@@ -1,0 +1,5 @@
+#include "../include/Resources.h"
+
+RES_HEIGHTMAP
+RES_LOSPHERE
+RES_TORUS

@@ -1,0 +1,255 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 44;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8DD76F6A0486A84900D96B5E /* XMLTest.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859E8B029090EE04C91782 /* XMLTest.1 */; };
+		C7407BE60EC66B9B0056DFC3 /* libboost_unit_test_framework-xgcc40-mt-1_36.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C7407BE50EC66B9B0056DFC3 /* libboost_unit_test_framework-xgcc40-mt-1_36.dylib */; };
+		C7407CF20EC6955D0056DFC3 /* XMLDocumentTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7407CF10EC6955D0056DFC3 /* XMLDocumentTest.cpp */; };
+		C7407D1F0EC696A90056DFC3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7407D1D0EC696A90056DFC3 /* main.cpp */; };
+		C7CDEB1F0EBB9D5E000997D3 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7CDEB1E0EBB9D5E000997D3 /* OpenGL.framework */; };
+		C7CDEB230EBB9D6D000997D3 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7CDEB220EBB9D6D000997D3 /* CoreVideo.framework */; };
+		C7CDEB250EBB9D78000997D3 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7CDEB240EBB9D78000997D3 /* QTKit.framework */; };
+		C7CDEB270EBB9DBF000997D3 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7CDEB260EBB9DBF000997D3 /* AppKit.framework */; };
+		C7CDEB2B0EBB9DCE000997D3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7CDEB2A0EBB9DCE000997D3 /* Foundation.framework */; };
+		C7CDEB5C0EBBA312000997D3 /* XMLElementTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEB5B0EBBA312000997D3 /* XMLElementTest.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76F690486A84900D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				8DD76F6A0486A84900D96B5E /* XMLTest.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		8DD76F6C0486A84900D96B5E /* XMLTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = XMLTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C6859E8B029090EE04C91782 /* XMLTest.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = XMLTest.1; sourceTree = "<group>"; };
+		C7407BE50EC66B9B0056DFC3 /* libboost_unit_test_framework-xgcc40-mt-1_36.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libboost_unit_test_framework-xgcc40-mt-1_36.dylib"; path = "../../../../boost_1_36_0/stage/lib/libboost_unit_test_framework-xgcc40-mt-1_36.dylib"; sourceTree = SOURCE_ROOT; };
+		C7407CF10EC6955D0056DFC3 /* XMLDocumentTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = XMLDocumentTest.cpp; path = ../XMLDocumentTest.cpp; sourceTree = SOURCE_ROOT; };
+		C7407D1D0EC696A90056DFC3 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../main.cpp; sourceTree = SOURCE_ROOT; };
+		C7407D1E0EC696A90056DFC3 /* XMLFixtures.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = XMLFixtures.h; path = ../XMLFixtures.h; sourceTree = SOURCE_ROOT; };
+		C7CDEB1E0EBB9D5E000997D3 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		C7CDEB220EBB9D6D000997D3 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		C7CDEB240EBB9D78000997D3 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		C7CDEB260EBB9DBF000997D3 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		C7CDEB2A0EBB9DCE000997D3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C7CDEB5B0EBBA312000997D3 /* XMLElementTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = XMLElementTest.cpp; path = ../XMLElementTest.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76F660486A84900D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7CDEB1F0EBB9D5E000997D3 /* OpenGL.framework in Frameworks */,
+				C7CDEB230EBB9D6D000997D3 /* CoreVideo.framework in Frameworks */,
+				C7CDEB250EBB9D78000997D3 /* QTKit.framework in Frameworks */,
+				C7CDEB270EBB9DBF000997D3 /* AppKit.framework in Frameworks */,
+				C7CDEB2B0EBB9DCE000997D3 /* Foundation.framework in Frameworks */,
+				C7407BE60EC66B9B0056DFC3 /* libboost_unit_test_framework-xgcc40-mt-1_36.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* XMLTest */ = {
+			isa = PBXGroup;
+			children = (
+				C7407BE50EC66B9B0056DFC3 /* libboost_unit_test_framework-xgcc40-mt-1_36.dylib */,
+				08FB7795FE84155DC02AAC07 /* Source */,
+				C6859E8C029090F304C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+				C7CDEB1E0EBB9D5E000997D3 /* OpenGL.framework */,
+				C7CDEB220EBB9D6D000997D3 /* CoreVideo.framework */,
+				C7CDEB240EBB9D78000997D3 /* QTKit.framework */,
+				C7CDEB260EBB9DBF000997D3 /* AppKit.framework */,
+				C7CDEB2A0EBB9DCE000997D3 /* Foundation.framework */,
+			);
+			name = XMLTest;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				C7407D1D0EC696A90056DFC3 /* main.cpp */,
+				C7407D1E0EC696A90056DFC3 /* XMLFixtures.h */,
+				C7407CF10EC6955D0056DFC3 /* XMLDocumentTest.cpp */,
+				C7CDEB5B0EBBA312000997D3 /* XMLElementTest.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76F6C0486A84900D96B5E /* XMLTest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C6859E8C029090F304C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				C6859E8B029090EE04C91782 /* XMLTest.1 */,
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8DD76F620486A84900D96B5E /* XMLTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "XMLTest" */;
+			buildPhases = (
+				8DD76F640486A84900D96B5E /* Sources */,
+				8DD76F660486A84900D96B5E /* Frameworks */,
+				8DD76F690486A84900D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XMLTest;
+			productInstallPath = "$(HOME)/bin";
+			productName = XMLTest;
+			productReference = 8DD76F6C0486A84900D96B5E /* XMLTest */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "XMLTest" */;
+			compatibilityVersion = "Xcode 3.0";
+			hasScannedForEncodings = 1;
+			mainGroup = 08FB7794FE84155DC02AAC07 /* XMLTest */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DD76F620486A84900D96B5E /* XMLTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76F640486A84900D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7CDEB5C0EBBA312000997D3 /* XMLElementTest.cpp in Sources */,
+				C7407CF20EC6955D0056DFC3 /* XMLDocumentTest.cpp in Sources */,
+				C7407D1F0EC696A90056DFC3 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB923208733DC60010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				HEADER_SEARCH_PATHS = (
+					../../../include/tinyxml,
+					../../../../boost_1_36_0,
+				);
+				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../boost_1_36_0/stage/lib\"",
+				);
+				OTHER_LDFLAGS = (
+					../../../lib/libflint_d.a,
+					"-lcurl",
+				);
+				PRODUCT_NAME = XMLTest;
+				USER_HEADER_SEARCH_PATHS = ../../../../flint/include;
+			};
+			name = Debug;
+		};
+		1DEB923308733DC60010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../../boost_1_36_0/stage/lib\"",
+				);
+				PRODUCT_NAME = XMLTest;
+			};
+			name = Release;
+		};
+		1DEB923608733DC60010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = i386;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+			};
+			name = Debug;
+		};
+		1DEB923708733DC60010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = i386;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "XMLTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB923208733DC60010E9CD /* Debug */,
+				1DEB923308733DC60010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "XMLTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB923608733DC60010E9CD /* Debug */,
+				1DEB923708733DC60010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}

@@ -1,0 +1,7 @@
+/**
+\page anatomypage The Anatomy of a Cinder App
+<H2>Introduction</H2>
+<H2>Structure</H2>
+\image html anatomy/CinderLoop.png
+So that's it.
+*/

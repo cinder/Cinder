@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" href="stylesheets/cinder.css" type="text/css" media="screen" />
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+	<title>Windows Setup</title>
+</head>
+<body>
+
+<div class="wrapper">
+	<div class="header">
+		<h1><a href="http://libcinder.org">Cinder</a><h1>
+	</div>
+
+	<div class="contents">
+		<h1>Windows Setup</h1>
+		<p>Cinder on Windows is
+		designed to use Microsoft Visual Studio 2008, and works with both the
+		commercial version and the freely available <em>Express</em> editions. If you don't already have it installed, 
+		you can download <a href="http://www.microsoft.com/exPress/download/#webInstall">Visual C++ Express here</a>.</p>
+		<br>
+		<p>If you are you using an Express edition of Visual C++ and you have
+		never installed the Platform SDK, you'll want to do that too - just 
+		<a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=E6E1C3DF-A74F-4207-8586-711EBE331CDC&amp;displaylang=en">download and run the installer here</a>.</p>
+		<br>
+		<p>You'll need the DirectX SDK - <a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=B66E14B8-8505-4B17-BF80-EDB2DF5ABAD4">Download the August 2009 version here</a>. You'll also need to tell Visual Studio how to find the DirectX header files. Select <b>Tools | Options</b> from the menu bar and find <b>VC++ Directories</b> in the <b>Projects and Solutions</b> group. Choose <b>Include Files</b> from the <b>Show directories for</b> dropdown list and click the New Folder icon. Enter <em>$(DXSDK_DIR)\include</em> and click OK.</p>
+		
+		<br/>
+		<center><img style="width: 600px;" alt="DirectX include path" src="msw_images/dxsetup1.jpg"></center>
+		<br/>
+		
+		<p>Lastly, you'll need to grab the <a href="https://connect.apple.com/cgi-bin/WebObjects/MemberSite.woa/wa/getSoftware?bundleID=19910">QuickTime SDK 7.3 from Apple</a> which requires you to have a free ADC login. Cinder expects QuickTime to exist in the same directory it does, as 
+		<em>QuickTimeSDK-7.3.</em> Be sure to install it accordingly when prompted by the installer. Your directories should look about like this:</p>
+		<center><img alt="folders" src="msw_images/folders.png"></center>
+		<br>
+				
+		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you should be all set. However if you are building from our <a href="http://github.com/cinder/Cinder">Github repository</a> skip down to the <a href="#advanced">advanced section</a>.</p>
+		<br>
+		<p>Let's try opening and building one of the samples. From Windows Explorer, navigate to the <em>cinder\samples\QuickTime\vc9</em> folder and double-click <em>quickTimeSample.sln</em>.</p>
+		<br>
+		<p>Under the <em>Debug</em> menu select <em>Start Debugging</em> and click <em>Yes</em>
+		when prompted to build the project. The QuickTime sample will launch
+		and present you with an Open dialog. Select a QuickTime movie on your
+		hard drive, and you should see something about like this:</p>
+
+		<center><img alt="QuickTime sample" src="msw_images/quicktimesample.jpg"></center><br>
+
+		<p>Especially as we continue to develop the documentation, the samples are the best
+		way to get started learning Cinder. Don't be afraid to modify them and
+		experiment. And if you haven't read Robert Hodgin's <em>Hello, Cinder</em> tutorial, you should go <a href="../html/hello_cinder.html"> do that first</a>. </p>
+
+		<h2><a name="advanced">Advanced - Building Cinder</a></h2>
+
+		<p>If you are building Cinder from the source, available on our <a href="http://github.com/cinder/Cinder">Github repository</a>, you have just a couple of additional steps remaining. As an aside, if you are brand new to Cinder, you maybe happier just using one of our <a href="http://libcinder.org/download/">packaged releases</a>.</p>
+		<br>
+
+		<p>You'll want to grab the latest Boost, currently version 1.42, which you can 
+		<a href="http://sourceforge.net/projects/boost/files/boost/1.42.0/boost_1_42_0.zip/download">download here</a>. 		After dearchiving it, you'll want to take the resulting directory and put it directly into your Cinder directory, and name it <em>boost</em>.</p>
+
+		<br>
+
+		<p>Everything look good? Let's try to build Cinder then. Open up the Visual Studio 
+		solution in <em>cinder\vc9\cinder.sln.</em> Under the <em>Build</em> menu select 
+		<em>Batch Build</em>, and click the checkboxes corresponding to both the 
+		<em>Debug</em> and <em>Release</em> build configurations, and then hit the <em>Build</em> button.</p>
+
+		<center><img style="width: 602px; height: 347px;" alt="Batch Build" src="msw_images/batchbuild.png"></center>
+		<br>
+		<p>This will take a second, but once everything succeeds, there should exist the 
+		files <em>cinder.lib</em> and <em>cinder_d.lib</em> at the path <em>cinder\libs</em></p>
+	</div>
+</div>
+</body>
+</html>

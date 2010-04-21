@@ -1,0 +1,10 @@
+/**
+\class cinder::gl::Fbo
+\details
+FBOs are used for doing off-screen rendering, including rendering to a texture. An FBO can capture draw commands that would normally
+go to the screen, and can be used to implement a large variety of techniques, particularly post-processing effects like blurs, depth-of-field and the like. 
+FBOs are formally specified in the extension <A HREF="http://oss.sgi.com/projects/ogl-sample/registry/EXT/framebuffer_object.txt"><tt>GL_EXT_framebuffer_object</tt></A>.
+\sa
+\ref guide_gl_Fbo <BR>
+
+*/

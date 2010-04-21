@@ -1,0 +1,26 @@
+/*! \page helloCinder Hello, Cinder
+\n
+Welcome to Cinder. This tutorial is a quick-start guide and mini-tour of how to create and evolve a Cinder project from scratch. Things are going to be pretty informal here. Instead of exhaustively covering a topic before moving on, we are going to meander around a bit and sample some features along the way. Hopefully, this tutorial will inspire you to continue to explore Cinder and learn to love it as much as we do. \n
+\n
+Below you will find some brief chapter descriptions. Each chapter has a corresponding project, which you can find in the <em>cinder/tour</em> directory. \n
+\image html tutorial_tour_location_shot.png
+\n
+\ref helloCinderChapter1 "Chapter 1: Getting Started"\n
+In the first chapter, we will set up a new project and learn how to load and display images. We go on to show how to draw simple shapes and we even set up a basic %Particle engine. \n
+\n
+\ref helloCinderChapter2 "Chapter 2: Personality and diversity"\n
+We continue to expand our Particle engine. We also learn how to pull color data from images and put that information to good use. \n
+\n
+\ref helloCinderChapter3 "Chapter 3: Influence"\n
+In chapter 3, we show how to use keyboard and mouse input to control our %Particle engine. \n
+\n
+\ref helloCinderChapter4 "Chapter 4: Fine tuning"\n
+A birth/death cycle is added to our %Particle class and Perlin noise is introduced. \n
+\n
+\ref helloCinderChapter5 "Chapter 5: External Forces"\n
+We show you how to use nested iterators to allow the Particles to interact with each other. We then tie everything together and marvel at how far we have come. \n
+\n
+\n
+
+Okay, enough with the introduction. \ref helloCinderChapter1 "Dive right in".
+*/

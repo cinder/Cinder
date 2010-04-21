@@ -1,0 +1,82 @@
+/**
+\page guide_gl_Fbo Guide to Framebuffer Objects (FBOs)
+<H2>Introduction</H2>
+In OpenGL, the results of rendering commands end up as pixels in a 2D image called a \em framebuffer. The default framebuffer in OpenGL is automatically drawn to the screen, but Framebuffer Objects (FBOs) provide a mechanism for users to supply an alternative, off-screen destination. Drawing off-screen enables a number of effects which are difficult or impossible otherwise. For example, imagine you want to blur the entire screen. By using an FBO, you can capture the result of your rendering commands before they hit the screen, process those pixels using an OpenGL shader, and then draw the blurred pixels instead of the originals.<BR><BR>
+
+A framebuffer can also encapsulate more than just red-green-blue data per pixel. In fact by default OpenGL stores depth information, as well as alpha (or coverage) values, among other things. An FBO can also represent this additional information, allowing the storage and processing of alpha and depth information. Furthermore, all of this information can be used as textures in subsequent OpenGL rendering. This technique is often called <I>render-to-texture</i>.
+
+<BR>
+<H2>Setting up an FBO</H2>
+To setup an FBO, the first step is to specify the size of the FBO in pixels.
+
+\code
+#include "cinder/gl/Fbo.h"
+using namespace ci;
+gl::Fbo myFbo( 640, 480 );
+\endcode
+<BR>
+Because we have not specified any formatting parameters, the FBO defaults to a format that emulates the normal screen-based framebuffer, storing RGB as well as alpha and depth information. To make use of the FBO, the first step is to bind it as the current framebuffer.
+\code
+myFbo.bindFramebuffer();
+<...drawing commands...>
+\endcode
+<BR>
+Now any rendering commands we issue will render to our FBO instead of the screen. Once we are finished rendering off-screen, we will want to restore the screen as the primary framebuffer, which we'll do like this:
+\code
+myFbo.unbindFramebuffer();
+\endcode
+<BR>
+At this point, our FBO contains the result of our rendering commands stored as a \ref cinder::gl::Texture "gl::Texture". We can do any number of things with these pixels. Assuming we have a shader which blurs, we might do something like this:
+\code
+#include "cinder/gl/GlslProg.h"
+gl::GlslProg blurShader;
+blurShader.uniform( "blurRadius", 5.0f );
+blurShader.bind();
+gl::draw( myFbo.getTexture() ); // draw the contents of the Fbo by using it as a texture
+blurShader.unbind();
+\endcode
+
+<H2><BR>Advanced Formats</H2>
+The Cinder FBO class also support customizing what data is stored in the FBO using the \ref cinder::gl::Fbo::Format "Fbo::Format" object. For example to enable mip-mapping, you would write something about like this:
+\code
+gl::Fbo::Format format;
+format.enableMipmapping();
+gl::Fbo myFbo( 640, 480, format );
+\endcode
+<BR>
+The \ref cinder::gl::Fbo::Format "Fbo::Format" object can also be used to modify the way the data of the framebuffer is stored. For example, on implementations that support it, we can enable a high dynamic range floating point framebuffer by passing the constant \c GL_RGBA32F as the format for storing the color data, meaning 32-bit floating point data for red, green, blue and alpha.
+
+\code
+gl::Fbo::Format hdrFormat;
+hdrFormat.setColorInternalFormat( GL_RGBA32F );
+gl::Fbo myHdrFbo( 640, 480, hdrFormat );
+\endcode
+
+<H2><BR>Antialiasing with FBOs</H2>
+The Cinder ci::gl::Fbo also supports the option to antialias FBOs on implementations that support it. The typical technique is known as <I>multisample antialiasing</I> (MSAA), and works simply by taking several samples per pixel and averaging them together. This averaging step must be performed after all the rendering has taken place, and the Cinder FBO class automatically takes care of it when you call \ref cinder::gl::Fbo::getTexture() "Fbo::getTexture()" or \ref cinder::gl::Fbo::bindTexture() "Fbo::bindTexture()".
+<BR><BR>
+In order to enable MSAA, set your format to use a value greater than 1 for its samples.
+\code
+gl::Fbo::Format msaaFormat;
+msaaFormat.setSamples( 4 ); // enable 4x MSAA
+gl::Fbo myMsaaFbo( 640, 480, msaaFormat );
+\endcode
+<BR>
+Additionally, though currently limited to Nvidia cards on Windows, the Cinder FBO supports an antialiasing scheme known as <I>coverage sample antialiasing</I> (CSAA). This technique works by determining pixel coverage information (effectively alpha) in a less expensive manner than MSAA. Per Nvidia's documentation, "...CSAA produces antialiased images that rival the quality of 8x or 16x MSAA, while introducing only a minimal performance hit over standard (typically 4x) MSAA." To understand more about how CSAA works, <A HREF="http://developer.nvidia.com/object/coverage-sampled-aa.html">please refer to this documentation from Nvidia</A>. This feature can be enabled in Cinder's \ref cinder::gl::Fbo "gl::Fbo" class like so:
+\code
+gl::Fbo::Format csaaFormat;
+csaaFormat.setSamples( 4 );
+csaaFormat.setCoverageSamples( 8 ); // a combination which creates the "CSAA 8x" mode
+gl::Fbo myCsaaFbo( 640, 480, csaaFormat );
+\endcode
+<BR>
+\note Currenty by enabling FBO multisampling, you automatically disable the depth buffer's availablility as a texture, though your FBO may still contain a depth buffer. Consequently \ref cinder::gl::Fbo::getDepthTexture() "getDepthTexture()" and \ref cinder::gl::Fbo::bindDepthTexture() "bindDepthTexture()" will fail.
+<BR>
+<H2>Saving FBO Contents</H2>
+Saving the pixels from an FBO is quite straightforward.
+\code
+#include "cinder/ImageIo.h"
+writeImage( getHomeDirectory() + "myPixels.png", myFbo.getTexture() );
+\endcode
+
+*/

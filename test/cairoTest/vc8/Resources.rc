@@ -1,0 +1,4 @@
+#include "../Resources.h"
+
+RES_BEYONCE_JPG		JPG					"..\\..\\..\\samples\\data\\Beyonce.jpg"
+RES_ROMEDALEN_PNG	PNG					"..\\romedalen.png"

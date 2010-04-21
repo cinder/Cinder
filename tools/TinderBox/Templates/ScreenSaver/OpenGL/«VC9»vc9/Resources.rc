@@ -1,0 +1,3 @@
+﻿#include "..\include\Resources.h"
+
+// this line needs to end in a carriage return

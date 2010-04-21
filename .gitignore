@@ -1,0 +1,17 @@
+# Mac OS X cruft
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.user
+.DS_Store
+
+boost/
+build/
+lib/libcinder*.a
+lib/cinder*.lib
+
+# Windows cruft
+*.suo
+*.ncb
+Debug/
+Release/

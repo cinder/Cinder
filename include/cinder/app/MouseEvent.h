@@ -1,0 +1,93 @@
+/*
+ Copyright (c) 2010, The Barbarian Group
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+*/
+
+#pragma once
+
+#include "cinder/Vector.h"
+
+namespace cinder { namespace app {
+
+//! Represents a mouse event
+class MouseEvent {
+  public:
+	MouseEvent() {}
+	MouseEvent( int aInitiator, int aX, int aY, unsigned int aModifiers, float aWheelIncrement, uint32_t aNativeModifiers )
+		: mInitiator( aInitiator ), mX( aX ), mY( aY ), mModifiers( aModifiers ), mWheelIncrement( aWheelIncrement ), mNativeModifiers( aNativeModifiers )
+	{}
+	
+	//! Returns the X coordinate of the mouse event
+	int			getX() const { return mX; }
+	//! Returns the Y coordinate of the mouse event
+	int			getY() const { return mY; }
+	//! Returns the coordinates of the mouse event
+	Vec2i		getPos() const { return Vec2i( mX, mY ); }
+	//! Returns whether the initiator for the event was the left mouse button
+	bool		isLeft() const { return ( mInitiator & LEFT_DOWN ) ? true : false; }
+	//! Returns whether the initiator for the event was the right mouse button
+	bool		isRight() const { return ( mInitiator & RIGHT_DOWN ) ? true : false; }
+	//! Returns whether the initiator for the event was the middle mouse button
+	bool		isMiddle() const { return ( mInitiator & MIDDLE_DOWN ) ? true : false; }
+	//! Returns whether the left mouse button was pressed during the event
+	bool		isLeftDown() const { return (mModifiers & LEFT_DOWN) ? true : false; }
+	//! Returns whether the right mouse button was pressed during the event
+	bool		isRightDown() const { return (mModifiers & RIGHT_DOWN) ? true : false; }
+	//! Returns whether the middle mouse button was pressed during the event
+	bool		isMiddleDown() const { return (mModifiers & MIDDLE_DOWN) ? true : false; }
+	//! Returns whether the Shift key was pressed during the event.
+	bool		isShiftDown() const { return (mModifiers & SHIFT_DOWN) ? true : false; }
+	//! Returns whether the Alt (or Option) key was pressed during the event.
+	bool		isAltDown() const { return (mModifiers & ALT_DOWN) ? true : false; }
+	//! Returns whether the Control key was pressed during the event.
+	bool		isControlDown() const { return (mModifiers & CTRL_DOWN) ? true : false; }
+	//! Returns whether the meta key was pressed during the event. Maps to the Windows key on Windows and the Command key on Mac OS X.
+	bool		isMetaDown() const { return (mModifiers & META_DOWN) ? true : false; }
+	//! Returns whether the accelerator key was pressed during the event. Maps to the Control key on Windows and the Command key on Mac OS X.
+	bool		isAccelDown() const { return (mModifiers & ACCEL_DOWN) ? true : false; }	
+	//! Returns the number of detents the user has wheeled through. Positive values correspond to wheel-up and negative to wheel-down.
+	float		getWheelIncrement() const { return mWheelIncrement; }
+	
+	//! Returns the platform-native modifier mask
+	uint32_t	getNativeModifiers() const { return mNativeModifiers; }	
+
+	enum {	LEFT_DOWN	= 0x0001,
+			RIGHT_DOWN	= 0x0002,
+			MIDDLE_DOWN = 0x0004,
+			SHIFT_DOWN	= 0x0008,
+			ALT_DOWN	= 0x0010,
+			CTRL_DOWN	= 0x0020,
+			META_DOWN	= 0x0040,
+#if defined( CINDER_MSW )
+			ACCEL_DOWN	= CTRL_DOWN
+#else
+			ACCEL_DOWN	= META_DOWN
+#endif
+			};	
+			
+  private:
+	int				mInitiator;
+	int				mX, mY;
+	unsigned int	mModifiers;
+	float			mWheelIncrement;
+	uint32_t		mNativeModifiers;
+};
+
+} } // namespace cinder::app
