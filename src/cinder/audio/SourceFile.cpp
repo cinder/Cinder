@@ -137,7 +137,7 @@ OSStatus LoaderSourceFile::dataInputCallback( AudioConverterRef inAudioConverter
 	theLoader->mConverterBuffer.mBuffers = new Buffer[theLoader->mConverterBuffer.mNumberBuffers];
 	for( int i = 0; i < theLoader->mConverterBuffer.mNumberBuffers; i++ ) {
 		theLoader->mConverterBuffer.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
-		theLoader->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theSource->mMaxPacketSize/* * theLoader->mConverterBuffer.mBuffers[i].mNumberChannels*/ );
+		theLoader->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theSource->mMaxPacketSize * theLoader->mConverterBuffer.mBuffers[i].mNumberChannels );
 		theLoader->mConverterBuffer.mBuffers[i].mData = malloc( theLoader->mConverterBuffer.mBuffers[i].mDataByteSize );
 	}
 	

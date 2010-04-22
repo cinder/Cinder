@@ -212,6 +212,14 @@ OSStatus OutputAudioUnit::Track::renderCallback( void * audioTrack, AudioUnitRen
 		
 		theLoader->loadData( (uint32_t *)&inNumberFrames, &bufferList );
 		delete [] bufferList.mBuffers;
+		
+		ioData->mNumberBuffers = bufferList.mNumberBuffers;
+		for( int i = 0; i < bufferList.mNumberBuffers; i++ ) {
+			ioData->mBuffers[i].mNumberChannels = bufferList.mBuffers[i].mNumberChannels;
+			ioData->mBuffers[i].mDataByteSize = bufferList.mBuffers[i].mDataByteSize;
+			ioData->mBuffers[i].mData = bufferList.mBuffers[i].mData;
+		}
+		
 	}
 	//save data into pcm buffer if it's enabled
 	/*if( theTrack->mPCMBufferEnabled ) {
