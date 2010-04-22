@@ -70,7 +70,7 @@ class Io {
 #endif
 	Io() 
 		: mSampleRate( 0 ), mChannelCount( 0 ), mBitsPerSample( 0 ), mBlockAlign( 0 ), mDataType( DATA_UNKNOWN ), 
-			mIsInterleaved( false ), mIsPcm( false ), mIsBigEndian( false )
+			mIsInterleaved( true ), mIsPcm( false ), mIsBigEndian( false )
 	{}
 	
 	int32_t			mSampleRate;

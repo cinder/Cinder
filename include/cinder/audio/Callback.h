@@ -50,7 +50,7 @@ class Callback {
 
   public:
 	Callback() {}
-	Callback( CallbackFunction aCallback, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 );
+	Callback( CallbackFunction aCallback, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 4 );
 	~Callback() {}
 	
 	operator SourceRef() const;

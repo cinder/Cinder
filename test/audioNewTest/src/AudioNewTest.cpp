@@ -23,8 +23,8 @@ void sineWave( uint64_t inSampleOffset, uint32_t *ioSampleCount, audio::BufferLi
 			float pos = idx / 44100.0f * 550.0f;
 			float val = math<float>::sin( pos * 2.0f * M_PI );
 			for( int k = 0; k < ioBuffer->mBuffers[i].mNumberChannels; k++ ) {
-				//buffer[j+k] = (0.5f + ( 0.5f * val ));
-				buffer[j+k] = val;
+				buffer[j+k] = (0.5f + ( 0.5f * val ));
+				//buffer[j+k] = val;
 			}
 			idx++;
 		}
