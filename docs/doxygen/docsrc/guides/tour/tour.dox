@@ -1,8 +1,13 @@
 /*! \page helloCinder Hello, Cinder
 \n
-Welcome to Cinder. This tutorial is a quick-start guide and mini-tour of how to create and evolve a Cinder project from scratch. Things are going to be pretty informal here. Instead of exhaustively covering a topic before moving on, we are going to meander around a bit and sample some features along the way. Hopefully, this tutorial will inspire you to continue to explore Cinder and learn to love it as much as we do. \n
+\section tourIntro Introduction
+\n
+Hi. My name is <a href="http://www.roberthodgin.com">Robert Hodgin</a>, and I am the author of this tutorial (with helpful input from <a href="http://www.drawnline.new">Andrew Bell</a> and <a href="http://www.todaycreate.com">Mike Creighton</a>). I want to help others get started with Cinder because learning a new framework can be intimidating. Over five chapters, I will show you how to go from a brand new Cinder project to a particle engine with both local and global forces, and then use it to achieve some artistic effects. Along the way, I will point out a few of Cinder's features as well as explaining a bit about my personal coding practices. If you wish to see what you will be working towards, check the final video at the end of Chapter 5. However, if you prefer the mystery of not knowing, read on. \n
+\n
+Things are going to be pretty informal. Think of it as a quick-start guide. Instead of exhaustively covering a topic before moving on to the next, I am going to meander around a bit and sample some of Cinder's many features along the way. Hopefully, this tutorial will inspire you to continue to explore Cinder and learn to love it as much as I do. \n
 \n
 Below you will find some brief chapter descriptions. Each chapter has a corresponding project, which you can find in the <em>cinder/tour</em> directory. \n
+\n
 \image html tutorial_tour_location_shot.png
 \n
 \ref helloCinderChapter1 "Chapter 1: Getting Started"\n
