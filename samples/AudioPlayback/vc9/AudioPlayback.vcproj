@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include;..\..\..\..\..\..\include;..\..\..\..\..\..\boost"
+				AdditionalIncludeDirectories="..\include;..\..\..\include;..\..\..\boost"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="cinder_d.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\..\..\..\lib;..\..\..\..\..\..\lib\msw"
+				AdditionalLibraryDirectories="..\..\..\lib;..\..\..\lib\msw"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -188,7 +188,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\..\..\..\..\include\cinder\Cinder.h"
+				RelativePath="..\include\Resources.h"
 				>
 			</File>
 		</Filter>
@@ -197,6 +197,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath="..\resources\Resources.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
