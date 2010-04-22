@@ -189,7 +189,7 @@ void LoaderSourceCallback::loadData( uint32_t *ioSampleCount, BufferList *ioData
 	
 	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );
 #elif defined( CINDER_MSW )
-	(*mSource->mCallback)( mSampleOffset, ioSampleCount, ioData->mBuffers[0] );
+	(*mSource->mCallback)( mSampleOffset, ioSampleCount, &ioData->mBuffers[0] );
 	mSampleOffset += *ioSampleCount;
 #endif
 }

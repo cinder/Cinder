@@ -48,7 +48,7 @@ void AudioNewTestApp::setup()
 	//mAudioSource = audio::load( loadResource( "guitar.mp3", RES_GUITAR_MP3, "MP3" ) );
 	//console() << mAudioSource->getDuration() << std::endl;
 	//mAudioSource = audio::load( "..\\data\\guitar.mp3" );
-	mAudioSource = audio::load( loadResource( "booyah.mp3"/*, RES_BOOYAH_MP3, "MP3"*/ ) );
+	mAudioSource = audio::load( loadResource( "booyah.mp3", RES_BOOYAH_MP3, "MP3" ) );
 	
 	//mTrack1 = audio::Output::addTrack( audio::load( loadResource( "guitar.mp3", RES_GUITAR_MP3, "MP3" ) ) );
 	//mTrack2 = audio::Output::addTrack( audio::load( loadResource( "drums.mp3", RES_DRUMS_MP3, "MP3" ) ) );
