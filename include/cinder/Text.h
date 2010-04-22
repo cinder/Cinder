@@ -80,4 +80,10 @@ class TextLayout {
 	std::deque<shared_ptr<class Line> >		mLines;
 };
 
+/** \brief Renders a single string and returns it as a Surface.
+	Optional \a baselineOffset pointer will receive how many pixels of descender are in the returned Surface. Offset rendering the result Surface by this amount in order to preserve a consistent baseline.
+	Consider gl::drawString() as a more convenient alternative.
+**/
+Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset = 0 );
+
 } // namespace cinder

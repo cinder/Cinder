@@ -77,7 +77,11 @@ void VoronoiGpuApp::draw()
 	// draw the voronoi sites in yellow
 	gl::color( Color( 1.0f, 1.0f, 0.0f ) );	
 	for( vector<Vec2i>::const_iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
-		gl::drawSolidCircle( Vec2f( *ptIt ), 2.0f );	
+		gl::drawSolidCircle( Vec2f( *ptIt ), 2.0f );
+	
+	gl::enableAlphaBlending();
+	gl::drawStringRight( "Click to add a point", Vec2f( getWindowWidth() - 10, getWindowHeight() - 20 ), Color( 1, 0.3, 0 ) );
+	gl::disableAlphaBlending();
 }
 
 // This line tells Cinder to actually create the application

@@ -415,4 +415,67 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	return result;
 }
 
+Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset )
+{
+	Line line;
+	line.addRun( Run( str, font, color ) );
+	line.mJustification = Line::LEFT;
+	line.mLeadingOffset = 0;	
+	line.calcExtents();
+
+	float totalWidth = line.mWidth;
+	float totalHeight = line.mHeight;
+	int pixelWidth = (int)math<float>::ceil( totalWidth );
+	int pixelHeight = (int)math<float>::ceil( totalHeight );
+
+	// Odd failure - return a NULL Surface
+	if( ( pixelWidth < 0 ) || ( pixelHeight < 0 ) )
+		return Surface();
+
+#if defined( CINDER_MAC )
+	Surface result( pixelWidth, pixelHeight, true, SurfaceChannelOrder::RGBA );
+	CGContextRef cgContext = cocoa::createCgBitmapContext( result );
+	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
+
+	float currentY = totalHeight + 1.0f;
+	currentY -= line.mAscent + line.mLeadingOffset;
+	line.render( cgContext, currentY, (float)0, pixelWidth );
+
+	if( baselineOffset )
+		*baselineOffset = line.mDescent;
+
+	// force all the rendering to finish and release the context
+	::CGContextFlush( cgContext );
+	::CGContextRelease( cgContext );
+
+	ip::unpremultiply( &result );
+#elif defined( CINDER_MSW )
+	// I don't have a great explanation for this other than it seems to be necessary
+	pixelHeight += 1;
+	// prep our GDI and GDI+ resources
+	::HDC dc = TextManager::instance()->getDc();
+	Surface result( pixelWidth, pixelHeight, true, SurfaceChannelOrder::RGBA );
+	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result, false );
+	//Gdiplus::Bitmap *offscreenBitmap = new Gdiplus::Bitmap( pixelWidth, pixelHeight, (premultiplied) ? PixelFormat32bppPARGB : PixelFormat32bppARGB );
+	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
+	// high quality text rendering
+	offscreenGraphics->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
+	// fill the surface with the background color
+	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255), 
+			(BYTE)(mBackgroundColor.g * 255), (BYTE)(mBackgroundColor.b * 255) ) );
+
+	// walk the lines and render them, advancing our Y offset along the way
+	float currentY = 0;
+	currentY += line.mLeadingOffset + line.mLeading;
+	line.render( offscreenGraphics, currentY, (float)mHorizontalBorder, (float)pixelWidth );
+
+	::GdiFlush();
+
+	delete offscreenBitmap;
+	delete offscreenGraphics;		
+#endif	
+
+	return result;
+}
+
 } // namespace cinder

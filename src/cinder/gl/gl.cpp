@@ -28,6 +28,7 @@
 #include "cinder/TriMesh.h"
 #include "cinder/Sphere.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/Text.h"
 #include <cmath>
 
 #if defined( CINDER_MAC ) && ( ! defined( CINDER_COCOA_TOUCH ) )
@@ -364,6 +365,11 @@ void enableAlphaBlending( bool premultiplied )
 		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	else
 		glBlendFunc( GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
+}
+
+void disableAlphaBlending()
+{
+	glDisable( GL_BLEND );
 }
 
 void enableAdditiveBlending()
@@ -922,6 +928,45 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
 }
 
+namespace {
+void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
+{
+	// justification: { left = -1, center = 0, right = 1 }
+	SaveTextureBindState saveBindState( GL_TEXTURE_2D );
+	SaveTextureEnabledState saveEnabledState( GL_TEXTURE_2D );
+	SaveColorState colorState();
+
+	static Font defaultFont( "Arial", 14 );
+	if( ! font )
+		font = defaultFont;
+
+	float baselineOffset;
+	gl::Texture tex( renderString( str, font, color, &baselineOffset ) );
+	glColor3ub( 255, 255, 255 );
+	if( justification == -1 ) // left
+		draw( tex, pos - Vec2f( 0, baselineOffset ) );
+	else if( justification == 0 ) // center
+		draw( tex, pos - Vec2f( tex.getWidth() * 0.5f, baselineOffset ) );	
+	else // right
+		draw( tex, pos - Vec2f( tex.getWidth(), baselineOffset ) );
+}
+} // anonymous namespace
+
+void drawString( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+{
+	drawStringHelper( str, pos, color, font, -1 );
+}
+
+void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+{
+	drawStringHelper( str, pos, color, font, 0 );
+}
+
+void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+{
+	drawStringHelper( str, pos, color, font, 1 );
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // SaveTextureBindState
 SaveTextureBindState::SaveTextureBindState( GLint target )
@@ -959,6 +1004,18 @@ SaveTextureEnabledState::~SaveTextureEnabledState()
 		glEnable( mTarget );
 	else
 		glDisable( mTarget );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// SaveColorState
+SaveColorState::SaveColorState()
+{
+	glGetFloatv( GL_CURRENT_COLOR, mOldValues );
+}
+
+SaveColorState::~SaveColorState()
+{
+	glColor4fv( mOldValues );
 }
 
 } } // namespace gl::cinder

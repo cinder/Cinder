@@ -36,6 +36,7 @@
 #include "cinder/Vector.h"
 #include "cinder/Color.h"
 #include "cinder/Rect.h"
+#include "cinder/Font.h"
 
 #if defined( CINDER_MSW )
 	#include <windows.h>
@@ -128,8 +129,10 @@ inline void color( const Color &c ) { glColor3f( c.r, c.g, c.b ); }
 inline void color( const ColorA &c ) { glColor4f( c.r, c.g, c.b, c.a ); }
 #endif // ! defined( CINDER_GLES )
 
-//! Enables alpha blending and selects a \c BlendFunc that is appropriate for premultiplied-alpha when \a premultiplied
+//! Enables alpha blending. Selects a \c BlendFunc that is appropriate for premultiplied-alpha when \a premultiplied
 void enableAlphaBlending( bool premultiplied = false );
+//! Disables alpha blending.
+void disableAlphaBlending();
 //! Enables alpha blending and selects a \c BlendFunc for additive blending
 void enableAdditiveBlending();
 
@@ -200,6 +203,18 @@ void draw( const Texture &texture, const Rectf &rect );
 //! Draws the pixels inside \a srcArea of \a texture on the XY-plane in the rectangle defined by \a destRect
 void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect );
 
+#if ! defined( CINDER_COCOA_TOUCH )
+
+//! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
+void drawString( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+//! Draws a string \a str with the horizontal center of its baseline located at \a pos. Optional \a font and \a color affect the style
+void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+//! Draws a right-justified string \a str with the center of its  located at \a pos. Optional \a font and \a color affect the style
+void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+
+#endif // ! defined( CINDER_COCOA_TOUCH )
+
+
 //! Convenience class designed to push and pop the currently bound texture for a given texture unit
 struct SaveTextureBindState {
 	SaveTextureBindState( GLint target );
@@ -216,6 +231,14 @@ struct SaveTextureEnabledState {
   private:
 	GLint		mTarget;
 	GLboolean	mOldValue;
+};
+
+//! Convenience class designed to push and pop the current color
+struct SaveColorState {
+	SaveColorState();
+	~SaveColorState();
+  private:
+	GLfloat		mOldValues[4];
 };
 
 //! Initializes the GLee library. This is generally called automatically by the application and is only necessary if you need to use GLee before your app's setup() method is called.
