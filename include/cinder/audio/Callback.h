@@ -34,7 +34,7 @@ typedef shared_ptr<class SourceCallback>	SourceCallbackRef;
 typedef shared_ptr<class LoaderSourceCallback>	LoaderSourceFileRef;
 
 //TODO: maybe change this to use a cinder Audio buffer that you fill?
-typedef void (*CallbackFunction)( uint64_t inSampleOffset, uint32_t *ioSampleCount, BufferList *ioBuffer );
+typedef void (*CallbackFunction)( uint64_t inSampleOffset, uint32_t *ioSampleCount, Buffer *ioBuffer );
 
 class Callback {
   private:
@@ -50,7 +50,7 @@ class Callback {
 
   public:
 	Callback() {}
-	Callback( CallbackFunction aCallback, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 4 );
+	Callback( CallbackFunction aCallback, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 );
 	~Callback() {}
 	
 	operator SourceRef() const;

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		C769872C1180D354002615B3 /* booyah.wav in Resources */ = {isa = PBXBuildFile; fileRef = C769872B1180D354002615B3 /* booyah.wav */; };
 		C79B4F21115533D200F17270 /* AudioNewTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C79B4F20115533D200F17270 /* AudioNewTest.cpp */; };
 		C79B4F391155353200F17270 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C79B4F381155353200F17270 /* Accelerate.framework */; };
 		C79B4F3B1155353200F17270 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C79B4F3A1155353200F17270 /* AudioToolbox.framework */; };
@@ -30,6 +31,7 @@
 		32CA4F630368D1EE00C91783 /* audioNewTest_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = audioNewTest_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* audioNewTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = audioNewTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C769872B1180D354002615B3 /* booyah.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = booyah.wav; path = ../data/booyah.wav; sourceTree = SOURCE_ROOT; };
 		C79B4F20115533D200F17270 /* AudioNewTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioNewTest.cpp; path = ../src/AudioNewTest.cpp; sourceTree = SOURCE_ROOT; };
 		C79B4F381155353200F17270 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		C79B4F3A1155353200F17270 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -131,6 +133,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C769872B1180D354002615B3 /* booyah.wav */,
 				C79B5484115C0E2F00F17270 /* booyah.mp3 */,
 				C79B5476115C0BEC00F17270 /* drums.mp3 */,
 				C79B52EC115823F200F17270 /* guitar.mp3 */,
@@ -194,6 +197,7 @@
 				C79B52ED115823F200F17270 /* guitar.mp3 in Resources */,
 				C79B5477115C0BEC00F17270 /* drums.mp3 in Resources */,
 				C79B5485115C0E2F00F17270 /* booyah.mp3 in Resources */,
+				C769872C1180D354002615B3 /* booyah.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

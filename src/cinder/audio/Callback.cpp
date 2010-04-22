@@ -95,6 +95,7 @@ LoaderSourceCallback::LoaderSourceCallback( SourceCallback *source, Target *targ
 	
 	sourceDescription.mFormatID = kAudioFormatLinearPCM; //kAudioFormatLinearPCM;
 	sourceDescription.mFormatFlags = CalculateLPCMFlags( mSource->getBitsPerSample(), mSource->getBlockAlign() * 8, mSource->isFloat(), mSource->isBigEndian(), ( ! mSource->isInterleaved() ) /*is non interleaved*/ );
+	//sourceDescription.mFormatFlags |= kAudioFormatFlagIsPacked;
 	sourceDescription.mSampleRate = source->getSampleRate();
 	sourceDescription.mBytesPerPacket = ( mSource->getBlockAlign() ); //( mSource->getBitsPerSample() * mSource->getChannelCount() ) / 8;
 	sourceDescription.mFramesPerPacket = 1;
@@ -188,7 +189,7 @@ void LoaderSourceCallback::loadData( uint32_t *ioSampleCount, BufferList *ioData
 	
 	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );
 #elif defined( CINDER_MSW )
-	(*mSource->mCallback)( mSampleOffset, ioSampleCount, ioData );
+	(*mSource->mCallback)( mSampleOffset, ioSampleCount, ioData->mBuffers[0] );
 	mSampleOffset += *ioSampleCount;
 #endif
 }
@@ -226,7 +227,7 @@ OSStatus LoaderSourceCallback::dataInputCallback( AudioConverterRef inAudioConve
 	theLoader->mConverterBuffer.mBuffers = new Buffer[theLoader->mConverterBuffer.mNumberBuffers];
 	for( int i = 0; i < theLoader->mConverterBuffer.mNumberBuffers; i++ ) {
 		theLoader->mConverterBuffer.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
-		theLoader->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * ( theSource->mBitsPerSample / 8 ) * theLoader->mConverterBuffer.mBuffers[i].mNumberChannels );
+		theLoader->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theSource->getBlockAlign() );
 		theLoader->mConverterBuffer.mBuffers[i].mData = malloc( theLoader->mConverterBuffer.mBuffers[i].mDataByteSize );
 	}
 	
@@ -234,7 +235,7 @@ OSStatus LoaderSourceCallback::dataInputCallback( AudioConverterRef inAudioConve
 	theLoader->mCurrentPacketDescriptions = new AudioStreamPacketDescription[*ioNumberDataPackets];
 	
 	//err = AudioFileReadPackets( theSource->mFileRef, false, (UInt32 *)&(theLoader->mConverterBuffer.mBuffers[0].mDataByteSize), theLoader->mCurrentPacketDescriptions, theLoader->mPacketOffset, (UInt32 *)ioNumberDataPackets, theLoader->mConverterBuffer.mBuffers[0].mData );
-	(*theSource->mCallback)( theLoader->mSampleOffset, (uint32_t *)ioNumberDataPackets, &theLoader->mConverterBuffer );
+	(*theSource->mCallback)( theLoader->mSampleOffset, (uint32_t *)ioNumberDataPackets, &theLoader->mConverterBuffer.mBuffers[0] );
 	
 	
 	//ioData->mBuffers[0].mData = theTrack->mSourceBuffer;
