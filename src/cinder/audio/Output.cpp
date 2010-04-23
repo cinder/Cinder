@@ -613,12 +613,12 @@ void OutputXAudio::Track::play()
 
 void OutputXAudio::Track::stop()
 {
-	//mLoader->stop();
+	if( ! mIsPlaying ) return;
 	mSourceVoice->Stop( 0, XAUDIO2_COMMIT_NOW ); //might not really need this
-	mSourceVoice->FlushSourceBuffers();
 	mIsPlaying = false;
 	SetEvent( mBufferEndEvent ); //signals event to end queuethread
-	//might need to clean out the buffers here
+	mQueueThread->join();
+	mSourceVoice->FlushSourceBuffers();
 }
 
 void OutputXAudio::Track::setVolume( float aVolume )
@@ -652,7 +652,7 @@ void OutputXAudio::Track::fillBuffer()
 			//tell the loader to go fuck itself?
 			break;
 		}
-
+		
 		BufferList bufferList;
 		bufferList.mNumberBuffers = 1;
 		Buffer buffer;
