@@ -461,13 +461,13 @@ Surface renderString( const std::string &str, const Font &font, const ColorA &co
 	// high quality text rendering
 	offscreenGraphics->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
 	// fill the surface with the background color
-	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255), 
-			(BYTE)(mBackgroundColor.g * 255), (BYTE)(mBackgroundColor.b * 255) ) );
+	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(0), (BYTE)(0), 
+			(BYTE)(0), (BYTE)(0) ) );
 
 	// walk the lines and render them, advancing our Y offset along the way
 	float currentY = 0;
 	currentY += line.mLeadingOffset + line.mLeading;
-	line.render( offscreenGraphics, currentY, (float)mHorizontalBorder, (float)pixelWidth );
+	line.render( offscreenGraphics, currentY, (float)0, (float)pixelWidth );
 
 	::GdiFlush();
 
