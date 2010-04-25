@@ -17,17 +17,21 @@ void TutorialApp::prepareSettings( Settings *settings ){
 }
 \endcode
 \n
-You also get a mouse event but we will cover that a little later.\n
+Another thing to notice up front is that Cinder uses C++ namespaces. Depending on what programming languages you've worked with, you may have already encountered namespaces before. They're nothing fancy - just a way of grouping functions and classes together under a common name. Everything in Cinder is inside the \ref cinder "cinder::" namespace. So to reference something inside it, like say, the Timer class, we refer to cinder::Timer. C++ namespaces also support hierarchies, which is a very nice feature that Cinder takes advantage of. So for example, the OpenGL texture class has the full name of cinder::gl::Texture. However this can get a little long-winded sometimes, so Cinder provides a couple of shortcuts. The first is that whenever you would refer to \ref cinder "cinder::" you can also refer to its synonym, \ref ci "ci::". These are completely interchangeable, but <tt>ci::</tt> is a little easier to type, so we recommend it. Secondly, you'll generally see in the samples the following two lines toward the top:
+\code
+using namespace ci;
+using namespace ci::app;
+\endcode
 \n
-Another thing to notice up front is that Cinder uses C++ namespaces. If you are new to C++, this concept might be a little confusing. There is a reference to find out about the Cinder namespaces which you can view <a href="http://libcinder.org/docs/namespaces.html">here</a>.
+These \c using statements are just a shortcut to tell the C++ compiler, \"if it's ever unclear, I am talking about namespace \em whatever, but I am not going to keep typing <tt>whatever::</tt> everywhere.\" There is a list of the namespaces inside Cinder <a href="namespaces.html">here</a>.\n
 \n
 Now that you understand the basic workings for any Cinder application, feel free to hit Run (or build or whatever button makes it go). You should see a 800x600 pixel window filled with black.\n
 \n
 \image html tutorial_part1_00.png
 \n
-Congratulations. You have just created your new blank canvas: a black expanse filled with potential. It is a single line of code and a perfect place to start. This is how you clear the screen to a color which has no red, green or blue pixels. 
+Congratulations. You have just created your new blank canvas: a black expanse filled with potential. It is a single line of code and a perfect place to start. This is how you clear the screen to black in Cinder.
 \code
-gl::clear( Color( 0, 0, 0 ) );
+gl::clear();
 \endcode
 \n
 If you are familiar with OpenGL, you will note that this is just a convenience method provided by Cinder. All \ref cinder::gl::clear() "gl::clear()" is doing is wrapping up a few lines of code into one easy to use function. The actual code executed by \ref cinder::gl::clear() "gl::clear()" is shown below.
@@ -50,7 +54,7 @@ gl::clear( Color( 1, 0, 0 ), true );
 \n
 It is much nicer to just deal with that single line of code instead of needing to write out the full OpenGL syntax to clear the screen. As we continue, we will encounter many other convenience methods. They are entirely optional. If you'd rather write out the whole thing, be our guest.\n
 \n
-By the way, \ref cinder::Color() "Color()" is a convenience type provided by Cinder to help describe and manipulate color data.\n 
+By the way, \ref cinder::ColorT "Color()" is just a class provided by Cinder to help describe and manipulate color data.\n 
 \n
 Moving along, perhaps you want the background to cycle between white and black. You could make use of  getElapsedSeconds(), which will return a float equal to the number of seconds since the app started. The following \c gray variable oscillates between 0.0 and 1.0.
 \code
@@ -66,9 +70,9 @@ Loading images in C++ can be a chore. Luckily, Cinder does most of the hard work
 \n
 1) Tell Cinder where to find the ImageIO class.
 \code
-#include "cinder/ImageIO.h"
+#include "cinder/ImageIo.h"
 \endcode
-You put this line at the top of the project with the other includes. This lets Cinder know that you want to use code from the ImageIO class.
+You put this line at the top of the project with the other includes. This lets Cinder know that you want to use code from the ImageIo class.
 \n
 \n
 2) Declare a new texture in the App class.
@@ -98,13 +102,13 @@ And what does a loaded and drawn image look like? Well, if you use a picture of 
 \image html tutorial_part1_01.jpg
 \n
 \section options Other options for dealing with images
-As we mentioned before, putting images directly into the resources folder is one option, but it can be annoying if you want cross platform compatibility. That requires you to jump through a couple extra hoops. We are going to show you two different ways you can use images in your application without needing to have them stored locally. The first way is to prompt the user for file path.\n
+As we mentioned before, putting images directly into the resources folder is one option, but Cinder makes it easy to load images from many different sources. I'm going to show you two additional ways you can use images in your application without needing to have them stored locally. The first way is to prompt the user for file path.\n
 \n
-The following code will attempt to create an image from a resource selected by means of a file path dialog box. Once you select a file, assuming the file is a valid image, a texture is created. Otherwise, an exception is thrown.
+The following code will attempt to create an image from a file selected by means of a standard open dialog box. Once you select a file, assuming the file is a valid image, a texture is created. Otherwise, an exception is thrown.
 \code
 try {
-	std::string p = getOpenFilePath("", ImageIo::getLoadExtensions());
-	if( ! p.empty() ) {
+	std::string p = getOpenFilePath( "", ImageIo::getLoadExtensions() );
+	if( ! p.empty() ) { // an empty string means the user canceled
 		myImage = gl::Texture( loadImage( p ) );
 	}
 }
@@ -112,6 +116,8 @@ catch( ... ) {
 	console() << "Unable to load the image." << std::endl;
 }
 \endcode
+\n
+Notice the second parameter to getOpenFilePath(), which is the result of ImageIo::getLoadExtensions(). This is a quick way to tell the open dialog, "only the let user pick files whose extensions correspond with the types of images I know how to load."\n
 \n
 The second way of getting images into your application is to load them directly from a \ref cinder::Url "Url". This is surprisingly easy.
 \code
@@ -176,9 +182,9 @@ gl::drawSolidCircle( Vec2f( x, y ) + getWindowSize() / 2, abs( x ) );
 \section particleEngine Creating a basic Particle engine
 These last few steps, though tiny, are a great example why we should go ahead and make a class for this circle. If we ever wanted to draw two or more circles, each with their own position, speed, and size, it becomes necessary to package up this data into its own class to make it easier to access each circle individually. We could say \c circle1 has a position of \c loc1 with a size of \c radius1, and then do the same with \c circle2 and \c circle3 and so on. However, when you want to start dealing with thousands of circles, it quickly becomes obvious that we should rethink how we are approaching this problem.\n
 \n
-First, we will create a controller class. This just makes it easy to segregate <tt>Particle</tt>-related code. This new class is called \c ParticleController and as the name suggests, it is in charge of controlling the <tt>Particle</tt>s. It will have its own \c update() and \c draw() methods. \c update() will iterate through all of the <tt>Particle</tt>s and tell each one to run its own personal \c update() method. After all the <tt>Particle</tt>s are updated, the \c ParticleController then tells each of the <tt>Particle</tt>s to \c draw().\n
+First, we will create a controller class. This just makes it easy to segregate <tt>Particle</tt>-related code. This new class is called \c ParticleController and as the name suggests, it is in charge of controlling the <tt>Particle</tt>s. It will have its own \c update() and \c %draw() methods. \c update() will iterate through all of the <tt>Particle</tt>s and tell each one to run its own personal \c update() method. After all the <tt>Particle</tt>s are updated, the \c ParticleController then tells each of the <tt>Particle</tt>s to \c draw().\n
 \n
-The \c Particle class is based what we did with the circle above. Each \c Particle has a position in space, a direction of travel, a speed of travel, a size, and whatever else you want to add to give each \c Particle its own personality. Later on, we will add a few more variables. Here is a summary of the \c Particle class code (the full source is contained in CinderTutorial1)
+The \c Particle class is based what we did with the circle above. Each \c Particle has a position in space, a direction of travel, a speed of travel, a size, and whatever else you want to add to give each \c Particle its own personality. Later on, we will add a few more variables. Here is a summary of the \c Particle class code (the full source is contained in \em <a href="../../tour/Chapter%201/">cinder/tour/Chapter 1/</a>)
 \code
 Particle::Particle( Vec2f loc ) {
 	mLoc = loc;
@@ -220,9 +226,9 @@ class ParticleController {
 };
 \endcode
 \n
-Not much to it. The \c ParticleController::update() method tells all the <tt>Particle</tt>s to update. The \c ParticleController::draw() method tells all the <tt>Particle</tt>s to draw. And the \c addParticles() and \c removeParticles() methods will create or destroy the supplied amount of <tt>Particle</tt>s.\n
+Not much to it. The \c ParticleController::update() method tells all the <tt>Particle</tt>s to update. The <tt>ParticleController::%draw()</tt> method tells all the <tt>Particle</tt>s to draw. And the \c addParticles() and \c removeParticles() methods will create or destroy the supplied amount of <tt>Particle</tt>s.\n
 \n
-All of the <tt>Particle</tt>s are kept in a \c list. If you want to add a new \c Particle to the end of the \c list, you use \c push_back:
+All of the <tt>Particle</tt>s are kept in a \c list. This is a class built-in to C++ which maintains a linked list of objects. If you're new to C++, you should definitely familiarize yourself with these built-in classes (called the STL) - they are extremely fast and powerful. A nice list and discussion of them is <a href="http://cplusplus.com/reference/stl/">available here</a>. If you want to add a new \c Particle to the end of the \c list, you use \c push_back:
 \code
 float x = Rand::randFloat( app::getWindowWidth() );
 float y = Rand::randFloat( app::getWindowHeight() );
@@ -231,7 +237,7 @@ mParticles.push_back( Particle( Vec2f( x, y ) ) );
 \n
 And as you might have guessed, to remove a \c Particle from the end of the \c list, you use \c pop_back(). Eventually you are going to want more control over which <tt>Particle</tt>s to remove. For instance, a \c Particle moves offscreen and you no longer need it around. You cannot rely on \c pop_back() because it is highly unlikely that the \c Particle at the end of the \c list will also be the one that just moved offscreen. We will solve this problem a little later in the tutorial.\n
 \n
-In order to tell each of the <tt>Particle</tt>s in our list to \c update() or \c draw(), we use an iterator. The iterator is simply a way to access all the items in a list one by one.
+In order to tell each of the <tt>Particle</tt>s in our list to \c update() or \c %draw(), we use an iterator. The iterator is simply a way to access all the items in a list one by one.
 \code
 void ParticleController::update() {
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
@@ -267,7 +273,5 @@ When you build and run the project, you should see 50 white circles appear in ra
 \image html tutorial_part1_03.png
 \n
 Up next, we are going to add some personality to our <tt>Particle</tt>s. On to \ref helloCinderChapter2 "Chapter 2".\n
-\n
-<a href="TutorialPart1.zip">Click here</a> to download the Cinder project folder for Chapter 1.\n
 \n
 */
