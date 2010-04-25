@@ -418,6 +418,7 @@ Font::Obj::Obj( const string &aName, float aSize )
 	string result = cocoa::convertCfString( fullName );
 	::CFRelease( fullName );
 #else
+	FontManager::instance(); // force GDI+ init
 	assert( sizeof(wchar_t) == 2 );
     wstring faceName = toUtf16( mName );
     
@@ -444,6 +445,7 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
 
 #elif defined( CINDER_MSW )
+	FontManager::instance(); // force GDI+ init
 	INT found = 0, count = 0;
 	WCHAR familyName[1024];
 	Gdiplus::PrivateFontCollection privateFontCollection;

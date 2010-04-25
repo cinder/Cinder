@@ -386,7 +386,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	pixelHeight += 1;
 	// prep our GDI and GDI+ resources
 	HDC dc = TextManager::instance()->getDc();
-	result = Surface8u( pixelWidth, pixelHeight, useAlpha, SurfaceConstraintsNative() );
+	result = Surface8u( pixelWidth, pixelHeight, useAlpha, SurfaceConstraintsGdiPlus() );
 	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result, premultiplied );
 	//Gdiplus::Bitmap *offscreenBitmap = new Gdiplus::Bitmap( pixelWidth, pixelHeight, (premultiplied) ? PixelFormat32bppPARGB : PixelFormat32bppARGB );
 	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
@@ -433,16 +433,13 @@ Surface renderString( const std::string &str, const Font &font, const ColorA &co
 		return Surface();
 
 #if defined( CINDER_MAC )
-	Surface result( pixelWidth, pixelHeight, true, SurfaceChannelOrder::RGBA );
+	Surface result( pixelWidth, pixelHeight, true, SurfaceConstraintsGdiPlus() );
 	CGContextRef cgContext = cocoa::createCgBitmapContext( result );
 	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
 
 	float currentY = totalHeight + 1.0f;
 	currentY -= line.mAscent + line.mLeadingOffset;
 	line.render( cgContext, currentY, (float)0, pixelWidth );
-
-	if( baselineOffset )
-		*baselineOffset = line.mDescent;
 
 	// force all the rendering to finish and release the context
 	::CGContextFlush( cgContext );
@@ -454,7 +451,7 @@ Surface renderString( const std::string &str, const Font &font, const ColorA &co
 	pixelHeight += 1;
 	// prep our GDI and GDI+ resources
 	::HDC dc = TextManager::instance()->getDc();
-	Surface result( pixelWidth, pixelHeight, true, SurfaceChannelOrder::RGBA );
+	Surface result( pixelWidth, pixelHeight, true, SurfaceConstraintsGdiPlus() );
 	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result, false );
 	//Gdiplus::Bitmap *offscreenBitmap = new Gdiplus::Bitmap( pixelWidth, pixelHeight, (premultiplied) ? PixelFormat32bppPARGB : PixelFormat32bppARGB );
 	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
@@ -474,6 +471,9 @@ Surface renderString( const std::string &str, const Font &font, const ColorA &co
 	delete offscreenBitmap;
 	delete offscreenGraphics;		
 #endif	
+
+	if( baselineOffset )
+		*baselineOffset = line.mDescent;
 
 	return result;
 }
