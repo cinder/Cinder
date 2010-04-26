@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="AudioGenerative"
-	ProjectGUID="{9DA00FEA-5218-413E-B762-35D91045B3B4}"
+	ProjectGUID="{D976BCAE-7111-4D53-92CE-3A47244FC21D}"
 	RootNamespace="AudioGenerative"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"

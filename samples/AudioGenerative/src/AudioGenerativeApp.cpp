@@ -47,7 +47,16 @@ void AudioGenerativeApp::mouseMove( MouseEvent event )
 void AudioGenerativeApp::draw()
 {
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
+	
+	// draw a representation of the sine wave
+	const float audioToVisualScale = 10.0f;
+	const float waveHeight = 200.0f;
+	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
+	glBegin( GL_LINE_STRIP );
+	for( float x = -getWindowWidth() / 2; x < getWindowWidth() / 2; x += 0.5f ) {
+		gl::vertex( getWindowCenter() + Vec2f( x, waveHeight * sin( x * gPhaseAdjust * audioToVisualScale ) ) );
+	}
+	glEnd();
 }
 
-// This line tells Cinder to actually create the application
 CINDER_APP_BASIC( AudioGenerativeApp, RendererGl )
