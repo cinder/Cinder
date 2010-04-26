@@ -433,7 +433,7 @@ Surface renderString( const std::string &str, const Font &font, const ColorA &co
 		return Surface();
 
 #if defined( CINDER_MAC )
-	Surface result( pixelWidth, pixelHeight, true, SurfaceConstraintsGdiPlus() );
+	Surface result( pixelWidth, pixelHeight, true, SurfaceChannelOrder::RGBA );
 	CGContextRef cgContext = cocoa::createCgBitmapContext( result );
 	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
 
