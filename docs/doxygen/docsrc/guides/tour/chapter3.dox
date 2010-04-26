@@ -91,7 +91,7 @@ Think of each \c Particle as having an arrow which always points towards the mou
 \n
 \image html tutorial_part3_01.png
 \n
-That is a bit more than we need. Instead we want a normalized vector, which is a vector that has a length of 1.0. We also need to account for the possibility that the mouse location and \c Particle location might be equal. If we try to \ref Vec2::normalize "normalize()" a vector that has a length of zero, the computer will cry. Cinder has a solution to that problem. If you are unable to guarantee that the length will always be greater than zero, you can use \ref cinder::Vec2::safeNormalize "safeNormalize()" which will do that check for you.
+That is a bit more than we need. Instead we want a normalized vector, which is a vector that has a length of 1.0. We also need to account for the possibility that the mouse location and \c Particle location might be equal. If we try to \ref cinder::Vec2::normalize() "normalize()" a vector that has a length of zero, the computer will cry. Cinder has a solution to that problem. If you are unable to guarantee that the length will always be greater than zero, you can use \ref cinder::Vec2::safeNormalize "safeNormalize()" which will do that check for you.
 \code
 void Particle::update( const Channel32f &channel, const Vec2i &mouseLoc ) {
 	mDirToCursor = mouseLoc - mLoc;

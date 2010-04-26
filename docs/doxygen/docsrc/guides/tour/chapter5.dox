@@ -26,8 +26,7 @@ This formula is not based on anything other than trial and error. I tried settin
 \section repulsion Basic Repulsive Force
 \code
 void ParticleController::repulseParticles() {
-	for( list<Particle>::iterator p1 = mParticles.begin(); p1 != mParticles.end(); ++p1 ){
-	
+	for( list<Particle>::iterator p1 = mParticles.begin(); p1 != mParticles.end(); ++p1 ) {
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
 			Vec2f dir = p1->mLoc - p2->mLoc;
@@ -71,7 +70,7 @@ When finding out the length of a vector, you first find out the squared distance
 sqrt( x*x + y*y )
 \endcode
 \n
-You should try to avoid using \c sqrt() when possible, especially inside of a huge nested loop. It will definitely slow things down as the square root calculation is a bit more intensive than just adding or multiplying. The good news is there is also a \c lengthSquared() method we can use. 
+You should try to avoid using \c sqrt() when possible, especially inside of a huge nested loop. It will definitely slow things down as the square root calculation is much more processor-intensive than just adding or multiplying. The good news is there is also a \c lengthSquared() method we can use. 
 \code
 Vec2f dir = p1->mLoc - p2->mLoc;
 float distSqrd = dir.lengthSquared();
@@ -89,7 +88,7 @@ dir.normalize();
 \n
 The first factor which determines how much push each \c Particle has on the other is the inverse of the distance squared. 
 \code
-float F = 1.0f/distSqrd;
+float F = 1.0f / distSqrd;
 \endcode
 \n
 Since we already know that force equals mass times acceleration (Newton's 2nd law), we can find p2's contribution to p1's total acceleration by \e adding the force divided by p1's mass.
@@ -114,12 +113,11 @@ Every single Particle pushes away its neighbors which causes the <tt>Particle</t
 Ready for something special? Try this. Turn off the <tt>Particle</tt>'s ability to age. Turn off the \ref cinder::Perlin "Perlin" noise influence. And finally, put back the \ref cinder::ChannelT "Channel"-based variable radius. Once you add a few thousand <tt>Particle</tt>s, you should get back something like this. \n
 \Movie{tutorial_part5_02.mov,800,620}
 \n
-During the course of this tutorial, we have managed to create a robust stippling algorithm almost by accident. We started with a simple image loading example and some randomly moving circles. After a few minor iterations, we have written a compelling program that will dynamically stipple images by simply combining a \c Particle engine with a repulsive force.\n
+During the course of this tutorial, we have managed to create a robust stippling algorithm almost by accident. We started with a simple image loading example and some randomly moving circles. After a few minor iterations, we have written a pretty cool program that will dynamically stipple images by simply combining a particle engine with a repulsive force.\n
 \n
-Hopefully, now that you are finished with chapter 5, you are inspired and anxious to continue exploring. This is not an end. There is so much more to do. Try adding a third dimension to this project. Experiment with different types of external and internal forces. Try mixing different \e flavors of Particles together. Find new ways to control the Particles such as microphone input or webcam. Trace the path the particles travel over time. Draw the connections between neighboring particles. Or maybe don't draw the particles at all and instead only draw their collisions. So many options! So many paths to explore. And it all started from an empty black window.\n
+Hopefully you are inspired and anxious to continue exploring. This is not an end - there is so much more to do. Try adding a third dimension to this project. Experiment with different types of external and internal forces. Try mixing different \e flavors of Particles together. Find new ways to control the Particles such as microphone input or webcam. Trace the path the particles travel over time. Draw the connections between neighboring particles. Or maybe don't draw the particles at all and instead only draw their collisions. So many options! So many paths to explore. And it all started from an empty black window.\n
 \n
-Where to now? Have a peek in the <a href="http://libcinder.org/gallery/">Gallery</a> or read more about the <a href="http://libcinder.org/features/">Features</a>. If you have questions, comments, ideas, or work to share, hop on over to the <a href="http://forum.libcinder.org/#AllForums">Cinder forum</a>.
+Where to now? Have a peek in the <a href="http://libcinder.org/gallery/">Gallery</a> to see what others are up to with Cinder, or read more about the <a href="http://libcinder.org/features/">Features</a> for ideas on what to explore. If you have questions, comments, ideas, or work to share, hop on over to the <a href="http://forum.libcinder.org/#AllForums">Cinder forum</a>. On behalf of its whole community, let me say that we're excited you've taken the time to check out Cinder, and we hope you'll come join in.
 \n
-<a href="TutorialPart5.zip">Click here</a> to download the Cinder project folder for Chapter 5.\n
-\n
+
 */
