@@ -3,7 +3,7 @@
 It is time for some user interaction. Watching circles move on their own just isn't that satisfying. You want some direct control. There are many ways to accomplish this. You could use webcam input, microphone input, even the serial port. However, for now we are just going to focus on the two simplest ways to allow user interaction: keyboard and mouse.\n
 \n
 \section keyboard Keyboard input
-First up, keyboard input. You might have noticed that a \ref cinder::app::AppBasic::keyDown "keyDown()" method was added to the source code from the last chapter. Nothing crazy, just two boolean toggles to control what should be rendered. If you hit the '1' key, you toggle on or off the rendering of the source image. If you hit the '2' key, you toggle the rendering of the <tt>Particle</tt>s.\n
+First up, keyboard input. You might have noticed that a \ref cinder::app::AppBasic::keyDown "keyDown()" method was added to the source code from the last chapter. Much like \ref cinder::app::App::setup "setup()", \ref cinder::app::App::update "update()" and \ref cinder::app::App::draw "draw()", \ref cinder::app::App::keyDown "keyDown()" is one of a few special functions (more properly called \em virtual functions in C++ nomenclature) which we can override to let our app do something based on a particular event. In our case we're not doing anything too crazy, just two boolean toggles to control what should be rendered. If you hit the '1' key, you toggle on or off the rendering of the source image. If you hit the '2' key, you toggle the rendering of the <tt>Particle</tt>s.\n
 \code
 void TutorialApp::keyDown( KeyEvent event ) {
 	if( event.getChar() == '1' ){
@@ -17,11 +17,17 @@ void TutorialApp::keyDown( KeyEvent event ) {
 To check for special keys, you use \ref cinder::app::KeyEvent::getCode "event.getCode()" instead of \ref cinder::app::KeyEvent::getChar "event.getChar()". Special keys include the arrow keys, \e shift, \e esc, \e ctrl, etc. For example, to check for the right arrow, you do this:
 \code
 if( event.getCode() == KeyEvent::KEY_RIGHT ) {
-	std::cout << "Right Arrow pressed" << std::endl;
+	console() << "Right Arrow pressed" << std::endl;
 }
 \endcode
 \n
-If you ever decide to make a first-person shooter style camera, you will need to handle the key events a little differently. You will want to store the state of a specific key. A good way to do this is to make a few boolean variables like \c isMovingForward and \c isJumping. If the 'w' key is pressed ('w' is how you move forward in default FPS controls), set \c isMovingForward to true. When the 'w' key is released, you set \c isMovingForward to false.
+Oh, and notice the call to console(). This is a Cinder function which returns a class we can send text to, and it's a handy, cross-platform way to print out notes and debugging information. It behaves just like <tt><a href="http://cplusplus.com/reference/iostream/cout/">std::cout</a></tt>, and in fact on the Mac it \em is <tt>std::cout</tt>. However on the PC it calls some special code which prints each line to the \em Output window of Visual C++, or to a system-wide log viewable using the tool <a href="http://technet.microsoft.com/en-us/sysinternals/bb896647.aspx">DebugView</a> from Microsoft. You can also send many Cinder types directly to it, using something like:
+\code
+Color myColor( 1.0f, 0.5f, 0.25f );
+console() << "myColor = " << myColor << std::endl.
+\endcode
+\n
+Moving on, let's imagine as an example you are creating a first-person shooter style camera. You will want to respond to key events by storing the state of a specific key. A good way to do this is to make a few boolean variables like \c isMovingForward and \c isJumping. If the 'w' key is pressed ('w' is how you move forward in default FPS controls), set \c isMovingForward to true. When the 'w' key is released, you set \c isMovingForward to false.
 \code
 void TutorialApp::keyDown( KeyEvent event ) {
 	if( event.getChar() == 'w' ) {
@@ -36,21 +42,21 @@ void TutorialApp::keyUp( KeyEvent event ) {
 }
 \endcode
 \n
-In your camera code, you use these key states to determine what direction to move the camera. This will give you much better responsiveness than moving the camera only on \ref cinder::app::AppBasic::keyDown "keyDown()" events which are periodic instead of constant.\n
+In your camera code, you would use these key states to determine what direction to move the camera. This will give you much better responsiveness than moving the camera only on \ref cinder::app::AppBasic::keyDown "keyDown()" events which are periodic instead of constant.\n
 \n
 \section mouse Mouse input
-Cinder gives you five different mouse events that it can listen to. You can check for mouse button press and release, much like with the KeyEvents. You do this with \ref cinder::app::AppBasic::mouseDown "mouseDown()" and \ref cinder::app::AppBasic::mouseUp "mouseUp()", just like with the KeyEvents. Additionally, you can check for left, right, or middle mouse button clicks as well as checking to see if any modifying keys keys were held down during the click.\n
+Cinder offers five different mouse events which it can listen to. You can check for mouse button press and release, much like with the \ref cinder::app::KeyEvent "KeyEvent"s. You do this by overriding \ref cinder::app::App::mouseDown "mouseDown()" and \ref cinder::app::App::mouseUp "mouseUp()". Additionally, you can check for left, right, or middle mouse button clicks as well as checking to see if any modifying keys keys were held down during the click.\n
 \n
 As an example, here is the code for checking to see if the right mouse button was clicked while the shift key was depressed.
 \code
 void TutorialApp::mouseDown( MouseEvent event ) {
 	if( event.isRight() && event.isShiftDown() ) {
-		std::cout << "Special thing happened!" << std::endl;
+		console() << "Special thing happened!" << std::endl;
 	}
 }
 \endcode
 \n
-In addition to button press state, you can also check for move and drag events. If the mouse is in motion, \ref cinder::app::AppBasic::mouseMove "mouseMove()" will fire every frame. If you happen to also have a mouse button pressed, \ref cinder::app::AppBasic::mouseDrag "mouseDrag()" will fire instead.\n
+In addition to button press state, you can also check for move and drag events. If the mouse is in motion, \ref cinder::app::AppBasic::mouseMove "mouseMove()" will fire every frame. If you happen to also have a mouse button pressed, \ref cinder::app::AppBasic::mouseDrag "mouseDrag()" will fire instead. Finally, while we don't make use of it in this tutorial, Cinder supports mousewheel events via the \ref cinder::app::App::mouseWheel "mouseWheel()" function.\n
 \n
 The next thing we are going to add to our tutorial is the ability to influence the <tt>Particle</tt>s based on their proximity to the cursor. The first thing we want to do is use \ref cinder::app::AppBasic::mouseMove "mouseMove()" to get and store the cursor position, which we will keep in a new member variable called \c mMouseLoc.
 \code
@@ -70,7 +76,7 @@ void TutorialApp::mouseDrag( MouseEvent event ) {
 }
 \endcode
 \n
-Now that we are keeping track of the cursor position, we need to get that data to the <tt>Particle</tt>s. Well, we can't talk to them without going through \c ParticleController first, so lets add \c mMouseLoc as a parameter for \c ParticleController::update(). Don't forget to make the change in your .h file. If C++ is new to you, you will likely encounter many compile errors that occurred because you didn't make the required changes to both the .h and .cpp files.
+Now that we are keeping track of the cursor position, we need to get that data to the <tt>Particle</tt>s. Well, we can't talk to them without going through \c ParticleController first, so lets add \c mMouseLoc as a parameter for \c ParticleController::update(). Don't forget to make the change in your .h file. If C++ is new to you, this is a common source of compile errors - forgetting to make the required changes to both the .h and .cpp files.
 \code
 void ParticleController::update( const Channel32f &channel, const Vec2i &mouseLoc ) {
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
@@ -81,11 +87,11 @@ void ParticleController::update( const Channel32f &channel, const Vec2i &mouseLo
 \n
 We want to do the same thing to <tt>Particle::update()</tt>. And while we are poking around in the \c Particle class code, go ahead and add an additional \ref cinder::Vec2 "Vec2f" that we will call \c mDirToCursor.\n
 \n
-Think of each \c Particle having an arrow which always points towards the mouse. This is what \c mDirToCursor will represent. To find out the \c mDirToCursor, you take the cursor location and subtract the <tt>Particle</tt>'s location. This will give you a vector that points from the \c Particle all the way to the mouse. If we draw those vectors, it would look like this:\n
+Think of each \c Particle as having an arrow which always points towards the mouse. This is what \c mDirToCursor will represent. To find out the \c mDirToCursor, you take the cursor location and subtract the <tt>Particle</tt>'s location. This will give you a vector that points from the \c Particle all the way to the mouse. If we draw those vectors, it would look like this:\n
 \n
 \image html tutorial_part3_01.png
 \n
-That is a bit more than we need. Instead we want a normalized vector, which is a vector that has a length of 1.0. Just be sure to account for the possibility that the mouse location and \c Particle location might be equal. If we try to normalize() a vector that has a length of zero, the computer will cry. Cinder has a solution to that problem. If you are unable to guarantee that the length will always be greater than zero, you can use \ref cinder::Vec2::safeNormalize "safeNormalize()" which will do that check for you.
+That is a bit more than we need. Instead we want a normalized vector, which is a vector that has a length of 1.0. We also need to account for the possibility that the mouse location and \c Particle location might be equal. If we try to \ref Vec2::normalize "normalize()" a vector that has a length of zero, the computer will cry. Cinder has a solution to that problem. If you are unable to guarantee that the length will always be greater than zero, you can use \ref cinder::Vec2::safeNormalize "safeNormalize()" which will do that check for you.
 \code
 void Particle::update( const Channel32f &channel, const Vec2i &mouseLoc ) {
 	mDirToCursor = mouseLoc - mLoc;
@@ -94,7 +100,7 @@ void Particle::update( const Channel32f &channel, const Vec2i &mouseLoc ) {
 }
 \endcode
 \n
-If we safeNormalize() \c mDirToCursor and run our project again, it will look like the following image. The length of the arrows is exaggerated to make it easier to see them. Also, you can use gl::drawVector() which asks for the start and end of your line segment and then draws the line and corresponding arrow head. The following code block shows how you would draw the arrows.\n
+If we cinder::Vec2::safeNormalize "safeNormalize()" \c mDirToCursor and run our project again, it will look like the image below. The length of the arrows is exaggerated to make it easier to see them. Also, you can use gl::drawVector() which asks for the start and end of your line segment and then draws the line and corresponding arrow head. The following code block shows how you would draw the arrows.\n
 \code
 void Particle::draw() {
 	gl::color( Color( 1.0f, 1.0f, 1.0f ) );
@@ -118,13 +124,13 @@ It is starting to get really interesting! There are definitely a lot of good tan
 \section iteration1 Iteration 1: Mouse Distortion
 We start by changing the resolution of the \c Particle grid. We double the number of <tt>Particle</tt>'s along each axis to end up with 4x the amount we were using prior. This brings us to 19200 <tt>Particle</tt>s which is perfectly fine for realtime performance. For the accompanying images, we are actually using 480,000 <tt>Particle</tt>s and not surprisingly, the frame rate will suffer.\n
 \n
-To help keep the frame rate zippy, we are going to switch to rectangles instead of circles because there are fewer vertices to draw. There are a few different ways to create a \c Rect. We are going to use 2 pairs of variables. The first pair represent the x and y coordinate of the rectangle's upper left corner. The second pair of variables will represent the lower right corner. 
+To help keep the frame rate zippy, we are going to switch to rectangles instead of circles because there are fewer vertices to draw. We'll use Cinder's built-in rectangle class, and we'll use the version that takes <tt>float</tt>s called \ref cinder::RectT "Rectf". There are a few different ways to construct a \ref cinder::RectT "Rectf". We are going to use 2 pairs of variables. The first pair represents the x and y coordinate of the rectangle's upper left corner. The second pair of variables will represent the lower right corner. 
 \code
 Rectf rect( mLoc.x, mLoc.y, mLoc.x + mRadius, mLoc.y + mRadius );
 gl::drawSolidRect( rect );
 \endcode
 \n
-I want to apologize for using the word '<tt>radius</tt>' to describe the size of this rectangle. If it helps, you can think of it as a circle but with a triangle fan resolution of 5.\n
+I want to apologize for using the word \em radius to describe the size of this rectangle. If it helps, you can think of it as a circle but with a triangle fan resolution of 5.\n
 \n
 Now we introduce a local \ref cinder::Vec2 "Vec2f" called \c newLoc which is based on the current location but has an offset added to it. Our offset will be the unit vector representing the direction to the cursor. We multiply it by 100.0 because an offset of 0.0 to 1.0 is not that noticeable.
 \code
@@ -180,7 +186,4 @@ gl::drawSolidCircle( mLoc + mDirToCursor, mRadius );
 \n
 Congratulations! We have just created an incredibly simple and naive code-based representation of the wave/particle duality of nature and light. Let's continue. Now that we understand how to control our <tt>Particle</tt>s, we can start to fine tune their behavior in \ref helloCinderChapter4 "Chapter 4".\n
 \n
-<a href="TutorialPart3.zip">Click here</a> to download the Cinder project folder for this chapter.\n
-\n
-
 */

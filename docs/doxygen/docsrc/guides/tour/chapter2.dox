@@ -71,7 +71,7 @@ Since we are calling this in our \c Particle class, we need to tell the \c Parti
 \section returnImage Recreating the Image with Particles
 In the last section, we learned three different ways to load and display an image. In this section, we are going to combine the image and \c Particle engine to hopefully create something greater than the sum of the parts.\n
 \n
-We will start by discussing an alternative to \ref cinder::gl::Texture "gl::Texture". All we need right now is grayscale. We only need a single channel worth of information as opposed to the four channels that are used in a \ref cinder::gl::Texture "gl::Texture".\n
+We will start by replacing our \ref cinder::gl::Texture "gl::Texture" with a new class, the \ref cinder::ChannelT "Channel". This is a class which can be used for storing a grayscale image. Its name comes from the fact that its older brother, the \ref cinder::SurfaceT "Surface" represents a color image made up of individual color channels: red, green, blue and sometimes alpha. However we don't need all that data for our purposes - we just want a gray image, so using a \ref cinder::SurfaceT "Surface" is overkill. Also, although \ref cinder::gl::Texture "gl::Texture"s can be grayscale, we don't want to draw this image anymore - we want to get at its data. So instead of putting it on the graphics card, we want to store it in memory, which a \ref cinder::ChannelT "Channel" is ideal for.\n
 \n
 Loading an image into a \ref cinder::ChannelT "Channel" is practically the same as loading into a \ref cinder::gl::Texture "gl::Texture".
 \code
@@ -79,7 +79,7 @@ Url url( "http://www.flight404.com/_images/paris.jpg" );
 mChannel = Channel32f( loadImage( loadUrl( url ) ) );
 \endcode
 \n
-It is the same as before except we create a \ref cinder::ChannelT "Channel32f" instead of the \ref cinder::gl::Texture "gl::Texture". The \e 32f simply means the \ref cinder::ChannelT "Channel" is made up of 32 bit floating point numbers.\n
+It is the same as before except we create a \ref cinder::ChannelT "Channel32f" instead of the \ref cinder::gl::Texture "gl::Texture". The \e 32f simply means the \ref cinder::ChannelT "Channel" is made up of 32 bit floating point numbers. In this scheme, \c 1.0 represents white and \c 0 represents black.\n
 \n
 This next step is just begging to happen. Each \c Particle is going to reference the \ref cinder::ChannelT "Channel" to see what color gray exists at that <tt>Particle</tt>'s location. It will then set its color to this grayscale value.
 \code
@@ -104,7 +104,7 @@ Step 3) Draw myself \n
 
 Each of the 4800 <tt>Particle</tt>s goes through this set of instructions every frame. You might be thinking this is overkill. The \c Particle only needs to find out its color once. This could happen when each \c Particle is created and then you never need to make the calculation.\n
 \n
-This is entirely true. However, in short while, we will want to animate some of these variables which means we would have to do these calculations every frame. So, in short, separate your variables and your constants. If a property is not going to change, just define it once and forget about it. However, if you need to animate this property over time, you should do this in the \ref cinder::app::App::update "update()" method which gets called every frame. \n
+This is entirely true. However, in a short while, we will want to animate some of these variables which means we will have to do these calculations every frame anyway. So in general, you should separate your variables and your constants. If a property is not going to change, just define it once and forget about it. However, if you need to animate this property over time, you should do this in the \ref cinder::app::App::update "update()" method which gets called every frame. \n
 \n
 \image html tutorial_part2_06.png
 \n
@@ -117,9 +117,9 @@ void Particle::update( const Channel32f &channel ) {
 \n
 This code looks familiar enough. Pass in the reference to a \ref cinder::ChannelT "Channel", get the grayscale value at the <tt>Particle</tt>'s position, then set the radius to be equal to that value.\n
 \n
-A quick side-note about the demon that is the <em>Magic Number</em>. In the code above, I know exactly why I wrote \c 7.0. Since \c getData() for a \ref cinder::ChannelT "Channel32f" returns a value from \c 0.0 to \c 1.0, I decided I wanted that range to be larger. I arbitrarily chose \c 7.0.\n
+A quick side-note about the demon that is the <em>magic number</em>. In the code above, I know exactly why I wrote \c 7.0. Since \c getData() for a \ref cinder::ChannelT "Channel32f" returns a value from \c 0.0 to \c 1.0, I decided I wanted that range to be larger. I arbitrarily chose \c 7.0.\n
 \n
-However, after a couple weeks of being away from the code I wrote, I may not remember why I wrote \c 7.0 or what that number is even supposed to represent. This doesn't necessarily mean you should replace all numbers with named constants. That would be overkill. Just be aware that when you use constants that are not defined (or at least, described with comments), you are potentially doing something you will regret later, and you are definitely doing something that other coders frown upon. Make an effort to minimize these <em>Magic Number</em> especially if you plan on sharing code with others.\n
+However, after a couple weeks of being away from the code I wrote, I may not remember why I wrote \c 7.0 or what that number is even supposed to represent. This doesn't necessarily mean you should replace all numbers with named constants. That would be overkill. Just be aware that when you use constants that are not defined (or at least, described with comments), you are potentially doing something you will regret later, and you are definitely doing something that other coders frown upon. Make an effort to minimize these <em>magic numbers</em> especially if you plan on sharing code with others.\n
 \n
 Instead of using \c 7.0, I have created a member variable called \c mScale which I initialized to \c 7.0. No more mystery. 
 \code
@@ -131,7 +131,5 @@ void Particle::update( const Channel32f &channel ) {
 \image html tutorial_part2_07.png
 \n
 It is time to give the user some control. \ref helloCinderChapter3 "Chapter 3" will explore some options for user input.\n
-\n
-<a href="TutorialPart2.zip">Click here</a> to download the Cinder project folder for Chapter 2.\n
 \n
 */
