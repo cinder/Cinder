@@ -1,6 +1,4 @@
-#ifndef RESOURCES_H
-#define RESOURCES_H
+#pragma once
+#include "cinder/CinderResources.h"
 
-#define	       RES_BOOYAH_MP3			128
-
-#endif // RESOURCES_H
+#define RES_BOOYAH		CINDER_RESOURCE( ../resources/, booyah.mp3, 128, MP3 )

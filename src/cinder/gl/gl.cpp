@@ -948,7 +948,7 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 	else if( justification == 0 ) // center
 		draw( tex, pos - Vec2f( tex.getWidth() * 0.5f, baselineOffset ) );	
 	else // right
-		draw( tex, pos - Vec2f( tex.getWidth(), baselineOffset ) );
+		draw( tex, pos - Vec2f( (float)tex.getWidth(), baselineOffset ) );
 }
 } // anonymous namespace
 

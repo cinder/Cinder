@@ -41,7 +41,16 @@ Surface8u convertGdiplusBitmap( Gdiplus::Bitmap &bitmap, bool premultiplied );
 Gdiplus::PixelFormat surfaceChannelOrderToGdiplusPixelFormat( const SurfaceChannelOrder &sco, bool premultiplied );
 
 /** Creates a Gdiplus::Bitmap which wraps a cinder::Surface8u.
-	Requires \a surface to confrom to SurfaceConstraintsNative and throw SurfaceConstraintsExc if it does not. Caller is responsible for deleting the result.**/
+	Requires \a surface to confrom to SurfaceConstraintsGdiPlus and throw SurfaceConstraintsExc if it does not. Caller is responsible for deleting the result.**/
 Gdiplus::Bitmap* createGdiplusBitmap( const Surface8u &surface, bool premultiplied );
 
 } } // namespace cinder::msw
+
+namespace cinder {
+
+class SurfaceConstraintsGdiPlus : public SurfaceConstraints {
+	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const { return ( alpha ) ? SurfaceChannelOrder::BGRA : SurfaceChannelOrder::BGR; }
+	virtual int32_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { int32_t result = requestedWidth * elementSize * sco.getPixelInc(); result += ( result & 3 ) ? ( 4 - (result&3) ) : 0; return result; }
+};
+
+} // namespace cinder

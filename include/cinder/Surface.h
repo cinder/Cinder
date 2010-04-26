@@ -74,20 +74,6 @@ class SurfaceConstraints {
 	virtual int32_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
 };
 
-//! Constrains the Surface to be interoperable with platform-native graphics APIs
-class SurfaceConstraintsNative : public SurfaceConstraints {
- public:
-	virtual ~SurfaceConstraintsNative() {}
- 
-	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const { return ( alpha ) ? SurfaceChannelOrder::BGRA : SurfaceChannelOrder::BGR; }
-	virtual int32_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const
-	{
-		int32_t rowBytes = requestedWidth * elementSize * sco.getPixelInc();
-		// ensure that rowBytes is a multiple of 4
-		return ( ( rowBytes + 3 ) / 4 ) * 4;
-	}
-};
-
 class SurfaceConstraintsDefault : public SurfaceConstraints {
 };
 
