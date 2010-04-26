@@ -16,8 +16,6 @@ class Particle {
 	
 	ci::Vec2f	mLoc;
 	ci::Vec2f	mVel;
-	float		mVelLength;
-	ci::Vec2f	mDirToCursor;
 	ci::Vec2f	mAcc;
 	
 	float		mDecay;
@@ -25,10 +23,8 @@ class Particle {
 	float		mScale;
 	
 	float		mMass;
-	float		mInvMass;
 
 	int			mAge;
 	int			mLifespan;
-	float		mAgePer;
 	bool		mIsDead;
 };

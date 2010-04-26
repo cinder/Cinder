@@ -14,15 +14,12 @@ class Particle {
 	
 	ci::Vec2f	mLoc;
 	ci::Vec2f	mVel;
-	ci::Vec2f	mDirToCursor;
 	
 	float		mDecay;
 	float		mRadius;
 	float		mScale;
 	
 	float		mMass;
-	float		mInvMass;
-	float		mCharge;
 	
 	int			mAge;
 	int			mLifespan;

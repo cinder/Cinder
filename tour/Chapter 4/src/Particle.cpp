@@ -14,7 +14,6 @@ Particle::Particle( Vec2f loc, Vec2f vel )
 	mLoc			= loc;
 	mVel			= vel;
 
-	mDirToCursor	= Vec2f::zero();
 	mDecay			= Rand::randFloat( 0.96f, 0.99f );
 	mRadius			= 0.0f;
 	mScale			= 3.0f;
@@ -41,7 +40,7 @@ void Particle::update( const Perlin &perlin, const Channel32f &channel, const Ve
 
 	mRadius	= mScale * mAgePer;
 	
-	mAge ++;
+	mAge++;
 	if( mAge > mLifespan ) mIsDead = true;
 	mAgePer = 1.0f - ( (float)mAge/(float)mLifespan );
 }
