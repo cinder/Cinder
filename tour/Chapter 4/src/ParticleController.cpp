@@ -12,11 +12,12 @@ ParticleController::ParticleController()
 
 void ParticleController::update( const Perlin &perlin, const Channel32f &channel, const Vec2i &mouseLoc )
 {
-	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
+	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ) {
 		if( p->mIsDead ){
-			mParticles.erase( p );
+			p = mParticles.erase( p );
 		} else {
 			p->update( perlin, channel, mouseLoc );
+			++p;
 		}
 	}
 }

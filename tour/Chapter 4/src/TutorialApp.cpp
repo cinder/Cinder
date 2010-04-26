@@ -123,7 +123,7 @@ void TutorialApp::draw()
 	}
 	
 	if( mSaveFrames ){
-		writeImage( getHomeDirectory() + "Tutorial/image_" + toString( getElapsedFrames() ) + ".png", copyWindowSurface() );
+		writeImage( getHomeDirectory() + "image_" + toString( getElapsedFrames() ) + ".png", copyWindowSurface() );
 	}
 }
 
