@@ -65,30 +65,28 @@ gl::clear( Color( gray, gray, gray ), true );
 Animation! Give yourself a pat on the back.
 \n
 \section loadingDisplayingImages Loading and displaying images
-Loading images in C++ can be a chore. Luckily, Cinder does most of the hard work for you. The process for loading and displaying an image can be broken up into four steps and only four lines of code.
+Loading images in C++ can be a chore. Luckily, Cinder does most of the hard work for you. The process for loading and displaying an image can be broken up into only a few lines of code.
 \n
 \n
-1) Tell Cinder where to find the ImageIO class.
+1) Tell the compiler we're interested in Cinder's image input/output code.
 \code
 #include "cinder/ImageIo.h"
 \endcode
-You put this line at the top of the project with the other includes. This lets Cinder know that you want to use code from the ImageIo class.
+You put this line at the top of the project with the other includes. In particular we'll be using the loadImage() function this file declares.
 \n
 \n
 2) Declare a new texture in the App class.
 \code
 gl::Texture myImage;
 \endcode
-Here is where you say that you want to have a \ref cinder::gl::Texture "gl::Texture" object and it is going to be called \c myImage. This line of code goes in the App class declarations.
+This is where you say that you want your app class to have a \ref cinder::gl::Texture "gl::Texture" object and it is going to be called \c myImage. This line of code goes in the App class declarations.
 \n
 \n
 3) Load an image into the texture you just declared.
 \code
 myImage = gl::Texture( loadImage( loadResource( "image.jpg" ) ) );
 \endcode
-Now that you have declared a new \ref cinder::gl::Texture "gl::Texture" object, you need to put some image data into that \ref cinder::gl::Texture "gl::Texture". There are myriad ways to do this. I have chosen the simplest possible scenario which means that you have an image file in your project's resources folder. This line of code goes into your \ref cinder::app::App::setup "setup()" method.
-\n
-If you would like to take a break and read about how to use and manage resources in a way that is cross-platform friendly, check out \ref CinderResources "Using Resources in Cinder". \n
+Now that you have declared a new \ref cinder::gl::Texture "gl::Texture" object, you need to put some image data into that \ref cinder::gl::Texture "gl::Texture". There are myriad ways to do this. In this example we are assuming you've got a resource in your application that is a JPEG file called <em>image.jpg</em>. We can load this resource using loadResource(), and we pass the result of that to loadImage(), and in turn construct our \ref cinder::gl::Texture "gl::Texture" with the image that comes back. This line of code would go into your \ref cinder::app::App::setup "setup()" method. (By the way, this is the Mac OS X way of using resources, and the Windows way is just a bit different, but we won't get into the subtleties here. If you would like to take a break and read about how to use and manage resources, check out \ref CinderResources "Using Resources in Cinder").\n
 \n
 4) Draw the Texture into the app window.
 \code
@@ -102,9 +100,9 @@ And what does a loaded and drawn image look like? Well, if you use a picture of 
 \image html tutorial_part1_01.jpg
 \n
 \section options Other options for dealing with images
-As we mentioned before, putting images directly into the resources folder is one option, but Cinder makes it easy to load images from many different sources. I'm going to show you two additional ways you can use images in your application without needing to have them stored locally. The first way is to prompt the user for file path.\n
+As we mentioned before, including images directly in your app as resources is one option, but Cinder makes it easy to load images from many different sources. I'm going to show you two additional ways you can use images in your application without needing to have them stored locally. The first way is to prompt the user to open a file.\n
 \n
-The following code will attempt to create an image from a file selected by means of a standard open dialog box. Once you select a file, assuming the file is a valid image, a texture is created. Otherwise, an exception is thrown.
+The following code will attempt to create an image from a file selected by means of a standard open dialog box. Once you select a file, assuming the file is a valid image, a texture is created. Otherwise, an exception is thrown and we print an error message (we'll discuss console() more in a bit).
 \code
 try {
 	std::string p = getOpenFilePath( "", ImageIo::getLoadExtensions() );
@@ -204,7 +202,7 @@ void Particle::draw() {
 \n
 The \c ParticleController, which we will discuss in a moment, is responsible for creating new <tt>Particle</tt>s. For now, we will also task the \c ParticleController with saying where the new \c Particle should be created and we pass that location in the constructor.\n
 \n
-The \c Particle then determines which direction it is traveling, in this case that direction is a random normalized 2D vector, as well as what speed it is traveling.\n
+The \c Particle then determines which direction it is traveling, in this case that direction is a random normalized 2D vector, as well as what speed it is traveling. We'll discuss these Rand functions in more detail in the next chapter.\n
 \n
 Note: The variables in the \c Particle class all begin with the letter 'm'. This is just a naming convention to let me know at a glance which variables are member variables. It is a good habit to get into and comes in very handy when the class grows to hundreds of lines of code.\n
 \n
