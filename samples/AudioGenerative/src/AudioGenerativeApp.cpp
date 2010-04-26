@@ -46,8 +46,7 @@ void AudioGenerativeApp::mouseMove( MouseEvent event )
 
 void AudioGenerativeApp::draw()
 {
-	glClearColor( 0.1f, 0.1f, 0.1f, 1.0f );
-	glClear( GL_COLOR_BUFFER_BIT );
+	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
 }
 
 // This line tells Cinder to actually create the application

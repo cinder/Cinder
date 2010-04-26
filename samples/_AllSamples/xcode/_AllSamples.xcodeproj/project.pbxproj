@@ -57,6 +57,7 @@
 				0039FB34115AD32700BA0BAD /* PBXTargetDependency */,
 				0039FB43115AD34700BA0BAD /* PBXTargetDependency */,
 				0039FB53115AD3A200BA0BAD /* PBXTargetDependency */,
+				005930E11185637100C890F2 /* PBXTargetDependency */,
 			);
 			name = Samples;
 			productName = Samples;
@@ -505,6 +506,20 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = HodginParticlesRedux;
 		};
+		005930DA1185636300C890F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 005930D31185636300C890F2 /* AudioGenerative.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* AudioGenerative.app */;
+			remoteInfo = AudioGenerative;
+		};
+		005930E01185637100C890F2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 005930D31185636300C890F2 /* AudioGenerative.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090 /* AudioGenerative */;
+			remoteInfo = AudioGenerative;
+		};
 		00705E731018F3F700DD615B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */;
@@ -721,6 +736,7 @@
 		0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MandelbrotGLSL.xcodeproj; path = ../../MandelbrotGLSL/xcode/MandelbrotGLSL.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Buddhabrot.xcodeproj; path = ../../Buddhabrot/xcode/Buddhabrot.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HodginParticlesRedux.xcodeproj; path = ../../HodginParticlesRedux/xcode/HodginParticlesRedux.xcodeproj; sourceTree = SOURCE_ROOT; };
+		005930D31185636300C890F2 /* AudioGenerative.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioGenerative.xcodeproj; path = ../../AudioGenerative/xcode/AudioGenerative.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageHeightField.xcodeproj; path = ../../ImageHeightField/xcode/ImageHeightField.xcodeproj; sourceTree = SOURCE_ROOT; };
 		007BDE071118921D00BC750C /* RDiffusion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RDiffusion.xcodeproj; path = ../../RDiffusion/xcode/RDiffusion.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SurfaceBasic.xcodeproj; path = ../../SurfaceBasic/xcode/SurfaceBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -740,6 +756,7 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				005930D31185636300C890F2 /* AudioGenerative.xcodeproj */,
 				0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */,
 				0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */,
 				0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */,
@@ -1036,6 +1053,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		005930D41185636300C890F2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				005930DB1185636300C890F2 /* AudioGenerative.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		00705E6C1018F3F700DD615B /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1154,6 +1179,10 @@
 				{
 					ProductGroup = 0005C9741006817F004D82BC /* Products */;
 					ProjectRef = 0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */;
+				},
+				{
+					ProductGroup = 005930D41185636300C890F2 /* Products */;
+					ProjectRef = 005930D31185636300C890F2 /* AudioGenerative.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C95610068030004D82BC /* Products */;
@@ -1560,6 +1589,13 @@
 			remoteRef = 0049C669101136610015B4B9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		005930DB1185636300C890F2 /* AudioGenerative.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = AudioGenerative.app;
+			remoteRef = 005930DA1185636300C890F2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		00705E741018F3F700DD615B /* ImageHeightField.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -1808,6 +1844,11 @@
 			isa = PBXTargetDependency;
 			name = HodginParticlesRedux;
 			targetProxy = 0049C66B1011366C0015B4B9 /* PBXContainerItemProxy */;
+		};
+		005930E11185637100C890F2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AudioGenerative;
+			targetProxy = 005930E01185637100C890F2 /* PBXContainerItemProxy */;
 		};
 		007BDE131118924E00BC750C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
