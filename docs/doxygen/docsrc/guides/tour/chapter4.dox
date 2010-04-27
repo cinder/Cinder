@@ -205,7 +205,8 @@ We also threw in the <tt>( 1.0f - agePer )</tt> because we want the \ref cinder:
 Sadly, this is not that exciting as a still image. We need to make a video. You'll notice these lines at the bottom of TutorialApp::%draw().
 \code
 if( mSaveFrames ){
-	writeImage( getHomeDirectory() + "image_" + toString( getElapsedFrames() ) + ".png", copyWindowSurface() );
+	writeImage( getHomeDirectory() + "image_" + toString( getElapsedFrames() ) + ".png",
+					copyWindowSurface() );
 }
 \endcode
 \n
