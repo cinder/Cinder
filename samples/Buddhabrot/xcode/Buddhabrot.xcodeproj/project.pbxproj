@@ -261,7 +261,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = i386;
-				CINDER_PATH = ../../../../cinder;
+				CINDER_PATH = ../../..;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
