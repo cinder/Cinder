@@ -943,7 +943,7 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 
 	float baselineOffset;
 	gl::Texture tex( renderString( str, font, color, &baselineOffset ) );
-	glColor3ub( 255, 255, 255 );
+	glColor4ub( 255, 255, 255, 255 );
 	if( justification == -1 ) // left
 		draw( tex, pos - Vec2f( 0, baselineOffset ) );
 	else if( justification == 0 ) // center
@@ -1017,7 +1017,8 @@ SaveColorState::SaveColorState()
 
 SaveColorState::~SaveColorState()
 {
-	glColor4fv( mOldValues );
+	// GLES doesn't have glColor4fv
+	glColor4f( mOldValues[0], mOldValues[1], mOldValues[2], mOldValues[3] );
 }
 
 } } // namespace gl::cinder
