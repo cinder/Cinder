@@ -4,7 +4,7 @@
 #include "cinder/gl/Material.h"
 #include "cinder/gl/Light.h"
 #include "cinder/Camera.h"
-#include "cinder/Box.h"
+#include "cinder/AxisAlignedBox.h"
 #include "cinder/Sphere.h"
 #include "cinder/gl/GlslProg.h"
 #include "../blocks/bullet/CinderBullet.h"

@@ -11,6 +11,7 @@
 #include "bullet/src/BulletCollision/CollisionShapes/btHeightfieldTerrainShape.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/TriMesh.h"
+#include "cinder/AxisAlignedBox.h"
 
 const float PI = 3.14159265;
 
@@ -140,7 +141,7 @@ namespace cinder {
 		return rigidBody;
 	}
 	
-	btRigidBody* create(btDynamicsWorld *world, Box box, Quatf rotation, Vec3f position)
+		btRigidBody* create(btDynamicsWorld *world, AxisAlignedBox3f box, Quatf rotation, Vec3f position)
 	{
 		Vec3f min = box.min();
 		Vec3f max = box.max();
