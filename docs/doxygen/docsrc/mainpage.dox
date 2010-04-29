@@ -1,11 +1,11 @@
 /**
 \mainpage Cinder Documentation
 \section welcome Welcome
-Welcome to Cinder. Have a look around.
+If you are just getting started, we recommend you begin with the \ref helloCinder "Hello, Cinder" guide. If you'd like to just get a sense of what's in Cinder, take a look at the <a href="namespaces.html">Namespace list</a>. And don't forget, the samples are still the best way to learn Cinder for now as we work to fill out the documentation.
 
 \section guides Guides
 \ref helloCinder "Hello, Cinder" \n
-\ref anatomypage "The Anatomy of a Cinder App" \n
 \ref CinderResources "Using Resources in Cinder" \n
 \ref CinderBoost "Cinder + Boost" \n
+\ref anatomypage "The Anatomy of a Cinder App" \n
 */

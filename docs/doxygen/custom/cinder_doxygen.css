@@ -74,7 +74,7 @@ body {
 	font-weight: normal;
 	background-color: #0c0000;
 	color:#333;
-	font-size: 13px;
+	font-size: 14px;
 }
 
 .wrapper {
@@ -315,7 +315,7 @@ dl.el {
 
 .fragment {
 	font-family: monospace, fixed;
-	font-size: 105%;
+	font-size: 100%;
 }
 
 pre.fragment {
