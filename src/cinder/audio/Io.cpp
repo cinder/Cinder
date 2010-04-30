@@ -184,4 +184,14 @@ void IoRegistrar::Inst::registerSourceType( string extension, SourceCreationFunc
 	}
 }
 
+void IoRegistrar::registerSourceGeneric( SourceCreationFunc func, int32_t priority ) 
+{
+	instance()->registerSourceGeneric( func, priority );
+}
+
+void IoRegistrar::Inst::registerSourceGeneric( SourceCreationFunc func, int32_t priority )
+{
+		mGenericSources.insert( make_pair( priority, func ) );
+}
+
 }} //namespace

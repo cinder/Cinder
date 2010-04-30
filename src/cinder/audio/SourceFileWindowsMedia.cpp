@@ -37,66 +37,37 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 	::HRESULT hr;
 
 	//setup readers
-	hr = ::WMCreateSyncReader(0, 0, &mReader);
+	IWMSyncReader * IWMReaderP = NULL;
+	hr = ::WMCreateSyncReader(0, 0, &IWMReaderP );
 	if( FAILED( hr ) ) {
-		//TODO: throw
-		return;
+		throw IoExceptionFailedLoad();
 	}
+	mReader = msw::makeComShared<IWMSyncReader>( IWMReaderP );
 
-	hr = mReader->QueryInterface( IID_IWMHeaderInfo, (void**)&mHeaderInfo );
-	if(FAILED(hr)) {
-		//TODO: throw
-		return;
+	IWMHeaderInfo * IWMHeaderInfoP = NULL;
+	hr = mReader->QueryInterface( IID_IWMHeaderInfo, (void**)&IWMHeaderInfoP );
+	if( FAILED(hr) ) {
+		throw IoExceptionFailedLoad();
 	}
+	mHeaderInfo = msw::makeComShared<IWMHeaderInfo>( IWMHeaderInfoP );
 
 	//turn data into stream
-	::HGLOBAL hMem;
-	::IStream* pStream;
-	
-	uint32_t dataSize = mSource->getLength();
-	hMem = ::GlobalAlloc( GMEM_MOVEABLE | GMEM_NODISCARD | GMEM_SHARE, dataSize );
-
-	LPVOID pMem = ::GlobalLock( hMem );
-
-	void * data = mSource->mBuffer.getData();
-	::CopyMemory( pMem, data, dataSize );
-	::GlobalUnlock( hMem );
-
-	hr = ::CreateStreamOnHGlobal( hMem, TRUE, &pStream );
+	::IStream * iStreamP = NULL;
+	hr = ::CreateStreamOnHGlobal( mSource->mMemHandle.get(), FALSE, &iStreamP );
 	if(FAILED(hr)) {
-		//todo: throw
-		return;
+		throw IoExceptionFailedLoad();
 	}
-
-	//hr = mReaderAdvanced2->OpenStream( pStream, &mCallback, this );
-	hr = mReader->OpenStream( pStream/*, &mCallback, this*/ );
-	if(FAILED(hr)) {
-		//todo: throw
-		return;
-	}
+	shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
 	
-	//wait for file to open
-	//::WaitForSingleObject( mOpenEvent, INFINITE );
-	
-	//ensure that there is only one stream in the file
-	uint32_t nOutputCount;
-	hr = mReader->GetOutputCount( &nOutputCount );
+	hr = mReader->OpenStream( pStream.get() );
 	if( FAILED(hr) ) {
-		//throw
-		return;
-	}
-	
-	//ensure this is audio only
-	if( nOutputCount != 1 ) {
-		//throw
-		return;
+		throw IoExceptionFailedLoad();
 	}
 
 	uint32_t nOutputFormatCount;
 	hr = mReader->GetOutputFormatCount(0, &nOutputFormatCount);
-	if(FAILED(hr)) {
-		//TODO: throw
-		return;
+	if( FAILED(hr) ) {
+		throw IoExceptionFailedLoad();
 	}
 	
 	uint32_t nFormatSize = 0; 
@@ -167,8 +138,7 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 
 	hr = mReader->SetOutputProps( 0, pProps );
 	if( FAILED( hr ) ) {
-		//TODO: handle error
-		return;
+		throw IoExceptionFailedLoad();
 	}
 
 	if( pProps ) {
@@ -182,8 +152,7 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 	WORD wLength = 8;
 	hr = mHeaderInfo->GetAttributeByName( &wStreamNum, g_wszWMDuration, &Type, (BYTE*)&dwDuration, &wLength );
 	if( FAILED( hr ) ) {
-		//TODO: handle error
-		return;
+		throw IoExceptionFailedLoad();
 	}
 
 	//divide by 10 million to get seconds
@@ -194,23 +163,18 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 	mMaxBufferSize = 0;
 	hr = mReader->GetMaxOutputSampleSize( 0, &mMaxBufferSize );
 	if( FAILED( hr ) ) {
-		//todo: throw
-		return;
+		throw IoExceptionFailedLoad();
 	}
 
 	//set data to not be compressed
-	hr = mReader->SetReadStreamSamples( 0, FALSE );
+	/*hr = mReader->SetReadStreamSamples( 0, FALSE );
 	if( FAILED( hr ) ) {
-		//todo: throw
-		return;
-	}
+		throw IoExceptionFailedLoad();
+	}*/
 }
 
 LoaderSourceFileWindowsMedia::~LoaderSourceFileWindowsMedia()
 {
-	//clean everything up
-	mHeaderInfo->Release();
-	mReader->Release();
 }
 
 uint64_t LoaderSourceFileWindowsMedia::getSampleOffset() const
@@ -281,6 +245,8 @@ void SourceFileWindowsMedia::registerSelf()
 	//TODO: find a way to enumerate Windows Media supported file formats
 	IoRegistrar::registerSourceType( "mp3", sourceFunc, SOURCE_PRIORITY );
 	IoRegistrar::registerSourceType( "wma", sourceFunc, SOURCE_PRIORITY );
+
+	IoRegistrar::registerSourceGeneric( sourceFunc, SOURCE_PRIORITY );
 }
 
 SourceFileWindowsMediaRef	SourceFileWindowsMedia::createFileRef( DataSourceRef dataSourceRef )
@@ -309,7 +275,50 @@ SourceFileWindowsMedia::SourceFileWindowsMedia( DataSourceRef dataSourceRef )
 	
 	mBuffer = dataSourceRef->getBuffer();
 
+	::HRESULT hr;
+	msw::initializeCom();
 
+	//setup readers
+	
+	IWMSyncReader * IWMReaderP = NULL;
+	hr = ::WMCreateSyncReader(0, 0, &IWMReaderP);
+	if( FAILED( hr ) ) {
+		throw SourceFileWindowsMediaExceptionUnsupportedData();
+	}
+	shared_ptr<IWMSyncReader> reader = msw::makeComShared<IWMSyncReader>( IWMReaderP );
+
+	//turn data into stream	
+	uint32_t dataSize = getLength();
+	mMemHandle = shared_ptr<void>( ::GlobalAlloc( GMEM_MOVEABLE | GMEM_NODISCARD | GMEM_SHARE, dataSize ), GlobalFree );
+
+	LPVOID pMem = ::GlobalLock( mMemHandle.get() );
+	void * data = mBuffer.getData();
+	::CopyMemory( pMem, data, dataSize );
+	::GlobalUnlock( mMemHandle.get() );
+
+	::IStream* iStreamP;
+	hr = ::CreateStreamOnHGlobal( mMemHandle.get(), FALSE, &iStreamP );
+	if(FAILED(hr)) {
+		throw SourceFileWindowsMediaExceptionUnsupportedData();
+	}
+	shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
+	
+	hr = reader->OpenStream( pStream.get() );
+	if( FAILED(hr) ) {
+		throw SourceFileWindowsMediaExceptionUnsupportedData();
+	}
+	
+	//ensure that there is only one stream in the file
+	uint32_t nOutputCount;
+	hr = reader->GetOutputCount( &nOutputCount );
+	if( FAILED(hr) ) {
+		throw SourceFileWindowsMediaExceptionUnsupportedData();
+	}
+	
+	//ensure this is audio only
+	if( nOutputCount != 1 ) {
+		throw SourceFileWindowsMediaExceptionUnsupportedData();
+	}
 }
 
 SourceFileWindowsMedia::~SourceFileWindowsMedia()
