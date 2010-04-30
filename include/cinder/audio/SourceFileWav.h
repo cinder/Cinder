@@ -27,6 +27,24 @@
 namespace cinder { namespace audio {
 
 typedef shared_ptr<class SourceFileWav>	SourceFileWavRef;
+typedef shared_ptr<class LoaderSourceFileWav>	LoaderSourceFileWavRef;
+
+class LoaderSourceFileWav : public Loader {
+ public:
+	static LoaderSourceFileWavRef	createRef( SourceFileWav *source, Target *target );	
+	~LoaderSourceFileWav();
+
+	uint32_t getOptimalBufferSize() const { return 0; }
+	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+
+	uint64_t getSampleOffset() const;
+	void setSampleOffset( uint64_t anOffset );
+protected:
+	LoaderSourceFileWav( SourceFileWav * source, Target * target );
+
+	SourceFileWav	* mSource;
+	uint64_t		mSampleOffset;
+};
 
 class SourceFileWav : public Source {
  public:
@@ -34,10 +52,22 @@ class SourceFileWav : public Source {
 	static SourceFileWavRef				createFileWavRef( DataSourceRef dataSourceRef );
 	~SourceFileWav();
 
-	//virtual LoaderRef getLoader( Target *target ) { return LoaderSourceFileWindowsMedia::createRef( this, target ); }
+	LoaderRef getLoader( Target *target ) { return LoaderSourceFileWav::createRef( this, target ); }
 
+	uint32_t getLength() const { return mDataLength; };
+	double getDuration() const { /*TODO*/ return 0.0;  }
+
+	static void		registerSelf();
  private:
-	SourceFileWindowsMedia( DataSourceRef dataSourceRef );
+	SourceFileWav( DataSourceRef dataSourceRef );
+	
+	uint32_t		mDataLength;
+	uint32_t		mDataStart;
+	uint64_t		mSampleCount;
+
+	friend LoaderSourceFileWav;
 };
+
+REGISTER_AUDIOIO( SourceFileWav )
 
 }} //namespace

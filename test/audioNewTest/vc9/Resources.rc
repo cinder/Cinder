@@ -1,5 +1,3 @@
-#include "..\include\Resources.h"
+#include "../include/Resources.h"
 
-RES_GUITAR_MP3		MP3					"..\\data\\guitar.mp3"
-RES_DRUMS_MP3		MP3					"..\\data\\drums.mp3"
-RES_BOOYAH_MP3		MP3					"..\\data\\booyah.mp3"
+RES_BOOYAH_WAV

@@ -377,6 +377,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\cinder\audio\SourceFileWav.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\cinder\audio\SourceFileWindowsMedia.cpp"
 					>
 				</File>
@@ -948,6 +952,10 @@
 				</File>
 				<File
 					RelativePath="..\include\cinder\audio\Output.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\audio\SourceFileWav.h"
 					>
 				</File>
 				<File
