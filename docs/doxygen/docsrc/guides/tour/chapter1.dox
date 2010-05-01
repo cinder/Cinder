@@ -182,7 +182,7 @@ These last few steps, though tiny, are a great example why we should go ahead an
 \n
 First, we will create a controller class. This just makes it easy to segregate <tt>Particle</tt>-related code. This new class is called \c ParticleController and as the name suggests, it is in charge of controlling the <tt>Particle</tt>s. It will have its own \c update() and \c %draw() methods. \c update() will iterate through all of the <tt>Particle</tt>s and tell each one to run its own personal \c update() method. After all the <tt>Particle</tt>s are updated, the \c ParticleController then tells each of the <tt>Particle</tt>s to \c draw().\n
 \n
-The \c Particle class is based what we did with the circle above. Each \c Particle has a position in space, a direction of travel, a speed of travel, a size, and whatever else you want to add to give each \c Particle its own personality. Later on, we will add a few more variables. Here is a summary of the \c Particle class code (the full source is contained in \em <a href="../../tour/Chapter%201/">cinder/tour/Chapter 1/</a>)
+The \c Particle class is based what we did with the circle above. Each \c Particle has a position in space, a direction of travel, a speed of travel, a size, and whatever else you want to add to give each \c Particle its own personality. Later on, we will add a few more variables. Here is a summary of the \c Particle class code (the full source is contained in \em cinder/tour/Chapter 1/)
 \code
 Particle::Particle( Vec2f loc ) {
 	mLoc = loc;
