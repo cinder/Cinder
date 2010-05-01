@@ -23,7 +23,7 @@ using namespace ci;
 using namespace ci::app;
 \endcode
 \n
-These \c using statements are just a shortcut to tell the C++ compiler, \"if it's ever unclear, I am talking about namespace \em whatever, but I am not going to keep typing <tt>whatever::</tt> everywhere.\" There is a list of the namespaces inside Cinder <a href="namespaces.html">here</a>.\n
+These \c using statements are just a shortcut to tell the C++ compiler, &ldquo;if it's ever unclear, I am talking about namespace \em whatever, but I am not going to keep typing <tt>whatever::</tt> everywhere.&rdquo; There is a list of the namespaces inside Cinder <a href="namespaces.html">here</a>.\n
 \n
 Now that you understand the basic workings for any Cinder application, feel free to hit Run (or build or whatever button makes it go). You should see a 800x600 pixel window filled with black.\n
 \n
