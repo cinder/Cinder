@@ -31,7 +31,8 @@
 		#include <CoreServices/CoreServices.h>
 	#endif
 #elif defined( CINDER_MSW )
-	#include <Windows.h>
+	#include <windows.h>
+	#include <windowsx.h>
 	#include <QTML.h>
 	namespace cinder {
 		void cpuidwrap( int *p, unsigned int param );
@@ -164,12 +165,10 @@ void cpuid( int whichlp, PLOGICALPROCESSORDATA p )
    p->nLargestStandardFunctionNumber = CPUInfo[0];
 
    // Get the information associated with each valid Id
-   for (i=0; i <= p->nLargestStandardFunctionNumber; ++i)
-   {
+   for (i=0; i <= p->nLargestStandardFunctionNumber; ++i) {
       cpuidwrap( CPUInfo, i );
       // Interpret CPU feature information.
-      if  (i == 1)
-      {
+      if(i == 1) {
          // Some of the bits of LocalApicId represent the CPU core 
          // within a processor and other bits represent the processor ID. 
          p->nLocalApicId = (CPUInfo[1] >> 24) & 0xff;
@@ -424,5 +423,39 @@ int System::getOsBugFixVersion()
 	return instance()->mOSBugFixVersion;
 }
 #endif // ! defined( CINDER_COCOA_TOUCH )
+
+bool System::hasMultiTouch()
+{
+	if( ! instance()->mCachedValues[MULTI_TOUCH] ) {
+#if defined( CINDER_MAC ) // Mac OS X doesn't really support touch yet (well, we don't yet)	
+		instance()->mHasMultiTouch = false;
+#elif defined( CINDER_COCOA_TOUCH ) // all incarnations of the iPhone OS support multiTouch
+		instance()->mHasMultiTouch = true;
+#elif defined( CINDER_MSW )
+		int value = ::GetSystemMetrics( 94/*SM_DIGITIZER*/ );
+		instance()->mHasMultiTouch = (value & 0x00000080/*NID_READY*/ ) && 
+				( (value & 0x00000040/*NID_MULTI_INPUT*/ ) || (value & 0x00000001/*NID_INTEGRATED_TOUCH*/ ) );
+#endif
+		instance()->mCachedValues[MULTI_TOUCH] = true;
+	}
+	
+	return instance()->mHasMultiTouch;
+}
+
+int32_t System::getMaxMultiTouchPoints()
+{
+	if( ! instance()->mCachedValues[MAX_MULTI_TOUCH_POINTS] ) {
+#if defined( CINDER_MAC ) // Mac OS X doesn't really support touch yet (well, we don't yet)
+		instance()->mMaxMultiTouchPoints = 0;
+#elif defined( CINDER_COCOA_TOUCH ) // all incarnations of the iPhone OS support multiTouch
+		instance()->mMaxMultiTouchPoints = 6; // we don't seem to be able to query this at runtime; should be hardcoded based on the device
+#elif defined( CINDER_MSW )
+		instance()->mMaxMultiTouchPoints = ::GetSystemMetrics( 95/*SM_MAXIMUMTOUCHES*/ );
+#endif
+		instance()->mCachedValues[MAX_MULTI_TOUCH_POINTS] = true;
+	}
+	
+	return instance()->mMaxMultiTouchPoints;
+}
 
 } // namespace cinder
