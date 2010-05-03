@@ -26,7 +26,8 @@
 #include "cinder/audio/Io.h"
 #include "cinder/audio/Buffer.h"
 
-#include <iostream>
+
+#include <boost/bind.hpp>
 
 namespace cinder { namespace audio {
 

@@ -6,34 +6,25 @@
 using namespace ci;
 using namespace ci::app;
 
-float gFreqTarget = 0.0f;
-float gPhase = 0.0f;
-float gPhaseAdjust = 0.0f;
-const float gMaxFreq = 2000.0f;
-
-void sineWave( uint64_t inSampleOffset, uint32_t *ioSampleCount, audio::Buffer *ioBuffer ) {
-	float * buffer = (float *)ioBuffer->mData;
-	gPhaseAdjust = gPhaseAdjust * 0.95f + ( gFreqTarget / 44100.0f ) * 0.05f;
-	for( int  i = 0; i < *ioSampleCount; i++ ) {
-		gPhase += gPhaseAdjust;
-		float r = gPhase - math<float>::floor( gPhase );
-		float val = math<float>::sin( r * 2.0f * M_PI );
-		
-		buffer[i*ioBuffer->mNumberChannels] = val;
-		buffer[i*ioBuffer->mNumberChannels + 1] = val;
-	}
-}
-
 class AudioGenerativeApp : public AppBasic {
  public:
 	void setup();
 	void mouseMove( MouseEvent event );
+	void sineWave( uint64_t inSampleOffset, uint32_t *ioSampleCount, audio::Buffer *ioBuffer );
 	void draw();
 	
+	float mFreqTarget;
+	float mPhase;
+	float mPhaseAdjust;
+	const float gMaxFreq = 2000.0f;
 };
 
 void AudioGenerativeApp::setup()
 {
+	mFreqTarget = 0.0f;
+	mPhase = 0.0f;
+	mPhaseAdjust = 0.0f;
+	
 	audio::Output::addTrack( audio::Callback( &sineWave ) );
 }
 
@@ -42,6 +33,19 @@ void AudioGenerativeApp::mouseMove( MouseEvent event )
 	int height = getWindowHeight();
 	//gFreqTarget = ( height - event.getY() ) / (float)height * gMaxFreq/ 44100.0f;
 	gFreqTarget = math<float>::clamp( ( height - event.getY() ) / (float)height * gMaxFreq, 0.0, 2000.0 );
+}
+
+void AudioGenerativeApp::sineWave( uint64_t inSampleOffset, uint32_t *ioSampleCount, audio::Buffer *ioBuffer ) {
+	float * buffer = (float *)ioBuffer->mData;
+	mPhaseAdjust = mPhaseAdjust * 0.95f + ( mFreqTarget / 44100.0f ) * 0.05f;
+	for( int  i = 0; i < *ioSampleCount; i++ ) {
+		mPhase += mPhaseAdjust;
+		float r = mPhase - math<float>::floor( mPhase );
+		float val = math<float>::sin( r * 2.0f * M_PI );
+		
+		buffer[i*ioBuffer->mNumberChannels] = val;
+		buffer[i*ioBuffer->mNumberChannels + 1] = val;
+	}
 }
 
 void AudioGenerativeApp::draw()
@@ -54,7 +58,7 @@ void AudioGenerativeApp::draw()
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
 	glBegin( GL_LINE_STRIP );
 	for( float x = -getWindowWidth() / 2; x < getWindowWidth() / 2; x += 0.5f ) {
-		gl::vertex( getWindowCenter() + Vec2f( x, waveHeight * sin( x * gPhaseAdjust * audioToVisualScale ) ) );
+		gl::vertex( getWindowCenter() + Vec2f( x, waveHeight * sin( x * mPhaseAdjust * audioToVisualScale ) ) );
 	}
 	glEnd();
 }
