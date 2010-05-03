@@ -1,4 +1,13 @@
+#include "cinder/Cinder.h"
+
+#if defined( CINDER_COCOA_TOUCH )
+#include "cinder/app/AppCocoaTouch.h"
+typedef ci::app::AppCocoaTouch AppBase;
+#else
 #include "cinder/app/AppBasic.h"
+typedef ci::app::AppBasic AppBase;
+#endif
+
 #include "cinder/System.h"
 #include "cinder/Rand.h"
 using namespace ci;
@@ -8,6 +17,7 @@ using namespace ci::app;
 #include <map>
 #include <list>
 using namespace std;
+
 
 struct TouchPoint {
 	TouchPoint() {}
@@ -20,7 +30,7 @@ struct TouchPoint {
 	
 	void draw() const
 	{
-		if( mTimeOfDeath > 0 ) // are we dying? then fade out
+/*		if( mTimeOfDeath > 0 ) // are we dying? then fade out
 			gl::color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0 ) );
 		else
 			gl::color( mColor );
@@ -31,7 +41,7 @@ struct TouchPoint {
 			glVertex2f( pointIter->x, pointIter->y );
 		}
 		// tell OpenGL to actually draw the lines now
-		glEnd();
+		glEnd();*/
 	}
 	
 	void startDying() { mTimeOfDeath = getElapsedSeconds() + 2.0f; } // two seconds til dead
@@ -44,7 +54,7 @@ struct TouchPoint {
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
-class MultiTouchApp : public AppBasic {
+class MultiTouchApp : public AppBase {
  public:
 	void	prepareSettings( Settings *settings );
 
@@ -105,7 +115,7 @@ void MultiTouchApp::draw()
 		activeIt->second.draw();
 	}
 
-	for( list<TouchPoint>::const_iterator dyingIt = mDyingPoints.begin(); dyingIt != mDyingPoints.end(); ) {
+	for( list<TouchPoint>::iterator dyingIt = mDyingPoints.begin(); dyingIt != mDyingPoints.end(); ) {
 		dyingIt->draw();
 		if( dyingIt->isDead() )
 			dyingIt = mDyingPoints.erase( dyingIt );
@@ -115,4 +125,8 @@ void MultiTouchApp::draw()
 }
 
 // This line tells Cinder to actually create the application
+#if defined( CINDER_COCOA_TOUCH )
+CINDER_APP_COCOA_TOUCH( MultiTouchApp, RendererGl )
+#else
 CINDER_APP_BASIC( MultiTouchApp, RendererGl )
+#endif

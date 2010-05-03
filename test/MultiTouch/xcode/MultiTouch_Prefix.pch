@@ -1,7 +1,14 @@
 //
-// Prefix header for all source files of the 'basicApp' target in the 'basicApp' project
+// Prefix header for all source files of the 'iPhoneTestGl' target in the 'iPhoneTestGl' project
 //
 
+#import <Availability.h>
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iPhone SDK 3.0 and later."
+#endif
+
 #ifdef __OBJC__
-    #import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 #endif

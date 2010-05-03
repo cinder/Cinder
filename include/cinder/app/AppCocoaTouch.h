@@ -24,6 +24,7 @@
 
 #include "cinder/App/App.h"
 #include "cinder/cocoa/CinderCocoaTouch.h"
+#include "cinder/app/TouchEvent.h"
 
 namespace cinder { namespace app {
 
@@ -34,11 +35,26 @@ class AppCocoaTouch : public App {
 	class Settings : public App::Settings {
 	  public:
 		Settings()
-			: App::Settings() {}
+			: App::Settings(), mEnableMultiTouch( true ) {}
+
+		//! Registers the app to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
+		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
+		//! Returns whether the app is registered to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
+		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
+		
+	  private:
+		bool		mEnableMultiTouch;
 	};
 
 	AppCocoaTouch();
 	virtual ~AppCocoaTouch() {}
+
+	//! Override to respond to the beginning of a multitouch sequence
+	virtual void		touchesBegan( TouchEvent event ) {}
+	//! Override to respond to movement (drags) during a multitouch sequence
+	virtual void		touchesMoved( TouchEvent event ) {}
+	//! Override to respond to the end of a multitouch sequence
+	virtual void		touchesEnded( TouchEvent event ) {}
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
 	virtual int		getWindowWidth() const;
@@ -60,16 +76,19 @@ class AppCocoaTouch : public App {
 	//! Sets whether the active App is in full-screen mode based on \a fullScreen
 	virtual void		setFullScreen( bool aFullScreen );
 
+	//! Returns the number seconds which have elapsed since the active App launched.
 	virtual double		getElapsedSeconds() const;
 
 	//! Returns the path to the application on disk
 	virtual std::string			getAppPath();
 
-	//! Ceases execution of the application
+	//! Ceases execution of the application. Not implemented yet on iPhone
 	virtual void	quit();
 
-	//! Returns a pointer to the current global AppBasic	
+	//! Returns a pointer to the current global AppBasic
 	static AppCocoaTouch*	get() { return sInstance; }
+	//! Returns a pointer to the current global AppBasic
+	virtual const Settings&	getSettings() const { return mSettings; }
 
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
@@ -79,7 +98,15 @@ class AppCocoaTouch : public App {
 	
 	virtual void	launch( const char *title, int argc, char * const argv[] );
 	//! \endcond
-		
+
+	// DO NOT CALL - should be private but aren't for esoteric reasons
+	//! \cond
+	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
+	void		privateTouchesBegan__( const TouchEvent &event );
+	void		privateTouchesMoved__( const TouchEvent &event );
+	void		privateTouchesEnded__( const TouchEvent &event );
+	//! \endcond
+
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
 	
@@ -87,6 +114,7 @@ class AppCocoaTouch : public App {
 	shared_ptr<AppCocoaTouchState>		mState;
 	
 	static AppCocoaTouch	*sInstance;	
+	Settings				mSettings;
 };
 
 } } // namespace cinder::app
