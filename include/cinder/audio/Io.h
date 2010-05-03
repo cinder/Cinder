@@ -130,17 +130,25 @@ class Loader {
 	Loader() {}
 };
 
+class IoException : public Exception {
+};
+
+class IoExceptionFailedLoad : public IoException {
+};
+
 struct IoRegistrar {
 	typedef SourceRef (*SourceCreationFunc)( DataSourceRef );
 
 	static SourceRef	createSource( DataSourceRef dataSource, std::string extension );
 	
 	static void		registerSourceType( std::string extension, SourceCreationFunc func, int32_t priority = 2 );
+	static void		registerSourceGeneric( SourceCreationFunc func, int32_t priority = 2 );
 	
   private:
 	
 	struct Inst {
 		void	registerSourceType( std::string extension, SourceCreationFunc func, int32_t priority );
+		void	registerSourceGeneric( SourceCreationFunc func, int32_t priority );
 	
 		SourceRef	createSource( DataSourceRef dataSource, std::string extension );
 		

@@ -45,7 +45,7 @@ void TutorialApp::keyUp( KeyEvent event ) {
 In your camera code, you would use these key states to determine what direction to move the camera. This will give you much better responsiveness than moving the camera only on \ref cinder::app::AppBasic::keyDown "keyDown()" events which are periodic instead of constant.\n
 \n
 \section mouse Mouse input
-Cinder offers five different mouse events which it can listen to. You can check for mouse button press and release, much like with the \ref cinder::app::KeyEvent "KeyEvent"s. You do this by overriding \ref cinder::app::App::mouseDown "mouseDown()" and \ref cinder::app::App::mouseUp "mouseUp()". Additionally, you can check for left, right, or middle mouse button clicks as well as checking to see if any modifying keys keys were held down during the click.\n
+Cinder offers five different mouse events which it can listen to. You can check for mouse button press and release, much like with the \ref cinder::app::KeyEvent "KeyEvent"s. You do this by overriding \ref cinder::app::App::mouseDown "mouseDown()" and \ref cinder::app::App::mouseUp "mouseUp()". Additionally, you can check for left, right, or middle mouse button clicks as well as checking to see if any modifying keys were held down during the click.\n
 \n
 As an example, here is the code for checking to see if the right mouse button was clicked while the shift key was depressed.
 \code

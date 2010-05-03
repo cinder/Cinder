@@ -56,8 +56,8 @@ class LoaderSourceFileWindowsMedia : public Loader {
 	WAVEFORMATEX					mOutputFormat;
 
 	uint32_t						mStreamSize;
-	IWMSyncReader					* mReader;
-	IWMHeaderInfo					* mHeaderInfo;
+	shared_ptr<IWMSyncReader>		mReader;
+	shared_ptr<IWMHeaderInfo>		mHeaderInfo;
 
 	uint32_t						mMaxBufferSize;
 	uint64_t						mSampleOffset;
@@ -84,10 +84,14 @@ class SourceFileWindowsMedia : public Source {
 	SourceFileWindowsMedia( DataSourceRef dataSourceRef );
 
 	cinder::Buffer mBuffer;
+	shared_ptr<void> mMemHandle;
 
 	friend LoaderSourceFileWindowsMedia;
 };
 
 REGISTER_AUDIOIO( SourceFileWindowsMedia )
+
+class SourceFileWindowsMediaExceptionUnsupportedData : public IoException {
+};
 
 }} //namespace
