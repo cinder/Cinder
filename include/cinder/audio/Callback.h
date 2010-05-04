@@ -63,50 +63,45 @@ class LoaderSourceCallback : public Loader {
 #endif	
 };
 
+template<typename T>
+shared_ptr<Callback<T> > createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), T& callbackObj )
+{
+	return shared_ptr<Callback<T> >( new Callback<T>( callbackFn, callbackObj ) );
+}
 
 template<typename T>
 class Callback : public Source {
 	typedef void (T::*fn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
 	
-  public:
-	Callback( fn callbackFn, T& callbackObj/*, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8*/ )
+  public: 
+	Callback( fn callbackFn, T& callbackObj, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 )
 		: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj )
 	{
 		mIsPcm = true;
-		/*mSampleRate = aSampleRate;
+		mSampleRate = aSampleRate;
 		mChannelCount = aChannelCount;
 		mBitsPerSample = aBitsPerSample;
-		mBlockAlign = aBlockAlign;*/
-		mSampleRate = 44100;
-		mChannelCount = 2;
-		mBitsPerSample = 32;
-		mBlockAlign = 8;
+		mBlockAlign = aBlockAlign;
 		mIsInterleaved = true;
 		mDataType = FLOAT32;
 		mIsBigEndian = false;
 	}
-
+    
 	virtual ~Callback() {}
 	
 	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback<T>::createRef( this, target ); }
 	double getDuration() const { return 100.0; } //TODO: support for endless sources
 	
   private:
+  
 	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { ( mCallbackObj.*mCallbackFn )( inSampleOffset, ioSampleCount, ioBuffer ); }
 	
 	T& mCallbackObj;
 	fn mCallbackFn;
 	
 	friend class LoaderSourceCallback<T>;
-	//template<typename Tt>
-	//friend shared_ptr<Callback<Tt> > createCallback( void (Tt::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), const Tt& callbackObj );
+	//friend shared_ptr<Callback<T> > createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), T& callbackObj );
 };
-
-template<typename T>
-shared_ptr<Callback<T> > createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), T& callbackObj )
-{
-	return shared_ptr<Callback<T> > ( new Callback<T>( callbackFn, callbackObj ) );
-}
 
 template<typename T>
 LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *target )
