@@ -28,9 +28,6 @@
 
 namespace cinder { namespace audio {
 
-typedef shared_ptr<class SourceCallback>	SourceCallbackRef;
-typedef shared_ptr<class LoaderSourceCallback>	LoaderSourceFileRef;
-
 template<typename T>
 class Callback {
   private:
@@ -77,5 +74,11 @@ class Callback {
 	void reset() { mObj.reset(); }
 	//@}
 };
+
+template<typename T>
+Callback<T> createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), const T& callbackObj )
+{
+	return Callback<T>( callbackFn, callbackObj );
+}
 
 }} //namespace

@@ -30,9 +30,12 @@
 
 namespace cinder { namespace audio {
 
+template<class T> class SourceCallback;
+
+template<class T>
 class LoaderSourceCallback : public Loader {
 	public:
-		static LoaderRef	createRef( SourceCallback *source, Target *target )
+		static LoaderRef	createRef( SourceCallback<T> *source, Target *target )
 		{
 			return shared_ptr<LoaderSourceCallback>( new LoaderSourceCallback( source, target ) );
 		}
@@ -43,8 +46,8 @@ class LoaderSourceCallback : public Loader {
 		void setSampleOffset( uint64_t anOffset );
 		void loadData( uint32_t *ioSampleCount, BufferList *ioData );
 	private:
-		LoaderSourceCallback( SourceCallback *source, Target *target );
-		SourceCallback					* mSource;
+		LoaderSourceCallback( SourceCallback<T> *source, Target *target );
+		SourceCallback<T>				* mSource;
 		uint64_t						mSampleOffset;
 
 #if defined(CINDER_COCOA)
@@ -57,6 +60,7 @@ class LoaderSourceCallback : public Loader {
 #endif	
 };
 
+template<class T>
 class SourceCallback : public Source {
   public:
 	SourceCallback( const Callback<T> &callback ) 
@@ -74,7 +78,7 @@ class SourceCallback : public Source {
 		mIsBigEndian = false;
 	}
 	~SourceCallback() {}
-	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback::createRef( this, target ); }
+	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback<T>::createRef( this, target ); }
 	
 	double getDuration() const { return 100.0; } //TODO: add support for endless sources
   private:
@@ -82,10 +86,11 @@ class SourceCallback : public Source {
 	
 	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { mCallback.getData( inSampleOffset, ioSampleCount, ioBuffer ); }
 	
-	friend class LoaderSourceCallback;
+	friend class LoaderSourceCallback<T>;
 };
 
-LoaderSourceCallback::LoaderSourceCallback( SourceCallback *source, Target *target )
+template<typename T>
+LoaderSourceCallback<T>::LoaderSourceCallback( SourceCallback<T> *source, Target *target )
 	: mSource( source ), mSampleOffset( 0 )
 {
 #if defined( CINDER_COCOA )
@@ -124,7 +129,7 @@ LoaderSourceCallback::LoaderSourceCallback( SourceCallback *source, Target *targ
 	err = AudioConverterNew( &sourceDescription, &targetDescription, &mConverter );
 	if( err ) {
 		//throw
-		switch(err) {
+		/*switch(err) {
 			case kAudioConverterErr_FormatNotSupported:
 				std::cout << "kAudioConverterErr_FormatNotSupported" << std::endl;
 			break;
@@ -155,12 +160,13 @@ LoaderSourceCallback::LoaderSourceCallback( SourceCallback *source, Target *targ
 			case kAudioConverterErr_OutputSampleRateOutOfRange:
 				std::cout << "kAudioConverterErr_OutputSampleRateOutOfRange" << std::endl;
 			break;
-		}
+		}*/
 	}
 #endif
 }
 
-LoaderSourceCallback::~LoaderSourceCallback()
+template<typename T>
+LoaderSourceCallback<T>::~LoaderSourceCallback()
 {
 #if defined( CINDER_COCOA )
 	cleanupPacketDescriptions();
@@ -169,15 +175,18 @@ LoaderSourceCallback::~LoaderSourceCallback()
 #endif
 }
 
-uint64_t LoaderSourceCallback::getSampleOffset() const { 
+template<typename T>
+uint64_t LoaderSourceCallback<T>::getSampleOffset() const { 
 	return mSampleOffset; 
 }
 
-void LoaderSourceCallback::setSampleOffset( uint64_t anOffset ) {
+template<typename T>
+void LoaderSourceCallback<T>::setSampleOffset( uint64_t anOffset ) {
 	mSampleOffset = anOffset;
 }
 
-void LoaderSourceCallback::loadData( uint32_t *ioSampleCount, BufferList *ioData )
+template<typename T>
+void LoaderSourceCallback<T>::loadData( uint32_t *ioSampleCount, BufferList *ioData )
 {	
 #if defined( CINDER_COCOA )
 	shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
@@ -197,7 +206,8 @@ void LoaderSourceCallback::loadData( uint32_t *ioSampleCount, BufferList *ioData
 }
 
 #if defined( CINDER_COCOA )
-void LoaderSourceCallback::cleanupPacketDescriptions()
+template<typename T>
+void LoaderSourceCallback<T>::cleanupPacketDescriptions()
 {
 	if( mCurrentPacketDescriptions ) {
 		delete [] mCurrentPacketDescriptions;
@@ -205,7 +215,8 @@ void LoaderSourceCallback::cleanupPacketDescriptions()
 	}
 }
 
-void LoaderSourceCallback::cleanupConverterBuffer() 
+template<typename T>
+void LoaderSourceCallback<T>::cleanupConverterBuffer() 
 {
 	for( int i = 0; i < mConverterBuffer.mNumberBuffers; i++ ) {
 		free( mConverterBuffer.mBuffers[i].mData );
@@ -216,12 +227,13 @@ void LoaderSourceCallback::cleanupConverterBuffer()
 	}
 }
 
-OSStatus LoaderSourceCallback::dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader )
+template<typename T>
+OSStatus LoaderSourceCallback<T>::dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader )
 {
 	OSStatus err = noErr;
 	
-	LoaderSourceCallback * theLoader = (LoaderSourceCallback *)audioLoader;
-	SourceCallback * theSource = theLoader->mSource;
+	LoaderSourceCallback<T> * theLoader = (LoaderSourceCallback<T> *)audioLoader;
+	SourceCallback<T> * theSource = theLoader->mSource;
 	
 	theLoader->cleanupConverterBuffer();
 	
@@ -257,24 +269,27 @@ OSStatus LoaderSourceCallback::dataInputCallback( AudioConverterRef inAudioConve
 }
 #endif
 
-Callback::Obj::Obj( fn callbackFn, const T& callbackObj, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign )
-	: mCallbackFunction( callbackFn ), mCallbackObject( t ), mSampleRate( aSampleRate ), mChannelCount( aChannelCount ), mBitsPerSample( aBitsPerSample ), mBlockAlign( aBlockAlign )
+template<typename T>
+Callback<T>::Obj::Obj( fn callbackFn, const T& callbackObj, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign )
+	: mCallbackFn( callbackFn ), mCallbackObj( callbackObj ), mSampleRate( aSampleRate ), mChannelCount( aChannelCount ), mBitsPerSample( aBitsPerSample ), mBlockAlign( aBlockAlign )
 {
 }
 
-Callback::Obj::~Obj()
+template<typename T>
+Callback<T>::Obj::~Obj()
 {
 }
 
-
-Callback::Callback( fn callbackFn, const T& callbackObj, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign ) 
+template<typename T>
+Callback<T>::Callback( fn callbackFn, const T& callbackObj, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign ) 
 	: mObj( new Obj( callbackFn, callbackObj, aSampleRate, aChannelCount, aBitsPerSample, aBlockAlign ) )
 {
 }
 
-Callback::operator SourceRef() const
+template<typename T>
+Callback<T>::operator SourceRef() const
 {
-	return shared_ptr<Source>( new SourceCallback( *this ) );
+	return shared_ptr<Source>( new SourceCallback<T>( *this ) );
 }
 
 }} //namespace
