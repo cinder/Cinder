@@ -29,6 +29,7 @@
 #include "cinder/Sphere.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
+#include "cinder/PolyLine.h"
 #include <cmath>
 
 #if defined( CINDER_MAC ) && ( ! defined( CINDER_COCOA_TOUCH ) )
@@ -424,6 +425,28 @@ void disableDepthWrite()
 	glDepthMask( GL_FALSE );
 }
 
+void drawLine( const Vec2f &start, const Vec2f &end )
+{
+	float lineVerts[2*2];
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, lineVerts );
+	lineVerts[0] = start.x; lineVerts[1] = start.y;
+	lineVerts[2] = end.x; lineVerts[3] = end.y;
+	glDrawArrays( GL_LINES, 0, 2 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+}
+
+void drawLine( const Vec3f &start, const Vec3f &end )
+{
+	float lineVerts[3*2];
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 3, GL_FLOAT, 0, lineVerts );
+	lineVerts[0] = start.x; lineVerts[1] = start.y; lineVerts[2] = start.z;
+	lineVerts[3] = end.x; lineVerts[4] = end.y; lineVerts[5] = end.z; 
+	glDrawArrays( GL_LINES, 0, 2 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+}
+
 namespace {
 void drawCubeImpl( const Vec3f &c, const Vec3f &size, bool drawColors )
 {
@@ -579,6 +602,27 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, verts );
 	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 1 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	delete [] verts;
+}
+
+void drawStrokedCircle( const Vec2f &center, float radius, int numSegments )
+{
+	// automatically determine the number of segments from the circumference
+	if( numSegments <= 0 ) {
+		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
+	}
+	if( numSegments < 2 ) numSegments = 2;
+	
+	GLfloat *verts = new float[numSegments*2];
+	for( int s = 0; s < numSegments; s++ ) {
+		float t = s / (float)numSegments * 2.0f * 3.14159f;
+		verts[s*2+0] = center.x + math<float>::cos( t ) * radius;
+		verts[s*2+1] = center.y + math<float>::sin( t ) * radius;
+	}
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_LINE_LOOP, 0, numSegments );
 	glDisableClientState( GL_VERTEX_ARRAY );
 	delete [] verts;
 }
@@ -768,7 +812,14 @@ void drawTorus( float outterRadius, float innerRadius, int longitudeSegments, in
 	delete [] tex;
 	delete [] vertex;
 	delete [] indices;
+}
 
+void draw( const PolyLine<Vec2f> &polyLine )
+{
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, &(polyLine.getPoints()[0]) );
+	glDrawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, polyLine.size() );
+	glDisableClientState( GL_VERTEX_ARRAY );
 }
 
 #if ! defined( CINDER_GLES )
