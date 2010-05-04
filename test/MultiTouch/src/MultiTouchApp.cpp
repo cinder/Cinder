@@ -106,15 +106,6 @@ void MultiTouchApp::draw()
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 
-	glColor4ub( 255, 128, 64, 255 );
-	gl::drawStrokedCircle( Vec2f( 123, 45 ), 50 );
-	glColor4ub( 129, 128, 64, 255 );
-	gl::drawLine( getWindowCenter(), getWindowSize() );
-	glColor4ub( 129, 255, 64, 255 );
-	gl::drawLine( Vec3f( getWindowCenter(), 0 ), Vec3f::zero() );
-
-//	gl::drawSolidRect( Rectf( 0, 0, 200, 200 ) );
-
 	for( map<uint32_t,TouchPoint>::const_iterator activeIt = mActivePoints.begin(); activeIt != mActivePoints.end(); ++activeIt ) {
 		activeIt->second.draw();
 	}
