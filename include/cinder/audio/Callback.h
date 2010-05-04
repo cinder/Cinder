@@ -26,59 +26,267 @@
 #include "cinder/audio/Io.h"
 #include "cinder/audio/Buffer.h"
 
+#if defined( CINDER_COCOA )
+	#include <CoreAudio/CoreAudioTypes.h>
+	#include <AudioToolbox/AudioConverter.h>
+#endif
+
 namespace cinder { namespace audio {
 
+template<typename> class Callback;
+
 template<typename T>
-class Callback {
-  private:
+class LoaderSourceCallback : public Loader {
+	public:
+		static LoaderRef	createRef( Callback<T> *source, Target *target )
+		{
+			return shared_ptr<LoaderSourceCallback<T> >( new LoaderSourceCallback<T>( source, target ) );
+		}
+		
+		~LoaderSourceCallback();
+		
+		uint64_t getSampleOffset() const;
+		void setSampleOffset( uint64_t anOffset );
+		void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	private:
+		LoaderSourceCallback( Callback<T> *source, Target *target );
+		Callback<T>						* mSource;
+		uint64_t						mSampleOffset;
+
+#if defined(CINDER_COCOA)
+		void cleanupPacketDescriptions();
+		void cleanupConverterBuffer();
+		static OSStatus dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader );
+		AudioConverterRef				mConverter;
+		AudioStreamPacketDescription	* mCurrentPacketDescriptions;
+		BufferList						mConverterBuffer;
+#endif	
+};
+
+
+template<typename T>
+class Callback : public Source {
 	typedef void (T::*fn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
 	
-	struct Obj {
-		Obj( fn callbackFn, const T& callbackObj, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign );
-		~Obj();
-		
-		T mCallbackObj;
-		fn mCallbackFn;
-		
-		uint32_t			mSampleRate;
-		uint16_t			mChannelCount;
-		uint16_t			mBitsPerSample; //Significant Bits Per Sample
-		uint16_t			mBlockAlign;
-	};
+  public:
+	Callback( fn callbackFn, T& callbackObj/*, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8*/ )
+		: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj )
+	{
+		mIsPcm = true;
+		/*mSampleRate = aSampleRate;
+		mChannelCount = aChannelCount;
+		mBitsPerSample = aBitsPerSample;
+		mBlockAlign = aBlockAlign;*/
+		mSampleRate = 44100;
+		mChannelCount = 2;
+		mBitsPerSample = 32;
+		mBlockAlign = 8;
+		mIsInterleaved = true;
+		mDataType = FLOAT32;
+		mIsBigEndian = false;
+	}
 
-  public:
-	Callback() {}
-	Callback( fn f, const T& t, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 );
-	~Callback() {}
+	virtual ~Callback() {}
 	
-	operator SourceRef() const;
+	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback<T>::createRef( this, target ); }
+	double getDuration() const { return 100.0; } //TODO: support for endless sources
 	
-	uint32_t getSampleRate() const { return mObj->mSampleRate; }
-	uint16_t getChannelCount() const { return mObj->mChannelCount; }
-	uint16_t getBitsPerSample() const { return mObj->mBitsPerSample; }
-	uint16_t getBlockAlign() const { return mObj->mBlockAlign; }
   private:
-	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { ( (mObj->mCallbackObj).*(mObj->mCallbackFn) )( inSampleOffset, ioSampleCount, ioBuffer ); }
-  
-	shared_ptr<Obj> mObj;
+	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { ( mCallbackObj.*mCallbackFn )( inSampleOffset, ioSampleCount, ioBuffer ); }
 	
-	friend class SourceCallback;
-  public:
-	//@{
-	//! Emulates shared_ptr-like behavior
-	Callback( const Callback &other ) { mObj = other.mObj; }
-	Callback& operator=( const Callback &other ) { mObj = other.mObj; return *this; }	
-	bool operator==( const Callback &other ) { return mObj == other.mObj; }
-	typedef shared_ptr<Obj> Callback::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &Callback::mObj; }
-	void reset() { mObj.reset(); }
-	//@}
+	T& mCallbackObj;
+	fn mCallbackFn;
+	
+	friend class LoaderSourceCallback<T>;
+	//template<typename Tt>
+	//friend shared_ptr<Callback<Tt> > createCallback( void (Tt::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), const Tt& callbackObj );
 };
 
 template<typename T>
-Callback<T> createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), const T& callbackObj )
+shared_ptr<Callback<T> > createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), T& callbackObj )
 {
-	return Callback<T>( callbackFn, callbackObj );
+	return shared_ptr<Callback<T> > ( new Callback<T>( callbackFn, callbackObj ) );
 }
+
+template<typename T>
+LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *target )
+	: mSource( source ), mSampleOffset( 0 )
+{
+#if defined( CINDER_COCOA )
+	mCurrentPacketDescriptions = 0;
+	mConverterBuffer.mNumberBuffers = 0;
+	mConverterBuffer.mBuffers = NULL;
+
+	AudioStreamBasicDescription sourceDescription;
+	
+	sourceDescription.mFormatID = kAudioFormatLinearPCM; //kAudioFormatLinearPCM;
+	sourceDescription.mFormatFlags = CalculateLPCMFlags( mSource->getBitsPerSample(), mSource->getBlockAlign() * 8, mSource->isFloat(), mSource->isBigEndian(), ( ! mSource->isInterleaved() ) /*is non interleaved*/ );
+	//sourceDescription.mFormatFlags |= kAudioFormatFlagIsPacked;
+	sourceDescription.mSampleRate = source->getSampleRate();
+	sourceDescription.mBytesPerPacket = ( mSource->getBlockAlign() ); //( mSource->getBitsPerSample() * mSource->getChannelCount() ) / 8;
+	sourceDescription.mFramesPerPacket = 1;
+	sourceDescription.mBytesPerFrame = ( mSource->getBlockAlign() );//( mSource->getBitsPerSample() * mSource->getChannelCount() ) / 8;
+	sourceDescription.mChannelsPerFrame = source->getChannelCount();
+	sourceDescription.mBitsPerChannel = source->getBitsPerSample();
+	
+	AudioStreamBasicDescription targetDescription;
+	
+	if( ! target->isPcm() ) {
+		//throw!
+	}
+	
+	targetDescription.mFormatID = kAudioFormatLinearPCM; //target->mNativeFormatId;
+	targetDescription.mFormatFlags = CalculateLPCMFlags( target->getBitsPerSample(), target->getBlockAlign() * 8, target->isFloat(), target->isBigEndian(), ( ! target->isInterleaved() ) ); //target->mNativeFormatFlags
+	targetDescription.mSampleRate = target->getSampleRate();
+	targetDescription.mBytesPerPacket =  target->getBlockAlign(); //target->mBytesPerPacket;
+	targetDescription.mFramesPerPacket = 1; //target->mFramesPerPacket;
+	targetDescription.mBytesPerFrame = ( target->getBlockAlign() ); //target->mBytesPerFrame;
+	targetDescription.mChannelsPerFrame = target->getChannelCount();
+	targetDescription.mBitsPerChannel = target->getBitsPerSample();
+	
+	OSStatus err = noErr;
+	err = AudioConverterNew( &sourceDescription, &targetDescription, &mConverter );
+	if( err ) {
+		//throw
+		/*switch(err) {
+			case kAudioConverterErr_FormatNotSupported:
+				std::cout << "kAudioConverterErr_FormatNotSupported" << std::endl;
+			break;
+			case kAudioConverterErr_OperationNotSupported:
+				std::cout << "kAudioConverterErr_OperationNotSupported" << std::endl;
+			break;
+			case kAudioConverterErr_PropertyNotSupported:
+				std::cout << "kAudioConverterErr_PropertyNotSupported" << std::endl;
+			break;
+			case kAudioConverterErr_InvalidInputSize:
+				std::cout << "kAudioConverterErr_InvalidInputSize" << std::endl;
+			break;
+			case kAudioConverterErr_InvalidOutputSize:
+				std::cout << "kAudioConverterErr_InvalidOutputSize" << std::endl;
+			break;
+			case kAudioConverterErr_UnspecifiedError:
+				std::cout << "kAudioConverterErr_UnspecifiedError" << std::endl;
+			break;
+			case kAudioConverterErr_BadPropertySizeError:
+				std::cout << "kAudioConverterErr_BadPropertySizeError" << std::endl;
+			break;
+			case kAudioConverterErr_RequiresPacketDescriptionsError:
+				std::cout << "kAudioConverterErr_RequiresPacketDescriptionsError" << std::endl;
+			break;
+			case kAudioConverterErr_InputSampleRateOutOfRange:
+				std::cout << "kAudioConverterErr_InputSampleRateOutOfRange" << std::endl;
+			break;
+			case kAudioConverterErr_OutputSampleRateOutOfRange:
+				std::cout << "kAudioConverterErr_OutputSampleRateOutOfRange" << std::endl;
+			break;
+		}*/
+	}
+#endif
+}
+
+template<typename T>
+LoaderSourceCallback<T>::~LoaderSourceCallback()
+{
+#if defined( CINDER_COCOA )
+	cleanupPacketDescriptions();
+	cleanupConverterBuffer();
+	AudioConverterDispose( mConverter );
+#endif
+}
+
+template<typename T>
+uint64_t LoaderSourceCallback<T>::getSampleOffset() const { 
+	return mSampleOffset; 
+}
+
+template<typename T>
+void LoaderSourceCallback<T>::setSampleOffset( uint64_t anOffset ) {
+	mSampleOffset = anOffset;
+}
+
+template<typename T>
+void LoaderSourceCallback<T>::loadData( uint32_t *ioSampleCount, BufferList *ioData )
+{	
+#if defined( CINDER_COCOA )
+	shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
+
+	AudioStreamPacketDescription * outputPacketDescriptions = new AudioStreamPacketDescription[*ioSampleCount];
+	OSStatus err = AudioConverterFillComplexBuffer( mConverter, LoaderSourceCallback::dataInputCallback, (void *)this, (UInt32 *)ioSampleCount, nativeBufferList.get(), outputPacketDescriptions );
+	delete [] outputPacketDescriptions;
+	if( err ) {
+		//throw
+	}
+	
+	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );
+#elif defined( CINDER_MSW )
+	mSource->getData( mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
+	mSampleOffset += *ioSampleCount;
+#endif
+}
+
+#if defined( CINDER_COCOA )
+template<typename T>
+void LoaderSourceCallback<T>::cleanupPacketDescriptions()
+{
+	if( mCurrentPacketDescriptions ) {
+		delete [] mCurrentPacketDescriptions;
+		mCurrentPacketDescriptions = 0;
+	}
+}
+
+template<typename T>
+void LoaderSourceCallback<T>::cleanupConverterBuffer() 
+{
+	for( int i = 0; i < mConverterBuffer.mNumberBuffers; i++ ) {
+		free( mConverterBuffer.mBuffers[i].mData );
+	}
+	if( mConverterBuffer.mBuffers ) {
+		delete [] mConverterBuffer.mBuffers;
+		mConverterBuffer.mBuffers = NULL;
+	}
+}
+
+template<typename T>
+OSStatus LoaderSourceCallback<T>::dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader )
+{
+	OSStatus err = noErr;
+	
+	LoaderSourceCallback<T> * theLoader = (LoaderSourceCallback<T> *)audioLoader;
+	Callback<T> * theSource = theLoader->mSource;
+	
+	theLoader->cleanupConverterBuffer();
+	
+	theLoader->mConverterBuffer.mNumberBuffers = ioData->mNumberBuffers;
+	theLoader->mConverterBuffer.mBuffers = new Buffer[theLoader->mConverterBuffer.mNumberBuffers];
+	for( int i = 0; i < theLoader->mConverterBuffer.mNumberBuffers; i++ ) {
+		theLoader->mConverterBuffer.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
+		theLoader->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theSource->getBlockAlign() );
+		theLoader->mConverterBuffer.mBuffers[i].mData = malloc( theLoader->mConverterBuffer.mBuffers[i].mDataByteSize );
+	}
+	
+	theLoader->cleanupPacketDescriptions();
+	theLoader->mCurrentPacketDescriptions = new AudioStreamPacketDescription[*ioNumberDataPackets];
+	
+	//err = AudioFileReadPackets( theSource->mFileRef, false, (UInt32 *)&(theLoader->mConverterBuffer.mBuffers[0].mDataByteSize), theLoader->mCurrentPacketDescriptions, theLoader->mPacketOffset, (UInt32 *)ioNumberDataPackets, theLoader->mConverterBuffer.mBuffers[0].mData );
+	theSource->getData( theLoader->mSampleOffset, (uint32_t)*ioNumberDataPackets, &theLoader->mConverterBuffer.mBuffers[0] );
+	
+	
+	//ioData->mBuffers[0].mData = theTrack->mSourceBuffer;
+	for( int i = 0; i < ioData->mNumberBuffers; i++ ) {
+			ioData->mBuffers[i].mData = theLoader->mConverterBuffer.mBuffers[i].mData;
+			ioData->mBuffers[i].mNumberChannels = theLoader->mConverterBuffer.mBuffers[i].mNumberChannels;
+			ioData->mBuffers[i].mDataByteSize = theLoader->mConverterBuffer.mBuffers[i].mDataByteSize;
+	}
+	
+	if( outDataPacketDescriptions ) {
+		*outDataPacketDescriptions = theLoader->mCurrentPacketDescriptions;
+	}
+	
+	theLoader->mSampleOffset += *ioNumberDataPackets;
+	
+    return err;
+}
+#endif
+
 
 }} //namespace
