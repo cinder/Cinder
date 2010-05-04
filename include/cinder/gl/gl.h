@@ -37,6 +37,7 @@
 #include "cinder/Color.h"
 #include "cinder/Rect.h"
 #include "cinder/Font.h"
+#include "cinder/PolyLine.h"
 
 #if defined( CINDER_MSW )
 	#include <windows.h>
@@ -123,11 +124,11 @@ inline void rotate( float degrees ) { rotate( Vec3f( 0, 0, degrees ) ); }
 inline void vertex( const Vec2f &v ) { glVertex2fv( &v.x ); }
 //! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
 inline void vertex( const Vec3f &v ) { glVertex3fv( &v.x ); }
+#endif // ! defined( CINDER_GLES )
 //! Sets the current color, and the alpha value to 1.0
-inline void color( const Color &c ) { glColor3f( c.r, c.g, c.b ); }
+inline void color( const Color &c ) { glColor4f( c.r, c.g, c.b, 1.0f ); }
 //! Sets the current color and alpha value
 inline void color( const ColorA &c ) { glColor4f( c.r, c.g, c.b, c.a ); }
-#endif // ! defined( CINDER_GLES )
 
 //! Enables alpha blending. Selects a \c BlendFunc that is appropriate for premultiplied-alpha when \a premultiplied
 void enableAlphaBlending( bool premultiplied = false );
@@ -158,6 +159,10 @@ void enableDepthRead( bool enable = true );
 //! Enables writing to the depth buffer when \a enable.
 void enableDepthWrite( bool enable = true );
 
+//! Draws a line from \a start to \a end
+void drawLine( const Vec2f &start, const Vec2f &end );
+//! Draws a line from \a start to \a end
+void drawLine( const Vec3f &start, const Vec3f &end );
 //! Renders a solid cube centered at \a center of size \a size. Normals and created texture coordinates are generated for \c GL_TEXTURE_2D, with each face in the range [0,0] - [1.0,1.0]
 void drawCube( const Vec3f &center, const Vec3f &size );
 //! Renders a solid cube centered at \a center of size \a size. Each face is assigned a unique color, and no normals or texture coordinates are generated.
@@ -168,6 +173,8 @@ void drawSphere( const Vec3f &center, float radius, int segments = 12 );
 void draw( const class Sphere &sphere, int segments = 12 );
 //! Renders a solid circle using triangle fans. The default value of zero for \a numSegments automatically determines a number of segments based on the circle's circumference.
 void drawSolidCircle( const Vec2f &center, float radius, int numSegments = 0 );
+//! Renders a stroked circle using a line loop. The default value of zero for \a numSegments automatically determines a number of segments based on the circle's circumference.
+void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = 0 );
 //! Renders a solid rectangle. Texture coordinates in the range [0,1] are generated unless \a textureRectangle.
 void drawSolidRect( const Rectf &rect, bool textureRectangle = false );
 //! Renders a coordinate frame representation centered at the origin. Arrowheads are drawn at the end of each axis with radius \a headRadius and length \a headLength.
@@ -178,6 +185,8 @@ void drawVector( const Vec3f &start, const Vec3f &end, float headLength = 0.2f, 
 void drawFrustum( const Camera &cam );
 //! Draws a torus at the origin, with an outter radius \a outterRadius and an inner radius \a innerRadius, subdivided into \a longitudeSegments and \a latitudeSegments. Normals and texture coordinates in the range [0,1] are generated.
 void drawTorus( float outterRadius, float innerRadius, int longitudeSegments = 12, int latitudeSegments = 12 );
+//! Draws a PolyLine \a polyLine
+void draw( const class PolyLine<Vec2f> &polyLine );
 
 #if ! defined( CINDER_GLES )
 //! Draws a cinder::TriMesh \a mesh at the origin.
