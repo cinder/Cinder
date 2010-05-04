@@ -53,6 +53,8 @@ static Boolean sIsEaglLayer;
 		mRenderer = renderer;
 		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self );
 		mApp->privateSetup__();
+		
+		self.multipleTouchEnabled = mApp->getSettings().isMultiTouchEnabled();
 	}
 	
     return self;
@@ -194,6 +196,7 @@ static Boolean sIsEaglLayer;
 
 - (void) touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
 {
+std::cout << "Touches moved: " << (int)[touches count] << std::endl;
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {

@@ -23,32 +23,26 @@ struct TouchPoint {
 	TouchPoint() {}
 	TouchPoint( const Vec2f &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
 	{
-		mPoints.push_back( initialPt ); 
+		mLine.push_back( initialPt ); 
 	}
 	
-	void addPoint( const Vec2f &pt ) { mPoints.push_back( pt ); }
+	void addPoint( const Vec2f &pt ) { mLine.push_back( pt ); }
 	
 	void draw() const
 	{
-/*		if( mTimeOfDeath > 0 ) // are we dying? then fade out
+		if( mTimeOfDeath > 0 ) // are we dying? then fade out
 			gl::color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0 ) );
 		else
 			gl::color( mColor );
 
-		glBegin( GL_LINE_STRIP );
-		// iterate across our list of points, and pass each one to OpenGL
-		for( vector<Vec2f>::const_iterator pointIter = mPoints.begin(); pointIter != mPoints.end(); ++pointIter ) {
-			glVertex2f( pointIter->x, pointIter->y );
-		}
-		// tell OpenGL to actually draw the lines now
-		glEnd();*/
+		gl::draw( mLine );
 	}
 	
 	void startDying() { mTimeOfDeath = getElapsedSeconds() + 2.0f; } // two seconds til dead
 	
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
 	
-	vector<Vec2f>	mPoints;
+	PolyLine<Vec2f>	mLine;
 	Color			mColor;
 	float			mTimeOfDeath;
 };
@@ -110,6 +104,16 @@ void MultiTouchApp::draw()
 {
 	gl::enableAlphaBlending();
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
+	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
+
+	glColor4ub( 255, 128, 64, 255 );
+	gl::drawStrokedCircle( Vec2f( 123, 45 ), 50 );
+	glColor4ub( 129, 128, 64, 255 );
+	gl::drawLine( getWindowCenter(), getWindowSize() );
+	glColor4ub( 129, 255, 64, 255 );
+	gl::drawLine( Vec3f( getWindowCenter(), 0 ), Vec3f::zero() );
+
+//	gl::drawSolidRect( Rectf( 0, 0, 200, 200 ) );
 
 	for( map<uint32_t,TouchPoint>::const_iterator activeIt = mActivePoints.begin(); activeIt != mActivePoints.end(); ++activeIt ) {
 		activeIt->second.draw();
