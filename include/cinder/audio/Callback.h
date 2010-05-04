@@ -26,23 +26,23 @@
 #include "cinder/audio/Io.h"
 #include "cinder/audio/Buffer.h"
 
-
-#include <boost/bind.hpp>
-
 namespace cinder { namespace audio {
 
 typedef shared_ptr<class SourceCallback>	SourceCallbackRef;
 typedef shared_ptr<class LoaderSourceCallback>	LoaderSourceFileRef;
 
-//TODO: maybe change this to use a cinder Audio buffer that you fill?
-typedef void (*CallbackFunction)( uint64_t inSampleOffset, uint32_t *ioSampleCount, Buffer *ioBuffer );
-
+template<typename T>
 class Callback {
   private:
+	typedef void (T::*fn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
+	
 	struct Obj {
-		Obj( CallbackFunction aCallback, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign );
+		Obj( fn callbackFn, const T& callbackObj, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign );
 		~Obj();
-		CallbackFunction	mCallback;
+		
+		T mCallbackObj;
+		fn mCallbackFn;
+		
 		uint32_t			mSampleRate;
 		uint16_t			mChannelCount;
 		uint16_t			mBitsPerSample; //Significant Bits Per Sample
@@ -51,7 +51,7 @@ class Callback {
 
   public:
 	Callback() {}
-	Callback( CallbackFunction aCallback, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 );
+	Callback( fn f, const T& t, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 );
 	~Callback() {}
 	
 	operator SourceRef() const;
@@ -61,7 +61,9 @@ class Callback {
 	uint16_t getBitsPerSample() const { return mObj->mBitsPerSample; }
 	uint16_t getBlockAlign() const { return mObj->mBlockAlign; }
   private:
-	shared_ptr<Callback::Obj> mObj;
+	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { ( (mObj->mCallbackObj).*(mObj->mCallbackFn) )( inSampleOffset, ioSampleCount, ioBuffer ); }
+  
+	shared_ptr<Obj> mObj;
 	
 	friend class SourceCallback;
   public:

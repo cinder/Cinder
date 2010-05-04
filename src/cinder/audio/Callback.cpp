@@ -59,10 +59,10 @@ class LoaderSourceCallback : public Loader {
 
 class SourceCallback : public Source {
   public:
-	SourceCallback( const Callback &callback ) 
+	SourceCallback( const Callback<T> &callback ) 
 		: Source()
 	{
-		mCallback = callback.mObj->mCallback;
+		mCallback = callback;
 		
 		mIsPcm = true;
 		mSampleRate = callback.getSampleRate();
@@ -78,7 +78,9 @@ class SourceCallback : public Source {
 	
 	double getDuration() const { return 100.0; } //TODO: add support for endless sources
   private:
-	CallbackFunction	mCallback;
+	Callback<T>	mCallback;
+	
+	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { mCallback.getData( inSampleOffset, ioSampleCount, ioBuffer ); }
 	
 	friend class LoaderSourceCallback;
 };
@@ -189,7 +191,7 @@ void LoaderSourceCallback::loadData( uint32_t *ioSampleCount, BufferList *ioData
 	
 	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );
 #elif defined( CINDER_MSW )
-	(*mSource->mCallback)( mSampleOffset, ioSampleCount, &ioData->mBuffers[0] );
+	mSource->getData( mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
 	mSampleOffset += *ioSampleCount;
 #endif
 }
@@ -235,7 +237,7 @@ OSStatus LoaderSourceCallback::dataInputCallback( AudioConverterRef inAudioConve
 	theLoader->mCurrentPacketDescriptions = new AudioStreamPacketDescription[*ioNumberDataPackets];
 	
 	//err = AudioFileReadPackets( theSource->mFileRef, false, (UInt32 *)&(theLoader->mConverterBuffer.mBuffers[0].mDataByteSize), theLoader->mCurrentPacketDescriptions, theLoader->mPacketOffset, (UInt32 *)ioNumberDataPackets, theLoader->mConverterBuffer.mBuffers[0].mData );
-	(*theSource->mCallback)( theLoader->mSampleOffset, (uint32_t *)ioNumberDataPackets, &theLoader->mConverterBuffer.mBuffers[0] );
+	theSource->getData( theLoader->mSampleOffset, (uint32_t)*ioNumberDataPackets, &theLoader->mConverterBuffer.mBuffers[0] );
 	
 	
 	//ioData->mBuffers[0].mData = theTrack->mSourceBuffer;
@@ -255,8 +257,8 @@ OSStatus LoaderSourceCallback::dataInputCallback( AudioConverterRef inAudioConve
 }
 #endif
 
-Callback::Obj::Obj( CallbackFunction aCallback, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign )
-	: mCallback( aCallback ), mSampleRate( aSampleRate ), mChannelCount( aChannelCount ), mBitsPerSample( aBitsPerSample ), mBlockAlign( aBlockAlign )
+Callback::Obj::Obj( fn callbackFn, const T& callbackObj, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign )
+	: mCallbackFunction( callbackFn ), mCallbackObject( t ), mSampleRate( aSampleRate ), mChannelCount( aChannelCount ), mBitsPerSample( aBitsPerSample ), mBlockAlign( aBlockAlign )
 {
 }
 
@@ -265,8 +267,8 @@ Callback::Obj::~Obj()
 }
 
 
-Callback::Callback( CallbackFunction aCallback, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign ) 
-	: mObj( new Obj( aCallback, aSampleRate, aChannelCount, aBitsPerSample, aBlockAlign ) )
+Callback::Callback( fn callbackFn, const T& callbackObj, uint32_t aSampleRate, uint16_t aChannelCount, uint16_t aBitsPerSample, uint16_t aBlockAlign ) 
+	: mObj( new Obj( callbackFn, callbackObj, aSampleRate, aChannelCount, aBitsPerSample, aBlockAlign ) )
 {
 }
 
