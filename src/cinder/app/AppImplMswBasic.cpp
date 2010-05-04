@@ -76,7 +76,7 @@ void AppImplMswBasic::run()
 	::SetFocus( mWnd );
 	::DragAcceptFiles( mWnd, TRUE );	
 
-	if( mApp->getSettings().isMultiTouch() ) {
+	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		// we need to make sure this version of User32 even has MultiTouch symbols, so we'll do that with GetProcAddress
 		void *sym = ::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
 		if( sym ) {
