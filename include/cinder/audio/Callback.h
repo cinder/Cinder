@@ -27,8 +27,7 @@
 #include "cinder/audio/Buffer.h"
 
 #if defined( CINDER_COCOA )
-	#include <CoreAudio/CoreAudioTypes.h>
-	#include <AudioToolbox/AudioConverter.h>
+	#include "cinder/audio/CocoaCaConverter.h"
 #endif
 
 namespace cinder { namespace audio {
@@ -43,10 +42,10 @@ class LoaderSourceCallback : public Loader {
 			return shared_ptr<LoaderSourceCallback<T> >( new LoaderSourceCallback<T>( source, target ) );
 		}
 		
-		~LoaderSourceCallback();
+		~LoaderSourceCallback() {}
 		
-		uint64_t getSampleOffset() const;
-		void setSampleOffset( uint64_t anOffset );
+		uint64_t getSampleOffset() const { return mSampleOffset; }
+		void setSampleOffset( uint64_t anOffset ) { mSampleOffset = anOffset; }
 		void loadData( uint32_t *ioSampleCount, BufferList *ioData );
 	private:
 		LoaderSourceCallback( Callback<T> *source, Target *target );
@@ -54,12 +53,8 @@ class LoaderSourceCallback : public Loader {
 		uint64_t						mSampleOffset;
 
 #if defined(CINDER_COCOA)
-		void cleanupPacketDescriptions();
-		void cleanupConverterBuffer();
-		static OSStatus dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader );
-		AudioConverterRef				mConverter;
-		AudioStreamPacketDescription	* mCurrentPacketDescriptions;
-		BufferList						mConverterBuffer;
+		static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData );
+		shared_ptr<CocoaCaConverter>	mConverter;
 #endif	
 };
 
@@ -108,10 +103,6 @@ LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *targ
 	: mSource( source ), mSampleOffset( 0 )
 {
 #if defined( CINDER_COCOA )
-	mCurrentPacketDescriptions = 0;
-	mConverterBuffer.mNumberBuffers = 0;
-	mConverterBuffer.mBuffers = NULL;
-
 	AudioStreamBasicDescription sourceDescription;
 	
 	sourceDescription.mFormatID = kAudioFormatLinearPCM; //kAudioFormatLinearPCM;
@@ -139,80 +130,16 @@ LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *targ
 	targetDescription.mChannelsPerFrame = target->getChannelCount();
 	targetDescription.mBitsPerChannel = target->getBitsPerSample();
 	
-	OSStatus err = noErr;
-	err = AudioConverterNew( &sourceDescription, &targetDescription, &mConverter );
-	if( err ) {
-		//throw
-		/*switch(err) {
-			case kAudioConverterErr_FormatNotSupported:
-				std::cout << "kAudioConverterErr_FormatNotSupported" << std::endl;
-			break;
-			case kAudioConverterErr_OperationNotSupported:
-				std::cout << "kAudioConverterErr_OperationNotSupported" << std::endl;
-			break;
-			case kAudioConverterErr_PropertyNotSupported:
-				std::cout << "kAudioConverterErr_PropertyNotSupported" << std::endl;
-			break;
-			case kAudioConverterErr_InvalidInputSize:
-				std::cout << "kAudioConverterErr_InvalidInputSize" << std::endl;
-			break;
-			case kAudioConverterErr_InvalidOutputSize:
-				std::cout << "kAudioConverterErr_InvalidOutputSize" << std::endl;
-			break;
-			case kAudioConverterErr_UnspecifiedError:
-				std::cout << "kAudioConverterErr_UnspecifiedError" << std::endl;
-			break;
-			case kAudioConverterErr_BadPropertySizeError:
-				std::cout << "kAudioConverterErr_BadPropertySizeError" << std::endl;
-			break;
-			case kAudioConverterErr_RequiresPacketDescriptionsError:
-				std::cout << "kAudioConverterErr_RequiresPacketDescriptionsError" << std::endl;
-			break;
-			case kAudioConverterErr_InputSampleRateOutOfRange:
-				std::cout << "kAudioConverterErr_InputSampleRateOutOfRange" << std::endl;
-			break;
-			case kAudioConverterErr_OutputSampleRateOutOfRange:
-				std::cout << "kAudioConverterErr_OutputSampleRateOutOfRange" << std::endl;
-			break;
-		}*/
-	}
+	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T>::dataInputCallback, &sourceDescription, &targetDescription ) );
 #endif
-}
-
-template<typename T>
-LoaderSourceCallback<T>::~LoaderSourceCallback()
-{
-#if defined( CINDER_COCOA )
-	cleanupPacketDescriptions();
-	cleanupConverterBuffer();
-	AudioConverterDispose( mConverter );
-#endif
-}
-
-template<typename T>
-uint64_t LoaderSourceCallback<T>::getSampleOffset() const { 
-	return mSampleOffset; 
-}
-
-template<typename T>
-void LoaderSourceCallback<T>::setSampleOffset( uint64_t anOffset ) {
-	mSampleOffset = anOffset;
 }
 
 template<typename T>
 void LoaderSourceCallback<T>::loadData( uint32_t *ioSampleCount, BufferList *ioData )
 {	
 #if defined( CINDER_COCOA )
-	shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
-
-	AudioStreamPacketDescription * outputPacketDescriptions = new AudioStreamPacketDescription[*ioSampleCount];
-	OSStatus err = AudioConverterFillComplexBuffer( mConverter, LoaderSourceCallback::dataInputCallback, (void *)this, (UInt32 *)ioSampleCount, nativeBufferList.get(), outputPacketDescriptions );
-	delete [] outputPacketDescriptions;
-	if( err ) {
-		//throw
-	}
-	
-	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );
+	mConverter->loadData( ioSampleCount, ioData );
+	mSampleOffset += *ioSampleCount;
 #elif defined( CINDER_MSW )
 	mSource->getData( mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
 	mSampleOffset += *ioSampleCount;
@@ -221,65 +148,12 @@ void LoaderSourceCallback<T>::loadData( uint32_t *ioSampleCount, BufferList *ioD
 
 #if defined( CINDER_COCOA )
 template<typename T>
-void LoaderSourceCallback<T>::cleanupPacketDescriptions()
-{
-	if( mCurrentPacketDescriptions ) {
-		delete [] mCurrentPacketDescriptions;
-		mCurrentPacketDescriptions = 0;
-	}
-}
-
-template<typename T>
-void LoaderSourceCallback<T>::cleanupConverterBuffer() 
-{
-	for( int i = 0; i < mConverterBuffer.mNumberBuffers; i++ ) {
-		free( mConverterBuffer.mBuffers[i].mData );
-	}
-	if( mConverterBuffer.mBuffers ) {
-		delete [] mConverterBuffer.mBuffers;
-		mConverterBuffer.mBuffers = NULL;
-	}
-}
-
-template<typename T>
-OSStatus LoaderSourceCallback<T>::dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader )
-{
-	OSStatus err = noErr;
-	
-	LoaderSourceCallback<T> * theLoader = (LoaderSourceCallback<T> *)audioLoader;
+void LoaderSourceCallback<T>::dataInputCallback( Loader * aLoader, uint32_t *ioSampleCount, BufferList *ioData ) {
+	LoaderSourceCallback * theLoader = dynamic_cast<LoaderSourceCallback *>( aLoader );
 	Callback<T> * theSource = theLoader->mSource;
 	
-	theLoader->cleanupConverterBuffer();
+	theSource->getData( theLoader->mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
 	
-	theLoader->mConverterBuffer.mNumberBuffers = ioData->mNumberBuffers;
-	theLoader->mConverterBuffer.mBuffers = new Buffer[theLoader->mConverterBuffer.mNumberBuffers];
-	for( int i = 0; i < theLoader->mConverterBuffer.mNumberBuffers; i++ ) {
-		theLoader->mConverterBuffer.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
-		theLoader->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theSource->getBlockAlign() );
-		theLoader->mConverterBuffer.mBuffers[i].mData = malloc( theLoader->mConverterBuffer.mBuffers[i].mDataByteSize );
-	}
-	
-	theLoader->cleanupPacketDescriptions();
-	theLoader->mCurrentPacketDescriptions = new AudioStreamPacketDescription[*ioNumberDataPackets];
-	
-	//err = AudioFileReadPackets( theSource->mFileRef, false, (UInt32 *)&(theLoader->mConverterBuffer.mBuffers[0].mDataByteSize), theLoader->mCurrentPacketDescriptions, theLoader->mPacketOffset, (UInt32 *)ioNumberDataPackets, theLoader->mConverterBuffer.mBuffers[0].mData );
-	theSource->getData( theLoader->mSampleOffset, (uint32_t)*ioNumberDataPackets, &theLoader->mConverterBuffer.mBuffers[0] );
-	
-	
-	//ioData->mBuffers[0].mData = theTrack->mSourceBuffer;
-	for( int i = 0; i < ioData->mNumberBuffers; i++ ) {
-			ioData->mBuffers[i].mData = theLoader->mConverterBuffer.mBuffers[i].mData;
-			ioData->mBuffers[i].mNumberChannels = theLoader->mConverterBuffer.mBuffers[i].mNumberChannels;
-			ioData->mBuffers[i].mDataByteSize = theLoader->mConverterBuffer.mBuffers[i].mDataByteSize;
-	}
-	
-	if( outDataPacketDescriptions ) {
-		*outDataPacketDescriptions = theLoader->mCurrentPacketDescriptions;
-	}
-	
-	theLoader->mSampleOffset += *ioNumberDataPackets;
-	
-    return err;
 }
 #endif
 
