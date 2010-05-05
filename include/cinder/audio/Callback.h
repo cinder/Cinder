@@ -64,9 +64,9 @@ class LoaderSourceCallback : public Loader {
 };
 
 template<typename T>
-shared_ptr<Callback<T> > createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), T& callbackObj )
+shared_ptr<Callback<T> > createCallback( T& callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) )
 {
-	return shared_ptr<Callback<T> >( new Callback<T>( callbackFn, callbackObj ) );
+	return shared_ptr<Callback<T> >( new Callback<T>( callbackObj, callbackFn ) );
 }
 
 template<typename T>
@@ -74,7 +74,7 @@ class Callback : public Source {
 	typedef void (T::*fn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
 	
   public: 
-	Callback( fn callbackFn, T& callbackObj, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 )
+	Callback( T& callbackObj, fn callbackFn, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 )
 		: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj )
 	{
 		mIsPcm = true;

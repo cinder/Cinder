@@ -26,7 +26,7 @@ void AudioGenerativeApp::setup()
 	mPhase = 0.0f;
 	mPhaseAdjust = 0.0f;
 	
-	audio::Output::play( audio::createCallback( &AudioGenerativeApp::sineWave, *this ) );
+	audio::Output::play( audio::createCallback( *this, &AudioGenerativeApp::sineWave ) );
 }
 
 void AudioGenerativeApp::mouseMove( MouseEvent event )
