@@ -53,7 +53,11 @@ class LoaderSourceCallback : public Loader {
 		uint64_t						mSampleOffset;
 
 #if defined(CINDER_COCOA)
-		static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData );
+		static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData ) {
+			LoaderSourceCallback * theLoader = dynamic_cast<LoaderSourceCallback *>( aLoader );
+			Callback<T> * theSource = theLoader->mSource;	
+			theSource->getData( theLoader->mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
+		}
 		shared_ptr<CocoaCaConverter>	mConverter;
 #endif	
 };
@@ -145,17 +149,6 @@ void LoaderSourceCallback<T>::loadData( uint32_t *ioSampleCount, BufferList *ioD
 	mSampleOffset += *ioSampleCount;
 #endif
 }
-
-#if defined( CINDER_COCOA )
-template<typename T>
-void LoaderSourceCallback<T>::dataInputCallback( Loader * aLoader, uint32_t *ioSampleCount, BufferList *ioData ) {
-	LoaderSourceCallback * theLoader = dynamic_cast<LoaderSourceCallback *>( aLoader );
-	Callback<T> * theSource = theLoader->mSource;
-	
-	theSource->getData( theLoader->mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
-	
-}
-#endif
 
 
 }} //namespace
