@@ -32,41 +32,7 @@
 
 namespace cinder { namespace audio {
 
-template<typename> class Callback;
-
-template<typename T>
-class LoaderSourceCallback : public Loader {
-	public:
-		static LoaderRef	createRef( Callback<T> *source, Target *target )
-		{
-			return shared_ptr<LoaderSourceCallback<T> >( new LoaderSourceCallback<T>( source, target ) );
-		}
-		
-		~LoaderSourceCallback() {}
-		
-		uint64_t getSampleOffset() const { return mSampleOffset; }
-		void setSampleOffset( uint64_t anOffset ) { mSampleOffset = anOffset; }
-		void loadData( uint32_t *ioSampleCount, BufferList *ioData );
-	private:
-		LoaderSourceCallback( Callback<T> *source, Target *target );
-		Callback<T>						* mSource;
-		uint64_t						mSampleOffset;
-
-#if defined(CINDER_COCOA)
-		static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData ) {
-			LoaderSourceCallback * theLoader = dynamic_cast<LoaderSourceCallback *>( aLoader );
-			Callback<T> * theSource = theLoader->mSource;	
-			theSource->getData( theLoader->mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
-		}
-		shared_ptr<CocoaCaConverter>	mConverter;
-#endif	
-};
-
-template<typename T>
-shared_ptr<Callback<T> > createCallback( T& callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) )
-{
-	return shared_ptr<Callback<T> >( new Callback<T>( callbackObj, callbackFn ) );
-}
+template<typename> class LoaderSourceCallback;
 
 template<typename T>
 class Callback : public Source {
@@ -100,6 +66,40 @@ class Callback : public Source {
 	
 	friend class LoaderSourceCallback<T>;
 	//friend shared_ptr<Callback<T> > createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), T& callbackObj );
+};
+
+template<typename T>
+shared_ptr<Callback<T> > createCallback( T& callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) )
+{
+	return shared_ptr<Callback<T> >( new Callback<T>( callbackObj, callbackFn ) );
+}
+
+template<typename T>
+class LoaderSourceCallback : public Loader {
+	public:
+		static LoaderRef	createRef( Callback<T> *source, Target *target )
+		{
+			return shared_ptr<LoaderSourceCallback<T> >( new LoaderSourceCallback<T>( source, target ) );
+		}
+		
+		~LoaderSourceCallback() {}
+		
+		uint64_t getSampleOffset() const { return mSampleOffset; }
+		void setSampleOffset( uint64_t anOffset ) { mSampleOffset = anOffset; }
+		void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	private:
+		LoaderSourceCallback( Callback<T> *source, Target *target );
+		Callback<T>						* mSource;
+		uint64_t						mSampleOffset;
+
+#if defined(CINDER_COCOA)
+		static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData ) {
+			LoaderSourceCallback * theLoader = dynamic_cast<LoaderSourceCallback *>( aLoader );
+			Callback<T> * theSource = theLoader->mSource;	
+			theSource->getData( theLoader->mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
+		}
+		shared_ptr<CocoaCaConverter>	mConverter;
+#endif	
 };
 
 template<typename T>
