@@ -36,10 +36,10 @@ template<typename> class LoaderSourceCallback;
 
 template<typename T>
 class Callback : public Source {
-	typedef void (T::*fn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
+	typedef void (T::*CallbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
 	
   public: 
-	Callback( T& callbackObj, fn callbackFn, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 )
+	Callback( T& callbackObj, CallbackFn callbackFn, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 )
 		: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj )
 	{
 		mIsPcm = true;
@@ -62,7 +62,7 @@ class Callback : public Source {
 	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { ( mCallbackObj.*mCallbackFn )( inSampleOffset, ioSampleCount, ioBuffer ); }
 	
 	T& mCallbackObj;
-	fn mCallbackFn;
+	CallbackFn mCallbackFn;
 	
 	friend class LoaderSourceCallback<T>;
 	//friend shared_ptr<Callback<T> > createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), T& callbackObj );
@@ -86,7 +86,15 @@ class LoaderSourceCallback : public Loader {
 		
 		uint64_t getSampleOffset() const { return mSampleOffset; }
 		void setSampleOffset( uint64_t anOffset ) { mSampleOffset = anOffset; }
-		void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+		void loadData( uint32_t *ioSampleCount, BufferList *ioData ) {	
+#if defined( CINDER_COCOA )
+			mConverter->loadData( ioSampleCount, ioData );
+			mSampleOffset += *ioSampleCount;
+#elif defined( CINDER_MSW )
+			mSource->getData( mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
+			mSampleOffset += *ioSampleCount;
+#endif
+		}
 	private:
 		LoaderSourceCallback( Callback<T> *source, Target *target );
 		Callback<T>						* mSource;
@@ -137,18 +145,5 @@ LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *targ
 	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T>::dataInputCallback, &sourceDescription, &targetDescription ) );
 #endif
 }
-
-template<typename T>
-void LoaderSourceCallback<T>::loadData( uint32_t *ioSampleCount, BufferList *ioData )
-{	
-#if defined( CINDER_COCOA )
-	mConverter->loadData( ioSampleCount, ioData );
-	mSampleOffset += *ioSampleCount;
-#elif defined( CINDER_MSW )
-	mSource->getData( mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
-	mSampleOffset += *ioSampleCount;
-#endif
-}
-
 
 }} //namespace
