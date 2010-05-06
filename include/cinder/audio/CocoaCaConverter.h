@@ -33,9 +33,9 @@ namespace cinder { namespace audio {
 
 class CocoaCaConverter {
  public:
-	typedef void (*LoaderFunction)( Loader * aLoader, uint32_t *ioSampleCount, BufferList *ioData );
+	typedef void (*LoaderFunction)( Loader * aLoader, uint32_t *ioSampleCount, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions );
 	
-	CocoaCaConverter( Loader *aLoader, LoaderFunction loaderFn, AudioStreamBasicDescription * sourceDescription, AudioStreamBasicDescription * targetDescription );
+	CocoaCaConverter( Loader *aLoader, LoaderFunction loaderFn, const AudioStreamBasicDescription& sourceDescription, const AudioStreamBasicDescription& targetDescription, uint32_t maxPacketSize );
 	~CocoaCaConverter();
 	
 	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
@@ -47,7 +47,7 @@ class CocoaCaConverter {
 	void cleanupPacketDescriptions();
 	void cleanupConverterBuffer();
 	
-	uint32_t						mSourceBlockAlign;
+	uint32_t						mMaxPacketSize;
 	Loader							* mLoader;
 	LoaderFunction					mLoaderFunction;
 	AudioConverterRef				mConverter;

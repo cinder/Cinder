@@ -25,10 +25,9 @@
 #include "cinder/Cinder.h"
 #include "cinder/audio/Io.h"
 #include "cinder/audio/Buffer.h"
+#include "cinder/audio/CocoaCaConverter.h"
 
 #include <AudioToolbox/AudioFile.h>
-#include <CoreAudio/CoreAudioTypes.h>
-#include <AudioToolbox/AudioConverter.h>
 
 
 namespace cinder { namespace audio {
@@ -37,26 +36,22 @@ typedef shared_ptr<class SourceFile>	SourceFileRef;
 typedef shared_ptr<class LoaderSourceFile>	LoaderSourceFileRef;
 
 class LoaderSourceFile : public Loader {
-	public:
-		static LoaderSourceFileRef	createRef( SourceFile *source, Target *target );
-		
-		~LoaderSourceFile();
-		
-		uint64_t getSampleOffset() const;
-		void setSampleOffset( uint64_t anOffset );
-		void loadData( uint32_t *ioSampleCount, BufferList *ioData );
-	private:
-		LoaderSourceFile( SourceFile *source, Target *target );
-		void cleanupPacketDescriptions();
-		void cleanupConverterBuffer();
-		
-		static OSStatus dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader );
-		
-		SourceFile						* mSource;
-		AudioConverterRef				mConverter;
-		BufferList						mConverterBuffer;
-		AudioStreamPacketDescription	* mCurrentPacketDescriptions;
-		uint64_t						mPacketOffset;
+ public:
+	static LoaderSourceFileRef	createRef( SourceFile *source, Target *target );
+	
+	~LoaderSourceFile() {}
+	
+	uint64_t getSampleOffset() const;
+	void setSampleOffset( uint64_t anOffset );
+	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+ private:
+	static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions );
+
+	LoaderSourceFile( SourceFile *source, Target *target );
+	
+	SourceFile						* mSource;
+	shared_ptr<CocoaCaConverter>	mConverter;
+	uint64_t						mPacketOffset;
 		
 };
 

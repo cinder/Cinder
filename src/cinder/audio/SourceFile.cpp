@@ -39,11 +39,8 @@ LoaderSourceFileRef	LoaderSourceFile::createRef( SourceFile *source, Target *tar
 }
 
 LoaderSourceFile::LoaderSourceFile( SourceFile *source, Target *target )
-	: mSource( source ), mPacketOffset( 0 ), mCurrentPacketDescriptions( 0 )
+	: mSource( source ), mPacketOffset( 0 )
 {
-	mConverterBuffer.mNumberBuffers = 0;
-	mConverterBuffer.mBuffers = NULL;
-
 	AudioStreamBasicDescription sourceDescription;
 	
 	sourceDescription.mFormatID = source->mNativeFormatId; //kAudioFormatLinearPCM;
@@ -71,16 +68,7 @@ LoaderSourceFile::LoaderSourceFile( SourceFile *source, Target *target )
 	targetDescription.mChannelsPerFrame = target->getChannelCount();
 	targetDescription.mBitsPerChannel = target->getBitsPerSample();
 	
-	OSStatus err = noErr;
-	err = AudioConverterNew( &sourceDescription, &targetDescription, &mConverter );
-}
-
-LoaderSourceFile::~LoaderSourceFile()
-{
-	cleanupPacketDescriptions();
-	cleanupConverterBuffer();
-	
-	AudioConverterDispose( mConverter );
+	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceFile::dataInputCallback, sourceDescription, targetDescription, mSource->mMaxPacketSize ) );
 }
 
 uint64_t LoaderSourceFile::getSampleOffset() const { 
@@ -93,7 +81,9 @@ void LoaderSourceFile::setSampleOffset( uint64_t anOffset ) {
 
 void LoaderSourceFile::loadData( uint32_t *ioSampleCount, BufferList *ioData )
 {	
-	shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
+	mConverter->loadData( ioSampleCount, ioData );
+	
+	/*shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
 
 	AudioStreamPacketDescription * outputPacketDescriptions = new AudioStreamPacketDescription[*ioSampleCount];
 	OSStatus err = AudioConverterFillComplexBuffer( mConverter, LoaderSourceFile::dataInputCallback, (void *)this, (UInt32 *)ioSampleCount, nativeBufferList.get(), outputPacketDescriptions );
@@ -102,29 +92,22 @@ void LoaderSourceFile::loadData( uint32_t *ioSampleCount, BufferList *ioData )
 		//throw
 	}
 	
-	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );
+	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );*/
 }
 
-void LoaderSourceFile::cleanupPacketDescriptions()
+void LoaderSourceFile::dataInputCallback( Loader* aLoader, uint32_t *ioNumberDataPackets, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions )
 {
-	if( mCurrentPacketDescriptions ) {
-		delete [] mCurrentPacketDescriptions;
-		mCurrentPacketDescriptions = 0;
+	LoaderSourceFile * theLoader = dynamic_cast<LoaderSourceFile *>( aLoader );
+	SourceFile * theSource = theLoader->mSource;
+	
+	OSStatus err = AudioFileReadPackets( theSource->mFileRef, false, (UInt32 *)&(ioData->mBuffers[0].mDataByteSize), packetDescriptions, theLoader->mPacketOffset, (UInt32 *)ioNumberDataPackets, ioData->mBuffers[0].mData );
+	if( err ) {
+		//throw ??
 	}
+	theLoader->mPacketOffset += *ioNumberDataPackets;
 }
 
-void LoaderSourceFile::cleanupConverterBuffer() 
-{
-	for( int i = 0; i < mConverterBuffer.mNumberBuffers; i++ ) {
-		free( mConverterBuffer.mBuffers[i].mData );
-	}
-	if( mConverterBuffer.mBuffers ) {
-		delete [] mConverterBuffer.mBuffers;
-		mConverterBuffer.mBuffers = NULL;
-	}
-}
-
-OSStatus LoaderSourceFile::dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader )
+/*OSStatus LoaderSourceFile::dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader )
 {
 	OSStatus err = noErr;
 	
@@ -163,8 +146,8 @@ OSStatus LoaderSourceFile::dataInputCallback( AudioConverterRef inAudioConverter
 		theTrack->mPacketOffset = 0;
 	}*/
 	
-    return err;
-}
+    /*return err;
+}*/
 
 
 void SourceFile::registerSelf()

@@ -101,7 +101,7 @@ class LoaderSourceCallback : public Loader {
 		uint64_t						mSampleOffset;
 
 #if defined(CINDER_COCOA)
-		static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData ) {
+		static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions ) {
 			LoaderSourceCallback * theLoader = dynamic_cast<LoaderSourceCallback *>( aLoader );
 			Callback<T> * theSource = theLoader->mSource;	
 			theSource->getData( theLoader->mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
@@ -119,7 +119,6 @@ LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *targ
 	
 	sourceDescription.mFormatID = kAudioFormatLinearPCM; //kAudioFormatLinearPCM;
 	sourceDescription.mFormatFlags = CalculateLPCMFlags( mSource->getBitsPerSample(), mSource->getBlockAlign() * 8, mSource->isFloat(), mSource->isBigEndian(), ( ! mSource->isInterleaved() ) /*is non interleaved*/ );
-	//sourceDescription.mFormatFlags |= kAudioFormatFlagIsPacked;
 	sourceDescription.mSampleRate = source->getSampleRate();
 	sourceDescription.mBytesPerPacket = ( mSource->getBlockAlign() ); //( mSource->getBitsPerSample() * mSource->getChannelCount() ) / 8;
 	sourceDescription.mFramesPerPacket = 1;
@@ -142,7 +141,7 @@ LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *targ
 	targetDescription.mChannelsPerFrame = target->getChannelCount();
 	targetDescription.mBitsPerChannel = target->getBitsPerSample();
 	
-	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T>::dataInputCallback, &sourceDescription, &targetDescription ) );
+	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T>::dataInputCallback, sourceDescription, targetDescription, mSource->getBlockAlign() ) );
 #endif
 }
 

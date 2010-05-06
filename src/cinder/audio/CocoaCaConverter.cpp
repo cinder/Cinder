@@ -24,14 +24,13 @@
 
 namespace cinder { namespace audio {
 
-CocoaCaConverter::CocoaCaConverter( Loader * aLoader, LoaderFunction loaderFn, AudioStreamBasicDescription * sourceDescription, AudioStreamBasicDescription * targetDescription )
-	: mLoader( aLoader ), mCurrentPacketDescriptions( NULL ), mLoaderFunction( loaderFn )
+CocoaCaConverter::CocoaCaConverter( Loader * aLoader, LoaderFunction loaderFn, const AudioStreamBasicDescription& sourceDescription, const AudioStreamBasicDescription& targetDescription, uint32_t maxPacketSize )
+	: mLoader( aLoader ), mCurrentPacketDescriptions( NULL ), mLoaderFunction( loaderFn ), mMaxPacketSize( maxPacketSize )
 {	
 	mConverterBuffer.mNumberBuffers = 0;
-	mSourceBlockAlign = sourceDescription->mBytesPerFrame;
 	
 	OSStatus err = noErr;
-	err = AudioConverterNew( sourceDescription, targetDescription, &mConverter );
+	err = AudioConverterNew( &sourceDescription, &targetDescription, &mConverter );
 	if( err ) {
 		//throw
 		/*switch(err) {
@@ -137,7 +136,7 @@ OSStatus CocoaCaConverter::dataInputCallback( AudioConverterRef inAudioConverter
 {
 	OSStatus err = noErr;
 	
-	CocoaCaConverter * theConverter = (CocoaCaConverter  *)audioLoader;
+	CocoaCaConverter * theConverter = reinterpret_cast<CocoaCaConverter *>( audioLoader );
 	
 	theConverter->cleanupConverterBuffer();
 	
@@ -145,23 +144,19 @@ OSStatus CocoaCaConverter::dataInputCallback( AudioConverterRef inAudioConverter
 	theConverter->mConverterBuffer.mBuffers = new Buffer[theConverter->mConverterBuffer.mNumberBuffers];
 	for( int i = 0; i < theConverter->mConverterBuffer.mNumberBuffers; i++ ) {
 		theConverter->mConverterBuffer.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
-		theConverter->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theConverter->mSourceBlockAlign );
+		theConverter->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theConverter->mMaxPacketSize );
 		theConverter->mConverterBuffer.mBuffers[i].mData = malloc( theConverter->mConverterBuffer.mBuffers[i].mDataByteSize );
 	}
 	
 	theConverter->cleanupPacketDescriptions();
 	theConverter->mCurrentPacketDescriptions = new AudioStreamPacketDescription[*ioNumberDataPackets];
 	
-	//err = AudioFileReadPackets( theSource->mFileRef, false, (UInt32 *)&(theLoader->mConverterBuffer.mBuffers[0].mDataByteSize), theLoader->mCurrentPacketDescriptions, theLoader->mPacketOffset, (UInt32 *)ioNumberDataPackets, theLoader->mConverterBuffer.mBuffers[0].mData );
-	//theSource->getData( theLoader->mSampleOffset, (uint32_t)*ioNumberDataPackets, &theLoader->mConverterBuffer.mBuffers[0] );
-	
-	//TODO: callbcak loader callback from here
-	(*theConverter->mLoaderFunction)( theConverter->mLoader, (uint32_t *)ioNumberDataPackets, &theConverter->mConverterBuffer );
+	(*theConverter->mLoaderFunction)( theConverter->mLoader, (uint32_t *)ioNumberDataPackets, &theConverter->mConverterBuffer, theConverter->mCurrentPacketDescriptions );
 	
 	for( int i = 0; i < ioData->mNumberBuffers; i++ ) {
-			ioData->mBuffers[i].mData = theConverter->mConverterBuffer.mBuffers[i].mData;
-			ioData->mBuffers[i].mNumberChannels = theConverter->mConverterBuffer.mBuffers[i].mNumberChannels;
-			ioData->mBuffers[i].mDataByteSize = theConverter->mConverterBuffer.mBuffers[i].mDataByteSize;
+		ioData->mBuffers[i].mData = theConverter->mConverterBuffer.mBuffers[i].mData;
+		ioData->mBuffers[i].mNumberChannels = theConverter->mConverterBuffer.mBuffers[i].mNumberChannels;
+		ioData->mBuffers[i].mDataByteSize = theConverter->mConverterBuffer.mBuffers[i].mDataByteSize;
 	}
 	
 	if( outDataPacketDescriptions ) {
