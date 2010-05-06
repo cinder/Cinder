@@ -37,10 +37,10 @@
 
 /* Begin PBXFileReference section */
 		00880A3611630C7F00F731D1 /* «PREFIX»App.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = «PREFIX»App.cpp; path = ../src/«PREFIX»App.cpp; sourceTree = SOURCE_ROOT; };
-		00880A3F11630CB400F731D1 /* AppScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppScreenSaver.h; path = ../«FLINTPATH»/include/cinder/app/AppScreenSaver.h; sourceTree = SOURCE_ROOT; };
-		00880A4011630CB400F731D1 /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = ../«FLINTPATH»/include/cinder/app/AppImplCocoaScreenSaver.h; sourceTree = SOURCE_ROOT; };
-		00880A4611630CDA00F731D1 /* AppImplCocoaScreenSaver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaScreenSaver.mm; path = ../«FLINTPATH»/src/cinder/app/AppImplCocoaScreenSaver.mm; sourceTree = SOURCE_ROOT; };
-		00880A4711630CDA00F731D1 /* AppScreenSaver.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppScreenSaver.cpp; path = ../«FLINTPATH»/src/cinder/app/AppScreenSaver.cpp; sourceTree = SOURCE_ROOT; };
+		00880A3F11630CB400F731D1 /* AppScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppScreenSaver.h; path = "../«FLINTPATH»/include/cinder/app/AppScreenSaver.h"; sourceTree = SOURCE_ROOT; };
+		00880A4011630CB400F731D1 /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = "../«FLINTPATH»/include/cinder/app/AppImplCocoaScreenSaver.h"; sourceTree = SOURCE_ROOT; };
+		00880A4611630CDA00F731D1 /* AppImplCocoaScreenSaver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaScreenSaver.mm; path = "../«FLINTPATH»/src/cinder/app/AppImplCocoaScreenSaver.mm"; sourceTree = SOURCE_ROOT; };
+		00880A4711630CDA00F731D1 /* AppScreenSaver.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppScreenSaver.cpp; path = "../«FLINTPATH»/src/cinder/app/AppScreenSaver.cpp"; sourceTree = SOURCE_ROOT; };
 		00880A5411630D7900F731D1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		00880A5511630D7900F731D1 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00880A5611630D7900F731D1 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
@@ -51,13 +51,13 @@
 		00880A5D11630D7900F731D1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		00C9A19011679DFE0086E7FD /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		00C9A19E11679F0E0086E7FD /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
-		00C9A1D21167C7810086E7FD /* AppImplCocoaRendererGl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererGl.mm; path = ../«FLINTPATH»/src/cinder/app/AppImplCocoaRendererGl.mm; sourceTree = SOURCE_ROOT; };
-		00C9A1D31167C7810086E7FD /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = ../«FLINTPATH»/src/cinder/app/AppImplCocoaRendererQuartz.mm; sourceTree = SOURCE_ROOT; };
-		00C9A1D41167C7810086E7FD /* AppImplCocoaTransparentGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppImplCocoaTransparentGLView.m; path = ../«FLINTPATH»/src/cinder/app/AppImplCocoaTransparentGLView.m; sourceTree = SOURCE_ROOT; };
-		00C9A1D51167C7810086E7FD /* CinderView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderView.mm; path = ../«FLINTPATH»/src/cinder/app/CinderView.mm; sourceTree = SOURCE_ROOT; };
-		00C9A1DA1167C7B50086E7FD /* AppImplCocoaRendererGl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererGl.h; path = ../«FLINTPATH»/include/cinder/app/AppImplCocoaRendererGl.h; sourceTree = SOURCE_ROOT; };
-		00C9A1DB1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererQuartz.h; path = ../«FLINTPATH»/include/cinder/app/AppImplCocoaRendererQuartz.h; sourceTree = SOURCE_ROOT; };
-		00C9A1DC1167C7B50086E7FD /* CinderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CinderView.h; path = ../«FLINTPATH»/include/cinder/app/CinderView.h; sourceTree = SOURCE_ROOT; };
+		00C9A1D21167C7810086E7FD /* AppImplCocoaRendererGl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererGl.mm; path = "../«FLINTPATH»/src/cinder/app/AppImplCocoaRendererGl.mm"; sourceTree = SOURCE_ROOT; };
+		00C9A1D31167C7810086E7FD /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = "../«FLINTPATH»/src/cinder/app/AppImplCocoaRendererQuartz.mm"; sourceTree = SOURCE_ROOT; };
+		00C9A1D41167C7810086E7FD /* AppImplCocoaTransparentGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppImplCocoaTransparentGLView.m; path = "../«FLINTPATH»/src/cinder/app/AppImplCocoaTransparentGLView.m"; sourceTree = SOURCE_ROOT; };
+		00C9A1D51167C7810086E7FD /* CinderView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderView.mm; path = "../«FLINTPATH»/src/cinder/app/CinderView.mm"; sourceTree = SOURCE_ROOT; };
+		00C9A1DA1167C7B50086E7FD /* AppImplCocoaRendererGl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererGl.h; path = "../«FLINTPATH»/include/cinder/app/AppImplCocoaRendererGl.h"; sourceTree = SOURCE_ROOT; };
+		00C9A1DB1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererQuartz.h; path = "../«FLINTPATH»/include/cinder/app/AppImplCocoaRendererQuartz.h"; sourceTree = SOURCE_ROOT; };
+		00C9A1DC1167C7B50086E7FD /* CinderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CinderView.h; path = "../«FLINTPATH»/include/cinder/app/CinderView.h"; sourceTree = SOURCE_ROOT; };
 		06F27B2DFFEEEFEF11CA0E56 /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = /System/Library/Frameworks/ScreenSaver.framework; sourceTree = "<absolute>"; };
 		089C1672FE841209C02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -352,13 +352,12 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
-					"$(CINDER_PATH)/lib/libcinder_d.a",
+					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
 					"-lcurl",
 				);
 				PRODUCT_NAME = «PREFIX»;
 				VALID_ARCHS = "i386 x86_64";
 				WRAPPER_EXTENSION = saver;
-				ZERO_LINK = YES;
 			};
 			name = Debug;
 		};
@@ -381,6 +380,10 @@
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"\"$(CINDER_PATH)/lib/libcinder.a\"",
+					"-lcurl",
+				);
 				PRODUCT_NAME = «PREFIX»;
 				VALID_ARCHS = "i386 x86_64";
 				WRAPPER_EXTENSION = saver;
@@ -392,16 +395,16 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CINDER_PATH = ../«FLINTPATH»;
+				CINDER_PATH = "../«FLINTPATH»";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
-				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 			};
 			name = Debug;
 		};
@@ -410,15 +413,15 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
-				CINDER_PATH = ../«FLINTPATH»;
+				CINDER_PATH = "../«FLINTPATH»";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
-				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 			};
 			name = Release;
 		};
