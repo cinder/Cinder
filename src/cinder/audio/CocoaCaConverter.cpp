@@ -28,6 +28,7 @@ CocoaCaConverter::CocoaCaConverter( Loader * aLoader, LoaderFunction loaderFn, c
 	: mLoader( aLoader ), mCurrentPacketDescriptions( NULL ), mLoaderFunction( loaderFn ), mMaxPacketSize( maxPacketSize )
 {	
 	mConverterBuffer.mNumberBuffers = 0;
+	mConverterBuffer.mBuffers = NULL;
 	
 	OSStatus err = noErr;
 	err = AudioConverterNew( &sourceDescription, &targetDescription, &mConverter );
