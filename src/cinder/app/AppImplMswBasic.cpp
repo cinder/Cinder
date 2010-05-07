@@ -74,15 +74,7 @@ void AppImplMswBasic::run()
 	::ShowWindow( mWnd, SW_SHOW );
 	::SetForegroundWindow( mWnd );
 	::SetFocus( mWnd );
-	::DragAcceptFiles( mWnd, TRUE );	
 
-	if( mApp->getSettings().isMultiTouchEnabled() ) {
-		// we need to make sure this version of User32 even has MultiTouch symbols, so we'll do that with GetProcAddress
-		void *sym = ::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
-		if( sym ) {
-			::RegisterTouchWindow( mWnd, 0 );
-		}
-	}
 	// initialize our next frame time to be definitely now
 	mNextFrameTime = -1;
 	
@@ -203,6 +195,9 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 
 	mApp->getRenderer()->setup( mApp, mWnd, mDC );
 
+	::DragAcceptFiles( mWnd, TRUE );
+	enableMultiTouch();
+
 	return true;									// Success
 }
 
@@ -268,8 +263,20 @@ void AppImplMswBasic::toggleFullScreen()
 	::SetForegroundWindow( mWnd );
 	::SetFocus( mWnd );
 	::DragAcceptFiles( mWnd, TRUE );
+	enableMultiTouch();
 	
 	mApp->privateResize__( mApp->getWindowWidth(), mApp->getWindowHeight() );
+}
+
+void AppImplMswBasic::enableMultiTouch()
+{
+	if( mApp->getSettings().isMultiTouchEnabled() ) {
+		// we need to make sure this version of User32 even has MultiTouch symbols, so we'll do that with GetProcAddress
+		void *sym = ::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
+		if( sym ) {
+			::RegisterTouchWindow( mWnd, 0 );
+		}
+	}
 }
 
 void AppImplMswBasic::setWindowWidth( int aWindowWidth )

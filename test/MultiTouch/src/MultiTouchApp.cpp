@@ -58,6 +58,7 @@ class MultiTouchApp : public AppBase {
 
 	void	setup();
 	void	draw();
+	void	keyDown( KeyEvent event ) { setFullScreen( ! isFullScreen() ); }
 	
 	map<uint32_t,TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;
