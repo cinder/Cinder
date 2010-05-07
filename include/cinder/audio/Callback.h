@@ -39,25 +39,33 @@ class Callback : public Source {
 	typedef void (T::*CallbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
 	
   public: 
-	Callback( T& callbackObj, CallbackFn callbackFn, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, uint16_t aBitsPerSample = 32, uint16_t aBlockAlign = 8 )
-		: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj )
-	{
-		mIsPcm = true;
-		mSampleRate = aSampleRate;
-		mChannelCount = aChannelCount;
-		mBitsPerSample = aBitsPerSample;
-		mBlockAlign = aBlockAlign;
-		mIsInterleaved = true;
-		mDataType = FLOAT32;
-		mIsBigEndian = false;
-	}
-    
 	virtual ~Callback() {}
 	
 	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback<T>::createRef( this, target ); }
 	double getDuration() const { return 100.0; } //TODO: support for endless sources
 	
   private:
+	Callback( T& callbackObj, CallbackFn callbackFn, uint32_t aSampleRate, uint16_t aChannelCount, DataType aDataType )
+		: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj )
+	{
+		mIsPcm = true;
+		mSampleRate = aSampleRate;
+		mChannelCount = aChannelCount;
+		mIsInterleaved = true;
+		mDataType = aDataType;
+		mIsBigEndian = false;
+		
+		if( mDataType == UINT8 || mDataType == INT8 ) {
+			mBitsPerSample = 8;
+		} else if( mDataType == INT16 ) {
+			mBitsPerSample = 16;
+		} else if( mDataType == UINT32 || mDataType == INT32 || mDataType == FLOAT32 ) {
+			mBitsPerSample = 32;
+		} else {
+			//TODO: thow unsupported datatype
+		}
+		mBlockAlign = ( mBitsPerSample / 8 ) * mChannelCount;
+	}
   
 	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { ( mCallbackObj.*mCallbackFn )( inSampleOffset, ioSampleCount, ioBuffer ); }
 	
@@ -65,13 +73,14 @@ class Callback : public Source {
 	CallbackFn mCallbackFn;
 	
 	friend class LoaderSourceCallback<T>;
-	//friend shared_ptr<Callback<T> > createCallback( void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), T& callbackObj );
+	template <typename T2>
+	friend shared_ptr<Callback<T2> > createCallback( T2& callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), uint32_t aSampleRate, uint16_t aChannelCount, Io::DataType aDataType );
 };
 
 template<typename T>
-shared_ptr<Callback<T> > createCallback( T& callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) )
+shared_ptr<Callback<T> > createCallback( T& callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ), uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, Io::DataType aDataType = Io::FLOAT32 )
 {
-	return shared_ptr<Callback<T> >( new Callback<T>( callbackObj, callbackFn ) );
+	return shared_ptr<Callback<T> >( new Callback<T>( callbackObj, callbackFn, aSampleRate, aChannelCount, aDataType ) );
 }
 
 template<typename T>
