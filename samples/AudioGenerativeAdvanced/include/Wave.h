@@ -6,10 +6,10 @@
 
 class SineWave {
  public:
-	SineWave( uint32_t freq, uint32_t duration );
-	~SineWave() { std::cout << "Destructed!" << std::endl; }
+	SineWave( uint32_t freq, float duration );
+	~SineWave() {}
 	void getData( uint64_t inSampleOffset, uint32_t inSampleCount, ci::audio::Buffer *ioBuffer );
  private:
 	uint32_t mFreq;
-	uint32_t mDuration;
+	float mDuration;
 };

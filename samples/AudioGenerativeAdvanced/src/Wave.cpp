@@ -2,14 +2,14 @@
 #include "cinder/CinderMath.h"
 
 
-SineWave::SineWave( uint32_t freq, uint32_t duration ) 
+SineWave::SineWave( uint32_t freq, float duration ) 
 	: mFreq( freq ), mDuration( duration )
 {
 }
 
 void SineWave::getData( uint64_t inSampleOffset, uint32_t inSampleCount, ci::audio::Buffer *ioBuffer )
 {
-	if( ( inSampleOffset / 44100.0f )  > mDuration ) {
+	if( ( inSampleOffset / 44100.0f ) > mDuration ) {
 		ioBuffer->mDataByteSize = 0;
 		return;
 	}

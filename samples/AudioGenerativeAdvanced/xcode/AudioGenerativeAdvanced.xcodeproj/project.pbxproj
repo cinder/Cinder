@@ -125,8 +125,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				C7DC2BAD1194692F004016F0 /* Wave.h */,
 				32CA4F630368D1EE00C91783 /* AudioGenerativeAdvanced_Prefix.pch */,
+				C7DC2BAD1194692F004016F0 /* Wave.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";

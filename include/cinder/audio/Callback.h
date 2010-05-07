@@ -39,28 +39,29 @@ class Callback : public Source {
  public: 
 	typedef void (T::*CallbackFunction)( uint64_t inSampleOffset, uint32_t inSampleCount, Buffer *ioBuffer );
 	
-	virtual ~Callback() {}
+	virtual ~Callback();
 	
 	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback<T>::createRef( this, target ); }
 	double getDuration() const { return 100.0; } //TODO: support for endless sources
 	
  private:
-	Callback( T& callbackObj, CallbackFunction callbackFn, uint32_t aSampleRate, uint16_t aChannelCount, DataType aDataType );
+	Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount, DataType aDataType );
   
-	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { ( mCallbackObj.*mCallbackFn )( inSampleOffset, ioSampleCount, ioBuffer ); }
+	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { ( mCallbackObj->*mCallbackFn )( inSampleOffset, ioSampleCount, ioBuffer ); }
 	
-	T& mCallbackObj;
+	T* mCallbackObj;
 	CallbackFunction mCallbackFn;
+	bool mOwnsCallbackObj;
 	
 	friend class LoaderSourceCallback<T>;
 	template <typename T2>
-	friend shared_ptr<Callback<T2> > createCallback( T2& callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, Buffer *ioBuffer ), uint32_t aSampleRate, uint16_t aChannelCount, Io::DataType aDataType );
+	friend shared_ptr<Callback<T2> > createCallback( T2* callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, Buffer *ioBuffer ), bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount, Io::DataType aDataType );
 };
 
 template<typename T>
-	shared_ptr<Callback<T> > createCallback( T& callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, Buffer *ioBuffer ), uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, Io::DataType aDataType = Io::FLOAT32 )
+	shared_ptr<Callback<T> > createCallback( T* callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, Buffer *ioBuffer ), bool ownCallbackObj = false, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, Io::DataType aDataType = Io::FLOAT32 )
 {
-	return shared_ptr<Callback<T> >( new Callback<T>( callbackObj, callbackFn, aSampleRate, aChannelCount, aDataType ) );
+	return shared_ptr<Callback<T> >( new Callback<T>( callbackObj, callbackFn, ownCallbackObj, aSampleRate, aChannelCount, aDataType ) );
 }
 
 template<typename T>
@@ -88,8 +89,8 @@ class LoaderSourceCallback : public Loader {
 };
 
 template<typename T>
-Callback<T>::Callback( T& callbackObj, CallbackFunction callbackFn, uint32_t aSampleRate, uint16_t aChannelCount, DataType aDataType )
-	: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj )
+Callback<T>::Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount, DataType aDataType )
+	: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj ), mOwnsCallbackObj( ownCallbackObj )
 {
 	mIsPcm = true;
 	mSampleRate = aSampleRate;
@@ -108,6 +109,14 @@ Callback<T>::Callback( T& callbackObj, CallbackFunction callbackFn, uint32_t aSa
 		//TODO: thow unsupported datatype
 	}
 	mBlockAlign = ( mBitsPerSample / 8 ) * mChannelCount;
+}
+
+template<typename T>
+Callback<T>::~Callback()
+{
+	if( mOwnsCallbackObj ) {
+		delete mCallbackObj;
+	}
 }
 	
 template<typename T>
