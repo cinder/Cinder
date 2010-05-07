@@ -272,9 +272,10 @@ void AppImplMswBasic::enableMultiTouch()
 {
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		// we need to make sure this version of User32 even has MultiTouch symbols, so we'll do that with GetProcAddress
-		void *sym = ::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
-		if( sym ) {
-			::RegisterTouchWindow( mWnd, 0 );
+		BOOL (WINAPI *RegisterTouchWindow)( HWND, ULONG);
+		*(DWORD *)&RegisterTouchWindow = (DWORD)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
+		if( RegisterTouchWindow ) {
+			(*RegisterTouchWindow)( mWnd, 0 );
 		}
 	}
 }
@@ -318,13 +319,21 @@ void AppImplMswBasic::getScreenSize( int clientWidth, int clientHeight, int *res
 
 void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 {
+	// pull these symbols dynamically out of the user32.dll
+	static BOOL (WINAPI *GetTouchInputInfo)( HTOUCHINPUT, UINT, PTOUCHINPUT, int ) = NULL;
+	if( ! GetTouchInputInfo )
+		*(size_t *)&GetTouchInputInfo = (size_t)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "GetTouchInputInfo" );
+	static BOOL (WINAPI *CloseTouchInputHandle)( HTOUCHINPUT ) = NULL;
+	if( ! CloseTouchInputHandle )
+		*(size_t *)&CloseTouchInputHandle = (size_t)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "CloseTouchInputHandle" );
+
 	bool handled = false;
 	double currentTime = getApp()->getElapsedSeconds(); // we don't trust the device's sense of time
 	unsigned int numInputs = LOWORD( wParam );
 	shared_ptr<TOUCHINPUT> pInputs = shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
 	if( pInputs ) {
 		vector<TouchEvent::Touch> beganTouches, movedTouches, endTouches;
-		if( ::GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, pInputs.get(), sizeof(TOUCHINPUT) ) ) {
+		if( GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, pInputs.get(), sizeof(TOUCHINPUT) ) ) {
 			for( unsigned int i = 0; i < numInputs; i++ ) {
 				const TOUCHINPUT &ti = pInputs.get()[i];
 				if( ti.dwID != 0 ) {
@@ -356,7 +365,7 @@ void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 				getApp()->privateTouchesEnded__( endTouches );
 			
             handled = ( ! beganTouches.empty() ) || ( ! movedTouches.empty() ) || ( ! endTouches.empty() );
-            ::CloseTouchInputHandle( (HTOUCHINPUT)lParam ); // this is exception-unsafe; we need some RAII goin' on there
+            CloseTouchInputHandle( (HTOUCHINPUT)lParam ); // this is exception-unsafe; we need some RAII goin' on there
         }
         else {
 			// for now we'll just ignore an error
