@@ -15,13 +15,13 @@ class AudioGenerativeAdvancedApp : public AppBasic {
 
 void AudioGenerativeAdvancedApp::setup()
 {
-	SineWave * sw = new SineWave( 550, 2 );
-	audio::Output::play( audio::createCallback( *sw, &SineWave::getData ) );
+
 }
 
 void AudioGenerativeAdvancedApp::mouseDown( MouseEvent event )
 {
-	
+	SineWave * sw = new SineWave( 550, 2 );
+	audio::Output::play( audio::createCallback( *sw, &SineWave::getData ) );
 }
 
 void AudioGenerativeAdvancedApp::draw()
