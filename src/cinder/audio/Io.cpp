@@ -61,6 +61,7 @@ void Io::loadFromCaAudioStreamBasicDescription( Io * anIo, const AudioStreamBasi
 	anIo->mIsInterleaved = false;
 	anIo->mBlockAlign = 0;
 	if( anIo->mNativeFormatId == kAudioFormatLinearPCM ) {
+		anIo->mIsPcm = true;
 		anIo->mBlockAlign = anIo->mBytesPerFrame;
 		anIo->mIsBigEndian = nativeFormatDescription->mFormatFlags & kAudioFormatFlagIsBigEndian;
 		anIo->mIsInterleaved = ! ( nativeFormatDescription->mFormatFlags & kAudioFormatFlagIsNonInterleaved );

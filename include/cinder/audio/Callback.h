@@ -106,7 +106,10 @@ Callback<T>::Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCall
 	} else if( mDataType == UINT32 || mDataType == INT32 || mDataType == FLOAT32 ) {
 		mBitsPerSample = 32;
 	} else {
-		//TODO: thow unsupported datatype
+		if( mOwnsCallbackObj ) {
+			delete callbackObj;
+		}
+		throw IoExceptionUnsupportedDataType();
 	}
 	mBlockAlign = ( mBitsPerSample / 8 ) * mChannelCount;
 }
@@ -138,7 +141,7 @@ LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *targ
 	AudioStreamBasicDescription targetDescription;
 	
 	if( ! target->isPcm() ) {
-		//throw!
+		throw IoExceptionUnsupportedDataFormat();
 	}
 	
 	targetDescription.mFormatID = kAudioFormatLinearPCM; //target->mNativeFormatId;
