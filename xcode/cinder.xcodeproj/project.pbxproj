@@ -816,7 +816,6 @@
 		C70E1A01106AA39D00E63577 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
 		C798B6931191E24A0033D504 /* CocoaCaConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaCaConverter.h; sourceTree = "<group>"; };
 		C798B6961191E2640033D504 /* CocoaCaConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CocoaCaConverter.cpp; sourceTree = "<group>"; };
-		C7A76E991176449F00A46655 /* Callback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Callback.cpp; sourceTree = "<group>"; };
 		C7A76E9A1176449F00A46655 /* Io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Io.cpp; sourceTree = "<group>"; };
 		C7A76E9B1176449F00A46655 /* Output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Output.cpp; sourceTree = "<group>"; };
 		C7A76E9C1176449F00A46655 /* SourceFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SourceFile.cpp; sourceTree = "<group>"; };
@@ -1365,7 +1364,6 @@
 		C7BA40600FA8BF0F00AADC07 /* audio */ = {
 			isa = PBXGroup;
 			children = (
-				C7A76E991176449F00A46655 /* Callback.cpp */,
 				C7A76E9A1176449F00A46655 /* Io.cpp */,
 				C7A76E9B1176449F00A46655 /* Output.cpp */,
 				C7A76E9C1176449F00A46655 /* SourceFile.cpp */,
