@@ -163,7 +163,7 @@ void LoaderSourceCallback<T>::loadData( uint32_t *ioSampleCount, BufferList *ioD
 	mConverter->loadData( ioSampleCount, ioData );
 	mSampleOffset += *ioSampleCount;
 #elif defined( CINDER_MSW )
-	mSource->getData( mSampleOffset, ioSampleCount, &ioData->mBuffers[0] );
+	mSource->getData( mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
 	mSampleOffset += *ioSampleCount;
 #endif
 }	
