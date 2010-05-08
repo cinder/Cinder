@@ -19,7 +19,6 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		C7DC2BAB119468C9004016F0 /* Wave.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7DC2BAA119468C9004016F0 /* Wave.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,8 +40,6 @@
 		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* AudioGenerativeAdvanced.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioGenerativeAdvanced.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C7DC2BAA119468C9004016F0 /* Wave.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Wave.cpp; path = ../src/Wave.cpp; sourceTree = SOURCE_ROOT; };
-		C7DC2BAD1194692F004016F0 /* Wave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Wave.h; path = ../include/Wave.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +67,6 @@
 			isa = PBXGroup;
 			children = (
 				00BAE6590E7ED9C10018A608 /* AudioGenerativeAdvancedApp.cpp */,
-				C7DC2BAA119468C9004016F0 /* Wave.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -126,7 +122,6 @@
 			isa = PBXGroup;
 			children = (
 				32CA4F630368D1EE00C91783 /* AudioGenerativeAdvanced_Prefix.pch */,
-				C7DC2BAD1194692F004016F0 /* Wave.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -204,7 +199,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				00BAE65A0E7ED9C10018A608 /* AudioGenerativeAdvancedApp.cpp in Sources */,
-				C7DC2BAB119468C9004016F0 /* Wave.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
