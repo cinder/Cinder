@@ -31,7 +31,7 @@ struct TouchPoint {
 	void draw() const
 	{
 		if( mTimeOfDeath > 0 ) // are we dying? then fade out
-			gl::color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0 ) );
+			gl::color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0f ) );
 		else
 			gl::color( mColor );
 
