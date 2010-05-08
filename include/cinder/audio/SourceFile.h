@@ -74,9 +74,8 @@ class SourceFile : public Source {
 	
 	uint64_t packetAtSample( uint64_t aSample ) const;
 	uint64_t sampleAtPacket( uint64_t aPacket ) const;
-		
 	
-	AudioFileID	mFileRef;
+	shared_ptr<OpaqueAudioFileID>	mFileRef;
 	
 	uint64_t	mPacketCount;
 	uint64_t	mByteCount;
