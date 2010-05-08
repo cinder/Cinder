@@ -55,6 +55,8 @@ class AppCocoaTouch : public App {
 	virtual void		touchesMoved( TouchEvent event ) {}
 	//! Override to respond to the end of a multitouch sequence
 	virtual void		touchesEnded( TouchEvent event ) {}
+	//! Returns a std::vector of all active touches
+	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
 	virtual int		getWindowWidth() const;
@@ -105,6 +107,7 @@ class AppCocoaTouch : public App {
 	void		privateTouchesBegan__( const TouchEvent &event );
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
+	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
 	//! \endcond
 
   private:
@@ -115,6 +118,7 @@ class AppCocoaTouch : public App {
 	
 	static AppCocoaTouch	*sInstance;	
 	Settings				mSettings;
+	std::vector<TouchEvent::Touch>	mActiveTouches;
 };
 
 } } // namespace cinder::app

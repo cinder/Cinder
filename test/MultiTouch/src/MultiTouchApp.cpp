@@ -121,7 +121,7 @@ void MultiTouchApp::draw()
 	
 	// draw yellow circles at the active touch points
 	gl::color( Color( 1, 1, 0 ) );
-	for( vector<TouchEvent::Touch>::const_iterator &touchIt = getActiveTouches().begin(); touchIt != getActiveTouches().end(); ++touchIt )
+	for( vector<TouchEvent::Touch>::const_iterator touchIt = getActiveTouches().begin(); touchIt != getActiveTouches().end(); ++touchIt )
 		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 

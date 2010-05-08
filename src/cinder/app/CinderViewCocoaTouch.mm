@@ -155,7 +155,7 @@ static Boolean sIsEaglLayer;
 {
 	std::map<UITouch*,uint32_t>::iterator found( mTouchIdMap.find( touch ) );
 	if( found == mTouchIdMap.end() )
-		std::cout << "Couldn' find touch in map?" << std::endl;
+		;//std::cout << "Couldn' find touch in map?" << std::endl;
 	else
 		mTouchIdMap.erase( found );
 }
@@ -164,11 +164,21 @@ static Boolean sIsEaglLayer;
 {
 	std::map<UITouch*,uint32_t>::const_iterator found( mTouchIdMap.find( touch ) );
 	if( found == mTouchIdMap.end() ) {
-		std::cout << "Couldn' find touch in map?" << std::endl;
+		;//std::cout << "Couldn' find touch in map?" << std::endl;
 		return 0;
 	}
 	else
 		return found->second;
+}
+
+- (void)updateActiveTouches
+{
+	std::vector<ci::app::TouchEvent::Touch> activeTouches;
+	for( std::map<UITouch*,uint32_t>::const_iterator touchIt = mTouchIdMap.begin(); touchIt != mTouchIdMap.end(); ++touchIt ) {
+		CGPoint pt = [touchIt->first locationInView:self];
+		activeTouches.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), touchIt->second, [touchIt->first timestamp], touchIt->first ) );
+	}
+	mApp->privateSetActiveTouches__( activeTouches );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,6 +191,7 @@ static Boolean sIsEaglLayer;
 			CGPoint pt = [touch locationInView:self];
 			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), [self addTouchToMap:touch], [touch timestamp], touch ) );
 		}
+		[self updateActiveTouches];
 		if( ! touchList.empty() )
 			mApp->privateTouchesBegan__( ci::app::TouchEvent( touchList ) );
 	}
@@ -196,13 +207,13 @@ static Boolean sIsEaglLayer;
 
 - (void) touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
 {
-std::cout << "Touches moved: " << (int)[touches count] << std::endl;
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
 		}
+		[self updateActiveTouches];
 		if( ! touchList.empty() )
 			mApp->privateTouchesMoved__( ci::app::TouchEvent( touchList ) );
 	}
@@ -225,6 +236,7 @@ std::cout << "Touches moved: " << (int)[touches count] << std::endl;
 			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
 			[self removeTouchFromMap:touch];
 		}
+		[self updateActiveTouches];
 		if( ! touchList.empty() )
 			mApp->privateTouchesEnded__( ci::app::TouchEvent( touchList ) );
 	}
