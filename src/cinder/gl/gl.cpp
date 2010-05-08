@@ -979,7 +979,6 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
 }
 
-#if ! defined( CINDER_COCOA_TOUCH )
 namespace {
 void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
 {
@@ -1018,7 +1017,6 @@ void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &co
 {
 	drawStringHelper( str, pos, color, font, 1 );
 }
-#endif // ! defined( CINDER_COCOA_TOUCH )
 
 ///////////////////////////////////////////////////////////////////////////////
 // SaveTextureBindState

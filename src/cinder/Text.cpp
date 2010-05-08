@@ -26,9 +26,11 @@
 #include "cinder/Utilities.h"
 
 
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
-	#include <ApplicationServices/ApplicationServices.h>
+	#if defined( CINDER_MAC )
+		#include <ApplicationServices/ApplicationServices.h>
+	#endif
 #elif defined( CINDER_MSW )
 	#define max(a, b) (((a) > (b)) ? (a) : (b))
 	#define min(a, b) (((a) < (b)) ? (a) : (b))
@@ -139,7 +141,7 @@ class Line {
 	void calcExtents();
 #if defined( CINDER_MAC )
 	void render( CGContextRef &cgContext, float currentY, float xBorder, float maxWidth );
-#else
+#elif defined( CINDER_MSW )
 	void render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth );
 #endif
 
@@ -415,6 +417,40 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	return result;
 }
 
+#if defined( CINDER_COCOA_TOUCH )
+Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset )
+{
+	Vec2i pixelSize;
+	{ // render "invisible" to a dummy context to determine string width
+		Surface temp( 1, 1, true, SurfaceChannelOrder::RGBA );
+		::CGContextRef cgContext = cocoa::createCgBitmapContext( temp );
+
+		::CGContextSelectFont( cgContext, font.getName().c_str(), font.getSize(), kCGEncodingMacRoman );
+		::CGContextSetTextDrawingMode( cgContext, kCGTextInvisible );
+		
+		::CGPoint startPoint = ::CGContextGetTextPosition( cgContext );
+		::CGContextShowText( cgContext, str.c_str(), str.length() );
+		::CGPoint endPoint = ::CGContextGetTextPosition( cgContext );
+		pixelSize = Vec2i( math<float>::ceil( endPoint.x - startPoint.x ), math<float>::ceil( font.getAscent() - font.getDescent() ) );
+		::CGContextRelease( cgContext );
+	}
+
+	Surface result( pixelSize.x, pixelSize.y, true, SurfaceChannelOrder::RGBA );
+	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
+	ip::fill( &result, ColorA( 0, 0, 0, 0.0 ) );
+	::CGContextSelectFont( cgContext, font.getName().c_str(), font.getSize(), kCGEncodingMacRoman );
+	::CGContextSetTextDrawingMode( cgContext, kCGTextFill );
+	::CGContextSetRGBFillColor( cgContext, color.r, color.g, color.b, color.a );
+	::CGContextSetTextPosition( cgContext, 0, -font.getDescent() + 1 );
+	::CGContextShowText( cgContext, str.c_str(), str.length() );
+	
+	if( baselineOffset )
+		*baselineOffset = 0;//font.getDescent();
+	
+	::CGContextRelease( cgContext );
+	return result;
+}
+#elif defined( CINDER_MAC) || defined( CINDER_MSW )
 Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset )
 {
 	Line line;
@@ -434,7 +470,7 @@ Surface renderString( const std::string &str, const Font &font, const ColorA &co
 
 #if defined( CINDER_MAC )
 	Surface result( pixelWidth, pixelHeight, true, SurfaceChannelOrder::RGBA );
-	CGContextRef cgContext = cocoa::createCgBitmapContext( result );
+	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
 	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
 
 	float currentY = totalHeight + 1.0f;
@@ -477,5 +513,6 @@ Surface renderString( const std::string &str, const Font &font, const ColorA &co
 
 	return result;
 }
+#endif
 
 } // namespace cinder
