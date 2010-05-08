@@ -118,6 +118,11 @@ void MultiTouchApp::draw()
 		else
 			++dyingIt;
 	}
+	
+	// draw yellow circles at the active touch points
+	gl::color( Color( 1, 1, 0 ) );
+	for( vector<TouchEvent::Touch>::const_iterator &touchIt = getActiveTouches().begin(); touchIt != getActiveTouches().end(); ++touchIt )
+		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 
 // This line tells Cinder to actually create the application

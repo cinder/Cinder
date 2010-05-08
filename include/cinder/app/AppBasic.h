@@ -84,6 +84,8 @@ class AppBasic : public App {
 	virtual void		touchesMoved( TouchEvent event ) {}
 	//! Override to respond to the end of a multitouch sequence
 	virtual void		touchesEnded( TouchEvent event ) {}
+	//! Returns a std::vector of all active touches
+	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
 #endif
 
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
@@ -131,6 +133,7 @@ class AppBasic : public App {
 	void		privateTouchesBegan__( const TouchEvent &event );
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
+	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
 
 	virtual bool		getsWindowsPaintEvents() { return true; }
 #endif
@@ -161,6 +164,8 @@ class AppBasic : public App {
 #elif defined( CINDER_MSW )
 	class AppImplMswBasic	*mImpl;
 	friend class AppImplMswBasic;
+	std::vector<TouchEvent::Touch>		mActiveTouches; // list of currently active touches
+	
 #endif
 
 	Settings		mSettings;

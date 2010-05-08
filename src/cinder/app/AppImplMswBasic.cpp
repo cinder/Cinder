@@ -332,7 +332,7 @@ void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 	unsigned int numInputs = LOWORD( wParam );
 	shared_ptr<TOUCHINPUT> pInputs = shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
 	if( pInputs ) {
-		vector<TouchEvent::Touch> beganTouches, movedTouches, endTouches;
+		vector<TouchEvent::Touch> beganTouches, movedTouches, endTouches, activeTouches;
 		if( GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, pInputs.get(), sizeof(TOUCHINPUT) ) ) {
 			for( unsigned int i = 0; i < numInputs; i++ ) {
 				const TOUCHINPUT &ti = pInputs.get()[i];
@@ -349,12 +349,16 @@ void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 					}
 					else if( ti.dwFlags & 0x0002/*TOUCHEVENTF_DOWN*/ ) {
 						beganTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						activeTouches.push_back( beganTouches.back() );
 					}
 					else if( ti.dwFlags & 0x0001/*TOUCHEVENTF_MOVE*/ ) {
 						movedTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						activeTouches.push_back( movedTouches.back() );
 					}
 				}
             }
+            
+            getApp()->privateSetActiveTouches__( activeTouches );
             
             // we need to post the event here so that our pInputs array is still valid since we've passed addresses into it as the native pointers
             if( ! beganTouches.empty() )
