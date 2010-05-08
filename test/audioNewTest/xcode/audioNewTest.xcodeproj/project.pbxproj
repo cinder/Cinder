@@ -19,7 +19,6 @@
 		C79B4F471155353200F17270 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C79B4F461155353200F17270 /* QuickTime.framework */; };
 		C79B52ED115823F200F17270 /* guitar.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C79B52EC115823F200F17270 /* guitar.mp3 */; };
 		C79B5477115C0BEC00F17270 /* drums.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C79B5476115C0BEC00F17270 /* drums.mp3 */; };
-		C79B5485115C0E2F00F17270 /* booyah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C79B5484115C0E2F00F17270 /* booyah.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -195,7 +194,6 @@
 			files = (
 				C79B52ED115823F200F17270 /* guitar.mp3 in Resources */,
 				C79B5477115C0BEC00F17270 /* drums.mp3 in Resources */,
-				C79B5485115C0E2F00F17270 /* booyah.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
