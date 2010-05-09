@@ -23,7 +23,6 @@
 
 /* Begin PBXFileReference section */
 		005372FD118FD835004D686E /* MultiTouch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiTouch.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		005372FF118FD835004D686E /* MultiTouch-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MultiTouch-Info copy.plist"; sourceTree = "<group>"; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDFDF11384CC60091E310 /* MultiTouchApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MultiTouchApp.cpp; path = ../src/MultiTouchApp.cpp; sourceTree = "<group>"; };
 		00CFE01411385E9D0091E310 /* TestApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestApp.h; path = include/TestApp.h; sourceTree = "<group>"; };
@@ -114,7 +113,6 @@
 			isa = PBXGroup;
 			children = (
 				8D1107310486CEB800E47090 /* MultiTouch-Info.plist */,
-				005372FF118FD835004D686E /* MultiTouch-Info copy.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -236,7 +234,7 @@
 				GCC_PREFIX_HEADER = MultiTouch_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
-				INFOPLIST_FILE = "MultiTouch-Info copy.plist";
+				INFOPLIST_FILE = "MultiTouch-Info.plist";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"";
 				PRODUCT_NAME = MultiTouch;
@@ -256,7 +254,7 @@
 				GCC_PREFIX_HEADER = MultiTouch_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
-				INFOPLIST_FILE = "MultiTouch-Info copy.plist";
+				INFOPLIST_FILE = "MultiTouch-Info.plist";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"";
 				PRODUCT_NAME = MultiTouch;
