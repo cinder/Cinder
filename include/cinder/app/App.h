@@ -193,6 +193,13 @@ class App {
 	virtual float		getFrameRate() const = 0;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
 	virtual void		setFrameRate( float aFrameRate ) = 0;
+	//! Returns the average frame-rate attained by the App as measured in frames-per-second
+	float				getAverageFps() const { return mAverageFps; }
+	//! Returns the sampling rate in seconds for measuring the average frame-per-second as returned by getAverageFps()
+	double				getFpsSampleInterval() const { return mFpsSampleInterval; }
+	//! Sets the sampling rate in seconds for measuring the average frame-per-second as returned by getAverageFps()
+	void				setFpsSampleInterval( double sampleInterval ) { mFpsSampleInterval = sampleInterval; }	
+
 	//! Returns whether the App is in full-screen mode or not.
 	virtual bool		isFullScreen() const = 0;
 	//! Sets whether the active App is in full-screen mode based on \a fullScreen
@@ -286,6 +293,10 @@ class App {
 
 	Timer					mTimer;
 	uint32_t				mFrameCount;
+	float					mAverageFps;
+	uint32_t				mFpsLastSampleFrame;
+	double					mFpsLastSampleTime;
+	double					mFpsSampleInterval;
 
 	shared_ptr<Renderer>	mRenderer;
 	std::vector<Listener*>	mListeners;

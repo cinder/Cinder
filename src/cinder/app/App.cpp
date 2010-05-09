@@ -49,7 +49,7 @@ namespace cinder { namespace app {
 App*	App::sInstance;
 
 App::App()
-	: mFrameCount( 0 ), mTimer( true )
+	: mFrameCount( 0 ), mFpsSampleInterval( 1 ), mTimer( true )
 {
 }
 
@@ -155,6 +155,16 @@ void App::privateUpdate__()
 {
 	update();
 	mFrameCount++;
+
+	double now = mTimer.getSeconds();
+	if( now > mFpsLastSampleTime + mFpsSampleInterval ) {
+		//calculate average Fps over sample interval
+		uint32_t framesPassed = mFrameCount - mFpsLastSampleFrame;
+		mAverageFps = framesPassed / (now - mFpsLastSampleTime);
+
+		mFpsLastSampleTime = now;
+		mFpsLastSampleFrame = mFrameCount;
+	}
 }
 
 void App::privateDraw__()
