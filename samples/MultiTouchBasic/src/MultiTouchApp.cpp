@@ -76,7 +76,6 @@ void MultiTouchApp::prepareSettings( Settings *settings )
 
 void MultiTouchApp::touchesBegan( TouchEvent event )
 {
-	console() << "Touches began:" << std::endl << event << std::endl;
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt ) {
 		Color newColor( CM_HSV, Rand::randFloat(), 1, 1 );
 		mActivePoints.insert( make_pair( touchIt->getId(), TouchPoint( touchIt->getPos(), newColor ) ) );
@@ -85,21 +84,18 @@ void MultiTouchApp::touchesBegan( TouchEvent event )
 
 void MultiTouchApp::touchesMoved( TouchEvent event )
 {
-	console() << "Touches moved:" << std::endl << event << std::endl;
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt )
 		mActivePoints[touchIt->getId()].addPoint( touchIt->getPos() );
 }
 
 void MultiTouchApp::touchesEnded( TouchEvent event )
 {
-	console() << "Touches ended:" << std::endl << event << std::endl;
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt ) {
 		mActivePoints[touchIt->getId()].startDying();
 		mDyingPoints.push_back( mActivePoints[touchIt->getId()] );
 		mActivePoints.erase( touchIt->getId() );
 	}
 }
-
 
 void MultiTouchApp::draw()
 {
@@ -125,7 +121,6 @@ void MultiTouchApp::draw()
 		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 
-// This line tells Cinder to actually create the application
 #if defined( CINDER_COCOA_TOUCH )
 CINDER_APP_COCOA_TOUCH( MultiTouchApp, RendererGl )
 #else
