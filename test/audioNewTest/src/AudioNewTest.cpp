@@ -57,7 +57,7 @@ void AudioNewTestApp::setup()
 	//mTrack1 = audio::Output::addTrack( audio::load( loadResource( "booyah.mp3", RES_BOOYAH_MP3, "MP3" ) ) );
 	//mTrack1->setLooping( true );
 	//mSineCallback = audio::Callback( &sineWave );
-	audio::Output::addTrack( audio::Callback( &sineWave ) );
+	//audio::Output::addTrack( audio::Callback( &sineWave ) );
 	
 	
 }

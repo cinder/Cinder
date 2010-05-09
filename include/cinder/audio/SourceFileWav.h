@@ -60,10 +60,15 @@ class SourceFileWav : public Source {
 	static void		registerSelf();
  private:
 	SourceFileWav( DataSourceRef dataSourceRef );
+	void readFormatChunk();
 	
+	IStreamRef		mStream;
 	uint32_t		mDataLength;
 	uint32_t		mDataStart;
 	uint64_t		mSampleCount;
+
+	uint16_t		mAudioFormat;
+	uint32_t		mByteRate;
 
 	friend LoaderSourceFileWav;
 };

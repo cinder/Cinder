@@ -20,9 +20,46 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 #include "cinder/audio/SourceFileWav.h"
-#include <cstring>
 
 namespace cinder { namespace audio {
+
+#if defined(CINDER_LITTLE_ENDIAN)
+	const uint32_t gRiffMarker = 'FFIR';
+	const uint32_t gRifxMarker = 'XFIR';
+	const uint32_t gWaveMarker = 'EVAW';
+	const uint32_t gDataMarker = 'atad';
+	const uint32_t gFmtMarker = ' tmf';
+#else
+	const uint32_t gRiffMarker = 'RIFF';
+	const uint32_t gRifxMarker = 'RIFX';
+	const uint32_t gWaveMarker = 'WAVE';
+	const uint32_t gDataMarker = 'data';
+	const uint32_t gFmtMarker = 'fmt ';
+#endif
+
+enum {
+	WAV_FORMAT_UNKOWN = 0x000,
+	WAV_FORMAT_PCM = 0x0001,		// PCM Format
+	WAV_FORMAT_MS_ADPCM = 0x0002,	// Microsoft ADPCM
+	WAV_FORMAT_IEEE_FLOAT = 0x0003,// Microsoft 32 bit float format
+	WAV_FORMAT_ALAW = 0x0006,
+	WAV_FORMAT_MULAW = 0x0007,
+	WAV_FORMAT_DIALOGIC_OKI_ADPCM = 0x0011, // IMA ADPCM
+	WAV_FORMAT_YAMAHA_ADPCM = 0x0016, // Yamaha ADPCM
+	WAV_FORMAT_GSM610 = 0x0031,
+	WAV_FORMAT_G721_ADPCM = 0x0040, // 
+	WAV_FORMAT_MPEG = 0x0050
+};	
+
+template<typename T>
+void readStreamWithEndianess( IStreamRef aIStream, T* param, bool isBigEndian )
+{
+	if( isBigEndian ) {
+		aIStream->readBig( param );
+		return;
+	}
+	aIStream->readLittle( param );
+}
 
 LoaderSourceFileWavRef LoaderSourceFileWav::createRef( SourceFileWav *source, Target *target ) {
 	return LoaderSourceFileWavRef( new LoaderSourceFileWav( source, target ) );
@@ -55,12 +92,12 @@ void LoaderSourceFileWav::loadData( uint32_t *ioSampleCount, BufferList *ioData 
 
 void SourceFileWav::registerSelf()
 {
-	static const int32_t SOURCE_PRIORITY = 2;
+	static const int32_t SOURCE_PRIORITY = 3;
 	
 	IoRegistrar::SourceCreationFunc sourceFunc = SourceFileWav::createRef;
 	
-	//TODO: find a way to enumerate Windows Media supported file formats
-	IoRegistrar::registerSourceType( "wav", sourceFunc, SOURCE_PRIORITY );
+	IoRegistrar::registerSourceType( "wav", sourceFunc, 1 );
+	IoRegistrar::registerSourceGeneric( sourceFunc, SOURCE_PRIORITY );
 }
 
 SourceFileWavRef	SourceFileWav::createFileWavRef( DataSourceRef dataSourceRef )
@@ -77,53 +114,67 @@ SourceFileWav::SourceFileWav( DataSourceRef dataSourceRef )
 	mBitsPerSample = 0;
 	mBlockAlign = 0;
 	mIsPcm = FALSE;
-	mIsBigEndian = TRUE;
+	mIsBigEndian = FALSE;
 	mIsInterleaved = FALSE;
 	/*if( dataSourceRef->isFilePath() ) {
-		//TODO: implement
+		//TODO
 	} else if ( dataSourceRef->isFilePath() ) {
-		//TODO: implement WindowsMedia network functionallity
+		//TODO
 	}else { //have to use buffer
-		//TODO: move current implementation into this
+		//TODO
 	}*/
-	IStreamRef stream = dataSourceRef->getStream();
+	mStream = dataSourceRef->getStream();
 
 	uint32_t fileSize = 0;
 	
-	char chunkName[5] = { 0 };
+	uint32_t chunkName = 0;
 	uint32_t chunkSize = 0;
 	
-	char riffType[5] = { 0 };
+	uint32_t riffType = 0;
 	
-	stream->readData( chunkName, 4 );
-	stream->readLittle( &fileSize );
+	mStream->readData( &chunkName, 4 );
+	if( chunkName == gRiffMarker ) {
+		mIsBigEndian = false;
+	} else if( chunkName == gRifxMarker ) {
+		mIsBigEndian = true;
+	} else {
+		throw IoExceptionFailedLoad();
+	}
+	
+	readStreamWithEndianess( mStream, &fileSize, mIsBigEndian );
 	fileSize = fileSize + 4 + sizeof( int );
 	
-	stream->readData( riffType, 4 );
-	if( strcmp( "RIFF", chunkName ) != 0 || strcmp( "WAVE", riffType ) != 0  ) {
-		//TODO: Throw Invalid Audio File exception
+	mStream->readData( &riffType, 4 );
+	if( riffType != gWaveMarker ) {
+		throw IoExceptionFailedLoad();
 	}
 	
 	
 	uint32_t chunkEnd = 0;
+	uint32_t chunks = 0;
+	static const uint8_t hasFormat = 1;
+	static const uint8_t hasData = 1 << 1;
 	
-	while( stream->tell() < fileSize) {
-		stream->readData( chunkName, 4 );
-		stream->readLittle( &chunkSize );
-		chunkEnd = stream->tell() + chunkSize;
-
-		OutputDebugStringA( chunkName );
+	while( mStream->tell() < fileSize) {
+		mStream->readData( &chunkName, 4 );
+		readStreamWithEndianess( mStream, &chunkSize, mIsBigEndian );
+		chunkEnd = mStream->tell() + chunkSize;
 		
-		if( strcmp( "fmt ", chunkName ) == 0 ) {
-			//readFormatChunk();
-		} else if( strcmp( "data", chunkName ) == 0 ) {
+		if( chunkName == gFmtMarker ) {
+			readFormatChunk();
+			chunks |= hasFormat;
+		} else if( chunkName == gDataMarker ) {
 			mDataLength = chunkSize;
-			mDataStart = stream->tell();
+			mDataStart = mStream->tell();
+			chunks |= hasData;
 		}
-		
-		stream->seekAbsolute( chunkEnd );
+		mStream->seekAbsolute( chunkEnd );
 	}
 	
+	if( chunks != ( hasFormat | hasData ) ) {
+		throw IoExceptionFailedLoad();
+	}
+
 	mSampleCount = mDataLength / ( mBitsPerSample / 8 );
 	
 	//Pull all of the data
@@ -136,8 +187,32 @@ SourceFileWav::SourceFileWav( DataSourceRef dataSourceRef )
 
 SourceFileWav::~SourceFileWav()
 {
-	
 }
 
+void SourceFileWav::readFormatChunk()
+{
+	readStreamWithEndianess( mStream, &mAudioFormat, mIsBigEndian );
+	readStreamWithEndianess( mStream, &mChannelCount, mIsBigEndian );
+	readStreamWithEndianess( mStream, &mSampleRate, mIsBigEndian );
+	readStreamWithEndianess( mStream, &mByteRate, mIsBigEndian );
+	readStreamWithEndianess( mStream, &mBlockAlign, mIsBigEndian );
+	readStreamWithEndianess( mStream, &mBitsPerSample, mIsBigEndian );
+	
+	if(	mAudioFormat == WAV_FORMAT_PCM || mAudioFormat == WAV_FORMAT_IEEE_FLOAT ) {
+		mIsPcm = true;
+		mIsInterleaved = true;
+		if( mAudioFormat == WAV_FORMAT_IEEE_FLOAT && mBitsPerSample == 32 ) {
+			mDataType = FLOAT32;
+		} else {
+			if( mBitsPerSample == 32 ) {
+				mDataType = INT32;
+			} else if( mBitsPerSample == 16 ) {
+				mDataType = INT16;
+			} else if( mBitsPerSample == 8 ) {
+				mDataType = UINT8;
+			}
+		}
+	}
+}
 
 }} //namespace
