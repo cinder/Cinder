@@ -155,4 +155,19 @@ void AppCocoaTouch::quit()
 return;
 }
 
+void AppCocoaTouch::privateTouchesBegan__( const TouchEvent &event )
+{
+	touchesBegan( event );
+}
+
+void AppCocoaTouch::privateTouchesMoved__( const TouchEvent &event )
+{
+	touchesMoved( event );
+}
+
+void AppCocoaTouch::privateTouchesEnded__( const TouchEvent &event )
+{
+	touchesEnded( event );
+}	
+
 } } // namespace cinder::app

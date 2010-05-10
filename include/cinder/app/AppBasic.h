@@ -32,6 +32,8 @@
 	#else
 		class AppImplCocoaBasic;
 	#endif
+#elif defined( CINDER_MSW )
+	#include "cinder/app/TouchEvent.h"
 #endif
 
 
@@ -54,7 +56,17 @@ class AppBasic : public App {
 		/** Returns the display the window is currently on. If called from prepareSettings() returns the primary display **/
 		Display*	getDisplay() const { return mDisplay; }
 		void		setDisplay( shared_ptr<Display> aDisplay );
+		
+#if defined( CINDER_MSW )
+		//! Registers the app to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7.
+		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
+		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7.
+		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
+#endif
 	 private:
+#if defined( CINDER_MSW )
+		bool		mEnableMultiTouch;
+#endif
 		int			mFullScreenSizeX, mFullScreenSizeY;
 		Display		*mDisplay;
 	};
@@ -63,7 +75,18 @@ class AppBasic : public App {
 	AppBasic();
 	virtual ~AppBasic();
 
-	virtual void			prepareSettings( Settings *settings ) {}
+	virtual void		prepareSettings( Settings *settings ) {}
+
+#if defined( CINDER_MSW )
+	//! Override to respond to the beginning of a multitouch sequence
+	virtual void		touchesBegan( TouchEvent event ) {}
+	//! Override to respond to movement (drags) during a multitouch sequence
+	virtual void		touchesMoved( TouchEvent event ) {}
+	//! Override to respond to the end of a multitouch sequence
+	virtual void		touchesEnded( TouchEvent event ) {}
+	//! Returns a std::vector of all active touches
+	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
+#endif
 
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
 	virtual int		getWindowWidth() const;
@@ -101,11 +124,20 @@ class AppBasic : public App {
 	//! Returns the path to the application on disk
 	virtual std::string			getAppPath();
 
+	// DO NOT CALL - should be private but aren't for esoteric reasons
+	//! \cond
+	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
 #if defined( CINDER_MAC )
-	void				privateSetImpl__( AppImplCocoaBasic *aImpl );
+	void		privateSetImpl__( AppImplCocoaBasic *aImpl );	
 #elif defined( CINDER_MSW )
+	void		privateTouchesBegan__( const TouchEvent &event );
+	void		privateTouchesMoved__( const TouchEvent &event );
+	void		privateTouchesEnded__( const TouchEvent &event );
+	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
+
 	virtual bool		getsWindowsPaintEvents() { return true; }
 #endif
+	//! \endcond
 	
 	//! Returns a pointer to the current global AppBasic
 	static AppBasic*	get()	{ return sInstance; }
@@ -132,6 +164,8 @@ class AppBasic : public App {
 #elif defined( CINDER_MSW )
 	class AppImplMswBasic	*mImpl;
 	friend class AppImplMswBasic;
+	std::vector<TouchEvent::Touch>		mActiveTouches; // list of currently active touches
+	
 #endif
 
 	Settings		mSettings;
