@@ -986,7 +986,7 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 	// justification: { left = -1, center = 0, right = 1 }
 	SaveTextureBindState saveBindState( GL_TEXTURE_2D );
 	SaveTextureEnabledState saveEnabledState( GL_TEXTURE_2D );
-	SaveColorState colorState();
+	SaveColorState colorState;
 
 	static Font defaultFont( "Arial", 14 );
 	if( ! font )
