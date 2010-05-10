@@ -174,11 +174,11 @@ void triMeshApp::setup(){
 	initPhysics();
 	
 	
-	ObjLoader loader( loadResource( RES_LOSPHERE )->getStream() );
+	ObjLoader loader( loadResource( RES_LOSPHERE )->createStream() );
 	loader.load( &mConvex );
 	mVBO = gl::VboMesh( mConvex );
 	
-	ObjLoader loader2( loadResource( RES_TORUS )->getStream() );
+	ObjLoader loader2( loadResource( RES_TORUS )->createStream() );
 	loader2.load( &mConcave );
 	mVBOTerrain = gl::VboMesh( mConcave );
 

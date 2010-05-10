@@ -41,7 +41,7 @@ class ObjLoaderApp : public AppBasic {
 
 void ObjLoaderApp::setup()
 {
-	ObjLoader loader( loadResource( RES_CUBE_OBJ )->getStream() );
+	ObjLoader loader( loadResource( RES_CUBE_OBJ )->createStream() );
 	loader.load( &mMesh );
 	mVBO = gl::VboMesh( mMesh );
 	

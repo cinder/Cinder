@@ -81,7 +81,7 @@ ImageSourcePng::ImageSourcePng( DataSourceRef dataSourceRef )
 	}
 
 	mCiInfoPtr = shared_ptr<ci_png_info>( new ci_png_info );
-	mCiInfoPtr->srcStreamRef = dataSourceRef->getStream();
+	mCiInfoPtr->srcStreamRef = dataSourceRef->createStream();
 
 	png_set_read_fn( mPngPtr, reinterpret_cast<void*>( mCiInfoPtr.get() ), ci_PNG_stream_reader );
 	mInfoPtr = png_create_info_struct( mPngPtr );
