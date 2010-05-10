@@ -69,7 +69,7 @@ LoaderSourceFileWavRef LoaderSourceFileWav::createRef( SourceFileWav *source, Ta
 LoaderSourceFileWav::LoaderSourceFileWav( SourceFileWav * source, Target * target ) 
 	: Loader(), mSource( source ), mSampleOffset( 0 )
 {
-	mStream = mSource->createStream();
+	mStream = mSource->mDataSource->createStream();
 	mStream->seekAbsolute( mSource->mDataStart );
 }
 
@@ -140,7 +140,7 @@ SourceFileWav::SourceFileWav( DataSourceRef dataSourceRef )
 	mIsBigEndian = FALSE;
 	mIsInterleaved = FALSE;
 	
-	IStreamRef stream = createStream();
+	IStreamRef stream = mDataSource->createStream();
 
 	uint32_t fileSize = 0;
 	
@@ -204,17 +204,6 @@ SourceFileWav::SourceFileWav( DataSourceRef dataSourceRef )
 
 SourceFileWav::~SourceFileWav()
 {
-}
-
-IStreamRef SourceFileWav::createStream()
-{
-	if( mDataSource->isFilePath() ) {
-		return loadFileStream( mDataSource->getFilePath() );
-	} else if ( mDataSource->isUrl() ) {
-		return loadUrlStream( mDataSource->getUrl() );
-	}
-
-	return IStreamMem::createRef( mDataSource->getBuffer().getData(), mDataSource->getBuffer().getDataSize() );
 }
 
 void SourceFileWav::readFormatChunk( IStreamRef stream )
