@@ -33,6 +33,11 @@ Timer::Timer()
 {
 #if defined( CINDER_COCOA )
 	mEndTime = mStartTime = -1;
+#elif defined( CINDER_MSW )
+	::LARGE_INTEGER nativeFreq;
+	::QueryPerformanceFrequency( &nativeFreq );
+	mInvNativeFreq = 1.0 / (double)(*((__int64*)&nativeFreq));
+	mStartTime = mEndTime = -1;
 #endif
 }
 
