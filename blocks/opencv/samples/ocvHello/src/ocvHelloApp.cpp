@@ -11,6 +11,7 @@ using std::list;
 
 namespace cinder {
 
+#if 0
 class SurfaceCv {
   public:
 	SurfaceCv() { }
@@ -50,6 +51,112 @@ class SurfaceCv {
 	cv::Mat			mMat;
 	Surface			mSurface; // this is here only to register a reference count against a constructing Surface
 };
+#endif
+
+class ImageTargetCvMat : public ImageTarget {
+  public:
+	static shared_ptr<ImageTargetCvMat> createRef( cv::Mat *mat ) { return shared_ptr<ImageTargetCvMat>( new ImageTargetCvMat( mat ) ); }
+
+	virtual bool hasAlpha() const;
+	
+	virtual void*	getRowPointer( int32_t row );
+	
+  protected:
+	ImageTargetCvMat( cv::Mat *mat );
+	
+	cv::Mat		*mMat;
+};
+
+class ImageSourceCvMat : public ImageSource {
+  public:
+	ImageSourceCvMat( const cv::Mat &mat )
+		: ImageSource()
+	{
+		mWidth = mat.cols;
+		mHeight = mat.rows;
+		setColorModel( ImageIo::CM_RGB );
+		setChannelOrder( ImageIo::RGB );
+		setDataType( ImageIo::UINT8 );
+		mRowBytes = mat.step;
+		mData = reinterpret_cast<const uint8_t*>( mat.data );
+	}
+
+	void load( ImageTargetRef target ) {
+		// get a pointer to the ImageSource function appropriate for handling our data configuration
+		ImageSource::RowFunc func = setupRowFunc( target );
+		
+		const uint8_t *data = mData;
+		for( int32_t row = 0; row < mHeight; ++row ) {
+			((*this).*func)( target, row, data );
+			data += mRowBytes;
+		}
+	}
+	
+	const uint8_t		*mData;
+	int32_t				mRowBytes;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ImageTargetCvMat
+ImageTargetCvMat::ImageTargetCvMat( cv::Mat *mat )
+	: ImageTarget(), mMat( mat )
+{
+	switch( mat->depth() ) {
+		case CV_8U: setDataType( ImageIo::UINT8 ); break;
+		case CV_16U: setDataType( ImageIo::UINT16 ); break;
+		case CV_32F: setDataType( ImageIo::FLOAT32 ); break;
+		default:
+			throw ImageIoExceptionIllegalDataType();
+	}
+	
+	switch( mat->channels() ) {
+		case 1:
+			setColorModel( ImageIo::CM_GRAY );
+			setChannelOrder( ImageIo::Y );			
+		break;
+		case 3:
+			setColorModel( ImageIo::CM_RGB );
+			setChannelOrder( ImageIo::RGB );			
+		break;
+		case 4:
+			setColorModel( ImageIo::CM_RGB );
+			setChannelOrder( ImageIo::RGBA );			
+		break;
+		default:
+			throw ImageIoExceptionIllegalColorModel();
+		break;
+	}
+}
+
+bool ImageTargetCvMat::hasAlpha() const
+{
+	return mMat->channels() == 4;
+}
+
+void* ImageTargetCvMat::getRowPointer( int32_t row )
+{
+	return reinterpret_cast<void*>( reinterpret_cast<uint8_t*>(mMat->data) + row * mMat->step );
+}
+
+cv::Mat toOcv( ci::ImageSourceRef sourceRef )
+{
+	int depth = CV_8U;
+	if( sourceRef->getDataType() == ImageIo::UINT16 )
+		depth = CV_16U;
+	else if( sourceRef->getDataType() == ImageIo::FLOAT32 )
+		depth = CV_32F;
+	int channels = ImageIo::channelOrderNumChannels( sourceRef->getChannelOrder() );
+	
+	cv::Mat result( sourceRef->getWidth(), sourceRef->getHeight(), CV_MAKETYPE( depth, channels) );
+	ImageTargetRef target = ImageTargetCvMat::createRef( &result );
+	sourceRef->load( target );
+	return result;
+}
+
+ImageSourceRef fromOcv( cv::Mat &mat )
+{
+	return ImageSourceRef( new ImageSourceCvMat( mat ) );
+}
 
 } // namespace cinder
 
@@ -62,10 +169,10 @@ class ocvHelloApp : public AppBasic {
 void ocvHelloApp::setup()
 {
 	const char* imagename = "../../lena.jpg";
-	SurfaceCv img( loadImage( imagename ) );
+	cv::Mat img( toOcv( loadImage( imagename ) ) );
     
-	SurfaceCv img_yuv;
-	cv::cvtColor( img, img_yuv, CV_BGR2YCrCb); // convert image to YUV color space. The output image will be created automatically
+	cv::Mat img_yuv;
+	cv::cvtColor( img, img_yuv, CV_BGR2YCrCb ); // convert image to YUV color space. The output image will be created automatically
     
 	std::vector<cv::Mat> planes; // Vector is template vector class, similar to STL's vector. It can store matrices too.
     split(img_yuv, planes); // split the image into separate color planes
@@ -80,10 +187,10 @@ void ocvHelloApp::setup()
     
     // method 2. process the first chroma plane using pre-stored row pointer.
     // method 3. process the second chroma plane using individual element access
-    for( int y = 0; y < img_yuv.getHeight(); y++ )
+    for( int y = 0; y < img_yuv.rows; y++ )
     {
         uchar* Uptr = planes[1].ptr<uchar>(y);
-        for( int x = 0; x < img_yuv.getWidth(); x++ )
+        for( int x = 0; x < img_yuv.cols; x++ )
         {
             Uptr[x] = cv::saturate_cast<uchar>((Uptr[x]-128)/2 + 128);
             uchar& Vxy = planes[2].at<uchar>(y, x);
@@ -96,10 +203,10 @@ void ocvHelloApp::setup()
     // and produce the output RGB image
     cv::cvtColor(img_yuv, img, CV_YCrCb2BGR);
 	
-	SurfaceCv blurred;
+	cv::Mat blurred;
 	cv::GaussianBlur( img, blurred, cv::Size(111,11), 0 );
 	
-	writeImage( "../../lena_out.jpg", blurred );
+	writeImage( "../../lena_out.jpg", fromOcv( blurred ) );
 	//cv::imwrite("../../lenanew.jpg", img );
 }
 
