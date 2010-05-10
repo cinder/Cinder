@@ -418,9 +418,9 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 }
 
 #if defined( CINDER_COCOA_TOUCH )
-Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset )
+Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset )
 {
-	Vec2i pixelSize;
+	Vec2i pixelSize, pow2PixelSize;
 	{ // render "invisible" to a dummy context to determine string width
 		Surface temp( 1, 1, true, SurfaceChannelOrder::RGBA );
 		::CGContextRef cgContext = cocoa::createCgBitmapContext( temp );
@@ -435,9 +435,10 @@ Surface renderString( const std::string &str, const Font &font, const ColorA &co
 		::CGContextRelease( cgContext );
 	}
 
-	Surface result( pixelSize.x, pixelSize.y, true, SurfaceChannelOrder::RGBA );
+	pow2PixelSize = Vec2i( nextPowerOf2( pixelSize.x ), nextPowerOf2( pixelSize.y ) );
+	Surface result( pow2PixelSize.x, pow2PixelSize.y, true );
 	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
-	ip::fill( &result, ColorA( 0, 0, 0, 0.0 ) );
+	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
 	::CGContextSelectFont( cgContext, font.getName().c_str(), font.getSize(), kCGEncodingMacRoman );
 	::CGContextSetTextDrawingMode( cgContext, kCGTextFill );
 	::CGContextSetRGBFillColor( cgContext, color.r, color.g, color.b, color.a );
@@ -445,7 +446,9 @@ Surface renderString( const std::string &str, const Font &font, const ColorA &co
 	::CGContextShowText( cgContext, str.c_str(), str.length() );
 	
 	if( baselineOffset )
-		*baselineOffset = 0;//font.getDescent();
+		*baselineOffset = font.getDescent();
+	if( actualSize )
+		*actualSize = pixelSize;
 	
 	::CGContextRelease( cgContext );
 	return result;
