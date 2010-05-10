@@ -82,10 +82,11 @@ uint64_t LoaderSourceFileWav::getSampleOffset() const
 	return mSampleOffset;
 }
 
+//TODO: protect mSampleOffset with mutex
 void LoaderSourceFileWav::setSampleOffset( uint64_t anOffset )
 {
 	mSampleOffset = anOffset;
-	mStream->seekAbsolute( mSource->mDataStart + anOffset );
+	mStream->seekAbsolute( mSource->mDataStart + ( anOffset * mSource->mBlockAlign ) );
 }
 
 void LoaderSourceFileWav::loadData( uint32_t *ioSampleCount, BufferList *ioData )
