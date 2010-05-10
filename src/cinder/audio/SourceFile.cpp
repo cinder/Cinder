@@ -31,8 +31,6 @@
 
 namespace cinder { namespace audio {
 
-//TODO: abstract this to be an CaAudioConverter Loader? 
-
 LoaderSourceFileRef	LoaderSourceFile::createRef( SourceFile *source, Target *target )
 {
 	return LoaderSourceFileRef( new LoaderSourceFile( source, target ) );
@@ -55,7 +53,7 @@ LoaderSourceFile::LoaderSourceFile( SourceFile *source, Target *target )
 	AudioStreamBasicDescription targetDescription;
 	
 	if( ! target->isPcm() ) {
-		//throw!
+		throw IoExceptionUnsupportedDataFormat();
 	}
 	
 	//right now this always converts to linear PCM --that's probably ok
@@ -82,17 +80,6 @@ void LoaderSourceFile::setSampleOffset( uint64_t anOffset ) {
 void LoaderSourceFile::loadData( uint32_t *ioSampleCount, BufferList *ioData )
 {	
 	mConverter->loadData( ioSampleCount, ioData );
-	
-	/*shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
-
-	AudioStreamPacketDescription * outputPacketDescriptions = new AudioStreamPacketDescription[*ioSampleCount];
-	OSStatus err = AudioConverterFillComplexBuffer( mConverter, LoaderSourceFile::dataInputCallback, (void *)this, (UInt32 *)ioSampleCount, nativeBufferList.get(), outputPacketDescriptions );
-	delete [] outputPacketDescriptions;
-	if( err ) {
-		//throw
-	}
-	
-	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );*/
 }
 
 void LoaderSourceFile::dataInputCallback( Loader* aLoader, uint32_t *ioNumberDataPackets, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions )
@@ -100,55 +87,12 @@ void LoaderSourceFile::dataInputCallback( Loader* aLoader, uint32_t *ioNumberDat
 	LoaderSourceFile * theLoader = dynamic_cast<LoaderSourceFile *>( aLoader );
 	SourceFile * theSource = theLoader->mSource;
 	
-	OSStatus err = AudioFileReadPackets( theSource->mFileRef, false, (UInt32 *)&(ioData->mBuffers[0].mDataByteSize), packetDescriptions, theLoader->mPacketOffset, (UInt32 *)ioNumberDataPackets, ioData->mBuffers[0].mData );
+	OSStatus err = AudioFileReadPackets( theSource->mFileRef.get(), false, (UInt32 *)&(ioData->mBuffers[0].mDataByteSize), packetDescriptions, theLoader->mPacketOffset, (UInt32 *)ioNumberDataPackets, ioData->mBuffers[0].mData );
 	if( err ) {
 		//throw ??
 	}
 	theLoader->mPacketOffset += *ioNumberDataPackets;
 }
-
-/*OSStatus LoaderSourceFile::dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader )
-{
-	OSStatus err = noErr;
-	
-	LoaderSourceFile * theLoader = (LoaderSourceFile *)audioLoader;
-	SourceFile * theSource = theLoader->mSource;
-	
-	theLoader->cleanupConverterBuffer();
-	
-	theLoader->mConverterBuffer.mNumberBuffers = ioData->mNumberBuffers;
-	theLoader->mConverterBuffer.mBuffers = new Buffer[theLoader->mConverterBuffer.mNumberBuffers];
-	for( int i = 0; i < theLoader->mConverterBuffer.mNumberBuffers; i++ ) {
-		theLoader->mConverterBuffer.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
-		theLoader->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theSource->mMaxPacketSize * theLoader->mConverterBuffer.mBuffers[i].mNumberChannels );
-		theLoader->mConverterBuffer.mBuffers[i].mData = malloc( theLoader->mConverterBuffer.mBuffers[i].mDataByteSize );
-	}
-	
-	theLoader->cleanupPacketDescriptions();
-	theLoader->mCurrentPacketDescriptions = new AudioStreamPacketDescription[*ioNumberDataPackets];
-	
-	err = AudioFileReadPackets( theSource->mFileRef, false, (UInt32 *)&(theLoader->mConverterBuffer.mBuffers[0].mDataByteSize), theLoader->mCurrentPacketDescriptions, theLoader->mPacketOffset, (UInt32 *)ioNumberDataPackets, theLoader->mConverterBuffer.mBuffers[0].mData );
-	
-	//ioData->mBuffers[0].mData = theTrack->mSourceBuffer;
-	for( int i = 0; i < ioData->mNumberBuffers; i++ ) {
-			ioData->mBuffers[i].mData = theLoader->mConverterBuffer.mBuffers[i].mData;
-			ioData->mBuffers[i].mNumberChannels = theLoader->mConverterBuffer.mBuffers[i].mNumberChannels;
-			ioData->mBuffers[i].mDataByteSize = theLoader->mConverterBuffer.mBuffers[i].mDataByteSize;
-	}
-	
-	if( outDataPacketDescriptions ) {
-		*outDataPacketDescriptions = theLoader->mCurrentPacketDescriptions;
-	}
-	
-	theLoader->mPacketOffset += *ioNumberDataPackets;
-	
-	/*if( theTrack->mIsLooping && theTrack->mPacketOffset >= theSource->getPacketCount() ) {
-		theTrack->mPacketOffset = 0;
-	}*/
-	
-    /*return err;
-}*/
-
 
 void SourceFile::registerSelf()
 {
@@ -198,6 +142,8 @@ void SourceFile::registerSelf()
 	}
 	free(audioTypes);
 	
+	IoRegistrar::registerSourceGeneric( sourceFunc, SOURCE_PRIORITY );
+	
 }
 
 SourceFileRef	SourceFile::createFileRef( DataSourceRef dataSourceRef ) {
@@ -208,62 +154,67 @@ SourceFile::SourceFile( DataSourceRef dataSourceRef )
 	: Source()
 {
 	OSStatus err = noErr;
+	AudioFileID aFileRef;
 	if( dataSourceRef->isFilePath() ) {
 		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath() );
 		::CFURLRef urlRef = ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString, kCFURLPOSIXPathStyle, false );
-		err = AudioFileOpenURL( urlRef, fsRdPerm, 0, &mFileRef );
+		err = AudioFileOpenURL( urlRef, fsRdPerm, 0, &aFileRef );
 		::CFRelease( pathString );
 		::CFRelease( urlRef );
 		if( err ) {
-			//throw
+			if( err == fnfErr ) {
+				throw IoExceptionSourceNotFound();
+			}
+			throw IoExceptionFailedLoad();
 		}
 	} else if( dataSourceRef->isUrl() ) {
 		::CFURLRef urlRef = cocoa::createCfUrl( dataSourceRef->getUrl() );
-		err = AudioFileOpenURL( urlRef, fsRdPerm, 0, &mFileRef );
+		err = AudioFileOpenURL( urlRef, fsRdPerm, 0, &aFileRef );
 		::CFRelease( urlRef );
 		if( err ) {
-			//throw
+			throw IoExceptionFailedLoad();
 		}
 	}
+	mFileRef = shared_ptr<OpaqueAudioFileID>( aFileRef, AudioFileClose );
+	
 	
 	//load header info
 	AudioStreamBasicDescription nativeFormatDescription;
 	UInt32 size = sizeof( AudioStreamBasicDescription );
-	err = AudioFileGetProperty( mFileRef, kAudioFilePropertyDataFormat, &size, &nativeFormatDescription );
+	err = AudioFileGetProperty( aFileRef, kAudioFilePropertyDataFormat, &size, &nativeFormatDescription );
 	if( err ) {
-		// throw
+		throw IoExceptionFailedLoad();
 	}
 	
 	loadFromCaAudioStreamBasicDescription( this, &nativeFormatDescription );
 	
 	size = sizeof( uint64_t );
-	err = AudioFileGetProperty( mFileRef, kAudioFilePropertyAudioDataPacketCount, &size, &mPacketCount );
+	err = AudioFileGetProperty( aFileRef, kAudioFilePropertyAudioDataPacketCount, &size, &mPacketCount );
 	if( err ) {
-		//throw
+		throw IoExceptionFailedLoad();
 	}
 	
 	size = sizeof( uint64_t );
-	err = AudioFileGetProperty( mFileRef, kAudioFilePropertyAudioDataByteCount, &size, &mByteCount );
+	err = AudioFileGetProperty( aFileRef, kAudioFilePropertyAudioDataByteCount, &size, &mByteCount );
 	if( err ) {
-		//throw
+		throw IoExceptionFailedLoad();
 	}
 	
 	size = sizeof( uint32_t );
-	err = AudioFileGetProperty( mFileRef, kAudioFilePropertyMaximumPacketSize, &size, &mMaxPacketSize );
+	err = AudioFileGetProperty( aFileRef, kAudioFilePropertyMaximumPacketSize, &size, &mMaxPacketSize );
 	if( err ) {
-		//throw
+		throw IoExceptionFailedLoad();
 	}
 	
 	size = sizeof( double );
-	err = AudioFileGetProperty( mFileRef, kAudioFilePropertyEstimatedDuration, &size, &mDuration );
+	err = AudioFileGetProperty( aFileRef, kAudioFilePropertyEstimatedDuration, &size, &mDuration );
 	if( err ) {
-		//throw
+		throw IoExceptionFailedLoad();
 	}
 }
 
 SourceFile::~SourceFile()
 {
-	AudioFileClose( mFileRef );
 }
 
 uint64_t SourceFile::packetAtTime( double aTime ) const

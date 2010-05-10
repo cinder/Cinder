@@ -135,6 +135,9 @@ class IoException : public Exception {
 
 class IoExceptionFailedLoad : public IoException {
 };
+
+class IoExceptionSourceNotFound : public IoExceptionFailedLoad {
+};
 	
 class IoExceptionUnsupportedDataType : public IoException {
 };

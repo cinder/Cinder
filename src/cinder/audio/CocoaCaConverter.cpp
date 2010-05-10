@@ -33,7 +33,7 @@ CocoaCaConverter::CocoaCaConverter( Loader * aLoader, LoaderFunction loaderFn, c
 	OSStatus err = noErr;
 	err = AudioConverterNew( &sourceDescription, &targetDescription, &mConverter );
 	if( err ) {
-		//throw
+		throw IoExceptionUnsupportedDataFormat();
 		/*switch(err) {
 			case kAudioConverterErr_FormatNotSupported:
 				std::cout << "kAudioConverterErr_FormatNotSupported" << std::endl;
