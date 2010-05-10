@@ -69,7 +69,8 @@ LoaderSourceFileWavRef LoaderSourceFileWav::createRef( SourceFileWav *source, Ta
 LoaderSourceFileWav::LoaderSourceFileWav( SourceFileWav * source, Target * target ) 
 	: Loader(), mSource( source ), mSampleOffset( 0 )
 {
-
+	mStream = mSource->createStream();
+	mStream->seekAbsolute( mSource->mDataStart );
 }
 
 LoaderSourceFileWav::~LoaderSourceFileWav()
@@ -84,11 +85,31 @@ uint64_t LoaderSourceFileWav::getSampleOffset() const
 void LoaderSourceFileWav::setSampleOffset( uint64_t anOffset )
 {
 	mSampleOffset = anOffset;
+	mStream->seekAbsolute( mSource->mDataStart + anOffset );
 }
 
 void LoaderSourceFileWav::loadData( uint32_t *ioSampleCount, BufferList *ioData )
 {	
+	if( mSampleOffset + *ioSampleCount > mSource->mSampleCount ) {
+		*ioSampleCount = mSource->mSampleCount - mSampleOffset;
+	}
+	
+	uint32_t dataSize = *ioSampleCount * mSource->mBlockAlign;
 
+#if defined(CINDER_LITTLE_ENDIAN)
+	bool nativeLittleEndian = true;
+#elif
+	bool nativeLittleEndian = false;
+#endif
+
+	//if native endianess matches source endianess just read it
+	if( (nativeLittleEndian && ! mSource->mIsBigEndian ) || ( ! nativeLittleEndian && mSource->mIsBigEndian ) ) {
+		mStream->readData( ioData->mBuffers[0].mData, dataSize );
+	} else {
+		//TODO: readWithEndianess with casted buffers
+	}
+	mSampleOffset += *ioSampleCount;
+	ioData->mBuffers[0].mDataByteSize = dataSize;
 }
 
 void SourceFileWav::registerSelf()
@@ -107,7 +128,7 @@ SourceFileWavRef	SourceFileWav::createFileWavRef( DataSourceRef dataSourceRef )
 }
 
 SourceFileWav::SourceFileWav( DataSourceRef dataSourceRef )
-	: Source()
+	: Source(), mDataSource( dataSourceRef )
 {
 	mDataType = DATA_UNKNOWN;
 	mSampleRate = 0;
@@ -117,14 +138,8 @@ SourceFileWav::SourceFileWav( DataSourceRef dataSourceRef )
 	mIsPcm = FALSE;
 	mIsBigEndian = FALSE;
 	mIsInterleaved = FALSE;
-	/*if( dataSourceRef->isFilePath() ) {
-		//TODO
-	} else if ( dataSourceRef->isFilePath() ) {
-		//TODO
-	}else { //have to use buffer
-		//TODO
-	}*/
-	mStream = dataSourceRef->getStream();
+	
+	IStreamRef stream = createStream();
 
 	uint32_t fileSize = 0;
 	
@@ -133,7 +148,7 @@ SourceFileWav::SourceFileWav( DataSourceRef dataSourceRef )
 	
 	uint32_t riffType = 0;
 	
-	mStream->readData( &chunkName, 4 );
+	stream->readData( &chunkName, 4 );
 	if( chunkName == gRiffMarker ) {
 		mIsBigEndian = false;
 	} else if( chunkName == gRifxMarker ) {
@@ -142,10 +157,10 @@ SourceFileWav::SourceFileWav( DataSourceRef dataSourceRef )
 		throw IoExceptionFailedLoad();
 	}
 	
-	readStreamWithEndianess( mStream, &fileSize, mIsBigEndian );
+	readStreamWithEndianess( stream, &fileSize, mIsBigEndian );
 	fileSize = fileSize + 4 + sizeof( int );
 	
-	mStream->readData( &riffType, 4 );
+	stream->readData( &riffType, 4 );
 	if( riffType != gWaveMarker ) {
 		throw IoExceptionFailedLoad();
 	}
@@ -156,32 +171,32 @@ SourceFileWav::SourceFileWav( DataSourceRef dataSourceRef )
 	static const uint8_t hasFormat = 1;
 	static const uint8_t hasData = 1 << 1;
 	
-	while( mStream->tell() < fileSize) {
-		mStream->readData( &chunkName, 4 );
-		readStreamWithEndianess( mStream, &chunkSize, mIsBigEndian );
-		chunkEnd = mStream->tell() + chunkSize;
+	while( stream->tell() < fileSize) {
+		stream->readData( &chunkName, 4 );
+		readStreamWithEndianess( stream, &chunkSize, mIsBigEndian );
+		chunkEnd = stream->tell() + chunkSize;
 		
 		if( chunkName == gFmtMarker ) {
-			readFormatChunk();
+			readFormatChunk( stream );
 			chunks |= hasFormat;
 		} else if( chunkName == gDataMarker ) {
 			mDataLength = chunkSize;
-			mDataStart = mStream->tell();
+			mDataStart = stream->tell();
 			chunks |= hasData;
 		}
-		mStream->seekAbsolute( chunkEnd );
+		stream->seekAbsolute( chunkEnd );
 	}
 	
 	if( chunks != ( hasFormat | hasData ) ) {
 		throw IoExceptionFailedLoad();
 	}
 
-	mSampleCount = mDataLength / ( mBitsPerSample / 8 );
+	mSampleCount = mDataLength / mBlockAlign;
 	
 	//Pull all of the data
 	//mData = (int16_t *)calloc( 1, mDataLength );
-	//mStream->seekSet( mDataStart );
-	//mStream->readData( mData, mDataLength );
+	//stream->seekSet( mDataStart );
+	//stream->readData( mData, mDataLength );
 
 
 }
@@ -190,14 +205,25 @@ SourceFileWav::~SourceFileWav()
 {
 }
 
-void SourceFileWav::readFormatChunk()
+IStreamRef SourceFileWav::createStream()
 {
-	readStreamWithEndianess( mStream, &mAudioFormat, mIsBigEndian );
-	readStreamWithEndianess( mStream, &mChannelCount, mIsBigEndian );
-	readStreamWithEndianess( mStream, &mSampleRate, mIsBigEndian );
-	readStreamWithEndianess( mStream, &mByteRate, mIsBigEndian );
-	readStreamWithEndianess( mStream, &mBlockAlign, mIsBigEndian );
-	readStreamWithEndianess( mStream, &mBitsPerSample, mIsBigEndian );
+	if( mDataSource->isFilePath() ) {
+		return loadFileStream( mDataSource->getFilePath() );
+	} else if ( mDataSource->isUrl() ) {
+		return loadUrlStream( mDataSource->getUrl() );
+	}
+
+	return IStreamMem::createRef( mDataSource->getBuffer().getData(), mDataSource->getBuffer().getDataSize() );
+}
+
+void SourceFileWav::readFormatChunk( IStreamRef stream )
+{
+	readStreamWithEndianess( stream, &mAudioFormat, mIsBigEndian );
+	readStreamWithEndianess( stream, &mChannelCount, mIsBigEndian );
+	readStreamWithEndianess( stream, &mSampleRate, mIsBigEndian );
+	readStreamWithEndianess( stream, &mByteRate, mIsBigEndian );
+	readStreamWithEndianess( stream, &mBlockAlign, mIsBigEndian );
+	readStreamWithEndianess( stream, &mBitsPerSample, mIsBigEndian );
 	
 	if(	mAudioFormat == WAV_FORMAT_PCM || mAudioFormat == WAV_FORMAT_IEEE_FLOAT ) {
 		mIsPcm = true;

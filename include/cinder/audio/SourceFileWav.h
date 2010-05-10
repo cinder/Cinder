@@ -43,6 +43,7 @@ protected:
 	LoaderSourceFileWav( SourceFileWav * source, Target * target );
 
 	SourceFileWav	* mSource;
+	IStreamRef		mStream;
 	uint64_t		mSampleOffset;
 };
 
@@ -60,9 +61,10 @@ class SourceFileWav : public Source {
 	static void		registerSelf();
  private:
 	SourceFileWav( DataSourceRef dataSourceRef );
-	void readFormatChunk();
+	void readFormatChunk( IStreamRef stream );
+	IStreamRef createStream();
 	
-	IStreamRef		mStream;
+	DataSourceRef	mDataSource;
 	uint32_t		mDataLength;
 	uint32_t		mDataStart;
 	uint64_t		mSampleCount;
