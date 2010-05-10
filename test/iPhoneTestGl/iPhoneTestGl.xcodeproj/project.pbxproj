@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		005374E41194F4B5004D686E /* cinder_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 005374E31194F4B5004D686E /* cinder_logo.png */; };
+		0053788D119624A4004D686E /* cinder_logo_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 0053788C119624A4004D686E /* cinder_logo_alpha.png */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
 		00CFDFE011384CC60091E310 /* TestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CFDFDF11384CC60091E310 /* TestApp.cpp */; };
-		00E716AB1159743F0071E506 /* Beyonce.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 00E716AA1159743F0071E506 /* Beyonce.jpg */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
@@ -17,10 +18,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		005374E31194F4B5004D686E /* cinder_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cinder_logo.png; path = ../../samples/data/cinder_logo.png; sourceTree = SOURCE_ROOT; };
+		0053788C119624A4004D686E /* cinder_logo_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cinder_logo_alpha.png; path = ../../samples/data/cinder_logo_alpha.png; sourceTree = SOURCE_ROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDFDF11384CC60091E310 /* TestApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TestApp.cpp; path = src/TestApp.cpp; sourceTree = "<group>"; };
 		00CFE01411385E9D0091E310 /* TestApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestApp.h; path = include/TestApp.h; sourceTree = "<group>"; };
-		00E716AA1159743F0071E506 /* Beyonce.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = Beyonce.jpg; path = ../../samples/data/Beyonce.jpg; sourceTree = SOURCE_ROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* iPhoneTestGl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPhoneTestGl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -94,7 +96,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				00E716AA1159743F0071E506 /* Beyonce.jpg */,
+				005374E31194F4B5004D686E /* cinder_logo.png */,
+				0053788C119624A4004D686E /* cinder_logo_alpha.png */,
 				8D1107310486CEB800E47090 /* iPhoneTestGl-Info.plist */,
 			);
 			name = Resources;
@@ -154,7 +157,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00E716AB1159743F0071E506 /* Beyonce.jpg in Resources */,
+				005374E41194F4B5004D686E /* cinder_logo.png in Resources */,
+				0053788D119624A4004D686E /* cinder_logo_alpha.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

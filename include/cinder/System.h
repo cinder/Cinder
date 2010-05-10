@@ -55,8 +55,14 @@ class System {
 	//! For version \c 10.5.8, this is \c 8. For Windows this corresponds to the major version of the service pack. So \c Service Pack 2 returns \c 2
 	static int			getOsBugFixVersion();
 #endif //! defined( CINDER_COCOA_TOUCH )	
+
+	//! Returns whether the system supports MultiTouch. Also returns true under Windows 7 in the presence of single touch support.
+	static bool			hasMultiTouch();
+	//! Returns the maximum number of simultaneous touches supported by the system's MultiTouch implementation.
+	static int32_t		getMaxMultiTouchPoints();
+	
  private:
-	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, TOTAL_CACHE_TYPES };
+	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, TOTAL_CACHE_TYPES };
 
 	System();
 	static shared_ptr<System>		instance();
@@ -66,6 +72,8 @@ class System {
 	bool				mHasSSE2, mHasSSE3, mHasSSE4_1, mHasSSE4_2, mHasX86_64;
 	int					mPhysicalCPUs, mLogicalCPUs;
 	int32_t				mOSMajorVersion, mOSMinorVersion, mOSBugFixVersion;
+	bool				mHasMultiTouch;
+	uint32_t			mMaxMultiTouchPoints;
 #if defined( CINDER_MSW )
 	uint32_t			mCPUID_EBX, mCPUID_ECX, mCPUID_EDX;
 #endif 

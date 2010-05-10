@@ -102,6 +102,10 @@
 		0049A34F116EE675007DDFB0 /* AxisAlignedBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */; };
 		0049C1B41010E5A40015B4B9 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049C1B31010E5A40015B4B9 /* Renderer.h */; };
 		0049C1B71010E5B10015B4B9 /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0049C1B61010E5B10015B4B9 /* Renderer.cpp */; };
+		005374F51194F584004D686E /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0005291F0FFBF4C200F19492 /* Text.cpp */; };
+		005374F61194F584004D686E /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0005291F0FFBF4C200F19492 /* Text.cpp */; };
+		005374F71194F588004D686E /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
+		005374F81194F589004D686E /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
 		006228E210C8248800A8191C /* DataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 006228E110C8248800A8191C /* DataSource.h */; };
 		006228E410C8273C00A8191C /* DataSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006228E310C8273C00A8191C /* DataSource.cpp */; };
 		00704FCD1114F93F003FCAE4 /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419CD0E8035D3004D34EB /* App.h */; };
@@ -1928,6 +1932,8 @@
 				001E355F115D5EFA000C228C /* Xml.cpp in Sources */,
 				00B729E4115DABD800CD71B9 /* Timer.cpp in Sources */,
 				0049A34A116EE65C007DDFB0 /* AxisAlignedBox.cpp in Sources */,
+				005374F51194F584004D686E /* Text.cpp in Sources */,
+				005374F71194F588004D686E /* Font.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2004,6 +2010,8 @@
 				001E3560115D5EFA000C228C /* Xml.cpp in Sources */,
 				00B729E5115DABD800CD71B9 /* Timer.cpp in Sources */,
 				0049A34B116EE65D007DDFB0 /* AxisAlignedBox.cpp in Sources */,
+				005374F61194F584004D686E /* Text.cpp in Sources */,
+				005374F81194F589004D686E /* Font.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

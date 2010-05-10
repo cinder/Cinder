@@ -26,6 +26,7 @@
 #include "cinder/app/Renderer.h"
 
 #include <windowsx.h>
+#include <winuser.h>
 
 using std::vector;
 using std::string;
@@ -73,8 +74,7 @@ void AppImplMswBasic::run()
 	::ShowWindow( mWnd, SW_SHOW );
 	::SetForegroundWindow( mWnd );
 	::SetFocus( mWnd );
-	::DragAcceptFiles( mWnd, TRUE );	
-	
+
 	// initialize our next frame time to be definitely now
 	mNextFrameTime = -1;
 	
@@ -195,6 +195,9 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 
 	mApp->getRenderer()->setup( mApp, mWnd, mDC );
 
+	::DragAcceptFiles( mWnd, TRUE );
+	enableMultiTouch();
+
 	return true;									// Success
 }
 
@@ -260,8 +263,21 @@ void AppImplMswBasic::toggleFullScreen()
 	::SetForegroundWindow( mWnd );
 	::SetFocus( mWnd );
 	::DragAcceptFiles( mWnd, TRUE );
+	enableMultiTouch();
 	
 	mApp->privateResize__( mApp->getWindowWidth(), mApp->getWindowHeight() );
+}
+
+void AppImplMswBasic::enableMultiTouch()
+{
+	if( mApp->getSettings().isMultiTouchEnabled() ) {
+		// we need to make sure this version of User32 even has MultiTouch symbols, so we'll do that with GetProcAddress
+		BOOL (WINAPI *RegisterTouchWindow)( HWND, ULONG);
+		*(DWORD *)&RegisterTouchWindow = (DWORD)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
+		if( RegisterTouchWindow ) {
+			(*RegisterTouchWindow)( mWnd, 0 );
+		}
+	}
 }
 
 void AppImplMswBasic::setWindowWidth( int aWindowWidth )
@@ -299,6 +315,71 @@ void AppImplMswBasic::getScreenSize( int clientWidth, int clientHeight, int *res
 	::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );
 	*resultWidth = windowRect.right - windowRect.left;
 	*resultHeight = windowRect.bottom - windowRect.top;
+}
+
+void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
+{
+	// pull these symbols dynamically out of the user32.dll
+	static BOOL (WINAPI *GetTouchInputInfo)( HTOUCHINPUT, UINT, PTOUCHINPUT, int ) = NULL;
+	if( ! GetTouchInputInfo )
+		*(size_t *)&GetTouchInputInfo = (size_t)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "GetTouchInputInfo" );
+	static BOOL (WINAPI *CloseTouchInputHandle)( HTOUCHINPUT ) = NULL;
+	if( ! CloseTouchInputHandle )
+		*(size_t *)&CloseTouchInputHandle = (size_t)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "CloseTouchInputHandle" );
+
+	bool handled = false;
+	double currentTime = getApp()->getElapsedSeconds(); // we don't trust the device's sense of time
+	unsigned int numInputs = LOWORD( wParam );
+	shared_ptr<TOUCHINPUT> pInputs = shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
+	if( pInputs ) {
+		vector<TouchEvent::Touch> beganTouches, movedTouches, endTouches, activeTouches;
+		if( GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, pInputs.get(), sizeof(TOUCHINPUT) ) ) {
+			for( unsigned int i = 0; i < numInputs; i++ ) {
+				const TOUCHINPUT &ti = pInputs.get()[i];
+				if( ti.dwID != 0 ) {
+					POINT pt;
+					// this has a small problem, which is that we lose the subpixel precision of the touch points.
+					// However ScreenToClient doesn't support floating or fixed point either, so we're stuck 
+					// unless we write our own ScreenToClient, which actually should be doable
+					pt.x = TOUCH_COORD_TO_PIXEL( ti.x );
+					pt.y = TOUCH_COORD_TO_PIXEL( ti.y );
+					::ScreenToClient( hWnd, &pt );
+					if( ti.dwFlags & 0x0004/*TOUCHEVENTF_UP*/ ) {
+						endTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+					}
+					else if( ti.dwFlags & 0x0002/*TOUCHEVENTF_DOWN*/ ) {
+						beganTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						activeTouches.push_back( beganTouches.back() );
+					}
+					else if( ti.dwFlags & 0x0001/*TOUCHEVENTF_MOVE*/ ) {
+						movedTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						activeTouches.push_back( movedTouches.back() );
+					}
+				}
+            }
+            
+            getApp()->privateSetActiveTouches__( activeTouches );
+            
+            // we need to post the event here so that our pInputs array is still valid since we've passed addresses into it as the native pointers
+            if( ! beganTouches.empty() )
+				getApp()->privateTouchesBegan__( beganTouches );
+			if( ! movedTouches.empty() )
+				getApp()->privateTouchesMoved__( movedTouches );
+			if( ! endTouches.empty() )
+				getApp()->privateTouchesEnded__( endTouches );
+			
+            handled = ( ! beganTouches.empty() ) || ( ! movedTouches.empty() ) || ( ! endTouches.empty() );
+            CloseTouchInputHandle( (HTOUCHINPUT)lParam ); // this is exception-unsafe; we need some RAII goin' on there
+        }
+        else {
+			// for now we'll just ignore an error
+        }
+	}
+
+    if( ! handled ) {
+        // if we didn't handle the message, let DefWindowProc handle it
+        ::DefWindowProc( hWnd, WM_TOUCH, wParam, lParam );
+    }
 }
 
 unsigned int prepMouseEventModifiers( WPARAM wParam )
@@ -495,6 +576,9 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			impl->getApp()->getRenderer()->startDraw();
 			impl->getApp()->draw();
 			impl->getApp()->getRenderer()->finishDraw();
+		break;
+		case WM_TOUCH:
+			impl->onTouch( mWnd, wParam, lParam );
 		break;
 	}
 

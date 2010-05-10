@@ -66,7 +66,8 @@ class Font {
 	float					getAscent() const;
 	float					getDescent() const;
 	size_t					getNumGlyphs() const;
-	
+
+#if ! defined( CINDER_COCOA_TOUCH )	
 	Glyph					getGlyphIndex( size_t idx );
 	Glyph					getGlyphChar( char utf8Char );
 	std::vector<Glyph>		getGlyphs( const std::string &utf8String );
@@ -74,6 +75,7 @@ class Font {
 	Shape2d					getGlyphShape( Glyph glyphIndex );
 	
 	static const std::vector<std::string>&		getNames( bool forceRefresh = false );
+#endif
 
 #if defined( CINDER_COCOA )
 	CGFontRef				getCgFontRef() const;

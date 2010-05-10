@@ -936,17 +936,17 @@ void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees,
 
 void draw( const Texture &texture )
 {
-	draw( texture, texture.getBounds(), texture.getBounds() );
+	draw( texture, Area( texture.getCleanBounds() ), texture.getCleanBounds() );
 }
 
 void draw( const Texture &texture, const Vec2f &pos )
 {
-	draw( texture, texture.getBounds(), Rectf( pos.x, pos.y, pos.x + texture.getWidth(), pos.y + texture.getHeight() ) );
+	draw( texture, texture.getCleanBounds(), Rectf( pos.x, pos.y, pos.x + texture.getCleanWidth(), pos.y + texture.getCleanHeight() ) );
 }
 
 void draw( const Texture &texture, const Rectf &rect )
 {
-	draw( texture, texture.getBounds(), rect );
+	draw( texture, texture.getCleanBounds(), rect );
 }
 
 void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
@@ -979,7 +979,6 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
 }
 
-#if ! defined( CINDER_COCOA_TOUCH )
 namespace {
 void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
 {
@@ -993,8 +992,16 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 		font = defaultFont;
 
 	float baselineOffset;
+#if defined( CINDER_COCOA_TOUCH )
+	Vec2i actualSize;
+	Surface8u pow2Surface( renderStringPow2( str, font, color, &actualSize, &baselineOffset ) );
+	gl::Texture tex( pow2Surface );
+	tex.setCleanTexCoords( actualSize.x / (float)pow2Surface.getWidth(), actualSize.y / (float)pow2Surface.getHeight() );
+#else
 	gl::Texture tex( renderString( str, font, color, &baselineOffset ) );
+#endif
 	glColor4ub( 255, 255, 255, 255 );
+
 	if( justification == -1 ) // left
 		draw( tex, pos - Vec2f( 0, baselineOffset ) );
 	else if( justification == 0 ) // center
@@ -1018,7 +1025,6 @@ void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &co
 {
 	drawStringHelper( str, pos, color, font, 1 );
 }
-#endif // ! defined( CINDER_COCOA_TOUCH )
 
 ///////////////////////////////////////////////////////////////////////////////
 // SaveTextureBindState

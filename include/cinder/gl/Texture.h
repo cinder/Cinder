@@ -102,12 +102,18 @@ class Texture {
 	GLint			getWidth() const;
 	//! the height of the texture in pixels
 	GLint			getHeight() const;
+	//! the width of the texture in pixels accounting for its "clean" area - \sa getCleanBounds()
+	GLint			getCleanWidth() const;
+	//! the height of the texture in pixels accounting for its "clean" area - \sa getCleanBounds()
+	GLint			getCleanHeight() const;
 	//! the size of the texture in pixels
 	Vec2i			getSize() const { return Vec2i( getWidth(), getHeight() ); }	
 	//! the aspect ratio of the texture (width / height)
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! the Area defining the Texture's bounds in pixels: [0,0]-[width,height]
 	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
+	//! the Area defining the Texture's clean pixel bounds in pixels: [0,0]-[width*maxU,height*maxV]
+	Area			getCleanBounds() const { return Area( 0, 0, getCleanWidth(), getCleanHeight() ); }
 	//! whether the texture has an alpha channel
 	bool			hasAlpha() const;
 	//!	These return the right thing even when the texture coordinate space is flipped
@@ -118,7 +124,7 @@ class Texture {
 	//!	These do not correspond to "top" and "right" when the texture is flipped
 	float			getMaxU() const;
 	float			getMaxV() const;
-	//! Returns the UV coordinates which correspond to the pixels contained in \a area
+	//! Returns the UV coordinates which correspond to the pixels contained in \a area. Does not compensate for clean coordinates. Does compensate for flipping.
 	Rectf			getAreaTexCoords( const Area &area ) const;
 	//! the Texture's internal format, which is the format that OpenGL stores the texture data in memory. Common values include \c GL_RGB, \c GL_RGBA and \c GL_LUMINANCE
 	GLint			getInternalFormat() const;
@@ -228,11 +234,11 @@ class Texture {
 	void	init( ImageSourceRef imageSource, const Format &format );	
 		 	
 	struct Obj {
-		Obj() : mWidth( -1 ), mHeight( -1 ), mInternalFormat( -1 ), mTextureID( 0 ), mFlipped( false ), mDeallocatorFunc( 0 ) {}
-		Obj( int aWidth, int aHeight ) : mInternalFormat( -1 ), mWidth( aWidth ), mHeight( aHeight ), mFlipped( false ), mTextureID( 0 ), mDeallocatorFunc( 0 )  {}
+		Obj() : mWidth( -1 ), mHeight( -1 ), mCleanWidth( -1 ), mCleanHeight( -1 ), mInternalFormat( -1 ), mTextureID( 0 ), mFlipped( false ), mDeallocatorFunc( 0 ) {}
+		Obj( int aWidth, int aHeight ) : mInternalFormat( -1 ), mWidth( aWidth ), mHeight( aHeight ), mCleanWidth( aWidth ), mCleanHeight( aHeight ), mFlipped( false ), mTextureID( 0 ), mDeallocatorFunc( 0 )  {}
 		~Obj();
 
-		mutable GLint	mWidth, mHeight;
+		mutable GLint	mWidth, mHeight, mCleanWidth, mCleanHeight;
 		float			mMaxU, mMaxV;
 		mutable GLint	mInternalFormat;
 		GLenum			mTarget;

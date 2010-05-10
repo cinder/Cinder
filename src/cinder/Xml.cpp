@@ -52,7 +52,7 @@ XmlDocument::XmlDocument( shared_ptr<cinder::IStream> is )
 XmlDocument::XmlDocument( DataSourceRef dataSource )
 	: tiDoc( new TiXmlDocument() )
 {
-	cinder_istream aStdIstream( dataSource->getStream() );
+	cinder_istream aStdIstream( dataSource->createStream() );
 	aStdIstream >> *tiDoc;
 }
 
