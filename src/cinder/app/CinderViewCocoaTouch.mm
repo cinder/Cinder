@@ -53,6 +53,8 @@ static Boolean sIsEaglLayer;
 		mRenderer = renderer;
 		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self );
 		mApp->privateSetup__();
+		
+		self.multipleTouchEnabled = mApp->getSettings().isMultiTouchEnabled();
 	}
 	
     return self;
@@ -129,17 +131,128 @@ static Boolean sIsEaglLayer;
     [super dealloc];
 }
 
+- (uint32_t)addTouchToMap:(UITouch*)touch
+{
+	uint32_t candidateId = 0;
+	bool found = true;
+	while( found ) {
+		candidateId++;
+		found = false;
+		for( std::map<UITouch*,uint32_t>::const_iterator mapIt = mTouchIdMap.begin(); mapIt != mTouchIdMap.end(); ++mapIt ) {
+			if( mapIt->second == candidateId ) {
+				found = true;
+				break;
+			}
+		}
+	}
+	
+	mTouchIdMap.insert( std::make_pair( touch, candidateId ) );
+	
+	return candidateId;
+}
+
+- (void)removeTouchFromMap:(UITouch*)touch
+{
+	std::map<UITouch*,uint32_t>::iterator found( mTouchIdMap.find( touch ) );
+	if( found == mTouchIdMap.end() )
+		;//std::cout << "Couldn' find touch in map?" << std::endl;
+	else
+		mTouchIdMap.erase( found );
+}
+
+- (uint32_t)findTouchInMap:(UITouch*)touch
+{
+	std::map<UITouch*,uint32_t>::const_iterator found( mTouchIdMap.find( touch ) );
+	if( found == mTouchIdMap.end() ) {
+		;//std::cout << "Couldn' find touch in map?" << std::endl;
+		return 0;
+	}
+	else
+		return found->second;
+}
+
+- (void)updateActiveTouches
+{
+	std::vector<ci::app::TouchEvent::Touch> activeTouches;
+	for( std::map<UITouch*,uint32_t>::const_iterator touchIt = mTouchIdMap.begin(); touchIt != mTouchIdMap.end(); ++touchIt ) {
+		CGPoint pt = [touchIt->first locationInView:self];
+		activeTouches.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), touchIt->second, [touchIt->first timestamp], touchIt->first ) );
+	}
+	mApp->privateSetActiveTouches__( activeTouches );
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Event handlers
 - (void) touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	for( UITouch *touch in touches ) {
-		std::cout << "Touched!" << std::endl;
-		CGPoint pt = [touch locationInView:self];
-		int mods = 0;
-		mods |= cinder::app::MouseEvent::LEFT_DOWN;
-		mApp->privateMouseDown__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 ) );
+	if( mApp->getSettings().isMultiTouchEnabled() ) {
+		std::vector<ci::app::TouchEvent::Touch> touchList;
+		for( UITouch *touch in touches ) {
+			CGPoint pt = [touch locationInView:self];
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), [self addTouchToMap:touch], [touch timestamp], touch ) );
+		}
+		[self updateActiveTouches];
+		if( ! touchList.empty() )
+			mApp->privateTouchesBegan__( ci::app::TouchEvent( touchList ) );
 	}
+	else {
+		for( UITouch *touch in touches ) {
+			CGPoint pt = [touch locationInView:self];		
+			int mods = 0;
+			mods |= cinder::app::MouseEvent::LEFT_DOWN;
+			mApp->privateMouseDown__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 ) );
+		}
+	}
+}
+
+- (void) touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
+{
+	if( mApp->getSettings().isMultiTouchEnabled() ) {
+		std::vector<ci::app::TouchEvent::Touch> touchList;
+		for( UITouch *touch in touches ) {
+			CGPoint pt = [touch locationInView:self];
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+		}
+		[self updateActiveTouches];
+		if( ! touchList.empty() )
+			mApp->privateTouchesMoved__( ci::app::TouchEvent( touchList ) );
+	}
+	else {
+		for( UITouch *touch in touches ) {
+			CGPoint pt = [touch locationInView:self];		
+			int mods = 0;
+			mods |= cinder::app::MouseEvent::LEFT_DOWN;
+			mApp->privateMouseDrag__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 ) );
+		}
+	}
+}
+
+- (void) touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
+{
+	if( mApp->getSettings().isMultiTouchEnabled() ) {
+		std::vector<ci::app::TouchEvent::Touch> touchList;
+		for( UITouch *touch in touches ) {
+			CGPoint pt = [touch locationInView:self];
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+			[self removeTouchFromMap:touch];
+		}
+		[self updateActiveTouches];
+		if( ! touchList.empty() )
+			mApp->privateTouchesEnded__( ci::app::TouchEvent( touchList ) );
+	}
+	else {
+		for( UITouch *touch in touches ) {
+			CGPoint pt = [touch locationInView:self];		
+			int mods = 0;
+			mods |= cinder::app::MouseEvent::LEFT_DOWN;
+			mApp->privateMouseUp__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 ) );
+		}
+	}
+}
+
+- (void) touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event
+{
+	[self touchesEnded:touches withEvent:event];
 }
 
 @end

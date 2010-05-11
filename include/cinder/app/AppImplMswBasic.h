@@ -56,7 +56,9 @@ class AppImplMswBasic : public AppImplMsw {
  protected:
 	bool		createWindow( int *width, int *height );
 	void		killWindow( bool wasFullScreen );
+	void		enableMultiTouch();
 	void		getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight );
+	void		onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam );
 	
 	bool		mShouldQuit;
 	bool		mIsDragging;

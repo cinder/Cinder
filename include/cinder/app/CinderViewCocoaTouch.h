@@ -29,27 +29,34 @@
 #include "cinder/app/AppCocoaTouch.h"
 #include "cinder/app/Renderer.h"
 
+#include <map>
+
 @interface CinderViewCocoaTouch : UIView
 {    
   @private
 	BOOL animating;
 	NSInteger animationFrameInterval;
 
-	id						displayLink;
+	id							displayLink;
 	ci::app::AppCocoaTouch		*mApp;
-	ci::app::Renderer		*mRenderer;
+	ci::app::Renderer			*mRenderer;
+	std::map<UITouch*,uint32_t>	mTouchIdMap;
 }
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
 
-- (id) initWithFrame:(CGRect)frame app:(cinder::app::AppCocoaTouch*)app renderer:(cinder::app::Renderer*)renderer;
+- (id)initWithFrame:(CGRect)frame app:(cinder::app::AppCocoaTouch*)app renderer:(cinder::app::Renderer*)renderer;
 - (void)drawRect:(CGRect)rect;
-- (void) startAnimation;
-- (void) layoutSubviews;
-- (void) drawView:(id)sender;
-- (void) stopAnimation;
+- (void)startAnimation;
+- (void)layoutSubviews;
+- (void)drawView:(id)sender;
+- (void)stopAnimation;
 
-- (void) touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event;
+- (uint32_t)addTouchToMap:(UITouch*)touch;
+- (void)removeTouchFromMap:(UITouch*)touch;
+- (uint32_t)findTouchInMap:(UITouch*)touch;
+- (void)updateActiveTouches;
+- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event;
 
 @end

@@ -5,6 +5,8 @@
 #include "TestApp.h"
 #include "cinder/Surface.h"
 #include "cinder/Utilities.h"
+#include "cinder/Rand.h"
+#include "cinder/Text.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -24,7 +26,10 @@ void TestApp::setup()
 	}
 	
 	mTex = gl::Texture( surface );
-	mTex = gl::Texture( loadImage( loadResource( "Beyonce.jpg" ) ) );
+	mTex = gl::Texture( loadImage( loadResource( "cinder_logo_alpha.png" ) ) );
+	
+	//mTempSurface = renderString( "Frame: " + toString( getElapsedFrames() ), Font( "Arial", 56 ), Color( 1, 0.5, 0.25 ) );	
+	mFont = Font( "Arial", 56 );
 	//Buffer buffer = loadStreamBuffer( loadFileStream( getResourcePath( "Beyonce.jpg" ) ) );
 	//mTex = gl::Texture( loadImage( DataSourceBuffer::createRef( buffer, ".jpg" ) ) );
 }
@@ -64,14 +69,19 @@ console() << "Frames: " << getElapsedFrames() << std::endl;
 void TestApp::draw()
 {
 	gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
+	gl::enableAlphaBlending();
 	gl::enableDepthRead();
 	
-	mTex.bind();
+	/*mTex.bind();
 	gl::setMatrices( mCam );
 	glPushMatrix();
 		gl::multModelView( mCubeRotation );
 		gl::drawCube( Vec3f::zero(), Vec3f( 2.0f, 2.0f, 2.0f ) );
-	glPopMatrix();
+	glPopMatrix();*/
+	
+	gl::setMatricesWindow( getWindowSize() );
+	gl::drawString( (Rand::randBool() ? ( "Fjrameyq: " ) : ( "Frame: " )) + toString( getElapsedFrames() ), Vec2f( 10, 40 ), Color( 1, 0.5, 0.25 ), mFont );
+//	gl::draw( mTex );
 }
 
 CINDER_APP_COCOA_TOUCH( TestApp, RendererGl )

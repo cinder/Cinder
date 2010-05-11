@@ -41,7 +41,7 @@ class DataSource {
 	const std::string&	getFilePathHint();
 
 	Buffer&				getBuffer();
-	virtual IStreamRef	getStream() = 0;
+	virtual IStreamRef	createStream() = 0;
 
   protected:
 	DataSource( const std::string &aFilePath, const Url &aUrl )
@@ -68,7 +68,7 @@ class DataSourcePath : public DataSource {
 	virtual bool	isFilePath() { return true; }
 	virtual bool	isUrl() { return false; }
 
-	virtual IStreamRef	getStream();
+	virtual IStreamRef	createStream();
 
   protected:
 	DataSourcePath( const std::string &path );
@@ -90,7 +90,7 @@ class DataSourceUrl : public DataSource {
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return true; }
 
-	virtual IStreamRef	getStream();
+	virtual IStreamRef	createStream();
 
   protected:
 	DataSourceUrl( const Url &Url );
@@ -112,7 +112,7 @@ class DataSourceBuffer : public DataSource {
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return false; }
 
-	virtual IStreamRef	getStream();
+	virtual IStreamRef	createStream();
 	
   protected:
 	DataSourceBuffer( Buffer aBuffer );

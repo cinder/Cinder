@@ -102,6 +102,10 @@
 		0049A34F116EE675007DDFB0 /* AxisAlignedBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */; };
 		0049C1B41010E5A40015B4B9 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049C1B31010E5A40015B4B9 /* Renderer.h */; };
 		0049C1B71010E5B10015B4B9 /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0049C1B61010E5B10015B4B9 /* Renderer.cpp */; };
+		005374F51194F584004D686E /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0005291F0FFBF4C200F19492 /* Text.cpp */; };
+		005374F61194F584004D686E /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0005291F0FFBF4C200F19492 /* Text.cpp */; };
+		005374F71194F588004D686E /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
+		005374F81194F589004D686E /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
 		006228E210C8248800A8191C /* DataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 006228E110C8248800A8191C /* DataSource.h */; };
 		006228E410C8273C00A8191C /* DataSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006228E310C8273C00A8191C /* DataSource.cpp */; };
 		00704FCD1114F93F003FCAE4 /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419CD0E8035D3004D34EB /* App.h */; };
@@ -559,8 +563,7 @@
 		C705F1800FD995120009395A /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C705F17F0FD995120009395A /* Buffer.h */; };
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
 		C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70E1A01106AA39D00E63577 /* Buffer.cpp */; };
-		C798B6941191E24A0033D504 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C798B6931191E24A0033D504 /* CocoaCaConverter.h */; };
-		C798B6981191E2640033D504 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C798B6961191E2640033D504 /* CocoaCaConverter.cpp */; };
+		C7A76E9E1176449F00A46655 /* Callback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E991176449F00A46655 /* Callback.cpp */; };
 		C7A76E9F1176449F00A46655 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
 		C7A76EA01176449F00A46655 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9B1176449F00A46655 /* Output.cpp */; };
 		C7A76EA11176449F00A46655 /* SourceFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9C1176449F00A46655 /* SourceFile.cpp */; };
@@ -814,8 +817,7 @@
 		C705F17F0FD995120009395A /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E19FE106AA38700E63577 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E1A01106AA39D00E63577 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
-		C798B6931191E24A0033D504 /* CocoaCaConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaCaConverter.h; sourceTree = "<group>"; };
-		C798B6961191E2640033D504 /* CocoaCaConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CocoaCaConverter.cpp; sourceTree = "<group>"; };
+		C7A76E991176449F00A46655 /* Callback.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Callback.cpp; sourceTree = "<group>"; };
 		C7A76E9A1176449F00A46655 /* Io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Io.cpp; sourceTree = "<group>"; };
 		C7A76E9B1176449F00A46655 /* Output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Output.cpp; sourceTree = "<group>"; };
 		C7A76E9C1176449F00A46655 /* SourceFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SourceFile.cpp; sourceTree = "<group>"; };
@@ -1356,7 +1358,6 @@
 				C7A76EA5117644AB00A46655 /* Output.h */,
 				C7A76EA6117644AB00A46655 /* SourceFile.h */,
 				C705F17F0FD995120009395A /* Buffer.h */,
-				C798B6931191E24A0033D504 /* CocoaCaConverter.h */,
 			);
 			path = audio;
 			sourceTree = "<group>";
@@ -1364,10 +1365,10 @@
 		C7BA40600FA8BF0F00AADC07 /* audio */ = {
 			isa = PBXGroup;
 			children = (
+				C7A76E991176449F00A46655 /* Callback.cpp */,
 				C7A76E9A1176449F00A46655 /* Io.cpp */,
 				C7A76E9B1176449F00A46655 /* Output.cpp */,
 				C7A76E9C1176449F00A46655 /* SourceFile.cpp */,
-				C798B6961191E2640033D504 /* CocoaCaConverter.cpp */,
 			);
 			path = audio;
 			sourceTree = "<group>";
@@ -1780,7 +1781,6 @@
 				C7A76EA9117644AB00A46655 /* Io.h in Headers */,
 				C7A76EAA117644AB00A46655 /* Output.h in Headers */,
 				C7A76EAB117644AB00A46655 /* SourceFile.h in Headers */,
-				C798B6941191E24A0033D504 /* CocoaCaConverter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1932,6 +1932,8 @@
 				001E355F115D5EFA000C228C /* Xml.cpp in Sources */,
 				00B729E4115DABD800CD71B9 /* Timer.cpp in Sources */,
 				0049A34A116EE65C007DDFB0 /* AxisAlignedBox.cpp in Sources */,
+				005374F51194F584004D686E /* Text.cpp in Sources */,
+				005374F71194F588004D686E /* Font.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2008,6 +2010,8 @@
 				001E3560115D5EFA000C228C /* Xml.cpp in Sources */,
 				00B729E5115DABD800CD71B9 /* Timer.cpp in Sources */,
 				0049A34B116EE65D007DDFB0 /* AxisAlignedBox.cpp in Sources */,
+				005374F61194F584004D686E /* Text.cpp in Sources */,
+				005374F81194F589004D686E /* Font.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2109,10 +2113,10 @@
 				001E3561115D5EFA000C228C /* Xml.cpp in Sources */,
 				00B729E3115DABD800CD71B9 /* Timer.cpp in Sources */,
 				0049A349116EE655007DDFB0 /* AxisAlignedBox.cpp in Sources */,
+				C7A76E9E1176449F00A46655 /* Callback.cpp in Sources */,
 				C7A76E9F1176449F00A46655 /* Io.cpp in Sources */,
 				C7A76EA01176449F00A46655 /* Output.cpp in Sources */,
 				C7A76EA11176449F00A46655 /* SourceFile.cpp in Sources */,
-				C798B6981191E2640033D504 /* CocoaCaConverter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

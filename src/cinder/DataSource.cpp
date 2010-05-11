@@ -73,12 +73,9 @@ void DataSourcePath::createBuffer()
 	mBuffer = loadStreamBuffer( stream );
 }
 
-IStreamRef DataSourcePath::getStream()
+IStreamRef DataSourcePath::createStream()
 {
-	if( ! mStream )
-		mStream = loadFileStream( mFilePath );
-		
-	return mStream;
+	return loadFileStream( mFilePath );
 }
 
 DataSourcePathRef loadFile( const std::string &path )
@@ -105,12 +102,9 @@ void DataSourceUrl::createBuffer()
 	mBuffer = loadStreamBuffer( stream );
 }
 
-IStreamRef DataSourceUrl::getStream()
+IStreamRef DataSourceUrl::createStream()
 {
-	if( ! mStream )
-		mStream = loadUrlStream( mUrl );
-		
-	return mStream;
+	return loadUrlStream( mUrl );
 }
 
 DataSourceUrlRef loadUrl( const Url &Url )
@@ -139,12 +133,9 @@ void DataSourceBuffer::createBuffer()
 	// no-op - we already supplied the buffer in the constructor
 }
 
-IStreamRef DataSourceBuffer::getStream()
+IStreamRef DataSourceBuffer::createStream()
 {
-	if( ! mStream )
-		mStream = IStreamMem::createRef( mBuffer.getData(), mBuffer.getDataSize() );
-		
-	return mStream;
+	return IStreamMem::createRef( mBuffer.getData(), mBuffer.getDataSize() );
 }
 
 } // namespace cinder
