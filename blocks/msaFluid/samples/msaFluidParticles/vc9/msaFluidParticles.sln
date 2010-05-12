@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "msaFluidBasic", "msaFluidBasic.vcproj", "{ADA00FEA-5218-413E-B762-35D91045B3B4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "msaFluidParticles", "msaFluidParticles.vcproj", "{ADA00FEA-5218-413E-B762-35D91045B3B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
