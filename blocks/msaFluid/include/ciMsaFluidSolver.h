@@ -220,8 +220,8 @@ protected:
 	void	diffuseUV(float diff);
 	
 	void	project(ci::Vec2f *xy, ci::Vec2f *pDiv);
-	void	linearSolver(int b, float *x, const __restrict float *x0, float a, float c);
-	void	linearSolverProject( __restrict ci::Vec2f* pdiv );
+	void	linearSolver(int b, float *x, const float* __restrict x0, float a, float c);
+	void	linearSolverProject( ci::Vec2f* __restrict pdiv );
 	void	linearSolverRGB( float a, float c);
 	void	linearSolverUV(float a, float c);
 	

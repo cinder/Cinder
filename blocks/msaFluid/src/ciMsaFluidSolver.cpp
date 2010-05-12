@@ -675,7 +675,7 @@ void ciMsaFluidSolver::project(ci::Vec2f* xy, ci::Vec2f* pDiv)
 
 
 //	Gauss-Seidel relaxation
-void ciMsaFluidSolver::linearSolver( int bound, __restrict float* x, const __restrict float* x0, float a, float c )
+void ciMsaFluidSolver::linearSolver( int bound, float* __restrict x, const float* __restrict x0, float a, float c )
 {
 	int	step_x = _NX + 2;
 	int index;
@@ -695,7 +695,7 @@ void ciMsaFluidSolver::linearSolver( int bound, __restrict float* x, const __res
 	}
 }
 
-void ciMsaFluidSolver::linearSolverProject( __restrict ci::Vec2f* pdiv )
+void ciMsaFluidSolver::linearSolverProject( ci::Vec2f* __restrict pdiv )
 {
 	int	step_x = _NX + 2;
 	int index;
@@ -748,8 +748,8 @@ void ciMsaFluidSolver::linearSolverUV( float a, float c )
 	int index;
 	int	step_x = _NX + 2;
 	c = 1. / c;
-	__restrict ci::Vec2f *localUV = uv;
-	const __restrict ci::Vec2f *localOldUV = uvOld;
+	ci::Vec2f* __restrict localUV = uv;
+	const ci::Vec2f* __restrict localOldUV = uvOld;
 
 	for (int k = solverIterations; k > 0; --k)	// MEMO
 	{           
