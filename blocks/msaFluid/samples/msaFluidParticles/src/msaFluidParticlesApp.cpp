@@ -3,10 +3,13 @@
 #include "ciMsaFluidSolver.h"
 #include "ciMsaFluidDrawerGl.h"
 
+#include "Particle.h"
+#include "ParticleSystem.h"
+
 using namespace ci;
 using namespace ci::app;
 
-class msaFluidBasicApp : public AppBasic {
+class msaFluidParticlesApp : public AppBasic {
  public:
 	void	setup();
  
@@ -23,15 +26,17 @@ class msaFluidBasicApp : public AppBasic {
 	int					fluidCellsX;
 	bool				resizeFluid;
 	bool				drawFluid;
+	bool				drawParticles;
 	bool				renderUsingVA;
 	
 	ciMsaFluidSolver	fluidSolver;
 	ciMsaFluidDrawerGl	fluidDrawer;	
+	ParticleSystem		particleSystem;
 	
 	Vec2i				pMouse;
 };
 
-void msaFluidBasicApp::setup()
+void msaFluidParticlesApp::setup()
 {
 	console() << "ciMSAFluid Demo | (c) 2009 Mehmet Akten | www.memo.tv" << std::endl;
 	
@@ -39,10 +44,12 @@ void msaFluidBasicApp::setup()
 	fluidSolver.setup(100, 100);
     fluidSolver.enableRGB(true).setFadeSpeed(0.002).setDeltaT(0.5).setVisc(0.00015).setColorDiffusion(0);
 	fluidDrawer.setup( &fluidSolver );
+	particleSystem.setFluidSolver( &fluidSolver );
 	
 	fluidCellsX			= 150;
 	
 	drawFluid			= true;
+	drawParticles		= false;
 	renderUsingVA		= true;
 	
 	setFrameRate( 60.0f );
@@ -53,13 +60,14 @@ void msaFluidBasicApp::setup()
 	gl::enableAlphaBlending();
 }
 
-void msaFluidBasicApp::fadeToColor( float r, float g, float b, float speed )
+void msaFluidParticlesApp::fadeToColor( float r, float g, float b, float speed )
 {
 	glColor4f( r, g, b, speed );
 	gl::drawSolidRect( getWindowBounds() );
 }
 
-void msaFluidBasicApp::addToFluid( Vec2f pos, Vec2f vel, bool addColor, bool addForce )
+// add force and dye to fluid, and create particles
+void msaFluidParticlesApp::addToFluid( Vec2f pos, Vec2f vel, bool addColor, bool addForce )
 {
     float speed = vel.x * vel.x  + vel.y * vel.y * getWindowAspectRatio() * getWindowAspectRatio();    // balance the x and y components of speed with the screen aspect ratio
     if( speed > 0 ) {
@@ -77,6 +85,9 @@ void msaFluidBasicApp::addToFluid( Vec2f pos, Vec2f vel, bool addColor, bool add
 			fluidSolver.r[index]  += drawColor.r * colorMult;
 			fluidSolver.g[index]  += drawColor.g * colorMult;
 			fluidSolver.b[index]  += drawColor.b * colorMult;
+
+			if( drawParticles )
+				particleSystem.addParticles( pos.x * getWindowWidth(), pos.y * getWindowHeight(), 1000);
 		}
 		
 		if( addForce ) {
@@ -89,7 +100,7 @@ void msaFluidBasicApp::addToFluid( Vec2f pos, Vec2f vel, bool addColor, bool add
     }
 }
 
-void msaFluidBasicApp::update()
+void msaFluidParticlesApp::update()
 {
 	if( resizeFluid ) {
 		fluidSolver.setSize(fluidCellsX, fluidCellsX / getWindowAspectRatio() );
@@ -100,21 +111,24 @@ void msaFluidBasicApp::update()
 	fluidSolver.update();
 }
 
-void msaFluidBasicApp::draw()
+void msaFluidParticlesApp::draw()
 {
 	if( drawFluid ) {
 		glColor3f(1, 1, 1);
 		fluidDrawer.draw(0, 0, getWindowWidth(), getWindowHeight());
 	}
+	if( drawParticles )
+		particleSystem.updateAndDraw( drawFluid );
 }
 
 
-void msaFluidBasicApp::resize( int w, int h )
+void msaFluidParticlesApp::resize( int w, int h )
 {
+	particleSystem.setWindowSize( Vec2i( w, h ) );
 	resizeFluid = true;
 }
 
-void msaFluidBasicApp::keyDown( KeyEvent event )
+void msaFluidParticlesApp::keyDown( KeyEvent event )
 { 
     switch( event.getChar() ) {
 		case 'f':
@@ -122,6 +136,9 @@ void msaFluidBasicApp::keyDown( KeyEvent event )
 		break;
 		case ' ':
 			fluidSolver.randomizeColor();
+		break;
+		case 'p':
+			drawParticles = ! drawParticles;
 		break;
 		case 'b': {
 			Timer timer;
@@ -136,7 +153,7 @@ void msaFluidBasicApp::keyDown( KeyEvent event )
     }
 }
 
-void msaFluidBasicApp::mouseMove( MouseEvent event )
+void msaFluidParticlesApp::mouseMove( MouseEvent event )
 {
 	Vec2f mouseNorm = Vec2f( event.getPos() ) / getWindowSize();
 	Vec2f mouseVel = Vec2f( event.getPos() - pMouse ) / getWindowSize();
@@ -144,7 +161,7 @@ void msaFluidBasicApp::mouseMove( MouseEvent event )
 	pMouse = event.getPos();
 }
 
-void msaFluidBasicApp::mouseDrag( MouseEvent event )
+void msaFluidParticlesApp::mouseDrag( MouseEvent event )
 {
 	Vec2f mouseNorm = Vec2f( event.getPos() ) / getWindowSize();
 	Vec2f mouseVel = Vec2f( event.getPos() - pMouse ) / getWindowSize();
@@ -152,4 +169,4 @@ void msaFluidBasicApp::mouseDrag( MouseEvent event )
 	pMouse = event.getPos();
 }
 
-CINDER_APP_BASIC( msaFluidBasicApp, RendererGl )
+CINDER_APP_BASIC( msaFluidParticlesApp, RendererGl )
