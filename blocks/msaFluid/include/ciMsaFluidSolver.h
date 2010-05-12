@@ -176,8 +176,7 @@ public:
 	float	*g, *gOld;
 	float	*b, *bOld;
 	
-	float	*u, *uOld;
-	float	*v, *vOld;
+	ci::Vec2f	*uv, *uvOld;
 
 	float	*curl;
 	
@@ -213,25 +212,29 @@ protected:
 	void	destroy();
 	
 	INLINE	float	calcCurl(int i, int j);
-	void	vorticityConfinement(float *Fvc_x, float *Fvc_y);
+	void	vorticityConfinement(ci::Vec2f *Fvc_xy);
 	
 	void	addSource(float *x, float *x0);
 	void	addSourceUV();		// does both U and V in one go
 	void	addSourceRGB();	// does R, G, and B in one go
 	
-	void	advect(int b, float *d, float *d0, float *du, float *dv);
-	void	advectRGB(int b, float *du, float *dv);
+	void	advect(int b, float *d, const float *d0, const ci::Vec2f *duv);
+	void	advect2d( ci::Vec2f *uv, const ci::Vec2f *duv );
+	void	advectRGB(int b, const ci::Vec2f *duv);
 	
 	void	diffuse(int b, float *c, float *c0, float diff);
 	void	diffuseRGB(int b, float diff);
 	void	diffuseUV(float diff);
 	
-	void	project(float *x, float *y, float *p, float *div);
-	void	linearSolver(int b, float *x, float *x0, float a, float c);
+	void	project(ci::Vec2f *xy, ci::Vec2f *pDiv);
+	void	linearSolver(int b, float *x, const __restrict float *x0, float a, float c);
+	void	linearSolverProject( __restrict ci::Vec2f* pdiv );
 	void	linearSolverRGB( float a, float c);
 	void	linearSolverUV(float a, float c);
 	
 	void	setBoundary(int b, float *x);
+	void	setBoundary02d(ci::Vec2f* x);
+	void	setBoundary2d(int b, ci::Vec2f *xy );
 	void	setBoundaryRGB();
 	
 	void	swapUV();
@@ -272,7 +275,7 @@ INLINE int ciMsaFluidSolver::getIndexForNormalizedPosition(float x, float y) con
 INLINE	void ciMsaFluidSolver::getInfoAtCell(int i, ci::Vec2f *vel, ci::Color *color) {
 	//	if(safeToRun()){
 	if(vel)
-		vel->set(u[i] * _invNX, v[i] * _invNY);
+		vel->set(uv[i].x * _invNX, uv[i].y * _invNY);
 	if(color)
 	{
 		if(doRGB)
@@ -311,8 +314,8 @@ INLINE	void ciMsaFluidSolver::addForceAtCell(int i, int j, float vx, float vy)
 {
 	//      if(safeToRun()){
 	int index = FLUID_IX(i, j);
-	uOld[index] += vx * _NX;
-	vOld[index] += vy * _NY;
+	uvOld[index].x += vx * _NX;
+	uvOld[index].y += vy * _NY;
 	//              unlock();
 	//      }
 }

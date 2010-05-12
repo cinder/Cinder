@@ -91,8 +91,8 @@ void msaFluidBasicApp::addToFluid( Vec2f pos, Vec2f vel, bool addColor, bool add
 		}
 		
 		if( addForce ) {
-			fluidSolver.u[index] += vel.x * velocityMult;
-			fluidSolver.v[index] += vel.y * velocityMult;
+			fluidSolver.uv[index].x += vel.x * velocityMult;
+			fluidSolver.uv[index].y += vel.y * velocityMult;
 		}
 		
 		if( ! drawFluid && getElapsedFrames()%5==0 )

@@ -7,8 +7,6 @@
  *
  */
 
-#pragma once
-
 #include "Particle.h"
 #include "cinder/Rand.h"
 #include "cinder/gl/gl.h"
@@ -34,8 +32,8 @@ void Particle::update( const ciMsaFluidSolver &solver, const Vec2f &windowSize, 
 	
 	// read fluid info and add to velocity
 	int fluidIndex = solver.getIndexForNormalizedPosition(x * invWindowSize.x, y * invWindowSize.y);
-	vx = solver.u[fluidIndex] * windowSize.x * mass * FLUID_FORCE + vx * MOMENTUM;
-	vy = solver.v[fluidIndex] * windowSize.y * mass * FLUID_FORCE + vy * MOMENTUM;
+	vx = solver.uv[fluidIndex].x * windowSize.x * mass * FLUID_FORCE + vx * MOMENTUM;
+	vy = solver.uv[fluidIndex].y * windowSize.y * mass * FLUID_FORCE + vy * MOMENTUM;
 	
 //	color.r = myApp->fluidSolver.r[fluidIndex] + 0.5;
 //	color.g = myApp->fluidSolver.g[fluidIndex] + 0.5;
