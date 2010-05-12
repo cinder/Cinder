@@ -18,10 +18,6 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		D19D899911459F0700682836 /* libcv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D19D899511459F0700682836 /* libcv.dylib */; };
-		D19D899A11459F0700682836 /* libcvaux.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D19D899611459F0700682836 /* libcvaux.dylib */; };
-		D19D899B11459F0700682836 /* libcxcore.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D19D899711459F0700682836 /* libcxcore.dylib */; };
-		D19D899C11459F0700682836 /* libhighgui.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = D19D899811459F0700682836 /* libhighgui.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,15 +33,12 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* ocvVideo_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ocvVideo_Prefix.pch; sourceTree = "<group>"; };
+		43F521B2119B63C400D2A65E /* CinderOpenCV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CinderOpenCV.h; path = ../../../include/CinderOpenCV.h; sourceTree = SOURCE_ROOT; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ocvVideo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ocvVideo.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D19D899511459F0700682836 /* libcv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcv.dylib; path = /usr/local/lib/libcv.dylib; sourceTree = "<absolute>"; };
-		D19D899611459F0700682836 /* libcvaux.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcvaux.dylib; path = /usr/local/lib/libcvaux.dylib; sourceTree = "<absolute>"; };
-		D19D899711459F0700682836 /* libcxcore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcxcore.dylib; path = /usr/local/lib/libcxcore.dylib; sourceTree = "<absolute>"; };
-		D19D899811459F0700682836 /* libhighgui.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhighgui.dylib; path = /usr/local/lib/libhighgui.dylib; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,10 +56,6 @@
 				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
 				00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */,
 				00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */,
-				D19D899911459F0700682836 /* libcv.dylib in Frameworks */,
-				D19D899A11459F0700682836 /* libcvaux.dylib in Frameworks */,
-				D19D899B11459F0700682836 /* libcxcore.dylib in Frameworks */,
-				D19D899C11459F0700682836 /* libhighgui.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,7 +108,7 @@
 		29B97314FDCFA39411CA2CEA /* ocvVideo */ = {
 			isa = PBXGroup;
 			children = (
-				D19D899211459E4400682836 /* opencv */,
+				43F521AF119B63C400D2A65E /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -154,15 +143,28 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D19D899211459E4400682836 /* opencv */ = {
+		43F521AF119B63C400D2A65E /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				D19D899511459F0700682836 /* libcv.dylib */,
-				D19D899611459F0700682836 /* libcvaux.dylib */,
-				D19D899711459F0700682836 /* libcxcore.dylib */,
-				D19D899811459F0700682836 /* libhighgui.dylib */,
+				43F521B0119B63C400D2A65E /* OpenCV */,
 			);
-			name = opencv;
+			name = Blocks;
+			sourceTree = "<group>";
+		};
+		43F521B0119B63C400D2A65E /* OpenCV */ = {
+			isa = PBXGroup;
+			children = (
+				43F521B1119B63C400D2A65E /* include */,
+			);
+			name = OpenCV;
+			sourceTree = "<group>";
+		};
+		43F521B1119B63C400D2A65E /* include */ = {
+			isa = PBXGroup;
+			children = (
+				43F521B2119B63C400D2A65E /* CinderOpenCV.h */,
+			);
+			name = include;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -241,6 +243,8 @@
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
 					"-lcurl",
+					"$(OPENCV_PATH)/lib/libcv.a",
+					"$(OPENCV_PATH)/lib/libcxcore.a",
 				);
 				PRODUCT_NAME = ocvVideo;
 				WRAPPER_EXTENSION = app;
@@ -264,6 +268,8 @@
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
 					"-lcurl",
+					"$(OPENCV_PATH)/lib/libcv.a",
+					"$(OPENCV_PATH)/lib/libcxcore.a",
 				);
 				PRODUCT_NAME = ocvVideo;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -280,9 +286,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/include/opencv,
+					"$(OPENCV_PATH)/include",
 					"$(CINDER_PATH)/boost",
 				);
+				OPENCV_PATH = "../../../OpenCV-2.1.0";
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
@@ -298,9 +305,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					/usr/local/include/opencv,
+					"$(OPENCV_PATH)/include",
 					"$(CINDER_PATH)/boost",
 				);
+				OPENCV_PATH = "../../../OpenCV-2.1.0";
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";

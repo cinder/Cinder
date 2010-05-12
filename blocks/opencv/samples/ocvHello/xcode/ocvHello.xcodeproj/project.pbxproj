@@ -34,15 +34,12 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* ocvHello_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ocvHello_Prefix.pch; sourceTree = "<group>"; };
+		43F52123119B4C0200D2A65E /* CinderOpenCV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CinderOpenCV.h; path = ../../../include/CinderOpenCV.h; sourceTree = SOURCE_ROOT; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ocvHello.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ocvHello.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D19D8911114590E600682836 /* libcv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcv.dylib; path = /usr/local/lib/libcv.dylib; sourceTree = "<absolute>"; };
-		D19D8912114590E600682836 /* libcvaux.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcvaux.dylib; path = /usr/local/lib/libcvaux.dylib; sourceTree = "<absolute>"; };
-		D19D8913114590E600682836 /* libcxcore.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcxcore.dylib; path = /usr/local/lib/libcxcore.dylib; sourceTree = "<absolute>"; };
-		D19D8914114590E600682836 /* libhighgui.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libhighgui.dylib; path = /usr/local/lib/libhighgui.dylib; sourceTree = "<absolute>"; };
 		D19D8949114599C400682836 /* lena.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lena.jpg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -113,9 +110,9 @@
 		29B97314FDCFA39411CA2CEA /* ocvHello */ = {
 			isa = PBXGroup;
 			children = (
+				43F5211D119B4AD200D2A65E /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
-				D19D890E114590AC00682836 /* OpenCV Frameworks */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -149,15 +146,28 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		D19D890E114590AC00682836 /* OpenCV Frameworks */ = {
+		43F5211D119B4AD200D2A65E /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				D19D8911114590E600682836 /* libcv.dylib */,
-				D19D8912114590E600682836 /* libcvaux.dylib */,
-				D19D8913114590E600682836 /* libcxcore.dylib */,
-				D19D8914114590E600682836 /* libhighgui.dylib */,
+				43F5211E119B4ADB00D2A65E /* OpenCV */,
 			);
-			name = "OpenCV Frameworks";
+			name = Blocks;
+			sourceTree = "<group>";
+		};
+		43F5211E119B4ADB00D2A65E /* OpenCV */ = {
+			isa = PBXGroup;
+			children = (
+				43F5211F119B4AE600D2A65E /* include */,
+			);
+			name = OpenCV;
+			sourceTree = "<group>";
+		};
+		43F5211F119B4AE600D2A65E /* include */ = {
+			isa = PBXGroup;
+			children = (
+				43F52123119B4C0200D2A65E /* CinderOpenCV.h */,
+			);
+			name = include;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -251,18 +261,22 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_FAST_MATH = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = ocvHello_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
 					"-lcurl",
+					"$(OPENCV_PATH)/lib/libcv.a",
+					"$(OPENCV_PATH)/lib/libcxcore.a",
 				);
 				PRODUCT_NAME = ocvHello;
 				STRIP_INSTALLED_PRODUCT = YES;
