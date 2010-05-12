@@ -166,12 +166,6 @@ public:
 	// allocate an array large enough to hold information for u, v, r, g, OR b
 	float* alloc()	{ return new float[_numCells];	}
 	
-	//	void copyU(float *p)	{ if(lock()) { memcpy(p, u, sizeof(float) * _numCells); unlock(); }}
-	//	void copyV(float *p)	{ if(lock()) { memcpy(p, v, sizeof(float) * _numCells); unlock(); }}
-	//	void copyR(float *p)	{ if(lock()) { memcpy(p, r, sizeof(float) * _numCells); unlock(); }}
-	//	void copyG(float *p)	{ if(lock()) { memcpy(p, g, sizeof(float) * _numCells); unlock(); }}
-	//	void copyB(float *p)	{ if(lock()) { memcpy(p, b, sizeof(float) * _numCells); unlock(); }}
-	
 	float	*r, *rOld;
 	float	*g, *gOld;
 	float	*b, *bOld;
@@ -190,7 +184,6 @@ public:
 	
 	bool	wrap_x;
 	bool	wrap_y;
-
 	
 	float width;
 	float height;
@@ -245,18 +238,6 @@ protected:
 	
 	void	fadeR();
 	void	fadeRGB();
-	/*	
-	 bool lock() {
-	 return true;
-	 }
-	 
-	 void unlock() {
-	 }
-	 
-	 bool safeToRun() {
-	 return true;
-	 }
-	 */
 };
 
 

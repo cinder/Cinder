@@ -191,8 +191,6 @@ void ciMsaFluidDrawerGl::drawColor(float x, float y, float renderWidth, float re
 	for(int j=1; j < fh-1; j++) {
 		for(int i=1; i < fw-1; i++) {
 			_fluidSolver->getInfoAtCell(i, j, &vel, &color);
-			float speed2 = fabs(vel.x) * fw + fabs(vel.y) * fh;
-			int speed = (int)math<float>::min(speed2 * 255 * alpha, 255);
 			uint8_t r = (uint8_t)math<float>::min(color.r * 255 * alpha, 255);
 			uint8_t g = (uint8_t)math<float>::min(color.g * 255 * alpha, 255);
 			uint8_t b = (uint8_t)math<float>::min(color.b * 255 * alpha, 255);
@@ -204,7 +202,7 @@ void ciMsaFluidDrawerGl::drawColor(float x, float y, float renderWidth, float re
 			_pixels[index++] = r;
 			_pixels[index++] = g;
 			_pixels[index++] = b;
-			if(_alphaEnabled) int a = _pixels[index++] = withAlpha ? math<uint8_t>::min(b, math<uint8_t>::max(r, g)) : 255;
+			if(_alphaEnabled) _pixels[index++] = withAlpha ? math<uint8_t>::min(b, math<uint8_t>::max(r, g)) : 255;
 		}
 	}
 

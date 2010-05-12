@@ -135,7 +135,7 @@ void msaFluidBasicApp::keyDown( KeyEvent event )
 			setFullScreen( ! isFullScreen() );
 		break;
 		case ' ':
-			fluidDrawer.incDrawMode();
+			fluidSolver.randomizeColor();
 		break;
 		case 'p':
 			drawParticles = ! drawParticles;

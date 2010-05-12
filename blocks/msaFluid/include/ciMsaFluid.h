@@ -31,8 +31,6 @@
 
 #pragma once
 
-#define OF_ADDON_USING_ciMsaFLUID
-
 #include "ciMsaFluidSolver.h"
 #include "ciMsaFluidDrawer.h"
 
