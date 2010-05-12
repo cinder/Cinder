@@ -665,7 +665,7 @@ void ciMsaFluidSolver::project(float* x, float* y, float* p, float* div)
 
 
 //	Gauss-Seidel relaxation
-void ciMsaFluidSolver::linearSolver( int bound, float* x, float* x0, float a, float c )
+void ciMsaFluidSolver::linearSolver( int bound, __restrict float* x, __restrict float* x0, float a, float c )
 {
 	int	step_x = _NX + 2;
 	int index;
@@ -685,9 +685,11 @@ void ciMsaFluidSolver::linearSolver( int bound, float* x, float* x0, float a, fl
 				 }
 				 */
 				index = FLUID_IX(_NX, j );
+				float prev = x[index+1];
 				for (int i = _NX; i > 0 ; --i)
 				{
-					x[index] = ( x[index-1] + x[index+1] + x[index - step_x] + x[index + step_x] + x0[index] ) * .25;
+					prev = ( x[index-1] + prev + x[index - step_x] + x[index + step_x] + x0[index] ) * .25;
+					x[index] = prev;
 					--index;				
 				}
 			}
@@ -748,6 +750,11 @@ void ciMsaFluidSolver::linearSolverUV( float a, float c )
 	int index;
 	int	step_x = _NX + 2;
 	c = 1. / c;
+	__restrict float *localU = u;
+	__restrict float *localV = v;
+	__restrict float *localOldU = uOld;
+	__restrict float *localOldV = vOld;	
+
 	for (int k = solverIterations; k > 0; --k)	// MEMO
 	{           
 		for (int j = _NY; j > 0 ; --j)
@@ -757,12 +764,17 @@ void ciMsaFluidSolver::linearSolverUV( float a, float c )
 			//index2 = index + 1;		//FLUID_IX(i+1, j);
 			//index3 = index - step_x;	//FLUID_IX(i, j-1);
 			//index4 = index + step_x;	//FLUID_IX(i, j+1);
+			float prevU = localU[index+1];
+			float prevV = localV[index+1];
 			for (int i = _NX; i > 0 ; --i)
 			{
 				
-				u[index] = ( ( u[index-1] + u[index+1] + u[index - step_x] + u[index + step_x] ) * a  +  uOld[index] ) * c;
-				v[index] = ( ( v[index-1] + v[index+1] + v[index - step_x] + v[index + step_x] ) * a  +  vOld[index] ) * c;
+				//localU[index] = ( ( localU[index-1] + localU[index+1] + localU[index - step_x] + localU[index + step_x] ) * a  + localOldU[index] ) * c;
+				prevU = ( ( localU[index-1] + prevU + localU[index - step_x] + localU[index + step_x] ) * a  + localOldU[index] ) * c;
+				prevV = ( ( localV[index-1] + prevV + localV[index - step_x] + localV[index + step_x] ) * a  + localOldV[index] ) * c;
 				//				x[FLUID_IX(i, j)] = (a * ( x[FLUID_IX(i-1, j)] + x[FLUID_IX(i+1, j)]  +  x[FLUID_IX(i, j-1)] + x[FLUID_IX(i, j+1)])  +  x0[FLUID_IX(i, j)]) / c;
+				localU[index] = prevU;
+				localV[index] = prevV;
 				--index;
 			}
 		}
