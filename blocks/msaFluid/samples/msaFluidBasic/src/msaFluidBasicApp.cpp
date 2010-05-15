@@ -23,7 +23,6 @@ class msaFluidBasicApp : public AppBasic {
 	int					fluidCellsX;
 	bool				resizeFluid;
 	bool				drawFluid;
-	bool				renderUsingVA;
 	
 	ciMsaFluidSolver	fluidSolver;
 	ciMsaFluidDrawerGl	fluidDrawer;	
@@ -36,14 +35,12 @@ void msaFluidBasicApp::setup()
 	console() << "ciMSAFluid Demo | (c) 2009 Mehmet Akten | www.memo.tv" << std::endl;
 	
 	// setup fluid stuff
-	fluidSolver.setup(100, 100);
-    fluidSolver.enableRGB(true).setFadeSpeed(0.002).setDeltaT(0.5).setVisc(0.00015).setColorDiffusion(0);
+	fluidCellsX	= 100;
+	fluidSolver.setup( fluidCellsX, fluidCellsX );
+    fluidSolver.enableRGB(true).setFadeSpeed(0.002f).setDeltaT(0.5f).setVisc(0.00015f).setColorDiffusion(0);
 	fluidDrawer.setup( &fluidSolver );
 	
-	fluidCellsX			= 150;
-	
 	drawFluid			= true;
-	renderUsingVA		= true;
 	
 	setFrameRate( 60.0f );
 	
@@ -61,32 +58,22 @@ void msaFluidBasicApp::fadeToColor( float r, float g, float b, float speed )
 
 void msaFluidBasicApp::addToFluid( Vec2f pos, Vec2f vel, bool addColor, bool addForce )
 {
-    float speed = vel.x * vel.x  + vel.y * vel.y * getWindowAspectRatio() * getWindowAspectRatio();    // balance the x and y components of speed with the screen aspect ratio
-    if( speed > 0 ) {
-		constrain( pos.x, 0.0f, 1.0f );
-		constrain( pos.y, 0.0f, 1.0f );
-		
-        float colorMult = 50;
-        float velocityMult = 30;
-		
-        int index = fluidSolver.getIndexForNormalizedPosition( pos.x, pos.y );
-		
-		if( addColor ) {
-			Color drawColor( CM_HSV, ( getElapsedFrames() % 360 ) / 360.0f, 1, 1 );
-			
-			fluidSolver.r[index]  += drawColor.r * colorMult;
-			fluidSolver.g[index]  += drawColor.g * colorMult;
-			fluidSolver.b[index]  += drawColor.b * colorMult;
-		}
-		
-		if( addForce ) {
-			fluidSolver.uv[index].x += vel.x * velocityMult;
-			fluidSolver.uv[index].y += vel.y * velocityMult;
-		}
-		
-		if( ! drawFluid && getElapsedFrames()%5==0 )
-			fadeToColor( 0, 0, 0, 0.1f );
-    }
+	pos.x = constrain( pos.x, 0.0f, 1.0f );
+	pos.y = constrain( pos.y, 0.0f, 1.0f );
+	
+	const float colorMult = 50;
+	const float velocityMult = 5;
+	
+	if( addColor ) {
+		float hue = ( getElapsedFrames() % 360 ) / 360.0f;
+		fluidSolver.addColorAtPos( pos, Color( CM_HSV, hue, 1, 1 ) * colorMult );
+	}
+	
+	if( addForce )
+		fluidSolver.addForceAtPos( pos, vel * velocityMult );
+	
+	if( ! drawFluid && getElapsedFrames()%5==0 )
+		fadeToColor( 0, 0, 0, 0.1f );
 }
 
 void msaFluidBasicApp::update()

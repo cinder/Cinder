@@ -58,19 +58,10 @@
 #define     FLUID_DEFAULT_FADESPEED         .03
 #define		FLUID_DEFAULT_SOLVER_ITERATIONS		10
 
-#ifndef	AAASEED
-#define			INLINE							inline
 #define		FLUID_IX(i, j)		((i) + (_NX + 2)  *(j))
-#else
-#define			INLINE								FINLINE
-#endif
 
 class ciMsaFluidSolver {
 public:	
-#ifdef	AAASEED
-	FINLINE         INT32 FLUID_IX( INT32 i, INT32 j)	{  return (i) + (_NX + 2)  * (j); }
-#endif
-	
 	ciMsaFluidSolver();
 	virtual ~ciMsaFluidSolver();
 	
@@ -84,60 +75,56 @@ public:
 	void reset();	
 	
 	// get index for cell position
-	INLINE int getIndexForCellPosition(int x, int y) const;
+	inline int getIndexForCellPosition(int x, int y) const;
 	
 	// get index for normalized position
-	INLINE int getIndexForNormalizedPosition(float x, float y) const;
+	inline int getIndexForNormalizedPosition(float x, float y) const;
+	inline int getIndexForNormalizedPosition( const ci::Vec2f &pos ) const { return getIndexForNormalizedPosition( pos.x, pos.y ); }
 	
 	// get color and/vel at any point in the fluid.
 	// pass pointers to ci::Vec2f (for velocity) and ci::Vec2f (for color) and they get filled with the info
 	// leave any pointer NULL if you don't want that info
 	
 	// get info at normalized (x, y) coordinates. range :(0..1), (0..1)
-	INLINE void getInfoAtPos(float x, float y, ci::Vec2f *vel, ci::Color *color = NULL);
+	inline void getInfoAtPos(float x, float y, ci::Vec2f *vel, ci::Color *color = NULL) const;
 	
 	// get info at fluid cell pixels (i, j) if you know it. range: (0..NX-1), (0..NY-1)
-	INLINE	void getInfoAtCell(int i, int j, ci::Vec2f *vel, ci::Color *color = NULL);
+	inline	void getInfoAtCell(int i, int j, ci::Vec2f *vel, ci::Color *color = NULL) const;
 	
 	// get info at fluid cell index if you know it. range: (0..numCells)
-	INLINE	void getInfoAtCell(int index, ci::Vec2f *vel, ci::Color *color = NULL);
-	
+	inline	void getInfoAtCell(int index, ci::Vec2f *vel, ci::Color *color = NULL) const;
 	
 	// add force at normalized (x, y) coordinates
-	// vx: horizontal velocity
-	// vy: vertical velocity
-	INLINE void addForceAtPos(float x, float y, float vx, float vy);
+	inline void addForceAtPos( const ci::Vec2f &pos, const ci::Vec2f &force );
 	
 	// add force at (i, j) fluid cell coordinates
-	// vx: horizontal velocity
-	// vy: vertical velocity
-	INLINE	void addForceAtCell(int i, int j, float vx, float vy);
+	inline	void addForceAtCell(int i, int j, const ci::Vec2f &force);
 	
 	// add color at normalized (x, y) coordinates
 	// r, g, b: normalized R, G, B components of color to inject
 	// for monochrome, g & b are ignore, only r is used
-	INLINE void addColorAtPos(float x, float y, float r, float g=0, float b=0);
+	inline void addColorAtPos(float x, float y, float r, float g=0, float b=0);
+	inline void addColorAtPos( const ci::Vec2f &pos, const ci::Color &color ) { addColorAtPos( pos.x, pos.y, color.r, color.g, color.b ); }
 	
 	// add color and force at (i, j) fluid cell coordinates
 	// r, g, b: normalized R, G, B components of color to inject
 	// for monochrome, g & b are ignore, only r is used
-	INLINE void addColorAtCell(int i, int j, float r, float g=0, float b=0 );
-	INLINE void addColorAtCell(int i, int j, float* rgb );
+	inline void addColorAtCell(int i, int j, float r, float g=0, float b=0 );
+	inline void addColorAtCell(int i, int j, float* rgb );
 	
 	// fill with random color at every cell
 	void randomizeColor();
-	
-	
+		
 	// return number of cells and dimensions
-	int getNumCells();
-	int getWidth();
-	int getHeight();
+	int getNumCells() const;
+	int getWidth() const;
+	int getHeight() const;
 	
-	bool isInited();
+	bool isInited() const;
 	
 	// accessors for  viscocity, it will lerp to the target at lerpspeed
 	ciMsaFluidSolver& setVisc(float newVisc); 
-	float getVisc();
+	float getVisc() const;
 	
 	// accessors for  color diffusion
 	// if diff == 0, color diffusion is not performed
@@ -153,19 +140,19 @@ public:
 	bool getVorticityConfinement();
 	ciMsaFluidSolver& setWrap( bool bx, bool by );
 	
-
 	// returns average density of fluid 
-	float getAvgDensity();
+	float getAvgDensity() const;
 	
 	// returns average _uniformity
-	float getUniformity();
+	float getUniformity() const;
 	
 	// returns average speed of fluid
-	float getAvgSpeed();	
-	
+	float getAvgSpeed() const;
+			
+protected:
 	// allocate an array large enough to hold information for u, v, r, g, OR b
 	float* alloc()	{ return new float[_numCells];	}
-	
+
 	float	*r, *rOld;
 	float	*g, *gOld;
 	float	*b, *bOld;
@@ -185,12 +172,11 @@ public:
 	bool	wrap_x;
 	bool	wrap_y;
 	
-	float width;
-	float height;
-	float invWidth;
-	float invHeight;
-	
-protected:
+	float	width;
+	float	height;
+	float	invWidth;
+	float	invHeight;
+
 	
 	int		_NX, _NY, _numCells;
 	float	_invNX, _invNY, _invNumCells;
@@ -204,7 +190,7 @@ protected:
 	
 	void	destroy();
 	
-	INLINE	float	calcCurl(int i, int j);
+	inline	float	calcCurl(int i, int j);
 	void	vorticityConfinement(ci::Vec2f *Fvc_xy);
 	
 	void	addSource(float *x, float *x0);
@@ -220,8 +206,8 @@ protected:
 	void	diffuseUV(float diff);
 	
 	void	project(ci::Vec2f *xy, ci::Vec2f *pDiv);
-	void	linearSolver(int b, float *x, const float* __restrict x0, float a, float c);
-	void	linearSolverProject( ci::Vec2f* __restrict pdiv );
+	void	linearSolver(int b, float *x, const float *x0, float a, float c);
+	void	linearSolverProject( ci::Vec2f *pdiv );
 	void	linearSolverRGB( float a, float c);
 	void	linearSolverUV(float a, float c);
 	
@@ -243,18 +229,17 @@ protected:
 
 // the functions below are here for optimization purposes
  
-INLINE int ciMsaFluidSolver::getIndexForCellPosition(int i, int j) const {
+inline int ciMsaFluidSolver::getIndexForCellPosition(int i, int j) const {
 	if(i < 1) i=1; else if(i > _NX) i = _NX;
 	if(j < 1) j=1; else if(j > _NY) j = _NY;
 	return FLUID_IX(i, j);
 }
 
-INLINE int ciMsaFluidSolver::getIndexForNormalizedPosition(float x, float y) const {
+inline int ciMsaFluidSolver::getIndexForNormalizedPosition(float x, float y) const {
 	return getIndexForCellPosition((int)floor(x * (_NX+2)), (int)floor(y * (_NY+2)));
 }
 
-INLINE	void ciMsaFluidSolver::getInfoAtCell(int i, ci::Vec2f *vel, ci::Color *color) {
-	//	if(safeToRun()){
+inline	void ciMsaFluidSolver::getInfoAtCell(int i, ci::Vec2f *vel, ci::Color *color) const {
 	if(vel)
 		vel->set(uv[i].x * _invNX, uv[i].y * _invNY);
 	if(color)
@@ -264,44 +249,37 @@ INLINE	void ciMsaFluidSolver::getInfoAtCell(int i, ci::Vec2f *vel, ci::Color *co
 		else
 			color->set( ci::CM_RGB, ci::Vec3f( r[i], r[i], r[i] ) );
 	}
-	//		unlock();
-	//	}
 }
 
-INLINE void ciMsaFluidSolver::getInfoAtPos(float x, float y, ci::Vec2f *vel, ci::Color *color) {
+inline void ciMsaFluidSolver::getInfoAtPos(float x, float y, ci::Vec2f *vel, ci::Color *color) const {
 	int i= (int)(x * (_NX+2));
 	int j= (int)(y * (_NY+2));
 	getInfoAtCell(i, j, vel, color);
 }
 
 
-INLINE	void ciMsaFluidSolver::getInfoAtCell(int i, int j, ci::Vec2f *vel, ci::Color *color) {
+inline	void ciMsaFluidSolver::getInfoAtCell(int i, int j, ci::Vec2f *vel, ci::Color *color) const {
 	if(i<0) i = 0; else if(i > _NX+1) i = _NX+1;
 	if(j<0) j = 0; else if(j > _NY+1) j = _NY+1;
 	getInfoAtCell(FLUID_IX(i, j), vel, color);
 }
 
-
-
-INLINE void ciMsaFluidSolver::addForceAtPos(float x, float y, float vx, float vy) {
-	int i = (int) (x * _NX + 1);
+inline void ciMsaFluidSolver::addForceAtPos(const ci::Vec2f &pos, const ci::Vec2f &force ) {
+	int i = (int) (pos.x * _NX + 1);
 	if( i<0 || _NX+1<i ) return;
-	int j = (int) (y * _NY + 1);
+	int j = (int) (pos.y * _NY + 1);
 	if( j<0 || _NY+1<j ) return;
-	addForceAtCell(i, j, vx, vy);
+	addForceAtCell( i, j, force );
 }
 
-INLINE	void ciMsaFluidSolver::addForceAtCell(int i, int j, float vx, float vy)
+inline	void ciMsaFluidSolver::addForceAtCell(int i, int j, const ci::Vec2f &force )
 {
-	//      if(safeToRun()){
 	int index = FLUID_IX(i, j);
-	uvOld[index].x += vx * _NX;
-	uvOld[index].y += vy * _NY;
-	//              unlock();
-	//      }
+	uvOld[index].x += force.x * _NX;
+	uvOld[index].y += force.y * _NY;
 }
 
-INLINE void ciMsaFluidSolver::addColorAtCell(int i, int j, float r, float g, float b )
+inline void ciMsaFluidSolver::addColorAtCell(int i, int j, float r, float g, float b )
 {
 	//      if(safeToRun()){
 	int index = FLUID_IX(i, j);
@@ -315,7 +293,7 @@ INLINE void ciMsaFluidSolver::addColorAtCell(int i, int j, float r, float g, flo
 	//      }
 }
 
-INLINE void ciMsaFluidSolver::addColorAtPos(float x, float y, float r, float g, float b) {
+inline void ciMsaFluidSolver::addColorAtPos(float x, float y, float r, float g, float b) {
 	int i = (int) (x * _NX + 1);
 	if( i<0 || _NX+1<i ) return;
 	int j = (int) (y * _NY + 1);
@@ -324,7 +302,7 @@ INLINE void ciMsaFluidSolver::addColorAtPos(float x, float y, float r, float g, 
 }
 
 
-INLINE void ciMsaFluidSolver::addColorAtCell(int i, int j, float* rgb )
+inline void ciMsaFluidSolver::addColorAtCell(int i, int j, float* rgb )
 {
 	addColorAtCell( i, j, rgb[0], rgb[1], rgb[2] );
 }

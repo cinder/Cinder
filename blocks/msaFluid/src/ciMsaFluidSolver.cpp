@@ -133,7 +133,7 @@ ciMsaFluidSolver& ciMsaFluidSolver::setWrap( bool bx, bool by ) {
 	return *this;
 }
 
-bool ciMsaFluidSolver::isInited() {
+bool ciMsaFluidSolver::isInited() const {
 	return _isInited;
 }
 
@@ -185,16 +185,16 @@ void ciMsaFluidSolver::reset() {
 }
 
 // return total number of cells (_NX+2) * (_NY+2)
-int ciMsaFluidSolver::getNumCells() {
+int ciMsaFluidSolver::getNumCells() const {
 	return _numCells;
 }
 
-int ciMsaFluidSolver::getWidth() {
+int ciMsaFluidSolver::getWidth() const {
 	return _NX + 2;
 }
 
 
-int ciMsaFluidSolver::getHeight() {
+int ciMsaFluidSolver::getHeight() const {
 	return _NY + 2;
 }
 
@@ -205,7 +205,7 @@ ciMsaFluidSolver& ciMsaFluidSolver::setVisc(float newVisc) {
 }
 
 // returns current viscocity
-float ciMsaFluidSolver::getVisc() {
+float ciMsaFluidSolver::getVisc() const {
 	return viscocity;
 }
 
@@ -221,16 +221,16 @@ float	ciMsaFluidSolver::getColorDiffusion()
 }
 
 // returns average density of fluid 
-float ciMsaFluidSolver::getAvgDensity() {
+float ciMsaFluidSolver::getAvgDensity() const {
 	return _avgDensity;
 }
 
 // returns average uniformity
-float ciMsaFluidSolver::getUniformity() {
+float ciMsaFluidSolver::getUniformity() const {
 	return _uniformity;
 }
 
-float ciMsaFluidSolver::getAvgSpeed() {
+float ciMsaFluidSolver::getAvgSpeed() const {
 	return _avgSpeed;
 }
 
