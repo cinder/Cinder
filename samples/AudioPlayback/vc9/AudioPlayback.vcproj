@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="AudioPlayback"
-	ProjectGUID="{9DA00FEA-5218-413E-B762-35D91045B3B4}"
+	ProjectGUID="{046DB1A9-B8CD-4DFA-817F-D0B58F1D93E9}"
 	RootNamespace="AudioPlayback"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
@@ -55,6 +55,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="..\..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -129,6 +130,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="..\..\..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
