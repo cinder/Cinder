@@ -815,7 +815,7 @@ GLint Texture::getHeight() const
 GLint Texture::getCleanWidth() const
 {
 #if ! defined( CINDER_GLES )
-	if( mObj->mWidth == -1 ) {
+	if( mObj->mCleanWidth == -1 ) {
 		gl::SaveTextureBindState( mObj->mTarget );
 		bind();
 		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_WIDTH, &mObj->mWidth );
@@ -829,7 +829,7 @@ GLint Texture::getCleanWidth() const
 GLint Texture::getCleanHeight() const
 {
 #if ! defined( CINDER_GLES )
-	if( mObj->mHeight == -1 ) {
+	if( mObj->mCleanHeight == -1 ) {
 		gl::SaveTextureBindState( mObj->mTarget );
 		bind();
 		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_HEIGHT, &mObj->mHeight );	
