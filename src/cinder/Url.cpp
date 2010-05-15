@@ -71,11 +71,84 @@ CURLLib* CURLLib::instance()
 	return sInstance;
 }
 
+class IStreamUrlImplCurl : public IStreamUrlImpl {
+  public:
+	IStreamUrlImplCurl( const std::string &url, const std::string &user, const std::string &password );
+	~IStreamUrlImplCurl();
+
+	virtual size_t		readDataAvailable( void *dest, size_t maxSize );
+	virtual void		seekAbsolute( off_t absoluteOffset );
+	virtual void		seekRelative( off_t relativeOffset );
+	virtual off_t		tell() const;
+	virtual off_t		size() const;
+	
+	virtual bool		isEof() const;
+	virtual void		IORead( void *t, size_t size );
+
+  private:
+	int					bufferRemaining() const { return mBufferedBytes - mBufferOffset; }
+	void				fillBuffer( int wantBytes ) const;
+	
+	static size_t		writeCallback( char *buffer, size_t size, size_t nitems, void *userp );   
+  
+ 	CURL					*mCurl;
+	CURLM					*mMulti;
+	
+	std::string				mUserColonPassword;
+	
+	mutable int still_running;				// Is background url fetch still in progress
+	mutable bool			mStartedRead;
+
+	mutable off_t			mSize;
+	mutable bool			mSizeCached;
+	mutable long			mResponseCode;
+	mutable char			*mEffectiveUrl;
+	
+	mutable uint8_t		*mBuffer;
+	mutable int			mBufferSize;
+	mutable int			mBufferOffset, mBufferedBytes;
+	mutable off_t		mBufferFileOffset;	// where in the file the buffer starts
+	static const int	DEFAULT_BUFFER_SIZE = 4096;
+};
+
+IStreamUrlImplCurl::IStreamUrlImplCurl( const std::string &url, const std::string &user, const std::string &password )
+	: IStreamUrlImpl( user, password ), still_running( 1 ), mSizeCached( false ), mBufferFileOffset( 0 ), mStartedRead( false ),
+	mEffectiveUrl( 0 ), mResponseCode( 0 )
+{	
+	if( ! CURLLib::instance() )
+		throw StreamExc(); // for some reason the curl lib isn't initialized, and we're screwed
+	
+	mMulti = curl_multi_init();
+
+	mCurl = curl_easy_init();
+	curl_easy_setopt( mCurl, CURLOPT_URL, url.c_str() );
+	curl_easy_setopt( mCurl, CURLOPT_WRITEDATA, this );
+	curl_easy_setopt( mCurl, CURLOPT_VERBOSE, 0L );
+	curl_easy_setopt( mCurl, CURLOPT_FOLLOWLOCATION, 1L );
+	curl_easy_setopt( mCurl, CURLOPT_WRITEFUNCTION, IStreamUrlImplCurl::writeCallback );
+
+	if( ( ! mUser.empty() ) || ( ! mPassword.empty() ) ) {
+		mUserColonPassword = mUser + ":" + mPassword;
+		curl_easy_setopt( mCurl, CURLOPT_USERPWD, mUserColonPassword.c_str() );
+		curl_easy_setopt( mCurl, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
+	}
+		
+	curl_multi_add_handle( mMulti, mCurl );
+
+	// we fill the buffer just to get things rolling
+	mBufferSize = DEFAULT_BUFFER_SIZE;
+	mBuffer = (uint8_t*)malloc( mBufferSize );
+	mBufferOffset = 0;
+	mBufferedBytes = 0;
+	mBufferFileOffset = 0;
+//	fillBuffer( Stream::MINIMUM_BUFFER_SIZE );
+}
+
 extern "C" {
 
-size_t IStreamUrl::writeCallback( char *buffer, size_t size, size_t nitems, void *userp )
+size_t IStreamUrlImplCurl::writeCallback( char *buffer, size_t size, size_t nitems, void *userp )
 {
-	cinder::IStreamUrl *stream = (cinder::IStreamUrl*)userp;
+	cinder::IStreamUrlImplCurl *stream = (cinder::IStreamUrlImplCurl*)userp;
 	size *= nitems;
 
 	int roomInBuffer = stream->mBufferSize - stream->mBufferedBytes;
@@ -104,47 +177,7 @@ size_t IStreamUrl::writeCallback( char *buffer, size_t size, size_t nitems, void
 
 } // extern "C"
 
-IStreamUrlRef IStreamUrl::createRef( const std::string &url, const std::string &user, const std::string &password )
-{
-	return IStreamUrlRef( new IStreamUrl( url, user, password ) );
-}
-
-IStreamUrl::IStreamUrl( const std::string &url, const std::string &aUser, const std::string &aPassword )
-	: IStream(), mUser( aUser ), mPassword( aPassword ), still_running( 1 ), mSizeCached( false ), mBufferFileOffset( 0 ), mStartedRead( false ),
-	mEffectiveUrl( 0 ), mResponseCode( 0 )
-{	
-	setFileName( url );
-
-	if( ! CURLLib::instance() )
-		throw StreamExc(); // for some reason the curl lib isn't initialized, and we're screwed
-	
-	mMulti = curl_multi_init();
-
-	mCurl = curl_easy_init();
-	curl_easy_setopt( mCurl, CURLOPT_URL, url.c_str() );
-	curl_easy_setopt( mCurl, CURLOPT_WRITEDATA, this );
-	curl_easy_setopt( mCurl, CURLOPT_VERBOSE, 0L );
-	curl_easy_setopt( mCurl, CURLOPT_FOLLOWLOCATION, 1L );
-	curl_easy_setopt( mCurl, CURLOPT_WRITEFUNCTION, IStreamUrl::writeCallback );
-
-	if( ( ! mUser.empty() ) || ( ! mPassword.empty() ) ) {
-		mUserColonPassword = mUser + ":" + mPassword;
-		curl_easy_setopt( mCurl, CURLOPT_USERPWD, mUserColonPassword.c_str() );
-		curl_easy_setopt( mCurl, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
-	}
-		
-	curl_multi_add_handle( mMulti, mCurl );
-
-	// we fill the buffer just to get things rolling
-	mBufferSize = DEFAULT_BUFFER_SIZE;
-	mBuffer = (uint8_t*)malloc( mBufferSize );
-	mBufferOffset = 0;
-	mBufferedBytes = 0;
-	mBufferFileOffset = 0;
-//	fillBuffer( Stream::MINIMUM_BUFFER_SIZE );
-}
-
-IStreamUrl::~IStreamUrl()
+IStreamUrlImplCurl::~IStreamUrlImplCurl()
 {
 	if( mBuffer )
 		free( mBuffer );
@@ -156,12 +189,12 @@ IStreamUrl::~IStreamUrl()
 		curl_multi_cleanup( mMulti );
 }
 
-bool IStreamUrl::isEof() const
+bool IStreamUrlImplCurl::isEof() const
 {
 	return ( mBufferedBytes - mBufferOffset == 0 ) && ( ! still_running );
 }
 
-void IStreamUrl::seekRelative( off_t relativeOffset )
+void IStreamUrlImplCurl::seekRelative( off_t relativeOffset )
 {
 	// if this move stays inside the current buffer, we're good
 	if( ( mBufferOffset + relativeOffset >= 0 ) && ( mBufferOffset + relativeOffset < mBufferedBytes ) ) {
@@ -176,12 +209,17 @@ throw; // need to implement this
 	}
 }
 
-void IStreamUrl::seekAbsolute( off_t absoluteOffset )
+void IStreamUrlImplCurl::seekAbsolute( off_t absoluteOffset )
 {
 	seekRelative( absoluteOffset - ( mBufferFileOffset + mBufferOffset ) );
 }
 
-off_t IStreamUrl::size() const
+off_t IStreamUrlImplCurl::tell() const
+{
+	return mBufferFileOffset + mBufferOffset;
+}
+
+off_t IStreamUrlImplCurl::size() const
 {
 	if( ! mStartedRead )
 		fillBuffer( 1 );
@@ -213,7 +251,7 @@ off_t IStreamUrl::size() const
 	}
 }
 
-void IStreamUrl::fillBuffer( int wantBytes ) const
+void IStreamUrlImplCurl::fillBuffer( int wantBytes ) const
 {
 	// first make sure we've started reading, and do so if not
 	if( ! mStartedRead ) {
@@ -278,7 +316,7 @@ void IStreamUrl::fillBuffer( int wantBytes ) const
     } while( still_running && ( bufferRemaining() < wantBytes ) );
 }
 
-void IStreamUrl::IORead( void *dest, size_t size )
+void IStreamUrlImplCurl::IORead( void *dest, size_t size )
 {
 	fillBuffer( size );
 	
@@ -290,7 +328,7 @@ void IStreamUrl::IORead( void *dest, size_t size )
 	mBufferOffset += size;
 }
 
-size_t IStreamUrl::readDataAvailable( void *dest, size_t maxSize )
+size_t IStreamUrlImplCurl::readDataAvailable( void *dest, size_t maxSize )
 {
 	fillBuffer( maxSize );
 	
@@ -303,7 +341,7 @@ size_t IStreamUrl::readDataAvailable( void *dest, size_t maxSize )
 	return maxSize;
 }
 
-long IStreamUrl::getResponseCode() const
+/*long IStreamUrlImplCurl::getResponseCode() const
 {
 	if( ! mStartedRead )
 		fillBuffer( 1 );
@@ -315,7 +353,7 @@ long IStreamUrl::getResponseCode() const
 	return mResponseCode;
 }
 
-std::string	IStreamUrl::getEffectiveUrl() const
+std::string	IStreamUrlImplCurl::getEffectiveUrl() const
 {
 	if( ! mStartedRead )
 		fillBuffer( 1 );
@@ -325,8 +363,24 @@ std::string	IStreamUrl::getEffectiveUrl() const
 	}
 	
 	return std::string( mEffectiveUrl );
+}*/
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// IStreamUrl
+IStreamUrlRef IStreamUrl::createRef( const std::string &url, const std::string &user, const std::string &password )
+{
+	return IStreamUrlRef( new IStreamUrl( url, user, password ) );
 }
 
+IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const std::string &password )
+	: IStream()
+{
+	setFileName( url );
+	mImpl = shared_ptr<IStreamUrlImpl>( new IStreamUrlImplCurl( url, user, password ) );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// loadUrl
 IStreamUrlRef loadUrlStream( const Url &url )
 {
 	try {
