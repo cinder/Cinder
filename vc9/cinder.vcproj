@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\include\tinyxml;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
+				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;..\include\tinyxml;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="Ws2_32.lib wldap32.lib libpng.lib shlwapi.lib OpenGL32.lib zlib.lib pixman-1.lib libcurl.lib wmvcore.lib Strmiids.lib Msimg32.lib"
+				AdditionalDependencies="Ws2_32.lib wldap32.lib libpng.lib shlwapi.lib OpenGL32.lib zlib.lib pixman-1.lib wmvcore.lib Strmiids.lib Msimg32.lib"
 				OutputFile="..\lib\cinder_d.lib"
 				AdditionalLibraryDirectories="..\lib\msw"
 				IgnoreAllDefaultLibraries="true"
@@ -115,7 +115,7 @@
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\include\tinyxml;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
+				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;..\include\tinyxml;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
@@ -135,7 +135,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="Ws2_32.lib wldap32.lib libpng.lib shlwapi.lib OpenGL32.lib zlib.lib pixman-1.lib libcurl.lib wmvcore.lib Strmiids.lib Msimg32.lib"
+				AdditionalDependencies="Ws2_32.lib wldap32.lib libpng.lib shlwapi.lib OpenGL32.lib zlib.lib pixman-1.lib wmvcore.lib Strmiids.lib Msimg32.lib"
 				OutputFile="..\lib\cinder.lib"
 				AdditionalLibraryDirectories="..\lib\msw"
 				IgnoreAllDefaultLibraries="true"
@@ -307,10 +307,6 @@
 			</File>
 			<File
 				RelativePath="..\src\cinder\Url.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\cinder\UrlImplCurl.cpp"
 				>
 			</File>
 			<File
@@ -857,10 +853,6 @@
 			</File>
 			<File
 				RelativePath="..\include\cinder\Url.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\cinder\UrlImplCurl.h"
 				>
 			</File>
 			<File
