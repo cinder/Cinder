@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9DA00FEA-5218-413E-B762-35D91045B3B4}</ProjectGuid>
+    <ProjectGuid>{6EBBC9AB-57E9-48F4-A197-977E4ACC69E5}</ProjectGuid>
     <RootNamespace>AudioPlayback</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -66,6 +66,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\..\..\include</AdditionalIncludeDirectories>
@@ -92,6 +93,8 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
     <ResourceCompile>
       <AdditionalIncludeDirectories>..\..\..\include</AdditionalIncludeDirectories>
