@@ -25,9 +25,6 @@
 #include "cinder/Cinder.h"
 #include "cinder/Stream.h"
 
-typedef void CURL;
-typedef void CURLM;
-
 namespace cinder {
 
 class Url {

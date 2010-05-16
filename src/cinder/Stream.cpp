@@ -555,10 +555,24 @@ Buffer loadStreamBuffer( IStreamRef is )
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
 	
-	Buffer result( fileSize );
-	is->readDataAvailable( result.getData(), fileSize );
-	
-	return result;
+	if( fileSize ) { // sometimes fileSize will be zero for a stream that doesn't know how big it is
+		Buffer result( fileSize );
+		is->readDataAvailable( result.getData(), fileSize );
+		return result;
+	}
+	else {
+		const size_t bufferSize = 4096;
+		size_t offset = 0;
+		Buffer result( bufferSize );
+		while( ! is->isEof() ) {
+			if( offset + bufferSize > result.getAllocatedSize() )
+				result.resize( std::max( (size_t)(result.getAllocatedSize() * 1.5f), offset + bufferSize ) );
+			size_t bytesRead = is->readDataAvailable( reinterpret_cast<uint8_t*>( result.getData() ) + offset, bufferSize );
+			offset += bytesRead;
+			result.setDataSize( offset );
+		}
+		return result;
+	}
 }
 
 /////////////////////////////////////////////////////////////////////

@@ -310,6 +310,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cinder\UrlImplCurl.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\cinder\UrlImplWinInet.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cinder\Utilities.cpp"
 				>
 			</File>
@@ -849,6 +857,14 @@
 			</File>
 			<File
 				RelativePath="..\include\cinder\Url.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\UrlImplCurl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\UrlImplWinInet.h"
 				>
 			</File>
 			<File
