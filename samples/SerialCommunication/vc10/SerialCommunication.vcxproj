@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9DA00FEA-5218-413E-B762-35D91045B3B4}</ProjectGuid>
+    <ProjectGuid>{2493345F-8810-43A4-A5F9-4AD2978628A5}</ProjectGuid>
     <RootNamespace>SerialCommunication</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

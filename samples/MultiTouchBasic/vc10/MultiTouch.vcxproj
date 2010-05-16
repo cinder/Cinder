@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9DA00FEA-5218-413E-B762-35D91045B3B4}</ProjectGuid>
+    <ProjectGuid>{98F87F66-7F4F-47D7-9C34-6CF9C40BB6E2}</ProjectGuid>
     <RootNamespace>MultiTouch</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
