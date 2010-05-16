@@ -25,6 +25,7 @@
 
 #include <Windows.h>
 #include <Wininet.h>
+#include <Strsafe.h>
 #pragma comment( lib, "wininet.lib" )
 
 namespace cinder {
@@ -37,10 +38,28 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 	mSession = shared_ptr<void>( ::InternetOpen( AGENT_NAME, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 ), ::InternetCloseHandle );
 	if( ! mSession )
 		throw StreamExc();
+
+	// We don't currently handle user/pass because it will require going through InternetConnect instead of InternetOpenUrl.
+	
+/*	if( ! user.empty() ) {
+		std::wstring wideUser = toUtf16( user );
+		if( ! ::InternetSetOption( mSession.get(), INTERNET_OPTION_USERNAME, (void*)wideUser.c_str(), wideUser.length()+1 ) ) {
+			DWORD err = GetLastError();	
+			throw StreamExc();
+		}
+	}
+
+	if( ! password.empty() ) {
+		std::wstring widePassword = toUtf16( password );
+		if( ! ::InternetSetOption( mSession.get(), INTERNET_OPTION_PASSWORD, (void*)widePassword.c_str(), widePassword.length()+1 ) )
+			throw StreamExc();
+	}*/
+
 	std::wstring wideUrl = toUtf16( url );
 	mConnection = shared_ptr<void>( ::InternetOpenUrl( mSession.get(), wideUrl.c_str(), NULL, NULL, INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_RELOAD, reinterpret_cast<DWORD_PTR>( this ) ), ::InternetCloseHandle );
 	if( ! mConnection )
 		throw StreamExc();
+
 	mBufferSize = DEFAULT_BUFFER_SIZE;
 	mBuffer = (uint8_t*)malloc( mBufferSize );
 	mBufferOffset = 0;
