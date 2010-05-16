@@ -30,35 +30,68 @@
 
 namespace cinder {
 
-namespace { static const WCHAR AGENT_NAME[] = L"libcinder.org"; }
+namespace { static const WCHAR AGENT_NAME[] = L"libcinder"; }
 
 IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std::string &user, const std::string &password )
 	: IStreamUrlImpl( user, password ), mIsFinished( false ), mBuffer( 0 ), mBufferFileOffset( 0 )
 {
+	std::wstring wideUrl = toUtf16( url );
+
+	// we need to break the URL up into its constituent parts so we can choose a scheme
+	URL_COMPONENTS urlComponents;
+	::memset( &urlComponents, 0, sizeof(urlComponents) );
+	urlComponents.dwStructSize = sizeof(urlComponents);
+	urlComponents.dwSchemeLength = 1;
+	urlComponents.dwHostNameLength = 1;
+	urlComponents.dwHostNameLength = 1;
+	urlComponents.dwUrlPathLength = 1;
+	BOOL success = ::InternetCrackUrl( wideUrl.c_str(), 0, 0, &urlComponents );
+	if( ! success )
+		throw StreamExc();
+
+	// TODO this should be made safe against buffer overflows
+	WCHAR host[1024], path[2048];
+	memcpy( host, urlComponents.lpszHostName, urlComponents.dwHostNameLength * sizeof(WCHAR) );
+	host[urlComponents.dwHostNameLength] = 0;
+	memcpy( path, urlComponents.lpszUrlPath, urlComponents.dwUrlPathLength * sizeof(WCHAR) );
+	path[urlComponents.dwUrlPathLength] = 0;	
+
+	// make sure this a scheme we know about - HTTP(S) or FTP
+	switch( urlComponents.nScheme ) {
+		case INTERNET_SCHEME_HTTP: case INTERNET_SCHEME_HTTPS: case INTERNET_SCHEME_FTP: break;
+		default: throw StreamExc();
+	}
+
 	mSession = shared_ptr<void>( ::InternetOpen( AGENT_NAME, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 ), ::InternetCloseHandle );
 	if( ! mSession )
 		throw StreamExc();
 
-	// We don't currently handle user/pass because it will require going through InternetConnect instead of InternetOpenUrl.
-	
-/*	if( ! user.empty() ) {
-		std::wstring wideUser = toUtf16( user );
-		if( ! ::InternetSetOption( mSession.get(), INTERNET_OPTION_USERNAME, (void*)wideUser.c_str(), wideUser.length()+1 ) ) {
-			DWORD err = GetLastError();	
-			throw StreamExc();
-		}
-	}
+	std::wstring wideUser = toUtf16( user );
+	std::wstring widePassword = toUtf16( password );
 
-	if( ! password.empty() ) {
-		std::wstring widePassword = toUtf16( password );
-		if( ! ::InternetSetOption( mSession.get(), INTERNET_OPTION_PASSWORD, (void*)widePassword.c_str(), widePassword.length()+1 ) )
-			throw StreamExc();
-	}*/
-
-	std::wstring wideUrl = toUtf16( url );
-	mConnection = shared_ptr<void>( ::InternetOpenUrl( mSession.get(), wideUrl.c_str(), NULL, NULL, INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_RELOAD, reinterpret_cast<DWORD_PTR>( this ) ), ::InternetCloseHandle );
+	mConnection = shared_ptr<void>( ::InternetConnect( mSession.get(), host, urlComponents.nPort, (wideUser.empty()) ? NULL : wideUser.c_str(), (widePassword.empty()) ? NULL : widePassword.c_str(), urlComponents.nScheme, 0, NULL ),
+										::InternetCloseHandle );
 	if( ! mConnection )
 		throw StreamExc();
+
+	if( ( urlComponents.nScheme == INTERNET_SCHEME_HTTP ) ||
+		( urlComponents.nScheme == INTERNET_SCHEME_HTTPS ) ) {
+			static LPCTSTR lpszAcceptTypes[] = { L"*/*", NULL };
+			mRequest = shared_ptr<void>( ::HttpOpenRequest( mConnection.get(), L"GET", path, NULL, NULL, lpszAcceptTypes,
+													INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_RELOAD, NULL ),
+											::InternetCloseHandle );
+			if( ! mRequest )
+				throw StreamExc();
+			BOOL success = ::HttpSendRequest( mRequest.get(), NULL, 0, NULL, 0);
+			if( ! success )
+				throw StreamExc();
+	}
+	else if( urlComponents.nScheme == INTERNET_SCHEME_FTP ) {
+		mRequest = shared_ptr<void>( ::FtpOpenFile( mConnection.get(), path, GENERIC_READ, FTP_TRANSFER_TYPE_BINARY, NULL ),
+										::InternetCloseHandle );
+			if( ! mRequest )
+				throw StreamExc();
+	}
 
 	mBufferSize = DEFAULT_BUFFER_SIZE;
 	mBuffer = (uint8_t*)malloc( mBufferSize );
@@ -105,7 +138,7 @@ off_t IStreamUrlImplWinInet::tell() const
 
 off_t IStreamUrlImplWinInet::size() const
 {
-	return 0;
+	return 0; // we don't know the size
 }
 
 void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
@@ -141,7 +174,7 @@ void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
 	
 	do {
 		::DWORD bytesAvailable, bytesToRead, bytesRead;
-		if( ! ::InternetQueryDataAvailable( mConnection.get(), &bytesAvailable, 0, 0 ) )
+		if( ! ::InternetQueryDataAvailable( mRequest.get(), &bytesAvailable, 0, 0 ) )
 			throw StreamExc();
 		
 		if( bytesAvailable == 0 ) {
@@ -150,7 +183,7 @@ void IStreamUrlImplWinInet::fillBuffer( int wantBytes ) const
 		}
 		
 		bytesToRead = std::min<int>( bytesAvailable, wantBytes );
-		if( ! ::InternetReadFile( mConnection.get(), mBuffer + mBufferedBytes, bytesToRead, &bytesRead ) )
+		if( ! ::InternetReadFile( mRequest.get(), mBuffer + mBufferedBytes, bytesToRead, &bytesRead ) )
 			throw StreamExc();
 		mBufferedBytes += bytesRead;
 		wantBytes -= bytesRead;
