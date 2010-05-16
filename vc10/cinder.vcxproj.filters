@@ -375,6 +375,9 @@
     <ClCompile Include="..\src\videoInput\videoInput.cpp">
       <Filter>Source Files\videoInput</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -706,6 +709,9 @@
     </ClInclude>
     <ClInclude Include="..\include\msw\videoInput\videoInput.h">
       <Filter>Header Files\videoinput</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\UrlImplWinInet.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
