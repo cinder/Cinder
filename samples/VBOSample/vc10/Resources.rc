@@ -1,0 +1,4 @@
+#pragma once
+#include "..\include\Resources.h"
+
+RES_IMAGE
