@@ -291,6 +291,8 @@
 		008CE8540E94693900644A05 /* Area.h in Headers */ = {isa = PBXBuildFile; fileRef = 008CE8530E94693900644A05 /* Area.h */; };
 		0091D8F10E81B9110029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F00E81B9110029341E /* OpenGL.framework */; };
 		0094F3460F6A120800EBED1B /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0094F3450F6A120800EBED1B /* ScreenSaver.framework */; };
+		009704A811A050C300B1FC50 /* UrlImplCurl.h in Headers */ = {isa = PBXBuildFile; fileRef = 009704A711A050C300B1FC50 /* UrlImplCurl.h */; };
+		009704AA11A050DB00B1FC50 /* UrlImplCurl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009704A911A050DB00B1FC50 /* UrlImplCurl.cpp */; };
 		009987160F79CFE20042F211 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		0099871A0F79D0750042F211 /* CinderCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009987190F79D0750042F211 /* CinderCocoa.mm */; };
 		009C864A10F3D5CB006B6861 /* ImageIo.h in Headers */ = {isa = PBXBuildFile; fileRef = 009C864910F3D5CB006B6861 /* ImageIo.h */; };
@@ -693,7 +695,7 @@
 		0049C1B61010E5B10015B4B9 /* Renderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Renderer.cpp; path = app/Renderer.cpp; sourceTree = "<group>"; };
 		006228E110C8248800A8191C /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		006228E310C8273C00A8191C /* DataSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataSource.cpp; sourceTree = "<group>"; };
-		007050BE1114F93F003FCAE4 /* libcinder-iphone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0071BD040FB9F4AD0092E7D6 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
 		0071BD080FB9FA2C0092E7D6 /* Display.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Display.cpp; sourceTree = "<group>"; };
 		007438400EA7924F005DD3E6 /* Capture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Capture.cpp; sourceTree = "<group>"; };
@@ -719,6 +721,8 @@
 		008CE8530E94693900644A05 /* Area.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Area.h; sourceTree = "<group>"; };
 		0091D8F00E81B9110029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		0094F3450F6A120800EBED1B /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = /System/Library/Frameworks/ScreenSaver.framework; sourceTree = "<absolute>"; };
+		009704A711A050C300B1FC50 /* UrlImplCurl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlImplCurl.h; sourceTree = "<group>"; };
+		009704A911A050DB00B1FC50 /* UrlImplCurl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UrlImplCurl.cpp; sourceTree = "<group>"; };
 		009987150F79CFE20042F211 /* CinderCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CinderCocoa.h; path = cocoa/CinderCocoa.h; sourceTree = "<group>"; };
 		009987190F79D0750042F211 /* CinderCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderCocoa.mm; path = cocoa/CinderCocoa.mm; sourceTree = "<group>"; };
 		009C864910F3D5CB006B6861 /* ImageIo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageIo.h; sourceTree = "<group>"; };
@@ -779,7 +783,7 @@
 		00CE73930E92DBE40059E09B /* GLee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLee.h; path = gl/GLee.h; sourceTree = "<group>"; };
 		00CE73970E92DBF80059E09B /* gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl.cpp; path = gl/gl.cpp; sourceTree = "<group>"; };
 		00CE73980E92DBF80059E09B /* GLee.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = GLee.c; path = gl/GLee.c; sourceTree = "<group>"; };
-		00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00CFE371113B7C7C0091E310 /* ImageSourcePng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSourcePng.cpp; sourceTree = "<group>"; };
 		00CFE373113B7C8C0091E310 /* ImageSourcePng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSourcePng.h; sourceTree = "<group>"; };
 		00CFE37B113B85F60091E310 /* Path2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path2d.h; sourceTree = "<group>"; };
@@ -861,7 +865,7 @@
 		C7CDF0060EBD5DA4000997D3 /* xpath_static.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_static.h; path = ../include/tinyxml/xpath_static.h; sourceTree = SOURCE_ROOT; };
 		C7CDF0070EBD5DA4000997D3 /* xpath_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_stream.h; path = ../include/tinyxml/xpath_stream.h; sourceTree = SOURCE_ROOT; };
 		C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_syntax.h; path = ../include/tinyxml/xpath_syntax.h; sourceTree = SOURCE_ROOT; };
-		D2AAC07E0554694100DB518D /* libcinder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2AAC07E0554694100DB518D /* libcinder_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EAC3D1A81011F2E700FFBC9E /* Serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serial.h; sourceTree = "<group>"; };
 		EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Serial.cpp; sourceTree = "<group>"; };
@@ -1093,6 +1097,7 @@
 				003832DE0E9C03CB00ACB120 /* Stream.h */,
 				00B729E7115DAC2B00CD71B9 /* Timer.h */,
 				00D92FE00EB8CC7200EE9D75 /* Url.h */,
+				009704A711A050C300B1FC50 /* UrlImplCurl.h */,
 				00D2F3EF0F90394000A7189A /* Ray.h */,
 				0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */,
 				00D2F6F30F9188FD00A7189A /* Sphere.h */,
@@ -1149,6 +1154,7 @@
 				003832E30E9C04AD00ACB120 /* Stream.cpp */,
 				00B729E2115DABD800CD71B9 /* Timer.cpp */,
 				00D92FB70EB8AE5200EE9D75 /* Url.cpp */,
+				009704A911A050DB00B1FC50 /* UrlImplCurl.cpp */,
 				00F3BD1C0EBF88AA00382AC1 /* Utilities.cpp */,
 				00D2F1850F8D8ACD00A7189A /* Perlin.cpp */,
 				00D2F6F60F9189C000A7189A /* Sphere.cpp */,
@@ -1278,9 +1284,9 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2AAC07E0554694100DB518D /* libcinder.a */,
-				007050BE1114F93F003FCAE4 /* libcinder-iphone.a */,
-				00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */,
+				D2AAC07E0554694100DB518D /* libcinder_d.a */,
+				007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */,
+				00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1785,6 +1791,7 @@
 				C7A76EAA117644AB00A46655 /* Output.h in Headers */,
 				C7A76EAB117644AB00A46655 /* SourceFile.h in Headers */,
 				C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */,
+				009704A811A050C300B1FC50 /* UrlImplCurl.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1805,7 +1812,7 @@
 			);
 			name = cinder_iphone;
 			productName = cinder;
-			productReference = 007050BE1114F93F003FCAE4 /* libcinder-iphone.a */;
+			productReference = 007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		00CFD92C1135C3520091E310 /* cinder_iphone_sim */ = {
@@ -1822,7 +1829,7 @@
 			);
 			name = cinder_iphone_sim;
 			productName = cinder;
-			productReference = 00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */;
+			productReference = 00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D2AAC07D0554694100DB518D /* cinder */ = {
@@ -1839,7 +1846,7 @@
 			);
 			name = cinder;
 			productName = cinder;
-			productReference = D2AAC07E0554694100DB518D /* libcinder.a */;
+			productReference = D2AAC07E0554694100DB518D /* libcinder_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -2121,6 +2128,7 @@
 				C7A76EA01176449F00A46655 /* Output.cpp in Sources */,
 				C7A76EA11176449F00A46655 /* SourceFile.cpp in Sources */,
 				C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */,
+				009704AA11A050DB00B1FC50 /* UrlImplCurl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

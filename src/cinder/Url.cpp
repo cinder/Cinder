@@ -27,7 +27,7 @@
 	typedef cinder::IStreamUrlImplWinInet	IStreamUrlPlatformImpl;
 #else
 	#include "cinder/UrlImplCurl.h"
-	typedef cinder::IStreamUrlCurl			IStreamUrlPlatformImpl;
+	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;
 #endif
 
 namespace cinder {
