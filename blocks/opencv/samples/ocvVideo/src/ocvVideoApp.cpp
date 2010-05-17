@@ -32,23 +32,22 @@ void ocvVideoApp::setup()
 void ocvVideoApp::update()
 {
 	if( mCap && mCap.checkNewFrame() ) {
-		cv::Mat matEdges;
-		cv::Sobel( toOcv( mCap.getSurface() ), matEdges, CV_8U, 1, 0, 3);
-//		cv::Laplacian( toOcv( mCap.getSurface() ), matEdges, CV_8U );
+		cv::Mat input( toOcv( mCap.getSurface() ) ), output;
+		cv::threshold( input, output, 128, 255, CV_8U );
+//		cv::Sobel( input, output, CV_8U, 1, 0, 3);
+//		cv::Laplacian( input, output, CV_8U );		
+//		cv::circle( output, toOcv( Vec2f(200, 200) ), 300, toOcv( Color( 0, 0.5f, 1 ) ), -1 );
+//		cv::line( output, cv::Point( 1, 1 ), cv::Point( 30, 30 ), toOcv( Color( 1, 0.5f, 0 ) ) );
 		
-//		cv::line( matEdges, cv::Point( 1, 1 ), cv::Point( 30, 30 ), CV_RGB( 1.0, 0.5, 0.25 ) );
-		cv::circle( matEdges, cv::Point( 200, 200 ), 300, CV_RGB( 1.0, 0.5, 25 ), -1 );
-		
-		mTexture = gl::Texture( fromOcv( matEdges ) );
+		mTexture = gl::Texture( fromOcv( output ) );
 	}	 
 }
 
 void ocvVideoApp::draw()
 {
 	gl::clear();
-	if( mTexture ) {
+	if( mTexture )
 		gl::draw( mTexture );
-	}
 }
 
 

@@ -11,9 +11,8 @@ class ImageTargetCvMat : public ImageTarget {
   public:
 	static shared_ptr<ImageTargetCvMat> createRef( cv::Mat *mat ) { return shared_ptr<ImageTargetCvMat>( new ImageTargetCvMat( mat ) ); }
 
-	virtual bool hasAlpha() const;
-	
-	virtual void*	getRowPointer( int32_t row );
+	virtual bool hasAlpha() const { return mMat->channels() == 4; }	
+	virtual void*	getRowPointer( int32_t row ) { return reinterpret_cast<void*>( reinterpret_cast<uint8_t*>(mMat->data) + row * mMat->step ); }
 	
   protected:
 	ImageTargetCvMat( cv::Mat *mat );
@@ -99,17 +98,7 @@ ImageTargetCvMat::ImageTargetCvMat( cv::Mat *mat )
 	}
 }
 
-bool ImageTargetCvMat::hasAlpha() const
-{
-	return mMat->channels() == 4;
-}
-
-void* ImageTargetCvMat::getRowPointer( int32_t row )
-{
-	return reinterpret_cast<void*>( reinterpret_cast<uint8_t*>(mMat->data) + row * mMat->step );
-}
-
-cv::Mat toOcv( ci::ImageSourceRef sourceRef )
+inline cv::Mat toOcv( ci::ImageSourceRef sourceRef )
 {
 	int depth = CV_8U;
 	if( sourceRef->getDataType() == ImageIo::UINT16 )
@@ -124,9 +113,24 @@ cv::Mat toOcv( ci::ImageSourceRef sourceRef )
 	return result;
 }
 
-ImageSourceRef fromOcv( cv::Mat &mat )
+inline ImageSourceRef fromOcv( cv::Mat &mat )
 {
 	return ImageSourceRef( new ImageSourceCvMat( mat ) );
+}
+
+inline cv::Scalar toOcv( const Color &color )
+{
+	return CV_RGB( color.r * 255, color.g * 255, color.b * 255 );
+}
+
+inline cv::Point toOcv( const Vec2f &point )
+{
+	return cv::Point( point.x, point.y );
+}
+
+inline Vec2f fromOcv( const cv::Point &point )
+{
+	return Vec2f( point.x, point.y );
 }
 
 } // namespace cinder
