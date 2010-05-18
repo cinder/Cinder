@@ -28,6 +28,26 @@
 #include <vector>
 #include <windows.h>
 
+// we declare all of the MultiTouch stuff in Win7 here to prevent requiring users to use the Win7 headers
+#if ! defined( WM_TOUCH )
+DECLARE_HANDLE(HTOUCHINPUT);
+typedef struct tagTOUCHINPUT {
+    LONG x;
+    LONG y;
+    HANDLE hSource;
+    DWORD dwID;
+    DWORD dwFlags;
+    DWORD dwMask;
+    DWORD dwTime;
+    ULONG_PTR dwExtraInfo;
+    DWORD cxContact;
+    DWORD cyContact;
+} TOUCHINPUT, *PTOUCHINPUT;
+typedef TOUCHINPUT const * PCTOUCHINPUT;
+#define TOUCH_COORD_TO_PIXEL(l)         ((l) / 100)
+#define WM_TOUCH                        0x0240
+#endif
+
 namespace cinder { namespace app {
 
 class AppImplMsw {

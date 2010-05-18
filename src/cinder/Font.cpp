@@ -49,6 +49,7 @@ using std::pair;
 
 namespace cinder {
 
+#if ! defined( CINDER_COCOA_TOUCH )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FontManager
 class FontManager
@@ -147,6 +148,8 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 	return mFontNames;
 }
 
+#endif ! defined( CINDER_COCOA_TOUCH )
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Font
 Font::Font( const string &name, float size )
@@ -159,10 +162,12 @@ Font::Font( DataSourceRef dataSource, float size )
 {
 }
 
+#if ! defined( CINDER_COCOA_TOUCH )
 const vector<string>& Font::getNames( bool forceRefresh )
 {
 	return FontManager::instance()->getNames( forceRefresh );
 }
+#endif // ! defined( CINDER_COCOA_TOUCH )
 
 const std::string& Font::getName() const
 { 
@@ -185,24 +190,25 @@ std::string Font::getFullName() const
 
 float Font::getLeading() const
 {
-	return ::CTFontGetLeading( mObj->mCTFont );
+	return ::CGFontGetLeading( mObj->mCGFont ) / (float)::CGFontGetUnitsPerEm( mObj->mCGFont ) * mObj->mSize;
 }
 
 float Font::getAscent() const
 {
-	return ::CTFontGetAscent( mObj->mCTFont );
+	return ::CGFontGetAscent( mObj->mCGFont ) / (float)::CGFontGetUnitsPerEm( mObj->mCGFont ) * mObj->mSize;
 }
 
 float Font::getDescent() const
 {
-	return ::CTFontGetDescent( mObj->mCTFont );
+	return ::CGFontGetDescent( mObj->mCGFont ) / (float)::CGFontGetUnitsPerEm( mObj->mCGFont ) * mObj->mSize;
 }
 
 size_t Font::getNumGlyphs() const
 {
-	return ::CTFontGetGlyphCount( mObj->mCTFont );
+	return ::CGFontGetNumberOfGlyphs( mObj->mCGFont );
 }
 
+#if ! defined( CINDER_COCOA_TOUCH )
 Font::Glyph Font::getGlyphIndex( size_t index )
 {
 	return (Glyph)index;
@@ -212,7 +218,7 @@ Font::Glyph Font::getGlyphChar( char c )
 {
 	UniChar uc = c;
 	CGGlyph result;
-	CTFontGetGlyphsForCharacters( mObj->mCTFont, &uc, &result, 1 );
+	::CTFontGetGlyphsForCharacters( mObj->mCTFont, &uc, &result, 1 );
 	return result;
 }
 
@@ -240,16 +246,19 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex )
 	CGPathRelease( path );
 	return resultShape;
 }
+#endif // ! defined( CINDER_COCOA_TOUCH )
 
 CGFontRef Font::getCgFontRef() const
 {
 	return mObj->mCGFont;
 }
 
+#if ! defined( CINDER_COCOA_TOUCH )
 CTFontRef Font::getCtFontRef() const
 {
 	return mObj->mCTFont;
 }
+#endif // ! defined( CINDER_COCOA_TOUCH )
 
 #elif defined( CINDER_MSW )
 
@@ -412,7 +421,9 @@ Font::Obj::Obj( const string &aName, float aSize )
 	CFRelease( cfName );
 	if( mCGFont == 0 )
 		throw FontInvalidNameExc();
+ #if defined( CINDER_MAC )
 	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
+ #endif
 	
 	::CFStringRef fullName = ::CGFontCopyFullName( mCGFont );
 	string result = cocoa::convertCfString( fullName );
@@ -442,7 +453,9 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 	mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
 	if( ! mCGFont )
 		throw FontInvalidNameExc();
+ #if defined( CINDER_MAC )
 	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
+ #endif
 
 #elif defined( CINDER_MSW )
 	FontManager::instance(); // force GDI+ init
@@ -482,7 +495,9 @@ Font::Obj::~Obj()
 {
 #if defined( CINDER_COCOA )
 	::CGFontRelease( mCGFont );
+ #if defined( CINDER_MAC )
 	::CFRelease( mCTFont );
+ #endif
 #else
 	if( mHfont ) // this should be replaced with something exception-safe
 		::DeleteObject( mHfont ); 

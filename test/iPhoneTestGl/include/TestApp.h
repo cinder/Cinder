@@ -16,4 +16,5 @@ class TestApp : public ci::app::AppCocoaTouch {
 	ci::Matrix44f	mCubeRotation;
 	ci::gl::Texture mTex;
 	ci::CameraPersp	mCam;
+	ci::Font		mFont;
 };

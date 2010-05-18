@@ -14,18 +14,6 @@ using namespace ci::app;
 using namespace std;
 
 
-void sineWave( uint64_t inSampleOffset, uint32_t *ioSampleCount, audio::Buffer *ioBuffer ) {
-	float * buffer = (float *)ioBuffer->mData;
-	for( int  i = 0; i < *ioSampleCount; i++ ) {
-		float pos = ( inSampleOffset + i ) / 44100.0f * 550.0f;
-		float val = (0.5f + ( 0.5f * math<float>::sin( pos * 2.0f * M_PI ) ) );
-		
-		buffer[i*ioBuffer->mNumberChannels] = val;
-		buffer[i*ioBuffer->mNumberChannels + 1] = val;
-	}
-}
-
-
 class AudioNewTestApp : public AppBasic {
  public:
 	void setup();
@@ -48,7 +36,7 @@ void AudioNewTestApp::setup()
 	//mAudioSource = audio::load( loadResource( "guitar.mp3", RES_GUITAR_MP3, "MP3" ) );
 	//console() << mAudioSource->getDuration() << std::endl;
 	//mAudioSource = audio::load( "..\\data\\guitar.mp3" );
-	mAudioSource = audio::load( loadResource( "booyah.mp3", RES_BOOYAH_MP3, "MP3" ) );
+	mAudioSource = audio::load( "../../../data/booyah.mp3" );
 	
 	//mTrack1 = audio::Output::addTrack( audio::load( loadResource( "guitar.mp3", RES_GUITAR_MP3, "MP3" ) ) );
 	//mTrack2 = audio::Output::addTrack( audio::load( loadResource( "drums.mp3", RES_DRUMS_MP3, "MP3" ) ) );
@@ -56,7 +44,6 @@ void AudioNewTestApp::setup()
 	//mTrack1 = audio::Output::addTrack( audio::load( loadResource( "booyah.mp3", RES_BOOYAH_MP3, "MP3" ) ) );
 	//mTrack1->setLooping( true );
 	//mSineCallback = audio::Callback( &sineWave );
-	audio::Output::addTrack( audio::Callback( &sineWave ) );
 	
 	
 }

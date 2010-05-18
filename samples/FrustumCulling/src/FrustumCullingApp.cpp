@@ -401,4 +401,4 @@ void FrustumCullingApp::keyDown( KeyEvent event )
 
 
 
-CINDER_APP_BASIC( FrustumCullingApp, RendererGL )
+CINDER_APP_BASIC( FrustumCullingApp, RendererGl )

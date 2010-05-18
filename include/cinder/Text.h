@@ -84,6 +84,11 @@ class TextLayout {
 	Optional \a baselineOffset pointer will receive how many pixels of descender are in the returned Surface. Offset rendering the result Surface by this amount in order to preserve a consistent baseline.
 	Consider gl::drawString() as a more convenient alternative.
 **/
+
+#if defined( CINDER_COCOA_TOUCH )
+Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset = 0 );
+#else
 Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset = 0 );
+#endif
 
 } // namespace cinder

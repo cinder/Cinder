@@ -212,16 +212,12 @@ void draw( const Texture &texture, const Rectf &rect );
 //! Draws the pixels inside \a srcArea of \a texture on the XY-plane in the rectangle defined by \a destRect
 void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect );
 
-#if ! defined( CINDER_COCOA_TOUCH )
-
 //! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
 void drawString( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
 //! Draws a string \a str with the horizontal center of its baseline located at \a pos. Optional \a font and \a color affect the style
 void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
 //! Draws a right-justified string \a str with the center of its  located at \a pos. Optional \a font and \a color affect the style
 void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
-
-#endif // ! defined( CINDER_COCOA_TOUCH )
 
 
 //! Convenience class designed to push and pop the currently bound texture for a given texture unit

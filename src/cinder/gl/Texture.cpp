@@ -746,6 +746,15 @@ void Texture::setCleanTexCoords( float maxU, float maxV )
 {
 	mObj->mMaxU = maxU;
 	mObj->mMaxV = maxV;
+	
+	if( mObj->mTarget == GL_TEXTURE_2D ) {
+		mObj->mCleanWidth = getWidth() * maxU;
+		mObj->mCleanHeight = getHeight() * maxV;
+	}
+	else {
+		mObj->mCleanWidth = (int32_t)maxU;
+		mObj->mCleanHeight = (int32_t)maxV;
+	}
 }
 
 float Texture::getLeft() const
@@ -782,7 +791,8 @@ GLint Texture::getWidth() const
 	if( mObj->mWidth == -1 ) {
 		gl::SaveTextureBindState( mObj->mTarget );
 		bind();
-		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_WIDTH, &mObj->mWidth );	
+		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_WIDTH, &mObj->mWidth );
+		mObj->mCleanWidth = mObj->mWidth;
 	}
 #endif // ! defined( CINDER_GLES )
 
@@ -796,19 +806,52 @@ GLint Texture::getHeight() const
 		gl::SaveTextureBindState( mObj->mTarget );
 		bind();
 		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_HEIGHT, &mObj->mHeight );	
+		mObj->mCleanHeight = mObj->mHeight;		
 	}
 #endif // ! defined( CINDER_GLES )	
 	return mObj->mHeight;
 }
 
+GLint Texture::getCleanWidth() const
+{
+#if ! defined( CINDER_GLES )
+	if( mObj->mCleanWidth == -1 ) {
+		gl::SaveTextureBindState( mObj->mTarget );
+		bind();
+		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_WIDTH, &mObj->mWidth );
+		mObj->mCleanWidth = mObj->mWidth;
+	}
+#endif // ! defined( CINDER_GLES )
+
+	return mObj->mCleanWidth;
+}
+
+GLint Texture::getCleanHeight() const
+{
+#if ! defined( CINDER_GLES )
+	if( mObj->mCleanHeight == -1 ) {
+		gl::SaveTextureBindState( mObj->mTarget );
+		bind();
+		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_HEIGHT, &mObj->mHeight );	
+		mObj->mCleanHeight = mObj->mHeight;		
+	}
+#endif // ! defined( CINDER_GLES )	
+	return mObj->mCleanHeight;
+}
+
 Rectf Texture::getAreaTexCoords( const Area &area ) const
 {
 	Rectf result;
-	
-	result.x1 = area.x1 / (float)getWidth() * mObj->mMaxU;
-	result.x2 = area.x2 / (float)getWidth() * mObj->mMaxU;
-	result.y1 = area.y1 / (float)getHeight() * mObj->mMaxV;
-	result.y2 = area.y2 / (float)getHeight() * mObj->mMaxV;
+
+	if( mObj->mTarget == GL_TEXTURE_2D ) {
+		result.x1 = area.x1 / (float)getWidth();
+		result.x2 = area.x2 / (float)getWidth();
+		result.y1 = area.y1 / (float)getHeight();
+		result.y2 = area.y2 / (float)getHeight();	
+	}
+	else {
+		result = Rectf( area );
+	}
 	
 	if( mObj->mFlipped ) {
 		std::swap( result.y1, result.y2 );
