@@ -133,4 +133,14 @@ inline Vec2f fromOcv( const cv::Point &point )
 	return Vec2f( point.x, point.y );
 }
 
+inline cv::Rect toOcv( const ci::Area &r )
+{
+	return cv::Rect( r.x1, r.y1, r.getWidth(), r.getHeight() );
+}
+
+inline ci::Area fromOcv( const cv::Rect &r )
+{
+	return Area( r.x, r.y, r.x + r.width, r.y + r.height );
+}
+
 } // namespace cinder
