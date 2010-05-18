@@ -126,9 +126,14 @@ inline void vertex( const Vec2f &v ) { glVertex2fv( &v.x ); }
 inline void vertex( const Vec3f &v ) { glVertex3fv( &v.x ); }
 #endif // ! defined( CINDER_GLES )
 //! Sets the current color, and the alpha value to 1.0
+inline void color( const Color8u &c ) { glColor4ub( c.r, c.g, c.b, 255 ); }
+//! Sets the current color and alpha value
+inline void color( const ColorA8u &c ) { glColor4ub( c.r, c.g, c.b, c.a ); }
+//! Sets the current color, and the alpha value to 1.0
 inline void color( const Color &c ) { glColor4f( c.r, c.g, c.b, 1.0f ); }
 //! Sets the current color and alpha value
 inline void color( const ColorA &c ) { glColor4f( c.r, c.g, c.b, c.a ); }
+
 
 //! Enables alpha blending. Selects a \c BlendFunc that is appropriate for premultiplied-alpha when \a premultiplied
 void enableAlphaBlending( bool premultiplied = false );
