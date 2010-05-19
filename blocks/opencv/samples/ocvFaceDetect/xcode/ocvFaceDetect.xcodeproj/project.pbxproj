@@ -255,8 +255,8 @@
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
 					"-lcurl",
-					"$(CINDER_PATH)/blocks/opencv/OpenCV-2.1.0/lib/libcv.a",
-					"$(CINDER_PATH)/blocks/opencv/OpenCV-2.1.0/lib/libcxcore.a",
+					"$(CINDER_PATH)/blocks/opencv/OpenCV/lib/libcv.a",
+					"$(CINDER_PATH)/blocks/opencv/OpenCV/lib/libcxcore.a",
 				);
 				PRODUCT_NAME = ocvFaceDetect;
 				WRAPPER_EXTENSION = app;
@@ -298,7 +298,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(CINDER_PATH)/blocks/opencv/OpenCV-2.1.0/include",
+					"$(CINDER_PATH)/blocks/opencv/OpenCV/include",
 					"$(CINDER_PATH)/boost",
 				);
 				PREBINDING = NO;
@@ -316,7 +316,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(CINDER_PATH)/blocks/opencv/OpenCV-2.1.0/include",
+					"$(CINDER_PATH)/blocks/opencv/OpenCV/include",
 					"$(CINDER_PATH)/boost",
 				);
 				PREBINDING = NO;

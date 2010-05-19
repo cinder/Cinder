@@ -43,7 +43,7 @@ void ocvFaceDetectApp::updateFaces( Channel grayCameraImage )
 	int scaledHeight = grayCameraImage.getHeight() / calcScale; 
 	cv::Mat smallImg( scaledHeight, scaledWidth, CV_8UC1 );
 
-	cv::resize( toOcv( grayCameraImage ), smallImg, smallImg.size(), 0, 0, cv::INTER_LINEAR );
+	cv::resize( toOcvRef( grayCameraImage ), smallImg, smallImg.size(), 0, 0, cv::INTER_LINEAR );
 	cv::equalizeHist( smallImg, smallImg );
 
 	// clear out the old ones

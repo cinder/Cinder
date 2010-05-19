@@ -113,6 +113,26 @@ inline cv::Mat toOcv( ci::ImageSourceRef sourceRef )
 	return result;
 }
 
+inline cv::Mat toOcvRef( Channel8u &channel )
+{
+	return cv::Mat( channel.getHeight(), channel.getWidth(), CV_MAKETYPE( CV_8U, 1 ), channel.getData(), channel.getRowBytes() );
+}
+
+inline cv::Mat toOcvRef( Channel32f &channel )
+{
+	return cv::Mat( channel.getHeight(), channel.getWidth(), CV_MAKETYPE( CV_32F, 1 ), channel.getData(), channel.getRowBytes() );
+}
+
+inline cv::Mat toOcvRef( Surface8u &surface )
+{
+	return cv::Mat( surface.getHeight(), surface.getWidth(), CV_MAKETYPE( CV_8U, surface.hasAlpha()?4:3), surface.getData(), surface.getRowBytes() );
+}
+
+inline cv::Mat toOcvRef( Surface32f &surface )
+{
+	return cv::Mat( surface.getHeight(), surface.getWidth(), CV_MAKETYPE( CV_32F, surface.hasAlpha()?4:3), surface.getData(), surface.getRowBytes() );
+}
+
 inline ImageSourceRef fromOcv( cv::Mat &mat )
 {
 	return ImageSourceRef( new ImageSourceCvMat( mat ) );
