@@ -30,18 +30,18 @@ class ocvFaceDetectApp : public AppBasic {
 void ocvFaceDetectApp::setup()
 {
 	mFaceCascade.load( getResourcePath( "haarcascade_frontalface_alt.xml" ) );
-	mEyeCascade.load( getResourcePath( "haarcascade_eye_tree_eyeglasses.xml" ) );
+	mEyeCascade.load( getResourcePath( "haarcascade_eye.xml" ) );	
 	
-	mCapture = Capture( 320, 240 );
+	mCapture = Capture( 640, 480 );
 	mCapture.start();
 }
 
 void ocvFaceDetectApp::updateFaces( Channel grayCameraImage )
 {
-	static const int calcScale = 1; // calculate the image at half scale
+	static const int calcScale = 2; // calculate the image at half scale
 	int scaledWidth = grayCameraImage.getWidth() / calcScale;
 	int scaledHeight = grayCameraImage.getHeight() / calcScale; 
-	cv::Mat smallImg( scaledWidth, scaledHeight, CV_8UC1 );
+	cv::Mat smallImg( scaledHeight, scaledWidth, CV_8UC1 );
 
 	cv::resize( toOcv( grayCameraImage ), smallImg, smallImg.size(), 0, 0, cv::INTER_LINEAR );
 	cv::equalizeHist( smallImg, smallImg );
@@ -51,19 +51,18 @@ void ocvFaceDetectApp::updateFaces( Channel grayCameraImage )
 	mEyes.clear();
 
 	vector<cv::Rect> faces;
-	mFaceCascade.detectMultiScale( smallImg, faces, 1.1, 2, 0 );
+	mFaceCascade.detectMultiScale( smallImg, faces, 1.1, 2, CV_HAAR_SCALE_IMAGE );
 	for( vector<cv::Rect>::const_iterator faceIter = faces.begin(); faceIter != faces.end(); faceIter++ ) {
-		Rectf faceRect(  faceIter->x + faceIter->width / 2.0f, faceIter->y + faceIter->height / 2.0f,
-			faceIter->x + faceIter->width, faceIter->y + faceIter->height );
-		// first let's push this face onto our vector, scaling it back up by calcScale
-console() << "R: " << faceIter->x << "," << faceIter->y << " sz: " << faceIter->width << "x" << faceIter->height << std::endl;
+		Rectf faceRect( fromOcv( *faceIter ) );
+		faceRect *= calcScale;
 		mFaces.push_back( faceRect );
 		
 		vector<cv::Rect> eyes;
-		mEyeCascade.detectMultiScale( smallImg( *faceIter ), eyes, 1.1, 2, 0 );
+		mEyeCascade.detectMultiScale( smallImg( *faceIter ), eyes, 1.1, 2, CV_HAAR_SCALE_IMAGE );
 		for( vector<cv::Rect>::const_iterator eyeIter = eyes.begin(); eyeIter != eyes.end(); ++eyeIter ) {
-			Rectf eyeRect( ( fromOcv( *eyeIter ) ).getOffsetBy( faceRect.getUpperLeft() ) );
-			mEyes.push_back( eyeRect.scaled( calcScale ) );
+			Rectf eyeRect( fromOcv( *eyeIter ) );
+			eyeRect = eyeRect * calcScale + faceRect.getUpperLeft();
+			mEyes.push_back( eyeRect );
 		}
 	}
 }
