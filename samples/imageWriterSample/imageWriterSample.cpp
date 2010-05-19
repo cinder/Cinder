@@ -15,7 +15,7 @@ class ImageWriterSampleApp : public AppBasic {
 		try {
 			Surface srf( loadImage( loadResource( RES_IMAGE ) ) );
 			
-			string pngPath = getSaveFilePath( getHomeDirectory() + "output.png" );
+			string pngPath = getSaveFilePath( getHomeDirectory() );
 			if( ! pngPath.empty() ) {
 				writeImage( pngPath, srf );
 			}
