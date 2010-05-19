@@ -21,7 +21,6 @@ class BasicApp : public AppBasic {
 
 void BasicApp::prepareSettings( Settings *settings )
 {
-	settings->enableSecondaryDisplayBlanking( false );
 	settings->setFullScreen( true );
 }
 
