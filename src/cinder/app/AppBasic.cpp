@@ -266,6 +266,9 @@ AppBasic::Settings::Settings()
 #if defined( CINDER_MSW )
 	mEnableMultiTouch = false;
 #endif
+#if defined( CINDER_MAC )
+	mEnableSecondaryDisplayBlanking = true; 
+#endif
 }
 
 void AppBasic::Settings::setShouldQuit( bool aShouldQuit )
