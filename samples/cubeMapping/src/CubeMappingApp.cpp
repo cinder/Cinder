@@ -59,6 +59,8 @@ class CubeMappingApp : public AppBasic {
 			std::cout << "Unable to load shader" << std::endl;
 		}
 		
+		currentMap = 0;
+		
 		mMaps.push_back( CubeMap( GLsizei(512), GLsizei(512),
 									 Surface8u( loadImage( loadResource( "grandcanyon_positive_x.jpg" ) ) ),
 									 Surface8u( loadImage( loadResource( "grandcanyon_positive_y.jpg" ) ) ),
@@ -100,8 +102,6 @@ class CubeMappingApp : public AppBasic {
 		//	glEnable( GL_BLEND );
 		glEnable( GL_MULTISAMPLE_ARB );
 		//	glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
-		
-		currentMap = 0;
 		
 		mMaps[currentMap].bindMulti(CUBE_MAP_LOC);
 		
