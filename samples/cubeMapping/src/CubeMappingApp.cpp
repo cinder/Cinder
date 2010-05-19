@@ -101,6 +101,8 @@ class CubeMappingApp : public AppBasic {
 		glEnable( GL_MULTISAMPLE_ARB );
 		//	glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
 		
+		currentMap = 0;
+		
 		mMaps[currentMap].bindMulti(CUBE_MAP_LOC);
 		
 		mShader.bind();

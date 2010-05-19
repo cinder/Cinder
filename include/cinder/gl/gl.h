@@ -91,10 +91,10 @@ Matrix44f getModelView();
 //! Returns the value of the current \c PROJECTION matrix as a Matrix44f.
 Matrix44f getProjection();
 
-//! Sets the viepwort and \c MODELVIEW and \c PROJECTION matrices to be a perspective projection with the upper-left corner at \c [0,0] and the lower-right at \c [screenWidth,screenHeight]
-void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f );
-//! Sets the viewport and \c MODELVIEW and \c PROJECTION matrices to be a perspective projection with the upper-left corner at \c [0,0] and the lower-right at \c [screenWidth,screenHeight]
-inline void setMatricesWindowPersp( const Vec2i &screenSize, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f )
+//! Sets the viepwort and \c MODELVIEW and \c PROJECTION matrices to be a perspective projection with the upper-left corner at \c [0,0] and the lower-right at \c [screenWidth,screenHeight], but flipped vertically if not \a originUpperLeft.
+void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f, bool originUpperLeft = true );
+//! Sets the viewport and \c MODELVIEW and \c PROJECTION matrices to be a perspective projection with the upper-left corner at \c [0,0] and the lower-right at \c [screenWidth,screenHeight], but flipped vertically if not \a originUpperLeft.
+inline void setMatricesWindowPersp( const Vec2i &screenSize, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f, bool originUpperLeft = true )
 	{ setMatricesWindowPersp( screenSize.x, screenSize.y, fovDegrees, nearPlane, farPlane ); }
 //! Sets the viewport and \c MODELVIEW and \c PROJECTION matrices to orthographic with the upper-left corner at \c [0,0] and the lower-right at \c [screenWidth,screenHeight] if \a originUpperLeft is \c true. Otherwise the origin is in the lower right.
 void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft = true );
@@ -126,9 +126,14 @@ inline void vertex( const Vec2f &v ) { glVertex2fv( &v.x ); }
 inline void vertex( const Vec3f &v ) { glVertex3fv( &v.x ); }
 #endif // ! defined( CINDER_GLES )
 //! Sets the current color, and the alpha value to 1.0
+inline void color( const Color8u &c ) { glColor4ub( c.r, c.g, c.b, 255 ); }
+//! Sets the current color and alpha value
+inline void color( const ColorA8u &c ) { glColor4ub( c.r, c.g, c.b, c.a ); }
+//! Sets the current color, and the alpha value to 1.0
 inline void color( const Color &c ) { glColor4f( c.r, c.g, c.b, 1.0f ); }
 //! Sets the current color and alpha value
 inline void color( const ColorA &c ) { glColor4f( c.r, c.g, c.b, c.a ); }
+
 
 //! Enables alpha blending. Selects a \c BlendFunc that is appropriate for premultiplied-alpha when \a premultiplied
 void enableAlphaBlending( bool premultiplied = false );

@@ -110,22 +110,22 @@ struct math<float>
 const double EPSILON_VALUE = 4.37114e-05;
 #define EPSILON EPSILON_VALUE
 
-static float toRadians( float x )
+inline float toRadians( float x )
 {
 	return x * 0.017453292519943295769f; // ( x * PI / 180 )
 }
 
-static double toRadians( double x )
+inline double toRadians( double x )
 {
 	return x * 0.017453292519943295769; // ( x * PI / 180 )
 }
 
-static float toDegrees( float x )
+inline float toDegrees( float x )
 {
 	return x * 57.295779513082321f; // ( x * 180 / PI )
 }
 
-static double toDegrees( double x )
+inline double toDegrees( double x )
 {
 	return x * 57.295779513082321; // ( x * 180 / PI )
 }
