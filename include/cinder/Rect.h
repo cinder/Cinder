@@ -57,7 +57,7 @@ class RectT {
 	RectT		getClipBy( const RectT &clip ) const;
 	Area		getInteriorArea() const;
 	void		offset( const Vec2<T> &offset );
-	RectT		getOffset( const Vec2<T> &off ) { RectT result( *this ); result.offset( off ); return result; }
+	RectT		getOffset( const Vec2<T> &off ) const { RectT result( *this ); result.offset( off ); return result; }
 	//! Translates the rectangle so that its center is at \a center
 	void		offsetCenterTo( const Vec2<T> &center ) { offset( center - getCenter() ); }
 	void		scaleCentered( const Vec2<T> &scale );
@@ -92,6 +92,16 @@ class RectT {
 	void		include( const std::vector<Vec2<T> > &points );
 	/** Expands the Rect to include \a rect in its interior **/
 	void		include( const RectT &rect );
+
+	const RectT<T>		operator+( const Vec2<T> &o ) const { return this->getOffset( o ); }
+	const RectT<T>		operator-( const Vec2<T> &o ) const { return this->getOffset( -o ); }
+	const RectT<T>		operator*( T s ) const { return this->scaled( s ); }
+	const RectT<T>		operator/( T s ) const { return this->scaled( ((T)1) / s ); }
+
+	RectT<T>&		operator+=( const Vec2<T> &o ) { offset( o ); return *this; }
+	RectT<T>&		operator-=( const Vec2<T> &o ) { offset( -o ); return *this; }
+	RectT<T>&		operator*=( T s ) { scale( s ); return *this; }
+	RectT<T>&		operator/=( T s ) { scale( ((T)1) / s ); return *this; }	
 
 	T			x1, y1, x2, y2;
 	
