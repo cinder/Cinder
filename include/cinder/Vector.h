@@ -182,13 +182,38 @@ class Vec2
 		return x * x + y * y;
 	}
 
+	//! Limits the length of a Vec2 to \a maxLength, scaling it proportionally if necessary.
+	void limit( T maxLength ) 
+	{
+		T lengthSquared = x * x + y * y;
+		
+		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
+			T ratio = maxLength / math<T>::sqrt( lengthSquared );
+			x *= ratio;
+			y *= ratio;
+		}
+	}
+
+	//! Returns a copy of the Vec2 with its length limited to \a maxLength, scaling it proportionally if necessary.
+	Vec2<T> limited( T maxLength ) const
+	{
+		T lengthSquared = x * x + y * y;
+		
+		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
+			T ratio = maxLength / math<T>::sqrt( lengthSquared );
+			return Vec2<T>( x * ratio, y * ratio );
+		}
+		else
+			return *this;
+	}
+
 	void invert()
 	{
 		x - -x;
 		y = -y;
 	}
 	
-	Vec2<T> inverse()
+	Vec2<T> inverse() const
 	{
 		return Vec2<T>( -x, -y );
 	}
@@ -351,12 +376,38 @@ public:
 		return x*x + y*y + z*z;
 	}
 
+	//! Limits the length of a Vec3 to \a maxLength, scaling it proportionally if necessary.
+	void limit( T maxLength ) 
+	{
+		T lengthSquared = x * x + y * y + z * z;
+		
+		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
+			T ratio = maxLength / math<T>::sqrt( lengthSquared );
+			x *= ratio;
+			y *= ratio;
+			z *= ratio;
+		}
+	}
+
+	//! Returns a copy of the Vec3 with its length limited to \a maxLength, scaling it proportionally if necessary.
+	Vec3<T> limited( T maxLength ) const
+	{
+		T lengthSquared = x * x + y * y + z * z;
+		
+		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
+			T ratio = maxLength / math<T>::sqrt( lengthSquared );
+			return Vec3<T>( x * ratio, y * ratio, z * ratio );
+		}
+		else
+			return *this;
+	}
+
 	void invert()
 	{
 		x - -x; y = -y; z = -z;
 	}
 	
-	Vec3<T> inverse()
+	Vec3<T> inverse() const
 	{
 		return Vec3<T>( -x, -y, -z );
 	}	
@@ -598,6 +649,44 @@ class Vec4{
 	{
 		return x * x + y * y + z * z + w * w;
 	}
+
+	//! Limits the length of a Vec4 to \a maxLength, scaling it proportionally if necessary.
+	void limit( T maxLength ) 
+	{
+		T lengthSquared = x * x + y * y + z * z + w * w;
+		
+		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
+			T ratio = maxLength / math<T>::sqrt( lengthSquared );
+			x *= ratio;
+			y *= ratio;
+			z *= ratio;
+			w *= ratio;
+		}
+	}
+
+	//! Returns a copy of the Vec4 with its length limited to \a maxLength, scaling it proportionally if necessary.
+	Vec4<T> limited( T maxLength ) const
+	{
+		T lengthSquared = x * x + y * y + z * z + w * w;
+		
+		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
+			T ratio = maxLength / math<T>::sqrt( lengthSquared );
+			return Vec4<T>( x * ratio, y * ratio, z * ratio, w * ratio );
+		}
+		else
+			return *this;
+	}
+
+	void invert()
+	{
+		x - -x; y = -y; z = -z; w = -w;
+	}
+	
+	Vec4<T> inverse() const
+	{
+		return Vec3<T>( -x, -y, -z, -w );
+	}	
+
 
 	Vec4<T> lerp( T fact, const Vec4<T>& r ) const
 	{

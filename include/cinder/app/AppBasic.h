@@ -56,6 +56,13 @@ class AppBasic : public App {
 		/** Returns the display the window is currently on. If called from prepareSettings() returns the primary display **/
 		Display*	getDisplay() const { return mDisplay; }
 		void		setDisplay( shared_ptr<Display> aDisplay );
+
+#if defined( CINDER_MAC )
+		/** Enables or disables blanking of secondary displays in fullscreen Apps. Enabled by default. **/
+		void	enableSecondaryDisplayBlanking( bool enable = false ) { mEnableSecondaryDisplayBlanking = enable; }
+		/** Returns whether blanking of secondary displays in enabled in fullscreen Apps. Enabled by default. **/
+		bool	isSecondaryDisplayBlankingEnabled() const { return mEnableSecondaryDisplayBlanking; }	
+#endif
 		
 #if defined( CINDER_MSW )
 		//! Registers the app to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7.
@@ -66,6 +73,9 @@ class AppBasic : public App {
 	 private:
 #if defined( CINDER_MSW )
 		bool		mEnableMultiTouch;
+#endif
+#if defined( CINDER_MAC )
+		bool		mEnableSecondaryDisplayBlanking;
 #endif
 		int			mFullScreenSizeX, mFullScreenSizeY;
 		Display		*mDisplay;

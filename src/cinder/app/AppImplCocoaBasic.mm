@@ -154,8 +154,12 @@
 }
 
 - (void)enterFullScreen
-{	
-	[cinderView enterFullScreenMode:[NSScreen mainScreen] withOptions:nil];
+{
+	NSDictionary *options = nil;
+	if( ! app->getSettings().isSecondaryDisplayBlankingEnabled() )
+		options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:NSFullScreenModeAllScreens];
+	[cinderView enterFullScreenMode:[NSScreen mainScreen] withOptions:options];
+	
 	NSRect bounds = [cinderView bounds];
 	mWindowWidth = static_cast<int>( bounds.size.width );
 	mWindowHeight = static_cast<int>( bounds.size.height );

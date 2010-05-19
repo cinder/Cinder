@@ -38,7 +38,7 @@ void FlickrTestApp::setup()
 		//std::cout << itemIter->firstChildElement().firstChild().value() << std::endl;
 		//std::cout << itemIter->findChildNode("media:title").firstChild().value() << std::endl;
 		map<string, string> attrs( itemIter->findChild("media:content").attributes() );
-		std::cout <<  "URL:" << attrs["url"] << std::endl;
+		console() <<  "URL:" << attrs["url"] << std::endl;
 		
 		mUrls.push_back( Url( attrs["url"] ) );
 	}

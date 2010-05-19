@@ -191,7 +191,7 @@ OSStatus OutputAudioUnit::Track::renderCallback( void * audioTrack, AudioUnitRen
 {	
 	OSStatus err = noErr;
 	
-	OutputAudioUnit::Track *theTrack = (OutputAudioUnit::Track *)audioTrack;
+	OutputAudioUnit::Track *theTrack = reinterpret_cast<OutputAudioUnit::Track *>( audioTrack );
 	LoaderRef theLoader = theTrack->mLoader;
 	
 	

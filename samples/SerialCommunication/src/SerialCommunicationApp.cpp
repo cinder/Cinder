@@ -48,8 +48,14 @@ void SerialCommunicationApp::setup()
 		console() << "Device: " << deviceIt->getName() << endl;
 	}
 	
-	Serial::Device dev = Serial::findDeviceByNameContains("tty.usbserial");
-	serial = Serial( dev, 9600);
+	try {
+		Serial::Device dev = Serial::findDeviceByNameContains("tty.usbserial");
+		serial = Serial( dev, 9600);
+	}
+	catch( ... ) {
+		console() << "There was an error initializing the serial device!" << std::endl;
+		exit( -1 );
+	}
 	
 	// wait for * as a sign for first contact
 	char contact = 0;

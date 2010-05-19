@@ -281,7 +281,7 @@ Matrix44f getProjection()
 	return result;
 }
 
-void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees, float nearPlane, float farPlane )
+void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees, float nearPlane, float farPlane, bool originUpperLeft )
 {
 	CameraPersp cam( screenWidth, screenHeight, fovDegrees, nearPlane, farPlane );
 
@@ -290,9 +290,11 @@ void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees
 
 	glMatrixMode( GL_MODELVIEW );
 	glLoadMatrixf( cam.getModelViewMatrix().m );
-	glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
-	glTranslatef( 0.0f, (float)-screenHeight, 0.0f );       // shift origin up to upper-left corner.
-	glViewport( 0, 0, screenWidth, screenHeight );
+	if( originUpperLeft ) {
+		glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
+		glTranslatef( 0.0f, (float)-screenHeight, 0.0f );       // shift origin up to upper-left corner.
+		glViewport( 0, 0, screenWidth, screenHeight );
+	}
 }
 
 void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft )

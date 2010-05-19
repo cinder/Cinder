@@ -25,9 +25,6 @@
 #include "cinder/Cinder.h"
 #include "cinder/Stream.h"
 
-typedef void CURL;
-typedef void CURLM;
-
 namespace cinder {
 
 class Url {
@@ -42,60 +39,61 @@ class Url {
 	std::string		mStr;
 };
 
+//! \cond
+// This is an abstract base class for implementing IStreamUrl
+class IStreamUrlImpl {
+  protected:
+	IStreamUrlImpl( const std::string &user, const std::string &password )
+		: mUser( user ), mPassword( password ) {}
+
+  public:
+	virtual ~IStreamUrlImpl() {}
+  
+	std::string			getUser() const { return mUser; }
+	std::string			getPassword() const { return mPassword; }
+
+	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) = 0;
+	virtual void		seekAbsolute( off_t absoluteOffset ) = 0;
+	virtual void		seekRelative( off_t relativeOffset ) = 0;
+	virtual off_t		tell() const = 0;
+	virtual off_t		size() const = 0;
+	
+	virtual bool		isEof() const = 0;
+	virtual void		IORead( void *t, size_t size ) = 0;
+	
+  protected:
+	const std::string		mUser, mPassword;
+};
+//! \endcond
+
 //! A pointer to an instance of an IStreamUrl. Can be created using IStreamUrl::createRef()
 typedef shared_ptr<class IStreamUrl>	IStreamUrlRef;
 
 /** \warning IStreamUrl does not currently support proper random access **/
 class IStreamUrl : public IStream {
   public:
-	//! Creates a new IStreamUrlRef from the memory pointed to by \a data which is of size \a size bytes.
-	static IStreamUrlRef	createRef( const std::string &url, const std::string &user, const std::string &password );
-	~IStreamUrl();
+	//! Creates a new IStreamUrlRef from the Url \a url with an optional login and password
+	static IStreamUrlRef	createRef( const std::string &url, const std::string &user = "", const std::string &password = "" );
 
-	virtual size_t		readDataAvailable( void *dest, size_t maxSize );
-	virtual void		seekAbsolute( off_t absoluteOffset );
-	virtual void		seekRelative( off_t relativeOffset );
-	virtual off_t		tell() const { return mBufferFileOffset + mBufferOffset; }
-	virtual off_t		size() const;
+	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) { return mImpl->readDataAvailable( dest, maxSize ); }
+	virtual void		seekAbsolute( off_t absoluteOffset ) { return seekAbsolute( absoluteOffset ); }
+	virtual void		seekRelative( off_t relativeOffset ) { return seekRelative( relativeOffset ); }
+	virtual off_t		tell() const { return mImpl->tell(); }
+	virtual off_t		size() const { return mImpl->size(); }
 	
-	virtual bool		isEof() const;
+	virtual bool		isEof() const { return mImpl->isEof(); }
 
-	std::string			getUser() const { return mUser; }
-	std::string			getPassword() const { return mPassword; }
-	long				getResponseCode() const;
-	std::string			getEffectiveUrl() const;
-	
+	std::string			getUser() const { return mImpl->getUser(); }
+	std::string			getPassword() const { return mImpl->getPassword(); }
 
   protected:
 	IStreamUrl( const std::string &url, const std::string &user, const std::string &password );
 
-	virtual void		IORead( void *t, size_t size );
-	virtual void		IOWrite( const void *t, size_t size ) {}
-
-	int					bufferRemaining() const { return mBufferedBytes - mBufferOffset; }
-	void				fillBuffer( int wantBytes ) const;
+	virtual void		IORead( void *t, size_t size ) { mImpl->IORead( t, size ); }
+	//! IStreamURL does not yet support writing
+	virtual void		IOWrite( const void *t, size_t size ) { throw std::exception(); }
 	
-	static size_t		writeCallback( char *buffer, size_t size, size_t nitems, void *userp ); 
-	
-  private:
-	CURL					*mCurl;
-	CURLM					*mMulti;
-	const std::string		mUser, mPassword;
-	std::string				mUserColonPassword;
-	
-	mutable int still_running;				// Is background url fetch still in progress
-	mutable bool			mStartedRead;
-
-	mutable off_t			mSize;
-	mutable bool			mSizeCached;
-	mutable long			mResponseCode;
-	mutable char			*mEffectiveUrl;
-	
-	mutable uint8_t		*mBuffer;
-	mutable int			mBufferSize;
-	mutable int			mBufferOffset, mBufferedBytes;
-	mutable off_t		mBufferFileOffset;	// where in the file the buffer starts
-	static const int	DEFAULT_BUFFER_SIZE = 4096;
+	shared_ptr<IStreamUrlImpl>	mImpl;
 };
 
 IStreamUrlRef		loadUrlStream( const Url &url );

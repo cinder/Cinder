@@ -335,7 +335,7 @@ class cinder_stream_source {
 		if( mStream->isEof() )
 			return -1;
 		
-		return static_cast<std::streamsize>( mStream->readDataAvailable( s, n ) );
+		return (std::streamsize)mStream->readDataAvailable( s, (size_t)n );
 	}
 
  protected:
@@ -353,7 +353,7 @@ class cinder_stream_sink {
 
 	std::streamsize write( const char *s, std::streamsize n )
 	{
-		mStream->writeData( s, n );
+		mStream->writeData( s, (size_t)n );
 		return n;
 	}
 
@@ -372,12 +372,12 @@ class cinder_stream_bidirectional_device {
 
 	std::streamsize read( char *s, std::streamsize n )
 	{
-		return static_cast<std::streamsize>( mStream->readDataAvailable( s, n ) );
+		return static_cast<std::streamsize>( mStream->readDataAvailable( s, (size_t)n ) );
 	}
 
 	std::streamsize write( const char *s, std::streamsize n )
 	{
-		mStream->writeData( s, n );
+		mStream->writeData( s, (size_t)n );
 		return n;
 	}
 

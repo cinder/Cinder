@@ -8,6 +8,7 @@ using namespace std;
 // We'll create a new Cinder Application by deriving from the BasicApp class
 class BasicApp : public AppBasic {
  public:
+	void prepareSettings( Settings *settings );
 	// Cinder will always call this function whenever the user drags the mouse
 	void mouseDrag( MouseEvent event );
 	void keyDown( KeyEvent event );
@@ -17,6 +18,11 @@ class BasicApp : public AppBasic {
 	// This will maintain a list of points which we will draw line segments between
 	list<Vec2f>		mPoints;
 };
+
+void BasicApp::prepareSettings( Settings *settings )
+{
+	settings->setFullScreen( true );
+}
 
 void BasicApp::mouseDrag( MouseEvent event )
 {
