@@ -18,7 +18,7 @@ class AudioPlaybackApp : public AppBasic {
 
 void AudioPlaybackApp::setup()
 {
-	mAudioSource = audio::load( loadResource( RES_BOOYAH ) );
+	mAudioSource = audio::load( loadResource( RES_BOOYAHWAV ) );
 }
 
 void AudioPlaybackApp::mouseDown( MouseEvent event )
