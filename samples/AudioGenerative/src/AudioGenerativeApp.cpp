@@ -10,7 +10,7 @@ class AudioGenerativeApp : public AppBasic {
  public:
 	void setup();
 	void mouseMove( MouseEvent event );
-	void sineWave( uint64_t inSampleOffset, uint32_t ioSampleCount, audio::Buffer *ioBuffer );
+	void sineWave( uint64_t inSampleOffset, uint32_t ioSampleCount, audio::Buffer32f *ioBuffer );
 	void draw();
 	
 	float mFreqTarget;
@@ -36,8 +36,8 @@ void AudioGenerativeApp::mouseMove( MouseEvent event )
 	mFreqTarget = math<float>::clamp( ( height - event.getY() ) / (float)height * mMaxFreq, 0.0, mMaxFreq );
 }
 
-void AudioGenerativeApp::sineWave( uint64_t inSampleOffset, uint32_t ioSampleCount, audio::Buffer *ioBuffer ) {
-	float * buffer = (float *)ioBuffer->mData;
+void AudioGenerativeApp::sineWave( uint64_t inSampleOffset, uint32_t ioSampleCount, audio::Buffer32f *ioBuffer ) {
+	float * buffer = ioBuffer->mData;
 	mPhaseAdjust = mPhaseAdjust * 0.95f + ( mFreqTarget / 44100.0f ) * 0.05f;
 	for( int  i = 0; i < ioSampleCount; i++ ) {
 		mPhase += mPhaseAdjust;
