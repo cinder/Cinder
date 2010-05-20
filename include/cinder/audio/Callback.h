@@ -30,6 +30,8 @@
 	#include "cinder/audio/CocoaCaConverter.h"
 #endif
 
+#include <boost/type_traits/is_same.hpp>
+
 namespace cinder { namespace audio {
 
 template<typename,typename> class LoaderSourceCallback;
@@ -45,7 +47,7 @@ class Callback : public Source {
 	double getDuration() const { return 100.0; } //TODO: support for endless sources
 	
  private:
-	Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount, DataType aDataType );
+	Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
   
 	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
 	
@@ -55,13 +57,13 @@ class Callback : public Source {
 	
 	friend class LoaderSourceCallback<T,U>;
 	template <typename T2, typename U2>
-	friend shared_ptr<Callback<T2,U2> > createCallback( T2* callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U2> *ioBuffer ), bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount, Io::DataType aDataType );
+	friend shared_ptr<Callback<T2,U2> > createCallback( T2* callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U2> *ioBuffer ), bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
 };
 
 template<typename T, typename U>
-shared_ptr<Callback<T,U> > createCallback( T* callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U> *ioBuffer ), bool ownCallbackObj = false, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, Io::DataType aDataType = Io::FLOAT32 )
+shared_ptr<Callback<T,U> > createCallback( T* callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U> *ioBuffer ), bool ownCallbackObj = false, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2 )
 {
-	return shared_ptr<Callback<T,U> >( new Callback<T,U>( callbackObj, callbackFn, ownCallbackObj, aSampleRate, aChannelCount, aDataType ) );
+	return shared_ptr<Callback<T,U> >( new Callback<T,U>( callbackObj, callbackFn, ownCallbackObj, aSampleRate, aChannelCount ) );
 }
 
 template<typename T, typename U>
@@ -89,28 +91,40 @@ class LoaderSourceCallback : public Loader {
 };
 
 template<typename T, typename U>
-Callback<T,U>::Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount, DataType aDataType )
+Callback<T,U>::Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount )
 	: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj ), mOwnsCallbackObj( ownCallbackObj )
 {
 	mIsPcm = true;
 	mSampleRate = aSampleRate;
 	mChannelCount = aChannelCount;
 	mIsInterleaved = true;
-	mDataType = aDataType;
 	mIsBigEndian = false;
 	
-	if( mDataType == UINT8 || mDataType == INT8 ) {
+	if( boost::is_same<U,uint8_t>::value ) {
+		mDataType = Io::UINT8;
 		mBitsPerSample = 8;
-	} else if( mDataType == INT16 ) {
+	} else if( boost::is_same<U,int8_t>::value ) {
+		mDataType = Io::INT8;
+		mBitsPerSample = 8;
+	} else if( boost::is_same<U,uint16_t>::value ) {
+		mDataType = Io::UINT16;
 		mBitsPerSample = 16;
-	} else if( mDataType == UINT32 || mDataType == INT32 || mDataType == FLOAT32 ) {
+	} else if( boost::is_same<U,int16_t>::value ) {
+		mDataType = Io::INT16;
+		mBitsPerSample = 16;
+	} else if( boost::is_same<U,uint32_t>::value ) {
+		mDataType = Io::UINT32;
+		mBitsPerSample = 32;
+	} else if( boost::is_same<U,int32_t>::value ) {
+		mDataType = Io::UINT32;
+		mBitsPerSample = 32;
+	} else if( boost::is_same<U,float>::value ) {
+		mDataType = Io::FLOAT32;
 		mBitsPerSample = 32;
 	} else {
-		if( mOwnsCallbackObj ) {
-			delete callbackObj;
-		}
-		throw IoExceptionUnsupportedDataType();
+		throw IoExceptionUnsupportedDataType(); //This callback seems to be providing an unsupprted type of data
 	}
+	
 	mBlockAlign = ( mBitsPerSample / 8 ) * mChannelCount;
 }
 
