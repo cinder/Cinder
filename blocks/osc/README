@@ -1,0 +1,17 @@
+Cinder OSC Block
+===============
+
+Cinder OSC Block allows you to use OSC protocol (http://opensoundcontrol.org/) with Cinder Framework (http://libcinder.org).
+
+
+
+Changelog
+-----------
+
+v 0.1
+This first version is a port from ofxOSC addon for openFrameworks (http://addons.openframeworks.cc/projects/show/ofxosc) by Damian Stewart (http://frey.co.nz).
+
+Contributors
+------------
+
+ * Hector Sanchez-Pajares <hector.spc@gmail.com>
