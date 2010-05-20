@@ -378,6 +378,9 @@
     <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -712,6 +715,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\SourceFileWav.h">
+      <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

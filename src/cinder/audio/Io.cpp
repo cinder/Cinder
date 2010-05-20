@@ -24,7 +24,9 @@
 #include "cinder/Utilities.h"
 
 #if defined(CINDER_MSW)
-	#include "cinder/audio/SourceFileWindowsMedia.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
+	// this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
+	#include "cinder/audio/SourceFileWindowsMedia.h"
+	#include "cinder/audio/SourceFileWav.h"	
 #endif
 
 using namespace std;
