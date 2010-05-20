@@ -58,8 +58,12 @@ class Track {
 	virtual void setLooping( bool isLooping ) = 0;
 	virtual bool isLooping() const = 0;
 	
+	virtual void setPcmBuffering( bool isBuffering ) = 0;
+	virtual bool isPcmBuffering() = 0;
+	
+	
   protected:
-	Track() {}
+	Track() : mPcmBuffering( false ) {}
 };
 
 class OutputImpl {

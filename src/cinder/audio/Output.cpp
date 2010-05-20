@@ -94,6 +94,11 @@ class OutputAudioUnit : public OutputImpl {
 		
 		bool isLooping() const { return mIsLooping; }
 		void setLooping( bool isLooping ) { mIsLooping = isLooping; }
+		
+		void setPcmBuffering( bool isBuffering ) { mIsPcmBuffering = isBuffering; }
+		bool isPcmBuffering() { return mIsPcmBuffering; }
+		
+		BufferList getPcmBuffer();
 	  private:
 		static OSStatus renderCallback( void * audioLoader, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData);
 		
