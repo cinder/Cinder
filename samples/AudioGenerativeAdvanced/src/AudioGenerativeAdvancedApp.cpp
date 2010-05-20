@@ -16,7 +16,7 @@ class SineWave {
  public:
 	SineWave( uint32_t freq, float duration );
 	~SineWave() {}
-	void getData( uint64_t inSampleOffset, uint32_t inSampleCount, ci::audio::Buffer *ioBuffer );
+	void getData( uint64_t inSampleOffset, uint32_t inSampleCount, ci::audio::Buffer32f *ioBuffer );
  private:
 	uint32_t mFreq;
 	float mDuration;
@@ -53,14 +53,12 @@ SineWave::SineWave( uint32_t freq, float duration )
 {
 }
 
-void SineWave::getData( uint64_t inSampleOffset, uint32_t inSampleCount, ci::audio::Buffer *ioBuffer )
+void SineWave::getData( uint64_t inSampleOffset, uint32_t inSampleCount, ci::audio::Buffer32f *ioBuffer )
 {
 	if( ( inSampleOffset / 44100.0f ) > mDuration ) {
 		ioBuffer->mDataByteSize = 0;
 		return;
 	}
-	
-	float * buffer = (float *)ioBuffer->mData;
 	
 	uint64_t idx = inSampleOffset;
 	
@@ -68,8 +66,8 @@ void SineWave::getData( uint64_t inSampleOffset, uint32_t inSampleCount, ci::aud
 		
 		float val = ci::math<float>::sin( idx * ( mFreq / 44100.0f ) * 2.0f * M_PI );
 		
-		buffer[i*ioBuffer->mNumberChannels] = val;
-		buffer[i*ioBuffer->mNumberChannels + 1] = val;
+		ioBuffer->mData[i*ioBuffer->mNumberChannels] = val;
+		ioBuffer->mData[i*ioBuffer->mNumberChannels + 1] = val;
 		idx++;
 	}
 }

@@ -30,46 +30,48 @@
 	#include "cinder/audio/CocoaCaConverter.h"
 #endif
 
+#include <boost/type_traits/is_same.hpp>
+
 namespace cinder { namespace audio {
 
-template<typename> class LoaderSourceCallback;
+template<typename,typename> class LoaderSourceCallback;
 
-template<typename T>
+template<typename T, typename U>
 class Callback : public Source {
  public: 
-	typedef void (T::*CallbackFunction)( uint64_t inSampleOffset, uint32_t inSampleCount, Buffer *ioBuffer );
+	typedef void (T::*CallbackFunction)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U> *ioBuffer );
 	
 	virtual ~Callback();
 	
-	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback<T>::createRef( this, target ); }
+	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback<T,U>::createRef( this, target ); }
 	double getDuration() const { return 100.0; } //TODO: support for endless sources
 	
  private:
-	Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount, DataType aDataType );
+	Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
   
-	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) { ( mCallbackObj->*mCallbackFn )( inSampleOffset, ioSampleCount, ioBuffer ); }
+	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
 	
 	T* mCallbackObj;
 	CallbackFunction mCallbackFn;
 	bool mOwnsCallbackObj;
 	
-	friend class LoaderSourceCallback<T>;
-	template <typename T2>
-	friend shared_ptr<Callback<T2> > createCallback( T2* callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, Buffer *ioBuffer ), bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount, Io::DataType aDataType );
+	friend class LoaderSourceCallback<T,U>;
+	template <typename T2, typename U2>
+	friend shared_ptr<Callback<T2,U2> > createCallback( T2* callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U2> *ioBuffer ), bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
 };
 
-template<typename T>
-	shared_ptr<Callback<T> > createCallback( T* callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, Buffer *ioBuffer ), bool ownCallbackObj = false, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2, Io::DataType aDataType = Io::FLOAT32 )
+template<typename T, typename U>
+shared_ptr<Callback<T,U> > createCallback( T* callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U> *ioBuffer ), bool ownCallbackObj = false, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2 )
 {
-	return shared_ptr<Callback<T> >( new Callback<T>( callbackObj, callbackFn, ownCallbackObj, aSampleRate, aChannelCount, aDataType ) );
+	return shared_ptr<Callback<T,U> >( new Callback<T,U>( callbackObj, callbackFn, ownCallbackObj, aSampleRate, aChannelCount ) );
 }
 
-template<typename T>
+template<typename T, typename U>
 class LoaderSourceCallback : public Loader {
  public:
-	static LoaderRef	createRef( Callback<T> *source, Target *target )
+	static LoaderRef	createRef( Callback<T,U> *source, Target *target )
 	{
-		return shared_ptr<LoaderSourceCallback<T> >( new LoaderSourceCallback<T>( source, target ) );
+		return shared_ptr<LoaderSourceCallback<T,U> >( new LoaderSourceCallback<T,U>( source, target ) );
 	}
 	
 	~LoaderSourceCallback() {}
@@ -78,8 +80,8 @@ class LoaderSourceCallback : public Loader {
 	void setSampleOffset( uint64_t anOffset ) { mSampleOffset = anOffset; }
 	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
   private:
-	LoaderSourceCallback( Callback<T> *source, Target *target );
-	Callback<T>						* mSource;
+	LoaderSourceCallback( Callback<T,U> *source, Target *target );
+	Callback<T,U>						* mSource;
 	uint64_t						mSampleOffset;
 
 #if defined(CINDER_COCOA)
@@ -88,42 +90,69 @@ class LoaderSourceCallback : public Loader {
 #endif	
 };
 
-template<typename T>
-Callback<T>::Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount, DataType aDataType )
+template<typename T, typename U>
+Callback<T,U>::Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount )
 	: Source(), mCallbackFn( callbackFn ), mCallbackObj( callbackObj ), mOwnsCallbackObj( ownCallbackObj )
 {
 	mIsPcm = true;
 	mSampleRate = aSampleRate;
 	mChannelCount = aChannelCount;
 	mIsInterleaved = true;
-	mDataType = aDataType;
 	mIsBigEndian = false;
 	
-	if( mDataType == UINT8 || mDataType == INT8 ) {
+	if( boost::is_same<U,uint8_t>::value ) {
+		mDataType = Io::UINT8;
 		mBitsPerSample = 8;
-	} else if( mDataType == INT16 ) {
+	} else if( boost::is_same<U,int8_t>::value ) {
+		mDataType = Io::INT8;
+		mBitsPerSample = 8;
+	} else if( boost::is_same<U,uint16_t>::value ) {
+		mDataType = Io::UINT16;
 		mBitsPerSample = 16;
-	} else if( mDataType == UINT32 || mDataType == INT32 || mDataType == FLOAT32 ) {
+	} else if( boost::is_same<U,int16_t>::value ) {
+		mDataType = Io::INT16;
+		mBitsPerSample = 16;
+	} else if( boost::is_same<U,uint32_t>::value ) {
+		mDataType = Io::UINT32;
+		mBitsPerSample = 32;
+	} else if( boost::is_same<U,int32_t>::value ) {
+		mDataType = Io::UINT32;
+		mBitsPerSample = 32;
+	} else if( boost::is_same<U,float>::value ) {
+		mDataType = Io::FLOAT32;
 		mBitsPerSample = 32;
 	} else {
-		if( mOwnsCallbackObj ) {
-			delete callbackObj;
-		}
-		throw IoExceptionUnsupportedDataType();
+		throw IoExceptionUnsupportedDataType(); //This callback seems to be providing an unsupprted type of data
 	}
+	
 	mBlockAlign = ( mBitsPerSample / 8 ) * mChannelCount;
 }
 
-template<typename T>
-Callback<T>::~Callback()
+template<typename T, typename U>
+Callback<T,U>::~Callback()
 {
 	if( mOwnsCallbackObj ) {
 		delete mCallbackObj;
 	}
 }
+
+template<typename T, typename U>
+void Callback<T,U>::getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) 
+{
+	BufferT<U> typedBuffer;
+	typedBuffer.mNumberChannels = ioBuffer->mNumberChannels;
+	typedBuffer.mDataByteSize = ioBuffer->mDataByteSize;
+	typedBuffer.mData = reinterpret_cast<U*>( ioBuffer->mData );
 	
-template<typename T>
-LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *target )
+	( mCallbackObj->*mCallbackFn )( inSampleOffset, ioSampleCount, &typedBuffer );
+	
+	ioBuffer->mNumberChannels = typedBuffer.mNumberChannels;
+	ioBuffer->mDataByteSize = typedBuffer.mDataByteSize;
+	ioBuffer->mData = reinterpret_cast<void*>( typedBuffer.mData );
+}
+	
+template<typename T, typename U>
+LoaderSourceCallback<T,U>::LoaderSourceCallback( Callback<T,U> *source, Target *target )
 	: mSource( source ), mSampleOffset( 0 )
 {
 #if defined( CINDER_COCOA )
@@ -153,12 +182,12 @@ LoaderSourceCallback<T>::LoaderSourceCallback( Callback<T> *source, Target *targ
 	targetDescription.mChannelsPerFrame = target->getChannelCount();
 	targetDescription.mBitsPerChannel = target->getBitsPerSample();
 	
-	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T>::dataInputCallback, sourceDescription, targetDescription, mSource->getBlockAlign() ) );
+	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T,U>::dataInputCallback, sourceDescription, targetDescription, mSource->getBlockAlign() ) );
 #endif
 }
 
-template<typename T>
-void LoaderSourceCallback<T>::loadData( uint32_t *ioSampleCount, BufferList *ioData ) {	
+template<typename T, typename U>
+void LoaderSourceCallback<T,U>::loadData( uint32_t *ioSampleCount, BufferList *ioData ) {	
 #if defined( CINDER_COCOA )
 	mConverter->loadData( ioSampleCount, ioData );
 	mSampleOffset += *ioSampleCount;
@@ -169,10 +198,10 @@ void LoaderSourceCallback<T>::loadData( uint32_t *ioSampleCount, BufferList *ioD
 }	
 
 #if defined( CINDER_COCOA )
-template<typename T>
-void LoaderSourceCallback<T>::dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions ) {
+template<typename T, typename U>
+void LoaderSourceCallback<T,U>::dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions ) {
 	LoaderSourceCallback * theLoader = dynamic_cast<LoaderSourceCallback *>( aLoader );
-	Callback<T> * theSource = theLoader->mSource;	
+	Callback<T,U> * theSource = theLoader->mSource;	
 	theSource->getData( theLoader->mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
 }
 #endif
