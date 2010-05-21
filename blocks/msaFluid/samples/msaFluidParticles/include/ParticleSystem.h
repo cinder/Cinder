@@ -1,6 +1,5 @@
 /*
  *  ParticleSystem.h
- *  ofxMSAFluid Demo
  *
  *  Created by Mehmet Akten on 02/05/2009.
  *  Copyright 2009 MSA Visuals Ltd.. All rights reserved.
@@ -31,8 +30,8 @@ public:
 	void setFluidSolver( const ciMsaFluidSolver *aSolver ) { solver = aSolver; }
 	
     void updateAndDraw( bool drawingFluid );
-	void addParticles(float x, float y, int count );
-	void addParticle(float x, float y);
+	void addParticles( const ci::Vec2f &pos, int count );
+	void addParticle( const ci::Vec2f &pos );
 	void setWindowSize( ci::Vec2i winSize );
 };
 

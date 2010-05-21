@@ -1,2 +1,12 @@
 * 0.8.0		April 26, 2010
 	Initial release
+* 0.8.1		May 21, 2010
+	MultiTouch in Windows 7 and Cocoa Touch
+	Visual C++ 2010 support
+	OSC by HŽctor S‡nchez-Pajares
+	MSAFluid - a port of Mehmet Atken's Fluid Simulation
+	Audio Synthesis
+	enableSecondaryDisplay - Mac OS X setting for optional display blanking
+	WinInet support - replacement of libCurl on Windows with native API
+	Text rendering on iPhone
+	gl::drawString()
