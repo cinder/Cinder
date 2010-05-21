@@ -345,15 +345,19 @@ void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 					pt.y = TOUCH_COORD_TO_PIXEL( ti.y );
 					::ScreenToClient( hWnd, &pt );
 					if( ti.dwFlags & 0x0004/*TOUCHEVENTF_UP*/ ) {
-						endTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						Vec2f prevPos = mMultiTouchPrev[ti.dwID];
+						endTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), prevPos, ti.dwID, currentTime, &pInputs.get()[i] ) );
+						mMultiTouchPrev.erase( ti.dwID );
 					}
 					else if( ti.dwFlags & 0x0002/*TOUCHEVENTF_DOWN*/ ) {
-						beganTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						beganTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						mMultiTouchPrev[ti.dwID] = Vec2f( (float)pt.x, (float)pt.y );
 						activeTouches.push_back( beganTouches.back() );
 					}
 					else if( ti.dwFlags & 0x0001/*TOUCHEVENTF_MOVE*/ ) {
-						movedTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						movedTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), mMultiTouchPrev[ti.dwID], ti.dwID, currentTime, &pInputs.get()[i] ) );
 						activeTouches.push_back( movedTouches.back() );
+						mMultiTouchPrev[ti.dwID] = Vec2f( (float)pt.x, (float)pt.y );
 					}
 				}
             }

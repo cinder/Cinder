@@ -66,12 +66,13 @@ class AppImplMswBasic : public AppImplMsw {
 	class AppBasic	*mApp;
 	
 	// Windows window variables
-	HWND				mWnd;
-	HDC					mDC;
-	HINSTANCE			mInstance;
-	DWORD				mWindowStyle, mWindowExStyle;
-	double				mNextFrameTime;
-	Display				*mDisplay;
+	HWND					mWnd;
+	HDC						mDC;
+	HINSTANCE				mInstance;
+	DWORD					mWindowStyle, mWindowExStyle;
+	double					mNextFrameTime;
+	Display					*mDisplay;
+	std::map<DWORD,Vec2f>	mMultiTouchPrev;
 
 	friend LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 };

@@ -42,24 +42,10 @@
  * ***********************************************************************/ 
 //	April-Mai 2009 optimized and extended by Maa (http://www.lagraine.com/ - new content coming soon)
 
+ /* Portions Copyright (c) 2010, The Cinder Project, http://libcinder.org */
+
 #include "ciMsaFluidSolver.h"
 #include "cinder/Rand.h"
-
-#define FLUID_CONDENSED_LOOPS				// doing a lot of the iterations in the same loop is quite faster...
-
-#ifdef FLUID_CONDENSED_LOOPS
-#define ADD_SOURCE_UV		addSourceUV();
-#define ADD_SOURCE_RGB		addSourceRGB();
-#define DIFFUSE_RGB			diffuseRGB(0, colorDiffusion );
-#define ADVECT_RGB			advectRGB(0, u, v);
-#define DIFFUSE_UV			diffuseUV( viscocity );
-#else	
-#define ADD_SOURCE_UV		addSource(u, uOld);	addSource(v, vOld);
-#define ADD_SOURCE_RGB		addSource(r, rOld);	addSource(g, gOld);	addSource(b, bOld);
-#define DIFFUSE_RGB			diffuse(0, r, rOld, colorDiffusion);       diffuse(0, g, gOld, colorDiffusion);       diffuse(0, b, bOld, colorDiffusion);    
-#define ADVECT_RGB			advect(0, r, rOld, u, v);	advect(0, g, gOld, u, v);	advect(0, b, bOld, u, v);
-#define DIFFUSE_UV			diffuse(0, u, uOld, viscocity);   diffuse(0, v, vOld, viscocity);
-#endif
 
 ciMsaFluidSolver::ciMsaFluidSolver()
 :r(NULL)
@@ -68,20 +54,15 @@ ciMsaFluidSolver::ciMsaFluidSolver()
 ,gOld(NULL)
 ,b(NULL)
 ,bOld(NULL)
-,u(NULL)
-,uOld(NULL)
-,v(NULL)
-,vOld(NULL)
+,uv(NULL)
+,uvOld(NULL)
 ,curl(NULL)
 ,_isInited(false)
 {
-	printf("ciMsaFluidSolver::ciMsaFluidSolver()\n");	
 }
 
 ciMsaFluidSolver& ciMsaFluidSolver::setSize(int NX, int NY)
 {
-	printf("ciMsaFluidSolver::setSize(%i, %i)\n", NX, NY);
-	
 	_NX = NX;
 	_NY = NY;
 	_numCells = (_NX + 2) * (_NY + 2);
@@ -102,8 +83,6 @@ ciMsaFluidSolver& ciMsaFluidSolver::setSize(int NX, int NY)
 
 ciMsaFluidSolver& ciMsaFluidSolver::setup(int NX, int NY)
 {
-	printf("ciMsaFluidSolver::init(%i, %i)\n", NX, NY);
-	
 	setDeltaT();
 	setFadeSpeed();
 	setSolverIterations();
@@ -154,17 +133,15 @@ ciMsaFluidSolver& ciMsaFluidSolver::setWrap( bool bx, bool by ) {
 	return *this;
 }
 
-bool ciMsaFluidSolver::isInited() {
+bool ciMsaFluidSolver::isInited() const {
 	return _isInited;
 }
 
 ciMsaFluidSolver::~ciMsaFluidSolver() {
-	printf("ciMsaFluidSolver::~ciMsaFluidSolver()\n");
 	destroy();
 }
 
 void ciMsaFluidSolver::destroy() {
-	printf("ciMsaFluidSolver::destroy()\n");
 	_isInited = false;
 	
 	if(r)		delete []r;
@@ -176,16 +153,13 @@ void ciMsaFluidSolver::destroy() {
 	if(b)		delete []b;
 	if(bOld)	delete []bOld;
 	
-	if(u)		delete []u;
-	if(uOld)	delete []uOld;
-	if(v)		delete []v;
-	if(vOld)	delete []vOld;
+	if(uv)		delete []uv;
+	if(uvOld)	delete []uvOld;
 	if(curl)       delete []curl;
 }
 
 
 void ciMsaFluidSolver::reset() {
-	printf("ciMsaFluidSolver::reset()\n");	
 	destroy();
 	_isInited = true;
 	
@@ -198,31 +172,29 @@ void ciMsaFluidSolver::reset() {
 	b    = new float[_numCells];
 	bOld = new float[_numCells];
 	
-	u    = new float[_numCells];
-	uOld = new float[_numCells];
-	v    = new float[_numCells];
-	vOld = new float[_numCells];
+	uv    = new ci::Vec2f[_numCells];
+	uvOld = new ci::Vec2f[_numCells];
 	curl = new float[_numCells];
 	
 	for ( int i = _numCells-1; i>=0; --i )
 	{
-		u[i] = uOld[i] = v[i] = vOld[i] = 0.0f;
+		uv[i] = uvOld[i] = ci::Vec2f::zero();
 		curl[i] = 0.0f;
 		r[i] = rOld[i] = g[i] = gOld[i] = b[i] = bOld[i] = 0;
 	}
 }
 
 // return total number of cells (_NX+2) * (_NY+2)
-int ciMsaFluidSolver::getNumCells() {
+int ciMsaFluidSolver::getNumCells() const {
 	return _numCells;
 }
 
-int ciMsaFluidSolver::getWidth() {
+int ciMsaFluidSolver::getWidth() const {
 	return _NX + 2;
 }
 
 
-int ciMsaFluidSolver::getHeight() {
+int ciMsaFluidSolver::getHeight() const {
 	return _NY + 2;
 }
 
@@ -233,7 +205,7 @@ ciMsaFluidSolver& ciMsaFluidSolver::setVisc(float newVisc) {
 }
 
 // returns current viscocity
-float ciMsaFluidSolver::getVisc() {
+float ciMsaFluidSolver::getVisc() const {
 	return viscocity;
 }
 
@@ -249,21 +221,21 @@ float	ciMsaFluidSolver::getColorDiffusion()
 }
 
 // returns average density of fluid 
-float ciMsaFluidSolver::getAvgDensity() {
+float ciMsaFluidSolver::getAvgDensity() const {
 	return _avgDensity;
 }
 
 // returns average uniformity
-float ciMsaFluidSolver::getUniformity() {
+float ciMsaFluidSolver::getUniformity() const {
 	return _uniformity;
 }
 
-float ciMsaFluidSolver::getAvgSpeed() {
+float ciMsaFluidSolver::getAvgSpeed() const {
 	return _avgSpeed;
 }
 
 #ifndef	SWAP
-template<class T> INLINE void SWAP( T& a, T& b)
+template<class T> void SWAP( T& a, T& b)
 {
 	T tmp = b;
 	b = a;
@@ -277,19 +249,17 @@ void ciMsaFluidSolver::swapRGB(){
 	SWAP( g, gOld );
 	SWAP( b, bOld );
 }
-void ciMsaFluidSolver::swapUV()	{	SWAP( u, uOld );
-SWAP( v, vOld );
-}
+void ciMsaFluidSolver::swapUV()	{	SWAP( uv, uvOld ); }
 
 // Curl and vorticityConfinement based on code by Alexander McKenzie
-INLINE	float ciMsaFluidSolver::calcCurl( int i, int j)
+float ciMsaFluidSolver::calcCurl( int i, int j)
 {
-	float du_dy = u[FLUID_IX(i, j + 1)] - u[FLUID_IX(i, j - 1)];
-	float dv_dx = v[FLUID_IX(i + 1, j)] - v[FLUID_IX(i - 1, j)];
+	float du_dy = uv[FLUID_IX(i, j + 1)].x - uv[FLUID_IX(i, j - 1)].x;
+	float dv_dx = uv[FLUID_IX(i + 1, j)].y - uv[FLUID_IX(i - 1, j)].y;
 	return (du_dy - dv_dx) * 0.5f;	// for optimization should be moved to later and done with another operation
 }
 
-void ciMsaFluidSolver::vorticityConfinement(float* Fvc_x, float* Fvc_y) {
+void ciMsaFluidSolver::vorticityConfinement(ci::Vec2f* Fvc_xy) {
 	float dw_dx, dw_dy;
 	float length;
 	float v;
@@ -323,46 +293,45 @@ void ciMsaFluidSolver::vorticityConfinement(float* Fvc_x, float* Fvc_y) {
 			v = calcCurl(i, j);
 			
 			// N x w
-			Fvc_x[FLUID_IX(i, j)] = dw_dy * -v;
-			Fvc_y[FLUID_IX(i, j)] = dw_dx *  v;
+			Fvc_xy[FLUID_IX(i, j)].x = dw_dy * -v;
+			Fvc_xy[FLUID_IX(i, j)].y = dw_dx *  v;
 		}
 	}
 }
 
 void ciMsaFluidSolver::update() {
-	ADD_SOURCE_UV
+	addSourceUV();
 	
 	if( doVorticityConfinement )
 	{
-		vorticityConfinement(uOld, vOld);
-		ADD_SOURCE_UV
+		vorticityConfinement(uvOld);
+		addSourceUV();
 	}
 	
 	swapUV();
 	
-	DIFFUSE_UV(viscocity);
+	diffuseUV( viscocity );
 	
-	project(u, v, uOld, vOld);
+	project(uv, uvOld);
 	
 	swapUV();
 	
-	advect(1, u, uOld, uOld, vOld);
-	advect(2, v, vOld, uOld, vOld);
+	advect2d(uv, uvOld);
 	
-	project(u, v, uOld, vOld);
+	project(uv, uvOld);
 	
 	if(doRGB)
 	{
-		ADD_SOURCE_RGB
+		addSourceRGB();
 		swapRGB();
 		
 		if( colorDiffusion!=0. && _dt!=0. )
 		{
-			DIFFUSE_RGB
+			diffuseRGB(0, colorDiffusion );
 			swapRGB();
 		}
 		
-		ADVECT_RGB
+		advectRGB(0, uv);
 		fadeRGB();
 	} 
 	else
@@ -376,7 +345,7 @@ void ciMsaFluidSolver::update() {
 			swapRGB();
 		}
 		
-		advect(0, r, rOld, u, v);	
+		advect(0, r, rOld, uv);	
 		fadeR();
 	}
 }
@@ -400,12 +369,12 @@ void ciMsaFluidSolver::fadeR() {
 	_avgSpeed = 0;
 	for (int i = _numCells-1; i >=0; --i) {
 		// clear old values
-		uOld[i] = vOld[i] = 0; 
+		uvOld[i] = ci::Vec2f::zero(); 
 		rOld[i] = 0;
 		//		gOld[i] = bOld[i] = 0;
 		
 		// calc avg speed
-		_avgSpeed += u[i] * u[i] + v[i] * v[i];
+		_avgSpeed += uv[i].x * uv[i].x + uv[i].y * uv[i].y;
 		
 		// calc avg density
 		tmp_r = ci::math<float>::min( 1.0f, r[i] );
@@ -423,8 +392,8 @@ void ciMsaFluidSolver::fadeR() {
 		r[i] = tmp_r * holdAmount;
 		
 		CHECK_ZERO(r[i]);
-		CHECK_ZERO(u[i]);
-		CHECK_ZERO(v[i]);
+		CHECK_ZERO(uv[i].x);
+		CHECK_ZERO(uv[i].y);
 		if(doVorticityConfinement) CHECK_ZERO(curl[i]);
 		
 	}
@@ -452,12 +421,12 @@ void ciMsaFluidSolver::fadeRGB() {
 	for (int i = _numCells-1; i >=0; --i)
 	{
 		// clear old values
-		uOld[i] = vOld[i] = 0; 
+		uvOld[i] = ci::Vec2f::zero();
 		rOld[i] = 0;
 		gOld[i] = bOld[i] = 0;
 		
 		// calc avg speed
-		_avgSpeed += u[i] * u[i] + v[i] * v[i];
+		_avgSpeed += uv[i].x * uv[i].x + uv[i].y * uv[i].y;
 		
 		// calc avg density
 		tmp_r = ci::math<float>::min( 1.0f, r[i] );
@@ -479,8 +448,8 @@ void ciMsaFluidSolver::fadeRGB() {
 		CHECK_ZERO(r[i]);
 		CHECK_ZERO(g[i]);
 		CHECK_ZERO(b[i]);
-		CHECK_ZERO(u[i]);
-		CHECK_ZERO(v[i]);
+		CHECK_ZERO(uv[i].x);
+		CHECK_ZERO(uv[i].y);
 		if(doVorticityConfinement) CHECK_ZERO(curl[i]);
 	}
 	_avgDensity *= _invNumCells;
@@ -495,8 +464,8 @@ void ciMsaFluidSolver::addSourceUV()
 {
 	for (int i = _numCells-1; i >=0; --i)
 	{
-		u[i] += _dt * uOld[i];
-		v[i] += _dt * vOld[i];
+		uv[i].x += _dt * uvOld[i].x;
+		uv[i].y += _dt * uvOld[i].y;
 	}
 }
 
@@ -510,8 +479,6 @@ void ciMsaFluidSolver::addSourceRGB()
 	}
 }
 
-
-
 void ciMsaFluidSolver::addSource(float* x, float* x0) {
 	for (int i = _numCells-1; i >=0; --i)
 	{
@@ -519,22 +486,21 @@ void ciMsaFluidSolver::addSource(float* x, float* x0) {
 	}
 }
 
-
-void ciMsaFluidSolver::advect( int bound, float* d, float* d0, float* du, float* dv) {
+void ciMsaFluidSolver::advect( int bound, float* d, const float* d0, const ci::Vec2f* duv) {
 	int i0, j0, i1, j1;
-	float x, y, s0, t0, s1, t1, dt0x, dt0y;
+	float x, y, s0, t0, s1, t1;
 	int	index;
 	
-	dt0x = _dt * _NX;
-	dt0y = _dt * _NY;
+	const float dt0x = _dt * _NX;
+	const float dt0y = _dt * _NY;
 	
 	for (int j = _NY; j > 0; --j)
 	{
 		for (int i = _NX; i > 0; --i)
 		{
 			index = FLUID_IX(i, j);
-			x = i - dt0x * du[index];
-			y = j - dt0y * dv[index];
+			x = i - dt0x * duv[index].x;
+			y = j - dt0y * duv[index].y;
 			
 			if (x > _NX + 0.5) x = _NX + 0.5f;
 			if (x < 0.5)     x = 0.5f;
@@ -554,15 +520,62 @@ void ciMsaFluidSolver::advect( int bound, float* d, float* d0, float* du, float*
 			t0 = 1 - t1;
 			
 			d[index] = s0 * (t0 * d0[FLUID_IX(i0, j0)] + t1 * d0[FLUID_IX(i0, j1)])
-			+ s1 * (t0 * d0[FLUID_IX(i1, j0)] + t1 * d0[FLUID_IX(i1, j1)]);
+						+ s1 * (t0 * d0[FLUID_IX(i1, j0)] + t1 * d0[FLUID_IX(i1, j1)]);
 			
 		}
 	}
 	setBoundary(bound, d);
 }
 
-void ciMsaFluidSolver::advectRGB(int bound, float* du, float* dv) {
+//          d    d0    du    dv
+// advect(1, u, uOld, uOld, vOld);
+// advect(2, v, vOld, uOld, vOld);
+void ciMsaFluidSolver::advect2d( ci::Vec2f *uv, const ci::Vec2f *duv ) {
 	int i0, j0, i1, j1;
+	float s0, t0, s1, t1;
+	int	index;
+	
+	const float dt0x = _dt * _NX;
+	const float dt0y = _dt * _NY;
+	
+	for (int j = _NY; j > 0; --j)
+	{
+		for (int i = _NX; i > 0; --i)
+		{
+			index = FLUID_IX(i, j);
+			float x = i - dt0x * duv[index].x;
+			float y = j - dt0y * duv[index].y;
+			
+			if (x > _NX + 0.5) x = _NX + 0.5f;
+			if (x < 0.5)     x = 0.5f;
+			
+			i0 = (int) x;
+			i1 = i0 + 1;
+			
+			if (y > _NY + 0.5) y = _NY + 0.5f;
+			if (y < 0.5)     y = 0.5f;
+			
+			j0 = (int) y;
+			j1 = j0 + 1;
+			
+			s1 = x - i0;
+			s0 = 1 - s1;
+			t1 = y - j0;
+			t0 = 1 - t1;
+			
+			uv[index].x = s0 * (t0 * duv[FLUID_IX(i0, j0)].x + t1 * duv[FLUID_IX(i0, j1)].x)
+						+ s1 * (t0 * duv[FLUID_IX(i1, j0)].x + t1 * duv[FLUID_IX(i1, j1)].x);
+			uv[index].y = s0 * (t0 * duv[FLUID_IX(i0, j0)].y + t1 * duv[FLUID_IX(i0, j1)].y)
+						+ s1 * (t0 * duv[FLUID_IX(i1, j0)].y + t1 * duv[FLUID_IX(i1, j1)].y);
+			
+		}
+	}
+	setBoundary2d(1, uv);
+	setBoundary2d(2, uv);	
+}
+
+void ciMsaFluidSolver::advectRGB(int bound, const ci::Vec2f* duv) {
+	int i0, j0;
 	float x, y, s0, t0, s1, t1, dt0x, dt0y;
 	int	index;
 	
@@ -574,8 +587,8 @@ void ciMsaFluidSolver::advectRGB(int bound, float* du, float* dv) {
 		for (int i = _NX; i > 0; --i)
 		{
 			index = FLUID_IX(i, j);
-			x = i - dt0x * du[index];
-			y = j - dt0y * dv[index];
+			x = i - dt0x * duv[index].x;
+			y = j - dt0y * duv[index].y;
 			
 			if (x > _NX + 0.5) x = _NX + 0.5f;
 			if (x < 0.5)     x = 0.5f;
@@ -602,8 +615,6 @@ void ciMsaFluidSolver::advectRGB(int bound, float* du, float* dv) {
 	setBoundaryRGB();
 }
 
-
-
 void ciMsaFluidSolver::diffuse( int bound, float* c, float* c0, float diff )
 {
 	float a = _dt * diff * _NX * _NY;	//todo find the exact strategy for using _NX and _NY in the factors
@@ -622,8 +633,7 @@ void ciMsaFluidSolver::diffuseUV( float diff )
 	linearSolverUV( a, 1.0 + 4 * a );
 }
 
-
-void ciMsaFluidSolver::project(float* x, float* y, float* p, float* div) 
+void ciMsaFluidSolver::project(ci::Vec2f* xy, ci::Vec2f* pDiv) 
 {
 	float	h;
 	int		index;
@@ -635,16 +645,16 @@ void ciMsaFluidSolver::project(float* x, float* y, float* p, float* div)
 		index = FLUID_IX(_NX, j);
 		for (int i = _NX; i > 0; --i)
 		{
-			div[index] = h * ( x[index+1] - x[index-1] + y[index+step_x] - y[index-step_x] );
-			p[index] = 0;
+			pDiv[index].x = h * ( xy[index+1].x - xy[index-1].x + xy[index+step_x].y - xy[index-step_x].y );
+			pDiv[index].y = 0;
 			--index;
 		}
 	}
 	
-	setBoundary(0, div);
-	setBoundary(0, p);
+	setBoundary02d( reinterpret_cast<ci::Vec2f*>( &pDiv[0].x ));
+	setBoundary02d( reinterpret_cast<ci::Vec2f*>( &pDiv[0].y ));
 	
-	linearSolver(0, p, div, 1, 4);
+	linearSolverProject( pDiv );
 	
 	float fx = 0.5f * _NX;
 	float fy = 0.5f * _NY;	//maa	change it from _NX to _NY
@@ -653,66 +663,56 @@ void ciMsaFluidSolver::project(float* x, float* y, float* p, float* div)
 		index = FLUID_IX(_NX, j);
 		for (int i = _NX; i > 0; --i)
 		{
-			x[index] -= fx * (p[index+1] - p[index-1]);
-			y[index] -= fy * (p[index+step_x] - p[index-step_x]);
+			xy[index].x -= fx * (pDiv[index+1].x - pDiv[index-1].x);
+			xy[index].y -= fy * (pDiv[index+step_x].x - pDiv[index-step_x].x);
 			--index;
 		}
 	}
 	
-	setBoundary(1, x);
-	setBoundary(2, y);
+	setBoundary2d(1, xy);
+	setBoundary2d(2, xy);
 }
 
 
 //	Gauss-Seidel relaxation
-void ciMsaFluidSolver::linearSolver( int bound, float* x, float* x0, float a, float c )
+void ciMsaFluidSolver::linearSolver( int bound, float* __restrict x, const float* __restrict x0, float a, float c )
 {
 	int	step_x = _NX + 2;
 	int index;
-	if( a == 1. && c == 4. )	//	optimize call in project()
+	c = 1. / c;
+	for (int k = solverIterations; k > 0; --k)	// MEMO 
 	{
-		for (int k = solverIterations; k > 0; --k)	// MEMO 
+		for (int j = _NY; j > 0 ; --j)
 		{
-			for (int j = _NY; j > 0 ; --j)
+			index = FLUID_IX(_NX, j );
+			for (int i = _NX; i > 0 ; --i)
 			{
-				/*				index = FLUID_IX(_NX, j );
-				 float* p = &x[index];
-				 float* po = &x0[index]+1;
-				 for (int i = _NX; i > 0 ; --i)
-				 {
-				 *p = ( *(p-1) + *(p+1) + *(p-step_x) + *(p+step_x) + *--po ) * .25;
-				 --p;
-				 }
-				 */
-				index = FLUID_IX(_NX, j );
-				for (int i = _NX; i > 0 ; --i)
-				{
-					x[index] = ( x[index-1] + x[index+1] + x[index - step_x] + x[index + step_x] + x0[index] ) * .25;
-					--index;				
-				}
+				x[index] = ( ( x[index-1] + x[index+1] + x[index - step_x] + x[index + step_x] ) * a + x0[index] ) * c;
+				--index;
 			}
-			setBoundary( bound, x );
 		}
-	}
-	else
-	{
-		c = 1. / c;
-		for (int k = solverIterations; k > 0; --k)	// MEMO 
-		{
-			for (int j = _NY; j > 0 ; --j)
-			{
-				index = FLUID_IX(_NX, j );
-				for (int i = _NX; i > 0 ; --i)
-				{
-					x[index] = ( ( x[index-1] + x[index+1] + x[index - step_x] + x[index + step_x] ) * a + x0[index] ) * c;
-					--index;
-				}
-			}
-			setBoundary( bound, x );
-		}
+		setBoundary( bound, x );
 	}
 }
 
+void ciMsaFluidSolver::linearSolverProject( ci::Vec2f* __restrict pdiv )
+{
+	int	step_x = _NX + 2;
+	int index;
+	for (int k = solverIterations; k > 0; --k) {
+		for (int j = _NY; j > 0 ; --j) {
+			index = FLUID_IX(_NX, j );
+			float prev = pdiv[index+1].x;
+			for (int i = _NX; i > 0 ; --i)
+			{
+				prev = ( pdiv[index-1].x + prev + pdiv[index - step_x].x + pdiv[index + step_x].x + pdiv[index].y ) * .25;
+				pdiv[index].x = prev;
+				--index;				
+			}
+		}
+		setBoundary02d( reinterpret_cast<ci::Vec2f*>( &pdiv[0].x ) );
+	}
+}
 
 void ciMsaFluidSolver::linearSolverRGB( float a, float c )
 {
@@ -748,47 +748,32 @@ void ciMsaFluidSolver::linearSolverUV( float a, float c )
 	int index;
 	int	step_x = _NX + 2;
 	c = 1. / c;
+	ci::Vec2f* __restrict localUV = uv;
+	const ci::Vec2f* __restrict localOldUV = uvOld;
+
 	for (int k = solverIterations; k > 0; --k)	// MEMO
 	{           
 		for (int j = _NY; j > 0 ; --j)
 		{
 			index = FLUID_IX(_NX, j );
-			//index1 = index - 1;		//FLUID_IX(i-1, j);
-			//index2 = index + 1;		//FLUID_IX(i+1, j);
-			//index3 = index - step_x;	//FLUID_IX(i, j-1);
-			//index4 = index + step_x;	//FLUID_IX(i, j+1);
+			float prevU = localUV[index+1].x;
+			float prevV = localUV[index+1].y;
 			for (int i = _NX; i > 0 ; --i)
 			{
-				
-				u[index] = ( ( u[index-1] + u[index+1] + u[index - step_x] + u[index + step_x] ) * a  +  uOld[index] ) * c;
-				v[index] = ( ( v[index-1] + v[index+1] + v[index - step_x] + v[index + step_x] ) * a  +  vOld[index] ) * c;
-				//				x[FLUID_IX(i, j)] = (a * ( x[FLUID_IX(i-1, j)] + x[FLUID_IX(i+1, j)]  +  x[FLUID_IX(i, j-1)] + x[FLUID_IX(i, j+1)])  +  x0[FLUID_IX(i, j)]) / c;
+				prevU = ( ( localUV[index-1].x + prevU + localUV[index - step_x].x + localUV[index + step_x].x ) * a  + localOldUV[index].x ) * c;
+				prevV = ( ( localUV[index-1].y + prevV + localUV[index - step_x].y + localUV[index + step_x].y ) * a  + localOldUV[index].y ) * c;
+				localUV[index].x = prevU;
+				localUV[index].y = prevV;
 				--index;
 			}
 		}
-		setBoundary( 1, u );
-		setBoundary( 2, v );
+		setBoundary2d( 1, uv );
 	}
 }
-
 
 // specifies simple boundry conditions.
 void ciMsaFluidSolver::setBoundary(int bound, float* x)
 {
-	//return;
-/*	for (int i = _NY; i > 0; --i )
-	{
-		//maa x[FLUID_IX(  0, i  )] = bound == 1 ? -x[FLUID_IX(_NX, i)] : x[FLUID_IX(_NX, i)];
-		//maa x[FLUID_IX(_NX+1, i  )] = bound == 1 ? -x[FLUID_IX(1, i)] : x[FLUID_IX(1, i)];
-		x[FLUID_IX(  0, i  )] = bound == 1 ? -x[FLUID_IX(1, i)] : x[FLUID_IX(1, i)];
-		x[FLUID_IX(_NX+1, i  )] = bound == 1 ? -x[FLUID_IX(_NX, i)] : x[FLUID_IX(_NX, i)];
-	}
-	for (int i = _NX; i > 0; --i )
-	{
-		x[FLUID_IX(  i, 0  )] = bound == 2 ? -x[FLUID_IX(i, 1)] : x[FLUID_IX(i, 1)];
-		x[FLUID_IX(  i, _NY+1)] = bound == 2 ? -x[FLUID_IX(i, _NY)] : x[FLUID_IX(i, _NY)];
-	}
-*/	
 	int dst1, dst2, src1, src2;
 	int step = FLUID_IX(0, 1) - FLUID_IX(0, 0);
 
@@ -834,6 +819,90 @@ void ciMsaFluidSolver::setBoundary(int bound, float* x)
 	x[FLUID_IX(  0, _NY+1)] = 0.5f * (x[FLUID_IX(1, _NY+1)] + x[FLUID_IX(  0, _NY)]);
 	x[FLUID_IX(_NX+1,   0)] = 0.5f * (x[FLUID_IX(_NX, 0  )] + x[FLUID_IX(_NX+1, 1)]);
 	x[FLUID_IX(_NX+1, _NY+1)] = 0.5f * (x[FLUID_IX(_NX, _NY+1)] + x[FLUID_IX(_NX+1, _NY)]);
+}
+
+void ciMsaFluidSolver::setBoundary02d(ci::Vec2f* x)
+{
+	int dst1, dst2, src1, src2;
+	int step = FLUID_IX(0, 1) - FLUID_IX(0, 0);
+
+	dst1 = FLUID_IX(0, 1);
+	src1 = FLUID_IX(1, 1);
+	dst2 = FLUID_IX(_NX+1, 1 );
+	src2 = FLUID_IX(_NX, 1);
+	if( wrap_x )
+		SWAP( src1, src2 );
+	for (int i = _NY; i > 0; --i )
+	{
+		x[dst1].x = x[src1].x;	dst1 += step;	src1 += step;	
+		x[dst2].x = x[src2].x;	dst2 += step;	src2 += step;	
+	}
+
+	dst1 = FLUID_IX(1, 0);
+	src1 = FLUID_IX(1, 1);
+	dst2 = FLUID_IX(1, _NY+1);
+	src2 = FLUID_IX(1, _NY);
+	if( wrap_y )
+		SWAP( src1, src2 );
+	for (int i = _NX; i > 0; --i )
+	{
+		x[dst1++] = x[src1++];
+		x[dst2++] = x[src2++];	
+	}
+	
+	x[FLUID_IX(  0,   0)].x = 0.5f * (x[FLUID_IX(1, 0  )].x + x[FLUID_IX(  0, 1)].x);
+	x[FLUID_IX(  0, _NY+1)].x = 0.5f * (x[FLUID_IX(1, _NY+1)].x + x[FLUID_IX(  0, _NY)].x);
+	x[FLUID_IX(_NX+1,   0)].x = 0.5f * (x[FLUID_IX(_NX, 0  )].x + x[FLUID_IX(_NX+1, 1)].x);
+	x[FLUID_IX(_NX+1, _NY+1)].x = 0.5f * (x[FLUID_IX(_NX, _NY+1)].x + x[FLUID_IX(_NX+1, _NY)].x);
+}
+
+void ciMsaFluidSolver::setBoundary2d( int bound, ci::Vec2f *xy )
+{
+	int dst1, dst2, src1, src2;
+	int step = FLUID_IX(0, 1) - FLUID_IX(0, 0);
+
+	dst1 = FLUID_IX(0, 1);
+	src1 = FLUID_IX(1, 1);
+	dst2 = FLUID_IX(_NX+1, 1 );
+	src2 = FLUID_IX(_NX, 1);
+	if( wrap_x )
+		SWAP( src1, src2 );
+	if( bound == 1 && !wrap_x )
+		for (int i = _NY; i > 0; --i )
+		{
+			xy[dst1].x = -xy[src1].x;	dst1 += step;	src1 += step;	
+			xy[dst2].x = -xy[src2].x;	dst2 += step;	src2 += step;	
+		}
+	else
+		for (int i = _NY; i > 0; --i )
+		{
+			xy[dst1].x = xy[src1].x;	dst1 += step;	src1 += step;	
+			xy[dst2].x = xy[src2].x;	dst2 += step;	src2 += step;	
+		}
+
+	dst1 = FLUID_IX(1, 0);
+	src1 = FLUID_IX(1, 1);
+	dst2 = FLUID_IX(1, _NY+1);
+	src2 = FLUID_IX(1, _NY);
+	if( wrap_y )
+		SWAP( src1, src2 );
+	if( bound == 2 && !wrap_y )
+		for (int i = _NX; i > 0; --i )
+		{
+			xy[dst1++].y = -xy[src1++].y;	
+			xy[dst2++].y = -xy[src2++].y;	
+		}
+	else
+		for (int i = _NX; i > 0; --i )
+		{
+			xy[dst1++].y = xy[src1++].y;
+			xy[dst2++].y = xy[src2++].y;	
+		}
+	
+	xy[FLUID_IX(  0,   0)][bound-1] = 0.5f * (xy[FLUID_IX(1, 0  )][bound-1] + xy[FLUID_IX(  0, 1)][bound-1]);
+	xy[FLUID_IX(  0, _NY+1)][bound-1] = 0.5f * (xy[FLUID_IX(1, _NY+1)][bound-1] + xy[FLUID_IX(  0, _NY)][bound-1]);
+	xy[FLUID_IX(_NX+1,   0)][bound-1] = 0.5f * (xy[FLUID_IX(_NX, 0  )][bound-1] + xy[FLUID_IX(_NX+1, 1)][bound-1]);
+	xy[FLUID_IX(_NX+1, _NY+1)][bound-1] = 0.5f * (xy[FLUID_IX(_NX, _NY+1)][bound-1] + xy[FLUID_IX(_NX+1, _NY)][bound-1]);
 }
 
 #define CPY_RGB( d, s )		{	r[d] = r[s];	g[d] = g[s];	b[d] = b[s]; }
@@ -890,38 +959,4 @@ void ciMsaFluidSolver::randomizeColor() {
 		} 
 	}
 }
-
-/*
- // add force to normalized x, y,  coordinates
- void ciMsaFluidSolver::addAtCell(float x, float y, float dx, float dy, float generateMult, float r, float g, float b, float speed2) {
- int i = (int) (x * _NX + 1);
- int j = (int) (y * _NY + 1);
- 
- if(i<0 || i>_NX+1 || j<0 || j>_NY+1) return;		
- addAtCell(i, j, dx, dy, generateMult, velocityMult, r, g, b, speed2);
- }
- 
- 
- // add force to x, y fluid coordinates
- void ciMsaFluidSolver::addAtCell(int i, int j, float dx, float dy, float generateMult, float r, float g, float b, float speed2) {
- if(speed2 < 0) speed2 = dx * dx + dy * dy;
- if(speed2 > 0.0f) {
- int index = FLUID_IX(i, j);
- 
- if(generateMult > 0) {
- float speedMult = 1.0f/255.0f * speed2 * speed2 * generateMult;
- rOld[index] += speedMult * r;
- gOld[index] += speedMult * g;
- bOld[index] += speedMult * b;
- }
- uOld[index] += dx * velocityMult;
- vOld[index] += dy * velocityMult;
- 
- }
- }
- 
- */
-
-
-
 

@@ -1,6 +1,5 @@
 /*
  *  Particle.h
- *  ofxMSAFluid Demo
  *
  *  Created by Mehmet Akten on 02/05/2009.
  *  Copyright 2009 MSA Visuals Ltd.. All rights reserved.
@@ -13,13 +12,11 @@
 #include "cinder/Vector.h"
 
 class Particle {
-public:	
-
-    float x, y;
-    float vx, vy;
-    float radius;
-    float alpha;
-    float mass;
+  public:	
+    ci::Vec2f	pos, vel;
+    float		radius;
+    float		alpha;
+    float		mass;
 	
     void init(float x, float y);
     void update( const ciMsaFluidSolver &solver, const ci::Vec2f &windowSize, const ci::Vec2f &invWindowSize );

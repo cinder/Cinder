@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0026CD1C1197C25E007D86C6 /* Particle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0026CD1A1197C25E007D86C6 /* Particle.cpp */; };
-		0026CD1D1197C25E007D86C6 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0026CD1B1197C25E007D86C6 /* ParticleSystem.cpp */; };
 		0026CD2A1197C295007D86C6 /* ciMsaFluidDrawerGl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0026CD281197C295007D86C6 /* ciMsaFluidDrawerGl.cpp */; };
 		0026CD2B1197C295007D86C6 /* ciMsaFluidSolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0026CD291197C295007D86C6 /* ciMsaFluidSolver.cpp */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
@@ -25,10 +23,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0026CD1A1197C25E007D86C6 /* Particle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Particle.cpp; path = ../src/Particle.cpp; sourceTree = SOURCE_ROOT; };
-		0026CD1B1197C25E007D86C6 /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleSystem.cpp; path = ../src/ParticleSystem.cpp; sourceTree = SOURCE_ROOT; };
-		0026CD201197C267007D86C6 /* Particle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Particle.h; path = ../include/Particle.h; sourceTree = SOURCE_ROOT; };
-		0026CD211197C267007D86C6 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleSystem.h; path = ../include/ParticleSystem.h; sourceTree = SOURCE_ROOT; };
 		0026CD231197C27F007D86C6 /* ciMsaFluid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ciMsaFluid.h; path = ../../../include/ciMsaFluid.h; sourceTree = SOURCE_ROOT; };
 		0026CD241197C27F007D86C6 /* ciMsaFluidDrawerGl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ciMsaFluidDrawerGl.h; path = ../../../include/ciMsaFluidDrawerGl.h; sourceTree = SOURCE_ROOT; };
 		0026CD251197C27F007D86C6 /* ciMsaFluidParticleUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ciMsaFluidParticleUpdater.h; path = ../../../include/ciMsaFluidParticleUpdater.h; sourceTree = SOURCE_ROOT; };
@@ -100,8 +94,6 @@
 			isa = PBXGroup;
 			children = (
 				0026CD271197C285007D86C6 /* msaFluid */,
-				0026CD1A1197C25E007D86C6 /* Particle.cpp */,
-				0026CD1B1197C25E007D86C6 /* ParticleSystem.cpp */,
 				00BAE6590E7ED9C10018A608 /* msaFluidBasicApp.cpp */,
 			);
 			name = Source;
@@ -158,8 +150,6 @@
 			isa = PBXGroup;
 			children = (
 				0026CD221197C26A007D86C6 /* msaFluid */,
-				0026CD201197C267007D86C6 /* Particle.h */,
-				0026CD211197C267007D86C6 /* ParticleSystem.h */,
 				32CA4F630368D1EE00C91783 /* msaFluidBasic_Prefix.pch */,
 			);
 			name = Headers;
@@ -237,8 +227,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				00BAE65A0E7ED9C10018A608 /* msaFluidBasicApp.cpp in Sources */,
-				0026CD1C1197C25E007D86C6 /* Particle.cpp in Sources */,
-				0026CD1D1197C25E007D86C6 /* ParticleSystem.cpp in Sources */,
 				0026CD2A1197C295007D86C6 /* ciMsaFluidDrawerGl.cpp in Sources */,
 				0026CD2B1197C295007D86C6 /* ciMsaFluidSolver.cpp in Sources */,
 			);
@@ -281,6 +269,7 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = msaFluidBasic_Prefix.pch;
+				GCC_UNROLL_LOOPS = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
