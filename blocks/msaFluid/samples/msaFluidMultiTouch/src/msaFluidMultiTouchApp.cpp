@@ -1,4 +1,10 @@
-#include "cinder/app/AppCocoaTouch.h"
+#if defined( CINDER_COCOA_TOUCH )
+	#include "cinder/app/AppCocoaTouch.h"
+	typedef ci::app::AppCocoaTouch AppBase;
+#else
+	#include "cinder/app/AppBasic.h"
+	typedef ci::app::AppBasic AppBase;
+#endif
 
 #include "ciMsaFluidSolver.h"
 #include "ciMsaFluidDrawerGl.h"
@@ -7,8 +13,9 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class msaFluidMultiTouchApp : public AppCocoaTouch {
+class msaFluidMultiTouchApp : public AppBase {
  public:
+	void	prepareSettings( Settings *settings );
 	void	setup();
  
 	void	fadeToColor( float r, float g, float b, float speed );
@@ -26,6 +33,11 @@ class msaFluidMultiTouchApp : public AppCocoaTouch {
 	ciMsaFluidSolver	fluidSolver;
 	ciMsaFluidDrawerGl	fluidDrawer;	
 };
+
+void msaFluidMultiTouchApp::prepareSettings( Settings *settings )
+{
+	settings->enableMultiTouch( true );
+}
 
 void msaFluidMultiTouchApp::setup()
 {
@@ -109,4 +121,8 @@ void msaFluidMultiTouchApp::touchesMoved( TouchEvent event )
 	}
 }
 
-CINDER_APP_COCOA_TOUCH( msaFluidMultiTouchApp, RendererGl )
+#if defined( CINDER_COCOA_TOUCH )
+	CINDER_APP_COCOA_TOUCH( msaFluidMultiTouchApp, RendererGl )
+#else
+	CINDER_APP_BASIC( msaFluidMultiTouchApp, RendererGl )
+#endif
