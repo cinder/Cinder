@@ -49,7 +49,7 @@ void msaFluidParticlesApp::setup()
 	fluidCellsX			= 150;
 	
 	drawFluid			= true;
-	drawParticles		= false;
+	drawParticles		= true;
 	renderUsingVA		= true;
 	
 	setFrameRate( 60.0f );
@@ -71,29 +71,23 @@ void msaFluidParticlesApp::addToFluid( Vec2f pos, Vec2f vel, bool addColor, bool
 {
     float speed = vel.x * vel.x  + vel.y * vel.y * getWindowAspectRatio() * getWindowAspectRatio();    // balance the x and y components of speed with the screen aspect ratio
     if( speed > 0 ) {
-		constrain( pos.x, 0.0f, 1.0f );
-		constrain( pos.y, 0.0f, 1.0f );
+		pos.x = constrain( pos.x, 0.0f, 1.0f );
+		pos.y = constrain( pos.y, 0.0f, 1.0f );
 		
-        float colorMult = 50;
-        float velocityMult = 30;
-		
-        int index = fluidSolver.getIndexForNormalizedPosition( pos.x, pos.y );
+        const float colorMult = 100;
+        const float velocityMult = 30;
 		
 		if( addColor ) {
 			Color drawColor( CM_HSV, ( getElapsedFrames() % 360 ) / 360.0f, 1, 1 );
 			
-			fluidSolver.r[index]  += drawColor.r * colorMult;
-			fluidSolver.g[index]  += drawColor.g * colorMult;
-			fluidSolver.b[index]  += drawColor.b * colorMult;
+			fluidSolver.addColorAtPos( pos, drawColor * colorMult );
 
 			if( drawParticles )
-				particleSystem.addParticles( pos.x * getWindowWidth(), pos.y * getWindowHeight(), 1000);
+				particleSystem.addParticles( pos * Vec2f( getWindowSize() ), 10 );
 		}
 		
-		if( addForce ) {
-			fluidSolver.uv[index].x += vel.x * velocityMult;
-			fluidSolver.uv[index].y += vel.y * velocityMult;
-		}
+		if( addForce )
+			fluidSolver.addForceAtPos( pos, vel * velocityMult );
 		
 		if( ! drawFluid && getElapsedFrames()%5==0 )
 			fadeToColor( 0, 0, 0, 0.1f );

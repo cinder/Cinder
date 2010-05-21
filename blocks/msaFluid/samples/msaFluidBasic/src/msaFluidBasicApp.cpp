@@ -35,7 +35,7 @@ void msaFluidBasicApp::setup()
 	console() << "ciMSAFluid Demo | (c) 2009 Mehmet Akten | www.memo.tv" << std::endl;
 	
 	// setup fluid stuff
-	fluidCellsX	= 100;
+	fluidCellsX	= 150;
 	fluidSolver.setup( fluidCellsX, fluidCellsX );
     fluidSolver.enableRGB(true).setFadeSpeed(0.002f).setDeltaT(0.5f).setVisc(0.00015f).setColorDiffusion(0);
 	fluidDrawer.setup( &fluidSolver );
@@ -62,7 +62,7 @@ void msaFluidBasicApp::addToFluid( Vec2f pos, Vec2f vel, bool addColor, bool add
 	pos.y = constrain( pos.y, 0.0f, 1.0f );
 	
 	const float colorMult = 50;
-	const float velocityMult = 5;
+	const float velocityMult = 50;
 	
 	if( addColor ) {
 		float hue = ( getElapsedFrames() % 360 ) / 360.0f;
@@ -95,7 +95,6 @@ void msaFluidBasicApp::draw()
 	}
 }
 
-
 void msaFluidBasicApp::resize( int w, int h )
 {
 	resizeFluid = true;
@@ -109,16 +108,6 @@ void msaFluidBasicApp::keyDown( KeyEvent event )
 		break;
 		case ' ':
 			fluidSolver.randomizeColor();
-		break;
-		case 'b': {
-			Timer timer;
-			timer.start();
-			const int ITERS = 1000;
-			for( int i = 0; i < ITERS; ++i )
-				fluidSolver.update();
-			timer.stop();
-			console() << ITERS << " iterations took " << timer.getSeconds() << " seconds." << std::endl;
-		}
 		break;
     }
 }

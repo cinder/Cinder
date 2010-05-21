@@ -88,6 +88,8 @@ public:
 	// get info at normalized (x, y) coordinates. range :(0..1), (0..1)
 	inline void getInfoAtPos(float x, float y, ci::Vec2f *vel, ci::Color *color = NULL) const;
 	
+	inline ci::Vec2f getVelocityAtPos( const ci::Vec2f &pos ) const;
+	
 	// get info at fluid cell pixels (i, j) if you know it. range: (0..NX-1), (0..NY-1)
 	inline	void getInfoAtCell(int i, int j, ci::Vec2f *vel, ci::Color *color = NULL) const;
 	
@@ -148,8 +150,8 @@ public:
 	
 	// returns average speed of fluid
 	float getAvgSpeed() const;
-			
-protected:
+
+  protected:			
 	// allocate an array large enough to hold information for u, v, r, g, OR b
 	float* alloc()	{ return new float[_numCells];	}
 
@@ -257,6 +259,14 @@ inline void ciMsaFluidSolver::getInfoAtPos(float x, float y, ci::Vec2f *vel, ci:
 	getInfoAtCell(i, j, vel, color);
 }
 
+inline ci::Vec2f ciMsaFluidSolver::getVelocityAtPos( const ci::Vec2f &pos ) const {
+	int i = (int)(pos.x * (_NX+2));
+	int j = (int)(pos.y * (_NY+2));
+	i = ci::constrain<int>( i, 0, _NX+1 );
+	j = ci::constrain<int>( j, 0, _NY+1 );
+	int o = FLUID_IX( i, j );
+	return ci::Vec2f( uv[o].x, uv[o].y );	
+}
 
 inline	void ciMsaFluidSolver::getInfoAtCell(int i, int j, ci::Vec2f *vel, ci::Color *color) const {
 	if(i<0) i = 0; else if(i > _NX+1) i = _NX+1;
@@ -275,8 +285,8 @@ inline void ciMsaFluidSolver::addForceAtPos(const ci::Vec2f &pos, const ci::Vec2
 inline	void ciMsaFluidSolver::addForceAtCell(int i, int j, const ci::Vec2f &force )
 {
 	int index = FLUID_IX(i, j);
-	uvOld[index].x += force.x * _NX;
-	uvOld[index].y += force.y * _NY;
+	uv[index].x += force.x;
+	uv[index].y += force.y;
 }
 
 inline void ciMsaFluidSolver::addColorAtCell(int i, int j, float r, float g, float b )

@@ -52,14 +52,14 @@ void ParticleSystem::updateAndDraw( bool drawingFluid ){
 }
 
 
-void ParticleSystem::addParticles(float x, float y, int count ){
+void ParticleSystem::addParticles( const Vec2f &pos, int count ){
 	for(int i=0; i<count; i++)
-		addParticle(x + Rand::randFloat(-15, 15), y + Rand::randFloat(-15, 15));
+		addParticle( pos + Rand::randVec2f() * 15 );
 }
 
 
-void ParticleSystem::addParticle(float x, float y) {
-	particles[curIndex].init(x, y);
+void ParticleSystem::addParticle( const Vec2f &pos ) {
+	particles[curIndex].init( pos.x, pos.y );
 	curIndex++;
 	if(curIndex >= MAX_PARTICLES) curIndex = 0;
 }

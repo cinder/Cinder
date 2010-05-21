@@ -235,7 +235,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\ciMsaFluidParticleUpdater.h"
+					RelativePath="..\..\..\include\ciMsaFluidSolver.h"
 					>
 				</File>
 			</Filter>
