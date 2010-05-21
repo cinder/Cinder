@@ -20,6 +20,7 @@
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		C769880C11810BBD002615B3 /* booyah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C769880B11810BBD002615B3 /* booyah.mp3 */; };
+		C779310111A47F5E00521786 /* booyah.wav in Resources */ = {isa = PBXBuildFile; fileRef = C779310011A47F5E00521786 /* booyah.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 		8D1107320486CEB800E47090 /* AudioPlayback.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioPlayback.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C769880B11810BBD002615B3 /* booyah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = booyah.mp3; path = ../resources/booyah.mp3; sourceTree = SOURCE_ROOT; };
 		C769880D11810BD8002615B3 /* Resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = SOURCE_ROOT; };
+		C779310011A47F5E00521786 /* booyah.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = booyah.wav; path = ../resources/booyah.wav; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +135,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				C779310011A47F5E00521786 /* booyah.wav */,
 				C769880B11810BBD002615B3 /* booyah.mp3 */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				00CCAF14116A9FEE008396D5 /* CinderApp.icns */,
@@ -194,6 +197,7 @@
 			files = (
 				00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */,
 				C769880C11810BBD002615B3 /* booyah.mp3 in Resources */,
+				C779310111A47F5E00521786 /* booyah.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

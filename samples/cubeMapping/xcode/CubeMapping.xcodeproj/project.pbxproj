@@ -314,10 +314,6 @@
 				GCC_PREFIX_HEADER = CubeMapping_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					../../../../../Code/flint/lib,
-				);
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
 					"-lcurl",
@@ -339,10 +335,6 @@
 				GCC_PREFIX_HEADER = CubeMapping_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					../../../../../Code/flint/lib,
-				);
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
 					"-lcurl",

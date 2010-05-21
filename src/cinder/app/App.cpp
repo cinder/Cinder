@@ -160,7 +160,7 @@ void App::privateUpdate__()
 	if( now > mFpsLastSampleTime + mFpsSampleInterval ) {
 		//calculate average Fps over sample interval
 		uint32_t framesPassed = mFrameCount - mFpsLastSampleFrame;
-		mAverageFps = framesPassed / (now - mFpsLastSampleTime);
+		mAverageFps = (float)(framesPassed / (now - mFpsLastSampleTime));
 
 		mFpsLastSampleTime = now;
 		mFpsLastSampleFrame = mFrameCount;

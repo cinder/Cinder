@@ -1,11 +1,10 @@
 #include "cinder/app/AppBasic.h"
+#include <list>
 using namespace ci;
 using namespace ci::app;
+using namespace std;
 
-#include <list>
-using std::list;
-
-// We'll create a new Cinder Application by deriving from the BasicApp class
+// We'll create a new Cinder Application by deriving from the AppBasic class
 class «PREFIX»App : public AppBasic {
  public:
 	// Cinder will always call this function whenever the user drags the mouse
@@ -25,9 +24,7 @@ void «PREFIX»App::mouseDrag( MouseEvent event )
 
 void «PREFIX»App::draw()
 {
-	// this pair of lines is the standard way to clear the screen in OpenGL
-	glClearColor( 0.1f, 0.1f, 0.1f, 1.0f );
-	glClear( GL_COLOR_BUFFER_BIT );
+	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
 
 	// We'll set the color to an orange color
 	glColor3f( 1.0f, 0.5f, 0.25f );

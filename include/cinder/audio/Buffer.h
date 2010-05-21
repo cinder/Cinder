@@ -26,11 +26,21 @@
 
 namespace cinder { namespace audio {
 
-struct Buffer { 
-    uint32_t	mNumberChannels; 
-    uint32_t	mDataByteSize; 
-    void		* mData; 
+template<typename T>
+struct BufferT {
+	uint32_t	mNumberChannels; 
+    uint32_t	mDataByteSize;
+	T			* mData;
 };
+
+typedef BufferT<void> Buffer; //used for internally handing around data, TODO: rename to something other than Buffer
+typedef BufferT<uint8_t> Buffer8u;
+typedef BufferT<int8_t> Buffer8i;
+typedef BufferT<uint16_t> Buffer16u;
+typedef BufferT<int16_t> Buffer16i;
+typedef BufferT<int32_t> Buffer32i;
+typedef BufferT<uint32_t> Buffer32u;
+typedef BufferT<float> Buffer32f;
 
 struct BufferList { 
     uint32_t	mNumberBuffers; 

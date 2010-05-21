@@ -11,7 +11,7 @@ using namespace ci::app;
 
 class FrustumCullingApp : public AppBasic {
  private:
-	enum { TOP, BOT, LEF, RIG, NEA, FAR };
+	enum { TOP, BOT, LEF, RIG, NEA, FARP };
 	enum { SPHERE, CUBE, POINT };
 	
  public:
@@ -274,7 +274,7 @@ void FrustumCullingApp::calcNearAndFarClipCoordinates( const Camera &cam )
 		calcFrustumPlane( mFrustumPlaneNormals[LEF], mFrustumPlanePoints[LEF], mFrustumPlaneDists[LEF], ntl, nbl, fbl );
 		calcFrustumPlane( mFrustumPlaneNormals[RIG], mFrustumPlanePoints[RIG], mFrustumPlaneDists[RIG], ftr, fbr, nbr );
 		calcFrustumPlane( mFrustumPlaneNormals[NEA], mFrustumPlanePoints[NEA], mFrustumPlaneDists[NEA], ntl, ntr, nbr );
-		calcFrustumPlane( mFrustumPlaneNormals[FAR], mFrustumPlanePoints[FAR], mFrustumPlaneDists[FAR], ftr, ftl, fbl );
+		calcFrustumPlane( mFrustumPlaneNormals[FARP], mFrustumPlanePoints[FARP], mFrustumPlaneDists[FARP], ftr, ftl, fbl );
 	}
 	
 	mFrustumPlaneCached = true;
