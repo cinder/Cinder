@@ -60,10 +60,9 @@ class Track {
 	
 	virtual void setPcmBuffering( bool isBuffering ) = 0;
 	virtual bool isPcmBuffering() = 0;
-	
-	
+	virtual PcmBuffer32fRef getPcmBuffer() = 0;
   protected:
-	Track() : mPcmBuffering( false ) {}
+	Track() {}
 };
 
 class OutputImpl {

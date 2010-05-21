@@ -42,10 +42,39 @@ typedef BufferT<int32_t> Buffer32i;
 typedef BufferT<uint32_t> Buffer32u;
 typedef BufferT<float> Buffer32f;
 
-struct BufferList { 
+typedef shared_ptr<Buffer32f> Buffer32fRef;
+
+template<typename T>
+struct BufferListT { 
     uint32_t	mNumberBuffers; 
-    Buffer		* mBuffers; 
+    BufferT<T>	* mBuffers; 
 };
+
+typedef BufferListT<void> BufferList;
+
+template<typename T>
+class PcmBufferT {
+ public:
+	PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount );
+	~PcmBufferT();
+	
+	void		appendData( T * aData, uint32_t aSampleCount );
+	T *			getData() { return mData; }
+	const T *	getData() const { return mData; }
+	
+	uint32_t	getSampleCount() const { return mSampleCount; }
+	uint32_t	getMaxSampleCount() const { return mMaxSampleCount; }
+	uint16_t	getChannelCount() const { return mChannelCount; }
+ private:
+	T			* mData;
+	uint32_t	mSampleCount;
+	uint32_t	mMaxSampleCount;
+	uint16_t	mChannelCount;
+};
+
+typedef PcmBufferT<float> PcmBuffer32f;
+
+typedef shared_ptr<PcmBuffer32f> PcmBuffer32fRef;
 
 inline void silenceBuffers( BufferList * aBufferList )
 {

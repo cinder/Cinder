@@ -26,6 +26,7 @@
 #include "cinder/Rand.h"
 
 #include <iostream>
+#include <boost/thread/mutex.hpp>
 
 #if defined(CINDER_MAC)
 	#include <CoreServices/CoreServices.h>
@@ -98,17 +99,24 @@ class OutputAudioUnit : public OutputImpl {
 		void setPcmBuffering( bool isBuffering ) { mIsPcmBuffering = isBuffering; }
 		bool isPcmBuffering() { return mIsPcmBuffering; }
 		
-		BufferList getPcmBuffer();
+		PcmBuffer32fRef getPcmBuffer();
 	  private:
 		static OSStatus renderCallback( void * audioLoader, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData);
 		
-		SourceRef	mSource;
+		void createPcmBuffer();
+		
+		SourceRef		mSource;
+		shared_ptr<TargetOutputAudioUnit> mTarget;
 		OutputAudioUnit	* mOutput;
-		TrackId		mInputBus;
-		LoaderRef	mLoader;
-		bool		mIsPlaying;
-		bool		mIsLooping;
-		uint64_t	mFrameOffset;
+		TrackId			mInputBus;
+		LoaderRef		mLoader;
+		bool			mIsPlaying;
+		bool			mIsLooping;
+		bool			mIsPcmBuffering;
+		
+		PcmBuffer32fRef	mLoadingPcmBuffer;
+		PcmBuffer32fRef	mLoadedPcmBuffer;
+		boost::mutex	mPcmBufferMutex;
 	};
 	
 	std::map<TrackId,shared_ptr<OutputAudioUnit::Track> >	mTracks;
@@ -121,10 +129,10 @@ TargetOutputAudioUnit::TargetOutputAudioUnit( const OutputAudioUnit *aOutput ) {
 }
 
 OutputAudioUnit::Track::Track( SourceRef source, OutputAudioUnit * output )
-	: cinder::audio::Track(), mSource( source ), mOutput( output ), mIsPlaying( false), mIsLooping( false ), mFrameOffset( 0 )
+	: cinder::audio::Track(), mSource( source ), mOutput( output ), mIsPlaying( false), mIsLooping( false ), mIsPcmBuffering( false )
 {
-	shared_ptr<TargetOutputAudioUnit> aTarget = TargetOutputAudioUnit::createRef( output );
-	mLoader = source->getLoader( aTarget.get() );
+	mTarget = TargetOutputAudioUnit::createRef( output );
+	mLoader = source->getLoader( mTarget.get() );
 	mInputBus = output->availableTrackId();
 }
 
@@ -192,6 +200,12 @@ void OutputAudioUnit::Track::setTime( double aTime )
 	mLoader->setSampleOffset( aSample );
 }
 
+PcmBuffer32fRef OutputAudioUnit::Track::getPcmBuffer()
+{
+	boost::mutex::scoped_lock( mPcmBufferMutex );
+	return mLoadedPcmBuffer;
+}
+
 OSStatus OutputAudioUnit::Track::renderCallback( void * audioTrack, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData)
 {	
 	OSStatus err = noErr;
@@ -237,6 +251,18 @@ OSStatus OutputAudioUnit::Track::renderCallback( void * audioTrack, AudioUnitRen
 		theTrack->mPCMBuffer.mSampleIdx += ioData->mBuffers[0].mDataByteSize / 4;
 		
 	}*/
+	
+	//add data to the PCM buffer if it's enabled
+	if( theTrack->mIsPcmBuffering ) {
+		if( ! theTrack->mLoadingPcmBuffer || ( theTrack->mLoadingPcmBuffer->getSampleCount() + ( ioData->mBuffers[0].mDataByteSize / sizeof(float) ) > theTrack->mLoadingPcmBuffer->getMaxSampleCount() ) ) {
+			boost::mutex::scoped_lock lock( theTrack->mPcmBufferMutex );
+			uint32_t bufferSampleCount = 1470; //TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second)
+			theTrack->mLoadedPcmBuffer = theTrack->mLoadingPcmBuffer;
+			theTrack->mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, theTrack->mTarget->getChannelCount() ) );
+		}
+		//TODO: right now this is just a single channel, going to have to interleave the data
+		theTrack->mLoadingPcmBuffer->appendData( reinterpret_cast<float *>( ioData->mBuffers[0].mData ), ioData->mBuffers[0].mDataByteSize / sizeof(float) );
+	 }
 	
 	if( ioData->mBuffers[0].mDataByteSize == 0 ) {
 		if( ! theTrack->mIsLooping ) {
