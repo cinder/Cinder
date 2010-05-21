@@ -1,3 +1,5 @@
+#include "cinder/Cinder.h"
+
 #if defined( CINDER_COCOA_TOUCH )
 	#include "cinder/app/AppCocoaTouch.h"
 	typedef ci::app::AppCocoaTouch AppBase;
