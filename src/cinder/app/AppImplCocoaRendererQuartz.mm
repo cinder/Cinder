@@ -22,13 +22,30 @@
 
 #import "cinder/app/AppImplCocoaRendererQuartz.h"
 
+
+// This is only here so that we can override rightMouseDown
+@interface CocoaRendererQuartzView : NSView
+{}
+@end
+
+@implementation CocoaRendererQuartzView
+// For whatever reasons, rightMouseDown does not get propagated along the normal responder chain
+- (void)rightMouseDown:(NSEvent *)theEvent
+{
+	[[self superview] rightMouseDown:theEvent];
+}
+
+@end
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
 @implementation AppImplCocoaRendererQuartz
 
 - (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp
 {
 	self = [super init];
 	
-	view = [[NSView alloc] initWithFrame:frame];
+	view = [[CocoaRendererQuartzView alloc] initWithFrame:frame];
 	app = aApp;
 	currentRef = nil;
 	[aCinderView addSubview:view];
