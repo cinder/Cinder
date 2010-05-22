@@ -163,7 +163,6 @@
 		007050051114F93F003FCAE4 /* AppImplCocoaRendererQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */; };
 		007050061114F93F003FCAE4 /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
 		007050071114F93F003FCAE4 /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
-		007050081114F93F003FCAE4 /* AppImplCocoaTransparentGlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */; };
 		007050091114F93F003FCAE4 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		0070500A1114F93F003FCAE4 /* PolyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE46D0F7A9F6700F17CB1 /* PolyLine.h */; };
 		0070500B1114F93F003FCAE4 /* BSplineFit.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE5740F803F7A00F17CB1 /* BSplineFit.h */; };
@@ -322,7 +321,6 @@
 		009FD54C10C9AEA100D63B1B /* ImageIo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD54B10C9AEA100D63B1B /* ImageIo.cpp */; };
 		009FD55510C9DB0600D63B1B /* ImageSourceFileQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 009FD55410C9DB0600D63B1B /* ImageSourceFileQuartz.h */; };
 		009FD55710CAB8B700D63B1B /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
-		009FE9790F77F0B600718D7B /* AppImplCocoaTransparentGlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */; };
 		00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
 		00A9CF010F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */; };
 		00AA5C870F64851C009CD67F /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
@@ -416,7 +414,6 @@
 		00CFD9661135C3520091E310 /* AppImplCocoaRendererQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */; };
 		00CFD9671135C3520091E310 /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
 		00CFD9681135C3520091E310 /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
-		00CFD9691135C3520091E310 /* AppImplCocoaTransparentGlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */; };
 		00CFD96A1135C3520091E310 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		00CFD96B1135C3520091E310 /* PolyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE46D0F7A9F6700F17CB1 /* PolyLine.h */; };
 		00CFD96C1135C3520091E310 /* BSplineFit.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE5740F803F7A00F17CB1 /* BSplineFit.h */; };
@@ -545,7 +542,6 @@
 		00D9A07C0EA57C3F00FF5AEB /* GlslProg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D9A07B0EA57C3F00FF5AEB /* GlslProg.cpp */; };
 		00D9A07E0EA57C5100FF5AEB /* GlslProg.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D9A07D0EA57C5100FF5AEB /* GlslProg.h */; };
 		00DCBA950F7932F400D88D86 /* CinderView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00DCBA940F7932F400D88D86 /* CinderView.mm */; };
-		00DCBB4A0F79345A00D88D86 /* AppImplCocoaTransparentGlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00DCBB450F79345A00D88D86 /* AppImplCocoaTransparentGlView.m */; };
 		00DCBE270F7986B800D88D86 /* AppImplCocoaRendererGl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00DCBE260F7986B800D88D86 /* AppImplCocoaRendererGl.mm */; };
 		00E0B49F0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */; };
 		00E0B4B20F605D64002C8FBD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00E0B4B10F605D64002C8FBD /* CoreGraphics.framework */; };
@@ -746,7 +742,6 @@
 		009FD54B10C9AEA100D63B1B /* ImageIo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageIo.cpp; sourceTree = "<group>"; };
 		009FD55410C9DB0600D63B1B /* ImageSourceFileQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSourceFileQuartz.h; sourceTree = "<group>"; };
 		009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ImageSourceFileQuartz.cpp; sourceTree = "<group>"; };
-		009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaTransparentGlView.h; path = app/AppImplCocoaTransparentGlView.h; sourceTree = "<group>"; };
 		00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */ = {isa = PBXFileReference; comments = "This is unused in Cinder since it has to be linked directly into the apps, but it's present for reference."; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppScreenSaver.cpp; path = app/AppScreenSaver.cpp; sourceTree = "<group>"; };
 		00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = app/AppImplCocoaScreenSaver.h; sourceTree = "<group>"; };
 		00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = app/AppImplCocoaRendererQuartz.mm; sourceTree = "<group>"; };
@@ -800,7 +795,6 @@
 		00D9A07B0EA57C3F00FF5AEB /* GlslProg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlslProg.cpp; path = gl/GlslProg.cpp; sourceTree = "<group>"; };
 		00D9A07D0EA57C5100FF5AEB /* GlslProg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlslProg.h; path = gl/GlslProg.h; sourceTree = "<group>"; };
 		00DCBA940F7932F400D88D86 /* CinderView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderView.mm; path = app/CinderView.mm; sourceTree = "<group>"; };
-		00DCBB450F79345A00D88D86 /* AppImplCocoaTransparentGlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppImplCocoaTransparentGlView.m; path = app/AppImplCocoaTransparentGLView.m; sourceTree = "<group>"; };
 		00DCBE260F7986B800D88D86 /* AppImplCocoaRendererGl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererGl.mm; path = app/AppImplCocoaRendererGl.mm; sourceTree = "<group>"; };
 		00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererQuartz.h; path = app/AppImplCocoaRendererQuartz.h; sourceTree = "<group>"; };
 		00E0B4B10F605D64002C8FBD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -944,7 +938,6 @@
 				009D6AED1157FB340037C77C /* AppImplCocoaTouchRendererGl.h */,
 				0005630611513B1D00ECFD91 /* AppImplCocoaTouchRendererQuartz.h */,
 				00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */,
-				009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */,
 			);
 			name = app;
 			sourceTree = "<group>";
@@ -963,7 +956,6 @@
 				00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */,
 				0005630A11513B9400ECFD91 /* AppImplCocoaTouchRendererQuartz.mm */,
 				009D6AF01157FB860037C77C /* AppImplCocoaTouchRendererGl.mm */,
-				00DCBB450F79345A00D88D86 /* AppImplCocoaTransparentGlView.m */,
 				0049C1B61010E5B10015B4B9 /* Renderer.cpp */,
 				00DCBA940F7932F400D88D86 /* CinderView.mm */,
 				009D6AFD1157FC8B0037C77C /* CinderViewCocoaTouch.mm */,
@@ -1498,7 +1490,6 @@
 				007050051114F93F003FCAE4 /* AppImplCocoaRendererQuartz.h in Headers */,
 				007050061114F93F003FCAE4 /* AppScreenSaver.h in Headers */,
 				007050071114F93F003FCAE4 /* AppImplCocoaScreenSaver.h in Headers */,
-				007050081114F93F003FCAE4 /* AppImplCocoaTransparentGlView.h in Headers */,
 				007050091114F93F003FCAE4 /* CinderCocoa.h in Headers */,
 				0070500A1114F93F003FCAE4 /* PolyLine.h in Headers */,
 				0070500B1114F93F003FCAE4 /* BSplineFit.h in Headers */,
@@ -1612,7 +1603,6 @@
 				00CFD9661135C3520091E310 /* AppImplCocoaRendererQuartz.h in Headers */,
 				00CFD9671135C3520091E310 /* AppScreenSaver.h in Headers */,
 				00CFD9681135C3520091E310 /* AppImplCocoaScreenSaver.h in Headers */,
-				00CFD9691135C3520091E310 /* AppImplCocoaTransparentGlView.h in Headers */,
 				00CFD96A1135C3520091E310 /* CinderCocoa.h in Headers */,
 				00CFD96B1135C3520091E310 /* PolyLine.h in Headers */,
 				00CFD96C1135C3520091E310 /* BSplineFit.h in Headers */,
@@ -1726,7 +1716,6 @@
 				00E0B49F0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h in Headers */,
 				00AA5C870F64851C009CD67F /* AppScreenSaver.h in Headers */,
 				00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */,
-				009FE9790F77F0B600718D7B /* AppImplCocoaTransparentGlView.h in Headers */,
 				009987160F79CFE20042F211 /* CinderCocoa.h in Headers */,
 				009EE46E0F7A9F6700F17CB1 /* PolyLine.h in Headers */,
 				009EE5770F803F7A00F17CB1 /* BSplineFit.h in Headers */,
@@ -2073,7 +2062,6 @@
 				00C154060EDBC12B00549EF3 /* Cairo.cpp in Sources */,
 				00B4F3E70F53955000B75296 /* AppBasic.cpp in Sources */,
 				00DCBA950F7932F400D88D86 /* CinderView.mm in Sources */,
-				00DCBB4A0F79345A00D88D86 /* AppImplCocoaTransparentGlView.m in Sources */,
 				00DCBE270F7986B800D88D86 /* AppImplCocoaRendererGl.mm in Sources */,
 				0099871A0F79D0750042F211 /* CinderCocoa.mm in Sources */,
 				009EE4720F7A9FAC00F17CB1 /* PolyLine.cpp in Sources */,
