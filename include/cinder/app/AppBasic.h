@@ -32,9 +32,9 @@
 	#else
 		class AppImplCocoaBasic;
 	#endif
-	#include "cinder/app/TouchEvent.h"
 #endif
 
+#include "cinder/app/TouchEvent.h"
 
 namespace cinder { namespace app {
 
@@ -133,13 +133,13 @@ class AppBasic : public App {
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
 #if defined( CINDER_MAC )
 	void		privateSetImpl__( AppImplCocoaBasic *aImpl );	
-
+#endif
 	void		privateTouchesBegan__( const TouchEvent &event );
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
 	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
 	
-#elif defined( CINDER_MSW )
+#if defined( CINDER_MSW )
 	virtual bool		getsWindowsPaintEvents() { return true; }
 #endif
 	//! \endcond
