@@ -26,7 +26,10 @@
 #include "cinder/app/App.h"
 
 #import <AppKit/NSView.h> 
+#import <AppKit/NSTouch.h> 
 #import <Foundation/Foundation.h>
+
+#include <map>
 
 @interface CinderView : NSView
 {
@@ -35,6 +38,10 @@
 	BOOL				stayFullScreen;
 	BOOL				appSetupCalled;
 	BOOL				receivesEvents;
+	
+	NSMutableDictionary				*mTouchIdMap;
+	std::map<uint32_t,ci::Vec2f>	mTouchPrevPointMap;
+	id					mMultiTouchDelegate;
 }
 
 @property (readwrite) BOOL appSetupCalled;
@@ -48,5 +55,13 @@
 
 - (void)setup:(cinder::app::App *)aApp;
 - (void)setApp:(cinder::app::App *)aApp;
+
+- (void)applicationWillResignActive:(NSNotification *)aNotification;
+
+- (void)setMultiTouchDelegate:(id)multiTouchDelegate;
+- (uint32_t)addTouchToMap:(NSTouch *)touch withPoint:(ci::Vec2f)point;
+- (void)removeTouchFromMap:(NSTouch *)touch;
+- (std::pair<uint32_t,ci::Vec2f>)updateTouch:(NSTouch *)touch withPoint:(ci::Vec2f)point;
+- (void)updateActiveTouches;
 
 @end

@@ -428,7 +428,7 @@ bool System::hasMultiTouch()
 {
 	if( ! instance()->mCachedValues[MULTI_TOUCH] ) {
 #if defined( CINDER_MAC ) // Mac OS X doesn't really support touch yet (well, we don't yet)	
-		instance()->mHasMultiTouch = false;
+		instance()->mHasMultiTouch = getOsMajorVersion() > 10 || getOsMinorVersion() >= 6;
 #elif defined( CINDER_COCOA_TOUCH ) // all incarnations of the iPhone OS support multiTouch
 		instance()->mHasMultiTouch = true;
 #elif defined( CINDER_MSW )
@@ -445,8 +445,8 @@ bool System::hasMultiTouch()
 int32_t System::getMaxMultiTouchPoints()
 {
 	if( ! instance()->mCachedValues[MAX_MULTI_TOUCH_POINTS] ) {
-#if defined( CINDER_MAC ) // Mac OS X doesn't really support touch yet (well, we don't yet)
-		instance()->mMaxMultiTouchPoints = 0;
+#if defined( CINDER_MAC ) // We don't have a good way of determining this yet
+		instance()->mMaxMultiTouchPoints = 10;
 #elif defined( CINDER_COCOA_TOUCH ) // all incarnations of the iPhone OS support multiTouch
 		instance()->mMaxMultiTouchPoints = 6; // we don't seem to be able to query this at runtime; should be hardcoded based on the device
 #elif defined( CINDER_MSW )

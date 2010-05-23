@@ -50,7 +50,7 @@ void msaFluidMultiTouchApp::setup()
     fluidSolver.enableRGB(true).setFadeSpeed(0.002).setDeltaT(0.5).setVisc(0.00015).setColorDiffusion(0);
 	fluidDrawer.setup( &fluidSolver );
 	
-	fluidCellsX			= 80;
+	fluidCellsX			= 150;
 	
 	setFrameRate( 60.0f );
 	

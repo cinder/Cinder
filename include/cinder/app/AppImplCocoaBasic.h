@@ -29,7 +29,9 @@
 #import "cinder/Stream.h"
 #import "cinder/Display.h"
 
-@interface AppImplCocoaBasic : NSApplication {
+#include "cinder/app/TouchEvent.h"
+
+@interface AppImplCocoaBasic : NSApplication<NSWindowDelegate> {
 	NSWindow				*win;
 	CinderView				*cinderView;
 	
@@ -68,5 +70,12 @@
 - (void)quit;
 - (cinder::Display*)getDisplay;
 - (void)setDisplay:(cinder::Display*)aDisplay;
+
+// multiTouch delegate methods
+- (void)touchesBegan:(ci::app::TouchEvent*)event;
+- (void)touchesMoved:(ci::app::TouchEvent*)event;
+- (void)touchesEnded:(ci::app::TouchEvent*)event;
+- (void)touchesEnded:(ci::app::TouchEvent*)event;
+- (void)setActiveTouches:(std::vector<ci::app::TouchEvent::Touch>*)touches;
 
 @end
