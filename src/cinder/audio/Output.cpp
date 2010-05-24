@@ -484,6 +484,10 @@ class OutputXAudio : public OutputImpl
 		void setLooping( bool isLooping ) { mIsLooping = isLooping; }
 		bool isLooping() const { return mIsLooping; }
 		
+		void setPcmBuffering( bool isBuffering ) { mIsPcmBuffering = isBuffering; }
+		bool isPcmBuffering() { return mIsPcmBuffering; }
+
+		PcmBuffer32fRef getPcmBuffer();
 	  private:
 		//static ::HRESULT				dataInputCallback( void * audioData, uint32_t dataSize, void * theTrack, uint64_t sampleTime, uint32_t sampleDuration );
 		void fillBuffer();
@@ -508,6 +512,11 @@ class OutputXAudio : public OutputImpl
 
 		HANDLE								mBufferEndEvent;
 		shared_ptr<boost::thread>			mQueueThread;
+
+		bool mIsPcmBuffering;
+		PcmBuffer32fRef	mLoadingPcmBuffer;
+		PcmBuffer32fRef	mLoadedPcmBuffer;
+		boost::mutex	mPcmBufferMutex;
 
 		class SourceCallback : public IXAudio2VoiceCallback
 		{
@@ -576,10 +585,10 @@ OutputXAudio::Track::Track( SourceRef source, OutputXAudio * output )
 		XAUDIO2_VOICE_DETAILS masterVoiceDetails;
 		mOutput->mMasterVoice->GetVoiceDetails( &masterVoiceDetails );
 
-		mVoiceDescription.wFormatTag = WAVE_FORMAT_PCM;
+		mVoiceDescription.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;//WAVE_FORMAT_PCM;
 		mVoiceDescription.nSamplesPerSec = masterVoiceDetails.InputSampleRate;
 		mVoiceDescription.nChannels = masterVoiceDetails.InputChannels;
-		mVoiceDescription.wBitsPerSample = 16;
+		mVoiceDescription.wBitsPerSample = 32;
 		mVoiceDescription.nBlockAlign = math<float>::ceil( ( mVoiceDescription.nChannels * mVoiceDescription.wBitsPerSample ) / 8.0 );
 		mVoiceDescription.nAvgBytesPerSec = ( mVoiceDescription.nBlockAlign * mVoiceDescription.nSamplesPerSec );
 		mVoiceDescription.cbSize = 0;
@@ -671,6 +680,12 @@ float OutputXAudio::Track::getVolume() const
 	return aValue;
 }
 
+PcmBuffer32fRef OutputXAudio::Track::getPcmBuffer()
+{
+	boost::mutex::scoped_lock( mPcmBufferMutex );
+	return mLoadedPcmBuffer;
+}
+
 //HRESULT OutputXAudio::Track::dataInputCallback( void * audioData, uint32_t dataSize, void * track, uint64_t sampleTime, uint32_t sampleDuration )
 void OutputXAudio::Track::fillBuffer()
 {
@@ -710,6 +725,18 @@ void OutputXAudio::Track::fillBuffer()
 		::HRESULT hr = mSourceVoice->SubmitSourceBuffer( &xbuffer );
 		if( hr != S_OK ) {
 
+		}
+
+		if( mIsPcmBuffering ) {
+			//TODO: right now this only supports floating point data
+			if( ! mLoadingPcmBuffer || ( mLoadingPcmBuffer->getSampleCount() + ( buffer.mDataByteSize / sizeof(float) ) > mLoadingPcmBuffer->getMaxSampleCount() ) ) {
+				boost::mutex::scoped_lock lock( mPcmBufferMutex );
+				uint32_t bufferSampleCount = 1470; //TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second)
+				mLoadedPcmBuffer = mLoadingPcmBuffer;
+				mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, mVoiceDescription.nChannels, true ) );
+			}
+			
+			mLoadingPcmBuffer->appendInterleavedData( reinterpret_cast<float *>( buffer.mData ), buffer.mDataByteSize / mVoiceDescription.nBlockAlign );
 		}
 		
 		mCurrentBuffer++;
