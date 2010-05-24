@@ -64,7 +64,7 @@ class PcmBufferT {
 	PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, bool isInterleaved );
 	~PcmBufferT();
 	
-	uint32_t	getSampleCount() const { return mSampleCount; }
+	uint32_t	getSampleCount( ChannelIdentifier channelId = CHANNEL_FRONT_LEFT ) const { return mBufferSampleCounts[channelId]; }
 	uint32_t	getMaxSampleCount() const { return mMaxSampleCount; }
 	uint16_t	getChannelCount() const { return mChannelCount; }
 	bool		isInterleaved() const  { return mIsInterleaved; }
@@ -80,7 +80,7 @@ class PcmBufferT {
 	BufferT<T>	* mBuffers;
 	
 	uint16_t	mBufferCount;
-	uint32_t	mSampleCount;
+	uint32_t	* mBufferSampleCounts;
 	uint32_t	mMaxSampleCount;
 	uint16_t	mChannelCount;
 	bool		mIsInterleaved;
