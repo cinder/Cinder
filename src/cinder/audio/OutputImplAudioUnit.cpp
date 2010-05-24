@@ -125,7 +125,7 @@ OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUni
 	} else {
 		BufferList bufferList;
 		bufferList.mNumberBuffers = ioData->mNumberBuffers;
-		bufferList.mBuffers = new Buffer[bufferList.mNumberBuffers];
+		bufferList.mBuffers = new BufferGeneric[bufferList.mNumberBuffers];
 		for( int i = 0; i < bufferList.mNumberBuffers; i++ ) {
 			bufferList.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
 			bufferList.mBuffers[i].mDataByteSize = ioData->mBuffers[i].mDataByteSize;

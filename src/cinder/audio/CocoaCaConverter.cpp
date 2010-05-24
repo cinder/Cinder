@@ -142,7 +142,7 @@ OSStatus CocoaCaConverter::dataInputCallback( AudioConverterRef inAudioConverter
 	theConverter->cleanupConverterBuffer();
 	
 	theConverter->mConverterBuffer.mNumberBuffers = ioData->mNumberBuffers;
-	theConverter->mConverterBuffer.mBuffers = new Buffer[theConverter->mConverterBuffer.mNumberBuffers];
+	theConverter->mConverterBuffer.mBuffers = new BufferGeneric[theConverter->mConverterBuffer.mNumberBuffers];
 	for( int i = 0; i < theConverter->mConverterBuffer.mNumberBuffers; i++ ) {
 		theConverter->mConverterBuffer.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
 		theConverter->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theConverter->mMaxPacketSize );
