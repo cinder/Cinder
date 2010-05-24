@@ -20,10 +20,12 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/audio/OutputImplXAudio.h"
+
 namespace cinder { namespace audio {
 
 //TODO: don't make these values fixed
-TargetOutputXAudio::TargetOutputXAudio( const WAVEFORMATEX *aOutDescription )
+TargetOutputImplXAudio::TargetOutputImplXAudio( const WAVEFORMATEX *aOutDescription )
 	: Target()
 {
 	mSampleRate = aOutDescription->nSamplesPerSec;
@@ -45,7 +47,7 @@ TargetOutputXAudio::TargetOutputXAudio( const WAVEFORMATEX *aOutDescription )
 	}
 }
 
-OutputXAudio::Track::Track( SourceRef source, OutputXAudio * output )
+OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
 	: cinder::audio::Track(), mSource( source ), mOutput( output )
 {
 	::HRESULT hr;
@@ -85,7 +87,7 @@ OutputXAudio::Track::Track( SourceRef source, OutputXAudio * output )
 		//throw
 	}
 	
-	shared_ptr<TargetOutputXAudio> target = TargetOutputXAudio::createRef( &mVoiceDescription );
+	shared_ptr<TargetOutputImplXAudio> target = TargetOutputImplXAudio::createRef( &mVoiceDescription );
 	mLoader = mSource->getLoader( target.get() );
 
 	//mBufferSize = mLoader->mBufferSize;
@@ -96,7 +98,7 @@ OutputXAudio::Track::Track( SourceRef source, OutputXAudio * output )
 	mSamplesPerBuffer = mBufferSize / mVoiceDescription.nBlockAlign;
 
 	//create buffers
-	mDecodedBuffers = new uint8_t[ OutputXAudio::Track::sMaxBufferCount * mBufferSize ];
+	mDecodedBuffers = new uint8_t[ OutputImplXAudio::Track::sMaxBufferCount * mBufferSize ];
 	mCurrentBuffer = 0;
 	mCurrentTime = 0;
 
@@ -108,19 +110,19 @@ OutputXAudio::Track::Track( SourceRef source, OutputXAudio * output )
 	}
 }
 
-OutputXAudio::Track::~Track()
+OutputImplXAudio::Track::~Track()
 {
 	stop();
 	delete [] mDecodedBuffers;
 	CloseHandle( mBufferEndEvent );
 }
 
-void OutputXAudio::Track::play()
+void OutputImplXAudio::Track::play()
 {
 	//mLoader->start();
 	//fillBufferCallback();
 	mIsPlaying = true;
-	mQueueThread = shared_ptr<boost::thread>( new boost::thread( boost::bind( &OutputXAudio::Track::fillBuffer, this ) ) );
+	mQueueThread = shared_ptr<boost::thread>( new boost::thread( boost::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
 
 	::HRESULT hr = mSourceVoice->Start( 0, XAUDIO2_COMMIT_NOW );
 	if( FAILED( hr ) ) {
@@ -129,7 +131,7 @@ void OutputXAudio::Track::play()
 	}
 }
 
-void OutputXAudio::Track::stop()
+void OutputImplXAudio::Track::stop()
 {
 	if( ! mIsPlaying ) return;
 	mSourceVoice->Stop( 0, XAUDIO2_COMMIT_NOW ); //might not really need this
@@ -139,7 +141,7 @@ void OutputXAudio::Track::stop()
 	mSourceVoice->FlushSourceBuffers();
 }
 
-void OutputXAudio::Track::setVolume( float aVolume )
+void OutputImplXAudio::Track::setVolume( float aVolume )
 {
 	aVolume = math<float>::clamp( aVolume, 0.0, 1.0 );
 	::HRESULT hr = mSourceVoice->SetVolume( aVolume );
@@ -148,27 +150,27 @@ void OutputXAudio::Track::setVolume( float aVolume )
 	}
 }
 
-float OutputXAudio::Track::getVolume() const
+float OutputImplXAudio::Track::getVolume() const
 {
 	float aValue = 0.0;
 	mSourceVoice->GetVolume( &aValue );
 	return aValue;
 }
 
-PcmBuffer32fRef OutputXAudio::Track::getPcmBuffer()
+PcmBuffer32fRef OutputImplXAudio::Track::getPcmBuffer()
 {
 	boost::mutex::scoped_lock( mPcmBufferMutex );
 	return mLoadedPcmBuffer;
 }
 
-//HRESULT OutputXAudio::Track::dataInputCallback( void * audioData, uint32_t dataSize, void * track, uint64_t sampleTime, uint32_t sampleDuration )
-void OutputXAudio::Track::fillBuffer()
+//HRESULT OutputImplXAudio::Track::dataInputCallback( void * audioData, uint32_t dataSize, void * track, uint64_t sampleTime, uint32_t sampleDuration )
+void OutputImplXAudio::Track::fillBuffer()
 {
-	//OutputXAudio::Track *theTrack = reinterpret_cast<OutputXAudio::Track*>( track );
+	//OutputImplXAudio::Track *theTrack = reinterpret_cast<OutputImplXAudio::Track*>( track );
 	XAUDIO2_VOICE_STATE state;
 	while( 1 ) {	
 		mSourceVoice->GetState( &state );
-		if( state.BuffersQueued >= OutputXAudio::Track::sMaxBufferCount ) {
+		if( state.BuffersQueued >= OutputImplXAudio::Track::sMaxBufferCount ) {
 			::WaitForSingleObject( mBufferEndEvent, INFINITE );
 		}
 
@@ -179,7 +181,7 @@ void OutputXAudio::Track::fillBuffer()
 		
 		BufferList bufferList;
 		bufferList.mNumberBuffers = 1;
-		Buffer buffer;
+		BufferGeneric buffer;
 		buffer.mData = &( mDecodedBuffers[mCurrentBuffer * mBufferSize] );
 		buffer.mDataByteSize = mBufferSize;
 		buffer.mNumberChannels = mVoiceDescription.nChannels;
@@ -204,29 +206,29 @@ void OutputXAudio::Track::fillBuffer()
 
 		if( mIsPcmBuffering ) {
 			//TODO: right now this only supports floating point data
-			if( ! mLoadingPcmBuffer || ( mLoadingPcmBuffer->getSampleCount() + ( buffer.mDataByteSize / sizeof(float) ) > mLoadingPcmBuffer->getMaxSampleCount() ) ) {
+			/*if( ! mLoadingPcmBuffer || ( mLoadingPcmBuffer->getSampleCount() + ( buffer.mDataByteSize / sizeof(float) ) > mLoadingPcmBuffer->getMaxSampleCount() ) ) {
 				boost::mutex::scoped_lock lock( mPcmBufferMutex );
 				uint32_t bufferSampleCount = 1470; //TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second)
 				mLoadedPcmBuffer = mLoadingPcmBuffer;
 				mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, mVoiceDescription.nChannels, true ) );
 			}
 			
-			mLoadingPcmBuffer->appendInterleavedData( reinterpret_cast<float *>( buffer.mData ), buffer.mDataByteSize / mVoiceDescription.nBlockAlign );
+			mLoadingPcmBuffer->appendInterleavedData( reinterpret_cast<float *>( buffer.mData ), buffer.mDataByteSize / mVoiceDescription.nBlockAlign );*/
 		}
 		
 		mCurrentBuffer++;
-		mCurrentBuffer %= OutputXAudio::Track::sMaxBufferCount;
+		mCurrentBuffer %= OutputImplXAudio::Track::sMaxBufferCount;
 	}
 }
 
-/*class TargetOutputXAudio : public Target
+/*class TargetOutputImplXAudio : public Target
 {
   public:
   protected:
-	TargetOutputXAudio
+	TargetOutputImplXAudio
 }*/
 
-OutputXAudio::OutputXAudio()
+OutputImplXAudio::OutputImplXAudio()
 	: OutputImpl(), mXAudio( NULL ), mMasterVoice( NULL )
 {
 	::HRESULT hr;
@@ -244,25 +246,25 @@ OutputXAudio::OutputXAudio()
 	}
 }
 
-OutputXAudio::~OutputXAudio()
+OutputImplXAudio::~OutputImplXAudio()
 {
 	//TODO: cleanup
 }
 
-TrackRef OutputXAudio::addTrack( SourceRef aSource, bool autoPlay ) 
+TrackRef OutputImplXAudio::addTrack( SourceRef aSource, bool autoPlay ) 
 {
-	//TargetOutputXAudioRef target = TargetOutputXAudio::createRef( this );
+	//TargetOutputImplXAudioRef target = TargetOutputImplXAudio::createRef( this );
 	//TODO: pass target instead of this?
-	shared_ptr<OutputXAudio::Track> track = shared_ptr<OutputXAudio::Track>( new OutputXAudio::Track( aSource, this ) );
+	shared_ptr<OutputImplXAudio::Track> track = shared_ptr<OutputImplXAudio::Track>( new OutputImplXAudio::Track( aSource, this ) );
 	TrackId inputBus = track->getTrackId();
-	mTracks.insert( std::pair<TrackId,shared_ptr<OutputXAudio::Track> >( inputBus, track ) );
+	mTracks.insert( std::pair<TrackId,shared_ptr<OutputImplXAudio::Track> >( inputBus, track ) );
 	if( autoPlay ) {
 		track->play();
 	}
 	return track;
 }
 
-void OutputXAudio::removeTrack( TrackId trackId )
+void OutputImplXAudio::removeTrack( TrackId trackId )
 {
 	if( mTracks.find( trackId ) == mTracks.end() ) {
 		//TODO: throw OutputInvalidTrackExc();

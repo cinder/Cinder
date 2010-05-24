@@ -49,7 +49,7 @@ class Callback : public Source {
  private:
 	Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
   
-	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
+	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, BufferGeneric *ioBuffer );
 	
 	T* mCallbackObj;
 	CallbackFunction mCallbackFn;
@@ -137,7 +137,7 @@ Callback<T,U>::~Callback()
 }
 
 template<typename T, typename U>
-void Callback<T,U>::getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) 
+void Callback<T,U>::getData( uint64_t inSampleOffset, uint32_t ioSampleCount, BufferGeneric *ioBuffer ) 
 {
 	BufferT<U> typedBuffer;
 	typedBuffer.mNumberChannels = ioBuffer->mNumberChannels;

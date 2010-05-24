@@ -33,21 +33,21 @@
 
 namespace cinder { namespace audio {
 
-class OutputXAudio;
+class OutputImplXAudio;
 
-class TargetOutputXAudio : public Target {
+class TargetOutputImplXAudio : public Target {
   public: 
-	static shared_ptr<TargetOutputXAudio> createRef( const WAVEFORMATEX *aOutDescription ){ return shared_ptr<TargetOutputXAudio>( new TargetOutputXAudio( aOutDescription ) );  }
-	~TargetOutputXAudio() {}
+	static shared_ptr<TargetOutputImplXAudio> createRef( const WAVEFORMATEX *aOutDescription ){ return shared_ptr<TargetOutputImplXAudio>( new TargetOutputImplXAudio( aOutDescription ) );  }
+	~TargetOutputImplXAudio() {}
   private:
-	TargetOutputXAudio( const WAVEFORMATEX *aOutDescription );
+	TargetOutputImplXAudio( const WAVEFORMATEX *aOutDescription );
 };
 
-class OutputXAudio : public OutputImpl 
+class OutputImplXAudio : public OutputImpl 
 {
   public:
-	OutputXAudio();
-	~OutputXAudio();
+	OutputImplXAudio();
+	~OutputImplXAudio();
 	TrackRef	addTrack( SourceRef aSource, bool autoplay );
 	void		removeTrack( TrackId );
 	
@@ -60,7 +60,7 @@ class OutputXAudio : public OutputImpl
 	class Track : public cinder::audio::Track
 	{
 	  public:
-		Track( SourceRef source, OutputXAudio * output );
+		Track( SourceRef source, OutputImplXAudio * output );
 		~Track();
 		void play();
 		void stop();
@@ -91,7 +91,7 @@ class OutputXAudio : public OutputImpl
 		TrackId							mTrackId;
 		SourceRef						mSource;
 		LoaderRef						mLoader;
-		OutputXAudio					* mOutput;
+		OutputImplXAudio					* mOutput;
 		
 		IXAudio2SourceVoice				* mSourceVoice;
 		WAVEFORMATEX					mVoiceDescription;
@@ -114,7 +114,7 @@ class OutputXAudio : public OutputImpl
 		{
 		public:
 			//HANDLE							mBufferEndEvent;
-			OutputXAudio::Track				* mTrack;
+			OutputImplXAudio::Track				* mTrack;
 				
 			SourceCallback()
 				/*: mBufferEndEvent( CreateEvent( NULL, FALSE, FALSE, NULL ) )*/{}
@@ -135,7 +135,7 @@ class OutputXAudio : public OutputImpl
 		SourceCallback					mVoiceCallback;
 	};
 
-	std::map<TrackId,shared_ptr<OutputXAudio::Track> >	mTracks;	
+	std::map<TrackId,shared_ptr<OutputImplXAudio::Track> >	mTracks;	
 };
 
 }} //namespaces

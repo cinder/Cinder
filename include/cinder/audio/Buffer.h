@@ -39,7 +39,7 @@ struct BufferT {
 	T			* mData;
 };
 
-typedef BufferT<void> Buffer; //used for internally handing around data, TODO: rename to something other than Buffer
+typedef BufferT<void> BufferGeneric; //used for internally handing around data
 typedef BufferT<uint8_t> Buffer8u;
 typedef BufferT<int8_t> Buffer8i;
 typedef BufferT<uint16_t> Buffer16u;
@@ -83,7 +83,7 @@ class PcmBufferT {
 	uint32_t	mSampleCount;
 	uint32_t	mMaxSampleCount;
 	uint16_t	mChannelCount;
-	uint16_t	mIsInterleaved;
+	bool		mIsInterleaved;
 };
 
 typedef PcmBufferT<float> PcmBuffer32f;

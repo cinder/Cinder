@@ -381,6 +381,12 @@
     <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Buffer.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -717,6 +723,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>
