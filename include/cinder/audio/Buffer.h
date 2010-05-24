@@ -23,8 +23,14 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/Exception.h"
 
 namespace cinder { namespace audio {
+
+typedef enum ChannelIdentifier { 
+	CHANNEL_FRONT_LEFT = 0, 
+	CHANNEL_FRONT_RIGHT = 1
+} ChannelIdentifier;
 
 template<typename T>
 struct BufferT {
@@ -55,26 +61,43 @@ typedef BufferListT<void> BufferList;
 template<typename T>
 class PcmBufferT {
  public:
-	PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount );
+	PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, bool isInterleaved );
 	~PcmBufferT();
-	
-	void		appendData( T * aData, uint32_t aSampleCount );
-	T *			getData() { return mData; }
-	const T *	getData() const { return mData; }
 	
 	uint32_t	getSampleCount() const { return mSampleCount; }
 	uint32_t	getMaxSampleCount() const { return mMaxSampleCount; }
 	uint16_t	getChannelCount() const { return mChannelCount; }
+	bool		isInterleaved() const  { return mIsInterleaved; }
+	
+	T *			getChannelData( ChannelIdentifier channelId ) const;
+	T *			getInterleavedData() const;
+	
+	//TODO: add support for adding/editing data at arbitrary positions in the buffer
+	//TODO: add support for an appendData method that just accepts a Buffer or BufferList and interprets interleaving accordingly
+	void		appendInterleavedData( T * aData, uint32_t aSampleCount );
+	void		appendChannelData( T * aData, uint32_t aSampleCount, ChannelIdentifier channelId );
  private:
-	T			* mData;
+	BufferT<T>	* mBuffers;
+	
+	uint16_t	mBufferCount;
 	uint32_t	mSampleCount;
 	uint32_t	mMaxSampleCount;
 	uint16_t	mChannelCount;
+	uint16_t	mIsInterleaved;
 };
 
 typedef PcmBufferT<float> PcmBuffer32f;
 
 typedef shared_ptr<PcmBuffer32f> PcmBuffer32fRef;
+
+class BufferException : public Exception {
+};
+
+class InvalidChannelBufferException : public BufferException {
+};
+
+class OutOfRangeBufferException : public BufferException {
+};
 
 inline void silenceBuffers( BufferList * aBufferList )
 {

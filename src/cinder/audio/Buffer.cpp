@@ -25,27 +25,88 @@
 namespace cinder { namespace audio {
 
 template<typename T>
-PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount ) 
-	: mMaxSampleCount( aMaxSampleCount ), mChannelCount( aChannelCount ), mSampleCount( 0 )
+PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, bool isInterleaved ) 
+	: mMaxSampleCount( aMaxSampleCount ), mChannelCount( aChannelCount ), mIsInterleaved( 0 ), mSampleCount( 0 )
 {
-	mData = new T[mMaxSampleCount * mChannelCount];
-}
-
-template<typename T>
-void PcmBufferT<T>::appendData( T * aData, uint32_t aSampleCount )
-{
-	if( mSampleCount + aSampleCount > mMaxSampleCount ) {
-		throw; //TODO
+	uint64_t bufferSize = 0;
+	uint16_t channelsPerBuffer = 0;
+	if( ! mIsInterleaved ) {
+		mBufferCount = mChannelCount;
+		bufferSize = mMaxSampleCount;
+		channelsPerBuffer = 1;
+	} else {
+		mBufferCount = 1;
+		bufferSize = mMaxSampleCount * mChannelCount;
+		channelsPerBuffer = mChannelCount;
 	}
 	
-	memcpy( &( mData[mSampleCount] ), aData, aSampleCount * sizeof(T) );
-	mSampleCount += aSampleCount;
+	mBuffers = new BufferT<T>[mBufferCount];
+	for( int i = 0; i < mBufferCount; i++ ) {
+		mBuffers[i].mNumberChannels = channelsPerBuffer;
+		mBuffers[i].mDataByteSize = bufferSize * sizeof(T);
+		mBuffers[i].mData = new T[bufferSize];
+	}
 }
 
 template<typename T>
 PcmBufferT<T>::~PcmBufferT()
 {
-	delete [] mData;
+	for( int i = 0; i < mBufferCount; i++ ) {
+		delete [] mBuffers[i].mData;
+	}
+	delete [] mBuffers;
+}
+
+template<typename T>
+T * PcmBufferT<T>::getChannelData( ChannelIdentifier channelId ) const {
+	if( mIsInterleaved ) {
+		//TODO: deinterleave
+	}
+	
+	if( channelId > mChannelCount - 1 ) {
+		throw InvalidChannelBufferException();
+	}
+	
+	return mBuffers[channelId].mData;
+}
+
+template<typename T>
+T * PcmBufferT<T>::getInterleavedData() const {
+	if( ! mIsInterleaved ) {
+		//TODO: interleave
+	}
+	return mBuffers[0].mData;
+}
+
+template<typename T>
+void PcmBufferT<T>::appendInterleavedData( T * aData, uint32_t aSampleCount )
+{
+	if( ! mIsInterleaved ) {
+		//TODO: iterate data and copy it into separate buffers
+	} else {
+		memcpy( &( mBuffers[0].mData[mSampleCount] ), aData, aSampleCount * sizeof(T) );
+	}
+	
+	mSampleCount += aSampleCount;
+}
+
+template<typename T>
+void PcmBufferT<T>::appendChannelData( T * aData, uint32_t aSampleCount, ChannelIdentifier channelId )
+{
+	if( mSampleCount + aSampleCount > mMaxSampleCount ) {
+		throw OutOfRangeBufferException();
+	}
+	
+	if( channelId > mChannelCount - 1 ) {
+		throw InvalidChannelBufferException();
+	}
+	
+	if( mIsInterleaved ) {
+		//TODO: iterate data and copy into separate buffers
+	} else {
+		memcpy( &( mBuffers[channelId].mData[mSampleCount] ), aData, aSampleCount * sizeof(T) );
+	}
+	mSampleCount += aSampleCount;
 }
 
 template class PcmBufferT<float>;

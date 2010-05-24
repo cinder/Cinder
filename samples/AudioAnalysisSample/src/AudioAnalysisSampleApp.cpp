@@ -34,7 +34,7 @@ void AudioAnalysisSampleApp::drawWaveForm( audio::TrackRef track )
 	}
 	
 	uint32_t bufferSamples = aPcmBuffer->getSampleCount();
-	float * aBuffer = aPcmBuffer->getData();
+	float * aBuffer = aPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT );
 
 	int displaySize = getWindowWidth();
 	int endIdx = bufferSamples;

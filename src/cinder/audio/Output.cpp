@@ -258,10 +258,13 @@ OSStatus OutputAudioUnit::Track::renderCallback( void * audioTrack, AudioUnitRen
 			boost::mutex::scoped_lock lock( theTrack->mPcmBufferMutex );
 			uint32_t bufferSampleCount = 1470; //TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second)
 			theTrack->mLoadedPcmBuffer = theTrack->mLoadingPcmBuffer;
-			theTrack->mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, theTrack->mTarget->getChannelCount() ) );
+			theTrack->mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, theTrack->mTarget->getChannelCount(), theTrack->mTarget->isInterleaved() ) );
 		}
-		//TODO: right now this is just a single channel, going to have to interleave the data
-		theTrack->mLoadingPcmBuffer->appendData( reinterpret_cast<float *>( ioData->mBuffers[0].mData ), ioData->mBuffers[0].mDataByteSize / sizeof(float) );
+		
+		for( int i = 0; i < ioData->mNumberBuffers; i++ ) {
+			//TODO: implement channel map to better deal with channel locations
+			theTrack->mLoadingPcmBuffer->appendChannelData( reinterpret_cast<float *>( ioData->mBuffers[i].mData ), ioData->mBuffers[0].mDataByteSize / sizeof(float), static_cast<ChannelIdentifier>( i ) );
+		}
 	 }
 	
 	if( ioData->mBuffers[0].mDataByteSize == 0 ) {
