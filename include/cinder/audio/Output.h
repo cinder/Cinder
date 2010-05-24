@@ -48,6 +48,7 @@ class Track {
 	virtual ~Track() {}
 	virtual void play() = 0;
 	virtual void stop() = 0;
+	virtual bool isPlaying() const = 0;
 	
 	virtual void setVolume( float aVolume ) = 0;
 	virtual float getVolume() const = 0;

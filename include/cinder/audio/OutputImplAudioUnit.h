@@ -71,6 +71,7 @@ class OutputImplAudioUnit : public OutputImpl {
 		~Track();
 		void play();
 		void stop();
+		bool isPlaying() const { return mIsPlaying; } 
 		
 		TrackId getTrackId() const { return mInputBus; }
 		
