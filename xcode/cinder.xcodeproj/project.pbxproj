@@ -578,6 +578,8 @@
 		C7BA408B0FA8C13A00AADC07 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */; };
 		C7BA408D0FA8C13A00AADC07 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */; };
 		C7BAB34611A639390071BA15 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7BAB34511A639390071BA15 /* Buffer.cpp */; };
+		C7BAB87211AB04E90071BA15 /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C7BAB87111AB04E90071BA15 /* OutputImplAudioUnit.h */; };
+		C7BAB87411AB04FF0071BA15 /* OutputImplAudioUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7BAB87311AB04FF0071BA15 /* OutputImplAudioUnit.cpp */; };
 		C7CDEFE80EBD5D73000997D3 /* action_store.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFD90EBD5D73000997D3 /* action_store.cpp */; };
 		C7CDEFE90EBD5D73000997D3 /* lex_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDA0EBD5D73000997D3 /* lex_util.cpp */; };
 		C7CDEFEA0EBD5D73000997D3 /* node_set.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDB0EBD5D73000997D3 /* node_set.cpp */; };
@@ -836,6 +838,8 @@
 		C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		C7BAB34511A639390071BA15 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
+		C7BAB87111AB04E90071BA15 /* OutputImplAudioUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputImplAudioUnit.h; sourceTree = "<group>"; };
+		C7BAB87311AB04FF0071BA15 /* OutputImplAudioUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputImplAudioUnit.cpp; sourceTree = "<group>"; };
 		C7CDEFD90EBD5D73000997D3 /* action_store.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = action_store.cpp; path = ../src/tinyxml/action_store.cpp; sourceTree = SOURCE_ROOT; };
 		C7CDEFDA0EBD5D73000997D3 /* lex_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lex_util.cpp; path = ../src/tinyxml/lex_util.cpp; sourceTree = SOURCE_ROOT; };
 		C7CDEFDB0EBD5D73000997D3 /* node_set.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = node_set.cpp; path = ../src/tinyxml/node_set.cpp; sourceTree = SOURCE_ROOT; };
@@ -1369,6 +1373,7 @@
 				C7A76EA6117644AB00A46655 /* SourceFile.h */,
 				C705F17F0FD995120009395A /* Buffer.h */,
 				C7792FB0119A186000521786 /* CocoaCaConverter.h */,
+				C7BAB87111AB04E90071BA15 /* OutputImplAudioUnit.h */,
 			);
 			path = audio;
 			sourceTree = "<group>";
@@ -1381,6 +1386,7 @@
 				C7A76E9C1176449F00A46655 /* SourceFile.cpp */,
 				C7792FAE119A185000521786 /* CocoaCaConverter.cpp */,
 				C7BAB34511A639390071BA15 /* Buffer.cpp */,
+				C7BAB87311AB04FF0071BA15 /* OutputImplAudioUnit.cpp */,
 			);
 			path = audio;
 			sourceTree = "<group>";
@@ -1795,6 +1801,7 @@
 				C7A76EAB117644AB00A46655 /* SourceFile.h in Headers */,
 				C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */,
 				009704A811A050C300B1FC50 /* UrlImplCurl.h in Headers */,
+				C7BAB87211AB04E90071BA15 /* OutputImplAudioUnit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2133,6 +2140,7 @@
 				C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */,
 				009704AA11A050DB00B1FC50 /* UrlImplCurl.cpp in Sources */,
 				C7BAB34611A639390071BA15 /* Buffer.cpp in Sources */,
+				C7BAB87411AB04FF0071BA15 /* OutputImplAudioUnit.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
