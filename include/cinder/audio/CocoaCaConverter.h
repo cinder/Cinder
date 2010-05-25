@@ -24,7 +24,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/audio/Io.h"
-#include "cinder/audio/Buffer.h"
+#include "cinder/audio/PcmBuffer.h"
 
 #include <CoreAudio/CoreAudioTypes.h>
 #include <AudioToolbox/AudioConverter.h>
