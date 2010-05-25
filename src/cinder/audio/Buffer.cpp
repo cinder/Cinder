@@ -77,6 +77,7 @@ shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier channel
 	if( mIsInterleaved ) {
 		void (*fn)( BufferT<T> * ) = deleteBuffer;
 		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
+		buffer->mData = new T[mMaxSampleCount];
 		for( int i = 0; i < mMaxSampleCount; i++ ) {
 			buffer->mData[i] = mBuffers[0]->mData[i * mChannelCount + channelId];
 		}
@@ -91,7 +92,17 @@ shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier channel
 template<typename T>
 shared_ptr<BufferT<T> > PcmBufferT<T>::getInterleavedData() const {
 	if( ! mIsInterleaved ) {
-		//TODO: interleave
+		void (*fn)( BufferT<T> * ) = deleteBuffer;
+		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
+		buffer->mData = new T[mMaxSampleCount * mChannelCount];
+		for( int i = 0; i < mMaxSampleCount; i++ ) {
+			for( int j = 0; j < mChannelCount; j++ ) {
+				buffer->mData[i * mChannelCount + j] = mBuffers[j]->mData[i];
+			}
+		}
+		buffer->mNumberChannels = mChannelCount;
+		buffer->mDataByteSize = mMaxSampleCount * mChannelCount * sizeof( T );
+		return buffer;
 	}
 	return mBuffers[0];
 }
@@ -99,13 +110,22 @@ shared_ptr<BufferT<T> > PcmBufferT<T>::getInterleavedData() const {
 template<typename T>
 void PcmBufferT<T>::appendInterleavedData( T * aData, uint32_t aSampleCount )
 {
+	if( mBufferSampleCounts[0] + aSampleCount > mMaxSampleCount ) {
+		throw OutOfRangeBufferException();
+	}
+
 	if( ! mIsInterleaved ) {
-		//TODO: iterate data and copy it into separate buffers
+		//iterate data and copy it into separate buffers
+		for( int i = 0; i < aSampleCount; i++ ) {
+			for( int j = 0; j < mChannelCount; j++ ) {
+				mBuffers[j]->mData[mBufferSampleCounts[j]] = aData[i + j];
+				mBufferSampleCounts[0] += 1;
+			}
+		}
 	} else {
 		memcpy( &( mBuffers[0]->mData[mBufferSampleCounts[0]] ), aData, aSampleCount * sizeof(T) );
+		mBufferSampleCounts[0] += aSampleCount;
 	}
-	
-	mBufferSampleCounts[0] += aSampleCount;
 }
 
 template<typename T>
@@ -120,7 +140,7 @@ void PcmBufferT<T>::appendChannelData( T * aData, uint32_t aSampleCount, Channel
 	}
 	
 	if( mIsInterleaved ) {
-		//TODO: iterate data and copy into separate buffers
+		//TODO: iterate data and copy into single buffers
 	} else {
 		memcpy( &( mBuffers[channelId]->mData[mBufferSampleCounts[channelId]] ), aData, aSampleCount * sizeof(T) );
 		mBufferSampleCounts[channelId] += aSampleCount;
