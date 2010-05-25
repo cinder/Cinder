@@ -107,7 +107,7 @@ inline void silenceBuffers( BufferList * aBufferList )
 	}
 }
 
-void deleteBuffer( BufferT<float> * aBuffer );
-
+template<typename T> 
+void deleteBuffer( BufferT<T> * aBuffer ) ;
 
 }} //namespace

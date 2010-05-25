@@ -21,14 +21,18 @@
 */
 
 #include "cinder/audio/Buffer.h"
+#include <functional>
 
 namespace cinder { namespace audio {
 
-void deleteBuffer( BufferT<float> * aBuffer )
+template<typename T> 
+void deleteBuffer( BufferT<T> * aBuffer ) 
 {
 	delete [] aBuffer;
 	delete aBuffer;
 }
+
+template void deleteBuffer( BufferT<float> * aBuffer );
 
 template<typename T>
 PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, bool isInterleaved ) 
@@ -47,8 +51,9 @@ PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, boo
 	}
 	
 	mBufferSampleCounts = new uint32_t[mBufferCount];
+	void (*fn)( BufferT<T> * ) = deleteBuffer;
 	for( int i = 0; i < mBufferCount; i++ ) {
-		shared_ptr<BufferT<T> > buffer( new BufferT<T>, deleteBuffer );
+		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
 		mBuffers.push_back( buffer );
 		buffer->mNumberChannels = channelsPerBuffer;
 		buffer->mDataByteSize = bufferSize * sizeof(T);
@@ -70,7 +75,8 @@ shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier channel
 	}
 	
 	if( mIsInterleaved ) {
-		shared_ptr<BufferT<T> > buffer( new BufferT<T>, deleteBuffer );
+		void (*fn)( BufferT<T> * ) = deleteBuffer;
+		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
 		for( int i = 0; i < mMaxSampleCount; i++ ) {
 			buffer->mData[i] = mBuffers[0]->mData[i * mChannelCount + channelId];
 		}
