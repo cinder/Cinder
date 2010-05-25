@@ -24,6 +24,8 @@
 
 #include "cinder/Cinder.h"
 
+#include <vector>
+
 namespace cinder { 
 
 /** \brief Queries system software and hardware capabilities of the computer.
@@ -60,6 +62,13 @@ class System {
 	static bool			hasMultiTouch();
 	//! Returns the maximum number of simultaneous touches supported by the system's MultiTouch implementation.
 	static int32_t		getMaxMultiTouchPoints();
+	
+#if defined( CINDER_COCOA )
+	//! Returns a list of IP addresses associated with the machine. Not cached.
+	static std::vector<std::string>		getIpAddresses();
+	//! Returns a list of hardware (MAC) addresses associated with the machine. Not cached.
+	static std::vector<std::string>		getHardwareAddresses();
+#endif	
 	
  private:
 	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, TOTAL_CACHE_TYPES };

@@ -26,8 +26,17 @@
 // Reference AMD's "Processor and Core Enumeration Using CPUID" for physical processor determination
 
 #if defined( CINDER_COCOA )
+	#if defined( CINDER_COCOA_TOUCH )
+		#import <CFNetwork/CFNetwork.h>
+	#endif
+	#import <netinet/in.h>
+	#import <netdb.h>
+	#import <ifaddrs.h>
+	#import <arpa/inet.h>
+	#import <net/ethernet.h>
+	#import <net/if_dl.h>
 	#include <sys/sysctl.h>
-	#if defined( CINDER_MAC )
+		#if defined( CINDER_MAC )
 		#include <CoreServices/CoreServices.h>
 	#endif
 #elif defined( CINDER_MSW )
@@ -40,6 +49,7 @@
 #endif
 
 #include <string>
+using namespace std;
 
 namespace cinder {
 
@@ -457,5 +467,60 @@ int32_t System::getMaxMultiTouchPoints()
 	
 	return instance()->mMaxMultiTouchPoints;
 }
+
+#if defined( CINDER_COCOA )
+// implementation derived from code on http://www.bdunagan.com/
+vector<string> System::getIpAddresses()
+{
+	vector<string> addresses;
+	struct ifaddrs *interfaces = NULL;
+	struct ifaddrs *currentAddress = NULL;
+
+	int success = getifaddrs( &interfaces );
+	if( success == 0 ) {
+		currentAddress = interfaces;
+		while( currentAddress ) {
+			if( currentAddress->ifa_addr->sa_family == AF_INET ) {
+				string address( inet_ntoa(((struct sockaddr_in *)currentAddress->ifa_addr)->sin_addr) );
+				if( address != "127.0.0.1" )
+					addresses.push_back( address );
+			}
+			currentAddress = currentAddress->ifa_next;
+		}
+	}
+	freeifaddrs( interfaces );
+	return addresses;
+}
+
+vector<string> System::getHardwareAddresses()
+{
+	vector<string> addresses;
+	struct ifaddrs *interfaces = NULL;
+	struct ifaddrs *currentAddress = NULL;
+	int success = getifaddrs(&interfaces);
+	if( success == 0 ) {
+		currentAddress = interfaces;
+		while( currentAddress ) {
+			if( currentAddress->ifa_addr->sa_family == AF_LINK ) {
+				string address( ether_ntoa((const struct ether_addr *)LLADDR((struct sockaddr_dl *)currentAddress->ifa_addr)) );
+				// ether_ntoa doesn't format the ethernet address with padding.
+				char paddedAddress[80];
+				int a,b,c,d,e,f;
+				sscanf( address.c_str(), "%x:%x:%x:%x:%x:%x", &a, &b, &c, &d, &e, &f);
+				sprintf( paddedAddress, "%02X:%02X:%02X:%02X:%02X:%02X",a,b,c,d,e,f );
+				address = string( paddedAddress );
+
+				if( (address != "00:00:00:00:00:00") && (address != "00:00:00:00:00:FF" ) ) {
+					addresses.push_back( address );
+				}
+			}
+			currentAddress = currentAddress->ifa_next;
+		}
+	}
+	freeifaddrs( interfaces );
+	return addresses;
+}
+
+#endif // defined( CINDER_COCOA )
 
 } // namespace cinder
