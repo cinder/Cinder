@@ -24,6 +24,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
+#include <vector>
 
 namespace cinder { namespace audio {
 
@@ -48,7 +49,7 @@ typedef BufferT<int32_t> Buffer32i;
 typedef BufferT<uint32_t> Buffer32u;
 typedef BufferT<float> Buffer32f;
 
-typedef shared_ptr<Buffer32f> Buffer32fRef;
+typedef shared_ptr<BufferT<float> > Buffer32fRef;
 
 template<typename T>
 struct BufferListT { 
@@ -69,21 +70,21 @@ class PcmBufferT {
 	uint16_t	getChannelCount() const { return mChannelCount; }
 	bool		isInterleaved() const  { return mIsInterleaved; }
 	
-	T *			getChannelData( ChannelIdentifier channelId ) const;
-	T *			getInterleavedData() const;
+	shared_ptr<BufferT<T> >		getChannelData( ChannelIdentifier channelId ) const;
+	shared_ptr<BufferT<T> >		getInterleavedData() const;
 	
 	//TODO: add support for adding/editing data at arbitrary positions in the buffer
 	//TODO: add support for an appendData method that just accepts a Buffer or BufferList and interprets interleaving accordingly
 	void		appendInterleavedData( T * aData, uint32_t aSampleCount );
 	void		appendChannelData( T * aData, uint32_t aSampleCount, ChannelIdentifier channelId );
  private:
-	BufferT<T>	* mBuffers;
+	std::vector<shared_ptr<BufferT<T> > > mBuffers;
 	
-	uint16_t	mBufferCount;
-	uint32_t	* mBufferSampleCounts;
-	uint32_t	mMaxSampleCount;
-	uint16_t	mChannelCount;
-	bool		mIsInterleaved;
+	uint16_t		mBufferCount;
+	uint32_t		* mBufferSampleCounts;
+	uint32_t		mMaxSampleCount;
+	uint16_t		mChannelCount;
+	bool			mIsInterleaved;
 };
 
 typedef PcmBufferT<float> PcmBuffer32f;
@@ -105,6 +106,8 @@ inline void silenceBuffers( BufferList * aBufferList )
 		memset( aBufferList->mBuffers[i].mData, 0, aBufferList->mBuffers[i].mDataByteSize );
 	}
 }
+
+void deleteBuffer( BufferT<float> * aBuffer );
 
 
 }} //namespace

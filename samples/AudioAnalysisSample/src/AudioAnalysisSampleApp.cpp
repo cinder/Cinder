@@ -21,12 +21,12 @@ class AudioAnalysisSampleApp : public AppBasic {
 
 void AudioAnalysisSampleApp::setup()
 {
-	mTrack1 = audio::Output::addTrack( audio::load( "/Users/mikeo/Music/iTunes/iTunes Music/Edward Sharpe & The Magnetic Zeros/Edward Sharpe & The Magnetic Zeros/03 Up From Below.mp3" ) );
-	mTrack1->setPcmBuffering( true );
-	//mTrack1 = audio::Output::addTrack( audio::load( loadResource( RES_GUITAR ) ) );
+	//mTrack1 = audio::Output::addTrack( audio::load( "/Users/mikeo/Music/iTunes/iTunes Music/Edward Sharpe & The Magnetic Zeros/Edward Sharpe & The Magnetic Zeros/03 Up From Below.mp3" ) );
 	//mTrack1->setPcmBuffering( true );
-	//mTrack2 = audio::Output::addTrack( audio::load( loadResource( RES_DRUMS ) ) );
-	//mTrack2->setPcmBuffering( true );
+	mTrack1 = audio::Output::addTrack( audio::load( loadResource( RES_GUITAR ) ) );
+	mTrack1->setPcmBuffering( true );
+	mTrack2 = audio::Output::addTrack( audio::load( loadResource( RES_DRUMS ) ) );
+	mTrack2->setPcmBuffering( true );
 }
 
 void AudioAnalysisSampleApp::keyDown( KeyEvent e ) {
@@ -43,8 +43,8 @@ void AudioAnalysisSampleApp::drawWaveForm( audio::TrackRef track )
 	}
 	
 	uint32_t bufferSamples = aPcmBuffer->getSampleCount();
-	float * leftBuffer = aPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT );
-	float * rightBuffer = aPcmBuffer->getChannelData( audio::CHANNEL_FRONT_RIGHT );
+	audio::Buffer32fRef leftBuffer = aPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT );
+	audio::Buffer32fRef rightBuffer = aPcmBuffer->getChannelData( audio::CHANNEL_FRONT_RIGHT );
 
 	int displaySize = getWindowWidth();
 	int endIdx = bufferSamples;
@@ -60,7 +60,7 @@ void AudioAnalysisSampleApp::drawWaveForm( audio::TrackRef track )
 	glColor3f( 1.0f, 0.5f, 0.25f );
 	glBegin( GL_LINE_STRIP );
 	for( int i = startIdx; i < endIdx; i++ ) {
-		float y = ( ( leftBuffer[i] - 1 ) * - 100 );
+		float y = ( ( leftBuffer->mData[i] - 1 ) * - 100 );
 		glVertex2f( ( i - startIdx ) , y );
 	}
 	glEnd();
@@ -68,7 +68,7 @@ void AudioAnalysisSampleApp::drawWaveForm( audio::TrackRef track )
 	glColor3f( 1.0f, 0.96f, 0.0f );
 	glBegin( GL_LINE_STRIP );
 	for( int i = startIdx; i < endIdx; i++ ) {
-		float y = ( ( rightBuffer[i] - 1 ) * - 100 );
+		float y = ( ( rightBuffer->mData[i] - 1 ) * - 100 );
 		glVertex2f( ( i - startIdx ) , y );
 	}
 	glEnd();
@@ -82,7 +82,7 @@ void AudioAnalysisSampleApp::draw()
 		glTranslatef( 0.0, 0.0, 0.0 );
 		drawWaveForm( mTrack1 );
 		glTranslatef( 0.0, 120.0, 0.0 );
-		//drawWaveForm( mTrack2 );
+		drawWaveForm( mTrack2 );
 	glPopMatrix();
 }
 
