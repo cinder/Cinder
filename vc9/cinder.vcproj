@@ -369,6 +369,10 @@
 				Name="audio"
 				>
 				<File
+					RelativePath="..\src\cinder\audio\Buffer.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\cinder\audio\Io.cpp"
 					>
 				</File>

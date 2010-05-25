@@ -381,10 +381,10 @@
     <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\Buffer.cpp">
+    <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp">
+    <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
   </ItemGroup>
@@ -623,9 +623,6 @@
     <ClInclude Include="..\include\cinder\app\TouchEvent.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\Buffer.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\audio\Callback.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
@@ -726,6 +723,9 @@
       <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\PcmBuffer.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>

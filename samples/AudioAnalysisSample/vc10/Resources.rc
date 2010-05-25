@@ -1,5 +1,4 @@
 #include "../include/Resources.h"
 
-ID ICON "cinder_app_icon.ico"
-
-//RES_MY_RESOURCE
+RES_GUITAR
+RES_DRUMS

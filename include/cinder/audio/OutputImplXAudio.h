@@ -64,6 +64,7 @@ class OutputImplXAudio : public OutputImpl
 		~Track();
 		void play();
 		void stop();
+		bool isPlaying() const { return mIsPlaying; }
 		
 		TrackId	getTrackId() const { return mTrackId; }
 		
@@ -91,7 +92,7 @@ class OutputImplXAudio : public OutputImpl
 		TrackId							mTrackId;
 		SourceRef						mSource;
 		LoaderRef						mLoader;
-		OutputImplXAudio					* mOutput;
+		OutputImplXAudio				* mOutput;
 		
 		IXAudio2SourceVoice				* mSourceVoice;
 		WAVEFORMATEX					mVoiceDescription;

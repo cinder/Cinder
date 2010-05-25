@@ -24,7 +24,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/DataSource.h"
-#include "cinder/audio/Buffer.h"
+#include "cinder/audio/PcmBuffer.h"
 
 #include <map>
 #include <string>

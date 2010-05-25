@@ -93,7 +93,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Buffer.cpp" />
+    <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp" />
     <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp" />
     <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp" />
     <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
@@ -279,7 +279,7 @@
     <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
     <ClInclude Include="..\include\cinder\app\Renderer.h" />
     <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
-    <ClInclude Include="..\include\cinder\audio\Buffer.h" />
+    <ClInclude Include="..\include\cinder\audio\PcmBuffer.h" />
     <ClInclude Include="..\include\cinder\audio\Callback.h" />
     <ClInclude Include="..\include\cinder\audio\Io.h" />
     <ClInclude Include="..\include\cinder\audio\Output.h" />

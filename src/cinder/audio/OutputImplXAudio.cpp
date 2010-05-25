@@ -48,7 +48,7 @@ TargetOutputImplXAudio::TargetOutputImplXAudio( const WAVEFORMATEX *aOutDescript
 }
 
 OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
-	: cinder::audio::Track(), mSource( source ), mOutput( output )
+	: cinder::audio::Track(), mSource( source ), mOutput( output ), mIsPcmBuffering( false )
 {
 	::HRESULT hr;
 
@@ -206,14 +206,14 @@ void OutputImplXAudio::Track::fillBuffer()
 
 		if( mIsPcmBuffering ) {
 			//TODO: right now this only supports floating point data
-			/*if( ! mLoadingPcmBuffer || ( mLoadingPcmBuffer->getSampleCount() + ( buffer.mDataByteSize / sizeof(float) ) > mLoadingPcmBuffer->getMaxSampleCount() ) ) {
+			if( ! mLoadingPcmBuffer || ( mLoadingPcmBuffer->getSampleCount() + ( buffer.mDataByteSize / sizeof(float) ) > mLoadingPcmBuffer->getMaxSampleCount() ) ) {
 				boost::mutex::scoped_lock lock( mPcmBufferMutex );
 				uint32_t bufferSampleCount = 1470; //TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second)
 				mLoadedPcmBuffer = mLoadingPcmBuffer;
 				mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, mVoiceDescription.nChannels, true ) );
 			}
 			
-			mLoadingPcmBuffer->appendInterleavedData( reinterpret_cast<float *>( buffer.mData ), buffer.mDataByteSize / mVoiceDescription.nBlockAlign );*/
+			mLoadingPcmBuffer->appendInterleavedData( reinterpret_cast<float *>( buffer.mData ), buffer.mDataByteSize / mVoiceDescription.nBlockAlign );
 		}
 		
 		mCurrentBuffer++;
