@@ -32,7 +32,10 @@ void deleteBuffer( BufferT<T> * aBuffer )
 	delete aBuffer;
 }
 
-template void deleteBuffer( BufferT<float> * aBuffer );
+#define DELETE_BUFFER_PROTOTYPES(r,data,T)\
+	template void deleteBuffer( BufferT<T> * aBuffer );
+
+BOOST_PP_SEQ_FOR_EACH( DELETE_BUFFER_PROTOTYPES, ~, AUDIO_DATA_TYPES )
 
 template<typename T>
 PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, bool isInterleaved ) 
@@ -147,6 +150,9 @@ void PcmBufferT<T>::appendChannelData( T * aData, uint32_t aSampleCount, Channel
 	}
 }
 
-template class PcmBufferT<float>;
+#define PCM_BUFFER_PROTOTYPES(r,data,T)\
+	template class PcmBufferT<T>;\
+
+BOOST_PP_SEQ_FOR_EACH( PCM_BUFFER_PROTOTYPES, ~, AUDIO_DATA_TYPES )
 
 }} //namespace

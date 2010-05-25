@@ -49,27 +49,21 @@ void AudioAnalysisSampleApp::drawWaveForm( audio::TrackRef track )
 	int displaySize = getWindowWidth();
 	int endIdx = bufferSamples;
 	
-	if( ( endIdx - displaySize ) < 0 ) {
-		return;
-		//endIdx = aBuffer.mSamplesPerBuffer - 1;
-	}
-	
-	
-	int startIdx = endIdx - displaySize;
+	float scale = displaySize / (float)endIdx;
 	
 	glColor3f( 1.0f, 0.5f, 0.25f );
 	glBegin( GL_LINE_STRIP );
-	for( int i = startIdx; i < endIdx; i++ ) {
+	for( int i = 0; i < endIdx; i++ ) {
 		float y = ( ( leftBuffer->mData[i] - 1 ) * - 100 );
-		glVertex2f( ( i - startIdx ) , y );
+		glVertex2f( ( i * scale ) , y );
 	}
 	glEnd();
 	
 	glColor3f( 1.0f, 0.96f, 0.0f );
 	glBegin( GL_LINE_STRIP );
-	for( int i = startIdx; i < endIdx; i++ ) {
+	for( int i = 0; i < endIdx; i++ ) {
 		float y = ( ( rightBuffer->mData[i] - 1 ) * - 100 );
-		glVertex2f( ( i - startIdx ) , y );
+		glVertex2f( ( i * scale ) , y );
 	}
 	glEnd();
 }
