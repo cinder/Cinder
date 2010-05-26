@@ -55,7 +55,7 @@ PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, boo
 	mBufferSampleCounts = new uint32_t[mBufferCount];
 	void (*fn)( BufferT<T> * ) = deleteBuffer;
 	for( int i = 0; i < mBufferCount; i++ ) {
-		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
+		shared_ptr<BufferT<T> > buffer( new BufferT<T> );
 		mBuffers.push_back( buffer );
 		buffer->mNumberChannels = channelsPerBuffer;
 		buffer->mDataByteSize = bufferSize * sizeof(T);
