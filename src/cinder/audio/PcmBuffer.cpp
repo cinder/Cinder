@@ -27,7 +27,7 @@ namespace cinder { namespace audio {
 template<typename T> 
 void deleteBuffer( BufferT<T> * aBuffer ) 
 {
-	delete [] aBuffer;
+	delete [] aBuffer->mData;
 	delete aBuffer;
 }
 
@@ -78,7 +78,7 @@ shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier channel
 	
 	if( mIsInterleaved ) {
 		void (*fn)( BufferT<T> * ) = deleteBuffer;
-		shared_ptr<BufferT<T> > buffer( new BufferT<T> );
+		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
 		buffer->mData = new T[mMaxSampleCount];
 		for( uint32_t i = 0; i < mMaxSampleCount; i++ ) {
 			buffer->mData[i] = mBuffers[0]->mData[i * mChannelCount + channelId];
