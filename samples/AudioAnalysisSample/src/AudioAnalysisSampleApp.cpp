@@ -21,7 +21,7 @@ class AudioAnalysisSampleApp : public AppBasic {
 
 void AudioAnalysisSampleApp::setup()
 {
-	//mTrack1 = audio::Output::addTrack( audio::load( "/Users/mikeo/Music/iTunes/iTunes Music/Edward Sharpe & The Magnetic Zeros/Edward Sharpe & The Magnetic Zeros/03 Up From Below.mp3" ) );
+	//mTrack1 = audio::Output::addTrack( audio::load( "C:\\code\\cinder\\samples\\AudioPlayback\\resources\\booyah.mp3" ) );
 	//mTrack1->setPcmBuffering( true );
 	mTrack1 = audio::Output::addTrack( audio::load( loadResource( RES_GUITAR ) ) );
 	mTrack1->setPcmBuffering( true );

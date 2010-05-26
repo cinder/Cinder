@@ -62,10 +62,10 @@ OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
 		XAUDIO2_VOICE_DETAILS masterVoiceDetails;
 		mOutput->mMasterVoice->GetVoiceDetails( &masterVoiceDetails );
 
-		mVoiceDescription.wFormatTag = WAVE_FORMAT_IEEE_FLOAT;//WAVE_FORMAT_PCM;
+		mVoiceDescription.wFormatTag = WAVE_FORMAT_PCM;//WAVE_FORMAT_IEEE_FLOAT;
 		mVoiceDescription.nSamplesPerSec = masterVoiceDetails.InputSampleRate;
 		mVoiceDescription.nChannels = masterVoiceDetails.InputChannels;
-		mVoiceDescription.wBitsPerSample = 32;
+		mVoiceDescription.wBitsPerSample = 16;
 		mVoiceDescription.nBlockAlign = math<float>::ceil( ( mVoiceDescription.nChannels * mVoiceDescription.wBitsPerSample ) / 8.0 );
 		mVoiceDescription.nAvgBytesPerSec = ( mVoiceDescription.nBlockAlign * mVoiceDescription.nSamplesPerSec );
 		mVoiceDescription.cbSize = 0;
@@ -212,8 +212,15 @@ void OutputImplXAudio::Track::fillBuffer()
 				mLoadedPcmBuffer = mLoadingPcmBuffer;
 				mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, mVoiceDescription.nChannels, true ) );
 			}
-			
-			mLoadingPcmBuffer->appendInterleavedData( reinterpret_cast<float *>( buffer.mData ), buffer.mDataByteSize / mVoiceDescription.nBlockAlign );
+
+			//TODO: only do this if Voice is not Float and make this more efficient
+			uint32_t sampleCount = buffer.mDataByteSize / mVoiceDescription.nBlockAlign / buffer.mNumberChannels;
+			float * copyBuffer = new float[sampleCount * buffer.mNumberChannels];
+			char * srcBuffer = (char *)buffer.mData;
+			for( uint32_t i = 0; i < ( sampleCount * buffer.mNumberChannels ); i++ ) {
+				memcpy( &( copyBuffer[i] ), &( srcBuffer[i * mVoiceDescription.nBlockAlign]), mVoiceDescription.nBlockAlign );
+			}
+			mLoadingPcmBuffer->appendInterleavedData( reinterpret_cast<float *>( buffer.mData ), sampleCount );
 		}
 		
 		mCurrentBuffer++;
