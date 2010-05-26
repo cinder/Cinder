@@ -2,6 +2,8 @@
 #include "cinder/Capture.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/Text.h"
+#include "cinder/Utilities.h"
 #include "CinderOpenCv.h"
 
 using namespace ci;
@@ -94,7 +96,7 @@ void ocvFaceDetectApp::draw()
 	
 	gl::color( ColorA( 0, 0, 1, 0.5f ) );
 	for( vector<Rectf>::const_iterator eyeIter = mEyes.begin(); eyeIter != mEyes.end(); ++eyeIter )
-		gl::drawSolidCircle( eyeIter->getCenter(), eyeIter->getWidth() / 2 );	
+		gl::drawSolidCircle( eyeIter->getCenter(), eyeIter->getWidth() / 2 );
 }
 
 CINDER_APP_BASIC( ocvFaceDetectApp, RendererGl )
