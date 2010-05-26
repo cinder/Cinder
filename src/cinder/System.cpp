@@ -469,8 +469,45 @@ int32_t System::getMaxMultiTouchPoints()
 }
 
 #if defined( CINDER_COCOA )
-// implementation derived from code on http://www.bdunagan.com/
-vector<string> System::getIpAddresses()
+vector<System::NetworkAdapter> System::getNetworkAdapters()
+{
+	vector<System::NetworkAdapter> adapters;
+	struct ifaddrs *interfaces = NULL;
+	struct ifaddrs *currentInterface = NULL;
+
+	int success = getifaddrs( &interfaces );
+	if( success == 0 ) {
+		currentInterface = interfaces;
+		while( currentInterface ) {
+			if( currentInterface->ifa_addr->sa_family == AF_INET ) {
+				char host[NI_MAXHOST];
+				int result = getnameinfo( currentInterface->ifa_addr,
+                           (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+                           host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
+				if( result != 0 )
+					continue;
+				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host ) );
+			}
+			currentInterface = currentInterface->ifa_next;
+		}
+	}
+	freeifaddrs( interfaces );
+	return adapters;
+}
+
+std::string System::getIpAddress()
+{
+	vector<System::NetworkAdapter> adapters = getNetworkAdapters();
+	std::string result = "127.0.0.1";
+	for( vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt ) {
+		if( adaptIt->getIpAddress() != "127.0.0.1" )
+			result = adaptIt->getIpAddress();
+	}
+	
+	return result;
+}
+
+/*vector<string> System::getIpAddresses()
 {
 	vector<string> addresses;
 	struct ifaddrs *interfaces = NULL;
@@ -519,7 +556,7 @@ vector<string> System::getHardwareAddresses()
 	}
 	freeifaddrs( interfaces );
 	return addresses;
-}
+}*/
 
 #endif // defined( CINDER_COCOA )
 

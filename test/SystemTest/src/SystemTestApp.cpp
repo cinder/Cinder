@@ -28,16 +28,11 @@ void SystemTestApp::setup()
 	console() << " Cores:" << System::getNumCores() << std::endl;
 	console() << " QuickTime version: " << std::hex << qtime::getQuickTimeVersion() << std::dec << " (" << qtime::getQuickTimeVersionString() << ")" << std::endl;	
 	
-	console() << " IP Addresses: " << std::endl;
-	vector<string> ipAddresses = System::getIpAddresses();
-	for( vector<string>::const_iterator addrIt = ipAddresses.begin(); addrIt != ipAddresses.end(); ++addrIt )
-		console() << "   " << *addrIt << std::endl;
-
-	console() << " Hardware Addresses: " << std::endl;
-	vector<string> hwAddresses = System::getHardwareAddresses();
-	for( vector<string>::const_iterator addrIt = hwAddresses.begin(); addrIt != hwAddresses.end(); ++addrIt )
-		console() << "   " << *addrIt << std::endl;
-
+	console() << "Network Adapters: " << std::endl;
+	vector<System::NetworkAdapter> adapters = System::getNetworkAdapters();
+	for( vector<System::NetworkAdapter>::const_iterator netIt = adapters.begin(); netIt != adapters.end(); ++netIt )
+		console() << "  " << *netIt << std::endl;
+	console() << "IP Address: " << System::getIpAddress() << std::endl;
 }
 
 CINDER_APP_BASIC( SystemTestApp, RendererGl )

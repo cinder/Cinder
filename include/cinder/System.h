@@ -25,6 +25,7 @@
 #include "cinder/Cinder.h"
 
 #include <vector>
+#include <string>
 
 namespace cinder { 
 
@@ -64,10 +65,22 @@ class System {
 	static int32_t		getMaxMultiTouchPoints();
 	
 #if defined( CINDER_COCOA )
-	//! Returns a list of IP addresses associated with the machine. Not cached.
-	static std::vector<std::string>		getIpAddresses();
-	//! Returns a list of hardware (MAC) addresses associated with the machine. Not cached.
-	static std::vector<std::string>		getHardwareAddresses();
+	//! Represents a single Network Adapter of the system
+	class NetworkAdapter {
+	  public:
+		const std::string&	getName() const { return mName; }
+		const std::string&	getIpAddress() const { return mIpAddress; }
+
+		NetworkAdapter( const std::string &name, const std::string &ip )
+			: mName( name ), mIpAddress( ip ) {}
+
+	  private:
+		std::string		mName, mIpAddress;
+	};
+	//! Returns a list of the network adapters associated with the machine. Not cached.
+	static std::vector<NetworkAdapter>		getNetworkAdapters();
+	//! Returns a best guess at the machine's "IP address". Not cached. Computers often have multiple IP addresses, but this will attempt to select the "best". \sa getNetworkAdapaters().
+	static std::string						getIpAddress();
 #endif	
 	
  private:
@@ -87,6 +100,12 @@ class System {
 	uint32_t			mCPUID_EBX, mCPUID_ECX, mCPUID_EDX;
 #endif 
 };
+
+inline std::ostream& operator<<( std::ostream &out, const System::NetworkAdapter &adapter )
+{
+	out << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress();
+	return out;
+}
 
 class SystemExc : public std::exception {
 };
