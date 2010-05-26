@@ -111,6 +111,6 @@ inline void silenceBuffers( BufferList * aBufferList )
 template<typename T> 
 void deleteBuffer( BufferT<T> * aBuffer ) ;
 
-#define AUDIO_DATA_TYPES (uint8_t)(int8_t)(uint16_t)(int16_t)(uint32_t)(int32_t)(float)
+#define AUDIO_DATA_TYPES (uint8_t)(int16_t)(int32_t)(float)
 
 }} //namespace

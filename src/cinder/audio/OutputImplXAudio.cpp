@@ -205,22 +205,28 @@ void OutputImplXAudio::Track::fillBuffer()
 		}
 
 		if( mIsPcmBuffering ) {
-			//TODO: right now this only supports floating point data
-			if( ! mLoadingPcmBuffer || ( mLoadingPcmBuffer->getSampleCount() + ( buffer.mDataByteSize / sizeof(float) ) > mLoadingPcmBuffer->getMaxSampleCount() ) ) {
+			uint32_t sampleCount = buffer.mDataByteSize / mVoiceDescription.nBlockAlign;
+			if( ! mLoadingPcmBuffer || ( mLoadingPcmBuffer->getSampleCount() + sampleCount > mLoadingPcmBuffer->getMaxSampleCount() ) ) {
 				boost::mutex::scoped_lock lock( mPcmBufferMutex );
-				uint32_t bufferSampleCount = 1470; //TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second)
-				mLoadedPcmBuffer = mLoadingPcmBuffer;
+				//TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second), also make sure the buffer isn't going to be larger than this? perhaps wrap data across buffers?
+				uint32_t bufferSampleCount = 2500;
+				if( mLoadingPcmBuffer ) {
+					mLoadedPcmBuffer = PcmBuffer32fRef();
+					mLoadedPcmBuffer = mLoadingPcmBuffer;
+				}
 				mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, mVoiceDescription.nChannels, true ) );
 			}
 
 			//TODO: only do this if Voice is not Float and make this more efficient
-			uint32_t sampleCount = buffer.mDataByteSize / mVoiceDescription.nBlockAlign / buffer.mNumberChannels;
+			//TODO: right now this only supports uint16_t
 			float * copyBuffer = new float[sampleCount * buffer.mNumberChannels];
-			char * srcBuffer = (char *)buffer.mData;
+			int16_t * srcBuffer = reinterpret_cast<int16_t *>( buffer.mData );
 			for( uint32_t i = 0; i < ( sampleCount * buffer.mNumberChannels ); i++ ) {
-				memcpy( &( copyBuffer[i] ), &( srcBuffer[i * mVoiceDescription.nBlockAlign]), mVoiceDescription.nBlockAlign );
+				//TODO: abstract this conversion
+				copyBuffer[i] = ( ( srcBuffer[i] / 32767.0f ) + 1.0f ) * 0.5f;
 			}
-			mLoadingPcmBuffer->appendInterleavedData( reinterpret_cast<float *>( buffer.mData ), sampleCount );
+			mLoadingPcmBuffer->appendInterleavedData( copyBuffer, sampleCount );
+			delete [] copyBuffer;
 		}
 		
 		mCurrentBuffer++;

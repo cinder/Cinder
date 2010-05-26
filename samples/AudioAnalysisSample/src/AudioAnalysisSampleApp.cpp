@@ -25,8 +25,8 @@ void AudioAnalysisSampleApp::setup()
 	//mTrack1->setPcmBuffering( true );
 	mTrack1 = audio::Output::addTrack( audio::load( loadResource( RES_GUITAR ) ) );
 	mTrack1->setPcmBuffering( true );
-	mTrack2 = audio::Output::addTrack( audio::load( loadResource( RES_DRUMS ) ) );
-	mTrack2->setPcmBuffering( true );
+	//mTrack2 = audio::Output::addTrack( audio::load( loadResource( RES_DRUMS ) ) );
+	//mTrack2->setPcmBuffering( true );
 }
 
 void AudioAnalysisSampleApp::keyDown( KeyEvent e ) {
@@ -76,7 +76,7 @@ void AudioAnalysisSampleApp::draw()
 		glTranslatef( 0.0, 0.0, 0.0 );
 		drawWaveForm( mTrack1 );
 		glTranslatef( 0.0, 120.0, 0.0 );
-		drawWaveForm( mTrack2 );
+		//drawWaveForm( mTrack2 );
 	glPopMatrix();
 }
 

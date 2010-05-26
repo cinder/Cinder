@@ -38,7 +38,7 @@ BOOST_PP_SEQ_FOR_EACH( DELETE_BUFFER_PROTOTYPES, ~, AUDIO_DATA_TYPES )
 
 template<typename T>
 PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, bool isInterleaved ) 
-	: mMaxSampleCount( aMaxSampleCount ), mChannelCount( aChannelCount ), mIsInterleaved( 0 )
+	: mMaxSampleCount( aMaxSampleCount ), mChannelCount( aChannelCount ), mIsInterleaved( isInterleaved )
 {
 	uint64_t bufferSize = 0;
 	uint16_t channelsPerBuffer = 0;
@@ -78,7 +78,7 @@ shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier channel
 	
 	if( mIsInterleaved ) {
 		void (*fn)( BufferT<T> * ) = deleteBuffer;
-		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
+		shared_ptr<BufferT<T> > buffer( new BufferT<T> );
 		buffer->mData = new T[mMaxSampleCount];
 		for( uint32_t i = 0; i < mMaxSampleCount; i++ ) {
 			buffer->mData[i] = mBuffers[0]->mData[i * mChannelCount + channelId];
@@ -125,7 +125,7 @@ void PcmBufferT<T>::appendInterleavedData( T * aData, uint32_t aSampleCount )
 			}
 		}
 	} else {
-		memcpy( &( mBuffers[0]->mData[mBufferSampleCounts[0]] ), aData, aSampleCount * sizeof(T) );
+		memcpy( &( mBuffers[0]->mData[mBufferSampleCounts[0] * mChannelCount] ), aData, aSampleCount * mChannelCount * sizeof(T) );
 		mBufferSampleCounts[0] += aSampleCount;
 	}
 }
