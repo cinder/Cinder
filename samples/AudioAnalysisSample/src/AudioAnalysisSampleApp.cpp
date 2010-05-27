@@ -13,6 +13,7 @@ class AudioAnalysisSampleApp : public AppBasic {
 	void setup();
 	void draw();
 	void drawWaveForm( audio::TrackRef track );
+	void drawFft( audio::TrackRef track );
 	void keyDown( KeyEvent e );
 	
 	audio::TrackRef mTrack1;
@@ -68,15 +69,38 @@ void AudioAnalysisSampleApp::drawWaveForm( audio::TrackRef track )
 	glEnd();
 }
 
+void AudioAnalysisSampleApp::drawFft( audio::TrackRef track )
+{
+	float ht = 100.0f;
+	shared_ptr<float> fftRef = track->computeFft();
+	if( ! fftRef ) {
+		return;
+	}
+	
+	float * fftBuffer = fftRef.get();
+	
+	for( int i = 0; i < ( 512 ); i++ ) {
+		float barY = fftBuffer[i] / 512 * ht;
+		glBegin( GL_QUADS );
+			glColor3f( 255.0f, 255.0f, 0.0f );
+			glVertex2f( i * 3, ht );
+			glVertex2f( i * 3 + 1, ht );
+			glColor3f( 0.0f, 255.0f, 0.0f );
+			glVertex2f( i * 3 + 1, ht - barY );
+			glVertex2f( i * 3, ht - barY );
+		glEnd();
+	}
+}
+
 void AudioAnalysisSampleApp::draw()
 {
 	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
 	
 	glPushMatrix();
 		glTranslatef( 0.0, 0.0, 0.0 );
-		drawWaveForm( mTrack1 );
+		drawFft( mTrack1 );
 		glTranslatef( 0.0, 120.0, 0.0 );
-		drawWaveForm( mTrack2 );
+		drawFft( mTrack2 );
 	glPopMatrix();
 }
 

@@ -21,6 +21,7 @@
 */
 
 #include "cinder/audio/OutputImplAudioUnit.h"
+#include "cinder/audio/FftProcessor.h"
 #include "cinder/CinderMath.h"
 
 #include <iostream>
@@ -107,6 +108,17 @@ PcmBuffer32fRef OutputImplAudioUnit::Track::getPcmBuffer()
 {
 	boost::mutex::scoped_lock( mPcmBufferMutex );
 	return mLoadedPcmBuffer;
+}
+
+shared_ptr<float> OutputImplAudioUnit::Track::computeFft( ChannelIdentifier channelId, uint16_t aBandCount )
+{
+	boost::mutex::scoped_lock( mPcmBufferMutex );
+	if( ! mLoadedPcmBuffer || mLoadedPcmBuffer->getSampleCount() < ( aBandCount * 2 ) ) {
+		return shared_ptr<float>();
+	}
+	FftProcessorRef processor = FftProcessor::createRef( aBandCount );
+	Buffer32fRef buffer = mLoadedPcmBuffer->getChannelData( channelId );
+	return processor->process( &( buffer->mData[ mLoadedPcmBuffer->getSampleCount() - ( aBandCount * 2 ) ] ) );
 }
 
 OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData)
