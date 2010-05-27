@@ -20,31 +20,49 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/audio/FftProcessor.h"
-
-#if defined( CINDER_MSW )
-	#include "cinder/audio/FftProcessorImplXDsp.h"
-	typedef cinder::audio::FftProcessorImplXDsp	FftProcessorPlatformImpl;
-#elif defined( CINDER_MAC )
-	#include "cinder/audio/FftProcessorImplAccelerate.h"
-	typedef cinder::audio::FftProcessorImplAccelerate	FftProcessorPlatformImpl;
-#endif
+#include "cinder/audio/FftProcessorImplXDsp.h"
 
 namespace cinder { namespace audio {
 
-FftProcessorImpl::FftProcessorImpl( uint16_t aBandCount )
-	: mBandCount( aBandCount )
-{
+void deleteFftBuffer( float * buffer ) {
+	delete [] buffer;
 }
 
-FftProcessorRef FftProcessor::createRef( uint16_t aBandCount )
+FftProcessorImplXDsp::FftProcessorImplXDsp( uint16_t aBandCount )
+	: FftProcessorImpl( aBandCount )
 {
-	return FftProcessorRef( new FftProcessor( aBandCount ) );
+	mRealData = new float[mBandCount];
+	mImagData = new float[mBandCount];
+	mRealUnswizzled = new float[mBandCount];
+	mImagUnswizzled = new float[mBandCount];
+	mUnityTable = new XDSP::XVECTOR[mBandCount];
+	XDSP::FFTInitializeUnityTable( mUnityTable, mBandCount );
+
+	mLog2Bands = log( (float)mBandCount ) / log( 2.0f );
 }
 
-FftProcessor::FftProcessor( uint16_t aBandCount )
+FftProcessorImplXDsp::~FftProcessorImplXDsp()
 {
-	mImpl = shared_ptr<FftProcessorImpl>( new FftProcessorPlatformImpl( aBandCount ) );
+	delete mRealData;
+	delete mImagData;
+	delete mUnityTable;
+}
+
+shared_ptr<float> FftProcessorImplXDsp::process( const float * inBuffer )
+{
+	memcpy( mRealData, inBuffer, mBandCount * sizeof( float ) );
+	memset( mImagData, 0, mBandCount * sizeof( float ) );
+	XDSP::FFT( (XDSP::XVECTOR *)mRealData, (XDSP::XVECTOR *)mImagData, (XDSP::XVECTOR *)mUnityTable, mBandCount );
+
+	XDSP::FFTUnswizzle( mRealUnswizzled, mRealData, mLog2Bands );
+	XDSP::FFTUnswizzle( mImagUnswizzled, mImagData, mLog2Bands );
+
+	float * outBuffer = new float[mBandCount];
+	for( uint16_t i = 0; i < mBandCount; i++ ) {
+		outBuffer[i] = sqrt( ( mRealUnswizzled[i] * mRealUnswizzled[i] ) + ( mImagUnswizzled[i] * mImagUnswizzled[i] ) );
+	}
+
+	return shared_ptr<float>( outBuffer, deleteFftBuffer );
 }
 
 }} //namespace

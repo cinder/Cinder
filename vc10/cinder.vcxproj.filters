@@ -387,6 +387,12 @@
     <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\FftProcessor.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\FftProcessorImplXDsp.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -726,6 +732,12 @@
       <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\audio\PcmBuffer.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\FftProcessor.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\FftProcessorImplXDsp.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>

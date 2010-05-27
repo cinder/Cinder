@@ -25,6 +25,7 @@
 #include "cinder/audio/Output.h"
 #include "cinder/msw/CinderMSW.h"
 #include "cinder/CinderMath.h"
+#include "cinder/audio/FftProcessor.h"
 
 #include <windows.h>
 #include <xaudio2.h>
@@ -81,6 +82,7 @@ class OutputImplXAudio : public OutputImpl
 		bool isPcmBuffering() { return mIsPcmBuffering; }
 
 		PcmBuffer32fRef getPcmBuffer();
+		shared_ptr<float> computeFft( ChannelIdentifier channelId, uint16_t aBandCount );
 	  private:
 		//static ::HRESULT				dataInputCallback( void * audioData, uint32_t dataSize, void * theTrack, uint64_t sampleTime, uint32_t sampleDuration );
 		void fillBuffer();

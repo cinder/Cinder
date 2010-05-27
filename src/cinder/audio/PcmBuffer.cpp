@@ -27,7 +27,9 @@ namespace cinder { namespace audio {
 template<typename T> 
 void deleteBuffer( BufferT<T> * aBuffer ) 
 {
-	delete [] aBuffer->mData;
+	if( aBuffer->mData ) {
+		delete [] aBuffer->mData;
+	}
 	delete aBuffer;
 }
 

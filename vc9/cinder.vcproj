@@ -369,7 +369,11 @@
 				Name="audio"
 				>
 				<File
-					RelativePath="..\src\cinder\audio\Buffer.cpp"
+					RelativePath="..\src\cinder\audio\FftProcessor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\cinder\audio\FftProcessorImplXDsp.cpp"
 					>
 				</File>
 				<File
@@ -382,6 +386,10 @@
 				</File>
 				<File
 					RelativePath="..\src\cinder\audio\OutputImplXAudio.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\cinder\audio\PcmBuffer.cpp"
 					>
 				</File>
 				<File
@@ -955,11 +963,15 @@
 				Name="audio"
 				>
 				<File
-					RelativePath="..\include\cinder\audio\Buffer.h"
+					RelativePath="..\include\cinder\audio\Callback.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\cinder\audio\Callback.h"
+					RelativePath="..\include\cinder\audio\FftProcessor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\audio\FftProcessorImplXDsp.h"
 					>
 				</File>
 				<File
@@ -972,6 +984,10 @@
 				</File>
 				<File
 					RelativePath="..\include\cinder\audio\OutputImplXAudio.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\audio\PcmBuffer.h"
 					>
 				</File>
 				<File

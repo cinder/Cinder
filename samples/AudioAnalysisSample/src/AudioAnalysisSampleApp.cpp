@@ -26,8 +26,8 @@ void AudioAnalysisSampleApp::setup()
 	//mTrack1->setPcmBuffering( true );
 	mTrack1 = audio::Output::addTrack( audio::load( loadResource( RES_GUITAR ) ) );
 	mTrack1->setPcmBuffering( true );
-	mTrack2 = audio::Output::addTrack( audio::load( loadResource( RES_DRUMS ) ) );
-	mTrack2->setPcmBuffering( true );
+	//mTrack2 = audio::Output::addTrack( audio::load( loadResource( RES_DRUMS ) ) );
+	//mTrack2->setPcmBuffering( true );
 }
 
 void AudioAnalysisSampleApp::keyDown( KeyEvent e ) {
@@ -72,15 +72,15 @@ void AudioAnalysisSampleApp::drawWaveForm( audio::TrackRef track )
 void AudioAnalysisSampleApp::drawFft( audio::TrackRef track )
 {
 	float ht = 100.0f;
-	shared_ptr<float> fftRef = track->computeFft();
+	boost::shared_ptr<float> fftRef = track->computeFft();
 	if( ! fftRef ) {
 		return;
 	}
 	
 	float * fftBuffer = fftRef.get();
 	
-	for( int i = 0; i < ( 512 ); i++ ) {
-		float barY = fftBuffer[i] / 512 * ht;
+	for( int i = 0; i < ( 256 ); i++ ) {
+		float barY = fftBuffer[i] / 256 * ht;
 		glBegin( GL_QUADS );
 			glColor3f( 255.0f, 255.0f, 0.0f );
 			glVertex2f( i * 3, ht );
@@ -99,8 +99,10 @@ void AudioAnalysisSampleApp::draw()
 	glPushMatrix();
 		glTranslatef( 0.0, 0.0, 0.0 );
 		drawFft( mTrack1 );
+		//drawWaveForm( mTrack1 );
 		glTranslatef( 0.0, 120.0, 0.0 );
-		drawFft( mTrack2 );
+		//drawFft( mTrack2 );
+		//drawWaveForm( mTrack2 );
 	glPopMatrix();
 }
 

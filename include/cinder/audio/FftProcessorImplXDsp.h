@@ -22,29 +22,29 @@
 
 #include "cinder/audio/FftProcessor.h"
 
-#if defined( CINDER_MSW )
-	#include "cinder/audio/FftProcessorImplXDsp.h"
-	typedef cinder::audio::FftProcessorImplXDsp	FftProcessorPlatformImpl;
-#elif defined( CINDER_MAC )
-	#include "cinder/audio/FftProcessorImplAccelerate.h"
-	typedef cinder::audio::FftProcessorImplAccelerate	FftProcessorPlatformImpl;
+#ifndef FLOAT32
+	#define FLOAT32 float
 #endif
+
+#include <windows.h>
+#include <xdsp.h>
+
 
 namespace cinder { namespace audio {
 
-FftProcessorImpl::FftProcessorImpl( uint16_t aBandCount )
-	: mBandCount( aBandCount )
-{
-}
+class FftProcessorImplXDsp : public FftProcessorImpl {
+ public:
+	FftProcessorImplXDsp( uint16_t aBandCount );
+	~FftProcessorImplXDsp();
 
-FftProcessorRef FftProcessor::createRef( uint16_t aBandCount )
-{
-	return FftProcessorRef( new FftProcessor( aBandCount ) );
-}
-
-FftProcessor::FftProcessor( uint16_t aBandCount )
-{
-	mImpl = shared_ptr<FftProcessorImpl>( new FftProcessorPlatformImpl( aBandCount ) );
-}
+	shared_ptr<float> process( const float * inBuffer );
+ private:
+	 uint32_t	mLog2Bands;
+	 XDSP::XVECTOR * mUnityTable;
+	 float * mRealData;
+	 float * mImagData;
+	 float * mRealUnswizzled;
+	 float * mImagUnswizzled;
+};
 
 }} //namespace
