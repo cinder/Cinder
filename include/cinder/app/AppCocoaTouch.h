@@ -25,6 +25,8 @@
 #include "cinder/App/App.h"
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/TouchEvent.h"
+#include "cinder/app/AccelEvent.h"
+
 
 namespace cinder { namespace app {
 
@@ -35,15 +37,25 @@ class AppCocoaTouch : public App {
 	class Settings : public App::Settings {
 	  public:
 		Settings()
-			: App::Settings(), mEnableMultiTouch( true ) {}
+			: App::Settings(), mEnableMultiTouch( true ), mEnableAccelerometer( true ), mAccelUpdateFreq( 30.0 ) {}
 
 		//! Registers the app to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
 		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
 		//! Returns whether the app is registered to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
 		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
 		
+		//! Registers the app to receive accelerometer events from the operating system. Disabled by default.
+		void		enableAccelerometer( bool enable = true ) { mEnableAccelerometer = enable; }
+		//! Returns whether the app is registered to receive accelerometer events from the operating system. Disabled by default. 
+		bool		isAccelerometerEnabled() const { return mEnableAccelerometer; }
+		
+		double		getAccelUpdateFreq() const { return mAccelUpdateFreq; }
+		void		setAccelUpdateFreq(double updateFreq) { mAccelUpdateFreq = updateFreq; }
+		
 	  private:
 		bool		mEnableMultiTouch;
+		bool		mEnableAccelerometer;
+		double		mAccelUpdateFreq;
 	};
 
 	AppCocoaTouch();
@@ -56,6 +68,11 @@ class AppCocoaTouch : public App {
 	//! Override to respond to the end of a multitouch sequence
 	virtual void		touchesEnded( TouchEvent event ) {}
 	//! Returns a std::vector of all active touches
+	
+	//! Returns a Vec3d of the acceleration direction
+	virtual void		accelerated( AccelEvent event ) {}
+	
+	
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
@@ -69,6 +86,11 @@ class AppCocoaTouch : public App {
 	//! Ignored on the iPhone.
 	void			setWindowSize( int windowWidth, int windowHeight ) {}
 
+	//! Enables the accelerometer (valid only on devices with accelerometers, no duh)
+	virtual void enableAccelerometer( float updateFrequency, bool filter, bool filterIsLowPass, float cutoffFreq );
+
+	//! Turns off the accelerometer
+	virtual void disableAccelerometer();
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
@@ -92,6 +114,8 @@ class AppCocoaTouch : public App {
 	//! Returns a pointer to the current global AppBasic
 	virtual const Settings&	getSettings() const { return mSettings; }
 
+
+
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch() { App::prepareLaunch(); }
@@ -108,6 +132,7 @@ class AppCocoaTouch : public App {
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
 	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
+	void		privateAccelerated__( const Vec3d direction );
 	//! \endcond
 
   private:
@@ -119,6 +144,7 @@ class AppCocoaTouch : public App {
 	static AppCocoaTouch	*sInstance;	
 	Settings				mSettings;
 	std::vector<TouchEvent::Touch>	mActiveTouches;
+	AccelEvent				mAccelEvent;
 };
 
 } } // namespace cinder::app

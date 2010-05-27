@@ -55,6 +55,10 @@ static Boolean sIsEaglLayer;
 		mApp->privateSetup__();
 		
 		self.multipleTouchEnabled = mApp->getSettings().isMultiTouchEnabled();
+//		self.accelerometerEnabled = mApp->getSettings().isAccelerometerEnabled();
+		
+
+
 	}
 	
     return self;
@@ -258,5 +262,6 @@ static Boolean sIsEaglLayer;
 {
 	[self touchesEnded:touches withEvent:event];
 }
+
 
 @end
