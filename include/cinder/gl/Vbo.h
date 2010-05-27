@@ -184,7 +184,8 @@ class VboMesh {
 	static void		unbindBuffers();
 
 	void						bufferIndices( const std::vector<uint32_t> &indices );
-	void						bufferPositions( const std::vector<Vec3f> &normals );
+	void						bufferPositions( const std::vector<Vec3f> &positions );
+	void						bufferPositions( const Vec3f *positions, size_t count );
 	void						bufferNormals( const std::vector<Vec3f> &normals );
 	void						bufferTexCoords2d( size_t unit, const std::vector<Vec2f> &texCoords );
 	class VertexIter			mapVertexBuffer();

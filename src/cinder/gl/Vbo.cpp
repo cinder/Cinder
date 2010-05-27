@@ -499,15 +499,20 @@ void VboMesh::bufferIndices( const std::vector<uint32_t> &indices )
 
 void VboMesh::bufferPositions( const std::vector<Vec3f> &positions )
 {
+	bufferPositions( &positions[0], positions.size() );
+}
+
+void VboMesh::bufferPositions( const Vec3f *positions, size_t count )
+{
 	if( mObj->mLayout.hasDynamicPositions() ) {
 		if( mObj->mDynamicStride == 0 )
-			getDynamicVbo().bufferSubData( mObj->mPositionOffset, sizeof(Vec3f) * positions.size(), &(positions[0]) );
+			getDynamicVbo().bufferSubData( mObj->mPositionOffset, sizeof(Vec3f) * count, positions );
 		else
 			throw;
 	}
 	else if( mObj->mLayout.hasStaticPositions() ) {
 		if( mObj->mStaticStride == 0 ) { // planar data
-			getStaticVbo().bufferSubData( mObj->mPositionOffset, sizeof(Vec3f) * positions.size(), &(positions[0]) );
+			getStaticVbo().bufferSubData( mObj->mPositionOffset, sizeof(Vec3f) * count, positions );
 		}
 		else
 			throw;
