@@ -1,0 +1,21 @@
+Reference manual:
+http://opencv.willowgarage.com/documentation/cpp/index.html
+
+Setting up OpenCV on Mac OS X
+=============================
+* Download OpenCV 2.1
+   http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.1/OpenCV-2.1.0.tar.bz2/download
+* Decompress to
+   cinder/blocks/opencv/ as OpenCV, resulting in
+      cinder/blocks/opencv/OpenCV
+* cmake -D CMAKE_BUILD_TYPE=RELEASE -D BUILD_PYTHON_SUPPORT=OFF -D BUILD_NEW_PYTHON_SUPPORT=OFF -D BUILD_EXAMPLES=OFF -D BUILD_TESTS=OFF -D BUILD_SHARED_LIBS=OFF -D CMAKE_CXX_FLAGS="-mmacosx-version-min=10.5" -D CMAKE_OSX_DEPLOYMENT_TARGET=10.5 -D CMAKE_OSX_SYSROOT=/Developer/SDKs/MacOSX10.5.sdk -D CMAKE_OSX_ARCHITECTURES="i386;x86_64" -D OPENCV_EXTRA_C_FLAGS="-mmacosx-version-min=10.5" .
+* make -j 8
+
+
+
+Creating a Project on Mac OS X
+==============================
+* Using TinderBox, create a new app based on BasicApp
+* Under Project Settings, All Configurations
+   Header Search Paths += $(CINDER_PATH)/blocks/opencv/OpenCV
+   User Header Search Paths += ../../../include
