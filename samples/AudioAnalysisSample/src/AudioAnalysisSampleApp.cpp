@@ -72,15 +72,16 @@ void AudioAnalysisSampleApp::drawWaveForm( audio::TrackRef track )
 void AudioAnalysisSampleApp::drawFft( audio::TrackRef track )
 {
 	float ht = 100.0f;
-	boost::shared_ptr<float> fftRef = track->computeFft();
+	uint16_t bandCount = 32;
+	boost::shared_ptr<float> fftRef = track->computeFft( audio::CHANNEL_FRONT_LEFT, bandCount );
 	if( ! fftRef ) {
 		return;
 	}
 	
 	float * fftBuffer = fftRef.get();
 	
-	for( int i = 0; i < ( 256 ); i++ ) {
-		float barY = fftBuffer[i] / 256 * ht;
+	for( int i = 0; i < ( bandCount ); i++ ) {
+		float barY = fftBuffer[i] / bandCount * ht;
 		glBegin( GL_QUADS );
 			glColor3f( 255.0f, 255.0f, 0.0f );
 			glVertex2f( i * 3, ht );
