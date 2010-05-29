@@ -52,13 +52,8 @@ static Boolean sIsEaglLayer;
 		mApp = app;
 		mRenderer = renderer;
 		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self );
-		mApp->privateSetup__();
 		
 		self.multipleTouchEnabled = mApp->getSettings().isMultiTouchEnabled();
-//		self.accelerometerEnabled = mApp->getSettings().isAccelerometerEnabled();
-		
-
-
 	}
 	
     return self;

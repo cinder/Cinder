@@ -42,6 +42,8 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 	[app->mState->mWindow addSubview:app->mState->mCinderView];
 	[app->mState->mCinderView release];
 	[app->mState->mWindow makeKeyAndVisible];
+
+	app->privateSetup__();
 	
 	[app->mState->mCinderView startAnimation];
 }
