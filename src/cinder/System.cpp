@@ -498,7 +498,6 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 		}
 	}
 	freeifaddrs( interfaces );
-	return adapters;
 #elif defined( CINDER_MSW )
     PIP_ADAPTER_INFO pAdapterInfo;
     PIP_ADAPTER_INFO pAdapter = NULL;
@@ -532,10 +531,11 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
     }
     if( pAdapterInfo )
         ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
+#endif // defined( CINDER_MSW )
 
 	return adapters;
+
 }
-#endif // defined( CINDER_MSW )
 
 std::string System::getIpAddress()
 {
