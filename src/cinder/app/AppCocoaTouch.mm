@@ -26,7 +26,7 @@
 
 namespace cinder { namespace app {
 
-AppCocoaTouch*		AppCocoaTouch::sInstance = 0;
+AppCocoaTouch*				AppCocoaTouch::sInstance = 0;
 
 // This struct serves as a compile firewall for maintaining AppCocoaTouch state information
 struct AppCocoaTouchState {
@@ -37,6 +37,7 @@ struct AppCocoaTouchState {
 
 void setupCocoaTouchWindow( AppCocoaTouch *app )
 {
+	app->privatePrepareSettings__();
 	app->mState->mWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	app->mState->mCinderView = [[CinderViewCocoaTouch alloc] initWithFrame:[[UIScreen mainScreen] bounds] app:app renderer:app->getRenderer()];
 	[app->mState->mWindow addSubview:app->mState->mCinderView];
@@ -180,6 +181,11 @@ std::string AppCocoaTouch::getAppPath()
 void AppCocoaTouch::quit()
 {
 return;
+}
+
+void AppCocoaTouch::privatePrepareSettings__()
+{
+	prepareSettings( &mSettings );
 }
 
 void AppCocoaTouch::privateTouchesBegan__( const TouchEvent &event )

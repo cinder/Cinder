@@ -51,6 +51,8 @@ class AppCocoaTouch : public App {
 	AppCocoaTouch();
 	virtual ~AppCocoaTouch() {}
 
+	virtual void		prepareSettings( Settings *settings ) {}
+
 	//! Override to respond to the beginning of a multitouch sequence
 	virtual void		touchesBegan( TouchEvent event ) {}
 	//! Override to respond to movement (drags) during a multitouch sequence
@@ -117,6 +119,7 @@ class AppCocoaTouch : public App {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
+	void		privatePrepareSettings__();
 	void		privateTouchesBegan__( const TouchEvent &event );
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
@@ -132,6 +135,7 @@ class AppCocoaTouch : public App {
 	
 	static AppCocoaTouch	*sInstance;	
 	Settings				mSettings;
+	
 	std::vector<TouchEvent::Touch>	mActiveTouches;
 
 	float					mAccelFilterFactor;
