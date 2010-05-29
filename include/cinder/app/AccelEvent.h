@@ -21,107 +21,62 @@
 */
 
 #pragma once
-#define PI 3.14159265359
-#define RADIANS_TO_DEGREES 180.0f/PI
-#define DEGREES_TO_RADIANS PI/180.0f
-#define kAccelerometerMinStep				0.02
-#define kAccelerometerNoiseAttenuation		3.0
-
 
 #include "cinder/Vector.h"
-
+#include "cinder/Quaternion.h"
 
 namespace cinder { namespace app {
 
 //! Represents a single acceleration value
 class AccelEvent {
 	public:
-		
-//		AccelEvent() {};
-		AccelEvent( bool filter = true, bool lowPass = true, double cutoffFreq = 5.0, double updateFreq = 30.0)
-		 		   : mAccelFilterIsEnabled( filter ), 
-					mAccelFilterIsLowPass( lowPass ), 
-					mAccelFilterCutoffFreq( cutoffFreq ),
-					mAccelUpdateFreq( updateFreq )
-			{
-				mRawAccel = Vec3d(0.0, 0.0, 0.0);
-				setupFilter();
-			}
+		AccelEvent( const Vec3f &data, const Vec3f &rawData )
+		 		   : mData( data ), mRawData( rawData )
+		{
+		}
 					
-		Vec3d getData() const { return mAccel; }
-		Vec3d getRawData() const { return mRawAccel; }
-		Vec2d getPolarPlaneVector(Vec3d accel) // (r, theta), theta is in degrees
+		Vec3f getData() const { return mData; }
+		Vec3f getRawData() const { return mRawData; }
+		Vec2f getPolarPlaneVector() const // (r, theta), theta is in degrees
 		{ 
-			double r = sin(PI*(accel.z+1)/2.0f);
-			double theta = asin(accel.y/sqrt(accel.x*accel.x + accel.y*accel.y))*RADIANS_TO_DEGREES;
+			float r = math<float>::sin( M_PI*(mData.z+1) / 2 );
+			float theta = toDegrees( math<float>::asin( mData.y / math<float>::sqrt( mData.x*mData.x + mData.y*mData.y )) );
 
-			if ( accel.x < 0 ) {		
+			if( mData.x < 0 ) {		
 				theta = -theta + 180.0f;
-			} else {
-				if ( accel.y < 0 ) {
+			}
+			else {
+				if( mData.y < 0 ) {
 					theta = theta + 360.0f;
 				}
 			}
-			return Vec2d(r, theta);			
+			
+			return Vec2f( r, theta );			
 	 	}
 	
-		Vec2d getPlaneVector(Vec3d accel)
+		Vec2f getPlaneVector() const
 		{
-			Vec2d v = getPolarPlaneVector(accel);
-			return Vec2d(-v.x*cos(v.y*DEGREES_TO_RADIANS), v.x*sin(v.y*DEGREES_TO_RADIANS));
+			Vec2f v = getPolarPlaneVector();
+			return Vec2f( -v.x * math<float>::cos( toRadians( v.y ) ), v.x * math<float>::sin( toRadians( v.y ) ) );
 		}
-		
-		
-		void addAccel(Vec3d accel) 
-		{
-			mRawAccel = accel;
-			
-			d = clamp( abs( mAccel.distance( mRawAccel ) )/ kAccelerometerMinStep - 1.0, 0.0, 1.0 ); 
-			alpha = (1.0 - d) * mFilterConstant / kAccelerometerNoiseAttenuation + d * mFilterConstant;
-			
-			newX = mRawAccel.x * alpha + mAccel.x * (1.0 - alpha);
-			newY = mRawAccel.y * alpha + mAccel.y * (1.0 - alpha);
-			newZ = mRawAccel.z * alpha + mAccel.z * (1.0 - alpha);
-			
-			mAccel.set( newX, newY, newZ );
-		}
-		
 
+		//! Returns a transformation matrix representing a transformation from an upright orientation to the current orientation
+		Matrix44f getMatrix() const
+		{
+			return Quatf( Vec3f( 0, -1, 0 ), mData.normalized() ).toMatrix44();
+		}
 		
 	private:
-		
-		void setupFilter() 
-		{
-			double dt = 1.0 / mAccelUpdateFreq;
-			double RC = 1.0 / mAccelFilterCutoffFreq;
-			mFilterConstant = dt / (dt + RC);
-	
-		};
-		
-		bool		mAccelFilterIsEnabled;
-		bool		mAccelFilterIsLowPass;
-		double		mAccelFilterCutoffFreq;
-		double		mAccelUpdateFreq;
-		Vec3d		mAccel;
-		Vec3d		mLastAccel;
-		Vec3d		mRawAccel;
-		double		mFilterConstant;
-		
-		double d, alpha, newX, newY, newZ, magnitude, theta;
-	
-		inline double clamp(double v, double min, double max)
-		{
-			if(v > max)
-				return max;
-			else if(v < min)
-				return min;
-			else
-				return v;
-		}
-	
-
-
+		Vec3f		mData;
+		Vec3f		mRawData;
 };
+
+// For convenience only
+inline std::ostream& operator<<( std::ostream &out, const AccelEvent &event )
+{
+	out << event.getData() << " raw: " << event.getRawData();
+	return out;
+}
 
 
 } } // namespace cinder::app

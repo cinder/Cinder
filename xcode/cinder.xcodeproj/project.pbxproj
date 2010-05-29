@@ -2156,6 +2156,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
@@ -2166,7 +2167,8 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone_d";
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos3.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Debug;
@@ -2188,6 +2190,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2199,7 +2202,8 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone";
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos3.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Release;

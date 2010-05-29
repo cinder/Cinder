@@ -32,13 +32,11 @@ AppCocoaTouch*		AppCocoaTouch::sInstance = 0;
 struct AppCocoaTouchState {
 	CinderViewCocoaTouch		*mCinderView;
 	UIWindow					*mWindow;
-	CFAbsoluteTime				mStartTime;	
+	CFAbsoluteTime				mStartTime;
 };
 
 void setupCocoaTouchWindow( AppCocoaTouch *app )
 {
-
-	
 	app->mState->mWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	app->mState->mCinderView = [[CinderViewCocoaTouch alloc] initWithFrame:[[UIScreen mainScreen] bounds] app:app renderer:app->getRenderer()];
 	[app->mState->mWindow addSubview:app->mState->mCinderView];
@@ -83,9 +81,9 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 }
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)thisAcceleration {
-	// Massage the UIAcceleration class into a Vec3d
-	ci::Vec3d direction = ci::Vec3d(thisAcceleration.x, thisAcceleration.y, thisAcceleration.z);
-	app->privateAccelerated__(direction);
+	// Massage the UIAcceleration class into a Vec3f
+	ci::Vec3f direction( thisAcceleration.x, thisAcceleration.y, thisAcceleration.z );
+	app->privateAccelerated__( direction );
 }
 
 - (void) dealloc
@@ -106,6 +104,7 @@ AppCocoaTouch::AppCocoaTouch()
 {
 	mState = shared_ptr<AppCocoaTouchState>( new AppCocoaTouchState() );
 	mState->mStartTime = ::CFAbsoluteTimeGetCurrent();
+	mLastAccel = Vec3f::zero();
 }
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
@@ -126,24 +125,21 @@ int	AppCocoaTouch::getWindowHeight() const
 }
 
 //! Enables the accelerometer
-void AppCocoaTouch::enableAccelerometer( float updateFrequency = 30, bool filter = true, bool filterIsLowPass = true, float cutoffFreq = 5.0f )
+void AppCocoaTouch::enableAccelerometer( float updateFrequency, float filterFactor )
 {
+	mAccelFilterFactor = filterFactor;
 	
-	mAccelEvent = AccelEvent(Vec3f(0.0, 0.0, 0.0), filter, filterIsLowPass, cutoffFreq);
-	mSettings.enableAccelerometer( true );
-	mSettings.setAccelUpdateFreq( updateFrequency );
+	if( updateFrequency <= 0 )
+		updateFrequency = 30.0f;
 	
-	[[UIAccelerometer sharedAccelerometer] setUpdateInterval:1.0/mSettings.getAccelUpdateFreq()];
+	[[UIAccelerometer sharedAccelerometer] setUpdateInterval:1.0 / updateFrequency];
 	CinderAppDelegateIPhone *appDel = (CinderAppDelegateIPhone *)[[UIApplication sharedApplication] delegate];
 	[[UIAccelerometer sharedAccelerometer] setDelegate:appDel];
-
 }
 
 void AppCocoaTouch::disableAccelerometer() {
 	
-	mSettings.enableAccelerometer( false );
 	[[UIAccelerometer sharedAccelerometer] setDelegate:nil];
-
 }
 
 //! Returns the maximum frame-rate the App will attempt to maintain.
@@ -199,10 +195,10 @@ void AppCocoaTouch::privateTouchesEnded__( const TouchEvent &event )
 	touchesEnded( event );
 }	
 
-void AppCocoaTouch::privateAccelerated__( const Vec3d direction )
+void AppCocoaTouch::privateAccelerated__( const Vec3f &direction )
 {
-	mAccelEvent.addAccel( direction );
-	accelerated( mAccelEvent );
+	accelerated( AccelEvent( mLastAccel * (1.0f - mAccelFilterFactor) + direction * mAccelFilterFactor, direction ) );
+	mLastAccel = direction;
 }
 
 } } // namespace cinder::app

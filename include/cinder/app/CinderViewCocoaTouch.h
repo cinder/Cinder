@@ -37,8 +37,6 @@
 	BOOL animating;
 	NSInteger animationFrameInterval;
 
-
-
 	id							displayLink;
 	ci::app::AppCocoaTouch		*mApp;
 	ci::app::Renderer			*mRenderer;

@@ -37,25 +37,15 @@ class AppCocoaTouch : public App {
 	class Settings : public App::Settings {
 	  public:
 		Settings()
-			: App::Settings(), mEnableMultiTouch( true ), mEnableAccelerometer( true ), mAccelUpdateFreq( 30.0 ) {}
+			: App::Settings(), mEnableMultiTouch( true ) {}
 
 		//! Registers the app to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
 		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
 		//! Returns whether the app is registered to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
 		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
 		
-		//! Registers the app to receive accelerometer events from the operating system. Disabled by default.
-		void		enableAccelerometer( bool enable = true ) { mEnableAccelerometer = enable; }
-		//! Returns whether the app is registered to receive accelerometer events from the operating system. Disabled by default. 
-		bool		isAccelerometerEnabled() const { return mEnableAccelerometer; }
-		
-		double		getAccelUpdateFreq() const { return mAccelUpdateFreq; }
-		void		setAccelUpdateFreq(double updateFreq) { mAccelUpdateFreq = updateFreq; }
-		
 	  private:
 		bool		mEnableMultiTouch;
-		bool		mEnableAccelerometer;
-		double		mAccelUpdateFreq;
 	};
 
 	AppCocoaTouch();
@@ -86,11 +76,11 @@ class AppCocoaTouch : public App {
 	//! Ignored on the iPhone.
 	void			setWindowSize( int windowWidth, int windowHeight ) {}
 
-	//! Enables the accelerometer (valid only on devices with accelerometers, no duh)
-	virtual void enableAccelerometer( float updateFrequency, bool filter, bool filterIsLowPass, float cutoffFreq );
-
+	//! Enables the device's accelerometer and modifies its filtering. \a updateFrequency represents the frequency with which accelerated() is called, measured in Hz. \a filterFactor represents the amount to weight the current value relative to the previous.
+	void enableAccelerometer( float updateFrequency = 30.0f, float filterFactor = 0.1f );
 	//! Turns off the accelerometer
-	virtual void disableAccelerometer();
+	void disableAccelerometer();
+	
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
@@ -115,7 +105,6 @@ class AppCocoaTouch : public App {
 	virtual const Settings&	getSettings() const { return mSettings; }
 
 
-
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch() { App::prepareLaunch(); }
@@ -132,7 +121,7 @@ class AppCocoaTouch : public App {
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
 	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
-	void		privateAccelerated__( const Vec3d direction );
+	void		privateAccelerated__( const Vec3f &direction );
 	//! \endcond
 
   private:
@@ -144,7 +133,9 @@ class AppCocoaTouch : public App {
 	static AppCocoaTouch	*sInstance;	
 	Settings				mSettings;
 	std::vector<TouchEvent::Touch>	mActiveTouches;
-	AccelEvent				mAccelEvent;
+
+	float					mAccelFilterFactor;
+	Vec3f					mLastAccel;
 };
 
 } } // namespace cinder::app
