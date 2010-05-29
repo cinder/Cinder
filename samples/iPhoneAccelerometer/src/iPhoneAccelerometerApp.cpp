@@ -24,6 +24,8 @@ void iPhoneAccelerometerApp::setup()
 void iPhoneAccelerometerApp::accelerated( AccelEvent event )
 {
 	mModelView = event.getMatrix();
+	if( event.isShake() )
+		console() << "Shake!" << std::endl;
 }
 
 void iPhoneAccelerometerApp::draw()

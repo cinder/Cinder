@@ -106,7 +106,7 @@ AppCocoaTouch::AppCocoaTouch()
 {
 	mState = shared_ptr<AppCocoaTouchState>( new AppCocoaTouchState() );
 	mState->mStartTime = ::CFAbsoluteTimeGetCurrent();
-	mLastAccel = Vec3f::zero();
+	mLastAccel = mLastRawAccel = Vec3f::zero();
 }
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
@@ -199,8 +199,10 @@ void AppCocoaTouch::privateTouchesEnded__( const TouchEvent &event )
 
 void AppCocoaTouch::privateAccelerated__( const Vec3f &direction )
 {
-	accelerated( AccelEvent( mLastAccel * (1.0f - mAccelFilterFactor) + direction * mAccelFilterFactor, direction ) );
-	mLastAccel = direction;
+	Vec3f filtered = mLastAccel * (1.0f - mAccelFilterFactor) + direction * mAccelFilterFactor;
+	accelerated( AccelEvent( filtered, direction, mLastAccel, mLastRawAccel ) );
+	mLastAccel = filtered;
+	mLastRawAccel = direction;
 }
 
 } } // namespace cinder::app

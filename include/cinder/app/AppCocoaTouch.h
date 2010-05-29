@@ -135,7 +135,7 @@ class AppCocoaTouch : public App {
 	std::vector<TouchEvent::Touch>	mActiveTouches;
 
 	float					mAccelFilterFactor;
-	Vec3f					mLastAccel;
+	Vec3f					mLastAccel, mLastRawAccel;
 };
 
 } } // namespace cinder::app
