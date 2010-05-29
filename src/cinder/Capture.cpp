@@ -180,6 +180,12 @@ const vector<Capture::Device>& Capture::getDevices( bool forceRefresh )
 		QTCaptureDevice *device = [devices objectAtIndex:i];
 		sDevices.push_back( Capture::Device( device ) );
 	}
+	
+	devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeMuxed];
+	for( int i = 0; i < [devices count]; i++) {
+		QTCaptureDevice *device = [devices objectAtIndex:i];
+		sDevices.push_back( Capture::Device( device ) );
+	}
 #else
 	CaptureMgr::instance()->sTotalDevices = CaptureMgr::instanceVI()->listDevices( true );
 	for( int i = 0; i < CaptureMgr::instance()->sTotalDevices; ++i ) {

@@ -34,7 +34,7 @@
 
 #if defined( CINDER_MAC ) && ( ! defined( CINDER_COCOA_TOUCH ) )
 	#include <ApplicationServices/ApplicationServices.h>
-	#include <OpenGL/OpenGl.h>
+	#include <OpenGL/OpenGL.h>
 #endif
 
 namespace cinder { namespace gl {

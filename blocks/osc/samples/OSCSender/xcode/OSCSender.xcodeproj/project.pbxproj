@@ -19,8 +19,6 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		8FAA482C1199727C008BCC95 /* osc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FAA47891199727C008BCC95 /* osc.a */; };
-		8FAA482D1199727C008BCC95 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 8FAA478A1199727C008BCC95 /* README */; };
 		8FAA48861199727C008BCC95 /* OscBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FAA48101199727C008BCC95 /* OscBundle.cpp */; };
 		8FAA48871199727C008BCC95 /* OscListener.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FAA48111199727C008BCC95 /* OscListener.cpp */; };
 		8FAA48881199727C008BCC95 /* OscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8FAA48121199727C008BCC95 /* OscMessage.cpp */; };
@@ -64,8 +62,6 @@
 		8FAA47841199727C008BCC95 /* OscListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscListener.h; sourceTree = "<group>"; };
 		8FAA47851199727C008BCC95 /* OscMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscMessage.h; sourceTree = "<group>"; };
 		8FAA47861199727C008BCC95 /* OscSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OscSender.h; sourceTree = "<group>"; };
-		8FAA47891199727C008BCC95 /* osc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = osc.a; sourceTree = "<group>"; };
-		8FAA478A1199727C008BCC95 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		8FAA48101199727C008BCC95 /* OscBundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscBundle.cpp; sourceTree = "<group>"; };
 		8FAA48111199727C008BCC95 /* OscListener.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscListener.cpp; sourceTree = "<group>"; };
 		8FAA48121199727C008BCC95 /* OscMessage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OscMessage.cpp; sourceTree = "<group>"; };
@@ -87,7 +83,6 @@
 				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
 				00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */,
 				00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */,
-				8FAA482C1199727C008BCC95 /* osc.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,15 +171,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		8FAA47461199727C008BCC95 /* Cinder-OSC */ = {
+		8FAA47461199727C008BCC95 /* osc */ = {
 			isa = PBXGroup;
 			children = (
 				8FAA47721199727C008BCC95 /* include */,
-				8FAA47871199727C008BCC95 /* libs */,
-				8FAA478A1199727C008BCC95 /* README */,
 				8FAA480F1199727C008BCC95 /* src */,
 			);
-			name = "Cinder-OSC";
+			name = osc;
 			path = ../../..;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -229,22 +222,6 @@
 			path = osc;
 			sourceTree = "<group>";
 		};
-		8FAA47871199727C008BCC95 /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				8FAA47881199727C008BCC95 /* osx */,
-			);
-			path = libs;
-			sourceTree = "<group>";
-		};
-		8FAA47881199727C008BCC95 /* osx */ = {
-			isa = PBXGroup;
-			children = (
-				8FAA47891199727C008BCC95 /* osc.a */,
-			);
-			path = osx;
-			sourceTree = "<group>";
-		};
 		8FAA480F1199727C008BCC95 /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -259,7 +236,7 @@
 		8FF4E07D119833D20066E11B /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				8FAA47461199727C008BCC95 /* Cinder-OSC */,
+				8FAA47461199727C008BCC95 /* osc */,
 			);
 			name = Blocks;
 			sourceTree = "<group>";
@@ -308,7 +285,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */,
-				8FAA482D1199727C008BCC95 /* README in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -341,14 +317,12 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OSCSender_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../libs/osx\"",
-				);
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
+					"$(CINDER_PATH)/blocks/osc/lib/macosx/osc.a",
 					"-lcurl",
 				);
 				PRODUCT_NAME = OSCSender;
@@ -368,14 +342,12 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = OSCSender_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../libs/osx\"",
-				);
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
+					"$(CINDER_PATH)/blocks/osc/lib/macosx/osc.a",
 					"-lcurl",
 				);
 				PRODUCT_NAME = OSCSender;

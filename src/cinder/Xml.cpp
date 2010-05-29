@@ -20,7 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/XML.h"
+#include "cinder/Xml.h"
 #include "xpath_processor.h"
 #include "tinyxml.h"
 
