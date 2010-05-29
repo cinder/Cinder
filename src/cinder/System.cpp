@@ -42,7 +42,12 @@
 #elif defined( CINDER_MSW )
 	#include <windows.h>
 	#include <windowsx.h>
-	#include <QTML.h>
+	#include <iphlpapi.h>
+	#pragma comment(lib, "IPHLPAPI.lib")
+	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+		#undef __STDC_CONSTANT_MACROS
+		#include <QTML.h>
+	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 	namespace cinder {
 		void cpuidwrap( int *p, unsigned int param );
 	}
@@ -468,10 +473,11 @@ int32_t System::getMaxMultiTouchPoints()
 	return instance()->mMaxMultiTouchPoints;
 }
 
-#if defined( CINDER_COCOA )
 vector<System::NetworkAdapter> System::getNetworkAdapters()
 {
 	vector<System::NetworkAdapter> adapters;
+
+#if defined( CINDER_COCOA )
 	struct ifaddrs *interfaces = NULL;
 	struct ifaddrs *currentInterface = NULL;
 
@@ -493,71 +499,55 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 	}
 	freeifaddrs( interfaces );
 	return adapters;
+#elif defined( CINDER_MSW )
+    PIP_ADAPTER_INFO pAdapterInfo;
+    PIP_ADAPTER_INFO pAdapter = NULL;
+    DWORD dwRetVal = 0;
+
+    ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+    pAdapterInfo = (IP_ADAPTER_INFO *)::HeapAlloc( ::GetProcessHeap(), 0, sizeof(IP_ADAPTER_INFO) );
+    if( pAdapterInfo == NULL ) {
+        return adapters;
+    }
+	// Make an initial call to GetAdaptersInfo to get
+	// the necessary size into the ulOutBufLen variable
+    if( ::GetAdaptersInfo( pAdapterInfo, &ulOutBufLen ) == ERROR_BUFFER_OVERFLOW) {
+        ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
+        pAdapterInfo = (IP_ADAPTER_INFO *) ::HeapAlloc( ::GetProcessHeap(), 0, ulOutBufLen );
+        if( ! pAdapterInfo ) {
+            return adapters;
+        }
+    }
+
+    if( (dwRetVal = ::GetAdaptersInfo( pAdapterInfo, &ulOutBufLen )) == NO_ERROR ) {
+        pAdapter = pAdapterInfo;
+        while( pAdapter ) {
+			adapters.push_back( System::NetworkAdapter( pAdapter->Description, pAdapter->IpAddressList.IpAddress.String ) );
+            pAdapter = pAdapter->Next;
+        }
+    }
+	else {
+        printf("GetAdaptersInfo failed with error: %d\n", dwRetVal);
+
+    }
+    if( pAdapterInfo )
+        ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
+
+	return adapters;
 }
+#endif // defined( CINDER_MSW )
 
 std::string System::getIpAddress()
 {
 	vector<System::NetworkAdapter> adapters = getNetworkAdapters();
 	std::string result = "127.0.0.1";
 	for( vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt ) {
-		if( adaptIt->getIpAddress() != "127.0.0.1" )
+		if( (adaptIt->getIpAddress() != "127.0.0.1") && (adaptIt->getIpAddress() != "0.0.0.0") )
 			result = adaptIt->getIpAddress();
 	}
 	
 	return result;
 }
 
-/*vector<string> System::getIpAddresses()
-{
-	vector<string> addresses;
-	struct ifaddrs *interfaces = NULL;
-	struct ifaddrs *currentAddress = NULL;
-
-	int success = getifaddrs( &interfaces );
-	if( success == 0 ) {
-		currentAddress = interfaces;
-		while( currentAddress ) {
-			if( currentAddress->ifa_addr->sa_family == AF_INET ) {
-				string address( inet_ntoa(((struct sockaddr_in *)currentAddress->ifa_addr)->sin_addr) );
-				if( address != "127.0.0.1" )
-					addresses.push_back( address );
-			}
-			currentAddress = currentAddress->ifa_next;
-		}
-	}
-	freeifaddrs( interfaces );
-	return addresses;
-}
-
-vector<string> System::getHardwareAddresses()
-{
-	vector<string> addresses;
-	struct ifaddrs *interfaces = NULL;
-	struct ifaddrs *currentAddress = NULL;
-	int success = getifaddrs(&interfaces);
-	if( success == 0 ) {
-		currentAddress = interfaces;
-		while( currentAddress ) {
-			if( currentAddress->ifa_addr->sa_family == AF_LINK ) {
-				string address( ether_ntoa((const struct ether_addr *)LLADDR((struct sockaddr_dl *)currentAddress->ifa_addr)) );
-				// ether_ntoa doesn't format the ethernet address with padding.
-				char paddedAddress[80];
-				int a,b,c,d,e,f;
-				sscanf( address.c_str(), "%x:%x:%x:%x:%x:%x", &a, &b, &c, &d, &e, &f);
-				sprintf( paddedAddress, "%02X:%02X:%02X:%02X:%02X:%02X",a,b,c,d,e,f );
-				address = string( paddedAddress );
-
-				if( (address != "00:00:00:00:00:00") && (address != "00:00:00:00:00:FF" ) ) {
-					addresses.push_back( address );
-				}
-			}
-			currentAddress = currentAddress->ifa_next;
-		}
-	}
-	freeifaddrs( interfaces );
-	return addresses;
-}*/
-
-#endif // defined( CINDER_COCOA )
 
 } // namespace cinder
