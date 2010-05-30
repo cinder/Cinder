@@ -38,6 +38,7 @@
 		#include <ImageCompression.h>
 		#include <Movies.h>
 		#include <CoreFoundation/CFBase.h>
+		#include <CoreFoundation/CFNumber.h>
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
 
@@ -72,7 +73,7 @@ MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, M
         throw MovieWriterExcInvalidPath();
 
 	// Create a movie for this file (data ref)
-    err = ::CreateMovieStorage( dataRef, dataRefType, 'TVOD', smCurrentScript, createMovieFileDeleteCurFile, &mDataHandler, &mMovie );
+    err = ::CreateMovieStorage( dataRef, dataRefType, 'TVOD', smCurrentScript, createMovieFileDeleteCurFile | createMovieFileDontCreateResFile, &mDataHandler, &mMovie );
 	::DisposeHandle( dataRef );
     if( err )
         throw MovieWriterExc();
@@ -91,7 +92,7 @@ MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, M
 
 	//Prepare media for editing
 	err = ::BeginMediaEdits( mMedia );
-mCodec = 'jpeg';
+mCodec = 'png ';
 	createCompressionSession();
 	mCurrentTimeValue = 0;
 }
@@ -99,6 +100,9 @@ mCodec = 'jpeg';
 void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource )
 {
 	CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource );
+	const float gamma = 2.5f;
+	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &gamma );
+	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
 
 	ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
 	ICMCompressionFrameOptionsRef frameOptions = NULL;
