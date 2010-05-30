@@ -21,16 +21,21 @@
  */
 
 #include "cinder/Cinder.h"
-
-#if defined( CINDER_MAC )
-	#ifdef __OBJC__
-		@class QTMovie;
-	#else
-		class QTMovie;
-	#endif
-#endif
-
+#include "cinder/qtime/QuickTime.h"
 #include "cinder/ImageIo.h"
+
+// These forward declarations prevent us from having to bring all of QuickTime into the global namespace in MSW
+#if defined( CINDER_MSW )
+	typedef struct ComponentInstanceRecord		ComponentInstanceRecord;
+	typedef ComponentInstanceRecord *			ComponentInstance;
+	typedef ComponentInstance					DataHandler;
+	typedef struct TrackType**					Track;
+	typedef struct MediaType**					Media;
+	typedef struct OpaqueICMCompressionSession* ICMCompressionSessionRef;
+	typedef const struct OpaqueICMEncodedFrame* ICMEncodedFrameRef;
+	typedef signed long							OSStatus;
+	typedef unsigned long						CodecType;
+#endif // defined( CINDER_MSW )
 
 namespace cinder { namespace qtime {
 
@@ -56,24 +61,34 @@ enum MovieWriterQuality {
 class MovieWriter {
   public:
 	MovieWriter() {}
-	MovieWriter( const std::string &path, MovieWriterCodecType codec = RAW, MovieWriterQuality quality = HIGH );
+	MovieWriter( const std::string &path, int32_t width, int32_t height, MovieWriterCodecType codec = RAW, MovieWriterQuality quality = HIGH );
 
-	void addFrame( const ImageSourceRef &imageSource );
+	void addFrame( const ImageSourceRef &imageSource ) { mObj->addFrame( imageSource ); }
 	void finish() { mObj->finish(); }
 	
   private:
 	/// \cond
 	struct Obj {
-		Obj( const std::string &path, MovieWriterCodecType type = RAW, MovieWriterQuality quality = HIGH );
+		Obj( const std::string &path, int32_t width, int32_t height, MovieWriterCodecType type = RAW, MovieWriterQuality quality = HIGH );
 		~Obj();
 		
+		void	addFrame( const ImageSourceRef &imageSource );
+		void	createCompressionSession();
 		void	finish();
 		
-		#if defined( CINDER_MAC )
-			QTMovie        *mMovie;
-		#endif
-		std::string mPath;
-		std::string mCodec;
+		static OSStatus encodedFrameOutputCallback( void *refCon, ::ICMCompressionSessionRef session, OSStatus err, ICMEncodedFrameRef encodedFrame, void *reserved );
+
+		::Movie						mMovie;
+		::DataHandler				mDataHandler;
+		::Track						mTrack;
+		::Media						mMedia;
+		::ICMCompressionSessionRef	mCompressionSession;
+
+		std::string		mPath;
+		::CodecType		mCodec;
+		::TimeValue		mCurrentTimeValue;
+		
+		int32_t		mWidth, mHeight;
 		int			mQuality;
 		bool		mFinished;
 	};
@@ -88,6 +103,13 @@ class MovieWriter {
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &MovieWriter::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  
+};
+
+class MovieWriterExc : public Exception {
+};
+class MovieWriterExcInvalidPath : public MovieWriterExc {
+};
+class MovieWriterExcFrameEncode : public MovieWriterExc {
 };
 
 } } // namespace cinder::qtime

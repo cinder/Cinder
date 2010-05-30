@@ -30,13 +30,22 @@
 #if defined( CINDER_MAC )
 	#include <QTKit/QTKit.h>
 	#include "cinder/cocoa/CinderCocoa.h"
+#else
+	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+		#undef __STDC_CONSTANT_MACROS
+		#include <QTML.h>
+		#include <CVPixelBuffer.h>
+		#include <ImageCompression.h>
+		#include <Movies.h>
+		#include <CoreFoundation/CFBase.h>
+	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
 
 
 namespace cinder { namespace qtime {
 
-MovieWriter::MovieWriter( const std::string &outPath, MovieWriterCodecType codec, MovieWriterQuality quality )
-	: mObj( shared_ptr<Obj>( new Obj( outPath, codec, quality ) ) )
+MovieWriter::MovieWriter( const std::string &outPath, int32_t width, int32_t height, MovieWriterCodecType codec, MovieWriterQuality quality )
+	: mObj( shared_ptr<Obj>( new Obj( outPath, width, height, codec, quality ) ) )
 {
 }
 
@@ -44,77 +53,168 @@ MovieWriter::Obj::~Obj()
 {
 	if( ! mFinished )
 		finish();
-
-	if( mMovie )
-		[mMovie release];
 }
 
-MovieWriter::Obj::Obj( const std::string &path, MovieWriterCodecType codec, MovieWriterQuality quality )
-	: mPath( path ), mQuality( quality ), mFinished( false )
+MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, MovieWriterCodecType codec, MovieWriterQuality quality )
+	: mPath( path ), mQuality( quality ), mWidth( width ), mHeight( height ), mFinished( false )
 {	
-	switch(codec) {
-		case PXLT:
-			mCodec = "pxlt";
-		break;
-		case RAW:
-			mCodec = "raw ";
-		break;
-		case H264:
-			mCodec = "avc1";
-		break;
-		case MP4:
-			mCodec = "mp4v";
-		break;
-		case H263:
-			mCodec = "h263";
-		break;
-		case PNG:
-			mCodec = "png ";
-		break;			
-	}
-	
-	NSString *tempPath = [NSString stringWithUTF8String:mPath.c_str()];	
-	mMovie = [[QTMovie alloc] initToWritableFile:tempPath error:NULL];
-	[mMovie setAttribute:[NSNumber numberWithBool:YES] forKey:QTMovieEditableAttribute];
-	[mMovie retain];	
+    OSErr       err = noErr;
+    Handle      dataRef;
+    OSType      dataRefType;
+ 
+	startQuickTime();
+
+    //Create movie file
+	CFStringRef strDestMoviePath = ::CFStringCreateWithCString( kCFAllocatorDefault, path.c_str(), kCFStringEncodingUTF8 );
+	err = ::QTNewDataReferenceFromFullPathCFString( strDestMoviePath, kQTNativeDefaultPathStyle, 0, &dataRef, &dataRefType );
+	::CFRelease( strDestMoviePath );
+	if( err )
+        throw MovieWriterExcInvalidPath();
+
+	// Create a movie for this file (data ref)
+    err = ::CreateMovieStorage( dataRef, dataRefType, 'TVOD', smCurrentScript, createMovieFileDeleteCurFile, &mDataHandler, &mMovie );
+	::DisposeHandle( dataRef );
+    if( err )
+        throw MovieWriterExc();
+
+	mTrack = ::NewMovieTrack( mMovie, width << 16, height << 16, 0 );
+	err = ::GetMoviesError();
+	if( err )
+		throw MovieWriterExc();
+        
+	//Create track media
+	::TimeScale timescale = 1000;
+	mMedia = ::NewTrackMedia( mTrack, ::VideoMediaType, timescale, 0, 0 );
+	err = GetMoviesError();
+	if( err )
+		throw MovieWriterExc();
+
+	//Prepare media for editing
+	err = ::BeginMediaEdits( mMedia );
+mCodec = 'jpeg';
+	createCompressionSession();
+	mCurrentTimeValue = 0;
 }
 	
-void MovieWriter::addFrame( const ImageSourceRef &imageSource )
+void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource )
 {
-/*	CGImageRef cgi = cocoa::createCgImage(imageSource);
-	NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithCGImage:cgi];
-	
-	NSImage *image = [[NSImage alloc] init];
-	[image addRepresentation:bitmapRep];
-	[bitmapRep release];*/
+	CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource );
 
-	CVPixelBufferRef imageBuffer = qtime::createCvPixelBuffer( imageSource );
-	NSCIImageRep *imageRep = [NSCIImageRep imageRepWithCIImage:[CIImage imageWithCVImageBuffer:imageBuffer]];
-	NSImage *image = [[[NSImage alloc] initWithSize:[imageRep size]] autorelease];
-	[image addRepresentation:imageRep];
-	int count = ::CFGetRetainCount( imageBuffer );
-	::CVPixelBufferRelease( imageBuffer );
-	
-	long long timeValue		= 10; // 60fps
-	long timeScale			= 600;
-	QTTime frameDuration    = QTMakeTime(timeValue, timeScale);
-	NSString *nsCodec = [[NSString alloc] initWithUTF8String:mObj->mCodec.c_str()];
-	NSNumber *nsQuality = [[NSNumber alloc] initWithLong:mObj->mQuality];
-	NSDictionary *opt = [NSDictionary dictionaryWithObjectsAndKeys:
-							nsCodec,  QTAddImageCodecType,
-							nsQuality, QTAddImageCodecQuality,
-							nil];
-	
-	[mObj->mMovie addImage:image forDuration:frameDuration withAttributes:opt];
+	ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
+	ICMCompressionFrameOptionsRef frameOptions = NULL;
+	OSStatus err = ::ICMCompressionSessionEncodeFrame( mCompressionSession, pixelBuffer,
+				mCurrentTimeValue, 60, validTimeFlags,
+                frameOptions, NULL, NULL );
+	mCurrentTimeValue += 60;
+	if( err )
+		MovieWriterExcFrameEncode();
+}
 
-	[nsCodec release];
-	[nsQuality release];
+extern "C" {
+OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon, 
+                   ICMCompressionSessionRef session, 
+                   OSStatus err,
+                   ICMEncodedFrameRef encodedFrame,
+                   void *reserved )
+{
+	MovieWriter::Obj *obj = reinterpret_cast<MovieWriter::Obj*>( refCon );
+	OSStatus result = ::AddMediaSampleFromEncodedFrame( obj->mMedia, encodedFrame, NULL );
+	return result;
+}
+
+}
+
+void MovieWriter::Obj::createCompressionSession()
+{
+	OSStatus err = noErr;
+	::ICMEncodedFrameOutputRecord encodedFrameOutputRecord = {0};
+	::ICMCompressionSessionOptionsRef sessionOptions = NULL;
+	
+	err = ::ICMCompressionSessionOptionsCreate( NULL, &sessionOptions );
+	if( err )
+		goto bail;
+	
+	// We must set this flag to enable P or B frames.
+	err = ::ICMCompressionSessionOptionsSetAllowTemporalCompression( sessionOptions, true );
+	if( err )
+		goto bail;
+	
+	// We must set this flag to enable B frames.
+	err = ::ICMCompressionSessionOptionsSetAllowFrameReordering( sessionOptions, true );
+	if( err )
+		goto bail;
+	
+	// Set the maximum key frame interval, also known as the key frame rate.
+	err = ::ICMCompressionSessionOptionsSetMaxKeyFrameInterval( sessionOptions, 30 );
+	if( err )
+		goto bail;
+
+	// This allows the compressor more flexibility (ie, dropping and coalescing frames).
+	err = ::ICMCompressionSessionOptionsSetAllowFrameTimeChanges( sessionOptions, true );
+	if( err )
+		goto bail;
+	
+	// We need durations when we store frames.
+	err = ::ICMCompressionSessionOptionsSetDurationsNeeded( sessionOptions, true );
+	if( err )
+		goto bail;
+	
+	// Set the average data rate.
+	/*err = ICMCompressionSessionOptionsSetProperty( sessionOptions, 
+				kQTPropertyClass_ICMCompressionSessionOptions,
+				kICMCompressionSessionOptionsPropertyID_AverageDataRate,
+				sizeof( averageDataRate ),
+				&averageDataRate );*/
+	if( err )
+		goto bail;
+	
+	encodedFrameOutputRecord.encodedFrameOutputCallback = encodedFrameOutputCallback;
+	encodedFrameOutputRecord.encodedFrameOutputRefCon = this;
+	encodedFrameOutputRecord.frameDataAllocator = NULL;
+	
+	::TimeScale timeScale = 1000;
+	err = ::ICMCompressionSessionCreate( NULL, mWidth, mHeight, mCodec, timeScale,
+			sessionOptions, NULL, &encodedFrameOutputRecord, &mCompressionSession );
+	if( err )
+		goto bail;
+	return;
+
+bail:
+	::ICMCompressionSessionOptionsRelease( sessionOptions );
+	throw MovieWriterExc();
 }
 
 void MovieWriter::Obj::finish()
 {
-	[mMovie updateMovieFile];
-	mFinished = true;
+	mFinished = true; // set this in case of throw
+
+	OSErr err;
+	if( mMedia )  {
+		err = ::EndMediaEdits( mMedia );
+		if( err )
+			throw MovieWriterExc();
+            
+		err = ::ExtendMediaDecodeDurationToDisplayEndTime( mMedia, NULL );
+		if( err )
+			throw MovieWriterExc();
+            
+		//Add media to track
+		err = ::InsertMediaIntoTrack( mTrack, 0, 0, ::GetMediaDisplayDuration( mMedia ), fixed1 );
+		if( err )
+			throw MovieWriterExc();
+            
+		//Write movie
+		err = ::AddMovieToStorage( mMovie, mDataHandler );
+		if( err )
+			throw MovieWriterExc();
+	}
+        
+	//Close movie file
+	if( mDataHandler )
+		::CloseMovieStorage( mDataHandler );
+
+	if( mMovie )
+		::DisposeMovie( mMovie );
 }
-	
+
 } } // namespace cinder::qtime

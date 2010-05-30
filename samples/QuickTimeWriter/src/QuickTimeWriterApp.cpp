@@ -22,7 +22,7 @@ void QuickTimeWriterApp::setup()
 {
 	string path = getSaveFilePath();
 	if( ! path.empty() )
-		mMovieWriter = qtime::MovieWriter( path, qtime::H264 );
+		mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), qtime::H264 );
 }
 
 void QuickTimeWriterApp::mouseDrag( MouseEvent event )

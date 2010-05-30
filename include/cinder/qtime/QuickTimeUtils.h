@@ -36,8 +36,11 @@
 		#include <CoreVideo/CoreVideo.h>
 	#endif
 #else
-	#include <QTML.h>
-	#include <Movies.h>
+	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+		#undef __STDC_CONSTANT_MACROS
+		#include <QTML.h>
+		#include <Movies.h>
+	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
 
 namespace cinder { namespace qtime {
