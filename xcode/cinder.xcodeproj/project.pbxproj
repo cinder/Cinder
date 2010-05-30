@@ -2294,6 +2294,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2305,7 +2306,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder_d;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
@@ -2335,6 +2336,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
@@ -2347,7 +2349,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;

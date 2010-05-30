@@ -130,8 +130,10 @@
 	// we need to get told about it when the window changes screens so we can update the display link
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowChangedScreen:) name:NSWindowDidMoveNotification object:nil];
 	[cinderView setNeedsDisplay:YES];
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5	
 	if( app->getSettings().isMultiTouchEnabled() )
 		[cinderView setMultiTouchDelegate:self];
+#endif
 }
 
 - (void)destroyWindow

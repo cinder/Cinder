@@ -443,7 +443,11 @@ bool System::hasMultiTouch()
 {
 	if( ! instance()->mCachedValues[MULTI_TOUCH] ) {
 #if defined( CINDER_MAC ) // Mac OS X doesn't really support touch yet (well, we don't yet)	
+	#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 		instance()->mHasMultiTouch = getOsMajorVersion() > 10 || getOsMinorVersion() >= 6;
+	#else
+		return false;
+	#endif
 #elif defined( CINDER_COCOA_TOUCH ) // all incarnations of the iPhone OS support multiTouch
 		instance()->mHasMultiTouch = true;
 #elif defined( CINDER_MSW )

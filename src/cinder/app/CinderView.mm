@@ -37,8 +37,10 @@
 	appSetupCalled = NO;
 	receivesEvents = YES;
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 	mTouchIdMap = nil;
 	mMultiTouchDelegate = nil;
+#endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 	
 	return self;
 }
@@ -50,10 +52,12 @@
 	app = aApp;
 	appSetupCalled = NO;
 	receivesEvents = app->receivesEvents();
-	
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 	mTouchIdMap = nil;
 	mMultiTouchDelegate = nil;
-	
+#endif //MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+
 	[self setupRenderer:frame];
 	
 	return self;
@@ -66,9 +70,10 @@
 	app = aApp;
 	receivesEvents = app->receivesEvents();
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 	mTouchIdMap = nil;
 	mMultiTouchDelegate = nil;
-
+#endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 	[self setupRenderer:NSMakeRect(0,0,1,1)];
 
 	return self;
@@ -82,12 +87,14 @@
 	if( receivesEvents )
 		[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
 	// register for touch events
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 	if( mMultiTouchDelegate ) {
 		[self setAcceptsTouchEvents:YES];
 		[self setWantsRestingTouches:YES];
 		if( ! mTouchIdMap )
 			mTouchIdMap = [[NSMutableDictionary alloc] initWithCapacity:10];
 	}
+#endif // #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 }
 
 - (void)draw
@@ -327,10 +334,11 @@
 
 - (void)applicationWillResignActive:(NSNotification *)aNotification
 {
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 	// send an ended event for any active points
 	if( ! mMultiTouchDelegate )
 		return;
-NSLog( @"Resigning." );
+
 	std::vector<ci::app::TouchEvent::Touch> emptyActiveTouches;
 	[mMultiTouchDelegate setActiveTouches:&emptyActiveTouches];
 
@@ -340,18 +348,25 @@ NSLog( @"Resigning." );
 		touchList.push_back( ci::app::TouchEvent::Touch( ptIt->second, ptIt->second, ptIt->first, eventTime, nil ) );
 	}
 
-	if( ! touchList.empty() )
-		[mMultiTouchDelegate touchesEnded:&touchList];
+	if( ! touchList.empty() ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesEnded:&touchEvent];
+	}
 
 	mTouchPrevPointMap.clear();
 	[mTouchIdMap removeAllObjects];
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // MultiTouch
 
-- (void)setMultiTouchDelegate:(id)multiTouchDelegate
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+- (void)setMultiTouchDelegate:(id<CinderViewMultiTouchDelegate>)multiTouchDelegate
 {
+	if( ! [self respondsToSelector:@selector(setAcceptsTouchEvents:)] )
+		return;
+	
 	mMultiTouchDelegate = multiTouchDelegate;
 	if( mMultiTouchDelegate ) {
 		[self setAcceptsTouchEvents:YES];
@@ -419,7 +434,6 @@ NSLog( @"Resigning." );
 	}
 	if( mMultiTouchDelegate )
 		[mMultiTouchDelegate setActiveTouches:&activeTouches];
-std::cout << "Acti: " << activeTouches.size() << "pre: " << mTouchPrevPointMap.size() << std::endl;
 }
 
 - (void)touchesBeganWithEvent:(NSEvent *)event
@@ -435,8 +449,10 @@ std::cout << "Acti: " << activeTouches.size() << "pre: " << mTouchPrevPointMap.s
 		touchList.push_back( ci::app::TouchEvent::Touch( pt, pt, [self addTouchToMap:touch withPoint:pt], eventTime, touch ) );
 	}
 	[self updateActiveTouches:event];
-	if( mMultiTouchDelegate && ( ! touchList.empty() ) )
-		[mMultiTouchDelegate touchesBegan:&touchList];
+	if( mMultiTouchDelegate && ( ! touchList.empty() ) ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesBegan:&touchEvent];
+	}
 }
 
 - (void)touchesMovedWithEvent:(NSEvent *)event
@@ -453,8 +469,10 @@ std::cout << "Acti: " << activeTouches.size() << "pre: " << mTouchPrevPointMap.s
 		touchList.push_back( ci::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
 	}
 	[self updateActiveTouches:event];
-	if( mMultiTouchDelegate && ( ! touchList.empty() ) )
-		[mMultiTouchDelegate touchesMoved:&touchList];
+	if( mMultiTouchDelegate && ( ! touchList.empty() ) ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesMoved:&touchEvent];
+	}
 }
 
 - (void)touchesEndedWithEvent:(NSEvent *)event
@@ -471,10 +489,12 @@ std::cout << "Acti: " << activeTouches.size() << "pre: " << mTouchPrevPointMap.s
 		touchList.push_back( ci::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
 		[self removeTouchFromMap:touch];
 	}
-std::cout << "Ended: " << touchList.size() << std::endl;
+
 	[self updateActiveTouches:event];
-	if( mMultiTouchDelegate && ( ! touchList.empty() ) )
-		[mMultiTouchDelegate touchesEnded:&touchList];
+	if( mMultiTouchDelegate && ( ! touchList.empty() ) ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesEnded:&touchEvent];
+	}
 }
  
 - (void)touchesCancelledWithEvent:(NSEvent *)event
@@ -491,11 +511,15 @@ std::cout << "Ended: " << touchList.size() << std::endl;
 		touchList.push_back( ci::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
 		[self removeTouchFromMap:touch];
 	}
-std::cout << "Cancelled: " << touchList.size() << std::endl;
+
 	[self updateActiveTouches:event];
-	if( mMultiTouchDelegate && ( ! touchList.empty() ) )
-		[mMultiTouchDelegate touchesEnded:&touchList];
+	if( mMultiTouchDelegate && ( ! touchList.empty() ) ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesEnded:&touchEvent];
+	}
 }
+
+#endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 
 - (void)setApp:(cinder::app::App *)aApp
 {
