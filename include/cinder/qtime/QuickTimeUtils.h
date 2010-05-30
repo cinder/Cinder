@@ -20,27 +20,30 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if ! defined( __LP64__ )
-
 #pragma once
 
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
 #include "cinder/Surface.h"
+#include "cinder/ImageIo.h"
 
 #include <string>
 
 #if defined( CINDER_MAC )
-#	include <QuickTime/QuickTime.h>
+	#if ! defined( __LP64__ )
+		#include <QuickTime/QuickTime.h>
+	#else
+		#include <CoreVideo/CoreVideo.h>
+	#endif
 #else
-#	include <QTML.h>
-#	include <Movies.h>
+	#include <QTML.h>
+	#include <Movies.h>
 #endif
 
 namespace cinder { namespace qtime {
 
+#if ! defined( __LP64__ )
 //! \cond
-
 bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 value );
 bool dictionarySetPixelBufferPixelFormatType( bool alpha, CFMutableDictionaryRef dict );
 bool dictionarySetPixelBufferSize( const unsigned int width, const unsigned int height, CFMutableDictionaryRef dict );
@@ -60,6 +63,29 @@ static void CVPixelBufferDealloc( void *refcon );
 //! Makes a cinder::Surface form a CVPixelBufferRef, setting a proper deallocation function to free the CVPixelBufferRef upon the destruction of the Surface::Obj
 Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
 
-} } // namespace cinder::qtime
-
 #endif // ! defined( __LP64__ )
+
+typedef shared_ptr<class ImageTargetCvPixelBuffer> ImageTargetCvPixelBufferRef;
+
+class ImageTargetCvPixelBuffer : public ci::ImageTarget {
+  public:
+	static ImageTargetCvPixelBufferRef createRef( ImageSourceRef imageSource );
+	~ImageTargetCvPixelBuffer();
+
+	virtual void*		getRowPointer( int32_t row );
+	virtual void		finalize();
+
+	::CVPixelBufferRef	getCvPixelBuffer() const { return mPixelBufferRef; }
+
+  protected:
+	ImageTargetCvPixelBuffer( ImageSourceRef imageSource );
+	
+	::CVPixelBufferRef	mPixelBufferRef;
+	size_t				mRowBytes;
+	uint8_t				*mData;
+};
+
+//! Creates a CVPixelBufferRef from an ImageSource. Release the result with CVPixelBufferRelease()
+CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource );
+
+} } // namespace cinder::qtime

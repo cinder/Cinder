@@ -25,6 +25,7 @@
 #endif
 
 #include "cinder/qtime/MovieWriter.h"
+#include "cinder/qtime/QuickTimeUtils.h"
 
 #if defined( CINDER_MAC )
 	#include <QTKit/QTKit.h>
@@ -80,28 +81,32 @@ MovieWriter::Obj::Obj( const std::string &path, MovieWriterCodecType codec, Movi
 	
 void MovieWriter::addFrame( const ImageSourceRef &imageSource )
 {
-	CGImageRef cgi = cocoa::createCgImage(imageSource);
+/*	CGImageRef cgi = cocoa::createCgImage(imageSource);
 	NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithCGImage:cgi];
 	
 	NSImage *image = [[NSImage alloc] init];
 	[image addRepresentation:bitmapRep];
-	[bitmapRep release];
+	[bitmapRep release];*/
+
+	CVPixelBufferRef imageBuffer = qtime::createCvPixelBuffer( imageSource );
+	NSCIImageRep *imageRep = [NSCIImageRep imageRepWithCIImage:[CIImage imageWithCVImageBuffer:imageBuffer]];
+	NSImage *image = [[[NSImage alloc] initWithSize:[imageRep size]] autorelease];
+	[image addRepresentation:imageRep];
+	int count = ::CFGetRetainCount( imageBuffer );
+	::CVPixelBufferRelease( imageBuffer );
 	
 	long long timeValue		= 10; // 60fps
 	long timeScale			= 600;
 	QTTime frameDuration    = QTMakeTime(timeValue, timeScale);
 	NSString *nsCodec = [[NSString alloc] initWithUTF8String:mObj->mCodec.c_str()];
 	NSNumber *nsQuality = [[NSNumber alloc] initWithLong:mObj->mQuality];
-	NSDictionary *opt = [[NSDictionary alloc] initWithObjectsAndKeys:
-						   nsCodec,  QTAddImageCodecType,
-						   nsQuality,				 QTAddImageCodecQuality,
-						   nil];
+	NSDictionary *opt = [NSDictionary dictionaryWithObjectsAndKeys:
+							nsCodec,  QTAddImageCodecType,
+							nsQuality, QTAddImageCodecQuality,
+							nil];
 	
 	[mObj->mMovie addImage:image forDuration:frameDuration withAttributes:opt];
 
-	::CGImageRelease( cgi );
-	[image release];
-	[opt release];
 	[nsCodec release];
 	[nsQuality release];
 }
