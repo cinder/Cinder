@@ -20,6 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "cinder/Cinder.h"
 
 #if defined( CINDER_MAC )
 	#ifdef __OBJC__
@@ -51,25 +52,42 @@ enum MovieWriterQuality {
 	NORMAL            = 0X00000200,
 	HIGH              = 0X00000300
 };
-	
-	
-	
+
 class MovieWriter {
-public:
-	MovieWriter();
-	MovieWriter(const std::string &path, MovieWriterCodecType type = RAW, MovieWriterQuality quality = HIGH);
-	~MovieWriter();
+  public:
+	MovieWriter() {}
+	MovieWriter( const std::string &path, MovieWriterCodecType codec = RAW, MovieWriterQuality quality = HIGH );
 
-	void addFrame(const ImageSourceRef &imageSource);	
-	void finish(void);
-
+	void addFrame( const ImageSourceRef &imageSource );
+	void finish() { mObj->finish(); }
 	
-private:
-	#if defined( CINDER_MAC )
-		QTMovie         *mMovie;
-	#endif
-	std::string mOutpath;
-	std::string mCodec;
-	int mQuality;
+  private:
+	/// \cond
+	struct Obj {
+		Obj( const std::string &path, MovieWriterCodecType type = RAW, MovieWriterQuality quality = HIGH );
+		~Obj();
+		
+		void	finish();
+		
+		#if defined( CINDER_MAC )
+			QTMovie        *mMovie;
+		#endif
+		std::string mPath;
+		std::string mCodec;
+		int			mQuality;
+		bool		mFinished;
+	};
+	/// \endcond
+	
+	shared_ptr<Obj>		mObj;  
+
+  public:
+	//@{
+	//! Emulates shared_ptr-like behavior
+	typedef shared_ptr<Obj> MovieWriter::*unspecified_bool_type;
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &MovieWriter::mObj; }
+	void reset() { mObj.reset(); }
+	//@}  
 };
-}}
+
+} } // namespace cinder::qtime

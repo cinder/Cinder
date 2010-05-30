@@ -20,57 +20,66 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
+#	error "This file must be compiled as Objective-C++ on the Mac"
+#endif
 
-#include <QTKit/QTKit.h>
-#include "MovieWriter.h"
-#include "cinder/cocoa/CinderCocoa.h"
+#include "cinder/qtime/MovieWriter.h"
+
+#if defined( CINDER_MAC )
+	#include <QTKit/QTKit.h>
+	#include "cinder/cocoa/CinderCocoa.h"
+#endif
 
 
 namespace cinder { namespace qtime {
 
-MovieWriter::MovieWriter() {}
+MovieWriter::MovieWriter( const std::string &outPath, MovieWriterCodecType codec, MovieWriterQuality quality )
+	: mObj( shared_ptr<Obj>( new Obj( outPath, codec, quality ) ) )
+{
+}
 
-MovieWriter::MovieWriter(const std::string &outpath, MovieWriterCodecType codec, MovieWriterQuality quality) {
-	mOutpath = outpath;
-	mQuality = quality;
-	
+MovieWriter::Obj::~Obj()
+{
+	if( ! mFinished )
+		finish();
+
+	if( mMovie )
+		[mMovie release];
+}
+
+MovieWriter::Obj::Obj( const std::string &path, MovieWriterCodecType codec, MovieWriterQuality quality )
+	: mPath( path ), mQuality( quality ), mFinished( false )
+{	
 	switch(codec) {
 		case PXLT:
 			mCodec = "pxlt";
-			break;
-
+		break;
 		case RAW:
 			mCodec = "raw ";
-			break;
-
+		break;
 		case H264:
 			mCodec = "avc1";
-			break;
-
+		break;
 		case MP4:
 			mCodec = "mp4v";
-			break;
-			
+		break;
 		case H263:
 			mCodec = "h263";
-			break;
-			
+		break;
 		case PNG:
 			mCodec = "png ";
-			break;			
+		break;			
 	}
 	
-	NSString *tempPath = [NSString stringWithUTF8String:mOutpath.c_str()];	
+	NSString *tempPath = [NSString stringWithUTF8String:mPath.c_str()];	
 	mMovie = [[QTMovie alloc] initToWritableFile:tempPath error:NULL];
 	[mMovie setAttribute:[NSNumber numberWithBool:YES] forKey:QTMovieEditableAttribute];
 	[mMovie retain];	
 }
-
-MovieWriter::~MovieWriter() {
-	if (mMovie) [mMovie release];
-}
 	
-void MovieWriter::addFrame(const ImageSourceRef &imageSource) {
+void MovieWriter::addFrame( const ImageSourceRef &imageSource )
+{
 	CGImageRef cgi = cocoa::createCgImage(imageSource);
 	NSBitmapImageRep *bitmapRep = [[NSBitmapImageRep alloc] initWithCGImage:cgi];
 	
@@ -81,26 +90,26 @@ void MovieWriter::addFrame(const ImageSourceRef &imageSource) {
 	long long timeValue		= 10; // 60fps
 	long timeScale			= 600;
 	QTTime frameDuration    = QTMakeTime(timeValue, timeScale);
-	NSString *nsCodec = [[NSString alloc] initWithUTF8String:mCodec.c_str()];
-	NSNumber *nsQuality = [[NSNumber alloc] initWithLong:mQuality];
+	NSString *nsCodec = [[NSString alloc] initWithUTF8String:mObj->mCodec.c_str()];
+	NSNumber *nsQuality = [[NSNumber alloc] initWithLong:mObj->mQuality];
 	NSDictionary *opt = [[NSDictionary alloc] initWithObjectsAndKeys:
 						   nsCodec,  QTAddImageCodecType,
 						   nsQuality,				 QTAddImageCodecQuality,
 						   nil];
 	
-	[mMovie addImage:image
-		 forDuration:frameDuration
-	  withAttributes:opt];
+	[mObj->mMovie addImage:image forDuration:frameDuration withAttributes:opt];
 
-	CGImageRelease(cgi);
+	::CGImageRelease( cgi );
 	[image release];
 	[opt release];
 	[nsCodec release];
 	[nsQuality release];
 }
 
-void MovieWriter::finish() {
+void MovieWriter::Obj::finish()
+{
 	[mMovie updateMovieFile];
+	mFinished = true;
 }
 	
-}}
+} } // namespace cinder::qtime
