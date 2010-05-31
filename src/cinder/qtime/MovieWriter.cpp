@@ -101,8 +101,14 @@ MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, c
 	mCurrentTimeValue = 0;
 }
 	
-void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource )
+void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float duration )
 {
+	if( mFinished )
+		throw MovieWriterExcAlreadyFinished();
+
+	if( duration <= 0 )
+		duration = mFormat.mDefaultTime;
+
 	CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource );
 	const float gamma = 2.5f;
 	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &gamma );
@@ -112,10 +118,11 @@ void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource )
 
 	ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
 	ICMCompressionFrameOptionsRef frameOptions = NULL;
+	long timeVal = static_cast<long>( duration * mFormat.mTimeBase );
 	OSStatus err = ::ICMCompressionSessionEncodeFrame( mCompressionSession, pixelBuffer,
-				mCurrentTimeValue, (long)(mFormat.mDefaultTime * mFormat.mTimeBase), validTimeFlags,
+				mCurrentTimeValue, timeVal, validTimeFlags,
                 frameOptions, NULL, NULL );
-	mCurrentTimeValue += (long)(mFormat.mDefaultTime * mFormat.mTimeBase);
+	mCurrentTimeValue += timeVal;
 	if( err )
 		MovieWriterExcFrameEncode();
 }
@@ -224,6 +231,9 @@ bail:
 
 void MovieWriter::Obj::finish()
 {
+	if( mFinished )
+		return;
+
 	mFinished = true; // set this in case of throw
 
 	OSErr err;

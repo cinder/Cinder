@@ -92,6 +92,8 @@ class MovieWriter {
 		bool		mEnableTemporal, mEnableReordering;
 		uint32_t	mMaxKeyFrameRate;
 		bool		mEnableFrameTimeChanges;
+
+		friend MovieWriter;
 		friend Obj;
 	};
 
@@ -100,7 +102,27 @@ class MovieWriter {
 	MovieWriter( const std::string &path, int32_t width, int32_t height, uint32_t code = 'png ', float quality = 0.99f );
 	MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format );
 
-	void addFrame( const ImageSourceRef &imageSource ) { mObj->addFrame( imageSource ); }
+	//! Returns the Movie's default frame duration measured in seconds. You can also think of this as the Movie's frameRate.
+	float	getDefaultDuration() const { return mObj->mFormat.mDefaultTime; }
+	//! Returns the width of the Movie in pixels
+	int32_t	getWidth() const { return mObj->mWidth; }
+	//! Returns the height of the Movie in pixels
+	int32_t	getHeight() const { return mObj->mHeight; }
+	//! Returns the size of the Movie in pixels
+	Vec2i	getSize() const { return Vec2i( getWidth(), getHeight() ); }
+	//! Returns the Movie's aspect ratio, which is its width / height
+	float	getAspectRatio() const { return getWidth() / (float)getHeight(); }
+	//! Returns the bounding Area of the Movie in pixels: [0,0]-(width,height)
+	Area	getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
+
+	//! Returns the Movie's Format
+	const Format&	getFormat() const { return mObj->mFormat; }
+
+	/** \brief Appends a frame to the Movie. The optional \a duration parameter allows a frame to be inserted for a time other than the Format's default duration.
+		\note Calling addFrame() after a call to finish() will throw a MovieWriterExcAlreadyFinished exception. **/
+	void addFrame( const ImageSourceRef &imageSource, float duration = -1.0f ) { mObj->addFrame( imageSource, duration ); }
+	
+	//! Completes the encoding of the movie and closes the file. Calling finish() more than once has no effect.
 	void finish() { mObj->finish(); }
 	
 	enum { CODEC_H264 = 'avc1', CODEC_JPEG = 'jpeg', CODEC_MP4 = 'mp4v', CODEC_PNG = 'png ', CODEC_RAW = 'raw ', CODEC_ANIMATION = 'rle ' };
@@ -111,7 +133,7 @@ class MovieWriter {
 		Obj( const std::string &path, int32_t width, int32_t height, const Format &format );
 		~Obj();
 		
-		void	addFrame( const ImageSourceRef &imageSource );
+		void	addFrame( const ImageSourceRef &imageSource, float duration );
 		void	createCompressionSession();
 		void	finish();
 		
@@ -148,6 +170,8 @@ class MovieWriterExc : public Exception {
 class MovieWriterExcInvalidPath : public MovieWriterExc {
 };
 class MovieWriterExcFrameEncode : public MovieWriterExc {
+};
+class MovieWriterExcAlreadyFinished : public MovieWriterExc {
 };
 
 } } // namespace cinder::qtime

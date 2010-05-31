@@ -1,5 +1,6 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/qtime/MovieWriter.h"
+#include "cinder/ip/Fill.h"
 
 #include <list>
 using namespace ci;
@@ -10,6 +11,7 @@ using namespace std;
 class QuickTimeWriterApp : public AppBasic {
  public:
 	void setup();
+	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
 	void draw();
 	
@@ -23,6 +25,19 @@ void QuickTimeWriterApp::setup()
 	string path = getSaveFilePath();
 	if( ! path.empty() )
 		mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), 'tiff' );
+}
+
+void QuickTimeWriterApp::mouseDown( MouseEvent event )
+{
+	if( event.isRight() ) {
+		// add one second of white on right clicks
+		Surface white( mMovieWriter.getWidth(), mMovieWriter.getHeight(), false );
+		ip::fill( &white, Color8u( 255, 255, 255 ) );
+		for( int i = 0; i < 30; ++i ) {
+			ip::fill( &white, Color8u( 0, 0, 255 ), Area( 0, 400, mMovieWriter.getWidth() * i / 30, 480 ) );
+			mMovieWriter.addFrame( white );
+		}
+	}
 }
 
 void QuickTimeWriterApp::mouseDrag( MouseEvent event )
