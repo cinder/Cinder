@@ -24,6 +24,8 @@
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/ImageIo.h"
 
+#include <string>
+
 // These forward declarations prevent us from having to bring all of QuickTime into the global namespace in MSW
 #if defined( CINDER_MSW )
 	typedef struct ComponentInstanceRecord		ComponentInstanceRecord;
@@ -39,37 +41,74 @@
 
 namespace cinder { namespace qtime {
 
-// more types can be found in ImageCompression.h
-enum MovieWriterCodecType {
-	MP4,
-	H264,
-	H263,
-	PNG,
-	PXLT,
-	RAW
-};
-
-enum MovieWriterQuality {
-	LOSSLESS          = 0X00000400,
-	MAX               = 0X000003FF,
-	MIN               = 0X00000000,
-	LOW               = 0X00000100,
-	NORMAL            = 0X00000200,
-	HIGH              = 0X00000300
-};
-
 class MovieWriter {
+	struct Obj;
+
   public:
+	class Format {
+	  public:
+		Format() : mQuality( 0.99f ), mCodec( 'png ' )
+		{
+			initDefaults();
+		}
+		Format( uint32_t codec, float quality )
+			: mCodec( codec ), mQuality( quality )
+		{
+			initDefaults();
+		}
+
+		//! Sets the four character code for the QuickTime codec. Additional types can be found in QuickTime's ImageCompression.h.
+		Format&		setCodec( uint32_t codec ) { mCodec = codec; return *this; }
+		//! Sets the overall quality for encoding. Must be in a range of [0,1.0]. Defaults to 0.99. 1.0 corresponds to lossless.
+		Format&		setQuality( float quality ) { mQuality = constrain<float>( quality, 0, 1 ); return *this; }
+		//! Sets the standard duration of a frame. Defaults to 1/30, meaning 30Hz.
+		Format&		setDefaultDuration( float defaultTime ) { mDefaultTime = defaultTime; return *this; }
+		//! Sets the integer base value for encoding time scale. Defaults to 600.
+		Format&		setTimeScale( long timeScale ) { mTimeBase = timeScale; return *this; }
+		//! Enables temporal compression (allowing \b P or \b B frames). Defaults to true.
+		Format&		enableTemporal( bool enable = true ) { mEnableTemporal = enable; return *this; }
+		//! Enables frame reordering. Defaults to true. In order to encode B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
+		Format&		enableReordering( bool enable = true ) { mEnableReordering = enable; return *this; }
+		//! Sets the maximum number of frames between key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression. The default key frame interval is 0, which indicates that the compressor should choose where to place all key frames.
+		Format&		setMaxKeyFrameRate( int32_t rate ) { mMaxKeyFrameRate = rate; return *this; }
+		//! Sets whether a codec is allowed to change frame times. Defaults to true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
+		Format&		enableFrameTimeChanges( bool enable ) { mEnableFrameTimeChanges = enable; return *this; }
+
+	  private:
+		void		initDefaults()
+		{
+			mTimeBase = 600;
+			mDefaultTime = 1 / 30.0f;
+			mEnableTemporal = true;
+			mEnableReordering = true;
+			mMaxKeyFrameRate = 0;
+			mEnableFrameTimeChanges = true;
+		}
+
+		uint32_t	mCodec;
+		long		mTimeBase;
+		float		mQuality;
+		float		mDefaultTime;
+		bool		mEnableTemporal, mEnableReordering;
+		uint32_t	mMaxKeyFrameRate;
+		bool		mEnableFrameTimeChanges;
+		friend Obj;
+	};
+
+
 	MovieWriter() {}
-	MovieWriter( const std::string &path, int32_t width, int32_t height, MovieWriterCodecType codec = RAW, MovieWriterQuality quality = HIGH );
+	MovieWriter( const std::string &path, int32_t width, int32_t height, uint32_t code = 'png ', float quality = 0.99f );
+	MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format );
 
 	void addFrame( const ImageSourceRef &imageSource ) { mObj->addFrame( imageSource ); }
 	void finish() { mObj->finish(); }
 	
+	enum { CODEC_H264 = 'avc1', CODEC_JPEG = 'jpeg', CODEC_MP4 = 'mp4v', CODEC_PNG = 'png ', CODEC_RAW = 'raw ', CODEC_ANIMATION = 'rle ' };
+
   private:
 	/// \cond
 	struct Obj {
-		Obj( const std::string &path, int32_t width, int32_t height, MovieWriterCodecType type = RAW, MovieWriterQuality quality = HIGH );
+		Obj( const std::string &path, int32_t width, int32_t height, const Format &format );
 		~Obj();
 		
 		void	addFrame( const ImageSourceRef &imageSource );
@@ -85,11 +124,10 @@ class MovieWriter {
 		::ICMCompressionSessionRef	mCompressionSession;
 
 		std::string		mPath;
-		::CodecType		mCodec;
 		::TimeValue		mCurrentTimeValue;
 		
 		int32_t		mWidth, mHeight;
-		int			mQuality;
+		Format		mFormat;
 		bool		mFinished;
 	};
 	/// \endcond

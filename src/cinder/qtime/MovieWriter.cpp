@@ -39,14 +39,20 @@
 		#include <Movies.h>
 		#include <CoreFoundation/CFBase.h>
 		#include <CoreFoundation/CFNumber.h>
+		#include <GXMath.h>
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
 
 
 namespace cinder { namespace qtime {
 
-MovieWriter::MovieWriter( const std::string &outPath, int32_t width, int32_t height, MovieWriterCodecType codec, MovieWriterQuality quality )
-	: mObj( shared_ptr<Obj>( new Obj( outPath, width, height, codec, quality ) ) )
+MovieWriter::MovieWriter( const std::string &path, int32_t width, int32_t height, uint32_t codec, float quality )
+	: mObj( shared_ptr<Obj>( new Obj( path, width, height, Format( codec, quality ) ) ) )
+{
+}
+
+MovieWriter::MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format )
+	: mObj( shared_ptr<Obj>( new Obj( path, width, height, format ) ) )
 {
 }
 
@@ -56,8 +62,8 @@ MovieWriter::Obj::~Obj()
 		finish();
 }
 
-MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, MovieWriterCodecType codec, MovieWriterQuality quality )
-	: mPath( path ), mQuality( quality ), mWidth( width ), mHeight( height ), mFinished( false )
+MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, const Format &format )
+	: mPath( path ), mWidth( width ), mHeight( height ), mFormat( format ), mFinished( false )
 {	
     OSErr       err = noErr;
     Handle      dataRef;
@@ -84,15 +90,13 @@ MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, M
 		throw MovieWriterExc();
         
 	//Create track media
-	::TimeScale timescale = 1000;
-	mMedia = ::NewTrackMedia( mTrack, ::VideoMediaType, timescale, 0, 0 );
+	mMedia = ::NewTrackMedia( mTrack, ::VideoMediaType, mFormat.mTimeBase, 0, 0 );
 	err = GetMoviesError();
 	if( err )
 		throw MovieWriterExc();
 
 	//Prepare media for editing
 	err = ::BeginMediaEdits( mMedia );
-mCodec = 'png ';
 	createCompressionSession();
 	mCurrentTimeValue = 0;
 }
@@ -103,13 +107,15 @@ void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource )
 	const float gamma = 2.5f;
 	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &gamma );
 	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
+	::CFRelease( gammaLevel );
+	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate );
 
 	ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
 	ICMCompressionFrameOptionsRef frameOptions = NULL;
 	OSStatus err = ::ICMCompressionSessionEncodeFrame( mCompressionSession, pixelBuffer,
-				mCurrentTimeValue, 60, validTimeFlags,
+				mCurrentTimeValue, (long)(mFormat.mDefaultTime * mFormat.mTimeBase), validTimeFlags,
                 frameOptions, NULL, NULL );
-	mCurrentTimeValue += 60;
+	mCurrentTimeValue += (long)(mFormat.mDefaultTime * mFormat.mTimeBase);
 	if( err )
 		MovieWriterExcFrameEncode();
 }
@@ -121,6 +127,20 @@ OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon,
                    ICMEncodedFrameRef encodedFrame,
                    void *reserved )
 {
+	ImageDescriptionHandle imageDescription = NULL;
+	err = ICMCompressionSessionGetImageDescription( session, &imageDescription );
+	if( ! err ) {
+		Fixed gammaLevel = FloatToFixed( 2.5f );//kQTUsePlatformDefaultGammaLevel;
+		err = ICMImageDescriptionSetProperty(imageDescription,
+						kQTPropertyClass_ImageDescription,
+						kICMImageDescriptionPropertyID_GammaLevel,
+						sizeof(gammaLevel), &gammaLevel);
+		if( err != 0 )
+			throw;
+	}
+	else
+		throw;
+
 	MovieWriter::Obj *obj = reinterpret_cast<MovieWriter::Obj*>( refCon );
 	OSStatus result = ::AddMediaSampleFromEncodedFrame( obj->mMedia, encodedFrame, NULL );
 	return result;
@@ -139,30 +159,45 @@ void MovieWriter::Obj::createCompressionSession()
 		goto bail;
 	
 	// We must set this flag to enable P or B frames.
-	err = ::ICMCompressionSessionOptionsSetAllowTemporalCompression( sessionOptions, true );
-	if( err )
-		goto bail;
+	if( mFormat.mEnableTemporal ) {
+		err = ::ICMCompressionSessionOptionsSetAllowTemporalCompression( sessionOptions, true );
+		if( err )
+			goto bail;
+	}
 	
 	// We must set this flag to enable B frames.
-	err = ::ICMCompressionSessionOptionsSetAllowFrameReordering( sessionOptions, true );
-	if( err )
-		goto bail;
+	if( mFormat.mEnableReordering ) {
+		err = ::ICMCompressionSessionOptionsSetAllowFrameReordering( sessionOptions, true );
+		if( err )
+			goto bail;
+	}
 	
 	// Set the maximum key frame interval, also known as the key frame rate.
-	err = ::ICMCompressionSessionOptionsSetMaxKeyFrameInterval( sessionOptions, 30 );
-	if( err )
-		goto bail;
+	if( mFormat.mMaxKeyFrameRate != 0 ) {
+		err = ::ICMCompressionSessionOptionsSetMaxKeyFrameInterval( sessionOptions, mFormat.mMaxKeyFrameRate );
+		if( err )
+			goto bail;
+	}
 
 	// This allows the compressor more flexibility (ie, dropping and coalescing frames).
-	err = ::ICMCompressionSessionOptionsSetAllowFrameTimeChanges( sessionOptions, true );
-	if( err )
-		goto bail;
+	if( mFormat.mEnableFrameTimeChanges ) {
+		err = ::ICMCompressionSessionOptionsSetAllowFrameTimeChanges( sessionOptions, true );
+		if( err )
+			goto bail;
+	}
 	
 	// We need durations when we store frames.
 	err = ::ICMCompressionSessionOptionsSetDurationsNeeded( sessionOptions, true );
 	if( err )
 		goto bail;
-	
+
+	CodecQ compressionQuality = CodecQ(0x00000400 * mFormat.mQuality);
+	err = ICMCompressionSessionOptionsSetProperty(sessionOptions,
+                                kQTPropertyClass_ICMCompressionSessionOptions,
+                                kICMCompressionSessionOptionsPropertyID_Quality,
+                                sizeof(compressionQuality),
+                                &compressionQuality );
+
 	// Set the average data rate.
 	/*err = ICMCompressionSessionOptionsSetProperty( sessionOptions, 
 				kQTPropertyClass_ICMCompressionSessionOptions,
@@ -175,12 +210,11 @@ void MovieWriter::Obj::createCompressionSession()
 	encodedFrameOutputRecord.encodedFrameOutputCallback = encodedFrameOutputCallback;
 	encodedFrameOutputRecord.encodedFrameOutputRefCon = this;
 	encodedFrameOutputRecord.frameDataAllocator = NULL;
-	
-	::TimeScale timeScale = 1000;
-	err = ::ICMCompressionSessionCreate( NULL, mWidth, mHeight, mCodec, timeScale,
+	err = ::ICMCompressionSessionCreate( NULL, mWidth, mHeight, mFormat.mCodec, mFormat.mTimeBase,
 			sessionOptions, NULL, &encodedFrameOutputRecord, &mCompressionSession );
 	if( err )
 		goto bail;
+
 	return;
 
 bail:
@@ -203,7 +237,7 @@ void MovieWriter::Obj::finish()
 			throw MovieWriterExc();
             
 		//Add media to track
-		err = ::InsertMediaIntoTrack( mTrack, 0, 0, ::GetMediaDisplayDuration( mMedia ), fixed1 );
+		err = ::InsertMediaIntoTrack( mTrack, 0, 0, (TimeValue)::GetMediaDisplayDuration( mMedia ), fixed1 );
 		if( err )
 			throw MovieWriterExc();
             
