@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 namespace cinder { 
 
@@ -99,10 +100,10 @@ class System {
 #endif 
 };
 
-inline std::ostream& operator<<( std::ostream &out, const System::NetworkAdapter &adapter )
+inline std::ostream& operator<<( std::ostream &outp, const System::NetworkAdapter &adapter )
 {
-	out << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress();
-	return out;
+	outp << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress();
+	return outp;
 }
 
 class SystemExc : public std::exception {
