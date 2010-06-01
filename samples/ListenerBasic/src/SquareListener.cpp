@@ -16,7 +16,7 @@ SquareListener::SquareListener( App *app )
  
 bool SquareListener::mouseDown( MouseEvent event )
 {
-	mSelected = mRect.isInside( event.getPos() );
+	mSelected = mRect.contains( event.getPos() );
 
 	// if we got selected then we handled the event, otherwise let it pass through
 	return mSelected;
