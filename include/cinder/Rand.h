@@ -40,6 +40,9 @@ class Rand {
 	Rand( uint32_t seed )
 		: mBase( seed ), mFloatGen( mBase, boost::uniform_real<float>( 0.0f, 1.0f ) ), mIntGen( mBase, boost::uniform_int<>( 0, 2147483647 ) )
 	{}
+
+	//! Re-seeds the random generator
+	void seed( uint32_t seedValue );
 	
 	//! returns a random boolean value
 	bool nextBool()
@@ -116,6 +119,9 @@ class Rand {
 	// STATICS
 	//! Resets the static random generator to a random seed based on the clock
 	static void randomize();
+	
+	//! Resets the static random generator to the specific seed \a seedValue
+	static void	randSeed( uint32_t seedValue );
 	
 	//! returns a random boolean value
 	static bool randBool()

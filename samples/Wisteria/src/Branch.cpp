@@ -54,7 +54,7 @@ void Branch::update()
 
 	if( ( mLifespan > 0 ) && ( ! mIsRoot ) ) {
 		mPos += Vec2f( cos( mAngle ), sin( mAngle ) ) * ( mSpeed * 2.0f * mScale );
-		if( ! Area( 0, 0, sWindowWidth, sWindowHeight ).isInside( mPos ) )
+		if( ! Area( 0, 0, sWindowWidth, sWindowHeight ).contains( mPos ) )
 			mLifespan = 0;
 
 		mAngle += mAngleDelta;
