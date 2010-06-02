@@ -25,6 +25,8 @@
 #include "cinder/App/App.h"
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/TouchEvent.h"
+#include "cinder/app/AccelEvent.h"
+
 
 namespace cinder { namespace app {
 
@@ -49,6 +51,8 @@ class AppCocoaTouch : public App {
 	AppCocoaTouch();
 	virtual ~AppCocoaTouch() {}
 
+	virtual void		prepareSettings( Settings *settings ) {}
+
 	//! Override to respond to the beginning of a multitouch sequence
 	virtual void		touchesBegan( TouchEvent event ) {}
 	//! Override to respond to movement (drags) during a multitouch sequence
@@ -56,6 +60,11 @@ class AppCocoaTouch : public App {
 	//! Override to respond to the end of a multitouch sequence
 	virtual void		touchesEnded( TouchEvent event ) {}
 	//! Returns a std::vector of all active touches
+	
+	//! Returns a Vec3d of the acceleration direction
+	virtual void		accelerated( AccelEvent event ) {}
+	
+	
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
@@ -69,6 +78,11 @@ class AppCocoaTouch : public App {
 	//! Ignored on the iPhone.
 	void			setWindowSize( int windowWidth, int windowHeight ) {}
 
+	//! Enables the device's accelerometer and modifies its filtering. \a updateFrequency represents the frequency with which accelerated() is called, measured in Hz. \a filterFactor represents the amount to weight the current value relative to the previous.
+	void enableAccelerometer( float updateFrequency = 30.0f, float filterFactor = 0.1f );
+	//! Turns off the accelerometer
+	void disableAccelerometer();
+	
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
@@ -92,6 +106,7 @@ class AppCocoaTouch : public App {
 	//! Returns a pointer to the current global AppBasic
 	virtual const Settings&	getSettings() const { return mSettings; }
 
+
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch() { App::prepareLaunch(); }
@@ -104,10 +119,12 @@ class AppCocoaTouch : public App {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
+	void		privatePrepareSettings__();
 	void		privateTouchesBegan__( const TouchEvent &event );
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
 	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
+	void		privateAccelerated__( const Vec3f &direction );
 	//! \endcond
 
   private:
@@ -118,7 +135,11 @@ class AppCocoaTouch : public App {
 	
 	static AppCocoaTouch	*sInstance;	
 	Settings				mSettings;
+	
 	std::vector<TouchEvent::Touch>	mActiveTouches;
+
+	float					mAccelFilterFactor;
+	Vec3f					mLastAccel, mLastRawAccel;
 };
 
 } } // namespace cinder::app

@@ -107,16 +107,16 @@ AreaT<T> AreaT<T>::getClipBy( const AreaT<T> &clip ) const
 }
 
 template<typename T>
-void AreaT<T>::offsetBy( const Vec2<T> &offset )
+void AreaT<T>::offset( const Vec2<T> &o )
 {
-	x1 += offset.x;
-	x2 += offset.x;
-	y1 += offset.y;
-	y2 += offset.y;
+	x1 += o.x;
+	x2 += o.x;
+	y1 += o.y;
+	y2 += o.y;
 }
 
 template<typename T>
-AreaT<T> AreaT<T>::getOffsetBy( const Vec2<T> &offset ) const
+AreaT<T> AreaT<T>::getOffset( const Vec2<T> &offset ) const
 {
 	return AreaT<T>( x1 + offset.x, y1 + offset.y, x2 + offset.x, y2 + offset.y );
 }
@@ -134,7 +134,7 @@ AreaT<T> AreaT<T>::getMoveULTo( const Vec2<T> &newUL ) const
 }
 
 template<typename T>
-bool AreaT<T>::isInside( const Vec2<T> &offset ) const
+bool AreaT<T>::contains( const Vec2<T> &offset ) const
 {
 	return ( ( offset.x >= x1 ) && ( offset.x < x2 ) && ( offset.y >= y1 ) && ( offset.y < y2 ) );
 }
@@ -183,7 +183,8 @@ AreaT<T> AreaT<T>::proportionalFit( const AreaT<T> &srcArea, const AreaT<T> &dst
 	
 	AreaT<T> resultArea( 0, 0, resultWidth, resultHeight );
 	if ( center )
-		resultArea.offsetBy( Vec2<T>( ( dstArea.getWidth() - resultWidth ) / 2, ( dstArea.getHeight() - resultHeight ) / 2 ) );
+		resultArea.offset( Vec2<T>( ( dstArea.getWidth() - resultWidth ) / 2, ( dstArea.getHeight() - resultHeight ) / 2 ) );
+	resultArea.offset( dstArea.getUL() );
 	return resultArea;
 }
 

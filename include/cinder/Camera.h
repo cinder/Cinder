@@ -114,7 +114,7 @@ class CameraPersp : public Camera {
  public:
 	CameraPersp();
 	CameraPersp( int pixelWidth, int pixelHeight, float fov ); // constructs screen-aligned camera
-	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float parPlane ); // constructs screen-aligned camera
+	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane ); // constructs screen-aligned camera
 	
 	void setPerspective( float horizFovDegrees, float aspectRatio, float nearPlane, float farPlane );
 	

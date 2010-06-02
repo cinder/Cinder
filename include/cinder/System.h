@@ -24,6 +24,10 @@
 
 #include "cinder/Cinder.h"
 
+#include <vector>
+#include <string>
+#include <iostream>
+
 namespace cinder { 
 
 /** \brief Queries system software and hardware capabilities of the computer.
@@ -61,6 +65,23 @@ class System {
 	//! Returns the maximum number of simultaneous touches supported by the system's MultiTouch implementation.
 	static int32_t		getMaxMultiTouchPoints();
 	
+	//! Represents a single Network Adapter of the system
+	class NetworkAdapter {
+	  public:
+		const std::string&	getName() const { return mName; }
+		const std::string&	getIpAddress() const { return mIpAddress; }
+
+		NetworkAdapter( const std::string &name, const std::string &ip )
+			: mName( name ), mIpAddress( ip ) {}
+
+	  private:
+		std::string		mName, mIpAddress;
+	};
+	//! Returns a list of the network adapters associated with the machine. Not cached.
+	static std::vector<NetworkAdapter>		getNetworkAdapters();
+	//! Returns a best guess at the machine's "IP address". Not cached. Computers often have multiple IP addresses, but this will attempt to select the "best". \sa getNetworkAdapaters().
+	static std::string						getIpAddress();
+	
  private:
 	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, TOTAL_CACHE_TYPES };
 
@@ -78,6 +99,12 @@ class System {
 	uint32_t			mCPUID_EBX, mCPUID_ECX, mCPUID_EDX;
 #endif 
 };
+
+inline std::ostream& operator<<( std::ostream &outp, const System::NetworkAdapter &adapter )
+{
+	outp << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress();
+	return outp;
+}
 
 class SystemExc : public std::exception {
 };

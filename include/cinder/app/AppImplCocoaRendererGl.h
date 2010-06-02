@@ -27,11 +27,9 @@
 @class AppImplCocoa;
 @class CinderView;
 
-#include "AppImplCocoaTransparentGLView.h"
-
 @interface AppImplCocoaRendererGl : NSObject
 {
-	AppImplCocoaTransparentGlView	*view;
+	NSOpenGLView					*view;
 	cinder::app::App				*app;
 	cinder::app::RendererGl			*renderer;
 	NSView							*cinderView;

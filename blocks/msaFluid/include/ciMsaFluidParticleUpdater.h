@@ -36,11 +36,8 @@
 
 #pragma once
 
-#ifdef OF_ADDON_USING_ciMsaPHYSICS
-
 #include "ciMsaParticleUpdater.h"
 #include "ciMsaFluid.h"
-
 
 
 class ciMsaFluidParticleUpdater : public ciMsaParticleUpdater {

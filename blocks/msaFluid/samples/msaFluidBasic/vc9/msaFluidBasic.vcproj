@@ -185,14 +185,6 @@
 				RelativePath="..\src\msaFluidBasicApp.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\src\Particle.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\ParticleSystem.cpp"
-				>
-			</File>
 			<Filter
 				Name="msaFluid"
 				>
@@ -211,14 +203,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath="..\include\Particle.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\ParticleSystem.h"
-				>
-			</File>
 			<Filter
 				Name="msaFluid"
 				>

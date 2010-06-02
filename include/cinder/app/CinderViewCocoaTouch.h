@@ -41,6 +41,8 @@
 	ci::app::AppCocoaTouch		*mApp;
 	ci::app::Renderer			*mRenderer;
 	std::map<UITouch*,uint32_t>	mTouchIdMap;
+	ci::Vec3d					mAcceleration;
+	
 }
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;

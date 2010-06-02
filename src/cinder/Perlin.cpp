@@ -219,6 +219,7 @@ throw; //TODO
 }
 */
 
+// Credit for the ideas for analytical Perlin derivatives below are due to Iñigo Quílez
 Vec2f Perlin::dnoise( float x, float y ) const
 {
 	int32_t X = ((int32_t)x) & 255, Y = ((int32_t)y) & 255;

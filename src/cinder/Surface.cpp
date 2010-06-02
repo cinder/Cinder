@@ -22,7 +22,7 @@
 
 #include "cinder/Surface.h"
 #include "cinder/ImageIo.h"
-#include "cinder/ip/fill.h"
+#include "cinder/ip/Fill.h"
 
 #include <boost/type_traits/is_same.hpp>
 using boost::tribool;

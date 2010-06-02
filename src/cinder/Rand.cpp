@@ -43,4 +43,14 @@ void Rand::randomize()
 #endif
 }
 
+void Rand::randSeed( uint32_t seed )
+{
+	sBase = boost::mt19937( seed );
+}
+
+void Rand::seed( uint32_t seedValue )
+{
+	mBase = boost::mt19937( seedValue );
+}
+
 } // ci

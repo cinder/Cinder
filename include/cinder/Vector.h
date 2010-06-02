@@ -209,7 +209,7 @@ class Vec2
 
 	void invert()
 	{
-		x - -x;
+		x = -x;
 		y = -y;
 	}
 	
@@ -404,7 +404,7 @@ public:
 
 	void invert()
 	{
-		x - -x; y = -y; z = -z;
+		x = -x; y = -y; z = -z;
 	}
 	
 	Vec3<T> inverse() const
@@ -679,7 +679,7 @@ class Vec4{
 
 	void invert()
 	{
-		x - -x; y = -y; z = -z; w = -w;
+		x = -x; y = -y; z = -z; w = -w;
 	}
 	
 	Vec4<T> inverse() const

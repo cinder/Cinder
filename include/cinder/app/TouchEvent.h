@@ -31,8 +31,8 @@ class TouchEvent {
   public:
 	class Touch {
 	  public:
-		Touch( const Vec2f &pos, uint32_t id, double time, void *native )
-			: mPos( pos ), mId( id ), mTime( time ), mNative( native ) {}
+		Touch( const Vec2f &pos, const Vec2f &prevPos, uint32_t id, double time, void *native )
+			: mPos( pos ), mPrevPos( prevPos ), mId( id ), mTime( time ), mNative( native ) {}
 	
 		//! Returns the x position of the touch measured in pixels
 		float		getX() const { return mPos.x; }
@@ -40,6 +40,12 @@ class TouchEvent {
 		float		getY() const { return mPos.y; }		
 		//! Returns the position of the touch measured in pixels
 		Vec2f		getPos() const { return mPos; }
+		//! Returns the previous x position of the touch measured in pixels
+		float		getPrevX() const { return mPrevPos.x; }
+		//! Returns the previous y position of the touch measured in pixels
+		float		getPrevY() const { return mPrevPos.y; }		
+		//! Returns the previous position of the touch measured in pixels
+		Vec2f		getPrevPos() const { return mPrevPos; }
 		//! Returns an ID unique for the lifetime of the touch
 		uint32_t	getId() const { return mId; }
 		//! Returns the timestamp associated with the touch, measured in seconds
@@ -48,7 +54,7 @@ class TouchEvent {
 		const void*	getNative() const { return mNative; }
 		
 	  private:
-		Vec2f		mPos;
+		Vec2f		mPos, mPrevPos;
 		uint32_t	mId;
 		double		mTime;
 		void		*mNative;

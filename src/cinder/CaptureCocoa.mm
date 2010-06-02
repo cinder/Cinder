@@ -115,6 +115,15 @@ static void frameDeallocator( void *refcon );
 		throw cinder::CaptureExcInitFail();
 	}
 	
+	// Disable the sound connection
+	NSArray *connections = [mCaptureDeviceInput connections];
+	for( int i = 0; i < [connections count]; i++ ) {
+		QTCaptureConnection *connection = [connections objectAtIndex:i];
+		if( [[connection mediaType] isEqualToString:QTMediaTypeSound] ) {
+			[connection setEnabled:NO];
+		}
+	}
+	
 	//get decompressed video output
 	mCaptureDecompressedOutput = [[QTCaptureDecompressedVideoOutput alloc] init];
 	success = [mCaptureSession addOutput:mCaptureDecompressedOutput error:&error];
