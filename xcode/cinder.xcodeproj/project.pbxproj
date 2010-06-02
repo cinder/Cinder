@@ -178,7 +178,6 @@
 		007050161114F93F003FCAE4 /* ObjLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 002DFD530FA5602900E45AE0 /* ObjLoader.h */; };
 		007050191114F93F003FCAE4 /* Vbo.h in Headers */ = {isa = PBXBuildFile; fileRef = 008ACC5A0FACCB1600CAAF4D /* Vbo.h */; };
 		0070501B1114F93F003FCAE4 /* Display.h in Headers */ = {isa = PBXBuildFile; fileRef = 0071BD040FB9F4AD0092E7D6 /* Display.h */; };
-		0070501F1114F93F003FCAE4 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C705F17F0FD995120009395A /* Buffer.h */; };
 		007050211114F93F003FCAE4 /* Font.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C071B20FF16261004801EA /* Font.h */; };
 		007050231114F93F003FCAE4 /* Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 000529000FFBE14900F19492 /* Text.h */; };
 		007050241114F93F003FCAE4 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049C1B31010E5A40015B4B9 /* Renderer.h */; };
@@ -429,7 +428,6 @@
 		00CFD9771135C3520091E310 /* ObjLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 002DFD530FA5602900E45AE0 /* ObjLoader.h */; };
 		00CFD97A1135C3520091E310 /* Vbo.h in Headers */ = {isa = PBXBuildFile; fileRef = 008ACC5A0FACCB1600CAAF4D /* Vbo.h */; };
 		00CFD97C1135C3520091E310 /* Display.h in Headers */ = {isa = PBXBuildFile; fileRef = 0071BD040FB9F4AD0092E7D6 /* Display.h */; };
-		00CFD9801135C3520091E310 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C705F17F0FD995120009395A /* Buffer.h */; };
 		00CFD9821135C3520091E310 /* Font.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C071B20FF16261004801EA /* Font.h */; };
 		00CFD9841135C3520091E310 /* Text.h in Headers */ = {isa = PBXBuildFile; fileRef = 000529000FFBE14900F19492 /* Text.h */; };
 		00CFD9851135C3520091E310 /* Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049C1B31010E5A40015B4B9 /* Renderer.h */; };
@@ -564,9 +562,15 @@
 		43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
 		5391FD680E957646002A13D5 /* KeyEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5391FD670E957646002A13D5 /* KeyEvent.h */; };
 		5391FE660E95CB01002A13D5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
-		C705F1800FD995120009395A /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C705F17F0FD995120009395A /* Buffer.h */; };
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
 		C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70E1A01106AA39D00E63577 /* Buffer.cpp */; };
+		C76DBDC511B6B85E00A353EB /* FftProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C76DBDC111B6B85E00A353EB /* FftProcessor.cpp */; };
+		C76DBDC611B6B85E00A353EB /* FftProcessorImplAccelerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C76DBDC211B6B85E00A353EB /* FftProcessorImplAccelerate.cpp */; };
+		C76DBDC711B6B85E00A353EB /* OutputImplAudioUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C76DBDC311B6B85E00A353EB /* OutputImplAudioUnit.cpp */; };
+		C76DBDC811B6B85E00A353EB /* PcmBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C76DBDC411B6B85E00A353EB /* PcmBuffer.cpp */; };
+		C76DBDCB11B6B87D00A353EB /* FftProcessorImplAccelerate.h in Headers */ = {isa = PBXBuildFile; fileRef = C76DBDC911B6B87D00A353EB /* FftProcessorImplAccelerate.h */; };
+		C76DBDCC11B6B87D00A353EB /* PcmBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C76DBDCA11B6B87D00A353EB /* PcmBuffer.h */; };
+		C76DBDED11B6B8EE00A353EB /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C76DBDEC11B6B8EE00A353EB /* OutputImplAudioUnit.h */; };
 		C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7792FAE119A185000521786 /* CocoaCaConverter.cpp */; };
 		C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
 		C7A76E9F1176449F00A46655 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
@@ -821,9 +825,15 @@
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
-		C705F17F0FD995120009395A /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E19FE106AA38700E63577 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E1A01106AA39D00E63577 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
+		C76DBDC111B6B85E00A353EB /* FftProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FftProcessor.cpp; sourceTree = "<group>"; };
+		C76DBDC211B6B85E00A353EB /* FftProcessorImplAccelerate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FftProcessorImplAccelerate.cpp; sourceTree = "<group>"; };
+		C76DBDC311B6B85E00A353EB /* OutputImplAudioUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputImplAudioUnit.cpp; sourceTree = "<group>"; };
+		C76DBDC411B6B85E00A353EB /* PcmBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PcmBuffer.cpp; sourceTree = "<group>"; };
+		C76DBDC911B6B87D00A353EB /* FftProcessorImplAccelerate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FftProcessorImplAccelerate.h; sourceTree = "<group>"; };
+		C76DBDCA11B6B87D00A353EB /* PcmBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmBuffer.h; sourceTree = "<group>"; };
+		C76DBDEC11B6B8EE00A353EB /* OutputImplAudioUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputImplAudioUnit.h; sourceTree = "<group>"; };
 		C7792FAE119A185000521786 /* CocoaCaConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CocoaCaConverter.cpp; sourceTree = "<group>"; };
 		C7792FB0119A186000521786 /* CocoaCaConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaCaConverter.h; sourceTree = "<group>"; };
 		C7A76E9A1176449F00A46655 /* Io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Io.cpp; sourceTree = "<group>"; };
@@ -1363,11 +1373,13 @@
 		C7BA405B0FA8BEFD00AADC07 /* audio */ = {
 			isa = PBXGroup;
 			children = (
+				C76DBDC911B6B87D00A353EB /* FftProcessorImplAccelerate.h */,
+				C76DBDCA11B6B87D00A353EB /* PcmBuffer.h */,
 				C7A76EA3117644AB00A46655 /* Callback.h */,
 				C7A76EA4117644AB00A46655 /* Io.h */,
 				C7A76EA5117644AB00A46655 /* Output.h */,
+				C76DBDEC11B6B8EE00A353EB /* OutputImplAudioUnit.h */,
 				C7A76EA6117644AB00A46655 /* SourceFile.h */,
-				C705F17F0FD995120009395A /* Buffer.h */,
 				C7792FB0119A186000521786 /* CocoaCaConverter.h */,
 			);
 			path = audio;
@@ -1376,6 +1388,10 @@
 		C7BA40600FA8BF0F00AADC07 /* audio */ = {
 			isa = PBXGroup;
 			children = (
+				C76DBDC111B6B85E00A353EB /* FftProcessor.cpp */,
+				C76DBDC211B6B85E00A353EB /* FftProcessorImplAccelerate.cpp */,
+				C76DBDC311B6B85E00A353EB /* OutputImplAudioUnit.cpp */,
+				C76DBDC411B6B85E00A353EB /* PcmBuffer.cpp */,
 				C7A76E9A1176449F00A46655 /* Io.cpp */,
 				C7A76E9B1176449F00A46655 /* Output.cpp */,
 				C7A76E9C1176449F00A46655 /* SourceFile.cpp */,
@@ -1515,7 +1531,6 @@
 				007050161114F93F003FCAE4 /* ObjLoader.h in Headers */,
 				007050191114F93F003FCAE4 /* Vbo.h in Headers */,
 				0070501B1114F93F003FCAE4 /* Display.h in Headers */,
-				0070501F1114F93F003FCAE4 /* Buffer.h in Headers */,
 				007050211114F93F003FCAE4 /* Font.h in Headers */,
 				007050231114F93F003FCAE4 /* Text.h in Headers */,
 				007050241114F93F003FCAE4 /* Renderer.h in Headers */,
@@ -1630,7 +1645,6 @@
 				00CFD9771135C3520091E310 /* ObjLoader.h in Headers */,
 				00CFD97A1135C3520091E310 /* Vbo.h in Headers */,
 				00CFD97C1135C3520091E310 /* Display.h in Headers */,
-				00CFD9801135C3520091E310 /* Buffer.h in Headers */,
 				00CFD9821135C3520091E310 /* Font.h in Headers */,
 				00CFD9841135C3520091E310 /* Text.h in Headers */,
 				00CFD9851135C3520091E310 /* Renderer.h in Headers */,
@@ -1745,7 +1759,6 @@
 				002DFD540FA5602900E45AE0 /* ObjLoader.h in Headers */,
 				008ACC5B0FACCB1600CAAF4D /* Vbo.h in Headers */,
 				0071BD050FB9F4AD0092E7D6 /* Display.h in Headers */,
-				C705F1800FD995120009395A /* Buffer.h in Headers */,
 				00C071B30FF16261004801EA /* Font.h in Headers */,
 				000529010FFBE14900F19492 /* Text.h in Headers */,
 				0049C1B41010E5A40015B4B9 /* Renderer.h in Headers */,
@@ -1797,6 +1810,9 @@
 				009704A811A050C300B1FC50 /* UrlImplCurl.h in Headers */,
 				43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */,
+				C76DBDCB11B6B87D00A353EB /* FftProcessorImplAccelerate.h in Headers */,
+				C76DBDCC11B6B87D00A353EB /* PcmBuffer.h in Headers */,
+				C76DBDED11B6B8EE00A353EB /* OutputImplAudioUnit.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2133,6 +2149,10 @@
 				C7A76EA11176449F00A46655 /* SourceFile.cpp in Sources */,
 				C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */,
 				009704AA11A050DB00B1FC50 /* UrlImplCurl.cpp in Sources */,
+				C76DBDC511B6B85E00A353EB /* FftProcessor.cpp in Sources */,
+				C76DBDC611B6B85E00A353EB /* FftProcessorImplAccelerate.cpp in Sources */,
+				C76DBDC711B6B85E00A353EB /* OutputImplAudioUnit.cpp in Sources */,
+				C76DBDC811B6B85E00A353EB /* PcmBuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
