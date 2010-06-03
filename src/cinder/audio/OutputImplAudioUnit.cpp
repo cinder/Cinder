@@ -110,20 +110,6 @@ PcmBuffer32fRef OutputImplAudioUnit::Track::getPcmBuffer()
 	return mLoadedPcmBuffer;
 }
 
-shared_ptr<float> OutputImplAudioUnit::Track::computeFft( ChannelIdentifier channelId, uint16_t aBandCount )
-{
-	mPcmBufferMutex.lock();
-	PcmBuffer32fRef pcmBuffer = mLoadedPcmBuffer;
-	mPcmBufferMutex.unlock();
-	
-	if( ! pcmBuffer || pcmBuffer->getSampleCount() < ( aBandCount * 2 ) ) {
-		return shared_ptr<float>();
-	}
-	Buffer32fRef buffer = pcmBuffer->getChannelData( channelId );
-	FftProcessorRef processor = FftProcessor::createRef( aBandCount );
-	return processor->process( &( buffer->mData[ pcmBuffer->getSampleCount() - ( aBandCount * 2 ) ] ) );
-}
-
 OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData)
 {	
 	OSStatus err = noErr;

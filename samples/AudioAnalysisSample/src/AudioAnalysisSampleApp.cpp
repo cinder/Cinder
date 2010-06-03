@@ -1,6 +1,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/audio/Io.h"
 #include "cinder/audio/Output.h"
+#include "cinder/audio/FftProcessor.h"
 
 #include "Resources.h"
 using namespace ci;
@@ -74,7 +75,12 @@ void AudioAnalysisSampleApp::drawFft( audio::TrackRef track )
 {
 	float ht = 100.0f;
 	uint16_t bandCount = 32;
-	boost::shared_ptr<float> fftRef = track->computeFft( audio::CHANNEL_FRONT_LEFT, bandCount );
+	
+	audio::PcmBuffer32fRef aPcmBuffer = track->getPcmBuffer();
+	if( ! aPcmBuffer ) {
+		return;
+	}
+	boost::shared_ptr<float> fftRef = audio::calculateFft( aPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT ), bandCount );
 	if( ! fftRef ) {
 		return;
 	}

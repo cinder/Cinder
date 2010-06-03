@@ -88,7 +88,6 @@ class OutputImplAudioUnit : public OutputImpl {
 		bool isPcmBuffering() { return mIsPcmBuffering; }
 		
 		PcmBuffer32fRef getPcmBuffer();
-		shared_ptr<float> computeFft( ChannelIdentifier channelId, uint16_t aBandCount );
 	  private:
 		static OSStatus renderCallback( void * audioLoader, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData);
 		

@@ -62,7 +62,6 @@ class Track {
 	virtual void setPcmBuffering( bool isBuffering ) = 0;
 	virtual bool isPcmBuffering() = 0;
 	virtual PcmBuffer32fRef getPcmBuffer() = 0;
-	virtual shared_ptr<float> computeFft( ChannelIdentifier channelId = CHANNEL_FRONT_LEFT, uint16_t aBandCount = 256 ) = 0;
   protected:
 	Track() {}
 };

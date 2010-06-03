@@ -23,10 +23,11 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/audio/PcmBuffer.h"
 
 namespace cinder { namespace audio {
 
-//shared_ptr<float> calculateFft( Buffer32fRef aBuffer, uint16_t aBandCount )
+shared_ptr<float> calculateFft( Buffer32fRef aBuffer, uint16_t aBandCount );
 
 class FftProcessorImpl {
  public:

@@ -32,11 +32,16 @@
 
 namespace cinder { namespace audio {
 
-/*shared_ptr<float> calculateFft( Buffer32fRef aBuffer, uint16_t aBandCount )
+shared_ptr<float> calculateFft( Buffer32fRef aBuffer, uint16_t aBandCount )
 {
+	if( ! aBuffer || ( aBuffer->mSampleCount < aBandCount * 2 ) ) {
+		//TODO: throw
+		return shared_ptr<float>();
+	}
+
 	FftProcessorRef processor = FftProcessor::createRef( aBandCount );
-	return processor->process( &( buffer->mData[ pcmBuffer->getSampleCount() - ( aBandCount * 2 ) ] ) );
-}*/
+	return processor->process( &( aBuffer->mData[ aBuffer->mSampleCount - ( aBandCount * 2 ) ] ) );
+}
 
 FftProcessorImpl::FftProcessorImpl( uint16_t aBandCount )
 	: mBandCount( aBandCount )

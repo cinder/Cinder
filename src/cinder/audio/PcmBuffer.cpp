@@ -62,6 +62,7 @@ PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, boo
 		buffer->mNumberChannels = channelsPerBuffer;
 		buffer->mDataByteSize = bufferSize * sizeof(T);
 		buffer->mData = new T[bufferSize];
+		buffer->mSampleCount = 0;
 		mBufferSampleCounts[i] = 0;
 	}
 }
@@ -87,6 +88,7 @@ shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier channel
 		}
 		buffer->mNumberChannels = 1;
 		buffer->mDataByteSize = mMaxSampleCount * sizeof( T );
+		buffer->mSampleCount = mBufferSampleCounts[channelId];
 		return buffer;
 	}
 	
@@ -106,6 +108,7 @@ shared_ptr<BufferT<T> > PcmBufferT<T>::getInterleavedData() const {
 		}
 		buffer->mNumberChannels = mChannelCount;
 		buffer->mDataByteSize = mMaxSampleCount * mChannelCount * sizeof( T );
+		buffer->mSampleCount = mBufferSampleCounts[0];
 		return buffer;
 	}
 	return mBuffers[0];
