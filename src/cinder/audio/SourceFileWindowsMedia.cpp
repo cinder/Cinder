@@ -188,7 +188,7 @@ void LoaderSourceFileWindowsMedia::setSampleOffset( uint64_t anOffset )
 	mReader->SetRange( timeAtSample( mSampleOffset ), 0 );
 }
 
-void LoaderSourceFileWindowsMedia::loadData( uint32_t *ioSampleCount, BufferList *ioData )
+void LoaderSourceFileWindowsMedia::loadData( BufferList *ioData )
 {	
 	HRESULT hr;
 	INSSBuffer * outBuffer;
@@ -200,7 +200,7 @@ void LoaderSourceFileWindowsMedia::loadData( uint32_t *ioSampleCount, BufferList
 
 	hr = mReader->GetNextSample( 0, &outBuffer, &pcnsSampleTime, &pcnsDuration, &pdwFlags, &pdwOutputNum, &pwStreamNum );
 	if( hr == NS_E_NO_MORE_SAMPLES ) {
-		*ioSampleCount = 0;
+		ioData->mBuffers[0].mSampleCount = 0;
 		return;
 	}
 
@@ -218,12 +218,8 @@ void LoaderSourceFileWindowsMedia::loadData( uint32_t *ioSampleCount, BufferList
 
 	memcpy( ioData->mBuffers[0].mData, rawBuffer, bufferSize );
 	ioData->mBuffers[0].mDataByteSize = bufferSize;
-	*ioSampleCount = bufferSize / mSrcBlockAlign;
-	mSampleOffset += *ioSampleCount;
-	
-
-//	LONGLONG duration = (*ioSampleCount / mSrcChannelCount ) / (double)mSrcSampleRate * 10000000L;
-	//hr = mReader->SetRange( mTimeOffset, 0 ); //TODO, just implement this in seeking
+	ioData->mBuffers[0].mSampleCount = bufferSize / mSrcBlockAlign;
+	mSampleOffset += ioData->mBuffers[0].mSampleCount;
 }
 
 uint64_t LoaderSourceFileWindowsMedia::timeAtSample( uint64_t aSample ) const
