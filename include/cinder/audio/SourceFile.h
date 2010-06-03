@@ -43,7 +43,7 @@ class LoaderSourceFile : public Loader {
 	
 	uint64_t getSampleOffset() const;
 	void setSampleOffset( uint64_t anOffset );
-	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	void loadData( BufferList *ioData );
  private:
 	static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions );
 

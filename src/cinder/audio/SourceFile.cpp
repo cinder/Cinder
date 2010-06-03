@@ -77,9 +77,9 @@ void LoaderSourceFile::setSampleOffset( uint64_t anOffset ) {
 	mPacketOffset = mSource->packetAtSample( anOffset );
 }
 
-void LoaderSourceFile::loadData( uint32_t *ioSampleCount, BufferList *ioData )
+void LoaderSourceFile::loadData( BufferList *ioData )
 {	
-	mConverter->loadData( ioSampleCount, ioData );
+	mConverter->loadData( ioData );
 }
 
 void LoaderSourceFile::dataInputCallback( Loader* aLoader, uint32_t *ioNumberDataPackets, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions )

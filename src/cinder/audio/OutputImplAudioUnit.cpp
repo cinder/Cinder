@@ -144,11 +144,11 @@ OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUni
 		for( int i = 0; i < bufferList.mNumberBuffers; i++ ) {
 			bufferList.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
 			bufferList.mBuffers[i].mDataByteSize = ioData->mBuffers[i].mDataByteSize;
+			bufferList.mBuffers[i].mSampleCount = inNumberFrames;
 			bufferList.mBuffers[i].mData = ioData->mBuffers[i].mData;
 		}
 		
-		theLoader->loadData( (uint32_t *)&inNumberFrames, &bufferList );
-		delete [] bufferList.mBuffers;
+		theLoader->loadData( &bufferList );
 		
 		ioData->mNumberBuffers = bufferList.mNumberBuffers;
 		for( int i = 0; i < bufferList.mNumberBuffers; i++ ) {
@@ -156,6 +156,8 @@ OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUni
 			ioData->mBuffers[i].mDataByteSize = bufferList.mBuffers[i].mDataByteSize;
 			ioData->mBuffers[i].mData = bufferList.mBuffers[i].mData;
 		}
+		
+		delete [] bufferList.mBuffers;
 		
 	}
 	//save data into pcm buffer if it's enabled

@@ -123,11 +123,13 @@ void PcmBufferT<T>::appendInterleavedData( T * aData, uint32_t aSampleCount )
 		for( uint32_t i = 0; i < aSampleCount; i++ ) {
 			for( uint16_t j = 0; j < mChannelCount; j++ ) {
 				mBuffers[j]->mData[mBufferSampleCounts[j]] = aData[i + j];
+				mBuffers[j]->mSampleCount += 1;
 				mBufferSampleCounts[0] += 1;
 			}
 		}
 	} else {
 		memcpy( &( mBuffers[0]->mData[mBufferSampleCounts[0] * mChannelCount] ), aData, aSampleCount * mChannelCount * sizeof(T) );
+		mBuffers[0]->mSampleCount += aSampleCount;
 		mBufferSampleCounts[0] += aSampleCount;
 	}
 }
@@ -147,6 +149,7 @@ void PcmBufferT<T>::appendChannelData( T * aData, uint32_t aSampleCount, Channel
 		//TODO: iterate data and copy into single buffers
 	} else {
 		memcpy( &( mBuffers[channelId]->mData[mBufferSampleCounts[channelId]] ), aData, aSampleCount * sizeof(T) );
+		mBuffers[channelId]->mSampleCount += aSampleCount;
 		mBufferSampleCounts[channelId] += aSampleCount;
 	}
 }

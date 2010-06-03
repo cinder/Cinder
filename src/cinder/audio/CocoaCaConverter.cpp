@@ -76,26 +76,29 @@ CocoaCaConverter::~CocoaCaConverter()
 	AudioConverterDispose( mConverter );
 }
 
-void CocoaCaConverter::loadData( uint32_t *ioSampleCount, BufferList *ioData )
+void CocoaCaConverter::loadData( BufferList *ioData )
 {	
 	shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
 
-	AudioStreamPacketDescription * outputPacketDescriptions = new AudioStreamPacketDescription[*ioSampleCount];
-	OSStatus err = AudioConverterFillComplexBuffer( mConverter, CocoaCaConverter::dataInputCallback, (void *)this, (UInt32 *)ioSampleCount, nativeBufferList.get(), outputPacketDescriptions );
+	UInt32 aSampleCount = ioData->mBuffers[0].mSampleCount;
+	AudioStreamPacketDescription * outputPacketDescriptions = new AudioStreamPacketDescription[aSampleCount];
+	
+	OSStatus err = AudioConverterFillComplexBuffer( mConverter, CocoaCaConverter::dataInputCallback, (void *)this, &aSampleCount, nativeBufferList.get(), outputPacketDescriptions );
 	delete [] outputPacketDescriptions;
 	if( err ) {
 		//throw
 	}
 	
-	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );
+	fillBufferListFromCaBufferList( ioData, nativeBufferList.get(), (uint32_t)aSampleCount );
 }
 
-void CocoaCaConverter::fillBufferListFromCaBufferList( BufferList * aBufferList, const AudioBufferList * caBufferList )
+void CocoaCaConverter::fillBufferListFromCaBufferList( BufferList * aBufferList, const AudioBufferList * caBufferList, uint32_t aSampleCount )
 {
 	aBufferList->mNumberBuffers = caBufferList->mNumberBuffers;
 	for( int i = 0; i < caBufferList->mNumberBuffers; i++ ) {
 		aBufferList->mBuffers[i].mNumberChannels = caBufferList->mBuffers[i].mNumberChannels;
 		aBufferList->mBuffers[i].mDataByteSize = caBufferList->mBuffers[i].mDataByteSize;
+		aBufferList->mBuffers[i].mSampleCount = aSampleCount;
 		aBufferList->mBuffers[i].mData = caBufferList->mBuffers[i].mData;
 	}
 }

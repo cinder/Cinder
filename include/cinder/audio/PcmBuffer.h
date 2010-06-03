@@ -38,6 +38,7 @@ template<typename T>
 struct BufferT {
 	uint32_t	mNumberChannels; 
     uint32_t	mDataByteSize;
+	uint32_t	mSampleCount;
 	T			* mData;
 };
 

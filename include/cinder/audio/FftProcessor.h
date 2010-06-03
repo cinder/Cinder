@@ -26,6 +26,8 @@
 
 namespace cinder { namespace audio {
 
+//shared_ptr<float> calculateFft( Buffer32fRef aBuffer, uint16_t aBandCount )
+
 class FftProcessorImpl {
  public:
 	FftProcessorImpl( uint16_t aBandCount );

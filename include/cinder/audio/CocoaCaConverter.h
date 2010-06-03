@@ -38,9 +38,9 @@ class CocoaCaConverter {
 	CocoaCaConverter( Loader *aLoader, LoaderFunction loaderFn, const AudioStreamBasicDescription& sourceDescription, const AudioStreamBasicDescription& targetDescription, uint32_t maxPacketSize );
 	~CocoaCaConverter();
 	
-	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	void loadData( BufferList *ioData );
  private:
-	static void fillBufferListFromCaBufferList( BufferList * aBufferList, const AudioBufferList * caBufferList );
+	static void fillBufferListFromCaBufferList( BufferList * aBufferList, const AudioBufferList * caBufferList, uint32_t aSampleCount = 0 );
 	static shared_ptr<AudioBufferList> createCaBufferList( const BufferList * caBufferList );
 	static OSStatus dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader );
  

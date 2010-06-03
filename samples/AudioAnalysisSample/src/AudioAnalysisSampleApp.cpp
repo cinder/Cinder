@@ -25,6 +25,7 @@ void AudioAnalysisSampleApp::setup()
 	//mTrack1 = audio::Output::addTrack( audio::load( "C:\\code\\cinder\\samples\\AudioPlayback\\resources\\booyah.mp3" ) );
 	//mTrack1->setPcmBuffering( true );
 	mTrack1 = audio::Output::addTrack( audio::load( loadResource( RES_GUITAR ) ) );
+	//mTrack1 = audio::Output::addTrack( audio::load( "../../../../AudioPlayback/resources/booyah.mp3" ) );
 	mTrack1->setPcmBuffering( true );
 	//mTrack2 = audio::Output::addTrack( audio::load( loadResource( RES_DRUMS ) ) );
 	//mTrack2->setPcmBuffering( true );

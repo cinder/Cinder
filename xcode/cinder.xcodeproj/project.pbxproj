@@ -571,6 +571,7 @@
 		C76DBDCB11B6B87D00A353EB /* FftProcessorImplAccelerate.h in Headers */ = {isa = PBXBuildFile; fileRef = C76DBDC911B6B87D00A353EB /* FftProcessorImplAccelerate.h */; };
 		C76DBDCC11B6B87D00A353EB /* PcmBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C76DBDCA11B6B87D00A353EB /* PcmBuffer.h */; };
 		C76DBDED11B6B8EE00A353EB /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C76DBDEC11B6B8EE00A353EB /* OutputImplAudioUnit.h */; };
+		C76DBE5A11B8060000A353EB /* FftProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = C76DBE5911B8060000A353EB /* FftProcessor.h */; };
 		C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7792FAE119A185000521786 /* CocoaCaConverter.cpp */; };
 		C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
 		C7A76E9F1176449F00A46655 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
@@ -834,6 +835,7 @@
 		C76DBDC911B6B87D00A353EB /* FftProcessorImplAccelerate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FftProcessorImplAccelerate.h; sourceTree = "<group>"; };
 		C76DBDCA11B6B87D00A353EB /* PcmBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmBuffer.h; sourceTree = "<group>"; };
 		C76DBDEC11B6B8EE00A353EB /* OutputImplAudioUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputImplAudioUnit.h; sourceTree = "<group>"; };
+		C76DBE5911B8060000A353EB /* FftProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FftProcessor.h; sourceTree = "<group>"; };
 		C7792FAE119A185000521786 /* CocoaCaConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CocoaCaConverter.cpp; sourceTree = "<group>"; };
 		C7792FB0119A186000521786 /* CocoaCaConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaCaConverter.h; sourceTree = "<group>"; };
 		C7A76E9A1176449F00A46655 /* Io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Io.cpp; sourceTree = "<group>"; };
@@ -1373,6 +1375,7 @@
 		C7BA405B0FA8BEFD00AADC07 /* audio */ = {
 			isa = PBXGroup;
 			children = (
+				C76DBE5911B8060000A353EB /* FftProcessor.h */,
 				C76DBDC911B6B87D00A353EB /* FftProcessorImplAccelerate.h */,
 				C76DBDCA11B6B87D00A353EB /* PcmBuffer.h */,
 				C7A76EA3117644AB00A46655 /* Callback.h */,
@@ -1813,6 +1816,7 @@
 				C76DBDCB11B6B87D00A353EB /* FftProcessorImplAccelerate.h in Headers */,
 				C76DBDCC11B6B87D00A353EB /* PcmBuffer.h in Headers */,
 				C76DBDED11B6B8EE00A353EB /* OutputImplAudioUnit.h in Headers */,
+				C76DBE5A11B8060000A353EB /* FftProcessor.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -118,7 +118,7 @@ class Loader {
 	virtual ~Loader() {}
 	virtual uint32_t getOptimalBufferSize() const { return 0; };
 
-	virtual void loadData( uint32_t *ioSampleCount, BufferList *ioData ) = 0;
+	virtual void loadData( BufferList *ioData ) = 0;
 	virtual uint64_t getSampleOffset() const = 0;
 	virtual void setSampleOffset( uint64_t anOffset ) = 0;
  protected:
