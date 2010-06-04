@@ -88,7 +88,31 @@ class ImageTargetCvPixelBuffer : public ci::ImageTarget {
 	uint8_t				*mData;
 };
 
-//! Creates a CVPixelBufferRef from an ImageSource. Release the result with CVPixelBufferRelease()
+//! Creates a CVPixelBufferRef from an ImageSource. Release the result with CVPixelBufferRelease().
 CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource );
+
+
+typedef shared_ptr<class ImageTargetGWorld> ImageTargetGWorldRef;
+
+class ImageTargetGWorld : public ci::ImageTarget {
+  public:
+	static ImageTargetGWorldRef createRef( ImageSourceRef imageSource );
+
+	virtual void*		getRowPointer( int32_t row );
+	virtual void		finalize();
+
+	::GWorldPtr			getGWorld() const { return mGWorld; }
+
+  protected:
+	ImageTargetGWorld( ImageSourceRef imageSource );
+	
+	::GWorldPtr			mGWorld;
+	::PixMapHandle		mPixMap;
+	size_t				mRowBytes;
+	uint8_t				*mData;
+};
+
+//! Creates a GWorld from an ImageSource. Dispose of the results using DisposeGWorld().
+GWorldPtr createGWorld( ImageSourceRef imageSource );
 
 } } // namespace cinder::qtime

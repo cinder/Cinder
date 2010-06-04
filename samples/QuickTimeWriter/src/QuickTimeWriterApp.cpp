@@ -24,7 +24,9 @@ void QuickTimeWriterApp::setup()
 {
 	string path = getSaveFilePath();
 	qtime::MovieWriter::Format format;
-	if( ! path.empty() && qtime::MovieWriter::getUserCompressionSettings( &format ) )
+	Surface surface( 640, 480, false );
+	ip::fill( &surface, Color8u( 255, 128, 64 ) );
+	if( ! path.empty() && qtime::MovieWriter::getUserCompressionSettings( &format, loadImage( "C:\\Users\\Andrew\\Pictures\\2046-724573.jpg" ) ) )
 		mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), format );
 }
 

@@ -108,8 +108,8 @@ class MovieWriter {
 	//! Returns the Movie's Format
 	const Format&	getFormat() const { return mObj->mFormat; }
 
-	//! Presents the user with the standard compression options dialog. Return \c false if user cancelled.
-	static bool		getUserCompressionSettings( Format *result );
+	//! Presents the user with the standard compression options dialog. Optional \a previewImage provides a still image as a preview. Returns \c false if user cancelled.
+	static bool		getUserCompressionSettings( Format *result, ImageSourceRef previewImage = ImageSourceRef() );
 
 	/** \brief Appends a frame to the Movie. The optional \a duration parameter allows a frame to be inserted for a time other than the Format's default duration.
 		\note Calling addFrame() after a call to finish() will throw a MovieWriterExcAlreadyFinished exception. **/

@@ -319,7 +319,7 @@ void MovieWriter::Obj::finish()
 		::DisposeMovie( mMovie );
 }
 
-bool MovieWriter::getUserCompressionSettings( Format *result )
+bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef imageSource )
 {
 	ComponentInstance stdCompression = 0;
 	long scPreferences;
@@ -345,14 +345,38 @@ bool MovieWriter::getUserCompressionSettings( Format *result )
 		return false;
 	}
 
+	// build a preview image
+	GWorldPtr previewImageGWorld = 0;
+	PixMapHandle previewImagePixMap = 0;
+	if( imageSource ) {
+		previewImageGWorld = qtime::createGWorld( imageSource );
+		previewImagePixMap = ::GetGWorldPixMap( previewImageGWorld );
+		if( ! ::LockPixels( previewImagePixMap ) ) {
+			if( stdCompression )
+				::CloseComponent( stdCompression );
+			return false;
+		}
+		::SCSetTestImagePixMap( stdCompression, previewImagePixMap, NULL, scPreferScaling );
+	}
+
 	// display the standard compression dialog box
 	err = ::SCRequestSequenceSettings( stdCompression );
+
+	// before we do anything else, let's free up our preview image resources
+	if( previewImagePixMap )
+        if( ::GetPixelsState( previewImagePixMap ) & pixelsLocked )
+            ::UnlockPixels( previewImagePixMap );
+	if( previewImageGWorld )
+		::DisposeGWorld( previewImageGWorld );
+
+	// now process the result
 	if( err ) {
 	    if( stdCompression )
 			::CloseComponent( stdCompression );
 		return false;
 	}
 
+	// pull out the codec and quality
 	::SCSpatialSettings spatialSettings;
 	::SCGetInfo( stdCompression, scSpatialSettingsType, &spatialSettings );
 	::CodecType codec = spatialSettings.codecType;

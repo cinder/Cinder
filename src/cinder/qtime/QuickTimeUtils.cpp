@@ -487,4 +487,66 @@ CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource )
 	return result;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+// ImageTargetGWorld
+ImageTargetGWorldRef ImageTargetGWorld::createRef( ImageSourceRef imageSource )
+{
+	return ImageTargetGWorldRef( new ImageTargetGWorld( imageSource ) );
+}
+
+ImageTargetGWorld::ImageTargetGWorld( ImageSourceRef imageSource )
+	: ImageTarget(), mGWorld( 0 ), mPixMap( 0 )
+{
+	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
+	
+	OSType formatType;
+	// for now all we support is 8 bit RGB(A)
+	setDataType( ImageIo::UINT8 );
+	if( imageSource->hasAlpha () ) {
+		formatType = k32BGRAPixelFormat;
+		setChannelOrder( ImageIo::BGRA );
+	}
+	else {
+		formatType = k24BGRPixelFormat;
+		setChannelOrder( ImageIo::BGR );
+	}
+	setColorModel( ImageIo::CM_RGB );
+
+	::Rect boundsRect;
+	boundsRect.left = boundsRect.top = 0;
+	boundsRect.right = (short)imageSource->getWidth();
+	boundsRect.bottom = (short)imageSource->getHeight();
+	if( ::QTNewGWorld( &mGWorld, formatType, &boundsRect, NULL, NULL, 0 ) != noErr )
+		throw ImageIoException();
+	
+	mPixMap = ::GetGWorldPixMap( mGWorld );
+    if( ! LockPixels( mPixMap ) ) {
+		::DisposeGWorld( mGWorld );
+        throw ImageIoException();
+	}
+
+	mData = reinterpret_cast<uint8_t*>( (**mPixMap).baseAddr );
+	mRowBytes = ( (**mPixMap).rowBytes ) & 0x3FFF;
+}
+
+void ImageTargetGWorld::finalize()
+{
+	if( ::GetPixelsState( mPixMap ) & pixelsLocked )
+		::UnlockPixels( mPixMap );
+}
+
+void* ImageTargetGWorld::getRowPointer( int32_t row )
+{
+	return &mData[row * mRowBytes];
+}
+
+GWorldPtr createGWorld( ImageSourceRef imageSource )
+{
+	ImageTargetGWorldRef target = ImageTargetGWorld::createRef( imageSource );
+	imageSource->load( target );
+	target->finalize();
+	return target->getGWorld();
+}
+
+
 } } // namespace cinder::qtime
