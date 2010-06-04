@@ -41,7 +41,7 @@ class LoaderSourceFileWindowsMedia : public Loader {
 	~LoaderSourceFileWindowsMedia();
 	
 	uint32_t getOptimalBufferSize() const { return mMaxBufferSize; }
-	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	void loadData( BufferList *ioData );
 
 	uint64_t getSampleOffset() const;
 	void setSampleOffset( uint64_t anOffset );

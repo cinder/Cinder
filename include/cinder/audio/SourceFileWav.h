@@ -35,7 +35,7 @@ class LoaderSourceFileWav : public Loader {
 	~LoaderSourceFileWav();
 
 	uint32_t getOptimalBufferSize() const { return 0; }
-	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	void loadData( BufferList *ioData );
 
 	uint64_t getSampleOffset() const;
 	void setSampleOffset( uint64_t anOffset );

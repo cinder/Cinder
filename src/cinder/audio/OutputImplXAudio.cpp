@@ -163,19 +163,6 @@ PcmBuffer32fRef OutputImplXAudio::Track::getPcmBuffer()
 	return mLoadedPcmBuffer;
 }
 
-shared_ptr<float> OutputImplXAudio::Track::computeFft( ChannelIdentifier channelId, uint16_t aBandCount )
-{
-	boost::mutex::scoped_lock( mPcmBufferMutex );
-	if( ! mLoadedPcmBuffer || mLoadedPcmBuffer->getSampleCount() < aBandCount ) {
-		return shared_ptr<float>();
-	}
-	PcmBuffer32fRef pcmBuffer( mLoadedPcmBuffer );
-	FftProcessorRef processor( FftProcessor::createRef( aBandCount ) );
-	Buffer32fRef buffer( pcmBuffer->getChannelData( channelId ) );
-	return processor->process( &( buffer->mData[ pcmBuffer->getSampleCount() - aBandCount ] ) );
-	//return shared_ptr<float>();
-}
-
 //HRESULT OutputImplXAudio::Track::dataInputCallback( void * audioData, uint32_t dataSize, void * track, uint64_t sampleTime, uint32_t sampleDuration )
 void OutputImplXAudio::Track::fillBuffer()
 {
@@ -198,12 +185,12 @@ void OutputImplXAudio::Track::fillBuffer()
 		buffer.mData = &( mDecodedBuffers[mCurrentBuffer * mBufferSize] );
 		buffer.mDataByteSize = mBufferSize;
 		buffer.mNumberChannels = mVoiceDescription.nChannels;
+		buffer.mSampleCount = mSamplesPerBuffer;
 		bufferList.mBuffers = &buffer;
 		
-		uint32_t sampleCount = mSamplesPerBuffer;
-		mLoader->loadData( &sampleCount, &bufferList );
+		mLoader->loadData( &bufferList );
 		
-		if( sampleCount <= 0 ) {
+		if( bufferList.mBuffers[0].mSampleCount <= 0 ) {
 			stop();
 			return;
 		}
