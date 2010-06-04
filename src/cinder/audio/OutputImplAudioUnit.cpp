@@ -36,7 +36,7 @@ OutputImplAudioUnit::Track::Track( SourceRef source, OutputImplAudioUnit * outpu
 	: cinder::audio::Track(), mSource( source ), mOutput( output ), mIsPlaying( false), mIsLooping( false ), mIsPcmBuffering( false )
 {
 	mTarget = TargetOutputImplAudioUnit::createRef( output );
-	mLoader = source->getLoader( mTarget.get() );
+	mLoader = source->createLoader( mTarget.get() );
 	mInputBus = output->availableTrackId();
 }
 

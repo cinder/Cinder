@@ -61,7 +61,7 @@ class SourceFile : public Source {
 	static SourceFileRef	createFileRef( DataSourceRef dataSourceRef );
 	~SourceFile();
 
-	virtual LoaderRef getLoader( Target *target ) { return LoaderSourceFile::createRef( this, target ); }
+	virtual LoaderRef createLoader( Target *target ) { return LoaderSourceFile::createRef( this, target ); }
 
 	double getDuration() const { return mDuration; };
 

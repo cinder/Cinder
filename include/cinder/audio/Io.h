@@ -102,7 +102,7 @@ class Target : public Io {
 class Source : public Io {
  public:
 	virtual ~Source() {}
-	virtual LoaderRef getLoader( Target *target ) { return LoaderRef(); }
+	virtual LoaderRef createLoader( Target *target ) { return LoaderRef(); }
 	
 	virtual double getDuration() const = 0;
  protected:
