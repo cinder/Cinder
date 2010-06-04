@@ -2,6 +2,7 @@
 #include "cinder/audio/Io.h"
 #include "cinder/audio/Output.h"
 #include "cinder/audio/Callback.h"
+#include "cinder/audio/PcmBuffer.h"
 
 #if defined(CINDER_MSW)
 	#include "cinder/audio/SourceFileWindowsMedia.h"
@@ -36,8 +37,20 @@ void AudioNewTestApp::setup()
 	//mAudioSource = audio::load( loadResource( "guitar.mp3", RES_GUITAR_MP3, "MP3" ) );
 	//console() << mAudioSource->getDuration() << std::endl;
 	//mAudioSource = audio::load( "..\\data\\guitar.mp3" );
-	mAudioSource = audio::load( "../../../data/booyah.mp3" );
-	audio::LoaderRef loader(  );
+	mAudioSource = audio::load( "../../../data/booyah_short.wav" );
+	audio::LoaderRef loader( mAudioSource->createLoader( audio::Output::getTarget() ) );
+	
+	audio::BufferList bufferList;
+	bufferList.mNumberBuffers = 2;
+	bufferList.mBuffers = new audio::BufferGeneric[2];
+	for( int i = 0; i < 2; i++ ) {
+		bufferList.mBuffers[i].mNumberChannels = 1;
+		bufferList.mBuffers[i].mSampleCount = 1024;
+		bufferList.mBuffers[i].mDataByteSize = 1024 * sizeof( float );
+		bufferList.mBuffers[i].mData = (void *)new float[1024];
+	}
+	
+	
 	
 	//mTrack1 = audio::Output::addTrack( audio::load( loadResource( "guitar.mp3", RES_GUITAR_MP3, "MP3" ) ) );
 	//mTrack2 = audio::Output::addTrack( audio::load( loadResource( "drums.mp3", RES_DRUMS_MP3, "MP3" ) ) );

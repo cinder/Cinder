@@ -33,10 +33,52 @@ void deleteBuffer( BufferT<T> * aBuffer )
 	delete aBuffer;
 }
 
-#define DELETE_BUFFER_PROTOTYPES(r,data,T)\
-	template void deleteBuffer( BufferT<T> * aBuffer );
+template<typename T>
+shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_t channelCount, bool isInterleaved )
+{
+	void (*fn)( BufferListT<T> * ) = deleteBufferList;
+	shared_ptr<BufferListT<T> > bufferList( new BufferListT<T>, fn );
+	uint16_t bufferCount = 0;
+	uint32_t bufferSize = 0;
+	uint16_t channelsPerBuffer = 0;
+	if( ! isInterleaved ) {
+		bufferCount = channelCount;
+		bufferSize = sampleCount;
+		channelsPerBuffer = 1;
+	} else {
+		bufferCount = 1;
+		bufferSize = sampleCount * channelCount;
+		channelsPerBuffer = channelCount;
+	}
+	
+	
+	bufferList->mNumberBuffers = bufferCount;
+	bufferList->mBuffers = new BufferT<T>[bufferCount];
+	for( int i = 0; i < bufferCount; i++ ) {
+		bufferList->mBuffers[i].mNumberChannels = channelsPerBuffer;
+		bufferList->mBuffers[i].mDataByteSize = bufferSize * sizeof(T);
+		bufferList->mBuffers[i].mData = new T[bufferSize];
+		bufferList->mBuffers[i].mSampleCount = sampleCount;
+	}
+	
+	return bufferList;
+}
 
-BOOST_PP_SEQ_FOR_EACH( DELETE_BUFFER_PROTOTYPES, ~, AUDIO_DATA_TYPES )
+template<typename T>
+void deleteBufferList( BufferListT<T> * aBufferList ) {
+	for( int i = 0; i < aBufferList->mNumberBuffers; i++ ) {
+		deleteBuffer( &( aBufferList->mBuffers[i] ) );
+	}
+	delete aBufferList;
+}
+
+#define CREATE_BUFFERLIST_PROTOTYPES(r,data,T)\
+	template void deleteBuffer( BufferT<T> * aBuffer );\
+	template shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_t channelCount, bool isInterleaved );\
+	template void deleteBufferList( BufferListT<T> * aBuffer );
+
+BOOST_PP_SEQ_FOR_EACH( CREATE_BUFFERLIST_PROTOTYPES, ~, AUDIO_DATA_TYPES )
+
 
 template<typename T>
 PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, bool isInterleaved ) 

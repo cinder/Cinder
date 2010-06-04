@@ -76,6 +76,8 @@ class OutputImpl {
 	
 	virtual float getVolume() const = 0;
 	virtual void setVolume( float aVolume ) = 0;
+	
+	virtual TargetRef getTarget() = 0;
   protected:
 	OutputImpl();
 	virtual TrackId					availableTrackId() { return mNextTrackId++; }
@@ -105,6 +107,8 @@ class Output {
 	
 	static float getVolume() { return instance()->getVolume(); }
 	static void setVolume( float aVolume ) { instance()->setVolume( aVolume ); }
+	
+	static TargetRef getTarget() { return instance()->getTarget(); }
   private:
 	static OutputImpl* instance();
 };

@@ -55,6 +55,8 @@ class OutputImplAudioUnit : public OutputImpl {
 	
 	void setVolume( float aVolume );
 	float getVolume() const;
+	
+	TargetRef getTarget();
   private:
 	AudioDeviceID					mOutputDeviceId;
 	AUGraph							mGraph;

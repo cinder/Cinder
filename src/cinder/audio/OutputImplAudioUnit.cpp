@@ -343,4 +343,9 @@ void OutputImplAudioUnit::setVolume( float aVolume )
 	}
 }
 
+TargetRef OutputImplAudioUnit::getTarget()
+{
+	return TargetOutputImplAudioUnit::createRef( this );
+}
+
 }} //namespace

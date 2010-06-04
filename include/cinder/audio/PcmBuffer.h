@@ -110,7 +110,13 @@ inline void silenceBuffers( BufferList * aBufferList )
 }
 
 template<typename T> 
-void deleteBuffer( BufferT<T> * aBuffer ) ;
+void deleteBuffer( BufferT<T> * aBuffer );
+
+template<typename T>
+shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_t channelCount, bool isInterleaved );
+
+template<typename T> 
+void deleteBufferList( BufferListT<T> * aBufferList );
 
 #define AUDIO_DATA_TYPES (uint8_t)(int16_t)(int32_t)(float)
 
