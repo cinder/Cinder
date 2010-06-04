@@ -24,6 +24,7 @@
 #	error "This file must be compiled as Objective-C++ on the Mac"
 #endif
 
+#include "cinder/app/App.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 
@@ -42,15 +43,110 @@
 		#include <GXMath.h>
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
-
+#include <QuickTimeComponents.h>
 
 namespace cinder { namespace qtime {
 
-MovieWriter::MovieWriter( const std::string &path, int32_t width, int32_t height, uint32_t codec, float quality )
-	: mObj( shared_ptr<Obj>( new Obj( path, width, height, Format( codec, quality ) ) ) )
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MovieWriter::Format
+
+MovieWriter::Format::Format()
+	: mCodec( 'png ' )
 {
+	initDefaults();
 }
 
+MovieWriter::Format::Format( uint32_t codec, float quality )
+	: mCodec( codec )
+{
+	initDefaults();
+	setQuality( quality );
+}
+
+MovieWriter::Format::Format( const ICMCompressionSessionOptionsRef options, uint32_t codec, float quality, float frameRate )
+	: mCodec( codec )
+{
+	::ICMCompressionSessionOptionsCreateCopy( NULL, options, &mOptions );
+	setQuality( quality );
+	setTimeScale( frameRate * 100 );
+	setDefaultDuration( 1.0f / frameRate );
+}
+
+MovieWriter::Format::Format( const Format &format )
+	: mCodec( format.mCodec ), mTimeBase( format.mTimeBase ), mDefaultTime( format.mDefaultTime )
+{
+	::ICMCompressionSessionOptionsCreateCopy( NULL, format.mOptions, &mOptions );
+}
+
+MovieWriter::Format::~Format()
+{
+	::ICMCompressionSessionOptionsRelease( mOptions );
+}
+
+void MovieWriter::Format::initDefaults()
+{
+	OSStatus err = ::ICMCompressionSessionOptionsCreate( NULL, &mOptions );
+
+	mTimeBase = 600;
+	mDefaultTime = 1 / 30.0f;
+
+	enableTemporal( true );
+	enableReordering( true );
+	enableFrameTimeChanges( true );
+	setQuality( 0.99f );
+}
+
+MovieWriter::Format& MovieWriter::Format::setQuality( float quality )
+{
+	quality = constrain<float>( quality, 0, 1 );
+	CodecQ compressionQuality = CodecQ(0x00000400 * quality);
+	OSStatus err = ICMCompressionSessionOptionsSetProperty( mOptions,
+                                kQTPropertyClass_ICMCompressionSessionOptions,
+                                kICMCompressionSessionOptionsPropertyID_Quality,
+                                sizeof(compressionQuality),
+                                &compressionQuality );	
+	return *this;
+}
+
+MovieWriter::Format& MovieWriter::Format::enableTemporal( bool enable )
+{
+	OSStatus err = ::ICMCompressionSessionOptionsSetAllowTemporalCompression( mOptions, enable );
+	return *this;
+}
+
+MovieWriter::Format& MovieWriter::Format::enableReordering( bool enable )
+{
+	OSStatus err = ::ICMCompressionSessionOptionsSetAllowFrameReordering( mOptions, enable );
+	return *this;
+}
+
+MovieWriter::Format& MovieWriter::Format::enableFrameTimeChanges( bool enable )
+{
+	OSStatus err = ::ICMCompressionSessionOptionsSetAllowFrameTimeChanges( mOptions, enable );
+	return *this;
+}
+
+MovieWriter::Format& MovieWriter::Format::setMaxKeyFrameRate( int32_t rate )
+{
+	OSStatus err = ::ICMCompressionSessionOptionsSetMaxKeyFrameInterval( mOptions, rate );
+	return *this;
+}
+
+const MovieWriter::Format& MovieWriter::Format::operator=( const Format &format )
+{
+	if( mOptions != format.mOptions ) {
+		::ICMCompressionSessionOptionsRelease( mOptions );
+		::ICMCompressionSessionOptionsCreateCopy( NULL, format.mOptions, &mOptions );
+	}
+
+	mTimeBase = format.mTimeBase;
+	mDefaultTime = format.mDefaultTime;
+
+	return *this;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MovieWriter
 MovieWriter::MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format )
 	: mObj( shared_ptr<Obj>( new Obj( path, width, height, format ) ) )
 {
@@ -161,56 +257,12 @@ void MovieWriter::Obj::createCompressionSession()
 	::ICMEncodedFrameOutputRecord encodedFrameOutputRecord = {0};
 	::ICMCompressionSessionOptionsRef sessionOptions = NULL;
 	
-	err = ::ICMCompressionSessionOptionsCreate( NULL, &sessionOptions );
+	err = ::ICMCompressionSessionOptionsCreateCopy( NULL, mFormat.mOptions, &sessionOptions );
 	if( err )
 		goto bail;
-	
-	// We must set this flag to enable P or B frames.
-	if( mFormat.mEnableTemporal ) {
-		err = ::ICMCompressionSessionOptionsSetAllowTemporalCompression( sessionOptions, true );
-		if( err )
-			goto bail;
-	}
-	
-	// We must set this flag to enable B frames.
-	if( mFormat.mEnableReordering ) {
-		err = ::ICMCompressionSessionOptionsSetAllowFrameReordering( sessionOptions, true );
-		if( err )
-			goto bail;
-	}
-	
-	// Set the maximum key frame interval, also known as the key frame rate.
-	if( mFormat.mMaxKeyFrameRate != 0 ) {
-		err = ::ICMCompressionSessionOptionsSetMaxKeyFrameInterval( sessionOptions, mFormat.mMaxKeyFrameRate );
-		if( err )
-			goto bail;
-	}
-
-	// This allows the compressor more flexibility (ie, dropping and coalescing frames).
-	if( mFormat.mEnableFrameTimeChanges ) {
-		err = ::ICMCompressionSessionOptionsSetAllowFrameTimeChanges( sessionOptions, true );
-		if( err )
-			goto bail;
-	}
 	
 	// We need durations when we store frames.
 	err = ::ICMCompressionSessionOptionsSetDurationsNeeded( sessionOptions, true );
-	if( err )
-		goto bail;
-
-	CodecQ compressionQuality = CodecQ(0x00000400 * mFormat.mQuality);
-	err = ICMCompressionSessionOptionsSetProperty(sessionOptions,
-                                kQTPropertyClass_ICMCompressionSessionOptions,
-                                kICMCompressionSessionOptionsPropertyID_Quality,
-                                sizeof(compressionQuality),
-                                &compressionQuality );
-
-	// Set the average data rate.
-	/*err = ICMCompressionSessionOptionsSetProperty( sessionOptions, 
-				kQTPropertyClass_ICMCompressionSessionOptions,
-				kICMCompressionSessionOptionsPropertyID_AverageDataRate,
-				sizeof( averageDataRate ),
-				&averageDataRate );*/
 	if( err )
 		goto bail;
 	
@@ -222,10 +274,12 @@ void MovieWriter::Obj::createCompressionSession()
 	if( err )
 		goto bail;
 
+	::ICMCompressionSessionOptionsRelease( sessionOptions );
 	return;
 
 bail:
-	::ICMCompressionSessionOptionsRelease( sessionOptions );
+	if( sessionOptions )
+		::ICMCompressionSessionOptionsRelease( sessionOptions );
 	throw MovieWriterExc();
 }
 
@@ -263,6 +317,58 @@ void MovieWriter::Obj::finish()
 
 	if( mMovie )
 		::DisposeMovie( mMovie );
+}
+
+bool MovieWriter::getUserCompressionSettings( Format *result )
+{
+	ComponentInstance stdCompression = 0;
+	long scPreferences;
+	ICMCompressionSessionOptionsRef sessionOptionsRef = NULL;
+	ComponentResult err;
+
+	startQuickTime();
+
+	err = ::OpenADefaultComponent( ::StandardCompressionType, ::StandardCompressionSubType, &stdCompression );
+	if( err || ( stdCompression == 0 ) )
+		return false;
+
+	// Indicates the client is ready to use the ICM compression session API to perform compression operations
+	// StdCompression will disable frame reordering and multi pass encoding if this flag not set because the
+	// older sequence APIs do not support these capabilities
+	scPreferences = scAllowEncodingWithCompressionSession;
+
+	// set the preferences we want
+	err = ::SCSetInfo( stdCompression, ::scPreferenceFlagsType, &scPreferences );
+	if( err ) {
+	    if( stdCompression )
+			::CloseComponent( stdCompression );
+		return false;
+	}
+
+	// display the standard compression dialog box
+	err = ::SCRequestSequenceSettings( stdCompression );
+	if( err ) {
+	    if( stdCompression )
+			::CloseComponent( stdCompression );
+		return false;
+	}
+
+	::SCSpatialSettings spatialSettings;
+	::SCGetInfo( stdCompression, scSpatialSettingsType, &spatialSettings );
+	::CodecType codec = spatialSettings.codecType;
+	::CodecQ quality = spatialSettings.spatialQuality;
+
+	::SCTemporalSettings temporalSettings;
+	::SCGetInfo( stdCompression, scTemporalSettingsType, &temporalSettings );
+
+	// creates a compression session options object based on configured settings
+	err = ::SCCopyCompressionSessionOptions( stdCompression, &sessionOptionsRef );
+    if( stdCompression )
+		::CloseComponent( stdCompression );
+
+	*result = Format( sessionOptionsRef, static_cast<uint32_t>( codec ), quality / (float)codecLosslessQuality, FixedToFloat( temporalSettings.frameRate ) );
+
+	return true;
 }
 
 } } // namespace cinder::qtime

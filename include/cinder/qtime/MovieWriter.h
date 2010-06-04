@@ -33,7 +33,8 @@
 	typedef ComponentInstance					DataHandler;
 	typedef struct TrackType**					Track;
 	typedef struct MediaType**					Media;
-	typedef struct OpaqueICMCompressionSession* ICMCompressionSessionRef;
+	typedef struct OpaqueICMCompressionSession*			ICMCompressionSessionRef;
+	typedef struct OpaqueICMCompressionSessionOptions*  ICMCompressionSessionOptionsRef;
 	typedef const struct OpaqueICMEncodedFrame* ICMEncodedFrameRef;
 	typedef signed long							OSStatus;
 	typedef unsigned long						CodecType;
@@ -47,51 +48,41 @@ class MovieWriter {
   public:
 	class Format {
 	  public:
-		Format() : mQuality( 0.99f ), mCodec( 'png ' )
-		{
-			initDefaults();
-		}
-		Format( uint32_t codec, float quality )
-			: mCodec( codec ), mQuality( quality )
-		{
-			initDefaults();
-		}
+		Format();
+		Format( uint32_t codec, float quality );
+		Format( const ICMCompressionSessionOptionsRef settings, uint32_t codec, float quality, float frameRate );
+		Format( const Format &format );
+		~Format();
 
-		//! Sets the four character code for the QuickTime codec. Additional types can be found in QuickTime's ImageCompression.h.
+		const Format& operator=( const Format &format );
+
+		//! Returns the four character code for the QuickTime codec. Types can be found in QuickTime's ImageCompression.h.
+		uint32_t	getCodec() const { return mCodec; }
+		//! Sets the four character code for the QuickTime codec. Defaults to PNG ('png '). Additional types can be found in QuickTime's ImageCompression.h.
 		Format&		setCodec( uint32_t codec ) { mCodec = codec; return *this; }
 		//! Sets the overall quality for encoding. Must be in a range of [0,1.0]. Defaults to 0.99. 1.0 corresponds to lossless.
-		Format&		setQuality( float quality ) { mQuality = constrain<float>( quality, 0, 1 ); return *this; }
+		Format&		setQuality( float quality );
 		//! Sets the standard duration of a frame. Defaults to 1/30, meaning 30Hz.
 		Format&		setDefaultDuration( float defaultTime ) { mDefaultTime = defaultTime; return *this; }
 		//! Sets the integer base value for encoding time scale. Defaults to 600.
 		Format&		setTimeScale( long timeScale ) { mTimeBase = timeScale; return *this; }
 		//! Enables temporal compression (allowing \b P or \b B frames). Defaults to true.
-		Format&		enableTemporal( bool enable = true ) { mEnableTemporal = enable; return *this; }
+		Format&		enableTemporal( bool enable = true );
 		//! Enables frame reordering. Defaults to true. In order to encode B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
-		Format&		enableReordering( bool enable = true ) { mEnableReordering = enable; return *this; }
-		//! Sets the maximum number of frames between key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression. The default key frame interval is 0, which indicates that the compressor should choose where to place all key frames.
-		Format&		setMaxKeyFrameRate( int32_t rate ) { mMaxKeyFrameRate = rate; return *this; }
+		Format&		enableReordering( bool enable = true );
+		//! Sets the maximum number of frames between key frames. Default is 0, which indicates that the compressor should choose where to place all key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression.
+		Format&		setMaxKeyFrameRate( int32_t rate );
 		//! Sets whether a codec is allowed to change frame times. Defaults to true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
-		Format&		enableFrameTimeChanges( bool enable ) { mEnableFrameTimeChanges = enable; return *this; }
+		Format&		enableFrameTimeChanges( bool enable );
 
 	  private:
-		void		initDefaults()
-		{
-			mTimeBase = 600;
-			mDefaultTime = 1 / 30.0f;
-			mEnableTemporal = true;
-			mEnableReordering = true;
-			mMaxKeyFrameRate = 0;
-			mEnableFrameTimeChanges = true;
-		}
+		void		initDefaults();
 
 		uint32_t	mCodec;
 		long		mTimeBase;
-		float		mQuality;
 		float		mDefaultTime;
-		bool		mEnableTemporal, mEnableReordering;
-		uint32_t	mMaxKeyFrameRate;
-		bool		mEnableFrameTimeChanges;
+
+		ICMCompressionSessionOptionsRef		mOptions;
 
 		friend MovieWriter;
 		friend Obj;
@@ -99,8 +90,7 @@ class MovieWriter {
 
 
 	MovieWriter() {}
-	MovieWriter( const std::string &path, int32_t width, int32_t height, uint32_t code = 'png ', float quality = 0.99f );
-	MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format );
+	MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format = Format::Format() );
 
 	//! Returns the Movie's default frame duration measured in seconds. You can also think of this as the Movie's frameRate.
 	float	getDefaultDuration() const { return mObj->mFormat.mDefaultTime; }
@@ -117,6 +107,9 @@ class MovieWriter {
 
 	//! Returns the Movie's Format
 	const Format&	getFormat() const { return mObj->mFormat; }
+
+	//! Presents the user with the standard compression options dialog. Return \c false if user cancelled.
+	static bool		getUserCompressionSettings( Format *result );
 
 	/** \brief Appends a frame to the Movie. The optional \a duration parameter allows a frame to be inserted for a time other than the Format's default duration.
 		\note Calling addFrame() after a call to finish() will throw a MovieWriterExcAlreadyFinished exception. **/

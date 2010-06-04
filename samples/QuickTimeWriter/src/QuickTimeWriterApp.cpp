@@ -23,8 +23,9 @@ class QuickTimeWriterApp : public AppBasic {
 void QuickTimeWriterApp::setup()
 {
 	string path = getSaveFilePath();
-	if( ! path.empty() )
-		mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), 'tiff' );
+	qtime::MovieWriter::Format format;
+	if( ! path.empty() && qtime::MovieWriter::getUserCompressionSettings( &format ) )
+		mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), format );
 }
 
 void QuickTimeWriterApp::mouseDown( MouseEvent event )
