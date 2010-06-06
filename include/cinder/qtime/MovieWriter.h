@@ -58,21 +58,29 @@ class MovieWriter {
 
 		//! Returns the four character code for the QuickTime codec. Types can be found in QuickTime's ImageCompression.h.
 		uint32_t	getCodec() const { return mCodec; }
-		//! Sets the four character code for the QuickTime codec. Defaults to PNG ('png '). Additional types can be found in QuickTime's ImageCompression.h.
+		//! Sets the four character code for the QuickTime codec. Defaults to \c PNG (\c 'png '). Additional types can be found in QuickTime's ImageCompression.h.
 		Format&		setCodec( uint32_t codec ) { mCodec = codec; return *this; }
 		//! Sets the overall quality for encoding. Must be in a range of [0,1.0]. Defaults to 0.99. 1.0 corresponds to lossless.
 		Format&		setQuality( float quality );
-		//! Sets the standard duration of a frame. Defaults to 1/30, meaning 30Hz.
-		Format&		setDefaultDuration( float defaultTime ) { mDefaultTime = defaultTime; return *this; }
-		//! Sets the integer base value for encoding time scale. Defaults to 600.
+		//! Returns the standard duration of a frame measured in seconds
+		float		getDefaultDuration() const { return mDefaultTime; }
+		//! Sets the standard duration of a frame measured in seconds. Defaults to \c 1/30 sec, meaning \c 30Hz.
+		Format&		setDefaultDuration( float defaultDuration ) { mDefaultTime = defaultDuration; return *this; }
+		//! Returns the integer base value for the encoding time scale.
+		long		getTimeScale() const { return mTimeBase; }
+		//! Sets the integer base value for encoding time scale. Defaults to \c 600.
 		Format&		setTimeScale( long timeScale ) { mTimeBase = timeScale; return *this; }
-		//! Enables temporal compression (allowing \b P or \b B frames). Defaults to true.
+		//! Returns the gamma value by which image data is encoded.
+		float		getGamma() const { return mGamma; }
+		//! Sets the gamma value by which image data is encoded. Defaults to \c 2.5 on MSW and \c 2.2 on Mac OS X.
+		Format&		setGamma( float gamma ) { mGamma = gamma; return *this; }
+		//! Enables temporal compression (allowing \b P or \b B frames). Defaults to \c true.
 		Format&		enableTemporal( bool enable = true );
-		//! Enables frame reordering. Defaults to true. In order to encode B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
+		//! Enables frame reordering. Defaults to true. In order to encode \b B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
 		Format&		enableReordering( bool enable = true );
-		//! Sets the maximum number of frames between key frames. Default is 0, which indicates that the compressor should choose where to place all key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression.
+		//! Sets the maximum number of frames between key frames. Default is \c 0, which indicates that the compressor should choose where to place all key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression.
 		Format&		setMaxKeyFrameRate( int32_t rate );
-		//! Sets whether a codec is allowed to change frame times. Defaults to true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
+		//! Sets whether a codec is allowed to change frame times. Defaults to \c true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
 		Format&		enableFrameTimeChanges( bool enable );
 
 	  private:
@@ -81,6 +89,7 @@ class MovieWriter {
 		uint32_t	mCodec;
 		long		mTimeBase;
 		float		mDefaultTime;
+		float		mGamma;
 
 		ICMCompressionSessionOptionsRef		mOptions;
 

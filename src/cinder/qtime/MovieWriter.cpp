@@ -47,6 +47,12 @@
 
 namespace cinder { namespace qtime {
 
+#if defined( CINDER_MSW )
+const float PLATFORM_DEFAULT_GAMMA = 2.5f;
+#else
+const float PLATFORM_DEFAULT_GAMMA = 2.2f;
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MovieWriter::Format
 
@@ -68,12 +74,13 @@ MovieWriter::Format::Format( const ICMCompressionSessionOptionsRef options, uint
 {
 	::ICMCompressionSessionOptionsCreateCopy( NULL, options, &mOptions );
 	setQuality( quality );
-	setTimeScale( frameRate * 100 );
+	setTimeScale( (long)(frameRate * 100) );
 	setDefaultDuration( 1.0f / frameRate );
+	setGamma( PLATFORM_DEFAULT_GAMMA );
 }
 
 MovieWriter::Format::Format( const Format &format )
-	: mCodec( format.mCodec ), mTimeBase( format.mTimeBase ), mDefaultTime( format.mDefaultTime )
+	: mCodec( format.mCodec ), mTimeBase( format.mTimeBase ), mDefaultTime( format.mDefaultTime ), mGamma( format.mGamma )
 {
 	::ICMCompressionSessionOptionsCreateCopy( NULL, format.mOptions, &mOptions );
 }
@@ -89,6 +96,7 @@ void MovieWriter::Format::initDefaults()
 
 	mTimeBase = 600;
 	mDefaultTime = 1 / 30.0f;
+	mGamma = PLATFORM_DEFAULT_GAMMA;
 
 	enableTemporal( true );
 	enableReordering( true );
@@ -139,8 +147,10 @@ const MovieWriter::Format& MovieWriter::Format::operator=( const Format &format 
 		::ICMCompressionSessionOptionsCreateCopy( NULL, format.mOptions, &mOptions );
 	}
 
+	mCodec = format.mCodec;
 	mTimeBase = format.mTimeBase;
 	mDefaultTime = format.mDefaultTime;
+	mGamma = format.mGamma;
 
 	return *this;
 }
@@ -187,7 +197,7 @@ MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, c
         
 	//Create track media
 	mMedia = ::NewTrackMedia( mTrack, ::VideoMediaType, mFormat.mTimeBase, 0, 0 );
-	err = GetMoviesError();
+	err = ::GetMoviesError();
 	if( err )
 		throw MovieWriterExc();
 
@@ -206,8 +216,7 @@ void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float durati
 		duration = mFormat.mDefaultTime;
 
 	CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource );
-	const float gamma = 2.5f;
-	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &gamma );
+	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &mFormat.mGamma );
 	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
 	::CFRelease( gammaLevel );
 	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate );
@@ -230,10 +239,12 @@ OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon,
                    ICMEncodedFrameRef encodedFrame,
                    void *reserved )
 {
+	MovieWriter::Obj *obj = reinterpret_cast<MovieWriter::Obj*>( refCon );
+
 	ImageDescriptionHandle imageDescription = NULL;
 	err = ICMCompressionSessionGetImageDescription( session, &imageDescription );
 	if( ! err ) {
-		Fixed gammaLevel = FloatToFixed( 2.5f );//kQTUsePlatformDefaultGammaLevel;
+		Fixed gammaLevel = FloatToFixed( obj->mFormat.mGamma );
 		err = ICMImageDescriptionSetProperty(imageDescription,
 						kQTPropertyClass_ImageDescription,
 						kICMImageDescriptionPropertyID_GammaLevel,
@@ -244,7 +255,6 @@ OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon,
 	else
 		throw;
 
-	MovieWriter::Obj *obj = reinterpret_cast<MovieWriter::Obj*>( refCon );
 	OSStatus result = ::AddMediaSampleFromEncodedFrame( obj->mMedia, encodedFrame, NULL );
 	return result;
 }
