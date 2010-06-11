@@ -821,9 +821,11 @@ GLint Texture::getCleanWidth() const
 		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_WIDTH, &mObj->mWidth );
 		mObj->mCleanWidth = mObj->mWidth;
 	}
-#endif // ! defined( CINDER_GLES )
 
 	return mObj->mCleanWidth;
+#else
+	return mObj->mWidth;
+#endif // ! defined( CINDER_GLES )	
 }
 
 GLint Texture::getCleanHeight() const
@@ -835,8 +837,11 @@ GLint Texture::getCleanHeight() const
 		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_HEIGHT, &mObj->mHeight );	
 		mObj->mCleanHeight = mObj->mHeight;		
 	}
-#endif // ! defined( CINDER_GLES )	
+	
 	return mObj->mCleanHeight;
+#else
+	return mObj->mHeight;
+#endif // ! defined( CINDER_GLES )	
 }
 
 Rectf Texture::getAreaTexCoords( const Area &area ) const

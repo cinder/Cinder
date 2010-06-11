@@ -32,6 +32,23 @@
 #include "cinder/app/Renderer.h"
 #include <iostream>
 
+// This is only here so that we can override isOpaque, which is necessary
+// for the ScreenSaverView to show it
+@interface AppImplCocoaTransparentGlView : NSOpenGLView 
+{}
+@end
+
+@implementation AppImplCocoaTransparentGlView
+- (BOOL)isOpaque
+{ return NO; }
+// For whatever reasons, rightMouseDown does not get propagated along the normal responder chain
+- (void)rightMouseDown:(NSEvent *)theEvent
+{
+	[[self superview] rightMouseDown:theEvent];
+}
+
+@end
+
 @implementation AppImplCocoaRendererGl
 
 - (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer

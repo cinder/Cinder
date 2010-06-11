@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\msaFluid">
+      <UniqueIdentifier>{631d1c0a-b2ea-4c2f-bd37-0f98e929593a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\msaFluid">
+      <UniqueIdentifier>{dab52d0f-8abd-4230-9c3a-64542a9d8019}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\msaFluidBasicApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\ciMsaFluidDrawerGl.cpp">
+      <Filter>Source Files\msaFluid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\ciMsaFluidSolver.cpp">
+      <Filter>Source Files\msaFluid</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\include\ciMsaFluid.h">
+      <Filter>Header Files\msaFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\ciMsaFluidDrawerGl.h">
+      <Filter>Header Files\msaFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\ciMsaFluidParticleUpdater.h">
+      <Filter>Header Files\msaFluid</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\ciMsaFluidParticleUpdater.h">
+      <Filter>Header Files\msaFluid</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

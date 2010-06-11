@@ -255,7 +255,11 @@ OutputAudioUnit::OutputAudioUnit()
 
 	NewAUGraph( &mGraph );
 	
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+	AudioComponentDescription cd;
+#else
 	ComponentDescription cd;
+#endif
 	cd.componentManufacturer = kAudioUnitManufacturer_Apple;
 	cd.componentFlags = 0;
 	cd.componentFlagsMask = 0;

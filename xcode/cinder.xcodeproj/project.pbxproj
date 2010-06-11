@@ -163,7 +163,6 @@
 		007050051114F93F003FCAE4 /* AppImplCocoaRendererQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */; };
 		007050061114F93F003FCAE4 /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
 		007050071114F93F003FCAE4 /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
-		007050081114F93F003FCAE4 /* AppImplCocoaTransparentGlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */; };
 		007050091114F93F003FCAE4 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		0070500A1114F93F003FCAE4 /* PolyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE46D0F7A9F6700F17CB1 /* PolyLine.h */; };
 		0070500B1114F93F003FCAE4 /* BSplineFit.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE5740F803F7A00F17CB1 /* BSplineFit.h */; };
@@ -322,7 +321,6 @@
 		009FD54C10C9AEA100D63B1B /* ImageIo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD54B10C9AEA100D63B1B /* ImageIo.cpp */; };
 		009FD55510C9DB0600D63B1B /* ImageSourceFileQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 009FD55410C9DB0600D63B1B /* ImageSourceFileQuartz.h */; };
 		009FD55710CAB8B700D63B1B /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
-		009FE9790F77F0B600718D7B /* AppImplCocoaTransparentGlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */; };
 		00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
 		00A9CF010F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */; };
 		00AA5C870F64851C009CD67F /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
@@ -416,7 +414,6 @@
 		00CFD9661135C3520091E310 /* AppImplCocoaRendererQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */; };
 		00CFD9671135C3520091E310 /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
 		00CFD9681135C3520091E310 /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
-		00CFD9691135C3520091E310 /* AppImplCocoaTransparentGlView.h in Headers */ = {isa = PBXBuildFile; fileRef = 009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */; };
 		00CFD96A1135C3520091E310 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		00CFD96B1135C3520091E310 /* PolyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE46D0F7A9F6700F17CB1 /* PolyLine.h */; };
 		00CFD96C1135C3520091E310 /* BSplineFit.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE5740F803F7A00F17CB1 /* BSplineFit.h */; };
@@ -545,7 +542,6 @@
 		00D9A07C0EA57C3F00FF5AEB /* GlslProg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D9A07B0EA57C3F00FF5AEB /* GlslProg.cpp */; };
 		00D9A07E0EA57C5100FF5AEB /* GlslProg.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D9A07D0EA57C5100FF5AEB /* GlslProg.h */; };
 		00DCBA950F7932F400D88D86 /* CinderView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00DCBA940F7932F400D88D86 /* CinderView.mm */; };
-		00DCBB4A0F79345A00D88D86 /* AppImplCocoaTransparentGlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00DCBB450F79345A00D88D86 /* AppImplCocoaTransparentGlView.m */; };
 		00DCBE270F7986B800D88D86 /* AppImplCocoaRendererGl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00DCBE260F7986B800D88D86 /* AppImplCocoaRendererGl.mm */; };
 		00E0B49F0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */; };
 		00E0B4B20F605D64002C8FBD /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00E0B4B10F605D64002C8FBD /* CoreGraphics.framework */; };
@@ -560,6 +556,12 @@
 		00F3BD200EBF89B700382AC1 /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		00FCDC1C10D434AC006140C7 /* TileRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FCDC1B10D434AC006140C7 /* TileRender.cpp */; };
 		00FCDC2010D4387D006140C7 /* TileRender.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FCDC1F10D4387D006140C7 /* TileRender.h */; };
+		43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
+		43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
+		43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
+		43D8B2F011B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
+		43D8B2F111B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
+		43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
 		5391FD680E957646002A13D5 /* KeyEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5391FD670E957646002A13D5 /* KeyEvent.h */; };
 		5391FE660E95CB01002A13D5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
 		C705F1800FD995120009395A /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C705F17F0FD995120009395A /* Buffer.h */; };
@@ -746,7 +748,6 @@
 		009FD54B10C9AEA100D63B1B /* ImageIo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageIo.cpp; sourceTree = "<group>"; };
 		009FD55410C9DB0600D63B1B /* ImageSourceFileQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSourceFileQuartz.h; sourceTree = "<group>"; };
 		009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ImageSourceFileQuartz.cpp; sourceTree = "<group>"; };
-		009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaTransparentGlView.h; path = app/AppImplCocoaTransparentGlView.h; sourceTree = "<group>"; };
 		00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */ = {isa = PBXFileReference; comments = "This is unused in Cinder since it has to be linked directly into the apps, but it's present for reference."; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppScreenSaver.cpp; path = app/AppScreenSaver.cpp; sourceTree = "<group>"; };
 		00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = app/AppImplCocoaScreenSaver.h; sourceTree = "<group>"; };
 		00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = app/AppImplCocoaRendererQuartz.mm; sourceTree = "<group>"; };
@@ -800,7 +801,6 @@
 		00D9A07B0EA57C3F00FF5AEB /* GlslProg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlslProg.cpp; path = gl/GlslProg.cpp; sourceTree = "<group>"; };
 		00D9A07D0EA57C5100FF5AEB /* GlslProg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GlslProg.h; path = gl/GlslProg.h; sourceTree = "<group>"; };
 		00DCBA940F7932F400D88D86 /* CinderView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderView.mm; path = app/CinderView.mm; sourceTree = "<group>"; };
-		00DCBB450F79345A00D88D86 /* AppImplCocoaTransparentGlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppImplCocoaTransparentGlView.m; path = app/AppImplCocoaTransparentGLView.m; sourceTree = "<group>"; };
 		00DCBE260F7986B800D88D86 /* AppImplCocoaRendererGl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererGl.mm; path = app/AppImplCocoaRendererGl.mm; sourceTree = "<group>"; };
 		00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererQuartz.h; path = app/AppImplCocoaRendererQuartz.h; sourceTree = "<group>"; };
 		00E0B4B10F605D64002C8FBD /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/ApplicationServices.framework/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -818,6 +818,8 @@
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
+		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
+		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
 		C705F17F0FD995120009395A /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E19FE106AA38700E63577 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
@@ -931,6 +933,8 @@
 				0088773B0F96671600FD55C5 /* FileDropEvent.h */,
 				5391FD670E957646002A13D5 /* KeyEvent.h */,
 				00241ABA0E830DC7004D34EB /* MouseEvent.h */,
+				43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */,
+				43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */,
 				00C05B970F4A03660046CC99 /* CinderView.h */,
 				009D6B001157FCA60037C77C /* CinderViewCocoaTouch.h */,
 				002419CD0E8035D3004D34EB /* App.h */,
@@ -944,7 +948,6 @@
 				009D6AED1157FB340037C77C /* AppImplCocoaTouchRendererGl.h */,
 				0005630611513B1D00ECFD91 /* AppImplCocoaTouchRendererQuartz.h */,
 				00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */,
-				009FE9780F77F0B600718D7B /* AppImplCocoaTransparentGlView.h */,
 			);
 			name = app;
 			sourceTree = "<group>";
@@ -963,7 +966,6 @@
 				00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */,
 				0005630A11513B9400ECFD91 /* AppImplCocoaTouchRendererQuartz.mm */,
 				009D6AF01157FB860037C77C /* AppImplCocoaTouchRendererGl.mm */,
-				00DCBB450F79345A00D88D86 /* AppImplCocoaTransparentGlView.m */,
 				0049C1B61010E5B10015B4B9 /* Renderer.cpp */,
 				00DCBA940F7932F400D88D86 /* CinderView.mm */,
 				009D6AFD1157FC8B0037C77C /* CinderViewCocoaTouch.mm */,
@@ -1498,7 +1500,6 @@
 				007050051114F93F003FCAE4 /* AppImplCocoaRendererQuartz.h in Headers */,
 				007050061114F93F003FCAE4 /* AppScreenSaver.h in Headers */,
 				007050071114F93F003FCAE4 /* AppImplCocoaScreenSaver.h in Headers */,
-				007050081114F93F003FCAE4 /* AppImplCocoaTransparentGlView.h in Headers */,
 				007050091114F93F003FCAE4 /* CinderCocoa.h in Headers */,
 				0070500A1114F93F003FCAE4 /* PolyLine.h in Headers */,
 				0070500B1114F93F003FCAE4 /* BSplineFit.h in Headers */,
@@ -1550,6 +1551,8 @@
 				001E3563115D5F14000C228C /* Xml.h in Headers */,
 				00B729E9115DAC2B00CD71B9 /* Timer.h in Headers */,
 				0049A34E116EE675007DDFB0 /* AxisAlignedBox.h in Headers */,
+				43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */,
+				43D8B2F011B0C87800B61EB6 /* TouchEvent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1612,7 +1615,6 @@
 				00CFD9661135C3520091E310 /* AppImplCocoaRendererQuartz.h in Headers */,
 				00CFD9671135C3520091E310 /* AppScreenSaver.h in Headers */,
 				00CFD9681135C3520091E310 /* AppImplCocoaScreenSaver.h in Headers */,
-				00CFD9691135C3520091E310 /* AppImplCocoaTransparentGlView.h in Headers */,
 				00CFD96A1135C3520091E310 /* CinderCocoa.h in Headers */,
 				00CFD96B1135C3520091E310 /* PolyLine.h in Headers */,
 				00CFD96C1135C3520091E310 /* BSplineFit.h in Headers */,
@@ -1664,6 +1666,8 @@
 				001E3564115D5F14000C228C /* Xml.h in Headers */,
 				00B729EA115DAC2B00CD71B9 /* Timer.h in Headers */,
 				0049A34F116EE675007DDFB0 /* AxisAlignedBox.h in Headers */,
+				43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */,
+				43D8B2F111B0C87800B61EB6 /* TouchEvent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1726,7 +1730,6 @@
 				00E0B49F0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h in Headers */,
 				00AA5C870F64851C009CD67F /* AppScreenSaver.h in Headers */,
 				00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */,
-				009FE9790F77F0B600718D7B /* AppImplCocoaTransparentGlView.h in Headers */,
 				009987160F79CFE20042F211 /* CinderCocoa.h in Headers */,
 				009EE46E0F7A9F6700F17CB1 /* PolyLine.h in Headers */,
 				009EE5770F803F7A00F17CB1 /* BSplineFit.h in Headers */,
@@ -1792,6 +1795,8 @@
 				C7A76EAB117644AB00A46655 /* SourceFile.h in Headers */,
 				C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */,
 				009704A811A050C300B1FC50 /* UrlImplCurl.h in Headers */,
+				43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */,
+				43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2073,7 +2078,6 @@
 				00C154060EDBC12B00549EF3 /* Cairo.cpp in Sources */,
 				00B4F3E70F53955000B75296 /* AppBasic.cpp in Sources */,
 				00DCBA950F7932F400D88D86 /* CinderView.mm in Sources */,
-				00DCBB4A0F79345A00D88D86 /* AppImplCocoaTransparentGlView.m in Sources */,
 				00DCBE270F7986B800D88D86 /* AppImplCocoaRendererGl.mm in Sources */,
 				0099871A0F79D0750042F211 /* CinderCocoa.mm in Sources */,
 				009EE4720F7A9FAC00F17CB1 /* PolyLine.cpp in Sources */,
@@ -2152,6 +2156,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
@@ -2162,7 +2167,8 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone_d";
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos3.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Debug;
@@ -2184,6 +2190,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2195,7 +2202,8 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone";
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos3.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
 			name = Release;
@@ -2216,7 +2224,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
@@ -2249,6 +2257,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2285,6 +2294,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2296,7 +2306,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder_d;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
@@ -2312,11 +2322,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(DEVELOPER_DIR)/SDKs/MacOSX10.5.sdk/System/Library/Frameworks\"",
-					"\"$(SDKROOT)$(SYSTEM_LIBRARY_DIR)/Frameworks/ApplicationServices.framework/Frameworks\"",
-				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_FAST_MATH = YES;
@@ -2326,6 +2331,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
@@ -2338,7 +2344,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;

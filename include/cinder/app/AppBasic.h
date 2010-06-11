@@ -32,10 +32,9 @@
 	#else
 		class AppImplCocoaBasic;
 	#endif
-#elif defined( CINDER_MSW )
-	#include "cinder/app/TouchEvent.h"
 #endif
 
+#include "cinder/app/TouchEvent.h"
 
 namespace cinder { namespace app {
 
@@ -64,16 +63,13 @@ class AppBasic : public App {
 		bool	isSecondaryDisplayBlankingEnabled() const { return mEnableSecondaryDisplayBlanking; }	
 #endif
 		
-#if defined( CINDER_MSW )
-		//! Registers the app to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7.
+		//! Registers the app to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7 and Mac OS X trackpad.
 		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
-		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7.
+		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7 and Mac OS X trackpad.
 		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
-#endif
+
 	 private:
-#if defined( CINDER_MSW )
 		bool		mEnableMultiTouch;
-#endif
 #if defined( CINDER_MAC )
 		bool		mEnableSecondaryDisplayBlanking;
 #endif
@@ -87,7 +83,6 @@ class AppBasic : public App {
 
 	virtual void		prepareSettings( Settings *settings ) {}
 
-#if defined( CINDER_MSW )
 	//! Override to respond to the beginning of a multitouch sequence
 	virtual void		touchesBegan( TouchEvent event ) {}
 	//! Override to respond to movement (drags) during a multitouch sequence
@@ -96,7 +91,6 @@ class AppBasic : public App {
 	virtual void		touchesEnded( TouchEvent event ) {}
 	//! Returns a std::vector of all active touches
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
-#endif
 
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
 	virtual int		getWindowWidth() const;
@@ -139,12 +133,13 @@ class AppBasic : public App {
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
 #if defined( CINDER_MAC )
 	void		privateSetImpl__( AppImplCocoaBasic *aImpl );	
-#elif defined( CINDER_MSW )
+#endif
 	void		privateTouchesBegan__( const TouchEvent &event );
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
 	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
-
+	
+#if defined( CINDER_MSW )
 	virtual bool		getsWindowsPaintEvents() { return true; }
 #endif
 	//! \endcond
@@ -174,9 +169,9 @@ class AppBasic : public App {
 #elif defined( CINDER_MSW )
 	class AppImplMswBasic	*mImpl;
 	friend class AppImplMswBasic;
-	std::vector<TouchEvent::Touch>		mActiveTouches; // list of currently active touches
-	
 #endif
+	
+	std::vector<TouchEvent::Touch>		mActiveTouches; // list of currently active touches
 
 	Settings		mSettings;
 };

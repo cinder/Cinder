@@ -52,7 +52,6 @@ static Boolean sIsEaglLayer;
 		mApp = app;
 		mRenderer = renderer;
 		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self );
-		mApp->privateSetup__();
 		
 		self.multipleTouchEnabled = mApp->getSettings().isMultiTouchEnabled();
 	}
@@ -176,7 +175,8 @@ static Boolean sIsEaglLayer;
 	std::vector<ci::app::TouchEvent::Touch> activeTouches;
 	for( std::map<UITouch*,uint32_t>::const_iterator touchIt = mTouchIdMap.begin(); touchIt != mTouchIdMap.end(); ++touchIt ) {
 		CGPoint pt = [touchIt->first locationInView:self];
-		activeTouches.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), touchIt->second, [touchIt->first timestamp], touchIt->first ) );
+		CGPoint prevPt = [touchIt->first previousLocationInView:self];
+		activeTouches.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), touchIt->second, [touchIt->first timestamp], touchIt->first ) );
 	}
 	mApp->privateSetActiveTouches__( activeTouches );
 }
@@ -189,7 +189,8 @@ static Boolean sIsEaglLayer;
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), [self addTouchToMap:touch], [touch timestamp], touch ) );
+			CGPoint prevPt = [touch previousLocationInView:self];
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), [self addTouchToMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() )
@@ -211,7 +212,8 @@ static Boolean sIsEaglLayer;
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+			CGPoint prevPt = [touch previousLocationInView:self];			
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() )
@@ -233,7 +235,8 @@ static Boolean sIsEaglLayer;
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+			CGPoint prevPt = [touch previousLocationInView:self];
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
 			[self removeTouchFromMap:touch];
 		}
 		[self updateActiveTouches];
@@ -254,5 +257,6 @@ static Boolean sIsEaglLayer;
 {
 	[self touchesEnded:touches withEvent:event];
 }
+
 
 @end

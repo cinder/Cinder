@@ -22,6 +22,7 @@
 
 #import "cinder/app/CinderView.h"
 #include "cinder/app/Renderer.h"
+#include "cinder/app/TouchEvent.h"
 #import <Cocoa/Cocoa.h>
 
 @implementation CinderView
@@ -35,6 +36,11 @@
 	app = NULL;
 	appSetupCalled = NO;
 	receivesEvents = YES;
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+	mTouchIdMap = nil;
+	mMultiTouchDelegate = nil;
+#endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 	
 	return self;
 }
@@ -46,7 +52,12 @@
 	app = aApp;
 	appSetupCalled = NO;
 	receivesEvents = app->receivesEvents();
-	
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+	mTouchIdMap = nil;
+	mMultiTouchDelegate = nil;
+#endif //MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+
 	[self setupRenderer:frame];
 	
 	return self;
@@ -59,6 +70,10 @@
 	app = aApp;
 	receivesEvents = app->receivesEvents();
 
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+	mTouchIdMap = nil;
+	mMultiTouchDelegate = nil;
+#endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 	[self setupRenderer:NSMakeRect(0,0,1,1)];
 
 	return self;
@@ -71,6 +86,15 @@
 	// register for drop events
 	if( receivesEvents )
 		[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+	// register for touch events
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+	if( mMultiTouchDelegate ) {
+		[self setAcceptsTouchEvents:YES];
+		[self setWantsRestingTouches:YES];
+		if( ! mTouchIdMap )
+			mTouchIdMap = [[NSMutableDictionary alloc] initWithCapacity:10];
+	}
+#endif // #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 }
 
 - (void)draw
@@ -308,10 +332,198 @@
     return YES;
 }
 
+- (void)applicationWillResignActive:(NSNotification *)aNotification
+{
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+	// send an ended event for any active points
+	if( ! mMultiTouchDelegate )
+		return;
+
+	std::vector<ci::app::TouchEvent::Touch> emptyActiveTouches;
+	[mMultiTouchDelegate setActiveTouches:&emptyActiveTouches];
+
+   	std::vector<ci::app::TouchEvent::Touch> touchList;
+	double eventTime = app->getElapsedSeconds();
+	for( std::map<uint32_t,ci::Vec2f>::const_iterator ptIt = mTouchPrevPointMap.begin(); ptIt != mTouchPrevPointMap.end(); ++ptIt ) {
+		touchList.push_back( ci::app::TouchEvent::Touch( ptIt->second, ptIt->second, ptIt->first, eventTime, nil ) );
+	}
+
+	if( ! touchList.empty() ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesEnded:&touchEvent];
+	}
+
+	mTouchPrevPointMap.clear();
+	[mTouchIdMap removeAllObjects];
+#endif
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// MultiTouch
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+- (void)setMultiTouchDelegate:(id<CinderViewMultiTouchDelegate>)multiTouchDelegate
+{
+	if( ! [self respondsToSelector:@selector(setAcceptsTouchEvents:)] )
+		return;
+	
+	mMultiTouchDelegate = multiTouchDelegate;
+	if( mMultiTouchDelegate ) {
+		[self setAcceptsTouchEvents:YES];
+		if( ! mTouchIdMap )
+			mTouchIdMap = [[NSMutableDictionary alloc] initWithCapacity:10];
+	}
+	else {
+		[self setAcceptsTouchEvents:NO];
+	}
+}
+
+- (uint32_t)addTouchToMap:(NSTouch *)touch withPoint:(ci::Vec2f)point
+{
+	uint32_t candidateId = 0;
+	NSArray *currentValues = [mTouchIdMap allValues];
+	bool found = true;
+	while( found ) {
+		candidateId++;
+		if( [currentValues indexOfObjectIdenticalTo:[NSNumber numberWithInt:candidateId]] == NSNotFound )
+			found = false;
+	}
+	
+	[mTouchIdMap setObject:[NSNumber numberWithInt:candidateId] forKey:[touch identity]];
+	mTouchPrevPointMap[candidateId] = point;
+	return candidateId;
+}
+
+- (void)removeTouchFromMap:(NSTouch *)touch
+{
+	NSNumber *num = [mTouchIdMap objectForKey:[touch identity]];
+	uint32_t curId = [num unsignedIntValue];
+	[mTouchIdMap removeObjectForKey:[touch identity]];
+	mTouchPrevPointMap.erase( curId );
+}
+
+- (std::pair<uint32_t,ci::Vec2f>)updateTouch:(NSTouch *)touch withPoint:(ci::Vec2f)point
+{
+	uint32_t curId = 0;
+	NSNumber *num = [mTouchIdMap objectForKey:[touch identity]];
+	if( num ) {
+		curId = [num unsignedIntValue];
+		ci::Vec2f prevPt = mTouchPrevPointMap[curId];
+		mTouchPrevPointMap[curId] = point;
+		return std::make_pair( curId, prevPt );		
+	}
+	else {
+		// sometimes we will get a move event for a touch we have no record of
+		// this can happen when the app resigns and the user never ends the touch
+		return std::make_pair( [self addTouchToMap:touch withPoint:point], point );
+	}	
+}
+
+- (void)updateActiveTouches:(NSEvent *)event
+{
+	std::vector<ci::app::TouchEvent::Touch> activeTouches;
+	NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseTouching inView:self];
+	float width = [self frame].size.width;
+	float height = [self frame].size.height;
+	double eventTime = [event timestamp];
+	for( NSTouch *touch in touches ) {
+		NSPoint rawPt = [touch normalizedPosition];
+		ci::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
+		std::pair<uint32_t,ci::Vec2f> prev = [self updateTouch:touch withPoint:pt];
+		activeTouches.push_back( ci::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
+	}
+	if( mMultiTouchDelegate )
+		[mMultiTouchDelegate setActiveTouches:&activeTouches];
+}
+
+- (void)touchesBeganWithEvent:(NSEvent *)event
+{
+	std::vector<ci::app::TouchEvent::Touch> touchList;
+	NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseBegan inView:self];
+	float width = [self frame].size.width;
+	float height = [self frame].size.height;
+	double eventTime = [event timestamp];
+	for( NSTouch *touch in touches ) {
+		NSPoint rawPt = [touch normalizedPosition];
+		ci::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
+		touchList.push_back( ci::app::TouchEvent::Touch( pt, pt, [self addTouchToMap:touch withPoint:pt], eventTime, touch ) );
+	}
+	[self updateActiveTouches:event];
+	if( mMultiTouchDelegate && ( ! touchList.empty() ) ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesBegan:&touchEvent];
+	}
+}
+
+- (void)touchesMovedWithEvent:(NSEvent *)event
+{
+   	std::vector<ci::app::TouchEvent::Touch> touchList;
+	NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseMoved inView:self];
+	float width = [self frame].size.width;
+	float height = [self frame].size.height;
+	double eventTime = [event timestamp];
+	for( NSTouch *touch in touches ) {
+		NSPoint rawPt = [touch normalizedPosition];
+		ci::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
+		std::pair<uint32_t,ci::Vec2f> prev = [self updateTouch:touch withPoint:pt];
+		touchList.push_back( ci::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
+	}
+	[self updateActiveTouches:event];
+	if( mMultiTouchDelegate && ( ! touchList.empty() ) ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesMoved:&touchEvent];
+	}
+}
+
+- (void)touchesEndedWithEvent:(NSEvent *)event
+{
+   	std::vector<ci::app::TouchEvent::Touch> touchList;
+	NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseEnded inView:self];
+	float width = [self frame].size.width;
+	float height = [self frame].size.height;
+	double eventTime = [event timestamp];
+	for( NSTouch *touch in touches ) {
+		NSPoint rawPt = [touch normalizedPosition];
+		ci::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
+		std::pair<uint32_t,ci::Vec2f> prev = [self updateTouch:touch withPoint:pt];
+		touchList.push_back( ci::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
+		[self removeTouchFromMap:touch];
+	}
+
+	[self updateActiveTouches:event];
+	if( mMultiTouchDelegate && ( ! touchList.empty() ) ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesEnded:&touchEvent];
+	}
+}
+ 
+- (void)touchesCancelledWithEvent:(NSEvent *)event
+{
+   	std::vector<ci::app::TouchEvent::Touch> touchList;
+	NSSet *touches = [event touchesMatchingPhase:NSTouchPhaseCancelled inView:self];
+	float width = [self frame].size.width;
+	float height = [self frame].size.height;
+	double eventTime = [event timestamp];
+	for( NSTouch *touch in touches ) {
+		NSPoint rawPt = [touch normalizedPosition];
+		ci::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
+		std::pair<uint32_t,ci::Vec2f> prev = [self updateTouch:touch withPoint:pt];
+		touchList.push_back( ci::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
+		[self removeTouchFromMap:touch];
+	}
+
+	[self updateActiveTouches:event];
+	if( mMultiTouchDelegate && ( ! touchList.empty() ) ) {
+		cinder::app::TouchEvent touchEvent( touchList );
+		[mMultiTouchDelegate touchesEnded:&touchEvent];
+	}
+}
+
+#endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+
 - (void)setApp:(cinder::app::App *)aApp
 {
 	app = aApp;
 }
-
 
 @end
