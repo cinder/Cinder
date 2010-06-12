@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project (http://libcinder.org)
  All rights reserved.
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -21,12 +21,13 @@
  */
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
-#	error "This file must be compiled as Objective-C++ on the Mac"
+	#error "This file must be compiled as Objective-C++ on the Mac"
 #endif
 
 #include "cinder/app/App.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/qtime/QuickTimeUtils.h"
+#include "cinder/Utilities.h"
 
 #if defined( CINDER_MAC )
 	#include <QTKit/QTKit.h>
@@ -69,8 +70,8 @@ MovieWriter::Format::Format( uint32_t codec, float quality )
 	setQuality( quality );
 }
 
-MovieWriter::Format::Format( const ICMCompressionSessionOptionsRef options, uint32_t codec, float quality, float frameRate )
-	: mCodec( codec )
+MovieWriter::Format::Format( const ICMCompressionSessionOptionsRef options, uint32_t codec, float quality, float frameRate, bool enableMultiPass )
+	: mCodec( codec ), mEnableMultiPass( enableMultiPass )
 {
 	::ICMCompressionSessionOptionsCreateCopy( NULL, options, &mOptions );
 	setQuality( quality );
@@ -80,7 +81,7 @@ MovieWriter::Format::Format( const ICMCompressionSessionOptionsRef options, uint
 }
 
 MovieWriter::Format::Format( const Format &format )
-	: mCodec( format.mCodec ), mTimeBase( format.mTimeBase ), mDefaultTime( format.mDefaultTime ), mGamma( format.mGamma )
+	: mCodec( format.mCodec ), mTimeBase( format.mTimeBase ), mDefaultTime( format.mDefaultTime ), mGamma( format.mGamma ), mEnableMultiPass( format.mEnableMultiPass )
 {
 	::ICMCompressionSessionOptionsCreateCopy( NULL, format.mOptions, &mOptions );
 }
@@ -97,6 +98,7 @@ void MovieWriter::Format::initDefaults()
 	mTimeBase = 600;
 	mDefaultTime = 1 / 30.0f;
 	mGamma = PLATFORM_DEFAULT_GAMMA;
+	mEnableMultiPass = false;
 
 	enableTemporal( true );
 	enableReordering( true );
@@ -151,6 +153,7 @@ const MovieWriter::Format& MovieWriter::Format::operator=( const Format &format 
 	mTimeBase = format.mTimeBase;
 	mDefaultTime = format.mDefaultTime;
 	mGamma = format.mGamma;
+	mEnableMultiPass = format.mEnableMultiPass;
 
 	return *this;
 }
@@ -203,8 +206,14 @@ MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, c
 
 	//Prepare media for editing
 	err = ::BeginMediaEdits( mMedia );
+
+	mRequestedMultiPass = false;
+	mDoingMultiPass = false;
+
 	createCompressionSession();
+
 	mCurrentTimeValue = 0;
+	mNumFrames = 0;
 }
 	
 void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float duration )
@@ -215,19 +224,37 @@ void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float durati
 	if( duration <= 0 )
 		duration = mFormat.mDefaultTime;
 
-	CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource );
+	::CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource );
 	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &mFormat.mGamma );
 	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
 	::CFRelease( gammaLevel );
 	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate );
 
-	ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
-	ICMCompressionFrameOptionsRef frameOptions = NULL;
-	long timeVal = static_cast<long>( duration * mFormat.mTimeBase );
+	::ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
+	::ICMCompressionFrameOptionsRef frameOptions = NULL;
+	int64_t durationVal = static_cast<int64_t>( duration * mFormat.mTimeBase );
 	OSStatus err = ::ICMCompressionSessionEncodeFrame( mCompressionSession, pixelBuffer,
-				mCurrentTimeValue, timeVal, validTimeFlags,
+				mCurrentTimeValue, durationVal, validTimeFlags,
                 frameOptions, NULL, NULL );
-	mCurrentTimeValue += timeVal;
+
+	mFrameTimes.push_back( std::pair<int64_t,int64_t>( mCurrentTimeValue, durationVal ) );
+
+	if( mDoingMultiPass ) {
+		mMultiPassFrameCache->write( (uint32_t)::CVPixelBufferGetWidth( pixelBuffer ) );
+		mMultiPassFrameCache->write( (uint32_t)::CVPixelBufferGetHeight( pixelBuffer ) );
+		mMultiPassFrameCache->write( (uint32_t)::CVPixelBufferGetPixelFormatType( pixelBuffer ) );
+		mMultiPassFrameCache->write( (uint32_t)::CVPixelBufferGetBytesPerRow( pixelBuffer ) );
+		::CVPixelBufferLockBaseAddress( pixelBuffer, 0 );
+		mMultiPassFrameCache->write( (uint32_t) ::CVPixelBufferGetDataSize( pixelBuffer ) );
+		mMultiPassFrameCache->writeData( ::CVPixelBufferGetBaseAddress( pixelBuffer ), ::CVPixelBufferGetDataSize( pixelBuffer ) );
+		::CVPixelBufferUnlockBaseAddress( pixelBuffer, 0 );
+	}
+
+	mCurrentTimeValue += durationVal;
+	++mNumFrames;
+
+	::CVPixelBufferRelease( pixelBuffer );
+
 	if( err )
 		MovieWriterExcFrameEncode();
 }
@@ -259,6 +286,35 @@ OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon,
 	return result;
 }
 
+OSStatus enableMultiPassWithTemporaryFile( ICMCompressionSessionOptionsRef inCompressionSessionOptions, ICMMultiPassStorageRef *outMultiPassStorage )
+{
+	::ICMMultiPassStorageRef multiPassStorage = NULL;
+	OSStatus status;
+	*outMultiPassStorage = NULL;
+
+	// create storage using a temporary file with a unique file name
+	status = ::ICMMultiPassStorageCreateWithTemporaryFile( kCFAllocatorDefault, NULL, NULL, 0, &multiPassStorage );
+	if( noErr != status )
+		goto bail;
+
+	// enable multi-pass by setting the compression session options
+	// note - the compression session options object retains the multi-pass
+	// storage object
+	status = ::ICMCompressionSessionOptionsSetProperty( inCompressionSessionOptions, kQTPropertyClass_ICMCompressionSessionOptions,
+						kICMCompressionSessionOptionsPropertyID_MultiPassStorage, sizeof(ICMMultiPassStorageRef), &multiPassStorage );
+
+ bail:
+    if( noErr != status ) {
+        // this api is NULL safe so we can just call it
+        ICMMultiPassStorageRelease( multiPassStorage );
+    }
+	else {
+        *outMultiPassStorage = multiPassStorage;
+    }
+
+    return status;
+}
+
 }
 
 void MovieWriter::Obj::createCompressionSession()
@@ -275,6 +331,29 @@ void MovieWriter::Obj::createCompressionSession()
 	err = ::ICMCompressionSessionOptionsSetDurationsNeeded( sessionOptions, true );
 	if( err )
 		goto bail;
+
+	// if this codec definitely cannot do multipass, let's disable it
+	::CodecInfo cInfo;
+	::GetCodecInfo( &cInfo, mFormat.mCodec, 0 );
+
+	bool attemptMultiPass = mFormat.mEnableMultiPass;
+	/*if( ! (cInfo.compressFlags & codecInfoDoesMultiPass) )
+		attemptMultiPass = false;*/
+
+	// if we have not enabled multiPass then explicitly disable it
+	::ICMCompressionPassModeFlags passModeFlags = 0;
+	::ICMMultiPassStorageRef multiPassStorage = 0;
+	if( ! attemptMultiPass ) {
+		::ICMMultiPassStorageRef nullStorage = NULL;
+		::ICMCompressionSessionOptionsSetProperty( sessionOptions, kQTPropertyClass_ICMCompressionSessionOptions, kICMCompressionSessionOptionsPropertyID_MultiPassStorage, sizeof(ICMMultiPassStorageRef), &nullStorage );
+		mRequestedMultiPass = false;
+	}
+	else {
+		err = enableMultiPassWithTemporaryFile( sessionOptions, &multiPassStorage );
+		if( err ) 
+			goto bail;
+		mRequestedMultiPass = true;
+	}
 	
 	encodedFrameOutputRecord.encodedFrameOutputCallback = encodedFrameOutputCallback;
 	encodedFrameOutputRecord.encodedFrameOutputRefCon = this;
@@ -283,6 +362,24 @@ void MovieWriter::Obj::createCompressionSession()
 			sessionOptions, NULL, &encodedFrameOutputRecord, &mCompressionSession );
 	if( err )
 		goto bail;
+
+	if( mRequestedMultiPass ) {
+		mDoingMultiPass = ::ICMCompressionSessionSupportsMultiPassEncoding( mCompressionSession, 0, &mMultiPassModeFlags ) != 0;
+		
+		if( mDoingMultiPass ) {
+			mMultiPassFrameCache = readWriteFileStream( getTemporaryFilePath() );
+			if( ! mMultiPassFrameCache )
+				throw MovieWriterExc();
+			mMultiPassFrameCache->setDeleteOnDestroy();
+		}
+
+		// we have to do call this and its counterpart regardless, if \a mRequestedMultiPass
+		::ICMCompressionSessionBeginPass( mCompressionSession, mMultiPassModeFlags, 0 );
+		// the session has retained this so we can release it
+		::ICMMultiPassStorageRelease( multiPassStorage );
+	}
+	else
+		mDoingMultiPass = false;
 
 	::ICMCompressionSessionOptionsRelease( sessionOptions );
 	return;
@@ -293,12 +390,85 @@ bail:
 	throw MovieWriterExc();
 }
 
+namespace {
+extern "C" void destroyDataArrayU8( void *releaseRefCon, const void *baseAddress )
+{
+	delete [] (reinterpret_cast<uint8_t*>( const_cast<void*>( baseAddress ) ));
+}
+} // anonymous namespace
+
 void MovieWriter::Obj::finish()
 {
 	if( mFinished )
 		return;
 
-	mFinished = true; // set this in case of throw
+	::ICMCompressionSessionCompleteFrames( mCompressionSession, true, 0, 0 );
+
+	mFinished = true; // set this in case of throw, otherwise we could loop forever
+
+	if( mDoingMultiPass ) {
+		bool done = false;
+		while( ! done ) {
+			::ICMCompressionSessionEndPass( mCompressionSession );
+			if( mMultiPassModeFlags & kICMCompressionPassMode_OutputEncodedFrames ) {
+				done = true;
+			}
+			else {
+				Boolean interpassDone = false;
+				while( ! interpassDone ) {
+					// passModeFlags will be set to the sessions recommended mode flags
+					// for the next pass. kICMCompressionPassMode_OutputEncodedFrames will
+					// only be set if the codec recommends that the next pass be the last
+					::ICMCompressionSessionProcessBetweenPasses( mCompressionSession, 0, &interpassDone, &mMultiPassModeFlags );
+				}
+			}
+
+			if( ! done ) { // do another pass
+				::ICMCompressionSessionBeginPass( mCompressionSession, mMultiPassModeFlags, 0 );
+				mMultiPassFrameCache->seekAbsolute( 0 );
+				for( uint32_t frame = 0; frame < mNumFrames; ++frame ) {
+					if( (mMultiPassModeFlags & kICMCompressionPassMode_NoSourceFrames) == 0 ) {
+						::CVPixelBufferRef pixelBuffer;
+						uint32_t width, height, format, rowBytes, dataSize;
+						
+						mMultiPassFrameCache->read( &width );
+						mMultiPassFrameCache->read( &height );
+						mMultiPassFrameCache->read( &format );
+						mMultiPassFrameCache->read( &rowBytes );
+						mMultiPassFrameCache->read( &dataSize );
+						// this should probably be optimized with a pool eventually
+						uint8_t *pixelData = new uint8_t[dataSize];
+						mMultiPassFrameCache->readData( pixelData, dataSize );
+
+						OSStatus err = ::CVPixelBufferCreateWithBytes( kCFAllocatorDefault, width, height, (OSType)format, pixelData, rowBytes, destroyDataArrayU8, NULL, NULL, &pixelBuffer );
+						if( err != noErr )
+							throw MovieWriterExcFrameEncode();
+
+						::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &mFormat.mGamma );
+						::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
+						::CFRelease( gammaLevel );
+						::CVBufferSetAttachment( pixelBuffer, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate );
+
+						::ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
+						::ICMCompressionFrameOptionsRef frameOptions = NULL;
+						err = ::ICMCompressionSessionEncodeFrame( mCompressionSession, pixelBuffer, mFrameTimes[frame].first,
+																		mFrameTimes[frame].second, validTimeFlags, frameOptions, NULL, NULL );
+						::CVPixelBufferRelease( pixelBuffer );
+					}
+					else {
+						::ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
+						::ICMCompressionFrameOptionsRef frameOptions = NULL;
+						OSStatus err = ::ICMCompressionSessionEncodeFrame( mCompressionSession, NULL, mFrameTimes[frame].first,
+																		mFrameTimes[frame].second, validTimeFlags, frameOptions, NULL, NULL );
+					}
+				}
+				::ICMCompressionSessionCompleteFrames( mCompressionSession, true, 0, 0 );
+			}
+		}
+	}
+	else if( mRequestedMultiPass ) {
+		::ICMCompressionSessionEndPass( mCompressionSession );
+	}
 
 	OSErr err;
 	if( mMedia )  {
@@ -321,7 +491,7 @@ void MovieWriter::Obj::finish()
 			throw MovieWriterExc();
 	}
         
-	//Close movie file
+	// Close movie file
 	if( mDataHandler )
 		::CloseMovieStorage( mDataHandler );
 
@@ -395,12 +565,16 @@ bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef ima
 	::SCTemporalSettings temporalSettings;
 	::SCGetInfo( stdCompression, scTemporalSettingsType, &temporalSettings );
 
+	::SCVideoMultiPassEncodingSettings multiPassSettings;
+	::SCGetInfo( stdCompression, scVideoMultiPassEncodingSettingsType, &multiPassSettings );
+
 	// creates a compression session options object based on configured settings
 	err = ::SCCopyCompressionSessionOptions( stdCompression, &sessionOptionsRef );
     if( stdCompression )
 		::CloseComponent( stdCompression );
 
-	*result = Format( sessionOptionsRef, static_cast<uint32_t>( codec ), quality / (float)codecLosslessQuality, FixedToFloat( temporalSettings.frameRate ) );
+	*result = Format( sessionOptionsRef, static_cast<uint32_t>( codec ), quality / (float)codecLosslessQuality,
+						FixedToFloat( temporalSettings.frameRate ), multiPassSettings.allowMultiPassEncoding != 0 );
 
 	return true;
 }

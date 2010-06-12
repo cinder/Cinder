@@ -23,6 +23,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Stream.h"
 
 #include <string>
 
@@ -38,6 +39,7 @@
 	typedef const struct OpaqueICMEncodedFrame* ICMEncodedFrameRef;
 	typedef signed long							OSStatus;
 	typedef unsigned long						CodecType;
+	typedef unsigned long						ICMCompressionPassModeFlags;
 #endif // defined( CINDER_MSW )
 
 namespace cinder { namespace qtime {
@@ -50,7 +52,7 @@ class MovieWriter {
 	  public:
 		Format();
 		Format( uint32_t codec, float quality );
-		Format( const ICMCompressionSessionOptionsRef settings, uint32_t codec, float quality, float frameRate );
+		Format( const ICMCompressionSessionOptionsRef settings, uint32_t codec, float quality, float frameRate, bool enableMultiPass );
 		Format( const Format &format );
 		~Format();
 
@@ -82,6 +84,9 @@ class MovieWriter {
 		Format&		setMaxKeyFrameRate( int32_t rate );
 		//! Sets whether a codec is allowed to change frame times. Defaults to \c true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
 		Format&		enableFrameTimeChanges( bool enable );
+		bool		isMultiPass() { return mEnableMultiPass; }
+		//! Enables multipass encoding. Defaults to \c false. While multiPass encoding can result in significantly smaller movies, it often takes much longer to compress and requires the creation of two temporary files for storing intermediate results.
+		Format&		enableMultiPass( bool enable ) { mEnableMultiPass = enable; return *this; }
 
 	  private:
 		void		initDefaults();
@@ -90,6 +95,7 @@ class MovieWriter {
 		long		mTimeBase;
 		float		mDefaultTime;
 		float		mGamma;
+		bool		mEnableMultiPass;
 
 		ICMCompressionSessionOptionsRef		mOptions;
 
@@ -124,6 +130,9 @@ class MovieWriter {
 		\note Calling addFrame() after a call to finish() will throw a MovieWriterExcAlreadyFinished exception. **/
 	void addFrame( const ImageSourceRef &imageSource, float duration = -1.0f ) { mObj->addFrame( imageSource, duration ); }
 	
+	//! Returns the number of frames in the movie
+	uint32_t	getNumFrames() const { return mObj->mNumFrames; }
+
 	//! Completes the encoding of the movie and closes the file. Calling finish() more than once has no effect.
 	void finish() { mObj->finish(); }
 	
@@ -141,18 +150,23 @@ class MovieWriter {
 		
 		static OSStatus encodedFrameOutputCallback( void *refCon, ::ICMCompressionSessionRef session, OSStatus err, ICMEncodedFrameRef encodedFrame, void *reserved );
 
-		::Movie						mMovie;
-		::DataHandler				mDataHandler;
-		::Track						mTrack;
-		::Media						mMedia;
-		::ICMCompressionSessionRef	mCompressionSession;
-
+		::Movie							mMovie;
+		::DataHandler					mDataHandler;
+		::Track							mTrack;
+		::Media							mMedia;
+		::ICMCompressionSessionRef		mCompressionSession;
+		::ICMCompressionPassModeFlags 	mMultiPassModeFlags;		
 		std::string		mPath;
-		::TimeValue		mCurrentTimeValue;
+		uint32_t		mNumFrames;
+		int64_t			mCurrentTimeValue;
 		
 		int32_t		mWidth, mHeight;
 		Format		mFormat;
-		bool		mFinished;
+		bool		mRequestedMultiPass, mDoingMultiPass, mFinished;		
+
+		IoStreamRef		mMultiPassFrameCache;
+
+		std::vector<std::pair<int64_t,int64_t> >	mFrameTimes;
 	};
 	/// \endcond
 	
