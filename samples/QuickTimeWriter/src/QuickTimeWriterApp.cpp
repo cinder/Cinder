@@ -2,6 +2,8 @@
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/ip/Fill.h"
 
+#include "Resources.h"
+
 #include <list>
 using namespace ci;
 using namespace ci::app;
@@ -11,7 +13,6 @@ using namespace std;
 class QuickTimeWriterApp : public AppBasic {
  public:
 	void setup();
-	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
 	void draw();
 	
@@ -23,23 +24,15 @@ class QuickTimeWriterApp : public AppBasic {
 void QuickTimeWriterApp::setup()
 {
 	string path = getSaveFilePath();
-	qtime::MovieWriter::Format format;
-	Surface surface( 640, 480, false );
-	ip::fill( &surface, Color8u( 255, 128, 64 ) );
-	if( ! path.empty() && qtime::MovieWriter::getUserCompressionSettings( &format, loadImage( "C:\\Users\\Andrew\\Pictures\\2046-724573.jpg" ) ) )
-		mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), format );
-}
+	if( path.empty() )
+		return; // user cancelled save
 
-void QuickTimeWriterApp::mouseDown( MouseEvent event )
-{
-	if( event.isRight() ) {
-		// add one second of white on right clicks
-		Surface white( mMovieWriter.getWidth(), mMovieWriter.getHeight(), false );
-		ip::fill( &white, Color8u( 255, 255, 255 ) );
-		for( int i = 0; i < 30; ++i ) {
-			ip::fill( &white, Color8u( 0, 0, 255 ), Area( 0, 400, mMovieWriter.getWidth() * i / 30, 480 ) );
-			mMovieWriter.addFrame( white );
-		}
+	// The preview image below is entitled "Lava" by "Z T Jackson"
+	// http://www.flickr.com/photos/ztjackson/3241111818/
+
+	qtime::MovieWriter::Format format;
+	if( qtime::MovieWriter::getUserCompressionSettings( &format, loadImage( loadResource( RES_PREVIEW_IMAGE ) ) ) ) {
+		mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), format );
 	}
 }
 
@@ -51,7 +44,7 @@ void QuickTimeWriterApp::mouseDrag( MouseEvent event )
 
 void QuickTimeWriterApp::draw()
 {
-	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
+	gl::clear( Color( 0.05f, 0.1f, 0.2f ) );
 
 	// We'll set the color to an orange color
 	glColor3f( 1.0f, 0.5f, 0.25f );
@@ -65,6 +58,7 @@ void QuickTimeWriterApp::draw()
 	// tell OpenGL to actually draw the lines now
 	glEnd();
 	
+	// add this frame to our movie
 	if( mMovieWriter )
 		mMovieWriter.addFrame( copyWindowSurface() );
 }
