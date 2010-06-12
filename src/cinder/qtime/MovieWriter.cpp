@@ -224,11 +224,10 @@ void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float durati
 	if( duration <= 0 )
 		duration = mFormat.mDefaultTime;
 
-	::CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource );
+	::CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource, false );
 	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &mFormat.mGamma );
 	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
 	::CFRelease( gammaLevel );
-	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate );
 
 	::ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
 	::ICMCompressionFrameOptionsRef frameOptions = NULL;
@@ -447,7 +446,7 @@ void MovieWriter::Obj::finish()
 						::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &mFormat.mGamma );
 						::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
 						::CFRelease( gammaLevel );
-						::CVBufferSetAttachment( pixelBuffer, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_709_2, kCVAttachmentMode_ShouldPropagate );
+						::CVBufferSetAttachment( pixelBuffer, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_601_4, kCVAttachmentMode_ShouldPropagate );
 
 						::ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
 						::ICMCompressionFrameOptionsRef frameOptions = NULL;
