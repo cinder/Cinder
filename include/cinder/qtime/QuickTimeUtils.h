@@ -72,7 +72,7 @@ typedef shared_ptr<class ImageTargetCvPixelBuffer> ImageTargetCvPixelBufferRef;
 
 class ImageTargetCvPixelBuffer : public ci::ImageTarget {
   public:
-	static ImageTargetCvPixelBufferRef createRef( ImageSourceRef imageSource );
+	static ImageTargetCvPixelBufferRef createRef( ImageSourceRef imageSource, bool convertToYpCbCr = false );
 	~ImageTargetCvPixelBuffer();
 
 	virtual void*		getRowPointer( int32_t row );
@@ -81,16 +81,19 @@ class ImageTargetCvPixelBuffer : public ci::ImageTarget {
 	::CVPixelBufferRef	getCvPixelBuffer() const { return mPixelBufferRef; }
 
   protected:
-	ImageTargetCvPixelBuffer( ImageSourceRef imageSource );
+	ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr );
 	
+	void		convertDataToYpCbCr();
+	void		convertDataToAYpCbCr();
+
 	::CVPixelBufferRef	mPixelBufferRef;
 	size_t				mRowBytes;
 	uint8_t				*mData;
+	bool				mConvertToYpCbCr;
 };
 
-//! Creates a CVPixelBufferRef from an ImageSource. Release the result with CVPixelBufferRelease().
-CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource );
-
+//! Creates a CVPixelBufferRef from an ImageSource. Release the result with CVPixelBufferRelease(). If \a convertToYpCbCr the resulting CVPixelBuffer will be in either \c k444YpCbCr8CodecType or \c k4444YpCbCrA8PixelFormat
+CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr = false );
 
 typedef shared_ptr<class ImageTargetGWorld> ImageTargetGWorldRef;
 

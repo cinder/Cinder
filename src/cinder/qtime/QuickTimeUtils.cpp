@@ -416,37 +416,47 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageTargetCgImage
-ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef imageSource )
+ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef imageSource, bool convertToYpCbCr )
 {
-	return ImageTargetCvPixelBufferRef( new ImageTargetCvPixelBuffer( imageSource ) );
+	return ImageTargetCvPixelBufferRef( new ImageTargetCvPixelBuffer( imageSource, convertToYpCbCr ) );
 }
 
-ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource )
-	: ImageTarget(), mPixelBufferRef( 0 )
+ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
+	: ImageTarget(), mPixelBufferRef( 0 ), mConvertToYpCbCr( convertToYpCbCr )
 {
 	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
 	
 	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
 	
+	// if we're converting to YCbCr, we'll load all of the data as RGB in terms of ci::ImageIo
+	// but we run color space conversion over it later in the finalize method
 	OSType formatType;
-	switch( imageSource->getDataType() ) {
-		// for now all we support is 8 bit RGB(A)
-		case ImageIo::UINT16:
-		case ImageIo::FLOAT32:
-		case ImageIo::UINT8:
-			setDataType( ImageIo::UINT8 );
-			if( imageSource->hasAlpha () ) {
-				formatType = k32ARGBPixelFormat;
-				setChannelOrder( ImageIo::ARGB );
-			}
-			else {
-				formatType = k24RGBPixelFormat;
-				setChannelOrder( ImageIo::RGB );
-			}
-			setColorModel( ImageIo::CM_RGB );
-		break;
-		default:
-			throw ImageIoException();
+	if( ! mConvertToYpCbCr ) {
+		switch( imageSource->getDataType() ) {
+			// for now all we support is 8 bit RGB(A)
+			case ImageIo::UINT16:
+			case ImageIo::FLOAT32:
+			case ImageIo::UINT8:
+				setDataType( ImageIo::UINT8 );
+				if( imageSource->hasAlpha () ) {
+					formatType = k32ARGBPixelFormat;
+					setChannelOrder( ImageIo::ARGB );
+				}
+				else {
+					formatType = k24RGBPixelFormat;
+					setChannelOrder( ImageIo::RGB );
+				}
+				setColorModel( ImageIo::CM_RGB );
+			break;
+			default:
+				throw ImageIoException();
+		}
+	}
+	else {
+		formatType = k4444YpCbCrA8PixelFormat;
+		setDataType( ImageIo::UINT8 );
+		setChannelOrder( ImageIo::RGBA );
+		setColorModel( ImageIo::CM_RGB );
 	}
 
 	if( ::CVPixelBufferCreate( kCFAllocatorDefault, imageSource->getWidth(), imageSource->getHeight(), 
@@ -475,11 +485,59 @@ void* ImageTargetCvPixelBuffer::getRowPointer( int32_t row )
 
 void ImageTargetCvPixelBuffer::finalize()
 {
+	switch( ::CVPixelBufferGetPixelFormatType( mPixelBufferRef ) ) {
+		case k4444YpCbCrA8PixelFormat:
+			convertDataToAYpCbCr();
+			::CVBufferSetAttachment( mPixelBufferRef, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_601_4, kCVAttachmentMode_ShouldPropagate );
+		break;
+		case k444YpCbCr8CodecType:
+			convertDataToYpCbCr();
+			::CVBufferSetAttachment( mPixelBufferRef, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_601_4, kCVAttachmentMode_ShouldPropagate );
+		break;
+	}
 }
 
-CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource )
+// Assumes RGB order 8 bit unsinged input, results in Rec. 601 YpCbCr
+void ImageTargetCvPixelBuffer::convertDataToYpCbCr()
 {
-	ImageTargetCvPixelBufferRef target = ImageTargetCvPixelBuffer::createRef( imageSource );
+	for( uint32_t y = 0; y < mHeight; ++y ) {
+		uint8_t *data = reinterpret_cast<uint8_t*>( getRowPointer( y ) );
+		for( uint32_t x = 0; x < mWidth; ++x ) {
+			float r = data[x*3+0] / 255.0f;
+			float g = data[x*3+1] / 255.0f;
+			float b = data[x*3+2] / 255.0f;
+			uint8_t yp = 16 + ( 65.481f * r + 128.553f * g + 24.966f * b );
+			uint8_t cb = 128 + ( -37.797f * r + -74.203f * g + 112 * b );
+			uint8_t cr = 128 + ( 112 * r + -93.786f * g + -18.214f * b );
+			data[x*3+0] = yp;
+			data[x*3+1] = cb;
+			data[x*3+2] = cr;
+		}
+	}
+}
+
+// Assumes RGBA order 8 bit unsigned input, results in Rec. 601 YpCbCrA
+void ImageTargetCvPixelBuffer::convertDataToAYpCbCr()
+{
+	for( uint32_t y = 0; y < mHeight; ++y ) {
+		uint8_t *data = reinterpret_cast<uint8_t*>( getRowPointer( y ) );
+		for( uint32_t x = 0; x < mWidth; ++x ) {
+			float r = data[x*4+0] / 255.0f;
+			float g = data[x*4+1] / 255.0f;
+			float b = data[x*4+2] / 255.0f;
+			uint8_t yp = 16 + ( 65.481f * r + 128.553f * g + 24.966f * b );
+			uint8_t cb = 128 + ( -37.797f * r + -74.203f * g + 112 * b );
+			uint8_t cr = 128 + ( 112 * r + -93.786f * g + -18.214f * b );
+			data[x*4+0] = cb;
+			data[x*4+1] = yp;
+			data[x*4+2] = cr;
+		}
+	}
+}
+
+CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
+{
+	ImageTargetCvPixelBufferRef target = ImageTargetCvPixelBuffer::createRef( imageSource, convertToYpCbCr );
 	imageSource->load( target );
 	target->finalize();
 	::CVPixelBufferRef result( target->getCvPixelBuffer() );
