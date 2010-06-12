@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
@@ -55,16 +55,16 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="..\..\..\include"
+				AdditionalIncludeDirectories="..\..\..\include;..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cinder_d.lib"
+				AdditionalDependencies="cinder_d.lib QTMLClient.lib CVClient.lib QTSClient.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\..\lib;..\..\..\lib\msw"
+				AdditionalLibraryDirectories="..\..\..\lib;..\..\..\lib\msw;..\..\..\..\QuickTimeSDK-7.3\Libraries"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -130,15 +130,16 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="..\..\..\include;..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cinder.lib"
+				AdditionalDependencies="cinder.lib QTMLClient.lib CVClient.lib QTSClient.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\..\lib;..\..\..\lib\msw"
+				AdditionalLibraryDirectories="..\..\..\lib;..\..\..\lib\msw;..\..\..\..\QuickTimeSDK-7.3\Libraries"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -201,7 +202,7 @@
 			<File
 				RelativePath=".\Resources.rc"
 				>
-			</File>			
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
