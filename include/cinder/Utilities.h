@@ -37,7 +37,7 @@ std::string getHomeDirectory();
 std::string getDocumentsDirectory();
 //! Returns a path to the user's temporary directory.
 std::string getTemporaryDirectory();
-//! Returns a path that is gauranteed to be unique and is suitable for creating a temporary file. An optional \a prefix parameters allows specification of a file name prefix, some portion of which will be incorporated into the result.
+//! Returns a path that is gauranteed to be unique and is suitable for creating a temporary file. An optional \a prefix parameters allows specification of a file name prefix, some portion of which will be incorporated into the result. Note a race condition that can exist between the uniqueness of the path and the creation of the file.
 std::string getTemporaryFilePath( const std::string &prefix = "" );
 //! Returns the directory portion of file path \a path, the last component of which must be a file name or a terminating path separator. 
 std::string getPathDirectory( const std::string &path );

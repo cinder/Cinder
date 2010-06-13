@@ -104,8 +104,8 @@ std::string getDocumentsDirectory()
 std::string getTemporaryDirectory()
 {
 #if defined( CINDER_COCOA )
-std::string result;
-#error TODO
+	NSString *docDir = ::NSTemporaryDirectory();
+	return cocoa::convertNsString( docDir ) + "/";
 #else
 	DWORD result = ::GetTempPathW( 0, L"" );
 	if( ! result )
@@ -124,8 +124,9 @@ std::string result;
 std::string getTemporaryFilePath( const std::string &prefix )
 {
 #if defined( CINDER_COCOA )
-std::string result;
-#error TODO
+	char path[2048];
+	sprintf( path, "%s%sXXXXXX", getTemporaryDirectory().c_str(), prefix.c_str() );
+	return string( mktemp( path ) );
 #else
 	TCHAR tempFileName[MAX_PATH]; 
 	DWORD result = ::GetTempPathW( 0, L"" );
@@ -190,7 +191,7 @@ bool createDirectories( const std::string &path, bool createParents )
 void deleteFile( const std::string &path )
 {
 #if defined( CINDER_COCOA )
-	#error "TODO"
+	unlink( path.c_str() );
 #else
 	if( ! ::DeleteFileW( toUtf16( path ).c_str() ) ) {
 		DWORD err = GetLastError();
