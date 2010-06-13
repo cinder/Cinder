@@ -13,6 +13,18 @@
 		005372F7118FD835004D686E /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		005372F8118FD835004D686E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
 		005372F9118FD835004D686E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
+		00970AD511A7939900B1FC50 /* MultiTouchApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CFDFDF11384CC60091E310 /* MultiTouchApp.cpp */; };
+		00970B1311A7945B00B1FC50 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B0611A7945B00B1FC50 /* Cocoa.framework */; };
+		00970B1411A7945B00B1FC50 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B0811A7945B00B1FC50 /* AppKit.framework */; };
+		00970B1511A7945B00B1FC50 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B0911A7945B00B1FC50 /* CoreData.framework */; };
+		00970B1611A7945B00B1FC50 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B0A11A7945B00B1FC50 /* Foundation.framework */; };
+		00970B1811A7945B00B1FC50 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B0C11A7945B00B1FC50 /* AudioToolbox.framework */; };
+		00970B1911A7945B00B1FC50 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B0D11A7945B00B1FC50 /* CoreAudio.framework */; };
+		00970B1E11A7945B00B1FC50 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B1211A7945B00B1FC50 /* AudioUnit.framework */; };
+		00970B6811A798C100B1FC50 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B6711A798C100B1FC50 /* OpenGL.framework */; };
+		00970B6C11A798E100B1FC50 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B6B11A798E100B1FC50 /* CoreVideo.framework */; };
+		00970B7011A7993E00B1FC50 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B6F11A7993E00B1FC50 /* QuickTime.framework */; };
+		00970B7411A7996A00B1FC50 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00970B7311A7996A00B1FC50 /* QTKit.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
 		00CFDFE011384CC60091E310 /* MultiTouchApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CFDFDF11384CC60091E310 /* MultiTouchApp.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -23,9 +35,20 @@
 
 /* Begin PBXFileReference section */
 		005372FD118FD835004D686E /* MultiTouch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiTouch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		00970ACA11A7933200B1FC50 /* MultiTouch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiTouch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		00970B0611A7945B00B1FC50 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		00970B0811A7945B00B1FC50 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		00970B0911A7945B00B1FC50 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		00970B0A11A7945B00B1FC50 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		00970B0C11A7945B00B1FC50 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		00970B0D11A7945B00B1FC50 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		00970B1211A7945B00B1FC50 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		00970B6711A798C100B1FC50 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		00970B6B11A798E100B1FC50 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		00970B6F11A7993E00B1FC50 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		00970B7311A7996A00B1FC50 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDFDF11384CC60091E310 /* MultiTouchApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MultiTouchApp.cpp; path = ../src/MultiTouchApp.cpp; sourceTree = "<group>"; };
-		00CFE01411385E9D0091E310 /* TestApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestApp.h; path = include/TestApp.h; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* MultiTouch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiTouch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -48,6 +71,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		00970AC811A7933200B1FC50 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00970B1311A7945B00B1FC50 /* Cocoa.framework in Frameworks */,
+				00970B1411A7945B00B1FC50 /* AppKit.framework in Frameworks */,
+				00970B1511A7945B00B1FC50 /* CoreData.framework in Frameworks */,
+				00970B1611A7945B00B1FC50 /* Foundation.framework in Frameworks */,
+				00970B1811A7945B00B1FC50 /* AudioToolbox.framework in Frameworks */,
+				00970B1911A7945B00B1FC50 /* CoreAudio.framework in Frameworks */,
+				00970B1E11A7945B00B1FC50 /* AudioUnit.framework in Frameworks */,
+				00970B6811A798C100B1FC50 /* OpenGL.framework in Frameworks */,
+				00970B6C11A798E100B1FC50 /* CoreVideo.framework in Frameworks */,
+				00970B7011A7993E00B1FC50 /* QuickTime.framework in Frameworks */,
+				00970B7411A7996A00B1FC50 /* QTKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -63,6 +104,48 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		00970AF711A7943B00B1FC50 /* iphone */ = {
+			isa = PBXGroup;
+			children = (
+				28FD15070DC6FC5B0079059D /* QuartzCore.framework */,
+				28FD14FF0DC6FC520079059D /* OpenGLES.framework */,
+				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
+				1D30AB110D05D00D00671497 /* Foundation.framework */,
+				00CFDF6A1138442D0091E310 /* CoreGraphics.framework */,
+			);
+			name = iphone;
+			sourceTree = "<group>";
+		};
+		00970AFA11A7944300B1FC50 /* macosx */ = {
+			isa = PBXGroup;
+			children = (
+				00970B0C11A7945B00B1FC50 /* AudioToolbox.framework */,
+				00970B0D11A7945B00B1FC50 /* CoreAudio.framework */,
+				00970B1211A7945B00B1FC50 /* AudioUnit.framework */,
+				00970B0711A7945B00B1FC50 /* Other Frameworks */,
+				00970B0511A7945B00B1FC50 /* Linked Frameworks */,
+			);
+			name = macosx;
+			sourceTree = "<group>";
+		};
+		00970B0511A7945B00B1FC50 /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				00970B0611A7945B00B1FC50 /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		00970B0711A7945B00B1FC50 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				00970B0811A7945B00B1FC50 /* AppKit.framework */,
+				00970B0911A7945B00B1FC50 /* CoreData.framework */,
+				00970B0A11A7945B00B1FC50 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
 		00CFDFA7113848F40091E310 /* Source */ = {
 			isa = PBXGroup;
 			children = (
@@ -74,7 +157,6 @@
 		00CFDFB81138492F0091E310 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				00CFE01411385E9D0091E310 /* TestApp.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -84,6 +166,7 @@
 			children = (
 				1D6058910D05DD3D006BFB54 /* MultiTouch.app */,
 				005372FD118FD835004D686E /* MultiTouch.app */,
+				00970ACA11A7933200B1FC50 /* MultiTouch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,11 +203,12 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				28FD15070DC6FC5B0079059D /* QuartzCore.framework */,
-				28FD14FF0DC6FC520079059D /* OpenGLES.framework */,
-				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
-				1D30AB110D05D00D00671497 /* Foundation.framework */,
-				00CFDF6A1138442D0091E310 /* CoreGraphics.framework */,
+				00970AFA11A7944300B1FC50 /* macosx */,
+				00970AF711A7943B00B1FC50 /* iphone */,
+				00970B6711A798C100B1FC50 /* OpenGL.framework */,
+				00970B6B11A798E100B1FC50 /* CoreVideo.framework */,
+				00970B6F11A7993E00B1FC50 /* QuickTime.framework */,
+				00970B7311A7996A00B1FC50 /* QTKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -147,6 +231,23 @@
 			name = MultiTouch_iPad;
 			productName = MultiTouch;
 			productReference = 005372FD118FD835004D686E /* MultiTouch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		00970AC911A7933200B1FC50 /* MultiTouch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 00970AD011A7936600B1FC50 /* Build configuration list for PBXNativeTarget "MultiTouch" */;
+			buildPhases = (
+				00970AC611A7933200B1FC50 /* Resources */,
+				00970AC711A7933200B1FC50 /* Sources */,
+				00970AC811A7933200B1FC50 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MultiTouch;
+			productName = MultiTouch;
+			productReference = 00970ACA11A7933200B1FC50 /* MultiTouch.app */;
 			productType = "com.apple.product-type.application";
 		};
 		1D6058900D05DD3D006BFB54 /* MultiTouch_iPhone */ = {
@@ -180,12 +281,20 @@
 			targets = (
 				1D6058900D05DD3D006BFB54 /* MultiTouch_iPhone */,
 				005372F0118FD835004D686E /* MultiTouch_iPad */,
+				00970AC911A7933200B1FC50 /* MultiTouch */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		005372F1118FD835004D686E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		00970AC611A7933200B1FC50 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -207,6 +316,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				005372F3118FD835004D686E /* MultiTouchApp.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		00970AC711A7933200B1FC50 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00970AD511A7939900B1FC50 /* MultiTouchApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,6 +377,56 @@
 				PRODUCT_NAME = MultiTouch;
 				SDKROOT = iphoneos3.2;
 				TARGETED_DEVICE_FAMILY = 2;
+			};
+			name = Release;
+		};
+		00970ACC11A7933300B1FC50 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = i386;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "MultiTouch-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"$(CINDER_PATH)/lib/libcinder_d.a",
+					"-lcurl",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = MultiTouch;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = "i386 x86_64";
+			};
+			name = Debug;
+		};
+		00970ACD11A7933300B1FC50 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = i386;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "MultiTouch-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"$(CINDER_PATH)/lib/cinder.a",
+					"-lcurl",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = MultiTouch;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = "i386 x86_64";
+				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -346,6 +513,15 @@
 			buildConfigurations = (
 				005372FB118FD835004D686E /* Debug */,
 				005372FC118FD835004D686E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		00970AD011A7936600B1FC50 /* Build configuration list for PBXNativeTarget "MultiTouch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				00970ACC11A7933300B1FC50 /* Debug */,
+				00970ACD11A7933300B1FC50 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

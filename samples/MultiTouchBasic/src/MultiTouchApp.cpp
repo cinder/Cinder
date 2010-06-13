@@ -52,6 +52,9 @@ class MultiTouchApp : public AppBase {
  public:
 	void	prepareSettings( Settings *settings );
 
+	void	mouseDown( MouseEvent event );
+	void	mouseDrag( MouseEvent event );	
+
 	void	touchesBegan( TouchEvent event );
 	void	touchesMoved( TouchEvent event );
 	void	touchesEnded( TouchEvent event );
@@ -76,6 +79,7 @@ void MultiTouchApp::prepareSettings( Settings *settings )
 
 void MultiTouchApp::touchesBegan( TouchEvent event )
 {
+console() << "Began: " << event << std::endl;
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt ) {
 		Color newColor( CM_HSV, Rand::randFloat(), 1, 1 );
 		mActivePoints.insert( make_pair( touchIt->getId(), TouchPoint( touchIt->getPos(), newColor ) ) );
@@ -90,11 +94,22 @@ void MultiTouchApp::touchesMoved( TouchEvent event )
 
 void MultiTouchApp::touchesEnded( TouchEvent event )
 {
+console() << "Ended: " << event << std::endl;
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt ) {
 		mActivePoints[touchIt->getId()].startDying();
 		mDyingPoints.push_back( mActivePoints[touchIt->getId()] );
 		mActivePoints.erase( touchIt->getId() );
 	}
+}
+
+void MultiTouchApp::mouseDown( MouseEvent event )
+{
+	console() << "Mouse down: " << event.isRight() << " & " << event.isControlDown() << std::endl;	
+}
+
+void MultiTouchApp::mouseDrag( MouseEvent event )
+{
+	console() << "Mouse drag: " << std::endl;	
 }
 
 void MultiTouchApp::draw()

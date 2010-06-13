@@ -239,7 +239,6 @@ void AppBasic::privateResize__( int width, int height )
 	App::privateResize__( width, height );
 }
 
-#if defined( CINDER_MSW )
 void AppBasic::privateTouchesBegan__( const TouchEvent &event )
 {	
 	touchesBegan( event );
@@ -254,7 +253,6 @@ void AppBasic::privateTouchesEnded__( const TouchEvent &event )
 {	
 	touchesEnded( event );
 }
-#endif // defined( CINDER_MSW )
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // AppBasic::Settings
@@ -263,9 +261,7 @@ AppBasic::Settings::Settings()
 {
 	mFullScreenSizeX = mFullScreenSizeY = 0;
 	mDisplay = Display::getMainDisplay().get();
-#if defined( CINDER_MSW )
 	mEnableMultiTouch = false;
-#endif
 #if defined( CINDER_MAC )
 	mEnableSecondaryDisplayBlanking = true; 
 #endif

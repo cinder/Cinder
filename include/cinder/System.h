@@ -60,9 +60,9 @@ class System {
 	static int			getOsBugFixVersion();
 #endif //! defined( CINDER_COCOA_TOUCH )	
 
-	//! Returns whether the system supports MultiTouch. Also returns true under Windows 7 in the presence of single touch support.
+	//! Returns whether the system supports MultiTouch. Also returns true under Windows 7 in the presence of single touch support. Always returns true on Mac OS X Snow Leopard.
 	static bool			hasMultiTouch();
-	//! Returns the maximum number of simultaneous touches supported by the system's MultiTouch implementation.
+	//! Returns the maximum number of simultaneous touches supported by the system's MultiTouch implementation. Only truly accurate on Windows 7.
 	static int32_t		getMaxMultiTouchPoints();
 	
 	//! Represents a single Network Adapter of the system
