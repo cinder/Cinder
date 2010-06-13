@@ -218,7 +218,7 @@ class VboMesh {
 		void	setPosition( float x, float y, float z ) { *(reinterpret_cast<Vec3f*>( &mPtr[mPositionOffset] )) = Vec3f( x, y, z ); }
 		void	setNormal( const Vec3f &n ) { *(reinterpret_cast<Vec3f*>( &mPtr[mNormalOffset] )) = n; }
 		void	setColorRGB( const Color &n ) { *(reinterpret_cast<Color*>( &mPtr[mColorRGBOffset] )) = n; }
-		void	setColorRGBA( const Color &n ) { *(reinterpret_cast<Color*>( &mPtr[mColorRGBAOffset] )) = n; }
+		void	setColorRGBA( const ColorA &n ) { *(reinterpret_cast<ColorA*>( &mPtr[mColorRGBAOffset] )) = n; }
 		void	setTexCoord2d0( const Vec2f &t ) { *(reinterpret_cast<Vec2f*>( &mPtr[mTexCoordOffset[0]] )) = t; }
 		void	setTexCoord3d0( const Vec3f &t ) { *(reinterpret_cast<Vec3f*>( &mPtr[mTexCoordOffset[0]] )) = t; }
 		void	setTexCoord2d1( const Vec2f &t ) { *(reinterpret_cast<Vec2f*>( &mPtr[mTexCoordOffset[1]] )) = t; }

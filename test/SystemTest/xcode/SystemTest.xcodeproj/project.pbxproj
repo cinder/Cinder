@@ -215,7 +215,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
-					"$(FLINT_PATH)/lib/libflint_d.a",
+					"$(CINDER_PATH)/lib/libcinder_d.a",
 					"-lcurl",
 				);
 				PRODUCT_NAME = SystemTest;
@@ -230,14 +230,16 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = SystemTest_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
-					"$(FLINT_PATH)/lib/libflint.a",
+					"$(CINDER_PATH)/lib/libcinder.a",
 					"-lcurl",
 				);
 				PRODUCT_NAME = SystemTest;
@@ -251,14 +253,13 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				BOOST_PATH = ../../../../boost_1_36_0;
-				FLINT_PATH = ../../..;
+				CINDER_PATH = ../../..;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(BOOST_PATH)";
+				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
-				USER_HEADER_SEARCH_PATHS = "$(FLINT_PATH)/include ../include";
+				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
 			};
 			name = Debug;
 		};
@@ -267,14 +268,13 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				BOOST_PATH = ../../../../boost_1_36_0;
-				FLINT_PATH = ../../..;
+				CINDER_PATH = ../../..;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(BOOST_PATH)";
+				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
-				USER_HEADER_SEARCH_PATHS = "$(FLINT_PATH)/include ../include";
+				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
 			};
 			name = Release;
 		};

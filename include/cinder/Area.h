@@ -51,10 +51,10 @@ class AreaT {
 	void			clipBy( const AreaT<T> &clip );
 	AreaT<T>		getClipBy( const AreaT<T> &clip ) const;
 
-	//! Translates the AreaT by \a offset	
-	void			offsetBy( const Vec2<T> &offset );
-	//! Returns a copy of the AreaT translated by \a offset
-	AreaT<T>		getOffsetBy( const Vec2<T> &offset ) const;
+	//! Translates the AreaT by \a off
+	void			offset( const Vec2<T> &off );
+	//! Returns a copy of the AreaT translated by \a off
+	AreaT<T>		getOffset( const Vec2<T> &off ) const;
 	//! Translates the AreaT so that its upper-left corner is \a newUL
 	void			moveULTo( const Vec2<T> &newUL );
 	//! Returns a copy of the AreaT translated so that its upper-left corner is \a newUL
@@ -71,18 +71,23 @@ class AreaT {
 	T				getY2() const { return y2; }
 	void			setY2( T aY2 ) { y2 = aY2; }
 	Vec2<T>			getUL() const { return Vec2<T>( x1, y1 ); } // left-top offset
-	Vec2<T>		getLR() const { return Vec2<T>( x2, y2 ); } // right-bottom offset
+	Vec2<T>			getLR() const { return Vec2<T>( x2, y2 ); } // right-bottom offset
 
-	bool			isInside( const Vec2<T> &offset ) const;
+	bool			contains( const Vec2<T> &offset ) const;
 	template<typename Y>
-	bool			isInside( const Vec2<Y> &offset ) const { return isInside( Vec2<T>( (T)math<Y>::ceil( offset. x ), (T)math<Y>::ceil( offset.y ) ) ); }
+	bool			contains( const Vec2<Y> &offset ) const { return contains( Vec2<T>( (T)math<Y>::ceil( offset. x ), (T)math<Y>::ceil( offset.y ) ) ); }
 	bool			intersects( const AreaT<T> &area ) const;
 
 	T				x1, y1, x2, y2;
 
 	bool			operator==( const AreaT<T> &aArea ) const { return ( ( x1 == aArea.x1 ) && ( y1 == aArea.y1 ) && ( x2 == aArea.x2 ) && ( y2 == aArea.y2 ) ); }
 	bool			operator<( const AreaT<T> &aArea ) const;
-	AreaT<T>		operator+( const Vec2<T> &offset ) const { return this->getOffsetBy( offset ); }
+
+	const AreaT<T>		operator+( const Vec2<T> &o ) const { return this->getOffset( o ); }
+	const AreaT<T>		operator-( const Vec2<T> &o ) const { return this->getOffset( -o ); }
+
+	AreaT<T>&		operator+=( const Vec2<T> &o ) { offset( o ); return *this; }
+	AreaT<T>&		operator-=( const Vec2<T> &o ) { offset( -o ); return *this; }
 
 	static AreaT<T>	proportionalFit( const AreaT<T> &srcArea, const AreaT<T> &dstArea, bool center, bool expand = false );
 

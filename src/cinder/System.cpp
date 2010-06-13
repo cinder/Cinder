@@ -26,20 +26,35 @@
 // Reference AMD's "Processor and Core Enumeration Using CPUID" for physical processor determination
 
 #if defined( CINDER_COCOA )
+	#if defined( CINDER_COCOA_TOUCH )
+		#import <CFNetwork/CFNetwork.h>
+	#endif
+	#import <netinet/in.h>
+	#import <netdb.h>
+	#import <ifaddrs.h>
+	#import <arpa/inet.h>
+	#import <net/ethernet.h>
+	#import <net/if_dl.h>
 	#include <sys/sysctl.h>
-	#if defined( CINDER_MAC )
+		#if defined( CINDER_MAC )
 		#include <CoreServices/CoreServices.h>
 	#endif
 #elif defined( CINDER_MSW )
 	#include <windows.h>
 	#include <windowsx.h>
-	#include <QTML.h>
+	#include <iphlpapi.h>
+	#pragma comment(lib, "IPHLPAPI.lib")
+	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+		#undef __STDC_CONSTANT_MACROS
+		#include <QTML.h>
+	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 	namespace cinder {
 		void cpuidwrap( int *p, unsigned int param );
 	}
 #endif
 
 #include <string>
+using namespace std;
 
 namespace cinder {
 
@@ -428,7 +443,11 @@ bool System::hasMultiTouch()
 {
 	if( ! instance()->mCachedValues[MULTI_TOUCH] ) {
 #if defined( CINDER_MAC ) // Mac OS X doesn't really support touch yet (well, we don't yet)	
-		instance()->mHasMultiTouch = false;
+	#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+		instance()->mHasMultiTouch = getOsMajorVersion() > 10 || getOsMinorVersion() >= 6;
+	#else
+		return false;
+	#endif
 #elif defined( CINDER_COCOA_TOUCH ) // all incarnations of the iPhone OS support multiTouch
 		instance()->mHasMultiTouch = true;
 #elif defined( CINDER_MSW )
@@ -445,8 +464,8 @@ bool System::hasMultiTouch()
 int32_t System::getMaxMultiTouchPoints()
 {
 	if( ! instance()->mCachedValues[MAX_MULTI_TOUCH_POINTS] ) {
-#if defined( CINDER_MAC ) // Mac OS X doesn't really support touch yet (well, we don't yet)
-		instance()->mMaxMultiTouchPoints = 0;
+#if defined( CINDER_MAC ) // We don't have a good way of determining this yet
+		instance()->mMaxMultiTouchPoints = 10;
 #elif defined( CINDER_COCOA_TOUCH ) // all incarnations of the iPhone OS support multiTouch
 		instance()->mMaxMultiTouchPoints = 6; // we don't seem to be able to query this at runtime; should be hardcoded based on the device
 #elif defined( CINDER_MSW )
@@ -457,5 +476,82 @@ int32_t System::getMaxMultiTouchPoints()
 	
 	return instance()->mMaxMultiTouchPoints;
 }
+
+vector<System::NetworkAdapter> System::getNetworkAdapters()
+{
+	vector<System::NetworkAdapter> adapters;
+
+#if defined( CINDER_COCOA )
+	struct ifaddrs *interfaces = NULL;
+	struct ifaddrs *currentInterface = NULL;
+
+	int success = getifaddrs( &interfaces );
+	if( success == 0 ) {
+		currentInterface = interfaces;
+		while( currentInterface ) {
+			if( currentInterface->ifa_addr->sa_family == AF_INET ) {
+				char host[NI_MAXHOST];
+				int result = getnameinfo( currentInterface->ifa_addr,
+                           (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+                           host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
+				if( result != 0 )
+					continue;
+				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host ) );
+			}
+			currentInterface = currentInterface->ifa_next;
+		}
+	}
+	freeifaddrs( interfaces );
+#elif defined( CINDER_MSW )
+    PIP_ADAPTER_INFO pAdapterInfo;
+    PIP_ADAPTER_INFO pAdapter = NULL;
+    DWORD dwRetVal = 0;
+
+    ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
+    pAdapterInfo = (IP_ADAPTER_INFO *)::HeapAlloc( ::GetProcessHeap(), 0, sizeof(IP_ADAPTER_INFO) );
+    if( pAdapterInfo == NULL ) {
+        return adapters;
+    }
+	// Make an initial call to GetAdaptersInfo to get
+	// the necessary size into the ulOutBufLen variable
+    if( ::GetAdaptersInfo( pAdapterInfo, &ulOutBufLen ) == ERROR_BUFFER_OVERFLOW) {
+        ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
+        pAdapterInfo = (IP_ADAPTER_INFO *) ::HeapAlloc( ::GetProcessHeap(), 0, ulOutBufLen );
+        if( ! pAdapterInfo ) {
+            return adapters;
+        }
+    }
+
+    if( (dwRetVal = ::GetAdaptersInfo( pAdapterInfo, &ulOutBufLen )) == NO_ERROR ) {
+        pAdapter = pAdapterInfo;
+        while( pAdapter ) {
+			adapters.push_back( System::NetworkAdapter( pAdapter->Description, pAdapter->IpAddressList.IpAddress.String ) );
+            pAdapter = pAdapter->Next;
+        }
+    }
+	else {
+        printf("GetAdaptersInfo failed with error: %d\n", dwRetVal);
+
+    }
+    if( pAdapterInfo )
+        ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
+#endif // defined( CINDER_MSW )
+
+	return adapters;
+
+}
+
+std::string System::getIpAddress()
+{
+	vector<System::NetworkAdapter> adapters = getNetworkAdapters();
+	std::string result = "127.0.0.1";
+	for( vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt ) {
+		if( (adaptIt->getIpAddress() != "127.0.0.1") && (adaptIt->getIpAddress() != "0.0.0.0") )
+			result = adaptIt->getIpAddress();
+	}
+	
+	return result;
+}
+
 
 } // namespace cinder

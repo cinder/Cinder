@@ -130,6 +130,10 @@
 	// we need to get told about it when the window changes screens so we can update the display link
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowChangedScreen:) name:NSWindowDidMoveNotification object:nil];
 	[cinderView setNeedsDisplay:YES];
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5	
+	if( app->getSettings().isMultiTouchEnabled() )
+		[cinderView setMultiTouchDelegate:self];
+#endif
 }
 
 - (void)destroyWindow
@@ -326,6 +330,43 @@
 {
 	// TODO: Kill current timer and replace with a new one reflecting this
 //	return aFrameRate;
+}
+
+- (void)windowDidResignKey:(NSNotification*)aNotification
+{
+NSLog( @"oioioi" );
+	[cinderView applicationWillResignActive:aNotification];
+}
+
+// multiTouch delegate methods
+- (void)touchesBegan:(ci::app::TouchEvent*)event
+{
+	app->privateTouchesBegan__( *event );
+}
+
+- (void)touchesMoved:(ci::app::TouchEvent*)event
+{
+	app->privateTouchesMoved__( *event );
+}
+
+- (void)touchesEnded:(ci::app::TouchEvent*)event
+{
+	app->privateTouchesEnded__( *event );
+}
+
+- (void)setActiveTouches:(std::vector<ci::app::TouchEvent::Touch>*)touches
+{
+	app->privateSetActiveTouches__( *touches );
+}
+
+- (void)touchesEndedWithEvent:(NSEvent *)event
+{
+	NSLog( @"Ended! @ app" );
+}
+
+- (void)touchesCancelledWithEvent:(NSEvent *)event
+{
+	NSLog( @"Cancelled! @ app" );
 }
 
 @end

@@ -25,8 +25,24 @@
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"
 
-#import <AppKit/NSView.h> 
+#import <AppKit/NSView.h>
 #import <Foundation/Foundation.h>
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+	#import <AppKit/NSTouch.h> 
+	#include "cinder/app/TouchEvent.h"
+#endif
+
+#include <map>
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+@protocol CinderViewMultiTouchDelegate
+- (void)touchesBegan:(ci::app::TouchEvent*)event;
+- (void)touchesMoved:(ci::app::TouchEvent*)event;
+- (void)touchesEnded:(ci::app::TouchEvent*)event;
+- (void)touchesEnded:(ci::app::TouchEvent*)event;
+- (void)setActiveTouches:(std::vector<ci::app::TouchEvent::Touch>*)touches;
+@end
+#endif
 
 @interface CinderView : NSView
 {
@@ -35,6 +51,12 @@
 	BOOL				stayFullScreen;
 	BOOL				appSetupCalled;
 	BOOL				receivesEvents;
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5	
+	NSMutableDictionary					*mTouchIdMap;
+	std::map<uint32_t,ci::Vec2f>		mTouchPrevPointMap;
+	id<CinderViewMultiTouchDelegate>	mMultiTouchDelegate;
+#endif
 }
 
 @property (readwrite) BOOL appSetupCalled;
@@ -48,5 +70,15 @@
 
 - (void)setup:(cinder::app::App *)aApp;
 - (void)setApp:(cinder::app::App *)aApp;
+
+- (void)applicationWillResignActive:(NSNotification *)aNotification;
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+- (void)setMultiTouchDelegate:(id<CinderViewMultiTouchDelegate>)multiTouchDelegate;
+- (uint32_t)addTouchToMap:(NSTouch *)touch withPoint:(ci::Vec2f)point;
+- (void)removeTouchFromMap:(NSTouch *)touch;
+- (std::pair<uint32_t,ci::Vec2f>)updateTouch:(NSTouch *)touch withPoint:(ci::Vec2f)point;
+- (void)updateActiveTouches:(NSEvent *)event;
+#endif
 
 @end

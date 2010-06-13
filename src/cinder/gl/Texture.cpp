@@ -219,8 +219,8 @@ Texture::Texture( GLenum aTarget, GLuint aTextureID, int aWidth, int aHeight, bo
 	mObj->mTarget = aTarget;
 	mObj->mTextureID = aTextureID;
 	mObj->mDoNotDispose = aDoNotDispose;
-	mObj->mWidth = aWidth;
-	mObj->mHeight = aHeight;
+	mObj->mWidth = mObj->mCleanWidth = aWidth;
+	mObj->mHeight = mObj->mCleanHeight = aHeight;
 
 	if( mObj->mTarget == GL_TEXTURE_2D ) {
 		mObj->mMaxU = mObj->mMaxV = 1.0f;
@@ -299,8 +299,8 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 {
 	mObj->mDoNotDispose = false;
 	mObj->mTarget = format.mTarget;
-	mObj->mWidth = imageSource->getWidth();
-	mObj->mHeight = imageSource->getHeight();
+	mObj->mWidth = mObj->mCleanWidth = imageSource->getWidth();
+	mObj->mHeight = mObj->mCleanHeight = imageSource->getHeight();
 	
 	// Set the internal format based on the image's color space
 	if( format.isAutoInternalFormat() ) {
@@ -821,9 +821,11 @@ GLint Texture::getCleanWidth() const
 		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_WIDTH, &mObj->mWidth );
 		mObj->mCleanWidth = mObj->mWidth;
 	}
-#endif // ! defined( CINDER_GLES )
 
 	return mObj->mCleanWidth;
+#else
+	return mObj->mWidth;
+#endif // ! defined( CINDER_GLES )	
 }
 
 GLint Texture::getCleanHeight() const
@@ -835,8 +837,11 @@ GLint Texture::getCleanHeight() const
 		glGetTexLevelParameteriv( mObj->mTarget, 0, GL_TEXTURE_HEIGHT, &mObj->mHeight );	
 		mObj->mCleanHeight = mObj->mHeight;		
 	}
-#endif // ! defined( CINDER_GLES )	
+	
 	return mObj->mCleanHeight;
+#else
+	return mObj->mHeight;
+#endif // ! defined( CINDER_GLES )	
 }
 
 Rectf Texture::getAreaTexCoords( const Area &area ) const
