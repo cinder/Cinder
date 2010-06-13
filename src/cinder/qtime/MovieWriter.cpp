@@ -44,6 +44,7 @@
 		#include <CoreFoundation/CFBase.h>
 		#include <CoreFoundation/CFNumber.h>
 		#include <GXMath.h>
+		#include <QuickTimeComponents.h>
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
 

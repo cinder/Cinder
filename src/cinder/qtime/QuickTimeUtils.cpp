@@ -582,8 +582,13 @@ ImageTargetGWorld::ImageTargetGWorld( ImageSourceRef imageSource )
         throw ImageIoException();
 	}
 
-	mData = reinterpret_cast<uint8_t*>( ::GetPixBaseAddr( mPixMap ) );//reinterpret_cast<uint8_t*>( (**mPixMap).baseAddr );
-	mRowBytes = ::GetPixRowBytes( mPixMap );//( (**mPixMap).rowBytes ) & 0x3FFF;
+#if defined( CINDER_MSW )
+	mData = reinterpret_cast<uint8_t*>( (**mPixMap).baseAddr );
+	mRowBytes = ( (**mPixMap).rowBytes ) & 0x3FFF;
+#else
+	mData = reinterpret_cast<uint8_t*>( ::GetPixBaseAddr( mPixMap ) );
+	mRowBytes = ::GetPixRowBytes( mPixMap );
+#endif
 }
 
 void ImageTargetGWorld::finalize()
