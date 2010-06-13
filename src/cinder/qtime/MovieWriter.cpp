@@ -20,6 +20,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if ! defined( __LP64__ )
+
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
 	#error "This file must be compiled as Objective-C++ on the Mac"
 #endif
@@ -44,7 +46,6 @@
 		#include <GXMath.h>
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
-#include <QuickTimeComponents.h>
 
 namespace cinder { namespace qtime {
 
@@ -321,6 +322,8 @@ void MovieWriter::Obj::createCompressionSession()
 	OSStatus err = noErr;
 	::ICMEncodedFrameOutputRecord encodedFrameOutputRecord = {0};
 	::ICMCompressionSessionOptionsRef sessionOptions = NULL;
+	::ICMMultiPassStorageRef multiPassStorage = 0;
+	bool attemptMultiPass = mFormat.mEnableMultiPass;
 	
 	err = ::ICMCompressionSessionOptionsCreateCopy( NULL, mFormat.mOptions, &sessionOptions );
 	if( err )
@@ -335,13 +338,10 @@ void MovieWriter::Obj::createCompressionSession()
 	::CodecInfo cInfo;
 	::GetCodecInfo( &cInfo, mFormat.mCodec, 0 );
 
-	bool attemptMultiPass = mFormat.mEnableMultiPass;
 	/*if( ! (cInfo.compressFlags & codecInfoDoesMultiPass) )
 		attemptMultiPass = false;*/
 
 	// if we have not enabled multiPass then explicitly disable it
-	::ICMCompressionPassModeFlags passModeFlags = 0;
-	::ICMMultiPassStorageRef multiPassStorage = 0;
 	if( ! attemptMultiPass ) {
 		::ICMMultiPassStorageRef nullStorage = NULL;
 		::ICMCompressionSessionOptionsSetProperty( sessionOptions, kQTPropertyClass_ICMCompressionSessionOptions, kICMCompressionSessionOptionsPropertyID_MultiPassStorage, sizeof(ICMMultiPassStorageRef), &nullStorage );
@@ -530,11 +530,11 @@ bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef ima
 	if( imageSource ) {
 		previewImageGWorld = qtime::createGWorld( imageSource );
 		previewImagePixMap = ::GetGWorldPixMap( previewImageGWorld );
-		if( ! ::LockPixels( previewImagePixMap ) ) {
+		/*if( ! ::LockPixels( previewImagePixMap ) ) {
 			if( stdCompression )
 				::CloseComponent( stdCompression );
 			return false;
-		}
+		}*/
 		::SCSetTestImagePixMap( stdCompression, previewImagePixMap, NULL, scPreferScaling );
 	}
 
@@ -579,3 +579,5 @@ bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef ima
 }
 
 } } // namespace cinder::qtime
+
+#endif // ! defined( __LP64__ )

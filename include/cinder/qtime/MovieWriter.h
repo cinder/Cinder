@@ -41,6 +41,9 @@
 	typedef signed long							OSStatus;
 	typedef unsigned long						CodecType;
 	typedef unsigned long						ICMCompressionPassModeFlags;
+#else
+	#include <QuickTime/QuickTime.h>
+	#include <QuickTime/ImageCompression.h>
 #endif // defined( CINDER_MSW )
 //! \endcond
 
@@ -103,8 +106,8 @@ class MovieWriter {
 
 		ICMCompressionSessionOptionsRef		mOptions;
 
-		friend MovieWriter;
-		friend Obj;
+		friend class MovieWriter;
+		friend class Obj;
 	};
 
 
