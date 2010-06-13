@@ -563,16 +563,10 @@ ImageTargetGWorld::ImageTargetGWorld( ImageSourceRef imageSource )
 	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
 	
 	OSType formatType;
-	// for now all we support is 8 bit RGB(A)
+	// for now all we support is 8 bit RGBA
 	setDataType( ImageIo::UINT8 );
-	if( imageSource->hasAlpha () ) {
-		formatType = k32BGRAPixelFormat;
-		setChannelOrder( ImageIo::BGRA );
-	}
-	else {
-		formatType = k24BGRPixelFormat;
-		setChannelOrder( ImageIo::BGR );
-	}
+	formatType = k32ARGBPixelFormat;
+	setChannelOrder( ImageIo::ARGB );
 	setColorModel( ImageIo::CM_RGB );
 
 	::Rect boundsRect;

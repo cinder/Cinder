@@ -116,7 +116,7 @@ class ImageTargetGWorld : public ci::ImageTarget {
 	uint8_t				*mData;
 };
 
-//! Creates a GWorld from an ImageSource. Dispose of the results using DisposeGWorld().
+//! Creates a GWorld from an ImageSource. Currently always creates a 32-bit RGBA GWorld. Dispose of the results using DisposeGWorld().
 GWorldPtr createGWorld( ImageSourceRef imageSource );
 #endif // defined( __LP64__ )
 
