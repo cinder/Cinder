@@ -28,6 +28,7 @@
 #include <string>
 
 // These forward declarations prevent us from having to bring all of QuickTime into the global namespace in MSW
+//! \cond
 #if defined( CINDER_MSW )
 	typedef struct ComponentInstanceRecord		ComponentInstanceRecord;
 	typedef ComponentInstanceRecord *			ComponentInstance;
@@ -41,6 +42,7 @@
 	typedef unsigned long						CodecType;
 	typedef unsigned long						ICMCompressionPassModeFlags;
 #endif // defined( CINDER_MSW )
+//! \endcond
 
 namespace cinder { namespace qtime {
 
@@ -48,6 +50,7 @@ class MovieWriter {
 	struct Obj;
 
   public:
+	//! Defines the encoding parameters of a MovieWriter
 	class Format {
 	  public:
 		Format();
@@ -60,15 +63,15 @@ class MovieWriter {
 
 		//! Returns the four character code for the QuickTime codec. Types can be found in QuickTime's ImageCompression.h.
 		uint32_t	getCodec() const { return mCodec; }
-		//! Sets the four character code for the QuickTime codec. Defaults to \c PNG (\c 'png '). Additional types can be found in QuickTime's ImageCompression.h.
+		//! Sets the four character code for the QuickTime codec. Defaults to \c PNG (\c 'png '). Additional types can be found in QuickTime's \c ImageCompression.h.
 		Format&		setCodec( uint32_t codec ) { mCodec = codec; return *this; }
-		//! Sets the overall quality for encoding. Must be in a range of [0,1.0]. Defaults to 0.99. 1.0 corresponds to lossless.
+		//! Sets the overall quality for encoding. Must be in a range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
 		Format&		setQuality( float quality );
 		//! Returns the standard duration of a frame measured in seconds
 		float		getDefaultDuration() const { return mDefaultTime; }
-		//! Sets the standard duration of a frame measured in seconds. Defaults to \c 1/30 sec, meaning \c 30Hz.
+		//! Sets the default duration of a frame, measured in seconds. Defaults to \c 1/30 sec, meaning \c 30 FPS.
 		Format&		setDefaultDuration( float defaultDuration ) { mDefaultTime = defaultDuration; return *this; }
-		//! Returns the integer base value for the encoding time scale.
+		//! Returns the integer base value for the encoding time scale. Defaults to \c 600
 		long		getTimeScale() const { return mTimeBase; }
 		//! Sets the integer base value for encoding time scale. Defaults to \c 600.
 		Format&		setTimeScale( long timeScale ) { mTimeBase = timeScale; return *this; }
@@ -78,15 +81,16 @@ class MovieWriter {
 		Format&		setGamma( float gamma ) { mGamma = gamma; return *this; }
 		//! Enables temporal compression (allowing \b P or \b B frames). Defaults to \c true.
 		Format&		enableTemporal( bool enable = true );
-		//! Enables frame reordering. Defaults to true. In order to encode \b B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
+		//! Enables frame reordering. Defaults to \c true. In order to encode \b B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
 		Format&		enableReordering( bool enable = true );
 		//! Sets the maximum number of frames between key frames. Default is \c 0, which indicates that the compressor should choose where to place all key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression.
 		Format&		setMaxKeyFrameRate( int32_t rate );
 		//! Sets whether a codec is allowed to change frame times. Defaults to \c true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
-		Format&		enableFrameTimeChanges( bool enable );
-		bool		isMultiPass() { return mEnableMultiPass; }
-		//! Enables multipass encoding. Defaults to \c false. While multiPass encoding can result in significantly smaller movies, it often takes much longer to compress and requires the creation of two temporary files for storing intermediate results.
-		Format&		enableMultiPass( bool enable ) { mEnableMultiPass = enable; return *this; }
+		Format&		enableFrameTimeChanges( bool enable = true );
+		//! Returns whether multiPass encoding is enabled. Defaults to \c false.
+		bool		isMultiPass() const { return mEnableMultiPass; }
+		//! Enables multiPass encoding. Defaults to \c false. While multiPass encoding can result in significantly smaller movies, it often takes much longer to compress and requires the creation of two temporary files for storing intermediate results.
+		Format&		enableMultiPass( bool enable = true ) { mEnableMultiPass = enable; return *this; }
 
 	  private:
 		void		initDefaults();
@@ -123,7 +127,8 @@ class MovieWriter {
 	//! Returns the Movie's Format
 	const Format&	getFormat() const { return mObj->mFormat; }
 
-	//! Presents the user with the standard compression options dialog. Optional \a previewImage provides a still image as a preview. Returns \c false if user cancelled.
+	/** \brief Presents the user with the standard compression options dialog. Optional \a previewImage provides a still image as a preview. Returns \c false if user cancelled.
+		\image html qtime/MovieWriter/qtime_settings_small.png **/
 	static bool		getUserCompressionSettings( Format *result, ImageSourceRef previewImage = ImageSourceRef() );
 
 	/** \brief Appends a frame to the Movie. The optional \a duration parameter allows a frame to be inserted for a time other than the Format's default duration.

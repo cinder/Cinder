@@ -1,0 +1,14 @@
+/**
+\class cinder::qtime::MovieWriter
+\brief Outputs QuickTime movies.
+\details
+The MovieWriter class is used to save QuickTime movies. It supports any built-in codec, as well as advanced features like frame reordering and multiPass encoding.
+\sa
+\ref guide_qtime_MovieWriter <BR>
+
+\class cinder::qtime::MovieWriter::Format
+\details
+\sa
+\ref guide_qtime_MovieWriter <BR>
+
+*/
