@@ -25,10 +25,15 @@
 #include "cinder/qtime/QuickTime.h"
 
 #if defined( CINDER_MSW )
-#	include <CVPixelBuffer.h>
-#	include <ImageCompression.h>
-#	include <Movies.h>
-#	include <QuickTimeComponents.h>
+	#include <CVPixelBuffer.h>
+	#include <ImageCompression.h>
+	#include <Movies.h>
+	#include <QuickTimeComponents.h>
+#else
+	#include <QuickTime/QuickTime.h>
+	#include <ApplicationServices/ApplicationServices.h>
+	#include <QuickTime/ImageCompression.h>
+	#include <CoreVideo/CoreVideo.h>
 #endif
 
 using namespace std;
@@ -453,7 +458,7 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 		}
 	}
 	else {
-		formatType = k4444YpCbCrA8PixelFormat;
+		formatType = 'v408';/*k4444YpCbCrA8PixelFormat;*/
 		setDataType( ImageIo::UINT8 );
 		setChannelOrder( ImageIo::RGBA );
 		setColorModel( ImageIo::CM_RGB );
@@ -473,7 +478,6 @@ ImageTargetCvPixelBuffer::~ImageTargetCvPixelBuffer()
 {
 	if( mPixelBufferRef ) {
 		::CVPixelBufferUnlockBaseAddress( mPixelBufferRef, 0 );
-		int count = ::CFGetRetainCount( mPixelBufferRef );
 		::CVPixelBufferRelease( mPixelBufferRef );
 	}
 }
@@ -486,11 +490,11 @@ void* ImageTargetCvPixelBuffer::getRowPointer( int32_t row )
 void ImageTargetCvPixelBuffer::finalize()
 {
 	switch( ::CVPixelBufferGetPixelFormatType( mPixelBufferRef ) ) {
-		case k4444YpCbCrA8PixelFormat:
+		case 'v408':/*k4444YpCbCrA8PixelFormat:*/
 			convertDataToAYpCbCr();
 			::CVBufferSetAttachment( mPixelBufferRef, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_601_4, kCVAttachmentMode_ShouldPropagate );
 		break;
-		case k444YpCbCr8CodecType:
+		case 'v308':/*k444YpCbCr8CodecType:*/
 			convertDataToYpCbCr();
 			::CVBufferSetAttachment( mPixelBufferRef, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_601_4, kCVAttachmentMode_ShouldPropagate );
 		break;
@@ -545,6 +549,7 @@ CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertTo
 	return result;
 }
 
+#if ! defined( __LP64__ )
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageTargetGWorld
 ImageTargetGWorldRef ImageTargetGWorld::createRef( ImageSourceRef imageSource )
@@ -578,13 +583,13 @@ ImageTargetGWorld::ImageTargetGWorld( ImageSourceRef imageSource )
 		throw ImageIoException();
 	
 	mPixMap = ::GetGWorldPixMap( mGWorld );
-    if( ! LockPixels( mPixMap ) ) {
+    if( ! ::LockPixels( mPixMap ) ) {
 		::DisposeGWorld( mGWorld );
         throw ImageIoException();
 	}
 
-	mData = reinterpret_cast<uint8_t*>( (**mPixMap).baseAddr );
-	mRowBytes = ( (**mPixMap).rowBytes ) & 0x3FFF;
+	mData = reinterpret_cast<uint8_t*>( ::GetPixBaseAddr( mPixMap ) );//reinterpret_cast<uint8_t*>( (**mPixMap).baseAddr );
+	mRowBytes = ::GetPixRowBytes( mPixMap );//( (**mPixMap).rowBytes ) & 0x3FFF;
 }
 
 void ImageTargetGWorld::finalize()
@@ -606,5 +611,6 @@ GWorldPtr createGWorld( ImageSourceRef imageSource )
 	return target->getGWorld();
 }
 
+#endif // ! defined( __LP64__ )
 
 } } // namespace cinder::qtime

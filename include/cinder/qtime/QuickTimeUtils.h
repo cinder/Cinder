@@ -95,6 +95,7 @@ class ImageTargetCvPixelBuffer : public ci::ImageTarget {
 //! Creates a CVPixelBufferRef from an ImageSource. Release the result with CVPixelBufferRelease(). If \a convertToYpCbCr the resulting CVPixelBuffer will be in either \c k444YpCbCr8CodecType or \c k4444YpCbCrA8PixelFormat
 CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr = false );
 
+#if ! defined( __LP64__ )
 typedef shared_ptr<class ImageTargetGWorld> ImageTargetGWorldRef;
 
 class ImageTargetGWorld : public ci::ImageTarget {
@@ -117,5 +118,6 @@ class ImageTargetGWorld : public ci::ImageTarget {
 
 //! Creates a GWorld from an ImageSource. Dispose of the results using DisposeGWorld().
 GWorldPtr createGWorld( ImageSourceRef imageSource );
+#endif // defined( __LP64__ )
 
 } } // namespace cinder::qtime
