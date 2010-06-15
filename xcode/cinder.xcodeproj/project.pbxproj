@@ -556,6 +556,9 @@
 		00F3BD200EBF89B700382AC1 /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		00FCDC1C10D434AC006140C7 /* TileRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FCDC1B10D434AC006140C7 /* TileRender.cpp */; };
 		00FCDC2010D4387D006140C7 /* TileRender.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FCDC1F10D4387D006140C7 /* TileRender.h */; };
+		4348854511C7C5EA009992EB /* Event.h in Headers */ = {isa = PBXBuildFile; fileRef = 4348854411C7C5EA009992EB /* Event.h */; };
+		4348854611C7C5EA009992EB /* Event.h in Headers */ = {isa = PBXBuildFile; fileRef = 4348854411C7C5EA009992EB /* Event.h */; };
+		4348854711C7C5EA009992EB /* Event.h in Headers */ = {isa = PBXBuildFile; fileRef = 4348854411C7C5EA009992EB /* Event.h */; };
 		438DF62B11C2C48D0004E969 /* Function.h in Headers */ = {isa = PBXBuildFile; fileRef = 438DF62A11C2C48D0004E969 /* Function.h */; };
 		43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
@@ -819,6 +822,7 @@
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
+		4348854411C7C5EA009992EB /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Event.h; path = app/Event.h; sourceTree = "<group>"; };
 		438DF62A11C2C48D0004E969 /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Function.h; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
@@ -932,6 +936,7 @@
 			isa = PBXGroup;
 			children = (
 				0049C1B31010E5A40015B4B9 /* Renderer.h */,
+				4348854411C7C5EA009992EB /* Event.h */,
 				0088773B0F96671600FD55C5 /* FileDropEvent.h */,
 				5391FD670E957646002A13D5 /* KeyEvent.h */,
 				00241ABA0E830DC7004D34EB /* MouseEvent.h */,
@@ -1556,6 +1561,7 @@
 				0049A34E116EE675007DDFB0 /* AxisAlignedBox.h in Headers */,
 				43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F011B0C87800B61EB6 /* TouchEvent.h in Headers */,
+				4348854511C7C5EA009992EB /* Event.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1671,6 +1677,7 @@
 				0049A34F116EE675007DDFB0 /* AxisAlignedBox.h in Headers */,
 				43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F111B0C87800B61EB6 /* TouchEvent.h in Headers */,
+				4348854711C7C5EA009992EB /* Event.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1801,6 +1808,7 @@
 				43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */,
 				438DF62B11C2C48D0004E969 /* Function.h in Headers */,
+				4348854611C7C5EA009992EB /* Event.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

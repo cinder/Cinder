@@ -76,70 +76,70 @@ void App::privateMouseDown__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDown( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
-		mouseDown( event );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseDown.begin(); cbIter != mCallbacksMouseDown.end(); ++cbIter )
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseDown.begin(); ( cbIter != mCallbacksMouseDown.end() ) && ( ! event.isHandled() ); ++cbIter )
 		(cbIter->second)( event );
+	if( ! event.isHandled() )
+		mouseDown( event );
 }
 
 void App::privateMouseUp__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseUp( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseUp.begin(); ( cbIter != mCallbacksMouseUp.end() ) && ( ! event.isHandled() ); ++cbIter )
+		(cbIter->second)( event );
+	if( ! event.isHandled() )
 		mouseUp( event );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseUp.begin(); cbIter != mCallbacksMouseUp.end(); ++cbIter )
-		(cbIter->second)( event );		
 }
 
 void App::privateMouseWheel__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseWheel( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseWheel.begin(); ( cbIter != mCallbacksMouseWheel.end() ) && ( ! event.isHandled() ); ++cbIter )
+		(cbIter->second)( event );
+	if( ! event.isHandled() )
 		mouseWheel( event );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseWheel.begin(); cbIter != mCallbacksMouseWheel.end(); ++cbIter )
-		(cbIter->second)( event );		
 }
 
 void App::privateMouseMove__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseMove( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
-		mouseMove( event );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseMove.begin(); cbIter != mCallbacksMouseMove.end(); ++cbIter )
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseMove.begin(); ( cbIter != mCallbacksMouseMove.end() ) && ( ! event.isHandled() ); ++cbIter )
 		(cbIter->second)( event );		
+	if( ! event.isHandled() )
+		mouseMove( event );
 }
 
 void App::privateMouseDrag__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDrag( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
-		mouseDrag( event );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseDrag.begin(); cbIter != mCallbacksMouseDrag.end(); ++cbIter )
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseDrag.begin(); ( cbIter != mCallbacksMouseDrag.end() ) && ( ! event.isHandled() ); ++cbIter )
 		(cbIter->second)( event );		
+	if( ! event.isHandled() )
+		mouseDrag( event );
 }
 
 void App::privateKeyDown__( const KeyEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyDown( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
-		keyDown( event );
-	for( CallbackMgr<void (KeyEvent)>::iterator cbIter = mCallbacksKeyDown.begin(); cbIter != mCallbacksKeyDown.end(); ++cbIter )
+	for( CallbackMgr<void (KeyEvent)>::iterator cbIter = mCallbacksKeyDown.begin(); ( cbIter != mCallbacksKeyDown.end() ) && ( ! event.isHandled() ); ++cbIter )
 		(cbIter->second)( event );		
+	if( ! event.isHandled() )
+		keyDown( event );
 }
 
 void App::privateKeyUp__( const KeyEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyUp( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
-		keyUp( event );
-	for( CallbackMgr<void (KeyEvent)>::iterator cbIter = mCallbacksKeyUp.begin(); cbIter != mCallbacksKeyUp.end(); ++cbIter )
+	for( CallbackMgr<void (KeyEvent)>::iterator cbIter = mCallbacksKeyUp.begin(); ( cbIter != mCallbacksKeyUp.end() ) && ( ! event.isHandled() ); ++cbIter )
 		(cbIter->second)( event );		
+	if( ! event.isHandled() )
+		keyUp( event );
 }
 
 void App::privateResize__( int width, int height )
@@ -148,20 +148,19 @@ void App::privateResize__( int width, int height )
 
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->resize( width, height ) ); ++listIt );
-	if( listIt == mListeners.end() )
-		resize( width, height );
 	for( CallbackMgr<void (int,int)>::iterator cbIter = mCallbacksResize.begin(); cbIter != mCallbacksResize.end(); ++cbIter )
 		(cbIter->second)( width, height );
+	resize( width, height );
 }
 
 void App::privateFileDrop__( const FileDropEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->fileDrop( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
-		fileDrop( event );
 	for( CallbackMgr<void (FileDropEvent)>::iterator cbIter = mCallbacksFileDrop.begin(); cbIter != mCallbacksFileDrop.end(); ++cbIter )
 		(cbIter->second)( event );
+	if( ! event.isHandled() )
+		fileDrop( event );
 }
 
 void App::privateSetup__()

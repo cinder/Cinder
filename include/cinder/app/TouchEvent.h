@@ -22,12 +22,14 @@
 
 #pragma once
 
+#include "cinder/Cinder.h"
+#include "cinder/app/Event.h"
 #include "cinder/Vector.h"
 
 namespace cinder { namespace app {
 
 //! Represents a mouse event
-class TouchEvent {
+class TouchEvent : public Event {
   public:
 	class Touch {
 	  public:
@@ -60,9 +62,9 @@ class TouchEvent {
 		void		*mNative;
 	};
   
-	TouchEvent() {}
+	TouchEvent() : Event() {}
 	TouchEvent( const std::vector<Touch> &touches )
-		: mTouches( touches )
+		: Event(), mTouches( touches )
 	{}
 	
 	//! Returns a std::vector of Touch descriptors associated with this event
