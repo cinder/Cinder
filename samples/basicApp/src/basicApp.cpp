@@ -1,9 +1,13 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/Rand.h"
 using namespace ci;
 using namespace ci::app;
 
 #include <list>
 using namespace std;
+
+void staticMouseDownHandler( MouseEvent event );
+void staticMouseUpHandler( MouseEvent event );
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
 class BasicApp : public AppBasic {
@@ -14,6 +18,8 @@ class BasicApp : public AppBasic {
 	void keyDown( KeyEvent event );
 	// Cinder calls this function 30 times per second by default
 	void draw();
+
+	void justSomeMouseDownHandler( MouseEvent event );
 	
 	// This will maintain a list of points which we will draw line segments between
 	list<Vec2f>		mPoints;
@@ -21,7 +27,24 @@ class BasicApp : public AppBasic {
 
 void BasicApp::prepareSettings( Settings *settings )
 {
-	settings->setFullScreen( true );
+	registerMouseDown( this, &BasicApp::justSomeMouseDownHandler );
+	registerMouseDown( staticMouseDownHandler );
+	registerMouseUp( staticMouseUpHandler );
+}
+
+void BasicApp::justSomeMouseDownHandler( MouseEvent event )
+{
+	console() << "member click" << std::endl;
+}
+
+void staticMouseDownHandler( MouseEvent event )
+{
+	console() << "static click" << std::endl;
+}
+
+void staticMouseUpHandler( MouseEvent event )
+{
+	console() << "static up" << std::endl;
 }
 
 void BasicApp::mouseDrag( MouseEvent event )

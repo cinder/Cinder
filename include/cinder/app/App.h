@@ -32,6 +32,7 @@
 #include "cinder/Display.h"
 #include "cinder/DataSource.h"
 #include "cinder/Timer.h"
+#include "cinder/Function.h"
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
 		#if defined( __OBJC__ )
@@ -55,6 +56,7 @@
 #endif
 
 #include <vector>
+#include <algorithm>
 
 namespace cinder { namespace app { 
 
@@ -162,6 +164,78 @@ class App {
 	void		addListener( Listener *listener );
 	//! Removes a listener from the App's event listeners. Does not <tt>delete</tt> \a listener.
 	void		removeListener( Listener *listener ); 
+
+	//! Registers a callback for mouseDown events. Returns a unique identifier which can be used as a parameter to unregisterMouseDown().
+	CallbackId		registerMouseDown( std::function<void (MouseEvent)> callback ) { return mCallbacksMouseDown.registerCb( callback ); }
+	//! Registers a callback for mouseDown events. Returns a unique identifier which can be used as a parameter to unregisterMouseDown().
+	template<typename T>
+	CallbackId		registerMouseDown( T *obj, void (T::*callback)(MouseEvent) ) { return mCallbacksMouseDown.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseDown events.
+	void			unregisterMouseDown( CallbackId id ) { mCallbacksMouseDown.unregisterCb( id ); }
+
+	//! Registers a callback for mouseUp events. Returns a unique identifier which can be used as a parameter to unregisterMouseUp().
+	CallbackId		registerMouseUp( std::function<void (MouseEvent)> callback ) { return mCallbacksMouseUp.registerCb( callback ); }
+	//! Registers a callback for mouseUp events. Returns a unique identifier which can be used as a parameter to unregisterMouseUp().
+	template<typename T>
+	CallbackId		registerMouseUp( T *obj, void (T::*callback)(MouseEvent) ) { return mCallbacksMouseUp.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseUp events.
+	void			unregisterMouseUp( CallbackId id ) { mCallbacksMouseUp.unregisterCb( id ); }
+
+	//! Registers a callback for mouseWheel events. Returns a unique identifier which can be used as a parameter to unregisterMouseWheel().
+	CallbackId		registerMouseWheel( std::function<void (MouseEvent)> callback ) { return mCallbacksMouseWheel.registerCb( callback ); }
+	//! Registers a callback for mouseWheel events. Returns a unique identifier which can be used as a parameter to unregisterMouseWheel().
+	template<typename T>
+	CallbackId		registerMouseWheel( T *obj, void (T::*callback)(MouseEvent) ) { return mCallbacksMouseWheel.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseWheel events.
+	void			unregisterMouseWheel( CallbackId id ) { mCallbacksMouseWheel.unregisterCb( id ); }
+
+	//! Registers a callback for mouseMove events. Returns a unique identifier which can be used as a parameter to unregisterMouseMove().
+	CallbackId		registerMouseMove( std::function<void (MouseEvent)> callback ) { return mCallbacksMouseMove.registerCb( callback ); }
+	//! Registers a callback for mouseMove events. Returns a unique identifier which can be used as a parameter to unregisterMouseMove().
+	template<typename T>
+	CallbackId		registerMouseMove( T *obj, void (T::*callback)(MouseEvent) ) { return mCallbacksMouseMove.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseMove events.
+	void			unregisterMouseMove( CallbackId id ) { mCallbacksMouseMove.unregisterCb( id ); }
+
+	//! Registers a callback for mouseDrag events. Returns a unique identifier which can be used as a parameter to unregisterMouseDrag().
+	CallbackId		registerMouseDrag( std::function<void (MouseEvent)> callback ) { return mCallbacksMouseDrag.registerCb( callback ); }
+	//! Registers a callback for mouseDrag events. Returns a unique identifier which can be used as a parameter to unregisterMouseDrag().
+	template<typename T>
+	CallbackId		registerMouseDrag( T *obj, void (T::*callback)(MouseEvent) ) { return mCallbacksMouseDrag.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseDrag events.
+	void			unregisterMouseDrag( CallbackId id ) { mCallbacksMouseDrag.unregisterCb( id ); }
+
+	//! Registers a callback for keyDown events. Returns a unique identifier which can be used as a parameter to unregisterKeyDown().
+	CallbackId		registerKeyDown( std::function<void (KeyEvent)> callback ) { return mCallbacksKeyDown.registerCb( callback ); }
+	//! Registers a callback for keyDown events. Returns a unique identifier which can be used as a parameter to unregisterKeyDown().
+	template<typename T>
+	CallbackId		registerKeyDown( T *obj, void (T::*callback)(KeyEvent) ) { return mCallbacksKeyDown.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for keyDown events.
+	void			unregisterKeyDown( CallbackId id ) { mCallbacksKeyDown.unregisterCb( id ); }
+
+	//! Registers a callback for keyUp events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
+	CallbackId		registerKeyUp( std::function<void (KeyEvent)> callback ) { return mCallbacksKeyUp.registerCb( callback ); }
+	//! Registers a callback for keyUp events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
+	template<typename T>
+	CallbackId		registerKeyUp( T *obj, void (T::*callback)(KeyEvent) ) { return mCallbacksKeyUp.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for keyUp events.
+	void			unregisterKeyUp( CallbackId id ) { mCallbacksKeyUp.unregisterCb( id ); }
+
+	//! Registers a callback for resize events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
+	CallbackId		registerResize( std::function<void (int,int)> callback ) { return mCallbacksResize.registerCb( callback ); }
+	//! Registers a callback for resize events. Returns a unique identifier which can be used as a parameter to unregisterResize().
+	template<typename T>
+	CallbackId		registerResize( T *obj, void (T::*callback)(int,int) ) { return mCallbacksResize.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for resize events.
+	void			unregisterResize( CallbackId id ) { mCallbacksResize.unregisterCb( id ); }
+
+	//! Registers a callback for fileDrop events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
+	CallbackId		registerFileDrop( std::function<void (FileDropEvent)> callback ) { return mCallbacksFileDrop.registerCb( callback ); }
+	//! Registers a callback for fileDrop events. Returns a unique identifier which can be used as a parameter to unregisterFileDrop().
+	template<typename T>
+	CallbackId		registerFileDrop( T *obj, void (T::*callback)(FileDropEvent) ) { return mCallbacksFileDrop.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for fileDrop events.
+	void			unregisterFileDrop( CallbackId id ) { mCallbacksFileDrop.unregisterCb( id ); }
 
 	// Accessors
 	virtual const Settings&	getSettings() const { return getSettings(); }
@@ -300,6 +374,11 @@ class App {
 
 	shared_ptr<Renderer>	mRenderer;
 	std::vector<Listener*>	mListeners;
+	
+	CallbackMgr<void (MouseEvent)>		mCallbacksMouseDown, mCallbacksMouseUp, mCallbacksMouseWheel, mCallbacksMouseMove, mCallbacksMouseDrag;
+	CallbackMgr<void (KeyEvent)>		mCallbacksKeyDown, mCallbacksKeyUp;
+	CallbackMgr<void (int,int)>			mCallbacksResize;
+	CallbackMgr<void (FileDropEvent)>	mCallbacksFileDrop;
 	
 	static App*		sInstance;
 };

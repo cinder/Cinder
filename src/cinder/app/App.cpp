@@ -78,6 +78,8 @@ void App::privateMouseDown__( const MouseEvent &event )
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDown( event ) ); ++listIt );
 	if( listIt == mListeners.end() )
 		mouseDown( event );
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseDown.begin(); cbIter != mCallbacksMouseDown.end(); ++cbIter )
+		(cbIter->second)( event );
 }
 
 void App::privateMouseUp__( const MouseEvent &event )
@@ -86,6 +88,8 @@ void App::privateMouseUp__( const MouseEvent &event )
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseUp( event ) ); ++listIt );
 	if( listIt == mListeners.end() )
 		mouseUp( event );
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseUp.begin(); cbIter != mCallbacksMouseUp.end(); ++cbIter )
+		(cbIter->second)( event );		
 }
 
 void App::privateMouseWheel__( const MouseEvent &event )
@@ -94,6 +98,8 @@ void App::privateMouseWheel__( const MouseEvent &event )
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseWheel( event ) ); ++listIt );
 	if( listIt == mListeners.end() )
 		mouseWheel( event );
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseWheel.begin(); cbIter != mCallbacksMouseWheel.end(); ++cbIter )
+		(cbIter->second)( event );		
 }
 
 void App::privateMouseMove__( const MouseEvent &event )
@@ -102,6 +108,8 @@ void App::privateMouseMove__( const MouseEvent &event )
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseMove( event ) ); ++listIt );
 	if( listIt == mListeners.end() )
 		mouseMove( event );
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseMove.begin(); cbIter != mCallbacksMouseMove.end(); ++cbIter )
+		(cbIter->second)( event );		
 }
 
 void App::privateMouseDrag__( const MouseEvent &event )
@@ -110,6 +118,8 @@ void App::privateMouseDrag__( const MouseEvent &event )
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDrag( event ) ); ++listIt );
 	if( listIt == mListeners.end() )
 		mouseDrag( event );
+	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseDrag.begin(); cbIter != mCallbacksMouseDrag.end(); ++cbIter )
+		(cbIter->second)( event );		
 }
 
 void App::privateKeyDown__( const KeyEvent &event )
@@ -118,6 +128,8 @@ void App::privateKeyDown__( const KeyEvent &event )
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyDown( event ) ); ++listIt );
 	if( listIt == mListeners.end() )
 		keyDown( event );
+	for( CallbackMgr<void (KeyEvent)>::iterator cbIter = mCallbacksKeyDown.begin(); cbIter != mCallbacksKeyDown.end(); ++cbIter )
+		(cbIter->second)( event );		
 }
 
 void App::privateKeyUp__( const KeyEvent &event )
@@ -126,19 +138,8 @@ void App::privateKeyUp__( const KeyEvent &event )
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyUp( event ) ); ++listIt );
 	if( listIt == mListeners.end() )
 		keyUp( event );
-}
-
-void App::privateFileDrop__( const FileDropEvent &event )
-{
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->fileDrop( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
-		fileDrop( event );
-}
-
-void App::privateSetup__()
-{
-	setup();
+	for( CallbackMgr<void (KeyEvent)>::iterator cbIter = mCallbacksKeyUp.begin(); cbIter != mCallbacksKeyUp.end(); ++cbIter )
+		(cbIter->second)( event );		
 }
 
 void App::privateResize__( int width, int height )
@@ -149,6 +150,23 @@ void App::privateResize__( int width, int height )
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->resize( width, height ) ); ++listIt );
 	if( listIt == mListeners.end() )
 		resize( width, height );
+	for( CallbackMgr<void (int,int)>::iterator cbIter = mCallbacksResize.begin(); cbIter != mCallbacksResize.end(); ++cbIter )
+		(cbIter->second)( width, height );
+}
+
+void App::privateFileDrop__( const FileDropEvent &event )
+{
+	vector<Listener*>::iterator listIt;
+	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->fileDrop( event ) ); ++listIt );
+	if( listIt == mListeners.end() )
+		fileDrop( event );
+	for( CallbackMgr<void (FileDropEvent)>::iterator cbIter = mCallbacksFileDrop.begin(); cbIter != mCallbacksFileDrop.end(); ++cbIter )
+		(cbIter->second)( event );
+}
+
+void App::privateSetup__()
+{
+	setup();
 }
 
 void App::privateUpdate__()

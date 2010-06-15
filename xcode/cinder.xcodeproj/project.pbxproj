@@ -556,6 +556,7 @@
 		00F3BD200EBF89B700382AC1 /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		00FCDC1C10D434AC006140C7 /* TileRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FCDC1B10D434AC006140C7 /* TileRender.cpp */; };
 		00FCDC2010D4387D006140C7 /* TileRender.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FCDC1F10D4387D006140C7 /* TileRender.h */; };
+		438DF62B11C2C48D0004E969 /* Function.h in Headers */ = {isa = PBXBuildFile; fileRef = 438DF62A11C2C48D0004E969 /* Function.h */; };
 		43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
@@ -697,7 +698,7 @@
 		0049C1B61010E5B10015B4B9 /* Renderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Renderer.cpp; path = app/Renderer.cpp; sourceTree = "<group>"; };
 		006228E110C8248800A8191C /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		006228E310C8273C00A8191C /* DataSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataSource.cpp; sourceTree = "<group>"; };
-		007050BE1114F93F003FCAE4 /* libcinder-iphone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0071BD040FB9F4AD0092E7D6 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
 		0071BD080FB9FA2C0092E7D6 /* Display.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Display.cpp; sourceTree = "<group>"; };
 		007438400EA7924F005DD3E6 /* Capture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Capture.cpp; sourceTree = "<group>"; };
@@ -784,7 +785,7 @@
 		00CE73930E92DBE40059E09B /* GLee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLee.h; path = gl/GLee.h; sourceTree = "<group>"; };
 		00CE73970E92DBF80059E09B /* gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl.cpp; path = gl/gl.cpp; sourceTree = "<group>"; };
 		00CE73980E92DBF80059E09B /* GLee.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = GLee.c; path = gl/GLee.c; sourceTree = "<group>"; };
-		00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00CFE371113B7C7C0091E310 /* ImageSourcePng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSourcePng.cpp; sourceTree = "<group>"; };
 		00CFE373113B7C8C0091E310 /* ImageSourcePng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSourcePng.h; sourceTree = "<group>"; };
 		00CFE37B113B85F60091E310 /* Path2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path2d.h; sourceTree = "<group>"; };
@@ -818,6 +819,7 @@
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
+		438DF62A11C2C48D0004E969 /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Function.h; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
@@ -867,7 +869,7 @@
 		C7CDF0060EBD5DA4000997D3 /* xpath_static.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_static.h; path = ../include/tinyxml/xpath_static.h; sourceTree = SOURCE_ROOT; };
 		C7CDF0070EBD5DA4000997D3 /* xpath_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_stream.h; path = ../include/tinyxml/xpath_stream.h; sourceTree = SOURCE_ROOT; };
 		C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_syntax.h; path = ../include/tinyxml/xpath_syntax.h; sourceTree = SOURCE_ROOT; };
-		D2AAC07E0554694100DB518D /* libcinder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2AAC07E0554694100DB518D /* libcinder_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EAC3D1A81011F2E700FFBC9E /* Serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serial.h; sourceTree = "<group>"; };
 		EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Serial.cpp; sourceTree = "<group>"; };
@@ -1084,6 +1086,7 @@
 				00B1337610FBBB8900AC7369 /* Shape2d.h */,
 				00CFE37B113B85F60091E310 /* Path2d.h */,
 				00CFE37C113B85F60091E310 /* Thread.h */,
+				438DF62A11C2C48D0004E969 /* Function.h */,
 				00241AB10E830DBA004D34EB /* Quaternion.h */,
 				00241AB20E830DBA004D34EB /* Rand.h */,
 				008CE8530E94693900644A05 /* Area.h */,
@@ -1286,9 +1289,9 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2AAC07E0554694100DB518D /* libcinder.a */,
-				007050BE1114F93F003FCAE4 /* libcinder-iphone.a */,
-				00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */,
+				D2AAC07E0554694100DB518D /* libcinder_d.a */,
+				007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */,
+				00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1797,6 +1800,7 @@
 				009704A811A050C300B1FC50 /* UrlImplCurl.h in Headers */,
 				43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */,
+				438DF62B11C2C48D0004E969 /* Function.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1817,7 +1821,7 @@
 			);
 			name = cinder_iphone;
 			productName = cinder;
-			productReference = 007050BE1114F93F003FCAE4 /* libcinder-iphone.a */;
+			productReference = 007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		00CFD92C1135C3520091E310 /* cinder_iphone_sim */ = {
@@ -1834,7 +1838,7 @@
 			);
 			name = cinder_iphone_sim;
 			productName = cinder;
-			productReference = 00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */;
+			productReference = 00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D2AAC07D0554694100DB518D /* cinder */ = {
@@ -1851,7 +1855,7 @@
 			);
 			name = cinder;
 			productName = cinder;
-			productReference = D2AAC07E0554694100DB518D /* libcinder.a */;
+			productReference = D2AAC07E0554694100DB518D /* libcinder_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */

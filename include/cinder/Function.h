@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project (http://libcinder.org)
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -22,49 +22,46 @@
 
 #pragma once
 
-#include <boost/cstdint.hpp>
-#include <boost/shared_ptr.hpp>
+#include "cinder/Cinder.h"
 
-#include "cinder/Function.h"
+#include <algorithm>
+#include <map>
 
-namespace cinder {
-using boost::int8_t;
-using boost::uint8_t;
-using boost::int16_t;
-using boost::uint16_t;
-using boost::int32_t;
-using boost::uint32_t;
-using boost::int64_t;
-using boost::uint64_t;
-
-using boost::shared_ptr;
-using boost::checked_array_deleter;
-
-#define CINDER_CINDER
-
-#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-	#define CINDER_MSW
-#elif defined(linux) || defined(__linux) || defined(__linux__)
-	#define CINDER_LINUX
-#elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
-	#define CINDER_COCOA
-	#include "TargetConditionals.h"
-	#if TARGET_OS_IPHONE
-		#define CINDER_COCOA_TOUCH
-	#else
-		#define CINDER_MAC
-	#endif
-	// This is defined to prevent the inclusion of some unfortunate macros in <AssertMacros.h>
-	#define __ASSERTMACROS__
+#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
+	#include <boost/tr1/functional.hpp>
+	namespace std {
+		using std::tr1::function;
+	}
 #else
-	#error "cinder compile error: Unknown platform"
+	#include <boost/tr1/functional.hpp>
+	namespace std {
+		using ::boost::function;
+	}
 #endif
 
-#define CINDER_LITTLE_ENDIAN
+//! Represents a unique identifier for a callback
+typedef uint32_t CallbackId;
 
-} // namespace cinder
+//! Implements a utility class for maintaining a list of callbacks
+template<typename SIG>
+class CallbackMgr {
+  private:
+	std::map<CallbackId,std::function<SIG> >		mCallbacks;	
 
-// Create a namepace alias as shorthand for cinder::
-#if ! defined( CINDER_NO_NS_ALIAS )
-	namespace ci = cinder;
-#endif // ! defined( CINDER_NO_NS_ALIAS )
+  public:
+	typedef typename std::map<CallbackId,std::function<SIG> >::iterator		iterator;
+	
+	CallbackId	registerCb( std::function<SIG> cb )
+	{
+		CallbackId cbId = 0;
+		if( ! mCallbacks.empty() )
+			cbId = mCallbacks.rbegin()->first + 1;
+		mCallbacks[cbId] = cb;
+		return cbId;	
+	}
+	
+	void		unregisterCb( CallbackId cbId ) { mCallbacks.erase( cbId ); }
+	
+	iterator begin() { return mCallbacks.begin(); }
+	iterator end() { return mCallbacks.end(); }  
+};
