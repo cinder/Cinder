@@ -261,6 +261,31 @@ string App::getOpenFilePath( const string &initialPath, vector<string> extension
 #endif
 }
 
+// TODO: implement method for Windows
+string	App::getOpenFolderPath(const std::string &initialPath)
+{
+	bool wasFullScreen = isFullScreen();
+	setFullScreen(false);
+	
+	NSOpenPanel *cinderOpen = [NSOpenPanel openPanel];
+	[cinderOpen setCanChooseFiles:NO];
+	[cinderOpen setCanChooseDirectories:YES];
+	[cinderOpen setAllowsMultipleSelection:NO];
+	
+	NSString *directory = initialPath.empty() ? nil : [[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath];
+	int resultCode = [cinderOpen runModalForDirectory:directory file:nil types:nil];	
+	
+	setFullScreen(wasFullScreen);
+	restoreWindowContext();
+	
+	if(resultCode == NSOKButton) {
+		NSString *result = [[cinderOpen filenames] objectAtIndex:0];
+		return string([result UTF8String]);
+	}
+	else
+		return string();
+}
+
 string	App::getSaveFilePath( const string &initialPath, vector<string> extensions )
 {
 #if defined( CINDER_MAC )
