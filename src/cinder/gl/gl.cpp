@@ -919,7 +919,7 @@ void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees,
 	Vec3f verts[4];
 	glVertexPointer( 3, GL_FLOAT, 0, &verts[0].x );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	GLfloat texCoords[8] = { 0, 0, 0, 1, 1, 1, 1, 0 };
+	GLfloat texCoords[8] = { 0, 0, 0, 1, 1, 0, 1, 1 };
 	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
 
 	float sinA = math<float>::sin( toRadians( rotationDegrees ) );
@@ -927,8 +927,8 @@ void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees,
 
 	verts[0] = pos + bbRight * ( -0.5f * scale.x * cosA - 0.5f * sinA * scale.y ) + bbUp * ( -0.5f * scale.x * sinA + 0.5f * cosA * scale.y );
 	verts[1] = pos + bbRight * ( -0.5f * scale.x * cosA - -0.5f * sinA * scale.y ) + bbUp * ( -0.5f * scale.x * sinA + -0.5f * cosA * scale.y );
-	verts[2] = pos + bbRight * ( 0.5f * scale.x * cosA - -0.5f * sinA * scale.y ) + bbUp * ( 0.5f * scale.x * sinA + -0.5f * cosA * scale.y );
-	verts[3] = pos + bbRight * ( 0.5f * scale.x * cosA - 0.5f * sinA * scale.y ) + bbUp * ( 0.5f * scale.x * sinA + 0.5f * cosA * scale.y );
+	verts[2] = pos + bbRight * ( 0.5f * scale.x * cosA - 0.5f * sinA * scale.y ) + bbUp * ( 0.5f * scale.x * sinA + 0.5f * cosA * scale.y );
+	verts[3] = pos + bbRight * ( 0.5f * scale.x * cosA - -0.5f * sinA * scale.y ) + bbUp * ( 0.5f * scale.x * sinA + -0.5f * cosA * scale.y );
 
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 
