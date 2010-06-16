@@ -72,7 +72,7 @@ class MovieBase {
 	int32_t		getHeight() const { return getObj()->mHeight; }
 	//! Returns the movie's aspect ratio, the ratio of its width to its height
 	float		getAspectRatio() const { return getObj()->mWidth / (float)getObj()->mHeight; }
-	//! Returns the movie's pixel aspect ratio
+	//! Returns the movie's pixel aspect ratio. Returns 1.0 if the movie does not contain an explicit pixel aspect ratio.
 	float		getPixelAspectRatio() const;
 	//! Returns the movie's length measured in seconds
 	float		getDuration() const { return getObj()->mDuration; }

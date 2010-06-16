@@ -79,30 +79,31 @@ static void startQuickTime()
 
 float MovieBase::getPixelAspectRatio() const
 {
-	
-	// TODO: What if video track is not at index 1?
-	Track track = GetMovieIndTrackType(getObj()->mMovie, 1, VideoMediaType, movieTrackMediaType);
-	if (track != NULL)
-	{
-		Media media = GetTrackMedia(track);
-		if (media)
-		{
-			float aspectRatio;
-			Handle h;
-			PixelAspectRatioImageDescriptionExtension ext;
+	float aspectRatio = 1.0f;
+
+	Track track = ::GetMovieIndTrackType( getObj()->mMovie, 1, VideoMediaType, movieTrackMediaType );
+	if( track != NULL ) {
+		Media media = ::GetTrackMedia(track);
+		if( media ) {
 			ImageDescriptionHandle idh;
-			SampleDescriptionHandle sdh = (SampleDescriptionHandle)NewHandle(0);
-			
-			GetMediaSampleDescription(media, 1, sdh);
+			SampleDescriptionHandle sdh = (SampleDescriptionHandle)::NewHandle( 0 );			
+			::GetMediaSampleDescription( media, 1, sdh );
 			idh = (ImageDescriptionHandle)sdh;
-			GetImageDescriptionExtension(idh, &h, 'pasp', 1);
-			ICMImageDescriptionGetProperty(idh, kQTPropertyClass_ImageDescription, kICMImageDescriptionPropertyID_PixelAspectRatio, sizeof(ext), &ext, NULL);
+			long count = 0;
+			::CountImageDescriptionExtensionType( idh, 'pasp', &count );
+			if( count >= 1 ) {
+				PixelAspectRatioImageDescriptionExtension ext;
+				::GetImageDescriptionExtension( idh, NULL, 'pasp', 1 );
+				::ICMImageDescriptionGetProperty( idh, kQTPropertyClass_ImageDescription, kICMImageDescriptionPropertyID_PixelAspectRatio, sizeof(ext), &ext, NULL );
 			
-			aspectRatio = (float)ext.hSpacing / (float)ext.vSpacing;
-			return aspectRatio;
+				aspectRatio = ext.hSpacing / (float)ext.vSpacing;
+			}
+
+			::DisposeHandle( (Handle)sdh );
 		}
 	}
-	return 0.0;
+
+	return aspectRatio;
 }
 
 	
