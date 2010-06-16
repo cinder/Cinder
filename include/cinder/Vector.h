@@ -142,15 +142,6 @@ class Vec2
 		return math<T>::sqrt( x*x + y*y );
 	}
 
-	T safeLength() const
-	{
-		T lenSquared = lengthSquared();
-		if( lenSquared > 0 )
-			return math<T>::sqrt( lenSquared );
-		else
-			return 0;
-	}
-
 	void normalize()
 	{
 		T invS = ((T)1) / length();
@@ -378,15 +369,6 @@ public:
 	T length() const 
 	{
 		return math<T>::sqrt( x*x + y*y + z*z );
-	}
-
-	T safeLength() const
-	{
-		T lenSquared = lengthSquared();
-		if( lenSquared > 0 )
-			return math<T>::sqrt( lenSquared );
-		else
-			return 0;
 	}
 
 	T lengthSquared() const 
@@ -636,15 +618,6 @@ class Vec4{
 
 	bool operator!=( const Vec4<T>& rhs ) const { return ! (*this == rhs); }
 
-	T safeLength() const
-	{
-		T lenSquared = lengthSquared();
-		if( lenSquared > 0 )
-			return math<T>::sqrt( lenSquared );
-		else
-			return 0;
-	}
-
 	T length() const
 	{
 		return math<float>::sqrt(x * x + y * y + z * z + w * w);
@@ -768,7 +741,7 @@ Vec2<T> toPolar( Vec2<T> car )
 	else // car.x < 0
 		theta = (math<T>::atan( car.y / car.x ) + M_PI );
 
-	return Vec2<T>( car.safeLength(), theta );
+	return Vec2<T>( car.length(), theta );
 }
 
 //! Converts a coordinate from polar coordinates of the form (radius, theta) to rectangular coordinates
