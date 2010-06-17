@@ -147,24 +147,6 @@ class App {
 	//! Quits the application gracefully
 	virtual void	quit() = 0;
 
-	class Listener {
-	 public:
-		virtual bool	mouseDown( MouseEvent event ) { return false; }
-		virtual bool	mouseUp( MouseEvent event ) { return false; }
-		virtual bool	mouseWheel( MouseEvent event ) { return false; }
-		virtual bool	mouseMove( MouseEvent event ) { return false; }
-		virtual bool	mouseDrag( MouseEvent event ) { return false; }
-		virtual bool	keyDown( KeyEvent event ) { return false; }
-		virtual bool	keyUp( KeyEvent event ) { return false; }
-		virtual bool	resize( int width, int height ) { return false; }
-		virtual bool	fileDrop( FileDropEvent event ) { return false; }
-	};
-
-	//! Adds a Listener to the App's event listeners. The app <tt>delete</tt>s \a listener upon its own destruction unless it is removed via removeListener
-	void		addListener( Listener *listener );
-	//! Removes a listener from the App's event listeners. Does not <tt>delete</tt> \a listener.
-	void		removeListener( Listener *listener ); 
-
 	//! Registers a callback for mouseDown events. Returns a unique identifier which can be used as a parameter to unregisterMouseDown().
 	CallbackId		registerMouseDown( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseDown.registerCb( callback ); }
 	//! Registers a callback for mouseDown events. Returns a unique identifier which can be used as a parameter to unregisterMouseDown().
@@ -373,7 +355,6 @@ class App {
 	double					mFpsSampleInterval;
 
 	shared_ptr<Renderer>	mRenderer;
-	std::vector<Listener*>	mListeners;
 	
 	CallbackMgr<bool (MouseEvent)>		mCallbacksMouseDown, mCallbacksMouseUp, mCallbacksMouseWheel, mCallbacksMouseMove, mCallbacksMouseDrag;
 	CallbackMgr<bool (KeyEvent)>		mCallbacksKeyDown, mCallbacksKeyUp;

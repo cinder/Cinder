@@ -55,27 +55,11 @@ App::App()
 
 App::~App()
 {
-	for( vector<Listener*>::iterator listenerIt = mListeners.begin(); listenerIt != mListeners.end(); ++listenerIt )
-		delete *listenerIt;
-}
-
-void App::addListener( Listener *listener )
-{
-	mListeners.push_back( listener );
-}
-
-void App::removeListener( Listener *listener )
-{
-	vector<Listener*>::iterator curIt = std::find( mListeners.begin(), mListeners.end(), listener );
-	if( curIt != mListeners.end() )
-		mListeners.erase( curIt );
 }
 
 // Pseudo-private event handlers
 void App::privateMouseDown__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDown( event ) ); ++listIt );
 	bool handled = false;
 	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseDown.begin(); ( cbIter != mCallbacksMouseDown.end() ) && ( ! handled ); ++cbIter )
 		handled = (cbIter->second)( event );
@@ -85,9 +69,6 @@ void App::privateMouseDown__( const MouseEvent &event )
 
 void App::privateMouseUp__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseUp( event ) ); ++listIt );
-	
 	bool handled = false;
 	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseUp.begin(); ( cbIter != mCallbacksMouseUp.end() ) && ( ! handled ); ++cbIter )
 		handled = (cbIter->second)( event );
@@ -97,9 +78,6 @@ void App::privateMouseUp__( const MouseEvent &event )
 
 void App::privateMouseWheel__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseWheel( event ) ); ++listIt );
-
 	bool handled = false;
 	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseWheel.begin(); ( cbIter != mCallbacksMouseWheel.end() ) && ( ! handled ); ++cbIter )
 		handled = (cbIter->second)( event );
@@ -109,9 +87,6 @@ void App::privateMouseWheel__( const MouseEvent &event )
 
 void App::privateMouseMove__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseMove( event ) ); ++listIt );
-
 	bool handled = false;
 	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseMove.begin(); ( cbIter != mCallbacksMouseMove.end() ) && ( ! handled ); ++cbIter )
 		handled = (cbIter->second)( event );
@@ -121,9 +96,6 @@ void App::privateMouseMove__( const MouseEvent &event )
 
 void App::privateMouseDrag__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDrag( event ) ); ++listIt );
-
 	bool handled = false;
 	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseDrag.begin(); ( cbIter != mCallbacksMouseDrag.end() ) && ( ! handled ); ++cbIter )
 		handled = (cbIter->second)( event );
@@ -133,9 +105,6 @@ void App::privateMouseDrag__( const MouseEvent &event )
 
 void App::privateKeyDown__( const KeyEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyDown( event ) ); ++listIt );
-
 	bool handled = false;
 	for( CallbackMgr<bool (KeyEvent)>::iterator cbIter = mCallbacksKeyDown.begin(); ( cbIter != mCallbacksKeyDown.end() ) && ( ! handled ); ++cbIter )
 		handled = (cbIter->second)( event );		
@@ -145,9 +114,6 @@ void App::privateKeyDown__( const KeyEvent &event )
 
 void App::privateKeyUp__( const KeyEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyUp( event ) ); ++listIt );
-
 	bool handled = false;
 	for( CallbackMgr<bool (KeyEvent)>::iterator cbIter = mCallbacksKeyUp.begin(); ( cbIter != mCallbacksKeyUp.end() ) && ( ! handled ); ++cbIter )
 		handled = (cbIter->second)( event );		
@@ -159,9 +125,6 @@ void App::privateResize__( int width, int height )
 {
 	getRenderer()->defaultResize();
 
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->resize( width, height ) ); ++listIt );
-
 	bool handled = false;
 	for( CallbackMgr<bool (int,int)>::iterator cbIter = mCallbacksResize.begin(); ( cbIter != mCallbacksResize.end() ) && ( ! handled ); ++cbIter )
 		handled = (cbIter->second)( width, height );		
@@ -171,9 +134,6 @@ void App::privateResize__( int width, int height )
 
 void App::privateFileDrop__( const FileDropEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->fileDrop( event ) ); ++listIt );
-
 	bool handled = false;
 	for( CallbackMgr<bool (FileDropEvent)>::iterator cbIter = mCallbacksFileDrop.begin(); ( cbIter != mCallbacksFileDrop.end() ) && ( ! handled ); ++cbIter )
 		handled = (cbIter->second)( event );
