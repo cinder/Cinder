@@ -22,7 +22,7 @@ bool gDebug = false;
 class ObjLoaderApp : public AppBasic {
  public:
 	void	setup();
-	void	resize( int width, int height );
+	void	resize( ResizeEvent event );
 
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );

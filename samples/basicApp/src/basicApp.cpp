@@ -12,40 +12,15 @@ void staticMouseUpHandler( MouseEvent event );
 // We'll create a new Cinder Application by deriving from the BasicApp class
 class BasicApp : public AppBasic {
  public:
-	void prepareSettings( Settings *settings );
 	// Cinder will always call this function whenever the user drags the mouse
 	void mouseDrag( MouseEvent event );
 	void keyDown( KeyEvent event );
 	// Cinder calls this function 30 times per second by default
 	void draw();
 
-	void justSomeMouseDownHandler( MouseEvent event );
-	
 	// This will maintain a list of points which we will draw line segments between
 	list<Vec2f>		mPoints;
 };
-
-void BasicApp::prepareSettings( Settings *settings )
-{
-	registerMouseDown( this, &BasicApp::justSomeMouseDownHandler );
-	registerMouseDown( staticMouseDownHandler );
-	registerMouseUp( staticMouseUpHandler );
-}
-
-void BasicApp::justSomeMouseDownHandler( MouseEvent event )
-{
-	console() << "member click" << std::endl;
-}
-
-void staticMouseDownHandler( MouseEvent event )
-{
-	console() << "static click" << std::endl;
-}
-
-void staticMouseUpHandler( MouseEvent event )
-{
-	console() << "static up" << std::endl;
-}
 
 void BasicApp::mouseDrag( MouseEvent event )
 {
