@@ -190,23 +190,43 @@ void AppCocoaTouch::privatePrepareSettings__()
 
 void AppCocoaTouch::privateTouchesBegan__( const TouchEvent &event )
 {
-	touchesBegan( event );
+	bool handled = false;
+	for( CallbackMgr<bool (TouchEvent)>::iterator cbIter = mCallbacksTouchesBegan.begin(); ( cbIter != mCallbacksTouchesBegan.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )	
+		touchesBegan( event );
 }
 
 void AppCocoaTouch::privateTouchesMoved__( const TouchEvent &event )
-{
-	touchesMoved( event );
+{	
+	bool handled = false;
+	for( CallbackMgr<bool (TouchEvent)>::iterator cbIter = mCallbacksTouchesMoved.begin(); ( cbIter != mCallbacksTouchesMoved.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )	
+		touchesMoved( event );
 }
 
 void AppCocoaTouch::privateTouchesEnded__( const TouchEvent &event )
-{
-	touchesEnded( event );
-}	
+{	
+	bool handled = false;
+	for( CallbackMgr<bool (TouchEvent)>::iterator cbIter = mCallbacksTouchesEnded.begin(); ( cbIter != mCallbacksTouchesEnded.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )	
+		touchesEnded( event );
+}
 
 void AppCocoaTouch::privateAccelerated__( const Vec3f &direction )
 {
 	Vec3f filtered = mLastAccel * (1.0f - mAccelFilterFactor) + direction * mAccelFilterFactor;
-	accelerated( AccelEvent( filtered, direction, mLastAccel, mLastRawAccel ) );
+
+	AccelEvent event( filtered, direction, mLastAccel, mLastRawAccel );
+	
+	bool handled = false;
+	for( CallbackMgr<bool (AccelEvent)>::iterator cbIter = mCallbacksAccelerated.begin(); ( cbIter != mCallbacksAccelerated.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )	
+		accelerated( event );
+
 	mLastAccel = filtered;
 	mLastRawAccel = direction;
 }

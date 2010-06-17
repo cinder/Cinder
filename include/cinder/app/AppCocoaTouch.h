@@ -60,12 +60,42 @@ class AppCocoaTouch : public App {
 	//! Override to respond to the end of a multitouch sequence
 	virtual void		touchesEnded( TouchEvent event ) {}
 	//! Returns a std::vector of all active touches
-	
+	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }	
 	//! Returns a Vec3d of the acceleration direction
 	virtual void		accelerated( AccelEvent event ) {}
-	
-	
-	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
+
+	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
+	CallbackId		registerTouchesBegan( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesBegan.registerCb( callback ); }
+	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
+	template<typename T>
+	CallbackId		registerTouchesBegan( T *obj, bool (T::*callback)(TouchEvent) ) { return mCallbacksTouchesBegan.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for touchesBegan events.
+	void			unregisterTouchesBegan( CallbackId id ) { mCallbacksTouchesBegan.unregisterCb( id ); }
+
+	//! Registers a callback for touchesMoved events. Returns a unique identifier which can be used as a parameter to unregisterTouchesMoved().
+	CallbackId		registerTouchesMoved( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesMoved.registerCb( callback ); }
+	//! Registers a callback for touchesMoved events. Returns a unique identifier which can be used as a parameter to unregisterTouchesMoved().
+	template<typename T>
+	CallbackId		registerTouchesMoved( T *obj, bool (T::*callback)(TouchEvent) ) { return mCallbacksTouchesMoved.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for touchesMoved events.
+	void			unregisterTouchesMoved( CallbackId id ) { mCallbacksTouchesMoved.unregisterCb( id ); }
+
+	//! Registers a callback for touchesEnded events. Returns a unique identifier which can be used as a parameter to unregisterTouchesEnded().
+	CallbackId		registerTouchesEnded( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesEnded.registerCb( callback ); }
+	//! Registers a callback for touchesEnded events. Returns a unique identifier which can be used as a parameter to unregisterTouchesEnded().
+	template<typename T>
+	CallbackId		registerTouchesEnded( T *obj, bool (T::*callback)(TouchEvent) ) { return mCallbacksTouchesEnded.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for touchesEnded events.
+	void			unregisterTouchesEnded( CallbackId id ) { mCallbacksTouchesEnded.unregisterCb( id ); }
+
+	//! Registers a callback for accelerated events. Returns a unique identifier which can be used as a parameter to unregisterAccelerated().
+	CallbackId		registerAccelerated( std::function<bool (AccelEvent)> callback ) { return mCallbacksAccelerated.registerCb( callback ); }
+	//! Registers a callback for touchesEnded events. Returns a unique identifier which can be used as a parameter to unregisterTouchesEnded().
+	template<typename T>
+	CallbackId		registerAccelerated( T *obj, bool (T::*callback)(AccelEvent) ) { return mCallbacksAccelerated.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for touchesEnded events.
+	void			unregisterAccelerated( CallbackId id ) { mCallbacksAccelerated.unregisterCb( id ); }
+
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
 	virtual int		getWindowWidth() const;
@@ -137,6 +167,9 @@ class AppCocoaTouch : public App {
 	Settings				mSettings;
 	
 	std::vector<TouchEvent::Touch>	mActiveTouches;
+
+	CallbackMgr<bool (TouchEvent)>		mCallbacksTouchesBegan, mCallbacksTouchesMoved, mCallbacksTouchesEnded;
+	CallbackMgr<bool (AccelEvent)>		mCallbacksAccelerated;
 
 	float					mAccelFilterFactor;
 	Vec3f					mLastAccel, mLastRawAccel;

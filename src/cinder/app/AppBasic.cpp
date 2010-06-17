@@ -240,18 +240,30 @@ void AppBasic::privateResize__( int width, int height )
 }
 
 void AppBasic::privateTouchesBegan__( const TouchEvent &event )
-{	
-	touchesBegan( event );
+{
+	bool handled = false;
+	for( CallbackMgr<bool (TouchEvent)>::iterator cbIter = mCallbacksTouchesBegan.begin(); ( cbIter != mCallbacksTouchesBegan.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )	
+		touchesBegan( event );
 }
 
 void AppBasic::privateTouchesMoved__( const TouchEvent &event )
 {	
-	touchesMoved( event );
+	bool handled = false;
+	for( CallbackMgr<bool (TouchEvent)>::iterator cbIter = mCallbacksTouchesMoved.begin(); ( cbIter != mCallbacksTouchesMoved.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )	
+		touchesMoved( event );
 }
 
 void AppBasic::privateTouchesEnded__( const TouchEvent &event )
 {	
-	touchesEnded( event );
+	bool handled = false;
+	for( CallbackMgr<bool (TouchEvent)>::iterator cbIter = mCallbacksTouchesEnded.begin(); ( cbIter != mCallbacksTouchesEnded.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )	
+		touchesEnded( event );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
