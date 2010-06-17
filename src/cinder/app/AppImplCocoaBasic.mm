@@ -334,7 +334,6 @@
 
 - (void)windowDidResignKey:(NSNotification*)aNotification
 {
-NSLog( @"oioioi" );
 	[cinderView applicationWillResignActive:aNotification];
 }
 
@@ -361,12 +360,10 @@ NSLog( @"oioioi" );
 
 - (void)touchesEndedWithEvent:(NSEvent *)event
 {
-	NSLog( @"Ended! @ app" );
 }
 
 - (void)touchesCancelledWithEvent:(NSEvent *)event
 {
-	NSLog( @"Cancelled! @ app" );
 }
 
 @end

@@ -77,6 +77,36 @@ static void startQuickTime()
 	::QTNewGWorld( &sDefaultGWorld, k24BGRPixelFormat, &boundsRect, NULL, NULL, 0 );
 }
 
+float MovieBase::getPixelAspectRatio() const
+{
+	float aspectRatio = 1.0f;
+
+	Track track = ::GetMovieIndTrackType( getObj()->mMovie, 1, VideoMediaType, movieTrackMediaType );
+	if( track != NULL ) {
+		Media media = ::GetTrackMedia(track);
+		if( media ) {
+			ImageDescriptionHandle idh;
+			SampleDescriptionHandle sdh = (SampleDescriptionHandle)::NewHandle( 0 );			
+			::GetMediaSampleDescription( media, 1, sdh );
+			idh = (ImageDescriptionHandle)sdh;
+			long count = 0;
+			::CountImageDescriptionExtensionType( idh, 'pasp', &count );
+			if( count >= 1 ) {
+				PixelAspectRatioImageDescriptionExtension ext;
+				::GetImageDescriptionExtension( idh, NULL, 'pasp', 1 );
+				::ICMImageDescriptionGetProperty( idh, kQTPropertyClass_ImageDescription, kICMImageDescriptionPropertyID_PixelAspectRatio, sizeof(ext), &ext, NULL );
+			
+				aspectRatio = ext.hSpacing / (float)ext.vSpacing;
+			}
+
+			::DisposeHandle( (Handle)sdh );
+		}
+	}
+
+	return aspectRatio;
+}
+
+	
 // We shouldn't call an abstract virtual from the constructor (specifically getObj()), so we have a two-phase construction, an empty constructor and this
 void MovieBase::initFromLoader( const MovieLoader &loader )
 {

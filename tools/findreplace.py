@@ -10,8 +10,8 @@ print "Replacing " + sys.argv[2] + " with " + sys.argv[3]
 
 for root, dirs, files in os.walk(sys.argv[1]):
     for name in files:
-        if name[name.rfind("."):] != ".vcproj":
-            continue
+#        if name[name.rfind("."):] != ".vcproj":
+#            continue
         f = open( join(root, name), "r" )
         fileLines = f.readlines(10000000)
         f.close()

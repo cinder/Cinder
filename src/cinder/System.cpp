@@ -529,10 +529,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
             pAdapter = pAdapter->Next;
         }
     }
-	else {
-        printf("GetAdaptersInfo failed with error: %d\n", dwRetVal);
 
-    }
     if( pAdapterInfo )
         ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
 #endif // defined( CINDER_MSW )
