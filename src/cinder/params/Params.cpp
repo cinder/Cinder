@@ -31,7 +31,7 @@ namespace cinder { namespace params {
 
 namespace {
 
-void mouseDown( app::MouseEvent event )
+bool mouseDown( app::MouseEvent event )
 {
 	TwMouseButtonID button;
 	if( event.isLeft() )
@@ -40,10 +40,10 @@ void mouseDown( app::MouseEvent event )
 		button = TW_MOUSE_RIGHT;
 	else
 		button = TW_MOUSE_MIDDLE;
-	event.setHandled( TwMouseButton( TW_MOUSE_PRESSED, button ) != 0 );
+	return TwMouseButton( TW_MOUSE_PRESSED, button ) != 0;
 }
 
-void mouseUp( app::MouseEvent event )
+bool mouseUp( app::MouseEvent event )
 {
 	TwMouseButtonID button;
 	if( event.isLeft() )
@@ -52,22 +52,22 @@ void mouseUp( app::MouseEvent event )
 		button = TW_MOUSE_RIGHT;
 	else
 		button = TW_MOUSE_MIDDLE;
-	event.setHandled( TwMouseButton( TW_MOUSE_RELEASED, button ) != 0 );
+	return TwMouseButton( TW_MOUSE_RELEASED, button ) != 0;
 }
 
-void mouseWheel( app::MouseEvent event )
+bool mouseWheel( app::MouseEvent event )
 {
 	static float sWheelPos = 0;
 	sWheelPos += event.getWheelIncrement();
-	event.setHandled( TwMouseWheel( (int)(sWheelPos) ) != 0 );
+	return TwMouseWheel( (int)(sWheelPos) ) != 0;
 }
 
-void mouseMove( app::MouseEvent event )
+bool mouseMove( app::MouseEvent event )
 {
-	event.setHandled( TwMouseMotion( event.getX(), event.getY() ) != 0 );
+	return TwMouseMotion( event.getX(), event.getY() ) != 0;
 }
 
-void keyDown( app::KeyEvent event )
+bool keyDown( app::KeyEvent event )
 {
 	int kmod = 0;
 	if( event.isShiftDown() )
@@ -76,12 +76,13 @@ void keyDown( app::KeyEvent event )
 		kmod |= TW_KMOD_CTRL;
 	if( event.isAltDown() )
 		kmod |= TW_KMOD_ALT;
-	event.setHandled( TwKeyPressed( event.getChar(), kmod ) != 0 );
+	return TwKeyPressed( event.getChar(), kmod ) != 0;
 }
 
-void resize( int width, int height )
+bool resize( int width, int height )
 {
-	TwWindowSize(width, height);
+	TwWindowSize( width, height );
+	return false;
 }
 
 class AntMgr {

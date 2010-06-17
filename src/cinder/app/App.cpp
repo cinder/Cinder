@@ -76,9 +76,10 @@ void App::privateMouseDown__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDown( event ) ); ++listIt );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseDown.begin(); ( cbIter != mCallbacksMouseDown.end() ) && ( ! event.isHandled() ); ++cbIter )
-		(cbIter->second)( event );
-	if( ! event.isHandled() )
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseDown.begin(); ( cbIter != mCallbacksMouseDown.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseDown( event );
 }
 
@@ -86,9 +87,11 @@ void App::privateMouseUp__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseUp( event ) ); ++listIt );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseUp.begin(); ( cbIter != mCallbacksMouseUp.end() ) && ( ! event.isHandled() ); ++cbIter )
-		(cbIter->second)( event );
-	if( ! event.isHandled() )
+	
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseUp.begin(); ( cbIter != mCallbacksMouseUp.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseUp( event );
 }
 
@@ -96,9 +99,11 @@ void App::privateMouseWheel__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseWheel( event ) ); ++listIt );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseWheel.begin(); ( cbIter != mCallbacksMouseWheel.end() ) && ( ! event.isHandled() ); ++cbIter )
-		(cbIter->second)( event );
-	if( ! event.isHandled() )
+
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseWheel.begin(); ( cbIter != mCallbacksMouseWheel.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseWheel( event );
 }
 
@@ -106,9 +111,11 @@ void App::privateMouseMove__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseMove( event ) ); ++listIt );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseMove.begin(); ( cbIter != mCallbacksMouseMove.end() ) && ( ! event.isHandled() ); ++cbIter )
-		(cbIter->second)( event );		
-	if( ! event.isHandled() )
+
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseMove.begin(); ( cbIter != mCallbacksMouseMove.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseMove( event );
 }
 
@@ -116,9 +123,11 @@ void App::privateMouseDrag__( const MouseEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDrag( event ) ); ++listIt );
-	for( CallbackMgr<void (MouseEvent)>::iterator cbIter = mCallbacksMouseDrag.begin(); ( cbIter != mCallbacksMouseDrag.end() ) && ( ! event.isHandled() ); ++cbIter )
-		(cbIter->second)( event );		
-	if( ! event.isHandled() )
+
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseDrag.begin(); ( cbIter != mCallbacksMouseDrag.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseDrag( event );
 }
 
@@ -126,9 +135,11 @@ void App::privateKeyDown__( const KeyEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyDown( event ) ); ++listIt );
-	for( CallbackMgr<void (KeyEvent)>::iterator cbIter = mCallbacksKeyDown.begin(); ( cbIter != mCallbacksKeyDown.end() ) && ( ! event.isHandled() ); ++cbIter )
-		(cbIter->second)( event );		
-	if( ! event.isHandled() )
+
+	bool handled = false;
+	for( CallbackMgr<bool (KeyEvent)>::iterator cbIter = mCallbacksKeyDown.begin(); ( cbIter != mCallbacksKeyDown.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )
 		keyDown( event );
 }
 
@@ -136,9 +147,11 @@ void App::privateKeyUp__( const KeyEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyUp( event ) ); ++listIt );
-	for( CallbackMgr<void (KeyEvent)>::iterator cbIter = mCallbacksKeyUp.begin(); ( cbIter != mCallbacksKeyUp.end() ) && ( ! event.isHandled() ); ++cbIter )
-		(cbIter->second)( event );		
-	if( ! event.isHandled() )
+
+	bool handled = false;
+	for( CallbackMgr<bool (KeyEvent)>::iterator cbIter = mCallbacksKeyUp.begin(); ( cbIter != mCallbacksKeyUp.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )
 		keyUp( event );
 }
 
@@ -148,18 +161,23 @@ void App::privateResize__( int width, int height )
 
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->resize( width, height ) ); ++listIt );
-	for( CallbackMgr<void (int,int)>::iterator cbIter = mCallbacksResize.begin(); cbIter != mCallbacksResize.end(); ++cbIter )
-		(cbIter->second)( width, height );
-	resize( width, height );
+
+	bool handled = false;
+	for( CallbackMgr<bool (int,int)>::iterator cbIter = mCallbacksResize.begin(); ( cbIter != mCallbacksResize.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( width, height );		
+	if( ! handled )
+		resize( width, height );
 }
 
 void App::privateFileDrop__( const FileDropEvent &event )
 {
 	vector<Listener*>::iterator listIt;
 	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->fileDrop( event ) ); ++listIt );
-	for( CallbackMgr<void (FileDropEvent)>::iterator cbIter = mCallbacksFileDrop.begin(); cbIter != mCallbacksFileDrop.end(); ++cbIter )
-		(cbIter->second)( event );
-	if( ! event.isHandled() )
+
+	bool handled = false;
+	for( CallbackMgr<bool (FileDropEvent)>::iterator cbIter = mCallbacksFileDrop.begin(); ( cbIter != mCallbacksFileDrop.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		fileDrop( event );
 }
 

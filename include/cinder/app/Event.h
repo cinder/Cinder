@@ -26,23 +26,13 @@
 
 namespace cinder { namespace app {
 
-//! Represents a file-drop event, typically received from Windows Explorer or Mac OS X Finder
+//! Base class for all Events
 class Event {
   protected:
-	Event()
-		: mHandled( false )
-	{}
+	Event() {}
 
   public:
 	virtual ~Event() {}
-
-	//! Returns whether an event has been marked as handled, meaning it should no longer propagate to other handlers
-	bool	isHandled() const { return mHandled; }
-	//! Marks whether an event has been handled, meaning it should no longer propagate to other handlers
-	void	setHandled( bool handled = true ) { mHandled = handled; }
-
-  protected:
-	bool	mHandled;
 };
 
 } } // namespace cinder::app

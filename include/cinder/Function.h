@@ -39,6 +39,8 @@
 	}
 #endif
 
+namespace cinder {
+
 //! Represents a unique identifier for a callback
 typedef uint32_t CallbackId;
 
@@ -65,3 +67,5 @@ class CallbackMgr {
 	iterator begin() { return mCallbacks.begin(); }
 	iterator end() { return mCallbacks.end(); }  
 };
+
+} // namespace cinder
