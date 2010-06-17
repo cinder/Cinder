@@ -28,6 +28,7 @@
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/app/FileDropEvent.h"
+#include "cinder/app/ResizeEvent.h"
 #include "cinder/Stream.h"
 #include "cinder/Display.h"
 #include "cinder/DataSource.h"
@@ -140,7 +141,7 @@ class App {
 	//! Override to receive key-up events.
 	virtual void	keyUp( KeyEvent event ) {}
 	//! Override to receive window resize events.
-	virtual void	resize( int width, int height ) {}
+	virtual void	resize( ResizeEvent event ) {}
 	//! Override to receive file-drop events.	
 	virtual void	fileDrop( FileDropEvent event ) {}
 	
@@ -204,10 +205,10 @@ class App {
 	void			unregisterKeyUp( CallbackId id ) { mCallbacksKeyUp.unregisterCb( id ); }
 
 	//! Registers a callback for resize events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
-	CallbackId		registerResize( std::function<bool (int,int)> callback ) { return mCallbacksResize.registerCb( callback ); }
+	CallbackId		registerResize( std::function<bool (ResizeEvent)> callback ) { return mCallbacksResize.registerCb( callback ); }
 	//! Registers a callback for resize events. Returns a unique identifier which can be used as a parameter to unregisterResize().
 	template<typename T>
-	CallbackId		registerResize( T *obj, bool (T::*callback)(int,int) ) { return mCallbacksResize.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	CallbackId		registerResize( T *obj, bool (T::*callback)(ResizeEvent) ) { return mCallbacksResize.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
 	//! Unregisters a callback for resize events.
 	void			unregisterResize( CallbackId id ) { mCallbacksResize.unregisterCb( id ); }
 
@@ -312,7 +313,7 @@ class App {
 	void	privateFileDrop__( const FileDropEvent &event );
 
 	virtual void	privateSetup__();
-	virtual void	privateResize__( int width, int height );	
+	virtual void	privateResize__( const ResizeEvent &event );	
 	virtual void	privateUpdate__();
 	virtual void	privateDraw__();
 	virtual void	privateShutdown__();
@@ -358,7 +359,7 @@ class App {
 	
 	CallbackMgr<bool (MouseEvent)>		mCallbacksMouseDown, mCallbacksMouseUp, mCallbacksMouseWheel, mCallbacksMouseMove, mCallbacksMouseDrag;
 	CallbackMgr<bool (KeyEvent)>		mCallbacksKeyDown, mCallbacksKeyUp;
-	CallbackMgr<bool (int,int)>			mCallbacksResize;
+	CallbackMgr<bool (ResizeEvent)>		mCallbacksResize;
 	CallbackMgr<bool (FileDropEvent)>	mCallbacksFileDrop;
 	
 	static App*		sInstance;

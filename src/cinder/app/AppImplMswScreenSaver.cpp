@@ -44,7 +44,7 @@ void AppImplMswScreenSaver::run()
 	mWindowWidth = windowRect.right;
 	mWindowHeight = windowRect.bottom;
 
-	mApp->privateResize__( windowRect.right, windowRect.bottom );
+	mApp->privateResize__( ResizeEvent( Vec2i( windowRect.right, windowRect.bottom ) ) );
 
 	::SetTimer( mWnd, TIMER_ID, (UINT)(1000 / mApp->getSettings().getFrameRate()), NULL );
 }

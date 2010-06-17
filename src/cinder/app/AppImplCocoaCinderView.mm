@@ -48,7 +48,7 @@
 
 	app->setup();
 	[cinderView setAppSetupCalled:YES];
-	app->privateResize__( app->getWindowWidth(), app->getWindowHeight() );
+	app->privateResize__( ci::app::ResizeEvent( ci::Vec2i( app->getWindowWidth(), app->getWindowHeight() ) ) );
 	[self startAnimationTimer];
 }
 

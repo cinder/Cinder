@@ -121,15 +121,15 @@ void App::privateKeyUp__( const KeyEvent &event )
 		keyUp( event );
 }
 
-void App::privateResize__( int width, int height )
+void App::privateResize__( const ResizeEvent &event )
 {
 	getRenderer()->defaultResize();
 
 	bool handled = false;
-	for( CallbackMgr<bool (int,int)>::iterator cbIter = mCallbacksResize.begin(); ( cbIter != mCallbacksResize.end() ) && ( ! handled ); ++cbIter )
-		handled = (cbIter->second)( width, height );		
+	for( CallbackMgr<bool (ResizeEvent)>::iterator cbIter = mCallbacksResize.begin(); ( cbIter != mCallbacksResize.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
 	if( ! handled )
-		resize( width, height );
+		resize( event );
 }
 
 void App::privateFileDrop__( const FileDropEvent &event )

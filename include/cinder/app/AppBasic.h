@@ -183,7 +183,7 @@ class AppBasic : public App {
 	//! \endcond
 
 	//! \cond
-	virtual void	privateResize__( int width, int height );
+	virtual void	privateResize__( const ResizeEvent &event );
 	//! \endcond
 
  private:

@@ -69,7 +69,7 @@ void AppImplMswBasic::run()
 	
 	mApp->privateSetup__();
 	mHasBeenInitialized = true;
-	mApp->privateResize__( mWindowWidth, mWindowHeight );
+	mApp->privateResize__( ResizeEvent( Vec2i( mWindowWidth, mWindowHeight ) ) );
 
 	::ShowWindow( mWnd, SW_SHOW );
 	::SetForegroundWindow( mWnd );
@@ -265,7 +265,7 @@ void AppImplMswBasic::toggleFullScreen()
 	::DragAcceptFiles( mWnd, TRUE );
 	enableMultiTouch();
 	
-	mApp->privateResize__( mApp->getWindowWidth(), mApp->getWindowHeight() );
+	mApp->privateResize__( ResizeEvent( Vec2i( mApp->getWindowWidth(), mApp->getWindowHeight() ) ) );
 }
 
 void AppImplMswBasic::enableMultiTouch()
@@ -546,7 +546,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			if( impl->mHasBeenInitialized ) {
 				impl->mWindowWidth = LOWORD(lParam);
 				impl->mWindowHeight = HIWORD(lParam);
-				impl->getApp()->privateResize__( impl->mWindowWidth, impl->mWindowHeight );
+				impl->getApp()->privateResize__( ResizeEvent( Vec2i( impl->mWindowWidth, impl->mWindowHeight ) ) );
 			}
 			return 0;
 		break;

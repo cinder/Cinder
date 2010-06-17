@@ -230,13 +230,13 @@ const Display& AppBasic::getDisplay()
 
 #endif
 
-void AppBasic::privateResize__( int width, int height )
+void AppBasic::privateResize__( const ResizeEvent &event )
 {	
 #if defined( CINDER_MAC )
-	[mImpl handleResizeWithWidth:width height:height];
+	[mImpl handleResizeWithWidth:event.getWidth() height:event.getHeight()];
 #endif
 
-	App::privateResize__( width, height );
+	App::privateResize__( event );
 }
 
 void AppBasic::privateTouchesBegan__( const TouchEvent &event )

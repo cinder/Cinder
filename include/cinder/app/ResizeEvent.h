@@ -23,20 +23,22 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/Vector.h"
+
+namespace cinder { namespace app {
 
 class ResizeEvent : public Event {
   public:
-	ResizeEvent( const Vec2i &size, const Vec2i &prevSize )
-		: mSize( size ), mPrevSize( prevSize );
+	ResizeEvent( const Vec2i &size )
+		: Event(), mSize( size )
 	{}
 	
 	Vec2i		getSize() const { return mSize; }
-	Vec2i		getPrevSize() const { return mPrevSize; }
 	int32_t		getWidth() const { return mSize.x; }
 	int32_t		getHeight() const { return mSize.y; }
-	int32_t		getPrevWidth() const { return mPrevSize.x; }
-	int32_t		getPrevHeight() const { return mPrevSize.y; }
 	
   private:
-	Vec2i		mSize, mPrevSize;
+	Vec2i		mSize;
 };
+
+} } // namespace cinder::app

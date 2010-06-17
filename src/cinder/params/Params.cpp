@@ -79,9 +79,9 @@ bool keyDown( app::KeyEvent event )
 	return TwKeyPressed( event.getChar(), kmod ) != 0;
 }
 
-bool resize( int width, int height )
+bool resize( app::ResizeEvent event )
 {
-	TwWindowSize( width, height );
+	TwWindowSize( event.getWidth(), event.getHeight() );
 	return false;
 }
 
