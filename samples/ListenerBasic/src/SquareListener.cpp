@@ -22,21 +22,21 @@ SquareListener::~SquareListener()
 	mApp->unregisterMouseDrag( mCbMouseDrag );	
 }
  
-void SquareListener::mouseDown( MouseEvent event )
+bool SquareListener::mouseDown( MouseEvent event )
 {
 	mSelected = mRect.contains( event.getPos() );
 
 	// if we got selected then we handled the event, otherwise let it pass through
-	event.setHandled( mSelected );
+	return mSelected;
 }
 
-void SquareListener::mouseDrag( MouseEvent event )
+bool SquareListener::mouseDrag( MouseEvent event )
 {
 	if( mSelected )
 		mRect.offsetCenterTo( event.getPos() );
 
 	// if we are selected then we handled the event, otherwise let it pass through
-	event.setHandled( mSelected );
+	return mSelected;
 }
 
 void SquareListener::draw()

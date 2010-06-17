@@ -21,32 +21,6 @@ class ListenerBasicApp : public AppBasic {
 };
 
 
-template<typename T>
-Vec2<T> toPolar( Vec2<T> car )
-{
-	const T epsilon = (T)0.0000001;
-	T theta;
-	if( math<T>::abs( car.x ) < epsilon ) { // x == 0
-		if( math<T>::abs( car.y ) < epsilon ) theta = 0;
-		else if( car.y > 0 ) theta = (T)M_PI / 2;
-		else theta = ( (T)M_PI * 3 ) / 2;
-	}
-	else if ( car.x > 0 ) {
-		if( car.y < 0 ) theta = math<T>::atan( car.y / car.x ) + 2 * (T)M_PI;
-		else theta = math<T>::atan( car.y / car.x );
-	}
-	else // car.x < 0
-		theta = (math<T>::atan( car.y / car.x ) + M_PI );
-
-	T lenSquared = car.lengthSquared();
-	return Vec2<T>( car.length(), theta );
-}
-
-template<typename T>
-Vec2<T> fromPolar( Vec2<T> pol ){
-	return Vec2<T>( math<T>::cos( pol.y ) *  pol.x , math<T>::sin( pol.y ) *  pol.x );
-}
-
 void ListenerBasicApp::setup()
 {
 	// This installs a listener which intercepts mouse-down events
@@ -70,8 +44,6 @@ void ListenerBasicApp::draw()
 {
 	gl::clear( Color( 0.3f, 0.3f, 0.3f ) );
 	
-	toPolar( Vec2f::zero() );
-
 	for( list<pair<Vec2f,Color> >::iterator circleIter = mCircles.begin(); circleIter != mCircles.end(); ++circleIter ) {
 		gl::color( circleIter->second );
 		gl::drawSolidCircle( circleIter->first, 20 );

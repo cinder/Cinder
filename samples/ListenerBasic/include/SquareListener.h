@@ -8,8 +8,8 @@ class SquareListener {
 	SquareListener( ci::app::App *app );
 	~SquareListener();
  
-	void	mouseDown( ci::app::MouseEvent event );
-	void	mouseDrag( ci::app::MouseEvent event );
+	bool	mouseDown( ci::app::MouseEvent event );
+	bool	mouseDrag( ci::app::MouseEvent event );
 	
 	void	draw();
 	
