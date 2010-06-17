@@ -284,8 +284,10 @@ string App::getFolderPath( const string &initialPath )
 	}
 	else
 		return string();
-#else
+#elif defined( CINDER_MSW )
 	return AppImplMsw::getFolderPath( initialPath );
+#else
+	return string();
 #endif
 }
 
