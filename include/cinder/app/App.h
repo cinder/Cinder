@@ -164,7 +164,7 @@ class App {
 	void		removeListener( Listener *listener ); 
 
 	// Accessors
-	virtual const Settings&	getSettings() const { return getSettings(); }
+	virtual const Settings&	getSettings() const = 0;
 	Renderer*				getRenderer() const { return mRenderer.get(); }
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
