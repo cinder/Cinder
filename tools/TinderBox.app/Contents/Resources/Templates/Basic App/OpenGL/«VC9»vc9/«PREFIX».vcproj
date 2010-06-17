@@ -55,7 +55,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				AdditionalIncludeDirectories="..\«WINFLINTPATH»\include"
+				AdditionalIncludeDirectories="..\«WINFLINTPATH»\include;..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
@@ -130,6 +130,7 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="..\«WINFLINTPATH»\include;..\include"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"

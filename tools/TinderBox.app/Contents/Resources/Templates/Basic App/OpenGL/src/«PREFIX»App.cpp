@@ -33,7 +33,7 @@ void «PREFIX»App::draw()
 	glBegin( GL_LINE_STRIP );
 	// iterate across our list of points, and pass each one to OpenGL
 	for( list<Vec2f>::iterator pointIter = mPoints.begin(); pointIter != mPoints.end(); ++pointIter ) {
-		glVertex2f( pointIter->x, pointIter->y );
+		gl::vertex( *pointIter );
 	}
 	// tell OpenGL to actually draw the lines now
 	glEnd();
