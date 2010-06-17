@@ -261,9 +261,9 @@ string App::getOpenFilePath( const string &initialPath, vector<string> extension
 #endif
 }
 
-// TODO: implement method for Windows
-string	App::getOpenFolderPath(const std::string &initialPath)
+string App::getFolderPath( const string &initialPath )
 {
+#if defined( CINDER_MAC )
 	bool wasFullScreen = isFullScreen();
 	setFullScreen(false);
 	
@@ -284,6 +284,9 @@ string	App::getOpenFolderPath(const std::string &initialPath)
 	}
 	else
 		return string();
+#else
+	return AppImplMsw::getFolderPath( initialPath );
+#endif
 }
 
 string	App::getSaveFilePath( const string &initialPath, vector<string> extensions )
