@@ -28,7 +28,7 @@
 #include <map>
 
 #if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
-	#include <boost/tr1/functional.hpp>
+	#include <functional>
 	namespace std {
 		using std::tr1::function;
 	}

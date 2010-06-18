@@ -719,5 +719,14 @@
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Event.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\ResizeEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Function.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

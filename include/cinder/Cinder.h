@@ -25,8 +25,6 @@
 #include <boost/cstdint.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "cinder/Function.h"
-
 namespace cinder {
 using boost::int8_t;
 using boost::uint8_t;
