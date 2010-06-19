@@ -84,6 +84,9 @@ class App {
 		Vec2i	getWindowSize() const { return Vec2i( mWindowSizeX, mWindowSizeY ); }
 		//! the size of the application's window specified in pixels. \return cinder::Area( 0, 0, width in pixels, height in pixels )
 		Area	getWindowBounds() const { return Area( 0, 0, mWindowSizeX, mWindowSizeY ); }
+		
+		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
+		const std::string& getTitle() const { return mTitle; }
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
 		void	setTitle( const std::string &title ) { mTitle = title; }
 

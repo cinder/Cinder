@@ -37,8 +37,11 @@
 	
 	[NSApplication sharedApplication];
 	
-	[NSApp setMainMenu:[[NSMenu alloc] init]];	
-	[self setApplicationMenu];
+	[NSApp setMainMenu:[[NSMenu alloc] init]];
+	
+	const std::string& applicationName = aApp->getSettings().getTitle();
+	[self setApplicationMenu: [NSString stringWithUTF8String: applicationName.c_str()]];
+	
 	[NSApp setDelegate:self];
 	
 	app = aApp;
@@ -179,24 +182,21 @@
 }
 
 // application menu stolen from SDLMian.m
-- (void)setApplicationMenu
+- (void)setApplicationMenu: (NSString*) applicationName
 {
     /* warning: this code is very odd */
     NSMenu *appleMenu;
     NSMenuItem *menuItem;
     NSString *title;
-    NSString *appName;
-    
-    appName = @"CinderApplication";
     appleMenu = [[NSMenu alloc] initWithTitle:@""];
     
     /* Add menu items */
-    title = [@"About " stringByAppendingString:appName];
+    title = [@"About " stringByAppendingString:applicationName];
     [appleMenu addItemWithTitle:title action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];
 	
     [appleMenu addItem:[NSMenuItem separatorItem]];
 	
-    title = [@"Hide " stringByAppendingString:appName];
+    title = [@"Hide " stringByAppendingString:applicationName];
     [appleMenu addItemWithTitle:title action:@selector(hide:) keyEquivalent:@"h"];
 	
     menuItem = (NSMenuItem *)[appleMenu addItemWithTitle:@"Hide Others" action:@selector(hideOtherApplications:) keyEquivalent:@"h"];
@@ -206,7 +206,7 @@
 	
     [appleMenu addItem:[NSMenuItem separatorItem]];
 	
-    title = [@"Quit " stringByAppendingString:appName];
+    title = [@"Quit " stringByAppendingString:applicationName];
     [appleMenu addItemWithTitle:title action:@selector(quit) keyEquivalent:@"q"];
     
     /* Put menu into the menubar */
