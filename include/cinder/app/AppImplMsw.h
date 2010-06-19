@@ -78,6 +78,7 @@ class AppImplMsw {
 	static std::string	getAppPath();	
 	static std::string	getOpenFilePath( const std::string &initialPath, std::vector<std::string> extensions );
 	static std::string	getSaveFilePath( const std::string &initialPath, std::vector<std::string> extensions );
+	static std::string	getFolderPath( const std::string &initialPath );
 	
  protected:
 	class App	*mApp;

@@ -139,7 +139,7 @@ class Vec2
 
 	T length() const
 	{
-		return (T)std::sqrt( x*x + y*y );
+		return math<T>::sqrt( x*x + y*y );
 	}
 
 	void normalize()
@@ -368,7 +368,7 @@ public:
 
 	T length() const 
 	{
-		return (T)std::sqrt( x*x + y*y + z*z );
+		return math<T>::sqrt( x*x + y*y + z*z );
 	}
 
 	T lengthSquared() const 
@@ -620,7 +620,7 @@ class Vec4{
 
 	T length() const
 	{
-		return (T)std::sqrt(x * x + y * y + z * z + w * w);
+		return math<float>::sqrt(x * x + y * y + z * z + w * w);
 	}
 
 	void normalize() 
@@ -722,6 +722,34 @@ class Vec4{
 	static Vec4<T> zAxis() { return Vec4<T>( 0, 0, 1, 0 ); }	
 	static Vec4<T> wAxis() { return Vec4<T>( 0, 0, 0, 1 ); }		
 };
+
+//! Converts a coordinate from rectangular (Cartesian) coordinates to polar coordinates of the form (radius, theta)
+template<typename T>
+Vec2<T> toPolar( Vec2<T> car )
+{
+	const T epsilon = (T)0.0000001;
+	T theta;
+	if( math<T>::abs( car.x ) < epsilon ) { // x == 0
+		if( math<T>::abs( car.y ) < epsilon ) theta = 0;
+		else if( car.y > 0 ) theta = (T)M_PI / 2;
+		else theta = ( (T)M_PI * 3 ) / 2;
+	}
+	else if ( car.x > 0 ) {
+		if( car.y < 0 ) theta = math<T>::atan( car.y / car.x ) + 2 * (T)M_PI;
+		else theta = math<T>::atan( car.y / car.x );
+	}
+	else // car.x < 0
+		theta = (math<T>::atan( car.y / car.x ) + M_PI );
+
+	return Vec2<T>( car.length(), theta );
+}
+
+//! Converts a coordinate from polar coordinates of the form (radius, theta) to rectangular coordinates
+template<typename T>
+Vec2<T> fromPolar( Vec2<T> pol )
+{
+	return Vec2<T>( math<T>::cos( pol.y ) *  pol.x , math<T>::sin( pol.y ) *  pol.x );
+}
 
 template<typename T,typename Y> inline Vec2<T> operator *( Y s, const Vec2<T> &v ) { return Vec2<T>( v.x * s, v.y * s ); }
 template<typename T,typename Y> inline Vec2<T> operator *( const Vec2<T> &v, Y s ) { return Vec2<T>( v.x * s, v.y * s ); }

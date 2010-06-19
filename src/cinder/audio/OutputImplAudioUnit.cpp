@@ -195,7 +195,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 
 	NewAUGraph( &mGraph );
 	
-	ComponentDescription cd;
+	AudioComponentDescription cd;
 	cd.componentManufacturer = kAudioUnitManufacturer_Apple;
 	cd.componentFlags = 0;
 	cd.componentFlagsMask = 0;

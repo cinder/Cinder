@@ -164,7 +164,7 @@ class App {
 	void		removeListener( Listener *listener ); 
 
 	// Accessors
-	virtual const Settings&	getSettings() const { return getSettings(); }
+	virtual const Settings&	getSettings() const = 0;
 	Renderer*				getRenderer() const { return mRenderer.get(); }
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
@@ -226,6 +226,8 @@ class App {
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 		\return the selected file path or an empty string if the user cancelled. **/
 	std::string		getOpenFilePath( const std::string &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
+	//! Presents the user with a folder-open dialog and returns the selected folder.
+	std::string		getFolderPath(const std::string &initialPath="");
 	//! Presents the user with a file-save dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.

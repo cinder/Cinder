@@ -22,8 +22,12 @@
 
 #include "cinder/app/AppImplMsw.h"
 #include "cinder/app/App.h"
+#include "cinder/Utilities.h"
+
+#include <Shlobj.h>
 
 using std::string;
+using std::wstring;
 using std::vector;
 using std::pair;
 
@@ -157,6 +161,51 @@ string AppImplMsw::getOpenFilePath( const string &initialPath, vector<string> ex
 	}
 	else
 		return string();
+}
+
+namespace {
+
+// see http://support.microsoft.com/kb/179378 "How To Browse for Folders from the Current Directory"
+INT CALLBACK getFolderPathBrowseCallbackProc( HWND hwnd, UINT uMsg, LPARAM lp, LPARAM pData ) 
+{
+	switch( uMsg ) {
+		case BFFM_INITIALIZED: 
+			// WParam is TRUE since you are passing a path.
+			// It would be FALSE if you were passing a pidl.
+			// pData is a pointer to the wide string containing our initial path back at the original call site
+			::SendMessage( hwnd, BFFM_SETSELECTION, TRUE, pData );
+		break;
+	}
+	return 0;
+}
+} // anonymous namespace
+
+string AppImplMsw::getFolderPath( const string &initialPath )
+{
+	wstring initialPathWide( toUtf16( initialPath ) );
+	string result;
+
+	::BROWSEINFO bi = { 0 };
+	bi.lParam = reinterpret_cast<LPARAM>( initialPathWide.c_str() );
+	bi.lpfn = getFolderPathBrowseCallbackProc;
+	bi.lpszTitle = L"Pick a Directory";
+	::LPITEMIDLIST pidl = ::SHBrowseForFolder( &bi );
+	if( pidl ) {
+		// get the name of the folder
+		TCHAR path[MAX_PATH];
+		if( ::SHGetPathFromIDList ( pidl, path ) ) {
+			result = toUtf8( path );
+		}
+
+		// free memory used
+		::IMalloc * imalloc = 0;
+		if( SUCCEEDED( ::SHGetMalloc( &imalloc ) ) ) {
+			imalloc->Free( pidl );
+			imalloc->Release();
+		}
+	}
+
+	return result;
 }
 
 string AppImplMsw::getSaveFilePath( const string &initialPath, vector<string> extensions )
