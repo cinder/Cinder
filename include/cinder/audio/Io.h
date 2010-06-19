@@ -29,7 +29,7 @@
 #include <map>
 #include <string>
 
-#if defined(CINDER_MAC)
+#if defined(CINDER_COCOA)
 	#include <AudioToolbox/AudioFile.h>
 #elif defined(CINDER_MSW)
 	#include <windows.h>
