@@ -60,6 +60,9 @@ struct BufferListT {
 };
 
 typedef BufferListT<void> BufferList;
+typedef BufferListT<float> BufferList32f;
+
+typedef shared_ptr<BufferList32f> BufferList32fRef;
 
 template<typename T>
 class PcmBufferT {

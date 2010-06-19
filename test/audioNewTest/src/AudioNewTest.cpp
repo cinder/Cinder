@@ -38,16 +38,14 @@ void AudioNewTestApp::setup()
 	//console() << mAudioSource->getDuration() << std::endl;
 	//mAudioSource = audio::load( "..\\data\\guitar.mp3" );
 	mAudioSource = audio::load( "../../../data/booyah_short.wav" );
-	audio::LoaderRef loader( mAudioSource->createLoader( audio::Output::getTarget() ) );
+	audio::TargetRef target( audio::Output::getTarget() );
+	audio::LoaderRef loader( mAudioSource->createLoader( target.get() ) );
 	
-	audio::BufferList bufferList;
-	bufferList.mNumberBuffers = 2;
-	bufferList.mBuffers = new audio::BufferGeneric[2];
-	for( int i = 0; i < 2; i++ ) {
-		bufferList.mBuffers[i].mNumberChannels = 1;
-		bufferList.mBuffers[i].mSampleCount = 1024;
-		bufferList.mBuffers[i].mDataByteSize = 1024 * sizeof( float );
-		bufferList.mBuffers[i].mData = (void *)new float[1024];
+	audio::BufferList32fRef buffer( audio::createBufferList<float>( 1024, 2, target->isInterleaved() ) );
+	loader->loadData( (audio::BufferList *)buffer.get() );
+	
+	for( int i = 0; i < 1024; i++ ) {
+		console() << buffer->mBuffers[0].mData[i] << std::endl;
 	}
 	
 	

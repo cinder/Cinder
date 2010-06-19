@@ -78,7 +78,7 @@ class LoaderSourceCallback : public Loader {
 	
 	uint64_t getSampleOffset() const { return mSampleOffset; }
 	void setSampleOffset( uint64_t anOffset ) { mSampleOffset = anOffset; }
-	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	void loadData( BufferList *ioData );
   private:
 	LoaderSourceCallback( Callback<T,U> *source, Target *target );
 	Callback<T,U>						* mSource;
@@ -187,12 +187,12 @@ LoaderSourceCallback<T,U>::LoaderSourceCallback( Callback<T,U> *source, Target *
 }
 
 template<typename T, typename U>
-void LoaderSourceCallback<T,U>::loadData( uint32_t *ioSampleCount, BufferList *ioData ) {	
+void LoaderSourceCallback<T,U>::loadData( BufferList *ioData ) {	
 #if defined( CINDER_COCOA )
-	mConverter->loadData( ioSampleCount, ioData );
-	mSampleOffset += *ioSampleCount;
+	mConverter->loadData( ioData );
+	mSampleOffset += ioData->mBuffers[0].mSampleCount;
 #elif defined( CINDER_MSW )
-	mSource->getData( mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
+	mSource->getData( mSampleOffset, &ioData->mBuffers[0].mSampleCount, &ioData->mBuffers[0] );
 	mSampleOffset += *ioSampleCount;
 #endif
 }	
