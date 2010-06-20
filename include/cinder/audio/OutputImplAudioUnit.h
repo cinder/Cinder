@@ -23,7 +23,6 @@
 #pragma once
 
 #include "cinder/audio/Output.h"
-
 #include <CoreServices/CoreServices.h>
 #include <CoreAudio/CoreAudioTypes.h>
 #include <AudioUnit/AudioUnit.h>
