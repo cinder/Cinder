@@ -62,13 +62,13 @@ void OutputImplAudioUnit::Track::play()
 	
 	OSStatus err;
 	
-	/*err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, mInputBus, mOutput->mPlayerDescription, sizeof(mOutput->mPlayerDescription) );
+	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, mInputBus, mOutput->mPlayerDescription, sizeof( AudioStreamBasicDescription ) );
 	if( err ) {
 		//throw
 		std::cout << "Error setting track input bus format on mixer" << std::endl;
 	}
 	
-	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, mInputBus, 1, 0 );
+	/*err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, mInputBus, 1, 0 );
 	if( err ) {
 		//throw
 		std::cout << "Error enabling input bus on mixer" << std::endl;
@@ -77,7 +77,12 @@ void OutputImplAudioUnit::Track::play()
 	float defaultVolume = 1.0;
 	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, defaultVolume, 0 );
 	if( err ) {
-		std::cout << "error setting default volume" << std::cout;
+		std::cout << "error setting default volume" << std::endl;
+	}
+	
+	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, mInputBus, 1, 0 );
+	if( err ) {
+		std::cout << "error enabling input bus" << std::endl;
 	}
 	
 	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &rcbs, sizeof(rcbs) );
@@ -85,6 +90,7 @@ void OutputImplAudioUnit::Track::play()
 		//throw
 		std::cout << "Error setting track redner callback on mixer" << std::endl;
 	}
+	
 	mIsPlaying = true;
 }
 
@@ -268,7 +274,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	
 	//stereo mixer node
 	cd.componentType = kAudioUnitType_Mixer;
-	cd.componentSubType = kAudioUnitSubType_StereoMixer;//kAudioUnitSubType_MultiChannelMixer;
+	cd.componentSubType = kAudioUnitSubType_MultiChannelMixer;//kAudioUnitSubType_StereoMixer;
 	AUGraphAddNode( mGraph, &cd, &mMixerNode );
 	
 	//setup mixer AU
@@ -287,22 +293,21 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	}
 	
 	//TODO: cleanup error checking in all of this
-	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
+	/*err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
 	if( err2 ) {
-		std::cout << "Error setting output unit output stream format" << std::endl;
-	}
+		std::cout << "Error setting output unit input stream format" << std::endl;
+	}*/
 	
 	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, mPlayerDescription, dsize );
 	if( err2 ) {
-		std::cout << "Error setting mixer unit input stream format" << std::endl;
+		std::cout << "Error setting mixer unit output stream format" << std::endl;
 	}
 	
-	/*UInt32 numbuses = 2;
-	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &numbuses, sizeof(numbuses));
+	UInt32 numBuses = 10;
+	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &numBuses, sizeof(numBuses));
 	if( err2 ) {
 		std::cout << "Error setting mixer unit input elements" << std::endl;
-	}*/
-	
+	}
 	
 	err2 = AudioUnitSetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
 	if( err2 ) {
