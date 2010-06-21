@@ -158,18 +158,21 @@ SourceFile::SourceFile( DataSourceRef dataSourceRef )
 	if( dataSourceRef->isFilePath() ) {
 		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath() );
 		::CFURLRef urlRef = ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString, kCFURLPOSIXPathStyle, false );
-		err = AudioFileOpenURL( urlRef, fsRdPerm, 0, &aFileRef );
+		err = AudioFileOpenURL( urlRef, kAudioFileReadPermission/*fsRdPerm*/, 0, &aFileRef );
 		::CFRelease( pathString );
 		::CFRelease( urlRef );
 		if( err ) {
+#if defined(CINDER_MAC)
+			//TODO: find iphone equivalent of fnfErr
 			if( err == fnfErr ) {
 				throw IoExceptionSourceNotFound();
 			}
+#endif
 			throw IoExceptionFailedLoad();
 		}
 	} else if( dataSourceRef->isUrl() ) {
 		::CFURLRef urlRef = cocoa::createCfUrl( dataSourceRef->getUrl() );
-		err = AudioFileOpenURL( urlRef, fsRdPerm, 0, &aFileRef );
+		err = AudioFileOpenURL( urlRef, kAudioFileReadPermission/*fsRdPerm*/, 0, &aFileRef );
 		::CFRelease( urlRef );
 		if( err ) {
 			throw IoExceptionFailedLoad();

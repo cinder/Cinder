@@ -23,11 +23,16 @@
 #pragma once
 
 #include "cinder/audio/Output.h"
-#include <CoreServices/CoreServices.h>
 #include <CoreAudio/CoreAudioTypes.h>
 #include <AudioUnit/AudioUnit.h>
 #include <AudioToolbox/AUGraph.h>
 #include <boost/thread/mutex.hpp>
+
+#if defined(CINDER_MAC)
+	#include <CoreServices/CoreServices.h>
+#elif defined(CINDER_COCOA_TOUCH)
+
+#endif
 
 namespace cinder { namespace audio {
 
@@ -57,7 +62,9 @@ class OutputImplAudioUnit : public OutputImpl {
 	
 	TargetRef getTarget();
   private:
+#if defined(CINDER_MAC)
 	AudioDeviceID					mOutputDeviceId;
+#endif
 	AUGraph							mGraph;
 	AUNode							mMixerNode;
 	AUNode							mOutputNode;

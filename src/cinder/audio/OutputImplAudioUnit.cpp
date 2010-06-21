@@ -26,6 +26,12 @@
 
 #include <iostream>
 
+#if defined(CINDER_MAC)
+	#define CINDER_AUDIOUNIT_OUTPUT_TYPE kAudioUnitSubType_DefaultOutput;
+#elif defined(CINDER_COCOA_TOUCH)
+	#define CINDER_AUDIOUNIT_OUTPUT_TYPE kAudioUnitSubType_RemoteIO; //TODO
+#endif
+
 namespace cinder { namespace audio {
 
 TargetOutputImplAudioUnit::TargetOutputImplAudioUnit( const OutputImplAudioUnit *aOutput ) {
@@ -53,9 +59,31 @@ void OutputImplAudioUnit::Track::play()
 	rcbs.inputProc = &OutputImplAudioUnit::Track::renderCallback;
 	rcbs.inputProcRefCon = (void *)this;
 	
-	OSStatus err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &rcbs, sizeof(rcbs) );
+	
+	OSStatus err;
+	
+	/*err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, mInputBus, mOutput->mPlayerDescription, sizeof(mOutput->mPlayerDescription) );
 	if( err ) {
 		//throw
+		std::cout << "Error setting track input bus format on mixer" << std::endl;
+	}
+	
+	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, mInputBus, 1, 0 );
+	if( err ) {
+		//throw
+		std::cout << "Error enabling input bus on mixer" << std::endl;
+	}*/
+	
+	float defaultVolume = 1.0;
+	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, defaultVolume, 0 );
+	if( err ) {
+		std::cout << "error setting default volume" << std::cout;
+	}
+	
+	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &rcbs, sizeof(rcbs) );
+	if( err ) {
+		//throw
+		std::cout << "Error setting track redner callback on mixer" << std::endl;
 	}
 	mIsPlaying = true;
 }
@@ -75,7 +103,7 @@ void OutputImplAudioUnit::Track::stop()
 float OutputImplAudioUnit::Track::getVolume() const
 {
 	float aValue = 0.0;
-	OSStatus err = AudioUnitGetParameter( mOutput->mMixerUnit, kStereoMixerParam_Volume, kAudioUnitScope_Input, mInputBus, &aValue );
+	OSStatus err = AudioUnitGetParameter( mOutput->mMixerUnit, /*kStereoMixerParam_Volume*/kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, &aValue );
 	if( err ) {
 		//throw
 	}
@@ -85,7 +113,7 @@ float OutputImplAudioUnit::Track::getVolume() const
 void OutputImplAudioUnit::Track::setVolume( float aVolume )
 {
 	aVolume = math<float>::clamp( aVolume, 0.0, 1.0 );
-	OSStatus err = AudioUnitSetParameter( mOutput->mMixerUnit, kStereoMixerParam_Volume, kAudioUnitScope_Input, mInputBus, aVolume, 0 );
+	OSStatus err = AudioUnitSetParameter( mOutput->mMixerUnit, /*kStereoMixerParam_Volume*/kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, aVolume, 0 );
 	if( err ) {
 		//throw
 	}
@@ -202,7 +230,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	
 	//output node
 	cd.componentType = kAudioUnitType_Output;
-	cd.componentSubType = kAudioUnitSubType_DefaultOutput;
+	cd.componentSubType = CINDER_AUDIOUNIT_OUTPUT_TYPE;
 	
 	//connect & setup
 	AUGraphOpen( mGraph );
@@ -215,9 +243,10 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	if( AUGraphNodeInfo( mGraph, mOutputNode, NULL, &mOutputUnit ) != noErr ) {
 		std::cout << "Error 2!" << std::endl;	
 	}
-	
+	UInt32 dsize;
+#if defined( CINDER_MAC )
 	//get default output device id and set it as the outdevice for the output unit
-	UInt32 dsize = sizeof( AudioDeviceID );
+	dsize = sizeof( AudioDeviceID );
 	err = AudioHardwareGetProperty( kAudioHardwarePropertyDefaultOutputDevice, &dsize, &mOutputDeviceId );
 	if( err != noErr ) {
 		std::cout << "Error getting default output device" << std::endl;
@@ -227,6 +256,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	if( err != noErr ) {
 		std::cout << "Error setting current output device" << std::endl;
 	}
+#endif
 	
 	//Tell the output unit not to reset timestamps 
 	//Otherwise sample rate changes will cause sync los
@@ -238,7 +268,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	
 	//stereo mixer node
 	cd.componentType = kAudioUnitType_Mixer;
-	cd.componentSubType = kAudioUnitSubType_StereoMixer;
+	cd.componentSubType = kAudioUnitSubType_StereoMixer;//kAudioUnitSubType_MultiChannelMixer;
 	AUGraphAddNode( mGraph, &cd, &mMixerNode );
 	
 	//setup mixer AU
@@ -248,7 +278,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	}
 	
 	
-	ComponentResult err2 = noErr;
+	OSStatus err2 = noErr;
 	dsize = sizeof( AudioStreamBasicDescription );
 	mPlayerDescription = new AudioStreamBasicDescription;
 	err2 = AudioUnitGetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, &dsize );
@@ -266,6 +296,13 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	if( err2 ) {
 		std::cout << "Error setting mixer unit input stream format" << std::endl;
 	}
+	
+	/*UInt32 numbuses = 2;
+	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &numbuses, sizeof(numbuses));
+	if( err2 ) {
+		std::cout << "Error setting mixer unit input elements" << std::endl;
+	}*/
+	
 	
 	err2 = AudioUnitSetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
 	if( err2 ) {
@@ -288,6 +325,12 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	// turn metering ON
 	UInt32 data = 1;
 	AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_MeteringMode, kAudioUnitScope_Global, 0, &data, sizeof(data) );
+	
+	float defaultVolume = 1.0;
+	err = AudioUnitSetParameter( mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, defaultVolume, 0 );
+	if( err ) {
+		std::cout << "error setting default volume" << std::cout;
+	}
 	
 	err = AUGraphStart( mGraph );
 	if( err ) {
@@ -327,7 +370,7 @@ void OutputImplAudioUnit::removeTrack( TrackId trackId )
 float OutputImplAudioUnit::getVolume() const
 {
 	float aValue = 0.0;
-	OSStatus err = AudioUnitGetParameter( mMixerUnit, kStereoMixerParam_Volume, kAudioUnitScope_Output, 0, &aValue );
+	OSStatus err = AudioUnitGetParameter( mMixerUnit, /*kStereoMixerParam_Volume*/kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, &aValue );
 	if( err ) {
 		//throw
 	}
@@ -337,7 +380,7 @@ float OutputImplAudioUnit::getVolume() const
 void OutputImplAudioUnit::setVolume( float aVolume )
 {
 	aVolume = math<float>::clamp( aVolume, 0.0, 1.0 );
-	OSStatus err = AudioUnitSetParameter( mMixerUnit, kStereoMixerParam_Volume, kAudioUnitScope_Output, 0, aVolume, 0 );
+	OSStatus err = AudioUnitSetParameter( mMixerUnit, /*kStereoMixerParam_Volume*/kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, aVolume, 0 );
 	if( err ) {
 		//throw
 	}

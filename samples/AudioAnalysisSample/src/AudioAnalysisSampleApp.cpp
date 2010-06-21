@@ -35,6 +35,9 @@ void AudioAnalysisSampleApp::setup()
 void AudioAnalysisSampleApp::keyDown( KeyEvent e ) {
 	if( e.getChar() == 'p' ) {
 		( mTrack1->isPlaying() ) ? mTrack1->stop() : mTrack1->play();
+	} else if( e.getChar() == 'c' ) {
+		std::cout << audio::Output::getVolume() << std::endl;
+		std::cout << mTrack1->getVolume() << std::endl;
 	}
 }
 
