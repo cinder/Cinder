@@ -27,6 +27,7 @@
 #include <AudioUnit/AudioUnit.h>
 #include <AudioToolbox/AUGraph.h>
 #include <boost/thread/mutex.hpp>
+#include <stack>
 
 #if defined(CINDER_MAC)
 	#include <CoreServices/CoreServices.h>
@@ -61,7 +62,12 @@ class OutputImplAudioUnit : public OutputImpl {
 	float getVolume() const;
 	
 	TargetRef getTarget();
+  protected:
+	TrackId							availableTrackId() { TrackId bus = mAvailableBuses.top(); mAvailableBuses.pop(); return bus; }
   private:
+  
+	static const uint32_t			sNumberBuses;
+	std::stack<TrackId>				mAvailableBuses;
 #if defined(CINDER_MAC)
 	AudioDeviceID					mOutputDeviceId;
 #endif
@@ -97,7 +103,8 @@ class OutputImplAudioUnit : public OutputImpl {
 		
 		PcmBuffer32fRef getPcmBuffer();
 	  private:
-		static OSStatus renderCallback( void * audioLoader, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData);
+		static OSStatus renderCallback( void * audioLoader, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData );
+		static OSStatus	renderNotifyCallback( void * audioTrack, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData );
 		
 		void createPcmBuffer();
 		

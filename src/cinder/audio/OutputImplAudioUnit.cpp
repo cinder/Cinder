@@ -27,12 +27,14 @@
 #include <iostream>
 
 #if defined(CINDER_MAC)
-	#define CINDER_AUDIOUNIT_OUTPUT_TYPE kAudioUnitSubType_DefaultOutput;
+	#define CINDER_AUDIOUNIT_OUTPUT_TYPE kAudioUnitSubType_DefaultOutput
 #elif defined(CINDER_COCOA_TOUCH)
-	#define CINDER_AUDIOUNIT_OUTPUT_TYPE kAudioUnitSubType_RemoteIO; //TODO
+	#define CINDER_AUDIOUNIT_OUTPUT_TYPE kAudioUnitSubType_RemoteIO
 #endif
 
 namespace cinder { namespace audio {
+
+const uint32_t OutputImplAudioUnit::sNumberBuses = 10;
 
 TargetOutputImplAudioUnit::TargetOutputImplAudioUnit( const OutputImplAudioUnit *aOutput ) {
 		loadFromCaAudioStreamBasicDescription( this, aOutput->mPlayerDescription );
@@ -44,6 +46,7 @@ OutputImplAudioUnit::Track::Track( SourceRef source, OutputImplAudioUnit * outpu
 	mTarget = TargetOutputImplAudioUnit::createRef( output );
 	mLoader = source->createLoader( mTarget.get() );
 	mInputBus = output->availableTrackId();
+	std::cout << mInputBus << std::endl;
 }
 
 OutputImplAudioUnit::Track::~Track() 
@@ -51,14 +54,14 @@ OutputImplAudioUnit::Track::~Track()
 	if( mIsPlaying ) {
 		stop();
 	}
+	mOutput->mAvailableBuses.push( mInputBus );
 }
 
 void OutputImplAudioUnit::Track::play() 
 {
-	AURenderCallbackStruct rcbs;
-	rcbs.inputProc = &OutputImplAudioUnit::Track::renderCallback;
-	rcbs.inputProcRefCon = (void *)this;
-	
+	AURenderCallbackStruct renderCallback;
+	renderCallback.inputProc = &OutputImplAudioUnit::Track::renderCallback;
+	renderCallback.inputProcRefCon = (void *)this;
 	
 	OSStatus err;
 	
@@ -85,7 +88,13 @@ void OutputImplAudioUnit::Track::play()
 		std::cout << "error enabling input bus" << std::endl;
 	}
 	
-	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &rcbs, sizeof(rcbs) );
+	err = AudioUnitAddRenderNotify( mOutput->mMixerUnit, OutputImplAudioUnit::Track::renderNotifyCallback, (void *)this );
+	if( err ) {
+		//throw
+		std::cout << "Error setting track redner notify callback on mixer" << std::endl;
+	}
+	
+	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &renderCallback, sizeof(renderCallback) );
 	if( err ) {
 		//throw
 		std::cout << "Error setting track redner callback on mixer" << std::endl;
@@ -96,13 +105,19 @@ void OutputImplAudioUnit::Track::play()
 
 void OutputImplAudioUnit::Track::stop()
 {
-	AURenderCallbackStruct rcbs;
-	rcbs.inputProc = NULL;
-	rcbs.inputProcRefCon = NULL;
-	OSStatus err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &rcbs, sizeof(rcbs) );
+	OSStatus err;
+	err = AudioUnitSetParameter( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, 0, 0);
 	if( err ) {
 		//don't throw here because this is called from the deconstructor
 	}
+	
+	/*AURenderCallbackStruct rcbs;
+	rcbs.inputProc = NULL;
+	rcbs.inputProcRefCon = NULL;
+	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &rcbs, sizeof(rcbs) );
+	if( err ) {
+		//don't throw here because this is called from the deconstructor
+	}*/
 	mIsPlaying = false;
 }
 
@@ -210,7 +225,6 @@ OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUni
 	if( ioData->mBuffers[0].mDataByteSize == 0 ) {
 		if( ! theTrack->mIsLooping ) {
 			theTrack->stop();
-			theTrack->mOutput->removeTrack( theTrack->getTrackId() );
 			//the track is dead at this point, don't do anything else
 			return err;
 		}
@@ -222,9 +236,41 @@ OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUni
     return err;
 }
 
-OutputImplAudioUnit::OutputImplAudioUnit()
-	: OutputImpl()
+OSStatus OutputImplAudioUnit::Track::renderNotifyCallback( void * audioTrack, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData )
 {
+	OSStatus err = noErr;
+	if( *ioActionFlags &= kAudioUnitRenderAction_PostRender ) {
+		OutputImplAudioUnit::Track * theTrack = reinterpret_cast<OutputImplAudioUnit::Track *>( audioTrack );
+		
+		if( ! theTrack->isPlaying() ) {
+			//disable render callback
+			AURenderCallbackStruct rcbs;
+			rcbs.inputProc = NULL;
+			rcbs.inputProcRefCon = NULL;
+			err = AudioUnitSetProperty( theTrack->mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, theTrack->mInputBus, &rcbs, sizeof(rcbs) );
+			if( err ) {
+				
+			}
+			
+			err = AudioUnitRemoveRenderNotify( theTrack->mOutput->mMixerUnit, OutputImplAudioUnit::Track::renderNotifyCallback, audioTrack );
+			if( err ) {
+			
+			}
+			
+			theTrack->mOutput->removeTrack( theTrack->getTrackId() );
+			//now the track should be dead
+		}
+	}
+	return err;
+}
+
+OutputImplAudioUnit::OutputImplAudioUnit()
+	: mAvailableBuses(), OutputImpl()
+{
+	for( uint32_t i = 1; i <= sNumberBuses; i++ ) {
+		mAvailableBuses.push( sNumberBuses - i );
+	}
+
 	OSStatus err = noErr;
 
 	NewAUGraph( &mGraph );
@@ -303,8 +349,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 		std::cout << "Error setting mixer unit output stream format" << std::endl;
 	}
 	
-	UInt32 numBuses = 10;
-	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &numBuses, sizeof(numBuses));
+	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &sNumberBuses, sizeof(sNumberBuses) );
 	if( err2 ) {
 		std::cout << "Error setting mixer unit input elements" << std::endl;
 	}
