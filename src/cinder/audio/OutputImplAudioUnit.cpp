@@ -70,12 +70,6 @@ void OutputImplAudioUnit::Track::play()
 		std::cout << "Error setting track input bus format on mixer" << std::endl;
 	}
 	
-	/*err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, mInputBus, 1, 0 );
-	if( err ) {
-		//throw
-		std::cout << "Error enabling input bus on mixer" << std::endl;
-	}*/
-	
 	float defaultVolume = 1.0;
 	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, defaultVolume, 0 );
 	if( err ) {
@@ -104,19 +98,12 @@ void OutputImplAudioUnit::Track::play()
 
 void OutputImplAudioUnit::Track::stop()
 {
-	OSStatus err;
+	/*OSStatus err;
 	err = AudioUnitSetParameter( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, 0, 0);
 	if( err ) {
 		//don't throw here because this is called from the deconstructor
-	}
-	
-	/*AURenderCallbackStruct rcbs;
-	rcbs.inputProc = NULL;
-	rcbs.inputProcRefCon = NULL;
-	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &rcbs, sizeof(rcbs) );
-	if( err ) {
-		//don't throw here because this is called from the deconstructor
 	}*/
+	//just set var to false, the next call of renderNotifyCallback will actually stop the audio unit callback
 	mIsPlaying = false;
 }
 
