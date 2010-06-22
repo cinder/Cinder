@@ -70,13 +70,13 @@ void OutputImplAudioUnit::Track::play()
 		std::cout << "Error setting track input bus format on mixer" << std::endl;
 	}
 	
-	float defaultVolume = 1.0;
+	/*float defaultVolume = 1.0;
 	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, defaultVolume, 0 );
 	if( err ) {
 		std::cout << "error setting default volume" << std::endl;
-	}
+	}*/
 	
-	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, mInputBus, 1, 0 );
+	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, 0/*mInputBus*/, 1, 0 );
 	if( err ) {
 		std::cout << "error enabling input bus" << std::endl;
 	}
@@ -87,7 +87,7 @@ void OutputImplAudioUnit::Track::play()
 		std::cout << "Error setting track redner notify callback on mixer" << std::endl;
 	}
 	
-	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &renderCallback, sizeof(renderCallback) );
+	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0/*mInputBus*/, &renderCallback, sizeof(renderCallback) );
 	if( err ) {
 		//throw
 		std::cout << "Error setting track redner callback on mixer" << std::endl;
@@ -317,19 +317,8 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	
 	
 	OSStatus err2 = noErr;
-	dsize = sizeof( AudioStreamBasicDescription );
-	mPlayerDescription = new AudioStreamBasicDescription;
-	err2 = AudioUnitGetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, &dsize );
-	if( err2 ) {
-		std::cout << "Error reading output unit stream format" << std::endl;
-	}
 	
 	//TODO: cleanup error checking in all of this
-	/*err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
-	if( err2 ) {
-		std::cout << "Error setting output unit input stream format" << std::endl;
-	}*/
-	
 	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, mPlayerDescription, dsize );
 	if( err2 ) {
 		std::cout << "Error setting mixer unit output stream format" << std::endl;
@@ -340,11 +329,6 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 		std::cout << "Error setting mixer unit input elements" << std::endl;
 	}
 	
-	err2 = AudioUnitSetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
-	if( err2 ) {
-		std::cout << "Error setting output unit input stream format" << std::endl;
-	}
-	
 	AUGraphConnectNodeInput( mGraph, mMixerNode, 0, mOutputNode, 0 );
 	
 	AudioStreamBasicDescription outDesc;
@@ -352,6 +336,21 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	AudioUnitGetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &outDesc, &size );
 	
 	AUGraphInitialize( mGraph );
+	
+	dsize = sizeof( AudioStreamBasicDescription );
+	mPlayerDescription = new AudioStreamBasicDescription;
+	err2 = AudioUnitGetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, &dsize );
+	if( err2 ) {
+		std::cout << "Error reading output unit stream format" << std::endl;
+	}
+	if( mPlayerDescription->mFormatID != kAudioFormatLinearPCM ) {
+		std::cout << "Error: output needs to be in a non-linear PCM format" << std::endl;
+	}
+	
+	err2 = AudioUnitSetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
+	if( err2 ) {
+		std::cout << "Error setting output unit input stream format" << std::endl;
+	}
 	
 	//race condition work around??
 	usleep( 10 * 1000 );

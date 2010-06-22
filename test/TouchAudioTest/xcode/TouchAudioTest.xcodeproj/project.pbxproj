@@ -30,7 +30,7 @@
 		8D1107310486CEB800E47090 /* TouchAudioTest-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TouchAudioTest-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		C7EE3EC411D029D100610C4D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		C7EE3ECA11D029D800610C4D /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		C7EE3ECE11D029E300610C4D /* AudioUnit.framework */ = {isa = PBXFileReference; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		C7EE3ECE11D029E300610C4D /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		C7EE3F4311D030E800610C4D /* Resources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = SOURCE_ROOT; };
 		C7EE3F4411D0311800610C4D /* booyah.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = booyah.mp3; path = ../resources/booyah.mp3; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
