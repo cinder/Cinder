@@ -29,12 +29,6 @@
 #include <boost/thread/mutex.hpp>
 #include <stack>
 
-#if defined(CINDER_MAC)
-	#include <CoreServices/CoreServices.h>
-#elif defined(CINDER_COCOA_TOUCH)
-
-#endif
-
 namespace cinder { namespace audio {
 
 class OutputImplAudioUnit;

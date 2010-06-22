@@ -70,13 +70,13 @@ void OutputImplAudioUnit::Track::play()
 		std::cout << "Error setting track input bus format on mixer" << std::endl;
 	}
 	
-	/*float defaultVolume = 1.0;
+	float defaultVolume = 0.5;
 	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, defaultVolume, 0 );
 	if( err ) {
 		std::cout << "error setting default volume" << std::endl;
-	}*/
+	}
 	
-	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, 0/*mInputBus*/, 1, 0 );
+	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, mInputBus, 1, 0 );
 	if( err ) {
 		std::cout << "error enabling input bus" << std::endl;
 	}
@@ -87,7 +87,7 @@ void OutputImplAudioUnit::Track::play()
 		std::cout << "Error setting track redner notify callback on mixer" << std::endl;
 	}
 	
-	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0/*mInputBus*/, &renderCallback, sizeof(renderCallback) );
+	err = AudioUnitSetProperty( mOutput->mMixerUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, mInputBus, &renderCallback, sizeof(renderCallback) );
 	if( err ) {
 		//throw
 		std::cout << "Error setting track redner callback on mixer" << std::endl;
@@ -319,11 +319,6 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	OSStatus err2 = noErr;
 	
 	//TODO: cleanup error checking in all of this
-	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, mPlayerDescription, dsize );
-	if( err2 ) {
-		std::cout << "Error setting mixer unit output stream format" << std::endl;
-	}
-	
 	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &sNumberBuses, sizeof(sNumberBuses) );
 	if( err2 ) {
 		std::cout << "Error setting mixer unit input elements" << std::endl;
@@ -337,14 +332,19 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	
 	AUGraphInitialize( mGraph );
 	
+	//Do all StreamFormat getting/setting after initialization, 
+	//since that's when the output unit is actually hooked up to the hardware
+	
 	dsize = sizeof( AudioStreamBasicDescription );
 	mPlayerDescription = new AudioStreamBasicDescription;
 	err2 = AudioUnitGetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, &dsize );
 	if( err2 ) {
 		std::cout << "Error reading output unit stream format" << std::endl;
 	}
-	if( mPlayerDescription->mFormatID != kAudioFormatLinearPCM ) {
-		std::cout << "Error: output needs to be in a non-linear PCM format" << std::endl;
+	
+	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, mPlayerDescription, dsize );
+	if( err2 ) {
+		std::cout << "Error setting mixer unit output stream format" << std::endl;
 	}
 	
 	err2 = AudioUnitSetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
@@ -358,10 +358,10 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	//TODO: tell the output AU about the order of the channels if there are more than 2 
 
 	// turn metering ON
-	UInt32 data = 1;
-	AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_MeteringMode, kAudioUnitScope_Global, 0, &data, sizeof(data) );
+	//UInt32 data = 1;
+	//AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_MeteringMode, kAudioUnitScope_Global, 0, &data, sizeof(data) );
 	
-	float defaultVolume = 1.0;
+	float defaultVolume = 0.5;
 	err = AudioUnitSetParameter( mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, defaultVolume, 0 );
 	if( err ) {
 		std::cout << "error setting default volume" << std::cout;
