@@ -34,7 +34,7 @@
 
 namespace cinder { namespace audio {
 
-const uint32_t OutputImplAudioUnit::sNumberBuses = 10;
+const uint32_t OutputImplAudioUnit::sNumberBuses = 15;
 
 TargetOutputImplAudioUnit::TargetOutputImplAudioUnit( const OutputImplAudioUnit *aOutput ) {
 		loadFromCaAudioStreamBasicDescription( this, aOutput->mPlayerDescription );
@@ -46,7 +46,6 @@ OutputImplAudioUnit::Track::Track( SourceRef source, OutputImplAudioUnit * outpu
 	mTarget = TargetOutputImplAudioUnit::createRef( output );
 	mLoader = source->createLoader( mTarget.get() );
 	mInputBus = output->availableTrackId();
-	std::cout << mInputBus << std::endl;
 }
 
 OutputImplAudioUnit::Track::~Track() 
