@@ -305,20 +305,20 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 		std::cout << "Error 4" << std::endl;
 	}
 	
-	
-	OSStatus err2 = noErr;
-	
 	//TODO: cleanup error checking in all of this
-	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &sNumberBuses, sizeof(sNumberBuses) );
-	if( err2 ) {
+	err = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &sNumberBuses, sizeof(sNumberBuses) );
+	if( err ) {
 		std::cout << "Error setting mixer unit input elements" << std::endl;
 	}
 	
 	AUGraphConnectNodeInput( mGraph, mMixerNode, 0, mOutputNode, 0 );
 	
 	AudioStreamBasicDescription outDesc;
-	UInt32 size = sizeof(outDesc);
-	AudioUnitGetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &outDesc, &size );
+	UInt32 size = sizeof( outDesc );
+	err = AudioUnitGetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &outDesc, &size );
+	if( err ) {
+		std::cout << "Error getting output unit stream format" << std::endl;
+	}
 	
 	AUGraphInitialize( mGraph );
 	
@@ -327,18 +327,18 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	
 	dsize = sizeof( AudioStreamBasicDescription );
 	mPlayerDescription = new AudioStreamBasicDescription;
-	err2 = AudioUnitGetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, &dsize );
-	if( err2 ) {
+	err = AudioUnitGetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, &dsize );
+	if( err ) {
 		std::cout << "Error reading output unit stream format" << std::endl;
 	}
 	
-	err2 = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, mPlayerDescription, dsize );
-	if( err2 ) {
+	err = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, mPlayerDescription, dsize );
+	if( err ) {
 		std::cout << "Error setting mixer unit output stream format" << std::endl;
 	}
 	
-	err2 = AudioUnitSetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
-	if( err2 ) {
+	err = AudioUnitSetProperty( mOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, mPlayerDescription, dsize );
+	if( err ) {
 		std::cout << "Error setting output unit input stream format" << std::endl;
 	}
 	
