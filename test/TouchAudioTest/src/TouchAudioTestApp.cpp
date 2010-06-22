@@ -21,7 +21,6 @@ class TouchAudioTestApp : public AppCocoaTouch {
 void TouchAudioTestApp::setup()
 {
 	mAudioSource = audio::load( loadResource( RES_BOOYAH ) );
-	std::cout << "Ok!" << std::endl;
 }
 
 void TouchAudioTestApp::resize( int width, int height )

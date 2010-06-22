@@ -28,8 +28,10 @@
 
 #if defined(CINDER_MAC)
 	#define CINDER_AUDIOUNIT_OUTPUT_TYPE kAudioUnitSubType_DefaultOutput
+	#define CINDER_DEFAULT_VOLUME 0.5
 #elif defined(CINDER_COCOA_TOUCH)
 	#define CINDER_AUDIOUNIT_OUTPUT_TYPE kAudioUnitSubType_RemoteIO
+	#define CINDER_DEFAULT_VOLUME 0.1 //volume scale is way louder on iphone --maybe scale it computationally in setVolue/getVoume?
 #endif
 
 namespace cinder { namespace audio {
@@ -70,16 +72,17 @@ void OutputImplAudioUnit::Track::play()
 		std::cout << "Error setting track input bus format on mixer" << std::endl;
 	}
 	
-	float defaultVolume = 0.5;
-	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, defaultVolume, 0 );
-	if( err ) {
-		std::cout << "error setting default volume" << std::endl;
-	}
-	
 	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, mInputBus, 1, 0 );
 	if( err ) {
 		std::cout << "error enabling input bus" << std::endl;
 	}
+	
+	err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, CINDER_DEFAULT_VOLUME, 0 );
+	if( err ) {
+		std::cout << "error setting default volume" << std::endl;
+	}
+	
+	mIsPlaying = true;
 	
 	err = AudioUnitAddRenderNotify( mOutput->mMixerUnit, OutputImplAudioUnit::Track::renderNotifyCallback, (void *)this );
 	if( err ) {
@@ -92,8 +95,6 @@ void OutputImplAudioUnit::Track::play()
 		//throw
 		std::cout << "Error setting track redner callback on mixer" << std::endl;
 	}
-	
-	mIsPlaying = true;
 }
 
 void OutputImplAudioUnit::Track::stop()
@@ -110,7 +111,7 @@ void OutputImplAudioUnit::Track::stop()
 float OutputImplAudioUnit::Track::getVolume() const
 {
 	float aValue = 0.0;
-	OSStatus err = AudioUnitGetParameter( mOutput->mMixerUnit, /*kStereoMixerParam_Volume*/kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, &aValue );
+	OSStatus err = AudioUnitGetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, &aValue );
 	if( err ) {
 		//throw
 	}
@@ -120,7 +121,7 @@ float OutputImplAudioUnit::Track::getVolume() const
 void OutputImplAudioUnit::Track::setVolume( float aVolume )
 {
 	aVolume = math<float>::clamp( aVolume, 0.0, 1.0 );
-	OSStatus err = AudioUnitSetParameter( mOutput->mMixerUnit, /*kStereoMixerParam_Volume*/kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, aVolume, 0 );
+	OSStatus err = AudioUnitSetParameter( mOutput->mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Input, mInputBus, aVolume, 0 );
 	if( err ) {
 		//throw
 	}
@@ -181,17 +182,6 @@ OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUni
 		delete [] bufferList.mBuffers;
 		
 	}
-	//save data into pcm buffer if it's enabled
-	/*if( theTrack->mPCMBufferEnabled ) {
-		if( theTrack->mPCMBuffer.mSampleIdx + ( ioData->mBuffers[0].mDataByteSize / sizeof(Float32) ) > theTrack->mPCMBuffer.mSamplesPerBuffer ) {
-			theTrack->mPCMBuffer.mSampleIdx = 0;
-		}
-		for( int i = 0; i < theTrack->mPCMBuffer.mBufferCount; i++ ) {
-			memcpy( (void *)( theTrack->mPCMBuffer.mBuffers[i] + theTrack->mPCMBuffer.mSampleIdx ), ioData->mBuffers[i].mData, ioData->mBuffers[i].mDataByteSize );
-		}
-		theTrack->mPCMBuffer.mSampleIdx += ioData->mBuffers[0].mDataByteSize / 4;
-		
-	}*/
 	
 	//add data to the PCM buffer if it's enabled
 	if( theTrack->mIsPcmBuffering ) {
@@ -283,7 +273,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	}
 	UInt32 dsize;
 #if defined( CINDER_MAC )
-	//get default output device id and set it as the outdevice for the output unit
+	//get default output device id and set it as the outdevice for the output unit, unnessary on the iphone
 	dsize = sizeof( AudioDeviceID );
 	err = AudioHardwareGetProperty( kAudioHardwarePropertyDefaultOutputDevice, &dsize, &mOutputDeviceId );
 	if( err != noErr ) {
@@ -361,8 +351,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	//UInt32 data = 1;
 	//AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_MeteringMode, kAudioUnitScope_Global, 0, &data, sizeof(data) );
 	
-	float defaultVolume = 0.5;
-	err = AudioUnitSetParameter( mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, defaultVolume, 0 );
+	err = AudioUnitSetParameter( mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, CINDER_DEFAULT_VOLUME, 0 );
 	if( err ) {
 		std::cout << "error setting default volume" << std::cout;
 	}
@@ -405,7 +394,7 @@ void OutputImplAudioUnit::removeTrack( TrackId trackId )
 float OutputImplAudioUnit::getVolume() const
 {
 	float aValue = 0.0;
-	OSStatus err = AudioUnitGetParameter( mMixerUnit, /*kStereoMixerParam_Volume*/kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, &aValue );
+	OSStatus err = AudioUnitGetParameter( mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, &aValue );
 	if( err ) {
 		//throw
 	}
@@ -415,7 +404,7 @@ float OutputImplAudioUnit::getVolume() const
 void OutputImplAudioUnit::setVolume( float aVolume )
 {
 	aVolume = math<float>::clamp( aVolume, 0.0, 1.0 );
-	OSStatus err = AudioUnitSetParameter( mMixerUnit, /*kStereoMixerParam_Volume*/kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, aVolume, 0 );
+	OSStatus err = AudioUnitSetParameter( mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, aVolume, 0 );
 	if( err ) {
 		//throw
 	}
