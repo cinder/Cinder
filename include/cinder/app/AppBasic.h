@@ -125,6 +125,11 @@ class AppBasic : public App {
 	//! Ceases execution of the application
 	virtual void		quit();
 
+#if defined( CINDER_MAC )
+	//! Returns a vector of the command line arguments passed to the app
+	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }
+#endif
+
 	//! Returns the path to the application on disk
 	virtual std::string			getAppPath();
 
@@ -165,7 +170,8 @@ class AppBasic : public App {
 	static AppBasic*	sInstance;
 
 #if defined( CINDER_MAC )
-	AppImplCocoaBasic		*mImpl;
+	AppImplCocoaBasic			*mImpl;
+	std::vector<std::string>	mCommandLineArgs;
 #elif defined( CINDER_MSW )
 	class AppImplMswBasic	*mImpl;
 	friend class AppImplMswBasic;

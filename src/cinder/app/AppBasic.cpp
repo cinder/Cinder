@@ -52,6 +52,12 @@ AppBasic::~AppBasic()
 void AppBasic::launch( const char *title, int argc, char * const argv[] )
 {
 	// We should parse args here eventually; on Windows we'll use ::GetCommandLineW & CommandLineToArgvW
+#if defined( CINDER_MAC )
+	for( int arg = 0; arg < argc; ++arg ) {
+		mCommandLineArgs.push_back( std::string( argv[arg] ) );
+	}
+#endif
+	
 	mSettings.setTitle( title );
 
 	prepareSettings( &mSettings );
