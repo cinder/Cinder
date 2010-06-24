@@ -125,10 +125,8 @@ class AppBasic : public App {
 	//! Ceases execution of the application
 	virtual void		quit();
 
-#if defined( CINDER_MAC )
 	//! Returns a vector of the command line arguments passed to the app
 	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }
-#endif
 
 	//! Returns the path to the application on disk
 	virtual std::string			getAppPath();
@@ -155,7 +153,11 @@ class AppBasic : public App {
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch() { App::prepareLaunch(); }
+#if defined( CINDER_MSW )
+	static void		executeLaunch( AppBasic *app, class Renderer *renderer, const char *title );
+#elif defined( CINDER_MAC )
 	static void		executeLaunch( AppBasic *app, class Renderer *renderer, const char *title, int argc, char * const argv[] ) { sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
+#endif
 	static void		cleanupLaunch() { App::cleanupLaunch(); }
 	
 	virtual void	launch( const char *title, int argc, char * const argv[] );
@@ -171,12 +173,13 @@ class AppBasic : public App {
 
 #if defined( CINDER_MAC )
 	AppImplCocoaBasic			*mImpl;
-	std::vector<std::string>	mCommandLineArgs;
 #elif defined( CINDER_MSW )
 	class AppImplMswBasic	*mImpl;
 	friend class AppImplMswBasic;
 #endif
 	
+	std::vector<std::string>	mCommandLineArgs;
+
 	std::vector<TouchEvent::Touch>		mActiveTouches; // list of currently active touches
 
 	Settings		mSettings;
@@ -202,7 +205,7 @@ class AppBasic : public App {
 		cinder::app::AppBasic::prepareLaunch();														\
 		cinder::app::AppBasic *app = new APP;														\
 		cinder::app::Renderer *ren = new RENDERER;													\
-		cinder::app::AppBasic::executeLaunch( app, ren, #APP, -1, 0 );								\
+		cinder::app::AppBasic::executeLaunch( app, ren, #APP );										\
 		cinder::app::AppBasic::cleanupLaunch();														\
 		return 0;																					\
 	}
