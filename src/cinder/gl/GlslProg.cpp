@@ -41,7 +41,8 @@ GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, Da
 {
 	mObj->mHandle = glCreateProgram();
 	
-	loadShader( vertexShader->getBuffer(), GL_VERTEX_SHADER_ARB );
+	if ( vertexShader )
+		loadShader( vertexShader->getBuffer(), GL_VERTEX_SHADER_ARB );
 	if( fragmentShader )
 		loadShader( fragmentShader->getBuffer(), GL_FRAGMENT_SHADER_ARB );
 	if( geometryShader )
@@ -55,7 +56,8 @@ GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const 
 {
 	mObj->mHandle = glCreateProgram();
 	
-	loadShader( vertexShader, GL_VERTEX_SHADER_ARB );
+	if ( vertexShader )
+		loadShader( vertexShader, GL_VERTEX_SHADER_ARB );
 	if( fragmentShader )
 		loadShader( fragmentShader, GL_FRAGMENT_SHADER_ARB );
 	if( geometryShader )

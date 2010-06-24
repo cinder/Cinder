@@ -40,8 +40,8 @@ void AudioGenerativeApp::sineWave( uint64_t inSampleOffset, uint32_t ioSampleCou
 	mPhaseAdjust = mPhaseAdjust * 0.95f + ( mFreqTarget / 44100.0f ) * 0.05f;
 	for( int  i = 0; i < ioSampleCount; i++ ) {
 		mPhase += mPhaseAdjust;
-		float r = mPhase - math<float>::floor( mPhase );
-		float val = math<float>::sin( r * 2.0f * M_PI );
+		mPhase = mPhase - math<float>::floor( mPhase );
+		float val = math<float>::sin( mPhase * 2.0f * M_PI );
 		
 		ioBuffer->mData[i*ioBuffer->mNumberChannels] = val;
 		ioBuffer->mData[i*ioBuffer->mNumberChannels + 1] = val;
