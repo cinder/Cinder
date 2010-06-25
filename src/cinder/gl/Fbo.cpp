@@ -84,7 +84,11 @@ Fbo::Format::Format()
 // Fbo
 void Fbo::init()
 {
+#if defined( CINDER_MSW )
 	static bool csaaSupported = ( GLEE_NV_framebuffer_multisample_coverage != 0 );
+#else
+	static bool csaaSupported = false;
+#endif
 	bool useCSAA = csaaSupported && ( mObj->mFormat.mCoverageSamples > mObj->mFormat.mSamples );
 	bool useMSAA = ( mObj->mFormat.mCoverageSamples > 0 ) || ( mObj->mFormat.mSamples > 0 );
 	if( useCSAA )
@@ -172,13 +176,13 @@ bool Fbo::initMultisample( bool csaa )
 	if( mObj->mFormat.mColorBuffer ) {
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mObj->mId );
 		glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, mObj->mColorRenderBufferId );
-		if( csaa ) {
+#if defined( CINDER_MSW )
+		if( csaa )
 			glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER_EXT, mObj->mFormat.mCoverageSamples, mObj->mFormat.mSamples, mObj->mFormat.mColorInternalFormat, mObj->mWidth, mObj->mHeight );
-		}
-		else {
+		else
+#endif
 			// create a regular MSAA color buffer
 			glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, mObj->mFormat.mSamples, mObj->mFormat.mColorInternalFormat, mObj->mWidth, mObj->mHeight );
-		}
 
 		// attach the multisampled color buffer
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, mObj->mColorRenderBufferId );
@@ -187,14 +191,14 @@ bool Fbo::initMultisample( bool csaa )
 	if( mObj->mFormat.mDepthBuffer ) {
 		glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, mObj->mDepthRenderBufferId );
 		// create the multisampled depth buffer (with or without coverage sampling)
-		if( csaa ) {
+#if defined( CINDER_MSW )
+		if( csaa )
 			// create a coverage sampled MSAA depth buffer
 			glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER_EXT, mObj->mFormat.mCoverageSamples, mObj->mFormat.mSamples, mObj->mFormat.mDepthInternalFormat, mObj->mWidth, mObj->mHeight );
-		}
-		else {
+		else
+#endif
 			// create a regular (not coverage sampled) MSAA depth buffer
 			glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, mObj->mFormat.mSamples, mObj->mFormat.mDepthInternalFormat, mObj->mWidth, mObj->mHeight );
-		}
 
 		// attach the depth buffer
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, mObj->mDepthRenderBufferId );
@@ -342,7 +346,7 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 GLint Fbo::getMaxSamples()
 {
 	if( sMaxSamples < 0 ) {
-		if( ( ! GLEE_EXT_framebuffer_multisample ) || ( ! GLEE_EXT_framebuffer_blit ) ) {
+		if( ( ! gl::isExtensionAvailable( "GL_EXT_framebuffer_multisample" ) ) || ( ! gl::isExtensionAvailable( "GLEE_EXT_framebuffer_blit" ) ) ) {
 			sMaxSamples = 0;
 		}
 		else

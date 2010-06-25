@@ -358,7 +358,6 @@
 		00CE73940E92DBE40059E09B /* gl.h in Headers */ = {isa = PBXBuildFile; fileRef = 00CE73920E92DBE40059E09B /* gl.h */; };
 		00CE73950E92DBE40059E09B /* GLee.h in Headers */ = {isa = PBXBuildFile; fileRef = 00CE73930E92DBE40059E09B /* GLee.h */; };
 		00CE73990E92DBF80059E09B /* gl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CE73970E92DBF80059E09B /* gl.cpp */; };
-		00CE739A0E92DBF80059E09B /* GLee.c in Sources */ = {isa = PBXBuildFile; fileRef = 00CE73980E92DBF80059E09B /* GLee.c */; };
 		00CFD92E1135C3520091E310 /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419CD0E8035D3004D34EB /* App.h */; };
 		00CFD92F1135C3520091E310 /* AppImplCocoaBasic.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419CE0E8035D3004D34EB /* AppImplCocoaBasic.h */; };
 		00CFD9301135C3520091E310 /* AppImplCocoaRendererGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419FA0E8036A7004D34EB /* AppImplCocoaRendererGl.h */; };
@@ -783,7 +782,6 @@
 		00CE73920E92DBE40059E09B /* gl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gl.h; path = gl/gl.h; sourceTree = "<group>"; };
 		00CE73930E92DBE40059E09B /* GLee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLee.h; path = gl/GLee.h; sourceTree = "<group>"; };
 		00CE73970E92DBF80059E09B /* gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl.cpp; path = gl/gl.cpp; sourceTree = "<group>"; };
-		00CE73980E92DBF80059E09B /* GLee.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = GLee.c; path = gl/GLee.c; sourceTree = "<group>"; };
 		00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00CFE371113B7C7C0091E310 /* ImageSourcePng.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSourcePng.cpp; sourceTree = "<group>"; };
 		00CFE373113B7C8C0091E310 /* ImageSourcePng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSourcePng.h; sourceTree = "<group>"; };
@@ -1273,7 +1271,6 @@
 				00E45D0A0E94792600B47EC2 /* Texture.cpp */,
 				00D9A07B0EA57C3F00FF5AEB /* GlslProg.cpp */,
 				00CE73970E92DBF80059E09B /* gl.cpp */,
-				00CE73980E92DBF80059E09B /* GLee.c */,
 				00C14F980ED51A2700549EF3 /* Fbo.cpp */,
 				008ACC5E0FACCB2200CAAF4D /* Vbo.cpp */,
 				00C150100ED6710500549EF3 /* Material.cpp */,
@@ -2040,7 +2037,6 @@
 				00241ABF0E830DD5004D34EB /* Camera.cpp in Sources */,
 				00241AC00E830DD5004D34EB /* Matrix.cpp in Sources */,
 				00CE73990E92DBF80059E09B /* gl.cpp in Sources */,
-				00CE739A0E92DBF80059E09B /* GLee.c in Sources */,
 				008CE83D0E94672E00644A05 /* Surface.cpp in Sources */,
 				008CE83E0E94672E00644A05 /* Channel.cpp in Sources */,
 				008CE8430E94679D00644A05 /* Area.cpp in Sources */,

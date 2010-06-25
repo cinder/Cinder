@@ -24,7 +24,10 @@
 
 #include "cinder/Cinder.h"
 
-#if ! defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_MAC )
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glext.h>
+#elif defined( CINDER_MSW )
 	#include "cinder/gl/GLee.h"
 #else
 	#define CINDER_GLES
@@ -60,6 +63,9 @@ namespace cinder {
 } // namespace cinder
 
 namespace cinder { namespace gl {
+
+//! Returns whether a particular OpenGL extension is available. Caches results
+bool isExtensionAvailable( const std::string &extName );
 
 //! Clears the OpenGL color buffer using \a color and optionally clears the depth buffer when \a clearDepthBuffer
 void clear( const ColorA &color = ColorA::black(), bool clearDepthBuffer = true );
@@ -251,8 +257,10 @@ struct SaveColorState {
 	GLfloat		mOldValues[4];
 };
 
+#if defined( CINDER_MSW )
 //! Initializes the GLee library. This is generally called automatically by the application and is only necessary if you need to use GLee before your app's setup() method is called.
 void initializeGlee();
+#endif
 
 } } // namespace cinder::gl 
 

@@ -41,8 +41,7 @@ GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, Da
 {
 	mObj->mHandle = glCreateProgram();
 	
-	if ( vertexShader )
-		loadShader( vertexShader->getBuffer(), GL_VERTEX_SHADER_ARB );
+	loadShader( vertexShader->getBuffer(), GL_VERTEX_SHADER_ARB );
 	if( fragmentShader )
 		loadShader( fragmentShader->getBuffer(), GL_FRAGMENT_SHADER_ARB );
 	if( geometryShader )
@@ -56,8 +55,7 @@ GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const 
 {
 	mObj->mHandle = glCreateProgram();
 	
-	if ( vertexShader )
-		loadShader( vertexShader, GL_VERTEX_SHADER_ARB );
+	loadShader( vertexShader, GL_VERTEX_SHADER_ARB );
 	if( fragmentShader )
 		loadShader( fragmentShader, GL_FRAGMENT_SHADER_ARB );
 	if( geometryShader )
@@ -78,9 +76,9 @@ void GlslProg::loadShader( Buffer shaderSourceBuffer, GLint shaderType )
 
 void GlslProg::loadShader( const char *shaderSource, GLint shaderType )
 {
-	GLhandleARB handle = glCreateShaderObjectARB( shaderType );
-	glShaderSource( (GLuint)handle, 1, reinterpret_cast<const GLchar**>( &shaderSource ), NULL );
-	glCompileShaderARB( handle );
+	GLuint handle = glCreateShader( shaderType );
+	glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &shaderSource ), NULL );
+	glCompileShader( handle );
 	
 	GLint status;
 	glGetShaderiv( (GLuint) handle, GL_COMPILE_STATUS, &status );
@@ -88,7 +86,7 @@ void GlslProg::loadShader( const char *shaderSource, GLint shaderType )
 		std::string log = getShaderLog( (GLuint)handle );
 		throw GlslProgCompileExc( log, shaderType );
 	}
-	glAttachObjectARB( mObj->mHandle, handle );
+	glAttachShader( mObj->mHandle, handle );
 }
 
 void GlslProg::link()
