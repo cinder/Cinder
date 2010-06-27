@@ -57,7 +57,7 @@ static GWorldPtr sDefaultGWorld;
 ::Movie openMovieFromUrl( const	Url &url );
 ::Movie openMovieFromPath( const std::string &path );
 
-static void startQuickTime()
+void startQuickTime()
 {
 	static bool initialized = false;
 	

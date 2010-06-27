@@ -46,15 +46,19 @@ class StreamBase : private boost::noncopyable {
 	static uint8_t		getNativeEndianness()
 #ifdef CINDER_LITTLE_ENDIAN
 		{ return STREAM_LITTLE_ENDIAN; }
- #else
+#else
 		{ return STREAM_BIG_ENDIAN; }
- #endif	
+#endif
  
 	//! Returns the file name of the path from which a Stream originated when relevant. Empty string when undefined.
-  	const std::string&		getFileName() const { return mFileName; }
-
+  	const std::string&	getFileName() const { return mFileName; }
 	//! Sets the file name of the path from which a Stream originated when relevant. Empty string when undefined.
-	void					setFileName( const std::string &aFileName ) { mFileName = aFileName; }
+	void				setFileName( const std::string &aFileName ) { mFileName = aFileName; }
+
+	//! Returns whether the Stream has been requested to destroy its source upon its own destruction. For example, IStreamFile will delete its source file. Ignored in some types of streams. Defaults to \c false.
+	bool		getDeleteOnDestroy() const { return mDeleteOnDestroy; }
+	//! Sets whether the Stream has been requested to destroy its source upon its own destruction. For example, IStreamFile will delete its source file. Ignored in some types of streams. Defaults to \c false.
+	void		setDeleteOnDestroy( bool enable = true ) { mDeleteOnDestroy = enable; }
 
 	//! Returns the current position of the stream measured in bytes **/
 	virtual off_t		tell() const = 0;
@@ -66,9 +70,10 @@ class StreamBase : private boost::noncopyable {
 	virtual void		seekRelative( off_t relativeOffset ) = 0;
  
  protected:
-	StreamBase() {}
+	StreamBase() : mDeleteOnDestroy( false ) {}
 
 	std::string				mFileName;
+	bool					mDeleteOnDestroy;
 };
 
 class OStream : public virtual StreamBase {

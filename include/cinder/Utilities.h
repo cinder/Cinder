@@ -35,14 +35,21 @@ std::string expandPath( const std::string &path );
 std::string getHomeDirectory();
 //! Returns a path to the user's documents directory.
 std::string getDocumentsDirectory();
+//! Returns a path to the user's temporary directory.
+std::string getTemporaryDirectory();
+//! Returns a path that is gauranteed to be unique and is suitable for creating a temporary file. An optional \a prefix parameters allows specification of a file name prefix, some portion of which will be incorporated into the result. Note a race condition that can exist between the uniqueness of the path and the creation of the file.
+std::string getTemporaryFilePath( const std::string &prefix = "" );
 //! Returns the directory portion of file path \a path, the last component of which must be a file name or a terminating path separator. 
 std::string getPathDirectory( const std::string &path );
-//! Returns the file name portion of file path \a path. For example "C:\Images\Beyonce.jpg" returns "Beyonce.jpg".
+//! Returns the file name portion of file path \a path. For example \c "C:\Images\Beyonce.jpg" returns \c "Beyonce.jpg".
 std::string getPathFileName( const std::string &path );
 //! Returns the file extension of the file located at \a path
 std::string getPathExtension( const std::string &path );
 //! Creates a directory at \a path and optionally creates any missing parent directories when \a createParents is \c true. Returns \c true upon success.
 bool createDirectories( const std::string &path, bool createParents = true );
+
+//! Delete the file at \a path. Fails quietly if the path does not exist.
+void deleteFile( const std::string &path );
 
 //! Returns a utf-16 encoded std::wstring by converting the utf-8 encoded string \a utf8
 std::wstring toUtf16( const std::string &utf8 );

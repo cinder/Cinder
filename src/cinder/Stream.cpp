@@ -164,6 +164,8 @@ IStreamFile::~IStreamFile()
 {
 	if( mOwnsFile )
 		fclose( mFile );
+	if( mDeleteOnDestroy && ( ! mFileName.empty() ) )
+		deleteFile( mFileName );
 }
 
 size_t IStreamFile::readDataAvailable( void *dest, size_t maxSize )
@@ -249,7 +251,7 @@ OStreamFileRef OStreamFile::createRef( FILE *file, bool ownsFile )
 }
 
 OStreamFile::OStreamFile( FILE *aFile, bool aOwnsFile )
-	: mFile( aFile ), mOwnsFile( aOwnsFile )
+	: OStream(), mFile( aFile ), mOwnsFile( aOwnsFile )
 {
 }
 
@@ -257,6 +259,8 @@ OStreamFile::~OStreamFile()
 {
 	if ( mOwnsFile )
 		fclose( mFile );
+	if( mDeleteOnDestroy && ( ! mFileName.empty() ) )
+		deleteFile( mFileName );
 }
 
 off_t OStreamFile::tell() const
@@ -292,7 +296,7 @@ IoStreamFileRef IoStreamFile::createRef( FILE *file, bool ownsFile, int32_t defa
 }
 
 IoStreamFile::IoStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
-	: mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
+	: IoStream(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
 	mBuffer = shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
 	mBufferFileOffset = std::numeric_limits<off_t>::min();
@@ -302,8 +306,10 @@ IoStreamFile::IoStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferS
 
 IoStreamFile::~IoStreamFile()
 {
-	if ( mOwnsFile )
+	if( mOwnsFile )
 		fclose( mFile );
+	if( mDeleteOnDestroy && ( ! mFileName.empty() ) )
+		deleteFile( mFileName );
 }
 
 size_t IoStreamFile::readDataAvailable( void *dest, size_t maxSize )

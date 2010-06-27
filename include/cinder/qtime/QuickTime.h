@@ -335,6 +335,8 @@ class MovieLoader {
 	//@}
 };
 
+//! Initializes QuickTime system-wide. Safe to call multiple times.
+void startQuickTime();
 //! Returns 0 if QuickTime is not available, otherwise an integer encoding of the QuickTime version. QuickTime 6.4 returns \c 0x06408000, (\c 0x00008000 suffix denotes a shipping release of QuickTime)
 extern int32_t getQuickTimeVersion();
 //! Returns an empty string if QuickTime is not available, otherwise a human readable string of the QuickTime version. QuickTime 6.4 returns \c "6.4"

@@ -381,6 +381,9 @@
     <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -718,6 +721,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h">
       <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h">
+      <Filter>Header Files\qtime</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

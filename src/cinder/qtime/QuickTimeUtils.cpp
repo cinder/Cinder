@@ -20,22 +20,27 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if ! defined( __LP64__ )
-
 #include "cinder/gl/gl.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 #include "cinder/qtime/QuickTime.h"
 
 #if defined( CINDER_MSW )
-#	include <CVPixelBuffer.h>
-#	include <ImageCompression.h>
-#	include <Movies.h>
-#	include <QuickTimeComponents.h>
+	#include <CVPixelBuffer.h>
+	#include <ImageCompression.h>
+	#include <Movies.h>
+	#include <QuickTimeComponents.h>
+#else
+	#include <QuickTime/QuickTime.h>
+	#include <ApplicationServices/ApplicationServices.h>
+	#include <QuickTime/ImageCompression.h>
+	#include <CoreVideo/CoreVideo.h>
 #endif
 
 using namespace std;
 
 namespace cinder { namespace qtime {
+
+#if ! defined( __LP64__ )
 
 bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 value )
 {
@@ -412,6 +417,199 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 	return result;
 }
 
-} } // namespace cinder::qtime
+#endif // ! defined( __LP64__ )
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// ImageTargetCgImage
+ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef imageSource, bool convertToYpCbCr )
+{
+	return ImageTargetCvPixelBufferRef( new ImageTargetCvPixelBuffer( imageSource, convertToYpCbCr ) );
+}
+
+ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
+	: ImageTarget(), mPixelBufferRef( 0 ), mConvertToYpCbCr( convertToYpCbCr )
+{
+	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
+	
+	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
+	
+	// if we're converting to YCbCr, we'll load all of the data as RGB in terms of ci::ImageIo
+	// but we run color space conversion over it later in the finalize method
+	OSType formatType;
+	if( ! mConvertToYpCbCr ) {
+		switch( imageSource->getDataType() ) {
+			// for now all we support is 8 bit RGB(A)
+			case ImageIo::UINT16:
+			case ImageIo::FLOAT32:
+			case ImageIo::UINT8:
+				setDataType( ImageIo::UINT8 );
+				if( imageSource->hasAlpha () ) {
+					formatType = k32ARGBPixelFormat;
+					setChannelOrder( ImageIo::ARGB );
+				}
+				else {
+					formatType = k24RGBPixelFormat;
+					setChannelOrder( ImageIo::RGB );
+				}
+				setColorModel( ImageIo::CM_RGB );
+			break;
+			default:
+				throw ImageIoException();
+		}
+	}
+	else {
+		formatType = 'v408';/*k4444YpCbCrA8PixelFormat;*/
+		setDataType( ImageIo::UINT8 );
+		setChannelOrder( ImageIo::RGBA );
+		setColorModel( ImageIo::CM_RGB );
+	}
+
+	if( ::CVPixelBufferCreate( kCFAllocatorDefault, imageSource->getWidth(), imageSource->getHeight(), 
+				formatType, NULL, &mPixelBufferRef ) != kCVReturnSuccess )
+		throw ImageIoException();
+	
+	if( ::CVPixelBufferLockBaseAddress( mPixelBufferRef, 0 ) != kCVReturnSuccess )
+		throw ImageIoException();
+	mData = reinterpret_cast<uint8_t*>( ::CVPixelBufferGetBaseAddress( mPixelBufferRef ) );
+	mRowBytes = ::CVPixelBufferGetBytesPerRow( mPixelBufferRef );
+}
+
+ImageTargetCvPixelBuffer::~ImageTargetCvPixelBuffer()
+{
+	if( mPixelBufferRef ) {
+		::CVPixelBufferUnlockBaseAddress( mPixelBufferRef, 0 );
+		::CVPixelBufferRelease( mPixelBufferRef );
+	}
+}
+
+void* ImageTargetCvPixelBuffer::getRowPointer( int32_t row )
+{
+	return &mData[row * mRowBytes];
+}
+
+void ImageTargetCvPixelBuffer::finalize()
+{
+	switch( ::CVPixelBufferGetPixelFormatType( mPixelBufferRef ) ) {
+		case 'v408':/*k4444YpCbCrA8PixelFormat:*/
+			convertDataToAYpCbCr();
+			::CVBufferSetAttachment( mPixelBufferRef, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_601_4, kCVAttachmentMode_ShouldPropagate );
+		break;
+		case 'v308':/*k444YpCbCr8CodecType:*/
+			convertDataToYpCbCr();
+			::CVBufferSetAttachment( mPixelBufferRef, kCVImageBufferYCbCrMatrixKey, kCVImageBufferYCbCrMatrix_ITU_R_601_4, kCVAttachmentMode_ShouldPropagate );
+		break;
+	}
+}
+
+// Assumes RGB order 8 bit unsinged input, results in Rec. 601 YpCbCr
+void ImageTargetCvPixelBuffer::convertDataToYpCbCr()
+{
+	for( uint32_t y = 0; y < mHeight; ++y ) {
+		uint8_t *data = reinterpret_cast<uint8_t*>( getRowPointer( y ) );
+		for( uint32_t x = 0; x < mWidth; ++x ) {
+			float r = data[x*3+0] / 255.0f;
+			float g = data[x*3+1] / 255.0f;
+			float b = data[x*3+2] / 255.0f;
+			uint8_t yp = 16 + ( 65.481f * r + 128.553f * g + 24.966f * b );
+			uint8_t cb = 128 + ( -37.797f * r + -74.203f * g + 112 * b );
+			uint8_t cr = 128 + ( 112 * r + -93.786f * g + -18.214f * b );
+			data[x*3+0] = yp;
+			data[x*3+1] = cb;
+			data[x*3+2] = cr;
+		}
+	}
+}
+
+// Assumes RGBA order 8 bit unsigned input, results in Rec. 601 YpCbCrA
+void ImageTargetCvPixelBuffer::convertDataToAYpCbCr()
+{
+	for( uint32_t y = 0; y < mHeight; ++y ) {
+		uint8_t *data = reinterpret_cast<uint8_t*>( getRowPointer( y ) );
+		for( uint32_t x = 0; x < mWidth; ++x ) {
+			float r = data[x*4+0] / 255.0f;
+			float g = data[x*4+1] / 255.0f;
+			float b = data[x*4+2] / 255.0f;
+			uint8_t yp = 16 + ( 65.481f * r + 128.553f * g + 24.966f * b );
+			uint8_t cb = 128 + ( -37.797f * r + -74.203f * g + 112 * b );
+			uint8_t cr = 128 + ( 112 * r + -93.786f * g + -18.214f * b );
+			data[x*4+0] = cb;
+			data[x*4+1] = yp;
+			data[x*4+2] = cr;
+		}
+	}
+}
+
+CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
+{
+	ImageTargetCvPixelBufferRef target = ImageTargetCvPixelBuffer::createRef( imageSource, convertToYpCbCr );
+	imageSource->load( target );
+	target->finalize();
+	::CVPixelBufferRef result( target->getCvPixelBuffer() );
+	::CVPixelBufferRetain( result );
+	return result;
+}
+
+#if ! defined( __LP64__ )
+///////////////////////////////////////////////////////////////////////////////////////////////
+// ImageTargetGWorld
+ImageTargetGWorldRef ImageTargetGWorld::createRef( ImageSourceRef imageSource )
+{
+	return ImageTargetGWorldRef( new ImageTargetGWorld( imageSource ) );
+}
+
+ImageTargetGWorld::ImageTargetGWorld( ImageSourceRef imageSource )
+	: ImageTarget(), mGWorld( 0 ), mPixMap( 0 )
+{
+	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
+	
+	OSType formatType;
+	// for now all we support is 8 bit RGBA
+	setDataType( ImageIo::UINT8 );
+	formatType = k32ARGBPixelFormat;
+	setChannelOrder( ImageIo::ARGB );
+	setColorModel( ImageIo::CM_RGB );
+
+	::Rect boundsRect;
+	boundsRect.left = boundsRect.top = 0;
+	boundsRect.right = (short)imageSource->getWidth();
+	boundsRect.bottom = (short)imageSource->getHeight();
+	if( ::QTNewGWorld( &mGWorld, formatType, &boundsRect, NULL, NULL, 0 ) != noErr )
+		throw ImageIoException();
+	
+	mPixMap = ::GetGWorldPixMap( mGWorld );
+    if( ! ::LockPixels( mPixMap ) ) {
+		::DisposeGWorld( mGWorld );
+        throw ImageIoException();
+	}
+
+#if defined( CINDER_MSW )
+	mData = reinterpret_cast<uint8_t*>( (**mPixMap).baseAddr );
+	mRowBytes = ( (**mPixMap).rowBytes ) & 0x3FFF;
+#else
+	mData = reinterpret_cast<uint8_t*>( ::GetPixBaseAddr( mPixMap ) );
+	mRowBytes = ::GetPixRowBytes( mPixMap );
+#endif
+}
+
+void ImageTargetGWorld::finalize()
+{
+	if( ::GetPixelsState( mPixMap ) & pixelsLocked )
+		::UnlockPixels( mPixMap );
+}
+
+void* ImageTargetGWorld::getRowPointer( int32_t row )
+{
+	return &mData[row * mRowBytes];
+}
+
+GWorldPtr createGWorld( ImageSourceRef imageSource )
+{
+	ImageTargetGWorldRef target = ImageTargetGWorld::createRef( imageSource );
+	imageSource->load( target );
+	target->finalize();
+	return target->getGWorld();
+}
 
 #endif // ! defined( __LP64__ )
+
+} } // namespace cinder::qtime

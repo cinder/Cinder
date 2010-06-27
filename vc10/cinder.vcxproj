@@ -118,6 +118,7 @@
     <ClCompile Include="..\src\cinder\Path2D.cpp" />
     <ClCompile Include="..\src\cinder\Perlin.cpp" />
     <ClCompile Include="..\src\cinder\PolyLine.cpp" />
+    <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp" />
     <ClCompile Include="..\src\cinder\Rand.cpp" />
     <ClCompile Include="..\src\cinder\Rect.cpp" />
     <ClCompile Include="..\src\cinder\Serial.cpp" />
@@ -198,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
+    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
     <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h" />
