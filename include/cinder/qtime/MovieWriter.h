@@ -107,7 +107,7 @@ class MovieWriter {
 		ICMCompressionSessionOptionsRef		mOptions;
 
 		friend class MovieWriter;
-		friend class Obj;
+		friend struct Obj;
 	};
 
 
