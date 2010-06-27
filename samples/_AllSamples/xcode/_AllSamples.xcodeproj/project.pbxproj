@@ -58,6 +58,7 @@
 				0039FB43115AD34700BA0BAD /* PBXTargetDependency */,
 				0039FB53115AD3A200BA0BAD /* PBXTargetDependency */,
 				005930E11185637100C890F2 /* PBXTargetDependency */,
+				006A1FCA11D7F87600941A5E /* PBXTargetDependency */,
 			);
 			name = Samples;
 			productName = Samples;
@@ -520,6 +521,20 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = AudioGenerative;
 		};
+		006A1FC611D7F86000941A5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* QuickTimeWriter.app */;
+			remoteInfo = QuickTimeWriter;
+		};
+		006A1FC911D7F87600941A5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090 /* QuickTimeWriter */;
+			remoteInfo = QuickTimeWriter;
+		};
 		00705E731018F3F700DD615B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */;
@@ -737,6 +752,7 @@
 		0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Buddhabrot.xcodeproj; path = ../../Buddhabrot/xcode/Buddhabrot.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HodginParticlesRedux.xcodeproj; path = ../../HodginParticlesRedux/xcode/HodginParticlesRedux.xcodeproj; sourceTree = SOURCE_ROOT; };
 		005930D31185636300C890F2 /* AudioGenerative.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioGenerative.xcodeproj; path = ../../AudioGenerative/xcode/AudioGenerative.xcodeproj; sourceTree = SOURCE_ROOT; };
+		006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeWriter.xcodeproj; path = ../../QuickTimeWriter/xcode/QuickTimeWriter.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageHeightField.xcodeproj; path = ../../ImageHeightField/xcode/ImageHeightField.xcodeproj; sourceTree = SOURCE_ROOT; };
 		007BDE071118921D00BC750C /* RDiffusion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RDiffusion.xcodeproj; path = ../../RDiffusion/xcode/RDiffusion.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SurfaceBasic.xcodeproj; path = ../../SurfaceBasic/xcode/SurfaceBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -756,6 +772,7 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */,
 				005930D31185636300C890F2 /* AudioGenerative.xcodeproj */,
 				0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */,
 				0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */,
@@ -1061,6 +1078,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		006A1FBE11D7F85F00941A5E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006A1FC711D7F86000941A5E /* QuickTimeWriter.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		00705E6C1018F3F700DD615B /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1303,6 +1328,10 @@
 				{
 					ProductGroup = 00F5014710CD9FEB002CB18B /* Products */;
 					ProjectRef = 00F5014610CD9FEB002CB18B /* quickTimeSample.xcodeproj */;
+				},
+				{
+					ProductGroup = 006A1FBE11D7F85F00941A5E /* Products */;
+					ProjectRef = 006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005CA1310068210004D82BC /* Products */;
@@ -1596,6 +1625,13 @@
 			remoteRef = 005930DA1185636300C890F2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		006A1FC711D7F86000941A5E /* QuickTimeWriter.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = QuickTimeWriter.app;
+			remoteRef = 006A1FC611D7F86000941A5E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		00705E741018F3F700DD615B /* ImageHeightField.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -1849,6 +1885,11 @@
 			isa = PBXTargetDependency;
 			name = AudioGenerative;
 			targetProxy = 005930E01185637100C890F2 /* PBXContainerItemProxy */;
+		};
+		006A1FCA11D7F87600941A5E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = QuickTimeWriter;
+			targetProxy = 006A1FC911D7F87600941A5E /* PBXContainerItemProxy */;
 		};
 		007BDE131118924E00BC750C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
