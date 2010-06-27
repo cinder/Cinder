@@ -130,7 +130,7 @@ class MovieWriter {
 	//! Returns the Movie's Format
 	const Format&	getFormat() const { return mObj->mFormat; }
 
-	/** \brief Presents the user with the standard compression options dialog. Optional \a previewImage provides a still image as a preview. Returns \c false if user cancelled.
+	/** \brief Presents the user with the standard compression options dialog. Optional \a previewImage provides a still image as a preview (currently ignored on Mac OS X). Returns \c false if user cancelled.
 		\image html qtime/MovieWriter/qtime_settings_small.png **/
 	static bool		getUserCompressionSettings( Format *result, ImageSourceRef previewImage = ImageSourceRef() );
 

@@ -526,6 +526,7 @@ bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef ima
 	}
 
 	// build a preview image
+#if defined( CINDER_MSW )	
 	GWorldPtr previewImageGWorld = 0;
 	PixMapHandle previewImagePixMap = 0;
 	if( imageSource ) {
@@ -538,17 +539,19 @@ bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef ima
 		}*/
 		::SCSetTestImagePixMap( stdCompression, previewImagePixMap, NULL, scPreferScaling );
 	}
+#endif
 
 	// display the standard compression dialog box
 	err = ::SCRequestSequenceSettings( stdCompression );
 
 	// before we do anything else, let's free up our preview image resources
+#if defined( CINDER_MSW )
 	if( previewImagePixMap )
         if( ::GetPixelsState( previewImagePixMap ) & pixelsLocked )
             ::UnlockPixels( previewImagePixMap );
 	if( previewImageGWorld )
 		::DisposeGWorld( previewImageGWorld );
-
+#endif
 	// now process the result
 	if( err ) {
 	    if( stdCompression )
