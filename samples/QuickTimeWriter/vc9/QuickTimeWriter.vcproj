@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="QuickTimeWriter"
-	ProjectGUID="{9DA00FEA-5218-413E-B762-35D91045B3B4}"
+	ProjectGUID="{2CF87810-F4F2-4065-8B01-3E3FAFB253D2}"
 	RootNamespace="QuickTimeWriter"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
