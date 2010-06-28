@@ -151,7 +151,7 @@ Texture::Texture( const Channel8u &channel, Format format )
 	: mObj( shared_ptr<Obj>( new Obj( channel.getWidth(), channel.getHeight() ) ) )
 {
 	if( format.mInternalFormat < 0 )
-		mObj->mInternalFormat = GL_LUMINANCE;
+		format.mInternalFormat = GL_LUMINANCE;
 
 	mObj->mInternalFormat = format.mInternalFormat;
 	mObj->mTarget = format.mTarget;
