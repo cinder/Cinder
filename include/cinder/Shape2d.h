@@ -40,6 +40,10 @@ class Shape2d {
 	void	quadTo( float x1, float y1, float x2, float y2 ) { quadTo( Vec2f( x1, y1 ), Vec2f( x2, y2 ) ); }
 	void	curveTo( const Vec2f &p1, const Vec2f &p2, const Vec2f &p3 );
 	void	curveTo( float x1, float y1, float x2, float y2, float x3, float y3 ) { curveTo( Vec2f( x1, y1 ), Vec2f( x2, y2 ), Vec2f( x3, y3 ) ); }
+	void	arc( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward = true );
+	void	arc( float centerX, float centerY, float radius, float startRadians, float endRadians, bool forward = true ) { arc( Vec2f( centerX, centerY ), radius, startRadians, endRadians, forward ); }
+	void	arcTo( const Vec2f &p, const Vec2f &t, float radius );
+	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( Vec2f( x, y ), Vec2f( tanX, tanY ), radius ); }
 	void	close();
 	
 	bool	empty() const { return mContours.empty(); }

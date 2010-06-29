@@ -49,6 +49,16 @@ void Shape2d::curveTo( const Vec2f &p1, const Vec2f &p2, const Vec2f &p3 )
 	mContours.back().curveTo( p1, p2, p3 );
 }
 
+void Shape2d::arc( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward )
+{
+	mContours.back().arc( center, radius, startRadians, endRadians, forward );
+}
+
+void Shape2d::arcTo( const Vec2f &p, const Vec2f &t, float radius )
+{
+	mContours.back().arcTo( p, t, radius );
+}
+
 void Shape2d::close()
 {
 	mContours.back().close();

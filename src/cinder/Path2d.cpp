@@ -246,21 +246,8 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 {
 	if( isClosed() || empty() ) // Do nothing if path is closed or segment list is empty.
 		return;
-	
-	/*
-	 *               b3    p1
-	 *   t  x.....__--o.....x
-	 *      :  _/
-	 *      : /
-	 *      :/
-	 *      |
-	 *   b0 o         x c
-	 *      |
-	 *      |
-	 *      |
-	 *      |
-	 *   p0 o
-	 */
+
+	const float epsilon = 1e-8;
 	
 	// Get current point.
 	const Vec2f& p0 = getCurrentPoint();
@@ -288,18 +275,18 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 	const float denominator = sqrt( p0tSquare * p1tSquare ) - ( p0t.x * p1t.x + p0t.y * p1t.y );
 	
 	// The denominator is zero <=> p0 and p1 are colinear.
-	if( fabs( denominator ) < 1e-8 ) {
+	if( math<float>::abs( denominator ) < epsilon ) {
 		lineTo( t );
 	}
 	else {
 		// |b0 - t| = |b3 - t| = radius * tan(a/2).
-		const float distanceFromT = fabs( radius * numerator / denominator );
+		const float distanceFromT = math<float>::abs( radius * numerator / denominator );
 		
 		// b0 = t + |b0 - t| * (p0 - t)/|p0 - t|.
 		const Vec2f b0 = t + distanceFromT * p0t.normalized();
 		
 		// If b0 deviates from p0, add a line to it.
-		if( math<float>::abs(b0.x - p0.x) > 1e-8 || math<float>::abs(b0.y - p0.y) > 1e-8 ) {
+		if( math<float>::abs(b0.x - p0.x) > epsilon || math<float>::abs(b0.y - p0.y) > epsilon ) {
 			lineTo( b0 );
 		}
 		
@@ -316,7 +303,7 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 		double fraction;
 		
 		// Assume dist = radius = 0 if the radius is very small.
-		if( math<double>::abs( radiusSquare / b0tSquare ) < 1e-8 )
+		if( math<double>::abs( radiusSquare / b0tSquare ) < epsilon )
 			fraction = 0.0;
 		else
 			fraction = ( 4.0 / 3.0 ) / ( 1.0 + math<double>::sqrt( 1.0 + b0tSquare / radiusSquare ) );
