@@ -36,7 +36,7 @@ Timer::Timer()
 #elif defined( CINDER_MSW )
 	::LARGE_INTEGER nativeFreq;
 	::QueryPerformanceFrequency( &nativeFreq );
-	mInvNativeFreq = 1.0 / (double)(*((__int64*)&nativeFreq));
+	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
 #endif
 }
@@ -49,7 +49,7 @@ Timer::Timer( bool startOnConstruction )
 #elif defined( CINDER_MSW )
 	::LARGE_INTEGER nativeFreq;
 	::QueryPerformanceFrequency( &nativeFreq );
-	mInvNativeFreq = 1.0 / (double)(*((__int64*)&nativeFreq));
+	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
 #endif
 	if( startOnConstruction ) {
@@ -64,7 +64,7 @@ void Timer::start()
 #elif defined( CINDER_MSW )
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
-	mStartTime = ((double)(*((__int64*)&rawTime))) * mInvNativeFreq;
+	mStartTime = rawTime.QuadPart * mInvNativeFreq;
 #endif
 
 	mIsStopped = false;
@@ -80,7 +80,7 @@ double Timer::getSeconds() const
 #elif defined( CINDER_MSW )
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
-	return (((double)(*((__int64*)&rawTime))) * mInvNativeFreq) - mStartTime;
+	return (rawTime.QuadPart * mInvNativeFreq) - mStartTime;
 #endif
 	}
 }
@@ -93,7 +93,7 @@ void Timer::stop()
 #elif defined( CINDER_MSW )
 		::LARGE_INTEGER rawTime;
 		::QueryPerformanceCounter( &rawTime );
-		mEndTime = ((double)(*((__int64*)&rawTime))) * mInvNativeFreq;		
+		mEndTime = rawTime.QuadPart * mInvNativeFreq;
 #endif
 		mIsStopped = true;
 	}
