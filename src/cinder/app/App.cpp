@@ -196,6 +196,7 @@ DataSourcePathRef App::loadResource( const std::string &macPath )
 		return DataSourcePath::createRef( resourcePath );
 }
 #else
+
 DataSourceBufferRef App::loadResource( int mswID, const std::string &mswType )
 {
 	return DataSourceBuffer::createRef( AppImplMsw::loadResource( mswID, mswType ) );
@@ -204,7 +205,7 @@ DataSourceBufferRef App::loadResource( int mswID, const std::string &mswType )
 #endif
 
 #if defined( CINDER_COCOA )
-string App::getResourcePath( const std::string &rsrcRelativePath ) const
+string App::getResourcePath( const std::string &rsrcRelativePath )
 {
 	string path = getPathDirectory( rsrcRelativePath );
 	string fileName = getPathFileName( rsrcRelativePath );
@@ -223,7 +224,7 @@ string App::getResourcePath( const std::string &rsrcRelativePath ) const
 	return string([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
-string App::getResourcePath() const
+string App::getResourcePath()
 {
 	char path[4096];
 	
