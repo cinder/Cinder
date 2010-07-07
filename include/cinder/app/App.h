@@ -214,11 +214,17 @@ class App {
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
 	
 	// utilities
+	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa CinderResources
 	static DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType );
 #if defined( CINDER_COCOA )
+	//! Returns a DataSourceRef to an application resource. \a macPath is a path relative to the bundle's resources folder. \sa CinderResources
 	static DataSourcePathRef	loadResource( const std::string &macPath );
-	std::string					getResourcePath( const std::string &rsrcRelativePath );
+	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. \sa CinderResources
+	std::string					getResourcePath( const std::string &rsrcRelativePath ) const;
+	//! Returns the absolute file path to the bundle's resources folder. \sa CinderResources
+	std::string					getResourcePath() const;
 #else
+	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa CinderResources
 	static DataSourceBufferRef	loadResource( int mswID, const std::string &mswType );
 #endif
 	
