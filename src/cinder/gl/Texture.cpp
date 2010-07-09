@@ -249,8 +249,6 @@ void Texture::init( const unsigned char *data, int unpackRowLength, GLenum dataF
 
 	glGenTextures( 1, &mObj->mTextureID );
 
-	glEnable( mObj->mTarget );
-
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_S, format.mWrapS );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
@@ -281,8 +279,6 @@ void Texture::init( const float *data, GLint dataFormat, const Format &format )
 	mObj->mDoNotDispose = false;
 
 	glGenTextures( 1, &mObj->mTextureID );
-
-	glEnable( mObj->mTarget );
 
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_S, format.mWrapS );
@@ -383,7 +379,6 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	}
 
 	glGenTextures( 1, &mObj->mTextureID );
-	glEnable( mObj->mTarget );
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_S, format.mWrapS );
@@ -686,7 +681,6 @@ Texture Texture::loadDds( IStreamRef ddsStream, Format format )
 		result.mObj->mHeight = height;
 		result.mObj->mInternalFormat = dataFormat;
 
-		glEnable( result.mObj->mTarget );
 		glBindTexture( result.mObj->mTarget, result.mObj->mTextureID );
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
@@ -738,25 +732,21 @@ void Texture::setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDealloca
 
 void Texture::setWrapS( GLenum wrapS )
 {
-	enableAndBind();
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_S, wrapS );
 }
 
 void Texture::setWrapT( GLenum wrapT )
 {
-	enableAndBind();
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, wrapT );
 }
 
 void Texture::setMinFilter( GLenum minFilter )
 {
-	enableAndBind();
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MIN_FILTER, minFilter );
 }
 
 void Texture::setMagFilter( GLenum magFilter )
 {
-	enableAndBind();
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, magFilter );
 }
 
