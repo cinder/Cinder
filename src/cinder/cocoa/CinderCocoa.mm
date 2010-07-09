@@ -77,6 +77,16 @@ void SafeNsData::safeRelease( const NSData *ptr )
 		[ptr release];
 }
 
+SafeNsAutoreleasePool::SafeNsAutoreleasePool()
+{
+	mPool = [[NSAutoreleasePool alloc] init];
+}
+
+SafeNsAutoreleasePool::~SafeNsAutoreleasePool()
+{
+	[((NSAutoreleasePool*)mPool) release];
+}
+
 void safeCfRelease( const CFTypeRef cfRef )
 {
 	if( cfRef != NULL )

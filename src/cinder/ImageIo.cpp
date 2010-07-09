@@ -29,6 +29,8 @@
 #if defined( CINDER_MSW )
 	#include "cinder/ImageSourceFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
 	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
+#elif defined( CINDER_COCOA )
+	#include "cinder/cocoa/CinderCocoa.h"
 #endif
 
 using namespace std;
@@ -372,6 +374,10 @@ void writeImage( const std::string &path, const ImageSourceRef &imageSource, std
 
 void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, string extension )
 {
+#if defined( CINDER_COCOA ) // this is necessary to limit the lifetime of the objc-based loader's allocations
+	cocoa::SafeNsAutoreleasePool autorelease;
+#endif
+
 	if( extension.empty() )
 		extension = getPathExtension( dataTarget->getFilePathHint() );
 	
