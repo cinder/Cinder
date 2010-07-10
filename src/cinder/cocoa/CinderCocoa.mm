@@ -84,7 +84,7 @@ SafeNsAutoreleasePool::SafeNsAutoreleasePool()
 
 SafeNsAutoreleasePool::~SafeNsAutoreleasePool()
 {
-	[((NSAutoreleasePool*)mPool) release];
+	[((NSAutoreleasePool*)mPool) drain];
 }
 
 void safeCfRelease( const CFTypeRef cfRef )
@@ -490,33 +490,27 @@ ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource )
 		}
 	}
 	
-	mData = new uint8_t[mHeight * mRowBytes];
+	mDataRef = ::CFDataCreateMutable( kCFAllocatorDefault, mHeight * mRowBytes );
+	::CFDataIncreaseLength( mDataRef, mHeight * mRowBytes );
+	mDataPtr = ::CFDataGetMutableBytePtr( mDataRef );
 }
 
 ImageTargetCgImage::~ImageTargetCgImage()
 {
+	::CFRelease( mDataRef );
 	if( mImageRef )
 		::CGImageRelease( mImageRef );
 }
 
 void* ImageTargetCgImage::getRowPointer( int32_t row )
 {
-	return &mData[row * mRowBytes];
+	return &mDataPtr[row * mRowBytes];
 }
-
-namespace {
-
-extern "C" void ImageTargetCgImageDeallocator( void *info, const void *data, size_t size ) 
-{
-	delete [] reinterpret_cast<const uint8_t*>( data );
-}
-
-} // anonymous namespace
 
 void ImageTargetCgImage::finalize()
 {
 	shared_ptr<CGColorSpace> colorSpaceRef( ( mColorModel == ImageIo::CM_GRAY ) ? ::CGColorSpaceCreateDeviceGray() : ::CGColorSpaceCreateDeviceRGB(), ::CGColorSpaceRelease );
-	shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( NULL, mData, mHeight * mRowBytes, ImageTargetCgImageDeallocator ), ::CGDataProviderRelease );
+	shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithCFData( mDataRef ), ::CGDataProviderRelease );
 
 	mImageRef = ::CGImageCreate( mWidth, mHeight, mBitsPerComponent, mBitsPerPixel, mRowBytes,
 			colorSpaceRef.get(), mBitmapInfo, dataProvider.get(), NULL, false, kCGRenderingIntentDefault );
@@ -531,7 +525,6 @@ void ImageTargetCgImage::finalize()
 	::CGImageRetain( result );
 	return result;
 }
-
 
 
 } } // namespace cinder::cocoa

@@ -194,7 +194,8 @@ class ImageTargetCgImage : public ImageTarget {
 	::CGImageRef		mImageRef;
 	size_t				mBitsPerComponent, mBitsPerPixel, mRowBytes;
 	::CGBitmapInfo		mBitmapInfo;
-	uint8_t				*mData;
+	::CFMutableDataRef	mDataRef;
+	uint8_t				*mDataPtr;
 };
 
 //! Loads an ImageSource into a new CGImageRef. Release the result with ::CGImageRelease.
