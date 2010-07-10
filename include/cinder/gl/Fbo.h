@@ -173,7 +173,7 @@ class Fbo {
 	//@{
 	//! Emulates shared_ptr-like behavior
 	typedef shared_ptr<Obj> Fbo::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &Fbo::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Fbo::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  	
 };

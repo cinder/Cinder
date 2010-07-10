@@ -76,9 +76,6 @@ class AdaptiveThresholdT {
 	
 	//@{
 	//! Emulates shared_ptr-like behavior
-	AdaptiveThresholdT( const AdaptiveThresholdT &other ) { mObj = other.mObj; }
-	AdaptiveThresholdT& operator=( const AdaptiveThresholdT &other ) { mObj = other.mObj; return *this; }	
-	bool operator==( const AdaptiveThresholdT &other ) { return mObj == other.mObj; }
 	typedef typename shared_ptr<Obj>::unspecified_bool_type unspecified_bool_type;
 	operator unspecified_bool_type() const { return static_cast<typename shared_ptr<Obj>::unspecified_bool_type>( mObj ); }
 	void reset() { mObj.reset(); }

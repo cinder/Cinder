@@ -254,7 +254,7 @@ class Texture {
 	//@{
 	//! Emulates shared_ptr-like behavior
 	typedef shared_ptr<Obj> Texture::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &Texture::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Texture::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  
 };
@@ -286,11 +286,8 @@ class TextureCache {
   public:
  	//@{
 	//! Emulates shared_ptr-like behavior
-	TextureCache( const TextureCache &other ) { mObj = other.mObj; }	
-	TextureCache& operator=( const TextureCache &other ) { mObj = other.mObj; return *this; }
-	bool operator==( const TextureCache &other ) { return mObj == other.mObj; }
 	typedef shared_ptr<Obj> TextureCache::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &TextureCache::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &TextureCache::mObj; }
 	void reset() { mObj.reset(); }
 	//@}	
 };

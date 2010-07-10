@@ -50,7 +50,7 @@ class SafeUiImage {
 
 	// cast to bool
 	typedef shared_ptr<std::pair<UIImage*,CGImageRef> > SafeUiImage::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &SafeUiImage::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &SafeUiImage::mObj; }
 	
   private:
 	static void destroy( std::pair<UIImage*,CGImageRef> *data );
