@@ -132,7 +132,7 @@ void ShadowMapSample::keyDown( ci::app::KeyEvent event )
 
 void ShadowMapSample::resize( int width, int height )
 {
-	glViewport( 0, 0, width, height );
+	AppBasic::resize( width, height );
 	mCamera->setPerspective( 45.0f, getWindowAspectRatio(), 0.1f, 100.0f );
 }
 
@@ -156,6 +156,7 @@ void ShadowMapSample::updateShadowMap()
 {
 	mDepthFbo.bindFramebuffer();
 
+	glPolygonOffset( 1.0f, 1.0f );
 	glEnable( GL_POLYGON_OFFSET_FILL );
 	glClear( GL_DEPTH_BUFFER_BIT );
 
@@ -186,9 +187,12 @@ void ShadowMapSample::update()
 
 void ShadowMapSample::draw()
 {
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	gl::clear();
+	gl::enableDepthWrite();
 	glEnable( GL_LIGHTING );
 	updateShadowMap();
+
+	gl::enableDepthRead();
 
 	glEnable( GL_TEXTURE_2D );
 	mDepthFbo.bindDepthTexture();
