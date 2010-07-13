@@ -346,7 +346,7 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 GLint Fbo::getMaxSamples()
 {
 	if( sMaxSamples < 0 ) {
-		if( ( ! gl::isExtensionAvailable( "GL_EXT_framebuffer_multisample" ) ) || ( ! gl::isExtensionAvailable( "GLEE_EXT_framebuffer_blit" ) ) ) {
+		if( ( ! gl::isExtensionAvailable( "GL_EXT_framebuffer_multisample" ) ) || ( ! gl::isExtensionAvailable( "GL_EXT_framebuffer_blit" ) ) ) {
 			sMaxSamples = 0;
 		}
 		else
