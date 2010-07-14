@@ -2296,6 +2296,8 @@
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
 					../lib/macosx/libboost_date_time.a,
+					../lib/macosx/libboost_filesystem.a,
+					../lib/macosx/libboost_system.a,
 					"../lib/macosx/libpixman-1.a",
 					../lib/macosx/libpng.a,
 					../lib/macosx/libcairo.a,
@@ -2334,6 +2336,8 @@
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
 					../lib/macosx/libboost_date_time.a,
+					../lib/macosx/libboost_filesystem.a,
+					../lib/macosx/libboost_system.a,
 					"../lib/macosx/libpixman-1.a",
 					../lib/macosx/libpng.a,
 					../lib/macosx/libcairo.a,
