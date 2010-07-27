@@ -467,20 +467,34 @@ public:
 			return cross( Vec3<T>::yAxis() );
 	}
 
-	void rotate( T ax, T ay, T az )
+	void rotateX( T angle )
 	{
-		T a = math<T>::cos( ax );
-		T b = math<T>::sin( ax );
-		T c = math<T>::cos( ay );
-		T d = math<T>::sin( ay );
-		T e = math<T>::cos( az );
-		T f = math<T>::sin( az );
-		T nx = c*e*x - c*f*y + d*z;
-		T ny = ( a*f + b*d*e ) * x + (a*e - b*d*f) * y - b*c*z;
-		T nz = ( b*f - a*d*e ) * x + (a*d*f + b*e) * y + a*c*z;
-		x = nx;
-		y = ny;
-		z = nz;
+		T sina = math<T>::sin(angle);
+		T cosa = math<T>::cos(angle);
+		T ry = y * cosa - z * sina;
+		T rz = y * sina + z * cosa;
+		y = ry;
+		z = rz;
+	}
+
+	void rotateY( T angle )
+	{
+		T sina = math<T>::sin(angle);
+		T cosa = math<T>::cos(angle);
+		T rx = x * cosa - z * sina;
+		T rz = x * sina + z * cosa;
+		x = rx;
+		z = rz;
+	}
+
+	void rotateZ( T angle )
+	{
+		T sina = math<T>::sin(angle);
+		T cosa = math<T>::cos(angle);
+		T rx = x * cosa - y * sina;
+		T ry = x * sina + y * cosa;
+		x = rx;
+		y = ry;
 	}
 
 	void rotate( Vec3<T> axis, T angle )
