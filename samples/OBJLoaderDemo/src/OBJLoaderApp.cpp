@@ -104,7 +104,7 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 		if( ! path.empty() ) {
 		console() << "Saving to " << path;
 			OStreamFileRef out = writeFileStream( path );
-			mMesh.write( out.get() );
+			mMesh.write( out );
 		}
 	}
 	else if( event.getChar() == 'f' ) {

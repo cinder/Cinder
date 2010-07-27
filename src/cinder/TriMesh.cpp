@@ -70,7 +70,7 @@ AxisAlignedBox3f TriMesh::calcBoundingBox() const
 	return AxisAlignedBox3f( min, max );
 }
 
-void TriMesh::read( IStream *in )
+void TriMesh::read( IStreamRef in )
 {
 	clear();
 
@@ -108,7 +108,7 @@ void TriMesh::read( IStream *in )
 	}
 }
 
-void TriMesh::write( OStream *out ) const
+void TriMesh::write( OStreamRef out ) const
 {
 	const uint8_t versionNumber = 1;
 	out->write( versionNumber );
