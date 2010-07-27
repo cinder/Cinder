@@ -179,8 +179,8 @@ class Vec2
 
 	void rotate(T angle)
 	{
-		T cosa = cos( toRadians(angle) );
-		T sina = sin( toRadians(angle) );
+		T cosa = math<T>::cos( angle );
+		T sina = math<T>::sin( angle );
 		T rx = x * cosa - y * sina;
 		y = x * sina + y * cosa;
 		x = rx;
@@ -469,18 +469,40 @@ public:
 
 	void rotate( T ax, T ay, T az )
 	{
-		T a = cos( toRadians( ax ) );
-		T b = sin( toRadians( ax ) );
-		T c = cos( toRadians( ay ) );
-		T d = sin( toRadians( ay ) );
-		T e = cos( toRadians( az )  );
-		T f = sin( toRadians( az ) );
+		T a = math<T>::cos( ax );
+		T b = math<T>::sin( ax );
+		T c = math<T>::cos( ay );
+		T d = math<T>::sin( ay );
+		T e = math<T>::cos( az );
+		T f = math<T>::sin( az );
 		T nx = c*e*x - c*f*y + d*z;
 		T ny = ( a*f + b*d*e ) * x + (a*e - b*d*f) * y - b*c*z;
 		T nz = ( b*f - a*d*e ) * x + (a*d*f + b*e) * y + a*c*z;
 		x = nx;
 		y = ny;
 		z = nz;
+	}
+
+	void rotate( Vec3<T> axis, T angle )
+	{
+		T cosa = math<T>::cos(angle);
+		T sina = math<T>::sin(angle);
+
+		T rx = (cosa + (1 - cosa) * axis.x * axis.x) * x;
+		rx += ((1 - cosa) * axis.x * axis.y - axis.z * sina) * y;
+		rx += ((1 - cosa) * axis.x * axis.z + axis.y * sina) * z;
+
+		T ry = ((1 - cosa) * axis.x * axis.y + axis.z * sina) * x;
+		ry += (cosa + (1 - cosa) * axis.y * axis.y) * y;
+		ry += ((1 - cosa) * axis.y * axis.z - axis.x * sina) * z;
+
+		T rz = ((1 - cosa) * axis.x * axis.z - axis.y * sina) * x;
+		rz += ((1 - cosa) * axis.y * axis.z + axis.x * sina) * y;
+		rz += (cosa + (1 - cosa) * axis.z * axis.z) * z;
+
+		x = rx;
+		y = ry;
+		z = rz;
 	}
 
 	Vec3<T> lerp( T fact, const Vec3<T> &rhs ) const
