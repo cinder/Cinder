@@ -179,8 +179,8 @@ class Vec2
 
 	void rotate(T angle)
 	{
-		T cosa = cos(angle);
-		T sina = sin(angle);
+		T cosa = cos( toRadians(angle) );
+		T sina = sin( toRadians(angle) );
 		T rx = x * cosa - y * sina;
 		y = x * sina + y * cosa;
 		x = rx;
