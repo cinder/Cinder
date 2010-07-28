@@ -30,12 +30,12 @@
 #undef max
 #endif
 
-namespace cinder { 
+namespace cinder {
 
 template<typename T>
 struct math
 {
-	static T	acos  (T x)		{return ::acos (double(x));}	
+	static T	acos  (T x)		{return ::acos (double(x));}
 	static T	asin  (T x)		{return ::asin (double(x));}
 	static T	atan  (T x)		{return ::atan (double(x));}
 	static T	atan2 (T x, T y)	{return ::atan2 (double(x), double(y));}
@@ -72,7 +72,7 @@ struct math
 template<>
 struct math<float>
 {
-	static float	acos  (float x)			{return ::acosf (x);}	
+	static float	acos  (float x)			{return ::acosf (x);}
 	static float	asin  (float x)			{return ::asinf (x);}
 	static float	atan  (float x)			{return ::atanf (x);}
 	static float	atan2 (float x, float y)	{return ::atan2f (x, y);}
@@ -104,7 +104,7 @@ struct math<float>
 };
 
 #ifndef M_PI
- #define M_PI           3.14159265358979323846 
+ #define M_PI           3.14159265358979323846
 #endif
 
 const double EPSILON_VALUE = 4.37114e-05;
@@ -134,6 +134,12 @@ template<typename T, typename L>
 T lerp( const T &a, const T &b, L factor )
 {
 	return a + ( b - a ) * factor;
+}
+
+template<typename T>
+T lmap(T val, T inMin, T inMax, T outMin, T outMax)
+{
+	return outMin + (outMax - outMin) * ((val - inMin) / (inMax - inMin));
 }
 
 template<typename T, typename L>
@@ -175,7 +181,7 @@ inline uint32_t log2floor( uint32_t x )
     uint32_t result = 0;
     while( x >>= 1 )
         ++result;
-    
+
     return result;
 }
 
@@ -195,4 +201,4 @@ inline uint32_t nextPowerOf2( uint32_t x )
     return(x+1);
 }
 
-} // namespace cinder 
+} // namespace cinder
