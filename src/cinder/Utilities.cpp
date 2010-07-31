@@ -101,6 +101,51 @@ std::string getDocumentsDirectory()
 	return result;
 }
 
+std::string getTemporaryDirectory()
+{
+#if defined( CINDER_COCOA )
+	NSString *docDir = ::NSTemporaryDirectory();
+	return cocoa::convertNsString( docDir ) + "/";
+#else
+	DWORD result = ::GetTempPathW( 0, L"" );
+	if( ! result )
+		throw std::runtime_error("Could not get system temp path");
+
+	std::vector<TCHAR> tempPath(result + 1);
+	result = ::GetTempPathW(static_cast<DWORD>(tempPath.size()), &tempPath[0]);
+	if( ( ! result ) || ( result >= tempPath.size() ) )
+		throw std::runtime_error("Could not get system temp path");
+
+	std::wstring wideResult( tempPath.begin(), tempPath.begin() + static_cast<std::size_t>(result) );
+	return toUtf8( wideResult );
+#endif
+}
+
+std::string getTemporaryFilePath( const std::string &prefix )
+{
+#if defined( CINDER_COCOA )
+	char path[2048];
+	sprintf( path, "%s%sXXXXXX", getTemporaryDirectory().c_str(), prefix.c_str() );
+	return string( mktemp( path ) );
+#else
+	TCHAR tempFileName[MAX_PATH]; 
+	DWORD result = ::GetTempPathW( 0, L"" );
+	if( ! result )
+		throw std::runtime_error("Could not get system temp path");
+
+	std::vector<TCHAR> tempPath(result + 1);
+	result = ::GetTempPathW(static_cast<DWORD>(tempPath.size()), &tempPath[0]);
+	if( ( ! result ) || ( result >= tempPath.size() ) )
+		throw std::runtime_error( "Could not get system temp path" );
+
+	result = ::GetTempFileName( &tempPath[0], toUtf16( prefix.c_str() ).c_str(), 0, tempFileName );
+    if( result == 0)
+		throw std::runtime_error( "Could not create temporary file path" );
+
+	return toUtf8( tempFileName );
+#endif
+}
+
 std::string getPathDirectory( const std::string &path )
 {
 	size_t lastSlash = path.rfind( getPathSeparator(), path.length() );
@@ -143,6 +188,16 @@ bool createDirectories( const std::string &path, bool createParents )
 #endif
 }
 
+void deleteFile( const std::string &path )
+{
+#if defined( CINDER_COCOA )
+	unlink( path.c_str() );
+#else
+	if( ! ::DeleteFileW( toUtf16( path ).c_str() ) ) {
+		DWORD err = GetLastError();
+	}
+#endif
+}
 
 wstring toUtf16( const string &utf8 )
 {

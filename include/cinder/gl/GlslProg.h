@@ -86,7 +86,7 @@ class GlslProg {
 	//@{
 	//! Emulates shared_ptr-like behavior
 	typedef shared_ptr<Obj> GlslProg::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &GlslProg::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &GlslProg::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  
 };

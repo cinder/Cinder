@@ -230,7 +230,7 @@ class MovieSurface : public MovieBase {
  	//@{
 	//! Emulates shared_ptr-like behavior
 	typedef shared_ptr<Obj> MovieSurface::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &MovieSurface::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &MovieSurface::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
 };
@@ -275,7 +275,7 @@ class MovieGl : public MovieBase {
 	//@{
 	//! Emulates shared_ptr-like behavior
 	typedef shared_ptr<Obj> MovieGl::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &MovieGl::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &MovieGl::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  
 };
@@ -326,15 +326,14 @@ class MovieLoader {
   public:
 	//@{
 	//! Emulates shared_ptr-like behavior
-	MovieLoader( const MovieLoader &other ) { mObj = other.mObj; }	
-	MovieLoader& operator=( const MovieLoader &other ) { mObj = other.mObj; return *this; }
-	bool operator==( const MovieLoader &other ) { return mObj == other.mObj; }
 	typedef shared_ptr<Obj> MovieLoader::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &MovieLoader::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &MovieLoader::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
 };
 
+//! Initializes QuickTime system-wide. Safe to call multiple times.
+void startQuickTime();
 //! Returns 0 if QuickTime is not available, otherwise an integer encoding of the QuickTime version. QuickTime 6.4 returns \c 0x06408000, (\c 0x00008000 suffix denotes a shipping release of QuickTime)
 extern int32_t getQuickTimeVersion();
 //! Returns an empty string if QuickTime is not available, otherwise a human readable string of the QuickTime version. QuickTime 6.4 returns \c "6.4"

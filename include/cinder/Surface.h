@@ -191,7 +191,7 @@ class SurfaceT {
 	//@{
 	//! Emulates shared_ptr-like behavior
 	typedef shared_ptr<Obj> SurfaceT::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &SurfaceT::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &SurfaceT::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
 

@@ -196,6 +196,7 @@ DataSourcePathRef App::loadResource( const std::string &macPath )
 		return DataSourcePath::createRef( resourcePath );
 }
 #else
+
 DataSourceBufferRef App::loadResource( int mswID, const std::string &mswType )
 {
 	return DataSourceBuffer::createRef( AppImplMsw::loadResource( mswID, mswType ) );
@@ -222,6 +223,18 @@ string App::getResourcePath( const std::string &rsrcRelativePath )
 	
 	return string([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
 }
+
+string App::getResourcePath()
+{
+	char path[4096];
+	
+	CFURLRef url = ::CFBundleCopyResourcesDirectoryURL( ::CFBundleGetMainBundle() );
+	::CFURLGetFileSystemRepresentation( url, true, (UInt8*)path, 4096 );
+	::CFRelease( url );
+	
+	return string( path );
+}
+
 #endif
 
 string App::getOpenFilePath( const string &initialPath, vector<string> extensions )

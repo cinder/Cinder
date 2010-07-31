@@ -62,7 +62,7 @@ class Vbo {
 	//@{
 	//! Emulates shared_ptr-like behavior
 	typedef shared_ptr<Obj> Vbo::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &Vbo::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Vbo::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  
 };
@@ -202,11 +202,8 @@ class VboMesh {
 
 	//@{
 	//! Emulates shared_ptr-like behavior
-	VboMesh( const VboMesh &other ) { mObj = other.mObj; }
-	VboMesh& operator=( const VboMesh &other ) { mObj = other.mObj; return *this; }
-	bool operator==( const VboMesh &other ) { return mObj == other.mObj; }
 	typedef shared_ptr<Obj> VboMesh::*unspecified_bool_type;
-	operator unspecified_bool_type() { return ( mObj.get() == 0 ) ? 0 : &VboMesh::mObj; }
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &VboMesh::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
 

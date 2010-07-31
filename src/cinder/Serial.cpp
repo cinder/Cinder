@@ -75,6 +75,7 @@ Serial::Obj::Obj( const Serial::Device &device, int baudRate )
 	baudToConstant[38400] = B38400;
 	baudToConstant[57600] = B57600;
 	baudToConstant[115200] = B115200;
+	baudToConstant[230400] = B230400;	
 	
 	int rateConstant = B9600;
 	if( baudToConstant.find( baudRate ) != baudToConstant.end() )

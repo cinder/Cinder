@@ -31,6 +31,7 @@
 #include "cinder/Text.h"
 #include "cinder/PolyLine.h"
 #include <cmath>
+#include <map>
 
 #if defined( CINDER_MAC ) && ( ! defined( CINDER_COCOA_TOUCH ) )
 	#include <ApplicationServices/ApplicationServices.h>
@@ -39,9 +40,9 @@
 
 namespace cinder { namespace gl {
 
-#if ! defined( CINDER_GLES )
+#if defined( CINDER_MSW )
 void initializeGlee() {
-#if defined( CINDER_MAC )
+/*#if defined( CINDER_MAC )
 	CGDirectDisplayID display = CGMainDisplayID(); // 1
 	CGOpenGLDisplayMask myDisplayMask = CGDisplayIDToOpenGLDisplayMask( display ); // 2
  
@@ -68,7 +69,7 @@ void initializeGlee() {
 		 // 9
 		CGLSetCurrentContext(curr_ctx); // 10
 	}
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW )*/
 	DWORD windowExStyle, windowStyle;
 	HWND wnd;
 	const char *title = "cinder";
@@ -102,7 +103,6 @@ void initializeGlee() {
 		return;											
 	}
 
-	
 	windowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
 	windowStyle = ( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );
 
@@ -179,10 +179,35 @@ void initializeGlee() {
 	::ReleaseDC( wnd, hdc );
 	DestroyWindow( wnd );
 	::UnregisterClass( TEXT("DUMMY"), instance );
-
-#endif
+//#endif
 }
 #endif
+
+bool isExtensionAvailable( const std::string &extName )
+{
+	static const char *sExtStr = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
+	static std::map<std::string,bool> sExtMap;
+	
+	std::map<std::string,bool>::const_iterator extIt = sExtMap.find( extName );
+	if( extIt == sExtMap.end() ) {
+		bool found = false;
+		int extNameLen = extName.size();
+		const char *p = sExtStr;
+		const char *end = sExtStr + strlen( sExtStr );
+		while( p < end ) {
+			int n = strcspn( p, " " );
+			if( (extNameLen == n) && ( strncmp(extName.c_str(), p, n) == 0)) {
+				found = true;
+				break;
+			}
+			p += (n + 1);
+		}
+		sExtMap[extName] = found;
+		return found;
+	}
+	else
+		return extIt->second;
+}
 
 void clear( const ColorA &color, bool clearDepthBuffer )
 {

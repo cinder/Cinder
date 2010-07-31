@@ -30,17 +30,17 @@
 
 #include "cinder/CinderMath.h"
 
-namespace cinder { 
+namespace cinder {
 
 template<typename T, typename Y>
 struct VEC3CONV {
 	static T	getX( const Y &v ) { return static_cast<T>( v.x ); }
 	static T	getY( const Y &v ) { return static_cast<T>( v.y ); }
-	static T	getZ( const Y &v ) { return static_cast<T>( v.z ); }		
+	static T	getZ( const Y &v ) { return static_cast<T>( v.z ); }
 };
 
 template<typename T>
-class Vec2 
+class Vec2
 {
  public:
 	T x,y;
@@ -54,8 +54,8 @@ class Vec2
 	explicit Vec2( const T *d ) : x( d[0] ), y( d[1] ) {}
 
 	template<typename FromT>
-	Vec2( const Vec2<FromT>& src ) 
-		: x( static_cast<T>( src.x ) ),y( static_cast<T>( src.y ) ) 
+	Vec2( const Vec2<FromT>& src )
+		: x( static_cast<T>( src.x ) ),y( static_cast<T>( src.y ) )
 	{}
 
 	void set( T ax, T ay )
@@ -66,8 +66,8 @@ class Vec2
 	void set( const Vec2<T> &rhs )
 	{
 		x = rhs.x; y = rhs.y;
-	}	
-	
+	}
+
 	// Operators
 	template<typename FromT>
 	Vec2<T>& operator=( const Vec2<FromT>& rhs )
@@ -109,16 +109,16 @@ class Vec2
 	Vec2<T>&	operator-=( T rhs ) { x -= rhs; y -= rhs; return *this; }
 	Vec2<T>&	operator*=( T rhs ) { x *= rhs; y *= rhs; return *this; }
 	Vec2<T>&	operator/=( T rhs ) { x /= rhs; y /= rhs; return *this; }
-	
+
 	Vec2<T>		operator-() const { return Vec2<T>( -x, -y ); } // unary negation
 
-	bool operator==( const Vec2<T> &rhs ) const 
+	bool operator==( const Vec2<T> &rhs ) const
 	{
-		return ( x == rhs.x ) && ( y == rhs.y ); 
+		return ( x == rhs.x ) && ( y == rhs.y );
 	}
 
 	bool operator!=( const Vec2<T> &rhs ) const
-	{ 
+	{
 		return ! ( *this == rhs );
 	}
 
@@ -177,16 +177,25 @@ class Vec2
 			return Vec2<T>::zero();
 	}
 
+	void rotate(T angle)
+	{
+		T cosa = math<T>::cos( angle );
+		T sina = math<T>::sin( angle );
+		T rx = x * cosa - y * sina;
+		y = x * sina + y * cosa;
+		x = rx;
+	}
+
 	T lengthSquared() const
 	{
 		return x * x + y * y;
 	}
 
 	//! Limits the length of a Vec2 to \a maxLength, scaling it proportionally if necessary.
-	void limit( T maxLength ) 
+	void limit( T maxLength )
 	{
 		T lengthSquared = x * x + y * y;
-		
+
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
 			T ratio = maxLength / math<T>::sqrt( lengthSquared );
 			x *= ratio;
@@ -198,7 +207,7 @@ class Vec2
 	Vec2<T> limited( T maxLength ) const
 	{
 		T lengthSquared = x * x + y * y;
-		
+
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
 			T ratio = maxLength / math<T>::sqrt( lengthSquared );
 			return Vec2<T>( x * ratio, y * ratio );
@@ -212,15 +221,15 @@ class Vec2
 		x = -x;
 		y = -y;
 	}
-	
+
 	Vec2<T> inverse() const
 	{
 		return Vec2<T>( -x, -y );
 	}
-	
+
 	Vec2<T> lerp( T fact, const Vec2<T>& r ) const
 	{
-		return (*this) + ( r - (*this) ) * fact;	
+		return (*this) + ( r - (*this) ) * fact;
 	}
 
 	static Vec2<T> max()
@@ -237,22 +246,22 @@ class Vec2
 	{
 		return Vec2<T>( static_cast<T>( 1 ), static_cast<T>( 1 ) );
 	}
-	
+
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
 
-	friend std::ostream& operator<<( std::ostream& lhs, const Vec2<T>& rhs ) 
+	friend std::ostream& operator<<( std::ostream& lhs, const Vec2<T>& rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "]";
 		return lhs;
 	}
-	
+
 	static Vec2<T> xAxis() { return Vec2<T>( 1, 0 ); }
 	static Vec2<T> yAxis() { return Vec2<T>( 0, 1 ); }
 };
 
 template<typename T>
-class Vec3 
+class Vec3
 {
 public:
 	T x,y,z;
@@ -261,10 +270,10 @@ public:
 	static const int DIM = 3;
 
 	Vec3() {}
-	Vec3( T nx, T ny, T nz ) 
+	Vec3( T nx, T ny, T nz )
 		: x( nx ), y( ny ), z( nz )
 	{}
-	Vec3( const Vec3<T> &src ) 
+	Vec3( const Vec3<T> &src )
 		: x( src.x ), y( src.y ), z( src.z )
 	{}
 	Vec3( const Vec2<T> &v2, T aZ )
@@ -274,7 +283,7 @@ public:
 	template<typename FromT>
 	Vec3( const Vec3<FromT> &src )
 		: x( static_cast<T>( src.x ) ), y( static_cast<T>( src.y ) ), z( static_cast<T>( src.z ) )
-	{}	
+	{}
 	template<typename Y>
 	explicit Vec3( const Y &v )
 		: x( VEC3CONV<Vec3<typename T::TYPE>,Y>::getX( v ) ), y( VEC3CONV<typename T::TYPE,Y>::getY( v ) ), z( VEC3CONV<typename T::TYPE,Y>::getZ( v ) )
@@ -284,14 +293,14 @@ public:
 	void set( T ax, T ay, T az )
 	{
 		x = ax; y = ay; z = az;
-	}	
+	}
 
 	void set( const Vec3<T> &rhs )
 	{
 		x = rhs.x; y = rhs.y; z = rhs.z;
-	}		
-	
-	Vec3<T>& operator=( const Vec3<T> &rhs ) 
+	}
+
+	Vec3<T>& operator=( const Vec3<T> &rhs )
 	{
 		x = rhs.x;
 		y = rhs.y;
@@ -338,12 +347,12 @@ public:
 
 	bool operator==( const Vec3<T>& rhs ) const
 	{
-		return ( x == rhs.x ) && ( y == rhs.y ) && ( z == rhs.z ); 
+		return ( x == rhs.x ) && ( y == rhs.y ) && ( z == rhs.z );
 	}
 
-	bool operator!=( const Vec3<T>& rhs ) const 
+	bool operator!=( const Vec3<T>& rhs ) const
 	{
-		return !( *this == rhs ); 
+		return !( *this == rhs );
 	}
 
 	T dot( const Vec3<T> &rhs ) const
@@ -351,8 +360,8 @@ public:
 		return x*rhs.x + y*rhs.y + z*rhs.z;
 	}
 
-	Vec3<T> cross( const Vec3<T> &rhs ) const 
-	{ 
+	Vec3<T> cross( const Vec3<T> &rhs ) const
+	{
 		return Vec3<T>( y * rhs.z - rhs.y * z, z * rhs.x - rhs.z * x, x * rhs.y - rhs.x * y );
 	}
 
@@ -366,21 +375,21 @@ public:
 		return ( *this - rhs ).lengthSquared();
 	}
 
-	T length() const 
+	T length() const
 	{
 		return math<T>::sqrt( x*x + y*y + z*z );
 	}
 
-	T lengthSquared() const 
+	T lengthSquared() const
 	{
 		return x*x + y*y + z*z;
 	}
 
 	//! Limits the length of a Vec3 to \a maxLength, scaling it proportionally if necessary.
-	void limit( T maxLength ) 
+	void limit( T maxLength )
 	{
 		T lengthSquared = x * x + y * y + z * z;
-		
+
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
 			T ratio = maxLength / math<T>::sqrt( lengthSquared );
 			x *= ratio;
@@ -393,7 +402,7 @@ public:
 	Vec3<T> limited( T maxLength ) const
 	{
 		T lengthSquared = x * x + y * y + z * z;
-		
+
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
 			T ratio = maxLength / math<T>::sqrt( lengthSquared );
 			return Vec3<T>( x * ratio, y * ratio, z * ratio );
@@ -406,13 +415,13 @@ public:
 	{
 		x = -x; y = -y; z = -z;
 	}
-	
+
 	Vec3<T> inverse() const
 	{
 		return Vec3<T>( -x, -y, -z );
-	}	
-	
-	void normalize() 
+	}
+
+	void normalize()
 	{
 		T invS = ((T)1) / length();
 		x *= invS;
@@ -448,7 +457,7 @@ public:
 		else
 			return *this;
 	}
-	
+
 	Vec3<T> randomOrthogonal() const
 	{
 		if( dot( Vec3<T>::xAxis() ) >= (T)0.01 ) {
@@ -457,21 +466,57 @@ public:
 		else
 			return cross( Vec3<T>::yAxis() );
 	}
-	
-	void rotate( T ax, T ay, T az ) 
+
+	void rotateX( T angle )
 	{
-		T a = cos( toRadians( ax ) );
-		T b = sin( toRadians( ax ) );
-		T c = cos( toRadians( ay ) );
-		T d = sin( toRadians( ay ) );
-		T e = cos( toRadians( az )  );
-		T f = sin( toRadians( az ) );
-		T nx = c*e*x - c*f*y + d*z;
-		T ny = ( a*f + b*d*e ) * x + (a*e - b*d*f) * y - b*c*z;
-		T nz = ( b*f - a*d*e ) * x + (a*d*f + b*e) * y + a*c*z;
-		x = nx; 
-		y = ny; 
-		z = nz;
+		T sina = math<T>::sin(angle);
+		T cosa = math<T>::cos(angle);
+		T ry = y * cosa - z * sina;
+		T rz = y * sina + z * cosa;
+		y = ry;
+		z = rz;
+	}
+
+	void rotateY( T angle )
+	{
+		T sina = math<T>::sin(angle);
+		T cosa = math<T>::cos(angle);
+		T rx = x * cosa - z * sina;
+		T rz = x * sina + z * cosa;
+		x = rx;
+		z = rz;
+	}
+
+	void rotateZ( T angle )
+	{
+		T sina = math<T>::sin(angle);
+		T cosa = math<T>::cos(angle);
+		T rx = x * cosa - y * sina;
+		T ry = x * sina + y * cosa;
+		x = rx;
+		y = ry;
+	}
+
+	void rotate( Vec3<T> axis, T angle )
+	{
+		T cosa = math<T>::cos(angle);
+		T sina = math<T>::sin(angle);
+
+		T rx = (cosa + (1 - cosa) * axis.x * axis.x) * x;
+		rx += ((1 - cosa) * axis.x * axis.y - axis.z * sina) * y;
+		rx += ((1 - cosa) * axis.x * axis.z + axis.y * sina) * z;
+
+		T ry = ((1 - cosa) * axis.x * axis.y + axis.z * sina) * x;
+		ry += (cosa + (1 - cosa) * axis.y * axis.y) * y;
+		ry += ((1 - cosa) * axis.y * axis.z - axis.x * sina) * z;
+
+		T rz = ((1 - cosa) * axis.x * axis.z - axis.y * sina) * x;
+		rz += ((1 - cosa) * axis.y * axis.z + axis.x * sina) * y;
+		rz += (cosa + (1 - cosa) * axis.z * axis.z) * z;
+
+		x = rx;
+		y = ry;
+		z = rz;
 	}
 
 	Vec3<T> lerp( T fact, const Vec3<T> &rhs ) const
@@ -482,8 +527,8 @@ public:
 	void lerpEq( T fact, const Vec3<T> &rhs )
 	{
 		x = x + ( rhs.x - x ) * fact; y = y + ( rhs.y - y ) * fact; z = z + ( rhs.z - z ) * fact;
-	}	
-	
+	}
+
 	static Vec3<T> max()
 	{
 		return Vec3<T>( std::numeric_limits<T>::max(), std::numeric_limits<T>::max(), std::numeric_limits<T>::max() );
@@ -521,11 +566,11 @@ public:
 		// interpolate src vectors
 		return *this * t1 + r * t2;
 	}
-	
+
 	// derived from but not equivalent to Quaternion::squad
 	Vec3<T> squad( T t, const Vec3<T> &tangentA, const Vec3<T> &tangentB, const Vec3<T> &end )
 	{
-		Vec3<T> r1 = this->slerp( t, end );	
+		Vec3<T> r1 = this->slerp( t, end );
 		Vec3<T> r2 = tangentA.slerp( t, tangentB );
 		return r1.slerp( 2 * t * (1-t), r2 );
 	}
@@ -533,12 +578,12 @@ public:
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
 
-	friend std::ostream& operator<<( std::ostream& lhs, const Vec3<T> rhs ) 
+	friend std::ostream& operator<<( std::ostream& lhs, const Vec3<T> rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "," << rhs.z  << "]";
 		return lhs;
 	}
-	
+
 	static Vec3<T> xAxis() { return Vec3<T>( 1, 0, 0 ); }
 	static Vec3<T> yAxis() { return Vec3<T>( 0, 1, 0 ); }
 	static Vec3<T> zAxis() { return Vec3<T>( 0, 0, 1 ); }
@@ -552,16 +597,16 @@ class Vec4{
 	typedef T TYPE;
 	static const int DIM = 4;
 
-	Vec4() 
+	Vec4()
 		: x( 0 ), y( 0 ), z( 0 ), w( 0 )
 	{}
 	Vec4( T nx, T ny, T nz, T nw )
 		: x( nx ), y( ny ), z( nz ), w( nw )
 	{}
-	Vec4( const Vec3<T>& src, T aW ) 
+	Vec4( const Vec3<T>& src, T aW )
 		: x( src.x ), y( src.y ), z( src.z ), w( aW )
 	{}
-	Vec4( const Vec4<T>& src ) 
+	Vec4( const Vec4<T>& src )
 		: x( src.x ), y( src.y ), z( src.z ), w( src.w )
 	{}
 	template<typename FromT>
@@ -570,20 +615,20 @@ class Vec4{
 	{}
 	explicit Vec4( const T *d ) : x( d[0] ), y( d[1] ), z( d[2] ), w( d[3] ) {}
 
-	Vec4<T>& operator=( const Vec4<T>& rhs ) 
+	Vec4<T>& operator=( const Vec4<T>& rhs )
 	{
 		x = rhs.x; y = rhs.y; z = rhs.z; w = rhs.w;
 		return *this;
 	}
 
 	template<typename FromT>
-	Vec4<T>& operator=( const Vec4<FromT>& rhs ) 
+	Vec4<T>& operator=( const Vec4<FromT>& rhs )
 	{
 		x = static_cast<T>(rhs.x); y = static_cast<T>(rhs.y); z = static_cast<T>(rhs.z); w = static_cast<T>(rhs.w);
 		return *this;
 	}
 
-	T& operator[]( int n ) 
+	T& operator[]( int n )
 	{
 		assert( n >= 0 && n <= 3 );
 		return (&x)[n];
@@ -611,9 +656,9 @@ class Vec4{
 
 	Vec4<T>	 operator-() const { return Vec4<T>( -x, -y, -z, -w ); } // unary negation
 
-	bool operator==( const Vec4<T>& rhs ) const 
+	bool operator==( const Vec4<T>& rhs ) const
 	{
-		return ( x == rhs.x ) && ( y == rhs.y ) && ( z == rhs.z ) && ( w == rhs.w ); 
+		return ( x == rhs.x ) && ( y == rhs.y ) && ( z == rhs.z ) && ( w == rhs.w );
 	}
 
 	bool operator!=( const Vec4<T>& rhs ) const { return ! (*this == rhs); }
@@ -623,7 +668,7 @@ class Vec4{
 		return math<float>::sqrt(x * x + y * y + z * z + w * w);
 	}
 
-	void normalize() 
+	void normalize()
 	{
 		T invS = ((T)1) / length();
 		x *= invS;
@@ -645,16 +690,16 @@ class Vec4{
 		}
 	}
 
-	T lengthSquared() const 
+	T lengthSquared() const
 	{
 		return x * x + y * y + z * z + w * w;
 	}
 
 	//! Limits the length of a Vec4 to \a maxLength, scaling it proportionally if necessary.
-	void limit( T maxLength ) 
+	void limit( T maxLength )
 	{
 		T lengthSquared = x * x + y * y + z * z + w * w;
-		
+
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
 			T ratio = maxLength / math<T>::sqrt( lengthSquared );
 			x *= ratio;
@@ -668,7 +713,7 @@ class Vec4{
 	Vec4<T> limited( T maxLength ) const
 	{
 		T lengthSquared = x * x + y * y + z * z + w * w;
-		
+
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
 			T ratio = maxLength / math<T>::sqrt( lengthSquared );
 			return Vec4<T>( x * ratio, y * ratio, z * ratio, w * ratio );
@@ -681,46 +726,46 @@ class Vec4{
 	{
 		x = -x; y = -y; z = -z; w = -w;
 	}
-	
+
 	Vec4<T> inverse() const
 	{
 		return Vec3<T>( -x, -y, -z, -w );
-	}	
+	}
 
 
 	Vec4<T> lerp( T fact, const Vec4<T>& r ) const
 	{
-		return (*this) + ( r - (*this) ) * fact;	
+		return (*this) + ( r - (*this) ) * fact;
 	}
 
 	static Vec4<T> max()
 	{
 		return Vec4<T>( std::numeric_limits<T>::max(), std::numeric_limits<T>::max(), std::numeric_limits<T>::max(), std::numeric_limits<T>::max() );
 	}
-	
+
 	static Vec4<T> zero()
 	{
 		return Vec4<T>( static_cast<T>( 0 ), static_cast<T>( 0 ), static_cast<T>( 0 ), static_cast<T>( 0 ) );
-	}	
+	}
 
 	static Vec4<T> one()
 	{
 		return Vec4<T>( static_cast<T>( 1 ), static_cast<T>( 1 ), static_cast<T>( 1 ), static_cast<T>( 1 ) );
-	}	
+	}
 
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
 
-	friend std::ostream& operator<<( std::ostream& lhs, const Vec4<T>& rhs ) 
+	friend std::ostream& operator<<( std::ostream& lhs, const Vec4<T>& rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "," << rhs.z << "," << rhs.w << "]";
 		return lhs;
 	}
-	
+
 	static Vec4<T> xAxis() { return Vec4<T>( 1, 0, 0, 0 ); }
 	static Vec4<T> yAxis() { return Vec4<T>( 0, 1, 0, 0 ); }
-	static Vec4<T> zAxis() { return Vec4<T>( 0, 0, 1, 0 ); }	
-	static Vec4<T> wAxis() { return Vec4<T>( 0, 0, 0, 1 ); }		
+	static Vec4<T> zAxis() { return Vec4<T>( 0, 0, 1, 0 ); }
+	static Vec4<T> wAxis() { return Vec4<T>( 0, 0, 0, 1 ); }
 };
 
 //! Converts a coordinate from rectangular (Cartesian) coordinates to polar coordinates of the form (radius, theta)

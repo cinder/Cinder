@@ -125,9 +125,15 @@ Texture::Texture( const Surface8u &surface, Format format )
 Texture::Texture( const Surface32f &surface, Format format )
 	: mObj( shared_ptr<Obj>( new Obj( surface.getWidth(), surface.getHeight() ) ) )
 {
+#if defined( CINDER_MAC )
+	bool supportsTextureFloat = gl::isExtensionAvailable( "GL_ARB_texture_float" );
+#elif defined( CINDER_MSW )
+	bool supportsTextureFloat = GLEE_ARB_texture_float;
+#endif
+
 	if( format.mInternalFormat < 0 ) {
 #if ! defined( CINDER_GLES )
-		if( GLEE_ARB_texture_float )
+		if( supportsTextureFloat )
 			format.mInternalFormat = surface.hasAlpha() ? GL_RGBA32F_ARB : GL_RGB32F_ARB;
 		else
 			format.mInternalFormat = surface.hasAlpha() ? GL_RGBA : GL_RGB;
@@ -145,7 +151,7 @@ Texture::Texture( const Channel8u &channel, Format format )
 	: mObj( shared_ptr<Obj>( new Obj( channel.getWidth(), channel.getHeight() ) ) )
 {
 	if( format.mInternalFormat < 0 )
-		mObj->mInternalFormat = GL_LUMINANCE;
+		format.mInternalFormat = GL_LUMINANCE;
 
 	mObj->mInternalFormat = format.mInternalFormat;
 	mObj->mTarget = format.mTarget;
@@ -173,9 +179,15 @@ Texture::Texture( const Channel8u &channel, Format format )
 Texture::Texture( const Channel32f &channel, Format format )
 	: mObj( shared_ptr<Obj>( new Obj( channel.getWidth(), channel.getHeight() ) ) )
 {
+#if defined( CINDER_MAC )
+	bool supportsTextureFloat = gl::isExtensionAvailable( "GL_ARB_texture_float" );
+#elif defined( CINDER_MSW )
+	bool supportsTextureFloat = GLEE_ARB_texture_float;
+#endif
+
 	if( format.mInternalFormat < 0 ) {
 #if ! defined( CINDER_GLES )
-		if( GLEE_ARB_texture_float )
+		if( supportsTextureFloat )
 			format.mInternalFormat = GL_LUMINANCE32F_ARB;
 		else
 			format.mInternalFormat = GL_LUMINANCE;
@@ -237,8 +249,6 @@ void Texture::init( const unsigned char *data, int unpackRowLength, GLenum dataF
 
 	glGenTextures( 1, &mObj->mTextureID );
 
-	glEnable( mObj->mTarget );
-
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_S, format.mWrapS );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
@@ -270,8 +280,6 @@ void Texture::init( const float *data, GLint dataFormat, const Format &format )
 
 	glGenTextures( 1, &mObj->mTextureID );
 
-	glEnable( mObj->mTarget );
-
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_S, format.mWrapS );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
@@ -301,6 +309,12 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	mObj->mTarget = format.mTarget;
 	mObj->mWidth = mObj->mCleanWidth = imageSource->getWidth();
 	mObj->mHeight = mObj->mCleanHeight = imageSource->getHeight();
+
+#if defined( CINDER_MAC )
+	bool supportsTextureFloat = gl::isExtensionAvailable( "GL_ARB_texture_float" );
+#elif defined( CINDER_MSW )
+	bool supportsTextureFloat = GLEE_ARB_texture_float;
+#endif
 	
 	// Set the internal format based on the image's color space
 	if( format.isAutoInternalFormat() ) {
@@ -311,7 +325,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA8 : GL_RGB8;
 				else if( imageSource->getDataType() == ImageIo::UINT16 )
 					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA16 : GL_RGB16;
-				else if( imageSource->getDataType() == ImageIo::FLOAT32 && GLEE_ARB_texture_float )
+				else if( imageSource->getDataType() == ImageIo::FLOAT32 && supportsTextureFloat )
 					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA32F_ARB : GL_RGB32F_ARB;
 				else
 					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : GL_RGB;
@@ -321,7 +335,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE8_ALPHA8 : GL_LUMINANCE8;
 				else if( imageSource->getDataType() == ImageIo::UINT16 )
 					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE16_ALPHA16 : GL_LUMINANCE16;
-				else if( imageSource->getDataType() == ImageIo::FLOAT32 && GLEE_ARB_texture_float )
+				else if( imageSource->getDataType() == ImageIo::FLOAT32 && supportsTextureFloat )
 					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA32F_ARB : GL_LUMINANCE32F_ARB;
 				else
 					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
@@ -365,7 +379,6 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	}
 
 	glGenTextures( 1, &mObj->mTextureID );
-	glEnable( mObj->mTarget );
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_S, format.mWrapS );
@@ -668,7 +681,6 @@ Texture Texture::loadDds( IStreamRef ddsStream, Format format )
 		result.mObj->mHeight = height;
 		result.mObj->mInternalFormat = dataFormat;
 
-		glEnable( result.mObj->mTarget );
 		glBindTexture( result.mObj->mTarget, result.mObj->mTextureID );
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 
@@ -720,25 +732,21 @@ void Texture::setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDealloca
 
 void Texture::setWrapS( GLenum wrapS )
 {
-	enableAndBind();
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_S, wrapS );
 }
 
 void Texture::setWrapT( GLenum wrapT )
 {
-	enableAndBind();
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, wrapT );
 }
 
 void Texture::setMinFilter( GLenum minFilter )
 {
-	enableAndBind();
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MIN_FILTER, minFilter );
 }
 
 void Texture::setMagFilter( GLenum magFilter )
 {
-	enableAndBind();
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, magFilter );
 }
 
@@ -1028,8 +1036,8 @@ class ImageSourceTexture : public ImageSource {
 			case GL_DEPTH_COMPONENT16: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::UINT16 ); format = GL_DEPTH_COMPONENT; break;
 			case GL_DEPTH_COMPONENT24: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_DEPTH_COMPONENT; break;
 			case GL_DEPTH_COMPONENT32: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_DEPTH_COMPONENT; break;
-			case GL_RGBA32F: setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGBA; break; 
-			case GL_RGB32F: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGB; break;
+			case GL_RGBA32F_ARB: setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGBA; break; 
+			case GL_RGB32F_ARB: setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::FLOAT32 ); format = GL_RGB; break;
 			case GL_LUMINANCE32F_ARB: setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_LUMINANCE; break;
 			case GL_LUMINANCE_ALPHA32F_ARB: setChannelOrder( ImageIo::YA ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 ); format = GL_LUMINANCE_ALPHA; break;
 #endif

@@ -56,8 +56,8 @@ class TriMesh {
 
 	AxisAlignedBox3f	calcBoundingBox() const;
 
-	void		read( IStream *in );
-	void		write( OStream *out ) const;
+	void		read( IStreamRef in );
+	void		write( OStreamRef out ) const;
 	
  private:
 	std::vector<Vec3f>		mVertices;

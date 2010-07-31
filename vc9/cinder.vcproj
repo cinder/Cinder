@@ -585,6 +585,10 @@
 				Name="qtime"
 				>
 				<File
+					RelativePath="..\src\cinder\qtime\MovieWriter.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\cinder\qtime\QuickTime.cpp"
 					>
 				</File>
@@ -1118,6 +1122,10 @@
 			<Filter
 				Name="qtime"
 				>
+				<File
+					RelativePath="..\include\cinder\qtime\MovieWriter.h"
+					>
+				</File>
 				<File
 					RelativePath="..\include\cinder\qtime\QuickTime.h"
 					>

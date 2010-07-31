@@ -99,6 +99,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MultiTouch", "..\..\MultiTo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SerialCommunication", "..\..\SerialCommunication\vc10\SerialCommunication.vcxproj", "{2493345F-8810-43A4-A5F9-4AD2978628A5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuickTimeWriter", "..\..\QuickTimeWriter\vc10\QuickTimeWriter.vcxproj", "{705F4597-3DFD-4940-A1C6-70A680C9FDD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -301,6 +303,10 @@ Global
 		{2493345F-8810-43A4-A5F9-4AD2978628A5}.Debug|Win32.Build.0 = Debug|Win32
 		{2493345F-8810-43A4-A5F9-4AD2978628A5}.Release|Win32.ActiveCfg = Release|Win32
 		{2493345F-8810-43A4-A5F9-4AD2978628A5}.Release|Win32.Build.0 = Release|Win32
+		{705F4597-3DFD-4940-A1C6-70A680C9FDD4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{705F4597-3DFD-4940-A1C6-70A680C9FDD4}.Debug|Win32.Build.0 = Debug|Win32
+		{705F4597-3DFD-4940-A1C6-70A680C9FDD4}.Release|Win32.ActiveCfg = Release|Win32
+		{705F4597-3DFD-4940-A1C6-70A680C9FDD4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

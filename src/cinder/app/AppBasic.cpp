@@ -24,9 +24,11 @@
 #include "cinder/app/Renderer.h"
 
 #if defined( CINDER_MAC )
-#	import "AppImplCocoaBasic.h"
+	#import "AppImplCocoaBasic.h"
 #elif defined( CINDER_MSW )
-#	include "cinder/app/AppImplMswBasic.h"
+	#include <Shellapi.h>
+	#include "cinder/Utilities.h"
+	#include "cinder/app/AppImplMswBasic.h"
 #endif
 
 namespace cinder { namespace app {
@@ -49,9 +51,39 @@ AppBasic::~AppBasic()
 #endif
 }
 
+#if defined( CINDER_MSW )
+void AppBasic::executeLaunch( AppBasic *app, class Renderer *renderer, const char *title )
+{
+	sInstance = app;
+
+	// MSW sends it arguments as widestrings, so we'll convert them to utf8 array and pass that
+	LPWSTR *szArglist;
+	int nArgs;
+
+	szArglist = ::CommandLineToArgvW( ::GetCommandLineW(), &nArgs );
+	if( szArglist && nArgs ) {
+		std::vector<std::string> utf8Args;
+		char **utf8ArgPointers = (char **)malloc( sizeof(char*) * nArgs );
+		for( int i = 0; i < nArgs; ++i )
+			utf8Args.push_back( toUtf8( szArglist[i] ) );
+		for( int i = 0; i < nArgs; ++i )
+			utf8ArgPointers[i] = const_cast<char *>( utf8Args[i].c_str() );
+		App::executeLaunch( app, renderer, title, nArgs, utf8ArgPointers );
+		free( utf8ArgPointers );
+	}
+	else	
+		App::executeLaunch( app, renderer, title, 0, NULL );
+
+	// Free memory allocated for CommandLineToArgvW arguments.
+	::LocalFree( szArglist );
+}
+#endif
+
 void AppBasic::launch( const char *title, int argc, char * const argv[] )
 {
-	// We should parse args here eventually; on Windows we'll use ::GetCommandLineW & CommandLineToArgvW
+	for( int arg = 0; arg < argc; ++arg )
+		mCommandLineArgs.push_back( std::string( argv[arg] ) );
+	
 	mSettings.setTitle( title );
 
 	prepareSettings( &mSettings );

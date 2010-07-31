@@ -87,6 +87,16 @@ class SafeNsData {
 	const Buffer		mBuffer;
 };
 
+//! Represents an exception-safe NSAutoreleasePool. Replaces the global NSAutoreleasePool for its lifetime
+class SafeNsAutoreleasePool {
+  public:
+	SafeNsAutoreleasePool();
+	~SafeNsAutoreleasePool();
+	
+  private:
+	void			*mPool;
+};
+
 //! Safely release a CoreFoundation object, testing for null before calling CFRelease. Designed to be used as the deleter of a shared_ptr.
 void safeCfRelease( const CFTypeRef cfRef );
 
@@ -184,7 +194,8 @@ class ImageTargetCgImage : public ImageTarget {
 	::CGImageRef		mImageRef;
 	size_t				mBitsPerComponent, mBitsPerPixel, mRowBytes;
 	::CGBitmapInfo		mBitmapInfo;
-	uint8_t				*mData;
+	::CFMutableDataRef	mDataRef;
+	uint8_t				*mDataPtr;
 };
 
 //! Loads an ImageSource into a new CGImageRef. Release the result with ::CGImageRelease.
