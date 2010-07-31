@@ -2163,7 +2163,7 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone_d";
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
@@ -2231,7 +2231,7 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone-sim_d";
-				SDKROOT = iphonesimulator3.1;
+				SDKROOT = iphonesimulator4.0;
 				VALID_ARCHS = i386;
 			};
 			name = Debug;
