@@ -31,6 +31,42 @@ namespace gl {
 GLint Fbo::sMaxSamples = -1;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RenderBuffer::Obj
+Renderbuffer::Obj::Obj()
+{
+	mWidth = mHeight = -1;
+	mId = 0;
+	mInternalFormat = 0;
+	mSamples = mCoverageSamples = 0;
+}
+
+Renderbuffer::Obj::Obj( int aWidth, int aHeight, GLenum internalFormat, int msaaSamples, int coverageSamples )
+	: mWidth( aWidth ), mHeight( aHeight ), mInternalFormat( internalFormat ), mSamples( msaaSamples ), mCoverageSamples( coverageSamples )
+{
+	glGenRenderbuffersEXT( 1, &mId );
+
+	if( mSamples > Fbo::getMaxSamples() )
+		mSamples = Fbo::getMaxSamples();
+
+	glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, mId );
+#if defined( CINDER_MSW )
+	if( mCoverageSamples ) // create a CSAA buffer
+		glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER_EXT, mCoverageSamples, mSamples, mInternalFormat, mWidth, mHeight );
+	else
+#endif
+	if( mSamples ) // create a regular MSAA buffer
+		glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, mSamples, mInternalFormat, mWidth, mHeight );
+	else
+		glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, mInternalFormat, mWidth, mHeight );
+}
+
+Renderbuffer::Obj::~Obj()
+{
+	if( mId )
+		glDeleteRenderbuffersEXT( 1, &mId );
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Fbo::Obj
 Fbo::Obj::Obj()
 {
@@ -187,7 +223,7 @@ bool Fbo::initMultisample( bool csaa )
 		// attach the multisampled color buffer
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, mObj->mColorRenderBufferId );
 	}
-
+	
 	if( mObj->mFormat.mDepthBuffer ) {
 		glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, mObj->mDepthRenderBufferId );
 		// create the multisampled depth buffer (with or without coverage sampling)

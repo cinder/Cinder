@@ -29,6 +29,49 @@
 
 namespace cinder { namespace gl {
 
+//! Represents a reference-counted OpenGL Renderbuffer, used primarily in conjunction with Fbos
+class Renderbuffer {
+  public:
+	//! Creates a NULL Renderbuffer
+	Renderbuffer() {}
+	//! Create a Renderbuffer \a width pixels wide and \a heigh pixels high, with an internal format of \a internalFormat, defaulting to GL_RGBA8
+	Renderbuffer( int width, int height, GLenum internalFormat = GL_RGBA8 );
+	//! Create a Renderbuffer \a width pixels wide and \a heigh pixels high, with an internal format of \a internalFormat, defaulting to GL_RGBA8, MSAA samples \a msaaSamples, and CSAA samples \a coverageSamples
+	Renderbuffer( int width, int height, GLenum internalFormat, int msaaSamples, int coverageSamples = 0 );
+
+	//! Returns the width of the Renderbuffer in pixels
+	int		getWidth() const { return mObj->mWidth; }
+	//! Returns the height of the Renderbuffer in pixels
+	int		getHeight() const { return mObj->mHeight; }
+	//! Returns the size of the Renderbuffer in pixels
+	Vec2i	getSize() const { return Vec2i( mObj->mWidth, mObj->mHeight ); }
+	//! Returns the bounding area of the Renderbuffer in pixels
+	Area	getBounds() const { return Area( 0, 0, mObj->mWidth, mObj->mHeight ); }
+	//! Returns the aspect ratio of the Renderbuffer
+	float	getAspectRatio() const { return mObj->mWidth / (float)mObj->mHeight; }
+
+	//! Returns the internal format of the Renderbuffer
+	GLenum	getInternalFormat() const { return mObj->mInternalFormat; }
+	//! Returns the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling
+	int		getSamples() const { return mObj->mSamples; }
+	//! Returns the number of coverage samples used in CSAA-style antialiasing. Defaults to none.
+	int		getCoverageSamples() const { return mObj->mCoverageSamples; }
+
+  private:
+	struct Obj {
+		Obj();
+		Obj( int aWidth, int aHeight, GLenum internalFormat, int msaaSamples, int coverageSamples );
+		~Obj();
+
+		int					mWidth, mHeight;
+		GLuint				mId;
+		GLenum				mInternalFormat;
+		int					mSamples, mCoverageSamples;
+	};
+ 
+	shared_ptr<Obj>		mObj;
+};
+
 //! Represents a reference-counted OpenGL Framebuffer Object
 class Fbo {
  public:
