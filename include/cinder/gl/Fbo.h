@@ -50,6 +50,8 @@ class Renderbuffer {
 	//! Returns the aspect ratio of the Renderbuffer
 	float	getAspectRatio() const { return mObj->mWidth / (float)mObj->mHeight; }
 
+	//! Returns the ID of the Renderbuffer
+	GLuint	getId() const { return mObj->mId; }
 	//! Returns the internal format of the Renderbuffer
 	GLenum	getInternalFormat() const { return mObj->mInternalFormat; }
 	//! Returns the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling
@@ -203,7 +205,8 @@ class Fbo {
 		int					mWidth, mHeight;
 		Format				mFormat;
 		GLuint				mId, mColorTextureId, mDepthTextureId;
-		GLuint				mColorRenderBufferId, mDepthRenderBufferId, mResolveFramebufferId;
+		GLuint				mResolveFramebufferId;
+		Renderbuffer		mColorRenderbuffer, mDepthRenderbuffer;
 		Texture				mColorTexture, mDepthTexture;
 		mutable bool		mNeedsResolve, mNeedsMipmapUpdate;
 	};
