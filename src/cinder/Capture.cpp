@@ -24,7 +24,7 @@
 #include "cinder/Capture.h"
 #if defined( CINDER_MAC )
 	#import <QTKit/QTKit.h>
-	#import "cinder/CaptureCocoa.h"
+	#import "cinder/CaptureImplQtKit.h"
 	#include "cinder/cocoa/CinderCocoa.h"
 #else
 	#include <boost/noncopyable.hpp>
@@ -214,7 +214,7 @@ Capture::Obj::Obj( int32_t width, int32_t height, const Device &device )
 	: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, PLATFORM_DEFAULT_CHANNEL_ORDER ), mDevice( device )
 {
 #if defined( CINDER_MAC )
-	mImpl = [[::CaptureCocoa alloc] initWithDevice:mDevice width:width height:height];
+	mImpl = [[::CaptureImplQtKit alloc] initWithDevice:mDevice width:width height:height];
 #else
 	mDeviceID = device.getUniqueId();
 	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight ) )
@@ -229,8 +229,8 @@ Capture::Obj::Obj( int32_t width, int32_t height, const Device &device )
 Capture::Obj::~Obj()
 {
 #if defined( CINDER_MAC )
-	[((::CaptureCocoa*)mImpl) stopCapture];
-	[((::CaptureCocoa*)mImpl) release];
+	[((::CaptureImplQtKit*)mImpl) stopCapture];
+	[((::CaptureImplQtKit*)mImpl) release];
 #else
 	CaptureMgr::instanceVI()->stopDevice( mDeviceID );
 #endif
@@ -247,7 +247,7 @@ Capture::Capture( int32_t width, int32_t height, const Device &device )
 void Capture::start()
 {
 #if defined( CINDER_MAC )
-	[((::CaptureCocoa*)mObj->mImpl) startCapture];
+	[((::CaptureImplQtKit*)mObj->mImpl) startCapture];
 #else
 	if( ! mObj->mIsCapturing ) {
 		if( ! CaptureMgr::instanceVI()->setupDevice( mObj->mDeviceID, mObj->mWidth, mObj->mHeight ) )
@@ -264,7 +264,7 @@ void Capture::start()
 void Capture::stop()
 {
 #if defined( CINDER_MAC )
-	[((::CaptureCocoa*)mObj->mImpl) stopCapture];
+	[((::CaptureImplQtKit*)mObj->mImpl) stopCapture];
 #else
 	if( mObj->mIsCapturing ) {
 		CaptureMgr::instanceVI()->stopDevice( mObj->mDeviceID );
@@ -276,7 +276,7 @@ void Capture::stop()
 bool Capture::isCapturing()
 {
 #if defined( CINDER_MAC )
-	return [((::CaptureCocoa*)mObj->mImpl) isCapturing];
+	return [((::CaptureImplQtKit*)mObj->mImpl) isCapturing];
 #else
 	return mObj->mIsCapturing;
 #endif
@@ -285,7 +285,7 @@ bool Capture::isCapturing()
 bool Capture::checkNewFrame() const
 {
 #if defined( CINDER_MAC )
-	return [((::CaptureCocoa*)mObj->mImpl) checkNewFrame];
+	return [((::CaptureImplQtKit*)mObj->mImpl) checkNewFrame];
 #else
 	return CaptureMgr::instanceVI()->isFrameNew( mObj->mDeviceID );
 #endif	
@@ -294,7 +294,7 @@ bool Capture::checkNewFrame() const
 Surface8u Capture::getSurface() const
 {
 #if defined( CINDER_MAC )
-	return [((::CaptureCocoa*)mObj->mImpl) getCurrentFrame];
+	return [((::CaptureImplQtKit*)mObj->mImpl) getCurrentFrame];
 #else
 	if( CaptureMgr::instanceVI()->isFrameNew( mObj->mDeviceID ) ) {
 		mObj->mCurrentFrame = mObj->mSurfaceCache->getNewSurface();

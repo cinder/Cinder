@@ -132,7 +132,7 @@
 		00704FE01114F93F003FCAE4 /* Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 003832DE0E9C03CB00ACB120 /* Stream.h */; };
 		00704FE11114F93F003FCAE4 /* GlslProg.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D9A07D0EA57C5100FF5AEB /* GlslProg.h */; };
 		00704FE21114F93F003FCAE4 /* Capture.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DE0EA7975A005DD3E6 /* Capture.h */; };
-		00704FE31114F93F003FCAE4 /* CaptureCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DF0EA7975A005DD3E6 /* CaptureCocoa.h */; };
+		00704FE31114F93F003FCAE4 /* CaptureImplQtKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DF0EA7975A005DD3E6 /* CaptureImplQtKit.h */; };
 		00704FE41114F93F003FCAE4 /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D23A550EAEB4DE0002BF91 /* Color.h */; };
 		00704FE51114F93F003FCAE4 /* Filter.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF0D0EB79A91003AB86B /* Filter.h */; };
 		00704FE61114F93F003FCAE4 /* Rect.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF160EB79C45003AB86B /* Rect.h */; };
@@ -270,9 +270,9 @@
 		0071BD050FB9F4AD0092E7D6 /* Display.h in Headers */ = {isa = PBXBuildFile; fileRef = 0071BD040FB9F4AD0092E7D6 /* Display.h */; };
 		0071BD090FB9FA2C0092E7D6 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0071BD080FB9FA2C0092E7D6 /* Display.cpp */; };
 		007438420EA7924F005DD3E6 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
-		007438430EA7924F005DD3E6 /* CaptureCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 007438410EA7924F005DD3E6 /* CaptureCocoa.mm */; };
+		007438430EA7924F005DD3E6 /* CaptureImplQtKit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 007438410EA7924F005DD3E6 /* CaptureImplQtKit.mm */; };
 		007438E00EA7975A005DD3E6 /* Capture.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DE0EA7975A005DD3E6 /* Capture.h */; };
-		007438E10EA7975A005DD3E6 /* CaptureCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DF0EA7975A005DD3E6 /* CaptureCocoa.h */; };
+		007438E10EA7975A005DD3E6 /* CaptureImplQtKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DF0EA7975A005DD3E6 /* CaptureImplQtKit.h */; };
 		007439930EA7BB47005DD3E6 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007439920EA7BB47005DD3E6 /* QTKit.framework */; };
 		0074399E0EA7BB7D005DD3E6 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */; };
 		0076581C11226084005547DF /* CinderResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 0076581B11226084005547DF /* CinderResources.h */; };
@@ -382,7 +382,7 @@
 		00CFD9411135C3520091E310 /* Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 003832DE0E9C03CB00ACB120 /* Stream.h */; };
 		00CFD9421135C3520091E310 /* GlslProg.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D9A07D0EA57C5100FF5AEB /* GlslProg.h */; };
 		00CFD9431135C3520091E310 /* Capture.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DE0EA7975A005DD3E6 /* Capture.h */; };
-		00CFD9441135C3520091E310 /* CaptureCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DF0EA7975A005DD3E6 /* CaptureCocoa.h */; };
+		00CFD9441135C3520091E310 /* CaptureImplQtKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DF0EA7975A005DD3E6 /* CaptureImplQtKit.h */; };
 		00CFD9451135C3520091E310 /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D23A550EAEB4DE0002BF91 /* Color.h */; };
 		00CFD9461135C3520091E310 /* Filter.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF0D0EB79A91003AB86B /* Filter.h */; };
 		00CFD9471135C3520091E310 /* Rect.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF160EB79C45003AB86B /* Rect.h */; };
@@ -698,13 +698,13 @@
 		006228E310C8273C00A8191C /* DataSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataSource.cpp; sourceTree = "<group>"; };
 		006A1EC611D7F39B00941A5E /* MovieWriter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = MovieWriter.cpp; path = qtime/MovieWriter.cpp; sourceTree = "<group>"; };
 		006A1EC811D7F3AC00941A5E /* MovieWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MovieWriter.h; path = qtime/MovieWriter.h; sourceTree = "<group>"; };
-		007050BE1114F93F003FCAE4 /* libcinder-iphone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0071BD040FB9F4AD0092E7D6 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
 		0071BD080FB9FA2C0092E7D6 /* Display.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Display.cpp; sourceTree = "<group>"; };
 		007438400EA7924F005DD3E6 /* Capture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Capture.cpp; sourceTree = "<group>"; };
-		007438410EA7924F005DD3E6 /* CaptureCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureCocoa.mm; sourceTree = "<group>"; };
+		007438410EA7924F005DD3E6 /* CaptureImplQtKit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureImplQtKit.mm; sourceTree = "<group>"; };
 		007438DE0EA7975A005DD3E6 /* Capture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Capture.h; sourceTree = "<group>"; };
-		007438DF0EA7975A005DD3E6 /* CaptureCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureCocoa.h; sourceTree = "<group>"; };
+		007438DF0EA7975A005DD3E6 /* CaptureImplQtKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplQtKit.h; sourceTree = "<group>"; };
 		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
 		0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		0076581B11226084005547DF /* CinderResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderResources.h; sourceTree = "<group>"; };
@@ -784,7 +784,7 @@
 		00CE73920E92DBE40059E09B /* gl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gl.h; path = gl/gl.h; sourceTree = "<group>"; };
 		00CE73930E92DBE40059E09B /* GLee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLee.h; path = gl/GLee.h; sourceTree = "<group>"; };
 		00CE73970E92DBF80059E09B /* gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl.cpp; path = gl/gl.cpp; sourceTree = "<group>"; };
-		00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00CFE37B113B85F60091E310 /* Path2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path2d.h; sourceTree = "<group>"; };
 		00CFE37C113B85F60091E310 /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
 		00D23A530EAEB4C00002BF91 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
@@ -865,7 +865,7 @@
 		C7CDF0060EBD5DA4000997D3 /* xpath_static.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_static.h; path = ../include/tinyxml/xpath_static.h; sourceTree = SOURCE_ROOT; };
 		C7CDF0070EBD5DA4000997D3 /* xpath_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_stream.h; path = ../include/tinyxml/xpath_stream.h; sourceTree = SOURCE_ROOT; };
 		C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_syntax.h; path = ../include/tinyxml/xpath_syntax.h; sourceTree = SOURCE_ROOT; };
-		D2AAC07E0554694100DB518D /* libcinder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2AAC07E0554694100DB518D /* libcinder_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EAC3D1A81011F2E700FFBC9E /* Serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serial.h; sourceTree = "<group>"; };
 		EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Serial.cpp; sourceTree = "<group>"; };
@@ -1071,7 +1071,7 @@
 				00887AC00F9C279700FD55C5 /* MayaCamUI.h */,
 				00F3BD1F0EBF89B700382AC1 /* Utilities.h */,
 				007438DE0EA7975A005DD3E6 /* Capture.h */,
-				007438DF0EA7975A005DD3E6 /* CaptureCocoa.h */,
+				007438DF0EA7975A005DD3E6 /* CaptureImplQtKit.h */,
 				00241A0C0E80375A004D34EB /* Cinder.h */,
 				00241AAE0E830DBA004D34EB /* Camera.h */,
 				00241AAF0E830DBA004D34EB /* CinderMath.h */,
@@ -1149,7 +1149,7 @@
 				008CE83C0E94672E00644A05 /* Channel.cpp */,
 				00D23A530EAEB4C00002BF91 /* Color.cpp */,
 				007438400EA7924F005DD3E6 /* Capture.cpp */,
-				007438410EA7924F005DD3E6 /* CaptureCocoa.mm */,
+				007438410EA7924F005DD3E6 /* CaptureImplQtKit.mm */,
 				003832E30E9C04AD00ACB120 /* Stream.cpp */,
 				00B729E2115DABD800CD71B9 /* Timer.cpp */,
 				00D92FB70EB8AE5200EE9D75 /* Url.cpp */,
@@ -1283,9 +1283,9 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2AAC07E0554694100DB518D /* libcinder.a */,
-				007050BE1114F93F003FCAE4 /* libcinder-iphone.a */,
-				00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */,
+				D2AAC07E0554694100DB518D /* libcinder_d.a */,
+				007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */,
+				00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1464,7 +1464,7 @@
 				00704FE01114F93F003FCAE4 /* Stream.h in Headers */,
 				00704FE11114F93F003FCAE4 /* GlslProg.h in Headers */,
 				00704FE21114F93F003FCAE4 /* Capture.h in Headers */,
-				00704FE31114F93F003FCAE4 /* CaptureCocoa.h in Headers */,
+				00704FE31114F93F003FCAE4 /* CaptureImplQtKit.h in Headers */,
 				00704FE41114F93F003FCAE4 /* Color.h in Headers */,
 				00704FE51114F93F003FCAE4 /* Filter.h in Headers */,
 				00704FE61114F93F003FCAE4 /* Rect.h in Headers */,
@@ -1579,7 +1579,7 @@
 				00CFD9411135C3520091E310 /* Stream.h in Headers */,
 				00CFD9421135C3520091E310 /* GlslProg.h in Headers */,
 				00CFD9431135C3520091E310 /* Capture.h in Headers */,
-				00CFD9441135C3520091E310 /* CaptureCocoa.h in Headers */,
+				00CFD9441135C3520091E310 /* CaptureImplQtKit.h in Headers */,
 				00CFD9451135C3520091E310 /* Color.h in Headers */,
 				00CFD9461135C3520091E310 /* Filter.h in Headers */,
 				00CFD9471135C3520091E310 /* Rect.h in Headers */,
@@ -1694,7 +1694,7 @@
 				003832DF0E9C03CB00ACB120 /* Stream.h in Headers */,
 				00D9A07E0EA57C5100FF5AEB /* GlslProg.h in Headers */,
 				007438E00EA7975A005DD3E6 /* Capture.h in Headers */,
-				007438E10EA7975A005DD3E6 /* CaptureCocoa.h in Headers */,
+				007438E10EA7975A005DD3E6 /* CaptureImplQtKit.h in Headers */,
 				00D23A560EAEB4DE0002BF91 /* Color.h in Headers */,
 				009EEF0E0EB79A91003AB86B /* Filter.h in Headers */,
 				009EEF170EB79C45003AB86B /* Rect.h in Headers */,
@@ -1814,7 +1814,7 @@
 			);
 			name = cinder_iphone;
 			productName = cinder;
-			productReference = 007050BE1114F93F003FCAE4 /* libcinder-iphone.a */;
+			productReference = 007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		00CFD92C1135C3520091E310 /* cinder_iphone_sim */ = {
@@ -1831,7 +1831,7 @@
 			);
 			name = cinder_iphone_sim;
 			productName = cinder;
-			productReference = 00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */;
+			productReference = 00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D2AAC07D0554694100DB518D /* cinder */ = {
@@ -1848,7 +1848,7 @@
 			);
 			name = cinder;
 			productName = cinder;
-			productReference = D2AAC07E0554694100DB518D /* libcinder.a */;
+			productReference = D2AAC07E0554694100DB518D /* libcinder_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -2046,7 +2046,7 @@
 				003832E40E9C04AD00ACB120 /* Stream.cpp in Sources */,
 				00D9A07C0EA57C3F00FF5AEB /* GlslProg.cpp in Sources */,
 				007438420EA7924F005DD3E6 /* Capture.cpp in Sources */,
-				007438430EA7924F005DD3E6 /* CaptureCocoa.mm in Sources */,
+				007438430EA7924F005DD3E6 /* CaptureImplQtKit.mm in Sources */,
 				00D23A540EAEB4C00002BF91 /* Color.cpp in Sources */,
 				009EEF1A0EB79C89003AB86B /* Rect.cpp in Sources */,
 				00D92FB80EB8AE5200EE9D75 /* Url.cpp in Sources */,

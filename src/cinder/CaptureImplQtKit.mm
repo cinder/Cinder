@@ -20,8 +20,18 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/CaptureCocoa.h"
+#import "cinder/CaptureImplQtKit.h"
 #include "cinder/cocoa/CinderCocoa.h"
+
+/*CaptureImplQtKitDevice::CaptureImplQtKitDevice( QTCaptureDevice* device )
+{
+
+}
+
+CaptureImplQtKitDevice::~CaptureImplQtKitDevice()
+{
+
+}*/
 
 static void frameDeallocator( void *refcon );
 
@@ -58,7 +68,7 @@ static void frameDeallocator( void *refcon );
 	NSLog(@"------------");
 }
 */
-@implementation CaptureCocoa
+@implementation CaptureImplQtKit
 
 - (void)dealloc 
 {

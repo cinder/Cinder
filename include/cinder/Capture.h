@@ -28,10 +28,10 @@
 
 #if defined( CINDER_MAC )
 #	if defined( __OBJC__ )
-		@class CaptureCocoa;
+		@class CaptureImplQtKit;
 		@class QTCaptureDevice;
 #	else
-		class CaptureCocoa;
+		class CaptureImplQtKit;
 		class QTCaptureDevice;
 #	endif
 #elif defined( CINDER_MSW )
@@ -126,7 +126,7 @@ class Capture {
 		virtual ~Obj();
 
 #if defined( CINDER_MAC ) 
-		CaptureCocoa		*mImpl;
+		CaptureImplQtKit				*mImpl;
 #elif defined( CINDER_MSW )
 		int								mDeviceID;
 		// this maintains a reference to the mgr so that we don't destroy it before

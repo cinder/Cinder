@@ -21,10 +21,20 @@
 */
 
 #import <QTKit/QTKit.h>
-#include "Capture.h"
 #include "cinder/Surface.h"
 
-@interface CaptureCocoa : NSObject {
+/*class CaptureImplQtKitDevice {
+	CaptureImplQtKitDevice() {}
+	CaptureImplQtKitDevice( QTCaptureDevice* device );
+	~CaptureImplQtKitDevice();
+	
+	const std::string&		getName() const { return mName; }
+	bool					checkAvailable() const;
+	bool					isConnected() const;
+	const std::string&		getUniqueId() const { return mUniqueId; }
+};*/
+
+@interface CaptureImplQtKit : NSObject {
 	BOOL								isCapturing;
 	QTCaptureSession					*mCaptureSession;
 	QTCaptureDecompressedVideoOutput	*mCaptureDecompressedOutput;
