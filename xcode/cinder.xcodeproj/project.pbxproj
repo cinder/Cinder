@@ -566,6 +566,10 @@
 		C705F1800FD995120009395A /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C705F17F0FD995120009395A /* Buffer.h */; };
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
 		C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70E1A01106AA39D00E63577 /* Buffer.cpp */; };
+		C7106FB6120CAFAD003B44A8 /* CaptureImplAvFoundation.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7106FB5120CAFAD003B44A8 /* CaptureImplAvFoundation.mm */; };
+		C7106FB7120CAFAD003B44A8 /* CaptureImplAvFoundation.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7106FB5120CAFAD003B44A8 /* CaptureImplAvFoundation.mm */; };
+		C7106FB9120CAFD1003B44A8 /* CaptureImplAvFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = C7106FB8120CAFD1003B44A8 /* CaptureImplAvFoundation.h */; };
+		C7106FBA120CAFD2003B44A8 /* CaptureImplAvFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = C7106FB8120CAFD1003B44A8 /* CaptureImplAvFoundation.h */; };
 		C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7792FAE119A185000521786 /* CocoaCaConverter.cpp */; };
 		C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
 		C7A76E9F1176449F00A46655 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
@@ -822,6 +826,8 @@
 		C705F17F0FD995120009395A /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E19FE106AA38700E63577 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E1A01106AA39D00E63577 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
+		C7106FB5120CAFAD003B44A8 /* CaptureImplAvFoundation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureImplAvFoundation.mm; sourceTree = "<group>"; };
+		C7106FB8120CAFD1003B44A8 /* CaptureImplAvFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplAvFoundation.h; sourceTree = "<group>"; };
 		C7792FAE119A185000521786 /* CocoaCaConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CocoaCaConverter.cpp; sourceTree = "<group>"; };
 		C7792FB0119A186000521786 /* CocoaCaConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaCaConverter.h; sourceTree = "<group>"; };
 		C7A76E9A1176449F00A46655 /* Io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Io.cpp; sourceTree = "<group>"; };
@@ -1072,6 +1078,7 @@
 				00F3BD1F0EBF89B700382AC1 /* Utilities.h */,
 				007438DE0EA7975A005DD3E6 /* Capture.h */,
 				007438DF0EA7975A005DD3E6 /* CaptureImplQtKit.h */,
+				C7106FB8120CAFD1003B44A8 /* CaptureImplAvFoundation.h */,
 				00241A0C0E80375A004D34EB /* Cinder.h */,
 				00241AAE0E830DBA004D34EB /* Camera.h */,
 				00241AAF0E830DBA004D34EB /* CinderMath.h */,
@@ -1150,6 +1157,7 @@
 				00D23A530EAEB4C00002BF91 /* Color.cpp */,
 				007438400EA7924F005DD3E6 /* Capture.cpp */,
 				007438410EA7924F005DD3E6 /* CaptureImplQtKit.mm */,
+				C7106FB5120CAFAD003B44A8 /* CaptureImplAvFoundation.mm */,
 				003832E30E9C04AD00ACB120 /* Stream.cpp */,
 				00B729E2115DABD800CD71B9 /* Timer.cpp */,
 				00D92FB70EB8AE5200EE9D75 /* Url.cpp */,
@@ -1550,6 +1558,7 @@
 				0049A34E116EE675007DDFB0 /* AxisAlignedBox.h in Headers */,
 				43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F011B0C87800B61EB6 /* TouchEvent.h in Headers */,
+				C7106FB9120CAFD1003B44A8 /* CaptureImplAvFoundation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1665,6 +1674,7 @@
 				0049A34F116EE675007DDFB0 /* AxisAlignedBox.h in Headers */,
 				43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F111B0C87800B61EB6 /* TouchEvent.h in Headers */,
+				C7106FBA120CAFD2003B44A8 /* CaptureImplAvFoundation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1947,6 +1957,7 @@
 				0049A34A116EE65C007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F51194F584004D686E /* Text.cpp in Sources */,
 				005374F71194F588004D686E /* Font.cpp in Sources */,
+				C7106FB6120CAFAD003B44A8 /* CaptureImplAvFoundation.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2025,6 +2036,7 @@
 				0049A34B116EE65D007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F61194F584004D686E /* Text.cpp in Sources */,
 				005374F81194F589004D686E /* Font.cpp in Sources */,
+				C7106FB7120CAFAD003B44A8 /* CaptureImplAvFoundation.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2211,7 +2223,10 @@
 				ARCHS = i386;
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_DIR)/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.0.sdk/System/Library/Frameworks\"",
+				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -2245,7 +2260,10 @@
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_DIR)/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.0.sdk/System/Library/Frameworks\"",
+				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_FAST_MATH = YES;
 				GCC_MODEL_TUNING = G5;

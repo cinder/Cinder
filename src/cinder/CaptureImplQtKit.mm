@@ -23,8 +23,6 @@
 #import "cinder/CaptureImplQtKit.h"
 #include "cinder/cocoa/CinderCocoa.h"
 
-#import <QTKit/QTKit.h>
-
 namespace cinder {
 
 CaptureImplQtKitDevice::CaptureImplQtKitDevice( QTCaptureDevice* device )
@@ -57,7 +55,7 @@ bool CaptureImplQtKitDevice::isConnected() const
 	return [device isConnected];
 }
 
-};
+} //namespace
 
 static void frameDeallocator( void *refcon );
 
@@ -249,7 +247,10 @@ static BOOL sDevicesEnumerated = false;
 		[[mCaptureDeviceInput device] close];
 		
 		[mCaptureSession release];
+		mCaptureSession = nil;
 		[mCaptureDeviceInput release];
+		mCaptureDeviceInput = nil;
+		
 
 		mIsCapturing = false;
 		mHasNewFrame = false;
