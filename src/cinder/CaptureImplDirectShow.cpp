@@ -141,17 +141,20 @@ bool CaptureImplDirectShow::Device::isConnected() const
 }*/
 
 CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, const Capture::Device &device )
+	: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, SurfaceChannelOrder::BGR )
 {
 	init( width, height, device );
 }
 
 CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height )
+	: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, SurfaceChannelOrder::BGR )
 {
 	init( width, height, Device() );
 }
 
 void CaptureImplDirectShow::init( int32_t width, int32_t height, const Capture::Device &device )
 {
+	//mDevice = device;
 	mDeviceID = device.getUniqueId();
 	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight ) )
 		throw CaptureExcInitFail();
