@@ -33,7 +33,7 @@ class CaptureImplDirectShow {
  public:
 	class Device;
 
-	CaptureImplDirectShow( int32_t width, int32_t height, const Capture::Device &device );
+	CaptureImplDirectShow( int32_t width, int32_t height, const Capture::DeviceRef device );
 	CaptureImplDirectShow( int32_t width, int32_t height );
 	~CaptureImplDirectShow();
 	
@@ -48,9 +48,9 @@ class CaptureImplDirectShow {
 	
 	Surface8u	getSurface() const;
 	
-	const Device& getDevice() const { return mDevice; }
+	const Capture::DeviceRef getDevice() const { return mDevice; }
 	
-	//static const std::vector<Device>&	getDevices( bool forceRefresh = false );
+	static const std::vector<Capture::DeviceRef>&	getDevices( bool forceRefresh = false );
 
 	class Device : public Capture::Device {
  	  public:
@@ -59,7 +59,6 @@ class CaptureImplDirectShow {
 		Capture::DeviceIdentifier	getUniqueId() const { return mUniqueId; }
 
 		Device( const std::string &name, int uniqueId ) : Capture::Device(), mUniqueId( uniqueId ) { mName = name; }
-		Device() : mUniqueId( 0 ) {}
 	 protected:
 		int				mUniqueId;
 	};
@@ -75,10 +74,10 @@ class CaptureImplDirectShow {
 
 	int32_t				mWidth, mHeight;
 	mutable Surface8u	mCurrentFrame;
-	Device				mDevice;
+	Capture::DeviceRef	mDevice;
 
 	static bool							sDevicesEnumerated;
-	static std::vector<CaptureImplDirectShow::Device>	sDevices;
+	static std::vector<Capture::DeviceRef>	sDevices;
 };
 
 } //namespace

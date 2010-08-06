@@ -30,7 +30,7 @@ using namespace std;
 namespace cinder {
 
 bool CaptureImplDirectShow::sDevicesEnumerated = false;
-vector<CaptureImplDirectShow::Device> CaptureImplDirectShow::sDevices;
+vector<Capture::DeviceRef> CaptureImplDirectShow::sDevices;
 
 class CaptureMgr : private boost::noncopyable
 {
@@ -124,7 +124,7 @@ bool CaptureImplDirectShow::Device::isConnected() const
 	return CaptureMgr::instanceVI()->isDeviceConnected( mUniqueId );
 }
 
-/*const vector<CaptureImplDirectShow::Device>& CaptureImplDirectShow::getDevices( bool forceRefresh )
+const vector<Capture::DeviceRef>& CaptureImplDirectShow::getDevices( bool forceRefresh )
 {
 	if( sDevicesEnumerated && ( ! forceRefresh ) )
 		return sDevices;
@@ -133,29 +133,20 @@ bool CaptureImplDirectShow::Device::isConnected() const
 
 	CaptureMgr::instance()->sTotalDevices = CaptureMgr::instanceVI()->listDevices( true );
 	for( int i = 0; i < CaptureMgr::instance()->sTotalDevices; ++i ) {
-		sDevices.push_back( CaptureImplDirectShow::Device( videoInput::getDeviceName( i ), i ) );
+		sDevices.push_back( Capture::DeviceRef( new CaptureImplDirectShow::Device( videoInput::getDeviceName( i ), i ) ) );
 	}
 
 	sDevicesEnumerated = true;
 	return sDevices;
-}*/
-
-CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, const Capture::Device &device )
-	: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, SurfaceChannelOrder::BGR )
-{
-	init( width, height, device );
 }
 
-CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height )
-	: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, SurfaceChannelOrder::BGR )
+CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, const Capture::DeviceRef device )
+	: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, SurfaceChannelOrder::BGR ), mDeviceID( 0 )
 {
-	init( width, height, Device() );
-}
-
-void CaptureImplDirectShow::init( int32_t width, int32_t height, const Capture::Device &device )
-{
-	//mDevice = device;
-	mDeviceID = device.getUniqueId();
+	mDevice = device;
+	if( mDevice ) {
+		mDeviceID = device->getUniqueId();
+	}
 	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight ) )
 		throw CaptureExcInitFail();
 	mWidth = CaptureMgr::instanceVI()->getWidth( mDeviceID );
