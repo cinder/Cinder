@@ -384,6 +384,9 @@
     <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp">
       <Filter>Source Files\qtime</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -444,9 +447,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Capture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\CaptureCocoa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Channel.h">
@@ -724,6 +724,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h">
       <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

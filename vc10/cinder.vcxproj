@@ -102,6 +102,7 @@
     <ClCompile Include="..\src\cinder\Buffer.cpp" />
     <ClCompile Include="..\src\cinder\Camera.cpp" />
     <ClCompile Include="..\src\cinder\Capture.cpp" />
+    <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp" />
     <ClCompile Include="..\src\cinder\Channel.cpp" />
     <ClCompile Include="..\src\cinder\Color.cpp" />
     <ClCompile Include="..\src\cinder\DataSource.cpp" />
@@ -199,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
+    <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
@@ -221,7 +223,6 @@
     <ClInclude Include="..\include\cinder\Buffer.h" />
     <ClInclude Include="..\include\cinder\Camera.h" />
     <ClInclude Include="..\include\cinder\Capture.h" />
-    <ClInclude Include="..\include\cinder\CaptureCocoa.h" />
     <ClInclude Include="..\include\cinder\Channel.h" />
     <ClInclude Include="..\include\cinder\ChanTraits.h" />
     <ClInclude Include="..\include\cinder\Cinder.h" />

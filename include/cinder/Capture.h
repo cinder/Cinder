@@ -34,20 +34,23 @@
 		class CaptureImplQtKit;
 		class QTCaptureDevice;
 #	endif
-#elif defined( CINDER_MSW )
-#	include "msw/videoInput/videoInput.h"
 #endif
 
 #include <map>
 
 namespace cinder {
 
+#if defined( CINDER_MSW )
+	class CaptureImplDirectShow;
+#endif
+
 class Capture {
  public:
 	class Device;
 	
 	Capture() {}
-	Capture( int32_t width, int32_t height, const Device &device = Device() );
+	Capture( int32_t width, int32_t height, const Device &device/* = Device()*/ );
+	Capture( int32_t width, int32_t height );
 	~Capture() {}
 
 	//! Begin capturing video
@@ -61,9 +64,9 @@ class Capture {
 	bool		checkNewFrame() const;
 
 	//! Returns the width of the captured image in pixels.
-	int32_t		getWidth() const { return mObj->mWidth; }
+	int32_t		getWidth() const;
 	//! Returns the height of the captured image in pixels.
-	int32_t		getHeight() const { return mObj->mHeight; }
+	int32_t		getHeight() const;
 	//! Returns the size of the captured image in pixels.
 	Vec2i		getSize() const { return Vec2i( getWidth(), getHeight() ); }
 	//! Returns the aspect ratio of the capture imagee, which is its width / height
@@ -74,15 +77,15 @@ class Capture {
 	//! Returns a Surface representing the current captured frame.
 	Surface8u	getSurface() const;
 	//! Returns the associated Device for this instace of Capture
-	Device		getDevice() const { return mObj->mDevice; }
+	const Capture::Device& getDevice() const;
 
 	//! Returns a vector of all Devices connected to the system. If \a forceRefresh then the system will be polled for connected devices.
-	static const std::vector<Device>&	getDevices( bool forceRefresh = false );
+	//static const std::vector<Device>&	getDevices( bool forceRefresh = false );
 	//! Finds a particular device based on its name
-	static Device						findDeviceByName( const std::string &name );
+	//static Device						findDeviceByName( const std::string &name );
 
 	//! Represents a video capture device
-	class Device {
+	/*class Device {
  	  public:
 		//! Returns the human-readable name of the device.
 		const std::string&		getName() const { return mName; }
@@ -107,42 +110,61 @@ class Capture {
 	#if defined( CINDER_MAC )
 		Device( QTCaptureDevice* device );
 	#else
-		Device( const std::string &name, int uniqueId ) : mName( name ), mUniqueId( uniqueId ) {}
+		Device( const std::string &name, int uniqueId );
 	#endif
 
 		std::string		mName;
 	#if defined( CINDER_MAC )
 		std::string		mUniqueId;
 	#else
-		int				mUniqueId;
+		::Device		*mImpl;
 	#endif
 	
 		friend class Capture;
+	};*/
+#if defined( CINDER_COCOA )
+	typedef const std::string& DeviceIdentifier;
+#else
+	typedef int DeviceIdentifier;
+#endif
+
+	//! \cond
+	// This is an abstract base class for implementing platform specific devices
+	class Device {
+	 public:
+		virtual ~Device() {}
+		//! Returns the human-readable name of the device.
+		const std::string&					getName() const { return mName; }
+		//! Returns whether the device is available for use.
+		virtual bool						checkAvailable() const = 0;
+		//! Returns whether the device is currently connected.
+		virtual bool						isConnected() const = 0;
+		//! Returns the OS-specific unique identifier
+		virtual Capture::DeviceIdentifier	getUniqueId() const = 0;
+	 protected:
+		Device() {}
+		 std::string		mName;
 	};
 		
  protected: 
 	struct Obj {
 		Obj( int32_t width, int32_t height, const Capture::Device &device );
+		Obj( int32_t width, int32_t height );
 		virtual ~Obj();
 
 #if defined( CINDER_MAC ) 
 		CaptureImplQtKit				*mImpl;
 #elif defined( CINDER_MSW )
-		int								mDeviceID;
-		// this maintains a reference to the mgr so that we don't destroy it before
-		// the last Capture is destroyed
-		shared_ptr<class CaptureMgr>	mMgrPtr;
-		bool							mIsCapturing;
-		shared_ptr<class SurfaceCache>	mSurfaceCache;
+		CaptureImplDirectShow			*mImpl;
 #endif
-		int32_t				mWidth, mHeight;
-		mutable Surface8u	mCurrentFrame;
-		Capture::Device		mDevice;
+		//int32_t				mWidth, mHeight;
+		//mutable Surface8u	mCurrentFrame;
+		//Capture::Device		mDevice;
 	};
 	
 	shared_ptr<Obj>						mObj;
-	static bool							sDevicesEnumerated;
-	static std::vector<Capture::Device>	sDevices;
+	//static bool							sDevicesEnumerated;
+	//static std::vector<Capture::Device>	sDevices;
 	
   public:
  	//@{

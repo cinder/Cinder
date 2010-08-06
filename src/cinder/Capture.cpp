@@ -26,8 +26,10 @@
 	#import <QTKit/QTKit.h>
 	#import "cinder/CaptureImplQtKit.h"
 	#include "cinder/cocoa/CinderCocoa.h"
-#else
-	#include <boost/noncopyable.hpp>
+	typedef CaptureImplQtKit	CapturePlatformImpl;
+#elif defined( CINDER_MSW )
+	#include "cinder/CaptureImplDirectShow.h"
+	typedef cinder::CaptureImplDirectShow	CapturePlatformImpl;
 #endif
 
 #include <set>
@@ -41,91 +43,8 @@ namespace cinder {
 	#define PLATFORM_DEFAULT_CHANNEL_ORDER SurfaceChannelOrder::RGB
 #endif
 
-bool Capture::sDevicesEnumerated = false;
-vector<Capture::Device> Capture::sDevices;
-
-#if defined( CINDER_MSW )
-class CaptureMgr : private boost::noncopyable
-{
- public:
-	CaptureMgr();
-	~CaptureMgr();
-
-	static shared_ptr<CaptureMgr>	instance();
-	static videoInput*	instanceVI() { return instance()->mVideoInput; }
-
-	static shared_ptr<CaptureMgr>	sInstance;
-	static int						sTotalDevices;
-	
- private:	
-	videoInput			*mVideoInput;
-};
-shared_ptr<CaptureMgr>	CaptureMgr::sInstance;
-int						CaptureMgr::sTotalDevices = 0;
-
-CaptureMgr::CaptureMgr()
-{
-	mVideoInput = new videoInput;
-	mVideoInput->setUseCallback( true );
-}
-
-CaptureMgr::~CaptureMgr()
-{
-	delete mVideoInput;
-}
-
-shared_ptr<CaptureMgr> CaptureMgr::instance()
-{
-	if( ! sInstance ) {
-		sInstance = shared_ptr<CaptureMgr>( new CaptureMgr );
-	}
-	return sInstance;
-}
-
-class SurfaceCache {
- public:
-	SurfaceCache( int32_t width, int32_t height, SurfaceChannelOrder sco, int numSurfaces )
-		: mWidth( width ), mHeight( height ), mSCO( sco )
-	{
-		for( int i = 0; i < numSurfaces; ++i ) {
-			mSurfaceData.push_back( shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], checked_array_deleter<uint8_t>() ) );
-			mDeallocatorRefcon.push_back( make_pair( this, i ) );
-			mSurfaceUsed.push_back( false );
-		}
-	}
-	
-	Surface8u getNewSurface()
-	{
-		// try to find an available block of pixel data to wrap a surface around	
-		for( size_t i = 0; i < mSurfaceData.size(); ++i ) {
-			if( ! mSurfaceUsed[i] ) {
-				mSurfaceUsed[i] = true;
-				Surface8u result( mSurfaceData[i].get(), mWidth, mHeight, mWidth * mSCO.getPixelInc(), mSCO );
-				result.setDeallocator( surfaceDeallocator, &mDeallocatorRefcon[i] );
-				return result;
-			}
-		}
-
-		// we couldn't find an available surface, so we'll need to allocate one
-		return Surface8u( mWidth, mHeight, mSCO.hasAlpha(), mSCO );
-	}
-	
-	static void surfaceDeallocator( void *refcon )
-	{
-		pair<SurfaceCache*,int> *info = reinterpret_cast<pair<SurfaceCache*,int>*>( refcon );
-		info->first->mSurfaceUsed[info->second] = false;
-	}
-
- private:
-	vector<shared_ptr<uint8_t> >	mSurfaceData;
-	vector<bool>					mSurfaceUsed;
-	vector<pair<SurfaceCache*,int> >	mDeallocatorRefcon;
-	int32_t				mWidth, mHeight;
-	SurfaceChannelOrder	mSCO;
-};
-
-#endif
-
+//bool Capture::sDevicesEnumerated = false;
+//vector<Capture::Device> Capture::sDevices;
 
 #if defined( CINDER_MAC )
 Capture::Device::Device( QTCaptureDevice *device ) 
@@ -145,7 +64,7 @@ Capture::Device::Device( QTCaptureDevice *device )
 }
 #endif
 
-bool Capture::Device::checkAvailable() const
+/*bool Capture::Device::checkAvailable() const
 {
 #if defined( CINDER_MAC )
 	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:[NSString stringWithUTF8String:mUniqueId.c_str()]];
@@ -163,18 +82,18 @@ bool Capture::Device::isConnected() const
 #elif defined( CINDER_MSW )
 	return CaptureMgr::instanceVI()->isDeviceConnected( mUniqueId );
 #endif
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Capture
-const vector<Capture::Device>& Capture::getDevices( bool forceRefresh )
-{
+/*const vector<Capture::Device>& Capture::getDevices( bool forceRefresh )
+{	
+#if defined( CINDER_MAC )
 	if( sDevicesEnumerated && ( ! forceRefresh ) )
 		return sDevices;
 
-	sDevices.clear();
-	
-#if defined( CINDER_MAC )
+	sDevices.clear();	
+
 	NSArray *devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeVideo];
 	for( int i = 0; i < [devices count]; i++ ) {
 		QTCaptureDevice *device = [devices objectAtIndex:i];
@@ -186,18 +105,17 @@ const vector<Capture::Device>& Capture::getDevices( bool forceRefresh )
 		QTCaptureDevice *device = [devices objectAtIndex:i];
 		sDevices.push_back( Capture::Device( device ) );
 	}
-#else
-	CaptureMgr::instance()->sTotalDevices = CaptureMgr::instanceVI()->listDevices( true );
-	for( int i = 0; i < CaptureMgr::instance()->sTotalDevices; ++i ) {
-		sDevices.push_back( Device( videoInput::getDeviceName( i ), i ) );
-	}
-#endif
-	
+
 	sDevicesEnumerated = true;
 	return sDevices;
-}
+#else
+	return CapturePlatformImpl::getDevices( forceRefresh );
+#endif
+	
+	
+}*/
 
-Capture::Device Capture::findDeviceByName( const string &name )
+/*Capture::Device Capture::findDeviceByName( const string &name )
 {
 	const vector<Device> &devices = getDevices();
 	for( vector<Device>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
@@ -206,102 +124,116 @@ Capture::Device Capture::findDeviceByName( const string &name )
 	}
 	
 	return Device(); // failed - return "null" device
-}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Capture::Obj
 Capture::Obj::Obj( int32_t width, int32_t height, const Device &device )
-	: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, PLATFORM_DEFAULT_CHANNEL_ORDER ), mDevice( device )
+	/*: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, PLATFORM_DEFAULT_CHANNEL_ORDER ), mDevice( device )*/
 {
-#if defined( CINDER_MAC )
-	mImpl = [[::CaptureImplQtKit alloc] initWithDevice:mDevice width:width height:height];
+#if defined( CINDER_COCOA )
+	mImpl = [[::CapturePlatformImpl alloc] initWithDevice:mDevice width:width height:height];
 #else
-	mDeviceID = device.getUniqueId();
-	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight ) )
-		throw CaptureExcInitFail();
-	mWidth = CaptureMgr::instanceVI()->getWidth( mDeviceID );
-	mHeight = CaptureMgr::instanceVI()->getHeight( mDeviceID );
-	mIsCapturing = true;
-	mSurfaceCache = shared_ptr<SurfaceCache>( new SurfaceCache( mWidth, mHeight, PLATFORM_DEFAULT_CHANNEL_ORDER, 4 ) );
+	mImpl = new CapturePlatformImpl( width, height, device );
+#endif	
+}
+
+Capture::Obj::Obj( int32_t width, int32_t height )
+	/*: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, PLATFORM_DEFAULT_CHANNEL_ORDER ), mDevice( device )*/
+{
+#if defined( CINDER_COCOA )
+	mImpl = [[::CapturePlatformImpl alloc] initWithWidth:width height:height];
+#else
+	mImpl = new CapturePlatformImpl( width, height );
 #endif	
 }
 
 Capture::Obj::~Obj()
 {
-#if defined( CINDER_MAC )
-	[((::CaptureImplQtKit*)mImpl) stopCapture];
-	[((::CaptureImplQtKit*)mImpl) release];
+#if defined( CINDER_COCOA )
+	[((::CapturePlatformImpl*)mImpl) stopCapture];
+	[((::CapturePlatformImpl*)mImpl) release];
 #else
-	CaptureMgr::instanceVI()->stopDevice( mDeviceID );
+	delete mImpl;
 #endif
 }
 
 Capture::Capture( int32_t width, int32_t height, const Device &device ) 
 {
 	mObj = shared_ptr<Obj>( new Obj( width, height, device ) );
-#if defined( CINDER_MSW )
-	mObj->mMgrPtr = CaptureMgr::instance();
-#endif
+}
+
+Capture::Capture( int32_t width, int32_t height) 
+{
+	mObj = shared_ptr<Obj>( new Obj( width, height ) );
 }
 
 void Capture::start()
 {
-#if defined( CINDER_MAC )
-	[((::CaptureImplQtKit*)mObj->mImpl) startCapture];
+#if defined( CINDER_COCOA )
+	[((::CapturePlatformImpl*)mObj->mImpl) startCapture];
 #else
-	if( ! mObj->mIsCapturing ) {
-		if( ! CaptureMgr::instanceVI()->setupDevice( mObj->mDeviceID, mObj->mWidth, mObj->mHeight ) )
-			throw CaptureExcInitFail();
-		if( ! CaptureMgr::instanceVI()->isDeviceSetup( mObj->mDeviceID ) )
-			throw CaptureExcInitFail();
-		mObj->mWidth = CaptureMgr::instanceVI()->getWidth( mObj->mDeviceID );
-		mObj->mHeight = CaptureMgr::instanceVI()->getHeight( mObj->mDeviceID );
-		mObj->mIsCapturing = true;
-	}
+	mObj->mImpl->start();
 #endif
 }
 
 void Capture::stop()
 {
-#if defined( CINDER_MAC )
-	[((::CaptureImplQtKit*)mObj->mImpl) stopCapture];
+#if defined( CINDER_COCOA )
+	[((::CapturePlatformImpl*)mObj->mImpl) stopCapture];
 #else
-	if( mObj->mIsCapturing ) {
-		CaptureMgr::instanceVI()->stopDevice( mObj->mDeviceID );
-		mObj->mIsCapturing = false;
-	}
+	mObj->mImpl->stop();
 #endif
 }
 
 bool Capture::isCapturing()
 {
-#if defined( CINDER_MAC )
-	return [((::CaptureImplQtKit*)mObj->mImpl) isCapturing];
+#if defined( CINDER_COCOA )
+	return [((::CapturePlatformImpl*)mObj->mImpl) isCapturing];
 #else
-	return mObj->mIsCapturing;
+	return mObj->mImpl->isCapturing();
 #endif
 }
 
 bool Capture::checkNewFrame() const
 {
-#if defined( CINDER_MAC )
-	return [((::CaptureImplQtKit*)mObj->mImpl) checkNewFrame];
+#if defined( CINDER_COCOA )
+	return [((::CapturePlatformImpl*)mObj->mImpl) checkNewFrame];
 #else
-	return CaptureMgr::instanceVI()->isFrameNew( mObj->mDeviceID );
+	return mObj->mImpl->checkNewFrame();
 #endif	
 }
 
 Surface8u Capture::getSurface() const
 {
-#if defined( CINDER_MAC )
-	return [((::CaptureImplQtKit*)mObj->mImpl) getCurrentFrame];
+#if defined( CINDER_COCOA )
+	return [((::CapturePlatformImpl*)mObj->mImpl) getCurrentFrame];
 #else
-	if( CaptureMgr::instanceVI()->isFrameNew( mObj->mDeviceID ) ) {
-		mObj->mCurrentFrame = mObj->mSurfaceCache->getNewSurface();
-		CaptureMgr::instanceVI()->getPixels( mObj->mDeviceID, mObj->mCurrentFrame.getData(), false, true );
-	}
+	return mObj->mImpl->getSurface();
+#endif
+}
+
+int32_t	Capture::getWidth() const { 
+#if defined( CINDER_COCOA )
 	
-	return mObj->mCurrentFrame;
+#else 
+	return mObj->mImpl->getWidth();
+#endif
+}
+
+int32_t	Capture::getHeight() const { 
+#if defined( CINDER_COCOA )
+	
+#else
+	return mObj->mImpl->getHeight();
+#endif
+}
+
+const Capture::Device& Capture::getDevice() const {
+#if defined( CINDER_COCOA )
+	 
+#else
+	return mObj->mImpl->getDevice();
 #endif
 }
 	
