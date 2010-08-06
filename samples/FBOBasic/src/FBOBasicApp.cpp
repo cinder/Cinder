@@ -32,11 +32,12 @@ class FBOBasicApp : public AppBasic {
 void FBOBasicApp::setup()
 {
 	gl::Fbo::Format format;
-	format.setSamples( 4 ); // enable 4x antialiasing
+//	format.setSamples( 4 ); // enable 4x antialiasing
 	mFbo = gl::Fbo( FBO_WIDTH, FBO_HEIGHT, format );
 
 	// echo a little bit of info just for demonstration purposes
 	console() << "Maximum # samples for FBOs: " << gl::Fbo::getMaxSamples() << endl;
+	console() << "Maximum # color attachments FBOs: " << gl::Fbo::getMaxAttachments() << endl;
 
 	mPixelateShader = gl::GlslProg( loadResource( RES_PASS_THRU_VERT ), loadResource( RES_PIXELATE_FRAG ) );
 	mCubeTexture = gl::Texture( loadImage( loadResource( RES_LOGO ) ) );

@@ -72,6 +72,14 @@ class Renderbuffer {
 	};
  
 	shared_ptr<Obj>		mObj;
+
+  public:
+  	//@{
+	//! Emulates shared_ptr-like behavior
+	typedef shared_ptr<Obj> Renderbuffer::*unspecified_bool_type;
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Renderbuffer::mObj; }
+	void reset() { mObj.reset(); }
+	//@}  	
 };
 
 //! Represents a reference-counted OpenGL Framebuffer Object
@@ -101,16 +109,16 @@ class Fbo {
 	//! Returns the texture target for this FBO. Typically \c GL_TEXTURE_2D or \c GL_TEXTURE_RECTANGLE_ARB
 	GLenum			getTarget() const { return mObj->mFormat.mTarget; }
 
-	//! Returns a reference to the color texture of the FBO
-	Texture&		getTexture();
-	//! Returns a reference to the depth texture of the FBO. Depth textures are not created when multisampling is used.
+	//! Returns a reference to the color texture of the FBO. \a attachment specifies which attachment in the case of multiple color buffers
+	Texture&		getTexture( int attachment = 0 );
+	//! Returns a reference to the depth texture of the FBO.
 	Texture&		getDepthTexture();	
 	
-	//! Binds the color texture associated with an Fbo to its target. Optionally binds to a multitexturing unit when \a textureUnit is non-zero
-	void 			bindTexture( int textureUnit = 0 );
+	//! Binds the color texture associated with an Fbo to its target. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. \a attachment specifies which color buffer in the case of multiple attachments.
+	void 			bindTexture( int textureUnit = 0, int attachment = 0 );
 	//! Unbinds the texture associated with an Fbo's target
 	void			unbindTexture();
-	//! Binds the depth texture associated with an Fbo to its target. Optionally binds to a multitexturing unit when \a textureUnit is non-zero
+	//! Binds the depth texture associated with an Fbo to its target.
 	void 			bindDepthTexture( int textureUnit = 0 );
 	//! Binds the Fbo as the currently active framebuffer, meaning it will receive the results of all subsequent rendering until it is unbound
 	void 			bindFramebuffer();
@@ -119,6 +127,9 @@ class Fbo {
 
 	//! Returns the maximum number of samples the graphics card is capable of using per pixel in MSAA for an Fbo
 	static GLint	getMaxSamples();
+
+	//! Returns the maximum number of color attachments the graphics card is capable of using for an Fbo
+	static GLint	getMaxAttachments();
 	
 	struct Format {
 	  public:
@@ -135,8 +146,8 @@ class Fbo {
 		void	setSamples( int samples ) { mSamples = samples; }
 		//! Sets the number of coverage samples used in CSAA-style antialiasing. Defaults to none. Note that not all implementations support CSAA, and is currenlty Windows-only Nvidia.
 		void	setCoverageSamples( int coverageSamples ) { mCoverageSamples = coverageSamples; }
-		//! Enables or disables the creation of a color buffer for the FBO.
-		void	enableColorBuffer( bool colorBuffer = true ) { mColorBuffer = colorBuffer; }
+		//! Enables or disables the creation of a color buffer for the FBO.. Creates multiple color attachments when \a numColorsBuffers >1
+		void	enableColorBuffer( bool colorBuffer = true, int numColorBuffers = 1 ) { mNumColorBuffers = ( colorBuffer ) ? numColorBuffers : 0; }
 		//! Enables or disables the creation of a depth buffer for the FBO.
 		void	enableDepthBuffer( bool depthBuffer = true ) { mDepthBuffer = depthBuffer; }
 //		void	enableStencilBuffer( bool stencilBuffer = true ) { mStencilBuffer = stencilBuffer; }
@@ -158,7 +169,6 @@ class Fbo {
 		 * Possible values are \li \c GL_NEAREST \li \c GL_LINEAR \li \c GL_NEAREST_MIPMAP_NEAREST \li \c GL_LINEAR_MIPMAP_NEAREST \li \c GL_NEAREST_MIPMAP_LINEAR \li \c GL_LINEAR_MIPMAP_LINEAR **/
 		void	setMagFilter( GLenum magFilter ) { mMagFilter = magFilter; }
 
-		
 		//! Returns the texture target associated with the FBO.
 		GLenum	getTarget() const { return mTarget; }
 		//! Returns the GL internal format for the color buffer. Defaults to \c GL_RGBA8.
@@ -170,7 +180,9 @@ class Fbo {
 		//! Returns the number of coverage samples used in CSAA-style antialiasing. Defaults to none.
 		int		getCoverageSamples() const { return mCoverageSamples; }
 		//! Returns whether the FBO contains a color buffer
-		bool	hasColorBuffer() const { return mColorBuffer; }
+		bool	hasColorBuffer() const { return mNumColorBuffers > 0; }
+		//! Returns the number of color buffers
+		int		getNumColorBuffers() const { return mNumColorBuffers; }
 		//! Returns whether the FBO contains a depth buffer
 		bool	hasDepthBuffer() const { return mDepthBuffer; }
 //		bool	hasStencilBuffer() const { return mStencilBuffer; }
@@ -183,7 +195,8 @@ class Fbo {
 		int			mSamples;
 		int			mCoverageSamples;
 		bool		mMipmapping;
-		bool		mColorBuffer, mDepthBuffer, mStencilBuffer;
+		bool		mDepthBuffer, mStencilBuffer;
+		int			mNumColorBuffers;
 		GLenum		mWrapS, mWrapT;
 		GLenum		mMinFilter, mMagFilter;
 		
@@ -193,8 +206,8 @@ class Fbo {
  protected:
 	void		init();
 	bool		initMultisample( bool csaa );
-	void		resolveTexture() const;
-	void		updateMipmaps( bool bindFirst ) const;
+	void		resolveTextures() const;
+	void		updateMipmaps( bool bindFirst, int attachment ) const;
 	bool		checkStatus( class FboExceptionInvalidSpecification *resultExc );
 
 	struct Obj {
@@ -204,16 +217,18 @@ class Fbo {
 
 		int					mWidth, mHeight;
 		Format				mFormat;
-		GLuint				mId, mColorTextureId, mDepthTextureId;
+		GLuint				mId;
 		GLuint				mResolveFramebufferId;
-		Renderbuffer		mColorRenderbuffer, mDepthRenderbuffer;
-		Texture				mColorTexture, mDepthTexture;
+		std::vector<Renderbuffer>	mMultisampleColorRenderbuffers;
+		Renderbuffer				mMultisampleDepthRenderbuffer;
+		std::vector<Texture>		mColorTextures;
+		Texture						mDepthTexture;
 		mutable bool		mNeedsResolve, mNeedsMipmapUpdate;
 	};
  
 	shared_ptr<Obj>		mObj;
 	
-	static GLint		sMaxSamples;
+	static GLint		sMaxSamples, sMaxAttachments;
 	
   public:
 	//@{

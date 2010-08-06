@@ -29,6 +29,7 @@ namespace cinder {
 namespace gl {
 
 GLint Fbo::sMaxSamples = -1;
+GLint Fbo::sMaxAttachments = -1;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RenderBuffer::Obj
@@ -58,6 +59,7 @@ Renderbuffer::Obj::Obj( int aWidth, int aHeight, GLenum internalFormat, int msaa
 		mCoverageSamples = 0;
 
 	glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, mId );
+
 #if defined( CINDER_MSW )
 	if( mCoverageSamples ) // create a CSAA buffer
 		glRenderbufferStorageMultisampleCoverageNV( GL_RENDERBUFFER_EXT, mCoverageSamples, mSamples, mInternalFormat, mWidth, mHeight );
@@ -91,14 +93,14 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 // Fbo::Obj
 Fbo::Obj::Obj()
 {
-	mId = mColorTextureId = mDepthTextureId = 0;
+	mId = 0;
 	mResolveFramebufferId = 0;
 }
 
 Fbo::Obj::Obj( int width, int height )
 	: mWidth( width ), mHeight( height )
 {
-	mId = mColorTextureId = mDepthTextureId = 0;
+	mId = 0;
 	mResolveFramebufferId = 0;
 }
 
@@ -108,10 +110,6 @@ Fbo::Obj::~Obj()
 		glDeleteFramebuffersEXT( 1, &mId );
 	if( mResolveFramebufferId )
 		glDeleteFramebuffersEXT( 1, &mResolveFramebufferId );
-	if( mColorTextureId )
-		glDeleteTextures( 1, &mColorTextureId );
-	if( mDepthTextureId )
-		glDeleteTextures( 1, &mDepthTextureId );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +121,7 @@ Fbo::Format::Format()
 	mDepthInternalFormat = GL_DEPTH_COMPONENT24;
 	mSamples = 0;
 	mCoverageSamples = 0;
-	mColorBuffer = true;
+	mNumColorBuffers = 1;
 	mDepthBuffer = true;
 	mStencilBuffer = false;
 	mMipmapping = false;
@@ -151,46 +149,43 @@ void Fbo::init()
 	glGenFramebuffersEXT( 1, &mObj->mId );
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mObj->mId );	
 
-	// allocate the color buffer
-	if( mObj->mFormat.mColorBuffer ) {
-		glGenTextures( 1, &mObj->mColorTextureId );
-		glBindTexture( getTarget(), mObj->mColorTextureId );
-		glTexImage2D( getTarget(), 0, getFormat().getColorInternalFormat(), mObj->mWidth, mObj->mHeight, 0, GL_RGBA, GL_FLOAT, NULL );
+	Texture::Format textureFormat;
+	textureFormat.setTarget( getTarget() );
+	textureFormat.setInternalFormat( getFormat().getColorInternalFormat() );
+	textureFormat.setWrap( mObj->mFormat.mWrapS, mObj->mFormat.mWrapT );
+	textureFormat.setMinFilter( mObj->mFormat.mMinFilter );
+	textureFormat.setMagFilter( mObj->mFormat.mMagFilter );
+	textureFormat.enableMipmapping( getFormat().hasMipMapping() );
 
-		glTexParameteri( getTarget(), GL_TEXTURE_MIN_FILTER, mObj->mFormat.mMinFilter );
-		glTexParameteri( getTarget(), GL_TEXTURE_MAG_FILTER, mObj->mFormat.mMagFilter );
-		glTexParameteri( getTarget(), GL_TEXTURE_WRAP_S, mObj->mFormat.mWrapS );
-		glTexParameteri( getTarget(), GL_TEXTURE_WRAP_T, mObj->mFormat.mWrapT );
-
-		if( getFormat().hasMipMapping() )
-			glGenerateMipmapEXT( getTarget() );
-			
-		mObj->mColorTexture = Texture( getTarget(), mObj->mColorTextureId, mObj->mWidth, mObj->mHeight, true );
+	// allocate the color buffers
+	for( int c = 0; c < mObj->mFormat.mNumColorBuffers; ++c ) {
+		mObj->mColorTextures.push_back( Texture( mObj->mWidth, mObj->mHeight, textureFormat ) );
 	}
-	else { // no color
+	
+	if( mObj->mFormat.mNumColorBuffers == 0 ) { // no color
 		glDrawBuffer( GL_NONE );
 		glReadBuffer( GL_NONE );	
 	}
 		
 	if( ( ( ! useCSAA ) && ( ! useMSAA ) ) || ( ! initMultisample( useCSAA ) ) ) { // if we don't need any variety of multisampling or it failed to initialize
-		// attach the color texture
-		if( mObj->mFormat.mColorBuffer )
-			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, getTarget(), mObj->mColorTextureId, 0 );
-		
+		// attach all the textures to the framebuffer
+		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c )
+			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + c, getTarget(), mObj->mColorTextures[c].getTextureId(), 0 );
+
 		// allocate and attach depth texture
 		if( mObj->mFormat.mDepthBuffer ) {
-			glGenTextures( 1, &mObj->mDepthTextureId );
-			glBindTexture( getTarget(), mObj->mDepthTextureId );
+			GLuint depthTextureId;
+			glGenTextures( 1, &depthTextureId );
+			glBindTexture( getTarget(), depthTextureId );
 			glTexImage2D( getTarget(), 0, getFormat().getDepthInternalFormat(), mObj->mWidth, mObj->mHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL );
 			glTexParameteri( getTarget(), GL_TEXTURE_MIN_FILTER, mObj->mFormat.mMinFilter );
 			glTexParameteri( getTarget(), GL_TEXTURE_MAG_FILTER, mObj->mFormat.mMagFilter );
 			glTexParameteri( getTarget(), GL_TEXTURE_WRAP_S, mObj->mFormat.mWrapS );
 			glTexParameteri( getTarget(), GL_TEXTURE_WRAP_T, mObj->mFormat.mWrapT );
 			glTexParameteri( getTarget(), GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
+			mObj->mDepthTexture = Texture( getTarget(), depthTextureId, mObj->mWidth, mObj->mHeight, true );
 
-			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, getTarget(), mObj->mDepthTextureId, 0 );
-		
-			mObj->mDepthTexture = Texture( getTarget(), mObj->mDepthTextureId, mObj->mWidth, mObj->mHeight, true );
+			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, getTarget(), mObj->mDepthTexture.getTextureId(), 0 );
 		}
 
 		FboExceptionInvalidSpecification exc;
@@ -208,11 +203,11 @@ bool Fbo::initMultisample( bool csaa )
 {
 	glGenFramebuffersEXT( 1, &mObj->mResolveFramebufferId );
 
-	// multisample, so we need to resolve from the FBO, bind the texture to the resolve FBO
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mObj->mResolveFramebufferId ); 
 	
-	if( mObj->mFormat.mColorBuffer )
-		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, getTarget(), mObj->mColorTextureId, 0 );
+	// bind all of the color buffers to the resolve FB's attachment points
+	for( size_t c = 0; c < mObj->mColorTextures.size(); ++c )
+		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + c, getTarget(), mObj->mColorTextures[c].getTextureId(), 0 );
 
 	// see if the resolve buffer is ok
 	FboExceptionInvalidSpecification ignoredException;
@@ -225,21 +220,20 @@ bool Fbo::initMultisample( bool csaa )
 		mObj->mFormat.mSamples = getMaxSamples();
 	}
 
-	// setup the primary framebuffer
-	if( mObj->mFormat.mColorBuffer ) {
-		// create the multisampled color Renderbuffer
-		mObj->mColorRenderbuffer = Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.mColorInternalFormat, mObj->mFormat.mSamples, mObj->mFormat.mCoverageSamples );
+	// setup the multisampled color renderbuffers
+	for( int c = 0; c < mObj->mFormat.mNumColorBuffers; ++c ) {
+		mObj->mMultisampleColorRenderbuffers.push_back( Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.mColorInternalFormat, mObj->mFormat.mSamples, mObj->mFormat.mCoverageSamples ) );
 
 		// attach the multisampled color buffer
-		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, mObj->mColorRenderbuffer.getId() );
+		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + c, GL_RENDERBUFFER_EXT, mObj->mMultisampleColorRenderbuffers.back().getId() );
 	}
 	
 	if( mObj->mFormat.mDepthBuffer ) {
 		// create the multisampled depth Renderbuffer
-		mObj->mDepthRenderbuffer = Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.mDepthInternalFormat, mObj->mFormat.mSamples, mObj->mFormat.mCoverageSamples );
+		mObj->mMultisampleDepthRenderbuffer = Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.mDepthInternalFormat, mObj->mFormat.mSamples, mObj->mFormat.mCoverageSamples );
 
 		// attach the depth Renderbuffer
-		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, mObj->mDepthRenderbuffer.getId() );
+		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, mObj->mMultisampleDepthRenderbuffer.getId() );
 	}
 
 	// see if the primary framebuffer turned out ok
@@ -259,15 +253,15 @@ Fbo::Fbo( int width, int height, bool alpha, bool color, bool depth )
 	Format format;
 	mObj->mFormat.mColorInternalFormat = ( alpha ) ? GL_RGBA8 : GL_RGB8;
 	mObj->mFormat.mDepthBuffer = depth;
-	mObj->mFormat.mColorBuffer = color;
+	mObj->mFormat.mNumColorBuffers = color ? 1 : 0;
 	init();
 }
 
-Texture& Fbo::getTexture()
+Texture& Fbo::getTexture( int attachment )
 {
-	resolveTexture();
-	updateMipmaps( true );
-	return mObj->mColorTexture;
+	resolveTextures();
+	updateMipmaps( true, attachment );
+	return mObj->mColorTextures[attachment];
 }
 
 Texture& Fbo::getDepthTexture()
@@ -275,11 +269,11 @@ Texture& Fbo::getDepthTexture()
 	return mObj->mDepthTexture;
 }
 
-void Fbo::bindTexture( int textureUnit )
+void Fbo::bindTexture( int textureUnit, int attachment )
 {
-	resolveTexture();
-	mObj->mColorTexture.bind( textureUnit );
-	updateMipmaps( false );
+	resolveTextures();
+	mObj->mColorTextures[attachment].bind( textureUnit );
+	updateMipmaps( false, attachment );
 }
 
 void Fbo::unbindTexture()
@@ -292,7 +286,7 @@ void Fbo::bindDepthTexture( int textureUnit )
 	mObj->mDepthTexture.bind( textureUnit );
 }
 
-void Fbo::resolveTexture() const
+void Fbo::resolveTextures() const
 {
 	if( ! mObj->mNeedsResolve )
 		return;
@@ -311,14 +305,14 @@ void Fbo::resolveTexture() const
 	mObj->mNeedsResolve = false;
 }
 
-void Fbo::updateMipmaps( bool bindFirst ) const
+void Fbo::updateMipmaps( bool bindFirst, int attachment ) const
 {
 	if( ! mObj->mNeedsMipmapUpdate )
 		return;
 	
 	if( bindFirst ) {
 		SaveTextureBindState state( getTarget() );
-		mObj->mColorTexture.bind();
+		mObj->mColorTextures[attachment].bind();
 		glGenerateMipmapEXT( getTarget() );
 	}
 	else {
@@ -384,7 +378,7 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 GLint Fbo::getMaxSamples()
 {
 	if( sMaxSamples < 0 ) {
-		if( ( ! gl::isExtensionAvailable( "GL_EXT_framebuffer_multisample" ) ) || ( ! gl::isExtensionAvailable( "GLEE_EXT_framebuffer_blit" ) ) ) {
+		if( ( ! gl::isExtensionAvailable( "GL_EXT_framebuffer_multisample" ) ) || ( ! gl::isExtensionAvailable( "GL_EXT_framebuffer_blit" ) ) ) {
 			sMaxSamples = 0;
 		}
 		else
@@ -392,6 +386,15 @@ GLint Fbo::getMaxSamples()
 	}
 	
 	return sMaxSamples;
+}
+
+GLint Fbo::getMaxAttachments()
+{
+	if( sMaxAttachments < 0 ) {
+		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &sMaxAttachments );
+	}
+	
+	return sMaxAttachments;
 }
 
 FboExceptionInvalidSpecification::FboExceptionInvalidSpecification( const string &message ) throw()
