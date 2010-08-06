@@ -23,10 +23,10 @@
 #include "cinder/Cinder.h"
 #include "cinder/Capture.h"
 #if defined( CINDER_MAC )
-	#import <QTKit/QTKit.h>
 	#import "cinder/CaptureImplQtKit.h"
-	#include "cinder/cocoa/CinderCocoa.h"
 	typedef CaptureImplQtKit	CapturePlatformImpl;
+#elif defined( CINDER_COCOA_TOUCH )
+	
 #elif defined( CINDER_MSW )
 	#include "cinder/CaptureImplDirectShow.h"
 	typedef cinder::CaptureImplDirectShow	CapturePlatformImpl;
@@ -43,129 +43,50 @@ namespace cinder {
 	#define PLATFORM_DEFAULT_CHANNEL_ORDER SurfaceChannelOrder::RGB
 #endif
 
-//bool Capture::sDevicesEnumerated = false;
-//vector<Capture::Device> Capture::sDevices;
-
-#if defined( CINDER_MAC )
-Capture::Device::Device( QTCaptureDevice *device ) 
-{
-	mUniqueId = cocoa::convertNsString( [device uniqueID] );
-	mName = cocoa::convertNsString( [device localizedDisplayName] );
-
-	// Apparently this stuff is basically useless
-/*	NSArray *formats = [device formatDescriptions];
-	for( int f = 0; f < [formats count]; ++f ) {
-		QTFormatDescription *format = [formats objectAtIndex:f];
-		if( [[format mediaType] isEqualToString:QTMediaTypeVideo] ) {
-			NSLog( @"%d %@", [formats count], [format formatDescriptionAttributes] );
-		}
-	}*/
-//	NSLog( @"%@", [device deviceAttributes] );
-}
-#endif
-
-/*bool Capture::Device::checkAvailable() const
-{
-#if defined( CINDER_MAC )
-	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:[NSString stringWithUTF8String:mUniqueId.c_str()]];
-	return [device isConnected] && (! [device isInUseByAnotherApplication]);
-#elif defined( CINDER_MSW )
-	return ( mUniqueId < CaptureMgr::sTotalDevices ) && ( ! CaptureMgr::instanceVI()->isDeviceSetup( mUniqueId ) );
-#endif
-}
-
-bool Capture::Device::isConnected() const
-{
-#if defined( CINDER_MAC )
-	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:[NSString stringWithUTF8String:mUniqueId.c_str()]];
-	return [device isConnected];
-#elif defined( CINDER_MSW )
-	return CaptureMgr::instanceVI()->isDeviceConnected( mUniqueId );
-#endif
-}*/
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Capture
-/*const vector<Capture::Device>& Capture::getDevices( bool forceRefresh )
+const vector<Capture::DeviceRef>& Capture::getDevices( bool forceRefresh )
 {	
-#if defined( CINDER_MAC )
-	if( sDevicesEnumerated && ( ! forceRefresh ) )
-		return sDevices;
-
-	sDevices.clear();	
-
-	NSArray *devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeVideo];
-	for( int i = 0; i < [devices count]; i++ ) {
-		QTCaptureDevice *device = [devices objectAtIndex:i];
-		sDevices.push_back( Capture::Device( device ) );
-	}
-	
-	devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeMuxed];
-	for( int i = 0; i < [devices count]; i++) {
-		QTCaptureDevice *device = [devices objectAtIndex:i];
-		sDevices.push_back( Capture::Device( device ) );
-	}
-
-	sDevicesEnumerated = true;
-	return sDevices;
+#if defined( CINDER_COCOA )
+	return [CapturePlatformImpl getDevices:forceRefresh];
 #else
 	return CapturePlatformImpl::getDevices( forceRefresh );
 #endif
-	
-	
-}*/
+}
 
-/*Capture::Device Capture::findDeviceByName( const string &name )
+/*Capture::DeviceRef Capture::findDeviceByName( const string &name )
 {
-	const vector<Device> &devices = getDevices();
-	for( vector<Device>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
+	const vector<DeviceRef> &devices = getDevices();
+	for( vector<DeviceRef>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
 		if( deviceIt->getName() == name )
-			return *deviceIt;
+			return deviceIt;
 	}
 	
-	return Device(); // failed - return "null" device
+	return DeviceRef(); // failed - return "null" device
 }*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Capture::Obj
-Capture::Obj::Obj( int32_t width, int32_t height, const Device &device )
+Capture::Obj::Obj( int32_t width, int32_t height, const DeviceRef device )
 	/*: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, PLATFORM_DEFAULT_CHANNEL_ORDER ), mDevice( device )*/
 {
 #if defined( CINDER_COCOA )
-	mImpl = [[::CapturePlatformImpl alloc] initWithDevice:mDevice width:width height:height];
+	mImpl = [[::CapturePlatformImpl alloc] initWithDevice:device width:width height:height];
 #else
 	mImpl = new CapturePlatformImpl( width, height, device );
-#endif	
-}
-
-Capture::Obj::Obj( int32_t width, int32_t height )
-	/*: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, PLATFORM_DEFAULT_CHANNEL_ORDER ), mDevice( device )*/
-{
-#if defined( CINDER_COCOA )
-	mImpl = [[::CapturePlatformImpl alloc] initWithWidth:width height:height];
-#else
-	mImpl = new CapturePlatformImpl( width, height );
 #endif	
 }
 
 Capture::Obj::~Obj()
 {
 #if defined( CINDER_COCOA )
-	[((::CapturePlatformImpl*)mImpl) stopCapture];
 	[((::CapturePlatformImpl*)mImpl) release];
 #else
 	delete mImpl;
 #endif
 }
 
-Capture::Capture( int32_t width, int32_t height, const Device &device ) 
+Capture::Capture( int32_t width, int32_t height, const DeviceRef device ) 
 {
 	mObj = shared_ptr<Obj>( new Obj( width, height, device ) );
-}
-
-Capture::Capture( int32_t width, int32_t height) 
-{
-	mObj = shared_ptr<Obj>( new Obj( width, height ) );
 }
 
 void Capture::start()
@@ -215,7 +136,7 @@ Surface8u Capture::getSurface() const
 
 int32_t	Capture::getWidth() const { 
 #if defined( CINDER_COCOA )
-	
+	return [((::CapturePlatformImpl*)mObj->mImpl) getWidth];
 #else 
 	return mObj->mImpl->getWidth();
 #endif
@@ -223,15 +144,15 @@ int32_t	Capture::getWidth() const {
 
 int32_t	Capture::getHeight() const { 
 #if defined( CINDER_COCOA )
-	
+	return [((::CapturePlatformImpl*)mObj->mImpl) getHeight];
 #else
 	return mObj->mImpl->getHeight();
 #endif
 }
 
-const Capture::Device& Capture::getDevice() const {
+const Capture::DeviceRef Capture::getDevice() const {
 #if defined( CINDER_COCOA )
-	 
+	return [((::CapturePlatformImpl*)mObj->mImpl) getDevice];
 #else
 	return mObj->mImpl->getDevice();
 #endif

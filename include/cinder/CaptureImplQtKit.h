@@ -20,22 +20,31 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import <QTKit/QTKit.h>
+#include "cinder/Cinder.h"
 #include "cinder/Surface.h"
+#include "cinder/Capture.h"
+#import <QTKit/QTKit.h>
+#include <vector>
 
-/*class CaptureImplQtKitDevice {
-	CaptureImplQtKitDevice() {}
+
+namespace cinder {
+
+class CaptureImplQtKitDevice : public Capture::Device {
+ public:
 	CaptureImplQtKitDevice( QTCaptureDevice* device );
-	~CaptureImplQtKitDevice();
+	~CaptureImplQtKitDevice() {}
 	
-	const std::string&		getName() const { return mName; }
-	bool					checkAvailable() const;
-	bool					isConnected() const;
-	const std::string&		getUniqueId() const { return mUniqueId; }
-};*/
+	bool						checkAvailable() const;
+	bool						isConnected() const;
+	Capture::DeviceIdentifier	getUniqueId() const { return mUniqueId; }
+ private:
+	Capture::DeviceIdentifier	mUniqueId;
+};
+
+} //namespace
 
 @interface CaptureImplQtKit : NSObject {
-	BOOL								isCapturing;
+	bool								mIsCapturing;
 	QTCaptureSession					*mCaptureSession;
 	QTCaptureDecompressedVideoOutput	*mCaptureDecompressedOutput;
 	QTCaptureDeviceInput				*mCaptureDeviceInput;
@@ -44,20 +53,26 @@
 	cinder::Surface8u				mCurrentFrame;
 	int								mWidth, mHeight;
 	int								mSurfaceChannelOrderCode;
-	NSString						*mDeviceUniqueId;
+	NSString						* mDeviceUniqueId;
 	int								mExposedFrameBytesPerRow;
 	int								mExposedFrameHeight;
 	int								mExposedFrameWidth;
-	BOOL							mHasNewFrame;
+	bool							mHasNewFrame;
+	cinder::Capture::DeviceRef		mDevice;
 }
 
-- (id)initWithDevice:(const cinder::Capture::Device&)device width:(int)width height:(int)height;
++ (const std::vector<cinder::Capture::DeviceRef>&)getDevices:(BOOL)forceRefresh;
+
+- (id)initWithDevice:(const cinder::Capture::DeviceRef)device width:(int)width height:(int)height;
 - (void)prepareStartCapture;
 - (void)startCapture;
 - (void)stopCapture;
-- (BOOL)isCapturing;
+- (bool)isCapturing;
 - (cinder::Surface8u)getCurrentFrame;
-- (BOOL)checkNewFrame;
+- (bool)checkNewFrame;
+- (const cinder::Capture::DeviceRef)getDevice;
+- (int)getWidth;
+- (int)getHeight;
 - (size_t)getCurrentFrameBytesPerRow;
 - (size_t)getCurrentFrameWidth;
 - (size_t)getCurrentFrameHeight;
