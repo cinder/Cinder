@@ -30,7 +30,7 @@ void CaptureApp::setup()
 	vector<Capture::DeviceRef> devices( Capture::getDevices() );
 	for( vector<Capture::DeviceRef>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
 		Capture::DeviceRef device = *deviceIt;
-		//console() << "Found Device " << device->getName() << " ID: " << device->getUniqueId() << std::endl;
+		console() << "Found Device " << device->getName() << " ID: " << device->getUniqueId() << std::endl;
 		try {
 			if( device->checkAvailable() ) {
 				mCaptures.push_back( Capture( WIDTH, HEIGHT, device ) );
