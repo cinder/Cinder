@@ -28,8 +28,9 @@
 namespace cinder {
 
 CaptureImplQtKitDevice::CaptureImplQtKitDevice( QTCaptureDevice* device )
-	: Capture::Device(), mUniqueId( cocoa::convertNsString( [device uniqueID] ) )
+	: Capture::Device()
 {
+	mUniqueId = cocoa::convertNsString( [device uniqueID] );
 	mName = cocoa::convertNsString( [device localizedDisplayName] );
 	
 		// Apparently this stuff is basically useless

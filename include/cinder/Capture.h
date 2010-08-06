@@ -88,7 +88,7 @@ class Capture {
 	static DeviceRef findDeviceByName( const std::string &name );
 
 #if defined( CINDER_COCOA )
-	typedef const std::string& DeviceIdentifier;
+	typedef std::string DeviceIdentifier;
 #else
 	typedef int DeviceIdentifier;
 #endif
