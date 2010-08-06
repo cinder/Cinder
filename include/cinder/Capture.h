@@ -85,46 +85,8 @@ class Capture {
 	//! Returns a vector of all Devices connected to the system. If \a forceRefresh then the system will be polled for connected devices.
 	static const std::vector<DeviceRef>&	getDevices( bool forceRefresh = false );
 	//! Finds a particular device based on its name
-	//static DeviceRef findDeviceByName( const std::string &name );
+	static DeviceRef findDeviceByName( const std::string &name );
 
-	//! Represents a video capture device
-	/*class Device {
- 	  public:
-		//! Returns the human-readable name of the device.
-		const std::string&		getName() const { return mName; }
-		//! Returns whether the device is available for use.
-		bool					checkAvailable() const;
-		//! Returns whether the device is currently connected.
-		bool					isConnected() const;
-
-		//! Returns the OS-specific unique identifier
-	#if defined( CINDER_MAC )
-		const std::string&		getUniqueId() const { return mUniqueId; }
-	#else
-		int						getUniqueId() const { return mUniqueId; }
-	#endif
-
-	#if defined( CINDER_MAC )
-		Device() {} // this represents a null device
-	#else
-		Device() : mUniqueId( 0 ) {}
-	#endif
-	 protected:
-	#if defined( CINDER_MAC )
-		Device( QTCaptureDevice* device );
-	#else
-		Device( const std::string &name, int uniqueId );
-	#endif
-
-		std::string		mName;
-	#if defined( CINDER_MAC )
-		std::string		mUniqueId;
-	#else
-		::Device		*mImpl;
-	#endif
-	
-		friend class Capture;
-	};*/
 #if defined( CINDER_COCOA )
 	typedef const std::string& DeviceIdentifier;
 #else
@@ -159,14 +121,9 @@ class Capture {
 #elif defined( CINDER_MSW )
 		CaptureImplDirectShow			*mImpl;
 #endif
-		//int32_t				mWidth, mHeight;
-		//mutable Surface8u	mCurrentFrame;
-		//Capture::Device		mDevice;
 	};
 	
 	shared_ptr<Obj>						mObj;
-	//static bool							sDevicesEnumerated;
-	//static std::vector<Capture::Device>	sDevices;
 	
   public:
  	//@{

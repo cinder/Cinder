@@ -51,12 +51,12 @@ class CaptureImplQtKitDevice : public Capture::Device {
 	
 	CVPixelBufferRef				mWorkingPixelBuffer;
 	cinder::Surface8u				mCurrentFrame;
-	int								mWidth, mHeight;
-	int								mSurfaceChannelOrderCode;
+	int32_t							mWidth, mHeight;
+	cinder::SurfaceChannelOrder		mSurfaceChannelOrderCode;
 	NSString						* mDeviceUniqueId;
-	int								mExposedFrameBytesPerRow;
-	int								mExposedFrameHeight;
-	int								mExposedFrameWidth;
+	int32_t							mExposedFrameBytesPerRow;
+	int32_t							mExposedFrameHeight;
+	int32_t							mExposedFrameWidth;
 	bool							mHasNewFrame;
 	cinder::Capture::DeviceRef		mDevice;
 }
@@ -71,10 +71,10 @@ class CaptureImplQtKitDevice : public Capture::Device {
 - (cinder::Surface8u)getCurrentFrame;
 - (bool)checkNewFrame;
 - (const cinder::Capture::DeviceRef)getDevice;
-- (int)getWidth;
-- (int)getHeight;
-- (size_t)getCurrentFrameBytesPerRow;
-- (size_t)getCurrentFrameWidth;
-- (size_t)getCurrentFrameHeight;
+- (int32_t)getWidth;
+- (int32_t)getHeight;
+- (int32_t)getCurrentFrameBytesPerRow;
+- (int32_t)getCurrentFrameWidth;
+- (int32_t)getCurrentFrameHeight;
 
 @end

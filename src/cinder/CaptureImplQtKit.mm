@@ -313,27 +313,27 @@ void frameDeallocator( void *refcon )
 	return mDevice;
 }
 
-- (int)getWidth
+- (int32_t)getWidth
 {
 	return mWidth;
 }
 
-- (int)getHeight
+- (int32_t)getHeight
 {
 	return mHeight;
 }
 
-- (size_t)getCurrentFrameBytesPerRow
+- (int32_t)getCurrentFrameBytesPerRow
 {
 	return mExposedFrameBytesPerRow;
 }
 
-- (size_t)getCurrentFrameWidth
+- (int32_t)getCurrentFrameWidth
 {
 	return mExposedFrameWidth;
 }
 
-- (size_t)getCurrentFrameHeight
+- (int32_t)getCurrentFrameHeight
 {
 	return mExposedFrameHeight;
 }

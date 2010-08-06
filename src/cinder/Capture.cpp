@@ -37,12 +37,6 @@ using namespace std;
 
 namespace cinder {
 
-#if defined( CINDER_MSW )
-	#define PLATFORM_DEFAULT_CHANNEL_ORDER SurfaceChannelOrder::BGR
-#else
-	#define PLATFORM_DEFAULT_CHANNEL_ORDER SurfaceChannelOrder::RGB
-#endif
-
 const vector<Capture::DeviceRef>& Capture::getDevices( bool forceRefresh )
 {	
 #if defined( CINDER_COCOA )
@@ -52,21 +46,20 @@ const vector<Capture::DeviceRef>& Capture::getDevices( bool forceRefresh )
 #endif
 }
 
-/*Capture::DeviceRef Capture::findDeviceByName( const string &name )
+Capture::DeviceRef Capture::findDeviceByName( const string &name )
 {
 	const vector<DeviceRef> &devices = getDevices();
 	for( vector<DeviceRef>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
-		if( deviceIt->getName() == name )
-			return deviceIt;
+		if( (*deviceIt)->getName() == name )
+			return *deviceIt;
 	}
 	
 	return DeviceRef(); // failed - return "null" device
-}*/
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Capture::Obj
 Capture::Obj::Obj( int32_t width, int32_t height, const DeviceRef device )
-	/*: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, PLATFORM_DEFAULT_CHANNEL_ORDER ), mDevice( device )*/
 {
 #if defined( CINDER_COCOA )
 	mImpl = [[::CapturePlatformImpl alloc] initWithDevice:device width:width height:height];
