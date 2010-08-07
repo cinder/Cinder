@@ -169,8 +169,13 @@ void Fbo::init()
 		
 	if( ( ( ! useCSAA ) && ( ! useMSAA ) ) || ( ! initMultisample( useCSAA ) ) ) { // if we don't need any variety of multisampling or it failed to initialize
 		// attach all the textures to the framebuffer
-		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c )
+		vector<GLenum> drawBuffers;
+		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c ) {
 			glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + c, getTarget(), mObj->mColorTextures[c].getTextureId(), 0 );
+			drawBuffers.push_back( GL_COLOR_ATTACHMENT0_EXT + c );
+		}
+		if( ! drawBuffers.empty() )
+			glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
 
 		// allocate and attach depth texture
 		if( mObj->mFormat.mDepthBuffer ) {
@@ -202,12 +207,14 @@ void Fbo::init()
 bool Fbo::initMultisample( bool csaa )
 {
 	glGenFramebuffersEXT( 1, &mObj->mResolveFramebufferId );
-
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mObj->mResolveFramebufferId ); 
 	
 	// bind all of the color buffers to the resolve FB's attachment points
+	vector<GLenum> drawBuffers;
 	for( size_t c = 0; c < mObj->mColorTextures.size(); ++c )
 		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + c, getTarget(), mObj->mColorTextures[c].getTextureId(), 0 );
+	if( ! drawBuffers.empty() )
+		glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
 
 	// see if the resolve buffer is ok
 	FboExceptionInvalidSpecification ignoredException;
@@ -228,6 +235,9 @@ bool Fbo::initMultisample( bool csaa )
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + c, GL_RENDERBUFFER_EXT, mObj->mMultisampleColorRenderbuffers.back().getId() );
 	}
 	
+	if( ! drawBuffers.empty() )
+		glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
+
 	if( mObj->mFormat.mDepthBuffer ) {
 		// create the multisampled depth Renderbuffer
 		mObj->mMultisampleDepthRenderbuffer = Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.mDepthInternalFormat, mObj->mFormat.mSamples, mObj->mFormat.mCoverageSamples );
