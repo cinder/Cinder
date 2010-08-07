@@ -112,12 +112,12 @@ class ColorT
 
 	float distance( const ColorT<T> &rhs ) const
 	{
-		return ( *this - rhs ).length();
+		return math<float>::sqrt( static_cast<float>( (r - rhs.r)*(r - rhs.r) + (g - rhs.g)*(g - rhs.g) + (b - rhs.b)*(b - rhs.b)) );
 	}
 
 	typename CHANTRAIT<T>::Accum distanceSquared( const ColorT<T> &rhs ) const
 	{
-		return ( *this - rhs ).lengthSquared();
+		return (r - rhs.r) * (r - rhs.r) + (g - rhs.g) * (g - rhs.g) + (b - rhs.b) * (b - rhs.b);
 	}
 
 	float length() const 

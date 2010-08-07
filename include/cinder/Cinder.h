@@ -38,6 +38,8 @@ using boost::uint64_t;
 using boost::shared_ptr;
 using boost::checked_array_deleter;
 
+#define CINDER_CINDER
+
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 	#define CINDER_MSW
 #elif defined(linux) || defined(__linux) || defined(__linux__)

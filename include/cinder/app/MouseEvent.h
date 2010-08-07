@@ -22,16 +22,19 @@
 
 #pragma once
 
+#include "cinder/Cinder.h"
+#include "cinder/app/Event.h"
 #include "cinder/Vector.h"
+
 
 namespace cinder { namespace app {
 
 //! Represents a mouse event
-class MouseEvent {
+class MouseEvent : public Event {
   public:
-	MouseEvent() {}
+	MouseEvent() : Event() {}
 	MouseEvent( int aInitiator, int aX, int aY, unsigned int aModifiers, float aWheelIncrement, uint32_t aNativeModifiers )
-		: mInitiator( aInitiator ), mX( aX ), mY( aY ), mModifiers( aModifiers ), mWheelIncrement( aWheelIncrement ), mNativeModifiers( aNativeModifiers )
+		: Event(), mInitiator( aInitiator ), mX( aX ), mY( aY ), mModifiers( aModifiers ), mWheelIncrement( aWheelIncrement ), mNativeModifiers( aNativeModifiers )
 	{}
 	
 	//! Returns the X coordinate of the mouse event

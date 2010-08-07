@@ -478,14 +478,14 @@ void Texture::SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder 
 			*dataFormat = GL_RGBA;
 			*type = GL_UNSIGNED_BYTE;
 		break;
-#if ! defined( CINDER_GLES )
-		case SurfaceChannelOrder::BGR:
-			*dataFormat = GL_BGR;
-			*type = GL_UNSIGNED_BYTE;
-		break;
 		case SurfaceChannelOrder::BGRA:
 		case SurfaceChannelOrder::BGRX:
 			*dataFormat = GL_BGRA;
+			*type = GL_UNSIGNED_BYTE;
+		break;
+#if ! defined( CINDER_GLES )
+		case SurfaceChannelOrder::BGR:
+			*dataFormat = GL_BGR;
 			*type = GL_UNSIGNED_BYTE;
 		break;
 		case SurfaceChannelOrder::ARGB:

@@ -6,12 +6,20 @@ using namespace ci;
 using namespace ci::app;
 
 SquareListener::SquareListener( App *app )
-	: App::Listener()
+	: mApp( app )
 {
 	mRect = Rectf( Vec2f( -40, -40 ), Vec2f( 40, 40 ) );
 	mRect.offset( app->getWindowCenter() );
 	mSelected = false;
-	app->addListener( this );
+	
+	mCbMouseDown = mApp->registerMouseDown( this, &SquareListener::mouseDown );
+	mCbMouseDrag = mApp->registerMouseDrag( this, &SquareListener::mouseDrag );	
+}
+
+SquareListener::~SquareListener()
+{
+	mApp->unregisterMouseDown( mCbMouseDown );
+	mApp->unregisterMouseDrag( mCbMouseDrag );	
 }
  
 bool SquareListener::mouseDown( MouseEvent event )

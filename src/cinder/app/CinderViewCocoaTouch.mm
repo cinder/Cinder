@@ -63,7 +63,7 @@ static Boolean sIsEaglLayer;
 {
 	CGRect bounds = [self bounds];
 	mRenderer->setFrameSize( bounds.size.width, bounds.size.height );
-	mApp->privateResize__( bounds.size.width, bounds.size.height );
+	mApp->privateResize__( ci::app::ResizeEvent( ci::Vec2i( bounds.size.width, bounds.size.height ) ) );
 	[self drawView:nil];	
 }
 

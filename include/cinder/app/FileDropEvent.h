@@ -22,16 +22,19 @@
 
 #pragma once
 
+#include "cinder/Cinder.h"
+#include "cinder/app/Event.h"
+
 #include <vector>
 #include <string>
 
 namespace cinder { namespace app {
 
 //! Represents a file-drop event, typically received from Windows Explorer or Mac OS X Finder
-class FileDropEvent {
+class FileDropEvent : public Event {
   public:
 	FileDropEvent( int aX, int aY, const std::vector<std::string> &aFiles )
-		: mX( aX ), mY( aY ), mFiles( aFiles )
+		: Event(), mX( aX ), mY( aY ), mFiles( aFiles )
 	{}
 	
 	//! Returns the X coordinate of the mouse during the event

@@ -2152,7 +2152,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
@@ -2163,7 +2163,7 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone_d";
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
@@ -2186,7 +2186,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2198,7 +2198,7 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone";
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
@@ -2220,6 +2220,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2231,7 +2232,7 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone-sim_d";
-				SDKROOT = iphonesimulator3.1;
+				SDKROOT = iphonesimulator4.0;
 				VALID_ARCHS = i386;
 			};
 			name = Debug;
@@ -2253,6 +2254,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
@@ -2265,7 +2267,7 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone-sim";
-				SDKROOT = iphonesimulator3.1;
+				SDKROOT = iphonesimulator4.0;
 				VALID_ARCHS = i386;
 			};
 			name = Release;
@@ -2296,6 +2298,8 @@
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
 					../lib/macosx/libboost_date_time.a,
+					../lib/macosx/libboost_filesystem.a,
+					../lib/macosx/libboost_system.a,
 					"../lib/macosx/libpixman-1.a",
 					../lib/macosx/libpng.a,
 					../lib/macosx/libcairo.a,
@@ -2334,6 +2338,8 @@
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
 					../lib/macosx/libboost_date_time.a,
+					../lib/macosx/libboost_filesystem.a,
+					../lib/macosx/libboost_system.a,
 					"../lib/macosx/libpixman-1.a",
 					../lib/macosx/libpng.a,
 					../lib/macosx/libcairo.a,

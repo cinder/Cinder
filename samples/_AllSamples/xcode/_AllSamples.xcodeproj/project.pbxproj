@@ -525,14 +525,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090 /* QuickTimeWriter.app */;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = QuickTimeWriter;
 		};
 		006A1FC911D7F87600941A5E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090 /* QuickTimeWriter */;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = QuickTimeWriter;
 		};
 		00705E731018F3F700DD615B /* PBXContainerItemProxy */ = {
