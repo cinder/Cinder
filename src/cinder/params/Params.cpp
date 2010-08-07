@@ -29,72 +29,61 @@ using namespace std;
 
 namespace cinder { namespace params {
 
-class TweakBarListener : public app::App::Listener {
- public:
-	TweakBarListener( app::App *app )
-	{
-		app->addListener( this );
-	}
-	
-	bool mouseDown( app::MouseEvent event )
-	{
-		TwMouseButtonID button;
-		if( event.isLeft() )
-			button = TW_MOUSE_LEFT;
-		else if( event.isRight() )
-			button = TW_MOUSE_RIGHT;
-		else
-			button = TW_MOUSE_MIDDLE;
-		TwMouseButton( TW_MOUSE_PRESSED, button );
-		return false;
-	}
-	
-	bool mouseUp( app::MouseEvent event )
-	{
-		TwMouseButtonID button;
-		if( event.isLeft() )
-			button = TW_MOUSE_LEFT;
-		else if( event.isRight() )
-			button = TW_MOUSE_RIGHT;
-		else
-			button = TW_MOUSE_MIDDLE;
-		TwMouseButton( TW_MOUSE_RELEASED, button );
-		return false;
-	}
-	
-	bool mouseMove( app::MouseEvent event )
-	{
-		TwMouseMotion( event.getX(), event.getY() );
-		return false;
-	}
-	
-	bool mouseDrag( app::MouseEvent event )
-	{
-		TwMouseMotion( event.getX(), event.getY() );
-		return false;
-	}
-	
-	bool keyDown( app::KeyEvent event )
-	{
-		int kmod = 0;
-		if( event.isShiftDown() )
-			kmod |= TW_KMOD_SHIFT;
-		if( event.isControlDown() )
-			kmod |= TW_KMOD_CTRL;
-		if( event.isAltDown() )
-			kmod |= TW_KMOD_ALT;
-		TwKeyPressed( event.getChar(), kmod );
-		return false;
-	}
-	
-	bool resize( int width, int height )
-	{
-		TwWindowSize(width, height);
-		return false;
-	}
-};
-
 namespace {
+
+bool mouseDown( app::MouseEvent event )
+{
+	TwMouseButtonID button;
+	if( event.isLeft() )
+		button = TW_MOUSE_LEFT;
+	else if( event.isRight() )
+		button = TW_MOUSE_RIGHT;
+	else
+		button = TW_MOUSE_MIDDLE;
+	return TwMouseButton( TW_MOUSE_PRESSED, button ) != 0;
+}
+
+bool mouseUp( app::MouseEvent event )
+{
+	TwMouseButtonID button;
+	if( event.isLeft() )
+		button = TW_MOUSE_LEFT;
+	else if( event.isRight() )
+		button = TW_MOUSE_RIGHT;
+	else
+		button = TW_MOUSE_MIDDLE;
+	return TwMouseButton( TW_MOUSE_RELEASED, button ) != 0;
+}
+
+bool mouseWheel( app::MouseEvent event )
+{
+	static float sWheelPos = 0;
+	sWheelPos += event.getWheelIncrement();
+	return TwMouseWheel( (int)(sWheelPos) ) != 0;
+}
+
+bool mouseMove( app::MouseEvent event )
+{
+	return TwMouseMotion( event.getX(), event.getY() ) != 0;
+}
+
+bool keyDown( app::KeyEvent event )
+{
+	int kmod = 0;
+	if( event.isShiftDown() )
+		kmod |= TW_KMOD_SHIFT;
+	if( event.isControlDown() )
+		kmod |= TW_KMOD_CTRL;
+	if( event.isAltDown() )
+		kmod |= TW_KMOD_ALT;
+	return TwKeyPressed( event.getChar(), kmod ) != 0;
+}
+
+bool resize( app::ResizeEvent event )
+{
+	TwWindowSize( event.getWidth(), event.getHeight() );
+	return false;
+}
 
 class AntMgr {
   public:
@@ -103,7 +92,13 @@ class AntMgr {
 			throw Exception();
 		}
 		
-		new TweakBarListener( app::App::get() );	
+		app::App::get()->registerMouseDown( mouseDown );
+		app::App::get()->registerMouseUp( mouseUp );
+		app::App::get()->registerMouseWheel( mouseWheel );		
+		app::App::get()->registerMouseMove( mouseMove );
+		app::App::get()->registerMouseDrag( mouseMove );
+		app::App::get()->registerKeyDown( keyDown );
+		app::App::get()->registerResize( resize );
 	}
 	
 	~AntMgr() {

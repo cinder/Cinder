@@ -8,7 +8,7 @@ using namespace ci::app;
 class TweakBarApp : public AppBasic {
  public:
 	void setup();
-	void resize( int width, int height );
+	void resize( ResizeEvent event );
 	void draw();
 	
 	CameraPersp				mCam;
@@ -37,7 +37,7 @@ void TweakBarApp::setup()
 	mParams.addParam( "Light Direction", &mLightDirection, "" );
 }
 
-void TweakBarApp::resize( int width, int height )
+void TweakBarApp::resize( ResizeEvent event )
 {
 	mCam.setAspectRatio( getWindowAspectRatio() );
 }

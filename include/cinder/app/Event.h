@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project (http://libcinder.org)
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -20,54 +20,19 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/AppImplMswScreenSaver.h"
+#pragma once
+
+#include "cinder/Cinder.h"
 
 namespace cinder { namespace app {
 
-static const int TIMER_ID = 1;
+//! Base class for all Events
+class Event {
+  protected:
+	Event() {}
 
-AppImplMswScreenSaver::AppImplMswScreenSaver( AppScreenSaver *aApp, HWND aWnd )
-	: AppImplMsw( aApp ), mApp( aApp ), mWnd( aWnd )
-{
-	privateSetWindowOffset__( Vec2i::zero() );
-}
-
-void AppImplMswScreenSaver::run()
-{
-	mDC = ::GetDC( mWnd );
-	mApp->getRenderer()->setup( mApp, mWnd, mDC );
-
-	mApp->privateSetup__();
-	
-	RECT windowRect;
-	::GetClientRect( mWnd, &windowRect );
-	mWindowWidth = windowRect.right;
-	mWindowHeight = windowRect.bottom;
-
-	mApp->privateResize__( ResizeEvent( Vec2i( windowRect.right, windowRect.bottom ) ) );
-
-	::SetTimer( mWnd, TIMER_ID, (UINT)(1000 / mApp->getSettings().getFrameRate()), NULL );
-}
-
-LRESULT AppImplMswScreenSaver::eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
-{
-	switch( message ) {
-		case WM_TIMER:
-			mApp->getRenderer()->startDraw();
-			mApp->privateUpdate__();
-			mApp->privateDraw__();
-			mApp->getRenderer()->finishDraw();
-			return 0;
-		break;
-		case WM_DESTROY:
-			mApp->getRenderer()->kill();
-			::KillTimer( mWnd, TIMER_ID );
-			::ReleaseDC( mWnd, mDC );
-			return 0;
-		break;
-		default:
-			return DefScreenSaverProc( hWnd, message, wParam, lParam );		
-	}
-}
+  public:
+	virtual ~Event() {}
+};
 
 } } // namespace cinder::app

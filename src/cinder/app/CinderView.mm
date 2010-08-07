@@ -126,7 +126,7 @@
 	bounds.size = [self convertSize:bounds.size toView:nil];
 
 	if( appSetupCalled ) { 
-		app->privateResize__((int) bounds.size.width, (int)bounds.size.height );
+		app->privateResize__( ci::app::ResizeEvent( ci::Vec2i( bounds.size.width, (int)bounds.size.height ) ) );
 		[self draw];
 	}
 }
