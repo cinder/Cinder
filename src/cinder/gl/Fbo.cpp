@@ -314,7 +314,10 @@ void Fbo::resolveTextures() const
 		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c ) {
 			glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + c );
 			glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + c );
-			glBlitFramebufferEXT( 0, 0, mObj->mWidth, mObj->mHeight, 0, 0, mObj->mWidth, mObj->mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
+			uint32_t bitfield = GL_COLOR_BUFFER_BIT;
+			if( mObj->mDepthTexture )
+				bitfield |= GL_DEPTH_BUFFER_BIT;
+			glBlitFramebufferEXT( 0, 0, mObj->mWidth, mObj->mHeight, 0, 0, mObj->mWidth, mObj->mHeight, bitfield, GL_NEAREST );
 		}
 
 		// restore the draw buffers to the default for the antialiased (non-resolve) framebuffer
