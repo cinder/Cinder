@@ -29,13 +29,17 @@
 
 namespace cinder { namespace gl {
 
-//! Represents a reference-counted OpenGL Renderbuffer, used primarily in conjunction with Fbos
+//! Represents a reference-counted OpenGL Renderbuffer, used primarily in conjunction with Fbos. Supported on OpenGL ES but multisampling is currently ignored.
 class Renderbuffer {
   public:
 	//! Creates a NULL Renderbuffer
 	Renderbuffer() {}
 	//! Create a Renderbuffer \a width pixels wide and \a heigh pixels high, with an internal format of \a internalFormat, defaulting to GL_RGBA8
+#if defined( CINDER_GLES )
+	Renderbuffer( int width, int height, GLenum internalFormat = GL_RGBA8_OES );
+#else
 	Renderbuffer( int width, int height, GLenum internalFormat = GL_RGBA8 );
+#endif
 	//! Create a Renderbuffer \a width pixels wide and \a heigh pixels high, with an internal format of \a internalFormat, defaulting to GL_RGBA8, MSAA samples \a msaaSamples, and CSAA samples \a coverageSamples
 	Renderbuffer( int width, int height, GLenum internalFormat, int msaaSamples, int coverageSamples = 0 );
 
@@ -128,6 +132,7 @@ class Fbo {
 	//! Returns the ID of the framebuffer itself. For antialiased FBOs this is the ID of the output multisampled FBO
 	GLuint		getId() const { return mObj->mId; }
 
+#if ! defined( CINDER_GLES )
 	//! For antialiased FBOs this returns the ID of the mirror FBO designed for reading, where the multisampled render buffers are resolved to. For non-antialised, this is the equivalent to getId()
 	GLuint		getResolveId() const { if( mObj->mResolveFramebufferId ) return mObj->mResolveFramebufferId; else return mObj->mId; }
 
@@ -137,6 +142,7 @@ class Fbo {
 	void		blitToScreen( const Area &srcArea, const Area &dstArea, GLenum filter = GL_NEAREST, GLbitfield mask = GL_COLOR_BUFFER_BIT ) const;
 	//! Copies from the screen from Area \a srcArea to \dstArea using filter \a filter. \a mask allows specification of color (\c GL_COLOR_BUFFER_BIT) and/or depth(\c GL_DEPTH_BUFFER_BIT). Calls glBlitFramebufferEXT() and is subject to its constraints and coordinate system.
 	void		blitFromScreen( const Area &srcArea, const Area &dstArea, GLenum filter = GL_NEAREST, GLbitfield mask = GL_COLOR_BUFFER_BIT );
+#endif
 
 	//! Returns the maximum number of samples the graphics card is capable of using per pixel in MSAA for an Fbo
 	static GLint	getMaxSamples();
@@ -150,16 +156,16 @@ class Fbo {
 
 		//! Set the texture target associated with the FBO. Defaults to \c GL_TEXTURE_2D, \c GL_TEXTURE_RECTANGLE_ARB is a common option as well
 		void	setTarget( GLenum target ) { mTarget = target; }
-		//! Sets the GL internal format for the color buffer. Defaults to \c GL_RGBA8. Common options also include <tt>GL_RGB8 and GL_RGBA32F</tt>
+		//! Sets the GL internal format for the color buffer. Defaults to \c GL_RGBA8. Common options also include \c GL_RGB8 and \c GL_RGBA32F
 		void	setColorInternalFormat( GLenum colorInternalFormat ) { mColorInternalFormat = colorInternalFormat; }
-		//! Sets the GL internal format for the depth buffer. Defaults to \c GL_DEPTH_COMPONENT24. Common options also include <tt>GL_DEPTH_COMPONENT16 and GL_DEPTH_COMPONENT32</tt>
+		//! Sets the GL internal format for the depth buffer. Defaults to \c GL_DEPTH_COMPONENT24. Common options also include \c GL_DEPTH_COMPONENT16 and \c GL_DEPTH_COMPONENT32
 		void	setDepthInternalFormat( GLenum depthInternalFormat ) { mDepthInternalFormat = depthInternalFormat; }
-		//! Sets the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling. Note that not all implementations support multisampling.
+		//! Sets the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling. Note that not all implementations support multisampling. Ignored on OpenGL ES.
 		void	setSamples( int samples ) { mSamples = samples; }
-		//! Sets the number of coverage samples used in CSAA-style antialiasing. Defaults to none. Note that not all implementations support CSAA, and is currenlty Windows-only Nvidia.
+		//! Sets the number of coverage samples used in CSAA-style antialiasing. Defaults to none. Note that not all implementations support CSAA, and is currenlty Windows-only Nvidia. Ignored on OpenGL ES.
 		void	setCoverageSamples( int coverageSamples ) { mCoverageSamples = coverageSamples; }
-		//! Enables or disables the creation of a color buffer for the FBO.. Creates multiple color attachments when \a numColorsBuffers >1
-		void	enableColorBuffer( bool colorBuffer = true, int numColorBuffers = 1 ) { mNumColorBuffers = ( colorBuffer ) ? numColorBuffers : 0; }
+		//! Enables or disables the creation of a color buffer for the FBO.. Creates multiple color attachments when \a numColorsBuffers >1, except on OpenGL ES which supports only 1.
+		void	enableColorBuffer( bool colorBuffer = true, int numColorBuffers = 1 );
 		//! Enables or disables the creation of a depth buffer for the FBO.
 		void	enableDepthBuffer( bool depthBuffer = true ) { mDepthBuffer = depthBuffer; }
 //		void	enableStencilBuffer( bool stencilBuffer = true ) { mStencilBuffer = stencilBuffer; }
@@ -187,9 +193,9 @@ class Fbo {
 		GLenum	getColorInternalFormat() const { return mColorInternalFormat; }
 		//! Returns the GL internal format for the depth buffer. Defaults to \c GL_DEPTH_COMPONENT24
 		GLenum	getDepthInternalFormat() const { return mDepthInternalFormat; }
-		//! Returns the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling
+		//! Returns the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling. OpenGL ES does not support multisampling.
 		int		getSamples() const { return mSamples; }
-		//! Returns the number of coverage samples used in CSAA-style antialiasing. Defaults to none.
+		//! Returns the number of coverage samples used in CSAA-style antialiasing. Defaults to none. OpenGL ES does not support multisampling.
 		int		getCoverageSamples() const { return mCoverageSamples; }
 		//! Returns whether the FBO contains a color buffer
 		bool	hasColorBuffer() const { return mNumColorBuffers > 0; }
