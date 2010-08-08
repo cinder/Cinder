@@ -306,15 +306,15 @@ void Fbo::resolveTextures() const
 		
 	// if this FBO is multisampled, resolve it, so it can be displayed
 	if ( mObj->mResolveFramebufferId ) {
-		GLint oldFb;
-		glGetIntegerv( GL_FRAMEBUFFER_BINDING_EXT, &oldFb );
+		SaveFramebufferBinding saveFboBinding;
+
 		glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, mObj->mId );
 		glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, mObj->mResolveFramebufferId );
 		
 		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c ) {
 			glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + c );
 			glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + c );
-			uint32_t bitfield = GL_COLOR_BUFFER_BIT;
+			GLbitfield bitfield = GL_COLOR_BUFFER_BIT;
 			if( mObj->mDepthTexture )
 				bitfield |= GL_DEPTH_BUFFER_BIT;
 			glBlitFramebufferEXT( 0, 0, mObj->mWidth, mObj->mHeight, 0, 0, mObj->mWidth, mObj->mHeight, bitfield, GL_NEAREST );
@@ -326,8 +326,6 @@ void Fbo::resolveTextures() const
 			drawBuffers.push_back( GL_COLOR_ATTACHMENT0_EXT + c );
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mObj->mId );
 		glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
-
-		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, oldFb );
 	}
 
 	mObj->mNeedsResolve = false;
@@ -402,7 +400,6 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
     return true;
 }
 
-
 GLint Fbo::getMaxSamples()
 {
 	if( sMaxSamples < 0 ) {
@@ -423,6 +420,33 @@ GLint Fbo::getMaxAttachments()
 	}
 	
 	return sMaxAttachments;
+}
+
+void Fbo::blitTo( Fbo dst, const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
+{
+	SaveFramebufferBinding saveFboBinding;
+
+	glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, mObj->mId );
+	glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, dst.getId() );		
+	glBlitFramebufferEXT( srcArea.getX1(), srcArea.getY1(), srcArea.getX2(), srcArea.getY2(), dstArea.getX1(), dstArea.getY1(), dstArea.getX2(), dstArea.getY2(), mask, filter );
+}
+
+void Fbo::blitToScreen( const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
+{
+	SaveFramebufferBinding saveFboBinding;
+
+	glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, mObj->mId );
+	glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, 0 );		
+	glBlitFramebufferEXT( srcArea.getX1(), srcArea.getY1(), srcArea.getX2(), srcArea.getY2(), dstArea.getX1(), dstArea.getY1(), dstArea.getX2(), dstArea.getY2(), mask, filter );
+}
+
+void Fbo::blitFromScreen( const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask )
+{
+	SaveFramebufferBinding saveFboBinding;
+
+	glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, GL_NONE );
+	glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, mObj->mId );		
+	glBlitFramebufferEXT( srcArea.getX1(), srcArea.getY1(), srcArea.getX2(), srcArea.getY2(), dstArea.getX1(), dstArea.getY1(), dstArea.getX2(), dstArea.getY2(), mask, filter );
 }
 
 FboExceptionInvalidSpecification::FboExceptionInvalidSpecification( const string &message ) throw()
