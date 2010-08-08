@@ -1105,4 +1105,18 @@ SaveColorState::~SaveColorState()
 	glColor4f( mOldValues[0], mOldValues[1], mOldValues[2], mOldValues[3] );
 }
 
+#if ! defined( CINDER_GLES )
+///////////////////////////////////////////////////////////////////////////////
+// SaveFramebufferBinding
+SaveFramebufferBinding::SaveFramebufferBinding()
+{
+	glGetIntegerv( GL_FRAMEBUFFER_BINDING_EXT, &mOldValue );
+}
+
+SaveFramebufferBinding::~SaveFramebufferBinding()
+{
+	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mOldValue );
+}
+#endif // ! defined( CINDER_GLES )
+
 } } // namespace gl::cinder
