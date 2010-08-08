@@ -24,7 +24,7 @@ class FBOBasicApp : public AppBasic {
 void FBOBasicApp::setup()
 {
 	gl::Fbo::Format format;
-	//format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
+//	format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
 	mFbo = gl::Fbo( FBO_WIDTH, FBO_HEIGHT, format );
 
 	gl::enableDepthRead();

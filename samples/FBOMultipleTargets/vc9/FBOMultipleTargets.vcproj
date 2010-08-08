@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="FBOMultipleTargets"
-	ProjectGUID="{9DA00FEA-5218-413E-B762-35D91045B3B4}"
+	ProjectGUID="{29703A9D-1C37-44A2-B1C7-9A6EC0C822C1}"
 	RootNamespace="FBOMultipleTargets"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
@@ -202,7 +202,19 @@
 			<File
 				RelativePath=".\Resources.rc"
 				>
-			</File>			
+			</File>
+		</Filter>
+		<Filter
+			Name="Shaders"
+			>
+			<File
+				RelativePath="..\resources\multipleOut_frag.glsl"
+				>
+			</File>
+			<File
+				RelativePath="..\resources\passThru_vert.glsl"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

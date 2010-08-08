@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{74202EDD-91D2-4D2A-B0B6-355CEB16E6BE}</ProjectGuid>
+    <ProjectGuid>{DBBA5587-B115-42ED-8490-44EAA0EA0A53}</ProjectGuid>
     <RootNamespace>FBOMultipleTargetsApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
@@ -111,7 +111,11 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />
-  </ItemGroup>  
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\resources\multipleOut_frag.glsl" />
+    <None Include="..\resources\passThru_vert.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

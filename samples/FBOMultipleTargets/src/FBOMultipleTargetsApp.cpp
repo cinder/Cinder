@@ -1,13 +1,18 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/gl/GlslProg.h"
+
+#include "Resources.h"
 
 using namespace ci;
 using namespace ci::app;
-using namespace std;
 
-// This sample shows a very basic use case for FBOs - it renders a spinning torus
-// into an FBO, and uses that as a Texture onto the sides of a cube.
+// This sample shows how to use an FBO with multiple color attachments.
+// It renders a spinning torus into two color attachments. The first attachment
+// is rendered as green, while the second attachment receives blue.
+// This is controlled by the shader, which is integral for using multiple attachments
+// see multipleOut_frag.glsl for the relevant bit
 class FBOMultipleTargetsApp : public AppBasic {
   public:
 	virtual void	setup();
@@ -17,6 +22,7 @@ class FBOMultipleTargetsApp : public AppBasic {
 	void			renderSceneToFbo();
 	
 	gl::Fbo				mFbo;
+	gl::GlslProg		mShaderMultipleOuts;
 	Matrix44f			mTorusRotation;
 	static const int	FBO_WIDTH = 256, FBO_HEIGHT = 256;
 };
@@ -24,8 +30,11 @@ class FBOMultipleTargetsApp : public AppBasic {
 void FBOMultipleTargetsApp::setup()
 {
 	gl::Fbo::Format format;
-	//format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
+	format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
+	format.enableColorBuffer( true, 2 ); // create an FBO with two color attachments
 	mFbo = gl::Fbo( FBO_WIDTH, FBO_HEIGHT, format );
+
+	mShaderMultipleOuts = gl::GlslProg( loadResource( RES_SHADER_VERT ), loadResource( RES_SHADER_FRAG ) );
 
 	gl::enableDepthRead();
 	gl::enableDepthWrite();	
@@ -51,13 +60,13 @@ void FBOMultipleTargetsApp::renderSceneToFbo()
 	// set the modelview matrix to reflect our current rotation
 	gl::multModelView( mTorusRotation );
 	
-	// clear out the FBO with blue
-	gl::clear( Color( 0.25, 0.5f, 1.0f ) );
+	// clear out both of the attachments of the FBO with black
+	gl::clear();
 
-	// render an orange torus, with no textures
-	glDisable( GL_TEXTURE_2D );
-	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
+	// render the torus with our multiple-output shader
+	mShaderMultipleOuts.bind();
 	gl::drawTorus( 1.4f, 0.3f, 32, 64 );
+	mShaderMultipleOuts.unbind();
 
 	// unbind the framebuffer, so that drawing goes to the screen again
 	mFbo.unbindFramebuffer();
@@ -77,26 +86,13 @@ void FBOMultipleTargetsApp::draw()
 	// clear the window to gray
 	gl::clear( Color( 0.35f, 0.35f, 0.35f ) );
 
-	// setup our camera to render the cube
-	CameraPersp cam( getWindowWidth(), getWindowHeight(), 60.0f );
-	cam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	cam.lookAt( Vec3f( 2.6f, 1.6f, -2.6f ), Vec3f::zero() );
-	gl::setMatrices( cam );
-
 	// set the viewport to match our window
 	gl::setViewport( getWindowBounds() );
 
-	// use the scene we rendered into the FBO as a texture
-	glEnable( GL_TEXTURE_2D );
-	mFbo.bindTexture();
-
-	// draw a cube textured with the FBO
-	gl::color( Color::white() );
-	gl::drawCube( Vec3f::zero(), Vec3f( 2.2f, 2.2f, 2.2f ) );
-
-	// show the FBO texture in the upper left corner
+	// draw the two textures we've created side-by-side
 	gl::setMatricesWindow( getWindowSize() );
-	gl::draw( mFbo.getTexture(0), Rectf( 0, 0, 96, 96 ) );
+	gl::draw( mFbo.getTexture(0), mFbo.getTexture(0).getBounds() );
+	gl::draw( mFbo.getTexture(1), mFbo.getTexture(1).getBounds() + Vec2f(mFbo.getTexture(0).getWidth(),0) );
 }
 
 CINDER_APP_BASIC( FBOMultipleTargetsApp, RendererGl )
