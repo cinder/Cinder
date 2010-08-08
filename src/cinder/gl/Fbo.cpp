@@ -211,8 +211,11 @@ bool Fbo::initMultisample( bool csaa )
 	
 	// bind all of the color buffers to the resolve FB's attachment points
 	vector<GLenum> drawBuffers;
-	for( size_t c = 0; c < mObj->mColorTextures.size(); ++c )
+	for( size_t c = 0; c < mObj->mColorTextures.size(); ++c ) {
 		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + c, getTarget(), mObj->mColorTextures[c].getTextureId(), 0 );
+		drawBuffers.push_back( GL_COLOR_ATTACHMENT0_EXT + c );
+	}
+
 	if( ! drawBuffers.empty() )
 		glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
 
@@ -307,7 +310,19 @@ void Fbo::resolveTextures() const
 		glGetIntegerv( GL_FRAMEBUFFER_BINDING_EXT, &oldFb );
 		glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, mObj->mId );
 		glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, mObj->mResolveFramebufferId );
-		glBlitFramebufferEXT( 0, 0, mObj->mWidth, mObj->mHeight, 0, 0, mObj->mWidth, mObj->mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
+		
+		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c ) {
+			glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + c );
+			glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + c );
+			glBlitFramebufferEXT( 0, 0, mObj->mWidth, mObj->mHeight, 0, 0, mObj->mWidth, mObj->mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
+		}
+
+		// restore the draw buffers to the default for the antialiased (non-resolve) framebuffer
+		vector<GLenum> drawBuffers;
+		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c )
+			drawBuffers.push_back( GL_COLOR_ATTACHMENT0_EXT + c );
+		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mObj->mId );
+		glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
 
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, oldFb );
 	}
