@@ -297,6 +297,8 @@
 		009987160F79CFE20042F211 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		0099871A0F79D0750042F211 /* CinderCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009987190F79D0750042F211 /* CinderCocoa.mm */; };
 		009C864A10F3D5CB006B6861 /* ImageIo.h in Headers */ = {isa = PBXBuildFile; fileRef = 009C864910F3D5CB006B6861 /* ImageIo.h */; };
+		009CB673120F22FF0066763D /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C14F980ED51A2700549EF3 /* Fbo.cpp */; };
+		009CB674120F23000066763D /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C14F980ED51A2700549EF3 /* Fbo.cpp */; };
 		009D6AEE1157FB340037C77C /* AppImplCocoaTouchRendererGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 009D6AED1157FB340037C77C /* AppImplCocoaTouchRendererGl.h */; };
 		009D6AEF1157FB340037C77C /* AppImplCocoaTouchRendererGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 009D6AED1157FB340037C77C /* AppImplCocoaTouchRendererGl.h */; };
 		009D6AF11157FB860037C77C /* AppImplCocoaTouchRendererGl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009D6AF01157FB860037C77C /* AppImplCocoaTouchRendererGl.mm */; };
@@ -1947,6 +1949,7 @@
 				0049A34A116EE65C007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F51194F584004D686E /* Text.cpp in Sources */,
 				005374F71194F588004D686E /* Font.cpp in Sources */,
+				009CB673120F22FF0066763D /* Fbo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2025,6 +2028,7 @@
 				0049A34B116EE65D007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F61194F584004D686E /* Text.cpp in Sources */,
 				005374F81194F589004D686E /* Font.cpp in Sources */,
+				009CB674120F23000066763D /* Fbo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

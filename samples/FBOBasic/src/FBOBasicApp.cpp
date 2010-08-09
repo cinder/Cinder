@@ -1,4 +1,13 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/Cinder.h"
+// select an appropriate base class for our App based on whether we're on iOS or not
+#if defined( CINDER_COCOA_TOUCH )
+	#include "cinder/app/AppCocoaTouch.h"
+	typedef ci::app::AppCocoaTouch AppBase;
+#else
+	#include "cinder/app/AppBasic.h"
+	typedef ci::app::AppBasic AppBase;
+#endif
+
 #include "cinder/Camera.h"
 #include "cinder/gl/Fbo.h"
 
@@ -8,7 +17,7 @@ using namespace std;
 
 // This sample shows a very basic use case for FBOs - it renders a spinning torus
 // into an FBO, and uses that as a Texture onto the sides of a cube.
-class FBOBasicApp : public AppBasic {
+class FBOBasicApp : public AppBase {
   public:
 	virtual void	setup();
 	virtual void	update();
@@ -36,6 +45,11 @@ void FBOBasicApp::setup()
 // Render the torus into the FBO
 void FBOBasicApp::renderSceneToFbo()
 {
+	// this will restore the old framebuffer binding when we leave this function
+	// on non-OpenGL ES platforms, you can just call mFbo.unbindFramebuffer() at the end of the function
+	// but this will restore the "screen" FBO on OpenGL ES, and does the right thing on both platforms
+	gl::SaveFramebufferBinding bindingSaver;
+	
 	// bind the framebuffer - now everything we draw will go there
 	mFbo.bindFramebuffer();
 
@@ -58,9 +72,7 @@ void FBOBasicApp::renderSceneToFbo()
 	glDisable( GL_TEXTURE_2D );
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
 	gl::drawTorus( 1.4f, 0.3f, 32, 64 );
-
-	// unbind the framebuffer, so that drawing goes to the screen again
-	mFbo.unbindFramebuffer();
+//	gl::drawColorCube( Vec3f::zero(), Vec3f( 2.2f, 2.2f, 2.2f ) );
 }
 
 void FBOBasicApp::update()
@@ -97,6 +109,14 @@ void FBOBasicApp::draw()
 	// show the FBO texture in the upper left corner
 	gl::setMatricesWindow( getWindowSize() );
 	gl::draw( mFbo.getTexture(0), Rectf( 0, 0, 96, 96 ) );
+	
+#if ! defined( CINDER_GLES ) // OpenGL ES can't do depth textures, otherwise draw the FBO's
+	gl::draw( mFbo.getDepthTexture(), Rectf( 96, 0, 96 + 96, 96 ) );
+#endif
 }
 
+#if defined( CINDER_COCOA_TOUCH )
+CINDER_APP_COCOA_TOUCH( FBOBasicApp, RendererGl )
+#else
 CINDER_APP_BASIC( FBOBasicApp, RendererGl )
+#endif
