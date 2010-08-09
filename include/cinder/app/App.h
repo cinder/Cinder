@@ -271,12 +271,12 @@ class App {
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
 	
 	// utilities
-	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
+	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). Throws ResourceLoadExc on failure. \sa \ref CinderResources
 	static DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType );
 #if defined( CINDER_COCOA )
-	//! Returns a DataSourceRef to an application resource. \a macPath is a path relative to the bundle's resources folder. \sa \ref CinderResources
+	//! Returns a DataSourceRef to an application resource. \a macPath is a path relative to the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
 	static DataSourcePathRef	loadResource( const std::string &macPath );
-	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. \sa \ref CinderResources
+	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
 	static std::string			getResourcePath( const std::string &rsrcRelativePath );
 	//! Returns the absolute file path to the bundle's resources folder. \sa \ref CinderResources
 	static std::string			getResourcePath();
@@ -456,5 +456,20 @@ inline ::CGContextRef	createWindowCgContext() { return ((Renderer2d*)(App::get()
 #endif
 
 //@}
+
+//! Exception for failed resource loading
+class ResourceLoadExc : public Exception {
+  public:
+#if defined( CINDER_COCOA )
+	ResourceLoadExc( const std::string &macPath );
+#elif defined( CINDER_MSW )
+	ResourceLoadExc( int mswID, const std::string &mswType );
+	ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType );
+#endif
+
+	virtual const char * what() const throw() { return mMessage; }
+
+	char mMessage[4096];
+};
 
 } } // namespace cinder::app

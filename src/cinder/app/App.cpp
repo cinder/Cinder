@@ -186,7 +186,7 @@ DataSourcePathRef App::loadResource( const std::string &macPath )
 {
 	string resourcePath = App::get()->getResourcePath( macPath );
 	if( resourcePath.empty() )
-		return shared_ptr<DataSourcePath>();
+		throw ResourceLoadExc( macPath );
 	else
 		return DataSourcePath::createRef( resourcePath );
 }
@@ -428,5 +428,24 @@ void App::Settings::enablePowerManagement( bool aPowerManagement )
 {
 	mPowerManagement = aPowerManagement;
 }
+
+#if defined( CINDER_COCOA )
+ResourceLoadExc::ResourceLoadExc( const std::string &macPath )
+{
+	sprintf( mMessage, "Failed to load resource: %s", macPath.c_str() );
+}
+
+#elif defined( CINDER_MSW )
+
+ResourceLoadExc::ResourceLoadExc( int mswID, const std::string &mswType )
+{
+	sprintf( mMessage, "Failed to load resource: #%d type: %s", mswID, mswType.c_str() );
+}
+
+ResourceLoadExc::ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType )
+{
+	sprintf( mMessage, "Failed to load resource: #%d type: %s Mac path: %s", mswID, mswType.c_str(), macPath.c_str() );
+}
+#endif // defined( CINDER_MSW )
 
 } } // namespace cinder::app
