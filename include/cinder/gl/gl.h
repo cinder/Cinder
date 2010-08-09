@@ -257,7 +257,6 @@ struct SaveColorState {
 	GLfloat		mOldValues[4];
 };
 
-#if ! defined( CINDER_GLES )
 //! Convenience class which pushes and pops the currently bound framebuffer
 struct SaveFramebufferBinding {
 	SaveFramebufferBinding();
@@ -265,7 +264,6 @@ struct SaveFramebufferBinding {
   private:
 	GLint		mOldValue;
 };
-#endif
 
 #if defined( CINDER_MSW )
 //! Initializes the GLee library. This is generally called automatically by the application and is only necessary if you need to use GLee before your app's setup() method is called.

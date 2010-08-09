@@ -127,11 +127,13 @@ Fbo::Format::Format()
 {
 	mTarget = GL_TEXTURE_2D;
 #if defined( CINDER_GLES )
-	mColorInternalFormat = GL_RGBA8_OES;
+	mColorInternalFormat = GL_RGBA;
 	mDepthInternalFormat = GL_DEPTH_COMPONENT24_OES;
+	mDepthBufferAsTexture = false;
 #else
 	mColorInternalFormat = GL_RGBA8;
 	mDepthInternalFormat = GL_DEPTH_COMPONENT24;
+	mDepthBufferAsTexture = true;
 #endif
 	mSamples = 0;
 	mCoverageSamples = 0;
@@ -154,10 +156,25 @@ void Fbo::Format::enableColorBuffer( bool colorBuffer, int numColorBuffers )
 #endif
 }
 
+void Fbo::Format::enableDepthBuffer( bool depthBuffer, bool asTexture )
+{
+	mDepthBuffer = depthBuffer;
+#if defined( CINDER_GLES )
+	mDepthBufferAsTexture = false;
+#else
+	mDepthBufferAsTexture = asTexture;
+#endif
+}
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Fbo
+
+
 void Fbo::init()
 {
+	gl::SaveFramebufferBinding bindingSaver;
+	
 #if defined( CINDER_MSW )
 	static bool csaaSupported = ( GLEE_NV_framebuffer_multisample_coverage != 0 );
 #else
@@ -206,20 +223,28 @@ void Fbo::init()
 
 		// allocate and attach depth texture
 		if( mObj->mFormat.mDepthBuffer ) {
-/*			GLuint depthTextureId;
-			glGenTextures( 1, &depthTextureId );
-			glBindTexture( getTarget(), depthTextureId );
-			glTexImage2D( getTarget(), 0, getFormat().getDepthInternalFormat(), mObj->mWidth, mObj->mHeight, 0, GL_LUMINANCE, GL_FLOAT, NULL );
-			glTexParameteri( getTarget(), GL_TEXTURE_MIN_FILTER, mObj->mFormat.mMinFilter );
-			glTexParameteri( getTarget(), GL_TEXTURE_MAG_FILTER, mObj->mFormat.mMagFilter );
-			glTexParameteri( getTarget(), GL_TEXTURE_WRAP_S, mObj->mFormat.mWrapS );
-			glTexParameteri( getTarget(), GL_TEXTURE_WRAP_T, mObj->mFormat.mWrapT );
-#if ! defined( CINDER_GLES )
-			glTexParameteri( getTarget(), GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
-#endif
-			mObj->mDepthTexture = Texture( getTarget(), depthTextureId, mObj->mWidth, mObj->mHeight, true );
+			if( mObj->mFormat.mDepthBufferAsTexture ) {
+	#if ! defined( CINDER_GLES )			
+				GLuint depthTextureId;
+				glGenTextures( 1, &depthTextureId );
+				glBindTexture( getTarget(), depthTextureId );
+				glTexImage2D( getTarget(), 0, getFormat().getDepthInternalFormat(), mObj->mWidth, mObj->mHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL );
+				glTexParameteri( getTarget(), GL_TEXTURE_MIN_FILTER, mObj->mFormat.mMinFilter );
+				glTexParameteri( getTarget(), GL_TEXTURE_MAG_FILTER, mObj->mFormat.mMagFilter );
+				glTexParameteri( getTarget(), GL_TEXTURE_WRAP_S, mObj->mFormat.mWrapS );
+				glTexParameteri( getTarget(), GL_TEXTURE_WRAP_T, mObj->mFormat.mWrapT );
+				glTexParameteri( getTarget(), GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
+				mObj->mDepthTexture = Texture( getTarget(), depthTextureId, mObj->mWidth, mObj->mHeight, true );
 
-			GL_SUFFIX(glFramebufferTexture2D)( GL_SUFFIX(GL_FRAMEBUFFER_), GL_SUFFIX(GL_DEPTH_ATTACHMENT_), getTarget(), mObj->mDepthTexture.getTextureId(), 0 );*/
+				glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, getTarget(), mObj->mDepthTexture.getTextureId(), 0 );
+	#else
+		throw; // this should never fire in OpenGL ES
+	#endif
+			}
+			else if( mObj->mFormat.mDepthBuffer ) { // implement depth buffer as RenderBuffer
+				mObj->mDepthRenderbuffer = Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.getDepthInternalFormat() );
+				GL_SUFFIX(glFramebufferRenderbuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), GL_SUFFIX(GL_DEPTH_ATTACHMENT_), GL_SUFFIX(GL_RENDERBUFFER_), mObj->mDepthRenderbuffer.getId() );
+			}
 		}
 
 		FboExceptionInvalidSpecification exc;
@@ -230,7 +255,6 @@ void Fbo::init()
 	
 	mObj->mNeedsResolve = false;
 	mObj->mNeedsMipmapUpdate = false;
-	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), 0 );
 }
 
 bool Fbo::initMultisample( bool csaa )
