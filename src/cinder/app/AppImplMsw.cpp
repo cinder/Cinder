@@ -61,17 +61,17 @@ Buffer AppImplMsw::loadResource( int id, const std::string &type )
 	wsprintfW( unicodeType, L"%S", type.c_str() );
 	resInfoHandle = ::FindResource( NULL, MAKEINTRESOURCE(id), unicodeType );
 	if( resInfoHandle == NULL ) {
-		return Buffer();
+		throw ResourceLoadExc( id, type );
 	}
 	resHandle = ::LoadResource( NULL, resInfoHandle );
 	if( resHandle == NULL ) {
-		return Buffer();	
+		throw ResourceLoadExc( id, type );
 	}
 	// it's not necessary to unlock resources because the system automatically deletes them when the process
 	// that created them terminates.
 	dataPtr = ::LockResource( resHandle );
 	if( dataPtr == 0 ) {
-		return Buffer();		
+		throw ResourceLoadExc( id, type );
 	}
 	dataSize = ::SizeofResource( NULL, resInfoHandle );
 	return Buffer( dataPtr, dataSize );
