@@ -22,14 +22,16 @@
 
 #pragma once
 
-namespace cinder{
-namespace app{
+#include "cinder/Cinder.h"
+#include "cinder/app/Event.h"
+
+namespace cinder{ namespace app{
 
 //! Represents a keyboard event
-class KeyEvent {
+class KeyEvent : public Event {
   public:	
 	KeyEvent( int aCode, char aChar, unsigned int aModifiers, unsigned int aNativeKeyCode )
-		: mCode( aCode ), mChar( aChar ), mModifiers( aModifiers ), mNativeKeyCode( aNativeKeyCode ) {}
+		: Event(), mCode( aCode ), mChar( aChar ), mModifiers( aModifiers ), mNativeKeyCode( aNativeKeyCode ) {}
 
 	//! Returns the key code associated with the event, which maps into the enum listed below
 	int		getCode() const { return mCode; }
@@ -218,5 +220,4 @@ class KeyEvent {
 	unsigned int	mNativeKeyCode;
 };
 
-} // namespace app
-} // namespace cinder
+} } // namespace cinder::app

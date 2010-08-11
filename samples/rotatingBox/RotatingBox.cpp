@@ -11,7 +11,7 @@ using namespace ci::app;
 class RotatingCubeApp : public AppBasic {
   public:	
 	void setup();
-	void resize( int width, int height );
+	void resize( ResizeEvent event );
 	void update();
 	void draw();
 	
@@ -48,7 +48,7 @@ void RotatingCubeApp::setup()
 	gl::enableDepthWrite();	
 }
 
-void RotatingCubeApp::resize( int width, int height )
+void RotatingCubeApp::resize( ResizeEvent event )
 {
 	// now tell our Camera that the window aspect ratio has changed
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );

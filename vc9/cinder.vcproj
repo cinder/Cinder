@@ -923,6 +923,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\include\cinder\app\Event.h"
+					>
+				</File>
+				<File
 					RelativePath="..\include\cinder\app\FileDropEvent.h"
 					>
 				</File>
@@ -940,6 +944,10 @@
 				</File>
 				<File
 					RelativePath="..\include\cinder\app\Renderer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\app\ResizeEvent.h"
 					>
 				</File>
 				<File

@@ -22,64 +22,66 @@
 
 #pragma once
 
+#include "cinder/Cinder.h"
+#include "cinder/app/Event.h"
 #include "cinder/Vector.h"
 #include "cinder/Quaternion.h"
 
 namespace cinder { namespace app {
 
 //! Represents a single acceleration value
-class AccelEvent {
-	public:
-		AccelEvent( const Vec3f &data, const Vec3f &rawData, const Vec3f &prevData, const Vec3f &prevRawData )
-		 		   : mData( data ), mRawData( rawData ), mPrevData( prevData ), mPrevRawData( prevRawData )
-		{
-		}
-		
-		//! Returns the filtered data for this event as a Vec3f representing the forces applied to the device
-		Vec3f	getData() const { return mData; }
-		//! Returns the unfiltered data for this event as a Vec3f representing the forces applied to the device
-		Vec3f	getRawData() const { return mRawData; }
-		//! Returns the filtered data for the previous event as a Vec3f representing the forces applied to the device
-		Vec3f	getPrevData() const { return mPrevData; }
-		//! Returns the raw data for the previous event as a Vec3f representing the forces applied to the device
-		Vec3f	getPrevRawData() const { return mPrevRawData; }
-
-		//! Returns whether this acceleration constitutes a shake, as defined by an acceleration of magnitude >= \a shakeDelta
-		bool	isShake( float shakeDelta = 2.2f ) const
-		{ return (mRawData - mPrevRawData).lengthSquared() > shakeDelta * shakeDelta; }
-		
-		Vec2f getPolarPlaneVector() const // (r, theta), theta is in degrees
-		{ 
-			float r = math<float>::sin( M_PI*(mData.z+1) / 2 );
-			float theta = toDegrees( math<float>::asin( mData.y / math<float>::sqrt( mData.x*mData.x + mData.y*mData.y )) );
-
-			if( mData.x < 0 ) {		
-				theta = -theta + 180.0f;
-			}
-			else {
-				if( mData.y < 0 ) {
-					theta = theta + 360.0f;
-				}
-			}
-			
-			return Vec2f( r, theta );			
-	 	}
+class AccelEvent : public Event {
+  public:
+	AccelEvent( const Vec3f &data, const Vec3f &rawData, const Vec3f &prevData, const Vec3f &prevRawData )
+		: Event(), mData( data ), mRawData( rawData ), mPrevData( prevData ), mPrevRawData( prevRawData )
+	{
+	}
 	
-		Vec2f getPlaneVector() const
-		{
-			Vec2f v = getPolarPlaneVector();
-			return Vec2f( -v.x * math<float>::cos( toRadians( v.y ) ), v.x * math<float>::sin( toRadians( v.y ) ) );
-		}
+	//! Returns the filtered data for this event as a Vec3f representing the forces applied to the device
+	Vec3f	getData() const { return mData; }
+	//! Returns the unfiltered data for this event as a Vec3f representing the forces applied to the device
+	Vec3f	getRawData() const { return mRawData; }
+	//! Returns the filtered data for the previous event as a Vec3f representing the forces applied to the device
+	Vec3f	getPrevData() const { return mPrevData; }
+	//! Returns the raw data for the previous event as a Vec3f representing the forces applied to the device
+	Vec3f	getPrevRawData() const { return mPrevRawData; }
 
-		//! Returns a matrix representing a transformation from an upright orientation (0,-1,0) to the current orientation
-		Matrix44f getMatrix() const
-		{
-			return Quatf( Vec3f( 0, -1, 0 ), mData.normalized() ).toMatrix44();
+	//! Returns whether this acceleration constitutes a shake, as defined by an acceleration of magnitude >= \a shakeDelta
+	bool	isShake( float shakeDelta = 2.2f ) const
+	{ return (mRawData - mPrevRawData).lengthSquared() > shakeDelta * shakeDelta; }
+	
+	Vec2f getPolarPlaneVector() const // (r, theta), theta is in degrees
+	{ 
+		float r = math<float>::sin( M_PI*(mData.z+1) / 2 );
+		float theta = toDegrees( math<float>::asin( mData.y / math<float>::sqrt( mData.x*mData.x + mData.y*mData.y )) );
+
+		if( mData.x < 0 ) {		
+			theta = -theta + 180.0f;
+		}
+		else {
+			if( mData.y < 0 ) {
+				theta = theta + 360.0f;
+			}
 		}
 		
-	private:
-		Vec3f		mData, mPrevData;
-		Vec3f		mRawData, mPrevRawData;
+		return Vec2f( r, theta );			
+	}
+
+	Vec2f getPlaneVector() const
+	{
+		Vec2f v = getPolarPlaneVector();
+		return Vec2f( -v.x * math<float>::cos( toRadians( v.y ) ), v.x * math<float>::sin( toRadians( v.y ) ) );
+	}
+
+	//! Returns a matrix representing a transformation from an upright orientation (0,-1,0) to the current orientation
+	Matrix44f getMatrix() const
+	{
+		return Quatf( Vec3f( 0, -1, 0 ), mData.normalized() ).toMatrix44();
+	}
+	
+  private:
+	Vec3f		mData, mPrevData;
+	Vec3f		mRawData, mPrevRawData;
 };
 
 // For convenience only

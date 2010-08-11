@@ -22,7 +22,7 @@ bool gDebug = false;
 class ObjLoaderApp : public AppBasic {
  public:
 	void	setup();
-	void	resize( int width, int height );
+	void	resize( ResizeEvent event );
 
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
@@ -57,9 +57,9 @@ void ObjLoaderApp::setup()
 	mShader.uniform( "tex0", 0 );
 }
 
-void ObjLoaderApp::resize( int width, int height )
+void ObjLoaderApp::resize( ResizeEvent event )
 {
-	App::resize( width, height );
+	App::resize( event );
 	mArcball.setWindowSize( getWindowSize() );
 	mArcball.setCenter( Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
 	mArcball.setRadius( 150 );

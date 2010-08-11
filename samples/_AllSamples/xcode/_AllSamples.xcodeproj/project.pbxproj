@@ -59,6 +59,7 @@
 				0039FB53115AD3A200BA0BAD /* PBXTargetDependency */,
 				005930E11185637100C890F2 /* PBXTargetDependency */,
 				006A1FCA11D7F87600941A5E /* PBXTargetDependency */,
+				009CB64F120F228F0066763D /* PBXTargetDependency */,
 			);
 			name = Samples;
 			productName = Samples;
@@ -525,14 +526,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090 /* QuickTimeWriter.app */;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = QuickTimeWriter;
 		};
 		006A1FC911D7F87600941A5E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090 /* QuickTimeWriter */;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = QuickTimeWriter;
 		};
 		00705E731018F3F700DD615B /* PBXContainerItemProxy */ = {
@@ -576,6 +577,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = SurfaceBasic;
+		};
+		009CB64C120F22810066763D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* FBOMultipleTargets.app */;
+			remoteInfo = FBOMultipleTargets;
+		};
+		009CB64E120F228F0066763D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090 /* FBOMultipleTargets */;
+			remoteInfo = FBOMultipleTargets;
 		};
 		009F02021136D23400636E3C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -756,6 +771,7 @@
 		00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageHeightField.xcodeproj; path = ../../ImageHeightField/xcode/ImageHeightField.xcodeproj; sourceTree = SOURCE_ROOT; };
 		007BDE071118921D00BC750C /* RDiffusion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RDiffusion.xcodeproj; path = ../../RDiffusion/xcode/RDiffusion.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SurfaceBasic.xcodeproj; path = ../../SurfaceBasic/xcode/SurfaceBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
+		009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOMultipleTargets.xcodeproj; path = ../../FBOMultipleTargets/xcode/FBOMultipleTargets.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageFileBasic.xcodeproj; path = ../../ImageFileBasic/xcode/ImageFileBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoronoiGpu.xcodeproj; path = ../../VoronoiGpu/xcode/VoronoiGpu.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureAdvanced.xcodeproj; path = ../../CaptureAdvanced/xcode/CaptureAdvanced.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -772,6 +788,7 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */,
 				006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */,
 				005930D31185636300C890F2 /* AudioGenerative.xcodeproj */,
 				0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */,
@@ -1110,6 +1127,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		009CB648120F22810066763D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009CB64D120F22810066763D /* FBOMultipleTargets.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		009F01FB1136D23400636E3C /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1256,6 +1281,10 @@
 				{
 					ProductGroup = 0039FB29115AD31B00BA0BAD /* Products */;
 					ProjectRef = 0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 009CB648120F22810066763D /* Products */;
+					ProjectRef = 009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C9C8100681E3004D82BC /* Products */;
@@ -1653,6 +1682,13 @@
 			remoteRef = 009C40EA1120680A0053283A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		009CB64D120F22810066763D /* FBOMultipleTargets.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FBOMultipleTargets.app;
+			remoteRef = 009CB64C120F22810066763D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		009F02031136D23400636E3C /* ImageFileBasic.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -1905,6 +1941,11 @@
 			isa = PBXTargetDependency;
 			name = SurfaceBasic;
 			targetProxy = 009C40EC112068140053283A /* PBXContainerItemProxy */;
+		};
+		009CB64F120F228F0066763D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBOMultipleTargets;
+			targetProxy = 009CB64E120F228F0066763D /* PBXContainerItemProxy */;
 		};
 		009F02051136D24300636E3C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
