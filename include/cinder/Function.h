@@ -29,15 +29,12 @@
 
 #if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
 	#include <functional>
-	namespace std {
-		using std::tr1::function;
-	}
 #else
 	#include <boost/tr1/functional.hpp>
-	namespace std {
-		using ::boost::function;
-	}
 #endif
+namespace std {
+	using std::tr1::function;
+}
 
 namespace cinder {
 
