@@ -26,6 +26,8 @@
 #include "cinder/app/Event.h"
 #include "cinder/Vector.h"
 
+#include <vector>
+
 namespace cinder { namespace app {
 
 //! Represents a mouse event
