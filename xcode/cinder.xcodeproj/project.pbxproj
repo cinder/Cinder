@@ -581,6 +581,8 @@
 		C7594FF6121733290059C0EE /* PcmBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FEE121733290059C0EE /* PcmBuffer.cpp */; };
 		C7594FF9121733290059C0EE /* OutputImplAudioUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FED121733290059C0EE /* OutputImplAudioUnit.cpp */; };
 		C7594FFA121733290059C0EE /* PcmBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FEE121733290059C0EE /* PcmBuffer.cpp */; };
+		C759501F121734C90059C0EE /* Input.h in Headers */ = {isa = PBXBuildFile; fileRef = C759501E121734C90059C0EE /* Input.h */; };
+		C7595021121734DC0059C0EE /* Input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7595020121734DC0059C0EE /* Input.cpp */; };
 		C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7792FAE119A185000521786 /* CocoaCaConverter.cpp */; };
 		C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
 		C7A76E9F1176449F00A46655 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
@@ -844,6 +846,8 @@
 		C7594FEC121733290059C0EE /* FftProcessorImplAccelerate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FftProcessorImplAccelerate.cpp; sourceTree = "<group>"; };
 		C7594FED121733290059C0EE /* OutputImplAudioUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputImplAudioUnit.cpp; sourceTree = "<group>"; };
 		C7594FEE121733290059C0EE /* PcmBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PcmBuffer.cpp; sourceTree = "<group>"; };
+		C759501E121734C90059C0EE /* Input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Input.h; sourceTree = "<group>"; };
+		C7595020121734DC0059C0EE /* Input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Input.cpp; sourceTree = "<group>"; };
 		C7792FAE119A185000521786 /* CocoaCaConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CocoaCaConverter.cpp; sourceTree = "<group>"; };
 		C7792FB0119A186000521786 /* CocoaCaConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaCaConverter.h; sourceTree = "<group>"; };
 		C7A76E9A1176449F00A46655 /* Io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Io.cpp; sourceTree = "<group>"; };
@@ -1384,13 +1388,14 @@
 			children = (
 				C7594FDB121732F20059C0EE /* FftProcessor.h */,
 				C7594FDC121732F20059C0EE /* FftProcessorImplAccelerate.h */,
-				C7594FDD121732F20059C0EE /* OutputImplAudioUnit.h */,
 				C7594FDE121732F20059C0EE /* PcmBuffer.h */,
 				C7A76EA3117644AB00A46655 /* Callback.h */,
 				C7A76EA4117644AB00A46655 /* Io.h */,
 				C7A76EA5117644AB00A46655 /* Output.h */,
+				C7594FDD121732F20059C0EE /* OutputImplAudioUnit.h */,
 				C7A76EA6117644AB00A46655 /* SourceFile.h */,
 				C7792FB0119A186000521786 /* CocoaCaConverter.h */,
+				C759501E121734C90059C0EE /* Input.h */,
 			);
 			path = audio;
 			sourceTree = "<group>";
@@ -1406,6 +1411,7 @@
 				C7A76E9B1176449F00A46655 /* Output.cpp */,
 				C7A76E9C1176449F00A46655 /* SourceFile.cpp */,
 				C7792FAE119A185000521786 /* CocoaCaConverter.cpp */,
+				C7595020121734DC0059C0EE /* Input.cpp */,
 			);
 			path = audio;
 			sourceTree = "<group>";
@@ -1828,6 +1834,7 @@
 				C7594FE0121732F20059C0EE /* FftProcessorImplAccelerate.h in Headers */,
 				C7594FE1121732F20059C0EE /* OutputImplAudioUnit.h in Headers */,
 				C7594FE2121732F20059C0EE /* PcmBuffer.h in Headers */,
+				C759501F121734C90059C0EE /* Input.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2173,6 +2180,7 @@
 				C7594FF0121733290059C0EE /* FftProcessorImplAccelerate.cpp in Sources */,
 				C7594FF1121733290059C0EE /* OutputImplAudioUnit.cpp in Sources */,
 				C7594FF2121733290059C0EE /* PcmBuffer.cpp in Sources */,
+				C7595021121734DC0059C0EE /* Input.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
