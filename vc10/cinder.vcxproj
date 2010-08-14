@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -94,10 +94,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp" />
-    <ClCompile Include="..\src\cinder\audio\FftProcessor.cpp" />
-    <ClCompile Include="..\src\cinder\audio\FftProcessorImplXDsp.cpp" />
-    <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp" />
-    <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp" />
     <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp" />
     <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
@@ -202,11 +198,11 @@
     <ClCompile Include="..\src\videoInput\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\cinder\audio\FftProcessor.h" />
-    <ClInclude Include="..\include\cinder\audio\FftProcessorImplXDsp.h" />
-    <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h" />
+    <ClInclude Include="..\include\cinder\app\Event.h" />
+    <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
+    <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
     <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h" />
@@ -286,7 +282,7 @@
     <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
     <ClInclude Include="..\include\cinder\app\Renderer.h" />
     <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
-    <ClInclude Include="..\include\cinder\audio\PcmBuffer.h" />
+    <ClInclude Include="..\include\cinder\audio\Buffer.h" />
     <ClInclude Include="..\include\cinder\audio\Callback.h" />
     <ClInclude Include="..\include\cinder\audio\Io.h" />
     <ClInclude Include="..\include\cinder\audio\Output.h" />

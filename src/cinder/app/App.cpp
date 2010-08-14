@@ -55,100 +55,95 @@ App::App()
 
 App::~App()
 {
-	for( vector<Listener*>::iterator listenerIt = mListeners.begin(); listenerIt != mListeners.end(); ++listenerIt )
-		delete *listenerIt;
-}
-
-void App::addListener( Listener *listener )
-{
-	mListeners.push_back( listener );
-}
-
-void App::removeListener( Listener *listener )
-{
-	vector<Listener*>::iterator curIt = std::find( mListeners.begin(), mListeners.end(), listener );
-	if( curIt != mListeners.end() )
-		mListeners.erase( curIt );
 }
 
 // Pseudo-private event handlers
 void App::privateMouseDown__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDown( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseDown.begin(); ( cbIter != mCallbacksMouseDown.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseDown( event );
 }
 
 void App::privateMouseUp__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseUp( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseUp.begin(); ( cbIter != mCallbacksMouseUp.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseUp( event );
 }
 
 void App::privateMouseWheel__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseWheel( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseWheel.begin(); ( cbIter != mCallbacksMouseWheel.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseWheel( event );
 }
 
 void App::privateMouseMove__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseMove( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseMove.begin(); ( cbIter != mCallbacksMouseMove.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseMove( event );
 }
 
 void App::privateMouseDrag__( const MouseEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->mouseDrag( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	bool handled = false;
+	for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = mCallbacksMouseDrag.begin(); ( cbIter != mCallbacksMouseDrag.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		mouseDrag( event );
 }
 
 void App::privateKeyDown__( const KeyEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyDown( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	bool handled = false;
+	for( CallbackMgr<bool (KeyEvent)>::iterator cbIter = mCallbacksKeyDown.begin(); ( cbIter != mCallbacksKeyDown.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )
 		keyDown( event );
 }
 
 void App::privateKeyUp__( const KeyEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->keyUp( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	bool handled = false;
+	for( CallbackMgr<bool (KeyEvent)>::iterator cbIter = mCallbacksKeyUp.begin(); ( cbIter != mCallbacksKeyUp.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )
 		keyUp( event );
+}
+
+void App::privateResize__( const ResizeEvent &event )
+{
+	getRenderer()->defaultResize();
+
+	bool handled = false;
+	for( CallbackMgr<bool (ResizeEvent)>::iterator cbIter = mCallbacksResize.begin(); ( cbIter != mCallbacksResize.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );		
+	if( ! handled )
+		resize( event );
 }
 
 void App::privateFileDrop__( const FileDropEvent &event )
 {
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->fileDrop( event ) ); ++listIt );
-	if( listIt == mListeners.end() )
+	bool handled = false;
+	for( CallbackMgr<bool (FileDropEvent)>::iterator cbIter = mCallbacksFileDrop.begin(); ( cbIter != mCallbacksFileDrop.end() ) && ( ! handled ); ++cbIter )
+		handled = (cbIter->second)( event );
+	if( ! handled )
 		fileDrop( event );
 }
 
 void App::privateSetup__()
 {
 	setup();
-}
-
-void App::privateResize__( int width, int height )
-{
-	getRenderer()->defaultResize();
-
-	vector<Listener*>::iterator listIt;
-	for( listIt = mListeners.begin(); ( listIt != mListeners.end() ) && ( ! (*listIt)->resize( width, height ) ); ++listIt );
-	if( listIt == mListeners.end() )
-		resize( width, height );
 }
 
 void App::privateUpdate__()
@@ -191,7 +186,7 @@ DataSourcePathRef App::loadResource( const std::string &macPath )
 {
 	string resourcePath = App::get()->getResourcePath( macPath );
 	if( resourcePath.empty() )
-		return shared_ptr<DataSourcePath>();
+		throw ResourceLoadExc( macPath );
 	else
 		return DataSourcePath::createRef( resourcePath );
 }
@@ -433,5 +428,24 @@ void App::Settings::enablePowerManagement( bool aPowerManagement )
 {
 	mPowerManagement = aPowerManagement;
 }
+
+#if defined( CINDER_COCOA )
+ResourceLoadExc::ResourceLoadExc( const std::string &macPath )
+{
+	sprintf( mMessage, "Failed to load resource: %s", macPath.c_str() );
+}
+
+#elif defined( CINDER_MSW )
+
+ResourceLoadExc::ResourceLoadExc( int mswID, const std::string &mswType )
+{
+	sprintf( mMessage, "Failed to load resource: #%d type: %s", mswID, mswType.c_str() );
+}
+
+ResourceLoadExc::ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType )
+{
+	sprintf( mMessage, "Failed to load resource: #%d type: %s Mac path: %s", mswID, mswType.c_str(), macPath.c_str() );
+}
+#endif // defined( CINDER_MSW )
 
 } } // namespace cinder::app

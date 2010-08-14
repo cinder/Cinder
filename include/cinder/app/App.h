@@ -28,10 +28,12 @@
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/app/FileDropEvent.h"
+#include "cinder/app/ResizeEvent.h"
 #include "cinder/Stream.h"
 #include "cinder/Display.h"
 #include "cinder/DataSource.h"
 #include "cinder/Timer.h"
+#include "cinder/Function.h"
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
 		#if defined( __OBJC__ )
@@ -55,6 +57,7 @@
 #endif
 
 #include <vector>
+#include <algorithm>
 
 namespace cinder { namespace app { 
 
@@ -141,30 +144,84 @@ class App {
 	//! Override to receive key-up events.
 	virtual void	keyUp( KeyEvent event ) {}
 	//! Override to receive window resize events.
-	virtual void	resize( int width, int height ) {}
+	virtual void	resize( ResizeEvent event ) {}
 	//! Override to receive file-drop events.	
 	virtual void	fileDrop( FileDropEvent event ) {}
 	
 	//! Quits the application gracefully
 	virtual void	quit() = 0;
 
-	class Listener {
-	 public:
-		virtual bool	mouseDown( MouseEvent event ) { return false; }
-		virtual bool	mouseUp( MouseEvent event ) { return false; }
-		virtual bool	mouseWheel( MouseEvent event ) { return false; }
-		virtual bool	mouseMove( MouseEvent event ) { return false; }
-		virtual bool	mouseDrag( MouseEvent event ) { return false; }
-		virtual bool	keyDown( KeyEvent event ) { return false; }
-		virtual bool	keyUp( KeyEvent event ) { return false; }
-		virtual bool	resize( int width, int height ) { return false; }
-		virtual bool	fileDrop( FileDropEvent event ) { return false; }
-	};
+	//! Registers a callback for mouseDown events. Returns a unique identifier which can be used as a parameter to unregisterMouseDown().
+	CallbackId		registerMouseDown( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseDown.registerCb( callback ); }
+	//! Registers a callback for mouseDown events. Returns a unique identifier which can be used as a parameter to unregisterMouseDown().
+	template<typename T>
+	CallbackId		registerMouseDown( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseDown.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseDown events.
+	void			unregisterMouseDown( CallbackId id ) { mCallbacksMouseDown.unregisterCb( id ); }
 
-	//! Adds a Listener to the App's event listeners. The app <tt>delete</tt>s \a listener upon its own destruction unless it is removed via removeListener
-	void		addListener( Listener *listener );
-	//! Removes a listener from the App's event listeners. Does not <tt>delete</tt> \a listener.
-	void		removeListener( Listener *listener ); 
+	//! Registers a callback for mouseUp events. Returns a unique identifier which can be used as a parameter to unregisterMouseUp().
+	CallbackId		registerMouseUp( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseUp.registerCb( callback ); }
+	//! Registers a callback for mouseUp events. Returns a unique identifier which can be used as a parameter to unregisterMouseUp().
+	template<typename T>
+	CallbackId		registerMouseUp( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseUp.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseUp events.
+	void			unregisterMouseUp( CallbackId id ) { mCallbacksMouseUp.unregisterCb( id ); }
+
+	//! Registers a callback for mouseWheel events. Returns a unique identifier which can be used as a parameter to unregisterMouseWheel().
+	CallbackId		registerMouseWheel( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseWheel.registerCb( callback ); }
+	//! Registers a callback for mouseWheel events. Returns a unique identifier which can be used as a parameter to unregisterMouseWheel().
+	template<typename T>
+	CallbackId		registerMouseWheel( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseWheel.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseWheel events.
+	void			unregisterMouseWheel( CallbackId id ) { mCallbacksMouseWheel.unregisterCb( id ); }
+
+	//! Registers a callback for mouseMove events. Returns a unique identifier which can be used as a parameter to unregisterMouseMove().
+	CallbackId		registerMouseMove( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseMove.registerCb( callback ); }
+	//! Registers a callback for mouseMove events. Returns a unique identifier which can be used as a parameter to unregisterMouseMove().
+	template<typename T>
+	CallbackId		registerMouseMove( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseMove.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseMove events.
+	void			unregisterMouseMove( CallbackId id ) { mCallbacksMouseMove.unregisterCb( id ); }
+
+	//! Registers a callback for mouseDrag events. Returns a unique identifier which can be used as a parameter to unregisterMouseDrag().
+	CallbackId		registerMouseDrag( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseDrag.registerCb( callback ); }
+	//! Registers a callback for mouseDrag events. Returns a unique identifier which can be used as a parameter to unregisterMouseDrag().
+	template<typename T>
+	CallbackId		registerMouseDrag( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseDrag.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for mouseDrag events.
+	void			unregisterMouseDrag( CallbackId id ) { mCallbacksMouseDrag.unregisterCb( id ); }
+
+	//! Registers a callback for keyDown events. Returns a unique identifier which can be used as a parameter to unregisterKeyDown().
+	CallbackId		registerKeyDown( std::function<bool (KeyEvent)> callback ) { return mCallbacksKeyDown.registerCb( callback ); }
+	//! Registers a callback for keyDown events. Returns a unique identifier which can be used as a parameter to unregisterKeyDown().
+	template<typename T>
+	CallbackId		registerKeyDown( T *obj, bool (T::*callback)(KeyEvent) ) { return mCallbacksKeyDown.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for keyDown events.
+	void			unregisterKeyDown( CallbackId id ) { mCallbacksKeyDown.unregisterCb( id ); }
+
+	//! Registers a callback for keyUp events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
+	CallbackId		registerKeyUp( std::function<bool (KeyEvent)> callback ) { return mCallbacksKeyUp.registerCb( callback ); }
+	//! Registers a callback for keyUp events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
+	template<typename T>
+	CallbackId		registerKeyUp( T *obj, bool (T::*callback)(KeyEvent) ) { return mCallbacksKeyUp.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for keyUp events.
+	void			unregisterKeyUp( CallbackId id ) { mCallbacksKeyUp.unregisterCb( id ); }
+
+	//! Registers a callback for resize events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
+	CallbackId		registerResize( std::function<bool (ResizeEvent)> callback ) { return mCallbacksResize.registerCb( callback ); }
+	//! Registers a callback for resize events. Returns a unique identifier which can be used as a parameter to unregisterResize().
+	template<typename T>
+	CallbackId		registerResize( T *obj, bool (T::*callback)(ResizeEvent) ) { return mCallbacksResize.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for resize events.
+	void			unregisterResize( CallbackId id ) { mCallbacksResize.unregisterCb( id ); }
+
+	//! Registers a callback for fileDrop events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
+	CallbackId		registerFileDrop( std::function<bool (FileDropEvent)> callback ) { return mCallbacksFileDrop.registerCb( callback ); }
+	//! Registers a callback for fileDrop events. Returns a unique identifier which can be used as a parameter to unregisterFileDrop().
+	template<typename T>
+	CallbackId		registerFileDrop( T *obj, bool (T::*callback)(FileDropEvent) ) { return mCallbacksFileDrop.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for fileDrop events.
+	void			unregisterFileDrop( CallbackId id ) { mCallbacksFileDrop.unregisterCb( id ); }
 
 	// Accessors
 	virtual const Settings&	getSettings() const = 0;
@@ -214,12 +271,12 @@ class App {
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
 	
 	// utilities
-	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
+	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). Throws ResourceLoadExc on failure. \sa \ref CinderResources
 	static DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType );
 #if defined( CINDER_COCOA )
-	//! Returns a DataSourceRef to an application resource. \a macPath is a path relative to the bundle's resources folder. \sa \ref CinderResources
+	//! Returns a DataSourceRef to an application resource. \a macPath is a path relative to the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
 	static DataSourcePathRef	loadResource( const std::string &macPath );
-	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. \sa \ref CinderResources
+	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
 	static std::string			getResourcePath( const std::string &rsrcRelativePath );
 	//! Returns the absolute file path to the bundle's resources folder. \sa \ref CinderResources
 	static std::string			getResourcePath();
@@ -267,7 +324,7 @@ class App {
 	void	privateFileDrop__( const FileDropEvent &event );
 
 	virtual void	privateSetup__();
-	virtual void	privateResize__( int width, int height );	
+	virtual void	privateResize__( const ResizeEvent &event );	
 	virtual void	privateUpdate__();
 	virtual void	privateDraw__();
 	virtual void	privateShutdown__();
@@ -310,7 +367,11 @@ class App {
 	double					mFpsSampleInterval;
 
 	shared_ptr<Renderer>	mRenderer;
-	std::vector<Listener*>	mListeners;
+	
+	CallbackMgr<bool (MouseEvent)>		mCallbacksMouseDown, mCallbacksMouseUp, mCallbacksMouseWheel, mCallbacksMouseMove, mCallbacksMouseDrag;
+	CallbackMgr<bool (KeyEvent)>		mCallbacksKeyDown, mCallbacksKeyUp;
+	CallbackMgr<bool (ResizeEvent)>		mCallbacksResize;
+	CallbackMgr<bool (FileDropEvent)>	mCallbacksFileDrop;
 	
 	static App*		sInstance;
 };
@@ -395,5 +456,20 @@ inline ::CGContextRef	createWindowCgContext() { return ((Renderer2d*)(App::get()
 #endif
 
 //@}
+
+//! Exception for failed resource loading
+class ResourceLoadExc : public Exception {
+  public:
+#if defined( CINDER_COCOA )
+	ResourceLoadExc( const std::string &macPath );
+#elif defined( CINDER_MSW )
+	ResourceLoadExc( int mswID, const std::string &mswType );
+	ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType );
+#endif
+
+	virtual const char * what() const throw() { return mMessage; }
+
+	char mMessage[4096];
+};
 
 } } // namespace cinder::app

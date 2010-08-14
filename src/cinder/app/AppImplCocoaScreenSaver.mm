@@ -47,7 +47,7 @@ using std::cout;
 	app->privateSetup__();
 	cinderView.appSetupCalled = YES;
 
-	app->privateResize__( app->getWindowWidth(), app->getWindowHeight() );
+	app->privateResize__( ci::app::ResizeEvent( ci::Vec2i( app->getWindowWidth(), app->getWindowHeight() ) ) );
 
 	[self setAnimationTimeInterval:1 / 30.0f];//app->getFrameRate()];
 	

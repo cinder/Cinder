@@ -20,6 +20,7 @@ class ListenerBasicApp : public AppBasic {
 	SquareListener					*mSquare;
 };
 
+
 void ListenerBasicApp::setup()
 {
 	// This installs a listener which intercepts mouse-down events
@@ -42,7 +43,7 @@ void ListenerBasicApp::mouseDrag( MouseEvent event )
 void ListenerBasicApp::draw()
 {
 	gl::clear( Color( 0.3f, 0.3f, 0.3f ) );
-
+	
 	for( list<pair<Vec2f,Color> >::iterator circleIter = mCircles.begin(); circleIter != mCircles.end(); ++circleIter ) {
 		gl::color( circleIter->second );
 		gl::drawSolidCircle( circleIter->first, 20 );

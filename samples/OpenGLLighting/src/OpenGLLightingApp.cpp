@@ -20,7 +20,7 @@ class OpenGLLightingApp : public AppBasic {
 	void prepareSettings( Settings *settings );
 	void setup();
 	void update();
-	void resize( int width, int height );
+	void resize( ResizeEvent event );
 	void mouseMove( MouseEvent event );
 	void mouseDrag( MouseEvent event );
 	void mouseDown( MouseEvent event );
@@ -71,7 +71,7 @@ void OpenGLLightingApp::setup()
 	glDisable( GL_TEXTURE_2D );
 }
 
-void OpenGLLightingApp::resize( int width, int height )
+void OpenGLLightingApp::resize( ResizeEvent event )
 {
 	mCam.lookAt( Vec3f( 0.0f, 0.0f, 750.0f ), Vec3f::zero() );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );

@@ -296,6 +296,8 @@
 		009987160F79CFE20042F211 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		0099871A0F79D0750042F211 /* CinderCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009987190F79D0750042F211 /* CinderCocoa.mm */; };
 		009C864A10F3D5CB006B6861 /* ImageIo.h in Headers */ = {isa = PBXBuildFile; fileRef = 009C864910F3D5CB006B6861 /* ImageIo.h */; };
+		009CB673120F22FF0066763D /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C14F980ED51A2700549EF3 /* Fbo.cpp */; };
+		009CB674120F23000066763D /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C14F980ED51A2700549EF3 /* Fbo.cpp */; };
 		009D6AEE1157FB340037C77C /* AppImplCocoaTouchRendererGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 009D6AED1157FB340037C77C /* AppImplCocoaTouchRendererGl.h */; };
 		009D6AEF1157FB340037C77C /* AppImplCocoaTouchRendererGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 009D6AED1157FB340037C77C /* AppImplCocoaTouchRendererGl.h */; };
 		009D6AF11157FB860037C77C /* AppImplCocoaTouchRendererGl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009D6AF01157FB860037C77C /* AppImplCocoaTouchRendererGl.mm */; };
@@ -563,42 +565,24 @@
 		5391FE660E95CB01002A13D5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
 		C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70E1A01106AA39D00E63577 /* Buffer.cpp */; };
-		C74BDF9A12049B8000D74C69 /* FftProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = C74BDF9612049B8000D74C69 /* FftProcessor.h */; };
-		C74BDF9B12049B8000D74C69 /* FftProcessorImplAccelerate.h in Headers */ = {isa = PBXBuildFile; fileRef = C74BDF9712049B8000D74C69 /* FftProcessorImplAccelerate.h */; };
-		C74BDF9C12049B8000D74C69 /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C74BDF9812049B8000D74C69 /* OutputImplAudioUnit.h */; };
-		C74BDF9D12049B8000D74C69 /* PcmBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C74BDF9912049B8000D74C69 /* PcmBuffer.h */; };
-		C74BDFA012049B8000D74C69 /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C74BDF9812049B8000D74C69 /* OutputImplAudioUnit.h */; };
-		C74BDFA112049B8000D74C69 /* PcmBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C74BDF9912049B8000D74C69 /* PcmBuffer.h */; };
-		C74BDFA412049B8000D74C69 /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C74BDF9812049B8000D74C69 /* OutputImplAudioUnit.h */; };
-		C74BDFA512049B8000D74C69 /* PcmBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C74BDF9912049B8000D74C69 /* PcmBuffer.h */; };
-		C74BDFAB12049BB200D74C69 /* FftProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C74BDFA712049BB200D74C69 /* FftProcessor.cpp */; };
-		C74BDFAC12049BB200D74C69 /* FftProcessorImplAccelerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C74BDFA812049BB200D74C69 /* FftProcessorImplAccelerate.cpp */; };
-		C74BDFAD12049BB200D74C69 /* OutputImplAudioUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C74BDFA912049BB200D74C69 /* OutputImplAudioUnit.cpp */; };
-		C74BDFAE12049BB200D74C69 /* PcmBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C74BDFAA12049BB200D74C69 /* PcmBuffer.cpp */; };
-		C74BDFB112049BB200D74C69 /* OutputImplAudioUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C74BDFA912049BB200D74C69 /* OutputImplAudioUnit.cpp */; };
-		C74BDFB212049BB200D74C69 /* PcmBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C74BDFAA12049BB200D74C69 /* PcmBuffer.cpp */; };
-		C74BDFB512049BB200D74C69 /* OutputImplAudioUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C74BDFA912049BB200D74C69 /* OutputImplAudioUnit.cpp */; };
-		C74BDFB612049BB200D74C69 /* PcmBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C74BDFAA12049BB200D74C69 /* PcmBuffer.cpp */; };
-		C74BE02C12049E2900D74C69 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
-		C74BE02D12049E2A00D74C69 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
-		C74BE02E12049E3000D74C69 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7792FAE119A185000521786 /* CocoaCaConverter.cpp */; };
-		C74BE02F12049E3000D74C69 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7792FAE119A185000521786 /* CocoaCaConverter.cpp */; };
-		C74BE03012049E3600D74C69 /* SourceFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9C1176449F00A46655 /* SourceFile.cpp */; };
-		C74BE03112049E3700D74C69 /* SourceFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9C1176449F00A46655 /* SourceFile.cpp */; };
-		C74BE03212049E3D00D74C69 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9B1176449F00A46655 /* Output.cpp */; };
-		C74BE03312049E3E00D74C69 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9B1176449F00A46655 /* Output.cpp */; };
-		C74BE03412049E5600D74C69 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
-		C74BE03512049E5700D74C69 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
-		C74BE03612049E5800D74C69 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
-		C74BE03712049E5F00D74C69 /* SourceFile.h in Headers */ = {isa = PBXBuildFile; fileRef = C7A76EA6117644AB00A46655 /* SourceFile.h */; };
-		C74BE03812049E5F00D74C69 /* SourceFile.h in Headers */ = {isa = PBXBuildFile; fileRef = C7A76EA6117644AB00A46655 /* SourceFile.h */; };
-		C74BE03912049E6400D74C69 /* Output.h in Headers */ = {isa = PBXBuildFile; fileRef = C7A76EA5117644AB00A46655 /* Output.h */; };
-		C74BE03A12049E6500D74C69 /* Output.h in Headers */ = {isa = PBXBuildFile; fileRef = C7A76EA5117644AB00A46655 /* Output.h */; };
-		C74BE03B12049E6B00D74C69 /* Io.h in Headers */ = {isa = PBXBuildFile; fileRef = C7A76EA4117644AB00A46655 /* Io.h */; };
-		C74BE03C12049E6C00D74C69 /* Io.h in Headers */ = {isa = PBXBuildFile; fileRef = C7A76EA4117644AB00A46655 /* Io.h */; };
-		C74BE03D12049E7200D74C69 /* Callback.h in Headers */ = {isa = PBXBuildFile; fileRef = C7A76EA3117644AB00A46655 /* Callback.h */; };
-		C74BE03F12049E7400D74C69 /* Callback.h in Headers */ = {isa = PBXBuildFile; fileRef = C7A76EA3117644AB00A46655 /* Callback.h */; };
+		C7594FDF121732F20059C0EE /* FftProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = C7594FDB121732F20059C0EE /* FftProcessor.h */; };
+		C7594FE0121732F20059C0EE /* FftProcessorImplAccelerate.h in Headers */ = {isa = PBXBuildFile; fileRef = C7594FDC121732F20059C0EE /* FftProcessorImplAccelerate.h */; };
+		C7594FE1121732F20059C0EE /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C7594FDD121732F20059C0EE /* OutputImplAudioUnit.h */; };
+		C7594FE2121732F20059C0EE /* PcmBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C7594FDE121732F20059C0EE /* PcmBuffer.h */; };
+		C7594FE5121732F20059C0EE /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C7594FDD121732F20059C0EE /* OutputImplAudioUnit.h */; };
+		C7594FE6121732F20059C0EE /* PcmBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C7594FDE121732F20059C0EE /* PcmBuffer.h */; };
+		C7594FE9121732F20059C0EE /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C7594FDD121732F20059C0EE /* OutputImplAudioUnit.h */; };
+		C7594FEA121732F20059C0EE /* PcmBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C7594FDE121732F20059C0EE /* PcmBuffer.h */; };
+		C7594FEF121733290059C0EE /* FftProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FEB121733290059C0EE /* FftProcessor.cpp */; };
+		C7594FF0121733290059C0EE /* FftProcessorImplAccelerate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FEC121733290059C0EE /* FftProcessorImplAccelerate.cpp */; };
+		C7594FF1121733290059C0EE /* OutputImplAudioUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FED121733290059C0EE /* OutputImplAudioUnit.cpp */; };
+		C7594FF2121733290059C0EE /* PcmBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FEE121733290059C0EE /* PcmBuffer.cpp */; };
+		C7594FF5121733290059C0EE /* OutputImplAudioUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FED121733290059C0EE /* OutputImplAudioUnit.cpp */; };
+		C7594FF6121733290059C0EE /* PcmBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FEE121733290059C0EE /* PcmBuffer.cpp */; };
+		C7594FF9121733290059C0EE /* OutputImplAudioUnit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FED121733290059C0EE /* OutputImplAudioUnit.cpp */; };
+		C7594FFA121733290059C0EE /* PcmBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7594FEE121733290059C0EE /* PcmBuffer.cpp */; };
 		C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7792FAE119A185000521786 /* CocoaCaConverter.cpp */; };
+		C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
 		C7A76E9F1176449F00A46655 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
 		C7A76EA01176449F00A46655 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9B1176449F00A46655 /* Output.cpp */; };
 		C7A76EA11176449F00A46655 /* SourceFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9C1176449F00A46655 /* SourceFile.cpp */; };
@@ -852,14 +836,14 @@
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
 		C70E19FE106AA38700E63577 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E1A01106AA39D00E63577 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
-		C74BDF9612049B8000D74C69 /* FftProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FftProcessor.h; sourceTree = "<group>"; };
-		C74BDF9712049B8000D74C69 /* FftProcessorImplAccelerate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FftProcessorImplAccelerate.h; sourceTree = "<group>"; };
-		C74BDF9812049B8000D74C69 /* OutputImplAudioUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputImplAudioUnit.h; sourceTree = "<group>"; };
-		C74BDF9912049B8000D74C69 /* PcmBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmBuffer.h; sourceTree = "<group>"; };
-		C74BDFA712049BB200D74C69 /* FftProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FftProcessor.cpp; sourceTree = "<group>"; };
-		C74BDFA812049BB200D74C69 /* FftProcessorImplAccelerate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FftProcessorImplAccelerate.cpp; sourceTree = "<group>"; };
-		C74BDFA912049BB200D74C69 /* OutputImplAudioUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputImplAudioUnit.cpp; sourceTree = "<group>"; };
-		C74BDFAA12049BB200D74C69 /* PcmBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PcmBuffer.cpp; sourceTree = "<group>"; };
+		C7594FDB121732F20059C0EE /* FftProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FftProcessor.h; sourceTree = "<group>"; };
+		C7594FDC121732F20059C0EE /* FftProcessorImplAccelerate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FftProcessorImplAccelerate.h; sourceTree = "<group>"; };
+		C7594FDD121732F20059C0EE /* OutputImplAudioUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputImplAudioUnit.h; sourceTree = "<group>"; };
+		C7594FDE121732F20059C0EE /* PcmBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmBuffer.h; sourceTree = "<group>"; };
+		C7594FEB121733290059C0EE /* FftProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FftProcessor.cpp; sourceTree = "<group>"; };
+		C7594FEC121733290059C0EE /* FftProcessorImplAccelerate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FftProcessorImplAccelerate.cpp; sourceTree = "<group>"; };
+		C7594FED121733290059C0EE /* OutputImplAudioUnit.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputImplAudioUnit.cpp; sourceTree = "<group>"; };
+		C7594FEE121733290059C0EE /* PcmBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PcmBuffer.cpp; sourceTree = "<group>"; };
 		C7792FAE119A185000521786 /* CocoaCaConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CocoaCaConverter.cpp; sourceTree = "<group>"; };
 		C7792FB0119A186000521786 /* CocoaCaConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CocoaCaConverter.h; sourceTree = "<group>"; };
 		C7A76E9A1176449F00A46655 /* Io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Io.cpp; sourceTree = "<group>"; };
@@ -1398,10 +1382,10 @@
 		C7BA405B0FA8BEFD00AADC07 /* audio */ = {
 			isa = PBXGroup;
 			children = (
-				C74BDF9612049B8000D74C69 /* FftProcessor.h */,
-				C74BDF9712049B8000D74C69 /* FftProcessorImplAccelerate.h */,
-				C74BDF9812049B8000D74C69 /* OutputImplAudioUnit.h */,
-				C74BDF9912049B8000D74C69 /* PcmBuffer.h */,
+				C7594FDB121732F20059C0EE /* FftProcessor.h */,
+				C7594FDC121732F20059C0EE /* FftProcessorImplAccelerate.h */,
+				C7594FDD121732F20059C0EE /* OutputImplAudioUnit.h */,
+				C7594FDE121732F20059C0EE /* PcmBuffer.h */,
 				C7A76EA3117644AB00A46655 /* Callback.h */,
 				C7A76EA4117644AB00A46655 /* Io.h */,
 				C7A76EA5117644AB00A46655 /* Output.h */,
@@ -1414,10 +1398,10 @@
 		C7BA40600FA8BF0F00AADC07 /* audio */ = {
 			isa = PBXGroup;
 			children = (
-				C74BDFA712049BB200D74C69 /* FftProcessor.cpp */,
-				C74BDFA812049BB200D74C69 /* FftProcessorImplAccelerate.cpp */,
-				C74BDFA912049BB200D74C69 /* OutputImplAudioUnit.cpp */,
-				C74BDFAA12049BB200D74C69 /* PcmBuffer.cpp */,
+				C7594FEB121733290059C0EE /* FftProcessor.cpp */,
+				C7594FEC121733290059C0EE /* FftProcessorImplAccelerate.cpp */,
+				C7594FED121733290059C0EE /* OutputImplAudioUnit.cpp */,
+				C7594FEE121733290059C0EE /* PcmBuffer.cpp */,
 				C7A76E9A1176449F00A46655 /* Io.cpp */,
 				C7A76E9B1176449F00A46655 /* Output.cpp */,
 				C7A76E9C1176449F00A46655 /* SourceFile.cpp */,
@@ -1594,13 +1578,8 @@
 				0049A34E116EE675007DDFB0 /* AxisAlignedBox.h in Headers */,
 				43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F011B0C87800B61EB6 /* TouchEvent.h in Headers */,
-				C74BDFA012049B8000D74C69 /* OutputImplAudioUnit.h in Headers */,
-				C74BDFA112049B8000D74C69 /* PcmBuffer.h in Headers */,
-				C74BE03512049E5700D74C69 /* CocoaCaConverter.h in Headers */,
-				C74BE03712049E5F00D74C69 /* SourceFile.h in Headers */,
-				C74BE03A12049E6500D74C69 /* Output.h in Headers */,
-				C74BE03C12049E6C00D74C69 /* Io.h in Headers */,
-				C74BE03F12049E7400D74C69 /* Callback.h in Headers */,
+				C7594FE5121732F20059C0EE /* OutputImplAudioUnit.h in Headers */,
+				C7594FE6121732F20059C0EE /* PcmBuffer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1715,13 +1694,8 @@
 				0049A34F116EE675007DDFB0 /* AxisAlignedBox.h in Headers */,
 				43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F111B0C87800B61EB6 /* TouchEvent.h in Headers */,
-				C74BDFA412049B8000D74C69 /* OutputImplAudioUnit.h in Headers */,
-				C74BDFA512049B8000D74C69 /* PcmBuffer.h in Headers */,
-				C74BE03412049E5600D74C69 /* CocoaCaConverter.h in Headers */,
-				C74BE03812049E5F00D74C69 /* SourceFile.h in Headers */,
-				C74BE03912049E6400D74C69 /* Output.h in Headers */,
-				C74BE03B12049E6B00D74C69 /* Io.h in Headers */,
-				C74BE03D12049E7200D74C69 /* Callback.h in Headers */,
+				C7594FE9121732F20059C0EE /* OutputImplAudioUnit.h in Headers */,
+				C7594FEA121732F20059C0EE /* PcmBuffer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1845,15 +1819,15 @@
 				C7A76EA9117644AB00A46655 /* Io.h in Headers */,
 				C7A76EAA117644AB00A46655 /* Output.h in Headers */,
 				C7A76EAB117644AB00A46655 /* SourceFile.h in Headers */,
+				C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */,
 				009704A811A050C300B1FC50 /* UrlImplCurl.h in Headers */,
 				43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */,
 				006A1EC911D7F3AC00941A5E /* MovieWriter.h in Headers */,
-				C74BDF9A12049B8000D74C69 /* FftProcessor.h in Headers */,
-				C74BDF9B12049B8000D74C69 /* FftProcessorImplAccelerate.h in Headers */,
-				C74BDF9C12049B8000D74C69 /* OutputImplAudioUnit.h in Headers */,
-				C74BDF9D12049B8000D74C69 /* PcmBuffer.h in Headers */,
-				C74BE03612049E5800D74C69 /* CocoaCaConverter.h in Headers */,
+				C7594FDF121732F20059C0EE /* FftProcessor.h in Headers */,
+				C7594FE0121732F20059C0EE /* FftProcessorImplAccelerate.h in Headers */,
+				C7594FE1121732F20059C0EE /* OutputImplAudioUnit.h in Headers */,
+				C7594FE2121732F20059C0EE /* PcmBuffer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2007,12 +1981,9 @@
 				0049A34A116EE65C007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F51194F584004D686E /* Text.cpp in Sources */,
 				005374F71194F588004D686E /* Font.cpp in Sources */,
-				C74BDFB112049BB200D74C69 /* OutputImplAudioUnit.cpp in Sources */,
-				C74BDFB212049BB200D74C69 /* PcmBuffer.cpp in Sources */,
-				C74BE02C12049E2900D74C69 /* Io.cpp in Sources */,
-				C74BE02F12049E3000D74C69 /* CocoaCaConverter.cpp in Sources */,
-				C74BE03012049E3600D74C69 /* SourceFile.cpp in Sources */,
-				C74BE03212049E3D00D74C69 /* Output.cpp in Sources */,
+				009CB673120F22FF0066763D /* Fbo.cpp in Sources */,
+				C7594FF9121733290059C0EE /* OutputImplAudioUnit.cpp in Sources */,
+				C7594FFA121733290059C0EE /* PcmBuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2091,12 +2062,9 @@
 				0049A34B116EE65D007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F61194F584004D686E /* Text.cpp in Sources */,
 				005374F81194F589004D686E /* Font.cpp in Sources */,
-				C74BDFB512049BB200D74C69 /* OutputImplAudioUnit.cpp in Sources */,
-				C74BDFB612049BB200D74C69 /* PcmBuffer.cpp in Sources */,
-				C74BE02D12049E2A00D74C69 /* Io.cpp in Sources */,
-				C74BE02E12049E3000D74C69 /* CocoaCaConverter.cpp in Sources */,
-				C74BE03112049E3700D74C69 /* SourceFile.cpp in Sources */,
-				C74BE03312049E3E00D74C69 /* Output.cpp in Sources */,
+				009CB674120F23000066763D /* Fbo.cpp in Sources */,
+				C7594FF5121733290059C0EE /* OutputImplAudioUnit.cpp in Sources */,
+				C7594FF6121733290059C0EE /* PcmBuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2201,10 +2169,10 @@
 				C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */,
 				009704AA11A050DB00B1FC50 /* UrlImplCurl.cpp in Sources */,
 				006A1EC711D7F39C00941A5E /* MovieWriter.cpp in Sources */,
-				C74BDFAB12049BB200D74C69 /* FftProcessor.cpp in Sources */,
-				C74BDFAC12049BB200D74C69 /* FftProcessorImplAccelerate.cpp in Sources */,
-				C74BDFAD12049BB200D74C69 /* OutputImplAudioUnit.cpp in Sources */,
-				C74BDFAE12049BB200D74C69 /* PcmBuffer.cpp in Sources */,
+				C7594FEF121733290059C0EE /* FftProcessor.cpp in Sources */,
+				C7594FF0121733290059C0EE /* FftProcessorImplAccelerate.cpp in Sources */,
+				C7594FF1121733290059C0EE /* OutputImplAudioUnit.cpp in Sources */,
+				C7594FF2121733290059C0EE /* PcmBuffer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2228,7 +2196,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
@@ -2262,7 +2230,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2274,7 +2242,7 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone";
-				SDKROOT = iphoneos3.2;
+				SDKROOT = iphoneos4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
@@ -2284,8 +2252,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
-				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				ARCHS = i386;
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
@@ -2297,6 +2264,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2330,6 +2298,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
@@ -2342,7 +2311,7 @@
 					../lib/macosx/libpng.a,
 				);
 				PRODUCT_NAME = "cinder-iphone-sim";
-				SDKROOT = iphonesimulator3.1;
+				SDKROOT = iphonesimulator4.0;
 				VALID_ARCHS = i386;
 			};
 			name = Release;
