@@ -262,7 +262,16 @@ void InputImplAudioUnit::setup()
 	
 	//the output sample rate must be the same as the input device's sample rate 
 	desiredOutFormat.mSampleRate = deviceInFormat.mSampleRate;
-	//TODO: set other options here? like channel count and bits per sample
+	//TODO: set other options here? like channel count
+	
+	//set the AudioUnit's output format to be float 32 linear non-interleaved PCM data
+	desiredOutFormat.mFormatID = kAudioFormatLinearPCM;
+	desiredOutFormat.mFormatFlags |= ( kAudioFormatFlagIsNonInterleaved | kAudioFormatFlagIsFloat | kAudioFormatFlagsNativeEndian | kAudioFormatFlagIsPacked );
+	uint32_t sampleSize = sizeof(float);
+	desiredOutFormat.mFramesPerPacket = 1;
+	desiredOutFormat.mBytesPerPacket = sampleSize;
+	desiredOutFormat.mBytesPerFrame = sampleSize;
+	desiredOutFormat.mBitsPerChannel = 8 * sampleSize;
 	
 	param = sizeof( AudioStreamBasicDescription );
 	err = AudioUnitSetProperty( mInputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &desiredOutFormat, param );
@@ -270,10 +279,13 @@ void InputImplAudioUnit::setup()
 		throw;
 	}
 	
+	mSampleRate = desiredOutFormat.mSampleRate;
+	mChannelCount = desiredOutFormat.mChannelsPerFrame;
+	
 	// Initialize the AudioUnit
 	err = AudioUnitInitialize( mInputUnit );
 	if(err != noErr) {
-		std::cout << "failed to initialize HAL Output AU a second time" << std::endl;
+		std::cout << "failed to initialize HAL Output AU" << std::endl;
 		throw;
 	}
 	
@@ -300,7 +312,7 @@ void InputImplAudioUnit::setup()
 		mInputBuffer->mBuffers[i].mData = inputBufferChannels[i];
 		
 		//create a circular buffer for each channel
-		mBuffers[i] = new circular_buffer<float>( sampleCount * 20 );
+		mBuffers[i] = new circular_buffer<float>( sampleCount * 4 );
 	}
 }
 

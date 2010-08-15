@@ -43,6 +43,10 @@ class InputImplAudioUnit : public InputImpl {
 	void start();
 	void stop();
 	PcmBuffer32fRef getPcmBuffer();
+	bool isCapturing() const { return mIsCapturing; }
+	
+	uint32_t getSampleRate() const { return mSampleRate; };
+	uint16_t getChannelCount() const { return mChannelCount; };
  protected:
 	static OSStatus inputCallback( void*, AudioUnitRenderActionFlags*, const AudioTimeStamp*, UInt32, UInt32, AudioBufferList* );
  
@@ -56,6 +60,10 @@ class InputImplAudioUnit : public InputImpl {
 	
 	std::vector<boost::circular_buffer<float> *>	mBuffers;
 	boost::mutex								mBufferMutex;
+	
+	AudioStreamBasicDescription		mFormatDescription;
+	uint32_t mSampleRate;
+	uint16_t mChannelCount;
 };
 
 

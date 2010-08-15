@@ -36,6 +36,10 @@ class InputImpl {
 	virtual void start() = 0;
 	virtual void stop() = 0;
 	virtual PcmBuffer32fRef getPcmBuffer() = 0;
+	virtual bool isCapturing() const = 0;
+	
+	virtual uint32_t getSampleRate() const = 0;
+	virtual uint16_t getChannelCount() const = 0;
  protected:
 	InputImpl() {}
 };
@@ -53,7 +57,12 @@ class Input {
 	void stop() { mImpl->stop(); }
 	//! Returns a copy of the buffer of the most recently captured audio data
 	PcmBuffer32fRef getPcmBuffer() { return mImpl->getPcmBuffer(); }
-	
+	//! Returns whether or not the input is currently capturing audio data
+	bool isCapturing() const { return mImpl->isCapturing(); }
+	//! Returns the sample rate of the captured audio data
+	uint32_t getSampleRate() { return mImpl->getSampleRate(); };
+	//! Returns the number of channels of the captured audio data
+	uint16_t getChannelCount() { return mImpl->getChannelCount(); };
  private:
 	shared_ptr<InputImpl> mImpl;
  public:
