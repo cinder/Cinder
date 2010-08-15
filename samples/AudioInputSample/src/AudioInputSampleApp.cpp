@@ -31,7 +31,7 @@ void AudioInputSampleApp::setup()
 
 void AudioInputSampleApp::update()
 {
-	uint16_t bandCount = 32;
+	uint16_t bandCount = 512;
 	mPcmBuffer = mInput->getPcmBuffer();
 	if( ! mPcmBuffer ) {
 		return;
@@ -42,8 +42,8 @@ void AudioInputSampleApp::update()
 void AudioInputSampleApp::draw()
 {
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
-	drawWaveForm();
-	//drawFft();
+	//drawWaveForm();
+	drawFft();
 }
 
 void AudioInputSampleApp::drawWaveForm()
@@ -80,8 +80,9 @@ void AudioInputSampleApp::drawWaveForm()
 
 void AudioInputSampleApp::drawFft()
 {
-	uint16_t bandCount = 32;
-	float ht = 100.0f;
+	uint16_t bandCount = 512;
+	float ht = 1000.0f;
+	float bottom = 150.0f;
 	
 	if( ! mFftDataRef ) {
 		return;
@@ -94,11 +95,11 @@ void AudioInputSampleApp::drawFft()
 		float barY = fftBuffer[i] / bandCount * ht;
 		glBegin( GL_QUADS );
 			glColor3f( 255.0f, 255.0f, 0.0f );
-			glVertex2f( i * 3, ht );
-			glVertex2f( i * 3 + 1, ht );
+			glVertex2f( i * 3, bottom );
+			glVertex2f( i * 3 + 1, bottom );
 			glColor3f( 0.0f, 255.0f, 0.0f );
-			glVertex2f( i * 3 + 1, ht - barY );
-			glVertex2f( i * 3, ht - barY );
+			glVertex2f( i * 3 + 1, bottom - barY );
+			glVertex2f( i * 3, bottom - barY );
 		glEnd();
 	}
 	std::cout << std::endl;

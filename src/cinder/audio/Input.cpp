@@ -109,7 +109,7 @@ OSStatus Input::inputCallback( void *inRefCon, AudioUnitRenderActionFlags *ioAct
 	
 	//copy data from the input buffer to the circular buffer
 	for( int i = 0; i < theInput->mInputBuffer->mNumberBuffers; i++ ) {
-		float * start = reinterpret_cast<float *>( &theInput->mInputBuffer->mBuffers[i].mData );
+		float * start = reinterpret_cast<float *>( theInput->mInputBuffer->mBuffers[i].mData );
 		float * end = start + inNumberFrames;
 		theInput->mBuffers[i]->insert( theInput->mBuffers[i]->end(), start, end );
 	}
