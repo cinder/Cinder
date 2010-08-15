@@ -23,6 +23,8 @@
 #include "cinder/audio/Input.h"
 #include <iostream>
 
+using boost::circular_buffer;
+
 namespace cinder { namespace audio {
 
 Input::Input()
@@ -34,7 +36,11 @@ Input::Input()
 Input::~Input()
 {
 	AudioComponentInstanceDispose( mInputUnit );
-
+	
+	for( int i = 0; i < mBuffers.size(); i++ ) {
+		delete mBuffers[i];
+	}
+	
 	free( mInputBuffer );
 	free( mInputBufferData );
 }
@@ -61,13 +67,27 @@ void Input::stop()
 
 PcmBuffer32fRef Input::getPcmBuffer()
 {
-	boost::mutex::scoped_lock( mBufferMutex );
-	return PcmBuffer32fRef();
+	if( ! mIsCapturing ) { return PcmBuffer32fRef(); }
+	
+	mBufferMutex.lock();
+	
+	//TODO: don't just assume the data is non-interleaved
+	PcmBuffer32fRef outBuffer( new PcmBuffer32f( mBuffers[0]->size(), mBuffers.size(), false ) );
+	for( int i = 0; i < mBuffers.size(); i++ ) {
+		circular_buffer<float>::array_range ar = mBuffers[i]->array_one();
+		outBuffer->appendChannelData( ar.first, ar.second, static_cast<ChannelIdentifier>( i ) );
+		ar = mBuffers[i]->array_two();
+		outBuffer->appendChannelData( ar.first, ar.second, static_cast<ChannelIdentifier>( i ) );
+	}
+	
+	mBufferMutex.unlock();
+	
+	return outBuffer;
 }
 
 OSStatus Input::inputCallback( void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData )
 {
-	Input * theInput = (Input *)inRefCon;
+	Input * theInput = reinterpret_cast<Input *>( inRefCon );
 	
 	//if( theInput->mFirstInputTime < 0. ) {
 	//	theInput->mFirstInputTime = inTimeStamp->mSampleTime;
@@ -85,18 +105,16 @@ OSStatus Input::inputCallback( void *inRefCon, AudioUnitRenderActionFlags *ioAct
 		throw;
 	}
 	
-	boost::mutex::scoped_lock( theInput->mBufferMutex );
+	theInput->mBufferMutex.lock();
 	
-	/*BufferList theBufferList;
-	theBufferList.mNumberBuffers = theInputDevice->mInputBuffer->mNumberBuffers;
-	theBufferList.mBuffers = new Buffer[theBufferList.mNumberBuffers];
-	for( int  i = 0; i < theBufferList.mNumberBuffers; i++ ) {
-		theBufferList.mBuffers[i].mDataByteSize = theInputDevice->mInputBuffer->mBuffers[i].mDataByteSize;
-		theBufferList.mBuffers[i].mNumberChannels = theInputDevice->mInputBuffer->mBuffers[i].mNumberChannels;
-		theBufferList.mBuffers[i].mData = theInputDevice->mInputBuffer->mBuffers[i].mData;
+	//copy data from the input buffer to the circular buffer
+	for( int i = 0; i < theInput->mInputBuffer->mNumberBuffers; i++ ) {
+		float * start = reinterpret_cast<float *>( &theInput->mInputBuffer->mBuffers[i].mData );
+		float * end = start + inNumberFrames;
+		theInput->mBuffers[i]->insert( theInput->mBuffers[i]->end(), start, end );
 	}
 	
-	theInputDevice->mRingBuffer->store( &theBufferList, uint32_t(inNumberFrames), int64_t(inTimeStamp->mSampleTime) );*/
+	theInput->mBufferMutex.unlock();
 	
 	return noErr;
 }
@@ -122,6 +140,13 @@ void Input::setup()
 		//throw InvalidDeviceInputDeviceExc();
 		throw;
 	}
+	
+	UInt32 size;
+	AudioDeviceGetPropertyInfo( mDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, NULL );
+	char * buf = new char[size];
+	AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, buf );
+	std::cout << buf << std::endl;
+	delete buf;
 
 	//create AudioOutputUnit
 	
@@ -251,14 +276,17 @@ void Input::setup()
 	}
 	
 	mInputBuffer = (AudioBufferList *)malloc( sizeof(AudioBufferList) + deviceInFormat.mChannelsPerFrame * sizeof(AudioBuffer) );
+	
 	mInputBuffer->mNumberBuffers = deviceInFormat.mChannelsPerFrame;
+	mBuffers.resize( mInputBuffer->mNumberBuffers );
 	for( int i = 0; i < mInputBuffer->mNumberBuffers; i++ ) {
 		mInputBuffer->mBuffers[i].mNumberChannels = 1;
 		mInputBuffer->mBuffers[i].mDataByteSize = sampleCount * deviceInFormat.mBytesPerFrame;
-		mInputBuffer->mBuffers[i].mData = inputBufferChannels[i];// + ( i * mSampleCount * mDeviceFormat.mBytesPerFrame );
+		mInputBuffer->mBuffers[i].mData = inputBufferChannels[i];
+		
+		//create a circular buffer for each channel
+		mBuffers[i] = new circular_buffer<float>( sampleCount * 20 );
 	}
-	
-	//mRingBuffer = new RingBuffer( mDeviceInFormat.mChannelsPerFrame, ( mDeviceInFormat.mBytesPerFrame / mDeviceInFormat.mChannelsPerFrame ), mSampleCount * 20 );
 }
 
 

@@ -28,6 +28,7 @@
 #include <AudioUnit/AudioUnit.h>
 #include <AudioToolbox/AudioToolbox.h>
 
+#include <vector>
 #include <boost/circular_buffer.hpp>
 #include <boost/thread/mutex.hpp>
 
@@ -53,8 +54,8 @@ class Input {
 	AudioBufferList					* mInputBuffer;
 	float							* mInputBufferData;
 	
-	boost::circular_buffer<float>	mBuffer;
-	boost::mutex					mBufferMutex;
+	std::vector<boost::circular_buffer<float> *>	mBuffers;
+	boost::mutex								mBufferMutex;
 };
 
 }} //namespace
