@@ -14,7 +14,7 @@ class AudioInputSampleApp : public AppBasic {
 	void drawFft();
 	void drawWaveForm();
 	
-	audio::Input * mInput;
+	audio::Input mInput;
 	boost::shared_ptr<float> mFftDataRef;
 	audio::PcmBuffer32fRef mPcmBuffer;
 };
@@ -22,17 +22,17 @@ class AudioInputSampleApp : public AppBasic {
 void AudioInputSampleApp::setup()
 {
 	//initialize the audio Input, using the default input device
-	mInput = new audio::Input();
+	mInput = audio::Input( true );
 	
 	//tell the input to start capturing audio
-	mInput->start();
+	mInput.start();
 	
 }
 
 void AudioInputSampleApp::update()
 {
 	uint16_t bandCount = 512;
-	mPcmBuffer = mInput->getPcmBuffer();
+	mPcmBuffer = mInput.getPcmBuffer();
 	if( ! mPcmBuffer ) {
 		return;
 	}
@@ -91,7 +91,6 @@ void AudioInputSampleApp::drawFft()
 	float * fftBuffer = mFftDataRef.get();
 	
 	for( int i = 0; i < ( bandCount ); i++ ) {
-		std::cout << fftBuffer[i] << " ";
 		float barY = fftBuffer[i] / bandCount * ht;
 		glBegin( GL_QUADS );
 			glColor3f( 255.0f, 255.0f, 0.0f );

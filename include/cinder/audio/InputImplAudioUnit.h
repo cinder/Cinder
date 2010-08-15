@@ -23,46 +23,40 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/audio/Input.h"
 #include "cinder/audio/PcmBuffer.h"
+
+#include <AudioUnit/AudioUnit.h>
+#include <AudioToolbox/AudioToolbox.h>
+
+#include <vector>
+#include <boost/circular_buffer.hpp>
+#include <boost/thread/mutex.hpp>
 
 namespace cinder { namespace audio {
 
-//! \cond
-// This is an abstract base class for implementing Input
-class InputImpl {
+class InputImplAudioUnit : public InputImpl {
  public:
-	virtual ~InputImpl() {}
+	InputImplAudioUnit();
+	~InputImplAudioUnit();
 	
-	virtual void start() = 0;
-	virtual void stop() = 0;
-	virtual PcmBuffer32fRef getPcmBuffer() = 0;
+	void start();
+	void stop();
+	PcmBuffer32fRef getPcmBuffer();
  protected:
-	InputImpl() {}
+	static OSStatus inputCallback( void*, AudioUnitRenderActionFlags*, const AudioTimeStamp*, UInt32, UInt32, AudioBufferList* );
+ 
+	void setup();
+ 
+	bool							mIsCapturing;
+	AudioComponentInstance			mInputUnit;
+	AudioDeviceID					mDeviceId;
+	AudioBufferList					* mInputBuffer;
+	float							* mInputBufferData;
+	
+	std::vector<boost::circular_buffer<float> *>	mBuffers;
+	boost::mutex								mBufferMutex;
 };
-//! \endcond
 
-class Input {
- public:
-	Input() {}
-	Input( bool placeHolder );
-	~Input() {}
-	
-	//! Starts capturing audio data from the input
-	void start() { mImpl->start(); }
-	//! Stops capturing audio data from the input
-	void stop() { mImpl->stop(); }
-	//! Returns a copy of the buffer of the most recently captured audio data
-	PcmBuffer32fRef getPcmBuffer() { return mImpl->getPcmBuffer(); }
-	
- private:
-	shared_ptr<InputImpl> mImpl;
- public:
-	//@{
-	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<InputImpl> Input::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mImpl.get() == 0 ) ? 0 : &Input::mImpl; }
-	void reset() { mImpl.reset(); }
-	//@}
-};
 
 }} //namespace
