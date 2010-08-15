@@ -181,15 +181,15 @@ void InputImplAudioUnit::setup()
 	
 	
 	// Initialize the AU
-	err = AudioUnitInitialize( mInputUnit );
+	/*err = AudioUnitInitialize( mInputUnit );
 	if(err != noErr)
 	{
 		std::cout << "failed to initialize HAL Output AU" << std::endl;
 		throw;
-	}
+	}*/
 	
 	
-	//enable IO
+	//enable IO on AudioUnit's input scope
 	param = 1;
 	err = AudioUnitSetProperty( mInputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1, &param, sizeof( UInt32 ) );
 	if( err != noErr ) {
@@ -197,7 +197,7 @@ void InputImplAudioUnit::setup()
 		throw;
 	}
 	
-	//disable IO on output element
+	//disable IO on AudioUnit's output scope
 	param = 0;
 	err = AudioUnitSetProperty( mInputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &param, sizeof( UInt32 ) );
 	if( err != noErr ) {
@@ -220,13 +220,6 @@ void InputImplAudioUnit::setup()
 	//Don't setup buffers until you know what the 
 	//input and output device audio streams look like.
 	
-	// Initialize the AU again
-	err = AudioUnitInitialize( mInputUnit );
-	if(err != noErr) {
-		std::cout << "failed to initialize HAL Output AU a second time" << std::endl;
-		throw;
-	}
-	
 	param = sizeof(UInt32);
 	uint32_t sampleCount;
 	err = AudioUnitGetProperty( mInputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &sampleCount, &param);
@@ -235,8 +228,13 @@ void InputImplAudioUnit::setup()
 		throw;
 	}
 	
-	AudioStreamBasicDescription	deviceOutFormat;
 	AudioStreamBasicDescription	deviceInFormat;
+	AudioStreamBasicDescription	desiredOutFormat;
+	
+	//StreamFormat setting: 
+	//get and the AudioUnit's default input and output scope stream formats
+	//the AudioUnit has a built in AudioConverter than can do basic PCM format conversions
+	//and channel mapping if the desired channel count is different from the device's channel count
 	
 	//Stream Format - Output Client Side
 	param = sizeof( AudioStreamBasicDescription );
@@ -248,29 +246,38 @@ void InputImplAudioUnit::setup()
 	
 	//Stream format client side
 	param = sizeof( AudioStreamBasicDescription );
-	err = AudioUnitGetProperty( mInputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &deviceOutFormat, &param );
+	err = AudioUnitGetProperty( mInputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &desiredOutFormat, &param );
 	if( err != noErr ) {
 		std::cout << "failed to get input output device ASBD" << std::endl;
 		throw;
 	}
 	
-	Float64 rate = 0;
-	param = sizeof(Float64);
-	AudioDeviceGetProperty( mDeviceId, 0, 1, kAudioDevicePropertyNominalSampleRate, &param, &rate );
-	deviceInFormat.mSampleRate = rate;
+	//get the device's sample rate - this has to be the same as the AudioUnit's output format
+	//this is actually already set on the AudioUnit's input default stream format
+	//Float64 rate = 0;
+	//param = sizeof(Float64);
+	//AudioDeviceGetProperty( mDeviceId, 0, 1, kAudioDevicePropertyNominalSampleRate, &param, &rate );
 	
-	deviceOutFormat.mSampleRate = rate;
+	//desiredOutFormat.mSampleRate = rate;
 	
-	//TODO: inputUnit's out format needs to be the lower of the inputUnit's input format or the output unit's output format
-	//right now this assumes inputUnit's is always lower or equal to outputUnit's
-	//actually, since it's getting run through the converter this might not matter?
-	deviceOutFormat.mChannelsPerFrame = deviceInFormat.mChannelsPerFrame;
+	//the output sample rate must be the same as the input device's sample rate 
+	desiredOutFormat.mSampleRate = deviceInFormat.mSampleRate;
+	//TODO: set other options here? like channel count and bits per sample
 	
 	param = sizeof( AudioStreamBasicDescription );
-	err = AudioUnitSetProperty( mInputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &deviceOutFormat, param );
+	err = AudioUnitSetProperty( mInputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 1, &desiredOutFormat, param );
 	if( err ) {
 		throw;
 	}
+	
+	// Initialize the AudioUnit
+	err = AudioUnitInitialize( mInputUnit );
+	if(err != noErr) {
+		std::cout << "failed to initialize HAL Output AU a second time" << std::endl;
+		throw;
+	}
+	
+	//Buffer Setup - create the buffers necessary for holding input data
 	
 	param = sizeof( AudioBufferList );
 	AudioBufferList aBufferList;
