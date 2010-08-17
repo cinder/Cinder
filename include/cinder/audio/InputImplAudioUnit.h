@@ -35,6 +35,15 @@
 
 namespace cinder { namespace audio {
 
+/*
+TODO: 
+refactor circular buffer
+add support for specifying buffer size
+add support for querying and specifying input device
+
+add support for specifying number of output channels
+*/
+
 class InputImplAudioUnit : public InputImpl {
  public:
 	InputImplAudioUnit();
