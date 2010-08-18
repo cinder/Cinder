@@ -380,7 +380,6 @@
 		00CFD9401135C3520091E310 /* KeyEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5391FD670E957646002A13D5 /* KeyEvent.h */; };
 		00CFD9411135C3520091E310 /* Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 003832DE0E9C03CB00ACB120 /* Stream.h */; };
 		00CFD9421135C3520091E310 /* GlslProg.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D9A07D0EA57C5100FF5AEB /* GlslProg.h */; };
-		00CFD9431135C3520091E310 /* Capture.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DE0EA7975A005DD3E6 /* Capture.h */; };
 		00CFD9451135C3520091E310 /* Color.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D23A550EAEB4DE0002BF91 /* Color.h */; };
 		00CFD9461135C3520091E310 /* Filter.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF0D0EB79A91003AB86B /* Filter.h */; };
 		00CFD9471135C3520091E310 /* Rect.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF160EB79C45003AB86B /* Rect.h */; };
@@ -565,7 +564,6 @@
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
 		C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70E1A01106AA39D00E63577 /* Buffer.cpp */; };
 		C727BFE5121B3AE600192073 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
-		C727BFE6121B3AE700192073 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
 		C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7792FAE119A185000521786 /* CocoaCaConverter.cpp */; };
 		C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
 		C7A76E9F1176449F00A46655 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
@@ -611,9 +609,7 @@
 		C7CDF0180EBD5DA4000997D3 /* xpath_syntax.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */; };
 		C7FA5FC212124A8F0065683B /* CaptureImplQtKit.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7FA5FC012124A790065683B /* CaptureImplQtKit.mm */; };
 		C7FA5FC312124A960065683B /* CaptureImplAvFoundation.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */; };
-		C7FA5FC412124A970065683B /* CaptureImplAvFoundation.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */; };
 		C7FA5FC712124B230065683B /* CaptureImplAvFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */; };
-		C7FA5FC812124B230065683B /* CaptureImplAvFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */; };
 		C7FA5FC912124B2C0065683B /* CaptureImplQtKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FA5FC612124B1C0065683B /* CaptureImplQtKit.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 		EAC3D1A91011F2E700FFBC9E /* Serial.h in Headers */ = {isa = PBXBuildFile; fileRef = EAC3D1A81011F2E700FFBC9E /* Serial.h */; };
@@ -1588,7 +1584,6 @@
 				00CFD9401135C3520091E310 /* KeyEvent.h in Headers */,
 				00CFD9411135C3520091E310 /* Stream.h in Headers */,
 				00CFD9421135C3520091E310 /* GlslProg.h in Headers */,
-				00CFD9431135C3520091E310 /* Capture.h in Headers */,
 				00CFD9451135C3520091E310 /* Color.h in Headers */,
 				00CFD9461135C3520091E310 /* Filter.h in Headers */,
 				00CFD9471135C3520091E310 /* Rect.h in Headers */,
@@ -1674,7 +1669,6 @@
 				0049A34F116EE675007DDFB0 /* AxisAlignedBox.h in Headers */,
 				43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F111B0C87800B61EB6 /* TouchEvent.h in Headers */,
-				C7FA5FC812124B230065683B /* CaptureImplAvFoundation.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2039,8 +2033,6 @@
 				005374F61194F584004D686E /* Text.cpp in Sources */,
 				005374F81194F589004D686E /* Font.cpp in Sources */,
 				009CB674120F23000066763D /* Fbo.cpp in Sources */,
-				C7FA5FC412124A970065683B /* CaptureImplAvFoundation.mm in Sources */,
-				C727BFE6121B3AE700192073 /* Capture.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
