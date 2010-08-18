@@ -22,6 +22,7 @@
 
 #import "cinder/CaptureImplAvFoundation.h"
 #include "cinder/cocoa/CinderCocoa.h"
+#include <dlfcn.h>
 
 namespace cinder {
 
@@ -113,23 +114,34 @@ static BOOL sDevicesEnumerated = false;
 	[super dealloc];
 }
 
-- (void)prepareStartCapture 
+- (bool)prepareStartCapture 
 {
+	// AVFramework is weak-linked to maintain support for iOS 3.2, 
+	// so if these symbols don't exist, don't start the capture
+	Class clsAVCaptureSession = NSClassFromString(@"AVCaptureSession");
+	Class clsAVCaptureDevice = NSClassFromString(@"AVCaptureDevice");
+	Class clsAVCaptureDeviceInput = NSClassFromString(@"AVCaptureDeviceInput");
+	Class clsAVCaptureVideoDataOutput = NSClassFromString(@"clsAVCaptureVideoDataOutput");
+	if( clsAVCaptureSession == nil || clsAVCaptureDevice == nil || clsAVCaptureDeviceInput == nil || clsAVCaptureVideoDataOutput == nil ) {
+		std::cout << "AVCaptureSession not available" << std::endl;
+		return false;
+	}
+
     NSError * error = nil;
 
-    mSession = [[AVCaptureSession alloc] init];
+    mSession = [[clsAVCaptureSession alloc] init];
 
     // Configure the session to produce lower resolution video frames, if your 
     // processing algorithm can cope. We'll specify medium quality for the
     // chosen device.
-    mSession.sessionPreset = AVCaptureSessionPresetMedium;
+	mSession.sessionPreset = AVCaptureSessionPresetMedium;
 
     // Find a suitable AVCaptureDevice
     AVCaptureDevice * device = nil;
 	if( ! mDeviceUniqueId ) {
-		device = device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+		device = device = [clsAVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
 	} else {
-		device = [AVCaptureDevice deviceWithUniqueID:mDeviceUniqueId];
+		device = [clsAVCaptureDevice deviceWithUniqueID:mDeviceUniqueId];
 	}
 	
 	if( ! device ) {
@@ -137,14 +149,14 @@ static BOOL sDevicesEnumerated = false;
 	}
 
     // Create a device input with the device and add it to the session.
-    AVCaptureDeviceInput * input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+    AVCaptureDeviceInput * input = [clsAVCaptureDeviceInput deviceInputWithDevice:device error:&error];
     if( ! input ) {
         throw cinder::CaptureExcInitFail();
     }
     [mSession addInput:input];
 
     // Create a VideoDataOutput and add it to the session
-    AVCaptureVideoDataOutput * output = [[[AVCaptureVideoDataOutput alloc] init] autorelease];
+    AVCaptureVideoDataOutput * output = [[[clsAVCaptureVideoDataOutput alloc] init] autorelease];
     [mSession addOutput:output];
 
     // Configure your output.
@@ -159,6 +171,7 @@ static BOOL sDevicesEnumerated = false;
     // If you wish to cap the frame rate to a known value, such as 15 fps, set 
     // minFrameDuration.
     // output.minFrameDuration = CMTimeMake(1, 15);
+	return true;
 }
 
 - (void)startCapture 
@@ -167,13 +180,13 @@ static BOOL sDevicesEnumerated = false;
 		return; 
 
 	@synchronized( self ) {
-		[self prepareStartCapture];
+		if( [self prepareStartCapture] ) {
+			mWorkingPixelBuffer = 0;
+			mHasNewFrame = false;
 		
-		mWorkingPixelBuffer = 0;
-		mHasNewFrame = false;
-		
-		mIsCapturing = true;
-		[mSession startRunning];
+			mIsCapturing = true;
+			[mSession startRunning];
+		}
 	}
 }
 

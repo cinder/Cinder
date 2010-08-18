@@ -62,7 +62,7 @@ class CaptureImplAvFoundationDevice : public Capture::Device {
 + (const std::vector<cinder::Capture::DeviceRef>&)getDevices:(BOOL)forceRefresh;
 
 - (id)initWithDevice:(const cinder::Capture::DeviceRef)device width:(int)width height:(int)height;
-- (void)prepareStartCapture;
+- (bool)prepareStartCapture;
 - (void)startCapture;
 - (void)stopCapture;
 - (bool)isCapturing;
