@@ -36,7 +36,13 @@
 #	endif
 
 #elif defined( CINDER_COCOA_TOUCH )
-
+#	if defined( __OBJC__ )
+		@class CaptureImplAvFoundation;
+		//@class QTCaptureDevice;
+#	else
+		class CaptureImplAvFoundation;
+		//class QTCaptureDevice;
+#	endif
 #endif
 
 #include <map>
@@ -118,6 +124,8 @@ class Capture {
 
 #if defined( CINDER_MAC ) 
 		CaptureImplQtKit				*mImpl;
+#elif defined( CINDER_COCOA_TOUCH )
+		CaptureImplAvFoundation			*mImpl;
 #elif defined( CINDER_MSW )
 		CaptureImplDirectShow			*mImpl;
 #endif

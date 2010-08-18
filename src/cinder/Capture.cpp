@@ -26,7 +26,8 @@
 	#import "cinder/CaptureImplQtKit.h"
 	typedef CaptureImplQtKit	CapturePlatformImpl;
 #elif defined( CINDER_COCOA_TOUCH )
-	
+	#import "cinder/CaptureImplAvFoundation.h"
+	typedef CaptureImplAvFoundation	CapturePlatformImpl;
 #elif defined( CINDER_MSW )
 	#include "cinder/CaptureImplDirectShow.h"
 	typedef cinder::CaptureImplDirectShow	CapturePlatformImpl;

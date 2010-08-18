@@ -564,6 +564,8 @@
 		C705F1800FD995120009395A /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C705F17F0FD995120009395A /* Buffer.h */; };
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
 		C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70E1A01106AA39D00E63577 /* Buffer.cpp */; };
+		C727BFE5121B3AE600192073 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
+		C727BFE6121B3AE700192073 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
 		C7792FAF119A185000521786 /* CocoaCaConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7792FAE119A185000521786 /* CocoaCaConverter.cpp */; };
 		C7792FB1119A186000521786 /* CocoaCaConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = C7792FB0119A186000521786 /* CocoaCaConverter.h */; };
 		C7A76E9F1176449F00A46655 /* Io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7A76E9A1176449F00A46655 /* Io.cpp */; };
@@ -1957,6 +1959,7 @@
 				005374F71194F588004D686E /* Font.cpp in Sources */,
 				009CB673120F22FF0066763D /* Fbo.cpp in Sources */,
 				C7FA5FC312124A960065683B /* CaptureImplAvFoundation.mm in Sources */,
+				C727BFE5121B3AE600192073 /* Capture.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2037,6 +2040,7 @@
 				005374F81194F589004D686E /* Font.cpp in Sources */,
 				009CB674120F23000066763D /* Fbo.cpp in Sources */,
 				C7FA5FC412124A970065683B /* CaptureImplAvFoundation.mm in Sources */,
+				C727BFE6121B3AE700192073 /* Capture.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
