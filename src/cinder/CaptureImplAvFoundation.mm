@@ -70,14 +70,16 @@ static BOOL sDevicesEnumerated = false;
 		return sDevices;
 	}
 
-	sDevices.clear();	
-
-	NSArray * devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-	for( int i = 0; i < [devices count]; i++ ) {
-		AVCaptureDevice * device = [devices objectAtIndex:i];
-		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplAvFoundationDevice( device ) ) );
+	sDevices.clear();
+	
+	Class clsAVCaptureDevice = NSClassFromString(@"AVCaptureDevice");
+	if( clsAVCaptureDevice != nil ) {
+		NSArray * devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+		for( int i = 0; i < [devices count]; i++ ) {
+			AVCaptureDevice * device = [devices objectAtIndex:i];
+			sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplAvFoundationDevice( device ) ) );
+		}
 	}
-
 	sDevicesEnumerated = true;
 	return sDevices;
 }
