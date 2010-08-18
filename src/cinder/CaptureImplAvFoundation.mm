@@ -123,7 +123,7 @@ static BOOL sDevicesEnumerated = false;
 	Class clsAVCaptureSession = NSClassFromString(@"AVCaptureSession");
 	Class clsAVCaptureDevice = NSClassFromString(@"AVCaptureDevice");
 	Class clsAVCaptureDeviceInput = NSClassFromString(@"AVCaptureDeviceInput");
-	Class clsAVCaptureVideoDataOutput = NSClassFromString(@"clsAVCaptureVideoDataOutput");
+	Class clsAVCaptureVideoDataOutput = NSClassFromString(@"AVCaptureVideoDataOutput");
 	if( clsAVCaptureSession == nil || clsAVCaptureDevice == nil || clsAVCaptureDeviceInput == nil || clsAVCaptureVideoDataOutput == nil ) {
 		std::cout << "AVCaptureSession not available" << std::endl;
 		return false;
