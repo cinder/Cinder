@@ -124,8 +124,13 @@ static BOOL sDevicesEnumerated = false;
 	Class clsAVCaptureDevice = NSClassFromString(@"AVCaptureDevice");
 	Class clsAVCaptureDeviceInput = NSClassFromString(@"AVCaptureDeviceInput");
 	Class clsAVCaptureVideoDataOutput = NSClassFromString(@"AVCaptureVideoDataOutput");
-	if( clsAVCaptureSession == nil || clsAVCaptureDevice == nil || clsAVCaptureDeviceInput == nil || clsAVCaptureVideoDataOutput == nil ) {
-		std::cout << "AVCaptureSession not available" << std::endl;
+	Class clsAVCaptureConnection = NSClassFromString(@"AVCaptureConnection");
+	if( clsAVCaptureSession == nil || 
+		clsAVCaptureDevice == nil || 
+		clsAVCaptureDeviceInput == nil || 
+		clsAVCaptureVideoDataOutput == nil ||
+		clsAVCaptureConnection == nil ) 
+	{
 		return false;
 	}
 
@@ -160,7 +165,19 @@ static BOOL sDevicesEnumerated = false;
     // Create a VideoDataOutput and add it to the session
     AVCaptureVideoDataOutput * output = [[[clsAVCaptureVideoDataOutput alloc] init] autorelease];
     [mSession addOutput:output];
-
+	
+	//adjust connection settings
+	/*
+	//Testing indicates that at least the 3GS doesn't support video orientation changes
+	NSArray * connections = output.connections;
+	for( int i = 0; i < [connections count]; i++ ) {
+		AVCaptureConnection * connection = [connections objectAtIndex:i];
+		
+		if( connection.supportsVideoOrientation ) {
+			connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+		}
+	}*/
+	
     // Configure your output.
     dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);
     [output setSampleBufferDelegate:self queue:queue];
