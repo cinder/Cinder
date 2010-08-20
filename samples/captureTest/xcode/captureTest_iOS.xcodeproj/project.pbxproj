@@ -216,7 +216,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"";
 				PRODUCT_NAME = captureTest;
-				SDKROOT = iphonesimulator4.0;
+				SDKROOT = iphoneos4.0;
 			};
 			name = Release;
 		};
