@@ -193,7 +193,6 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"";
 				PRODUCT_NAME = «PREFIX»;
-				SDKROOT = iphonesimulator4.0;
 			};
 			name = Debug;
 		};
@@ -212,7 +211,6 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"";
 				PRODUCT_NAME = «PREFIX»;
-				SDKROOT = iphonesimulator4.0;
 			};
 			name = Release;
 		};
