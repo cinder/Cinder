@@ -85,7 +85,6 @@ DataSourcePathRef loadFile( const std::string &path )
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceUrl
-#if ! defined( CINDER_COCOA_TOUCH )
 DataSourceUrlRef DataSourceUrl::createRef( const Url &Url )
 {
 	return DataSourceUrlRef( new DataSourceUrl( Url ) );
@@ -111,7 +110,6 @@ DataSourceUrlRef loadUrl( const Url &Url )
 {
 	return DataSourceUrl::createRef( Url );
 }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceBuffer

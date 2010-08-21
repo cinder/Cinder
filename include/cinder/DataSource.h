@@ -80,7 +80,6 @@ class DataSourcePath : public DataSource {
 
 DataSourcePathRef	loadFile( const std::string &path );
 
-#if ! defined( CINDER_COCOA_TOUCH )
 typedef shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
 class DataSourceUrl : public DataSource {
@@ -101,7 +100,6 @@ class DataSourceUrl : public DataSource {
 };
 
 DataSourceUrlRef	loadUrl( const Url &Url );
-#endif
 
 typedef shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 
