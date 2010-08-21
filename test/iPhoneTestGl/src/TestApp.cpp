@@ -2,11 +2,13 @@
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Url.h"
 #include "TestApp.h"
 #include "cinder/Surface.h"
 #include "cinder/Utilities.h"
 #include "cinder/Rand.h"
 #include "cinder/Text.h"
+#include "cinder/Xml.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -32,6 +34,10 @@ void TestApp::setup()
 	mFont = Font( "Arial", 56 );
 	//Buffer buffer = loadStreamBuffer( loadFileStream( getResourcePath( "Beyonce.jpg" ) ) );
 	//mTex = gl::Texture( loadImage( DataSourceBuffer::createRef( buffer, ".jpg" ) ) );
+	mTex = gl::Texture( loadImage( loadUrl( Url( "http://images.apple.com/home/images/promo_iphone_case_program_20100723.jpg" ) ) ) );
+
+	XmlDocument doc( loadUrlStream( "http://www.feedparser.org/docs/http-authentication.html", "test", "basic" ) );
+	console() << doc << std::endl;
 }
 
 void TestApp::resize( int width, int height )
@@ -80,8 +86,8 @@ void TestApp::draw()
 	glPopMatrix();*/
 	
 	gl::setMatricesWindow( getWindowSize() );
-	gl::drawString( (Rand::randBool() ? ( "Fjrameyq: " ) : ( "Frame: " )) + toString( getElapsedFrames() ), Vec2f( 10, 40 ), Color( 1, 0.5, 0.25 ), mFont );
-//	gl::draw( mTex );
+//	gl::drawString( (Rand::randBool() ? ( "Fjrameyq: " ) : ( "Frame: " )) + toString( getElapsedFrames() ), Vec2f( 10, 40 ), Color( 1, 0.5, 0.25 ), mFont );
+	gl::draw( mTex );
 }
 
 CINDER_APP_COCOA_TOUCH( TestApp, RendererGl )
