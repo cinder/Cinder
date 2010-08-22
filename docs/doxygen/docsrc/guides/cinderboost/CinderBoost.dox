@@ -31,8 +31,8 @@ cd cinder/boost\n
 ./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=x86 address-model=32 macosx-version=10.6 macosx-version-min=10.5 stage\n
 cp stage/lib/*.a ../lib/macosx\n
 </tt>
-\n
 \em Note: If you need 64-bit support, change the <tt>address-model=32</tt> to <tt>address-model=32_64</tt>.\n
+\n
 <b>Windows</b>:\n
 <tt>
 cd cinder\\boost\n
@@ -43,7 +43,7 @@ copy stage\\lib\\*.lib ..\\lib\\msw\n
 \n
 <b>iOS</b>:\n
 In order to build Boost for iOS, you'll need to append the following lines to your user-config.jam file, located at <em>cinder/boost/tools/build/v2/user-config.jam</em>.\n
-<code>
+\code
 using darwin : 4.2.1~iphone
 : /Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/g++ -arch armv7
 : <striper>
@@ -55,14 +55,15 @@ using darwin : 4.2.1~iphonesim
 : <striper>
 : <architecture>x86 <target-os>iphone
 ;
-</code>
+\endcode
 \n
-<em>iPhone Device</em>
+<em>iPhone Device</em>\n
 <tt>
 ./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=arm target-os=iphone macosx-version=iphone-3.2 stage\n
 cp stage/lib/*.a ../lib/ios\n
 </tt>
-<em>iPhone Simulator</em>
+\n
+<em>iPhone Simulator</em>\n
 <tt>
 ./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=x86 target-os=iphone macosx-version=iphonesim-3.2 stage\n
 cp stage/lib/*.a ../lib/ios-sim\n
