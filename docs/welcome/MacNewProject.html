@@ -107,10 +107,10 @@
 	Project Settings window and under the <em>Project</em> menu select <em>Edit Active Target &lt;your project name&gt;</em>.</p>
 	<br>
 	<p>We only need to modify one setting here, which is to set the string
-	which tells the linker to add libcinder and libcurl. Go to the <em>Build</em> tab and under the 
+	which tells the linker to add libcinder. Go to the <em>Build</em> tab and under the 
 	<em>Configuration</em> popup select <em>Debug</em>. Now find the 
-	<em>Other Linker Flags</em> setting under the <em>Linking</em> settings and set it to <em>"$(CINDER_PATH)/lib/libcinder_d.a -lcurl"</em>. 
-	Now do the same for the <em>Release</em> configuration but set it to <em>"$(CINDER_PATH)/lib/libcinder.a -lcurl"</em>.</p>
+	<em>Other Linker Flags</em> setting under the <em>Linking</em> settings and set it to <em>"$(CINDER_PATH)/lib/libcinder_d.a"</em>. 
+	Now do the same for the <em>Release</em> configuration but set it to <em>"$(CINDER_PATH)/lib/libcinder.a"</em>.</p>
 	
 	<center><img alt="Linker settings" src="mac_images/linkersettings.png"></img></center>
 	<br>
@@ -157,12 +157,12 @@
     <tr>
       <td style="vertical-align: top;">Target: Debug</td>
       <td style="vertical-align: top;">Other Linker Flags</td>
-      <td style="vertical-align: top; font-family: Courier;">$(CINDER_PATH)/lib/libcinder_d.a -lcurl</td>
+      <td style="vertical-align: top; font-family: Courier;">$(CINDER_PATH)/lib/libcinder_d.a</td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Target: Release</td>
       <td style="vertical-align: top;">Other Linker Flags</td>
-      <td style="vertical-align: top; font-family: Courier;">$(CINDER_PATH)/lib/libcinder.a -lcurl</td>
+      <td style="vertical-align: top; font-family: Courier;">$(CINDER_PATH)/lib/libcinder.a</td>
     </tr>
   </tbody>
 </table>
