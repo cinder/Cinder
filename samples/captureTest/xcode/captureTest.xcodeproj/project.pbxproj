@@ -236,7 +236,7 @@
 				);
 				OTHER_LDFLAGS = (
 					../../../lib/libcinder_d.a,
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = captureTest;
 				WRAPPER_EXTENSION = app;
@@ -261,7 +261,7 @@
 				);
 				OTHER_LDFLAGS = (
 					../../../lib/libcinder.a,
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = surfaceTest;
 				WRAPPER_EXTENSION = app;

@@ -249,7 +249,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				);
 				OTHER_LDFLAGS = (
 					../../../lib/libcinder_d.a,
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = waterSim;
 				WRAPPER_EXTENSION = app;
@@ -278,7 +278,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				);
 				OTHER_LDFLAGS = (
 					../../../lib/libcinder.a,
-					"-lcurl",
+					"",
 				);
 				PREBINDING = YES;
 				PRODUCT_NAME = waterSim;

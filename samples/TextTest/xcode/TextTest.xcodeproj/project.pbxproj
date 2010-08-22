@@ -231,7 +231,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = TextTest;
 				WRAPPER_EXTENSION = app;
@@ -255,7 +255,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = TextTest;
 				STRIP_INSTALLED_PRODUCT = YES;

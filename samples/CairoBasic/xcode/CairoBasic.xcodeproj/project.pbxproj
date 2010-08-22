@@ -225,7 +225,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
-					"-lcurl",
+					"",
 					"-lz",
 				);
 				PRODUCT_NAME = CairoBasic;
@@ -252,7 +252,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
-					"-lcurl",
+					"",
 					"-lz",
 				);
 				PRODUCT_NAME = CairoBasic;
