@@ -4,14 +4,14 @@
 
 The <a href="http://boost.org">Boost libraries</a> are a collection of peer-reviewed open source C++ libraries. These libraries are some of the highest quality on the planet. In fact they are so good, several have gone on to become part of the C++ standard itself. Many of the developers who work on Boost are members of the C++ committee.\n\n
 
-Cinder makes use of a few key Boost libraries, primarily while we wait for our supported compilers to provide implementations of these features. In particular, Cinder makes use of the Boost <a href="http://www.boost.org/doc/libs/1_42_0/libs/smart_ptr/smart_ptr.htm">smart pointers</a> library and the Boost <a href="http://www.boost.org/doc/libs/1_42_0/doc/html/thread.html">threads</a> library. Both of these have been accepted as standard C++ and eventually Cinder will phase out the Boost implementations in favor of compiler-provided ones.\n\n
+Cinder makes use of a few key Boost libraries, primarily while we wait for our supported compilers to provide implementations of these features. In particular, Cinder makes use of the Boost <a href="http://www.boost.org/doc/libs/1_44_0/libs/smart_ptr/smart_ptr.htm">smart pointers</a> library and the Boost <a href="http://www.boost.org/doc/libs/1_44_0/doc/html/thread.html">threads</a> library. Both of these have been accepted as standard C++ and eventually Cinder will phase out the Boost implementations in favor of compiler-provided ones.\n\n
 
 \section setup Setting up Boost
 If you have downloaded one of the pre-built packages from the Cinder website, Boost is already included - you're all set. However if you are building Cinder yourself from <a href="http://github.com/cinder">github</a>, or you would like to upgrade your copy of Boost from the included version, these instructions will guide you through the process.\n\n
 
-If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.42. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a>\n
+If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.44. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a>\n
 \n
-Now you'll need to put Boost inside your Cinder folder, and <b>rename it \e boost</b>. Your cinder directory should be laid out similarly to the screenshot below. At this point you should be all done if you are using Boost version 1.42, which is the version Cinder is currently built against. If you are moving to a different version of Boost, follow the build \ref build "instructions below".\n
+Now you'll need to put Boost inside your Cinder folder, and <b>rename it \e boost</b>. Your cinder directory should be laid out similarly to the screenshot below. At this point you should be all done if you are using Boost version 1.44, which is the version Cinder is currently built against. If you are moving to a different version of Boost, follow the build \ref build "instructions below".\n
 \image html cinder_finder.png
 \n
 \section use Using Boost in Cinder
@@ -23,15 +23,16 @@ The <tt>shared_ptr</tt> library, like many Boost libraries, is a header-only lib
 
 
 \section build Building Boost (Advanced Users)
-If you would like to use a different version of Boost from the one that ships with Cinder, or use a compiler we don't directly support, you'll need to build two Boost libraries yourself. In order to do so you'll want to <a href="http://sourceforge.net/projects/boost/files/boost-jam/3.1.17/">download Boost.Jam</a> for your platform. This is a command line tool similar to CMake. After decompressing the zip file, move the bjam program into your boost directory. Now let's do some compiling.\n
+If you would like to use a different version of Boost from the one that ships with Cinder, or use a compiler we don't directly support, you'll need to build two Boost libraries yourself. In order to do so you'll want to <a href="http://sourceforge.net/projects/boost/files/boost-jam/3.1.18/">download Boost.Jam</a> for your platform. This is a command line tool similar to CMake. After decompressing the zip file, move the bjam program into your boost directory. Now let's do some compiling.\n
 \n
 <b>Mac OS X</b>:\n
 <tt>
 cd cinder/boost\n
-./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=x86 address-model=32_64 macosx-version=10.6 macosx-version-min=10.5 stage\n
+./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=x86 address-model=32 macosx-version=10.6 macosx-version-min=10.5 stage\n
 cp stage/lib/*.a ../lib/macosx\n
 </tt>
 \n
+\em Note: If you need 64-bit support, change the <tt>address-model=32</tt> to <tt>address-model=32_64</tt>.\n
 <b>Windows</b>:\n
 <tt>
 cd cinder\\boost\n
