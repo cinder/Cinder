@@ -81,10 +81,17 @@ PcmBuffer32fRef InputImplAudioUnit::getPcmBuffer()
 	
 	//TODO: don't just assume the data is non-interleaved
 	PcmBuffer32fRef outBuffer( new PcmBuffer32f( mBuffers[0]->size(), mBuffers.size(), false ) );
-	for( int i = 0; i < mBuffers.size(); i++ ) {
+	/*for( int i = 0; i < mBuffers.size(); i++ ) {
 		circular_buffer<float>::array_range ar = mBuffers[i]->array_one();
 		outBuffer->appendChannelData( ar.first, ar.second, static_cast<ChannelIdentifier>( i ) );
 		ar = mBuffers[i]->array_two();
+		outBuffer->appendChannelData( ar.first, ar.second, static_cast<ChannelIdentifier>( i ) );
+	}*/
+	
+	for( int i = 0; i < mCircularBuffers.size(); i++ ) {
+		CircularBuffer<float>::ArrayRange ar = mCircularBuffers[i]->arrayOne();
+		outBuffer->appendChannelData( ar.first, ar.second, static_cast<ChannelIdentifier>( i ) );
+		ar = mCircularBuffers[i]->arrayTwo();
 		outBuffer->appendChannelData( ar.first, ar.second, static_cast<ChannelIdentifier>( i ) );
 	}
 	
@@ -118,6 +125,9 @@ OSStatus InputImplAudioUnit::inputCallback( void *inRefCon, AudioUnitRenderActio
 	//copy data from the input buffer to the circular buffer
 	for( int i = 0; i < theInput->mInputBuffer->mNumberBuffers; i++ ) {
 		float * start = reinterpret_cast<float *>( theInput->mInputBuffer->mBuffers[i].mData );
+		
+		theInput->mCircularBuffers[i]->copy( start, inNumberFrames );
+		
 		float * end = start + inNumberFrames;
 		theInput->mBuffers[i]->insert( theInput->mBuffers[i]->end(), start, end );
 	}
@@ -304,8 +314,10 @@ void InputImplAudioUnit::setup()
 	
 	mInputBuffer = (AudioBufferList *)malloc( sizeof(AudioBufferList) + deviceInFormat.mChannelsPerFrame * sizeof(AudioBuffer) );
 	
+	
 	mInputBuffer->mNumberBuffers = deviceInFormat.mChannelsPerFrame;
 	mBuffers.resize( mInputBuffer->mNumberBuffers );
+	mCircularBuffers.resize( mInputBuffer->mNumberBuffers );
 	for( int i = 0; i < mInputBuffer->mNumberBuffers; i++ ) {
 		mInputBuffer->mBuffers[i].mNumberChannels = 1;
 		mInputBuffer->mBuffers[i].mDataByteSize = sampleCount * deviceInFormat.mBytesPerFrame;
@@ -313,6 +325,8 @@ void InputImplAudioUnit::setup()
 		
 		//create a circular buffer for each channel
 		mBuffers[i] = new circular_buffer<float>( sampleCount * 4 );
+		
+		mCircularBuffers[i] = new CircularBuffer<float>( sampleCount * 4 );
 	}
 }
 

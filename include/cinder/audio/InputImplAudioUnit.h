@@ -25,6 +25,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/audio/Input.h"
 #include "cinder/audio/PcmBuffer.h"
+#include "cinder/audio/CircularBuffer.h"
 
 #include <AudioUnit/AudioUnit.h>
 #include <AudioToolbox/AudioToolbox.h>
@@ -68,7 +69,9 @@ class InputImplAudioUnit : public InputImpl {
 	float							* mInputBufferData;
 	
 	std::vector<boost::circular_buffer<float> *>	mBuffers;
-	boost::mutex								mBufferMutex;
+	std::vector<CircularBuffer<float> *>	mCircularBuffers;
+	
+	boost::mutex					mBufferMutex;
 	
 	AudioStreamBasicDescription		mFormatDescription;
 	uint32_t mSampleRate;
