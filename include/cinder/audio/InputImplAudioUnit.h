@@ -31,6 +31,7 @@
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <vector>
+//#include <boost/circular_buffer.hpp>
 #include <boost/thread/mutex.hpp>
 
 namespace cinder { namespace audio {

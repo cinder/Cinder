@@ -105,7 +105,6 @@ void AudioInputSampleApp::drawFft()
 			glVertex2f( i * 3, bottom - barY );
 		glEnd();
 	}
-	std::cout << std::endl;
 }
 
 

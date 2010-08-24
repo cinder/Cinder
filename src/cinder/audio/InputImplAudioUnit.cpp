@@ -23,6 +23,8 @@
 #include "cinder/audio/InputImplAudioUnit.h"
 #include <iostream>
 
+//using boost::circular_buffer;
+
 namespace cinder { namespace audio {
 
 InputImplAudioUnit::InputImplAudioUnit()
@@ -124,7 +126,7 @@ OSStatus InputImplAudioUnit::inputCallback( void *inRefCon, AudioUnitRenderActio
 	for( int i = 0; i < theInput->mInputBuffer->mNumberBuffers; i++ ) {
 		float * start = reinterpret_cast<float *>( theInput->mInputBuffer->mBuffers[i].mData );
 		
-		theInput->mCircularBuffers[i]->insert( start, inNumberFrames );
+		theInput->mCircularBuffers[i]->insert( start, ( theInput->mInputBuffer->mBuffers[i].mDataByteSize / sizeof(float) ) );
 		
 		//float * end = start + inNumberFrames;
 		//theInput->mBuffers[i]->insert( theInput->mBuffers[i]->end(), start, end );

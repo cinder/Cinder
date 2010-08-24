@@ -38,7 +38,8 @@ class CircularBuffer {
 		return ArrayRange( mBufferStart, ( mBufferStart >= mBufferLast ) ? ( mBufferEnd - mBufferStart ) : mSize );
 	}
 	ArrayRange arrayTwo() const {
-		return ArrayRange( mBufferLast, ( mBufferStart >= mBufferLast ) ? ( mBufferLast - mBuffer ) : 0 );
+		uint32_t size = ( mBufferStart >= mBufferLast ) ? ( mBufferLast - mBuffer ) : 0;
+		return ArrayRange( mBufferLast - size, size );
 	}
 	
 	uint32_t size() const { return mSize; }
