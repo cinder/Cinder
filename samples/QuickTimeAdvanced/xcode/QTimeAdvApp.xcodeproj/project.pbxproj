@@ -217,7 +217,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = QTimeAdvApp;
 				WRAPPER_EXTENSION = app;
@@ -241,7 +241,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = QTimeAdvApp;
 				WRAPPER_EXTENSION = app;

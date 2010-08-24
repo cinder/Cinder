@@ -122,7 +122,7 @@ CFStringRef	createCfString( const std::string &str );
 SafeCfString createSafeCfString( const std::string &str );
 //! Converts a NSString into a std::string with UTF8 encoding.
 std::string	convertNsString( NSString *str );
-//! Converts a cinder::URL into a CFURLRef. User mus call CFRelease() to free the result.
+//! Converts a cinder::URL into a CFURLRef. User must call CFRelease() to free the result.
 CFURLRef createCfUrl( const cinder::Url &url );
 
 #if defined( CINDER_MAC )

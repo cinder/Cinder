@@ -102,7 +102,7 @@
 	if( ! appSetupCalled )
 		return;
 
-	[self setNeedsDisplay:YES];
+	[self display];
 }
 
 - (void)drawRect:(NSRect)rect

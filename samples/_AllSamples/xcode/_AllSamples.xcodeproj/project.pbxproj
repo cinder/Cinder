@@ -582,14 +582,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090 /* FBOMultipleTargets.app */;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = FBOMultipleTargets;
 		};
 		009CB64E120F228F0066763D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090 /* FBOMultipleTargets */;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = FBOMultipleTargets;
 		};
 		009F02021136D23400636E3C /* PBXContainerItemProxy */ = {

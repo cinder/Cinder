@@ -299,7 +299,7 @@
 				);
 				OTHER_LDFLAGS = (
 					"../../../lib/libcinder-x86_64_d.a",
-					"-lcurl",
+					"",
 					"-lz",
 				);
 				PRODUCT_NAME = basicApp;
@@ -335,7 +335,7 @@
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"../../../lib/libcinder-x86_64.a",
-					"-lcurl",
+					"",
 				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO;
 				PRODUCT_NAME = basicApp;
@@ -359,10 +359,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					../../../lib/libcinder_d.a,
-					"-lcurl",
-				);
+				OTHER_LDFLAGS = ../../../lib/libcinder_d.a;
 				PRODUCT_NAME = basicApp;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -387,11 +384,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LD_GENERATE_MAP_FILE = YES;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				OTHER_LDFLAGS = (
-					../../../lib/libcinder.a,
-					"-lcurl",
-					"-lz",
-				);
+				OTHER_LDFLAGS = ../../../lib/libcinder.a;
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO;
 				PRODUCT_NAME = basicApp;
 				STRIP_INSTALLED_PRODUCT = YES;

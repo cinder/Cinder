@@ -20,8 +20,42 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/CaptureCocoa.h"
+#import "cinder/CaptureImplQtKit.h"
 #include "cinder/cocoa/CinderCocoa.h"
+
+namespace cinder {
+
+CaptureImplQtKitDevice::CaptureImplQtKitDevice( QTCaptureDevice* device )
+	: Capture::Device()
+{
+	mUniqueId = cocoa::convertNsString( [device uniqueID] );
+	mName = cocoa::convertNsString( [device localizedDisplayName] );
+	
+		// Apparently this stuff is basically useless
+/*	NSArray *formats = [device formatDescriptions];
+	for( int f = 0; f < [formats count]; ++f ) {
+		QTFormatDescription *format = [formats objectAtIndex:f];
+		if( [[format mediaType] isEqualToString:QTMediaTypeVideo] ) {
+			NSLog( @"%d %@", [formats count], [format formatDescriptionAttributes] );
+		}
+	}*/
+//	NSLog( @"%@", [device deviceAttributes] );
+
+}
+
+bool CaptureImplQtKitDevice::checkAvailable() const
+{
+	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:[NSString stringWithUTF8String:mUniqueId.c_str()]];
+	return [device isConnected] && (! [device isInUseByAnotherApplication]);
+}
+
+bool CaptureImplQtKitDevice::isConnected() const
+{
+	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:[NSString stringWithUTF8String:mUniqueId.c_str()]];
+	return [device isConnected];
+}
+
+} //namespace
 
 static void frameDeallocator( void *refcon );
 
@@ -58,11 +92,61 @@ static void frameDeallocator( void *refcon );
 	NSLog(@"------------");
 }
 */
-@implementation CaptureCocoa
+
+static std::vector<cinder::Capture::DeviceRef> sDevices;
+static BOOL sDevicesEnumerated = false;
+
+@implementation CaptureImplQtKit
+
+
++ (const std::vector<cinder::Capture::DeviceRef>&)getDevices:(BOOL)forceRefresh
+{
+	if( sDevicesEnumerated && ( ! forceRefresh ) ) {
+		return sDevices;
+	}
+
+	sDevices.clear();	
+
+	NSArray *devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeVideo];
+	for( int i = 0; i < [devices count]; i++ ) {
+		QTCaptureDevice *device = [devices objectAtIndex:i];
+		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplQtKitDevice( device ) ) );
+	}
+	
+	devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeMuxed];
+	for( int i = 0; i < [devices count]; i++) {
+		QTCaptureDevice *device = [devices objectAtIndex:i];
+		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplQtKitDevice( device ) ) );
+	}
+
+	sDevicesEnumerated = true;
+	return sDevices;
+}
+
+- (id)initWithDevice:(const cinder::Capture::DeviceRef)device width:(int)width height:(int)height 
+{
+	if( ( self = [super init] ) ) {
+
+		mDevice = device;
+		if( mDevice ) {
+			mDeviceUniqueId = [NSString stringWithUTF8String:device->getUniqueId().c_str()];
+			[mDeviceUniqueId retain];
+		}
+		
+		mIsCapturing = false;
+		mWidth = width;
+		mHeight = height;
+		mHasNewFrame = false;
+		mExposedFrameBytesPerRow = 0;
+		mExposedFrameWidth = 0;
+		mExposedFrameHeight = 0;
+	}
+	return self;
+}
 
 - (void)dealloc 
 {
-	if( isCapturing ) {
+	if( mIsCapturing ) {
 		[self stopCapture];
 	}
 	
@@ -71,18 +155,6 @@ static void frameDeallocator( void *refcon );
 	[super dealloc];
 }
 
-- (id)initWithDevice:(const cinder::Capture::Device&)device width:(int)width height:(int)height 
-{
-	self = [super init];
-
-	mDeviceUniqueId = [NSString stringWithUTF8String:device.getUniqueId().c_str()];
-	[mDeviceUniqueId retain];
-	
-	mWidth = width;
-	mHeight = height;
-	
-	return self;
-}
 
 - (void)prepareStartCapture
 {
@@ -93,10 +165,9 @@ static void frameDeallocator( void *refcon );
 	
 	//if mDevice is NULL, use the default video device to capture from
 	QTCaptureDevice *device = nil;
-	if( [mDeviceUniqueId length] == 0 ) {
+	if( ! mDeviceUniqueId ) {
 		device = [QTCaptureDevice defaultInputDeviceWithMediaType:QTMediaTypeVideo];
-	}
-	else {
+	} else {
 		device = [QTCaptureDevice deviceWithUniqueID:mDeviceUniqueId];
 	}
 	
@@ -152,23 +223,23 @@ static void frameDeallocator( void *refcon );
 
 - (void)startCapture 
 {
-	if( isCapturing )
+	if( mIsCapturing )
 		return; 
 
 	@synchronized( self ) {
 		[self prepareStartCapture];
 		
 		mWorkingPixelBuffer = 0;
-		mHasNewFrame = FALSE;
+		mHasNewFrame = false;
 		
-		isCapturing = TRUE;
+		mIsCapturing = true;
 		[mCaptureSession startRunning];
 	}
 }
 
 - (void)stopCapture
 {
-	if( ! isCapturing )
+	if( ! mIsCapturing )
 		return;
 
 	@synchronized( self ) {
@@ -176,10 +247,13 @@ static void frameDeallocator( void *refcon );
 		[[mCaptureDeviceInput device] close];
 		
 		[mCaptureSession release];
+		mCaptureSession = nil;
 		[mCaptureDeviceInput release];
+		mCaptureDeviceInput = nil;
+		
 
-		isCapturing = FALSE;
-		mHasNewFrame = FALSE;
+		mIsCapturing = false;
+		mHasNewFrame = false;
 		
 		mCurrentFrame.reset();
 		
@@ -190,14 +264,14 @@ static void frameDeallocator( void *refcon );
 	}
 }
 
-- (BOOL)isCapturing
+- (bool)isCapturing
 {
-	return isCapturing;
+	return mIsCapturing;
 }
 
 - (cinder::Surface8u)getCurrentFrame
 {
-	if( ( ! isCapturing ) || ( ! mWorkingPixelBuffer ) ) {
+	if( ( ! mIsCapturing ) || ( ! mWorkingPixelBuffer ) ) {
 		return mCurrentFrame;
 	}
 	
@@ -219,12 +293,12 @@ static void frameDeallocator( void *refcon );
 	return mCurrentFrame;
 }
 
-- (BOOL)checkNewFrame
+- (bool)checkNewFrame
 {
-	BOOL result;
+	bool result;
 	@synchronized (self) {
 		result = mHasNewFrame;
-		mHasNewFrame = FALSE;
+		mHasNewFrame = false;
 	}
 	return result;
 }
@@ -236,17 +310,32 @@ void frameDeallocator( void *refcon )
 	CVBufferRelease( pixelBuffer );
 }
 
-- (size_t)getCurrentFrameBytesPerRow
+- (const cinder::Capture::DeviceRef)getDevice
+{
+	return mDevice;
+}
+
+- (int32_t)getWidth
+{
+	return mWidth;
+}
+
+- (int32_t)getHeight
+{
+	return mHeight;
+}
+
+- (int32_t)getCurrentFrameBytesPerRow
 {
 	return mExposedFrameBytesPerRow;
 }
 
-- (size_t)getCurrentFrameWidth
+- (int32_t)getCurrentFrameWidth
 {
 	return mExposedFrameWidth;
 }
 
-- (size_t)getCurrentFrameHeight
+- (int32_t)getCurrentFrameHeight
 {
 	return mExposedFrameHeight;
 }
@@ -254,7 +343,7 @@ void frameDeallocator( void *refcon )
 - (void)captureOutput:(QTCaptureOutput *)captureOutput didOutputVideoFrame:(CVImageBufferRef)videoFrame withSampleBuffer:(QTSampleBuffer *)sampleBuffer fromConnection:(QTCaptureConnection *)connection
 {
 	@synchronized( self ) {
-		if( isCapturing ) {
+		if( mIsCapturing ) {
 			// if the last pixel buffer went unclaimed, we'll need to release it
 			if( mWorkingPixelBuffer ) {
 				CVBufferRelease( mWorkingPixelBuffer );
@@ -263,7 +352,7 @@ void frameDeallocator( void *refcon )
 			CVBufferRetain( videoFrame );
 		
 			mWorkingPixelBuffer = (CVPixelBufferRef)videoFrame;
-			mHasNewFrame = TRUE;			
+			mHasNewFrame = true;			
 		}
 	}	
 }

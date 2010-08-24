@@ -27,12 +27,13 @@ class CaptureApp : public AppBasic {
 void CaptureApp::setup()
 {	
 	// list out the devices
-	vector<Capture::Device> devices( Capture::getDevices() );
-	for( vector<Capture::Device>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
-		console() << "Found Device " << deviceIt->getName() << " ID: " << deviceIt->getUniqueId() << std::endl;
+	vector<Capture::DeviceRef> devices( Capture::getDevices() );
+	for( vector<Capture::DeviceRef>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
+		Capture::DeviceRef device = *deviceIt;
+		console() << "Found Device " << device->getName() << " ID: " << device->getUniqueId() << std::endl;
 		try {
-			if( deviceIt->checkAvailable() ) {
-				mCaptures.push_back( Capture( WIDTH, HEIGHT, *deviceIt ) );
+			if( device->checkAvailable() ) {
+				mCaptures.push_back( Capture( WIDTH, HEIGHT, device ) );
 				mCaptures.back().start();
 			
 				// placeholder text
@@ -42,13 +43,13 @@ void CaptureApp::setup()
 				TextLayout layout;
 				layout.setFont( Font( "Arial", 24 ) );
 				layout.setColor( Color( 1, 1, 1 ) );
-				layout.addLine( deviceIt->getName() );
+				layout.addLine( device->getName() );
 				mNameTextures.push_back( gl::Texture( layout.render( true ) ) );
 			}
-			console() << "   device is NOT available" << std::endl;
+			console() << "device is NOT available" << std::endl;
 		}
 		catch( CaptureExc & ) {
-			console() << "Unable to initialize device: " << deviceIt->getName() << endl;
+			console() << "Unable to initialize device: " << device->getName() << endl;
 		}
 	}
 }

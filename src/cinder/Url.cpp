@@ -25,6 +25,9 @@
 #if defined( CINDER_MSW )
 	#include "cinder/UrlImplWinInet.h"
 	typedef cinder::IStreamUrlImplWinInet	IStreamUrlPlatformImpl;
+#elif defined( CINDER_COCOA )
+	#include "cinder/UrlImplCocoa.h"
+	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;
 #else
 	#include "cinder/UrlImplCurl.h"
 	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;
