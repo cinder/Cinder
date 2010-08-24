@@ -31,13 +31,19 @@ class CircularBuffer {
  
 	CircularBuffer( uint32_t size );
 	~CircularBuffer();
-	void copy( const T* src, uint32_t size );
-	ArrayRange arrayOne() {
+	
+	void insert( const T* src, uint32_t size );
+	
+	ArrayRange arrayOne() const {
 		return ArrayRange( mBufferStart, ( mBufferStart >= mBufferLast ) ? ( mBufferEnd - mBufferStart ) : mSize );
 	}
-	ArrayRange arrayTwo() {
+	ArrayRange arrayTwo() const {
 		return ArrayRange( mBufferLast, ( mBufferStart >= mBufferLast ) ? ( mBufferLast - mBuffer ) : 0 );
 	}
+	
+	uint32_t size() const { return mSize; }
+	uint32_t maxSize() const { return mMaxSize; }
+	
  private:
 	T * mBuffer;
 	T * mBufferLast;
@@ -67,7 +73,7 @@ CircularBuffer<T>::~CircularBuffer()
 }
 
 template<typename T>
-void CircularBuffer<T>::copy( const T* src, uint32_t size )
+void CircularBuffer<T>::insert( const T* src, uint32_t size )
 {
 	if( size > mMaxSize ) {
 		throw; //TODO

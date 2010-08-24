@@ -42,8 +42,12 @@ void AudioInputSampleApp::update()
 void AudioInputSampleApp::draw()
 {
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
-	//drawWaveForm();
-	drawFft();
+	
+	glPushMatrix();
+		drawFft();
+		glTranslatef( 0.0f, 200.0f, 0.0f );
+		drawWaveForm();
+	glPopMatrix();
 }
 
 void AudioInputSampleApp::drawWaveForm()

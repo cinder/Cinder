@@ -31,7 +31,6 @@
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <vector>
-#include <boost/circular_buffer.hpp>
 #include <boost/thread/mutex.hpp>
 
 namespace cinder { namespace audio {
@@ -68,7 +67,7 @@ class InputImplAudioUnit : public InputImpl {
 	AudioBufferList					* mInputBuffer;
 	float							* mInputBufferData;
 	
-	std::vector<boost::circular_buffer<float> *>	mBuffers;
+	//std::vector<boost::circular_buffer<float> *>	mBuffers;
 	std::vector<CircularBuffer<float> *>	mCircularBuffers;
 	
 	boost::mutex					mBufferMutex;
