@@ -36,7 +36,11 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 #else
 	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+	#pragma push_macro( "_STDINT_H" )
 		#undef __STDC_CONSTANT_MACROS
+		#if _MSC_VER >= 1600 // VC10 or greater
+			#define _STDINT_H
+		#endif
 		#include <QTML.h>
 		#include <CVPixelBuffer.h>
 		#include <ImageCompression.h>
@@ -45,6 +49,7 @@
 		#include <CoreFoundation/CFNumber.h>
 		#include <GXMath.h>
 		#include <QuickTimeComponents.h>
+	#pragma pop_macro( "_STDINT_H" )
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
 

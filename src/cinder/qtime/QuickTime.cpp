@@ -37,11 +37,19 @@
 	#include <CoreVideo/CoreVideo.h>
 	#include <CoreVideo/CVBase.h>
 #else
-	#include <QTML.h>
-	#include <CVPixelBuffer.h>
-	#include <ImageCompression.h>
-	#include <Movies.h>
-	#include <GXMath.h>
+	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+	#pragma push_macro( "_STDINT_H" )
+		#undef __STDC_CONSTANT_MACROS
+		#if _MSC_VER >= 1600 // VC10 or greater
+			#define _STDINT_H
+		#endif
+		#include <QTML.h>
+		#include <CVPixelBuffer.h>
+		#include <ImageCompression.h>
+		#include <Movies.h>
+		#include <GXMath.h>
+	#pragma pop_macro( "_STDINT_H" )
+	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 	// this call is improperly defined as Mac-only in the headers
 	extern "C" {
 	EXTERN_API_C( OSStatus ) QTPixelBufferContextCreate( CFAllocatorRef, CFDictionaryRef, QTVisualContextRef* );

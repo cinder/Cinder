@@ -21,14 +21,20 @@
 */
 
 #include "cinder/gl/gl.h"
-#include "cinder/qtime/QuickTimeUtils.h"
 #include "cinder/qtime/QuickTime.h"
+#include "cinder/qtime/QuickTimeUtils.h"
 
 #if defined( CINDER_MSW )
-	#include <CVPixelBuffer.h>
-	#include <ImageCompression.h>
-	#include <Movies.h>
-	#include <QuickTimeComponents.h>
+	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+	#pragma push_macro( "_STDINT_H" )
+		#undef __STDC_CONSTANT_MACROS
+		#define _STDINT_H
+		#include <CVPixelBuffer.h>
+		#include <ImageCompression.h>
+		#include <Movies.h>
+		#include <QuickTimeComponents.h>
+	#pragma pop_macro( "_STDINT_H" )
+	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #else
 	#include <QuickTime/QuickTime.h>
 	#include <ApplicationServices/ApplicationServices.h>
