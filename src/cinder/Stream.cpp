@@ -28,6 +28,7 @@
 #include <limits>
 #include <boost/scoped_array.hpp>
 #include <iostream>
+#include <boost/preprocessor/seq/for_each.hpp>
 using std::string;
 
 namespace cinder {
