@@ -40,6 +40,7 @@ bjam --toolset=msvc --with-date_time --with-filesystem --with-thread runtime-lin
 bjam --toolset=msvc --with-date_time --with-filesystem --with-thread runtime-link=static link=static variant=debug stage\n
 copy stage\\lib\\*.lib ..\\lib\\msw\n
 </tt>
+\em Note: If you need to build in Visual C++ 9.0, change the <tt>--toolset=msvc</tt> to <tt>--toolset=msvc-9.0</tt>.\n
 \n
 <b>iOS</b>:\n
 In order to build Boost for iOS, you'll need to append the following lines to your user-config.jam file, located at <em>cinder/boost/tools/build/v2/user-config.jam</em>.\n
