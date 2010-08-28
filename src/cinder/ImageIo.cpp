@@ -30,8 +30,6 @@
 	#include "cinder/ImageSourceFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
 	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
 #elif defined( CINDER_COCOA )
-	#include <objc/objc-auto.h>
-	#include <Foundation/Foundation.h>
 	#include "cinder/cocoa/CinderCocoa.h"
 #endif
 
