@@ -79,6 +79,7 @@ void SafeNsData::safeRelease( const NSData *ptr )
 
 SafeNsAutoreleasePool::SafeNsAutoreleasePool()
 {
+	[NSThread currentThread]; // register this thread with garbage collection
 	mPool = [[NSAutoreleasePool alloc] init];
 }
 
