@@ -51,7 +51,11 @@ static Boolean sIsEaglLayer;
 		displayLink = nil;
 		mApp = app;
 		mRenderer = renderer;
-		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self );
+		ci::Area a = ci::cocoa::CgRectToArea( frame );
+		if( [[UIScreen mainScreen] respondsToSelector:NSSelectorFromString(@"getScale")] )
+			[self setContentScaleFactor:[[UIScreen mainScreen] scale]];
+
+		renderer->setup( mApp, a, self );
 		
 		self.multipleTouchEnabled = mApp->getSettings().isMultiTouchEnabled();
 	}
