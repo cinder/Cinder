@@ -44,7 +44,10 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 	[app->mState->mCinderView release];
 	[app->mState->mWindow makeKeyAndVisible];
 
+	[app->mState->mCinderView layoutIfNeeded];
 	app->privateSetup__();
+	[app->mState->mCinderView setAppSetupCalled:YES];
+	app->privateResize__( ci::app::ResizeEvent( ci::Vec2i( [app->mState->mCinderView bounds].size.width, [app->mState->mCinderView bounds].size.height ) ) );
 	
 	[app->mState->mCinderView startAnimation];
 }
@@ -118,13 +121,19 @@ void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
 int	AppCocoaTouch::getWindowWidth() const
 {
 	::CGRect bounds = [mState->mCinderView bounds];
-	return ::CGRectGetWidth( bounds );
+	if( [mState->mCinderView respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] )
+		return ::CGRectGetWidth( bounds ) * mState->mCinderView.contentScaleFactor;
+	else
+		return ::CGRectGetWidth( bounds );
 }
 
 int	AppCocoaTouch::getWindowHeight() const
 {
 	::CGRect bounds = [mState->mCinderView bounds];
-	return ::CGRectGetHeight( bounds );
+	if( [mState->mCinderView respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] )
+		return ::CGRectGetHeight( bounds ) * mState->mCinderView.contentScaleFactor;
+	else
+		return ::CGRectGetHeight( bounds );
 }
 
 //! Enables the accelerometer

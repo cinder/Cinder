@@ -27,6 +27,7 @@
 @implementation CinderViewCocoaTouch
 
 @synthesize animating;
+@synthesize appSetupCalled;
 @dynamic animationFrameInterval;
 
 // Set in initWithFrame based on the renderer
@@ -47,15 +48,16 @@ static Boolean sIsEaglLayer;
 	
 	if( (self = [super initWithFrame:frame]) ) {
 		animating = FALSE;
+		appSetupCalled = FALSE;
 		animationFrameInterval = 1;
 		displayLink = nil;
 		mApp = app;
 		mRenderer = renderer;
-		ci::Area a = ci::cocoa::CgRectToArea( frame );
-		if( [[UIScreen mainScreen] respondsToSelector:NSSelectorFromString(@"getScale")] )
+		if( [[UIScreen mainScreen] respondsToSelector:@selector(scale:)] &&
+				[self respondsToSelector:@selector(setContentScaleFactor:)] )
 			[self setContentScaleFactor:[[UIScreen mainScreen] scale]];
 
-		renderer->setup( mApp, a, self );
+		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self );
 		
 		self.multipleTouchEnabled = mApp->getSettings().isMultiTouchEnabled();
 	}
@@ -65,10 +67,14 @@ static Boolean sIsEaglLayer;
 
 - (void) layoutSubviews
 {
+	[super layoutSubviews];
+	
 	CGRect bounds = [self bounds];
 	mRenderer->setFrameSize( bounds.size.width, bounds.size.height );
-	mApp->privateResize__( ci::app::ResizeEvent( ci::Vec2i( bounds.size.width, bounds.size.height ) ) );
-	[self drawView:nil];	
+	if( appSetupCalled ) {
+		mApp->privateResize__( ci::app::ResizeEvent( ci::Vec2i( bounds.size.width, bounds.size.height ) ) );
+		[self drawView:nil];	
+	}
 }
 
 - (void)drawRect:(CGRect)rect
