@@ -130,6 +130,25 @@ void InterfaceGl::draw()
 	TwDraw();
 }
 
+void InterfaceGl::show( bool visible )
+{
+	int32_t visibleInt = ( visible ) ? 1 : 0;
+	TwSetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
+}
+
+void InterfaceGl::hide()
+{
+	int32_t visibleInt = 0;
+	TwSetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
+}
+
+bool InterfaceGl::isVisible() const
+{
+	int32_t visibleInt;
+	TwGetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
+	return visibleInt != 0;
+}
+
 void InterfaceGl::implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
 {
 	if( readOnly )
