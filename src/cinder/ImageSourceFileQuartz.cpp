@@ -92,6 +92,8 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 	}
 	else if( dataSourceRef->isUrl() ) {
 		::CFURLRef urlRef = cocoa::createCfUrl( dataSourceRef->getUrl() );
+		if( ! urlRef )
+			throw ImageIoExceptionFailedLoad();
 		sourceRef = ::CGImageSourceCreateWithURL( urlRef, optionsDict );
 		::CFRelease( urlRef );		
 	}
