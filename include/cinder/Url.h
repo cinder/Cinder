@@ -24,6 +24,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Stream.h"
+#include <iostream>
 
 namespace cinder {
 
