@@ -30,10 +30,16 @@ namespace cinder {
 class Url {
  public:
 	Url() {}
-	explicit Url( const std::string &urlString );
+	//! Constructs a URL from a string. If \a isEscaped is false, automatically calls Url::encode(). Assumes UTF-8 input.
+	explicit Url( const std::string &urlString, bool isEscaped = false );
 	
+	//! Returns the string representation of the URL as std::string. Encoded as UTF-8.
 	std::string	str() const { return mStr; }
+	//! Returns the string representation of the URL as char*. Encoded as UTF-8.
 	const char*	c_str() const { return mStr.c_str(); }
+
+	//! Replaces illegal URL characters as defined by RFC 2396 with their escaped equivalents and returns a copy of \a unescaped. Assumes UTF-8 input.
+	static std::string encode( const std::string &unescaped );
 		
  private:
 	std::string		mStr;

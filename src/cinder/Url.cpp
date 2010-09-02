@@ -26,6 +26,7 @@
 	#include "cinder/UrlImplWinInet.h"
 	typedef cinder::IStreamUrlImplWinInet	IStreamUrlPlatformImpl;
 #elif defined( CINDER_COCOA )
+	#include "cinder/cocoa/CinderCocoa.h"
 	#include "cinder/UrlImplCocoa.h"
 	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;
 #else
@@ -37,9 +38,26 @@ namespace cinder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Url
-Url::Url( const std::string &urlString )
-	: mStr( urlString )
+Url::Url( const std::string &urlString, bool isEscaped )
+	: mStr( isEscaped ? 
+		urlString : encode( urlString ) )
 {
+}
+
+std::string Url::encode( const std::string &unescaped )
+{
+#if defined( CINDER_COCOA )
+	cocoa::SafeCfString unescapedStr = cocoa::createSafeCfString( unescaped );
+	CFStringRef escaped = ::CFURLCreateStringByAddingPercentEscapes( kCFAllocatorDefault, unescapedStr.get(), NULL, NULL, kCFStringEncodingUTF8 );
+	std::string result = cocoa::convertCfString( escaped );
+	::CFRelease( escaped );
+	return result;
+#elif defined( CINDER_MSW )
+	wchar_t buffer[4096];
+	std::wstring wideUnescaped = toUtf16( unescaped );
+	::UrlEscapeW( wideUnescaped.c_str(), buffer, 4096, ::URL_BROWSER_MODE );
+	return toUtf8( std::wstring( buffer ) );
+#endif	
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
