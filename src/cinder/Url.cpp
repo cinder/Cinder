@@ -22,7 +22,9 @@
 
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
+#include "cinder/Utilities.h"
 #if defined( CINDER_MSW )
+	#include <Shlwapi.h>
 	#include "cinder/UrlImplWinInet.h"
 	typedef cinder::IStreamUrlImplWinInet	IStreamUrlPlatformImpl;
 #elif defined( CINDER_COCOA )
@@ -54,8 +56,9 @@ std::string Url::encode( const std::string &unescaped )
 	return result;
 #elif defined( CINDER_MSW )
 	wchar_t buffer[4096];
+	DWORD bufferSize = 4096;
 	std::wstring wideUnescaped = toUtf16( unescaped );
-	::UrlEscapeW( wideUnescaped.c_str(), buffer, 4096, ::URL_BROWSER_MODE );
+	UrlEscape( wideUnescaped.c_str(), buffer, &bufferSize, 0 );
 	return toUtf8( std::wstring( buffer ) );
 #endif	
 }

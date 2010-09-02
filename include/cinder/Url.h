@@ -45,6 +45,12 @@ class Url {
 	std::string		mStr;
 };
 
+inline std::ostream& operator<<( std::ostream &out, const Url &url )
+{
+	out << url.str();
+	return out;
+}
+
 //! \cond
 // This is an abstract base class for implementing IStreamUrl
 class IStreamUrlImpl {
