@@ -752,6 +752,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\cinder\Filesystem.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\cinder\Filter.h"
 				>
 			</File>
