@@ -108,6 +108,12 @@
 		005374F81194F589004D686E /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
 		006228E210C8248800A8191C /* DataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 006228E110C8248800A8191C /* DataSource.h */; };
 		006228E410C8273C00A8191C /* DataSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006228E310C8273C00A8191C /* DataSource.cpp */; };
+		0062484F122F607500039A7A /* Filesystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484D122F607500039A7A /* Filesystem.h */; };
+		00624850122F607500039A7A /* Function.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484E122F607500039A7A /* Function.h */; };
+		00624851122F607500039A7A /* Filesystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484D122F607500039A7A /* Filesystem.h */; };
+		00624852122F607500039A7A /* Function.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484E122F607500039A7A /* Function.h */; };
+		00624853122F607500039A7A /* Filesystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484D122F607500039A7A /* Filesystem.h */; };
+		00624854122F607500039A7A /* Function.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484E122F607500039A7A /* Function.h */; };
 		006A1EC711D7F39C00941A5E /* MovieWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006A1EC611D7F39B00941A5E /* MovieWriter.cpp */; };
 		006A1EC911D7F3AC00941A5E /* MovieWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 006A1EC811D7F3AC00941A5E /* MovieWriter.h */; };
 		00704FCD1114F93F003FCAE4 /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419CD0E8035D3004D34EB /* App.h */; };
@@ -708,6 +714,8 @@
 		0049C1B61010E5B10015B4B9 /* Renderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Renderer.cpp; path = app/Renderer.cpp; sourceTree = "<group>"; };
 		006228E110C8248800A8191C /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		006228E310C8273C00A8191C /* DataSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataSource.cpp; sourceTree = "<group>"; };
+		0062484D122F607500039A7A /* Filesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Filesystem.h; sourceTree = "<group>"; };
+		0062484E122F607500039A7A /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Function.h; sourceTree = "<group>"; };
 		006A1EC611D7F39B00941A5E /* MovieWriter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = MovieWriter.cpp; path = qtime/MovieWriter.cpp; sourceTree = "<group>"; };
 		006A1EC811D7F3AC00941A5E /* MovieWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MovieWriter.h; path = qtime/MovieWriter.h; sourceTree = "<group>"; };
 		007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1087,6 +1095,8 @@
 				00CE73910E92DBD60059E09B /* gl */,
 				0076581B11226084005547DF /* CinderResources.h */,
 				0032FD2810BB46F500C63A9D /* Exception.h */,
+				0062484D122F607500039A7A /* Filesystem.h */,
+				0062484E122F607500039A7A /* Function.h */,
 				008876550F957E7300FD55C5 /* Arcball.h */,
 				00887AC00F9C279700FD55C5 /* MayaCamUI.h */,
 				00F3BD1F0EBF89B700382AC1 /* Utilities.h */,
@@ -1575,6 +1585,8 @@
 				43D8B2F011B0C87800B61EB6 /* TouchEvent.h in Headers */,
 				C7FA5FC712124B230065683B /* CaptureImplAvFoundation.h in Headers */,
 				43ED0FE21220949A003AEB0B /* UrlImplCocoa.h in Headers */,
+				00624851122F607500039A7A /* Filesystem.h in Headers */,
+				00624852122F607500039A7A /* Function.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1689,6 +1701,8 @@
 				43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */,
 				43D8B2F111B0C87800B61EB6 /* TouchEvent.h in Headers */,
 				43ED0FE41220949A003AEB0B /* UrlImplCocoa.h in Headers */,
+				00624853122F607500039A7A /* Filesystem.h in Headers */,
+				00624854122F607500039A7A /* Function.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1818,6 +1832,8 @@
 				006A1EC911D7F3AC00941A5E /* MovieWriter.h in Headers */,
 				C7FA5FC912124B2C0065683B /* CaptureImplQtKit.h in Headers */,
 				43ED0FE31220949A003AEB0B /* UrlImplCocoa.h in Headers */,
+				0062484F122F607500039A7A /* Filesystem.h in Headers */,
+				00624850122F607500039A7A /* Function.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
