@@ -49,6 +49,9 @@ class TriMesh {
 	size_t		getNumTriangles() const { return mIndices.size() / 3; }
 	size_t		getNumVertices() const { return mVertices.size(); }
 
+	//! Puts the 3 vertices of triangle number \a idx into \a a, \a b and \a c.
+	void		getTriangleVertices( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const;
+
 	const std::vector<Vec3f>&	getVertices() const { return mVertices; }
 	const std::vector<Vec3f>&	getNormals() const { return mNormals; }
 	const std::vector<Vec2f>&	getTexCoords() const { return mTexCoords; }	
