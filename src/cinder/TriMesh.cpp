@@ -46,6 +46,13 @@ void TriMesh::appendNormals( const Vec4d *normals, size_t num )
 		mNormals.push_back( Vec3f( (float)normals[v].x, (float)normals[v].y, (float)normals[v].z ) );
 }
 
+void TriMesh::getTriangleVertices( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const
+{
+	*a = mVertices[ mIndices[idx * 3] ];
+	*b = mVertices[ mIndices[idx * 3 + 1] ];
+	*c = mVertices[ mIndices[idx * 3 + 2] ];
+}
+
 AxisAlignedBox3f TriMesh::calcBoundingBox() const
 {
 	if( mVertices.empty() )

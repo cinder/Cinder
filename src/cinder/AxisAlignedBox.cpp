@@ -119,7 +119,7 @@ int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 }
 
  // algorithm from "Fast, Minimum Storage Ray-Triangle Intersection"
-bool AxisAlignedBox3f::calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result )
+bool AxisAlignedBox3f::calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result ) const
 {
 	Vec3f edge1, edge2, tvec, pvec, qvec;
 	float det;
