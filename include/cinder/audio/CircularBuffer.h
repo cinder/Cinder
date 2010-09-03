@@ -35,10 +35,10 @@ class CircularBuffer {
 	void insert( const T* src, uint32_t size );
 	
 	ArrayRange arrayOne() const {
-		return ArrayRange( mBufferStart, ( mBufferStart >= mBufferLast ) ? ( mBufferEnd - mBufferStart ) : mSize );
+		return ArrayRange( mBufferStart, ( mBufferStart >= mBufferLast && mSize == mMaxSize ) ? ( mBufferEnd - mBufferStart ) : mSize );
 	}
 	ArrayRange arrayTwo() const {
-		uint32_t size = ( mBufferStart >= mBufferLast ) ? ( mBufferLast - mBuffer ) : 0;
+		uint32_t size = ( mBufferStart >= mBufferLast && mSize == mMaxSize ) ? ( mBufferLast - mBuffer ) : 0;
 		return ArrayRange( mBufferLast - size, size );
 	}
 	
