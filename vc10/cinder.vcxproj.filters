@@ -605,9 +605,6 @@
     <ClInclude Include="..\include\cinder\app\FileDropEvent.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\FlintView.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\app\KeyEvent.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>

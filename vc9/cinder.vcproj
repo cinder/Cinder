@@ -935,10 +935,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\include\cinder\app\FlintView.h"
-					>
-				</File>
-				<File
 					RelativePath="..\include\cinder\app\KeyEvent.h"
 					>
 				</File>

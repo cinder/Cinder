@@ -279,7 +279,6 @@
     <ClInclude Include="..\include\cinder\app\AppImplMswScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\FileDropEvent.h" />
-    <ClInclude Include="..\include\cinder\app\FlintView.h" />
     <ClInclude Include="..\include\cinder\app\KeyEvent.h" />
     <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
     <ClInclude Include="..\include\cinder\app\Renderer.h" />
