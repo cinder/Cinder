@@ -104,8 +104,9 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const Matrix44f &transform ) const
 }
 
 
-void TriMesh::read( IStreamRef in )
+void TriMesh::read( DataSourceRef dataSource )
 {
+	IStreamRef in = dataSource->createStream();
 	clear();
 
 	uint8_t versionNumber;
