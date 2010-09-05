@@ -51,6 +51,8 @@ App*	App::sInstance;
 App::App()
 	: mFrameCount( 0 ), mFpsSampleInterval( 1 ), mTimer( true )
 {
+	mFpsLastSampleFrame = 0;
+	mFpsLastSampleTime = 0;
 }
 
 App::~App()
