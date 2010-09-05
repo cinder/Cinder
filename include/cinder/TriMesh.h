@@ -26,6 +26,7 @@
 #include "cinder/Vector.h"
 #include "cinder/AxisAlignedBox.h"
 #include "cinder/DataSource.h"
+#include "cinder/DataTarget.h"
 #include "cinder/Matrix.h"
 
 namespace cinder {
@@ -64,7 +65,7 @@ class TriMesh {
 	AxisAlignedBox3f	calcBoundingBox( const Matrix44f &transform ) const;
 
 	void		read( DataSourceRef in );
-	void		write( OStreamRef out ) const;
+	void		write( DataTargetRef out ) const;
 	
  private:
 	std::vector<Vec3f>		mVertices;

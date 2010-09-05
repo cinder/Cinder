@@ -143,8 +143,10 @@ void TriMesh::read( DataSourceRef dataSource )
 	}
 }
 
-void TriMesh::write( OStreamRef out ) const
+void TriMesh::write( DataTargetRef dataTarget ) const
 {
+	OStreamRef out = dataTarget->getStream();
+	
 	const uint8_t versionNumber = 1;
 	out->write( versionNumber );
 	
