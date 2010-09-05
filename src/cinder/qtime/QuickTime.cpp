@@ -257,26 +257,28 @@ int32_t	MovieBase::getNumFrames() const
 //! \see http://developer.apple.com/qa/qtmtb/qtmtb17.html Technical Q&A QTMTB17
 bool MovieBase::hasAlpha() const
 {
-	Track visualTrack = ::GetMovieIndTrackType( getObj()->mMovie, 1, VisualMediaCharacteristic, movieTrackCharacteristic );
-	if( ! visualTrack )
-		return false;
-	SampleDescriptionHandle imageDescH = (SampleDescriptionHandle)NewHandle( sizeof( Handle ) );
-	Media visualMedia = ::GetTrackMedia( visualTrack );
-	if( ! visualMedia)
-		return false;
-	::GetMediaSampleDescription( visualMedia, 1, imageDescH );
-	OSErr err = ::GetMoviesError();
-	if( err != noErr )
-		return false;
-	if( ! imageDescH )
-		return false;
-	if( imageDescH ) {
-		bool result = (*(ImageDescriptionHandle)imageDescH)->depth == 32;
-		::DisposeHandle( (char**)imageDescH );
-		return result;
+	for( long trackIdx = 1; trackIdx <= ::GetMovieTrackCount( getObj()->mMovie ); ++trackIdx ) {
+		Track track = ::GetMovieIndTrack( getObj()->mMovie, trackIdx );
+		Media media = ::GetTrackMedia( track );
+		OSType      dwType;
+		::GetMediaHandlerDescription( media, &dwType, 0, 0 );
+		if( ( dwType == VideoMediaType ) || ( dwType == MPEGMediaType ) ) {
+			ImageDescriptionHandle imageDescH = (ImageDescriptionHandle)::NewHandleClear(sizeof(ImageDescription));
+			::GetMediaSampleDescription( media, 1, (SampleDescriptionHandle)imageDescH );
+			OSErr err = ::GetMoviesError();
+			if( err != noErr ) {
+				DisposeHandle( (Handle)imageDescH );
+				continue;
+			}
+			if( imageDescH ) {
+				bool result = (*imageDescH)->depth == 32;
+				::DisposeHandle( (Handle)imageDescH );
+				return result;
+			}
+		}
 	}
-	else
-		return false;
+	
+	return false;
 }
 
 bool MovieBase::hasVisuals() const

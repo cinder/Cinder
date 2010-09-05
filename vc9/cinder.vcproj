@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cinder\CaptureImplDirectShow.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cinder\Channel.cpp"
 				>
 			</File>
@@ -263,6 +267,10 @@
 			</File>
 			<File
 				RelativePath="..\src\cinder\Rand.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\cinder\Ray.cpp"
 				>
 			</File>
 			<File
