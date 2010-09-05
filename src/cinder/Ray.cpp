@@ -20,44 +20,59 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-
-#include "cinder/Vector.h"
+#include "cinder/Ray.h"
 
 namespace cinder {
 
-class Ray {
- public:
-	Ray() {}
-	Ray( const Vec3f &aOrigin, const Vec3f &aDirection ) : mOrigin( aOrigin ) { setDirection( aDirection ); }
-
-	void			setOrigin( const Vec3f &aOrigin ) { mOrigin = aOrigin; }
-	const Vec3f&	getOrigin() const { return mOrigin; }
+ // algorithm from "Fast, Minimum Storage Ray-Triangle Intersection"
+bool Ray::calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result ) const
+{
+	Vec3f edge1, edge2, tvec, pvec, qvec;
+	float det;
+	float u, v;
+	const float EPSILON = 0.000001f;
 	
-	void setDirection( const Vec3f &aDirection ) {
-		mDirection = aDirection;
-        mInvDirection = Vec3f( 1.0f / mDirection.x, 1.0f / mDirection.y, 1.0f / mDirection.z );
-        mSignX = ( mDirection.x < 0.0f ) ? 1 : 0;
-        mSignY = ( mDirection.y < 0.0f ) ? 1 : 0;
-        mSignZ = ( mDirection.z < 0.0f ) ? 1 : 0;		
-	}
-	const Vec3f&	getDirection() const { return mDirection; }
-	const Vec3f&	getInverseDirection() const { return mInvDirection; }
+	edge1 = vert1 - vert0;
+	edge2 = vert2 - vert0;
 	
-	char	getSignX() const { return mSignX; }
-	char	getSignY() const { return mSignY; }
-	char	getSignZ() const { return mSignZ; }		
+	pvec = getDirection().cross( edge2 );
+	det = edge1.dot( pvec );
 	
-	Vec3f calcPosition( float t ) const { return mOrigin + mDirection * t; }
+#if 0 // we don't want to backface cull
+	if ( det < EPSILON )
+		  return false;
+	tvec = getOrigin() - vert0;
+	
+	u = tvec.dot( pvec );
+	if ( ( u < 0.0f ) || ( u > det ) )
+		return false;
+	
+	qvec = tvec.cross( edge1 );
+	v = getDirection().dot( qvec );
+	if ( v < 0.0f || u + v > det )
+		return false;
+	
+	*result = edge2.dot( qvec ) / det;
+	return true;
+#else
+	if( det > -EPSILON && det < EPSILON )
+		return false;
 
-	bool calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result ) const;
+	float inv_det = 1.0f / det;
+	tvec = getOrigin() - vert0;
+	u = tvec.dot( pvec ) * inv_det;
+	if( u < 0.0f || u > 1.0f )
+		return false;
 
- protected:
-	Vec3f	mOrigin;
-	Vec3f	mDirection;
-	// these are helpful to certain ray intersection algorithms
-	char	mSignX, mSignY, mSignZ;
-	Vec3f	mInvDirection;
-};
+	qvec = tvec.cross( edge1 );
+
+	v = getDirection().dot( qvec ) * inv_det;
+	if( v < 0.0f || u + v > 1.0f )
+		return 0;
+
+	*result = edge2.dot( qvec ) * inv_det;
+	return true;
+#endif
+}
 
 } // namespace cinder

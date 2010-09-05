@@ -266,6 +266,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cinder\Ray.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cinder\Rect.cpp"
 				>
 			</File>
