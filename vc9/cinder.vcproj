@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cinder\CaptureImplDirectShow.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cinder\Channel.cpp"
 				>
 			</File>
