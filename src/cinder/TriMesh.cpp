@@ -82,7 +82,8 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const Matrix44f &transform ) const
 	if( mVertices.empty() )
 		return AxisAlignedBox3f( Vec3f::zero(), Vec3f::zero() );
 
-	Vec3f min(mVertices[0]), max(mVertices[0]);
+	Vec3f min( transform.transformPointAffine( mVertices[0] ) );
+	Vec3f max( min );
 	for( size_t i = 0; i < mVertices.size(); ++i ) {
 		Vec3f v = transform.transformPointAffine( mVertices[i] );
 
