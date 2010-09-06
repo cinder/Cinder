@@ -58,6 +58,17 @@ Capture::DeviceRef Capture::findDeviceByName( const string &name )
 	return DeviceRef(); // failed - return "null" device
 }
 
+Capture::DeviceRef Capture::findDeviceByNameContains( const string &nameFragment )
+{	
+	const vector<DeviceRef> &devices = getDevices();
+	for( vector<DeviceRef>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
+		if( (*deviceIt)->getName().find( nameFragment ) != std::string::npos )
+			return *deviceIt;
+	}
+
+	return DeviceRef();
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Capture::Obj
 Capture::Obj::Obj( int32_t width, int32_t height, const DeviceRef device )
