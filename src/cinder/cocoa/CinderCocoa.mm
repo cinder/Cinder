@@ -353,18 +353,19 @@ ImageSourceCgImageRef ImageSourceCgImage::createRef( ::CGImageRef imageRef )
 }
 
 ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef )
-	: ImageSource(), mImageRef( imageRef )
+	: ImageSource()
 {
-	::CGImageRetain( mImageRef );
+	::CGImageRetain( imageRef );
+	mImageRef = shared_ptr<CGImage>( imageRef, ::CGImageRelease );
 	
-	setSize( ::CGImageGetWidth( mImageRef ), ::CGImageGetHeight( mImageRef ) );
-	size_t bpc = ::CGImageGetBitsPerComponent( mImageRef );
+	setSize( ::CGImageGetWidth( mImageRef.get() ), ::CGImageGetHeight( mImageRef.get() ) );
+	size_t bpc = ::CGImageGetBitsPerComponent( mImageRef.get() );
 	//size_t bpp = ::CGImageGetBitsPerPixel( mImageRef );
 
 	// translate data types
-	::CGBitmapInfo bitmapInfo = ::CGImageGetBitmapInfo( mImageRef );
+	::CGBitmapInfo bitmapInfo = ::CGImageGetBitmapInfo( mImageRef.get() );
 	bool isFloat = ( bitmapInfo & kCGBitmapFloatComponents ) != 0;
-	::CGImageAlphaInfo alphaInfo = ::CGImageGetAlphaInfo( mImageRef );
+	::CGImageAlphaInfo alphaInfo = ::CGImageGetAlphaInfo( mImageRef.get() );
 	if( isFloat )
 		setDataType( ImageIo::FLOAT32 );
 	else
@@ -378,7 +379,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef )
 		swapEndian = true;
 	
 	// translate color space
-	::CGColorSpaceRef colorSpace = ::CGImageGetColorSpace( mImageRef );
+	::CGColorSpaceRef colorSpace = ::CGImageGetColorSpace( mImageRef.get() );
 	switch( ::CGColorSpaceGetModel( colorSpace ) ) {
 		case kCGColorSpaceModelMonochrome:
 			setColorModel( ImageIo::CM_GRAY );
@@ -416,15 +417,14 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef )
 	}
 }
 
-ImageSourceCgImage::~ImageSourceCgImage()
-{
-	::CGImageRelease( mImageRef );
-}
-
 void ImageSourceCgImage::load( ImageTargetRef target )
 {
-	int32_t rowBytes = ::CGImageGetBytesPerRow( mImageRef );	
-	::CFDataRef pixels = ::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef ) );
+	int32_t rowBytes = ::CGImageGetBytesPerRow( mImageRef.get() );
+	::CFDataRef pixels = ::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) );
+	
+	if( ! pixels ) {
+		throw ImageIoExceptionFailedLoad();
+	}
 	
 	// get a pointer to the ImageSource function appropriate for handling our data configuration
 	ImageSource::RowFunc func = setupRowFunc( target );
