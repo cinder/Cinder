@@ -28,7 +28,7 @@ If you would like to use a different version of Boost from the one that ships wi
 <b>Mac OS X</b>:\n
 <tt>
 cd cinder/boost\n
-./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=x86 address-model=32 macosx-version=10.6 macosx-version-min=10.5 stage\n
+./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=x86 address-model=32 macosx-version=10.6 macosx-version-min=10.5 cflags=-fvisibility-inlines-hidden stage\n
 cp stage/lib/*.a ../lib/macosx\n
 </tt>
 \em Note: If you need 64-bit support, change the <tt>address-model=32</tt> to <tt>address-model=32_64</tt>.\n

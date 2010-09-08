@@ -77,8 +77,37 @@ AxisAlignedBox3f TriMesh::calcBoundingBox() const
 	return AxisAlignedBox3f( min, max );
 }
 
-void TriMesh::read( IStreamRef in )
+AxisAlignedBox3f TriMesh::calcBoundingBox( const Matrix44f &transform ) const
 {
+	if( mVertices.empty() )
+		return AxisAlignedBox3f( Vec3f::zero(), Vec3f::zero() );
+
+	Vec3f min( transform.transformPointAffine( mVertices[0] ) );
+	Vec3f max( min );
+	for( size_t i = 0; i < mVertices.size(); ++i ) {
+		Vec3f v = transform.transformPointAffine( mVertices[i] );
+
+		if( v.x < min.x )
+			min.x = v.x;
+		else if( v.x > max.x )
+			max.x = v.x;
+		if( v.y < min.y )
+			min.y = v.y;
+		else if( v.y > max.y )
+			max.y = v.y;
+		if( v.z < min.z )
+			min.z = v.z;
+		else if( v.z > max.z )
+			max.z = v.z;
+	}
+
+	return AxisAlignedBox3f( min, max );
+}
+
+
+void TriMesh::read( DataSourceRef dataSource )
+{
+	IStreamRef in = dataSource->createStream();
 	clear();
 
 	uint8_t versionNumber;
@@ -115,8 +144,10 @@ void TriMesh::read( IStreamRef in )
 	}
 }
 
-void TriMesh::write( OStreamRef out ) const
+void TriMesh::write( DataTargetRef dataTarget ) const
 {
+	OStreamRef out = dataTarget->getStream();
+	
 	const uint8_t versionNumber = 1;
 	out->write( versionNumber );
 	

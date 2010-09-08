@@ -92,6 +92,8 @@ class Capture {
 	static const std::vector<DeviceRef>&	getDevices( bool forceRefresh = false );
 	//! Finds a particular device based on its name
 	static DeviceRef findDeviceByName( const std::string &name );
+	//! Finds the first device whose name contains the string \a nameFragment
+	static DeviceRef findDeviceByNameContains( const std::string &nameFragment );
 
 #if defined( CINDER_COCOA )
 	typedef std::string DeviceIdentifier;

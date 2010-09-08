@@ -1,5 +1,1 @@
 #include "../include/Resources.h"
-
-RES_PASS_THRU_VERT
-RES_PIXELATE_FRAG
-RES_LOGO
