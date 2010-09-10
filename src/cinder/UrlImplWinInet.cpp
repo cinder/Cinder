@@ -32,6 +32,13 @@ namespace cinder {
 
 namespace { static const WCHAR AGENT_NAME[] = L"libcinder"; }
 
+// Call InternetCloseHandle, testing for NULL. Designed to be the deallocator for shared_ptr's
+void safeInternetCloseHandle( HINTERNET hInternet )
+{
+	if( hInternet )
+		::InternetCloseHandle( hInternet );
+}
+
 IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std::string &user, const std::string &password )
 	: IStreamUrlImpl( user, password ), mIsFinished( false ), mBuffer( 0 ), mBufferFileOffset( 0 )
 {
@@ -62,7 +69,7 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 		default: throw StreamExc();
 	}
 
-	mSession = shared_ptr<void>( ::InternetOpen( AGENT_NAME, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 ), ::InternetCloseHandle );
+	mSession = shared_ptr<void>( ::InternetOpen( AGENT_NAME, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 ), safeInternetCloseHandle );
 	if( ! mSession )
 		throw StreamExc();
 
@@ -70,7 +77,7 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 	std::wstring widePassword = toUtf16( password );
 
 	mConnection = shared_ptr<void>( ::InternetConnect( mSession.get(), host, urlComponents.nPort, (wideUser.empty()) ? NULL : wideUser.c_str(), (widePassword.empty()) ? NULL : widePassword.c_str(), urlComponents.nScheme, 0, NULL ),
-										::InternetCloseHandle );
+										safeInternetCloseHandle );
 	if( ! mConnection )
 		throw StreamExc();
 
@@ -79,7 +86,7 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 			static LPCTSTR lpszAcceptTypes[] = { L"*/*", NULL };
 			mRequest = shared_ptr<void>( ::HttpOpenRequest( mConnection.get(), L"GET", path, NULL, NULL, lpszAcceptTypes,
 													INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_RELOAD, NULL ),
-											::InternetCloseHandle );
+											safeInternetCloseHandle );
 			if( ! mRequest )
 				throw StreamExc();
 			BOOL success = ::HttpSendRequest( mRequest.get(), NULL, 0, NULL, 0);
@@ -88,7 +95,7 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 	}
 	else if( urlComponents.nScheme == INTERNET_SCHEME_FTP ) {
 		mRequest = shared_ptr<void>( ::FtpOpenFile( mConnection.get(), path, GENERIC_READ, FTP_TRANSFER_TYPE_BINARY, NULL ),
-										::InternetCloseHandle );
+										safeInternetCloseHandle );
 			if( ! mRequest )
 				throw StreamExc();
 	}
