@@ -81,24 +81,12 @@ IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const s
 // loadUrl
 IStreamUrlRef loadUrlStream( const Url &url )
 {
-	try {
-		IStreamUrlRef result = IStreamUrl::createRef( url.str(), "", "" );
-		return result;
-	}
-	catch( ... ) {
-		return IStreamUrlRef();
-	}
+	return IStreamUrl::createRef( url.str(), "", "" );
 }
 
 IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, const std::string &password )
 {
-	try {
-		IStreamUrlRef result = IStreamUrl::createRef( url, user, password );
-		return result;
-	}
-	catch( ... ) {
-		return IStreamUrlRef();
-	}
+	return IStreamUrl::createRef( url, user, password );
 }
 
 } // namespace cinder
