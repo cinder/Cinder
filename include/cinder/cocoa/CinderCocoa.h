@@ -172,6 +172,8 @@ class ImageSourceCgImage : public ImageSource {
 	//! Retains (and later releases) \a imageRef
 	ImageSourceCgImage( ::CGImageRef imageRef );
 	
+	bool					mIsIndexed;
+	Color8u					mColorTable[256];
 	shared_ptr<CGImage>		mImageRef;
 };
 

@@ -353,7 +353,7 @@ ImageSourceCgImageRef ImageSourceCgImage::createRef( ::CGImageRef imageRef )
 }
 
 ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef )
-	: ImageSource()
+	: ImageSource(), mIsIndexed( false )
 {
 	::CGImageRetain( imageRef );
 	mImageRef = shared_ptr<CGImage>( imageRef, ::CGImageRelease );
@@ -411,6 +411,18 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef )
 				break;
 			}
 		break;
+		case kCGColorSpaceModelIndexed: {
+			setColorModel( ImageIo::CM_RGB );
+			setChannelOrder( ImageIo::RGB );
+			
+			mIsIndexed = true;
+			size_t clutSize = ::CGColorSpaceGetColorTableCount( colorSpace );
+			uint8_t colorTable[256*3];
+			::CGColorSpaceGetColorTable( colorSpace, colorTable );
+			for( size_t c = 0; c < clutSize; ++c )
+				mColorTable[c] = Color8u( colorTable[c*3+0], colorTable[c*3+1], colorTable[c*3+2] );
+		}
+		break;
 		default: // we only support Gray and RGB data for now
 			throw ImageIoExceptionIllegalColorModel();
 		break;
@@ -420,22 +432,30 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef )
 void ImageSourceCgImage::load( ImageTargetRef target )
 {
 	int32_t rowBytes = ::CGImageGetBytesPerRow( mImageRef.get() );
-	::CFDataRef pixels = ::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) );
+	shared_ptr<const __CFData> pixels( ::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) ), safeCfRelease );
 	
-	if( ! pixels ) {
+	if( ! pixels )
 		throw ImageIoExceptionFailedLoad();
-	}
 	
 	// get a pointer to the ImageSource function appropriate for handling our data configuration
 	ImageSource::RowFunc func = setupRowFunc( target );
 	
-	const uint8_t *data = ::CFDataGetBytePtr( pixels );
+	shared_ptr<Color8u> indexedRowBuffer;
+	if( mIsIndexed )
+		indexedRowBuffer = shared_ptr<Color8u>( new Color8u[mWidth], checked_array_deleter<Color8u>() );
+	
+	const uint8_t *data = ::CFDataGetBytePtr( pixels.get() );
 	for( int32_t row = 0; row < mHeight; ++row ) {
-		((*this).*func)( target, row, data );
+		// if this is indexed fill in our temporary row buffer with the colors pulled from the palette
+		if( mIsIndexed ) {
+			for( int32_t i = 0; i < mWidth; ++i )
+				indexedRowBuffer.get()[i] = mColorTable[data[i]];
+			((*this).*func)( target, row, indexedRowBuffer.get() );	
+		}
+		else
+			((*this).*func)( target, row, data );
 		data += rowBytes;
 	}
-	
-	::CFRelease( pixels );
 }
 
 ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef )
