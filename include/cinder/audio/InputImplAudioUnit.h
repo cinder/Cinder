@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2009, The Barbarian Group
+ Copyright (c) 2010, Cinder
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -31,22 +31,22 @@
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <vector>
-//#include <boost/circular_buffer.hpp>
 #include <boost/thread/mutex.hpp>
 
 namespace cinder { namespace audio {
 
 /*
 TODO: 
-refactor circular buffer
 add support for specifying buffer size
-add support for querying and specifying input device
 
 add support for specifying number of output channels
 */
 
 class InputImplAudioUnit : public InputImpl {
  public:
+	class Device;
+	
+ 
 	InputImplAudioUnit();
 	~InputImplAudioUnit();
 	
@@ -57,6 +57,22 @@ class InputImplAudioUnit : public InputImpl {
 	
 	uint32_t getSampleRate() const { return mSampleRate; };
 	uint16_t getChannelCount() const { return mChannelCount; };
+	
+	static const std::vector<Input::DeviceRef>&	getDevices( bool forceRefresh );
+	static Input::DeviceRef getDefaultDevice();
+	
+	class Device : public Input::Device {
+	 public:
+		Device( AudioDeviceID aDeviceId );
+		const std::string& getName();
+		
+		bool operator==( const Device &rhs ) const {
+			return ( mDeviceId == rhs.mDeviceId );
+		}
+	 private:
+		AudioDeviceID	mDeviceId;
+		std::string		mDeviceName;
+	};
  protected:
 	static OSStatus inputCallback( void*, AudioUnitRenderActionFlags*, const AudioTimeStamp*, UInt32, UInt32, AudioBufferList* );
  
@@ -68,7 +84,6 @@ class InputImplAudioUnit : public InputImpl {
 	AudioBufferList					* mInputBuffer;
 	float							* mInputBufferData;
 	
-	//std::vector<boost::circular_buffer<float> *>	mBuffers;
 	std::vector<CircularBuffer<float> *>	mCircularBuffers;
 	
 	boost::mutex					mBufferMutex;
@@ -76,6 +91,9 @@ class InputImplAudioUnit : public InputImpl {
 	AudioStreamBasicDescription		mFormatDescription;
 	uint32_t mSampleRate;
 	uint16_t mChannelCount;
+	
+	static bool								sDevicesEnumerated;
+	static std::vector<Input::DeviceRef>	sDevices;
 };
 
 

@@ -36,5 +36,25 @@ Input::Input( bool placeHolder )
 	mImpl = shared_ptr<InputImpl>( new InputPlatformImpl() );
 }
 
+const std::vector<Input::DeviceRef>&	Input::getDevices( bool forceRefresh )
+{
+	return InputPlatformImpl::getDevices( forceRefresh );
+}
+
+Input::DeviceRef Input::getDefaultDevice()
+{
+	return InputPlatformImpl::getDefaultDevice();
+}
+
+Input::DeviceRef Input::findDeviceByName( const std::string &name )
+{
+	return Input::DeviceRef();
+}
+
+Input::DeviceRef Input::findDeviceByNameContains( const std::string &nameFragment )
+{
+	return Input::DeviceRef();
+}
+
 
 }} //namespace

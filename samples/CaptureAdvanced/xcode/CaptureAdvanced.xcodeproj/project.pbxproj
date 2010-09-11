@@ -217,7 +217,6 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
-					"",
 				);
 				PRODUCT_NAME = CaptureAdvanced;
 				WRAPPER_EXTENSION = app;
@@ -241,7 +240,6 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
-					"",
 				);
 				PRODUCT_NAME = CaptureAdvanced;
 				STRIP_INSTALLED_PRODUCT = YES;

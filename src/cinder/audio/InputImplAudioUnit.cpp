@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, Cinder
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -23,9 +23,12 @@
 #include "cinder/audio/InputImplAudioUnit.h"
 #include <iostream>
 
-//using boost::circular_buffer;
+using namespace std;
 
 namespace cinder { namespace audio {
+
+bool InputImplAudioUnit::sDevicesEnumerated = false;
+vector<Input::DeviceRef> InputImplAudioUnit::sDevices;
 
 InputImplAudioUnit::InputImplAudioUnit()
 	: InputImpl(), mIsCapturing( false )
@@ -155,16 +158,8 @@ void InputImplAudioUnit::setup()
 	err = AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyStreamFormat, &param, &deviceInStreamFormat );
 	if( err != noErr ) {
 		//not an input device
-		//throw InvalidDeviceInputDeviceExc();
-		throw;
+		throw InvalidDeviceInputExc();
 	}
-	
-	UInt32 size;
-	AudioDeviceGetPropertyInfo( mDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, NULL );
-	char * buf = new char[size];
-	AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, buf );
-	std::cout << buf << std::endl;
-	delete buf;
 
 	//create AudioOutputUnit
 	
@@ -328,6 +323,78 @@ void InputImplAudioUnit::setup()
 		
 		mCircularBuffers[i] = new CircularBuffer<float>( sampleCount * 4 );
 	}
+}
+
+const std::vector<Input::DeviceRef>& InputImplAudioUnit::getDevices( bool forceRefresh )
+{
+	if( forceRefresh || ! sDevicesEnumerated ) {
+		sDevices.clear();
+		
+		UInt32 propSize;
+		AudioHardwareGetPropertyInfo( kAudioHardwarePropertyDevices, &propSize, NULL );
+		//AudioDeviceID * deviceIds = new AudioDeviceID[propSize / sizeof(AudioDeviceID)];
+		uint32_t deviceCount = ( propSize / sizeof(AudioDeviceID) );
+		AudioDeviceID deviceIds[deviceCount];
+		AudioHardwareGetProperty( kAudioHardwarePropertyDevices, &propSize, &deviceIds );
+		
+		for( uint32_t i = 0; i < deviceCount; i++ ) {
+			try {
+				Input::DeviceRef aDevice = Input::DeviceRef( new Device( deviceIds[i] ) );
+				sDevices.push_back( aDevice );
+			} catch( InvalidDeviceInputExc ) {
+				continue;
+			}
+		}
+		
+		sDevicesEnumerated = true;
+	}
+	
+	return sDevices;
+}
+
+Input::DeviceRef InputImplAudioUnit::getDefaultDevice()
+{	
+	AudioDeviceID aDeviceId;
+	UInt32 param = sizeof( AudioDeviceID );
+	OSStatus err = AudioHardwareGetProperty( kAudioHardwarePropertyDefaultInputDevice, &param, &aDeviceId );
+	if( err != noErr ) {
+		//TODO
+		std::cout << "Error getting default device" << std::endl;
+		throw;
+	}
+	return Input::DeviceRef( new InputImplAudioUnit::Device( aDeviceId ) );
+}
+
+InputImplAudioUnit::Device::Device( AudioDeviceID aDeviceId ) 
+	: Input::Device(), mDeviceId( aDeviceId ), mDeviceName()
+{
+	//get the stream format and confirm that this is indeed an input device 
+	UInt32 param = sizeof( AudioStreamBasicDescription );
+	AudioStreamBasicDescription deviceInStreamFormat;
+	OSStatus err = AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyStreamFormat, &param, &deviceInStreamFormat );
+	if( err != noErr ) {
+		//not an input device
+		throw InvalidDeviceInputExc();
+	}
+}
+
+const std::string& InputImplAudioUnit::Device::getName()
+{
+	if( mDeviceName.length() == 0 ) {
+		OSStatus err;
+		UInt32 size;
+		err = AudioDeviceGetPropertyInfo( mDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, NULL );
+		if( err != noErr ) {
+			throw InvalidDeviceInputExc();
+		}
+		char buf[size];
+		err = AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, buf );
+		if( err != noErr ) {
+			throw InvalidDeviceInputExc();
+		}
+		mDeviceName = std::string( buf );
+	}
+	return mDeviceName;
 }
 
 }} //namespace

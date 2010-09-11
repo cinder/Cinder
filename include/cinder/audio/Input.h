@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2009, The Barbarian Group
+ Copyright (c) 2010, Cinder
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -47,6 +47,9 @@ class InputImpl {
 
 class Input {
  public:
+	class Device;
+	typedef shared_ptr<Device> DeviceRef;
+ 
 	Input() {}
 	Input( bool placeHolder );
 	~Input() {}
@@ -63,6 +66,28 @@ class Input {
 	uint32_t getSampleRate() { return mImpl->getSampleRate(); };
 	//! Returns the number of channels of the captured audio data
 	uint16_t getChannelCount() { return mImpl->getChannelCount(); };
+	
+	//! Returns a vector of all Devices connected to the system. If \a forceRefresh then the system will be polled for connected devices.
+	static const std::vector<DeviceRef>&	getDevices( bool forceRefresh = false );
+	//! Gets the default audio input device
+	static DeviceRef getDefaultDevice();
+	//! Finds a particular device based on its name
+	static DeviceRef findDeviceByName( const std::string &name );
+	//! Finds the first device whose name contains the string \a nameFragment
+	static DeviceRef findDeviceByNameContains( const std::string &nameFragment );
+	
+	//! \cond
+	// This is an abstract base class for implementing platform specific devices
+	class Device {
+	 public:
+		virtual ~Device() {}
+		//! Returns the human-readable name of the device.
+		virtual const std::string& getName() = 0;
+		
+		//virtual bool operator==( const Device &rhs ) const = 0;
+	 protected:
+		Device() {}
+	};
  private:
 	shared_ptr<InputImpl> mImpl;
  public:
@@ -73,5 +98,9 @@ class Input {
 	void reset() { mImpl.reset(); }
 	//@}
 };
+
+class InputExc : public Exception {};
+class InvalidDeviceInputExc : public InputExc {};
+
 
 }} //namespace

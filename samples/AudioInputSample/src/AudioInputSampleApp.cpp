@@ -2,6 +2,7 @@
 #include "cinder/audio/Input.h"
 #include "cinder/audio/FftProcessor.h"
 #include <iostream>
+#include <vector>
 
 using namespace ci;
 using namespace ci::app;
@@ -21,6 +22,11 @@ class AudioInputSampleApp : public AppBasic {
 
 void AudioInputSampleApp::setup()
 {
+	const std::vector<audio::Input::DeviceRef>& devices = audio::Input::getDevices();
+	for( std::vector<audio::Input::DeviceRef>::const_iterator iter = devices.begin(); iter != devices.end(); ++iter ) {
+		console() << (*iter)->getName() << std::endl;
+	}
+
 	//initialize the audio Input, using the default input device
 	mInput = audio::Input( true );
 	
