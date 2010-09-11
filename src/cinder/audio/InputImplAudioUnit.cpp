@@ -28,12 +28,16 @@ using namespace std;
 namespace cinder { namespace audio {
 
 bool InputImplAudioUnit::sDevicesEnumerated = false;
-vector<Input::DeviceRef> InputImplAudioUnit::sDevices;
+vector<InputDeviceRef> InputImplAudioUnit::sDevices;
 
-InputImplAudioUnit::InputImplAudioUnit()
-	: InputImpl(), mIsCapturing( false )
+InputImplAudioUnit::InputImplAudioUnit( InputDeviceRef aDevice )
+	: InputImpl( aDevice ), mIsCapturing( false ), mDevice( aDevice ), mSampleRate( 0 ), mChannelCount( 0 ), mIsSetup( false )
 {
-	setup();
+	//assume that if a device is provided, go ahead and do the expensive setup
+	//if device is NULL, this is presumably just a default constructor call, hold off on setup until start is called
+	if( mDevice ) {
+		setup();
+	}
 }
 
 InputImplAudioUnit::~InputImplAudioUnit()
@@ -55,6 +59,8 @@ InputImplAudioUnit::~InputImplAudioUnit()
 void InputImplAudioUnit::start()
 {
 	if( mIsCapturing ) return;
+	
+	setup();
 
 	OSStatus err = AudioOutputUnitStart( mInputUnit );
 	if( err != noErr ) {
@@ -142,27 +148,18 @@ OSStatus InputImplAudioUnit::inputCallback( void *inRefCon, AudioUnitRenderActio
 
 void InputImplAudioUnit::setup() 
 {
+	if( mIsSetup ) return;
+	
 	OSStatus err = noErr;
 
 	//get default input device
-	UInt32 param = sizeof( AudioDeviceID );
-	err = AudioHardwareGetProperty( kAudioHardwarePropertyDefaultInputDevice, &param, &mDeviceId );
-	if( err != noErr ) {
-		std::cout << "Error getting default input device" << std::endl;
-		//todo throw
+	if( ! mDevice ) {
+		mDevice = InputImplAudioUnit::getDefaultDevice();
 	}
 	
-	// get hardware device format
-	param = sizeof( AudioStreamBasicDescription );
-	AudioStreamBasicDescription deviceInStreamFormat;
-	err = AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyStreamFormat, &param, &deviceInStreamFormat );
-	if( err != noErr ) {
-		//not an input device
-		throw InvalidDeviceInputExc();
-	}
+	AudioDeviceID nativeDeviceId = static_cast<AudioDeviceID>( mDevice->getDeviceId() );
 
 	//create AudioOutputUnit
-	
 	AudioComponent component;
 	AudioComponentDescription description;
 	
@@ -193,7 +190,7 @@ void InputImplAudioUnit::setup()
 		throw;
 	}*/
 	
-	
+	UInt32 param;
 	//enable IO on AudioUnit's input scope
 	param = 1;
 	err = AudioUnitSetProperty( mInputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Input, 1, &param, sizeof( UInt32 ) );
@@ -211,7 +208,7 @@ void InputImplAudioUnit::setup()
 	}
 	
 	// Set the current device to the default input unit.
-	err = AudioUnitSetProperty( mInputUnit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0, &mDeviceId, sizeof(AudioDeviceID) );
+	err = AudioUnitSetProperty( mInputUnit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0, &nativeDeviceId, sizeof(AudioDeviceID) );
 	if( err != noErr ) {
 		std::cout << "failed to set AU input device" << std::endl;
 		throw;
@@ -298,7 +295,7 @@ void InputImplAudioUnit::setup()
 	
 	param = sizeof( AudioBufferList );
 	AudioBufferList aBufferList;
-	AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyStreamConfiguration, &param, &aBufferList);
+	AudioDeviceGetProperty( nativeDeviceId, 0, true, kAudioDevicePropertyStreamConfiguration, &param, &aBufferList);
 	
 	//setup buffer for recieving data in the callback
 	mInputBufferData = (float *)malloc( sampleCount * deviceInFormat.mBytesPerFrame );
@@ -323,23 +320,23 @@ void InputImplAudioUnit::setup()
 		
 		mCircularBuffers[i] = new CircularBuffer<float>( sampleCount * 4 );
 	}
+	mIsSetup = true;
 }
 
-const std::vector<Input::DeviceRef>& InputImplAudioUnit::getDevices( bool forceRefresh )
+const std::vector<InputDeviceRef>& InputImplAudioUnit::getDevices( bool forceRefresh )
 {
 	if( forceRefresh || ! sDevicesEnumerated ) {
 		sDevices.clear();
 		
 		UInt32 propSize;
 		AudioHardwareGetPropertyInfo( kAudioHardwarePropertyDevices, &propSize, NULL );
-		//AudioDeviceID * deviceIds = new AudioDeviceID[propSize / sizeof(AudioDeviceID)];
 		uint32_t deviceCount = ( propSize / sizeof(AudioDeviceID) );
 		AudioDeviceID deviceIds[deviceCount];
 		AudioHardwareGetProperty( kAudioHardwarePropertyDevices, &propSize, &deviceIds );
 		
 		for( uint32_t i = 0; i < deviceCount; i++ ) {
 			try {
-				Input::DeviceRef aDevice = Input::DeviceRef( new Device( deviceIds[i] ) );
+				InputDeviceRef aDevice = InputDeviceRef( new Device( deviceIds[i] ) );
 				sDevices.push_back( aDevice );
 			} catch( InvalidDeviceInputExc ) {
 				continue;
@@ -352,7 +349,7 @@ const std::vector<Input::DeviceRef>& InputImplAudioUnit::getDevices( bool forceR
 	return sDevices;
 }
 
-Input::DeviceRef InputImplAudioUnit::getDefaultDevice()
+InputDeviceRef InputImplAudioUnit::getDefaultDevice()
 {	
 	AudioDeviceID aDeviceId;
 	UInt32 param = sizeof( AudioDeviceID );
@@ -362,12 +359,14 @@ Input::DeviceRef InputImplAudioUnit::getDefaultDevice()
 		std::cout << "Error getting default device" << std::endl;
 		throw;
 	}
-	return Input::DeviceRef( new InputImplAudioUnit::Device( aDeviceId ) );
+	return InputDeviceRef( new InputImplAudioUnit::Device( aDeviceId ) );
 }
 
 InputImplAudioUnit::Device::Device( AudioDeviceID aDeviceId ) 
-	: Input::Device(), mDeviceId( aDeviceId ), mDeviceName()
+	: InputDevice(), mDeviceName()
 {
+	mDeviceId = static_cast<InputDevice::DeviceIdentifier>( aDeviceId );
+	
 	//get the stream format and confirm that this is indeed an input device 
 	UInt32 param = sizeof( AudioStreamBasicDescription );
 	AudioStreamBasicDescription deviceInStreamFormat;
@@ -383,12 +382,13 @@ const std::string& InputImplAudioUnit::Device::getName()
 	if( mDeviceName.length() == 0 ) {
 		OSStatus err;
 		UInt32 size;
-		err = AudioDeviceGetPropertyInfo( mDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, NULL );
+		AudioDeviceID nativeDeviceId = static_cast<AudioDeviceID>( mDeviceId );
+		err = AudioDeviceGetPropertyInfo( nativeDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, NULL );
 		if( err != noErr ) {
 			throw InvalidDeviceInputExc();
 		}
 		char buf[size];
-		err = AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, buf );
+		err = AudioDeviceGetProperty( nativeDeviceId, 0, true, kAudioDevicePropertyDeviceName, &size, buf );
 		if( err != noErr ) {
 			throw InvalidDeviceInputExc();
 		}

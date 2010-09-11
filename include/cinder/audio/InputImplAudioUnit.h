@@ -31,6 +31,7 @@
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <vector>
+#include <map>
 #include <boost/thread/mutex.hpp>
 
 namespace cinder { namespace audio {
@@ -47,7 +48,7 @@ class InputImplAudioUnit : public InputImpl {
 	class Device;
 	
  
-	InputImplAudioUnit();
+	InputImplAudioUnit( InputDeviceRef aDevice );
 	~InputImplAudioUnit();
 	
 	void start();
@@ -58,10 +59,10 @@ class InputImplAudioUnit : public InputImpl {
 	uint32_t getSampleRate() const { return mSampleRate; };
 	uint16_t getChannelCount() const { return mChannelCount; };
 	
-	static const std::vector<Input::DeviceRef>&	getDevices( bool forceRefresh );
-	static Input::DeviceRef getDefaultDevice();
+	static const std::vector<InputDeviceRef>&	getDevices( bool forceRefresh );
+	static InputDeviceRef getDefaultDevice();
 	
-	class Device : public Input::Device {
+	class Device : public InputDevice {
 	 public:
 		Device( AudioDeviceID aDeviceId );
 		const std::string& getName();
@@ -70,14 +71,15 @@ class InputImplAudioUnit : public InputImpl {
 			return ( mDeviceId == rhs.mDeviceId );
 		}
 	 private:
-		AudioDeviceID	mDeviceId;
 		std::string		mDeviceName;
 	};
  protected:
 	static OSStatus inputCallback( void*, AudioUnitRenderActionFlags*, const AudioTimeStamp*, UInt32, UInt32, AudioBufferList* );
  
 	void setup();
- 
+	
+	bool							mIsSetup;
+	InputDeviceRef					mDevice;
 	bool							mIsCapturing;
 	AudioComponentInstance			mInputUnit;
 	AudioDeviceID					mDeviceId;
@@ -93,7 +95,10 @@ class InputImplAudioUnit : public InputImpl {
 	uint16_t mChannelCount;
 	
 	static bool								sDevicesEnumerated;
-	static std::vector<Input::DeviceRef>	sDevices;
+	static std::vector<InputDeviceRef>		sDevices;
+	//static std::map<InputDevice::DeviceIdentifier, AudioDeviceID> sDeviceIdMap;
+	//TODO: mask platform specific identifiers (AudioDeviceID) behind a map 
+	//that maps Cinder InputDevice::DeviceIdentifier to the platform specific identifier
 };
 
 

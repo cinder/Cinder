@@ -31,29 +31,34 @@ namespace cinder { namespace audio {
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Input
 
-Input::Input( bool placeHolder )
+Input::Input()
 {
-	mImpl = shared_ptr<InputImpl>( new InputPlatformImpl() );
+	mImpl = shared_ptr<InputImpl>( new InputPlatformImpl( InputDeviceRef() ) );
 }
 
-const std::vector<Input::DeviceRef>&	Input::getDevices( bool forceRefresh )
+Input::Input( InputDeviceRef aDevice )
+{
+	mImpl = shared_ptr<InputImpl>( new InputPlatformImpl( aDevice ) );
+}
+
+const std::vector<InputDeviceRef>&	Input::getDevices( bool forceRefresh )
 {
 	return InputPlatformImpl::getDevices( forceRefresh );
 }
 
-Input::DeviceRef Input::getDefaultDevice()
+InputDeviceRef Input::getDefaultDevice()
 {
 	return InputPlatformImpl::getDefaultDevice();
 }
 
-Input::DeviceRef Input::findDeviceByName( const std::string &name )
+InputDeviceRef Input::findDeviceByName( const std::string &name )
 {
-	return Input::DeviceRef();
+	return InputDeviceRef();
 }
 
-Input::DeviceRef Input::findDeviceByNameContains( const std::string &nameFragment )
+InputDeviceRef Input::findDeviceByNameContains( const std::string &nameFragment )
 {
-	return Input::DeviceRef();
+	return InputDeviceRef();
 }
 
 

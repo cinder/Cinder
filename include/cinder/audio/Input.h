@@ -28,6 +28,24 @@
 namespace cinder { namespace audio {
 
 //! \cond
+// This is an abstract base class for implementing platform specific InputDevices
+class InputDevice {
+ public:
+	typedef uint32_t DeviceIdentifier;
+ 
+	virtual ~InputDevice() {}
+	//! Returns the human-readable name of the device.
+	virtual const std::string& getName() = 0;
+	virtual DeviceIdentifier getDeviceId() { return mDeviceId; }
+ protected:
+	InputDevice() {}
+	DeviceIdentifier mDeviceId;
+};
+//! \endcond
+
+typedef shared_ptr<InputDevice> InputDeviceRef;
+
+//! \cond
 // This is an abstract base class for implementing Input
 class InputImpl {
  public:
@@ -41,17 +59,15 @@ class InputImpl {
 	virtual uint32_t getSampleRate() const = 0;
 	virtual uint16_t getChannelCount() const = 0;
  protected:
-	InputImpl() {}
+	InputImpl( InputDeviceRef aDevice ) {}
 };
 //! \endcond
 
 class Input {
  public:
-	class Device;
-	typedef shared_ptr<Device> DeviceRef;
  
-	Input() {}
-	Input( bool placeHolder );
+	Input();
+	Input( InputDeviceRef aDevice );
 	~Input() {}
 	
 	//! Starts capturing audio data from the input
@@ -68,26 +84,13 @@ class Input {
 	uint16_t getChannelCount() { return mImpl->getChannelCount(); };
 	
 	//! Returns a vector of all Devices connected to the system. If \a forceRefresh then the system will be polled for connected devices.
-	static const std::vector<DeviceRef>&	getDevices( bool forceRefresh = false );
+	static const std::vector<InputDeviceRef>&	getDevices( bool forceRefresh = false );
 	//! Gets the default audio input device
-	static DeviceRef getDefaultDevice();
+	static InputDeviceRef getDefaultDevice();
 	//! Finds a particular device based on its name
-	static DeviceRef findDeviceByName( const std::string &name );
+	static InputDeviceRef findDeviceByName( const std::string &name );
 	//! Finds the first device whose name contains the string \a nameFragment
-	static DeviceRef findDeviceByNameContains( const std::string &nameFragment );
-	
-	//! \cond
-	// This is an abstract base class for implementing platform specific devices
-	class Device {
-	 public:
-		virtual ~Device() {}
-		//! Returns the human-readable name of the device.
-		virtual const std::string& getName() = 0;
-		
-		//virtual bool operator==( const Device &rhs ) const = 0;
-	 protected:
-		Device() {}
-	};
+	static InputDeviceRef findDeviceByNameContains( const std::string &nameFragment );
  private:
 	shared_ptr<InputImpl> mImpl;
  public:
@@ -101,6 +104,5 @@ class Input {
 
 class InputExc : public Exception {};
 class InvalidDeviceInputExc : public InputExc {};
-
 
 }} //namespace

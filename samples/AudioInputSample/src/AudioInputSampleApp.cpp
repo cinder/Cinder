@@ -22,13 +22,13 @@ class AudioInputSampleApp : public AppBasic {
 
 void AudioInputSampleApp::setup()
 {
-	const std::vector<audio::Input::DeviceRef>& devices = audio::Input::getDevices();
-	for( std::vector<audio::Input::DeviceRef>::const_iterator iter = devices.begin(); iter != devices.end(); ++iter ) {
+	const std::vector<audio::InputDeviceRef>& devices = audio::Input::getDevices();
+	for( std::vector<audio::InputDeviceRef>::const_iterator iter = devices.begin(); iter != devices.end(); ++iter ) {
 		console() << (*iter)->getName() << std::endl;
 	}
 
 	//initialize the audio Input, using the default input device
-	mInput = audio::Input( true );
+	mInput = audio::Input();
 	
 	//tell the input to start capturing audio
 	mInput.start();
@@ -64,7 +64,7 @@ void AudioInputSampleApp::drawWaveForm()
 	
 	uint32_t bufferSamples = mPcmBuffer->getSampleCount();
 	audio::Buffer32fRef leftBuffer = mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT );
-	audio::Buffer32fRef rightBuffer = mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_RIGHT );
+	//audio::Buffer32fRef rightBuffer = mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_RIGHT );
 
 	int displaySize = getWindowWidth();
 	int endIdx = bufferSamples;
@@ -79,13 +79,13 @@ void AudioInputSampleApp::drawWaveForm()
 	}
 	glEnd();
 	
-	glColor3f( 1.0f, 0.96f, 0.0f );
+	/*glColor3f( 1.0f, 0.96f, 0.0f );
 	glBegin( GL_LINE_STRIP );
 	for( int i = 0; i < endIdx; i++ ) {
 		float y = ( ( rightBuffer->mData[i] - 1 ) * - 100 );
 		glVertex2f( ( i * scale ) , y );
 	}
-	glEnd();
+	glEnd();*/
 }
 
 void AudioInputSampleApp::drawFft()
