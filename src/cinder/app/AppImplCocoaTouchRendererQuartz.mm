@@ -61,6 +61,13 @@
 {
 	currentRef = UIGraphicsGetCurrentContext();
 	CGContextRetain( currentRef );
+	// iOS with high res display automatically scales the CTM by the contentScaleFactor
+	// we'll undo this so that the CTM is 1:1
+	if( [view respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ) {
+		float scale = 1.0f / view.contentScaleFactor;
+		CGContextScaleCTM( currentRef, scale, scale );
+	}
+	
 }
 
 - (void)flushBuffer

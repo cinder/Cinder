@@ -41,6 +41,7 @@
 #include "cinder/Rect.h"
 #include "cinder/Font.h"
 #include "cinder/PolyLine.h"
+#include "cinder/AxisAlignedBox.h"
 
 #if defined( CINDER_MSW )
 	#include <windows.h>
@@ -178,6 +179,10 @@ void drawLine( const Vec3f &start, const Vec3f &end );
 void drawCube( const Vec3f &center, const Vec3f &size );
 //! Renders a solid cube centered at \a center of size \a size. Each face is assigned a unique color, and no normals or texture coordinates are generated.
 void drawColorCube( const Vec3f &center, const Vec3f &size );
+//! Renders a stroked cube centered at \a center of size \a size.
+void drawStrokedCube( const Vec3f &center, const Vec3f &size );
+//! Renders a stroked cube \a aab
+inline void drawStrokedCube( const AxisAlignedBox3f &aab ) { drawStrokedCube( aab.getCenter(), aab.getSize() ); }
 //! Renders a solid sphere centered at \a center of radius \a radius. \a segments defines how many segments the sphere is subdivided into. Normals and texture coordinates in the range [0,1] are generated.
 void drawSphere( const Vec3f &center, float radius, int segments = 12 );
 //! Renders a solid sphere. \a segments defines how many segments the sphere is subdivided into. Normals and texture coordinates in the range [0,1] are generated.

@@ -162,15 +162,19 @@ typedef shared_ptr<class ImageSourceCgImage> ImageSourceCgImageRef;
 
 class ImageSourceCgImage : public ImageSource {
   public:
+	//! Retains (and later releases) \a imageRef
 	static ImageSourceCgImageRef	createRef( ::CGImageRef imageRef );
-	~ImageSourceCgImage();
+	virtual ~ImageSourceCgImage() {}
 
 	virtual void	load( ImageTargetRef target );
 
   protected:
+	//! Retains (and later releases) \a imageRef
 	ImageSourceCgImage( ::CGImageRef imageRef );
 	
-	::CGImageRef	mImageRef;
+	bool					mIsIndexed;
+	Color8u					mColorTable[256];
+	shared_ptr<CGImage>		mImageRef;
 };
 
 ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef );

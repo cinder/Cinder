@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -121,6 +121,7 @@
     <ClCompile Include="..\src\cinder\PolyLine.cpp" />
     <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp" />
     <ClCompile Include="..\src\cinder\Rand.cpp" />
+    <ClCompile Include="..\src\cinder\Ray.cpp" />
     <ClCompile Include="..\src\cinder\Rect.cpp" />
     <ClCompile Include="..\src\cinder\Serial.cpp" />
     <ClCompile Include="..\src\cinder\Shape2d.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
     <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
+    <ClInclude Include="..\include\cinder\Filesystem.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
@@ -278,7 +280,6 @@
     <ClInclude Include="..\include\cinder\app\AppImplMswScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\FileDropEvent.h" />
-    <ClInclude Include="..\include\cinder\app\FlintView.h" />
     <ClInclude Include="..\include\cinder\app\KeyEvent.h" />
     <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
     <ClInclude Include="..\include\cinder\app\Renderer.h" />

@@ -28,6 +28,8 @@
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
 		#import <CFNetwork/CFNetwork.h>
+		#import <Foundation/NSArray.h>
+		#import <UIKit/UIDevice.h>
 	#endif
 	#import <netinet/in.h>
 	#import <netdb.h>
@@ -45,8 +47,13 @@
 	#include <iphlpapi.h>
 	#pragma comment(lib, "IPHLPAPI.lib")
 	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+	#pragma push_macro( "_STDINT_H" )
 		#undef __STDC_CONSTANT_MACROS
+		#if _MSC_VER >= 1600 // VC10 or greater
+			#define _STDINT_H
+		#endif
 		#include <QTML.h>
+	#pragma pop_macro( "_STDINT_H" )
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 	namespace cinder {
 		void cpuidwrap( int *p, unsigned int param );
@@ -380,11 +387,13 @@ int System::getNumCores()
 	return instance()->mLogicalCPUs;
 }
 
-#if ! defined( CINDER_COCOA_TOUCH )
 int System::getOsMajorVersion()
 {
 	if( ! instance()->mCachedValues[OS_MAJOR] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA_TOUCH )
+		NSArray *sysVerComponents = [[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."];
+		instance()->mOSMajorVersion = [[sysVerComponents objectAtIndex:0] intValue];
+#elif defined( CINDER_COCOA )	
 		if( Gestalt(gestaltSystemVersionMajor, reinterpret_cast<SInt32*>( &(instance()->mOSMajorVersion) ) ) != noErr)
 			throw SystemExcFailedQuery();
 #else
@@ -403,7 +412,10 @@ int System::getOsMajorVersion()
 int System::getOsMinorVersion()
 {
 	if( ! instance()->mCachedValues[OS_MINOR] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA_TOUCH )
+		NSArray *sysVerComponents = [[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."];
+		instance()->mOSMinorVersion = [[sysVerComponents objectAtIndex:1] intValue];	
+#elif defined( CINDER_COCOA )	
 		if( Gestalt(gestaltSystemVersionMinor, reinterpret_cast<SInt32*>( &(instance()->mOSMinorVersion) ) ) != noErr)
 			throw SystemExcFailedQuery();
 #else
@@ -422,7 +434,13 @@ int System::getOsMinorVersion()
 int System::getOsBugFixVersion()
 {
 	if( ! instance()->mCachedValues[OS_BUGFIX] ) {
-#if defined( CINDER_COCOA )	
+#if defined( CINDER_COCOA_TOUCH )
+		NSArray *sysVerComponents = [[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."];
+		if( [sysVerComponents count] > 2 )
+			instance()->mOSBugFixVersion = [[sysVerComponents objectAtIndex:2] intValue];
+		else
+			instance()->mOSBugFixVersion = 0;
+#elif defined( CINDER_COCOA )	
 		if( Gestalt(gestaltSystemVersionBugFix, reinterpret_cast<SInt32*>( &(instance()->mOSBugFixVersion) ) ) != noErr)
 			throw SystemExcFailedQuery();
 #else
@@ -437,7 +455,6 @@ int System::getOsBugFixVersion()
 	
 	return instance()->mOSBugFixVersion;
 }
-#endif // ! defined( CINDER_COCOA_TOUCH )
 
 bool System::hasMultiTouch()
 {

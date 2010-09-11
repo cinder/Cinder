@@ -25,7 +25,9 @@
 #include <vector>
 #include "cinder/Vector.h"
 #include "cinder/AxisAlignedBox.h"
-#include "cinder/Stream.h"
+#include "cinder/DataSource.h"
+#include "cinder/DataTarget.h"
+#include "cinder/Matrix.h"
 
 namespace cinder {
 
@@ -49,15 +51,21 @@ class TriMesh {
 	size_t		getNumTriangles() const { return mIndices.size() / 3; }
 	size_t		getNumVertices() const { return mVertices.size(); }
 
+	//! Puts the 3 vertices of triangle number \a idx into \a a, \a b and \a c.
+	void		getTriangleVertices( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const;
+
 	const std::vector<Vec3f>&	getVertices() const { return mVertices; }
 	const std::vector<Vec3f>&	getNormals() const { return mNormals; }
 	const std::vector<Vec2f>&	getTexCoords() const { return mTexCoords; }	
 	const std::vector<size_t>&		getIndices() const { return mIndices; }		
 
+	//! Calculates the bounding box of all vertices
 	AxisAlignedBox3f	calcBoundingBox() const;
+	//! Calculates the bounding box of all vertices as transformed by \a transform
+	AxisAlignedBox3f	calcBoundingBox( const Matrix44f &transform ) const;
 
-	void		read( IStreamRef in );
-	void		write( OStreamRef out ) const;
+	void		read( DataSourceRef in );
+	void		write( DataTargetRef out ) const;
 	
  private:
 	std::vector<Vec3f>		mVertices;

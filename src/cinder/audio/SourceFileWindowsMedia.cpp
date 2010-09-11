@@ -64,13 +64,13 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 		throw IoExceptionFailedLoad();
 	}
 
-	uint32_t nOutputFormatCount;
+	DWORD nOutputFormatCount;
 	hr = mReader->GetOutputFormatCount(0, &nOutputFormatCount);
 	if( FAILED(hr) ) {
 		throw IoExceptionFailedLoad();
 	}
 	
-	uint32_t nFormatSize = 0; 
+	DWORD nFormatSize = 0; 
 	BYTE* pBuf = 0;
 	IWMOutputMediaProps* pProps = 0;
 	for( uint32_t j = 0; j < nOutputFormatCount; j++ ) {
@@ -80,7 +80,7 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 		}
 
 		//get required size of the media type structure
-		uint32_t nNewSize = 0;
+		DWORD nNewSize = 0;
 		hr = pProps->GetMediaType( NULL, & nNewSize );
 		if( FAILED(hr) ) {
 			continue;
@@ -160,8 +160,10 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 
 	mStreamSize = (uint32_t)( fTime * mOutputFormat.nAvgBytesPerSec * 1.5 );
 	
+	DWORD tempMaxBufferSize = 0;
 	mMaxBufferSize = 0;
-	hr = mReader->GetMaxOutputSampleSize( 0, &mMaxBufferSize );
+	hr = mReader->GetMaxOutputSampleSize( 0, &tempMaxBufferSize );
+	mMaxBufferSize = tempMaxBufferSize;
 	if( FAILED( hr ) ) {
 		throw IoExceptionFailedLoad();
 	}
@@ -305,7 +307,7 @@ SourceFileWindowsMedia::SourceFileWindowsMedia( DataSourceRef dataSourceRef )
 	}
 	
 	//ensure that there is only one stream in the file
-	uint32_t nOutputCount;
+	DWORD nOutputCount;
 	hr = reader->GetOutputCount( &nOutputCount );
 	if( FAILED(hr) ) {
 		throw SourceFileWindowsMediaExceptionUnsupportedData();

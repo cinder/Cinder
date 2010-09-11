@@ -37,6 +37,10 @@ class InterfaceGl {
 	InterfaceGl( const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 	
 	static void		draw();
+
+	void	show( bool visible = true );
+	void	hide();
+	bool	isVisible() const;
 	
 	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, float *floatParam, const std::string &optionsStr = "", bool readOnly = false );

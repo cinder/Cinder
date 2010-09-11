@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project: http://libcinder.org
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "Vector.h"
-#include "Ray.h"
+#include "cinder/Vector.h"
+#include "cinder/Ray.h"
 
 namespace cinder {
 
@@ -35,15 +35,17 @@ class AxisAlignedBox3f {
 	bool	intersects( const Ray &ray );
 	int		intersect( const Ray &ray, float intersections[2] );
 
-	Vec3f			length() { return mExtents[1] - mExtents[0]; }
-	const Vec3f&	min() const { return mExtents[0]; }
-	const Vec3f&	max() const { return mExtents[1]; }	
+	Vec3f			getCenter() const { return ( mExtents[1] + mExtents[0] ) * 0.5f; }
+	Vec3f			getSize() const { return mExtents[1] - mExtents[0]; }
 	
+	const Vec3f&	getMin() const { return mExtents[0]; }
+	const Vec3f&	getMax() const { return mExtents[1]; }	
+	
+	static bool calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result );
+
  protected:
 	Vec3f mExtents[2];
 	Vec3f mVerts[8];
-
-	bool calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result );
 };
 
 } // namespace cinder
