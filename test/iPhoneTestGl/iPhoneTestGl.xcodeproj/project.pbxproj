@@ -15,9 +15,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
-		43ED10871220993F003AEB0B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43ED10861220993F003AEB0B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		43ED10891220993F003AEB0B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43ED10881220993F003AEB0B /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		43ED108B1220993F003AEB0B /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43ED108A1220993F003AEB0B /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,9 +29,6 @@
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* iPhoneTestGl_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iPhoneTestGl_Prefix.pch; sourceTree = "<group>"; };
-		43ED10861220993F003AEB0B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		43ED10881220993F003AEB0B /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		43ED108A1220993F003AEB0B /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* iPhoneTestGl-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iPhoneTestGl-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -48,9 +42,6 @@
 				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
 				28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */,
 				00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */,
-				43ED10871220993F003AEB0B /* AVFoundation.framework in Frameworks */,
-				43ED10891220993F003AEB0B /* CoreMedia.framework in Frameworks */,
-				43ED108B1220993F003AEB0B /* CoreVideo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,9 +111,6 @@
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				00CFDF6A1138442D0091E310 /* CoreGraphics.framework */,
-				43ED10861220993F003AEB0B /* AVFoundation.framework */,
-				43ED10881220993F003AEB0B /* CoreMedia.framework */,
-				43ED108A1220993F003AEB0B /* CoreVideo.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -193,6 +181,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -202,10 +191,22 @@
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "iPhoneTestGl-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone_d.a";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a";
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"$(CINDER_PATH)/lib/libcinder-iphone_d.a",
+					"-lz",
+					"-weak_framework",
+					CoreVideo,
+					"-weak_framework",
+					CoreMedia,
+					"-weak_framework",
+					AVFoundation,
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a",
+					"-lz",
+				);
 				PRODUCT_NAME = iPhoneTestGl;
-				SDKROOT = iphonesimulator4.0;
+				SDKROOT = iphonesimulator3.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -215,6 +216,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iPhoneTestGl_Prefix.pch;

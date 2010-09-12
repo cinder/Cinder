@@ -9,6 +9,7 @@
 #include "cinder/Rand.h"
 #include "cinder/Text.h"
 #include "cinder/Xml.h"
+#include "cinder/System.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -38,6 +39,10 @@ void TestApp::setup()
 
 	XmlDocument doc( loadUrlStream( "http://www.feedparser.org/docs/http-authentication.html", "test", "basic" ) );
 	console() << doc << std::endl;
+
+	console() << "System version: " << System::getOsMajorVersion() << "." << System::getOsMinorVersion() << "." << System::getOsBugFixVersion() << std::endl;
+	
+console() << "size: " << getWindowSize() << std::endl;	
 }
 
 void TestApp::resize( int width, int height )
@@ -69,7 +74,6 @@ void TestApp::mouseDown( MouseEvent event )
 void TestApp::update()
 {
 	mCubeRotation.rotate( Vec3f( 1, 1, 1 ), 0.03f );
-console() << "Frames: " << getElapsedFrames() << std::endl;
 }
 
 void TestApp::draw()
@@ -77,7 +81,7 @@ void TestApp::draw()
 	gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
 	gl::enableAlphaBlending();
 	gl::enableDepthRead();
-	
+console() << getWindowWidth() << std::endl;	
 	/*mTex.bind();
 	gl::setMatrices( mCam );
 	glPushMatrix();
@@ -86,6 +90,7 @@ void TestApp::draw()
 	glPopMatrix();*/
 	
 	gl::setMatricesWindow( getWindowSize() );
+	gl::setViewport( getWindowBounds() );
 //	gl::drawString( (Rand::randBool() ? ( "Fjrameyq: " ) : ( "Frame: " )) + toString( getElapsedFrames() ), Vec2f( 10, 40 ), Color( 1, 0.5, 0.25 ), mFont );
 	gl::draw( mTex );
 }
