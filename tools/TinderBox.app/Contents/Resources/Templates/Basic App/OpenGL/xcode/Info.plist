@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>CinderApp.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.barbariangroup.«PROJECTNAME»</string>
+	<string>org.libcinder.«PROJECTNAME»</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

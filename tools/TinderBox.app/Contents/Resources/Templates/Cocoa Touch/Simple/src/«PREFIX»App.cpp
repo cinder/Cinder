@@ -10,14 +10,14 @@ using namespace ci::app;
 class «PREFIX»App : public AppCocoaTouch {
   public:
 	virtual void	setup();
-	virtual void	resize( int width, int height );
+	virtual void	resize( ResizeEvent event );
 	virtual void	update();
 	virtual void	draw();
-	virtual void	mouseDown( ci::app::MouseEvent event );
+	virtual void	mouseDown( MouseEvent event );
 		
-	ci::Matrix44f	mCubeRotation;
-	ci::gl::Texture mTex;
-	ci::CameraPersp	mCam;
+	Matrix44f	mCubeRotation;
+	gl::Texture mTex;
+	CameraPersp	mCam;
 };
 
 void «PREFIX»App::setup()
@@ -38,15 +38,15 @@ void «PREFIX»App::setup()
 	mTex = gl::Texture( surface );
 }
 
-void «PREFIX»App::resize( int width, int height )
+void «PREFIX»App::resize( ResizeEvent event )
 {
 	mCam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
-	mCam.setPerspective( 60, width / (float)height, 1, 1000 );
+	mCam.setPerspective( 60, event.getAspectRatio(), 1, 1000 );
 }
 
 void «PREFIX»App::mouseDown( MouseEvent event )
 {
-	std::cout << "Mouse down @ " << event.getPos() << std::endl;
+	console() << "Mouse down @ " << event.getPos() << std::endl;
 }
 
 void «PREFIX»App::update()
@@ -57,6 +57,7 @@ void «PREFIX»App::update()
 void «PREFIX»App::draw()
 {
 	gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
+	gl::enable( GL_TEXTURE_2D );
 	gl::enableDepthRead();
 	
 	mTex.bind();
