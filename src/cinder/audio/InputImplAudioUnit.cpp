@@ -116,7 +116,9 @@ OSStatus InputImplAudioUnit::inputCallback( void *inRefCon, AudioUnitRenderActio
 	//if( theInput->mFirstInputTime < 0. ) {
 	//	theInput->mFirstInputTime = inTimeStamp->mSampleTime;
 	//}
-
+	
+	AudioBufferList theInputBuffer;
+	
 	OSStatus err = AudioUnitRender( theInput->mInputUnit,
                     ioActionFlags,
                     inTimeStamp,
@@ -222,6 +224,14 @@ void InputImplAudioUnit::setup()
 	//Don't setup buffers until you know what the 
 	//input and output device audio streams look like.
 	
+	// Initialize the AudioUnit
+	err = AudioUnitInitialize( mInputUnit );
+	if(err != noErr) {
+		std::cout << "failed to initialize HAL Output AU" << std::endl;
+		throw;
+	}
+	
+	//Get Size of IO Buffers
 	param = sizeof(UInt32);
 	uint32_t sampleCount;
 	err = AudioUnitGetProperty( mInputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &sampleCount, &param);
@@ -256,15 +266,16 @@ void InputImplAudioUnit::setup()
 	
 	//get the device's sample rate - this has to be the same as the AudioUnit's output format
 	//this is actually already set on the AudioUnit's input default stream format
-	//Float64 rate = 0;
-	//param = sizeof(Float64);
-	//AudioDeviceGetProperty( mDeviceId, 0, 1, kAudioDevicePropertyNominalSampleRate, &param, &rate );
-	
-	//desiredOutFormat.mSampleRate = rate;
+	Float64 rate = 0;
+	param = sizeof(Float64);
+	AudioDeviceGetProperty( nativeDeviceId, 0, 1, kAudioDevicePropertyNominalSampleRate, &param, &rate );
+	desiredOutFormat.mSampleRate = rate;
 	
 	//the output sample rate must be the same as the input device's sample rate 
-	desiredOutFormat.mSampleRate = deviceInFormat.mSampleRate;
-	//TODO: set other options here? like channel count
+	//desiredOutFormat.mSampleRate = deviceInFormat.mSampleRate;
+
+	//one of the two above options is necessary, either getting the kAudioDevicePropertyNominalSampleRate 
+	//or just setting desiredOutFormat.mSampleRate = deviceInFormat.mSampleRate;
 	
 	//set the AudioUnit's output format to be float 32 linear non-interleaved PCM data
 	desiredOutFormat.mFormatID = kAudioFormatLinearPCM;
@@ -284,12 +295,6 @@ void InputImplAudioUnit::setup()
 	mSampleRate = desiredOutFormat.mSampleRate;
 	mChannelCount = desiredOutFormat.mChannelsPerFrame;
 	
-	// Initialize the AudioUnit
-	err = AudioUnitInitialize( mInputUnit );
-	if(err != noErr) {
-		std::cout << "failed to initialize HAL Output AU" << std::endl;
-		throw;
-	}
 	
 	//Buffer Setup - create the buffers necessary for holding input data
 	
@@ -304,7 +309,7 @@ void InputImplAudioUnit::setup()
 		inputBufferChannels[h] = &mInputBufferData[h * sampleCount];
 	}
 	
-	mInputBuffer = (AudioBufferList *)malloc( sizeof(AudioBufferList) + deviceInFormat.mChannelsPerFrame * sizeof(AudioBuffer) );
+	mInputBuffer = (AudioBufferList *)malloc( offsetof(AudioBufferList, mBuffers[0]) + ( deviceInFormat.mChannelsPerFrame * sizeof(AudioBuffer) ) );
 	
 	
 	mInputBuffer->mNumberBuffers = deviceInFormat.mChannelsPerFrame;
@@ -367,14 +372,23 @@ InputImplAudioUnit::Device::Device( AudioDeviceID aDeviceId )
 {
 	mDeviceId = static_cast<InputDevice::DeviceIdentifier>( aDeviceId );
 	
-	//get the stream format and confirm that this is indeed an input device 
+	//ensure that we can get various properties from the input device that ensure it's an input
 	UInt32 param = sizeof( AudioStreamBasicDescription );
 	AudioStreamBasicDescription deviceInStreamFormat;
-	OSStatus err = AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyStreamFormat, &param, &deviceInStreamFormat );
-	if( err != noErr ) {
-		//not an input device
+	if( AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertyStreamFormat, &param, &deviceInStreamFormat ) != noErr ) {
 		throw InvalidDeviceInputExc();
 	}
+	
+	/*param = sizeof(UInt32);
+	if( AudioDeviceGetProperty(mID, 0, true, kAudioDevicePropertySafetyOffset, &propsize, &mSafetyOffset) != noErr ) {
+		throw InvalidDeviceInputExc();
+	}
+	
+	param = sizeof(UInt32);	
+	if( AudioDeviceGetProperty(mID, 0, true, kAudioDevicePropertyBufferFrameSize, &propsize, &mBufferSizeFrames) != noErr ) {
+		throw InvalidDeviceInputExc();
+	}*/
+		
 }
 
 const std::string& InputImplAudioUnit::Device::getName()

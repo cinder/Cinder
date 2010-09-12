@@ -28,7 +28,7 @@ void AudioInputSampleApp::setup()
 	}
 
 	//initialize the audio Input, using the default input device
-	mInput = audio::Input();
+	mInput = audio::Input( devices[0] );
 	
 	//tell the input to start capturing audio
 	mInput.start();
