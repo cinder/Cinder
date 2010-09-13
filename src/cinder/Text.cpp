@@ -183,7 +183,9 @@ void Line::calcExtents()
 	::CFAttributedStringBeginEditing( attrStr );
 	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		// create and append this run's CFAttributedString
-		::CFAttributedStringReplaceAttributedString( attrStr, ::CFRangeMake( ::CFAttributedStringGetLength( attrStr ), 0 ), cocoa::createCfAttributedString( runIt->mText, runIt->mFont, runIt->mColor ) );
+		::CFAttributedStringRef runStr = cocoa::createCfAttributedString( runIt->mText, runIt->mFont, runIt->mColor );
+		::CFAttributedStringReplaceAttributedString( attrStr, ::CFRangeMake( ::CFAttributedStringGetLength( attrStr ), 0 ), runStr );
+		::CFRelease( runStr );
 	}	
 	// all done - coalesce
 	::CFAttributedStringEndEditing( attrStr );			
