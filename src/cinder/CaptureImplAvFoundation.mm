@@ -111,7 +111,7 @@ static BOOL sDevicesEnumerated = false;
 		[self stopCapture];
 	}
 	
-	[mDeviceUniqueId retain];
+	[mDeviceUniqueId release];
 	
 	[super dealloc];
 }
@@ -146,7 +146,7 @@ static BOOL sDevicesEnumerated = false;
     // Find a suitable AVCaptureDevice
     AVCaptureDevice * device = nil;
 	if( ! mDeviceUniqueId ) {
-		device = device = [clsAVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+		device = [clsAVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
 	} else {
 		device = [clsAVCaptureDevice deviceWithUniqueID:mDeviceUniqueId];
 	}
