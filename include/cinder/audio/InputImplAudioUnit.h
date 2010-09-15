@@ -72,6 +72,7 @@ class InputImplAudioUnit : public InputImpl {
 		}
 	 private:
 		std::string		mDeviceName;
+		UInt32			mSafetyOffset;
 	};
  protected:
 	static OSStatus inputCallback( void*, AudioUnitRenderActionFlags*, const AudioTimeStamp*, UInt32, UInt32, AudioBufferList* );

@@ -117,7 +117,7 @@ OSStatus InputImplAudioUnit::inputCallback( void *inRefCon, AudioUnitRenderActio
 	//	theInput->mFirstInputTime = inTimeStamp->mSampleTime;
 	//}
 	
-	AudioBufferList theInputBuffer;
+	//AudioBufferList theInputBuffer;
 	
 	OSStatus err = AudioUnitRender( theInput->mInputUnit,
                     ioActionFlags,
@@ -128,7 +128,8 @@ OSStatus InputImplAudioUnit::inputCallback( void *inRefCon, AudioUnitRenderActio
 	
 	if( err != noErr ) {
 		std::cout << "Error rendering input code" << std::endl;
-		throw;
+		//throw;
+		return noErr;
 	}
 	
 	theInput->mBufferMutex.lock();
@@ -271,6 +272,9 @@ void InputImplAudioUnit::setup()
 	AudioDeviceGetProperty( nativeDeviceId, 0, 1, kAudioDevicePropertyNominalSampleRate, &param, &rate );
 	desiredOutFormat.mSampleRate = rate;
 	
+	//output the same number of channels that are input
+	desiredOutFormat.mChannelsPerFrame = deviceInFormat.mChannelsPerFrame;
+	
 	//the output sample rate must be the same as the input device's sample rate 
 	//desiredOutFormat.mSampleRate = deviceInFormat.mSampleRate;
 
@@ -380,11 +384,11 @@ InputImplAudioUnit::Device::Device( AudioDeviceID aDeviceId )
 	}
 	
 	/*param = sizeof(UInt32);
-	if( AudioDeviceGetProperty(mID, 0, true, kAudioDevicePropertySafetyOffset, &propsize, &mSafetyOffset) != noErr ) {
+	if( AudioDeviceGetProperty( mDeviceId, 0, true, kAudioDevicePropertySafetyOffset, &param, &mSafetyOffset) != noErr ) {
 		throw InvalidDeviceInputExc();
-	}
+	}*/
 	
-	param = sizeof(UInt32);	
+	/*param = sizeof(UInt32);	
 	if( AudioDeviceGetProperty(mID, 0, true, kAudioDevicePropertyBufferFrameSize, &propsize, &mBufferSizeFrames) != noErr ) {
 		throw InvalidDeviceInputExc();
 	}*/
