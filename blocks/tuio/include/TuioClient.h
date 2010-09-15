@@ -158,8 +158,8 @@ class Client {
 
 	CallbackMgr<void (const osc::Message*)>	mOscMessageCallbacks;
 	
-	shared_ptr<ProfileHandler<Object>>	mHandlerObject;
-	shared_ptr<ProfileHandler<Cursor>>	mHandlerCursor;
+	shared_ptr<ProfileHandler<Object> >		mHandlerObject;
+	shared_ptr<ProfileHandler<Cursor> >		mHandlerCursor;
 
 	bool				mConnected;
 	mutable std::mutex	mMutex;
