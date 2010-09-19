@@ -51,6 +51,7 @@ using std::wstring;
 
 namespace cinder {
 
+#if ! defined( CINDER_COCOA_TOUCH )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TextManager
 class TextManager : private boost::noncopyable
@@ -418,6 +419,8 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 
 	return result;
 }
+#endif // ! defined( CINDER_COCOA_TOUCH )
+
 
 #if defined( CINDER_COCOA_TOUCH )
 Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset )
