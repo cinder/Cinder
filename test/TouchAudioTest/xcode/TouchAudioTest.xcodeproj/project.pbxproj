@@ -13,6 +13,9 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
+		C71FD5921247F737008E0772 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C71FD5911247F737008E0772 /* AVFoundation.framework */; };
+		C71FD5951247F742008E0772 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C71FD5941247F742008E0772 /* CoreVideo.framework */; };
+		C71FD5981247F748008E0772 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C71FD5971247F748008E0772 /* CoreMedia.framework */; };
 		C7EE3EC511D029D100610C4D /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7EE3EC411D029D100610C4D /* CoreAudio.framework */; };
 		C7EE3ECB11D029D800610C4D /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7EE3ECA11D029D800610C4D /* AudioToolbox.framework */; };
 		C7EE3F4511D0311800610C4D /* booyah.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = C7EE3F4411D0311800610C4D /* booyah.mp3 */; };
@@ -28,6 +31,9 @@
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* TouchAudioTest_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchAudioTest_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* TouchAudioTest-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TouchAudioTest-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		C71FD5911247F737008E0772 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = iphoneos3.1/System/Library/Frameworks/AVFoundation.framework; sourceTree = "<group>"; };
+		C71FD5941247F742008E0772 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		C71FD5971247F748008E0772 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		C7EE3EC411D029D100610C4D /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		C7EE3ECA11D029D800610C4D /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		C7EE3ECE11D029E300610C4D /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
@@ -47,6 +53,9 @@
 				00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */,
 				C7EE3EC511D029D100610C4D /* CoreAudio.framework in Frameworks */,
 				C7EE3ECB11D029D800610C4D /* AudioToolbox.framework in Frameworks */,
+				C71FD5921247F737008E0772 /* AVFoundation.framework in Frameworks */,
+				C71FD5951247F742008E0772 /* CoreVideo.framework in Frameworks */,
+				C71FD5981247F748008E0772 /* CoreMedia.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +119,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C71FD5911247F737008E0772 /* AVFoundation.framework */,
 				C7EE3EC411D029D100610C4D /* CoreAudio.framework */,
 				C7EE3ECA11D029D800610C4D /* AudioToolbox.framework */,
 				C7EE3ECE11D029E300610C4D /* AudioUnit.framework */,
@@ -118,6 +128,8 @@
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				1D30AB110D05D00D00671497 /* Foundation.framework */,
 				00CFDF6A1138442D0091E310 /* CoreGraphics.framework */,
+				C71FD5941247F742008E0772 /* CoreVideo.framework */,
+				C71FD5971247F748008E0772 /* CoreMedia.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -198,7 +210,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"";
 				PRODUCT_NAME = TouchAudioTest;
-				SDKROOT = iphonesimulator3.1;
+				SDKROOT = iphoneos4.0;
 			};
 			name = Debug;
 		};

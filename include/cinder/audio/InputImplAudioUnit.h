@@ -61,7 +61,7 @@ class InputImplAudioUnit : public InputImpl {
 	
 	static const std::vector<InputDeviceRef>&	getDevices( bool forceRefresh );
 	static InputDeviceRef getDefaultDevice();
-	
+#if defined( CINDER_MAC )
 	class Device : public InputDevice {
 	 public:
 		Device( AudioDeviceID aDeviceId );
@@ -74,6 +74,21 @@ class InputImplAudioUnit : public InputImpl {
 		std::string		mDeviceName;
 		UInt32			mSafetyOffset;
 	};
+#elif defined( CINDER_COCOA_TOUCH )
+	//iOS doesn't support audio device enumeration, 
+	//so this is just a placeholder to represent the defualt device
+	class Device : public InputDevice {
+	 public:
+		Device();
+		const std::string& getName() { return mDeviceName; }
+		
+		bool operator==( const Device &rhs ) const {
+			return true;
+		}
+	 private:
+		std::string		mDeviceName;
+	};
+#endif
  protected:
 	static OSStatus inputCallback( void*, AudioUnitRenderActionFlags*, const AudioTimeStamp*, UInt32, UInt32, AudioBufferList* );
  
@@ -83,7 +98,6 @@ class InputImplAudioUnit : public InputImpl {
 	InputDeviceRef					mDevice;
 	bool							mIsCapturing;
 	AudioComponentInstance			mInputUnit;
-	AudioDeviceID					mDeviceId;
 	AudioBufferList					* mInputBuffer;
 	float							* mInputBufferData;
 	

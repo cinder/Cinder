@@ -159,15 +159,17 @@ void InputImplAudioUnit::setup()
 	if( ! mDevice ) {
 		mDevice = InputImplAudioUnit::getDefaultDevice();
 	}
-	
-	AudioDeviceID nativeDeviceId = static_cast<AudioDeviceID>( mDevice->getDeviceId() );
 
 	//create AudioOutputUnit
 	AudioComponent component;
 	AudioComponentDescription description;
 	
 	description.componentType = kAudioUnitType_Output;
+#if defined( CINDER_MAC )
 	description.componentSubType = kAudioUnitSubType_HALOutput;
+#elif defined( CINDER_COCOA_TOUCH )
+	description.componentSubType = kAudioUnitType_Output;
+#endif
 	description.componentManufacturer = kAudioUnitManufacturer_Apple;
 	description.componentFlags = 0;
 	description.componentFlagsMask = 0;
@@ -210,12 +212,16 @@ void InputImplAudioUnit::setup()
 		throw;
 	}
 	
+#if defined( CINDER_MAC )
+	AudioDeviceID nativeDeviceId = static_cast<AudioDeviceID>( mDevice->getDeviceId() );
+	
 	// Set the current device to the default input unit.
 	err = AudioUnitSetProperty( mInputUnit, kAudioOutputUnitProperty_CurrentDevice, kAudioUnitScope_Global, 0, &nativeDeviceId, sizeof(AudioDeviceID) );
 	if( err != noErr ) {
 		std::cout << "failed to set AU input device" << std::endl;
 		throw;
 	}
+#endif
 	
 	AURenderCallbackStruct callback;
 	callback.inputProc = InputImplAudioUnit::inputCallback;
@@ -233,13 +239,17 @@ void InputImplAudioUnit::setup()
 	}
 	
 	//Get Size of IO Buffers
-	param = sizeof(UInt32);
 	uint32_t sampleCount;
-	err = AudioUnitGetProperty( mInputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &sampleCount, &param);
+	param = sizeof(UInt32);
+#if defined( CINDER_MAC )
+	err = AudioUnitGetProperty( mInputUnit, kAudioDevicePropertyBufferFrameSize, kAudioUnitScope_Global, 0, &sampleCount, &param );
 	if( err != noErr ) {
 		std::cout << "Error getting buffer frame size" << std::endl;
 		throw;
 	}
+#elif defined( CINDER_COCOA_TOUCH )
+	AudioUnitGetProperty( mInputUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &sampleCount, &param );
+#endif
 	
 	AudioStreamBasicDescription	deviceInFormat;
 	AudioStreamBasicDescription	desiredOutFormat;
@@ -267,16 +277,16 @@ void InputImplAudioUnit::setup()
 	
 	//get the device's sample rate - this has to be the same as the AudioUnit's output format
 	//this is actually already set on the AudioUnit's input default stream format
-	Float64 rate = 0;
-	param = sizeof(Float64);
-	AudioDeviceGetProperty( nativeDeviceId, 0, 1, kAudioDevicePropertyNominalSampleRate, &param, &rate );
-	desiredOutFormat.mSampleRate = rate;
+	//Float64 rate = 0;
+	//param = sizeof(Float64);
+	//AudioDeviceGetProperty( nativeDeviceId, 0, 1, kAudioDevicePropertyNominalSampleRate, &param, &rate );
+	//desiredOutFormat.mSampleRate = rate;
+	
+	//the output sample rate must be the same as the input device's sample rate 
+	desiredOutFormat.mSampleRate = deviceInFormat.mSampleRate;
 	
 	//output the same number of channels that are input
 	desiredOutFormat.mChannelsPerFrame = deviceInFormat.mChannelsPerFrame;
-	
-	//the output sample rate must be the same as the input device's sample rate 
-	//desiredOutFormat.mSampleRate = deviceInFormat.mSampleRate;
 
 	//one of the two above options is necessary, either getting the kAudioDevicePropertyNominalSampleRate 
 	//or just setting desiredOutFormat.mSampleRate = deviceInFormat.mSampleRate;
@@ -302,9 +312,9 @@ void InputImplAudioUnit::setup()
 	
 	//Buffer Setup - create the buffers necessary for holding input data
 	
-	param = sizeof( AudioBufferList );
-	AudioBufferList aBufferList;
-	AudioDeviceGetProperty( nativeDeviceId, 0, true, kAudioDevicePropertyStreamConfiguration, &param, &aBufferList);
+	//param = sizeof( AudioBufferList );
+	//AudioBufferList aBufferList;
+	//AudioDeviceGetProperty( nativeDeviceId, 0, true, kAudioDevicePropertyStreamConfiguration, &param, &aBufferList);
 	
 	//setup buffer for recieving data in the callback
 	mInputBufferData = (float *)malloc( sampleCount * deviceInFormat.mBytesPerFrame );
@@ -332,6 +342,7 @@ void InputImplAudioUnit::setup()
 	mIsSetup = true;
 }
 
+#if defined( CINDER_MAC )
 const std::vector<InputDeviceRef>& InputImplAudioUnit::getDevices( bool forceRefresh )
 {
 	if( forceRefresh || ! sDevicesEnumerated ) {
@@ -414,5 +425,28 @@ const std::string& InputImplAudioUnit::Device::getName()
 	}
 	return mDeviceName;
 }
+#elif defined( CINDER_COCOA_TOUCH )
+
+const std::vector<InputDeviceRef>& InputImplAudioUnit::getDevices( bool forceRefresh )
+{
+	if( forceRefresh || ! sDevicesEnumerated ) {
+		sDevices.clear();
+		sDevices.push_back( InputDeviceRef( new InputImplAudioUnit::Device() ) );
+		sDevicesEnumerated = true;
+	}
+	return sDevices;
+}
+
+InputDeviceRef InputImplAudioUnit::getDefaultDevice()
+{
+	return InputDeviceRef( new InputImplAudioUnit::Device() );
+}
+
+InputImplAudioUnit::Device::Device() 
+	: InputDevice(), mDeviceName("Default Audio Device")
+{
+}
+
+#endif
 
 }} //namespace
