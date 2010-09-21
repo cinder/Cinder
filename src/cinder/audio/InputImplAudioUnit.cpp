@@ -168,7 +168,7 @@ void InputImplAudioUnit::setup()
 #if defined( CINDER_MAC )
 	description.componentSubType = kAudioUnitSubType_HALOutput;
 #elif defined( CINDER_COCOA_TOUCH )
-	description.componentSubType = kAudioUnitType_Output;
+	description.componentSubType = kAudioUnitSubType_RemoteIO;
 #endif
 	description.componentManufacturer = kAudioUnitManufacturer_Apple;
 	description.componentFlags = 0;
@@ -317,21 +317,21 @@ void InputImplAudioUnit::setup()
 	//AudioDeviceGetProperty( nativeDeviceId, 0, true, kAudioDevicePropertyStreamConfiguration, &param, &aBufferList);
 	
 	//setup buffer for recieving data in the callback
-	mInputBufferData = (float *)malloc( sampleCount * deviceInFormat.mBytesPerFrame );
-	float * inputBufferChannels[deviceInFormat.mChannelsPerFrame];
-	for( int h = 0; h < deviceInFormat.mChannelsPerFrame; h++ ) {
+	mInputBufferData = (float *)malloc( sampleCount * desiredOutFormat.mBytesPerFrame );
+	float * inputBufferChannels[desiredOutFormat.mChannelsPerFrame];
+	for( int h = 0; h < desiredOutFormat.mChannelsPerFrame; h++ ) {
 		inputBufferChannels[h] = &mInputBufferData[h * sampleCount];
 	}
 	
-	mInputBuffer = (AudioBufferList *)malloc( offsetof(AudioBufferList, mBuffers[0]) + ( deviceInFormat.mChannelsPerFrame * sizeof(AudioBuffer) ) );
+	mInputBuffer = (AudioBufferList *)malloc( offsetof(AudioBufferList, mBuffers[0]) + ( desiredOutFormat.mChannelsPerFrame * sizeof(AudioBuffer) ) );
 	
 	
-	mInputBuffer->mNumberBuffers = deviceInFormat.mChannelsPerFrame;
+	mInputBuffer->mNumberBuffers = desiredOutFormat.mChannelsPerFrame;
 	//mBuffers.resize( mInputBuffer->mNumberBuffers );
 	mCircularBuffers.resize( mInputBuffer->mNumberBuffers );
 	for( int i = 0; i < mInputBuffer->mNumberBuffers; i++ ) {
 		mInputBuffer->mBuffers[i].mNumberChannels = 1;
-		mInputBuffer->mBuffers[i].mDataByteSize = sampleCount * deviceInFormat.mBytesPerFrame;
+		mInputBuffer->mBuffers[i].mDataByteSize = sampleCount * desiredOutFormat.mBytesPerFrame;
 		mInputBuffer->mBuffers[i].mData = inputBufferChannels[i];
 		
 		//create a circular buffer for each channel

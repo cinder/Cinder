@@ -9,7 +9,6 @@ using namespace ci::app;
 class TouchAudioTestApp : public AppCocoaTouch {
   public:
 	virtual void	setup();
-	virtual void	resize( int width, int height );
 	virtual void	update();
 	virtual void	draw();
 	virtual void	touchesBegan( TouchEvent event );
@@ -30,11 +29,6 @@ void TouchAudioTestApp::setup()
 	
 }
 
-void TouchAudioTestApp::resize( int width, int height )
-{
-	
-}
-
 void TouchAudioTestApp::touchesBegan( TouchEvent event )
 {
 	//std::cout << "Touch" << std::endl;
@@ -51,7 +45,11 @@ void TouchAudioTestApp::update()
 
 void TouchAudioTestApp::draw()
 {
+	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
+	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
+	
+	drawWaveForm();
 }
 
 void TouchAudioTestApp::drawWaveForm()
@@ -63,18 +61,24 @@ void TouchAudioTestApp::drawWaveForm()
 	uint32_t bufferSamples = mPcmBuffer->getSampleCount();
 	audio::Buffer32fRef leftBuffer = mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT );
 	//audio::Buffer32fRef rightBuffer = mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_RIGHT );
-
-	int displaySize = getWindowWidth();
-	int endIdx = bufferSamples;
 	
-	float scale = displaySize / (float)endIdx;
+	float center = getWindowWidth() / 2;
+	float displaySize = getWindowHeight();
+	uint32_t endIdx = bufferSamples;
+	
+	//only draw the last 1024 samples or less
+	int32_t startIdx = ( endIdx - 1024 );
+	startIdx = math<int32_t>::clamp( startIdx, 0, endIdx );
+	
+	float scale = displaySize / (float)( endIdx - startIdx );
+	//float scale = displaySize / (float)( endIdx );
 	
 	PolyLine<Vec2f>	line;
 	
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
-	for( int i = 0; i < endIdx; i++ ) {
-		float y = ( ( leftBuffer->mData[i] - 1 ) * - 100 );
-		line.push_back( Vec2f( ( i * scale ) , y) );
+	for( uint32_t i = startIdx, c = 0; i < endIdx; i++, c++ ) {
+		float y = ( ( leftBuffer->mData[i] - 1 ) * - center );
+		line.push_back( Vec2f( y, ( c * scale ) ) );
 	}
 	gl::draw( line );
 	
