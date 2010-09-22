@@ -88,7 +88,7 @@ OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
 	}
 	
 	shared_ptr<TargetOutputImplXAudio> target = TargetOutputImplXAudio::createRef( &mVoiceDescription );
-	mLoader = mSource->getLoader( target.get() );
+	mLoader = mSource->createLoader( target.get() );
 
 	//mBufferSize = mLoader->mBufferSize;
 	mBufferSize = mLoader->getOptimalBufferSize();
@@ -286,5 +286,10 @@ void OutputImplXAudio::removeTrack( TrackId trackId )
 	
 	mTracks.erase( trackId );
 }
+
+/*TargetRef OutputImplXAudio::getTarget()
+{
+	return TargetOutputImplXAudio::createRef( mMasterVoice );
+}*/
 
 }} //namespaces

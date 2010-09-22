@@ -74,7 +74,7 @@ class SourceFileWindowsMedia : public Source {
 	static SourceFileWindowsMediaRef	createFileRef( DataSourceRef dataSourceRef );
 	~SourceFileWindowsMedia();
 
-	virtual LoaderRef getLoader( Target *target ) { return LoaderSourceFileWindowsMedia::createRef( this, target ); }
+	virtual LoaderRef createLoader( Target *target ) { return LoaderSourceFileWindowsMedia::createRef( this, target ); }
   
 	uint32_t getLength() const { return mBuffer.getDataSize(); };
 	double getDuration() const { /*TODO*/ return 0.0;  }

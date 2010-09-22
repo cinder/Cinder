@@ -53,7 +53,7 @@ class SourceFileWav : public Source {
 	static SourceFileWavRef				createFileWavRef( DataSourceRef dataSourceRef );
 	~SourceFileWav();
 
-	LoaderRef getLoader( Target *target ) { return LoaderSourceFileWav::createRef( this, target ); }
+	LoaderRef createLoader( Target *target ) { return LoaderSourceFileWav::createRef( this, target ); }
 
 	uint32_t getLength() const { return mDataLength; };
 	double getDuration() const { /*TODO*/ return 0.0;  }

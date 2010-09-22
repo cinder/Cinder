@@ -54,6 +54,8 @@ class OutputImplXAudio : public OutputImpl
 	
 	void setVolume( float aVolume ) {}
 	float getVolume() const { /*TODO*/ return 0.0; }
+
+	//TargetRef getTarget();
   protected:
 	::IXAudio2							* mXAudio;
 	::IXAudio2MasteringVoice			* mMasterVoice;

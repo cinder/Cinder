@@ -84,7 +84,7 @@ template<typename T>
 PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, bool isInterleaved ) 
 	: mMaxSampleCount( aMaxSampleCount ), mChannelCount( aChannelCount ), mIsInterleaved( isInterleaved )
 {
-	uint64_t bufferSize = 0;
+	uint32_t bufferSize = 0;
 	uint16_t channelsPerBuffer = 0;
 	if( ! mIsInterleaved ) {
 		mBufferCount = mChannelCount;
