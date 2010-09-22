@@ -60,6 +60,7 @@
 				005930E11185637100C890F2 /* PBXTargetDependency */,
 				006A1FCA11D7F87600941A5E /* PBXTargetDependency */,
 				009CB64F120F228F0066763D /* PBXTargetDependency */,
+				00125BAF1249B10500080A0D /* PBXTargetDependency */,
 			);
 			name = Samples;
 			productName = Samples;
@@ -438,6 +439,20 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = NormalMapping;
 		};
+		00125BAC1249B0FA00080A0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* Picking3D.app */;
+			remoteInfo = Picking3D;
+		};
+		00125BAE1249B10500080A0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090 /* Picking3D */;
+			remoteInfo = Picking3D;
+		};
 		00236DA01130E4C7006C991F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00236D981130E4C7006C991F /* CairoBasic.xcodeproj */;
@@ -761,6 +776,7 @@
 		0005CA6610068252004D82BC /* waterSim.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = waterSim.xcodeproj; path = ../../waterSim/xcode/waterSim.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA6F10068258004D82BC /* Wisteria.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Wisteria.xcodeproj; path = ../../Wisteria/xcode/Wisteria.xcodeproj; sourceTree = SOURCE_ROOT; };
 		000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NormalMapping.xcodeproj; path = ../../NormalMapping/xcode/NormalMapping.xcodeproj; sourceTree = SOURCE_ROOT; };
+		00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Picking3D.xcodeproj; path = ../../Picking3D/xcode/Picking3D.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00236D981130E4C7006C991F /* CairoBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CairoBasic.xcodeproj; path = ../../CairoBasic/xcode/CairoBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MandelbrotGLSL.xcodeproj; path = ../../MandelbrotGLSL/xcode/MandelbrotGLSL.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -788,6 +804,7 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */,
 				009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */,
 				006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */,
 				005930D31185636300C890F2 /* AudioGenerative.xcodeproj */,
@@ -1043,6 +1060,14 @@
 			isa = PBXGroup;
 			children = (
 				000B6785103CB3C5003D463F /* NormalMapping.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00125BA91249B0FA00080A0D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00125BAD1249B0FA00080A0D /* Picking3D.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1347,6 +1372,10 @@
 					ProjectRef = 0005C9FF10068206004D82BC /* perlinTest.xcodeproj */;
 				},
 				{
+					ProductGroup = 00125BA91249B0FA00080A0D /* Products */;
+					ProjectRef = 00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */;
+				},
+				{
 					ProductGroup = 00F0B3451039F821003AB416 /* Products */;
 					ProjectRef = 00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */;
 				},
@@ -1610,6 +1639,13 @@
 			fileType = wrapper.application;
 			path = NormalMapping.app;
 			remoteRef = 000B6784103CB3C5003D463F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00125BAD1249B0FA00080A0D /* Picking3D.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Picking3D.app;
+			remoteRef = 00125BAC1249B0FA00080A0D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		00236DA11130E4C7006C991F /* CairoBasic.app */ = {
@@ -1891,6 +1927,11 @@
 			isa = PBXTargetDependency;
 			name = NormalMapping;
 			targetProxy = 000B6787103CB3E4003D463F /* PBXContainerItemProxy */;
+		};
+		00125BAF1249B10500080A0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Picking3D;
+			targetProxy = 00125BAE1249B10500080A0D /* PBXContainerItemProxy */;
 		};
 		00236DA31130E4D8006C991F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
