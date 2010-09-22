@@ -55,7 +55,7 @@ class OutputImplAudioUnit : public OutputImpl {
 	void setVolume( float aVolume );
 	float getVolume() const;
 	
-	TargetRef getTarget();
+	//TargetRef getTarget();
   protected:
 	TrackId							availableTrackId() { TrackId bus = mAvailableBuses.top(); mAvailableBuses.pop(); return bus; }
   private:

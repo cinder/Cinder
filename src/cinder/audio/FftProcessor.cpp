@@ -22,10 +22,7 @@
 
 #include "cinder/audio/FftProcessor.h"
 
-#if defined( CINDER_MSW )
-	#include "cinder/audio/FftProcessorImplXDsp.h"
-	typedef cinder::audio::FftProcessorImplXDsp	FftProcessorPlatformImpl;
-#elif defined( CINDER_MAC )
+#if defined( CINDER_MAC )
 	#include "cinder/audio/FftProcessorImplAccelerate.h"
 	typedef cinder::audio::FftProcessorImplAccelerate	FftProcessorPlatformImpl;
 #endif
