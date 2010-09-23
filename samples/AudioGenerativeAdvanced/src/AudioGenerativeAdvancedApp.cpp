@@ -4,7 +4,7 @@
 #include "cinder/Rand.h"
 #include "cinder/CinderMath.h"
 #include "cinder/Cinder.h"
-#include "cinder/audio/Buffer.h"
+#include "cinder/audio/PcmBuffer.h"
 
 using namespace ci;
 using namespace ci::app;

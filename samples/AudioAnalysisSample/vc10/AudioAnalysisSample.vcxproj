@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{74202EDD-91D2-4D2A-B0B6-355CEB16E6BE}</ProjectGuid>
+    <ProjectGuid>{CA366820-5A7F-4C62-BD73-C135C081C931}</ProjectGuid>
     <RootNamespace>AudioAnalysisSampleApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
