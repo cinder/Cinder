@@ -443,14 +443,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090 /* Picking3D.app */;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = Picking3D;
 		};
 		00125BAE1249B10500080A0D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090 /* Picking3D */;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = Picking3D;
 		};
 		00236DA01130E4C7006C991F /* PBXContainerItemProxy */ = {
@@ -747,6 +747,34 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = quickTimeSample;
 		};
+		C7FB1E95124BF2E00045AFD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* AudioAnalysisSample.app */;
+			remoteInfo = AudioAnalysisSample;
+		};
+		C7FB1E9E124BF2EB0045AFD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* AudioGenerativeAdvanced.app */;
+			remoteInfo = AudioGenerativeAdvanced;
+		};
+		C7FB1EA7124BF2F80045AFD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* AudioInputSample.app */;
+			remoteInfo = AudioInputSample;
+		};
+		C7FB1EB3124BF3010045AFD2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* AudioPlayback.app */;
+			remoteInfo = AudioPlayback;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -798,12 +826,20 @@
 		00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeIteration.xcodeproj; path = ../../QuickTimeIteration/xcode/QuickTimeIteration.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLSLLighting.xcodeproj; path = ../../GLSLLighting/xcode/GLSLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F5014610CD9FEB002CB18B /* quickTimeSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = quickTimeSample.xcodeproj; path = ../../QuickTime/xcode/quickTimeSample.xcodeproj; sourceTree = SOURCE_ROOT; };
+		C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioAnalysisSample.xcodeproj; path = ../../AudioAnalysisSample/xcode/AudioAnalysisSample.xcodeproj; sourceTree = SOURCE_ROOT; };
+		C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioGenerativeAdvanced.xcodeproj; path = ../../AudioGenerativeAdvanced/xcode/AudioGenerativeAdvanced.xcodeproj; sourceTree = SOURCE_ROOT; };
+		C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioInputSample.xcodeproj; path = ../../AudioInputSample/xcode/AudioInputSample.xcodeproj; sourceTree = SOURCE_ROOT; };
+		C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioPlayback.xcodeproj; path = ../../AudioPlayback/xcode/AudioPlayback.xcodeproj; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */,
+				C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */,
+				C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */,
+				C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */,
 				00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */,
 				009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */,
 				006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */,
@@ -1240,6 +1276,38 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		C7FB1E8F124BF2E00045AFD2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C7FB1E96124BF2E00045AFD2 /* AudioAnalysisSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C7FB1E98124BF2EB0045AFD2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C7FB1E9F124BF2EB0045AFD2 /* AudioGenerativeAdvanced.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C7FB1EA1124BF2F80045AFD2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C7FB1EA8124BF2F80045AFD2 /* AudioInputSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C7FB1EAA124BF3010045AFD2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C7FB1EB4124BF3010045AFD2 /* AudioPlayback.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXProject section */
@@ -1247,7 +1315,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 0005C93F10067FF4004D82BC /* Build configuration list for PBXProject "_AllSamples" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 0005C93A10067FF4004D82BC;
 			projectDirPath = "";
 			projectReferences = (
@@ -1256,8 +1331,24 @@
 					ProjectRef = 0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */;
 				},
 				{
+					ProductGroup = C7FB1E8F124BF2E00045AFD2 /* Products */;
+					ProjectRef = C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */;
+				},
+				{
 					ProductGroup = 005930D41185636300C890F2 /* Products */;
 					ProjectRef = 005930D31185636300C890F2 /* AudioGenerative.xcodeproj */;
+				},
+				{
+					ProductGroup = C7FB1E98124BF2EB0045AFD2 /* Products */;
+					ProjectRef = C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */;
+				},
+				{
+					ProductGroup = C7FB1EA1124BF2F80045AFD2 /* Products */;
+					ProjectRef = C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */;
+				},
+				{
+					ProductGroup = C7FB1EAA124BF3010045AFD2 /* Products */;
+					ProjectRef = C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C95610068030004D82BC /* Products */;
@@ -1793,6 +1884,34 @@
 			fileType = wrapper.application;
 			path = quickTimeSample.app;
 			remoteRef = 00F5014E10CD9FEB002CB18B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C7FB1E96124BF2E00045AFD2 /* AudioAnalysisSample.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = AudioAnalysisSample.app;
+			remoteRef = C7FB1E95124BF2E00045AFD2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C7FB1E9F124BF2EB0045AFD2 /* AudioGenerativeAdvanced.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = AudioGenerativeAdvanced.app;
+			remoteRef = C7FB1E9E124BF2EB0045AFD2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C7FB1EA8124BF2F80045AFD2 /* AudioInputSample.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = AudioInputSample.app;
+			remoteRef = C7FB1EA7124BF2F80045AFD2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C7FB1EB4124BF3010045AFD2 /* AudioPlayback.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = AudioPlayback.app;
+			remoteRef = C7FB1EB3124BF3010045AFD2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
