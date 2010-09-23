@@ -225,9 +225,7 @@
 				GCC_PREFIX_HEADER = AudioGenerativeAdvanced_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
-				);
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_NAME = AudioGenerativeAdvanced;
 				WRAPPER_EXTENSION = app;
 			};
@@ -247,9 +245,7 @@
 				GCC_PREFIX_HEADER = AudioGenerativeAdvanced_Prefix.pch;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = (
-					"\"$(CINDER_PATH)/lib/libcinder.a\"",
-				);
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				PRODUCT_NAME = AudioGenerativeAdvanced;
 				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;

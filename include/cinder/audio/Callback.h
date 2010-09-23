@@ -43,7 +43,7 @@ class Callback : public Source {
 	
 	virtual ~Callback();
 	
-	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback<T,U>::createRef( this, target ); }
+	LoaderRef createLoader( Target *target ) { return LoaderSourceCallback<T,U>::createRef( this, target ); }
 	double getDuration() const { return 100.0; } //TODO: support for endless sources
 	
  private:
