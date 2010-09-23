@@ -23,7 +23,8 @@
 		C7B92F23121C83A500093AFE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F22121C83A500093AFE /* CoreMedia.framework */; };
 		C7B92F25121C83A500093AFE /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F24121C83A500093AFE /* CoreVideo.framework */; };
 		C7FB1B5A124BDD700045AFD2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F20121C83A500093AFE /* AVFoundation.framework */; };
-		C7FB1B64124BDDAA0045AFD2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F22121C83A500093AFE /* CoreMedia.framework */; };
+		C7FB1C44124BE6870045AFD2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB1C43124BE6870045AFD2 /* AudioToolbox.framework */; };
+		C7FB1C63124BE6E90045AFD2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB1C43124BE6870045AFD2 /* AudioToolbox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		C7B92F20121C83A500093AFE /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C7B92F22121C83A500093AFE /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		C7B92F24121C83A500093AFE /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		C7FB1C43124BE6870045AFD2 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,7 +55,7 @@
 				005372F8118FD835004D686E /* QuartzCore.framework in Frameworks */,
 				005372F9118FD835004D686E /* CoreGraphics.framework in Frameworks */,
 				C7FB1B5A124BDD700045AFD2 /* AVFoundation.framework in Frameworks */,
-				C7FB1B64124BDDAA0045AFD2 /* CoreMedia.framework in Frameworks */,
+				C7FB1C63124BE6E90045AFD2 /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,6 +71,7 @@
 				C7B92F21121C83A500093AFE /* AVFoundation.framework in Frameworks */,
 				C7B92F23121C83A500093AFE /* CoreMedia.framework in Frameworks */,
 				C7B92F25121C83A500093AFE /* CoreVideo.framework in Frameworks */,
+				C7FB1C44124BE6870045AFD2 /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +142,7 @@
 				C7B92F20121C83A500093AFE /* AVFoundation.framework */,
 				C7B92F22121C83A500093AFE /* CoreMedia.framework */,
 				C7B92F24121C83A500093AFE /* CoreVideo.framework */,
+				C7FB1C43124BE6870045AFD2 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
