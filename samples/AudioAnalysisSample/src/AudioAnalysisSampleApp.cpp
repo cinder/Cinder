@@ -30,7 +30,7 @@ void AudioAnalysisSampleApp::setup()
 	mTrack = audio::Output::addTrack( audio::load( loadResource( RES_GUITAR ) ) );
 	
 	//you must enable enable PCM buffering on the track to be able to call getPcmBuffer on it later
-	mTrack->setPcmBuffering( true );
+	mTrack->enablePcmBuffering( true );
 }
 
 void AudioAnalysisSampleApp::keyDown( KeyEvent e ) {

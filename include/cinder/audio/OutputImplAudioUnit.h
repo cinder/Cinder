@@ -92,7 +92,7 @@ class OutputImplAudioUnit : public OutputImpl {
 		bool isLooping() const { return mIsLooping; }
 		void setLooping( bool isLooping ) { mIsLooping = isLooping; }
 		
-		void setPcmBuffering( bool isBuffering ) { mIsPcmBuffering = isBuffering; }
+		void enablePcmBuffering( bool isBuffering ) { mIsPcmBuffering = isBuffering; }
 		bool isPcmBuffering() { return mIsPcmBuffering; }
 		
 		PcmBuffer32fRef getPcmBuffer();

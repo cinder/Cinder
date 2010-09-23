@@ -80,7 +80,7 @@ class OutputImplXAudio : public OutputImpl
 		void setLooping( bool isLooping ) { mIsLooping = isLooping; }
 		bool isLooping() const { return mIsLooping; }
 		
-		void setPcmBuffering( bool isBuffering ) { mIsPcmBuffering = isBuffering; }
+		void enablePcmBuffering( bool isBuffering ) { mIsPcmBuffering = isBuffering; }
 		bool isPcmBuffering() { return mIsPcmBuffering; }
 
 		PcmBuffer32fRef getPcmBuffer();
