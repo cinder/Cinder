@@ -24,6 +24,7 @@ void TestApp::setup()
 {
 	anim = 0;
 	console() << "Launched app at " << getAppPath() << std::endl;
+	console() << "Launched width: " << getWindowWidth() << std::endl;
 }
 
 void TestApp::resize( int width, int height )
@@ -45,7 +46,7 @@ void TestApp::update()
 void TestApp::draw()
 {
 	CGContextRef ctx( createWindowCgContext() );
-
+console() << "Run size: " << getWindowSize() << std::endl;
 	// Clear out to bkg color
 	CGContextBeginPath( ctx );
 	CGContextSetRGBFillColor( ctx, 0.1, 0.2, 0.6, 1.0f );	

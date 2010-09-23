@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{2c5f187f-718b-4c68-a04a-fb72ea92cf6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\osc">
+      <UniqueIdentifier>{d4fe610c-05a4-43ea-aabf-c6037af96488}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\tuio">
+      <UniqueIdentifier>{23c41de7-19e7-49b8-9022-e0604b4b9f13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\tuio\include">
+      <UniqueIdentifier>{d6572191-f65a-457c-a391-69a47f521291}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\tuio\src">
+      <UniqueIdentifier>{37e9d1e0-669f-431b-8de2-f5c334ed752f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\osc\include">
+      <UniqueIdentifier>{74bed71d-95dd-45c5-b09e-716d0cdbaf2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\osc\src">
+      <UniqueIdentifier>{49ff1cb4-ad7b-4361-9f27-47359188556a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\MultiTouchApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\TuioClient.cpp">
+      <Filter>Blocks\tuio\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\osc\src\OscBundle.cpp">
+      <Filter>Blocks\osc\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\osc\src\OscListener.cpp">
+      <Filter>Blocks\osc\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\osc\src\OscMessage.cpp">
+      <Filter>Blocks\osc\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\osc\src\OscSender.cpp">
+      <Filter>Blocks\osc\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\include\cinder\Cinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\TuioClient.h">
+      <Filter>Blocks\tuio\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\TuioObject.h">
+      <Filter>Blocks\tuio\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\TuioCursor.h">
+      <Filter>Blocks\tuio\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\include\TuioProfileBase.h">
+      <Filter>Blocks\tuio\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\osc\include\OscArg.h">
+      <Filter>Blocks\osc\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\osc\include\OscBundle.h">
+      <Filter>Blocks\osc\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\osc\include\OscListener.h">
+      <Filter>Blocks\osc\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\osc\include\OscMessage.h">
+      <Filter>Blocks\osc\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\osc\include\OscSender.h">
+      <Filter>Blocks\osc\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

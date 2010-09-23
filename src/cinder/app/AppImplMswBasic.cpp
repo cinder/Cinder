@@ -24,6 +24,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/app/AppImplMswRenderer.h"
 #include "cinder/app/Renderer.h"
+#include "cinder/Utilities.h"
 
 #include <windowsx.h>
 #include <winuser.h>
@@ -101,7 +102,6 @@ void AppImplMswBasic::run()
 
 bool AppImplMswBasic::createWindow( int *width, int *height )
 {
-	const char *title = "Cinder";
 	int bits = 32;
 
 	if( *width <= 0 ) {
@@ -166,13 +166,12 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 
 	::AdjustWindowRectEx( &WindowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
 
-	wchar_t unicodeTitle[1024]; 
-	wsprintfW( unicodeTitle, L"%S", title );
+	std::wstring unicodeTitle = toUtf16( mApp->getSettings().getTitle() ); 
 
 	// Create The Window
 	if( ! ( mWnd = ::CreateWindowEx( mWindowExStyle,						// Extended Style For The Window
 		( mFullScreen ) ? FULLSCREEN_WIN_CLASS_NAME : WINDOWED_WIN_CLASS_NAME,
-		unicodeTitle,						// Window Title
+		unicodeTitle.c_str(),						// Window Title
 		mWindowStyle,					// Required Window Style
 		WindowRect.left, WindowRect.top,								// Window Position
 		WindowRect.right-WindowRect.left,	// Calculate Window Width

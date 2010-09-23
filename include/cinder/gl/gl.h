@@ -141,6 +141,10 @@ inline void color( const Color &c ) { glColor4f( c.r, c.g, c.b, 1.0f ); }
 //! Sets the current color and alpha value
 inline void color( const ColorA &c ) { glColor4f( c.r, c.g, c.b, c.a ); }
 
+//! Enables the OpenGL State \a state. Equivalent to calling to glEnable( state );
+inline void enable( GLenum state ) { glEnable( state ); }
+//! Disables the OpenGL State \a state. Equivalent to calling to glDisable( state );
+inline void disable( GLenum state ) { glDisable( state ); }
 
 //! Enables alpha blending. Selects a \c BlendFunc that is appropriate for premultiplied-alpha when \a premultiplied
 void enableAlphaBlending( bool premultiplied = false );

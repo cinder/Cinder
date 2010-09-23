@@ -32,7 +32,7 @@ void FlickrTestApp::setup()
 {
 	glEnable( GL_TEXTURE_2D );
 
-	XmlDocument doc( loadUrlStream( "http://api.flickr.com/services/feeds/photos_public.gne?id=13349694@N00&lang=en-us&format=rss_200" ) );	
+	XmlDocument doc( loadUrlStream( "http://api.flickr.com/services/feeds/groups_pool.gne?id=1423039@N24&lang=en-us&format=rss_200" ) );	
 	vector<XmlElement> items( doc.xpath( "/rss/channel/item" ) );
 	for( vector<XmlElement>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter ) {
 		//std::cout << itemIter->firstChildElement().firstChild().value() << std::endl;

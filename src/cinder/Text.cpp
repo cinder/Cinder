@@ -51,6 +51,7 @@ using std::wstring;
 
 namespace cinder {
 
+#if ! defined( CINDER_COCOA_TOUCH )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TextManager
 class TextManager : private boost::noncopyable
@@ -183,7 +184,9 @@ void Line::calcExtents()
 	::CFAttributedStringBeginEditing( attrStr );
 	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
 		// create and append this run's CFAttributedString
-		::CFAttributedStringReplaceAttributedString( attrStr, ::CFRangeMake( ::CFAttributedStringGetLength( attrStr ), 0 ), cocoa::createCfAttributedString( runIt->mText, runIt->mFont, runIt->mColor ) );
+		::CFAttributedStringRef runStr = cocoa::createCfAttributedString( runIt->mText, runIt->mFont, runIt->mColor );
+		::CFAttributedStringReplaceAttributedString( attrStr, ::CFRangeMake( ::CFAttributedStringGetLength( attrStr ), 0 ), runStr );
+		::CFRelease( runStr );
 	}	
 	// all done - coalesce
 	::CFAttributedStringEndEditing( attrStr );			
@@ -416,6 +419,8 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 
 	return result;
 }
+#endif // ! defined( CINDER_COCOA_TOUCH )
+
 
 #if defined( CINDER_COCOA_TOUCH )
 Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset )
