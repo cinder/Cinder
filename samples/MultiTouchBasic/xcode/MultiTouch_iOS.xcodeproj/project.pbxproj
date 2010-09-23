@@ -19,12 +19,11 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
-		C725DDEC121D8ECC00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F22121C83A500093AFE /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		C725DDED121D8ECC00FA186B /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F24121C83A500093AFE /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C7B92F21121C83A500093AFE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F20121C83A500093AFE /* AVFoundation.framework */; };
 		C7B92F23121C83A500093AFE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F22121C83A500093AFE /* CoreMedia.framework */; };
 		C7B92F25121C83A500093AFE /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F24121C83A500093AFE /* CoreVideo.framework */; };
-		C7B92F2E121C83B200093AFE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F20121C83A500093AFE /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C7FB1B5A124BDD700045AFD2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F20121C83A500093AFE /* AVFoundation.framework */; };
+		C7FB1B64124BDDAA0045AFD2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F22121C83A500093AFE /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,14 +47,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C725DDEC121D8ECC00FA186B /* CoreMedia.framework in Frameworks */,
-				C725DDED121D8ECC00FA186B /* CoreVideo.framework in Frameworks */,
-				C7B92F2E121C83B200093AFE /* AVFoundation.framework in Frameworks */,
 				005372F5118FD835004D686E /* Foundation.framework in Frameworks */,
 				005372F6118FD835004D686E /* UIKit.framework in Frameworks */,
 				005372F7118FD835004D686E /* OpenGLES.framework in Frameworks */,
 				005372F8118FD835004D686E /* QuartzCore.framework in Frameworks */,
 				005372F9118FD835004D686E /* CoreGraphics.framework in Frameworks */,
+				C7FB1B5A124BDD700045AFD2 /* AVFoundation.framework in Frameworks */,
+				C7FB1B64124BDDAA0045AFD2 /* CoreMedia.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,7 +187,14 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MultiTouch_iOS" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -252,9 +257,12 @@
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "MultiTouch_iOS-Info.plist";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"",
+					"-lz",
+				);
 				PRODUCT_NAME = MultiTouch;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
@@ -273,9 +281,12 @@
 				INFOPLIST_FILE = "MultiTouch_iOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"",
+					"-lz",
+				);
 				PRODUCT_NAME = MultiTouch;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
@@ -295,9 +306,12 @@
 				INFOPLIST_FILE = "MultiTouch_iOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"",
+					"-lz",
+				);
 				PRODUCT_NAME = MultiTouch;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -315,9 +329,12 @@
 				INFOPLIST_FILE = "MultiTouch_iOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"";
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"",
+					"-lz",
+				);
 				PRODUCT_NAME = MultiTouch;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -336,7 +353,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" include";
 			};
 			name = Debug;
@@ -353,7 +370,7 @@
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.1;
+				SDKROOT = iphoneos4.1;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" include";
 			};
 			name = Release;

@@ -15,7 +15,7 @@
 		C727BFB9121B386C00192073 /* captureTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C727BFB8121B386C00192073 /* captureTest.cpp */; };
 		C727C02A121B400300192073 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C029121B400300192073 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C727C02E121B400300192073 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02D121B400300192073 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		C7B92F86121C864200093AFE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F85121C864200093AFE /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		C7FB1B3F124BDA7C0045AFD2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,7 +31,6 @@
 		C727C029121B400300192073 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C727C02B121B400300192073 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		C727C02D121B400300192073 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
-		C7B92F85121C864200093AFE /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,7 +45,7 @@
 				00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */,
 				C727C02A121B400300192073 /* AVFoundation.framework in Frameworks */,
 				C727C02E121B400300192073 /* CoreVideo.framework in Frameworks */,
-				C7B92F86121C864200093AFE /* CoreMedia.framework in Frameworks */,
+				C7FB1B3F124BDA7C0045AFD2 /* CoreMedia.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,7 +84,6 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				C7B92F85121C864200093AFE /* CoreMedia.framework */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -148,7 +146,14 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "captureTest_iOS" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -197,7 +202,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"";
 				PRODUCT_NAME = captureTest;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 			};
 			name = Debug;
 		};
@@ -216,7 +221,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"";
 				PRODUCT_NAME = captureTest;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 			};
 			name = Release;
 		};
@@ -234,7 +239,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" include";
 			};
 			name = Debug;
@@ -252,7 +257,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos4.1;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" include";
 			};
 			name = Release;
