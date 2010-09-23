@@ -1,19 +1,31 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/Cinder.h"
+
+#if defined( CINDER_COCOA_TOUCH )
+	#include "cinder/app/AppCocoaTouch.h"
+	typedef ci::app::AppCocoaTouch AppBase;
+#else
+	#include "cinder/app/AppBasic.h"
+	#include "cinder/audio/FftProcessor.h"
+	typedef ci::app::AppBasic AppBase;
+#endif
+
 #include "cinder/audio/Input.h"
-#include "cinder/audio/FftProcessor.h"
 #include <iostream>
 #include <vector>
 
 using namespace ci;
 using namespace ci::app;
 
-class AudioInputSampleApp : public AppBasic {
+class AudioInputSampleApp : public AppBase {
  public:
 	void setup();
 	void update();
 	void draw();
+	void drawWaveForm( float height );
+
+#if defined(CINDER_MAC)
 	void drawFft();
-	void drawWaveForm();
+#endif
 	
 	audio::Input mInput;
 	boost::shared_ptr<float> mFftDataRef;
@@ -22,6 +34,7 @@ class AudioInputSampleApp : public AppBasic {
 
 void AudioInputSampleApp::setup()
 {
+	//iterate input devices and print their names to the console
 	const std::vector<audio::InputDeviceRef>& devices = audio::Input::getDevices();
 	for( std::vector<audio::InputDeviceRef>::const_iterator iter = devices.begin(); iter != devices.end(); ++iter ) {
 		console() << (*iter)->getName() << std::endl;
@@ -37,26 +50,38 @@ void AudioInputSampleApp::setup()
 
 void AudioInputSampleApp::update()
 {
-	uint16_t bandCount = 512;
 	mPcmBuffer = mInput.getPcmBuffer();
 	if( ! mPcmBuffer ) {
 		return;
 	}
+#if defined( CINDER_MAC )
+	uint16_t bandCount = 512;
+	//presently FFT only works on OS X, not iOS
 	mFftDataRef = audio::calculateFft( mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT ), bandCount );
+#endif
 }
 
 void AudioInputSampleApp::draw()
 {
+#if defined( CINDER_COCOA_TOUCH )
+	float waveFormHeight = getWindowWidth() / 2;
+#else
+	float waveFormHeight = 100.0;
+#endif
+
+	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
 	
 	glPushMatrix();
-		drawFft();
+		drawWaveForm( waveFormHeight );
+#if defined(CINDER_MAC)
 		glTranslatef( 0.0f, 200.0f, 0.0f );
-		drawWaveForm();
+		drawFft();
+#endif
 	glPopMatrix();
 }
 
-void AudioInputSampleApp::drawWaveForm()
+void AudioInputSampleApp::drawWaveForm( float height )
 {
 	if( ! mPcmBuffer ) {
 		return;
@@ -69,25 +94,25 @@ void AudioInputSampleApp::drawWaveForm()
 	int displaySize = getWindowWidth();
 	int endIdx = bufferSamples;
 	
-	float scale = displaySize / (float)endIdx;
+	//only draw the last 1024 samples or less
+	int32_t startIdx = ( endIdx - 1024 );
+	startIdx = math<int32_t>::clamp( startIdx, 0, endIdx );
 	
-	glColor3f( 1.0f, 0.5f, 0.25f );
-	glBegin( GL_LINE_STRIP );
-	for( int i = 0; i < endIdx; i++ ) {
+	float scale = displaySize / (float)( endIdx - startIdx );
+	
+	PolyLine<Vec2f>	line;
+	
+	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
+	for( uint32_t i = startIdx, c = 0; i < endIdx; i++, c++ ) {
 		float y = ( ( leftBuffer->mData[i] - 1 ) * - 100 );
-		glVertex2f( ( i * scale ) , y );
+		line.push_back( Vec2f( ( c * scale ), y ) );
 	}
-	glEnd();
+	gl::draw( line );
 	
-	/*glColor3f( 1.0f, 0.96f, 0.0f );
-	glBegin( GL_LINE_STRIP );
-	for( int i = 0; i < endIdx; i++ ) {
-		float y = ( ( rightBuffer->mData[i] - 1 ) * - 100 );
-		glVertex2f( ( i * scale ) , y );
-	}
-	glEnd();*/
+
 }
 
+#if defined(CINDER_MAC)
 void AudioInputSampleApp::drawFft()
 {
 	uint16_t bandCount = 512;
@@ -112,6 +137,10 @@ void AudioInputSampleApp::drawFft()
 		glEnd();
 	}
 }
+#endif
 
-
+#if defined( CINDER_COCOA_TOUCH )
+CINDER_APP_COCOA_TOUCH( AudioInputSampleApp, RendererGl )
+#else
 CINDER_APP_BASIC( AudioInputSampleApp, RendererGl )
+#endif
