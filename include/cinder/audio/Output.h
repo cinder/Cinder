@@ -24,10 +24,11 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/audio/Io.h"
+#include "cinder/Exception.h"
 
 namespace cinder { namespace audio {
 
-typedef uint32_t				TrackId;
+typedef int32_t					TrackId;
 typedef shared_ptr<class Track> TrackRef;
 
 class OutputImpl;
@@ -112,5 +113,10 @@ class Output {
   private:
 	static OutputImpl* instance();
 };
+
+class OutputException : public Exception {};
+class OutOfTracksException : public Exception {};
+
+
 
 }} //namespace

@@ -36,7 +36,7 @@
 
 namespace cinder { namespace audio {
 
-const uint32_t OutputImplAudioUnit::sNumberBuses = 15;
+const uint32_t OutputImplAudioUnit::sDefaultNumberBuses = 20;
 
 TargetOutputImplAudioUnit::TargetOutputImplAudioUnit( const OutputImplAudioUnit *aOutput ) {
 		loadFromCaAudioStreamBasicDescription( this, aOutput->mPlayerDescription );
@@ -45,9 +45,10 @@ TargetOutputImplAudioUnit::TargetOutputImplAudioUnit( const OutputImplAudioUnit 
 OutputImplAudioUnit::Track::Track( SourceRef source, OutputImplAudioUnit * output )
 	: cinder::audio::Track(), mSource( source ), mOutput( output ), mIsPlaying( false), mIsLooping( false ), mIsPcmBuffering( false )
 {
+	mInputBus = output->availableTrackId();
+	if( mInputBus < 0 ) throw OutOfTracksException();
 	mTarget = TargetOutputImplAudioUnit::createRef( output );
 	mLoader = source->createLoader( mTarget.get() );
-	mInputBus = output->availableTrackId();
 }
 
 OutputImplAudioUnit::Track::~Track() 
@@ -243,9 +244,6 @@ OSStatus OutputImplAudioUnit::Track::renderNotifyCallback( void * audioTrack, Au
 OutputImplAudioUnit::OutputImplAudioUnit()
 	: mAvailableBuses(), OutputImpl()
 {
-	for( uint32_t i = 1; i <= sNumberBuses; i++ ) {
-		mAvailableBuses.push( sNumberBuses - i );
-	}
 
 	OSStatus err = noErr;
 
@@ -306,9 +304,23 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	}
 	
 	//TODO: cleanup error checking in all of this
-	err = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &sNumberBuses, sizeof(sNumberBuses) );
+	
+	//check the element count, if it's less than our default element count, increase, or else just leave it alone
+	err = AudioUnitGetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &mNumberBuses, &dsize );
 	if( err ) {
-		std::cout << "Error setting mixer unit input elements" << std::endl;
+		std::cout << "Error getting mixer unit input elements" << std::endl;
+	}
+	
+	if( mNumberBuses < sDefaultNumberBuses ) {
+		mNumberBuses = sDefaultNumberBuses;
+		err = AudioUnitSetProperty( mMixerUnit, kAudioUnitProperty_ElementCount, kAudioUnitScope_Input, 0, &mNumberBuses, sizeof(mNumberBuses) );
+		if( err ) {
+			std::cout << "Error setting mixer unit input elements" << std::endl;
+		}
+	}
+	
+	for( uint32_t i = 1; i <= mNumberBuses; i++ ) {
+		mAvailableBuses.push( mNumberBuses - i );
 	}
 	
 	AUGraphConnectNodeInput( mGraph, mMixerNode, 0, mOutputNode, 0 );
@@ -372,7 +384,13 @@ OutputImplAudioUnit::~OutputImplAudioUnit()
 
 TrackRef OutputImplAudioUnit::addTrack( SourceRef aSource, bool autoplay )
 {
-	shared_ptr<OutputImplAudioUnit::Track> track = shared_ptr<OutputImplAudioUnit::Track>( new OutputImplAudioUnit::Track( aSource, this ) );
+	shared_ptr<OutputImplAudioUnit::Track> track;
+	try {
+		track = shared_ptr<OutputImplAudioUnit::Track>( new OutputImplAudioUnit::Track( aSource, this ) );
+	} catch( OutOfTracksException ) {
+		//if it can't add it, just return a null track
+		return track;
+	}
 	TrackId inputBus = track->getTrackId();
 	mTracks.insert( std::pair<TrackId,shared_ptr<OutputImplAudioUnit::Track> >( inputBus, track ) );
 	if( autoplay ) {

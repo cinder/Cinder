@@ -57,11 +57,16 @@ class OutputImplAudioUnit : public OutputImpl {
 	
 	//TargetRef getTarget();
   protected:
-	TrackId							availableTrackId() { TrackId bus = mAvailableBuses.top(); mAvailableBuses.pop(); return bus; }
+	TrackId							availableTrackId() { 
+										if( mAvailableBuses.size() < 1 ) return -1;
+										TrackId bus = mAvailableBuses.top(); 
+										mAvailableBuses.pop(); return bus; 
+									}
   private:
   
-	static const uint32_t			sNumberBuses;
+	static const uint32_t			sDefaultNumberBuses;
 	std::stack<TrackId>				mAvailableBuses;
+	uint32_t						mNumberBuses;
 #if defined(CINDER_MAC)
 	AudioDeviceID					mOutputDeviceId;
 #endif
