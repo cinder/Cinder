@@ -99,7 +99,8 @@ class DataSourceUrl : public DataSource {
 	IStreamUrlRef	mStream;
 };
 
-DataSourceUrlRef	loadUrl( const Url &Url );
+DataSourceUrlRef		loadUrl( const Url &Url );
+inline DataSourceUrlRef	loadUrl( const std::string &urlString ) { return loadUrl( Url( urlString ) ); }
 
 typedef shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 
