@@ -2,10 +2,22 @@
 <html>
 <head>
 	<link rel="stylesheet" href="stylesheets/cinder.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="stylesheets/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="stylesheets/jquery.lightbox-0.5.pack.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesheets/jquery.lightbox-0.5.css" media="screen" />
 	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 	<title>Windows Setup</title>
 </head>
 <body>
+
+<script type="text/javascript">
+$(function() {
+	$('#msvc_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});
+	$('#sdk_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});
+	$('#dxsdk_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});	
+	$('#qtime_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});	
+});
+</script>
 
 <div class="wrapper">
 	<div class="header">
@@ -13,63 +25,107 @@
 	</div>
 
 	<div class="contents">
-		<h1>Windows Setup</h1>
-		<p>Cinder on Windows is
-		designed to use Microsoft Visual Studio 2010, and works with both the
-		commercial version and the freely available <em>Express</em> editions. If you don't already have it installed, 
-		you can download <a href="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">Visual C++ Express here</a>.</p>
-		<br>
-		<p><b>Note to Visual Studio 2008/Visual C++ 2008 Express Edition Users:</b> The Cinder binaries are pre-built to work with VC++ 2010, but you can still easily use Cinder. You'll just need to rebuild the .lib files. To do this, simply open the cinder solution in the vc9 folder and build it under both the Debug and Release configurations.</p>
-		<br>
-		<p>If you are you using an Express edition of Visual C++ and you have
-		never installed the Platform SDK, you'll want to do that too - just 
-		<a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=E6E1C3DF-A74F-4207-8586-711EBE331CDC&amp;displaylang=en">download and run the installer here</a>.</p>
-		<br>
-		<p>You'll need the DirectX SDK - <a href="http://www.microsoft.com/downloads/details.aspx?FamilyID=B66E14B8-8505-4B17-BF80-EDB2DF5ABAD4">Download the August 2009 version here</a>. You'll also need to tell Visual Studio how to find the DirectX header files. Select <b>Tools | Options</b> from the menu bar and find <b>VC++ Directories</b> in the <b>Projects and Solutions</b> group. Choose <b>Include Files</b> from the <b>Show directories for</b> dropdown list and click the New Folder icon. Enter <em>$(DXSDK_DIR)\include</em> and click OK.</p>
-		
+		<h1>Welcome to Cinder on Windows</h1>
+		<p>This guide will help you get started using Cinder on Windows. Start by downloading Cinder itself from the site's <a href="http://libcinder.org/download/">Download Page</a> if you haven't already. Choose the Visual C++ 2010 version if you don't already have Visual C++ installed.<br/>
 		<br/>
-		<center><img style="width: 600px;" alt="DirectX include path" src="msw_images/dxsetup1.jpg"></center>
-		<br/>
+		<h1>Microsoft Visual C++</h1>
+		<p>
+		Cinder is designed for either Microsoft Visual Studio 2008 or 2010, and works with both the
+		commercial versions and the freely available <em>Express</em> editions. If you don't already have one of those versions installed, 
+		we'll walk you through setting up the free 2010 edition.<br/>
+		</p><br/>
+		<p>
+		The first step is of course to download Visual C++ itself, which you <a href="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">can do here</a>. Next, lauch the installer. You can leave the settings at their defaults and simply click the <em>Install</em> button.
+		</p>
+
+		<br>
+		<center>
+		<div id="msvc_image">
+			<a href="msw_images/msvc/step1.png" title="Begin by downloading Visual C++ 2010 from Microsoft's website.">
+				<img src="msw_images/msvc/step1_thumb.png" /></a>
+			<a href="msw_images/msvc/step2.png" title="The default installation settings are correct - you can simply press <em>Install</em> (and then go make some coffee).">
+				<img src="msw_images/msvc/step2_thumb.png" /></a>
+		</div>
+		</center>
+		<br />
+		<h1>Windows Platform SDK</h1>
+		<p>Next you'll want the latest Microsoft's Platform SDK, which you can <a href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&displaylang=en">download here</a>. After launching your new copy of <em>winsdk_web.exe</em>, you'll want to setup your installation as it's depicted in the included images.</p>
+		<br />
+		<center>
+		<div id="sdk_image">
+			<a href="msw_images/sdk/step1.png" title="Download the Microsoft Windows SDK for Windows 7 and .NET Framework 4 (version 7.1) from Microsoft's website.">
+				<img src="msw_images/sdk/step1_thumb.png" /></a>
+			<a href="msw_images/sdk/step2.png" title="Launch the winsdk_web.exe file and press <em>Next</em>.">
+				<img src="msw_images/sdk/step2_thumb.png" /></a>
+			<a href="msw_images/sdk/step3.png" title="The default installation paths are the best choices.">
+				<img src="msw_images/sdk/step3_thumb.png" /></a>
+			<a href="msw_images/sdk/step4.png" title="This image depicts the settings you should choose for a minimal Cinder-compatible installation.">
+				<img src="msw_images/sdk/step4_thumb.png" /></a>
+		</div>
+		</center>
+		<br />
 		
-		<p>Lastly, you'll need to grab the <a href="https://connect.apple.com/cgi-bin/WebObjects/MemberSite.woa/wa/getSoftware?bundleID=19910">QuickTime SDK 7.3 from Apple</a> which requires you to have a free ADC login. Cinder expects QuickTime to exist in the same directory it does, as 
-		<em>QuickTimeSDK-7.3.</em> Be sure to install it accordingly when prompted by the installer. Your directories should look about like this:</p>
+		<h1>DirectX SDK</h1>
+		<p>Cinder makes use of DirectX for its audio code, so you'll want to grab the latest DirectX SDK, which you can <a href="http://www.microsoft.com/downloads/en/details.aspx?displaylang=en&FamilyID=3021d52b-514e-41d3-ad02-438a3ba730ba">download here</a>. Next, launch your new copy of <em>DXSDK_Jun10.exe</em>. </p>
+		
+		<br />
+		<center>
+		<div id="dxsdk_image">
+			<a href="msw_images/dxsdk/step1.png" title="Download the DirectX Software Development Kit (June 2010 release) from Microsoft's website.">
+				<img src="msw_images/dxsdk/step1_thumb.png" /></a>
+			<a href="msw_images/dxsdk/step2.png" title="Launch the DXSDK_Jun10.exe file and press <em>Next</em>.">
+				<img src="msw_images/dxsdk/step2_thumb.png" /></a>
+			<a href="msw_images/dxsdk/step3.png" title="The default installation path is the best choice.">
+				<img src="msw_images/dxsdk/step3_thumb.png" /></a>
+			<a href="msw_images/dxsdk/step4.png" title="This default installation options are the best choices.">
+				<img src="msw_images/dxsdk/step4_thumb.png" /></a>
+		</div>
+		</center>
+		<br />
+		
+		<h1>QuickTime SDK</h1>
+		
+		<p>Lastly, you'll need to grab the <a href="https://connect.apple.com/cgi-bin/WebObjects/MemberSite.woa/wa/getSoftware?bundleID=19910">QuickTime SDK 7.3 from Apple</a>, which requires you to have a free ADC account. If you don't have an account, follow the <em>Join now</em> link in the lower right corner, and follow the <em>Learn more</em> link under the "Register as an Apple Developer" heading on the next page. From there, select the <em>Get Started</em> page, and then select <em>Create an Apple ID</em> on the one after that. After creating your account, you can login to the original site and download the QuickTime 7.3 SDK.</p>
+		<br />
+		<p>Cinder expects QuickTime to exist in the same directory it does, in a directory called <em>QuickTimeSDK-7.3.</em> Be sure to install it accordingly when prompted by the installer.</p>
+		<br />
+		<center>
+		<div id="qtime_image">
+			<a href="msw_images/qtime/step1.png" title="To download the QuickTime SDK you'll need an ADC account. You can create one by following the <em>Join now</em> link in the lower right corner.">
+				<img src="msw_images/qtime/step1_thumb.png" /></a>
+			<a href="msw_images/qtime/step2.png" title="To continue with the process of creating an account, scroll to the bottom of the page and click the <em>Learn more</em> link.">
+				<img src="msw_images/qtime/step2_thumb.png" /></a>
+			<a href="msw_images/qtime/step3.png" title="To create an account, click the <em>Get Started</em> button on the page that follows.">
+				<img src="msw_images/qtime/step3_thumb.png" /></a>
+			<a href="msw_images/qtime/step4.png" title="Select <em>Create an Apple ID</em> on the page that follows.">
+				<img src="msw_images/qtime/step4_thumb.png" /></a>
+			<a href="msw_images/qtime/step5.png" title="After creating an account, return to the original page and use your new account to login. Then select the <em>QuickTime 7.3 SDK for Windows</em> link.">
+				<img src="msw_images/qtime/step5_thumb.png" /></a>
+			<a href="msw_images/qtime/step6.png" title="Launch the installer, and when prompted for an installation path select the same directory that Cinder lives in (Cinder's parent directory, not inside Cinder itself.)">
+				<img src="msw_images/qtime/step6_thumb.png" /></a>
+		</div>
+		</center>
+		<br />
+
+		<p>Once you're done, your directories should look roughly like this:</p><br />
 		<center><img alt="folders" src="msw_images/folders.png"></center>
+		<br />
+		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you should be all set. However if you are building from our <a href="http://github.com/cinder/Cinder">Github repository</a> you'll want to refer to the <a href="GitSetup.html">Cinder + Git document</a>.</p>
 		<br>
-				
-		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you should be all set. However if you are building from our <a href="http://github.com/cinder/Cinder">Github repository</a> skip down to the <a href="#advanced">advanced section</a>.</p>
-		<br>
-		<p>Let's try opening and building one of the samples. From Windows Explorer, navigate to the <em>cinder\samples\QuickTime\vc9</em> folder and double-click <em>quickTimeSample.sln</em>.</p>
+		<p>Let's try opening and building one of the samples. From Windows Explorer, navigate to the <em>cinder\samples\QuickTime\vc10</em> folder (or <em>vc9</em> if you're using Visual C++ 2008) and double-click <em>quickTimeSample.sln</em>.</p>
 		<br>
 		<p>Under the <em>Debug</em> menu select <em>Start Debugging</em> and click <em>Yes</em>
 		when prompted to build the project. The QuickTime sample will launch
 		and present you with an Open dialog. Select a QuickTime movie on your
 		hard drive, and you should see something about like this:</p>
-
+		<br />
 		<center><img alt="QuickTime sample" src="msw_images/quicktimesample.jpg"></center><br>
 
 		<p>Especially as we continue to develop the documentation, the samples are the best
 		way to get started learning Cinder. Don't be afraid to modify them and
-		experiment. And if you haven't read Robert Hodgin's <em>Hello, Cinder</em> tutorial, you should go <a href="../docs/hello_cinder.html"> do that first</a>. </p>
+		experiment. And if you haven't read Robert Hodgin's <em>Hello, Cinder</em> tutorial, you should go <a href="../html/hello_cinder.html"> do that first</a>. </p>
 
-		<h2><a name="advanced">Advanced - Building Cinder</a></h2>
-
-		<p>If you are building Cinder from the source, available on our <a href="http://github.com/cinder/Cinder">Github repository</a>, you have just a couple of additional steps remaining. As an aside, if you are brand new to Cinder, you maybe happier just using one of our <a href="http://libcinder.org/download/">packaged releases</a>.</p>
-		<br>
-
-		<p>You'll want to grab the latest Boost, currently version 1.44, which you can 
-		<a href="http://sourceforge.net/projects/boost/files/boost/1.44.0/boost_1_44_0.zip/download">download here</a>. 		After dearchiving it, you'll want to take the resulting directory and put it directly into your Cinder directory, and name it <em>boost</em>.</p>
-
-		<br>
-
-		<p>Everything look good? Let's try to build Cinder then. Open up the Visual Studio 
-		solution in <em>cinder\vc9\cinder.sln.</em> Under the <em>Build</em> menu select 
-		<em>Batch Build</em>, and click the checkboxes corresponding to both the 
-		<em>Debug</em> and <em>Release</em> build configurations, and then hit the <em>Build</em> button.</p>
-
-		<center><img style="width: 602px; height: 347px;" alt="Batch Build" src="msw_images/batchbuild.png"></center>
-		<br>
-		<p>This will take a second, but once everything succeeds, there should exist the 
-		files <em>cinder.lib</em> and <em>cinder_d.lib</em> at the path <em>cinder\libs</em></p>
+		
 	</div>
 </div>
 </body>

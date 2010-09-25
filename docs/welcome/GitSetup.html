@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" href="stylesheets/cinder.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="stylesheets/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="stylesheets/jquery.lightbox-0.5.pack.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesheets/jquery.lightbox-0.5.css" media="screen" />
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+	<title>Windows Setup</title>
+</head>
+<body>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" href="stylesheets/cinder.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="stylesheets/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="stylesheets/jquery.lightbox-0.5.pack.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesheets/jquery.lightbox-0.5.css" media="screen" />
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+	<title>Windows Setup</title>
+</head>
+<body>
+
+<script type="text/javascript">
+$(function() {
+	$('#msvc_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});
+	$('#sdk_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});
+	$('#dxsdk_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});	
+	$('#qtime_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});	
+});
+</script>
+
+<div class="wrapper">
+	<div class="header">
+		<h1><a href="http://libcinder.org">Cinder</a><h1>
+	</div>
+
+	<div class="contents">
+		<h1>Cinder + Git</h1>
+		<p>If you're interested in keeping up with the latest Cinder development or contributing to the project (yes please!) then you'll definitely want to setup the github version. However if you are brand new to Cinder, you maybe happier just using one of our <a href="http://libcinder.org/download/">packaged releases</a>. If you are building Cinder from the source, available on our <a href="http://github.com/cinder/Cinder">Github repository</a>, you have just a couple of additional steps remaining.</p>
+		<br>
+
+		<h1>Installing Git on Mac OS X</h1>
+		<h1>Installing Git on Windows</h1>
+		<h1>Checking out the source</h1>
+		<h1>Downloading Boost</h1>
+		
+		<p>You'll want to grab the latest Boost, currently version 1.44, which you can 
+		<a href="http://sourceforge.net/projects/boost/files/boost/1.44.0/boost_1_44_0.zip/download">download here</a>. 		After dearchiving it, you'll want to take the resulting directory and put it directly into your Cinder directory, and name it <em>boost</em>.</p>
+
+		<br>
+
+		<h1>Building on Mac OS X</h1>
+		<h1>Building on Windows</h1>	
+		<p>Everything look good? Let's try to build Cinder then. Open up the Visual Studio 
+		solution in <em>cinder\vc9\cinder.sln.</em> Under the <em>Build</em> menu select 
+		<em>Batch Build</em>, and click the checkboxes corresponding to both the 
+		<em>Debug</em> and <em>Release</em> build configurations, and then hit the <em>Build</em> button.</p>
+
+		<center><img style="width: 602px; height: 347px;" alt="Batch Build" src="msw_images/batchbuild.png"></center>
+		<br>
+		<p>This will take a second, but once everything succeeds, there should exist the 
+		files <em>cinder.lib</em> and <em>cinder_d.lib</em> at the path <em>cinder\libs</em></p>
+		<h1>Generating Documentation</h1>
+	</div>
+</div>
+</body>
