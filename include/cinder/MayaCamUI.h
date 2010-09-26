@@ -32,11 +32,23 @@ class MayaCamUI {
 	MayaCamUI() { mInitialCam = mCurrentCam = CameraPersp(); }
 	MayaCamUI( const CameraPersp &aInitialCam ) { mInitialCam = mCurrentCam = aInitialCam; }
 	
+	bool mouseDown( app::MouseEvent event )
+	{
+		mouseDown( event.getPos() );
+		return false;
+	}
+	
 	void mouseDown( const Vec2i &mousePos )
 	{
 		mInitialMousePos = mousePos;
 		mInitialCam = mCurrentCam;
 		mLastAction = ACTION_NONE;
+	}
+	
+	bool mouseDrag( app::MouseEvent event )
+	{
+		mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
+		return false;
 	}
 	
 	void mouseDrag( const Vec2i &mousePos, bool leftDown, bool middleDown, bool rightDown )
@@ -94,6 +106,7 @@ class MayaCamUI {
 			mCurrentCam.setEyePoint( mInitialCam.getCenterOfInterestPoint() + rotatedVec );
 			mCurrentCam.setOrientation( mInitialCam.getOrientation() * Quatf( mU, deltaY ) * Quatf( Vec3f::yAxis(), deltaX ) );
 		}
+		
 	}	
 	
 	const CameraPersp& getCamera() const { return mCurrentCam; }
