@@ -89,8 +89,8 @@ class IStreamUrl : public IStream {
 	static IStreamUrlRef	createRef( const std::string &url, const std::string &user = "", const std::string &password = "" );
 
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) { return mImpl->readDataAvailable( dest, maxSize ); }
-	virtual void		seekAbsolute( off_t absoluteOffset ) { return seekAbsolute( absoluteOffset ); }
-	virtual void		seekRelative( off_t relativeOffset ) { return seekRelative( relativeOffset ); }
+	virtual void		seekAbsolute( off_t absoluteOffset ) { return mImpl->seekAbsolute( absoluteOffset ); }
+	virtual void		seekRelative( off_t relativeOffset ) { return mImpl->seekRelative( relativeOffset ); }
 	virtual off_t		tell() const { return mImpl->tell(); }
 	virtual off_t		size() const { return mImpl->size(); }
 	

@@ -252,9 +252,9 @@
 // returns 0 on success
 - (int)IoRead:(void*)dest withSize:(size_t)size
 {
-	@synchronized( self ) {
-		[self fillBuffer:size];
-		
+	[self fillBuffer:size];
+	
+	@synchronized( self ) {		
 		// check if theres data in the buffer - if not fillBuffer() either errored or EOF
 		if( [self bufferRemaining] < (off_t)size )
 			return -1;
@@ -268,6 +268,7 @@
 
 - (void)fillBuffer:(int)wantBytes
 {
+	{
 	@synchronized( self ) {
 		// do we already have the number of bytes we need, or are we disconnected?
 		if( ([self bufferRemaining] >= wantBytes) || ( ! mStillConnected ) )
@@ -282,24 +283,27 @@
 			mBufferFileOffset += bytesCulled;
 		}
 	}
+	}
 
 	// wait for the buffer to get filled by the secondary thread
 	while( ([self bufferRemaining] < wantBytes) && mStillConnected ) {
-		usleep( 10000 );
+		usleep( 100000 );
 	}
 }
 
 - (size_t)readDataAvailable:(void*)dest withSize:(size_t)maxSize
 {
 	[self fillBuffer:maxSize];
-	
-	int remaining = [self bufferRemaining];
-	if( remaining < (off_t)maxSize )
-		maxSize = remaining;
+
+	@synchronized( self ) {	
+		int remaining = [self bufferRemaining];
+		if( remaining < (off_t)maxSize )
+			maxSize = remaining;
+			
+		memcpy( dest, mBuffer + mBufferOffset, maxSize );
 		
-	memcpy( dest, mBuffer + mBufferOffset, maxSize );
-	
-	mBufferOffset += maxSize;
+		mBufferOffset += maxSize;
+	}
 	return maxSize;
 }
 
