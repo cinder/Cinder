@@ -268,7 +268,6 @@
 
 - (void)fillBuffer:(int)wantBytes
 {
-	{
 	@synchronized( self ) {
 		// do we already have the number of bytes we need, or are we disconnected?
 		if( ([self bufferRemaining] >= wantBytes) || ( ! mStillConnected ) )
@@ -283,16 +282,16 @@
 			mBufferFileOffset += bytesCulled;
 		}
 	}
-	}
 
 	// wait for the buffer to get filled by the secondary thread
 	while( ([self bufferRemaining] < wantBytes) && mStillConnected ) {
-		usleep( 100000 );
+		usleep( 10000 );
 	}
 }
 
 - (size_t)readDataAvailable:(void*)dest withSize:(size_t)maxSize
 {
+	// this MUST be called outside the @synchronized block
 	[self fillBuffer:maxSize];
 
 	@synchronized( self ) {	
