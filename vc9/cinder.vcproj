@@ -377,14 +377,6 @@
 				Name="audio"
 				>
 				<File
-					RelativePath="..\src\cinder\audio\FftProcessor.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\cinder\audio\FftProcessorImplXDsp.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\src\cinder\audio\Io.cpp"
 					>
 				</File>
