@@ -182,11 +182,13 @@ static Boolean sIsEaglLayer;
 
 - (void)updateActiveTouches
 {
+	static float contentScale = [self respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ? self.contentScaleFactor : 1;
+
 	std::vector<ci::app::TouchEvent::Touch> activeTouches;
 	for( std::map<UITouch*,uint32_t>::const_iterator touchIt = mTouchIdMap.begin(); touchIt != mTouchIdMap.end(); ++touchIt ) {
 		CGPoint pt = [touchIt->first locationInView:self];
 		CGPoint prevPt = [touchIt->first previousLocationInView:self];
-		activeTouches.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), touchIt->second, [touchIt->first timestamp], touchIt->first ) );
+		activeTouches.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ) * contentScale, ci::Vec2f( prevPt.x, prevPt.y ) * contentScale, touchIt->second, [touchIt->first timestamp], touchIt->first ) );
 	}
 	mApp->privateSetActiveTouches__( activeTouches );
 }
@@ -195,12 +197,14 @@ static Boolean sIsEaglLayer;
 // Event handlers
 - (void) touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
 {
+	static float contentScale = [self respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ? self.contentScaleFactor : 1;
+	
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			CGPoint prevPt = [touch previousLocationInView:self];
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), [self addTouchToMap:touch], [touch timestamp], touch ) );
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ) * contentScale, ci::Vec2f( prevPt.x, prevPt.y ) * contentScale, [self addTouchToMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() )
@@ -211,19 +215,21 @@ static Boolean sIsEaglLayer;
 			CGPoint pt = [touch locationInView:self];		
 			int mods = 0;
 			mods |= cinder::app::MouseEvent::LEFT_DOWN;
-			mApp->privateMouseDown__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 ) );
+			mApp->privateMouseDown__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x * contentScale, pt.y * contentScale, mods, 0.0f, 0 ) );
 		}
 	}
 }
 
 - (void) touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
 {
+	static float contentScale = [self respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ? self.contentScaleFactor : 1;
+
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			CGPoint prevPt = [touch previousLocationInView:self];			
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ) * contentScale, ci::Vec2f( prevPt.x, prevPt.y ) * contentScale, [self findTouchInMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() )
@@ -234,19 +240,21 @@ static Boolean sIsEaglLayer;
 			CGPoint pt = [touch locationInView:self];		
 			int mods = 0;
 			mods |= cinder::app::MouseEvent::LEFT_DOWN;
-			mApp->privateMouseDrag__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 ) );
+			mApp->privateMouseDrag__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x * contentScale, pt.y * contentScale, mods, 0.0f, 0 ) );
 		}
 	}
 }
 
 - (void) touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
 {
+	static float contentScale = [self respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ? self.contentScaleFactor : 1;
+
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			CGPoint prevPt = [touch previousLocationInView:self];
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ) * contentScale, ci::Vec2f( prevPt.x, prevPt.y ) * contentScale, [self findTouchInMap:touch], [touch timestamp], touch ) );
 			[self removeTouchFromMap:touch];
 		}
 		[self updateActiveTouches];
@@ -258,7 +266,7 @@ static Boolean sIsEaglLayer;
 			CGPoint pt = [touch locationInView:self];		
 			int mods = 0;
 			mods |= cinder::app::MouseEvent::LEFT_DOWN;
-			mApp->privateMouseUp__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 ) );
+			mApp->privateMouseUp__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x * contentScale, pt.y * contentScale, mods, 0.0f, 0 ) );
 		}
 	}
 }
