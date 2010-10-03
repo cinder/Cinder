@@ -31,7 +31,7 @@ bool InputImplAudioUnit::sDevicesEnumerated = false;
 vector<InputDeviceRef> InputImplAudioUnit::sDevices;
 
 InputImplAudioUnit::InputImplAudioUnit( InputDeviceRef aDevice )
-	: InputImpl( aDevice ), mIsCapturing( false ), mDevice( aDevice ), mSampleRate( 0 ), mChannelCount( 0 ), mIsSetup( false )
+	: InputImpl( aDevice ), mIsCapturing( false ), mDevice( aDevice ), mSampleRate( 0 ), mChannelCount( 0 ), mIsSetup( false ), mInputBuffer( 0 ), mInputBufferData( 0 )
 {
 	//assume that if a device is provided, go ahead and do the expensive setup
 	//if device is NULL, this is presumably just a default constructor call, hold off on setup until start is called
@@ -52,8 +52,10 @@ InputImplAudioUnit::~InputImplAudioUnit()
 		delete mCircularBuffers[i];
 	}
 	
-	free( mInputBuffer );
-	free( mInputBufferData );
+	if( mInputBuffer )
+		free( mInputBuffer );
+	if( mInputBufferData )
+		free( mInputBufferData );
 }
 	
 void InputImplAudioUnit::start()
