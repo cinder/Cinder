@@ -89,7 +89,7 @@ DataTargetPathRef writeFile( const std::string &path, bool createParents )
 		createDirectories( getPathDirectory( path ) ); 
 	}
 	
-	return DataTargetPath::createRef( path );
+ 	return DataTargetPath::createRef( path );
 }
 
 } // namespace cinder

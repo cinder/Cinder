@@ -150,7 +150,7 @@ std::string getPathDirectory( const std::string &path )
 {
 	size_t lastSlash = path.rfind( getPathSeparator(), path.length() );
 	if( lastSlash == string::npos ) {
-		return path;
+		return "";
 	}
 	else
 		return path.substr( 0, lastSlash );
@@ -180,6 +180,9 @@ std::string getPathExtension( const std::string &path )
 
 bool createDirectories( const std::string &path, bool createParents )
 {
+	if( path.empty() )
+		return true;
+
 #if defined( CINDER_COCOA )
 	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
 	return static_cast<bool>( [[NSFileManager defaultManager] createDirectoryAtPath:pathNS withIntermediateDirectories:YES attributes:nil error:nil] );
