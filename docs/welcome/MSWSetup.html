@@ -28,7 +28,7 @@ $(function() {
 		<h1>Welcome to Cinder on Windows</h1>
 		<p>This guide will help you get started using Cinder on Windows. Start by downloading Cinder itself from the site's <a href="http://libcinder.org/download/">Download Page</a> if you haven't already. Choose the Visual C++ 2010 version if you don't already have Visual C++ installed.<br/>
 		<br/>
-		<h1>Microsoft Visual C++</h1>
+		<h2>Microsoft Visual C++</h2>
 		<p>
 		Cinder is designed for either Microsoft Visual Studio 2008 or 2010, and works with both the
 		commercial versions and the freely available <em>Express</em> editions. If you don't already have one of those versions installed, 
@@ -48,7 +48,7 @@ $(function() {
 		</div>
 		</center>
 		<br />
-		<h1>Windows Platform SDK</h1>
+		<h2>Windows Platform SDK</h2>
 		<p>Next you'll want the latest Microsoft's Platform SDK, which you can <a href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&displaylang=en">download here</a>. After launching your new copy of <em>winsdk_web.exe</em>, you'll want to setup your installation as it's depicted in the included images.</p>
 		<br />
 		<center>
@@ -65,7 +65,7 @@ $(function() {
 		</center>
 		<br />
 		
-		<h1>DirectX SDK</h1>
+		<h2>DirectX SDK</h2>
 		<p>Cinder makes use of DirectX for its audio code, so you'll want to grab the latest DirectX SDK, which you can <a href="http://www.microsoft.com/downloads/en/details.aspx?displaylang=en&FamilyID=3021d52b-514e-41d3-ad02-438a3ba730ba">download here</a>. Next, launch your new copy of <em>DXSDK_Jun10.exe</em>. </p>
 		
 		<br />
@@ -83,7 +83,7 @@ $(function() {
 		</center>
 		<br />
 		
-		<h1>QuickTime SDK</h1>
+		<h2>QuickTime SDK</h2>
 		
 		<p>Lastly, you'll need to grab the <a href="https://connect.apple.com/cgi-bin/WebObjects/MemberSite.woa/wa/getSoftware?bundleID=19910">QuickTime SDK 7.3 from Apple</a>, which requires you to have a free ADC account. If you don't have an account, follow the <em>Join now</em> link in the lower right corner, and follow the <em>Learn more</em> link under the "Register as an Apple Developer" heading on the next page. From there, select the <em>Get Started</em> page, and then select <em>Create an Apple ID</em> on the one after that. After creating your account, you can login to the original site and download the QuickTime 7.3 SDK.</p>
 		<br />
@@ -110,7 +110,7 @@ $(function() {
 		<p>Once you're done, your directories should look roughly like this:</p><br />
 		<center><img alt="folders" src="msw_images/folders.png"></center>
 		<br />
-		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you should be all set. However if you are building from our <a href="http://github.com/cinder/Cinder">Github repository</a> you'll want to refer to the <a href="GitSetup.html">Cinder + Git document</a>.</p>
+		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you should be all set.</p>
 		<br>
 		<p>Let's try opening and building one of the samples. From Windows Explorer, navigate to the <em>cinder\samples\QuickTime\vc10</em> folder (or <em>vc9</em> if you're using Visual C++ 2008) and double-click <em>quickTimeSample.sln</em>.</p>
 		<br>
@@ -125,7 +125,11 @@ $(function() {
 		way to get started learning Cinder. Don't be afraid to modify them and
 		experiment. And if you haven't read Robert Hodgin's <em>Hello, Cinder</em> tutorial, you should go <a href="../html/hello_cinder.html"> do that first</a>. </p>
 
+		<h2><a name="tinderbox">TinderBox</a></h2>
+		<p>TinderBox is our GUI tool for creating Cinder projects quickly and easily. It can generate Xcode as well as Visual C++ 2008 and 2010 projects. It is located at <em>cinder/tools/TinderBox</em> in our packaged releases. A guide to creating projects using TinderBox is <a href="MSWNewProject.html#tinderbox">available here</a>.
 		
+		<h2><a name="advanced">Cinder + Git</a></h2>
+		If you would like to keep up with the latest Cinder development, the project is <a href="http://github.com/cinder">hosted on github</a>. A guide for setting up Cinder using git is <a href="GitSetup.html">available here</a>.
 	</div>
 </div>
 </body>

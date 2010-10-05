@@ -42,7 +42,7 @@ $(function() {
 		<p>If you're interested in keeping up with the latest Cinder development or contributing to the project (yes please!) then you'll definitely want to setup a clone of Cinder's git repository. Cinder's home on Github is at <a href="http://github.com/cinder">http://github.com/cinder</a>.</p>
 		<br>
 
-		<h1>Installing Git on Mac OS X</h1>
+		<h2>Installing Git on Mac OS X</h2>
 		<p>If you don't already have Git installed on your Mac, start by downloading the <a href="http://code.google.com/p/git-osx-installer/downloads/list">Git installer here</a> (at the time of this writing, the file <em>git-1.7.2.3-intel-leopard.dmg</em> was the latest installer).</p>
 		<br />
 		<p>Run the installer with the default settings and then launch Terminal. Navigate to the directory where you'd like to create the repository and run this command:</p>
@@ -65,7 +65,7 @@ $(function() {
 		</center>
 		<br />
 		<p>If you aren't familiar with git, the only command you need to remember is <code>git pull</code> which, when executed from your new cinder_master directory, will update your copy of Cinder. Doing forget to rebuild Cinder (described below) whenever you do this.</p>
-		<h1>Installing Git on Windows</h1>
+		<h2>Installing Git on Windows</h2>
 		<p>If you don't already have Git installed on your PC, start by downloading the <a href="http://code.google.com/p/msysgit/downloads/list">Git installer here</a> (at the time of this writing, the file <em>Git-1.7.2.3-preview20100911.exe</em> was the latest installer).</p>
 		<br />
 		<p>When prompted by the installer, we recommend that you select the <em>Use Git Bash only</em> option for <em>Adjusting your PATH environment</em>. For line-ending configurations, we also recommend the default, <em>Checkut windows-style, commit Unix-style</em>. Once you've got Git installed, launch the <em>Git Bash</em> application. Navigate to the directory where you would like to setup Cinder, and execute the command:</p>
@@ -90,12 +90,12 @@ $(function() {
 		</center>
 		<br />
 		<p>If you aren't familiar with git, the only command you need to remember is <code>git pull</code> which, when executed from your new cinder_master directory, will update your copy of Cinder. Doing forget to rebuild Cinder (described below) whenever you do this.</p>
-		<h1>Downloading Boost</h1>
+		<h2>Downloading Boost</h2>
 		
 		<p>You'll also need to download the same Boost version Cinder is built against, currently version 1.44, which you can 
 		<a href="http://sourceforge.net/projects/boost/files/boost/1.44.0/">download here</a>. After dearchiving it, take the resulting directory, put it in your Cinder directory and rename it <em>boost</em>. You don't need to build Boost, but these headers are necessary to build Cinder. It is also possible to copy the <em>boost</em> directory from one of our prepackaged Cinder releases as a shortcut.</p>
 		<br>
-		<h1>Building on Mac OS X</h1>
+		<h2>Building on Mac OS X</h2>
 		The most straightforward way to build both the Debug and Release configurations of the Mac OS X, iOS and iOS Simulator targets is to run the script located at <em>cinder/xcode/fullbuild.sh</em>
 		<br /><br />
 		<code>
@@ -112,7 +112,7 @@ $(function() {
 		<br>
 
 		
-		<h1>Building on Windows</h1>	
+		<h2>Building on Windows</h2>	
 		<p>To build Cinder on Windows, first make sure you've got the rest of your development environment setup as described in the <a href="MSWSetup.html">Windows Setup</a> document. Next, open up the Visual Studio 
 		solution in <em>cinder\vc10\cinder.sln</em> (or <em>cinder\vc9\cinder.sln</em> if you are still using Visual C++ 2008). Under the <em>Build</em> menu select 
 		<em>Batch Build</em>, and click the checkboxes corresponding to both the 
@@ -128,7 +128,7 @@ $(function() {
 		<p>This will take a second, but once everything succeeds, the 
 		files <em>cinder.lib</em> and <em>cinder_d.lib</em> will be created at the path <em>cinder\libs</em>.</p>
 
-		<h1>OpenCV</h1>
+		<h2>OpenCV</h2>
 		Cinder's support for OpenCV is maintained separately from the primary distribution due to its size. To setup OpenCV support, cd to your <em>blocks</em> directory and execute the command below:<br />
 		<code>
 		cd blocks<br />
@@ -136,7 +136,7 @@ $(function() {
 		</code>
 		<br />
 
-		<h1>Generating Documentation</h1>
+		<h2>Generating Documentation</h2>
 		<p>
 		As a final step, if you'd like to have a local copy of the Cinder documentation, you can generate it using Doxygen. If you don't already have it installed, you can download the latest <a href="http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc">Doxygen release here</a>. After installing it, simply open the file <em>cinder/docs/doxygen/Doxyfile</em> and hit <em>Run</em>. After some processing, you'll have a local copy of the docs, which you can open at <em>cinder/docs/html/index.html</em>.</p>
 		<br />
