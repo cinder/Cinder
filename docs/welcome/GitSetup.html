@@ -127,6 +127,15 @@ $(function() {
 		<br>
 		<p>This will take a second, but once everything succeeds, the 
 		files <em>cinder.lib</em> and <em>cinder_d.lib</em> will be created at the path <em>cinder\libs</em>.</p>
+
+		<h1>OpenCV</h1>
+		Cinder's support for OpenCV is maintained separately from the primary distribution due to its size. To setup OpenCV support, cd to your <em>blocks</em> directory and execute the command below:<br />
+		<code>
+		cd blocks<br />
+		git clone git://github.com/cinder/Cinder-OpenCV.git opencv
+		</code>
+		<br />
+
 		<h1>Generating Documentation</h1>
 		<p>
 		As a final step, if you'd like to have a local copy of the Cinder documentation, you can generate it using Doxygen. If you don't already have it installed, you can download the latest <a href="http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc">Doxygen release here</a>. After installing it, simply open the file <em>cinder/docs/doxygen/Doxyfile</em> and hit <em>Run</em>. After some processing, you'll have a local copy of the docs, which you can open at <em>cinder/docs/html/index.html</em>.</p>
