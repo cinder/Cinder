@@ -36,6 +36,10 @@
 
 namespace cinder { namespace audio {
 
+#if defined( __MAC_OS_X_VERSION_MAX_ALLOWED ) && (__MAC_OS_X_VERSION_MAX_ALLOWED < 1060)
+	typedef ComponentDescription AudioComponentDescription;
+#endif
+
 const uint32_t OutputImplAudioUnit::sDefaultNumberBuses = 20;
 
 TargetOutputImplAudioUnit::TargetOutputImplAudioUnit( const OutputImplAudioUnit *aOutput ) {

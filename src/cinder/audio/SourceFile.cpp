@@ -27,6 +27,9 @@
 
 #if defined( CINDER_COCOA )
 	#include <CoreFoundation/CoreFoundation.h>
+	#if defined( __MAC_OS_X_VERSION_MAX_ALLOWED ) && (__MAC_OS_X_VERSION_MAX_ALLOWED < 1060)
+		#define kAudioFileReadPermission fsRdPerm
+	#endif
 #endif
 
 namespace cinder { namespace audio {
@@ -158,7 +161,7 @@ SourceFile::SourceFile( DataSourceRef dataSourceRef )
 	if( dataSourceRef->isFilePath() ) {
 		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath() );
 		::CFURLRef urlRef = ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString, kCFURLPOSIXPathStyle, false );
-		err = AudioFileOpenURL( urlRef, kAudioFileReadPermission/*fsRdPerm*/, 0, &aFileRef );
+		err = AudioFileOpenURL( urlRef, kAudioFileReadPermission, 0, &aFileRef );
 		::CFRelease( pathString );
 		::CFRelease( urlRef );
 		if( err ) {
@@ -172,7 +175,7 @@ SourceFile::SourceFile( DataSourceRef dataSourceRef )
 		}
 	} else if( dataSourceRef->isUrl() ) {
 		::CFURLRef urlRef = cocoa::createCfUrl( dataSourceRef->getUrl() );
-		err = AudioFileOpenURL( urlRef, kAudioFileReadPermission/*fsRdPerm*/, 0, &aFileRef );
+		err = AudioFileOpenURL( urlRef, kAudioFileReadPermission, 0, &aFileRef );
 		::CFRelease( urlRef );
 		if( err ) {
 			throw IoExceptionFailedLoad();
