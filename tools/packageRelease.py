@@ -60,7 +60,7 @@ def processExport( outputName, compilerName, version ):
     shutil.rmtree( outputDir + "test" )
     print "copying boost headers"
     shutil.copytree( baseDir + os.sep + "boost" + os.sep + "boost", outputDir + "boost" + os.sep + "boost" )
-	return outputDir
+    return outputDir
     
 
 if len(sys.argv) != 3:
