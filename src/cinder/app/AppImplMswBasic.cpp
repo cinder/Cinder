@@ -92,7 +92,7 @@ void AppImplMswBasic::run()
 			::RedrawWindow( mWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
 		}
 		else
-			::Sleep( 1 );
+			::Sleep( 0 );
 	}
 
 	killWindow( mFullScreen );
