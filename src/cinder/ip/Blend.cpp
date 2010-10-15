@@ -57,7 +57,7 @@ void blendImpl_u8( Surface8u *background, const Surface8u &foreground, const Are
 		Vec2i relativeOffset = absOffset - srcArea.getUL();
 		background->copyFrom( foreground, srcArea, relativeOffset );
 		if( DSTALPHA )
-			ip::fill( background->getChannelAlpha(), (uint8_t)255 );
+			ip::fill( &background->getChannelAlpha(), (uint8_t)255 );
 		return;
 	}
 	
@@ -131,7 +131,7 @@ void blendImpl_float( Surface32f *background, const Surface32f &foreground, cons
 		Vec2i relativeOffset = absOffset - srcArea.getUL();
 		background->copyFrom( foreground, srcArea, relativeOffset );
 		if( DSTALPHA )
-			ip::fill( background->getChannelAlpha(), 1.0f );
+			ip::fill( &background->getChannelAlpha(), 1.0f );
 		return;
 	}
 	

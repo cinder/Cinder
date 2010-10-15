@@ -317,7 +317,7 @@ void SurfaceT<T>::init( ImageSourceRef imageSource, const SurfaceConstraints &co
 	
 	// if the image doesn't have alpha but we do, set ourselves to be full alpha
 	if( hasAlpha && ( ! imageSource->hasAlpha() ) ) {
-		ip::fill( getChannelAlpha(), CHANTRAIT<T>::max() );
+		ip::fill( &getChannelAlpha(), CHANTRAIT<T>::max() );
 	}	
 }
 

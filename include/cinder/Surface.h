@@ -163,17 +163,17 @@ class SurfaceT {
 	uint8_t						getAlphaOffset() const { return mObj->mChannelOrder.getAlphaOffset(); }
 	void						setChannelOrder( const SurfaceChannelOrder &aChannelOrder );
 
-	ChannelT<T>*				getChannel( uint8_t ChannelT ) { return &mObj->mChannels[ChannelT]; }
-	ChannelT<T>*				getChannelRed() { return &mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
-	ChannelT<T>*				getChannelGreen() { return &mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
-	ChannelT<T>*				getChannelBlue() { return &mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
-	ChannelT<T>*				getChannelAlpha() { return &mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
+	ChannelT<T>&				getChannel( uint8_t ChannelT ) { return mObj->mChannels[ChannelT]; }
+	ChannelT<T>&				getChannelRed() { return mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
+	ChannelT<T>&				getChannelGreen() { return mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
+	ChannelT<T>&				getChannelBlue() { return mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
+	ChannelT<T>&				getChannelAlpha() { return mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
 
-	const ChannelT<T>*			getChannel( uint8_t ChannelT ) const { return &mObj->mChannels[ChannelT]; }
-	const ChannelT<T>*			getChannelRed() const { return &mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
-	const ChannelT<T>*			getChannelGreen() const { return &mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
-	const ChannelT<T>*			getChannelBlue() const { return &mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
-	const ChannelT<T>*			getChannelAlpha() const { return &mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
+	const ChannelT<T>&			getChannel( uint8_t ChannelT ) const { return mObj->mChannels[ChannelT]; }
+	const ChannelT<T>&			getChannelRed() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
+	const ChannelT<T>&			getChannelGreen() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
+	const ChannelT<T>&			getChannelBlue() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
+	const ChannelT<T>&			getChannelAlpha() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
 
 	//! Convenience method for getting a single pixel. For performance-sensitive code consider Surface::Iter instead.
 	ColorAT<T>	getPixel( Vec2i pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); const T *p = getData( pos ); return ColorAT<T>( p[getRedOffset()], p[getGreenOffset()], p[getBlueOffset()], ( hasAlpha() ) ? p[getAlphaOffset()] : CHANTRAIT<T>::max() ); }

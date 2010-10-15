@@ -312,15 +312,15 @@ void resize( const SurfaceT<T> &srcSurface, const Area &srcArea, SurfaceT<T> *ds
 	vector<const ChannelT<T>*> srcChannels;
 	vector<ChannelT<T>*> dstChannels;
 
-	srcChannels.push_back( srcSurface.getChannelRed() );
-	dstChannels.push_back( dstSurface->getChannelRed() );
-	srcChannels.push_back( srcSurface.getChannelGreen() );
-	dstChannels.push_back( dstSurface->getChannelGreen() );
-	srcChannels.push_back( srcSurface.getChannelBlue() );
-	dstChannels.push_back( dstSurface->getChannelBlue() );
+	srcChannels.push_back( &srcSurface.getChannelRed() );
+	dstChannels.push_back( &dstSurface->getChannelRed() );
+	srcChannels.push_back( &srcSurface.getChannelGreen() );
+	dstChannels.push_back( &dstSurface->getChannelGreen() );
+	srcChannels.push_back( &srcSurface.getChannelBlue() );
+	dstChannels.push_back( &dstSurface->getChannelBlue() );
 	if ( srcSurface.hasAlpha() && dstSurface->hasAlpha() ) {
-		srcChannels.push_back( srcSurface.getChannelAlpha() );
-		dstChannels.push_back( dstSurface->getChannelAlpha() );	
+		srcChannels.push_back( &srcSurface.getChannelAlpha() );
+		dstChannels.push_back( &dstSurface->getChannelAlpha() );	
 	}
 
 	resample( srcChannels, filter, srcArea, dstArea, dstChannels );
