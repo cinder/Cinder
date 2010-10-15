@@ -80,7 +80,7 @@ class IStreamUrlImpl {
 //! \endcond
 
 //! A pointer to an instance of an IStreamUrl. Can be created using IStreamUrl::createRef()
-typedef shared_ptr<class IStreamUrl>	IStreamUrlRef;
+typedef std::shared_ptr<class IStreamUrl>	IStreamUrlRef;
 
 /** \warning IStreamUrl does not currently support proper random access **/
 class IStreamUrl : public IStream {
@@ -106,7 +106,7 @@ class IStreamUrl : public IStream {
 	//! IStreamURL does not yet support writing
 	virtual void		IOWrite( const void *t, size_t size ) { throw std::exception(); }
 	
-	shared_ptr<IStreamUrlImpl>	mImpl;
+	std::shared_ptr<IStreamUrlImpl>	mImpl;
 };
 
 IStreamUrlRef		loadUrlStream( const Url &url );

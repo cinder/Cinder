@@ -23,7 +23,6 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
 
-using boost::shared_ptr;
 using namespace std;
 
 namespace cinder { namespace gl {

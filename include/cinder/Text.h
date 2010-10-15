@@ -78,7 +78,7 @@ class TextLayout {
 	float	mCurrentLeadingOffset;
 	int		mHorizontalBorder, mVerticalBorder;
   
-	std::deque<shared_ptr<class Line> >		mLines;
+	std::deque<std::shared_ptr<class Line> >		mLines;
 };
 #endif
 

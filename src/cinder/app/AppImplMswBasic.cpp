@@ -329,7 +329,7 @@ void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 	bool handled = false;
 	double currentTime = getApp()->getElapsedSeconds(); // we don't trust the device's sense of time
 	unsigned int numInputs = LOWORD( wParam );
-	shared_ptr<TOUCHINPUT> pInputs = shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
+	std::shared_ptr<TOUCHINPUT> pInputs = std::shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
 	if( pInputs ) {
 		vector<TouchEvent::Touch> beganTouches, movedTouches, endTouches, activeTouches;
 		if( GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, pInputs.get(), sizeof(TOUCHINPUT) ) ) {

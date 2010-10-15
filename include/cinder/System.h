@@ -84,8 +84,8 @@ class System {
 	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, TOTAL_CACHE_TYPES };
 
 	System();
-	static shared_ptr<System>		instance();
-	static shared_ptr<System>		sInstance;
+	static std::shared_ptr<System>		instance();
+	static std::shared_ptr<System>		sInstance;
 
 	bool				mCachedValues[TOTAL_CACHE_TYPES];
 	bool				mHasSSE2, mHasSSE3, mHasSSE4_1, mHasSSE4_2, mHasX86_64;

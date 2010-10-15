@@ -47,7 +47,7 @@ class ObjLoader {
 	/**Constructs and does the parsing of the file
 	 * \param includeUVs  if false UV coordinates will be skipped, which can provide a faster load time
 	**/
-	 ObjLoader( shared_ptr<IStream> aStream, bool includeUVs = true );
+	 ObjLoader( std::shared_ptr<IStream> aStream, bool includeUVs = true );
 	~ObjLoader();
 
 	/**Loads all the groups present in the file into a single TriMesh
@@ -88,10 +88,10 @@ class ObjLoader {
 	void	loadInternalTextures( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
 	void	loadInternal( const Group &group, std::map<int,int> &uniqueVerts, TriMesh *destTriMesh );	
  
-	shared_ptr<IStream>		mStream;
-	std::vector<Vec3f>		mVertices, mNormals;
-	std::vector<Vec2f>		mTexCoords;
-	std::vector<Group>		mGroups;
+	std::shared_ptr<IStream>	mStream;
+	std::vector<Vec3f>			mVertices, mNormals;
+	std::vector<Vec2f>			mTexCoords;
+	std::vector<Group>			mGroups;
 };
 
 } // namespace cinder

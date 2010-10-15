@@ -815,12 +815,12 @@ int32_t ScaledFont::getType()
 // Glyph
 /*Glyph::Glyph() 
 {
-	mCairoGlyph = shared_ptr<cairo_glyph_t>( new cairo_glyph_t );
+	mCairoGlyph = std::shared_ptr<cairo_glyph_t>( new cairo_glyph_t );
 }
 
 Glyph::Glyph( cairo_glyph_t *aGlyph ) 
 {
-	mCairoGlyph = shared_ptr<cairo_glyph_t>( new cairo_glyph_t );
+	mCairoGlyph = std::shared_ptr<cairo_glyph_t>( new cairo_glyph_t );
 	*mCairoGlyph.get() = *aGlyph;
 }
 
@@ -884,12 +884,12 @@ void GlyphArray::clear()
 // FontExtents
 FontExtents::FontExtents()
 {
-	mCairoFontExtents = shared_ptr<cairo_font_extents_t>( new cairo_font_extents_t );
+	mCairoFontExtents = std::shared_ptr<cairo_font_extents_t>( new cairo_font_extents_t );
 }
 
 FontExtents::FontExtents( cairo_font_extents_t *aCairoFontExtents )
 {
-	mCairoFontExtents = shared_ptr<cairo_font_extents_t>( new cairo_font_extents_t );
+	mCairoFontExtents = std::shared_ptr<cairo_font_extents_t>( new cairo_font_extents_t );
 	*mCairoFontExtents.get() = *aCairoFontExtents;
 }
 
@@ -950,12 +950,12 @@ double& FontExtents::maxYAdvance()
 // TextExtents
 TextExtents::TextExtents() 
 {
-	mCairoTextExtents = shared_ptr<cairo_text_extents_t>( new cairo_text_extents_t );
+	mCairoTextExtents = std::shared_ptr<cairo_text_extents_t>( new cairo_text_extents_t );
 }
 
 TextExtents::TextExtents( cairo_text_extents_t *aCairoTextExtents ) 
 {
-	mCairoTextExtents = shared_ptr<cairo_text_extents_t>( new cairo_text_extents_t );
+	mCairoTextExtents = std::shared_ptr<cairo_text_extents_t>( new cairo_text_extents_t );
 	*mCairoTextExtents.get() = *aCairoTextExtents;
 }
 

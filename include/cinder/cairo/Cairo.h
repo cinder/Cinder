@@ -428,7 +428,7 @@ public:
 	double&					y();
 	
 private:
-	shared_ptr<cairo_glyph_t>	mCairoGlyph;
+	std::shared_ptr<cairo_glyph_t>	mCairoGlyph;
 };
 
 // This stores a std::vector of cairo_glyph_t
@@ -468,7 +468,7 @@ public:
 	double&			maxYAdvance();
 		
 private:
-	shared_ptr<cairo_font_extents_t>	mCairoFontExtents;
+	std::shared_ptr<cairo_font_extents_t>	mCairoFontExtents;
 };
 
 class TextExtents
@@ -494,7 +494,7 @@ public:
     double&			yAdvance();	
 	
 private:
-	shared_ptr<cairo_text_extents_t>	mCairoTextExtents;
+	std::shared_ptr<cairo_text_extents_t>	mCairoTextExtents;
 };
 
 /////////////////////////////////////////////////////////////////////////////

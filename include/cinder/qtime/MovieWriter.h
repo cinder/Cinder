@@ -178,12 +178,12 @@ class MovieWriter {
 	};
 	/// \endcond
 	
-	shared_ptr<Obj>		mObj;  
+	std::shared_ptr<Obj>		mObj;  
 
   public:
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> MovieWriter::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> MovieWriter::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &MovieWriter::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  

@@ -32,8 +32,8 @@
 
 namespace cinder { namespace audio {
 
-typedef shared_ptr<class SourceFileWindowsMedia>	SourceFileWindowsMediaRef;
-typedef shared_ptr<class LoaderSourceFileWindowsMedia>	LoaderSourceFileWindowsMediaRef;
+typedef std::shared_ptr<class SourceFileWindowsMedia>	SourceFileWindowsMediaRef;
+typedef std::shared_ptr<class LoaderSourceFileWindowsMedia>	LoaderSourceFileWindowsMediaRef;
 
 class LoaderSourceFileWindowsMedia : public Loader {
   public:
@@ -56,8 +56,8 @@ class LoaderSourceFileWindowsMedia : public Loader {
 	WAVEFORMATEX					mOutputFormat;
 
 	uint32_t						mStreamSize;
-	shared_ptr<IWMSyncReader>		mReader;
-	shared_ptr<IWMHeaderInfo>		mHeaderInfo;
+	std::shared_ptr<IWMSyncReader>	mReader;
+	std::shared_ptr<IWMHeaderInfo>	mHeaderInfo;
 
 	uint32_t						mMaxBufferSize;
 	uint64_t						mSampleOffset;
@@ -84,7 +84,7 @@ class SourceFileWindowsMedia : public Source {
 	SourceFileWindowsMedia( DataSourceRef dataSourceRef );
 
 	cinder::Buffer mBuffer;
-	shared_ptr<void> mMemHandle;
+	std::shared_ptr<void> mMemHandle;
 
 	friend LoaderSourceFileWindowsMedia;
 };

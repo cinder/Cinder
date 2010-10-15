@@ -74,7 +74,7 @@ IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const s
 	: IStream()
 {
 	setFileName( url );
-	mImpl = shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password ) );
+	mImpl = std::shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password ) );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////

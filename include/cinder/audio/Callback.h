@@ -57,13 +57,13 @@ class Callback : public Source {
 	
 	friend class LoaderSourceCallback<T,U>;
 	template <typename T2, typename U2>
-	friend shared_ptr<Callback<T2,U2> > createCallback( T2* callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U2> *ioBuffer ), bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
+	friend std::shared_ptr<Callback<T2,U2> > createCallback( T2* callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U2> *ioBuffer ), bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
 };
 
 template<typename T, typename U>
-shared_ptr<Callback<T,U> > createCallback( T* callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U> *ioBuffer ), bool ownCallbackObj = false, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2 )
+std::shared_ptr<Callback<T,U> > createCallback( T* callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U> *ioBuffer ), bool ownCallbackObj = false, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2 )
 {
-	return shared_ptr<Callback<T,U> >( new Callback<T,U>( callbackObj, callbackFn, ownCallbackObj, aSampleRate, aChannelCount ) );
+	return std::shared_ptr<Callback<T,U> >( new Callback<T,U>( callbackObj, callbackFn, ownCallbackObj, aSampleRate, aChannelCount ) );
 }
 
 template<typename T, typename U>
@@ -71,7 +71,7 @@ class LoaderSourceCallback : public Loader {
  public:
 	static LoaderRef	createRef( Callback<T,U> *source, Target *target )
 	{
-		return shared_ptr<LoaderSourceCallback<T,U> >( new LoaderSourceCallback<T,U>( source, target ) );
+		return std::shared_ptr<LoaderSourceCallback<T,U> >( new LoaderSourceCallback<T,U>( source, target ) );
 	}
 	
 	~LoaderSourceCallback() {}
@@ -86,7 +86,7 @@ class LoaderSourceCallback : public Loader {
 
 #if defined(CINDER_COCOA)
 	static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions );
-	shared_ptr<CocoaCaConverter>	mConverter;
+	std::shared_ptr<CocoaCaConverter>	mConverter;
 #endif	
 };
 
@@ -182,7 +182,7 @@ LoaderSourceCallback<T,U>::LoaderSourceCallback( Callback<T,U> *source, Target *
 	targetDescription.mChannelsPerFrame = target->getChannelCount();
 	targetDescription.mBitsPerChannel = target->getBitsPerSample();
 	
-	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T,U>::dataInputCallback, sourceDescription, targetDescription, mSource->getBlockAlign() ) );
+	mConverter = std::shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T,U>::dataInputCallback, sourceDescription, targetDescription, mSource->getBlockAlign() ) );
 #endif
 }
 

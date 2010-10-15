@@ -56,7 +56,7 @@ namespace cinder {
 class Capture {
  public:
 	class Device;
-	typedef shared_ptr<Device> DeviceRef;
+	typedef std::shared_ptr<Device> DeviceRef;
 	
 	Capture() {}
 	Capture( int32_t width, int32_t height, const DeviceRef device = DeviceRef() );
@@ -133,12 +133,12 @@ class Capture {
 #endif
 	};
 	
-	shared_ptr<Obj>						mObj;
+	std::shared_ptr<Obj>				mObj;
 	
   public:
  	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> Capture::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> Capture::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Capture::mObj; }
 	void reset() { mObj.reset(); }
 	//@}

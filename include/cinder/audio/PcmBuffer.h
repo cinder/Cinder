@@ -51,7 +51,7 @@ typedef BufferT<int32_t> Buffer32i;
 typedef BufferT<uint32_t> Buffer32u;
 typedef BufferT<float> Buffer32f;
 
-typedef shared_ptr<BufferT<float> > Buffer32fRef;
+typedef std::shared_ptr<BufferT<float> > Buffer32fRef;
 
 template<typename T>
 struct BufferListT { 
@@ -62,7 +62,7 @@ struct BufferListT {
 typedef BufferListT<void> BufferList;
 typedef BufferListT<float> BufferList32f;
 
-typedef shared_ptr<BufferList32f> BufferList32fRef;
+typedef std::shared_ptr<BufferList32f> BufferList32fRef;
 
 template<typename T>
 class PcmBufferT {
@@ -75,15 +75,15 @@ class PcmBufferT {
 	uint16_t	getChannelCount() const { return mChannelCount; }
 	bool		isInterleaved() const  { return mIsInterleaved; }
 	
-	shared_ptr<BufferT<T> >		getChannelData( ChannelIdentifier channelId ) const;
-	shared_ptr<BufferT<T> >		getInterleavedData() const;
+	std::shared_ptr<BufferT<T> >		getChannelData( ChannelIdentifier channelId ) const;
+	std::shared_ptr<BufferT<T> >		getInterleavedData() const;
 	
 	//TODO: add support for adding/editing data at arbitrary positions in the buffer
 	//TODO: add support for an appendData method that just accepts a Buffer or BufferList and interprets interleaving accordingly
 	void		appendInterleavedData( T * aData, uint32_t aSampleCount );
 	void		appendChannelData( T * aData, uint32_t aSampleCount, ChannelIdentifier channelId );
  private:
-	std::vector<shared_ptr<BufferT<T> > > mBuffers;
+	std::vector<std::shared_ptr<BufferT<T> > > mBuffers;
 	
 	uint16_t		mBufferCount;
 	uint32_t		* mBufferSampleCounts;
@@ -94,7 +94,7 @@ class PcmBufferT {
 
 typedef PcmBufferT<float> PcmBuffer32f;
 
-typedef shared_ptr<PcmBuffer32f> PcmBuffer32fRef;
+typedef std::shared_ptr<PcmBuffer32f> PcmBuffer32fRef;
 
 class PcmBufferException : public Exception {
 };
@@ -116,7 +116,7 @@ template<typename T>
 void deleteBuffer( BufferT<T> * aBuffer );
 
 template<typename T>
-shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_t channelCount, bool isInterleaved );
+std::shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_t channelCount, bool isInterleaved );
 
 template<typename T> 
 void deleteBufferList( BufferListT<T> * aBufferList );

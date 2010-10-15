@@ -23,8 +23,7 @@
 #include "cinder/gl/Vbo.h"
 #include <sstream>
 
-using std::vector;
-using std::pair;
+using namespace std;
 
 namespace cinder { namespace gl {
 

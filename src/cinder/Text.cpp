@@ -25,7 +25,6 @@
 #include "cinder/ip/Premultiply.h"
 #include "cinder/Utilities.h"
 
-
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
@@ -44,10 +43,7 @@
 
 #include <boost/noncopyable.hpp>
 #include <limits.h>
-using std::deque;
-using std::vector;
-using std::string;
-using std::wstring;
+using namespace std;
 
 namespace cinder {
 
@@ -111,7 +107,7 @@ TextManager* TextManager::instance()
 ////////////////////////////////////////////////////////////////////////////////////////
 // Run
 struct Run {
-	Run( const std::string &aText, const Font &aFont, const ColorA &aColor )
+	Run( const string &aText, const Font &aFont, const ColorA &aColor )
 		: mText( aText ), mFont( aFont ), mColor( aColor )
 	{
 #if defined( CINDER_MSW )
@@ -423,7 +419,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 
 
 #if defined( CINDER_COCOA_TOUCH )
-Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset )
+Surface renderStringPow2( const string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset )
 {
 	Vec2i pixelSize, pow2PixelSize;
 	{ // render "invisible" to a dummy context to determine string width
@@ -459,7 +455,7 @@ Surface renderStringPow2( const std::string &str, const Font &font, const ColorA
 	return result;
 }
 #elif defined( CINDER_MAC) || defined( CINDER_MSW )
-Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset )
+Surface renderString( const string &str, const Font &font, const ColorA &color, float *baselineOffset )
 {
 	Line line;
 	line.addRun( Run( str, font, color ) );

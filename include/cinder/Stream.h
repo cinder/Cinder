@@ -99,7 +99,7 @@ class OStream : public virtual StreamBase {
 };
 
 
-typedef shared_ptr<class OStream>	OStreamRef;
+typedef std::shared_ptr<class OStream>	OStreamRef;
 
 class IStream : public virtual StreamBase {
  public:
@@ -131,7 +131,7 @@ class IStream : public virtual StreamBase {
 		
 	static const int	MINIMUM_BUFFER_SIZE = 8; // minimum bytes of random access a stream must offer relative to the file start
 };
-typedef shared_ptr<IStream>		IStreamRef;
+typedef std::shared_ptr<IStream>		IStreamRef;
 
 
 class IoStream : public IStream, public OStream {
@@ -139,10 +139,10 @@ class IoStream : public IStream, public OStream {
 	IoStream() : IStream(), OStream() {}
 	virtual ~IoStream() {}
 };
-typedef shared_ptr<IoStream>		IoStreamRef;
+typedef std::shared_ptr<IoStream>		IoStreamRef;
 
 
-typedef shared_ptr<class IStreamFile>	IStreamFileRef;
+typedef std::shared_ptr<class IStreamFile>	IStreamFileRef;
 
 class IStreamFile : public IStream {
  public:
@@ -166,18 +166,18 @@ class IStreamFile : public IStream {
 
 	virtual void		IORead( void *t, size_t size );
  
-	FILE					*mFile;
-	bool					mOwnsFile;
-	size_t					mBufferSize, mDefaultBufferSize;
-	shared_ptr<uint8_t>	mBuffer;
-	off_t					mBufferOffset; // actual offset to do IO from; incremented by IO
-	off_t					mBufferFileOffset; // beginning of the buffer in the file
-	mutable off_t			mSize;
-	mutable bool			mSizeCached;
+	FILE						*mFile;
+	bool						mOwnsFile;
+	size_t						mBufferSize, mDefaultBufferSize;
+	std::shared_ptr<uint8_t>	mBuffer;
+	off_t						mBufferOffset; // actual offset to do IO from; incremented by IO
+	off_t						mBufferFileOffset; // beginning of the buffer in the file
+	mutable off_t				mSize;
+	mutable bool				mSizeCached;
 };
 
 
-typedef shared_ptr<class OStreamFile>	OStreamFileRef;
+typedef std::shared_ptr<class OStreamFile>	OStreamFileRef;
 
 class OStreamFile : public OStream {
   public:
@@ -202,7 +202,7 @@ class OStreamFile : public OStream {
 };
 
 
-typedef shared_ptr<class IoStreamFile>		IoStreamFileRef;
+typedef std::shared_ptr<class IoStreamFile>		IoStreamFileRef;
 
 class IoStreamFile : public IoStream {
  public:
@@ -227,18 +227,18 @@ class IoStreamFile : public IoStream {
 	virtual void		IORead( void *t, size_t size );
 	virtual void		IOWrite( const void *t, size_t size );
  
-	FILE					*mFile;
-	bool					mOwnsFile;
-	int32_t					mBufferSize, mDefaultBufferSize;
-	shared_ptr<uint8_t>		mBuffer;
-	off_t					mBufferOffset; // actual offset to do IO from; incremented by IO
-	off_t					mBufferFileOffset; // beginning of the buffer in the file
-	mutable off_t			mSize;
-	mutable bool			mSizeCached;
+	FILE						*mFile;
+	bool						mOwnsFile;
+	int32_t						mBufferSize, mDefaultBufferSize;
+	std::shared_ptr<uint8_t>	mBuffer;
+	off_t						mBufferOffset; // actual offset to do IO from; incremented by IO
+	off_t						mBufferFileOffset; // beginning of the buffer in the file
+	mutable off_t				mSize;
+	mutable bool				mSizeCached;
 };
 
 
-typedef shared_ptr<class IStreamMem>	IStreamMemRef;
+typedef std::shared_ptr<class IStreamMem>	IStreamMemRef;
 class IStreamMem : public IStream {
  public:
 	//! Creates a new IStreamMemRef from the memory pointed to by \a data which is of size \a size bytes.
@@ -291,7 +291,7 @@ class OStreamMem : public OStream {
 	size_t			mOffset;
 };
 
-typedef shared_ptr<OStreamMem>		OStreamMemRef;
+typedef std::shared_ptr<OStreamMem>		OStreamMemRef;
 
 
 // This class is a utility to save and restore a stream's state
@@ -315,7 +315,7 @@ OStreamFileRef	writeFileStream( const std::string &path, bool createParents = tr
 IoStreamFileRef readWriteFileStream( const std::string &path );
 
 //! Loads the contents of a stream into a contiguous block of memory, pointed to by \a resultData. The size of this block is stored in \a resultDataSize.
-void loadStreamMemory( IStreamRef is, shared_ptr<uint8_t> *resultData, size_t *resultDataSize );
+void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize );
 //! Loads the contents of a stream into a Buffer
 Buffer loadStreamBuffer( IStreamRef is );
 

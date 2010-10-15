@@ -26,7 +26,7 @@ class rayMarcherApp : public AppBasic {
 	void		update();
 	void		draw();
 
-	shared_ptr<Surface8u>	mImageSurface;
+	std::shared_ptr<Surface8u>	mImageSurface;
 	gl::Texture				mImageTexture;
 
 	RayMarcher		mMarcher;
@@ -73,7 +73,7 @@ void rayMarcherApp::keyDown( KeyEvent event )
 
 void rayMarcherApp::resize( ResizeEvent event )
 {
-	mImageSurface = shared_ptr<Surface8u>( new Surface8u( getWindowWidth(), getWindowHeight(), false ) );
+	mImageSurface = std::shared_ptr<Surface8u>( new Surface8u( getWindowWidth(), getWindowHeight(), false ) );
 	mImageTexture = gl::Texture( *mImageSurface );
 	mCurrentLine = 0;
 	

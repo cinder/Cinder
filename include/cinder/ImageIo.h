@@ -34,10 +34,10 @@
 
 namespace cinder {
 
-typedef shared_ptr<class ImageSource>		ImageSourceRef;
-typedef shared_ptr<class ImageLoader>		ImageLoaderRef;
-typedef shared_ptr<class ImageTarget>		ImageTargetRef;
-typedef shared_ptr<class ImageTargetFile>	ImageTargetFileRef;
+typedef std::shared_ptr<class ImageSource>		ImageSourceRef;
+typedef std::shared_ptr<class ImageLoader>		ImageLoaderRef;
+typedef std::shared_ptr<class ImageTarget>		ImageTargetRef;
+typedef std::shared_ptr<class ImageTargetFile>	ImageTargetFileRef;
 
 class ImageIo {
   public:

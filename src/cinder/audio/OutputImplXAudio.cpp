@@ -87,7 +87,7 @@ OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
 		//throw
 	}
 	
-	shared_ptr<TargetOutputImplXAudio> target = TargetOutputImplXAudio::createRef( &mVoiceDescription );
+	std::shared_ptr<TargetOutputImplXAudio> target = TargetOutputImplXAudio::createRef( &mVoiceDescription );
 	mLoader = mSource->createLoader( target.get() );
 
 	//mBufferSize = mLoader->mBufferSize;
@@ -122,7 +122,7 @@ void OutputImplXAudio::Track::play()
 	//mLoader->start();
 	//fillBufferCallback();
 	mIsPlaying = true;
-	mQueueThread = shared_ptr<boost::thread>( new boost::thread( boost::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
+	mQueueThread = std::shared_ptr<boost::thread>( new boost::thread( boost::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
 
 	::HRESULT hr = mSourceVoice->Start( 0, XAUDIO2_COMMIT_NOW );
 	if( FAILED( hr ) ) {
@@ -268,9 +268,9 @@ TrackRef OutputImplXAudio::addTrack( SourceRef aSource, bool autoPlay )
 {
 	//TargetOutputImplXAudioRef target = TargetOutputImplXAudio::createRef( this );
 	//TODO: pass target instead of this?
-	shared_ptr<OutputImplXAudio::Track> track = shared_ptr<OutputImplXAudio::Track>( new OutputImplXAudio::Track( aSource, this ) );
+	std::shared_ptr<OutputImplXAudio::Track> track = std::shared_ptr<OutputImplXAudio::Track>( new OutputImplXAudio::Track( aSource, this ) );
 	TrackId inputBus = track->getTrackId();
-	mTracks.insert( std::pair<TrackId,shared_ptr<OutputImplXAudio::Track> >( inputBus, track ) );
+	mTracks.insert( std::pair<TrackId,std::shared_ptr<OutputImplXAudio::Track> >( inputBus, track ) );
 	if( autoPlay ) {
 		track->play();
 	}

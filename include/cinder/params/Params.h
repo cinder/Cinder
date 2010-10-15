@@ -57,7 +57,7 @@ class InterfaceGl {
  protected:
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly ); 
 
-	shared_ptr<TwBar>	mBar;
+	std::shared_ptr<TwBar>	mBar;
 };
 
 } } // namespace cinder::params

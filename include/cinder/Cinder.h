@@ -23,7 +23,16 @@
 #pragma once
 
 #include <boost/cstdint.hpp>
-#include <boost/shared_ptr.hpp>
+
+#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
+	#include <memory>
+	#include <boost/shared_ptr.hpp> // necessary for checked_array_deleter
+#else
+	#include <boost/shared_ptr.hpp>
+	namespace std {
+		using boost::shared_ptr; // future-proof shared_ptr by putting it into std::
+	}
+#endif
 
 namespace cinder {
 using boost::int8_t;
@@ -35,7 +44,6 @@ using boost::uint32_t;
 using boost::int64_t;
 using boost::uint64_t;
 
-using boost::shared_ptr;
 using boost::checked_array_deleter;
 
 #define CINDER_CINDER

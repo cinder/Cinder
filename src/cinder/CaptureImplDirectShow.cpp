@@ -38,17 +38,17 @@ class CaptureMgr : private boost::noncopyable
 	CaptureMgr();
 	~CaptureMgr();
 
-	static shared_ptr<CaptureMgr>	instance();
+	static std::shared_ptr<CaptureMgr>	instance();
 	static videoInput*	instanceVI() { return instance()->mVideoInput; }
 
-	static shared_ptr<CaptureMgr>	sInstance;
+	static std::shared_ptr<CaptureMgr>	sInstance;
 	static int						sTotalDevices;
 	
  private:	
 	videoInput			*mVideoInput;
 };
-shared_ptr<CaptureMgr>	CaptureMgr::sInstance;
-int						CaptureMgr::sTotalDevices = 0;
+std::shared_ptr<CaptureMgr>	CaptureMgr::sInstance;
+int							CaptureMgr::sTotalDevices = 0;
 
 CaptureMgr::CaptureMgr()
 {
@@ -61,10 +61,10 @@ CaptureMgr::~CaptureMgr()
 	delete mVideoInput;
 }
 
-shared_ptr<CaptureMgr> CaptureMgr::instance()
+std::shared_ptr<CaptureMgr> CaptureMgr::instance()
 {
 	if( ! sInstance ) {
-		sInstance = shared_ptr<CaptureMgr>( new CaptureMgr );
+		sInstance = std::shared_ptr<CaptureMgr>( new CaptureMgr );
 	}
 	return sInstance;
 }
@@ -75,7 +75,7 @@ class SurfaceCache {
 		: mWidth( width ), mHeight( height ), mSCO( sco )
 	{
 		for( int i = 0; i < numSurfaces; ++i ) {
-			mSurfaceData.push_back( shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], checked_array_deleter<uint8_t>() ) );
+			mSurfaceData.push_back( std::shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], checked_array_deleter<uint8_t>() ) );
 			mDeallocatorRefcon.push_back( make_pair( this, i ) );
 			mSurfaceUsed.push_back( false );
 		}
@@ -104,7 +104,7 @@ class SurfaceCache {
 	}
 
  private:
-	vector<shared_ptr<uint8_t> >	mSurfaceData;
+	vector<std::shared_ptr<uint8_t> >	mSurfaceData;
 	vector<bool>					mSurfaceUsed;
 	vector<pair<SurfaceCache*,int> >	mDeallocatorRefcon;
 	int32_t				mWidth, mHeight;
@@ -152,7 +152,7 @@ CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, con
 	mWidth = CaptureMgr::instanceVI()->getWidth( mDeviceID );
 	mHeight = CaptureMgr::instanceVI()->getHeight( mDeviceID );
 	mIsCapturing = true;
-	mSurfaceCache = shared_ptr<SurfaceCache>( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::BGR, 4 ) );
+	mSurfaceCache = std::shared_ptr<SurfaceCache>( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::BGR, 4 ) );
 
 	mMgrPtr = CaptureMgr::instance();
 }

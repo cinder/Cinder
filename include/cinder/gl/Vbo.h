@@ -56,12 +56,12 @@ class Vbo {
 		GLuint			mId;
 	};
 	
-	shared_ptr<Obj>	mObj;
+	std::shared_ptr<Obj>	mObj;
 
   public:
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> Vbo::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> Vbo::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Vbo::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  
@@ -202,7 +202,7 @@ class VboMesh {
 
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> VboMesh::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> VboMesh::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &VboMesh::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
@@ -255,19 +255,19 @@ class VboMesh {
 			Vbo						mVbo;
 		};
 	 	 
-		shared_ptr<Obj>		mObj;
-		uint8_t				*mPtr;
-		uint8_t				*mData, *mDataEnd; // we cache these from the Obj to reduce dereferencing
-		size_t				mPositionOffset, mNormalOffset;
-		size_t				mColorRGBOffset, mColorRGBAOffset;
-		size_t				mTexCoordOffset[ATTR_MAX_TEXTURE_UNIT+1];
-		uint8_t				mStride;
+		std::shared_ptr<Obj>	mObj;
+		uint8_t					*mPtr;
+		uint8_t					*mData, *mDataEnd; // we cache these from the Obj to reduce dereferencing
+		size_t					mPositionOffset, mNormalOffset;
+		size_t					mColorRGBOffset, mColorRGBAOffset;
+		size_t					mTexCoordOffset[ATTR_MAX_TEXTURE_UNIT+1];
+		uint8_t					mStride;
 	};
 
  protected:
 	void	initializeBuffers( bool staticDataPlanar );
 
-	shared_ptr<Obj>		mObj;
+	std::shared_ptr<Obj>		mObj;
 };
 
 class VboExc : public std::exception {

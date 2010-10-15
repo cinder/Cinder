@@ -77,7 +77,7 @@ class SurfaceConstraints {
 class SurfaceConstraintsDefault : public SurfaceConstraints {
 };
 
-typedef shared_ptr<class ImageSource> ImageSourceRef;
+typedef std::shared_ptr<class ImageSource> ImageSourceRef;
 
 template<typename T>
 class SurfaceT {
@@ -109,7 +109,7 @@ class SurfaceT {
 	SurfaceT( int32_t aWidth, int32_t aHeight, bool alpha, SurfaceChannelOrder aChannelOrder = SurfaceChannelOrder::UNSPECIFIED );
 	SurfaceT( int32_t aWidth, int32_t aHeight, bool alpha, const SurfaceConstraints &constraints );
 	SurfaceT( T *aData, int32_t aWidth, int32_t aHeight, int32_t aRowBytes, SurfaceChannelOrder aChannelOrder );
-	SurfaceT( shared_ptr<class ImageSource> imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
+	SurfaceT( std::shared_ptr<class ImageSource> imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
 
 	operator ImageSourceRef() const;
 
@@ -190,15 +190,15 @@ class SurfaceT {
 
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> SurfaceT::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> SurfaceT::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &SurfaceT::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
 
  private:
-	shared_ptr<Obj>		mObj;
+	std::shared_ptr<Obj>		mObj;
 
-	void init( shared_ptr<class ImageSource> imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
+	void init( std::shared_ptr<class ImageSource> imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
 
 	void	copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
 	void	copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
