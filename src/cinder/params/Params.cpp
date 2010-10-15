@@ -195,7 +195,25 @@ void InterfaceGl::addParam( const std::string &name, ColorA *param, const std::s
 void InterfaceGl::addParam( const std::string &name, std::string *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParam( name, param, TW_TYPE_STDSTRING, optionsStr, readOnly );
-} 
+}
+
+void InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly )
+{
+	TwEnumVal *ev = new TwEnumVal[enumNames.size()];
+	for( int v = 0; v < enumNames.size(); ++v ) {
+		ev[v].Value = v;
+		ev[v].Label = const_cast<char*>( enumNames[v].c_str() );
+	}
+
+	TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev, enumNames.size() );
+
+	if( readOnly )
+		TwAddVarRO( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
+	else
+		TwAddVarRW( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
+		
+	delete [] ev;
+}
 
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
 {
