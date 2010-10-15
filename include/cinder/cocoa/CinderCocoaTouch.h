@@ -51,7 +51,7 @@ class SafeUiImage {
   private:
 	static void destroy( std::pair<UIImage*,CGImageRef> *data );
 
-	shared_ptr<std::pair<UIImage*,CGImageRef> >	mObj;
+	std::shared_ptr<std::pair<UIImage*,CGImageRef> >	mObj;
 };
 
 /** Loads an ImageSourceRef \a imageSource into a SafeUiImage, which acts like a shared_ptr but can cast itself to UIImage* automatically **/

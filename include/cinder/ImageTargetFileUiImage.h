@@ -34,7 +34,7 @@ typedef uint32_t CGBitmapInfo;
 
 namespace cinder {
 
-typedef shared_ptr<class ImageTargetFileUiImage> ImageTargetFileUiImageRef;
+typedef std::shared_ptr<class ImageTargetFileUiImage> ImageTargetFileUiImageRef;
 
 class ImageTargetFileUiImage : public cocoa::ImageTargetCgImage {
   public:

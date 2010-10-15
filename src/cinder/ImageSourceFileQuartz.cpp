@@ -76,17 +76,17 @@ void ImageSourceFileQuartz::registerSelf()
 // ImageSourceFileQuartz
 ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceRef dataSourceRef )
 {
-	shared_ptr<CGImageSource> sourceRef;
-	shared_ptr<CGImage> imageRef;
+	std::shared_ptr<CGImageSource> sourceRef;
+	std::shared_ptr<CGImage> imageRef;
 	
 	::CFStringRef keys[1] = { kCGImageSourceShouldAllowFloat };
 	::CFBooleanRef values[1] = { kCFBooleanTrue };
-	shared_ptr<const __CFDictionary> optionsDict( CFDictionaryCreate( kCFAllocatorDefault, (const void **)&keys, (const void **)&values, 1, NULL, NULL ), cocoa::safeCfRelease );
+	std::shared_ptr<const __CFDictionary> optionsDict( CFDictionaryCreate( kCFAllocatorDefault, (const void **)&keys, (const void **)&values, 1, NULL, NULL ), cocoa::safeCfRelease );
 
 	if( dataSourceRef->isFilePath() ) {
 		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath() );
 		::CFURLRef urlRef = ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString, kCFURLPOSIXPathStyle, false );
-		sourceRef = shared_ptr<CGImageSource>( ::CGImageSourceCreateWithURL( urlRef, optionsDict.get() ), cocoa::safeCfRelease );
+		sourceRef = std::shared_ptr<CGImageSource>( ::CGImageSourceCreateWithURL( urlRef, optionsDict.get() ), cocoa::safeCfRelease );
 		::CFRelease( pathString );
 		::CFRelease( urlRef );
 	}
@@ -94,7 +94,7 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 		::CFURLRef urlRef = cocoa::createCfUrl( dataSourceRef->getUrl() );
 		if( ! urlRef )
 			throw ImageIoExceptionFailedLoad();
-		sourceRef = shared_ptr<CGImageSource>( ::CGImageSourceCreateWithURL( urlRef, optionsDict.get() ), cocoa::safeCfRelease );
+		sourceRef = std::shared_ptr<CGImageSource>( ::CGImageSourceCreateWithURL( urlRef, optionsDict.get() ), cocoa::safeCfRelease );
 		::CFRelease( urlRef );		
 	}
 	else { // last ditch, we'll use a dataref from the buffer
@@ -102,12 +102,12 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 		if( ! dataRef )
 			throw ImageIoExceptionFailedLoad();
 		
-		sourceRef = shared_ptr<CGImageSource>( ::CGImageSourceCreateWithData( dataRef, optionsDict.get() ), cocoa::safeCfRelease );
+		sourceRef = std::shared_ptr<CGImageSource>( ::CGImageSourceCreateWithData( dataRef, optionsDict.get() ), cocoa::safeCfRelease );
 		::CFRelease( dataRef );
 	}
 	
 	if( sourceRef ) {
-		imageRef = shared_ptr<CGImage>( ::CGImageSourceCreateImageAtIndex( sourceRef.get(), 0, optionsDict.get() ), CGImageRelease );
+		imageRef = std::shared_ptr<CGImage>( ::CGImageSourceCreateImageAtIndex( sourceRef.get(), 0, optionsDict.get() ), CGImageRelease );
 		if( ! imageRef )
 			throw ImageIoExceptionFailedLoad();
 	}

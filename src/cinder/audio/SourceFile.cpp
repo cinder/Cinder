@@ -69,7 +69,7 @@ LoaderSourceFile::LoaderSourceFile( SourceFile *source, Target *target )
 	targetDescription.mChannelsPerFrame = target->getChannelCount();
 	targetDescription.mBitsPerChannel = target->getBitsPerSample();
 	
-	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceFile::dataInputCallback, sourceDescription, targetDescription, mSource->mMaxPacketSize ) );
+	mConverter = std::shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceFile::dataInputCallback, sourceDescription, targetDescription, mSource->mMaxPacketSize ) );
 }
 
 uint64_t LoaderSourceFile::getSampleOffset() const { 
@@ -181,7 +181,7 @@ SourceFile::SourceFile( DataSourceRef dataSourceRef )
 			throw IoExceptionFailedLoad();
 		}
 	}
-	mFileRef = shared_ptr<OpaqueAudioFileID>( aFileRef, AudioFileClose );
+	mFileRef = std::shared_ptr<OpaqueAudioFileID>( aFileRef, AudioFileClose );
 	
 	
 	//load header info

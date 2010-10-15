@@ -32,8 +32,8 @@
 
 namespace cinder { namespace audio {
 
-typedef shared_ptr<class SourceFile>	SourceFileRef;
-typedef shared_ptr<class LoaderSourceFile>	LoaderSourceFileRef;
+typedef std::shared_ptr<class SourceFile>	SourceFileRef;
+typedef std::shared_ptr<class LoaderSourceFile>	LoaderSourceFileRef;
 
 class LoaderSourceFile : public Loader {
  public:
@@ -49,9 +49,9 @@ class LoaderSourceFile : public Loader {
 
 	LoaderSourceFile( SourceFile *source, Target *target );
 	
-	SourceFile						* mSource;
-	shared_ptr<CocoaCaConverter>	mConverter;
-	uint64_t						mPacketOffset;
+	SourceFile							*mSource;
+	std::shared_ptr<CocoaCaConverter>	mConverter;
+	uint64_t							mPacketOffset;
 		
 };
 
@@ -75,7 +75,7 @@ class SourceFile : public Source {
 	uint64_t packetAtSample( uint64_t aSample ) const;
 	uint64_t sampleAtPacket( uint64_t aPacket ) const;
 	
-	shared_ptr<OpaqueAudioFileID>	mFileRef;
+	std::shared_ptr<OpaqueAudioFileID>	mFileRef;
 	
 	uint64_t	mPacketCount;
 	uint64_t	mByteCount;

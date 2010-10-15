@@ -43,7 +43,7 @@ class InputDevice {
 };
 //! \endcond
 
-typedef shared_ptr<InputDevice> InputDeviceRef;
+typedef std::shared_ptr<InputDevice> InputDeviceRef;
 
 //! \cond
 // This is an abstract base class for implementing Input
@@ -92,11 +92,11 @@ class Input {
 	//! Finds the first device whose name contains the string \a nameFragment
 	static InputDeviceRef findDeviceByNameContains( const std::string &nameFragment );
  private:
-	shared_ptr<InputImpl> mImpl;
+	std::shared_ptr<InputImpl> mImpl;
  public:
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<InputImpl> Input::*unspecified_bool_type;
+	typedef std::shared_ptr<InputImpl> Input::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mImpl.get() == 0 ) ? 0 : &Input::mImpl; }
 	void reset() { mImpl.reset(); }
 	//@}

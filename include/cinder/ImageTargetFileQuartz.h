@@ -32,7 +32,7 @@ typedef uint32_t CGBitmapInfo;
 
 namespace cinder {
 
-typedef shared_ptr<class ImageTargetFileQuartz> ImageTargetFileQuartzRef;
+typedef std::shared_ptr<class ImageTargetFileQuartz> ImageTargetFileQuartzRef;
 
 class ImageTargetFileQuartz : public cocoa::ImageTargetCgImage {
   public:
@@ -48,9 +48,9 @@ class ImageTargetFileQuartz : public cocoa::ImageTargetCgImage {
 	void			setupImageDestOptions();
 	
 	::CGImageDestinationRef			mImageDest;
-	shared_ptr<__CFDictionary>		mImageDestOptions;
+	std::shared_ptr<__CFDictionary>	mImageDestOptions;
 	
-	shared_ptr<uint8_t>		mData;
+	std::shared_ptr<uint8_t>		mData;
 };
 
 REGISTER_IMAGE_IO_FILE_HANDLER( ImageTargetFileQuartz )

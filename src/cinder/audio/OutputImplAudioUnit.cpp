@@ -388,15 +388,15 @@ OutputImplAudioUnit::~OutputImplAudioUnit()
 
 TrackRef OutputImplAudioUnit::addTrack( SourceRef aSource, bool autoplay )
 {
-	shared_ptr<OutputImplAudioUnit::Track> track;
+	std::shared_ptr<OutputImplAudioUnit::Track> track;
 	try {
-		track = shared_ptr<OutputImplAudioUnit::Track>( new OutputImplAudioUnit::Track( aSource, this ) );
+		track = std::shared_ptr<OutputImplAudioUnit::Track>( new OutputImplAudioUnit::Track( aSource, this ) );
 	} catch( OutOfTracksException ) {
 		//if it can't add it, just return a null track
 		return track;
 	}
 	TrackId inputBus = track->getTrackId();
-	mTracks.insert( std::pair<TrackId,shared_ptr<OutputImplAudioUnit::Track> >( inputBus, track ) );
+	mTracks.insert( std::pair<TrackId,std::shared_ptr<OutputImplAudioUnit::Track> >( inputBus, track ) );
 	if( autoplay ) {
 		track->play();
 	}

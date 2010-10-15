@@ -35,7 +35,7 @@ class OutputImplAudioUnit;
 
 class TargetOutputImplAudioUnit : public Target {
   public: 
-	static shared_ptr<TargetOutputImplAudioUnit> createRef( const OutputImplAudioUnit *aOutput ){ return shared_ptr<TargetOutputImplAudioUnit>( new TargetOutputImplAudioUnit( aOutput ) );  };
+	static std::shared_ptr<TargetOutputImplAudioUnit> createRef( const OutputImplAudioUnit *aOutput ){ return std::shared_ptr<TargetOutputImplAudioUnit>( new TargetOutputImplAudioUnit( aOutput ) );  };
 	~TargetOutputImplAudioUnit() {}
   private:
 	TargetOutputImplAudioUnit( const OutputImplAudioUnit *aOutput );
@@ -108,7 +108,7 @@ class OutputImplAudioUnit : public OutputImpl {
 		void createPcmBuffer();
 		
 		SourceRef		mSource;
-		shared_ptr<TargetOutputImplAudioUnit> mTarget;
+		std::shared_ptr<TargetOutputImplAudioUnit> mTarget;
 		OutputImplAudioUnit	* mOutput;
 		TrackId			mInputBus;
 		LoaderRef		mLoader;
@@ -121,7 +121,7 @@ class OutputImplAudioUnit : public OutputImpl {
 		boost::mutex	mPcmBufferMutex;
 	};
 	
-	std::map<TrackId,shared_ptr<OutputImplAudioUnit::Track> >	mTracks;
+	std::map<TrackId,std::shared_ptr<OutputImplAudioUnit::Track> >	mTracks;
 	
 	friend class TargetOutputImplAudioUnit;
 };
