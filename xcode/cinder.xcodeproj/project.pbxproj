@@ -555,6 +555,10 @@
 		00F3BD200EBF89B700382AC1 /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		00FCDC1C10D434AC006140C7 /* TileRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FCDC1B10D434AC006140C7 /* TileRender.cpp */; };
 		00FCDC2010D4387D006140C7 /* TileRender.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FCDC1F10D4387D006140C7 /* TileRender.h */; };
+		434708D91267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
+		434708DA1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
+		434708DB1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
+		434708DD1267EE5800AA7349 /* Blend.h in Headers */ = {isa = PBXBuildFile; fileRef = 434708DC1267EE5800AA7349 /* Blend.h */; };
 		43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
@@ -872,6 +876,8 @@
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
+		434708D81267EE4300AA7349 /* Blend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blend.cpp; path = ip/Blend.cpp; sourceTree = "<group>"; };
+		434708DC1267EE5800AA7349 /* Blend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Blend.h; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
 		43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UrlImplCocoa.mm; sourceTree = "<group>"; };
@@ -1267,6 +1273,7 @@
 		00C07D8D0FFF1E43004801EA /* ip */ = {
 			isa = PBXGroup;
 			children = (
+				434708DC1267EE5800AA7349 /* Blend.h */,
 				00419C7711057CDB007EC9AD /* EdgeDetect.h */,
 				00419C7811057CDB007EC9AD /* Fill.h */,
 				00419C7911057CDB007EC9AD /* Flip.h */,
@@ -1283,6 +1290,7 @@
 		00C07D8F0FFF1E99004801EA /* ip */ = {
 			isa = PBXGroup;
 			children = (
+				434708D81267EE4300AA7349 /* Blend.cpp */,
 				00419C6511057CC6007EC9AD /* EdgeDetect.cpp */,
 				00419C6611057CC6007EC9AD /* Fill.cpp */,
 				00419C6711057CC6007EC9AD /* Flip.cpp */,
@@ -1913,6 +1921,7 @@
 				C7FB1BB7124BE31E0045AFD2 /* InputImplAudioUnit.h in Headers */,
 				C7FB1BB8124BE31E0045AFD2 /* OutputImplAudioUnit.h in Headers */,
 				C7FB1BB9124BE31E0045AFD2 /* PcmBuffer.h in Headers */,
+				434708DD1267EE5800AA7349 /* Blend.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2087,6 +2096,7 @@
 				C7FB1BA6124BE3050045AFD2 /* Io.cpp in Sources */,
 				C7FB1BA7124BE3050045AFD2 /* Output.cpp in Sources */,
 				C7FB1BA8124BE3050045AFD2 /* SourceFile.cpp in Sources */,
+				434708DA1267EE4300AA7349 /* Blend.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2177,6 +2187,7 @@
 				C7FB1BA9124BE3060045AFD2 /* Io.cpp in Sources */,
 				C7FB1BAA124BE3060045AFD2 /* Output.cpp in Sources */,
 				C7FB1BAB124BE3060045AFD2 /* SourceFile.cpp in Sources */,
+				434708DB1267EE4300AA7349 /* Blend.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2288,6 +2299,7 @@
 				C7FB1B98124BE2DF0045AFD2 /* InputImplAudioUnit.cpp in Sources */,
 				C7FB1B99124BE2DF0045AFD2 /* OutputImplAudioUnit.cpp in Sources */,
 				C7FB1B9A124BE2DF0045AFD2 /* PcmBuffer.cpp in Sources */,
+				434708D91267EE4300AA7349 /* Blend.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
