@@ -129,7 +129,7 @@ class Texture {
 	//! the Texture's internal format, which is the format that OpenGL stores the texture data in memory. Common values include \c GL_RGB, \c GL_RGBA and \c GL_LUMINANCE
 	GLint			getInternalFormat() const;
 	//! the ID number for the texture, appropriate to pass to calls like \c glBindTexture()
-	GLuint			getTextureId() const { return mObj->mTextureID; }
+	GLuint			getId() const { return mObj->mTextureID; }
 	//! the target associated with texture. Typical values are \c GL_TEXTURE_2D and \c GL_TEXTURE_RECTANGLE_ARB
 	GLenum			getTarget() const { return mObj->mTarget; }
 	//!	whether the texture is flipped vertically
