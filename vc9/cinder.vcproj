@@ -521,6 +521,10 @@
 				Name="ip"
 				>
 				<File
+					RelativePath="..\src\cinder\ip\Blend.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\cinder\ip\EdgeDetect.cpp"
 					>
 				</File>
@@ -1066,6 +1070,10 @@
 			<Filter
 				Name="ip"
 				>
+				<File
+					RelativePath="..\include\cinder\ip\Blend.h"
+					>
+				</File>
 				<File
 					RelativePath="..\include\cinder\ip\EdgeDetect.h"
 					>
