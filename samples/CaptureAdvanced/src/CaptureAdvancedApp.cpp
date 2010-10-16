@@ -46,7 +46,8 @@ void CaptureApp::setup()
 				layout.addLine( device->getName() );
 				mNameTextures.push_back( gl::Texture( layout.render( true ) ) );
 			}
-			console() << "device is NOT available" << std::endl;
+			else
+				console() << "device is NOT available" << std::endl;
 		}
 		catch( CaptureExc & ) {
 			console() << "Unable to initialize device: " << device->getName() << endl;
