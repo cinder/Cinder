@@ -38,9 +38,9 @@
 
 namespace cinder { namespace audio {
 
-typedef shared_ptr<class Source>		SourceRef;
-typedef shared_ptr<class Target>		TargetRef;
-typedef shared_ptr<class Loader>		LoaderRef;
+typedef std::shared_ptr<class Source>		SourceRef;
+typedef std::shared_ptr<class Target>		TargetRef;
+typedef std::shared_ptr<class Loader>		LoaderRef;
 
 class Io {
  public:
@@ -125,7 +125,7 @@ class Loader {
  protected:
 #if defined(CINDER_COCOA)
 	static void fillBufferListFromCaBufferList( BufferList * aBufferList, const AudioBufferList * caBufferList );
-	static shared_ptr<AudioBufferList> createCaBufferList( const BufferList * caBufferList );
+	static std::shared_ptr<AudioBufferList> createCaBufferList( const BufferList * caBufferList );
 #endif
  
 	Loader() {}

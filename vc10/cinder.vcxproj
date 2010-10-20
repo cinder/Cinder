@@ -116,6 +116,7 @@
     <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourcePng.cpp" />
     <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Blend.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
     <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
     <ClCompile Include="..\src\cinder\Path2D.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
     <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />
+    <ClInclude Include="..\include\cinder\ip\Blend.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />

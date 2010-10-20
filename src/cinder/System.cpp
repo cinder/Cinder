@@ -65,12 +65,12 @@ using namespace std;
 
 namespace cinder {
 
-shared_ptr<System> System::sInstance;
+std::shared_ptr<System> System::sInstance;
 
-shared_ptr<System> System::instance()
+std::shared_ptr<System> System::instance()
 {
 	if( ! sInstance ) {
-		sInstance = shared_ptr<System>( new System );
+		sInstance = std::shared_ptr<System>( new System );
 	}
 	
 	return sInstance;
@@ -101,7 +101,7 @@ static std::string getSysCtlString( const std::string &key )
 	if( error )
 		throw SystemExcFailedQuery();
 	// make a string big enough
-	shared_ptr<char> str( new char[len], checked_array_deleter<char>() );
+	std::shared_ptr<char> str( new char[len], checked_array_deleter<char>() );
 	// call again, this time actually getting the value
 	error = sysctlbyname( key.c_str(), str.get(), &len, NULL, 0 );
 	if( error )

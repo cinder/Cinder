@@ -34,10 +34,10 @@ void deleteBuffer( BufferT<T> * aBuffer )
 }
 
 template<typename T>
-shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_t channelCount, bool isInterleaved )
+std::shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_t channelCount, bool isInterleaved )
 {
 	void (*fn)( BufferListT<T> * ) = deleteBufferList;
-	shared_ptr<BufferListT<T> > bufferList( new BufferListT<T>, fn );
+	std::shared_ptr<BufferListT<T> > bufferList( new BufferListT<T>, fn );
 	uint16_t bufferCount = 0;
 	uint32_t bufferSize = 0;
 	uint16_t channelsPerBuffer = 0;
@@ -74,7 +74,7 @@ void deleteBufferList( BufferListT<T> * aBufferList ) {
 
 #define CREATE_BUFFERLIST_PROTOTYPES(r,data,T)\
 	template void deleteBuffer( BufferT<T> * aBuffer );\
-	template shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_t channelCount, bool isInterleaved );\
+	template std::shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_t channelCount, bool isInterleaved );\
 	template void deleteBufferList( BufferListT<T> * aBuffer );
 
 BOOST_PP_SEQ_FOR_EACH( CREATE_BUFFERLIST_PROTOTYPES, ~, AUDIO_DATA_TYPES )
@@ -99,7 +99,7 @@ PcmBufferT<T>::PcmBufferT( uint32_t aMaxSampleCount, uint16_t aChannelCount, boo
 	mBufferSampleCounts = new uint32_t[mBufferCount];
 	void (*fn)( BufferT<T> * ) = deleteBuffer;
 	for( int i = 0; i < mBufferCount; i++ ) {
-		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
+		std::shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
 		mBuffers.push_back( buffer );
 		buffer->mNumberChannels = channelsPerBuffer;
 		buffer->mDataByteSize = bufferSize * sizeof(T);
@@ -116,14 +116,14 @@ PcmBufferT<T>::~PcmBufferT()
 }
 
 template<typename T>
-shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier channelId ) const {
+std::shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier channelId ) const {
 	if( channelId > mChannelCount - 1 ) {
 		throw InvalidChannelPcmBufferException();
 	}
 	
 	if( mIsInterleaved ) {
 		void (*fn)( BufferT<T> * ) = deleteBuffer;
-		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
+		std::shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
 		buffer->mData = new T[mMaxSampleCount];
 		for( uint32_t i = 0; i < mMaxSampleCount; i++ ) {
 			buffer->mData[i] = mBuffers[0]->mData[i * mChannelCount + channelId];
@@ -138,10 +138,10 @@ shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier channel
 }
 
 template<typename T>
-shared_ptr<BufferT<T> > PcmBufferT<T>::getInterleavedData() const {
+std::shared_ptr<BufferT<T> > PcmBufferT<T>::getInterleavedData() const {
 	if( ! mIsInterleaved ) {
 		void (*fn)( BufferT<T> * ) = deleteBuffer;
-		shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
+		std::shared_ptr<BufferT<T> > buffer( new BufferT<T>, fn );
 		buffer->mData = new T[mMaxSampleCount * mChannelCount];
 		for( uint32_t i = 0; i < mMaxSampleCount; i++ ) {
 			for( uint16_t j = 0; j < mChannelCount; j++ ) {

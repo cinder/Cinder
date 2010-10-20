@@ -108,7 +108,7 @@ namespace cinder { namespace app {
 AppCocoaTouch::AppCocoaTouch()
 	: App()
 {
-	mState = shared_ptr<AppCocoaTouchState>( new AppCocoaTouchState() );
+	mState = std::shared_ptr<AppCocoaTouchState>( new AppCocoaTouchState() );
 	mState->mStartTime = ::CFAbsoluteTimeGetCurrent();
 	mLastAccel = mLastRawAccel = Vec3f::zero();
 }

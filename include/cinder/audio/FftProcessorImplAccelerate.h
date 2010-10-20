@@ -32,7 +32,7 @@ class FftProcessorImplAccelerate : public FftProcessorImpl {
 	FftProcessorImplAccelerate( uint16_t aBandCount );
 	~FftProcessorImplAccelerate();
 	
-	shared_ptr<float> process( const float * inBuffer );
+	std::shared_ptr<float> process( const float * inBuffer );
  private:
 	const static vDSP_Stride	sStride = 1;
 	

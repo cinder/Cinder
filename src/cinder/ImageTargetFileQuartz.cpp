@@ -97,7 +97,7 @@ void ImageTargetFileQuartz::setupImageDestOptions()
 	int bitsPerComponent = ImageIo::dataTypeBytes( getDataType() ) * 8;
 
 	// setup the dictionary of options for CGImageDestinationAddImage
-	mImageDestOptions = shared_ptr<__CFDictionary>( ::CFDictionaryCreateMutable( kCFAllocatorDefault, 3, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks ), cocoa::safeCfRelease );
+	mImageDestOptions = std::shared_ptr<__CFDictionary>( ::CFDictionaryCreateMutable( kCFAllocatorDefault, 3, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks ), cocoa::safeCfRelease );
 	::CFDictionarySetValue( mImageDestOptions.get(), kCGImagePropertyIsFloat, ( getDataType() == ImageIo::FLOAT32 ) ? kCFBooleanTrue : kCFBooleanFalse );
 	::CFDictionarySetValue( mImageDestOptions.get(), kCGImagePropertyHasAlpha, ( hasAlpha() ) ? kCFBooleanTrue : kCFBooleanFalse );
 	::CFNumberRef depthNumber = ::CFNumberCreate( kCFAllocatorDefault, kCFNumberIntType, &bitsPerComponent );
@@ -113,11 +113,11 @@ ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSou
 	mImageDest = NULL;
 	if( dataTarget->providesFilePath() ) {
 		cocoa::SafeCfString pathString = cocoa::createSafeCfString( dataTarget->getFilePath() );
-		shared_ptr<const __CFURL> urlRef( ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString.get(), kCFURLPOSIXPathStyle, false ), cocoa::safeCfRelease );
+		std::shared_ptr<const __CFURL> urlRef( ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString.get(), kCFURLPOSIXPathStyle, false ), cocoa::safeCfRelease );
 		mImageDest = ::CGImageDestinationCreateWithURL( urlRef.get(), uti.get(), 1, NULL );
 	}
 	else if( dataTarget->providesUrl() ) {
-		shared_ptr<const __CFURL> urlRef( cocoa::createCfUrl( dataTarget->getUrl() ), cocoa::safeCfRelease );
+		std::shared_ptr<const __CFURL> urlRef( cocoa::createCfUrl( dataTarget->getUrl() ), cocoa::safeCfRelease );
 		mImageDest = ::CGImageDestinationCreateWithURL( urlRef.get(), uti.get(), 1, NULL );
 	
 	}
@@ -126,7 +126,7 @@ ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSou
 		::CGDataConsumerCallbacks callbacks;
 		callbacks.putBytes = cgDataConsumerPutBytes;
 		callbacks.releaseConsumer = cgDataConsumerRelease;
-		shared_ptr<CGDataConsumer> consumer( ::CGDataConsumerCreate( ostreamRef, &callbacks ), ::CGDataConsumerRelease );
+		std::shared_ptr<CGDataConsumer> consumer( ::CGDataConsumerCreate( ostreamRef, &callbacks ), ::CGDataConsumerRelease );
 		mImageDest = ::CGImageDestinationCreateWithDataConsumer( consumer.get(), uti.get(), 1, NULL );
 	}
 	

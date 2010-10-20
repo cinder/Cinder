@@ -33,12 +33,12 @@ namespace cinder { namespace audio {
 
 Input::Input()
 {
-	mImpl = shared_ptr<InputImpl>( new InputPlatformImpl( InputDeviceRef() ) );
+	mImpl = std::shared_ptr<InputImpl>( new InputPlatformImpl( InputDeviceRef() ) );
 }
 
 Input::Input( InputDeviceRef aDevice )
 {
-	mImpl = shared_ptr<InputImpl>( new InputPlatformImpl( aDevice ) );
+	mImpl = std::shared_ptr<InputImpl>( new InputPlatformImpl( aDevice ) );
 }
 
 const std::vector<InputDeviceRef>&	Input::getDevices( bool forceRefresh )

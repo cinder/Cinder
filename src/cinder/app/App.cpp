@@ -36,8 +36,7 @@
 	#include "cinder/app/AppImplMsw.h"
 #endif
 
-using std::string;
-using std::vector;
+using namespace std;
 
 namespace cinder { namespace app {
 
@@ -174,7 +173,7 @@ void App::privateShutdown__()
 	shutdown();
 }
 	
-DataSourceRef App::loadResource( const std::string &macPath, int mswID, const std::string &mswType )
+DataSourceRef App::loadResource( const string &macPath, int mswID, const string &mswType )
 {
 #if defined( CINDER_COCOA )
 	return loadResource( macPath );
@@ -184,7 +183,7 @@ DataSourceRef App::loadResource( const std::string &macPath, int mswID, const st
 }
 
 #if defined( CINDER_COCOA )
-DataSourcePathRef App::loadResource( const std::string &macPath )
+DataSourcePathRef App::loadResource( const string &macPath )
 {
 	string resourcePath = App::get()->getResourcePath( macPath );
 	if( resourcePath.empty() )
@@ -194,7 +193,7 @@ DataSourcePathRef App::loadResource( const std::string &macPath )
 }
 #else
 
-DataSourceBufferRef App::loadResource( int mswID, const std::string &mswType )
+DataSourceBufferRef App::loadResource( int mswID, const string &mswType )
 {
 	return DataSourceBuffer::createRef( AppImplMsw::loadResource( mswID, mswType ) );
 }
@@ -202,7 +201,7 @@ DataSourceBufferRef App::loadResource( int mswID, const std::string &mswType )
 #endif
 
 #if defined( CINDER_COCOA )
-string App::getResourcePath( const std::string &rsrcRelativePath )
+string App::getResourcePath( const string &rsrcRelativePath )
 {
 	string path = getPathDirectory( rsrcRelativePath );
 	string fileName = getPathFileName( rsrcRelativePath );
@@ -216,7 +215,7 @@ string App::getResourcePath( const std::string &rsrcRelativePath )
 	
 	NSString *resultPath = [[NSBundle mainBundle] pathForResource:[NSString stringWithUTF8String:fileName.c_str()] ofType:nil inDirectory:pathNS];
 	if( ! resultPath )
-		return std::string();
+		return string();
 	
 	return string([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
 }
@@ -432,19 +431,19 @@ void App::Settings::enablePowerManagement( bool aPowerManagement )
 }
 
 #if defined( CINDER_COCOA )
-ResourceLoadExc::ResourceLoadExc( const std::string &macPath )
+ResourceLoadExc::ResourceLoadExc( const string &macPath )
 {
 	sprintf( mMessage, "Failed to load resource: %s", macPath.c_str() );
 }
 
 #elif defined( CINDER_MSW )
 
-ResourceLoadExc::ResourceLoadExc( int mswID, const std::string &mswType )
+ResourceLoadExc::ResourceLoadExc( int mswID, const string &mswType )
 {
 	sprintf( mMessage, "Failed to load resource: #%d type: %s", mswID, mswType.c_str() );
 }
 
-ResourceLoadExc::ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType )
+ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string &mswType )
 {
 	sprintf( mMessage, "Failed to load resource: #%d type: %s Mac path: %s", mswID, mswType.c_str(), macPath.c_str() );
 }

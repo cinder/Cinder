@@ -76,12 +76,12 @@ class AdaptiveThresholdT {
 	
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef typename shared_ptr<Obj>::unspecified_bool_type unspecified_bool_type;
-	operator unspecified_bool_type() const { return static_cast<typename shared_ptr<Obj>::unspecified_bool_type>( mObj ); }
+	typedef std::shared_ptr<Obj> AdaptiveThresholdT::*unspecified_bool_type;
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &AdaptiveThresholdT::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
  private:
-	shared_ptr<Obj>		mObj;
+	std::shared_ptr<Obj>		mObj;
 };
 
 typedef AdaptiveThresholdT<uint8_t>		AdaptiveThreshold;

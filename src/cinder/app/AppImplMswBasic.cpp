@@ -81,7 +81,7 @@ void AppImplMswBasic::run()
 	
 	MSG msg;
 	while( ! mShouldQuit ) {
-		if( ::PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) {
+		while( ::PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) {
 			::TranslateMessage( &msg );
 			::DispatchMessage( &msg ); 
 		}
@@ -92,7 +92,7 @@ void AppImplMswBasic::run()
 			::RedrawWindow( mWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
 		}
 		else
-			::Sleep( 1 );
+			::Sleep( 0 );
 	}
 
 	killWindow( mFullScreen );
@@ -329,7 +329,7 @@ void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 	bool handled = false;
 	double currentTime = getApp()->getElapsedSeconds(); // we don't trust the device's sense of time
 	unsigned int numInputs = LOWORD( wParam );
-	shared_ptr<TOUCHINPUT> pInputs = shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
+	std::shared_ptr<TOUCHINPUT> pInputs = std::shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
 	if( pInputs ) {
 		vector<TouchEvent::Touch> beganTouches, movedTouches, endTouches, activeTouches;
 		if( GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, pInputs.get(), sizeof(TOUCHINPUT) ) ) {

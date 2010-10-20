@@ -322,7 +322,7 @@ Font::Glyph Font::getGlyphIndex( size_t idx )
 vector<Font::Glyph> Font::getGlyphs( const string &utf8String )
 {
 	wstring wideString = toUtf16( utf8String );
-	shared_ptr<WORD> buffer( new WORD[wideString.length()], checked_array_deleter<WORD>() );
+	std::shared_ptr<WORD> buffer( new WORD[wideString.length()], checked_array_deleter<WORD>() );
 	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
 	DWORD numGlyphs = ::GetGlyphIndices( FontManager::instance()->getFontDc(), &wideString[0], (int)wideString.length(), buffer.get(), GGI_MARK_NONEXISTING_GLYPHS );
 	if( numGlyphs == GDI_ERROR )
@@ -346,7 +346,7 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex )
     if( bytesGlyph == GDI_ERROR )
 		throw FontGlyphFailureExc();
 
-	shared_ptr<uint8_t> buffer( new uint8_t[bytesGlyph], checked_array_deleter<uint8_t>() );
+	std::shared_ptr<uint8_t> buffer( new uint8_t[bytesGlyph], checked_array_deleter<uint8_t>() );
 	uint8_t *ptr = buffer.get();
     if( ! buffer ) {
 		throw FontGlyphFailureExc();
@@ -433,7 +433,7 @@ Font::Obj::Obj( const string &aName, float aSize )
 	assert( sizeof(wchar_t) == 2 );
     wstring faceName = toUtf16( mName );
     
-    mGdiplusFont = shared_ptr<Gdiplus::Font>( new Gdiplus::Font( faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
+    mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
 	
 	finishSetup();
 #endif
@@ -447,7 +447,7 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 {
 #if defined( CINDER_COCOA )
 	Buffer buffer( dataSource->getBuffer() );
-	shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( NULL, buffer.getData(), buffer.getDataSize(), NULL ), ::CGDataProviderRelease );
+	std::shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( NULL, buffer.getData(), buffer.getDataSize(), NULL ), ::CGDataProviderRelease );
 	if( ! dataProvider )
 		throw FontInvalidNameExc();
 	mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
@@ -474,14 +474,14 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 	
 	// this is admittedly troublesome, but a new/delete combo blows up. This cannot be good.
 	// And the sample code implies I should even be able to allocate FontFamily's on the stack, but that is not the case it seems
-	shared_ptr<void> fontFamily( malloc(sizeof(Gdiplus::FontFamily)), free );
+	std::shared_ptr<void> fontFamily( malloc(sizeof(Gdiplus::FontFamily)), free );
 	// we only know how to use the first font family here
 	privateFontCollection.GetFamilies( 1, (Gdiplus::FontFamily*)fontFamily.get(), &found );
 
 	if( found != 0 ) {
 		((Gdiplus::FontFamily*)fontFamily.get())->GetFamilyName( familyName );
 		mName = toUtf8( familyName );
-		mGdiplusFont = shared_ptr<Gdiplus::Font>( new Gdiplus::Font( familyName, size * 72 / 96 /* Mac<->PC size conversion factor */, Gdiplus::FontStyleRegular,
+		mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( familyName, size * 72 / 96 /* Mac<->PC size conversion factor */, Gdiplus::FontStyleRegular,
                              Gdiplus::UnitPixel, &privateFontCollection ) );
 	}
 	else

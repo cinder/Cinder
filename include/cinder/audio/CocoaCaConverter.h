@@ -41,7 +41,7 @@ class CocoaCaConverter {
 	void loadData( BufferList *ioData );
  private:
 	static void fillBufferListFromCaBufferList( BufferList * aBufferList, const AudioBufferList * caBufferList, uint32_t aSampleCount = 0 );
-	static shared_ptr<AudioBufferList> createCaBufferList( const BufferList * caBufferList );
+	static std::shared_ptr<AudioBufferList> createCaBufferList( const BufferList * caBufferList );
 	static OSStatus dataInputCallback( AudioConverterRef inAudioConverter, UInt32 *ioNumberDataPackets, AudioBufferList *ioData, AudioStreamPacketDescription **outDataPacketDescriptions, void *audioLoader );
  
 	void cleanupPacketDescriptions();

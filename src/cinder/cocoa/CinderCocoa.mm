@@ -34,6 +34,7 @@
 #endif
 #import <Foundation/NSData.h>
 
+using namespace std;
 
 namespace cinder { namespace cocoa {
 

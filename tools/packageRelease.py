@@ -60,13 +60,19 @@ def processExport( outputName, compilerName, version ):
     shutil.rmtree( outputDir + "test" )
     print "copying boost headers"
     shutil.copytree( baseDir + os.sep + "boost" + os.sep + "boost", outputDir + "boost" + os.sep + "boost" )
+    return outputDir
     
 
 if len(sys.argv) != 3:
     printUsage()
 elif sys.argv[2] == 'xcode':
     gCompiler = 'xcode'
-    processExport( "mac", "xcode", sys.argv[1] )
+    outputDir = processExport( "mac", "xcode", sys.argv[1] )
+    os.chdir( outputDir + "xcode" )
+    os.system( "./fullbuild.sh" )
+    shutil.rmtree( outputDir + "xcode/build" )
+    os.chdir( outputDir + "lib" )
+    os.system( "strip -r *.a" )
 elif sys.argv[2] == 'vc9':
     gCompiler = 'vc9'
     processExport( "vc2008", "vc9", sys.argv[1] )

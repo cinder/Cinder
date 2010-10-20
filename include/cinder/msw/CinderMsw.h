@@ -47,8 +47,8 @@ void ComDelete( void *p );
 
 //! Creates a shared_ptr whose deleter will properly decrement the reference count of a COM object
 template<typename T>
-inline shared_ptr<T> makeComShared( T *p )
-{ return shared_ptr<T>( p, &ComDelete ); }
+inline std::shared_ptr<T> makeComShared( T *p )
+{ return std::shared_ptr<T>( p, &ComDelete ); }
 
 //! Wraps a cinder::OStream with a COM ::IStream
 class ComOStream : public ::IStream

@@ -33,7 +33,7 @@ namespace cinder {
 
 struct ci_png_info;
 
-typedef shared_ptr<class ImageSourcePng>	ImageSourcePngRef;
+typedef std::shared_ptr<class ImageSourcePng>	ImageSourcePngRef;
 
 class ImageSourcePng : public ImageSource {
   public:
@@ -49,9 +49,9 @@ class ImageSourcePng : public ImageSource {
 	ImageSourcePng( DataSourceRef dataSourceRef );
 	bool loadHeader();
 	
-	shared_ptr<ci_png_info>		mCiInfoPtr;
-	png_struct_def				*mPngPtr;
-	png_info_struct				*mInfoPtr;
+	std::shared_ptr<ci_png_info>	mCiInfoPtr;
+	png_struct_def					*mPngPtr;
+	png_info_struct					*mInfoPtr;
 };
 
 REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourcePng )

@@ -155,7 +155,7 @@ IStreamFileRef IStreamFile::createRef( FILE *file, bool ownsFile, int32_t defaul
 IStreamFile::IStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
 	: IStream(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
-	mBuffer = shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
+	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
 	mBufferFileOffset = std::numeric_limits<off_t>::min();
 	mBufferOffset = 0;
 	mBufferSize = 0;
@@ -299,7 +299,7 @@ IoStreamFileRef IoStreamFile::createRef( FILE *file, bool ownsFile, int32_t defa
 IoStreamFile::IoStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
 	: IoStream(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
-	mBuffer = shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
+	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
 	mBufferFileOffset = std::numeric_limits<off_t>::min();
 	mBufferOffset = 0;
 	mBufferSize = 0;
@@ -515,7 +515,7 @@ IStreamFileRef loadFileStream( const std::string &path )
 		return IStreamFileRef();
 }
 
-shared_ptr<OStreamFile> writeFileStream( const std::string &path, bool createParents )
+std::shared_ptr<OStreamFile> writeFileStream( const std::string &path, bool createParents )
 {
 	if( createParents ) {
 		createDirectories( getPathDirectory( path ) );
@@ -527,7 +527,7 @@ shared_ptr<OStreamFile> writeFileStream( const std::string &path, bool createPar
 		return s;
 	}
 	else
-		return shared_ptr<OStreamFile>();
+		return std::shared_ptr<OStreamFile>();
 }
 
 IoStreamFileRef readWriteFileStream( const std::string &path )
@@ -542,13 +542,13 @@ IoStreamFileRef readWriteFileStream( const std::string &path )
 		return IoStreamFileRef();
 }
 
-void loadStreamMemory( IStreamRef is, shared_ptr<uint8_t> *resultData, size_t *resultDataSize )
+void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize )
 {
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
 	
-	*resultData = shared_ptr<uint8_t>( (uint8_t*)malloc( fileSize ), free );
+	*resultData = std::shared_ptr<uint8_t>( (uint8_t*)malloc( fileSize ), free );
 	if( ! (*resultData ) )
 		throw StreamExcOutOfMemory();
 

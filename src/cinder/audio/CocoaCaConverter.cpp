@@ -78,7 +78,7 @@ CocoaCaConverter::~CocoaCaConverter()
 
 void CocoaCaConverter::loadData( BufferList *ioData )
 {	
-	shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
+	std::shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
 
 	UInt32 aSampleCount = ioData->mBuffers[0].mSampleCount;
 	AudioStreamPacketDescription * outputPacketDescriptions = new AudioStreamPacketDescription[aSampleCount];
@@ -103,9 +103,9 @@ void CocoaCaConverter::fillBufferListFromCaBufferList( BufferList * aBufferList,
 	}
 }
 
-shared_ptr<AudioBufferList> CocoaCaConverter::createCaBufferList( const BufferList * aBufferList )
+std::shared_ptr<AudioBufferList> CocoaCaConverter::createCaBufferList( const BufferList * aBufferList )
 {
-	shared_ptr<AudioBufferList> caBufferList( (AudioBufferList *)malloc( sizeof( UInt32 ) + ( sizeof( AudioBuffer ) * aBufferList->mNumberBuffers ) ), free );
+	std::shared_ptr<AudioBufferList> caBufferList( (AudioBufferList *)malloc( sizeof( UInt32 ) + ( sizeof( AudioBuffer ) * aBufferList->mNumberBuffers ) ), free );
 	
 	caBufferList->mNumberBuffers = aBufferList->mNumberBuffers;
 	for( int i = 0; i < caBufferList->mNumberBuffers; i++ ) {

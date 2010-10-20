@@ -41,7 +41,7 @@ class XmlDocument {
 	XmlDocument();
 	XmlDocument( const std::string &filePath );
 	XmlDocument( std::istream& is );
-	XmlDocument( shared_ptr<cinder::IStream> is );
+	XmlDocument( std::shared_ptr<cinder::IStream> is );
 	XmlDocument( DataSourceRef dataSource );
 	
 	//XmlDocument( const char * str ) : tiDoc( str ) {}
@@ -55,7 +55,7 @@ class XmlDocument {
 	std::vector<XmlElement> xpath( const char *aXpathExpr ) const;
 	
   private:
-	shared_ptr<TiXmlDocument>	tiDoc;
+	std::shared_ptr<TiXmlDocument>	tiDoc;
 };
 
 class XmlElement {

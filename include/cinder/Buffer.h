@@ -53,7 +53,7 @@ class Buffer {
 	const void * getData() const { return mObj->mData; }
 	
 	//! Returns a shared_ptr for the data and gives up ownership of the data
-	shared_ptr<uint8_t>	convertToSharedPtr();
+	std::shared_ptr<uint8_t>	convertToSharedPtr();
 	
 	void resize( size_t newSize );
 	
@@ -61,12 +61,12 @@ class Buffer {
 	//TODO: copy from region of another buffer
 	
   private:
-	shared_ptr<Obj>		mObj;
+	std::shared_ptr<Obj>		mObj;
 
   public:
  	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> Buffer::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> Buffer::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Buffer::mObj; }
 	void reset() { mObj.reset(); }
 	//@}

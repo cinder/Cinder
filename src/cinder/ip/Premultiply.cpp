@@ -21,8 +21,37 @@
 */
 
 #include "cinder/ip/Premultiply.h"
+#include "cinder/ChanTraits.h"
 
 namespace cinder { namespace ip {
+
+// this is a candidate for sse2
+template<typename T>
+void premultiply( SurfaceT<T> *surface )
+{
+	const Area clippedArea = surface->getBounds();
+
+	if( ! surface->hasAlpha() )
+		return;
+
+	surface->setPremultiplied( true );
+
+	int32_t rowBytes = surface->getRowBytes();
+	uint8_t pixelInc = surface->getPixelInc();
+	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset(), alphaOffset = surface->getAlphaOffset();
+	for( int32_t y = clippedArea.getY1(); y < clippedArea.getY2(); ++y ) {
+		T *dstPtr = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( surface->getData() + clippedArea.getX1() * pixelInc ) + y * rowBytes );
+		for( int32_t x = 0; x < clippedArea.getWidth(); ++x ) {
+			// The basic formula for unpremultiplication is to divide by the alpha
+			T alpha = dstPtr[alphaOffset];
+			
+			dstPtr[redOffset] = CHANTRAIT<T>::premultiply( dstPtr[redOffset], alpha );
+			dstPtr[greenOffset] = CHANTRAIT<T>::premultiply( dstPtr[greenOffset], alpha );
+			dstPtr[blueOffset] = CHANTRAIT<T>::premultiply( dstPtr[blueOffset], alpha );
+			dstPtr += pixelInc;
+		}
+	}
+}
 
 // this is a candidate for sse2
 template<>
@@ -32,6 +61,8 @@ void unpremultiply<uint8_t>( SurfaceT<uint8_t> *surface )
 
 	if( ! surface->hasAlpha() )
 		return;
+
+	surface->setPremultiplied( false );
 
 	int32_t rowBytes = surface->getRowBytes();
 	uint8_t pixelInc = surface->getPixelInc();
@@ -60,6 +91,8 @@ void unpremultiply<float>( SurfaceT<float> *surface )
 	if( ! surface->hasAlpha() )
 		return;
 
+	surface->setPremultiplied( false );
+
 	int32_t rowBytes = surface->getRowBytes();
 	uint8_t pixelInc = surface->getPixelInc();
 	uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset(), alphaOffset = surface->getAlphaOffset();
@@ -78,7 +111,12 @@ void unpremultiply<float>( SurfaceT<float> *surface )
 	}	
 }
 
-// Due to explicit specialization we do not need this
-//BOOST_PP_SEQ_FOR_EACH( premult_PROTOTYPES, ~, CHANNEL_TYPES )
+
+
+#define premult_PROTOTYPES(r,data,T)\
+	template void premultiply( SurfaceT<T> *Surface );
+
+BOOST_PP_SEQ_FOR_EACH( premult_PROTOTYPES, ~, CHANNEL_TYPES )
+	
 
 } } // namespace cinder::ip

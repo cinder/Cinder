@@ -38,7 +38,7 @@ class OutputImplXAudio;
 
 class TargetOutputImplXAudio : public Target {
   public: 
-	static shared_ptr<TargetOutputImplXAudio> createRef( const WAVEFORMATEX *aOutDescription ){ return shared_ptr<TargetOutputImplXAudio>( new TargetOutputImplXAudio( aOutDescription ) );  }
+	static std::shared_ptr<TargetOutputImplXAudio> createRef( const WAVEFORMATEX *aOutDescription ){ return std::shared_ptr<TargetOutputImplXAudio>( new TargetOutputImplXAudio( aOutDescription ) );  }
 	~TargetOutputImplXAudio() {}
   private:
 	TargetOutputImplXAudio( const WAVEFORMATEX *aOutDescription );
@@ -107,7 +107,7 @@ class OutputImplXAudio : public OutputImpl
 		uint64_t						mCurrentTime;
 
 		HANDLE								mBufferEndEvent;
-		shared_ptr<boost::thread>			mQueueThread;
+		std::shared_ptr<boost::thread>		mQueueThread;
 
 		bool mIsPcmBuffering;
 		PcmBuffer32fRef	mLoadingPcmBuffer;
@@ -139,7 +139,7 @@ class OutputImplXAudio : public OutputImpl
 		SourceCallback					mVoiceCallback;
 	};
 
-	std::map<TrackId,shared_ptr<OutputImplXAudio::Track> >	mTracks;	
+	std::map<TrackId,std::shared_ptr<OutputImplXAudio::Track> >	mTracks;	
 };
 
 }} //namespaces

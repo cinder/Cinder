@@ -73,7 +73,7 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
 
 #endif // ! defined( __LP64__ )
 
-typedef shared_ptr<class ImageTargetCvPixelBuffer> ImageTargetCvPixelBufferRef;
+typedef std::shared_ptr<class ImageTargetCvPixelBuffer> ImageTargetCvPixelBufferRef;
 
 class ImageTargetCvPixelBuffer : public ci::ImageTarget {
   public:
@@ -101,7 +101,7 @@ class ImageTargetCvPixelBuffer : public ci::ImageTarget {
 CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr = false );
 
 #if ! defined( __LP64__ )
-typedef shared_ptr<class ImageTargetGWorld> ImageTargetGWorldRef;
+typedef std::shared_ptr<class ImageTargetGWorld> ImageTargetGWorldRef;
 
 class ImageTargetGWorld : public ci::ImageTarget {
   public:

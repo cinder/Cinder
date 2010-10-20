@@ -27,7 +27,11 @@
 
 namespace cinder { namespace ip {
 
-/** Unpremultiplies the contents of a Surface using its own alpha channel **/
+/** Premultiplies the contents of a Surface using its own alpha channel. Marks the Surface as being premultiplied. **/
+template<typename T>
+void premultiply( SurfaceT<T> *surface );
+
+/** Unpremultiplies the contents of a Surface using its own alpha channel. Marks the Surface as being unpremultiplied. **/
 template<typename T>
 void unpremultiply( SurfaceT<T> *surface );
 

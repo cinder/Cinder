@@ -354,7 +354,7 @@ class App {
   
 #if defined( CINDER_MSW )
 	friend class AppImplMsw;
-	shared_ptr<cinder::msw::dostream>	mOutputStream;
+	std::shared_ptr<cinder::msw::dostream>	mOutputStream;
 #else
 	static void				*sAutoReleasePool;
 #endif
@@ -366,7 +366,7 @@ class App {
 	double					mFpsLastSampleTime;
 	double					mFpsSampleInterval;
 
-	shared_ptr<Renderer>	mRenderer;
+	std::shared_ptr<Renderer>	mRenderer;
 	
 	CallbackMgr<bool (MouseEvent)>		mCallbacksMouseDown, mCallbacksMouseUp, mCallbacksMouseWheel, mCallbacksMouseMove, mCallbacksMouseDrag;
 	CallbackMgr<bool (KeyEvent)>		mCallbacksKeyDown, mCallbacksKeyUp;

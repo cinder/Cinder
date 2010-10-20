@@ -68,9 +68,9 @@ class CaptureImplDirectShow {
 	int								mDeviceID;
 	// this maintains a reference to the mgr so that we don't destroy it before
 	// the last Capture is destroyed
-	shared_ptr<class CaptureMgr>	mMgrPtr;
-	bool							mIsCapturing;
-	shared_ptr<class SurfaceCache>	mSurfaceCache;
+	std::shared_ptr<class CaptureMgr>	mMgrPtr;
+	bool								mIsCapturing;
+	std::shared_ptr<class SurfaceCache>	mSurfaceCache;
 
 	int32_t				mWidth, mHeight;
 	mutable Surface8u	mCurrentFrame;

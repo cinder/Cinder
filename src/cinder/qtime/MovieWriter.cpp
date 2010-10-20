@@ -168,7 +168,7 @@ const MovieWriter::Format& MovieWriter::Format::operator=( const Format &format 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MovieWriter
 MovieWriter::MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format )
-	: mObj( shared_ptr<Obj>( new Obj( path, width, height, format ) ) )
+	: mObj( std::shared_ptr<Obj>( new Obj( path, width, height, format ) ) )
 {
 }
 

@@ -27,19 +27,19 @@
 
 namespace cinder { namespace audio {
 
-shared_ptr<float> calculateFft( Buffer32fRef aBuffer, uint16_t aBandCount );
+std::shared_ptr<float> calculateFft( Buffer32fRef aBuffer, uint16_t aBandCount );
 
 class FftProcessorImpl {
  public:
 	FftProcessorImpl( uint16_t aBandCount );
 	virtual ~FftProcessorImpl() {}
-	virtual shared_ptr<float> process( const float * inBuffer ) = 0;
+	virtual std::shared_ptr<float> process( const float * inBuffer ) = 0;
 	uint16_t getBandCount() const { return mBandCount; }
  protected:
 	uint16_t mBandCount;
 };
 
-typedef shared_ptr<class FftProcessor> FftProcessorRef;
+typedef std::shared_ptr<class FftProcessor> FftProcessorRef;
 
 class FftProcessor {
  public:
@@ -47,11 +47,11 @@ class FftProcessor {
 	
 	static FftProcessorRef createRef( uint16_t aBandCount = DEFAULT_BAND_COUNT );
 	
-	shared_ptr<float> process( const float * inBuffer ) { return mImpl->process( inBuffer ); }
+	std::shared_ptr<float> process( const float * inBuffer ) { return mImpl->process( inBuffer ); }
 	uint16_t getBandCount() const { return mImpl->getBandCount(); }
  private:
 	FftProcessor( uint16_t aBandCount );
-	shared_ptr<FftProcessorImpl> mImpl;
+	std::shared_ptr<FftProcessorImpl> mImpl;
 };
 
 }} //namespace

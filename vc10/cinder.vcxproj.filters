@@ -396,6 +396,9 @@
     <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Blend.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -748,6 +751,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\audio\PcmBuffer.h">
       <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Blend.h">
+      <Filter>Header Files\ip</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

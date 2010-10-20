@@ -14,17 +14,18 @@
 
 	<div class="contents">
 		<h1>Mac OS X Setup</h1>
-		<p>Let's walk through the process of getting Cinder running on your Mac OS X machine. If you don't already have Xcode installed, you'll need to start with that. It should have come with your computer's install discs, but if you don't have
-		those handy (or you have an Xcode older than verison 3.1), you can download the latest version from Apple
+		<p>Let's walk through the process of getting Cinder running on your Mac OS X machine. You'll need XCode 3.1 or later, which you can download from Apple
 		<a href="http://developer.apple.com/technology/xcode.html">right here</a>.
-		If you don't already have a free ADC account, you'll first need to create one
-		with Apple, which you can <a href="https://connect.apple.com/">do here</a>.</p>
+		If you don't already have a free ADC account, you'll first need to create one, which you can <a href="https://connect.apple.com/">do here</a>.</p>
 		<br>
 		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you already have everything you need. </p>
 		<br>
 		<p>Let's try opening and building one of the samples. From the Finder, navigate to the <em>cinder/samples/QuickTime</em> folder and open <em>xcode/quickTimeSample.xcodeproj</em> by double-clicking it. From the <b>Run</b> menu select the <b>Run</b> item. Xcode will take a few seconds to build the sample and then it should launch. You'll be greeted by a standard Mac open dialog box. Navigate to a QuickTime movie on your hard drive and open it. You should see your movie begin playing back in the app's window. Hit the 'o' key to open a different movie file, or you can just drag &amp; drop one from the Finder. </p>
 
 		<center><img alt="QuickTime Sample" src="mac_images/quicktimesample.png"></img></center>
+		
+		<h2><a name="debug">Debug Symbols</a></h2>
+		<p>While not strictly necessary, if you would like to be able to step into Cinder's own code during your debug process, you'll want to build Cinder with debug symbols. This is straightforward - just open <em>xcode/cinder.xcodeproj</em> in XCode and build the Debug configuration for the Cinder target. If you are doing iOS development you'll want to do the same thing for the <em>cinder_iphone</em> and <em>cinder_iphone_sim</em> targets.
 		
 		<h2><a name="tinderbox">TinderBox</a></h2>
 		<p>TinderBox is our GUI tool for creating Cinder projects quickly and easily. It can generate Xcode as well as Visual C++ 2008 and 2010 projects. It is located at <em>cinder/tools/TinderBox</em> in our packaged releases. A guide to creating projects using TinderBox is <a href="MacNewProject.html#tinderbox">available here</a>.

@@ -44,8 +44,9 @@ struct CHANTRAIT<uint8_t>
 	static uint8_t convert( uint16_t v ) { return v / 257; }	
 	static uint8_t convert( float v ) { return static_cast<uint8_t>( v * 255 ); }
 	static uint8_t grayscale( uint8_t r, uint8_t g, uint8_t b ) { return ( r * 54 + g * 183 + b * 19 ) >> 8; } // luma coefficients from Rec. 709
-	//! Calculates the multiplied version of a color component \a c by alpha \a a
-	static uint8_t premultiply( uint8_t c, uint8_t a ) { return c * 255 / a; } // TODO: need Jim Blinn's optimized trick here
+	static uint8_t premultiply( uint8_t c, uint8_t a ) { return a * c / 255; }
+	//static uint8_t premultiply( uint8_t c, uint8_t a ) { uint16_t t = c * a + 0x80f; return ( ( t >> 8 ) + t ) >> 8; }
+	static uint8_t inverse( uint8_t c ) { return ~c; }
 };
 
 template<>
@@ -74,6 +75,7 @@ struct CHANTRAIT<float>
 	static float grayscale( float r, float g, float b ) { return r * 0.2126f + g * 0.7152f + b * 0.0722f; } // luma coefficients from Rec. 709
 	//! Calculates the multiplied version of a color component \a c by alpha \a a
 	static float premultiply( float c, float a ) { return c * a; }
+	static float inverse( float c ) { return 1.0f - c; }	
 };
 
 #define CHANNEL_TYPES (uint8_t)(float)

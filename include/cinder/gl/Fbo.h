@@ -75,12 +75,12 @@ class Renderbuffer {
 		int					mSamples, mCoverageSamples;
 	};
  
-	shared_ptr<Obj>		mObj;
+	std::shared_ptr<Obj>		mObj;
 
   public:
   	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> Renderbuffer::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> Renderbuffer::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Renderbuffer::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  	
@@ -247,14 +247,14 @@ class Fbo {
 		mutable bool		mNeedsResolve, mNeedsMipmapUpdate;
 	};
  
-	shared_ptr<Obj>		mObj;
+	std::shared_ptr<Obj>	mObj;
 	
-	static GLint		sMaxSamples, sMaxAttachments;
+	static GLint			sMaxSamples, sMaxAttachments;
 	
   public:
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> Fbo::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> Fbo::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Fbo::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  	

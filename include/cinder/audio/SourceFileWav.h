@@ -26,8 +26,8 @@
 
 namespace cinder { namespace audio {
 
-typedef shared_ptr<class SourceFileWav>	SourceFileWavRef;
-typedef shared_ptr<class LoaderSourceFileWav>	LoaderSourceFileWavRef;
+typedef std::shared_ptr<class SourceFileWav>	SourceFileWavRef;
+typedef std::shared_ptr<class LoaderSourceFileWav>	LoaderSourceFileWavRef;
 
 class LoaderSourceFileWav : public Loader {
  public:

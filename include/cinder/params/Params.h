@@ -50,12 +50,14 @@ class InterfaceGl {
 	void	addParam( const std::string &name, Color *quatParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, ColorA *quatParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, std::string *strParam, const std::string &optionsStr = "", bool readOnly = false );
+	//! Adds enumerated parameter. The value corresponds to the indices of \a enumNames.
+	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr = "", bool readOnly = false );
 	void	addSeparator( const std::string &name = "", const std::string &optionsStr = "" );
 	
  protected:
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly ); 
 
-	shared_ptr<TwBar>	mBar;
+	std::shared_ptr<TwBar>	mBar;
 };
 
 } } // namespace cinder::params

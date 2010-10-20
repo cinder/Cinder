@@ -27,6 +27,10 @@ using namespace std;
 
 namespace cinder { namespace audio {
 
+#if defined( __MAC_OS_X_VERSION_MAX_ALLOWED ) && (__MAC_OS_X_VERSION_MAX_ALLOWED < 1060)
+	typedef ComponentDescription AudioComponentDescription;
+#endif
+
 bool InputImplAudioUnit::sDevicesEnumerated = false;
 vector<InputDeviceRef> InputImplAudioUnit::sDevices;
 
@@ -47,7 +51,13 @@ InputImplAudioUnit::~InputImplAudioUnit()
 	}
 	
 	if( mInputUnit ) {
+#if ! defined( __MAC_OS_X_VERSION_MAX_ALLOWED ) || (__MAC_OS_X_VERSION_MAX_ALLOWED >= 1060)
+		//iOS and OS X SDK >= 10.6
 		AudioComponentInstanceDispose( mInputUnit );
+#else
+		// OS X SDK 10.5
+		AudioUnitUninitialize( mInputUnit );
+#endif
 	}
 	
 	for( int i = 0; i < mCircularBuffers.size(); i++ ) {
@@ -165,7 +175,6 @@ void InputImplAudioUnit::setup()
 	}
 
 	//create AudioOutputUnit
-	AudioComponent component;
 	AudioComponentDescription description;
 	
 	description.componentType = kAudioUnitType_Output;
@@ -177,27 +186,29 @@ void InputImplAudioUnit::setup()
 	description.componentManufacturer = kAudioUnitManufacturer_Apple;
 	description.componentFlags = 0;
 	description.componentFlagsMask = 0;
-	component = AudioComponentFindNext( NULL, &description );
+#if ! defined( __MAC_OS_X_VERSION_MAX_ALLOWED ) || (__MAC_OS_X_VERSION_MAX_ALLOWED >= 1060)
+	//for iOS and OS X SDK >= 10.6
+	AudioComponent component = AudioComponentFindNext( NULL, &description );
 	if( ! component ) {
 		std::cout << "Error finding next component" << std::endl;
 		throw;
 	}
-	
+
 	err = AudioComponentInstanceNew( component, &mInputUnit );
 	if( err != noErr ) {
 		mInputUnit = NULL;
 		std::cout << "Error getting output unit" << std::endl;
 		throw;
 	}
-	
-	
-	// Initialize the AU
-	/*err = AudioUnitInitialize( mInputUnit );
+#else
+	//for OS X 10.5 SDK
+	err = AudioUnitInitialize( mInputUnit );
 	if(err != noErr)
 	{
 		std::cout << "failed to initialize HAL Output AU" << std::endl;
 		throw;
-	}*/
+	}
+#endif
 	
 	UInt32 param;
 	//enable IO on AudioUnit's input scope

@@ -24,6 +24,8 @@
 #include "xpath_processor.h"
 #include "tinyxml.h"
 
+using namespace std;
+
 namespace cinder {
 
 XmlDocument::XmlDocument()

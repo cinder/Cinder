@@ -50,7 +50,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef )
     hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&IWICFactoryP) );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedLoad();
-	shared_ptr<IWICImagingFactory> IWICFactory = msw::makeComShared( IWICFactoryP );
+	std::shared_ptr<IWICImagingFactory> IWICFactory = msw::makeComShared( IWICFactoryP );
 	
     // Create a decoder
 	IWICBitmapDecoder *decoderP = NULL;
@@ -70,7 +70,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef )
 		hr = IWICFactory->CreateStream( &pIWICStream );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad();
-		shared_ptr<IWICStream> stream = msw::makeComShared( pIWICStream );
+		std::shared_ptr<IWICStream> stream = msw::makeComShared( pIWICStream );
 		
 		Buffer buffer = dataSourceRef->getBuffer();
 		hr = stream->InitializeFromMemory( reinterpret_cast<BYTE*>( buffer.getData() ), buffer.getDataSize() );
@@ -81,14 +81,14 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef )
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad();
 	}
-	shared_ptr<IWICBitmapDecoder> decoder = msw::makeComShared( decoderP );
+	std::shared_ptr<IWICBitmapDecoder> decoder = msw::makeComShared( decoderP );
 
     // Retrieve the first frame of the image from the decoder
 	IWICBitmapFrameDecode *frameP = NULL;
 	hr = decoder->GetFrame(0, &frameP);
 	if( ! SUCCEEDED(hr) )
 		throw ImageIoExceptionFailedLoad();
-	shared_ptr<IWICBitmapFrameDecode> frame = msw::makeComShared( frameP );
+	std::shared_ptr<IWICBitmapFrameDecode> frame = msw::makeComShared( frameP );
 
 	UINT width = 0, height = 0;
 	frame->GetSize( &width, &height );
@@ -100,14 +100,14 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef )
 	bool requiresConversion = processFormat( pixelFormat, &convertPixelFormat );
 	mRowBytes = mWidth * ImageIo::dataTypeBytes( mDataType ) * channelOrderNumChannels( mChannelOrder );
 
-	mData = shared_ptr<uint8_t>( new uint8_t[mRowBytes * mHeight], boost::checked_array_delete<uint8_t> );
+	mData = std::shared_ptr<uint8_t>( new uint8_t[mRowBytes * mHeight], boost::checked_array_delete<uint8_t> );
 
 	if( requiresConversion ) {
 		IWICFormatConverter *pIFormatConverter = NULL;	
 		hr = IWICFactory->CreateFormatConverter( &pIFormatConverter );
 		if( ! SUCCEEDED( hr ) )
 			throw ImageIoExceptionFailedLoad();
-		shared_ptr<IWICFormatConverter> formatConverter = msw::makeComShared( pIFormatConverter );
+		std::shared_ptr<IWICFormatConverter> formatConverter = msw::makeComShared( pIFormatConverter );
 		hr = formatConverter->Initialize( frame.get(), convertPixelFormat, WICBitmapDitherTypeNone,
 					NULL, 0.f, WICBitmapPaletteTypeCustom );
 		if( ! SUCCEEDED( hr ) )

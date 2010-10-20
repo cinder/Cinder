@@ -57,7 +57,7 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 	if(FAILED(hr)) {
 		throw IoExceptionFailedLoad();
 	}
-	shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
+	std::shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
 	
 	hr = mReader->OpenStream( pStream.get() );
 	if( FAILED(hr) ) {
@@ -283,11 +283,11 @@ SourceFileWindowsMedia::SourceFileWindowsMedia( DataSourceRef dataSourceRef )
 	if( FAILED( hr ) ) {
 		throw SourceFileWindowsMediaExceptionUnsupportedData();
 	}
-	shared_ptr<IWMSyncReader> reader = msw::makeComShared<IWMSyncReader>( IWMReaderP );
+	std::shared_ptr<IWMSyncReader> reader = msw::makeComShared<IWMSyncReader>( IWMReaderP );
 
 	//turn data into stream	
 	uint32_t dataSize = getLength();
-	mMemHandle = shared_ptr<void>( ::GlobalAlloc( GMEM_MOVEABLE | GMEM_NODISCARD | GMEM_SHARE, dataSize ), GlobalFree );
+	mMemHandle = std::shared_ptr<void>( ::GlobalAlloc( GMEM_MOVEABLE | GMEM_NODISCARD | GMEM_SHARE, dataSize ), GlobalFree );
 
 	LPVOID pMem = ::GlobalLock( mMemHandle.get() );
 	void * data = mBuffer.getData();
@@ -299,7 +299,7 @@ SourceFileWindowsMedia::SourceFileWindowsMedia( DataSourceRef dataSourceRef )
 	if(FAILED(hr)) {
 		throw SourceFileWindowsMediaExceptionUnsupportedData();
 	}
-	shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
+	std::shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
 	
 	hr = reader->OpenStream( pStream.get() );
 	if( FAILED(hr) ) {

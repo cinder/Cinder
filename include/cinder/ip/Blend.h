@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2010, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -20,47 +21,19 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/gl/DisplayList.h"
-#include "cinder/gl/gl.h"
+#pragma once
 
-using namespace std;
+#include "cinder/Cinder.h"
+#include "cinder/Area.h"
+#include "cinder/Vector.h"
+#include "cinder/Surface.h"
 
-namespace cinder { namespace gl {
+namespace cinder { namespace ip {
 
-DisplayList::Obj::~Obj()
-{
-	if( mID > 0 )
-		glDeleteLists( mID, 1 );		
-}
+void blend( Surface *background, const Surface &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset = Vec2i::zero() );
+inline void blend( Surface *background, const Surface &foreground ) { blend( background, foreground, background->getBounds(), Vec2i::zero() ); }
+void blend( Surface32f *background, const Surface32f &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset = Vec2i::zero() );
+inline void blend( Surface32f *background, const Surface32f &foreground ) { blend( background, foreground, background->getBounds(), Vec2i::zero() ); }
 
-DisplayList::DisplayList( GLint aMode )
-	: mObj( shared_ptr<Obj>( new Obj ) )
-{
-	mObj->mModelMatrix.setToIdentity();
-	mObj->mID = glGenLists( 1 );
-	mObj->mMode = aMode;
-}
 
-void DisplayList::newList()
-{
-	glNewList( mObj->mID, mObj->mMode );
-}
-
-void DisplayList::endList()
-{
-	glEndList();
-}
-
-void DisplayList::draw() const
-{
-	if( mObj->mMaterial )
-		mObj->mMaterial->apply();
-
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();
-		gl::multModelView( mObj->mModelMatrix );
-		glCallList( mObj->mID );
-	glPopMatrix();
-}
-
-} } // namespace cinder::gl
+} } // namespace cinder::ip

@@ -23,6 +23,8 @@
 #include "cinder/ImageSourcePng.h"
 #include <png.h>
 
+using namespace std;
+
 namespace cinder {
 
 struct ci_png_info

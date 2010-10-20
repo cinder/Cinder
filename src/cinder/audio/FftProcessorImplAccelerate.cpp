@@ -51,7 +51,7 @@ FftProcessorImplAccelerate::~FftProcessorImplAccelerate()
 	vDSP_destroy_fftsetup( mFftSetup );
 }
 
-shared_ptr<float> FftProcessorImplAccelerate::process( const float * inData )
+std::shared_ptr<float> FftProcessorImplAccelerate::process( const float * inData )
 {
 	mFftComplexBuffer.realp = (float *)memset( mFftComplexBuffer.realp, 0, mBandCount );
 	mFftComplexBuffer.imagp = (float *)memset( mFftComplexBuffer.imagp, 0, mBandCount );
@@ -64,7 +64,7 @@ shared_ptr<float> FftProcessorImplAccelerate::process( const float * inData )
 		outData[i] = sqrt( ( mFftComplexBuffer.realp[i] * mFftComplexBuffer.realp[i] ) + ( mFftComplexBuffer.imagp[i] * mFftComplexBuffer.imagp[i] ) );
 	}
 	
-	return shared_ptr<float>( outData, deleteFftBuffer );;
+	return std::shared_ptr<float>( outData, deleteFftBuffer );;
 }
 
 }} //namespace

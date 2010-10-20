@@ -97,7 +97,11 @@ class InputImplAudioUnit : public InputImpl {
 	bool							mIsSetup;
 	InputDeviceRef					mDevice;
 	bool							mIsCapturing;
+#if ! defined( __MAC_OS_X_VERSION_MAX_ALLOWED ) && (__MAC_OS_X_VERSION_MAX_ALLOWED >= 1060)
 	AudioComponentInstance			mInputUnit;
+#else
+	AudioUnit						mInputUnit;
+#endif
 	AudioBufferList					* mInputBuffer;
 	float							* mInputBufferData;
 	
