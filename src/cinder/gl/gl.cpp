@@ -882,6 +882,17 @@ void draw( const TriMesh &mesh )
 	}
 	else
 		glDisableClientState( GL_NORMAL_ARRAY );
+	
+	if( mesh.hasColorsRGB() ) {
+		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else if( mesh.hasColorsRGBA() ) {
+		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else 
+		glDisableClientState( GL_COLOR_ARRAY );	
 
 	if( mesh.hasTexCoords() ) {
 		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
@@ -893,6 +904,7 @@ void draw( const TriMesh &mesh )
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_COLOR_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 }
 
@@ -908,6 +920,17 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 	else
 		glDisableClientState( GL_NORMAL_ARRAY );
 
+	if( mesh.hasColorsRGB() ) {
+		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else if( mesh.hasColorsRGBA() ) {
+		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}	
+	else 
+		glDisableClientState( GL_COLOR_ARRAY );
+	
 	if( mesh.hasTexCoords() ) {
 		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
 		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -919,6 +942,7 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_COLOR_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 }
 

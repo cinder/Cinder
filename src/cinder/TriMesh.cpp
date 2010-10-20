@@ -30,6 +30,8 @@ void TriMesh::clear()
 {
 	mVertices.clear();
 	mNormals.clear();
+	mColorsRGB.clear();
+	mColorsRGBA.clear();
 	mTexCoords.clear();
 	mIndices.clear();
 }
