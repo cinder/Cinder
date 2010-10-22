@@ -105,7 +105,7 @@ std::string getTemporaryDirectory()
 {
 #if defined( CINDER_COCOA )
 	NSString *docDir = ::NSTemporaryDirectory();
-	return cocoa::convertNsString( docDir ) + "/";
+	return cocoa::convertNsString( docDir );
 #else
 	DWORD result = ::GetTempPathW( 0, L"" );
 	if( ! result )
