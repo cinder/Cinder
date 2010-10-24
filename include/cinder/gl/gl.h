@@ -249,10 +249,10 @@ struct SaveTextureBindState {
 	GLint	mOldID;
 };
 
-//! Convenience class designed to push and pop the enabled/disabled state of a given texture unit
-struct SaveTextureEnabledState {
-	SaveTextureEnabledState( GLint target );
-	~SaveTextureEnabledState();
+//! Convenience class designed to push and pop a boolean OpenGL state
+struct BoolState {
+	BoolState( GLint target );
+	~BoolState();
   private:
 	GLint		mTarget;
 	GLboolean	mOldValue;
