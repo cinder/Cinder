@@ -187,7 +187,7 @@ void blendImpl_float( Surface32f *background, const Surface32f &foreground, cons
 
 void blend( Surface8u *background, const Surface8u &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset )
 {
-	pair<Area,Vec2i> srcDst = clippedSrcDst( background->getBounds(), srcArea, foreground.getBounds(), srcArea.getUL() + dstRelativeOffset );	
+	pair<Area,Vec2i> srcDst = clippedSrcDst( foreground.getBounds(), srcArea, background->getBounds(), srcArea.getUL() + dstRelativeOffset );	
 	if( background->hasAlpha() ) {
 		if( background->isPremultiplied() ) {
 			if( foreground.isPremultiplied() )
@@ -212,7 +212,7 @@ void blend( Surface8u *background, const Surface8u &foreground, const Area &srcA
 
 void blend( Surface32f *background, const Surface32f &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset )
 {
-	pair<Area,Vec2i> srcDst = clippedSrcDst( background->getBounds(), srcArea, foreground.getBounds(), srcArea.getUL() + dstRelativeOffset );	
+	pair<Area,Vec2i> srcDst = clippedSrcDst( foreground.getBounds(), srcArea, background->getBounds(), srcArea.getUL() + dstRelativeOffset );
 	if( background->hasAlpha() ) {
 		if( background->isPremultiplied() ) {
 			if( foreground.isPremultiplied() )
