@@ -49,7 +49,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\include\tinyxml;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -75,7 +75,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\include\tinyxml;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -152,21 +152,6 @@
     <ClCompile Include="..\src\cinder\audio\Io.cpp" />
     <ClCompile Include="..\src\cinder\audio\Output.cpp" />
     <ClCompile Include="..\src\cinder\audio\SourceFileWindowsMedia.cpp" />
-    <ClCompile Include="..\src\tinyxml\action_store.cpp" />
-    <ClCompile Include="..\src\tinyxml\lex_util.cpp" />
-    <ClCompile Include="..\src\tinyxml\node_set.cpp" />
-    <ClCompile Include="..\src\tinyxml\tinystr.cpp" />
-    <ClCompile Include="..\src\tinyxml\tinyxml.cpp" />
-    <ClCompile Include="..\src\tinyxml\tinyxmlerror.cpp" />
-    <ClCompile Include="..\src\tinyxml\tinyxmlparser.cpp" />
-    <ClCompile Include="..\src\tinyxml\tokenlist.cpp" />
-    <ClCompile Include="..\src\tinyxml\xml_util.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_expression.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_processor.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_stack.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_static.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_stream.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_syntax.cpp" />
     <ClCompile Include="..\src\cinder\cairo\Cairo.cpp" />
     <ClCompile Include="..\src\cinder\gl\DisplayList.cpp" />
     <ClCompile Include="..\src\cinder\gl\Fbo.cpp" />
@@ -214,6 +199,8 @@
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
+    <ClInclude Include="..\include\rapidxml\rapidxml.hpp" />
+    <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp" />
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
     <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h" />
     <ClInclude Include="..\src\AntTweakBar\LoadOGL.h" />
