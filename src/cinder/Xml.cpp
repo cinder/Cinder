@@ -1,6 +1,8 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project
  All rights reserved.
+ 
+ This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -21,236 +23,303 @@
 */
 
 #include "cinder/Xml.h"
-#include "xpath_processor.h"
-#include "tinyxml.h"
+
+#include "rapidxml/rapidxml.hpp"
+#include "rapidxml/rapidxml_print.hpp"
 
 using namespace std;
 
 namespace cinder {
 
-XmlDocument::XmlDocument()
-	: tiDoc( new TiXmlDocument() )
-{}
+void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *result, const XmlTree::ParseOptions &parseOptions );
 
-XmlDocument::XmlDocument( const std::string &filePath )
-	: tiDoc( new TiXmlDocument() )
+
+XmlTree::Iter::Iter( XmlTree &root, const string &filterPath, const char seperator )
 {
-	tiDoc->Parse( filePath.c_str() );
-}
-
-XmlDocument::XmlDocument( std::istream &is )
-	: tiDoc( new TiXmlDocument() )
-{
-	is >> *tiDoc;
-}
-
-XmlDocument::XmlDocument( shared_ptr<cinder::IStream> is )
-	: tiDoc( new TiXmlDocument() )
-{
-	cinder_istream aStdIstream( is );
-	aStdIstream >> *tiDoc;
-}
-
-XmlDocument::XmlDocument( DataSourceRef dataSource )
-	: tiDoc( new TiXmlDocument() )
-{
-	cinder_istream aStdIstream( dataSource->createStream() );
-	aStdIstream >> *tiDoc;
-}
-
-std::istream& operator>>( std::istream &in, XmlDocument &base )
-{
-	//TiXmlDocument aDoc = base.tinyXmlDoc();
-	in >> *(base.tiDoc);
-	return in;
-}
-
-std::ostream& operator<<( std::ostream &out, const XmlDocument &base )
-{
-	out << *(base.tiDoc);
-	return out;
-}
-
-XmlElement XmlDocument::rootNode() const 
-{ 
-	TiXmlElement * node = tiDoc->FirstChildElement();
-	if ( node ) {
-		return XmlElement( node );
+	mEndSequence = &root.getChildren();
+	
+	vector<XmlTree>::iterator childIt;
+	if( ! root.getChildIterator( filterPath, seperator, &mFilter, &childIt ) ) { // false means couldn't find it - mark ourselves as done
+		mIter = mEndSequence->end();
+		mSequence = mEndSequence;
 	}
-	return XmlElement( 0 );
-}
-
-std::vector<XmlElement> XmlDocument::xpath( const char * aXpathExpr ) const
-{
-	return rootNode().xpath( aXpathExpr );
-}
-
-//////////////////////////////////////////////////////////////////////////////////////
-// XmlElement
-std::string XmlElement::name() const
-{
-	if ( tiNode ) {
-		return tiNode->ValueStr(); 
+	else {
+		mIter = childIt;
+		mSequence = &(mIter->getParent().getChildren());
 	}
-	return std::string("");
 }
 
-bool XmlElement::hasChildren() const
+XmlTree::XmlTree( const std::string &xmlString, ParseOptions parseOptions )
 {
-	if ( tiNode ) {
-		const TiXmlElement * child = tiNode->FirstChildElement();
-		if( child ) {
-			return true;
+	std::vector<char> strCopy( xmlString.begin(), xmlString.end() );
+	rapidxml::xml_document<> doc;    // character type defaults to char
+	if( parseOptions.getParseComments() )
+		doc.parse<rapidxml::parse_comment_nodes | rapidxml::parse_doctype_node>( &strCopy[0] );
+	else
+		doc.parse<rapidxml::parse_doctype_node>( &strCopy[0] );
+	parseItem( doc, NULL, this, parseOptions );
+	setNodeType( NODE_DOCUMENT ); // call this after parse - constructor replaces it	
+}
+
+void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *result, const XmlTree::ParseOptions &options )
+{
+	*result = XmlTree( node.name(), node.value(), parent );
+	for( const rapidxml::xml_node<> *item = node.first_node(); item; item = item->next_sibling() ) {
+		XmlTree::NodeType type;
+		switch( item->type() ) {
+			case rapidxml::node_element:
+				type = XmlTree::NODE_ELEMENT;
+			break;
+			case rapidxml::node_cdata: {
+				if( options.getCollapseCData() ) {
+					result->setValue( result->getValue() + item->value() );
+					continue;
+				}
+				else {
+					type = XmlTree::NODE_CDATA;
+				}
+			}
+			break;						
+			case rapidxml::node_comment:
+				type = XmlTree::NODE_COMMENT;
+			break;
+			case rapidxml::node_doctype: {
+				result->setDocType( item->value() );
+				continue;
+			}
+			default:
+				continue;
 		}
+		
+		result->getChildren().push_back( XmlTree() );
+		parseItem( *item, result, &result->getChildren().back(), options );
+		result->getChildren().back().setNodeType( type );
 	}
+
+	for( rapidxml::xml_attribute<> *attr = node.first_attribute(); attr; attr = attr->next_attribute() )
+		result->getAttributes().push_back( XmlTree::Attr( attr->name(), attr->value() ) );
+}
+
+void XmlTree::loadFromDataSource( DataSourceRef dataSource, XmlTree *result, const XmlTree::ParseOptions &parseOptions )
+{
+	Buffer buf = dataSource->getBuffer();
+	size_t dataSize = buf.getDataSize();
+	shared_ptr<char> bufString( new char[dataSize+1], checked_array_deleter<char>() );
+	memcpy( bufString.get(), buf.getData(), buf.getDataSize() );
+	bufString.get()[dataSize] = 0;
+	rapidxml::xml_document<> doc;    // character type defaults to char
+	if( parseOptions.getParseComments() )
+		doc.parse<rapidxml::parse_comment_nodes | rapidxml::parse_doctype_node>( bufString.get() );
+	else
+		doc.parse<rapidxml::parse_doctype_node>( bufString.get() );
+	parseItem( doc, NULL, result, parseOptions );
+	result->setNodeType( NODE_DOCUMENT ); // call this after parse - constructor replaces it
+}
+
+bool XmlTree::hasChild( const string &relativePath, char separator ) const
+{
+	return getNodePtr( relativePath, separator ) != NULL;
+}
+
+const XmlTree& XmlTree::getChild( const string &relativePath, char separator ) const
+{
+	XmlTree* child = getNodePtr( relativePath, separator );
+	if( child )
+		return *child;
+	else
+		throw ChildNotFoundExc( *this, relativePath );
+}
+
+XmlTree& XmlTree::getChild( const string &relativePath, char separator )
+{
+	XmlTree* child = getNodePtr( relativePath, separator );
+	if( child )
+		return *child;
+	else
+		throw ChildNotFoundExc( *this, relativePath );
+}
+
+const XmlTree::Attr& XmlTree::getAttribute( const string &attrName ) const
+{
+	for( vector<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
+		if( attrIt->getName() == attrName )
+			return *attrIt;
+	throw AttrNotFoundExc( *this, attrName );
+}
+
+template<typename T>
+T XmlTree::getAttributeValue( const string &attrName, const T &defaultValue ) const
+{
+	try {
+		return getAttribute( attrName ).getValue<T>();
+	}
+	catch( ... ) {
+		return defaultValue;
+	}
+}
+
+void XmlTree::setAttribute( const std::string &attrName, const std::string &value )
+{
+	vector<Attr>::iterator atIt;
+	for( atIt = mAttributes.begin(); atIt != mAttributes.end(); ++atIt )
+		if( atIt->getName() == attrName )
+			break;
+	
+	if( atIt == mAttributes.end() )
+		mAttributes.push_back( Attr( attrName, value ) );
+	else
+		atIt->setValue( value );
+}
+
+bool XmlTree::hasAttribute( const std::string &attrName ) const
+{
+	for( vector<Attr>::const_iterator atIt = mAttributes.begin(); atIt != mAttributes.end(); ++atIt )
+		if( atIt->getName() == attrName )
+			return true;
+	
 	return false;
 }
 
-
-std::vector<XmlElement> XmlElement::xpath( const char *aXpathExpr ) const
+string	XmlTree::getPath( char separator ) const
 {
-	std::vector<XmlElement> v;
-	if( tiNode ) {
-		TinyXPath::xpath_processor aProcessor( tiNode, aXpathExpr );
-		//TinyXPath::expression_result aExpressionResult = aProcessor.er_compute_xpath(); 
-		//TinyXPath::node_set * aResult = aExpressionResult.nsp_get_node_set(); 
-		
-		unsigned int count = aProcessor.u_compute_xpath_node_set();
-		for( unsigned int i = 0; i < count; i++ ) {
-			TiXmlNode * aNode = aProcessor.XNp_get_xpath_node( i );
-			if( aNode->ToElement() ) {
-				v.push_back( XmlElement( aNode->ToElement() ) );
-			}
-		}
-	}
-	return v;
-}
-
-XmlElement XmlElement::findChild( const char *aNodeName ) const
-{
-	if( tiNode ) {
-		TiXmlElement * child = tiNode->FirstChildElement( aNodeName );
-		if( child ) {
-			return XmlElement( child );
-		}
-	}
-	return XmlElement( 0 );
-}
-
-XmlElement XmlElement::parent() const
-{
-	if( tiNode ) {
-		TiXmlNode * parent = tiNode->Parent();
-		if ( parent && parent->ToElement() ) {
-			return XmlElement( parent->ToElement() );
-		}
-	}
-	return XmlElement( 0 );
-}
-
-std::vector<XmlElement> XmlElement::children() const
-{
-	std::vector<XmlElement> children;
-	for(TiXmlElement * child = tiNode->FirstChildElement(); child != NULL; child = child->NextSiblingElement() ) {
-		children.push_back( XmlElement( child ) );
-	}
+	string result;
 	
-	return children;
+	const XmlTree *node = this;
+	while( node ) {
+		string nodeName = node->getTag();
+		if( node != this )
+			nodeName += separator;
+		result = nodeName + result;
+		node = node->mParent;
+	}
+		
+	return result;
 }
 
-XmlElement XmlElement::firstChild() const
+void XmlTree::push_back( const XmlTree &newChild )
 {
-	if( tiNode ) {
-		TiXmlElement * child = tiNode->FirstChildElement();
-		if ( child ) {
-			return XmlElement( child );
+	mChildren.push_back( newChild );
+	mChildren.back().mParent = this;
+}
+
+XmlTree* XmlTree::getNodePtr( const string &relativePath, char separator ) const
+{
+	XmlTree *curNode = const_cast<XmlTree*>( this );
+	size_t offset = 0;
+	do {
+		const string curElement = relativePath.substr( offset, relativePath.find( separator, offset ) - offset );
+		vector<XmlTree> &children = curNode->getChildren();
+		vector<XmlTree>::iterator childIt;
+		for( childIt = children.begin(); childIt != children.end(); ++childIt ) {
+			if( childIt->getTag() == curElement )
+				break;
 		}
-	}
-	return XmlElement( 0 );
+		if( childIt == children.end() ) // couldn't find this one - return NULL
+			return 0;
+		curNode = &(*childIt );
+		offset = relativePath.find( separator, offset );
+		if( offset != string::npos )
+			++offset;
+	} while ( ( offset != string::npos ) && ( offset != relativePath.length() ) );
+	
+	return curNode;
 }
 
-XmlElement XmlElement::lastChild() const
+// walks 'relativePath' and returns an iterator pointing to the first descendant matching
+// 'resultFilter' contains the tail of the relativePath
+// Returns mChildren.end() on failure
+bool XmlTree::getChildIterator( const string &relativePath, char separator, string *resultFilter, vector<XmlTree>::iterator *resultIt )
 {
-	if( tiNode ) {
-		for( TiXmlNode * child = tiNode->LastChild(); child != NULL; child = child->PreviousSibling() ) {
-			if ( child->ToElement() ) {
-				return XmlElement( child->ToElement() );
-			}
-		}
-	}
-	return XmlElement( 0 );
+	vector<XmlTree>::iterator curNode = mChildren.end();
+	size_t offset = 0;
+	
+	if( mChildren.empty() )
+		return false; // empty - failure
+	
+	vector<XmlTree> *curChildren( &mChildren );
+	do {
+		*resultFilter = relativePath.substr( offset, relativePath.find( separator, offset ) - offset );
+		vector<XmlTree>::iterator childIt;
+		for( childIt = curChildren->begin(); childIt != curChildren->end(); ++childIt )
+			if( childIt->getTag() == *resultFilter )
+				break;
+		if( childIt == curChildren->end() )
+			return false; // failure
+		curNode = childIt;
+		offset = relativePath.find( separator, offset );
+		if( offset != string::npos )
+			++offset;
+		curChildren = &(curNode->getChildren());
+	} while( ( offset != string::npos ) && ( offset != relativePath.length() ) );
+	
+	*resultIt = curNode;
+	return true;
 }
 
-XmlElement XmlElement::previousSibling() const
+void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::xml_node<char> *parent ) const
 {
-	if( tiNode ) {
-		for( TiXmlNode * sib = tiNode->PreviousSibling(); sib != NULL; sib = sib->PreviousSibling() ) {
-			if ( sib->ToElement() ) {
-				return XmlElement( sib->ToElement() );
-			}
-		}
+	rapidxml::node_type type;
+	switch( getNodeType() ) {
+		case XmlTree::NODE_ELEMENT: type = rapidxml::node_element; break;
+		case XmlTree::NODE_COMMENT: type = rapidxml::node_comment; break;
+		case XmlTree::NODE_CDATA: type = rapidxml::node_cdata; break;
+		
+		default: throw UnknownNodeTypeExc();
 	}
-	return XmlElement( 0 );
+	rapidxml::xml_node<char> *node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), doc.allocate_string( getValue().c_str() ) );
+	parent->append_node( node );
+
+	for( vector<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
+		node->append_attribute( doc.allocate_attribute( doc.allocate_string( attrIt->getName().c_str() ), doc.allocate_string( attrIt->getValue().c_str() ) ) );
+		
+	for( vector<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
+		childIt->appendRapidXmlNode( doc, node );
 }
 
-XmlElement XmlElement::nextSibling() const
+shared_ptr<rapidxml::xml_document<char> > XmlTree::createRapidXmlDoc() const
 {
-	if( tiNode ) {
-		TiXmlElement * sib = tiNode->NextSiblingElement();
-		if( sib ) {
-			return XmlElement( sib );
-		}
+	shared_ptr<rapidxml::xml_document<char> > result( new rapidxml::xml_document<>() );	
+	if( isDocument() ) {
+		rapidxml::xml_node<char> *declarationNode = result->allocate_node( rapidxml::node_declaration, "", "" );
+		result->append_node( declarationNode );
+		if( ! mDocType.empty() )
+			result->append_node( result->allocate_node( rapidxml::node_doctype, "", result->allocate_string( mDocType.c_str() ) ) );
+
+		for( vector<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
+			childIt->appendRapidXmlNode( *result, result.get() );
+
+		declarationNode->append_attribute( result->allocate_attribute( "version", "1.0" ) );
+		declarationNode->append_attribute( result->allocate_attribute( "encoding", "utf-8" ) );
 	}
-	return XmlElement( 0 );
+	else
+		appendRapidXmlNode( *result, result.get() );
+	return result;
 }
 
-std::string XmlElement::value() const
+ostream& operator<<( ostream &out, const XmlTree &xml )
 {
-	if( tiNode ) {
-		TiXmlPrinter printer;
-		printer.SetStreamPrinting();
-		for( const TiXmlNode * child = tiNode->FirstChild(); child != NULL; child = child->NextSibling() ) {
-			child->Accept( &printer );
-		}
-		return printer.Str();
-	}
-	return std::string();
+	shared_ptr<rapidxml::xml_document<char> > doc = xml.createRapidXmlDoc();
+	return rapidxml::print( out, *doc, 0 );
 }
 
-std::map<std::string, std::string> XmlElement::attributes() const {
-	std::map<std::string, std::string> attrs;
-	if( tiNode ) {
-		for( TiXmlAttribute * attr = tiNode->FirstAttribute(); attr; attr = attr->Next() ) {
-			attrs[attr->Name()] = attr->Value();
-		}
-	}
-	return attrs;
-}
-
-void XmlElement::setAttribute( const char * attrName, const char * attrValue )
+void XmlTree::write( DataTargetRef target )
 {
-	if ( tiNode ) {
-		tiNode->SetAttribute( attrName, attrValue );
-	}
+	// this could do with a more efficient implementation
+	shared_ptr<rapidxml::xml_document<char> > doc = createRapidXmlDoc();
+	OStreamRef os = target->getStream();
+	std::ostringstream ss;
+	ss << *doc;
+	os->writeData( ss.str().c_str(), ss.str().length() );
 }
 
-void XmlElement::addChild( const char * name, const char * value )
+XmlTree::ChildNotFoundExc::ChildNotFoundExc( const XmlTree &node, const string &childPath ) throw()
 {
-	//TODO
+	sprintf( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
 }
 
-std::ostream& operator<<( std::ostream &out, const XmlElement &base )
+XmlTree::AttrNotFoundExc::AttrNotFoundExc( const XmlTree &node, const string &attrName ) throw()
 {
-/*	out << "<" << base.name() << ">" << std::endl;
-	for( TiXmlElement *child = base.tiNode->FirstChildElement(); child != NULL; child = child->NextSiblingElement() ) {
-		if( child )
-			out << XmlElement( child ) << std::endl;
-	}
-	out << base.value();
-	out << "</" << base.name() << ">";*/
-	out << *(base.tiNode);
-
-	return out;
+	sprintf( mMessage, "Could not find attribute: %s for node: %s", attrName.c_str(), node.getPath().c_str() );
 }
 
 } // namespace cinder
