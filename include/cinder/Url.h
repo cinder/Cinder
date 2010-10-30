@@ -52,6 +52,14 @@ inline std::ostream& operator<<( std::ostream &out, const Url &url )
 	return out;
 }
 
+inline std::istream& operator>>( std::istream &is, Url &url )
+{
+	std::string temp;
+	is >> temp;
+	url = Url( temp );
+	return is;
+}
+
 //! \cond
 // This is an abstract base class for implementing IStreamUrl
 class IStreamUrlImpl {
