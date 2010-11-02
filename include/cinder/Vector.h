@@ -232,6 +232,11 @@ class Vec2
 		return (*this) + ( r - (*this) ) * fact;
 	}
 
+	void lerpEq( T fact, const Vec2<T> &rhs )
+	{
+		x = x + ( rhs.x - x ) * fact; y = y + ( rhs.y - y ) * fact;
+	}
+
 	static Vec2<T> max()
 	{
 		return Vec2<T>( std::numeric_limits<T>::max(), std::numeric_limits<T>::max() );
@@ -732,10 +737,14 @@ class Vec4{
 		return Vec3<T>( -x, -y, -z, -w );
 	}
 
-
 	Vec4<T> lerp( T fact, const Vec4<T>& r ) const
 	{
 		return (*this) + ( r - (*this) ) * fact;
+	}
+
+	void lerpEq( T fact, const Vec4<T> &rhs )
+	{
+		x = x + ( rhs.x - x ) * fact; y = y + ( rhs.y - y ) * fact; z = z + ( rhs.z - z ) * fact; w = w + ( rhs.w - w ) * fact;
 	}
 
 	static Vec4<T> max()
