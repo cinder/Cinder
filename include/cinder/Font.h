@@ -105,21 +105,21 @@ class Font {
 		const struct __CTFont*	mCTFont;
 	#endif
 #elif defined( CINDER_MSW )
-		::TEXTMETRIC				mTextMetric;
-		::LOGFONTW					mLogFont;
-		::HFONT						mHfont;
-		shared_ptr<Gdiplus::Font>	mGdiplusFont;
+		::TEXTMETRIC					mTextMetric;
+		::LOGFONTW						mLogFont;
+		::HFONT							mHfont;
+		std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
 		std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
 		size_t					mNumGlyphs;
 #endif 		
 	};
 
-	shared_ptr<Obj>			mObj;
+	std::shared_ptr<Obj>			mObj;
 	
   public:
  	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> Font::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> Font::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Font::mObj; }
 	void reset() { mObj.reset(); }
 	//@}

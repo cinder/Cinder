@@ -14,60 +14,24 @@
 
 	<div class="contents">
 		<h1>Mac OS X Setup</h1>
-		<p>Let's walk through the process of getting Cinder running on your Mac OS X machine. If you don't already have Xcode installed, you'll need to start with that. It should have come with your computer's install discs, but if you don't have
-		those handy (or you have an Xcode older than verison 3.1), you can download the latest version from Apple
+		<p>Let's walk through the process of getting Cinder running on your Mac OS X machine. You'll need XCode 3.1 or later, which you can download from Apple
 		<a href="http://developer.apple.com/technology/xcode.html">right here</a>.
-		If you don't already have a free ADC account, you'll first need to create one
-		with Apple, which you can <a href="https://connect.apple.com/">do here</a>.</p>
+		If you don't already have a free ADC account, you'll first need to create one, which you can <a href="https://connect.apple.com/">do here</a>.</p>
 		<br>
-		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you already have everything you need. However if you are building from our <a href="http://github.com/cinder/Cinder">Github repository</a> skip down to the <a href="#advanced">advanced section</a>.</p>
+		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you already have everything you need. </p>
 		<br>
 		<p>Let's try opening and building one of the samples. From the Finder, navigate to the <em>cinder/samples/QuickTime</em> folder and open <em>xcode/quickTimeSample.xcodeproj</em> by double-clicking it. From the <b>Run</b> menu select the <b>Run</b> item. Xcode will take a few seconds to build the sample and then it should launch. You'll be greeted by a standard Mac open dialog box. Navigate to a QuickTime movie on your hard drive and open it. You should see your movie begin playing back in the app's window. Hit the 'o' key to open a different movie file, or you can just drag &amp; drop one from the Finder. </p>
 
 		<center><img alt="QuickTime Sample" src="mac_images/quicktimesample.png"></img></center>
 		
+		<h2><a name="debug">Debug Symbols</a></h2>
+		<p>While not strictly necessary, if you would like to be able to step into Cinder's own code during your debug process, you'll want to build Cinder with debug symbols. This is straightforward - just open <em>xcode/cinder.xcodeproj</em> in XCode and build the Debug configuration for the Cinder target. If you are doing iOS development you'll want to do the same thing for the <em>cinder_iphone</em> and <em>cinder_iphone_sim</em> targets.
+		
 		<h2><a name="tinderbox">TinderBox</a></h2>
-		<p>TinderBox is our GUI tool for creating Cinder projects quickly and easily. For the time being it is Mac only, though a cross-platform version is very high on our to-do list. In the meantime however, the Mac version can generate both Xcode and Visual C++ projects, and it's pretty handy. It is located at <em>cinder/tools/TinderBox.app</em> in our packaged releases. The first time you launch it, TinderBox will ask you to point it at the location of Cinder on your hard drive.
+		<p>TinderBox is our GUI tool for creating Cinder projects quickly and easily. It can generate Xcode as well as Visual C++ 2008 and 2010 projects. It is located at <em>cinder/tools/TinderBox</em> in our packaged releases. A guide to creating projects using TinderBox is <a href="MacNewProject.html#tinderbox">available here</a>.
 		
-		<center><img alt="TinderBox welcome" src="mac_images/TinderBox_first.png"></img></center>
-		
-		<p>Navigate to the top level Cinder directory and hit <b>Open</b>. If you ever need to change this later, you can do so from the preferences menu.</p>
-		
-		<center><img alt="TinderBox Cinder Location" src="mac_images/TinderBox_second.png"></img></center>
-
-		<p>Whenever you launch TinderBox, it will start by asking you where you would like to save your new project, and what you would like to call it. </p>
-		
-		<center><img alt="TinderBox Save Dialog" src="mac_images/TinderBox_third.png"></img></center>
-		
-		<p>There are a number of settings in TinderBox, but the defaults will suffice for most users. Simply hit the <B>Create</B> button, and you'll have a complete Cinder project ready for you to start coding in.</p>
-
-		<center><img alt="TinderBox Settings" src="mac_images/TinderBox_fourth.png"></img></center>
-
-		<center><img alt="TinderBox Results" src="mac_images/TinderBox_fifth.png"></img></center>
-		
-		<p>Especially as we continue to develop the documentation, the samples are the best
-		way to get started learning Cinder. Don't be afraid to modify them and
-		experiment. And if you haven't read Robert Hodgin's <em>Hello, Cinder</em> tutorial, you should go <a href="../docs/hello_cinder.html"> do that first</a>. </p>
-		
-		<h2><a name="advanced">Advanced - Building Cinder</a></h2>
-		<p>If you are building Cinder from the source, available on our <a href="http://github.com/cinder/Cinder">Github repository</a>, you have just a couple of additional steps remaining. As an aside, if you are brand new to Cinder, you maybe happier just using one of our <a href="http://libcinder.org/download/">packaged releases</a>.</p>
-		<br>
-		<p>First, grab version 1.42 of Boost, which <a href="http://sourceforge.net/projects/boost/files/boost/1.42.0/boost_1_42_0.tar.bz2/download">you can do here</a>.
-		After dearchiving it, you'll want to take the resulting directory and put it directly into your Cinder directory, and name it <em>boost</em>. It should look about like this:
-		<center><img alt="Cinder in Finder" src="mac_images/cinder_finder.png"></img></p></center>
-
-		<p>Now let's build Cinder itself. Open up the Xcode project in <em>xcode/cinder.xcodeproj</em>. To build Cinder, select the 
-		<b>Build</b> item from the <b>Build</b> menu.</p>
-
-		<center><img alt="Build | Build" src="mac_images/buildmenu.png"></img></center>
-		<p>
-		Cinder has both a Debug and a Release version. To build the Release
-		version, change the active build configuration, which you can do from
-		the project's pop-up menu depicted below (note that your version of
-		Xcode might look slightly different).</p>
-
-		<center><img style="width: 492px; height: 499px;" alt="Release Build Config" src="mac_images/build_config.png"></img></center>
-		<p>Now build Cinder again, via the <b>Build | Build</b> menu item (or just hit Cmd-B) If all of that worked, in <em>cinder/lib/</em> you should see <em>libcinder.a</em> and <em>libcinder_d.a</em>. </p>
+		<h2><a name="advanced">Cinder + Git</a></h2>
+		If you would like to keep up with the latest Cinder development, the project is <a href="http://github.com/cinder">hosted on github</a>. A guide for setting up Cinder using git is <a href="GitSetup.html">available here</a>.
 	</div>
 </div>
 </body>

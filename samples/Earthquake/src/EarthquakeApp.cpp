@@ -98,7 +98,7 @@ void EarthquakeApp::setup()
 	mPov			= POV( this, ci::Vec3f( 0.0f, 0.0f, 1000.0f ), ci::Vec3f( 0.0f, 0.0f, 0.0f ) );
 	mEarth			= Earth( earthDiffuse, earthNormal, earthMask );
 	
-	parseEarthquakes( "http://www.earthquake.gov/eqcenter/catalogs/7day-M2.5.xml" );
+	parseEarthquakes( "http://earthquake.usgs.gov/earthquakes/catalogs/7day-M2.5.xml" );
 	
 	mEarth.setQuakeLocTip();
 }
@@ -259,20 +259,14 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 			titleString.getline( lineBuffer, 511 );
 			title = string( lineBuffer );
 			
-			//const XmlElement &dateEl = itemIter->findChild( "updated" );
-			
 			const XmlElement &locationEl = itemIter->findChild( "georss:point" );
 			istringstream locationString( locationEl.value() );
 			Vec2f locationVector;
 			locationString >> locationVector.x >> locationVector.y;
 			
-			float elevationValue = fromString<float>( itemIter->findChild( "georss:elev" ).value() );
-	console() << "El: " << elevationValue;
 			mEarth.addQuake( locationVector.x, locationVector.y, magnitude, title );
 		}
 	}
-	
-	//mEarth.addQuake( 37.7f, -122.0f, 8.6f, "San Francisco" );
 }
 
 

@@ -35,7 +35,7 @@ typedef struct CGImage *CGImageRef;
 
 namespace cinder {
 
-typedef shared_ptr<class ImageSourceFileUiImage>	ImageSourceFileUiImageRef;
+typedef std::shared_ptr<class ImageSourceFileUiImage>	ImageSourceFileUiImageRef;
 
 class ImageSourceFileUiImage : public cocoa::ImageSourceCgImage {
   public:

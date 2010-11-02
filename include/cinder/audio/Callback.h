@@ -24,7 +24,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/audio/Io.h"
-#include "cinder/audio/Buffer.h"
+#include "cinder/audio/PcmBuffer.h"
 
 #if defined( CINDER_COCOA )
 	#include "cinder/audio/CocoaCaConverter.h"
@@ -43,13 +43,13 @@ class Callback : public Source {
 	
 	virtual ~Callback();
 	
-	LoaderRef getLoader( Target *target ) { return LoaderSourceCallback<T,U>::createRef( this, target ); }
+	LoaderRef createLoader( Target *target ) { return LoaderSourceCallback<T,U>::createRef( this, target ); }
 	double getDuration() const { return 100.0; } //TODO: support for endless sources
 	
  private:
 	Callback( T* callbackObj, CallbackFunction callbackFn, bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
   
-	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer );
+	void getData( uint64_t inSampleOffset, uint32_t ioSampleCount, BufferGeneric *ioBuffer );
 	
 	T* mCallbackObj;
 	CallbackFunction mCallbackFn;
@@ -57,13 +57,13 @@ class Callback : public Source {
 	
 	friend class LoaderSourceCallback<T,U>;
 	template <typename T2, typename U2>
-	friend shared_ptr<Callback<T2,U2> > createCallback( T2* callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U2> *ioBuffer ), bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
+	friend std::shared_ptr<Callback<T2,U2> > createCallback( T2* callbackObj, void (T2::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U2> *ioBuffer ), bool ownCallbackObj, uint32_t aSampleRate, uint16_t aChannelCount );
 };
 
 template<typename T, typename U>
-shared_ptr<Callback<T,U> > createCallback( T* callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U> *ioBuffer ), bool ownCallbackObj = false, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2 )
+std::shared_ptr<Callback<T,U> > createCallback( T* callbackObj, void (T::*callbackFn)( uint64_t inSampleOffset, uint32_t inSampleCount, BufferT<U> *ioBuffer ), bool ownCallbackObj = false, uint32_t aSampleRate = 44100, uint16_t aChannelCount = 2 )
 {
-	return shared_ptr<Callback<T,U> >( new Callback<T,U>( callbackObj, callbackFn, ownCallbackObj, aSampleRate, aChannelCount ) );
+	return std::shared_ptr<Callback<T,U> >( new Callback<T,U>( callbackObj, callbackFn, ownCallbackObj, aSampleRate, aChannelCount ) );
 }
 
 template<typename T, typename U>
@@ -71,14 +71,14 @@ class LoaderSourceCallback : public Loader {
  public:
 	static LoaderRef	createRef( Callback<T,U> *source, Target *target )
 	{
-		return shared_ptr<LoaderSourceCallback<T,U> >( new LoaderSourceCallback<T,U>( source, target ) );
+		return std::shared_ptr<LoaderSourceCallback<T,U> >( new LoaderSourceCallback<T,U>( source, target ) );
 	}
 	
 	~LoaderSourceCallback() {}
 	
 	uint64_t getSampleOffset() const { return mSampleOffset; }
 	void setSampleOffset( uint64_t anOffset ) { mSampleOffset = anOffset; }
-	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	void loadData( BufferList *ioData );
   private:
 	LoaderSourceCallback( Callback<T,U> *source, Target *target );
 	Callback<T,U>						* mSource;
@@ -86,7 +86,7 @@ class LoaderSourceCallback : public Loader {
 
 #if defined(CINDER_COCOA)
 	static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions );
-	shared_ptr<CocoaCaConverter>	mConverter;
+	std::shared_ptr<CocoaCaConverter>	mConverter;
 #endif	
 };
 
@@ -137,7 +137,7 @@ Callback<T,U>::~Callback()
 }
 
 template<typename T, typename U>
-void Callback<T,U>::getData( uint64_t inSampleOffset, uint32_t ioSampleCount, Buffer *ioBuffer ) 
+void Callback<T,U>::getData( uint64_t inSampleOffset, uint32_t ioSampleCount, BufferGeneric *ioBuffer ) 
 {
 	BufferT<U> typedBuffer;
 	typedBuffer.mNumberChannels = ioBuffer->mNumberChannels;
@@ -182,18 +182,18 @@ LoaderSourceCallback<T,U>::LoaderSourceCallback( Callback<T,U> *source, Target *
 	targetDescription.mChannelsPerFrame = target->getChannelCount();
 	targetDescription.mBitsPerChannel = target->getBitsPerSample();
 	
-	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T,U>::dataInputCallback, sourceDescription, targetDescription, mSource->getBlockAlign() ) );
+	mConverter = std::shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceCallback<T,U>::dataInputCallback, sourceDescription, targetDescription, mSource->getBlockAlign() ) );
 #endif
 }
 
 template<typename T, typename U>
-void LoaderSourceCallback<T,U>::loadData( uint32_t *ioSampleCount, BufferList *ioData ) {	
+void LoaderSourceCallback<T,U>::loadData( BufferList *ioData ) {	
 #if defined( CINDER_COCOA )
-	mConverter->loadData( ioSampleCount, ioData );
-	mSampleOffset += *ioSampleCount;
+	mConverter->loadData( ioData );
+	mSampleOffset += ioData->mBuffers[0].mSampleCount;
 #elif defined( CINDER_MSW )
-	mSource->getData( mSampleOffset, *ioSampleCount, &ioData->mBuffers[0] );
-	mSampleOffset += *ioSampleCount;
+	mSource->getData( mSampleOffset, ioData->mBuffers[0].mSampleCount, &ioData->mBuffers[0] );
+	mSampleOffset += ioData->mBuffers[0].mSampleCount;
 #endif
 }	
 

@@ -22,7 +22,8 @@
 
 #pragma once
 
-#include "Cinder/ImageIO.h"
+#include "cinder/Cinder.h"
+#include "cinder/ImageIo.h"
 
 #ifndef GUID
 typedef struct _GUID GUID;
@@ -32,7 +33,7 @@ struct IWICBitmapFrameEncode;
 
 namespace cinder {
 
-typedef shared_ptr<class ImageTargetFileWic> ImageTargetFileWicRef;
+typedef std::shared_ptr<class ImageTargetFileWic> ImageTargetFileWicRef;
 
 class ImageTargetFileWic : public ImageTarget {
   public:
@@ -48,13 +49,13 @@ class ImageTargetFileWic : public ImageTarget {
 	
 	void		setupPixelFormat( const GUID &guid );
 	
-	shared_ptr<uint8_t>		mData;
-	int32_t					mRowBytes;
-	DataTargetRef			mDataTarget;
-	const GUID				*mCodecGUID;
+	std::shared_ptr<uint8_t>	mData;
+	int32_t						mRowBytes;
+	DataTargetRef				mDataTarget;
+	const GUID					*mCodecGUID;
 	
-	shared_ptr<IWICBitmapEncoder>				mEncoder;
-	shared_ptr<IWICBitmapFrameEncode>			mBitmapFrame;
+	std::shared_ptr<IWICBitmapEncoder>			mEncoder;
+	std::shared_ptr<IWICBitmapFrameEncode>		mBitmapFrame;
 };
 
 REGISTER_IMAGE_IO_FILE_HANDLER( ImageTargetFileWic )

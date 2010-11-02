@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C++ Express 2010
+# Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArcballDemo", "..\..\ArcballDemo\vc10\ArcballDemo.vcxproj", "{9DA00FEA-5218-413E-B762-35D91045B3B4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "basicApp", "..\..\basicApp\vc10\basicApp.vcxproj", "{74202EDD-91D2-4D2A-B0B6-355CEB16E6BE}"
@@ -102,6 +102,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuickTimeWriter", "..\..\QuickTimeWriter\vc10\QuickTimeWriter.vcxproj", "{705F4597-3DFD-4940-A1C6-70A680C9FDD4}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FBOMultipleTargets", "..\..\FBOMultipleTargets\vc10\FBOMultipleTargets.vcxproj", "{DBBA5587-B115-42ED-8490-44EAA0EA0A53}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Picking3D", "..\..\Picking3D\vc10\Picking3D.vcxproj", "{D2C29D9D-96AC-4A6A-B8E5-67686D5EB1D7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioAnalysisSample", "..\..\AudioAnalysisSample\vc10\AudioAnalysisSample.vcxproj", "{CA366820-5A7F-4C62-BD73-C135C081C931}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -313,6 +317,14 @@ Global
 		{DBBA5587-B115-42ED-8490-44EAA0EA0A53}.Debug|Win32.Build.0 = Debug|Win32
 		{DBBA5587-B115-42ED-8490-44EAA0EA0A53}.Release|Win32.ActiveCfg = Release|Win32
 		{DBBA5587-B115-42ED-8490-44EAA0EA0A53}.Release|Win32.Build.0 = Release|Win32
+		{D2C29D9D-96AC-4A6A-B8E5-67686D5EB1D7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D2C29D9D-96AC-4A6A-B8E5-67686D5EB1D7}.Debug|Win32.Build.0 = Debug|Win32
+		{D2C29D9D-96AC-4A6A-B8E5-67686D5EB1D7}.Release|Win32.ActiveCfg = Release|Win32
+		{D2C29D9D-96AC-4A6A-B8E5-67686D5EB1D7}.Release|Win32.Build.0 = Release|Win32
+		{CA366820-5A7F-4C62-BD73-C135C081C931}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CA366820-5A7F-4C62-BD73-C135C081C931}.Debug|Win32.Build.0 = Debug|Win32
+		{CA366820-5A7F-4C62-BD73-C135C081C931}.Release|Win32.ActiveCfg = Release|Win32
+		{CA366820-5A7F-4C62-BD73-C135C081C931}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -51,7 +51,7 @@ namespace cinder {
 
 namespace cinder { namespace cocoa {
 
-typedef shared_ptr<const struct __CFString> SafeCfString;
+typedef std::shared_ptr<const struct __CFString> SafeCfString;
 
 //! Represents an exception-safe Cocoa NSString which behaves like a shared_ptr but can implicitly cast itself to NSString*
 class SafeNsString {
@@ -68,7 +68,7 @@ class SafeNsString {
   private:
 	static void safeRelease( const NSString *ptr );
 	
-	shared_ptr<NSString>	mPtr;
+	std::shared_ptr<NSString>	mPtr;
 };
 
 //! Represents an exception-safe Cocoa NSData which behaves like a shared_ptr but can implicitly cast itself to NSData*
@@ -83,8 +83,8 @@ class SafeNsData {
   private:
 	static void safeRelease( const NSData *ptr );
 	
-	shared_ptr<NSData>	mPtr;
-	const Buffer		mBuffer;
+	std::shared_ptr<NSData>	mPtr;
+	const Buffer			mBuffer;
 };
 
 //! Represents an exception-safe NSAutoreleasePool. Replaces the global NSAutoreleasePool for its lifetime
@@ -122,7 +122,7 @@ CFStringRef	createCfString( const std::string &str );
 SafeCfString createSafeCfString( const std::string &str );
 //! Converts a NSString into a std::string with UTF8 encoding.
 std::string	convertNsString( NSString *str );
-//! Converts a cinder::URL into a CFURLRef. User mus call CFRelease() to free the result.
+//! Converts a cinder::URL into a CFURLRef. User must call CFRelease() to free the result.
 CFURLRef createCfUrl( const cinder::Url &url );
 
 #if defined( CINDER_MAC )
@@ -158,25 +158,29 @@ int getCvPixelFormatTypeFromSurfaceChannelOrder( const SurfaceChannelOrder &sco 
 CFDataRef createCfDataRef( const cinder::Buffer &buffer );
 
 
-typedef shared_ptr<class ImageSourceCgImage> ImageSourceCgImageRef;
+typedef std::shared_ptr<class ImageSourceCgImage> ImageSourceCgImageRef;
 
 class ImageSourceCgImage : public ImageSource {
   public:
+	//! Retains (and later releases) \a imageRef
 	static ImageSourceCgImageRef	createRef( ::CGImageRef imageRef );
-	~ImageSourceCgImage();
+	virtual ~ImageSourceCgImage() {}
 
 	virtual void	load( ImageTargetRef target );
 
   protected:
+	//! Retains (and later releases) \a imageRef
 	ImageSourceCgImage( ::CGImageRef imageRef );
 	
-	::CGImageRef	mImageRef;
+	bool						mIsIndexed;
+	Color8u						mColorTable[256];
+	std::shared_ptr<CGImage>	mImageRef;
 };
 
 ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef );
 
 
-typedef shared_ptr<class ImageTargetCgImage> ImageTargetCgImageRef;
+typedef std::shared_ptr<class ImageTargetCgImage> ImageTargetCgImageRef;
 
 class ImageTargetCgImage : public ImageTarget {
   public:

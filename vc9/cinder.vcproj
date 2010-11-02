@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cinder\CaptureImplDirectShow.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cinder\Channel.cpp"
 				>
 			</File>
@@ -263,6 +267,10 @@
 			</File>
 			<File
 				RelativePath="..\src\cinder\Rand.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\cinder\Ray.cpp"
 				>
 			</File>
 			<File
@@ -374,6 +382,14 @@
 				</File>
 				<File
 					RelativePath="..\src\cinder\audio\Output.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\cinder\audio\OutputImplXAudio.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\cinder\audio\PcmBuffer.cpp"
 					>
 				</File>
 				<File
@@ -504,6 +520,10 @@
 			<Filter
 				Name="ip"
 				>
+				<File
+					RelativePath="..\src\cinder\ip\Blend.cpp"
+					>
+				</File>
 				<File
 					RelativePath="..\src\cinder\ip\EdgeDetect.cpp"
 					>
@@ -752,6 +772,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\cinder\Filesystem.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\cinder\Filter.h"
 				>
 			</File>
@@ -931,10 +955,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\include\cinder\app\FlintView.h"
-					>
-				</File>
-				<File
 					RelativePath="..\include\cinder\app\KeyEvent.h"
 					>
 				</File>
@@ -959,11 +979,15 @@
 				Name="audio"
 				>
 				<File
-					RelativePath="..\include\cinder\audio\Buffer.h"
+					RelativePath="..\include\cinder\audio\Callback.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\cinder\audio\Callback.h"
+					RelativePath="..\include\cinder\audio\FftProcessor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\audio\FftProcessorImplXDsp.h"
 					>
 				</File>
 				<File
@@ -972,6 +996,14 @@
 				</File>
 				<File
 					RelativePath="..\include\cinder\audio\Output.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\audio\OutputImplXAudio.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\audio\PcmBuffer.h"
 					>
 				</File>
 				<File
@@ -1038,6 +1070,10 @@
 			<Filter
 				Name="ip"
 				>
+				<File
+					RelativePath="..\include\cinder\ip\Blend.h"
+					>
+				</File>
 				<File
 					RelativePath="..\include\cinder\ip\EdgeDetect.h"
 					>

@@ -24,7 +24,6 @@
 		00C9A19F11679F0E0086E7FD /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C9A19E11679F0E0086E7FD /* QuickTime.framework */; };
 		00C9A1D61167C7810086E7FD /* AppImplCocoaRendererGl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00C9A1D21167C7810086E7FD /* AppImplCocoaRendererGl.mm */; };
 		00C9A1D71167C7810086E7FD /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00C9A1D31167C7810086E7FD /* AppImplCocoaRendererQuartz.mm */; };
-		00C9A1D81167C7810086E7FD /* AppImplCocoaTransparentGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 00C9A1D41167C7810086E7FD /* AppImplCocoaTransparentGLView.m */; };
 		00C9A1D91167C7810086E7FD /* CinderView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00C9A1D51167C7810086E7FD /* CinderView.mm */; };
 		00C9A1DD1167C7B50086E7FD /* AppImplCocoaRendererGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C9A1DA1167C7B50086E7FD /* AppImplCocoaRendererGl.h */; };
 		00C9A1DE1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C9A1DB1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h */; };
@@ -53,7 +52,6 @@
 		00C9A19E11679F0E0086E7FD /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
 		00C9A1D21167C7810086E7FD /* AppImplCocoaRendererGl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererGl.mm; path = "../«FLINTPATH»/src/cinder/app/AppImplCocoaRendererGl.mm"; sourceTree = SOURCE_ROOT; };
 		00C9A1D31167C7810086E7FD /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = "../«FLINTPATH»/src/cinder/app/AppImplCocoaRendererQuartz.mm"; sourceTree = SOURCE_ROOT; };
-		00C9A1D41167C7810086E7FD /* AppImplCocoaTransparentGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppImplCocoaTransparentGLView.m; path = "../«FLINTPATH»/src/cinder/app/AppImplCocoaTransparentGLView.m"; sourceTree = SOURCE_ROOT; };
 		00C9A1D51167C7810086E7FD /* CinderView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderView.mm; path = "../«FLINTPATH»/src/cinder/app/CinderView.mm"; sourceTree = SOURCE_ROOT; };
 		00C9A1DA1167C7B50086E7FD /* AppImplCocoaRendererGl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererGl.h; path = "../«FLINTPATH»/include/cinder/app/AppImplCocoaRendererGl.h"; sourceTree = SOURCE_ROOT; };
 		00C9A1DB1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererQuartz.h; path = "../«FLINTPATH»/include/cinder/app/AppImplCocoaRendererQuartz.h"; sourceTree = SOURCE_ROOT; };
@@ -132,7 +130,6 @@
 			children = (
 				00C9A1D21167C7810086E7FD /* AppImplCocoaRendererGl.mm */,
 				00C9A1D31167C7810086E7FD /* AppImplCocoaRendererQuartz.mm */,
-				00C9A1D41167C7810086E7FD /* AppImplCocoaTransparentGLView.m */,
 				00C9A1D51167C7810086E7FD /* CinderView.mm */,
 				00880A4611630CDA00F731D1 /* AppImplCocoaScreenSaver.mm */,
 				00880A4711630CDA00F731D1 /* AppScreenSaver.cpp */,
@@ -311,7 +308,6 @@
 				00880A4911630CDA00F731D1 /* AppScreenSaver.cpp in Sources */,
 				00C9A1D61167C7810086E7FD /* AppImplCocoaRendererGl.mm in Sources */,
 				00C9A1D71167C7810086E7FD /* AppImplCocoaRendererQuartz.mm in Sources */,
-				00C9A1D81167C7810086E7FD /* AppImplCocoaTransparentGLView.m in Sources */,
 				00C9A1D91167C7810086E7FD /* CinderView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

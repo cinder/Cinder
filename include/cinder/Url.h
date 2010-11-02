@@ -24,20 +24,33 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Stream.h"
+#include <iostream>
 
 namespace cinder {
 
 class Url {
  public:
 	Url() {}
-	explicit Url( const std::string &urlString );
+	//! Constructs a URL from a string. If \a isEscaped is false, automatically calls Url::encode(). Assumes UTF-8 input.
+	explicit Url( const std::string &urlString, bool isEscaped = false );
 	
+	//! Returns the string representation of the URL as std::string. Encoded as UTF-8.
 	std::string	str() const { return mStr; }
+	//! Returns the string representation of the URL as char*. Encoded as UTF-8.
 	const char*	c_str() const { return mStr.c_str(); }
+
+	//! Replaces illegal URL characters as defined by RFC 2396 with their escaped equivalents and returns a copy of \a unescaped. Assumes UTF-8 input.
+	static std::string encode( const std::string &unescaped );
 		
  private:
 	std::string		mStr;
 };
+
+inline std::ostream& operator<<( std::ostream &out, const Url &url )
+{
+	out << url.str();
+	return out;
+}
 
 //! \cond
 // This is an abstract base class for implementing IStreamUrl
@@ -67,7 +80,7 @@ class IStreamUrlImpl {
 //! \endcond
 
 //! A pointer to an instance of an IStreamUrl. Can be created using IStreamUrl::createRef()
-typedef shared_ptr<class IStreamUrl>	IStreamUrlRef;
+typedef std::shared_ptr<class IStreamUrl>	IStreamUrlRef;
 
 /** \warning IStreamUrl does not currently support proper random access **/
 class IStreamUrl : public IStream {
@@ -76,8 +89,8 @@ class IStreamUrl : public IStream {
 	static IStreamUrlRef	createRef( const std::string &url, const std::string &user = "", const std::string &password = "" );
 
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) { return mImpl->readDataAvailable( dest, maxSize ); }
-	virtual void		seekAbsolute( off_t absoluteOffset ) { return seekAbsolute( absoluteOffset ); }
-	virtual void		seekRelative( off_t relativeOffset ) { return seekRelative( relativeOffset ); }
+	virtual void		seekAbsolute( off_t absoluteOffset ) { return mImpl->seekAbsolute( absoluteOffset ); }
+	virtual void		seekRelative( off_t relativeOffset ) { return mImpl->seekRelative( relativeOffset ); }
 	virtual off_t		tell() const { return mImpl->tell(); }
 	virtual off_t		size() const { return mImpl->size(); }
 	
@@ -93,7 +106,7 @@ class IStreamUrl : public IStream {
 	//! IStreamURL does not yet support writing
 	virtual void		IOWrite( const void *t, size_t size ) { throw std::exception(); }
 	
-	shared_ptr<IStreamUrlImpl>	mImpl;
+	std::shared_ptr<IStreamUrlImpl>	mImpl;
 };
 
 IStreamUrlRef		loadUrlStream( const Url &url );

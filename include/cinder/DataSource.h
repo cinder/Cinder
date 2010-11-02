@@ -29,7 +29,7 @@
 
 namespace cinder {
 
-typedef shared_ptr<class DataSource>	DataSourceRef;
+typedef std::shared_ptr<class DataSource>	DataSourceRef;
 
 class DataSource { 
   public:
@@ -59,7 +59,7 @@ class DataSource {
 };
 
 
-typedef shared_ptr<class DataSourcePath>	DataSourcePathRef;
+typedef std::shared_ptr<class DataSourcePath>	DataSourcePathRef;
 
 class DataSourcePath : public DataSource {
   public:
@@ -80,8 +80,7 @@ class DataSourcePath : public DataSource {
 
 DataSourcePathRef	loadFile( const std::string &path );
 
-#if ! defined( CINDER_COCOA_TOUCH )
-typedef shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
+typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
 class DataSourceUrl : public DataSource {
   public:
@@ -100,10 +99,10 @@ class DataSourceUrl : public DataSource {
 	IStreamUrlRef	mStream;
 };
 
-DataSourceUrlRef	loadUrl( const Url &Url );
-#endif
+DataSourceUrlRef		loadUrl( const Url &Url );
+inline DataSourceUrlRef	loadUrl( const std::string &urlString ) { return loadUrl( Url( urlString ) ); }
 
-typedef shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
+typedef std::shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 
 class DataSourceBuffer : public DataSource {
   public:

@@ -102,9 +102,8 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 	else if( event.getChar() == 's' ) {
 		std::string path = getSaveFilePath( "output.trimesh" );
 		if( ! path.empty() ) {
-		console() << "Saving to " << path;
-			OStreamFileRef out = writeFileStream( path );
-			mMesh.write( out );
+			console() << "Saving to " << path;
+			mMesh.write( writeFile( path ) );
 		}
 	}
 	else if( event.getChar() == 'f' ) {

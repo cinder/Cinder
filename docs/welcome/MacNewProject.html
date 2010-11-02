@@ -18,9 +18,32 @@
 	</div>
 	
 	<div class="contents">
-	<h1>Creating a new Cinder project on Mac OS X</h1>
-	<p>For Mac users, our <a href="MacSetup.html#tinderbox">GUI tool TinderBox</a> is the easiest way to create new Cinder projects, and in general we recommend you use that. However it can be instructive and occasionally even necessary to know how to create a Cinder project from scratch. It's not too hard, really. Xcode offers tremendous flexibility in how
-	users can structure their projects. This guide will show you how to
+	<h1>Creating a Mac OS X Project</h1>
+	<p>The TinderBox tool which comes with Cinder is the easiest way to create new projects, and in general we recommend you use that. However it can be instructive to know how to create a Cinder project from scratch, which is discussed in the <a href="#fromScratch">section below</a>.
+
+	<h2><a name="tinderbox">TinderBox</a></h2>
+	<p>TinderBox is our GUI tool for creating Cinder projects quickly and easily. It can generate Xcode as well as Visual C++ 2008 and 2010 projects. It is located at <em>cinder/tools/TinderBox</em> in our packaged releases. The first time you launch it, TinderBox will ask you to point it at the location of Cinder on your hard drive.
+	
+	<center><img alt="TinderBox welcome" src="mac_images/TinderBox_first.png"></img></center>
+	
+	<p>Navigate to the top level Cinder directory and hit <b>Open</b>. If you ever need to change this later, you can do so from the preferences menu.</p>
+	
+	<center><img alt="TinderBox Cinder Location" src="mac_images/TinderBox_second.png"></img></center>
+
+	<p>Whenever you launch TinderBox, it will start by asking you where you would like to save your new project, and what you would like to call it. </p>
+	
+	<center><img alt="TinderBox Save Dialog" src="mac_images/TinderBox_third.png"></img></center>
+	
+	<p>There are a number of settings in TinderBox, but the defaults will suffice for most users. Simply hit the <B>Create</B> button, and you'll have a complete Cinder project ready for you to start coding in.</p>
+
+	<center><img alt="TinderBox Settings" src="mac_images/TinderBox_fourth.png"></img></center>
+
+	<center><img alt="TinderBox Results" src="mac_images/TinderBox_fifth.png"></img></center>
+
+	<h2><a name="fromScratch">Creating Projects from Scratch</a></h2>
+	
+	While TinderBox is the most convenient way to create a new Cinder project, creating them by hand is not too hard, really. Xcode offers tremendous flexibility in how
+	users can structure their projects. This section will show you how to
 	setup a project similarly to the samples, but Cinder is designed to be
 	flexible too, and you should feel free to adapt things to your preferences.</p>
 	<br>
@@ -107,10 +130,10 @@
 	Project Settings window and under the <em>Project</em> menu select <em>Edit Active Target &lt;your project name&gt;</em>.</p>
 	<br>
 	<p>We only need to modify one setting here, which is to set the string
-	which tells the linker to add libcinder and libcurl. Go to the <em>Build</em> tab and under the 
+	which tells the linker to add libcinder. Go to the <em>Build</em> tab and under the 
 	<em>Configuration</em> popup select <em>Debug</em>. Now find the 
-	<em>Other Linker Flags</em> setting under the <em>Linking</em> settings and set it to <em>"$(CINDER_PATH)/lib/libcinder_d.a -lcurl"</em>. 
-	Now do the same for the <em>Release</em> configuration but set it to <em>"$(CINDER_PATH)/lib/libcinder.a -lcurl"</em>.</p>
+	<em>Other Linker Flags</em> setting under the <em>Linking</em> settings and set it to <em>"$(CINDER_PATH)/lib/libcinder_d.a"</em>. 
+	Now do the same for the <em>Release</em> configuration but set it to <em>"$(CINDER_PATH)/lib/libcinder.a"</em>.</p>
 	
 	<center><img alt="Linker settings" src="mac_images/linkersettings.png"></img></center>
 	<br>
@@ -157,12 +180,12 @@
     <tr>
       <td style="vertical-align: top;">Target: Debug</td>
       <td style="vertical-align: top;">Other Linker Flags</td>
-      <td style="vertical-align: top; font-family: Courier;">$(CINDER_PATH)/lib/libcinder_d.a -lcurl</td>
+      <td style="vertical-align: top; font-family: Courier;">$(CINDER_PATH)/lib/libcinder_d.a</td>
     </tr>
     <tr>
       <td style="vertical-align: top;">Target: Release</td>
       <td style="vertical-align: top;">Other Linker Flags</td>
-      <td style="vertical-align: top; font-family: Courier;">$(CINDER_PATH)/lib/libcinder.a -lcurl</td>
+      <td style="vertical-align: top; font-family: Courier;">$(CINDER_PATH)/lib/libcinder.a</td>
     </tr>
   </tbody>
 </table>

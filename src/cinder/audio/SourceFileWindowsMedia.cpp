@@ -57,20 +57,20 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 	if(FAILED(hr)) {
 		throw IoExceptionFailedLoad();
 	}
-	shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
+	std::shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
 	
 	hr = mReader->OpenStream( pStream.get() );
 	if( FAILED(hr) ) {
 		throw IoExceptionFailedLoad();
 	}
 
-	uint32_t nOutputFormatCount;
+	DWORD nOutputFormatCount;
 	hr = mReader->GetOutputFormatCount(0, &nOutputFormatCount);
 	if( FAILED(hr) ) {
 		throw IoExceptionFailedLoad();
 	}
 	
-	uint32_t nFormatSize = 0; 
+	DWORD nFormatSize = 0; 
 	BYTE* pBuf = 0;
 	IWMOutputMediaProps* pProps = 0;
 	for( uint32_t j = 0; j < nOutputFormatCount; j++ ) {
@@ -80,7 +80,7 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 		}
 
 		//get required size of the media type structure
-		uint32_t nNewSize = 0;
+		DWORD nNewSize = 0;
 		hr = pProps->GetMediaType( NULL, & nNewSize );
 		if( FAILED(hr) ) {
 			continue;
@@ -160,8 +160,10 @@ LoaderSourceFileWindowsMedia::LoaderSourceFileWindowsMedia( SourceFileWindowsMed
 
 	mStreamSize = (uint32_t)( fTime * mOutputFormat.nAvgBytesPerSec * 1.5 );
 	
+	DWORD tempMaxBufferSize = 0;
 	mMaxBufferSize = 0;
-	hr = mReader->GetMaxOutputSampleSize( 0, &mMaxBufferSize );
+	hr = mReader->GetMaxOutputSampleSize( 0, &tempMaxBufferSize );
+	mMaxBufferSize = tempMaxBufferSize;
 	if( FAILED( hr ) ) {
 		throw IoExceptionFailedLoad();
 	}
@@ -188,7 +190,7 @@ void LoaderSourceFileWindowsMedia::setSampleOffset( uint64_t anOffset )
 	mReader->SetRange( timeAtSample( mSampleOffset ), 0 );
 }
 
-void LoaderSourceFileWindowsMedia::loadData( uint32_t *ioSampleCount, BufferList *ioData )
+void LoaderSourceFileWindowsMedia::loadData( BufferList *ioData )
 {	
 	HRESULT hr;
 	INSSBuffer * outBuffer;
@@ -200,7 +202,7 @@ void LoaderSourceFileWindowsMedia::loadData( uint32_t *ioSampleCount, BufferList
 
 	hr = mReader->GetNextSample( 0, &outBuffer, &pcnsSampleTime, &pcnsDuration, &pdwFlags, &pdwOutputNum, &pwStreamNum );
 	if( hr == NS_E_NO_MORE_SAMPLES ) {
-		*ioSampleCount = 0;
+		ioData->mBuffers[0].mSampleCount = 0;
 		return;
 	}
 
@@ -218,12 +220,8 @@ void LoaderSourceFileWindowsMedia::loadData( uint32_t *ioSampleCount, BufferList
 
 	memcpy( ioData->mBuffers[0].mData, rawBuffer, bufferSize );
 	ioData->mBuffers[0].mDataByteSize = bufferSize;
-	*ioSampleCount = bufferSize / mSrcBlockAlign;
-	mSampleOffset += *ioSampleCount;
-	
-
-//	LONGLONG duration = (*ioSampleCount / mSrcChannelCount ) / (double)mSrcSampleRate * 10000000L;
-	//hr = mReader->SetRange( mTimeOffset, 0 ); //TODO, just implement this in seeking
+	ioData->mBuffers[0].mSampleCount = bufferSize / mSrcBlockAlign;
+	mSampleOffset += ioData->mBuffers[0].mSampleCount;
 }
 
 uint64_t LoaderSourceFileWindowsMedia::timeAtSample( uint64_t aSample ) const
@@ -285,11 +283,11 @@ SourceFileWindowsMedia::SourceFileWindowsMedia( DataSourceRef dataSourceRef )
 	if( FAILED( hr ) ) {
 		throw SourceFileWindowsMediaExceptionUnsupportedData();
 	}
-	shared_ptr<IWMSyncReader> reader = msw::makeComShared<IWMSyncReader>( IWMReaderP );
+	std::shared_ptr<IWMSyncReader> reader = msw::makeComShared<IWMSyncReader>( IWMReaderP );
 
 	//turn data into stream	
 	uint32_t dataSize = getLength();
-	mMemHandle = shared_ptr<void>( ::GlobalAlloc( GMEM_MOVEABLE | GMEM_NODISCARD | GMEM_SHARE, dataSize ), GlobalFree );
+	mMemHandle = std::shared_ptr<void>( ::GlobalAlloc( GMEM_MOVEABLE | GMEM_NODISCARD | GMEM_SHARE, dataSize ), GlobalFree );
 
 	LPVOID pMem = ::GlobalLock( mMemHandle.get() );
 	void * data = mBuffer.getData();
@@ -301,7 +299,7 @@ SourceFileWindowsMedia::SourceFileWindowsMedia( DataSourceRef dataSourceRef )
 	if(FAILED(hr)) {
 		throw SourceFileWindowsMediaExceptionUnsupportedData();
 	}
-	shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
+	std::shared_ptr<::IStream> pStream = msw::makeComShared<::IStream>( iStreamP );
 	
 	hr = reader->OpenStream( pStream.get() );
 	if( FAILED(hr) ) {
@@ -309,7 +307,7 @@ SourceFileWindowsMedia::SourceFileWindowsMedia( DataSourceRef dataSourceRef )
 	}
 	
 	//ensure that there is only one stream in the file
-	uint32_t nOutputCount;
+	DWORD nOutputCount;
 	hr = reader->GetOutputCount( &nOutputCount );
 	if( FAILED(hr) ) {
 		throw SourceFileWindowsMediaExceptionUnsupportedData();

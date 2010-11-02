@@ -22,9 +22,15 @@
 
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
+#include "cinder/Utilities.h"
 #if defined( CINDER_MSW )
+	#include <Shlwapi.h>
 	#include "cinder/UrlImplWinInet.h"
 	typedef cinder::IStreamUrlImplWinInet	IStreamUrlPlatformImpl;
+#elif defined( CINDER_COCOA )
+	#include "cinder/cocoa/CinderCocoa.h"
+	#include "cinder/UrlImplCocoa.h"
+	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;
 #else
 	#include "cinder/UrlImplCurl.h"
 	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;
@@ -34,9 +40,27 @@ namespace cinder {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Url
-Url::Url( const std::string &urlString )
-	: mStr( urlString )
+Url::Url( const std::string &urlString, bool isEscaped )
+	: mStr( isEscaped ? 
+		urlString : encode( urlString ) )
 {
+}
+
+std::string Url::encode( const std::string &unescaped )
+{
+#if defined( CINDER_COCOA )
+	cocoa::SafeCfString unescapedStr = cocoa::createSafeCfString( unescaped );
+	CFStringRef escaped = ::CFURLCreateStringByAddingPercentEscapes( kCFAllocatorDefault, unescapedStr.get(), NULL, NULL, kCFStringEncodingUTF8 );
+	std::string result = cocoa::convertCfString( escaped );
+	::CFRelease( escaped );
+	return result;
+#elif defined( CINDER_MSW )
+	wchar_t buffer[4096];
+	DWORD bufferSize = 4096;
+	std::wstring wideUnescaped = toUtf16( unescaped );
+	UrlEscape( wideUnescaped.c_str(), buffer, &bufferSize, 0 );
+	return toUtf8( std::wstring( buffer ) );
+#endif	
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,31 +74,19 @@ IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const s
 	: IStream()
 {
 	setFileName( url );
-	mImpl = shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password ) );
+	mImpl = std::shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password ) );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // loadUrl
 IStreamUrlRef loadUrlStream( const Url &url )
 {
-	try {
-		IStreamUrlRef result = IStreamUrl::createRef( url.str(), "", "" );
-		return result;
-	}
-	catch( ... ) {
-		return IStreamUrlRef();
-	}
+	return IStreamUrl::createRef( url.str(), "", "" );
 }
 
 IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, const std::string &password )
 {
-	try {
-		IStreamUrlRef result = IStreamUrl::createRef( url, user, password );
-		return result;
-	}
-	catch( ... ) {
-		return IStreamUrlRef();
-	}
+	return IStreamUrl::createRef( url, user, password );
 }
 
 } // namespace cinder

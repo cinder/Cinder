@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project: http://libcinder.org
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -49,6 +49,8 @@ class Ray {
 	char	getSignZ() const { return mSignZ; }		
 	
 	Vec3f calcPosition( float t ) const { return mOrigin + mDirection * t; }
+
+	bool calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result ) const;
 
  protected:
 	Vec3f	mOrigin;

@@ -76,33 +76,36 @@ CocoaCaConverter::~CocoaCaConverter()
 	AudioConverterDispose( mConverter );
 }
 
-void CocoaCaConverter::loadData( uint32_t *ioSampleCount, BufferList *ioData )
+void CocoaCaConverter::loadData( BufferList *ioData )
 {	
-	shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
+	std::shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
 
-	AudioStreamPacketDescription * outputPacketDescriptions = new AudioStreamPacketDescription[*ioSampleCount];
-	OSStatus err = AudioConverterFillComplexBuffer( mConverter, CocoaCaConverter::dataInputCallback, (void *)this, (UInt32 *)ioSampleCount, nativeBufferList.get(), outputPacketDescriptions );
+	UInt32 aSampleCount = ioData->mBuffers[0].mSampleCount;
+	AudioStreamPacketDescription * outputPacketDescriptions = new AudioStreamPacketDescription[aSampleCount];
+	
+	OSStatus err = AudioConverterFillComplexBuffer( mConverter, CocoaCaConverter::dataInputCallback, (void *)this, &aSampleCount, nativeBufferList.get(), outputPacketDescriptions );
 	delete [] outputPacketDescriptions;
 	if( err ) {
 		//throw
 	}
 	
-	fillBufferListFromCaBufferList( ioData, nativeBufferList.get() );
+	fillBufferListFromCaBufferList( ioData, nativeBufferList.get(), (uint32_t)aSampleCount );
 }
 
-void CocoaCaConverter::fillBufferListFromCaBufferList( BufferList * aBufferList, const AudioBufferList * caBufferList )
+void CocoaCaConverter::fillBufferListFromCaBufferList( BufferList * aBufferList, const AudioBufferList * caBufferList, uint32_t aSampleCount )
 {
 	aBufferList->mNumberBuffers = caBufferList->mNumberBuffers;
 	for( int i = 0; i < caBufferList->mNumberBuffers; i++ ) {
 		aBufferList->mBuffers[i].mNumberChannels = caBufferList->mBuffers[i].mNumberChannels;
 		aBufferList->mBuffers[i].mDataByteSize = caBufferList->mBuffers[i].mDataByteSize;
+		aBufferList->mBuffers[i].mSampleCount = aSampleCount;
 		aBufferList->mBuffers[i].mData = caBufferList->mBuffers[i].mData;
 	}
 }
 
-shared_ptr<AudioBufferList> CocoaCaConverter::createCaBufferList( const BufferList * aBufferList )
+std::shared_ptr<AudioBufferList> CocoaCaConverter::createCaBufferList( const BufferList * aBufferList )
 {
-	shared_ptr<AudioBufferList> caBufferList( (AudioBufferList *)malloc( sizeof( UInt32 ) + ( sizeof( AudioBuffer ) * aBufferList->mNumberBuffers ) ), free );
+	std::shared_ptr<AudioBufferList> caBufferList( (AudioBufferList *)malloc( sizeof( UInt32 ) + ( sizeof( AudioBuffer ) * aBufferList->mNumberBuffers ) ), free );
 	
 	caBufferList->mNumberBuffers = aBufferList->mNumberBuffers;
 	for( int i = 0; i < caBufferList->mNumberBuffers; i++ ) {
@@ -142,7 +145,7 @@ OSStatus CocoaCaConverter::dataInputCallback( AudioConverterRef inAudioConverter
 	theConverter->cleanupConverterBuffer();
 	
 	theConverter->mConverterBuffer.mNumberBuffers = ioData->mNumberBuffers;
-	theConverter->mConverterBuffer.mBuffers = new Buffer[theConverter->mConverterBuffer.mNumberBuffers];
+	theConverter->mConverterBuffer.mBuffers = new BufferGeneric[theConverter->mConverterBuffer.mNumberBuffers];
 	for( int i = 0; i < theConverter->mConverterBuffer.mNumberBuffers; i++ ) {
 		theConverter->mConverterBuffer.mBuffers[i].mNumberChannels = ioData->mBuffers[i].mNumberChannels;
 		theConverter->mConverterBuffer.mBuffers[i].mDataByteSize = ( *ioNumberDataPackets * theConverter->mMaxPacketSize );

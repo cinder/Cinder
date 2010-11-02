@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project: http://libcinder.org
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -73,100 +73,51 @@ int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 {
 	int i = 0;
 	
-	if( calcTriangleIntersection( ray, mVerts[2], mVerts[0], mVerts[1], &intersections[i] ) ) { // +Z
+	if( ray.calcTriangleIntersection( mVerts[2], mVerts[0], mVerts[1], &intersections[i] ) ) { // +Z
 		i++;
 	}
-	else if( calcTriangleIntersection( ray, mVerts[1], mVerts[3], mVerts[2], &intersections[i] ) ) { // +Z
+	else if( ray.calcTriangleIntersection( mVerts[1], mVerts[3], mVerts[2], &intersections[i] ) ) { // +Z
 		i++;
 	}
 
-	if( calcTriangleIntersection( ray, mVerts[7], mVerts[5], mVerts[3], &intersections[i] ) ) { // +X
+	if( ray.calcTriangleIntersection( mVerts[7], mVerts[5], mVerts[3], &intersections[i] ) ) { // +X
 		i++; if( i > 2 ) return i;
 	}
-	else if( calcTriangleIntersection( ray, mVerts[1], mVerts[7], mVerts[3], &intersections[i] ) ) { // +X
-		i++; if( i > 2 ) return i;
-	}
-
-	if( calcTriangleIntersection( ray, mVerts[3], mVerts[5], mVerts[4], &intersections[i] ) ) { // +Y
-		i++; if( i > 2 ) return i;
-	}
-	else if( calcTriangleIntersection( ray, mVerts[2], mVerts[3], mVerts[4], &intersections[i] ) ) { // +Y
+	else if( ray.calcTriangleIntersection( mVerts[1], mVerts[7], mVerts[3], &intersections[i] ) ) { // +X
 		i++; if( i > 2 ) return i;
 	}
 
-	if( calcTriangleIntersection( ray, mVerts[1], mVerts[0], mVerts[7], &intersections[i] ) ) { // -Y
+	if( ray.calcTriangleIntersection( mVerts[3], mVerts[5], mVerts[4], &intersections[i] ) ) { // +Y
 		i++; if( i > 2 ) return i;
 	}
-	else if( calcTriangleIntersection( ray, mVerts[0], mVerts[6], mVerts[7], &intersections[i] ) ) { // -Y
-		i++; if( i > 2 ) return i;
-	}
-
-	if( calcTriangleIntersection( ray, mVerts[4], mVerts[0], mVerts[2], &intersections[i] ) ) { // -X
-		i++; if( i > 2 ) return i;
-	}
-	else if( calcTriangleIntersection( ray, mVerts[4], mVerts[6], mVerts[0], &intersections[i] ) ) { // -X
+	else if( ray.calcTriangleIntersection( mVerts[2], mVerts[3], mVerts[4], &intersections[i] ) ) { // +Y
 		i++; if( i > 2 ) return i;
 	}
 
-	if( calcTriangleIntersection( ray, mVerts[6], mVerts[4], mVerts[5], &intersections[i] ) ) { // -Z
+	if( ray.calcTriangleIntersection( mVerts[1], mVerts[0], mVerts[7], &intersections[i] ) ) { // -Y
+		i++; if( i > 2 ) return i;
+	}
+	else if( ray.calcTriangleIntersection( mVerts[0], mVerts[6], mVerts[7], &intersections[i] ) ) { // -Y
+		i++; if( i > 2 ) return i;
+	}
+
+	if( ray.calcTriangleIntersection( mVerts[4], mVerts[0], mVerts[2], &intersections[i] ) ) { // -X
+		i++; if( i > 2 ) return i;
+	}
+	else if( ray.calcTriangleIntersection( mVerts[4], mVerts[6], mVerts[0], &intersections[i] ) ) { // -X
+		i++; if( i > 2 ) return i;
+	}
+
+	if( ray.calcTriangleIntersection( mVerts[6], mVerts[4], mVerts[5], &intersections[i] ) ) { // -Z
 		i++;
 	}
-	else if( calcTriangleIntersection( ray, mVerts[7], mVerts[6], mVerts[5], &intersections[i] ) ) { // -Z
+	else if( ray.calcTriangleIntersection( mVerts[7], mVerts[6], mVerts[5], &intersections[i] ) ) { // -Z
 		i++;
 	}
 
 	return i;
 }
 
- // algorithm from "Fast, Minimum Storage Ray-Triangle Intersection"
-bool AxisAlignedBox3f::calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result )
-{
-	Vec3f edge1, edge2, tvec, pvec, qvec;
-	float det;
-	float u, v;
-	const float EPSILON = 0.000001f;
-	
-	edge1 = vert1 - vert0;
-	edge2 = vert2 - vert0;
-	
-	pvec = ray.getDirection().cross( edge2 );
-	det = edge1.dot( pvec );
-	
-#if 0 // we don't want to backface cull
-	if ( det < EPSILON )
-		  return false;
-	tvec = ray.getOrigin() - vert0;
-	
-	u = tvec.dot( pvec );
-	if ( ( u < 0.0f ) || ( u > det ) )
-		return false;
-	
-	qvec = tvec.cross( edge1 );
-	v = ray.getDirection().dot( qvec );
-	if ( v < 0.0f || u + v > det )
-		return false;
-	
-	*result = edge2.dot( qvec ) / det;
-	return true;
-#else
-	if( det > -EPSILON && det < EPSILON )
-		return false;
 
-	float inv_det = 1.0f / det;
-	tvec = ray.getOrigin() - vert0;
-	u = tvec.dot( pvec ) * inv_det;
-	if( u < 0.0f || u > 1.0f )
-		return false;
-
-	qvec = tvec.cross( edge1 );
-
-	v = ray.getDirection().dot( qvec ) * inv_det;
-	if( v < 0.0f || u + v > 1.0f )
-		return 0;
-
-	*result = edge2.dot( qvec ) * inv_det;
-	return true;
-#endif
-}
 
 } // namespace cinder

@@ -37,11 +37,19 @@
 	#include <CoreVideo/CoreVideo.h>
 	#include <CoreVideo/CVBase.h>
 #else
-	#include <QTML.h>
-	#include <CVPixelBuffer.h>
-	#include <ImageCompression.h>
-	#include <Movies.h>
-	#include <GXMath.h>
+	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+	#pragma push_macro( "_STDINT_H" )
+		#undef __STDC_CONSTANT_MACROS
+		#if _MSC_VER >= 1600 // VC10 or greater
+			#define _STDINT_H
+		#endif
+		#include <QTML.h>
+		#include <CVPixelBuffer.h>
+		#include <ImageCompression.h>
+		#include <Movies.h>
+		#include <GXMath.h>
+	#pragma pop_macro( "_STDINT_H" )
+	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 	// this call is improperly defined as Mac-only in the headers
 	extern "C" {
 	EXTERN_API_C( OSStatus ) QTPixelBufferContextCreate( CFAllocatorRef, CFDictionaryRef, QTVisualContextRef* );
@@ -249,26 +257,28 @@ int32_t	MovieBase::getNumFrames() const
 //! \see http://developer.apple.com/qa/qtmtb/qtmtb17.html Technical Q&A QTMTB17
 bool MovieBase::hasAlpha() const
 {
-	Track visualTrack = ::GetMovieIndTrackType( getObj()->mMovie, 1, VisualMediaCharacteristic, movieTrackCharacteristic );
-	if( ! visualTrack )
-		return false;
-	SampleDescriptionHandle imageDescH = (SampleDescriptionHandle)NewHandle( sizeof( Handle ) );
-	Media visualMedia = ::GetTrackMedia( visualTrack );
-	if( ! visualMedia)
-		return false;
-	::GetMediaSampleDescription( visualMedia, 1, imageDescH );
-	OSErr err = ::GetMoviesError();
-	if( err != noErr )
-		return false;
-	if( ! imageDescH )
-		return false;
-	if( imageDescH ) {
-		bool result = (*(ImageDescriptionHandle)imageDescH)->depth == 32;
-		::DisposeHandle( (char**)imageDescH );
-		return result;
+	for( long trackIdx = 1; trackIdx <= ::GetMovieTrackCount( getObj()->mMovie ); ++trackIdx ) {
+		Track track = ::GetMovieIndTrack( getObj()->mMovie, trackIdx );
+		Media media = ::GetTrackMedia( track );
+		OSType      dwType;
+		::GetMediaHandlerDescription( media, &dwType, 0, 0 );
+		if( ( dwType == VideoMediaType ) || ( dwType == MPEGMediaType ) ) {
+			ImageDescriptionHandle imageDescH = (ImageDescriptionHandle)::NewHandleClear(sizeof(ImageDescription));
+			::GetMediaSampleDescription( media, 1, (SampleDescriptionHandle)imageDescH );
+			OSErr err = ::GetMoviesError();
+			if( err != noErr ) {
+				DisposeHandle( (Handle)imageDescH );
+				continue;
+			}
+			if( imageDescH ) {
+				bool result = (*imageDescH)->depth == 32;
+				::DisposeHandle( (Handle)imageDescH );
+				return result;
+			}
+		}
 	}
-	else
-		return false;
+	
+	return false;
 }
 
 bool MovieBase::hasVisuals() const

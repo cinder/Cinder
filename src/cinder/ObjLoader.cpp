@@ -26,13 +26,8 @@
 using boost::lexical_cast;
 
 #include <sstream>
-using std::map;
-using std::pair;
-using std::make_pair;
+using namespace std;
 using boost::make_tuple;
-using std::stringstream;
-using std::string;
-using std::vector;
 
 namespace cinder {
 

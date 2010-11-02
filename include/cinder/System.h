@@ -48,7 +48,6 @@ class System {
 	static int			getNumCpus();
 	//! Returns the number of cores (or logical processors) in the system. A single processor dual core machine returns 2.	
 	static int			getNumCores();
-#if ! defined( CINDER_COCOA_TOUCH )	
 	//! Returns the major version of the operating system.
 	//! For version \c 10.5.8, this is \c 10. For Windows Vista this is 6. Refer to the MSDN documentation for the \c OSVERSIONINFOEX struct for Windows meanings
 	static int			getOsMajorVersion();
@@ -58,7 +57,6 @@ class System {
 	//! Returns the bugfix version of the operating system.
 	//! For version \c 10.5.8, this is \c 8. For Windows this corresponds to the major version of the service pack. So \c Service Pack 2 returns \c 2
 	static int			getOsBugFixVersion();
-#endif //! defined( CINDER_COCOA_TOUCH )	
 
 	//! Returns whether the system supports MultiTouch. Also returns true under Windows 7 in the presence of single touch support. Always returns true on Mac OS X Snow Leopard.
 	static bool			hasMultiTouch();
@@ -86,8 +84,8 @@ class System {
 	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, TOTAL_CACHE_TYPES };
 
 	System();
-	static shared_ptr<System>		instance();
-	static shared_ptr<System>		sInstance;
+	static std::shared_ptr<System>		instance();
+	static std::shared_ptr<System>		sInstance;
 
 	bool				mCachedValues[TOTAL_CACHE_TYPES];
 	bool				mHasSSE2, mHasSSE3, mHasSSE4_1, mHasSSE4_2, mHasX86_64;

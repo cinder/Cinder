@@ -63,10 +63,10 @@ void Buffer::copyFrom( const void * aData, size_t length )
 	memcpy( mObj->mData, aData, length );
 }
 
-shared_ptr<uint8_t>	Buffer::convertToSharedPtr()
+std::shared_ptr<uint8_t>	Buffer::convertToSharedPtr()
 {
 	mObj->mOwnsData = false;
-	return shared_ptr<uint8_t>( reinterpret_cast<uint8_t*>( mObj->mData ), free );
+	return std::shared_ptr<uint8_t>( reinterpret_cast<uint8_t*>( mObj->mData ), free );
 }
 
 Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel, bool resizeResult )

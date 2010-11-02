@@ -36,7 +36,11 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 #else
 	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+	#pragma push_macro( "_STDINT_H" )
 		#undef __STDC_CONSTANT_MACROS
+		#if _MSC_VER >= 1600 // VC10 or greater
+			#define _STDINT_H
+		#endif
 		#include <QTML.h>
 		#include <CVPixelBuffer.h>
 		#include <ImageCompression.h>
@@ -45,6 +49,7 @@
 		#include <CoreFoundation/CFNumber.h>
 		#include <GXMath.h>
 		#include <QuickTimeComponents.h>
+	#pragma pop_macro( "_STDINT_H" )
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
 
@@ -163,7 +168,7 @@ const MovieWriter::Format& MovieWriter::Format::operator=( const Format &format 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MovieWriter
 MovieWriter::MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format )
-	: mObj( shared_ptr<Obj>( new Obj( path, width, height, format ) ) )
+	: mObj( std::shared_ptr<Obj>( new Obj( path, width, height, format ) ) )
 {
 }
 

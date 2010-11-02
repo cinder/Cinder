@@ -236,7 +236,7 @@
 				);
 				OTHER_LDFLAGS = (
 					../../../lib/libcinder_d.a,
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = captureTest;
 				WRAPPER_EXTENSION = app;
@@ -261,7 +261,7 @@
 				);
 				OTHER_LDFLAGS = (
 					../../../lib/libcinder.a,
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = surfaceTest;
 				WRAPPER_EXTENSION = app;
@@ -276,9 +276,9 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				OTHER_LDFLAGS = "";
 				PREBINDING = NO;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
 			};
@@ -292,8 +292,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				PREBINDING = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
 			};

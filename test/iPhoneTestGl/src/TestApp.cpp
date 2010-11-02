@@ -2,11 +2,14 @@
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Url.h"
 #include "TestApp.h"
 #include "cinder/Surface.h"
 #include "cinder/Utilities.h"
 #include "cinder/Rand.h"
 #include "cinder/Text.h"
+#include "cinder/Xml.h"
+#include "cinder/System.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -32,6 +35,14 @@ void TestApp::setup()
 	mFont = Font( "Arial", 56 );
 	//Buffer buffer = loadStreamBuffer( loadFileStream( getResourcePath( "Beyonce.jpg" ) ) );
 	//mTex = gl::Texture( loadImage( DataSourceBuffer::createRef( buffer, ".jpg" ) ) );
+	mTex = gl::Texture( loadImage( loadUrl( Url( "http://images.apple.com/home/images/promo_iphone_case_program_20100723.jpg" ) ) ) );
+
+	XmlDocument doc( loadUrlStream( "http://www.feedparser.org/docs/http-authentication.html", "test", "basic" ) );
+	console() << doc << std::endl;
+
+	console() << "System version: " << System::getOsMajorVersion() << "." << System::getOsMinorVersion() << "." << System::getOsBugFixVersion() << std::endl;
+	
+console() << "size: " << getWindowSize() << std::endl;	
 }
 
 void TestApp::resize( int width, int height )
@@ -63,7 +74,6 @@ void TestApp::mouseDown( MouseEvent event )
 void TestApp::update()
 {
 	mCubeRotation.rotate( Vec3f( 1, 1, 1 ), 0.03f );
-console() << "Frames: " << getElapsedFrames() << std::endl;
 }
 
 void TestApp::draw()
@@ -71,7 +81,7 @@ void TestApp::draw()
 	gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
 	gl::enableAlphaBlending();
 	gl::enableDepthRead();
-	
+console() << getWindowWidth() << std::endl;	
 	/*mTex.bind();
 	gl::setMatrices( mCam );
 	glPushMatrix();
@@ -80,8 +90,9 @@ void TestApp::draw()
 	glPopMatrix();*/
 	
 	gl::setMatricesWindow( getWindowSize() );
-	gl::drawString( (Rand::randBool() ? ( "Fjrameyq: " ) : ( "Frame: " )) + toString( getElapsedFrames() ), Vec2f( 10, 40 ), Color( 1, 0.5, 0.25 ), mFont );
-//	gl::draw( mTex );
+	gl::setViewport( getWindowBounds() );
+//	gl::drawString( (Rand::randBool() ? ( "Fjrameyq: " ) : ( "Frame: " )) + toString( getElapsedFrames() ), Vec2f( 10, 40 ), Color( 1, 0.5, 0.25 ), mFont );
+	gl::draw( mTex );
 }
 
 CINDER_APP_COCOA_TOUCH( TestApp, RendererGl )

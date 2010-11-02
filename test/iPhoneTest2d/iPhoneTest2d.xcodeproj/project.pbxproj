@@ -167,11 +167,33 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iPhoneTest2d_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = "iPhoneTest2d-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				OTHER_LDFLAGS = "";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone_d.a";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a";
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"$(CINDER_PATH)/lib/libcinder-iphone_d.a",
+					"-lz",
+					"-weak_framework",
+					CoreVideo,
+					"-weak_framework",
+					CoreMedia,
+					"-weak_framework",
+					AVFoundation,
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a",
+					"-lz",
+					"-weak_framework",
+					CoreVideo,
+					"-weak_framework",
+					CoreMedia,
+					"-weak_framework",
+					AVFoundation,
+				);
 				PRODUCT_NAME = iPhoneTest2d;
+				SDKROOT = iphonesimulator4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};

@@ -23,6 +23,8 @@
 #include "cinder/gl/DisplayList.h"
 #include "cinder/gl/gl.h"
 
+using namespace std;
+
 namespace cinder { namespace gl {
 
 DisplayList::Obj::~Obj()

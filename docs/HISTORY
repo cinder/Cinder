@@ -10,3 +10,24 @@
 	WinInet support - replacement of libCurl on Windows with native API
 	Text rendering on iPhone
 	gl::drawString()
+* 0.8.2		---
+	OpenCV 2.1 Support on Mac OS X, iOS and Windows
+	Microphone input on Mac OS X & iOS
+	FFT audio analysis on Mac OS X
+	Significant improvement in build times on Mac OS X (typically halved)
+	QuickTime output, including multi-pass H.264
+	Video Capture support on iOS
+	Optional callbacks for event handling
+	FBO support for iOS
+	FBO support for multiple render targets
+	URL loading for iOS and Mac OS X via NSURLConnection (replacing libcurl)
+	TUIO 1.1 implementation with help from HŽctor S‡nchez-Pajares
+	new Picking3D sample courtesy of Paul Houx
+	MultiTouch support under Mac OS X 10.6
+	Accelerometer support under iOS
+	Support for command line parameters on Mac OS X and Windows
+	TinderBox for Windows
+	Upgraded Cairo to 1.10.0
+	Upgraded to Boost 1.44
+	Removed Mac OS X GLee dependency
+	

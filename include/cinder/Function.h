@@ -58,8 +58,21 @@ class CallbackMgr {
 		mCallbacks[cbId] = cb;
 		return cbId;	
 	}
+
+	template<typename A1>
+	void call( A1 a1 ) { for( iterator it = begin(); it != end(); ++it ) it->second( a1 ); }
+	template<typename A1, typename A2>
+	void call( A1 a1, A2 a2 ) { for( iterator it = begin(); it != end(); ++it ) it->second( a1, a2 ); }
+	template<typename A1, typename A2, typename A3>
+	void call( A1 a1, A2 a2, A3 a3 ) { for( iterator it = begin(); it != end(); ++it ) it->second( a1, a2, a3 ); }
+	template<typename A1, typename A2, typename A3, typename A4>
+	void call( A1 a1, A2 a2, A3 a3, A4 a4 ) { for( iterator it = begin(); it != end(); ++it ) it->second( a1, a2, a3, a4 ); }
+	template<typename A1, typename A2, typename A3, typename A4, typename A5>
+	void call( A1 a1, A2 a2, A3 a3, A4 a4, A5 a5 ) { for( iterator it = begin(); it != end(); ++it ) it->second( a1, a2, a3, a4, a5 ); }
 	
-	void		unregisterCb( CallbackId cbId ) { mCallbacks.erase( cbId ); }
+	void	unregisterCb( CallbackId cbId ) { mCallbacks.erase( cbId ); }
+	
+	bool	empty() const { return mCallbacks.empty(); }
 	
 	iterator begin() { return mCallbacks.begin(); }
 	iterator end() { return mCallbacks.end(); }  

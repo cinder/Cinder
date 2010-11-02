@@ -89,13 +89,13 @@ void LoaderSourceFileWav::setSampleOffset( uint64_t anOffset )
 	mStream->seekAbsolute( mSource->mDataStart + ( anOffset * mSource->mBlockAlign ) );
 }
 
-void LoaderSourceFileWav::loadData( uint32_t *ioSampleCount, BufferList *ioData )
+void LoaderSourceFileWav::loadData( BufferList *ioData )
 {	
-	if( mSampleOffset + *ioSampleCount > mSource->mSampleCount ) {
-		*ioSampleCount = mSource->mSampleCount - mSampleOffset;
+	if( mSampleOffset + ioData->mBuffers[0].mSampleCount > mSource->mSampleCount ) {
+		ioData->mBuffers[0].mSampleCount = mSource->mSampleCount - mSampleOffset;
 	}
 	
-	uint32_t dataSize = *ioSampleCount * mSource->mBlockAlign;
+	uint32_t dataSize = ioData->mBuffers[0].mSampleCount * mSource->mBlockAlign;
 
 #if defined(CINDER_LITTLE_ENDIAN)
 	bool nativeLittleEndian = true;
@@ -109,7 +109,7 @@ void LoaderSourceFileWav::loadData( uint32_t *ioSampleCount, BufferList *ioData 
 	} else {
 		//TODO: readWithEndianess with casted buffers
 	}
-	mSampleOffset += *ioSampleCount;
+	mSampleOffset += ioData->mBuffers[0].mSampleCount;
 	ioData->mBuffers[0].mDataByteSize = dataSize;
 }
 

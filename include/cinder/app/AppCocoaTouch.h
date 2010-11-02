@@ -161,7 +161,7 @@ class AppCocoaTouch : public App {
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
 	
 	// The state is contained in a struct in order to avoid this .h needing to be compiled as Objective-C++
-	shared_ptr<AppCocoaTouchState>		mState;
+	std::shared_ptr<AppCocoaTouchState>		mState;
 	
 	static AppCocoaTouch	*sInstance;	
 	Settings				mSettings;
