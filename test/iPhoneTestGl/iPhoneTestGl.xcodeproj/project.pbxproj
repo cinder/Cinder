@@ -180,6 +180,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -192,7 +193,8 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone_d.a";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a";
 				PRODUCT_NAME = iPhoneTestGl;
-				SDKROOT = iphonesimulator3.1;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos3.2;
 			};
 			name = Debug;
 		};
@@ -200,6 +202,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -210,7 +213,8 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone_d.a";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a";
 				PRODUCT_NAME = iPhoneTestGl;
-				SDKROOT = iphonesimulator3.1;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				SDKROOT = iphoneos3.2;
 			};
 			name = Release;
 		};
@@ -227,7 +231,7 @@
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.1.3;
+				SDKROOT = iphoneos3.2;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include include";
 			};
 			name = Debug;
@@ -244,7 +248,7 @@
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos3.1.3;
+				SDKROOT = iphoneos3.2;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include include";
 			};
 			name = Release;
