@@ -270,7 +270,6 @@
 		0071BD050FB9F4AD0092E7D6 /* Display.h in Headers */ = {isa = PBXBuildFile; fileRef = 0071BD040FB9F4AD0092E7D6 /* Display.h */; };
 		0071BD090FB9FA2C0092E7D6 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0071BD080FB9FA2C0092E7D6 /* Display.cpp */; };
 		007438420EA7924F005DD3E6 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
-		007438430EA7924F005DD3E6 /* CaptureCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 007438410EA7924F005DD3E6 /* CaptureCocoa.mm */; };
 		007438E00EA7975A005DD3E6 /* Capture.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DE0EA7975A005DD3E6 /* Capture.h */; };
 		007438E10EA7975A005DD3E6 /* CaptureCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DF0EA7975A005DD3E6 /* CaptureCocoa.h */; };
 		007439930EA7BB47005DD3E6 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007439920EA7BB47005DD3E6 /* QTKit.framework */; };
@@ -700,11 +699,10 @@
 		006228E310C8273C00A8191C /* DataSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataSource.cpp; sourceTree = "<group>"; };
 		006A1EC611D7F39B00941A5E /* MovieWriter.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = MovieWriter.cpp; path = qtime/MovieWriter.cpp; sourceTree = "<group>"; };
 		006A1EC811D7F3AC00941A5E /* MovieWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MovieWriter.h; path = qtime/MovieWriter.h; sourceTree = "<group>"; };
-		007050BE1114F93F003FCAE4 /* libcinder-iphone.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0071BD040FB9F4AD0092E7D6 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
 		0071BD080FB9FA2C0092E7D6 /* Display.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Display.cpp; sourceTree = "<group>"; };
 		007438400EA7924F005DD3E6 /* Capture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Capture.cpp; sourceTree = "<group>"; };
-		007438410EA7924F005DD3E6 /* CaptureCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureCocoa.mm; sourceTree = "<group>"; };
 		007438DE0EA7975A005DD3E6 /* Capture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Capture.h; sourceTree = "<group>"; };
 		007438DF0EA7975A005DD3E6 /* CaptureCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureCocoa.h; sourceTree = "<group>"; };
 		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -786,7 +784,7 @@
 		00CE73920E92DBE40059E09B /* gl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gl.h; path = gl/gl.h; sourceTree = "<group>"; };
 		00CE73930E92DBE40059E09B /* GLee.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GLee.h; path = gl/GLee.h; sourceTree = "<group>"; };
 		00CE73970E92DBF80059E09B /* gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl.cpp; path = gl/gl.cpp; sourceTree = "<group>"; };
-		00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		00CFE37B113B85F60091E310 /* Path2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Path2d.h; sourceTree = "<group>"; };
 		00CFE37C113B85F60091E310 /* Thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Thread.h; sourceTree = "<group>"; };
 		00D23A530EAEB4C00002BF91 /* Color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Color.cpp; sourceTree = "<group>"; };
@@ -867,7 +865,7 @@
 		C7CDF0060EBD5DA4000997D3 /* xpath_static.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_static.h; path = ../include/tinyxml/xpath_static.h; sourceTree = SOURCE_ROOT; };
 		C7CDF0070EBD5DA4000997D3 /* xpath_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_stream.h; path = ../include/tinyxml/xpath_stream.h; sourceTree = SOURCE_ROOT; };
 		C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_syntax.h; path = ../include/tinyxml/xpath_syntax.h; sourceTree = SOURCE_ROOT; };
-		D2AAC07E0554694100DB518D /* libcinder.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2AAC07E0554694100DB518D /* libcinder_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EAC3D1A81011F2E700FFBC9E /* Serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serial.h; sourceTree = "<group>"; };
 		EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Serial.cpp; sourceTree = "<group>"; };
@@ -1151,7 +1149,6 @@
 				008CE83C0E94672E00644A05 /* Channel.cpp */,
 				00D23A530EAEB4C00002BF91 /* Color.cpp */,
 				007438400EA7924F005DD3E6 /* Capture.cpp */,
-				007438410EA7924F005DD3E6 /* CaptureCocoa.mm */,
 				003832E30E9C04AD00ACB120 /* Stream.cpp */,
 				00B729E2115DABD800CD71B9 /* Timer.cpp */,
 				00D92FB70EB8AE5200EE9D75 /* Url.cpp */,
@@ -1285,9 +1282,9 @@
 		034768DFFF38A50411DB9C8B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2AAC07E0554694100DB518D /* libcinder.a */,
-				007050BE1114F93F003FCAE4 /* libcinder-iphone.a */,
-				00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */,
+				D2AAC07E0554694100DB518D /* libcinder_d.a */,
+				007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */,
+				00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1816,7 +1813,7 @@
 			);
 			name = cinder_iphone;
 			productName = cinder;
-			productReference = 007050BE1114F93F003FCAE4 /* libcinder-iphone.a */;
+			productReference = 007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		00CFD92C1135C3520091E310 /* cinder_iphone_sim */ = {
@@ -1833,7 +1830,7 @@
 			);
 			name = cinder_iphone_sim;
 			productName = cinder;
-			productReference = 00CFD9E11135C3520091E310 /* libcinder-iphone-sim.a */;
+			productReference = 00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		D2AAC07D0554694100DB518D /* cinder */ = {
@@ -1850,7 +1847,7 @@
 			);
 			name = cinder;
 			productName = cinder;
-			productReference = D2AAC07E0554694100DB518D /* libcinder.a */;
+			productReference = D2AAC07E0554694100DB518D /* libcinder_d.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -2057,7 +2054,6 @@
 				003832E40E9C04AD00ACB120 /* Stream.cpp in Sources */,
 				00D9A07C0EA57C3F00FF5AEB /* GlslProg.cpp in Sources */,
 				007438420EA7924F005DD3E6 /* Capture.cpp in Sources */,
-				007438430EA7924F005DD3E6 /* CaptureCocoa.mm in Sources */,
 				00D23A540EAEB4C00002BF91 /* Color.cpp in Sources */,
 				009EEF1A0EB79C89003AB86B /* Rect.cpp in Sources */,
 				00D92FB80EB8AE5200EE9D75 /* Url.cpp in Sources */,
@@ -2313,7 +2309,7 @@
 					../lib/macosx/libboost_filesystem.a,
 					../lib/macosx/libboost_system.a,
 					"../lib/macosx/libpixman-1.a",
-					../lib/macosx/libpng.a,
+					../lib/macosx/libpng14.a,
 					../lib/macosx/libcairo.a,
 					../lib/macosx/libz.a,
 				);
@@ -2354,7 +2350,7 @@
 					../lib/macosx/libboost_filesystem.a,
 					../lib/macosx/libboost_system.a,
 					"../lib/macosx/libpixman-1.a",
-					../lib/macosx/libpng.a,
+					../lib/macosx/libpng14.a,
 					../lib/macosx/libcairo.a,
 					../lib/macosx/libz.a,
 				);
