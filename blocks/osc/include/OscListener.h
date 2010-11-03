@@ -57,7 +57,7 @@ class Listener {
 	bool getNextMessage( Message *resultMessage );
 	
   private:
-	shared_ptr<class OscListener>   oscListener;
+	std::shared_ptr<class OscListener>   oscListener;
 };
 
 } } // namespace cinder::osc

@@ -43,7 +43,7 @@ namespace cinder  { namespace osc {
 		
 	private:
 		
-		 shared_ptr<class OscSender>   oscSender;
+		 std::shared_ptr<class OscSender>   oscSender;
 		
 	};
 } // namespace osc

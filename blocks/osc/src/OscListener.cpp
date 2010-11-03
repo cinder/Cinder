@@ -66,7 +66,7 @@ class OscListener : public ::osc::OscPacketListener {
 	UdpListeningReceiveSocket* mListen_socket;
 	
 	mutable std::mutex mMutex;
-	shared_ptr<std::thread> mThread;
+	std::shared_ptr<std::thread> mThread;
 	
 	CallbackMgr<void (const Message*)>	mMessageReceivedCbs;
 	bool mSocketHasShutdown;
@@ -87,7 +87,7 @@ void OscListener::setup(int listen_port)
 	
 	mListen_socket = new UdpListeningReceiveSocket(IpEndpointName(IpEndpointName::ANY_ADDRESS, listen_port), this);
 
-	mThread = shared_ptr<std::thread>( new std::thread( &OscListener::threadSocket, this ) );
+	mThread = std::shared_ptr<std::thread>( new std::thread( &OscListener::threadSocket, this ) );
 }
 
 void OscListener::shutdown() {
@@ -182,7 +182,7 @@ void OscListener::unregisterMessageReceived( CallbackId id )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Listener
 Listener::Listener() {
-	oscListener = shared_ptr<OscListener>( new OscListener );
+	oscListener = std::shared_ptr<OscListener>( new OscListener );
 }
 
 void Listener::setup(int listen_port){
