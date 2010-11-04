@@ -35,8 +35,8 @@ void FlickrTestApp::setup()
 {
 	glEnable( GL_TEXTURE_2D );
 
-	XmlTree xml( loadUrl( Url( "http://api.flickr.com/services/feeds/groups_pool.gne?id=1423039@N24&lang=en-us&format=rss_200" ) ) );
-	for( XmlTree::Iter item = xml.begin( "rss/channel/item" ); item != xml.end(); ++item ) {
+	const XmlTree xml( loadUrl( Url( "http://api.flickr.com/services/feeds/groups_pool.gne?id=1423039@N24&lang=en-us&format=rss_200" ) ) );
+	for( XmlTree::ConstIter item = xml.begin( "rss/channel/item" ); item != xml.end(); ++item ) {
 		mUrls.push_back( item->getChild( "media:content" ).getAttributeValue<Url>( "url" ) );
 	}
 

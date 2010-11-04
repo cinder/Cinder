@@ -46,30 +46,80 @@ namespace cinder {
 
 class XmlTree {
   public:
-	//! An iterator over the children of an XmlTree.
-	class Iter {
+	//! A const iterator over the children of an XmlTree.
+	class ConstIter {
 	  public:
 		//! \cond
-		Iter( std::vector<XmlTree> *sequence )
+		ConstIter( const std::vector<XmlTree> *sequence )
 			: mSequence( sequence ), mEndSequence( sequence ), mIter( sequence->begin() ), mFilter( "" )
 		{}
 		
-		Iter( std::vector<XmlTree> *sequence, std::vector<XmlTree>::iterator iter )
+		ConstIter( const std::vector<XmlTree> *sequence, std::vector<XmlTree>::const_iterator iter )
 			: mSequence( sequence ), mEndSequence( sequence ), mIter( iter ), mFilter( "" )
 		{}
 		//! \endcond
 		
 		//! Constucts an iterator over the XmlTree \a root for children which match the path \a filterPath.
-		Iter( XmlTree &root, const std::string &filterPath, const char seperator = '/' );
+		ConstIter( const XmlTree &root, const std::string &filterPath, char separator = '/' );
+					
+		//! Returns a reference to the XmlTree the iterator currently points to.
+		const XmlTree&		operator*() const { return *mIter; }
+		//! Returns a pointer to the XmlTree the iterator currently points to.
+		const XmlTree*		operator->() const { return &(*mIter); }
+
+		//! Increments the iterator to the next child. If using a non-empty filterPath increments to the next child which matches the filterPath.
+		ConstIter& operator++() {
+			if( ! mFilter.empty() ) {
+				do {
+					++mIter;
+				} while( ( mIter != mSequence->end() ) && ( mIter->getTag() != mFilter ) );
+				if( mIter == mSequence->end() ) { // true end; went off our sequence, so mark it as done
+					mIter = mEndSequence->end();
+					mSequence = mEndSequence;
+				}
+			}
+			else
+				++mIter;
+			return *this;
+		}
+		
+		//! Increments the iterator to the next child. If using a non-empty filterPath increments to the next child which matches the filterPath.
+		const ConstIter operator++(int) {
+			ConstIter prev( *this );
+			++(*this);
+			return prev; 
+		}
+		
+		bool operator!=( const ConstIter &rhs ) { return ( mSequence != rhs.mSequence ) || ( mIter != rhs.mIter ); }
+		bool operator==( const ConstIter &rhs ) { return ( mSequence == rhs.mSequence ) && ( mIter == rhs.mIter ); }
+		
+	  protected:
+		// mEndSequence* because begin( filterPath ) might send us to a child sequence
+		const std::vector<XmlTree>				*mSequence, *mEndSequence;
+		std::vector<XmlTree>::const_iterator	mIter;
+		std::string								mFilter;
+	};
+
+	//! An iterator over the children of an XmlTree.	
+	class Iter : public XmlTree::ConstIter {
+	  public:
+		//! \cond
+		Iter( std::vector<XmlTree> *sequence )
+			: ConstIter( sequence )
+		{}
+		
+		Iter( std::vector<XmlTree> *sequence, std::vector<XmlTree>::iterator iter )
+			: ConstIter( sequence, iter )
+		{}
+		//! \endcond
+	
+		//! Constucts an iterator over the XmlTree \a root for children which match the path \a filterPath.
+		Iter( XmlTree &root, const std::string &filterPath, char separator = '/' );
 		
 		//! Returns a reference to the XmlTree the iterator currently points to.
-		const XmlTree&	operator*() const { return *mIter; }
-		//! Returns a reference to the XmlTree the iterator currently points to.
-		XmlTree&		operator*() { return *mIter; }
+		XmlTree&		operator*() const { return const_cast<XmlTree&>(*mIter); }
 		//! Returns a pointer to the XmlTree the iterator currently points to.
-		const XmlTree*	operator->() const { return &(*mIter); }
-		//! Returns a pointer to the XmlTree the iterator currently points to.
-		XmlTree*		operator->() { return &(*mIter); }
+		XmlTree*		operator->() const { return const_cast<XmlTree*>( &(*mIter) ); }
 
 		//! Increments the iterator to the next child. If using a non-empty filterPath increments to the next child which matches the filterPath.
 		Iter& operator++() {
@@ -96,12 +146,7 @@ class XmlTree {
 		
 		bool operator!=( const Iter &rhs ) { return ( mSequence != rhs.mSequence ) || ( mIter != rhs.mIter ); }
 		bool operator==( const Iter &rhs ) { return ( mSequence == rhs.mSequence ) && ( mIter == rhs.mIter ); }
-		
-	  private:
-		// mEndSequence* because begin( filterPath ) might send us to a child sequence
-		std::vector<XmlTree>			*mSequence, *mEndSequence;
-		std::vector<XmlTree>::iterator	mIter;
-		std::string						mFilter;
+
 	};
 
 	//! XML attribute.
@@ -217,6 +262,8 @@ class XmlTree {
 	
 	//! Returns the first child that matches \a relativePath or end() if none matches
 	Iter					find( const std::string &relativePath, char separator = '/' ) { return Iter( *this, relativePath, separator ); }
+	//! Returns the first child that matches \a relativePath or end() if none matches
+	ConstIter				find( const std::string &relativePath, char separator = '/' ) const { return ConstIter( *this, relativePath, separator ); }
 	//! Returns whether at least one child matches \a relativePath
 	bool						hasChild( const std::string &relativePath, char separator = '/' ) const;
 
@@ -259,8 +306,14 @@ class XmlTree {
 	Iter						begin() { return Iter( &mChildren ); }
 	/** Returns an Iter to the children node of this node which match the path \a filterPath. **/	
 	Iter						begin( const std::string &filterPath, char separator = '/' ) { return Iter( *this, filterPath, separator ); }	
+	/** Returns an Iter to the first child node of this node. **/	
+	ConstIter					begin() const { return ConstIter( &mChildren ); }
+	/** Returns an Iter to the children node of this node which match the path \a filterPath. **/	
+	ConstIter					begin( const std::string &filterPath, char separator = '/' ) const { return ConstIter( *this, filterPath, separator ); }	
 	/** Returns an Iter which marks the end of the children of this node. **/	
 	Iter						end() { return Iter( &mChildren, mChildren.end() ); }
+	/** Returns an Iter which marks the end of the children of this node. **/	
+	ConstIter					end() const { return ConstIter( &mChildren, mChildren.end() ); }
 	/** Appends the node \a newChild to the children of this node. **/	
 	void						push_back( const XmlTree &newChild );
 
@@ -308,7 +361,7 @@ class XmlTree {
 
   private:
 	XmlTree*	getNodePtr( const std::string &relativePath, char separator ) const;
-	bool		getChildIterator( const std::string &relativePath, char separator, std::string *resultFilter, std::vector<XmlTree>::iterator *resultIt );
+	bool		getChildIterator( const std::string &relativePath, char separator, std::string *resultFilter, std::vector<XmlTree>::const_iterator *resultIt ) const;
 	void		appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::xml_node<char> *parent ) const;
 
 	NodeType					mNodeType;

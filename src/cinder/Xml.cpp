@@ -34,12 +34,17 @@ namespace cinder {
 void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *result, const XmlTree::ParseOptions &parseOptions );
 
 
-XmlTree::Iter::Iter( XmlTree &root, const string &filterPath, const char seperator )
+XmlTree::Iter::Iter( XmlTree &root, const string &filterPath, char separator )
+	: ConstIter( root, filterPath, separator )
+{
+}
+
+XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, const char separator )
 {
 	mEndSequence = &root.getChildren();
 	
-	vector<XmlTree>::iterator childIt;
-	if( ! root.getChildIterator( filterPath, seperator, &mFilter, &childIt ) ) { // false means couldn't find it - mark ourselves as done
+	vector<XmlTree>::const_iterator childIt;
+	if( ! root.getChildIterator( filterPath, separator, &mFilter, &childIt ) ) { // false means couldn't find it - mark ourselves as done
 		mIter = mEndSequence->end();
 		mSequence = mEndSequence;
 	}
@@ -228,18 +233,18 @@ XmlTree* XmlTree::getNodePtr( const string &relativePath, char separator ) const
 // walks 'relativePath' and returns an iterator pointing to the first descendant matching
 // 'resultFilter' contains the tail of the relativePath
 // Returns mChildren.end() on failure
-bool XmlTree::getChildIterator( const string &relativePath, char separator, string *resultFilter, vector<XmlTree>::iterator *resultIt )
+bool XmlTree::getChildIterator( const string &relativePath, char separator, string *resultFilter, vector<XmlTree>::const_iterator *resultIt ) const
 {
-	vector<XmlTree>::iterator curNode = mChildren.end();
+	vector<XmlTree>::const_iterator curNode = mChildren.end();
 	size_t offset = 0;
 	
 	if( mChildren.empty() )
 		return false; // empty - failure
 	
-	vector<XmlTree> *curChildren( &mChildren );
+	const vector<XmlTree> *curChildren( &mChildren );
 	do {
 		*resultFilter = relativePath.substr( offset, relativePath.find( separator, offset ) - offset );
-		vector<XmlTree>::iterator childIt;
+		vector<XmlTree>::const_iterator childIt;
 		for( childIt = curChildren->begin(); childIt != curChildren->end(); ++childIt )
 			if( childIt->getTag() == *resultFilter )
 				break;

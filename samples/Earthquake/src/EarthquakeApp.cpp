@@ -272,8 +272,8 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 		}
 	}*/
 	
-	XmlTree xml( loadUrl( Url( url ) ) );
-	for( XmlTree::Iter itemIter = xml.begin( "feed/entry" ); itemIter != xml.end(); ++itemIter ) {
+	const XmlTree xml( loadUrl( Url( url ) ) );
+	for( XmlTree::ConstIter itemIter = xml.begin( "feed/entry" ); itemIter != xml.end(); ++itemIter ) {
 		string titleLine( itemIter->getChild( "title" ).getValue() );
 		size_t firstComma = titleLine.find( ',' );
 		float magnitude = fromString<float>( titleLine.substr( titleLine.find( ' ' ) + 1, firstComma - 2 ) );
