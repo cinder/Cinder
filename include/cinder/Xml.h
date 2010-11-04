@@ -35,17 +35,21 @@
 #include <string>
 #include <vector>
 
+//! \cond
 namespace rapidxml {
 	template<class Ch> class xml_document;
 	template<class Ch> class xml_node;
 };
+//! \endcond
 
 namespace cinder {
 
 class XmlTree {
   public:
+	//! An iterator over the children of an XmlTree.
 	class Iter {
 	  public:
+		//! \cond
 		Iter( std::vector<XmlTree> *sequence )
 			: mSequence( sequence ), mEndSequence( sequence ), mIter( sequence->begin() ), mFilter( "" )
 		{}
@@ -53,14 +57,21 @@ class XmlTree {
 		Iter( std::vector<XmlTree> *sequence, std::vector<XmlTree>::iterator iter )
 			: mSequence( sequence ), mEndSequence( sequence ), mIter( iter ), mFilter( "" )
 		{}
+		//! \endcond
 		
+		//! Constucts an iterator over the XmlTree \a root for children which match the path \a filterPath.
 		Iter( XmlTree &root, const std::string &filterPath, const char seperator = '/' );
 		
+		//! Returns a reference to the XmlTree the iterator currently points to.
 		const XmlTree&	operator*() const { return *mIter; }
+		//! Returns a reference to the XmlTree the iterator currently points to.
 		XmlTree&		operator*() { return *mIter; }
+		//! Returns a pointer to the XmlTree the iterator currently points to.
 		const XmlTree*	operator->() const { return &(*mIter); }
+		//! Returns a pointer to the XmlTree the iterator currently points to.
 		XmlTree*		operator->() { return &(*mIter); }
-		
+
+		//! Increments the iterator to the next child. If using a non-empty filterPath increments to the next child which matches the filterPath.
 		Iter& operator++() {
 			if( ! mFilter.empty() ) {
 				do {
@@ -76,6 +87,7 @@ class XmlTree {
 			return *this;
 		}
 		
+		//! Increments the iterator to the next child. If using a non-empty filterPath increments to the next child which matches the filterPath.
 		const Iter operator++(int) {
 			Iter prev( *this );
 			++(*this);
@@ -92,117 +104,181 @@ class XmlTree {
 		std::string						mFilter;
 	};
 
+	//! XML attribute.
 	class Attr {
 	  public:
+		//! Constructs an XML attribute named \a name with the value \a value.
 		Attr( const std::string &name, const std::string &value )
 			: mName( name ), mValue( value )
 		{}
 		
+		//! Returns the name of the attribute as a string.
 		const std::string&		getName() const { return mName; }
+		//! Returns the value of the attribute as a string.
 		std::string				getValue() const { return mValue; }
+		/** \brief Returns the value of the attribute parsed as a T. Requires T to support the istream>> operator. 
+		<br><tt>float size = myAttr.getValue<float>( "size" );</tt> **/		
 		template<typename T>
 		T						getValue() const { return boost::lexical_cast<T>( mValue ); }
 		
-		void					setValue( const std::string &val ) { mValue = val; }
+		/** Sets the value of the attribute to \a value. **/
+		void					setValue( const std::string &value ) { mValue = value; }
+		/** Sets the value of the attribute to \a value, which is cast to a string first. Requires T to support the ostream<< operator. **/
 		template<typename T>
-		void					setValue( const T &val ) { mValue = boost::lexical_cast<std::string>( val ); }
+		void					setValue( const T &value ) { mValue = boost::lexical_cast<std::string>( value ); }
 
 	  private:
 		std::string		mName, mValue;
 	};
-	
+
+	//! Options for XML parsing. Passed to the XmlTree constructor.
 	class ParseOptions {
 	  public:
+		//! Default options. Disables parsing comments and enables collapsing CDATA.
 		ParseOptions() : mParseComments( false ), mCollapseCData( true ) {}
 		
+		//! Sets whether XML comments are parsed or not.
 		ParseOptions& parseComments( bool parse = true ) { mParseComments = parse; return *this; }
+		//! Sets whether CDATA blocks are collapsed automatically or not.
 		ParseOptions& collapseCData( bool collapse = true ) { mCollapseCData = collapse; return *this; }
 		
+		//! Returns whether XML comments are parsed or not.
 		bool	getParseComments() const { return mParseComments; }
+		//! Sets whether XML comments are parsed or not.
 		void	setParseComments( bool parseComments = true ) { mParseComments = parseComments; }
+		//! Returns whether CDATA blocks are collapsed automatically or not.
 		bool	getCollapseCData() const { return mCollapseCData; }
+		//! Sets whether CDATA blocks are collapsed automatically or not.
 		void	setCollapseCData( bool collapseCData = true ) { mCollapseCData = collapseCData; }
 		
 	  private:
 		bool	mParseComments, mCollapseCData;
 	};
 
+	//! Enum listing all types of XML nodes understood by the parser.
 	typedef enum NodeType { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT };
 
+	//! Default constructor, creating an empty node.
 	XmlTree() : mParent( 0 ), mNodeType( NODE_UNKNOWN ) {}
   
+	/** \brief Parses XML contained in \a dataSource using the options \a parseOptions. Commonly used with the results of loadUrl(), loadFile() or loadResource().
+		<br><tt>XmlTree myDoc( loadUrl( "http://rss.cnn.com/rss/cnn_topstories.rss" ) );</tt> **/
 	explicit XmlTree( DataSourceRef dataSource, ParseOptions parseOptions = ParseOptions() ) {
 		loadFromDataSource( dataSource, this, parseOptions );
 	}
 
+	//! Parses the XML contained in the string \a xmlString using the options \a parseOptions.
 	explicit XmlTree( const std::string &xmlString, ParseOptions parseOptions = ParseOptions() );
 
+	//! Constructs an XML node with the tag \a tag, the value \a value. Optionally sets the pointer to the node's parent and sets the node type.
 	explicit XmlTree( const std::string &tag, const std::string &value, XmlTree *parent = 0, NodeType type = NODE_ELEMENT )
 		: mTag( tag ), mValue( value ), mParent( parent )
 	{}
 
+	//! Returns the type of this node as a NodeType.
 	NodeType					getNodeType() const { return mNodeType; }
+	//! Sets the type of this node to NodeType \a type.
 	void						setNodeType( NodeType type ) { mNodeType = type; }
+	//! Returns whether this node is a document node, meaning it is a root node.
 	bool						isDocument() const { return mNodeType == NODE_DOCUMENT; }
+	//! Returns whether this node is an element node.
 	bool						isElement() const { return mNodeType == NODE_ELEMENT; }
+	//! Returns whether this node represents CDATA. Only possible when a document's ParseOptions disabled collapsing CDATA.
 	bool						isCData() const { return mNodeType == NODE_CDATA; }
+	//! Returns whether this node represents a comment. Only possible when a document's ParseOptions enabled parsing commments.
 	bool						isComment() const { return mNodeType == NODE_COMMENT; }
 
+	//! Returns the tag or name of the node as a string.
 	const std::string&			getTag() const { return mTag; }
+	//! Sets the tag or name of the node to the string \a tag.
 	void						setTag( const std::string &tag ) { mTag = tag; }
 	
+	//! Returns the value of the node as a string.
 	std::string					getValue() const { return mValue; }
+	//! Returns the value of the node parsed as a T. Requires T to support the istream>> operator.
 	template<typename T>
 	T							getValue() const { return boost::lexical_cast<T>( mValue ); }
+	//! Returns the value of the node parsed as a T. If the value is empty or fails to parse \a defaultValue is returned. Requires T to support the istream>> operator.
 	template<typename T>
 	T							getValue( const T &defaultValue ) const { try { return boost::lexical_cast<T>( mValue ); } catch( ... ) { return defaultValue; } }
 
+	//! Sets the value of the node to the string \a value.
 	void						setValue( const std::string &value ) { mValue = value; }
+	//! Sets the value of the node to \a value which is converted to a string first. Requires T to support the ostream<< operator.
 	template<typename T>
 	T							setValue( const T &value ) { mValue = boost::lexical_cast<std::string>( value ); }
 
+	//! Returns whether this node has a parent node.
 	bool						hasParent() const { return mParent != NULL; }
+	//! Returns a reference to the node which is the parent of this node.
 	XmlTree&					getParent() { return *mParent; }
+	//! Returns a reference to the node which is the parent of this node.
 	const XmlTree&				getParent() const { return *mParent; }
 	
+	//! Returns the first child that matches \a relativePath or end() if none matches
+	Iter					find( const std::string &relativePath, char separator = '/' ) { return Iter( *this, relativePath, separator ); }
+	//! Returns whether at least one child matches \a relativePath
 	bool						hasChild( const std::string &relativePath, char separator = '/' ) const;
-	
+
+	//! Returns the first child that matches \a relativePath. Throws ChildNotFoundExc if none matches.
 	XmlTree&					getChild( const std::string &relativePath, char separator = '/' );
+	//! Returns the first child that matches \a relativePath. Throws ChildNotFoundExc if none matches.
 	const XmlTree&				getChild( const std::string &relativePath, char separator = '/' ) const;
+	//! Returns a reference to the node's vector of children nodes.
 	std::vector<XmlTree>&		getChildren() { return mChildren; }
+	//! Returns a reference to the node's vector of children nodes.
 	const std::vector<XmlTree>&	getChildren() const { return mChildren; }
-	
+
+	//! Returns a reference to the node's vector of attributes.	
 	std::vector<Attr>&			getAttributes() { return mAttributes; }
+	//! Returns a reference to the node's vector of attributes.	
 	const std::vector<Attr>&	getAttributes() const { return mAttributes; }
-	
+
+	//! Returns a reference to the node attribute named \a attrName. Throws AttrNotFoundExc if no attribute exists with that name.
 	const Attr&					getAttribute( const std::string &attrName ) const;
 
+	/** \brief Returns the value of the attribute \a attrName parsed as a T. Throws AttrNotFoundExc if no attribute exists with that name. Requires T to support the istream>> operator. 
+		<br><tt>float size = myNode.getAttributeValue<float>( "size" );</tt> **/
 	template<typename T>
 	T							getAttributeValue( const std::string &attrName ) const { return getAttribute( attrName ).getValue<T>(); }
+	/** \brief Returns the value of the attribute \a attrName parsed as a T. Returns \a defaultValue if no attribute exists with that name. Requires T to support the istream>> operator.
+		<br><tt>float size = myNode.getAttributeValue<float>( "size", 1.0f );</tt> **/
 	template<typename T>
 	T							getAttributeValue( const std::string &attrName, const T &defaultValue ) const;
+	/** Sets the value of the attribute \a attrName to \a value. If the attribute does not exist it is appended. **/
 	void						setAttribute( const std::string &attrName, const std::string &value );
+	/** Sets the value of the attribute \a attrName to \a value, which is cast to a string first. Requires T to support the ostream<< operator. If the attribute does not exist it is appended. **/
 	template<typename T>
 	void						setAttribute( const std::string &attrName, const T &value ) { setAttribute( attrName, boost::lexical_cast<std::string>( value ) ); }
-	
+	/** Returns whether the node has an attribute named \a attrName. **/
 	bool						hasAttribute( const std::string &attrName ) const;
-	
+	/** Returns a path to this node, separated by the character \a separator. **/	
 	std::string					getPath( char separator = '/' ) const;
 	
+	/** Returns an Iter to the first child node of this node. **/	
 	Iter						begin() { return Iter( &mChildren ); }
+	/** Returns an Iter to the children node of this node which match the path \a filterPath. **/	
 	Iter						begin( const std::string &filterPath, char separator = '/' ) { return Iter( *this, filterPath, separator ); }	
+	/** Returns an Iter which marks the end of the children of this node. **/	
 	Iter						end() { return Iter( &mChildren, mChildren.end() ); }
+	/** Appends the node \a newChild to the children of this node. **/	
 	void						push_back( const XmlTree &newChild );
 
+	/** Returns the DOCTYPE string for this node. Only meaningful on a document's root node. **/	
 	std::string					getDocType() const { return mDocType; }
+	/** Sets the DOCTYPE string for this node. Only meaningful on a document's root node. **/
 	void						setDocType( const std::string &docType ) { mDocType = docType; }
 
+	/** Streams the XmlTree \a xml to std::ostream \a out with standard formatting. **/
 	friend std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
+	/** Writes this XmlTree to \a target with standard formatting. **/
 	void						write( DataTargetRef target );
-	
+
+	//! Base class for XmlTree exceptions.
 	class Exception : public cinder::Exception {
 	};
 	
+	//! Exception expressing the absence of an expected child node.
 	class ChildNotFoundExc : public XmlTree::Exception {
 	  public:
 		ChildNotFoundExc( const XmlTree &node, const std::string &childPath ) throw();
@@ -213,6 +289,7 @@ class XmlTree {
 		char mMessage[2048];
 	};
 
+	//! Exception expressing the absence of an expected attribute.
 	class AttrNotFoundExc : public XmlTree::Exception {
 	  public:
 		AttrNotFoundExc( const XmlTree &node, const std::string &attrName ) throw();
@@ -223,6 +300,7 @@ class XmlTree {
 		char mMessage[2048];
 	};
 
+	//! Exception implying an XML node of an unknown type. Implies a low-level problem communicating with RapidXML.
 	class UnknownNodeTypeExc : public cinder::Exception {
 	};
 
