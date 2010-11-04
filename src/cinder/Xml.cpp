@@ -152,17 +152,6 @@ const XmlTree::Attr& XmlTree::getAttribute( const string &attrName ) const
 	throw AttrNotFoundExc( *this, attrName );
 }
 
-template<typename T>
-T XmlTree::getAttributeValue( const string &attrName, const T &defaultValue ) const
-{
-	try {
-		return getAttribute( attrName ).getValue<T>();
-	}
-	catch( ... ) {
-		return defaultValue;
-	}
-}
-
 void XmlTree::setAttribute( const std::string &attrName, const std::string &value )
 {
 	vector<Attr>::iterator atIt;

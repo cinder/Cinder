@@ -291,7 +291,8 @@ class XmlTree {
 	/** \brief Returns the value of the attribute \a attrName parsed as a T. Returns \a defaultValue if no attribute exists with that name. Requires T to support the istream>> operator.
 		<br><tt>float size = myNode.getAttributeValue<float>( "size", 1.0f );</tt> **/
 	template<typename T>
-	T							getAttributeValue( const std::string &attrName, const T &defaultValue ) const;
+	T							getAttributeValue( const std::string &attrName, const T &defaultValue ) const { try { return getAttribute( attrName ).getValue<T>(); } catch( ... ) { return defaultValue; } }
+
 	/** Sets the value of the attribute \a attrName to \a value. If the attribute does not exist it is appended. **/
 	void						setAttribute( const std::string &attrName, const std::string &value );
 	/** Sets the value of the attribute \a attrName to \a value, which is cast to a string first. Requires T to support the ostream<< operator. If the attribute does not exist it is appended. **/
