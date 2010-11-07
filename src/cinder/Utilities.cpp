@@ -42,6 +42,7 @@
 #endif
 
 #include <vector>
+#include <boost/tokenizer.hpp>
 using std::vector;
 using std::string;
 using std::wstring;
@@ -200,6 +201,22 @@ void deleteFile( const std::string &path )
 		DWORD err = GetLastError();
 	}
 #endif
+}
+
+std::vector<std::string> split( const std::string &str, char separator )
+{
+	return split( str, string( 1, separator ) );
+}
+
+std::vector<std::string> split( const std::string &str, const std::string &separators )
+{
+	vector<string> result;
+	typedef boost::tokenizer<boost::char_separator<char> >  tokenizer;
+	boost::char_separator<char> sep( separators.c_str() );
+	tokenizer tokens( str, sep );
+	for( tokenizer::iterator tokIt = tokens.begin(); tokIt != tokens.end(); ++tokIt )
+		result.push_back( *tokIt );
+	return result;
 }
 
 wstring toUtf16( const string &utf8 )
