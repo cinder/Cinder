@@ -235,7 +235,14 @@ console() << doc.getChild( "/library/album/track" ) << std::endl;
 <BR>
 
 <h3>Implementation Notes</h3>
-XmlTree is implemented using the <A href="http://rapidxml.sourceforge.net/">RapidXML</A> library. For unusually performance-conscious use cases, it is worth considering using RapidXML directly, as the XmlTree is designed to be convenient more than it is fast.
+The XmlTree::Iter and XmlTree::ConstIter are designed to be STL-compatible iterators. For example, if you are using a lambdas-aware C++ compiler (currently only VC2010 at the time of this writing) the following code prints the names of the albums in the music library:
+\code
+std::for_each( doc.begin( "library/album" ), doc.end(), []( const XmlTree &child ) {
+	app::console() << child.getChild( "title" ).getValue() << std::endl;
+} );
+\endcode
+<BR>
+XmlTree is implemented using the <A href="http://rapidxml.sourceforge.net/">RapidXML</A> library. For unusually performance-conscious use cases, it is worth considering using RapidXML directly, as the XmlTree is designed to be convenient more than it is fast. The necessary header files are in <em>cinder/include/rapidxml</em> and can be <tt>\#include</tt>d like so:
 \code
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
