@@ -1,4 +1,4 @@
-# Doxyfile 1.7.1
+# Doxyfile 1.7.2
 
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project
@@ -136,7 +136,7 @@ STRIP_FROM_PATH        = ./../..
 STRIP_FROM_INC_PATH    = 
 
 # If the SHORT_NAMES tag is set to YES, doxygen will generate much shorter 
-# (but less readable) file names. This can be useful is your file systems 
+# (but less readable) file names. This can be useful if your file system 
 # doesn't support long names like on DOS, Mac, or CD-ROM.
 
 SHORT_NAMES            = NO
@@ -234,7 +234,7 @@ EXTENSION_MAPPING      =
 # to include (a tag file for) the STL sources as input, then you should 
 # set this tag to YES in order to let doxygen match functions declarations and 
 # definitions whose arguments contain STL classes (e.g. func(std::string); v.s. 
-# func(std::string) {}). This also make the inheritance and collaboration 
+# func(std::string) {}). This also makes the inheritance and collaboration 
 # diagrams that involve STL classes more complete and accurate.
 
 BUILTIN_STL_SUPPORT    = YES
@@ -252,7 +252,7 @@ SIP_SUPPORT            = NO
 
 # For Microsoft's IDL there are propget and propput attributes to indicate getter 
 # and setter methods for a property. Setting this option to YES (the default) 
-# will make doxygen to replace the get and set methods by a property in the 
+# will make doxygen replace the get and set methods by a property in the 
 # documentation. This will only work if the methods are indeed getting or 
 # setting a simple type. If this is not the case, or you want to show the 
 # methods anyway, you should set this option to NO.
@@ -293,7 +293,7 @@ TYPEDEF_HIDES_STRUCT   = NO
 # causing a significant performance penality. 
 # If the system has enough physical memory increasing the cache will improve the 
 # performance by keeping more symbols in memory. Note that the value works on 
-# a logarithmic scale so increasing the size by one will rougly double the 
+# a logarithmic scale so increasing the size by one will roughly double the 
 # memory usage. The cache size is given by this formula: 
 # 2^(16+SYMBOL_CACHE_SIZE). The valid range is 0..9, the default is 0, 
 # corresponding to a cache size of 2^16 = 65536 symbols
@@ -338,7 +338,7 @@ EXTRACT_LOCAL_METHODS  = NO
 # extracted and appear in the documentation as a namespace called 
 # 'anonymous_namespace{file}', where file will be replaced with the base 
 # name of the file that contains the anonymous namespace. By default 
-# anonymous namespace are hidden.
+# anonymous namespaces are hidden.
 
 EXTRACT_ANON_NSPACES   = NO
 
@@ -479,10 +479,10 @@ GENERATE_DEPRECATEDLIST= NO
 ENABLED_SECTIONS       = 
 
 # The MAX_INITIALIZER_LINES tag determines the maximum number of lines 
-# the initial value of a variable or define consists of for it to appear in 
+# the initial value of a variable or macro consists of for it to appear in 
 # the documentation. If the initializer consists of more lines than specified 
 # here it will be hidden. Use a value of 0 to hide initializers completely. 
-# The appearance of the initializer of individual variables and defines in the 
+# The appearance of the initializer of individual variables and macros in the 
 # documentation can be controlled using \showinitializer or \hideinitializer 
 # command in the documentation regardless of this setting.
 
@@ -559,7 +559,7 @@ WARN_IF_UNDOCUMENTED   = YES
 
 WARN_IF_DOC_ERROR      = YES
 
-# This WARN_NO_PARAMDOC option can be abled to get warnings for 
+# The WARN_NO_PARAMDOC option can be enabled to get warnings for 
 # functions that are documented, but have no documentation for their parameters 
 # or return value. If set to NO (the default) doxygen will only warn about 
 # wrong or incomplete parameter documentation, but not about the absence of 
@@ -606,8 +606,9 @@ INPUT_ENCODING         = UTF-8
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
 # and *.h) to filter out the source-files in the directories. If left 
 # blank the following patterns are tested: 
-# *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx 
-# *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm *.py *.f90
+# *.c *.cc *.cxx *.cpp *.c++ *.d *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh 
+# *.hxx *.hpp *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm *.dox *.py 
+# *.f90 *.f *.vhd *.vhdl
 
 FILE_PATTERNS          = *.c \
                          *.cc \
@@ -658,9 +659,8 @@ EXCLUDE                = ../../samples \
                          ../../include/tinyxml \
                          ../../include/msw \
                          ../../include/macosx \
-                         ../../src/tinyxml \
+                         ../../include/rapidxml \
                          ../../docs/html \
-                         ../../src/flint/gl/GLee.c \
                          ../../src/AntTweakBar \
                          ../../include/cinder/gl/GLee.h \
                          ../../boost \
@@ -1062,8 +1062,10 @@ ECLIPSE_DOC_ID         = org.doxygen.Project
 
 DISABLE_INDEX          = NO
 
-# This tag can be used to set the number of enum values (range [1..20]) 
-# that doxygen will group on one line in the generated HTML documentation.
+# This tag can be used to set the number of enum values (range [0,1..20]) 
+# that doxygen will group on one line in the generated HTML documentation. 
+# Note that a value of 0 will completely suppress the enum values from
+# appearing in the overview section.
 
 ENUM_VALUES_PER_LINE   = 4
 
@@ -1109,6 +1111,26 @@ FORMULA_FONTSIZE       = 10
 
 FORMULA_TRANSPARENT    = YES
 
+# Enable the USE_MATHJAX option to render LaTeX formulas using MathJax 
+# (see http://www.mathjax.org) which uses client side Javascript for the 
+# rendering instead of using prerendered bitmaps. Use this if you do not 
+# have LaTeX installed or if you want to formulas look prettier in the HTML 
+# output. When enabled you also need to install MathJax separately and 
+# configure the path to it using the MATHJAX_RELPATH option.
+
+USE_MATHJAX            = NO
+
+# When MathJax is enabled you need to specify the location relative to the 
+# HTML output directory using the MATHJAX_RELPATH option. The destination 
+# directory should contain the MathJax.js script. For instance, if the mathjax 
+# directory is located at the same level as the HTML output directory, then 
+# MATHJAX_RELPATH should be ../mathjax. The default value points to the
+# mathjax.org site, so you can quickly see the result without installing 
+# MathJax, but it is strongly recommended to install a local copy of MathJax 
+# before deployment.
+
+MATHJAX_RELPATH        = http://www.mathjax.org/mathjax
+
 # When the SEARCHENGINE tag is enabled doxygen will generate a search box 
 # for the HTML output. The underlying search engine uses javascript 
 # and DHTML and should work on any modern browser. Note that when using 
@@ -1124,7 +1146,7 @@ SEARCHENGINE           = NO
 # using Javascript. Doxygen will generate the search PHP script and index 
 # file to put on the web server. The advantage of the server 
 # based approach is that it scales better to large projects and allows 
-# full text search. The disadvances is that it is more difficult to setup 
+# full text search. The disadvantages are that it is more difficult to setup 
 # and does not have live searching capabilities.
 
 SERVER_BASED_SEARCH    = NO
@@ -1165,7 +1187,7 @@ MAKEINDEX_CMD_NAME     = makeindex
 COMPACT_LATEX          = NO
 
 # The PAPER_TYPE tag can be used to set the paper type that is used 
-# by the printer. Possible values are: a4, a4wide, letter, legal and 
+# by the printer. Possible values are: a4, letter, legal and 
 # executive. If left blank a4wide will be used.
 
 PAPER_TYPE             = a4wide
@@ -1481,9 +1503,8 @@ PERL_PATH              = /usr/bin/perl
 # If the CLASS_DIAGRAMS tag is set to YES (the default) Doxygen will 
 # generate a inheritance diagram (in HTML, RTF and LaTeX) for classes with base 
 # or super classes. Setting the tag to NO turns the diagrams off. Note that 
-# this option is superseded by the HAVE_DOT option below. This is only a 
-# fallback. It is recommended to install and use dot, since it yields more 
-# powerful graphs.
+# this option also works with HAVE_DOT disabled, but it is recommended to 
+# install and use dot, since it yields more powerful graphs.
 
 CLASS_DIAGRAMS         = NO
 
@@ -1601,7 +1622,7 @@ CALL_GRAPH             = NO
 CALLER_GRAPH           = NO
 
 # If the GRAPHICAL_HIERARCHY and HAVE_DOT tags are set to YES then doxygen 
-# will graphical hierarchy of all classes instead of a textual one.
+# will generate a graphical hierarchy of all classes instead of a textual one.
 
 GRAPHICAL_HIERARCHY    = YES
 
@@ -1613,7 +1634,7 @@ GRAPHICAL_HIERARCHY    = YES
 DIRECTORY_GRAPH        = YES
 
 # The DOT_IMAGE_FORMAT tag can be used to set the image format of the images 
-# generated by dot. Possible values are png, jpg, or gif 
+# generated by dot. Possible values are png, jpg, or gif. 
 # If left blank png will be used.
 
 DOT_IMAGE_FORMAT       = png
@@ -1628,6 +1649,12 @@ DOT_PATH               =
 # \dotfile command).
 
 DOTFILE_DIRS           = 
+
+# The MSCFILE_DIRS tag can be used to specify one or more directories that 
+# contain msc files that are included in the documentation (see the 
+# \mscfile command).
+
+MSCFILE_DIRS           = 
 
 # The DOT_GRAPH_MAX_NODES tag can be used to set the maximum number of 
 # nodes that will be shown in the graph. If the number of nodes in a graph 

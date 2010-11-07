@@ -11,9 +11,6 @@
     <Filter Include="Source Files\audio">
       <UniqueIdentifier>{4f01399a-99e9-43e7-8108-2d2d4528a7ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\tinyxml">
-      <UniqueIdentifier>{f8612726-ec65-41b7-b9d9-1aaca356d2e1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\cairo">
       <UniqueIdentifier>{cc25da90-4ac6-4bdd-8ac7-7be1ed6117ed}</UniqueIdentifier>
     </Filter>
@@ -72,6 +69,9 @@
     <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Header Files\rapidxml">
+      <UniqueIdentifier>{5af4abed-f424-479b-8c89-969fc75d54be}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -227,51 +227,6 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\SourceFileWindowsMedia.cpp">
       <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\action_store.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\lex_util.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\node_set.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\tinystr.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\tinyxml.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\tinyxmlerror.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\tinyxmlparser.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\tokenlist.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\xml_util.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\xpath_expression.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\xpath_processor.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\xpath_stack.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\xpath_static.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\xpath_stream.cpp">
-      <Filter>Source Files\tinyxml</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\tinyxml\xpath_syntax.cpp">
-      <Filter>Source Files\tinyxml</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\cairo\Cairo.cpp">
       <Filter>Source Files\cairo</Filter>
@@ -754,6 +709,12 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\ip\Blend.h">
       <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rapidxml\rapidxml.hpp">
+      <Filter>Header Files\rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp">
+      <Filter>Header Files\rapidxml</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

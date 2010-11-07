@@ -145,22 +145,6 @@
 		00704FE51114F93F003FCAE4 /* Filter.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF0D0EB79A91003AB86B /* Filter.h */; };
 		00704FE61114F93F003FCAE4 /* Rect.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF160EB79C45003AB86B /* Rect.h */; };
 		00704FE71114F93F003FCAE4 /* Url.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D92FE00EB8CC7200EE9D75 /* Url.h */; };
-		00704FE81114F93F003FCAE4 /* action_store.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFF90EBD5DA4000997D3 /* action_store.h */; };
-		00704FE91114F93F003FCAE4 /* byte_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFA0EBD5DA4000997D3 /* byte_stream.h */; };
-		00704FEA1114F93F003FCAE4 /* lex_token.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFB0EBD5DA4000997D3 /* lex_token.h */; };
-		00704FEB1114F93F003FCAE4 /* lex_util.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFC0EBD5DA4000997D3 /* lex_util.h */; };
-		00704FEC1114F93F003FCAE4 /* node_set.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFD0EBD5DA4000997D3 /* node_set.h */; };
-		00704FED1114F93F003FCAE4 /* tinystr.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFE0EBD5DA4000997D3 /* tinystr.h */; };
-		00704FEE1114F93F003FCAE4 /* tinyxml.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFF0EBD5DA4000997D3 /* tinyxml.h */; };
-		00704FEF1114F93F003FCAE4 /* tinyxpath_conf.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0000EBD5DA4000997D3 /* tinyxpath_conf.h */; };
-		00704FF01114F93F003FCAE4 /* tokenlist.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0010EBD5DA4000997D3 /* tokenlist.h */; };
-		00704FF11114F93F003FCAE4 /* xml_util.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0020EBD5DA4000997D3 /* xml_util.h */; };
-		00704FF21114F93F003FCAE4 /* xpath_expression.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0030EBD5DA4000997D3 /* xpath_expression.h */; };
-		00704FF31114F93F003FCAE4 /* xpath_processor.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0040EBD5DA4000997D3 /* xpath_processor.h */; };
-		00704FF41114F93F003FCAE4 /* xpath_stack.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0050EBD5DA4000997D3 /* xpath_stack.h */; };
-		00704FF51114F93F003FCAE4 /* xpath_static.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0060EBD5DA4000997D3 /* xpath_static.h */; };
-		00704FF61114F93F003FCAE4 /* xpath_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0070EBD5DA4000997D3 /* xpath_stream.h */; };
-		00704FF71114F93F003FCAE4 /* xpath_syntax.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */; };
 		00704FF81114F93F003FCAE4 /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		00704FFA1114F93F003FCAE4 /* QuickTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C938EE0ECCB753000238B1 /* QuickTime.h */; };
 		00704FFB1114F93F003FCAE4 /* Fbo.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C14F9A0ED51A3B00549EF3 /* Fbo.h */; };
@@ -223,21 +207,6 @@
 		007050531114F93F003FCAE4 /* Stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003832E30E9C04AD00ACB120 /* Stream.cpp */; };
 		007050571114F93F003FCAE4 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D23A530EAEB4C00002BF91 /* Color.cpp */; };
 		007050581114F93F003FCAE4 /* Rect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009EEF190EB79C89003AB86B /* Rect.cpp */; };
-		0070505A1114F93F003FCAE4 /* action_store.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFD90EBD5D73000997D3 /* action_store.cpp */; };
-		0070505B1114F93F003FCAE4 /* lex_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDA0EBD5D73000997D3 /* lex_util.cpp */; };
-		0070505C1114F93F003FCAE4 /* node_set.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDB0EBD5D73000997D3 /* node_set.cpp */; };
-		0070505D1114F93F003FCAE4 /* tinystr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDC0EBD5D73000997D3 /* tinystr.cpp */; };
-		0070505E1114F93F003FCAE4 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDD0EBD5D73000997D3 /* tinyxml.cpp */; };
-		0070505F1114F93F003FCAE4 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDE0EBD5D73000997D3 /* tinyxmlerror.cpp */; };
-		007050601114F93F003FCAE4 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDF0EBD5D73000997D3 /* tinyxmlparser.cpp */; };
-		007050611114F93F003FCAE4 /* tokenlist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE00EBD5D73000997D3 /* tokenlist.cpp */; };
-		007050621114F93F003FCAE4 /* xml_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE10EBD5D73000997D3 /* xml_util.cpp */; };
-		007050631114F93F003FCAE4 /* xpath_expression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE20EBD5D73000997D3 /* xpath_expression.cpp */; };
-		007050641114F93F003FCAE4 /* xpath_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE30EBD5D73000997D3 /* xpath_processor.cpp */; };
-		007050651114F93F003FCAE4 /* xpath_stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE40EBD5D73000997D3 /* xpath_stack.cpp */; };
-		007050661114F93F003FCAE4 /* xpath_static.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE50EBD5D73000997D3 /* xpath_static.cpp */; };
-		007050671114F93F003FCAE4 /* xpath_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE60EBD5D73000997D3 /* xpath_stream.cpp */; };
-		007050681114F93F003FCAE4 /* xpath_syntax.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE70EBD5D73000997D3 /* xpath_syntax.cpp */; };
 		007050691114F93F003FCAE4 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00F3BD1C0EBF88AA00382AC1 /* Utilities.cpp */; };
 		0070506D1114F93F003FCAE4 /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C150100ED6710500549EF3 /* Material.cpp */; };
 		007050781114F93F003FCAE4 /* CinderCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009987190F79D0750042F211 /* CinderCocoa.mm */; };
@@ -282,6 +251,12 @@
 		0076581C11226084005547DF /* CinderResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 0076581B11226084005547DF /* CinderResources.h */; };
 		007B09740E9559960052257E /* Rand.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007B09730E9559960052257E /* Rand.cpp */; };
 		007B09840E957B9A0052257E /* KeyEvent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007B09830E957B9A0052257E /* KeyEvent.cpp */; };
+		007CE1F7127BB13B00799071 /* rapidxml_print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F5127BB13B00799071 /* rapidxml_print.hpp */; };
+		007CE1F8127BB13B00799071 /* rapidxml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F6127BB13B00799071 /* rapidxml.hpp */; };
+		007CE1F9127BB13B00799071 /* rapidxml_print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F5127BB13B00799071 /* rapidxml_print.hpp */; };
+		007CE1FA127BB13B00799071 /* rapidxml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F6127BB13B00799071 /* rapidxml.hpp */; };
+		007CE1FB127BB13B00799071 /* rapidxml_print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F5127BB13B00799071 /* rapidxml_print.hpp */; };
+		007CE1FC127BB13B00799071 /* rapidxml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F6127BB13B00799071 /* rapidxml.hpp */; };
 		008876560F957E7300FD55C5 /* Arcball.h in Headers */ = {isa = PBXBuildFile; fileRef = 008876550F957E7300FD55C5 /* Arcball.h */; };
 		0088773C0F96671600FD55C5 /* FileDropEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0088773B0F96671600FD55C5 /* FileDropEvent.h */; };
 		00887AC10F9C279700FD55C5 /* MayaCamUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 00887AC00F9C279700FD55C5 /* MayaCamUI.h */; };
@@ -389,22 +364,6 @@
 		00CFD9461135C3520091E310 /* Filter.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF0D0EB79A91003AB86B /* Filter.h */; };
 		00CFD9471135C3520091E310 /* Rect.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EEF160EB79C45003AB86B /* Rect.h */; };
 		00CFD9481135C3520091E310 /* Url.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D92FE00EB8CC7200EE9D75 /* Url.h */; };
-		00CFD9491135C3520091E310 /* action_store.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFF90EBD5DA4000997D3 /* action_store.h */; };
-		00CFD94A1135C3520091E310 /* byte_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFA0EBD5DA4000997D3 /* byte_stream.h */; };
-		00CFD94B1135C3520091E310 /* lex_token.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFB0EBD5DA4000997D3 /* lex_token.h */; };
-		00CFD94C1135C3520091E310 /* lex_util.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFC0EBD5DA4000997D3 /* lex_util.h */; };
-		00CFD94D1135C3520091E310 /* node_set.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFD0EBD5DA4000997D3 /* node_set.h */; };
-		00CFD94E1135C3520091E310 /* tinystr.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFE0EBD5DA4000997D3 /* tinystr.h */; };
-		00CFD94F1135C3520091E310 /* tinyxml.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFF0EBD5DA4000997D3 /* tinyxml.h */; };
-		00CFD9501135C3520091E310 /* tinyxpath_conf.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0000EBD5DA4000997D3 /* tinyxpath_conf.h */; };
-		00CFD9511135C3520091E310 /* tokenlist.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0010EBD5DA4000997D3 /* tokenlist.h */; };
-		00CFD9521135C3520091E310 /* xml_util.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0020EBD5DA4000997D3 /* xml_util.h */; };
-		00CFD9531135C3520091E310 /* xpath_expression.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0030EBD5DA4000997D3 /* xpath_expression.h */; };
-		00CFD9541135C3520091E310 /* xpath_processor.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0040EBD5DA4000997D3 /* xpath_processor.h */; };
-		00CFD9551135C3520091E310 /* xpath_stack.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0050EBD5DA4000997D3 /* xpath_stack.h */; };
-		00CFD9561135C3520091E310 /* xpath_static.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0060EBD5DA4000997D3 /* xpath_static.h */; };
-		00CFD9571135C3520091E310 /* xpath_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0070EBD5DA4000997D3 /* xpath_stream.h */; };
-		00CFD9581135C3520091E310 /* xpath_syntax.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */; };
 		00CFD9591135C3520091E310 /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		00CFD95B1135C3520091E310 /* QuickTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C938EE0ECCB753000238B1 /* QuickTime.h */; };
 		00CFD95C1135C3520091E310 /* Fbo.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C14F9A0ED51A3B00549EF3 /* Fbo.h */; };
@@ -467,21 +426,6 @@
 		00CFD9A41135C3520091E310 /* Stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003832E30E9C04AD00ACB120 /* Stream.cpp */; };
 		00CFD9A51135C3520091E310 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D23A530EAEB4C00002BF91 /* Color.cpp */; };
 		00CFD9A61135C3520091E310 /* Rect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009EEF190EB79C89003AB86B /* Rect.cpp */; };
-		00CFD9A71135C3520091E310 /* action_store.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFD90EBD5D73000997D3 /* action_store.cpp */; };
-		00CFD9A81135C3520091E310 /* lex_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDA0EBD5D73000997D3 /* lex_util.cpp */; };
-		00CFD9A91135C3520091E310 /* node_set.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDB0EBD5D73000997D3 /* node_set.cpp */; };
-		00CFD9AA1135C3520091E310 /* tinystr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDC0EBD5D73000997D3 /* tinystr.cpp */; };
-		00CFD9AB1135C3520091E310 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDD0EBD5D73000997D3 /* tinyxml.cpp */; };
-		00CFD9AC1135C3520091E310 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDE0EBD5D73000997D3 /* tinyxmlerror.cpp */; };
-		00CFD9AD1135C3520091E310 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDF0EBD5D73000997D3 /* tinyxmlparser.cpp */; };
-		00CFD9AE1135C3520091E310 /* tokenlist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE00EBD5D73000997D3 /* tokenlist.cpp */; };
-		00CFD9AF1135C3520091E310 /* xml_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE10EBD5D73000997D3 /* xml_util.cpp */; };
-		00CFD9B01135C3520091E310 /* xpath_expression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE20EBD5D73000997D3 /* xpath_expression.cpp */; };
-		00CFD9B11135C3520091E310 /* xpath_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE30EBD5D73000997D3 /* xpath_processor.cpp */; };
-		00CFD9B21135C3520091E310 /* xpath_stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE40EBD5D73000997D3 /* xpath_stack.cpp */; };
-		00CFD9B31135C3520091E310 /* xpath_static.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE50EBD5D73000997D3 /* xpath_static.cpp */; };
-		00CFD9B41135C3520091E310 /* xpath_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE60EBD5D73000997D3 /* xpath_stream.cpp */; };
-		00CFD9B51135C3520091E310 /* xpath_syntax.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE70EBD5D73000997D3 /* xpath_syntax.cpp */; };
 		00CFD9B61135C3520091E310 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00F3BD1C0EBF88AA00382AC1 /* Utilities.cpp */; };
 		00CFD9B81135C3520091E310 /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C150100ED6710500549EF3 /* Material.cpp */; };
 		00CFD9B91135C3520091E310 /* CinderCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009987190F79D0750042F211 /* CinderCocoa.mm */; };
@@ -596,37 +540,6 @@
 		C7BA40890FA8C13A00AADC07 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */; };
 		C7BA408B0FA8C13A00AADC07 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */; };
 		C7BA408D0FA8C13A00AADC07 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */; };
-		C7CDEFE80EBD5D73000997D3 /* action_store.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFD90EBD5D73000997D3 /* action_store.cpp */; };
-		C7CDEFE90EBD5D73000997D3 /* lex_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDA0EBD5D73000997D3 /* lex_util.cpp */; };
-		C7CDEFEA0EBD5D73000997D3 /* node_set.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDB0EBD5D73000997D3 /* node_set.cpp */; };
-		C7CDEFEB0EBD5D73000997D3 /* tinystr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDC0EBD5D73000997D3 /* tinystr.cpp */; };
-		C7CDEFEC0EBD5D73000997D3 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDD0EBD5D73000997D3 /* tinyxml.cpp */; };
-		C7CDEFED0EBD5D73000997D3 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDE0EBD5D73000997D3 /* tinyxmlerror.cpp */; };
-		C7CDEFEE0EBD5D73000997D3 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFDF0EBD5D73000997D3 /* tinyxmlparser.cpp */; };
-		C7CDEFEF0EBD5D73000997D3 /* tokenlist.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE00EBD5D73000997D3 /* tokenlist.cpp */; };
-		C7CDEFF00EBD5D73000997D3 /* xml_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE10EBD5D73000997D3 /* xml_util.cpp */; };
-		C7CDEFF10EBD5D73000997D3 /* xpath_expression.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE20EBD5D73000997D3 /* xpath_expression.cpp */; };
-		C7CDEFF20EBD5D73000997D3 /* xpath_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE30EBD5D73000997D3 /* xpath_processor.cpp */; };
-		C7CDEFF30EBD5D73000997D3 /* xpath_stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE40EBD5D73000997D3 /* xpath_stack.cpp */; };
-		C7CDEFF40EBD5D73000997D3 /* xpath_static.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE50EBD5D73000997D3 /* xpath_static.cpp */; };
-		C7CDEFF50EBD5D73000997D3 /* xpath_stream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE60EBD5D73000997D3 /* xpath_stream.cpp */; };
-		C7CDEFF60EBD5D73000997D3 /* xpath_syntax.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C7CDEFE70EBD5D73000997D3 /* xpath_syntax.cpp */; };
-		C7CDF0090EBD5DA4000997D3 /* action_store.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFF90EBD5DA4000997D3 /* action_store.h */; };
-		C7CDF00A0EBD5DA4000997D3 /* byte_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFA0EBD5DA4000997D3 /* byte_stream.h */; };
-		C7CDF00B0EBD5DA4000997D3 /* lex_token.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFB0EBD5DA4000997D3 /* lex_token.h */; };
-		C7CDF00C0EBD5DA4000997D3 /* lex_util.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFC0EBD5DA4000997D3 /* lex_util.h */; };
-		C7CDF00D0EBD5DA4000997D3 /* node_set.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFD0EBD5DA4000997D3 /* node_set.h */; };
-		C7CDF00E0EBD5DA4000997D3 /* tinystr.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFE0EBD5DA4000997D3 /* tinystr.h */; };
-		C7CDF00F0EBD5DA4000997D3 /* tinyxml.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDEFFF0EBD5DA4000997D3 /* tinyxml.h */; };
-		C7CDF0100EBD5DA4000997D3 /* tinyxpath_conf.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0000EBD5DA4000997D3 /* tinyxpath_conf.h */; };
-		C7CDF0110EBD5DA4000997D3 /* tokenlist.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0010EBD5DA4000997D3 /* tokenlist.h */; };
-		C7CDF0120EBD5DA4000997D3 /* xml_util.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0020EBD5DA4000997D3 /* xml_util.h */; };
-		C7CDF0130EBD5DA4000997D3 /* xpath_expression.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0030EBD5DA4000997D3 /* xpath_expression.h */; };
-		C7CDF0140EBD5DA4000997D3 /* xpath_processor.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0040EBD5DA4000997D3 /* xpath_processor.h */; };
-		C7CDF0150EBD5DA4000997D3 /* xpath_stack.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0050EBD5DA4000997D3 /* xpath_stack.h */; };
-		C7CDF0160EBD5DA4000997D3 /* xpath_static.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0060EBD5DA4000997D3 /* xpath_static.h */; };
-		C7CDF0170EBD5DA4000997D3 /* xpath_stream.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0070EBD5DA4000997D3 /* xpath_stream.h */; };
-		C7CDF0180EBD5DA4000997D3 /* xpath_syntax.h in Headers */ = {isa = PBXBuildFile; fileRef = C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */; };
 		C7FA5FC212124A8F0065683B /* CaptureImplQtKit.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7FA5FC012124A790065683B /* CaptureImplQtKit.mm */; };
 		C7FA5FC312124A960065683B /* CaptureImplAvFoundation.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */; };
 		C7FA5FC712124B230065683B /* CaptureImplAvFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */; };
@@ -772,6 +685,8 @@
 		0076581B11226084005547DF /* CinderResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderResources.h; sourceTree = "<group>"; };
 		007B09730E9559960052257E /* Rand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rand.cpp; sourceTree = "<group>"; };
 		007B09830E957B9A0052257E /* KeyEvent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = KeyEvent.cpp; path = app/KeyEvent.cpp; sourceTree = "<group>"; };
+		007CE1F5127BB13B00799071 /* rapidxml_print.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = rapidxml_print.hpp; path = ../include/rapidxml/rapidxml_print.hpp; sourceTree = SOURCE_ROOT; };
+		007CE1F6127BB13B00799071 /* rapidxml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = rapidxml.hpp; path = ../include/rapidxml/rapidxml.hpp; sourceTree = SOURCE_ROOT; };
 		008876550F957E7300FD55C5 /* Arcball.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arcball.h; sourceTree = "<group>"; };
 		0088773B0F96671600FD55C5 /* FileDropEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDropEvent.h; path = app/FileDropEvent.h; sourceTree = "<group>"; };
 		00887AC00F9C279700FD55C5 /* MayaCamUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MayaCamUI.h; sourceTree = "<group>"; };
@@ -899,37 +814,6 @@
 		C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		C7CDEFD90EBD5D73000997D3 /* action_store.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = action_store.cpp; path = ../src/tinyxml/action_store.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFDA0EBD5D73000997D3 /* lex_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lex_util.cpp; path = ../src/tinyxml/lex_util.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFDB0EBD5D73000997D3 /* node_set.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = node_set.cpp; path = ../src/tinyxml/node_set.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFDC0EBD5D73000997D3 /* tinystr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinystr.cpp; path = ../src/tinyxml/tinystr.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFDD0EBD5D73000997D3 /* tinyxml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyxml.cpp; path = ../src/tinyxml/tinyxml.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFDE0EBD5D73000997D3 /* tinyxmlerror.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyxmlerror.cpp; path = ../src/tinyxml/tinyxmlerror.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFDF0EBD5D73000997D3 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tinyxmlparser.cpp; path = ../src/tinyxml/tinyxmlparser.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFE00EBD5D73000997D3 /* tokenlist.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tokenlist.cpp; path = ../src/tinyxml/tokenlist.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFE10EBD5D73000997D3 /* xml_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xml_util.cpp; path = ../src/tinyxml/xml_util.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFE20EBD5D73000997D3 /* xpath_expression.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xpath_expression.cpp; path = ../src/tinyxml/xpath_expression.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFE30EBD5D73000997D3 /* xpath_processor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xpath_processor.cpp; path = ../src/tinyxml/xpath_processor.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFE40EBD5D73000997D3 /* xpath_stack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xpath_stack.cpp; path = ../src/tinyxml/xpath_stack.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFE50EBD5D73000997D3 /* xpath_static.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xpath_static.cpp; path = ../src/tinyxml/xpath_static.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFE60EBD5D73000997D3 /* xpath_stream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xpath_stream.cpp; path = ../src/tinyxml/xpath_stream.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFE70EBD5D73000997D3 /* xpath_syntax.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xpath_syntax.cpp; path = ../src/tinyxml/xpath_syntax.cpp; sourceTree = SOURCE_ROOT; };
-		C7CDEFF90EBD5DA4000997D3 /* action_store.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = action_store.h; path = ../include/tinyxml/action_store.h; sourceTree = SOURCE_ROOT; };
-		C7CDEFFA0EBD5DA4000997D3 /* byte_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = byte_stream.h; path = ../include/tinyxml/byte_stream.h; sourceTree = SOURCE_ROOT; };
-		C7CDEFFB0EBD5DA4000997D3 /* lex_token.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lex_token.h; path = ../include/tinyxml/lex_token.h; sourceTree = SOURCE_ROOT; };
-		C7CDEFFC0EBD5DA4000997D3 /* lex_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lex_util.h; path = ../include/tinyxml/lex_util.h; sourceTree = SOURCE_ROOT; };
-		C7CDEFFD0EBD5DA4000997D3 /* node_set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = node_set.h; path = ../include/tinyxml/node_set.h; sourceTree = SOURCE_ROOT; };
-		C7CDEFFE0EBD5DA4000997D3 /* tinystr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinystr.h; path = ../include/tinyxml/tinystr.h; sourceTree = SOURCE_ROOT; };
-		C7CDEFFF0EBD5DA4000997D3 /* tinyxml.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinyxml.h; path = ../include/tinyxml/tinyxml.h; sourceTree = SOURCE_ROOT; };
-		C7CDF0000EBD5DA4000997D3 /* tinyxpath_conf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinyxpath_conf.h; path = ../include/tinyxml/tinyxpath_conf.h; sourceTree = SOURCE_ROOT; };
-		C7CDF0010EBD5DA4000997D3 /* tokenlist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tokenlist.h; path = ../include/tinyxml/tokenlist.h; sourceTree = SOURCE_ROOT; };
-		C7CDF0020EBD5DA4000997D3 /* xml_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xml_util.h; path = ../include/tinyxml/xml_util.h; sourceTree = SOURCE_ROOT; };
-		C7CDF0030EBD5DA4000997D3 /* xpath_expression.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_expression.h; path = ../include/tinyxml/xpath_expression.h; sourceTree = SOURCE_ROOT; };
-		C7CDF0040EBD5DA4000997D3 /* xpath_processor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_processor.h; path = ../include/tinyxml/xpath_processor.h; sourceTree = SOURCE_ROOT; };
-		C7CDF0050EBD5DA4000997D3 /* xpath_stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_stack.h; path = ../include/tinyxml/xpath_stack.h; sourceTree = SOURCE_ROOT; };
-		C7CDF0060EBD5DA4000997D3 /* xpath_static.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_static.h; path = ../include/tinyxml/xpath_static.h; sourceTree = SOURCE_ROOT; };
-		C7CDF0070EBD5DA4000997D3 /* xpath_stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_stream.h; path = ../include/tinyxml/xpath_stream.h; sourceTree = SOURCE_ROOT; };
-		C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xpath_syntax.h; path = ../include/tinyxml/xpath_syntax.h; sourceTree = SOURCE_ROOT; };
 		C7FA5FC012124A790065683B /* CaptureImplQtKit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureImplQtKit.mm; sourceTree = "<group>"; };
 		C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureImplAvFoundation.mm; sourceTree = "<group>"; };
 		C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplAvFoundation.h; sourceTree = "<group>"; };
@@ -1112,6 +996,15 @@
 				003ADB8F1038974A00ACF6F2 /* TwBar.cpp */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		007CE1F1127BB11200799071 /* rapidxml */ = {
+			isa = PBXGroup;
+			children = (
+				007CE1F5127BB13B00799071 /* rapidxml_print.hpp */,
+				007CE1F6127BB13B00799071 /* rapidxml.hpp */,
+			);
+			name = rapidxml;
 			sourceTree = "<group>";
 		};
 		009987140F79CFC20042F211 /* cocoa */ = {
@@ -1399,7 +1292,6 @@
 			isa = PBXGroup;
 			children = (
 				003ADB661038970C00ACF6F2 /* AntTweakBar */,
-				C7CDEFD80EBD5D60000997D3 /* TinyXML */,
 				1058C7B0FEA5585E11CA2CBB /* Linked Frameworks */,
 				1058C7B2FEA5585E11CA2CBB /* Other Frameworks */,
 			);
@@ -1447,6 +1339,7 @@
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				007CE1F1127BB11200799071 /* rapidxml */,
 				32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */,
 			);
 			name = "Other Sources";
@@ -1488,60 +1381,6 @@
 			path = audio;
 			sourceTree = "<group>";
 		};
-		C7CDEFD80EBD5D60000997D3 /* TinyXML */ = {
-			isa = PBXGroup;
-			children = (
-				C7CDEFF80EBD5D8A000997D3 /* include */,
-				C7CDEFF70EBD5D78000997D3 /* src */,
-			);
-			name = TinyXML;
-			sourceTree = "<group>";
-		};
-		C7CDEFF70EBD5D78000997D3 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				C7CDEFD90EBD5D73000997D3 /* action_store.cpp */,
-				C7CDEFDA0EBD5D73000997D3 /* lex_util.cpp */,
-				C7CDEFDB0EBD5D73000997D3 /* node_set.cpp */,
-				C7CDEFDC0EBD5D73000997D3 /* tinystr.cpp */,
-				C7CDEFDD0EBD5D73000997D3 /* tinyxml.cpp */,
-				C7CDEFDE0EBD5D73000997D3 /* tinyxmlerror.cpp */,
-				C7CDEFDF0EBD5D73000997D3 /* tinyxmlparser.cpp */,
-				C7CDEFE00EBD5D73000997D3 /* tokenlist.cpp */,
-				C7CDEFE10EBD5D73000997D3 /* xml_util.cpp */,
-				C7CDEFE20EBD5D73000997D3 /* xpath_expression.cpp */,
-				C7CDEFE30EBD5D73000997D3 /* xpath_processor.cpp */,
-				C7CDEFE40EBD5D73000997D3 /* xpath_stack.cpp */,
-				C7CDEFE50EBD5D73000997D3 /* xpath_static.cpp */,
-				C7CDEFE60EBD5D73000997D3 /* xpath_stream.cpp */,
-				C7CDEFE70EBD5D73000997D3 /* xpath_syntax.cpp */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		C7CDEFF80EBD5D8A000997D3 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				C7CDEFF90EBD5DA4000997D3 /* action_store.h */,
-				C7CDEFFA0EBD5DA4000997D3 /* byte_stream.h */,
-				C7CDEFFB0EBD5DA4000997D3 /* lex_token.h */,
-				C7CDEFFC0EBD5DA4000997D3 /* lex_util.h */,
-				C7CDEFFD0EBD5DA4000997D3 /* node_set.h */,
-				C7CDEFFE0EBD5DA4000997D3 /* tinystr.h */,
-				C7CDEFFF0EBD5DA4000997D3 /* tinyxml.h */,
-				C7CDF0000EBD5DA4000997D3 /* tinyxpath_conf.h */,
-				C7CDF0010EBD5DA4000997D3 /* tokenlist.h */,
-				C7CDF0020EBD5DA4000997D3 /* xml_util.h */,
-				C7CDF0030EBD5DA4000997D3 /* xpath_expression.h */,
-				C7CDF0040EBD5DA4000997D3 /* xpath_processor.h */,
-				C7CDF0050EBD5DA4000997D3 /* xpath_stack.h */,
-				C7CDF0060EBD5DA4000997D3 /* xpath_static.h */,
-				C7CDF0070EBD5DA4000997D3 /* xpath_stream.h */,
-				C7CDF0080EBD5DA4000997D3 /* xpath_syntax.h */,
-			);
-			name = include;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -1575,22 +1414,6 @@
 				00704FE51114F93F003FCAE4 /* Filter.h in Headers */,
 				00704FE61114F93F003FCAE4 /* Rect.h in Headers */,
 				00704FE71114F93F003FCAE4 /* Url.h in Headers */,
-				00704FE81114F93F003FCAE4 /* action_store.h in Headers */,
-				00704FE91114F93F003FCAE4 /* byte_stream.h in Headers */,
-				00704FEA1114F93F003FCAE4 /* lex_token.h in Headers */,
-				00704FEB1114F93F003FCAE4 /* lex_util.h in Headers */,
-				00704FEC1114F93F003FCAE4 /* node_set.h in Headers */,
-				00704FED1114F93F003FCAE4 /* tinystr.h in Headers */,
-				00704FEE1114F93F003FCAE4 /* tinyxml.h in Headers */,
-				00704FEF1114F93F003FCAE4 /* tinyxpath_conf.h in Headers */,
-				00704FF01114F93F003FCAE4 /* tokenlist.h in Headers */,
-				00704FF11114F93F003FCAE4 /* xml_util.h in Headers */,
-				00704FF21114F93F003FCAE4 /* xpath_expression.h in Headers */,
-				00704FF31114F93F003FCAE4 /* xpath_processor.h in Headers */,
-				00704FF41114F93F003FCAE4 /* xpath_stack.h in Headers */,
-				00704FF51114F93F003FCAE4 /* xpath_static.h in Headers */,
-				00704FF61114F93F003FCAE4 /* xpath_stream.h in Headers */,
-				00704FF71114F93F003FCAE4 /* xpath_syntax.h in Headers */,
 				00704FF81114F93F003FCAE4 /* Utilities.h in Headers */,
 				00704FFA1114F93F003FCAE4 /* QuickTime.h in Headers */,
 				00704FFB1114F93F003FCAE4 /* Fbo.h in Headers */,
@@ -1664,6 +1487,8 @@
 				C7FB1BBE124BE31E0045AFD2 /* InputImplAudioUnit.h in Headers */,
 				C7FB1BBF124BE31E0045AFD2 /* OutputImplAudioUnit.h in Headers */,
 				C7FB1BC0124BE31E0045AFD2 /* PcmBuffer.h in Headers */,
+				007CE1F9127BB13B00799071 /* rapidxml_print.hpp in Headers */,
+				007CE1FA127BB13B00799071 /* rapidxml.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1696,22 +1521,6 @@
 				00CFD9461135C3520091E310 /* Filter.h in Headers */,
 				00CFD9471135C3520091E310 /* Rect.h in Headers */,
 				00CFD9481135C3520091E310 /* Url.h in Headers */,
-				00CFD9491135C3520091E310 /* action_store.h in Headers */,
-				00CFD94A1135C3520091E310 /* byte_stream.h in Headers */,
-				00CFD94B1135C3520091E310 /* lex_token.h in Headers */,
-				00CFD94C1135C3520091E310 /* lex_util.h in Headers */,
-				00CFD94D1135C3520091E310 /* node_set.h in Headers */,
-				00CFD94E1135C3520091E310 /* tinystr.h in Headers */,
-				00CFD94F1135C3520091E310 /* tinyxml.h in Headers */,
-				00CFD9501135C3520091E310 /* tinyxpath_conf.h in Headers */,
-				00CFD9511135C3520091E310 /* tokenlist.h in Headers */,
-				00CFD9521135C3520091E310 /* xml_util.h in Headers */,
-				00CFD9531135C3520091E310 /* xpath_expression.h in Headers */,
-				00CFD9541135C3520091E310 /* xpath_processor.h in Headers */,
-				00CFD9551135C3520091E310 /* xpath_stack.h in Headers */,
-				00CFD9561135C3520091E310 /* xpath_static.h in Headers */,
-				00CFD9571135C3520091E310 /* xpath_stream.h in Headers */,
-				00CFD9581135C3520091E310 /* xpath_syntax.h in Headers */,
 				00CFD9591135C3520091E310 /* Utilities.h in Headers */,
 				00CFD95B1135C3520091E310 /* QuickTime.h in Headers */,
 				00CFD95C1135C3520091E310 /* Fbo.h in Headers */,
@@ -1784,6 +1593,8 @@
 				C7FB1BC5124BE31E0045AFD2 /* InputImplAudioUnit.h in Headers */,
 				C7FB1BC6124BE31E0045AFD2 /* OutputImplAudioUnit.h in Headers */,
 				C7FB1BC7124BE31E0045AFD2 /* PcmBuffer.h in Headers */,
+				007CE1FB127BB13B00799071 /* rapidxml_print.hpp in Headers */,
+				007CE1FC127BB13B00799071 /* rapidxml.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1817,22 +1628,6 @@
 				009EEF0E0EB79A91003AB86B /* Filter.h in Headers */,
 				009EEF170EB79C45003AB86B /* Rect.h in Headers */,
 				00D92FE10EB8CC7200EE9D75 /* Url.h in Headers */,
-				C7CDF0090EBD5DA4000997D3 /* action_store.h in Headers */,
-				C7CDF00A0EBD5DA4000997D3 /* byte_stream.h in Headers */,
-				C7CDF00B0EBD5DA4000997D3 /* lex_token.h in Headers */,
-				C7CDF00C0EBD5DA4000997D3 /* lex_util.h in Headers */,
-				C7CDF00D0EBD5DA4000997D3 /* node_set.h in Headers */,
-				C7CDF00E0EBD5DA4000997D3 /* tinystr.h in Headers */,
-				C7CDF00F0EBD5DA4000997D3 /* tinyxml.h in Headers */,
-				C7CDF0100EBD5DA4000997D3 /* tinyxpath_conf.h in Headers */,
-				C7CDF0110EBD5DA4000997D3 /* tokenlist.h in Headers */,
-				C7CDF0120EBD5DA4000997D3 /* xml_util.h in Headers */,
-				C7CDF0130EBD5DA4000997D3 /* xpath_expression.h in Headers */,
-				C7CDF0140EBD5DA4000997D3 /* xpath_processor.h in Headers */,
-				C7CDF0150EBD5DA4000997D3 /* xpath_stack.h in Headers */,
-				C7CDF0160EBD5DA4000997D3 /* xpath_static.h in Headers */,
-				C7CDF0170EBD5DA4000997D3 /* xpath_stream.h in Headers */,
-				C7CDF0180EBD5DA4000997D3 /* xpath_syntax.h in Headers */,
 				00F3BD200EBF89B700382AC1 /* Utilities.h in Headers */,
 				00C938EF0ECCB753000238B1 /* QuickTime.h in Headers */,
 				00C14F9B0ED51A3B00549EF3 /* Fbo.h in Headers */,
@@ -1922,6 +1717,8 @@
 				C7FB1BB8124BE31E0045AFD2 /* OutputImplAudioUnit.h in Headers */,
 				C7FB1BB9124BE31E0045AFD2 /* PcmBuffer.h in Headers */,
 				434708DD1267EE5800AA7349 /* Blend.h in Headers */,
+				007CE1F7127BB13B00799071 /* rapidxml_print.hpp in Headers */,
+				007CE1F8127BB13B00799071 /* rapidxml.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2021,21 +1818,6 @@
 				007050531114F93F003FCAE4 /* Stream.cpp in Sources */,
 				007050571114F93F003FCAE4 /* Color.cpp in Sources */,
 				007050581114F93F003FCAE4 /* Rect.cpp in Sources */,
-				0070505A1114F93F003FCAE4 /* action_store.cpp in Sources */,
-				0070505B1114F93F003FCAE4 /* lex_util.cpp in Sources */,
-				0070505C1114F93F003FCAE4 /* node_set.cpp in Sources */,
-				0070505D1114F93F003FCAE4 /* tinystr.cpp in Sources */,
-				0070505E1114F93F003FCAE4 /* tinyxml.cpp in Sources */,
-				0070505F1114F93F003FCAE4 /* tinyxmlerror.cpp in Sources */,
-				007050601114F93F003FCAE4 /* tinyxmlparser.cpp in Sources */,
-				007050611114F93F003FCAE4 /* tokenlist.cpp in Sources */,
-				007050621114F93F003FCAE4 /* xml_util.cpp in Sources */,
-				007050631114F93F003FCAE4 /* xpath_expression.cpp in Sources */,
-				007050641114F93F003FCAE4 /* xpath_processor.cpp in Sources */,
-				007050651114F93F003FCAE4 /* xpath_stack.cpp in Sources */,
-				007050661114F93F003FCAE4 /* xpath_static.cpp in Sources */,
-				007050671114F93F003FCAE4 /* xpath_stream.cpp in Sources */,
-				007050681114F93F003FCAE4 /* xpath_syntax.cpp in Sources */,
 				007050691114F93F003FCAE4 /* Utilities.cpp in Sources */,
 				0070506D1114F93F003FCAE4 /* Material.cpp in Sources */,
 				007050781114F93F003FCAE4 /* CinderCocoa.mm in Sources */,
@@ -2114,21 +1896,6 @@
 				00CFD9A41135C3520091E310 /* Stream.cpp in Sources */,
 				00CFD9A51135C3520091E310 /* Color.cpp in Sources */,
 				00CFD9A61135C3520091E310 /* Rect.cpp in Sources */,
-				00CFD9A71135C3520091E310 /* action_store.cpp in Sources */,
-				00CFD9A81135C3520091E310 /* lex_util.cpp in Sources */,
-				00CFD9A91135C3520091E310 /* node_set.cpp in Sources */,
-				00CFD9AA1135C3520091E310 /* tinystr.cpp in Sources */,
-				00CFD9AB1135C3520091E310 /* tinyxml.cpp in Sources */,
-				00CFD9AC1135C3520091E310 /* tinyxmlerror.cpp in Sources */,
-				00CFD9AD1135C3520091E310 /* tinyxmlparser.cpp in Sources */,
-				00CFD9AE1135C3520091E310 /* tokenlist.cpp in Sources */,
-				00CFD9AF1135C3520091E310 /* xml_util.cpp in Sources */,
-				00CFD9B01135C3520091E310 /* xpath_expression.cpp in Sources */,
-				00CFD9B11135C3520091E310 /* xpath_processor.cpp in Sources */,
-				00CFD9B21135C3520091E310 /* xpath_stack.cpp in Sources */,
-				00CFD9B31135C3520091E310 /* xpath_static.cpp in Sources */,
-				00CFD9B41135C3520091E310 /* xpath_stream.cpp in Sources */,
-				00CFD9B51135C3520091E310 /* xpath_syntax.cpp in Sources */,
 				00CFD9B61135C3520091E310 /* Utilities.cpp in Sources */,
 				00CFD9B81135C3520091E310 /* Material.cpp in Sources */,
 				00CFD9B91135C3520091E310 /* CinderCocoa.mm in Sources */,
@@ -2212,21 +1979,6 @@
 				00D23A540EAEB4C00002BF91 /* Color.cpp in Sources */,
 				009EEF1A0EB79C89003AB86B /* Rect.cpp in Sources */,
 				00D92FB80EB8AE5200EE9D75 /* Url.cpp in Sources */,
-				C7CDEFE80EBD5D73000997D3 /* action_store.cpp in Sources */,
-				C7CDEFE90EBD5D73000997D3 /* lex_util.cpp in Sources */,
-				C7CDEFEA0EBD5D73000997D3 /* node_set.cpp in Sources */,
-				C7CDEFEB0EBD5D73000997D3 /* tinystr.cpp in Sources */,
-				C7CDEFEC0EBD5D73000997D3 /* tinyxml.cpp in Sources */,
-				C7CDEFED0EBD5D73000997D3 /* tinyxmlerror.cpp in Sources */,
-				C7CDEFEE0EBD5D73000997D3 /* tinyxmlparser.cpp in Sources */,
-				C7CDEFEF0EBD5D73000997D3 /* tokenlist.cpp in Sources */,
-				C7CDEFF00EBD5D73000997D3 /* xml_util.cpp in Sources */,
-				C7CDEFF10EBD5D73000997D3 /* xpath_expression.cpp in Sources */,
-				C7CDEFF20EBD5D73000997D3 /* xpath_processor.cpp in Sources */,
-				C7CDEFF30EBD5D73000997D3 /* xpath_stack.cpp in Sources */,
-				C7CDEFF40EBD5D73000997D3 /* xpath_static.cpp in Sources */,
-				C7CDEFF50EBD5D73000997D3 /* xpath_stream.cpp in Sources */,
-				C7CDEFF60EBD5D73000997D3 /* xpath_syntax.cpp in Sources */,
 				00F3BD1D0EBF88AA00382AC1 /* Utilities.cpp in Sources */,
 				00C938F10ECCB7C7000238B1 /* QuickTime.cpp in Sources */,
 				00C14F990ED51A2700549EF3 /* Fbo.cpp in Sources */,
@@ -2516,7 +2268,6 @@
 				HEADER_SEARCH_PATHS = (
 					../boost,
 					../include/macosx/png,
-					../include/macosx/tinyxml,
 					../include/macosx/cairo,
 				);
 				OBJROOT = build/;
@@ -2540,7 +2291,6 @@
 				HEADER_SEARCH_PATHS = (
 					../boost,
 					../include/macosx/png,
-					../include/macosx/tinyxml,
 					../include/macosx/cairo,
 				);
 				OBJROOT = build/;
