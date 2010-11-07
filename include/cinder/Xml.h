@@ -185,7 +185,7 @@ class XmlTree {
 	typedef enum NodeType { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT };
 
 	//! Default constructor, creating an empty node.
-	XmlTree() : mParent( 0 ), mNodeType( NODE_DOCUMENT ) {}
+	XmlTree() : mParent( 0 ), mNodeType( NODE_ELEMENT ) {}
   
 	/** \brief Parses XML contained in \a dataSource using the options \a parseOptions. Commonly used with the results of loadUrl(), loadFile() or loadResource().
 		<br><tt>XmlTree myDoc( loadUrl( "http://rss.cnn.com/rss/cnn_topstories.rss" ) );</tt> **/
@@ -242,9 +242,9 @@ class XmlTree {
 	const XmlTree&				getParent() const { return *mParent; }
 	
 	//! Returns the first child that matches \a relativePath or end() if none matches
-	Iter					find( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) { return Iter( *this, relativePath, caseSensitive, separator ); }
+	Iter						find( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) { return Iter( *this, relativePath, caseSensitive, separator ); }
 	//! Returns the first child that matches \a relativePath or end() if none matches
-	ConstIter				find( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const { return ConstIter( *this, relativePath, caseSensitive, separator ); }
+	ConstIter					find( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const { return ConstIter( *this, relativePath, caseSensitive, separator ); }
 	//! Returns whether at least one child matches \a relativePath
 	bool						hasChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const;
 
@@ -306,8 +306,8 @@ class XmlTree {
 
 	/** Streams the XmlTree \a xml to std::ostream \a out with standard formatting. **/
 	friend std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
-	/** Writes this XmlTree to \a target with standard formatting. **/
-	void						write( DataTargetRef target );
+	/** Writes this XmlTree to \a target with standard formatting. If \a createDocument is true then an implicit parent NODE_DOCUMENT is created when necessary and \a this is treated as the root element. **/
+	void						write( DataTargetRef target, bool createDocument = true );
 
 	//! Base class for XmlTree exceptions.
 	class Exception : public cinder::Exception {
@@ -339,7 +339,8 @@ class XmlTree {
 	class UnknownNodeTypeExc : public cinder::Exception {
 	};
 
-	std::shared_ptr<rapidxml::xml_document<char> >	createRapidXmlDoc() const;	
+	//! Returns a shared_ptr to a RapidXML xml_document. If \a createDocument is true then an implicit parent NODE_DOCUMENT is created when necessary and \a this is treated as the root element.
+	std::shared_ptr<rapidxml::xml_document<char> >	createRapidXmlDoc( bool createDocument = false ) const;	
 
   private:
 	XmlTree*	getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;

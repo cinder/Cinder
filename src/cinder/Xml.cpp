@@ -283,23 +283,16 @@ void XmlTree::push_back( const XmlTree &newChild )
 XmlTree* XmlTree::getNodePtr( const string &relativePath, bool caseSensitive, char separator ) const
 {
 	XmlTree *curNode = const_cast<XmlTree*>( this );
-	size_t offset = 0;
-	do {
-		const string curElement = relativePath.substr( offset, relativePath.find( separator, offset ) - offset );
-		list<XmlTree> &children = curNode->getChildren();
-		list<XmlTree>::iterator childIt;
-		for( childIt = children.begin(); childIt != children.end(); ++childIt ) {
-			if( tagsMatch( childIt->getTag(), curElement, caseSensitive ) )
-				break;
-		}
-		if( childIt == children.end() ) // couldn't find this one - return NULL
+
+	vector<string> pathComponents = split( relativePath, separator );
+	for( vector<string>::const_iterator pathIt = pathComponents.begin(); pathIt != pathComponents.end(); ++pathIt ) {
+		list<XmlTree>::const_iterator node = XmlTree::findNextChildNamed( curNode->getChildren(), curNode->getChildren().begin(), *pathIt, caseSensitive )	;
+		if( node != curNode->getChildren().end() )
+			curNode = const_cast<XmlTree*>( &(*node) );
+		else
 			return 0;
-		curNode = &(*childIt );
-		offset = relativePath.find( separator, offset );
-		if( offset != string::npos )
-			++offset;
-	} while ( ( offset != string::npos ) && ( offset != relativePath.length() ) );
-	
+	}
+
 	return curNode;
 }
 
@@ -325,17 +318,22 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		childIt->appendRapidXmlNode( doc, node );
 }
 
-shared_ptr<rapidxml::xml_document<char> > XmlTree::createRapidXmlDoc() const
+shared_ptr<rapidxml::xml_document<char> > XmlTree::createRapidXmlDoc( bool createDocument ) const
 {
 	shared_ptr<rapidxml::xml_document<char> > result( new rapidxml::xml_document<>() );	
-	if( isDocument() ) {
+	if( isDocument() || createDocument ) {
 		rapidxml::xml_node<char> *declarationNode = result->allocate_node( rapidxml::node_declaration, "", "" );
 		result->append_node( declarationNode );
-		if( ! mDocType.empty() )
+		if( isDocument() && ( ! mDocType.empty() ) )
 			result->append_node( result->allocate_node( rapidxml::node_doctype, "", result->allocate_string( mDocType.c_str() ) ) );
 
-		for( list<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
-			childIt->appendRapidXmlNode( *result, result.get() );
+		if( isDocument() ) {
+			for( list<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
+				childIt->appendRapidXmlNode( *result, result.get() );
+		}
+		else {
+			appendRapidXmlNode( *result, result.get() );
+		}
 
 		declarationNode->append_attribute( result->allocate_attribute( "version", "1.0" ) );
 		declarationNode->append_attribute( result->allocate_attribute( "encoding", "utf-8" ) );
@@ -347,14 +345,14 @@ shared_ptr<rapidxml::xml_document<char> > XmlTree::createRapidXmlDoc() const
 
 ostream& operator<<( ostream &out, const XmlTree &xml )
 {
-	shared_ptr<rapidxml::xml_document<char> > doc = xml.createRapidXmlDoc();
+	shared_ptr<rapidxml::xml_document<char> > doc = xml.createRapidXmlDoc( false );
 	return rapidxml::print( out, *doc, 0 );
 }
 
-void XmlTree::write( DataTargetRef target )
+void XmlTree::write( DataTargetRef target, bool createDocument )
 {
 	// this could do with a more efficient implementation
-	shared_ptr<rapidxml::xml_document<char> > doc = createRapidXmlDoc();
+	shared_ptr<rapidxml::xml_document<char> > doc = createRapidXmlDoc( createDocument );
 	OStreamRef os = target->getStream();
 	std::ostringstream ss;
 	ss << *doc;
