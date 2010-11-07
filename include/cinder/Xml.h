@@ -199,7 +199,7 @@ class XmlTree {
 
 	//! Constructs an XML node with the tag \a tag, the value \a value. Optionally sets the pointer to the node's parent and sets the node type.
 	explicit XmlTree( const std::string &tag, const std::string &value, XmlTree *parent = 0, NodeType type = NODE_ELEMENT )
-		: mTag( tag ), mValue( value ), mParent( parent )
+		: mTag( tag ), mValue( value ), mParent( parent ), mNodeType( type )
 	{}
 
 	//! Returns the type of this node as a NodeType.

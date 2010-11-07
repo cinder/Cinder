@@ -23,6 +23,7 @@
 */
 
 #include "cinder/Xml.h"
+#include "cinder/Utilities.h"
 
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
@@ -330,7 +331,9 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		
 		default: throw UnknownNodeTypeExc();
 	}
-	rapidxml::xml_node<char> *node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), doc.allocate_string( getValue().c_str() ) );
+	rapidxml::xml_node<char> *node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), NULL );
+	if( ! getValue().empty() )
+		node->append_node( doc.allocate_node( rapidxml::node_data, NULL, doc.allocate_string( getValue().c_str() ) ) );
 	parent->append_node( node );
 
 	for( vector<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
