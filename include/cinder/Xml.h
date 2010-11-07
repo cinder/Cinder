@@ -31,9 +31,9 @@
 #include "cinder/Exception.h"
 
 #include <boost/lexical_cast.hpp>
-#include <map>
 #include <string>
 #include <vector>
+#include <list>
 
 //! \cond
 namespace rapidxml {
@@ -50,8 +50,8 @@ class XmlTree {
 	class ConstIter {
 	  public:
 		//! \cond
-		ConstIter( const std::vector<XmlTree> *sequence );		
-		ConstIter( const std::vector<XmlTree> *sequence, std::vector<XmlTree>::const_iterator iter );		
+		ConstIter( const std::list<XmlTree> *sequence );		
+		ConstIter( const std::list<XmlTree> *sequence, std::list<XmlTree>::const_iterator iter );		
 		ConstIter( const XmlTree &root, const std::string &filterPath, bool caseSensitive = false, char separator = '/' );
 		//! \endcond
 
@@ -79,13 +79,13 @@ class XmlTree {
 	  protected:
 		//! \cond
 		void	increment();
-		void	setToEnd( const std::vector<XmlTree> *seq );
+		void	setToEnd( const std::list<XmlTree> *seq );
 		bool	isDone() const;
 		
-		std::vector<const std::vector<XmlTree>*>				mSequenceStack;
-		std::vector<std::vector<XmlTree>::const_iterator>		mIterStack;
-		std::vector<std::string>								mFilter;
-		bool													mCaseSensitive;
+		std::vector<const std::list<XmlTree>*>				mSequenceStack;
+		std::vector<std::list<XmlTree>::const_iterator>		mIterStack;
+		std::vector<std::string>							mFilter;
+		bool												mCaseSensitive;
 		//! \endcond		
 	};
 
@@ -93,11 +93,11 @@ class XmlTree {
 	class Iter : public XmlTree::ConstIter {
 	  public:
 		//! \cond
-		Iter( std::vector<XmlTree> *sequence )
+		Iter( std::list<XmlTree> *sequence )
 			: ConstIter( sequence )
 		{}
 		
-		Iter( std::vector<XmlTree> *sequence, std::vector<XmlTree>::iterator iter )
+		Iter( std::list<XmlTree> *sequence, std::list<XmlTree>::iterator iter )
 			: ConstIter( sequence, iter )
 		{}
 	
@@ -252,15 +252,15 @@ class XmlTree {
 	XmlTree&					getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' );
 	//! Returns the first child that matches \a relativePath. Throws ChildNotFoundExc if none matches.
 	const XmlTree&				getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const;
-	//! Returns a reference to the node's vector of children nodes.
-	std::vector<XmlTree>&		getChildren() { return mChildren; }
-	//! Returns a reference to the node's vector of children nodes.
-	const std::vector<XmlTree>&	getChildren() const { return mChildren; }
+	//! Returns a reference to the node's list of children nodes.
+	std::list<XmlTree>&			getChildren() { return mChildren; }
+	//! Returns a reference to the node's list of children nodes.
+	const std::list<XmlTree>&	getChildren() const { return mChildren; }
 
-	//! Returns a reference to the node's vector of attributes.	
-	std::vector<Attr>&			getAttributes() { return mAttributes; }
-	//! Returns a reference to the node's vector of attributes.	
-	const std::vector<Attr>&	getAttributes() const { return mAttributes; }
+	//! Returns a reference to the node's list of attributes.	
+	std::list<Attr>&			getAttributes() { return mAttributes; }
+	//! Returns a reference to the node's list of attributes.	
+	const std::list<Attr>&		getAttributes() const { return mAttributes; }
 
 	//! Returns a reference to the node attribute named \a attrName. Throws AttrNotFoundExc if no attribute exists with that name.
 	const Attr&					getAttribute( const std::string &attrName ) const;
@@ -345,15 +345,15 @@ class XmlTree {
 	XmlTree*	getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;
 	void		appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::xml_node<char> *parent ) const;
 
-	static std::vector<XmlTree>::const_iterator	findNextChildNamed( const std::vector<XmlTree> &sequence, std::vector<XmlTree>::const_iterator firstCandidate, const std::string &searchTag, bool caseSensitive );
+	static std::list<XmlTree>::const_iterator	findNextChildNamed( const std::list<XmlTree> &sequence, std::list<XmlTree>::const_iterator firstCandidate, const std::string &searchTag, bool caseSensitive );
 
 	NodeType					mNodeType;
   	std::string					mTag;
 	std::string					mValue;
 	std::string					mDocType; // only used on NodeType::NODE_DOCUMENT
 	XmlTree						*mParent;
-	std::vector<XmlTree>		mChildren;
-	std::vector<Attr>			mAttributes;
+	std::list<XmlTree>			mChildren;
+	std::list<Attr>			mAttributes;
 	
 	static void		loadFromDataSource( DataSourceRef dataSource, XmlTree *result, const ParseOptions &parseOptions );
 };

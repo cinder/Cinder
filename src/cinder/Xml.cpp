@@ -47,13 +47,13 @@ bool tagsMatch( const std::string &tag1, const std::string &tag2, bool caseSensi
 }
 } // anonymous namespace
 
-XmlTree::ConstIter::ConstIter( const std::vector<XmlTree> *sequence )
+XmlTree::ConstIter::ConstIter( const std::list<XmlTree> *sequence )
 {
 	mSequenceStack.push_back( sequence );
 	mIterStack.push_back( sequence->begin() );
 }
 
-XmlTree::ConstIter::ConstIter( const std::vector<XmlTree> *sequence, std::vector<XmlTree>::const_iterator iter )
+XmlTree::ConstIter::ConstIter( const std::list<XmlTree> *sequence, std::list<XmlTree>::const_iterator iter )
 {
 	mSequenceStack.push_back( sequence );
 	mIterStack.push_back( iter );
@@ -75,7 +75,7 @@ XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, bo
 		else
 			mSequenceStack.push_back( &mIterStack.back()->getChildren() );
 		
-		vector<XmlTree>::const_iterator child = findNextChildNamed( *mSequenceStack.back(), mSequenceStack.back()->begin(), *filterComp, mCaseSensitive );
+		list<XmlTree>::const_iterator child = findNextChildNamed( *mSequenceStack.back(), mSequenceStack.back()->begin(), *filterComp, mCaseSensitive );
 		if( child != (mSequenceStack.back())->end() )
 			mIterStack.push_back( child );
 		else { // failed to find an item that matches this part of the filter; mark as finished and return
@@ -86,7 +86,7 @@ XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, bo
 }
 
 // sets the iterator to be pointing to the end, meaning iteration is done
-void XmlTree::ConstIter::setToEnd( const vector<XmlTree> *seq )
+void XmlTree::ConstIter::setToEnd( const list<XmlTree> *seq )
 {
 	mSequenceStack.clear();
 	mSequenceStack.push_back( seq );
@@ -107,7 +107,7 @@ void XmlTree::ConstIter::increment()
 	
 		bool found = false;
 		do {
-			vector<XmlTree>::const_iterator next = findNextChildNamed( *mSequenceStack.back(), mIterStack.back(), mFilter[mSequenceStack.size()-1], mCaseSensitive );
+			list<XmlTree>::const_iterator next = findNextChildNamed( *mSequenceStack.back(), mIterStack.back(), mFilter[mSequenceStack.size()-1], mCaseSensitive );
 			if( next == mSequenceStack.back()->end() ) { // we've finished this part of the sequence stack
 				mIterStack.pop_back();
 				mSequenceStack.pop_back();
@@ -126,9 +126,9 @@ void XmlTree::ConstIter::increment()
 	}
 }
 
-vector<XmlTree>::const_iterator XmlTree::findNextChildNamed( const vector<XmlTree> &sequence, vector<XmlTree>::const_iterator firstCandidate, const string &searchTag, bool caseSensitive )
+list<XmlTree>::const_iterator XmlTree::findNextChildNamed( const list<XmlTree> &sequence, list<XmlTree>::const_iterator firstCandidate, const string &searchTag, bool caseSensitive )
 {
-	vector<XmlTree>::const_iterator result = firstCandidate;
+	list<XmlTree>::const_iterator result = firstCandidate;
 	while( result != sequence.end() ) {
 		if( tagsMatch( result->getTag(), searchTag, caseSensitive ) )
 			break;
@@ -230,7 +230,7 @@ XmlTree& XmlTree::getChild( const string &relativePath, bool caseSensitive, char
 
 const XmlTree::Attr& XmlTree::getAttribute( const string &attrName ) const
 {
-	for( vector<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
+	for( list<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
 		if( attrIt->getName() == attrName )
 			return *attrIt;
 	throw AttrNotFoundExc( *this, attrName );
@@ -238,7 +238,7 @@ const XmlTree::Attr& XmlTree::getAttribute( const string &attrName ) const
 
 void XmlTree::setAttribute( const std::string &attrName, const std::string &value )
 {
-	vector<Attr>::iterator atIt;
+	list<Attr>::iterator atIt;
 	for( atIt = mAttributes.begin(); atIt != mAttributes.end(); ++atIt )
 		if( atIt->getName() == attrName )
 			break;
@@ -251,7 +251,7 @@ void XmlTree::setAttribute( const std::string &attrName, const std::string &valu
 
 bool XmlTree::hasAttribute( const std::string &attrName ) const
 {
-	for( vector<Attr>::const_iterator atIt = mAttributes.begin(); atIt != mAttributes.end(); ++atIt )
+	for( list<Attr>::const_iterator atIt = mAttributes.begin(); atIt != mAttributes.end(); ++atIt )
 		if( atIt->getName() == attrName )
 			return true;
 	
@@ -286,8 +286,8 @@ XmlTree* XmlTree::getNodePtr( const string &relativePath, bool caseSensitive, ch
 	size_t offset = 0;
 	do {
 		const string curElement = relativePath.substr( offset, relativePath.find( separator, offset ) - offset );
-		vector<XmlTree> &children = curNode->getChildren();
-		vector<XmlTree>::iterator childIt;
+		list<XmlTree> &children = curNode->getChildren();
+		list<XmlTree>::iterator childIt;
 		for( childIt = children.begin(); childIt != children.end(); ++childIt ) {
 			if( tagsMatch( childIt->getTag(), curElement, caseSensitive ) )
 				break;
@@ -318,10 +318,10 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		node->append_node( doc.allocate_node( rapidxml::node_data, NULL, doc.allocate_string( getValue().c_str() ) ) );
 	parent->append_node( node );
 
-	for( vector<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
+	for( list<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
 		node->append_attribute( doc.allocate_attribute( doc.allocate_string( attrIt->getName().c_str() ), doc.allocate_string( attrIt->getValue().c_str() ) ) );
 		
-	for( vector<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
+	for( list<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
 		childIt->appendRapidXmlNode( doc, node );
 }
 
@@ -334,7 +334,7 @@ shared_ptr<rapidxml::xml_document<char> > XmlTree::createRapidXmlDoc() const
 		if( ! mDocType.empty() )
 			result->append_node( result->allocate_node( rapidxml::node_doctype, "", result->allocate_string( mDocType.c_str() ) ) );
 
-		for( vector<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
+		for( list<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
 			childIt->appendRapidXmlNode( *result, result.get() );
 
 		declarationNode->append_attribute( result->allocate_attribute( "version", "1.0" ) );
