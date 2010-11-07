@@ -101,7 +101,6 @@ class Capture {
 	typedef int DeviceIdentifier;
 #endif
 
-	//! \cond
 	// This is an abstract base class for implementing platform specific devices
 	class Device {
 	 public:

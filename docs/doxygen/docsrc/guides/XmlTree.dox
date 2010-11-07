@@ -117,7 +117,7 @@ std::string ownerCity = xmlNode.getChild( "library.owner.city", true, '.' );
 \endcode
 <BR>
 <h3>Values & Attributes</h3>
-As we've alredy seen, you can get the tag (or name) of a node by calling \ref cinder::XmlTree::getTag "getTag()". To get the value of a node as a string use \ref cinder::XmlTree::getValue "getValue()". As an additional convenience, you can have XmlTree parse a string for you for any type which supports the istream>> operator. For example, if you know the nodes' values are floats, you might do this:
+As we've already seen, you can get the tag (or name) of a node by calling \ref cinder::XmlTree::getTag "getTag()". To get the value of a node as a string use \ref cinder::XmlTree::getValue "getValue()". As an additional convenience, you can have XmlTree parse a string for you for any type which supports the istream>> operator. For example, if you know the nodes' values are floats, you might do this:
 \code
 vector<float> myFloats;
 for( XmlTree::Iter item = xml.begin(); item != xml.end(); ++item )

@@ -53,7 +53,7 @@ void deleteFile( const std::string &path );
 
 //! Returns a vector of substrings split by the separator \a separator. <tt>split( "one two three", ' ' ) -> [ "one", "two", "three" ]</tt>
 std::vector<std::string> split( const std::string &str, char separator );
-//! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", ' ,' ) -> [ "one", "two", "three" ]</tt>
+//! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", " ," ) -> [ "one", "two", "three" ]</tt>
 std::vector<std::string> split( const std::string &str, const std::string &separators );
 
 //! Returns a utf-16 encoded std::wstring by converting the utf-8 encoded string \a utf8
