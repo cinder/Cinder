@@ -51,11 +51,9 @@ class XmlTree {
 	  public:
 		//! \cond
 		ConstIter( const std::vector<XmlTree> *sequence );		
-		ConstIter( const std::vector<XmlTree> *sequence, std::vector<XmlTree>::const_iterator iter );
+		ConstIter( const std::vector<XmlTree> *sequence, std::vector<XmlTree>::const_iterator iter );		
+		ConstIter( const XmlTree &root, const std::string &filterPath, bool caseSensitive = false, char separator = '/' );
 		//! \endcond
-		
-		//! Constucts an iterator over the XmlTree \a root for children which match the path \a filterPath.
-		ConstIter( const XmlTree &root, const std::string &filterPath, char separator = '/' );
 
 		//! Returns a reference to the XmlTree the iterator currently points to.
 		const XmlTree&		operator*() const { return *mIterStack.back(); }
@@ -87,6 +85,7 @@ class XmlTree {
 		std::vector<const std::vector<XmlTree>*>				mSequenceStack;
 		std::vector<std::vector<XmlTree>::const_iterator>		mIterStack;
 		std::vector<std::string>								mFilter;
+		bool													mCaseSensitive;
 		//! \endcond		
 	};
 
@@ -101,12 +100,12 @@ class XmlTree {
 		Iter( std::vector<XmlTree> *sequence, std::vector<XmlTree>::iterator iter )
 			: ConstIter( sequence, iter )
 		{}
-		//! \endcond
 	
-		//! Constucts an iterator over the XmlTree \a root for children which match the path \a filterPath.
-		Iter( XmlTree &root, const std::string &filterPath, char separator = '/' )
-			: ConstIter( root, filterPath, separator )
+		Iter( XmlTree &root, const std::string &filterPath, bool caseSensitive, char separator )
+			: ConstIter( root, filterPath, caseSensitive, separator )
 		{}
+		//! \endcond
+
 		
 		//! Returns a reference to the XmlTree the iterator currently points to.
 		XmlTree&		operator*() const { return const_cast<XmlTree&>(*mIterStack.back()); }
@@ -243,16 +242,16 @@ class XmlTree {
 	const XmlTree&				getParent() const { return *mParent; }
 	
 	//! Returns the first child that matches \a relativePath or end() if none matches
-	Iter					find( const std::string &relativePath, char separator = '/' ) { return Iter( *this, relativePath, separator ); }
+	Iter					find( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) { return Iter( *this, relativePath, caseSensitive, separator ); }
 	//! Returns the first child that matches \a relativePath or end() if none matches
-	ConstIter				find( const std::string &relativePath, char separator = '/' ) const { return ConstIter( *this, relativePath, separator ); }
+	ConstIter				find( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const { return ConstIter( *this, relativePath, caseSensitive, separator ); }
 	//! Returns whether at least one child matches \a relativePath
-	bool						hasChild( const std::string &relativePath, char separator = '/' ) const;
+	bool						hasChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const;
 
 	//! Returns the first child that matches \a relativePath. Throws ChildNotFoundExc if none matches.
-	XmlTree&					getChild( const std::string &relativePath, char separator = '/' );
+	XmlTree&					getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' );
 	//! Returns the first child that matches \a relativePath. Throws ChildNotFoundExc if none matches.
-	const XmlTree&				getChild( const std::string &relativePath, char separator = '/' ) const;
+	const XmlTree&				getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const;
 	//! Returns a reference to the node's vector of children nodes.
 	std::vector<XmlTree>&		getChildren() { return mChildren; }
 	//! Returns a reference to the node's vector of children nodes.
@@ -288,11 +287,11 @@ class XmlTree {
 	/** Returns an Iter to the first child node of this node. **/	
 	Iter						begin() { return Iter( &mChildren ); }
 	/** Returns an Iter to the children node of this node which match the path \a filterPath. **/	
-	Iter						begin( const std::string &filterPath, char separator = '/' ) { return Iter( *this, filterPath, separator ); }	
+	Iter						begin( const std::string &filterPath, bool caseSensitive = false, char separator = '/' ) { return Iter( *this, filterPath, caseSensitive, separator ); }	
 	/** Returns an Iter to the first child node of this node. **/	
 	ConstIter					begin() const { return ConstIter( &mChildren ); }
 	/** Returns an Iter to the children node of this node which match the path \a filterPath. **/	
-	ConstIter					begin( const std::string &filterPath, char separator = '/' ) const { return ConstIter( *this, filterPath, separator ); }	
+	ConstIter					begin( const std::string &filterPath, bool caseSensitive = false, char separator = '/' ) const { return ConstIter( *this, filterPath, caseSensitive, separator ); }	
 	/** Returns an Iter which marks the end of the children of this node. **/	
 	Iter						end() { return Iter( &mChildren, mChildren.end() ); }
 	/** Returns an Iter which marks the end of the children of this node. **/	
@@ -343,11 +342,10 @@ class XmlTree {
 	std::shared_ptr<rapidxml::xml_document<char> >	createRapidXmlDoc() const;	
 
   private:
-	XmlTree*	getNodePtr( const std::string &relativePath, char separator ) const;
-	bool		getChildIterator( const std::string &relativePath, char separator, std::string *resultFilter, std::vector<XmlTree>::const_iterator *resultIt ) const;
+	XmlTree*	getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;
 	void		appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::xml_node<char> *parent ) const;
 
-	static std::vector<XmlTree>::const_iterator	findNextChildNamed( const std::vector<XmlTree> &sequence, std::vector<XmlTree>::const_iterator firstCandidate, const std::string &searchTag );
+	static std::vector<XmlTree>::const_iterator	findNextChildNamed( const std::vector<XmlTree> &sequence, std::vector<XmlTree>::const_iterator firstCandidate, const std::string &searchTag, bool caseSensitive );
 
 	NodeType					mNodeType;
   	std::string					mTag;

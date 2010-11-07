@@ -24,6 +24,7 @@
 
 #include "cinder/Xml.h"
 #include "cinder/Utilities.h"
+#include <boost/algorithm/string.hpp>
 
 #include "rapidxml/rapidxml.hpp"
 #include "rapidxml/rapidxml_print.hpp"
@@ -34,6 +35,17 @@ namespace cinder {
 
 void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *result, const XmlTree::ParseOptions &parseOptions );
 
+namespace {
+bool tagsMatch( const std::string &tag1, const std::string &tag2, bool caseSensitive )
+{
+	if( caseSensitive && ( tag1 == tag2 ) )
+		return true;
+	else if( ( ! caseSensitive ) && ( boost::iequals( tag1, tag2 ) ) )
+		return true;
+	else
+		return false;
+}
+} // anonymous namespace
 
 XmlTree::ConstIter::ConstIter( const std::vector<XmlTree> *sequence )
 {
@@ -47,7 +59,8 @@ XmlTree::ConstIter::ConstIter( const std::vector<XmlTree> *sequence, std::vector
 	mIterStack.push_back( iter );
 }
 
-XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, char separator )
+XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, bool caseSensitive, char separator )
+	: mCaseSensitive( caseSensitive )
 {
 	mFilter = split( filterPath, separator );
 
@@ -62,7 +75,7 @@ XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, ch
 		else
 			mSequenceStack.push_back( &mIterStack.back()->getChildren() );
 		
-		vector<XmlTree>::const_iterator child = findNextChildNamed( *mSequenceStack.back(), mSequenceStack.back()->begin(), *filterComp );
+		vector<XmlTree>::const_iterator child = findNextChildNamed( *mSequenceStack.back(), mSequenceStack.back()->begin(), *filterComp, mCaseSensitive );
 		if( child != (mSequenceStack.back())->end() )
 			mIterStack.push_back( child );
 		else { // failed to find an item that matches this part of the filter; mark as finished and return
@@ -94,7 +107,7 @@ void XmlTree::ConstIter::increment()
 	
 		bool found = false;
 		do {
-			vector<XmlTree>::const_iterator next = findNextChildNamed( *mSequenceStack.back(), mIterStack.back(), mFilter[mSequenceStack.size()-1] );
+			vector<XmlTree>::const_iterator next = findNextChildNamed( *mSequenceStack.back(), mIterStack.back(), mFilter[mSequenceStack.size()-1], mCaseSensitive );
 			if( next == mSequenceStack.back()->end() ) { // we've finished this part of the sequence stack
 				mIterStack.pop_back();
 				mSequenceStack.pop_back();
@@ -113,15 +126,15 @@ void XmlTree::ConstIter::increment()
 	}
 }
 
-vector<XmlTree>::const_iterator XmlTree::findNextChildNamed( const vector<XmlTree> &sequence, vector<XmlTree>::const_iterator firstCandidate, const string &searchTag )
+vector<XmlTree>::const_iterator XmlTree::findNextChildNamed( const vector<XmlTree> &sequence, vector<XmlTree>::const_iterator firstCandidate, const string &searchTag, bool caseSensitive )
 {
 	vector<XmlTree>::const_iterator result = firstCandidate;
-	while( result != sequence.end() )
-		if( result->getTag() == searchTag )
+	while( result != sequence.end() ) {
+		if( tagsMatch( result->getTag(), searchTag, caseSensitive ) )
 			break;
 		else
 			++result;
-			
+	}
 	return result;
 }
 
@@ -192,23 +205,23 @@ void XmlTree::loadFromDataSource( DataSourceRef dataSource, XmlTree *result, con
 	result->setNodeType( NODE_DOCUMENT ); // call this after parse - constructor replaces it
 }
 
-bool XmlTree::hasChild( const string &relativePath, char separator ) const
+bool XmlTree::hasChild( const string &relativePath, bool caseSensitive, char separator ) const
 {
-	return getNodePtr( relativePath, separator ) != NULL;
+	return getNodePtr( relativePath, caseSensitive, separator ) != NULL;
 }
 
-const XmlTree& XmlTree::getChild( const string &relativePath, char separator ) const
+const XmlTree& XmlTree::getChild( const string &relativePath, bool caseSensitive, char separator ) const
 {
-	XmlTree* child = getNodePtr( relativePath, separator );
+	XmlTree* child = getNodePtr( relativePath, caseSensitive, separator );
 	if( child )
 		return *child;
 	else
 		throw ChildNotFoundExc( *this, relativePath );
 }
 
-XmlTree& XmlTree::getChild( const string &relativePath, char separator )
+XmlTree& XmlTree::getChild( const string &relativePath, bool caseSensitive, char separator )
 {
-	XmlTree* child = getNodePtr( relativePath, separator );
+	XmlTree* child = getNodePtr( relativePath, caseSensitive, separator );
 	if( child )
 		return *child;
 	else
@@ -267,7 +280,7 @@ void XmlTree::push_back( const XmlTree &newChild )
 	mChildren.back().mParent = this;
 }
 
-XmlTree* XmlTree::getNodePtr( const string &relativePath, char separator ) const
+XmlTree* XmlTree::getNodePtr( const string &relativePath, bool caseSensitive, char separator ) const
 {
 	XmlTree *curNode = const_cast<XmlTree*>( this );
 	size_t offset = 0;
@@ -276,7 +289,7 @@ XmlTree* XmlTree::getNodePtr( const string &relativePath, char separator ) const
 		vector<XmlTree> &children = curNode->getChildren();
 		vector<XmlTree>::iterator childIt;
 		for( childIt = children.begin(); childIt != children.end(); ++childIt ) {
-			if( childIt->getTag() == curElement )
+			if( tagsMatch( childIt->getTag(), curElement, caseSensitive ) )
 				break;
 		}
 		if( childIt == children.end() ) // couldn't find this one - return NULL
@@ -288,37 +301,6 @@ XmlTree* XmlTree::getNodePtr( const string &relativePath, char separator ) const
 	} while ( ( offset != string::npos ) && ( offset != relativePath.length() ) );
 	
 	return curNode;
-}
-
-// walks 'relativePath' and returns an iterator pointing to the first descendant matching
-// 'resultFilter' contains the tail of the relativePath
-// Returns mChildren.end() on failure
-bool XmlTree::getChildIterator( const string &relativePath, char separator, string *resultFilter, vector<XmlTree>::const_iterator *resultIt ) const
-{
-	vector<XmlTree>::const_iterator curNode = mChildren.end();
-	size_t offset = 0;
-	
-	if( mChildren.empty() )
-		return false; // empty - failure
-	
-	const vector<XmlTree> *curChildren( &mChildren );
-	do {
-		*resultFilter = relativePath.substr( offset, relativePath.find( separator, offset ) - offset );
-		vector<XmlTree>::const_iterator childIt;
-		for( childIt = curChildren->begin(); childIt != curChildren->end(); ++childIt )
-			if( childIt->getTag() == *resultFilter )
-				break;
-		if( childIt == curChildren->end() )
-			return false; // failure
-		curNode = childIt;
-		offset = relativePath.find( separator, offset );
-		if( offset != string::npos )
-			++offset;
-		curChildren = &(curNode->getChildren());
-	} while( ( offset != string::npos ) && ( offset != relativePath.length() ) );
-	
-	*resultIt = curNode;
-	return true;
 }
 
 void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::xml_node<char> *parent ) const
