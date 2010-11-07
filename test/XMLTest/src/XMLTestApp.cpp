@@ -32,7 +32,7 @@ const XmlTree& findTrackNamed( const XmlTree &library, const std::string &search
 
 void XMLTestApp::setup()
 {
-	XmlTree doc( loadFile( getHomeDirectory() + "library.xml" ) );
+	const XmlTree doc( loadFile( getHomeDirectory() + "library.xml" ) );
 	XmlTree musicLibrary( doc.getChild( "library" ) );
 	for( XmlTree::Iter item = doc.begin("library/album"); item != doc.end(); ++item ) {
 		console() << "Node: " << item->getTag() << " Value: " << item->getValue() << endl;
@@ -59,6 +59,11 @@ void XMLTestApp::setup()
 	XmlTree &firstTrackRef = doc.getChild( "/library/album/track" );
 	firstTrackRef.setValue( "Replacement name" );
 	console() << doc.getChild( "/library/album/track" ) << std::endl;
+
+	// This code only works in VC2010
+/*	std::for_each( doc.begin( "library/album" ), doc.end(), []( const XmlTree &child ) {
+		app::console() << child.getChild( "title" ).getValue() << std::endl;
+	} );*/
 }
 
 void XMLTestApp::mouseDown( MouseEvent event )
