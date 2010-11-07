@@ -34,24 +34,94 @@ namespace cinder {
 void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *result, const XmlTree::ParseOptions &parseOptions );
 
 
-XmlTree::Iter::Iter( XmlTree &root, const string &filterPath, char separator )
-	: ConstIter( root, filterPath, separator )
+XmlTree::ConstIter::ConstIter( const std::vector<XmlTree> *sequence )
 {
+	mSequenceStack.push_back( sequence );
+	mIterStack.push_back( sequence->begin() );
 }
 
-XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, const char separator )
+XmlTree::ConstIter::ConstIter( const std::vector<XmlTree> *sequence, std::vector<XmlTree>::const_iterator iter )
 {
-	mEndSequence = &root.getChildren();
+	mSequenceStack.push_back( sequence );
+	mIterStack.push_back( iter );
+}
+
+XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, char separator )
+{
+	mFilter = split( filterPath, separator );
+
+	if( mFilter.empty() ) { // empty filter means nothing matches
+		setToEnd( &root.getChildren() );
+		return;
+	}	
+
+	for( vector<string>::const_iterator filterComp = mFilter.begin(); filterComp != mFilter.end(); ++filterComp ) {
+		if( mIterStack.empty() ) // first item
+			mSequenceStack.push_back( &root.getChildren() );
+		else
+			mSequenceStack.push_back( &mIterStack.back()->getChildren() );
+		
+		vector<XmlTree>::const_iterator child = findNextChildNamed( *mSequenceStack.back(), mSequenceStack.back()->begin(), *filterComp );
+		if( child != (mSequenceStack.back())->end() )
+			mIterStack.push_back( child );
+		else { // failed to find an item that matches this part of the filter; mark as finished and return
+			setToEnd( &root.getChildren() );
+			return;
+		}
+	}
+}
+
+// sets the iterator to be pointing to the end, meaning iteration is done
+void XmlTree::ConstIter::setToEnd( const vector<XmlTree> *seq )
+{
+	mSequenceStack.clear();
+	mSequenceStack.push_back( seq );
+	mIterStack.clear();
+	mIterStack.push_back( seq->end() );
+}
+
+bool XmlTree::ConstIter::isDone() const
+{
+	return ( mSequenceStack.size() == 1 ) && ( mIterStack.back() == mSequenceStack[0]->end() );
+}
+
+void XmlTree::ConstIter::increment()
+{
+	++mIterStack.back();
 	
-	vector<XmlTree>::const_iterator childIt;
-	if( ! root.getChildIterator( filterPath, separator, &mFilter, &childIt ) ) { // false means couldn't find it - mark ourselves as done
-		mIter = mEndSequence->end();
-		mSequence = mEndSequence;
+	if( ! mFilter.empty() ) {
+	
+		bool found = false;
+		do {
+			vector<XmlTree>::const_iterator next = findNextChildNamed( *mSequenceStack.back(), mIterStack.back(), mFilter[mSequenceStack.size()-1] );
+			if( next == mSequenceStack.back()->end() ) { // we've finished this part of the sequence stack
+				mIterStack.pop_back();
+				mSequenceStack.pop_back();
+				++mIterStack.back(); // next in the new top, which was formerly top-1
+			}
+			else if( mSequenceStack.size() < mFilter.size() ) { // we're not on a leaf, so push this onto the stack
+				mIterStack[mIterStack.size()-1] = next;
+				mSequenceStack.push_back( &next->getChildren() );
+				mIterStack.push_back( next->getChildren().begin() );
+			}
+			else {
+				mIterStack[mIterStack.size()-1] = next;
+				found = true;
+			}
+		} while( ( ! isDone() ) && ( ! found ) );
 	}
-	else {
-		mIter = childIt;
-		mSequence = &(mIter->getParent().getChildren());
-	}
+}
+
+vector<XmlTree>::const_iterator XmlTree::findNextChildNamed( const vector<XmlTree> &sequence, vector<XmlTree>::const_iterator firstCandidate, const string &searchTag )
+{
+	vector<XmlTree>::const_iterator result = firstCandidate;
+	while( result != sequence.end() )
+		if( result->getTag() == searchTag )
+			break;
+		else
+			++result;
+			
+	return result;
 }
 
 XmlTree::XmlTree( const std::string &xmlString, ParseOptions parseOptions )
