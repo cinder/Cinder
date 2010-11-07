@@ -31,6 +31,7 @@
 #include "cinder/Exception.h"
 
 #include <boost/lexical_cast.hpp>
+#include <iterator>
 #include <string>
 #include <vector>
 #include <list>
@@ -364,5 +365,28 @@ class XmlTree {
 
 std::ostream& operator<<( std::ostream &out, const XmlTree &xml );
 
-
 } // namespace cinder
+
+namespace std {
+
+//! \cond
+template<>
+struct iterator_traits<cinder::XmlTree::Iter> {
+	typedef cinder::XmlTree			value_type;
+	typedef ptrdiff_t				difference_type;
+	typedef forward_iterator_tag	iterator_category;
+	typedef cinder::XmlTree*		pointer;
+	typedef cinder::XmlTree&		reference;
+};
+
+template<>
+struct iterator_traits<cinder::XmlTree::ConstIter> {
+	typedef cinder::XmlTree			value_type;
+	typedef ptrdiff_t				difference_type;
+	typedef forward_iterator_tag	iterator_category;
+	typedef const cinder::XmlTree*	pointer;
+	typedef const cinder::XmlTree&	reference;
+};
+//! \endcond
+
+} // namespace std
