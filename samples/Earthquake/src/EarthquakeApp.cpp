@@ -242,36 +242,6 @@ void EarthquakeApp::draw()
 
 void EarthquakeApp::parseEarthquakes( const string &url )
 {
-/*	XmlDocument doc( loadUrlStream( url ) );
-	vector<XmlElement> items( doc.rootNode().children() );
-
-	for( vector<XmlElement>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter ) {
-		if( itemIter->name() == "entry" ) {
-			// Title is in the form "M 3.3, Puerto Rico region"
-			const XmlElement &titleEl = itemIter->findChild( "title" );
-			istringstream titleString( titleEl.value() );
-			string dummy, title;
-			float magnitude;
-			titleString.ignore( 2, ' ' );
-			titleString >> magnitude;
-			titleString.ignore( 2, ' ' );
-			char lineBuffer[512];
-			titleString.getline( lineBuffer, 511 );
-			title = string( lineBuffer );
-			
-			//const XmlElement &dateEl = itemIter->findChild( "updated" );
-			
-			const XmlElement &locationEl = itemIter->findChild( "georss:point" );
-			istringstream locationString( locationEl.value() );
-			Vec2f locationVector;
-			locationString >> locationVector.x >> locationVector.y;
-			
-			float elevationValue = fromString<float>( itemIter->findChild( "georss:elev" ).value() );
-	console() << "El: " << elevationValue;
-			mEarth.addQuake( locationVector.x, locationVector.y, magnitude, title );
-		}
-	}*/
-	
 	const XmlTree xml( loadUrl( Url( url ) ) );
 	for( XmlTree::ConstIter itemIter = xml.begin( "feed/entry" ); itemIter != xml.end(); ++itemIter ) {
 		string titleLine( itemIter->getChild( "title" ).getValue() );
@@ -283,8 +253,6 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 		Vec2f locationVector;
 		locationString >> locationVector.x >> locationVector.y;
 		
-		float elevationValue = itemIter->getChild( "georss:elev" ).getValue<float>( 0 );
-std::cout << "Elevation: " << elevationValue << std::endl;
 		mEarth.addQuake( locationVector.x, locationVector.y, magnitude, title );		
 	}
 	console() << xml << std::endl;
