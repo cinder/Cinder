@@ -1,7 +1,5 @@
 /**
 \page guide_XmlTree XML in Cinder
-<H2>XML in Cinder</H2>
-<BR>
 <h3>Introduction</h3>
 Cinder provides the \ref cinder::XmlTree "XmlTree" class for processing XML. This class is recursive, meaning an XmlTree can contain other XmlTrees as its children. This design is similar to XML itself, which is a hierarchical format where an element can contain children elements.
 <BR><BR>
