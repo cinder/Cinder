@@ -216,7 +216,7 @@ const XmlTree& XmlTree::getChild( const string &relativePath, bool caseSensitive
 	if( child )
 		return *child;
 	else
-		throw ChildNotFoundExc( *this, relativePath );
+		throw ExcChildNotFound( *this, relativePath );
 }
 
 XmlTree& XmlTree::getChild( const string &relativePath, bool caseSensitive, char separator )
@@ -225,7 +225,7 @@ XmlTree& XmlTree::getChild( const string &relativePath, bool caseSensitive, char
 	if( child )
 		return *child;
 	else
-		throw ChildNotFoundExc( *this, relativePath );
+		throw ExcChildNotFound( *this, relativePath );
 }
 
 const XmlTree::Attr& XmlTree::getAttribute( const string &attrName ) const
@@ -233,7 +233,7 @@ const XmlTree::Attr& XmlTree::getAttribute( const string &attrName ) const
 	for( list<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
 		if( attrIt->getName() == attrName )
 			return *attrIt;
-	throw AttrNotFoundExc( *this, attrName );
+	throw ExcAttrNotFound( *this, attrName );
 }
 
 void XmlTree::setAttribute( const std::string &attrName, const std::string &value )
@@ -304,7 +304,7 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		case XmlTree::NODE_COMMENT: type = rapidxml::node_comment; break;
 		case XmlTree::NODE_CDATA: type = rapidxml::node_cdata; break;
 		
-		default: throw UnknownNodeTypeExc();
+		default: throw ExcUnknownNodeType();
 	}
 	rapidxml::xml_node<char> *node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), NULL );
 	if( ! getValue().empty() )
@@ -359,12 +359,12 @@ void XmlTree::write( DataTargetRef target, bool createDocument )
 	os->writeData( ss.str().c_str(), ss.str().length() );
 }
 
-XmlTree::ChildNotFoundExc::ChildNotFoundExc( const XmlTree &node, const string &childPath ) throw()
+XmlTree::ExcChildNotFound::ExcChildNotFound( const XmlTree &node, const string &childPath ) throw()
 {
 	sprintf( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
 }
 
-XmlTree::AttrNotFoundExc::AttrNotFoundExc( const XmlTree &node, const string &attrName ) throw()
+XmlTree::ExcAttrNotFound::ExcAttrNotFound( const XmlTree &node, const string &attrName ) throw()
 {
 	sprintf( mMessage, "Could not find attribute: %s for node: %s", attrName.c_str(), node.getPath().c_str() );
 }

@@ -201,6 +201,9 @@ class XmlTree {
 		: mTag( tag ), mValue( value ), mParent( parent ), mNodeType( type )
 	{}
 
+	//! Returns an XML document node
+	static XmlTree		createDoc() { return XmlTree( "", "", 0, NODE_DOCUMENT ); }
+
 	//! Returns the type of this node as a NodeType.
 	NodeType					getNodeType() const { return mNodeType; }
 	//! Sets the type of this node to NodeType \a type.
@@ -248,9 +251,9 @@ class XmlTree {
 	//! Returns whether at least one child matches \a relativePath
 	bool						hasChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const;
 
-	//! Returns the first child that matches \a relativePath. Throws ChildNotFoundExc if none matches.
+	//! Returns the first child that matches \a relativePath. Throws ExcChildNotFound if none matches.
 	XmlTree&					getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' );
-	//! Returns the first child that matches \a relativePath. Throws ChildNotFoundExc if none matches.
+	//! Returns the first child that matches \a relativePath. Throws ExcChildNotFound if none matches.
 	const XmlTree&				getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const;
 	//! Returns a reference to the node's list of children nodes.
 	std::list<XmlTree>&			getChildren() { return mChildren; }
@@ -314,9 +317,9 @@ class XmlTree {
 	};
 	
 	//! Exception expressing the absence of an expected child node.
-	class ChildNotFoundExc : public XmlTree::Exception {
+	class ExcChildNotFound : public XmlTree::Exception {
 	  public:
-		ChildNotFoundExc( const XmlTree &node, const std::string &childPath ) throw();
+		ExcChildNotFound( const XmlTree &node, const std::string &childPath ) throw();
 	  
 		virtual const char* what() const throw() { return mMessage; }
 	  
@@ -325,9 +328,9 @@ class XmlTree {
 	};
 
 	//! Exception expressing the absence of an expected attribute.
-	class AttrNotFoundExc : public XmlTree::Exception {
+	class ExcAttrNotFound : public XmlTree::Exception {
 	  public:
-		AttrNotFoundExc( const XmlTree &node, const std::string &attrName ) throw();
+		ExcAttrNotFound( const XmlTree &node, const std::string &attrName ) throw();
 			  
 		virtual const char* what() const throw() { return mMessage; }
 	  
@@ -336,7 +339,7 @@ class XmlTree {
 	};
 
 	//! Exception implying an XML node of an unknown type. Implies a low-level problem communicating with RapidXML.
-	class UnknownNodeTypeExc : public cinder::Exception {
+	class ExcUnknownNodeType : public cinder::Exception {
 	};
 
 	//! Returns a shared_ptr to a RapidXML xml_document. If \a createDocument is true then an implicit parent NODE_DOCUMENT is created when necessary and \a this is treated as the root element.
