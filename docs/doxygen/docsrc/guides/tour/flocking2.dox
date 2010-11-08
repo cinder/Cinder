@@ -19,7 +19,7 @@ The first rule of flocking is that objects want their own space. They will do wh
 
 		list::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
-			Vec3f dir = p1-&gt;mPos[0] - p2-&gt;mPos[0];
+			Vec3f dir = p1-&gt;mPos - p2-&gt;mPos;
 			float distSqrd = dir.lengthSquared();
 
 			if( distSqrd &lt;= zoneRadiusSqrd ) {	// SEPARATION

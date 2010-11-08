@@ -17,7 +17,7 @@ In the last chapter, we discussed the first rule of Flocking: avoid overcrowding
 	for( list::iterator p1 = mParticles.begin(); p1 != mParticles.end(); ++p1 ) {
 		list::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
-			Vec3f dir = p1-&gt;mPos[0] - p2-&gt;mPos[0];
+			Vec3f dir = p1-&gt;mPos - p2-&gt;mPos;
 			float distSqrd = dir.lengthSquared();
 
 			if( distSqrd &lt; zoneRadiusSqrd ) { // If the neighbor is within the zone radius...
