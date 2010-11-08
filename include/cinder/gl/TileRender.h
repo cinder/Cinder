@@ -43,6 +43,10 @@ class TileRender {
 	Surface		getSurface() const { return mSurface; }
 	
 	void		setMatricesWindow( int32_t windowWidth, int32_t windowHeight );
+	void		setMatricesWindow( const Vec2i &windowSize ) { setMatricesWindow( windowSize.x, windowSize.y ); }
+	void		setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f );
+	void		setMatricesWindowPersp( const Vec2i &windowSize, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f )
+												{ setMatricesWindowPersp( windowSize.x, windowSize.y, fovDegrees, nearPlane, farPlane ); }
 	void		setMatrices( const Camera &camera );
 
 	void		frustum( float left, float right, float bottom, float top, float nearPlane, float farPlane );

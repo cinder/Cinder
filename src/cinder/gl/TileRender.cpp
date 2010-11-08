@@ -81,6 +81,12 @@ bool TileRender::nextTile()
 	return true;
 }
 
+void TileRender::setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees, float nearPlane, float farPlane )
+{
+	CameraPersp cam( screenWidth, screenHeight, fovDegrees, nearPlane, farPlane );
+	setMatrices( cam );
+}
+
 void TileRender::setMatricesWindow( int32_t windowWidth, int32_t windowHeight )
 {
 	ortho( 0, (float)windowWidth, (float)windowHeight, 0, -1.0f, 1.0f );
