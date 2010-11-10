@@ -106,6 +106,13 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 			mMesh.write( writeFile( path ) );
 		}
 	}
+	else if( event.getChar() == 'j' ) {
+		std::string path = getSaveFilePath( "output.obj" );
+		if( ! path.empty() ) {
+			console() << "Saving to " << path;
+			ObjLoader::write( writeFile( path ), mMesh );
+		}	
+	}	
 	else if( event.getChar() == 'f' ) {
 		frameCurrentObject();
 	}

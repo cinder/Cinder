@@ -24,6 +24,8 @@
 
 #include <boost/lexical_cast.hpp>
 using boost::lexical_cast;
+#include <sstream>
+using std::ostringstream;
 
 #include <sstream>
 using namespace std;
@@ -425,5 +427,62 @@ void ObjLoader::loadInternal( const Group &group, map<int,int> &uniqueVerts, Tri
 	}	
 }
 
+void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool writeNormals, bool includeUVs )
+{
+	OStreamRef stream = dataTarget->getStream();
+	const size_t numVerts = mesh.getNumVertices();
+	for( size_t p = 0; p < numVerts; ++p ) {
+		ostringstream os;
+		os << "v " << mesh.getVertices()[p].x << " " << mesh.getVertices()[p].y << " " << mesh.getVertices()[p].z << std::endl;
+		stream->write( os.str() );
+	}
+
+	const bool processTexCoords = mesh.hasTexCoords() && includeUVs;
+	if( processTexCoords ) {
+		for( size_t p = 0; p < numVerts; ++p ) {
+			ostringstream os;
+			os << "vt " << mesh.getTexCoords()[p].x << " " << mesh.getTexCoords()[p].y << std::endl;
+			stream->write( os.str() );
+		}
+	}
+	
+	const bool processNormals = mesh.hasNormals() && writeNormals;
+	if( processNormals ) {
+		for( size_t p = 0; p < numVerts; ++p ) {
+			ostringstream os;
+			os << "vn " << mesh.getNormals()[p].x << " " << mesh.getNormals()[p].y << " " << mesh.getNormals()[p].z << std::endl;
+			stream->write( os.str() );
+		}
+	}
+	
+	const size_t numTriangles = mesh.getNumTriangles();
+	const std::vector<size_t>& indices( mesh.getIndices() );
+	for( size_t t = 0; t < numTriangles; ++t ) {
+		ostringstream os;
+		os << "f ";
+		if( processNormals && processTexCoords ) {
+			os << indices[t*3+0]+1 << "/" << indices[t*3+0]+1 << "/" << indices[t*3+0]+1 << " ";
+			os << indices[t*3+1]+1 << "/" << indices[t*3+1]+1 << "/" << indices[t*3+1]+1 << " ";
+			os << indices[t*3+2]+1 << "/" << indices[t*3+2]+1 << "/" << indices[t*3+2]+1 << " ";
+		}
+		else if ( processNormals ) {
+			os << indices[t*3+0]+1 << "//" << indices[t*3+0]+1 << " ";
+			os << indices[t*3+1]+1 << "//" << indices[t*3+1]+1 << " ";
+			os << indices[t*3+2]+1 << "//" << indices[t*3+2]+1 << " ";
+		}
+		else if( processTexCoords ) {
+			os << indices[t*3+0]+1 << "/" << indices[t*3+0]+1 << " ";
+			os << indices[t*3+1]+1 << "/" << indices[t*3+1]+1 << " ";
+			os << indices[t*3+2]+1 << "/" << indices[t*3+2]+1 << " ";
+		}
+		else { // just verts
+			os << indices[t*3+0] << " ";
+			os << indices[t*3+1] << " ";
+			os << indices[t*3+2] << " ";			
+		}
+		os << std::endl;
+		stream->write( os.str() );
+	}
+}
 
 } // namespace cinder

@@ -76,6 +76,9 @@ class ObjLoader {
 		bool					mHasTexCoords;
 		bool					mHasNormals;
 	};
+
+	//! Writes a new OBJ file to \a dataTarget. \warning - this method will be moved in the future
+	static void		write( DataTargetRef dataTarget, const TriMesh &mesh, bool writeNormals = true, bool writeUVs = true );
 	
  private:
 	typedef boost::tuple<int,int> VertexPair;

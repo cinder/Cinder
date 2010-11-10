@@ -64,6 +64,7 @@ class TriMesh {
 	const std::vector<Color>&		getColorsRGB() const { return mColorsRGB; }
 	const std::vector<ColorA>&		getColorsRGBA() const { return mColorsRGBA; }
 	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	
+	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
 	const std::vector<size_t>&		getIndices() const { return mIndices; }		
 
 	//! Calculates the bounding box of all vertices
