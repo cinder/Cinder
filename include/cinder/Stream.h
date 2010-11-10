@@ -80,6 +80,7 @@ class OStream : public virtual StreamBase {
  public:
 	virtual ~OStream() {}
 
+	void		write( const std::string &s ) { writeData( s.c_str(), s.length() ); }
 	template<typename T>
 	void		write( T t );
 	template<typename T>
