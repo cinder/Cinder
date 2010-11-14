@@ -420,6 +420,9 @@ char mapVirtualKey( WPARAM wParam )
 	BYTE keyboardState[256];
 	::GetKeyboardState( keyboardState );
 	WORD result[4];
+
+	// the control key messes up the ToAscii result, so we zero it out
+	keyboardState[VK_CONTROL] = 0;
 	
 	int resultLength = ::ToAscii( wParam, ::MapVirtualKey( wParam, 0 ), keyboardState, result, 0 );
 	if( resultLength == 1 )
