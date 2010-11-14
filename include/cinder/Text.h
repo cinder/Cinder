@@ -33,6 +33,7 @@
 
 namespace cinder {
 
+#if ! defined( CINDER_COCOA_TOUCH )
 class TextLayout {
  public:
 	/*! \brief This is an abstract line
@@ -77,8 +78,9 @@ class TextLayout {
 	float	mCurrentLeadingOffset;
 	int		mHorizontalBorder, mVerticalBorder;
   
-	std::deque<shared_ptr<class Line> >		mLines;
+	std::deque<std::shared_ptr<class Line> >		mLines;
 };
+#endif
 
 /** \brief Renders a single string and returns it as a Surface.
 	Optional \a baselineOffset pointer will receive how many pixels of descender are in the returned Surface. Offset rendering the result Surface by this amount in order to preserve a consistent baseline.

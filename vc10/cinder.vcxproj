@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -49,7 +49,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\include\tinyxml;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -75,7 +75,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\include\tinyxml;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -94,6 +94,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp" />
+    <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp" />
+    <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp" />
     <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp" />
     <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
@@ -102,6 +104,7 @@
     <ClCompile Include="..\src\cinder\Buffer.cpp" />
     <ClCompile Include="..\src\cinder\Camera.cpp" />
     <ClCompile Include="..\src\cinder\Capture.cpp" />
+    <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp" />
     <ClCompile Include="..\src\cinder\Channel.cpp" />
     <ClCompile Include="..\src\cinder\Color.cpp" />
     <ClCompile Include="..\src\cinder\DataSource.cpp" />
@@ -113,6 +116,7 @@
     <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourcePng.cpp" />
     <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Blend.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
     <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
     <ClCompile Include="..\src\cinder\Path2D.cpp" />
@@ -120,6 +124,7 @@
     <ClCompile Include="..\src\cinder\PolyLine.cpp" />
     <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp" />
     <ClCompile Include="..\src\cinder\Rand.cpp" />
+    <ClCompile Include="..\src\cinder\Ray.cpp" />
     <ClCompile Include="..\src\cinder\Rect.cpp" />
     <ClCompile Include="..\src\cinder\Serial.cpp" />
     <ClCompile Include="..\src\cinder\Shape2d.cpp" />
@@ -147,21 +152,6 @@
     <ClCompile Include="..\src\cinder\audio\Io.cpp" />
     <ClCompile Include="..\src\cinder\audio\Output.cpp" />
     <ClCompile Include="..\src\cinder\audio\SourceFileWindowsMedia.cpp" />
-    <ClCompile Include="..\src\tinyxml\action_store.cpp" />
-    <ClCompile Include="..\src\tinyxml\lex_util.cpp" />
-    <ClCompile Include="..\src\tinyxml\node_set.cpp" />
-    <ClCompile Include="..\src\tinyxml\tinystr.cpp" />
-    <ClCompile Include="..\src\tinyxml\tinyxml.cpp" />
-    <ClCompile Include="..\src\tinyxml\tinyxmlerror.cpp" />
-    <ClCompile Include="..\src\tinyxml\tinyxmlparser.cpp" />
-    <ClCompile Include="..\src\tinyxml\tokenlist.cpp" />
-    <ClCompile Include="..\src\tinyxml\xml_util.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_expression.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_processor.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_stack.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_static.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_stream.cpp" />
-    <ClCompile Include="..\src\tinyxml\xpath_syntax.cpp" />
     <ClCompile Include="..\src\cinder\cairo\Cairo.cpp" />
     <ClCompile Include="..\src\cinder\gl\DisplayList.cpp" />
     <ClCompile Include="..\src\cinder\gl\Fbo.cpp" />
@@ -200,10 +190,17 @@
   <ItemGroup>
     <ClInclude Include="..\include\cinder\app\Event.h" />
     <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
+    <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h" />
+    <ClInclude Include="..\include\cinder\audio\PcmBuffer.h" />
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
+    <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
+    <ClInclude Include="..\include\cinder\Filesystem.h" />
+    <ClInclude Include="..\include\cinder\ip\Blend.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
+    <ClInclude Include="..\include\rapidxml\rapidxml.hpp" />
+    <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp" />
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
     <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h" />
     <ClInclude Include="..\src\AntTweakBar\LoadOGL.h" />
@@ -224,7 +221,6 @@
     <ClInclude Include="..\include\cinder\Buffer.h" />
     <ClInclude Include="..\include\cinder\Camera.h" />
     <ClInclude Include="..\include\cinder\Capture.h" />
-    <ClInclude Include="..\include\cinder\CaptureCocoa.h" />
     <ClInclude Include="..\include\cinder\Channel.h" />
     <ClInclude Include="..\include\cinder\ChanTraits.h" />
     <ClInclude Include="..\include\cinder\Cinder.h" />
@@ -277,12 +273,10 @@
     <ClInclude Include="..\include\cinder\app\AppImplMswScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\FileDropEvent.h" />
-    <ClInclude Include="..\include\cinder\app\FlintView.h" />
     <ClInclude Include="..\include\cinder\app\KeyEvent.h" />
     <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
     <ClInclude Include="..\include\cinder\app\Renderer.h" />
     <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
-    <ClInclude Include="..\include\cinder\audio\Buffer.h" />
     <ClInclude Include="..\include\cinder\audio\Callback.h" />
     <ClInclude Include="..\include\cinder\audio\Io.h" />
     <ClInclude Include="..\include\cinder\audio\Output.h" />

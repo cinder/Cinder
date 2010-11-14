@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<library>
+  <owner>
+    <name>Andrew Bell</name>
+    <city>New York</city>
+  </owner>
+  <album musician="John Coltrane" year="1989">
+    <title>Ole Coltrane</title>
+    <track id="0">Ole</track>
+    <track id="1">Dahomey Dance</track>
+    <track id="2">Aisha</track>
+    <track id="3">To Her Ladyship</track>
+  </album>
+  <album musician="Burial + Four Tet" year="2009">
+    <title>Moth/Wolf Club</title>
+    <track id="0">Moth</track>
+    <track id="1">Wolf</track>
+  </album>
+</library>

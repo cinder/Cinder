@@ -27,6 +27,9 @@
 
 #if defined( CINDER_COCOA )
 	#include <CoreFoundation/CoreFoundation.h>
+	#if defined( __MAC_OS_X_VERSION_MAX_ALLOWED ) && (__MAC_OS_X_VERSION_MAX_ALLOWED < 1060)
+		#define kAudioFileReadPermission fsRdPerm
+	#endif
 #endif
 
 namespace cinder { namespace audio {
@@ -66,7 +69,7 @@ LoaderSourceFile::LoaderSourceFile( SourceFile *source, Target *target )
 	targetDescription.mChannelsPerFrame = target->getChannelCount();
 	targetDescription.mBitsPerChannel = target->getBitsPerSample();
 	
-	mConverter = shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceFile::dataInputCallback, sourceDescription, targetDescription, mSource->mMaxPacketSize ) );
+	mConverter = std::shared_ptr<CocoaCaConverter>( new CocoaCaConverter( this, &LoaderSourceFile::dataInputCallback, sourceDescription, targetDescription, mSource->mMaxPacketSize ) );
 }
 
 uint64_t LoaderSourceFile::getSampleOffset() const { 
@@ -77,9 +80,9 @@ void LoaderSourceFile::setSampleOffset( uint64_t anOffset ) {
 	mPacketOffset = mSource->packetAtSample( anOffset );
 }
 
-void LoaderSourceFile::loadData( uint32_t *ioSampleCount, BufferList *ioData )
+void LoaderSourceFile::loadData( BufferList *ioData )
 {	
-	mConverter->loadData( ioSampleCount, ioData );
+	mConverter->loadData( ioData );
 }
 
 void LoaderSourceFile::dataInputCallback( Loader* aLoader, uint32_t *ioNumberDataPackets, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions )
@@ -158,24 +161,27 @@ SourceFile::SourceFile( DataSourceRef dataSourceRef )
 	if( dataSourceRef->isFilePath() ) {
 		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath() );
 		::CFURLRef urlRef = ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString, kCFURLPOSIXPathStyle, false );
-		err = AudioFileOpenURL( urlRef, fsRdPerm, 0, &aFileRef );
+		err = AudioFileOpenURL( urlRef, kAudioFileReadPermission, 0, &aFileRef );
 		::CFRelease( pathString );
 		::CFRelease( urlRef );
 		if( err ) {
+#if defined(CINDER_MAC)
+			//TODO: find iphone equivalent of fnfErr
 			if( err == fnfErr ) {
 				throw IoExceptionSourceNotFound();
 			}
+#endif
 			throw IoExceptionFailedLoad();
 		}
 	} else if( dataSourceRef->isUrl() ) {
 		::CFURLRef urlRef = cocoa::createCfUrl( dataSourceRef->getUrl() );
-		err = AudioFileOpenURL( urlRef, fsRdPerm, 0, &aFileRef );
+		err = AudioFileOpenURL( urlRef, kAudioFileReadPermission, 0, &aFileRef );
 		::CFRelease( urlRef );
 		if( err ) {
 			throw IoExceptionFailedLoad();
 		}
 	}
-	mFileRef = shared_ptr<OpaqueAudioFileID>( aFileRef, AudioFileClose );
+	mFileRef = std::shared_ptr<OpaqueAudioFileID>( aFileRef, AudioFileClose );
 	
 	
 	//load header info

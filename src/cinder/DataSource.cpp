@@ -85,15 +85,15 @@ DataSourcePathRef loadFile( const std::string &path )
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceUrl
-#if ! defined( CINDER_COCOA_TOUCH )
-DataSourceUrlRef DataSourceUrl::createRef( const Url &Url )
+DataSourceUrlRef DataSourceUrl::createRef( const Url &url )
 {
-	return DataSourceUrlRef( new DataSourceUrl( Url ) );
+	return DataSourceUrlRef( new DataSourceUrl( url ) );
 }
 
-DataSourceUrl::DataSourceUrl( const Url &Url )
-	: DataSource( "", Url )
+DataSourceUrl::DataSourceUrl( const Url &url )
+	: DataSource( "", url )
 {
+	setFilePathHint( url.str() );
 }
 
 void DataSourceUrl::createBuffer()
@@ -107,11 +107,10 @@ IStreamRef DataSourceUrl::createStream()
 	return loadUrlStream( mUrl );
 }
 
-DataSourceUrlRef loadUrl( const Url &Url )
+DataSourceUrlRef loadUrl( const Url &url )
 {
-	return DataSourceUrl::createRef( Url );
+	return DataSourceUrl::createRef( url );
 }
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceBuffer

@@ -129,7 +129,7 @@ class Texture {
 	//! the Texture's internal format, which is the format that OpenGL stores the texture data in memory. Common values include \c GL_RGB, \c GL_RGBA and \c GL_LUMINANCE
 	GLint			getInternalFormat() const;
 	//! the ID number for the texture, appropriate to pass to calls like \c glBindTexture()
-	GLuint			getTextureId() const { return mObj->mTextureID; }
+	GLuint			getId() const { return mObj->mTextureID; }
 	//! the target associated with texture. Typical values are \c GL_TEXTURE_2D and \c GL_TEXTURE_RECTANGLE_ARB
 	GLenum			getTarget() const { return mObj->mTarget; }
 	//!	whether the texture is flipped vertically
@@ -248,12 +248,12 @@ class Texture {
 		void			(*mDeallocatorFunc)(void *refcon);
 		void			*mDeallocatorRefcon;			
 	};
-	shared_ptr<Obj>		mObj;
+	std::shared_ptr<Obj>		mObj;
 
   public:
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> Texture::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> Texture::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Texture::mObj; }
 	void reset() { mObj.reset(); }
 	//@}  
@@ -281,12 +281,12 @@ class TextureCache {
 		static void TextureCacheDeallocator( void *aDeallocatorRefcon );
 	};
  
-	shared_ptr<Obj>		mObj;
+	std::shared_ptr<Obj>		mObj;
 
   public:
  	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> TextureCache::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> TextureCache::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &TextureCache::mObj; }
 	void reset() { mObj.reset(); }
 	//@}	

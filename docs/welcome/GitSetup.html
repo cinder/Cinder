@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" href="stylesheets/cinder.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="stylesheets/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="stylesheets/jquery.lightbox-0.5.pack.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesheets/jquery.lightbox-0.5.css" media="screen" />
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+	<title>Windows Setup</title>
+</head>
+<body>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<link rel="stylesheet" href="stylesheets/cinder.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="stylesheets/jquery-1.4.2.min.js"></script>
+	<script type="text/javascript" src="stylesheets/jquery.lightbox-0.5.pack.js"></script>
+	<link rel="stylesheet" type="text/css" href="stylesheets/jquery.lightbox-0.5.css" media="screen" />
+	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+	<title>Cinder + Git</title>
+</head>
+<body>
+
+<script type="text/javascript">
+$(function() {
+	$('#macgit_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});
+	$('#mswgit_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});
+	$('#macbuild_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});		
+	$('#mswbuild_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});		
+	$('#doxygen_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});	
+});
+</script>
+
+<div class="wrapper">
+	<div class="header">
+		<h1><a href="http://libcinder.org">Cinder</a><h1>
+	</div>
+
+	<div class="contents">
+		<h1>Cinder + Git</h1>
+		<p>If you're interested in keeping up with the latest Cinder development or contributing to the project (yes please!) then you'll definitely want to setup a clone of Cinder's git repository. Cinder's home on Github is at <a href="http://github.com/cinder">http://github.com/cinder</a>.</p>
+		<br>
+
+		<h2>Installing Git on Mac OS X</h2>
+		<p>If you don't already have Git installed on your Mac, start by downloading the <a href="http://code.google.com/p/git-osx-installer/downloads/list">Git installer here</a> (at the time of this writing, the file <em>git-1.7.2.3-intel-leopard.dmg</em> was the latest installer).</p>
+		<br />
+		<p>Run the installer with the default settings and then launch Terminal. Navigate to the directory where you'd like to create the repository and run this command:</p>
+		<br />
+		<code>
+		git clone git://github.com/cinder/Cinder.git cinder_master
+		</code>
+		<br /><br />
+		<center>
+		<div id="macgit_image">
+			<a href="git_images/mac_images/step1.png" title="Download the latest Git installer from its Google code page.">
+				<img src="git_images/mac_images/step1_thumb.png" /></a>
+			<a href="git_images/mac_images/step2.png" title="The default installer options are good choices.">
+				<img src="git_images/mac_images/step2_thumb.png" /></a>
+			<a href="git_images/mac_images/step3.png" title="Cinder's home on Github provides a path for checking out the repository, <code>git://github.com/cinder/Cinder.git</code>">
+				<img src="git_images/mac_images/step3_thumb.png" /></a>
+			<a href="git_images/mac_images/step4.png" title="After launching Terminal, execute the command<br /> <code>git clone git://github.com/cinder/Cinder.git cinder_master</code>">
+				<img src="git_images/mac_images/step4_thumb.png" /></a>
+		</div>
+		</center>
+		<br />
+		<p>If you aren't familiar with git, the only command you need to remember is <code>git pull</code> which, when executed from your new cinder_master directory, will update your copy of Cinder. Doing forget to rebuild Cinder (described below) whenever you do this.</p>
+		<h2>Installing Git on Windows</h2>
+		<p>If you don't already have Git installed on your PC, start by downloading the <a href="http://code.google.com/p/msysgit/downloads/list">Git installer here</a> (at the time of this writing, the file <em>Git-1.7.2.3-preview20100911.exe</em> was the latest installer).</p>
+		<br />
+		<p>When prompted by the installer, we recommend that you select the <em>Use Git Bash only</em> option for <em>Adjusting your PATH environment</em>. For line-ending configurations, we also recommend the default, <em>Checkut windows-style, commit Unix-style</em>. Once you've got Git installed, launch the <em>Git Bash</em> application. Navigate to the directory where you would like to setup Cinder, and execute the command:</p>
+		<br />
+		<code>
+		git clone git://github.com/cinder/Cinder.git cinder_master
+		</code>
+		<br /><br />
+		<center>
+		<div id="mswgit_image">
+			<a href="git_images/msw_images/step1.png" title="Download the latest Git installer from its Google code page.">
+				<img src="git_images/msw_images/step1_thumb.png" /></a>
+			<a href="git_images/msw_images/step2.png" title="When prompted about <em>Adjusting your PATH environment</em> we recommend you select <em>Use Git Bash only</em>.">
+				<img src="git_images/msw_images/step2_thumb.png" /></a>
+			<a href="git_images/msw_images/step3.png" title="When prompted about <em>Configuring line ending conversions</em> we recommend you select <em>Checkut windows-style, commit Unix-style</em>.">
+				<img src="git_images/msw_images/step3_thumb.png" /></a>
+			<a href="git_images/msw_images/step4.png" title="Cinder's home on Github provides a path for checking out the repository, <code>git://github.com/cinder/Cinder.git</code>">
+				<img src="git_images/msw_images/step4_thumb.png" /></a>
+			<a href="git_images/msw_images/step5.png" title="After launching Git Bash, execute the command<br /> <code>git clone git://github.com/cinder/Cinder.git cinder_master</code>">
+				<img src="git_images/msw_images/step5_thumb.png" /></a>
+		</div>
+		</center>
+		<br />
+		<p>If you aren't familiar with git, the only command you need to remember is <code>git pull</code> which, when executed from your new cinder_master directory, will update your copy of Cinder. Doing forget to rebuild Cinder (described below) whenever you do this.</p>
+		<h2>Downloading Boost</h2>
+		
+		<p>You'll also need to download the same Boost version Cinder is built against, currently version 1.44, which you can 
+		<a href="http://sourceforge.net/projects/boost/files/boost/1.44.0/">download here</a>. After dearchiving it, take the resulting directory, put it in your Cinder directory and rename it <em>boost</em>. You don't need to build Boost, but these headers are necessary to build Cinder. It is also possible to copy the <em>boost</em> directory from one of our prepackaged Cinder releases as a shortcut.</p>
+		<br>
+		<h2>Building on Mac OS X</h2>
+		The most straightforward way to build both the Debug and Release configurations of the Mac OS X, iOS and iOS Simulator targets is to run the script located at <em>cinder/xcode/fullbuild.sh</em>
+		<br /><br />
+		<code>
+		cd xcode<br />
+		./fullbuild.sh
+		</code>
+		<br />
+		<center>
+		<div id="macbuild_image">
+			<a href="git_images/mac_images/mac_build.png" title="Run the script <code>xcode/fullbuild.sh</code> and go make some coffee.">
+				<img src="git_images/mac_images/mac_build_thumb.png" /></a>
+		</div>
+		</center>		
+		<br>
+
+		
+		<h2>Building on Windows</h2>	
+		<p>To build Cinder on Windows, first make sure you've got the rest of your development environment setup as described in the <a href="MSWSetup.html">Windows Setup</a> document. Next, open up the Visual Studio 
+		solution in <em>cinder\vc10\cinder.sln</em> (or <em>cinder\vc9\cinder.sln</em> if you are still using Visual C++ 2008). Under the <em>Build</em> menu select 
+		<em>Batch Build</em>, and click the checkboxes corresponding to both the 
+		<em>Debug</em> and <em>Release</em> build configurations, and then hit the <em>Build</em> button. If you don't have a <em>Batch Build</em> menu item, make sure you have Visual C++ in expert mode, which is toggled under the menu item <em>Tools | Settings | Expert Settings</em>.</p>
+		<br />
+		<center>
+		<div id="mswbuild_image">
+			<a href="msw_images/batchbuild.png" title="Select both the Debug and Release configurations for the Batch Build.">
+				<img src="msw_images/batchbuild_thumb.png" /></a>
+		</div>
+		</center>		
+		<br>
+		<p>This will take a second, but once everything succeeds, the 
+		files <em>cinder.lib</em> and <em>cinder_d.lib</em> will be created at the path <em>cinder\libs</em>.</p>
+
+		<h2>OpenCV</h2>
+		Cinder's support for OpenCV is maintained separately from the primary distribution due to its size. To setup OpenCV support, cd to your <em>blocks</em> directory and execute the command below:<br />
+		<code>
+		cd blocks<br />
+		git clone git://github.com/cinder/Cinder-OpenCV.git opencv
+		</code>
+		<br />
+
+		<h2>Generating Documentation</h2>
+		<p>
+		As a final step, if you'd like to have a local copy of the Cinder documentation, you can generate it using Doxygen. If you don't already have it installed, you can download the latest <a href="http://www.stack.nl/~dimitri/doxygen/download.html#latestsrc">Doxygen release here</a>. After installing it, simply open the file <em>cinder/docs/doxygen/Doxyfile</em> and hit <em>Run</em>. After some processing, you'll have a local copy of the docs, which you can open at <em>cinder/docs/html/index.html</em>.</p>
+		<br />
+		<center>
+		<div id="doxygen_image">
+			<a href="git_images/doxygen.png" title="Open up Cinder's Doxyfile using Doxygen, navigate to the Run tab and press <em>Run doxygen</em> to create a local set of documentation.">
+				<img src="git_images/doxygen_thumb.png" /></a>
+		</div>
+		</center>
+	</div>
+</div>
+</body>

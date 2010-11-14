@@ -221,7 +221,7 @@
 				);
 				OTHER_LDFLAGS = (
 					../../../lib/libcinder_d.a,
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = bezierPath;
 				WRAPPER_EXTENSION = app;
@@ -246,7 +246,7 @@
 				);
 				OTHER_LDFLAGS = (
 					../../../lib/libcinder.a,
-					"-lcurl",
+					"",
 				);
 				PRODUCT_NAME = bezierPath;
 				WRAPPER_EXTENSION = app;

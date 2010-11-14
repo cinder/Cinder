@@ -98,7 +98,7 @@ void EarthquakeApp::setup()
 	mPov			= POV( this, ci::Vec3f( 0.0f, 0.0f, 1000.0f ), ci::Vec3f( 0.0f, 0.0f, 0.0f ) );
 	mEarth			= Earth( earthDiffuse, earthNormal, earthMask );
 	
-	parseEarthquakes( "http://www.earthquake.gov/eqcenter/catalogs/7day-M2.5.xml" );
+	parseEarthquakes( "http://earthquake.usgs.gov/earthquakes/catalogs/7day-M2.5.xml" );
 	
 	mEarth.setQuakeLocTip();
 }
@@ -242,35 +242,20 @@ void EarthquakeApp::draw()
 
 void EarthquakeApp::parseEarthquakes( const string &url )
 {
-	XmlDocument doc( loadUrlStream( url ) );
-	vector<XmlElement> items( doc.rootNode().children() );
+	const XmlTree xml( loadUrl( Url( url ) ) );
+	for( XmlTree::ConstIter itemIter = xml.begin( "feed/entry" ); itemIter != xml.end(); ++itemIter ) {
+		string titleLine( itemIter->getChild( "title" ).getValue() );
+		size_t firstComma = titleLine.find( ',' );
+		float magnitude = fromString<float>( titleLine.substr( titleLine.find( ' ' ) + 1, firstComma - 2 ) );
+		string title = titleLine.substr( firstComma + 2 );
 
-	for( vector<XmlElement>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter ) {
-		if( itemIter->name() == "entry" ) {
-			// Title is in the form "M 3.3, Puerto Rico region"
-			const XmlElement &titleEl = itemIter->findChild( "title" );
-			istringstream titleString( titleEl.value() );
-			string dummy, title;
-			float magnitude;
-			titleString.ignore( 2, ' ' );
-			titleString >> magnitude;
-			titleString.ignore( 2, ' ' );
-			char lineBuffer[512];
-			titleString.getline( lineBuffer, 511 );
-			title = string( lineBuffer );
-			
-			//const XmlElement &dateEl = itemIter->findChild( "updated" );
-			
-			const XmlElement &locationEl = itemIter->findChild( "georss:point" );
-			istringstream locationString( locationEl.value() );
-			Vec2f locationVector;
-			locationString >> locationVector.x >> locationVector.y;
-			
-			float elevationValue = fromString<float>( itemIter->findChild( "georss:elev" ).value() );
-	console() << "El: " << elevationValue;
-			mEarth.addQuake( locationVector.x, locationVector.y, magnitude, title );
-		}
+		istringstream locationString( itemIter->getChild( "georss:point" ).getValue() );
+		Vec2f locationVector;
+		locationString >> locationVector.x >> locationVector.y;
+		
+		mEarth.addQuake( locationVector.x, locationVector.y, magnitude, title );		
 	}
+	console() << xml << std::endl;
 	
 	//mEarth.addQuake( 37.7f, -122.0f, 8.6f, "San Francisco" );
 }

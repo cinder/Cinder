@@ -44,7 +44,7 @@ class IStreamUrlImplWinInet : public IStreamUrlImpl {
 	int					bufferDataRemaining() const { return mBufferedBytes - mBufferOffset; }
 	void				fillBuffer( int wantBytes ) const; 
   
-	shared_ptr<void>		mSession, mConnection, mRequest;
+	std::shared_ptr<void>		mSession, mConnection, mRequest;
 	
 	mutable bool			mIsFinished;
 	mutable uint8_t			*mBuffer; // todo - consider an exception-safe version of this

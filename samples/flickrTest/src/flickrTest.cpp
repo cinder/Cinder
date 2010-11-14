@@ -5,6 +5,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Utilities.h"
 
 #include <iostream>
 #include <map>
@@ -28,21 +29,17 @@ class FlickrTestApp : public AppBasic {
 	double					lastTime;	
 };
 
+
+
 void FlickrTestApp::setup()
 {
 	glEnable( GL_TEXTURE_2D );
 
-	XmlDocument doc( loadUrlStream( "http://api.flickr.com/services/feeds/photos_public.gne?id=13349694@N00&lang=en-us&format=rss_200" ) );	
-	vector<XmlElement> items( doc.xpath( "/rss/channel/item" ) );
-	for( vector<XmlElement>::iterator itemIter = items.begin(); itemIter != items.end(); ++itemIter ) {
-		//std::cout << itemIter->firstChildElement().firstChild().value() << std::endl;
-		//std::cout << itemIter->findChildNode("media:title").firstChild().value() << std::endl;
-		map<string, string> attrs( itemIter->findChild("media:content").attributes() );
-		console() <<  "URL:" << attrs["url"] << std::endl;
-		
-		mUrls.push_back( Url( attrs["url"] ) );
+	const XmlTree xml( loadUrl( Url( "http://api.flickr.com/services/feeds/groups_pool.gne?id=1423039@N24&lang=en-us&format=rss_200" ) ) );
+	for( XmlTree::ConstIter item = xml.begin( "rss/channel/item" ); item != xml.end(); ++item ) {
+		mUrls.push_back( item->getChild( "media:content" ).getAttributeValue<Url>( "url" ) );
 	}
-	
+
 	createTextureFromURL();
 	lastTime = getElapsedSeconds();
 	activeTex = 0;

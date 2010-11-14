@@ -30,7 +30,7 @@
 
 namespace cinder {
 
-typedef shared_ptr<class DataTarget>	DataTargetRef;
+typedef std::shared_ptr<class DataTarget>	DataTargetRef;
 
 class DataTarget { 
   public:
@@ -57,7 +57,7 @@ class DataTarget {
 };
 
 
-typedef shared_ptr<class DataTargetPath>	DataTargetPathRef;
+typedef std::shared_ptr<class DataTargetPath>	DataTargetPathRef;
 
 class DataTargetPath : public DataTarget {
   public:
@@ -75,7 +75,7 @@ class DataTargetPath : public DataTarget {
 };
 
 
-typedef shared_ptr<class DataTargetStream>	DataTargetStreamRef;
+typedef std::shared_ptr<class DataTargetStream>	DataTargetStreamRef;
 
 class DataTargetStream : public DataTarget {
   public:

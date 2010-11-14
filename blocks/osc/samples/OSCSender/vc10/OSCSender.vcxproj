@@ -100,7 +100,6 @@
     <ClCompile Include="..\..\..\src\OscSender.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\include\cinder\Cinder.h" />
     <ClInclude Include="..\..\..\include\OscArg.h" />
     <ClInclude Include="..\..\..\include\OscBundle.h" />
     <ClInclude Include="..\..\..\include\OscListener.h" />

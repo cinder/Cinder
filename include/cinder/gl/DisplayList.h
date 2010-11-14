@@ -45,12 +45,12 @@ class DisplayList {
 	Matrix44f&			getModelMatrix() { return mObj->mModelMatrix; }
 	const Matrix44f&	getModelMatrix() const { return mObj->mModelMatrix; }	
 	
-	void			setMaterial( const Material &aMaterial ) { mObj->mMaterial = shared_ptr<Material>( new Material( aMaterial ) ); }
+	void			setMaterial( const Material &aMaterial ) { mObj->mMaterial = std::shared_ptr<Material>( new Material( aMaterial ) ); }
 	Material&		getMaterial() { return *(mObj->mMaterial); }
 
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef shared_ptr<Obj> DisplayList::*unspecified_bool_type;
+	typedef std::shared_ptr<Obj> DisplayList::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &DisplayList::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
@@ -60,13 +60,13 @@ class DisplayList {
 		Obj() : mID( 0 ) {}
 		~Obj();
 	
-		GLuint					mID;
-		GLint					mMode;
-		Matrix44f				mModelMatrix;
-		shared_ptr<Material>	mMaterial;		
+		GLuint						mID;
+		GLint						mMode;
+		Matrix44f					mModelMatrix;
+		std::shared_ptr<Material>	mMaterial;		
 	};
  
-	shared_ptr<Obj>		mObj;
+	std::shared_ptr<Obj>		mObj;
 };
 
 } // namespace gl

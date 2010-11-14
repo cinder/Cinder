@@ -1,5 +1,10 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project
+ All rights reserved.
+ 
+ This code is designed for use with the Cinder C++ library, http://libcinder.org 
+
+ Portions Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -32,6 +37,22 @@
 
 namespace cinder {
 
+//!  \cond
+template<typename T>
+struct VECTRAIT {
+	typedef float DIST;
+};
+
+template<>
+struct VECTRAIT<double> {
+	typedef double DIST;
+};
+
+template<>
+struct VECTRAIT<int32_t> {
+	typedef float DIST;
+};
+
 template<typename T, typename Y>
 struct VEC3CONV {
 	static T	getX( const Y &v ) { return static_cast<T>( v.x ); }
@@ -39,13 +60,16 @@ struct VEC3CONV {
 	static T	getZ( const Y &v ) { return static_cast<T>( v.z ); }
 };
 
+//! \endcond
+
 template<typename T>
 class Vec2
 {
  public:
 	T x,y;
 
-	typedef T TYPE;
+	typedef T							TYPE;
+	typedef typename VECTRAIT<T>::DIST	DIST;
 	static const int DIM = 2;
 
 	Vec2() {}
@@ -127,7 +151,7 @@ class Vec2
 		return x * rhs.x + y * rhs.y;
 	}
 
-	T distance( const Vec2<T> &rhs ) const
+	DIST distance( const Vec2<T> &rhs ) const
 	{
 		return ( *this - rhs ).length();
 	}
@@ -137,21 +161,21 @@ class Vec2
 		return ( *this - rhs ).lengthSquared();
 	}
 
-	T length() const
+	DIST length() const
 	{
-		return math<T>::sqrt( x*x + y*y );
+		return math<DIST>::sqrt( x*x + y*y );
 	}
 
 	void normalize()
 	{
-		T invS = ((T)1) / length();
+		DIST invS = 1 / length();
 		x *= invS;
 		y *= invS;
 	}
 
 	Vec2<T> normalized() const
 	{
-		T invS = ((T)1) / length();
+		DIST invS = 1 / length();
 		return Vec2<T>( x * invS, y * invS );
 	}
 
@@ -160,7 +184,7 @@ class Vec2
 	{
 		T s = lengthSquared();
 		if( s > 0 ) {
-			T invL = ((T)1) / math<T>::sqrt( s );
+			DIST invL = 1 / math<DIST>::sqrt( s );
 			x *= invL;
 			y *= invL;
 		}
@@ -170,17 +194,17 @@ class Vec2
 	{
 		T s = lengthSquared();
 		if( s > 0 ) {
-			T invL = ((T)1) / math<T>::sqrt( s );
+			DIST invL = 1 / math<DIST>::sqrt( s );
 			return Vec2<T>( x * invL, y * invL );
 		}
 		else
 			return Vec2<T>::zero();
 	}
 
-	void rotate(T angle)
+	void rotate( DIST radians )
 	{
-		T cosa = math<T>::cos( angle );
-		T sina = math<T>::sin( angle );
+		T cosa = math<T>::cos( radians );
+		T sina = math<T>::sin( radians );
 		T rx = x * cosa - y * sina;
 		y = x * sina + y * cosa;
 		x = rx;
@@ -192,12 +216,12 @@ class Vec2
 	}
 
 	//! Limits the length of a Vec2 to \a maxLength, scaling it proportionally if necessary.
-	void limit( T maxLength )
+	void limit( DIST maxLength )
 	{
 		T lengthSquared = x * x + y * y;
 
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
-			T ratio = maxLength / math<T>::sqrt( lengthSquared );
+			DIST ratio = maxLength / math<DIST>::sqrt( lengthSquared );
 			x *= ratio;
 			y *= ratio;
 		}
@@ -209,7 +233,7 @@ class Vec2
 		T lengthSquared = x * x + y * y;
 
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
-			T ratio = maxLength / math<T>::sqrt( lengthSquared );
+			DIST ratio = maxLength / math<DIST>::sqrt( lengthSquared );
 			return Vec2<T>( x * ratio, y * ratio );
 		}
 		else
@@ -232,6 +256,11 @@ class Vec2
 		return (*this) + ( r - (*this) ) * fact;
 	}
 
+	void lerpEq( T fact, const Vec2<T> &rhs )
+	{
+		x = x + ( rhs.x - x ) * fact; y = y + ( rhs.y - y ) * fact;
+	}
+
 	static Vec2<T> max()
 	{
 		return Vec2<T>( std::numeric_limits<T>::max(), std::numeric_limits<T>::max() );
@@ -239,12 +268,12 @@ class Vec2
 
 	static Vec2<T> zero()
 	{
-		return Vec2<T>( static_cast<T>( 0 ), static_cast<T>( 0 ) );
+		return Vec2<T>( 0, 0 );
 	}
 
 	static Vec2<T> one()
 	{
-		return Vec2<T>( static_cast<T>( 1 ), static_cast<T>( 1 ) );
+		return Vec2<T>( 1, 1 );
 	}
 
 	operator T*(){ return (T*) this; }
@@ -266,7 +295,7 @@ class Vec3
 public:
 	T x,y,z;
 
-	typedef T TYPE;
+	typedef T								TYPE;
 	static const int DIM = 3;
 
 	Vec3() {}
@@ -732,10 +761,14 @@ class Vec4{
 		return Vec3<T>( -x, -y, -z, -w );
 	}
 
-
 	Vec4<T> lerp( T fact, const Vec4<T>& r ) const
 	{
 		return (*this) + ( r - (*this) ) * fact;
+	}
+
+	void lerpEq( T fact, const Vec4<T> &rhs )
+	{
+		x = x + ( rhs.x - x ) * fact; y = y + ( rhs.y - y ) * fact; z = z + ( rhs.z - z ) * fact; w = w + ( rhs.w - w ) * fact;
 	}
 
 	static Vec4<T> max()

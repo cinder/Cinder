@@ -64,11 +64,11 @@ void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const 
 template<typename T>
 void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &dstLT, SurfaceT<T> *dstSurface )
 {
-	edgeDetectSobel( *srcSurface.getChannelRed(), srcArea, dstLT, dstSurface->getChannelRed() );
-	edgeDetectSobel( *srcSurface.getChannelGreen(), srcArea, dstLT, dstSurface->getChannelGreen() );
-	edgeDetectSobel( *srcSurface.getChannelBlue(), srcArea, dstLT, dstSurface->getChannelBlue() );
+	edgeDetectSobel( srcSurface.getChannelRed(), srcArea, dstLT, &dstSurface->getChannelRed() );
+	edgeDetectSobel( srcSurface.getChannelGreen(), srcArea, dstLT, &dstSurface->getChannelGreen() );
+	edgeDetectSobel( srcSurface.getChannelBlue(), srcArea, dstLT, &dstSurface->getChannelBlue() );
 	if( srcSurface.hasAlpha() && dstSurface->hasAlpha() )
-		edgeDetectSobel( *srcSurface.getChannelAlpha(), srcArea, dstLT, dstSurface->getChannelAlpha() );
+		edgeDetectSobel( srcSurface.getChannelAlpha(), srcArea, dstLT, &dstSurface->getChannelAlpha() );
 }
 
 template<typename T>

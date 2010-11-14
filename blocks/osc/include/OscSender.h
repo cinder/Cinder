@@ -4,7 +4,7 @@
  All rights reserved.
  
  
- This is a block for OSC Integration for Cinder framework developed by The Barbarian Group, 2010
+ This is a block for OSC Integration for the Cinder framework (http://libcinder.org)
  
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -43,7 +43,7 @@ namespace cinder  { namespace osc {
 		
 	private:
 		
-		 shared_ptr<class OscSender>   oscSender;
+		 std::shared_ptr<class OscSender>   oscSender;
 		
 	};
 } // namespace osc

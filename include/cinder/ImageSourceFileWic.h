@@ -32,7 +32,7 @@ typedef struct _GUID GUID;
 
 namespace cinder {
 
-typedef shared_ptr<class ImageSourceFileWic>	ImageSourceFileWicRef;
+typedef std::shared_ptr<class ImageSourceFileWic>	ImageSourceFileWicRef;
 
 class ImageSourceFileWic : public ImageSource {
   public:
@@ -48,8 +48,8 @@ class ImageSourceFileWic : public ImageSource {
 	
 	bool	processFormat( const ::GUID &guid, ::GUID *convertGUID );
 	
-	shared_ptr<uint8_t>		mData;
-	int32_t					mRowBytes;
+	std::shared_ptr<uint8_t>	mData;
+	int32_t						mRowBytes;
 };
 
 REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourceFileWic )

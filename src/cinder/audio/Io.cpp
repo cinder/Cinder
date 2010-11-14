@@ -101,9 +101,9 @@ void Loader::fillBufferListFromCaBufferList( BufferList * aBufferList, const Aud
 	}
 }
 
-shared_ptr<AudioBufferList> Loader::createCaBufferList( const BufferList * aBufferList )
+std::shared_ptr<AudioBufferList> Loader::createCaBufferList( const BufferList * aBufferList )
 {
-	shared_ptr<AudioBufferList> caBufferList( (AudioBufferList *)malloc( sizeof( UInt32 ) + ( sizeof( AudioBuffer ) * aBufferList->mNumberBuffers ) ), free );
+	std::shared_ptr<AudioBufferList> caBufferList( (AudioBufferList *)malloc( sizeof( UInt32 ) + ( sizeof( AudioBuffer ) * aBufferList->mNumberBuffers ) ), free );
 	
 	caBufferList->mNumberBuffers = aBufferList->mNumberBuffers;
 	for( int i = 0; i < caBufferList->mNumberBuffers; i++ ) {
@@ -119,9 +119,9 @@ shared_ptr<AudioBufferList> Loader::createCaBufferList( const BufferList * aBuff
 ///////////////////////////////////////////////////////////////////////////////
 IoRegistrar::Inst* IoRegistrar::instance()
 {
-	static shared_ptr<Inst> sInst;
+	static std::shared_ptr<Inst> sInst;
 	if( ! sInst ) {
-		sInst = shared_ptr<Inst>( new IoRegistrar::Inst );
+		sInst = std::shared_ptr<Inst>( new IoRegistrar::Inst );
 	}
 	return sInst.get();
 }

@@ -51,6 +51,11 @@ bool createDirectories( const std::string &path, bool createParents = true );
 //! Delete the file at \a path. Fails quietly if the path does not exist.
 void deleteFile( const std::string &path );
 
+//! Returns a vector of substrings split by the separator \a separator. <tt>split( "one two three", ' ' ) -> [ "one", "two", "three" ]</tt>
+std::vector<std::string> split( const std::string &str, char separator );
+//! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", " ," ) -> [ "one", "two", "three" ]</tt>
+std::vector<std::string> split( const std::string &str, const std::string &separators );
+
 //! Returns a utf-16 encoded std::wstring by converting the utf-8 encoded string \a utf8
 std::wstring toUtf16( const std::string &utf8 );
 //! Returns a utf-8 encoded std::string by converting the utf-16 encoded string \a utf16

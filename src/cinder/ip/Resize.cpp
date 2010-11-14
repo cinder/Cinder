@@ -152,12 +152,12 @@ void resample( const vector<const ChannelT<T>*> &srcChannels, const FilterBase &
 	
 	FilterParams filterParamsX, filterParamsY;
 	Mapping m;
-	shared_ptr<typename SCALETRAIT<T>::SUMT> accum;
+	std::shared_ptr<typename SCALETRAIT<T>::SUMT> accum;
 	int32_t dstWidth = (int32_t)clippedDstArea.getWidth(), dstHeight = (int32_t)clippedDstArea.getHeight();
 	int32_t srcWidth = (int32_t)clippedSrcRect.getWidth(), srcHeight = (int32_t)clippedSrcRect.getHeight();
 	int32_t srcOffsetX = static_cast<int32_t>( floor( clippedSrcRect.getX1() ) );
 	int32_t srcOffsetY = static_cast<int32_t>( floor( clippedSrcRect.getY1() ) );
-	vector<pair<int32_t,shared_ptr<typename SCALETRAIT<T>::SUMT> > > linesBuffer;
+	vector<pair<int32_t,std::shared_ptr<typename SCALETRAIT<T>::SUMT> > > linesBuffer;
 
 	m.sx = dstWidth / (float)srcWidth;
 	m.sy = dstHeight / (float)srcHeight;
@@ -175,14 +175,14 @@ void resample( const vector<const ChannelT<T>*> &srcChannels, const FilterBase &
 	filterParamsY.width = (int32_t)ceil( 2.0f * filterParamsY.supp );
 
 	for( int32_t i = 0; i < filterParamsY.width; i++ )
-		linesBuffer.push_back( std::make_pair( -1, shared_ptr<typename SCALETRAIT<T>::SUMT>( new typename SCALETRAIT<T>::SUMT[dstWidth], checked_array_deleter<typename SCALETRAIT<T>::SUMT>() ) ) );
+		linesBuffer.push_back( std::make_pair( -1, std::shared_ptr<typename SCALETRAIT<T>::SUMT>( new typename SCALETRAIT<T>::SUMT[dstWidth], checked_array_deleter<typename SCALETRAIT<T>::SUMT>() ) ) );
 
 	WeightTable<typename SCALETRAIT<T>::SUMT> *xWeights, yWeights;
 	typename SCALETRAIT<T>::SUMT *xWeightBuffer, *xWeightPtr;
 	xWeights = (WeightTable<typename SCALETRAIT<T>::SUMT>*)malloc( sizeof(WeightTable<int32_t>) * dstWidth );
 	xWeightBuffer = (typename SCALETRAIT<T>::SUMT*)malloc( sizeof(typename SCALETRAIT<T>::SUMT) * dstWidth * filterParamsX.width );
 	yWeights.weight = (typename SCALETRAIT<T>::SUMT*)malloc( sizeof(typename SCALETRAIT<T>::SUMT) * filterParamsY.width );
-	accum = shared_ptr<typename SCALETRAIT<T>::SUMT>( new typename SCALETRAIT<T>::SUMT[dstWidth], checked_array_deleter<typename SCALETRAIT<T>::SUMT>() );
+	accum = std::shared_ptr<typename SCALETRAIT<T>::SUMT>( new typename SCALETRAIT<T>::SUMT[dstWidth], checked_array_deleter<typename SCALETRAIT<T>::SUMT>() );
 
 	xWeightPtr = xWeightBuffer;
 	for ( int32_t bx = 0; bx < dstWidth; bx++, xWeightPtr += filterParamsX.width ) {
@@ -312,15 +312,15 @@ void resize( const SurfaceT<T> &srcSurface, const Area &srcArea, SurfaceT<T> *ds
 	vector<const ChannelT<T>*> srcChannels;
 	vector<ChannelT<T>*> dstChannels;
 
-	srcChannels.push_back( srcSurface.getChannelRed() );
-	dstChannels.push_back( dstSurface->getChannelRed() );
-	srcChannels.push_back( srcSurface.getChannelGreen() );
-	dstChannels.push_back( dstSurface->getChannelGreen() );
-	srcChannels.push_back( srcSurface.getChannelBlue() );
-	dstChannels.push_back( dstSurface->getChannelBlue() );
+	srcChannels.push_back( &srcSurface.getChannelRed() );
+	dstChannels.push_back( &dstSurface->getChannelRed() );
+	srcChannels.push_back( &srcSurface.getChannelGreen() );
+	dstChannels.push_back( &dstSurface->getChannelGreen() );
+	srcChannels.push_back( &srcSurface.getChannelBlue() );
+	dstChannels.push_back( &dstSurface->getChannelBlue() );
 	if ( srcSurface.hasAlpha() && dstSurface->hasAlpha() ) {
-		srcChannels.push_back( srcSurface.getChannelAlpha() );
-		dstChannels.push_back( dstSurface->getChannelAlpha() );	
+		srcChannels.push_back( &srcSurface.getChannelAlpha() );
+		dstChannels.push_back( &dstSurface->getChannelAlpha() );	
 	}
 
 	resample( srcChannels, filter, srcArea, dstArea, dstChannels );

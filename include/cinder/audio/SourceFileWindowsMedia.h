@@ -32,8 +32,8 @@
 
 namespace cinder { namespace audio {
 
-typedef shared_ptr<class SourceFileWindowsMedia>	SourceFileWindowsMediaRef;
-typedef shared_ptr<class LoaderSourceFileWindowsMedia>	LoaderSourceFileWindowsMediaRef;
+typedef std::shared_ptr<class SourceFileWindowsMedia>	SourceFileWindowsMediaRef;
+typedef std::shared_ptr<class LoaderSourceFileWindowsMedia>	LoaderSourceFileWindowsMediaRef;
 
 class LoaderSourceFileWindowsMedia : public Loader {
   public:
@@ -41,7 +41,7 @@ class LoaderSourceFileWindowsMedia : public Loader {
 	~LoaderSourceFileWindowsMedia();
 	
 	uint32_t getOptimalBufferSize() const { return mMaxBufferSize; }
-	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	void loadData( BufferList *ioData );
 
 	uint64_t getSampleOffset() const;
 	void setSampleOffset( uint64_t anOffset );
@@ -56,8 +56,8 @@ class LoaderSourceFileWindowsMedia : public Loader {
 	WAVEFORMATEX					mOutputFormat;
 
 	uint32_t						mStreamSize;
-	shared_ptr<IWMSyncReader>		mReader;
-	shared_ptr<IWMHeaderInfo>		mHeaderInfo;
+	std::shared_ptr<IWMSyncReader>	mReader;
+	std::shared_ptr<IWMHeaderInfo>	mHeaderInfo;
 
 	uint32_t						mMaxBufferSize;
 	uint64_t						mSampleOffset;
@@ -74,7 +74,7 @@ class SourceFileWindowsMedia : public Source {
 	static SourceFileWindowsMediaRef	createFileRef( DataSourceRef dataSourceRef );
 	~SourceFileWindowsMedia();
 
-	virtual LoaderRef getLoader( Target *target ) { return LoaderSourceFileWindowsMedia::createRef( this, target ); }
+	virtual LoaderRef createLoader( Target *target ) { return LoaderSourceFileWindowsMedia::createRef( this, target ); }
   
 	uint32_t getLength() const { return mBuffer.getDataSize(); };
 	double getDuration() const { /*TODO*/ return 0.0;  }
@@ -84,7 +84,7 @@ class SourceFileWindowsMedia : public Source {
 	SourceFileWindowsMedia( DataSourceRef dataSourceRef );
 
 	cinder::Buffer mBuffer;
-	shared_ptr<void> mMemHandle;
+	std::shared_ptr<void> mMemHandle;
 
 	friend LoaderSourceFileWindowsMedia;
 };

@@ -181,6 +181,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -189,10 +190,24 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "iPhoneTestGl-Info.plist";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone_d.a";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"$(CINDER_PATH)/lib/libcinder-iphone_d.a",
+					"-lz",
+					"-weak_framework",
+					CoreVideo,
+					"-weak_framework",
+					CoreMedia,
+					"-weak_framework",
+					AVFoundation,
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a",
+					"-lz",
+				);
 				PRODUCT_NAME = iPhoneTestGl;
-				SDKROOT = iphonesimulator3.1;
+				SDKROOT = iphonesimulator3.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -201,16 +216,19 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iPhoneTestGl_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "iPhoneTestGl-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone_d.a";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a";
 				PRODUCT_NAME = iPhoneTestGl;
-				SDKROOT = iphonesimulator3.1;
+				SDKROOT = iphonesimulator4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

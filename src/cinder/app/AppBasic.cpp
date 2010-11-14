@@ -332,7 +332,7 @@ void AppBasic::Settings::setResizable( bool aResizable )
 	mResizable = aResizable;
 }
 
-void AppBasic::Settings::setDisplay( shared_ptr<Display> aDisplay )
+void AppBasic::Settings::setDisplay( std::shared_ptr<Display> aDisplay )
 {
 	mDisplay = aDisplay.get();
 }

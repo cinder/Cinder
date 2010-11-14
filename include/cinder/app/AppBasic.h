@@ -55,7 +55,7 @@ class AppBasic : public App {
 
 		/** Returns the display the window is currently on. If called from prepareSettings() returns the primary display **/
 		Display*	getDisplay() const { return mDisplay; }
-		void		setDisplay( shared_ptr<Display> aDisplay );
+		void		setDisplay( std::shared_ptr<Display> aDisplay );
 
 #if defined( CINDER_MAC )
 		/** Enables or disables blanking of secondary displays in fullscreen Apps. Enabled by default. **/

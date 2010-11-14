@@ -1,0 +1,98 @@
+#include "cinder/app/AppBasic.h"
+#include "cinder/gl/gl.h"
+#include "cinder/Xml.h"
+#include "cinder/Utilities.h"
+
+#include "rapidxml/rapidxml.hpp"
+#include "rapidxml/rapidxml_print.hpp"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+class XMLTestApp : public AppBasic {
+  public:
+	void setup();
+	void mouseDown( MouseEvent event );	
+	void update();
+	void draw();
+};
+
+// Finds the track named \a searchTrack in the music library \a library. Throws XmlTree::ChildNotFoundExc() if none is found.
+const XmlTree& findTrackNamed( const XmlTree &library, const std::string &searchTrack )
+{
+	for( XmlTree::ConstIter trackIter = library.begin("album/track"); trackIter != library.end(); ++trackIter ) {
+		if( trackIter->getValue() == searchTrack )
+			return *trackIter;
+	}
+	
+	// failed to find a track named 'searchTrack'
+	throw XmlTree::ExcChildNotFound( library, searchTrack );
+}
+
+void XMLTestApp::setup()
+{
+	const XmlTree doc( loadFile( getHomeDirectory() + "library.xml" ) );
+	XmlTree musicLibrary( doc.getChild( "library" ) );
+	for( XmlTree::Iter item = doc.begin("library/album"); item != doc.end(); ++item ) {
+		console() << "Node: " << item->getTag() << " Value: " << item->getValue() << endl;
+	}
+	for( XmlTree::Iter track = doc.begin("library/album/track"); track != doc.end(); ++track )
+		console() << track->getValue() << endl;
+
+	XmlTree firstAlbum = doc.getChild( "library/album" );
+	for( XmlTree::Iter child = firstAlbum.begin(); child != firstAlbum.end(); ++child ) {
+		console() << "Tag: " << child->getTag() << "  Value: " << child->getValue() << endl;
+	}
+	console() << doc.getChild( "library/owner/city" );
+	XmlTree ownerCity = doc.getChild( "///library/////owner/city" );
+	console() << "Path: " << ownerCity.getPath() << "  Value: " << ownerCity.getValue() << std::endl;
+	console() << doc;
+	
+	console() << findTrackNamed( doc.getChild( "library" ), "Wolf" );
+	
+	// Whoops - assignment by value doesn't modifying the original XmlTree
+	XmlTree firstTrackCopy = doc.getChild( "/library/album/track" );
+	firstTrackCopy.setValue( "Replacement name" );
+	console() << doc.getChild( "/library/album/track" ) << std::endl;
+
+	XmlTree &firstTrackRef = doc.getChild( "/library/album/track" );
+	firstTrackRef.setValue( "Replacement name" );
+	console() << doc.getChild( "/library/album/track" ) << std::endl;
+
+	// This code only works in VC2010
+/*	std::for_each( doc.begin( "library/album" ), doc.end(), []( const XmlTree &child ) {
+		app::console() << child.getChild( "title" ).getValue() << std::endl;
+	} );*/
+}
+
+void XMLTestApp::mouseDown( MouseEvent event )
+{
+	XmlTree doc = XmlTree::createDoc();
+	XmlTree library( "library", "" );
+	XmlTree album( "album", "" );
+	album.setAttribute( "musician", "Sufjan Stevens" );
+	album.setAttribute( "year", "2004" );
+	album.push_back( XmlTree( "title", "Seven Swans" ) );
+	album.push_back( XmlTree( "track", "All the Trees of the Field Will Clap Their Hands" ) );
+	album.push_back( XmlTree( "track", "The Dress Looks Nice on You" ) );
+	album.push_back( XmlTree( "track", "In the Devil's Territory" ) );
+	album.push_back( XmlTree( "track", "To Be Alone With You" ) );
+	library.push_back( album );
+	doc.push_back( library );
+	console() << doc;
+	doc.write( writeFile( getHomeDirectory() + "testoutput.xml" ), false );
+}
+
+void XMLTestApp::update()
+{
+}
+
+void XMLTestApp::draw()
+{
+	// clear out the window with black
+	gl::clear( Color( 0, 0, 0 ) ); 
+}
+
+
+CINDER_APP_BASIC( XMLTestApp, RendererGl )

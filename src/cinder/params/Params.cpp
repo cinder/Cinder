@@ -110,16 +110,16 @@ class AntMgr {
 
 void initAntGl()
 {
-	static shared_ptr<AntMgr> mgr;
+	static std::shared_ptr<AntMgr> mgr;
 	if( ! mgr )
-		mgr = shared_ptr<AntMgr>( new AntMgr );
+		mgr = std::shared_ptr<AntMgr>( new AntMgr );
 }
 
 
 InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const ColorA color )
 {
 	initAntGl();
-	mBar = shared_ptr<TwBar>( TwNewBar( title.c_str() ), TwDeleteBar );
+	mBar = std::shared_ptr<TwBar>( TwNewBar( title.c_str() ), TwDeleteBar );
 	char optionsStr[1024];
 	sprintf( optionsStr, "%s size='%d %d' color='%d %d %d' alpha=%d", title.c_str(), size.x, size.y, (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255) );
 	TwDefine( optionsStr );
@@ -128,6 +128,25 @@ InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const Col
 void InterfaceGl::draw()
 {
 	TwDraw();
+}
+
+void InterfaceGl::show( bool visible )
+{
+	int32_t visibleInt = ( visible ) ? 1 : 0;
+	TwSetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
+}
+
+void InterfaceGl::hide()
+{
+	int32_t visibleInt = 0;
+	TwSetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
+}
+
+bool InterfaceGl::isVisible() const
+{
+	int32_t visibleInt;
+	TwGetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
+	return visibleInt != 0;
 }
 
 void InterfaceGl::implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
@@ -176,7 +195,25 @@ void InterfaceGl::addParam( const std::string &name, ColorA *param, const std::s
 void InterfaceGl::addParam( const std::string &name, std::string *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParam( name, param, TW_TYPE_STDSTRING, optionsStr, readOnly );
-} 
+}
+
+void InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly )
+{
+	TwEnumVal *ev = new TwEnumVal[enumNames.size()];
+	for( int v = 0; v < enumNames.size(); ++v ) {
+		ev[v].Value = v;
+		ev[v].Label = const_cast<char*>( enumNames[v].c_str() );
+	}
+
+	TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev, enumNames.size() );
+
+	if( readOnly )
+		TwAddVarRO( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
+	else
+		TwAddVarRW( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
+		
+	delete [] ev;
+}
 
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
 {

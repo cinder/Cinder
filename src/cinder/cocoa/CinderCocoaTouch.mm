@@ -61,7 +61,7 @@ SafeUiImage::SafeUiImage( UIImage *uiImage, CGImageRef imageRef )
 		[uiImage retain];
 	if( imageRef )
 		::CGImageRetain( imageRef );
-	mObj = shared_ptr<std::pair<UIImage*,CGImageRef> >( new std::pair<UIImage*,CGImageRef>( uiImage, imageRef ), SafeUiImage::destroy );
+	mObj = std::shared_ptr<std::pair<UIImage*,CGImageRef> >( new std::pair<UIImage*,CGImageRef>( uiImage, imageRef ), SafeUiImage::destroy );
 }
 
 void SafeUiImage::destroy( std::pair<UIImage*,CGImageRef> *data )

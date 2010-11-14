@@ -1,0 +1,4 @@
+#include "../include/Resources.h"
+
+RES_GUITAR
+RES_DRUMS

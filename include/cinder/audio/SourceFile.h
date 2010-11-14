@@ -24,7 +24,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/audio/Io.h"
-#include "cinder/audio/Buffer.h"
+#include "cinder/audio/PcmBuffer.h"
 #include "cinder/audio/CocoaCaConverter.h"
 
 #include <AudioToolbox/AudioFile.h>
@@ -32,8 +32,8 @@
 
 namespace cinder { namespace audio {
 
-typedef shared_ptr<class SourceFile>	SourceFileRef;
-typedef shared_ptr<class LoaderSourceFile>	LoaderSourceFileRef;
+typedef std::shared_ptr<class SourceFile>	SourceFileRef;
+typedef std::shared_ptr<class LoaderSourceFile>	LoaderSourceFileRef;
 
 class LoaderSourceFile : public Loader {
  public:
@@ -43,15 +43,15 @@ class LoaderSourceFile : public Loader {
 	
 	uint64_t getSampleOffset() const;
 	void setSampleOffset( uint64_t anOffset );
-	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	void loadData( BufferList *ioData );
  private:
 	static void dataInputCallback( Loader* aLoader, uint32_t *ioSampleCount, BufferList *ioData, AudioStreamPacketDescription * packetDescriptions );
 
 	LoaderSourceFile( SourceFile *source, Target *target );
 	
-	SourceFile						* mSource;
-	shared_ptr<CocoaCaConverter>	mConverter;
-	uint64_t						mPacketOffset;
+	SourceFile							*mSource;
+	std::shared_ptr<CocoaCaConverter>	mConverter;
+	uint64_t							mPacketOffset;
 		
 };
 
@@ -61,7 +61,7 @@ class SourceFile : public Source {
 	static SourceFileRef	createFileRef( DataSourceRef dataSourceRef );
 	~SourceFile();
 
-	virtual LoaderRef getLoader( Target *target ) { return LoaderSourceFile::createRef( this, target ); }
+	virtual LoaderRef createLoader( Target *target ) { return LoaderSourceFile::createRef( this, target ); }
 
 	double getDuration() const { return mDuration; };
 
@@ -75,7 +75,7 @@ class SourceFile : public Source {
 	uint64_t packetAtSample( uint64_t aSample ) const;
 	uint64_t sampleAtPacket( uint64_t aPacket ) const;
 	
-	shared_ptr<OpaqueAudioFileID>	mFileRef;
+	std::shared_ptr<OpaqueAudioFileID>	mFileRef;
 	
 	uint64_t	mPacketCount;
 	uint64_t	mByteCount;

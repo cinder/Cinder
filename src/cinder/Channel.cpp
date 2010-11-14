@@ -26,6 +26,8 @@
 
 #include <boost/type_traits/is_same.hpp>
 
+using namespace std;
+
 namespace cinder {
 
 template<typename T>

@@ -22,12 +22,13 @@
 
 #include "cinder/Display.h"
 #include <map>
-using std::map;
-using std::vector;
+using namespace std;
 
 #if defined( CINDER_MAC )
 #	include <Cocoa/Cocoa.h>
 #endif
+
+
 
 namespace cinder {
 

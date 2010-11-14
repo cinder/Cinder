@@ -361,6 +361,10 @@ ImageSourceRef loadImage( const std::string &path, std::string extension )
 
 ImageSourceRef loadImage( DataSourceRef dataSource, string extension )
 {
+#if defined( CINDER_COCOA )
+	cocoa::SafeNsAutoreleasePool autorelease;
+#endif
+
 	if( extension.empty() )
 		extension = getPathExtension( dataSource->getFilePathHint() );
 	
@@ -457,7 +461,7 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, s
 	}
 	
 	// failure
-	return ImageSourceRef();
+	throw ImageIoExceptionFailedLoad();
 }
 
 void ImageIoRegistrar::registerSourceType( string extension, SourceCreationFunc func, int32_t priority )

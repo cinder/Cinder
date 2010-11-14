@@ -1,5 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project (http://libcinder.org)
+
+ Portions Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -51,8 +53,7 @@ int32_t	SurfaceConstraintsCairo::getRowBytes( int requestedWidth, const SurfaceC
 
 } // namespace cinder
 
-namespace cinder {
-namespace cairo {
+namespace cinder { namespace cairo {
 
 const int32_t	FONT_SLANT_NORMAL	= CAIRO_FONT_SLANT_NORMAL;
 const int32_t	FONT_SLANT_ITALIC	= CAIRO_FONT_SLANT_ITALIC;
@@ -814,12 +815,12 @@ int32_t ScaledFont::getType()
 // Glyph
 /*Glyph::Glyph() 
 {
-	mCairoGlyph = shared_ptr<cairo_glyph_t>( new cairo_glyph_t );
+	mCairoGlyph = std::shared_ptr<cairo_glyph_t>( new cairo_glyph_t );
 }
 
 Glyph::Glyph( cairo_glyph_t *aGlyph ) 
 {
-	mCairoGlyph = shared_ptr<cairo_glyph_t>( new cairo_glyph_t );
+	mCairoGlyph = std::shared_ptr<cairo_glyph_t>( new cairo_glyph_t );
 	*mCairoGlyph.get() = *aGlyph;
 }
 
@@ -883,12 +884,12 @@ void GlyphArray::clear()
 // FontExtents
 FontExtents::FontExtents()
 {
-	mCairoFontExtents = shared_ptr<cairo_font_extents_t>( new cairo_font_extents_t );
+	mCairoFontExtents = std::shared_ptr<cairo_font_extents_t>( new cairo_font_extents_t );
 }
 
 FontExtents::FontExtents( cairo_font_extents_t *aCairoFontExtents )
 {
-	mCairoFontExtents = shared_ptr<cairo_font_extents_t>( new cairo_font_extents_t );
+	mCairoFontExtents = std::shared_ptr<cairo_font_extents_t>( new cairo_font_extents_t );
 	*mCairoFontExtents.get() = *aCairoFontExtents;
 }
 
@@ -949,12 +950,12 @@ double& FontExtents::maxYAdvance()
 // TextExtents
 TextExtents::TextExtents() 
 {
-	mCairoTextExtents = shared_ptr<cairo_text_extents_t>( new cairo_text_extents_t );
+	mCairoTextExtents = std::shared_ptr<cairo_text_extents_t>( new cairo_text_extents_t );
 }
 
 TextExtents::TextExtents( cairo_text_extents_t *aCairoTextExtents ) 
 {
-	mCairoTextExtents = shared_ptr<cairo_text_extents_t>( new cairo_text_extents_t );
+	mCairoTextExtents = std::shared_ptr<cairo_text_extents_t>( new cairo_text_extents_t );
 	*mCairoTextExtents.get() = *aCairoTextExtents;
 }
 
@@ -1040,9 +1041,10 @@ Context::Context( const Context &other )
 
 Context::~Context()
 {
-	if( mCairo ) {
+	if( mCairoSurface )
+		cairo_surface_flush( mCairoSurface );
+	if( mCairo )
 		cairo_destroy( mCairo );
-	}
 }
 
 Context& Context::operator=( const Context &other )
@@ -1663,5 +1665,5 @@ cairo::SurfaceQuartz createWindowSurface()
 }
 */
 
-} // namespace cairo
-} // namespace cinder
+} } // namespace cinder::cairo
+

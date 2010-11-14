@@ -42,6 +42,7 @@
 #endif
 
 #include <vector>
+#include <boost/tokenizer.hpp>
 using std::vector;
 using std::string;
 using std::wstring;
@@ -105,7 +106,7 @@ std::string getTemporaryDirectory()
 {
 #if defined( CINDER_COCOA )
 	NSString *docDir = ::NSTemporaryDirectory();
-	return cocoa::convertNsString( docDir ) + "/";
+	return cocoa::convertNsString( docDir );
 #else
 	DWORD result = ::GetTempPathW( 0, L"" );
 	if( ! result )
@@ -150,7 +151,7 @@ std::string getPathDirectory( const std::string &path )
 {
 	size_t lastSlash = path.rfind( getPathSeparator(), path.length() );
 	if( lastSlash == string::npos ) {
-		return path;
+		return "";
 	}
 	else
 		return path.substr( 0, lastSlash );
@@ -180,6 +181,9 @@ std::string getPathExtension( const std::string &path )
 
 bool createDirectories( const std::string &path, bool createParents )
 {
+	if( path.empty() )
+		return true;
+
 #if defined( CINDER_COCOA )
 	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
 	return static_cast<bool>( [[NSFileManager defaultManager] createDirectoryAtPath:pathNS withIntermediateDirectories:YES attributes:nil error:nil] );
@@ -197,6 +201,22 @@ void deleteFile( const std::string &path )
 		DWORD err = GetLastError();
 	}
 #endif
+}
+
+std::vector<std::string> split( const std::string &str, char separator )
+{
+	return split( str, string( 1, separator ) );
+}
+
+std::vector<std::string> split( const std::string &str, const std::string &separators )
+{
+	vector<string> result;
+	typedef boost::tokenizer<boost::char_separator<char> >  tokenizer;
+	boost::char_separator<char> sep( separators.c_str() );
+	tokenizer tokens( str, sep );
+	for( tokenizer::iterator tokIt = tokens.begin(); tokIt != tokens.end(); ++tokIt )
+		result.push_back( *tokIt );
+	return result;
 }
 
 wstring toUtf16( const string &utf8 )

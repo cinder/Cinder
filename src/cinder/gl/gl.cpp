@@ -574,6 +574,27 @@ void drawColorCube( const Vec3f &center, const Vec3f &size )
 }
 	
 
+void drawStrokedCube( const Vec3f &center, const Vec3f &size )
+{
+	Vec3f min = center - size * 0.5f;
+	Vec3f max = center + size * 0.5f;
+
+	gl::drawLine( Vec3f(min.x, min.y, min.z), Vec3f(max.x, min.y, min.z) );
+	gl::drawLine( Vec3f(max.x, min.y, min.z), Vec3f(max.x, max.y, min.z) );
+	gl::drawLine( Vec3f(max.x, max.y, min.z), Vec3f(min.x, max.y, min.z) );
+	gl::drawLine( Vec3f(min.x, max.y, min.z), Vec3f(min.x, min.y, min.z) );
+	
+	gl::drawLine( Vec3f(min.x, min.y, max.z), Vec3f(max.x, min.y, max.z) );
+	gl::drawLine( Vec3f(max.x, min.y, max.z), Vec3f(max.x, max.y, max.z) );
+	gl::drawLine( Vec3f(max.x, max.y, max.z), Vec3f(min.x, max.y, max.z) );
+	gl::drawLine( Vec3f(min.x, max.y, max.z), Vec3f(min.x, min.y, max.z) );
+	
+	gl::drawLine( Vec3f(min.x, min.y, min.z), Vec3f(min.x, min.y, max.z) );
+	gl::drawLine( Vec3f(min.x, max.y, min.z), Vec3f(min.x, max.y, max.z) );
+	gl::drawLine( Vec3f(max.x, max.y, min.z), Vec3f(max.x, max.y, max.z) );
+	gl::drawLine( Vec3f(max.x, min.y, min.z), Vec3f(max.x, min.y, max.z) );
+}
+
 // http://local.wasp.uwa.edu.au/~pbourke/texture_colour/spheremap/  Paul Bourke's sphere code
 // We should weigh an alternative that reduces the batch count by using GL_TRIANGLES instead
 void drawSphere( const Vec3f &center, float radius, int segments )
@@ -884,6 +905,17 @@ void draw( const TriMesh &mesh )
 	}
 	else
 		glDisableClientState( GL_NORMAL_ARRAY );
+	
+	if( mesh.hasColorsRGB() ) {
+		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else if( mesh.hasColorsRGBA() ) {
+		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else 
+		glDisableClientState( GL_COLOR_ARRAY );	
 
 	if( mesh.hasTexCoords() ) {
 		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
@@ -895,6 +927,7 @@ void draw( const TriMesh &mesh )
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_COLOR_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 }
 
@@ -910,6 +943,17 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 	else
 		glDisableClientState( GL_NORMAL_ARRAY );
 
+	if( mesh.hasColorsRGB() ) {
+		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else if( mesh.hasColorsRGBA() ) {
+		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}	
+	else 
+		glDisableClientState( GL_COLOR_ARRAY );
+	
 	if( mesh.hasTexCoords() ) {
 		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
 		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -921,6 +965,7 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_COLOR_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 }
 
@@ -1002,7 +1047,9 @@ void draw( const Texture &texture, const Rectf &rect )
 void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 {
 	SaveTextureBindState saveBindState( texture.getTarget() );
-	SaveTextureEnabledState saveEnabledState( texture.getTarget() );
+	BoolState saveEnabledState( texture.getTarget() );
+	BoolState vertexArrayState( GL_VERTEX_ARRAY );
+	BoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
 	texture.enableAndBind();
 
 	glEnableClientState( GL_VERTEX_ARRAY );
@@ -1024,17 +1071,12 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 	texCoords[3*2+0] = srcCoords.getX1(); texCoords[3*2+1] = srcCoords.getY2();	
 
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
 }
 
 namespace {
 void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
 {
 	// justification: { left = -1, center = 0, right = 1 }
-	SaveTextureBindState saveBindState( GL_TEXTURE_2D );
-	SaveTextureEnabledState saveEnabledState( GL_TEXTURE_2D );
 	SaveColorState colorState;
 
 	static Font defaultFont( "Arial", 14 );
@@ -1100,14 +1142,14 @@ SaveTextureBindState::~SaveTextureBindState()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// SaveTextureEnabledState
-SaveTextureEnabledState::SaveTextureEnabledState( GLint target )
+// BoolState
+BoolState::BoolState( GLint target )
 	: mTarget( target )
 {
 	glGetBooleanv( target, &mOldValue );
 }
 
-SaveTextureEnabledState::~SaveTextureEnabledState()
+BoolState::~BoolState()
 {
 	if( mOldValue )
 		glEnable( mTarget );

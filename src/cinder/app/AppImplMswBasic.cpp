@@ -24,6 +24,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/app/AppImplMswRenderer.h"
 #include "cinder/app/Renderer.h"
+#include "cinder/Utilities.h"
 
 #include <windowsx.h>
 #include <winuser.h>
@@ -80,7 +81,7 @@ void AppImplMswBasic::run()
 	
 	MSG msg;
 	while( ! mShouldQuit ) {
-		if( ::PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) {
+		while( ::PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) {
 			::TranslateMessage( &msg );
 			::DispatchMessage( &msg ); 
 		}
@@ -91,7 +92,7 @@ void AppImplMswBasic::run()
 			::RedrawWindow( mWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
 		}
 		else
-			::Sleep( 1 );
+			::Sleep( 0 );
 	}
 
 	killWindow( mFullScreen );
@@ -101,7 +102,6 @@ void AppImplMswBasic::run()
 
 bool AppImplMswBasic::createWindow( int *width, int *height )
 {
-	const char *title = "Cinder";
 	int bits = 32;
 
 	if( *width <= 0 ) {
@@ -166,13 +166,12 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 
 	::AdjustWindowRectEx( &WindowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
 
-	wchar_t unicodeTitle[1024]; 
-	wsprintfW( unicodeTitle, L"%S", title );
+	std::wstring unicodeTitle = toUtf16( mApp->getSettings().getTitle() ); 
 
 	// Create The Window
 	if( ! ( mWnd = ::CreateWindowEx( mWindowExStyle,						// Extended Style For The Window
 		( mFullScreen ) ? FULLSCREEN_WIN_CLASS_NAME : WINDOWED_WIN_CLASS_NAME,
-		unicodeTitle,						// Window Title
+		unicodeTitle.c_str(),						// Window Title
 		mWindowStyle,					// Required Window Style
 		WindowRect.left, WindowRect.top,								// Window Position
 		WindowRect.right-WindowRect.left,	// Calculate Window Width
@@ -330,7 +329,7 @@ void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 	bool handled = false;
 	double currentTime = getApp()->getElapsedSeconds(); // we don't trust the device's sense of time
 	unsigned int numInputs = LOWORD( wParam );
-	shared_ptr<TOUCHINPUT> pInputs = shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
+	std::shared_ptr<TOUCHINPUT> pInputs = std::shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
 	if( pInputs ) {
 		vector<TouchEvent::Touch> beganTouches, movedTouches, endTouches, activeTouches;
 		if( GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, pInputs.get(), sizeof(TOUCHINPUT) ) ) {
@@ -421,6 +420,9 @@ char mapVirtualKey( WPARAM wParam )
 	BYTE keyboardState[256];
 	::GetKeyboardState( keyboardState );
 	WORD result[4];
+
+	// the control key messes up the ToAscii result, so we zero it out
+	keyboardState[VK_CONTROL] = 0;
 	
 	int resultLength = ::ToAscii( wParam, ::MapVirtualKey( wParam, 0 ), keyboardState, result, 0 );
 	if( resultLength == 1 )

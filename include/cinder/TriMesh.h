@@ -25,7 +25,10 @@
 #include <vector>
 #include "cinder/Vector.h"
 #include "cinder/AxisAlignedBox.h"
-#include "cinder/Stream.h"
+#include "cinder/DataSource.h"
+#include "cinder/DataTarget.h"
+#include "cinder/Matrix.h"
+#include "cinder/Color.h"
 
 namespace cinder {
 
@@ -35,12 +38,16 @@ class TriMesh {
 	void		clear();
 	
 	bool		hasNormals() const { return ! mNormals.empty(); }
+	bool		hasColorsRGB() const { return ! mColorsRGB.empty(); }
+	bool		hasColorsRGBA() const { return ! mColorsRGBA.empty(); }
 	bool		hasTexCoords() const { return ! mTexCoords.empty(); }
 
 	void		appendVertex( const Vec3f &v ) { mVertices.push_back( v ); }
 	void		appendVertices( const Vec4d *verts, size_t num );
 	void		appendNormal( const Vec3f &v ) { mNormals.push_back( v ); }
 	void		appendNormals( const Vec4d *normals, size_t num );
+	void		appendColorRGB( const Color &rgb ) { mColorsRGB.push_back( rgb ); }
+	void		appendColorRGBA( const ColorA &rgba ) { mColorsRGBA.push_back( rgba ); }
 	void		appendTexCoord( const Vec2f &v ) { mTexCoords.push_back( v ); }
 	void		appendTriangle( size_t v0, size_t v1, size_t v2 )
 	{ mIndices.push_back( v0 ); mIndices.push_back( v1 ); mIndices.push_back( v2 ); }
@@ -49,19 +56,30 @@ class TriMesh {
 	size_t		getNumTriangles() const { return mIndices.size() / 3; }
 	size_t		getNumVertices() const { return mVertices.size(); }
 
-	const std::vector<Vec3f>&	getVertices() const { return mVertices; }
-	const std::vector<Vec3f>&	getNormals() const { return mNormals; }
-	const std::vector<Vec2f>&	getTexCoords() const { return mTexCoords; }	
+	//! Puts the 3 vertices of triangle number \a idx into \a a, \a b and \a c.
+	void		getTriangleVertices( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const;
+
+	const std::vector<Vec3f>&		getVertices() const { return mVertices; }
+	const std::vector<Vec3f>&		getNormals() const { return mNormals; }
+	const std::vector<Color>&		getColorsRGB() const { return mColorsRGB; }
+	const std::vector<ColorA>&		getColorsRGBA() const { return mColorsRGBA; }
+	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	
+	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
 	const std::vector<size_t>&		getIndices() const { return mIndices; }		
 
+	//! Calculates the bounding box of all vertices
 	AxisAlignedBox3f	calcBoundingBox() const;
+	//! Calculates the bounding box of all vertices as transformed by \a transform
+	AxisAlignedBox3f	calcBoundingBox( const Matrix44f &transform ) const;
 
-	void		read( IStreamRef in );
-	void		write( OStreamRef out ) const;
+	void		read( DataSourceRef in );
+	void		write( DataTargetRef out ) const;
 	
  private:
 	std::vector<Vec3f>		mVertices;
 	std::vector<Vec3f>		mNormals;
+	std::vector<Color>		mColorsRGB;
+	std::vector<ColorA>		mColorsRGBA;
 	std::vector<Vec2f>		mTexCoords;
 	std::vector<size_t>		mIndices;
 };

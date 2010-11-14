@@ -27,7 +27,7 @@
 
 namespace cinder {
 
-typedef shared_ptr<class ImageSource> ImageSourceRef;
+typedef std::shared_ptr<class ImageSource> ImageSourceRef;
 
 template<typename T>
 class ChannelT {
@@ -100,8 +100,8 @@ class ChannelT {
 	
 	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef typename shared_ptr<Obj>::unspecified_bool_type unspecified_bool_type;
-	operator unspecified_bool_type() const { return static_cast<typename shared_ptr<Obj>::unspecified_bool_type>( mObj ); }
+	typedef std::shared_ptr<Obj> ChannelT::*unspecified_bool_type;
+	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &ChannelT::mObj; }
 	void reset() { mObj.reset(); }
 	//@}
 
@@ -221,7 +221,7 @@ class ChannelT {
 	ConstIter	getIter( const Area &area ) const { return ConstIter( *this, area ); }
 	
  protected:
- 	shared_ptr<Obj>		mObj;
+ 	std::shared_ptr<Obj>		mObj;
 };
 
 

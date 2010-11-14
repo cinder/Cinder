@@ -37,9 +37,14 @@
 	#endif
 #else
 	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
+	#pragma push_macro( "_STDINT_H" )
 		#undef __STDC_CONSTANT_MACROS
+		#if _MSC_VER >= 1600 // VC10 or greater
+			#define _STDINT_H
+		#endif
 		#include <QTML.h>
 		#include <Movies.h>
+	#pragma pop_macro( "_STDINT_H" )
 	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 #endif
 
@@ -68,7 +73,7 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
 
 #endif // ! defined( __LP64__ )
 
-typedef shared_ptr<class ImageTargetCvPixelBuffer> ImageTargetCvPixelBufferRef;
+typedef std::shared_ptr<class ImageTargetCvPixelBuffer> ImageTargetCvPixelBufferRef;
 
 class ImageTargetCvPixelBuffer : public ci::ImageTarget {
   public:
@@ -96,7 +101,7 @@ class ImageTargetCvPixelBuffer : public ci::ImageTarget {
 CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr = false );
 
 #if ! defined( __LP64__ )
-typedef shared_ptr<class ImageTargetGWorld> ImageTargetGWorldRef;
+typedef std::shared_ptr<class ImageTargetGWorld> ImageTargetGWorldRef;
 
 class ImageTargetGWorld : public ci::ImageTarget {
   public:

@@ -42,11 +42,12 @@
 	ci::app::Renderer			*mRenderer;
 	std::map<UITouch*,uint32_t>	mTouchIdMap;
 	ci::Vec3d					mAcceleration;
-	
+	BOOL						appSetupCalled;
 }
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
 @property (nonatomic) NSInteger animationFrameInterval;
+@property (readwrite) BOOL appSetupCalled;
 
 - (id)initWithFrame:(CGRect)frame app:(cinder::app::AppCocoaTouch*)app renderer:(cinder::app::Renderer*)renderer;
 - (void)drawRect:(CGRect)rect;

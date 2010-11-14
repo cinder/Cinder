@@ -26,8 +26,8 @@
 
 namespace cinder { namespace audio {
 
-typedef shared_ptr<class SourceFileWav>	SourceFileWavRef;
-typedef shared_ptr<class LoaderSourceFileWav>	LoaderSourceFileWavRef;
+typedef std::shared_ptr<class SourceFileWav>	SourceFileWavRef;
+typedef std::shared_ptr<class LoaderSourceFileWav>	LoaderSourceFileWavRef;
 
 class LoaderSourceFileWav : public Loader {
  public:
@@ -35,7 +35,7 @@ class LoaderSourceFileWav : public Loader {
 	~LoaderSourceFileWav();
 
 	uint32_t getOptimalBufferSize() const { return 0; }
-	void loadData( uint32_t *ioSampleCount, BufferList *ioData );
+	void loadData( BufferList *ioData );
 
 	uint64_t getSampleOffset() const;
 	void setSampleOffset( uint64_t anOffset );
@@ -53,7 +53,7 @@ class SourceFileWav : public Source {
 	static SourceFileWavRef				createFileWavRef( DataSourceRef dataSourceRef );
 	~SourceFileWav();
 
-	LoaderRef getLoader( Target *target ) { return LoaderSourceFileWav::createRef( this, target ); }
+	LoaderRef createLoader( Target *target ) { return LoaderSourceFileWav::createRef( this, target ); }
 
 	uint32_t getLength() const { return mDataLength; };
 	double getDuration() const { /*TODO*/ return 0.0;  }

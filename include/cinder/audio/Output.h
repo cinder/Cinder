@@ -24,11 +24,12 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/audio/Io.h"
+#include "cinder/Exception.h"
 
 namespace cinder { namespace audio {
 
-typedef uint32_t				TrackId;
-typedef shared_ptr<class Track> TrackRef;
+typedef int32_t					TrackId;
+typedef std::shared_ptr<class Track> TrackRef;
 
 class OutputImpl;
 
@@ -48,6 +49,7 @@ class Track {
 	virtual ~Track() {}
 	virtual void play() = 0;
 	virtual void stop() = 0;
+	virtual bool isPlaying() const = 0;
 	
 	virtual void setVolume( float aVolume ) = 0;
 	virtual float getVolume() const = 0;
@@ -58,6 +60,9 @@ class Track {
 	virtual void setLooping( bool isLooping ) = 0;
 	virtual bool isLooping() const = 0;
 	
+	virtual void enablePcmBuffering( bool isBuffering ) = 0;
+	virtual bool isPcmBuffering() = 0;
+	virtual PcmBuffer32fRef getPcmBuffer() = 0;
   protected:
 	Track() {}
 };
@@ -72,6 +77,8 @@ class OutputImpl {
 	
 	virtual float getVolume() const = 0;
 	virtual void setVolume( float aVolume ) = 0;
+	
+	//virtual TargetRef getTarget() = 0;
   protected:
 	OutputImpl();
 	virtual TrackId					availableTrackId() { return mNextTrackId++; }
@@ -101,8 +108,15 @@ class Output {
 	
 	static float getVolume() { return instance()->getVolume(); }
 	static void setVolume( float aVolume ) { instance()->setVolume( aVolume ); }
+	
+	//static TargetRef getTarget() { return instance()->getTarget(); }
   private:
 	static OutputImpl* instance();
 };
+
+class OutputException : public Exception {};
+class OutOfTracksException : public Exception {};
+
+
 
 }} //namespace

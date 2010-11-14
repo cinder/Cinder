@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;..\include\tinyxml;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
+				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
@@ -115,7 +115,7 @@
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;..\include\tinyxml;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
+				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cinder\CaptureImplDirectShow.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cinder\Channel.cpp"
 				>
 			</File>
@@ -263,6 +267,10 @@
 			</File>
 			<File
 				RelativePath="..\src\cinder\Rand.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\cinder\Ray.cpp"
 				>
 			</File>
 			<File
@@ -377,75 +385,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\cinder\audio\OutputImplXAudio.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\cinder\audio\PcmBuffer.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\cinder\audio\SourceFileWav.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\src\cinder\audio\SourceFileWindowsMedia.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="tinyxml"
-				>
-				<File
-					RelativePath="..\src\tinyxml\action_store.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\lex_util.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\node_set.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\tinystr.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\tinyxml.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\tinyxmlerror.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\tinyxmlparser.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\tokenlist.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\xml_util.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\xpath_expression.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\xpath_processor.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\xpath_stack.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\xpath_static.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\xpath_stream.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\src\tinyxml\xpath_syntax.cpp"
 					>
 				</File>
 			</Filter>
@@ -504,6 +456,10 @@
 			<Filter
 				Name="ip"
 				>
+				<File
+					RelativePath="..\src\cinder\ip\Blend.cpp"
+					>
+				</File>
 				<File
 					RelativePath="..\src\cinder\ip\EdgeDetect.cpp"
 					>
@@ -752,6 +708,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\cinder\Filesystem.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\cinder\Filter.h"
 				>
 			</File>
@@ -931,10 +891,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\include\cinder\app\FlintView.h"
-					>
-				</File>
-				<File
 					RelativePath="..\include\cinder\app\KeyEvent.h"
 					>
 				</File>
@@ -959,11 +915,15 @@
 				Name="audio"
 				>
 				<File
-					RelativePath="..\include\cinder\audio\Buffer.h"
+					RelativePath="..\include\cinder\audio\Callback.h"
 					>
 				</File>
 				<File
-					RelativePath="..\include\cinder\audio\Callback.h"
+					RelativePath="..\include\cinder\audio\FftProcessor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\audio\FftProcessorImplXDsp.h"
 					>
 				</File>
 				<File
@@ -972,6 +932,14 @@
 				</File>
 				<File
 					RelativePath="..\include\cinder\audio\Output.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\audio\OutputImplXAudio.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\audio\PcmBuffer.h"
 					>
 				</File>
 				<File
@@ -1038,6 +1006,10 @@
 			<Filter
 				Name="ip"
 				>
+				<File
+					RelativePath="..\include\cinder\ip\Blend.h"
+					>
+				</File>
 				<File
 					RelativePath="..\include\cinder\ip\EdgeDetect.h"
 					>
@@ -1120,6 +1092,18 @@
 				>
 				<File
 					RelativePath="..\include\msw\videoInput\videoInput.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="rapidxml"
+				>
+				<File
+					RelativePath="..\include\rapidxml\rapidxml.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\include\rapidxml\rapidxml_print.hpp"
 					>
 				</File>
 			</Filter>
