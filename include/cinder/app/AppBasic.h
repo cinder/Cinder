@@ -192,6 +192,11 @@ class AppBasic : public App {
 	//! \cond
 	virtual void	privateResize__( const ResizeEvent &event );
 	//! \endcond
+	
+#ifdef __OBJC__
+	// ROGER / newResize
+	void newResize(int w, int h) { [mImpl setWindowSizeWithWidth:w height:h];};
+#endif
 
  private:
  

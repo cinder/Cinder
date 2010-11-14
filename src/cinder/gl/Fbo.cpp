@@ -486,7 +486,8 @@ GLint Fbo::getMaxAttachments()
 {
 #if ! defined( CINDER_GLES )
 	if( sMaxAttachments < 0 ) {
-		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &sMaxAttachments );
+		// ROGER GL_MAX_COLOR_ATTACHMENTS >> GL_MAX_COLOR_ATTACHMENTS_EXT
+		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &sMaxAttachments );
 	}
 	
 	return sMaxAttachments;

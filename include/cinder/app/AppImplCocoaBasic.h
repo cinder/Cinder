@@ -31,12 +31,17 @@
 
 #include "cinder/app/TouchEvent.h"
 
+// ROGER / NSWindowUnlimited
+#import "NSWindowUnlimited.h"
+
 #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 @interface AppImplCocoaBasic : NSApplication<NSWindowDelegate,CinderViewMultiTouchDelegate> {
 #else
 @interface AppImplCocoaBasic : NSApplication {
 #endif
-	NSWindow				*win;
+	// ROGER / NSWindowUnlimited
+	//NSWindow				*win;
+	NSWindowUnlimited		*win;
 	CinderView				*cinderView;
 	
 	NSTimer					*animationTimer;
@@ -74,7 +79,7 @@
 - (void)quit;
 - (cinder::Display*)getDisplay;
 - (void)setDisplay:(cinder::Display*)aDisplay;
-
+	
 #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 // multiTouch delegate methods
 - (void)touchesBegan:(ci::app::TouchEvent*)event;

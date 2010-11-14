@@ -27,9 +27,9 @@
 
 #include "OscSender.h"
 
-#include "osc/OscOutboundPacketStream.h"
-#include "osc/OscTypes.h"
-#include "ip/UdpSocket.h"
+#include "OscOutboundPacketStream.h"
+#include "OscTypes.h"
+#include "UdpSocket.h"
 
 #include <assert.h>
 namespace cinder { namespace osc {
