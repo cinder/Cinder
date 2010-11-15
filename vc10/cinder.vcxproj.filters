@@ -722,5 +722,8 @@
     <ClInclude Include="..\include\cinder\Clipboard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppNative.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

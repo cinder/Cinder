@@ -189,6 +189,7 @@
     <ClCompile Include="..\src\videoInput\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\cinder\app\AppNative.h" />
     <ClInclude Include="..\include\cinder\app\Event.h" />
     <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
     <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h" />
