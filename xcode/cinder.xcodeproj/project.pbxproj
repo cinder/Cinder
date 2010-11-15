@@ -81,6 +81,8 @@
 		003ADBA01038996800ACF6F2 /* AntTweakBar.h in Headers */ = {isa = PBXBuildFile; fileRef = 003ADB9E1038996800ACF6F2 /* AntTweakBar.h */; };
 		003FAA9F1290CC90002D6860 /* Clipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003FAA9E1290CC90002D6860 /* Clipboard.cpp */; };
 		003FAAA31290CCB1002D6860 /* Clipboard.h in Headers */ = {isa = PBXBuildFile; fileRef = 003FAAA21290CCB1002D6860 /* Clipboard.h */; };
+		003FAAB81290E01D002D6860 /* Clipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003FAA9E1290CC90002D6860 /* Clipboard.cpp */; };
+		003FAAB91290E01E002D6860 /* Clipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003FAA9E1290CC90002D6860 /* Clipboard.cpp */; };
 		00419C6E11057CC6007EC9AD /* EdgeDetect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6511057CC6007EC9AD /* EdgeDetect.cpp */; };
 		00419C6F11057CC6007EC9AD /* Fill.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6611057CC6007EC9AD /* Fill.cpp */; };
 		00419C7011057CC6007EC9AD /* Flip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6711057CC6007EC9AD /* Flip.cpp */; };
@@ -1886,6 +1888,7 @@
 				C7FB1BA7124BE3050045AFD2 /* Output.cpp in Sources */,
 				C7FB1BA8124BE3050045AFD2 /* SourceFile.cpp in Sources */,
 				434708DA1267EE4300AA7349 /* Blend.cpp in Sources */,
+				003FAAB81290E01D002D6860 /* Clipboard.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1962,6 +1965,7 @@
 				C7FB1BAA124BE3060045AFD2 /* Output.cpp in Sources */,
 				C7FB1BAB124BE3060045AFD2 /* SourceFile.cpp in Sources */,
 				434708DB1267EE4300AA7349 /* Blend.cpp in Sources */,
+				003FAAB91290E01E002D6860 /* Clipboard.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
