@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cinder\Clipboard.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cinder\Color.cpp"
 				>
 			</File>
@@ -685,6 +689,10 @@
 			</File>
 			<File
 				RelativePath="..\include\cinder\CinderResources.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Clipboard.h"
 				>
 			</File>
 			<File
