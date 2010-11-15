@@ -1,11 +1,5 @@
 ﻿#include "cinder/Cinder.h"
-#if defined( CINDER_COCOA_TOUCH )
-	#include "cinder/app/AppCocoaTouch.h"
-	typedef ci::app::AppCocoaTouch	AppNative;
-#else
-	#include "cinder/app/AppBasic.h"
-	typedef ci::app::AppBasic		AppNative;
-#endif
+#include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Clipboard.h"
 #include "cinder/gl/Texture.h"
@@ -35,7 +29,6 @@ void ClipboardBasicApp::keyDown( KeyEvent event )
 void ClipboardBasicApp::draw()
 {
 	gl::clear( Color( 0.5f, 0.5f, 0.5f ) ); 
-	gl::enableAlphaBlending( true );
 	gl::setMatricesWindow( getWindowSize() );
 	
 	if( Clipboard::hasImage() )
@@ -46,8 +39,4 @@ void ClipboardBasicApp::draw()
 		gl::drawString( "Clipboard contents unknown", Vec2f( 0, getWindowCenter().y ) );
 }
 
-#if defined( CINDER_COCOA_TOUCH )
-CINDER_APP_COCOA_TOUCH( ClipboardBasicApp, RendererGl )
-#else
-CINDER_APP_BASIC( ClipboardBasicApp, RendererGl )
-#endif
+CINDER_APP_NATIVE( ClipboardBasicApp, RendererGl )
