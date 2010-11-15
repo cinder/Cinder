@@ -30,6 +30,7 @@ void ClipboardBasicApp::draw()
 {
 	gl::clear( Color( 0.5f, 0.5f, 0.5f ) ); 
 	gl::setMatricesWindow( getWindowSize() );
+	gl::enableAlphaBlending();
 	
 	if( Clipboard::hasImage() )
 		gl::draw( gl::Texture( Clipboard::getImage() ) );
