@@ -354,6 +354,9 @@
     <ClCompile Include="..\src\cinder\ip\Blend.cpp">
       <Filter>Source Files\ip</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\Clipboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -715,6 +718,12 @@
     </ClInclude>
     <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp">
       <Filter>Header Files\rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Clipboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppNative.h">
+      <Filter>Header Files\app</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -79,10 +79,6 @@ TextManager::TextManager()
 {
 #if defined( CINDER_MAC )
 #elif defined( CINDER_MSW )
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-	ULONG_PTR gdiplusToken;
-	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
-
 	mDummyDC = ::CreateCompatibleDC( 0 );
 	mGraphics = new Gdiplus::Graphics( mDummyDC );
 #endif
@@ -388,7 +384,8 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	// prep our GDI and GDI+ resources
 	HDC dc = TextManager::instance()->getDc();
 	result = Surface8u( pixelWidth, pixelHeight, useAlpha, SurfaceConstraintsGdiPlus() );
-	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result, premultiplied );
+	result.setPremultiplied( premultiplied );
+	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result );
 	//Gdiplus::Bitmap *offscreenBitmap = new Gdiplus::Bitmap( pixelWidth, pixelHeight, (premultiplied) ? PixelFormat32bppPARGB : PixelFormat32bppARGB );
 	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
 	// high quality text rendering
@@ -492,7 +489,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	// prep our GDI and GDI+ resources
 	::HDC dc = TextManager::instance()->getDc();
 	Surface result( pixelWidth, pixelHeight, true, SurfaceConstraintsGdiPlus() );
-	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result, false );
+	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result );
 	//Gdiplus::Bitmap *offscreenBitmap = new Gdiplus::Bitmap( pixelWidth, pixelHeight, (premultiplied) ? PixelFormat32bppPARGB : PixelFormat32bppARGB );
 	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
 	// high quality text rendering

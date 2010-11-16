@@ -94,10 +94,6 @@ FontManager::FontManager()
 	nsFontManager = [NSFontManager sharedFontManager];
 	[nsFontManager retain];
 #else
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-	ULONG_PTR gdiplusToken;
-	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);	
-
 	mFontDc = ::CreateCompatibleDC( NULL );
 	mGraphics = new Gdiplus::Graphics( mFontDc );
 #endif

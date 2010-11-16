@@ -54,10 +54,14 @@ class ImageSourceSurface : public ImageSource {
 		mHeight = surface.getHeight();
 		setColorModel( ImageIo::CM_RGB );
 		setChannelOrder( ImageIo::ChannelOrder( surface.getChannelOrder().getImageIoChannelOrder() ) );
-		if( boost::is_same<T,uint8_t>::value )
+		if( boost::is_same<T,uint8_t>::value ) {
 			setDataType( ImageIo::UINT8 );
-		else if( boost::is_same<T,float>::value )
+			mSurface8u = *reinterpret_cast<const Surface8u*>( &surface ); // register reference to 'surface'
+		}
+		else if( boost::is_same<T,float>::value ) {
 			setDataType( ImageIo::FLOAT32 );
+			mSurface32f = *reinterpret_cast<const Surface32f*>( &surface ); // register reference to 'surface'
+		}
 		else
 			throw; // this surface seems to be a type we've never met
 		mRowBytes = surface.getRowBytes();
@@ -75,6 +79,9 @@ class ImageSourceSurface : public ImageSource {
 		}
 	}
 	
+	// not ideal, but these are used to register a reference to the surface we were constructed with
+	Surface8u			mSurface8u;
+	Surface32f			mSurface32f;
 	const uint8_t		*mData;
 	int32_t				mRowBytes;
 };
@@ -510,4 +517,4 @@ void* ImageTargetSurface<T>::getRowPointer( int32_t row )
 
 BOOST_PP_SEQ_FOR_EACH( SURFACE_PROTOTYPES, ~, CHANNEL_TYPES )
 
-} // namespace dt
+} // namespace cinder

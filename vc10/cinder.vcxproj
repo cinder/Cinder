@@ -106,6 +106,7 @@
     <ClCompile Include="..\src\cinder\Capture.cpp" />
     <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp" />
     <ClCompile Include="..\src\cinder\Channel.cpp" />
+    <ClCompile Include="..\src\cinder\Clipboard.cpp" />
     <ClCompile Include="..\src\cinder\Color.cpp" />
     <ClCompile Include="..\src\cinder\DataSource.cpp" />
     <ClCompile Include="..\src\cinder\DataTarget.cpp" />
@@ -188,12 +189,14 @@
     <ClCompile Include="..\src\videoInput\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\cinder\app\AppNative.h" />
     <ClInclude Include="..\include\cinder\app\Event.h" />
     <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
     <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h" />
     <ClInclude Include="..\include\cinder\audio\PcmBuffer.h" />
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
     <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
+    <ClInclude Include="..\include\cinder\Clipboard.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />
     <ClInclude Include="..\include\cinder\ip\Blend.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />

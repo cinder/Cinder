@@ -52,8 +52,8 @@ namespace cinder { namespace app {
 
 class AppImplMsw {
  public:
-	AppImplMsw( class App *aApp ) : mApp( aApp ), mWindowOffset( 0, 0 ) {}
-	virtual ~AppImplMsw() {}
+	AppImplMsw( class App *aApp );
+	virtual ~AppImplMsw();
 	
 	int				getWindowWidth() const { return mWindowWidth; }
 	int				getWindowHeight() const { return mWindowHeight; }
@@ -85,7 +85,8 @@ class AppImplMsw {
 	int			mWindowWidth, mWindowHeight;	
 	bool		mFullScreen;
 	Vec2i		mWindowOffset;
-	float		mFrameRate; 
+	float		mFrameRate;
+	ULONG_PTR	mGdiplusToken;
 };
 
 } } // namespace cinder::app
