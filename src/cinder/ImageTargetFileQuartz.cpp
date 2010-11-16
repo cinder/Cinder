@@ -141,7 +141,10 @@ void ImageTargetFileQuartz::finalize()
 	ImageTargetCgImage::finalize();
 	
 	::CGImageDestinationAddImage( mImageDest, mImageRef, mImageDestOptions.get() );
-	::CGImageDestinationFinalize( mImageDest );
+	if( ! ::CGImageDestinationFinalize( mImageDest ) ) { // failed to write
+		::CFRelease( mImageDest );
+		throw ImageIoExceptionFailedWrite();
+	}
 
 	// clean up
 	::CFRelease( mImageDest );
