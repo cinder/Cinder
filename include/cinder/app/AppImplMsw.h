@@ -27,6 +27,8 @@
 #include <string>
 #include <vector>
 #include <windows.h>
+#undef min
+#undef max
 
 // we declare all of the MultiTouch stuff in Win7 here to prevent requiring users to use the Win7 headers
 #if ! defined( WM_TOUCH )

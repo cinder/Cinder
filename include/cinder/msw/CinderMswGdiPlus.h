@@ -25,6 +25,8 @@
 #include "cinder/Cinder.h"
 #include "cinder/Surface.h"
 #include <windows.h>
+#undef min
+#undef max
 
 // forward declarations
 namespace Gdiplus {

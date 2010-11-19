@@ -28,6 +28,8 @@
 
 #include <Wmsdk.h>
 #include <windows.h>
+#undef min
+#undef max
 
 
 namespace cinder { namespace audio {

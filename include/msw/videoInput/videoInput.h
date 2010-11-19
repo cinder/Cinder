@@ -46,7 +46,8 @@ Thanks to:
 	#   define _WIN32_WINNT 0x400
 #endif
 #include <windows.h>
-
+#undef min
+#undef max
 
 //Example Usage
 /*

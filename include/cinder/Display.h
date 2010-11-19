@@ -33,7 +33,9 @@
 		class NSScreen;
 #	endif
 #elif defined( CINDER_MSW )
-#	include <windows.h>
+	#include <windows.h>
+	#undef min
+	#undef max
 #endif
 
 #include <map>

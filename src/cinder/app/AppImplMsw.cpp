@@ -31,6 +31,7 @@
 #include <gdiplus.h>
 #undef min
 #undef max
+#pragma comment(lib, "gdiplus")
 
 using std::string;
 using std::wstring;

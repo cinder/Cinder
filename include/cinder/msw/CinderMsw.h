@@ -29,7 +29,8 @@
 
 #include <string>
 #include <windows.h>
-
+#undef min
+#undef max
 
 namespace cinder { namespace msw {
 

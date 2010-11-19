@@ -37,6 +37,8 @@
 	#endif
 #elif defined( CINDER_MSW )
 	#include <windows.h>
+	#undef min
+	#undef max
 
 	namespace Gdiplus {
 		class Font;

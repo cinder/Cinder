@@ -31,6 +31,8 @@
 	#include <termios.h>
 #elif defined( CINDER_MSW )
 	#include <windows.h>
+	#undef min
+	#undef max
 #endif
 
 namespace cinder {

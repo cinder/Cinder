@@ -22,7 +22,9 @@
 
 #pragma once
 
-#include <Windows.h>
+#include <windows.h>
+#undef min
+#undef max
 #include <ostream>
 #include <sstream>
 #include <string>
