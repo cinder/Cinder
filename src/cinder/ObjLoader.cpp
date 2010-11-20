@@ -33,8 +33,23 @@ using boost::make_tuple;
 
 namespace cinder {
 
-ObjLoader::ObjLoader( shared_ptr<IStream> aStream, bool includeUVs )
-	: mStream( aStream )
+ObjLoader::ObjLoader( shared_ptr<IStream> stream, bool includeUVs )
+	: mStream( stream )
+{
+	parse( includeUVs );
+}
+
+ObjLoader::ObjLoader( DataSourceRef dataSource, bool includeUVs )
+	: mStream( dataSource->createStream() )
+{
+	parse( includeUVs );
+}
+
+ObjLoader::~ObjLoader()
+{
+}
+
+void ObjLoader::parse( bool includeUVs )
 {
 	Group *currentGroup;
 	mGroups.push_back( Group() );
@@ -77,10 +92,6 @@ ObjLoader::ObjLoader( shared_ptr<IStream> aStream, bool includeUVs )
 			currentGroup->mName = line.substr( line.find( ' ' ) + 1 );
 		}
 	}
-}
-
-ObjLoader::~ObjLoader()
-{
 }
 
 void ObjLoader::parseFace( Group *group, const std::string &s, bool includeUVs )
