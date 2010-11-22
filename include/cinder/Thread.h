@@ -25,12 +25,14 @@
 #include "cinder/Cinder.h"
 
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/condition_variable.hpp>
 
 // Promote classes from boost which will be part of std:: in C++1x where necessary
 namespace std {
 	using boost::mutex;
+	using boost::recursive_mutex;
 	using boost::thread;
 	using boost::lock_guard;
 	using boost::unique_lock;
