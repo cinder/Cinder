@@ -480,9 +480,9 @@ ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource )
 	bool writingAlpha = imageSource->hasAlpha();
 	bool isFloat = true;
 	switch( imageSource->getDataType() ) {
-		case ImageIo::UINT8: mBitsPerComponent = 8; isFloat = false; setDataType( ImageIo::UINT8 ); break;
-		case ImageIo::UINT16: mBitsPerComponent = 16; isFloat = false; setDataType( ImageIo::UINT16 ); break;
-		default: mBitsPerComponent = 32; isFloat = true; setDataType( ImageIo::FLOAT32 );
+		case ImageIo::UINT8: mBitsPerComponent = 8; isFloat = false; setDataType( ImageIo::UINT8 ); mBitmapInfo = kCGBitmapByteOrderDefault; break;
+		case ImageIo::UINT16: mBitsPerComponent = 16; isFloat = false; setDataType( ImageIo::UINT16 ); mBitmapInfo = kCGBitmapByteOrder16Little; break;
+		default: mBitsPerComponent = 32; isFloat = true; mBitmapInfo = kCGBitmapByteOrder32Little | kCGBitmapFloatComponents; setDataType( ImageIo::FLOAT32 );
 	}
 	uint8_t numChannels;
 	switch( imageSource->getColorModel() ) {
@@ -495,7 +495,6 @@ ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource )
 	mRowBytes = mWidth * ( numChannels * mBitsPerComponent ) / 8;
 	setColorModel( ( imageSource->getColorModel() == ImageIo::CM_GRAY ) ? ImageIo::CM_GRAY : ImageIo::CM_RGB );
 	
-	mBitmapInfo = ( isFloat ) ? ( kCGBitmapByteOrder32Little | kCGBitmapFloatComponents ) : kCGBitmapByteOrderDefault;
 	if( writingAlpha ) {
 		mBitmapInfo |= ( imageSource->isPremultiplied() ) ? kCGImageAlphaPremultipliedLast : kCGImageAlphaLast;
 		if( mColorModel == CM_GRAY )
