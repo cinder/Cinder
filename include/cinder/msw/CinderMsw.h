@@ -29,6 +29,7 @@
 
 #include <string>
 #include <windows.h>
+#include <Objidl.h>
 #undef min
 #undef max
 
