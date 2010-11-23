@@ -26,7 +26,7 @@ using std::vector;
 
 namespace cinder {
 
-const int Path2d::sSegmentTypePointCounts[] = { 1, 2, 3, 0 };
+const int Path2d::sSegmentTypePointCounts[] = { 0, 1, 2, 3, 0 };
 
 Path2d::Path2d( const BSpline<Vec2f> &spline, float subdivisionStep )
 {
@@ -138,7 +138,6 @@ void Path2d::moveTo( const Vec2f &p )
 		throw Path2dExc(); // can only moveTo as the first point
 		
 	mPoints.push_back( p );
-	mSegments.push_back( MOVETO );
 }
 
 void Path2d::lineTo( const Vec2f &p )
@@ -339,10 +338,10 @@ Vec2f Path2d::getPosition( float t ) const
 	else if( t >= 1 )
 		return mPoints.back();
 	
-	size_t totalSegments = mSegments.size() - 1; // -1 because the moveTo doesn't count
+	size_t totalSegments = mSegments.size();
 	float segParamLength = 1.0f / totalSegments; 
-	size_t seg = 1 + t * totalSegments;			// +1 to skip the moveTo
-	float subSeg = ( t - ( seg - 1 ) * segParamLength ) / segParamLength;
+	size_t seg = t * totalSegments;
+	float subSeg = ( t - seg * segParamLength ) / segParamLength;
 	
 	return getSegmentPosition( seg, subSeg );
 }
@@ -355,25 +354,22 @@ Vec2f Path2d::getSegmentPosition( size_t segment, float t ) const
 	switch( mSegments[segment] ) {
 		case CUBICTO: {
 			float t1 = 1 - t;
-			return mPoints[firstPoint-1]*(t1*t1*t1) + mPoints[firstPoint]*(3*t*t1*t1) + mPoints[firstPoint+1]*(3*t*t*t1) + mPoints[firstPoint+2]*(t*t*t);
+			return mPoints[firstPoint]*(t1*t1*t1) + mPoints[firstPoint+1]*(3*t*t1*t1) + mPoints[firstPoint+2]*(3*t*t*t1) + mPoints[firstPoint+3]*(t*t*t);
 		}
 		break;
 		case QUADTO: {
 			float t1 = 1 - t;
-			return mPoints[firstPoint-1]*(t1*t1) + mPoints[firstPoint]*(2*t*t1) + mPoints[firstPoint+1]*(t*t);
+			return mPoints[firstPoint]*(t1*t1) + mPoints[firstPoint+1]*(2*t*t1) + mPoints[firstPoint+2]*(t*t);
 		}
 		break;
 		case LINETO: {
 			float t1 = 1 - t;
-			return mPoints[firstPoint-1]*t1 + mPoints[firstPoint]*t;
+			return mPoints[firstPoint]*t1 + mPoints[firstPoint+1]*t;
 		}
 		case CLOSE: {
 			float t1 = 1 - t;
 			return mPoints[firstPoint]*t1 + mPoints[0]*t;
 		}
-		break;
-		case MOVETO:
-			return mPoints[firstPoint];
 		break;
 		default:
 			throw Path2dExc();

@@ -53,7 +53,7 @@ void PathBasicApp::draw()
 	p1.moveTo( 10, 10 );
 	//p1.lineTo( 20, 30 );
 	p1.quadTo( 100, 50, 100, 100 );
-//	p1.curveTo( 125, 125, 155, 125, 165, 100 );
+	p1.curveTo( 125, 125, 155, 125, 165, 100 );
 	p1.close();
 	drawPath( p1 );
 }

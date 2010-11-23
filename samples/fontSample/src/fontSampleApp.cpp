@@ -112,7 +112,7 @@ struct VerboseCharDraw {
 		}
 		else if( type == Path2d::CLOSE ) {
 			mCtx.setSource( lineColor );
-			mCtx.line( points[0], *previousPoint );
+			mCtx.line( *previousPoint, points[0] );
 			mCtx.stroke();
 		}
 		return true;
@@ -130,8 +130,8 @@ void fontSampleApp::drawCharacterVerbose( cairo::Context &ctx, Vec2f where )
 	ctx.setSourceRgb( 1.0f, 1.0, 0.5f );
 	ctx.translate( where );
 	// Uncomment below to render the character filled
-	// ctx.appendPath( mShape );
-	// ctx.fill();
+	//ctx.appendPath( mShape );
+	//ctx.fill();
 	
 	VerboseCharDraw verb( ctx );
 	mShape.iterate<VerboseCharDraw>( verb );

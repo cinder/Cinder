@@ -1475,11 +1475,11 @@ void Context::appendPath( const cinder::Shape2d &path )
 void Context::appendPath( const cinder::Path2d &path )
 {
 	size_t point = 0;
+	if( path.empty() )
+		return;
+	moveTo( path.getPoint( point++ ) );
 	for( size_t seg = 0; seg < path.getNumSegments(); ++seg ) {
 		switch( path.getSegmentType( seg ) ) {
-			case Path2d::MOVETO:
-				moveTo( path.getPoint( point++ ) );
-			break;
 			case Path2d::LINETO:
 				lineTo( path.getPoint( point++ ) );
 			break;

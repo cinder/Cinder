@@ -71,18 +71,22 @@ class Shape2d {
 		bool stop = false;
 		for( std::vector<Path2d>::const_iterator contourIt = mContours.begin(); contourIt != mContours.end(); ++contourIt ) {
 			size_t pt = 0;
+			it( Path2d::MOVETO, &contourIt->mPoints[0], 0 );
+			pt++;
 			for( std::vector<Path2d::SegmentType>::const_iterator segIt = contourIt->mSegments.begin(); segIt != contourIt->mSegments.end(); ++segIt ) {
-				if( ! it( *segIt, &contourIt->mPoints[pt], ( pt > 0 ) ? &contourIt->mPoints[pt-1] : 0 ) ) {
+				if( *segIt == Path2d::CLOSE )
+					it( *segIt, &contourIt->mPoints[0], &contourIt->mPoints[pt-1] );
+				else if( ! it( *segIt, &contourIt->mPoints[pt], ( pt > 0 ) ? &contourIt->mPoints[pt-1] : 0 ) ) {
 					stop = true;
 					break;
 				}
 				pt += Path2d::sSegmentTypePointCounts[*segIt];
 			}
 			if( stop ) break;
-			else if( contourIt->isClosed() ) {
+			/*else if( contourIt->isClosed() ) {
 				if( ! it( Path2d::CLOSE, contourIt->empty() ? NULL : &contourIt->mPoints[0], ( pt > 0 ) ? &contourIt->mPoints[pt-1] : 0 ) )
 					break;
-			}
+			}*/
 		}
 	}
 	
