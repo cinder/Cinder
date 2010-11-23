@@ -1493,10 +1493,11 @@ void Context::appendPath( const cinder::Path2d &path )
 				curveTo( path.getPoint( point ), path.getPoint( point + 1 ), path.getPoint( point + 2 ) );
 				point += 3;
 			break;
+			case Path2d::CLOSE:
+				closePath();
+			break;
 		}
 	}
-	if( path.isClosed() )
-		closePath();
 }
 
 void Context::circle( double dx, double dy, double radius )

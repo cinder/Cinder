@@ -26,10 +26,9 @@ using std::vector;
 
 namespace cinder {
 
-const int Path2d::sSegmentTypePointCounts[] = { 1, 1, 2, 3, 0 };
+const int Path2d::sSegmentTypePointCounts[] = { 1, 2, 3, 0 };
 
 Path2d::Path2d( const BSpline<Vec2f> &spline, float subdivisionStep )
-	: mClosed( false )
 {
 	int numPoints = spline.getNumControlPoints();
 	if( numPoints <= spline.getDegree() )
@@ -153,6 +152,9 @@ void Path2d::lineTo( const Vec2f &p )
 
 void Path2d::quadTo( const Vec2f &p1, const Vec2f &p2 )
 {
+	if( mPoints.empty() )
+		throw Path2dExc(); // can only quadTo as non-first point
+
 	mPoints.push_back( p1 );
 	mPoints.push_back( p2 );
 	mSegments.push_back( QUADTO );
@@ -160,6 +162,9 @@ void Path2d::quadTo( const Vec2f &p1, const Vec2f &p2 )
 
 void Path2d::curveTo( const Vec2f &p1, const Vec2f &p2, const Vec2f &p3 )
 {
+	if( mPoints.empty() )
+		throw Path2dExc(); // can only curveTo as non-first point
+
 	mPoints.push_back( p1 );
 	mPoints.push_back( p2 );
 	mPoints.push_back( p3 );	
@@ -230,12 +235,12 @@ void Path2d::arcSegmentAsCubicBezier( const Vec2f &center, float radius, float s
 	float r_sin_B, r_cos_B;
 	float h;
 
-	r_sin_A = radius * sin (startRadians);
-	r_cos_A = radius * cos (startRadians);
-	r_sin_B = radius * sin (endRadians);
-	r_cos_B = radius * cos (endRadians);
+	r_sin_A = radius * math<float>::sin( startRadians );
+	r_cos_A = radius * math<float>::cos( startRadians );
+	r_sin_B = radius * math<float>::sin( endRadians );
+	r_cos_B = radius * math<float>::cos( endRadians );
 
-	h = 4.0f/3.0f * tan ((endRadians - startRadians) / 4.0f);
+	h = 4.0f/3.0f * math<float>::tan( (endRadians - startRadians) / 4 );
 
 	curveTo( center.x + r_cos_A - h * r_sin_A, center.y + r_sin_A + h * r_cos_A, center.x + r_cos_B + h * r_sin_B,
 				center.y + r_sin_B - h * r_cos_B, center.x + r_cos_B, center.y + r_sin_B );
@@ -244,8 +249,8 @@ void Path2d::arcSegmentAsCubicBezier( const Vec2f &center, float radius, float s
 // Implementation courtesy of Lennart Kudling
 void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 {
-	if( isClosed() || empty() ) // Do nothing if path is closed or segment list is empty.
-		return;
+	if( isClosed() || empty() )
+		throw Path2dExc(); // can only arcTo as non-first point
 
 	const float epsilon = 1e-8;
 	
@@ -325,6 +330,54 @@ void Path2d::removeSegment( size_t segment )
 	mPoints.erase( mPoints.begin() + firstPoint, mPoints.begin() + firstPoint + pointCount );
 	
 	mSegments.erase( mSegments.begin() + segment );
+}
+
+Vec2f Path2d::getPosition( float t ) const
+{
+	if( t <= 0 )
+		return mPoints[0];
+	else if( t >= 1 )
+		return mPoints.back();
+	
+	size_t totalSegments = mSegments.size() - 1; // -1 because the moveTo doesn't count
+	float segParamLength = 1.0f / totalSegments; 
+	size_t seg = 1 + t * totalSegments;			// +1 to skip the moveTo
+	float subSeg = ( t - ( seg - 1 ) * segParamLength ) / segParamLength;
+	
+	return getSegmentPosition( seg, subSeg );
+}
+
+Vec2f Path2d::getSegmentPosition( size_t segment, float t ) const
+{
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < segment; ++s )
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	switch( mSegments[segment] ) {
+		case CUBICTO: {
+			float t1 = 1 - t;
+			return mPoints[firstPoint-1]*(t1*t1*t1) + mPoints[firstPoint]*(3*t*t1*t1) + mPoints[firstPoint+1]*(3*t*t*t1) + mPoints[firstPoint+2]*(t*t*t);
+		}
+		break;
+		case QUADTO: {
+			float t1 = 1 - t;
+			return mPoints[firstPoint-1]*(t1*t1) + mPoints[firstPoint]*(2*t*t1) + mPoints[firstPoint+1]*(t*t);
+		}
+		break;
+		case LINETO: {
+			float t1 = 1 - t;
+			return mPoints[firstPoint-1]*t1 + mPoints[firstPoint]*t;
+		}
+		case CLOSE: {
+			float t1 = 1 - t;
+			return mPoints[firstPoint]*t1 + mPoints[0]*t;
+		}
+		break;
+		case MOVETO:
+			return mPoints[firstPoint];
+		break;
+		default:
+			throw Path2dExc();
+	}
 }
 
 } // namespace cinder
