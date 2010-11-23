@@ -24,7 +24,6 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #include "TuioClient.h"
 #include "cinder/app/App.h"
 
@@ -35,24 +34,28 @@ using namespace std;
 
 namespace cinder { namespace tuio {
 
-
 // This class handles each of the profile types, currently Object: '2Dobj' and Cursor: '2Dcur'
 template<typename T>
 struct ProfileHandler {
-	ProfileHandler() : mPreviousFrame( -1 ) {}
+	ProfileHandler() {}
 
-	void			handleMessage( const osc::Message &message );
-	std::vector<T>	getInstancesAsVector() const;
+	void			handleMessage( const osc::Message &message, int32_t pastFrameThreshold );
+	std::vector<T>	getInstancesAsVector(std::string source = "") const;
+
+	std::set<std::string>					mSources;
+
+	//////////////////////////////////////////////////////////////////////
+	// For all of the following maps, the key is the source IP address
+	//////////////////////////////////////////////////////////////////////
 
 	// current instances of this profile
-	std::map<int32_t,T>		mInstances;
-
+	std::map<std::string, std::map<int32_t,T> >		mInstances;
 	// containers for changes which will be propagated upon receipt of 'fseq'
-	std::vector<T>			mUpdates, mAdds;
-	std::vector<int32_t>	mDeletes;
-
-	// last frame we processed per the 'fseq' message
-	int32_t		mPreviousFrame;
+	std::map<std::string, std::vector<T> > mUpdates;
+	std::map<std::string, std::vector<T> > mAdds;
+	std::map<std::string, std::vector<int32_t> >	mDeletes;
+	// Last frame we processed per the 'fseq' message
+	std::map<std::string, int32_t> mPreviousFrame;
 
 	CallbackMgr<void (T)>					mAddedCallbacks, mUpdatedCallbacks, mRemovedCallbacks;
 	CallbackMgr<void (app::TouchEvent)>		mTouchesBeganCb, mTouchesMovedCb, mTouchesEndedCb;
@@ -60,19 +63,22 @@ struct ProfileHandler {
 };
 
 template<typename T>
-void ProfileHandler<T>::handleMessage( const osc::Message &message )
+void ProfileHandler<T>::handleMessage( const osc::Message &message, int32_t pastFrameThreshold )
 {
 	lock_guard<mutex> lock( mMutex );
 	const std::string messageType = message.getArgAsString( 0 );
 	double currentTime = app::getElapsedSeconds();
+	std::string source = message.getRemoteIp();
+
+	mSources.insert(source);
 
 	if( messageType == "set" ) {
 		T inst = T::createFromSetMessage( message );
 
-		if( mInstances.find( inst.getSessionId() ) == mInstances.end() )
-			mAdds.push_back( inst );
+		if( mInstances[source].find( inst.getSessionId() ) == mInstances[source].end() )
+			mAdds[source].push_back( inst );
 		else
-			mUpdates.push_back( inst );					
+			mUpdates[source].push_back( inst );					
 	}
 	else if( messageType == "alive" ) {
 		set<int32_t> aliveInstances;
@@ -80,9 +86,16 @@ void ProfileHandler<T>::handleMessage( const osc::Message &message )
 			aliveInstances.insert( message.getArgAsInt32( i ) );
 
 		// anything not in 'aliveInstances' has been removed
-		for( typename map<int32_t,T>::iterator instIt = mInstances.begin(); instIt != mInstances.end(); ++instIt ) {
-			if( aliveInstances.find( instIt->first ) == aliveInstances.end() )
-				mDeletes.push_back( instIt->first );
+
+		typedef map<int32_t,T> InstanceMap;
+		// We look at all (and only) the instances owned by the source of the message
+		typename map<std::string,InstanceMap>::iterator instanceMap = mInstances.find(source);
+		if ( instanceMap != mInstances.end() ) {
+			typename InstanceMap::iterator instIt = instanceMap->second.begin();
+			for( ; instIt != instanceMap->second.end(); ++instIt ) {
+					if( aliveInstances.find( instIt->first ) == aliveInstances.end() )
+						mDeletes[source].push_back( instIt->first );
+			}
 		}
 	}
 	else if( messageType == "fseq" ) {
@@ -90,11 +103,17 @@ void ProfileHandler<T>::handleMessage( const osc::Message &message )
 
 		// due to UDP's unpredictability, it is possible to receive messages from "the past". Don't process these updates if that's true here
 		// note that a frame of -1 implies that this is just an update, but doesn't represent a new time so we'll just process it
-		if( ( frame == -1 ) || ( frame > mPreviousFrame ) ) {
+
+		// If the frame is "too far" in the past, we assume that the source has
+		// been reset/restarted, or it's a different source, and we accept it.
+		int32_t prev_frame = mPreviousFrame[source];
+		int32_t dframe = frame - prev_frame;
+
+		if( ( frame == -1 ) || ( dframe > 0 ) || ( dframe < -pastFrameThreshold ) ) {
 			// propagate the newly added instances
 			vector<app::TouchEvent::Touch> beganTouches;
-			for( typename vector<T>::const_iterator addIt = mAdds.begin(); addIt != mAdds.end(); ++addIt ) {
-				mInstances[addIt->getSessionId()] = *addIt;
+			for( typename vector<T>::const_iterator addIt = mAdds[source].begin(); addIt != mAdds[source].end(); ++addIt ) {
+				mInstances[source][addIt->getSessionId()] = *addIt;
 				beganTouches.push_back( addIt->getTouch( currentTime, app::getWindowSize() ) );
 				mAddedCallbacks.call( *addIt );
 			}
@@ -105,8 +124,8 @@ void ProfileHandler<T>::handleMessage( const osc::Message &message )
 
 			// propagate the updated instances
 			vector<app::TouchEvent::Touch> movedTouches;
-			for( typename vector<T>::const_iterator updateIt = mUpdates.begin(); updateIt != mUpdates.end(); ++updateIt ) {
-				mInstances[updateIt->getSessionId()] = *updateIt;
+			for( typename vector<T>::const_iterator updateIt = mUpdates[source].begin(); updateIt != mUpdates[source].end(); ++updateIt ) {
+				mInstances[source][updateIt->getSessionId()] = *updateIt;
 				movedTouches.push_back( updateIt->getTouch( currentTime, app::getWindowSize() ) );
 				mUpdatedCallbacks.call( *updateIt );
 			}
@@ -117,42 +136,64 @@ void ProfileHandler<T>::handleMessage( const osc::Message &message )
 
 			// propagate the deleted instances
 			vector<app::TouchEvent::Touch> endedTouches;
-			for( vector<int32_t>::const_iterator deleteIt = mDeletes.begin(); deleteIt != mDeletes.end(); ++deleteIt ) {
-				mRemovedCallbacks.call( mInstances[*deleteIt] );
+			for( vector<int32_t>::const_iterator deleteIt = mDeletes[source].begin(); deleteIt != mDeletes[source].end(); ++deleteIt ) {
+				mRemovedCallbacks.call( mInstances[source][*deleteIt] );
 
-				endedTouches.push_back( mInstances[*deleteIt].getTouch( currentTime, app::getWindowSize() ) );
+				endedTouches.push_back( mInstances[source][*deleteIt].getTouch( currentTime, app::getWindowSize() ) );
 
 				// call this last - we're using it in the callbacks
-				mInstances.erase( *deleteIt );
+				mInstances[source].erase( *deleteIt );
 			}
 
 			// send a touchesEnded
 			if( ! endedTouches.empty() )
 				mTouchesEndedCb.call( app::TouchEvent( endedTouches ) );
 
-			mPreviousFrame = ( frame == -1 ) ? mPreviousFrame : frame;
+			mPreviousFrame[source] = ( frame == -1 ) ? mPreviousFrame[source] : frame;
 		}
 
-		mUpdates.clear();
-		mAdds.clear();
-		mDeletes.clear();
+		mUpdates[source].clear();
+		mAdds[source].clear();
+		mDeletes[source].clear();
 	}
 }
 	
 template<typename T>
-vector<T> ProfileHandler<T>::getInstancesAsVector() const
+vector<T> ProfileHandler<T>::getInstancesAsVector(std::string source) const
 {
 	lock_guard<mutex> lock( mMutex );
 	
 	vector<T> result;
-	for( typename map<int32_t,T>::const_iterator instIt = mInstances.begin(); instIt != mInstances.end(); ++instIt )
-		result.push_back( instIt->second );
 
+	typedef map<int32_t,T> InstanceMap;
+	if( source == "" ) {
+		// Get instances across all sources
+		for( std::set<std::string>::const_iterator s = mSources.begin(); s != mSources.end(); ++s) {
+			typename map<std::string,InstanceMap>::const_iterator instanceMap = mInstances.find(*s);
+			if ( instanceMap != mInstances.end() ) {
+				typename InstanceMap::const_iterator instIt = instanceMap->second.begin();
+				for ( ; instIt != instanceMap->second.end(); ++instIt )
+					result.push_back( instIt->second );
+			}
+		}
+	}
+	else {
+		// We collect only the instances owned by the specified source
+		typename map<std::string,InstanceMap>::const_iterator instanceMap = mInstances.find(source);
+		if ( instanceMap != mInstances.end() ) {
+			typename InstanceMap::const_iterator instIt = instanceMap->second.begin();
+			for ( ; instIt != instanceMap->second.end(); ++instIt )
+				result.push_back( instIt->second );
+		}
+	}
 	return result;
 }
 
 Client::Client()
-	: mHandlerObject( new ProfileHandler<Object>() ), mHandlerCursor( new ProfileHandler<Cursor>() )
+	: mHandlerObject( new ProfileHandler<Object>() ),
+	  mHandlerCursor( new ProfileHandler<Cursor>() ),
+	  mHandlerCursor25d( new ProfileHandler<Cursor25d>() ),
+	  mPastFrameThreshold( DEFAULT_PAST_FRAME_THRESHOLD )
 {
 }
 
@@ -200,37 +241,66 @@ void		Client::unregisterTouchesMoved( CallbackId id ) { mHandlerCursor->mTouches
 CallbackId	Client::registerTouchesEnded( std::function<void (app::TouchEvent)> callback ) { return mHandlerCursor->mTouchesEndedCb.registerCb( callback ); }
 void		Client::unregisterTouchesEnded( CallbackId id ) { mHandlerCursor->mTouchesEndedCb.unregisterCb( id ); }
 
-
-vector<Cursor> Client::getCursors() const
+const std::set<std::string>& Client::getSources() const
 {
-	return mHandlerCursor->getInstancesAsVector();
+	return mSources;
 }
 
-vector<Object> Client::getObjects() const
+vector<Cursor> Client::getCursors(std::string source) const
 {
-	return mHandlerObject->getInstancesAsVector();
+	return mHandlerCursor->getInstancesAsVector(source);
 }
 
-vector<app::TouchEvent::Touch> Client::getActiveTouches() const
+vector<Cursor25d> Client::getCursors25d(std::string source) const
+{
+	return mHandlerCursor25d->getInstancesAsVector(source);
+}
+
+vector<Object> Client::getObjects(std::string source) const
+{
+	return mHandlerObject->getInstancesAsVector(source);
+}
+
+vector<app::TouchEvent::Touch> Client::getActiveTouches(std::string source) const
 {
 	lock_guard<mutex> lock( mMutex );
 	
 	double currentTime = app::getElapsedSeconds();
 	vector<app::TouchEvent::Touch> result;
-	vector<Cursor> cursors = mHandlerCursor->getInstancesAsVector();
-	for( vector<Cursor>::const_iterator instIt = cursors.begin(); instIt != cursors.end(); ++instIt )
-		result.push_back( instIt->getTouch( currentTime, app::getWindowSize() ) );
+	if ( source == "" ) {
+		// Get cursors from all sources
+		std::set<std::string> sources = getSources();
+		int sourcenum = 0;
+		for( std::set<std::string>::const_iterator source = sources.begin(); source != sources.end(); ++source,++sourcenum ) {
+			vector<Cursor> cursors = mHandlerCursor->getInstancesAsVector(*source);
+			for( vector<Cursor>::const_iterator instIt = cursors.begin(); instIt != cursors.end(); ++instIt ) {
+				result.push_back( instIt->getTouch( currentTime, app::getWindowSize() ) );
+			}
+		}
+	} else {
+		// Get cursors from one source
+		vector<Cursor> cursors = mHandlerCursor->getInstancesAsVector(source);
+		for( vector<Cursor>::const_iterator instIt = cursors.begin(); instIt != cursors.end(); ++instIt ) {
+			result.push_back( instIt->getTouch( currentTime, app::getWindowSize() ) );
+		}
+	}
 
 	return result;	
 }
 
 void Client::oscMessageReceived( const osc::Message *message )
 {
-	if( message->getAddress() == "/tuio/2Dobj" )
-		mHandlerObject->handleMessage( *message );
-	else if( message->getAddress() == "/tuio/2Dcur" )
-		mHandlerCursor->handleMessage( *message );
-	else { // send the raw OSC message since it's one we don't know about
+	std::string source = message->getRemoteIp();
+	mSources.insert(source);
+
+	std::string a = message->getAddress();
+	if( a == "/tuio/2Dobj" ) {
+		mHandlerObject->handleMessage( *message, mPastFrameThreshold );
+	} else if( a == "/tuio/2Dcur" ) {
+		mHandlerCursor->handleMessage( *message, mPastFrameThreshold );
+	} else if( a == "/tuio/25Dcur" ) {
+		mHandlerCursor25d->handleMessage( *message, mPastFrameThreshold );
+	} else { // send the raw OSC message since it's one we don't know about
 		for( CallbackMgr<void (const osc::Message*)>::iterator cbIt = mOscMessageCallbacks.begin(); cbIt != mOscMessageCallbacks.end(); ++cbIt )
 			cbIt->second( message );
 	}

@@ -29,6 +29,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/Vector.h"
 
+#include "TuioClient.h"
 #include "TuioProfileBase.h"
 
 namespace cinder { namespace tuio {
@@ -37,13 +38,15 @@ class Object : public ProfileBase {
   public:
 	Object() : ProfileBase() {}
 
-	Object( int32_t sessionId, int32_t fiducialId, Vec2f pos, float angle, Vec2f speed, float rotationSpeed, float motionAccel, float rotationAccel )
-		: ProfileBase( sessionId, pos, speed, motionAccel ), mFiducialId( fiducialId ), mAngle( angle ), mRotationSpeed( rotationSpeed ), mRotationAccel( rotationAccel )
+	Object( std::string source, int32_t sessionId, int32_t fiducialId, Vec2f pos, float angle, Vec2f speed, float rotationSpeed, float motionAccel, float rotationAccel )
+		: ProfileBase(source,sessionId), mPos( pos ), mSpeed( speed ), mPrevPos( pos ),
+		mFiducialId( fiducialId ), mAngle( angle ), mRotationSpeed( rotationSpeed ), mRotationAccel( rotationAccel )
 	{}
 
 	// Create from a '2dobj' 'set' message
 	static Object createFromSetMessage( const osc::Message &message )
 	{
+		std::string source = message.getRemoteIp();
 		int32_t sessionId = message.getArgAsInt32( 1 );
 		int32_t fiducialId = message.getArgAsInt32( 2 );
 		Vec2f pos = Vec2f( message.getArgAsFloat( 3 ), message.getArgAsFloat( 4 ) );
@@ -53,8 +56,13 @@ class Object : public ProfileBase {
 		float motionAccel = message.getArgAsFloat( 9 );
 		float rotationAccel = message.getArgAsFloat( 10 );
 
-		return Object( sessionId, fiducialId, pos, angle, speed, rotationSpeed, motionAccel, rotationAccel );
+		return Object( source, sessionId, fiducialId, pos, angle, speed, rotationSpeed, motionAccel, rotationAccel );
 	}
+
+	Vec2f	getPos() const { return mPos; }
+	Vec2f	getPrevPos() const { return mPrevPos; }
+	Vec2f	getSpeed() const { return mSpeed; }
+	float	getMotionAccel() const { return mMotionAccel; }
 
 	int32_t getFiducialId() const {  return mFiducialId; };
 	//! Returns the angle of the object measured in radians
@@ -66,6 +74,9 @@ class Object : public ProfileBase {
 	int32_t		mFiducialId;
 	float		mAngle;
 	float		mRotationSpeed, mRotationAccel;
+	Vec2f		mPos, mPrevPos;
+	Vec2f		mSpeed;
+	float		mMotionAccel;
 };
 
 } } // namespace cinder::tuio

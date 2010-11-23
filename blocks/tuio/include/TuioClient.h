@@ -36,6 +36,7 @@
 
 #include <list>
 #include <map>
+#include <set>
 
 #include "TuioObject.h"
 #include "TuioCursor.h"
@@ -57,10 +58,13 @@ class Client {
 	bool isConnected() const { return mConnected; }
 	
 	//! Returns a vector of currently active Objects			
-	std::vector<Object>		getObjects() const;
+	std::vector<Object>		getObjects(std::string source) const;
 	//! Returns a vector of currently active cursors
-	std::vector<Cursor>		getCursors() const;
-	
+	std::vector<Cursor>		getCursors(std::string source = "") const;
+	std::vector<Cursor25d>	getCursors25d(std::string source = "") const;
+
+	//! Returns a vector of currently active sources (IP addresses)
+	const std::set<std::string>&	getSources() const;
 		
 	//! Registers an async callback which fires when a new cursor is added
 	CallbackId	registerCursorAdded( std::function<void (Cursor)> callback );
@@ -147,9 +151,15 @@ class Client {
 	void	registerTouches( APP *app ) { registerTouchesBegan( app, &APP::touchesBegan ); registerTouchesMoved( app, &APP::touchesMoved ); registerTouchesEnded( app, &APP::touchesEnded ); }
 
 	//! Returns a std::vector of all active touches, derived from \c 2Dcur (Cursor) messages
-	std::vector<app::TouchEvent::Touch>		getActiveTouches() const;
+	std::vector<app::TouchEvent::Touch>		getActiveTouches(std::string source = "") const;
+
+	//! Returns the threshold for a frame ID being old enough to imply a new source
+	int32_t	getPastFrameThreshold() const { return mPastFrameThreshold; }
+	//! Sets the threshold for a frame ID being old enough to imply a new source
+	void	setPastFrameThreshold( int32_t pastFrameThreshold ) { mPastFrameThreshold = pastFrameThreshold; }
 
 	static const int DEFAULT_TUIO_PORT = 3333;
+	static const int32_t DEFAULT_PAST_FRAME_THRESHOLD = 10; // default threshold for a frame ID being old enough to imply a new source
 
   private:
 	void oscMessageReceived( const osc::Message *message );
@@ -160,8 +170,11 @@ class Client {
 	
 	std::shared_ptr<ProfileHandler<Object> >		mHandlerObject;
 	std::shared_ptr<ProfileHandler<Cursor> >		mHandlerCursor;
+	std::shared_ptr<ProfileHandler<Cursor25d> >		mHandlerCursor25d;
+	std::set<std::string>							mSources;
 
 	bool				mConnected;
+	int32_t				mPastFrameThreshold;
 	mutable std::mutex	mMutex;
 };
 	
