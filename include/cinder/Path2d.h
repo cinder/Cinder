@@ -65,6 +65,8 @@ class Path2d {
 	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>
 	Vec2f	getSegmentPosition( size_t segment, float t ) const;
 	
+	std::vector<Vec2f>	subdivide( float approximationScale = 1.0f ) const;
+	
 	const Vec2f&	getPoint( size_t point ) const { return mPoints[point]; }
 	const Vec2f&	getCurrentPoint() const { return mPoints.back(); }
 	void			setPoint( size_t index, const Vec2f &p ) { mPoints[index] = p; }
@@ -80,6 +82,7 @@ class Path2d {
  private:
 	void	arcHelper( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const Vec2f &center, float radius, float startRadians, float endRadins );
+	void	subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, int level, std::vector<Vec2f> *result ) const;
 
 	std::vector<Vec2f>			mPoints;
 	std::vector<SegmentType>	mSegments;

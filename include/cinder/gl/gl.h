@@ -207,6 +207,8 @@ void drawFrustum( const Camera &cam );
 void drawTorus( float outterRadius, float innerRadius, int longitudeSegments = 12, int latitudeSegments = 12 );
 //! Draws a PolyLine \a polyLine
 void draw( const class PolyLine<Vec2f> &polyLine );
+//! Draws a Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
+void draw( const class Path2d &path2d, float approximationScale = 1.0f );
 
 #if ! defined( CINDER_GLES )
 //! Draws a cinder::TriMesh \a mesh at the origin.

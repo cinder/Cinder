@@ -366,6 +366,7 @@ Vec2f Path2d::getSegmentPosition( size_t segment, float t ) const
 			float t1 = 1 - t;
 			return mPoints[firstPoint]*t1 + mPoints[firstPoint+1]*t;
 		}
+		break;
 		case CLOSE: {
 			float t1 = 1 - t;
 			return mPoints[firstPoint]*t1 + mPoints[0]*t;
@@ -374,6 +375,101 @@ Vec2f Path2d::getSegmentPosition( size_t segment, float t ) const
 		default:
 			throw Path2dExc();
 	}
+}
+
+vector<Vec2f> Path2d::subdivide( float approximationScale ) const
+{
+	if( mSegments.empty() )
+		return vector<Vec2f>();
+
+	float distanceToleranceSqr = 0.5f / approximationScale;
+	distanceToleranceSqr *= distanceToleranceSqr;
+	
+	size_t firstPoint = 0;
+	vector<Vec2f> result;
+	result.push_back( mPoints[0] );
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		switch( mSegments[s] ) {
+			case CUBICTO:
+				result.push_back( mPoints[firstPoint] );
+//				result.push_back( mPoints[firstPoint+1] );
+//				result.push_back( mPoints[firstPoint+2] );
+				result.push_back( mPoints[firstPoint+3] );
+			break;
+			case QUADTO:
+				result.push_back( mPoints[firstPoint] );
+				subdivideQuadratic( distanceToleranceSqr, mPoints[firstPoint], mPoints[firstPoint+1], mPoints[firstPoint+2], 0, &result );
+				result.push_back( mPoints[firstPoint+2] );
+			break;
+			case LINETO:
+				result.push_back( mPoints[firstPoint] );
+				result.push_back( mPoints[firstPoint+1] );
+			break;
+			case CLOSE:
+				result.push_back( mPoints[firstPoint] );
+				result.push_back( mPoints[0] );
+			break;
+			default:
+				throw Path2dExc();
+		}
+		
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+	
+	return result;
+}
+
+void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, int level, vector<Vec2f> *result ) const
+{
+	const int recursionLimit = 17;
+	const float collinearEpsilon = 0.0000001f;
+	
+	if( level > recursionLimit ) 
+		return;
+
+	Vec2f p12 = ( p1 + p2 ) * 0.5f;
+	Vec2f p23 = ( p2 + p3 ) * 0.5f;
+	Vec2f p123 = ( p12 + p23 ) * 0.5f;
+
+	float dx = p3.x - p1.x;
+	float dy = p3.y - p1.y;
+	float d = math<float>::abs(((p2.x - p3.x) * dy - (p2.y - p3.y) * dx));
+
+	if( d > collinearEpsilon ) { 
+		if( d * d <= distanceToleranceSqr * (dx*dx + dy*dy) ) {
+			// We can stop the recursion
+			result->push_back( p123 );
+			return;
+		}
+	}
+	else { // Collinear case
+		float da = dx*dx + dy*dy;
+		if( da == 0 ) {
+			d = p1.distanceSquared( p2 );
+		}
+		else {
+			d = ((p2.x - p1.x)*dx + (p2.y - p1.y)*dy) / da;
+			if( d > 0 && d < 1 ) {
+				// Simple collinear case, 1---2---3 - We can leave just two endpoints
+				return;
+			}
+			
+			if(d <= 0)
+				d = p2.distanceSquared( p1 );
+			else if(d >= 1)
+				d = p2.distanceSquared( p3 );
+			else
+				d = p2.distanceSquared( Vec2f( p1.x + d * dx, p1.y + d * dy ) );
+		}
+		if( d < distanceToleranceSqr ) {
+			result->push_back( p2 );
+			return;
+		}
+	}
+
+	// Continue subdivision
+	subdivideQuadratic( distanceToleranceSqr, p1, p123, p123, level + 1, result ); 
+	subdivideQuadratic( distanceToleranceSqr, p123, p23, p3, level + 1, result );
 }
 
 } // namespace cinder

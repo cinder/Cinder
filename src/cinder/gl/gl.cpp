@@ -30,6 +30,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
 #include "cinder/PolyLine.h"
+#include "cinder/Path2d.h"
 #include <cmath>
 #include <map>
 
@@ -868,6 +869,15 @@ void draw( const PolyLine<Vec2f> &polyLine )
 	glVertexPointer( 2, GL_FLOAT, 0, &(polyLine.getPoints()[0]) );
 	glDrawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, polyLine.size() );
 	glDisableClientState( GL_VERTEX_ARRAY );
+}
+
+void draw( const class Path2d &path2d, float approximationScale )
+{
+	std::vector<Vec2f> points = path2d.subdivide( approximationScale );
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
+	glDrawArrays( GL_LINE_STRIP, 0, points.size() );
+	glDisableClientState( GL_VERTEX_ARRAY );	
 }
 
 #if ! defined( CINDER_GLES )

@@ -133,9 +133,36 @@ void fontSampleApp::drawCharacterVerbose( cairo::Context &ctx, Vec2f where )
 	//ctx.appendPath( mShape );
 	//ctx.fill();
 	
-	VerboseCharDraw verb( ctx );
-	mShape.iterate<VerboseCharDraw>( verb );
+/*	VerboseCharDraw verb( ctx );
+	mShape.iterate<VerboseCharDraw>( verb );*/
+
+ctx.setSource( ColorA( 1, 0.5f, 0.25f, 0.8f ) );
+for( size_t c = 0; c < mShape.getNumContours(); ++c ) {
+	const Path2d &path( mShape.getContour( c ) );
+	ctx.moveTo( path.getPoint( 0 ) + Vec2f( -100, 0 ) );
+	for( float t = 0; t < 1; t += 0.001f )
+		ctx.lineTo( path.getPosition( t ) + Vec2f( -100, 0 ) );
+	ctx.stroke();
+}
+ctx.closePath();
+
+for( size_t c = 0; c < mShape.getNumContours(); ++c ) {
+	const Path2d &path( mShape.getContour( c ) );
+	vector<Vec2f> points = path.subdivide();
 	
+	ctx.setSource( ColorA( 0.5f, 1.0f, 0.5f, 0.2f ) );
+	for( size_t p = 0; p < points.size(); ++p ) {
+		ctx.circle( points[p], 3.0f );
+	}
+	ctx.stroke();
+	
+	ctx.setSource( ColorA( 0.5f, 0.75f, 1.0f, 0.4f ) );
+	ctx.moveTo( points[0] );
+	for( size_t p = 1; p < points.size(); ++p )
+		ctx.lineTo( points[p] );
+	ctx.stroke();	
+}
+
 	ctx.setMatrix( prevMat );
 }
 
