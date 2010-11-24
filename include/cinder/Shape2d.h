@@ -50,8 +50,9 @@ class Shape2d {
 	void	clear() { mContours.clear(); }
 	size_t	getNumContours() const { return mContours.size(); }
 	
-	const Path2d&	getContour( size_t i ) const { return mContours[i]; }
-	Path2d&			getContour( size_t i ) { return mContours[i]; }
+	const Path2d&				getContour( size_t i ) const { return mContours[i]; }
+	Path2d&						getContour( size_t i ) { return mContours[i]; }
+	const std::vector<Path2d>&	getContours() const { return mContours; }
 	
 	const Vec2f&	getCurrentPoint() const { return mContours.back().getCurrentPoint(); }
 	

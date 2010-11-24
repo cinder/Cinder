@@ -55,7 +55,7 @@ class Path2d {
 	void	close() { mSegments.push_back( CLOSE ); }
 	bool	isClosed() const { return ( mSegments.size() > 1 ) && mSegments.back() == CLOSE; }
 	
-	bool	empty() const { return mSegments.empty(); }
+	bool	empty() const { return mPoints.empty(); }
 	void	clear() { mSegments.clear(); mPoints.clear(); }
 	size_t	getNumSegments() const { return mSegments.size(); }
 	size_t	getNumPoints() const { return mPoints.size(); }
@@ -83,6 +83,7 @@ class Path2d {
 	void	arcHelper( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const Vec2f &center, float radius, float startRadians, float endRadins );
 	void	subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, int level, std::vector<Vec2f> *result ) const;
+	void	subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, const Vec2f &p4, int level, std::vector<Vec2f> *result ) const;
 
 	std::vector<Vec2f>			mPoints;
 	std::vector<SegmentType>	mSegments;

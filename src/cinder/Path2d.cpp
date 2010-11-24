@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Cinder Project (http://libcinder.org)
- All rights reserved.
+ Copyright (c) 2010, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -19,6 +20,7 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 */
+
 
 #include "cinder/Path2d.h"
 
@@ -321,7 +323,7 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 
 void Path2d::removeSegment( size_t segment )
 {
-	int firstPoint = 0;
+	int firstPoint = 1; // we always skip the first point, since it's a moveTo
 	for( size_t s = 0; s < segment; ++s )
 		firstPoint += sSegmentTypePointCounts[mSegments[s]];
 
@@ -392,8 +394,7 @@ vector<Vec2f> Path2d::subdivide( float approximationScale ) const
 		switch( mSegments[s] ) {
 			case CUBICTO:
 				result.push_back( mPoints[firstPoint] );
-//				result.push_back( mPoints[firstPoint+1] );
-//				result.push_back( mPoints[firstPoint+2] );
+				subdivideCubic( distanceToleranceSqr, mPoints[firstPoint], mPoints[firstPoint+1], mPoints[firstPoint+2], mPoints[firstPoint+3], 0, &result );
 				result.push_back( mPoints[firstPoint+3] );
 			break;
 			case QUADTO:
@@ -419,6 +420,7 @@ vector<Vec2f> Path2d::subdivide( float approximationScale ) const
 	return result;
 }
 
+// This technique is due to Maxim Shemanarev: http://antigrain.com/research/adaptive_bezier/index.html, but removes tangent error estimates
 void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, int level, vector<Vec2f> *result ) const
 {
 	const int recursionLimit = 17;
@@ -437,13 +439,12 @@ void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, co
 
 	if( d > collinearEpsilon ) { 
 		if( d * d <= distanceToleranceSqr * (dx*dx + dy*dy) ) {
-			// We can stop the recursion
 			result->push_back( p123 );
 			return;
 		}
 	}
 	else { // Collinear case
-		float da = dx*dx + dy*dy;
+		float da = dx * dx + dy * dy;
 		if( da == 0 ) {
 			d = p1.distanceSquared( p2 );
 		}
@@ -468,8 +469,107 @@ void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, co
 	}
 
 	// Continue subdivision
-	subdivideQuadratic( distanceToleranceSqr, p1, p123, p123, level + 1, result ); 
+	subdivideQuadratic( distanceToleranceSqr, p1, p12, p123, level + 1, result ); 
 	subdivideQuadratic( distanceToleranceSqr, p123, p23, p3, level + 1, result );
+}
+
+// This technique is due to Maxim Shemanarev: http://antigrain.com/research/adaptive_bezier/index.html, but removes tangent error estimates
+void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, const Vec2f &p4, int level, vector<Vec2f> *result ) const
+{
+	const int recursionLimit = 17;
+	const float collinearEpsilon = 0.0000001f;
+	
+	if( level > recursionLimit ) 
+		return;
+	
+	// Calculate all the mid-points of the line segments
+	//----------------------
+
+	Vec2f p12 = ( p1 + p2 ) * 0.5f;
+	Vec2f p23 = ( p2 + p3 ) * 0.5f;
+	Vec2f p34 = ( p3 + p4 ) * 0.5f;
+	Vec2f p123 = ( p12 + p23 ) * 0.5f;
+	Vec2f p234 = ( p23 + p34 ) * 0.5f;
+	Vec2f p1234 = ( p123 + p234 ) * 0.5f;
+
+
+	// Try to approximate the full cubic curve by a single straight line
+	//------------------
+	float dx = p4.x - p1.x;
+	float dy = p4.y - p1.y;
+
+	float d2 = math<float>::abs(((p2.x - p4.x) * dy - (p2.y - p4.y) * dx));
+	float d3 = math<float>::abs(((p3.x - p4.x) * dy - (p3.y - p4.y) * dx));
+	float k, da1, da2;
+
+	switch( (int(d2 > collinearEpsilon) << 1) + int(d3 > collinearEpsilon) ) {
+		case 0:
+			// All collinear OR p1==p4
+			k = dx*dx + dy*dy;
+			if( k == 0 ) {
+				d2 = p1.distanceSquared( p2 );
+				d3 = p4.distanceSquared( p3 );
+			}
+			else {
+				k   = 1 / k;
+				da1 = p2.x - p1.x;
+				da2 = p2.y - p1.y;
+				d2  = k * ( da1 * dx + da2 * dy );
+				da1 = p3.x - p1.x;
+				da2 = p3.y - p1.y;
+				d3  = k * ( da1 * dx + da2 * dy );
+				if( d2 > 0 && d2 < 1 && d3 > 0 && d3 < 1 ) {
+					// Simple collinear case, 1---2---3---4
+					// We can leave just two endpoints
+					return;
+				}
+					 if(d2 <= 0) d2 = p2.distanceSquared( p1 );
+				else if(d2 >= 1) d2 = p2.distanceSquared( p4 );
+				else             d2 = p2.distanceSquared( Vec2f( p1.x + d2*dx, p1.y + d2*dy ) );
+
+					 if(d3 <= 0) d3 = p3.distanceSquared( p1 );
+				else if(d3 >= 1) d3 = p3.distanceSquared( p4 );
+				else             d3 = p3.distanceSquared( Vec2f( p1.x + d3*dx, p1.y + d3*dy ) );
+			}
+			if(d2 > d3) {
+				if( d2 < distanceToleranceSqr ) {
+					result->push_back( p2 );
+					return;
+				}
+			}
+			else {
+				if( d3 < distanceToleranceSqr ) {
+					result->push_back( p3 );
+					return;
+				}
+			}
+		break;
+		case 1:
+			// p1,p2,p4 are collinear, p3 is significant
+			if( d3 * d3 <= distanceToleranceSqr * ( dx*dx + dy*dy ) ) {
+				result->push_back( p23 );
+				return;
+			}
+		break;
+		case 2:
+			// p1,p3,p4 are collinear, p2 is significant
+			if( d2 * d2 <= distanceToleranceSqr * ( dx*dx + dy*dy ) ) {
+				result->push_back( p23 );
+				return;
+			}
+		break;
+		case 3: 
+			// Regular case
+			if( (d2 + d3)*(d2 + d3) <= distanceToleranceSqr * ( dx*dx + dy*dy ) ) {
+				result->push_back( p23 );
+				return;
+			}
+		break;
+	}
+
+	// Continue subdivision
+	subdivideCubic( distanceToleranceSqr, p1, p12, p123, p1234, level + 1, result ); 
+	subdivideCubic( distanceToleranceSqr, p1234, p234, p34, p4, level + 1, result ); 
 }
 
 } // namespace cinder
