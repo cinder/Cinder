@@ -877,6 +877,8 @@ void draw( const PolyLine<Vec2f> &polyLine )
 
 void draw( const Path2d &path2d, float approximationScale )
 {
+	if( path2d.getNumSegments() == 0 )
+		return;
 	std::vector<Vec2f> points = path2d.subdivide( approximationScale );
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
@@ -888,6 +890,8 @@ void draw( const Shape2d &shape2d, float approximationScale )
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
 	for( std::vector<Path2d>::const_iterator contourIt = shape2d.getContours().begin(); contourIt != shape2d.getContours().end(); ++contourIt ) {
+		if( contourIt->getNumSegments() == 0 )
+			continue;
 		std::vector<Vec2f> points = contourIt->subdivide( approximationScale );
 		glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
 		glDrawArrays( GL_LINE_STRIP, 0, points.size() );
@@ -898,6 +902,8 @@ void draw( const Shape2d &shape2d, float approximationScale )
 #if ! defined( CINDER_GLES )
 void drawSolid( const Path2d &path2d, float approximationScale )
 {
+	if( path2d.getNumSegments() == 0 )
+		return;
 	std::vector<Vec2f> points = path2d.subdivide( approximationScale );
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
