@@ -26,7 +26,7 @@ class Path2dApp : public AppBasic {
 void Path2dApp::mouseDown( MouseEvent event )
 {		
 	if( event.isLeftDown() ) { // line
-		if( mPath.getNumSegments() == 0 ) {
+		if( mPath.empty() ) {
 			mPath.moveTo( event.getPos() );
 			mTrackedPoint = 0;
 		}
@@ -46,9 +46,9 @@ void Path2dApp::mouseDrag( MouseEvent event )
 		// and now we'll delete that line and replace it with a curve
 		mPath.removeSegment( mPath.getNumSegments() - 1 );
 		
-		Path2d::SegmentType prevType = mPath.getSegmentType( mPath.getNumSegments() - 1 );		
+		Path2d::SegmentType prevType = ( mPath.getNumSegments() == 0 ) ? Path2d::MOVETO : mPath.getSegmentType( mPath.getNumSegments() - 1 );		
 		
-		if( event.isShiftDown() ) { // add a quadratic curve segment
+		if( event.isShiftDown() || prevType == Path2d::MOVETO ) { // add a quadratic curve segment
 			mPath.quadTo( event.getPos(), endPt );
 		}
 		else { // add a cubic curve segment
