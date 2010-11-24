@@ -1,5 +1,8 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project, All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+
+ Portions Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -31,6 +34,7 @@
 #include "cinder/Text.h"
 #include "cinder/PolyLine.h"
 #include "cinder/Path2d.h"
+#include "cinder/Shape2d.h"
 #include <cmath>
 #include <map>
 
@@ -871,7 +875,7 @@ void draw( const PolyLine<Vec2f> &polyLine )
 	glDisableClientState( GL_VERTEX_ARRAY );
 }
 
-void draw( const class Path2d &path2d, float approximationScale )
+void draw( const Path2d &path2d, float approximationScale )
 {
 	std::vector<Vec2f> points = path2d.subdivide( approximationScale );
 	glEnableClientState( GL_VERTEX_ARRAY );
@@ -880,7 +884,27 @@ void draw( const class Path2d &path2d, float approximationScale )
 	glDisableClientState( GL_VERTEX_ARRAY );	
 }
 
+void draw( const Shape2d &shape2d, float approximationScale )
+{
+	glEnableClientState( GL_VERTEX_ARRAY );
+	for( std::vector<Path2d>::const_iterator contourIt = shape2d.getContours().begin(); contourIt != shape2d.getContours().end(); ++contourIt ) {
+		std::vector<Vec2f> points = contourIt->subdivide( approximationScale );
+		glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
+		glDrawArrays( GL_LINE_STRIP, 0, points.size() );
+	}
+	glDisableClientState( GL_VERTEX_ARRAY );	
+}
+
 #if ! defined( CINDER_GLES )
+void drawSolid( const Path2d &path2d, float approximationScale )
+{
+	std::vector<Vec2f> points = path2d.subdivide( approximationScale );
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
+	glDrawArrays( GL_POLYGON, 0, points.size() );
+	glDisableClientState( GL_VERTEX_ARRAY );	
+}
+
 void draw( const TriMesh &mesh )
 {
 	glVertexPointer( 3, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
