@@ -154,7 +154,7 @@ std::string getPathDirectory( const std::string &path )
 		return "";
 	}
 	else
-		return path.substr( 0, lastSlash );
+		return path.substr( 0, lastSlash + 1 );
 }
 
 std::string getPathFileName( const std::string &path )
