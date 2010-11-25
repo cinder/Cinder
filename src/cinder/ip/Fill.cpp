@@ -133,7 +133,7 @@ void fill( ChannelT<T> *channel, T value )
 	template void fill<T>( ChannelT<T> *channel, const T value, const Area &area ); \
 	template void fill<T>( ChannelT<T> *channel, const T value );
 
-BOOST_PP_SEQ_FOR_EACH( fill_PROTOTYPES, ~, CHANNEL_TYPES )
+BOOST_PP_SEQ_FOR_EACH( fill_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
 
 
 } } // namespace cinder::ip

@@ -225,8 +225,9 @@ class ChannelT {
 };
 
 
-typedef ChannelT<uint8_t>	Channel;
-typedef ChannelT<uint8_t>	Channel8u;
-typedef ChannelT<float>		Channel32f;
+typedef ChannelT<uint8_t>	Channel;	//! 8-bit image channel. Synonym for Channel8u.
+typedef ChannelT<uint8_t>	Channel8u;	//! 8-bit image channel
+typedef ChannelT<uint16_t>	Channel16u;	//! 16-bit image channel. Suitable as an intermediate representation and ImageIo but not a first-class citizen.
+typedef ChannelT<float>		Channel32f; //! 32-bit floating point image channel
 
 } // namespace cinder
