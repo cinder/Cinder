@@ -151,6 +151,12 @@ class Vec2
 		return x * rhs.x + y * rhs.y;
 	}
 
+	//! Returns the z component of the cross if the two operands were Vec3's on the XY plane, the equivalent of Vec3(*this).cross( Vec3(rhs) ).z
+	T cross( const Vec2<T> &rhs ) const
+	{
+		return x * rhs.y - y * rhs.x;
+	}
+
 	DIST distance( const Vec2<T> &rhs ) const
 	{
 		return ( *this - rhs ).length();
@@ -306,7 +312,10 @@ public:
 		: x( src.x ), y( src.y ), z( src.z )
 	{}
 	Vec3( const Vec2<T> &v2, T aZ )
-		: x( v2.x ), y ( v2.y ), z( aZ )
+		: x( v2.x ), y( v2.y ), z( aZ )
+	{}
+	explicit Vec3( const Vec2<T> &v2 )
+		: x( v2.x ), y( v2.y ), z( 0 )
 	{}
 	explicit Vec3( const T *d ) : x( d[0] ), y( d[1] ), z( d[2] ) {}
 	template<typename FromT>
