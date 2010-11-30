@@ -196,7 +196,7 @@ class Vec2
 		}
 	}
 
-	Vec2<T> safeNormalized()
+	Vec2<T> safeNormalized() const
 	{
 		T s = lengthSquared();
 		if( s > 0 ) {
@@ -485,7 +485,7 @@ public:
 		}
 	}
 
-	Vec3<T> safeNormalized()
+	Vec3<T> safeNormalized() const
 	{
 		T s = lengthSquared();
 		if( s > 0 ) {
