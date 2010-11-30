@@ -606,7 +606,7 @@ public:
 	}
 
 	// derived from but not equivalent to Quaternion::squad
-	Vec3<T> squad( T t, const Vec3<T> &tangentA, const Vec3<T> &tangentB, const Vec3<T> &end )
+	Vec3<T> squad( T t, const Vec3<T> &tangentA, const Vec3<T> &tangentB, const Vec3<T> &end ) const
 	{
 		Vec3<T> r1 = this->slerp( t, end );
 		Vec3<T> r2 = tangentA.slerp( t, tangentB );
