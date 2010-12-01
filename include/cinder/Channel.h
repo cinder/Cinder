@@ -31,6 +31,23 @@ typedef std::shared_ptr<class ImageSource> ImageSourceRef;
 
 template<typename T>
 class ChannelT {
+	
+	/*! /brief A Channel represents a single channel of data in a bitmap, for example the Red data of an RGB Image. They can be generated from an Surface by using the getChannelRed() method
+	 of the Surface:
+	 
+	 Channel rChan = surf.getChannelRed();
+	 
+	 or they can be constructed and then assigned data:
+	 
+	 Channel chan(500, 500);
+	 chan.copyFrom(rChan, Area(0, 0, 500, 500)); // this assumes that rChan has already had its data allocated and assigned
+	 
+	 or it can be assigned empty data when constructed:
+	 
+	 unsigned char* data = new unsigned char[500*500];
+	 Channel chan(500, 500, 500, 1, data);
+	 */
+	 
  protected:
  	struct Obj {
 		Obj( int32_t width, int32_t height );
@@ -47,7 +64,7 @@ class ChannelT {
 	};
 
  public:
-	//! default constructor, creates an invalid ChannelT
+	//! default constructor, creates an invalid ChannelT, the channel will need to be assigned data before it can be used
 	ChannelT() {}
 	//! Allocates and owns a contiguous block of memory that is sizeof(T) * width * height
 	ChannelT( int32_t width, int32_t height );
