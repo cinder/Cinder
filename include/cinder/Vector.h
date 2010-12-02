@@ -267,6 +267,45 @@ class Vec2
 		x = x + ( rhs.x - x ) * fact; y = y + ( rhs.y - y ) * fact;
 	}
 
+	// GLSL inspired swizzling functions.
+	Vec2<T> xx() const { return Vec2<T>(x, x); }
+	Vec2<T> xy() const { return Vec2<T>(x, y); }
+	Vec2<T> xz() const { return Vec2<T>(x, z); }
+	Vec2<T> yx() const { return Vec2<T>(y, x); }
+	Vec2<T> yy() const { return Vec2<T>(y, y); }
+	Vec2<T> yz() const { return Vec2<T>(y, z); }
+	Vec2<T> zx() const { return Vec2<T>(z, x); }
+	Vec2<T> zy() const { return Vec2<T>(z, y); }
+	Vec2<T> zz() const { return Vec2<T>(z, z); }
+
+	Vec3<T> xxx() const { return Vec3<T>(x, x, x); }
+	Vec3<T> xxy() const { return Vec3<T>(x, x, y); }
+	Vec3<T> xxz() const { return Vec3<T>(x, x, z); }
+	Vec3<T> xyx() const { return Vec3<T>(x, y, x); }
+	Vec3<T> xyy() const { return Vec3<T>(x, y, y); }
+	Vec3<T> xyz() const { return Vec3<T>(x, y, z); }
+	Vec3<T> xzx() const { return Vec3<T>(x, z, x); }
+	Vec3<T> xzy() const { return Vec3<T>(x, z, y); }
+	Vec3<T> xzz() const { return Vec3<T>(x, z, z); }
+	Vec3<T> yxx() const { return Vec3<T>(y, x, x); }
+	Vec3<T> yxy() const { return Vec3<T>(y, x, y); }
+	Vec3<T> yxz() const { return Vec3<T>(y, x, z); }
+	Vec3<T> yyx() const { return Vec3<T>(y, y, x); }
+	Vec3<T> yyy() const { return Vec3<T>(y, y, y); }
+	Vec3<T> yyz() const { return Vec3<T>(y, y, z); }
+	Vec3<T> yzx() const { return Vec3<T>(y, z, x); }
+	Vec3<T> yzy() const { return Vec3<T>(y, z, y); }
+	Vec3<T> yzz() const { return Vec3<T>(y, z, z); }
+	Vec3<T> zxx() const { return Vec3<T>(z, x, x); }
+	Vec3<T> zxy() const { return Vec3<T>(z, x, y); }
+	Vec3<T> zxz() const { return Vec3<T>(z, x, z); }
+	Vec3<T> zyx() const { return Vec3<T>(z, y, x); }
+	Vec3<T> zyy() const { return Vec3<T>(z, y, y); }
+	Vec3<T> zyz() const { return Vec3<T>(z, y, z); }
+	Vec3<T> zzx() const { return Vec3<T>(z, z, x); }
+	Vec3<T> zzy() const { return Vec3<T>(z, z, y); }
+	Vec3<T> zzz() const { return Vec3<T>(z, z, z); }
+
 	static Vec2<T> max()
 	{
 		return Vec2<T>( std::numeric_limits<T>::max(), std::numeric_limits<T>::max() );
@@ -613,6 +652,45 @@ public:
 		return r1.slerp( 2 * t * (1-t), r2 );
 	}
 
+	// GLSL inspired swizzling functions.
+	Vec2<T> xx() const { return Vec2<T>(x, x); }
+	Vec2<T> xy() const { return Vec2<T>(x, y); }
+	Vec2<T> xz() const { return Vec2<T>(x, z); }
+	Vec2<T> yx() const { return Vec2<T>(y, x); }
+	Vec2<T> yy() const { return Vec2<T>(y, y); }
+	Vec2<T> yz() const { return Vec2<T>(y, z); }
+	Vec2<T> zx() const { return Vec2<T>(z, x); }
+	Vec2<T> zy() const { return Vec2<T>(z, y); }
+	Vec2<T> zz() const { return Vec2<T>(z, z); }
+
+	Vec3<T> xxx() const { return Vec3<T>(x, x, x); }
+	Vec3<T> xxy() const { return Vec3<T>(x, x, y); }
+	Vec3<T> xxz() const { return Vec3<T>(x, x, z); }
+	Vec3<T> xyx() const { return Vec3<T>(x, y, x); }
+	Vec3<T> xyy() const { return Vec3<T>(x, y, y); }
+	Vec3<T> xyz() const { return Vec3<T>(x, y, z); }
+	Vec3<T> xzx() const { return Vec3<T>(x, z, x); }
+	Vec3<T> xzy() const { return Vec3<T>(x, z, y); }
+	Vec3<T> xzz() const { return Vec3<T>(x, z, z); }
+	Vec3<T> yxx() const { return Vec3<T>(y, x, x); }
+	Vec3<T> yxy() const { return Vec3<T>(y, x, y); }
+	Vec3<T> yxz() const { return Vec3<T>(y, x, z); }
+	Vec3<T> yyx() const { return Vec3<T>(y, y, x); }
+	Vec3<T> yyy() const { return Vec3<T>(y, y, y); }
+	Vec3<T> yyz() const { return Vec3<T>(y, y, z); }
+	Vec3<T> yzx() const { return Vec3<T>(y, z, x); }
+	Vec3<T> yzy() const { return Vec3<T>(y, z, y); }
+	Vec3<T> yzz() const { return Vec3<T>(y, z, z); }
+	Vec3<T> zxx() const { return Vec3<T>(z, x, x); }
+	Vec3<T> zxy() const { return Vec3<T>(z, x, y); }
+	Vec3<T> zxz() const { return Vec3<T>(z, x, z); }
+	Vec3<T> zyx() const { return Vec3<T>(z, y, x); }
+	Vec3<T> zyy() const { return Vec3<T>(z, y, y); }
+	Vec3<T> zyz() const { return Vec3<T>(z, y, z); }
+	Vec3<T> zzx() const { return Vec3<T>(z, z, x); }
+	Vec3<T> zzy() const { return Vec3<T>(z, z, y); }
+	Vec3<T> zzz() const { return Vec3<T>(z, z, z); }
+
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
 
@@ -628,7 +706,8 @@ public:
 };
 
 template <class T>
-class Vec4{
+class Vec4
+{
  public:
 	T x,y,z,w;
 
