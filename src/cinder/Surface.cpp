@@ -272,6 +272,12 @@ SurfaceT<T>::operator ImageSourceRef() const
 }
 
 template<typename T>
+SurfaceT<T>::operator ImageTargetRef()
+{
+	return ImageTargetSurface<T>::createRef( this );
+}
+
+template<typename T>
 SurfaceT<T> SurfaceT<T>::clone( bool copyPixels ) const
 {
 	SurfaceT result( getWidth(), getHeight(), hasAlpha(), getChannelOrder() );
@@ -519,8 +525,9 @@ void* ImageTargetSurface<T>::getRowPointer( int32_t row )
 	return reinterpret_cast<void*>( mSurface->getData( Vec2i( 0, row ) ) );
 }
 
-template class SurfaceT<uint8_t>;
-template class SurfaceT<uint16_t>;
-template class SurfaceT<float>;
+#define Surface_PROTOTYPES(r,data,T)\
+	template class SurfaceT<T>;
+
+BOOST_PP_SEQ_FOR_EACH( Surface_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
 
 } // namespace cinder

@@ -78,6 +78,7 @@ class SurfaceConstraintsDefault : public SurfaceConstraints {
 };
 
 typedef std::shared_ptr<class ImageSource> ImageSourceRef;
+typedef std::shared_ptr<class ImageTarget> ImageTargetRef;
 
 template<typename T>
 class SurfaceT {
@@ -112,6 +113,7 @@ class SurfaceT {
 	SurfaceT( std::shared_ptr<class ImageSource> imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
 
 	operator ImageSourceRef() const;
+	operator ImageTargetRef();
 
 	//! Returns the width of the Surface in pixels
 	int32_t			getWidth() const { return mObj->mWidth; }
