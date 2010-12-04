@@ -318,6 +318,8 @@ class PatternSolid : public Pattern {
 
 class PatternSurface : public Pattern {
   public:
+	//! Initializes with a null PatternSurface
+	PatternSurface() : Pattern() {}
 	PatternSurface( SurfaceBase &surface );
 	PatternSurface( ci::Surface cinderSurface );
 	PatternSurface( ImageSourceRef imageSource );
