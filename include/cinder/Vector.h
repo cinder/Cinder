@@ -151,6 +151,12 @@ class Vec2
 		return x * rhs.x + y * rhs.y;
 	}
 
+	//! Returns the z component of the cross if the two operands were Vec3's on the XY plane, the equivalent of Vec3(*this).cross( Vec3(rhs) ).z
+	T cross( const Vec2<T> &rhs ) const
+	{
+		return x * rhs.y - y * rhs.x;
+	}
+
 	DIST distance( const Vec2<T> &rhs ) const
 	{
 		return ( *this - rhs ).length();
@@ -190,7 +196,7 @@ class Vec2
 		}
 	}
 
-	Vec2<T> safeNormalized()
+	Vec2<T> safeNormalized() const
 	{
 		T s = lengthSquared();
 		if( s > 0 ) {
@@ -306,7 +312,10 @@ public:
 		: x( src.x ), y( src.y ), z( src.z )
 	{}
 	Vec3( const Vec2<T> &v2, T aZ )
-		: x( v2.x ), y ( v2.y ), z( aZ )
+		: x( v2.x ), y( v2.y ), z( aZ )
+	{}
+	explicit Vec3( const Vec2<T> &v2 )
+		: x( v2.x ), y( v2.y ), z( 0 )
 	{}
 	explicit Vec3( const T *d ) : x( d[0] ), y( d[1] ), z( d[2] ) {}
 	template<typename FromT>
@@ -476,7 +485,7 @@ public:
 		}
 	}
 
-	Vec3<T> safeNormalized()
+	Vec3<T> safeNormalized() const
 	{
 		T s = lengthSquared();
 		if( s > 0 ) {
@@ -597,7 +606,7 @@ public:
 	}
 
 	// derived from but not equivalent to Quaternion::squad
-	Vec3<T> squad( T t, const Vec3<T> &tangentA, const Vec3<T> &tangentB, const Vec3<T> &end )
+	Vec3<T> squad( T t, const Vec3<T> &tangentA, const Vec3<T> &tangentB, const Vec3<T> &end ) const
 	{
 		Vec3<T> r1 = this->slerp( t, end );
 		Vec3<T> r2 = tangentA.slerp( t, tangentB );
