@@ -45,6 +45,8 @@ class ImageTargetChannel : public ImageTarget {
 	{
 		if( boost::is_same<T,float>::value )
 			setDataType( ImageIo::FLOAT32 );
+		else if( boost::is_same<T,uint16_t>::value )
+			setDataType( ImageIo::UINT16 );
 		else if( boost::is_same<T,uint8_t>::value )
 			setDataType( ImageIo::UINT8 );
 		else 
@@ -67,10 +69,18 @@ class ImageSourceChannel : public ImageSource {
 		mHeight = channel.getHeight();
 		setColorModel( ImageIo::CM_GRAY );
 		setChannelOrder( ImageIo::Y );
-		if( boost::is_same<T,uint8_t>::value )
+		if( boost::is_same<T,uint8_t>::value ) {
 			setDataType( ImageIo::UINT8 );
-		else if( boost::is_same<T,float>::value )
+			mChannel8u = *reinterpret_cast<const Channel8u*>( &channel ); // register reference to 'channel'
+		}
+		else if( boost::is_same<T,uint16_t>::value ) {
+			setDataType( ImageIo::UINT16 );
+			mChannel16u = *reinterpret_cast<const Channel16u*>( &channel ); // register reference to 'channel'
+		}
+		else if( boost::is_same<T,float>::value ) {
 			setDataType( ImageIo::FLOAT32 );
+			mChannel32f = *reinterpret_cast<const Channel32f*>( &channel ); // register reference to 'channel'
+		}
 		else
 			throw; // this channel seems to be a type we've never met
 		mRowBytes = channel.getRowBytes();
@@ -87,7 +97,11 @@ class ImageSourceChannel : public ImageSource {
 			data += mRowBytes;
 		}
 	}
-	
+
+	// not ideal, but these are used to register a reference to the channel we were constructed with
+	Channel8u			mChannel8u;
+	Channel16u			mChannel16u;
+	Channel32f			mChannel32f;	
 	const uint8_t		*mData;
 	int32_t				mRowBytes;
 };
@@ -232,6 +246,7 @@ T ChannelT<T>::areaAverage( const Area &area ) const
 }
 
 template class ChannelT<uint8_t>;
+template class ChannelT<uint16_t>;
 template class ChannelT<float>;
 
 } // namespace cinder

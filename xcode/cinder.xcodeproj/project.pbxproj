@@ -47,6 +47,9 @@
 		002DFD540FA5602900E45AE0 /* ObjLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 002DFD530FA5602900E45AE0 /* ObjLoader.h */; };
 		002F8F73103AFD9A0077CB91 /* System.h in Headers */ = {isa = PBXBuildFile; fileRef = 002F8F71103AFD9A0077CB91 /* System.h */; };
 		002F8F76103AFEBF0077CB91 /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 002F8F74103AFEBF0077CB91 /* System.cpp */; };
+		003133A4129EB85D009DC098 /* Blend.h in Headers */ = {isa = PBXBuildFile; fileRef = 003133A3129EB85D009DC098 /* Blend.h */; };
+		003133A5129EB85D009DC098 /* Blend.h in Headers */ = {isa = PBXBuildFile; fileRef = 003133A3129EB85D009DC098 /* Blend.h */; };
+		003133A6129EB85D009DC098 /* Blend.h in Headers */ = {isa = PBXBuildFile; fileRef = 003133A3129EB85D009DC098 /* Blend.h */; };
 		0032FD2910BB46F500C63A9D /* Exception.h in Headers */ = {isa = PBXBuildFile; fileRef = 0032FD2810BB46F500C63A9D /* Exception.h */; };
 		0032FD2B10BB472E00C63A9D /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0032FD2A10BB472E00C63A9D /* Exception.cpp */; };
 		003832DF0E9C03CB00ACB120 /* Stream.h in Headers */ = {isa = PBXBuildFile; fileRef = 003832DE0E9C03CB00ACB120 /* Stream.h */; };
@@ -509,7 +512,6 @@
 		434708D91267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DA1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DB1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
-		434708DD1267EE5800AA7349 /* Blend.h in Headers */ = {isa = PBXBuildFile; fileRef = 434708DC1267EE5800AA7349 /* Blend.h */; };
 		43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
@@ -626,6 +628,7 @@
 		002DFD530FA5602900E45AE0 /* ObjLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjLoader.h; sourceTree = "<group>"; };
 		002F8F71103AFD9A0077CB91 /* System.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = System.h; sourceTree = "<group>"; };
 		002F8F74103AFEBF0077CB91 /* System.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = System.cpp; sourceTree = "<group>"; };
+		003133A3129EB85D009DC098 /* Blend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blend.h; path = ip/Blend.h; sourceTree = "<group>"; };
 		0032FD2810BB46F500C63A9D /* Exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Exception.h; sourceTree = "<group>"; };
 		0032FD2A10BB472E00C63A9D /* Exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Exception.cpp; sourceTree = "<group>"; };
 		003832DE0E9C03CB00ACB120 /* Stream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Stream.h; sourceTree = "<group>"; };
@@ -802,7 +805,6 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
 		434708D81267EE4300AA7349 /* Blend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blend.cpp; path = ip/Blend.cpp; sourceTree = "<group>"; };
-		434708DC1267EE5800AA7349 /* Blend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Blend.h; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
 		43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UrlImplCocoa.mm; sourceTree = "<group>"; };
@@ -1179,7 +1181,7 @@
 		00C07D8D0FFF1E43004801EA /* ip */ = {
 			isa = PBXGroup;
 			children = (
-				434708DC1267EE5800AA7349 /* Blend.h */,
+				003133A3129EB85D009DC098 /* Blend.h */,
 				00419C7711057CDB007EC9AD /* EdgeDetect.h */,
 				00419C7811057CDB007EC9AD /* Fill.h */,
 				00419C7911057CDB007EC9AD /* Flip.h */,
@@ -1503,6 +1505,7 @@
 				007CE1F9127BB13B00799071 /* rapidxml_print.hpp in Headers */,
 				007CE1FA127BB13B00799071 /* rapidxml.hpp in Headers */,
 				003FABA81290ED38002D6860 /* AppNative.h in Headers */,
+				003133A5129EB85D009DC098 /* Blend.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1610,6 +1613,7 @@
 				007CE1FB127BB13B00799071 /* rapidxml_print.hpp in Headers */,
 				007CE1FC127BB13B00799071 /* rapidxml.hpp in Headers */,
 				003FABA91290ED38002D6860 /* AppNative.h in Headers */,
+				003133A6129EB85D009DC098 /* Blend.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1731,11 +1735,11 @@
 				C7FB1BB7124BE31E0045AFD2 /* InputImplAudioUnit.h in Headers */,
 				C7FB1BB8124BE31E0045AFD2 /* OutputImplAudioUnit.h in Headers */,
 				C7FB1BB9124BE31E0045AFD2 /* PcmBuffer.h in Headers */,
-				434708DD1267EE5800AA7349 /* Blend.h in Headers */,
 				007CE1F7127BB13B00799071 /* rapidxml_print.hpp in Headers */,
 				007CE1F8127BB13B00799071 /* rapidxml.hpp in Headers */,
 				003FAAA31290CCB1002D6860 /* Clipboard.h in Headers */,
 				003FABA71290ED38002D6860 /* AppNative.h in Headers */,
+				003133A4129EB85D009DC098 /* Blend.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -78,6 +78,7 @@ class SurfaceConstraintsDefault : public SurfaceConstraints {
 };
 
 typedef std::shared_ptr<class ImageSource> ImageSourceRef;
+typedef std::shared_ptr<class ImageTarget> ImageTargetRef;
 
 template<typename T>
 class SurfaceT {
@@ -112,6 +113,7 @@ class SurfaceT {
 	SurfaceT( std::shared_ptr<class ImageSource> imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
 
 	operator ImageSourceRef() const;
+	operator ImageTargetRef();
 
 	//! Returns the width of the Surface in pixels
 	int32_t			getWidth() const { return mObj->mWidth; }
@@ -390,8 +392,9 @@ class SurfaceConstraintsExc : public SurfaceExc {
 	}
 };
 
-typedef SurfaceT<uint8_t> Surface;
-typedef SurfaceT<uint8_t> Surface8u;
-typedef SurfaceT<float> Surface32f;
+typedef SurfaceT<uint8_t> Surface;		//! 8-bit image. Synonym for Surface8u.
+typedef SurfaceT<uint8_t> Surface8u;	//! 8-bit image
+typedef SurfaceT<uint16_t> Surface16u;	//! 16-bit image. Suitable as an intermediate representation and ImageIo but not a first-class citizen.
+typedef SurfaceT<float> Surface32f;		//! 32-bit floating point image
 
 } // namespace cinder

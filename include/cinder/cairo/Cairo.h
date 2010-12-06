@@ -29,6 +29,7 @@
 #include "cinder/BSpline.h"
 #include "cinder/Shape2d.h"
 #include "cinder/Font.h"
+#include "cinder/ImageIo.h"
 
 #if defined( CINDER_COCOA_TOUCH )
 	#include <CoreGraphics/CoreGraphics.h>
@@ -116,7 +117,9 @@ class SurfaceImage : public SurfaceBase {
 	SurfaceImage() : SurfaceBase() {}
 	SurfaceImage( int32_t width, int32_t height, bool hasAlpha = false );
 	SurfaceImage( const uint8_t *dataPtr, int32_t width, int32_t height, int32_t stride, bool hasAlpha = false );
-	SurfaceImage( const cinder::Surface &ciSurface );
+	//! Creates a copy of \a ciSurface
+	SurfaceImage( cinder::Surface ciSurface );
+	SurfaceImage( ImageSourceRef imageSource );
 	SurfaceImage( const SurfaceImage &other );
 	
 	uint8_t*		getData();
@@ -279,8 +282,8 @@ class Matrix
 
 class Pattern {
   public:
-	Pattern( cairo_pattern_t *aPattern ) : mCairoPattern( aPattern ) {}
-	//! Creates a Pattern from a cairo_pattern_t pointer. Does not automatically increment the cairo_pattern_t reference count.	
+  	//! Creates a Pattern from a cairo_pattern_t pointer. Does not automatically increment the cairo_pattern_t reference count.
+	Pattern( cairo_pattern_t *aPattern ) : mCairoPattern( aPattern ) {}	
 	Pattern( const Pattern &other );
 	~Pattern();
 	
@@ -315,7 +318,11 @@ class PatternSolid : public Pattern {
 
 class PatternSurface : public Pattern {
   public:
+	//! Initializes with a null PatternSurface
+	PatternSurface() : Pattern() {}
 	PatternSurface( SurfaceBase &surface );
+	PatternSurface( ci::Surface cinderSurface );
+	PatternSurface( ImageSourceRef imageSource );
 };
 
 class Gradient : public Pattern {
