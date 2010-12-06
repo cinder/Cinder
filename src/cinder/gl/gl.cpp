@@ -1065,8 +1065,8 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 {
 	SaveTextureBindState saveBindState( texture.getTarget() );
 	BoolState saveEnabledState( texture.getTarget() );
-	BoolState vertexArrayState( GL_VERTEX_ARRAY );
-	BoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
+	ClientBoolState vertexArrayState( GL_VERTEX_ARRAY );
+	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
 	texture.enableAndBind();
 
 	glEnableClientState( GL_VERTEX_ARRAY );
@@ -1172,6 +1172,22 @@ BoolState::~BoolState()
 		glEnable( mTarget );
 	else
 		glDisable( mTarget );
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// ClientBoolState
+ClientBoolState::ClientBoolState( GLint target )
+	: mTarget( target )
+{
+	glGetBooleanv( target, &mOldValue );
+}
+
+ClientBoolState::~ClientBoolState()
+{
+	if( mOldValue )
+		glEnableClientState( mTarget );
+	else
+		glDisableClientState( mTarget );
 }
 
 ///////////////////////////////////////////////////////////////////////////////
