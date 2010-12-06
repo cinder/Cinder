@@ -197,14 +197,18 @@ Matrix44<T> Matrix44<T>::alignZAxisWithTarget( Vec3<T> targetDir, Vec3<T> upDir 
 //
 //  Throw 'NullVecExc' if 'firstPoint' and 'secondPoint' are equals.
 template<typename T>
-Matrix44<T> firstFrame( const Vec3<T> &firstPoint, const Vec3<T> &secondPoint, const Vec3<T> &thirdPoint )
+Matrix44<T> firstFrame( 
+	const Vec3<T> &firstPoint, 
+	const Vec3<T> &secondPoint,
+	const Vec3<T> &thirdPoint 
+)
 {
     Vec3<T> t = ( secondPoint - firstPoint ).normalized();
 
     Vec3<T> n = t.cross( thirdPoint - firstPoint ).normalized();
     if( n.length() == 0.0f ) {
         int i = fabs( t[0] ) < fabs( t[1] ) ? 0 : 1;
-        if( fabs( t[2] ) < fabs( t[i] )) i = 2;
+        if( fabs( t[2] ) < fabs( t[i] ) ) i = 2;
 
         Vec3<T> v( (T)0.0, (T)0.0, (T)0.0 ); v[i] = (T)1.0;
         n = t.cross( v ).normalized();
@@ -229,11 +233,16 @@ Matrix44<T> firstFrame( const Vec3<T> &firstPoint, const Vec3<T> &secondPoint, c
 //  frame defined by the previously computed transformation matrix and the
 //  new point and tangent vector along the curve.
 template<typename T>
-Matrix44<T> nextFrame( const Matrix44<T> &prevMatrix, const Vec3<T> &prevPoint, const Vec3<T> &curPoint,
-			Vec3<T> &prevTangent, Vec3<T> *curTangent )
+Matrix44<T> nextFrame( 
+	const Matrix44<T> &prevMatrix, 
+	const Vec3<T> &prevPoint, 
+	const Vec3<T> &curPoint,
+	Vec3<T> &prevTangent, 
+	Vec3<T> &curTangent 
+)
 {
-    Vec3<T> a( 0, 0, 0 );		// Rotation axis.
-    T r(0);				// Rotation angle.
+    Vec3<T> a = Vec3<T>::zero();	// Rotation axis.
+    T r = 0;						// Rotation angle.
 
     if( ( prevTangent.length() != 0.0 ) && ( curTangent.length() != 0.0 ) ) {
         prevTangent.normalize();
@@ -248,11 +257,15 @@ Matrix44<T> nextFrame( const Matrix44<T> &prevMatrix, const Vec3<T> &prevPoint, 
     }
 
     if( ( a.length() != 0.0 ) && ( r != 0.0 ) ) {
-        Matrix44<T> R = Matrix44<T>::creatRotation( a, r );
+        Matrix44<T> R  = Matrix44<T>::createRotation( a, r );		
         Matrix44<T> Tj = Matrix44<T>::createTranslation( curPoint );
         Matrix44<T> Ti = Matrix44<T>::createTranslation( -prevPoint );
 
-        return prevMatrix * Ti * R * Tj;
+		// Original order of operation:
+        //return prevMatrix * Ti * R * Tj;
+		//
+		// Cinder's order of operation
+        return Tj*R*Ti*prevMatrix;
     }
     else {
         Matrix44<T> Tr = Matrix44<T>::createTranslation( curPoint - prevPoint );
@@ -267,10 +280,23 @@ Matrix44<T> nextFrame( const Matrix44<T> &prevMatrix, const Vec3<T> &prevPoint, 
 //  frame defined by the previously computed transformation matrix and the
 //  last point along the curve.
 template<typename T>
-Matrix44<T> lastFrame( const Matrix44<T> &prevMatrix, const Vec3<T> &prevPoint, const Vec3<T> &lastPoint )
+Matrix44<T> lastFrame( 
+	const Matrix44<T> &prevMatrix, 
+	const Vec3<T> &prevPoint, 
+	const Vec3<T> &lastPoint 
+)
 {
     return prevMatrix * Matrix44<T>::createTranslation( lastPoint - prevPoint );
 }
+
+// Explicitly declare the functions
+template Matrix44f firstFrame( const Vec3f &firstPoint, const Vec3f &secondPoint, const Vec3f &thirdPoint );
+template Matrix44f nextFrame( const Matrix44f &prevMatrix, const Vec3f &prevPoint, const Vec3f &curPoint, Vec3f &prevTangent, Vec3f &curTangent );
+template Matrix44f lastFrame( const Matrix44f &prevMatrix, const Vec3f &prevPoint, 	const Vec3f &lastPoint );
+template Matrix44d firstFrame( const Vec3d &firstPoint, const Vec3d &secondPoint, const Vec3d &thirdPoint );
+template Matrix44d nextFrame( const Matrix44d &prevMatrix, const Vec3d &prevPoint, const Vec3d &curPoint, Vec3d &prevTangent, Vec3d &curTangent );
+template Matrix44d lastFrame( const Matrix44d &prevMatrix, const Vec3d &prevPoint, 	const Vec3d &lastPoint );
+
 
 template class Matrix44<float>;
 template class Matrix44<double>;
