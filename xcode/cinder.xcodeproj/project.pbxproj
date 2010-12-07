@@ -2237,7 +2237,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder_d;
-				SDKROOT = macosx10.6;
+				SDKROOT = "";
 				VALID_ARCHS = i386;
 			};
 			name = Debug;
@@ -2274,7 +2274,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder;
-				SDKROOT = macosx10.6;
+				SDKROOT = "";
 				VALID_ARCHS = i386;
 			};
 			name = Release;
