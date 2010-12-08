@@ -118,22 +118,23 @@ void Tube::buildFrenet()
 	mFrames.resize( n );
 	
 	for( int i = 0; i < n; ++i ) {
-		Vec3f p0, p1, p2;
-		p0 = mPs[i];
-		p1 = mPs[i + 1];
-		p2 = mPs[i + 2];
-		
-		if( i == (n - 2) ) {
+		Vec3f p0, p1, p2;		
+		if( i < (n - 2) ) {
+			p0 = mPs[i];
+			p1 = mPs[i + 1];
+			p2 = mPs[i + 2];
+		}
+		else if( i == (n - 2) ) {
 			p0 = mPs[i - 1];
 			p1 = mPs[i];
 			p2 = mPs[i + 1];
-		}
-		
-		if( i == (n - 1) ) {
+		}	
+		else if( i == (n - 1) ) {
 			p0 = mPs[i - 3];
 			p1 = mPs[i - 2];
 			p2 = mPs[i - 1];
 		}
+
 		
 	    Vec3f t = (p1 - p0).normalized();
 		Vec3f n = t.cross(p2 - p0).normalized();
