@@ -43,7 +43,7 @@ class TubularApp : public AppBasic {
 	bool					mWireframe;
 	bool					mPause;
 	
-	int						mNumSegs;
+	int32_t					mNumSegs;
 	int						mShape;
 	Arcball					mArcball;
 	params::InterfaceGl		mParams;

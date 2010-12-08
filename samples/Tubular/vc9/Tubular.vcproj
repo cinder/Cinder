@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
@@ -180,6 +180,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\src\Tube.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\TubularApp.cpp"
 				>
 			</File>
@@ -193,6 +197,10 @@
 				RelativePath="..\include\Resources.h"
 				>
 			</File>
+			<File
+				RelativePath="..\include\Tube.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -202,7 +210,7 @@
 			<File
 				RelativePath=".\Resources.rc"
 				>
-			</File>			
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
