@@ -2106,7 +2106,7 @@
 					../lib/ios/libboost_filesystem.a,
 				);
 				PRODUCT_NAME = "cinder-iphone_d";
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
@@ -2138,7 +2138,7 @@
 					../lib/ios/libboost_filesystem.a,
 				);
 				PRODUCT_NAME = "cinder-iphone";
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv6 armv7";
 			};
@@ -2169,7 +2169,7 @@
 					"../lib/ios-sim/libboost_filesystem.a",
 				);
 				PRODUCT_NAME = "cinder-iphone-sim_d";
-				SDKROOT = iphonesimulator4.1;
+				SDKROOT = iphoneos4.2;
 				VALID_ARCHS = i386;
 			};
 			name = Debug;
@@ -2201,7 +2201,7 @@
 					"../lib/ios-sim/libboost_filesystem.a",
 				);
 				PRODUCT_NAME = "cinder-iphone-sim";
-				SDKROOT = iphonesimulator4.1;
+				SDKROOT = iphoneos;
 				VALID_ARCHS = i386;
 			};
 			name = Release;
@@ -2237,7 +2237,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder_d;
-				SDKROOT = macosx10.6;
+				SDKROOT = "";
 				VALID_ARCHS = i386;
 			};
 			name = Debug;
@@ -2274,7 +2274,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder;
-				SDKROOT = macosx10.6;
+				SDKROOT = "";
 				VALID_ARCHS = i386;
 			};
 			name = Release;

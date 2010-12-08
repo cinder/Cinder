@@ -265,6 +265,15 @@ struct BoolState {
 	GLboolean	mOldValue;
 };
 
+//! Convenience class designed to push and pop a boolean OpenGL state
+struct ClientBoolState {
+	ClientBoolState( GLint target );
+	~ClientBoolState();
+  private:
+	GLint		mTarget;
+	GLboolean	mOldValue;
+};
+
 //! Convenience class designed to push and pop the current color
 struct SaveColorState {
 	SaveColorState();
