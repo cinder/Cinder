@@ -35,8 +35,8 @@ public:
 	void					drawTs( float lineLength = 1.0f, float lineWidth = 1.0f );
 	void					drawFrames( float lineLength = 1.0f, float lineWidth = 1.0f  );
 	
-	void					drawNs( float lineLength = 1.0f, float lineWidth = 1.0f );
-	void					drawBs( float lineLength = 1.0f, float lineWidth = 1.0f );
+	//void					drawNs( float lineLength = 1.0f, float lineWidth = 1.0f );
+	//void					drawBs( float lineLength = 1.0f, float lineWidth = 1.0f );
 	
 	void					drawFrameSlices( float scale = 1.0f );
 
@@ -51,11 +51,6 @@ private:
 	std::vector<Vec3f>		mPs;			// Points in b-spline sample
 	std::vector<Vec3f>		mTs;			// Tangents in b-spline sample
 	std::vector<Matrix44f>	mFrames;		// Coordinate frame at each b-spline sample
-	
-	// We use these to show the difference between the parallel transform frame and frenet frames.
-	// They are optional.
-	std::vector<Vec3f>		mNs;			// Second derivative
-	std::vector<Vec3f>		mBs;			// Cross product of tangent and second derivative 
 };
 
 
