@@ -218,10 +218,14 @@ Matrix44<T> firstFrame(
 
     Matrix44<T> M;
 
-    M.m[0] =  t[0]; M.m[1] =  t[1]; M.m[2] =  t[2]; M.m[3] = (T)0.0,
-    M.m[4] =  n[0]; M.m[5] =  n[1]; M.m[6] =  n[2]; M.m[7] = (T)0.0,
-    M.m[8] =  b[0]; M.m[9] =  b[1]; M.m[10] =  b[2]; M.m[11] = (T)0.0,
+    M.m[0] =  b[0]; M.m[1] =  b[1]; M.m[2]  =  b[2]; M.m[3]  = (T)0.0,
+    M.m[4] =  n[0]; M.m[5] =  n[1]; M.m[6]  =  n[2]; M.m[7]  = (T)0.0,
+    M.m[8] =  t[0]; M.m[9] =  t[1]; M.m[10] =  t[2]; M.m[11] = (T)0.0,
     M.m[12] = firstPoint[0]; M.m[13] = firstPoint[1]; M.m[14] = firstPoint[2]; M.m[15] = (T)1.0;
+    //M.m[0] =  t[0]; M.m[1] =  t[1]; M.m[2] =  t[2]; M.m[3] = (T)0.0,
+    //M.m[4] =  n[0]; M.m[5] =  n[1]; M.m[6] =  n[2]; M.m[7] = (T)0.0,
+    //M.m[8] =  b[0]; M.m[9] =  b[1]; M.m[10] =  b[2]; M.m[11] = (T)0.0,
+    //M.m[12] = firstPoint[0]; M.m[13] = firstPoint[1]; M.m[14] = firstPoint[2]; M.m[15] = (T)1.0;
 
     return M;
 
@@ -269,8 +273,11 @@ Matrix44<T> nextFrame(
     }
     else {
         Matrix44<T> Tr = Matrix44<T>::createTranslation( curPoint - prevPoint );
-
-        return prevMatrix * Tr;
+		// Original order of operation:
+        //return prevMatrix*Tr;
+		//
+		// Cinder's order of operation
+        return Tr*prevMatrix;
     }
 }
 
@@ -286,7 +293,11 @@ Matrix44<T> lastFrame(
 	const Vec3<T> &lastPoint 
 )
 {
-    return prevMatrix * Matrix44<T>::createTranslation( lastPoint - prevPoint );
+	// Original order of operation:
+	//return prevMatrix * Matrix44<T>::createTranslation( lastPoint - prevPoint );
+	//
+	// Cinder's order of operation
+    return Matrix44<T>::createTranslation( lastPoint - prevPoint )*prevMatrix;
 }
 
 // Explicitly declare the functions
