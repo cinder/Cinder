@@ -31,9 +31,7 @@ Tube::Tube( const Tube& obj )
   mScale1( obj.mScale1 ),
   mPs( obj.mPs ),
   mTs( obj.mTs ),
-  mFrames( obj.mFrames ),
-  mNs( obj.mNs ),
-  mBs( obj.mBs )
+  mFrames( obj.mFrames )
 {
 }
 
@@ -57,8 +55,6 @@ Tube& Tube::operator=( const Tube& rhs )
 		mPs			= rhs.mPs;
 		mTs			= rhs.mTs;
 		mFrames		= rhs.mFrames;
-		mNs			= rhs.mNs;
-		mBs			= rhs.mBs;
 	}
 	return *this;
 }
@@ -67,8 +63,6 @@ void Tube::sampleCurve()
 {
 	mPs.clear();
 	mTs.clear();
-	mNs.clear();
-	mBs.clear();
 
 	float dt = 1.0f/(float)mNumSegs;
 	for( int i = 0; i < mNumSegs; ++i ) {
@@ -79,14 +73,7 @@ void Tube::sampleCurve()
 		
 		Vec3f T = mBSpline.getDerivative( t );
 		mTs.push_back( T.normalized() );
-		
-		Vec3f N = mBSpline.getSecondDerivative( t );
-		mNs.push_back( N.normalized() );
-		
-		Vec3f B = T.cross( N );
-		mBs.push_back( B.normalized() );
 	}
-	
 }
 
 void Tube::buildPTF() 
@@ -224,34 +211,6 @@ void Tube::drawTs( float lineLength , float lineWidth )
 	for( int i = 0; i < ( mPs.size() - 1 ); ++i ) {
 		glVertex3f( mPs[i] );
 		glVertex3f( mPs[i] + mTs[i]*lineLength );
-	}
-	glEnd();
-}
-
-void Tube::drawNs( float lineLength , float lineWidth )
-{
-	if( mPs.empty() || mNs.empty() )
-		return;
-
-	glLineWidth( lineWidth );
-	glBegin( GL_LINES );
-	for( int i = 0; i < ( mPs.size() - 1 ); ++i ) {
-		glVertex3f( mPs[i] );
-		glVertex3f( mPs[i] + mNs[i]*lineLength );
-	}
-	glEnd();
-}
-
-void Tube::drawBs( float lineLength , float lineWidth )
-{
-	if( mPs.empty() || mBs.empty() )
-		return;
-
-	glLineWidth( lineWidth );
-	glBegin( GL_LINES );
-	for( int i = 0; i < ( mPs.size() - 1 ); ++i ) {
-		glVertex3f( mPs[i] );
-		glVertex3f( mPs[i] + mBs[i]*lineLength );
 	}
 	glEnd();
 }

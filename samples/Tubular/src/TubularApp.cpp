@@ -36,8 +36,6 @@ class TubularApp : public AppBasic {
 	bool					mFrenet;
 	bool					mDrawS;
 	bool					mDrawT;
-	bool					mDrawN;
-	bool					mDrawB;
 	bool					mDrawFrames;
 	bool					mDrawMesh;
 	bool					mDrawSlices;
@@ -83,8 +81,6 @@ void TubularApp::setup()
 	mFrenet		= false;
 	mDrawS		= false;
 	mDrawT		= false;
-	mDrawN		= false;
-	mDrawB		= false;
 	mDrawFrames	= false;
 	mDrawMesh	= true;
 	mDrawSlices	= false;
