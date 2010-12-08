@@ -35,7 +35,7 @@ mFrames is an array of matrices that gets built using mPs and mTs.
 mPs, mTs and mFrames are all the same size. You will need at least 3 
 points and 3 tangents. Anything smaller than that won't work. 
 
-The sample uses a b-spline curve. But you can use almoset any curve as long as you
+The sample uses a b-spline curve. But you can use almost any curve as long as you
 can caclulate the tangent (or first derivative) for it. 
 
 Once you have mFrames built - you can just multiply against it to put whatever you
