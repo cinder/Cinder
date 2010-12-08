@@ -1,3 +1,58 @@
+/* 
+
+This sample shows how to use firstFrame, nextFrame, and lastFrame
+from cinder/Matrix.h to build a parallel transport frame.
+
+It's really easy! I promise!
+
+If you look in Tube.cpp - you will see this function:
+
+void Tube::buildPTF() 
+{
+	mFrames.clear();
+
+	int n = mPs.size();
+	// Make sure we have at least 3 points because the first frame requires it
+	if( n >= 3 ) {
+		mFrames.resize( n );
+		// Make the parallel transport frame
+		mFrames[0] = firstFrame( mPs[0], mPs[1],  mPs[2] );
+		// Make the remaining frames - saving the last
+		for( int i = 1; i < n - 1; ++i ) {
+			Vec3f prevT = mTs[i - 1];
+			Vec3f curT  = mTs[i];
+			mFrames[i] = nextFrame( mFrames[i - 1], mPs[i - 1], mPs[i], prevT, curT );
+		}
+		// Make the last frame
+		mFrames[n - 1] = lastFrame( mFrames[n - 2], mPs[n - 2], mPs[n - 1] );
+	}
+}
+
+mPs are the points of the b-spline along t, which is 0 to 1. mPs is an array of Vec3f. 
+mTs are the tangents of the b-spline along t. mTs is an array of Vec3f. Must be normalized.
+mFrames is an array of matrices that gets built using mPs and mTs. 	
+
+mPs, mTs and mFrames are all the same size. You will need at least 3 
+points and 3 tangents. Anything smaller than that won't work. 
+
+The sample uses a b-spline curve. But you can use almoset any curve as long as you
+can caclulate the tangent (or first derivative) for it. 
+
+Once you have mFrames built - you can just multiply against it to put whatever you
+want into the corrent orientation at the segment of the curve. If you use something 
+like a square or a circle - it needs to face down Z. 
+
+Check out these functions:
+	- buildMesh()
+	- drawFrames()
+	- drawFrameSlices()
+	
+They each illustrate an example of how to use the frame for different scenarios.
+
+Any other questions - go to the forums! 
+http://http://forum.libcinder.org
+
+*/
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Arcball.h"
