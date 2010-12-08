@@ -5,6 +5,7 @@
 #include "cinder/Text.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Utilities.h"
+#include "cinder/params/Params.h"
 
 #include "Tube.h"
 
@@ -33,11 +34,8 @@ class TubularApp : public AppBasic {
 	
 	CameraPersp				mCam;
 	
-	bool					mFrenet;
-	bool					mDrawS;
-	bool					mDrawT;
-	bool					mDrawN;
-	bool					mDrawB;
+	bool					mParallelTransport;
+	bool					mDrawCurve;
 	bool					mDrawFrames;
 	bool					mDrawMesh;
 	bool					mDrawSlices;
@@ -45,9 +43,10 @@ class TubularApp : public AppBasic {
 	bool					mWireframe;
 	bool					mPause;
 	
-	int						mNumSegs;	
+	int						mNumSegs;
+	int						mShape;
 	Arcball					mArcball;
-	
+	params::InterfaceGl		mParams;
 };
 
 void TubularApp::prepareSettings()
@@ -74,98 +73,45 @@ void TubularApp::setup()
 	mBSpline = BSpline3f( mCurPoints, degree, loop, open );
 	
 	// Tube
-	mNumSegs = 64;
+	mNumSegs = 32;
 	mTube.setBSpline( mBSpline );
 	mTube.setNumSegments( mNumSegs );
 	mTube.sampleCurve();
 	
 	//
-	mFrenet		= false;
-	mDrawS		= false;
-	mDrawT		= false;
-	mDrawN		= false;
-	mDrawB		= false;
-	mDrawFrames	= false;
-	mDrawMesh	= true;
-	mDrawSlices	= false;
-	
-	mWireframe  = false;
-	mPause		= false;
+	mParallelTransport	= true;
+	mDrawCurve			= false;
+	mDrawFrames			= true;
+	mDrawMesh			= true;
+	mDrawSlices			= false;
+	mShape				= 0;
+	mWireframe			= true;
+	mPause				= false;
 	
 	// Arcball
 	mArcball.setWindowSize( getWindowSize() );
 	mArcball.setCenter( getWindowCenter() );
 	mArcball.setRadius( 150 );		
+	
+	mParams = params::InterfaceGl( "Parameters", Vec2i( 200, 200 ) );
+	mParams.addParam( "Parallel Transport", &mParallelTransport, "keyIncr=f" );
+	mParams.addParam( "Draw Curve", &mDrawCurve, "keyIncr=c" );
+	mParams.addParam( "Wireframe", &mWireframe, "keyIncr=w" );
+	mParams.addParam( "Draw Mesh", &mDrawMesh, "keyIncr=m" );
+	mParams.addParam( "Draw Slices", &mDrawSlices, "keyIncr=l" );
+	mParams.addParam( "Draw Frames", &mDrawFrames, "keyIncr=t" );
+	vector<string> shapes;
+	shapes.push_back( "circle" ); shapes.push_back( "star" ); shapes.push_back( "hypotrochoid" ); shapes.push_back( "epicycloid" );
+	mParams.addParam( "Shape", shapes, &mShape, "keyIncr=s" );
+	mParams.addParam( "Segments", &mNumSegs, "min=4 max=1024 keyIncr== keyDecr=-" );
 }
 
 void TubularApp::keyDown( KeyEvent event )
 {
 	switch( event.getChar() ) {
-	case 's': 
-		mDrawS = ! mDrawS;
-	break;
-
-	case 't': 
-		mDrawFrames = ! mDrawFrames;
-	break;
-		
-	case 'f': 
-		mFrenet = ! mFrenet;
-	break;
-	
-	case 'm':
-		mDrawMesh = ! mDrawMesh;
-	break;
-	
-	case 'l':
-		mDrawSlices = ! mDrawSlices;
-	break;
-	
-	case 'w':
-		mWireframe = ! mWireframe;
-	break;
-	
-	case 'p':
-		mPause = ! mPause;
-	break;
-	
-	case '1': {
-		std::vector<Vec3f> prof;
-		makeCircleProfile( prof, 0.25f, 16 );
-		mTube.setProfile( prof );
-	}
-	break;
-	
-	case '2': {
-		std::vector<Vec3f> prof;
-		makeStarProfile( prof, 0.25f );
-		mTube.setProfile( prof );
-	}
-	break;
-
-	case '3': {
-		std::vector<Vec3f> prof;
-		makeHypotrochoid( prof, 0.25f );
-		mTube.setProfile( prof );
-	}
-	break;
-
-	case '4': {
-		std::vector<Vec3f> prof;
-		makeEpicycloid( prof, 0.25f );
-		mTube.setProfile( prof );
-	}
-	break;
-	
-	case '-':
-		if( mNumSegs >4 ) 
-			--mNumSegs;
-	break;
-	
-	case '+':
-		if( mNumSegs < 1024 ) 
-			++mNumSegs;
-	break;
+		case ' ':
+			mPause = ! mPause;
+		break;
 	}
 }
 
@@ -191,6 +137,23 @@ void TubularApp::resize( ResizeEvent event )
 
 void TubularApp::update()
 {
+	// Profile
+	std::vector<Vec3f> prof;
+	switch( mShape ) {
+		case 0:
+			makeCircleProfile( prof, 0.25f, 16 );
+		break;
+		case 1:
+			makeStarProfile( prof, 0.25f );
+		break;
+		case 2:
+			makeHypotrochoid( prof, 0.25f );
+		break;
+		case 3:
+			makeEpicycloid( prof, 0.25f );
+		break;
+	}
+	mTube.setProfile( prof );
 	
 	// BSpline
 	if( ! mPause ) {
@@ -218,7 +181,7 @@ void TubularApp::update()
 	mTube.setBSpline( mBSpline );
 	mTube.setNumSegments( mNumSegs );
 	mTube.sampleCurve();
-	if( ! mFrenet ) {
+	if( mParallelTransport ) {
 		mTube.buildPTF();
 	}
 	else {
@@ -252,7 +215,7 @@ void TubularApp::draw()
 		mTube.drawFrameSlices( 0.25f );
 	}
 	
-	if( mDrawS ) {
+	if( mDrawCurve ) {
 		gl::color( Color( 1, 1, 1 ) );
 		mTube.drawPs();
 	}
@@ -261,22 +224,7 @@ void TubularApp::draw()
 		mTube.drawFrames( 0.5f );
 	}
 	
-	gl::setMatricesWindow( getWindowSize() );
-	int yp = 5;
-	gl::drawString( "Segments: " + toString( mNumSegs ) + " +/- to increase/decrease", Vec2i( 5, yp ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "Frame Type: " +  toString( mFrenet ? "frenet" : "parallel transport frames" ), Vec2i( 5, yp += 20 ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "f - parallel transport frames or frenet frames", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "s - curve segements", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "w - wireframe", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "m - mesh", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "l - slices", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "t - coordinate frames", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "p - pause animation", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "mouse - rotates", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "1 - circle", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "2 - disfigured star", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "3 - hypotrochoid", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
-	gl::drawString( "4 - epicycloid", Vec2i( 5, yp += 20  ), ColorA( 1, 1, 1, 0.5f ), Font( "Arial", 18 ) );
+	params::InterfaceGl::draw();
 }
 
 
