@@ -240,16 +240,16 @@ class SurfaceT {
 
 		T&			rClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[mRedOff + xOff * mInc + yOff * mRowInc]; }
+							return *(T*)((uint8_t*)( mPtr + mRedOff + xOff * mInc ) + yOff * mRowInc); }
 		T&			gClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[mGreenOff + xOff * mInc + yOff * mRowInc]; }
+							return *(T*)((uint8_t*)( mPtr + mGreenOff + xOff * mInc ) + yOff * mRowInc); }
 		T&			bClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[mBlueOff + xOff * mInc + yOff * mRowInc]; }		
+							return *(T*)((uint8_t*)( mPtr + mBlueOff + xOff * mInc ) + yOff * mRowInc); }
 		T&			aClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[mAlphaOff + xOff * mInc + yOff * mRowInc]; }
+							return *(T*)((uint8_t*)( mPtr + mAlphaOff + xOff * mInc ) + yOff * mRowInc); }
 		
 		const int32_t	x() const { return mX; }
 		const int32_t	y() const { return mY; }
@@ -333,16 +333,16 @@ class SurfaceT {
 
 		const T&	rClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[mRedOff + xOff * mInc + yOff * mRowInc]; }
+							return *(T*)((uint8_t*)( mPtr + mRedOff + xOff * mInc ) + yOff * mRowInc); }
 		const T&	gClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[mGreenOff + xOff * mInc + yOff * mRowInc]; }
+							return *(T*)((uint8_t*)( mPtr + mGreenOff + xOff * mInc ) + yOff * mRowInc); }
 		const T&	bClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[mBlueOff + xOff * mInc + yOff * mRowInc]; }		
+							return *(T*)((uint8_t*)( mPtr + mBlueOff + xOff * mInc ) + yOff * mRowInc); }
 		const T&	aClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[mAlphaOff + xOff * mInc + yOff * mRowInc]; }
+							return *(T*)((uint8_t*)( mPtr + mAlphaOff + xOff * mInc ) + yOff * mRowInc); }
 		
 		const int32_t	x() const { return mX; }
 		const int32_t	y() const { return mY; }

@@ -126,9 +126,9 @@ class ChannelT {
 		
 		T&			v() const { return *mPtr; }
 		T&			v( int32_t xOff, int32_t yOff ) const { return mPtr[xOff * mInc + yOff * mRowInc]; }
-		T&			vClamped ( int32_t xOff, int32_t yOff ) const
+		T&			vClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[xOff * mInc + yOff * mRowInc]; }
+							return *(T*)((uint8_t*)( mPtr + xOff * mInc ) + yOff * mRowInc); }
 
 		const int32_t	x() const { return mX; }
 		const int32_t	y() const { return mY; }
@@ -183,7 +183,7 @@ class ChannelT {
 		const T&	v( int32_t xOff, int32_t yOff ) const { return mPtr[xOff * mInc + yOff * mRowInc]; }
 		const T&	vClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
-							return mPtr[xOff * mInc + yOff * mRowInc]; }
+							return *(T*)((uint8_t*)( mPtr + xOff * mInc ) + yOff * mRowInc); }
 
 		const int32_t	x() const { return mX; }
 		const int32_t	y() const { return mY; }
