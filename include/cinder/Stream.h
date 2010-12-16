@@ -272,8 +272,12 @@ class IStreamMem : public IStream {
 };
 
 
+typedef std::shared_ptr<class OStreamMem>		OStreamMemRef;
+
 class OStreamMem : public OStream {
  public:
+	static OStreamMemRef		createRef( size_t bufferSizeHint = 4096 ) { return std::shared_ptr<OStreamMem>( new OStreamMem( bufferSizeHint ) ); }
+
 	~OStreamMem();
 
 	virtual off_t		tell() const { return static_cast<off_t>( mOffset ); }
@@ -291,8 +295,6 @@ class OStreamMem : public OStream {
 	size_t			mDataSize;
 	size_t			mOffset;
 };
-
-typedef std::shared_ptr<OStreamMem>		OStreamMemRef;
 
 
 // This class is a utility to save and restore a stream's state
