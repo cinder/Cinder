@@ -295,7 +295,8 @@ a.qindexHL {
 }
 
 a.el {
-	font-weight: bold;
+	color: #800000;
+/*	font-weight: bold;*/
 }
 
 a.elRef {
