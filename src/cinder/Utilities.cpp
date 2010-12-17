@@ -192,7 +192,7 @@ bool createDirectories( const std::string &path, bool createParents )
 #endif
 }
 
-#if !defined( CINDER_COCOA_TOUCH )	
+#if !defined( CINDER_COCOA )	
 void launchWebBrowser( const Url &url )
 {
 }

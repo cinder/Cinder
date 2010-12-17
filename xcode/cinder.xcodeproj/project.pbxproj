@@ -509,6 +509,8 @@
 		00F3BD200EBF89B700382AC1 /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		00FCDC1C10D434AC006140C7 /* TileRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FCDC1B10D434AC006140C7 /* TileRender.cpp */; };
 		00FCDC2010D4387D006140C7 /* TileRender.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FCDC1F10D4387D006140C7 /* TileRender.h */; };
+		15A22CBE12BC2A4C0087AB95 /* UtilitiesImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 15D219DE12BC1E0C006CF6DD /* UtilitiesImplCocoa.mm */; };
+		15A22CBF12BC2A4C0087AB95 /* UtilitiesImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 15D219DE12BC1E0C006CF6DD /* UtilitiesImplCocoa.mm */; };
 		15D219DF12BC1E0C006CF6DD /* UtilitiesImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 15D219DE12BC1E0C006CF6DD /* UtilitiesImplCocoa.mm */; };
 		434708D91267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DA1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
@@ -1904,6 +1906,7 @@
 				C7FB1BA8124BE3050045AFD2 /* SourceFile.cpp in Sources */,
 				434708DA1267EE4300AA7349 /* Blend.cpp in Sources */,
 				003FAAB81290E01D002D6860 /* Clipboard.cpp in Sources */,
+				15A22CBE12BC2A4C0087AB95 /* UtilitiesImplCocoa.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2080,6 +2083,7 @@
 				C7FB1B9A124BE2DF0045AFD2 /* PcmBuffer.cpp in Sources */,
 				434708D91267EE4300AA7349 /* Blend.cpp in Sources */,
 				003FAA9F1290CC90002D6860 /* Clipboard.cpp in Sources */,
+				15A22CBF12BC2A4C0087AB95 /* UtilitiesImplCocoa.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
