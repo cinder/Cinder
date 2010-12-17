@@ -509,6 +509,7 @@
 		00F3BD200EBF89B700382AC1 /* Utilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F3BD1F0EBF89B700382AC1 /* Utilities.h */; };
 		00FCDC1C10D434AC006140C7 /* TileRender.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FCDC1B10D434AC006140C7 /* TileRender.cpp */; };
 		00FCDC2010D4387D006140C7 /* TileRender.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FCDC1F10D4387D006140C7 /* TileRender.h */; };
+		15D219DF12BC1E0C006CF6DD /* UtilitiesImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 15D219DE12BC1E0C006CF6DD /* UtilitiesImplCocoa.mm */; };
 		434708D91267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DA1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DB1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
@@ -803,6 +804,7 @@
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		15D219DE12BC1E0C006CF6DD /* UtilitiesImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UtilitiesImplCocoa.mm; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
 		434708D81267EE4300AA7349 /* Blend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blend.cpp; path = ip/Blend.cpp; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
@@ -1152,6 +1154,7 @@
 				00D92FB70EB8AE5200EE9D75 /* Url.cpp */,
 				43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */,
 				00F3BD1C0EBF88AA00382AC1 /* Utilities.cpp */,
+				15D219DE12BC1E0C006CF6DD /* UtilitiesImplCocoa.mm */,
 				003FAA9E1290CC90002D6860 /* Clipboard.cpp */,
 				00D2F1850F8D8ACD00A7189A /* Perlin.cpp */,
 				00D2F6F60F9189C000A7189A /* Sphere.cpp */,
@@ -1978,6 +1981,7 @@
 				C7FB1BAB124BE3060045AFD2 /* SourceFile.cpp in Sources */,
 				434708DB1267EE4300AA7349 /* Blend.cpp in Sources */,
 				003FAAB91290E01E002D6860 /* Clipboard.cpp in Sources */,
+				15D219DF12BC1E0C006CF6DD /* UtilitiesImplCocoa.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

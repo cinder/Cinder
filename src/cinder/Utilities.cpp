@@ -192,6 +192,12 @@ bool createDirectories( const std::string &path, bool createParents )
 #endif
 }
 
+#if !defined( CINDER_COCOA_TOUCH )	
+void launchWebBrowser( const Url &url )
+{
+}
+#endif
+
 void deleteFile( const std::string &path )
 {
 #if defined( CINDER_COCOA )
