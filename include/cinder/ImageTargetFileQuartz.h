@@ -36,16 +36,16 @@ typedef std::shared_ptr<class ImageTargetFileQuartz> ImageTargetFileQuartzRef;
 
 class ImageTargetFileQuartz : public cocoa::ImageTargetCgImage {
   public:
-	static ImageTargetRef		createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, const std::string &extensionData );
+	static ImageTargetRef		createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
 
 	virtual void	finalize();
 	
 	static void		registerSelf();
 	
   protected:
-	ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSourceRef imageSource, const std::string &extensionData );
+	ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
 
-	void			setupImageDestOptions();
+	void			setupImageDestOptions( ImageTarget::Options options );
 	
 	::CGImageDestinationRef			mImageDest;
 	std::shared_ptr<__CFDictionary>	mImageDestOptions;

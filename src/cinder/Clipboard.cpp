@@ -198,10 +198,10 @@ void Clipboard::setString( const std::string &str )
 #endif
 }
 
-void Clipboard::setImage( ImageSourceRef imageSource )
+void Clipboard::setImage( ImageSourceRef imageSource, ImageTarget::Options options )
 {
 #if defined( CINDER_MAC )
-	cocoa::ImageTargetCgImageRef target = cocoa::ImageTargetCgImage::createRef( imageSource );
+	cocoa::ImageTargetCgImageRef target = cocoa::ImageTargetCgImage::createRef( imageSource, options );
 	imageSource->load( target );
 	target->finalize();
 	

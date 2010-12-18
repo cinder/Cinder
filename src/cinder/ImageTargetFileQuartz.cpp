@@ -71,9 +71,9 @@ void ImageTargetFileQuartz::registerSelf()
 	::CFRelease( destTypes );
 }
 
-ImageTargetRef ImageTargetFileQuartz::createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, const string &extensionData )
+ImageTargetRef ImageTargetFileQuartz::createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
 {
-	return ImageTargetRef( new ImageTargetFileQuartz( dataTarget, imageSource, extensionData ) );
+	return ImageTargetRef( new ImageTargetFileQuartz( dataTarget, imageSource, options, extensionData ) );
 }
 
 namespace { // anonymous namespace
@@ -92,7 +92,7 @@ extern "C" void cgDataConsumerRelease( void *info )
 
 } // anonymous namespace
 
-void ImageTargetFileQuartz::setupImageDestOptions()
+void ImageTargetFileQuartz::setupImageDestOptions( ImageTarget::Options options )
 {
 	int bitsPerComponent = ImageIo::dataTypeBytes( getDataType() ) * 8;
 
@@ -103,10 +103,14 @@ void ImageTargetFileQuartz::setupImageDestOptions()
 	::CFNumberRef depthNumber = ::CFNumberCreate( kCFAllocatorDefault, kCFNumberIntType, &bitsPerComponent );
 	::CFDictionarySetValue( mImageDestOptions.get(), kCGImagePropertyDepth, depthNumber );
 	::CFRelease( depthNumber );
+	float qualityValue = options.getQuality();
+	::CFNumberRef qualityNumber = ::CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &qualityValue );
+	::CFDictionarySetValue( mImageDestOptions.get(), kCGImageDestinationLossyCompressionQuality, qualityNumber );
+	::CFRelease( qualityNumber );
 }
 
-ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSourceRef imageSource, const std::string &extensionData )
-	: cocoa::ImageTargetCgImage( imageSource )
+ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData )
+	: cocoa::ImageTargetCgImage( imageSource, options )
 {
 	cocoa::SafeCfString uti = cocoa::createSafeCfString( extensionData );
 
@@ -133,7 +137,7 @@ ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSou
 	if( ! mImageDest )
 		throw ImageIoExceptionFailedWrite();
 		
-	setupImageDestOptions();
+	setupImageDestOptions( options );
 }
 
 void ImageTargetFileQuartz::finalize()

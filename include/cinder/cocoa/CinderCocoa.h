@@ -184,7 +184,7 @@ typedef std::shared_ptr<class ImageTargetCgImage> ImageTargetCgImageRef;
 
 class ImageTargetCgImage : public ImageTarget {
   public:
-	static ImageTargetCgImageRef createRef( ImageSourceRef imageSource );
+	static ImageTargetCgImageRef createRef( ImageSourceRef imageSource, ImageTarget::Options options );
 	~ImageTargetCgImage();
 
 	virtual void*	getRowPointer( int32_t row );
@@ -193,7 +193,7 @@ class ImageTargetCgImage : public ImageTarget {
 	::CGImageRef	getCgImage() const { return mImageRef; }
 
   protected:
-	ImageTargetCgImage( ImageSourceRef imageSource );
+	ImageTargetCgImage( ImageSourceRef imageSource, ImageTarget::Options options );
 	
 	::CGImageRef		mImageRef;
 	size_t				mBitsPerComponent, mBitsPerPixel, mRowBytes;
@@ -203,7 +203,7 @@ class ImageTargetCgImage : public ImageTarget {
 };
 
 //! Loads an ImageSource into a new CGImageRef. Release the result with ::CGImageRelease.
-::CGImageRef createCgImage( ImageSourceRef imageSource );
+::CGImageRef createCgImage( ImageSourceRef imageSource, ImageTarget::Options = ImageTarget::Options() );
 
 
 } } // namespace cinder::cocoa

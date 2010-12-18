@@ -467,12 +467,12 @@ ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageTargetCgImage
-ImageTargetCgImageRef ImageTargetCgImage::createRef( ImageSourceRef imageSource )
+ImageTargetCgImageRef ImageTargetCgImage::createRef( ImageSourceRef imageSource, ImageTarget::Options options )
 {
-	return ImageTargetCgImageRef( new ImageTargetCgImage( imageSource ) );
+	return ImageTargetCgImageRef( new ImageTargetCgImage( imageSource, options ) );
 }
 
-ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource )
+ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource, ImageTarget::Options options )
 	: ImageTarget(), mImageRef( 0 )
 {
 	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
@@ -484,8 +484,14 @@ ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource )
 		case ImageIo::UINT16: mBitsPerComponent = 16; isFloat = false; setDataType( ImageIo::UINT16 ); mBitmapInfo = kCGBitmapByteOrder16Little; break;
 		default: mBitsPerComponent = 32; isFloat = true; mBitmapInfo = kCGBitmapByteOrder32Little | kCGBitmapFloatComponents; setDataType( ImageIo::FLOAT32 );
 	}
+	
+	if( options.isColorModelDefault() )
+		setColorModel( ( imageSource->getColorModel() == ImageIo::CM_GRAY ) ? ImageIo::CM_GRAY : ImageIo::CM_RGB );
+	else
+		setColorModel( ( options.getColorModel() == ImageIo::CM_GRAY ) ? ImageIo::CM_GRAY : ImageIo::CM_RGB );
+	
 	uint8_t numChannels;
-	switch( imageSource->getColorModel() ) {
+	switch( mColorModel ) {
 		case ImageIo::CM_GRAY:
 			numChannels = ( writingAlpha ) ? 2 : 1; break;
 		default:
@@ -493,7 +499,6 @@ ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource )
 	}
 	mBitsPerPixel = numChannels * mBitsPerComponent;
 	mRowBytes = mWidth * ( numChannels * mBitsPerComponent ) / 8;
-	setColorModel( ( imageSource->getColorModel() == ImageIo::CM_GRAY ) ? ImageIo::CM_GRAY : ImageIo::CM_RGB );
 	
 	if( writingAlpha ) {
 		mBitmapInfo |= ( imageSource->isPremultiplied() ) ? kCGImageAlphaPremultipliedLast : kCGImageAlphaLast;
@@ -537,9 +542,9 @@ void ImageTargetCgImage::finalize()
 			colorSpaceRef.get(), mBitmapInfo, dataProvider.get(), NULL, false, kCGRenderingIntentDefault );
 }
 
-::CGImageRef createCgImage( ImageSourceRef imageSource )
+::CGImageRef createCgImage( ImageSourceRef imageSource, ImageTarget::Options options )
 {
-	ImageTargetCgImageRef target = ImageTargetCgImage::createRef( imageSource );
+	ImageTargetCgImageRef target = ImageTargetCgImage::createRef( imageSource, options );
 	imageSource->load( target );
 	target->finalize();
 	::CGImageRef result( target->getCgImage() );

@@ -40,11 +40,11 @@ class Clipboard {
 	static std::string		getString();
 	//! Returns the clipboard contents as an ImageSourceRef or a null if the clipboard does not contain an image
 	static ImageSourceRef	getImage();
-	
+
 	//! Sets the clipboard contents to the UTF-8 string \a str
 	static void				setString( const std::string &str );
 	//! Sets the clipboard contents to the ImageSource \a image
-	static void				setImage( ImageSourceRef image );	
+	static void				setImage( ImageSourceRef image, ImageTarget::Options options = ImageTarget::Options() );	
 };
 
 } // namespace cinder
