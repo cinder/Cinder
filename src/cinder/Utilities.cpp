@@ -27,9 +27,16 @@
 #include "cinder/Cinder.h"
 #include "cinder/Utilities.h"
 
+
+#if defined( CINDER_COCOA_TOUCH )
+	#import <UIKit/UIKit.h>
+#elif defined( CINDER_COCOA )
+	#import <AppKit/NSWorkspace.h>
+#endif
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#import <Foundation/NSString.h>
+	#import <Foundation/NSURL.h>
 	#import <Foundation/NSPathUtilities.h>
 	#import <Foundation/NSFileManager.h>
 	#include <cxxabi.h>
@@ -192,11 +199,20 @@ bool createDirectories( const std::string &path, bool createParents )
 #endif
 }
 
-#if !defined( CINDER_COCOA )	
 void launchWebBrowser( const Url &url )
 {
-}
+#if defined( CINDER_COCOA )
+	NSString *nsString = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
+	NSURL *nsUrl = [NSURL URLWithString:nsString];
 #endif
+#if defined( CINDER_COCOA_TOUCH )
+	[[UIApplication sharedApplication] openURL:nsUrl ];
+#elif defined( CINDER_COCOA )
+	[[NSWorkspace sharedWorkspace] openURL:nsUrl ];
+#else
+	// TODO: MSW implementation
+#endif
+}
 
 void deleteFile( const std::string &path )
 {
