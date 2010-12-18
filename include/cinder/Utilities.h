@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 #include "cinder/Cinder.h"
+#include "cinder/Url.h"
 #include <boost/lexical_cast.hpp>
 
 namespace cinder {
@@ -48,6 +49,9 @@ std::string getPathExtension( const std::string &path );
 //! Creates a directory at \a path and optionally creates any missing parent directories when \a createParents is \c true. Returns \c true upon success.
 bool createDirectories( const std::string &path, bool createParents = true );
 
+//! Launches a path in a web browser
+void launchWebBrowser( const Url &url );
+	
 //! Delete the file at \a path. Fails quietly if the path does not exist.
 void deleteFile( const std::string &path );
 
