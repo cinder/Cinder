@@ -37,7 +37,7 @@ typedef std::shared_ptr<class ImageTargetFileWic> ImageTargetFileWicRef;
 
 class ImageTargetFileWic : public ImageTarget {
   public:
-	static ImageTargetRef		createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, const std::string &extensionData );
+	static ImageTargetRef		createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
 	
 	virtual void*	getRowPointer( int32_t row );
 	virtual void	finalize();
@@ -45,7 +45,7 @@ class ImageTargetFileWic : public ImageTarget {
 	static void		registerSelf();
 	
   protected:
-	ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef imageSource, const std::string &extensionData );
+	ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
 	
 	void		setupPixelFormat( const GUID &guid );
 	

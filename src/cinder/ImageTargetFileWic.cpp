@@ -69,12 +69,12 @@ void ImageTargetFileWic::registerSelf()
 	getExtensionMap()["wmp"] = &GUID_ContainerFormatWmp;
 }
 
-ImageTargetRef ImageTargetFileWic::createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, const string &extensionData )
+ImageTargetRef ImageTargetFileWic::createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
 {
-	return ImageTargetRef( new ImageTargetFileWic( dataTarget, imageSource, extensionData ) );
+	return ImageTargetRef( new ImageTargetFileWic( dataTarget, imageSource, options, extensionData ) );
 }
 
-ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef imageSource, const string &extensionData )
+ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
 	: ImageTarget(), mDataTarget( dataTarget )
 {
 	mCodecGUID = getExtensionMap()[extensionData];
@@ -161,7 +161,16 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 		throw ImageIoExceptionFailedLoad();
 	mBitmapFrame = msw::makeComShared( pBitmapFrame );
 
-	hr = mBitmapFrame->Initialize( 0 );
+	// setup the propertyBag to express quality
+	PROPBAG2 option = { 0 };
+    option.pstrName = L"ImageQuality";
+    VARIANT varValue;    
+    VariantInit(&varValue);
+    varValue.vt = VT_R4;
+    varValue.fltVal = options.getQuality();      
+    hr = pPropertybag->Write( 1, &option, &varValue );
+
+	hr = mBitmapFrame->Initialize( pPropertybag );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedLoad();	
 	
