@@ -1,0 +1,52 @@
+/**
+\class cinder::SurfaceT
+\details
+A Surface always contains red, green and blue data, along with an optional alpha channel.<br>
+<br>
+Surfaces come in two primary configurations, the traditional 8-bits per channel represented by \ref cinder::Surface8u "Surface8u", and a float per channel,
+suitable for high dynamic range images, represented by \ref cinder::Surface32f "Surface32f". \em Surface is a short-hand synonym for \em Surface8u. <br>
+<br>
+Surfaces are a CPU-based image representation, and must be converted appropriately to be drawn using the GPU. For example,
+to be used with OpenGL, the \ref cinder::gl::Texture "gl::Texture" is a natural choice, and it can be constructed directly from a Surface.<br>
+<br>
+To manipulate individual pixels of a Surface, the \ref SurfaceT::Iter "Surface::Iter" class can be used.<br>
+<br>
+To allocate a Surface that is 640x480 and has an alpha channel, use:<br>
+<tt>Surface mySurface( 640, 480, true );</tt><br>
+A Surface can be created from an image file using the result of loadImage():<br>
+<tt>Surface bitmap( loadImage( "image.jpg" ) );</tt><br>
+<br>
+The pixels of each row of a Surface are stored in contiguous memory, and the start of each row is offset from the previous by the stride (measured in bytes) returned
+by \ref cinder::SurfaceT::getRowBytes "getRowBytes()". Pixels can be ordered in memory in a number of configurations, specified using the SurfaceChannelOrder class.
+\sa
+\ref guide_Images "Images in Cinder"
+*/
+
+/**
+\class cinder::SurfaceT::Iter
+\details
+The Iter class can be used to walk the pixels of a Surface using a nested for-loop, where the outer loop calls
+\ref SurfaceT::Iter::line() "line()", and the inner calls SurfaceT::Iter::pixel() "pixel()".<br>
+<br>
+To walk pixels of a Surface, call getIter() on the surface and then call the line() and pixel() methods of the Iter:
+\code
+Surface::Iter iter = surface->getIter( area );
+while( iter.line() ) {
+	while( iter.pixel() ) {
+		iter.r() = 255 - iter.r();
+		iter.g() = 255 - iter.g();
+		iter.b() = 255 - iter.b();
+	}
+}
+		/*! \brief Returns the red value of the offset pixel that the Iter currently points to.
+			The \a xOff and \a yOff parameters determine the offset on the x and y axis relative to the pixel that the iterator currently points to:
+			\code
+			inputIter.r(1, 1); // will return the red value of the pixel to the lower right of the current pixel
+			inputIter.r(-1, 0); // will return the red value of the pixel directly above the current pixel
+			\endcode
+		 */
+
+\endcode
+\sa
+\ref guide_Images "Images in Cinder"
+*/

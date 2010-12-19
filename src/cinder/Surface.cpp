@@ -202,21 +202,6 @@ void SurfaceT<T>::Obj::initChannels()
 }
 
 template<typename T>
-void SurfaceT<T>::Obj::setData( T *aData, int32_t aWidth, int32_t aHeight, int32_t aRowBytes )
-{
-	if( mOwnsData )
-		delete [] mData;
-
-	mData = aData;
-	mOwnsData = false;
-	mWidth = aWidth;
-	mHeight = aHeight;
-	mRowBytes = aRowBytes;
-	
-	initChannels();
-}
-
-template<typename T>
 void SurfaceT<T>::Obj::setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon )
 {
 	mDeallocatorFunc = aDeallocatorFunc;
@@ -295,12 +280,6 @@ SurfaceT<T> SurfaceT<T>::clone( const Area &area, bool copyPixels ) const
 		result.copyFrom( *this, area, -area.getUL() );
 	
 	return result;
-}
-
-template<typename T>
-void SurfaceT<T>::setData( T *aData, int32_t aWidth, int32_t aHeight, int32_t aRowBytes )
-{
-	mObj->setData( aData, aWidth, aHeight, aRowBytes );
 }
 
 template<typename T>

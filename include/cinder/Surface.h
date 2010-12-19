@@ -1,7 +1,10 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2010, The Cinder Project, All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
+ Portions Copyright (c) 2010, The Barbarian Group
+ All rights reserved.
+ 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -81,16 +84,7 @@ typedef std::shared_ptr<class ImageSource> ImageSourceRef;
 typedef std::shared_ptr<class ImageTarget> ImageTargetRef;
 
 template<typename T>
-	/*! \brief an in-memory image representation.
-	 
-	 Surfaces cannot be drawn using gl::draw(). They must be cast to a gl::Texture first. A Surface is meant to be manipulated by the image processing routines in the cinder::ip package ebfore being passed an OpenGL Texture. Surfaces are contiguous in memory, which means that when you look at an Image you see a grid of pixels but the memory is simply a block of allocated memory filled with numeric values. A Surface can be created from the ImageSource reference returned by loadImage():
-	 
-	 <tt>Surface bitmap( loadImage( "image.jpg" ) );</tt>
-	 
-	 or it can be initialized:
-	 
-	 <tt>Surface32f mySurface(500, 500, true, SurfaceChannelOrder::RGBA);</tt>
-	 */
+//! An in-memory representation of an image.
 class SurfaceT {
  private:
 	/// \cond
@@ -99,7 +93,6 @@ class SurfaceT {
 		~Obj();
 		
 		void		initChannels();
-		void		setData( T *aData, int32_t aWidth, int32_t aHeight, int32_t aRowBytes );
 		void		setChannelOrder( const SurfaceChannelOrder &aChannelOrder );
 		void		setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon );
 	
@@ -180,63 +173,63 @@ class SurfaceT {
 	T*					getDataAlpha( const Vec2i &offset ) { return getData( offset ) + getAlphaOffset(); }
 	const T*			getDataAlpha( const Vec2i &offset ) const { return getData( offset ) + getAlphaOffset(); }
 	
-	/*! Sets the data of the Surface from either a pointer to floats in the case of a Surface32f or a pointer to unsigned char values in the case of a Surface8u. To call the setData method you setting the data from another surface you could do the following
-	 
-		<tt>Surface newImage(oldImage.getData, oldImage.getWidth(), oldImage.getHeight(), oldImage.getRowBites());</tt>
-		
-		to set the Surface data from a separate image you would do the following:
-	 
-		<tt>mySurface.setData(&blockOfData, 500, 500, 1500);</tt>
-	 
-	 */
-	void				setData( T *data, int32_t width, int32_t height, int32_t rowBytes );
-	/** Set's the deallocator, an optional callback which will fire upon the Surface::Obj's destruction. This is useful when a Surface is wrapping another API's image data structure whose lifetime is tied to the Surface's. **/
+	/** Sets the deallocator, an optional callback which will fire upon the Surface::Obj's destruction. This is useful when a Surface is wrapping another API's image data structure whose lifetime is tied to the Surface's. **/
 	void				setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon );
 	
+	//! Returns the channel order of the Surface, the in-memory ordering of the channels of each pixel
 	const SurfaceChannelOrder&	getChannelOrder() const { return mObj->mChannelOrder; }
+	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 0.
 	uint8_t						getRedOffset() const { return mObj->mChannelOrder.getRedOffset(); }
+	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 1.
 	uint8_t						getGreenOffset() const { return mObj->mChannelOrder.getGreenOffset(); }
+	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 2.
 	uint8_t						getBlueOffset() const { return mObj->mChannelOrder.getBlueOffset(); }
+	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 3. Returns SurfaceChannelOrder::INVALID in the absence of an alpha channel.
 	uint8_t						getAlphaOffset() const { return mObj->mChannelOrder.getAlphaOffset(); }
+	//! Sets the channel order of the Surface, the in-memory ordering of the channels of each pixel. Call does not modify any pixel data, but does modify its interpretation. 
 	void						setChannelOrder( const SurfaceChannelOrder &aChannelOrder );
 
-	ChannelT<T>&				getChannel( uint8_t ChannelT ) { return mObj->mChannels[ChannelT]; }
+	//! Returns a reference to a Channel \a channelIndex indexed according to how the channels are arranged per the SurfaceChannelOrder.
+	ChannelT<T>&				getChannel( uint8_t channelIndex ) { return mObj->mChannels[channelIndex]; }
+	//! Returns a const reference to a Channel \a channelIndex indexed  according to how the channels are arranged per the SurfaceChannelOrder.
+	const ChannelT<T>&			getChannel( uint8_t channelIndex ) const { return mObj->mChannels[channelIndex]; }
 	
-	/*! returns a reference to the red Channel contained within the Surfaces data */
-	ChannelT<T>&				getChannelRed() { return mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
-	/*! returns a reference to the green Channel contained within the Surfaces data */
-	ChannelT<T>&				getChannelGreen() { return mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
-	/*! returns a reference to the blue Channel contained within the Surfaces data */
-	ChannelT<T>&				getChannelBlue() { return mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
-	/*! returns a reference to the alpha Channel contained within the Surfaces data */
-	ChannelT<T>&				getChannelAlpha() { return mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
+	/*! Returns a reference to the red Channel of the Surface */
+	ChannelT<T>&		getChannelRed() { return mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
+	/*! Returns a reference to the green Channel of the Surface */
+	ChannelT<T>&		getChannelGreen() { return mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
+	/*! Returns a reference to the blue Channel of the Surface */
+	ChannelT<T>&		getChannelBlue() { return mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
+	/*! Returns a reference to the alpha Channel of the Surface. Undefined in the absence of an alpha channel. */
+	ChannelT<T>&		getChannelAlpha() { return mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
 
-	const ChannelT<T>&			getChannel( uint8_t ChannelT ) const { return mObj->mChannels[ChannelT]; }
-	const ChannelT<T>&			getChannelRed() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
-	const ChannelT<T>&			getChannelGreen() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
-	const ChannelT<T>&			getChannelBlue() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
-	const ChannelT<T>&			getChannelAlpha() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
+	/*! Returns a const reference to the red Channel of the Surface */
+	const ChannelT<T>&	getChannelRed() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
+	/*! Returns a const reference to the green Channel of the Surface */	
+	const ChannelT<T>&	getChannelGreen() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
+	/*! Returns a const reference to the blue Channel of the Surface */	
+	const ChannelT<T>&	getChannelBlue() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
+	/*! Returns a const reference to the alpha Channel of the Surface. Undefined in the absence of an alpha channel. */	
+	const ChannelT<T>&	getChannelAlpha() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
 
-	//! Convenience method for getting a single pixel. For performance-sensitive code consider Surface::Iter instead.
+	//! Convenience method for getting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
 	ColorAT<T>	getPixel( Vec2i pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); const T *p = getData( pos ); return ColorAT<T>( p[getRedOffset()], p[getGreenOffset()], p[getBlueOffset()], ( hasAlpha() ) ? p[getAlphaOffset()] : CHANTRAIT<T>::max() ); }
-	//! Convenience method for setting a single pixel. For performance-sensitive code consider SurfaceT<T>::Iter instead.
+	//! Convenience method for setting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
 	void	setPixel( Vec2i pos, const ColorT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; }
-	//! Convenience method for setting a single pixel. For performance-sensitive code consider SurfaceT<T>::Iter instead.
+	//! Convenience method for setting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
 	void	setPixel( Vec2i pos, const ColorAT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; if( hasAlpha() ) p[getAlphaOffset()] = c.a; }
 
-	void				copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset = Vec2i::zero() );
-//	template<typename T2>
-//	void				copy( const SurfaceT<T2> &srcSurface, const Area &srcArea, const Offset &dstOffset = Offset::zero() );	
+	//! Copies the Area \srcArea of the Surface \a srcSurface to \a this Surface. The destination Area is \a srcArea offset by \a relativeOffset.
+	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset = Vec2i::zero() );
 
-	/*! returns an averaged color for the area defined by the area parameter */
-	ColorT<T>						areaAverage( const Area &area ) const;
+	/*! Returns an averaged color for the Area defined by \a area */
+	ColorT<T>	areaAverage( const Area &area ) const;
 
-	//@{
-	//! Emulates shared_ptr-like behavior
+	/// \cond
 	typedef std::shared_ptr<Obj> SurfaceT::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &SurfaceT::mObj; }
 	void reset() { mObj.reset(); }
-	//@}
+	/// \endcond
 
  private:
 	std::shared_ptr<Obj>		mObj;
@@ -249,23 +242,7 @@ class SurfaceT {
  
  public:
 	
-	/*! \brief The Iter is returned from a Surface by a call to getIter() and is used to walk the pixel data of a surface line by line and pixel by pixel
-	 
-		To walk the lines and pixels of a Surface, call getIter() on the surface and then call the line() and pixel() methods of the Iter:
-	 
-		Surface::Iter iter = surface->getIter( area );
-		while( iter.line() ) {
-			while( iter.pixel() ) {
-				iter.r() = 255 - iter.r();
-				iter.g() = 255 - iter.g();
-				iter.b() = 255 - iter.b();
-			}
-		}
-	 
-	 
-	 */
-	
-	
+	//! Convenience class for iterating the pixels of a Surface.
 	class Iter {
 	 public:
 		Iter( SurfaceT<T> &SurfaceT, const Area &area ) 
@@ -286,29 +263,22 @@ class SurfaceT {
 			mY = clippedArea.getY1() - 1;
 			mLinePtr -= mRowInc;
 		}
-		/*! returns the red value of the pixel that the Iter currently points to */
+		/*! Returns the red value of the pixel that the Iter currently points to */
 		T&			r() const { return mPtr[mRedOff]; }
-		/*! returns the green value of the pixel that the Iter currently points to */
+		/*! Returns the green value of the pixel that the Iter currently points to */
 		T&			g() const { return mPtr[mGreenOff]; }
-		/*! returns the blue value of the pixel that the Iter currently points to */
+		/*! Returns the blue value of the pixel that the Iter currently points to */
 		T&			b() const { return mPtr[mBlueOff]; }
-		/*! returns the alpha value of the pixel that the Iter currently points to */
+		/*! Returns the alpha value of the pixel that the Iter currently points to. Undefined in the absence of an alpha channel. */
 		T&			a() const { return mPtr[mAlphaOff]; }
 
-		/*! \brief returns the red value of the offset pixel that the Iter currently points to
-		 
-			The xOff and yOff parameters determine the offset on the x and y axis relative to the pixel that the iterator currently points to:
-		 
-			inputIter.r(1, 1); // will return the red value of the pixel to the lower right of the current pixel
-			inputIter.r(-1, 0); // will return the red value of the pixel directly above the current pixel
-		 
-		 */
+		//! Returns the red value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
 		T&			r( int32_t xOff, int32_t yOff ) const { return mPtr[mRedOff + xOff * mInc + yOff * mRowInc]; }
-		/*! \brief returns the green value of the offset pixel that the Iter currently points to */
+		//! Returns the green value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
 		T&			g( int32_t xOff, int32_t yOff ) const { return mPtr[mGreenOff + xOff * mInc + yOff * mRowInc]; }
-		/*! \brief returns the blue value of the offset pixel that the Iter currently points to */
+		//! Returns the blue value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
 		T&			b( int32_t xOff, int32_t yOff ) const { return mPtr[mBlueOff + xOff * mInc + yOff * mRowInc]; }	
-		/*! \brief returns the alpha value of the offset pixel that the Iter currently points to */
+		//! Returns the alpha value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Undefined in the absence of an alpha channel.
 		T&			a( int32_t xOff, int32_t yOff ) const { return mPtr[mAlphaOff + xOff * mInc + yOff * mRowInc]; }
 
 		T&			rClamped( int32_t xOff, int32_t yOff ) const
@@ -323,18 +293,21 @@ class SurfaceT {
 		T&			aClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
 							return *(T*)((uint8_t*)( mPtr + mAlphaOff + xOff * mInc ) + yOff * mRowInc); }
-		
+
+		//! Returns the x coordinate of the pixel the Iter currently points to
 		const int32_t	x() const { return mX; }
+		//! Returns the y coordinate of the pixel the Iter currently points to
 		const int32_t	y() const { return mY; }
+		//! Returns the coordinate of the pixel the Iter currently points to
 		Vec2i			getPos() const { return Vec2i( mX, mY ); }
-		/*! returns whether there is another pixel value in the line that the Iter currently points to and advances the Iter one pixel */
+		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {
 			++mX;
 			mPtr += mInc;
 			return mX < mEndX;
 		}
 		
-		/*! returns whether there is another line that the Iter currently points to and advances the Iter one line */
+		//! Increments which row the Iter points to, and returns \c false when no rows remain in the Surface.
 		bool line() {
 			++mY;
 			mLinePtr += mRowInc;
@@ -345,19 +318,21 @@ class SurfaceT {
 			return mY < mEndY;
 		}
 		
-		/*! returns the width of the Surface that the Iter was created by */
+		//! Returns the width of the Area the Iter iterates
 		int32_t		getWidth() const { return mWidth; }
-		/*! returns the height of the Surface that the Iter was created by */
+		//! Returns the height of the Area the Iter iterates
 		int32_t		getHeight() const { return mHeight; }
 
+		/// \cond
 		uint8_t				mRedOff, mGreenOff, mBlueOff, mAlphaOff, mInc;
 		uint8_t				*mLinePtr;
 		T					*mPtr;
 		int32_t				mRowInc, mWidth, mHeight;
 		int32_t				mX, mY, mStartX, mStartY, mEndX, mEndY;
+		/// \endcond
 	};
 
-	/*! \brief creates a const Iter for a Surface that can be used to read but not write pixel values from a Surface. It functions the same as the Iter, but the pixel values cannot be altered */
+	//! Convenience class for iterating the pixels of a Surface. Is \c const, performing read-only operations on the Surface.
 	class ConstIter {
 	 public:
 		ConstIter( const Iter &iter ) {
@@ -403,10 +378,10 @@ class SurfaceT {
 		const T&	b() const { return mPtr[mBlueOff]; }	
 		const T&	a() const { return mPtr[mAlphaOff]; }
 
-		const T&			r( int32_t xOff, int32_t yOff ) const { return mPtr[mRedOff + xOff * mInc + yOff * mRowInc]; }
-		const T&			g( int32_t xOff, int32_t yOff ) const { return mPtr[mGreenOff + xOff * mInc + yOff * mRowInc]; }
-		const T&			b( int32_t xOff, int32_t yOff ) const { return mPtr[mBlueOff + xOff * mInc + yOff * mRowInc]; }	
-		const T&			a( int32_t xOff, int32_t yOff ) const { return mPtr[mAlphaOff + xOff * mInc + yOff * mRowInc]; }
+		const T&	r( int32_t xOff, int32_t yOff ) const { return mPtr[mRedOff + xOff * mInc + yOff * mRowInc]; }
+		const T&	g( int32_t xOff, int32_t yOff ) const { return mPtr[mGreenOff + xOff * mInc + yOff * mRowInc]; }
+		const T&	b( int32_t xOff, int32_t yOff ) const { return mPtr[mBlueOff + xOff * mInc + yOff * mRowInc]; }	
+		const T&	a( int32_t xOff, int32_t yOff ) const { return mPtr[mAlphaOff + xOff * mInc + yOff * mRowInc]; }
 
 		const T&	rClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
@@ -444,11 +419,13 @@ class SurfaceT {
 		int32_t		getWidth() const { return mWidth; }
 		int32_t		getHeight() const { return mHeight; }
 
+		/// \cond
 		uint8_t				mRedOff, mGreenOff, mBlueOff, mAlphaOff, mInc;
 		const uint8_t		*mLinePtr;
 		const T				*mPtr;
 		int32_t				mRowInc, mWidth, mHeight;
 		int32_t				mX, mY, mStartX, mStartY, mEndX, mEndY;
+		/// \endcond
 	};
 
 	Iter		getIter() { return Iter( *this, this->getBounds() ); }
@@ -469,9 +446,13 @@ class SurfaceConstraintsExc : public SurfaceExc {
 	}
 };
 
-typedef SurfaceT<uint8_t> Surface;		//! 8-bit image. Synonym for Surface8u.
-typedef SurfaceT<uint8_t> Surface8u;	//! 8-bit image
-typedef SurfaceT<uint16_t> Surface16u;	//! 16-bit image. Suitable as an intermediate representation and ImageIo but not a first-class citizen.
-typedef SurfaceT<float> Surface32f;		//! 32-bit floating point image
+//! 8-bit image. Synonym for Surface8u.
+typedef SurfaceT<uint8_t> Surface;
+//! 8-bit image
+typedef SurfaceT<uint8_t> Surface8u;	
+//! 16-bit image. Suitable as an intermediate representation and ImageIo but not a first-class citizen.
+typedef SurfaceT<uint16_t> Surface16u;
+//! 32-bit floating point image
+typedef SurfaceT<float> Surface32f;
 
 } // namespace cinder
