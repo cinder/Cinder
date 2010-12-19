@@ -35,6 +35,7 @@
 
 namespace cinder {
 
+//! Specifies the in-memory ordering of the channels of a Surface.
 class SurfaceChannelOrder {
   public:
 	SurfaceChannelOrder() : mCode( UNSPECIFIED ), mRed( INVALID ), mGreen( INVALID ), mBlue( INVALID ), mAlpha( INVALID ), mPixelInc( INVALID ) {}
@@ -223,7 +224,7 @@ class SurfaceT {
 	//! Copies the Area \a srcArea of the Surface \a srcSurface to \a this Surface. The destination Area is \a srcArea offset by \a relativeOffset.
 	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset = Vec2i::zero() );
 
-	/*! Returns an averaged color for the Area defined by \a area */
+	//! Returns an averaged color for the Area defined by \a area
 	ColorT<T>	areaAverage( const Area &area ) const;
 
 	/// \cond

@@ -29,7 +29,7 @@ The Iter class can be used to walk the pixels of a Surface using a nested for-lo
 \ref SurfaceT::Iter::line() "line()", and the inner calls \ref SurfaceT::Iter::pixel() "pixel()".<br>
 The code below implements an invert on the Area \a area of \a surface:<br>
 \code
-Surface::Iter iter = surface->getIter( area );
+Surface::Iter iter = surface.getIter( area );
 while( iter.line() ) {
 	while( iter.pixel() ) {
 		iter.r() = 255 - iter.r();
@@ -62,7 +62,7 @@ The ConstIter class can be used to walk the pixels of a Surface using a nested f
 \ref SurfaceT::ConstIter::line() "line()", and the inner calls \ref SurfaceT::ConstIter::pixel() "pixel()".<br>
 The code below finds the maximum red value in the Area \a area of \a surface:<br>
 \code
-Surface::Iter iter = surface->getIter( area );
+Surface::ConstIter iter = surface.getIter( area );
 uint8_t maxRed = 0;
 while( iter.line() ) {
 	while( iter.pixel() ) {
