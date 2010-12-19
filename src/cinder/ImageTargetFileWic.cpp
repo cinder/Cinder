@@ -94,7 +94,8 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 			formatGUID = premultAlpha ? GUID_WICPixelFormat128bppPRGBAFloat : GUID_WICPixelFormat128bppRGBAFloat;
 	}
 	else {
-		if( imageSource->getColorModel() == ImageIo::CM_GRAY ) {
+		ImageIo::ColorModel cm = options.isColorModelDefault() ? imageSource->getColorModel() : options.getColorModel();
+		if( cm == ImageIo::CM_GRAY ) {
 			if( imageSource->getDataType() == ImageIo::UINT8 )
 				formatGUID = GUID_WICPixelFormat8bppGray;
 			else if( imageSource->getDataType() == ImageIo::UINT16 )
@@ -102,7 +103,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 			else
 				formatGUID = GUID_WICPixelFormat32bppGrayFloat;
 		}
-		else {
+		else { // RGB
 			if( imageSource->getDataType() == ImageIo::UINT8 )
 				formatGUID = GUID_WICPixelFormat24bppBGR;
 			else if( imageSource->getDataType() == ImageIo::UINT16 )
