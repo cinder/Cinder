@@ -118,7 +118,8 @@ class SurfaceT {
 	*/
 	SurfaceT( int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED );
 	SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints );
-	SurfaceT( T *aData, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder );
+	//! Constructs a surface from the memory pointed to by \a data. Does not assume ownership of the memory in \a data, which consequently should not be freed while the Surface is still in use.
+	SurfaceT( T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder );
 	/*! \brief Creates a Surface object from an ImageSource, for instance from the result of a loadImage() call
 	 
 	 To load an image from a resource, pass the result of the loadImage() call to the Surface constructor as shown below
@@ -219,7 +220,7 @@ class SurfaceT {
 	//! Convenience method for setting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
 	void	setPixel( Vec2i pos, const ColorAT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; if( hasAlpha() ) p[getAlphaOffset()] = c.a; }
 
-	//! Copies the Area \srcArea of the Surface \a srcSurface to \a this Surface. The destination Area is \a srcArea offset by \a relativeOffset.
+	//! Copies the Area \a srcArea of the Surface \a srcSurface to \a this Surface. The destination Area is \a srcArea offset by \a relativeOffset.
 	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset = Vec2i::zero() );
 
 	/*! Returns an averaged color for the Area defined by \a area */
@@ -263,33 +264,37 @@ class SurfaceT {
 			mY = clippedArea.getY1() - 1;
 			mLinePtr -= mRowInc;
 		}
-		/*! Returns the red value of the pixel that the Iter currently points to */
+		/*! Returns a reference to the red value of the pixel that the Iter currently points to */
 		T&			r() const { return mPtr[mRedOff]; }
-		/*! Returns the green value of the pixel that the Iter currently points to */
+		/*! Returns a reference to the green value of the pixel that the Iter currently points to */
 		T&			g() const { return mPtr[mGreenOff]; }
-		/*! Returns the blue value of the pixel that the Iter currently points to */
+		/*! Returns a reference to the blue value of the pixel that the Iter currently points to */
 		T&			b() const { return mPtr[mBlueOff]; }
-		/*! Returns the alpha value of the pixel that the Iter currently points to. Undefined in the absence of an alpha channel. */
+		/*! Returns a reference to the alpha value of the pixel that the Iter currently points to. Undefined in the absence of an alpha channel. */
 		T&			a() const { return mPtr[mAlphaOff]; }
 
-		//! Returns the red value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
+		//! Returns a reference to the red value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
 		T&			r( int32_t xOff, int32_t yOff ) const { return mPtr[mRedOff + xOff * mInc + yOff * mRowInc]; }
-		//! Returns the green value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
+		//! Returns a reference to the green value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
 		T&			g( int32_t xOff, int32_t yOff ) const { return mPtr[mGreenOff + xOff * mInc + yOff * mRowInc]; }
-		//! Returns the blue value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
+		//! Returns a reference to the blue value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
 		T&			b( int32_t xOff, int32_t yOff ) const { return mPtr[mBlueOff + xOff * mInc + yOff * mRowInc]; }	
-		//! Returns the alpha value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Undefined in the absence of an alpha channel.
+		//! Returns a reference to the alpha value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Undefined in the absence of an alpha channel.
 		T&			a( int32_t xOff, int32_t yOff ) const { return mPtr[mAlphaOff + xOff * mInc + yOff * mRowInc]; }
 
+		//! Returns a reference to the red value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Clamps offset to the bounds of the Iter.
 		T&			rClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
 							return *(T*)((uint8_t*)( mPtr + mRedOff + xOff * mInc ) + yOff * mRowInc); }
+		//! Returns a reference to the green value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Clamps offset to the bounds of the Iter.
 		T&			gClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
 							return *(T*)((uint8_t*)( mPtr + mGreenOff + xOff * mInc ) + yOff * mRowInc); }
+		//! Returns a reference to the blue value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Clamps offset to the bounds of the Iter.							
 		T&			bClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
 							return *(T*)((uint8_t*)( mPtr + mBlueOff + xOff * mInc ) + yOff * mRowInc); }
+		//! Returns a reference to the alpha value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Clamps offset to the bounds of the Iter. Undefined in the absence of an alpha channel.
 		T&			aClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
 							return *(T*)((uint8_t*)( mPtr + mAlphaOff + xOff * mInc ) + yOff * mRowInc); }
@@ -300,6 +305,7 @@ class SurfaceT {
 		const int32_t	y() const { return mY; }
 		//! Returns the coordinate of the pixel the Iter currently points to
 		Vec2i			getPos() const { return Vec2i( mX, mY ); }
+
 		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {
 			++mX;
@@ -332,7 +338,7 @@ class SurfaceT {
 		/// \endcond
 	};
 
-	//! Convenience class for iterating the pixels of a Surface. Is \c const, performing read-only operations on the Surface.
+	//! Convenience class for iterating the pixels of a Surface. The iteration is \c const, performing read-only operations on the Surface.
 	class ConstIter {
 	 public:
 		ConstIter( const Iter &iter ) {
@@ -373,39 +379,56 @@ class SurfaceT {
 			mLinePtr -= mRowInc;
 		}
 		
+		//! Returns a reference to the red value of the pixel that the Iter currently points to
 		const T&	r() const { return mPtr[mRedOff]; }
+		//! Returns a reference to the green value of the pixel that the Iter currently points to
 		const T&	g() const { return mPtr[mGreenOff]; }
+		//! Returns a reference to the blue value of the pixel that the Iter currently points to		
 		const T&	b() const { return mPtr[mBlueOff]; }	
+		//! Returns a reference to the alpha value of the pixel that the Iter currently points to. Undefined in the absence of an alpha channel.
 		const T&	a() const { return mPtr[mAlphaOff]; }
 
+		//! Returns a reference to the red value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
 		const T&	r( int32_t xOff, int32_t yOff ) const { return mPtr[mRedOff + xOff * mInc + yOff * mRowInc]; }
+		//! Returns a reference to the green value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels
 		const T&	g( int32_t xOff, int32_t yOff ) const { return mPtr[mGreenOff + xOff * mInc + yOff * mRowInc]; }
+		//! Returns a reference to the blue value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels		
 		const T&	b( int32_t xOff, int32_t yOff ) const { return mPtr[mBlueOff + xOff * mInc + yOff * mRowInc]; }	
+		//! Returns a reference to the alpha value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels		
 		const T&	a( int32_t xOff, int32_t yOff ) const { return mPtr[mAlphaOff + xOff * mInc + yOff * mRowInc]; }
 
+		//! Returns the red value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Clamps offset to the bounds of the Iter.
 		const T&	rClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
 							return *(T*)((uint8_t*)( mPtr + mRedOff + xOff * mInc ) + yOff * mRowInc); }
+		//! Returns the green value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Clamps offset to the bounds of the Iter.
 		const T&	gClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
 							return *(T*)((uint8_t*)( mPtr + mGreenOff + xOff * mInc ) + yOff * mRowInc); }
+		//! Returns the blue value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Clamps offset to the bounds of the Iter.
 		const T&	bClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
 							return *(T*)((uint8_t*)( mPtr + mBlueOff + xOff * mInc ) + yOff * mRowInc); }
+		//! Returns the alpha value of the pixel that the Iter currently points to, offset by (\a xOff, \a yOff) pixels. Clamps offset to the bounds of the Iter. Undefined in the absence of an alpha channel.
 		const T&	aClamped( int32_t xOff, int32_t yOff ) const
 						{	xOff = std::min(std::max(mX + xOff, mStartX),mEndX - 1) - mX; yOff = std::min(std::max( mY + yOff, mStartY ), mEndY - 1) - mY;
 							return *(T*)((uint8_t*)( mPtr + mAlphaOff + xOff * mInc ) + yOff * mRowInc); }
 		
+		//! Returns the x coordinate of the pixel the Iter currently points to
 		const int32_t	x() const { return mX; }
+			//! Returns the t coordinate of the pixel the Iter currently points to		
 		const int32_t	y() const { return mY; }
+		//! Returns the coordinate of the pixel the Iter currently points to		
 		Vec2i			getPos() const { return Vec2i( mX, mY ); }
 
+		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {
 			++mX;
 			mPtr += mInc;
 			return mX < mEndX;
 		}
 		
+		//! Increments which row the Iter points to, and returns \c false when no rows remain in the Surface.
 		bool line() {
 			++mY;
 			mLinePtr += mRowInc;
@@ -416,7 +439,9 @@ class SurfaceT {
 			return mY < mEndY;
 		}
 		
+		//! Returns the width of the Area the Iter iterates
 		int32_t		getWidth() const { return mWidth; }
+		//! Returns the height of the Area the Iter iterates
 		int32_t		getHeight() const { return mHeight; }
 
 		/// \cond
@@ -428,9 +453,13 @@ class SurfaceT {
 		/// \endcond
 	};
 
+	//! Returns an Iter which iterates the entire Surface.
 	Iter		getIter() { return Iter( *this, this->getBounds() ); }
+	//! Returns an Iter which iterates the Area \a area.
 	Iter		getIter( const Area &area ) { return Iter( *this, area ); }
+	//! Returns a ConstIter which iterates the entire Surface.
 	ConstIter	getIter() const { return ConstIter( *this, this->getBounds() ); }
+	//! Returns a ConstIter which iterates the Area \a area.
 	ConstIter	getIter( const Area &area ) const { return ConstIter( *this, area ); }
 };
 

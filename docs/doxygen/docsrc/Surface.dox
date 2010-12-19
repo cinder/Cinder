@@ -26,9 +26,8 @@ by \ref cinder::SurfaceT::getRowBytes "getRowBytes()". Pixels can be ordered in 
 \class cinder::SurfaceT::Iter
 \details
 The Iter class can be used to walk the pixels of a Surface using a nested for-loop, where the outer loop calls
-\ref SurfaceT::Iter::line() "line()", and the inner calls SurfaceT::Iter::pixel() "pixel()".<br>
-<br>
-To walk pixels of a Surface, call getIter() on the surface and then call the line() and pixel() methods of the Iter:
+\ref SurfaceT::Iter::line() "line()", and the inner calls \ref SurfaceT::Iter::pixel() "pixel()".<br>
+The code below implements an invert on the Area \a area of \a surface:<br>
 \code
 Surface::Iter iter = surface->getIter( area );
 while( iter.line() ) {
@@ -38,15 +37,53 @@ while( iter.line() ) {
 		iter.b() = 255 - iter.b();
 	}
 }
-		/*! \brief Returns the red value of the offset pixel that the Iter currently points to.
-			The \a xOff and \a yOff parameters determine the offset on the x and y axis relative to the pixel that the iterator currently points to:
-			\code
-			inputIter.r(1, 1); // will return the red value of the pixel to the lower right of the current pixel
-			inputIter.r(-1, 0); // will return the red value of the pixel directly above the current pixel
-			\endcode
-		 */
+\endcode
 
+In addition to r(), g(), b() and a(), the Iter provides accessors which accept an offset in x & y relative to the current location:
+\code
+inputIter.r(1, 1); // will return the red value of the pixel to the lower right of the current pixel
+inputIter.b(0, -1); // will return the blue value of the pixel directly above the current pixel
+\endcode
+
+A final family accessors, rClamped(), gClamped(), bClamped() and aClamped() also accept an x & y relative offset, but will not sample
+outside of the bounds of the iterator.
+\code
+inputIter.rClamped(-2,0); // when called on the left edge of a row,
+						  //this will simply return the left-most pixel's red value
 \endcode
 \sa
+\ref guide_Images "Images in Cinder"
+*/
+
+/**
+\class cinder::SurfaceT::ConstIter
+\details
+The ConstIter class can be used to walk the pixels of a Surface using a nested for-loop, where the outer loop calls
+\ref SurfaceT::ConstIter::line() "line()", and the inner calls \ref SurfaceT::ConstIter::pixel() "pixel()".<br>
+The code below finds the maximum red value in the Area \a area of \a surface:<br>
+\code
+Surface::Iter iter = surface->getIter( area );
+uint8_t maxRed = 0;
+while( iter.line() ) {
+	while( iter.pixel() ) {
+		if( iter.r() > maxRed )
+			maxRed = iter.r();
+	}
+}
+\endcode
+In addition to r(), g(), b() and a(), the Iter provides accessors which accept an offset in x & y relative to the current location:
+\code
+inputIter.r(1, 1); // will return the red value of the pixel to the lower right of the current pixel
+inputIter.b(0, -1); // will return the blue value of the pixel directly above the current pixel
+\endcode
+
+A final family accessors, rClamped(), gClamped(), bClamped() and aClamped() also accept an x & y relative offset, but will not sample
+outside of the bounds of the iterator.
+\code
+inputIter.rClamped(-2,0); // when called on the left edge of a row,
+						  //this will simply return the left-most pixel's red value
+\endcode
+\sa
+\ref cinder::SurfaceT::Iter<br>
 \ref guide_Images "Images in Cinder"
 */
