@@ -171,10 +171,12 @@ class ImageSourceCgImage : public ImageSource {
   protected:
 	//! Retains (and later releases) \a imageRef
 	ImageSourceCgImage( ::CGImageRef imageRef );
-	
-	bool						mIsIndexed;
+
+	bool						mIsIndexed, mIs16BitPacked;
 	Color8u						mColorTable[256];
 	std::shared_ptr<CGImage>	mImageRef;
+
+	uint16_t					m16BitPackedRedOffset, m16BitPackedGreenOffset, m16BitPackedBlueOffset;
 };
 
 ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef );
@@ -194,7 +196,7 @@ class ImageTargetCgImage : public ImageTarget {
 
   protected:
 	ImageTargetCgImage( ImageSourceRef imageSource, ImageTarget::Options options );
-	
+
 	::CGImageRef		mImageRef;
 	size_t				mBitsPerComponent, mBitsPerPixel, mRowBytes;
 	::CGBitmapInfo		mBitmapInfo;

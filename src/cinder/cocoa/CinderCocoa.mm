@@ -354,14 +354,14 @@ ImageSourceCgImageRef ImageSourceCgImage::createRef( ::CGImageRef imageRef )
 }
 
 ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef )
-	: ImageSource(), mIsIndexed( false )
+	: ImageSource(), mIsIndexed( false ), mIs16BitPacked( false )
 {
 	::CGImageRetain( imageRef );
 	mImageRef = shared_ptr<CGImage>( imageRef, ::CGImageRelease );
 	
 	setSize( ::CGImageGetWidth( mImageRef.get() ), ::CGImageGetHeight( mImageRef.get() ) );
 	size_t bpc = ::CGImageGetBitsPerComponent( mImageRef.get() );
-	//size_t bpp = ::CGImageGetBitsPerPixel( mImageRef );
+	size_t bpp = ::CGImageGetBitsPerPixel( mImageRef.get() );
 
 	// translate data types
 	::CGBitmapInfo bitmapInfo = ::CGImageGetBitmapInfo( mImageRef.get() );
@@ -378,55 +378,67 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef )
 	bool swapEndian = false;
 	if( bitmapInfo & kCGBitmapByteOrder32Little )
 		swapEndian = true;
-	
-	// translate color space
-	::CGColorSpaceRef colorSpace = ::CGImageGetColorSpace( mImageRef.get() );
-	switch( ::CGColorSpaceGetModel( colorSpace ) ) {
-		case kCGColorSpaceModelMonochrome:
-			setColorModel( ImageIo::CM_GRAY );
-			setChannelOrder( ( hasAlpha ) ? ImageIo::YA : ImageIo::Y );
-		break;
-		case kCGColorSpaceModelRGB:
-			setColorModel( ImageSource::CM_RGB );
-			switch( alphaInfo ) {
-				case kCGImageAlphaNone:
-					setChannelOrder( (swapEndian) ? ImageIo::BGR : ImageIo::RGB );
-				break;
-				case kCGImageAlphaPremultipliedLast:
-					setChannelOrder( (swapEndian) ? ImageIo::ABGR : ImageIo::RGBA ); setPremultiplied( true );
-				break;
-				case kCGImageAlphaLast:
-					setChannelOrder( (swapEndian) ? ImageIo::ABGR : ImageIo::RGBA );
-				break;
-				case kCGImageAlphaPremultipliedFirst:
-					setChannelOrder( (swapEndian) ? ImageIo::BGRA : ImageIo::ARGB ); setPremultiplied( true );
-				break;
-				case kCGImageAlphaFirst:
-					setChannelOrder( (swapEndian) ? ImageIo::BGRA : ImageIo::ARGB );
-				break;
-				case kCGImageAlphaNoneSkipFirst:
-					setChannelOrder( (swapEndian) ? ImageIo::BGRX : ImageIo::XRGB );
-				break;
-				case kCGImageAlphaNoneSkipLast:
-					setChannelOrder( (swapEndian) ? ImageIo::XBGR : ImageIo::RGBX );
-				break;
-			}
-		break;
-		case kCGColorSpaceModelIndexed: {
-			setColorModel( ImageIo::CM_RGB );
-			setChannelOrder( ImageIo::RGB );
-			
-			mIsIndexed = true;
-			size_t clutSize = ::CGColorSpaceGetColorTableCount( colorSpace );
-			uint8_t colorTable[256*3];
-			::CGColorSpaceGetColorTable( colorSpace, colorTable );
-			for( size_t c = 0; c < clutSize; ++c )
-				mColorTable[c] = Color8u( colorTable[c*3+0], colorTable[c*3+1], colorTable[c*3+2] );
+
+	if( bpp == 16 && bpc == 5 ) {// 16-bit packed: 5-5-5 format
+		mIs16BitPacked = true;
+		m16BitPackedRedOffset = 10; m16BitPackedGreenOffset = 5; m16BitPackedBlueOffset = 0;
+		if( (alphaInfo == kCGImageAlphaNoneSkipLast) || (alphaInfo == kCGImageAlphaPremultipliedLast) || (alphaInfo == kCGImageAlphaLast) ) {
+			m16BitPackedRedOffset++; m16BitPackedGreenOffset++; m16BitPackedBlueOffset++;
 		}
-		break;
-		default: // we only support Gray and RGB data for now
-			throw ImageIoExceptionIllegalColorModel();
-		break;
+		setColorModel( ImageIo::CM_RGB );
+		setChannelOrder( ImageIo::RGB );
+		setDataType( ImageIo::UINT8 );
+	}
+	else {
+		// translate color space
+		::CGColorSpaceRef colorSpace = ::CGImageGetColorSpace( mImageRef.get() );
+		switch( ::CGColorSpaceGetModel( colorSpace ) ) {
+			case kCGColorSpaceModelMonochrome:
+				setColorModel( ImageIo::CM_GRAY );
+				setChannelOrder( ( hasAlpha ) ? ImageIo::YA : ImageIo::Y );
+			break;
+			case kCGColorSpaceModelRGB:
+				setColorModel( ImageSource::CM_RGB );
+				switch( alphaInfo ) {
+					case kCGImageAlphaNone:
+						setChannelOrder( (swapEndian) ? ImageIo::BGR : ImageIo::RGB );
+					break;
+					case kCGImageAlphaPremultipliedLast:
+						setChannelOrder( (swapEndian) ? ImageIo::ABGR : ImageIo::RGBA ); setPremultiplied( true );
+					break;
+					case kCGImageAlphaLast:
+						setChannelOrder( (swapEndian) ? ImageIo::ABGR : ImageIo::RGBA );
+					break;
+					case kCGImageAlphaPremultipliedFirst:
+						setChannelOrder( (swapEndian) ? ImageIo::BGRA : ImageIo::ARGB ); setPremultiplied( true );
+					break;
+					case kCGImageAlphaFirst:
+						setChannelOrder( (swapEndian) ? ImageIo::BGRA : ImageIo::ARGB );
+					break;
+					case kCGImageAlphaNoneSkipFirst:
+						setChannelOrder( (swapEndian) ? ImageIo::BGRX : ImageIo::XRGB );
+					break;
+					case kCGImageAlphaNoneSkipLast:
+						setChannelOrder( (swapEndian) ? ImageIo::XBGR : ImageIo::RGBX );
+					break;
+				}
+			break;
+			case kCGColorSpaceModelIndexed: {
+				setColorModel( ImageIo::CM_RGB );
+				setChannelOrder( ImageIo::RGB );
+				
+				mIsIndexed = true;
+				size_t clutSize = ::CGColorSpaceGetColorTableCount( colorSpace );
+				uint8_t colorTable[256*3];
+				::CGColorSpaceGetColorTable( colorSpace, colorTable );
+				for( size_t c = 0; c < clutSize; ++c )
+					mColorTable[c] = Color8u( colorTable[c*3+0], colorTable[c*3+1], colorTable[c*3+2] );
+			}
+			break;
+			default: // we only support Gray and RGB data for now
+				throw ImageIoExceptionIllegalColorModel();
+			break;
+		}
 	}
 }
 
@@ -441,17 +453,28 @@ void ImageSourceCgImage::load( ImageTargetRef target )
 	// get a pointer to the ImageSource function appropriate for handling our data configuration
 	ImageSource::RowFunc func = setupRowFunc( target );
 	
-	shared_ptr<Color8u> indexedRowBuffer;
-	if( mIsIndexed )
-		indexedRowBuffer = shared_ptr<Color8u>( new Color8u[mWidth], checked_array_deleter<Color8u>() );
+	shared_ptr<Color8u> tempRowBuffer;
+	if( mIsIndexed || mIs16BitPacked )
+		tempRowBuffer = shared_ptr<Color8u>( new Color8u[mWidth], checked_array_deleter<Color8u>() );
 	
 	const uint8_t *data = ::CFDataGetBytePtr( pixels.get() );
 	for( int32_t row = 0; row < mHeight; ++row ) {
 		// if this is indexed fill in our temporary row buffer with the colors pulled from the palette
 		if( mIsIndexed ) {
 			for( int32_t i = 0; i < mWidth; ++i )
-				indexedRowBuffer.get()[i] = mColorTable[data[i]];
-			((*this).*func)( target, row, indexedRowBuffer.get() );	
+				tempRowBuffer.get()[i] = mColorTable[data[i]];
+			((*this).*func)( target, row, tempRowBuffer.get() );
+		}
+		else if( mIs16BitPacked ) {
+			const uint16_t *data16 = reinterpret_cast<const uint16_t*>( data );
+			for( int32_t i = 0; i < mWidth; ++i ) {
+				const uint16_t d = data16[i];
+				Color8u *out = &tempRowBuffer.get()[i];
+				out->r = (( d & ( 31 << m16BitPackedRedOffset ) ) >> m16BitPackedRedOffset) * 255 / 31;
+				out->g = (( d & ( 31 << m16BitPackedGreenOffset ) ) >> m16BitPackedGreenOffset) * 255 / 31;
+				out->b = (( d & ( 31 << m16BitPackedBlueOffset ) ) >> m16BitPackedBlueOffset) * 255 / 31;
+			}
+			((*this).*func)( target, row, tempRowBuffer.get() );
 		}
 		else
 			((*this).*func)( target, row, data );
