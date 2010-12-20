@@ -36,6 +36,7 @@
 
 namespace cinder { namespace gl {
 
+//! Represents an OpenGL GLSL program. \ImplShared
 class GlslProg {
   public: 
 	GlslProg() {}

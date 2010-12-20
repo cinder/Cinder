@@ -32,7 +32,7 @@ namespace cinder {
 
 typedef std::shared_ptr<class ImageSource> ImageSourceRef;
 
-//! A single channel of image data, either a color channel of a Surface or a grayscale image.
+//! A single channel of image data, either a color channel of a Surface or a grayscale image. \ImplShared
 template<typename T>
 class ChannelT {	 
  protected:

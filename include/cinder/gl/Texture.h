@@ -33,18 +33,8 @@
 
 namespace cinder { namespace gl {
 
-/** \brief Reference-counted OpenGL texture
-
-	Texture represents an OpenGL texture object. It maintains an internal reference-counted pointer which supports copying and assignment and properly frees the associated OpenGL resources.
-	\n \em Example Usage:\code
-	gl::Texture myTexture = gl::Texture( loadImage( loadFile( "someFile.png" ) ) ); // creates an OpenGL texture based on a file
-	myTexture.enableAndBind();
-	... // OpenGL commands using the texture
-	myTexture.unbind();
-	gl::Texture myOtherTexture = myTexture; // this does the right thing and does not risk a double-free of the OpenGL resource
-	\endcode
-**/
-
+/** \brief Represents an OpenGL Texture. \ImplShared
+\see \ref guide_Images "Images in Cinder" */
 class Texture {
   public:
 	struct Format;

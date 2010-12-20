@@ -29,7 +29,7 @@
 
 namespace cinder { namespace gl {
 
-//! Represents a reference-counted OpenGL Renderbuffer, used primarily in conjunction with Fbos. Supported on OpenGL ES but multisampling is currently ignored.
+//! Represents an OpenGL Renderbuffer, used primarily in conjunction with FBOs. Supported on OpenGL ES but multisampling is currently ignored. \ImplShared
 class Renderbuffer {
   public:
 	//! Creates a NULL Renderbuffer
@@ -86,7 +86,7 @@ class Renderbuffer {
 	//@}  	
 };
 
-//! Represents a reference-counted OpenGL Framebuffer Object
+//! Represents an OpenGL Framebuffer Object. //! Represents an instance of a font at a point size. \ImplShared
 class Fbo {
  public:
 	struct Format;

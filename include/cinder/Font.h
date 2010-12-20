@@ -47,6 +47,7 @@
 
 namespace cinder {
 
+//! Represents an instance of a font at a point size. \ImplShared
 class Font {
  public:
 	typedef uint16_t		Glyph;		

@@ -85,7 +85,7 @@ typedef std::shared_ptr<class ImageSource> ImageSourceRef;
 typedef std::shared_ptr<class ImageTarget> ImageTargetRef;
 
 template<typename T>
-//! An in-memory representation of an image.
+//! An in-memory representation of an image. \ImplShared
 class SurfaceT {
  private:
 	/// \cond
