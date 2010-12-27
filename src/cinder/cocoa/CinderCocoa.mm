@@ -31,6 +31,7 @@
 	#import <AppKit/AppKit.h>
 #else
 	#import <UIKit/UIKit.h>
+	#import <CoreText/CoreText.h>
 #endif
 #import <Foundation/NSData.h>
 
@@ -197,7 +198,6 @@ CFURLRef createCfUrl( const Url &url )
 	return result;
 }
 
-#if defined( CINDER_MAC )
 CFAttributedStringRef createCfAttributedString( const std::string &str, const Font &font, const ColorA &color )
 {
 	CGColorRef cgColor = createCgColor( color );
@@ -225,7 +225,6 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 	
 	return attrString;
 }
-#endif //defined( CINDER_MAC )
 
 CGColorRef createCgColor( const Color &color )
 {
