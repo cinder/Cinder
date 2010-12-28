@@ -421,7 +421,7 @@ Font::Obj::Obj( const string &aName, float aSize )
 	mCGFont = ::CGFontCreateWithFontName( cfName );
 	CFRelease( cfName );
 	if( mCGFont == 0 )
-		throw FontInvalidNameExc();
+		throw FontInvalidNameExc( aName );
 	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
 	
 	::CFStringRef fullName = ::CGFontCopyFullName( mCGFont );

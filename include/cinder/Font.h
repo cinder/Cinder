@@ -122,6 +122,12 @@ class Font {
 };
 
 class FontInvalidNameExc : public cinder::Exception {
+  public:
+	FontInvalidNameExc() throw() {}
+	FontInvalidNameExc( const std::string &fontName ) throw() { sprintf( mMessage, "%s", fontName.c_str() ); }
+	virtual const char* what() const throw() { return mMessage; }	
+  private:
+	char mMessage[2048];	
 };
 
 class FontGlyphFailureExc : public cinder::Exception {
