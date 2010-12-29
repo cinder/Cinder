@@ -125,10 +125,8 @@ std::string	convertNsString( NSString *str );
 //! Converts a cinder::URL into a CFURLRef. User must call CFRelease() to free the result.
 CFURLRef createCfUrl( const cinder::Url &url );
 
-#if defined( CINDER_MAC )
 //! Converts a std::string to a CFAttributedStringRef with attributes set for \a font and \a color. Assumes UTF8 encoding. User must call CFRelease() to free the result.
 CFAttributedStringRef createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color );
-#endif
 
 //! Converts a cinder::Color to CGColor. User must call CGColorRelease() to free the result.
 CGColorRef createCgColor( const Color &color );

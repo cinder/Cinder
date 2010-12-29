@@ -26,6 +26,7 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_COCOA_TOUCH )
 		#import <UIKit/UIKit.h>
+		#import <CoreText/CoreText.h>
 	#else
 		#import <Cocoa/Cocoa.h>
 	#endif
@@ -49,7 +50,6 @@ using std::pair;
 
 namespace cinder {
 
-#if ! defined( CINDER_COCOA_TOUCH )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // FontManager
 class FontManager
@@ -77,9 +77,9 @@ class FontManager
 	LONG				convertSizeToLogfontHeight( float size ) { return ::MulDiv( (long)size, -::GetDeviceCaps( mFontDc, LOGPIXELSY ), 96 ); }
 #endif
 	
-#if defined( CINDER_COCOA )
+#if defined( CINDER_MAC )
 	NSFontManager		*nsFontManager;
-#else
+#elif defined( CINDER_MSW )
 	HDC					mFontDc;
 	Gdiplus::Graphics	*mGraphics;
 #endif
@@ -90,10 +90,10 @@ FontManager *FontManager::sInstance = 0;
 FontManager::FontManager()
 {
 	mFontsEnumerated = false;
-#if defined( CINDER_COCOA )
+#if defined( CINDER_MAC )
 	nsFontManager = [NSFontManager sharedFontManager];
 	[nsFontManager retain];
-#else
+#elif defined( CINDER_MSW )
 	mFontDc = ::CreateCompatibleDC( NULL );
 	mGraphics = new Gdiplus::Graphics( mFontDc );
 #endif
@@ -101,7 +101,7 @@ FontManager::FontManager()
 
 FontManager::~FontManager()
 {
-#if defined( CINDER_COCOA )
+#if defined( CINDER_MAC )
 	[nsFontManager release];
 #endif
 }
@@ -126,14 +126,26 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 {
 	if( ( ! mFontsEnumerated ) || forceRefresh ) {
 		mFontNames.clear();
-#if defined( CINDER_COCOA )
+#if defined( CINDER_MAC )
 		NSArray *fontArray = [nsFontManager availableFonts];
 		NSUInteger totalFonts = [fontArray count];
 		for( unsigned int i = 0; i < totalFonts; ++i ) {
 			NSString *str = [fontArray objectAtIndex:i];
 			mFontNames.push_back( string( [str UTF8String] ) );
 		}
-#else
+#elif defined( CINDER_COCOA_TOUCH )
+		NSArray *familyNames = [UIFont familyNames];
+		NSUInteger totalFamilies = [familyNames count];
+		for( unsigned int i = 0; i < totalFamilies; ++i ) {
+			NSString *familyName = [familyNames objectAtIndex:i];
+			NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
+			NSUInteger totalFonts = [fontNames count];
+			for( unsigned int f = 0; f < totalFonts; ++f ) {
+				NSString *fontName = [fontNames objectAtIndex:f];
+				mFontNames.push_back( string( [fontName UTF8String] ) );
+			}
+		}
+#elif defined( CINDER_MSW )
 		// consider enumerating character sets? DEFAULT_CHARSET potentially here
 		::LOGFONT lf = { 0, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, 0, 0, 0, 0, '\0' };
 		::EnumFontFamiliesEx( getFontDc(), &lf, (FONTENUMPROC)EnumFontFamiliesExProc, reinterpret_cast<LPARAM>( &mFontNames ), 0 );	
@@ -144,7 +156,6 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 	return mFontNames;
 }
 
-#endif ! defined( CINDER_COCOA_TOUCH )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Font
@@ -158,12 +169,10 @@ Font::Font( DataSourceRef dataSource, float size )
 {
 }
 
-#if ! defined( CINDER_COCOA_TOUCH )
 const vector<string>& Font::getNames( bool forceRefresh )
 {
 	return FontManager::instance()->getNames( forceRefresh );
 }
-#endif // ! defined( CINDER_COCOA_TOUCH )
 
 const std::string& Font::getName() const
 { 
@@ -204,7 +213,6 @@ size_t Font::getNumGlyphs() const
 	return ::CGFontGetNumberOfGlyphs( mObj->mCGFont );
 }
 
-#if ! defined( CINDER_COCOA_TOUCH )
 Font::Glyph Font::getGlyphIndex( size_t index )
 {
 	return (Glyph)index;
@@ -242,19 +250,16 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex )
 	CGPathRelease( path );
 	return resultShape;
 }
-#endif // ! defined( CINDER_COCOA_TOUCH )
 
 CGFontRef Font::getCgFontRef() const
 {
 	return mObj->mCGFont;
 }
 
-#if ! defined( CINDER_COCOA_TOUCH )
 CTFontRef Font::getCtFontRef() const
 {
 	return mObj->mCTFont;
 }
-#endif // ! defined( CINDER_COCOA_TOUCH )
 
 #elif defined( CINDER_MSW )
 
@@ -416,10 +421,8 @@ Font::Obj::Obj( const string &aName, float aSize )
 	mCGFont = ::CGFontCreateWithFontName( cfName );
 	CFRelease( cfName );
 	if( mCGFont == 0 )
-		throw FontInvalidNameExc();
- #if defined( CINDER_MAC )
+		throw FontInvalidNameExc( aName );
 	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
- #endif
 	
 	::CFStringRef fullName = ::CGFontCopyFullName( mCGFont );
 	string result = cocoa::convertCfString( fullName );
@@ -449,9 +452,7 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 	mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
 	if( ! mCGFont )
 		throw FontInvalidNameExc();
- #if defined( CINDER_MAC )
 	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
- #endif
 
 #elif defined( CINDER_MSW )
 	FontManager::instance(); // force GDI+ init
@@ -491,9 +492,7 @@ Font::Obj::~Obj()
 {
 #if defined( CINDER_COCOA )
 	::CGFontRelease( mCGFont );
- #if defined( CINDER_MAC )
 	::CFRelease( mCTFont );
- #endif
 #else
 	if( mHfont ) // this should be replaced with something exception-safe
 		::DeleteObject( mHfont ); 
