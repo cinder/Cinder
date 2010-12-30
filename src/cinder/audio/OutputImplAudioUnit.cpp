@@ -220,7 +220,7 @@ OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUni
 OSStatus OutputImplAudioUnit::Track::renderNotifyCallback( void * audioTrack, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData )
 {
 	OSStatus err = noErr;
-	if( *ioActionFlags &= kAudioUnitRenderAction_PostRender ) {
+	if( *ioActionFlags & kAudioUnitRenderAction_PostRender ) {
 		OutputImplAudioUnit::Track * theTrack = reinterpret_cast<OutputImplAudioUnit::Track *>( audioTrack );
 		
 		if( ! theTrack->isPlaying() ) {

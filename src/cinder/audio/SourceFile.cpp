@@ -78,6 +78,8 @@ uint64_t LoaderSourceFile::getSampleOffset() const {
 
 void LoaderSourceFile::setSampleOffset( uint64_t anOffset ) {
 	mPacketOffset = mSource->packetAtSample( anOffset );
+	if( anOffset == 0 )
+		mConverter->reset();
 }
 
 void LoaderSourceFile::loadData( BufferList *ioData )

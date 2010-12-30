@@ -76,6 +76,11 @@ CocoaCaConverter::~CocoaCaConverter()
 	AudioConverterDispose( mConverter );
 }
 
+void CocoaCaConverter::reset()
+{
+	::AudioConverterReset( mConverter );
+}
+
 void CocoaCaConverter::loadData( BufferList *ioData )
 {	
 	std::shared_ptr<AudioBufferList> nativeBufferList = createCaBufferList( ioData );
