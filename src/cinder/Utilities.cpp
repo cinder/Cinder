@@ -204,13 +204,16 @@ void launchWebBrowser( const Url &url )
 #if defined( CINDER_COCOA )
 	NSString *nsString = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
 	NSURL *nsUrl = [NSURL URLWithString:nsString];
+#elif defined( CINDER_MSW )
+	wstring urlStr = toUtf16( url.str() );
 #endif
+
 #if defined( CINDER_COCOA_TOUCH )
 	[[UIApplication sharedApplication] openURL:nsUrl ];
 #elif defined( CINDER_COCOA )
 	[[NSWorkspace sharedWorkspace] openURL:nsUrl ];
-#else
-	// TODO: MSW implementation
+#elif defined( CINDER_MSW )
+	ShellExecute( NULL, L"open", urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
 #endif
 }
 
