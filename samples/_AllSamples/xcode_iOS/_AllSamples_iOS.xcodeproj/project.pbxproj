@@ -1,0 +1,414 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		0087D1AA12CD7E58002CD69F /* AllSamples_iOS */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 0087D1AD12CD7E76002CD69F /* Build configuration list for PBXAggregateTarget "AllSamples_iOS" */;
+			buildPhases = (
+			);
+			dependencies = (
+				0087D1DC12CD7F1F002CD69F /* PBXTargetDependency */,
+				0087D32F12CD82C2002CD69F /* PBXTargetDependency */,
+				0087D33112CD82C2002CD69F /* PBXTargetDependency */,
+				0087D33312CD82C2002CD69F /* PBXTargetDependency */,
+				0087D33512CD82C2002CD69F /* PBXTargetDependency */,
+				0087D33712CD82C2002CD69F /* PBXTargetDependency */,
+				0087D33912CD82C2002CD69F /* PBXTargetDependency */,
+			);
+			name = AllSamples_iOS;
+			productName = AllSamples_iOS;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		0087D1B612CD7E7A002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
+			remoteInfo = MultiTouch_iPhone;
+		};
+		0087D1D912CD7F1A002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
+			remoteInfo = AudioInputSample;
+		};
+		0087D1DB12CD7F1F002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
+			remoteInfo = AudioInputSample;
+		};
+		0087D24312CD807D002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* captureTest.app */;
+			remoteInfo = captureTest;
+		};
+		0087D25A12CD80A7002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* ClipboardBasic_iOS.app */;
+			remoteInfo = ClipboardBasic_iOS;
+		};
+		0087D2D712CD81D3002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* FBOBasic_iOS.app */;
+			remoteInfo = FBOBasic_iOS;
+		};
+		0087D2E512CD81EB002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* iPhoneAccelerometer.app */;
+			remoteInfo = iPhoneAccelerometer;
+		};
+		0087D32912CD828A002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* TextTest_iOS.app */;
+			remoteInfo = TextTest_iOS;
+		};
+		0087D32E12CD82C2002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* MultiTouch_iOS */;
+			remoteInfo = MultiTouch_iOS;
+		};
+		0087D33012CD82C2002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* TextTest_iOS */;
+			remoteInfo = TextTest_iOS;
+		};
+		0087D33212CD82C2002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* iPhoneAccelerometer */;
+			remoteInfo = iPhoneAccelerometer;
+		};
+		0087D33412CD82C2002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* ClipboardBasic_iOS */;
+			remoteInfo = ClipboardBasic_iOS;
+		};
+		0087D33612CD82C2002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* captureTest */;
+			remoteInfo = captureTest;
+		};
+		0087D33812CD82C2002CD69F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* FBOBasic_iOS */;
+			remoteInfo = FBOBasic_iOS;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MultiTouch_iOS.xcodeproj; path = ../../MultiTouchBasic/xcode/MultiTouch_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioInputSample_iOS.xcodeproj; path = ../../AudioInputSample/xcode/AudioInputSample_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = captureTest_iOS.xcodeproj; path = ../../captureTest/xcode/captureTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ClipboardBasic_iOS.xcodeproj; path = ../../ClipboardBasic/xcode_iOS/ClipboardBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic_iOS.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = iPhoneAccelerometer.xcodeproj; path = ../../iPhoneAccelerometer/xcode/iPhoneAccelerometer.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest_iOS.xcodeproj; path = ../../TextTest/xcode_iOS/TextTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		0087D08412CD7DC5002CD69F = {
+			isa = PBXGroup;
+			children = (
+				0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */,
+				0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */,
+				0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */,
+				0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */,
+				0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */,
+				0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */,
+				0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */,
+			);
+			sourceTree = "<group>";
+		};
+		0087D1AF12CD7E7A002CD69F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0087D1B712CD7E7A002CD69F /* MultiTouch.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0087D1D312CD7F1A002CD69F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0087D1DA12CD7F1A002CD69F /* AudioInputSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0087D24012CD807D002CD69F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0087D24412CD807D002CD69F /* captureTest.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0087D25712CD80A7002CD69F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0087D25B12CD80A7002CD69F /* ClipboardBasic_iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0087D2D412CD81D3002CD69F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0087D2D812CD81D3002CD69F /* FBOBasic_iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0087D2E212CD81EB002CD69F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0087D2E612CD81EB002CD69F /* iPhoneAccelerometer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0087D32612CD828A002CD69F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0087D32A12CD828A002CD69F /* TextTest_iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		0087D08612CD7DC5002CD69F /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 0087D08912CD7DC5002CD69F /* Build configuration list for PBXProject "_AllSamples_iOS" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 0087D08412CD7DC5002CD69F;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 0087D1D312CD7F1A002CD69F /* Products */;
+					ProjectRef = 0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */;
+				},
+				{
+					ProductGroup = 0087D24012CD807D002CD69F /* Products */;
+					ProjectRef = 0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */;
+				},
+				{
+					ProductGroup = 0087D25712CD80A7002CD69F /* Products */;
+					ProjectRef = 0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */;
+				},
+				{
+					ProductGroup = 0087D2D412CD81D3002CD69F /* Products */;
+					ProjectRef = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
+				},
+				{
+					ProductGroup = 0087D2E212CD81EB002CD69F /* Products */;
+					ProjectRef = 0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */;
+				},
+				{
+					ProductGroup = 0087D1AF12CD7E7A002CD69F /* Products */;
+					ProjectRef = 0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */;
+				},
+				{
+					ProductGroup = 0087D32612CD828A002CD69F /* Products */;
+					ProjectRef = 0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				0087D1AA12CD7E58002CD69F /* AllSamples_iOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		0087D1B712CD7E7A002CD69F /* MultiTouch.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MultiTouch.app;
+			remoteRef = 0087D1B612CD7E7A002CD69F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0087D1DA12CD7F1A002CD69F /* AudioInputSample.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = AudioInputSample.app;
+			remoteRef = 0087D1D912CD7F1A002CD69F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0087D24412CD807D002CD69F /* captureTest.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = captureTest.app;
+			remoteRef = 0087D24312CD807D002CD69F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0087D25B12CD80A7002CD69F /* ClipboardBasic_iOS.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ClipboardBasic_iOS.app;
+			remoteRef = 0087D25A12CD80A7002CD69F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0087D2D812CD81D3002CD69F /* FBOBasic_iOS.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FBOBasic_iOS.app;
+			remoteRef = 0087D2D712CD81D3002CD69F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0087D2E612CD81EB002CD69F /* iPhoneAccelerometer.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = iPhoneAccelerometer.app;
+			remoteRef = 0087D2E512CD81EB002CD69F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0087D32A12CD828A002CD69F /* TextTest_iOS.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = TextTest_iOS.app;
+			remoteRef = 0087D32912CD828A002CD69F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXTargetDependency section */
+		0087D1DC12CD7F1F002CD69F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AudioInputSample;
+			targetProxy = 0087D1DB12CD7F1F002CD69F /* PBXContainerItemProxy */;
+		};
+		0087D32F12CD82C2002CD69F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MultiTouch_iOS;
+			targetProxy = 0087D32E12CD82C2002CD69F /* PBXContainerItemProxy */;
+		};
+		0087D33112CD82C2002CD69F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TextTest_iOS;
+			targetProxy = 0087D33012CD82C2002CD69F /* PBXContainerItemProxy */;
+		};
+		0087D33312CD82C2002CD69F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = iPhoneAccelerometer;
+			targetProxy = 0087D33212CD82C2002CD69F /* PBXContainerItemProxy */;
+		};
+		0087D33512CD82C2002CD69F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ClipboardBasic_iOS;
+			targetProxy = 0087D33412CD82C2002CD69F /* PBXContainerItemProxy */;
+		};
+		0087D33712CD82C2002CD69F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = captureTest;
+			targetProxy = 0087D33612CD82C2002CD69F /* PBXContainerItemProxy */;
+		};
+		0087D33912CD82C2002CD69F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBOBasic_iOS;
+			targetProxy = 0087D33812CD82C2002CD69F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0087D08712CD7DC5002CD69F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		0087D08812CD7DC5002CD69F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		0087D1AB12CD7E58002CD69F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = AllSamples_iOS;
+			};
+			name = Debug;
+		};
+		0087D1AC12CD7E58002CD69F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = AllSamples_iOS;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0087D08912CD7DC5002CD69F /* Build configuration list for PBXProject "_AllSamples_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0087D08712CD7DC5002CD69F /* Debug */,
+				0087D08812CD7DC5002CD69F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0087D1AD12CD7E76002CD69F /* Build configuration list for PBXAggregateTarget "AllSamples_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0087D1AB12CD7E58002CD69F /* Debug */,
+				0087D1AC12CD7E58002CD69F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0087D08612CD7DC5002CD69F /* Project object */;
+}
