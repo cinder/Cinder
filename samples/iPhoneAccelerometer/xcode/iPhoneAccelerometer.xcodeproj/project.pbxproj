@@ -12,6 +12,7 @@
 		0085FF7012ADE68F002498E8 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0085FF6F12ADE68F002498E8 /* CoreVideo.framework */; };
 		0085FF7812ADE6AA002498E8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0085FF7712ADE6AA002498E8 /* AVFoundation.framework */; };
 		0085FF7C12ADE6BE002498E8 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0085FF7B12ADE6BE002498E8 /* CoreMedia.framework */; };
+		0087D2E912CD81F0002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D2E812CD81F0002CD69F /* CoreText.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
 		00CFDFE011384CC60091E310 /* iPhoneAccelerometerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CFDFDF11384CC60091E310 /* iPhoneAccelerometerApp.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -26,6 +27,7 @@
 		0085FF6F12ADE68F002498E8 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		0085FF7712ADE6AA002498E8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		0085FF7B12ADE6BE002498E8 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		0087D2E812CD81F0002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDFDF11384CC60091E310 /* iPhoneAccelerometerApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = iPhoneAccelerometerApp.cpp; path = ../src/iPhoneAccelerometerApp.cpp; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -52,6 +54,7 @@
 				0085FF7012ADE68F002498E8 /* CoreVideo.framework in Frameworks */,
 				0085FF7812ADE6AA002498E8 /* AVFoundation.framework in Frameworks */,
 				0085FF7C12ADE6BE002498E8 /* CoreMedia.framework in Frameworks */,
+				0087D2E912CD81F0002CD69F /* CoreText.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,6 +126,7 @@
 				0085FF6F12ADE68F002498E8 /* CoreVideo.framework */,
 				0085FF7712ADE6AA002498E8 /* AVFoundation.framework */,
 				0085FF7B12ADE6BE002498E8 /* CoreMedia.framework */,
+				0087D2E812CD81F0002CD69F /* CoreText.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
