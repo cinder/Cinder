@@ -52,6 +52,15 @@ class KeyEvent : public Event {
 	
 	//! Maps a platform-native key-code to the key code enum
 	static int		translateNativeKeyCode( int nativeKeyCode );
+	
+	//! Sets the key code associated with the event, which maps into the enum listed below
+	void setCode( int code ) { mCode = code; }
+	//! Sets the ASCII character associated with the event.
+	void setChar( int ascii_char ) { mChar = ascii_char; }
+	//! Sets the modifers for the event
+	void setModifiers( unsigned int modifiers ) { mModifiers = modifiers; }
+	//! Sets the native key code for the event. Advanced users only.
+	void setNativeKeyCode( unsigned int code ) { mNativeKeyCode = code; }
 
 	enum {	SHIFT_DOWN	= 0x0008,
 			ALT_DOWN	= 0x0010,
