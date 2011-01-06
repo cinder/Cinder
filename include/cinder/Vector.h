@@ -62,6 +62,8 @@ struct VEC3CONV {
 
 //! \endcond
 
+template<typename T> class Vec3;
+
 template<typename T>
 class Vec2
 {
