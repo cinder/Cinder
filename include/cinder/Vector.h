@@ -630,6 +630,13 @@ public:
 		return r1.slerp( 2 * t * (1-t), r2 );
 	}
 
+	void reflect( const Vec3<T>& normal )
+	{
+		T f = 2 * dot( normal );
+		*this = (*this) - (normal * f);
+	
+	}
+
 	// GLSL inspired swizzling functions.
 	Vec2<T> xx() const { return Vec2<T>(x, x); }
 	Vec2<T> xy() const { return Vec2<T>(x, y); }
