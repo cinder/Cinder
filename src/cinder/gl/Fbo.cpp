@@ -33,9 +33,11 @@ GLint Fbo::sMaxAttachments = -1;
 
 // Convenience macro to append either OES or EXT appropriately to a symbol based on OGLES vs. OGL
 #if defined( CINDER_GLES )
-	#define GL_SUFFIX(sym) sym##OES
+	#define GL_SUFFIX(sym) sym
+	#define GL_SUFFIX_(sym) sym
 #else
 	#define GL_SUFFIX(sym) sym##EXT
+	#define GL_SUFFIX_(sym) sym##_EXT
 #endif
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +67,7 @@ Renderbuffer::Obj::Obj( int aWidth, int aHeight, GLenum internalFormat, int msaa
 	if( ! csaaSupported )
 		mCoverageSamples = 0;
 
-	GL_SUFFIX(glBindRenderbuffer)( GL_SUFFIX(GL_RENDERBUFFER_), mId );
+	GL_SUFFIX(glBindRenderbuffer)( GL_SUFFIX_(GL_RENDERBUFFER), mId );
 
 #if ! defined( CINDER_GLES )
   #if defined( CINDER_MSW )
@@ -77,7 +79,7 @@ Renderbuffer::Obj::Obj( int aWidth, int aHeight, GLenum internalFormat, int msaa
 		glRenderbufferStorageMultisampleEXT( GL_RENDERBUFFER_EXT, mSamples, mInternalFormat, mWidth, mHeight );
 	else
 #endif
-		GL_SUFFIX(glRenderbufferStorage)( GL_SUFFIX(GL_RENDERBUFFER_), mInternalFormat, mWidth, mHeight );
+		GL_SUFFIX(glRenderbufferStorage)( GL_SUFFIX_(GL_RENDERBUFFER), mInternalFormat, mWidth, mHeight );
 }
 
 Renderbuffer::Obj::~Obj()
@@ -187,7 +189,7 @@ void Fbo::init()
 
 	// allocate the framebuffer itself
 	GL_SUFFIX(glGenFramebuffers)( 1, &mObj->mId );
-	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), mObj->mId );	
+	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX_(GL_FRAMEBUFFER), mObj->mId );	
 
 	Texture::Format textureFormat;
 	textureFormat.setTarget( getTarget() );
@@ -213,8 +215,8 @@ void Fbo::init()
 		// attach all the textures to the framebuffer
 		vector<GLenum> drawBuffers;
 		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c ) {
-			GL_SUFFIX(glFramebufferTexture2D)( GL_SUFFIX(GL_FRAMEBUFFER_), GL_SUFFIX(GL_COLOR_ATTACHMENT0_) + c, getTarget(), mObj->mColorTextures[c].getId(), 0 );
-			drawBuffers.push_back( GL_SUFFIX(GL_COLOR_ATTACHMENT0_) + c );
+			GL_SUFFIX(glFramebufferTexture2D)( GL_SUFFIX_(GL_FRAMEBUFFER), GL_SUFFIX_(GL_COLOR_ATTACHMENT0) + c, getTarget(), mObj->mColorTextures[c].getId(), 0 );
+			drawBuffers.push_back( GL_SUFFIX_(GL_COLOR_ATTACHMENT0) + c );
 		}
 #if ! defined( CINDER_GLES )
 		if( ! drawBuffers.empty() )
@@ -243,7 +245,7 @@ void Fbo::init()
 			}
 			else if( mObj->mFormat.mDepthBuffer ) { // implement depth buffer as RenderBuffer
 				mObj->mDepthRenderbuffer = Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.getDepthInternalFormat() );
-				GL_SUFFIX(glFramebufferRenderbuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), GL_SUFFIX(GL_DEPTH_ATTACHMENT_), GL_SUFFIX(GL_RENDERBUFFER_), mObj->mDepthRenderbuffer.getId() );
+				GL_SUFFIX(glFramebufferRenderbuffer)( GL_SUFFIX_(GL_FRAMEBUFFER), GL_SUFFIX_(GL_DEPTH_ATTACHMENT), GL_SUFFIX_(GL_RENDERBUFFER), mObj->mDepthRenderbuffer.getId() );
 			}
 		}
 
@@ -413,7 +415,7 @@ void Fbo::updateMipmaps( bool bindFirst, int attachment ) const
 
 void Fbo::bindFramebuffer()
 {
-	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), mObj->mId );
+	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX_(GL_FRAMEBUFFER), mObj->mId );
 	if( mObj->mResolveFramebufferId ) {
 		mObj->mNeedsResolve = true;
 	}
@@ -424,36 +426,36 @@ void Fbo::bindFramebuffer()
 
 void Fbo::unbindFramebuffer()
 {
-	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), 0 );
+	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX_(GL_FRAMEBUFFER), 0 );
 }
 
 bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 {
 	GLenum status;
-	status = (GLenum) GL_SUFFIX(glCheckFramebufferStatus)( GL_SUFFIX(GL_FRAMEBUFFER_) );
+	status = (GLenum) GL_SUFFIX(glCheckFramebufferStatus)( GL_SUFFIX_(GL_FRAMEBUFFER) );
 	switch( status ) {
-		case GL_SUFFIX(GL_FRAMEBUFFER_COMPLETE_):
+		case GL_SUFFIX_(GL_FRAMEBUFFER_COMPLETE):
 		break;
-		case GL_SUFFIX(GL_FRAMEBUFFER_UNSUPPORTED_):
+		case GL_SUFFIX_(GL_FRAMEBUFFER_UNSUPPORTED):
 			*resultExc = FboExceptionInvalidSpecification( "Unsupported framebuffer format" );
 		return false;
-		case GL_SUFFIX(GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_):
+		case GL_SUFFIX_(GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT):
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: missing attachment" );
 		return false;
-		case GL_SUFFIX(GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_):
+		case GL_SUFFIX_(GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT):
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: duplicate attachment" );
 		return false;
-		case GL_SUFFIX(GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_):
+		case GL_SUFFIX_(GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS):
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: attached images must have same dimensions" );
 		return false;
-		case GL_SUFFIX(GL_FRAMEBUFFER_INCOMPLETE_FORMATS_):
+#if ! defined( CINDER_GLES )
+		case GL_SUFFIX_(GL_FRAMEBUFFER_INCOMPLETE_FORMATS):
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: attached images must have same format" );
 		return false;
-#if ! defined( CINDER_GLES )
-		case GL_SUFFIX(GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_):
+		case GL_SUFFIX_(GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER):
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: missing draw buffer" );
 		return false;
-		case GL_SUFFIX(GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_):
+		case GL_SUFFIX_(GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER):
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: missing read buffer" );
 		return false;
 #endif

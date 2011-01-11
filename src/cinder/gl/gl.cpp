@@ -225,6 +225,7 @@ void clear( const ColorA &color, bool clearDepthBuffer )
 		glClear( GL_COLOR_BUFFER_BIT );
 }
 
+#if ! defined( CINDER_GLES )
 void setModelView( const Camera &cam )
 {
 	glMatrixMode( GL_MODELVIEW );
@@ -1202,13 +1203,14 @@ SaveColorState::~SaveColorState()
 	// GLES doesn't have glColor4fv
 	glColor4f( mOldValues[0], mOldValues[1], mOldValues[2], mOldValues[3] );
 }
+#endif // ! defined( CINDER_GLES )
 
 ///////////////////////////////////////////////////////////////////////////////
 // SaveFramebufferBinding
 SaveFramebufferBinding::SaveFramebufferBinding()
 {
 #if defined( CINDER_GLES )
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING_OES, &mOldValue );
+	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &mOldValue );
 #else	
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING_EXT, &mOldValue );
 #endif
@@ -1217,7 +1219,7 @@ SaveFramebufferBinding::SaveFramebufferBinding()
 SaveFramebufferBinding::~SaveFramebufferBinding()
 {
 #if defined( CINDER_GLES )
-	glBindFramebufferOES( GL_FRAMEBUFFER_OES, mOldValue );
+	glBindFramebuffer( GL_FRAMEBUFFER, mOldValue );
 #else
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mOldValue );
 #endif
