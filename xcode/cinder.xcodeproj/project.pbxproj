@@ -266,6 +266,8 @@
 		007CE1FA127BB13B00799071 /* rapidxml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F6127BB13B00799071 /* rapidxml.hpp */; };
 		007CE1FB127BB13B00799071 /* rapidxml_print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F5127BB13B00799071 /* rapidxml_print.hpp */; };
 		007CE1FC127BB13B00799071 /* rapidxml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F6127BB13B00799071 /* rapidxml.hpp */; };
+		0087DE1F12DC1469002CD69F /* GlslProg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D9A07B0EA57C3F00FF5AEB /* GlslProg.cpp */; };
+		0087DE2012DC1469002CD69F /* GlslProg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D9A07B0EA57C3F00FF5AEB /* GlslProg.cpp */; };
 		008876560F957E7300FD55C5 /* Arcball.h in Headers */ = {isa = PBXBuildFile; fileRef = 008876550F957E7300FD55C5 /* Arcball.h */; };
 		0088773C0F96671600FD55C5 /* FileDropEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 0088773B0F96671600FD55C5 /* FileDropEvent.h */; };
 		00887AC10F9C279700FD55C5 /* MayaCamUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 00887AC00F9C279700FD55C5 /* MayaCamUI.h */; };
@@ -1892,6 +1894,7 @@
 				C7FB1BA8124BE3050045AFD2 /* SourceFile.cpp in Sources */,
 				434708DA1267EE4300AA7349 /* Blend.cpp in Sources */,
 				003FAAB81290E01D002D6860 /* Clipboard.cpp in Sources */,
+				0087DE1F12DC1469002CD69F /* GlslProg.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1966,6 +1969,7 @@
 				C7FB1BAB124BE3060045AFD2 /* SourceFile.cpp in Sources */,
 				434708DB1267EE4300AA7349 /* Blend.cpp in Sources */,
 				003FAAB91290E01E002D6860 /* Clipboard.cpp in Sources */,
+				0087DE2012DC1469002CD69F /* GlslProg.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
