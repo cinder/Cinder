@@ -45,7 +45,7 @@
 
 - (void) allocateGraphics
 {
-	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
+	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	
 	if (!context || ![EAGLContext setCurrentContext:context])
 	{
