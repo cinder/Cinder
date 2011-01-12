@@ -220,4 +220,17 @@ void InterfaceGl::addSeparator( const std::string &name, const std::string &opti
 	TwAddSeparator( mBar.get(), name.c_str(), optionsStr.c_str() );
 }
 
+void InterfaceGl::implButtonCallback( void *clientData )
+{
+	std::function<void ()> *fn = reinterpret_cast<std::function<void ()>*>( clientData );
+	(*fn)(); 
+}
+
+void InterfaceGl::addButton( const std::string &name, const std::function<void ()> &callback, const std::string &optionsStr )
+{
+	std::shared_ptr<std::function<void ()> > callbackPtr( new std::function<void ()>( callback ) );
+	mButtonCallbacks.push_back( callbackPtr );
+	TwAddButton( mBar.get(), name.c_str(), (TwButtonCallback)InterfaceGl::implButtonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
+}
+
 } } // namespace cinder::params
