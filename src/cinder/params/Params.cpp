@@ -200,7 +200,7 @@ void InterfaceGl::addParam( const std::string &name, std::string *param, const s
 void InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly )
 {
 	TwEnumVal *ev = new TwEnumVal[enumNames.size()];
-	for( int v = 0; v < enumNames.size(); ++v ) {
+	for( size_t v = 0; v < enumNames.size(); ++v ) {
 		ev[v].Value = v;
 		ev[v].Label = const_cast<char*>( enumNames[v].c_str() );
 	}
@@ -220,17 +220,19 @@ void InterfaceGl::addSeparator( const std::string &name, const std::string &opti
 	TwAddSeparator( mBar.get(), name.c_str(), optionsStr.c_str() );
 }
 
-void InterfaceGl::implButtonCallback( void *clientData )
+namespace { // anonymous namespace
+void TW_CALL implButtonCallback( void *clientData )
 {
 	std::function<void ()> *fn = reinterpret_cast<std::function<void ()>*>( clientData );
 	(*fn)(); 
-}
+} 
+} // anonymous namespace
 
 void InterfaceGl::addButton( const std::string &name, const std::function<void ()> &callback, const std::string &optionsStr )
 {
 	std::shared_ptr<std::function<void ()> > callbackPtr( new std::function<void ()>( callback ) );
 	mButtonCallbacks.push_back( callbackPtr );
-	TwAddButton( mBar.get(), name.c_str(), (TwButtonCallback)InterfaceGl::implButtonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
+	TwAddButton( mBar.get(), name.c_str(), implButtonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
 }
 
 } } // namespace cinder::params

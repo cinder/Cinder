@@ -58,7 +58,6 @@ class InterfaceGl {
 	
  protected:
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly ); 
-	static void		implButtonCallback( void *clientData );
 
 	std::shared_ptr<TwBar>							mBar;
 	std::vector<std::shared_ptr<std::function<void()> > >	mButtonCallbacks;
