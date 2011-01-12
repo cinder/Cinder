@@ -10,6 +10,7 @@ class TweakBarApp : public AppBasic {
 	void setup();
 	void resize( ResizeEvent event );
 	void draw();
+	void button();
 	
 	CameraPersp				mCam;
 	params::InterfaceGl		mParams;
@@ -35,6 +36,12 @@ void TweakBarApp::setup()
 	mParams.addParam( "Cube Color", &mColor, "" );	
 	mParams.addSeparator();	
 	mParams.addParam( "Light Direction", &mLightDirection, "" );
+	mParams.addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
+}
+
+void TweakBarApp::button()
+{
+	app::console() << "Clicked!" << std::endl;
 }
 
 void TweakBarApp::resize( ResizeEvent event )
