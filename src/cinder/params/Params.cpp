@@ -220,6 +220,11 @@ void InterfaceGl::addSeparator( const std::string &name, const std::string &opti
 	TwAddSeparator( mBar.get(), name.c_str(), optionsStr.c_str() );
 }
 
+void InterfaceGl::addText( const std::string &name, const std::string &optionsStr )
+{
+	TwAddButton( mBar.get(), name.c_str(), NULL, NULL, optionsStr.c_str() );
+}
+
 namespace { // anonymous namespace
 void TW_CALL implButtonCallback( void *clientData )
 {
@@ -233,6 +238,15 @@ void InterfaceGl::addButton( const std::string &name, const std::function<void (
 	std::shared_ptr<std::function<void ()> > callbackPtr( new std::function<void ()>( callback ) );
 	mButtonCallbacks.push_back( callbackPtr );
 	TwAddButton( mBar.get(), name.c_str(), implButtonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
+}
+
+void InterfaceGl::setOptions( const std::string &name, const std::string &optionsStr )
+{
+	std::string target = "`" + (std::string)TwGetBarName( mBar.get() ) + "`";
+	if( !( name.empty() ) )
+		target += "/`" + name + "`";
+
+	TwDefine( ( target + " " + optionsStr ).c_str() );
 }
 
 } } // namespace cinder::params

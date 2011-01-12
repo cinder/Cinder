@@ -37,11 +37,13 @@ void TweakBarApp::setup()
 	mParams.addSeparator();	
 	mParams.addParam( "Light Direction", &mLightDirection, "" );
 	mParams.addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
+	mParams.addText( "text", "label=`This is a label without a parameter.`" );
 }
 
 void TweakBarApp::button()
 {
 	app::console() << "Clicked!" << std::endl;
+	mParams.setOptions( "text", "label=`Clicked!`" );
 }
 
 void TweakBarApp::resize( ResizeEvent event )
