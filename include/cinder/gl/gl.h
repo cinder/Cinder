@@ -265,6 +265,7 @@ struct BoolState {
 	GLboolean	mOldValue;
 };
 
+#if ! defined( CINDER_GLES )
 //! Convenience class designed to push and pop a boolean OpenGL state
 struct ClientBoolState {
 	ClientBoolState( GLint target );
@@ -281,6 +282,7 @@ struct SaveColorState {
   private:
 	GLfloat		mOldValues[4];
 };
+#endif
 
 //! Convenience class which pushes and pops the currently bound framebuffer
 struct SaveFramebufferBinding {
