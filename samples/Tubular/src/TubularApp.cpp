@@ -148,7 +148,7 @@ void TubularApp::setup()
 	mArcball.setCenter( getWindowCenter() );
 	mArcball.setRadius( 150 );		
 	
-	mParams = params::InterfaceGl( "Parameters", Vec2i( 200, 200 ) );
+	mParams = params::InterfaceGl( "Parameters", "size='200 200'" );
 	mParams.addParam( "Parallel Transport", &mParallelTransport, "keyIncr=f" );
 	mParams.addParam( "Draw Curve", &mDrawCurve, "keyIncr=c" );
 	mParams.addParam( "Wireframe", &mWireframe, "keyIncr=w" );

@@ -35,7 +35,7 @@ namespace cinder { namespace params {
 class InterfaceGl {
  public:
 	InterfaceGl() {}
-	InterfaceGl( const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	InterfaceGl( const std::string &title, const std::string &optionsStr = "" );
 	
 	static void		draw();
 
