@@ -35,13 +35,13 @@ typedef std::shared_ptr<class ImageSourceFileQuartz>	ImageSourceFileQuartzRef;
 
 class ImageSourceFileQuartz : public cocoa::ImageSourceCgImage {
   public:
-	static ImageSourceRef			createRef( DataSourceRef dataSourceRef ) { return createFileQuartzRef( dataSourceRef ); }
-	static ImageSourceFileQuartzRef	createFileQuartzRef( DataSourceRef dataSourceRef );
+	static ImageSourceRef			createRef( DataSourceRef dataSourceRef, ImageSource::Options options ) { return createFileQuartzRef( dataSourceRef, options ); }
+	static ImageSourceFileQuartzRef	createFileQuartzRef( DataSourceRef dataSourceRef, ImageSource::Options options );
 
 	static void		registerSelf();
 
   protected:
-	ImageSourceFileQuartz( CGImageRef imageRef );
+	ImageSourceFileQuartz( CGImageRef imageRef, ImageSource::Options options );
 };
 
 REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourceFileQuartz )

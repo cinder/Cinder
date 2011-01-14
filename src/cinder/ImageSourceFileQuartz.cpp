@@ -74,7 +74,7 @@ void ImageSourceFileQuartz::registerSelf()
 
 ///////////////////////////////////////////////////////////////////////////////
 // ImageSourceFileQuartz
-ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceRef dataSourceRef )
+ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceRef dataSourceRef, ImageSource::Options options )
 {
 	std::shared_ptr<CGImageSource> sourceRef;
 	std::shared_ptr<CGImage> imageRef;
@@ -107,18 +107,18 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 	}
 	
 	if( sourceRef ) {
-		imageRef = std::shared_ptr<CGImage>( ::CGImageSourceCreateImageAtIndex( sourceRef.get(), 0, optionsDict.get() ), CGImageRelease );
+		imageRef = std::shared_ptr<CGImage>( ::CGImageSourceCreateImageAtIndex( sourceRef.get(), options.getIndex(), optionsDict.get() ), CGImageRelease );
 		if( ! imageRef )
 			throw ImageIoExceptionFailedLoad();
 	}
 	else
 		throw ImageIoExceptionFailedLoad();
 
-	return ImageSourceFileQuartzRef( new ImageSourceFileQuartz( imageRef.get() ) );
+	return ImageSourceFileQuartzRef( new ImageSourceFileQuartz( imageRef.get(), options ) );
 }
 
-ImageSourceFileQuartz::ImageSourceFileQuartz( CGImageRef imageRef )
-	: ImageSourceCgImage( imageRef )
+ImageSourceFileQuartz::ImageSourceFileQuartz( CGImageRef imageRef, ImageSource::Options options )
+	: ImageSourceCgImage( imageRef, options )
 {
 }
 
