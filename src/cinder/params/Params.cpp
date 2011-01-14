@@ -85,6 +85,12 @@ bool resize( app::ResizeEvent event )
 	return false;
 }
 
+void TW_CALL implStdStringToClient( std::string& destinationClientString, const std::string& sourceLibraryString )
+{
+  // copy strings from the library to the client app
+  destinationClientString = sourceLibraryString;
+}
+
 class AntMgr {
   public:
 	AntMgr() {
@@ -123,6 +129,8 @@ InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const Col
 	char optionsStr[1024];
 	sprintf( optionsStr, "`%s` size='%d %d' color='%d %d %d' alpha=%d", title.c_str(), size.x, size.y, (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255) );
 	TwDefine( optionsStr );
+	
+	TwCopyStdStringToClientFunc( implStdStringToClient );
 }
 
 void InterfaceGl::draw()
