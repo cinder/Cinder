@@ -10,6 +10,7 @@ class TweakBarApp : public AppBasic {
 	void setup();
 	void resize( ResizeEvent event );
 	void draw();
+	void button();
 	
 	CameraPersp				mCam;
 	params::InterfaceGl		mParams;
@@ -17,6 +18,7 @@ class TweakBarApp : public AppBasic {
 	Quatf					mObjOrientation;
 	Vec3f					mLightDirection;
 	ColorA					mColor;
+	std::string				mString;
 };
 
 void TweakBarApp::setup()
@@ -29,12 +31,21 @@ void TweakBarApp::setup()
 	mCam.lookAt( Vec3f( -20, 0, 0 ), Vec3f::zero() );
 
 	// Setup the parameters
-	mParams = params::InterfaceGl( "Parameters", Vec2i( 200, 400 ) );
+	mParams = params::InterfaceGl( "App parameters", Vec2i( 200, 400 ) );
 	mParams.addParam( "Cube Size", &mObjSize, "min=0.1 max=20.5 step=0.5 keyIncr=z keyDecr=Z" );
 	mParams.addParam( "Cube Rotation", &mObjOrientation );
 	mParams.addParam( "Cube Color", &mColor, "" );	
 	mParams.addSeparator();	
 	mParams.addParam( "Light Direction", &mLightDirection, "" );
+	mParams.addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
+	mParams.addText( "text", "label=`This is a label without a parameter.`" );
+	mParams.addParam( "String ", &mString, "" );
+}
+
+void TweakBarApp::button()
+{
+	app::console() << "Clicked!" << std::endl;
+	mParams.setOptions( "text", "label=`Clicked!`" );
 }
 
 void TweakBarApp::resize( ResizeEvent event )
