@@ -630,12 +630,23 @@ public:
 		return r1.slerp( 2 * t * (1-t), r2 );
 	}
 
+
+	// Compute reflection vector from this vector and a given normal
 	void reflect( const Vec3<T>& normal )
 	{
 		T f = 2 * dot( normal );
-		*this = (*this) - (normal * f);
-	
+		*this = (*this) - (normal * f);	
 	}
+
+
+	// Compute new point based on barycentric coordinates
+	void Vec3<T>::setBaryCentric( const Vec3<T>& v1, const Vec3<T>& v2, const Vec3<T>& v3, const T& f, const T& g )
+	{
+		x = v1.x + f * (v2.x - v1.x) + g * (v3.x - v1.x);
+		y = v1.y + f * (v2.y - v1.y) + g * (v3.y - v1.y);
+		z = v1.z + f * (v2.z - v1.z) + g * (v3.z - v1.z);
+	}
+
 
 	// GLSL inspired swizzling functions.
 	Vec2<T> xx() const { return Vec2<T>(x, x); }
