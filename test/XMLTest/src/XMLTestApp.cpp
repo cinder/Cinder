@@ -32,12 +32,12 @@ const XmlTree& findTrackNamed( const XmlTree &library, const std::string &search
 
 void XMLTestApp::setup()
 {
-	const XmlTree doc( loadFile( getHomeDirectory() + "library.xml" ) );
+	XmlTree doc( loadFile( getHomeDirectory() + "library.xml" ) );
 	XmlTree musicLibrary( doc.getChild( "library" ) );
-	for( XmlTree::Iter item = doc.begin("library/album"); item != doc.end(); ++item ) {
+	for( XmlTree::ConstIter item = doc.begin("library/album"); item != doc.end(); ++item ) {
 		console() << "Node: " << item->getTag() << " Value: " << item->getValue() << endl;
 	}
-	for( XmlTree::Iter track = doc.begin("library/album/track"); track != doc.end(); ++track )
+	for( XmlTree::ConstIter track = doc.begin("library/album/track"); track != doc.end(); ++track )
 		console() << track->getValue() << endl;
 
 	XmlTree firstAlbum = doc.getChild( "library/album" );
