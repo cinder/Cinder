@@ -184,10 +184,13 @@ class VboMesh {
 	static void		unbindBuffers();
 
 	void						bufferIndices( const std::vector<uint32_t> &indices );
+    void						bufferIndices( const uint32_t *indices, size_t count );
 	void						bufferPositions( const std::vector<Vec3f> &positions );
 	void						bufferPositions( const Vec3f *positions, size_t count );
 	void						bufferNormals( const std::vector<Vec3f> &normals );
+    void						bufferNormals( const Vec3f *normals, size_t count );
 	void						bufferTexCoords2d( size_t unit, const std::vector<Vec2f> &texCoords );
+    void						bufferTexCoords2d( size_t unit, const Vec2f *texCoords, size_t count );
 	class VertexIter			mapVertexBuffer();
 
 	Vbo&				getIndexVbo() const { return mObj->mBuffers[INDEX_BUFFER]; }
