@@ -26,6 +26,7 @@
 #include <vector>
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
+#include "cinder/Filesystem.h"
 #include <boost/lexical_cast.hpp>
 
 namespace cinder {
@@ -46,6 +47,10 @@ std::string getPathDirectory( const std::string &path );
 std::string getPathFileName( const std::string &path );
 //! Returns the file extension of the file located at \a path
 std::string getPathExtension( const std::string &path );
+//! Returns a unique pathname, numbered sequentially to avoid conflicts with files of the same/similar name.
+std::string getUniquePath( const std::string &path, const std::string &sep = "-", int padding = 2, bool initialNumbering = true );
+//! Returns a left-padded string based on the input string
+std::string leftPaddedString( const std::string &input, int padding=2, const std::string pad="0" );
 //! Creates a directory at \a path and optionally creates any missing parent directories when \a createParents is \c true. Returns \c true upon success.
 bool createDirectories( const std::string &path, bool createParents = true );
 
