@@ -56,6 +56,7 @@ class Shape2d {
 	
 	const Vec2f&	getCurrentPoint() const { return mContours.back().getCurrentPoint(); }
 	
+    void			appendContour( const Path2d &contour ) { mContours.push_back( contour ); }
 	void			removeContour( size_t i ) { mContours.erase( mContours.begin() + i ); }
 
 	//! Returns the bounding box of the path's control points. Note that this is not necessarily the bounding box of the path's shape.
