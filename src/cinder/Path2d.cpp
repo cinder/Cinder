@@ -24,6 +24,8 @@
 
 #include "cinder/Path2d.h"
 
+#include <algorithm>
+
 using std::vector;
 
 namespace cinder {
@@ -319,6 +321,29 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 		
 		curveTo( b1, b2, b3 );
 	}
+}
+    
+void Path2d::reverse()
+{
+    // The path is empty: nothing to do.
+    if( empty() )
+        return;
+    
+    // Reverse all points.
+    std::reverse( mPoints.begin(), mPoints.end() );
+    
+    // Reverse the segments, but skip the "moveto" and "close":
+	if( isClosed() ) {
+        // There should be at least 4 segments: "moveto", "close" and two other segments.
+        if( mSegments.size() > 3 )
+            std::reverse( mSegments.begin() + 1, mSegments.end() - 1 );
+    }
+    else {
+        // There should be at least 3 segments: "moveto" and two other segments.
+        if( mSegments.size() > 2 )
+            std::reverse( mSegments.begin() + 1, mSegments.end() );
+    }
+
 }
 
 void Path2d::removeSegment( size_t segment )

@@ -54,6 +54,8 @@ class Path2d {
 	//! Closes the path, by drawing a straight line from the first to the last point. This is only legal as the last command.
 	void	close() { mSegments.push_back( CLOSE ); }
 	bool	isClosed() const { return ( mSegments.size() > 1 ) && mSegments.back() == CLOSE; }
+    
+    void reverse();
 	
 	bool	empty() const { return mPoints.empty(); }
 	void	clear() { mSegments.clear(); mPoints.clear(); }
