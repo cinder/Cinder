@@ -888,11 +888,12 @@ float Texture::getMaxV() const
 	return mObj->mMaxV;
 }
 
-void Texture::bind( GLuint textureUnit ) const
+int Texture::bind( GLuint textureUnit ) const
 {
 	glActiveTexture( GL_TEXTURE0 + textureUnit );
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 	glActiveTexture( GL_TEXTURE0 );
+	return textureUnit;
 }
 
 void Texture::unbind( GLuint textureUnit ) const

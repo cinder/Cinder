@@ -131,7 +131,9 @@ Fbo::Format::Format()
 	mDepthInternalFormat = GL_DEPTH_COMPONENT24_OES;
 	mDepthBufferAsTexture = false;
 #else
-	mColorInternalFormat = GL_RGBA8;
+	for( int i=0; i<MAX_FBO_COLORBUFFERS; i++ )
+		mColorBufferInternalFormat[i] = GL_RGBA8;
+	//mColorInternalFormat = GL_RGBA8;
 	mDepthInternalFormat = GL_DEPTH_COMPONENT24;
 	mDepthBufferAsTexture = true;
 #endif
@@ -154,6 +156,10 @@ void Fbo::Format::enableColorBuffer( bool colorBuffer, int numColorBuffers )
 #else
 	mNumColorBuffers = ( colorBuffer ) ? numColorBuffers : 0;
 #endif
+
+	// Reset to start with
+	for( int i=0; i<MAX_FBO_COLORBUFFERS; i++ )
+		mColorBufferInternalFormat[i] = GL_RGBA8;
 }
 
 void Fbo::Format::enableDepthBuffer( bool depthBuffer, bool asTexture )
@@ -189,16 +195,26 @@ void Fbo::init()
 	GL_SUFFIX(glGenFramebuffers)( 1, &mObj->mId );
 	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), mObj->mId );	
 
-	Texture::Format textureFormat;
+	/*Texture::Format textureFormat;
 	textureFormat.setTarget( getTarget() );
 	textureFormat.setInternalFormat( getFormat().getColorInternalFormat() );
 	textureFormat.setWrap( mObj->mFormat.mWrapS, mObj->mFormat.mWrapT );
 	textureFormat.setMinFilter( mObj->mFormat.mMinFilter );
 	textureFormat.setMagFilter( mObj->mFormat.mMagFilter );
-	textureFormat.enableMipmapping( getFormat().hasMipMapping() );
+	textureFormat.enableMipmapping( getFormat().hasMipMapping() );*/
 
 	// allocate the color buffers
-	for( int c = 0; c < mObj->mFormat.mNumColorBuffers; ++c ) {
+	for( int c = 0; c < mObj->mFormat.mNumColorBuffers; ++c ) 
+	{
+		//V
+		Texture::Format textureFormat;
+		textureFormat.setTarget( getTarget() );
+		textureFormat.setInternalFormat( getFormat().getColorInternalFormat(c) );
+		textureFormat.setWrap( mObj->mFormat.mWrapS, mObj->mFormat.mWrapT );
+		textureFormat.setMinFilter( mObj->mFormat.mMinFilter );
+		textureFormat.setMagFilter( mObj->mFormat.mMagFilter );
+		textureFormat.enableMipmapping( getFormat().hasMipMapping() );
+
 		mObj->mColorTextures.push_back( Texture( mObj->mWidth, mObj->mHeight, textureFormat ) );
 	}
 	
@@ -287,8 +303,11 @@ bool Fbo::initMultisample( bool csaa )
 	}
 
 	// setup the multisampled color renderbuffers
-	for( int c = 0; c < mObj->mFormat.mNumColorBuffers; ++c ) {
-		mObj->mMultisampleColorRenderbuffers.push_back( Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.mColorInternalFormat, mObj->mFormat.mSamples, mObj->mFormat.mCoverageSamples ) );
+	for( int c = 0; c < mObj->mFormat.mNumColorBuffers; ++c ) 
+	{
+		//V
+		mObj->mMultisampleColorRenderbuffers.push_back( Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.mColorBufferInternalFormat[c], mObj->mFormat.mSamples, mObj->mFormat.mCoverageSamples ) );
+		//mObj->mMultisampleColorRenderbuffers.push_back( Renderbuffer( mObj->mWidth, mObj->mHeight, mObj->mFormat.mColorInternalFormat, mObj->mFormat.mSamples, mObj->mFormat.mCoverageSamples ) );
 
 		// attach the multisampled color buffer
 		glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + c, GL_RENDERBUFFER_EXT, mObj->mMultisampleColorRenderbuffers.back().getId() );
@@ -324,7 +343,10 @@ Fbo::Fbo( int width, int height, bool alpha, bool color, bool depth )
 #if defined( CINDER_GLES )
 	mObj->mFormat.mColorInternalFormat = ( alpha ) ? GL_RGBA8_OES : GL_RGB8_OES;
 #else
-	mObj->mFormat.mColorInternalFormat = ( alpha ) ? GL_RGBA8 : GL_RGB8;
+	//V
+	for( int i=0; i<MAX_FBO_COLORBUFFERS; i++ )
+		mObj->mFormat.mColorBufferInternalFormat[i] = ( alpha ) ? GL_RGBA8 : GL_RGB8;
+	//mObj->mFormat.mColorInternalFormat = ( alpha ) ? GL_RGBA8 : GL_RGB8;
 #endif
 	mObj->mFormat.mDepthBuffer = depth;
 	mObj->mFormat.mNumColorBuffers = color ? 1 : 0;

@@ -133,7 +133,7 @@ class Texture {
 	//!	Disables the Texture's target
 	void			disable() const;
 	//!	Binds the Texture's texture to its target in the multitexturing unit \c GL_TEXTURE0 + \a textureUnit
-	void 			bind( GLuint textureUnit = 0 ) const;
+	int				bind( GLuint textureUnit = 0 ) const;
 	//!	Unbinds the Texture currently bound in the Texture's target
 	void			unbind( GLuint textureUnit = 0 ) const;
 
