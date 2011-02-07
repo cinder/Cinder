@@ -257,6 +257,11 @@ class Fbo {
 		Texture						mDepthTexture;
 		Renderbuffer				mDepthRenderbuffer;
 		mutable bool		mNeedsResolve, mNeedsMipmapUpdate;
+
+		// Saved viewport
+		static GLint				mOldViewport[4];
+		static GLint				mSavedID;
+		static bool				mIsLocked;
 	};
  
 	std::shared_ptr<Obj>	mObj;

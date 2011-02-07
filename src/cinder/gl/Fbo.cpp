@@ -99,6 +99,11 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Control viewport change and lock switch.
+bool Fbo::Obj::mIsLocked = FALSE;
+GLint Fbo::Obj::mOldViewport[4] = { -1, -1, -1, -1 };
+
 // Fbo::Obj
 Fbo::Obj::Obj()
 {
@@ -435,6 +440,14 @@ void Fbo::updateMipmaps( bool bindFirst, int attachment ) const
 
 void Fbo::bindFramebuffer()
 {
+	// Change viewport to fit this FBO
+	if( Obj::mOldViewport[0] == -1 )
+	{
+		glGetIntegerv( GL_VIEWPORT, &(*Obj::mOldViewport) );
+		glViewport( 0, 0, mObj->mWidth, mObj->mHeight );
+	}
+
+	// Bind framebuffer
 	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), mObj->mId );
 	if( mObj->mResolveFramebufferId ) {
 		mObj->mNeedsResolve = true;
@@ -442,11 +455,23 @@ void Fbo::bindFramebuffer()
 	if( mObj->mFormat.hasMipMapping() ) {
 		mObj->mNeedsMipmapUpdate = true;
 	}
+
+	// Set lock flag to true
+	Obj::mIsLocked = TRUE;
 }
 
 void Fbo::unbindFramebuffer()
 {
 	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), 0 );
+
+	// Change to old viewport set before we binded this fbo
+	if( Obj::mOldViewport[0] != -1 )
+	{
+		glViewport( Obj::mOldViewport[0], Obj::mOldViewport[1], Obj::mOldViewport[2], Obj::mOldViewport[3] );			
+	}
+	// Set lock flag to false
+	Obj::mIsLocked = FALSE;
+
 }
 
 bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
