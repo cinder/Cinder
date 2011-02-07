@@ -55,7 +55,8 @@ class Path2d {
 	void	close() { mSegments.push_back( CLOSE ); }
 	bool	isClosed() const { return ( mSegments.size() > 1 ) && mSegments.back() == CLOSE; }
     
-    void reverse();
+	//! Reverses the order of the path's points, inverting its winding order
+    void	reverse();
 	
 	bool	empty() const { return mPoints.empty(); }
 	void	clear() { mSegments.clear(); mPoints.clear(); }
