@@ -93,8 +93,9 @@ namespace cinder
 		{
 			mObj->mHandle = glCreateProgram();
 
-			static bool first = true;
-			if (first) {
+			//static bool first = true;
+			//if (first) 
+			{
 				string prefix( mPath );
 				if (prefix[prefix.size() - 1] != '/')
 					prefix = prefix + "/";
@@ -109,7 +110,7 @@ namespace cinder
 				if( !glswAddDirective( "*", ss.str().c_str() ) )
 					throw GlslEffectCompileExc( "[glsw]  Failed on directive add", 0 );
 
-				first = false;
+				//first = false;
 			}
 
 			if ( v )
