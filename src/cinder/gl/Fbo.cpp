@@ -449,10 +449,6 @@ void Fbo::bindFramebuffer()
 	{
 		glGetIntegerv( GL_VIEWPORT, &(*mOldViewport) );
 		glViewport( 0, 0, mObj->mWidth, mObj->mHeight );
-
-		std::stringstream ss;
-		ss << mOldViewport[0] << ", " << mOldViewport[1] << ", " << mOldViewport[2] << ", " << mOldViewport[3] << ", " << std::endl;
-		OutputDebugStringA( ss.str().c_str() );
 	}
 
 	// Bind framebuffer
@@ -475,10 +471,6 @@ void Fbo::unbindFramebuffer()
 	// Change to old viewport set before we binded this fbo
 	//if( mOldViewport[0] != -1 )
 	{
-		std::stringstream ss;
-		ss << mOldViewport[0] << ", " << mOldViewport[1] << ", " << mOldViewport[2] << ", " << mOldViewport[3] << ", " << std::endl;
-		OutputDebugStringA( ss.str().c_str() );
-
 		glViewport( mOldViewport[0], mOldViewport[1], mOldViewport[2], mOldViewport[3] );			
 	}
 	// Set lock flag to false
