@@ -82,6 +82,7 @@ namespace cinder
 
 		GlslEffect::Obj::~Obj()
 		{
+			glswShutdown();
 			if( mHandle )
 				glDeleteProgram( (GLuint)mHandle );
 		}
@@ -134,7 +135,17 @@ namespace cinder
 
 		GlslEffect::~GlslEffect()
 		{ 
-			glswShutdown(); 
+		}
+
+		int GlslEffect::shutDown()
+		{
+			return glswShutdown();
+		}
+
+
+		int GlslEffect::addDirective( const char* token, const char* directive )
+		{
+			return glswAddDirective( token, directive );
 		}
 
 		void GlslEffect::loadShader( const char *shaderSource, GLint shaderType )

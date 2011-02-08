@@ -20,6 +20,7 @@ Copyright (c) 2010, The Barbarian Group
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <sstream>
 #include "cinder/gl/gl.h" // must be first
 #include "cinder/gl/Fbo.h"
 
@@ -101,8 +102,8 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Control viewport change and lock switch.
-bool Fbo::Obj::mIsLocked = FALSE;
-GLint Fbo::Obj::mOldViewport[4] = { -1, -1, -1, -1 };
+bool Fbo::mIsLocked = FALSE;
+GLint Fbo::mOldViewport[4] = { -1, -1, -1, -1 };
 
 // Fbo::Obj
 Fbo::Obj::Obj()
@@ -274,6 +275,9 @@ void Fbo::init()
 		}
 	}
 	
+	mIsLocked = FALSE;
+	for( int i=0; i<4; i++ ) mOldViewport[i] = -1;
+
 	mObj->mNeedsResolve = false;
 	mObj->mNeedsMipmapUpdate = false;
 }
@@ -441,10 +445,14 @@ void Fbo::updateMipmaps( bool bindFirst, int attachment ) const
 void Fbo::bindFramebuffer()
 {
 	// Change viewport to fit this FBO
-	if( Obj::mOldViewport[0] == -1 )
+	//if( mOldViewport[0] == -1 )
 	{
-		glGetIntegerv( GL_VIEWPORT, &(*Obj::mOldViewport) );
+		glGetIntegerv( GL_VIEWPORT, &(*mOldViewport) );
 		glViewport( 0, 0, mObj->mWidth, mObj->mHeight );
+
+		std::stringstream ss;
+		ss << mOldViewport[0] << ", " << mOldViewport[1] << ", " << mOldViewport[2] << ", " << mOldViewport[3] << ", " << std::endl;
+		OutputDebugStringA( ss.str().c_str() );
 	}
 
 	// Bind framebuffer
@@ -457,7 +465,7 @@ void Fbo::bindFramebuffer()
 	}
 
 	// Set lock flag to true
-	Obj::mIsLocked = TRUE;
+	mIsLocked = TRUE;
 }
 
 void Fbo::unbindFramebuffer()
@@ -465,13 +473,16 @@ void Fbo::unbindFramebuffer()
 	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), 0 );
 
 	// Change to old viewport set before we binded this fbo
-	if( Obj::mOldViewport[0] != -1 )
+	//if( mOldViewport[0] != -1 )
 	{
-		glViewport( Obj::mOldViewport[0], Obj::mOldViewport[1], Obj::mOldViewport[2], Obj::mOldViewport[3] );			
+		std::stringstream ss;
+		ss << mOldViewport[0] << ", " << mOldViewport[1] << ", " << mOldViewport[2] << ", " << mOldViewport[3] << ", " << std::endl;
+		OutputDebugStringA( ss.str().c_str() );
+
+		glViewport( mOldViewport[0], mOldViewport[1], mOldViewport[2], mOldViewport[3] );			
 	}
 	// Set lock flag to false
-	Obj::mIsLocked = FALSE;
-
+	mIsLocked = FALSE;
 }
 
 bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )

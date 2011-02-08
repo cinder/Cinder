@@ -34,6 +34,9 @@ namespace cinder
 			GlslEffect( const char* v, const char* f=NULL, const char* g=NULL );
 			~GlslEffect();
 
+			static int		shutDown();
+			static int		addDirective( const char* token, const char* directive );
+
 			void			bind() const;
 			static void		unbind();
 
