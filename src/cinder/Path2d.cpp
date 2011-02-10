@@ -596,5 +596,13 @@ void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const 
 	subdivideCubic( distanceToleranceSqr, p1, p12, p123, p1234, level + 1, result ); 
 	subdivideCubic( distanceToleranceSqr, p1234, p234, p34, p4, level + 1, result ); 
 }
+	
+Rectf	Path2d::calcBoundingBox() const
+{
+	Rectf result( Vec2f::zero(), Vec2f::zero() );
+	result.include( mPoints );
+	
+	return result;	
+}
 
 } // namespace cinder

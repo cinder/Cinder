@@ -79,6 +79,9 @@ class Path2d {
 	enum SegmentType { MOVETO, LINETO, QUADTO, CUBICTO, CLOSE };
 	static const int sSegmentTypePointCounts[];
 	SegmentType		getSegmentType( size_t segment ) const { return mSegments[segment]; }
+	
+	//! Returns the bounding box around all control points. As with Shape2d, note this is not necessarily the bounding box of the Path's shape.
+	Rectf	calcBoundingBox() const;
 
 	friend class Shape2d;
 
