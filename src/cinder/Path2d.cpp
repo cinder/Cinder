@@ -600,7 +600,11 @@ void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const 
 Rectf	Path2d::calcBoundingBox() const
 {
 	Rectf result( Vec2f::zero(), Vec2f::zero() );
-	result.include( mPoints );
+	if( ! mPoints.empty() )
+	{
+		result = Rectf( mPoints[0], mPoints[0] );
+		result.include( mPoints );
+	}
 	
 	return result;	
 }
