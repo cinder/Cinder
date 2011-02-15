@@ -115,6 +115,7 @@
     <ClCompile Include="..\src\cinder\Font.cpp" />
     <ClCompile Include="..\src\cinder\gl\GlslEffect.cpp" />
     <ClCompile Include="..\src\cinder\gl\glsw.c" />
+    <ClCompile Include="..\src\cinder\gl\glsw.cpp" />
     <ClCompile Include="..\src\cinder\ImageIo.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourcePng.cpp" />

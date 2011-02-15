@@ -4,11 +4,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "Vitamin/gl/glsw.h"
 
 #ifdef WIN32
 #pragma warning(disable:4996) // allow "fopen"
 #endif
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -394,8 +394,14 @@ static bstring __glsw__LoadEffectContents(glswContext* gc, bstring effectName)
     return effectContents;
 }
 
+
+
 ///////////////////////////////////////////////////////////////////////////////
 // PUBLIC FUNCTIONS
+
+int glswAddPath(const char* pathPrefix, const char* pathSuffix);
+
+
 
 int glswInit()
 {

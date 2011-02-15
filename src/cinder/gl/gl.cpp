@@ -225,6 +225,18 @@ void clear( const ColorA &color, bool clearDepthBuffer )
 		glClear( GL_COLOR_BUFFER_BIT );
 }
 
+void clear( float r, float g, float b, bool clearDepthBuffer )
+{
+	glClearColor( r, g, b, 1.0f );
+	if( clearDepthBuffer ) {
+		glDepthMask( GL_TRUE );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	}
+	else
+		glClear( GL_COLOR_BUFFER_BIT );
+}
+
+
 void setModelView( const Camera &cam )
 {
 	glMatrixMode( GL_MODELVIEW );

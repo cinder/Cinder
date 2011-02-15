@@ -16,6 +16,7 @@
 #include <map>
 
 #include "cinder/gl/gl.h"
+#include "cinder/gl/GlslProg.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
 #include "cinder/DataSource.h"
@@ -108,13 +109,13 @@ namespace cinder
 			GLint	mShaderType;
 		};
 
-		class GlslNullProgramExc : public std::exception {
+		/*class GlslNullProgramExc : public std::exception {
 		 public:	
 			virtual const char* what() const throw()
 			{
 				return "Glsl: Attempt to use null shader";
 			}
 
-		};
+		};*/
 	}  // namespace GL
 } // namespace V
