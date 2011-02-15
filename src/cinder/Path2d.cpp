@@ -24,6 +24,8 @@
 
 #include "cinder/Path2d.h"
 
+#include <algorithm>
+
 using std::vector;
 
 namespace cinder {
@@ -320,6 +322,29 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 		curveTo( b1, b2, b3 );
 	}
 }
+    
+void Path2d::reverse()
+{
+    // The path is empty: nothing to do.
+    if( empty() )
+        return;
+    
+    // Reverse all points.
+    std::reverse( mPoints.begin(), mPoints.end() );
+    
+    // Reverse the segments, but skip the "moveto" and "close":
+	if( isClosed() ) {
+        // There should be at least 4 segments: "moveto", "close" and two other segments.
+        if( mSegments.size() > 3 )
+            std::reverse( mSegments.begin() + 1, mSegments.end() - 1 );
+    }
+    else {
+        // There should be at least 3 segments: "moveto" and two other segments.
+        if( mSegments.size() > 2 )
+            std::reverse( mSegments.begin() + 1, mSegments.end() );
+    }
+
+}
 
 void Path2d::removeSegment( size_t segment )
 {
@@ -570,6 +595,18 @@ void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const 
 	// Continue subdivision
 	subdivideCubic( distanceToleranceSqr, p1, p12, p123, p1234, level + 1, result ); 
 	subdivideCubic( distanceToleranceSqr, p1234, p234, p34, p4, level + 1, result ); 
+}
+	
+Rectf	Path2d::calcBoundingBox() const
+{
+	Rectf result( Vec2f::zero(), Vec2f::zero() );
+	if( ! mPoints.empty() )
+	{
+		result = Rectf( mPoints[0], mPoints[0] );
+		result.include( mPoints );
+	}
+	
+	return result;	
 }
 
 } // namespace cinder

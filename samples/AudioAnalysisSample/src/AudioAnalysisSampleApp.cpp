@@ -102,7 +102,7 @@ void AudioAnalysisSampleApp::drawFft()
 	if( ! mPcmBuffer ) return;
 	
 	//use the most recent Pcm data to calculate the Fft
-	boost::shared_ptr<float> fftRef = audio::calculateFft( mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT ), bandCount );
+	std::shared_ptr<float> fftRef = audio::calculateFft( mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT ), bandCount );
 	if( ! fftRef ) {
 		return;
 	}

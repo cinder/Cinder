@@ -144,7 +144,7 @@ list<XmlTree>::const_iterator XmlTree::findNextChildNamed( const list<XmlTree> &
 
 XmlTree::XmlTree( const std::string &xmlString, ParseOptions parseOptions )
 {
-	std::vector<char> strCopy( xmlString.begin(), xmlString.end() );
+	std::string strCopy( xmlString );
 	rapidxml::xml_document<> doc;    // character type defaults to char
 	if( parseOptions.getParseComments() )
 		doc.parse<rapidxml::parse_comment_nodes | rapidxml::parse_doctype_node>( &strCopy[0] );

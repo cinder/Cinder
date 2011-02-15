@@ -571,7 +571,44 @@ void VboMesh::bufferTexCoords2d( size_t unit, const std::vector<Vec2f> &texCoord
 	else
 		throw;
 }
+	
+void VboMesh::bufferColorsRGB( const std::vector<Color> &colors )
+{
+	if( mObj->mLayout.hasDynamicColorsRGB() ) {
+		if( mObj->mDynamicStride == 0 )
+			getDynamicVbo().bufferSubData( mObj->mColorRGBOffset, sizeof(Color) * colors.size(), &(colors[0]) );
+		else
+			throw;
+	}
+	else if( mObj->mLayout.hasStaticColorsRGB() ) {
+		if( mObj->mStaticStride == 0 ) { // planar data
+			getStaticVbo().bufferSubData( mObj->mColorRGBOffset, sizeof(Color) * colors.size(), &(colors[0]) );
+		}
+		else
+			throw;
+	}
+	else
+		throw;
+}
 
+void VboMesh::bufferColorsRGBA( const std::vector<ColorA> &colors )
+{
+	if( mObj->mLayout.hasDynamicColorsRGBA() ) {
+		if( mObj->mDynamicStride == 0 )
+			getDynamicVbo().bufferSubData( mObj->mColorRGBAOffset, sizeof(ColorA) * colors.size(), &(colors[0]) );
+		else
+			throw;
+	}
+	else if( mObj->mLayout.hasStaticColorsRGBA() ) {
+		if( mObj->mStaticStride == 0 ) { // planar data
+			getStaticVbo().bufferSubData( mObj->mColorRGBAOffset, sizeof(ColorA) * colors.size(), &(colors[0]) );
+		}
+		else
+			throw;
+	}
+	else
+		throw;
+}
 
 VboMesh::VertexIter	VboMesh::mapVertexBuffer()
 {
