@@ -70,6 +70,7 @@ Texture::Format::Format()
 	mMagFilter = GL_LINEAR;
 	mMipmapping = false;
 	mInternalFormat = -1;
+	mAnisotropy = 1;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -256,6 +257,14 @@ void Texture::init( const unsigned char *data, int unpackRowLength, GLenum dataF
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, format.mMagFilter );
 	if( format.mMipmapping )
 		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
+	// Anisotropy filtering
+	if( GLEE_EXT_texture_filter_anisotropic )
+	{
+		GLfloat maxAnisotropy;
+		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );
+		if( format.mAnisotropy > 1.0f )
+			glTexParameterf( mObj->mTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, format.mAnisotropy ); 
+	}
 	if( mObj->mTarget == GL_TEXTURE_2D ) {
 		mObj->mMaxU = mObj->mMaxV = 1.0f;
 	}
@@ -287,6 +296,14 @@ void Texture::init( const float *data, GLint dataFormat, const Format &format )
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, format.mMagFilter );
 	if( format.mMipmapping )
 		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
+	// Anisotropy filtering
+	if( GLEE_EXT_texture_filter_anisotropic )
+	{
+		GLfloat maxAnisotropy;
+		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );
+		if( format.mAnisotropy > 1.0f )
+			glTexParameterf( mObj->mTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, format.mAnisotropy ); 
+	}
 	if( mObj->mTarget == GL_TEXTURE_2D ) {
 		mObj->mMaxU = mObj->mMaxV = 1.0f;
 	}
@@ -387,6 +404,14 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, format.mMagFilter );
 	if( format.mMipmapping )
 		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
+	// Anisotropy filtering
+	if( GLEE_EXT_texture_filter_anisotropic )
+	{
+		GLfloat maxAnisotropy;
+		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );
+		if( format.mAnisotropy > 1.0f )
+			glTexParameterf( mObj->mTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, format.mAnisotropy ); 
+	}
 	if( mObj->mTarget == GL_TEXTURE_2D ) {
 		mObj->mMaxU = mObj->mMaxV = 1.0f;
 	}
@@ -756,8 +781,8 @@ void Texture::setCleanTexCoords( float maxU, float maxV )
 	mObj->mMaxV = maxV;
 	
 	if( mObj->mTarget == GL_TEXTURE_2D ) {
-		mObj->mCleanWidth = getWidth() * maxU;
-		mObj->mCleanHeight = getHeight() * maxV;
+		mObj->mCleanWidth = (int32_t)(getWidth() * maxU);
+		mObj->mCleanHeight = (int32_t)(getHeight() * maxV);
 	}
 	else {
 		mObj->mCleanWidth = (int32_t)maxU;

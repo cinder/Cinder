@@ -188,6 +188,10 @@ class Texture {
 		/** Sets the filtering behavior when a texture is displayed at a higher resolution than its native resolution. Default is \c GL_LINEAR
 		 * Possible values are \li \c GL_NEAREST \li \c GL_LINEAR \li \c GL_NEAREST_MIPMAP_NEAREST \li \c GL_LINEAR_MIPMAP_NEAREST \li \c GL_NEAREST_MIPMAP_LINEAR \li \c GL_LINEAR_MIPMAP_LINEAR **/
 		void	setMagFilter( GLenum magFilter ) { mMagFilter = magFilter; }
+
+		// Set anisotropy value for filtering
+		void setAnisotropy( GLfloat value )	{ mAnisotropy = value; }
+
 				
 		//! Returns the texture's target
 		GLenum	getTarget() const { return mTarget; }
@@ -207,11 +211,15 @@ class Texture {
 		GLenum	getMinFilter() const { return mMinFilter; }
 		//! Returns the texture magnifying function, which is used whenever the pixel being textured maps to an area less than or equal to one texture element.
 		GLenum	getMagFilter() const { return mMagFilter; }
+
+		// Return anisotropy value
+		GLfloat getAnisotropy() const { return mAnisotropy; }
 		
 	  protected:
 		GLenum			mTarget;
 		GLenum			mWrapS, mWrapT;
 		GLenum			mMinFilter, mMagFilter;
+		GLfloat			mAnisotropy;
 		bool			mMipmapping;
 		GLint			mInternalFormat;
 		
