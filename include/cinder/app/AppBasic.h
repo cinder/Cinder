@@ -236,5 +236,14 @@ class AppBasic : public App {
 		cinder::app::AppBasic::executeLaunch( app, ren, #APP );										\
 		cinder::app::AppBasic::cleanupLaunch();														\
 		return 0;																					\
+	}																								\
+	int main(int argc, char *argv[])																\
+	{																								\
+		cinder::app::AppBasic::prepareLaunch();														\
+		cinder::app::AppBasic *app = new APP;														\
+		cinder::app::Renderer *ren = new RENDERER;													\
+		cinder::app::AppBasic::executeLaunch( app, ren, #APP );										\
+		cinder::app::AppBasic::cleanupLaunch();														\
+		return 0;																					\
 	}
 #endif
