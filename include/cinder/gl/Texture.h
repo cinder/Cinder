@@ -45,6 +45,8 @@ class Texture {
 	Texture( int aWidth, int aHeight, Format format = Format() );
 	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
 	Texture( const unsigned char *data, int dataFormat, int aWidth, int aHeight, Format format = Format() );
+	/** \brief Constructs a compressed texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. \a dataFormat is not used. **/
+	Texture( const unsigned char *data, int dataFormat, int aWidth, int aHeight, int compressedImageSize, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
 	Texture( const Surface8u &surface, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
@@ -219,7 +221,8 @@ class Texture {
 	};
 
  protected:
-	void	init( const unsigned char *data, int unpackRowLength, GLenum dataFormat, GLenum type, const Format &format );	
+	void	init( const unsigned char *data, int unpackRowLength, GLenum dataFormat, GLenum type, const Format &format );
+    void	init( const unsigned char *data, int compressedImageSize, const Format &format );
 	void	init( const float *data, GLint dataFormat, const Format &format );
 	void	init( ImageSourceRef imageSource, const Format &format );	
 		 	
