@@ -304,8 +304,7 @@ void Texture::init( const unsigned char *data, int compressedImageSize, const Fo
 		mObj->mMaxU = (float)mObj->mWidth;
 		mObj->mMaxV = (float)mObj->mHeight;
 	}
-	
-	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+
 	glCompressedTexImage2D( mObj->mTarget, 0, mObj->mInternalFormat, mObj->mWidth, mObj->mHeight, 0, compressedImageSize, data );
 }
 
