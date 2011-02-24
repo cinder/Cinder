@@ -107,14 +107,16 @@ Texture::Texture( const unsigned char *data, int dataFormat, int aWidth, int aHe
 	init( data, 0, dataFormat, GL_UNSIGNED_BYTE, format );
 }
 
-Texture::Texture( const unsigned char *data, int dataFormat, int aWidth, int aHeight, int compressedImageSize, Format format )
-: mObj( shared_ptr<Obj>( new Obj( aWidth, aHeight ) ) )
+Texture Texture::withCompressedData( const unsigned char *data, int aWidth, int aHeight, int compressedDataSize, Format format )
 {
-	if( format.mInternalFormat == -1 )
+    Texture result;
+    result.mObj = shared_ptr<Obj>( new Obj( aWidth, aHeight ) );
+    if( format.mInternalFormat == -1 )
 		format.mInternalFormat = GL_RGBA;
-	mObj->mInternalFormat = format.mInternalFormat;
-	mObj->mTarget = format.mTarget;
-	init( data, compressedImageSize, format );
+    result.mObj->mInternalFormat = format.mInternalFormat;
+	result.mObj->mTarget = format.mTarget;
+	result.init( data, compressedDataSize, format );
+    return result;
 }
 
 Texture::Texture( const Surface8u &surface, Format format )
@@ -284,7 +286,7 @@ void Texture::init( const unsigned char *data, int unpackRowLength, GLenum dataF
 #endif	
 }
 
-void Texture::init( const unsigned char *data, int compressedImageSize, const Format &format )
+void Texture::init( const unsigned char *data, int compressedDataSize, const Format &format )
 {
 	mObj->mDoNotDispose = false;
 	
@@ -295,17 +297,8 @@ void Texture::init( const unsigned char *data, int compressedImageSize, const Fo
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MIN_FILTER, format.mMinFilter );	
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, format.mMagFilter );
-	if( format.mMipmapping )
-		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
-	if( mObj->mTarget == GL_TEXTURE_2D ) {
-		mObj->mMaxU = mObj->mMaxV = 1.0f;
-	}
-	else {
-		mObj->mMaxU = (float)mObj->mWidth;
-		mObj->mMaxV = (float)mObj->mHeight;
-	}
 
-	glCompressedTexImage2D( mObj->mTarget, 0, mObj->mInternalFormat, mObj->mWidth, mObj->mHeight, 0, compressedImageSize, data );
+	glCompressedTexImage2D( mObj->mTarget, 0, mObj->mInternalFormat, mObj->mWidth, mObj->mHeight, 0, compressedDataSize, data );
 }
 
 void Texture::init( const float *data, GLint dataFormat, const Format &format )

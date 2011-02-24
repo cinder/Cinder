@@ -45,8 +45,6 @@ class Texture {
 	Texture( int aWidth, int aHeight, Format format = Format() );
 	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
 	Texture( const unsigned char *data, int dataFormat, int aWidth, int aHeight, Format format = Format() );
-	/** \brief Constructs a compressed texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. \a dataFormat is not used. **/
-	Texture( const unsigned char *data, int dataFormat, int aWidth, int aHeight, int compressedImageSize, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
 	Texture( const Surface8u &surface, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
@@ -141,6 +139,8 @@ class Texture {
 
 	//!	Creates a new Texture from raw DirectDraw Stream data
 	static Texture	loadDds( IStreamRef ddsStream, Format format );
+	/** \brief Constructs a compressed texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. \a dataFormat is not used. **/
+	static Texture	withCompressedData( const unsigned char *data, int aWidth, int aHeight, int compressedDataSize, Format format = Format() );
 
 	//! Converts a SurfaceChannelOrder into an appropriate OpenGL dataFormat and type
 	static void		SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, GLint *dataFormat, GLenum *type );
