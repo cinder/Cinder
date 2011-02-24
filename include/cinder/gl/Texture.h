@@ -140,7 +140,7 @@ class Texture {
 	//!	Creates a new Texture from raw DirectDraw Stream data
 	static Texture	loadDds( IStreamRef ddsStream, Format format );
 	/** \brief Constructs a compressed texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. \a dataFormat is not used. **/
-	static Texture	withCompressedData( const unsigned char *data, int aWidth, int aHeight, int compressedDataSize, Format format = Format() );
+	static Texture	withCompressedData( const unsigned char *data, int aWidth, int aHeight, size_t compressedDataSize, Format format = Format() );
 
 	//! Converts a SurfaceChannelOrder into an appropriate OpenGL dataFormat and type
 	static void		SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, GLint *dataFormat, GLenum *type );
