@@ -20,6 +20,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
+
 #include "cinder/Cinder.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/ImageIo.h"
