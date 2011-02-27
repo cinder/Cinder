@@ -24,7 +24,14 @@
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
 
+#include <windows.h>
 #include <Shlobj.h>
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#include <gdiplus.h>
+#undef min
+#undef max
+#pragma comment(lib, "gdiplus")
 
 using std::string;
 using std::wstring;
@@ -32,6 +39,20 @@ using std::vector;
 using std::pair;
 
 namespace cinder { namespace app {
+
+AppImplMsw::AppImplMsw( App *aApp )
+	: mApp( aApp ), mWindowOffset( 0, 0 )
+{
+	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+	Gdiplus::GdiplusStartup( &mGdiplusToken, &gdiplusStartupInput, NULL );
+}
+
+AppImplMsw::~AppImplMsw()
+{
+	// there's no way to ensure all GDI+ objects have been freed, so we don't do this
+	// for now this seems fine
+//	Gdiplus::GdiplusShutdown( mGdiplusToken );
+}
 
 void AppImplMsw::hideCursor()
 {

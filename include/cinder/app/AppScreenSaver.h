@@ -35,6 +35,8 @@
 #elif defined( CINDER_MSW )
 	#include "cinder/app/AppImplMswScreenSaver.h"
 	#include <windows.h>
+	#undef min
+	#undef max
 	#include <ScrnSave.h>
 #endif
 

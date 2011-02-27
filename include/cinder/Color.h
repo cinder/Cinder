@@ -1,5 +1,8 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project, All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+
+ Portions Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -77,15 +80,16 @@ class ColorT
 
 	Vec3f get( ColorModel cm );
 
-	T & operator[]( int n )
+	T& operator[]( int n )
 	{
 		assert( n >= 0 && n <= 2 );
-		if( 0 == n )
-			return r;
-		else if( 1 == n )
-			return g;
-		else
-			return b;
+		return (&r)[n];
+	}
+
+	const T& operator[]( int n ) const
+	{
+		assert( n >= 0 && n <= 2 );
+		return (&r)[n];
 	}
 
 	ColorT<T>		operator+( const ColorT<T> &rhs ) const { return ColorT<T>( r + rhs.r, g + rhs.g, b + rhs.b ); }
@@ -158,15 +162,12 @@ class ColorT
 
 	static ColorT<T> white()
 	{
-		return ColorT<T>( static_cast<T>( 1 ), static_cast<T>( 1 ), static_cast<T>( 1 ) );
+		return ColorT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
 	}
 
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
 };
-
-template<typename T>
-std::ostream& operator<<( std::ostream &s, const ColorT<T> &v );
 
 
 //////////////////////////////////////////////////////////////
@@ -216,17 +217,16 @@ class ColorAT {
 		return * this;
 	}
 
-	T& operator[]( int n ) 
+	T& operator[]( int n )
 	{
-		assert(n >= 0 && n <= 3);
-		if( 0 == n ) 
-			return r;
-		else if( 1 == n ) 
-			return g;
-		else if( 2 == n ) 
-			return b;
-		else
-			return a;
+		assert( n >= 0 && n <= 3 );
+		return (&r)[n];
+	}
+
+	const T& operator[]( int n ) const
+	{
+		assert( n >= 0 && n <= 3 );
+		return (&r)[n];
 	}
 
 	ColorAT<T>	operator+( const ColorAT<T> &rhs ) const { return ColorAT<T>( r + rhs.r, g + rhs.g, b + rhs.b, a + rhs.a ); }
@@ -284,16 +284,18 @@ class ColorAT {
 
 	static ColorAT<T> black()
 	{
-		return zero();
+		return ColorAT<T>( static_cast<T>( 0 ), static_cast<T>( 0 ), static_cast<T>( 0 ), CHANTRAIT<T>::max() );
+	}
+
+	static ColorAT<T> white()
+	{
+		return ColorAT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
 	}
 
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
 	operator ColorT<T>(){ return ColorT<T>( r, g, b ); }
 };
-
-template<typename T>
-std::ostream& operator<<( std::ostream &lhs, const ColorAT<T> &rhs );
 
 // Free Functions
 

@@ -24,16 +24,6 @@
 
 #include <boost/cstdint.hpp>
 
-#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
-	#include <memory>
-	#include <boost/shared_ptr.hpp> // necessary for checked_array_deleter
-#else
-	#include <boost/shared_ptr.hpp>
-	namespace std {
-		using boost::shared_ptr; // future-proof shared_ptr by putting it into std::
-	}
-#endif
-
 namespace cinder {
 using boost::int8_t;
 using boost::uint8_t;
@@ -43,8 +33,6 @@ using boost::int32_t;
 using boost::uint32_t;
 using boost::int64_t;
 using boost::uint64_t;
-
-using boost::checked_array_deleter;
 
 #define CINDER_CINDER
 
@@ -69,6 +57,30 @@ using boost::checked_array_deleter;
 #define CINDER_LITTLE_ENDIAN
 
 } // namespace cinder
+
+
+#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
+	#include <memory>
+#elif defined( CINDER_COCOA )
+	#include <tr1/memory>
+	namespace std {
+		using std::tr1::shared_ptr;
+		using std::tr1::static_pointer_cast;
+		using std::tr1::dynamic_pointer_cast;
+		using std::tr1::const_pointer_cast;
+	}
+#else
+	#include <boost/shared_ptr.hpp>
+	namespace std {
+		using boost::shared_ptr; // future-proof shared_ptr by putting it into std::
+		using boost::static_pointer_cast;
+		using boost::dynamic_pointer_cast;
+		using boost::const_pointer_cast;
+	}
+#endif
+
+#include <boost/shared_ptr.hpp> // necessary for checked_array_deleter
+using boost::checked_array_deleter;
 
 // Create a namepace alias as shorthand for cinder::
 #if ! defined( CINDER_NO_NS_ALIAS )

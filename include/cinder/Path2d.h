@@ -33,10 +33,12 @@ namespace cinder {
 
 class Path2d {
  public:
-	Path2d() : mClosed( false ) {}
+	Path2d() {}
 	explicit Path2d( const BSpline<Vec2f> &spline, float subdivisionStep = 0.01f );
-	
+
+	//! Sets the start point of the path to \a p. This is the only legal first command, and only legal as the first command.
 	void	moveTo( const Vec2f &p );
+	//! Sets the start point of the path to (\a x, \a y ). This is the only legal first command, and only legal as the first command.
 	void	moveTo( float x, float y ) { moveTo( Vec2f( x, y ) ); }
 	void	lineTo( const Vec2f &p );
 	void	lineTo( float x, float y ) { lineTo( Vec2f( x, y ) ); }
@@ -49,13 +51,24 @@ class Path2d {
 	void	arcTo( const Vec2f &p, const Vec2f &t, float radius );
 	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( Vec2f( x, y ), Vec2f( tanX, tanY ), radius ); }
 	
-	void	close() { mClosed = true; }
-	bool	isClosed() const { return mClosed; }
+	//! Closes the path, by drawing a straight line from the first to the last point. This is only legal as the last command.
+	void	close() { mSegments.push_back( CLOSE ); }
+	bool	isClosed() const { return ( mSegments.size() > 1 ) && mSegments.back() == CLOSE; }
+    
+	//! Reverses the order of the path's points, inverting its winding order
+    void	reverse();
 	
-	bool	empty() const { return mSegments.empty(); }
+	bool	empty() const { return mPoints.empty(); }
 	void	clear() { mSegments.clear(); mPoints.clear(); }
 	size_t	getNumSegments() const { return mSegments.size(); }
 	size_t	getNumPoints() const { return mPoints.size(); }
+
+	//! Returns the point on the curve at parameter \a t, which lies in the range <tt>[0,1]</tt>
+	Vec2f	getPosition( float t ) const;
+	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>
+	Vec2f	getSegmentPosition( size_t segment, float t ) const;
+	
+	std::vector<Vec2f>	subdivide( float approximationScale = 1.0f ) const;
 	
 	const Vec2f&	getPoint( size_t point ) const { return mPoints[point]; }
 	const Vec2f&	getCurrentPoint() const { return mPoints.back(); }
@@ -66,14 +79,18 @@ class Path2d {
 	enum SegmentType { MOVETO, LINETO, QUADTO, CUBICTO, CLOSE };
 	static const int sSegmentTypePointCounts[];
 	SegmentType		getSegmentType( size_t segment ) const { return mSegments[segment]; }
+	
+	//! Returns the bounding box around all control points. As with Shape2d, note this is not necessarily the bounding box of the Path's shape.
+	Rectf	calcBoundingBox() const;
 
 	friend class Shape2d;
 
  private:
 	void	arcHelper( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const Vec2f &center, float radius, float startRadians, float endRadins );
+	void	subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, int level, std::vector<Vec2f> *result ) const;
+	void	subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, const Vec2f &p4, int level, std::vector<Vec2f> *result ) const;
 
-	bool						mClosed;
 	std::vector<Vec2f>			mPoints;
 	std::vector<SegmentType>	mSegments;
 };

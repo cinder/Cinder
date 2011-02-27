@@ -7,22 +7,38 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0087D27712CD8104002CD69F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D27612CD8104002CD69F /* AudioToolbox.framework */; };
+		0087D27912CD8104002CD69F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D27812CD8104002CD69F /* AVFoundation.framework */; };
+		0087D27B12CD8104002CD69F /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D27A12CD8104002CD69F /* CoreAudio.framework */; };
+		0087D27D12CD8104002CD69F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D27C12CD8104002CD69F /* CoreMedia.framework */; };
+		0087D27F12CD8104002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D27E12CD8104002CD69F /* CoreText.framework */; };
+		0087D28112CD8104002CD69F /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D28012CD8104002CD69F /* CoreVideo.framework */; };
+		0087D28312CD8104002CD69F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D28212CD8104002CD69F /* Foundation.framework */; };
+		0087D28512CD8104002CD69F /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D28412CD8104002CD69F /* OpenGLES.framework */; };
+		0087D28712CD8104002CD69F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D28612CD8104002CD69F /* UIKit.framework */; };
+		0087D28D12CD811E002CD69F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D28C12CD811E002CD69F /* AVFoundation.framework */; };
+		0087D29B12CD813F002CD69F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D29A12CD813F002CD69F /* CoreGraphics.framework */; };
+		0087D29F12CD814F002CD69F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D29E12CD814F002CD69F /* libz.dylib */; };
+		0087D2BF12CD81BB002CD69F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D2BE12CD81BB002CD69F /* QuartzCore.framework */; };
 		009CB6F5120F42DE0066763D /* FBOBasicApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009CB6F4120F42DE0066763D /* FBOBasicApp.cpp */; };
-		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
-		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
-		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0087D27612CD8104002CD69F /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		0087D27812CD8104002CD69F /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		0087D27A12CD8104002CD69F /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		0087D27C12CD8104002CD69F /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		0087D27E12CD8104002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		0087D28012CD8104002CD69F /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		0087D28212CD8104002CD69F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		0087D28412CD8104002CD69F /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		0087D28612CD8104002CD69F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		0087D28C12CD811E002CD69F /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		0087D29A12CD813F002CD69F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		0087D29E12CD814F002CD69F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		0087D2BE12CD81BB002CD69F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		009CB6F4120F42DE0066763D /* FBOBasicApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FBOBasicApp.cpp; path = ../src/FBOBasicApp.cpp; sourceTree = SOURCE_ROOT; };
-		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* FBOBasic_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FBOBasic_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		32CA4F630368D1EE00C91783 /* FBOBasic_iOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBOBasic_iOS_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* FBOBasic_iOS-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "FBOBasic_iOS-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -32,11 +48,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
-				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
-				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
-				28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */,
-				00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */,
+				0087D27712CD8104002CD69F /* AudioToolbox.framework in Frameworks */,
+				0087D27912CD8104002CD69F /* AVFoundation.framework in Frameworks */,
+				0087D27B12CD8104002CD69F /* CoreAudio.framework in Frameworks */,
+				0087D27D12CD8104002CD69F /* CoreMedia.framework in Frameworks */,
+				0087D27F12CD8104002CD69F /* CoreText.framework in Frameworks */,
+				0087D28112CD8104002CD69F /* CoreVideo.framework in Frameworks */,
+				0087D28312CD8104002CD69F /* Foundation.framework in Frameworks */,
+				0087D28512CD8104002CD69F /* OpenGLES.framework in Frameworks */,
+				0087D28712CD8104002CD69F /* UIKit.framework in Frameworks */,
+				0087D28D12CD811E002CD69F /* AVFoundation.framework in Frameworks */,
+				0087D29B12CD813F002CD69F /* CoreGraphics.framework in Frameworks */,
+				0087D29F12CD814F002CD69F /* libz.dylib in Frameworks */,
+				0087D2BF12CD81BB002CD69F /* QuartzCore.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,11 +122,19 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				28FD15070DC6FC5B0079059D /* QuartzCore.framework */,
-				28FD14FF0DC6FC520079059D /* OpenGLES.framework */,
-				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
-				1D30AB110D05D00D00671497 /* Foundation.framework */,
-				00CFDF6A1138442D0091E310 /* CoreGraphics.framework */,
+				0087D27A12CD8104002CD69F /* CoreAudio.framework */,
+				0087D27812CD8104002CD69F /* AVFoundation.framework */,
+				0087D27612CD8104002CD69F /* AudioToolbox.framework */,
+				0087D27C12CD8104002CD69F /* CoreMedia.framework */,
+				0087D27E12CD8104002CD69F /* CoreText.framework */,
+				0087D28012CD8104002CD69F /* CoreVideo.framework */,
+				0087D28212CD8104002CD69F /* Foundation.framework */,
+				0087D28412CD8104002CD69F /* OpenGLES.framework */,
+				0087D28612CD8104002CD69F /* UIKit.framework */,
+				0087D28C12CD811E002CD69F /* AVFoundation.framework */,
+				0087D29A12CD813F002CD69F /* CoreGraphics.framework */,
+				0087D29E12CD814F002CD69F /* libz.dylib */,
+				0087D2BE12CD81BB002CD69F /* QuartzCore.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -134,7 +166,14 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "FBOBasic_iOS" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -183,7 +222,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"";
 				PRODUCT_NAME = FBOBasic_iOS;
-				SDKROOT = iphonesimulator3.2;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -203,7 +242,7 @@
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"";
 				PRODUCT_NAME = FBOBasic_iOS;
-				SDKROOT = iphonesimulator4.0;
+				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
@@ -221,7 +260,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" include";
 			};
 			name = Debug;
@@ -239,7 +278,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" include";
 			};
 			name = Release;

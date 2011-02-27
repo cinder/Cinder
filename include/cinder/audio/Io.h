@@ -33,6 +33,8 @@
 	#include <AudioToolbox/AudioFile.h>
 #elif defined(CINDER_MSW)
 	#include <windows.h>
+	#undef min
+	#undef max
 	#include <mmsystem.h> 
 #endif
 

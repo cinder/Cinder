@@ -371,12 +371,12 @@ ImageSourceRef loadImage( DataSourceRef dataSource, string extension )
 	return ImageIoRegistrar::createSource( dataSource, extension );
 }
 
-void writeImage( const std::string &path, const ImageSourceRef &imageSource, std::string extension )
+void writeImage( const std::string &path, const ImageSourceRef &imageSource, ImageTarget::Options options, std::string extension )
 {
-	writeImage( writeFile( path ), imageSource, extension );
+	writeImage( writeFile( path ), imageSource, options, extension );
 }
 
-void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, string extension )
+void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, ImageTarget::Options options, string extension )
 {
 #if defined( CINDER_COCOA ) // this is necessary to limit the lifetime of the objc-based loader's allocations
 	cocoa::SafeNsAutoreleasePool autorelease;
@@ -385,7 +385,7 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, st
 	if( extension.empty() )
 		extension = getPathExtension( dataTarget->getFilePathHint() );
 	
-	ImageTargetRef imageTarget = ImageIoRegistrar::createTarget( dataTarget, imageSource, extension );
+	ImageTargetRef imageTarget = ImageIoRegistrar::createTarget( dataTarget, imageSource, options, extension );
 	if( imageTarget ) {
 		writeImage( imageTarget, imageSource );
 	}
@@ -409,12 +409,12 @@ ImageIoRegistrar::Inst* ImageIoRegistrar::instance()
 	return sInst.get();
 }
 
-ImageTargetRef ImageIoRegistrar::createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, std::string extension )
+ImageTargetRef ImageIoRegistrar::createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, std::string extension )
 {
-	return instance()->createTarget( dataTarget, imageSource, extension );
+	return instance()->createTarget( dataTarget, imageSource, options, extension );
 }
 
-ImageTargetRef ImageIoRegistrar::Inst::createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, std::string extension )
+ImageTargetRef ImageIoRegistrar::Inst::createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, std::string extension )
 {
 	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>(tolower) );	
 	
@@ -422,7 +422,7 @@ ImageTargetRef ImageIoRegistrar::Inst::createTarget( DataTargetRef dataTarget, I
 	if( sIt != mTargets.end() )	{
 		ImageIoRegistrar::TargetCreationFunc creationFunc = sIt->second.begin()->second.first;
 		string extensionData = sIt->second.begin()->second.second;
-		return (*creationFunc)( dataTarget, imageSource, extensionData );
+		return (*creationFunc)( dataTarget, imageSource, options, extensionData );
 	}
 	else
 		return ImageTargetRef(); // couldn't find a handler for this extension	

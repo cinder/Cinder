@@ -47,7 +47,11 @@ class ObjLoader {
 	/**Constructs and does the parsing of the file
 	 * \param includeUVs  if false UV coordinates will be skipped, which can provide a faster load time
 	**/
-	 ObjLoader( std::shared_ptr<IStream> aStream, bool includeUVs = true );
+	ObjLoader( std::shared_ptr<IStream> aStream, bool includeUVs = true );
+	/**Constructs and does the parsing of the file
+	 * \param includeUVs if false UV coordinates will be skipped, which can provide a faster load time
+	**/
+	ObjLoader( DataSourceRef dataSource, bool includeUVs = true );
 	~ObjLoader();
 
 	/**Loads all the groups present in the file into a single TriMesh
@@ -83,6 +87,8 @@ class ObjLoader {
  private:
 	typedef boost::tuple<int,int> VertexPair;
 	typedef boost::tuple<int,int,int> VertexTriple;
+
+	void	parse( bool includeUVs );
 
  	void	parseFace( Group *group, const std::string &s, bool includeUVs );
 	void	loadInternalNoOptimize( const Group &group, TriMesh *destTriMesh, bool texCoords, bool normals );

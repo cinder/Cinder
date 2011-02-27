@@ -54,10 +54,18 @@ class ImageSourceSurface : public ImageSource {
 		mHeight = surface.getHeight();
 		setColorModel( ImageIo::CM_RGB );
 		setChannelOrder( ImageIo::ChannelOrder( surface.getChannelOrder().getImageIoChannelOrder() ) );
-		if( boost::is_same<T,uint8_t>::value )
+		if( boost::is_same<T,uint8_t>::value ) {
 			setDataType( ImageIo::UINT8 );
-		else if( boost::is_same<T,float>::value )
+			mSurface8u = *reinterpret_cast<const Surface8u*>( &surface ); // register reference to 'surface'
+		}
+		else if( boost::is_same<T,uint16_t>::value ) {
+			setDataType( ImageIo::UINT16 );
+			mSurface16u = *reinterpret_cast<const Surface16u*>( &surface ); // register reference to 'surface'
+		}
+		else if( boost::is_same<T,float>::value ) {
 			setDataType( ImageIo::FLOAT32 );
+			mSurface32f = *reinterpret_cast<const Surface32f*>( &surface ); // register reference to 'surface'
+		}
 		else
 			throw; // this surface seems to be a type we've never met
 		mRowBytes = surface.getRowBytes();
@@ -75,6 +83,10 @@ class ImageSourceSurface : public ImageSource {
 		}
 	}
 	
+	// not ideal, but these are used to register a reference to the surface we were constructed with
+	Surface8u			mSurface8u;
+	Surface16u			mSurface16u;
+	Surface32f			mSurface32f;
 	const uint8_t		*mData;
 	int32_t				mRowBytes;
 };
@@ -190,21 +202,6 @@ void SurfaceT<T>::Obj::initChannels()
 }
 
 template<typename T>
-void SurfaceT<T>::Obj::setData( T *aData, int32_t aWidth, int32_t aHeight, int32_t aRowBytes )
-{
-	if( mOwnsData )
-		delete [] mData;
-
-	mData = aData;
-	mOwnsData = false;
-	mWidth = aWidth;
-	mHeight = aHeight;
-	mRowBytes = aRowBytes;
-	
-	initChannels();
-}
-
-template<typename T>
 void SurfaceT<T>::Obj::setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon )
 {
 	mDeallocatorFunc = aDeallocatorFunc;
@@ -260,6 +257,12 @@ SurfaceT<T>::operator ImageSourceRef() const
 }
 
 template<typename T>
+SurfaceT<T>::operator ImageTargetRef()
+{
+	return ImageTargetSurface<T>::createRef( this );
+}
+
+template<typename T>
 SurfaceT<T> SurfaceT<T>::clone( bool copyPixels ) const
 {
 	SurfaceT result( getWidth(), getHeight(), hasAlpha(), getChannelOrder() );
@@ -277,12 +280,6 @@ SurfaceT<T> SurfaceT<T>::clone( const Area &area, bool copyPixels ) const
 		result.copyFrom( *this, area, -area.getUL() );
 	
 	return result;
-}
-
-template<typename T>
-void SurfaceT<T>::setData( T *aData, int32_t aWidth, int32_t aHeight, int32_t aRowBytes )
-{
-	mObj->setData( aData, aWidth, aHeight, aRowBytes );
 }
 
 template<typename T>
@@ -448,6 +445,8 @@ ImageTargetSurface<T>::ImageTargetSurface( SurfaceT<T> *aSurface )
 {
 	if( boost::is_same<T,float>::value )
 		setDataType( ImageIo::FLOAT32 );
+	else if( boost::is_same<T,uint16_t>::value )
+		setDataType( ImageIo::UINT16 );
 	else if( boost::is_same<T,uint8_t>::value )
 		setDataType( ImageIo::UINT8 );
 	else 
@@ -505,9 +504,9 @@ void* ImageTargetSurface<T>::getRowPointer( int32_t row )
 	return reinterpret_cast<void*>( mSurface->getData( Vec2i( 0, row ) ) );
 }
 
-#define SURFACE_PROTOTYPES(r,data,T)\
+#define Surface_PROTOTYPES(r,data,T)\
 	template class SurfaceT<T>;
 
-BOOST_PP_SEQ_FOR_EACH( SURFACE_PROTOTYPES, ~, CHANNEL_TYPES )
+BOOST_PP_SEQ_FOR_EACH( Surface_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
 
-} // namespace dt
+} // namespace cinder

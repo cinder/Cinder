@@ -30,21 +30,46 @@
 
 namespace cinder { namespace msw {
 
-Surface8u convertGdiplusBitmap( Gdiplus::Bitmap &bitmap, bool premultiplied )
+Surface8u convertGdiplusBitmap( Gdiplus::Bitmap &bitmap )
 {	
 	Gdiplus::BitmapData bitmapData;
 	Gdiplus::Rect rect( 0, 0, bitmap.GetWidth(), bitmap.GetHeight() );
-	bitmap.LockBits( &rect, Gdiplus::ImageLockModeRead, (premultiplied) ? PixelFormat32bppPARGB : PixelFormat32bppARGB, &bitmapData );
-	Surface8u result( bitmap.GetWidth(), bitmap.GetHeight(), true, SurfaceChannelOrder::BGRA );
+
+	Gdiplus::PixelFormat requestedFormat = bitmap.GetPixelFormat();
+	SurfaceChannelOrder sco;
+	bool premult;
+	gdiplusPixelFormatToSurfaceChannelOrder( requestedFormat, &sco, &premult );
+	if( sco == SurfaceChannelOrder::UNSPECIFIED ) {
+		UINT flags = bitmap.GetFlags();
+		sco = ( flags & Gdiplus::ImageFlagsHasAlpha ) ? SurfaceChannelOrder::BGRA : SurfaceChannelOrder::BGR;
+		requestedFormat = ( flags & Gdiplus::ImageFlagsHasAlpha ) ? PixelFormat32bppARGB : PixelFormat24bppRGB;
+	}
+	
+	bitmap.LockBits( &rect, Gdiplus::ImageLockModeRead, requestedFormat, &bitmapData );
+	Surface8u result( bitmap.GetWidth(), bitmap.GetHeight(), sco.hasAlpha(), sco );
 
 	const uint8_t *srcDataBase = (uint8_t*)bitmapData.Scan0;
 	int32_t width = bitmap.GetWidth();
 	for( uint32_t y = 0; y < bitmap.GetHeight(); ++y ) {
-		memcpy( result.getData( Vec2i( 0, y ) ), srcDataBase + y * bitmapData.Stride, width * 4 );
+		memcpy( result.getData( Vec2i( 0, y ) ), srcDataBase + y * bitmapData.Stride, width * result.getPixelInc() );
 	}
 
 	bitmap.UnlockBits( &bitmapData );
 	return result;
+}
+
+void gdiplusPixelFormatToSurfaceChannelOrder( Gdiplus::PixelFormat format, SurfaceChannelOrder *resultChannelOrder, bool *resultPremultiplied )
+{
+	*resultPremultiplied = false;
+	if( format == PixelFormat32bppPARGB ) {
+		*resultPremultiplied = true;
+		*resultChannelOrder = SurfaceChannelOrder::BGRA;
+	}
+	else if( format == PixelFormat32bppARGB ) *resultChannelOrder = SurfaceChannelOrder::BGRA;
+	else if( format == PixelFormat24bppRGB ) *resultChannelOrder = SurfaceChannelOrder::BGR;
+	else if( format == PixelFormat32bppRGB ) *resultChannelOrder = SurfaceChannelOrder::BGRX;
+	else
+		*resultChannelOrder = SurfaceChannelOrder::UNSPECIFIED;
 }
 
 Gdiplus::PixelFormat surfaceChannelOrderToGdiplusPixelFormat( const SurfaceChannelOrder &sco, bool premultiplied )
@@ -64,12 +89,12 @@ Gdiplus::PixelFormat surfaceChannelOrderToGdiplusPixelFormat( const SurfaceChann
 	}
 }
 
-Gdiplus::Bitmap* createGdiplusBitmap( const Surface8u &surface, bool premultiplied )
+Gdiplus::Bitmap* createGdiplusBitmap( const Surface8u &surface )
 {
 	if( ( surface.getRowBytes() % 4 ) != 0 )
 		throw SurfaceConstraintsExc();
 		
-	Gdiplus::PixelFormat pf = surfaceChannelOrderToGdiplusPixelFormat( surface.getChannelOrder(), premultiplied );
+	Gdiplus::PixelFormat pf = surfaceChannelOrderToGdiplusPixelFormat( surface.getChannelOrder(), surface.isPremultiplied() );
 	if( pf == PixelFormatUndefined )
 		throw SurfaceConstraintsExc();
 	

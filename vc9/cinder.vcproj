@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cinder\Clipboard.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cinder\Color.cpp"
 				>
 			</File>
@@ -688,6 +692,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\cinder\Clipboard.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\cinder\Color.h"
 				>
 			</File>
@@ -876,6 +884,10 @@
 				</File>
 				<File
 					RelativePath="..\include\cinder\app\AppImplMswScreenSaver.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\app\AppNative.h"
 					>
 				</File>
 				<File

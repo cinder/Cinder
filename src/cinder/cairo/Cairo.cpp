@@ -186,19 +186,36 @@ SurfaceImage::SurfaceImage( const uint8_t *dataPtr, int32_t width, int32_t heigh
 	initCinderSurface( hasAlpha, cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
 }
 
-SurfaceImage::SurfaceImage( const cinder::Surface &ciSurface ) 
+SurfaceImage::SurfaceImage( cinder::Surface ciSurface ) 
 	: SurfaceBase( ciSurface.getWidth(), ciSurface.getHeight() )
 {
-	if( ciSurface.getChannelOrder() == cinder::SurfaceChannelOrder::BGRA ) {
+	bool needsManualCopy = true;
+	cairo_format_t format = ( ciSurface.getChannelOrder() == cinder::SurfaceChannelOrder::BGRA ) ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24;
+	bool legalRowBytes = cairo_format_stride_for_width( format, ciSurface.getWidth() ) == ciSurface.getRowBytes();
+	if( legalRowBytes && ( ciSurface.getChannelOrder() == cinder::SurfaceChannelOrder::BGRA ) ) {
 		mCairoSurface = cairo_image_surface_create_for_data( const_cast<unsigned char*>( ciSurface.getData() ), CAIRO_FORMAT_ARGB32, ciSurface.getWidth(), ciSurface.getHeight(), ciSurface.getRowBytes() );
+		needsManualCopy = false;
 	} 
-	else if( ciSurface.getChannelOrder() == cinder::SurfaceChannelOrder::BGRX ) {
+	else if( legalRowBytes && ( ciSurface.getChannelOrder() == cinder::SurfaceChannelOrder::BGRX ) ) {
 		mCairoSurface = cairo_image_surface_create_for_data( const_cast<unsigned char*>( ciSurface.getData() ), CAIRO_FORMAT_RGB24, ciSurface.getWidth(), ciSurface.getHeight(), ciSurface.getRowBytes() );
+		needsManualCopy = false;
 	}
-	else
-		throw;
+	else { // we can't natively represent this Surface configuration, so we'll just allocate one and manually copy it
+		mCairoSurface = cairo_image_surface_create( ciSurface.hasAlpha() ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, ciSurface.getWidth(), ciSurface.getHeight() );
+	}
 	
 	initCinderSurface( ciSurface.hasAlpha(), cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
+
+	if( needsManualCopy )
+		mCinderSurface.copyFrom( ciSurface, ciSurface.getBounds(), Vec2i::zero() );
+}
+
+SurfaceImage::SurfaceImage( ImageSourceRef imageSource )
+	: SurfaceBase( imageSource->getWidth(), imageSource->getWidth() )
+{
+	mCairoSurface = cairo_image_surface_create( imageSource->hasAlpha() ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, imageSource->getWidth(), imageSource->getHeight() );
+	initCinderSurface( imageSource->hasAlpha(), cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
+	writeImage( mCinderSurface, imageSource );
 }
 
 SurfaceImage::SurfaceImage( const SurfaceImage &other )
@@ -604,6 +621,16 @@ PatternSolid::PatternSolid( const Color &color )
 // PatternSurface
 PatternSurface::PatternSurface( SurfaceBase &surface )
 	: Pattern( cairo_pattern_create_for_surface( surface.getCairoSurface() ) )
+{
+}
+
+PatternSurface::PatternSurface( ci::Surface cinderSurface )
+	: Pattern( cairo_pattern_create_for_surface( SurfaceImage( cinderSurface ).getCairoSurface() ) )
+{
+}
+
+PatternSurface::PatternSurface( ImageSourceRef imageSource )
+	: Pattern( cairo_pattern_create_for_surface( SurfaceImage( imageSource ).getCairoSurface() ) )
 {
 }
 
@@ -1475,11 +1502,11 @@ void Context::appendPath( const cinder::Shape2d &path )
 void Context::appendPath( const cinder::Path2d &path )
 {
 	size_t point = 0;
+	if( path.empty() )
+		return;
+	moveTo( path.getPoint( point++ ) );
 	for( size_t seg = 0; seg < path.getNumSegments(); ++seg ) {
 		switch( path.getSegmentType( seg ) ) {
-			case Path2d::MOVETO:
-				moveTo( path.getPoint( point++ ) );
-			break;
 			case Path2d::LINETO:
 				lineTo( path.getPoint( point++ ) );
 			break;
@@ -1493,10 +1520,11 @@ void Context::appendPath( const cinder::Path2d &path )
 				curveTo( path.getPoint( point ), path.getPoint( point + 1 ), path.getPoint( point + 2 ) );
 				point += 3;
 			break;
+			case Path2d::CLOSE:
+				closePath();
+			break;
 		}
 	}
-	if( path.isClosed() )
-		closePath();
 }
 
 void Context::circle( double dx, double dy, double radius )

@@ -753,16 +753,31 @@ public:
 //    see Game Programming Gems 2, Section 2.5
 
 template<typename T>
-Matrix44<T> firstFrame( const Vec3<T> &firstPoint, const Vec3<T> &secondPoint, const Vec3<T> &thirdPoint );
-template<typename T>
-Matrix44<T> nextFrame( const Matrix44<T> &prevMatrix, const Vec3<T> &prevPoint, const Vec3<T> &curPoint,
-			Vec3<T> &prevTangent, Vec3<T> &curTangent );
-template<typename T>
-Matrix44<T> lastFrame( const Matrix44<T> &prevMatrix, const Vec3<T> &prevPoint, const Vec3<T> &lastPoint );
+Matrix44<T> firstFrame( 
+	const Vec3<T> &firstPoint,
+	const Vec3<T> &secondPoint, 
+	const Vec3<T> &thirdPoint
+);
 
-typedef Matrix22<float>	Matrix22f;
+template<typename T>
+Matrix44<T> nextFrame( 
+	const Matrix44<T> &prevMatrix, 
+	const Vec3<T> &prevPoint,
+	const Vec3<T> &curPoint,
+	Vec3<T> &prevTangent, 
+	Vec3<T> &curTangent 
+);
+			
+template<typename T>
+Matrix44<T> lastFrame( 
+	const Matrix44<T> &prevMatrix, 
+	const Vec3<T> &prevPoint, 
+	const Vec3<T> &lastPoint 
+);
+
+typedef Matrix22<float>	 Matrix22f;
 typedef Matrix22<double> Matrix22d;
-typedef Matrix44<float>	Matrix44f;
+typedef Matrix44<float>	 Matrix44f;
 typedef Matrix44<double> Matrix44d;
 
 } // namespace cinder

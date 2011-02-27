@@ -33,29 +33,26 @@ namespace cinder { namespace tuio {
 // Base class from which the Object and Cursor profiles are derived
 class ProfileBase {
   public:
-	ProfileBase() : mSessionId( -1 ) {}
+	ProfileBase() : mSessionId( -1 ), mSource("Unknown") {}
 
-	ProfileBase( int32_t sessionId, Vec2f pos, Vec2f speed = Vec2f::zero(), float motionAccel = 0 ) 
-		: mSessionId( sessionId ), mPos( pos ), mSpeed( speed ), mPrevPos( pos )
+	ProfileBase( std::string source, int32_t sessionId ) 
+		: mSessionId( sessionId ), mSource(source)
 	{
 	}
 		
 	int32_t	getSessionId() const{ return mSessionId; }
-	Vec2f	getPos() const { return mPos; }
-	Vec2f	getPrevPos() const { return mPrevPos; }
-	Vec2f	getSpeed() const { return mSpeed; }
-	float	getMotionAccel() const { return mMotionAccel; }
 
 	//! Translates into a ci::TouchEvent::Touch
 	app::TouchEvent::Touch getTouch( double time, const Vec2f &posScale ) const {
 		return app::TouchEvent::Touch( getPos() * posScale, getPrevPos() * posScale, (uint32_t)getSessionId(), time, NULL );
 	}
 
+	virtual Vec2f	getPos() const = 0;
+	virtual Vec2f	getPrevPos() const = 0;
+
   protected:
 	int32_t		mSessionId;
-	Vec2f		mPos, mPrevPos;
-	Vec2f		mSpeed;
-	float		mMotionAccel;
+	std::string mSource;
 };
 
 } } // namespace cinder::tuio

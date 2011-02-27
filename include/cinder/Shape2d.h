@@ -50,11 +50,13 @@ class Shape2d {
 	void	clear() { mContours.clear(); }
 	size_t	getNumContours() const { return mContours.size(); }
 	
-	const Path2d&	getContour( size_t i ) const { return mContours[i]; }
-	Path2d&			getContour( size_t i ) { return mContours[i]; }
+	const Path2d&				getContour( size_t i ) const { return mContours[i]; }
+	Path2d&						getContour( size_t i ) { return mContours[i]; }
+	const std::vector<Path2d>&	getContours() const { return mContours; }
 	
 	const Vec2f&	getCurrentPoint() const { return mContours.back().getCurrentPoint(); }
 	
+    void			appendContour( const Path2d &contour ) { mContours.push_back( contour ); }
 	void			removeContour( size_t i ) { mContours.erase( mContours.begin() + i ); }
 
 	//! Returns the bounding box of the path's control points. Note that this is not necessarily the bounding box of the path's shape.
@@ -71,18 +73,22 @@ class Shape2d {
 		bool stop = false;
 		for( std::vector<Path2d>::const_iterator contourIt = mContours.begin(); contourIt != mContours.end(); ++contourIt ) {
 			size_t pt = 0;
+			it( Path2d::MOVETO, &contourIt->mPoints[0], 0 );
+			pt++;
 			for( std::vector<Path2d::SegmentType>::const_iterator segIt = contourIt->mSegments.begin(); segIt != contourIt->mSegments.end(); ++segIt ) {
-				if( ! it( *segIt, &contourIt->mPoints[pt], ( pt > 0 ) ? &contourIt->mPoints[pt-1] : 0 ) ) {
+				if( *segIt == Path2d::CLOSE )
+					it( *segIt, &contourIt->mPoints[0], &contourIt->mPoints[pt-1] );
+				else if( ! it( *segIt, &contourIt->mPoints[pt], ( pt > 0 ) ? &contourIt->mPoints[pt-1] : 0 ) ) {
 					stop = true;
 					break;
 				}
 				pt += Path2d::sSegmentTypePointCounts[*segIt];
 			}
 			if( stop ) break;
-			else if( contourIt->isClosed() ) {
+			/*else if( contourIt->isClosed() ) {
 				if( ! it( Path2d::CLOSE, contourIt->empty() ? NULL : &contourIt->mPoints[0], ( pt > 0 ) ? &contourIt->mPoints[pt-1] : 0 ) )
 					break;
-			}
+			}*/
 		}
 	}
 	

@@ -109,9 +109,13 @@ void XmlTree::ConstIter::increment()
 		do {
 			list<XmlTree>::const_iterator next = findNextChildNamed( *mSequenceStack.back(), mIterStack.back(), mFilter[mSequenceStack.size()-1], mCaseSensitive );
 			if( next == mSequenceStack.back()->end() ) { // we've finished this part of the sequence stack
-				mIterStack.pop_back();
-				mSequenceStack.pop_back();
-				++mIterStack.back(); // next in the new top, which was formerly top-1
+				if( mSequenceStack.size() > 1 ) { // we might already be done, in which case incrementing would be bad
+					mIterStack.pop_back();
+					mSequenceStack.pop_back();
+					++mIterStack.back(); // next in the new top, which was formerly top-1
+				}
+				else
+					mIterStack[0] = mSequenceStack.back()->end(); // all done
 			}
 			else if( mSequenceStack.size() < mFilter.size() ) { // we're not on a leaf, so push this onto the stack
 				mIterStack[mIterStack.size()-1] = next;
@@ -140,7 +144,7 @@ list<XmlTree>::const_iterator XmlTree::findNextChildNamed( const list<XmlTree> &
 
 XmlTree::XmlTree( const std::string &xmlString, ParseOptions parseOptions )
 {
-	std::vector<char> strCopy( xmlString.begin(), xmlString.end() );
+	std::string strCopy( xmlString );
 	rapidxml::xml_document<> doc;    // character type defaults to char
 	if( parseOptions.getParseComments() )
 		doc.parse<rapidxml::parse_comment_nodes | rapidxml::parse_doctype_node>( &strCopy[0] );

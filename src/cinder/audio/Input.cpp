@@ -53,11 +53,21 @@ InputDeviceRef Input::getDefaultDevice()
 
 InputDeviceRef Input::findDeviceByName( const std::string &name )
 {
+	const std::vector<InputDeviceRef>& devices = getDevices();
+	for (size_t i = 0; i < devices.size(); ++i) {
+		if (devices[i]->getName() == name)
+			return devices[i];
+	}
 	return InputDeviceRef();
 }
 
 InputDeviceRef Input::findDeviceByNameContains( const std::string &nameFragment )
 {
+	const std::vector<InputDeviceRef>& devices = getDevices();
+	for (size_t i = 0; i < devices.size(); ++i) {
+		if (devices[i]->getName().find(nameFragment) != std::string::npos)
+			return devices[i];
+	}
 	return InputDeviceRef();
 }
 

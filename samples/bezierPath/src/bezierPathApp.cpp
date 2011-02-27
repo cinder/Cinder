@@ -1,7 +1,6 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/Path2d.h"
-#include "cinder/cairo/Cairo.h"
-#include "cinder/ip/Fill.h"
+#include "cinder/gl/gl.h"
 
 #include <vector>
 
@@ -26,7 +25,7 @@ class Path2dApp : public AppBasic {
 void Path2dApp::mouseDown( MouseEvent event )
 {		
 	if( event.isLeftDown() ) { // line
-		if( mPath.getNumSegments() == 0 ) {
+		if( mPath.empty() ) {
 			mPath.moveTo( event.getPos() );
 			mTrackedPoint = 0;
 		}
@@ -46,9 +45,9 @@ void Path2dApp::mouseDrag( MouseEvent event )
 		// and now we'll delete that line and replace it with a curve
 		mPath.removeSegment( mPath.getNumSegments() - 1 );
 		
-		Path2d::SegmentType prevType = mPath.getSegmentType( mPath.getNumSegments() - 1 );		
+		Path2d::SegmentType prevType = ( mPath.getNumSegments() == 0 ) ? Path2d::MOVETO : mPath.getSegmentType( mPath.getNumSegments() - 1 );		
 		
-		if( event.isShiftDown() ) { // add a quadratic curve segment
+		if( event.isShiftDown() || prevType == Path2d::MOVETO ) { // add a quadratic curve segment
 			mPath.quadTo( event.getPos(), endPt );
 		}
 		else { // add a cubic curve segment
@@ -61,7 +60,7 @@ void Path2dApp::mouseDrag( MouseEvent event )
 				// we can figure out what the equivalent cubic tangent would be using a little math
 				Vec2f quadTangent = mPath.getPoint( mPath.getNumPoints() - 2 );
 				Vec2f quadEnd = mPath.getPoint( mPath.getNumPoints() - 1 );
-				Vec2f prevDelta = ( quadTangent + ( quadEnd - quadTangent ) * 0.3333333f ) - quadEnd;
+				Vec2f prevDelta = ( quadTangent + ( quadEnd - quadTangent ) / 3 ) - quadEnd;
 				tan1 = quadEnd - prevDelta;
 			}
 			else
@@ -80,38 +79,25 @@ void Path2dApp::mouseUp( MouseEvent event )
 	mTrackedPoint = -1;
 }
 
-void Path2dApp::keyDown( KeyEvent event ) {
-	if( event.getCode() == KeyEvent::KEY_f ) {
-		setFullScreen( ! isFullScreen() );
-	}
-	else if( event.getCode() == KeyEvent::KEY_ESCAPE ) {
-		setFullScreen( false );
-	}
-	else if( event.getChar() == 'x' ) {
+void Path2dApp::keyDown( KeyEvent event )
+{
+	if( event.getChar() == 'x' )
 		mPath.clear();
-	}
 }
 
 void Path2dApp::draw()
 {
-	// clear to the background color
-	cairo::Context ctx( cairo::createWindowSurface() );
-	ctx.setSourceRgb( 0.0f, 0.1f, 0.2f );
-	ctx.paint();
+	gl::clear( Color( 0.0f, 0.1f, 0.2f ) );
 	
 	// draw the control points
-	ctx.setSourceRgb( 1.0f, 1.0f, 0.0f );
-	for( size_t p = 0; p < mPath.getNumPoints(); ++p ) {
-		ctx.newSubPath();
-		ctx.arc( mPath.getPoint( p ), 2.5, 0, 2 * 3.14159 );
-	}
-	ctx.stroke();
+	gl::color( Color( 1, 1, 0 ) );
+	for( size_t p = 0; p < mPath.getNumPoints(); ++p )
+		gl::drawSolidCircle( mPath.getPoint( p ), 2.5f );
 
 	// draw the curve itself
-	ctx.setSourceRgb( 1.0f, 0.5f, 0.25f );
-	ctx.appendPath( mPath );
-	ctx.stroke();
+	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
+	gl::draw( mPath );
 }
 
 
-CINDER_APP_BASIC( Path2dApp, Renderer2d )
+CINDER_APP_BASIC( Path2dApp, RendererGl )

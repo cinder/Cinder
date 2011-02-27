@@ -130,6 +130,25 @@ class ImageTarget : public ImageIo {
 	virtual void	setRow( int32_t row, const void *data ) { throw; }
 	virtual void	finalize() { }
 	
+	class Options {
+	  public:
+		Options() : mQuality( 0.9f ), mColorModelDefault( true ) {}
+		
+		Options& quality( float quality ) { mQuality = quality; return *this; }
+		Options& colorModel( ImageIo::ColorModel cm ) { mColorModelDefault = false; mColorModel = cm; return *this; }
+		
+		void	setColorModelDefault() { mColorModelDefault = true; }
+		
+		float				getQuality() const { return mQuality; }
+		bool				isColorModelDefault() const { return mColorModelDefault; }
+		ImageIo::ColorModel	getColorModel() const { return mColorModel; }
+		
+	  protected:
+		float					mQuality;
+		bool					mColorModelDefault;
+		ImageIo::ColorModel		mColorModel;
+	};
+	
   protected:
 	ImageTarget() {}	
 };
@@ -139,10 +158,10 @@ ImageSourceRef	loadImage( const std::string &path, std::string extension = "" );
 //! Loads an image from \a dataSource. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG
 ImageSourceRef	loadImage( DataSourceRef dataSource, std::string extension = "" );
 /** \brief Writes \a imageSource to \a dataTarget. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG **/
-void			writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, std::string extension = "" );
+void			writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, ImageTarget::Options options = ImageTarget::Options(), std::string extension = "" );
 /** Writes \a imageSource to file path \a path. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG
  * \note If \a path does not exist, the necessary directories are created automatically. **/
-void			writeImage( const std::string &path, const ImageSourceRef &imageSource, std::string extension = "" );
+void			writeImage( const std::string &path, const ImageSourceRef &imageSource, ImageTarget::Options options = ImageTarget::Options(), std::string extension = "" );
 /** \brief Writes \a imageSource to \a imageTarget. **/
 void			writeImage( ImageTargetRef imageTarget, const ImageSourceRef &imageSource );
 
@@ -170,10 +189,10 @@ class ImageIoExceptionIllegalChannelOrder : public ImageIoException {
 
 struct ImageIoRegistrar {
 	typedef ImageSourceRef (*SourceCreationFunc)( DataSourceRef );
-	typedef ImageTargetRef (*TargetCreationFunc)( DataTargetRef, ImageSourceRef, const std::string& );
+	typedef ImageTargetRef (*TargetCreationFunc)( DataTargetRef, ImageSourceRef, ImageTarget::Options options, const std::string& );
 
 	static ImageSourceRef	createSource( DataSourceRef dataSource, std::string extension );
-	static ImageTargetRef	createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, std::string extension );
+	static ImageTargetRef	createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, std::string extension );
 	
 	static void		registerSourceType( std::string extension, SourceCreationFunc func, int32_t priority = 2 );
 	static void		registerSourceGeneric( SourceCreationFunc func, int32_t priority = 2 );
@@ -188,7 +207,7 @@ struct ImageIoRegistrar {
 		void	registerTargetType( std::string extension, TargetCreationFunc func, int32_t priority, const std::string &extensionData );		
 
 		ImageSourceRef	createSource( DataSourceRef dataSource, std::string extension );
-		ImageTargetRef	createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, std::string extension );
+		ImageTargetRef	createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, std::string extension );
 	
 		std::map<std::string, std::multimap<int32_t,SourceCreationFunc> >	mSources;
 		std::map<int32_t, SourceCreationFunc>								mGenericSources;

@@ -22,8 +22,11 @@
 
 #pragma once
 
+#include "cinder/Cinder.h"
 #include "cinder/Surface.h"
 #include <windows.h>
+#undef min
+#undef max
 
 // forward declarations
 namespace Gdiplus {
@@ -33,16 +36,17 @@ namespace Gdiplus {
 
 namespace cinder { namespace msw {
 
-/** Copies the contents of a Gdiplus::Bitmap. \a premultiplied determines whether the result should be premultiplied by alpha **/
-Surface8u convertGdiplusBitmap( Gdiplus::Bitmap &bitmap, bool premultiplied );
+/** Copies the contents of a Gdiplus::Bitmap to a new Surface8u. **/
+Surface8u convertGdiplusBitmap( Gdiplus::Bitmap &bitmap );
 
-/** \brief Translates a cinder::SurfaceChannelOrder into a Gdiplus::PixelFormat 
-	Supports BGR, BGRX, BGRA. Returns PixelFormatUndefined on failure **/
+/** Translates a cinder::SurfaceChannelOrder into a Gdiplus::PixelFormat. Supports BGR, BGRX, BGRA. Returns PixelFormatUndefined on failure **/
 Gdiplus::PixelFormat surfaceChannelOrderToGdiplusPixelFormat( const SurfaceChannelOrder &sco, bool premultiplied );
 
-/** Creates a Gdiplus::Bitmap which wraps a cinder::Surface8u.
-	Requires \a surface to confrom to SurfaceConstraintsGdiPlus and throw SurfaceConstraintsExc if it does not. Caller is responsible for deleting the result.**/
-Gdiplus::Bitmap* createGdiplusBitmap( const Surface8u &surface, bool premultiplied );
+/** Translates a Gdiplus::PixelFormat \a format to a a SurfaceChannelOrder. Sets \a resultPremultiplied based on whether \a format is premultiplied. **/
+void gdiplusPixelFormatToSurfaceChannelOrder( Gdiplus::PixelFormat format, SurfaceChannelOrder *resultChannelOrder, bool *resultPremultiplied );
+
+/** Creates a Gdiplus::Bitmap which wraps a Surface8u. Requires \a surface to confrom to SurfaceConstraintsGdiPlus and throw SurfaceConstraintsExc if it does not. Caller is responsible for deleting the result.**/
+Gdiplus::Bitmap* createGdiplusBitmap( const Surface8u &surface );
 
 } } // namespace cinder::msw
 

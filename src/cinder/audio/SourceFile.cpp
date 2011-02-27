@@ -78,6 +78,8 @@ uint64_t LoaderSourceFile::getSampleOffset() const {
 
 void LoaderSourceFile::setSampleOffset( uint64_t anOffset ) {
 	mPacketOffset = mSource->packetAtSample( anOffset );
+	if( anOffset == 0 )
+		mConverter->reset();
 }
 
 void LoaderSourceFile::loadData( BufferList *ioData )
@@ -110,43 +112,34 @@ void SourceFile::registerSelf()
 		//registers no types on error
 		return;
 	}
-	uint32_t * audioTypes = (uint32_t *)malloc(propertySize);
+	uint32_t *audioTypes = (uint32_t *)malloc(propertySize);
 	err = AudioFileGetGlobalInfo(kAudioFileGlobalInfo_ReadableTypes, 0, NULL, &propertySize, audioTypes );
 	if( err ) {
 		//registers no types on error
-		free(audioTypes);
+		free( audioTypes );
 		return;
 	}
 	
 	int nTypes = propertySize / sizeof(uint32_t);
 	for( int i = 0; i < nTypes; i++ ) {
 		CFArrayRef extensions = NULL;
-		propertySize = sizeof(extensions);
-		err = AudioFileGetGlobalInfo(kAudioFileGlobalInfo_ExtensionsForType, sizeof(uint32_t), (UInt32 *)&audioTypes[i], &propertySize, &extensions);
-		if ( ! err ) {
+		propertySize = sizeof( CFArrayRef );
+		err = AudioFileGetGlobalInfo( kAudioFileGlobalInfo_ExtensionsForType, sizeof(uint32_t), (UInt32 *)&audioTypes[i], &propertySize, &extensions );
+		if( ! err ) {
 			CFIndex nExtensions = CFArrayGetCount(extensions);
 			for( int j = 0; j < nExtensions; j++ ) {
 				CFStringRef cfext = (CFStringRef)CFArrayGetValueAtIndex(extensions, j);
-				Boolean res = FALSE;
-				char * ext = NULL;
-				uint8_t extLen = 3;
-				while( ! res && extLen < 5 ) {
-					ext = new char[extLen];
-					res = CFStringGetCString( cfext, ext, extLen * sizeof(char), kCFStringEncodingASCII );
-					if( res ) {
-						IoRegistrar::registerSourceType( ext, sourceFunc, SOURCE_PRIORITY );
-					}
-					delete ext;
-					ext = NULL;
-					extLen++;
-				}
+				char extstr[32];
+				if( ::CFStringGetCString( cfext, extstr, 32, kCFStringEncodingUTF8 ) )
+					IoRegistrar::registerSourceType( extstr, sourceFunc, SOURCE_PRIORITY );
 			}
+			
+			::CFRelease( extensions );
 		}		
 	}
-	free(audioTypes);
+	free( audioTypes );
 	
 	IoRegistrar::registerSourceGeneric( sourceFunc, SOURCE_PRIORITY );
-	
 }
 
 SourceFileRef	SourceFile::createFileRef( DataSourceRef dataSourceRef ) {

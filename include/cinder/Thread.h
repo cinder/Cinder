@@ -23,16 +23,39 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#if defined( CINDER_COCOA )
+	#include "cinder/cocoa/CinderCocoa.h"
+#endif
 
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/thread/condition_variable.hpp>
 
 // Promote classes from boost which will be part of std:: in C++1x where necessary
 namespace std {
 	using boost::mutex;
+	using boost::recursive_mutex;
 	using boost::thread;
 	using boost::lock_guard;
 	using boost::unique_lock;
 	using boost::condition_variable;
 }
+
+namespace cinder {
+//! Create an instance of this class at the beginning of any multithreaded code that makes use of Cinder functionality
+class ThreadSetup {
+  public:
+	ThreadSetup() {
+	}
+	
+	~ThreadSetup() {	
+	}
+	
+  protected:
+#if defined( CINDER_COCOA )
+	cocoa::SafeNsAutoreleasePool	mAutoreleasePool;
+#endif
+};
+
+} // namespace cinder

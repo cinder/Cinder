@@ -7,12 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		005372F3118FD835004D686E /* MultiTouchApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CFDFDF11384CC60091E310 /* MultiTouchApp.cpp */; };
-		005372F5118FD835004D686E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
-		005372F6118FD835004D686E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
-		005372F7118FD835004D686E /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
-		005372F8118FD835004D686E /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
-		005372F9118FD835004D686E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
+		0087D06D12CD7CE9002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D06C12CD7CE9002CD69F /* CoreText.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
 		00CFDFE011384CC60091E310 /* MultiTouchApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CFDFDF11384CC60091E310 /* MultiTouchApp.cpp */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -22,13 +17,11 @@
 		C7B92F21121C83A500093AFE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F20121C83A500093AFE /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C7B92F23121C83A500093AFE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F22121C83A500093AFE /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C7B92F25121C83A500093AFE /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F24121C83A500093AFE /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		C7FB1B5A124BDD700045AFD2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92F20121C83A500093AFE /* AVFoundation.framework */; };
 		C7FB1C44124BE6870045AFD2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB1C43124BE6870045AFD2 /* AudioToolbox.framework */; settings = {ATTRIBUTES = (Required, ); }; };
-		C7FB1C63124BE6E90045AFD2 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7FB1C43124BE6870045AFD2 /* AudioToolbox.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		005372FD118FD835004D686E /* MultiTouch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiTouch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0087D06C12CD7CE9002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDFDF11384CC60091E310 /* MultiTouchApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MultiTouchApp.cpp; path = ../src/MultiTouchApp.cpp; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -45,20 +38,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		005372F4118FD835004D686E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				005372F5118FD835004D686E /* Foundation.framework in Frameworks */,
-				005372F6118FD835004D686E /* UIKit.framework in Frameworks */,
-				005372F7118FD835004D686E /* OpenGLES.framework in Frameworks */,
-				005372F8118FD835004D686E /* QuartzCore.framework in Frameworks */,
-				005372F9118FD835004D686E /* CoreGraphics.framework in Frameworks */,
-				C7FB1B5A124BDD700045AFD2 /* AVFoundation.framework in Frameworks */,
-				C7FB1C63124BE6E90045AFD2 /* AudioToolbox.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -72,6 +51,7 @@
 				C7B92F23121C83A500093AFE /* CoreMedia.framework in Frameworks */,
 				C7B92F25121C83A500093AFE /* CoreVideo.framework in Frameworks */,
 				C7FB1C44124BE6870045AFD2 /* AudioToolbox.framework in Frameworks */,
+				0087D06D12CD7CE9002CD69F /* CoreText.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,7 +77,6 @@
 			isa = PBXGroup;
 			children = (
 				1D6058910D05DD3D006BFB54 /* MultiTouch.app */,
-				005372FD118FD835004D686E /* MultiTouch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -143,6 +122,7 @@
 				C7B92F22121C83A500093AFE /* CoreMedia.framework */,
 				C7B92F24121C83A500093AFE /* CoreVideo.framework */,
 				C7FB1C43124BE6870045AFD2 /* AudioToolbox.framework */,
+				0087D06C12CD7CE9002CD69F /* CoreText.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -150,26 +130,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		005372F0118FD835004D686E /* MultiTouch_iPad */ = {
+		1D6058900D05DD3D006BFB54 /* MultiTouch_iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 005372FA118FD835004D686E /* Build configuration list for PBXNativeTarget "MultiTouch_iPad" */;
-			buildPhases = (
-				005372F1118FD835004D686E /* Resources */,
-				005372F2118FD835004D686E /* Sources */,
-				005372F4118FD835004D686E /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = MultiTouch_iPad;
-			productName = MultiTouch;
-			productReference = 005372FD118FD835004D686E /* MultiTouch.app */;
-			productType = "com.apple.product-type.application";
-		};
-		1D6058900D05DD3D006BFB54 /* MultiTouch_iPhone */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MultiTouch_iPhone" */;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MultiTouch_iOS" */;
 			buildPhases = (
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
@@ -179,7 +142,7 @@
 			);
 			dependencies = (
 			);
-			name = MultiTouch_iPhone;
+			name = MultiTouch_iOS;
 			productName = MultiTouch;
 			productReference = 1D6058910D05DD3D006BFB54 /* MultiTouch.app */;
 			productType = "com.apple.product-type.application";
@@ -203,20 +166,12 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1D6058900D05DD3D006BFB54 /* MultiTouch_iPhone */,
-				005372F0118FD835004D686E /* MultiTouch_iPad */,
+				1D6058900D05DD3D006BFB54 /* MultiTouch_iOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		005372F1118FD835004D686E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1D60588D0D05DD3D006BFB54 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -227,14 +182,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		005372F2118FD835004D686E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				005372F3118FD835004D686E /* MultiTouchApp.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1D60588E0D05DD3D006BFB54 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -246,55 +193,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		005372FB118FD835004D686E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MultiTouch_Prefix.pch;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
-				INFOPLIST_FILE = "MultiTouch_iOS-Info.plist";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"",
-					"-lz",
-				);
-				PRODUCT_NAME = MultiTouch;
-				SDKROOT = iphoneos4.1;
-				TARGETED_DEVICE_FAMILY = 2;
-			};
-			name = Debug;
-		};
-		005372FC118FD835004D686E /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				COPY_PHASE_STRIP = YES;
-				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = MultiTouch_Prefix.pch;
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
-				INFOPLIST_FILE = "MultiTouch_iOS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"",
-					"-lz",
-				);
-				PRODUCT_NAME = MultiTouch;
-				SDKROOT = iphoneos4.1;
-				TARGETED_DEVICE_FAMILY = 2;
-			};
-			name = Release;
-		};
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -315,7 +213,6 @@
 					"-lz",
 				);
 				PRODUCT_NAME = MultiTouch;
-				SDKROOT = iphoneos4.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -338,7 +235,6 @@
 					"-lz",
 				);
 				PRODUCT_NAME = MultiTouch;
-				SDKROOT = iphoneos4.1;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -357,7 +253,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" include";
 			};
 			name = Debug;
@@ -374,7 +270,7 @@
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
-				SDKROOT = iphoneos4.1;
+				SDKROOT = iphoneos;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" include";
 			};
 			name = Release;
@@ -382,16 +278,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		005372FA118FD835004D686E /* Build configuration list for PBXNativeTarget "MultiTouch_iPad" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				005372FB118FD835004D686E /* Debug */,
-				005372FC118FD835004D686E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MultiTouch_iPhone" */ = {
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MultiTouch_iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1D6058940D05DD3E006BFB54 /* Debug */,

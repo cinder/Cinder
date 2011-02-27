@@ -28,7 +28,7 @@ class AudioInputSampleApp : public AppBase {
 #endif
 	
 	audio::Input mInput;
-	boost::shared_ptr<float> mFftDataRef;
+	std::shared_ptr<float> mFftDataRef;
 	audio::PcmBuffer32fRef mPcmBuffer;
 };
 

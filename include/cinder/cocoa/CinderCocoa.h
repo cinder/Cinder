@@ -125,10 +125,8 @@ std::string	convertNsString( NSString *str );
 //! Converts a cinder::URL into a CFURLRef. User must call CFRelease() to free the result.
 CFURLRef createCfUrl( const cinder::Url &url );
 
-#if defined( CINDER_MAC )
 //! Converts a std::string to a CFAttributedStringRef with attributes set for \a font and \a color. Assumes UTF8 encoding. User must call CFRelease() to free the result.
 CFAttributedStringRef createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color );
-#endif
 
 //! Converts a cinder::Color to CGColor. User must call CGColorRelease() to free the result.
 CGColorRef createCgColor( const Color &color );
@@ -171,10 +169,12 @@ class ImageSourceCgImage : public ImageSource {
   protected:
 	//! Retains (and later releases) \a imageRef
 	ImageSourceCgImage( ::CGImageRef imageRef );
-	
-	bool						mIsIndexed;
+
+	bool						mIsIndexed, mIs16BitPacked;
 	Color8u						mColorTable[256];
 	std::shared_ptr<CGImage>	mImageRef;
+
+	uint16_t					m16BitPackedRedOffset, m16BitPackedGreenOffset, m16BitPackedBlueOffset;
 };
 
 ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef );
@@ -184,7 +184,7 @@ typedef std::shared_ptr<class ImageTargetCgImage> ImageTargetCgImageRef;
 
 class ImageTargetCgImage : public ImageTarget {
   public:
-	static ImageTargetCgImageRef createRef( ImageSourceRef imageSource );
+	static ImageTargetCgImageRef createRef( ImageSourceRef imageSource, ImageTarget::Options options );
 	~ImageTargetCgImage();
 
 	virtual void*	getRowPointer( int32_t row );
@@ -193,8 +193,8 @@ class ImageTargetCgImage : public ImageTarget {
 	::CGImageRef	getCgImage() const { return mImageRef; }
 
   protected:
-	ImageTargetCgImage( ImageSourceRef imageSource );
-	
+	ImageTargetCgImage( ImageSourceRef imageSource, ImageTarget::Options options );
+
 	::CGImageRef		mImageRef;
 	size_t				mBitsPerComponent, mBitsPerPixel, mRowBytes;
 	::CGBitmapInfo		mBitmapInfo;
@@ -203,7 +203,7 @@ class ImageTargetCgImage : public ImageTarget {
 };
 
 //! Loads an ImageSource into a new CGImageRef. Release the result with ::CGImageRelease.
-::CGImageRef createCgImage( ImageSourceRef imageSource );
+::CGImageRef createCgImage( ImageSourceRef imageSource, ImageTarget::Options = ImageTarget::Options() );
 
 
 } } // namespace cinder::cocoa

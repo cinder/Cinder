@@ -43,9 +43,9 @@ void ImageTargetFileUiImage::registerSelf()
 	ImageIoRegistrar::registerTargetType( "jpg", func, PRIORITY, "jpeg" ); ImageIoRegistrar::registerTargetType( "jpeg", func, PRIORITY, "jpeg" ); ImageIoRegistrar::registerTargetType( "jpe", func, PRIORITY, "jpeg" );
 }
 
-ImageTargetRef ImageTargetFileUiImage::createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, const string &extensionData )
+ImageTargetRef ImageTargetFileUiImage::createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
 {
-	return ImageTargetRef( new ImageTargetFileUiImage( dataTarget, imageSource, extensionData ) );
+	return ImageTargetRef( new ImageTargetFileUiImage( dataTarget, imageSource, options, extensionData ) );
 }
 
 namespace { // anonymous namespace
@@ -64,8 +64,8 @@ extern "C" void cgDataConsumerRelease( void *info )
 
 } // anonymous namespace
 
-ImageTargetFileUiImage::ImageTargetFileUiImage( DataTargetRef dataTarget, ImageSourceRef imageSource, const string &extensionData )
-	: ImageTargetCgImage( imageSource ), mExtension( extensionData ), mDataTarget( dataTarget )
+ImageTargetFileUiImage::ImageTargetFileUiImage( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
+	: ImageTargetCgImage( imageSource, options ), mExtension( extensionData ), mDataTarget( dataTarget ), mOptions( options )
 {
 }
 
@@ -82,7 +82,7 @@ void ImageTargetFileUiImage::finalize()
 		data = UIImagePNGRepresentation( image );
 	}
 	else if( mExtension == "jpeg" ) {
-		data = UIImageJPEGRepresentation( image, 1.0f );
+		data = UIImageJPEGRepresentation( image, mOptions.getQuality() );
 	}
 	
 	if( ! data )

@@ -29,6 +29,8 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
 		#include <ApplicationServices/ApplicationServices.h>
+	#elif defined( CINDER_COCOA_TOUCH )
+		#include <CoreText/CoreText.h>
 	#endif
 #elif defined( CINDER_MSW )
 	#define max(a, b) (((a) > (b)) ? (a) : (b))
@@ -47,7 +49,6 @@ using namespace std;
 
 namespace cinder {
 
-#if ! defined( CINDER_COCOA_TOUCH )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TextManager
 class TextManager : private boost::noncopyable
@@ -79,10 +80,6 @@ TextManager::TextManager()
 {
 #if defined( CINDER_MAC )
 #elif defined( CINDER_MSW )
-	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-	ULONG_PTR gdiplusToken;
-	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
-
 	mDummyDC = ::CreateCompatibleDC( 0 );
 	mGraphics = new Gdiplus::Graphics( mDummyDC );
 #endif
@@ -136,7 +133,7 @@ class Line {
 	void addRun( const Run &run ) { mRuns.push_back( run ); }
 
 	void calcExtents();
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 	void render( CGContextRef &cgContext, float currentY, float xBorder, float maxWidth );
 #elif defined( CINDER_MSW )
 	void render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth );
@@ -149,14 +146,14 @@ class Line {
 	float				mHeight, mWidth;
 	float				mLeadingOffset;
 	float				mDescent, mLeading, mAscent;
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 	CTLineRef			mCTLineRef;
 #endif
 };
 
 Line::Line()
 {
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 	mCTLineRef = 0;
 #endif
 	mLeadingOffset = 0;
@@ -164,7 +161,7 @@ Line::Line()
 
 Line::~Line()
 {
-#if	defined( CINDER_MAC )
+#if	defined( CINDER_COCOA )
 	if( mCTLineRef != 0 )
 		::CFRelease( mCTLineRef );
 #endif
@@ -173,7 +170,7 @@ Line::~Line()
  // sets the line's mWidth, mHeight, mAscent, mDescent, mLeading
 void Line::calcExtents()
 {
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 	CFMutableAttributedStringRef attrStr = ::CFAttributedStringCreateMutable( kCFAllocatorDefault, 0 );
 
 	// Defer internal consistency-checking and coalescing until we're done building this thing
@@ -221,7 +218,7 @@ void Line::calcExtents()
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
 }
 
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 void Line::render( CGContextRef &cgContext, float currentY, float xBorder, float maxWidth )
 {
 	if( mJustification == CENTERED )
@@ -362,7 +359,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 		return Surface();
 
 	// allocate the surface based on our collective extents
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 	result = Surface( pixelWidth, pixelHeight, useAlpha, (useAlpha)?SurfaceChannelOrder::RGBA:SurfaceChannelOrder::RGBX );
 	CGContextRef cgContext = cocoa::createCgBitmapContext( result );
 	ip::fill( &result, mBackgroundColor.premultiplied() );
@@ -388,7 +385,8 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	// prep our GDI and GDI+ resources
 	HDC dc = TextManager::instance()->getDc();
 	result = Surface8u( pixelWidth, pixelHeight, useAlpha, SurfaceConstraintsGdiPlus() );
-	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result, premultiplied );
+	result.setPremultiplied( premultiplied );
+	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result );
 	//Gdiplus::Bitmap *offscreenBitmap = new Gdiplus::Bitmap( pixelWidth, pixelHeight, (premultiplied) ? PixelFormat32bppPARGB : PixelFormat32bppARGB );
 	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
 	// high quality text rendering
@@ -415,7 +413,6 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 
 	return result;
 }
-#endif // ! defined( CINDER_COCOA_TOUCH )
 
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -492,7 +489,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	// prep our GDI and GDI+ resources
 	::HDC dc = TextManager::instance()->getDc();
 	Surface result( pixelWidth, pixelHeight, true, SurfaceConstraintsGdiPlus() );
-	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result, false );
+	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result );
 	//Gdiplus::Bitmap *offscreenBitmap = new Gdiplus::Bitmap( pixelWidth, pixelHeight, (premultiplied) ? PixelFormat32bppPARGB : PixelFormat32bppARGB );
 	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
 	// high quality text rendering

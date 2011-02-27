@@ -227,7 +227,14 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "basicApp" */;
 			compatibilityVersion = "Xcode 3.0";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* basicApp */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -299,7 +306,6 @@
 				);
 				OTHER_LDFLAGS = (
 					"../../../lib/libcinder-x86_64_d.a",
-					"",
 					"-lz",
 				);
 				PRODUCT_NAME = basicApp;
@@ -335,7 +341,6 @@
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = (
 					"../../../lib/libcinder-x86_64.a",
-					"",
 				);
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO;
 				PRODUCT_NAME = basicApp;

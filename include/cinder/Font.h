@@ -37,6 +37,8 @@
 	#endif
 #elif defined( CINDER_MSW )
 	#include <windows.h>
+	#undef min
+	#undef max
 
 	namespace Gdiplus {
 		class Font;
@@ -45,6 +47,7 @@
 
 namespace cinder {
 
+//! Represents an instance of a font at a point size. \ImplShared
 class Font {
  public:
 	typedef uint16_t		Glyph;		
@@ -67,7 +70,6 @@ class Font {
 	float					getDescent() const;
 	size_t					getNumGlyphs() const;
 
-#if ! defined( CINDER_COCOA_TOUCH )	
 	Glyph					getGlyphIndex( size_t idx );
 	Glyph					getGlyphChar( char utf8Char );
 	std::vector<Glyph>		getGlyphs( const std::string &utf8String );
@@ -75,13 +77,10 @@ class Font {
 	Shape2d					getGlyphShape( Glyph glyphIndex );
 	
 	static const std::vector<std::string>&		getNames( bool forceRefresh = false );
-#endif
 
 #if defined( CINDER_COCOA )
 	CGFontRef				getCgFontRef() const;
-  #if defined( CINDER_MAC )
 	CTFontRef				getCtFontRef() const;
-  #endif
 #elif defined( CINDER_MSW )
 	::LOGFONT				getLogfont() const { return mObj->mLogFont; }
 	const Gdiplus::Font*	getGdiplusFont() const { return mObj->mGdiplusFont.get(); }
@@ -101,9 +100,7 @@ class Font {
 		float					mSize;
 #if defined( CINDER_COCOA )
 		CGFontRef				mCGFont;
-	#if defined( CINDER_MAC )		
 		const struct __CTFont*	mCTFont;
-	#endif
 #elif defined( CINDER_MSW )
 		::TEXTMETRIC					mTextMetric;
 		::LOGFONTW						mLogFont;
@@ -126,6 +123,12 @@ class Font {
 };
 
 class FontInvalidNameExc : public cinder::Exception {
+  public:
+	FontInvalidNameExc() throw() {}
+	FontInvalidNameExc( const std::string &fontName ) throw() { sprintf( mMessage, "%s", fontName.c_str() ); }
+	virtual const char* what() const throw() { return mMessage; }	
+  private:
+	char mMessage[2048];	
 };
 
 class FontGlyphFailureExc : public cinder::Exception {
