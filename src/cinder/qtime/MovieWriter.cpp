@@ -222,7 +222,7 @@ MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, c
 	mCurrentTimeValue = 0;
 	mNumFrames = 0;
 }
-	
+
 void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float duration )
 {
 	if( mFinished )
