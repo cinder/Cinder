@@ -407,6 +407,7 @@ App::Settings::Settings()
 	mShouldQuit = false;
 	mFullScreen = false;
 	mResizable = true;
+    mChromeless = false;
 	mWindowSizeX = 640;
 	mWindowSizeY = 480;
     mWindowPositionX = -1;

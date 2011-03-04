@@ -79,9 +79,16 @@ class App {
 
 		//! a value of true allows screensavers or the system's power management to hide the app. Default value is \c false.
 		void	enablePowerManagement( bool aPowerManagement = true );
-
+        
 		//! is the application set to run at fullscreen
 		bool	isFullScreen() const { return mFullScreen; }
+        
+        //! is the application set to run without frame borders
+        bool    isChromeless() const { return mChromeless; }
+        
+        //! sets the window to be created without frame borders
+        void    setChromeless( bool aChromeless ) { mChromeless = aChromeless; }
+        
 		//! width of the application's window specified in pixels
 		int		getWindowWidth() const { return mWindowSizeX; }
 		//! height of the application's window specified in pixels
@@ -125,6 +132,7 @@ class App {
 		float			mFrameRate;
 		bool			mResizable; // window is Resizable. default: true
 		bool			mPowerManagement; // allow screensavers or power management to hide app. default: false
+        bool            mChromeless; // window has no ui decoration. default: false
 		std::string		mTitle;
 	};
 

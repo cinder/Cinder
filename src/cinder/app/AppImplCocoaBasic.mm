@@ -109,12 +109,19 @@
     }
     
     if(app->getSettings().getWindowPositionY() != -1) {
+        offsetY = app->getSettings().getWindowPositionY();        
+        
         CGFloat cgMenuBarHeight = [[[NSApplication sharedApplication] mainMenu] menuBarHeight];
-        int menuBarHeight = (int) cgMenuBarHeight + 1; 
-        offsetY = app->getSettings().getWindowPositionY() + menuBarHeight;
+        int menuBarHeight = static_cast<int>(cgMenuBarHeight) + 1; 
+
+        if(!app->getSettings().isChromeless() && offsetY < menuBarHeight)
+            offsetY = menuBarHeight;
     }
         
-	NSRect winRect = NSMakeRect( offsetX, mDisplay->getHeight() - offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
+    int posY = (mDisplay->getHeight() - app->getSettings().getWindowHeight()) -offsetY;
+    NSLog(@"posY %i", posY);
+    
+	NSRect winRect = NSMakeRect( offsetX, posY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
 	unsigned int myStyleMask = NSTitledWindowMask;
 	
 	if( app->getSettings().isResizable() ) {
@@ -141,6 +148,15 @@
     mWindowPositionX = offsetX;
     mWindowPositionY = offsetY;    
 		
+    // Override settings if window is chromeless
+    if( app->getSettings().isChromeless() ) {
+        [win setStyleMask: NSBorderlessWindowMask];
+        [win setLevel: NSScreenSaverWindowLevel];
+        [self setWindowPositionY: offsetY];
+    }
+    
+    NSLog(@"window position %i %i", mWindowPositionX, mWindowPositionY);
+    
 	[self startAnimationTimer];
 	[win makeKeyAndOrderFront:nil];
 	[win setInitialFirstResponder:cinderView];
@@ -152,6 +168,17 @@
 	if( app->getSettings().isMultiTouchEnabled() )
 		[cinderView setMultiTouchDelegate:self];
 #endif
+}
+
+// In order to receive keyboard events, we need to be able to be the key window.
+// By default this would be YES, except if we don't have a title bar, for example in fullscreen mode.  We want to always be able to become the key window and the main window.
+-(BOOL)canBecomeMainWindow {
+    return YES;
+}
+
+// Chromeless windows that use the NSBorderlessWindowMask can't become key by default. Override this method so that controls in this window will be enabled.
+- (BOOL)canBecomeKeyWindow {
+    return YES;
 }
 
 - (void)destroyWindow
