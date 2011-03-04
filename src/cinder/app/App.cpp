@@ -489,7 +489,8 @@ App::Settings::Settings()
 	mResizable = true;
 	mWindowSizeX = 640;
 	mWindowSizeY = 480;
-		
+    mWindowPositionX = -1;
+    mWindowPositionY = -1;
 	mPowerManagement = false;
 	mFrameRate = 60.0f;
 }
@@ -498,6 +499,12 @@ void App::Settings::setWindowSize( int aWindowSizeX, int aWindowSizeY )
 {
 	mWindowSizeX = aWindowSizeX;
 	mWindowSizeY = aWindowSizeY;
+}
+    
+void App::Settings::setWindowPosition( int aWindowPositionX, int aWindowPositionY )
+{
+    mWindowPositionX = aWindowPositionX;
+    mWindowPositionY = aWindowPositionY;
 }
 	
 void App::Settings::setFrameRate( float aFrameRate )

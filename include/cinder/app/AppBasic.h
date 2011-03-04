@@ -129,6 +129,17 @@ class AppBasic : public App {
 	//! Sets the size of the App's window. Ignored in full-screen mode.
 	void			setWindowSize( int windowWidth, int windowHeight );
 
+    //! Returns the X coordinate of the top-left-corner of the window.
+    virtual int     getWindowPositionX() const;
+    //! Sets the X coordinate of the top-left corner of the window.
+    void            setWindowPositionX( int x );
+    //! Returns the Y coordinate of the top-left corner of the window.
+    virtual int     getWindowPositionY() const;
+    //! Sets the Y coordinate of the top-left corner of the window.
+    void            setWindowPositionY( int y );
+    //! Sets the X & Y coordinates of the top-left corner of the window.
+    void            setWindowPosition(int x, int y);
+    
 	//! Returns the maximum frame-rate the App will attempt to maintain measured in frames-per-second
 	virtual float		getFrameRate() const;
 	//! Sets the maximum frame-rate the App will attempt to maintain \ a frameRate frames-per-second

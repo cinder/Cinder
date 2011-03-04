@@ -102,13 +102,25 @@
 - (void)createWindow
 {
 	int offsetX = ( mDisplay->getWidth() - app->getSettings().getWindowWidth() ) / 2;
-	int offsetY = ( mDisplay->getHeight() - app->getSettings().getWindowHeight() ) / 2;	
-	NSRect winRect = NSMakeRect( offsetX, offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
+	int offsetY = ( mDisplay->getHeight() - app->getSettings().getWindowHeight() ) / 2;
+	
+    if(app->getSettings().getWindowPositionX() != -1) {
+        offsetX = app->getSettings().getWindowPositionX();
+    }
+    
+    if(app->getSettings().getWindowPositionY() != -1) {
+        CGFloat cgMenuBarHeight = [[[NSApplication sharedApplication] mainMenu] menuBarHeight];
+        int menuBarHeight = (int) cgMenuBarHeight + 1; 
+        offsetY = app->getSettings().getWindowPositionY() + menuBarHeight;
+    }
+        
+	NSRect winRect = NSMakeRect( offsetX, mDisplay->getHeight() - offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
 	unsigned int myStyleMask = NSTitledWindowMask;
 	
 	if( app->getSettings().isResizable() ) {
 		myStyleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
 	}
+    
 	win = [[NSWindow alloc] initWithContentRect:winRect
 									  styleMask:myStyleMask
 										backing:NSBackingStoreBuffered
@@ -125,6 +137,9 @@
 
 	mWindowWidth = static_cast<int>( winRect.size.width );
 	mWindowHeight = static_cast<int>( winRect.size.height );
+
+    mWindowPositionX = offsetX;
+    mWindowPositionY = offsetY;    
 		
 	[self startAnimationTimer];
 	[win makeKeyAndOrderFront:nil];
@@ -302,6 +317,36 @@
 {
 	mWindowWidth = w;
 	mWindowHeight = h;
+}
+
+- (int)getWindowPositionX
+{
+    return mWindowPositionX;
+}
+
+- (void)setWindowPositionX:(int)x
+{
+    [self setWindowPositionWithLeft: x top: [self getWindowPositionY]];
+}
+
+- (int)getWindowPositionY
+{
+    return mWindowPositionY;    
+}
+
+- (void)setWindowPositionY:(int)y
+{
+    [self setWindowPositionWithLeft: [self getWindowPositionX] top: y];
+}
+
+- (void)setWindowPositionWithLeft:(int)x top:(int)y;
+{
+    NSPoint p;
+    p.x = x;
+    p.y = mDisplay->getHeight() - y;
+    mWindowPositionX = x;
+    mWindowPositionY = y;
+    [win setFrameTopLeftPoint: p];
 }
 
 - (void)windowChangedScreen:(NSNotification*)inNotification

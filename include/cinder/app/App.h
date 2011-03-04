@@ -75,6 +75,9 @@ class App {
 		//! width and height of the window when applicable
 		void	setWindowSize( int aWindowSizeX, int aWindowSizeY );
 
+        //! position of the window on the screen
+        void    setWindowPosition( int aWindowPositionX, int aWindowPositionY );
+        
 		//! The maximum frameRate the update/draw loop will execute at, specified in frames per second. Default value is 30 FPS
 		void	setFrameRate( float aFrameRate );
 
@@ -91,7 +94,16 @@ class App {
 		Vec2i	getWindowSize() const { return Vec2i( mWindowSizeX, mWindowSizeY ); }
 		//! the size of the application's window specified in pixels. \return cinder::Area( 0, 0, width in pixels, height in pixels )
 		Area	getWindowBounds() const { return Area( 0, 0, mWindowSizeX, mWindowSizeY ); }
+
+		//! position of the window in pixels on screen from left in pixels
+        int getWindowPositionX() const { return mWindowPositionX; }
+        
+		//! position of the window on screen from top in pixels
+        int getWindowPositionY() const { return mWindowPositionY; }
 		
+        //! position of the window on screen in pixels
+        Vec2i getWindowPosition() const { return Vec2i(mWindowPositionX, mWindowPositionY); }
+        
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
 		const std::string& getTitle() const { return mTitle; }
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
@@ -110,6 +122,9 @@ class App {
 	  
 		bool			mShouldQuit; // defaults to false, facilitates early termination
 		int				mWindowSizeX, mWindowSizeY; // default: 640x480
+
+        int             mWindowPositionX, mWindowPositionY; // default: -1, -1
+            
 		bool			mFullScreen; // window covers screen. default: false
 		float			mFrameRate;
 		bool			mResizable; // window is Resizable. default: true
@@ -253,6 +268,18 @@ class App {
 	//! Returns the bounding area of the App's window or the screen in full-screen mode.
 	/** Equivalent to \code Area( 0, 0, getWindowWidth(), getWindowHeight() ); \endcode **/	
 	Area				getWindowBounds() const { return Area( 0, 0, getWindowWidth(), getWindowHeight() ); }
+
+    //! Returns the X coordinate of the top-left-corner of the window if applicable.
+    virtual int         getWindowPositionX() const { return 0; }
+    //! Sets the X coordinate of the top-left corner of the window if applicable.
+    virtual void        setWindowPositionX( int x ) {}
+    //! Returns the Y coordinate of the top-left corner of the window if applicable.
+    virtual int         getWindowPositionY() const { return 0; }
+    //! Sets the Y coordinate of the top-left corner of the window if applicable.
+    virtual void        setWindowPositionY( int y ) {}
+    //! Sets the X & Y coordinates of the top-left corner of the window.
+    virtual void        setWindowPosition(int x, int y) {}
+    
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const = 0;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
