@@ -54,8 +54,10 @@ class InterfaceGl {
 	//! Adds enumerated parameter. The value corresponds to the indices of \a enumNames.
 	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr = "", bool readOnly = false );
 	void	addSeparator( const std::string &name = "", const std::string &optionsStr = "" );
+	void	addText( const std::string &name = "", const std::string &optionsStr = "" );
 	void	addButton( const std::string &name, const std::function<void()> &callback, const std::string &optionsStr = "" );
-	
+	void	setOptions( const std::string &name = "", const std::string &optionsStr = "" );
+
  protected:
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly ); 
 

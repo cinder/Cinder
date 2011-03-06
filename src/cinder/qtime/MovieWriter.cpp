@@ -88,7 +88,7 @@ MovieWriter::Format::Format( const ICMCompressionSessionOptionsRef options, uint
 }
 
 MovieWriter::Format::Format( const Format &format )
-	: mCodec( format.mCodec ), mTimeBase( format.mTimeBase ), mDefaultTime( format.mDefaultTime ), mGamma( format.mGamma ), mEnableMultiPass( format.mEnableMultiPass )
+	: mCodec( format.mCodec ), mTimeBase( format.mTimeBase ), mDefaultTime( format.mDefaultTime ), mGamma( format.mGamma ), mEnableMultiPass( format.mEnableMultiPass ), mQualityFloat( format.mQualityFloat )
 {
 	::ICMCompressionSessionOptionsCreateCopy( NULL, format.mOptions, &mOptions );
 }
@@ -115,8 +115,8 @@ void MovieWriter::Format::initDefaults()
 
 MovieWriter::Format& MovieWriter::Format::setQuality( float quality )
 {
-	quality = constrain<float>( quality, 0, 1 );
-	CodecQ compressionQuality = CodecQ(0x00000400 * quality);
+	mQualityFloat = constrain<float>( quality, 0, 1 );
+	CodecQ compressionQuality = CodecQ(0x00000400 * mQualityFloat);
 	OSStatus err = ICMCompressionSessionOptionsSetProperty( mOptions,
                                 kQTPropertyClass_ICMCompressionSessionOptions,
                                 kICMCompressionSessionOptionsPropertyID_Quality,
@@ -125,10 +125,20 @@ MovieWriter::Format& MovieWriter::Format::setQuality( float quality )
 	return *this;
 }
 
+bool MovieWriter::Format::isTemporal() const
+{
+	return ::ICMCompressionSessionOptionsGetAllowTemporalCompression( mOptions );
+}
+
 MovieWriter::Format& MovieWriter::Format::enableTemporal( bool enable )
 {
 	OSStatus err = ::ICMCompressionSessionOptionsSetAllowTemporalCompression( mOptions, enable );
 	return *this;
+}
+
+bool MovieWriter::Format::isReordering() const
+{
+	return ::ICMCompressionSessionOptionsGetAllowFrameReordering( mOptions );
 }
 
 MovieWriter::Format& MovieWriter::Format::enableReordering( bool enable )
@@ -137,10 +147,20 @@ MovieWriter::Format& MovieWriter::Format::enableReordering( bool enable )
 	return *this;
 }
 
+bool MovieWriter::Format::isFrameTimeChanges() const
+{
+	return ::ICMCompressionSessionOptionsGetAllowFrameTimeChanges( mOptions );
+}
+
 MovieWriter::Format& MovieWriter::Format::enableFrameTimeChanges( bool enable )
 {
 	OSStatus err = ::ICMCompressionSessionOptionsSetAllowFrameTimeChanges( mOptions, enable );
 	return *this;
+}
+
+int32_t MovieWriter::Format::getMaxKeyFrameRate() const
+{
+	return ::ICMCompressionSessionOptionsGetMaxKeyFrameInterval( mOptions );
 }
 
 MovieWriter::Format& MovieWriter::Format::setMaxKeyFrameRate( int32_t rate )
