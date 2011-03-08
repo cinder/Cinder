@@ -67,8 +67,11 @@ template<typename T> class Vec3;
 template<typename T>
 class Vec2
 {
- public:
-	T x,y;
+public:
+	union {
+		struct { T x,y; };
+		struct { T w,h; };
+	};
 
 	typedef T							TYPE;
 	typedef typename VECTRAIT<T>::DIST	DIST;
@@ -903,12 +906,22 @@ template<typename T,typename Y> inline Vec4<T> operator *( Y s, const Vec4<T> &v
 template<typename T,typename Y> inline Vec4<T> operator *( const Vec4<T> &v, Y s ) { return Vec4<T>( v.x * s, v.y * s, v.z * s, v.w * s ); }
 
 
+typedef Vec2<int>		Vec2i;
+typedef Vec2<int>		vec2i;
 typedef Vec2<float>		Vec2f;
+typedef Vec2<float>		vec2f;
 typedef Vec2<double>	Vec2d;
+typedef Vec2<double>	vec2d;
+typedef Vec3<int>		Vec3i;
+typedef Vec3<int>		vec3i;
 typedef Vec3<float>		Vec3f;
+typedef Vec3<float>		vec3f;
 typedef Vec3<double>	Vec3d;
+typedef Vec3<double>	vec3d;
 typedef Vec4<float>		Vec4f;
+typedef Vec4<float>		vec4f;
 typedef Vec4<double>	Vec4d;
+typedef Vec4<double>	vec4d;
 typedef Vec2<int>		Vec2i;
 
 } // namespace cinder

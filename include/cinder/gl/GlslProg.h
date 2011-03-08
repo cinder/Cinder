@@ -67,11 +67,13 @@ class GlslProg {
 
 	std::string		getShaderLog( GLuint handle ) const;
 
+	void			link();
+
   protected:
 	void			loadShader( Buffer shaderSourceBuffer, GLint shaderType );
 	void			loadShader( const char *shaderSource, GLint shaderType );
 	void			attachShaders();
-	void			link();
+//	void			link();
 
 	struct Obj {
 		Obj() : mHandle( 0 ) {}

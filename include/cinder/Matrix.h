@@ -776,8 +776,13 @@ Matrix44<T> lastFrame(
 );
 
 typedef Matrix22<float>	 Matrix22f;
+typedef Matrix22<float>	 mat2f;
 typedef Matrix22<double> Matrix22d;
+typedef Matrix22<double> mat2d;
 typedef Matrix44<float>	 Matrix44f;
+typedef Matrix44<float>	 mat4f;
 typedef Matrix44<double> Matrix44d;
+typedef Matrix44<double> mat4d;
 
 } // namespace cinder
+
