@@ -87,7 +87,9 @@ class MovieBase {
 	bool		hasVisuals() const;
 	//! Returns whether a movie contains at least one audio track, defined as Sound, Music, or MPEG tracks
 	bool		hasAudio() const;
-	
+
+	//! Returns whether a movie has a new frame available
+	bool		checkNewFrame();
 
 	//! Returns the current time of a movie in seconds
 	float		getCurrentTime() const;
