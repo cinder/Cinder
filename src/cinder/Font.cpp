@@ -57,20 +57,17 @@ class FontManager
  public:
 	static FontManager*		instance();
 
-	const vector<string>&		getNames( bool forceRefresh );
-	
-	bool	mFontsEnumerated;
-
-	friend class Font;
-
+	const vector<string>&	getNames( bool forceRefresh );
+	Font					getDefault() const { return mDefault; }
  private:
 	FontManager();
 	~FontManager();
 
 	static FontManager	*sInstance;
 
+	bool				mFontsEnumerated;
 	vector<string>		mFontNames;
-
+	Font				mDefault;
 #if defined( CINDER_MSW )
 	HDC					getFontDc() const { return mFontDc; }
 	Gdiplus::Graphics*	getGraphics() const { return mGraphics; }
@@ -83,6 +80,8 @@ class FontManager
 	HDC					mFontDc;
 	Gdiplus::Graphics	*mGraphics;
 #endif
+
+	friend class Font;
 };
 
 FontManager *FontManager::sInstance = 0;
@@ -97,6 +96,8 @@ FontManager::FontManager()
 	mFontDc = ::CreateCompatibleDC( NULL );
 	mGraphics = new Gdiplus::Graphics( mFontDc );
 #endif
+
+	mDefault = Font( "Arial", 12 );
 }
 
 FontManager::~FontManager()
@@ -156,7 +157,6 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 	return mFontNames;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Font
 Font::Font( const string &name, float size )
@@ -172,6 +172,11 @@ Font::Font( DataSourceRef dataSource, float size )
 const vector<string>& Font::getNames( bool forceRefresh )
 {
 	return FontManager::instance()->getNames( forceRefresh );
+}
+
+Font Font::getDefault()
+{
+	return FontManager::instance()->getDefault();
 }
 
 const std::string& Font::getName() const
