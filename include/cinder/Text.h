@@ -26,10 +26,16 @@
 
 #include "cinder/Surface.h"
 #include "cinder/Font.h"
+#include "cinder/Vector.h"
 
 #include <vector>
 #include <deque>
 #include <string>
+
+// Core Text forward declarations
+#if defined( CINDER_COCOA )
+typedef struct __CTFrame;
+#endif
 
 namespace cinder {
 
@@ -85,10 +91,66 @@ class TextLayout {
 	Consider gl::drawString() as a more convenient alternative.
 **/
 
+class TextBox {
+  public:
+	typedef enum Alignment { LEFT, CENTER, RIGHT } Alignment;
+	enum { GROW = 0 };
+	
+	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ) {}
+
+	TextBox				size( Vec2i sz ) { TextBox result( *this ); result.setSize( sz ); return result; }
+	TextBox				size( int width, int height ) { TextBox result( *this ); result.setSize( Vec2i( width, height ) ); return result; }
+	Vec2i				getSize() const { return mSize; }
+	void				setSize( Vec2i sz ) { mSize = sz; mInvalid = true; }
+
+	TextBox				text( const std::string &t ) { TextBox result( *this ); result.setText( t ); return result; }
+	const std::string&	getText() const { return mText; }
+	void				setText( const std::string &t ) { mText = t; mInvalid = true; }
+	void				appendText( const std::string &t ) { mText += t; mInvalid = true; }
+
+	TextBox				font( const Font &f ) { TextBox result( *this ); result.setFont( f ); return result; }
+	const Font&			getFont() const { return mFont; }
+	void				setFont( const Font &f ) { mFont = f; mInvalid = true; }
+
+	TextBox				alignment( Alignment align ) { TextBox result( *this ); result.setAlignment( align ); return result; }
+	Alignment			getAlignment() const { return mAlign; }
+	void				setAlignment( Alignment align ) { mAlign = align; mInvalid = true; }
+
+	TextBox				color( ColorA color ) { TextBox result( *this ); result.setColor( color ); return result; }
+	ColorA				getColor() const { return mColor; }
+	void				setColor( ColorA color ) { mColor = color; }
+
+	TextBox				backgroundColor( ColorA bgColor ) { TextBox result( *this ); result.setBackgroundColor( bgColor ); return result; }
+	ColorA				getBackgroundColor() const { return mBackgroundColor; }
+	void				setBackgroundColor( ColorA bgColor ) { mBackgroundColor = bgColor; }
+
+	TextBox				premultiplied( bool premult = true ) { TextBox result( *this ); result.setPremultiplied( premult ); return result; }
+	bool				getPremultiplied() const { return mPremultiplied; }
+	void				setPremultiplied( bool premult ) { mPremultiplied = premult; }
+
+	Vec2i				measure() const;
+	Surface				render( Vec2f offset = Vec2f::zero() );
+
+  protected:
+#if defined( CINDER_COCOA )
+	std::shared_ptr<const __CTFrame>	createFrame( const std::string &str, const Area &area, const Font &font, Vec2i size, const ColorA &textColor );
+#endif
+
+	Alignment		mAlign;
+	Vec2i			mSize;
+	std::string		mText;
+	Font			mFont;
+	ColorA			mColor, mBackgroundColor;
+	bool			mPremultiplied;
+	mutable bool	mInvalid;
+};
+
 #if defined( CINDER_COCOA_TOUCH )
 Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset = 0 );
 #else
 Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset = 0 );
 #endif
+
+Surface renderStringBox( const std::string &str, const Area &area, const Font &font, const ColorA &textColor = ColorA( 1, 1, 1, 1), const ColorA &backgroundColor = ColorA( 0, 0, 0, 0 ), bool premultiplied = true );
 
 } // namespace cinder

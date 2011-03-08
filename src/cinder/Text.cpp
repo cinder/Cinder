@@ -516,4 +516,149 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 }
 #endif
 
+Surface renderStringBox( const std::string &str, const Area &area, const Font &font, const ColorA &textColor, const ColorA &backgroundColor, bool premultiplied )
+{
+#if defined( CINDER_COCOA )
+	Surface result( area.getWidth(), area.getHeight(), true, SurfaceChannelOrder::RGBA );
+	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
+	ip::fill( &result, backgroundColor );
+
+	CGMutablePathRef boxPath = ::CGPathCreateMutable();
+	::CGPathAddRect( boxPath, NULL, cocoa::createCgRect( area ) );
+	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( str, font, textColor );
+	CTFramesetterRef framesetter = ::CTFramesetterCreateWithAttributedString( attrStr );
+	CTFrameRef frame = ::CTFramesetterCreateFrame( framesetter, CFRangeMake( 0, 0 ), boxPath, NULL );
+	::CTFrameDraw( frame, cgContext );
+	::CGContextFlush( cgContext );
+	::CGContextRelease( cgContext );
+
+	if( ! premultiplied )
+		ip::unpremultiply( &result );
+	else
+		result.setPremultiplied( true );
+#elif defined( CINDER_MSW )
+	// I don't have a great explanation for this other than it seems to be necessary
+	pixelHeight += 1;
+	// prep our GDI and GDI+ resources
+	::HDC dc = TextManager::instance()->getDc();
+	Surface result( pixelWidth, pixelHeight, true, SurfaceConstraintsGdiPlus() );
+	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result );
+	//Gdiplus::Bitmap *offscreenBitmap = new Gdiplus::Bitmap( pixelWidth, pixelHeight, (premultiplied) ? PixelFormat32bppPARGB : PixelFormat32bppARGB );
+	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
+	// high quality text rendering
+	offscreenGraphics->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
+	// fill the surface with the background color
+	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(0), (BYTE)(0), 
+			(BYTE)(0), (BYTE)(0) ) );
+
+	// walk the lines and render them, advancing our Y offset along the way
+	float currentY = 0;
+	currentY += line.mLeadingOffset + line.mLeading;
+	line.render( offscreenGraphics, currentY, (float)0, (float)pixelWidth );
+
+	::GdiFlush();
+
+	delete offscreenBitmap;
+	delete offscreenGraphics;		
+#endif	
+
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TextBox
+#if defined( CINDER_COCOA )
+Vec2f measureFrame( CTFrameRef frame )
+{
+	CFArrayRef lines = ::CTFrameGetLines( frame );
+	size_t numLines = ::CFArrayGetCount( lines );
+	CGFloat ascent, descent, leading;
+	CGFloat height = 0;
+	double width = 0;
+	for( CFIndex index = 0; index < numLines; index++){
+		CTLineRef line = (CTLineRef)::CFArrayGetValueAtIndex( lines, index );
+		width = std::max( ::CTLineGetTypographicBounds( line, &ascent, &descent, &leading ), width );
+		height += ascent + fabs(descent) + leading;
+	}
+
+	return Vec2f( width, height );
+}
+
+shared_ptr<const __CTFrame> TextBox::createFrame( const std::string &str, const Area &area, const Font &font, Vec2i size, const ColorA &textColor )
+{
+	CGMutablePathRef boxPath = ::CGPathCreateMutable();
+	::CGPathAddRect( boxPath, NULL, cocoa::createCgRect( area ) );
+	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( str, font, textColor );
+	CTFramesetterRef framesetter = ::CTFramesetterCreateWithAttributedString( attrStr );
+	CTFrameRef frame = ::CTFramesetterCreateFrame( framesetter, CFRangeMake( 0, 0 ), boxPath, NULL );
+	
+	::CGPathRelease( boxPath );
+	::CFRelease( attrStr );
+	::CFRelease( framesetter );
+	
+	return shared_ptr<const __CTFrame>( frame, ::CFRelease );
+}
+
+Vec2i TextBox::measure() const
+{
+	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor );
+	CTFramesetterRef framesetter = ::CTFramesetterCreateWithAttributedString( attrStr );
+
+	CGSize constraints = { ( mSize.x <= GROW ) ? CGFLOAT_MAX : mSize.x, ( mSize.y <= GROW ) ? CGFLOAT_MAX : mSize.y };
+	CFRange fitRange, fullRange = { 0, 0 };
+	CGSize fitSize = ::CTFramesetterSuggestFrameSizeWithConstraints( framesetter, fullRange, 0, constraints, &fitRange );
+	
+	::CFRelease( attrStr );
+	::CFRelease( framesetter );
+	
+	return Vec2i( math<float>::ceil( fitSize.width ), math<float>::ceil( fitSize.height ) );
+}
+
+Surface	TextBox::render( Vec2f offset )
+{
+	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor );
+	CTFramesetterRef framesetter = ::CTFramesetterCreateWithAttributedString( attrStr );
+	float sizeX = mSize.x, sizeY = mSize.y;
+	if( mSize.x <= GROW || mSize.y <= GROW ) {
+		const float HUGE_SIZE = 1000000.0f;
+		CGSize constraints = { ( mSize.x <= GROW ) ? CGFLOAT_MAX : mSize.x, ( mSize.y <= GROW ) ? CGFLOAT_MAX : mSize.y };
+		CGMutablePathRef boxPath = ::CGPathCreateMutable();
+		::CGPathAddRect( boxPath, NULL, cocoa::createCgRect( Area( 0, 0, mSize.x <= GROW ? HUGE_SIZE : mSize.x, mSize.y <= GROW ? HUGE_SIZE : mSize.y ) ) );
+		CTFrameRef frame = ::CTFramesetterCreateFrame( framesetter, CFRangeMake( 0, 0 ), boxPath, NULL );
+		
+		Vec2f measurements = measureFrame( frame );
+		sizeX = measurements.x;
+		sizeY = measurements.y;
+		
+		::CGPathRelease( boxPath );
+		::CFRelease( frame );
+	}
+	sizeX = math<float>::ceil( sizeX );
+	sizeY = math<float>::ceil( sizeY );
+	CGMutablePathRef boxPath = ::CGPathCreateMutable();
+	::CGPathAddRect( boxPath, NULL, cocoa::createCgRect( Area( 0, 0, ceil(sizeX), ceil(sizeY) ) ) );
+	CTFrameRef frame = ::CTFramesetterCreateFrame( framesetter, CFRangeMake( 0, 0 ), boxPath, NULL );
+	
+	::CGPathRelease( boxPath );
+	::CFRelease( attrStr );
+	::CFRelease( framesetter );
+	
+	Surface result( (int)sizeX, (int)sizeY, true );
+	ip::fill( &result, mBackgroundColor );
+	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
+	::CTFrameDraw( frame, cgContext );
+	::CGContextFlush( cgContext );
+	::CGContextRelease( cgContext );
+	::CFRelease( frame );
+
+	if( ! mPremultiplied )
+		ip::unpremultiply( &result );
+	else
+		result.setPremultiplied( true );	
+
+	return result;
+}
+
+#endif
+
 } // namespace cinder
