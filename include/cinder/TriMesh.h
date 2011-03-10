@@ -104,15 +104,27 @@ class TriMesh {
 	void		getTriangleVertices( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const;
 
 	//! Returns all the vertices for a mesh in a std::vector as Vec3f objects 
+	std::vector<Vec3f>&				getVertices() { return mVertices; }
+	//! Returns all the vertices for a mesh in a std::vector as Vec3f objects 
 	const std::vector<Vec3f>&		getVertices() const { return mVertices; }
+	//! Returns all the normals for a mesh in a std::vector as Vec3f objects. There will be one of these for each triangle face in the mesh
+	std::vector<Vec3f>&				getNormals() { return mNormals; }
 	//! Returns all the normals for a mesh in a std::vector as Vec3f objects. There will be one of these for each triangle face in the mesh
 	const std::vector<Vec3f>&		getNormals() const { return mNormals; }
 	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each triangle face in the mesh
+	std::vector<Color>&				getColorsRGB() { return mColorsRGB; }
+	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each triangle face in the mesh
 	const std::vector<Color>&		getColorsRGB() const { return mColorsRGB; }
+	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each triangle face in the mesh
+	std::vector<ColorA>&			getColorsRGBA() { return mColorsRGBA; }
 	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each triangle face in the mesh
 	const std::vector<ColorA>&		getColorsRGBA() const { return mColorsRGBA; }
 	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
+	std::vector<Vec2f>&				getTexCoords() { return mTexCoords; }	
+	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
 	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	
+	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
+	std::vector<size_t>&			getIndices() { return mIndices; }		
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
 	const std::vector<size_t>&		getIndices() const { return mIndices; }		
 

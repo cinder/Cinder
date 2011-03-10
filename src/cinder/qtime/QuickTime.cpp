@@ -447,6 +447,24 @@ void MovieBase::setRate( float rate )
 	::SetMovieRate( getObj()->mMovie, FloatToFixed( rate ) );
 }
 
+bool MovieBase::checkNewFrame()
+{
+	bool result;
+	
+	getObj()->lock();
+		if( (QTVisualContextRef)getObj()->mVisualContext ) {
+			::MoviesTask( getObj()->mMovie, 0 );	
+			::QTVisualContextTask( (QTVisualContextRef)getObj()->mVisualContext );
+			result = ::QTVisualContextIsNewImageAvailable( (QTVisualContextRef)getObj()->mVisualContext, nil );
+		}
+		else {
+			result = false;
+		}
+	getObj()->unlock();
+	
+	return result;
+}
+
 void MovieBase::updateFrame()
 {
 	getObj()->lock();
@@ -462,6 +480,7 @@ void MovieBase::updateFrame()
 			OSStatus err = ::QTVisualContextCopyImageForTime( (QTVisualContextRef)getObj()->mVisualContext, kCFAllocatorDefault, NULL, &newImageRef );
 			if( ( err == noErr ) && newImageRef )
 				getObj()->newFrame( newImageRef );
+
 			if( getObj()->mNewFrameCallback && newImageRef ) {
 				
 				/*CVAttachmentMode mode;
@@ -479,7 +498,6 @@ void MovieBase::updateFrame()
 			}
 		}
 	}
-
 	getObj()->unlock();
 }
 
