@@ -86,11 +86,6 @@ class TextLayout {
 	std::deque<std::shared_ptr<class Line> >		mLines;
 };
 
-/** \brief Renders a single string and returns it as a Surface.
-	Optional \a baselineOffset pointer will receive how many pixels of descender are in the returned Surface. Offset rendering the result Surface by this amount in order to preserve a consistent baseline.
-	Consider gl::drawString() as a more convenient alternative.
-**/
-
 class TextBox {
   public:
 	typedef enum Alignment { LEFT, CENTER, RIGHT } Alignment;
@@ -128,7 +123,7 @@ class TextBox {
 	bool				getPremultiplied() const { return mPremultiplied; }
 	void				setPremultiplied( bool premult ) { mPremultiplied = premult; }
 
-	Vec2i				measure() const;
+	Vec2f				measure() const;
 	Surface				render( Vec2f offset = Vec2f::zero() );
 
   protected:
@@ -145,6 +140,10 @@ class TextBox {
 	mutable bool	mInvalid;
 };
 
+/** \brief Renders a single string and returns it as a Surface.
+	Optional \a baselineOffset pointer will receive how many pixels of descender are in the returned Surface. Offset rendering the result Surface by this amount in order to preserve a consistent baseline.
+	Consider gl::drawString() as a more convenient alternative.
+**/
 #if defined( CINDER_COCOA_TOUCH )
 Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset = 0 );
 #else
