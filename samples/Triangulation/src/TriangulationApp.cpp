@@ -1,8 +1,5 @@
 #include "cinder/app/AppBasic.h"
-#include "cinder/cairo/Cairo.h"
 #include "cinder/Font.h"
-#include "cinder/Utilities.h"
-#include "cinder/ImageIo.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Triangulate.h"
 #include "cinder/gl/Vbo.h"
@@ -11,14 +8,13 @@
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-#include <sstream>
 
 class TriangulationApp : public AppBasic {
  public:
 	void		setup();
 	void		draw();
 
-	void		keyDown( KeyEvent event ) { if( event.getChar() == 'f' ) { setRandomFont(); setRandomGlyph(); } else setRandomGlyph(); }
+	void		keyDown( KeyEvent event ) { setRandomGlyph(); }
 
 	void		recalcMesh();
 	
@@ -28,7 +24,7 @@ class TriangulationApp : public AppBasic {
 	Font				mFont;
 	Shape2d				mShape;
 	vector<string>		mFontNames;
-	gl::VboMesh			mVboMesh, mPointsMesh;
+	gl::VboMesh			mVboMesh;
 	params::InterfaceGl	mParams;
 	bool				mDrawWireframe;
 	int					mFontSize;
@@ -41,6 +37,8 @@ void TriangulationApp::setup()
 	mParams.addParam( "Font Size", &mFontSize, "min=1 max=2000 keyIncr== keyDecr=-" );
 	mDrawWireframe = true;
 	mParams.addParam( "Draw Wireframe", &mDrawWireframe, "min=1 max=2000 keyIncr== keyDecr=-" );
+	mParams.addButton( "Random Font", bind( &TriangulationApp::setRandomFont, this ), "key=f" );
+	mParams.addButton( "Random Glyph", bind( &TriangulationApp::setRandomGlyph, this ) );
 
 	mFontNames = Font::getNames();
 	mFont = Font( "Times", mFontSize );
@@ -61,13 +59,7 @@ void TriangulationApp::setRandomFont()
 {
 	// select a random font from those available on the system
 	mFont = Font( mFontNames[rand() % mFontNames.size()], mFontSize );
-
-	// exercise the code which determines which glyphs map to a given string
-	console() << "In this font, the string 'abc123' is glyphs: " << std::endl;
-	vector<Font::Glyph> glyphs = mFont.getGlyphs( "abc123" );
-	for( vector<Font::Glyph>::const_iterator it = glyphs.begin(); it != glyphs.end(); ++it )
-		console() << *it << " ";
-	console() << endl;
+	setRandomGlyph();
 }
 
 void TriangulationApp::setRandomGlyph()
