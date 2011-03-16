@@ -508,6 +508,57 @@
 		434708D91267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DA1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DB1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
+		43A993A313258EA20022157F /* bucketalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939413258EA20022157F /* bucketalloc.c */; };
+		43A993A413258EA20022157F /* bucketalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939513258EA20022157F /* bucketalloc.h */; };
+		43A993A513258EA20022157F /* dict.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939613258EA20022157F /* dict.c */; };
+		43A993A613258EA20022157F /* dict.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939713258EA20022157F /* dict.h */; };
+		43A993A713258EA20022157F /* geom.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939813258EA20022157F /* geom.c */; };
+		43A993A813258EA20022157F /* geom.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939913258EA20022157F /* geom.h */; };
+		43A993A913258EA20022157F /* mesh.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939A13258EA20022157F /* mesh.c */; };
+		43A993AA13258EA20022157F /* mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939B13258EA20022157F /* mesh.h */; };
+		43A993AB13258EA20022157F /* priorityq.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939C13258EA20022157F /* priorityq.c */; };
+		43A993AC13258EA20022157F /* priorityq.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939D13258EA20022157F /* priorityq.h */; };
+		43A993AD13258EA20022157F /* sweep.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939E13258EA20022157F /* sweep.c */; };
+		43A993AE13258EA20022157F /* sweep.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939F13258EA20022157F /* sweep.h */; };
+		43A993AF13258EA20022157F /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A993A013258EA20022157F /* tess.c */; };
+		43A993B013258EA20022157F /* tess.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A993A113258EA20022157F /* tess.h */; };
+		43A993B113258EA20022157F /* tesselator.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A993A213258EA20022157F /* tesselator.h */; };
+		43A993B213258EA20022157F /* bucketalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939413258EA20022157F /* bucketalloc.c */; };
+		43A993B313258EA20022157F /* bucketalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939513258EA20022157F /* bucketalloc.h */; };
+		43A993B413258EA20022157F /* dict.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939613258EA20022157F /* dict.c */; };
+		43A993B513258EA20022157F /* dict.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939713258EA20022157F /* dict.h */; };
+		43A993B613258EA20022157F /* geom.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939813258EA20022157F /* geom.c */; };
+		43A993B713258EA20022157F /* geom.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939913258EA20022157F /* geom.h */; };
+		43A993B813258EA20022157F /* mesh.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939A13258EA20022157F /* mesh.c */; };
+		43A993B913258EA20022157F /* mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939B13258EA20022157F /* mesh.h */; };
+		43A993BA13258EA20022157F /* priorityq.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939C13258EA20022157F /* priorityq.c */; };
+		43A993BB13258EA20022157F /* priorityq.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939D13258EA20022157F /* priorityq.h */; };
+		43A993BC13258EA20022157F /* sweep.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939E13258EA20022157F /* sweep.c */; };
+		43A993BD13258EA20022157F /* sweep.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939F13258EA20022157F /* sweep.h */; };
+		43A993BE13258EA20022157F /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A993A013258EA20022157F /* tess.c */; };
+		43A993BF13258EA20022157F /* tess.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A993A113258EA20022157F /* tess.h */; };
+		43A993C013258EA20022157F /* tesselator.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A993A213258EA20022157F /* tesselator.h */; };
+		43A993C113258EA20022157F /* bucketalloc.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939413258EA20022157F /* bucketalloc.c */; };
+		43A993C213258EA20022157F /* bucketalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939513258EA20022157F /* bucketalloc.h */; };
+		43A993C313258EA20022157F /* dict.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939613258EA20022157F /* dict.c */; };
+		43A993C413258EA20022157F /* dict.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939713258EA20022157F /* dict.h */; };
+		43A993C513258EA20022157F /* geom.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939813258EA20022157F /* geom.c */; };
+		43A993C613258EA20022157F /* geom.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939913258EA20022157F /* geom.h */; };
+		43A993C713258EA20022157F /* mesh.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939A13258EA20022157F /* mesh.c */; };
+		43A993C813258EA20022157F /* mesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939B13258EA20022157F /* mesh.h */; };
+		43A993C913258EA20022157F /* priorityq.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939C13258EA20022157F /* priorityq.c */; };
+		43A993CA13258EA20022157F /* priorityq.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939D13258EA20022157F /* priorityq.h */; };
+		43A993CB13258EA20022157F /* sweep.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A9939E13258EA20022157F /* sweep.c */; };
+		43A993CC13258EA20022157F /* sweep.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A9939F13258EA20022157F /* sweep.h */; };
+		43A993CD13258EA20022157F /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 43A993A013258EA20022157F /* tess.c */; };
+		43A993CE13258EA20022157F /* tess.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A993A113258EA20022157F /* tess.h */; };
+		43A993CF13258EA20022157F /* tesselator.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A993A213258EA20022157F /* tesselator.h */; };
+		43A993D413258EC70022157F /* Triangulate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43A993D313258EC70022157F /* Triangulate.cpp */; };
+		43A993D513258EC70022157F /* Triangulate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43A993D313258EC70022157F /* Triangulate.cpp */; };
+		43A993D613258EC70022157F /* Triangulate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43A993D313258EC70022157F /* Triangulate.cpp */; };
+		43A993D913258EE30022157F /* Triangulate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A993D813258EE30022157F /* Triangulate.h */; };
+		43A993DA13258EE30022157F /* Triangulate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A993D813258EE30022157F /* Triangulate.h */; };
+		43A993DB13258EE30022157F /* Triangulate.h in Headers */ = {isa = PBXBuildFile; fileRef = 43A993D813258EE30022157F /* Triangulate.h */; };
 		43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
@@ -801,6 +852,23 @@
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
 		434708D81267EE4300AA7349 /* Blend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blend.cpp; path = ip/Blend.cpp; sourceTree = "<group>"; };
+		43A9939413258EA20022157F /* bucketalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bucketalloc.c; sourceTree = "<group>"; };
+		43A9939513258EA20022157F /* bucketalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bucketalloc.h; sourceTree = "<group>"; };
+		43A9939613258EA20022157F /* dict.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = dict.c; sourceTree = "<group>"; };
+		43A9939713258EA20022157F /* dict.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dict.h; sourceTree = "<group>"; };
+		43A9939813258EA20022157F /* geom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = geom.c; sourceTree = "<group>"; };
+		43A9939913258EA20022157F /* geom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = geom.h; sourceTree = "<group>"; };
+		43A9939A13258EA20022157F /* mesh.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mesh.c; sourceTree = "<group>"; };
+		43A9939B13258EA20022157F /* mesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mesh.h; sourceTree = "<group>"; };
+		43A9939C13258EA20022157F /* priorityq.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = priorityq.c; sourceTree = "<group>"; };
+		43A9939D13258EA20022157F /* priorityq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = priorityq.h; sourceTree = "<group>"; };
+		43A9939E13258EA20022157F /* sweep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sweep.c; sourceTree = "<group>"; };
+		43A9939F13258EA20022157F /* sweep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sweep.h; sourceTree = "<group>"; };
+		43A993A013258EA20022157F /* tess.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tess.c; sourceTree = "<group>"; };
+		43A993A113258EA20022157F /* tess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tess.h; sourceTree = "<group>"; };
+		43A993A213258EA20022157F /* tesselator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tesselator.h; sourceTree = "<group>"; };
+		43A993D313258EC70022157F /* Triangulate.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Triangulate.cpp; sourceTree = "<group>"; };
+		43A993D813258EE30022157F /* Triangulate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Triangulate.h; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
 		43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UrlImplCocoa.mm; sourceTree = "<group>"; };
@@ -1094,6 +1162,7 @@
 				0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */,
 				00D2F6F30F9188FD00A7189A /* Sphere.h */,
 				002DFC050FA50D0200E45AE0 /* TriMesh.h */,
+				43A993D813258EE30022157F /* Triangulate.h */,
 				002DFD530FA5602900E45AE0 /* ObjLoader.h */,
 				0071BD040FB9F4AD0092E7D6 /* Display.h */,
 				00C071B20FF16261004801EA /* Font.h */,
@@ -1155,6 +1224,7 @@
 				0049A348116EE655007DDFB0 /* AxisAlignedBox.cpp */,
 				0012529212344FAA00080A0D /* Ray.cpp */,
 				002DFC070FA50D1600E45AE0 /* TriMesh.cpp */,
+				43A993D313258EC70022157F /* Triangulate.cpp */,
 				0071BD080FB9FA2C0092E7D6 /* Display.cpp */,
 				00C071AF0FF16244004801EA /* Font.cpp */,
 				0005291F0FFBF4C200F19492 /* Text.cpp */,
@@ -1350,11 +1420,35 @@
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				43A9939313258EA20022157F /* libtess2 */,
 				007CE1F1127BB11200799071 /* rapidxml */,
 				32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
+		};
+		43A9939313258EA20022157F /* libtess2 */ = {
+			isa = PBXGroup;
+			children = (
+				43A9939413258EA20022157F /* bucketalloc.c */,
+				43A9939513258EA20022157F /* bucketalloc.h */,
+				43A9939613258EA20022157F /* dict.c */,
+				43A9939713258EA20022157F /* dict.h */,
+				43A9939813258EA20022157F /* geom.c */,
+				43A9939913258EA20022157F /* geom.h */,
+				43A9939A13258EA20022157F /* mesh.c */,
+				43A9939B13258EA20022157F /* mesh.h */,
+				43A9939C13258EA20022157F /* priorityq.c */,
+				43A9939D13258EA20022157F /* priorityq.h */,
+				43A9939E13258EA20022157F /* sweep.c */,
+				43A9939F13258EA20022157F /* sweep.h */,
+				43A993A013258EA20022157F /* tess.c */,
+				43A993A113258EA20022157F /* tess.h */,
+				43A993A213258EA20022157F /* tesselator.h */,
+			);
+			name = libtess2;
+			path = ../src/libtess2;
+			sourceTree = SOURCE_ROOT;
 		};
 		C7BA405B0FA8BEFD00AADC07 /* audio */ = {
 			isa = PBXGroup;
@@ -1502,6 +1596,15 @@
 				007CE1FA127BB13B00799071 /* rapidxml.hpp in Headers */,
 				003FABA81290ED38002D6860 /* AppNative.h in Headers */,
 				003133A5129EB85D009DC098 /* Blend.h in Headers */,
+				43A993B313258EA20022157F /* bucketalloc.h in Headers */,
+				43A993B513258EA20022157F /* dict.h in Headers */,
+				43A993B713258EA20022157F /* geom.h in Headers */,
+				43A993B913258EA20022157F /* mesh.h in Headers */,
+				43A993BB13258EA20022157F /* priorityq.h in Headers */,
+				43A993BD13258EA20022157F /* sweep.h in Headers */,
+				43A993BF13258EA20022157F /* tess.h in Headers */,
+				43A993C013258EA20022157F /* tesselator.h in Headers */,
+				43A993DA13258EE30022157F /* Triangulate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1610,6 +1713,15 @@
 				007CE1FC127BB13B00799071 /* rapidxml.hpp in Headers */,
 				003FABA91290ED38002D6860 /* AppNative.h in Headers */,
 				003133A6129EB85D009DC098 /* Blend.h in Headers */,
+				43A993C213258EA20022157F /* bucketalloc.h in Headers */,
+				43A993C413258EA20022157F /* dict.h in Headers */,
+				43A993C613258EA20022157F /* geom.h in Headers */,
+				43A993C813258EA20022157F /* mesh.h in Headers */,
+				43A993CA13258EA20022157F /* priorityq.h in Headers */,
+				43A993CC13258EA20022157F /* sweep.h in Headers */,
+				43A993CE13258EA20022157F /* tess.h in Headers */,
+				43A993CF13258EA20022157F /* tesselator.h in Headers */,
+				43A993DB13258EE30022157F /* Triangulate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1736,6 +1848,15 @@
 				003FAAA31290CCB1002D6860 /* Clipboard.h in Headers */,
 				003FABA71290ED38002D6860 /* AppNative.h in Headers */,
 				003133A4129EB85D009DC098 /* Blend.h in Headers */,
+				43A993A413258EA20022157F /* bucketalloc.h in Headers */,
+				43A993A613258EA20022157F /* dict.h in Headers */,
+				43A993A813258EA20022157F /* geom.h in Headers */,
+				43A993AA13258EA20022157F /* mesh.h in Headers */,
+				43A993AC13258EA20022157F /* priorityq.h in Headers */,
+				43A993AE13258EA20022157F /* sweep.h in Headers */,
+				43A993B013258EA20022157F /* tess.h in Headers */,
+				43A993B113258EA20022157F /* tesselator.h in Headers */,
+				43A993D913258EE30022157F /* Triangulate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1895,6 +2016,14 @@
 				434708DA1267EE4300AA7349 /* Blend.cpp in Sources */,
 				003FAAB81290E01D002D6860 /* Clipboard.cpp in Sources */,
 				0087DE1F12DC1469002CD69F /* GlslProg.cpp in Sources */,
+				43A993B213258EA20022157F /* bucketalloc.c in Sources */,
+				43A993B413258EA20022157F /* dict.c in Sources */,
+				43A993B613258EA20022157F /* geom.c in Sources */,
+				43A993B813258EA20022157F /* mesh.c in Sources */,
+				43A993BA13258EA20022157F /* priorityq.c in Sources */,
+				43A993BC13258EA20022157F /* sweep.c in Sources */,
+				43A993BE13258EA20022157F /* tess.c in Sources */,
+				43A993D513258EC70022157F /* Triangulate.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1970,6 +2099,14 @@
 				434708DB1267EE4300AA7349 /* Blend.cpp in Sources */,
 				003FAAB91290E01E002D6860 /* Clipboard.cpp in Sources */,
 				0087DE2012DC1469002CD69F /* GlslProg.cpp in Sources */,
+				43A993C113258EA20022157F /* bucketalloc.c in Sources */,
+				43A993C313258EA20022157F /* dict.c in Sources */,
+				43A993C513258EA20022157F /* geom.c in Sources */,
+				43A993C713258EA20022157F /* mesh.c in Sources */,
+				43A993C913258EA20022157F /* priorityq.c in Sources */,
+				43A993CB13258EA20022157F /* sweep.c in Sources */,
+				43A993CD13258EA20022157F /* tess.c in Sources */,
+				43A993D613258EC70022157F /* Triangulate.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2068,6 +2205,14 @@
 				C7FB1B9A124BE2DF0045AFD2 /* PcmBuffer.cpp in Sources */,
 				434708D91267EE4300AA7349 /* Blend.cpp in Sources */,
 				003FAA9F1290CC90002D6860 /* Clipboard.cpp in Sources */,
+				43A993A313258EA20022157F /* bucketalloc.c in Sources */,
+				43A993A513258EA20022157F /* dict.c in Sources */,
+				43A993A713258EA20022157F /* geom.c in Sources */,
+				43A993A913258EA20022157F /* mesh.c in Sources */,
+				43A993AB13258EA20022157F /* priorityq.c in Sources */,
+				43A993AD13258EA20022157F /* sweep.c in Sources */,
+				43A993AF13258EA20022157F /* tess.c in Sources */,
+				43A993D413258EC70022157F /* Triangulate.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2290,7 +2435,7 @@
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PREBINDING = NO;
 				SYMROOT = ../lib;
-				USER_HEADER_SEARCH_PATHS = ../include;
+				USER_HEADER_SEARCH_PATHS = "../include ../src/libtest2";
 			};
 			name = Debug;
 		};
@@ -2313,7 +2458,7 @@
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PREBINDING = NO;
 				SYMROOT = ../lib;
-				USER_HEADER_SEARCH_PATHS = ../include;
+				USER_HEADER_SEARCH_PATHS = "../include ../src/libtest2";
 			};
 			name = Release;
 		};
