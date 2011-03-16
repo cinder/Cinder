@@ -54,6 +54,9 @@ class Path2d {
 	//! Closes the path, by drawing a straight line from the first to the last point. This is only legal as the last command.
 	void	close() { mSegments.push_back( CLOSE ); }
 	bool	isClosed() const { return ( mSegments.size() > 1 ) && mSegments.back() == CLOSE; }
+    
+	//! Reverses the order of the path's points, inverting its winding order
+    void	reverse();
 	
 	bool	empty() const { return mPoints.empty(); }
 	void	clear() { mSegments.clear(); mPoints.clear(); }
@@ -76,6 +79,9 @@ class Path2d {
 	enum SegmentType { MOVETO, LINETO, QUADTO, CUBICTO, CLOSE };
 	static const int sSegmentTypePointCounts[];
 	SegmentType		getSegmentType( size_t segment ) const { return mSegments[segment]; }
+	
+	//! Returns the bounding box around all control points. As with Shape2d, note this is not necessarily the bounding box of the Path's shape.
+	Rectf	calcBoundingBox() const;
 
 	friend class Shape2d;
 

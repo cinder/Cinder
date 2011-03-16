@@ -41,7 +41,7 @@ class ObjLoaderApp : public AppBasic {
 
 void ObjLoaderApp::setup()
 {
-	ObjLoader loader( loadResource( RES_CUBE_OBJ ) );
+	ObjLoader loader( (DataSourceRef)loadResource( RES_CUBE_OBJ ) );
 	loader.load( &mMesh );
 	mVBO = gl::VboMesh( mMesh );
 	
@@ -93,7 +93,7 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 	if( event.getChar() == 'o' ) {
 		std::string path = getOpenFilePath();
 		if( ! path.empty() ) {
-			ObjLoader loader( loadFile( path ) );
+			ObjLoader loader( (DataSourceRef)loadFile( path ) );
 			loader.load( &mMesh, true );
 			mVBO = gl::VboMesh( mMesh );
 			console() << "Total verts: " << mMesh.getVertices().size() << std::endl;
