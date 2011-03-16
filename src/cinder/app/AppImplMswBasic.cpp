@@ -70,7 +70,7 @@ void AppImplMswBasic::run()
 	
 	mApp->privateSetup__();
 	mHasBeenInitialized = true;
-	mApp->privateResize__( ResizeEvent( Vec2i( mWindowWidth, mWindowHeight ) ) );
+	mApp->privateResize__( ResizeEvent( Vec2i( mWindowWidth, mWindowHeight ) ) ); 
 
 	::ShowWindow( mWnd, SW_SHOW );
 	::SetForegroundWindow( mWnd );
