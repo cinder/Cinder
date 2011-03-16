@@ -44,6 +44,11 @@ void TriMesh::appendVertices( const Vec4d *verts, size_t num )
 		mVertices.push_back( Vec3f( (float)verts[v].x, (float)verts[v].y, (float)verts[v].z ) );
 }
 
+void TriMesh::appendIndices( uint32_t *indices, size_t num )
+{
+	mIndices.insert( mIndices.end(), indices, indices + num );
+}
+
 void TriMesh::appendNormals( const Vec4d *normals, size_t num )
 {
 	for( size_t v = 0; v < num; ++v )
@@ -186,6 +191,16 @@ void TriMesh2d::clear()
 	mColorsRgba.clear();
 	mTexCoords.clear();
 	mIndices.clear();
+}
+
+void TriMesh2d::appendVertices( const Vec2f *verts, size_t num )
+{
+	mVertices.insert( mVertices.end(), verts, verts + num );
+}
+
+void TriMesh2d::appendIndices( uint32_t *indices, size_t num )
+{
+	mIndices.insert( mIndices.end(), indices, indices + num );
 }
 
 void TriMesh2d::getTriangleVertices( size_t idx, Vec2f *a, Vec2f *b, Vec2f *c ) const
