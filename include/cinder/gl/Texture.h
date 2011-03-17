@@ -120,6 +120,8 @@ class Texture {
 	GLint			getInternalFormat() const;
 	//! the ID number for the texture, appropriate to pass to calls like \c glBindTexture()
 	GLuint			getId() const { return mObj->mTextureID; }
+	//! the Unit index for the texture, appropriate to pass to GLSL uniforms, etc.
+	GLuint			getTextureUnit() const { return mObj->mTextureUnit; }
 	//! the target associated with texture. Typical values are \c GL_TEXTURE_2D and \c GL_TEXTURE_RECTANGLE_ARB
 	GLenum			getTarget() const { return mObj->mTarget; }
 	//!	whether the texture is flipped vertically
@@ -241,6 +243,7 @@ class Texture {
 		mutable GLint	mInternalFormat;
 		GLenum			mTarget;
 		GLuint			mTextureID;
+		GLuint			mTextureUnit;
 		bool			mDoNotDispose;
 		bool			mFlipped;	
 		void			(*mDeallocatorFunc)(void *refcon);

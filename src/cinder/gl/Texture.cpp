@@ -248,6 +248,8 @@ void Texture::init( const unsigned char *data, int unpackRowLength, GLenum dataF
 {
 	mObj->mDoNotDispose = false;
 
+	mObj->mTextureUnit = -1;
+
 	glGenTextures( 1, &mObj->mTextureID );
 
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
@@ -915,6 +917,7 @@ float Texture::getMaxV() const
 
 int Texture::bind( GLuint textureUnit ) const
 {
+	mObj->mTextureUnit = textureUnit;
 	glActiveTexture( GL_TEXTURE0 + textureUnit );
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 	glActiveTexture( GL_TEXTURE0 );
@@ -923,6 +926,7 @@ int Texture::bind( GLuint textureUnit ) const
 
 void Texture::unbind( GLuint textureUnit ) const
 {
+	mObj->mTextureUnit = textureUnit;
 	glActiveTexture( GL_TEXTURE0 + textureUnit );
 	glBindTexture( mObj->mTarget, 0 );
 	glActiveTexture( GL_TEXTURE0 );
@@ -930,12 +934,14 @@ void Texture::unbind( GLuint textureUnit ) const
 
 void Texture::enableAndBind() const
 {
+	mObj->mTextureUnit = 0;
 	glEnable( mObj->mTarget );
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 }
 
 void Texture::disable() const
 {
+	mObj->mTextureUnit = 0;
 	glDisable( mObj->mTarget );
 }
 
