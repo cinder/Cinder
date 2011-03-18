@@ -10,7 +10,7 @@ using namespace ci::app;
 using namespace std;
 
 class TriangulationApp : public AppBasic {
- public:
+  public:
 	void		setup();
 	void		draw();
 
@@ -28,17 +28,25 @@ class TriangulationApp : public AppBasic {
 	params::InterfaceGl	mParams;
 	bool				mDrawWireframe;
 	int					mFontSize;
+	float				mZoom;
+	float				mPrecision, mOldPrecision;
+	int					mNumPoints;
 };
 
 void TriangulationApp::setup()
 {
-	mParams = params::InterfaceGl( "Parameters", Vec2i( 200, 400 ) );
+	mParams = params::InterfaceGl( "Parameters", Vec2i( 220, 170 ) );
 	mFontSize = 256;
-	mParams.addParam( "Font Size", &mFontSize, "min=1 max=2000 keyIncr== keyDecr=-" );
 	mDrawWireframe = true;
 	mParams.addParam( "Draw Wireframe", &mDrawWireframe, "min=1 max=2000 keyIncr== keyDecr=-" );
 	mParams.addButton( "Random Font", bind( &TriangulationApp::setRandomFont, this ), "key=f" );
 	mParams.addButton( "Random Glyph", bind( &TriangulationApp::setRandomGlyph, this ) );
+	mZoom = 1.0f;
+	mParams.addParam( "Zoom", &mZoom, "min=0.01 max=20 keyIncr=z keyDecr=Z" );
+	mOldPrecision = mPrecision = 1.0f;
+	mParams.addParam( "Precision", &mPrecision, "min=0.01 max=20 keyIncr=p keyDecr=P" );
+	mNumPoints = 0;
+	mParams.addParam( "Num Points", &mNumPoints, "", true );
 
 	mFontNames = Font::getNames();
 	mFont = Font( "Times", mFontSize );
@@ -52,7 +60,10 @@ void TriangulationApp::setup()
 
 void TriangulationApp::recalcMesh()
 {
-	mVboMesh = gl::VboMesh( Triangulator( mShape ).calcMesh( Triangulator::WINDING_ODD ) ); 
+	TriMesh2d mesh = Triangulator( mShape, mPrecision ).calcMesh( Triangulator::WINDING_ODD );
+	mNumPoints = mesh.getNumIndices();
+	mVboMesh = gl::VboMesh( mesh ); 
+	mOldPrecision = mPrecision;
 }
 
 void TriangulationApp::setRandomFont()
@@ -76,10 +87,14 @@ void TriangulationApp::setRandomGlyph()
 
 void TriangulationApp::draw()
 {
+	if( mOldPrecision != mPrecision )
+		recalcMesh();
+
 	gl::clear();
 	gl::pushModelView();
-		gl::translate( getWindowCenter() );
-		gl::color( Color( 0, 0, 0.8f ) );
+		gl::translate( getWindowCenter() * Vec2f( 0.8f, 1.2f ) );
+		gl::scale( Vec3f( mZoom, mZoom, mZoom ) );
+		gl::color( Color( 0.8f, 0.4f, 0.0f ) );
 		gl::draw( mVboMesh );
 		if( mDrawWireframe ) {
 			gl::enableWireframe();
