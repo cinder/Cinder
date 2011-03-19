@@ -570,27 +570,7 @@ Surface renderStringBox( const std::string &str, const Area &area, const Font &f
 #if defined( CINDER_COCOA )
 
 
-Vec2f measureFrame( CTFrameRef frame )
-{
-	CFArrayRef lines = ::CTFrameGetLines( frame );
-	size_t numLines = ::CFArrayGetCount( lines );
-	CGFloat ascent, descent, leading;
-	CGFloat height = 0;
-	double width = 0;
-	for( CFIndex index = 0; index < numLines; index++){
-		CTLineRef line = (CTLineRef)::CFArrayGetValueAtIndex( lines, index );
-		::CFRange rng = ::CTLineGetStringRange( line );
-		width = std::max( ::CTLineGetTypographicBounds( line, &ascent, &descent, &leading ), width );
-		if( ( index == numLines - 1 ) && ( numLines > 1 ) )
-			height += leading;
-		else
-			height += ascent + fabs(descent) + leading;
-	}
-
-	return Vec2f( width, height );
-}
-
-void TextBox::createLines()
+void TextBox::createLines() const
 {
 	if( ! mInvalid )
 		return;
@@ -600,96 +580,67 @@ void TextBox::createLines()
 	CTTypesetterRef typeSetter = ::CTTypesetterCreateWithAttributedString( attrStr );
 
 	CFIndex strLength = ::CFAttributedStringGetLength( attrStr );
-	Vec2f pen = Vec2f::zero();
 
-	double maxWidth = ( mSize.x <= 0 ) ? FLOAT_MAX : mSize.x;
+	double maxWidth = ( mSize.x <= 0 ) ? CGFLOAT_MAX : mSize.x;
 
 	mCalculatedSize = Vec2f::zero();
 	mLines.clear();
+	Vec2f lineOffset = Vec2f::zero();
 	while( range.location < strLength ) {
-		CGFloat offset = 0, ascent, descent, leading;
+		CGFloat ascent, descent, leading;
 		range.length = ::CTTypesetterSuggestLineBreak( typeSetter, range.location, maxWidth );
 		CTLineRef line = ::CTTypesetterCreateLine( typeSetter, range );
-		Vec2f lineSize, lineOffset;
-		lineSize.x = ::CTLineGetTypographicBounds( line, &ascent, &descent, &leading );
-		lineSize.y = ascent + descent + leading;
-		lineOffset = ::CTLineGetPenOffsetForFlush( line, 0, 
-		mLines.push_back( make_pair( shared_ptr<__CTLine>( line, ::CFRelease ), lineOffset ) );
-
-		lineRect = [self drawLine:line
-				   atPosition:&penPosition
-				  withContext:context
-					   inRect:&bounds
-				];
-
-		[m_linesRect addObject:NSStringFromCGRect(lineRect)];
-
-		m_frame.size.width = MAX(CGRectGetWidth(lineRect), m_frame.size.width);
-		m_frame.size.height += CGRectGetHeight(lineRect);
-
-		penPosition.x = CGRectGetMinX(bounds);
+		double lineWidth = ::CTLineGetTypographicBounds( line, &ascent, &descent, &leading );
+		
+		
+		lineOffset.x = 0;//::CTLineGetPenOffsetForFlush( line, 0, maxWidth );
+		lineOffset.y += ascent;
+		mLines.push_back( make_pair( shared_ptr<const __CTLine>( line, ::CFRelease ), lineOffset ) );
+		lineOffset.y += descent + leading;
+		mCalculatedSize.x = std::max( mCalculatedSize.x, (float)lineWidth );
+		mCalculatedSize.y += ascent + descent + leading;
 		range.location += range.length;
-
-		[(NSObject *)line autorelease];
 	}
-  
+
 	::CFRelease( attrStr );
   
-	mInvalid = true;
-}
-
-
-Rectf drawLine( CTLineRef line, CGPoint *p, CGContextRef context, Rectf *inRect )
-{
-	CGRect lineRect = CGRectZero;
-	lineRect.origin = CGPointMake(p->x + self.lineInsets.left, CGRectGetHeight(*rect) - p->y);
-
-	CGFloat ascent, descent, leading;
-	lineRect.size.width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading) + self.lineInsets.right;
-	double penOffset = CTLineGetPenOffsetForFlush(line, self.textAlignment * 0.5f, rect->size.width);
-	p->x += penOffset + self.lineInsets.left;
-
-	p->y -= (ascent + self.lineInsets.top);
-	if (context)
-	CGContextSetTextPosition(context, p->x, p->y);
-
-	lineRect.size.height = ascent + descent + leading + self.lineInsets.bottom + self.lineInsets.top;
-
-	if (self.highlighted && self.highlightedImage)
-	[self drawHighlightedImage:self.highlightedImage inRect:lineRect];
-
-	if (context)
-	CTLineDraw(line, context);
-
-	p->x += self.lineInsets.right;
-	p->y -= ( descent + leading + m_lineInsets.bottom);
-
-	return lineRect;
+	mInvalid = false;
 }
 
 Vec2f TextBox::measure() const
 {
-	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor );
-	CTFramesetterRef framesetter = ::CTFramesetterCreateWithAttributedString( attrStr );
-
-	CGMutablePathRef boxPath = ::CGPathCreateMutable();
-	const float HUGE_SIZE = 1000000.0f;
-	::CGPathAddRect( boxPath, NULL, cocoa::createCgRect( Area( 0, 0, mSize.x <= GROW ? HUGE_SIZE : mSize.x, mSize.y <= GROW ? HUGE_SIZE : mSize.y ) ) );
-	CTFrameRef frame = ::CTFramesetterCreateFrame( framesetter, CFRangeMake( 0, 0 ), boxPath, NULL );
-	
-//	Vec2f measurements = measureFrame( frame );
-
-	
-	::CGPathRelease( boxPath );
-	::CFRelease( frame );
-	::CFRelease( framesetter );
-	
-	return measurements;
+	createLines();
+	return mCalculatedSize;
 }
 
 Surface	TextBox::render( Vec2f offset )
 {
-	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor );
+	createLines();
+	
+	float sizeX = ( mSize.x <= 0 ) ? mCalculatedSize.x : mSize.x;
+	float sizeY = ( mSize.y <= 0 ) ? mCalculatedSize.y : mSize.y;
+	sizeX = math<float>::ceil( sizeX );
+	sizeY = math<float>::ceil( sizeY );
+	
+	Surface result( (int)sizeX, (int)sizeY, true );
+	ip::fill( &result, mBackgroundColor );
+	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
+	::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
+	
+	for( vector<pair<shared_ptr<const __CTLine>,Vec2f> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		::CGContextSetTextPosition( cgContext, lineIt->second.x, sizeY - lineIt->second.y );
+		::CTLineDraw( lineIt->first.get(), cgContext );
+	}
+	
+	if( ! mPremultiplied )
+		ip::unpremultiply( &result );
+	else
+		result.setPremultiplied( true );	
+
+	return result;
+	
+
+/*	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor );
 	CTFramesetterRef framesetter = ::CTFramesetterCreateWithAttributedString( attrStr );
 	float sizeX = mSize.x, sizeY = mSize.y;
 	if( mSize.x <= GROW || mSize.y <= GROW ) {
@@ -729,7 +680,7 @@ Surface	TextBox::render( Vec2f offset )
 	else
 		result.setPremultiplied( true );	
 
-	return result;
+	return result;*/
 }
 
 #endif
