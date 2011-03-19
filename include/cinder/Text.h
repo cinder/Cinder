@@ -136,11 +136,11 @@ class TextBox {
 	bool			mPremultiplied;
 	mutable bool	mInvalid;
 
-	Vec2f			mCalculatedSize;
+	mutable Vec2f	mCalculatedSize;
 #if defined( CINDER_COCOA )
-	void			createLines();
+	void			createLines() const;
 
-	std::vector<std::pair<const __CTLine,Vec2f> >	mLines;
+	mutable std::vector<std::pair<std::shared_ptr<const __CTLine>,Vec2f> >	mLines;
 #endif	
 };
 
