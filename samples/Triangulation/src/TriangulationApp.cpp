@@ -30,7 +30,7 @@ class TriangulationApp : public AppBasic {
 	int					mFontSize;
 	float				mZoom;
 	float				mPrecision, mOldPrecision;
-	int					mNumPoints;
+	int32_t				mNumPoints;
 };
 
 void TriangulationApp::setup()
