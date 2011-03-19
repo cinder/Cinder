@@ -35,6 +35,7 @@
 // Core Text forward declarations
 #if defined( CINDER_COCOA )
 typedef struct __CTFrame;
+typedef struct __CTLine;
 #endif
 
 namespace cinder {
@@ -127,10 +128,6 @@ class TextBox {
 	Surface				render( Vec2f offset = Vec2f::zero() );
 
   protected:
-#if defined( CINDER_COCOA )
-	std::shared_ptr<const __CTFrame>	createFrame( const std::string &str, const Area &area, const Font &font, Vec2i size, const ColorA &textColor );
-#endif
-
 	Alignment		mAlign;
 	Vec2i			mSize;
 	std::string		mText;
@@ -138,6 +135,13 @@ class TextBox {
 	ColorA			mColor, mBackgroundColor;
 	bool			mPremultiplied;
 	mutable bool	mInvalid;
+
+	Vec2f			mCalculatedSize;
+#if defined( CINDER_COCOA )
+	void			createLines();
+
+	std::vector<std::pair<const __CTLine,Vec2f> >	mLines;
+#endif	
 };
 
 /** \brief Renders a single string and returns it as a Surface.
