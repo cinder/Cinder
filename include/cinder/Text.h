@@ -114,7 +114,7 @@ class TextBox {
 
 	TextBox				color( ColorA color ) { TextBox result( *this ); result.setColor( color ); return result; }
 	ColorA				getColor() const { return mColor; }
-	void				setColor( ColorA color ) { mColor = color; }
+	void				setColor( ColorA color ) { mColor = color; mInvalid = true; }
 
 	TextBox				backgroundColor( ColorA bgColor ) { TextBox result( *this ); result.setBackgroundColor( bgColor ); return result; }
 	ColorA				getBackgroundColor() const { return mBackgroundColor; }
@@ -153,7 +153,5 @@ Surface renderStringPow2( const std::string &str, const Font &font, const ColorA
 #else
 Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset = 0 );
 #endif
-
-Surface renderStringBox( const std::string &str, const Area &area, const Font &font, const ColorA &textColor = ColorA( 1, 1, 1, 1), const ColorA &backgroundColor = ColorA( 0, 0, 0, 0 ), bool premultiplied = true );
 
 } // namespace cinder
