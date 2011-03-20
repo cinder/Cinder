@@ -38,7 +38,8 @@ void TextBoxApp::mouseDrag( MouseEvent event )
 void TextBoxApp::render()
 {
 	string txt = "Here is some text that is larger than can fit naturally inside of 100 pixels.\nAnd here is another line after a hard break.";
-	TextBox tbox = TextBox().alignment( TextBox::CENTER ).font( mFont ).size( Vec2i( mSize.x, TextBox::GROW ) ).text( txt ).premultiplied( true );
+	TextBox tbox = TextBox().alignment( TextBox::RIGHT ).font( mFont ).size( Vec2i( mSize.x, TextBox::GROW ) ).text( txt ).premultiplied( true );
+	tbox.setColor( Color( 1.0f, 0.65f, 0.35f ) );
 	tbox.setBackgroundColor( ColorA( 0.5, 0, 0, 1 ) );
 	Vec2i sz = tbox.measure();
 	console() << "Height: " << sz.y << endl;
