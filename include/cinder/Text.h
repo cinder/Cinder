@@ -141,7 +141,11 @@ class TextBox {
 	void			createLines() const;
 
 	mutable std::vector<std::pair<std::shared_ptr<const __CTLine>,Vec2f> >	mLines;
-#endif	
+#elif defined( CINDER_MSW )
+	void			calculate() const;
+
+	mutable std::wstring	mWideText;
+#endif
 };
 
 /** \brief Renders a single string and returns it as a Surface.

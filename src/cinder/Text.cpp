@@ -199,7 +199,7 @@ void Line::calcExtents()
 		Gdiplus::StringFormat format;
 		format.SetAlignment( Gdiplus::StringAlignmentNear ); format.SetLineAlignment( Gdiplus::StringAlignmentNear );
 		Gdiplus::RectF sizeRect;
-		const Gdiplus::Font *font = runIt->mFont.getGdiplusFont();;
+		const Gdiplus::Font *font = runIt->mFont.getGdiplusFont();
 		TextManager::instance()->getGraphics()->MeasureString( &runIt->mWideText[0], -1, font, Gdiplus::PointF( 0, 0 ), &format, &sizeRect );
 		
 		runIt->mWidth = sizeRect.Width;
@@ -592,7 +592,79 @@ Surface	TextBox::render( Vec2f offset )
 
 	return result;
 }
+#elif defined( CINDER_MSW )
 
-#endif // defined( CINDER_COCOA )
+void TextBox::calculate() const
+{
+	if( ! mInvalid )
+		return;
+	const float MAX_SIZE = 1000000.0f;
+
+	mWideText = toUtf16( mText );
+
+	Gdiplus::StringFormat format;
+	Gdiplus::StringAlignment align = Gdiplus::StringAlignmentNear;
+	if( mAlign == TextBox::CENTER ) align = Gdiplus::StringAlignmentCenter;
+	else if( mAlign == TextBox::RIGHT ) align = Gdiplus::StringAlignmentFar;
+	format.SetAlignment( align ); format.SetLineAlignment( align );
+	const Gdiplus::Font *font = mFont.getGdiplusFont();
+	Gdiplus::RectF sizeRect( 0, 0, 0, 0 ), outSize;
+	sizeRect.Width = ( mSize.x <= 0 ) ? MAX_SIZE : mSize.x;
+	sizeRect.Height = ( mSize.y <= 0 ) ? MAX_SIZE : mSize.y;
+	TextManager::instance()->getGraphics()->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
+	TextManager::instance()->getGraphics()->MeasureString( &mWideText[0], -1, font, sizeRect, &format, &outSize, NULL, NULL );
+
+	mCalculatedSize.x = outSize.Width;
+	mCalculatedSize.y = outSize.Height;
+
+	mInvalid = false;
+}
+
+Vec2f TextBox::measure() const
+{
+	calculate();
+	return mCalculatedSize;
+}
+
+Surface	TextBox::render( Vec2f offset )
+{
+	calculate();
+	
+	float sizeX = ( mSize.x <= 0 ) ? mCalculatedSize.x : mSize.x;
+	float sizeY = ( mSize.y <= 0 ) ? mCalculatedSize.y : mSize.y;
+	sizeX = math<float>::ceil( sizeX );
+	sizeY = math<float>::ceil( sizeY );
+
+	sizeY += 1;
+	// prep our GDI and GDI+ resources
+	::HDC dc = TextManager::instance()->getDc();
+	Surface result( (int)sizeX, (int)sizeY, true, SurfaceConstraintsGdiPlus() );
+	result.setPremultiplied( mPremultiplied );
+	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result );
+	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
+	// high quality text rendering
+	offscreenGraphics->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
+	// fill the surface with the background color
+	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255), 
+			(BYTE)(mBackgroundColor.g * 255), (BYTE)(mBackgroundColor.b * 255) ) );
+	const Gdiplus::Font *font = mFont.getGdiplusFont();;
+	ColorA8u nativeColor( mColor );
+	Gdiplus::StringFormat format;
+	Gdiplus::StringAlignment align = Gdiplus::StringAlignmentNear;
+	if( mAlign == TextBox::CENTER ) align = Gdiplus::StringAlignmentCenter;
+	else if( mAlign == TextBox::RIGHT ) align = Gdiplus::StringAlignmentFar;
+	format.SetAlignment( align  ); format.SetLineAlignment( align );
+	Gdiplus::SolidBrush brush( Gdiplus::Color( nativeColor.a, nativeColor.r, nativeColor.g, nativeColor.b ) );
+	offscreenGraphics->DrawString( &mWideText[0], -1, font, Gdiplus::RectF( offset.x, offset.y, sizeX, sizeY ), &format, &brush );
+	
+	::GdiFlush();
+
+	delete offscreenBitmap;
+	delete offscreenGraphics;
+
+	return result;
+}
+
+#endif // defined( CINDER_MSW )
 
 } // namespace cinder
