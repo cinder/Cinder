@@ -159,6 +159,10 @@ bool OscListener::getNextMessage( Message* message )
 		return false;
 	
 	Message* src_message = mMessages.front();
+	if (src_message == NULL)
+		return false;
+	if (src_message->getAddress() == "")
+		return false;
 	message->copy( *src_message );
 	
 	delete src_message;	

@@ -195,7 +195,9 @@ class AppBasic : public App {
 	
 #ifdef __OBJC__
 	// ROGER / newResize
+#ifdef ROGER_NEW_RESIZE
 	void newResize(int w, int h) { [mImpl setWindowSizeWithWidth:w height:h];};
+#endif
 #endif
 
  private:
