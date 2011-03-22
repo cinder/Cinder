@@ -26,7 +26,7 @@
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/app/AccelEvent.h"
-
+#include "cinder/app/OrientationEvent.h"
 
 namespace cinder { namespace app {
 
@@ -61,8 +61,10 @@ class AppCocoaTouch : public App {
 	virtual void		touchesEnded( TouchEvent event ) {}
 	//! Returns a std::vector of all active touches
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }	
-	//! Returns a Vec3d of the acceleration direction
+	//! Override to respond to the acceleration direction
 	virtual void		accelerated( AccelEvent event ) {}
+	//! Override to respond to the device orientation
+	virtual void		orientationChanged( OrientationEvent event ) {}
 
 	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
 	CallbackId		registerTouchesBegan( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesBegan.registerCb( callback ); }
@@ -90,12 +92,20 @@ class AppCocoaTouch : public App {
 
 	//! Registers a callback for accelerated events. Returns a unique identifier which can be used as a parameter to unregisterAccelerated().
 	CallbackId		registerAccelerated( std::function<bool (AccelEvent)> callback ) { return mCallbacksAccelerated.registerCb( callback ); }
-	//! Registers a callback for touchesEnded events. Returns a unique identifier which can be used as a parameter to unregisterTouchesEnded().
+	//! Registers a callback for accelerated events. Returns a unique identifier which can be used as a parameter to unregisterAccelerated().
 	template<typename T>
 	CallbackId		registerAccelerated( T *obj, bool (T::*callback)(AccelEvent) ) { return mCallbacksAccelerated.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for touchesEnded events.
+	//! Unregisters a callback for accelerated events.
 	void			unregisterAccelerated( CallbackId id ) { mCallbacksAccelerated.unregisterCb( id ); }
 
+	//! Registers a callback for orientationChanged events. Returns a unique identifier which can be used as a parameter to unregisterOrientationChanged().
+	CallbackId		registerOrientationChanged( std::function<bool (OrientationEvent)> callback ) { return mCallbacksOrientationChanged.registerCb( callback ); }
+	//! Registers a callback for orientationChanged events. Returns a unique identifier which can be used as a parameter to unregisterOrientationChanged().
+	template<typename T>
+	CallbackId		registerOrientationChanged( T *obj, bool (T::*callback)(OrientationEvent) ) { return mCallbacksOrientationChanged.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for orientationChanged events.
+	void			unregisterOrientationChanged( CallbackId id ) { mCallbacksOrientationChanged.unregisterCb( id ); }
+    
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
 	virtual int		getWindowWidth() const;
@@ -155,6 +165,7 @@ class AppCocoaTouch : public App {
 	void		privateTouchesEnded__( const TouchEvent &event );
 	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
 	void		privateAccelerated__( const Vec3f &direction );
+    void        privateOrientationChanged__( const DeviceOrientation &orientation );
 	//! \endcond
 
   private:
@@ -168,11 +179,13 @@ class AppCocoaTouch : public App {
 	
 	std::vector<TouchEvent::Touch>	mActiveTouches;
 
-	CallbackMgr<bool (TouchEvent)>		mCallbacksTouchesBegan, mCallbacksTouchesMoved, mCallbacksTouchesEnded;
-	CallbackMgr<bool (AccelEvent)>		mCallbacksAccelerated;
+	CallbackMgr<bool (TouchEvent)>          mCallbacksTouchesBegan, mCallbacksTouchesMoved, mCallbacksTouchesEnded;
+	CallbackMgr<bool (AccelEvent)>          mCallbacksAccelerated;
+    CallbackMgr<bool (OrientationEvent)>    mCallbacksOrientationChanged;
 
 	float					mAccelFilterFactor;
 	Vec3f					mLastAccel, mLastRawAccel;
+    DeviceOrientation       mLastOrientation;
 };
 
 } } // namespace cinder::app

@@ -48,7 +48,18 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 	app->privateSetup__();
 	[app->mState->mCinderView setAppSetupCalled:YES];
 	app->privateResize__( ci::app::ResizeEvent( ci::Vec2i( [app->mState->mCinderView bounds].size.width, [app->mState->mCinderView bounds].size.height ) ) );
-	
+
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"UIDeviceOrientationDidChangeNotification" object:nil queue:nil usingBlock: ^(NSNotification *notification) {
+        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        if (UIDeviceOrientationIsValidInterfaceOrientation(orientation)) {
+            // let's always make sure the task bar is shown on the correct side of the device            
+            [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientation(orientation);
+        }
+        // and then tell everyone else
+        app->privateOrientationChanged__(DeviceOrientation(orientation));
+    }];    
+    [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    
 	[app->mState->mCinderView startAnimation];
 }
 
@@ -91,6 +102,7 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 	ci::Vec3f direction( thisAcceleration.x, thisAcceleration.y, thisAcceleration.z );
 	app->privateAccelerated__( direction );
 }
+
 
 - (void) dealloc
 {
@@ -238,6 +250,19 @@ void AppCocoaTouch::privateAccelerated__( const Vec3f &direction )
 
 	mLastAccel = filtered;
 	mLastRawAccel = direction;
+}
+
+void AppCocoaTouch::privateOrientationChanged__( const DeviceOrientation &orientation )
+{
+    OrientationEvent event( orientation, mLastOrientation );
+    
+    bool handled = false;
+    for( CallbackMgr<bool (OrientationEvent)>::iterator cbIter = mCallbacksOrientationChanged.begin(); ( cbIter != mCallbacksOrientationChanged.end() ) && ( ! handled ); ++cbIter )
+        handled = (cbIter->second)( event );		
+    if( ! handled )	
+        orientationChanged( event );
+    
+    mLastOrientation = orientation;
 }
 
 } } // namespace cinder::app
