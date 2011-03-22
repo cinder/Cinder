@@ -197,6 +197,8 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments = 0 );
 void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = 0 );
 //! Renders a solid rectangle. Texture coordinates in the range [0,1] are generated unless \a textureRectangle.
 void drawSolidRect( const Rectf &rect, bool textureRectangle = false );
+// ROGER
+void drawStrokedRect( const Rectf &rect );
 //! Renders a coordinate frame representation centered at the origin. Arrowheads are drawn at the end of each axis with radius \a headRadius and length \a headLength.
 void drawCoordinateFrame( float axisLength = 1.0f, float headLength = 0.2f, float headRadius = 0.05f );
 //! Draws a vector starting at \a start and ending at \a end. An arrowhead is drawn at the end of radius \a headRadius and length \a headLength.

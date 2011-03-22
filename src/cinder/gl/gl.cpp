@@ -704,6 +704,27 @@ void drawSolidRect( const Rectf &rect, bool textureRectangle )
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
 }
 
+	// ROGER
+	void drawStrokedRect( const Rectf &rect )
+	{
+		glEnableClientState( GL_VERTEX_ARRAY );
+		GLfloat verts[8];
+		glVertexPointer( 2, GL_FLOAT, 0, verts );
+		verts[0*2+0] = rect.getX2();
+		verts[0*2+1] = rect.getY1();
+		verts[1*2+0] = rect.getX1();
+		verts[1*2+1] = rect.getY1();
+		verts[2*2+0] = rect.getX1();
+		verts[2*2+1] = rect.getY2();
+		verts[3*2+0] = rect.getX2();
+		verts[3*2+1] = rect.getY2();
+		
+		glDrawArrays( GL_LINE_LOOP, 0, 4 );
+		
+		glDisableClientState( GL_VERTEX_ARRAY );
+		glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
+	}
+	
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 {
 	glColor4ub( 255, 0, 0, 255 );
