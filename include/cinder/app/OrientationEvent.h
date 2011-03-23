@@ -53,11 +53,75 @@ namespace cinder { namespace app {
         
         DeviceOrientation getOrientation() const { return mOrientation; }
         DeviceOrientation getPrevOrientation() const { return mPrevOrientation; }
+
+        bool isValidInterfaceOrientation()
+        {
+            return UIDeviceOrientationIsValidInterfaceOrientation( UIDeviceOrientation(mOrientation) );
+        }
         
-        // TODO: getMatrix() analagous to AccelEvent::getMatrix;
+        bool isPortait()
+        {
+            return UIDeviceOrientationIsPortrait( UIDeviceOrientation(mOrientation) );            
+        }
         
+        bool isLandscape()
+        {
+            return UIDeviceOrientationIsLandscape( UIDeviceOrientation(mOrientation) );
+        }
+
+        // if you usually use Vec3f::yAxis() for up on your CameraPersp, this will help
+        Vec3f getUpVector()
+        {
+            switch ( mOrientation )
+            {
+                case PORTRAIT_ORIENTATION:
+                    return Vec3f::yAxis();
+                case UPSIDE_DOWN_PORTRAIT_ORIENTATION:
+                    return -Vec3f::yAxis();
+                case LANDSCAPE_LEFT_ORIENTATION:
+                    return Vec3f::xAxis();
+                case LANDSCAPE_RIGHT_ORIENTATION:
+                    return -Vec3f::xAxis();
+                default:
+                    // if in doubt, just return the normal one
+                    return Vec3f::yAxis();                    
+            }  
+        }
+        
+        // if you're doing 2D drawing, this matrix moves the origin to the correct device corner
+        // to get the window size, use app::getWindowSize() and apply a .yx() swizzle if event.isLandscape()
+        Matrix44f getOrientationMatrix()
+        {
+            // a little bit messy to assume only one fullscreen app, but it is iOS:
+            // if this bothers anyone, deviceSize should probably be an argument of this method
+            Vec2f deviceSize = app::getWindowSize();
+            
+            Matrix44f orientationMtx;
+            switch ( mOrientation )
+            {
+                case UPSIDE_DOWN_PORTRAIT_ORIENTATION:
+                    orientationMtx.translate( Vec3f( deviceSize.x, deviceSize.y, 0 ) );            
+                    orientationMtx.rotate( Vec3f( 0, 0, M_PI ) );
+                    break;
+                case LANDSCAPE_LEFT_ORIENTATION:
+                    orientationMtx.translate( Vec3f( deviceSize.x, 0, 0 ) );
+                    orientationMtx.rotate( Vec3f( 0, 0, M_PI/2.0f ) );
+                    break;
+                case LANDSCAPE_RIGHT_ORIENTATION:
+                    orientationMtx.translate( Vec3f( 0, deviceSize.y, 0 ) );
+                    orientationMtx.rotate( Vec3f( 0, 0, -M_PI/2.0f ) );
+                    break;
+                default:
+                    break;
+            }
+            
+            return orientationMtx;          
+        }
+
     private:
+        
         DeviceOrientation mOrientation, mPrevOrientation;
+        
     };
     
     // For convenience only
