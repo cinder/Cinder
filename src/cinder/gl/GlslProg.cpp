@@ -171,6 +171,18 @@ void GlslProg::uniform( const std::string &name, const Vec4f &data )
 	glUniform4f( loc, data.x, data.y, data.z, data.w );
 }
 
+void GlslProg::uniform( const std::string &name, const Color &data )
+{
+	GLint loc = getUniformLocation( name );
+	glUniform3f( loc, data.r, data.g, data.b );
+}
+
+void GlslProg::uniform( const std::string &name, const ColorA &data )
+{
+	GLint loc = getUniformLocation( name );
+	glUniform4f( loc, data.r, data.g, data.b, data.a );
+}
+
 void GlslProg::uniform( const std::string &name, const float *data, int count )
 {
 	GLint loc = getUniformLocation( name );
