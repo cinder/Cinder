@@ -786,14 +786,14 @@ class Vec4
 
 	T length() const
 	{
-		// w is ignored
-		return math<float>::sqrt( x*x + y*y + z*z );
+		// For most vector operations, this assumes w to be zero.
+		return math<float>::sqrt( x*x + y*y + z*z + w*w );
 	}
 
 	T lengthSquared() const
 	{
-		// w is ignored
-		return x*x + y*y + z*z;
+		// For most vector operations, this assumes w to be zero.
+		return x*x + y*y + z*z + w*w;
 	}
 
 	void normalize()
@@ -802,13 +802,13 @@ class Vec4
 		x *= invS;
 		y *= invS;
 		z *= invS;
-		w  = (T)0;
+		w *= invS;
 	}
 	
 	Vec4<T> normalized() const 
 	{
 		T invS = ((T)1) / length();
-		return Vec4<T>( x*invS, y*invS, z*invS, (T)0 );
+		return Vec4<T>( x*invS, y*invS, z*invS, w*invS );
 	}
 
 	// Tests for zero-length
@@ -827,7 +827,7 @@ class Vec4
 	//! Limits the length of a Vec4 to \a maxLength, scaling it proportionally if necessary.
 	void limit( T maxLength )
 	{
-		T lenSq = x * x + y * y + z * z + w * w;
+		T lenSq = lengthSquared();
 
 		if( ( lenSq > maxLength * maxLength ) && ( lenSq > 0 ) ) {
 			T ratio = maxLength / math<T>::sqrt( lenSq );
