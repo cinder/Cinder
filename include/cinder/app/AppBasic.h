@@ -144,6 +144,8 @@ class AppBasic : public App {
 	void				hideCursor();
 	//! Shows the mouse cursor
 	void				showCursor();
+	//! Forces the application to become 'focused'
+	void				getFocus();
 
 	const Settings&		getSettings() const { return mSettings; }
 	const Display&		getDisplay();
