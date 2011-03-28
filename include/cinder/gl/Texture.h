@@ -157,6 +157,9 @@ class Texture {
 	//! Returns whether a give OpenGL dataFormat contains color channels
 	static bool		dataFormatHasColor( GLint dataFormat );
 
+        //! Returns the reference count for the texture.
+	long			getUseCount() const { return mObj.use_count(); };
+
 	//! Creates a clone of this texture which does not have ownership, but points to the same resource
 	Texture			weakClone() const;
 
