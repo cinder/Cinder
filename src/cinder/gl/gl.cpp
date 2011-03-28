@@ -875,6 +875,14 @@ void draw( const PolyLine<Vec2f> &polyLine )
 	glDisableClientState( GL_VERTEX_ARRAY );
 }
 
+void draw( const PolyLine<Vec3f> &polyLine )
+{
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 3, GL_FLOAT, 0, &(polyLine.getPoints()[0]) );
+	glDrawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, polyLine.size() );
+	glDisableClientState( GL_VERTEX_ARRAY );
+}
+
 void draw( const Path2d &path2d, float approximationScale )
 {
 	if( path2d.getNumSegments() == 0 )
