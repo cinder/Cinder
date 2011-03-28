@@ -119,6 +119,8 @@ typedef RectT<double>	Rectd;
 // This class maps a rectangle into another rectangle
 class RectMapping {
  public:
+    RectMapping()
+        : mSrcRect( 0, 0, 0, 0 ), mDstRect( 0, 0, 0, 0 ) {}
 	RectMapping( const Rectf &aSrcRect, const Rectf &aDstRect )
 		: mSrcRect( aSrcRect ), mDstRect( aDstRect ) {}
 	RectMapping( const Rectf &aSrcRect, const Rectf &aDstRect, bool preserveSrcAspect );
