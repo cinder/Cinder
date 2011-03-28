@@ -560,6 +560,30 @@ void TextBox::createLines() const
 	mInvalid = false;
 }
 
+vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
+{
+	vector<pair<uint16_t,Vec2f> > result;
+
+	createLines();
+	CFRange range = CFRangeMake( 0, 0 );
+	for( vector<pair<shared_ptr<const __CTLine>,Vec2f> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		CFArrayRef runsArray = ::CTLineGetGlyphRuns( lineIt->first.get() );
+		CFIndex runs = ::CFArrayGetCount( runsArray );
+		for( CFIndex run = 0; run < runs; ++run ) {
+			CTRunRef runRef = (CTRunRef)::CFArrayGetValueAtIndex( runsArray, run );
+			CFIndex glyphCount = ::CTRunGetGlyphCount( runRef );
+			CGPoint points[glyphCount];
+			CGGlyph glyphBuffer[glyphCount];
+			::CTRunGetPositions( runRef, range, points );
+			::CTRunGetGlyphs( runRef, range, glyphBuffer );
+			for( size_t t = 0; t < glyphCount; ++t )			
+				result.push_back( make_pair( glyphBuffer[t], Vec2f( points[t].x, points[t].y ) + lineIt->second ) );
+		}
+	}
+	
+	return result;
+}
+
 Vec2f TextBox::measure() const
 {
 	createLines();
