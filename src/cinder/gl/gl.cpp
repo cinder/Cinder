@@ -899,37 +899,40 @@ void drawCylinder( float base, float top, float height, int slices, int stacks )
 	glNormalPointer( GL_FLOAT, 0, normal );
 
 	for(i=0;i<slices;i++) {
-		float ct = cos(2.0f * (float)M_PI * (float)i / (float)(slices - 1));
-		float st = sin(2.0f * (float)M_PI * (float)i / (float)(slices - 1));
+		float u = (float)i / (float)(slices - 1);
+		float ct = cos(2.0f * (float)M_PI * u);
+		float st = sin(2.0f * (float)M_PI * u);
 
 		for(j=0;j<stacks;j++) {
-			float n = (float)j / (float)(stacks-1);
-			float r = lerp<float>(base, top, n); 
+			float v = (float)j / (float)(stacks-1);
+			float radius = lerp<float>(base, top, v); 
 
-			normal[3 * (i * stacks + j)    ] = ct;
-			normal[3 * (i * stacks + j) + 1] = 0;
-			normal[3 * (i * stacks + j) + 2] = st;
+			int index = 3 * (i * stacks + j);
 
-			tex[2 * (i * stacks + j)    ] = (float)i / (float)(slices - 1);
-			tex[2 * (i * stacks + j) + 1] = 1.0f - n; // top of texture is top of cylinder
+			normal[index    ] = -ct;
+			normal[index + 1] = 0;
+			normal[index + 2] = -st;
 
-			vertex[3 * (i * stacks + j)    ] = ct * r;
-			vertex[3 * (i * stacks + j) + 1] = height * n;
-			vertex[3 * (i * stacks + j) + 2] = st * r;
+			tex[2 * (i * stacks + j)    ] = u;
+			tex[2 * (i * stacks + j) + 1] = 1.0f - v; // top of texture is top of cylinder
+
+			vertex[index    ] = ct * radius;
+			vertex[index + 1] = v * height;
+			vertex[index + 2] = st * radius;
 		}
 	}
 
 	for(i=0;i<(stacks - 1);i++) {
 		for(j=0;j<slices;j++) {
 			indices[j*2+0] = i + 1 + j * stacks;
-			indices[j*2+1] = i + 0 + j * stacks;
+			indices[j*2+1] = i     + j * stacks;
 		}
 		glDrawElements( GL_TRIANGLE_STRIP, (slices)*2, GL_UNSIGNED_SHORT, indices );
 	}
 
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	glDisableClientState( GL_VERTEX_ARRAY );
 
 	delete [] normal;
 	delete [] tex;
