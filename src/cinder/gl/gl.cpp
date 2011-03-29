@@ -911,7 +911,7 @@ void drawCylinder( float base, float top, float height, int slices, int stacks )
 			normal[3 * (i * stacks + j) + 2] = st;
 
 			tex[2 * (i * stacks + j)    ] = (float)i / (float)(slices - 1);
-			tex[2 * (i * stacks + j) + 1] = (float)j;
+			tex[2 * (i * stacks + j) + 1] = 1.0f - n; // top of texture is top of cylinder
 
 			vertex[3 * (i * stacks + j)    ] = ct * r;
 			vertex[3 * (i * stacks + j) + 1] = height * n;
