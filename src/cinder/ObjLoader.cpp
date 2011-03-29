@@ -496,4 +496,39 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 	}
 }
 
+bool ObjLoader::exportGroups(const std::string &path, bool replace)
+{
+	bool			success = true;
+
+	ci::TriMesh		mesh;
+	std::string		file;
+
+	// traverse groups
+	for(size_t i=0;i<mGroups.size();++i) {
+		// construct file name: <path>/<group>.msh
+		file = ci::getPathDirectory( path ) + mGroups[i].mName + ".msh";
+
+		// check if file exists
+		if(!replace && ci::fs::exists( ci::fs::path(file) ) ) {
+			// file already exists and will not be replaced
+			success = false;
+			continue;
+		}
+
+		// load group into mesh
+		load(i, &mesh);
+
+		try {
+			mesh.write( ci::writeFile(file, true) );
+			//file successfuly created/written
+		}
+		catch(...) {
+			// file could not be created/written
+			success = false;
+		}
+	}
+
+	return success;
+}
+
 } // namespace cinder
