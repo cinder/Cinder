@@ -37,6 +37,11 @@
 
 namespace cinder {
 
+//! forward declaration of "cinder/Quaternion.h",
+//! needed by Vec3<T>::angle()
+template<typename T>
+class Quaternion;
+
 //!  \cond
 template<typename T>
 struct VECTRAIT {
@@ -167,6 +172,11 @@ class Vec2
 	T distanceSquared( const Vec2<T> &rhs ) const
 	{
 		return ( *this - rhs ).lengthSquared();
+	}
+
+	T angle( const Vec2<T> &rhs ) const
+	{
+		return math<T>::atan2(this->y, this->x) - math<T>::atan2(rhs.y, rhs.x);
 	}
 
 	DIST length() const
@@ -428,6 +438,16 @@ public:
 	T distanceSquared( const Vec3<T> &rhs ) const
 	{
 		return ( *this - rhs ).lengthSquared();
+	}
+
+	Quaternion<T> angle( const Vec3<T> &rhs ) const
+	{
+		// adapted from: http://www.euclideanspace.com/maths/algebra/vectors/angleBetween/index.htm
+		T		angle = math<T>::acos( this->dot(rhs) / ( this->length() * rhs.length() ) ) / 2;
+		Vec3<T>	axis = this->cross(rhs).normalized();
+		T		s = math<T>::sin(angle);
+
+		return Quaternion<T>( math<T>::cos(angle), axis.x * s, axis.y * s, axis.z * s ); 
 	}
 
 	T length() const
