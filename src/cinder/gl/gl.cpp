@@ -703,6 +703,19 @@ void drawSolidRect( const Rectf &rect, bool textureRectangle )
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
 }
 
+void drawStrokedRect( const Rectf &rect )
+{
+	GLfloat verts[8];
+	verts[0] = rect.getX1();	verts[1] = rect.getY1();
+	verts[2] = rect.getX2();	verts[3] = rect.getY1();
+	verts[4] = rect.getX2();	verts[5] = rect.getY2();
+	verts[6] = rect.getX1();	verts[7] = rect.getY2();
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_LINE_LOOP, 0, 4 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+}
+
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 {
 	glColor4ub( 255, 0, 0, 255 );
@@ -861,6 +874,63 @@ void drawTorus( float outterRadius, float innerRadius, int longitudeSegments, in
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
 	
+	delete [] normal;
+	delete [] tex;
+	delete [] vertex;
+	delete [] indices;
+}
+
+void drawCylinder( float base, float top, float height, int slices, int stacks )
+{
+	stacks = math<int>::max(2, stacks + 1);	// minimum of 1 stack
+	slices = math<int>::max(4, slices + 1);	// minimum of 3 slices
+
+	int i, j;
+	float *normal = new float[stacks * slices * 3];
+	float *vertex = new float[stacks * slices * 3];
+	float *tex = new float[stacks * slices * 2];
+	GLushort *indices = new GLushort[slices * 2];
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 3, GL_FLOAT, 0, vertex );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glTexCoordPointer( 2, GL_FLOAT, 0, tex );
+	glEnableClientState( GL_NORMAL_ARRAY );
+	glNormalPointer( GL_FLOAT, 0, normal );
+
+	for(i=0;i<slices;i++) {
+		float ct = cos(2.0f * (float)M_PI * (float)i / (float)(slices - 1));
+		float st = sin(2.0f * (float)M_PI * (float)i / (float)(slices - 1));
+
+		for(j=0;j<stacks;j++) {
+			float n = (float)j / (float)(stacks-1);
+			float r = lerp<float>(base, top, n); 
+
+			normal[3 * (i * stacks + j)    ] = ct;
+			normal[3 * (i * stacks + j) + 1] = 0;
+			normal[3 * (i * stacks + j) + 2] = st;
+
+			tex[2 * (i * stacks + j)    ] = (float)i / (float)(slices - 1);
+			tex[2 * (i * stacks + j) + 1] = (float)j;
+
+			vertex[3 * (i * stacks + j)    ] = ct * r;
+			vertex[3 * (i * stacks + j) + 1] = height * n;
+			vertex[3 * (i * stacks + j) + 2] = st * r;
+		}
+	}
+
+	for(i=0;i<(stacks - 1);i++) {
+		for(j=0;j<slices;j++) {
+			indices[j*2+0] = i + 1 + j * stacks;
+			indices[j*2+1] = i + 0 + j * stacks;
+		}
+		glDrawElements( GL_TRIANGLE_STRIP, (slices)*2, GL_UNSIGNED_SHORT, indices );
+	}
+
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	glDisableClientState( GL_NORMAL_ARRAY );
+
 	delete [] normal;
 	delete [] tex;
 	delete [] vertex;
