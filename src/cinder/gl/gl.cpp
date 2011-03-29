@@ -909,9 +909,9 @@ void drawCylinder( float base, float top, float height, int slices, int stacks )
 
 			int index = 3 * (i * stacks + j);
 
-			normal[index    ] = -ct;
+			normal[index    ] = ct;
 			normal[index + 1] = 0;
-			normal[index + 2] = -st;
+			normal[index + 2] = st;
 
 			tex[2 * (i * stacks + j)    ] = u;
 			tex[2 * (i * stacks + j) + 1] = 1.0f - v; // top of texture is top of cylinder
@@ -924,8 +924,8 @@ void drawCylinder( float base, float top, float height, int slices, int stacks )
 
 	for(i=0;i<(stacks - 1);i++) {
 		for(j=0;j<slices;j++) {
-			indices[j*2+0] = i + 1 + j * stacks;
-			indices[j*2+1] = i     + j * stacks;
+			indices[j*2+0] = i + 0 + j * stacks;
+			indices[j*2+1] = i + 1 + j * stacks;
 		}
 		glDrawElements( GL_TRIANGLE_STRIP, (slices)*2, GL_UNSIGNED_SHORT, indices );
 	}
