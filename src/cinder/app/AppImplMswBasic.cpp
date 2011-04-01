@@ -88,7 +88,7 @@ void AppImplMswBasic::run()
 
 		double currentSeconds = mApp->getElapsedSeconds();
 		if( currentSeconds >= mNextFrameTime ) {
-			if( (currentSeconds - mNextFrameTime) > 1.0 ) {
+			if( (currentSeconds - mNextFrameTime) > 2.0 / mFrameRate ) {
 				// skip frames if too slow
 				mNextFrameTime = currentSeconds + 1.0 / mFrameRate;
 			}
