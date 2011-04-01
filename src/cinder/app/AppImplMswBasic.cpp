@@ -76,8 +76,8 @@ void AppImplMswBasic::run()
 	::SetForegroundWindow( mWnd );
 	::SetFocus( mWnd );
 
-	// initialize our next frame time to be definitely now
-	mNextFrameTime = -1;
+	// initialize our next frame time
+	mNextFrameTime = mApp->getElapsedSeconds();
 	
 	MSG msg;
 	while( ! mShouldQuit ) {
@@ -85,14 +85,23 @@ void AppImplMswBasic::run()
 			::TranslateMessage( &msg );
 			::DispatchMessage( &msg ); 
 		}
+
 		double currentSeconds = mApp->getElapsedSeconds();
 		if( currentSeconds >= mNextFrameTime ) {
-			mNextFrameTime = currentSeconds + 1.0 / mFrameRate;
+			if( (currentSeconds - mNextFrameTime) > 1.0 ) {
+				// skip frames if too slow
+				mNextFrameTime = currentSeconds + 1.0 / mFrameRate;
+			}
+			else {
+				// stabilize frame rate
+				mNextFrameTime = mNextFrameTime + 1.0 / mFrameRate;
+			}
+
 			mApp->privateUpdate__();
 			::RedrawWindow( mWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
 		}
 		else
-			::Sleep( 0 );
+			::Sleep( 1 );
 	}
 
 	killWindow( mFullScreen );
@@ -302,7 +311,9 @@ void AppImplMswBasic::setWindowSize( int aWindowWidth, int aWindowHeight )
 
 float AppImplMswBasic::setFrameRate( float aFrameRate )
 {
-	return aFrameRate;
+	mFrameRate = aFrameRate;
+
+	return mFrameRate;
 }
 
 void AppImplMswBasic::getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight )
