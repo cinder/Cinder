@@ -644,17 +644,17 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	}
 	if( numSegments < 2 ) numSegments = 2;
 	
-	GLfloat *verts = new float[(numSegments+1)*2];
+	GLfloat *verts = new float[(numSegments+2)*2];
 	verts[0] = center.x;
 	verts[1] = center.y;
-	for( int s = 0; s < numSegments; s++ ) {
-		float t = s / (float)(numSegments-1) * 2.0f * 3.14159f;
+	for( int s = 0; s <= numSegments; s++ ) {
+		float t = s / (float)numSegments * 2.0f * 3.14159f;
 		verts[(s+1)*2+0] = center.x + math<float>::cos( t ) * radius;
 		verts[(s+1)*2+1] = center.y + math<float>::sin( t ) * radius;
 	}
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 1 );
+	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
 	glDisableClientState( GL_VERTEX_ARRAY );
 	delete [] verts;
 }
