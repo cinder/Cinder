@@ -218,12 +218,12 @@ size_t Font::getNumGlyphs() const
 	return ::CGFontGetNumberOfGlyphs( mObj->mCGFont );
 }
 
-Font::Glyph Font::getGlyphIndex( size_t index )
+Font::Glyph Font::getGlyphIndex( size_t index ) const
 {
 	return (Glyph)index;
 }
 
-Font::Glyph Font::getGlyphChar( char c )
+Font::Glyph Font::getGlyphChar( char c ) const
 {
 	UniChar uc = c;
 	CGGlyph result;
@@ -231,29 +231,44 @@ Font::Glyph Font::getGlyphChar( char c )
 	return result;
 }
 
-vector<Font::Glyph> Font::getGlyphs( const string &s )
+vector<Font::Glyph> Font::getGlyphs( const string &s ) const
 {
-	NSString *ns = [[[NSString alloc] initWithUTF8String:s.c_str() ] autorelease];
-	size_t length = [ns length];
-	unichar ubuf[length];
-	CGGlyph glyphs[length];
-	[ns getCharacters:ubuf];
-	CTFontGetGlyphsForCharacters( mObj->mCTFont, ubuf, glyphs, length );
-	
 	vector<Font::Glyph> result;
-	for( size_t t = 0; t < length; ++t )
-		result.push_back( glyphs[t] );
-		
+
+	CFRange range = CFRangeMake( 0, 0 );	
+	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( s, *this, ColorA( 1, 1, 1, 1 ) );
+	CTLineRef line = ::CTLineCreateWithAttributedString( attrStr );
+	CFArrayRef runsArray = ::CTLineGetGlyphRuns( line );
+	CFIndex numRuns = ::CFArrayGetCount( runsArray );
+	for( CFIndex run = 0; run < numRuns; ++run ) {
+		CTRunRef runRef = (CTRunRef)::CFArrayGetValueAtIndex( runsArray, run );
+		CFIndex glyphCount = ::CTRunGetGlyphCount( runRef );
+		CGGlyph glyphBuffer[glyphCount];
+		::CTRunGetGlyphs( runRef, range, glyphBuffer );
+		for( size_t t = 0; t < glyphCount; ++t )			
+			result.push_back( glyphBuffer[t] );
+	}
+	
+	::CFRelease( attrStr );
+	::CFRelease( line );
+	
 	return result;
 }
 
-Shape2d Font::getGlyphShape( Glyph glyphIndex )
+Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 {
 	CGPathRef path = CTFontCreatePathForGlyph( mObj->mCTFont, static_cast<CGGlyph>( glyphIndex ), NULL );
 	Shape2d resultShape;
 	cocoa::convertCgPath( path, &resultShape, true );
 	CGPathRelease( path );
 	return resultShape;
+}
+
+Rectf Font::getGlyphBoundingBox( Glyph glyph ) const
+{
+	CGGlyph glyphs[1] = { glyph };
+	CGRect bounds = ::CTFontGetBoundingRectsForGlyphs( mObj->mCTFont, kCTFontDefaultOrientation, glyphs, NULL, 1 );
+	return Rectf( bounds.origin.x, bounds.origin.y, bounds.origin.x + bounds.size.width, bounds.origin.y + bounds.size.height );
 }
 
 CGFontRef Font::getCgFontRef() const
@@ -293,7 +308,7 @@ size_t Font::getNumGlyphs() const
 	return mObj->mNumGlyphs;
 }
 
-Font::Glyph Font::getGlyphChar( char c )
+Font::Glyph Font::getGlyphChar( char c ) const
 {
 	WORD buffer[1];
 	WCHAR theChar[1] = { (WCHAR)c };
@@ -304,7 +319,7 @@ Font::Glyph Font::getGlyphChar( char c )
 	return (Glyph)buffer[0];
 }
 
-Font::Glyph Font::getGlyphIndex( size_t idx )
+Font::Glyph Font::getGlyphIndex( size_t idx ) const
 {
 	size_t ct = 0;
 	bool found = false;
@@ -325,7 +340,7 @@ Font::Glyph Font::getGlyphIndex( size_t idx )
 	return (Glyph)ct;
 }
 
-vector<Font::Glyph> Font::getGlyphs( const string &utf8String )
+vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
 {
 	wstring wideString = toUtf16( utf8String );
 	std::shared_ptr<WORD> buffer( new WORD[wideString.length()], checked_array_deleter<WORD>() );
@@ -341,7 +356,7 @@ vector<Font::Glyph> Font::getGlyphs( const string &utf8String )
 	return result;
 }
 
-Shape2d Font::getGlyphShape( Glyph glyphIndex )
+Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 {
 	Shape2d resultShape;
 	static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
