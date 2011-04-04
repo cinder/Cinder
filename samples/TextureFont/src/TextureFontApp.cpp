@@ -38,7 +38,7 @@ class TextureFontApp : public AppNative {
 
 void TextureFontApp::setup()
 {
-	mFont = Font( "Gotham-BlackItalic", 42 );
+	mFont = Font( "Zapfino", 42 );
 	mSize = Vec2f( 100, 100 );
 	render();
 }
@@ -62,7 +62,7 @@ void TextureFontApp::keyDown( KeyEvent event )
 			render();
 		break;
 		case 'f':
-			mFont = Font( Font::getNames()[Rand::randInt() % Font::getNames().size()], mFont.getSize() - 1 );
+			mFont = Font( Font::getNames()[Rand::randInt() % Font::getNames().size()], mFont.getSize() );
 			console() << mFont.getName() << std::endl;
 			render();
 		break;
@@ -78,8 +78,8 @@ void TextureFontApp::render()
 	Vec2i sz = tbox.measure();
 	vector<pair<uint16_t,Vec2f> > glyphs = tbox.measureGlyphs();
 
-	//mTextureFont = gl::TextureFont::create( mFont );
-	mTextureFont = gl::TextureFont::create( mFont, "abh!" );
+	mTextureFont = gl::TextureFont::create( mFont );
+	//mTextureFont = gl::TextureFont::create( mFont, "abh!" );
 }
 
 void TextureFontApp::update()
@@ -92,8 +92,8 @@ void TextureFontApp::draw()
 	gl::enableAlphaBlending( false );
 	gl::clear( Color( 0, 0, 0 ) );
 	
-//std::string str( "Hyphae, Hello! worlds, hellf, florida Hello" );
-std::string str( "abh!" );
+std::string str( "Hyphae, Hello! worlds, hellf, florida Hello" );
+//std::string str( "abh!" );
 Vec2f pos( 2, 50 );
 	gl::drawString( str, pos, ColorA( 1, 1, 0.5, 1 ), mFont );
 		

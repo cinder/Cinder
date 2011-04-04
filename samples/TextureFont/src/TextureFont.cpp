@@ -58,8 +58,8 @@ std::cout << "  " << glyphExtents << std::endl;
 	glyphExtents.x = ceil( glyphExtents.x );
 	glyphExtents.y = ceil( glyphExtents.y );
 
-const int textureWidth = 512;
-const int textureHeight = 512;
+const int textureWidth = 1024;
+const int textureHeight = 1024;
 
 	int glyphsWide = floor( textureWidth / (glyphExtents.x+3) );
 	int glyphsTall = floor( textureHeight / (glyphExtents.y+5) );	
@@ -79,30 +79,26 @@ ColorA white( 1, 1, 1, 1 );
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
 		GlyphInfo newInfo;
 		newInfo.mTextureIndex = curTextureIndex;
-CGSize advances[1];
-CGGlyph tempGl[1] = { *glyphIt };
-CTFontGetAdvancesForGlyphs( mFont.getCtFontRef(), kCTFontDefaultOrientation, tempGl, advances, 1 );
 		Rectf bb = font.getGlyphBoundingBox( *glyphIt );
-float xDelta = advances[0].width - bb.getWidth();		
 		Vec2f ul = curOffset + Vec2f( 0, glyphExtents.y - bb.getHeight() );
 		Vec2f lr = curOffset + Vec2f( glyphExtents.x, glyphExtents.y );
 		newInfo.mTexCoords = Area( floor( ul.x ), floor( ul.y ), ceil( lr.x ) + 3, ceil( lr.y ) + 2 );
-		newInfo.mOriginOffset.x = floor(bb.x1) - 1 - xDelta;
+		newInfo.mOriginOffset.x = floor(bb.x1) - 1;
 		newInfo.mOriginOffset.y = -(bb.getHeight()-1)-ceil( bb.y1+0.5f );
 		mGlyphMap[*glyphIt] = newInfo;
 		renderGlyphs[curGlyphIndex] = *glyphIt;
 		//renderPositions[curGlyphIndex].x = curOffset.x - bb.x1 + 1;
-		renderPositions[curGlyphIndex].x = curOffset.x - floor(bb.x1) + xDelta;
+		renderPositions[curGlyphIndex].x = curOffset.x - floor(bb.x1) + 1;
 		renderPositions[curGlyphIndex].y = surface.getHeight() - (curOffset.y + glyphExtents.y) - ceil(bb.y1+0.5f);// - ( 1 - fmod( bb.y1, 1.0f ) );
-cout << *glyphIt << " bb: " << bb << "adv: " << advances[0].width << " vs. " << bb.getWidth() << std::endl;
-surface.setPixel( newInfo.mTexCoords.getUL(), ColorA8u( 255, 255, 0, 255 ) );
-surface.setPixel( newInfo.mTexCoords.getLR() - Vec2i(1,1), ColorA8u( 255, 0, 0, 255 ) );
+//cout << *glyphIt << " bb: " << bb << std::endl;
+//surface.setPixel( newInfo.mTexCoords.getUL(), ColorA8u( 255, 255, 0, 255 ) );
+//surface.setPixel( newInfo.mTexCoords.getLR() - Vec2i(1,1), ColorA8u( 255, 0, 0, 255 ) );
 		curOffset += Vec2i( glyphExtents.x + 3, 0 );
 		++glyphIt;
 		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
 			::CGContextShowGlyphsAtPositions( cgContext, renderGlyphs, renderPositions, curGlyphIndex );
 
-::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
+/*::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
 uint8_t glyph = 86;
 renderGlyphs[0] = glyph;
 renderGlyphs[1] = glyph;
@@ -111,24 +107,22 @@ renderPositions[0].x = 0;
 renderPositions[0].y = 100;
 renderPositions[1].x = font.getGlyphBoundingBox( glyph ).x1;
 renderPositions[1].y = 200;
-renderPositions[2].x = -font.getGlyphBoundingBox( glyph ).x1;
+renderPositions[2].x = -font.getGlyphBoundingBox( glyph ).x1 + 1;
 renderPositions[2].y = 300;
 
 ::CGContextShowGlyphsAtPositions( cgContext, renderGlyphs, renderPositions, 3 );
 			::CGContextFlush( cgContext );
 
-
+*/
 
 
 			ip::unpremultiply( &surface );
-writeImage( getHomeDirectory() + string("crunk_") + toString( (int)curTextureIndex ) + ".png", surface );
+//writeImage( getHomeDirectory() + string("crunk_") + toString( (int)curTextureIndex ) + ".png", surface );
 			mTextures.push_back( gl::Texture( surface ) );
 			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
 			curOffset = Vec2i::zero();
 			curGlyphIndex = 0;
 			++curTextureIndex;
-
-
 		}
 		else if( ( curGlyphIndex ) % glyphsWide == 0 ) { // wrap around
 			curOffset.x = 0;

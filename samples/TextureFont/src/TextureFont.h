@@ -35,7 +35,7 @@ typedef std::shared_ptr<class TextureFont>	TextureFontRef;
 
 class TextureFont {
   public:
-	static TextureFontRef		create( const Font &font, const std::string &utf8Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456890().?!,:;'\"&*=+-/\\@#_[]<>%^llfl" )
+	static TextureFontRef		create( const Font &font, const std::string &utf8Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456890().?!,:;'\"&*=+-/\\@#_[]<>%^llflphrids" )
 	{ return TextureFontRef( new TextureFont( font, utf8Chars ) ); }
 	
 	void	drawString( const std::string &str, const Vec2f &baseline );
