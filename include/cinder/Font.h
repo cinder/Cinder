@@ -77,6 +77,7 @@ class Font {
 	Shape2d					getGlyphShape( Glyph glyphIndex );
 	
 	static const std::vector<std::string>&		getNames( bool forceRefresh = false );
+	static Font				getDefault();
 
 #if defined( CINDER_COCOA )
 	CGFontRef				getCgFontRef() const;
