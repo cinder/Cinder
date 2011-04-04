@@ -50,6 +50,7 @@ class Ray {
 	
 	Vec3f calcPosition( float t ) const { return mOrigin + mDirection * t; }
 
+	bool calcRayIntersection( const Ray &ray, float *result ) const;
 	bool calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result ) const;
 
  protected:
