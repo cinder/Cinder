@@ -87,14 +87,16 @@ void AppImplMswBasic::run()
 		}
 
 		double currentSeconds = mApp->getElapsedSeconds();
+		double secondsPerFrame = 1.0 / mFrameRate; // TODO: should be calculated once
 		if( currentSeconds >= mNextFrameTime ) {
-			if( (currentSeconds - mNextFrameTime) > 2.0 / mFrameRate ) {
+			if( (currentSeconds - mNextFrameTime) >= secondsPerFrame ) {
 				// skip frames if too slow
-				mNextFrameTime = currentSeconds + 1.0 / mFrameRate;
+				int numSkipFrames = (int)((currentSeconds - mNextFrameTime) / secondsPerFrame);
+				mNextFrameTime = mNextFrameTime + numSkipFrames * secondsPerFrame;
 			}
 			else {
 				// stabilize frame rate
-				mNextFrameTime = mNextFrameTime + 1.0 / mFrameRate;
+				mNextFrameTime = mNextFrameTime + secondsPerFrame;
 			}
 
 			mApp->privateUpdate__();
