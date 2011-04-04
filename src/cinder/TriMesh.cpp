@@ -188,6 +188,32 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 	}
 }
 
+void TriMesh::generateNormals(void)
+{
+	mNormals.clear();
+
+	for(size_t i=0;i<mVertices.size();++i)
+		mNormals.push_back( Vec3f::zero() );
+
+        for(size_t i=0;i<getNumTriangles();++i)
+	{
+		Vec3f v0 = mVertices[ mIndices[i * 3] ];
+		Vec3f v1 = mVertices[ mIndices[i * 3 + 1] ];
+		Vec3f v2 = mVertices[ mIndices[i * 3 + 2] ];
+
+		Vec3f e0 = v2 - v0;
+		Vec3f e1 = v2 - v1;
+		Vec3f n = e0.cross(e1).normalized();
+
+		mNormals[ mIndices[i * 3] ] += n;
+		mNormals[ mIndices[i * 3 + 1] ] += n;
+		mNormals[ mIndices[i * 3 + 2] ] += n;
+	}
+
+	for(size_t i=0;i<mNormals.size();++i)
+		mNormals[i].normalize();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // TriMesh2d
 void TriMesh2d::clear()
