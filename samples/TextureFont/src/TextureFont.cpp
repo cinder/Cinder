@@ -163,7 +163,8 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 			Rectf srcCoords = mTextures[texIdx].getAreaTexCoords( mGlyphMap[glyphIt->first].mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect += glyphIt->second;
-			destRect += mGlyphMap[glyphIt->first].mOriginOffset;
+//			destRect += mGlyphMap[glyphIt->first].mOriginOffset;
+destRect += Vec2f( floor( mGlyphMap[glyphIt->first].mOriginOffset.x ), floor( mGlyphMap[glyphIt->first].mOriginOffset.y ) );
 			destRect += Vec2f( baseline.x, baseline.y - mFont.getAscent() );
 			destRect.offset( -Vec2f( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) ) );
 			
@@ -197,6 +198,13 @@ void TextureFont::drawString( const std::string &str, const Vec2f &baseline )
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW );
 	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
 	drawGlyphs( glyphMeasures, baseline );
+}
+
+void TextureFont::drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset )
+{
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() );
+	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
+	drawGlyphs( glyphMeasures, fitRect.getUpperLeft() );	
 }
 
 } } // namespace cinder::gl

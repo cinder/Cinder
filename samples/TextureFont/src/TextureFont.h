@@ -39,6 +39,7 @@ class TextureFont {
 	{ return TextureFontRef( new TextureFont( font, utf8Chars ) ); }
 	
 	void	drawString( const std::string &str, const Vec2f &baseline );
+	void	drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero() );
 	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline );
 	
 	struct GlyphInfo {
