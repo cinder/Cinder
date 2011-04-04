@@ -156,15 +156,18 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 		GLenum indexType = GL_UNSIGNED_INT;
 #endif
 		for( vector<pair<uint16_t,Vec2f> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
-			if( mGlyphMap[glyphIt->first].mTextureIndex != texIdx )
+			std::map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
+			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
 				continue;
+				
+			const GlyphInfo &glyphInfo = glyphInfoIt->second;
 			
-			Rectf destRect( mGlyphMap[glyphIt->first].mTexCoords );
-			Rectf srcCoords = mTextures[texIdx].getAreaTexCoords( mGlyphMap[glyphIt->first].mTexCoords );
+			Rectf destRect( glyphInfo.mTexCoords );
+			Rectf srcCoords = mTextures[texIdx].getAreaTexCoords( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect += glyphIt->second;
 //			destRect += mGlyphMap[glyphIt->first].mOriginOffset;
-destRect += Vec2f( floor( mGlyphMap[glyphIt->first].mOriginOffset.x ), floor( mGlyphMap[glyphIt->first].mOriginOffset.y ) );
+destRect += Vec2f( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) );
 			destRect += Vec2f( baseline.x, baseline.y - mFont.getAscent() );
 			destRect.offset( -Vec2f( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) ) );
 			
