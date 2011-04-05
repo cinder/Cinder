@@ -41,6 +41,7 @@ using namespace std;
 
 namespace cinder { namespace gl {
 
+#if defined( CINDER_COCOA )
 TextureFont::TextureFont( const Font &font, const string &utf8Chars )
 	: mFont( font )
 {
@@ -54,7 +55,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars )
 		glyphExtents.x = std::max( glyphExtents.x, bb.getWidth() );
 		glyphExtents.y = std::max( glyphExtents.y, bb.getHeight() );
 	}
-std::cout << "  " << glyphExtents << std::endl;
+
 	glyphExtents.x = ceil( glyphExtents.x );
 	glyphExtents.y = ceil( glyphExtents.y );
 
@@ -132,6 +133,81 @@ renderPositions[2].y = 300;
 
 	::CGContextRelease( cgContext );
 }
+#elif defined( CINDER_MSW )
+TextureFont::TextureFont( const Font &font, const string &utf8Chars )
+	: mFont( font )
+{
+	// get the glyph indices we'll need
+	vector<Font::Glyph>	tempGlyphs = font.getGlyphs( utf8Chars );
+	set<Font::Glyph> glyphs( tempGlyphs.begin(), tempGlyphs.end() );
+	// determine the max glyph extents
+	Vec2f glyphExtents = Vec2f::zero();
+	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
+		Rectf bb = font.getGlyphBoundingBox( *glyphIt );
+		glyphExtents.x = std::max( glyphExtents.x, bb.getWidth() );
+		glyphExtents.y = std::max( glyphExtents.y, bb.getHeight() );
+	}
+
+	glyphExtents.x = ceil( glyphExtents.x );
+	glyphExtents.y = ceil( glyphExtents.y );
+
+const int textureWidth = 1024;
+const int textureHeight = 1024;
+
+	int glyphsWide = floor( textureWidth / (glyphExtents.x+3) );
+	int glyphsTall = floor( textureHeight / (glyphExtents.y+5) );	
+	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
+	Vec2i curOffset = Vec2i::zero();
+/*CGGlyph renderGlyphs[glyphsWide*glyphsTall];
+CGPoint renderPositions[glyphsWide*glyphsTall];
+Surface surface( textureWidth, textureHeight, true );
+ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );
+ColorA white( 1, 1, 1, 1 );
+::CGContextRef cgContext = cocoa::createCgBitmapContext( surface );
+::CGContextSetRGBFillColor( cgContext, 1, 1, 1, 1 );
+::CGContextSetFont( cgContext, font.getCgFontRef() );
+::CGContextSetFontSize( cgContext, font.getSize() );
+::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
+
+	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
+		GlyphInfo newInfo;
+		newInfo.mTextureIndex = curTextureIndex;
+		Rectf bb = font.getGlyphBoundingBox( *glyphIt );
+		Vec2f ul = curOffset + Vec2f( 0, glyphExtents.y - bb.getHeight() );
+		Vec2f lr = curOffset + Vec2f( glyphExtents.x, glyphExtents.y );
+		newInfo.mTexCoords = Area( floor( ul.x ), floor( ul.y ), ceil( lr.x ) + 3, ceil( lr.y ) + 2 );
+		newInfo.mOriginOffset.x = floor(bb.x1) - 1;
+		newInfo.mOriginOffset.y = -(bb.getHeight()-1)-ceil( bb.y1+0.5f );
+		mGlyphMap[*glyphIt] = newInfo;
+		renderGlyphs[curGlyphIndex] = *glyphIt;
+		//renderPositions[curGlyphIndex].x = curOffset.x - bb.x1 + 1;
+		renderPositions[curGlyphIndex].x = curOffset.x - floor(bb.x1) + 1;
+		renderPositions[curGlyphIndex].y = surface.getHeight() - (curOffset.y + glyphExtents.y) - ceil(bb.y1+0.5f);// - ( 1 - fmod( bb.y1, 1.0f ) );
+//cout << *glyphIt << " bb: " << bb << std::endl;
+//surface.setPixel( newInfo.mTexCoords.getUL(), ColorA8u( 255, 255, 0, 255 ) );
+//surface.setPixel( newInfo.mTexCoords.getLR() - Vec2i(1,1), ColorA8u( 255, 0, 0, 255 ) );
+		curOffset += Vec2i( glyphExtents.x + 3, 0 );
+		++glyphIt;
+		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
+			::CGContextShowGlyphsAtPositions( cgContext, renderGlyphs, renderPositions, curGlyphIndex );
+
+			ip::unpremultiply( &surface );
+//writeImage( getHomeDirectory() + string("crunk_") + toString( (int)curTextureIndex ) + ".png", surface );
+			mTextures.push_back( gl::Texture( surface ) );
+			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
+			curOffset = Vec2i::zero();
+			curGlyphIndex = 0;
+			++curTextureIndex;
+		}
+		else if( ( curGlyphIndex ) % glyphsWide == 0 ) { // wrap around
+			curOffset.x = 0;
+			curOffset.y += glyphExtents.y + 2;
+		}
+	}
+
+	::CGContextRelease( cgContext );*/
+}
+#endif
 
 void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline )
 {

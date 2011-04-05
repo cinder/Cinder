@@ -38,7 +38,7 @@ class TextureFontApp : public AppNative {
 
 void TextureFontApp::setup()
 {
-	mFont = Font( "Courier New", 18 );
+	mFont = Font( "Courier", 18 );
 	mSize = Vec2f( 100, 100 );
 	render();
 }

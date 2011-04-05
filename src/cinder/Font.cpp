@@ -432,6 +432,20 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 	return resultShape;
 }
 
+Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
+{
+	static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
+	GLYPHMETRICS metrics;
+	DWORD bytesGlyph = ::GetGlyphOutlineW( FontManager::instance()->getFontDc(), glyphIndex,
+							GGO_METRICS | GGO_GLYPH_INDEX, &metrics, 0, NULL, &matrix);
+
+    if( bytesGlyph == GDI_ERROR )
+		throw FontGlyphFailureExc();
+
+	return Rectf( metrics.gmptGlyphOrigin.x, metrics.gmptGlyphOrigin.y,
+			metrics.gmptGlyphOrigin.x + metrics.gmBlackBoxX, metrics.gmptGlyphOrigin.y + (int)metrics.gmBlackBoxY );
+}
+
 #endif
 
 Font::Obj::Obj( const string &aName, float aSize )

@@ -644,6 +644,14 @@ void TextBox::calculate() const
 	mInvalid = false;
 }
 
+vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
+{
+	vector<pair<uint16_t,Vec2f> > result;
+
+	return result;
+}
+
+
 Vec2f TextBox::measure() const
 {
 	calculate();
