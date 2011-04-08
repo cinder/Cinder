@@ -44,6 +44,11 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 	[app->mState->mCinderView release];
 	[app->mState->mWindow makeKeyAndVisible];
 
+    // set this here to ensure it's accessible from getDeviceOrientation in setup
+    // use status bar orientation to force a valid interface orientation on startup
+    // from there you can use isValidInterfaceOrientation on orientationChanged events
+    app->mLastOrientation = DeviceOrientation([UIApplication sharedApplication].statusBarOrientation);
+    
 	[app->mState->mCinderView layoutIfNeeded];
 	app->privateSetup__();
 	[app->mState->mCinderView setAppSetupCalled:YES];
@@ -59,7 +64,7 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
         app->privateOrientationChanged__(DeviceOrientation(orientation));
     }];    
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-    
+
 	[app->mState->mCinderView startAnimation];
 }
 

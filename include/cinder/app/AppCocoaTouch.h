@@ -117,7 +117,9 @@ class AppCocoaTouch : public App {
 	void			setWindowHeight( int windowHeight ) {}
 	//! Ignored on the iPhone.
 	void			setWindowSize( int windowWidth, int windowHeight ) {}
-
+	//! Returns the current orientation of the device
+    DeviceOrientation getDeviceOrientation() const { return mLastOrientation; }
+    
 	//! Enables the device's accelerometer and modifies its filtering. \a updateFrequency represents the frequency with which accelerated() is called, measured in Hz. \a filterFactor represents the amount to weight the current value relative to the previous.
 	void enableAccelerometer( float updateFrequency = 30.0f, float filterFactor = 0.1f );
 	//! Turns off the accelerometer

@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include <UIKit/UIDevice.h>
 #include "cinder/Cinder.h"
 #include "cinder/app/Event.h"
 
