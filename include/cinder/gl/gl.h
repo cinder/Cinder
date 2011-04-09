@@ -207,8 +207,8 @@ void drawVector( const Vec3f &start, const Vec3f &end, float headLength = 0.2f, 
 void drawFrustum( const Camera &cam );
 //! Draws a torus at the origin, with an outter radius \a outterRadius and an inner radius \a innerRadius, subdivided into \a longitudeSegments and \a latitudeSegments. Normals and texture coordinates in the range [0,1] are generated.
 void drawTorus( float outterRadius, float innerRadius, int longitudeSegments = 12, int latitudeSegments = 12 );
-//! Draws a open-ended cylinder, with base radius \a base and top radius \a top, with height \a height, subdivided into \a slices and \a stacks. Normals and texture coordinates in the range [0,1] are generated.
-void drawCylinder( float base, float top, float height, int slices = 12, int stacks = 1 );
+//! Draws a open-ended cylinder, with base radius \a baseRadius and top radius \a topRadius, with height \a height, subdivided into \a slices and \a stacks. Normals and texture coordinates in the range [0,1] are generated.
+void drawCylinder( float baseRadius, float topRadius, float height, int slices = 12, int stacks = 1 );
 //! Draws a 2d PolyLine \a polyLine
 void draw( const class PolyLine<Vec2f> &polyLine );
 //! Draws a 3d PolyLine \a polyLine
