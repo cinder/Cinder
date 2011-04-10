@@ -125,8 +125,10 @@ class TextBox {
 	void				setPremultiplied( bool premult ) { mPremultiplied = premult; }
 
 	Vec2f									measure() const;
+	/** Returns a vector of pairs of glyph indices and the position of their left baselines
+		\warning Does not support word wrapping on Windows. **/
 	std::vector<std::pair<uint16_t,Vec2f> >	measureGlyphs() const;
-	
+
 	Surface				render( Vec2f offset = Vec2f::zero() );
 
   protected:

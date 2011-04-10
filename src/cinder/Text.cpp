@@ -644,18 +644,73 @@ void TextBox::calculate() const
 	mInvalid = false;
 }
 
-vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
-{
-	vector<pair<uint16_t,Vec2f> > result;
-
-	return result;
-}
-
-
 Vec2f TextBox::measure() const
 {
 	calculate();
 	return mCalculatedSize;
+}
+
+vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
+{
+	vector<pair<uint16_t,Vec2f> > result;
+
+	GCP_RESULTSW gcpResults;
+	WCHAR *glyphIndices = NULL;
+	int *dx = NULL;
+
+	::SelectObject( Font::getGlobalDc(), mFont.getHfont() );
+	mWideText = toUtf16( mText );
+
+	gcpResults.lStructSize = sizeof (gcpResults);
+	gcpResults.lpOutString = NULL;
+	gcpResults.lpOrder = NULL;
+	gcpResults.lpCaretPos = NULL;
+	gcpResults.lpClass = NULL;
+
+	uint32_t bufferSize = std::max<uint32_t>( mWideText.length() * 1.2, 16);		/* Initially guess number of chars plus a few */
+	while( true ) {
+		if( glyphIndices ) {
+			free( glyphIndices );
+			glyphIndices = NULL;
+		}
+		if( dx ) {
+			free( dx );
+			dx = NULL;
+		}
+
+		glyphIndices = (WCHAR*)malloc( bufferSize * sizeof(WCHAR) );
+		dx = (int*)malloc( bufferSize * sizeof(int) );
+		gcpResults.nGlyphs = bufferSize;
+		gcpResults.lpDx = dx;
+		gcpResults.lpGlyphs = glyphIndices;
+
+		if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), &mWideText[0], mWideText.length(), 0,
+						&gcpResults, GCP_DIACRITIC | GCP_LIGATE | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
+			return vector<pair<uint16_t,Vec2f> >(); // failure
+		}
+
+		if( gcpResults.lpDx && gcpResults.lpGlyphs )
+			break;
+
+		// Too small a buffer, try again
+		bufferSize += bufferSize / 2;
+		if( bufferSize > INT_MAX) {
+			return vector<pair<uint16_t,Vec2f> >(); // failure
+		}
+	}
+
+	int xPos = 0;
+	for( int i = 0; i < gcpResults.nGlyphs; i++ ) {
+		result.push_back( std::make_pair( glyphIndices[i], Vec2f( xPos, 0 ) ) );
+		xPos += dx[i];
+	}
+
+	if( glyphIndices )
+		free( glyphIndices );
+	if( dx )
+		free( dx );
+
+	return result;
 }
 
 Surface	TextBox::render( Vec2f offset )
