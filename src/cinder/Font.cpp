@@ -436,6 +436,7 @@ Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
 {
 	static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
 	GLYPHMETRICS metrics;
+	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
 	DWORD bytesGlyph = ::GetGlyphOutlineW( FontManager::instance()->getFontDc(), glyphIndex,
 							GGO_METRICS | GGO_GLYPH_INDEX, &metrics, 0, NULL, &matrix);
 
@@ -470,7 +471,13 @@ Font::Obj::Obj( const string &aName, float aSize )
 	assert( sizeof(wchar_t) == 2 );
     wstring faceName = toUtf16( mName );
     
-    mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
+	mHfont = ::CreateFont( -mSize * 72 / 96, 0, 0, 0, FW_DONTCARE, false, false, false,
+						DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
+						ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+						faceName.c_str() );
+	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
+//    mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
+	mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( FontManager::instance()->getFontDc(), mHfont ) );
 	
 	finishSetup();
 #endif
@@ -506,7 +513,7 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 	count = privateFontCollection.GetFamilyCount();
 	if( count <= 0 )
 		throw FontInvalidNameExc();
-	
+
 	// this is admittedly troublesome, but a new/delete combo blows up. This cannot be good.
 	// And the sample code implies I should even be able to allocate FontFamily's on the stack, but that is not the case it seems
 	std::shared_ptr<void> fontFamily( malloc(sizeof(Gdiplus::FontFamily)), free );
@@ -515,9 +522,9 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 
 	if( found != 0 ) {
 		((Gdiplus::FontFamily*)fontFamily.get())->GetFamilyName( familyName );
+
 		mName = toUtf8( familyName );
-		mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( familyName, size * 72 / 96 /* Mac<->PC size conversion factor */, Gdiplus::FontStyleRegular,
-                             Gdiplus::UnitPixel, &privateFontCollection ) );
+		mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( ((Gdiplus::FontFamily*)fontFamily.get()), size * 72 / 96 /* Mac<->PC size conversion factor */ ) );
 	}
 	else
 		throw FontInvalidNameExc();
@@ -541,12 +548,15 @@ void Font::Obj::finishSetup()
 {
 #if defined( CINDER_MSW )
 	mGdiplusFont->GetLogFontW( FontManager::instance()->getGraphics(), &mLogFont );
+	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
 
-	mHfont = ::CreateFontIndirectW( &mLogFont );
+	if( ! mHfont )
+		mHfont = ::CreateFontIndirectW( &mLogFont );
 	if( ! mHfont )
 		throw FontInvalidNameExc();
 	
 	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
+
 	if( ! ::GetTextMetrics( FontManager::instance()->getFontDc(), &mTextMetric ) )
 		throw FontInvalidNameExc();
 
@@ -561,5 +571,12 @@ void Font::Obj::finishSetup()
 	delete [] buffer;
 #endif
 }
+
+#if defined( CINDER_MSW )
+HDC Font::getGlobalDc()
+{
+	return FontManager::instance()->getFontDc();
+}
+#endif
 
 } // namespace cinder

@@ -86,7 +86,9 @@ class Font {
 	CTFontRef				getCtFontRef() const;
 #elif defined( CINDER_MSW )
 	::LOGFONT				getLogfont() const { return mObj->mLogFont; }
+	::HFONT					getHfont() const { return mObj->mHfont; }
 	const Gdiplus::Font*	getGdiplusFont() const { return mObj->mGdiplusFont.get(); }
+	static HDC				getGlobalDc();
 #endif
 
  private:
