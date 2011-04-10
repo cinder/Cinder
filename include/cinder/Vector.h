@@ -695,10 +695,10 @@ class Vec4
 	Vec4()
 		: x( 0 ), y( 0 ), z( 0 ), w( 0 )
 	{}
-	Vec4( T nx, T ny, T nz, T nw )
+	Vec4( T nx, T ny, T nz, T nw = 0 )
 		: x( nx ), y( ny ), z( nz ), w( nw )
 	{}
-	Vec4( const Vec3<T>& src, T aW )
+	Vec4( const Vec3<T>& src, T aW = 0 )
 		: x( src.x ), y( src.y ), z( src.z ), w( aW )
 	{}
 	Vec4( const Vec4<T>& src )
@@ -739,28 +739,58 @@ class Vec4
 	const Vec4<T>	operator-( const Vec4<T>& rhs ) const { return Vec4<T>( x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w ); }
 	const Vec4<T>	operator*( const Vec4<T>& rhs ) const { return Vec4<T>( x * rhs.x, y * rhs.y, z * rhs.z, w * rhs.w ); }
 	const Vec4<T>	operator/( const Vec4<T>& rhs ) const { return Vec4<T>( x / rhs.x, y / rhs.y, z / rhs.z, w / rhs.w ); }
-	Vec4<T>&	operator+=( const Vec4<T>& rhs ) { x += rhs.x; y += rhs.y; z += rhs.z; w += rhs.w; return *this; }
-	Vec4<T>&	operator-=( const Vec4<T>& rhs ) {	x -= rhs.x;	y -= rhs.y;	z -= rhs.z;	w -= rhs.w;	return *this; }
-	Vec4<T>&	operator*=( const Vec4<T>& rhs ) { x *= rhs.x; y *= rhs.y; z *= rhs.z;	w *= rhs.w;	return *this; }
-	Vec4<T>&	operator/=( const Vec4<T>& rhs ) {	x /= rhs.x;	y /= rhs.y;	z /= rhs.z;	w /= rhs.w;	return *this; }
+	Vec4<T>&		operator+=( const Vec4<T>& rhs ) { x += rhs.x; y += rhs.y; z += rhs.z; w += rhs.w; return *this; }
+	Vec4<T>&		operator-=( const Vec4<T>& rhs ) {	x -= rhs.x;	y -= rhs.y;	z -= rhs.z;	w -= rhs.w;	return *this; }
+	Vec4<T>&		operator*=( const Vec4<T>& rhs ) { x *= rhs.x; y *= rhs.y; z *= rhs.z;	w *= rhs.w;	return *this; }
+	Vec4<T>&		operator/=( const Vec4<T>& rhs ) {	x /= rhs.x;	y /= rhs.y;	z /= rhs.z;	w /= rhs.w;	return *this; }
 	const Vec4<T>	operator/( T rhs ) const { return Vec4<T>( x / rhs, y / rhs, z / rhs, w / rhs ); }
-	Vec4<T>&	operator+=( T rhs ) {	x += rhs; y += rhs; z += rhs; w += rhs; return *this; }
-	Vec4<T>&	operator-=( T rhs ) {	x -= rhs; y -= rhs; z -= rhs; w -= rhs;	return * this; }
-	Vec4<T>&	operator*=( T rhs ) { x *= rhs; y *= rhs; z *= rhs; w *= rhs; return * this; }
-	Vec4<T>&	operator/=( T rhs ) { x /= rhs; y /= rhs; z /= rhs; w /= rhs;	return * this; }
+	Vec4<T>&		operator+=( T rhs ) {	x += rhs; y += rhs; z += rhs; w += rhs; return *this; }
+	Vec4<T>&		operator-=( T rhs ) {	x -= rhs; y -= rhs; z -= rhs; w -= rhs;	return * this; }
+	Vec4<T>&		operator*=( T rhs ) { x *= rhs; y *= rhs; z *= rhs; w *= rhs; return * this; }
+	Vec4<T>&		operator/=( T rhs ) { x /= rhs; y /= rhs; z /= rhs; w /= rhs;	return * this; }
 
-	Vec4<T>	 operator-() const { return Vec4<T>( -x, -y, -z, -w ); } // unary negation
+	Vec4<T>			operator-() const { return Vec4<T>( -x, -y, -z, -w ); } // unary negation
 
 	bool operator==( const Vec4<T>& rhs ) const
 	{
 		return ( x == rhs.x ) && ( y == rhs.y ) && ( z == rhs.z ) && ( w == rhs.w );
 	}
 
-	bool operator!=( const Vec4<T>& rhs ) const { return ! (*this == rhs); }
+	bool operator!=( const Vec4<T>& rhs ) const 
+	{ 
+		return ! (*this == rhs); 
+	}
+
+	T dot( const Vec4<T> &rhs ) const
+	{
+		return x*rhs.x + y*rhs.y + z*rhs.z;
+	}
+
+	Vec4<T> cross( const Vec4<T> &rhs ) const
+	{
+		return Vec4<T>( y*rhs.z - rhs.y*z, z*rhs.x - rhs.z*x, x*rhs.y - rhs.x*y );
+	}
+
+	T distance( const Vec4<T> &rhs ) const
+	{
+		return ( *this - rhs ).length();
+	}
+
+	T distanceSquared( const Vec4<T> &rhs ) const
+	{
+		return ( *this - rhs ).lengthSquared();
+	}
 
 	T length() const
 	{
-		return math<float>::sqrt(x * x + y * y + z * z + w * w);
+		// For most vector operations, this assumes w to be zero.
+		return math<float>::sqrt( x*x + y*y + z*z + w*w );
+	}
+
+	T lengthSquared() const
+	{
+		// For most vector operations, this assumes w to be zero.
+		return x*x + y*y + z*z + w*w;
 	}
 
 	void normalize()
@@ -771,8 +801,14 @@ class Vec4
 		z *= invS;
 		w *= invS;
 	}
+	
+	Vec4<T> normalized() const 
+	{
+		T invS = ((T)1) / length();
+		return Vec4<T>( x*invS, y*invS, z*invS, w*invS );
+	}
 
-	// tests for zero-length
+	// Tests for zero-length
 	void safeNormalize()
 	{
 		T s = lengthSquared();
@@ -781,18 +817,24 @@ class Vec4
 			x *= invS;
 			y *= invS;
 			z *= invS;
-			w *= invS;
+			w  = (T)0;
 		}
-	}
-
-	T lengthSquared() const
-	{
-		return x * x + y * y + z * z + w * w;
 	}
 
 	//! Limits the length of a Vec4 to \a maxLength, scaling it proportionally if necessary.
 	void limit( T maxLength )
 	{
+		T lenSq = lengthSquared();
+
+		if( ( lenSq > maxLength * maxLength ) && ( lenSq > 0 ) ) {
+			T ratio = maxLength / math<T>::sqrt( lenSq );
+			x *= ratio;
+			y *= ratio;
+			z *= ratio;
+			w *= ratio;
+		}
+	
+		/*
 		T lengthSquared = x * x + y * y + z * z + w * w;
 
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
@@ -802,11 +844,22 @@ class Vec4
 			z *= ratio;
 			w *= ratio;
 		}
+		*/
 	}
 
 	//! Returns a copy of the Vec4 with its length limited to \a maxLength, scaling it proportionally if necessary.
 	Vec4<T> limited( T maxLength ) const
 	{
+		T lenSq = lengthSquared();
+
+		if( ( lenSq > maxLength * maxLength ) && ( lenSq > 0 ) ) {
+			T ratio = maxLength / math<T>::sqrt( lenSq );
+			return Vec4<T>( x * ratio, y * ratio, z * ratio, w * ratio );
+		}
+		else
+			return *this;
+
+		/*
 		T lengthSquared = x * x + y * y + z * z + w * w;
 
 		if( ( lengthSquared > maxLength * maxLength ) && ( lengthSquared > 0 ) ) {
@@ -815,6 +868,7 @@ class Vec4
 		}
 		else
 			return *this;
+		*/
 	}
 
 	void invert()
@@ -824,7 +878,7 @@ class Vec4
 
 	Vec4<T> inverse() const
 	{
-		return Vec3<T>( -x, -y, -z, -w );
+		return Vec4<T>( -x, -y, -z, -w );
 	}
 
 	Vec4<T> lerp( T fact, const Vec4<T>& r ) const
