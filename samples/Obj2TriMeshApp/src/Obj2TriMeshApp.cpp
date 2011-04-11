@@ -34,6 +34,9 @@
 #include "cinder/Utilities.h"
 #include "cinder/app/AppBasic.h"
 
+// needed to create formatted strings in a safe way
+#include <boost/format.hpp>
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -50,15 +53,22 @@ class BasicApp : public AppBasic {
 	void resize( ResizeEvent event );
 	void fileDrop( FileDropEvent event );
 
-	void drawGrid(int size=100, int step=10);
+	// utility methods
+	void	drawGrid(int size=100, int step=10);
+	void	startTimer( const string &msg="" );
+	double	stopTimer( const string &msg="" );
+	void	outputMessage(const string &msg="", double t=0.0);
 protected:
-	MayaCamUI		mMayaCam;
+	double			mTime;
 
+	MayaCamUI		mMayaCam;
 	vector<TriMesh>	mMeshes;
 };
 
 void BasicApp::setup()
 {
+	// initialize members
+	mTime = getElapsedSeconds();
 	mMeshes.clear();
 
 	// set up the camera
@@ -160,40 +170,37 @@ void BasicApp::fileDrop( FileDropEvent event )
 	vector<string>	files = event.getFiles();
 	vector<string>::iterator	itr;
 
+	// clear current meshes
+	mMeshes.clear();
+
 	for(itr=files.begin();itr!=files.end();++itr)
 	{
-		double		t;
 		string		path =  getPathDirectory( expandPath(*itr) );
 		string		filename = getPathFileName(*itr);
 
-		// clear current meshes
-		mMeshes.clear();
-
-		console() << "-------------" << std::endl;
+		outputMessage("------%d------", 0.0);
 		
 		try {
 			// first: try to load it as a TriMesh data file (which is quite fast)
 			//console() << "Loading binary data file..." << std::endl;
-			t = getElapsedSeconds();
+			startTimer();
 			TriMesh	mesh;
 			mesh.read( DataSourcePath::createRef( path + filename ) );
 			mMeshes.push_back( mesh );
-			console() << "Mesh data file loaded in " << (getElapsedSeconds() - t) << " seconds" << std::endl;
+			stopTimer("Mesh data file loaded in %d seconds");
 		}
 		catch(...) {
 			// if that didn't work, try to load it as an OBJ file (which can be very slow)
 			try	{				
 				// load OBJ file
-				console() << "Loading OBJ file..." << std::endl;
-				t = getElapsedSeconds();	
+				startTimer("Loading OBJ file...");
 				ObjLoader loader( DataSourcePath::createRef( path + filename ) );
-				double tObj = (getElapsedSeconds() - t);
-				console() << "OBJ data file loaded in " << tObj << " seconds" << std::endl;
+				double tObj = stopTimer("OBJ data file loaded in %d seconds");
 
 				// export each mesh group to a binary file
-				console() << "Exporting mesh groups to separate files that load faster..." << std::endl;
+				startTimer("Exporting mesh groups to separate files that load faster...");
 				loader.writeGroups( path, true );
-				console() << "Export complete" << std::endl;
+				stopTimer("Export took %d seconds");
 
 				// we could create the TriMesh now, but for demonstration purposes we will load
 				// the generated TriMeshes from their files
@@ -201,8 +208,7 @@ void BasicApp::fileDrop( FileDropEvent event )
 				//loader.load( &mesh, true, true, true );
 				//mMeshes.push_back( mesh );
 
-				console() << "Loading this model as separate TriMesh files..." << std::endl;
-				t = getElapsedSeconds();	
+				startTimer("Loading this model as separate TriMesh files");
 				size_t numGroups = loader.getNumGroups();
 				for(size_t i=0;i<numGroups;++i) {
 					string name = loader.getGroupName(i);
@@ -210,10 +216,9 @@ void BasicApp::fileDrop( FileDropEvent event )
 					TriMesh	mesh;
 					mesh.read( DataSourcePath::createRef( path + name + ".msh" ) );
 					mMeshes.push_back( mesh );
-				}
-				double tMesh = (getElapsedSeconds() - t);
-				console() << "Loading as separate TriMesh files took " << tMesh << " seconds" << std::endl;
-				console() << "Compared to the ObjLoader, this is " << (int)(tObj / tMesh) << " times faster" << std::endl;
+				}				
+				double tMesh = stopTimer("Loading as separate TriMesh files took %d seconds");
+				outputMessage("Compared to the ObjLoader, this is %d times faster", (tObj / tMesh));
 			}
 			catch(...){}
 		}
@@ -227,6 +232,29 @@ void BasicApp::drawGrid(int size, int step)
 		gl::drawLine( Vec3f((float)i, 0.0f, -1.0f * (float)size), Vec3f((float)i, 0.0f, (float)size) );
 		gl::drawLine( Vec3f(-1.0f * (float)size, 0.0f, (float)i), Vec3f((float)size, 0.0f, (float)i) );
 	}
+}
+
+void BasicApp::startTimer(const string &msg)
+{
+	console() << msg << std::endl;
+	mTime = getElapsedSeconds();
+}
+
+double BasicApp::stopTimer(const string &msg)
+{
+	double t = getElapsedSeconds() - mTime;
+
+	outputMessage(msg, t);	
+
+	return t;
+}
+
+void BasicApp::outputMessage(const string &msg, double t)
+{
+	// substitute elapsed time (use %d in your message)
+	// note: there HAS to be a %d in your string :P
+	string formattedMsg = boost::str(boost::format(msg) %t);
+	console() << formattedMsg << std::endl;
 }
 
 CINDER_APP_BASIC( BasicApp, RendererGl )
