@@ -39,14 +39,14 @@ typedef std::shared_ptr<class ImageSourceFileUiImage>	ImageSourceFileUiImageRef;
 
 class ImageSourceFileUiImage : public cocoa::ImageSourceCgImage {
   public:
-	static ImageSourceRef				createRef( DataSourceRef dataSourceRef ) { return createFileUiImageRef( dataSourceRef ); }
-	static ImageSourceFileUiImageRef	createFileUiImageRef( DataSourceRef dataSourceRef );
+	static ImageSourceRef				createRef( DataSourceRef dataSourceRef, ImageSource::Options options = ImageSource::Options() ) { return createFileUiImageRef( dataSourceRef, options ); }
+	static ImageSourceFileUiImageRef	createFileUiImageRef( DataSourceRef dataSourceRef, ImageSource::Options options = ImageSource::Options() );
 	~ImageSourceFileUiImage();
 
 	static void		registerSelf();
 
   protected:
-	ImageSourceFileUiImage( void/*UIImage**/ *uiImage, CGImageRef imageRef );
+	ImageSourceFileUiImage( void/*UIImage**/ *uiImage, CGImageRef imageRef, ImageSource::Options options );
 	
 	/*UIImage*/void			*mUiImage;
 };

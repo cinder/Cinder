@@ -85,6 +85,19 @@ class ImageSource : public ImageIo {
 	ImageSource() : ImageIo(), mIsPremultiplied( false ), mPixelAspectRatio( 1 ) {}
 	virtual ~ImageSource() {}  
 
+	class Options {
+	  public:
+		Options() : mIndex( 0 ) {}
+
+		//! Specifies an image index for multi-part images, like animated GIFs
+		Options& index( int32_t aIndex ) { mIndex = aIndex; return *this; }
+		
+		int32_t				getIndex() const { return mIndex; }
+		
+	  protected:
+		int32_t			mIndex;
+	};
+
 	//! Returns the aspect ratio of individual pixels to accommodate non-square pixels
 	float		getPixelAspectRatio() const;
 	//! Returns whether the ImageSource's color data has been premultiplied by its alpha channel
@@ -154,9 +167,9 @@ class ImageTarget : public ImageIo {
 };
 
 //! Loads an image from the file path \a path. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG
-ImageSourceRef	loadImage( const std::string &path, std::string extension = "" );
+ImageSourceRef	loadImage( const std::string &path, ImageSource::Options options = ImageSource::Options(), std::string extension = "" );
 //! Loads an image from \a dataSource. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG
-ImageSourceRef	loadImage( DataSourceRef dataSource, std::string extension = "" );
+ImageSourceRef	loadImage( DataSourceRef dataSource, ImageSource::Options options = ImageSource::Options(), std::string extension = "" );
 /** \brief Writes \a imageSource to \a dataTarget. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG **/
 void			writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, ImageTarget::Options options = ImageTarget::Options(), std::string extension = "" );
 /** Writes \a imageSource to file path \a path. Optional \a extension parameter allows specification of a file type. For example, "jpg" would force the file to load as a JPEG
@@ -188,10 +201,10 @@ class ImageIoExceptionIllegalChannelOrder : public ImageIoException {
 
 
 struct ImageIoRegistrar {
-	typedef ImageSourceRef (*SourceCreationFunc)( DataSourceRef );
+	typedef ImageSourceRef (*SourceCreationFunc)( DataSourceRef, ImageSource::Options options );
 	typedef ImageTargetRef (*TargetCreationFunc)( DataTargetRef, ImageSourceRef, ImageTarget::Options options, const std::string& );
 
-	static ImageSourceRef	createSource( DataSourceRef dataSource, std::string extension );
+	static ImageSourceRef	createSource( DataSourceRef dataSource, ImageSource::Options options, std::string extension );
 	static ImageTargetRef	createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, std::string extension );
 	
 	static void		registerSourceType( std::string extension, SourceCreationFunc func, int32_t priority = 2 );
@@ -206,7 +219,7 @@ struct ImageIoRegistrar {
 		void	registerSourceGeneric( SourceCreationFunc func, int32_t priority );
 		void	registerTargetType( std::string extension, TargetCreationFunc func, int32_t priority, const std::string &extensionData );		
 
-		ImageSourceRef	createSource( DataSourceRef dataSource, std::string extension );
+		ImageSourceRef	createSource( DataSourceRef dataSource, ImageSource::Options options, std::string extension );
 		ImageTargetRef	createTarget( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, std::string extension );
 	
 		std::map<std::string, std::multimap<int32_t,SourceCreationFunc> >	mSources;

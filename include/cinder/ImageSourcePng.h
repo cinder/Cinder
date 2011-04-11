@@ -37,8 +37,8 @@ typedef std::shared_ptr<class ImageSourcePng>	ImageSourcePngRef;
 
 class ImageSourcePng : public ImageSource {
   public:
-	static ImageSourcePngRef	createRef( DataSourceRef dataSourceRef );
-	static ImageSourceRef			createSourceRef( DataSourceRef dataSourceRef ) { return createRef( dataSourceRef ); }
+	static ImageSourcePngRef	createRef( DataSourceRef dataSourceRef, ImageSource::Options options = ImageSource::Options() );
+	static ImageSourceRef		createSourceRef( DataSourceRef dataSourceRef, ImageSource::Options options = ImageSource::Options() ) { return createRef( dataSourceRef, options ); }
 	~ImageSourcePng();
 
 	virtual void	load( ImageTargetRef target );
@@ -46,7 +46,7 @@ class ImageSourcePng : public ImageSource {
 	static void		registerSelf();
 
   protected:
-	ImageSourcePng( DataSourceRef dataSourceRef );
+	ImageSourcePng( DataSourceRef dataSourceRef, ImageSource::Options options );
 	bool loadHeader();
 	
 	std::shared_ptr<ci_png_info>	mCiInfoPtr;

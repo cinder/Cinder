@@ -35,13 +35,20 @@ typedef std::shared_ptr<class ImageSourceFileQuartz>	ImageSourceFileQuartzRef;
 
 class ImageSourceFileQuartz : public cocoa::ImageSourceCgImage {
   public:
-	static ImageSourceRef			createRef( DataSourceRef dataSourceRef ) { return createFileQuartzRef( dataSourceRef ); }
-	static ImageSourceFileQuartzRef	createFileQuartzRef( DataSourceRef dataSourceRef );
+	static ImageSourceRef			createRef( DataSourceRef dataSourceRef, ImageSource::Options options ) { return createFileQuartzRef( dataSourceRef, options ); }
+	static ImageSourceFileQuartzRef	createFileQuartzRef( DataSourceRef dataSourceRef, ImageSource::Options options );
+
+	//! Returns a CFDictionaryRef of properties returned by Quartz ImageIO. Result should not be freed.
+	CFDictionaryRef	getQuartzProperties() const;
+	//! Returns a CFDictionaryRef of properties returned by Quartz ImageIO specific to the particular image index optionally passed in ImageSource::Options, such as a particular frame of an animated GIF. Result should not be freed.
+	CFDictionaryRef	getQuartzIndexProperties() const;
 
 	static void		registerSelf();
 
   protected:
-	ImageSourceFileQuartz( CGImageRef imageRef );
+	ImageSourceFileQuartz( CGImageRef imageRef, ImageSource::Options options, std::shared_ptr<const struct __CFDictionary> imageProperties, std::shared_ptr<const struct __CFDictionary> imageIndexProps );
+	
+	std::shared_ptr<const struct __CFDictionary>		mImageProperties, mImageIndexProperties;
 };
 
 REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourceFileQuartz )
