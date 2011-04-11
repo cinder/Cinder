@@ -32,17 +32,22 @@ struct TESStesselator;
 
 namespace cinder {
 
+//! Converts an arbitrary Shape2d into a TriMesh2d
 class Triangulator {
   public:
 	typedef enum Winding { WINDING_ODD, WINDING_NONZERO, WINDING_POSITIVE, WINDING_NEGATIVE, WINDING_ABS_GEQ_TWO } Winding;
-  
+
+	//! Default constructor
 	Triangulator();
+	//! Constructs using a Shape2d. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space
 	Triangulator( const Shape2d &shape, float approximationScale = 1.0f );
-	
-//	void		addEdge( const PolyLine &polyLine );
+
+	//! Adds a Shape2d to the tesselation. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space	
+	void		addShape( const Shape2d &path, float approximationScale = 1.0f );
+	//! Adds a Path2d to the tesselation. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space	
 	void		addPath( const Path2d &path, float approximationScale = 1.0f );
-//	void		addHole( const PolyLine &polyLine );
-	
+
+	//! Performs the tesselation, returning a TriMesh2d
 	TriMesh2d		calcMesh( Winding winding = WINDING_ODD );
 	
 	class Exception : public ci::Exception {
