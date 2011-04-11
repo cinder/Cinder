@@ -43,7 +43,7 @@ void stdFree( void* userData, void* ptr )
 Triangulator::Triangulator( const Shape2d &shape, float approximationScale )
 {	
 	allocate();
-	addShape( shape );
+	addShape( shape, approximationScale );
 }
 
 Triangulator::Triangulator()
@@ -53,7 +53,7 @@ Triangulator::Triangulator()
 
 void Triangulator::allocate()
 {
-	int mAllocated = 0;
+	mAllocated = 0;
 	
 	TESSalloc ma;
 	memset( &ma, 0, sizeof(ma) );
@@ -69,7 +69,8 @@ void Triangulator::allocate()
 
 void Triangulator::addShape( const Shape2d &shape, float approximationScale )
 {
-	for( size_t p = 0; p < shape.getContours().size(); ++p ) {
+	size_t numContours = shape.getContours().size();
+	for( size_t p = 0; p < numContours; ++p ) {
 		addPath( shape.getContour(p), approximationScale );
 	}	
 }
@@ -84,7 +85,7 @@ TriMesh2d Triangulator::calcMesh( Winding winding )
 {
 	TriMesh2d result;
 	
-	tessTesselate( mTess.get(), (int)TESS_WINDING_ODD, TESS_POLYGONS, 3, 2, 0 );
+	tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, 0 );
 	result.appendVertices( (Vec2f*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
 	result.appendIndices( (uint32_t*)( tessGetElements( mTess.get() ) ), tessGetElementCount( mTess.get() ) * 3 );
 	
