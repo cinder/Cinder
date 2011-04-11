@@ -225,6 +225,7 @@ void clear( const ColorA &color, bool clearDepthBuffer )
 		glClear( GL_COLOR_BUFFER_BIT );
 }
 
+#if ! defined( CINDER_GLES )
 void setModelView( const Camera &cam )
 {
 	glMatrixMode( GL_MODELVIEW );
@@ -391,6 +392,8 @@ void rotate( const Quatf &quat )
 		glRotatef( toDegrees( angle ), axis.x, axis.y, axis.z );
 }
 
+#endif // ! defined( CINDER_GLES )
+
 void enableAlphaBlending( bool premultiplied )
 {
 	glEnable( GL_BLEND );
@@ -411,6 +414,8 @@ void enableAdditiveBlending()
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );	
 }
 
+#if ! defined( CINDER_GLES )
+
 void enableAlphaTest( float value, int func )
 {
 	glEnable( GL_ALPHA_TEST );
@@ -422,7 +427,6 @@ void disableAlphaTest()
 	glDisable( GL_ALPHA_TEST );
 }
 
-#if ! defined( CINDER_GLES )
 void enableWireframe()
 {
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -457,6 +461,7 @@ void disableDepthWrite()
 	glDepthMask( GL_FALSE );
 }
 
+#if ! defined( CINDER_GLES )
 void drawLine( const Vec2f &start, const Vec2f &end )
 {
 	float lineVerts[2*2];
@@ -644,17 +649,17 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	}
 	if( numSegments < 2 ) numSegments = 2;
 	
-	GLfloat *verts = new float[(numSegments+1)*2];
+	GLfloat *verts = new float[(numSegments+2)*2];
 	verts[0] = center.x;
 	verts[1] = center.y;
-	for( int s = 0; s < numSegments; s++ ) {
-		float t = s / (float)(numSegments-1) * 2.0f * 3.14159f;
+	for( int s = 0; s <= numSegments; s++ ) {
+		float t = s / (float)numSegments * 2.0f * 3.14159f;
 		verts[(s+1)*2+0] = center.x + math<float>::cos( t ) * radius;
 		verts[(s+1)*2+1] = center.y + math<float>::sin( t ) * radius;
 	}
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 1 );
+	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
 	glDisableClientState( GL_VERTEX_ARRAY );
 	delete [] verts;
 }
@@ -701,6 +706,19 @@ void drawSolidRect( const Rectf &rect, bool textureRectangle )
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
+}
+
+void drawStrokedRect( const Rectf &rect )
+{
+	GLfloat verts[8];
+	verts[0] = rect.getX1();	verts[1] = rect.getY1();
+	verts[2] = rect.getX2();	verts[3] = rect.getY1();
+	verts[4] = rect.getX2();	verts[5] = rect.getY2();
+	verts[6] = rect.getX1();	verts[7] = rect.getY2();
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_LINE_LOOP, 0, 4 );
+	glDisableClientState( GL_VERTEX_ARRAY );
 }
 
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
@@ -867,6 +885,66 @@ void drawTorus( float outterRadius, float innerRadius, int longitudeSegments, in
 	delete [] indices;
 }
 
+void drawCylinder( float base, float top, float height, int slices, int stacks )
+{
+	stacks = math<int>::max(2, stacks + 1);	// minimum of 1 stack
+	slices = math<int>::max(4, slices + 1);	// minimum of 3 slices
+
+	int i, j;
+	float *normal = new float[stacks * slices * 3];
+	float *vertex = new float[stacks * slices * 3];
+	float *tex = new float[stacks * slices * 2];
+	GLushort *indices = new GLushort[slices * 2];
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 3, GL_FLOAT, 0, vertex );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glTexCoordPointer( 2, GL_FLOAT, 0, tex );
+	glEnableClientState( GL_NORMAL_ARRAY );
+	glNormalPointer( GL_FLOAT, 0, normal );
+
+	for(i=0;i<slices;i++) {
+		float u = (float)i / (float)(slices - 1);
+		float ct = cos(2.0f * (float)M_PI * u);
+		float st = sin(2.0f * (float)M_PI * u);
+
+		for(j=0;j<stacks;j++) {
+			float v = (float)j / (float)(stacks-1);
+			float radius = lerp<float>(base, top, v); 
+
+			int index = 3 * (i * stacks + j);
+
+			normal[index    ] = ct;
+			normal[index + 1] = 0;
+			normal[index + 2] = st;
+
+			tex[2 * (i * stacks + j)    ] = u;
+			tex[2 * (i * stacks + j) + 1] = 1.0f - v; // top of texture is top of cylinder
+
+			vertex[index    ] = ct * radius;
+			vertex[index + 1] = v * height;
+			vertex[index + 2] = st * radius;
+		}
+	}
+
+	for(i=0;i<(stacks - 1);i++) {
+		for(j=0;j<slices;j++) {
+			indices[j*2+0] = i + 0 + j * stacks;
+			indices[j*2+1] = i + 1 + j * stacks;
+		}
+		glDrawElements( GL_TRIANGLE_STRIP, (slices)*2, GL_UNSIGNED_SHORT, indices );
+	}
+
+	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	glDisableClientState( GL_VERTEX_ARRAY );
+
+	delete [] normal;
+	delete [] tex;
+	delete [] vertex;
+	delete [] indices;
+}
+
 void draw( const PolyLine<Vec2f> &polyLine )
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
@@ -907,7 +985,6 @@ void draw( const Shape2d &shape2d, float approximationScale )
 	glDisableClientState( GL_VERTEX_ARRAY );	
 }
 
-#if ! defined( CINDER_GLES )
 void drawSolid( const Path2d &path2d, float approximationScale )
 {
 	if( path2d.getNumSegments() == 0 )
@@ -1028,9 +1105,6 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 	vbo.disableClientStates();
 }
 
-#endif ! defined( CINDER_GLES )
-
-
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp )
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
@@ -1143,6 +1217,8 @@ void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &co
 	drawStringHelper( str, pos, color, font, 1 );
 }
 
+#endif ! defined( CINDER_GLES )
+
 ///////////////////////////////////////////////////////////////////////////////
 // SaveTextureBindState
 SaveTextureBindState::SaveTextureBindState( GLint target )
@@ -1184,6 +1260,7 @@ BoolState::~BoolState()
 
 ///////////////////////////////////////////////////////////////////////////////
 // ClientBoolState
+#if ! defined( CINDER_GLES )
 ClientBoolState::ClientBoolState( GLint target )
 	: mTarget( target )
 {
@@ -1197,9 +1274,11 @@ ClientBoolState::~ClientBoolState()
 	else
 		glDisableClientState( mTarget );
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // SaveColorState
+#if ! defined( CINDER_GLES )
 SaveColorState::SaveColorState()
 {
 	glGetFloatv( GL_CURRENT_COLOR, mOldValues );
@@ -1210,13 +1289,14 @@ SaveColorState::~SaveColorState()
 	// GLES doesn't have glColor4fv
 	glColor4f( mOldValues[0], mOldValues[1], mOldValues[2], mOldValues[3] );
 }
+#endif // ! defined( CINDER_GLES )
 
 ///////////////////////////////////////////////////////////////////////////////
 // SaveFramebufferBinding
 SaveFramebufferBinding::SaveFramebufferBinding()
 {
 #if defined( CINDER_GLES )
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING_OES, &mOldValue );
+	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &mOldValue );
 #else	
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING_EXT, &mOldValue );
 #endif
@@ -1225,7 +1305,7 @@ SaveFramebufferBinding::SaveFramebufferBinding()
 SaveFramebufferBinding::~SaveFramebufferBinding()
 {
 #if defined( CINDER_GLES )
-	glBindFramebufferOES( GL_FRAMEBUFFER_OES, mOldValue );
+	glBindFramebuffer( GL_FRAMEBUFFER, mOldValue );
 #else
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mOldValue );
 #endif

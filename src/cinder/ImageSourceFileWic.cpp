@@ -32,12 +32,12 @@ namespace cinder {
 
 ///////////////////////////////////////////////////////////////////////////////
 // ImageSourceFileWic
-ImageSourceFileWicRef ImageSourceFileWic::createFileWicRef( DataSourceRef dataSourceRef )
+ImageSourceFileWicRef ImageSourceFileWic::createFileWicRef( DataSourceRef dataSourceRef, ImageSource::Options options )
 {
-	return ImageSourceFileWicRef( new ImageSourceFileWic( dataSourceRef ) );
+	return ImageSourceFileWicRef( new ImageSourceFileWic( dataSourceRef, options ) );
 }
 
-ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef )
+ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource::Options options )
 	: ImageSource()
 {
 	::HRESULT hr = S_OK;
@@ -83,9 +83,9 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef )
 	}
 	std::shared_ptr<IWICBitmapDecoder> decoder = msw::makeComShared( decoderP );
 
-    // Retrieve the first frame of the image from the decoder
+    // Retrieve the 'index' frame of the image from the decoder
 	IWICBitmapFrameDecode *frameP = NULL;
-	hr = decoder->GetFrame(0, &frameP);
+	hr = decoder->GetFrame( options.getIndex(), &frameP );
 	if( ! SUCCEEDED(hr) )
 		throw ImageIoExceptionFailedLoad();
 	std::shared_ptr<IWICBitmapFrameDecode> frame = msw::makeComShared( frameP );

@@ -354,12 +354,12 @@ ImageSource::RowFunc ImageSource::setupRowFunc( ImageTargetRef target )
 
 
 ///////////////////////////////////////////////////////////////////////////////
-ImageSourceRef loadImage( const std::string &path, std::string extension )
+ImageSourceRef loadImage( const std::string &path, ImageSource::Options options, string extension )
 {
-	return loadImage( DataSourcePath::createRef( path ), extension );
+	return loadImage( DataSourcePath::createRef( path ), options, extension );
 }
 
-ImageSourceRef loadImage( DataSourceRef dataSource, string extension )
+ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options, string extension )
 {
 #if defined( CINDER_COCOA )
 	cocoa::SafeNsAutoreleasePool autorelease;
@@ -368,7 +368,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, string extension )
 	if( extension.empty() )
 		extension = getPathExtension( dataSource->getFilePathHint() );
 	
-	return ImageIoRegistrar::createSource( dataSource, extension );
+	return ImageIoRegistrar::createSource( dataSource, options, extension );
 }
 
 void writeImage( const std::string &path, const ImageSourceRef &imageSource, ImageTarget::Options options, std::string extension )
@@ -428,12 +428,12 @@ ImageTargetRef ImageIoRegistrar::Inst::createTarget( DataTargetRef dataTarget, I
 		return ImageTargetRef(); // couldn't find a handler for this extension	
 }
 
-ImageSourceRef ImageIoRegistrar::createSource( DataSourceRef dataSource, string extension )
+ImageSourceRef ImageIoRegistrar::createSource( DataSourceRef dataSource, ImageSource::Options options, string extension )
 {
-	return instance()->createSource( dataSource, extension );
+	return instance()->createSource( dataSource, options, extension );
 }
 
-ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, string extension )
+ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, ImageSource::Options options, string extension )
 {
 	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>( tolower ) );
 
@@ -443,7 +443,7 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, s
 		if( sIt != mSources.end() ) {
 			for( multimap<int32_t,ImageIoRegistrar::SourceCreationFunc>::const_iterator sourcesIt = sIt->second.begin(); sourcesIt != sIt->second.end(); ++sourcesIt ) {
 				try {
-					return (*(sourcesIt->second))( dataSource );
+					return (*(sourcesIt->second))( dataSource, options );
 				}
 				catch( ... ) { // we'll ignore exceptions and move to the next handler
 				}
@@ -454,7 +454,7 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, s
 	// if there is no extension, or none of the registered types got it, we'll have try the generic loaders	
 	for( map<int32_t, ImageIoRegistrar::SourceCreationFunc>::const_iterator genericIt = mGenericSources.begin(); genericIt != mGenericSources.end(); ++genericIt ) {
 		try {
-			return (*(genericIt->second))( dataSource );
+			return (*(genericIt->second))( dataSource, options );
 		}
 		catch( ... ) { // we'll ignore exceptions and move to the next handler
 		}

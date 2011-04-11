@@ -31,7 +31,7 @@
 	#include "cinder/gl/GLee.h"
 #else
 	#define CINDER_GLES
-	#define CINDER_GLES1
+	#define CINDER_GLES2
 #endif
 
 #include "cinder/Quaternion.h"
@@ -49,8 +49,8 @@
 	#undef max
 	#include <gl/gl.h>
 #elif defined( CINDER_COCOA_TOUCH )
-	#include <OpenGLES/ES1/gl.h>
-	#include <OpenGLES/ES1/glext.h>
+	#include <OpenGLES/ES2/gl.h>
+	#include <OpenGLES/ES2/glext.h>
 #elif defined( CINDER_MAC )
 	#include <OpenGL/gl.h>
 #endif
@@ -131,7 +131,6 @@ inline void rotate( float degrees ) { rotate( Vec3f( 0, 0, degrees ) ); }
 inline void vertex( const Vec2f &v ) { glVertex2fv( &v.x ); }
 //! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
 inline void vertex( const Vec3f &v ) { glVertex3fv( &v.x ); }
-#endif // ! defined( CINDER_GLES )
 //! Sets the current color, and the alpha value to 1.0
 inline void color( const Color8u &c ) { glColor4ub( c.r, c.g, c.b, 255 ); }
 //! Sets the current color and alpha value
@@ -140,6 +139,7 @@ inline void color( const ColorA8u &c ) { glColor4ub( c.r, c.g, c.b, c.a ); }
 inline void color( const Color &c ) { glColor4f( c.r, c.g, c.b, 1.0f ); }
 //! Sets the current color and alpha value
 inline void color( const ColorA &c ) { glColor4f( c.r, c.g, c.b, c.a ); }
+#endif // ! defined( CINDER_GLES )
 
 //! Enables the OpenGL State \a state. Equivalent to calling to glEnable( state );
 inline void enable( GLenum state ) { glEnable( state ); }
@@ -197,6 +197,8 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments = 0 );
 void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = 0 );
 //! Renders a solid rectangle. Texture coordinates in the range [0,1] are generated unless \a textureRectangle.
 void drawSolidRect( const Rectf &rect, bool textureRectangle = false );
+//! Renders a stroked rectangle.
+void drawStrokedRect( const Rectf &rect );
 //! Renders a coordinate frame representation centered at the origin. Arrowheads are drawn at the end of each axis with radius \a headRadius and length \a headLength.
 void drawCoordinateFrame( float axisLength = 1.0f, float headLength = 0.2f, float headRadius = 0.05f );
 //! Draws a vector starting at \a start and ending at \a end. An arrowhead is drawn at the end of radius \a headRadius and length \a headLength.
@@ -205,6 +207,8 @@ void drawVector( const Vec3f &start, const Vec3f &end, float headLength = 0.2f, 
 void drawFrustum( const Camera &cam );
 //! Draws a torus at the origin, with an outter radius \a outterRadius and an inner radius \a innerRadius, subdivided into \a longitudeSegments and \a latitudeSegments. Normals and texture coordinates in the range [0,1] are generated.
 void drawTorus( float outterRadius, float innerRadius, int longitudeSegments = 12, int latitudeSegments = 12 );
+//! Draws a open-ended cylinder, with base radius \a baseRadius and top radius \a topRadius, with height \a height, subdivided into \a slices and \a stacks. Normals and texture coordinates in the range [0,1] are generated.
+void drawCylinder( float baseRadius, float topRadius, float height, int slices = 12, int stacks = 1 );
 //! Draws a 2d PolyLine \a polyLine
 void draw( const class PolyLine<Vec2f> &polyLine );
 //! Draws a 3d PolyLine \a polyLine
@@ -267,6 +271,7 @@ struct BoolState {
 	GLboolean	mOldValue;
 };
 
+#if ! defined( CINDER_GLES )
 //! Convenience class designed to push and pop a boolean OpenGL state
 struct ClientBoolState {
 	ClientBoolState( GLint target );
@@ -283,6 +288,7 @@ struct SaveColorState {
   private:
 	GLfloat		mOldValues[4];
 };
+#endif
 
 //! Convenience class which pushes and pops the currently bound framebuffer
 struct SaveFramebufferBinding {
@@ -315,11 +321,12 @@ inline void glTexCoord4f( const cinder::Vec4f &v ) { glTexCoord4f( v.x, v.y, v.z
 //inline void glMultiTexCoord2f( GLenum target, const cinder::Vec2f &v ) { glMultiTexCoord2f( target, v.x, v.y ); }
 //inline void glMultiTexCoord3f( GLenum target, const cinder::Vec3f &v ) { glMultiTexCoord3f( target, v.x, v.y, v.z ); }
 //inline void glMultiTexCoord4f( GLenum target, const cinder::Vec4f &v ) { glMultiTexCoord4f( target, v.x, v.y, v.z, v.w ); }
-#endif // ! defined( CINDER_GLES )
 inline void glTranslatef( const cinder::Vec3f &v ) { glTranslatef( v.x, v.y, v.z ); }
 inline void glScalef( const cinder::Vec3f &v ) { glScalef( v.x, v.y, v.z ); }
 inline void glRotatef( float angle, const cinder::Vec3f &v ) { glRotatef( angle, v.x, v.y, v.z ); }
 inline void glRotatef( const cinder::Quatf &quat ) { cinder::Vec3f axis; float angle; quat.getAxisAngle( &axis, &angle ); glRotatef( cinder::toDegrees( angle ), axis.x, axis.y, axis.z ); }
 inline void glMultMatrixf( const cinder::Matrix44f &m ) { glMultMatrixf( m.m ); }
 inline void glLoadMatrixf( const cinder::Matrix44f &m ) { glLoadMatrixf( m.m ); }
+#endif // ! defined( CINDER_GLES )
+
 //@}
