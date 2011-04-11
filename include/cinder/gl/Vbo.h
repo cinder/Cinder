@@ -166,6 +166,7 @@ class VboMesh {
  
 	VboMesh() {}
 	explicit VboMesh( const TriMesh &triMesh, Layout layout = Layout() );
+	explicit VboMesh( const TriMesh2d &triMesh, Layout layout = Layout() );
 	/*** Creates a VboMesh with \a numVertices vertices and \a numIndices indices. Dynamic data is stored interleaved and static data is planar. **/
 	VboMesh( size_t numVertices, size_t numIndices, Layout layout, GLenum primitiveType );
 	/*** Creates a VboMesh with \a numVertices vertices and \a numIndices indices. Accepts pointers to preexisting buffers, which may be NULL to request allocation **/

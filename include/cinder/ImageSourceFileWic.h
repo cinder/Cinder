@@ -36,15 +36,15 @@ typedef std::shared_ptr<class ImageSourceFileWic>	ImageSourceFileWicRef;
 
 class ImageSourceFileWic : public ImageSource {
   public:
-	static ImageSourceRef			createRef( DataSourceRef dataSourceRef ) { return createFileWicRef( dataSourceRef ); }
-	static ImageSourceFileWicRef	createFileWicRef( DataSourceRef dataSourceRef );
+	static ImageSourceRef			createRef( DataSourceRef dataSourceRef, ImageSource::Options options = ImageSource::Options() ) { return createFileWicRef( dataSourceRef, options ); }
+	static ImageSourceFileWicRef	createFileWicRef( DataSourceRef dataSourceRef, ImageSource::Options options = ImageSource::Options() );
 
 	virtual void	load( ImageTargetRef target );
 
 	static void registerSelf();
 
   protected:
-	ImageSourceFileWic( DataSourceRef dataSourceRef );
+	ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource::Options options );
 	
 	bool	processFormat( const ::GUID &guid, ::GUID *convertGUID );
 	

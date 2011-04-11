@@ -161,14 +161,14 @@ typedef std::shared_ptr<class ImageSourceCgImage> ImageSourceCgImageRef;
 class ImageSourceCgImage : public ImageSource {
   public:
 	//! Retains (and later releases) \a imageRef
-	static ImageSourceCgImageRef	createRef( ::CGImageRef imageRef );
+	static ImageSourceCgImageRef	createRef( ::CGImageRef imageRef, ImageSource::Options options = ImageSource::Options() );
 	virtual ~ImageSourceCgImage() {}
 
 	virtual void	load( ImageTargetRef target );
 
   protected:
 	//! Retains (and later releases) \a imageRef
-	ImageSourceCgImage( ::CGImageRef imageRef );
+	ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Options options );
 
 	bool						mIsIndexed, mIs16BitPacked;
 	Color8u						mColorTable[256];
@@ -177,7 +177,7 @@ class ImageSourceCgImage : public ImageSource {
 	uint16_t					m16BitPackedRedOffset, m16BitPackedGreenOffset, m16BitPackedBlueOffset;
 };
 
-ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef );
+ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef, ImageSource::Options = ImageSource::Options() );
 
 
 typedef std::shared_ptr<class ImageTargetCgImage> ImageTargetCgImageRef;

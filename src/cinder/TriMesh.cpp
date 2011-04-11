@@ -26,6 +26,8 @@ using std::vector;
 
 namespace cinder {
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// TriMesh
 void TriMesh::clear()
 {
 	mVertices.clear();
@@ -40,6 +42,11 @@ void TriMesh::appendVertices( const Vec4d *verts, size_t num )
 {
 	for( size_t v = 0; v < num; ++v )
 		mVertices.push_back( Vec3f( (float)verts[v].x, (float)verts[v].y, (float)verts[v].z ) );
+}
+
+void TriMesh::appendIndices( uint32_t *indices, size_t num )
+{
+	mIndices.insert( mIndices.end(), indices, indices + num );
 }
 
 void TriMesh::appendNormals( const Vec4d *normals, size_t num )
@@ -173,6 +180,54 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 	for( vector<size_t>::const_iterator it = mIndices.begin(); it != mIndices.end(); ++it ) {
 		out->writeLittle( static_cast<uint32_t>( *it) );
 	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// TriMesh2d
+void TriMesh2d::clear()
+{
+	mVertices.clear();
+	mColorsRgb.clear();
+	mColorsRgba.clear();
+	mTexCoords.clear();
+	mIndices.clear();
+}
+
+void TriMesh2d::appendVertices( const Vec2f *verts, size_t num )
+{
+	mVertices.insert( mVertices.end(), verts, verts + num );
+}
+
+void TriMesh2d::appendIndices( uint32_t *indices, size_t num )
+{
+	mIndices.insert( mIndices.end(), indices, indices + num );
+}
+
+void TriMesh2d::getTriangleVertices( size_t idx, Vec2f *a, Vec2f *b, Vec2f *c ) const
+{
+	*a = mVertices[ mIndices[idx * 3] ];
+	*b = mVertices[ mIndices[idx * 3 + 1] ];
+	*c = mVertices[ mIndices[idx * 3 + 2] ];
+}
+
+Rectf TriMesh2d::calcBoundingBox() const
+{
+	if( mVertices.empty() )
+		return Rectf( Vec2f::zero(), Vec2f::zero() );
+
+	Vec2f min(mVertices[0]), max(mVertices[0]);
+	for( size_t i = 1; i < mVertices.size(); ++i ) {
+		if( mVertices[i].x < min.x )
+			min.x = mVertices[i].x;
+		else if( mVertices[i].x > max.x )
+			max.x = mVertices[i].x;
+		if( mVertices[i].y < min.y )
+			min.y = mVertices[i].y;
+		else if( mVertices[i].y > max.y )
+			max.y = mVertices[i].y;
+	}
+	
+	return Rectf( min, max );
 }
 
 } // namespace cinder
