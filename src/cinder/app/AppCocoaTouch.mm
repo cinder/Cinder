@@ -73,11 +73,13 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 - (void) applicationWillResignActive:(UIApplication *)application
 {
 //	[cinderView stopAnimation];
+    app->willResignActive();
 }
 
 - (void) applicationDidBecomeActive:(UIApplication *)application
 {
 //	[cinderView startAnimation];
+    app->didBecomeActive();
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

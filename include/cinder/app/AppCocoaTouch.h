@@ -52,6 +52,9 @@ class AppCocoaTouch : public App {
 	virtual ~AppCocoaTouch() {}
 
 	virtual void		prepareSettings( Settings *settings ) {}
+    //! System event notification
+    virtual void        didBecomeActive() {}
+    virtual void        willResignActive() {}
 
 	//! Override to respond to the beginning of a multitouch sequence
 	virtual void		touchesBegan( TouchEvent event ) {}
