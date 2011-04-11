@@ -311,6 +311,12 @@
 		009FD54C10C9AEA100D63B1B /* ImageIo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD54B10C9AEA100D63B1B /* ImageIo.cpp */; };
 		009FD55510C9DB0600D63B1B /* ImageSourceFileQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 009FD55410C9DB0600D63B1B /* ImageSourceFileQuartz.h */; };
 		009FD55710CAB8B700D63B1B /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
+		00A112111353857B00081873 /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A112101353857B00081873 /* TextureFont.cpp */; };
+		00A112121353857B00081873 /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A112101353857B00081873 /* TextureFont.cpp */; };
+		00A112131353857B00081873 /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A112101353857B00081873 /* TextureFont.cpp */; };
+		00A112151353858900081873 /* TextureFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A112141353858900081873 /* TextureFont.h */; };
+		00A112161353858900081873 /* TextureFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A112141353858900081873 /* TextureFont.h */; };
+		00A112171353858900081873 /* TextureFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A112141353858900081873 /* TextureFont.h */; };
 		00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
 		00A9CF010F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */; };
 		00AA5C870F64851C009CD67F /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
@@ -782,6 +788,8 @@
 		009FD54B10C9AEA100D63B1B /* ImageIo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageIo.cpp; sourceTree = "<group>"; };
 		009FD55410C9DB0600D63B1B /* ImageSourceFileQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSourceFileQuartz.h; sourceTree = "<group>"; };
 		009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = ImageSourceFileQuartz.cpp; sourceTree = "<group>"; };
+		00A112101353857B00081873 /* TextureFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFont.cpp; path = gl/TextureFont.cpp; sourceTree = "<group>"; };
+		00A112141353858900081873 /* TextureFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureFont.h; path = gl/TextureFont.h; sourceTree = "<group>"; };
 		00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */ = {isa = PBXFileReference; comments = "This is unused in Cinder since it has to be linked directly into the apps, but it's present for reference."; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppScreenSaver.cpp; path = app/AppScreenSaver.cpp; sourceTree = "<group>"; };
 		00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = app/AppImplCocoaScreenSaver.h; sourceTree = "<group>"; };
 		00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = app/AppImplCocoaRendererQuartz.mm; sourceTree = "<group>"; };
@@ -1315,6 +1323,7 @@
 		00CE73910E92DBD60059E09B /* gl */ = {
 			isa = PBXGroup;
 			children = (
+				00A112141353858900081873 /* TextureFont.h */,
 				00CE73920E92DBE40059E09B /* gl.h */,
 				00CE73930E92DBE40059E09B /* GLee.h */,
 				00E45D080E94790F00B47EC2 /* Texture.h */,
@@ -1332,6 +1341,7 @@
 		00CE73960E92DBEB0059E09B /* gl */ = {
 			isa = PBXGroup;
 			children = (
+				00A112101353857B00081873 /* TextureFont.cpp */,
 				00C150A40ED8F88100549EF3 /* Light.cpp */,
 				00E45D0A0E94792600B47EC2 /* Texture.cpp */,
 				00D9A07B0EA57C3F00FF5AEB /* GlslProg.cpp */,
@@ -1603,6 +1613,7 @@
 				43A9961213304DA90022157F /* sweep.h in Headers */,
 				43A9961413304DA90022157F /* tess.h in Headers */,
 				43A9961513304DA90022157F /* tesselator.h in Headers */,
+				00A112161353858900081873 /* TextureFont.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1720,6 +1731,7 @@
 				43A9962113304DA90022157F /* sweep.h in Headers */,
 				43A9962313304DA90022157F /* tess.h in Headers */,
 				43A9962413304DA90022157F /* tesselator.h in Headers */,
+				00A112151353858900081873 /* TextureFont.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1855,6 +1867,7 @@
 				43A9960313304DA90022157F /* sweep.h in Headers */,
 				43A9960513304DA90022157F /* tess.h in Headers */,
 				43A9960613304DA90022157F /* tesselator.h in Headers */,
+				00A112171353858900081873 /* TextureFont.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2021,6 +2034,7 @@
 				43A9960F13304DA90022157F /* priorityq.c in Sources */,
 				43A9961113304DA90022157F /* sweep.c in Sources */,
 				43A9961313304DA90022157F /* tess.c in Sources */,
+				00A112121353857B00081873 /* TextureFont.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2103,6 +2117,7 @@
 				43A9961E13304DA90022157F /* priorityq.c in Sources */,
 				43A9962013304DA90022157F /* sweep.c in Sources */,
 				43A9962213304DA90022157F /* tess.c in Sources */,
+				00A112111353857B00081873 /* TextureFont.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2209,6 +2224,7 @@
 				43A9960013304DA90022157F /* priorityq.c in Sources */,
 				43A9960213304DA90022157F /* sweep.c in Sources */,
 				43A9960413304DA90022157F /* tess.c in Sources */,
+				00A112131353857B00081873 /* TextureFont.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

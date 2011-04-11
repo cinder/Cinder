@@ -3,7 +3,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
 #include "cinder/Rand.h"
-#include "TextureFont.h"
+#include "cinder/gl/TextureFont.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -99,10 +99,8 @@ void TextureFontApp::draw()
 	
 	gl::color( Color( 1,1,1) );
 	gl::color( ColorA( 1, 0.5f, 0.25f, 1.0f ) );
-	mTextureFont->drawString( str, Vec2f( 0, 100 ) );
-//	gl::drawSolidRect( boundsRect );
-	gl::color( Color::black() );
-//	mTextureFont->drawString( str, boundsRect );
+//	mTextureFont->drawString( str, Vec2f( 0, 100 ) );
+	mTextureFont->drawString( str, boundsRect );
 }
 
 
