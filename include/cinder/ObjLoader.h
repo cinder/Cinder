@@ -76,11 +76,16 @@ class ObjLoader {
 	size_t getNumTexCoords(){ return mTexCoords.size(); };
 	//! Returns the number of groups
 	size_t getNumGroups(){ return mGroups.size(); };
+	//! Returns the name of the specified group
+	std::string getGroupName( size_t groupIndex );
 	
-	/**Exports each group as a TriMesh binary file. You can then use TriMesh::load() to load the mesh, which is a lot faster.
-	 * \param path path to where each group will be saved as a .msh file
-	 * \param replace if true, will replace existing files. Defaults to false*/ 
-	bool exportGroups(const std::string &path, bool replace=false);
+	//! Writes the specified group as binary data to the /a dataTarget
+	bool writeGroup( size_t groupIndex, DataTargetRef dataTarget );
+	//! Writes the specified group to a binary file that can be loaded by the TriMesh class
+	bool writeGroup( size_t groupIndex, const std::string &path );
+	//! Writes all groups to binary files in the specified folder /a path. The name of the file
+	//! will be the name of the group.
+	bool writeGroups( const std::string &path, bool replace=false, const std::string &extension=".msh" );
 	
 	struct Face {
 		int					mNumVertices;

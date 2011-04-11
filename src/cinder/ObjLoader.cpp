@@ -496,7 +496,39 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 	}
 }
 
-bool ObjLoader::exportGroups(const std::string &path, bool replace)
+std::string ObjLoader::getGroupName(size_t groupIndex)
+{
+	if(groupIndex < 0 || groupIndex >= mGroups.size())
+		return "";
+
+	return mGroups[groupIndex].mName;
+}
+
+bool ObjLoader::writeGroup(size_t groupIndex, const std::string &path )
+{
+	return writeGroup( groupIndex, DataTargetPath::createRef( path ) );
+}
+
+bool ObjLoader::writeGroup(size_t groupIndex, DataTargetRef dataTarget)
+{		
+	try {
+		// load specified group into mesh
+		ci::TriMesh		mesh;
+		load(groupIndex, &mesh);
+
+		// write to data target
+		mesh.write( dataTarget );
+
+		//file successfuly created/written
+		return true;
+	}
+	catch(...) {
+		// file could not be created/written
+		return false;
+	}
+}
+
+bool ObjLoader::writeGroups(const std::string &path, bool replace, const std::string &extension)
 {
 	bool			success = true;
 
@@ -505,8 +537,8 @@ bool ObjLoader::exportGroups(const std::string &path, bool replace)
 
 	// traverse groups
 	for(size_t i=0;i<mGroups.size();++i) {
-		// construct file name: <path>/<group>.msh
-		file = ci::getPathDirectory( path ) + mGroups[i].mName + ".msh";
+		// construct file name: <path>/<group><extension>
+		file = ci::getPathDirectory( path ) + mGroups[i].mName + extension;
 
 		// check if file exists
 		if(!replace && ci::fs::exists( ci::fs::path(file) ) ) {
