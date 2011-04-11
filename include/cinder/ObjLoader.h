@@ -79,12 +79,11 @@ class ObjLoader {
 	//! Returns the name of the specified group
 	std::string getGroupName( size_t groupIndex );
 	
-	//! Writes the specified group as binary data to the /a dataTarget
+	//! Writes the specified group as binary data to the \a dataTarget
 	bool writeGroup( size_t groupIndex, DataTargetRef dataTarget );
 	//! Writes the specified group to a binary file that can be loaded by the TriMesh class
 	bool writeGroup( size_t groupIndex, const std::string &path );
-	//! Writes all groups to binary files in the specified folder /a path. The name of the file
-	//! will be the name of the group.
+	//! Writes all groups to binary files in the specified folder \a path. The name of the file will be the name of the group.
 	bool writeGroups( const std::string &path, bool replace=false, const std::string &extension=".msh" );
 	
 	struct Face {
