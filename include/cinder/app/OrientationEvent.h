@@ -22,13 +22,12 @@
 
 #pragma once
 
-#include <UIKit/UIDevice.h>
 #include "cinder/Cinder.h"
 #include "cinder/app/Event.h"
 
 namespace cinder { namespace app {
 
-    enum DeviceOrientation { 
+    enum Orientation { 
         UNKNOWN_ORIENTATION = UIDeviceOrientationUnknown,
         // Device oriented vertically, home button on the bottom:
         PORTRAIT_ORIENTATION = UIDeviceOrientationPortrait, 
@@ -47,89 +46,112 @@ namespace cinder { namespace app {
     class OrientationEvent : public Event {
     public:
         
-        OrientationEvent( const DeviceOrientation orientation, const DeviceOrientation prevOrientation )
-		: Event(), mOrientation( orientation ), mPrevOrientation( prevOrientation )
+        OrientationEvent( const Orientation deviceOrientation, 
+                          const Orientation prevDeviceOrientation, 
+                          const Orientation interfaceOrientation, 
+                          const Orientation prevInterfaceOrientation ):
+            Event(), 
+            mDeviceOrientation( deviceOrientation ), 
+            mPrevDeviceOrientation( prevDeviceOrientation ),
+            mInterfaceOrientation( interfaceOrientation ), 
+            mPrevInterfaceOrientation( prevInterfaceOrientation )
         {
         }
         
-        DeviceOrientation getOrientation() const { return mOrientation; }
-        DeviceOrientation getPrevOrientation() const { return mPrevOrientation; }
+        Orientation getDeviceOrientation() const { return mDeviceOrientation; }
+        Orientation getPrevDeviceOrientation() const { return mPrevDeviceOrientation; }
 
-        bool isValidInterfaceOrientation()
-        {
-            return UIDeviceOrientationIsValidInterfaceOrientation( UIDeviceOrientation(mOrientation) );
-        }
-        
-        bool isPortait()
-        {
-            return UIDeviceOrientationIsPortrait( UIDeviceOrientation(mOrientation) );            
-        }
-        
-        bool isLandscape()
-        {
-            return UIDeviceOrientationIsLandscape( UIDeviceOrientation(mOrientation) );
-        }
-
-        // if you usually use Vec3f::yAxis() for up on your CameraPersp, this will help
-        Vec3f getUpVector()
-        {
-            switch ( mOrientation )
-            {
-                case PORTRAIT_ORIENTATION:
-                    return Vec3f::yAxis();
-                case UPSIDE_DOWN_PORTRAIT_ORIENTATION:
-                    return -Vec3f::yAxis();
-                case LANDSCAPE_LEFT_ORIENTATION:
-                    return Vec3f::xAxis();
-                case LANDSCAPE_RIGHT_ORIENTATION:
-                    return -Vec3f::xAxis();
-                default:
-                    // if in doubt, just return the normal one
-                    return Vec3f::yAxis();                    
-            }  
-        }
-        
-        // if you're doing 2D drawing, this matrix moves the origin to the correct device corner
-        // to get the window size, use app::getWindowSize() and apply a .yx() swizzle if event.isLandscape()
-        Matrix44f getOrientationMatrix()
-        {
-            // a little bit messy to assume only one fullscreen app, but it is iOS:
-            // if this bothers anyone, deviceSize should probably be an argument of this method
-            Vec2f deviceSize = app::getWindowSize();
-            
-            Matrix44f orientationMtx;
-            switch ( mOrientation )
-            {
-                case UPSIDE_DOWN_PORTRAIT_ORIENTATION:
-                    orientationMtx.translate( Vec3f( deviceSize.x, deviceSize.y, 0 ) );            
-                    orientationMtx.rotate( Vec3f( 0, 0, M_PI ) );
-                    break;
-                case LANDSCAPE_LEFT_ORIENTATION:
-                    orientationMtx.translate( Vec3f( deviceSize.x, 0, 0 ) );
-                    orientationMtx.rotate( Vec3f( 0, 0, M_PI/2.0f ) );
-                    break;
-                case LANDSCAPE_RIGHT_ORIENTATION:
-                    orientationMtx.translate( Vec3f( 0, deviceSize.y, 0 ) );
-                    orientationMtx.rotate( Vec3f( 0, 0, -M_PI/2.0f ) );
-                    break;
-                default:
-                    break;
-            }
-            
-            return orientationMtx;          
-        }
+        Orientation getInterfaceOrientation() const { return mInterfaceOrientation; }
+        Orientation getPrevInterfaceOrientation() const { return mPrevInterfaceOrientation; }
 
     private:
         
-        DeviceOrientation mOrientation, mPrevOrientation;
+        const Orientation mDeviceOrientation, mPrevDeviceOrientation;
+        const Orientation mInterfaceOrientation, mPrevInterfaceOrientation;
         
     };
     
     // For convenience only
     inline std::ostream& operator<<( std::ostream &out, const OrientationEvent &event )
     {
-        out << event.getOrientation() << " raw: " << event.getPrevOrientation();
+        out << "OrientationEvent (device: " 
+            << event.getPrevDeviceOrientation() 
+            << " -> " << event.getDeviceOrientation() 
+            << "; interface: "
+            << event.getPrevInterfaceOrientation() 
+            << " -> " << event.getInterfaceOrientation()
+            << ")";
         return out;
     }
+    
+    // same behaviour as iOS's UIDeviceOrientationIsValidInterfaceOrientation()
+    inline bool isValidInterfaceOrientation(const Orientation &orientation)
+    {
+        return (orientation == PORTRAIT_ORIENTATION || orientation == UPSIDE_DOWN_PORTRAIT_ORIENTATION || orientation == LANDSCAPE_LEFT_ORIENTATION || orientation == LANDSCAPE_RIGHT_ORIENTATION);
+    }
+    
+    // same as iOS's UIDeviceOrientationIsPortrait()
+    inline bool isPortaitOrientation(const Orientation &orientation)
+    {
+        return (orientation == PORTRAIT_ORIENTATION || orientation == UPSIDE_DOWN_PORTRAIT_ORIENTATION);
+    }
+    
+    // same as iOS's UIDeviceOrientationIsLandscape()
+    inline bool isLandscapeOrientation(const Orientation &orientation)
+    {
+        return (orientation == LANDSCAPE_LEFT_ORIENTATION || orientation == LANDSCAPE_RIGHT_ORIENTATION);
+    }
+    
+    // if you usually use Vec3f::yAxis() for up on your CameraPersp, this will help
+    template<typename T>
+    Vec3<T> getUpVectorForOrientation(const Orientation &orientation)
+    {
+        switch ( orientation )
+        {
+            case PORTRAIT_ORIENTATION:
+                return Vec3<T>::yAxis();
+            case UPSIDE_DOWN_PORTRAIT_ORIENTATION:
+                return -Vec3<T>::yAxis();
+            case LANDSCAPE_LEFT_ORIENTATION:
+                return Vec3<T>::xAxis();
+            case LANDSCAPE_RIGHT_ORIENTATION:
+                return -Vec3<T>::xAxis();
+            default:
+                // if in doubt, just return the normal one
+                return Vec3<T>::yAxis();                    
+        }  
+    }
+    
+    // if you're doing 2D drawing, this matrix moves the origin to the correct device corner
+    // to get the window size, use app::getWindowSize(), test for 
+    // isLandscape(event.getInterfaceOrientation()) and apply a .yx() swizzle 
+    template<typename T>
+    Matrix44<T> getOrientationMatrix44(const Orientation &orientation)
+    {
+        // a little bit messy to assume only one fullscreen app, but it is iOS:
+        // if this bothers anyone, deviceSize should probably be an argument of this method
+        Vec2<T> deviceSize = app::getWindowSize();
+        
+        Matrix44<T> orientationMtx;
+        switch ( orientation )
+        {
+            case UPSIDE_DOWN_PORTRAIT_ORIENTATION:
+                orientationMtx.translate( Vec3<T>( deviceSize.x, deviceSize.y, 0 ) );            
+                orientationMtx.rotate( Vec3<T>( 0, 0, M_PI ) );
+                break;
+            case LANDSCAPE_LEFT_ORIENTATION:
+                orientationMtx.translate( Vec3<T>( deviceSize.x, 0, 0 ) );
+                orientationMtx.rotate( Vec3<T>( 0, 0, M_PI/2.0 ) );
+                break;
+            case LANDSCAPE_RIGHT_ORIENTATION:
+                orientationMtx.translate( Vec3<T>( 0, deviceSize.y, 0 ) );
+                orientationMtx.rotate( Vec3<T>( 0, 0, -M_PI/2.0 ) );
+                break;
+            default:
+                break;
+        }
+        
+        return orientationMtx;          
+    }    
     
 } } // namespace cinder::app

@@ -44,10 +44,10 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 	[app->mState->mCinderView release];
 	[app->mState->mWindow makeKeyAndVisible];
 
-    // set this here to ensure it's accessible from getDeviceOrientation in setup
-    // use status bar orientation to force a valid interface orientation on startup
-    // from there you can use isValidInterfaceOrientation on orientationChanged events
-    app->mLastOrientation = DeviceOrientation([UIApplication sharedApplication].statusBarOrientation);
+    // set this here to ensure it's accessible from getDeviceOrientation in setup:
+    app->mDeviceOrientation = Orientation([[UIDevice currentDevice] orientation]);
+    // use status bar orientation to force a valid interface orientation on startup:
+    app->mInterfaceOrientation = Orientation([UIApplication sharedApplication].statusBarOrientation);
     
 	[app->mState->mCinderView layoutIfNeeded];
 	app->privateSetup__();
@@ -61,7 +61,7 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
             [UIApplication sharedApplication].statusBarOrientation = UIInterfaceOrientation(orientation);
         }
         // and then tell everyone else
-        app->privateOrientationChanged__(DeviceOrientation(orientation));
+        app->privateOrientationChanged__(Orientation(orientation));
     }];    
     [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
 
@@ -257,17 +257,26 @@ void AppCocoaTouch::privateAccelerated__( const Vec3f &direction )
 	mLastRawAccel = direction;
 }
 
-void AppCocoaTouch::privateOrientationChanged__( const DeviceOrientation &orientation )
+void AppCocoaTouch::privateOrientationChanged__( const Orientation &orientation )
 {
-    OrientationEvent event( orientation, mLastOrientation );
+    Orientation lastInterfaceOrientation = mInterfaceOrientation;
+    Orientation lastDeviceOrienation = mDeviceOrientation;
+
+    // always update device orientation
+    mDeviceOrientation = orientation;
+    
+    // only update interface orientation if it's valid
+    if (isValidInterfaceOrientation(orientation)) {
+        mInterfaceOrientation = orientation;
+    }
+    
+    OrientationEvent event( mDeviceOrientation, lastDeviceOrienation, mInterfaceOrientation, lastInterfaceOrientation );
     
     bool handled = false;
     for( CallbackMgr<bool (OrientationEvent)>::iterator cbIter = mCallbacksOrientationChanged.begin(); ( cbIter != mCallbacksOrientationChanged.end() ) && ( ! handled ); ++cbIter )
         handled = (cbIter->second)( event );		
     if( ! handled )	
         orientationChanged( event );
-    
-    mLastOrientation = orientation;
 }
 
 } } // namespace cinder::app

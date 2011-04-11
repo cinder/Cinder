@@ -63,7 +63,7 @@ class AppCocoaTouch : public App {
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }	
 	//! Override to respond to the acceleration direction
 	virtual void		accelerated( AccelEvent event ) {}
-	//! Override to respond to the device orientation
+	//! Override to respond to the device or interface orientation
 	virtual void		orientationChanged( OrientationEvent event ) {}
 
 	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
@@ -117,8 +117,10 @@ class AppCocoaTouch : public App {
 	void			setWindowHeight( int windowHeight ) {}
 	//! Ignored on the iPhone.
 	void			setWindowSize( int windowWidth, int windowHeight ) {}
-	//! Returns the current orientation of the device
-    DeviceOrientation getDeviceOrientation() const { return mLastOrientation; }
+	//! Returns the current orientation of the device (including FaceUp/FaceDown and UnknownOrientation)
+    Orientation getDeviceOrientation() const { return mDeviceOrientation; }
+	//! Returns the current orientation of the interface (one of Portrait, LandscapeLeft, LandscapeRight and UpsideDownPortrait)
+    Orientation getInterfaceOrientation() const { return mInterfaceOrientation; }
     
 	//! Enables the device's accelerometer and modifies its filtering. \a updateFrequency represents the frequency with which accelerated() is called, measured in Hz. \a filterFactor represents the amount to weight the current value relative to the previous.
 	void enableAccelerometer( float updateFrequency = 30.0f, float filterFactor = 0.1f );
@@ -167,7 +169,7 @@ class AppCocoaTouch : public App {
 	void		privateTouchesEnded__( const TouchEvent &event );
 	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
 	void		privateAccelerated__( const Vec3f &direction );
-    void        privateOrientationChanged__( const DeviceOrientation &orientation );
+    void        privateOrientationChanged__( const Orientation &orientation );
 	//! \endcond
 
   private:
@@ -187,7 +189,7 @@ class AppCocoaTouch : public App {
 
 	float					mAccelFilterFactor;
 	Vec3f					mLastAccel, mLastRawAccel;
-    DeviceOrientation       mLastOrientation;
+    Orientation				mDeviceOrientation, mInterfaceOrientation;
 };
 
 } } // namespace cinder::app
