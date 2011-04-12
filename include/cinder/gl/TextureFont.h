@@ -53,13 +53,31 @@ class TextureFont {
 		bool		mPremultiply;
 	};
 
+	struct DrawOptions {
+		DrawOptions() : mClipHorizontal( true ), mClipVertical( true ), mPixelSnap( true ) {}
+		
+		DrawOptions&	clipHorizontal( bool clipH = true ) { mClipHorizontal = clipH; return *this; }
+		DrawOptions&	clipVertial( bool clipV = true ) { mClipVertical = clipV; return *this; }
+		DrawOptions&	pixelSnap( bool pixelSnap = true ) { mPixelSnap = pixelSnap; return *this; }
+
+		bool			getClipHorizontal() const { return mClipHorizontal; }
+		bool			getClipVertical() const { return mClipVertical; }
+		bool			getPixelSnap() const { return mPixelSnap; }
+						
+	  protected:
+		bool		mClipHorizontal, mClipVertical, mPixelSnap;
+	};
+
 	static TextureFontRef		create( const Font &font, const std::string &supportedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456890().?!,:;'\"&*=+-/\\@#_[]<>%^llflphrids", const Format &format = Format() )
 	{ return TextureFontRef( new TextureFont( font, supportedChars, format ) ); }
 	
-	void	drawString( const std::string &str, const Vec2f &baseline );
-	/** \warning Does not support word-wrap on Windows **/
-	void	drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero() );
-	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline );
+	void	drawString( const std::string &str, const Vec2f &baseline, const DrawOptions &options = DrawOptions() );
+	void	drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
+#if defined( CINDER_COCOA )
+	void	drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
+#endif
+	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline, const DrawOptions &options = DrawOptions() );
+	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, const Vec2f &offset, const DrawOptions &options = DrawOptions() );
 
 	struct GlyphInfo {
 		uint8_t		mTextureIndex;

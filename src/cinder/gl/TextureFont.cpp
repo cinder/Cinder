@@ -20,7 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "TextureFont.h"
+#include "cinder/gl/TextureFont.h"
 
 #include "cinder/Text.h"
 #include "cinder/ip/Fill.h"
@@ -86,7 +86,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 		mGlyphMap[*glyphIt] = newInfo;
 		renderGlyphs[curGlyphIndex] = *glyphIt;
 		renderPositions[curGlyphIndex].x = curOffset.x - floor(bb.x1) + 1;
-		renderPositions[curGlyphIndex].y = surface.getHeight() - (curOffset.y + glyphExtents.y) - ceil(bb.y1+0.5f);// - ( 1 - fmod( bb.y1, 1.0f ) );
+		renderPositions[curGlyphIndex].y = surface.getHeight() - (curOffset.y + glyphExtents.y) - ceil(bb.y1+0.5f);
 		curOffset += Vec2i( glyphExtents.x + 3, 0 );
 		++glyphIt;
 		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
@@ -246,7 +246,7 @@ const int textureHeight = 1024;
 }
 #endif
 
-void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline )
+void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline, const DrawOptions &options )
 {
 	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
 	BoolState saveEnabledState( mTextures[0].getTarget() );
@@ -279,9 +279,10 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 			Rectf srcCoords = mTextures[texIdx].getAreaTexCoords( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect += glyphIt->second;
-			destRect += Vec2f( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) );
-			destRect += Vec2f( baseline.x, baseline.y - mFont.getAscent() );
-			destRect.offset( -Vec2f( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) ) );
+			if( options.getPixelSnap() )
+				destRect += Vec2f( floor( baseline.x + glyphInfo.mOriginOffset.x + 0.5f ), floor( baseline.y - mFont.getAscent() + glyphInfo.mOriginOffset.y ) );
+			else
+				destRect += Vec2f( baseline.x + glyphInfo.mOriginOffset.x, floor( baseline.y - mFont.getAscent() + glyphInfo.mOriginOffset.y ) );
 			
 			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY1() );
 			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY1() );
@@ -308,18 +309,119 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 	}
 }
 
-void TextureFont::drawString( const std::string &str, const Vec2f &baseline )
+void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, const Vec2f &offset, const DrawOptions &options )
+{
+	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
+	BoolState saveEnabledState( mTextures[0].getTarget() );
+	ClientBoolState vertexArrayState( GL_VERTEX_ARRAY );
+	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
+	gl::enable( mTextures[0].getTarget() );
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
+		vector<float> verts, texCoords;
+#if defined( CINDER_GLES )
+		vector<uint16_t> indices;
+		uint16_t curIdx = 0;
+		GLenum indexType = GL_UNSIGNED_SHORT;
+#else
+		vector<uint32_t> indices;
+		uint32_t curIdx = 0;
+		GLenum indexType = GL_UNSIGNED_INT;
+#endif
+		for( vector<pair<uint16_t,Vec2f> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
+			std::map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
+			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
+				continue;
+				
+			const GlyphInfo &glyphInfo = glyphInfoIt->second;
+			Rectf srcTexCoords = mTextures[texIdx].getAreaTexCoords( glyphInfo.mTexCoords );
+			Rectf destRect( glyphInfo.mTexCoords );
+			destRect -= destRect.getUpperLeft();
+			destRect += glyphIt->second;
+			if( options.getPixelSnap() )
+				destRect += Vec2f( floor( offset.x + glyphInfo.mOriginOffset.x + 0.5f ), floor( offset.y - mFont.getAscent() + glyphInfo.mOriginOffset.y ) );
+			else
+				destRect += Vec2f( offset.x + glyphInfo.mOriginOffset.x, floor( offset.y - mFont.getAscent() + glyphInfo.mOriginOffset.y ) );
+			
+			// clip
+			if( options.getClipHorizontal() && destRect.x1 < clip.x1 ) { // clip off the left edge
+				if( destRect.x2 < clip.x1 )
+					continue;
+				float clippedWidth = destRect.x2 - clip.x1;
+				destRect.x1 = destRect.x2 - clippedWidth;
+				srcTexCoords.x1 = srcTexCoords.x2 - clippedWidth / mTextures[texIdx].getWidth();
+			}
+			else if( options.getClipHorizontal() && destRect.x2 > clip.x2 ) { // clip off the left edge
+				if( destRect.x1 > clip.x2 )
+					continue;
+				float clippedWidth = clip.x2 - destRect.x1;
+				destRect.x2 = destRect.x1 + clippedWidth;
+				srcTexCoords.x2 = srcTexCoords.x1 + clippedWidth / mTextures[texIdx].getWidth();				
+			}
+			
+			if( options.getClipVertical() && destRect.y1 < clip.y1 ) { // clip off the top edge
+				if( destRect.y2 < clip.y1 )
+					continue;
+				float clippedHeight = destRect.y2 - clip.y1;
+				destRect.y1 = destRect.y2 - clippedHeight;
+				srcTexCoords.y1 = srcTexCoords.y2 - clippedHeight / mTextures[texIdx].getHeight();
+			}
+			else if( options.getClipVertical() && destRect.y2 > clip.y2 ) { // clip off the bottom edge
+				if( destRect.y1 > clip.y2 )
+					continue;
+				float clippedHeight = clip.y2 - destRect.y1;
+				destRect.y2 = destRect.y1 + clippedHeight;
+				srcTexCoords.y2 = srcTexCoords.y1 + clippedHeight / mTextures[texIdx].getHeight();
+			}						
+												
+			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY1() );
+			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY1() );
+			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY2() );
+			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY2() );
+
+			texCoords.push_back( srcTexCoords.getX2() ); texCoords.push_back( srcTexCoords.getY1() );
+			texCoords.push_back( srcTexCoords.getX1() ); texCoords.push_back( srcTexCoords.getY1() );
+			texCoords.push_back( srcTexCoords.getX2() ); texCoords.push_back( srcTexCoords.getY2() );
+			texCoords.push_back( srcTexCoords.getX1() ); texCoords.push_back( srcTexCoords.getY2() );
+			
+			indices.push_back( curIdx + 0 ); indices.push_back( curIdx + 1 ); indices.push_back( curIdx + 2 );
+			indices.push_back( curIdx + 2 ); indices.push_back( curIdx + 1 ); indices.push_back( curIdx + 3 );
+			curIdx += 4;
+		}
+		
+		if( curIdx == 0 )
+			continue;
+		
+		mTextures[texIdx].bind();
+		glVertexPointer( 2, GL_FLOAT, 0, &verts[0] );
+		glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
+		glDrawElements( GL_TRIANGLES, indices.size(), indexType, &indices[0] );
+	}
+}
+
+void TextureFont::drawString( const std::string &str, const Vec2f &baseline, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW );
 	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
-	drawGlyphs( glyphMeasures, baseline );
+	drawGlyphs( glyphMeasures, baseline, options );
 }
 
-void TextureFont::drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset )
+void TextureFont::drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset, const DrawOptions &options )
+{
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, fitRect.getHeight() );
+	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
+	drawGlyphs( glyphMeasures, fitRect, fitRect.getUpperLeft() + offset, options );	
+}
+
+#if defined( CINDER_COCOA )
+void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() );
 	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
-	drawGlyphs( glyphMeasures, fitRect.getUpperLeft() );	
+	drawGlyphs( glyphMeasures, fitRect.getUpperLeft() + offset, options );
 }
+#endif
 
 } } // namespace cinder::gl
