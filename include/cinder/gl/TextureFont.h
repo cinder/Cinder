@@ -35,25 +35,49 @@ typedef std::shared_ptr<class TextureFont>	TextureFontRef;
 
 class TextureFont {
   public:
-	static TextureFontRef		create( const Font &font, const std::string &utf8Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456890().?!,:;'\"&*=+-/\\@#_[]<>%^llflphrids" )
-	{ return TextureFontRef( new TextureFont( font, utf8Chars ) ); }
+	class Format {
+	  public:
+		Format() : mTextureWidth( 1024 ), mTextureHeight( 1024 ), mPremultiply( false )
+		{}
+		
+		Format&		textureWidth( int32_t textureWidth ) { mTextureWidth = textureWidth; return *this; }
+		int32_t		getTextureWidth() const { return mTextureWidth; }
+		Format&		textureHeight( int32_t textureHeight ) { mTextureHeight = textureHeight; return *this; }
+		int32_t		getTextureHeight() const { return mTextureHeight; }
+		
+		Format&		premultiply( bool premult = true ) { mPremultiply = premult; return *this; }
+		bool		getPremultiply() const { return mPremultiply; }
+		
+	  protected:
+		int32_t		mTextureWidth, mTextureHeight;
+		bool		mPremultiply;
+	};
+
+	static TextureFontRef		create( const Font &font, const std::string &supportedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456890().?!,:;'\"&*=+-/\\@#_[]<>%^llflphrids", const Format &format = Format() )
+	{ return TextureFontRef( new TextureFont( font, supportedChars, format ) ); }
 	
 	void	drawString( const std::string &str, const Vec2f &baseline );
 	/** \warning Does not support word-wrap on Windows **/
 	void	drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero() );
 	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline );
-	
+
 	struct GlyphInfo {
 		uint8_t		mTextureIndex;
 		Area		mTexCoords;
 		Vec2f		mOriginOffset;
 	};
   
-	TextureFont( const Font &font, const std::string &utf8Chars );
+	float	getAscent() const { return mFont.getAscent(); }
+	float	getDescent() const { return mFont.getDescent(); }	
+	bool	isPremultiplied() const { return mFormat.getPremultiply(); }
+
+  protected:
+	TextureFont( const Font &font, const std::string &supportedChars, const Format &format );
 	
 	std::map<Font::Glyph, GlyphInfo>		mGlyphMap;
 	std::vector<gl::Texture>				mTextures;
 	Font									mFont;
+	Format									mFormat;
 };
 
 } } // namespace cinder::gl
