@@ -25,18 +25,6 @@
 
 using namespace std;
 
-// Macros for defining implementation-specific shader types
-#if ! defined( CINDER_GLES )
-	#if ! defined( GL_VERTEX_SHADER )
-		#define GL_VERTEX_SHADER		GL_VERTEX_SHADER_ARB
-	#endif
-	#if ! defined( GL_FRAGMENT_SHADER )
-		#define GL_FRAGMENT_SHADER		GL_FRAGMENT_SHADER_ARB
-	#endif
-	#define GL_GEOMETRY_SHADER		GL_GEOMETRY_SHADER_EXT
-#endif
-
-
 namespace cinder { namespace gl {
 
 GlslProg::Obj::~Obj()
@@ -47,44 +35,32 @@ GlslProg::Obj::~Obj()
 
 //////////////////////////////////////////////////////////////////////////
 // GlslProg
-#if defined( CINDER_GLES )
-GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader )
-#else
 GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, DataSourceRef geometryShader )
-#endif
 	: mObj( shared_ptr<Obj>( new Obj ) )
 {
 	mObj->mHandle = glCreateProgram();
 	
 	if ( vertexShader )
-		loadShader( vertexShader->getBuffer(), GL_VERTEX_SHADER );
+		loadShader( vertexShader->getBuffer(), GL_VERTEX_SHADER_ARB );
 	if( fragmentShader )
-		loadShader( fragmentShader->getBuffer(), GL_FRAGMENT_SHADER );
-#if ! defined( CINDER_GLES )
+		loadShader( fragmentShader->getBuffer(), GL_FRAGMENT_SHADER_ARB );
 	if( geometryShader )
-		loadShader( geometryShader->getBuffer(), GL_GEOMETRY_SHADER );
-#endif
+		loadShader( geometryShader->getBuffer(), GL_GEOMETRY_SHADER_EXT );
 
 	link();
 }
 
-#if defined( CINDER_GLES )
-GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader )
-#else
 GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const char *geometryShader )
-#endif
 	: mObj( shared_ptr<Obj>( new Obj ) )
 {
 	mObj->mHandle = glCreateProgram();
 	
 	if ( vertexShader )
-		loadShader( vertexShader, GL_VERTEX_SHADER );
+		loadShader( vertexShader, GL_VERTEX_SHADER_ARB );
 	if( fragmentShader )
-		loadShader( fragmentShader, GL_FRAGMENT_SHADER );
-#if ! defined( CINDER_GLES )
+		loadShader( fragmentShader, GL_FRAGMENT_SHADER_ARB );
 	if( geometryShader )
-		loadShader( geometryShader, GL_GEOMETRY_SHADER );
-#endif
+		loadShader( geometryShader, GL_GEOMETRY_SHADER_EXT );
 
 	link();
 }
@@ -259,14 +235,12 @@ GLint GlslProg::getAttribLocation( const std::string &name )
 GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint aShaderType ) throw()
 	: mShaderType( aShaderType )
 {
-	if( mShaderType == GL_VERTEX_SHADER )
+	if( mShaderType == GL_VERTEX_SHADER_ARB )
 		strncpy( mMessage, "VERTEX: ", 1000 );
-	else if( mShaderType == GL_FRAGMENT_SHADER )
+	else if( mShaderType == GL_FRAGMENT_SHADER_ARB )
 		strncpy( mMessage, "FRAGMENT: ", 1000 );
-#if ! defined( CINDER_GLES )
-	else if( mShaderType == GL_GEOMETRY_SHADER )
+	else if( mShaderType == GL_GEOMETRY_SHADER_EXT )
 		strncpy( mMessage, "GEOMETRY: ", 1000 );
-#endif
 	else
 		strncpy( mMessage, "UNKNOWN: ", 1000 );
 	strncat( mMessage, log.c_str(), 15000 );

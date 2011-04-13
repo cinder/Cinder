@@ -225,7 +225,6 @@ void clear( const ColorA &color, bool clearDepthBuffer )
 		glClear( GL_COLOR_BUFFER_BIT );
 }
 
-#if ! defined( CINDER_GLES )
 void setModelView( const Camera &cam )
 {
 	glMatrixMode( GL_MODELVIEW );
@@ -392,8 +391,6 @@ void rotate( const Quatf &quat )
 		glRotatef( toDegrees( angle ), axis.x, axis.y, axis.z );
 }
 
-#endif // ! defined( CINDER_GLES )
-
 void enableAlphaBlending( bool premultiplied )
 {
 	glEnable( GL_BLEND );
@@ -414,8 +411,6 @@ void enableAdditiveBlending()
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );	
 }
 
-#if ! defined( CINDER_GLES )
-
 void enableAlphaTest( float value, int func )
 {
 	glEnable( GL_ALPHA_TEST );
@@ -427,6 +422,7 @@ void disableAlphaTest()
 	glDisable( GL_ALPHA_TEST );
 }
 
+#if ! defined( CINDER_GLES )
 void enableWireframe()
 {
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
@@ -461,7 +457,6 @@ void disableDepthWrite()
 	glDepthMask( GL_FALSE );
 }
 
-#if ! defined( CINDER_GLES )
 void drawLine( const Vec2f &start, const Vec2f &end )
 {
 	float lineVerts[2*2];
@@ -985,6 +980,7 @@ void draw( const Shape2d &shape2d, float approximationScale )
 	glDisableClientState( GL_VERTEX_ARRAY );	
 }
 
+#if ! defined( CINDER_GLES )
 void drawSolid( const Path2d &path2d, float approximationScale )
 {
 	if( path2d.getNumSegments() == 0 )
@@ -1105,6 +1101,9 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 	vbo.disableClientStates();
 }
 
+#endif ! defined( CINDER_GLES )
+
+
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp )
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
@@ -1217,8 +1216,6 @@ void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &co
 	drawStringHelper( str, pos, color, font, 1 );
 }
 
-#endif ! defined( CINDER_GLES )
-
 ///////////////////////////////////////////////////////////////////////////////
 // SaveTextureBindState
 SaveTextureBindState::SaveTextureBindState( GLint target )
@@ -1260,7 +1257,6 @@ BoolState::~BoolState()
 
 ///////////////////////////////////////////////////////////////////////////////
 // ClientBoolState
-#if ! defined( CINDER_GLES )
 ClientBoolState::ClientBoolState( GLint target )
 	: mTarget( target )
 {
@@ -1274,11 +1270,9 @@ ClientBoolState::~ClientBoolState()
 	else
 		glDisableClientState( mTarget );
 }
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // SaveColorState
-#if ! defined( CINDER_GLES )
 SaveColorState::SaveColorState()
 {
 	glGetFloatv( GL_CURRENT_COLOR, mOldValues );
@@ -1289,14 +1283,13 @@ SaveColorState::~SaveColorState()
 	// GLES doesn't have glColor4fv
 	glColor4f( mOldValues[0], mOldValues[1], mOldValues[2], mOldValues[3] );
 }
-#endif // ! defined( CINDER_GLES )
 
 ///////////////////////////////////////////////////////////////////////////////
 // SaveFramebufferBinding
 SaveFramebufferBinding::SaveFramebufferBinding()
 {
 #if defined( CINDER_GLES )
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &mOldValue );
+	glGetIntegerv( GL_FRAMEBUFFER_BINDING_OES, &mOldValue );
 #else	
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING_EXT, &mOldValue );
 #endif
@@ -1305,7 +1298,7 @@ SaveFramebufferBinding::SaveFramebufferBinding()
 SaveFramebufferBinding::~SaveFramebufferBinding()
 {
 #if defined( CINDER_GLES )
-	glBindFramebuffer( GL_FRAMEBUFFER, mOldValue );
+	glBindFramebufferOES( GL_FRAMEBUFFER_OES, mOldValue );
 #else
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mOldValue );
 #endif
