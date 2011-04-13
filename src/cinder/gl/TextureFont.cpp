@@ -166,7 +166,7 @@ set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedCh
 }
 
 TextureFont::TextureFont( const Font &font, const string &utf8Chars )
-	: mFont( font )
+	: mFont( font ), 
 {
 	// get the glyph indices we'll need
 	set<Font::Glyph> glyphs = getNecessaryGlyphs( font, utf8Chars );
@@ -246,7 +246,7 @@ const int textureHeight = 1024;
 }
 #endif
 
-void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline, const DrawOptions &options )
+void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, Vec2f baseline, const DrawOptions &options )
 {
 	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
 	BoolState saveEnabledState( mTextures[0].getTarget() );
@@ -268,6 +268,9 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 		uint32_t curIdx = 0;
 		GLenum indexType = GL_UNSIGNED_INT;
 #endif
+		if( options.getPixelSnap() )
+			baseline = Vec2f( floor( baseline.x ), floor( baseline.y ) );
+			
 		for( vector<pair<uint16_t,Vec2f> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
 			std::map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
 			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
@@ -279,10 +282,10 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 			Rectf srcCoords = mTextures[texIdx].getAreaTexCoords( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect += glyphIt->second;
+			destRect += Vec2f( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) );
+			destRect += Vec2f( baseline.x, baseline.y - mFont.getAscent() );
 			if( options.getPixelSnap() )
-				destRect += Vec2f( floor( baseline.x + glyphInfo.mOriginOffset.x + 0.5f ), floor( baseline.y - mFont.getAscent() + glyphInfo.mOriginOffset.y ) );
-			else
-				destRect += Vec2f( baseline.x + glyphInfo.mOriginOffset.x, floor( baseline.y - mFont.getAscent() + glyphInfo.mOriginOffset.y ) );
+				destRect -= Vec2f( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
 			
 			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY1() );
 			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY1() );
@@ -309,7 +312,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 	}
 }
 
-void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, const Vec2f &offset, const DrawOptions &options )
+void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, Vec2f offset, const DrawOptions &options )
 {
 	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
 	BoolState saveEnabledState( mTextures[0].getTarget() );
@@ -330,6 +333,9 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 		uint32_t curIdx = 0;
 		GLenum indexType = GL_UNSIGNED_INT;
 #endif
+		if( options.getPixelSnap() )
+			offset = Vec2f( floor( offset.x ), floor( offset.y ) );
+
 		for( vector<pair<uint16_t,Vec2f> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
 			std::map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
 			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
@@ -340,10 +346,10 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 			Rectf destRect( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect += glyphIt->second;
+			destRect += Vec2f( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) );
+			destRect += Vec2f( offset.x, offset.y );
 			if( options.getPixelSnap() )
-				destRect += Vec2f( floor( offset.x + glyphInfo.mOriginOffset.x + 0.5f ), floor( offset.y + glyphInfo.mOriginOffset.y + 0.5f ) );
-			else
-				destRect += Vec2f( offset.x + glyphInfo.mOriginOffset.x, floor( offset.y + glyphInfo.mOriginOffset.y ) );
+				destRect -= Vec2f( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
 			
 			// clip
 			Rectf clipped( destRect );
