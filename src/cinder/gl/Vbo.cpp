@@ -186,6 +186,8 @@ VboMesh::VboMesh( const TriMesh2d &triMesh, Layout layout )
 		mObj->mLayout.setStaticIndices();
 		mObj->mLayout.setStaticPositions();
 	}
+	else
+		mObj->mLayout = layout;
 
 	mObj->mPrimitiveType = GL_TRIANGLES;
 	mObj->mNumIndices = triMesh.getNumIndices();

@@ -254,10 +254,8 @@ void Texture::init( const unsigned char *data, int unpackRowLength, GLenum dataF
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MIN_FILTER, format.mMinFilter );	
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, format.mMagFilter );
-#if ! defined( CINDER_GLES )
 	if( format.mMipmapping )
 		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
-#endif
 	if( mObj->mTarget == GL_TEXTURE_2D ) {
 		mObj->mMaxU = mObj->mMaxV = 1.0f;
 	}
@@ -287,10 +285,8 @@ void Texture::init( const float *data, GLint dataFormat, const Format &format )
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MIN_FILTER, format.mMinFilter );	
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, format.mMagFilter );
-#if ! defined( CINDER_GLES )
 	if( format.mMipmapping )
 		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
-#endif
 	if( mObj->mTarget == GL_TEXTURE_2D ) {
 		mObj->mMaxU = mObj->mMaxV = 1.0f;
 	}
@@ -389,10 +385,8 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MIN_FILTER, format.mMinFilter );	
 	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, format.mMagFilter );
-#if ! defined( CINDER_GLES )
 	if( format.mMipmapping )
 		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
-#endif
 	if( mObj->mTarget == GL_TEXTURE_2D ) {
 		mObj->mMaxU = mObj->mMaxV = 1.0f;
 	}

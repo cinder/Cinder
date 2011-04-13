@@ -41,13 +41,8 @@ namespace cinder { namespace gl {
 class GlslProg {
   public: 
 	GlslProg() {}
-#if defined( CINDER_GLES )
-	GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef() );
-	GlslProg( const char *vertexShader, const char *fragmentShader = 0 );
-#else
 	GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef(), DataSourceRef geometryShader = DataSourceRef() );
 	GlslProg( const char *vertexShader, const char *fragmentShader = 0, const char *geometryShader = 0 );
-#endif
 
 	void			bind() const;
 	static void		unbind();
