@@ -341,45 +341,35 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 			destRect -= destRect.getUpperLeft();
 			destRect += glyphIt->second;
 			if( options.getPixelSnap() )
-				destRect += Vec2f( floor( offset.x + glyphInfo.mOriginOffset.x + 0.5f ), floor( offset.y - mFont.getAscent() + glyphInfo.mOriginOffset.y ) );
+				destRect += Vec2f( floor( offset.x + glyphInfo.mOriginOffset.x + 0.5f ), floor( offset.y + glyphInfo.mOriginOffset.y + 0.5f ) );
 			else
-				destRect += Vec2f( offset.x + glyphInfo.mOriginOffset.x, floor( offset.y - mFont.getAscent() + glyphInfo.mOriginOffset.y ) );
+				destRect += Vec2f( offset.x + glyphInfo.mOriginOffset.x, floor( offset.y + glyphInfo.mOriginOffset.y ) );
 			
 			// clip
-			if( options.getClipHorizontal() && destRect.x1 < clip.x1 ) { // clip off the left edge
-				if( destRect.x2 < clip.x1 )
-					continue;
-				float clippedWidth = destRect.x2 - clip.x1;
-				destRect.x1 = destRect.x2 - clippedWidth;
-				srcTexCoords.x1 = srcTexCoords.x2 - clippedWidth / mTextures[texIdx].getWidth();
+			Rectf clipped( destRect );
+			if( options.getClipHorizontal() ) {
+				clipped.x1 = std::max( destRect.x1, clip.x1 );
+				clipped.x2 = std::min( destRect.x2, clip.x2 );
 			}
-			else if( options.getClipHorizontal() && destRect.x2 > clip.x2 ) { // clip off the left edge
-				if( destRect.x1 > clip.x2 )
-					continue;
-				float clippedWidth = clip.x2 - destRect.x1;
-				destRect.x2 = destRect.x1 + clippedWidth;
-				srcTexCoords.x2 = srcTexCoords.x1 + clippedWidth / mTextures[texIdx].getWidth();				
+			if( options.getClipVertical() ) {
+				clipped.y1 = std::max( destRect.y1, clip.y1 );
+				clipped.y2 = std::min( destRect.y2, clip.y2 );
 			}
 			
-			if( options.getClipVertical() && destRect.y1 < clip.y1 ) { // clip off the top edge
-				if( destRect.y2 < clip.y1 )
-					continue;
-				float clippedHeight = destRect.y2 - clip.y1;
-				destRect.y1 = destRect.y2 - clippedHeight;
-				srcTexCoords.y1 = srcTexCoords.y2 - clippedHeight / mTextures[texIdx].getHeight();
-			}
-			else if( options.getClipVertical() && destRect.y2 > clip.y2 ) { // clip off the bottom edge
-				if( destRect.y1 > clip.y2 )
-					continue;
-				float clippedHeight = clip.y2 - destRect.y1;
-				destRect.y2 = destRect.y1 + clippedHeight;
-				srcTexCoords.y2 = srcTexCoords.y1 + clippedHeight / mTextures[texIdx].getHeight();
-			}						
-												
-			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY1() );
-			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY1() );
-			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY2() );
-			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY2() );
+			if( clipped.x1 >= clipped.x2 || clipped.y1 >= clipped.y2 )
+				continue;
+			
+			Vec2f coordScale( 1 / (float)destRect.getWidth() / mTextures[texIdx].getWidth() * glyphInfo.mTexCoords.getWidth(),
+				1 / (float)destRect.getHeight() / mTextures[texIdx].getHeight() * glyphInfo.mTexCoords.getHeight() );
+			srcTexCoords.x1 = srcTexCoords.x1 + ( clipped.x1 - destRect.x1 ) * coordScale.x;
+			srcTexCoords.x2 = srcTexCoords.x1 + ( clipped.x2 - clipped.x1 ) * coordScale.x;
+			srcTexCoords.y1 = srcTexCoords.y1 + ( clipped.y1 - destRect.y1 ) * coordScale.y;
+			srcTexCoords.y2 = srcTexCoords.y1 + ( clipped.y2 - clipped.y1 ) * coordScale.y;
+
+			verts.push_back( clipped.getX2() ); verts.push_back( clipped.getY1() );
+			verts.push_back( clipped.getX1() ); verts.push_back( clipped.getY1() );
+			verts.push_back( clipped.getX2() ); verts.push_back( clipped.getY2() );
+			verts.push_back( clipped.getX1() ); verts.push_back( clipped.getY2() );
 
 			texCoords.push_back( srcTexCoords.getX2() ); texCoords.push_back( srcTexCoords.getY1() );
 			texCoords.push_back( srcTexCoords.getX1() ); texCoords.push_back( srcTexCoords.getY1() );
