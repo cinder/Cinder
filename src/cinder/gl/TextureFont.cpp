@@ -116,7 +116,6 @@ set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedCh
 	set<Font::Glyph> result;
 
 	GCP_RESULTS gcpResults;
-	unsigned int i;
 	WCHAR *glyphIndices = NULL;
 
 	wstring utf16 = toUtf16( supportedChars );
@@ -129,7 +128,7 @@ set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedCh
 	gcpResults.lpCaretPos = NULL;
 	gcpResults.lpClass = NULL;
 
-	uint32_t bufferSize = std::max<uint32_t>( utf16.length() * 1.2, 16);		// Initially guess number of chars plus a few
+	uint32_t bufferSize = std::max<uint32_t>( (uint32_t)(utf16.length() * 1.2f), 16);		// Initially guess number of chars plus a few
 	while( true ) {
 		if( glyphIndices ) {
 			free( glyphIndices );
@@ -156,7 +155,7 @@ set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedCh
 		}
 	}
 
-	for( int i = 0; i < gcpResults.nGlyphs; i++ )
+	for( UINT i = 0; i < gcpResults.nGlyphs; i++ )
 		result.insert( glyphIndices[i] );
 
 	if( glyphIndices )
@@ -165,8 +164,8 @@ set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedCh
 	return result;
 }
 
-TextureFont::TextureFont( const Font &font, const string &utf8Chars )
-	: mFont( font ), 
+TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Format &format )
+	: mFont( font ), mFormat( format )
 {
 	// get the glyph indices we'll need
 	set<Font::Glyph> glyphs = getNecessaryGlyphs( font, utf8Chars );
@@ -178,17 +177,14 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars )
 		glyphExtents.y = std::max<int>( glyphExtents.y, bb.getHeight() );
 	}
 
-const int textureWidth = 1024;
-const int textureHeight = 1024;
-
 	::SelectObject( Font::getGlobalDc(), mFont.getHfont() );
 
-	int glyphsWide = textureWidth / glyphExtents.x;
-	int glyphsTall = textureHeight / glyphExtents.y;	
+	int glyphsWide = mFormat.getTextureWidth() / glyphExtents.x;
+	int glyphsTall = mFormat.getTextureHeight() / glyphExtents.y;	
 	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
 	Vec2i curOffset = Vec2i::zero();
 
-	Channel channel( textureWidth, textureHeight );
+	Channel channel( mFormat.getTextureWidth(), mFormat.getTextureHeight() );
 	ip::fill<uint8_t>( &channel, 0 );
 
 	GLYPHMETRICS gm = { 0, };
@@ -229,7 +225,8 @@ const int textureHeight = 1024;
 		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
 			Surface tempSurface( channel, SurfaceConstraintsDefault(), true );
 			tempSurface.getChannelAlpha().copyFrom( channel, channel.getBounds() );
-			ip::unpremultiply( &tempSurface );
+			if( ! format.getPremultiply() )
+				ip::unpremultiply( &tempSurface );
 			mTextures.push_back( gl::Texture( tempSurface ) );
 			ip::fill<uint8_t>( &channel, 0 );			
 			curOffset = Vec2i::zero();

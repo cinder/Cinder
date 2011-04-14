@@ -18,15 +18,9 @@
     <ClCompile Include="..\src\TextureFontApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\TextureFont.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\TextureFont.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
