@@ -242,6 +242,12 @@ template<typename T>
 class Matrix44 
 {
 public:
+	typedef T TYPE;
+	//
+	static const size_t DIM		= 4;
+	static const size_t DIM_SQ	= DIM*DIM;
+	static const size_t MEM_LEN	= sizeof(T)*DIM_SQ;
+
 	//
 	// This class is OpenGL friendly and stores the m as how OpenGL would expect it.
 	// m[i,j]:
@@ -256,8 +262,20 @@ public:
 	// | m[2] m[6] m[10] m[14] |
 	// | m[3] m[7] m[11] m[15] |
 	//
-
-	T m[16];
+	union {
+		T m[16];
+		struct {
+			// This looks like it's transposed from the above, but it's really not.
+			// It just has to be written this way so it follows the right ordering
+			// in the memory layout as well as being mathematically correct.
+			T m00, m10, m20, m30;
+			T m01, m11, m21, m31;
+			T m02, m12, m22, m32;
+			T m03, m13, m23, m33;
+		};
+		// [Cols][Rows]
+		T mcols[4][4];
+	};
 
 	Matrix44() { setToIdentity(); }
 	Matrix44( const T * dt ) 
@@ -575,13 +593,13 @@ public:
 
 	void transpose()
 	{
-		T temp;
-		temp = m[1]; m[1] = m[4]; m[4] = temp;
-		temp = m[2]; m[2] = m[8]; m[8] = temp;
-		temp = m[3]; m[2] = m[12]; m[12] = temp;
-		temp = m[6]; m[6] = m[9]; m[9] = temp;
-		temp = m[7]; m[7] = m[13]; m[13] = temp;
-		temp = m[11]; m[11] = m[14]; m[14] = temp;
+		T t;
+		t = m01; m01 = m10; m10 = t;
+		t = m02; m02 = m20; m20 = t;
+		t = m03; m03 = m30; m30 = t;
+		t = m12; m12 = m21; m21 = t;
+		t = m13; m13 = m31; m31 = t;
+		t = m23; m23 = m32; m32 = t;
 	}
 
 	Matrix44<T> transposed() const
