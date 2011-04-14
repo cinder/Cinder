@@ -45,7 +45,7 @@
 
 - (void) allocateGraphics
 {
-	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+	context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES1];
 	
 	if (!context || ![EAGLContext setCurrentContext:context])
 	{
@@ -54,34 +54,34 @@
 	}
 	
 	// Create default framebuffer object. The backing will be allocated for the current layer in -resizeFromLayer
-	glGenFramebuffers( 1, &defaultFramebuffer );
-	glGenRenderbuffers( 1, &colorRenderbuffer );
-	glBindFramebuffer( GL_FRAMEBUFFER, defaultFramebuffer );
-	glBindRenderbuffer( GL_RENDERBUFFER, colorRenderbuffer );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer );
+	glGenFramebuffersOES( 1, &defaultFramebuffer );
+	glGenRenderbuffersOES( 1, &colorRenderbuffer );
+	glBindFramebufferOES( GL_FRAMEBUFFER_OES, defaultFramebuffer );
+	glBindRenderbufferOES( GL_RENDERBUFFER_OES, colorRenderbuffer );
+	glFramebufferRenderbufferOES( GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, colorRenderbuffer );
 
-	glGenRenderbuffers( 1, &depthRenderbuffer );
-	glBindRenderbuffer( GL_RENDERBUFFER, depthRenderbuffer );
-	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, backingWidth, backingHeight );
-	glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer );
+	glGenRenderbuffersOES( 1, &depthRenderbuffer );
+	glBindRenderbufferOES( GL_RENDERBUFFER_OES, depthRenderbuffer );
+	glRenderbufferStorageOES( GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, backingWidth, backingHeight );
+	glFramebufferRenderbufferOES( GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, depthRenderbuffer );
 }
 
 - (void) layoutSubviews
 {
 	// Allocate color buffer backing based on the current layer size
-    glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-    [context renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer*)cinderView.layer];
-	glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth);
-    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight);
+    glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
+    [context renderbufferStorage:GL_RENDERBUFFER_OES fromDrawable:(CAEAGLLayer*)cinderView.layer];
+	glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
+    glGetRenderbufferParameterivOES(GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
 
-	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, 
-                             GL_DEPTH_COMPONENT16, 
+	glBindRenderbufferOES(GL_RENDERBUFFER_OES, depthRenderbuffer);
+    glRenderbufferStorageOES(GL_RENDERBUFFER_OES, 
+                             GL_DEPTH_COMPONENT16_OES, 
                              backingWidth, backingHeight);
 	
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    if (glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES)
 	{
-		NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+		NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
     }
 }
 
@@ -91,14 +91,14 @@
     
 	// This application only creates a single default framebuffer which is already bound at this point.
 	// This call is redundant, but needed if dealing with multiple framebuffers.
-    glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, defaultFramebuffer);
     glViewport(0, 0, backingWidth, backingHeight);
 }
 
 - (void)flushBuffer
 {
-    glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-    [context presentRenderbuffer:GL_RENDERBUFFER];
+    glBindRenderbufferOES(GL_RENDERBUFFER_OES, colorRenderbuffer);
+    [context presentRenderbuffer:GL_RENDERBUFFER_OES];
 }
 
 - (void)setFrameSize:(CGSize)newSize

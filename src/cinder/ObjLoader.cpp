@@ -487,9 +487,9 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 			os << indices[t*3+2]+1 << "/" << indices[t*3+2]+1 << " ";
 		}
 		else { // just verts
-			os << indices[t*3+0] << " ";
-			os << indices[t*3+1] << " ";
-			os << indices[t*3+2] << " ";			
+			os << indices[t*3+0]+1 << " ";
+			os << indices[t*3+1]+1 << " ";
+			os << indices[t*3+2]+1 << " ";			
 		}
 		os << std::endl;
 		stream->write( os.str() );
