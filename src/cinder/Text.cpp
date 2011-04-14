@@ -525,7 +525,7 @@ void TextBox::createLines() const
 		return;
 
 	CFRange range = CFRangeMake( 0, 0 );
-	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor );
+	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor, mLigate );
 	CTTypesetterRef typeSetter = ::CTTypesetterCreateWithAttributedString( attrStr );
 
 	CFIndex strLength = ::CFAttributedStringGetLength( attrStr );

@@ -92,7 +92,7 @@ class TextBox {
 	typedef enum Alignment { LEFT, CENTER, RIGHT } Alignment;
 	enum { GROW = 0 };
 	
-	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ) {}
+	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ), mLigate( true ) {}
 
 	TextBox				size( Vec2i sz ) { TextBox result( *this ); result.setSize( sz ); return result; }
 	TextBox				size( int width, int height ) { TextBox result( *this ); result.setSize( Vec2i( width, height ) ); return result; }
@@ -124,6 +124,10 @@ class TextBox {
 	bool				getPremultiplied() const { return mPremultiplied; }
 	void				setPremultiplied( bool premult ) { mPremultiplied = premult; }
 
+	TextBox				ligate( bool ligateText = true ) { TextBox result( *this ); result.setLigate( ligateText ); return result; }
+	bool				getLigate() const { return mLigate; }
+	void				setLigate( bool ligateText ) { mLigate = ligateText; }
+
 	Vec2f									measure() const;
 	/** Returns a vector of pairs of glyph indices and the position of their left baselines
 		\warning Does not support word wrapping on Windows. **/
@@ -138,6 +142,7 @@ class TextBox {
 	Font			mFont;
 	ColorA			mColor, mBackgroundColor;
 	bool			mPremultiplied;
+	bool			mLigate;
 	mutable bool	mInvalid;
 
 	mutable Vec2f	mCalculatedSize;
