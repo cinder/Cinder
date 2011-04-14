@@ -505,7 +505,6 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 	WCHAR familyName[1024];
 	Gdiplus::PrivateFontCollection privateFontCollection;
 
-   // Add three font files to the private collection.
 	ci::Buffer buffer = dataSource->getBuffer();
 	privateFontCollection.AddMemoryFont( buffer.getData(), buffer.getDataSize() );
 
@@ -528,7 +527,14 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 	}
 	else
 		throw FontInvalidNameExc();
-		
+	
+	// now that we know the name thanks to GDI+, let's load the HFONT
+	// this is only because we can't seem to get the LOGFONT -> HFONT to work down in finishSetup
+	DWORD numFonts = 0;
+	::AddFontMemResourceEx( buffer.getData(), buffer.getDataSize(), 0, &numFonts );
+	if( numFonts < 1 )
+		throw FontInvalidNameExc();
+
 	finishSetup();
 #endif
 }
@@ -548,7 +554,6 @@ void Font::Obj::finishSetup()
 {
 #if defined( CINDER_MSW )
 	mGdiplusFont->GetLogFontW( FontManager::instance()->getGraphics(), &mLogFont );
-	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
 
 	if( ! mHfont )
 		mHfont = ::CreateFontIndirectW( &mLogFont );
