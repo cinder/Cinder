@@ -68,11 +68,12 @@ Animation! Give yourself a pat on the back.
 Loading images in C++ can be a chore. Luckily, Cinder does most of the hard work for you. The process for loading and displaying an image can be broken up into only a few lines of code.
 \n
 \n
-1) Tell the compiler we're interested in Cinder's image input/output code.
+1) Tell the compiler we're interested in Cinder's image input/output code and gl Texture code.
 \code
 #include "cinder/ImageIo.h"
+#include "cinder/gl/Texture.h"
 \endcode
-You put this line at the top of the project with the other includes. In particular we'll be using the loadImage() function this file declares.
+You put these lines at the top of the project with the other includes.
 \n
 \n
 2) Declare a new texture in the App class.

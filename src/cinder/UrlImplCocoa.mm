@@ -316,7 +316,7 @@ namespace cinder {
 IStreamUrlImplCocoa::IStreamUrlImplCocoa( const std::string &url, const std::string &user, const std::string &password )
 	: IStreamUrlImpl( user, password )
 {
-	mDelegate = [[IStreamUrlImplCocoaDelegate alloc] initWithImpl:this url:Url(url) user:user password:password];
+	mDelegate = [[IStreamUrlImplCocoaDelegate alloc] initWithImpl:this url:Url(url, true) user:user password:password];
 	
 	mThread = [[NSThread alloc] initWithTarget:mDelegate
 									  selector:@selector(threadEntry:)

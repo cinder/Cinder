@@ -73,6 +73,9 @@
     <Filter Include="Header Files\rapidxml">
       <UniqueIdentifier>{5af4abed-f424-479b-8c89-969fc75d54be}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\libtess2">
+      <UniqueIdentifier>{2d33008c-c675-44bd-a5bb-b5998abbf655}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -357,6 +360,7 @@
     <ClCompile Include="..\src\cinder\Clipboard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\src\cinder\gl\GlslEffect.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -365,6 +369,31 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\glsw.cpp">
       <Filter>Source Files\gl</Filter>
+=======
+    <ClCompile Include="..\src\libtess2\bucketalloc.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\dict.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\geom.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\mesh.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\priorityq.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\sweep.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\tess.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Triangulate.cpp">
+      <Filter>Source Files</Filter>
+>>>>>>> remotes/cinder/master
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -734,11 +763,40 @@
     <ClInclude Include="..\include\cinder\app\AppNative.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\include\cinder\gl\GlslEffect.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\glsw.h">
       <Filter>Header Files\gl</Filter>
+=======
+    <ClInclude Include="..\src\libtess2\bucketalloc.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\dict.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\geom.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\mesh.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\priorityq.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\sweep.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\tess.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\tesselator.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Triangulate.h">
+      <Filter>Header Files</Filter>
+>>>>>>> remotes/cinder/master
     </ClInclude>
   </ItemGroup>
 </Project>

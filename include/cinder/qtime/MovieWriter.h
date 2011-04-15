@@ -20,6 +20,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#pragma once
+
 #include "cinder/Cinder.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/ImageIo.h"
@@ -68,6 +70,8 @@ class MovieWriter {
 		uint32_t	getCodec() const { return mCodec; }
 		//! Sets the four character code for the QuickTime codec. Defaults to \c PNG (\c 'png '). Additional types can be found in QuickTime's \c ImageCompression.h.
 		Format&		setCodec( uint32_t codec ) { mCodec = codec; return *this; }
+		//! Returns the overall quality for encoding in the range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
+		float		getQuality() const { return mQualityFloat; }
 		//! Sets the overall quality for encoding. Must be in a range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
 		Format&		setQuality( float quality );
 		//! Returns the standard duration of a frame measured in seconds
@@ -82,12 +86,20 @@ class MovieWriter {
 		float		getGamma() const { return mGamma; }
 		//! Sets the gamma value by which image data is encoded. Defaults to \c 2.5 on MSW and \c 2.2 on Mac OS X.
 		Format&		setGamma( float gamma ) { mGamma = gamma; return *this; }
+		//! Returns if temporal compression (allowing \b P or \b B frames) is enabled. Defaults to \c true.
+		bool		isTemporal() const;
 		//! Enables temporal compression (allowing \b P or \b B frames). Defaults to \c true.
 		Format&		enableTemporal( bool enable = true );
+		//! Returns if frame reordering is enabled. Defaults to \c true. In order to encode \b B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
+		bool		isReordering() const;
 		//! Enables frame reordering. Defaults to \c true. In order to encode \b B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
 		Format&		enableReordering( bool enable = true );
+		//! Gets the maximum number of frames between key frames. Default is \c 0, which indicates that the compressor should choose where to place all key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression.
+		int32_t		getMaxKeyFrameRate() const;
 		//! Sets the maximum number of frames between key frames. Default is \c 0, which indicates that the compressor should choose where to place all key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression.
 		Format&		setMaxKeyFrameRate( int32_t rate );
+		//! Returns whether a codec is allowed to change frame times. Defaults to \c true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
+		bool		isFrameTimeChanges() const;
 		//! Sets whether a codec is allowed to change frame times. Defaults to \c true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
 		Format&		enableFrameTimeChanges( bool enable = true );
 		//! Returns whether multiPass encoding is enabled. Defaults to \c false.
@@ -101,6 +113,7 @@ class MovieWriter {
 		uint32_t	mCodec;
 		long		mTimeBase;
 		float		mDefaultTime;
+		float		mQualityFloat;
 		float		mGamma;
 		bool		mEnableMultiPass;
 
