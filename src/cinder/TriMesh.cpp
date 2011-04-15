@@ -113,7 +113,6 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const Matrix44f &transform ) const
 	return AxisAlignedBox3f( min, max );
 }
 
-
 void TriMesh::read( DataSourceRef dataSource )
 {
 	IStreamRef in = dataSource->createStream();
@@ -181,6 +180,7 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 		out->writeLittle( static_cast<uint32_t>( *it) );
 	}
 }
+
 void TriMesh::generateNormals(void)
 {
 	mNormals.clear();
@@ -206,6 +206,7 @@ void TriMesh::generateNormals(void)
 	for(size_t i=0;i<mNormals.size();++i)
 		mNormals[i].normalize();
 }
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // TriMesh2d
 void TriMesh2d::clear()
