@@ -347,12 +347,12 @@ CFDataRef createCfDataRef( const Buffer &buffer )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageSourceCgImage
-ImageSourceCgImageRef ImageSourceCgImage::createRef( ::CGImageRef imageRef )
+ImageSourceCgImageRef ImageSourceCgImage::createRef( ::CGImageRef imageRef, ImageSource::Options options )
 {
-	return shared_ptr<ImageSourceCgImage>( new ImageSourceCgImage( imageRef ) );
+	return shared_ptr<ImageSourceCgImage>( new ImageSourceCgImage( imageRef, options ) );
 }
 
-ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef )
+ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Options /*options*/ )
 	: ImageSource(), mIsIndexed( false ), mIs16BitPacked( false )
 {
 	::CGImageRetain( imageRef );
@@ -481,9 +481,9 @@ void ImageSourceCgImage::load( ImageTargetRef target )
 	}
 }
 
-ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef )
+ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef, ImageSource::Options options )
 {
-	return ImageSourceCgImage::createRef( imageRef );
+	return ImageSourceCgImage::createRef( imageRef, options );
 }
 
 
