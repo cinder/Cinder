@@ -197,19 +197,22 @@ void BasicApp::fileDrop( FileDropEvent event )
 				ObjLoader loader( DataSourcePath::createRef( path + filename ) );
 				double tObj = stopTimer("OBJ data file loaded in %d seconds");
 
-				// export each mesh group to a binary file
+				// count the number of groups
+				size_t numGroups = loader.getNumGroups();
+
+				// export each mesh group to a binary file for demonstration purposes
 				startTimer("Exporting mesh groups to separate files that load faster...");
-				loader.writeGroups( path, true );
+				for(size_t i=0;i<numGroups;++i) {
+					string name = loader.getGroupName(i);
+
+					TriMesh mesh;
+					loader.load(i, &mesh, true, true, true);
+					mesh.write( writeFile( path + name + ".msh" ) );
+				}
 				stopTimer("Export took %d seconds");
 
-				// we could create the TriMesh now, but for demonstration purposes we will load
-				// the generated TriMeshes from their files
-				//TriMesh mesh;
-				//loader.load( &mesh, true, true, true );
-				//mMeshes.push_back( mesh );
-
+				// load each mesh from binary file for demonstration purposes
 				startTimer("Loading this model as separate TriMesh files");
-				size_t numGroups = loader.getNumGroups();
 				for(size_t i=0;i<numGroups;++i) {
 					string name = loader.getGroupName(i);
 
