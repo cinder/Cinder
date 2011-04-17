@@ -242,7 +242,7 @@ struct EaseOutInQuint{ float operator()( float t ) const { return easeOutInQuint
 //! Easing equation for a sinusoidal (sin(t)) ease-in, accelerating from zero velocity.
 inline float easeInSine( float t )
 {
-	return -math<float>::cos( t * (float)(M_PI / 2) ) + 1;
+	return -math<float>::cos( t * (float)M_PI / 2 ) + 1;
 }
 
 //! Easing equation for a sinusoidal (sin(t)) ease-in, accelerating from zero velocity. Functor edition.
@@ -251,7 +251,7 @@ struct EaseInSine{ float operator()( float t ) const { return easeInSine( t ); }
 //! Easing equation for a sinusoidal (sin(t)) ease-out, decelerating from zero velocity.
 inline float easeOutSine( float t )
 {
-	return math<float>::sin( t * (float)(M_PI / 2) );
+	return math<float>::sin( t * (float)M_PI / 2 );
 }
 
 //! Easing equation for a sinusoidal (sin(t)) easing out, decelerating from zero velocity. Functor edition.
@@ -531,16 +531,16 @@ inline float easeInElasticHelper_( float t, float b, float c, float d, float a, 
         s = p / 4.0f;
     }
 	else {
-        s = p / (2 * M_PI) * math<float>::asin( c / a );
+        s = p / (2 * (float)M_PI) * math<float>::asin( c / a );
     }
 
     t_adj -= 1;
-    return -( a * math<float>::pow( 2,10*t_adj) * math<float>::sin( (t_adj*d-s)*(2*M_PI)/p )) + b;
+    return -( a * math<float>::pow( 2,10*t_adj) * math<float>::sin( (t_adj*d-s)*(2*(float)M_PI)/p )) + b;
 }
 
 inline float easeOutElasticHelper_( float t, float /*b*/, float c, float /*d*/, float a, float p )
 {
-    if( t==0 ) return 0;
+    if( t == 0 ) return 0;
     if( t == 1) return c;
 
     float s;
@@ -549,10 +549,10 @@ inline float easeOutElasticHelper_( float t, float /*b*/, float c, float /*d*/, 
         s = p / 4;
     }
 	else {
-        s = p / ( 2 * M_PI ) * math<float>::asin( c / a );
+        s = p / ( 2 * (float)M_PI ) * math<float>::asin( c / a );
     }
 
-    return a * math<float>::pow( 2, -10*t ) * math<float>::sin( (t-s)*(2*M_PI)/p ) + c;
+    return a * math<float>::pow( 2, -10*t ) * math<float>::sin( (t-s)*(2*(float)M_PI)/p ) + c;
 }
 //! \endcond
 
@@ -595,11 +595,11 @@ inline float easeInOutElastic( float t, float amplitude, float period )
         s = period / 4;
     }
 	else {
-        s = period / (2 * M_PI) * math<float>::asin( 1 / amplitude );
+        s = period / (2 * (float)M_PI) * math<float>::asin( 1 / amplitude );
     }
 
-    if( t < 1 ) return -0.5f * ( amplitude * math<float>::pow( 2.0f, 10*(t-1) ) * math<float>::sin( (t-1-s)*(2*M_PI)/period ));
-    return amplitude * math<float>::pow( 2,-10*(t-1) ) * math<float>::sin( (t-1-s)*(2*M_PI)/period ) * 0.5f + 1;
+    if( t < 1 ) return -0.5f * ( amplitude * math<float>::pow( 2.0f, 10*(t-1) ) * math<float>::sin( (t-1-s)*(2*(float)M_PI)/period ));
+    return amplitude * math<float>::pow( 2,-10*(t-1) ) * math<float>::sin( (t-1-s)*(2*(float)M_PI)/period ) * 0.5f + 1;
 }
 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-in/out, accelerating until halfway, then decelerating. Functor edition.
@@ -613,7 +613,7 @@ struct EaseInOutElastic {
 inline float easeOutInElastic( float t, float amplitude, float period )
 {
     if (t < 0.5) return easeOutElasticHelper_(t*2, 0, 0.5, 1.0, amplitude, period );
-    return easeInElasticHelper_(2*t - 1.0, 0.5, 0.5, 1.0, amplitude, period );
+    return easeInElasticHelper_(2*t - 1, 0.5f, 0.5f, 1, amplitude, period );
 }
 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-out/in, decelerating until halfway, then accelerating. Functor edition.
