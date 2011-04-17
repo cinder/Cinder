@@ -68,7 +68,7 @@ void EaseGalleryApp::setup()
 	mEaseBoxes.push_back( EaseBox( EaseInQuad(), "EaseInQuad" ) );
 	mEaseBoxes.push_back( EaseBox( EaseOutQuad(), "EaseOutQuad" ) );
 	mEaseBoxes.push_back( EaseBox( EaseInOutQuad(), "EaseInOutQuad" ) );
-	mEaseBoxes.push_back( EaseBox( EaseOutInQuad(), "EaseOutQuad" ) );
+	mEaseBoxes.push_back( EaseBox( EaseOutInQuad(), "EaseOutInQuad" ) );
 
 	mEaseBoxes.push_back( EaseBox( EaseInCubic(), "EaseInCubic" ) );
 	mEaseBoxes.push_back( EaseBox( EaseOutCubic(), "EaseOutCubic" ) );
