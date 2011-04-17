@@ -756,6 +756,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\cinder\Easing.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\cinder\CinderResources.h"
 				>
 			</File>
