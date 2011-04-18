@@ -74,7 +74,7 @@ void ImageSourceFileQuartz::registerSelf()
 
 ///////////////////////////////////////////////////////////////////////////////
 // ImageSourceFileQuartz
-ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceRef dataSourceRef )
+ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceRef dataSourceRef, ImageSource::Options options )
 {
 	std::shared_ptr<CGImageSource> sourceRef;
 	std::shared_ptr<CGImage> imageRef;
@@ -107,19 +107,32 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 	}
 	
 	if( sourceRef ) {
-		imageRef = std::shared_ptr<CGImage>( ::CGImageSourceCreateImageAtIndex( sourceRef.get(), 0, optionsDict.get() ), CGImageRelease );
+		imageRef = std::shared_ptr<CGImage>( ::CGImageSourceCreateImageAtIndex( sourceRef.get(), options.getIndex(), optionsDict.get() ), CGImageRelease );
 		if( ! imageRef )
 			throw ImageIoExceptionFailedLoad();
 	}
 	else
 		throw ImageIoExceptionFailedLoad();
 
-	return ImageSourceFileQuartzRef( new ImageSourceFileQuartz( imageRef.get() ) );
+	std::shared_ptr<const __CFDictionary> imageProperties( ::CGImageSourceCopyProperties( sourceRef.get(), NULL ), ::CFRelease );
+	std::shared_ptr<const __CFDictionary> imageIndexProperties( ::CGImageSourceCopyPropertiesAtIndex( sourceRef.get(), options.getIndex(), NULL ), ::CFRelease );
+
+	return ImageSourceFileQuartzRef( new ImageSourceFileQuartz( imageRef.get(), options, imageProperties, imageIndexProperties ) );
 }
 
-ImageSourceFileQuartz::ImageSourceFileQuartz( CGImageRef imageRef )
-	: ImageSourceCgImage( imageRef )
+ImageSourceFileQuartz::ImageSourceFileQuartz( CGImageRef imageRef, ImageSource::Options options, std::shared_ptr<const struct __CFDictionary> imageProperties, std::shared_ptr<const struct __CFDictionary> imageIndexProps )
+	: ImageSourceCgImage( imageRef, options ), mImageProperties( imageProperties ), mImageIndexProperties( imageIndexProps )
 {
+}
+
+CFDictionaryRef	ImageSourceFileQuartz::getQuartzProperties() const
+{
+	return mImageProperties.get();
+}
+
+CFDictionaryRef	ImageSourceFileQuartz::getQuartzIndexProperties() const
+{
+	return mImageIndexProperties.get();
 }
 
 } // namespace cinder

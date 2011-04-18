@@ -197,6 +197,8 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments = 0 );
 void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = 0 );
 //! Renders a solid rectangle. Texture coordinates in the range [0,1] are generated unless \a textureRectangle.
 void drawSolidRect( const Rectf &rect, bool textureRectangle = false );
+//! Renders a stroked rectangle.
+void drawStrokedRect( const Rectf &rect );
 //! Renders a coordinate frame representation centered at the origin. Arrowheads are drawn at the end of each axis with radius \a headRadius and length \a headLength.
 void drawCoordinateFrame( float axisLength = 1.0f, float headLength = 0.2f, float headRadius = 0.05f );
 //! Draws a vector starting at \a start and ending at \a end. An arrowhead is drawn at the end of radius \a headRadius and length \a headLength.
@@ -205,6 +207,8 @@ void drawVector( const Vec3f &start, const Vec3f &end, float headLength = 0.2f, 
 void drawFrustum( const Camera &cam );
 //! Draws a torus at the origin, with an outter radius \a outterRadius and an inner radius \a innerRadius, subdivided into \a longitudeSegments and \a latitudeSegments. Normals and texture coordinates in the range [0,1] are generated.
 void drawTorus( float outterRadius, float innerRadius, int longitudeSegments = 12, int latitudeSegments = 12 );
+//! Draws a open-ended cylinder, with base radius \a baseRadius and top radius \a topRadius, with height \a height, subdivided into \a slices and \a stacks. Normals and texture coordinates in the range [0,1] are generated.
+void drawCylinder( float baseRadius, float topRadius, float height, int slices = 12, int stacks = 1 );
 //! Draws a 2d PolyLine \a polyLine
 void draw( const class PolyLine<Vec2f> &polyLine );
 //! Draws a 3d PolyLine \a polyLine
