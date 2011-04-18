@@ -46,7 +46,8 @@
 namespace cinder { namespace gl {
 
 #if defined( CINDER_MSW )
-void initializeGlee() {
+//void initializeGlee() {
+void initializeGLEW() {
 /*#if defined( CINDER_MAC )
 	CGDirectDisplayID display = CGMainDisplayID(); // 1
 	CGOpenGLDisplayMask myDisplayMask = CGDisplayIDToOpenGLDisplayMask( display ); // 2
@@ -176,7 +177,9 @@ void initializeGlee() {
 	}
 	
 	if( wglMakeCurrent( hdc, hglrc ) ) {
-		GLeeInit();
+//		GLeeInit();						//get rid of GLee
+		glewExperimental = GL_TRUE;		//replace with experimental GLEW
+		glewInit();
 	}
 	wglMakeCurrent( NULL, NULL ); 
 
