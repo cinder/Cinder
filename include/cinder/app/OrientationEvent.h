@@ -101,6 +101,23 @@ namespace cinder { namespace app {
     {
         return (orientation == LANDSCAPE_LEFT_ORIENTATION || orientation == LANDSCAPE_RIGHT_ORIENTATION);
     }
+
+    // how much to rotate from PORTRAIT_ORIENTATION to the given orientation
+/*    float getAngleForOrientation(const Orientation &orientation)
+    {
+        switch ( orientation )
+        {
+            case UPSIDE_DOWN_PORTRAIT_ORIENTATION:
+                return M_PI;
+            case LANDSCAPE_LEFT_ORIENTATION:
+                return M_PI/2.0f;
+            case LANDSCAPE_RIGHT_ORIENTATION:
+                return -M_PI/2.0f;
+            default:
+                // if in doubt, just return the normal one
+                return 0.0f;
+        }  
+    } */
     
     // if you usually use Vec3f::yAxis() for up on your CameraPersp, this will help
     template<typename T>
