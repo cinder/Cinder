@@ -242,6 +242,7 @@
     <ClInclude Include="..\include\cinder\ChanTraits.h" />
     <ClInclude Include="..\include\cinder\Cinder.h" />
     <ClInclude Include="..\include\cinder\CinderMath.h" />
+    <ClInclude Include="..\include\cinder\Easing.h" />
     <ClInclude Include="..\include\cinder\CinderResources.h" />
     <ClInclude Include="..\include\cinder\Color.h" />
     <ClInclude Include="..\include\cinder\DataSource.h" />
