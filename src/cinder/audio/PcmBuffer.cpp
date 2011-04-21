@@ -134,7 +134,12 @@ std::shared_ptr<BufferT<T> > PcmBufferT<T>::getChannelData( ChannelIdentifier ch
 		return buffer;
 	}
 	
-	return mBuffers[channelId];
+    // MW checking for empty buffer
+    if(channelId < mBuffers.size()) { 
+        return mBuffers[channelId];
+    } else {
+        return std::shared_ptr<BufferT<T> >();
+    }
 }
 
 template<typename T>

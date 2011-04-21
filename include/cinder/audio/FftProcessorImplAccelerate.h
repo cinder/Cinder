@@ -39,6 +39,7 @@ class FftProcessorImplAccelerate : public FftProcessorImpl {
 	uint32_t			mLog2Size;
 	FFTSetup			mFftSetup;
 	DSPSplitComplex		mFftComplexBuffer;
+//    float*              mWindow;
 };
 
 }} //namespace

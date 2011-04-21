@@ -41,13 +41,17 @@ FftProcessorImplAccelerate::FftProcessorImplAccelerate( uint16_t aBandCount )
 	
 	mFftComplexBuffer.realp = (float *)malloc( mBandCount * sizeof( float ) );
 	mFftComplexBuffer.imagp = (float *)malloc( mBandCount * sizeof( float ) );
+    
+//    mWindow = (float *)malloc( mBandCount * sizeof( float ) );
+//    vDSP_hann_window( mWindow, mBandCount, vDSP_HANN_NORM );
 }
 
 FftProcessorImplAccelerate::~FftProcessorImplAccelerate()
 {
 	free( mFftComplexBuffer.realp );
 	free( mFftComplexBuffer.imagp );
-	
+//	free( mWindow );
+    
 	vDSP_destroy_fftsetup( mFftSetup );
 }
 
@@ -58,13 +62,31 @@ std::shared_ptr<float> FftProcessorImplAccelerate::process( const float * inData
 	
 	vDSP_ctoz( (DSPComplex *)inData, 2 * sStride, &mFftComplexBuffer, 1, mBandCount );
 	vDSP_fft_zrip( mFftSetup, &mFftComplexBuffer, 1, mLog2Size, FFT_FORWARD );
-	
+    
 	float * outData = new float[mBandCount];
 	for( int i = 0; i < mBandCount; i++ ) {
 		outData[i] = sqrt( ( mFftComplexBuffer.realp[i] * mFftComplexBuffer.realp[i] ) + ( mFftComplexBuffer.imagp[i] * mFftComplexBuffer.imagp[i] ) );
 	}
-	
-	return std::shared_ptr<float>( outData, deleteFftBuffer );;
+  
+ 	return std::shared_ptr<float>( outData, deleteFftBuffer );
+    
+    /*
+    // apply window to fft data
+//   vDSP_vmul( outData, 1, mWindow, 1, outData, 1, mBandCount );
+    
+    float* windowedOutData = new float[mBandCount];
+
+//    for( int i = 0; i < mBandCount; i++ ) {
+//        windowedOutData[i] = 0.0f;
+//    }
+    
+    float val = 0.0f;
+    vDSP_vsmul( outData, 1, &val, windowedOutData, 1, mBandCount );
+    
+    delete outData;
+    
+	return std::shared_ptr<float>( windowedOutData, deleteFftBuffer );
+     */
 }
 
 }} //namespace

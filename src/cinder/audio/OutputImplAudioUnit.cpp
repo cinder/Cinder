@@ -192,7 +192,11 @@ OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUni
 	if( theTrack->mIsPcmBuffering ) {
 		if( ! theTrack->mLoadingPcmBuffer || ( theTrack->mLoadingPcmBuffer->getSampleCount() + ( ioData->mBuffers[0].mDataByteSize / sizeof(float) ) > theTrack->mLoadingPcmBuffer->getMaxSampleCount() ) ) {
 			boost::mutex::scoped_lock lock( theTrack->mPcmBufferMutex );
-			uint32_t bufferSampleCount = 1470; //TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second)
+			
+            // uint32_t bufferSampleCount = 1470; //TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second)
+            
+            uint32_t bufferSampleCount = 1470 * 2; // MW
+            
 			theTrack->mLoadedPcmBuffer = theTrack->mLoadingPcmBuffer;
 			theTrack->mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, theTrack->mTarget->getChannelCount(), theTrack->mTarget->isInterleaved() ) );
 		}
