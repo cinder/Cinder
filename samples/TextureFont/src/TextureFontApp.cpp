@@ -10,16 +10,6 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-Vec2f ul, lr;
-
-float toTex( int pos, int size )
-{
- //return 0.5f/size + pos / ( (size) + 0./(size) ); 
- return pos / (float)size;
-}
-
-
-
 class TextureFontApp : public AppNative {
   public:
 	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
@@ -39,7 +29,7 @@ class TextureFontApp : public AppNative {
 
 void TextureFontApp::setup()
 {
-	mFont = Font( "ACaslonPro-Italic", 72 );
+	mFont = Font( "ACaslonPro-Italic", 24 );
 	//mFont = Font( "Arial", 24 );
 	mSize = Vec2f( 100, 100 );
 	render();
@@ -101,10 +91,10 @@ void TextureFontApp::draw()
 	gl::color( Color( 1,1,1) );
 	gl::color( ColorA( 1, 0.5f, 0.25f, 1.0f ) );
 //	mTextureFont->drawString( str, Vec2f( 0, 100 ) );
-	mTextureFont->drawString( str, boundsRect );
+	mTextureFont->drawStringWrapped( str, boundsRect );
 	
 	gl::color( Color( 1,1,1) );
-	mTextureFont->drawString( toString( floor(getAverageFps()) ) + " FPS", Vec2f( 10, getWindowHeight() + mTextureFont->getDescent() ) );
+	mTextureFont->drawString( toString( floor(getAverageFps()) ) + " FPS", Vec2f( 10, getWindowHeight() - mTextureFont->getDescent() ) );
 }
 
 
