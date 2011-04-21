@@ -372,7 +372,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 		// these are negated from Cinder's normal pixel coordinate system
 		currentY -= (*lineIt)->mAscent + (*lineIt)->mLeadingOffset;
 		(*lineIt)->render( cgContext, currentY, (float)mHorizontalBorder, pixelWidth );
-		currentY -= (*lineIt)->mDescent + (*lineIt)->mLeading;
+		currentY += -(*lineIt)->mDescent - (*lineIt)->mLeading;
 	}
 
 	// force all the rendering to finish and release the context
