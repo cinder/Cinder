@@ -214,7 +214,7 @@ float Font::getAscent() const
 
 float Font::getDescent() const
 {
-	return ::CGFontGetDescent( mObj->mCGFont ) / (float)::CGFontGetUnitsPerEm( mObj->mCGFont ) * mObj->mSize;
+	return - ::CGFontGetDescent( mObj->mCGFont ) / (float)::CGFontGetUnitsPerEm( mObj->mCGFont ) * mObj->mSize;
 }
 
 size_t Font::getNumGlyphs() const
