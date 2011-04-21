@@ -60,24 +60,30 @@ class TextureFont {
 	};
 
 	struct DrawOptions {
-		DrawOptions() : mClipHorizontal( true ), mClipVertical( true ), mPixelSnap( true ) {}
-		
+		DrawOptions() : mClipHorizontal( true ), mClipVertical( true ), mPixelSnap( true ), mLigate( false ) {}
+
+		//! Returns whether the output clips horizontally
+		bool			getClipHorizontal() const { return mClipHorizontal; }		
 		//! Sets whether the output clips horizontally
 		DrawOptions&	clipHorizontal( bool clipH = true ) { mClipHorizontal = clipH; return *this; }
+
+		//! Returns whether the output clips vertically
+		bool			getClipVertical() const { return mClipVertical; }		
 		//! Sets whether the output clips vertically
 		DrawOptions&	clipVertical( bool clipV = true ) { mClipVertical = clipV; return *this; }
+
+		//! Returns whether the output glyphs are snapped to pixel boundaries. This sharpens static text but prevents subpixel animation
+		bool			getPixelSnap() const { return mPixelSnap; }		
 		//! Sets whether the output glyphs are snapped to pixel boundaries. This sharpens static text but prevents subpixel animation
 		DrawOptions&	pixelSnap( bool pixelSnap = true ) { mPixelSnap = pixelSnap; return *this; }
 
-		//! Returns whether the output clips horizontally
-		bool			getClipHorizontal() const { return mClipHorizontal; }
-		//! Returns whether the output clips vertically
-		bool			getClipVertical() const { return mClipVertical; }
-		//! Returns whether the output glyphs are snapped to pixel boundaries. This sharpens static text but prevents subpixel animation
-		bool			getPixelSnap() const { return mPixelSnap; }
+		//! Returns whether advanced ligatures are used, which must have been instantiated by the \a supportedChars parameter of the TextureFont::create() call. Default to \c false.
+		bool			getLigate() const { return mLigate; }
+		//! Sets whether advanced ligatures are used, which must have been instantiated by the \a supportedChars parameter of the TextureFont::create() call. Default to \c false.
+		DrawOptions&	ligate( bool useLigatures = true ) { mLigate = useLigatures; return *this; }
 						
 	  protected:
-		bool		mClipHorizontal, mClipVertical, mPixelSnap;
+		bool		mClipHorizontal, mClipVertical, mPixelSnap, mLigate;
 	};
 
 	//! Creates a new TextureFontRef with font \a font, ensuring that glyphs necessary to render \a supportedChars are renderable, and format \a format
