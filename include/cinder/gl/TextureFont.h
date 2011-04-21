@@ -40,12 +40,18 @@ class TextureFont {
 		Format() : mTextureWidth( 1024 ), mTextureHeight( 1024 ), mPremultiply( false )
 		{}
 		
+		//! Sets the width of the textures created internally for glyphs. Default \c 1024
 		Format&		textureWidth( int32_t textureWidth ) { mTextureWidth = textureWidth; return *this; }
+		//! Returns the width of the textures created internally for glyphs. Default \c 1024
 		int32_t		getTextureWidth() const { return mTextureWidth; }
+		//! Sets the height of the textures created internally for glyphs. Default \c 1024
 		Format&		textureHeight( int32_t textureHeight ) { mTextureHeight = textureHeight; return *this; }
+		//! Sets the height of the textures created internally for glyphs. Default \c 1024
 		int32_t		getTextureHeight() const { return mTextureHeight; }
 		
+		//! Sets whether the TextureFont render premultiplied output. Default \c false
 		Format&		premultiply( bool premult = true ) { mPremultiply = premult; return *this; }
+		//! Returns whether the TextureFont render premultiplied output. Default \c false
 		bool		getPremultiply() const { return mPremultiply; }
 		
 	  protected:
@@ -56,41 +62,56 @@ class TextureFont {
 	struct DrawOptions {
 		DrawOptions() : mClipHorizontal( true ), mClipVertical( true ), mPixelSnap( true ) {}
 		
+		//! Sets whether the output clips horizontally
 		DrawOptions&	clipHorizontal( bool clipH = true ) { mClipHorizontal = clipH; return *this; }
+		//! Sets whether the output clips vertically
 		DrawOptions&	clipVertical( bool clipV = true ) { mClipVertical = clipV; return *this; }
+		//! Sets whether the output glyphs are snapped to pixel boundaries. This sharpens static text but prevents subpixel animation
 		DrawOptions&	pixelSnap( bool pixelSnap = true ) { mPixelSnap = pixelSnap; return *this; }
 
+		//! Returns whether the output clips horizontally
 		bool			getClipHorizontal() const { return mClipHorizontal; }
+		//! Returns whether the output clips vertically
 		bool			getClipVertical() const { return mClipVertical; }
+		//! Returns whether the output glyphs are snapped to pixel boundaries. This sharpens static text but prevents subpixel animation
 		bool			getPixelSnap() const { return mPixelSnap; }
 						
 	  protected:
 		bool		mClipHorizontal, mClipVertical, mPixelSnap;
 	};
 
+	//! Creates a new TextureFontRef with font \a font, ensuring that glyphs necessary to render \a supportedChars are renderable, and format \a format
 	static TextureFontRef		create( const Font &font, const std::string &supportedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456890().?!,:;'\"&*=+-/\\@#_[]<>%^llflphridséèáà", const Format &format = Format() )
 	{ return TextureFontRef( new TextureFont( font, supportedChars, format ) ); }
 	
+	//! Draws string \a str at baseline \a baseline with DrawOptions \a options
 	void	drawString( const std::string &str, const Vec2f &baseline, const DrawOptions &options = DrawOptions() );
+	//! Draws string \a str fit inside \a fitRect, with internal offset \a offset and DrawOptions \a options
 	void	drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
 #if defined( CINDER_COCOA )
+	//! Draws word-wrapped string \a str fit inside \a fitRect, with internal offset \a offset and DrawOptions \a options. Mac & iOS only.
 	void	drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
 #endif
-	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, Vec2f baseline, const DrawOptions &options = DrawOptions() );
+	//! Draws the glyphs in \a glyphMeasures at baseline \a baseline with DrawOptions \a options. \a glyphMeasures is a vector of pairs of glyph indices and offsets for the glyph baselines
+	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline, const DrawOptions &options = DrawOptions() );
+	//! Draws the glyphs in \a glyphMeasures clipped by \a clip, with \a offset added to each of the glyph offsets with DrawOptions \a options. \a glyphMeasures is a vector of pairs of glyph indices and offsets for the glyph baselines.
 	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, Vec2f offset, const DrawOptions &options = DrawOptions() );
+
+	//! Returns the ascent of the font
+	float	getAscent() const { return mFont.getAscent(); }
+	//! Returns the descent of the font
+	float	getDescent() const { return mFont.getDescent(); }
+	//! Returns whether the TextureFont output premultipled output. Default is \c false.
+	bool	isPremultiplied() const { return mFormat.getPremultiply(); }
+
+  protected:
+	TextureFont( const Font &font, const std::string &supportedChars, const Format &format );
 
 	struct GlyphInfo {
 		uint8_t		mTextureIndex;
 		Area		mTexCoords;
 		Vec2f		mOriginOffset;
 	};
-  
-	float	getAscent() const { return mFont.getAscent(); }
-	float	getDescent() const { return mFont.getDescent(); }	
-	bool	isPremultiplied() const { return mFormat.getPremultiply(); }
-
-  protected:
-	TextureFont( const Font &font, const std::string &supportedChars, const Format &format );
 	
 	std::map<Font::Glyph, GlyphInfo>		mGlyphMap;
 	std::vector<gl::Texture>				mTextures;

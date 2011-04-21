@@ -243,13 +243,15 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 }
 #endif
 
-void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, Vec2f baseline, const DrawOptions &options )
+void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baselineIn, const DrawOptions &options )
 {
 	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
 	BoolState saveEnabledState( mTextures[0].getTarget() );
 	ClientBoolState vertexArrayState( GL_VERTEX_ARRAY );
 	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
 	gl::enable( mTextures[0].getTarget() );
+
+	Vec2f baseline = baselineIn;
 
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
