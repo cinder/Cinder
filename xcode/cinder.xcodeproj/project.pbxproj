@@ -363,6 +363,9 @@
 		00A1142F1355369A00081873 /* tess.c in Sources */ = {isa = PBXBuildFile; fileRef = 00A114021355369A00081873 /* tess.c */; };
 		00A114301355369A00081873 /* tess.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A114031355369A00081873 /* tess.h */; };
 		00A114311355369A00081873 /* tesselator.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A114041355369A00081873 /* tesselator.h */; };
+		00A115391357F42400081873 /* Easing.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A115381357F42400081873 /* Easing.h */; };
+		00A1153A1357F42400081873 /* Easing.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A115381357F42400081873 /* Easing.h */; };
+		00A1153B1357F42400081873 /* Easing.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A115381357F42400081873 /* Easing.h */; };
 		00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
 		00A9CF010F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */; };
 		00AA5C870F64851C009CD67F /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
@@ -811,6 +814,7 @@
 		00A114021355369A00081873 /* tess.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tess.c; sourceTree = "<group>"; };
 		00A114031355369A00081873 /* tess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tess.h; sourceTree = "<group>"; };
 		00A114041355369A00081873 /* tesselator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tesselator.h; sourceTree = "<group>"; };
+		00A115381357F42400081873 /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
 		00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */ = {isa = PBXFileReference; comments = "This is unused in Cinder since it has to be linked directly into the apps, but it's present for reference."; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppScreenSaver.cpp; path = app/AppScreenSaver.cpp; sourceTree = "<group>"; };
 		00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = app/AppImplCocoaScreenSaver.h; sourceTree = "<group>"; };
 		00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = app/AppImplCocoaRendererQuartz.mm; sourceTree = "<group>"; };
@@ -1190,6 +1194,7 @@
 				00D23A550EAEB4DE0002BF91 /* Color.h */,
 				00241AB30E830DBA004D34EB /* Vector.h */,
 				003832DE0E9C03CB00ACB120 /* Stream.h */,
+				00A115381357F42400081873 /* Easing.h */,
 				00B729E7115DAC2B00CD71B9 /* Timer.h */,
 				00D92FE00EB8CC7200EE9D75 /* Url.h */,
 				43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */,
@@ -1620,6 +1625,7 @@
 				00A114211355369A00081873 /* tess.h in Headers */,
 				00A114221355369A00081873 /* tesselator.h in Headers */,
 				4354C47D1357BBF200120EE3 /* TextureFont.h in Headers */,
+				00A1153A1357F42400081873 /* Easing.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1738,6 +1744,7 @@
 				00A114301355369A00081873 /* tess.h in Headers */,
 				00A114311355369A00081873 /* tesselator.h in Headers */,
 				4354C47E1357BBF300120EE3 /* TextureFont.h in Headers */,
+				00A1153B1357F42400081873 /* Easing.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1874,6 +1881,7 @@
 				00A114121355369A00081873 /* tess.h in Headers */,
 				00A114131355369A00081873 /* tesselator.h in Headers */,
 				4354C47C1357BBED00120EE3 /* TextureFont.h in Headers */,
+				00A115391357F42400081873 /* Easing.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
