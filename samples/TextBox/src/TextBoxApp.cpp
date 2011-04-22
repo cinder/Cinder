@@ -24,7 +24,11 @@ class TextBoxApp : public AppNative {
 
 void TextBoxApp::setup()
 {
-	mFont = Font( "Zapfino", 34 );
+#if defined( CINDER_COCOA )
+	mFont = Font( "Cochin-Italic", 32 );
+#else
+	mFont = Font( "Times New Roman", 32 );
+#endif
 	mSize = Vec2f( 100, 100 );
 	render();
 }

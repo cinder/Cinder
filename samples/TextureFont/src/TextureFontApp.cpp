@@ -24,7 +24,11 @@ class TextureFontApp : public AppNative {
 
 void TextureFontApp::setup()
 {
+#if defined( CINDER_COCOA )
 	mFont = Font( "Cochin-Italic", 24 );
+#else
+	mFont = Font( "Times New Roman", 24 );
+#endif
 	mTextureFont = gl::TextureFont::create( mFont );
 }
 
