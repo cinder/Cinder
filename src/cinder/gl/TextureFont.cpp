@@ -258,6 +258,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
 		vector<float> verts, texCoords;
+		const gl::Texture &curTex = mTextures[texIdx];
 #if defined( CINDER_GLES )
 		vector<uint16_t> indices;
 		uint16_t curIdx = 0;
@@ -271,14 +272,14 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 			baseline = Vec2f( floor( baseline.x ), floor( baseline.y ) );
 			
 		for( vector<pair<uint16_t,Vec2f> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
-			std::map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
+			boost::unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
 			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
 				continue;
 				
 			const GlyphInfo &glyphInfo = glyphInfoIt->second;
 			
 			Rectf destRect( glyphInfo.mTexCoords );
-			Rectf srcCoords = mTextures[texIdx].getAreaTexCoords( glyphInfo.mTexCoords );
+			Rectf srcCoords = curTex.getAreaTexCoords( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect += glyphIt->second;
 			destRect += Vec2f( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) );
@@ -304,7 +305,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 		if( curIdx == 0 )
 			continue;
 		
-		mTextures[texIdx].bind();
+		curTex.bind();
 		glVertexPointer( 2, GL_FLOAT, 0, &verts[0] );
 		glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
 		glDrawElements( GL_TRIANGLES, indices.size(), indexType, &indices[0] );
@@ -323,6 +324,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
 		vector<float> verts, texCoords;
+		const gl::Texture &curTex = mTextures[texIdx];
 #if defined( CINDER_GLES )
 		vector<uint16_t> indices;
 		uint16_t curIdx = 0;
@@ -336,12 +338,12 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 			offset = Vec2f( floor( offset.x ), floor( offset.y ) );
 
 		for( vector<pair<uint16_t,Vec2f> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
-			std::map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
+			boost::unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
 			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
 				continue;
 				
 			const GlyphInfo &glyphInfo = glyphInfoIt->second;
-			Rectf srcTexCoords = mTextures[texIdx].getAreaTexCoords( glyphInfo.mTexCoords );
+			Rectf srcTexCoords = curTex.getAreaTexCoords( glyphInfo.mTexCoords );
 			Rectf destRect( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect += glyphIt->second;
@@ -364,8 +366,8 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 			if( clipped.x1 >= clipped.x2 || clipped.y1 >= clipped.y2 )
 				continue;
 			
-			Vec2f coordScale( 1 / (float)destRect.getWidth() / mTextures[texIdx].getWidth() * glyphInfo.mTexCoords.getWidth(),
-				1 / (float)destRect.getHeight() / mTextures[texIdx].getHeight() * glyphInfo.mTexCoords.getHeight() );
+			Vec2f coordScale( 1 / (float)destRect.getWidth() / curTex.getWidth() * glyphInfo.mTexCoords.getWidth(),
+				1 / (float)destRect.getHeight() / curTex.getHeight() * glyphInfo.mTexCoords.getHeight() );
 			srcTexCoords.x1 = srcTexCoords.x1 + ( clipped.x1 - destRect.x1 ) * coordScale.x;
 			srcTexCoords.x2 = srcTexCoords.x1 + ( clipped.x2 - clipped.x1 ) * coordScale.x;
 			srcTexCoords.y1 = srcTexCoords.y1 + ( clipped.y1 - destRect.y1 ) * coordScale.y;
@@ -389,7 +391,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 		if( curIdx == 0 )
 			continue;
 		
-		mTextures[texIdx].bind();
+		curTex.bind();
 		glVertexPointer( 2, GL_FLOAT, 0, &verts[0] );
 		glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
 		glDrawElements( GL_TRIANGLES, indices.size(), indexType, &indices[0] );
