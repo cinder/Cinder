@@ -57,7 +57,7 @@ void TextureFontApp::draw()
 	gl::clear( Color( 0,0, 0 ) );
 	
 	std::string str( "Granted, then, that certain transformations do happen, it is essential that we should regard them in the philosophic manner of fairy tales, not in the unphilosophic manner of science and the \"Laws of Nature.\" When we are asked why eggs turn into birds or fruits fall in autumn, we must answer exactly as the fairy godmother would answer if Cinderella asked her why mice turned into horses or her clothes fell from her at twelve o'clock. We must answer that it is MAGIC. It is not a \"law,\" for we do not understand its general formula." );
-	Rectf boundsRect( 100, mTextureFont->getAscent(), getWindowWidth() - 100, getWindowHeight() - 100 );
+	Rectf boundsRect( 40, mTextureFont->getAscent() + 40, getWindowWidth() - 40, getWindowHeight() - 40 );
 
 	gl::color( ColorA( 1, 0.5f, 0.25f, 1.0f ) );
 
