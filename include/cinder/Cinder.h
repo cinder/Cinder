@@ -72,6 +72,7 @@ using boost::uint64_t;
 	}
 #else
 	#include <boost/shared_ptr.hpp>
+	#include <boost/enable_shared_from_this.hpp>
 	namespace std {
 		using boost::shared_ptr; // future-proof shared_ptr by putting it into std::
 		using boost::static_pointer_cast;

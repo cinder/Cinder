@@ -52,77 +52,77 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* captureTest.app */;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
 			remoteInfo = captureTest;
 		};
 		0087D25A12CD80A7002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* ClipboardBasic_iOS.app */;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
 			remoteInfo = ClipboardBasic_iOS;
 		};
 		0087D2D712CD81D3002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* FBOBasic_iOS.app */;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
 			remoteInfo = FBOBasic_iOS;
 		};
 		0087D2E512CD81EB002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* iPhoneAccelerometer.app */;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
 			remoteInfo = iPhoneAccelerometer;
 		};
 		0087D32912CD828A002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 1D6058910D05DD3D006BFB54 /* TextTest_iOS.app */;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
 			remoteInfo = TextTest_iOS;
 		};
 		0087D32E12CD82C2002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* MultiTouch_iOS */;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = MultiTouch_iOS;
 		};
 		0087D33012CD82C2002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* TextTest_iOS */;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = TextTest_iOS;
 		};
 		0087D33212CD82C2002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* iPhoneAccelerometer */;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = iPhoneAccelerometer;
 		};
 		0087D33412CD82C2002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* ClipboardBasic_iOS */;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = ClipboardBasic_iOS;
 		};
 		0087D33612CD82C2002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* captureTest */;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = captureTest;
 		};
 		0087D33812CD82C2002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54 /* FBOBasic_iOS */;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = FBOBasic_iOS;
 		};
 /* End PBXContainerItemProxy section */
