@@ -69,12 +69,12 @@ void ImageSourcePng::registerSelf()
 
 ///////////////////////////////////////////////////////////////////////////////
 // ImageSourcePng
-ImageSourcePngRef ImageSourcePng::createRef( DataSourceRef dataSourceRef )
+ImageSourcePngRef ImageSourcePng::createRef( DataSourceRef dataSourceRef, ImageSource::Options options )
 {
-	return ImageSourcePngRef( new ImageSourcePng( dataSourceRef ) );
+	return ImageSourcePngRef( new ImageSourcePng( dataSourceRef, options ) );
 }
 
-ImageSourcePng::ImageSourcePng( DataSourceRef dataSourceRef )
+ImageSourcePng::ImageSourcePng( DataSourceRef dataSourceRef, ImageSource::Options /*options*/ )
 	: ImageSource(), mInfoPtr( 0 ), mPngPtr( 0 )
 {
 	mPngPtr = png_create_read_struct( PNG_LIBPNG_VER_STRING, (png_voidp)NULL, NULL, NULL );

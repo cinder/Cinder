@@ -59,6 +59,7 @@ class PolyLine {
 	bool					mClosed;
 };
 
-//typedef PolyLine<Vec2f> PolyLine2f;
+typedef PolyLine<Vec2f> PolyLine2f;
+typedef PolyLine<Vec2d> PolyLine2d;
 
 } // namespace cinder

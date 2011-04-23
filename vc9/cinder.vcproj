@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/MP"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
+				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar;..\src\libtess2"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="3"
@@ -115,7 +115,7 @@
 				InlineFunctionExpansion="0"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar"
+				AdditionalIncludeDirectories="..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\msw\cairo;&quot;..\..\QuickTimeSDK-7.3\CIncludes&quot;;..\src\AntTweakBar;..\src\libtess2"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
@@ -314,6 +314,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\cinder\Triangulate.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\src\cinder\TriMesh.cpp"
 				>
 			</File>
@@ -446,6 +450,10 @@
 				</File>
 				<File
 					RelativePath="..\src\cinder\gl\Texture.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\src\cinder\gl\TextureFont.cpp"
 					>
 				</File>
 				<File
@@ -625,6 +633,70 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="libtess2"
+				>
+				<File
+					RelativePath="..\src\libtess2\bucketalloc.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\bucketalloc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\dict.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\dict.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\geom.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\geom.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\mesh.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\mesh.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\priorityq.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\priorityq.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\sweep.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\sweep.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\tess.c"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\tess.h"
+					>
+				</File>
+				<File
+					RelativePath="..\src\libtess2\tesselator.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -709,6 +781,10 @@
 			</File>
 			<File
 				RelativePath="..\include\cinder\Display.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Easing.h"
 				>
 			</File>
 			<File
@@ -821,6 +897,10 @@
 			</File>
 			<File
 				RelativePath="..\include\cinder\Timer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Triangulate.h"
 				>
 			</File>
 			<File
@@ -1004,6 +1084,10 @@
 				</File>
 				<File
 					RelativePath="..\include\cinder\gl\Texture.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\gl\TextureFont.h"
 					>
 				</File>
 				<File

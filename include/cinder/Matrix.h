@@ -242,6 +242,12 @@ template<typename T>
 class Matrix44 
 {
 public:
+	typedef T TYPE;
+	//
+	static const size_t DIM		= 4;
+	static const size_t DIM_SQ	= DIM*DIM;
+	static const size_t MEM_LEN	= sizeof(T)*DIM_SQ;
+
 	//
 	// This class is OpenGL friendly and stores the m as how OpenGL would expect it.
 	// m[i,j]:
@@ -256,8 +262,20 @@ public:
 	// | m[2] m[6] m[10] m[14] |
 	// | m[3] m[7] m[11] m[15] |
 	//
-
-	T m[16];
+	union {
+		T m[16];
+		struct {
+			// This looks like it's transposed from the above, but it's really not.
+			// It just has to be written this way so it follows the right ordering
+			// in the memory layout as well as being mathematically correct.
+			T m00, m10, m20, m30;
+			T m01, m11, m21, m31;
+			T m02, m12, m22, m32;
+			T m03, m13, m23, m33;
+		};
+		// [Cols][Rows]
+		T mcols[4][4];
+	};
 
 	Matrix44() { setToIdentity(); }
 	Matrix44( const T * dt ) 
@@ -304,18 +322,22 @@ public:
 
 	T determinant() const
 	{
-		return (m[ 0] * (	m[ 5] * (m[10] * m[15] - m[11] * m[14])  - 
-								m[ 9] * (m[ 6] * m[15] - m[ 7] * m[14])  + 
-								m[13] * (m[ 6] * m[11] - m[ 7] * m[10])) - 
-				m[ 4] * (	m[ 1] * (m[10] * m[15] - m[11] * m[14])  - 
-								m[ 9] * (m[ 2] * m[15] - m[ 3] * m[14])  + 
-								m[13] * (m[ 2] * m[11] - m[ 3] * m[10])) +
-				m[ 8] * (	m[ 1] * (m[ 6] * m[15] - m[ 7] * m[14])  -
-								m[ 5] * (m[ 2] * m[15] - m[ 3] * m[14])  +
-								m[13] * (m[ 2] * m[ 7] - m[ 3] * m[ 6])) -
-				m[12] * (	m[ 1] * (m[ 6] * m[11] - m[ 7] * m[10])  -
-								m[ 5] * (m[ 2] * m[11] - m[ 3] * m[10])  +
-								m[ 9] * (m[ 2] * m[ 7] - m[ 3] * m[ 6])) );
+		T a0 = m[ 0]*m[ 5] - m[ 1]*m[ 4];
+		T a1 = m[ 0]*m[ 6] - m[ 2]*m[ 4];
+		T a2 = m[ 0]*m[ 7] - m[ 3]*m[ 4];
+		T a3 = m[ 1]*m[ 6] - m[ 2]*m[ 5];
+		T a4 = m[ 1]*m[ 7] - m[ 3]*m[ 5];
+		T a5 = m[ 2]*m[ 7] - m[ 3]*m[ 6];
+		T b0 = m[ 8]*m[13] - m[ 9]*m[12];
+		T b1 = m[ 8]*m[14] - m[10]*m[12];
+		T b2 = m[ 8]*m[15] - m[11]*m[12];
+		T b3 = m[ 9]*m[14] - m[10]*m[13];
+		T b4 = m[ 9]*m[15] - m[11]*m[13];
+		T b5 = m[10]*m[15] - m[11]*m[14];
+
+		T det = a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
+
+		return det;
 	}
 	
 	// post-multiplies column vector [rhs.x rhs.y rhs.z 1] and divides by w
@@ -575,13 +597,13 @@ public:
 
 	void transpose()
 	{
-		T temp;
-		temp = m[1]; m[1] = m[4]; m[4] = temp;
-		temp = m[2]; m[2] = m[8]; m[8] = temp;
-		temp = m[3]; m[2] = m[12]; m[12] = temp;
-		temp = m[6]; m[6] = m[9]; m[9] = temp;
-		temp = m[7]; m[7] = m[13]; m[13] = temp;
-		temp = m[11]; m[11] = m[14]; m[14] = temp;
+		T t;
+		t = m01; m01 = m10; m10 = t;
+		t = m02; m02 = m20; m20 = t;
+		t = m03; m03 = m30; m30 = t;
+		t = m12; m12 = m21; m21 = t;
+		t = m13; m13 = m31; m31 = t;
+		t = m23; m23 = m32; m32 = t;
 	}
 
 	Matrix44<T> transposed() const
@@ -599,44 +621,61 @@ public:
 
 	Matrix44<T> inverted() const
 	{
-		Matrix44<T> inv;
-	
-		T d = determinant();
-		if( fabs( d ) < (T)EPSILON ) {
+		T a0 = m[ 0]*m[ 5] - m[ 1]*m[ 4];
+		T a1 = m[ 0]*m[ 6] - m[ 2]*m[ 4];
+		T a2 = m[ 0]*m[ 7] - m[ 3]*m[ 4];
+		T a3 = m[ 1]*m[ 6] - m[ 2]*m[ 5];
+		T a4 = m[ 1]*m[ 7] - m[ 3]*m[ 5];
+		T a5 = m[ 2]*m[ 7] - m[ 3]*m[ 6];
+		T b0 = m[ 8]*m[13] - m[ 9]*m[12];
+		T b1 = m[ 8]*m[14] - m[10]*m[12];
+		T b2 = m[ 8]*m[15] - m[11]*m[12];
+		T b3 = m[ 9]*m[14] - m[10]*m[13];
+		T b4 = m[ 9]*m[15] - m[11]*m[13];
+		T b5 = m[10]*m[15] - m[11]*m[14];
+
+		T det = a0*b5 - a1*b4 + a2*b3 + a3*b2 - a4*b1 + a5*b0;
+
+		if( fabs( det ) < (T)EPSILON ) {
 			return Matrix44<T>(); // returns identity on error
 		}
 
-		// build adjoint (transpose of matrix of cofactors of this matrix (tricky!)
-		T sub[3][3] ;
-		int a,b;
-		for( int i = 0; i < 4; i++ )  {
-			for( int j = 0; j < 4; j++ ) {
-				a = 0;
-				for( int r = 0; r < 3; r++, a++ )  {
-					if( r == i ) {
-						a++;
-					}
+		Matrix44<T> inv;
+		inv.m[ 0] = + m[ 5]*b5 - m[ 6]*b4 + m[ 7]*b3;
+		inv.m[ 4] = - m[ 4]*b5 + m[ 6]*b2 - m[ 7]*b1;
+		inv.m[ 8] = + m[ 4]*b4 - m[ 5]*b2 + m[ 7]*b0;
+		inv.m[12] = - m[ 4]*b3 + m[ 5]*b1 - m[ 6]*b0;
+		inv.m[ 1] = - m[ 1]*b5 + m[ 2]*b4 - m[ 3]*b3;
+		inv.m[ 5] = + m[ 0]*b5 - m[ 2]*b2 + m[ 3]*b1;
+		inv.m[ 9] = - m[ 0]*b4 + m[ 1]*b2 - m[ 3]*b0;
+		inv.m[13] = + m[ 0]*b3 - m[ 1]*b1 + m[ 2]*b0;
+		inv.m[ 2] = + m[13]*a5 - m[14]*a4 + m[15]*a3;
+		inv.m[ 6] = - m[12]*a5 + m[14]*a2 - m[15]*a1;
+		inv.m[10] = + m[12]*a4 - m[13]*a2 + m[15]*a0;
+		inv.m[14] = - m[12]*a3 + m[13]*a1 - m[14]*a0;
+		inv.m[ 3] = - m[ 9]*a5 + m[10]*a4 - m[11]*a3;
+		inv.m[ 7] = + m[ 8]*a5 - m[10]*a2 + m[11]*a1;
+		inv.m[11] = - m[ 8]*a4 + m[ 9]*a2 - m[11]*a0;
+		inv.m[15] = + m[ 8]*a3 - m[ 9]*a1 + m[10]*a0;
 
-					b = 0;
-					for( int s = 0 ; s < 3; s++, b++ ) {
-						if( s == j ) {
-							b++;
-						}
-						sub[r][s] = m[a + 4 * b];
-					}
-				}
+		T invDet = ((T)1)/det;
+		inv.m[ 0] *= invDet;
+		inv.m[ 1] *= invDet;
+		inv.m[ 2] *= invDet;
+		inv.m[ 3] *= invDet;
+		inv.m[ 4] *= invDet;
+		inv.m[ 5] *= invDet;
+		inv.m[ 6] *= invDet;
+		inv.m[ 7] *= invDet;
+		inv.m[ 8] *= invDet;
+		inv.m[ 9] *= invDet;
+		inv.m[10] *= invDet;
+		inv.m[11] *= invDet;
+		inv.m[12] *= invDet;
+		inv.m[13] *= invDet;
+		inv.m[14] *= invDet;
+		inv.m[15] *= invDet;
 
-				inv.m[j + 4 * i] =	sub[0][0] * ( sub[1][1] *sub[2][2] - sub[2][1] * sub[1][2] ) - 
-										sub[0][1] * ( sub[1][0] *sub[2][2] - sub[2][0] * sub[1][2] ) + 
-										sub[0][2] * ( sub[1][0] *sub[2][1] - sub[2][0] * sub[1][1] );
-
-				if( ( (i + j) % 2 != 0) && ( fabs(inv.m[j + 4 * i]) > (T)EPSILON ) ) {
-					inv.m[j + 4 * i] *= (T)-1.0;
-				}
-			}
-		}
-
-		inv *= (T)(1.0 / d);
 		return inv;
 	}
 

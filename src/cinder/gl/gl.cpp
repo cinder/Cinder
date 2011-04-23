@@ -644,17 +644,17 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	}
 	if( numSegments < 2 ) numSegments = 2;
 	
-	GLfloat *verts = new float[(numSegments+1)*2];
+	GLfloat *verts = new float[(numSegments+2)*2];
 	verts[0] = center.x;
 	verts[1] = center.y;
-	for( int s = 0; s < numSegments; s++ ) {
-		float t = s / (float)(numSegments-1) * 2.0f * 3.14159f;
+	for( int s = 0; s <= numSegments; s++ ) {
+		float t = s / (float)numSegments * 2.0f * 3.14159f;
 		verts[(s+1)*2+0] = center.x + math<float>::cos( t ) * radius;
 		verts[(s+1)*2+1] = center.y + math<float>::sin( t ) * radius;
 	}
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 1 );
+	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
 	glDisableClientState( GL_VERTEX_ARRAY );
 	delete [] verts;
 }
@@ -701,6 +701,19 @@ void drawSolidRect( const Rectf &rect, bool textureRectangle )
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
+}
+
+void drawStrokedRect( const Rectf &rect )
+{
+	GLfloat verts[8];
+	verts[0] = rect.getX1();	verts[1] = rect.getY1();
+	verts[2] = rect.getX2();	verts[3] = rect.getY1();
+	verts[4] = rect.getX2();	verts[5] = rect.getY2();
+	verts[6] = rect.getX1();	verts[7] = rect.getY2();
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_LINE_LOOP, 0, 4 );
+	glDisableClientState( GL_VERTEX_ARRAY );
 }
 
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
@@ -861,6 +874,66 @@ void drawTorus( float outterRadius, float innerRadius, int longitudeSegments, in
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
 	
+	delete [] normal;
+	delete [] tex;
+	delete [] vertex;
+	delete [] indices;
+}
+
+void drawCylinder( float base, float top, float height, int slices, int stacks )
+{
+	stacks = math<int>::max(2, stacks + 1);	// minimum of 1 stack
+	slices = math<int>::max(4, slices + 1);	// minimum of 3 slices
+
+	int i, j;
+	float *normal = new float[stacks * slices * 3];
+	float *vertex = new float[stacks * slices * 3];
+	float *tex = new float[stacks * slices * 2];
+	GLushort *indices = new GLushort[slices * 2];
+
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 3, GL_FLOAT, 0, vertex );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glTexCoordPointer( 2, GL_FLOAT, 0, tex );
+	glEnableClientState( GL_NORMAL_ARRAY );
+	glNormalPointer( GL_FLOAT, 0, normal );
+
+	for(i=0;i<slices;i++) {
+		float u = (float)i / (float)(slices - 1);
+		float ct = cos(2.0f * (float)M_PI * u);
+		float st = sin(2.0f * (float)M_PI * u);
+
+		for(j=0;j<stacks;j++) {
+			float v = (float)j / (float)(stacks-1);
+			float radius = lerp<float>(base, top, v); 
+
+			int index = 3 * (i * stacks + j);
+
+			normal[index    ] = ct;
+			normal[index + 1] = 0;
+			normal[index + 2] = st;
+
+			tex[2 * (i * stacks + j)    ] = u;
+			tex[2 * (i * stacks + j) + 1] = 1.0f - v; // top of texture is top of cylinder
+
+			vertex[index    ] = ct * radius;
+			vertex[index + 1] = v * height;
+			vertex[index + 2] = st * radius;
+		}
+	}
+
+	for(i=0;i<(stacks - 1);i++) {
+		for(j=0;j<slices;j++) {
+			indices[j*2+0] = i + 0 + j * stacks;
+			indices[j*2+1] = i + 1 + j * stacks;
+		}
+		glDrawElements( GL_TRIANGLE_STRIP, (slices)*2, GL_UNSIGNED_SHORT, indices );
+	}
+
+	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	glDisableClientState( GL_VERTEX_ARRAY );
+
 	delete [] normal;
 	delete [] tex;
 	delete [] vertex;
