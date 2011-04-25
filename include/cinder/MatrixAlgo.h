@@ -146,6 +146,12 @@ inline Matrix44f SseMultiply( const Matrix44f& mat0, const Matrix44f& mat1 )
 	return ret;
 }
 
+#if defined( CINDER_MSW )
+#   pragma runtime_checks( "", off )
+#   pragma warning( push )
+#   pragma warning( disable:4700 )
+#endif 
+
 inline Matrix44f SseInvert( const Matrix44f& mat )
 {
 	CINDER_ALIGN16_MATRIX44F( ret );
@@ -242,6 +248,11 @@ inline Matrix44f SseInvert( const Matrix44f& mat )
 
 	return ret;
 }
+
+#if defined( CINDER_MSW )
+#   pragma warning( pop )
+#   pragma runtime_checks( "", restore )
+#endif
 
 #endif // #if defined( CINDER_MSW ) || defined( CINDER_MAC )
 
