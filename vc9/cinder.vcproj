@@ -756,10 +756,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\cinder\Easing.h"
-				>
-			</File>
-			<File
 				RelativePath="..\include\cinder\CinderResources.h"
 				>
 			</File>
@@ -781,6 +777,10 @@
 			</File>
 			<File
 				RelativePath="..\include\cinder\Display.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Easing.h"
 				>
 			</File>
 			<File
@@ -821,6 +821,22 @@
 			</File>
 			<File
 				RelativePath="..\include\cinder\Matrix.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Matrix22.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Matrix33.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Matrix44.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\MatrixAlgo.h"
 				>
 			</File>
 			<File
