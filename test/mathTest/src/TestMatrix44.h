@@ -491,7 +491,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				b += SseMultiply( align_c0, align_m0*(float)i );
 			}
 			timer.stop();
-			os << "   " << "   " << iter << " SseMultiply() calls took " << timer.getSeconds() << " seconds" << "\n";
+			os << "   " << "   " << iter << " MatrixAlgo::SseMultiply() calls took " << timer.getSeconds() << " seconds" << "\n";
 		}
 	}
 
@@ -1445,7 +1445,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				++notWithinEpison;
 			}
 		}
-		os << "   " << "comparison of inverted and SseInvert test: " << notWithinEpison << " angles not within EPSILON";
+		os << "   " << "comparison of inverted and MatrixAlgo::SseInvert test: " << notWithinEpison << " angles not within EPSILON";
 		if( notWithinEpison > 0 )
 			os << " - check source";
 		os << "\n";
@@ -1472,7 +1472,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 				b += SseInvert( align_m0 );
 			}
 			timer.stop();
-			os << "   " << "   " << iter << " SseInvert() calls took " << timer.getSeconds() << " seconds" << "\n";
+			os << "   " << "   " << iter << " MatrixAlgo::SseInvert() calls took " << timer.getSeconds() << " seconds" << "\n";
 		}
 	}
 
