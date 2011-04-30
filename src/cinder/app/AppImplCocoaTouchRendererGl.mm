@@ -79,8 +79,7 @@
                              GL_DEPTH_COMPONENT16_OES, 
                              backingWidth, backingHeight);
 	
-    if (glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES)
-	{
+    if( glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES) != GL_FRAMEBUFFER_COMPLETE_OES ) {
 		NSLog(@"Failed to make complete framebuffer object %x", glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
     }
 }
@@ -108,6 +107,7 @@
 
 - (void)defaultResize
 {
+	cinder::gl::setMatricesWindow( backingWidth, backingHeight );
 }
 
 - (BOOL)needsDrawRect

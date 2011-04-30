@@ -303,7 +303,10 @@ void TextLayout::addRightLine( const string &line )
 
 void TextLayout::append( const string &str )
 {
-	mLines.back()->addRun( Run( str, mCurrentFont, mCurrentColor ) );
+	if( mLines.empty() )
+		addLine( str );
+	else
+		mLines.back()->addRun( Run( str, mCurrentFont, mCurrentColor ) );
 }
 
 void TextLayout::setFont( const Font &font )
