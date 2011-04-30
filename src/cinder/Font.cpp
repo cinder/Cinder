@@ -97,7 +97,7 @@ FontManager::FontManager()
 	mGraphics = new Gdiplus::Graphics( mFontDc );
 #endif
 
-	mDefault = Font( "Arial", 12 );
+//	mDefault = Font( "Arial", 12 );
 }
 
 FontManager::~FontManager()
