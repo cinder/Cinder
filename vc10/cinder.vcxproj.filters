@@ -239,9 +239,6 @@
     <ClCompile Include="..\src\cinder\gl\gl.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\GLee.c">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\GlslProg.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -379,6 +376,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\Triangulate.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\glew.c">
+      <Filter>Source Files\gl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -634,9 +634,6 @@
     <ClInclude Include="..\include\cinder\gl\gl.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\GLee.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\gl\GlslProg.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
@@ -779,6 +776,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\UniformBuffer.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\glxew.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\wglew.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>

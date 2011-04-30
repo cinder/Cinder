@@ -28,9 +28,9 @@
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
 #elif defined( CINDER_MSW )
-//	#include "cinder/gl/GLee.h"		//get rid of GLee
-	#include <GL/glew.h>			//replace with GLEW
-	#include <GL/wglew.h>			//need this one too
+//	#include "cinder/gl/GLee.h"			//get rid of GLee
+	#include "cinder/gl/glew.h"			//replace with GLEW
+	#include "cinder/gl/wglew.h"		//need this one too
 #else
 	#define CINDER_GLES
 	#define CINDER_GLES1
