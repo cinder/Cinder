@@ -453,6 +453,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\src\cinder\gl\TextureFont.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\src\cinder\gl\TileRender.cpp"
 					>
 				</File>
@@ -756,10 +760,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\cinder\Easing.h"
-				>
-			</File>
-			<File
 				RelativePath="..\include\cinder\CinderResources.h"
 				>
 			</File>
@@ -781,6 +781,10 @@
 			</File>
 			<File
 				RelativePath="..\include\cinder\Display.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Easing.h"
 				>
 			</File>
 			<File
@@ -1080,6 +1084,10 @@
 				</File>
 				<File
 					RelativePath="..\include\cinder\gl\Texture.h"
+					>
+				</File>
+				<File
+					RelativePath="..\include\cinder\gl\TextureFont.h"
 					>
 				</File>
 				<File
