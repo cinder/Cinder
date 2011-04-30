@@ -599,6 +599,25 @@ void VboMesh::bufferPositions( const Vec3f *positions, size_t count )
 		throw;
 }
 
+void VboMesh::bufferNormals( const Vec3f *normals, size_t count )
+{
+	if( mObj->mLayout.hasDynamicNormals() ) {
+		if( mObj->mDynamicStride == 0 )
+			getDynamicVbo().bufferSubData( mObj->mNormalOffset, sizeof(Vec3f) * count, normals );
+		else
+			throw;
+	}
+	else if( mObj->mLayout.hasStaticNormals() ) {
+		if( mObj->mStaticStride == 0 ) { // planar data
+			getStaticVbo().bufferSubData( mObj->mNormalOffset, sizeof(Vec3f) * count, normals );
+		}
+		else
+			throw;
+	}
+	else
+		throw;
+}
+
 void VboMesh::bufferNormals( const std::vector<Vec3f> &normals )
 {
 	if( mObj->mLayout.hasDynamicNormals() ) {

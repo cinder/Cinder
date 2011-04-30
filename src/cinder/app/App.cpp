@@ -144,6 +144,10 @@ void App::privateFileDrop__( const FileDropEvent &event )
 
 void App::privateSetup__()
 {
+	//Initialize GLEW
+	glewExperimental = GL_TRUE;
+	glewInit();
+
 	setup();
 }
 

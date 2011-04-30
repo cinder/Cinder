@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cinder_d.lib"
+				AdditionalDependencies="cinder_d.lib glew32.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\..\lib;..\..\..\lib\msw"
 				GenerateDebugInformation="true"

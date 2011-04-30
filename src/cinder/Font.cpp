@@ -438,7 +438,7 @@ Font::Obj::Obj( const string &aName, float aSize )
     wstring faceName = toUtf16( mName );
     
     mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
-	
+
 	finishSetup();
 #endif
 }

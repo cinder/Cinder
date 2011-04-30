@@ -103,8 +103,8 @@ void VboSampleApp::draw()
 	// this pair of lines is the standard way to clear the screen in OpenGL
 	gl::clear( Color( 0.15f, 0.15f, 0.15f ) );
 
-	gl::scale( Vec3f( 10, 10, 10 ) );
-	mTexture.enableAndBind();
+//	gl::scale( Vec3f( 10, 10, 10 ) );
+//	mTexture.enableAndBind();
 	gl::draw( mVboMesh );
 	gl::draw( mVboMesh2 );
 }
