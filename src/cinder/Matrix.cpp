@@ -24,176 +24,13 @@
 
 namespace cinder {
 
-template<typename T>
-Matrix44<T> Matrix44<T>::createTranslation( const Vec3<T> &v, T w )
-{
-	Matrix44 ret;
-	ret.m[12] = v.x;
-	ret.m[13] = v.y;
-	ret.m[14] = v.z;
-	ret.m[15] = w;
-
-	return ret;
-}
-
-template<typename T>
-Matrix44<T> Matrix44<T>::createScale( const Vec3<T> &v )
-{
-	Matrix44<T> ret;
-	
-	ret.at(0,0) = v.x;
-	ret.at(0,1) = 0;
-	ret.at(0,2) = 0;
-
-	ret.at(1,0) = 0;
-	ret.at(1,1) = v.y;
-	ret.at(1,2) = 0;
-
-	ret.at(2,0) = 0;
-	ret.at(2,1) = 0;
-	ret.at(2,2) = v.z;
-
-	return ret;
-}
-
-template<typename T>
-Matrix44<T> Matrix44<T>::createRotation( const Vec3<T> &from, const Vec3<T> &to, const Vec3<T> &worldUp )
-{
-    // The goal is to obtain a rotation matrix that takes 
-    // "fromDir" to "toDir".  We do this in two steps and 
-    // compose the resulting rotation matrices; 
-    //    (a) rotate "fromDir" into the z-axis
-    //    (b) rotate the z-axis into "toDir"
- 
-    // The from direction must be non-zero; but we allow zero to and up dirs.
-    if( from.lengthSquared() == 0 ) {
-		return Matrix44<T>();
-	}
-    else {
-		Matrix44<T> zAxis2FromDir = alignZAxisWithTarget( from, Vec3<T>::yAxis() );
-		Matrix44<T> fromDir2zAxis = zAxis2FromDir.transposed();
-		Matrix44<T> zAxis2ToDir = alignZAxisWithTarget( to, worldUp );
-		return fromDir2zAxis * zAxis2ToDir;
-    }
-}
-
-template<typename T>
-Matrix44<T> Matrix44<T>::createRotation( const Vec3<T> &axis, T angle )
-{
-	Vec3<T> unit( axis.normalized() );
-	T sine = math<T>::sin( angle );
-	T cosine = math<T>::cos( angle );
-
-	Matrix44<T> ret;
-
-	ret.m[0] = unit.x * unit.x * (1 - cosine) + cosine;
-	ret.m[1] = unit.x * unit.y * (1 - cosine) + unit.z * sine;
-	ret.m[2] = unit.x * unit.z * (1 - cosine) - unit.y * sine;
-	ret.m[3] = 0;
-
-	ret.m[4] = unit.x * unit.y * (1 - cosine) - unit.z * sine;
-	ret.m[5] = unit.y * unit.y * (1 - cosine) + cosine;
-	ret.m[6] = unit.y * unit.z * (1 - cosine) + unit.x * sine;
-	ret.m[7] = 0;
-
-	ret.m[8] = unit.x * unit.z * (1 - cosine) + unit.y * sine;
-	ret.m[9] = unit.y * unit.z * (1 - cosine) - unit.x * sine;
-	ret.m[10] = unit.z * unit.z * (1 - cosine) + cosine;
-	ret.m[11] = 0;
-
-	ret.m[12] = 0;
-	ret.m[13] = 0;
-	ret.m[14] = 0;
-	ret.m[15] = 1;
-
-    return ret;
-}
-
-template<typename T>
-Matrix44<T> Matrix44<T>::createRotation( const Vec3<T> &eulerRadians )
-{
-	Matrix44<T> ret;
-	T cos_rz, sin_rz, cos_ry, sin_ry, cos_rx, sin_rx;
-
-	cos_rx = math<T>::cos( eulerRadians.x );
-	cos_ry = math<T>::cos( eulerRadians.y );
-	cos_rz = math<T>::cos( eulerRadians.z );
-
-	sin_rx = math<T>::sin( eulerRadians.x );
-	sin_ry = math<T>::sin( eulerRadians.y );
-	sin_rz = math<T>::sin( eulerRadians.z );
-
-	ret.m[0] =  cos_rz * cos_ry;
-	ret.m[1] =  sin_rz * cos_ry;
-	ret.m[2] = -sin_ry;
-	ret.m[3] =  0;
-
-	ret.m[4] = -sin_rz * cos_rx + cos_rz * sin_ry * sin_rx;
-	ret.m[5] =  cos_rz * cos_rx + sin_rz * sin_ry * sin_rx;
-	ret.m[6] =  cos_ry * sin_rx;
-	ret.m[7] =  0;
-
-	ret.m[8] =  sin_rz * sin_rx + cos_rz * sin_ry * cos_rx;
-	ret.m[9] = -cos_rz * sin_rx + sin_rz * sin_ry * cos_rx;
-	ret.m[10] =  cos_ry * cos_rx;
-	ret.m[11] =  0;
-
-	ret.m[12] =  0;
-	ret.m[13] =  0;
-	ret.m[14] =  0;
-	ret.m[15] =  1;
-
-	return ret;
-}
-
-template<typename T>
-Matrix44<T> Matrix44<T>::alignZAxisWithTarget( Vec3<T> targetDir, Vec3<T> upDir )
-{
-    // Ensure that the target direction is non-zero.
-    if( targetDir.lengthSquared() == 0 )
-		targetDir = Vec3<T>::zAxis();
-
-    // Ensure that the up direction is non-zero.
-    if( upDir.lengthSquared() == 0 )
-		upDir = Vec3<T>::yAxis();
-
-    // Check for degeneracies.  If the upDir and targetDir are parallel 
-    // or opposite, then compute a new, arbitrary up direction that is
-    // not parallel or opposite to the targetDir.
-    if( upDir.cross( targetDir ).lengthSquared() == 0 ) {
-		upDir = targetDir.cross( Vec3<T>::xAxis() );
-	if( upDir.lengthSquared() == 0 )
-	    upDir = targetDir.cross( Vec3<T>::zAxis() );
-    }
-
-    // Compute the x-, y-, and z-axis vectors of the new coordinate system.
-    Vec3<T> targetPerpDir = upDir.cross( targetDir );    
-    Vec3<T> targetUpDir = targetDir.cross( targetPerpDir );
-    
-
-    // Rotate the x-axis into targetPerpDir (row 0),
-    // rotate the y-axis into targetUpDir   (row 1),
-    // rotate the z-axis into targetDir     (row 2).
-    Vec3<T> row[3];
-    row[0] = targetPerpDir.normalized();
-    row[1] = targetUpDir.normalized();
-    row[2] = targetDir.normalized();
-    
-    Matrix44<T> mat( row[0].x,	row[0].y,	row[0].z,  0,
-					row[1].x,  row[1].y,  row[1].z,  0,
-					row[2].x,  row[2].y,  row[2].z,  0,
-					0,          0,          0,          1 );
-    
-    return mat;
-}
-
 //
 //  firstFrame - Compute the first reference frame along a curve.
 //
 //  This function returns the transformation matrix to the reference frame
 //  defined by the three points 'firstPoint', 'secondPoint' and 'thirdPoint'. Note that if the two
-//  vectors <firstPoint,secondPoint> and <firstPoint,thirdPoint> are colinears, an arbitrary twist value will
-//  be choosen.
+//  vectors <firstPoint,secondPoint> and <firstPoint,thirdPoint> are co-linears, an arbitrary twist value will
+//  be chosen.
 //
 //  Throw 'NullVecExc' if 'firstPoint' and 'secondPoint' are equals.
 template<typename T>
@@ -307,9 +144,5 @@ template Matrix44f lastFrame( const Matrix44f &prevMatrix, const Vec3f &prevPoin
 template Matrix44d firstFrame( const Vec3d &firstPoint, const Vec3d &secondPoint, const Vec3d &thirdPoint );
 template Matrix44d nextFrame( const Matrix44d &prevMatrix, const Vec3d &prevPoint, const Vec3d &curPoint, Vec3d &prevTangent, Vec3d &curTangent );
 template Matrix44d lastFrame( const Matrix44d &prevMatrix, const Vec3d &prevPoint, 	const Vec3d &lastPoint );
-
-
-template class Matrix44<float>;
-template class Matrix44<double>;
 
 } // namespace cinder
