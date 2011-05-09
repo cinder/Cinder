@@ -424,7 +424,16 @@ void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRec
 Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &options ) const
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
+#if defined( CINDER_COCOA )
 	return tbox.measure();
+#else
+	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
+	Vec2f result = glyphMeasures.back().second;
+	boost::unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphMeasures.back().first );
+	if( glyphInfoIt == mGlyphMap.end() )
+		result += glyphInfoIt->second.mOriginOffset + glyphInfoIt->second.mTexCoords.getSize();
+	return result;
+#endif
 }
 
 #if defined( CINDER_COCOA )
