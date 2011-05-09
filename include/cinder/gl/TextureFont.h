@@ -82,7 +82,7 @@ class TextureFont {
 		bool			getLigate() const { return mLigate; }
 		//! Sets whether advanced ligatures are used, which must have been instantiated by the \a supportedChars parameter of the TextureFont::create() call. Default to \c false.
 		DrawOptions&	ligate( bool useLigatures = true ) { mLigate = useLigatures; return *this; }
-						
+
 	  protected:
 		bool		mClipHorizontal, mClipVertical, mPixelSnap, mLigate;
 	};
@@ -104,6 +104,15 @@ class TextureFont {
 	//! Draws the glyphs in \a glyphMeasures clipped by \a clip, with \a offset added to each of the glyph offsets with DrawOptions \a options. \a glyphMeasures is a vector of pairs of glyph indices and offsets for the glyph baselines.
 	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, Vec2f offset, const DrawOptions &options = DrawOptions() );
 
+	//! Returns the size in pixels necessary to render the string \a str with DrawOptions \a options.
+	Vec2f	measureString( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
+#if defined( CINDER_COCOA )
+	//! Returns the size in pixels necessary to render the word-wrapped string \a str fit inside \a fitRect with DrawOptions \a options. Mac & iOS only.
+	Vec2f	measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
+#endif
+    
+    //! Returns the name of the font
+    std::string getName() const { return mFont.getName(); }
 	//! Returns the ascent of the font
 	float	getAscent() const { return mFont.getAscent(); }
 	//! Returns the descent of the font

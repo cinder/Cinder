@@ -421,4 +421,18 @@ void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRec
 }
 #endif
 
+Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &options ) const
+{
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
+	return tbox.measure();
+}
+
+#if defined( CINDER_COCOA )
+Vec2f TextureFont::measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
+{
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
+	return tbox.measure();
+}
+#endif
+
 } } // namespace cinder::gl
