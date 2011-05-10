@@ -19,6 +19,7 @@ class QuaternionAccumApp : public AppBasic {
   public:
 	void setup();
 	void update();
+	void resize( ResizeEvent event );
 	void mouseDown( MouseEvent event );
 	
 	void createRandomBspline();
@@ -44,15 +45,18 @@ void QuaternionAccumApp::setup()
 	gl::enableDepthWrite();
 	gl::enableAlphaBlending();
 	
-	mCam = CameraPersp( getWindowWidth(), getWindowHeight(), 40.0f );
-	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.1f, 100.0f );
-	mCam.lookAt( Vec3f( 15, 15, 15 ), Vec3f( 0, 0, 0 ) );
-	
 	mPlaneTexture = loadImage( loadResource( RES_PLANE_TEXTURE ) );
 	mBallTexture = loadImage( loadResource( RES_BALL_TEXTURE ) );
 	
 	createRandomBspline();
 	mLastTime = getElapsedSeconds();
+}
+
+void QuaternionAccumApp::resize( ResizeEvent event )
+{
+	mCam = CameraPersp( getWindowWidth(), getWindowHeight(), 40.0f );
+	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.1f, 100.0f );
+	mCam.lookAt( Vec3f( 15, 15, 15 ), Vec3f( 0, 0, 0 ) );
 }
 
 void QuaternionAccumApp::update()

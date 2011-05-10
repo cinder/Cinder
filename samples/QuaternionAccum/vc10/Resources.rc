@@ -2,4 +2,5 @@
 
 ID ICON "..\\resources\\cinder_app_icon.ico"
 
-//RES_MY_RESOURCE
+RES_PLANE_TEXTURE
+RES_BALL_TEXTURE
