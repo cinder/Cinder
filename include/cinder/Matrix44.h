@@ -1231,51 +1231,6 @@ Matrix44<T> Matrix44<T>::createScale( const Vec4<T> &v )
 template<typename T>
 Matrix44<T> Matrix44<T>::alignZAxisWithTarget( Vec3<T> targetDir, Vec3<T> upDir )
 {
-
-	// Ensure that the target direction is non-zero.
-	if( targetDir.lengthSquared() < EPSILON ) {
-		// We want to look down the negative z-axis since to match OpenGL.
-		targetDir = -Vec3<T>::zAxis();
-	}
-
-	// Ensure that the up direction is non-zero.
-	if( upDir.lengthSquared() < EPSILON ) {
-		upDir = Vec3<T>::yAxis();
-	}
-
-	// Check for degeneracies.  If the upDir and targetDir are parallel 
-	// or opposite, then compute a new, arbitrary up direction that is
-	// not parallel or opposite to the targetDir.
-	if( upDir.cross( targetDir ).lengthSquared() == 0 ) {
-		upDir = targetDir.cross( Vec3<T>::xAxis() );
-		if( upDir.lengthSquared() == 0 ) {
-			upDir = targetDir.cross( Vec3<T>::zAxis() );
-		}
-	}
-
-	// Compute the x-, y-, and z-axis vectors of the new coordinate system.
-	Vec3<T> targetPerpDir = targetDir.cross( upDir );
-	Vec3<T> targetUpDir   = targetPerpDir.cross( targetDir );
-
-
-	// Rotate the x-axis into targetPerpDir (row 0),
-	// rotate the y-axis into targetUpDir   (row 1),
-	// rotate the z-axis into targetDir     (row 2).
-	Vec3<T> row[3];
-	row[0] = targetPerpDir.normalized();
-	row[1] = targetUpDir.normalized();
-	row[2] = targetDir.normalized();
-
-	Matrix44<T> mat( 
-		row[0].x,  row[0].y,  row[0].z,  0,
-		row[1].x,  row[1].y,  row[1].z,  0,
-		row[2].x,  row[2].y,  row[2].z,  0,
-		       0,          0,        0,  1 
-	);
-
-	return mat;
-
-	/*
     // Ensure that the target direction is non-zero.
     if( targetDir.lengthSquared() == 0 )
 		targetDir = Vec3<T>::zAxis();
@@ -1312,7 +1267,6 @@ Matrix44<T> Matrix44<T>::alignZAxisWithTarget( Vec3<T> targetDir, Vec3<T> upDir 
 					        0,          0,        0,  1 );
     
     return mat;
-	*/
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
