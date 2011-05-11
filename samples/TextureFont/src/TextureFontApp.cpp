@@ -24,8 +24,10 @@ class TextureFontApp : public AppNative {
 
 void TextureFontApp::setup()
 {
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA_TOUCH )
 	mFont = Font( "Cochin-Italic", 24 );
+#elif defined( CINDER_COCOA )
+	mFont = Font( "BigCaslon-Medium", 24 );
 #else
 	mFont = Font( "Times New Roman", 24 );
 #endif
