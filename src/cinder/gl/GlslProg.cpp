@@ -22,6 +22,7 @@
 
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Texture.h"
 
 using namespace std;
 
@@ -211,6 +212,14 @@ void GlslProg::uniform( const std::string &name, const Matrix44f &data, bool tra
 {
 	GLint loc = getUniformLocation( name );
 	glUniformMatrix4fv( loc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, data.m );
+}
+
+void GlslProg::uniform( const std::string &name, const Texture &tex, int activeTexture )
+{
+	GLint loc = getUniformLocation( name );
+	glActiveTexture(GL_TEXTURE0 + activeTexture);
+	tex.bind();
+	glUniform1i( loc, activeTexture);
 }
 
 GLint GlslProg::getUniformLocation( const std::string &name )
