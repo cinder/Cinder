@@ -212,6 +212,10 @@
     <ClInclude Include="..\include\cinder\gl\UniformBuffer.h" />
     <ClInclude Include="..\include\cinder\gl\wglew.h" />
     <ClInclude Include="..\include\cinder\ip\Blend.h" />
+    <ClInclude Include="..\include\cinder\Matrix22.h" />
+    <ClInclude Include="..\include\cinder\Matrix33.h" />
+    <ClInclude Include="..\include\cinder\Matrix44.h" />
+    <ClInclude Include="..\include\cinder\MatrixAlgo.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\Triangulate.h" />

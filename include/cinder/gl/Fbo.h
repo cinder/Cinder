@@ -129,6 +129,13 @@ class Fbo {
 	//! Unbinds the Fbo as the currently active framebuffer, restoring the primary context as the target for all subsequent rendering
 	static void 	unbindFramebuffer();
 
+	//! Intended as a convenience functions which calls bind and glViewport and all that automatically
+	void			begin();
+
+	//! Reverts to state prior to calling begin()
+	void			end();
+
+
 	//! Returns the ID of the framebuffer itself. For antialiased FBOs this is the ID of the output multisampled FBO
 	GLuint		getId() const { return mObj->mId; }
 

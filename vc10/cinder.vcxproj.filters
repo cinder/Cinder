@@ -775,6 +775,7 @@
     <ClInclude Include="..\include\cinder\Easing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\include\cinder\gl\UniformBuffer.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
@@ -783,6 +784,19 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\wglew.h">
       <Filter>Header Files\gl</Filter>
+=======
+    <ClInclude Include="..\include\cinder\Matrix22.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Matrix33.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Matrix44.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\MatrixAlgo.h">
+      <Filter>Header Files</Filter>
+>>>>>>> 9f54ae99e5daf3e0b7aeccd33c389eec9ed195f1
     </ClInclude>
   </ItemGroup>
 </Project>

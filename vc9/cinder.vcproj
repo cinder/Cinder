@@ -828,6 +828,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\cinder\Matrix22.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Matrix33.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\Matrix44.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\cinder\MatrixAlgo.h"
+				>
+			</File>
+			<File
 				RelativePath="..\include\cinder\MayaCamUI.h"
 				>
 			</File>

@@ -70,8 +70,12 @@ class MovieBase {
 	int32_t		getWidth() const { return getObj()->mWidth; }
 	//! Returns the height of the movie in pixels
 	int32_t		getHeight() const { return getObj()->mHeight; }
+	//! Returns the size of the movie in pixels
+	Vec2i		getSize() const { return Vec2i( getWidth(), getHeight() ); }	
 	//! Returns the movie's aspect ratio, the ratio of its width to its height
 	float		getAspectRatio() const { return getObj()->mWidth / (float)getObj()->mHeight; }
+	//! the Area defining the Movie's bounds in pixels: [0,0]-[width,height]
+	Area		getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 	//! Returns the movie's pixel aspect ratio. Returns 1.0 if the movie does not contain an explicit pixel aspect ratio.
 	float		getPixelAspectRatio() const;
 	//! Returns the movie's length measured in seconds

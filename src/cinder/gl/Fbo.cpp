@@ -429,6 +429,17 @@ void Fbo::unbindFramebuffer()
 	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), 0 );
 }
 
+
+void Fbo::begin()
+{
+
+}
+
+void Fbo::end()
+{
+
+}
+
 bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 {
 	GLenum status;

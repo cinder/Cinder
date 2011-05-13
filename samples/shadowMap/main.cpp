@@ -196,8 +196,8 @@ void ShadowMapSample::draw()
 
 	glEnable( GL_TEXTURE_2D );
 	mDepthFbo.bindDepthTexture();
-	mShader.bind();
-	mShader.uniform( "shadowTransMatrix", mLight->getShadowTransformationMatrix( *mCamera ) );
+//	mShader.bind();
+//	mShader.uniform( "shadowTransMatrix", mLight->getShadowTransformationMatrix( *mCamera ) );
 	
 	if( mLookThroughCamera )
 		gl::setMatrices( *mCamera );
@@ -211,7 +211,7 @@ void ShadowMapSample::draw()
 		gl::drawCube( Vec3f::zero(), Vec3f( 1, 1, 1 ) );
 	glPopMatrix();
 	
-	mShader.unbind();
+//	mShader.unbind();
 	mDepthFbo.unbindTexture();
 	
 	// Draw the lighting frustum unless we're looking through it
