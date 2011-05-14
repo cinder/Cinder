@@ -308,6 +308,11 @@ class ColorAT {
 extern ColorT<float> hsvToRGB( const Vec3f &hsv );
 extern Vec3f rgbToHSV( const ColorT<float> &c );
 
+extern std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs );
+extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs );
+extern std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs );
+extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs );
+
 typedef ColorT<float>		Color;
 typedef ColorT<float>		Colorf;
 typedef ColorT<uint8_t>		Color8u;
