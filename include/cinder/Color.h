@@ -194,6 +194,12 @@ class ColorAT {
 	ColorAT( ColorModel cm, float c1, float c2, float c3, float aA = CHANTRAIT<T>::convert( 1.0f ) );
 
 	template<typename FromT>
+	ColorAT( const ColorT<FromT> &src ) 
+		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ), a( CHANTRAIT<T>::convert( 1.0f ) ) 
+	{}
+
+
+	template<typename FromT>
 	ColorAT( const ColorAT<FromT>& src )
 		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ), a( CHANTRAIT<T>::convert( src.a ) )
 	{}
