@@ -72,8 +72,8 @@ class AppImplMsw {
 	virtual void	privateSetWindowOffset__( const Vec2i &aWindowOffset ) { mWindowOffset = aWindowOffset; }
 	
 	
-	static void	hideCursor();
-	static void	showCursor();
+	static void	hideCursor(bool forced=false);
+	static void	showCursor(bool forced=false);
 	
 	static Buffer	loadResource( int id, const std::string &type );
 	

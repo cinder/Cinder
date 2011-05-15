@@ -214,21 +214,21 @@ std::string AppBasic::getAppPath()
 #endif
 }
 
-void AppBasic::hideCursor()
+void AppBasic::hideCursor(bool forced)
 {
 #if defined( CINDER_MAC )
 	[NSCursor hide];
 #elif defined( CINDER_MSW )
-	AppImplMsw::hideCursor();
+	AppImplMsw::hideCursor(forced);
 #endif
 }
 
-void AppBasic::showCursor()
+void AppBasic::showCursor(bool forced)
 {
 #if defined( CINDER_MAC )
 	[NSCursor unhide];
 #elif defined( CINDER_MSW )
-	AppImplMsw::showCursor();
+	AppImplMsw::showCursor(forced);
 #endif
 }
 

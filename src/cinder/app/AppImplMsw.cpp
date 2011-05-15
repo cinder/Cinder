@@ -54,14 +54,34 @@ AppImplMsw::~AppImplMsw()
 //	Gdiplus::GdiplusShutdown( mGdiplusToken );
 }
 
-void AppImplMsw::hideCursor()
+void AppImplMsw::hideCursor(bool forced)
 {
-	::ShowCursor( FALSE );
+	int count = ::ShowCursor( FALSE );
+
+	if(forced) {
+		// circumvent Windows' display counter by ensuring the cursor
+		// becomes hidden with one call to 'hideCursor()'
+		while( count > -1 ) 
+			count = ::ShowCursor( FALSE );
+
+		while( count < -1 )
+			count = ::ShowCursor( TRUE );
+	}
 }
 
-void AppImplMsw::showCursor()
+void AppImplMsw::showCursor(bool forced)
 {
-	::ShowCursor( TRUE );
+	int count = ::ShowCursor( TRUE );
+
+	if(forced) {
+		// circumvent Windows' display counter by ensuring the cursor 
+		// becomes visible with one call to 'showCursor()'
+		while( count > 0 ) 
+			count = ::ShowCursor( FALSE );
+
+		while( count < 0 )
+			count = ::ShowCursor( TRUE );
+	}
 }
 
 Vec2i AppImplMsw::mouseLocation()
