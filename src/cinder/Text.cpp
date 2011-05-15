@@ -627,6 +627,10 @@ void TextBox::calculate() const
 		return;
 	const float MAX_SIZE = 1000000.0f;
 
+	if( mText.empty() ) {
+		mCalculatedSize = Vec2f::zero();
+		return;
+	}
 	mWideText = toUtf16( mText );
 
 	Gdiplus::StringFormat format;
@@ -656,6 +660,9 @@ Vec2f TextBox::measure() const
 vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
 {
 	vector<pair<uint16_t,Vec2f> > result;
+
+	if( mText.empty() )
+		return result;
 
 	GCP_RESULTSW gcpResults;
 	WCHAR *glyphIndices = NULL;
