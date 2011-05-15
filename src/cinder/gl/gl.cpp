@@ -1101,7 +1101,7 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 	vbo.disableClientStates();
 }
 
-#endif ! defined( CINDER_GLES )
+#endif // ! defined( CINDER_GLES )
 
 
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp )
