@@ -111,6 +111,8 @@ class TextureFont {
 	Vec2f	measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
 #endif
     
+	//! Returns the font the TextureFont represents
+	const Font&		getFont() const { return mFont; }
     //! Returns the name of the font
     std::string getName() const { return mFont.getName(); }
 	//! Returns the ascent of the font
