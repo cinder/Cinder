@@ -1,4 +1,4 @@
-/*
+﻿/*
  Copyright (c) 2011, The Cinder Project: http://libcinder.org All rights reserved.
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -88,7 +88,7 @@ class TextureFont {
 	};
 
 	//! Creates a new TextureFontRef with font \a font, ensuring that glyphs necessary to render \a supportedChars are renderable, and format \a format
-	static TextureFontRef		create( const Font &font, const std::string &supportedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflphridséèáà", const Format &format = Format() )
+	static TextureFontRef		create( const Font &font, const std::string &supportedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphridséèáà", const Format &format = Format() )
 	{ return TextureFontRef( new TextureFont( font, supportedChars, format ) ); }
 	
 	//! Draws string \a str at baseline \a baseline with DrawOptions \a options
