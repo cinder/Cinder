@@ -54,8 +54,9 @@ class Quaternion
 	// construct from axis-angle
 	Quaternion( const Vec3<T> &axis, T radians ) { set( axis, radians ); } 
 	Quaternion( const Vec3<T> &from, const Vec3<T> &to ) { set( from, to ); }
-	// create from euler angles in radians expressed in ZYX rotation order
+	// create from Euler angles in radians expressed in ZYX rotation order
 	Quaternion( T xRotation, T yRotation, T zRotation ) { set( xRotation, yRotation, zRotation ); }
+	Quaternion( const Matrix33<T> &m ) { set( m ); }
 	Quaternion( const Matrix44<T> &m ) { set( m ); }
 	template<typename Y>
 	explicit Quaternion( const Y &v )
@@ -338,6 +339,39 @@ class Quaternion
 		axis->z = v.z * invLen;
 	}
 
+	Matrix33<T> toMatrix33() const
+	{
+		Matrix33<T> mV;
+		T xs, ys, zs, wx, wy, wz, xx, xy, xz, yy, yz, zz;
+
+		xs = v.x + v.x;   
+		ys = v.y + v.y;
+		zs = v.z + v.z;
+		wx = w * xs;
+		wy = w * ys;
+		wz = w * zs;
+		xx = v.x * xs;
+		xy = v.x * ys;
+		xz = v.x * zs;
+		yy = v.y * ys;
+		yz = v.y * zs;
+		zz = v.z * zs;
+
+		mV[0] = T( 1 ) - ( yy + zz );
+		mV[3] = xy - wz;
+		mV[6] = xz + wy;
+
+		mV[1] = xy + wz;
+		mV[4] = T( 1 ) - ( xx + zz );
+		mV[7] = yz - wx;
+
+		mV[2] = xz - wy;
+		mV[5] = yz + wx;
+		mV[8] = T( 1 ) - ( xx + yy );
+
+		return mV;
+	}
+
 	Matrix44<T> toMatrix44() const
 	{
 		Matrix44<T> mV;
@@ -360,12 +394,12 @@ class Quaternion
 		mV[4] = xy - wz;
 		mV[8] = xz + wy;
 		mV[12] = 0;
-	    
+
 		mV[1] = xy + wz;
 		mV[5] = T( 1 ) - ( xx + zz );
 		mV[9] = yz - wx;
 		mV[13] = 0;
-	    
+
 		mV[2] = xz - wy;
 		mV[6] = yz + wx;
 		mV[10] = T( 1 ) - ( xx + yy );
@@ -375,7 +409,7 @@ class Quaternion
 		mV[7] = 0;
 		mV[11] = 0;
 		mV[15] = T( 1 );
-		
+
 		return mV;
 	}
 
@@ -535,9 +569,41 @@ class Quaternion
 		return result;
 	}
 
+	void set( const Matrix33<T> &m )
+	{
+		//T trace = m.m[0] + m.m[4] + m.m[8];
+		T trace = m.trace();
+		if ( trace > (T)0.0 )
+		{
+			T s = math<T>::sqrt( trace + (T)1.0 );
+			w = s * (T)0.5;
+			T recip = (T)0.5 / s;
+			v.x = ( m.at(2,1) - m.at(1,2) ) * recip;
+			v.y = ( m.at(0,2) - m.at(2,0) ) * recip;
+			v.z = ( m.at(1,0) - m.at(0,1) ) * recip;
+		}
+		else
+		{
+			unsigned int i = 0;
+			if( m.at(1,1) > m.at(0,0) )
+				i = 1;
+			if( m.at(2,2) > m.at(i,i) )
+				i = 2;
+			unsigned int j = ( i + 1 ) % 3;
+			unsigned int k = ( j + 1 ) % 3;
+			T s = math<T>::sqrt( m.at(i,i) - m.at(j,j) - m.at(k,k) + (T)1.0 );
+			(*this)[i] = (T)0.5 * s;
+			T recip = (T)0.5 / s;
+			w = ( m.at(k,j) - m.at(j,k) ) * recip;
+			(*this)[j] = ( m.at(j,i) + m.at(i,j) ) * recip;
+			(*this)[k] = ( m.at(k,i) + m.at(i,k) ) * recip;
+		}
+	}
+
 	void set( const Matrix44<T> &m )
 	{
-		T trace =  m.m[0] + m.m[5] + m.m[10];
+		//T trace = m.m[0] + m.m[5] + m.m[10];
+		T trace = m.trace();
 		if ( trace > (T)0.0 )
 		{
 			T s = math<T>::sqrt( trace + (T)1.0 );

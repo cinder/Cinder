@@ -207,6 +207,10 @@
     <ClInclude Include="..\include\cinder\Clipboard.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />
     <ClInclude Include="..\include\cinder\ip\Blend.h" />
+    <ClInclude Include="..\include\cinder\Matrix22.h" />
+    <ClInclude Include="..\include\cinder\Matrix33.h" />
+    <ClInclude Include="..\include\cinder\Matrix44.h" />
+    <ClInclude Include="..\include\cinder\MatrixAlgo.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\Triangulate.h" />

@@ -65,6 +65,7 @@ using boost::uint64_t;
 	#include <tr1/memory>
 	namespace std {
 		using std::tr1::shared_ptr;
+		using std::tr1::weak_ptr;		
 		using std::tr1::static_pointer_cast;
 		using std::tr1::dynamic_pointer_cast;
 		using std::tr1::const_pointer_cast;
@@ -75,6 +76,7 @@ using boost::uint64_t;
 	#include <boost/enable_shared_from_this.hpp>
 	namespace std {
 		using boost::shared_ptr; // future-proof shared_ptr by putting it into std::
+		using boost::weak_ptr;
 		using boost::static_pointer_cast;
 		using boost::dynamic_pointer_cast;
 		using boost::const_pointer_cast;
