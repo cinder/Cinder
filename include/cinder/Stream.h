@@ -25,6 +25,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/Buffer.h"
 #include "cinder/Exception.h"
+#include "cinder/Filesystem.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -82,6 +83,7 @@ class OStream : public virtual StreamBase {
 
 	//! Writes null-terminated string, including terminator
 	void		write( const std::string &s ) { writeData( s.c_str(), s.length() + 1 ); }
+	void		write( const ci::fs::path &p ) { writeData( p.string().c_str(), p.string().length() + 1 ); }
 	template<typename T>
 	void		write( T t ) { IOWrite( &t, sizeof(T) ); }
 	template<typename T>
@@ -118,6 +120,7 @@ class IStream : public virtual StreamBase {
 
 	//! Reads characters until a null terminator
 	void		read( std::string *s );
+	void		read( ci::fs::path *p );
 	void		readFixedString( char *t, size_t maxSize, bool nullTerminate );
 	void		readFixedString( std::string *t, size_t size );
 	std::string	readLine();
