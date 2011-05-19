@@ -70,6 +70,8 @@ void DataSourcePath::createBuffer()
 {
 	// no-op - we already supplied the buffer in the constructor
 	IStreamFileRef stream = loadFileStream( mFilePath );
+	if( ! stream )
+		throw StreamExc();
 	mBuffer = loadStreamBuffer( stream );
 }
 
