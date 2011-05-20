@@ -61,7 +61,11 @@ class FontManager
 	Font					getDefault() const
 	{
 		if( ! mDefault )
-			mDefault = Font( "Arial", 12 );
+#if defined( CINDER_COCOA )        
+            mDefault = Font( "Helvetica", 12 );
+#elif defined( CINDER_MSW )    
+            mDefault = Font( "Arial", 12 );
+#endif
 		
 		return mDefault;
 	}
