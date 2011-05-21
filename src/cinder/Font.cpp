@@ -472,7 +472,7 @@ Font::Obj::Obj( const string &aName, float aSize )
     wstring faceName = toUtf16( mName );
     
 	mHfont = ::CreateFont( -mSize * 72 / 96, 0, 0, 0, FW_DONTCARE, false, false, false,
-						DEFAULT_CHARSET, OUT_TT_ONLY_PRECIS, CLIP_DEFAULT_PRECIS,
+						DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
 						ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
 						faceName.c_str() );
 	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
