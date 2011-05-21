@@ -141,9 +141,9 @@ class AppBasic : public App {
 	//! Returns the current location of the mouse. Can be called outside the normal event loop.
 	Vec2i				getMousePos() const;
 	//! Hides the mouse cursor
-	void				hideCursor();
+	void				hideCursor(bool forced=false);
 	//! Shows the mouse cursor
-	void				showCursor();
+	void				showCursor(bool forced=false);
 
 	const Settings&		getSettings() const { return mSettings; }
 	const Display&		getDisplay();
