@@ -48,7 +48,7 @@ namespace cinder { namespace app {
 App*	App::sInstance;
 
 App::App()
-	: mFrameCount( 0 ), mFpsSampleInterval( 1 ), mTimer( true )
+	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true )
 {
 	mFpsLastSampleFrame = 0;
 	mFpsLastSampleTime = 0;

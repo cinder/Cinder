@@ -54,7 +54,7 @@ void ImageSourceFileUiImage::registerSelf()
 
 ///////////////////////////////////////////////////////////////////////////////
 // ImageSourceFileUiImage
-ImageSourceFileUiImageRef ImageSourceFileUiImage::createFileUiImageRef( DataSourceRef dataSourceRef )
+ImageSourceFileUiImageRef ImageSourceFileUiImage::createFileUiImageRef( DataSourceRef dataSourceRef, ImageSource::Options options )
 {
 	UIImage *uiImage = 0;
 	if( dataSourceRef->isFilePath() ) {
@@ -75,11 +75,11 @@ ImageSourceFileUiImageRef ImageSourceFileUiImage::createFileUiImageRef( DataSour
 	else
 		throw ImageIoExceptionFailedLoad();		
 
-	return ImageSourceFileUiImageRef( new ImageSourceFileUiImage( uiImage, imageRef ) );
+	return ImageSourceFileUiImageRef( new ImageSourceFileUiImage( uiImage, imageRef, options ) );
 }
 
-ImageSourceFileUiImage::ImageSourceFileUiImage( /*UIImage**/void *uiImage, CGImageRef imageRef )
-	: ImageSourceCgImage( imageRef ), mUiImage( uiImage )
+ImageSourceFileUiImage::ImageSourceFileUiImage( /*UIImage**/void *uiImage, CGImageRef imageRef, ImageSource::Options options )
+	: ImageSourceCgImage( imageRef, options ), mUiImage( uiImage )
 {
 }
 

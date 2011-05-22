@@ -35,12 +35,6 @@ namespace cinder {
 
 //////////////////////////////////////////////////////////////////////////
 template<typename T>
-void OStream::write( T t )
-{
-	IOWrite( &t, sizeof(T) );
-}
-
-template<typename T>
 void OStream::writeBig( T t )
 {
 #ifdef BOOST_BIG_ENDIAN
@@ -63,10 +57,22 @@ void OStream::writeLittle( T t )
 }
 
 //////////////////////////////////////////////////////////////////////////
-template<typename T>
-void IStream::read( T *t )
+void IStream::read( std::string *s )
 {
-	IORead( t, sizeof(T) );
+	std::vector<char> chars;
+	char c;
+	do {
+		read( &c );
+		chars.push_back( c );
+	} while( c != 0 );
+	*s = string( &chars[0] );
+}
+
+void IStream::read( ci::fs::path *p )
+{
+	std::string tempS;
+	read( &tempS );
+	*p = fs::path( tempS );
 }
 
 template<typename T>

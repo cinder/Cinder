@@ -21,6 +21,7 @@
 */
 
 #include "cinder/Area.h"
+#include "cinder/Rect.h"
 #include <algorithm>
 
 using std::pair;
@@ -33,6 +34,11 @@ AreaT<T>::AreaT( const Vec2<T> &UL, const Vec2<T> &LR )
 	set( UL.x, UL.y, LR.x, LR.y );
 }
 
+template<typename T>
+AreaT<T>::AreaT( const RectT<float> &r )
+{
+	set( r.x1, r.y1, r.x2, r.y2 );
+}
 
 template<>
  template<>

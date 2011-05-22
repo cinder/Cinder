@@ -32,6 +32,9 @@
 namespace cinder {
 
 template<typename T>
+class RectT;
+
+template<typename T>
 class AreaT {
  public:
 	AreaT() {}
@@ -40,6 +43,7 @@ class AreaT {
 		{ set( aX1, aY1, aX2, aY2 ); }
 	template<typename Y>
 	explicit AreaT( const AreaT<Y> &aAreaBase );
+	explicit AreaT( const RectT<float> &r );
 
 	void			set( T aX1, T aY1, T aX2, T aY2 );
 		
