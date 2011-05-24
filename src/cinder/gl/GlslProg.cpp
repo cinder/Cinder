@@ -35,8 +35,8 @@ GlslProg::Obj::~Obj()
 
 //////////////////////////////////////////////////////////////////////////
 // GlslProg
-GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, DataSourceRef geometryShader )
-	: mObj( shared_ptr<Obj>( new Obj ) )
+GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, DataSourceRef geometryShader, GeometryShaderSettings* opts )
+: mObj( shared_ptr<Obj>( new Obj ) )
 {
 	mObj->mHandle = glCreateProgram();
 	
@@ -44,13 +44,14 @@ GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, Da
 		loadShader( vertexShader->getBuffer(), GL_VERTEX_SHADER_ARB );
 	if( fragmentShader )
 		loadShader( fragmentShader->getBuffer(), GL_FRAGMENT_SHADER_ARB );
-	if( geometryShader )
-		loadShader( geometryShader->getBuffer(), GL_GEOMETRY_SHADER_EXT );
-
+	if( geometryShader ) 
+		loadShader( geometryShader->getBuffer(), GL_GEOMETRY_SHADER_EXT, opts );
+	
 	link();
 }
-
-GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const char *geometryShader )
+	
+	
+GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const char *geometryShader, GeometryShaderSettings* opts )
 	: mObj( shared_ptr<Obj>( new Obj ) )
 {
 	mObj->mHandle = glCreateProgram();
@@ -60,22 +61,23 @@ GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const 
 	if( fragmentShader )
 		loadShader( fragmentShader, GL_FRAGMENT_SHADER_ARB );
 	if( geometryShader )
-		loadShader( geometryShader, GL_GEOMETRY_SHADER_EXT );
+		loadShader( geometryShader, GL_GEOMETRY_SHADER_EXT, opts );
 
 	link();
 }
 
-void GlslProg::loadShader( Buffer shaderSourceBuffer, GLint shaderType )
+void GlslProg::loadShader( Buffer shaderSourceBuffer, GLint shaderType, GeometryShaderSettings* opts )
 {
 	// we need to duplicate the contents of the buffer and append a null-terminator
 	shared_ptr<char> sourceBlock( new char[shaderSourceBuffer.getDataSize() + 1], checked_array_deleter<char>() );
 	memcpy( sourceBlock.get(), shaderSourceBuffer.getData(), shaderSourceBuffer.getDataSize() );
 	sourceBlock.get()[shaderSourceBuffer.getDataSize()] = 0; // null terminate
 	const char *sourceBlockPtr = sourceBlock.get();
-	loadShader( sourceBlockPtr, shaderType );
+	loadShader( sourceBlockPtr, shaderType, opts );
+	
 }
 
-void GlslProg::loadShader( const char *shaderSource, GLint shaderType )
+void GlslProg::loadShader( const char *shaderSource, GLint shaderType, GeometryShaderSettings* opts )
 {
 	GLuint handle = glCreateShader( shaderType );
 	glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &shaderSource ), NULL );
@@ -88,6 +90,22 @@ void GlslProg::loadShader( const char *shaderSource, GLint shaderType )
 		throw GlslProgCompileExc( log, shaderType );
 	}
 	glAttachShader( mObj->mHandle, handle );
+	
+	int absoluteMax; 
+	glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &absoluteMax); 
+	if(opts) 
+	{
+		glProgramParameteriEXT( mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, (opts->maxVertices < absoluteMax) ? opts->maxVertices : absoluteMax);
+		glProgramParameteriEXT( mObj->mHandle ,GL_GEOMETRY_INPUT_TYPE_EXT, opts->outputType); 
+		glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_OUTPUT_TYPE_EXT, opts->inputType);
+	}
+	else 
+	{
+		glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_VERTICES_OUT_EXT, absoluteMax);
+		glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_INPUT_TYPE_EXT,GL_TRIANGLES); 
+		glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_OUTPUT_TYPE_EXT,GL_TRIANGLES);
+	}
+	
 }
 
 void GlslProg::link()

@@ -36,13 +36,22 @@
 #include "cinder/DataSource.h"
 
 namespace cinder { namespace gl {
+	
+class GeometryShaderSettings {
+	public:
+	
+	GLint inputType;
+	GLint outputType;
+	GLint maxVertices;
+
+};
 
 //! Represents an OpenGL GLSL program. \ImplShared
 class GlslProg {
   public: 
 	GlslProg() {}
-	GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef(), DataSourceRef geometryShader = DataSourceRef() );
-	GlslProg( const char *vertexShader, const char *fragmentShader = 0, const char *geometryShader = 0 );
+	GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef(), DataSourceRef geometryShader = DataSourceRef(), GeometryShaderSettings* opts = 0 );
+	GlslProg( const char *vertexShader, const char *fragmentShader = 0, const char *geometryShader = 0, GeometryShaderSettings* opts = 0 );
 
 	void			bind() const;
 	static void		unbind();
@@ -71,8 +80,8 @@ class GlslProg {
 	std::string		getShaderLog( GLuint handle ) const;
 
   protected:
-	void			loadShader( Buffer shaderSourceBuffer, GLint shaderType );
-	void			loadShader( const char *shaderSource, GLint shaderType );
+	void			loadShader( Buffer shaderSourceBuffer, GLint shaderType, GeometryShaderSettings* opts = 0 );
+	void			loadShader( const char *shaderSource, GLint shaderType, GeometryShaderSettings* opts = 0 );
 	void			attachShaders();
 	void			link();
 
