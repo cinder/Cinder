@@ -91,21 +91,24 @@ void GlslProg::loadShader( const char *shaderSource, GLint shaderType, GeometryS
 	}
 	glAttachShader( mObj->mHandle, handle );
 	
-	int absoluteMax; 
-	glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &absoluteMax); 
-	if(opts) 
+	if(shaderType == GL_GEOMETRY_INPUT_TYPE_EXT)
 	{
-		glProgramParameteriEXT( mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, (opts->maxVertices < absoluteMax) ? opts->maxVertices : absoluteMax);
-		glProgramParameteriEXT( mObj->mHandle ,GL_GEOMETRY_INPUT_TYPE_EXT, opts->outputType); 
-		glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_OUTPUT_TYPE_EXT, opts->inputType);
-	}
-	else 
-	{
-		glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_VERTICES_OUT_EXT, absoluteMax);
-		glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_INPUT_TYPE_EXT,GL_TRIANGLES); 
-		glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_OUTPUT_TYPE_EXT,GL_TRIANGLES);
-	}
 	
+		int absoluteMax; 
+		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &absoluteMax); 
+		if(opts) 
+		{
+			glProgramParameteriEXT( mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, (opts->maxVertices < absoluteMax) ? opts->maxVertices : absoluteMax);
+			glProgramParameteriEXT( mObj->mHandle ,GL_GEOMETRY_INPUT_TYPE_EXT, opts->outputType); 
+			glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_OUTPUT_TYPE_EXT, opts->inputType);
+		}
+		else 
+		{
+			glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_VERTICES_OUT_EXT, absoluteMax);
+			glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_INPUT_TYPE_EXT,GL_TRIANGLES); 
+			glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_OUTPUT_TYPE_EXT,GL_TRIANGLES);
+		}
+	}
 }
 
 void GlslProg::link()
