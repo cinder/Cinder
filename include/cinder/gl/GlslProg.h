@@ -125,5 +125,19 @@ class GlslNullProgramExc : public std::exception {
 	}
 
 };
+	
+class GlslNullGSSettingsExc : public std::exception {
+public:	
+	
+	GlslNullGSSettingsExc( const std::string &log ) throw();
+	virtual const char* what() const throw()
+	{
+		return mMessage;
+	}
+	
+private:
+	char mMessage[15001];
+	
+};
 
 } } // namespace cinder::gl

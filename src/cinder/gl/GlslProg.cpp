@@ -95,18 +95,35 @@ void GlslProg::loadShader( const char *shaderSource, GLint shaderType, GeometryS
 	{
 	
 		int absoluteMax; 
-		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &absoluteMax); 
+		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &absoluteMax);
+		
 		if(opts) 
 		{
+			
 			glProgramParameteriEXT( mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, (opts->maxVertices < absoluteMax) ? opts->maxVertices : absoluteMax);
-			glProgramParameteriEXT( mObj->mHandle ,GL_GEOMETRY_INPUT_TYPE_EXT, opts->outputType); 
-			glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_OUTPUT_TYPE_EXT, opts->inputType);
+			
+			if(isnan(opts->outputType))
+			{
+				throw(GlslNullGSSettingsExc("Glsl: Attempt to use Geometry shader without output type set"));
+			}
+			else 
+			{
+				glProgramParameteriEXT( mObj->mHandle ,GL_GEOMETRY_INPUT_TYPE_EXT, opts->outputType); 
+			}
+
+			if(isnan(opts->inputType))
+			{
+				throw(GlslNullGSSettingsExc("Glsl: Attempt to use Geometry shader without input type set"));
+			}
+			else 
+			{
+				glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_OUTPUT_TYPE_EXT, opts->inputType);
+			}
+
 		}
 		else 
 		{
-			glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_VERTICES_OUT_EXT, absoluteMax);
-			glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_INPUT_TYPE_EXT,GL_TRIANGLES); 
-			glProgramParameteriEXT( mObj->mHandle,GL_GEOMETRY_OUTPUT_TYPE_EXT,GL_TRIANGLES);
+			throw(GlslNullGSSettingsExc("Glsl: Attempt to use Geometry shader without vertices and input/output types set"));
 		}
 	}
 }
@@ -265,6 +282,12 @@ GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint aShaderTyp
 	else
 		strncpy( mMessage, "UNKNOWN: ", 1000 );
 	strncat( mMessage, log.c_str(), 15000 );
+}
+	
+//////////////////////////////////////////////////////////////////////////////
+	
+GlslNullGSSettingsExc::GlslNullGSSettingsExc(const std::string &log) throw() {
+	strncpy(mMessage, log.c_str(), 15000);
 }
 	
 } } // namespace cinder::gl
