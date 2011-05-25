@@ -35,33 +35,47 @@ GlslProg::Obj::~Obj()
 
 //////////////////////////////////////////////////////////////////////////
 // GlslProg
-GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, DataSourceRef geometryShader )
+    GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, DataSourceRef geometryShader, GLint geometryInputType, GLint geometryOutputType, GLint geometryOutputVertices)
 	: mObj( shared_ptr<Obj>( new Obj ) )
 {
 	mObj->mHandle = glCreateProgram();
 	
 	if ( vertexShader )
 		loadShader( vertexShader->getBuffer(), GL_VERTEX_SHADER_ARB );
+    
 	if( fragmentShader )
 		loadShader( fragmentShader->getBuffer(), GL_FRAGMENT_SHADER_ARB );
-	if( geometryShader )
+    
+	if( geometryShader ) {
 		loadShader( geometryShader->getBuffer(), GL_GEOMETRY_SHADER_EXT );
-
+        
+        glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_INPUT_TYPE_EXT, geometryInputType);
+        glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_OUTPUT_TYPE_EXT, geometryOutputType);
+        glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, geometryOutputVertices);
+    }
+    
 	link();
 }
 
-GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const char *geometryShader )
+GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const char *geometryShader, GLint geometryInputType, GLint geometryOutputType, GLint geometryOutputVertices)
 	: mObj( shared_ptr<Obj>( new Obj ) )
 {
 	mObj->mHandle = glCreateProgram();
 	
 	if ( vertexShader )
 		loadShader( vertexShader, GL_VERTEX_SHADER_ARB );
+    
 	if( fragmentShader )
 		loadShader( fragmentShader, GL_FRAGMENT_SHADER_ARB );
-	if( geometryShader )
+    
+	if( geometryShader ) {
 		loadShader( geometryShader, GL_GEOMETRY_SHADER_EXT );
-
+        
+        glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_INPUT_TYPE_EXT, geometryInputType);
+        glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_OUTPUT_TYPE_EXT, geometryOutputType);
+        glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, geometryOutputVertices);
+    }
+    
 	link();
 }
 
