@@ -175,6 +175,44 @@ bool RectT<T>::intersects( const RectT<T> &rect ) const
 }
 
 template<typename T>
+T RectT<T>::distance( const Vec2<T> &pt ) const
+{
+	T squaredDistance = 0;
+	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
+	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
+	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
+	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
+	
+	if( squaredDistance > 0 )
+		return math<T>::sqrt( squaredDistance );
+	else
+		return 0;
+}
+
+template<typename T>
+T RectT<T>::distanceSquared( const Vec2<T> &pt ) const
+{
+	T squaredDistance = 0;
+	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
+	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
+	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
+	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
+	
+	return squaredDistance;
+}
+
+template<typename T>
+Vec2<T>	RectT<T>::closestPoint( const Vec2<T> &pt ) const
+{
+	Vec2<T> result = pt;
+	if( pt.x < x1 ) result.x = x1;
+	else if( pt.x > x2 ) result.x = x2;
+	if( pt.y < y1 ) result.y = y1;
+	else if( pt.y > y2 ) result.y = y2;
+	return result;
+}
+
+template<typename T>
 void RectT<T>::include( const Vec2<T> &point )
 {
 	if( x1 > point.x ) x1 = point.x;
