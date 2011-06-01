@@ -144,6 +144,10 @@ public:
 	// OpenGL layout: m[0]=d0, m[1]=d1, m[2]=d2 ... m[13]=d13, m[14]=d14, m[15]=d15 - unless srcIsRowMajor is true
 	void				set( T d0, T d1, T d2, T d3, T d4, T d5, T d6, T d7, T d8, T d9, T d10, T d11, T d12, T d13, T d14, T d15, bool srcIsRowMajor = false );
 
+	Vec3<T>				getForward() const;
+	Vec3<T>				getRight() const;
+	Vec3<T>				getUp() const;
+
 	Vec4<T>				getColumn( int col ) const;
 	void				setColumn( int col, const Vec4<T> &v );
 	
@@ -650,6 +654,28 @@ void Matrix44<T>::set( T d0, T d1, T d2, T d3, T d4, T d5, T d6, T d7, T d8, T d
 		m[3] =  d3; m[7] =  d7; m[11] = d11; m[15] = d15;
 	}
 }
+
+
+template< typename T >
+Vec3<T> Matrix44<T>::getForward() const
+{
+	return *reinterpret_cast<const Vec3<T>*>(m+8);
+}
+
+
+template< typename T >
+Vec3<T> Matrix44<T>::getRight() const
+{
+	return *reinterpret_cast<const Vec3<T>*>(m+0);
+}
+
+
+template< typename T >
+Vec3<T> Matrix44<T>::getUp() const
+{
+	return *reinterpret_cast<const Vec3<T>*>(m+4);
+}
+
 
 template< typename T >
 Vec4<T> Matrix44<T>::getColumn( int col ) const
