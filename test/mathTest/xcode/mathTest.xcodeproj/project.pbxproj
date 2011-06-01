@@ -36,6 +36,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		277C2BB3135D096200178A29 /* TestMatrix22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestMatrix22.h; path = ../src/TestMatrix22.h; sourceTree = SOURCE_ROOT; };
+		277C2BB4135D096200178A29 /* TestMatrix33.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestMatrix33.h; path = ../src/TestMatrix33.h; sourceTree = SOURCE_ROOT; };
+		277C2BB5135D096200178A29 /* TestMatrix44.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestMatrix44.h; path = ../src/TestMatrix44.h; sourceTree = SOURCE_ROOT; };
 		27E7E17813581FF10042057C /* mathTestApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mathTestApp.cpp; path = ../src/mathTestApp.cpp; sourceTree = SOURCE_ROOT; };
 		27E7E24D135823B40042057C /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
 		27E7E251135823CB0042057C /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
@@ -80,6 +83,7 @@
 		08FB7794FE84155DC02AAC07 /* mathTest */ = {
 			isa = PBXGroup;
 			children = (
+				277C2BB2135D095600178A29 /* Headers */,
 				27E7E32B1358241D0042057C /* Frameworks */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				C6859E8C029090F304C91782 /* Documentation */,
@@ -102,6 +106,16 @@
 				8DD76F6C0486A84900D96B5E /* mathTest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		277C2BB2135D095600178A29 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				277C2BB3135D096200178A29 /* TestMatrix22.h */,
+				277C2BB4135D096200178A29 /* TestMatrix33.h */,
+				277C2BB5135D096200178A29 /* TestMatrix44.h */,
+			);
+			name = Headers;
 			sourceTree = "<group>";
 		};
 		27E7E32B1358241D0042057C /* Frameworks */ = {
