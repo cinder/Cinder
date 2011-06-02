@@ -149,7 +149,7 @@ inline void vertex( const Vec3f &v ) { glVertex3fv( &v.x ); }
 inline void vertex( float x, float y, float z ) { glVertex3f( x, y, z ); }
 #endif // ! defined( CINDER_GLES )
 //! Sets the current color and the alpha value to 1.0
-inline void color( float r, float g, float b ) { glColor3f( r, g, b ); }
+inline void color( float r, float g, float b ) { glColor4f( r, g, b, 1.0f ); }
 //! Sets the current color and alpha value
 inline void color( float r, float g, float b, float a ) { glColor4f( r, g, b, a ); }
 //! Sets the current color, and the alpha value to 1.0
