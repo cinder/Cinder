@@ -155,6 +155,47 @@ bool AreaT<T>::intersects( const AreaT<T> &area ) const
 }
 
 template<typename T>
+ template<typename Y>
+float AreaT<T>::distance( const Vec2<Y> &pt ) const
+{
+	float squaredDistance = 0;
+	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
+	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
+	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
+	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
+	
+	if( squaredDistance > 0 )
+		return math<float>::sqrt( squaredDistance );
+	else
+		return 0;
+}
+
+template<typename T>
+ template<typename Y>
+float AreaT<T>::distanceSquared( const Vec2<Y> &pt ) const
+{
+	float squaredDistance = 0;
+	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
+	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
+	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
+	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
+	
+	return squaredDistance;
+}
+
+template<typename T>
+ template<typename Y>
+Vec2<Y>	AreaT<T>::closestPoint( const Vec2<Y> &pt ) const
+{
+	Vec2<Y> result = pt;
+	if( pt.x < x1 ) result.x = x1;
+	else if( pt.x > x2 ) result.x = x2;
+	if( pt.y < y1 ) result.y = y1;
+	else if( pt.y > y2 ) result.y = y2;
+	return result;
+}
+
+template<typename T>
 bool AreaT<T>::operator<( const AreaT<T> &aArea ) const
 {
 	if ( x1 != aArea.x1 ) return x1 < x1;
@@ -212,5 +253,11 @@ pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcAre
 
 template class AreaT<int32_t>;
 template class AreaT<boost::rational<int32_t> >;
+template float AreaT<int32_t>::distance( const Vec2i &pt ) const;
+template float AreaT<int32_t>::distance( const Vec2f &pt ) const;
+template float AreaT<int32_t>::distanceSquared( const Vec2i &pt ) const;
+template float AreaT<int32_t>::distanceSquared( const Vec2f &pt ) const;
+template Vec2i AreaT<int32_t>::closestPoint( const Vec2i &pt ) const;
+template Vec2f AreaT<int32_t>::closestPoint( const Vec2f &pt ) const;
 
 } // namespace cinder

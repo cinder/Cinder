@@ -82,6 +82,17 @@ class AreaT {
 	bool			contains( const Vec2<Y> &offset ) const { return contains( Vec2<T>( (T)math<Y>::ceil( offset. x ), (T)math<Y>::ceil( offset.y ) ) ); }
 	bool			intersects( const AreaT<T> &area ) const;
 
+	//! Returns the distance between the point \a pt and the rectangle. Points inside the Area return \c 0.
+	template<typename Y>
+	float		distance( const Vec2<Y> &pt ) const;
+	//! Returns the squared distance between the point \a pt and the rectangle. Points inside the rectangle return \c 0.
+	template<typename Y>
+	float		distanceSquared( const Vec2<Y> &pt ) const;
+
+	//! Returns the nearest point on the Rect \a rect. Points inside the rectangle return \a pt.
+	template<typename Y>
+	Vec2<Y>		closestPoint( const Vec2<Y> &pt ) const;
+
 	T				x1, y1, x2, y2;
 
 	bool			operator==( const AreaT<T> &aArea ) const { return ( ( x1 == aArea.x1 ) && ( y1 == aArea.y1 ) && ( x2 == aArea.x2 ) && ( y2 == aArea.y2 ) ); }

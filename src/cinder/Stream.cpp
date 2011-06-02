@@ -68,6 +68,13 @@ void IStream::read( std::string *s )
 	*s = string( &chars[0] );
 }
 
+void IStream::read( ci::fs::path *p )
+{
+	std::string tempS;
+	read( &tempS );
+	*p = fs::path( tempS );
+}
+
 template<typename T>
 void IStream::readBig( T *t )
 {
