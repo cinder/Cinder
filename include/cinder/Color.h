@@ -43,8 +43,12 @@ class ColorT
  public:
 	T r,g,b;
 
-	ColorT() : r( 0 ), g( 0 ), b( 0 ) {}
-    ColorT( T gray ) : r( gray ), g( gray ), b( gray ) {}
+	ColorT()
+    	: r( 0 ), g( 0 ), b( 0 )
+    {}
+    ColorT( T gray )
+    	: r( gray ), g( gray ), b( gray )
+    {}
 	ColorT( T aR, T aG, T aB ) 
 		: r( aR ), g( aG ), b( aB )
 	{}
