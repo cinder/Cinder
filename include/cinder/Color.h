@@ -44,6 +44,7 @@ class ColorT
 	T r,g,b;
 
 	ColorT() : r( 0 ), g( 0 ), b( 0 ) {}
+    ColorT( T gray ) : r( gray ), g( gray ), b( gray ) {}
 	ColorT( T aR, T aG, T aB ) 
 		: r( aR ), g( aG ), b( aB )
 	{}
@@ -181,6 +182,9 @@ class ColorAT {
 	ColorAT() 
 		: r( 0 ), g( 0 ), b( 0 ), a( 0 )
 	{}
+    ColorAT( T gray, T aA )
+    	: r( gray ), g( gray ), b( gray ), a( aA )
+    {}
 	ColorAT( T aR, T aG, T aB, T aA = CHANTRAIT<T>::convert( 1.0f ) )
 		: r( aR ), g( aG ), b( aB ), a( aA )
 	{}
