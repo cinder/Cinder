@@ -738,6 +738,16 @@ class Vec4
 		return *this;
 	}
 
+	void set( T ax, T ay, T az, T aw )
+	{
+		x = ax; y = ay; z = az; w = aw;
+	}
+
+	void set( const Vec4<T> &rhs )
+	{
+		x = rhs.x; y = rhs.y; z = rhs.z; w = rhs.w;
+	}
+
 	template<typename FromT>
 	Vec4<T>& operator=( const Vec4<FromT>& rhs )
 	{

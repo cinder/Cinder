@@ -54,15 +54,34 @@ RendererGl::RendererGl()
 	: Renderer(), mImpl( 0 )
 {
 	mAntiAliasing = AA_MSAA_16;
+	mMajorVersion = 0;
+	mMinorVersion = 0;
 }
 
 RendererGl::RendererGl( int aAntiAliasing )
 	: Renderer(), mImpl( 0 ), mAntiAliasing( aAntiAliasing )
+{
+	mMajorVersion = 0;
+	mMinorVersion = 0;
+}
+
+RendererGl::RendererGl( int aAntiAliasing, int majorVersion, int minorVersion )
+	: Renderer(), mImpl( 0 ), mAntiAliasing( aAntiAliasing ), mMajorVersion(majorVersion), mMinorVersion(minorVersion)
 {}
 
 void RendererGl::setAntiAliasing( int aAntiAliasing )
 {
 	mAntiAliasing = aAntiAliasing;
+}
+
+void RendererGl::setMajorVersion( int value )
+{
+	mMajorVersion= value;
+}
+
+void RendererGl::setMinorVersion( int value )
+{
+	mMinorVersion = value;
 }
 
 #if defined( CINDER_MAC )

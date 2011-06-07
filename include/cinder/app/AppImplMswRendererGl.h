@@ -39,6 +39,7 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
 	virtual void	swapBuffers() const;
 	virtual void	makeCurrentContext();
 
+	virtual void	createGLContext( int32_t majorVersion=3, int32_t minorVersion=0 );
  protected:
 	bool	initializeInternal( HWND wnd, HDC dc );
 	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
