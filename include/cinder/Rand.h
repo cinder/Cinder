@@ -108,6 +108,14 @@ class Rand {
 		
 		return Vec3f( x, y, z );
 	}
+    
+    //! returns a random Vec3f that lies on the line (a, b)
+    Vec3f nextVec3f(Vec3f a, Vec3f b) {
+        Vec3f line = b - a;
+        float length = line.length();
+        line.normalize();
+        return (start + (line * nextFloat(0.0f, length)));
+    }
 
 	//! returns a random Vec2f that represents a point on the unit circle	
 	Vec2f nextVec2f( )
@@ -115,7 +123,7 @@ class Rand {
 		float theta = nextFloat( (float)M_PI * 2.0f );
 		return Vec2f( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
-	
+
 	// STATICS
 	//! Resets the static random generator to a random seed based on the clock
 	static void randomize();
@@ -188,6 +196,14 @@ class Rand {
 		
 		return Vec3f( x, y, z );
 	}
+    
+    //! returns a random Vec3f that lies on the line (a, b)
+    Vec3f nextVec3f(Vec3f a, Vec3f b) {
+        Vec3f line = b - a;
+        float length = line.length();
+        line.normalize();
+        return (start + (line * randFloat(0.0f, length)));
+    }    
 
 	//! returns a random Vec2f that represents a point on the unit circle
 	static Vec2f randVec2f()
