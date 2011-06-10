@@ -114,7 +114,7 @@ class Rand {
         Vec3f line = b - a;
         float length = line.length();
         line.normalize();
-        return (start + (line * nextFloat(0.0f, length)));
+        return (a + (line * nextFloat(0.0f, length)));
     }
 
 	//! returns a random Vec2f that represents a point on the unit circle	
@@ -123,6 +123,14 @@ class Rand {
 		float theta = nextFloat( (float)M_PI * 2.0f );
 		return Vec2f( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
+    
+    //! returns a random Vec2f that lies on the line (a, b)
+    Vec2f nextVec2f(Vec2f a, Vec2f b) {
+        Vec2f line = b = a;
+        float length = line.length();
+        line.normalize();
+        return (a + (line * nextFloat(0.0f, length)));
+    }
 
 	// STATICS
 	//! Resets the static random generator to a random seed based on the clock
@@ -198,11 +206,11 @@ class Rand {
 	}
     
     //! returns a random Vec3f that lies on the line (a, b)
-    Vec3f nextVec3f(Vec3f a, Vec3f b) {
+    static Vec3f randVec3f(Vec3f a, Vec3f b) {
         Vec3f line = b - a;
         float length = line.length();
         line.normalize();
-        return (start + (line * randFloat(0.0f, length)));
+        return (a + (line * randFloat(0.0f, length)));
     }    
 
 	//! returns a random Vec2f that represents a point on the unit circle
@@ -211,6 +219,14 @@ class Rand {
 		float theta = randFloat( (float)M_PI * 2.0f );
 		return Vec2f( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
+    
+    //! returns a random Vec2f that lies on the line (a, b)
+    static Vec2f randVec2f(Vec2f a, Vec2f b) {
+        Vec2f line = b = a;
+        float length = line.length();
+        line.normalize();
+        return (a + (line * randFloat(0.0f, length)));
+    }
 	
 private:
 	boost::mt19937 mBase;
