@@ -126,7 +126,7 @@ class Rand {
     
     //! returns a random Vec2f that lies on the line (a, b)
     Vec2f nextVec2f(Vec2f a, Vec2f b) {
-        Vec2f line = b = a;
+        Vec2f line = b - a;
         float length = line.length();
         line.normalize();
         return (a + (line * nextFloat(0.0f, length)));
@@ -222,7 +222,7 @@ class Rand {
     
     //! returns a random Vec2f that lies on the line (a, b)
     static Vec2f randVec2f(Vec2f a, Vec2f b) {
-        Vec2f line = b = a;
+        Vec2f line = b - a;
         float length = line.length();
         line.normalize();
         return (a + (line * randFloat(0.0f, length)));
