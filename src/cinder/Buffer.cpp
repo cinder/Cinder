@@ -105,7 +105,7 @@ Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel, bool resi
 	return outBuffer;
 }
 
-Buffer decompressBuffer( const Buffer &aBuffer, bool useGZip, bool resizeResult )
+Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult, bool useGZip )
 {
 	int err;
 	z_stream strm;
