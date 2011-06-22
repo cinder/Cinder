@@ -72,6 +72,14 @@ class RectT {
 	//! Returns whether \a rect intersects with this
 	bool		intersects( const RectT &rect ) const;
 
+	//! Returns the distance between the point \a pt and the rectangle. Points inside the rectangle return \c 0.
+	T		distance( const Vec2<T> &pt ) const;
+	//! Returns the squared distance between the point \a pt and the rectangle. Points inside the rectangle return \c 0.
+	T		distanceSquared( const Vec2<T> &pt ) const;
+
+	//! Returns the nearest point on the Rect \a rect. Points inside the rectangle return \a pt.
+	Vec2<T>		closestPoint( const Vec2<T> &pt ) const;
+
 	T		getX1() const { return x1; }
 	T		getY1() const { return y1; }
 	T		getX2() const { return x2; }
