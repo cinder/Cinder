@@ -1,4 +1,4 @@
-Ôªø/*
+/*
  Copyright (c) 2011, The Cinder Project: http://libcinder.org All rights reserved.
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -38,7 +38,7 @@ class TextureFont {
   public:
 	class Format {
 	  public:
-		Format() : mTextureWidth( 1024 ), mTextureHeight( 1024 ), mPremultiply( false )
+		Format() : mTextureWidth( 1024 ), mTextureHeight( 1024 ), mPremultiply( false ), mMipmapping( false )
 		{}
 		
 		//! Sets the width of the textures created internally for glyphs. Default \c 1024
@@ -52,16 +52,22 @@ class TextureFont {
 		
 		//! Sets whether the TextureFont render premultiplied output. Default \c false
 		Format&		premultiply( bool premult = true ) { mPremultiply = premult; return *this; }
-		//! Returns whether the TextureFont render premultiplied output. Default \c false
+		//! Returns whether the TextureFont renders premultiplied output. Default \c false
 		bool		getPremultiply() const { return mPremultiply; }
+		
+		//! Enables or disables mipmapping. Default is disabled.
+		Format&		enableMipmapping( bool enable = true ) { mMipmapping = enable; return *this; }
+		//! Returns whether the TextureFont texture has mipmapping enabled
+		bool		hasMipmapping() const { return mMipmapping; }
 		
 	  protected:
 		int32_t		mTextureWidth, mTextureHeight;
 		bool		mPremultiply;
+		bool		mMipmapping;
 	};
 
 	struct DrawOptions {
-		DrawOptions() : mClipHorizontal( true ), mClipVertical( true ), mPixelSnap( true ), mLigate( false ) {}
+		DrawOptions() : mClipHorizontal( true ), mClipVertical( true ), mPixelSnap( true ), mLigate( false ), mScale( 1 ) {}
 
 		//! Returns whether the output clips horizontally
 		bool			getClipHorizontal() const { return mClipHorizontal; }		
@@ -83,12 +89,19 @@ class TextureFont {
 		//! Sets whether advanced ligatures are used, which must have been instantiated by the \a supportedChars parameter of the TextureFont::create() call. Default to \c false.
 		DrawOptions&	ligate( bool useLigatures = true ) { mLigate = useLigatures; return *this; }
 
+		//! Returns the scale at which the type is rendered. 2 is double size. Default \c 1
+		float			getScale() const { return mScale; }
+		//! Sets the scale at which the type is rendered. 2 is double size. Default \c 1
+		DrawOptions&	scale( float sc ) { mScale = sc; return *this; }
+
+
 	  protected:
 		bool		mClipHorizontal, mClipVertical, mPixelSnap, mLigate;
+		float		mScale;
 	};
 
 	//! Creates a new TextureFontRef with font \a font, ensuring that glyphs necessary to render \a supportedChars are renderable, and format \a format
-	static TextureFontRef		create( const Font &font, const std::string &supportedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphrids√©√®√°√†", const Format &format = Format() )
+	static TextureFontRef		create( const Font &font, const Format &format = Format(), const std::string &supportedChars = TextureFont::defaultChars() )
 	{ return TextureFontRef( new TextureFont( font, supportedChars, format ) ); }
 	
 	//! Draws string \a str at baseline \a baseline with DrawOptions \a options
@@ -100,9 +113,9 @@ class TextureFont {
 	void	drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
 #endif
 	//! Draws the glyphs in \a glyphMeasures at baseline \a baseline with DrawOptions \a options. \a glyphMeasures is a vector of pairs of glyph indices and offsets for the glyph baselines
-	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline, const DrawOptions &options = DrawOptions() );
+	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline, const DrawOptions &options = DrawOptions(), const std::vector<ColorA8u> &colors = std::vector<ColorA8u>() );
 	//! Draws the glyphs in \a glyphMeasures clipped by \a clip, with \a offset added to each of the glyph offsets with DrawOptions \a options. \a glyphMeasures is a vector of pairs of glyph indices and offsets for the glyph baselines.
-	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, Vec2f offset, const DrawOptions &options = DrawOptions() );
+	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, Vec2f offset, const DrawOptions &options = DrawOptions(), const std::vector<ColorA8u> &colors = std::vector<ColorA8u>() );
 
 	//! Returns the size in pixels necessary to render the string \a str with DrawOptions \a options.
 	Vec2f	measureString( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
@@ -111,6 +124,11 @@ class TextureFont {
 	Vec2f	measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
 #endif
     
+	//! Returns a vector of glyph/placement pairs representing \a str, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
+	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const DrawOptions &options ) const;
+	//! Returns a vector of glyph/placement pairs representing \a str fit inside \a fitRect, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
+	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const;
+
 	//! Returns the font the TextureFont represents
 	const Font&		getFont() const { return mFont; }
     //! Returns the name of the font
@@ -121,6 +139,10 @@ class TextureFont {
 	float	getDescent() const { return mFont.getDescent(); }
 	//! Returns whether the TextureFont output premultipled output. Default is \c false.
 	bool	isPremultiplied() const { return mFormat.getPremultiply(); }
+
+	//! Returns the default set of characters for a TextureFont, suitable for most English text, including some common ligatures and accented vowels.
+	//! \c "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphridséáèà"
+	static std::string		defaultChars() { return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphrids\303\251\303\241\303\250\303\240"; }
 
   protected:
 	TextureFont( const Font &font, const std::string &supportedChars, const Format &format );
