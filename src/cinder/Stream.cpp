@@ -550,6 +550,9 @@ IoStreamFileRef readWriteFileStream( const std::string &path )
 
 void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize )
 {
+	// prevent crash if stream is not valid
+	if(!is) throw StreamExc();
+
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
@@ -564,6 +567,9 @@ void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size
 
 Buffer loadStreamBuffer( IStreamRef is )
 {
+	// prevent crash if stream is not valid
+	if(!is) throw StreamExc();
+
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
