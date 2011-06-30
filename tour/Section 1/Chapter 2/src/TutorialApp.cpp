@@ -35,7 +35,7 @@ void TutorialApp::prepareSettings( Settings *settings )
 
 void TutorialApp::setup()
 {
-	Url url( "http://www.libcinder.org/media/tutorial/paris.jpg" );
+	Url url( "http://libcinder.org/media/tutorial/paris.jpg" );
 	mChannel = Channel32f( loadImage( loadUrl( url ) ) );
 	mTexture = mChannel;
 
