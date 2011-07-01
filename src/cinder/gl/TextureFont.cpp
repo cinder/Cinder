@@ -177,12 +177,19 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	// determine the max glyph extents
 	Vec2i glyphExtents = Vec2f::zero();
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
-		Rectf bb = font.getGlyphBoundingBox( *glyphIt );
-		glyphExtents.x = std::max<int>( glyphExtents.x, bb.getWidth() );
-		glyphExtents.y = std::max<int>( glyphExtents.y, bb.getHeight() );
+		try {
+			Rectf bb = font.getGlyphBoundingBox( *glyphIt );
+			glyphExtents.x = std::max<int>( glyphExtents.x, bb.getWidth() );
+			glyphExtents.y = std::max<int>( glyphExtents.y, bb.getHeight() );
+		}
+		catch( FontGlyphFailureExc &e ) {
+		}
 	}
 
 	::SelectObject( Font::getGlobalDc(), mFont.getHfont() );
+
+	if( ( glyphExtents.x == 0 ) || ( glyphExtents.y == 0 ) )
+		return;
 
 	int glyphsWide = mFormat.getTextureWidth() / glyphExtents.x;
 	int glyphsTall = mFormat.getTextureHeight() / glyphExtents.y;	
