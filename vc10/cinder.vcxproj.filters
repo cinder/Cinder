@@ -384,6 +384,9 @@
     <ClCompile Include="..\src\cinder\Triangulate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TextureFont.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -793,6 +796,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\MatrixAlgo.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\TextureFont.h">
+      <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
