@@ -35,7 +35,7 @@ GlslProg::Obj::~Obj()
 
 //////////////////////////////////////////////////////////////////////////
 // GlslProg
-GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, DataSourceRef geometryShader )
+GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, DataSourceRef geometryShader, GLenum gsInput, GLenum gsOutput )
 	: mObj( shared_ptr<Obj>( new Obj ) )
 {
 	mObj->mHandle = glCreateProgram();
@@ -45,12 +45,15 @@ GlslProg::GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader, Da
 	if( fragmentShader )
 		loadShader( fragmentShader->getBuffer(), GL_FRAGMENT_SHADER_ARB );
 	if( geometryShader )
+	{
 		loadShader( geometryShader->getBuffer(), GL_GEOMETRY_SHADER_EXT );
+		setupGS( gsInput, gsOutput );
+	}
 
 	link();
 }
 
-GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const char *geometryShader )
+GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const char *geometryShader, GLenum gsInput, GLenum gsOutput )
 	: mObj( shared_ptr<Obj>( new Obj ) )
 {
 	mObj->mHandle = glCreateProgram();
@@ -60,7 +63,10 @@ GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const 
 	if( fragmentShader )
 		loadShader( fragmentShader, GL_FRAGMENT_SHADER_ARB );
 	if( geometryShader )
+	{
 		loadShader( geometryShader, GL_GEOMETRY_SHADER_EXT );
+		setupGS( gsInput, gsOutput );
+	}
 
 	link();
 }
@@ -90,6 +96,19 @@ void GlslProg::loadShader( const char *shaderSource, GLint shaderType )
 	glAttachShader( mObj->mHandle, handle );
 }
 
+	// ROGER
+	// Setup Geometry Shader
+	// input:  GL_POINTS, GL_LINES, GL_LINES_ADJACENCY_EXT, GL_TRIANGLES, GL_TRIANGLES_ADJACENCY_EXT
+	// output: GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP
+	void GlslProg::setupGS( GLenum gsInput, GLenum gsOutput )
+	{
+		int max;
+		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &max);
+		glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, max);
+		glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_INPUT_TYPE_EXT, gsInput);
+		glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_OUTPUT_TYPE_EXT, gsOutput);
+	}
+	
 void GlslProg::link()
 {
 	glLinkProgram( mObj->mHandle );	

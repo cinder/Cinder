@@ -41,8 +41,8 @@ namespace cinder { namespace gl {
 class GlslProg {
   public: 
 	GlslProg() {}
-	GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef(), DataSourceRef geometryShader = DataSourceRef() );
-	GlslProg( const char *vertexShader, const char *fragmentShader = 0, const char *geometryShader = 0 );
+	GlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef(), DataSourceRef geometryShader = DataSourceRef(), GLenum gsInput = GL_LINES, GLenum gsOutput = GL_POINTS );
+	GlslProg( const char *vertexShader, const char *fragmentShader = 0, const char *geometryShader = 0, GLenum gsInput = GL_LINES, GLenum gsOutput = GL_POINTS );
 
 	void			bind() const;
 	static void		unbind();
@@ -75,6 +75,7 @@ class GlslProg {
 	void			loadShader( const char *shaderSource, GLint shaderType );
 	void			attachShaders();
 	void			link();
+	void			setupGS( GLenum gsInput, GLenum gsOutput );
 
 	struct Obj {
 		Obj() : mHandle( 0 ) {}
