@@ -119,6 +119,8 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 		mObj->mLayout.setStaticIndices();
 		mObj->mLayout.setStaticPositions();
 	}
+	else
+		mObj->mLayout = layout;
 
 	mObj->mPrimitiveType = GL_TRIANGLES;
 	mObj->mNumIndices = triMesh.getNumIndices();
@@ -149,6 +151,69 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 			}
 			if( copyNormal ) {
 				*(reinterpret_cast<Vec3f*>(ptr)) = triMesh.getNormals()[v];
+				ptr += sizeof( Vec3f );
+			}
+			if( copyColorRGB ) {
+				*(reinterpret_cast<Color*>(ptr)) = triMesh.getColorsRGB()[v];
+				ptr += sizeof( Color );
+			}
+			if( copyColorRGBA ) {
+				*(reinterpret_cast<ColorA*>(ptr)) = triMesh.getColorsRGBA()[v];
+				ptr += sizeof( Color );
+			}
+			if( copyTexCoord2D ) {
+				*(reinterpret_cast<Vec2f*>(ptr)) = triMesh.getTexCoords()[v];
+				ptr += sizeof( Vec2f );
+			}
+		}
+		
+		mObj->mBuffers[buffer].unmap();
+	}
+
+	unbindBuffers();	
+}
+
+VboMesh::VboMesh( const TriMesh2d &triMesh, Layout layout )
+	: mObj( shared_ptr<Obj>( new Obj ) )
+{
+	if( layout.isDefaults() ) { // we need to start by preparing our layout
+		if( triMesh.hasColorsRgb() )
+			mObj->mLayout.setStaticColorsRGB();
+		if( triMesh.hasColorsRgba() )
+			mObj->mLayout.setStaticColorsRGBA();
+		if( triMesh.hasTexCoords() )
+			mObj->mLayout.setStaticTexCoords2d();
+		mObj->mLayout.setStaticIndices();
+		mObj->mLayout.setStaticPositions();
+	}
+	else
+		mObj->mLayout = layout;
+
+	mObj->mPrimitiveType = GL_TRIANGLES;
+	mObj->mNumIndices = triMesh.getNumIndices();
+	mObj->mNumVertices = triMesh.getNumVertices();
+
+	initializeBuffers( false );
+			
+	// upload the indices
+	getIndexVbo().bufferData( sizeof(uint32_t) * triMesh.getNumIndices(), &(triMesh.getIndices()[0]), (mObj->mLayout.hasStaticIndices()) ? GL_STATIC_DRAW : GL_STREAM_DRAW );
+	
+	// upload the verts
+	for( int buffer = STATIC_BUFFER; buffer <= DYNAMIC_BUFFER; ++buffer ) {
+		if( ! mObj->mBuffers[buffer] )
+			continue;
+		
+		uint8_t *ptr = mObj->mBuffers[buffer].map( GL_WRITE_ONLY );
+		
+		bool copyPosition = ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticPositions() : mObj->mLayout.hasDynamicPositions();
+		bool copyColorRGB = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) && triMesh.hasColorsRgb();
+		bool copyColorRGBA = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGBA() : mObj->mLayout.hasDynamicColorsRGBA() ) && triMesh.hasColorsRgba();
+		bool copyTexCoord2D = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d() : mObj->mLayout.hasDynamicTexCoords2d() ) && triMesh.hasTexCoords();
+		
+		for( size_t v = 0; v < mObj->mNumVertices; ++v ) {
+			if( copyPosition ) {
+				const Vec2f &p = triMesh.getVertices()[v];
+				*(reinterpret_cast<Vec3f*>(ptr)) = Vec3f( p.x, p.y, 0 );
 				ptr += sizeof( Vec3f );
 			}
 			if( copyColorRGB ) {

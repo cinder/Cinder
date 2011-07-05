@@ -49,7 +49,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;..\src\libtess2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -75,7 +75,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;..\src\libtess2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -113,6 +113,7 @@
     <ClCompile Include="..\src\cinder\Display.cpp" />
     <ClCompile Include="..\src\cinder\Exception.cpp" />
     <ClCompile Include="..\src\cinder\Font.cpp" />
+    <ClCompile Include="..\src\cinder\gl\TextureFont.cpp" />
     <ClCompile Include="..\src\cinder\ImageIo.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourcePng.cpp" />
@@ -135,6 +136,7 @@
     <ClCompile Include="..\src\cinder\System.cpp" />
     <ClCompile Include="..\src\cinder\Text.cpp" />
     <ClCompile Include="..\src\cinder\Timer.cpp" />
+    <ClCompile Include="..\src\cinder\Triangulate.cpp" />
     <ClCompile Include="..\src\cinder\TriMesh.cpp" />
     <ClCompile Include="..\src\cinder\Url.cpp" />
     <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp" />
@@ -186,6 +188,13 @@
     <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwOpenGL.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp" />
+    <ClCompile Include="..\src\libtess2\bucketalloc.c" />
+    <ClCompile Include="..\src\libtess2\dict.c" />
+    <ClCompile Include="..\src\libtess2\geom.c" />
+    <ClCompile Include="..\src\libtess2\mesh.c" />
+    <ClCompile Include="..\src\libtess2\priorityq.c" />
+    <ClCompile Include="..\src\libtess2\sweep.c" />
+    <ClCompile Include="..\src\libtess2\tess.c" />
     <ClCompile Include="..\src\videoInput\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -198,9 +207,15 @@
     <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\include\cinder\Clipboard.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />
+    <ClInclude Include="..\include\cinder\gl\TextureFont.h" />
     <ClInclude Include="..\include\cinder\ip\Blend.h" />
+    <ClInclude Include="..\include\cinder\Matrix22.h" />
+    <ClInclude Include="..\include\cinder\Matrix33.h" />
+    <ClInclude Include="..\include\cinder\Matrix44.h" />
+    <ClInclude Include="..\include\cinder\MatrixAlgo.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
+    <ClInclude Include="..\include\cinder\Triangulate.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
     <ClInclude Include="..\include\rapidxml\rapidxml.hpp" />
     <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp" />
@@ -228,6 +243,7 @@
     <ClInclude Include="..\include\cinder\ChanTraits.h" />
     <ClInclude Include="..\include\cinder\Cinder.h" />
     <ClInclude Include="..\include\cinder\CinderMath.h" />
+    <ClInclude Include="..\include\cinder\Easing.h" />
     <ClInclude Include="..\include\cinder\CinderResources.h" />
     <ClInclude Include="..\include\cinder\Color.h" />
     <ClInclude Include="..\include\cinder\DataSource.h" />
@@ -311,6 +327,14 @@
     <ClInclude Include="..\include\cinder\qtime\QuickTime.h" />
     <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h" />
     <ClInclude Include="..\include\msw\videoInput\videoInput.h" />
+    <ClInclude Include="..\src\libtess2\bucketalloc.h" />
+    <ClInclude Include="..\src\libtess2\dict.h" />
+    <ClInclude Include="..\src\libtess2\geom.h" />
+    <ClInclude Include="..\src\libtess2\mesh.h" />
+    <ClInclude Include="..\src\libtess2\priorityq.h" />
+    <ClInclude Include="..\src\libtess2\sweep.h" />
+    <ClInclude Include="..\src\libtess2\tess.h" />
+    <ClInclude Include="..\src\libtess2\tesselator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

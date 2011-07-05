@@ -1,13 +1,5 @@
 #include "cinder/Cinder.h"
-
-#if defined( CINDER_COCOA_TOUCH )
-#include "cinder/app/AppCocoaTouch.h"
-typedef ci::app::AppCocoaTouch AppBase;
-#else
-#include "cinder/app/AppBasic.h"
-typedef ci::app::AppBasic AppBase;
-#endif
-
+#include "cinder/app/AppNative.h"
 #include "cinder/System.h"
 #include "cinder/Rand.h"
 using namespace ci;
@@ -48,7 +40,7 @@ struct TouchPoint {
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
-class MultiTouchApp : public AppBase {
+class MultiTouchApp : public AppNative {
  public:
 	void	prepareSettings( Settings *settings );
 
@@ -116,7 +108,6 @@ void MultiTouchApp::draw()
 {
 	gl::enableAlphaBlending();
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
-	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 
 	for( map<uint32_t,TouchPoint>::const_iterator activeIt = mActivePoints.begin(); activeIt != mActivePoints.end(); ++activeIt ) {
 		activeIt->second.draw();
@@ -136,8 +127,4 @@ void MultiTouchApp::draw()
 		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 
-#if defined( CINDER_COCOA_TOUCH )
-CINDER_APP_COCOA_TOUCH( MultiTouchApp, RendererGl )
-#else
-CINDER_APP_BASIC( MultiTouchApp, RendererGl )
-#endif
+CINDER_APP_NATIVE( MultiTouchApp, RendererGl )

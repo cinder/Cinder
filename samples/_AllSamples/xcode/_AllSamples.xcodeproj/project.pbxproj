@@ -61,6 +61,7 @@
 				006A1FCA11D7F87600941A5E /* PBXTargetDependency */,
 				009CB64F120F228F0066763D /* PBXTargetDependency */,
 				00125BAF1249B10500080A0D /* PBXTargetDependency */,
+				00A11A42135A28CA00081873 /* PBXTargetDependency */,
 			);
 			name = Samples;
 			productName = Samples;
@@ -621,6 +622,20 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = ImageFileBasic;
 		};
+		00A11A3F135A28BF00081873 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090 /* EaseGallery.app */;
+			remoteInfo = EaseGallery;
+		};
+		00A11A41135A28CA00081873 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090 /* EaseGallery */;
+			remoteInfo = EaseGallery;
+		};
 		00AE0FEB113DF18C005AFB58 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */;
@@ -817,6 +832,7 @@
 		009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SurfaceBasic.xcodeproj; path = ../../SurfaceBasic/xcode/SurfaceBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOMultipleTargets.xcodeproj; path = ../../FBOMultipleTargets/xcode/FBOMultipleTargets.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageFileBasic.xcodeproj; path = ../../ImageFileBasic/xcode/ImageFileBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
+		00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EaseGallery.xcodeproj; path = ../../EaseGallery/xcode/EaseGallery.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoronoiGpu.xcodeproj; path = ../../VoronoiGpu/xcode/VoronoiGpu.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureAdvanced.xcodeproj; path = ../../CaptureAdvanced/xcode/CaptureAdvanced.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLLighting.xcodeproj; path = ../../OpenGLLighting/xcode/OpenGLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -836,6 +852,7 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */,
 				C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */,
 				C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */,
@@ -1204,6 +1221,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00A11A33135A28BF00081873 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00A11A40135A28BF00081873 /* EaseGallery.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		00AE0FE8113DF18C005AFB58 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1389,6 +1414,10 @@
 				{
 					ProductGroup = 0005C9AC100681D2004D82BC /* Products */;
 					ProjectRef = 0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */;
+				},
+				{
+					ProductGroup = 00A11A33135A28BF00081873 /* Products */;
+					ProjectRef = 00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C9B6100681D9004D82BC /* Products */;
@@ -1823,6 +1852,13 @@
 			remoteRef = 009F02021136D23400636E3C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		00A11A40135A28BF00081873 /* EaseGallery.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = EaseGallery.app;
+			remoteRef = 00A11A3F135A28BF00081873 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		00AE0FEC113DF18C005AFB58 /* VoronoiGpu.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2111,6 +2147,11 @@
 			isa = PBXTargetDependency;
 			name = ImageFileBasic;
 			targetProxy = 009F02041136D24300636E3C /* PBXContainerItemProxy */;
+		};
+		00A11A42135A28CA00081873 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EaseGallery;
+			targetProxy = 00A11A41135A28CA00081873 /* PBXContainerItemProxy */;
 		};
 		00AE0FF3113DF1F2005AFB58 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2010, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -21,6 +22,8 @@
 */
 
 #include "cinder/Buffer.h"
+#include "cinder/DataSource.h"
+#include "cinder/DataTarget.h"
 #include <zlib.h>
 #include <cmath>
 #include <iostream>
@@ -37,6 +40,14 @@ Buffer::Obj::~Obj()
 	if( mOwnsData ) {
 		free( mData );
 	}
+}
+
+Buffer::Buffer( std::shared_ptr<DataSource> dataSource )
+{
+	Buffer &otherBuffer = dataSource->getBuffer();
+	char *data = reinterpret_cast<char*>( malloc( otherBuffer.getDataSize() ) );
+	memcpy( data, otherBuffer.getData(), otherBuffer.getDataSize() );
+	mObj = std::shared_ptr<Obj>( new Obj( data, otherBuffer.getDataSize(), true ) );
 }
 
 Buffer::Buffer( void * aData, size_t aSize ) 
@@ -61,6 +72,12 @@ void Buffer::resize( size_t newSize )
 void Buffer::copyFrom( const void * aData, size_t length )
 {
 	memcpy( mObj->mData, aData, length );
+}
+
+void Buffer::write( std::shared_ptr<class DataTarget> dataTarget )
+{
+	OStreamRef os = dataTarget->getStream();
+	os->write( *this );
 }
 
 std::shared_ptr<uint8_t>	Buffer::convertToSharedPtr()
