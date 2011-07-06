@@ -127,9 +127,9 @@ class TriMesh {
 	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
 	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	std::vector<size_t>&			getIndices() { return mIndices; }		
+	std::vector<uint32_t>&			getIndices() { return mIndices; }		
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	const std::vector<size_t>&		getIndices() const { return mIndices; }		
+	const std::vector<uint32_t>&	getIndices() const { return mIndices; }		
 
 	//! Calculates the bounding box of all vertices
 	AxisAlignedBox3f	calcBoundingBox() const;
@@ -147,7 +147,7 @@ class TriMesh {
 	std::vector<Color>		mColorsRGB;
 	std::vector<ColorA>		mColorsRGBA;
 	std::vector<Vec2f>		mTexCoords;
-	std::vector<size_t>		mIndices;
+	std::vector<uint32_t>	mIndices;
 };
 
 class TriMesh2d {

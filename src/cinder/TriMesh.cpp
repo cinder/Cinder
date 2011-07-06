@@ -177,8 +177,8 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 		out->writeLittle( it->x ); out->writeLittle( it->y );
 	}
 
-	for( vector<size_t>::const_iterator it = mIndices.begin(); it != mIndices.end(); ++it ) {
-		out->writeLittle( static_cast<uint32_t>( *it) );
+	for( vector<uint32_t>::const_iterator it = mIndices.begin(); it != mIndices.end(); ++it ) {
+		out->writeLittle( *it );
 	}
 }
 
