@@ -74,6 +74,10 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 	::CGContextSetFontSize( cgContext, font.getSize() );
 	::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
 
+#if defined( CINDER_GLES )
+	std::shared_ptr<uint8_t> lumAlphaData( new uint8_t[mFormat.getTextureWidth()*mFormat.getTextureHeight()*2], checked_array_deleter<uint8_t>() );
+#endif
+
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
 		GlyphInfo newInfo;
 		newInfo.mTextureIndex = curTextureIndex;
@@ -99,7 +103,21 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 			textureFormat.setInternalFormat( GL_LUMINANCE_ALPHA );
+#if defined( CINDER_GLES )
+			// under iOS format and interalFormat must match, so let's make a block of LUMINANCE_ALPHA data
+			Surface8u::ConstIter iter( surface, surface.getBounds() );
+			size_t offset = 0;
+			while( iter.line() ) {
+				while( iter.pixel() ) {
+					lumAlphaData.get()[offset+0] = iter.r();
+					lumAlphaData.get()[offset+1] = iter.a();
+					offset += 2;
+				}
+			}
+			mTextures.push_back( gl::Texture( lumAlphaData.get(), GL_LUMINANCE_ALPHA, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
+#else
 			mTextures.push_back( gl::Texture( surface, textureFormat ) );
+#endif
 			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
 			curOffset = Vec2i::zero();
 			curGlyphIndex = 0;
