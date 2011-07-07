@@ -1,0 +1,26 @@
+MIDI Block for Cinder framework
+===============================
+
+Changelog
+
+v 0.1alpha
+Initial state.
+MIDI input implementation only.
+
+
+
+Author: Hector Sanchez-Pajares
+http://www.aerstudio.com
+
+
+
+MIDI support for Cinder framework (http://libcinder.org) by The Barbarian Group. 
+
+It uses rtMIDI library (http://www.music.mcgill.ca/~gary/rtmidi/)
+
+
+Thanks to: ofxMidi http://addons.openframeworks.cc/projects/show/ofxmidiin
+
+
+
+
