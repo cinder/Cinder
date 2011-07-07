@@ -467,7 +467,7 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 	}
 	
 	const size_t numTriangles = mesh.getNumTriangles();
-	const std::vector<size_t>& indices( mesh.getIndices() );
+	const std::vector<uint32_t>& indices( mesh.getIndices() );
 	for( size_t t = 0; t < numTriangles; ++t ) {
 		ostringstream os;
 		os << "f ";
