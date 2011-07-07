@@ -132,7 +132,9 @@ Fbo::Format::Format()
 	mDepthBufferAsTexture = false;
 #else
 	mColorInternalFormat = GL_RGBA8;
-	mDepthInternalFormat = GL_DEPTH_COMPONENT24;
+	// ROGER: try to remove self shadowing
+	//mDepthInternalFormat = GL_DEPTH_COMPONENT24;
+	mDepthInternalFormat = GL_DEPTH_COMPONENT32;
 	mDepthBufferAsTexture = true;
 #endif
 	mSamples = 0;

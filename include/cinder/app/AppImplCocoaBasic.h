@@ -31,7 +31,7 @@
 
 #include "cinder/app/TouchEvent.h"
 
-// ROGER / NSWindowUnlimited
+// ROGER / newResize / NSWindowUnlimited
 #import "NSWindowUnlimited.h"
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
@@ -39,7 +39,7 @@
 #else
 @interface AppImplCocoaBasic : NSApplication {
 #endif
-	// ROGER / NSWindowUnlimited
+	// ROGER / newResize / NSWindowUnlimited
 	//NSWindow				*win;
 	NSWindowUnlimited		*win;
 	CinderView				*cinderView;
