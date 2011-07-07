@@ -159,13 +159,22 @@ bool OscListener::getNextMessage( Message* message )
 		return false;
 	
 	Message* src_message = mMessages.front();
+
 	if (src_message == NULL)
+	{
+		console() << "OscListener:: NULL MESSAGE!" << std::endl;
 		return false;
-	if (src_message->getAddress() == "")
-		return false;
-	message->copy( *src_message );
+	}
 	
+	if (src_message->getAddress().size() == 0)
+	{
+		console() << "OscListener:: EMPTY ADDRESS!" << std::endl;
+		return false;
+	}
+	
+	message->copy( *src_message );
 	delete src_message;	
+	
 	mMessages.pop_front();
 	
 	return true;
