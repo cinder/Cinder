@@ -25,6 +25,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/Buffer.h"
 #include "cinder/Exception.h"
+#include "cinder/Filesystem.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -80,9 +81,11 @@ class OStream : public virtual StreamBase {
  public:
 	virtual ~OStream() {}
 
-	void		write( const std::string &s ) { writeData( s.c_str(), s.length() ); }
+	//! Writes null-terminated string, including terminator
+	void		write( const std::string &s ) { writeData( s.c_str(), s.length() + 1 ); }
+	void		write( const ci::fs::path &p ) { writeData( p.string().c_str(), p.string().length() + 1 ); }
 	template<typename T>
-	void		write( T t );
+	void		write( T t ) { IOWrite( &t, sizeof(T) ); }
 	template<typename T>
 	void		writeEndian( T t, uint8_t endian ) { if ( endian == STREAM_BIG_ENDIAN ) writeBig( t ); else writeLittle( t ); }
 	template<typename T>
@@ -107,14 +110,17 @@ class IStream : public virtual StreamBase {
 	virtual ~IStream() {};
 
 	template<typename T>
-	void		read( T *t );
+	void		read( T *t ) { IORead( t, sizeof(T) ); }
 	template<typename T>
 	void		readEndian( T *t, uint8_t endian ) { if ( endian == STREAM_BIG_ENDIAN ) readBig( t ); else readLittle( t ); }
 	template<typename T>
 	void		readBig( T *t );
 	template<typename T>
 	void		readLittle( T *t );
-	
+
+	//! Reads characters until a null terminator
+	void		read( std::string *s );
+	void		read( ci::fs::path *p );
 	void		readFixedString( char *t, size_t maxSize, bool nullTerminate );
 	void		readFixedString( std::string *t, size_t size );
 	std::string	readLine();

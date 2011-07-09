@@ -26,10 +26,17 @@
 
 #include "cinder/Surface.h"
 #include "cinder/Font.h"
+#include "cinder/Vector.h"
 
 #include <vector>
 #include <deque>
 #include <string>
+
+// Core Text forward declarations
+#if defined( CINDER_COCOA )
+typedef struct __CTFrame;
+typedef struct __CTLine;
+#endif
 
 namespace cinder {
 
@@ -80,11 +87,80 @@ class TextLayout {
 	std::deque<std::shared_ptr<class Line> >		mLines;
 };
 
+class TextBox {
+  public:
+	typedef enum Alignment { LEFT, CENTER, RIGHT } Alignment;
+	enum { GROW = 0 };
+	
+	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ), mLigate( true ) {}
+
+	TextBox				size( Vec2i sz ) { TextBox result( *this ); result.setSize( sz ); return result; }
+	TextBox				size( int width, int height ) { TextBox result( *this ); result.setSize( Vec2i( width, height ) ); return result; }
+	Vec2i				getSize() const { return mSize; }
+	void				setSize( Vec2i sz ) { mSize = sz; mInvalid = true; }
+
+	TextBox				text( const std::string &t ) { TextBox result( *this ); result.setText( t ); return result; }
+	const std::string&	getText() const { return mText; }
+	void				setText( const std::string &t ) { mText = t; mInvalid = true; }
+	void				appendText( const std::string &t ) { mText += t; mInvalid = true; }
+
+	TextBox				font( const Font &f ) { TextBox result( *this ); result.setFont( f ); return result; }
+	const Font&			getFont() const { return mFont; }
+	void				setFont( const Font &f ) { mFont = f; mInvalid = true; }
+
+	TextBox				alignment( Alignment align ) { TextBox result( *this ); result.setAlignment( align ); return result; }
+	Alignment			getAlignment() const { return mAlign; }
+	void				setAlignment( Alignment align ) { mAlign = align; mInvalid = true; }
+
+	TextBox				color( ColorA color ) { TextBox result( *this ); result.setColor( color ); return result; }
+	ColorA				getColor() const { return mColor; }
+	void				setColor( ColorA color ) { mColor = color; mInvalid = true; }
+
+	TextBox				backgroundColor( ColorA bgColor ) { TextBox result( *this ); result.setBackgroundColor( bgColor ); return result; }
+	ColorA				getBackgroundColor() const { return mBackgroundColor; }
+	void				setBackgroundColor( ColorA bgColor ) { mBackgroundColor = bgColor; }
+
+	TextBox				premultiplied( bool premult = true ) { TextBox result( *this ); result.setPremultiplied( premult ); return result; }
+	bool				getPremultiplied() const { return mPremultiplied; }
+	void				setPremultiplied( bool premult ) { mPremultiplied = premult; }
+
+	TextBox				ligate( bool ligateText = true ) { TextBox result( *this ); result.setLigate( ligateText ); return result; }
+	bool				getLigate() const { return mLigate; }
+	void				setLigate( bool ligateText ) { mLigate = ligateText; }
+
+	Vec2f									measure() const;
+	/** Returns a vector of pairs of glyph indices and the position of their left baselines
+		\warning Does not support word wrapping on Windows. **/
+	std::vector<std::pair<uint16_t,Vec2f> >	measureGlyphs() const;
+
+	Surface				render( Vec2f offset = Vec2f::zero() );
+
+  protected:
+	Alignment		mAlign;
+	Vec2i			mSize;
+	std::string		mText;
+	Font			mFont;
+	ColorA			mColor, mBackgroundColor;
+	bool			mPremultiplied;
+	bool			mLigate;
+	mutable bool	mInvalid;
+
+	mutable Vec2f	mCalculatedSize;
+#if defined( CINDER_COCOA )
+	void			createLines() const;
+
+	mutable std::vector<std::pair<std::shared_ptr<const __CTLine>,Vec2f> >	mLines;
+#elif defined( CINDER_MSW )
+	void			calculate() const;
+
+	mutable std::wstring	mWideText;
+#endif
+};
+
 /** \brief Renders a single string and returns it as a Surface.
 	Optional \a baselineOffset pointer will receive how many pixels of descender are in the returned Surface. Offset rendering the result Surface by this amount in order to preserve a consistent baseline.
 	Consider gl::drawString() as a more convenient alternative.
 **/
-
 #if defined( CINDER_COCOA_TOUCH )
 Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset = 0 );
 #else

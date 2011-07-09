@@ -39,6 +39,7 @@ void msaFluidBasicApp::setup()
 	fluidSolver.setup( fluidCellsX, fluidCellsX );
     fluidSolver.enableRGB(true).setFadeSpeed(0.002f).setDeltaT(0.5f).setVisc(0.00015f).setColorDiffusion(0);
 	fluidDrawer.setup( &fluidSolver );
+	fluidSolver.enableVorticityConfinement( true );
 	
 	drawFluid			= true;
 	

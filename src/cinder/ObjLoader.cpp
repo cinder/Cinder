@@ -467,7 +467,7 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 	}
 	
 	const size_t numTriangles = mesh.getNumTriangles();
-	const std::vector<size_t>& indices( mesh.getIndices() );
+	const std::vector<uint32_t>& indices( mesh.getIndices() );
 	for( size_t t = 0; t < numTriangles; ++t ) {
 		ostringstream os;
 		os << "f ";
@@ -487,9 +487,9 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 			os << indices[t*3+2]+1 << "/" << indices[t*3+2]+1 << " ";
 		}
 		else { // just verts
-			os << indices[t*3+0] << " ";
-			os << indices[t*3+1] << " ";
-			os << indices[t*3+2] << " ";			
+			os << indices[t*3+0]+1 << " ";
+			os << indices[t*3+1]+1 << " ";
+			os << indices[t*3+2]+1 << " ";			
 		}
 		os << std::endl;
 		stream->write( os.str() );

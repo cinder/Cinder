@@ -79,8 +79,6 @@ void OSCListenerApp::update(){
 				catch (...) {
 					console() << "Exception reading argument as float" << std::endl;
 				}
-				
-				positionX = message.getArgAsFloat(0);
 			}else if (message.getArgType(i) == osc::TYPE_STRING){
 				try {
 					console() << "------ value: " << message.getArgAsString(i).c_str() << std::endl;
@@ -91,6 +89,11 @@ void OSCListenerApp::update(){
 							
 			}
 		}
+        
+        if( message.getNumArgs() != 0 && message.getArgType( 0 ) == osc::TYPE_FLOAT )
+        {
+            positionX = message.getArgAsFloat(0);
+        }
 		
 	}
 }

@@ -26,7 +26,7 @@ void TutorialApp::prepareSettings( Settings *settings )
 
 void TutorialApp::setup()
 {
-	Url url( "http://www.libcinder.org/media/tutorial/paris.jpg" );
+	Url url( "http://libcinder.org/media/tutorial/paris.jpg" );
 	mImage = gl::Texture( loadImage( loadUrl( url ) ) );
 
 	mParticleController.addParticles( 250 );

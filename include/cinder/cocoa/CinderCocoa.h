@@ -127,6 +127,8 @@ CFURLRef createCfUrl( const cinder::Url &url );
 
 //! Converts a std::string to a CFAttributedStringRef with attributes set for \a font and \a color. Assumes UTF8 encoding. User must call CFRelease() to free the result.
 CFAttributedStringRef createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color );
+//! Converts a std::string to a CFAttributedStringRef with attributes set for \a font and \a color. If \a ligate then ligatures will be used. Assumes UTF8 encoding. User must call CFRelease() to free the result.
+CFAttributedStringRef createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color, bool ligate );
 
 //! Converts a cinder::Color to CGColor. User must call CGColorRelease() to free the result.
 CGColorRef createCgColor( const Color &color );
@@ -161,14 +163,14 @@ typedef std::shared_ptr<class ImageSourceCgImage> ImageSourceCgImageRef;
 class ImageSourceCgImage : public ImageSource {
   public:
 	//! Retains (and later releases) \a imageRef
-	static ImageSourceCgImageRef	createRef( ::CGImageRef imageRef );
+	static ImageSourceCgImageRef	createRef( ::CGImageRef imageRef, ImageSource::Options options = ImageSource::Options() );
 	virtual ~ImageSourceCgImage() {}
 
 	virtual void	load( ImageTargetRef target );
 
   protected:
 	//! Retains (and later releases) \a imageRef
-	ImageSourceCgImage( ::CGImageRef imageRef );
+	ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Options options );
 
 	bool						mIsIndexed, mIs16BitPacked;
 	Color8u						mColorTable[256];
@@ -177,7 +179,7 @@ class ImageSourceCgImage : public ImageSource {
 	uint16_t					m16BitPackedRedOffset, m16BitPackedGreenOffset, m16BitPackedBlueOffset;
 };
 
-ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef );
+ImageSourceCgImageRef createImageSource( ::CGImageRef imageRef, ImageSource::Options = ImageSource::Options() );
 
 
 typedef std::shared_ptr<class ImageTargetCgImage> ImageTargetCgImageRef;

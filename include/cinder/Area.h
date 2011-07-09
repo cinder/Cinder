@@ -32,6 +32,9 @@
 namespace cinder {
 
 template<typename T>
+class RectT;
+
+template<typename T>
 class AreaT {
  public:
 	AreaT() {}
@@ -40,6 +43,7 @@ class AreaT {
 		{ set( aX1, aY1, aX2, aY2 ); }
 	template<typename Y>
 	explicit AreaT( const AreaT<Y> &aAreaBase );
+	explicit AreaT( const RectT<float> &r );
 
 	void			set( T aX1, T aY1, T aX2, T aY2 );
 		
@@ -77,6 +81,17 @@ class AreaT {
 	template<typename Y>
 	bool			contains( const Vec2<Y> &offset ) const { return contains( Vec2<T>( (T)math<Y>::ceil( offset. x ), (T)math<Y>::ceil( offset.y ) ) ); }
 	bool			intersects( const AreaT<T> &area ) const;
+
+	//! Returns the distance between the point \a pt and the rectangle. Points inside the Area return \c 0.
+	template<typename Y>
+	float		distance( const Vec2<Y> &pt ) const;
+	//! Returns the squared distance between the point \a pt and the rectangle. Points inside the rectangle return \c 0.
+	template<typename Y>
+	float		distanceSquared( const Vec2<Y> &pt ) const;
+
+	//! Returns the nearest point on the Rect \a rect. Points inside the rectangle return \a pt.
+	template<typename Y>
+	Vec2<Y>		closestPoint( const Vec2<Y> &pt ) const;
 
 	T				x1, y1, x2, y2;
 

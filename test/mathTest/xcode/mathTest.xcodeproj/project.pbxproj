@@ -1,0 +1,312 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		27E7E17913581FF10042057C /* mathTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27E7E17813581FF10042057C /* mathTestApp.cpp */; };
+		27E7E24E135823B40042057C /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E24D135823B40042057C /* QuickTime.framework */; };
+		27E7E252135823CB0042057C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E251135823CB0042057C /* Carbon.framework */; };
+		27E7E254135823CB0042057C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E253135823CB0042057C /* Cocoa.framework */; };
+		27E7E25D135823E10042057C /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E25C135823E10042057C /* OpenGL.framework */; };
+		27E7E263135824080042057C /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E262135824080042057C /* Accelerate.framework */; };
+		27E7E265135824080042057C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E264135824080042057C /* AudioToolbox.framework */; };
+		27E7E267135824080042057C /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E266135824080042057C /* AudioUnit.framework */; };
+		27E7E269135824080042057C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E268135824080042057C /* CoreAudio.framework */; };
+		27E7E26B135824080042057C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E26A135824080042057C /* CoreVideo.framework */; };
+		27E7E26D135824080042057C /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E26C135824080042057C /* QTKit.framework */; };
+		27E7E3DB1358245D0042057C /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E3DA1358245D0042057C /* AppKit.framework */; };
+		27E7E3DD1358245D0042057C /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E3DC1358245D0042057C /* CoreData.framework */; };
+		27E7E3DF1358245D0042057C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27E7E3DE1358245D0042057C /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76F690486A84900D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		277C2BB3135D096200178A29 /* TestMatrix22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestMatrix22.h; path = ../src/TestMatrix22.h; sourceTree = SOURCE_ROOT; };
+		277C2BB4135D096200178A29 /* TestMatrix33.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestMatrix33.h; path = ../src/TestMatrix33.h; sourceTree = SOURCE_ROOT; };
+		277C2BB5135D096200178A29 /* TestMatrix44.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TestMatrix44.h; path = ../src/TestMatrix44.h; sourceTree = SOURCE_ROOT; };
+		27E7E17813581FF10042057C /* mathTestApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mathTestApp.cpp; path = ../src/mathTestApp.cpp; sourceTree = SOURCE_ROOT; };
+		27E7E24D135823B40042057C /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		27E7E251135823CB0042057C /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		27E7E253135823CB0042057C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		27E7E25C135823E10042057C /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		27E7E262135824080042057C /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		27E7E264135824080042057C /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		27E7E266135824080042057C /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		27E7E268135824080042057C /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		27E7E26A135824080042057C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		27E7E26C135824080042057C /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		27E7E3DA1358245D0042057C /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		27E7E3DC1358245D0042057C /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		27E7E3DE1358245D0042057C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		8DD76F6C0486A84900D96B5E /* mathTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mathTest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76F660486A84900D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27E7E24E135823B40042057C /* QuickTime.framework in Frameworks */,
+				27E7E252135823CB0042057C /* Carbon.framework in Frameworks */,
+				27E7E254135823CB0042057C /* Cocoa.framework in Frameworks */,
+				27E7E25D135823E10042057C /* OpenGL.framework in Frameworks */,
+				27E7E263135824080042057C /* Accelerate.framework in Frameworks */,
+				27E7E265135824080042057C /* AudioToolbox.framework in Frameworks */,
+				27E7E267135824080042057C /* AudioUnit.framework in Frameworks */,
+				27E7E269135824080042057C /* CoreAudio.framework in Frameworks */,
+				27E7E26B135824080042057C /* CoreVideo.framework in Frameworks */,
+				27E7E26D135824080042057C /* QTKit.framework in Frameworks */,
+				27E7E3DB1358245D0042057C /* AppKit.framework in Frameworks */,
+				27E7E3DD1358245D0042057C /* CoreData.framework in Frameworks */,
+				27E7E3DF1358245D0042057C /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* mathTest */ = {
+			isa = PBXGroup;
+			children = (
+				277C2BB2135D095600178A29 /* Headers */,
+				27E7E32B1358241D0042057C /* Frameworks */,
+				08FB7795FE84155DC02AAC07 /* Source */,
+				C6859E8C029090F304C91782 /* Documentation */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = mathTest;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				27E7E17813581FF10042057C /* mathTestApp.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76F6C0486A84900D96B5E /* mathTest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		277C2BB2135D095600178A29 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				277C2BB3135D096200178A29 /* TestMatrix22.h */,
+				277C2BB4135D096200178A29 /* TestMatrix33.h */,
+				277C2BB5135D096200178A29 /* TestMatrix44.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		27E7E32B1358241D0042057C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				27E7E32C1358242E0042057C /* Linked Frameworks */,
+				27E7E32D135824350042057C /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		27E7E32C1358242E0042057C /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				27E7E24D135823B40042057C /* QuickTime.framework */,
+				27E7E251135823CB0042057C /* Carbon.framework */,
+				27E7E253135823CB0042057C /* Cocoa.framework */,
+				27E7E25C135823E10042057C /* OpenGL.framework */,
+				27E7E262135824080042057C /* Accelerate.framework */,
+				27E7E264135824080042057C /* AudioToolbox.framework */,
+				27E7E266135824080042057C /* AudioUnit.framework */,
+				27E7E268135824080042057C /* CoreAudio.framework */,
+				27E7E26A135824080042057C /* CoreVideo.framework */,
+				27E7E26C135824080042057C /* QTKit.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		27E7E32D135824350042057C /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				27E7E3DA1358245D0042057C /* AppKit.framework */,
+				27E7E3DC1358245D0042057C /* CoreData.framework */,
+				27E7E3DE1358245D0042057C /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		C6859E8C029090F304C91782 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Documentation;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8DD76F620486A84900D96B5E /* mathTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "mathTest" */;
+			buildPhases = (
+				8DD76F640486A84900D96B5E /* Sources */,
+				8DD76F660486A84900D96B5E /* Frameworks */,
+				8DD76F690486A84900D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mathTest;
+			productInstallPath = "$(HOME)/bin";
+			productName = mathTest;
+			productReference = 8DD76F6C0486A84900D96B5E /* mathTest */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "mathTest" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* mathTest */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DD76F620486A84900D96B5E /* mathTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76F640486A84900D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27E7E17913581FF10042057C /* mathTestApp.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB923208733DC60010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CINDER_PATH = ../../..;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"$(CINDER_PATH)/lib/libcinder_d.a",
+					"-lz",
+				);
+				PRODUCT_NAME = mathTest;
+			};
+			name = Debug;
+		};
+		1DEB923308733DC60010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CINDER_PATH = ../../..;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"$(CINDER_PATH)/lib/libcinder.a",
+					"-lz",
+				);
+				PRODUCT_NAME = mathTest;
+			};
+			name = Release;
+		};
+		1DEB923608733DC60010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = i386;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../../boost;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+				USER_HEADER_SEARCH_PATHS = ../../../include;
+				VALID_ARCHS = i386;
+			};
+			name = Debug;
+		};
+		1DEB923708733DC60010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = i386;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = ../../../boost;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+				USER_HEADER_SEARCH_PATHS = ../../../include;
+				VALID_ARCHS = i386;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB923108733DC60010E9CD /* Build configuration list for PBXNativeTarget "mathTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB923208733DC60010E9CD /* Debug */,
+				1DEB923308733DC60010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB923508733DC60010E9CD /* Build configuration list for PBXProject "mathTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB923608733DC60010E9CD /* Debug */,
+				1DEB923708733DC60010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}
