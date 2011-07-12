@@ -70,14 +70,28 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 	setupCocoaTouchWindow( app );
 }
 
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+	[app->mState->mCinderView stopAnimation];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+	[app->mState->mCinderView startAnimation];
+}
+
 - (void) applicationWillResignActive:(UIApplication *)application
 {
 //	[cinderView stopAnimation];
+    [app->mState->mCinderView stopAnimation];
+    app->willResignActive();
 }
 
 - (void) applicationDidBecomeActive:(UIApplication *)application
 {
 //	[cinderView startAnimation];
+    [app->mState->mCinderView startAnimation];
+    app->didBecomeActive();
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
