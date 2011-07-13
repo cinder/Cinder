@@ -1260,7 +1260,11 @@ BoolState::~BoolState()
 ClientBoolState::ClientBoolState( GLint target )
 	: mTarget( target )
 {
-	glGetBooleanv( target, &mOldValue );
+#if defined( CINDER_GLES )
+    mOldValue = glIsEnabled( target );
+#else  
+    glGetBooleanv( target, &mOldValue );
+#endif
 }
 
 ClientBoolState::~ClientBoolState()
