@@ -584,4 +584,9 @@ HDC Font::getGlobalDc()
 }
 #endif
 
+FontInvalidNameExc::FontInvalidNameExc( const std::string &fontName ) throw()
+{
+	sprintf( mMessage, "%s", fontName.c_str() );
+}
+
 } // namespace cinder
