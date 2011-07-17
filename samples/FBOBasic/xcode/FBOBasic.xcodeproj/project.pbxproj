@@ -171,7 +171,11 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "FBOBasic" */;
 			compatibilityVersion = "Xcode 3.0";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* FBOBasic */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -214,11 +218,11 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = FBOBasic_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
-					"",
 				);
 				PRODUCT_NAME = FBOBasic;
 				WRAPPER_EXTENSION = app;
@@ -237,11 +241,11 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = FBOBasic_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
-					"",
 				);
 				PRODUCT_NAME = FBOBasic;
 				STRIP_INSTALLED_PRODUCT = YES;

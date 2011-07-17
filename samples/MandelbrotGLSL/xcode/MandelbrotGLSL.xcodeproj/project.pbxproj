@@ -178,7 +178,11 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MandelbrotGLSL" */;
 			compatibilityVersion = "Xcode 3.0";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* MandelbrotGLSL */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -224,11 +228,11 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MandelbrotGLSL_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
-					"",
 				);
 				PRODUCT_NAME = MandelbrotGLSL;
 				WRAPPER_EXTENSION = app;
@@ -247,11 +251,11 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = MandelbrotGLSL_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
-					"",
 				);
 				PRODUCT_NAME = MandelbrotGLSL;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -268,8 +272,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				PREBINDING = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
 			};
@@ -284,8 +288,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				PREBINDING = NO;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
 			};

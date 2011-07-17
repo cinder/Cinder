@@ -54,8 +54,8 @@ def processExport( outputName, compilerName, version ):
     os.system( "doxygen Doxyfile" )
     print "generating Cinder-OpenCV docs"
     os.chdir( outputDir + "blocks" + os.sep + "opencv" + os.sep + "docs" + os.sep + "doxygen" )
-    os.system( "doxygen Doxyfile" )
-    os.remove( outputDir + "docs" + os.sep + "doxygen" + os.sep + "cinder.tag" )
+    os.system( "/Applications/Doxygen.app/Contents/Resources/doxygen Doxyfile" )
+#    os.remove( outputDir + "docs" + os.sep + "doxygen" + os.sep + "cinder.tag" )
     print "removing test"
     shutil.rmtree( outputDir + "test" )
     print "copying boost headers"

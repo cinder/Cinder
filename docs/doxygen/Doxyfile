@@ -31,7 +31,7 @@ PROJECT_NAME           = Cinder
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER         = 0.8.3dev
+PROJECT_NUMBER         = 0.8.3
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -191,7 +191,7 @@ TAB_SIZE               = 4
 
 ALIASES                = "DummyImage{1}=\image html \"\1\" \" \" width=1cm" \
                          "Movie{3}=\htmlonly <!-- \endhtmlonly \DummyImage{\1} \htmlonly --><embed width=\"\2\" height=\"\3\" target=\"myself\" autoplay=\"false\" src=\"\1\" pluginspage=\"http://www.apple.com/quicktime/download/index.html\"></embed> \endhtmlonly" \
-                         "ImplShared=\ref guide_ImplShared \"Implicitly shared object\".
+                         "ImplShared=\ref guide_ImplShared \"Implicitly shared object\"."
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C 
 # sources only. Doxygen will then generate output that is more tailored for C. 

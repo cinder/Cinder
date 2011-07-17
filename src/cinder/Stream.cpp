@@ -81,7 +81,7 @@ void IStream::readBig( T *t )
 #ifdef BOOST_BIG_ENDIAN
 	read( t );
 #else
-	IORead( &t, sizeof(T) );
+	IORead( t, sizeof(T) );
 	*t = swapEndian( *t );
 #endif
 }
@@ -92,7 +92,7 @@ void IStream::readLittle( T *t )
 #ifdef CINDER_LITTLE_ENDIAN
 	read( t );
 #else
-	IORead( &t, sizeof(T) );
+	IORead( t, sizeof(T) );
 	*t = swapEndian( *t );
 #endif
 }
@@ -550,6 +550,9 @@ IoStreamFileRef readWriteFileStream( const std::string &path )
 
 void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize )
 {
+	// prevent crash if stream is not valid
+	if(!is) throw StreamExc();
+
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
@@ -564,6 +567,9 @@ void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size
 
 Buffer loadStreamBuffer( IStreamRef is )
 {
+	// prevent crash if stream is not valid
+	if(!is) throw StreamExc();
+
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
