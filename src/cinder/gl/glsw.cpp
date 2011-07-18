@@ -11,7 +11,6 @@
 */
 
 #include "cinder/gl/gl.h"
-#include "cinder/gl/GlslProg.h"
 #include "cinder/gl/glsw.h"
 
 
@@ -19,11 +18,15 @@ namespace cinder
 { 
 	namespace glsw 
 	{
-		int shutDown()
+		int shutDownGLSW()
 		{
 			return glswShutdown();
 		}
 
+		int initGLSW()
+		{
+			return glswInit();
+		}
 
 		int addDirective( const char* token, const char* directive )
 		{
@@ -48,10 +51,9 @@ namespace cinder
 					throw gl::GlslProgCompileExc( "[glsw]  Failed to init", 0 );
 				if( !glswAddPath( prefix.c_str(), ".glsl" ) )
 					throw gl::GlslProgCompileExc( "[glsw]  Failed on path add", 0 );
-
 				std::stringstream ss;
 				ss << "#version " << mVersion << std::endl;
-				if( !glswAddDirective( "*", ss.str().c_str() ) )
+				if( !glswAddDirective( "GLVERSION", ss.str().c_str() ) )
 					throw gl::GlslProgCompileExc( "[glsw]  Failed on directive add", 0 );
 
 				first = false;

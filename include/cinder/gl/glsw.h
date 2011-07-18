@@ -35,7 +35,8 @@ namespace cinder
 		// Set shader version
 		static void setGlslVersion( const std::string& version ) { mVersion = version; }
 
-		int shutDown();
+		int initGLSW();
+		int shutDownGLSW();
 		int addDirective( const char* token, const char* directive );
 		cinder::gl::GlslProg create( const char* vs, const char* ps=0, const char* gs=0 );
 	}
