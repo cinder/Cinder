@@ -199,7 +199,7 @@ void Line::calcExtents()
 		Gdiplus::StringFormat format;
 		format.SetAlignment( Gdiplus::StringAlignmentNear ); format.SetLineAlignment( Gdiplus::StringAlignmentNear );
 		Gdiplus::RectF sizeRect;
-		const Gdiplus::Font *font = runIt->mFont.getGdiplusFont();;
+		const Gdiplus::Font *font = runIt->mFont.getGdiplusFont();
 		TextManager::instance()->getGraphics()->MeasureString( &runIt->mWideText[0], -1, font, Gdiplus::PointF( 0, 0 ), &format, &sizeRect );
 		
 		runIt->mWidth = sizeRect.Width;
@@ -372,7 +372,7 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 		// these are negated from Cinder's normal pixel coordinate system
 		currentY -= (*lineIt)->mAscent + (*lineIt)->mLeadingOffset;
 		(*lineIt)->render( cgContext, currentY, (float)mHorizontalBorder, pixelWidth );
-		currentY -= (*lineIt)->mDescent + (*lineIt)->mLeading;
+		currentY += -(*lineIt)->mDescent - (*lineIt)->mLeading;
 	}
 
 	// force all the rendering to finish and release the context
@@ -518,5 +518,250 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	return result;
 }
 #endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TextBox
+#if defined( CINDER_COCOA )
+void TextBox::createLines() const
+{
+	if( ! mInvalid )
+		return;
+
+	CFRange range = CFRangeMake( 0, 0 );
+	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor, mLigate );
+	CTTypesetterRef typeSetter = ::CTTypesetterCreateWithAttributedString( attrStr );
+
+	CFIndex strLength = ::CFAttributedStringGetLength( attrStr );
+
+	double maxWidth = ( mSize.x <= 0 ) ? CGFLOAT_MAX : mSize.x;
+
+	float flush = 0;
+	if( mAlign == TextBox::CENTER ) flush = 0.5f;
+	else if( mAlign == TextBox::RIGHT ) flush = 1;
+
+	mCalculatedSize = Vec2f::zero();
+	mLines.clear();
+	Vec2f lineOffset = Vec2f::zero();
+	while( range.location < strLength ) {
+		CGFloat ascent, descent, leading;
+		range.length = ::CTTypesetterSuggestLineBreak( typeSetter, range.location, maxWidth );
+		CTLineRef line = ::CTTypesetterCreateLine( typeSetter, range );
+		double lineWidth = ::CTLineGetTypographicBounds( line, &ascent, &descent, &leading );
+		
+		lineOffset.x = ::CTLineGetPenOffsetForFlush( line, flush, maxWidth );
+		lineOffset.y += ascent;
+		mLines.push_back( make_pair( shared_ptr<const __CTLine>( line, ::CFRelease ), lineOffset ) );
+		lineOffset.y += descent + leading;
+		mCalculatedSize.x = std::max( mCalculatedSize.x, (float)lineWidth );
+		mCalculatedSize.y += ascent + descent + leading;
+		range.location += range.length;
+	}
+
+	::CFRelease( attrStr );
+	::CFRelease( typeSetter );
+  
+	mInvalid = false;
+}
+
+vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
+{
+	vector<pair<uint16_t,Vec2f> > result;
+
+	createLines();
+	CFRange range = CFRangeMake( 0, 0 );
+	for( vector<pair<shared_ptr<const __CTLine>,Vec2f> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		CFArrayRef runsArray = ::CTLineGetGlyphRuns( lineIt->first.get() );
+		CFIndex runs = ::CFArrayGetCount( runsArray );
+		for( CFIndex run = 0; run < runs; ++run ) {
+			CTRunRef runRef = (CTRunRef)::CFArrayGetValueAtIndex( runsArray, run );
+			CFIndex glyphCount = ::CTRunGetGlyphCount( runRef );
+			CGPoint points[glyphCount];
+			CGGlyph glyphBuffer[glyphCount];
+			::CTRunGetPositions( runRef, range, points );
+			::CTRunGetGlyphs( runRef, range, glyphBuffer );
+			for( size_t t = 0; t < glyphCount; ++t )			
+				result.push_back( make_pair( glyphBuffer[t], Vec2f( points[t].x, points[t].y ) + lineIt->second ) );
+		}
+	}
+	
+	return result;
+}
+
+Vec2f TextBox::measure() const
+{
+	createLines();
+	return mCalculatedSize;
+}
+
+Surface	TextBox::render( Vec2f offset )
+{
+	createLines();
+	
+	float sizeX = ( mSize.x <= 0 ) ? mCalculatedSize.x : mSize.x;
+	float sizeY = ( mSize.y <= 0 ) ? mCalculatedSize.y : mSize.y;
+	sizeX = math<float>::ceil( sizeX );
+	sizeY = math<float>::ceil( sizeY );
+	
+	Surface result( (int)sizeX, (int)sizeY, true );
+	ip::fill( &result, mBackgroundColor );
+	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
+	::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
+	
+	for( vector<pair<shared_ptr<const __CTLine>,Vec2f> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		::CGContextSetTextPosition( cgContext, lineIt->second.x + offset.x, sizeY - lineIt->second.y + offset.y );
+		::CTLineDraw( lineIt->first.get(), cgContext );
+	}
+	
+	if( ! mPremultiplied )
+		ip::unpremultiply( &result );
+	else
+		result.setPremultiplied( true );	
+
+	return result;
+}
+#elif defined( CINDER_MSW )
+
+void TextBox::calculate() const
+{
+	if( ! mInvalid )
+		return;
+	const float MAX_SIZE = 1000000.0f;
+
+	if( mText.empty() ) {
+		mCalculatedSize = Vec2f::zero();
+		return;
+	}
+	mWideText = toUtf16( mText );
+
+	Gdiplus::StringFormat format;
+	Gdiplus::StringAlignment align = Gdiplus::StringAlignmentNear;
+	if( mAlign == TextBox::CENTER ) align = Gdiplus::StringAlignmentCenter;
+	else if( mAlign == TextBox::RIGHT ) align = Gdiplus::StringAlignmentFar;
+	format.SetAlignment( align ); format.SetLineAlignment( align );
+	const Gdiplus::Font *font = mFont.getGdiplusFont();
+	Gdiplus::RectF sizeRect( 0, 0, 0, 0 ), outSize;
+	sizeRect.Width = ( mSize.x <= 0 ) ? MAX_SIZE : mSize.x;
+	sizeRect.Height = ( mSize.y <= 0 ) ? MAX_SIZE : mSize.y;
+	TextManager::instance()->getGraphics()->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
+	TextManager::instance()->getGraphics()->MeasureString( &mWideText[0], -1, font, sizeRect, &format, &outSize, NULL, NULL );
+
+	mCalculatedSize.x = outSize.Width;
+	mCalculatedSize.y = outSize.Height;
+
+	mInvalid = false;
+}
+
+Vec2f TextBox::measure() const
+{
+	calculate();
+	return mCalculatedSize;
+}
+
+vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
+{
+	vector<pair<uint16_t,Vec2f> > result;
+
+	if( mText.empty() )
+		return result;
+
+	GCP_RESULTSW gcpResults;
+	WCHAR *glyphIndices = NULL;
+	int *dx = NULL;
+
+	::SelectObject( Font::getGlobalDc(), mFont.getHfont() );
+	mWideText = toUtf16( mText );
+
+	gcpResults.lStructSize = sizeof (gcpResults);
+	gcpResults.lpOutString = NULL;
+	gcpResults.lpOrder = NULL;
+	gcpResults.lpCaretPos = NULL;
+	gcpResults.lpClass = NULL;
+
+	uint32_t bufferSize = std::max<uint32_t>( mWideText.length() * 1.2, 16);		/* Initially guess number of chars plus a few */
+	while( true ) {
+		if( glyphIndices ) {
+			free( glyphIndices );
+			glyphIndices = NULL;
+		}
+		if( dx ) {
+			free( dx );
+			dx = NULL;
+		}
+
+		glyphIndices = (WCHAR*)malloc( bufferSize * sizeof(WCHAR) );
+		dx = (int*)malloc( bufferSize * sizeof(int) );
+		gcpResults.nGlyphs = bufferSize;
+		gcpResults.lpDx = dx;
+		gcpResults.lpGlyphs = glyphIndices;
+
+		if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), &mWideText[0], mWideText.length(), 0,
+						&gcpResults, GCP_DIACRITIC | GCP_LIGATE | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
+			return vector<pair<uint16_t,Vec2f> >(); // failure
+		}
+
+		if( gcpResults.lpDx && gcpResults.lpGlyphs )
+			break;
+
+		// Too small a buffer, try again
+		bufferSize += bufferSize / 2;
+		if( bufferSize > INT_MAX) {
+			return vector<pair<uint16_t,Vec2f> >(); // failure
+		}
+	}
+
+	int xPos = 0;
+	for( int i = 0; i < gcpResults.nGlyphs; i++ ) {
+		result.push_back( std::make_pair( glyphIndices[i], Vec2f( xPos, 0 ) ) );
+		xPos += dx[i];
+	}
+
+	if( glyphIndices )
+		free( glyphIndices );
+	if( dx )
+		free( dx );
+
+	return result;
+}
+
+Surface	TextBox::render( Vec2f offset )
+{
+	calculate();
+	
+	float sizeX = ( mSize.x <= 0 ) ? mCalculatedSize.x : mSize.x;
+	float sizeY = ( mSize.y <= 0 ) ? mCalculatedSize.y : mSize.y;
+	sizeX = math<float>::ceil( sizeX );
+	sizeY = math<float>::ceil( sizeY );
+
+	sizeY += 1;
+	// prep our GDI and GDI+ resources
+	::HDC dc = TextManager::instance()->getDc();
+	Surface result( (int)sizeX, (int)sizeY, true, SurfaceConstraintsGdiPlus() );
+	result.setPremultiplied( mPremultiplied );
+	Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result );
+	Gdiplus::Graphics *offscreenGraphics = Gdiplus::Graphics::FromImage( offscreenBitmap );
+	// high quality text rendering
+	offscreenGraphics->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
+	// fill the surface with the background color
+	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255), 
+			(BYTE)(mBackgroundColor.g * 255), (BYTE)(mBackgroundColor.b * 255) ) );
+	const Gdiplus::Font *font = mFont.getGdiplusFont();;
+	ColorA8u nativeColor( mColor );
+	Gdiplus::StringFormat format;
+	Gdiplus::StringAlignment align = Gdiplus::StringAlignmentNear;
+	if( mAlign == TextBox::CENTER ) align = Gdiplus::StringAlignmentCenter;
+	else if( mAlign == TextBox::RIGHT ) align = Gdiplus::StringAlignmentFar;
+	format.SetAlignment( align  ); format.SetLineAlignment( align );
+	Gdiplus::SolidBrush brush( Gdiplus::Color( nativeColor.a, nativeColor.r, nativeColor.g, nativeColor.b ) );
+	offscreenGraphics->DrawString( &mWideText[0], -1, font, Gdiplus::RectF( offset.x, offset.y, sizeX, sizeY ), &format, &brush );
+	
+	::GdiFlush();
+
+	delete offscreenBitmap;
+	delete offscreenGraphics;
+
+	return result;
+}
+
+#endif // defined( CINDER_MSW )
 
 } // namespace cinder

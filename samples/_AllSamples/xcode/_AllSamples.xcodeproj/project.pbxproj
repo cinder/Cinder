@@ -626,14 +626,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090 /* EaseGallery.app */;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = EaseGallery;
 		};
 		00A11A41135A28CA00081873 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090 /* EaseGallery */;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = EaseGallery;
 		};
 		00AE0FEB113DF18C005AFB58 /* PBXContainerItemProxy */ = {

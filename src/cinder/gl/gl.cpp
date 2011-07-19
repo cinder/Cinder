@@ -1113,7 +1113,7 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 	vbo.disableClientStates();
 }
 
-#endif ! defined( CINDER_GLES )
+#endif // ! defined( CINDER_GLES )
 
 
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp )
@@ -1272,7 +1272,11 @@ BoolState::~BoolState()
 ClientBoolState::ClientBoolState( GLint target )
 	: mTarget( target )
 {
-	glGetBooleanv( target, &mOldValue );
+#if defined( CINDER_GLES )
+    mOldValue = glIsEnabled( target );
+#else  
+    glGetBooleanv( target, &mOldValue );
+#endif
 }
 
 ClientBoolState::~ClientBoolState()

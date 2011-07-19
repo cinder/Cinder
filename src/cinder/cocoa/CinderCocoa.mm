@@ -226,6 +226,39 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 	return attrString;
 }
 
+CFAttributedStringRef createCfAttributedString( const std::string &str, const Font &font, const ColorA &color, bool ligate )
+{
+	CGColorRef cgColor = createCgColor( color );
+	const int ligatures = ( ligate ) ? 1 : 0;
+    CFNumberRef ligaturesRef = ::CFNumberCreate( kCFAllocatorDefault, kCFNumberIntType, &ligatures );
+	const CFStringRef keys[] = {
+		kCTFontAttributeName,
+		kCTForegroundColorAttributeName,
+		kCTLigatureAttributeName
+	};
+	const CFTypeRef values[] = {
+		font.getCtFontRef(),
+		cgColor,
+		ligaturesRef
+	};
+	
+	// Create our attributes
+	CFDictionaryRef attributes = ::CFDictionaryCreate(kCFAllocatorDefault, (const void**)&keys, (const void**)&values, sizeof(keys)/sizeof(keys[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+	assert( attributes != NULL );
+
+	CGColorRelease( cgColor );
+	
+	// Create the attributed string
+	CFStringRef strRef = CFStringCreateWithCString( kCFAllocatorDefault, str.c_str(), kCFStringEncodingUTF8 );
+	CFAttributedStringRef attrString = ::CFAttributedStringCreate( kCFAllocatorDefault, strRef, attributes );
+	
+	CFRelease( strRef );
+	CFRelease( attributes );
+	CFRelease( ligaturesRef );
+	
+	return attrString;
+}
+
 CGColorRef createCgColor( const Color &color )
 {
 	shared_ptr<CGColorSpace> safeColor( ::CGColorSpaceCreateDeviceRGB(), ::CGColorSpaceRelease );

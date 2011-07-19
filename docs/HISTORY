@@ -10,7 +10,7 @@
 	WinInet support - replacement of libCurl on Windows with native API
 	Text rendering on iPhone
 	gl::drawString()
-* 0.8.2		---
+* 0.8.2		Oct 14, 2010
 	OpenCV 2.1 Support on Mac OS X, iOS and Windows
 	Microphone input on Mac OS X & iOS
 	FFT audio analysis on Mac OS X
@@ -30,4 +30,17 @@
 	Upgraded Cairo to 1.10.0
 	Upgraded to Boost 1.44
 	Removed Mac OS X GLee dependency
-	
+* 0.8.3		July 15, 2011
+	Part 2 of Robert Hodgin's "Hello Cinder" tutorial
+	Text Layout Improvements
+	TextureFont Class
+	New XML Parsing and Export API
+	OBJ Exporting
+	Clipboard Support
+	Sophisticated Path Subdivision
+	16-bit Image Pipeline
+	Parallel Transport Frame
+	Triangulation API
+	TriMesh2D
+	Math Core Cleanup and Optimizations
+	Built-in Penner Easing Equations

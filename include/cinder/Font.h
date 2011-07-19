@@ -70,20 +70,25 @@ class Font {
 	float					getDescent() const;
 	size_t					getNumGlyphs() const;
 
-	Glyph					getGlyphIndex( size_t idx );
-	Glyph					getGlyphChar( char utf8Char );
-	std::vector<Glyph>		getGlyphs( const std::string &utf8String );
+	Glyph					getGlyphIndex( size_t idx ) const;
+	Glyph					getGlyphChar( char utf8Char ) const;
+	std::vector<Glyph>		getGlyphs( const std::string &utf8String ) const;
 	//! Returns a cinder::Shape2d representing the shape of the glyph at \a glyphIndex
-	Shape2d					getGlyphShape( Glyph glyphIndex );
+	Shape2d					getGlyphShape( Glyph glyphIndex ) const;
+	//! Returns the bounding box of a Glyph, relative to the baseline as the origin
+	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
 	
 	static const std::vector<std::string>&		getNames( bool forceRefresh = false );
+	static Font				getDefault();
 
 #if defined( CINDER_COCOA )
 	CGFontRef				getCgFontRef() const;
 	CTFontRef				getCtFontRef() const;
 #elif defined( CINDER_MSW )
 	::LOGFONT				getLogfont() const { return mObj->mLogFont; }
+	::HFONT					getHfont() const { return mObj->mHfont; }
 	const Gdiplus::Font*	getGdiplusFont() const { return mObj->mGdiplusFont.get(); }
+	static HDC				getGlobalDc();
 #endif
 
  private:
@@ -125,7 +130,11 @@ class Font {
 class FontInvalidNameExc : public cinder::Exception {
   public:
 	FontInvalidNameExc() throw() {}
+<<<<<<< HEAD
 	FontInvalidNameExc( const std::string &fontName ) throw() { sprintf_s( mMessage, "%s", fontName.c_str() ); }
+=======
+	FontInvalidNameExc( const std::string &fontName ) throw();
+>>>>>>> 0f58230c22034daa1f93abe8949acf15da9ee578
 	virtual const char* what() const throw() { return mMessage; }	
   private:
 	char mMessage[2048];	
