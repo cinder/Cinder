@@ -63,6 +63,15 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 
 @implementation CinderAppDelegateIPhone
 
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    app->privateOpenURL__(cinder::app::OpenURLEvent([[url absoluteString] cString]));
+}
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+    
+    app->privateOpenURL__(cinder::app::OpenURLEvent([[url absoluteString] cString])); 
+}
 
 - (void) applicationDidFinishLaunching:(UIApplication *)application
 {
@@ -211,6 +220,14 @@ void AppCocoaTouch::privatePrepareSettings__()
 	prepareSettings( &mSettings );
 }
 
+void AppCocoaTouch::privateOpenURL__( const OpenURLEvent &event )
+{
+    bool handled = false;
+    for( CallbackMgr<bool (OpenURLEvent)>::iterator cbIter = mCallbacksOpenURL.begin(); ( cbIter != mCallbacksOpenURL.end() ) && ( ! handled ); ++cbIter )
+        handled = (cbIter->second)( event );		
+}
+    
+    
 void AppCocoaTouch::privateTouchesBegan__( const TouchEvent &event )
 {
 	bool handled = false;

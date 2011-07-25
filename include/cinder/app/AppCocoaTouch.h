@@ -30,6 +30,21 @@
 
 namespace cinder { namespace app {
 
+    class OpenURLEvent : public Event {
+    public:
+        OpenURLEvent(const std::string url) : mURL(url) 
+        {
+        }
+        
+        const std::string getURL() {return mURL;}
+        
+    private:
+        std::string mURL;
+    };
+    
+    
+
+    
 struct AppCocoaTouchState;
 
 class AppCocoaTouch : public App {
@@ -99,6 +114,11 @@ class AppCocoaTouch : public App {
 	//! Unregisters a callback for touchesEnded events.
 	void			unregisterAccelerated( CallbackId id ) { mCallbacksAccelerated.unregisterCb( id ); }
 
+    template<typename T>
+	CallbackId		registerOpenURL( T *obj, bool (T::*callback)(OpenURLEvent) ) { return mCallbacksOpenURL.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for touchesEnded events.
+	void			unregisterOpenURL( CallbackId id ) { mCallbacksOpenURL.unregisterCb( id ); }
+
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
 	virtual int		getWindowWidth() const;
@@ -152,7 +172,8 @@ class AppCocoaTouch : public App {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
-	void		privatePrepareSettings__();
+	void        privateOpenURL__( const OpenURLEvent &event );
+    void		privatePrepareSettings__();
 	void		privateTouchesBegan__( const TouchEvent &event );
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
@@ -174,6 +195,7 @@ class AppCocoaTouch : public App {
 
 	CallbackMgr<bool (TouchEvent)>		mCallbacksTouchesBegan, mCallbacksTouchesMoved, mCallbacksTouchesEnded;
 	CallbackMgr<bool (AccelEvent)>		mCallbacksAccelerated;
+    CallbackMgr<bool (OpenURLEvent)>		mCallbacksOpenURL;
 
 	float					mAccelFilterFactor;
 	Vec3f					mLastAccel, mLastRawAccel;

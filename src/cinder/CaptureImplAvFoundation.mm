@@ -167,16 +167,19 @@ static BOOL sDevicesEnumerated = false;
     [mSession addOutput:output];
 	
 	//adjust connection settings
-	/*
-	//Testing indicates that at least the 3GS doesn't support video orientation changes
 	NSArray * connections = output.connections;
 	for( int i = 0; i < [connections count]; i++ ) {
-		AVCaptureConnection * connection = [connections objectAtIndex:i];
-		
+		AVCaptureConnection * connection = [connections objectAtIndex:i];	
 		if( connection.supportsVideoOrientation ) {
+			NSLog(@"orientation dumping");
+//
+//			NSLog(connection.videoOrientation);
 			connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+//			[connection setOrientation: AVCaptureVideoOrientationPortrait];
+//			NSLog(connection.videoOrientation);
+//	
 		}
-	}*/
+	}
 	
     // Configure your output.
     dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);

@@ -29,7 +29,6 @@
 #include <vector>
 
 namespace cinder { namespace app {
-
 //! Represents a mouse event
 class TouchEvent : public Event {
   public:

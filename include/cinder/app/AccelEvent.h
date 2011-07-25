@@ -27,8 +27,11 @@
 #include "cinder/Vector.h"
 #include "cinder/Quaternion.h"
 
+
+
 namespace cinder { namespace app {
 
+        
 //! Represents a single acceleration value
 class AccelEvent : public Event {
   public:
