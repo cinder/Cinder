@@ -24,6 +24,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/app/Event.h"
+#include "cinder/Filesystem.h"
 
 #include <vector>
 #include <string>
@@ -33,7 +34,7 @@ namespace cinder { namespace app {
 //! Represents a file-drop event, typically received from Windows Explorer or Mac OS X Finder
 class FileDropEvent : public Event {
   public:
-	FileDropEvent( int aX, int aY, const std::vector<std::string> &aFiles )
+	FileDropEvent( int aX, int aY, const std::vector<fs::path> &aFiles )
 		: Event(), mX( aX ), mY( aY ), mFiles( aFiles )
 	{}
 	
@@ -45,15 +46,15 @@ class FileDropEvent : public Event {
 	Vec2i		getPos() const { return Vec2i( mX, mY ); }
 
 	//! Returns the vector of file paths which were dropped
-	const std::vector<std::string>&	getFiles() const { return mFiles; }
+	const std::vector<fs::path>&	getFiles() const { return mFiles; }
 	//! Returns the number of files dropped during the event
 	size_t							getNumFiles() const { return mFiles.size(); }
 	//! Returns the path for file number \a index. 
-	const std::string&				getFile( size_t index ) const { return mFiles.at(index); }
+	const fs::path&					getFile( size_t index ) const { return mFiles.at(index); }
 
   private:
 	int							mX, mY;
-	std::vector<std::string>	mFiles;
+	std::vector<fs::path>		mFiles;
 };
 
 } } // namespace cinder::app

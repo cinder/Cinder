@@ -22,9 +22,9 @@ class ImageFileBasicApp : public AppBasic {
 void ImageFileBasicApp::setup()
 {
 	try {
-		std::string path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
+		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() ) {
-			mTexture = gl::Texture( loadImage( path ) );
+			mTexture = gl::Texture( loadImage( path.string() ) );
 		}
 	}
 	catch( ... ) {
@@ -41,16 +41,16 @@ void ImageFileBasicApp::keyDown( KeyEvent event )
 		setFullScreen( false );
 	}
 	else if( event.getChar() == 'o' ) {
-		std::string path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
+		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() )
-			mTexture = gl::Texture( loadImage( path ) );
+			mTexture = gl::Texture( loadImage( path.string() ) );
 	}
 }
 
 void ImageFileBasicApp::fileDrop( FileDropEvent event )
 {
 	try {
-		mTexture = gl::Texture( loadImage( event.getFile( 0 ) ) );
+		mTexture = gl::Texture( loadImage( event.getFile( 0 ).string() ) );
 	}
 	catch( ... ) {
 		console() << "unable to load the texture file!" << std::endl;

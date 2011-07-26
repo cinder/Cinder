@@ -16,9 +16,9 @@ class ImageWriterSampleApp : public AppBasic {
 			// load a source image into a Surface to be written later
 			Surface srf( loadImage( loadResource( RES_IMAGE ) ), SurfaceConstraintsDefault(), false );
 			
-			string pngPath = getSaveFilePath( getHomeDirectory() );
+			fs::path pngPath = getSaveFilePath( getHomeDirectory() );
 			if( ! pngPath.empty() ) {
-				writeImage( pngPath, srf, ImageTarget::Options().colorModel( ImageIo::CM_GRAY ).quality( 0.5f ) );
+				writeImage( pngPath.string(), srf, ImageTarget::Options().colorModel( ImageIo::CM_GRAY ).quality( 0.5f ) );
 			}
 		}
 		catch( ... ) {

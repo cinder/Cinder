@@ -215,7 +215,7 @@ SurfaceImage::SurfaceImage( ImageSourceRef imageSource )
 {
 	mCairoSurface = cairo_image_surface_create( imageSource->hasAlpha() ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, imageSource->getWidth(), imageSource->getHeight() );
 	initCinderSurface( imageSource->hasAlpha(), cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
-	writeImage( mCinderSurface, imageSource );
+	writeImage( (ImageTargetRef)mCinderSurface, imageSource );
 }
 
 SurfaceImage::SurfaceImage( const SurfaceImage &other )

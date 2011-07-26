@@ -233,7 +233,7 @@ string App::getResourcePath()
 
 #endif
 
-string App::getOpenFilePath( const string &initialPath, vector<string> extensions )
+fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 #if defined( CINDER_MAC )
 	bool wasFullScreen = isFullScreen();
@@ -270,7 +270,7 @@ string App::getOpenFilePath( const string &initialPath, vector<string> extension
 #endif
 }
 
-string App::getFolderPath( const string &initialPath )
+fs::path App::getFolderPath( const fs::path &initialPath )
 {
 #if defined( CINDER_MAC )
 	bool wasFullScreen = isFullScreen();
@@ -300,7 +300,7 @@ string App::getFolderPath( const string &initialPath )
 #endif
 }
 
-string	App::getSaveFilePath( const string &initialPath, vector<string> extensions )
+fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 #if defined( CINDER_MAC )
 	bool wasFullScreen = isFullScreen();

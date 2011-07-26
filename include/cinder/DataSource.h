@@ -26,6 +26,7 @@
 #include "cinder/Url.h"
 #include "cinder/Buffer.h"
 #include "cinder/Stream.h"
+#include "cinder/Filesystem.h"
 
 namespace cinder {
 
@@ -36,7 +37,7 @@ class DataSource {
 	virtual bool	isFilePath() = 0;
 	virtual bool	isUrl() = 0;
 	
-	const std::string&	getFilePath();
+	const fs::path&		getFilePath();
 	const Url&			getUrl();
 	const std::string&	getFilePathHint();
 
@@ -44,7 +45,7 @@ class DataSource {
 	virtual IStreamRef	createStream() = 0;
 
   protected:
-	DataSource( const std::string &aFilePath, const Url &aUrl )
+	DataSource( const fs::path &aFilePath, const Url &aUrl )
 		: mFilePath( aFilePath ), mUrl( aUrl ) 
 	{}
 	virtual ~DataSource() {}
@@ -54,7 +55,8 @@ class DataSource {
 	void	setFilePathHint( const std::string &aFilePathHint );
 	
 	Buffer				mBuffer;
-	std::string			mFilePath, mFilePathHint;
+	fs::path			mFilePath;
+	std::string			mFilePathHint;
 	Url					mUrl;
 };
 
@@ -63,7 +65,7 @@ typedef std::shared_ptr<class DataSourcePath>	DataSourcePathRef;
 
 class DataSourcePath : public DataSource {
   public:
-	static DataSourcePathRef	createRef( const std::string &path );
+	static DataSourcePathRef	createRef( const fs::path &path );
 
 	virtual bool	isFilePath() { return true; }
 	virtual bool	isUrl() { return false; }
@@ -71,14 +73,14 @@ class DataSourcePath : public DataSource {
 	virtual IStreamRef	createStream();
 
   protected:
-	DataSourcePath( const std::string &path );
+	explicit DataSourcePath( const fs::path &path );
 	
 	virtual	void	createBuffer();
 	
 	IStreamFileRef	mStream;	
 };
 
-DataSourcePathRef	loadFile( const std::string &path );
+DataSourcePathRef	loadFile( const fs::path &path );
 
 typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 

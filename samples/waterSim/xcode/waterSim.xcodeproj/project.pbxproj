@@ -192,7 +192,14 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "waterSim" */;
 			compatibilityVersion = "Xcode 3.0";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* waterSim */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -235,7 +242,7 @@
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -247,10 +254,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 					"$(inherited)",
 					../../../lib,
 				);
-				OTHER_LDFLAGS = (
-					../../../lib/libcinder_d.a,
-					"",
-				);
+				OTHER_LDFLAGS = ../../../lib/libcinder_d.a;
 				PRODUCT_NAME = waterSim;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -263,7 +267,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
-GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -276,10 +280,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 					"$(inherited)",
 					../../../lib,
 				);
-				OTHER_LDFLAGS = (
-					../../../lib/libcinder.a,
-					"",
-				);
+				OTHER_LDFLAGS = ../../../lib/libcinder.a;
 				PREBINDING = YES;
 				PRODUCT_NAME = waterSim;
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -292,7 +293,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 			buildSettings = {
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
-GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
@@ -308,7 +309,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 			buildSettings = {
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
-GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";

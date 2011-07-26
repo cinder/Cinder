@@ -52,9 +52,9 @@ class StreamBase : private boost::noncopyable {
 #endif
  
 	//! Returns the file name of the path from which a Stream originated when relevant. Empty string when undefined.
-  	const std::string&	getFileName() const { return mFileName; }
+  	const fs::path&		getFileName() const { return mFileName; }
 	//! Sets the file name of the path from which a Stream originated when relevant. Empty string when undefined.
-	void				setFileName( const std::string &aFileName ) { mFileName = aFileName; }
+	void				setFileName( const fs::path &aFileName ) { mFileName = aFileName; }
 
 	//! Returns whether the Stream has been requested to destroy its source upon its own destruction. For example, IStreamFile will delete its source file. Ignored in some types of streams. Defaults to \c false.
 	bool		getDeleteOnDestroy() const { return mDeleteOnDestroy; }
@@ -73,7 +73,7 @@ class StreamBase : private boost::noncopyable {
  protected:
 	StreamBase() : mDeleteOnDestroy( false ) {}
 
-	std::string				mFileName;
+	fs::path				mFileName;
 	bool					mDeleteOnDestroy;
 };
 
@@ -317,11 +317,11 @@ class IStreamStateRestore {
 };
 
 //! Opens the file lcoated at \a path for read access as a stream.
-IStreamFileRef	loadFileStream( const std::string &path );
+IStreamFileRef	loadFileStream( const fs::path &path );
 //! Opens the file located at \a path for write access as a stream, and creates it if it does not exist. Optionally creates any intermediate directories when \a createParents is true.
-OStreamFileRef	writeFileStream( const std::string &path, bool createParents = true );
+OStreamFileRef	writeFileStream( const fs::path &path, bool createParents = true );
 //! Opens a path for read-write access as a stream.
-IoStreamFileRef readWriteFileStream( const std::string &path );
+IoStreamFileRef readWriteFileStream( const fs::path &path );
 
 //! Loads the contents of a stream into a contiguous block of memory, pointed to by \a resultData. The size of this block is stored in \a resultDataSize.
 void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize );

@@ -356,7 +356,7 @@ ImageSource::RowFunc ImageSource::setupRowFunc( ImageTargetRef target )
 ///////////////////////////////////////////////////////////////////////////////
 ImageSourceRef loadImage( const std::string &path, ImageSource::Options options, string extension )
 {
-	return loadImage( DataSourcePath::createRef( path ), options, extension );
+	return loadImage( (DataSourceRef)DataSourcePath::createRef( path ), options, extension );
 }
 
 ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options, string extension )
@@ -373,7 +373,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 
 void writeImage( const std::string &path, const ImageSourceRef &imageSource, ImageTarget::Options options, std::string extension )
 {
-	writeImage( writeFile( path ), imageSource, options, extension );
+	writeImage( (DataTargetRef)writeFile( path ), imageSource, options, extension );
 }
 
 void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, ImageTarget::Options options, string extension )

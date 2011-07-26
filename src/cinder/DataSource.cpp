@@ -31,7 +31,7 @@ void DataSource::setFilePathHint( const std::string &aFilePathHint )
 	mFilePathHint = aFilePathHint;
 }
 
-const std::string& DataSource::getFilePath()
+const fs::path& DataSource::getFilePath()
 {
 	return mFilePath;
 }
@@ -55,15 +55,15 @@ Buffer& DataSource::getBuffer()
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourcePath
-DataSourcePathRef DataSourcePath::createRef( const std::string &path )
+DataSourcePathRef DataSourcePath::createRef( const fs::path &path )
 {
 	return DataSourcePathRef( new DataSourcePath( path ) );
 }
 
-DataSourcePath::DataSourcePath( const std::string &path )
+DataSourcePath::DataSourcePath( const fs::path &path )
 	: DataSource( path, Url() )
 {
-	setFilePathHint( path );
+	setFilePathHint( path.string() );
 }
 
 void DataSourcePath::createBuffer()
@@ -80,7 +80,7 @@ IStreamRef DataSourcePath::createStream()
 	return loadFileStream( mFilePath );
 }
 
-DataSourcePathRef loadFile( const std::string &path )
+DataSourcePathRef loadFile( const fs::path &path )
 {
 	return DataSourcePath::createRef( path );
 }

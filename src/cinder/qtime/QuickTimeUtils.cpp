@@ -204,7 +204,7 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 	return result;
 }
 
-::Movie openMovieFromPath( const std::string &path )
+::Movie openMovieFromPath( const fs::path &path )
 {
 	::Movie result;
 	QTNewMoviePropertyElement movieProps[10];

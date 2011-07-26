@@ -48,9 +48,9 @@ void ImageHFApp::setup()
 
 void ImageHFApp::openFile()
 {
-	std::string path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
+	fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 	if( ! path.empty() ) {
-		mImage = loadImage( path );
+		mImage = loadImage( path.string() );
 	 
 		mWidth = mImage.getWidth();
 		mHeight = mImage.getHeight();

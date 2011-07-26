@@ -32,32 +32,32 @@ void DataTarget::setFilePathHint( const std::string &aFilePathHint )
 	mFilePathHint = aFilePathHint;
 }
 
-const std::string& DataTarget::getFilePath()
+const fs::path& DataTarget::getFilePath() const
 {
 	return mFilePath;
 }
 
-const Url& DataTarget::getUrl()
+const Url& DataTarget::getUrl() const
 {
 	return mUrl;
 }
 
-const std::string& DataTarget::getFilePathHint()
+const std::string& DataTarget::getFilePathHint() const
 {
 	return mFilePathHint;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // DataTargetPath
-DataTargetPathRef DataTargetPath::createRef( const std::string &path )
+DataTargetPathRef DataTargetPath::createRef( const fs::path &path )
 {
 	return DataTargetPathRef( new DataTargetPath( path ) );
 }
 
-DataTargetPath::DataTargetPath( const std::string &path )
+DataTargetPath::DataTargetPath( const fs::path &path )
 	: DataTarget( path, Url() )
 {
-	setFilePathHint( path );
+	setFilePathHint( path.string() );
 }
 
 OStreamRef DataTargetPath::getStream()
@@ -78,16 +78,15 @@ DataTargetStreamRef DataTargetStream::createRef( OStreamRef stream )
 DataTargetStream::DataTargetStream( OStreamRef stream )
 	: DataTarget( "", Url() ), mStream( stream )
 {
-	setFilePathHint( mStream->getFileName() );
+	setFilePathHint( mStream->getFileName().string() );
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // Free functions
-DataTargetPathRef writeFile( const std::string &path, bool createParents )
+DataTargetPathRef writeFile( const fs::path &path, bool createParents )
 {
-	if( createParents ) { 
-		createDirectories( getPathDirectory( path ) ); 
-	}
+	if( createParents )
+		createDirectories( path ); 
 	
  	return DataTargetPath::createRef( path );
 }
