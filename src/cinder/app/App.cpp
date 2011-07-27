@@ -506,7 +506,7 @@ ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string
 
 AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
 {
-	strncpy( mMessage, relativePath.c_str(), sizeof(mMessage) );
+	strncpy( mMessage, relativePath.string().c_str(), sizeof(mMessage) );
 }
 
 } } // namespace cinder::app
