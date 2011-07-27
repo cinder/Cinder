@@ -52,6 +52,7 @@ App::App()
 {
 	mFpsLastSampleFrame = 0;
 	mFpsLastSampleTime = 0;
+	mAssetDirectoriesInitialized = false;
 }
 
 App::~App()
@@ -199,6 +200,60 @@ DataSourceBufferRef App::loadResource( int mswID, const string &mswType )
 }
 
 #endif
+
+
+void App::prepareAssetLoading()
+{
+	if( ! mAssetDirectoriesInitialized ) {
+		fs::path appPath = getAppPath();
+
+		// first search the local directory, then its parent, up to 5 levels up
+		fs::path curPath = appPath;
+		for( int parentCt = 0; parentCt <= 5; ++parentCt ) {
+			fs::path curAssetPath = curPath / "assets";
+			if( fs::exists( curAssetPath ) && fs::is_directory( curAssetPath ) ) {
+				mAssetDirectories.push_back( curAssetPath );
+				break;
+			}
+			curPath = curPath.parent_path();
+		}
+				
+		mAssetDirectoriesInitialized = true;
+	}
+}
+
+// locate the asset at 'relativePath'
+fs::path App::findAssetPath( const fs::path &relativePath )
+{
+	prepareAssetLoading();
+	for( vector<fs::path>::const_iterator assetDirIt = mAssetDirectories.begin(); assetDirIt != mAssetDirectories.end(); ++assetDirIt ) {
+		if( fs::exists( *assetDirIt / relativePath ) )
+			return ( *assetDirIt / relativePath );
+	}
+	
+	// empty implies failure
+	return fs::path();
+}
+
+DataSourcePathRef App::loadAsset( const fs::path &relativePath )
+{
+	fs::path assetPath = findAssetPath( relativePath );
+	if( ! assetPath.empty() )
+		return DataSourcePath::createRef( assetPath.string() );
+	else
+		throw AssetLoadExc( relativePath );
+}
+
+fs::path App::getAssetPath( const fs::path &relativePath )
+{
+	return findAssetPath( relativePath );
+}
+
+void App::addAssetDirectory( const fs::path &dirPath )
+{
+	
+	mAssetDirectories.push_back( dirPath );
+}
 
 #if defined( CINDER_COCOA )
 string App::getResourcePath( const string &rsrcRelativePath )
@@ -448,5 +503,10 @@ ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string
 	sprintf( mMessage, "Failed to load resource: #%d type: %s Mac path: %s", mswID, mswType.c_str(), macPath.c_str() );
 }
 #endif // defined( CINDER_MSW )
+
+AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
+{
+	strncpy( mMessage, relativePath.c_str(), sizeof(mMessage) );
+}
 
 } } // namespace cinder::app

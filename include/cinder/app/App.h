@@ -285,6 +285,13 @@ class App {
 	static DataSourceBufferRef	loadResource( int mswID, const std::string &mswType );
 #endif
 	
+	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
+	DataSourcePathRef		loadAsset( const fs::path &relativePath );
+	//! Returns a fs::path to an application asset. Returns an empty path on failure.
+	fs::path				getAssetPath( const fs::path &relativePath );
+	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
+	void					addAssetDirectory( const fs::path &dirPath );
+	
 	//! Returns the path to the application on disk
 	virtual std::string			getAppPath() = 0;
 	//! Presents the user with a file-open dialog and returns the selected file path.
@@ -351,6 +358,8 @@ class App {
 	//! \endcond
 
   private:
+	  void 		prepareAssetLoading();
+	  fs::path	findAssetPath( const fs::path &relativePath );
   
 #if defined( CINDER_MSW )
 	friend class AppImplMsw;
@@ -372,6 +381,11 @@ class App {
 	CallbackMgr<bool (KeyEvent)>		mCallbacksKeyDown, mCallbacksKeyUp;
 	CallbackMgr<bool (ResizeEvent)>		mCallbacksResize;
 	CallbackMgr<bool (FileDropEvent)>	mCallbacksFileDrop;
+
+	// have we already setup the default path to assets?
+	bool						mAssetDirectoriesInitialized;
+	// Path to directories which contain assets
+	std::vector<fs::path>		mAssetDirectories;
 	
 	static App*		sInstance;
 };
@@ -466,6 +480,16 @@ class ResourceLoadExc : public Exception {
 	ResourceLoadExc( int mswID, const std::string &mswType );
 	ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType );
 #endif
+
+	virtual const char * what() const throw() { return mMessage; }
+
+	char mMessage[4096];
+};
+
+//! Exception for failed asset loading
+class AssetLoadExc : public Exception {
+  public:
+	AssetLoadExc( const fs::path &relativePath );
 
 	virtual const char * what() const throw() { return mMessage; }
 
