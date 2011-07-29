@@ -286,7 +286,7 @@ class App {
 #endif
 	
 	//! Returns the path to the application on disk
-	virtual std::string			getAppPath() = 0;
+	virtual fs::path			getAppPath() = 0;
 	//! Presents the user with a file-open dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
