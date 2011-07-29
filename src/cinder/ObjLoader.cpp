@@ -492,7 +492,7 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 			os << indices[t*3+2]+1 << " ";			
 		}
 		os << std::endl;
-		stream->write( os.str() );
+		stream->writeData( os.str().c_str(), os.str().length() );
 	}
 }
 
