@@ -109,7 +109,7 @@ IStreamRef DataSourceUrl::createStream()
 	return loadUrlStream( mUrl );
 }
 
-DataSourceUrlRef loadUrl( const Url &url )
+DataSourceRef loadUrl( const Url &url )
 {
 	return DataSourceUrl::createRef( url );
 }

@@ -18,7 +18,7 @@ class ImageWriterSampleApp : public AppBasic {
 			
 			fs::path pngPath = getSaveFilePath( getHomeDirectory() );
 			if( ! pngPath.empty() ) {
-				writeImage( pngPath.string(), srf, ImageTarget::Options().colorModel( ImageIo::CM_GRAY ).quality( 0.5f ) );
+				writeImage( pngPath, srf, ImageTarget::Options().colorModel( ImageIo::CM_GRAY ).quality( 0.5f ) );
 			}
 		}
 		catch( ... ) {

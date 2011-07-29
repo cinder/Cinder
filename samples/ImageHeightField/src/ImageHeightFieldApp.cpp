@@ -50,7 +50,7 @@ void ImageHFApp::openFile()
 {
 	fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 	if( ! path.empty() ) {
-		mImage = loadImage( path.string() );
+		mImage = loadImage( path );
 	 
 		mWidth = mImage.getWidth();
 		mHeight = mImage.getHeight();

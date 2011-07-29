@@ -67,7 +67,7 @@ void QTimeIterApp::keyDown( KeyEvent event )
 			if( mSurface ) {
 				fs::path savePath = getSaveFilePath();
 				if( ! savePath.empty() ) {
-					writeImage( (DataTargetRef)writeFile( savePath ), mSurface );
+					writeImage( savePath, mSurface );
 				}
 			}
 		}

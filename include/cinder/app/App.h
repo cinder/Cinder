@@ -275,14 +275,14 @@ class App {
 	static DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType );
 #if defined( CINDER_COCOA )
 	//! Returns a DataSourceRef to an application resource. \a macPath is a path relative to the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
-	static DataSourcePathRef	loadResource( const std::string &macPath );
+	static DataSourceRef		loadResource( const std::string &macPath );
 	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
-	static std::string			getResourcePath( const std::string &rsrcRelativePath );
+	static fs::path				getResourcePath( const fs::path &rsrcRelativePath );
 	//! Returns the absolute file path to the bundle's resources folder. \sa \ref CinderResources
-	static std::string			getResourcePath();
+	static fs::path				getResourcePath();
 #else
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-	static DataSourceBufferRef	loadResource( int mswID, const std::string &mswType );
+	static DataSourceRef		loadResource( int mswID, const std::string &mswType );
 #endif
 	
 	//! Returns the path to the application on disk
@@ -415,13 +415,13 @@ inline double	getElapsedSeconds() { return App::get()->getElapsedSeconds(); }
 inline uint32_t	getElapsedFrames() { return App::get()->getElapsedFrames(); }
 
 //! Returns a DataSource to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-inline DataSourceRef			loadResource( const std::string &macPath, int mswID, const std::string &mswType ) { return App::loadResource( macPath, mswID, mswType ); }
+inline DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType ) { return App::loadResource( macPath, mswID, mswType ); }
 #if defined( CINDER_COCOA )
 	//! Returns a DataSource to an application resource. \a macPath is a path relative to the bundle's resources folder. \sa \ref CinderResources
-	inline DataSourcePathRef	loadResource( const std::string &macPath ) { return App::loadResource( macPath ); }
+	inline DataSourceRef	loadResource( const std::string &macPath ) { return App::loadResource( macPath ); }
 #else
 	//! Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-	inline DataSourceBufferRef	loadResource( int mswID, const std::string &mswType ) { return App::loadResource( mswID, mswType ); }
+	inline DataSourceRef	loadResource( int mswID, const std::string &mswType ) { return App::loadResource( mswID, mswType ); }
 #endif
 
 //! Returns the path to the active App on disk

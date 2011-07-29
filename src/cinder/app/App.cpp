@@ -183,9 +183,9 @@ DataSourceRef App::loadResource( const string &macPath, int mswID, const string 
 }
 
 #if defined( CINDER_COCOA )
-DataSourcePathRef App::loadResource( const string &macPath )
+DataSourceRef App::loadResource( const string &macPath )
 {
-	string resourcePath = App::get()->getResourcePath( macPath );
+	fs::path resourcePath = App::get()->getResourcePath( macPath );
 	if( resourcePath.empty() )
 		throw ResourceLoadExc( macPath );
 	else
@@ -193,7 +193,7 @@ DataSourcePathRef App::loadResource( const string &macPath )
 }
 #else
 
-DataSourceBufferRef App::loadResource( int mswID, const string &mswType )
+DataSourceRef App::loadResource( int mswID, const string &mswType )
 {
 	return DataSourceBuffer::createRef( AppImplMsw::loadResource( mswID, mswType ) );
 }
@@ -201,10 +201,10 @@ DataSourceBufferRef App::loadResource( int mswID, const string &mswType )
 #endif
 
 #if defined( CINDER_COCOA )
-string App::getResourcePath( const string &rsrcRelativePath )
+fs::path App::getResourcePath( const fs::path &rsrcRelativePath )
 {
-	string path = getPathDirectory( rsrcRelativePath );
-	string fileName = getPathFileName( rsrcRelativePath );
+	fs::path path = rsrcRelativePath.parent_path();
+	fs::path fileName = rsrcRelativePath.filename();
 	
 	if( fileName.empty() )
 		return string();
@@ -217,10 +217,10 @@ string App::getResourcePath( const string &rsrcRelativePath )
 	if( ! resultPath )
 		return string();
 	
-	return string([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
+	return fs::path([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
-string App::getResourcePath()
+fs::path App::getResourcePath()
 {
 	char path[4096];
 	
@@ -228,7 +228,7 @@ string App::getResourcePath()
 	::CFURLGetFileSystemRepresentation( url, true, (UInt8*)path, 4096 );
 	::CFRelease( url );
 	
-	return string( path );
+	return fs::path( path );
 }
 
 #endif

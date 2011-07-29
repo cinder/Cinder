@@ -24,7 +24,7 @@ void ImageFileBasicApp::setup()
 	try {
 		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() ) {
-			mTexture = gl::Texture( loadImage( path.string() ) );
+			mTexture = gl::Texture( loadImage( path ) );
 		}
 	}
 	catch( ... ) {
@@ -50,7 +50,7 @@ void ImageFileBasicApp::keyDown( KeyEvent event )
 void ImageFileBasicApp::fileDrop( FileDropEvent event )
 {
 	try {
-		mTexture = gl::Texture( loadImage( event.getFile( 0 ).string() ) );
+		mTexture = gl::Texture( loadImage( event.getFile( 0 ) ) );
 	}
 	catch( ... ) {
 		console() << "unable to load the texture file!" << std::endl;
