@@ -154,7 +154,7 @@ typedef std::shared_ptr<class IStreamFile>	IStreamFileRef;
 class IStreamFile : public IStream {
  public:
 	//! Creates a new IStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
-	static IStreamFileRef createRef( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
+	static IStreamFileRef create( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
 	~IStreamFile();
 
 	size_t		readDataAvailable( void *dest, size_t maxSize );
@@ -189,7 +189,7 @@ typedef std::shared_ptr<class OStreamFile>	OStreamFileRef;
 class OStreamFile : public OStream {
   public:
 	//! Creates a new OStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
-	static OStreamFileRef	createRef( FILE *file, bool ownsFile = true );
+	static OStreamFileRef	create( FILE *file, bool ownsFile = true );
 	~OStreamFile();
 
 	virtual off_t		tell() const;
@@ -214,7 +214,7 @@ typedef std::shared_ptr<class IoStreamFile>		IoStreamFileRef;
 class IoStreamFile : public IoStream {
  public:
 	//! Creates a new IoStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
-	static IoStreamFileRef createRef( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
+	static IoStreamFileRef create( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
 	~IoStreamFile();
 
 	size_t		readDataAvailable( void *dest, size_t maxSize );
@@ -249,7 +249,7 @@ typedef std::shared_ptr<class IStreamMem>	IStreamMemRef;
 class IStreamMem : public IStream {
  public:
 	//! Creates a new IStreamMemRef from the memory pointed to by \a data which is of size \a size bytes.
-	static IStreamMemRef		createRef( const void *data, size_t size );
+	static IStreamMemRef		create( const void *data, size_t size );
 	~IStreamMem();
 
 	size_t		readDataAvailable( void *dest, size_t maxSize );
@@ -282,7 +282,7 @@ typedef std::shared_ptr<class OStreamMem>		OStreamMemRef;
 
 class OStreamMem : public OStream {
  public:
-	static OStreamMemRef		createRef( size_t bufferSizeHint = 4096 ) { return std::shared_ptr<OStreamMem>( new OStreamMem( bufferSizeHint ) ); }
+	static OStreamMemRef		create( size_t bufferSizeHint = 4096 ) { return std::shared_ptr<OStreamMem>( new OStreamMem( bufferSizeHint ) ); }
 
 	~OStreamMem();
 

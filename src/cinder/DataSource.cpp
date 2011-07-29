@@ -136,7 +136,7 @@ void DataSourceBuffer::createBuffer()
 
 IStreamRef DataSourceBuffer::createStream()
 {
-	return IStreamMem::createRef( mBuffer.getData(), mBuffer.getDataSize() );
+	return IStreamMem::create( mBuffer.getData(), mBuffer.getDataSize() );
 }
 
 } // namespace cinder
