@@ -189,7 +189,7 @@ DataSourceRef App::loadResource( const string &macPath )
 	if( resourcePath.empty() )
 		throw ResourceLoadExc( macPath );
 	else
-		return DataSourcePath::createRef( resourcePath );
+		return DataSourcePath::create( resourcePath );
 }
 #else
 

@@ -356,7 +356,7 @@ ImageSource::RowFunc ImageSource::setupRowFunc( ImageTargetRef target )
 ///////////////////////////////////////////////////////////////////////////////
 ImageSourceRef loadImage( const fs::path &path, ImageSource::Options options, string extension )
 {
-	return loadImage( (DataSourceRef)DataSourcePath::createRef( path ), options, extension );
+	return loadImage( (DataSourceRef)DataSourcePath::create( path ), options, extension );
 }
 
 ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options, string extension )

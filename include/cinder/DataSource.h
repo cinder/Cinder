@@ -65,7 +65,7 @@ typedef std::shared_ptr<class DataSourcePath>	DataSourcePathRef;
 
 class DataSourcePath : public DataSource {
   public:
-	static DataSourcePathRef	createRef( const fs::path &path );
+	static DataSourcePathRef	create( const fs::path &path );
 
 	virtual bool	isFilePath() { return true; }
 	virtual bool	isUrl() { return false; }
@@ -86,7 +86,7 @@ typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
 class DataSourceUrl : public DataSource {
   public:
-	static DataSourceUrlRef	createRef( const Url &Url );
+	static DataSourceUrlRef	create( const Url &Url );
 
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return true; }
@@ -108,7 +108,7 @@ typedef std::shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 
 class DataSourceBuffer : public DataSource {
   public:
-	static DataSourceBufferRef		createRef( Buffer buffer, const std::string &filePathHint = "" );
+	static DataSourceBufferRef		create( Buffer buffer, const std::string &filePathHint = "" );
 
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return false; }
