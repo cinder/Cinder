@@ -175,6 +175,7 @@ class AppCocoaTouch : public App {
     void startUpdatingLocation();
     void stopUpdatingLocation();
     
+    LocationEvent getLocation();
     bool headingAvailable();
     bool locationServicesEnabled();
 

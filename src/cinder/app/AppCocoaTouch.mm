@@ -325,4 +325,13 @@ namespace cinder { namespace app {
         return [CLLocationManager locationServicesEnabled];
     }
     
+    LocationEvent AppCocoaTouch::getLocation()
+    {
+        LocationCoordinate2D locationCoordinate2D;
+        locationCoordinate2D.latitude=locationManager.location.coordinate.latitude;
+        locationCoordinate2D.longitude=locationManager.location.coordinate.longitude;
+        LocationEvent newLocation(locationCoordinate2D,locationManager.location.speed, locationManager.location.altitude);
+        return newLocation;
+    }
+    
 } } // namespace cinder::app
