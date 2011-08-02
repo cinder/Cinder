@@ -166,7 +166,8 @@ class AppCocoaTouch : public App {
 	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
 	void		privateAccelerated__( const Vec3f &direction );
     void        privateCompassUpdated__(const float degree);
-    void        privateDidUpdateToLocation__(const float oldX, const float oldY, const float oldSpeed, const float oldAltitude, const float newX,const float newY, const float newSpeed, const float newAltitude);
+    void        privateDidUpdateToLocation__(const float oldX, const float oldY, const float oldSpeed, const float oldAltitude, const float oldHorizontalAccuracy, const float oldVerticalAccuracy,
+                                             const float newX, const float newY, const float newSpeed, const float newAltitude, const float newHorizontalAccuracy, const float newVerticalAccuracy);
 	//! \endcond
     
     //! CLLocationManager methods

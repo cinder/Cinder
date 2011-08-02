@@ -93,8 +93,8 @@ namespace cinder { namespace app {
     //LocationEvent mNewLocation(LocationCoordinate2D(newLocation.coordinate.latitude,newLocation.coordinate.longitude));
     //LocationEvent oldLocation(oldLocation.coordinate.latitude,oldLocation.coordinate.longitude);
     //LocationEvent newLocation(newLocation.coordinate.latitude,newLocation.coordinate.longitude);
-    app->privateDidUpdateToLocation__(oldLocation.coordinate.latitude, oldLocation.coordinate.longitude, oldLocation.speed, oldLocation.altitude,
-                                      newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.speed, newLocation.altitude);
+    app->privateDidUpdateToLocation__(oldLocation.coordinate.latitude, oldLocation.coordinate.longitude, oldLocation.speed, oldLocation.altitude, oldLocation.horizontalAccuracy, oldLocation.verticalAccuracy,
+                                      newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.speed, newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
 }
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)thisAcceleration {
@@ -280,8 +280,8 @@ namespace cinder { namespace app {
         compassUpdated(degree);
     }
     
-    void AppCocoaTouch::privateDidUpdateToLocation__(const float oldLatitude, const float oldLongitude, const float oldSpeed, const float oldAltitude,
-                                                     const float newLatitude, const float newLongitude, const float newSpeed, const float newAltitude){
+    void AppCocoaTouch::privateDidUpdateToLocation__(const float oldLatitude, const float oldLongitude, const float oldSpeed, const float oldAltitude, const float oldHorizontalAccuracy, const float oldVerticalAccuracy,
+                                                     const float newLatitude, const float newLongitude, const float newSpeed, const float newAltitude, const float newHorizontalAccuracy, const float newVerticalAccuracy){
         LocationCoordinate2D oldLocationCoordinate2D;
         oldLocationCoordinate2D.latitude=oldLatitude;
         oldLocationCoordinate2D.longitude=oldLongitude;
@@ -289,8 +289,8 @@ namespace cinder { namespace app {
         newLocationCoordinate2D.latitude=newLatitude;
         newLocationCoordinate2D.longitude=newLongitude;
         
-        LocationEvent newLocation(newLocationCoordinate2D,newSpeed, newAltitude);
-        LocationEvent oldLocation(oldLocationCoordinate2D,oldSpeed, oldAltitude);
+        LocationEvent newLocation(newLocationCoordinate2D,newSpeed, newAltitude, newHorizontalAccuracy, newVerticalAccuracy);
+        LocationEvent oldLocation(oldLocationCoordinate2D,oldSpeed, oldAltitude, oldHorizontalAccuracy, oldVerticalAccuracy);
         didUpdateToLocation(oldLocation,newLocation);
     }
     
@@ -330,7 +330,7 @@ namespace cinder { namespace app {
         LocationCoordinate2D locationCoordinate2D;
         locationCoordinate2D.latitude=locationManager.location.coordinate.latitude;
         locationCoordinate2D.longitude=locationManager.location.coordinate.longitude;
-        LocationEvent newLocation(locationCoordinate2D,locationManager.location.speed, locationManager.location.altitude);
+        LocationEvent newLocation(locationCoordinate2D,locationManager.location.speed, locationManager.location.altitude, locationManager.location.horizontalAccuracy, locationManager.location.verticalAccuracy);
         return newLocation;
     }
     
