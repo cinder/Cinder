@@ -11,6 +11,7 @@ boost/
 build/
 lib/libcinder*.a
 lib/cinder*.lib
+samples/E-BoardingRing/
 
 # Windows cruft
 *.suo
