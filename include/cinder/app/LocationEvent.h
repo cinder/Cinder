@@ -21,12 +21,13 @@ namespace cinder { namespace app {
     class LocationEvent : public Event {
     public:
         
-        LocationEvent(LocationCoordinate2D coord, float speed): Event(), mCoordinate(coord), mSpeed(speed){};
+        LocationEvent(LocationCoordinate2D coord, float speed, float altitude): Event(), mCoordinate(coord), mSpeed(speed), mAltitude(altitude){};
         
         LocationCoordinate2D getCoordinate(){return mCoordinate;}
         float getLatitude(){return mCoordinate.latitude;}
         float getLongitude(){return mCoordinate.longitude;}
         float getSpeed(){return mSpeed;}
+        float getAltitude(){return mAltitude;}
         
         
         
@@ -34,6 +35,7 @@ namespace cinder { namespace app {
     private:
         LocationCoordinate2D mCoordinate;
         float                mSpeed;
+        float                mAltitude;
 
 
 

@@ -93,7 +93,8 @@ namespace cinder { namespace app {
     //LocationEvent mNewLocation(LocationCoordinate2D(newLocation.coordinate.latitude,newLocation.coordinate.longitude));
     //LocationEvent oldLocation(oldLocation.coordinate.latitude,oldLocation.coordinate.longitude);
     //LocationEvent newLocation(newLocation.coordinate.latitude,newLocation.coordinate.longitude);
-    app->privateDidUpdateToLocation__(oldLocation.coordinate.latitude, oldLocation.coordinate.longitude, oldLocation.speed, newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.speed);
+    app->privateDidUpdateToLocation__(oldLocation.coordinate.latitude, oldLocation.coordinate.longitude, oldLocation.speed, oldLocation.altitude,
+                                      newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.speed, newLocation.altitude);
 }
 
 - (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)thisAcceleration {
@@ -279,7 +280,8 @@ namespace cinder { namespace app {
         compassUpdated(degree);
     }
     
-    void AppCocoaTouch::privateDidUpdateToLocation__(const float oldLatitude, const float oldLongitude, const float oldSpeed, const float newLatitude,const float newLongitude, const float newSpeed){
+    void AppCocoaTouch::privateDidUpdateToLocation__(const float oldLatitude, const float oldLongitude, const float oldSpeed, const float oldAltitude,
+                                                     const float newLatitude, const float newLongitude, const float newSpeed, const float newAltitude){
         LocationCoordinate2D oldLocationCoordinate2D;
         oldLocationCoordinate2D.latitude=oldLatitude;
         oldLocationCoordinate2D.longitude=oldLongitude;
@@ -287,8 +289,8 @@ namespace cinder { namespace app {
         newLocationCoordinate2D.latitude=newLatitude;
         newLocationCoordinate2D.longitude=newLongitude;
         
-        LocationEvent newLocation(newLocationCoordinate2D,newSpeed);
-        LocationEvent oldLocation(oldLocationCoordinate2D,oldSpeed);
+        LocationEvent newLocation(newLocationCoordinate2D,newSpeed, newAltitude);
+        LocationEvent oldLocation(oldLocationCoordinate2D,oldSpeed, oldAltitude);
         didUpdateToLocation(oldLocation,newLocation);
     }
     
