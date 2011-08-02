@@ -26,6 +26,7 @@
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/app/AccelEvent.h"
+#include "cinder/app/LocationEvent.h"
 
 
 namespace cinder { namespace app {
@@ -47,14 +48,13 @@ class AppCocoaTouch : public App {
 	  private:
 		bool		mEnableMultiTouch;
 	};
-
+    
+    float  compassDegre;
+    
 	AppCocoaTouch();
 	virtual ~AppCocoaTouch() {}
 
 	virtual void		prepareSettings( Settings *settings ) {}
-    //! System event notification
-    virtual void        didBecomeActive() {}
-    virtual void        willResignActive() {}
 
 	//! Override to respond to the beginning of a multitouch sequence
 	virtual void		touchesBegan( TouchEvent event ) {}
@@ -66,7 +66,11 @@ class AppCocoaTouch : public App {
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }	
 	//! Returns a Vec3d of the acceleration direction
 	virtual void		accelerated( AccelEvent event ) {}
-
+    //! Returns the compass degree
+    virtual void        compassUpdated(const float degree){}
+    //!
+    virtual void        didUpdateToLocation(LocationEvent oldLocation, LocationEvent newLocation){}
+    
 	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
 	CallbackId		registerTouchesBegan( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesBegan.registerCb( callback ); }
 	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
@@ -115,6 +119,9 @@ class AppCocoaTouch : public App {
 	void enableAccelerometer( float updateFrequency = 30.0f, float filterFactor = 0.1f );
 	//! Turns off the accelerometer
 	void disableAccelerometer();
+    //! 
+    void enableCompass();
+    float essai();
 	
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const;
@@ -158,14 +165,24 @@ class AppCocoaTouch : public App {
 	void		privateTouchesEnded__( const TouchEvent &event );
 	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
 	void		privateAccelerated__( const Vec3f &direction );
+    void        privateCompassUpdated__(const float degree);
+    void        privateDidUpdateToLocation__(const float oldX, const float oldY, const float newX,const float newY);
 	//! \endcond
-
-	// The state is contained in a struct in order to avoid this .h needing to be compiled as Objective-C++
-	std::shared_ptr<AppCocoaTouchState>		mState;
+    
+    //! CLLocationManager methods
+    void startUpdatingHeading();
+    void stopUpdatingHeading();
+    void startUpdatingLocation();
+    void stopUpdatingLocation();
+    
+    bool headingAvailable();
+    bool locationServicesEnabled();
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
 	
+	// The state is contained in a struct in order to avoid this .h needing to be compiled as Objective-C++
+	std::shared_ptr<AppCocoaTouchState>		mState;
 	
 	static AppCocoaTouch	*sInstance;	
 	Settings				mSettings;
@@ -177,6 +194,7 @@ class AppCocoaTouch : public App {
 
 	float					mAccelFilterFactor;
 	Vec3f					mLastAccel, mLastRawAccel;
+    
 };
 
 } } // namespace cinder::app
