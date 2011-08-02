@@ -334,4 +334,20 @@ namespace cinder { namespace app {
         return newLocation;
     }
     
+    
+    float AppCocoaTouch::distanceBetweenLocations(LocationEvent locationA, LocationEvent locationB)
+    {
+        
+        CLLocation *mLocationA=[[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationA.getLatitude(), locationA.getLongitude())
+                                                             altitude:locationA.getAltitude() 
+                                                   horizontalAccuracy:kCLLocationAccuracyBest verticalAccuracy:kCLLocationAccuracyBest 
+                                                            timestamp:[NSDate date]];
+        CLLocation *mLocationB=[[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationB.getLatitude(), locationB.getLongitude())
+                                                             altitude:locationB.getAltitude() 
+                                                   horizontalAccuracy:kCLLocationAccuracyBest verticalAccuracy:kCLLocationAccuracyBest 
+                                                            timestamp:[NSDate date]]; 
+        float distance=[mLocationA distanceFromLocation:mLocationB];
+        return distance;
+    }
+    
 } } // namespace cinder::app

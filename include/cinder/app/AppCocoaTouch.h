@@ -175,9 +175,11 @@ class AppCocoaTouch : public App {
     void startUpdatingLocation();
     void stopUpdatingLocation();
     
-    LocationEvent getLocation();
     bool headingAvailable();
     bool locationServicesEnabled();
+    LocationEvent getLocation();
+    
+    float distanceBetweenLocations(LocationEvent locationA, LocationEvent locationB);
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
