@@ -130,11 +130,7 @@ class Font {
 class FontInvalidNameExc : public cinder::Exception {
   public:
 	FontInvalidNameExc() throw() {}
-<<<<<<< HEAD
-	FontInvalidNameExc( const std::string &fontName ) throw() { sprintf_s( mMessage, "%s", fontName.c_str() ); }
-=======
 	FontInvalidNameExc( const std::string &fontName ) throw();
->>>>>>> 0f58230c22034daa1f93abe8949acf15da9ee578
 	virtual const char* what() const throw() { return mMessage; }	
   private:
 	char mMessage[2048];	
