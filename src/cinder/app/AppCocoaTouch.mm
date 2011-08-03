@@ -108,6 +108,10 @@ namespace cinder { namespace app {
     app->privateCompassUpdated__(newHeading.magneticHeading);
 }
 
+- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
+    return app->privateShouldDisplayHeadingCalibration__();
+}
+
 - (void) dealloc
 {
     //	[window release];
@@ -158,7 +162,6 @@ namespace cinder { namespace app {
         //NSLog(@"hello");
         //std::console()<<@"hello"<<std::endl;
         mAccelFilterFactor = filterFactor;
-        
         if( updateFrequency <= 0 )
             updateFrequency = 30.0f;
         
@@ -172,22 +175,12 @@ namespace cinder { namespace app {
         [[UIAccelerometer sharedAccelerometer] setDelegate:nil];
     }
     
-    void AppCocoaTouch::enableCompass() {
-        
+    void AppCocoaTouch::enableLocationSevices() {
         CinderAppDelegateIPhone *appDel = (CinderAppDelegateIPhone *)[[UIApplication sharedApplication] delegate];
         locationManager=[[[CLLocationManager alloc] init] retain];
-        //locationManager.headingFilter=1;
         locationManager.delegate=appDel;
-        //[locationManager startUpdatingLocation];
-        //[locationManager startUpdatingHeading];
         NSLog(@"compass enabled");
-        //[CLLocationManager headingAvailable];
     }    
-    
-    float AppCocoaTouch::essai(){
-        //NSLog(@"%f", compassDegre);
-        return compassDegre;
-    }
     
     //! Returns the maximum frame-rate the App will attempt to maintain.
     float AppCocoaTouch::getFrameRate() const
@@ -294,6 +287,11 @@ namespace cinder { namespace app {
         didUpdateToLocation(oldLocation,newLocation);
     }
     
+    bool AppCocoaTouch::privateShouldDisplayHeadingCalibration__()
+    {
+        return shouldDisplayHeadingCalibration();
+    }
+    
     //!CLLocationMethod
     void AppCocoaTouch::startUpdatingHeading()
     {
@@ -332,6 +330,7 @@ namespace cinder { namespace app {
         locationCoordinate2D.longitude=locationManager.location.coordinate.longitude;
         LocationEvent newLocation(locationCoordinate2D,locationManager.location.speed, locationManager.location.altitude, locationManager.location.horizontalAccuracy, locationManager.location.verticalAccuracy);
         return newLocation;
+        
     }
     
     

@@ -49,7 +49,7 @@ class AppCocoaTouch : public App {
 		bool		mEnableMultiTouch;
 	};
     
-    float  compassDegre;
+    float  compassDegree;
     
 	AppCocoaTouch();
 	virtual ~AppCocoaTouch() {}
@@ -70,6 +70,8 @@ class AppCocoaTouch : public App {
     virtual void        compassUpdated(const float degree){}
     //!
     virtual void        didUpdateToLocation(LocationEvent oldLocation, LocationEvent newLocation){}
+    
+    virtual bool        shouldDisplayHeadingCalibration(){}
     
 	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
 	CallbackId		registerTouchesBegan( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesBegan.registerCb( callback ); }
@@ -119,9 +121,11 @@ class AppCocoaTouch : public App {
 	void enableAccelerometer( float updateFrequency = 30.0f, float filterFactor = 0.1f );
 	//! Turns off the accelerometer
 	void disableAccelerometer();
-    //! 
-    void enableCompass();
-    float essai();
+    
+    //! Enables the device's location services.
+    void enableLocationSevices();
+    
+    
 	
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const;
@@ -168,18 +172,30 @@ class AppCocoaTouch : public App {
     void        privateCompassUpdated__(const float degree);
     void        privateDidUpdateToLocation__(const float oldX, const float oldY, const float oldSpeed, const float oldAltitude, const float oldHorizontalAccuracy, const float oldVerticalAccuracy,
                                              const float newX, const float newY, const float newSpeed, const float newAltitude, const float newHorizontalAccuracy, const float newVerticalAccuracy);
+    bool        privateShouldDisplayHeadingCalibration__();
 	//! \endcond
     
     //! CLLocationManager methods
+    
+    //! start updating heading
     void startUpdatingHeading();
+    //! stop updating heading
     void stopUpdatingHeading();
+    //! start updating location
     void startUpdatingLocation();
+    //! stop updating location
     void stopUpdatingLocation();
     
+    //! Returns YES if the device supports the heading service, otherwise NO.
     bool headingAvailable();
+    
+    //! Determines whether the user has location services enabled.
     bool locationServicesEnabled();
+    
+    //! Return the last location received. Will be nil until a location has been received.
     LocationEvent getLocation();
     
+    //! Returns the lateral distance between two locations.
     float distanceBetweenLocations(LocationEvent locationA, LocationEvent locationB);
 
   private:
