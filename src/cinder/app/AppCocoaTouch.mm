@@ -215,6 +215,11 @@ namespace cinder { namespace app {
         NSLog(@"The desired accuracy is %f",locationManager.desiredAccuracy);
     }
     
+    void AppCocoaTouch::setDistanceFilter(float distanceFilter)
+    {
+        locationManager.distanceFilter=distanceFilter;
+    }
+    
     //! Returns the maximum frame-rate the App will attempt to maintain.
     float AppCocoaTouch::getFrameRate() const
     {
@@ -354,7 +359,7 @@ namespace cinder { namespace app {
     
     LocationEvent AppCocoaTouch::getLocation()
     {
-        NSLog(@"The desired accuracy is %f",locationManager.desiredAccuracy);
+        NSLog(@"The distance filter is %f",locationManager.distanceFilter);
         LocationCoordinate2D locationCoordinate2D;
         locationCoordinate2D.latitude=locationManager.location.coordinate.latitude;
         locationCoordinate2D.longitude=locationManager.location.coordinate.longitude;

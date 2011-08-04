@@ -137,6 +137,8 @@ namespace cinder { namespace app {
         
         void setAccuracyLevelDesired(Accuracy accuracy);
         
+        void setDistanceFilter(float distanceFilter);
+        
         
         //! Returns the maximum frame-rate the App will attempt to maintain.
         virtual float		getFrameRate() const;
