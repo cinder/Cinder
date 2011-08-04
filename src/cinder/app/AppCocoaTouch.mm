@@ -28,7 +28,8 @@
 namespace cinder { namespace app {
     
     AppCocoaTouch*				AppCocoaTouch::sInstance = 0;
-    CLLocationManager *locationManager;
+    CLLocationManager           *locationManager;
+    
     // This struct serves as a compile firewall for maintaining AppCocoaTouch state information
     struct AppCocoaTouchState {
         CinderViewCocoaTouch		*mCinderView;
@@ -89,27 +90,22 @@ namespace cinder { namespace app {
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
-    //LocationEvent mOldLocation(LocationCoordinate2D(oldLocation.coordinate.latitude,oldLocation.coordinate.longitude));
-    //LocationEvent mNewLocation(LocationCoordinate2D(newLocation.coordinate.latitude,newLocation.coordinate.longitude));
-    //LocationEvent oldLocation(oldLocation.coordinate.latitude,oldLocation.coordinate.longitude);
-    //LocationEvent newLocation(newLocation.coordinate.latitude,newLocation.coordinate.longitude);
     app->privateDidUpdateToLocation__(oldLocation.coordinate.latitude, oldLocation.coordinate.longitude, oldLocation.speed, oldLocation.altitude, oldLocation.horizontalAccuracy, oldLocation.verticalAccuracy,
                                       newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.speed, newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
 }
-
-- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)thisAcceleration {
-	// Massage the UIAcceleration class into a Vec3f
-	ci::Vec3f direction( thisAcceleration.x, thisAcceleration.y, thisAcceleration.z );
-	app->privateAccelerated__( direction );
-}
-
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading{
     app->privateCompassUpdated__(newHeading.magneticHeading);
 }
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
-    return app->privateShouldDisplayHeadingCalibration__();
+    return app->shouldDisplayHeadingCalibration;
+}
+
+- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)thisAcceleration {
+	// Massage the UIAcceleration class into a Vec3f
+	ci::Vec3f direction( thisAcceleration.x, thisAcceleration.y, thisAcceleration.z );
+	app->privateAccelerated__( direction );
 }
 
 - (void) dealloc
@@ -159,8 +155,6 @@ namespace cinder { namespace app {
     //! Enables the accelerometer
     void AppCocoaTouch::enableAccelerometer( float updateFrequency, float filterFactor )
     {
-        //NSLog(@"hello");
-        //std::console()<<@"hello"<<std::endl;
         mAccelFilterFactor = filterFactor;
         if( updateFrequency <= 0 )
             updateFrequency = 30.0f;
@@ -175,7 +169,8 @@ namespace cinder { namespace app {
         [[UIAccelerometer sharedAccelerometer] setDelegate:nil];
     }
     
-    void AppCocoaTouch::enableLocationSevices() {
+    void AppCocoaTouch::enableLocationSevices(bool displayHeadingCalibration) {
+        shouldDisplayHeadingCalibration=displayHeadingCalibration;
         CinderAppDelegateIPhone *appDel = (CinderAppDelegateIPhone *)[[UIApplication sharedApplication] delegate];
         locationManager=[[[CLLocationManager alloc] init] retain];
         locationManager.delegate=appDel;
@@ -286,12 +281,7 @@ namespace cinder { namespace app {
         LocationEvent oldLocation(oldLocationCoordinate2D,oldSpeed, oldAltitude, oldHorizontalAccuracy, oldVerticalAccuracy);
         didUpdateToLocation(oldLocation,newLocation);
     }
-    
-    bool AppCocoaTouch::privateShouldDisplayHeadingCalibration__()
-    {
-        return shouldDisplayHeadingCalibration();
-    }
-    
+   
     //!CLLocationMethod
     void AppCocoaTouch::startUpdatingHeading()
     {
@@ -330,7 +320,6 @@ namespace cinder { namespace app {
         locationCoordinate2D.longitude=locationManager.location.coordinate.longitude;
         LocationEvent newLocation(locationCoordinate2D,locationManager.location.speed, locationManager.location.altitude, locationManager.location.horizontalAccuracy, locationManager.location.verticalAccuracy);
         return newLocation;
-        
     }
     
     
@@ -348,5 +337,6 @@ namespace cinder { namespace app {
         float distance=[mLocationA distanceFromLocation:mLocationB];
         return distance;
     }
+    
     
 } } // namespace cinder::app
