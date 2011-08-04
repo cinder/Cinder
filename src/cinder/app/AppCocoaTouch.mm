@@ -94,17 +94,20 @@ namespace cinder { namespace app {
                                       newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.speed, newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
 }
 
-- (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading{
+- (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
+{
     ci::Vec3f rawGeoMagnetismVector(newHeading.x, newHeading.y, newHeading.z);
     const char *tmp = [newHeading.description UTF8String];
     app->privateCompassUpdated__(newHeading.magneticHeading, newHeading.trueHeading, newHeading.headingAccuracy, tmp, rawGeoMagnetismVector);
 }
 
-- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
-    return app->shouldDisplayHeadingCalibration;
+- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager
+{
+    return app->mShouldDisplayHeadingCalibration;
 }
 
-- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)thisAcceleration {
+- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)thisAcceleration 
+{
 	// Massage the UIAcceleration class into a Vec3f
 	ci::Vec3f direction( thisAcceleration.x, thisAcceleration.y, thisAcceleration.z );
 	app->privateAccelerated__( direction );
@@ -171,13 +174,46 @@ namespace cinder { namespace app {
         [[UIAccelerometer sharedAccelerometer] setDelegate:nil];
     }
     
-    void AppCocoaTouch::enableLocationSevices(bool displayHeadingCalibration) {
-        shouldDisplayHeadingCalibration=displayHeadingCalibration;
+    void AppCocoaTouch::enableLocationSevices() {
         CinderAppDelegateIPhone *appDel = (CinderAppDelegateIPhone *)[[UIApplication sharedApplication] delegate];
         locationManager=[[[CLLocationManager alloc] init] retain];
         locationManager.delegate=appDel;
         NSLog(@"compass enabled");
     }    
+    
+    void AppCocoaTouch::shouldDisplayHeadingCalibration(bool displayHeadingCalibration)
+    {
+        mShouldDisplayHeadingCalibration=displayHeadingCalibration;
+    }
+    
+    void AppCocoaTouch::setAccuracyLevelDesired(Accuracy accuracy)
+    {
+        CLLocationAccuracy locationManagerAccuracy;
+        switch (accuracy) {
+            case AccuracyBestForNavigation:
+                locationManagerAccuracy=kCLLocationAccuracyBestForNavigation;
+                break;
+            case AccuracyBest:
+                locationManagerAccuracy=kCLLocationAccuracyBest;
+                break;
+            case AccuracyNearestTenMeters:
+                locationManagerAccuracy=kCLLocationAccuracyNearestTenMeters;
+                break;
+            case AccuracyHundredMeters:
+                locationManagerAccuracy=kCLLocationAccuracyHundredMeters;
+                break;
+            case AccuracyKilometer:
+                locationManagerAccuracy=kCLLocationAccuracyKilometer;
+                break;
+            case AccuracyThreeKilometers:
+                locationManagerAccuracy=kCLLocationAccuracyThreeKilometers;
+                break;
+            default:
+                break;
+        }
+        locationManager.desiredAccuracy=locationManagerAccuracy;
+        NSLog(@"The desired accuracy is %f",locationManager.desiredAccuracy);
+    }
     
     //! Returns the maximum frame-rate the App will attempt to maintain.
     float AppCocoaTouch::getFrameRate() const
@@ -318,6 +354,7 @@ namespace cinder { namespace app {
     
     LocationEvent AppCocoaTouch::getLocation()
     {
+        NSLog(@"The desired accuracy is %f",locationManager.desiredAccuracy);
         LocationCoordinate2D locationCoordinate2D;
         locationCoordinate2D.latitude=locationManager.location.coordinate.latitude;
         locationCoordinate2D.longitude=locationManager.location.coordinate.longitude;
@@ -328,7 +365,6 @@ namespace cinder { namespace app {
     
     float AppCocoaTouch::distanceBetweenLocations(LocationEvent locationA, LocationEvent locationB)
     {
-        
         CLLocation *mLocationA=[[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationA.getLatitude(), locationA.getLongitude())
                                                              altitude:locationA.getAltitude() 
                                                    horizontalAccuracy:kCLLocationAccuracyBest verticalAccuracy:kCLLocationAccuracyBest 

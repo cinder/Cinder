@@ -29,6 +29,14 @@
 #include "cinder/app/LocationEvent.h"
 #include "cinder/app/HeadingEvent.h"
 
+typedef enum{
+    AccuracyBestForNavigation,
+    AccuracyBest,
+    AccuracyNearestTenMeters,
+    AccuracyHundredMeters,
+    AccuracyKilometer,
+    AccuracyThreeKilometers,
+}Accuracy;
 
 namespace cinder { namespace app {
     
@@ -51,8 +59,8 @@ namespace cinder { namespace app {
         };
         
         float  compassDegree;
-        bool   shouldDisplayHeadingCalibration;
-        
+        bool   mShouldDisplayHeadingCalibration;
+    
         AppCocoaTouch();
         virtual ~AppCocoaTouch() {}
         
@@ -122,9 +130,12 @@ namespace cinder { namespace app {
         //! Turns off the accelerometer
         void disableAccelerometer();
         
-        //! Enables the device's location services, set displayHeadingCalibration to TRUE to display heading calibration info. The display will remain until heading is calibrated.
-        void enableLocationSevices(bool displayHeadingCalibration);
+        //! Enables the device's location services, set displayHeadingCalibration to TRUE to display heading calibration info. The display will remain until heading is calibrated. The default accuracy level desired is AccuracyBest.
+        void enableLocationSevices();
         
+        void shouldDisplayHeadingCalibration(bool displayHeadingCalibration);
+        
+        void setAccuracyLevelDesired(Accuracy accuracy);
         
         
         //! Returns the maximum frame-rate the App will attempt to maintain.
