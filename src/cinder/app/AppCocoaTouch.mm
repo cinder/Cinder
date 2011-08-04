@@ -95,7 +95,9 @@ namespace cinder { namespace app {
 }
 
 - (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading{
-    app->privateCompassUpdated__(newHeading.magneticHeading);
+    ci::Vec3f rawGeoMagnetismVector(newHeading.x, newHeading.y, newHeading.z);
+    const char *tmp = [newHeading.description UTF8String];
+    app->privateCompassUpdated__(newHeading.magneticHeading, newHeading.trueHeading, newHeading.headingAccuracy, tmp, rawGeoMagnetismVector);
 }
 
 - (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager{
@@ -263,9 +265,10 @@ namespace cinder { namespace app {
         mLastRawAccel = direction;
     }
     
-    void AppCocoaTouch::privateCompassUpdated__(const float degree)
+    void AppCocoaTouch::privateCompassUpdated__(const float magneticHeading, const float trueHeading, const float headingAccuracy, const char *description, const Vec3f &rawGeoMagnetismVector)
     {
-        compassUpdated(degree);
+        HeadingEvent newHeading(magneticHeading, trueHeading, headingAccuracy, description, rawGeoMagnetismVector);
+        compassUpdated(newHeading);
     }
     
     void AppCocoaTouch::privateDidUpdateToLocation__(const float oldLatitude, const float oldLongitude, const float oldSpeed, const float oldAltitude, const float oldHorizontalAccuracy, const float oldVerticalAccuracy,

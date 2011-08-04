@@ -27,6 +27,7 @@
 #include "cinder/app/TouchEvent.h"
 #include "cinder/app/AccelEvent.h"
 #include "cinder/app/LocationEvent.h"
+#include "cinder/app/HeadingEvent.h"
 
 
 namespace cinder { namespace app {
@@ -68,7 +69,7 @@ namespace cinder { namespace app {
         //! Returns a Vec3d of the acceleration direction
         virtual void		accelerated( AccelEvent event ) {}
         //! Invoked when a new heading is available, Returns the compass degree.
-        virtual void        compassUpdated(const float degree){}
+        virtual void        compassUpdated(HeadingEvent newHeading){}
         //! Invoked when a new location is available. oldLocation may be nil if there is no previous location available.
         virtual void        didUpdateToLocation(LocationEvent oldLocation, LocationEvent newLocation){}
                 
@@ -168,7 +169,7 @@ namespace cinder { namespace app {
         void		privateTouchesEnded__( const TouchEvent &event );
         void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
         void		privateAccelerated__( const Vec3f &direction );
-        void        privateCompassUpdated__(const float degree);
+        void        privateCompassUpdated__(const float magneticHeading, const float trueHeading, const float headingAccuracy, const char *description, const Vec3f &rawGeoMagnetismVector);
         void        privateDidUpdateToLocation__(const float oldX, const float oldY, const float oldSpeed, const float oldAltitude, const float oldHorizontalAccuracy, const float oldVerticalAccuracy,
                                                  const float newX, const float newY, const float newSpeed, const float newAltitude, const float newHorizontalAccuracy, const float newVerticalAccuracy);
         //! \endcond
