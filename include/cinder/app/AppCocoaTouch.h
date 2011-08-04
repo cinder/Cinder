@@ -130,15 +130,19 @@ namespace cinder { namespace app {
         //! Turns off the accelerometer
         void disableAccelerometer();
         
-        //! Enables the device's location services, set displayHeadingCalibration to TRUE to display heading calibration info. The display will remain until heading is calibrated. The default accuracy level desired is AccuracyBest.
+        //! Enables the device's location services
         void enableLocationSevices();
-        
+        //! Set displayHeadingCalibration to TRUE to display heading calibration info. The display will remain until heading is calibrated. 
         void shouldDisplayHeadingCalibration(bool displayHeadingCalibration);
-        
+        //! The desired location accuracy. The location service will try its best to achieve your desired accuracy.
         void setAccuracyLevelDesired(Accuracy accuracy);
-        
+        float getAccuracyLevelDesired();
+        //! Specifies the minimum update distance in meters. Client will not be notified of movements of less than the stated value, unless the accuracy has improved.
         void setDistanceFilter(float distanceFilter);
-        
+        float getDistanceFilter();
+        //! Specifies the minimum amount of change in degrees needed for a heading service update. Client will not be notified of updates less than the stated filter value.
+        void setHeadingFilter(float headingFilter);
+        float getHeadingFilter();
         
         //! Returns the maximum frame-rate the App will attempt to maintain.
         virtual float		getFrameRate() const;

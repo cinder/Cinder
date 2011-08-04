@@ -215,9 +215,29 @@ namespace cinder { namespace app {
         NSLog(@"The desired accuracy is %f",locationManager.desiredAccuracy);
     }
     
+    float AppCocoaTouch::getAccuracyLevelDesired()
+    {
+        return locationManager.desiredAccuracy;
+    }
+    
     void AppCocoaTouch::setDistanceFilter(float distanceFilter)
     {
         locationManager.distanceFilter=distanceFilter;
+    }
+    
+    float AppCocoaTouch::getDistanceFilter()
+    {
+        return locationManager.distanceFilter;
+    }
+    
+    void AppCocoaTouch::setHeadingFilter(float headingFilter)
+    {
+        locationManager.headingFilter=headingFilter;
+    }
+    
+    float AppCocoaTouch::getHeadingFilter()
+    {
+        return locationManager.headingFilter;
     }
     
     //! Returns the maximum frame-rate the App will attempt to maintain.
