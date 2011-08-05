@@ -27,7 +27,7 @@
 #include <AudioUnit/AudioUnit.h>
 #include <AudioToolbox/AUGraph.h>
 #include <boost/thread/mutex.hpp>
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+#if defined( CINDER_MAC) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
 	#include <CoreAudio/AudioHardware.h>
 #endif
 #include <stack>
