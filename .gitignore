@@ -19,3 +19,5 @@ samples/E-BoardingRing/
 *.sdf
 Debug/
 Release/
+
+samples/E-BoardingRing

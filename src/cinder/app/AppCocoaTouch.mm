@@ -28,7 +28,8 @@
 namespace cinder { namespace app {
     
     AppCocoaTouch*				AppCocoaTouch::sInstance = 0;
-    CLLocationManager *locationManager;
+    CLLocationManager           *locationManager;
+    
     // This struct serves as a compile firewall for maintaining AppCocoaTouch state information
     struct AppCocoaTouchState {
         CinderViewCocoaTouch		*mCinderView;
@@ -89,22 +90,27 @@ namespace cinder { namespace app {
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation
 {
-    //LocationEvent mOldLocation(LocationCoordinate2D(oldLocation.coordinate.latitude,oldLocation.coordinate.longitude));
-    //LocationEvent mNewLocation(LocationCoordinate2D(newLocation.coordinate.latitude,newLocation.coordinate.longitude));
-    //LocationEvent oldLocation(oldLocation.coordinate.latitude,oldLocation.coordinate.longitude);
-    //LocationEvent newLocation(newLocation.coordinate.latitude,newLocation.coordinate.longitude);
-    app->privateDidUpdateToLocation__(oldLocation.coordinate.latitude, oldLocation.coordinate.longitude, newLocation.coordinate.latitude, newLocation.coordinate.longitude);
+    app->privateDidUpdateToLocation__(oldLocation.coordinate.latitude, oldLocation.coordinate.longitude, oldLocation.speed, oldLocation.altitude, oldLocation.horizontalAccuracy, oldLocation.verticalAccuracy,
+                                      newLocation.coordinate.latitude, newLocation.coordinate.longitude, newLocation.speed, newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy);
 }
 
-- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)thisAcceleration {
+- (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
+{
+    ci::Vec3f rawGeoMagnetismVector(newHeading.x, newHeading.y, newHeading.z);
+    const char *tmp = [newHeading.description UTF8String];
+    app->privateCompassUpdated__(newHeading.magneticHeading, newHeading.trueHeading, newHeading.headingAccuracy, tmp, rawGeoMagnetismVector);
+}
+
+- (BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager
+{
+    return app->mShouldDisplayHeadingCalibration;
+}
+
+- (void)accelerometer:(UIAccelerometer *)accelerometer didAccelerate:(UIAcceleration *)thisAcceleration 
+{
 	// Massage the UIAcceleration class into a Vec3f
 	ci::Vec3f direction( thisAcceleration.x, thisAcceleration.y, thisAcceleration.z );
 	app->privateAccelerated__( direction );
-}
-
-
-- (void) locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading{
-    app->privateCompassUpdated__(newHeading.magneticHeading);
 }
 
 - (void) dealloc
@@ -154,10 +160,7 @@ namespace cinder { namespace app {
     //! Enables the accelerometer
     void AppCocoaTouch::enableAccelerometer( float updateFrequency, float filterFactor )
     {
-        //NSLog(@"hello");
-        //std::console()<<@"hello"<<std::endl;
         mAccelFilterFactor = filterFactor;
-        
         if( updateFrequency <= 0 )
             updateFrequency = 30.0f;
         
@@ -171,21 +174,70 @@ namespace cinder { namespace app {
         [[UIAccelerometer sharedAccelerometer] setDelegate:nil];
     }
     
-    void AppCocoaTouch::enableCompass() {
-        
+    void AppCocoaTouch::enableLocationSevices() {
         CinderAppDelegateIPhone *appDel = (CinderAppDelegateIPhone *)[[UIApplication sharedApplication] delegate];
         locationManager=[[[CLLocationManager alloc] init] retain];
-        //locationManager.headingFilter=1;
         locationManager.delegate=appDel;
-        //[locationManager startUpdatingLocation];
-        //[locationManager startUpdatingHeading];
         NSLog(@"compass enabled");
-        //[CLLocationManager headingAvailable];
     }    
     
-    float AppCocoaTouch::essai(){
-        //NSLog(@"%f", compassDegre);
-        return compassDegre;
+    void AppCocoaTouch::shouldDisplayHeadingCalibration(bool displayHeadingCalibration)
+    {
+        mShouldDisplayHeadingCalibration=displayHeadingCalibration;
+    }
+    
+    void AppCocoaTouch::setAccuracyLevelDesired(Accuracy accuracy)
+    {
+        CLLocationAccuracy locationManagerAccuracy;
+        switch (accuracy) {
+            case AccuracyBestForNavigation:
+                locationManagerAccuracy=kCLLocationAccuracyBestForNavigation;
+                break;
+            case AccuracyBest:
+                locationManagerAccuracy=kCLLocationAccuracyBest;
+                break;
+            case AccuracyNearestTenMeters:
+                locationManagerAccuracy=kCLLocationAccuracyNearestTenMeters;
+                break;
+            case AccuracyHundredMeters:
+                locationManagerAccuracy=kCLLocationAccuracyHundredMeters;
+                break;
+            case AccuracyKilometer:
+                locationManagerAccuracy=kCLLocationAccuracyKilometer;
+                break;
+            case AccuracyThreeKilometers:
+                locationManagerAccuracy=kCLLocationAccuracyThreeKilometers;
+                break;
+            default:
+                break;
+        }
+        locationManager.desiredAccuracy=locationManagerAccuracy;
+        NSLog(@"The desired accuracy is %f",locationManager.desiredAccuracy);
+    }
+    
+    float AppCocoaTouch::getAccuracyLevelDesired()
+    {
+        return locationManager.desiredAccuracy;
+    }
+    
+    void AppCocoaTouch::setDistanceFilter(float distanceFilter)
+    {
+        locationManager.distanceFilter=distanceFilter;
+    }
+    
+    float AppCocoaTouch::getDistanceFilter()
+    {
+        return locationManager.distanceFilter;
+    }
+    
+    void AppCocoaTouch::setHeadingFilter(float headingFilter)
+    {
+        locationManager.headingFilter=headingFilter;
+    }
+    
+    float AppCocoaTouch::getHeadingFilter()
+    {
+        return locationManager.headingFilter;
     }
     
     //! Returns the maximum frame-rate the App will attempt to maintain.
@@ -274,12 +326,14 @@ namespace cinder { namespace app {
         mLastRawAccel = direction;
     }
     
-    void AppCocoaTouch::privateCompassUpdated__(const float degree)
+    void AppCocoaTouch::privateCompassUpdated__(const float magneticHeading, const float trueHeading, const float headingAccuracy, const char *description, const Vec3f &rawGeoMagnetismVector)
     {
-        compassUpdated(degree);
+        HeadingEvent newHeading(magneticHeading, trueHeading, headingAccuracy, description, rawGeoMagnetismVector);
+        compassUpdated(newHeading);
     }
     
-    void AppCocoaTouch::privateDidUpdateToLocation__(const float oldLatitude, const float oldLongitude, const float newLatitude,const float newLongitude){
+    void AppCocoaTouch::privateDidUpdateToLocation__(const float oldLatitude, const float oldLongitude, const float oldSpeed, const float oldAltitude, const float oldHorizontalAccuracy, const float oldVerticalAccuracy,
+                                                     const float newLatitude, const float newLongitude, const float newSpeed, const float newAltitude, const float newHorizontalAccuracy, const float newVerticalAccuracy){
         LocationCoordinate2D oldLocationCoordinate2D;
         oldLocationCoordinate2D.latitude=oldLatitude;
         oldLocationCoordinate2D.longitude=oldLongitude;
@@ -287,11 +341,11 @@ namespace cinder { namespace app {
         newLocationCoordinate2D.latitude=newLatitude;
         newLocationCoordinate2D.longitude=newLongitude;
         
-        LocationEvent newLocation(newLocationCoordinate2D);
-        LocationEvent oldLocation(oldLocationCoordinate2D);
+        LocationEvent newLocation(newLocationCoordinate2D,newSpeed, newAltitude, newHorizontalAccuracy, newVerticalAccuracy);
+        LocationEvent oldLocation(oldLocationCoordinate2D,oldSpeed, oldAltitude, oldHorizontalAccuracy, oldVerticalAccuracy);
         didUpdateToLocation(oldLocation,newLocation);
     }
-    
+   
     //!CLLocationMethod
     void AppCocoaTouch::startUpdatingHeading()
     {
@@ -322,5 +376,31 @@ namespace cinder { namespace app {
     {
         return [CLLocationManager locationServicesEnabled];
     }
+    
+    LocationEvent AppCocoaTouch::getLocation()
+    {
+        NSLog(@"The distance filter is %f",locationManager.distanceFilter);
+        LocationCoordinate2D locationCoordinate2D;
+        locationCoordinate2D.latitude=locationManager.location.coordinate.latitude;
+        locationCoordinate2D.longitude=locationManager.location.coordinate.longitude;
+        LocationEvent newLocation(locationCoordinate2D,locationManager.location.speed, locationManager.location.altitude, locationManager.location.horizontalAccuracy, locationManager.location.verticalAccuracy);
+        return newLocation;
+    }
+    
+    
+    float AppCocoaTouch::distanceBetweenLocations(LocationEvent locationA, LocationEvent locationB)
+    {
+        CLLocation *mLocationA=[[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationA.getLatitude(), locationA.getLongitude())
+                                                             altitude:locationA.getAltitude() 
+                                                   horizontalAccuracy:kCLLocationAccuracyBest verticalAccuracy:kCLLocationAccuracyBest 
+                                                            timestamp:[NSDate date]];
+        CLLocation *mLocationB=[[CLLocation alloc] initWithCoordinate:CLLocationCoordinate2DMake(locationB.getLatitude(), locationB.getLongitude())
+                                                             altitude:locationB.getAltitude() 
+                                                   horizontalAccuracy:kCLLocationAccuracyBest verticalAccuracy:kCLLocationAccuracyBest 
+                                                            timestamp:[NSDate date]]; 
+        float distance=[mLocationA distanceFromLocation:mLocationB];
+        return distance;
+    }
+    
     
 } } // namespace cinder::app
