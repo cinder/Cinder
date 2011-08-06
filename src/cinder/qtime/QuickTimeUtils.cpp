@@ -555,7 +555,7 @@ CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertTo
 	return result;
 }
 
-#if ! defined( __LP64__ )
+#if defined( CINDER_MSW )
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageTargetGWorld
 ImageTargetGWorldRef ImageTargetGWorld::createRef( ImageSourceRef imageSource )
@@ -616,6 +616,6 @@ GWorldPtr createGWorld( ImageSourceRef imageSource )
 	return target->getGWorld();
 }
 
-#endif // ! defined( __LP64__ )
+#endif // defined( CINDER_MSW )
 
 } } // namespace cinder::qtime
