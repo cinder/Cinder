@@ -5,7 +5,7 @@ http://libcinder.org
 Cinder is a peer-reviewed, free, open source C++ library for creative coding.
 
 Cinder supports Mac OS X, Windows and iOS-based devices.
-It requires XCode 3.2 or later on the Mac, and Visual C++ 2010 on Windows.
+It requires XCode 3.2 or later on the Mac, and Visual C++ 2010 on Windows. The Boost C++ library is required for those building from source, version 1.44 is recommended. See the v0.8.2 documentation page for more details: http://libcinder.org/docs/v0.8.2/_cinder_boost.html
 
 Cinder is released under the Modified BSD License.
 
