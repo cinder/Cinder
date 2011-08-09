@@ -239,7 +239,7 @@ DataSourcePathRef App::loadAsset( const fs::path &relativePath )
 {
 	fs::path assetPath = findAssetPath( relativePath );
 	if( ! assetPath.empty() )
-		return DataSourcePath::createRef( assetPath.string() );
+		return DataSourcePath::create( assetPath.string() );
 	else
 		throw AssetLoadExc( relativePath );
 }
