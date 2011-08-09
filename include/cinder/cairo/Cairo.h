@@ -126,8 +126,8 @@ class SurfaceImage : public SurfaceBase {
 	const uint8_t*	getData() const { return getData(); }
 	int32_t			getStride() const;
 
-	cinder::Surface&		getSurface();
-	const cinder::Surface&	getSurface() const { return getSurface(); }
+	cinder::Surface&		getSurface() { return mCinderSurface; }
+	const cinder::Surface&	getSurface() const { return mCinderSurface; }
 
  protected:
 	void	initCinderSurface( bool alpha, uint8_t *data, int32_t stride );
@@ -221,7 +221,7 @@ class SurfaceCgBitmapContext : public SurfaceBase {
 	SurfaceCgBitmapContext( const SurfaceCgBitmapContext &other );
 
 	cinder::Surface&			getSurface() { return mSurface; }
-	const cinder::Surface&		getSurface() const { return getSurface(); } 
+	const cinder::Surface&		getSurface() const { return mSurface; } 
 
 	CGContextRef				getCgContextRef() { return mCgContextRef; }
 	
