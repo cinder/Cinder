@@ -592,6 +592,24 @@
 		43ED153D1221DF6C003AEB0B /* UrlImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */; };
 		5391FD680E957646002A13D5 /* KeyEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5391FD670E957646002A13D5 /* KeyEvent.h */; };
 		5391FE660E95CB01002A13D5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
+		654AB01D13EAB08300C66FC9 /* HeadingEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 654AB01C13EAB08300C66FC9 /* HeadingEvent.h */; };
+		654AB01E13EAB08300C66FC9 /* HeadingEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 654AB01C13EAB08300C66FC9 /* HeadingEvent.h */; };
+		654AB01F13EAB08300C66FC9 /* HeadingEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 654AB01C13EAB08300C66FC9 /* HeadingEvent.h */; };
+		65AA710913E7FB2C006AAC38 /* LocationEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 65AA710813E7FB2C006AAC38 /* LocationEvent.h */; };
+		65AA710A13E7FB2C006AAC38 /* LocationEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 65AA710813E7FB2C006AAC38 /* LocationEvent.h */; };
+		65AA710B13E7FB2C006AAC38 /* LocationEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 65AA710813E7FB2C006AAC38 /* LocationEvent.h */; };
+		65AA710E13E7FB6A006AAC38 /* LocationEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = 65AA710D13E7FB6A006AAC38 /* LocationEvent.mm */; };
+		65AA710F13E7FB6A006AAC38 /* LocationEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = 65AA710D13E7FB6A006AAC38 /* LocationEvent.mm */; };
+		65AA711013E7FB6A006AAC38 /* LocationEvent.mm in Sources */ = {isa = PBXBuildFile; fileRef = 65AA710D13E7FB6A006AAC38 /* LocationEvent.mm */; };
+		65AA711213E7FD35006AAC38 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AA711113E7FD35006AAC38 /* CoreLocation.framework */; };
+		65AA711413E7FD45006AAC38 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AA711313E7FD45006AAC38 /* CoreLocation.framework */; };
+		65AA711613E7FD54006AAC38 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AA711513E7FD54006AAC38 /* CoreLocation.framework */; };
+		65AA711813E7FE35006AAC38 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AA711713E7FE35006AAC38 /* CoreVideo.framework */; };
+		65AA711A13E7FE4B006AAC38 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AA711913E7FE4B006AAC38 /* UIKit.framework */; };
+		65AA711C13E7FE59006AAC38 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AA711B13E7FE59006AAC38 /* CoreVideo.framework */; };
+		65AA711E13E7FE60006AAC38 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AA711D13E7FE60006AAC38 /* UIKit.framework */; };
+		65AA712013E7FE70006AAC38 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AA711F13E7FE70006AAC38 /* CoreVideo.framework */; };
+		65AA712213E7FE81006AAC38 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AA712113E7FE81006AAC38 /* QTKit.framework */; };
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
 		C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70E1A01106AA39D00E63577 /* Buffer.cpp */; };
 		C727BFE5121B3AE600192073 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
@@ -898,6 +916,18 @@
 		43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UrlImplCocoa.mm; sourceTree = "<group>"; };
 		43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlImplCocoa.h; sourceTree = "<group>"; };
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
+		654AB01C13EAB08300C66FC9 /* HeadingEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HeadingEvent.h; path = app/HeadingEvent.h; sourceTree = "<group>"; };
+		65AA710813E7FB2C006AAC38 /* LocationEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LocationEvent.h; path = app/LocationEvent.h; sourceTree = "<group>"; };
+		65AA710D13E7FB6A006AAC38 /* LocationEvent.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = LocationEvent.mm; path = app/LocationEvent.mm; sourceTree = "<group>"; };
+		65AA711113E7FD35006AAC38 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = /System/Library/Frameworks/CoreLocation.framework; sourceTree = "<absolute>"; };
+		65AA711313E7FD45006AAC38 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
+		65AA711513E7FD54006AAC38 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
+		65AA711713E7FE35006AAC38 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
+		65AA711913E7FE4B006AAC38 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		65AA711B13E7FE59006AAC38 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
+		65AA711D13E7FE60006AAC38 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		65AA711F13E7FE70006AAC38 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = ../../../System/Library/Frameworks/CoreVideo.framework; sourceTree = "<group>"; };
+		65AA712113E7FE81006AAC38 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = ../../../System/Library/Frameworks/QTKit.framework; sourceTree = "<group>"; };
 		C70E19FE106AA38700E63577 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E1A01106AA39D00E63577 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
 		C7792FAE119A185000521786 /* CocoaCaConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CocoaCaConverter.cpp; sourceTree = "<group>"; };
@@ -942,6 +972,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65AA711E13E7FE60006AAC38 /* UIKit.framework in Frameworks */,
+				65AA711C13E7FE59006AAC38 /* CoreVideo.framework in Frameworks */,
+				65AA711413E7FD45006AAC38 /* CoreLocation.framework in Frameworks */,
 				C7B93060121C952400093AFE /* CoreVideo.framework in Frameworks */,
 				C7B9305F121C951400093AFE /* CoreMedia.framework in Frameworks */,
 				007050AF1114F93F003FCAE4 /* AppKit.framework in Frameworks */,
@@ -959,6 +992,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65AA711A13E7FE4B006AAC38 /* UIKit.framework in Frameworks */,
+				65AA711813E7FE35006AAC38 /* CoreVideo.framework in Frameworks */,
+				65AA711613E7FD54006AAC38 /* CoreLocation.framework in Frameworks */,
 				C7B93061121C952800093AFE /* CoreVideo.framework in Frameworks */,
 				C7B9305E121C950800093AFE /* AVFoundation.framework in Frameworks */,
 				C7B9303F121C946800093AFE /* CoreMedia.framework in Frameworks */,
@@ -976,6 +1012,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65AA712213E7FE81006AAC38 /* QTKit.framework in Frameworks */,
+				65AA712013E7FE70006AAC38 /* CoreVideo.framework in Frameworks */,
+				65AA711213E7FD35006AAC38 /* CoreLocation.framework in Frameworks */,
 				5391FE660E95CB01002A13D5 /* AppKit.framework in Frameworks */,
 				D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */,
 				0091D8F10E81B9110029341E /* OpenGL.framework in Frameworks */,
@@ -1002,6 +1041,8 @@
 				5391FD670E957646002A13D5 /* KeyEvent.h */,
 				00241ABA0E830DC7004D34EB /* MouseEvent.h */,
 				43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */,
+				65AA710813E7FB2C006AAC38 /* LocationEvent.h */,
+				654AB01C13EAB08300C66FC9 /* HeadingEvent.h */,
 				43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */,
 				00C05B970F4A03660046CC99 /* CinderView.h */,
 				009D6B001157FCA60037C77C /* CinderViewCocoaTouch.h */,
@@ -1028,6 +1069,7 @@
 				002419D30E8035E1004D34EB /* App.cpp */,
 				00B4F3E60F53955000B75296 /* AppBasic.cpp */,
 				00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */,
+				65AA710D13E7FB6A006AAC38 /* LocationEvent.mm */,
 				009D6B1B1157FD3A0037C77C /* AppCocoaTouch.mm */,
 				002419D40E8035E1004D34EB /* AppImplCocoaBasic.mm */,
 				00F976ED0F9D182D00F92D65 /* AppImplCocoaScreenSaver.mm */,
@@ -1414,6 +1456,12 @@
 		0867D691FE84028FC02AAC07 /* libcinder */ = {
 			isa = PBXGroup;
 			children = (
+				65AA712113E7FE81006AAC38 /* QTKit.framework */,
+				65AA711F13E7FE70006AAC38 /* CoreVideo.framework */,
+				65AA711D13E7FE60006AAC38 /* UIKit.framework */,
+				65AA711B13E7FE59006AAC38 /* CoreVideo.framework */,
+				65AA711913E7FE4B006AAC38 /* UIKit.framework */,
+				65AA711713E7FE35006AAC38 /* CoreVideo.framework */,
 				00BAE5D70E7ED4510018A608 /* Include */,
 				08FB77AEFE84172EC02AAC07 /* Source */,
 				32C88DFF0371C24200C91783 /* Other Sources */,
@@ -1464,6 +1512,9 @@
 		1058C7B2FEA5585E11CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				65AA711513E7FD54006AAC38 /* CoreLocation.framework */,
+				65AA711313E7FD45006AAC38 /* CoreLocation.framework */,
+				65AA711113E7FD35006AAC38 /* CoreLocation.framework */,
 				0867D6A5FE840307C02AAC07 /* AppKit.framework */,
 				D2F7E8BE07B2D77200F64583 /* CoreData.framework */,
 				0867D69BFE84028FC02AAC07 /* Foundation.framework */,
@@ -1638,6 +1689,8 @@
 				00A114221355369A00081873 /* tesselator.h in Headers */,
 				4354C47D1357BBF200120EE3 /* TextureFont.h in Headers */,
 				00A1153A1357F42400081873 /* Easing.h in Headers */,
+				65AA710A13E7FB2C006AAC38 /* LocationEvent.h in Headers */,
+				654AB01E13EAB08300C66FC9 /* HeadingEvent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1757,6 +1810,8 @@
 				00A114311355369A00081873 /* tesselator.h in Headers */,
 				4354C47E1357BBF300120EE3 /* TextureFont.h in Headers */,
 				00A1153B1357F42400081873 /* Easing.h in Headers */,
+				65AA710B13E7FB2C006AAC38 /* LocationEvent.h in Headers */,
+				654AB01F13EAB08300C66FC9 /* HeadingEvent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1898,6 +1953,8 @@
 				277C2CF11366632B00178A29 /* Matrix33.h in Headers */,
 				277C2CF21366632B00178A29 /* Matrix44.h in Headers */,
 				277C2CF31366632B00178A29 /* MatrixAlgo.h in Headers */,
+				65AA710913E7FB2C006AAC38 /* LocationEvent.h in Headers */,
+				654AB01D13EAB08300C66FC9 /* HeadingEvent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2068,6 +2125,7 @@
 				00A1141E1355369A00081873 /* sweep.c in Sources */,
 				00A114201355369A00081873 /* tess.c in Sources */,
 				4354C4811357BC1100120EE3 /* TextureFont.cpp in Sources */,
+				65AA710F13E7FB6A006AAC38 /* LocationEvent.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2154,6 +2212,7 @@
 				00A1142D1355369A00081873 /* sweep.c in Sources */,
 				00A1142F1355369A00081873 /* tess.c in Sources */,
 				4354C4821357BC1100120EE3 /* TextureFont.cpp in Sources */,
+				65AA711013E7FB6A006AAC38 /* LocationEvent.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2261,6 +2320,7 @@
 				00A1140F1355369A00081873 /* sweep.c in Sources */,
 				00A114111355369A00081873 /* tess.c in Sources */,
 				4354C4801357BC1100120EE3 /* TextureFont.cpp in Sources */,
+				65AA710E13E7FB6A006AAC38 /* LocationEvent.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

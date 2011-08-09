@@ -39,6 +39,7 @@
 		#if defined( __OBJC__ )
 			#import <UIKit/UIKit.h>
 			#import <CoreFoundation/CoreFoundation.h>
+            #import <CoreLocation/CoreLocation.h>
 		#endif
 	#else
 		#include <ApplicationServices/ApplicationServices.h>
