@@ -233,11 +233,6 @@ int32_t SurfaceImage::getStride() const
 	return cairo_image_surface_get_stride( mCairoSurface );
 }
 
-cinder::Surface& SurfaceImage::getSurface()
-{
-	return mCinderSurface;
-}
-
 void SurfaceImage::initCinderSurface( bool alpha, uint8_t *data, int32_t stride )
 {
 #if defined( BOOST_BIG_ENDIAN )
