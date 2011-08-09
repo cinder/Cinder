@@ -125,7 +125,7 @@ class MovieWriter {
 
 
 	MovieWriter() {}
-	MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format = Format::Format() );
+	MovieWriter( const fs::path &path, int32_t width, int32_t height, const Format &format = Format::Format() );
 
 	//! Returns the Movie's default frame duration measured in seconds. You can also think of this as the Movie's frameRate.
 	float	getDefaultDuration() const { return mObj->mFormat.mDefaultTime; }
@@ -162,7 +162,7 @@ class MovieWriter {
   private:
 	/// \cond
 	struct Obj {
-		Obj( const std::string &path, int32_t width, int32_t height, const Format &format );
+		Obj( const fs::path &path, int32_t width, int32_t height, const Format &format );
 		~Obj();
 		
 		void	addFrame( const ImageSourceRef &imageSource, float duration );
@@ -177,7 +177,7 @@ class MovieWriter {
 		::Media							mMedia;
 		::ICMCompressionSessionRef		mCompressionSession;
 		::ICMCompressionPassModeFlags 	mMultiPassModeFlags;		
-		std::string		mPath;
+		fs::path		mPath;
 		uint32_t		mNumFrames;
 		int64_t			mCurrentTimeValue;
 		

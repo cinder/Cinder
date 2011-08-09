@@ -31,7 +31,7 @@
 namespace cinder {
 
 //! Returns a canonical version of \a path by expanding a "~" and symlinks on the Mac "..", "." and "//"
-std::string expandPath( const std::string &path );
+fs::path expandPath( const fs::path &path );
 //! Returns a path to the user's home directory.
 std::string getHomeDirectory();
 //! Returns a path to the user's documents directory.
@@ -47,13 +47,13 @@ std::string getPathFileName( const std::string &path );
 //! Returns the file extension of the file located at \a path
 std::string getPathExtension( const std::string &path );
 //! Creates a directory at \a path and optionally creates any missing parent directories when \a createParents is \c true. Returns \c true upon success.
-bool createDirectories( const std::string &path, bool createParents = true );
+bool createDirectories( const fs::path &path, bool createParents = true );
 
 //! Launches a path in a web browser
 void launchWebBrowser( const Url &url );
 	
 //! Delete the file at \a path. Fails quietly if the path does not exist.
-void deleteFile( const std::string &path );
+void deleteFile( const fs::path &path );
 
 //! Returns a vector of substrings split by the separator \a separator. <tt>split( "one two three", ' ' ) -> [ "one", "two", "three" ]</tt>
 std::vector<std::string> split( const std::string &str, char separator );
