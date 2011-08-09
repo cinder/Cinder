@@ -80,7 +80,7 @@ IStreamRef DataSourcePath::createStream()
 	return loadFileStream( mFilePath );
 }
 
-DataSourcePathRef loadFile( const fs::path &path )
+DataSourceRef loadFile( const fs::path &path )
 {
 	return DataSourcePath::create( path );
 }

@@ -93,7 +93,7 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 	if( event.getChar() == 'o' ) {
 		fs::path path = getOpenFilePath();
 		if( ! path.empty() ) {
-			ObjLoader loader( (DataSourceRef)loadFile( path ) );
+			ObjLoader loader( loadFile( path ) );
 			loader.load( &mMesh, true );
 			mVBO = gl::VboMesh( mMesh );
 			console() << "Total verts: " << mMesh.getVertices().size() << std::endl;

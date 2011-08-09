@@ -80,7 +80,7 @@ class DataSourcePath : public DataSource {
 	IStreamFileRef	mStream;	
 };
 
-DataSourcePathRef	loadFile( const fs::path &path );
+DataSourceRef	loadFile( const fs::path &path );
 
 typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
