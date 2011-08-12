@@ -54,17 +54,19 @@
 
 namespace cinder { namespace app {
 
+class App;
+
 class Renderer {
  public:
 	virtual ~Renderer() {};
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		virtual void	setup( class App *aApp, CGRect frame, NSView *cinderView ) = 0;	
+		virtual void	setup( App *aApp, CGRect frame, NSView *cinderView ) = 0;	
 		virtual CGContextRef			getCgContext() { throw; } // the default behavior is failure
 		virtual CGLContextObj			getCglContext() { throw; } // the default behavior is failure
 		virtual CGLPixelFormatObj		getCglPixelFormat() { throw; } // the default behavior is failure
 	#elif defined( CINDER_COCOA_TOUCH )
-		virtual void	setup( class App *aApp, const Area &frame, UIView *cinderView ) = 0;
+		virtual void	setup( App *aApp, const Area &frame, UIView *cinderView ) = 0;
 		virtual bool	isEaglLayer() const { return false; }
 	#endif
 
@@ -72,7 +74,7 @@ class Renderer {
 
 	virtual void					makeCurrentContext() = 0;
 #elif defined( CINDER_MSW )
-	virtual void setup( class App *aApp, HWND wnd, HDC dc ) = 0;
+	virtual void setup( App *aApp, HWND wnd, HDC dc ) = 0;
 
 	virtual void prepareToggleFullScreen() {}
 	virtual void finishToggleFullScreen() {}
@@ -89,7 +91,7 @@ class Renderer {
 	virtual void defaultResize() {}
 
  protected:
-	class App			*mApp;
+	App			*mApp;
 };
 
 class RendererGl : public Renderer {

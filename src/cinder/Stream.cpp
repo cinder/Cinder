@@ -81,7 +81,7 @@ void IStream::readBig( T *t )
 #ifdef BOOST_BIG_ENDIAN
 	read( t );
 #else
-	IORead( &t, sizeof(T) );
+	IORead( t, sizeof(T) );
 	*t = swapEndian( *t );
 #endif
 }
@@ -92,7 +92,7 @@ void IStream::readLittle( T *t )
 #ifdef CINDER_LITTLE_ENDIAN
 	read( t );
 #else
-	IORead( &t, sizeof(T) );
+	IORead( t, sizeof(T) );
 	*t = swapEndian( *t );
 #endif
 }

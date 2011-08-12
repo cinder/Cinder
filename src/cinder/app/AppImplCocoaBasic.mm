@@ -330,8 +330,9 @@
 
 - (void)setFrameRate:(float)aFrameRate
 {
-	// TODO: Kill current timer and replace with a new one reflecting this
-//	return aFrameRate;
+    [animationTimer invalidate];
+    mFrameRate = aFrameRate;
+    [self startAnimationTimer];
 }
 
 - (void)windowDidResignKey:(NSNotification*)aNotification
