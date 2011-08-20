@@ -224,6 +224,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
 		DWORD dwBuffSize = ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_GRAY8_BITMAP | GGO_GLYPH_INDEX, &gm, 0, NULL, &identityMatrix );
 		if( dwBuffSize > bufferSize ) {
+			delete[] pBuff;
 			pBuff = new BYTE[dwBuffSize];
 			bufferSize = dwBuffSize;
 		}
