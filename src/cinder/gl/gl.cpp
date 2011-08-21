@@ -992,6 +992,74 @@ void drawSolid( const Path2d &path2d, float approximationScale )
 	glDisableClientState( GL_VERTEX_ARRAY );	
 }
 
+// TriMesh2d
+void draw( const TriMesh2d &mesh )
+{
+	glVertexPointer( 2, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
+	glEnableClientState( GL_VERTEX_ARRAY );
+
+	glDisableClientState( GL_NORMAL_ARRAY );
+	
+	if( mesh.hasColorsRgb() ) {
+		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else if( mesh.hasColorsRgba() ) {
+		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else 
+		glDisableClientState( GL_COLOR_ARRAY );	
+
+	if( mesh.hasTexCoords() ) {
+		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
+		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	}
+	else
+		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
+
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_COLOR_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+// TriMesh2d
+void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCount )
+{
+	glVertexPointer( 2, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
+	glEnableClientState( GL_VERTEX_ARRAY );
+
+	glDisableClientState( GL_NORMAL_ARRAY );
+
+	if( mesh.hasColorsRgb() ) {
+		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else if( mesh.hasColorsRgba() ) {
+		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}	
+	else 
+		glDisableClientState( GL_COLOR_ARRAY );
+	
+	if( mesh.hasTexCoords() ) {
+		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
+		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	}
+	else
+		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+		
+	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
+
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_COLOR_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+// TriMesh
 void draw( const TriMesh &mesh )
 {
 	glVertexPointer( 3, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
@@ -1029,6 +1097,7 @@ void draw( const TriMesh &mesh )
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 }
 
+// TriMesh2d
 void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount )
 {
 	glVertexPointer( 3, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
