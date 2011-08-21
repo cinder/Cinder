@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "cinder/App/App.h"
+#include "cinder/app/App.h"
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/app/AccelEvent.h"
