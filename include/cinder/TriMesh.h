@@ -76,6 +76,8 @@ class TriMesh {
 	/*! Creates a vertex which can be referred to with appendTriangle() or appendIndices() */
 	void		appendVertex( const Vec3f &v ) { mVertices.push_back( v ); }
 	/*! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() */
+	void		appendVertices( const Vec3f *verts, size_t num );
+	/*! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() */
 	void		appendVertices( const Vec4d *verts, size_t num );
 	/*! Appends a normal  */
 	void		appendNormal( const Vec3f &v ) { mNormals.push_back( v ); }
