@@ -145,7 +145,7 @@ class ColorT
 		}
 	}
 
-	ColorT<T> lerp( T fact, const ColorT<T> &d ) const
+	ColorT<T> lerp( float fact, const ColorT<T> &d ) const
 	{
 		return ColorT<T>( r + ( d.r - r ) * fact, g + ( d.g - g ) * fact, b + ( d.b - b ) * fact );
 	}
