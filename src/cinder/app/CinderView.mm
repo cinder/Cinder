@@ -136,6 +136,11 @@
 	return YES;
 }
 
+- (BOOL)isOpaque
+{
+	return YES;
+}
+
 /////////////////////////////////////////////////////////////////////////////////
 // Event Handling
 - (BOOL)acceptsFirstResponder

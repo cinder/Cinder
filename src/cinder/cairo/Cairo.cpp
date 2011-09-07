@@ -233,11 +233,6 @@ int32_t SurfaceImage::getStride() const
 	return cairo_image_surface_get_stride( mCairoSurface );
 }
 
-cinder::Surface& SurfaceImage::getSurface()
-{
-	return mCinderSurface;
-}
-
 void SurfaceImage::initCinderSurface( bool alpha, uint8_t *data, int32_t stride )
 {
 #if defined( BOOST_BIG_ENDIAN )
@@ -378,8 +373,8 @@ CGContextRef SurfaceQuartz::getCgContextRef()
 SurfaceCgBitmapContext::SurfaceCgBitmapContext( int32_t width, int32_t height, bool alpha )
 	: SurfaceBase( width, height )
 {
-	cinder::Surface surface = cinder::Surface( width, height, alpha, SurfaceConstraintsCgBitmapContext() );
-	mCgContextRef = cinder::cocoa::createCgBitmapContext( surface );
+	mSurface = cinder::Surface( width, height, alpha, SurfaceConstraintsCgBitmapContext() );
+	mCgContextRef = cinder::cocoa::createCgBitmapContext( mSurface );
 	// Need to flip this vertically since Quartz is lower-left origin
 	::CGContextTranslateCTM( mCgContextRef, 0.0f, height );
 	::CGContextScaleCTM( mCgContextRef, 1.0f, -1.0f );

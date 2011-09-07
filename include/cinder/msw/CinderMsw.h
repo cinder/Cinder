@@ -42,7 +42,7 @@ Surface8u convertHBitmap( HBITMAP hbitmap );
 
 //! Converts a Win32 POINTFX fixed point point to a cinder::Vec2f
 inline Vec2f toVec2f( const ::POINTFX &p )
-{ return Vec2f( ( (p.x.value << 16) | p.y.fract ) / 65535.0f, ( (p.y.value << 16) | p.y.fract ) / 65535.0f ); }
+{ return Vec2f( ( (p.x.value << 16) | p.x.fract ) / 65535.0f, ( (p.y.value << 16) | p.y.fract ) / 65535.0f ); }
 
 //! A free function designed to interact with makeComShared
 void ComDelete( void *p );

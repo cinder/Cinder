@@ -109,6 +109,16 @@ class ColorT
 	const ColorT<T>&	operator*=( T rhs ) { r *= rhs; g *= rhs; b *= rhs; return *this; }
 	const ColorT<T>&	operator/=( T rhs ) { r /= rhs; g /= rhs; b /= rhs; return *this; }
 
+	bool operator==( const ColorT<T>& rhs ) const
+	{
+		return ( r == rhs.r ) && ( g == rhs.g ) && ( b == rhs.b );
+	}
+
+	bool operator!=( const ColorT<T>& rhs ) const
+	{
+		return ! ( *this == rhs );
+	}
+
 	typename CHANTRAIT<T>::Accum dot( const ColorT<T> &rhs ) const
 	{
 		return r*rhs.r + g*rhs.g + b*rhs.b;
@@ -145,7 +155,7 @@ class ColorT
 		}
 	}
 
-	ColorT<T> lerp( T fact, const ColorT<T> &d ) const
+	ColorT<T> lerp( float fact, const ColorT<T> &d ) const
 	{
 		return ColorT<T>( r + ( d.r - r ) * fact, g + ( d.g - g ) * fact, b + ( d.b - b ) * fact );
 	}
@@ -251,6 +261,16 @@ class ColorAT {
 	const ColorAT<T>&	operator-=( T rhs ) {	r -= rhs; g -= rhs; b -= rhs; a -= rhs;	return * this; }
 	const ColorAT<T>&	operator*=( T rhs ) { r *= rhs; g *= rhs; b *= rhs; a *= rhs; return * this; }
 	const ColorAT<T>&	operator/=( T rhs ) { r /= rhs; g /= rhs; b /= rhs; a /= rhs;	return * this; }
+
+	bool operator==( const ColorAT<T>& rhs ) const
+	{
+		return ( r == rhs.r ) && ( g == rhs.g ) && ( b == rhs.b ) && ( a == rhs.a );
+	}
+
+	bool operator!=( const ColorAT<T>& rhs ) const
+	{
+	return ! ( *this == rhs );
+	}
 
 	float length() const
 	{
