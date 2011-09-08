@@ -260,7 +260,7 @@ void Texture::init( const unsigned char *data, int unpackRowLength, GLenum dataF
 	if( format.mMipmapping )
 		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
 	// Anisotropy filtering
-	if( GLEE_EXT_texture_filter_anisotropic )
+	if( GL_EXT_texture_filter_anisotropic )
 	{
 		GLfloat maxAnisotropy;
 		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );
@@ -299,7 +299,7 @@ void Texture::init( const float *data, GLint dataFormat, const Format &format )
 	if( format.mMipmapping )
 		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
 	// Anisotropy filtering
-	if( GLEE_EXT_texture_filter_anisotropic )
+	if( GL_EXT_texture_filter_anisotropic )
 	{
 		GLfloat maxAnisotropy;
 		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );
@@ -407,7 +407,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	if( format.mMipmapping )
 		glTexParameteri( mObj->mTarget, GL_GENERATE_MIPMAP, GL_TRUE );
 	// Anisotropy filtering
-	if( GLEE_EXT_texture_filter_anisotropic )
+	if( GL_EXT_texture_filter_anisotropic )
 	{
 		GLfloat maxAnisotropy;
 		glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropy );

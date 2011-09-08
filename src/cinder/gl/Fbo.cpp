@@ -102,7 +102,7 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Control viewport change and lock switch.
-bool Fbo::mIsLocked = FALSE;
+bool Fbo::mIsLocked = false;
 GLint Fbo::mOldViewport[4] = { -1, -1, -1, -1 };
 
 // Fbo::Obj
@@ -275,7 +275,7 @@ void Fbo::init()
 		}
 	}
 	
-	mIsLocked = FALSE;
+	mIsLocked = false;
 	for( int i=0; i<4; i++ ) mOldViewport[i] = -1;
 
 	mObj->mNeedsResolve = false;
@@ -461,7 +461,7 @@ void Fbo::bindFramebuffer()
 	}
 
 	// Set lock flag to true
-	mIsLocked = TRUE;
+	mIsLocked = true;
 }
 
 void Fbo::unbindFramebuffer()
@@ -474,7 +474,7 @@ void Fbo::unbindFramebuffer()
 		glViewport( mOldViewport[0], mOldViewport[1], mOldViewport[2], mOldViewport[3] );			
 	}
 	// Set lock flag to false
-	mIsLocked = FALSE;
+	mIsLocked = false;
 }
 
 bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )

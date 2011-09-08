@@ -642,7 +642,7 @@ public:
 
 
 	// Compute new point based on barycentric coordinates
-	void Vec3<T>::setBaryCentric( const Vec3<T>& v1, const Vec3<T>& v2, const Vec3<T>& v3, const T& f, const T& g )
+	void setBaryCentric( const Vec3<T>& v1, const Vec3<T>& v2, const Vec3<T>& v3, const T& f, const T& g )
 	{
 		x = v1.x + f * (v2.x - v1.x) + g * (v3.x - v1.x);
 		y = v1.y + f * (v2.y - v1.y) + g * (v3.y - v1.y);

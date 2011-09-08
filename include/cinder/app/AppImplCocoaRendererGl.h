@@ -48,5 +48,6 @@
 - (BOOL)needsDrawRect;
 
 + (NSOpenGLPixelFormat*)defaultPixelFormat:(int)antialiasLevel;
++ (NSOpenGLPixelFormat*)GL32CorePixelFormat:(int)antialiasLevel;
 
 @end
