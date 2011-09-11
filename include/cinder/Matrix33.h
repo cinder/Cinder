@@ -173,8 +173,15 @@ public:
 	// post-multiplies column vector v - no divide by w
 	Vec3<T>				postMultiply( const Vec3<T> &v ) const;
 
+	// post-multiplies column vector [rhs.x rhs.y rhs.z 1] and divides by w - same as operator*( const Vec3<T>& )
+	Vec2<T>				transformPoint( const Vec2<T> &rhs ) const;
+
 	// post-multiplies column vector [rhs.x rhs.y rhs.z]
 	Vec3<T>				transformVec( const Vec3<T> &v ) const { return postMultiply( v ); }
+
+	// multiplies the current matrix by a translation matrix derived from tr
+	void				translate( const Vec2<T> &tr ) { *this *= createTranslation( tr ); }
+	void				translate( const Vec3<T> &tr ) { *this *= createTranslation( tr ); }
 
 	// rotate by radians on axis (conceptually, rotate is before 'this')
 	template <template <typename> class VecT>
@@ -200,6 +207,10 @@ public:
 	static Matrix33<T>  one() { return Matrix33( (T)1 ); }
 	// returns 0 filled matrix
 	static Matrix33<T>  zero() { return Matrix33( (T)0 ); }
+
+	// creates translation matrix
+	static Matrix33<T>	createTranslation( const Vec2<T> &v, T w = 1 );
+	static Matrix33<T>	createTranslation( const Vec3<T> &v ) { return createTranslation( v.xyz(), v.w );}
 
 	// creates rotation matrix
 	static Matrix33<T>	createRotation( const Vec3<T> &axis, T radians );
@@ -774,6 +785,16 @@ Vec3<T> Matrix33<T>::postMultiply( const Vec3<T> &v ) const
 }
 
 template< typename T >
+Vec2<T> Matrix33<T>::transformPoint( const Vec2<T> &rhs ) const
+{
+	T x = m00*rhs.x + m01*rhs.y + m02;
+	T y = m10*rhs.x + m11*rhs.y + m12;
+	T w = m20*rhs.x + m21*rhs.y + m22;
+
+	return Vec2<T>( x / w, y / w);
+}
+
+template< typename T >
 void Matrix33<T>::scale( T s )
 {
 	for( int i = 0; i < DIM_SQ; ++i ) {
@@ -808,6 +829,17 @@ Matrix33<T> Matrix33<T>::invertTransform() const
 			ret.at( j, i ) = at( i, j );
 		}
 	}
+
+	return ret;
+}
+
+template<typename T>
+Matrix33<T> Matrix33<T>::createTranslation( const Vec2<T> &v, T w )
+{
+	Matrix33 ret;
+	ret.m[6] = v.x;
+	ret.m[7] = v.y;
+	ret.m[8] = w;
 
 	return ret;
 }
