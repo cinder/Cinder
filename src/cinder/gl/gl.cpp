@@ -1175,6 +1175,10 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 namespace {
 void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
 {
+	// ROGER
+	if ( str.length() == 0 )
+		return;
+	
 	// justification: { left = -1, center = 0, right = 1 }
 	SaveColorState colorState;
 
