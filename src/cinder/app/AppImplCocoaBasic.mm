@@ -109,13 +109,12 @@
 	if( app->getSettings().isResizable() ) {
 		myStyleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
 	}
-	// ROGER / NSWindowUnlimited
-	win = [[NSWindowUnlimited alloc] initWithContentRect:winRect
+	win = [[NSWindow alloc] initWithContentRect:winRect
 									  styleMask:myStyleMask
 										backing:NSBackingStoreBuffered
 										  defer:NO
 										 screen:mDisplay->getNSScreen()];
-
+	
 	if( cinderView == nil ) {
 		cinderView = [[CinderView alloc] initWithFrame:NSMakeRect( 0, 0, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() ) app:app];
 		[cinderView retain];
@@ -307,8 +306,7 @@
 - (void)windowChangedScreen:(NSNotification*)inNotification
 {
     // If the video moves to a different screen, synchronize to the timing of that screen.
-	// ROGER / NSWindowUnlimited
-	NSWindowUnlimited *window = [inNotification object]; 
+	NSWindow *window = [inNotification object]; 
 	CGDirectDisplayID displayID = (CGDirectDisplayID)[[[[window screen] deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 
 	if( displayID != mDisplay->getCGDirectDisplayID() ) {
