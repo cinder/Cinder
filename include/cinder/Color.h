@@ -165,6 +165,32 @@ class ColorT
 		return ColorT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
 	}
 
+	// ROGER
+	static ColorT<T> red()
+	{
+		return ColorT<T>( CHANTRAIT<T>::max(), static_cast<T>( 0 ), static_cast<T>( 0 ) );
+	}
+	static ColorT<T> green()
+	{
+		return ColorT<T>( static_cast<T>( 0 ), CHANTRAIT<T>::max(), static_cast<T>( 0 ) );
+	}
+	static ColorT<T> blue()
+	{
+		return ColorT<T>( static_cast<T>( 0 ), static_cast<T>( 0 ), CHANTRAIT<T>::max() );
+	}
+	static ColorT<T> yellow()
+	{
+		return ColorT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), static_cast<T>( 0 ) );
+	}
+	static ColorT<T> cyan()
+	{
+		return ColorT<T>( static_cast<T>( 0 ), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
+	}
+	static ColorT<T> magenta()
+	{
+		return ColorT<T>( CHANTRAIT<T>::max(), static_cast<T>( 0 ), CHANTRAIT<T>::max() );
+	}
+	
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
 };
@@ -297,6 +323,33 @@ class ColorAT {
 	{
 		return ColorAT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
 	}
+	
+	// ROGER
+	static ColorAT<T> red()
+	{
+		return ColorAT<T>( CHANTRAIT<T>::max(), static_cast<T>( 0 ), static_cast<T>( 0 ), CHANTRAIT<T>::max() );
+	}
+	static ColorAT<T> green()
+	{
+		return ColorAT<T>( static_cast<T>( 0 ), CHANTRAIT<T>::max(), static_cast<T>( 0 ), CHANTRAIT<T>::max() );
+	}
+	static ColorAT<T> blue()
+	{
+		return ColorAT<T>( static_cast<T>( 0 ), static_cast<T>( 0 ), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
+	}
+	static ColorAT<T> yellow()
+	{
+		return ColorAT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), static_cast<T>( 0 ), CHANTRAIT<T>::max() );
+	}
+	static ColorAT<T> cyan()
+	{
+		return ColorAT<T>( static_cast<T>( 0 ), CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
+	}
+	static ColorAT<T> magenta()
+	{
+		return ColorAT<T>( CHANTRAIT<T>::max(), static_cast<T>( 0 ), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
+	}
+	
 
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
