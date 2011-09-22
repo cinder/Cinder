@@ -1,0 +1,258 @@
+// !$*UTF8*$!
+{
+	00BAE6590E7ED9C10018A608 /* MidiExampleApp.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {888, 1001}}";
+			sepNavSelRange = "{336, 0}";
+			sepNavVisRange = "{0, 813}";
+		};
+	};
+	29B97313FDCFA39411CA2CEA /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = 8F766A2111B7B46D00BBA954 /* MidiExample */;
+		activeTarget = 8D1107260486CEB800E47090 /* MidiExample */;
+		addToTargets = (
+			8D1107260486CEB800E47090 /* MidiExample */,
+		);
+		codeSenseManager = 8F766A4411B7B47300BBA954 /* Code sense */;
+		executables = (
+			8F766A2111B7B46D00BBA954 /* MidiExample */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					710,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 298039611;
+			PBXWorkspaceStateSaveDate = 298039611;
+		};
+		perUserProjectItems = {
+			8F23A0CC11C3B95000C61550 /* PBXTextBookmark */ = 8F23A0CC11C3B95000C61550 /* PBXTextBookmark */;
+			8F23A0D011C3BB9100C61550 /* PBXTextBookmark */ = 8F23A0D011C3BB9100C61550 /* PBXTextBookmark */;
+			8F23A0D111C3BB9100C61550 /* PBXTextBookmark */ = 8F23A0D111C3BB9100C61550 /* PBXTextBookmark */;
+			8F23A0D211C3BB9100C61550 /* PBXTextBookmark */ = 8F23A0D211C3BB9100C61550 /* PBXTextBookmark */;
+			8F23A0D311C3BB9100C61550 /* PBXTextBookmark */ = 8F23A0D311C3BB9100C61550 /* PBXTextBookmark */;
+			8F23A0D411C3BB9100C61550 /* PBXTextBookmark */ = 8F23A0D411C3BB9100C61550 /* PBXTextBookmark */;
+			8F23A0D511C3BB9100C61550 /* PBXTextBookmark */ = 8F23A0D511C3BB9100C61550 /* PBXTextBookmark */;
+			8F23A0D611C3BB9100C61550 /* PBXTextBookmark */ = 8F23A0D611C3BB9100C61550 /* PBXTextBookmark */;
+			8F766AF611B7B87F00BBA954 = 8F766AF611B7B87F00BBA954 /* PBXTextBookmark */;
+			8F766AFA11B7B88600BBA954 = 8F766AFA11B7B88600BBA954 /* PBXTextBookmark */;
+		};
+		sourceControlManager = 8F766A4311B7B47300BBA954 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	32CA4F630368D1EE00C91783 /* MidiExample_Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {888, 536}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 147}";
+		};
+	};
+	8D1107260486CEB800E47090 /* MidiExample */ = {
+		activeExec = 0;
+		executables = (
+			8F766A2111B7B46D00BBA954 /* MidiExample */,
+		);
+	};
+	8F23A0CC11C3B95000C61550 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8F766AF711B7B87F00BBA954 /* MidiExampleApp.cpp */;
+		name = "MidiExampleApp.cpp: 18";
+		rLen = 0;
+		rLoc = 1800;
+		rType = 0;
+		vrLen = 1081;
+		vrLoc = 647;
+	};
+	8F23A0D011C3BB9100C61550 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 32CA4F630368D1EE00C91783 /* MidiExample_Prefix.pch */;
+		name = "MidiExample_Prefix.pch: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 147;
+		vrLoc = 0;
+	};
+	8F23A0D111C3BB9100C61550 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8F766A4711B7B48900BBA954 /* MidiConstants.h */;
+		name = "MidiConstants.h: 26";
+		rLen = 0;
+		rLoc = 1463;
+		rType = 0;
+		vrLen = 1721;
+		vrLoc = 0;
+	};
+	8F23A0D211C3BB9100C61550 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8F766A4811B7B48900BBA954 /* MidiExceptions.h */;
+		name = "MidiExceptions.h: 26";
+		rLen = 0;
+		rLoc = 1463;
+		rType = 0;
+		vrLen = 1691;
+		vrLoc = 0;
+	};
+	8F23A0D311C3BB9100C61550 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8F766A4911B7B48900BBA954 /* MidiIn.h */;
+		name = "MidiIn.h: 26";
+		rLen = 0;
+		rLoc = 1463;
+		rType = 0;
+		vrLen = 1686;
+		vrLoc = 0;
+	};
+	8F23A0D411C3BB9100C61550 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8F766A4A11B7B48900BBA954 /* MidiMessage.h */;
+		name = "MidiMessage.h: 26";
+		rLen = 0;
+		rLoc = 1463;
+		rType = 0;
+		vrLen = 1606;
+		vrLoc = 0;
+	};
+	8F23A0D511C3BB9100C61550 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8F766AF711B7B87F00BBA954 /* MidiExampleApp.cpp */;
+		name = "MidiExampleApp.cpp: 1";
+		rLen = 1463;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1770;
+		vrLoc = 0;
+	};
+	8F23A0D611C3BB9100C61550 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 8F766AF711B7B87F00BBA954 /* MidiExampleApp.cpp */;
+		name = "MidiExampleApp.cpp: 22";
+		rLen = 0;
+		rLoc = 1252;
+		rType = 0;
+		vrLen = 1770;
+		vrLoc = 0;
+	};
+	8F766A2111B7B46D00BBA954 /* MidiExample */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = MidiExample;
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+	};
+	8F766A4311B7B47300BBA954 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	8F766A4411B7B47300BBA954 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	8F766A4711B7B48900BBA954 /* MidiConstants.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {888, 858}}";
+			sepNavSelRange = "{1463, 0}";
+			sepNavVisRange = "{0, 1721}";
+		};
+	};
+	8F766A4811B7B48900BBA954 /* MidiExceptions.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {888, 624}}";
+			sepNavSelRange = "{1463, 0}";
+			sepNavVisRange = "{0, 1691}";
+		};
+	};
+	8F766A4911B7B48900BBA954 /* MidiIn.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {888, 923}}";
+			sepNavSelRange = "{1463, 0}";
+			sepNavVisRange = "{0, 1686}";
+		};
+	};
+	8F766A4A11B7B48900BBA954 /* MidiMessage.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {888, 663}}";
+			sepNavSelRange = "{1463, 0}";
+			sepNavVisRange = "{0, 1606}";
+		};
+	};
+	8F766AF611B7B87F00BBA954 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "Expected `)' before ';' token";
+		fRef = 8F766AF711B7B87F00BBA954 /* MidiExampleApp.cpp */;
+		rLen = 1;
+		rLoc = 0;
+		rType = 1;
+	};
+	8F766AF711B7B87F00BBA954 /* MidiExampleApp.cpp */ = {
+		isa = PBXFileReference;
+		lastKnownFileType = sourcecode.cpp.cpp;
+		name = MidiExampleApp.cpp;
+		path = "/Work/libraries/c/Cinder-MIDI/samples/MidiExample/xcode/../src/MidiExampleApp.cpp";
+		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {888, 1235}}";
+			sepNavSelRange = "{1252, 0}";
+			sepNavVisRange = "{0, 1770}";
+		};
+	};
+	8F766AFA11B7B88600BBA954 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 00BAE6590E7ED9C10018A608 /* MidiExampleApp.cpp */;
+		name = "MidiExampleApp.cpp: 18";
+		rLen = 0;
+		rLoc = 1800;
+		rType = 0;
+		vrLen = 813;
+		vrLoc = 0;
+	};
+}
