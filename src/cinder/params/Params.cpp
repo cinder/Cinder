@@ -22,6 +22,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/params/Params.h"
+#include "cinder/Utilities.h"
 
 #include "AntTweakBar.h"
 
@@ -64,7 +65,11 @@ bool mouseWheel( app::MouseEvent event )
 
 bool mouseMove( app::MouseEvent event )
 {
-	return TwMouseMotion( event.getX(), event.getY() ) != 0;
+	// ROGER
+	// let move on bottom
+	//return TwMouseMotion( event.getX(), event.getY() ) != 0;
+	TwMouseMotion( event.getX(), event.getY() ) != 0;
+	return false;
 }
 
 bool keyDown( app::KeyEvent event )
@@ -222,7 +227,28 @@ void InterfaceGl::addParam( const std::string &name, const std::vector<std::stri
 		
 	delete [] ev;
 }
-
+	
+	// ROGER
+	void InterfaceGl::addParam( const std::string &name, const std::map<int,std::string> &valueLabels, int *param, const std::string &optionsStr, bool readOnly )
+	{
+		int v=0;
+		TwEnumVal *ev = new TwEnumVal[valueLabels.size()];
+		std::map<int,std::string>::const_iterator it;
+		for ( it=valueLabels.begin() ; it != valueLabels.end(); it++, v++ ) {
+			ev[v].Value = (int)(it->first);
+			ev[v].Label = const_cast<char*>( (it->second).c_str() );
+		}
+		
+		TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev, valueLabels.size() );
+		
+		if( readOnly )
+			TwAddVarRO( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
+		else
+			TwAddVarRW( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
+		
+		delete [] ev;
+	}
+	
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
 {
 	TwAddSeparator( mBar.get(), name.c_str(), optionsStr.c_str() );
@@ -255,6 +281,14 @@ void InterfaceGl::setOptions( const std::string &name, const std::string &option
 		target += "/`" + name + "`";
 
 	TwDefine( ( target + " " + optionsStr ).c_str() );
+}
+
+// ROGER
+// ATTENTION: Call only after drawn once, or else it will crash!
+void InterfaceGl::setFontSize( int fontSize )
+{
+	std::string target = " GLOBAL fontsize=" + toString( math<int>::clamp( fontSize, 1, 3 ) ) + " ";
+	TwDefine( target.c_str() );
 }
 
 } } // namespace cinder::params
