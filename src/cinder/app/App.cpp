@@ -150,7 +150,8 @@ void App::privateSetup__()
 void App::privateUpdate__()
 {
 	update();
-	mFrameCount++;
+	// ROGER:: Increase mFrameCount AFTER draw()
+	//mFrameCount++;
 
 	double now = mTimer.getSeconds();
 	if( now > mFpsLastSampleTime + mFpsSampleInterval ) {
@@ -166,6 +167,8 @@ void App::privateUpdate__()
 void App::privateDraw__()
 {
 	draw();
+	// ROGER:: Increase mFrameCount AFTER draw()
+	mFrameCount++;
 }
 
 void App::privateShutdown__()
