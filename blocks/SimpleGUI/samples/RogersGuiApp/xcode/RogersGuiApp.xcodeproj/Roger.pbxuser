@@ -1,0 +1,165 @@
+// !$*UTF8*$!
+{
+	00BAE6590E7ED9C10018A608 /* RogersGuiApp.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1083, 2834}}";
+			sepNavSelRange = "{4045, 0}";
+			sepNavVisRange = "{2869, 1753}";
+			sepNavWindowFrame = "{{84, 32}, {1062, 778}}";
+		};
+	};
+	29B97313FDCFA39411CA2CEA /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = DB6C8DD013F71E0B00912847 /* RogersGuiApp */;
+		activeTarget = 8D1107260486CEB800E47090 /* RogersGuiApp */;
+		breakpoints = (
+		);
+		codeSenseManager = DB6C8DE813F71E3900912847 /* Code sense */;
+		executables = (
+			DB6C8DD013F71E0B00912847 /* RogersGuiApp */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					669,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					629,
+					60,
+					20,
+					48,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 336089239;
+			PBXWorkspaceStateSaveDate = 336089239;
+		};
+		perUserProjectItems = {
+			DB51E77C1408564E00FFFEC8 /* PBXTextBookmark */ = DB51E77C1408564E00FFFEC8 /* PBXTextBookmark */;
+			DB51E77D1408564E00FFFEC8 /* PBXTextBookmark */ = DB51E77D1408564E00FFFEC8 /* PBXTextBookmark */;
+		};
+		sourceControlManager = DB6C8DE713F71E3900912847 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	8D1107260486CEB800E47090 /* RogersGuiApp */ = {
+		activeExec = 0;
+		executables = (
+			DB6C8DD013F71E0B00912847 /* RogersGuiApp */,
+		);
+	};
+	93B36A1A1317006D0003A1EE /* SimpleGUI.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1153, 4810}}";
+			sepNavSelRange = "{9715, 13}";
+			sepNavVisRange = "{8714, 1614}";
+			sepNavWindowFrame = "{{61, 53}, {1062, 778}}";
+		};
+	};
+	93B36A7F1317006D0003A1EE /* SimpleGUI.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1132, 14638}}";
+			sepNavSelRange = "{21748, 0}";
+			sepNavVisRange = "{20607, 1128}";
+			sepNavWindowFrame = "{{61, 53}, {1062, 778}}";
+		};
+	};
+	DB51E77C1408564E00FFFEC8 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 00BAE6590E7ED9C10018A608 /* RogersGuiApp.cpp */;
+		name = "RogersGuiApp.cpp: 206";
+		rLen = 20;
+		rLoc = 6410;
+		rType = 0;
+		vrLen = 1036;
+		vrLoc = 5610;
+	};
+	DB51E77D1408564E00FFFEC8 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 00BAE6590E7ED9C10018A608 /* RogersGuiApp.cpp */;
+		name = "RogersGuiApp.cpp: 116";
+		rLen = 0;
+		rLoc = 4045;
+		rType = 0;
+		vrLen = 1753;
+		vrLoc = 2869;
+	};
+	DB6C8DD013F71E0B00912847 /* RogersGuiApp */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = RogersGuiApp;
+		savedGlobals = {
+		};
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+		variableFormatDictionary = {
+		};
+	};
+	DB6C8DE713F71E3900912847 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	DB6C8DE813F71E3900912847 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+}
