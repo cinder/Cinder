@@ -193,6 +193,9 @@ class AppBasic : public App {
 	virtual void	privateResize__( const ResizeEvent &event );
 	//! \endcond
 	
+	// ROGER
+	bool isMinimized();
+	
  private:
  
 	static AppBasic*	sInstance;

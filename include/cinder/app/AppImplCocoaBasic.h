@@ -85,4 +85,7 @@
 - (void)setActiveTouches:(std::vector<ci::app::TouchEvent::Touch>*)touches;
 #endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 
+	// ROGER
+	- (bool)isMinimized;
+
 @end

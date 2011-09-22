@@ -367,4 +367,10 @@
 {
 }
 
+// ROGER
+- (bool)isMinimized
+{
+	return [win isMiniaturized];
+}
+
 @end
