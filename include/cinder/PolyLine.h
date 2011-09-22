@@ -53,6 +53,8 @@ class PolyLine {
 
 	T			getPosition( float t ) const;
 	T			getDerivative( float t ) const;
+
+	void		scale( const T &scaleFactor, T scaleCenter = T::zero() );
 	
  private:
 	std::vector<T>			mPoints;
