@@ -57,7 +57,7 @@
 
 // forward declarations
 namespace cinder {
-	class Camera; class TriMesh; class Sphere;
+	class Camera; class TriMesh2d; class TriMesh; class Sphere;
 	namespace gl {
 		 class VboMesh; class Texture;
 	}
@@ -242,6 +242,11 @@ void draw( const class Shape2d &shape2d, float approximationScale = 1.0f );
 //! Draws a solid (filled) Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
 void drawSolid( const class Path2d &path2d, float approximationScale = 1.0f );
 
+
+//! Draws a cinder::TriMesh \a mesh at the origin.
+void draw( const TriMesh2d &mesh );
+//! Draws a range of triangles starting with triangle # \a startTriangle and a count of \a triangleCount from cinder::TriMesh \a mesh at the origin.
+void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCount );
 //! Draws a cinder::TriMesh \a mesh at the origin.
 void draw( const TriMesh &mesh );
 //! Draws a range of triangles starting with triangle # \a startTriangle and a count of \a triangleCount from cinder::TriMesh \a mesh at the origin.
