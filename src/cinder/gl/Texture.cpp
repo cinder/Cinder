@@ -908,6 +908,15 @@ void Texture::enableAndBind() const
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 }
 
+	// ROGER
+	void Texture::enableAndBind( GLuint textureUnit ) const
+	{
+		glEnable( mObj->mTarget );
+		glActiveTexture( GL_TEXTURE0 + textureUnit );
+		glBindTexture( mObj->mTarget, mObj->mTextureID );
+		glActiveTexture( GL_TEXTURE0 );
+	}
+	
 void Texture::disable() const
 {
 	glDisable( mObj->mTarget );

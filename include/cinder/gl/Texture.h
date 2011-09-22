@@ -130,6 +130,8 @@ class Texture {
 	/**	\brief Enables the Texture's target and binds its associated texture.
 		Equivalent to calling \code glEnable( target ); glBindTexture( target, textureID ); \endcode **/
 	void			enableAndBind() const;
+	// ROGER
+	void			enableAndBind(GLuint unit) const;
 	//!	Disables the Texture's target
 	void			disable() const;
 	//!	Binds the Texture's texture to its target in the multitexturing unit \c GL_TEXTURE0 + \a textureUnit
