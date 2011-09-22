@@ -1781,7 +1781,10 @@ int ANT_CALL TwInit(ETwGraphAPI _GraphAPI, void *_Device)
     g_TwMgr = new CTwMgr(_GraphAPI, _Device);
 
     TwGenerateDefaultFonts();
-    g_TwMgr->m_CurrentFont = g_DefaultNormalFont;
+	// ROGER
+	// Default font size = SMALL
+    //g_TwMgr->m_CurrentFont = g_DefaultNormalFont;
+    g_TwMgr->m_CurrentFont = g_DefaultSmallFont;
 
     int Res = TwCreateGraph(_GraphAPI);
 
