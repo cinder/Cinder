@@ -717,6 +717,75 @@ void drawStrokedRect( const Rectf &rect )
 	glDisableClientState( GL_VERTEX_ARRAY );
 }
 
+void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner )
+{
+	// automatically determine the number of segments from the circumference
+	if( numSegmentsPerCorner <= 0 ) {
+		numSegmentsPerCorner = (int)math<double>::floor( cornerRadius * M_PI * 2 / 4 );
+	}
+	if( numSegmentsPerCorner < 2 ) numSegmentsPerCorner = 2;
+
+	Vec2f center = r.getCenter();
+
+	GLfloat *verts = new float[(numSegmentsPerCorner+2)*2*4+4];
+	verts[0] = center.x;
+	verts[1] = center.y;
+	size_t tri = 1;
+	const float angleDelta = 1 / (float)numSegmentsPerCorner * M_PI / 2;
+	const float cornerCenterVerts[8] = { r.x2 - cornerRadius, r.y2 - cornerRadius, r.x1 + cornerRadius, r.y2 - cornerRadius,
+			r.x1 + cornerRadius, r.y1 + cornerRadius, r.x2 - cornerRadius, r.y1 + cornerRadius };
+	for( size_t corner = 0; corner < 4; ++corner ) {
+		float angle = corner * M_PI / 2.0f;
+		Vec2f cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
+		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
+			Vec2f pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius, cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
+			verts[tri*2+0] = pt.x;
+			verts[tri*2+1] = pt.y;
+			++tri;
+			angle += angleDelta;
+		}
+	}
+	// close it off
+	verts[tri*2+0] = r.x2;
+	verts[tri*2+1] = r.y2 - cornerRadius;
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_TRIANGLE_FAN, 0, (numSegmentsPerCorner+1) * 4 + 2 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	delete [] verts;
+}
+
+void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner )
+{
+	// automatically determine the number of segments from the circumference
+	if( numSegmentsPerCorner <= 0 ) {
+		numSegmentsPerCorner = (int)math<double>::floor( cornerRadius * M_PI * 2 / 4 );
+	}
+	if( numSegmentsPerCorner < 2 ) numSegmentsPerCorner = 2;
+
+	GLfloat *verts = new float[(numSegmentsPerCorner+2)*2*4];
+	size_t tri = 0;
+	const float angleDelta = 1 / (float)numSegmentsPerCorner * M_PI / 2;
+	const float cornerCenterVerts[8] = { r.x2 - cornerRadius, r.y2 - cornerRadius, r.x1 + cornerRadius, r.y2 - cornerRadius,
+			r.x1 + cornerRadius, r.y1 + cornerRadius, r.x2 - cornerRadius, r.y1 + cornerRadius };
+	for( size_t corner = 0; corner < 4; ++corner ) {
+		float angle = corner * M_PI / 2.0f;
+		Vec2f cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
+		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
+			Vec2f pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius, cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
+			verts[tri*2+0] = pt.x;
+			verts[tri*2+1] = pt.y;
+			++tri;
+			angle += angleDelta;
+		}
+	}
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_LINE_LOOP, 0, tri );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	delete [] verts;
+}
+
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 {
 	glColor4ub( 255, 0, 0, 255 );
