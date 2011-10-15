@@ -118,6 +118,23 @@ void RectT<T>::offset( const Vec2<T> &offset )
 }
 
 template<typename T>
+void RectT<T>::inflate( const Vec2<T> &amount )
+{
+	x1 -= amount.x;
+	x2 += amount.x;
+	y1 -= amount.y; // assume canonical rect has y1 < y2
+	y2 += amount.y;
+}
+
+template<typename T>
+RectT<T> RectT<T>::inflated( const Vec2<T> &amount ) const
+{
+	RectT<T> result( *this );
+	result.inflate( amount );
+	return result;
+}
+
+template<typename T>
 void RectT<T>::scaleCentered( const Vec2<T> &scale )
 {
 	T halfWidth = getWidth() * scale.x / 2.0f;
