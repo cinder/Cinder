@@ -420,7 +420,7 @@ Matrix::Matrix( double xx_, double yx_, double xy_, double yy_, double x0_, doub
 {
 	xx = xx_;
 	yx = yx_;
-	xy = xx_;
+	xy = xy_;
 	yy = yy_;
 	x0 = x0_;
 	y0 = y0_;
@@ -430,7 +430,7 @@ void Matrix::init( double xx_, double yx_, double xy_, double yy_, double x0_, d
 {
 	xx = xx_;
 	yx = yx_;
-	xy = xx_;
+	xy = xy_;
 	yy = yy_;
 	x0 = x0_;
 	y0 = y0_;
