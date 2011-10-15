@@ -40,6 +40,12 @@ void stdFree( void* userData, void* ptr )
 	free( ptr );
 }
 
+Triangulator::Triangulator( const Path2d &path, float approximationScale )
+{	
+	allocate();
+	addPath( path, approximationScale );
+}
+
 Triangulator::Triangulator( const Shape2d &shape, float approximationScale )
 {	
 	allocate();

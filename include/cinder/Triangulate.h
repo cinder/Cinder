@@ -39,6 +39,8 @@ class Triangulator {
 
 	//! Default constructor
 	Triangulator();
+	//! Constructs using a Path2d. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space
+	Triangulator( const Path2d &path, float approximationScale = 1.0f );
 	//! Constructs using a Shape2d. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space
 	Triangulator( const Shape2d &shape, float approximationScale = 1.0f );
 	//! Constructs using a PolyLine2f.
