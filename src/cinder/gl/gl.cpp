@@ -35,6 +35,7 @@
 #include "cinder/PolyLine.h"
 #include "cinder/Path2d.h"
 #include "cinder/Shape2d.h"
+#include "cinder/Triangulate.h"
 #include <cmath>
 #include <map>
 
@@ -980,21 +981,29 @@ void draw( const Shape2d &shape2d, float approximationScale )
 	glDisableClientState( GL_VERTEX_ARRAY );	
 }
 
-#if ! defined( CINDER_GLES )
 void drawSolid( const Path2d &path2d, float approximationScale )
 {
-	if( path2d.getNumSegments() == 0 )
-		return;
-	std::vector<Vec2f> points = path2d.subdivide( approximationScale );
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
-	glDrawArrays( GL_POLYGON, 0, points.size() );
-	glDisableClientState( GL_VERTEX_ARRAY );	
+	draw( Triangulator( path2d ).calcMesh() );
 }
+
+void drawSolid( const Shape2d &shape2d, float approximationScale )
+{
+	draw( Triangulator( shape2d ).calcMesh() );
+}
+
+void drawSolid( const PolyLine2f &polyLine )
+{
+	draw( Triangulator( polyLine ).calcMesh() );
+}
+
+#if ! defined( CINDER_GLES )
 
 // TriMesh2d
 void draw( const TriMesh2d &mesh )
 {
+	if( mesh.getNumVertices() <= 0 )
+		return;
+
 	glVertexPointer( 2, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
 	glEnableClientState( GL_VERTEX_ARRAY );
 
