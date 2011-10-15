@@ -981,6 +981,8 @@ void draw( const Shape2d &shape2d, float approximationScale )
 	glDisableClientState( GL_VERTEX_ARRAY );	
 }
 
+#if ! defined( CINDER_GLES )
+
 void drawSolid( const Path2d &path2d, float approximationScale )
 {
 	draw( Triangulator( path2d ).calcMesh() );
@@ -995,8 +997,6 @@ void drawSolid( const PolyLine2f &polyLine )
 {
 	draw( Triangulator( polyLine ).calcMesh() );
 }
-
-#if ! defined( CINDER_GLES )
 
 // TriMesh2d
 void draw( const TriMesh2d &mesh )

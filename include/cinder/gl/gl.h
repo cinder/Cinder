@@ -238,14 +238,14 @@ void draw( const class Path2d &path2d, float approximationScale = 1.0f );
 //! Draws a Shape2d \a shape2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
 void draw( const class Shape2d &shape2d, float approximationScale = 1.0f );
 
+#if ! defined( CINDER_GLES )
+
 //! Draws a solid (filled) Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const class Path2d &path2d, float approximationScale = 1.0f );
 //! Draws a solid (filled) Shape2d \a shape2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const class Shape2d &shape2d, float approximationScale = 1.0f );
 //! Draws a solid (filled) PolyLine2f \a polyLine. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const PolyLine2f &polyLine );
-
-#if ! defined( CINDER_GLES )
 
 //! Draws a cinder::TriMesh \a mesh at the origin.
 void draw( const TriMesh2d &mesh );
