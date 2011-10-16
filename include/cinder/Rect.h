@@ -58,6 +58,8 @@ class RectT {
 	Area		getInteriorArea() const;
 	void		offset( const Vec2<T> &offset );
 	RectT		getOffset( const Vec2<T> &off ) const { RectT result( *this ); result.offset( off ); return result; }
+	void		inflate( const Vec2<T> &amount );
+	RectT		inflated( const Vec2<T> &amount ) const;
 	//! Translates the rectangle so that its center is at \a center
 	void		offsetCenterTo( const Vec2<T> &center ) { offset( center - getCenter() ); }
 	void		scaleCentered( const Vec2<T> &scale );

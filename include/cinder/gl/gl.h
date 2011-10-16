@@ -219,6 +219,8 @@ void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = 0 )
 void drawSolidRect( const Rectf &rect, bool textureRectangle = false );
 //! Renders a stroked rectangle.
 void drawStrokedRect( const Rectf &rect );
+void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner = 0 );
+void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner = 0 );
 //! Renders a coordinate frame representation centered at the origin. Arrowheads are drawn at the end of each axis with radius \a headRadius and length \a headLength.
 void drawCoordinateFrame( float axisLength = 1.0f, float headLength = 0.2f, float headRadius = 0.05f );
 //! Draws a vector starting at \a start and ending at \a end. An arrowhead is drawn at the end of radius \a headRadius and length \a headLength.
@@ -239,9 +241,13 @@ void draw( const class Path2d &path2d, float approximationScale = 1.0f );
 void draw( const class Shape2d &shape2d, float approximationScale = 1.0f );
 
 #if ! defined( CINDER_GLES )
-//! Draws a solid (filled) Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
-void drawSolid( const class Path2d &path2d, float approximationScale = 1.0f );
 
+//! Draws a solid (filled) Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
+void drawSolid( const class Path2d &path2d, float approximationScale = 1.0f );
+//! Draws a solid (filled) Shape2d \a shape2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
+void drawSolid( const class Shape2d &shape2d, float approximationScale = 1.0f );
+//! Draws a solid (filled) PolyLine2f \a polyLine. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
+void drawSolid( const PolyLine2f &polyLine );
 
 //! Draws a cinder::TriMesh \a mesh at the origin.
 void draw( const TriMesh2d &mesh );
