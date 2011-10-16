@@ -1459,6 +1459,16 @@ void Context::rectangle( const Vec2f &upperLeft, const Vec2f &lowerRight )
 	rectangle( upperLeft.x - width * 0.5f, upperLeft.y - height * 0.5f, width, height );
 }
 
+void Context::roundedRectangle( const Rectf &r, float cornerRadius )
+{
+	// derived from formula due to Helton Moraes
+	cairo_arc( mCairo, r.x1 + cornerRadius, r.y1 + cornerRadius, cornerRadius, 2*(M_PI/2), 3*( M_PI/2) );
+	cairo_arc( mCairo, r.x2 - cornerRadius, r.y1 + cornerRadius, cornerRadius, 3*(M_PI/2), 4*(M_PI/2) );
+	cairo_arc( mCairo, r.x2 - cornerRadius, r.y2 - cornerRadius, cornerRadius, 0*(M_PI/2), 1*(M_PI/2) );
+	cairo_arc( mCairo, r.x1 + cornerRadius, r.y2 - cornerRadius, cornerRadius, 1*(M_PI/2), 2*(M_PI/2) );
+	cairo_close_path( mCairo );
+}
+
 /*
 void Context::glyphPath( const cairo_glyph_t *glyphs, int num_glyphs )
 {
