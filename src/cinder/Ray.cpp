@@ -79,7 +79,7 @@ bool Ray::calcPlaneIntersection( const Vec3f &planeOrigin, const Vec3f &planeNor
 {
 	float denom = planeNormal.dot(getDirection());
 
-	if(denom > -EPSILON && denom < EPSILON)
+	if(denom > -EPSILON_VALUE && denom < EPSILON_VALUE)
 		return false;
 
 	*result = planeNormal.dot(planeOrigin - getOrigin()) / denom;
