@@ -35,7 +35,7 @@ namespace cinder { namespace audio {
 
 SourceRef load( const std::string &path, std::string extension )
 {
-	return load( DataSourcePath::createRef( path ), extension );
+	return load( DataSourcePath::create( path ), extension );
 }
 
 SourceRef load( DataSourceRef dataSource, std::string extension )
