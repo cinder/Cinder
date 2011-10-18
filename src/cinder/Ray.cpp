@@ -24,7 +24,7 @@
 
 namespace cinder {
 
- // algorithm from "Fast, Minimum Storage Ray-Triangle Intersection"
+// algorithm from "Fast, Minimum Storage Ray-Triangle Intersection"
 bool Ray::calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result ) const
 {
 	Vec3f edge1, edge2, tvec, pvec, qvec;
@@ -73,6 +73,17 @@ bool Ray::calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, cons
 	*result = edge2.dot( qvec ) * inv_det;
 	return true;
 #endif
+}
+
+bool Ray::calcPlaneIntersection( const Vec3f &planeOrigin, const Vec3f &planeNormal, float *result ) const
+{
+	float denom = planeNormal.dot(getDirection());
+
+	if(denom != 0.0f){
+		*result = planeNormal.dot(planeOrigin - getOrigin()) / denom;
+		return true;
+	}
+	return false;
 }
 
 } // namespace cinder
