@@ -286,7 +286,7 @@ class App {
 #endif
 	
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
-	DataSourcePathRef		loadAsset( const fs::path &relativePath );
+	DataSourceRef			loadAsset( const fs::path &relativePath );
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
 	fs::path				getAssetPath( const fs::path &relativePath );
 	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
@@ -437,6 +437,13 @@ inline DataSourceRef		loadResource( const std::string &macPath, int mswID, const
 	//! Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
 	inline DataSourceRef	loadResource( int mswID, const std::string &mswType ) { return App::loadResource( mswID, mswType ); }
 #endif
+
+//! Returns a DataSourceRef to the active App's's asset. Throws a AssetLoadExc on failure.
+inline DataSourceRef		loadAsset( const fs::path &relativePath ) { return App::get()->loadAsset( relativePath ); }
+//! Returns a fs::path to the active App's asset. Returns an empty path on failure.
+inline fs::path				getAssetPath( const fs::path &relativePath ) { return App::get()->getAssetPath( relativePath ); }
+//! Adds an absolute path \a dirPath to the active App's list of directories which are searched for assets.
+inline void					addAssetDirectory( const fs::path &dirPath ) { App::get()->addAssetDirectory( dirPath ); }
 
 //! Returns the path to the active App on disk
 inline fs::path		getAppPath() { return App::get()->getAppPath(); }

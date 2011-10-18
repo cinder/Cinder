@@ -207,6 +207,15 @@ void App::prepareAssetLoading()
 	if( ! mAssetDirectoriesInitialized ) {
 		fs::path appPath = getAppPath();
 
+		// if this is Mac OS or iOS, search inside the bundle's resources
+#if defined( CINDER_COCOA )
+		if( fs::exists( getResourcePath() / "assets" ) && fs::is_directory( getResourcePath() / "assets" ) ) {
+			mAssetDirectories.push_back( getResourcePath() / "assets" );
+			mAssetDirectoriesInitialized = true;
+			return;
+		}
+#endif		
+
 		// first search the local directory, then its parent, up to 5 levels up
 		fs::path curPath = appPath;
 		for( int parentCt = 0; parentCt <= 5; ++parentCt ) {
@@ -235,7 +244,7 @@ fs::path App::findAssetPath( const fs::path &relativePath )
 	return fs::path();
 }
 
-DataSourcePathRef App::loadAsset( const fs::path &relativePath )
+DataSourceRef App::loadAsset( const fs::path &relativePath )
 {
 	fs::path assetPath = findAssetPath( relativePath );
 	if( ! assetPath.empty() )
@@ -277,13 +286,13 @@ fs::path App::getResourcePath( const fs::path &rsrcRelativePath )
 
 fs::path App::getResourcePath()
 {
-	char path[4096];
+	char p[4096];
 	
 	CFURLRef url = ::CFBundleCopyResourcesDirectoryURL( ::CFBundleGetMainBundle() );
-	::CFURLGetFileSystemRepresentation( url, true, (UInt8*)path, 4096 );
+	::CFURLGetFileSystemRepresentation( url, true, (UInt8*)p, 4096 );
 	::CFRelease( url );
-	
-	return fs::path( path );
+
+	return fs::path( std::string( p ) ); // not casting this to a std::string seems to fail on iOS
 }
 
 #endif
