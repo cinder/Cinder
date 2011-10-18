@@ -117,7 +117,7 @@ fs::path AppImplMsw::getAppPath()
 		}
 	}
 
-	return fs::path( appPath );
+	return fs::path( std::string( appPath ) );
 }
 
 fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
