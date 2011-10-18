@@ -27,10 +27,10 @@ class QTimeAdvApp : public AppBasic {
 
 	void addActiveMovie( qtime::MovieGl movie );
 	void loadMovieUrl( const std::string &urlString );
-	void loadMovieFile( const std::string &path );
+	void loadMovieFile( const fs::path &path );
 
 
-	std::string mLastPath;
+	fs::path mLastPath;
 	// all of the actively playing movies
 	vector<qtime::MovieGl> mMovies;
 	// movies we're still waiting on to be loaded
@@ -48,7 +48,7 @@ void QTimeAdvApp::prepareSettings( Settings *settings )
 void QTimeAdvApp::setup()
 {
 	srand( 133 );
-	string moviePath = getOpenFilePath();
+	fs::path moviePath = getOpenFilePath();
 	if( ! moviePath.empty() )
 		loadMovieFile( moviePath );
 }
@@ -59,7 +59,7 @@ void QTimeAdvApp::keyDown( KeyEvent event )
 		setFullScreen( ! isFullScreen() );
 	}
 	else if( event.getChar() == 'o' ) {
-		string moviePath = getOpenFilePath();
+		fs::path moviePath = getOpenFilePath();
 		if( ! moviePath.empty() )
 			loadMovieFile( moviePath );
 	}
@@ -106,7 +106,7 @@ void QTimeAdvApp::loadMovieUrl( const string &urlString )
 	}
 }
 
-void QTimeAdvApp::loadMovieFile( const string &moviePath )
+void QTimeAdvApp::loadMovieFile( const fs::path &moviePath )
 {
 	qtime::MovieGl movie;
 	

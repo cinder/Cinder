@@ -37,13 +37,13 @@ void ImageTargetFileUiImage::registerSelf()
 {
 	const int32_t PRIORITY = 2;
 
-	ImageIoRegistrar::TargetCreationFunc func = ImageTargetFileUiImage::createRef;
+	ImageIoRegistrar::TargetCreationFunc func = ImageTargetFileUiImage::create;
 
 	ImageIoRegistrar::registerTargetType( "png", func, PRIORITY, "png" );
 	ImageIoRegistrar::registerTargetType( "jpg", func, PRIORITY, "jpeg" ); ImageIoRegistrar::registerTargetType( "jpeg", func, PRIORITY, "jpeg" ); ImageIoRegistrar::registerTargetType( "jpe", func, PRIORITY, "jpeg" );
 }
 
-ImageTargetRef ImageTargetFileUiImage::createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
+ImageTargetRef ImageTargetFileUiImage::create( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
 {
 	return ImageTargetRef( new ImageTargetFileUiImage( dataTarget, imageSource, options, extensionData ) );
 }

@@ -61,7 +61,7 @@ bool dictionarySetPixelBufferOptions( unsigned int width, unsigned int height, b
 CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool alpha );
 
 ::Movie openMovieFromUrl( const Url &url );
-::Movie openMovieFromPath( const std::string &path );
+::Movie openMovieFromPath( const fs::path &path );
 ::Movie openMovieFromMemory( const void *data, size_t dataSize, const std::string &fileNameHint, const std::string &mimeTypeHint );
 
 //! \endcond

@@ -23,7 +23,7 @@ class QuickTimeWriterApp : public AppBasic {
 
 void QuickTimeWriterApp::setup()
 {
-	string path = getSaveFilePath();
+	fs::path path = getSaveFilePath();
 	if( path.empty() )
 		return; // user cancelled save
 
