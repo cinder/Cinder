@@ -79,12 +79,11 @@ bool Ray::calcPlaneIntersection( const Vec3f &planeOrigin, const Vec3f &planeNor
 {
 	float denom = planeNormal.dot(getDirection());
 
-	if(denom > -EPSILON_VALUE && denom < EPSILON_VALUE)
-		return false;
-
-	*result = planeNormal.dot(planeOrigin - getOrigin()) / denom;
-
-	return true;
+	if(denom != 0.0f){
+		*result = planeNormal.dot(planeOrigin - getOrigin()) / denom;
+		return true;
+	}
+	return false;
 }
 
 } // namespace cinder
