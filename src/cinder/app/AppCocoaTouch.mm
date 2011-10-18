@@ -1,4 +1,4 @@
-/*
+sbt/*
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
@@ -65,12 +65,12 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-    app->privateOpenURL__(cinder::app::OpenURLEvent([[url absoluteString] cString]));
+    return app->privateOpenURL__(cinder::app::OpenUrlEvent(std::string([[url absoluteString] UTF8String])));
 }
 
-- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    
-    app->privateOpenURL__(cinder::app::OpenURLEvent([[url absoluteString] cString])); 
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url
+{
+    return app->privateOpenURL__(cinder::app::OpenUrlEvent(std::string([[url absoluteString] UTF8String])));     
 }
 
 - (void) applicationDidFinishLaunching:(UIApplication *)application
@@ -220,11 +220,13 @@ void AppCocoaTouch::privatePrepareSettings__()
 	prepareSettings( &mSettings );
 }
 
-void AppCocoaTouch::privateOpenURL__( const OpenURLEvent &event )
+bool AppCocoaTouch::privateOpenURL__( const OpenUrlEvent &event )
 {
     bool handled = false;
-    for( CallbackMgr<bool (OpenURLEvent)>::iterator cbIter = mCallbacksOpenURL.begin(); ( cbIter != mCallbacksOpenURL.end() ) && ( ! handled ); ++cbIter )
-        handled = (cbIter->second)( event );		
+    for( CallbackMgr<bool (OpenUrlEvent)>::iterator cbIter = mCallbacksOpenUrl.begin(); ( cbIter != mCallbacksOpenUrl.end() ) && ( ! handled ); ++cbIter ) {
+        handled = (cbIter->second)( event );
+    }
+    return handled;
 }
     
     

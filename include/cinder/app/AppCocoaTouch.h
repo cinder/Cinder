@@ -26,25 +26,10 @@
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/app/AccelEvent.h"
-
+#include "cinder/app/OpenUrlEvent.h"
 
 namespace cinder { namespace app {
 
-    class OpenURLEvent : public Event {
-    public:
-        OpenURLEvent(const std::string url) : mURL(url) 
-        {
-        }
-        
-        const std::string getURL() {return mURL;}
-        
-    private:
-        std::string mURL;
-    };
-    
-    
-
-    
 struct AppCocoaTouchState;
 
 class AppCocoaTouch : public App {
@@ -115,9 +100,9 @@ class AppCocoaTouch : public App {
 	void			unregisterAccelerated( CallbackId id ) { mCallbacksAccelerated.unregisterCb( id ); }
 
     template<typename T>
-	CallbackId		registerOpenURL( T *obj, bool (T::*callback)(OpenURLEvent) ) { return mCallbacksOpenURL.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	CallbackId		registerOpenURL( T *obj, bool (T::*callback)(OpenUrlEvent) ) { return mCallbacksOpenUrl.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
 	//! Unregisters a callback for touchesEnded events.
-	void			unregisterOpenURL( CallbackId id ) { mCallbacksOpenURL.unregisterCb( id ); }
+	void			unregisterOpenURL( CallbackId id ) { mCallbacksOpenUrl.unregisterCb( id ); }
 
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
@@ -172,7 +157,7 @@ class AppCocoaTouch : public App {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
-	void        privateOpenURL__( const OpenURLEvent &event );
+	bool        privateOpenURL__( const OpenUrlEvent &event );
     void		privatePrepareSettings__();
 	void		privateTouchesBegan__( const TouchEvent &event );
 	void		privateTouchesMoved__( const TouchEvent &event );
@@ -195,7 +180,7 @@ class AppCocoaTouch : public App {
 
 	CallbackMgr<bool (TouchEvent)>		mCallbacksTouchesBegan, mCallbacksTouchesMoved, mCallbacksTouchesEnded;
 	CallbackMgr<bool (AccelEvent)>		mCallbacksAccelerated;
-    CallbackMgr<bool (OpenURLEvent)>		mCallbacksOpenURL;
+    CallbackMgr<bool (OpenUrlEvent)>	mCallbacksOpenUrl;
 
 	float					mAccelFilterFactor;
 	Vec3f					mLastAccel, mLastRawAccel;
