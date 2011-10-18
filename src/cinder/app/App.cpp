@@ -207,12 +207,24 @@ void App::prepareAssetLoading()
 	if( ! mAssetDirectoriesInitialized ) {
 		fs::path appPath = getAppPath();
 
-		// if this is Mac OS or iOS, search inside the bundle's resources
+		// if this is Mac OS or iOS, search inside the bundle's resources, and then the bundle's root
 #if defined( CINDER_COCOA )
 		if( fs::exists( getResourcePath() / "assets" ) && fs::is_directory( getResourcePath() / "assets" ) ) {
 			mAssetDirectories.push_back( getResourcePath() / "assets" );
 			mAssetDirectoriesInitialized = true;
 			return;
+		}
+		else {
+			fs::path appAssetPath = getAppPath() / "assets/";
+ #if defined( TARGET_IPHONE_SIMULATOR ) // for some reason is_directory fails under the simulator
+			if( fs::exists( appAssetPath ) /*&& fs::is_directory( appAssetPath )*/ ) {
+ #else
+			if( fs::exists( appAssetPath ) && fs::is_directory( appAssetPath ) ) {
+ #endif
+				mAssetDirectories.push_back( appAssetPath );
+				mAssetDirectoriesInitialized = true;
+				return;		
+			}
 		}
 #endif		
 
