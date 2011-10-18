@@ -208,7 +208,7 @@ MovieWriter::Obj::Obj( const fs::path &path, int32_t width, int32_t height, cons
 	startQuickTime();
 
     //Create movie file
-	CFStringRef strDestMoviePath = ::CFStringCreateWithCString( kCFAllocatorDefault, path.c_str(), kCFStringEncodingUTF8 );
+	CFStringRef strDestMoviePath = ::CFStringCreateWithCString( kCFAllocatorDefault, path.string().c_str(), kCFStringEncodingUTF8 );
 	err = ::QTNewDataReferenceFromFullPathCFString( strDestMoviePath, kQTNativeDefaultPathStyle, 0, &dataRef, &dataRefType );
 	::CFRelease( strDestMoviePath );
 	if( err )

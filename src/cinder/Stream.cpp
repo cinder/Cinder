@@ -511,7 +511,7 @@ void OStreamMem::IOWrite( const void *t, size_t size )
 
 IStreamFileRef loadFileStream( const fs::path &path )
 {
-	FILE *f = fopen( path.c_str(), "rb" );
+	FILE *f = fopen( path.string().c_str(), "rb" );
 	if( f ) {
 		IStreamFileRef s = IStreamFile::create( f, true );
 		s->setFileName( path );
@@ -526,7 +526,7 @@ std::shared_ptr<OStreamFile> writeFileStream( const fs::path &path, bool createP
 	if( createParents ) {
 		createDirectories( path.parent_path() );
 	}
-	FILE *f = fopen( expandPath( path ).c_str(), "wb" );
+	FILE *f = fopen( expandPath( path ).string().c_str(), "wb" );
 	if( f ) {
 		OStreamFileRef s = OStreamFile::create( f, true );
 		s->setFileName( path );
@@ -538,7 +538,7 @@ std::shared_ptr<OStreamFile> writeFileStream( const fs::path &path, bool createP
 
 IoStreamFileRef readWriteFileStream( const fs::path &path )
 {
-	FILE *f = fopen( expandPath( path ).c_str(), "w+b" );
+	FILE *f = fopen( expandPath( path ).string().c_str(), "w+b" );
 	if( f ) {
 		IoStreamFileRef s = IoStreamFile::create( f, true );
 		s->setFileName( path );

@@ -179,7 +179,7 @@ DataSourceRef App::loadResource( const string &macPath, int mswID, const string 
 #if defined( CINDER_COCOA )
 	return loadResource( macPath );
 #else
-	return DataSourceBuffer::createRef( AppImplMsw::loadResource( mswID, mswType ), macPath );
+	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ), macPath );
 #endif
 }
 
@@ -196,7 +196,7 @@ DataSourceRef App::loadResource( const string &macPath )
 
 DataSourceRef App::loadResource( int mswID, const string &mswType )
 {
-	return DataSourceBuffer::createRef( AppImplMsw::loadResource( mswID, mswType ) );
+	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ) );
 }
 
 #endif
