@@ -39,7 +39,7 @@ using namespace std;
 
 namespace cinder { namespace cocoa {
 
-SafeNsString::SafeNsString( const NSString *str )
+SafeNsString::SafeNsString( NSString *str )
 {
 	[str retain];
 	mPtr = shared_ptr<NSString>( str, safeRelease );
@@ -51,7 +51,7 @@ SafeNsString::SafeNsString( const std::string &str )
 	[mPtr.get() retain];
 }
 
-void SafeNsString::safeRelease( const NSString *ptr )
+void SafeNsString::safeRelease( NSString *ptr )
 {
 	if( ptr )
 		[ptr release];
