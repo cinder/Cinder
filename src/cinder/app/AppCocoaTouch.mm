@@ -1,4 +1,4 @@
-sbt/*
+/*
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
@@ -65,7 +65,12 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
 {
-    return app->privateOpenURL__(cinder::app::OpenUrlEvent(std::string([[url absoluteString] UTF8String])));
+    if (!url) {
+        return NO;
+    }
+    NSString *urlString = [url absoluteString];
+    std::string stringUrl = std::string([urlString UTF8String]);
+    return app->privateOpenURL__(cinder::app::OpenUrlEvent(stringUrl));
 }
 
 - (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -90,7 +95,7 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
     // here to restrict which apps can open us?
     
     // for now we'll always say YES if an app opened an URL or file we claim to own in the plist...    
-    return [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey] != nil;
+    return (launchOptions != nil) && ([launchOptions objectForKey:UIApplicationLaunchOptionsURLKey] != nil);
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
