@@ -657,6 +657,7 @@
 		C7FB1BC6124BE31E0045AFD2 /* OutputImplAudioUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FB1BB1124BE31E0045AFD2 /* OutputImplAudioUnit.h */; };
 		C7FB1BC7124BE31E0045AFD2 /* PcmBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FB1BB2124BE31E0045AFD2 /* PcmBuffer.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
+		E2487674144F2CFA007E02EF /* OpenUrlEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = E2487673144F2CFA007E02EF /* OpenUrlEvent.h */; };
 		EAC3D1A91011F2E700FFBC9E /* Serial.h in Headers */ = {isa = PBXBuildFile; fileRef = EAC3D1A81011F2E700FFBC9E /* Serial.h */; };
 		EAC3D1AD1011F3AC00FFBC9E /* Serial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */; };
 /* End PBXBuildFile section */
@@ -933,6 +934,7 @@
 		C7FB1BB2124BE31E0045AFD2 /* PcmBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PcmBuffer.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libcinder_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		E2487673144F2CFA007E02EF /* OpenUrlEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OpenUrlEvent.h; path = app/OpenUrlEvent.h; sourceTree = "<group>"; };
 		EAC3D1A81011F2E700FFBC9E /* Serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serial.h; sourceTree = "<group>"; };
 		EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Serial.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -997,6 +999,7 @@
 		002419CC0E8035CA004D34EB /* app */ = {
 			isa = PBXGroup;
 			children = (
+				E2487673144F2CFA007E02EF /* OpenUrlEvent.h */,
 				0049C1B31010E5A40015B4B9 /* Renderer.h */,
 				0088773B0F96671600FD55C5 /* FileDropEvent.h */,
 				5391FD670E957646002A13D5 /* KeyEvent.h */,
@@ -1898,6 +1901,7 @@
 				277C2CF11366632B00178A29 /* Matrix33.h in Headers */,
 				277C2CF21366632B00178A29 /* Matrix44.h in Headers */,
 				277C2CF31366632B00178A29 /* MatrixAlgo.h in Headers */,
+				E2487674144F2CFA007E02EF /* OpenUrlEvent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2422,7 +2426,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder_d;
-				SDKROOT = "";
+				SDKROOT = macosx10.6;
 				VALID_ARCHS = i386;
 			};
 			name = Debug;
@@ -2459,7 +2463,7 @@
 					../lib/macosx/libz.a,
 				);
 				PRODUCT_NAME = cinder;
-				SDKROOT = "";
+				SDKROOT = macosx10.6;
 				VALID_ARCHS = i386;
 			};
 			name = Release;
