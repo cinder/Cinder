@@ -66,6 +66,8 @@ class AppCocoaTouch : public App {
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }	
 	//! Returns a Vec3d of the acceleration direction
 	virtual void		accelerated( AccelEvent event ) {}
+	//! called when the app is opened using a URL (must be set in plist)
+	virtual bool		urlOpened( OpenUrlEvent event ) { return false; }
 
 	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
 	CallbackId		registerTouchesBegan( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesBegan.registerCb( callback ); }
