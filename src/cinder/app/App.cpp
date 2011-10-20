@@ -52,6 +52,7 @@ App::App()
 {
 	mFpsLastSampleFrame = 0;
 	mFpsLastSampleTime = 0;
+	mAssetDirectoriesInitialized = false;
 }
 
 App::~App()
@@ -178,33 +179,108 @@ DataSourceRef App::loadResource( const string &macPath, int mswID, const string 
 #if defined( CINDER_COCOA )
 	return loadResource( macPath );
 #else
-	return DataSourceBuffer::createRef( AppImplMsw::loadResource( mswID, mswType ), macPath );
+	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ), macPath );
 #endif
 }
 
 #if defined( CINDER_COCOA )
-DataSourcePathRef App::loadResource( const string &macPath )
+DataSourceRef App::loadResource( const string &macPath )
 {
-	string resourcePath = App::get()->getResourcePath( macPath );
+	fs::path resourcePath = App::get()->getResourcePath( macPath );
 	if( resourcePath.empty() )
 		throw ResourceLoadExc( macPath );
 	else
-		return DataSourcePath::createRef( resourcePath );
+		return DataSourcePath::create( resourcePath );
 }
 #else
 
-DataSourceBufferRef App::loadResource( int mswID, const string &mswType )
+DataSourceRef App::loadResource( int mswID, const string &mswType )
 {
-	return DataSourceBuffer::createRef( AppImplMsw::loadResource( mswID, mswType ) );
+	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ) );
 }
 
 #endif
 
-#if defined( CINDER_COCOA )
-string App::getResourcePath( const string &rsrcRelativePath )
+
+void App::prepareAssetLoading()
 {
-	string path = getPathDirectory( rsrcRelativePath );
-	string fileName = getPathFileName( rsrcRelativePath );
+	if( ! mAssetDirectoriesInitialized ) {
+		fs::path appPath = getAppPath();
+
+		// if this is Mac OS or iOS, search inside the bundle's resources, and then the bundle's root
+#if defined( CINDER_COCOA )
+		if( fs::exists( getResourcePath() / "assets" ) && fs::is_directory( getResourcePath() / "assets" ) ) {
+			mAssetDirectories.push_back( getResourcePath() / "assets" );
+			mAssetDirectoriesInitialized = true;
+			return;
+		}
+		else {
+			fs::path appAssetPath = getAppPath() / "assets/";
+ #if defined( TARGET_IPHONE_SIMULATOR ) // for some reason is_directory fails under the simulator
+			if( fs::exists( appAssetPath ) /*&& fs::is_directory( appAssetPath )*/ ) {
+ #else
+			if( fs::exists( appAssetPath ) && fs::is_directory( appAssetPath ) ) {
+ #endif
+				mAssetDirectories.push_back( appAssetPath );
+				mAssetDirectoriesInitialized = true;
+				return;		
+			}
+		}
+#endif		
+
+		// first search the local directory, then its parent, up to 5 levels up
+		fs::path curPath = appPath;
+		for( int parentCt = 0; parentCt <= 5; ++parentCt ) {
+			fs::path curAssetPath = curPath / "assets";
+			if( fs::exists( curAssetPath ) && fs::is_directory( curAssetPath ) ) {
+				mAssetDirectories.push_back( curAssetPath );
+				break;
+			}
+			curPath = curPath.parent_path();
+		}
+				
+		mAssetDirectoriesInitialized = true;
+	}
+}
+
+// locate the asset at 'relativePath'
+fs::path App::findAssetPath( const fs::path &relativePath )
+{
+	prepareAssetLoading();
+	for( vector<fs::path>::const_iterator assetDirIt = mAssetDirectories.begin(); assetDirIt != mAssetDirectories.end(); ++assetDirIt ) {
+		if( fs::exists( *assetDirIt / relativePath ) )
+			return ( *assetDirIt / relativePath );
+	}
+	
+	// empty implies failure
+	return fs::path();
+}
+
+DataSourceRef App::loadAsset( const fs::path &relativePath )
+{
+	fs::path assetPath = findAssetPath( relativePath );
+	if( ! assetPath.empty() )
+		return DataSourcePath::create( assetPath.string() );
+	else
+		throw AssetLoadExc( relativePath );
+}
+
+fs::path App::getAssetPath( const fs::path &relativePath )
+{
+	return findAssetPath( relativePath );
+}
+
+void App::addAssetDirectory( const fs::path &dirPath )
+{
+	
+	mAssetDirectories.push_back( dirPath );
+}
+
+#if defined( CINDER_COCOA )
+fs::path App::getResourcePath( const fs::path &rsrcRelativePath )
+{
+	fs::path path = rsrcRelativePath.parent_path();
+	fs::path fileName = rsrcRelativePath.filename();
 	
 	if( fileName.empty() )
 		return string();
@@ -217,23 +293,23 @@ string App::getResourcePath( const string &rsrcRelativePath )
 	if( ! resultPath )
 		return string();
 	
-	return string([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
+	return fs::path([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
 }
 
-string App::getResourcePath()
+fs::path App::getResourcePath()
 {
-	char path[4096];
+	char p[4096];
 	
 	CFURLRef url = ::CFBundleCopyResourcesDirectoryURL( ::CFBundleGetMainBundle() );
-	::CFURLGetFileSystemRepresentation( url, true, (UInt8*)path, 4096 );
+	::CFURLGetFileSystemRepresentation( url, true, (UInt8*)p, 4096 );
 	::CFRelease( url );
-	
-	return string( path );
+
+	return fs::path( std::string( p ) ); // not casting this to a std::string seems to fail on iOS
 }
 
 #endif
 
-string App::getOpenFilePath( const string &initialPath, vector<string> extensions )
+fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 #if defined( CINDER_MAC )
 	bool wasFullScreen = isFullScreen();
@@ -270,7 +346,7 @@ string App::getOpenFilePath( const string &initialPath, vector<string> extension
 #endif
 }
 
-string App::getFolderPath( const string &initialPath )
+fs::path App::getFolderPath( const fs::path &initialPath )
 {
 #if defined( CINDER_MAC )
 	bool wasFullScreen = isFullScreen();
@@ -300,7 +376,7 @@ string App::getFolderPath( const string &initialPath )
 #endif
 }
 
-string	App::getSaveFilePath( const string &initialPath, vector<string> extensions )
+fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 #if defined( CINDER_MAC )
 	bool wasFullScreen = isFullScreen();
@@ -448,5 +524,10 @@ ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string
 	sprintf( mMessage, "Failed to load resource: #%d type: %s Mac path: %s", mswID, mswType.c_str(), macPath.c_str() );
 }
 #endif // defined( CINDER_MSW )
+
+AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
+{
+	strncpy( mMessage, relativePath.string().c_str(), sizeof(mMessage) );
+}
 
 } } // namespace cinder::app

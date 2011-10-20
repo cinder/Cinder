@@ -64,6 +64,13 @@ void Shape2d::close()
 	mContours.back().close();
 }
 
+void Shape2d::scale( const Vec2f &amount, Vec2f scaleCenter )
+{
+	for( vector<Path2d>::iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
+		contIt->scale( amount, scaleCenter );
+}
+
+
 Rectf Shape2d::calcBoundingBox() const
 {
 	Rectf result( Vec2f::zero(), Vec2f::zero() );
@@ -79,6 +86,26 @@ Rectf Shape2d::calcBoundingBox() const
 	// now iterate all the contours and expand the result to include their points
 	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
 		result.include( contIt->mPoints );
+	}
+	
+	return result;
+}
+
+Rectf Shape2d::calcPreciseBoundingBox() const
+{
+	Rectf result( Vec2f::zero(), Vec2f::zero() );
+
+	// find the first point and initialize the result with that
+	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
+		if( ! contIt->mPoints.empty() ) {
+			result = Rectf( contIt->mPoints[0], contIt->mPoints[0] );
+			break;
+		}
+	}
+
+	// now iterate all the contours and expand the result to include their points
+	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
+		result.include( contIt->calcPreciseBoundingBox() );
 	}
 	
 	return result;

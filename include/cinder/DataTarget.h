@@ -37,14 +37,14 @@ class DataTarget {
 	virtual bool	providesFilePath() = 0;
 	virtual bool	providesUrl() = 0;
 	
-	const std::string&		getFilePath();
-	const Url&				getUrl();
-	const std::string&		getFilePathHint();
+	const fs::path&			getFilePath() const;
+	const Url&				getUrl() const;
+	const std::string&		getFilePathHint() const;
 
 	virtual OStreamRef		getStream() = 0;
 
   protected:
-	DataTarget( const std::string &aFilePath, const Url &aUrl )
+	DataTarget( const fs::path &aFilePath, const Url &aUrl )
 		: mFilePath( aFilePath ), mUrl( aUrl ) 
 	{}
 	virtual ~DataTarget() {}
@@ -52,7 +52,8 @@ class DataTarget {
 	void	setFilePathHint( const std::string &aFilePathHint );
 	
 	Buffer				mBuffer;
-	std::string			mFilePath, mFilePathHint;
+	fs::path			mFilePath;
+	std::string			mFilePathHint;
 	Url					mUrl;
 };
 
@@ -61,7 +62,7 @@ typedef std::shared_ptr<class DataTargetPath>	DataTargetPathRef;
 
 class DataTargetPath : public DataTarget {
   public:
-	static DataTargetPathRef	createRef( const std::string &path );
+	static DataTargetPathRef	createRef( const fs::path &path );
 	
 	virtual bool	providesFilePath() { return true; }
 	virtual bool	providesUrl() { return false; }
@@ -69,7 +70,7 @@ class DataTargetPath : public DataTarget {
 	virtual OStreamRef		getStream();
 	
   protected:
-	DataTargetPath( const std::string &path );
+	explicit DataTargetPath( const fs::path &path );
   
 	OStreamFileRef	mStream;  
 };
@@ -93,6 +94,6 @@ class DataTargetStream : public DataTarget {
 };
 
 //! Returns a DataTarget to file path \a path, and optionally creates any necessary directories when \a createParents is \c true.
-DataTargetPathRef writeFile( const std::string &path, bool createParents = true );
+DataTargetPathRef writeFile( const fs::path &path, bool createParents = true );
 
 } // namespace cinder

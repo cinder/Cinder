@@ -65,7 +65,7 @@ std::string Url::encode( const std::string &unescaped )
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // IStreamUrl
-IStreamUrlRef IStreamUrl::createRef( const Url &url, const std::string &user, const std::string &password )
+IStreamUrlRef IStreamUrl::create( const Url &url, const std::string &user, const std::string &password )
 {
 	return IStreamUrlRef( new IStreamUrl( url.str(), user, password ) );
 }
@@ -81,12 +81,12 @@ IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const s
 // loadUrl
 IStreamUrlRef loadUrlStream( const Url &url )
 {
-	return IStreamUrl::createRef( url, "", "" );
+	return IStreamUrl::create( url, "", "" );
 }
 
 IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, const std::string &password )
 {
-	return IStreamUrl::createRef( Url( url ), user, password );
+	return IStreamUrl::create( Url( url ), user, password );
 }
 
 } // namespace cinder

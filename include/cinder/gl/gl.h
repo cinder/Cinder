@@ -215,6 +215,10 @@ void draw( const class Sphere &sphere, int segments = 12 );
 void drawSolidCircle( const Vec2f &center, float radius, int numSegments = 0 );
 //! Renders a stroked circle using a line loop. The default value of zero for \a numSegments automatically determines a number of segments based on the circle's circumference.
 void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = 0 );
+//! Renders a solid ellipse using triangle fans. The default value of zero for \a numSegments automatically determines a number of segments based on the ellipse's circumference.
+void drawSolidEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments = 0 );
+//! Renders a stroked circle using a line loop. The default value of zero for \a numSegments automatically determines a number of segments based on the circle's circumference.
+void drawStrokedEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments = 0 );
 //! Renders a solid rectangle. Texture coordinates in the range [0,1] are generated unless \a textureRectangle.
 void drawSolidRect( const Rectf &rect, bool textureRectangle = false );
 //! Renders a stroked rectangle.

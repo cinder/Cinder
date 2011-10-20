@@ -88,11 +88,16 @@ void Path2dApp::keyDown( KeyEvent event )
 void Path2dApp::draw()
 {
 	gl::clear( Color( 0.0f, 0.1f, 0.2f ) );
+	gl::enableAlphaBlending();
 	
 	// draw the control points
 	gl::color( Color( 1, 1, 0 ) );
 	for( size_t p = 0; p < mPath.getNumPoints(); ++p )
 		gl::drawSolidCircle( mPath.getPoint( p ), 2.5f );
+
+	// draw the precise bounding box
+	gl::color( ColorA( 0, 1, 1, 0.2f ) );
+	gl::drawSolidRect( mPath.calcPreciseBoundingBox() );
 
 	// draw the curve itself
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );

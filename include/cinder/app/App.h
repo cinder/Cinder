@@ -275,30 +275,37 @@ class App {
 	static DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType );
 #if defined( CINDER_COCOA )
 	//! Returns a DataSourceRef to an application resource. \a macPath is a path relative to the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
-	static DataSourcePathRef	loadResource( const std::string &macPath );
+	static DataSourceRef		loadResource( const std::string &macPath );
 	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
-	static std::string			getResourcePath( const std::string &rsrcRelativePath );
+	static fs::path				getResourcePath( const fs::path &rsrcRelativePath );
 	//! Returns the absolute file path to the bundle's resources folder. \sa \ref CinderResources
-	static std::string			getResourcePath();
+	static fs::path				getResourcePath();
 #else
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-	static DataSourceBufferRef	loadResource( int mswID, const std::string &mswType );
+	static DataSourceRef		loadResource( int mswID, const std::string &mswType );
 #endif
 	
+	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
+	DataSourceRef			loadAsset( const fs::path &relativePath );
+	//! Returns a fs::path to an application asset. Returns an empty path on failure.
+	fs::path				getAssetPath( const fs::path &relativePath );
+	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
+	void					addAssetDirectory( const fs::path &dirPath );
+	
 	//! Returns the path to the application on disk
-	virtual std::string			getAppPath() = 0;
+	virtual fs::path			getAppPath() = 0;
 	//! Presents the user with a file-open dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 		\return the selected file path or an empty string if the user cancelled. **/
-	std::string		getOpenFilePath( const std::string &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
+	fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
 	//! Presents the user with a folder-open dialog and returns the selected folder.
-	std::string		getFolderPath(const std::string &initialPath="");
+	fs::path		getFolderPath(const fs::path &initialPath="");
 	//! Presents the user with a file-save dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 		\return the selected file path or an empty string if the user cancelled. **/
-	std::string		getSaveFilePath( const std::string &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
+	fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
 
 	//! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
 	std::ostream&	console();
@@ -351,6 +358,8 @@ class App {
 	//! \endcond
 
   private:
+	  void 		prepareAssetLoading();
+	  fs::path	findAssetPath( const fs::path &relativePath );
   
 #if defined( CINDER_MSW )
 	friend class AppImplMsw;
@@ -372,6 +381,11 @@ class App {
 	CallbackMgr<bool (KeyEvent)>		mCallbacksKeyDown, mCallbacksKeyUp;
 	CallbackMgr<bool (ResizeEvent)>		mCallbacksResize;
 	CallbackMgr<bool (FileDropEvent)>	mCallbacksFileDrop;
+
+	// have we already setup the default path to assets?
+	bool						mAssetDirectoriesInitialized;
+	// Path to directories which contain assets
+	std::vector<fs::path>		mAssetDirectories;
 	
 	static App*		sInstance;
 };
@@ -415,27 +429,34 @@ inline double	getElapsedSeconds() { return App::get()->getElapsedSeconds(); }
 inline uint32_t	getElapsedFrames() { return App::get()->getElapsedFrames(); }
 
 //! Returns a DataSource to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-inline DataSourceRef			loadResource( const std::string &macPath, int mswID, const std::string &mswType ) { return App::loadResource( macPath, mswID, mswType ); }
+inline DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType ) { return App::loadResource( macPath, mswID, mswType ); }
 #if defined( CINDER_COCOA )
 	//! Returns a DataSource to an application resource. \a macPath is a path relative to the bundle's resources folder. \sa \ref CinderResources
-	inline DataSourcePathRef	loadResource( const std::string &macPath ) { return App::loadResource( macPath ); }
+	inline DataSourceRef	loadResource( const std::string &macPath ) { return App::loadResource( macPath ); }
 #else
 	//! Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-	inline DataSourceBufferRef	loadResource( int mswID, const std::string &mswType ) { return App::loadResource( mswID, mswType ); }
+	inline DataSourceRef	loadResource( int mswID, const std::string &mswType ) { return App::loadResource( mswID, mswType ); }
 #endif
 
+//! Returns a DataSourceRef to the active App's's asset. Throws a AssetLoadExc on failure.
+inline DataSourceRef		loadAsset( const fs::path &relativePath ) { return App::get()->loadAsset( relativePath ); }
+//! Returns a fs::path to the active App's asset. Returns an empty path on failure.
+inline fs::path				getAssetPath( const fs::path &relativePath ) { return App::get()->getAssetPath( relativePath ); }
+//! Adds an absolute path \a dirPath to the active App's list of directories which are searched for assets.
+inline void					addAssetDirectory( const fs::path &dirPath ) { App::get()->addAssetDirectory( dirPath ); }
+
 //! Returns the path to the active App on disk
-inline std::string		getAppPath() { return App::get()->getAppPath(); }
+inline fs::path		getAppPath() { return App::get()->getAppPath(); }
 //! Presents the user with a file-open dialog and returns the selected file path.
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
-inline std::string		getOpenFilePath( const std::string &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getOpenFilePath( initialPath, extensions ); }
+inline fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getOpenFilePath( initialPath, extensions ); }
 //! Presents the user with a file-save dialog and returns the selected file path.
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
-inline std::string		getSaveFilePath( const std::string &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getSaveFilePath( initialPath, extensions ); }
+inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getSaveFilePath( initialPath, extensions ); }
 
 //! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
 /** On Mac OS X all output is echoed either to the Debugger Console in XCode or the system console
@@ -466,6 +487,16 @@ class ResourceLoadExc : public Exception {
 	ResourceLoadExc( int mswID, const std::string &mswType );
 	ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType );
 #endif
+
+	virtual const char * what() const throw() { return mMessage; }
+
+	char mMessage[4096];
+};
+
+//! Exception for failed asset loading
+class AssetLoadExc : public Exception {
+  public:
+	AssetLoadExc( const fs::path &relativePath );
 
 	virtual const char * what() const throw() { return mMessage; }
 

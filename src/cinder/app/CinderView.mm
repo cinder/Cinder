@@ -327,9 +327,9 @@
     if( [[pboard types] containsObject:NSFilenamesPboardType] ) {
         NSArray *files = [pboard propertyListForType:NSFilenamesPboardType];
         int numberOfFiles = [files count];
-		std::vector<std::string> paths;
+		std::vector<ci::fs::path> paths;
 		for( int i = 0; i < numberOfFiles; ++i )
-			paths.push_back( std::string( [[files objectAtIndex:i] UTF8String] ) );
+			paths.push_back( ci::fs::path( [[files objectAtIndex:i] UTF8String] ) );
 		NSPoint loc = [sender draggingLocation];
 		app->privateFileDrop__( cinder::app::FileDropEvent( (int)loc.x, app->getWindowHeight() - (int)loc.y, paths ) );
 	}

@@ -1,7 +1,0 @@
-#include "cinder/CinderResources.h"
-#include "Resources.h"
-
-ID ICON "cinder_app_icon.ico"
-
-RES_SHADER_VERT
-RES_SHADER_FRAG

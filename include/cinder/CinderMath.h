@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Portions Copyright (c) 2004, Laminar Research.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -57,6 +59,11 @@ struct math
 	}
 	static T	pow   (T x, T y)	{return ::pow (double(x), double(y));}
 	static T	sqrt  (T x)		{return ::sqrt (double(x));}
+#if defined( _MSC_VER )
+	static T	cbrt( T x )		{ return ::pow( x, 1.0 / 3.0 ); }
+#else
+	static T	cbrt( T x )		{ return ::cbrt( x ); }
+#endif
 	static T	ceil  (T x)		{return ::ceil (double(x));}
 	static T	abs  (T x)		{return ::fabs (double(x));}
 	static T	floor (T x)		{return ::floor (double(x));}
@@ -88,8 +95,13 @@ struct math<float>
 	static float	modf  (float x, float *y)	{return ::modff (x, y);}
 	static float	pow   (float x, float y)	{return ::powf (x, y);}
 	static float	sqrt  (float x)			{return ::sqrtf (x);}
+#if defined( _MSC_VER )
+	static float	cbrt  (float x)			{return ::powf( x, 1.0f / 3.0f ); }
+#else
+	static float	cbrt  (float x)			{ return ::cbrtf( x ); }	
+#endif
 	static float	ceil  (float x)			{return ::ceilf (x);}
-	static float	abs  (float x)			{return ::fabsf (x);}
+	static float	abs   (float x)			{return ::fabsf (x);}
 	static float	floor (float x)			{return ::floorf (x);}
 	static float	fmod  (float x, float y)	{return ::fmodf (x, y);}
 	#if !defined(_MSC_VER)
@@ -199,6 +211,74 @@ inline uint32_t nextPowerOf2( uint32_t x )
     x |= (x >> 8);
     x |= (x >> 16);
     return(x+1);
+}
+
+template<typename T>
+inline int solveLinear( T a, T b, T result[1] )
+{
+	if( a == 0 ) return (b == 0 ? -1 : 0 );
+	result[0] = -b / a;
+	return 1;
+}
+
+template<typename T>
+inline int solveQuadratic( T a, T b, T c, T result[2] )
+{
+	if( a == 0 ) return solveLinear( b, c, result );
+
+	T radical = b * b - 4 * a * c;
+	if( radical < 0 ) return 0;
+
+	if( radical == 0 ) {
+		result[0] = -b / (2 * a);
+		return 1;
+	}
+
+	T srad = math<T>::sqrt( radical );
+	result[0] = ( -b - srad ) / (2 * a);
+	result[1] = ( -b + srad ) / (2 * a);
+	if( a < 0 ) std::swap( result[0], result[1] );
+	return 2;
+}
+
+template<typename T>
+inline int solveCubic( T a, T b, T c, T d, T result[3] )
+{
+	// Code from formulas at: http://www.1728.com/cubic2.htm
+	if( a == 0 )
+		return solveQuadratic( b, c, d, result );
+
+	T f = ((3 * c / a) - ((b * b) / (a * a))) / 3;
+	T g = ((2 * b * b * b) / (a * a * a) - (9 * b * c) / (a * a) + (27 * d) / (a)) / 27;
+	T h = g * g / 4 + f * f * f / 27;
+
+	if( f == 0 && g == 0 && h == 0 ) {
+		result[0] = -math<T>::cbrt( d / a );
+		return 1;
+	}
+	else if( h > 0 ) {
+		// 1 root
+		T r = -( g / 2 ) + math<T>::sqrt( h );
+		T s = math<T>::cbrt( r );
+		T t = -(g / 2) - math<T>::sqrt( h );
+		T u = math<T>::cbrt( t );
+
+		result[0] = (s + u) - (b / (3 * a));
+		return 1;
+	}
+	else { // 3 roots
+		T i = math<T>::sqrt( (g * g / 4) - h );
+		T j = math<T>::cbrt( i );
+		T k = math<T>::acos( -(g / (2 * i)) );
+		T l = -j;
+		T m = math<T>::cos( k / 3 );
+		T n = math<T>::sqrt(3) * math<T>::sin( k / 3 );
+		T p = -b / (3 * a);
+		result[0] = 2 * j * math<T>::cos(k / 3) - (b / (3 * a));
+		result[1] = l * (m + n) + p;
+		result[2] = l * (m - n) + p;
+		return 3;
+	}
 }
 
 } // namespace cinder

@@ -1,6 +1,0 @@
-#include "cinder/CinderResources.h"
-#include "Resources.h"
-
-ID ICON "cinder_app_icon.ico"
-
-RES_PREVIEW_IMAGE
