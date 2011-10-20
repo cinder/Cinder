@@ -48,13 +48,12 @@ void slerpBasicApp::update()
 	
 	// spin the scene by a few degrees around the y Axis
 	mSpinTheWholeWorld *= Quatf( Vec3f::yAxis(), 0.01f );
-	app::console() << mSpinTheWholeWorld << std::endl;
 }
 
 void slerpBasicApp::setupSlerp()
 {
-	mVecA = Rand::randVec3f();
-	mVecB = Rand::randVec3f();
+	mVecA = randVec3f();
+	mVecB = randVec3f();
 	mSlerpAmt = 0;
 }
 
