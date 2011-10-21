@@ -732,4 +732,111 @@ Rectf Path2d::calcPreciseBoundingBox() const
 	return result;
 }
 
+// contains() helper routines
+namespace {
+float linearYatX( const Vec2f p[2], float x )
+{
+	if( p[0].x == p[1].x ) 	return p[0].y;
+	return p[0].y + (p[1].y - p[0].y) * (x - p[0].x) / (p[1].x - p[0].x);
+}
+
+size_t linearCrossings( const Vec2f p[2], const Vec2f &pt )
+{
+	if( (p[0].x < pt.x && pt.x <= p[1].x ) ||
+		(p[1].x < pt.x && pt.x <= p[0].x )) {
+		if( pt.y > linearYatX( p, pt.x ) )
+			return 1;
+	}
+	return 0;
+}
+
+size_t cubicBezierCrossings( const Vec2f p[4], const Vec2f &pt )
+{
+	float Ax =     -p[0].x + 3 * p[1].x - 3 * p[2].x + p[3].x;
+	float Bx =  3 * p[0].x - 6 * p[1].x + 3 * p[2].x;
+	float Cx = -3 * p[0].x + 3 * p[1].x;
+	float Dx =		p[0].x - pt.x;
+
+	float Ay =     -p[0].y + 3 * p[1].y - 3 * p[2].y + p[3].y;
+	float By =  3 * p[0].y - 6 * p[1].y + 3 * p[2].y;
+	float Cy = -3 * p[0].y + 3 * p[1].y;
+	float Dy =		p[0].y;
+
+	float roots[3];
+	int numRoots = solveCubic( Ax, Bx, Cx, Dx, roots );
+
+	if( numRoots < 1)
+		return 0;
+
+	int result = 0;
+	for( int n = 0; n < numRoots; ++n )
+		if( roots[n] > 0 && roots[n] < 1 )
+			if( Ay * roots[n] * roots[n] * roots[n] + By * roots[n] * roots[n] + Cy * roots[n] + Dy < pt.y )
+				++result;
+	
+	return result;
+}
+
+size_t quadraticBezierCrossings( const Vec2f p[3], const Vec2f &pt )
+{
+	float Ax = 1.0f * p[0].x - 2.0f * p[1].x + 1.0f * p[2].x;
+	float Bx = -2.0f * p[0].x + 2.0f * p[1].x;
+	float Cx = 1.0f * p[0].x - pt.x;
+
+	float Ay = 1.0f * p[0].y - 2.0f * p[1].y + 1.0f * p[2].y;
+	float By = -2.0f * p[0].y + 2.0f * p[1].y;
+	float Cy = 1.0f * p[0].y;
+
+	float roots[2];
+	int numRoots = solveQuadratic( Ax, Bx, Cx, roots );
+
+	if( numRoots < 1)
+		return 0;
+
+	int result = 0;
+	for( int n = 0; n < numRoots; ++n )
+		if (roots[n] > 0 && roots[n] < 1 )
+			if( Ay * roots[n] * roots[n] + By * roots[n] + Cy < pt.y )
+				++result;
+	
+	return result;
+}
+} // anonymous namespace
+
+
+bool Path2d::contains( const Vec2f &pt ) const
+{
+	if( mPoints.size() <= 2 )
+		return false;
+
+	size_t firstPoint = 0;
+	size_t crossings = 0;
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		switch( mSegments[s] ) {
+			case CUBICTO:
+				crossings += cubicBezierCrossings( &(mPoints[firstPoint]), pt );
+			break;
+			case QUADTO:
+				crossings += quadraticBezierCrossings( &(mPoints[firstPoint]), pt );
+			break;
+			case LINETO:
+				crossings += linearCrossings( &(mPoints[firstPoint]), pt );
+			break;
+			case CLOSE: // ignore - we always assume closed
+			break;
+			default:
+				;//throw Path2dExc();
+		}
+		
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+
+	Vec2f temp[2];
+	temp[0] = mPoints[mPoints.size()-1];
+	temp[1] = mPoints[0];
+	crossings += linearCrossings( &(temp[0]), pt );
+	
+	return (crossings & 1) == 1;
+}
+
 } // namespace cinder

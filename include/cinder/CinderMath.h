@@ -242,43 +242,6 @@ inline int solveQuadratic( T a, T b, T c, T result[2] )
 }
 
 template<typename T>
-inline int solveCubic( T a, T b, T c, T d, T result[3] )
-{
-	// Code from formulas at: http://www.1728.com/cubic2.htm
-	if( a == 0 )
-		return solveQuadratic( b, c, d, result );
-
-	T f = ((3 * c / a) - ((b * b) / (a * a))) / 3;
-	T g = ((2 * b * b * b) / (a * a * a) - (9 * b * c) / (a * a) + (27 * d) / (a)) / 27;
-	T h = g * g / 4 + f * f * f / 27;
-
-	if( f == 0 && g == 0 && h == 0 ) {
-		result[0] = -math<T>::cbrt( d / a );
-		return 1;
-	}
-	else if( h > 0 ) {
-		// 1 root
-		T r = -( g / 2 ) + math<T>::sqrt( h );
-		T s = math<T>::cbrt( r );
-		T t = -(g / 2) - math<T>::sqrt( h );
-		T u = math<T>::cbrt( t );
-
-		result[0] = (s + u) - (b / (3 * a));
-		return 1;
-	}
-	else { // 3 roots
-		T i = math<T>::sqrt( (g * g / 4) - h );
-		T j = math<T>::cbrt( i );
-		T k = math<T>::acos( -(g / (2 * i)) );
-		T l = -j;
-		T m = math<T>::cos( k / 3 );
-		T n = math<T>::sqrt(3) * math<T>::sin( k / 3 );
-		T p = -b / (3 * a);
-		result[0] = 2 * j * math<T>::cos(k / 3) - (b / (3 * a));
-		result[1] = l * (m + n) + p;
-		result[2] = l * (m - n) + p;
-		return 3;
-	}
-}
+int solveCubic( T a, T b, T c, T d, T result[3] );
 
 } // namespace cinder
