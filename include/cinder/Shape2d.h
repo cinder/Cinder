@@ -63,9 +63,12 @@ class Shape2d {
 	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f::zero() );
 
 	//! Returns the bounding box of the Shape's control points. Note that this is not necessarily the bounding box of the path's shape.
-	Rectf			calcBoundingBox() const;
+	Rectf	calcBoundingBox() const;
 	//! Returns the precise bounding box of the Shape's curves. Slower to calculate than calcBoundingBox().
-	Rectf			calcPreciseBoundingBox() const;
+	Rectf	calcPreciseBoundingBox() const;
+
+	//! Returns whether the point \a pt is contained within the boundaries of the shape
+	bool	contains( const Vec2f &pt ) const;
 
 	//! Iterates all of the contours and points of a Shape2d.
 	/** Expects a template parameter that implements
