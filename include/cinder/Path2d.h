@@ -74,9 +74,11 @@ class Path2d {
 	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f::zero() );
 
 	const std::vector<Vec2f>&	getPoints() const { return mPoints; }
-	const Vec2f&	getPoint( size_t point ) const { return mPoints[point]; }
-	const Vec2f&	getCurrentPoint() const { return mPoints.back(); }
-	void			setPoint( size_t index, const Vec2f &p ) { mPoints[index] = p; }
+	std::vector<Vec2f>&			getPoints() { return mPoints; }
+	const Vec2f&				getPoint( size_t point ) const { return mPoints[point]; }
+	Vec2f&						getPoint( size_t point ) { return mPoints[point]; }
+	const Vec2f&				getCurrentPoint() const { return mPoints.back(); }
+	void						setPoint( size_t index, const Vec2f &p ) { mPoints[index] = p; }
 
 	void			removeSegment( size_t segment );
 
@@ -88,6 +90,9 @@ class Path2d {
 	Rectf	calcBoundingBox() const;
 	//! Returns the precise bounding box around the curve itself. Slower to calculate than calcBoundingBox().
 	Rectf	calcPreciseBoundingBox() const;	
+
+	//! Returns whether the point \a pt is contained within the boundaries of the path
+	bool	contains( const Vec2f &pt ) const;
 
 	friend class Shape2d;
 	friend std::ostream& operator<<( std::ostream &out, const Path2d &p );

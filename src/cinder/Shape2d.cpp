@@ -111,4 +111,15 @@ Rectf Shape2d::calcPreciseBoundingBox() const
 	return result;
 }
 
+bool Shape2d::contains( const Vec2f &pt ) const
+{
+	int numPathsInside = 0;
+	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
+		if( contIt->contains( pt ) )
+			numPathsInside++;
+	}
+	
+	return ( numPathsInside % 2 ) == 1;
+}
+
 } // namespace cinder

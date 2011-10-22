@@ -105,6 +105,9 @@
     <ClCompile Include="..\src\cinder\Channel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\CinderMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\cinder\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
