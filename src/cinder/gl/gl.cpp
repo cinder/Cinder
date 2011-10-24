@@ -681,6 +681,50 @@ void drawStrokedCircle( const Vec2f &center, float radius, int numSegments )
 	delete [] verts;
 }
 
+void drawSolidEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments )
+{
+	// automatically determine the number of segments from the circumference
+	if( numSegments <= 0 ) {
+		numSegments = (int)math<double>::floor( std::max(radiusX,radiusY) * M_PI * 2 );
+	}
+	if( numSegments < 2 ) numSegments = 2;
+	
+	GLfloat *verts = new float[(numSegments+2)*2];
+	verts[0] = center.x;
+	verts[1] = center.y;
+	for( int s = 0; s <= numSegments; s++ ) {
+		float t = s / (float)numSegments * 2.0f * 3.14159f;
+		verts[(s+1)*2+0] = center.x + math<float>::cos( t ) * radiusX;
+		verts[(s+1)*2+1] = center.y + math<float>::sin( t ) * radiusY;
+	}
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	delete [] verts;
+}
+
+void drawStrokedEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments )
+{
+	// automatically determine the number of segments from the circumference
+	if( numSegments <= 0 ) {
+		numSegments = (int)math<double>::floor( std::max(radiusX,radiusY) * M_PI * 2 );
+	}
+	if( numSegments < 2 ) numSegments = 2;
+	
+	GLfloat *verts = new float[numSegments*2];
+	for( int s = 0; s < numSegments; s++ ) {
+		float t = s / (float)numSegments * 2.0f * 3.14159f;
+		verts[s*2+0] = center.x + math<float>::cos( t ) * radiusX;
+		verts[s*2+1] = center.y + math<float>::sin( t ) * radiusY;
+	}
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_LINE_LOOP, 0, numSegments );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	delete [] verts;
+}
+
 void drawSolidRect( const Rectf &rect, bool textureRectangle )
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
