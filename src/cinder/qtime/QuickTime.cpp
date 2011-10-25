@@ -444,7 +444,7 @@ void MovieBase::stepBackward()
 
 void MovieBase::setRate( float rate )
 {
-	::SetMovieRate( getObj()->mMovie, FloatToFixed( rate ) );
+	::SetMovieRate( getObj()->mMovie, floatToFixed( rate ) );
 }
 
 bool MovieBase::checkNewFrame()

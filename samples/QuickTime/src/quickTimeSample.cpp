@@ -43,6 +43,10 @@ void QuickTimeSampleApp::keyDown( KeyEvent event )
 		if( ! moviePath.empty() )
 			loadMovieFile( moviePath );
 	}
+	else if( event.getChar() == '1' )
+		mMovie.setRate( 0.5f );
+	else if( event.getChar() == '2' )
+		mMovie.setRate( 2 );
 }
 
 void QuickTimeSampleApp::loadMovieFile( const fs::path &moviePath )
@@ -101,4 +105,4 @@ void QuickTimeSampleApp::draw()
 	}
 }
 
-CINDER_APP_BASIC( QuickTimeSampleApp, RendererGl );
+CINDER_APP_BASIC( QuickTimeSampleApp, RendererGl(0) );
