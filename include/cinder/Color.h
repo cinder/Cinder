@@ -78,7 +78,7 @@ class ColorT
 		return * this;
 	}
 
-	Vec3f get( ColorModel cm );
+	Vec3f get( ColorModel cm ) const;
 
 	T& operator[]( int n )
 	{
