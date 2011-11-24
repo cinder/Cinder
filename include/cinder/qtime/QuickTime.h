@@ -338,6 +338,8 @@ class MovieLoader {
 	//@}
 };
 
+inline int32_t floatToFixed( float fl ) { return ((int32_t)((float)(fl) * ((int32_t) 0x00010000L))); }
+
 //! Initializes QuickTime system-wide. Safe to call multiple times.
 void startQuickTime();
 //! Returns 0 if QuickTime is not available, otherwise an integer encoding of the QuickTime version. QuickTime 6.4 returns \c 0x06408000, (\c 0x00008000 suffix denotes a shipping release of QuickTime)

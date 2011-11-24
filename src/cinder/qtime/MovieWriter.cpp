@@ -297,7 +297,7 @@ OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon,
 	ImageDescriptionHandle imageDescription = NULL;
 	err = ICMCompressionSessionGetImageDescription( session, &imageDescription );
 	if( ! err ) {
-		Fixed gammaLevel = FloatToFixed( obj->mFormat.mGamma );
+		Fixed gammaLevel = qtime::floatToFixed( obj->mFormat.mGamma );
 		err = ICMImageDescriptionSetProperty(imageDescription,
 						kQTPropertyClass_ImageDescription,
 						kICMImageDescriptionPropertyID_GammaLevel,
