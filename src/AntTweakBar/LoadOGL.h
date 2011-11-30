@@ -347,7 +347,7 @@ ANT_GL_DECL(void, glTexGenf, (GLenum coord, GLenum pname, GLfloat param))
 ANT_GL_DECL(void, glTexGenfv, (GLenum coord, GLenum pname, const GLfloat *params))
 ANT_GL_DECL(void, glTexGeni, (GLenum coord, GLenum pname, GLint param))
 ANT_GL_DECL(void, glTexGeniv, (GLenum coord, GLenum pname, const GLint *params))
-#if defined(ANT_OSX)
+#if defined(ANT_OSX) && (MAC_OS_X_VERSION_MAX_ALLOWED < 1070) // Mac OS X 10.7
 // Mac OSX redefined these OpenGL calls: glTexImage1D, glTexImage2D
 ANT_GL_DECL(void, glTexImage1D, (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLint border, GLenum format, GLenum type, const GLvoid *pixels))
 ANT_GL_DECL(void, glTexImage2D, (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels))

@@ -119,6 +119,7 @@
     <ClCompile Include="..\src\cinder\ImageSourcePng.cpp" />
     <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ip\Blend.cpp" />
+    <ClCompile Include="..\src\cinder\CinderMath.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
     <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
     <ClCompile Include="..\src\cinder\Path2D.cpp" />

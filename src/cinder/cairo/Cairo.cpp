@@ -215,7 +215,7 @@ SurfaceImage::SurfaceImage( ImageSourceRef imageSource )
 {
 	mCairoSurface = cairo_image_surface_create( imageSource->hasAlpha() ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, imageSource->getWidth(), imageSource->getHeight() );
 	initCinderSurface( imageSource->hasAlpha(), cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
-	writeImage( mCinderSurface, imageSource );
+	writeImage( (ImageTargetRef)mCinderSurface, imageSource );
 }
 
 SurfaceImage::SurfaceImage( const SurfaceImage &other )
@@ -231,11 +231,6 @@ uint8_t* SurfaceImage::getData()
 int32_t SurfaceImage::getStride() const 
 {
 	return cairo_image_surface_get_stride( mCairoSurface );
-}
-
-cinder::Surface& SurfaceImage::getSurface()
-{
-	return mCinderSurface;
 }
 
 void SurfaceImage::initCinderSurface( bool alpha, uint8_t *data, int32_t stride )
@@ -378,8 +373,8 @@ CGContextRef SurfaceQuartz::getCgContextRef()
 SurfaceCgBitmapContext::SurfaceCgBitmapContext( int32_t width, int32_t height, bool alpha )
 	: SurfaceBase( width, height )
 {
-	cinder::Surface surface = cinder::Surface( width, height, alpha, SurfaceConstraintsCgBitmapContext() );
-	mCgContextRef = cinder::cocoa::createCgBitmapContext( surface );
+	mSurface = cinder::Surface( width, height, alpha, SurfaceConstraintsCgBitmapContext() );
+	mCgContextRef = cinder::cocoa::createCgBitmapContext( mSurface );
 	// Need to flip this vertically since Quartz is lower-left origin
 	::CGContextTranslateCTM( mCgContextRef, 0.0f, height );
 	::CGContextScaleCTM( mCgContextRef, 1.0f, -1.0f );
@@ -425,7 +420,7 @@ Matrix::Matrix( double xx_, double yx_, double xy_, double yy_, double x0_, doub
 {
 	xx = xx_;
 	yx = yx_;
-	xy = xx_;
+	xy = xy_;
 	yy = yy_;
 	x0 = x0_;
 	y0 = y0_;
@@ -435,7 +430,7 @@ void Matrix::init( double xx_, double yx_, double xy_, double yy_, double x0_, d
 {
 	xx = xx_;
 	yx = yx_;
-	xy = xx_;
+	xy = xy_;
 	yy = yy_;
 	x0 = x0_;
 	y0 = y0_;
@@ -1462,6 +1457,16 @@ void Context::rectangle( const Vec2f &upperLeft, const Vec2f &lowerRight )
 	float width = lowerRight.x - upperLeft.x;
 	float height = lowerRight.y - upperLeft.y;
 	rectangle( upperLeft.x - width * 0.5f, upperLeft.y - height * 0.5f, width, height );
+}
+
+void Context::roundedRectangle( const Rectf &r, float cornerRadius )
+{
+	// derived from formula due to Helton Moraes
+	cairo_arc( mCairo, r.x1 + cornerRadius, r.y1 + cornerRadius, cornerRadius, 2*(M_PI/2), 3*( M_PI/2) );
+	cairo_arc( mCairo, r.x2 - cornerRadius, r.y1 + cornerRadius, cornerRadius, 3*(M_PI/2), 4*(M_PI/2) );
+	cairo_arc( mCairo, r.x2 - cornerRadius, r.y2 - cornerRadius, cornerRadius, 0*(M_PI/2), 1*(M_PI/2) );
+	cairo_arc( mCairo, r.x1 + cornerRadius, r.y2 - cornerRadius, cornerRadius, 1*(M_PI/2), 2*(M_PI/2) );
+	cairo_close_path( mCairo );
 }
 
 /*

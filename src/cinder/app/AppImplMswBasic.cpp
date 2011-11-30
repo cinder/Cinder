@@ -562,7 +562,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			HDROP dropH = (HDROP)wParam;
 			POINT dropPoint;
 			char fileName[8192];
-			vector<string> files;
+			vector<fs::path> files;
 			
 			int droppedFileCount = ::DragQueryFile( dropH, 0xFFFFFFFF, 0, 0 );
 			for( int i = 0; i < droppedFileCount; ++i ) {

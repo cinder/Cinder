@@ -196,9 +196,9 @@ double AppCocoaTouch::getElapsedSeconds() const
 	return ( currentTime - mState->mStartTime );
 }
 
-std::string AppCocoaTouch::getAppPath()
+fs::path AppCocoaTouch::getAppPath()
 { 
-	return [[[NSBundle mainBundle] bundlePath] UTF8String];
+	return fs::path([[[NSBundle mainBundle] bundlePath] UTF8String]);
 }
 
 void AppCocoaTouch::quit()

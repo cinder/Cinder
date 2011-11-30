@@ -65,7 +65,7 @@ void ColorT<T>::set( ColorModel cm, const Vec3f &v )
 }
 
 template<typename T>
-Vec3f ColorT<T>::get( ColorModel cm )
+Vec3f ColorT<T>::get( ColorModel cm ) const
 {
 	switch( cm ) {
 		case CM_HSV: {
@@ -135,12 +135,6 @@ ColorT<uint8_t> ColorT<uint8_t>::operator/( uint8_t rhs ) const
 
 //////////////////////////////////////////////////////////////
 // uint8_t additional
-template<>
-ColorT<uint8_t> ColorT<uint8_t>::lerp( uint8_t fact, const ColorT<uint8_t> &d ) const
-{
-	return ColorT<uint8_t>( r + ( d.r - r ) * fact / 255, g + ( d.g - g ) * fact / 255, b + ( d.b - b ) * fact / 255 );
-}
-
 std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs ) 
 {
 	lhs << "[" << rhs.r << "," << rhs.g << "," << rhs.b  << "]";

@@ -38,6 +38,12 @@ void TriMesh::clear()
 	mIndices.clear();
 }
 
+void TriMesh::appendVertices( const Vec3f *verts, size_t num )
+{
+	for( size_t v = 0; v < num; ++v )
+		mVertices.push_back( verts[v] );
+}
+
 void TriMesh::appendVertices( const Vec4d *verts, size_t num )
 {
 	for( size_t v = 0; v < num; ++v )

@@ -20,7 +20,7 @@ class QuickTimeSampleApp : public AppBasic {
 	void update();
 	void draw();
 
-	void loadMovieFile( const string &path );
+	void loadMovieFile( const fs::path &path );
 
 	gl::Texture					mFrameTexture, mInfoTexture;
 	qtime::MovieGl				mMovie;
@@ -28,7 +28,7 @@ class QuickTimeSampleApp : public AppBasic {
 
 void QuickTimeSampleApp::setup()
 {
-	string moviePath = getOpenFilePath();
+	fs::path moviePath = getOpenFilePath();
 	if( ! moviePath.empty() )
 		loadMovieFile( moviePath );
 }
@@ -39,13 +39,17 @@ void QuickTimeSampleApp::keyDown( KeyEvent event )
 		setFullScreen( ! isFullScreen() );
 	}
 	else if( event.getChar() == 'o' ) {
-		string moviePath = getOpenFilePath();
+		fs::path moviePath = getOpenFilePath();
 		if( ! moviePath.empty() )
 			loadMovieFile( moviePath );
 	}
+	else if( event.getChar() == '1' )
+		mMovie.setRate( 0.5f );
+	else if( event.getChar() == '2' )
+		mMovie.setRate( 2 );
 }
 
-void QuickTimeSampleApp::loadMovieFile( const string &moviePath )
+void QuickTimeSampleApp::loadMovieFile( const fs::path &moviePath )
 {
 	try {
 		// load up the movie, set it to loop, and begin playing
@@ -57,7 +61,7 @@ void QuickTimeSampleApp::loadMovieFile( const string &moviePath )
 		TextLayout infoText;
 		infoText.clear( ColorA( 0.2f, 0.2f, 0.2f, 0.5f ) );
 		infoText.setColor( Color::white() );
-		infoText.addCenteredLine( getPathFileName( moviePath ) );
+		infoText.addCenteredLine( moviePath.filename().string() );
 		infoText.addLine( toString( mMovie.getWidth() ) + " x " + toString( mMovie.getHeight() ) + " pixels" );
 		infoText.addLine( toString( mMovie.getDuration() ) + " seconds" );
 		infoText.addLine( toString( mMovie.getNumFrames() ) + " frames" );
@@ -101,4 +105,4 @@ void QuickTimeSampleApp::draw()
 	}
 }
 
-CINDER_APP_BASIC( QuickTimeSampleApp, RendererGl );
+CINDER_APP_BASIC( QuickTimeSampleApp, RendererGl(0) );

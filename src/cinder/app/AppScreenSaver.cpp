@@ -100,7 +100,7 @@ void AppScreenSaver::setFrameRate( float frameRate )
 #endif
 }
 
-std::string AppScreenSaver::getAppPath()
+fs::path AppScreenSaver::getAppPath()
 {
 #if defined( CINDER_MAC )
 	return [mImpl getAppPath];

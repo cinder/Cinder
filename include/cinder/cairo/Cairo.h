@@ -126,8 +126,8 @@ class SurfaceImage : public SurfaceBase {
 	const uint8_t*	getData() const { return getData(); }
 	int32_t			getStride() const;
 
-	cinder::Surface&		getSurface();
-	const cinder::Surface&	getSurface() const { return getSurface(); }
+	cinder::Surface&		getSurface() { return mCinderSurface; }
+	const cinder::Surface&	getSurface() const { return mCinderSurface; }
 
  protected:
 	void	initCinderSurface( bool alpha, uint8_t *data, int32_t stride );
@@ -221,7 +221,7 @@ class SurfaceCgBitmapContext : public SurfaceBase {
 	SurfaceCgBitmapContext( const SurfaceCgBitmapContext &other );
 
 	cinder::Surface&			getSurface() { return mSurface; }
-	const cinder::Surface&		getSurface() const { return getSurface(); } 
+	const cinder::Surface&		getSurface() const { return mSurface; } 
 
 	CGContextRef				getCgContextRef() { return mCgContextRef; }
 	
@@ -623,6 +623,7 @@ class Context
 	void        rectangle( double x, double y, double width, double height );
 	void        rectangle( const Rectf &r ) { rectangle( r.x1, r.y1, r.getWidth(), r.getHeight() ); }
 	void        rectangle( const Vec2f &upperLeft, const Vec2f &lowerRight );
+	void		roundedRectangle( const Rectf &r, float cornerRadius );
 	//void        glyphPath( const cairo_glyph_t *glyphs, int num_glyphs );
 	void        textPath( const char *utf8 );
 	void        relCurveTo( double dx1, double dy1, double dx2, double dy2, double dx3, double dy3 );
