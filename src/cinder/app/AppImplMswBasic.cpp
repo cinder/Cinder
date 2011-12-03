@@ -105,23 +105,25 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	int bits = 32;
 
 	if( *width <= 0 ) {
-		*width = ::GetSystemMetrics( SM_CXSCREEN );
-		*height = ::GetSystemMetrics( SM_CYSCREEN );
+		*width = mDisplay->getWidth();
+		*height = mDisplay->getHeight();
 	}
 
 	WNDCLASS	wc;						// Windows Class Structure
 	RECT		WindowRect;				// Grabs Rectangle Upper Left / Lower Right Values
+	Area		DisplayArea = mDisplay->getArea();
+	
 	if( mFullScreen ) {
-		WindowRect.left = 0L;
-		WindowRect.right = (long)*width;
-		WindowRect.top = 0L;
-		WindowRect.bottom = (long)*height;
+		WindowRect.left = DisplayArea.getX1();
+		WindowRect.right = DisplayArea.getX2();
+		WindowRect.top = DisplayArea.getY1();
+		WindowRect.bottom = DisplayArea.getY2();
 	}
 	else { // center the window on the display if windowed
-		WindowRect.left = ( getDisplay()->getWidth() - *width ) / 2;
-		WindowRect.right = ( getDisplay()->getWidth() - *width ) / 2 + *width;
-		WindowRect.top = ( getDisplay()->getHeight() - *height ) / 2;
-		WindowRect.bottom = ( getDisplay()->getHeight() - *height ) / 2 + *height;
+		WindowRect.left = DisplayArea.getX1() + ( mDisplay->getWidth() - *width ) / 2;
+		WindowRect.right = DisplayArea.getX1() + ( mDisplay->getWidth() - *width ) / 2 + *width;
+		WindowRect.top = DisplayArea.getY1() + ( mDisplay->getHeight() - *height ) / 2;
+		WindowRect.bottom = DisplayArea.getY1() + ( mDisplay->getHeight() - *height ) / 2 + *height;
 	}
 
 	mInstance			= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
@@ -145,8 +147,8 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		DEVMODE dmScreenSettings;								
 		memset( &dmScreenSettings, 0, sizeof(dmScreenSettings) );	// Makes Sure Memory's Cleared
 		dmScreenSettings.dmSize = sizeof( dmScreenSettings );
-		dmScreenSettings.dmPelsWidth	= *width;
-		dmScreenSettings.dmPelsHeight	= *height;
+		dmScreenSettings.dmPelsWidth	= ::GetSystemMetrics( SM_CXSCREEN );
+		dmScreenSettings.dmPelsHeight	= ::GetSystemMetrics( SM_CYSCREEN );
 		dmScreenSettings.dmBitsPerPel	= bits;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
@@ -231,8 +233,8 @@ void AppImplMswBasic::toggleFullScreen()
 	
 	int windowWidth, windowHeight;
 	if( mApp->isFullScreen() ) {
-		windowWidth = mApp->getSettings().getFullScreenWidth();
-		windowHeight = mApp->getSettings().getFullScreenHeight();	
+		windowWidth = mDisplay->getWidth();
+		windowHeight = mDisplay->getHeight();	
 	}
 	else {
 		windowWidth = mApp->getSettings().getWindowWidth();
@@ -314,6 +316,25 @@ void AppImplMswBasic::getScreenSize( int clientWidth, int clientHeight, int *res
 	::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );
 	*resultWidth = windowRect.right - windowRect.left;
 	*resultHeight = windowRect.bottom - windowRect.top;
+}
+
+void AppImplMswBasic::privateSetWindowOffset__( const Vec2i &aWindowOffset ) 
+{ 
+	mWindowOffset = aWindowOffset;
+	
+	// check if the center of the window is on the current display
+	Vec2i windowCenter = aWindowOffset + Vec2i( mApp->getWindowWidth()/2, mApp->getWindowHeight()/2 );
+
+	if( ! (mDisplay->getArea().contains( windowCenter )) ) {
+		const vector<std::tr1::shared_ptr<Display> > displays =  mDisplay->getDisplays();
+		for( vector<std::tr1::shared_ptr<Display> >::const_iterator it = displays.begin(); it != displays.end(); ++it ) {
+			Area a = (*it)->getArea();
+			if( a.contains( windowCenter ) ) {
+				mDisplay = (*it).get();
+				break;
+			}
+		}
+	}
 }
 
 void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
@@ -562,7 +583,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			HDROP dropH = (HDROP)wParam;
 			POINT dropPoint;
 			char fileName[8192];
-			vector<fs::path> files;
+			vector<fs:path> files;
 			
 			int droppedFileCount = ::DragQueryFile( dropH, 0xFFFFFFFF, 0, 0 );
 			for( int i = 0; i < droppedFileCount; ++i ) {
