@@ -267,10 +267,167 @@ void draw( const VboMesh &vbo );
 void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 );
 //! Draws a range of elements from a cinder::gl::VboMesh \a vbo.
 void drawArrays( const VboMesh &vbo, GLint first, GLsizei count );
-//!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.
 #endif // ! defined( CINDER_GLES )
 
-void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp );
+/** Draws a textured quad of given size in a plane defined by \a bbRight and \a
+ * bbUp, rotated around its normal.
+ *
+ * \param pos coordinate of the billboard center
+ * \param size width and hight of the billboard
+ * \param bbRight
+ * \param bbUp axes to align billboard with prior to rotation,
+ * for screen aligned axes see Camera::getBillboardVectors()
+ * \param rotationDegrees rotate the billboard this much around the vector
+ * orthogonal to \a bbRight x \a bbUp.
+ * \param texCoords texture coordinates to map onto the billboard: an array of 8
+ * floats, two coordinates per corner in the following order: lower left, upper
+ * left, upper right, lower right.
+ *
+ * This version calculates sin and cos of the rotation angle, if you need to
+ * draw large amount of unrotated (screen axes aligned) billboard the versions
+ * without \a rotateDegrees argument are faster.
+ *
+ * \see Camera::getBillboardVectors()
+ */
+void drawBillboard( const Vec3f &pos, const Vec2f &size, float rotationDegrees,
+        const Vec3f &bbRight, const Vec3f &bbUp, GLfloat texCoords[] );
+
+/** Draws a textured quad of given size in a plane defined by \a bbRight and \a
+ * bbUp, rotated around its normal.
+ *
+ * \param pos coordinate of the billboard center
+ * \param size width and hight of the billboard
+ * \param bbRight
+ * \param bbUp axes to align billboard with prior to rotation,
+ * for screen aligned axes see Camera::getBillboardVectors()
+ * \param rotationDegrees rotate the billboard this much around the vector
+ * orthogonal to \a bbRight x \a bbUp.
+ * \param uv00
+ * \param uv11 determine a rectangular portion of the texture to
+ * map to the billboard
+ *
+ * This version calculates sin and cos of the rotation angle, if you need to
+ * draw large amount of unrotated (screen axes aligned) billboard the versions
+ * without \a rotateDegrees argument are faster.
+ *
+ * \see Camera::getBillboardVectors()
+ */
+inline void drawBillboard( const Vec3f &pos, const Vec2f &size, float rotationDegrees,
+        const Vec3f &bbRight, const Vec3f &bbUp,
+        const Vec2f& uv00, const Vec2f& uv11 )
+{
+
+    GLfloat texCoords[8] = {
+        uv11.x, uv11.y,
+        uv11.x, uv00.y,
+        uv00.x, uv00.y,
+        uv00.x, uv11.y
+    };
+    drawBillboard(pos, size, rotationDegrees, bbRight, bbUp, texCoords);
+}
+
+/** Draws a textured quad of given size in a plane defined by \a bbRight and \a
+ * bbUp, rotated around its normal, using full texture.
+ *
+ * \param pos coordinate of the billboard center
+ * \param size width and hight of the billboard
+ * \param bbRight
+ * \param bbUp axes to align billboard with prior to rotation,
+ * for screen aligned axes see Camera::getBillboardVectors()
+ * \param rotationDegrees rotate the billboard this much around the vector
+ * orthogonal to \a bbRight x \a bbUp.
+ *
+ * This version calculates sin and cos of the rotation angle, if you need to
+ * draw large amount of unrotated (screen axes aligned) billboard the versions
+ * without \a rotateDegrees argument are faster.
+ *
+ * This version uses full texture coordinate ranges (0.0 - 1.1 in both
+ * directions), for partical textures.
+ *
+ * \see Camera::getBillboardVectors()
+ */
+inline void drawBillboard( const Vec3f &pos, const Vec2f &size, float rotationDegrees,
+        const Vec3f &bbRight, const Vec3f &bbUp)
+{
+    drawBillboard(pos, size, rotationDegrees, bbRight, bbUp, Vec2f(0,0), Vec2f(1,1));
+}
+
+/** Draws a textured unrotated quad of given size aligned with axes \a bbRight
+ * and \a bbUp.
+ *
+ * \param pos coordinate of the billboard center
+ * \param size width and hight of the billboard
+ * \param bbRight
+ * \param bbUp axes to align billboard with, for screen aligned
+ * axes see Camera::getBillboardVectors()
+ * \param texCoords texture coordinates to map onto the billboard: an array of 8
+ * floats, two coordinates per corner in the following order: lower left, upper
+ * left, upper right, lower right.
+ *
+ * This version is optimized for unrotated (screen axes aligned) billboards,
+ * useful when you need to draw a large number of such billboards. It avoids a
+ * sin/cos calls and several multiplications per billboard.
+ *
+ * \see Camera::getBillboardVectors()
+ */
+void drawBillboard(const Vec3f& pos, const Vec2f& size,
+        const Vec3f &bbRight, const Vec3f &bbUp, GLfloat texCoords[] );
+
+/** Draws a textured unrotated quad of given size aligned with axes \a bbRight
+ * and \a bbUp, version with texture coordinates given by two corners.
+ *
+ * \param pos coordinate of the billboard center
+ * \param size width and hight of the billboard
+ * \param bbRight
+ * \param bbUp axes to align billboard with, for screen aligned
+ * axes see Camera::getBillboardVectors()
+ * \param uv00
+ * \param uv11 determine a rectangular portion of the texture to
+ * map to the billboard
+ *
+ * This version is optimized for unrotated (screen axes aligned) billboards,
+ * useful when you need to draw a large number of such billboards. It avoids a
+ * sin/cos calls and several multiplications per billboard.
+ *
+ * \see Camera::getBillboardVectors()
+ */
+inline void drawBillboard(const Vec3f& pos, const Vec2f& size,
+        const Vec3f &bbRight, const Vec3f &bbUp,
+        const Vec2f& uv00, const Vec2f& uv11 )
+{
+    GLfloat texCoords[8] = {
+        uv11.x, uv11.y,
+        uv11.x, uv00.y,
+        uv00.x, uv00.y,
+        uv00.x, uv11.y
+    };
+    drawBillboard(pos, size, bbRight, bbUp, texCoords);
+}
+
+/** Draws a textured unrotated quad of given size aligned with axes \a bbRight
+ * and \a bbUp, using full texture.
+ *
+ * \param pos coordinate of the billboard center
+ * \param size width and hight of the billboard
+ * \param bbRight
+ * \param bbUp axes to align billboard with, for screen aligned
+ * axes see Camera::getBillboardVectors()
+ *
+ * This version of billboard drawing is optimized for unrotated (screen axes aligned),
+ * useful when you need to draw a large number of such billboards. It avoids a
+ * sin/cos calls and several multiplications per billboard.
+ *
+ * This version uses full texture coordinate ranges (0.0 - 1.1 in both
+ * directions), for partical textures.
+ *
+ * \see Camera::getBillboardVectors()
+ */
+inline void drawBillboard(const Vec3f& pos, const Vec2f& size,
+        const Vec3f &bbRight, const Vec3f &bbUp )
+{
+    drawBillboard(pos, size, bbRight, bbUp, Vec2f(0,0), Vec2f(1,1));
+}
+
 //! Draws \a texture on the XY-plane
 void draw( const Texture &texture );
 //! Draws \a texture on the XY-plane at \a pos
