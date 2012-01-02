@@ -30,10 +30,10 @@
 	#include <tuple>
 #else
 	#include <boost/tuple/tuple_comparison.hpp>
-namespace std {
-	using boost::tuple;
-	using boost::make_tuple;
-}
+	namespace std {
+		using boost::tuple;
+		using boost::make_tuple;
+	}
 #endif
 #include <map>
 
