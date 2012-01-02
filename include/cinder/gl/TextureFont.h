@@ -28,7 +28,14 @@
 #include "cinder/gl/Texture.h"
 
 #include <map>
-#include <boost/unordered_map.hpp>
+#ifdef CINDER_CXX11_LIB
+	#include <unordered_map>
+#else
+	#include <boost/unordered_map.hpp>
+	namespace std {
+		using boost::unordered_map;
+	}
+#endif
 
 namespace cinder { namespace gl {
 
@@ -153,7 +160,7 @@ class TextureFont {
 		Vec2f		mOriginOffset;
 	};
 	
-	boost::unordered_map<Font::Glyph, GlyphInfo>	mGlyphMap;
+	std::unordered_map<Font::Glyph, GlyphInfo>	mGlyphMap;
 	std::vector<gl::Texture>						mTextures;
 	Font											mFont;
 	Format											mFormat;

@@ -22,17 +22,13 @@
 
 #pragma once
 
-#include <boost/cstdint.hpp>
+#ifdef CINDER_CXX11_LIB
+	#include <cstdint>
+#else
+	#include <boost/cstdint.hpp>
+#endif
 
 namespace cinder {
-using boost::int8_t;
-using boost::uint8_t;
-using boost::int16_t;
-using boost::uint16_t;
-using boost::int32_t;
-using boost::uint32_t;
-using boost::int64_t;
-using boost::uint64_t;
 
 #define CINDER_CINDER
 
@@ -84,7 +80,7 @@ using boost::uint64_t;
 	}
 #endif
 
-#include <boost/shared_ptr.hpp> // necessary for checked_array_deleter
+#include <boost/checked_delete.hpp> // necessary for checked_array_deleter
 using boost::checked_array_deleter;
 
 // Create a namepace alias as shorthand for cinder::

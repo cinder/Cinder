@@ -24,8 +24,6 @@
 #include "cinder/ChanTraits.h"
 #include "cinder/ImageIo.h"
 
-#include <boost/type_traits/is_same.hpp>
-
 using namespace std;
 
 namespace cinder {

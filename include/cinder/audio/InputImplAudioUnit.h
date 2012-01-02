@@ -26,13 +26,13 @@
 #include "cinder/audio/Input.h"
 #include "cinder/audio/PcmBuffer.h"
 #include "cinder/audio/CircularBuffer.h"
+#include "cinder/Thread.h"
 
 #include <AudioUnit/AudioUnit.h>
 #include <AudioToolbox/AudioToolbox.h>
 
 #include <vector>
 #include <map>
-#include <boost/thread/mutex.hpp>
 
 namespace cinder { namespace audio {
 
@@ -107,7 +107,7 @@ class InputImplAudioUnit : public InputImpl {
 	
 	std::vector<CircularBuffer<float> *>	mCircularBuffers;
 	
-	boost::mutex					mBufferMutex;
+	std::mutex					mBufferMutex;
 	
 	AudioStreamBasicDescription		mFormatDescription;
 	uint32_t mSampleRate;

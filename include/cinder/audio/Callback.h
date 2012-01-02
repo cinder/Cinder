@@ -30,8 +30,6 @@
 	#include "cinder/audio/CocoaCaConverter.h"
 #endif
 
-#include <boost/type_traits/is_same.hpp>
-
 namespace cinder { namespace audio {
 
 template<typename,typename> class LoaderSourceCallback;
