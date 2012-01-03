@@ -6,15 +6,21 @@
 #include "cinder/Timeline.h"
 #include "cinder/gl/TextureFont.h"
 #include "cinder/Easing.h"
+#include "cinder/Rand.h"
 
 #include "Character.h"
 
-Character::Character( gl::TextureFontRef textureFont, string character,  Matrix44f matrix )
+Character::Character( gl::TextureFontRef textureFont, string character, Matrix44f matrix )
 {
 	mTextureFont = textureFont;
 	mChar = character;
 	
-	mColor = ColorAf( 1.0f, 1.0f, 1.0f, 0.0f );
+	mColorStart = ColorAf( 1.0f, 0.5f, 0.0f, 0.0f );
+	mColorCur	= mColorStart;
+	
+	float hue = Rand::randFloat( 0.55f, 0.6f );
+	float sat = Rand::randFloat( 0.5f, 1.0f );
+	mColorDest	= ColorAf( CM_HSV, hue, sat, 1.0f, 1.0f );
 	mMatrix = mDestMatrix = matrix;
 	
 	mKernBounds = Rectf( 0.0f, 0.0f, mTextureFont->measureString( mChar ).x, mTextureFont->getAscent() );
@@ -25,14 +31,14 @@ Character::Character( gl::TextureFontRef textureFont, string character,  Matrix4
 void Character::animIn( Timeline &timeline, Matrix44f matrix )
 {
 	mDestMatrix = matrix;
-	timeline.apply( &mColor, ColorAf( 1.0f, 1.0f, 1.0f, 0.5f ), 1.0f, EaseOutAtan( 10 ) );
-	timeline.apply( &mMatrix, matrix, 1.0f, EaseOutAtan( 10 ) );
+	timeline.apply( &mColorCur, mColorDest, 1.0f, EaseOutAtan( 20 ) );
+	timeline.apply( &mMatrix, matrix, 0.5f, EaseOutAtan( 10 ) );
 }
 
 void Character::animOut( Timeline &timeline, Matrix44f matrix )
 {
 	mDestMatrix = matrix;
-	timeline.apply( &mColor, ColorAf( 1.0f, 1.0f, 1.0f, 0.0f ), 1.0f, EaseOutQuad() ).finishFn( bind( &Character::onAnimOut, this ) );
+	timeline.apply( &mColorCur, mColorStart, 1.0f, EaseOutQuad() ).finishFn( bind( &Character::onAnimOut, this ) );
 	timeline.apply( &mMatrix, matrix, 1.0f, EaseOutQuad() );
 }
 
@@ -58,7 +64,7 @@ Matrix44f Character::getDestMatrix() const
 
 void Character::draw() const
 {
-	gl::color( mColor );
+	gl::color( mColorCur );
 	gl::pushMatrices();
 		Matrix44f m = mMatrix;
 		m.scale( Vec3f( 1.0f, -1.0f, 1.0 ) );
