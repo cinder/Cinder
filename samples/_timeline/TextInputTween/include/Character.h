@@ -31,8 +31,10 @@ class Character {
   protected:
 	void	onAnimOut();
 	
-	Anim<ColorAf>			mColor;
+	Anim<ColorAf>			mColorCur;
 	Anim<Matrix44f>			mMatrix;
+	
+	ColorAf					mColorStart, mColorDest;
 	
 	Matrix44f				mDestMatrix;
 	

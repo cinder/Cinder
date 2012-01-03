@@ -27,6 +27,7 @@ class TextInputTweenApp : public AppBasic {
 	void prepareSettings( Settings *settings );
 	void setup();
 	void keyDown( KeyEvent event );
+	void update();
 	void draw();
 	
 	void addChar( char c );
@@ -65,7 +66,7 @@ void TextInputTweenApp::setup()
 	
 	// camera
 	mCamDist = 600.0f;
-	mCam.setPerspective(75.0f, getWindowAspectRatio(), 0.1f, 5000.0f);
+	mCam.setPerspective( 75.0f, getWindowAspectRatio(), 0.1f, 5000.0f );
 	mCam.lookAt( Vec3f( 0.0f, 0.0f, mCamDist ), Vec3f::zero(), Vec3f::yAxis() );
 	
 	// scene
@@ -76,6 +77,7 @@ void TextInputTweenApp::setup()
 	addChar( 'Y' );
 	addChar( 'P' );
 	addChar( 'E' );
+	addChar( ' ' );
 }
 
 void TextInputTweenApp::keyDown( KeyEvent event )
@@ -100,8 +102,8 @@ void TextInputTweenApp::addChar( char c )
 		mSceneDestMatrix.translate( Vec3f( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 	
 	Matrix44f randStartMatrix = mSceneDestMatrix;
-	randStartMatrix.translate( getRandomVec3f( 300.0f, 100.0f ) );
-	randStartMatrix.rotate( getRandomVec3f(2.0f, 6.0f) );
+	randStartMatrix.translate( getRandomVec3f( 100.0f, 600.0f ) );
+	randStartMatrix.rotate( getRandomVec3f( 2.0f, 6.0f ) );
 	
 	mCharacters.push_back( Character( mTextureFont, string( &c, 1 ), randStartMatrix ) );
 	
@@ -127,13 +129,21 @@ void TextInputTweenApp::removeChar()
 			mSceneDestMatrix = Matrix44f::identity();
 		
 		Matrix44f randStartMatrix = mSceneDestMatrix;
-		randStartMatrix.translate( getRandomVec3f( 300.0f, 100.0f ) );
-		randStartMatrix.rotate( getRandomVec3f(2.0f, 6.0f) );
+		randStartMatrix.translate( getRandomVec3f( 100.0f, 600.0f ) );
+		randStartMatrix.rotate( getRandomVec3f( 2.0f, 6.0f ) );
 		
 		mDyingCharacters.back().animOut( timeline(), randStartMatrix );
 		
 		timeline().apply( &mSceneMatrix, mSceneDestMatrix, 1.0f, EaseOutAtan( 10 ) );
 	}
+}
+
+void TextInputTweenApp::update()
+{
+	float camDistDest = 600.0f + sin( mCharacters.size() * 0.1f ) * 300.0f;
+	mCamDist -= ( mCamDist - camDistDest ) * 0.1f;
+	
+	mCam.lookAt( Vec3f( 0.0f, 0.0f, mCamDist ), Vec3f::zero(), Vec3f::yAxis() );
 }
 
 void TextInputTweenApp::draw()
@@ -155,7 +165,7 @@ void TextInputTweenApp::draw()
 
 Vec3f TextInputTweenApp::getRandomVec3f( float min, float max )
 {
-	return Rand::randVec3f() * ( Rand::randFloat() * ( max - min ) + min );
+	return Rand::randVec3f() * Rand::randFloat( min, max );
 }
 
 
