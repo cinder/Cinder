@@ -175,6 +175,11 @@ class ColorT
 		return ColorT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
 	}
 
+	static ColorT<T> gray( T value )
+	{
+		return ColorT<T>( value, value, value );
+	}
+
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
 };
@@ -316,6 +321,11 @@ class ColorAT {
 	static ColorAT<T> white()
 	{
 		return ColorAT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
+	}
+
+	static ColorT<T> gray( T value )
+	{
+		return ColorAT<T>( value, value, value, CHANTRAIT<T>::max() );
 	}
 
 	operator T*(){ return (T*) this; }
