@@ -136,9 +136,12 @@
     <ClCompile Include="..\src\cinder\Surface.cpp" />
     <ClCompile Include="..\src\cinder\System.cpp" />
     <ClCompile Include="..\src\cinder\Text.cpp" />
+    <ClCompile Include="..\src\cinder\Timeline.cpp" />
+    <ClCompile Include="..\src\cinder\TimelineItem.cpp" />
     <ClCompile Include="..\src\cinder\Timer.cpp" />
     <ClCompile Include="..\src\cinder\Triangulate.cpp" />
     <ClCompile Include="..\src\cinder\TriMesh.cpp" />
+    <ClCompile Include="..\src\cinder\Tween.cpp" />
     <ClCompile Include="..\src\cinder\Url.cpp" />
     <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp" />
     <ClCompile Include="..\src\cinder\Utilities.cpp" />
@@ -216,7 +219,10 @@
     <ClInclude Include="..\include\cinder\MatrixAlgo.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
+    <ClInclude Include="..\include\cinder\Timeline.h" />
+    <ClInclude Include="..\include\cinder\TimelineItem.h" />
     <ClInclude Include="..\include\cinder\Triangulate.h" />
+    <ClInclude Include="..\include\cinder\Tween.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
     <ClInclude Include="..\include\rapidxml\rapidxml.hpp" />
     <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp" />

@@ -59,6 +59,10 @@
 #include <vector>
 #include <algorithm>
 
+namespace cinder {
+class Timeline;
+} // namespace cinder
+
 namespace cinder { namespace app { 
 
 class App {
@@ -309,6 +313,9 @@ class App {
 
 	//! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
 	std::ostream&	console();
+	
+	//! Returns a reference to the App's Timeline
+	Timeline&		timeline() { return *mTimeline; }
 
 	/** \return a copy of the window's contents as a Surface8u **/
 	Surface	copyWindowSurface();
@@ -374,6 +381,8 @@ class App {
 	uint32_t				mFpsLastSampleFrame;
 	double					mFpsLastSampleTime;
 	double					mFpsSampleInterval;
+
+	std::shared_ptr<Timeline>	mTimeline;
 
 	std::shared_ptr<Renderer>	mRenderer;
 	
@@ -463,6 +472,9 @@ inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<
 	On Windows output is echoed using OutputDebugString, echoed to the Output window of the debugger or to a stream viewable with Dbgview
 	\code console() << "This line will be echoed" << std::endl; \endcode **/
 inline std::ostream&	console() { return App::get()->console(); }
+
+//! Returns a reference to the active App's Timeline
+inline Timeline&	timeline() { return App::get()->timeline(); }
 
 //! Returns a copy of the window's contents as a Surface8u
 inline Surface	copyWindowSurface() { return App::get()->copyWindowSurface(); }
