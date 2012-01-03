@@ -98,7 +98,7 @@ Buffer AppImplMsw::loadResource( int id, const std::string &type )
 	return Buffer( dataPtr, dataSize );
 }
 
-std::string AppImplMsw::getAppPath()
+fs::path AppImplMsw::getAppPath()
 {
 	char appPath[MAX_PATH] = "";
 
@@ -117,10 +117,10 @@ std::string AppImplMsw::getAppPath()
 		}
 	}
 
-	return std::string( appPath );
+	return fs::path( std::string( appPath ) );
 }
 
-string AppImplMsw::getOpenFilePath( const string &initialPath, vector<string> extensions )
+fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 	OPENFILENAMEA ofn;       // common dialog box structure
 	char szFile[260];       // buffer for file name
@@ -171,7 +171,7 @@ string AppImplMsw::getOpenFilePath( const string &initialPath, vector<string> ex
 		ofn.lpstrInitialDir = NULL;
 	else {
 		char initialPathStr[MAX_PATH];
-		strcpy( initialPathStr, initialPath.c_str() );
+		strcpy( initialPathStr, initialPath.string().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
 	}
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
@@ -201,9 +201,9 @@ INT CALLBACK getFolderPathBrowseCallbackProc( HWND hwnd, UINT uMsg, LPARAM lp, L
 }
 } // anonymous namespace
 
-string AppImplMsw::getFolderPath( const string &initialPath )
+fs::path AppImplMsw::getFolderPath( const fs::path &initialPath )
 {
-	wstring initialPathWide( toUtf16( initialPath ) );
+	wstring initialPathWide( toUtf16( initialPath.string() ) );
 	string result;
 
 	::BROWSEINFO bi = { 0 };
@@ -229,7 +229,7 @@ string AppImplMsw::getFolderPath( const string &initialPath )
 	return result;
 }
 
-string AppImplMsw::getSaveFilePath( const string &initialPath, vector<string> extensions )
+fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 	OPENFILENAMEA ofn;       // common dialog box structure
 	char szFile[260];       // buffer for file name
@@ -283,7 +283,7 @@ string AppImplMsw::getSaveFilePath( const string &initialPath, vector<string> ex
 		ofn.lpstrInitialDir = NULL;
 	else {
 		char initialPathStr[MAX_PATH];
-		strcpy( initialPathStr, initialPath.c_str() );
+		strcpy( initialPathStr, initialPath.string().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
 	}
 	ofn.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;

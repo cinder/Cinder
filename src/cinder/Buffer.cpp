@@ -105,7 +105,7 @@ Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel, bool resi
 	return outBuffer;
 }
 
-Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult )
+Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult, bool useGZip )
 {
 	int err;
 	z_stream strm;
@@ -115,7 +115,7 @@ Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult )
 	strm.opaque = Z_NULL;
 	strm.avail_in = 0;
 	strm.next_in = Z_NULL;
-	err = inflateInit( &strm );
+	err = useGZip ? inflateInit2( &strm, 16 + MAX_WBITS ) : inflateInit( &strm );
 	if( err != Z_OK ) {
 		//cleanup stream
 		(void)inflateEnd(&strm);

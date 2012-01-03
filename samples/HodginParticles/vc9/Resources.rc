@@ -1,4 +1,0 @@
-#include "../include/Resources.h"
-
-RES_PARTICLE
-RES_EMITTER

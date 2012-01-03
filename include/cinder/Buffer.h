@@ -78,6 +78,6 @@ class Buffer {
 };
 
 Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel = DEFAULT_COMPRESSION_LEVEL, bool resizeResult = true );
-Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult = true );
+Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult = true, bool useGZip = false );
 
 } //namespace

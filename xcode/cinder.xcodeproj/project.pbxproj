@@ -576,6 +576,9 @@
 		4354C4801357BC1100120EE3 /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4354C47F1357BC1100120EE3 /* TextureFont.cpp */; };
 		4354C4811357BC1100120EE3 /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4354C47F1357BC1100120EE3 /* TextureFont.cpp */; };
 		4354C4821357BC1100120EE3 /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4354C47F1357BC1100120EE3 /* TextureFont.cpp */; };
+		43C432401450A8DA0095B260 /* CinderMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43C4323F1450A8DA0095B260 /* CinderMath.cpp */; };
+		43C432411450A8DA0095B260 /* CinderMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43C4323F1450A8DA0095B260 /* CinderMath.cpp */; };
+		43C432421450A8DA0095B260 /* CinderMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43C4323F1450A8DA0095B260 /* CinderMath.cpp */; };
 		43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
@@ -757,7 +760,7 @@
 		0071BD080FB9FA2C0092E7D6 /* Display.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Display.cpp; sourceTree = "<group>"; };
 		007438400EA7924F005DD3E6 /* Capture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Capture.cpp; sourceTree = "<group>"; };
 		007438DE0EA7975A005DD3E6 /* Capture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Capture.h; sourceTree = "<group>"; };
-		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
+		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = ../../../../../../Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		0076581B11226084005547DF /* CinderResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderResources.h; sourceTree = "<group>"; };
 		007B09730E9559960052257E /* Rand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rand.cpp; sourceTree = "<group>"; };
@@ -893,6 +896,7 @@
 		434708D81267EE4300AA7349 /* Blend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blend.cpp; path = ip/Blend.cpp; sourceTree = "<group>"; };
 		4354C47B1357BBED00120EE3 /* TextureFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureFont.h; path = gl/TextureFont.h; sourceTree = "<group>"; };
 		4354C47F1357BC1100120EE3 /* TextureFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFont.cpp; path = gl/TextureFont.cpp; sourceTree = "<group>"; };
+		43C4323F1450A8DA0095B260 /* CinderMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CinderMath.cpp; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
 		43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UrlImplCocoa.mm; sourceTree = "<group>"; };
@@ -1253,6 +1257,7 @@
 				009EE4710F7A9FAC00F17CB1 /* PolyLine.cpp */,
 				00241ABC0E830DD5004D34EB /* Camera.cpp */,
 				00241ABD0E830DD5004D34EB /* Matrix.cpp */,
+				43C4323F1450A8DA0095B260 /* CinderMath.cpp */,
 				009EE56A0F803F5600F17CB1 /* BandedMatrix.cpp */,
 				009EE56B0F803F5600F17CB1 /* BSplineFit.cpp */,
 				009EE56C0F803F5600F17CB1 /* BSpline.cpp */,
@@ -2068,6 +2073,7 @@
 				00A1141E1355369A00081873 /* sweep.c in Sources */,
 				00A114201355369A00081873 /* tess.c in Sources */,
 				4354C4811357BC1100120EE3 /* TextureFont.cpp in Sources */,
+				43C432411450A8DA0095B260 /* CinderMath.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2154,6 +2160,7 @@
 				00A1142D1355369A00081873 /* sweep.c in Sources */,
 				00A1142F1355369A00081873 /* tess.c in Sources */,
 				4354C4821357BC1100120EE3 /* TextureFont.cpp in Sources */,
+				43C432421450A8DA0095B260 /* CinderMath.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2261,6 +2268,7 @@
 				00A1140F1355369A00081873 /* sweep.c in Sources */,
 				00A114111355369A00081873 /* tess.c in Sources */,
 				4354C4801357BC1100120EE3 /* TextureFont.cpp in Sources */,
+				43C432401450A8DA0095B260 /* CinderMath.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

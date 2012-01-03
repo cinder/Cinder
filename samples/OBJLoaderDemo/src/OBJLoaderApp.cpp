@@ -91,23 +91,23 @@ void ObjLoaderApp::frameCurrentObject()
 void ObjLoaderApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'o' ) {
-		std::string path = getOpenFilePath();
+		fs::path path = getOpenFilePath();
 		if( ! path.empty() ) {
-			ObjLoader loader( (DataSourceRef)loadFile( path ) );
+			ObjLoader loader( loadFile( path ) );
 			loader.load( &mMesh, true );
 			mVBO = gl::VboMesh( mMesh );
 			console() << "Total verts: " << mMesh.getVertices().size() << std::endl;
 		}
 	}
 	else if( event.getChar() == 's' ) {
-		std::string path = getSaveFilePath( "output.trimesh" );
+		fs::path path = getSaveFilePath( "output.trimesh" );
 		if( ! path.empty() ) {
 			console() << "Saving to " << path;
 			mMesh.write( writeFile( path ) );
 		}
 	}
 	else if( event.getChar() == 'j' ) {
-		std::string path = getSaveFilePath( "output.obj" );
+		fs::path path = getSaveFilePath( "output.obj" );
 		if( ! path.empty() ) {
 			console() << "Saving to " << path;
 			ObjLoader::write( writeFile( path ), mMesh );

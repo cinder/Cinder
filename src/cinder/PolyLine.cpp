@@ -51,6 +51,13 @@ T PolyLine<T>::getDerivative( float t ) const
 	return mPoints[span+1] - mPoints[span];
 }
 
+template<typename T>
+void PolyLine<T>::scale( const T &scaleFactor, T scaleCenter )
+{
+	for( typename std::vector<T>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
+		*ptIt = scaleCenter + ( *ptIt - scaleCenter ) * scaleFactor;
+}
+
 template class PolyLine<Vec2f>;
 template class PolyLine<Vec2d>;
 

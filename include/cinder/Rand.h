@@ -206,4 +206,38 @@ private:
 	static boost::variate_generator<boost::mt19937&, boost::uniform_int<> > sIntGen;
 };
 
+//! Resets the static random generator to the specific seed \a seedValue
+inline void randSeed( uint32_t seedValue ) { Rand::randSeed( seedValue ); }
+
+//! returns a random boolean value
+inline bool randBool() { return Rand::randBool(); }
+
+//! returns a random integer in the range [0,2147483647]
+inline int32_t randInt() { return Rand::randInt(); }
+
+//! returns a random integer in the range [0,v)
+inline int32_t randInt( int32_t v ) { return Rand::randInt( v ); }
+
+//! returns a random integer in the range [a,b)
+inline int32_t randInt( int32_t a, int32_t b ) { return Rand::randInt( a, b ); }
+
+//! returns a random float in the range [0.0f,1.0f]
+inline float randFloat() { return Rand::randFloat(); }
+
+//! returns a random float in the range [0.0f,v]
+inline float randFloat( float v ) { return Rand::randFloat( v ); }
+
+//! returns a random float in the range [a,b]
+inline float randFloat( float a, float b ) { return Rand::randFloat( a, b ); }
+
+//! returns a random float in the range [a,b] or the range [-b,-a]
+inline float randPosNegFloat( float a, float b ) { return Rand::randPosNegFloat( a, b ); }
+
+//! returns a random Vec3f that represents a point on the unit sphere
+inline Vec3f randVec3f() { return Rand::randVec3f(); }
+
+//! returns a random Vec2f that represents a point on the unit circle
+inline Vec2f randVec2f() { return Rand::randVec2f(); }
+
+
 } // namespace cinder

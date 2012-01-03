@@ -70,9 +70,15 @@ class Path2d {
 	
 	std::vector<Vec2f>	subdivide( float approximationScale = 1.0f ) const;
 	
-	const Vec2f&	getPoint( size_t point ) const { return mPoints[point]; }
-	const Vec2f&	getCurrentPoint() const { return mPoints.back(); }
-	void			setPoint( size_t index, const Vec2f &p ) { mPoints[index] = p; }
+	//! Scales the Path2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
+	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f::zero() );
+
+	const std::vector<Vec2f>&	getPoints() const { return mPoints; }
+	std::vector<Vec2f>&			getPoints() { return mPoints; }
+	const Vec2f&				getPoint( size_t point ) const { return mPoints[point]; }
+	Vec2f&						getPoint( size_t point ) { return mPoints[point]; }
+	const Vec2f&				getCurrentPoint() const { return mPoints.back(); }
+	void						setPoint( size_t index, const Vec2f &p ) { mPoints[index] = p; }
 
 	void			removeSegment( size_t segment );
 
@@ -82,18 +88,52 @@ class Path2d {
 	
 	//! Returns the bounding box around all control points. As with Shape2d, note this is not necessarily the bounding box of the Path's shape.
 	Rectf	calcBoundingBox() const;
+	//! Returns the precise bounding box around the curve itself. Slower to calculate than calcBoundingBox().
+	Rectf	calcPreciseBoundingBox() const;	
+
+	//! Returns whether the point \a pt is contained within the boundaries of the path
+	bool	contains( const Vec2f &pt ) const;
 
 	friend class Shape2d;
-
- private:
+	friend std::ostream& operator<<( std::ostream &out, const Path2d &p );
+  private:
 	void	arcHelper( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward );
-	void	arcSegmentAsCubicBezier( const Vec2f &center, float radius, float startRadians, float endRadins );
+	void	arcSegmentAsCubicBezier( const Vec2f &center, float radius, float startRadians, float endRadians );
 	void	subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, int level, std::vector<Vec2f> *result ) const;
 	void	subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, const Vec2f &p4, int level, std::vector<Vec2f> *result ) const;
 
 	std::vector<Vec2f>			mPoints;
 	std::vector<SegmentType>	mSegments;
 };
+
+inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
+{
+	size_t pt = 0;
+	for( size_t s = 0; s < p.mSegments.size(); ++s ) {
+		if( p.mSegments[s] == Path2d::MOVETO ) {
+			out << "M " << p.mPoints[pt].x << " " << p.mPoints[pt].y << " ";
+			pt++;
+		}
+		if( p.mSegments[s] == Path2d::LINETO ) {
+			out << "L " << p.mPoints[pt].x << " " << p.mPoints[pt].y << " ";
+			pt++;
+		}
+		else if( p.mSegments[s] == Path2d::QUADTO ) {
+			out << "Q " << p.mPoints[pt].x << " " << p.mPoints[pt].y << " " << p.mPoints[pt+1].x << " " << p.mPoints[pt+1].y << " ";
+			pt += 2;
+		}
+		else if( p.mSegments[s] == Path2d::CUBICTO ) {
+			out << "C " << p.mPoints[pt].x << " " << p.mPoints[pt].y << " " << p.mPoints[pt+1].x << " " << p.mPoints[pt+1].y << " " << p.mPoints[pt+2].x << " " << p.mPoints[pt+2].y << " ";
+			pt += 3;
+		}
+		else {
+			out << "Z ";
+		}
+
+	}
+	
+	return out;
+}
 
 class Path2dExc : public Exception {
 };

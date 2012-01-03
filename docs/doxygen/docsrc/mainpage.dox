@@ -5,7 +5,7 @@ If you are just getting started, we recommend you begin with the \ref helloCinde
 
 \section guides Guides
 \ref helloCinder "Hello, Cinder" \n
-\ref CinderResources "Using Resources in Cinder" \n
+\ref CinderResources "Assets & Resources in Cinder" \n
 \ref guide_Images "Images in Cinder" \n
 \ref guide_XmlTree "XML in Cinder" \n
 \ref CinderBoost "Cinder + Boost" \n

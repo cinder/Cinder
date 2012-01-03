@@ -58,7 +58,7 @@ ImageSourceFileUiImageRef ImageSourceFileUiImage::createFileUiImageRef( DataSour
 {
 	UIImage *uiImage = 0;
 	if( dataSourceRef->isFilePath() ) {
-		uiImage = [UIImage imageWithContentsOfFile:cocoa::SafeNsString( dataSourceRef->getFilePath() )];
+		uiImage = [UIImage imageWithContentsOfFile:cocoa::SafeNsString( dataSourceRef->getFilePath().string() )];
 		[uiImage retain];
 	}
 	else { // no file path, so we'll use a dataref from the buffer

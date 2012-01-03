@@ -94,7 +94,7 @@ typedef std::shared_ptr<class IStreamUrl>	IStreamUrlRef;
 class IStreamUrl : public IStream {
   public:
 	//! Creates a new IStreamUrlRef from the Url \a url with an optional login and password
-	static IStreamUrlRef		createRef( const Url &url, const std::string &user = "", const std::string &password = "" );
+	static IStreamUrlRef		create( const Url &url, const std::string &user = "", const std::string &password = "" );
 	
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) { return mImpl->readDataAvailable( dest, maxSize ); }
 	virtual void		seekAbsolute( off_t absoluteOffset ) { return mImpl->seekAbsolute( absoluteOffset ); }

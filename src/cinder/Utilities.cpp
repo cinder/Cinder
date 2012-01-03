@@ -56,7 +56,7 @@ using std::wstring;
 
 namespace cinder {
 
-std::string expandPath( const std::string &path )
+fs::path expandPath( const fs::path &path )
 {
 	string result;
 	
@@ -66,11 +66,11 @@ std::string expandPath( const std::string &path )
 	result = string( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
 #else
 	char buffer[MAX_PATH];
-	::PathCanonicalizeA( buffer, path.c_str() );
+	::PathCanonicalizeA( buffer, path.string().c_str() );
 	result = buffer; 
 #endif
 
-	return result;	
+	return fs::path( result );
 }
 
 std::string getHomeDirectory()
@@ -186,16 +186,18 @@ std::string getPathExtension( const std::string &path )
 		return std::string();
 }
 
-bool createDirectories( const std::string &path, bool createParents )
+bool createDirectories( const fs::path &path, bool createParents )
 {
 	if( path.empty() )
 		return true;
 
+	fs::path dirPath = path.parent_path();
+
 #if defined( CINDER_COCOA )
-	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
+	NSString *pathNS = [NSString stringWithCString:dirPath.c_str() encoding:NSUTF8StringEncoding];
 	return static_cast<bool>( [[NSFileManager defaultManager] createDirectoryAtPath:pathNS withIntermediateDirectories:YES attributes:nil error:nil] );
 #else
-	return ::SHCreateDirectoryExA( NULL, path.c_str(), NULL ) == ERROR_SUCCESS;
+	return ::SHCreateDirectoryExA( NULL, dirPath.string().c_str(), NULL ) == ERROR_SUCCESS;
 #endif
 }
 
@@ -217,12 +219,12 @@ void launchWebBrowser( const Url &url )
 #endif
 }
 
-void deleteFile( const std::string &path )
+void deleteFile( const fs::path &path )
 {
 #if defined( CINDER_COCOA )
 	unlink( path.c_str() );
 #else
-	if( ! ::DeleteFileW( toUtf16( path ).c_str() ) ) {
+	if( ! ::DeleteFileW( toUtf16( path.string() ).c_str() ) ) {
 		DWORD err = GetLastError();
 	}
 #endif

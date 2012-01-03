@@ -139,7 +139,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 	
 	// initialize the stream based on properties of the cinder::DataSouce
 	if( mDataTarget->providesFilePath() ) {
-		hr = stream->InitializeFromFilename( toUtf16( mDataTarget->getFilePath() ).c_str(), GENERIC_WRITE );
+		hr = stream->InitializeFromFilename( toUtf16( mDataTarget->getFilePath().string() ).c_str(), GENERIC_WRITE );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad();
 	}

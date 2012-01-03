@@ -623,6 +623,7 @@ class Context
 	void        rectangle( double x, double y, double width, double height );
 	void        rectangle( const Rectf &r ) { rectangle( r.x1, r.y1, r.getWidth(), r.getHeight() ); }
 	void        rectangle( const Vec2f &upperLeft, const Vec2f &lowerRight );
+	void		roundedRectangle( const Rectf &r, float cornerRadius );
 	//void        glyphPath( const cairo_glyph_t *glyphs, int num_glyphs );
 	void        textPath( const char *utf8 );
 	void        relCurveTo( double dx1, double dy1, double dx2, double dy2, double dx3, double dy3 );

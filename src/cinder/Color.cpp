@@ -65,7 +65,7 @@ void ColorT<T>::set( ColorModel cm, const Vec3f &v )
 }
 
 template<typename T>
-Vec3f ColorT<T>::get( ColorModel cm )
+Vec3f ColorT<T>::get( ColorModel cm ) const
 {
 	switch( cm ) {
 		case CM_HSV: {

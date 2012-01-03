@@ -1,7 +1,0 @@
-#include <windows.h>
-#include <scrnsave.h>
-
-STRINGTABLE DISCARDABLE
-BEGIN
-	IDS_DESCRIPTION "Cinder ScreenSaver"
-END
