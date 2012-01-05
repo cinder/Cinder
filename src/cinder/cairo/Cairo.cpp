@@ -476,6 +476,14 @@ int32_t	Matrix::invert()
 	return static_cast<int32_t>( cairo_matrix_invert( &getCairoMatrix() ) );
 }
 
+const Matrix& Matrix::operator*=( const Matrix &rhs )
+{
+	cairo_matrix_t r;
+	cairo_matrix_multiply( &r, &getCairoMatrix(), &rhs.getCairoMatrix() );
+	init( r.xx, r.yx, r.xy, r.yy, r.x0, r.y0 );
+	return *this;
+}
+
 Vec2f Matrix::transformPoint( const Vec2f &v ) const
 {
 	double x = v.x, y = v.y;

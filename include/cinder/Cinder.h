@@ -23,6 +23,11 @@
 #pragma once
 
 #include <boost/cstdint.hpp>
+#include <boost/version.hpp>
+
+#if BOOST_VERSION < 104800
+	#error "Cinder requires Boost version 1.48 or later"
+#endif
 
 namespace cinder {
 using boost::int8_t;
@@ -86,6 +91,15 @@ using boost::uint64_t;
 
 #include <boost/shared_ptr.hpp> // necessary for checked_array_deleter
 using boost::checked_array_deleter;
+
+// if compiler supports r-value references, #define CINDER_RVALUE_REFERENCES
+#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
+	#define CINDER_RVALUE_REFERENCES
+#elif defined( __clang__ )
+	#if __has_feature(cxx_rvalue_references)
+		#define CINDER_RVALUE_REFERENCES
+	#endif
+#endif
 
 // Create a namepace alias as shorthand for cinder::
 #if ! defined( CINDER_NO_NS_ALIAS )
