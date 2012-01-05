@@ -24,6 +24,7 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/Camera.h"
 #include "cinder/Utilities.h"
+#include "cinder/Timeline.h"
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
@@ -48,7 +49,7 @@ namespace cinder { namespace app {
 App*	App::sInstance;
 
 App::App()
-	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true )
+	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() )
 {
 	mFpsLastSampleFrame = 0;
 	mFpsLastSampleTime = 0;
@@ -145,6 +146,7 @@ void App::privateFileDrop__( const FileDropEvent &event )
 
 void App::privateSetup__()
 {
+	mTimeline->stepTo( getElapsedSeconds() );
 	setup();
 }
 
@@ -152,6 +154,8 @@ void App::privateUpdate__()
 {
 	update();
 	mFrameCount++;
+
+	mTimeline->stepTo( getElapsedSeconds() );
 
 	double now = mTimer.getSeconds();
 	if( now > mFpsLastSampleTime + mFpsSampleInterval ) {
