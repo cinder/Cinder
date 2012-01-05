@@ -295,7 +295,7 @@ fs::path App::getResourcePath( const fs::path &rsrcRelativePath )
 	
 	NSString *resultPath = [[NSBundle mainBundle] pathForResource:[NSString stringWithUTF8String:fileName.c_str()] ofType:nil inDirectory:pathNS];
 	if( ! resultPath )
-		return string();
+		return rsrcRelativePath; // return the incoming path because caller is going to try to open it
 	
 	return fs::path([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
 }
