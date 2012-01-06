@@ -10,6 +10,9 @@
 
 #include "Character.h"
 
+using namespace ci;
+using namespace std;
+
 Character::Character( gl::TextureFontRef textureFont, string character, Matrix44f matrix )
 {
 	mTextureFont = textureFont;
