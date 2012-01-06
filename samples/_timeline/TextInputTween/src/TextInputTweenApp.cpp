@@ -109,8 +109,8 @@ void TextInputTweenApp::addChar( char c )
 	
 	mSceneDestMatrix.translate( Vec3f( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 
-	float x = (count + 281)/50.0f;
-	mSceneDestMatrix.rotate( Vec3f( sin(x)*0.1f, cos(x)*0.2f, cos(x)*0.05f ) ); // makes the scene meander
+	float t = (count + 281)/50.0f;
+	mSceneDestMatrix.rotate( Vec3f( sin(t)*0.1f, cos(t)*0.2f, cos(t)*0.05f ) ); // makes the scene meander
 	
 	mCharacters.back().animIn( timeline(), mSceneDestMatrix );
 	
