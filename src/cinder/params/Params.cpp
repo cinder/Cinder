@@ -33,6 +33,8 @@ namespace cinder { namespace params {
 
 namespace {
 
+#undef DELETE
+
 #define SYNONYM(ck,ak) ((int)cinder::app::KeyEvent::KEY_ ## ck, TW_KEY_ ## ak)
 #define HOMONYM(k) SYNONYM(k,k)
     std::map<int,TwKeySpecial> specialKeys = boost::assign::map_list_of
