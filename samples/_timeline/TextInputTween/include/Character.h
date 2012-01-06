@@ -11,37 +11,35 @@
 #include "cinder/Color.h"
 #include "cinder/Rect.h"
 
-using namespace ci;
-using namespace std;
 
 class Character {
   public:
 	Character() {}
-	Character( gl::TextureFontRef textureFont, string character,  Matrix44f matrix );
+	Character( ci::gl::TextureFontRef textureFont, std::string character,  ci::Matrix44f matrix );
 	
-	void	animIn( Timeline &timeline,  Matrix44f matrix );
-	void	animOut( Timeline &timeline,  Matrix44f matrix );
+	void	animIn( ci::Timeline &timeline,  ci::Matrix44f matrix );
+	void	animOut( ci::Timeline &timeline,  ci::Matrix44f matrix );
 	
 	void	draw() const;
 	
-	Rectf		getKernBounds() const;
+	ci::Rectf		getKernBounds() const;
 	bool		isDead() const;
-	Matrix44f	getDestMatrix() const;
+	ci::Matrix44f	getDestMatrix() const;
 	
   protected:
 	void	onAnimOut();
 	
-	Anim<ColorAf>			mColorCur;
-	Anim<Matrix44f>			mMatrix;
+	ci::Anim<ci::ColorAf>			mColorCur;
+	ci::Anim<ci::Matrix44f>			mMatrix;
 	
-	ColorAf					mColorStart, mColorDest;
+	ci::ColorAf					mColorStart, mColorDest;
 	
-	Matrix44f				mDestMatrix;
+	ci::Matrix44f				mDestMatrix;
 	
-	string					mChar;
+	std::string					mChar;
 	
-	gl::TextureFontRef		mTextureFont;
-	Rectf					mKernBounds;
+	ci::gl::TextureFontRef		mTextureFont;
+	ci::Rectf					mKernBounds;
 	
 	bool					mIsDead;
 };
