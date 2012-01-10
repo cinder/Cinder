@@ -51,7 +51,6 @@ T tweenLerp( const T &start, const T &end, float time )
 	return start * ( 1 - time ) + end * time;
 }
 
-//Our templated tween design
 class TweenBase : public TimelineItem {
   public:
 	typedef std::function<void ()>		StartFn;
@@ -67,12 +66,18 @@ class TweenBase : public TimelineItem {
 
 	void			setStartFn( StartFn startFunction ) { mStartFunction = startFunction; }
 	StartFn			getStartFn() const { return mStartFunction; }
+
+	void			setReverseStartFn( StartFn reverseStartFunction ) { mReverseStartFunction = reverseStartFunction; }
+	StartFn			getReverseStartFn() const { return mReverseStartFunction; }
 	
 	void			setUpdateFn( UpdateFn updateFunction ) { mUpdateFunction = updateFunction; }									
 	UpdateFn		getUpdateFn() const { return mUpdateFunction; }
 																																					
 	void			setFinishFn( FinishFn finishFn ) { mFinishFunction = finishFn; }
 	FinishFn		getFinishFn() const { return mFinishFunction; }
+
+	void			setReverseFinishFn( FinishFn reverseFinishFn ) { mReverseFinishFunction = reverseFinishFn; }
+	FinishFn		getReverseFinishFn() const { return mReverseFinishFunction; }
 	
 	class Options {
 	  protected:
@@ -92,16 +97,18 @@ class TweenBase : public TimelineItem {
 		TimelineItem::reset( unsetStarted );
 	}
 
-	virtual void complete()
+	virtual void complete( bool reverse )
 	{
-		if( mFinishFunction )
+		if( reverse && mReverseFinishFunction )
+			mReverseFinishFunction();
+		else if( ( ! reverse ) && mFinishFunction )
 			mFinishFunction();
 	}
 
   
-	StartFn			mStartFunction;
+	StartFn			mStartFunction, mReverseStartFunction;
 	UpdateFn		mUpdateFunction;	
-	FinishFn		mFinishFunction;
+	FinishFn		mFinishFunction, mReverseFinishFunction;
   
 	EaseFn		mEaseFunction;
 	float		mDuration;
@@ -159,8 +166,10 @@ class Tween : public TweenBase {
 	class Options : public TweenBase::Options {
 	  public:
 		Options&	startFn( const TweenBase::StartFn &startFn ) { mTweenRef->setStartFn( startFn ); return *this; }
+		Options&	reverseStartFn( const TweenBase::StartFn &reverseStartFn ) { mTweenRef->setReverseStartFn( reverseStartFn ); return *this; }
 		Options&	updateFn( const TweenBase::UpdateFn &updateFn ) { mTweenRef->setUpdateFn( updateFn ); return *this; }
 		Options&	finishFn( const TweenBase::FinishFn &finishFn ) { mTweenRef->setFinishFn( finishFn ); return *this; }
+		Options&	reverseFinishFn( const TweenBase::FinishFn &reverseFinishFn ) { mTweenRef->setReverseFinishFn( reverseFinishFn ); return *this; }
 		Options&	easeFn( const EaseFn &easeFunc ) { mTweenRef->setEaseFn( easeFunc ); return *this; }
 		Options&	delay( float delayAmt ) { mTweenRef->setStartTime( mTweenRef->getStartTime() + delayAmt ); return *this; }
 		Options&	autoRemove( bool remove = true ) { mTweenRef->setAutoRemove( remove ); return *this; }
@@ -205,11 +214,13 @@ class Tween : public TweenBase {
 		return result;
 	}
 	
-	virtual void start()
+	virtual void start( bool reverse )
 	{
 		if( mCopyStartValue )
 			mStartValue = *(reinterpret_cast<T*>( mTarget ) );
-		if( mStartFunction )
+		if( reverse && mReverseStartFunction )
+			mReverseStartFunction();
+		else if( ( ! reverse ) && mStartFunction )
 			mStartFunction();
 	}
 	

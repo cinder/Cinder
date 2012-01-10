@@ -46,7 +46,7 @@ class Timeline : public TimelineItem {
 
 	//! Advances time a specified amount and evaluates items
 	void	step( float timestep );
-	//! Goes to a specific time and evaluates items
+	//! Goes to a specific time and evaluates items.
 	void	stepTo( float absoluteTime );
 	
 	//! Returns the timeline's most recent current time
@@ -166,6 +166,10 @@ class Timeline : public TimelineItem {
 		TimelineRef result = std::static_pointer_cast<Timeline>( thisTimelineItem );
 		return result;
 	}
+
+	//! \cond
+	virtual void	stepTo( float absoluteTime, bool reverse ) { stepTo( absoluteTime ); }
+	//! \endcond
 	
   protected:
   	Timeline();
@@ -173,10 +177,10 @@ class Timeline : public TimelineItem {
 	virtual void reverse();
 	virtual TimelineItemRef cloneReverse() const;
 	virtual TimelineItemRef clone() const;
-	virtual void start() {}
+	virtual void start( bool reverse ) {} // no-op
 	virtual void loopStart();
 	virtual void update( float absTime );
-	virtual void complete() {}
+	virtual void complete( bool reverse ) {} // no-op
 
 	void						eraseMarked();
 	virtual float				calcDuration() const;
@@ -201,10 +205,10 @@ class Cue : public TimelineItem {
 	virtual TimelineItemRef	cloneReverse() const;
 	virtual TimelineItemRef clone() const;
 
-	virtual void start() {} // starting is a no-op for Cues
+	virtual void start( bool reverse ) {} // starting is a no-op for Cues
 	virtual void loopStart();
 	virtual void update( float relativeTime ) {} // update is a no-op for Cues
-	virtual void complete() {} // completion is a no-op for Cues
+	virtual void complete( bool reverse ) {} // completion is a no-op for Cues
 	virtual bool updateAtLoopStart() { return true; }
   
 	std::function<void ()>		mFunction;

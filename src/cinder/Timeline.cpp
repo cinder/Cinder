@@ -44,11 +44,12 @@ Timeline::Timeline()
 void Timeline::step( float timestep )
 {
 	mCurrentTime += timestep;
-	stepTo( mCurrentTime );
+	stepTo( mCurrentTime, timestep < 0 );
 }
 
 void Timeline::stepTo( float absoluteTime )
 {	
+	bool reverse = mCurrentTime > absoluteTime;
 	mCurrentTime = absoluteTime;
 	
 	eraseMarked();
@@ -58,7 +59,7 @@ void Timeline::stepTo( float absoluteTime )
 	// Deleted items are never removed immediately, but are marked for deletion.
 	s_iter endItem = mItems.end();
 	for( s_iter iter = mItems.begin(); iter != endItem; ++iter ) {
-		iter->second->stepTo( mCurrentTime );
+		iter->second->stepTo( mCurrentTime, reverse );
 		if( iter->second->isComplete() && iter->second->getAutoRemove() )
 			iter->second->mMarkedForRemoval = true;
 	}

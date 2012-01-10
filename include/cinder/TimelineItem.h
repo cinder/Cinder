@@ -80,10 +80,10 @@ class TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	//! Sets whether the item will remove itself from the Timeline when it is complete
 	void	setAutoRemove( bool autoRemove = true ) { mAutoRemove = autoRemove; }
 	
-	virtual void start() = 0;
+	virtual void start( bool reverse ) = 0;
 	virtual void loopStart() {}
 	virtual void update( float relativeTime ) = 0;
-	virtual void complete() = 0;
+	virtual void complete( bool reverse ) = 0;
 	//! Call update() only at the beginning of each loop (for example Cues exhibit require this behavior)
 	virtual bool 	updateAtLoopStart() { return false; }
 	virtual float	calcDuration() const { return mDuration; }
@@ -92,8 +92,8 @@ class TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	virtual TimelineItemRef		clone() const = 0;
 	//! Creates a cloned item which runs in reverse relative to a timeline of duration \a timelineDuration
 	virtual TimelineItemRef		cloneReverse() const = 0;
-	//! go to a specific time, generally called by the parent Timeline only.
-	void stepTo( float time );
+	//! go to a specific time, generally called by the parent Timeline only. If \a reverse then playhead is interpreted as retreating rather than advancing.
+	void stepTo( float time, bool reverse );
 	
 	TimelineItemRef thisRef() { return shared_from_this(); }
 	
@@ -108,7 +108,9 @@ class TimelineItem : public std::enable_shared_from_this<TimelineItem>
 
 	void	*mTarget;
 	float	mStartTime;
-	bool	mHasStarted, mComplete, mMarkedForRemoval;
+	bool	mHasStarted, mHasReverseStarted;
+	bool	mComplete, mReverseComplete;
+	bool	mMarkedForRemoval;
 	bool	mInfinite;
 	bool	mLoop;
 	bool	mUseAbsoluteTime;

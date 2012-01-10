@@ -29,14 +29,16 @@
 namespace cinder {
 
 TimelineItem::TimelineItem( class Timeline *parent )
-	: mParent( parent ), mTarget( 0 ), mStartTime( 0 ), mDirtyDuration( false ), mDuration( 0 ), mInvDuration( 0 ), mHasStarted( false ),
-		mComplete( false ), mMarkedForRemoval( false ), mAutoRemove( true ), mInfinite( false ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
+	: mParent( parent ), mTarget( 0 ), mStartTime( 0 ), mDirtyDuration( false ), mDuration( 0 ), mInvDuration( 0 ), mHasStarted( false ), mHasReverseStarted( false ),
+		mComplete( false ), mReverseComplete( false ), mMarkedForRemoval( false ), mAutoRemove( true ),
+		mInfinite( false ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
 {
 }
 
 TimelineItem::TimelineItem( Timeline *parent, void *target, float startTime, float duration )
-	: mParent( parent ), mTarget( target ), mStartTime( startTime ), mDirtyDuration( false ), mDuration( std::max( duration, 0.0f ) ), mInvDuration( duration <= 0 ? 0 : (1 / duration) ), mHasStarted( false ),
-		mComplete( false ), mMarkedForRemoval( false ), mAutoRemove( true ), mInfinite( false ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
+	: mParent( parent ), mTarget( target ), mStartTime( startTime ), mDirtyDuration( false ), mDuration( std::max( duration, 0.0f ) ), mInvDuration( duration <= 0 ? 0 : (1 / duration) ),
+		mHasStarted( false ), mHasReverseStarted( false ), mComplete( false ), mReverseComplete( false ), mMarkedForRemoval( false ), mAutoRemove( true ),
+		mInfinite( false ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
 {
 }
 
@@ -45,16 +47,22 @@ void TimelineItem::removeSelf()
 	mMarkedForRemoval = true;
 }
 
-void TimelineItem::stepTo( float newTime )
+void TimelineItem::stepTo( float newTime, bool reverse )
 {
-	if( mComplete || mMarkedForRemoval )
+	if( mMarkedForRemoval )
 		return;
 	
-	float absTime = newTime - mStartTime;
+	const float absTime = newTime - mStartTime;
+	const float endTime = mStartTime + mDuration;
 
 	updateDuration();
-	
-	if( newTime >= mStartTime ) {
+
+	if( ( ! mHasReverseStarted ) && reverse && ( newTime < mStartTime ) ) {
+		mHasReverseStarted = true;
+		mHasStarted = false;
+		start( true );
+	}	
+	else if( newTime >= mStartTime ) {
 		float relTime;
 		if( mLoop ) {
 			relTime = math<float>::fmod( absTime * mInvDuration, 1 );
@@ -62,10 +70,11 @@ void TimelineItem::stepTo( float newTime )
 		else
 			relTime = math<float>::min( absTime * mInvDuration, 1 );
 		
-		if( ! mHasStarted ) {
+		if( ( ! mHasStarted ) && ( ! reverse ) ) {
 			mHasStarted = true;
+			mHasReverseStarted = false;
 			loopStart();
-			start();
+			start( false );
 		}
 		
 		float time = ( mUseAbsoluteTime ) ? absTime : relTime;
@@ -87,9 +96,20 @@ void TimelineItem::stepTo( float newTime )
 		else
 			update( time );
 	}
-	if( newTime >= mStartTime + mDuration && ( ! mLoop ) && ( ! mInfinite ) ) {
-		mComplete = true;
-		complete();
+
+	if( newTime < endTime ) {
+		if( ( ! mReverseComplete ) && reverse ) {
+			mReverseComplete = true;
+			mComplete = false;
+			complete( true );
+		}
+	}
+	else if( ( ! mLoop ) && ( ! mInfinite ) ) { // newTime >= endTime
+		if( ( ! mComplete ) && ( ! reverse ) ) {
+			mComplete = true;
+			mReverseComplete = false;
+			complete( false );
+		}
 	}
 }
 
