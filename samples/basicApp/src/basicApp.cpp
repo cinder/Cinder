@@ -32,6 +32,8 @@ void BasicApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' )
 		setFullScreen( ! isFullScreen() );
+
+	wglSwapIntervalEXT( 0 );
 }
 
 void BasicApp::draw()
