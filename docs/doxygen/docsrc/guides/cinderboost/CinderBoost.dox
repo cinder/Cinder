@@ -28,7 +28,7 @@ Here's how to compile Boost yourself.
 <b>Mac OS X</b>:\n
 <tt>
 cd cinder/boost\n
-./bootstrap.sh --with-libraries=filesystem,thread,system,date_time
+./bootstrap.sh --with-libraries=filesystem,thread,system,date_time,regex
 ./b2 architecture=x86 address-model=32 macosx-version=10.6 stage
 cp stage/lib/*.a ../lib/macosx\n
 </tt>
@@ -39,11 +39,9 @@ From the Visual Studio Command Prompt:
 <tt>
 cd cinder\\boost\n
 bootstrap\n
-b2 stage\n
+b2 runtime-link=static --with-regex --with-thread --with-filesystem --with-date_time --with-system\n
 copy stage\\lib\\*.lib ..\\lib\\msw\n
 </tt>
-\em Note: If you need to build in Visual C++ 9.0, change the <tt>--toolset=msvc</tt> to <tt>--toolset=msvc-9.0</tt>.\n
-\n
 <b>iOS</b>:\n
 In order to build Boost for iOS, you'll need to append the following lines to your user-config.jam file, located at <em>cinder/boost/tools/build/v2/user-config.jam</em>.\n
 \code
@@ -62,14 +60,14 @@ using darwin : 4.2.1~iphonesim
 \n
 <em>iPhone Device</em>\n
 <tt>
-./bootstrap.sh --with-libraries=filesystem,thread,system,date_time\n
+./bootstrap.sh --with-libraries=filesystem,thread,system,date_time,regex\n
 ./b2 architecture=arm target-os=iphone macosx-version=iphone-4.3 stage\n
 cp stage/lib/*.a ../lib/ios\n
 </tt>
 \n
 <em>iPhone Simulator</em>\n
 <tt>
-./bootstrap.sh --with-libraries=filesystem,thread,system,date_time\n
+./bootstrap.sh --with-libraries=filesystem,thread,system,date_time,regex\n
 ./b2 architecture=x86 target-os=iphone macosx-version=iphonesim-4.3 stage\n
 cp stage/lib/*.a ../lib/ios-sim\n
 </tt>
