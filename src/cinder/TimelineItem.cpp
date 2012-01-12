@@ -31,14 +31,14 @@ namespace cinder {
 TimelineItem::TimelineItem( class Timeline *parent )
 	: mParent( parent ), mTarget( 0 ), mStartTime( 0 ), mDirtyDuration( false ), mDuration( 0 ), mInvDuration( 0 ), mHasStarted( false ), mHasReverseStarted( false ),
 		mComplete( false ), mReverseComplete( false ), mMarkedForRemoval( false ), mAutoRemove( true ),
-		mInfinite( false ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
+		mInfinite( false ), mLoop( false ), mPingPong( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
 {
 }
 
 TimelineItem::TimelineItem( Timeline *parent, void *target, float startTime, float duration )
 	: mParent( parent ), mTarget( target ), mStartTime( startTime ), mDirtyDuration( false ), mDuration( std::max( duration, 0.0f ) ), mInvDuration( duration <= 0 ? 0 : (1 / duration) ),
 		mHasStarted( false ), mHasReverseStarted( false ), mComplete( false ), mReverseComplete( false ), mMarkedForRemoval( false ), mAutoRemove( true ),
-		mInfinite( false ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
+		mInfinite( false ), mLoop( false ), mPingPong( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
 {
 }
 
@@ -64,7 +64,12 @@ void TimelineItem::stepTo( float newTime, bool reverse )
 	}	
 	else if( newTime >= mStartTime ) {
 		float relTime;
-		if( mLoop ) {
+		if( mPingPong ) {
+			relTime = math<float>::fmod( absTime * mInvDuration, 2 ); // varies from 0-2
+			if( relTime > 1 )
+				relTime = ( 2 - relTime );
+		}
+		else if( mLoop ) {
 			relTime = math<float>::fmod( absTime * mInvDuration, 1 );
 		}
 		else
@@ -83,7 +88,7 @@ void TimelineItem::stepTo( float newTime, bool reverse )
 		if( ( ! mUseAbsoluteTime ) && ( mInvDuration <= 0 ) )
 			time = 1.0f;
 
-		if( mLoop ) {
+		if( mLoop || mPingPong ) {
 			int32_t loopIteration = static_cast<int32_t>( ( newTime - mStartTime ) * mInvDuration );
 			if( loopIteration != mLastLoopIteration ) {
 				mLastLoopIteration = loopIteration;
@@ -141,7 +146,14 @@ float TimelineItem::loopTime( float absTime )
 {
 	float result = absTime;
 	
-	if( mLoop ) {
+	if( mPingPong ) {
+		result = math<float>::fmod( result * mInvDuration, 2 ); // varies from 0-2
+		if( result <= 1 )
+			result *= mDuration;
+		else
+			result = ( 2 - result ) * mDuration;
+	}
+	else if( mLoop ) {
 		result = math<float>::fmod( result * mInvDuration, 1 );
 		result *= mDuration;
 	}

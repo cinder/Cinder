@@ -56,6 +56,11 @@ class TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	//! Sets whether the item starts over when it is complete
 	void			setLoop( bool doLoop = true ) { mLoop = doLoop; }
 
+	//! Returns whether the item alternates between forward and reverse. Overrides loop when true.
+	bool			getPingPong() const { return mPingPong; }
+	//! Sets whether the item alternates between forward and reverse. Overrides loop when true.
+	void			setPingPong( bool pingPong = true ) { mPingPong = pingPong; }
+
 	//! Returns whether the item ever is marked as complete
 	bool			getInfinite() const { return mLoop; }
 	//! Sets whether the item ever is marked as complete
@@ -112,7 +117,7 @@ class TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	bool	mComplete, mReverseComplete;
 	bool	mMarkedForRemoval;
 	bool	mInfinite;
-	bool	mLoop;
+	bool	mLoop, mPingPong;
 	bool	mUseAbsoluteTime;
 	bool	mAutoRemove;
 	int32_t	mLastLoopIteration;
