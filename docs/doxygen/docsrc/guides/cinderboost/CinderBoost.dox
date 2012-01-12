@@ -71,4 +71,5 @@ cp stage/lib/*.a ../lib/ios\n
 ./b2 architecture=x86 target-os=iphone macosx-version=iphonesim-4.3 stage\n
 cp stage/lib/*.a ../lib/ios-sim\n
 </tt>
+\em Note: to strip armv6, use <tt>lipo -remove armv6 lib/ios/libboost_regex.a -output lib/ios/libboost_regex.a</tt>
 */
