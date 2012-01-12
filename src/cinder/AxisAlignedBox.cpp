@@ -118,6 +118,38 @@ int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 	return i;
 }
 
+Vec3f AxisAlignedBox3f::getPositive(const Vec3f &normal)
+{
+	Vec3f result = getMin();
+	Vec3f size = getSize();
 
+	if (normal.x > 0)
+		result.x += size.x;
+
+	if (normal.y > 0)
+		result.y += size.y;
+
+	if (normal.z > 0)
+		result.z += size.z;
+
+	return(result);
+}
+
+Vec3f AxisAlignedBox3f::getNegative(const Vec3f &normal)
+{
+	Vec3f result = getMin();
+	Vec3f size = getSize();
+
+	if (normal.x < 0)
+		result.x += size.x;
+
+	if (normal.y < 0)
+		result.y += size.y;
+
+	if (normal.z < 0)
+		result.z += size.z;
+
+	return(result);
+}
 
 } // namespace cinder

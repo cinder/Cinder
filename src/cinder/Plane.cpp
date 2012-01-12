@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Cinder Project: http://libcinder.org
+ Copyright (c) 2012, Paul Houx
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -20,36 +20,56 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-
-#include "cinder/Vector.h"
-#include "cinder/Ray.h"
+#include "cinder/Plane.h"
 
 namespace cinder {
 
-class AxisAlignedBox3f {
- public:
-	AxisAlignedBox3f() {}
-	AxisAlignedBox3f( const Vec3f &aMin, const Vec3f &aMax );
+Plane::Plane(void)
+	: mDistance(0.0f)
+{
+}
 
-	bool	intersects( const Ray &ray );
-	int		intersect( const Ray &ray, float intersections[2] );
+Plane::Plane( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3)
+{
+	setPoints(v1,v2,v3);
+}
 
-	Vec3f			getCenter() const { return ( mExtents[1] + mExtents[0] ) * 0.5f; }
-	Vec3f			getSize() const { return mExtents[1] - mExtents[0]; }
-	
-	const Vec3f&	getMin() const { return mExtents[0]; }
-	const Vec3f&	getMax() const { return mExtents[1]; }	
+Plane::~Plane(void)
+{
+}
 
-	//! For use in frustum culling
-	Vec3f	getNegative( const Vec3f &normal );
-	Vec3f	getPositive( const Vec3f &normal );
-	
-	static bool calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result );
+void Plane::setPoints( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 )
+{
+	Vec3f aux1(v1 - v2);
+	Vec3f aux2(v3 - v2);
 
- protected:
-	Vec3f mExtents[2];
-	Vec3f mVerts[8];
-};
+	mNormal = aux2.cross(aux1);
+	mNormal.normalize();
+
+	mPoint.set(v2);
+
+	mDistance = -(mNormal.dot(mPoint));
+}
+
+void Plane::setNormalAndPoint( const Vec3f &normal, const Vec3f &point )
+{
+	mNormal.set(normal);
+	mNormal.normalize();
+
+	mPoint.set(point);
+
+	mDistance = -(mNormal.dot(mPoint));
+}
+
+void Plane::setCoefficients(float a, float b, float c, float d)
+{
+	mNormal.set(a,b,c);
+
+	//! Will crash if zero length
+	float length = mNormal.length();
+	mNormal.normalize();
+
+	mDistance = d / length;
+}
 
 } // namespace cinder

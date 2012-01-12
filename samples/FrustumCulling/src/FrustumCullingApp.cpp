@@ -1,42 +1,31 @@
 #include "cinder/app/AppBasic.h"
-#include "cinder/Vector.h"
 #include "cinder/Camera.h"
-#include "cinder/Utilities.h"
-#include "cinder/gl/gl.h"
+#include "cinder/Frustum.h"
 #include "cinder/ImageIo.h"
-#include "InfoPanel.h"
+#include "cinder/Utilities.h"
+#include "cinder/Vector.h"
+#include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;
 
-class FrustumCullingApp : public AppBasic {
- private:
-	enum { TOP, BOT, LEF, RIG, NEA, FARP };
-	enum { SPHERE, CUBE, POINT };
-	
- public:
+class FrustumCullingApp 
+	: public AppBasic 
+{
+private:
+	static enum { SPHERE, POINT, CUBE };
+public:
 	void prepareSettings( Settings *settings );
 	void setup();
-	void keyDown( KeyEvent event );
 	void update();
 	void draw();
-	void drawLineCube( const Vec3f &center, const Vec3f &size );
-	
-	bool isPointInFrustum( const Vec3f &loc );
-	bool isSphereInFrustum( const Vec3f &loc, float radius );
-	bool isBoxInFrustum( const Vec3f &loc, const Vec3f &size );
-	
-	bool mFrustumPlaneCached;
 
-	void calcFrustumPlane( Vec3f &fNormal, Vec3f &fPoint, float &fDist, const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
-	void calcNearAndFarClipCoordinates( const Camera &cam );	
-	
+	void keyDown( KeyEvent event );
+protected:
 	CameraPersp mCam;
 	CameraPersp mRenderCam;
-	
-	Vec3f mFrustumPlaneNormals[6];
-	Vec3f mFrustumPlanePoints[6];
-	float mFrustumPlaneDists[6];
+
+	Frustum		mFrustum;
 	
 	float mFov, mNear, mFar;
 	float mDecay;
@@ -63,8 +52,6 @@ class FrustumCullingApp : public AppBasic {
 	bool mRenderPoints;
 	bool mRenderSpheres;
 	bool mRenderCubes;
-	
-	InfoPanel mInfoPanel;
 };
 
 
@@ -78,15 +65,7 @@ void FrustumCullingApp::prepareSettings( Settings *settings )
 
 void FrustumCullingApp::setup()
 {
-	mInfoPanel.createTexture();
-
-	// should this be a struct?
-	for( int i=0; i<6; i++ ){
-		mFrustumPlaneNormals[i] = Vec3f::zero();
-		mFrustumPlanePoints[i] = Vec3f::zero();
-		mFrustumPlaneDists[i] = 0.0f;
-	}
-	mFrustumPlaneCached = false;
+	mFrustum.set(mCam);
 	
 	mIsWatchingCam	= true;
 	
@@ -133,7 +112,6 @@ void FrustumCullingApp::setup()
 
 void FrustumCullingApp::update()
 {
-	mFrustumPlaneCached = false;
 	mAngle -= ( mAngle - mAngleDest ) * 0.1f;
 	mEye -= ( mEye - mEyeDest ) * 0.2f;
 	
@@ -142,7 +120,7 @@ void FrustumCullingApp::update()
 	
 	mCam.setPerspective( 25.0f, getWindowAspectRatio(), 100.0f, 350.0f );
 	mCam.lookAt( mEye, mCenter, mUp );
-	calcNearAndFarClipCoordinates( mCam );
+	mFrustum.set( mCam );
 	
 	
 	
@@ -187,186 +165,37 @@ void FrustumCullingApp::draw()
 				Vec3f loc( (x-mHalfGrid)*mGridSpace, (y-mHalfGrid/2)*mGridSpace, (z-mHalfGrid)*mGridSpace );
 				
 				if( mShapeType == POINT ){
-					if( isPointInFrustum( loc ) ){
+					if( mFrustum.isPointInFrustum( loc ) ){
 						glColor3f( 0.0f, 1.0f, 0.0f );
 						gl::drawCube( loc, Vec3f( 0.5f, 0.5f, 0.5f ) );
 					}
 					
 				} else if( mShapeType == SPHERE ){
-					if( isSphereInFrustum( loc, 5.0f ) ){
+					if( mFrustum.isSphereInFrustum( loc, 5.0f ) ){
 						glColor3f( 0.0f, 1.0f, 0.0f );
 						gl::drawSphere( loc, 5.0f );
 					}
 					
 				} else if( mShapeType == CUBE ){
-					int cubeSize = 6.0f;
-					if( isBoxInFrustum( loc, Vec3f( cubeSize, cubeSize, cubeSize ) ) ){
+					Vec3f cubeSize = Vec3f::one() * 6.0f;
+					AxisAlignedBox3f bounds( loc - 0.5f * cubeSize, loc + 0.5f * cubeSize );
+					if( mFrustum.isBoxInFrustum( bounds ) ){
 						glColor3f( 0.0f, 1.0f, 0.0f );
-						gl::drawCube( loc, Vec3f( cubeSize, cubeSize, cubeSize ) );
-						
+						gl::drawCube( loc, cubeSize );						
 					}
 				}
-
 			}
 		}
 	}
 	
 	float size = mGridSize * mGridSpace;
 	glColor4f( 0.4f, 0.4f, 0.4f, 1.0f );
-	drawLineCube( Vec3f::zero(), Vec3f( size, size, size ) );
+	gl::drawStrokedCube( Vec3f::zero(), Vec3f( size, size, size ) );
 	
 	
 	gl::enableDepthWrite( false );
 	gl::setMatricesWindow( getWindowSize() );
-
-	glEnable( GL_TEXTURE_2D );
-	mInfoPanel.update( mCounter );
-	glDisable( GL_TEXTURE_2D );
-	
-	
-	/*
-	std::stringstream ss;
-	ss << getHomeDirectory() << "FrustumCulling/image_" << mCounter << ".png";
-	writeImage( ss.str(), copyWindowSurface() );
-	*/
 }
-
-
-
-
-
-
-void FrustumCullingApp::drawLineCube( const Vec3f &center, const Vec3f &size )
-{
-	static GLfloat vertices[] = {	1, 1, 1,  1,-1, 1,  1,-1,-1,  1, 1,-1,
-								   -1, 1, 1, -1,-1, 1, -1,-1,-1, -1, 1,-1 };
-
-
-	static GLubyte elements[] = {	 0, 1, 1, 2, 2, 3, 3, 0,
-									 4, 5, 5, 6, 6, 7, 7, 4,
-									 0, 4, 1, 5, 2, 6, 3, 7 };
-	
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 3, GL_FLOAT, 0, vertices );
-
-	gl::pushModelView();
-		gl::translate( center );
-		gl::scale( size * 0.5f );
-		glDrawElements( GL_LINES, 24, GL_UNSIGNED_BYTE, elements );
-	gl::popModelView();
-
-	glDisableClientState( GL_VERTEX_ARRAY );
-}
-
-
-
-void FrustumCullingApp::calcNearAndFarClipCoordinates( const Camera &cam )
-{
-	Vec3f ntl, ntr, nbl, nbr;
-	cam.getNearClipCoordinates( &ntl, &ntr, &nbl, &nbr );
-
-	Vec3f ftl, ftr, fbl, fbr;
-	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
-	
-	if( ! mFrustumPlaneCached ){
-		calcFrustumPlane( mFrustumPlaneNormals[TOP], mFrustumPlanePoints[TOP], mFrustumPlaneDists[TOP], ntr, ntl, ftl );
-		calcFrustumPlane( mFrustumPlaneNormals[BOT], mFrustumPlanePoints[BOT], mFrustumPlaneDists[BOT], nbl, nbr, fbr );
-		calcFrustumPlane( mFrustumPlaneNormals[LEF], mFrustumPlanePoints[LEF], mFrustumPlaneDists[LEF], ntl, nbl, fbl );
-		calcFrustumPlane( mFrustumPlaneNormals[RIG], mFrustumPlanePoints[RIG], mFrustumPlaneDists[RIG], ftr, fbr, nbr );
-		calcFrustumPlane( mFrustumPlaneNormals[NEA], mFrustumPlanePoints[NEA], mFrustumPlaneDists[NEA], ntl, ntr, nbr );
-		calcFrustumPlane( mFrustumPlaneNormals[FARP], mFrustumPlanePoints[FARP], mFrustumPlaneDists[FARP], ftr, ftl, fbl );
-	}
-	
-	mFrustumPlaneCached = true;
-}
-
-// need 'const'?
-void FrustumCullingApp::calcFrustumPlane( Vec3f &fNormal, Vec3f &fPoint, float &fDist, const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 )
-{
-	Vec3f aux1, aux2;
-
-	aux1 = v1 - v2;
-	aux2 = v3 - v2;
-
-	fNormal = aux2.cross( aux1 );
-	fNormal.normalize();
-	fPoint.set( v2 );
-	fDist = -( fNormal.dot( fPoint ) );
-}
-
-
-
-bool FrustumCullingApp::isPointInFrustum( const Vec3f &loc )
-{
-	float d;
-	bool result = true;
-			
-	for( int i=0; i<6; i++ ){
-		d = mFrustumPlaneDists[i] + mFrustumPlaneNormals[i].dot( loc );
-		if( d < 0 )
-			return( false );
-	}
-
-	return( result );
-}
-
-
-bool FrustumCullingApp::isSphereInFrustum( const Vec3f &loc, float radius )
-{
-	float d;
-	bool result = true;
-	
-	for(int i=0; i<6; i++ ){
-		d = mFrustumPlaneDists[i] + mFrustumPlaneNormals[i].dot( loc );
-		if( d < -radius )
-			return( false );
-	}
-	
-	return( result );
-}
-
-
-bool FrustumCullingApp::isBoxInFrustum( const Vec3f &loc, const Vec3f &size )
-{
-	float d;
-	int out, in;
-	bool result = true;
-	
-	Vec3f vertex[8];
-	
-	vertex[0] = Vec3f( loc.x + size.x, loc.y + size.y, loc.z + size.z );
-	vertex[1] = Vec3f( loc.x + size.x, loc.y - size.y, loc.z + size.z );
-	vertex[2] = Vec3f( loc.x + size.x, loc.y - size.y, loc.z - size.z );
-	vertex[3] = Vec3f( loc.x + size.x, loc.y + size.y, loc.z - size.z );
-	vertex[4] = Vec3f( loc.x - size.x, loc.y + size.y, loc.z + size.z );
-	vertex[5] = Vec3f( loc.x - size.x, loc.y - size.y, loc.z + size.z );
-	vertex[6] = Vec3f( loc.x - size.x, loc.y - size.y, loc.z - size.z );
-	vertex[7] = Vec3f( loc.x - size.x, loc.y + size.y, loc.z - size.z );
-	
-	for( int i=0; i<6; i++ ){
-		out = 0;
-		in = 0;
-
-		for( int k=0; k<8 && ( in==0 || out==0 ); k++ ){
-			d = mFrustumPlaneDists[i] + mFrustumPlaneNormals[i].dot( vertex[k] );
-			
-			if( d < 0 )
-				out ++;
-			else
-				in ++;
-		}
-
-		if( !in )
-			return( false );
-	}
-	
-	return( result );
-}
-
-
-
-
-
 
 void FrustumCullingApp::keyDown( KeyEvent event )
 {
@@ -380,8 +209,6 @@ void FrustumCullingApp::keyDown( KeyEvent event )
 		mShapeType = POINT;
 	} else if( event.getChar() == 'c' ){
 		mIsWatchingCam = ! mIsWatchingCam;
-	} else if( event.getChar() == '/' || event.getChar() == '?' ){
-		mInfoPanel.toggleState();
 	}
 	
 	

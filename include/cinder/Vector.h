@@ -74,7 +74,7 @@ class Vec2
 	typedef typename VECTRAIT<T>::DIST	DIST;
 	static const int DIM = 2;
 
-	Vec2() {}
+	Vec2() : x( 0 ), y( 0 ) {}
 	Vec2( T nx, T ny ) : x( nx ), y( ny ) {}
 	Vec2( const Vec2<T>& src ) : x( src.x ), y( src.y ) {}
 	explicit Vec2( const T *d ) : x( d[0] ), y( d[1] ) {}
@@ -323,7 +323,9 @@ public:
 	typedef T								TYPE;
 	static const int DIM = 3;
 
-	Vec3() {}
+	Vec3()
+		: x( 0 ), y( 0 ), z( 0 )
+	{}
 	Vec3( T nx, T ny, T nz )
 		: x( nx ), y( ny ), z( nz )
 	{}

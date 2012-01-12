@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Cinder Project: http://libcinder.org
+ Copyright (c) 2012, Paul Houx
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -23,33 +23,31 @@
 #pragma once
 
 #include "cinder/Vector.h"
-#include "cinder/Ray.h"
 
 namespace cinder {
 
-class AxisAlignedBox3f {
- public:
-	AxisAlignedBox3f() {}
-	AxisAlignedBox3f( const Vec3f &aMin, const Vec3f &aMax );
+class Plane
+{
+public:
+	Plane(void);
+	Plane::Plane(const ci::Vec3f &v1, const ci::Vec3f &v2, const ci::Vec3f &v3);
+	virtual ~Plane(void);
 
-	bool	intersects( const Ray &ray );
-	int		intersect( const Ray &ray, float intersections[2] );
+	void	setPoints(const ci::Vec3f &v1, const ci::Vec3f &v2, const ci::Vec3f &v3);
+	void	setNormalAndPoint(const ci::Vec3f &normal, const ci::Vec3f &point);
 
-	Vec3f			getCenter() const { return ( mExtents[1] + mExtents[0] ) * 0.5f; }
-	Vec3f			getSize() const { return mExtents[1] - mExtents[0]; }
-	
-	const Vec3f&	getMin() const { return mExtents[0]; }
-	const Vec3f&	getMax() const { return mExtents[1]; }	
+	void	setCoefficients(float a, float b, float c, float d);
 
-	//! For use in frustum culling
-	Vec3f	getNegative( const Vec3f &normal );
-	Vec3f	getPositive( const Vec3f &normal );
-	
-	static bool calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result );
+	const ci::Vec3f&	getPoint() const { return mPoint; };
+	const ci::Vec3f&	getNormal() const { return mNormal; };
+	float				getDistance(const ci::Vec3f &p){ return (mDistance + mNormal.dot(p)); };
 
- protected:
-	Vec3f mExtents[2];
-	Vec3f mVerts[8];
+protected:
+	ci::Vec3f	mNormal;
+	ci::Vec3f	mPoint;
+
+	float		mDistance;
 };
 
 } // namespace cinder
+

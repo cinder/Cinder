@@ -94,10 +94,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\FrustumCullingApp.cpp" />
-    <ClCompile Include="..\src\InfoPanel.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\include\cinder\Cinder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

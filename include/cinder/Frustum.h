@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Cinder Project: http://libcinder.org
+ Copyright (c) 2012, Paul Houx
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -22,34 +22,38 @@
 
 #pragma once
 
-#include "cinder/Vector.h"
-#include "cinder/Ray.h"
+#include "cinder/AxisAlignedBox.h"
+#include "cinder/Camera.h"
+#include "cinder/Plane.h"
+#include "cinder/gl/gl.h"
 
 namespace cinder {
 
-class AxisAlignedBox3f {
- public:
-	AxisAlignedBox3f() {}
-	AxisAlignedBox3f( const Vec3f &aMin, const Vec3f &aMax );
+class Frustum
+{
+public:
+	static enum { NEARPLANE, FARPLANE, LEFTPLANE, RIGHTPLANE, TOPPLANE, BOTTOMPLANE };
+	static enum CullResult { OUTSIDE, INTERSECT, INSIDE };
 
-	bool	intersects( const Ray &ray );
-	int		intersect( const Ray &ray, float intersections[2] );
+public:
+	Frustum(void);
+	Frustum( const ci::Camera &cam );
+	virtual ~Frustum(void);
 
-	Vec3f			getCenter() const { return ( mExtents[1] + mExtents[0] ) * 0.5f; }
-	Vec3f			getSize() const { return mExtents[1] - mExtents[0]; }
-	
-	const Vec3f&	getMin() const { return mExtents[0]; }
-	const Vec3f&	getMax() const { return mExtents[1]; }	
+	//! create the frustum based on camera parameters
+	void set( const ci::Camera &cam );
+	//! TODO
+	// void set( const ci::Vec3f &eye, const ci::Plane &portal );
 
-	//! For use in frustum culling
-	Vec3f	getNegative( const Vec3f &normal );
-	Vec3f	getPositive( const Vec3f &normal );
-	
-	static bool calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result );
-
- protected:
-	Vec3f mExtents[2];
-	Vec3f mVerts[8];
+	//! Supply point in world coordinates
+	CullResult isPointInFrustum( const ci::Vec3f &loc );
+	//! Supply sphere in world coordinates
+	CullResult isSphereInFrustum( const ci::Vec3f &loc, float radius );
+	//! Supply box in world coordinates
+	CullResult isBoxInFrustum( ci::AxisAlignedBox3f &box );
+protected:
+	std::vector<ci::Plane>	mFrustumPlanes;
 };
 
 } // namespace cinder
+
