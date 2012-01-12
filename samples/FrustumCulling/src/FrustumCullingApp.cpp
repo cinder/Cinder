@@ -5,6 +5,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/Vector.h"
 #include "cinder/gl/gl.h"
+#include "InfoPanel.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -39,8 +40,7 @@ protected:
 
 	Vec3f mColor;
 	
-	float mCounter;
-	
+	float mCounter;	
 		
 	int mGridSize;
 	int mHalfGrid;
@@ -52,8 +52,9 @@ protected:
 	bool mRenderPoints;
 	bool mRenderSpheres;
 	bool mRenderCubes;
+	
+	InfoPanel mInfoPanel;
 };
-
 
 void FrustumCullingApp::prepareSettings( Settings *settings )
 {
@@ -62,9 +63,10 @@ void FrustumCullingApp::prepareSettings( Settings *settings )
 	settings->setFullScreen( false );
 }
 
-
 void FrustumCullingApp::setup()
 {
+	mInfoPanel.createTexture();
+
 	mFrustum.set(mCam);
 	
 	mIsWatchingCam	= true;
@@ -77,8 +79,7 @@ void FrustumCullingApp::setup()
 	
 	mCounter		= 0.0f;
 	
-	mColor			= Vec3f( 0.0f, 0.0f, 0.0f );
-	
+	mColor			= Vec3f( 0.0f, 0.0f, 0.0f );	
 	
 	mFov		= 60.0f;
 	mNear		= 10.0f;
@@ -99,16 +100,13 @@ void FrustumCullingApp::setup()
 	mREye		= Vec3f( 10.0f, 10.0f, 10.0f );
 	mRCenter	= Vec3f::zero();
 	
-	mUp			= Vec3f::yAxis();
-	
-	
+	mUp			= Vec3f::yAxis();	
 
 	glClearColor( 0.1f, 0.1f, 0.1f, 1.0f );
 	gl::enableDepthRead( true );
 	gl::enableDepthWrite( true );
 	gl::enableAlphaBlending();
 }
-
 
 void FrustumCullingApp::update()
 {
@@ -120,9 +118,7 @@ void FrustumCullingApp::update()
 	
 	mCam.setPerspective( 25.0f, getWindowAspectRatio(), 100.0f, 350.0f );
 	mCam.lookAt( mEye, mCenter, mUp );
-	mFrustum.set( mCam );
-	
-	
+	mFrustum.set( mCam );	
 	
 	if( mIsWatchingCam ){
 		mREye.lerpEq( mDecay, Vec3f( mEye.x + cos( mCounter * 0.003f ) * 300.0f, 100.0f, mEye.y + sin( mCounter * 0.003f ) * 300.0f ) );
@@ -136,19 +132,15 @@ void FrustumCullingApp::update()
 		mFov -= ( mFov - mCam.getFov() ) * mDecay;
 		mNear -= ( mNear - mCam.getNearClip() ) * mDecay;
 		mFar -= ( mFar - mCam.getFarClip() ) * mDecay;
-	}
-	
+	}	
 
 	mRenderCam.setPerspective( mFov, getWindowAspectRatio(), 10.0f, 1500.0f );
 	mRenderCam.lookAt( mREye, mRCenter, mUp );
 		
-	gl::setMatrices( mRenderCam );
-
-	
+	gl::setMatrices( mRenderCam );	
 	
 	mCounter += 1.0f;
 }
-
 
 void FrustumCullingApp::draw()
 {
@@ -157,7 +149,6 @@ void FrustumCullingApp::draw()
 	glColor4f( 1.0f, 1.0f, 1.0f, 1.0f );
 	if( mIsWatchingCam )
 		gl::drawFrustum( mCam );
-
 
 	for( int x=0; x<mGridSize; x++ ){
 		for( int y=0; y<mGridSize; y++ ){
@@ -191,10 +182,13 @@ void FrustumCullingApp::draw()
 	float size = mGridSize * mGridSpace;
 	glColor4f( 0.4f, 0.4f, 0.4f, 1.0f );
 	gl::drawStrokedCube( Vec3f::zero(), Vec3f( size, size, size ) );
-	
-	
+		
 	gl::enableDepthWrite( false );
 	gl::setMatricesWindow( getWindowSize() );
+
+	glEnable( GL_TEXTURE_2D );
+	mInfoPanel.update( mCounter );
+	glDisable( GL_TEXTURE_2D );
 }
 
 void FrustumCullingApp::keyDown( KeyEvent event )
@@ -209,8 +203,9 @@ void FrustumCullingApp::keyDown( KeyEvent event )
 		mShapeType = POINT;
 	} else if( event.getChar() == 'c' ){
 		mIsWatchingCam = ! mIsWatchingCam;
-	}
-	
+	} else if( event.getChar() == '/' || event.getChar() == '?' ){
+		mInfoPanel.toggleState();
+	}	
 	
 	if( event.getCode() == KeyEvent::KEY_UP ){
 		mEyeDest += mEyeNormal * 40.0f;
@@ -224,8 +219,5 @@ void FrustumCullingApp::keyDown( KeyEvent event )
 		mAngleDest -= 0.1f;
 	}
 }
-
-
-
 
 CINDER_APP_BASIC( FrustumCullingApp, RendererGl )
