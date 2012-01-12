@@ -611,7 +611,9 @@ Surface	TextBox::render( Vec2f offset )
 		::CGContextSetTextPosition( cgContext, lineIt->second.x + offset.x, sizeY - lineIt->second.y + offset.y );
 		::CTLineDraw( lineIt->first.get(), cgContext );
 	}
-	
+	CGContextFlush( cgContext );
+    CGContextRelease( cgContext );
+    
 	if( ! mPremultiplied )
 		ip::unpremultiply( &result );
 	else
