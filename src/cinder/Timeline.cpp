@@ -41,6 +41,14 @@ Timeline::Timeline()
 	mUseAbsoluteTime = true;
 }
 
+Timeline::Timeline( const Timeline &rhs )
+	: TimelineItem( rhs ), mDefaultAutoRemove( rhs.mDefaultAutoRemove ), mCurrentTime( rhs.mCurrentTime )
+{
+	for( s_const_iter iter = rhs.mItems.begin(); iter != rhs.mItems.end(); ++iter ) {
+		mItems.insert( make_pair( iter->first, iter->second->clone() ) );
+	}
+}
+
 void Timeline::step( float timestep )
 {
 	mCurrentTime += timestep;

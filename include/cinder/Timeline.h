@@ -41,6 +41,8 @@ typedef std::shared_ptr<class Timeline>		TimelineRef;
 	
 class Timeline : public TimelineItem {		
   public:
+  	Timeline();
+	
 	//! Creates a new timeline, defaulted to infinite
 	static TimelineRef	create() { TimelineRef result( new Timeline() ); result->setInfinite( true ); return result; }
 
@@ -171,9 +173,7 @@ class Timeline : public TimelineItem {
 	virtual void	stepTo( float absoluteTime, bool reverse ) { stepTo( absoluteTime ); }
 	//! \endcond
 	
-  protected:
-  	Timeline();
-  
+  protected:  
 	virtual void reverse();
 	virtual TimelineItemRef cloneReverse() const;
 	virtual TimelineItemRef clone() const;
@@ -189,6 +189,10 @@ class Timeline : public TimelineItem {
 	float						mCurrentTime;
 	
 	std::multimap<void*,TimelineItemRef>		mItems;
+	
+  private:
+	Timeline( const Timeline &rhs ); // private to prevent copying; use clone() method instead
+	Timeline& operator=( const Timeline &rhs ); // not defined to prevent copying
 };
 
 class Cue : public TimelineItem {
