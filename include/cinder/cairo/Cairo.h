@@ -269,9 +269,7 @@ class Matrix
 	void		scale( double sx, double sy );
 	void		rotate( double radians );
 	int32_t		invert();
-	
-	const Matrix& operator *=( const Matrix &rhs );
-	
+
 	//! Transforms the point \a v by the matrix.
 	Vec2f	transformPoint( const Vec2f &v ) const;
 	//! Transforms the distance vector \a v by the matrix. This is similar to cairo_matrix_transform_point() except that the translation components of the transformation are ignored
