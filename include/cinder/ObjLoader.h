@@ -26,7 +26,15 @@
 #include "cinder/Stream.h"
 
 #include <boost/logic/tribool.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
+#ifdef CINDER_CXX11_LIB
+	#include <tuple>
+#else
+	#include <boost/tuple/tuple_comparison.hpp>
+	namespace std {
+		using boost::tuple;
+		using boost::make_tuple;
+	}
+#endif
 #include <map>
 
 namespace cinder {
@@ -85,16 +93,16 @@ class ObjLoader {
 	static void		write( DataTargetRef dataTarget, const TriMesh &mesh, bool writeNormals = true, bool writeUVs = true );
 	
  private:
-	typedef boost::tuple<int,int> VertexPair;
-	typedef boost::tuple<int,int,int> VertexTriple;
+	typedef std::tuple<int,int> VertexPair;
+	typedef std::tuple<int,int,int> VertexTriple;
 
 	void	parse( bool includeUVs );
 
  	void	parseFace( Group *group, const std::string &s, bool includeUVs );
 	void	loadInternalNoOptimize( const Group &group, TriMesh *destTriMesh, bool texCoords, bool normals );
-	void	loadInternalNormalsTextures( const Group &group, std::map<boost::tuple<int,int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
-	void	loadInternalNormals( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
-	void	loadInternalTextures( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
+	void	loadInternalNormalsTextures( const Group &group, std::map<std::tuple<int,int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
+	void	loadInternalNormals( const Group &group, std::map<std::tuple<int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
+	void	loadInternalTextures( const Group &group, std::map<std::tuple<int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
 	void	loadInternal( const Group &group, std::map<int,int> &uniqueVerts, TriMesh *destTriMesh );	
  
 	std::shared_ptr<IStream>	mStream;

@@ -260,7 +260,11 @@ void Serial::readBytes( void *data, size_t numBytes )
 		totalBytesRead += bytesRead;
 		
 		// yield thread time to the system
+#ifdef CINDER_CXX11_LIB
+		std::this_thread::yield();
+#else
 		thread::yield();
+#endif
 	}
 }
 

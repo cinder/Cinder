@@ -29,7 +29,6 @@ using std::ostringstream;
 
 #include <sstream>
 using namespace std;
-using boost::make_tuple;
 
 namespace cinder {
 

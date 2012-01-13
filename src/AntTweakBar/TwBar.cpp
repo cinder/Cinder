@@ -5940,7 +5940,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
         }
         else if( _Pressed && !m_MouseDrag && m_Movable && !m_IsPopupList 
                  && ( (_Button==TW_MOUSE_LEFT && _X>=m_PosX+2*m_Font->m_CharHeight && _X<m_PosX+m_Width-2*m_Font->m_CharHeight && _Y>=m_PosY && _Y<m_PosY+m_Font->m_CharHeight)
-                      || _Button==TW_MOUSE_MIDDLE && _X>=m_PosX && _X<m_PosX+m_Width && _Y>=m_PosY && _Y<m_PosY+m_Height) )
+                      || (_Button==TW_MOUSE_MIDDLE && _X>=m_PosX && _X<m_PosX+m_Width && _Y>=m_PosY && _Y<m_PosY+m_Height)) )
         {
             m_MouseDrag = true;
             m_MouseDragTitle = true;

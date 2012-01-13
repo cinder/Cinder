@@ -23,7 +23,6 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 
-#include <boost/type_traits/is_same.hpp>
 #include <cctype>
 
 #if defined( CINDER_MSW )

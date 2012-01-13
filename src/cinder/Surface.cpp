@@ -24,9 +24,6 @@
 #include "cinder/ImageIo.h"
 #include "cinder/ip/Fill.h"
 
-#include <boost/type_traits/is_same.hpp>
-using boost::tribool;
-
 namespace cinder {
 
 template<typename T>
