@@ -69,7 +69,8 @@ class TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	//! Returns the time of the item's competion, equivalent to getStartTime() + getDuration().
 	float			getEndTime() const { return mStartTime + mDuration; }
 
-
+	//! Returns a pointer to the item's parent Timeline
+	class Timeline*		getParent() const { return mParent; }
 	//! Removes the item from its parent Timeline
 	void removeSelf();
 	//! Marks the item as not completed, and if \a unsetStarted, marks the item as not started

@@ -276,6 +276,9 @@ class AnimBase {
   	//! removes self from Timeline
 	void 	stop();
 	
+	//! returns the parent timeline for the Anim<> or NULL if there is none
+	TimelineRef	getParent() const { return mParentTimeline; }
+
   protected:
 	AnimBase( void *voidPtr ) : mVoidPtr( voidPtr ) {}
 	AnimBase( const AnimBase &rhs, void *voidPtr );
@@ -284,7 +287,7 @@ class AnimBase {
 	void 	set( const AnimBase &rhs );
 	void 	setReplace( const AnimBase &rhs );
 	
-  	void	setParentTimeline( TimelineRef parentTimeline );
+	void		setParentTimeline( TimelineRef parentTimeline );
 
 	void			*mVoidPtr;	
 	TimelineRef		mParentTimeline;
