@@ -66,7 +66,7 @@ std::shared_ptr<BufferListT<T> > createBufferList( uint32_t sampleCount, uint16_
 
 template<typename T>
 void deleteBufferList( BufferListT<T> * aBufferList ) {
-	for( int i = 0; i < aBufferList->mNumberBuffers; i++ ) {
+	for( uint32_t i = 0; i < aBufferList->mNumberBuffers; i++ ) {
 		deleteBuffer( &( aBufferList->mBuffers[i] ) );
 	}
 	delete aBufferList;

@@ -120,6 +120,8 @@ class Texture {
 	GLint			getInternalFormat() const;
 	//! the ID number for the texture, appropriate to pass to calls like \c glBindTexture()
 	GLuint			getId() const { return mObj->mTextureID; }
+	//! the Unit index for the texture, appropriate to pass to GLSL uniforms, etc.
+	GLuint			getTextureUnit() const { return mObj->mTextureUnit; }
 	//! the target associated with texture. Typical values are \c GL_TEXTURE_2D and \c GL_TEXTURE_RECTANGLE_ARB
 	GLenum			getTarget() const { return mObj->mTarget; }
 	//!	whether the texture is flipped vertically
@@ -133,7 +135,7 @@ class Texture {
 	//!	Disables the Texture's target
 	void			disable() const;
 	//!	Binds the Texture's texture to its target in the multitexturing unit \c GL_TEXTURE0 + \a textureUnit
-	void 			bind( GLuint textureUnit = 0 ) const;
+	int				bind( GLuint textureUnit = 0 ) const;
 	//!	Unbinds the Texture currently bound in the Texture's target
 	void			unbind( GLuint textureUnit = 0 ) const;
 
@@ -188,6 +190,10 @@ class Texture {
 		/** Sets the filtering behavior when a texture is displayed at a higher resolution than its native resolution. Default is \c GL_LINEAR
 		 * Possible values are \li \c GL_NEAREST \li \c GL_LINEAR \li \c GL_NEAREST_MIPMAP_NEAREST \li \c GL_LINEAR_MIPMAP_NEAREST \li \c GL_NEAREST_MIPMAP_LINEAR \li \c GL_LINEAR_MIPMAP_LINEAR **/
 		void	setMagFilter( GLenum magFilter ) { mMagFilter = magFilter; }
+
+		// Set anisotropy value for filtering
+		void setAnisotropy( GLfloat value )	{ mAnisotropy = value; }
+
 				
 		//! Returns the texture's target
 		GLenum	getTarget() const { return mTarget; }
@@ -207,11 +213,15 @@ class Texture {
 		GLenum	getMinFilter() const { return mMinFilter; }
 		//! Returns the texture magnifying function, which is used whenever the pixel being textured maps to an area less than or equal to one texture element.
 		GLenum	getMagFilter() const { return mMagFilter; }
+
+		// Return anisotropy value
+		GLfloat getAnisotropy() const { return mAnisotropy; }
 		
 	  protected:
 		GLenum			mTarget;
 		GLenum			mWrapS, mWrapT;
 		GLenum			mMinFilter, mMagFilter;
+		GLfloat			mAnisotropy;
 		bool			mMipmapping;
 		GLint			mInternalFormat;
 		
@@ -233,6 +243,7 @@ class Texture {
 		mutable GLint	mInternalFormat;
 		GLenum			mTarget;
 		GLuint			mTextureID;
+		GLuint			mTextureUnit;
 		bool			mDoNotDispose;
 		bool			mFlipped;	
 		void			(*mDeallocatorFunc)(void *refcon);

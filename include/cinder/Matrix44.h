@@ -26,10 +26,14 @@
 #include "cinder/Cinder.h"
 #include "cinder/CinderMath.h"
 #include "cinder/Vector.h"
+//#include "cinder/Quaternion.h"
 
 #include <iomanip>
 
 namespace cinder { 
+
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Matrix44
@@ -143,6 +147,10 @@ public:
 	void				set( const T *dt, bool srcIsRowMajor = false );
 	// OpenGL layout: m[0]=d0, m[1]=d1, m[2]=d2 ... m[13]=d13, m[14]=d14, m[15]=d15 - unless srcIsRowMajor is true
 	void				set( T d0, T d1, T d2, T d3, T d4, T d5, T d6, T d7, T d8, T d9, T d10, T d11, T d12, T d13, T d14, T d15, bool srcIsRowMajor = false );
+
+	Vec3<T>				getForward() const;
+	Vec3<T>				getRight() const;
+	Vec3<T>				getUp() const;
 
 	Vec4<T>				getColumn( int col ) const;
 	void				setColumn( int col, const Vec4<T> &v );
@@ -258,6 +266,8 @@ public:
 	// creates a rotation matrix with z-axis aligned to targetDir	
 	static Matrix44<T>	alignZAxisWithTarget( Vec3<T> targetDir, Vec3<T> upDir );
 	static Matrix44<T>	alignZAxisWithTarget( Vec4<T> targetDir, Vec4<T> upDir ) { return alignZAxisWithTarget( targetDir.xyz(), upDir.xyz() ); }
+
+	//Matrix44<T> Decompose( Vec3<T>* scaling, Quatf* rotation, Vec3<T>* position );
 
 	friend std::ostream& operator<<( std::ostream &lhs, const Matrix44<T> &rhs ) {
 		for( int i = 0; i < 4; i++) {
@@ -650,6 +660,28 @@ void Matrix44<T>::set( T d0, T d1, T d2, T d3, T d4, T d5, T d6, T d7, T d8, T d
 		m[3] =  d3; m[7] =  d7; m[11] = d11; m[15] = d15;
 	}
 }
+
+
+template< typename T >
+Vec3<T> Matrix44<T>::getForward() const
+{
+	return *reinterpret_cast<const Vec3<T>*>(m+8);
+}
+
+
+template< typename T >
+Vec3<T> Matrix44<T>::getRight() const
+{
+	return *reinterpret_cast<const Vec3<T>*>(m+0);
+}
+
+
+template< typename T >
+Vec3<T> Matrix44<T>::getUp() const
+{
+	return *reinterpret_cast<const Vec3<T>*>(m+4);
+}
+
 
 template< typename T >
 Vec4<T> Matrix44<T>::getColumn( int col ) const
@@ -1268,6 +1300,54 @@ Matrix44<T> Matrix44<T>::alignZAxisWithTarget( Vec3<T> targetDir, Vec3<T> upDir 
     
     return mat;
 }
+
+
+//// ----------------------------------------------------------------------------------------
+//template<typename T>
+//Matrix44<T> Matrix44<T>::Decompose( Vec3<T>* scaling, Quatf* rotation, Vec3<T>* position )
+//{
+//	const Matrix44<T>& _this = *this;
+//
+//	// extract translation
+//	position.x = _this[0][3];
+//	position.y = _this[1][3];
+//	position.z = _this[2][3];
+//
+//	// extract the rows of the matrix
+//	Vec3<T> vRows[3] = {
+//		Vec3<T>( _this[0][0], _this[1][0], _this[2][0] ),
+//		Vec3<T>( _this[0][1], _this[1][1], _this[2][1] ),
+//		Vec3<T>( _this[0][2], _this[1][2], _this[2][2] )
+//	};
+//
+//	// extract the scaling factors
+//	scaling.x = vRows[0].length();
+//	scaling.y = vRows[1].length();
+//	scaling.z = vRows[2].length();
+//
+//	// and remove all scaling from the matrix
+//	if( scaling.x )
+//	{
+//		vRows[0] /= scaling.x;
+//	}
+//	if( scaling.y )
+//	{
+//		vRows[1] /= scaling.y;
+//	}
+//	if( scaling.z )
+//	{
+//		vRows[2] /= scaling.z;
+//	}
+//
+//	// build a 3x3 rotation matrix
+//	Matrix33<T>( vRows[0].x,vRows[1].x,vRows[2].x,
+//		vRows[0].y,vRows[1].y,vRows[2].y,
+//		vRows[0].z,vRows[1].z,vRows[2].z );
+//
+//	// and generate the rotation quaternion from it
+//	rotation = Quat<T>( m );
+//}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Typedefs

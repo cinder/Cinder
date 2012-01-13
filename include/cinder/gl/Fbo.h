@@ -29,6 +29,8 @@
 
 namespace cinder { namespace gl {
 
+#define		MAX_FBO_COLORBUFFERS 16
+
 //! Represents an OpenGL Renderbuffer, used primarily in conjunction with FBOs. Supported on OpenGL ES but multisampling is currently ignored. \ImplShared
 class Renderbuffer {
   public:
@@ -157,7 +159,9 @@ class Fbo {
 		//! Set the texture target associated with the FBO. Defaults to \c GL_TEXTURE_2D, \c GL_TEXTURE_RECTANGLE_ARB is a common option as well
 		void	setTarget( GLenum target ) { mTarget = target; }
 		//! Sets the GL internal format for the color buffer. Defaults to \c GL_RGBA8 (and \c GL_RGBA on OpenGL ES). Common options also include \c GL_RGB8 and \c GL_RGBA32F
-		void	setColorInternalFormat( GLenum colorInternalFormat ) { mColorInternalFormat = colorInternalFormat; }
+		void	setColorInternalFormat( GLenum colorInternalFormat ) { for( int i=0; i<MAX_FBO_COLORBUFFERS; i++ ) mColorBufferInternalFormat[i] = colorInternalFormat; }
+		//V ! Sets the GL internal format for the color buffer at index 'index'. Defaults to \c GL_RGBA8 (and \c GL_RGBA on OpenGL ES). Common options also include \c GL_RGB8 and \c GL_RGBA32F
+		void	setColorInternalFormat( GLenum colorInternalFormat, uint32_t index ) { /*mColorInternalFormat = colorInternalFormat;*/ mColorBufferInternalFormat[index] = colorInternalFormat; }
 		//! Sets the GL internal format for the depth buffer. Defaults to \c GL_DEPTH_COMPONENT24. Common options also include \c GL_DEPTH_COMPONENT16 and \c GL_DEPTH_COMPONENT32
 		void	setDepthInternalFormat( GLenum depthInternalFormat ) { mDepthInternalFormat = depthInternalFormat; }
 		//! Sets the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling. Note that not all implementations support multisampling. Ignored on OpenGL ES.
@@ -189,8 +193,13 @@ class Fbo {
 
 		//! Returns the texture target associated with the FBO.
 		GLenum	getTarget() const { return mTarget; }
+
+		//! Returns the GL internal format for the color buffer for given index. Defaults to \c GL_RGBA8.
+		//V
+		GLenum	getColorInternalFormat( uint32_t index=0 ) const { return mColorBufferInternalFormat[index]; }
 		//! Returns the GL internal format for the color buffer. Defaults to \c GL_RGBA8.
-		GLenum	getColorInternalFormat() const { return mColorInternalFormat; }
+		//GLenum	getColorInternalFormat() const { return mColorBufferInternalFormat[0]/*mColorInternalFormat*/; }
+
 		//! Returns the GL internal format for the depth buffer. Defaults to \c GL_DEPTH_COMPONENT24.
 		GLenum	getDepthInternalFormat() const { return mDepthInternalFormat; }
 		//! Returns the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling. OpenGL ES does not support multisampling.
@@ -211,7 +220,8 @@ class Fbo {
 		
 	  protected:
 		GLenum		mTarget;
-		GLenum		mColorInternalFormat, mDepthInternalFormat;
+		//GLenum		mColorInternalFormat;
+		GLenum		mDepthInternalFormat;
 		int			mSamples;
 		int			mCoverageSamples;
 		bool		mMipmapping;
@@ -219,7 +229,9 @@ class Fbo {
 		int			mNumColorBuffers;
 		GLenum		mWrapS, mWrapT;
 		GLenum		mMinFilter, mMagFilter;
-		
+
+		GLenum		mColorBufferInternalFormat[MAX_FBO_COLORBUFFERS];
+
 		friend class Fbo;
 	};
 
@@ -250,7 +262,12 @@ class Fbo {
 	std::shared_ptr<Obj>	mObj;
 	
 	static GLint			sMaxSamples, sMaxAttachments;
-	
+
+	// Saved viewport
+	static GLint		mOldViewport[4];
+	static GLint		mSavedID;
+	static bool			mIsLocked;
+
   public:
 	//@{
 	//! Emulates shared_ptr-like behavior

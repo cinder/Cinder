@@ -632,6 +632,24 @@ public:
 		return r1.slerp( 2 * t * (1-t), r2 );
 	}
 
+
+	// Compute reflection vector from this vector and a given normal
+	void reflect( const Vec3<T>& normal )
+	{
+		T f = 2 * dot( normal );
+		*this = (*this) - (normal * f);	
+	}
+
+
+	// Compute new point based on barycentric coordinates
+	void setBaryCentric( const Vec3<T>& v1, const Vec3<T>& v2, const Vec3<T>& v3, const T& f, const T& g )
+	{
+		x = v1.x + f * (v2.x - v1.x) + g * (v3.x - v1.x);
+		y = v1.y + f * (v2.y - v1.y) + g * (v3.y - v1.y);
+		z = v1.z + f * (v2.z - v1.z) + g * (v3.z - v1.z);
+	}
+
+
 	// GLSL inspired swizzling functions.
 	Vec2<T> xx() const { return Vec2<T>(x, x); }
 	Vec2<T> xy() const { return Vec2<T>(x, y); }
@@ -718,6 +736,16 @@ class Vec4
 	{
 		x = rhs.x; y = rhs.y; z = rhs.z; w = rhs.w;
 		return *this;
+	}
+
+	void set( T ax, T ay, T az, T aw )
+	{
+		x = ax; y = ay; z = az; w = aw;
+	}
+
+	void set( const Vec4<T> &rhs )
+	{
+		x = rhs.x; y = rhs.y; z = rhs.z; w = rhs.w;
 	}
 
 	template<typename FromT>

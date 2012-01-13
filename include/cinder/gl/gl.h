@@ -70,6 +70,7 @@ bool isExtensionAvailable( const std::string &extName );
 
 //! Clears the OpenGL color buffer using \a color and optionally clears the depth buffer when \a clearDepthBuffer
 void clear( const ColorA &color = ColorA::black(), bool clearDepthBuffer = true );
+void clear( float r, float g, float b, bool clearDepthBuffer = true );
 
 //! Sets the \c MODELVIEW and \c PROJECTION matrices to reflect the values of \a cam. Leaves the \c MatrixMode as \c MODELVIEW.
 void setMatrices( const Camera &cam );

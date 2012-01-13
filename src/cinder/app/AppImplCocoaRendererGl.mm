@@ -58,8 +58,14 @@
 	cinderView = aCinderView;
 	
 	renderer = aRenderer;
+
+	NSOpenGLPixelFormat* fmt = 0;
 	
-	NSOpenGLPixelFormat* fmt = [AppImplCocoaRendererGl defaultPixelFormat:renderer->getAntiAliasing()];
+    if( renderer->getMajorVersion() >= 3 )
+        fmt = [AppImplCocoaRendererGl GL32CorePixelFormat:renderer->getAntiAliasing()];
+    else
+        fmt = [AppImplCocoaRendererGl defaultPixelFormat:renderer->getAntiAliasing()];
+
 	GLint aaSamples;
 	[fmt getValues:&aaSamples forAttribute:NSOpenGLPFASamples forVirtualScreen:0];
 	renderer->setAntiAliasing( aaSamples );
@@ -150,36 +156,78 @@
 	return YES;
 }
 
+
+
 + (NSOpenGLPixelFormat*)defaultPixelFormat:(int)antialiasLevel
 {
-	if( antialiasLevel == cinder::app::RendererGl::AA_NONE ) {
-		NSOpenGLPixelFormatAttribute attributes [] = {
-			NSOpenGLPFAWindow,
-			NSOpenGLPFADoubleBuffer,
-			NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24,
-	        NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
-			NSOpenGLPFANoRecovery,
-			(NSOpenGLPixelFormatAttribute)0
-		};
-		
-		return [[[NSOpenGLPixelFormat alloc] 
-				 initWithAttributes:attributes] autorelease];
-	}
-	else {
-		NSOpenGLPixelFormatAttribute attributes [] = {
-			NSOpenGLPFAWindow,
-			NSOpenGLPFADoubleBuffer,
-			NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24,
-	        NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1, 
-			NSOpenGLPFASamples, (NSOpenGLPixelFormatAttribute)cinder::app::RendererGl::sAntiAliasingSamples[antialiasLevel],
-			NSOpenGLPFANoRecovery,
-			(NSOpenGLPixelFormatAttribute)0
-		};
-		
-		
-		return [[[NSOpenGLPixelFormat alloc] 
-				 initWithAttributes:attributes] autorelease];
-	}
+        if( antialiasLevel == cinder::app::RendererGl::AA_NONE ) 
+        {
+            NSOpenGLPixelFormatAttribute attributes [] = {
+                NSOpenGLPFAWindow,
+                NSOpenGLPFADoubleBuffer,
+                NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24,
+                NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
+                NSOpenGLPFANoRecovery,
+                (NSOpenGLPixelFormatAttribute)0
+            };
+            
+            return [[[NSOpenGLPixelFormat alloc] 
+                     initWithAttributes:attributes] autorelease];
+        }
+        else 
+        {
+            NSOpenGLPixelFormatAttribute attributes [] = {
+                NSOpenGLPFAWindow,
+                NSOpenGLPFADoubleBuffer,
+                NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24,
+                NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1, 
+                NSOpenGLPFASamples, (NSOpenGLPixelFormatAttribute)cinder::app::RendererGl::sAntiAliasingSamples[antialiasLevel],
+                NSOpenGLPFANoRecovery,
+                (NSOpenGLPixelFormatAttribute)0
+            };
+            return [[[NSOpenGLPixelFormat alloc] 
+                     initWithAttributes:attributes] autorelease];
+        }
+}
+
++ (NSOpenGLPixelFormat*)GL32CorePixelFormat:(int)antialiasLevel
+{
+        if( antialiasLevel == cinder::app::RendererGl::AA_NONE ) 
+        {
+            NSOpenGLPixelFormatAttribute attributes [] = {
+                //NSOpenGLPFAWindow,
+                NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,  // Core GL 3.2
+                NSOpenGLPFADoubleBuffer,
+                NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24,
+                NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
+                NSOpenGLPFANoRecovery,
+                NSOpenGLPFAAccelerated,
+                //NSOpenGLPFAMaximumPolicy,
+                //            NSOpenGLPFAAcceleratedCompute,  // OpenCL support
+                (NSOpenGLPixelFormatAttribute)0
+            };
+            
+            return [[[NSOpenGLPixelFormat alloc] 
+                     initWithAttributes:attributes] autorelease];
+        }
+        else 
+        {
+            NSOpenGLPixelFormatAttribute attributes [] = {
+                //NSOpenGLPFAWindow,
+                NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,  // Core GL 3.2
+                NSOpenGLPFADoubleBuffer,
+                NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24,
+                NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1, 
+                NSOpenGLPFASamples, (NSOpenGLPixelFormatAttribute)cinder::app::RendererGl::sAntiAliasingSamples[antialiasLevel],
+                NSOpenGLPFANoRecovery,
+                NSOpenGLPFAAccelerated,
+                //NSOpenGLPFAMaximumPolicy,
+                //            NSOpenGLPFAAcceleratedCompute,  // OpenCL support
+                (NSOpenGLPixelFormatAttribute)0
+            };
+            return [[[NSOpenGLPixelFormat alloc] 
+                     initWithAttributes:attributes] autorelease];
+        }        
 }
 
 @end

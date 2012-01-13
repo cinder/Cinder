@@ -98,6 +98,7 @@ class RendererGl : public Renderer {
  public:
 	RendererGl();
 	RendererGl( int aAntiAliasing );
+	RendererGl( int aAntiAliasing, int majorVersion, int minorVersion );
 	~RendererGl();
  
 #if defined( CINDER_COCOA )
@@ -124,6 +125,11 @@ class RendererGl : public Renderer {
 	void				setAntiAliasing( int aAntiAliasing );
 	int					getAntiAliasing() const { return mAntiAliasing; }
 
+	void				setMajorVersion( int value );
+	int					getMajorVersion() const { return mMajorVersion; }
+	void				setMinorVersion( int value );
+	int					getMinorVersion() const { return mMinorVersion; }
+
 	virtual void	startDraw();
 	virtual void	finishDraw();
 	virtual void	defaultResize();
@@ -131,6 +137,7 @@ class RendererGl : public Renderer {
 	
  protected:
 	int			mAntiAliasing;
+	int			mMajorVersion, mMinorVersion;
 #if defined( CINDER_MAC )
 	AppImplCocoaRendererGl		*mImpl;
 #elif defined( CINDER_COCOA_TOUCH )

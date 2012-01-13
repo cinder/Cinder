@@ -188,7 +188,7 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc )
 		0,											// Shift Bit Ignored
 		0,											// No Accumulation Buffer
 		0, 0, 0, 0,									// Accumulation Bits Ignored
-		16,											// 32Bit Z-Buffer (Depth Buffer)  
+		32,											// 32Bit Z-Buffer (Depth Buffer)  
 		0,											// No Stencil Buffer
 		0,											// No Auxiliary Buffer
 		PFD_MAIN_PLANE,								// Main Drawing Layer
@@ -223,6 +223,12 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc )
 	if( ! ::wglMakeCurrent( dc, mRC ) ){					// Try To Activate The Rendering Context
 		return false;								
 	}
+
+
+	// Attempt a new GL version context
+	if( mRenderer->getMajorVersion() != 0 &&
+		mRenderer->getMinorVersion() != 0 )
+		createGLContext( mRenderer->getMajorVersion(), mRenderer->getMinorVersion() );
 
 	if( ( ! sMultisampleSupported ) && ( mRenderer->getAntiAliasing() > RendererGl::AA_NONE ) )  {
 		int level = initMultisample( pfd, mRenderer->getAntiAliasing(), dc );
@@ -273,7 +279,7 @@ int AppImplMswRendererGl::initMultisample( PIXELFORMATDESCRIPTOR pfd, int reques
 		WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
 		WGL_COLOR_BITS_ARB,24,
 		WGL_ALPHA_BITS_ARB,8,
-		WGL_DEPTH_BITS_ARB,16,
+		WGL_DEPTH_BITS_ARB,32,
 		WGL_STENCIL_BITS_ARB,0,
 		WGL_DOUBLE_BUFFER_ARB,GL_TRUE,
 		WGL_SAMPLE_BUFFERS_ARB,GL_TRUE,
@@ -307,6 +313,36 @@ void AppImplMswRendererGl::kill()
 	}
 
 	mRC = 0;
+}
+
+void AppImplMswRendererGl::createGLContext( int32_t majorVersion/*=3*/, int32_t minorVersion/*=0 */ )
+{
+		int attributes[] = 
+		{
+			WGL_CONTEXT_MAJOR_VERSION_ARB, majorVersion,
+			WGL_CONTEXT_MINOR_VERSION_ARB, minorVersion,
+			WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB, // Set OpenGL context to be forward compatible
+			0
+		};
+
+		// If the OpenGL 3.x context creation extension is available
+		if( GLEE_WGL_ARB_create_context )
+		{
+			HGLRC hrc = wglCreateContextAttribsARB( mDC, NULL, attributes );
+			wglMakeCurrent( NULL, NULL );
+			wglDeleteContext( mRC ); // Delete the old OpenGL context
+			wglMakeCurrent( mDC, hrc ); // Make our new OpenGL 3 context current
+			mRC = hrc;	// New RC
+		}
+		//else {
+		//	hrc = tempOpenGLContext; // If we didn't have support for OpenGL 3.x and up, use the OpenGL 2.1 context
+		//}
+
+		int glVersion[2] = { -1, -1 };
+		glGetIntegerv( GL_MAJOR_VERSION, &glVersion[0] );
+		glGetIntegerv( GL_MINOR_VERSION, &glVersion[1] );
+
+		app::console() << "Using OpenGL: " << glVersion[0] << "." << glVersion[1] << std::endl;
 }
 
 } } // namespace cinder::app
