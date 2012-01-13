@@ -18,3 +18,4 @@ lib/cinder*.lib
 *.sdf
 Debug/
 Release/
+ipch/
