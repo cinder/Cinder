@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{74202EDD-91D2-4D2A-B0B6-355CEB16E6BE}</ProjectGuid>
+    <ProjectGuid>{D6EB45EB-DB99-4E09-B18E-41EEAC112635}</ProjectGuid>
     <RootNamespace>TextInputTweenApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
