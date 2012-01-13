@@ -201,7 +201,7 @@ SurfaceImage::SurfaceImage( cinder::Surface ciSurface )
 		needsManualCopy = false;
 	}
 	else { // we can't natively represent this Surface configuration, so we'll just allocate one and manually copy it
-		mCairoSurface = cairo_image_surface_create( ciSurface.hasAlpha() ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, ciSurface.getWidth(), ciSurface.getHeight() );
+		mCairoSurface = cairo_image_surface_create( ciSurface.hasAlpha() ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24, ciSurface.getWidth(), ciSurface.getHeight() );
 	}
 	
 	initCinderSurface( ciSurface.hasAlpha(), cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
@@ -474,6 +474,14 @@ void Matrix::rotate( double radians )
 int32_t	Matrix::invert()
 {
 	return static_cast<int32_t>( cairo_matrix_invert( &getCairoMatrix() ) );
+}
+
+const Matrix& Matrix::operator*=( const Matrix &rhs )
+{
+	cairo_matrix_t r;
+	cairo_matrix_multiply( &r, &getCairoMatrix(), &rhs.getCairoMatrix() );
+	init( r.xx, r.yx, r.xy, r.yy, r.x0, r.y0 );
+	return *this;
 }
 
 Vec2f Matrix::transformPoint( const Vec2f &v ) const
@@ -1152,7 +1160,25 @@ void Context::copySurface( const SurfaceBase &surface, const Area &srcArea, cons
 {
 	cairo_set_source_surface( mCairo, const_cast<SurfaceBase&>( surface ).getCairoSurface(), dstOffset.x - srcArea.getX1(), dstOffset.y - srcArea.getY1() );
 	cairo_rectangle( mCairo, dstOffset.x, dstOffset.y, srcArea.getWidth(), srcArea.getHeight() );
-	cairo_paint( mCairo );
+	cairo_fill( mCairo );
+}
+
+void Context::copySurface( const SurfaceBase &surface, const Area &srcArea, const Rectf &dstRect )
+{
+	if( ( dstRect.getWidth() == 0 ) || ( dstRect.getHeight() == 0 ) )
+		return;
+
+	save();
+	cairo_set_source_surface( mCairo, const_cast<SurfaceBase&>( surface ).getCairoSurface(), 0, 0 );
+	cairo_pattern_t *sourcePattern = cairo_get_source( mCairo );
+	cairo_matrix_t m;
+	cairo_matrix_init_identity( &m );
+	cairo_matrix_scale( &m, srcArea.getWidth() / (float)dstRect.getWidth(), srcArea.getHeight() / (float)dstRect.getHeight() );
+	cairo_matrix_translate( &m, srcArea.getX1() - dstRect.getX1(), srcArea.getY1() - dstRect.getY1() );
+	cairo_pattern_set_matrix( sourcePattern, &m );
+	cairo_rectangle( mCairo, dstRect.getX1(), dstRect.getY1(), dstRect.getWidth(), dstRect.getHeight() );
+	cairo_fill( mCairo );	
+	restore();
 }
 
 Pattern* Context::getSource()

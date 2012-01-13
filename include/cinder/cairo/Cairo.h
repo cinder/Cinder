@@ -274,6 +274,8 @@ class Matrix
 	//! Transforms the distance vector \a v by the matrix. This is similar to cairo_matrix_transform_point() except that the translation components of the transformation are ignored
 	Vec2f	transformDistance( const Vec2f &v ) const;
 
+	const Matrix& 	operator*=( const Matrix &rhs );
+
 	// this is designed to mimic cairo_matrix_t exactly
     double xx; double yx;
     double xy; double yy;
@@ -540,6 +542,7 @@ class Context
 	Pattern*	getSource();
 
 	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Vec2i &dstOffset = Vec2i::zero() );
+	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Rectf &dstRect );	
 
 	void		setAntiAlias( int32_t antialias );
 	int32_t		getAntiAlias();
