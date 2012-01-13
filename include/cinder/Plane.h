@@ -30,24 +30,32 @@ class Plane
 {
 public:
 	Plane(void);
-	Plane::Plane(const ci::Vec3f &v1, const ci::Vec3f &v2, const ci::Vec3f &v3);
+	Plane::Plane( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
+	Plane::Plane( const Vec3f &normal, const Vec3f &point );
+	Plane::Plane( float a, float b, float c, float d );
 	virtual ~Plane(void);
 
-	void	setPoints(const ci::Vec3f &v1, const ci::Vec3f &v2, const ci::Vec3f &v3);
-	void	setNormalAndPoint(const ci::Vec3f &normal, const ci::Vec3f &point);
+	//! Defines a plane using 3 points. 
+	void	set( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
+	//! Defines a plane using a normal vector and a point.
+	void	set( const Vec3f &normal, const Vec3f &point );
+	//! Defines a plane using 4 coefficients.
+	void	set( float a, float b, float c, float d );
 
-	void	setCoefficients(float a, float b, float c, float d);
-
-	const ci::Vec3f&	getPoint() const { return mPoint; };
-	const ci::Vec3f&	getNormal() const { return mNormal; };
-	float				getDistance(const ci::Vec3f &p){ return (mDistance + mNormal.dot(p)); };
+	const Vec3f&	point() const { return mPoint; };
+	const Vec3f&	normal() const { return mNormal; };
+	float				distance( const Vec3f &p ){ return (mDistance + mNormal.dot(p)); };
 
 protected:
-	ci::Vec3f	mNormal;
-	ci::Vec3f	mPoint;
+	Vec3f	mNormal;
+	Vec3f	mPoint;
 
 	float		mDistance;
 };
 
-} // namespace cinder
+class PlaneExc : public std::exception {
+ public:
+	virtual const char* what() const throw() { return "Invalid parameters specified"; }
+};
 
+} // namespace cinder

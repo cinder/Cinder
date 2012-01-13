@@ -118,6 +118,7 @@ int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 	return i;
 }
 
+//!
 Vec3f AxisAlignedBox3f::getPositive(const Vec3f &normal)
 {
 	Vec3f result = getMin();
@@ -150,6 +151,29 @@ Vec3f AxisAlignedBox3f::getNegative(const Vec3f &normal)
 		result.z += size.z;
 
 	return(result);
+}
+
+AxisAlignedBox3f AxisAlignedBox3f::transformed( const Matrix44f &transform )
+{
+	Vec3f verts[8];
+
+	for(size_t i=0;i<8;i++) 
+		verts[i] = transform.transformPointAffine(mVerts[i]);
+
+	Vec3f min = verts[0];
+	Vec3f max = verts[0];
+	
+	for(size_t i=1;i<8;i++) {
+		if(verts[i].x < min.x) min.x = verts[i].x;
+		if(verts[i].y < min.y) min.y = verts[i].y;
+		if(verts[i].z < min.z) min.z = verts[i].z;
+
+		if(verts[i].x > max.x) max.x = verts[i].x;
+		if(verts[i].y > max.y) max.y = verts[i].y;
+		if(verts[i].z > max.z) max.z = verts[i].z;
+	}
+
+	return AxisAlignedBox3f(min, max);
 }
 
 } // namespace cinder

@@ -27,23 +27,42 @@ namespace cinder {
 Plane::Plane(void)
 	: mDistance(0.0f)
 {
+	// set default plane
+	set( Vec3f::yAxis(), Vec3f::zero() );
 }
 
-Plane::Plane( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3)
+Plane::Plane(const Vec3f &v1, const Vec3f &v2, const Vec3f &v3)
 {
-	setPoints(v1,v2,v3);
+	set(v1,v2,v3);
+}
+
+Plane::Plane(const Vec3f &normal, const Vec3f &point)
+{
+	set(normal, point);
+}
+
+Plane::Plane(float a, float b, float c, float d)
+{
+	set(a, b, c, d);
 }
 
 Plane::~Plane(void)
 {
 }
 
-void Plane::setPoints( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 )
+void Plane::set(const Vec3f &v1, const Vec3f &v2, const Vec3f &v3)
 {
 	Vec3f aux1(v1 - v2);
 	Vec3f aux2(v3 - v2);
+	Vec3f normal = aux2.cross(aux1);
+	
+	if(normal.lengthSquared() == 0.0f) {
+		 // error! invalid parameters
+		throw PlaneExc();
+		return;
+	}
 
-	mNormal = aux2.cross(aux1);
+	mNormal.set(normal);
 	mNormal.normalize();
 
 	mPoint.set(v2);
@@ -51,8 +70,14 @@ void Plane::setPoints( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 )
 	mDistance = -(mNormal.dot(mPoint));
 }
 
-void Plane::setNormalAndPoint( const Vec3f &normal, const Vec3f &point )
+void Plane::set(const Vec3f &normal, const Vec3f &point)
 {
+	if(normal.lengthSquared() == 0.0f) {
+		 // error! invalid parameters
+		throw PlaneExc();
+		return;
+	}
+
 	mNormal.set(normal);
 	mNormal.normalize();
 
@@ -61,12 +86,18 @@ void Plane::setNormalAndPoint( const Vec3f &normal, const Vec3f &point )
 	mDistance = -(mNormal.dot(mPoint));
 }
 
-void Plane::setCoefficients(float a, float b, float c, float d)
+void Plane::set(float a, float b, float c, float d)
 {
-	mNormal.set(a,b,c);
+	Vec3f normal(a, b, c);
+	
+	float length = normal.length();
+	if(length == 0.0f) {
+		 // error! invalid parameters
+		throw PlaneExc();
+		return;
+	}
 
-	//! Will crash if zero length
-	float length = mNormal.length();
+	mNormal.set(normal);
 	mNormal.normalize();
 
 	mDistance = d / length;

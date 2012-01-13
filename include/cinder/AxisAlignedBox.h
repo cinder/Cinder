@@ -22,8 +22,9 @@
 
 #pragma once
 
-#include "cinder/Vector.h"
+#include "cinder/Matrix.h"
 #include "cinder/Ray.h"
+#include "cinder/Vector.h"
 
 namespace cinder {
 
@@ -39,11 +40,14 @@ class AxisAlignedBox3f {
 	Vec3f			getSize() const { return mExtents[1] - mExtents[0]; }
 	
 	const Vec3f&	getMin() const { return mExtents[0]; }
-	const Vec3f&	getMax() const { return mExtents[1]; }	
+	const Vec3f&	getMax() const { return mExtents[1]; }
 
-	//! For use in frustum culling
+	//! for use in frustum culling
 	Vec3f	getNegative( const Vec3f &normal );
 	Vec3f	getPositive( const Vec3f &normal );
+
+	//! converts axis-aligned box to another coordinate space
+	AxisAlignedBox3f transformed( const Matrix44f &transform );
 	
 	static bool calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result );
 

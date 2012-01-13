@@ -118,6 +118,7 @@ void FrustumCullingApp::update()
 	
 	mCam.setPerspective( 25.0f, getWindowAspectRatio(), 100.0f, 350.0f );
 	mCam.lookAt( mEye, mCenter, mUp );
+
 	mFrustum.set( mCam );	
 	
 	if( mIsWatchingCam ){
@@ -156,13 +157,13 @@ void FrustumCullingApp::draw()
 				Vec3f loc( (x-mHalfGrid)*mGridSpace, (y-mHalfGrid/2)*mGridSpace, (z-mHalfGrid)*mGridSpace );
 				
 				if( mShapeType == POINT ){
-					if( mFrustum.isPointInFrustum( loc ) ){
+					if( mFrustum.intersects( loc ) ){
 						glColor3f( 0.0f, 1.0f, 0.0f );
 						gl::drawCube( loc, Vec3f( 0.5f, 0.5f, 0.5f ) );
 					}
 					
 				} else if( mShapeType == SPHERE ){
-					if( mFrustum.isSphereInFrustum( loc, 5.0f ) ){
+					if( mFrustum.intersects( loc, 5.0f ) ){
 						glColor3f( 0.0f, 1.0f, 0.0f );
 						gl::drawSphere( loc, 5.0f );
 					}
@@ -170,7 +171,7 @@ void FrustumCullingApp::draw()
 				} else if( mShapeType == CUBE ){
 					Vec3f cubeSize = Vec3f::one() * 6.0f;
 					AxisAlignedBox3f bounds( loc - 0.5f * cubeSize, loc + 0.5f * cubeSize );
-					if( mFrustum.isBoxInFrustum( bounds ) ){
+					if( mFrustum.intersects( bounds ) ){
 						glColor3f( 0.0f, 1.0f, 0.0f );
 						gl::drawCube( loc, cubeSize );						
 					}

@@ -21,81 +21,116 @@
 */
 
 #include "cinder/Frustum.h"
+#include "cinder/gl/gl.h"
 
 namespace cinder {
 
 Frustum::Frustum(void)
 {
+	// set planes using default perspective camera
 	set( CameraPersp() );
 }
 
-Frustum::Frustum( const ci::Camera &cam )
-{	
-	set(cam);
+Frustum::Frustum(const Camera &cam)
+{
+	// set planes using camera
+	set( cam );
 }
 
 Frustum::~Frustum(void)
 {
 }
 
-void Frustum::set( const ci::Camera &cam )
-{	
+void Frustum::set(const Camera &cam)
+{
 	Vec3f ntl, ntr, nbl, nbr;
 	cam.getNearClipCoordinates( &ntl, &ntr, &nbl, &nbr );
 
 	Vec3f ftl, ftr, fbl, fbr;
 	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
 
-	mFrustumPlanes.resize(6);
-	mFrustumPlanes[TOPPLANE].setPoints(ntr, ntl, ftl);
-	mFrustumPlanes[BOTTOMPLANE].setPoints(nbl, nbr, fbr);
-	mFrustumPlanes[LEFTPLANE].setPoints(ntl, nbl, fbl);
-	mFrustumPlanes[RIGHTPLANE].setPoints(nbr, ntr, fbr);
-	mFrustumPlanes[NEARPLANE].setPoints(ntl, ntr, nbr);
-	mFrustumPlanes[FARPLANE].setPoints(ftr, ftl, fbl);
+	mFrustumPlanes[TOPPLANE].set(ntr, ntl, ftl);
+	mFrustumPlanes[BOTTOMPLANE].set(nbl, nbr, fbr);
+	mFrustumPlanes[LEFTPLANE].set(ntl, nbl, fbl);
+	mFrustumPlanes[RIGHTPLANE].set(nbr, ntr, fbr);
+	mFrustumPlanes[NEARPLANE].set(ntl, ntr, nbr);
+	mFrustumPlanes[FARPLANE].set(ftr, ftl, fbl);
 }
 
-Frustum::CullResult Frustum::isPointInFrustum( const Vec3f &loc )
+void Frustum::set(const Camera &cam, const Vec3f &ntl, const Vec3f &ntr, const Vec3f &nbl, const Vec3f &nbr)
 {
-	Frustum::CullResult result = INSIDE;
+	Vec3f eye = cam.getEyePoint();
+	float farClip = cam.getFarClip();
 
-	for(size_t i=0; i<mFrustumPlanes.size(); ++i) {
-		if (mFrustumPlanes[i].getDistance(loc) < 0)
-			return OUTSIDE;
+	Vec3f ftl = (ntl - eye).normalized() * farClip;
+	Vec3f ftr = (ntr - eye).normalized() * farClip;
+	Vec3f fbl = (nbl - eye).normalized() * farClip;
+	Vec3f fbr = (nbr - eye).normalized() * farClip;
+
+	mFrustumPlanes[TOPPLANE].set(ntr, ntl, ftl);
+	mFrustumPlanes[BOTTOMPLANE].set(nbl, nbr, fbr);
+	mFrustumPlanes[LEFTPLANE].set(ntl, nbl, fbl);
+	mFrustumPlanes[RIGHTPLANE].set(nbr, ntr, fbr);
+	mFrustumPlanes[NEARPLANE].set(ntl, ntr, nbr);
+	mFrustumPlanes[FARPLANE].set(ftr, ftl, fbl);
+}
+
+bool Frustum::contains(const Vec3f &loc)
+{
+	for(size_t i=0; i<6; ++i) {
+		if (mFrustumPlanes[i].distance(loc) < 0)
+			return false;
 	}
 
-	return(result);
+	return true;
 }
 
-Frustum::CullResult Frustum::isSphereInFrustum( const Vec3f &loc, float radius )
+bool Frustum::contains(const Vec3f &center, float radius)
 {
-	Frustum::CullResult result = INSIDE;
-
 	float distance;
-	for(size_t i=0; i<mFrustumPlanes.size(); ++i) {
-		distance = mFrustumPlanes[i].getDistance(loc);
+	for(size_t i=0; i<6; ++i) {
+		distance = mFrustumPlanes[i].distance(center);
 		if (distance < -radius)
-			return OUTSIDE;
+			return false;
 		else if (distance < radius)
-			result =  INTERSECT;
+			return false;
 	}
 
-	return(result);
+	return true;
 }
 
-Frustum::CullResult Frustum::isBoxInFrustum(ci::AxisAlignedBox3f &box)
+bool Frustum::intersects(const Vec3f &center, float radius)
 {
-	Frustum::CullResult result = INSIDE;
-
-	for(size_t i=0; i<mFrustumPlanes.size(); ++i) {
-		if (mFrustumPlanes[i].getDistance(box.getPositive(mFrustumPlanes[i].getNormal())) < 0)
-			return OUTSIDE;
-		else if (mFrustumPlanes[i].getDistance(box.getNegative(mFrustumPlanes[i].getNormal())) < 0)
-			result = INTERSECT;
+	float distance;
+	for(size_t i=0; i<6; ++i) {
+		distance = mFrustumPlanes[i].distance(center);
+		if (distance < -radius)
+			return false;
 	}
 
-	return(result);
+	return true;
+}
+
+bool Frustum::contains(AxisAlignedBox3f &box)
+{
+	for(size_t i=0; i<6; ++i) {
+		if (mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].normal())) < 0)
+			return false;
+		else if (mFrustumPlanes[i].distance(box.getNegative(mFrustumPlanes[i].normal())) < 0)
+			return false;
+	}
+
+	return true;
+}
+
+bool Frustum::intersects(AxisAlignedBox3f &box)
+{
+	for(size_t i=0; i<6; ++i) {
+		if (mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].normal())) < 0)
+			return false;
+	}
+
+	return true;
 }
 
 } // namespace cinder
-
