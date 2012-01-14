@@ -6,9 +6,6 @@ using namespace ci::app;
 #include <list>
 using namespace std;
 
-void staticMouseDownHandler( MouseEvent event );
-void staticMouseUpHandler( MouseEvent event );
-
 // We'll create a new Cinder Application by deriving from the BasicApp class
 class BasicApp : public AppBasic {
  public:
@@ -32,8 +29,6 @@ void BasicApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' )
 		setFullScreen( ! isFullScreen() );
-
-	wglSwapIntervalEXT( 0 );
 }
 
 void BasicApp::draw()
