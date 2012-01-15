@@ -2,7 +2,7 @@
 //  ciConfigGuiBase.h
 //
 //  Created by Roger Sodre on 08/04/2010
-//  Copyright 2010 Studio Avante. All rights reserved.
+//  Copyright 2011 Studio Avante. All rights reserved.
 //
 #pragma once
 
@@ -10,7 +10,6 @@
 #include "cinder/Color.h"
 #include "cinder/Text.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Fbo.h"
 
 #include "ciConfig.h"
 
@@ -33,29 +32,24 @@ namespace cinder {
 		ciConfigGuiBase();
 		~ciConfigGuiBase();
 
-		bool onResize( app::ResizeEvent event );
-
 		void draw();
-
-		// Fbo
-		void guiSetUseFbo( bool _use=true );
 
 		//
 		// VIRTUALS
 		//
 		// setters
-		virtual void	guiAddGroup( std::string _name )	{}
-		virtual void	guiAddGroup( std::string _name, int x, int y, int w, int h, int wv=0 )	{}
-		virtual void*	guiAddPanel()						{ return NULL; }		// Switchable panel
-		virtual void	guiAddSeparator()					{}
-		virtual void*	guiAddText( std::string text )		{ return NULL; }
-		virtual void	guiAddSaveButton(bool ask=false)	{}
-		virtual void	guiAddLoadButton(bool ask=false)	{}
-		virtual void	guiUpdateValueLabels( int id )		{}
-		virtual void	guiShow( bool s = true )			{}
-		virtual void	guiSetAutoDraw( bool b=true )		{ bAutoDraw = b; };
-		virtual void	guiSetAutoHide( int s=5 )			{ mAutoHideSeconds = s; };
-		virtual void	guiSetOffset( const Vec2f & o )		{ mGuiOffset = o; }
+		virtual void	guiAddGroup( const std::string & _name )	{}
+		virtual void	guiAddGroup( const std::string & _name, int x, int y, int w, int h, int wv=0 )	{}
+		virtual void*	guiAddPanel( const std::string & _name="")	{ return NULL; }		// Switchable panel
+		virtual void	guiAddSeparator()							{}
+		virtual void*	guiAddText( std::string text )				{ return NULL; }
+		virtual void	guiAddSaveButton(bool ask=false)			{}
+		virtual void	guiAddLoadButton(bool ask=false)			{}
+		virtual void	guiUpdateValueLabels( int id )				{}
+		virtual void	guiShow( bool s = true )					{}
+		virtual void	guiSetAutoDraw( bool b=true )				{ bAutoDraw = b; };
+		virtual void	guiSetAutoHide( int s=5 )					{ mAutoHideSeconds = s; };
+		virtual void	guiSetOffset( const Vec2f & o )				{ mGuiOffset = o; }
 		//virtual CallbackId guiAddButton( const std::string &label, ciConfigGuiBase *obj, bool (ciConfigGuiBase::*callback)(ci::app::MouseEvent) ) { return 0; }
 		// Getters
 		virtual int		guiGetColumnWidth()					{ return 0; }
@@ -89,12 +83,6 @@ namespace cinder {
 		int			mGroupCount;
 		bool		bAutoDraw;
 		int			mAutoHideSeconds;
-		
-		// FBO
-		bool		bUsingFbo;
-		bool		bShouldResize;
-		gl::Fbo		mFbo;
-		CallbackId	cbResize;
 		
 	};
 	

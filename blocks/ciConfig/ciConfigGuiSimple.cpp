@@ -2,16 +2,15 @@
 //  ciConfigGuiSimple.cpp
 //
 //  Created by Roger Sodre on 08/04/2010
-//  Copyright 2010 Studio Avante. All rights reserved.
+//  Copyright 2011 Studio Avante. All rights reserved.
 //
 
 #include "ciConfigGuiSimple.h"
 #include <sys/time.h>
 
-using namespace ci;
+using namespace cinder;
 using namespace ci::app;
 using namespace std;
-using namespace mowa::sgui;
 
 namespace cinder {
 	
@@ -22,7 +21,7 @@ namespace cinder {
 		mGui = new SimpleGUI( App::get() );
 		mGui->lightColor = ColorA(0, 1, 1, 1);
 		// Use FBO by default
-		this->guiSetUseFbo();
+		//this->guiSetUseFbo();
 	}
 	ciConfigGuiSimple::~ciConfigGuiSimple()
 	{
@@ -34,16 +33,17 @@ namespace cinder {
 	// SETTERS
 	//
 	// Virtual
-	void ciConfigGuiSimple::guiAddGroup( std::string _name )
+	void ciConfigGuiSimple::guiAddGroup( const std::string & _name )
 	{
 		mGui->addColumn();
-		mGui->addLabel(_name);
+		if ( _name.length() )
+			mGui->addLabel(_name);
 		mGroupCount++;
 	}
 	// Virtual
-	void* ciConfigGuiSimple::guiAddPanel()
+	void* ciConfigGuiSimple::guiAddPanel( const std::string & _name )
 	{
-		return (void*) mGui->addPanel();
+		return (void*) mGui->addPanel(_name);
 	}
 	// Virtual
 	void ciConfigGuiSimple::guiAddSeparator()
@@ -79,7 +79,12 @@ namespace cinder {
 				((FloatVarControl*)c)->setPrecision( precision );
 		}
 		else if (params[id]->valueLabels.size() > 0)
-			c = mGui->addParam(label, this->getPointerInt(id), params[id]->valueLabels, this->getInt(id));
+		{
+			if ( this->testFlag(id,CFG_FLAG_DROP_DOWN) )
+				c = mGui->addParamDropDown(label, this->getPointerInt(id), params[id]->valueLabels );
+			else
+				c = mGui->addParamList(label, this->getPointerInt(id), params[id]->valueLabels );
+		}
 		else if (this->isColor(id))
 			c = mGui->addParam(label, this->getPointerColor(id), Color( this->getColor(id) ));
 		else if (this->isVector(id))
@@ -87,6 +92,8 @@ namespace cinder {
 			c = mGui->addParam(label, this->getPointerColor(id), Color( this->getColor(id) ));
 		else if (this->isBool(id))
 			c = mGui->addParam(label, this->getPointerBool(id), this->getBool(id));
+		else if (this->isString(id))
+			c = mGui->addParam(label, this->getPointerString(id));
 		else if (this->isInt(id))
 		{
 			c = mGui->addParam(label, this->getPointerInt(id), (int)this->getMin(id), (int)this->getMax(id), this->getInt(id));
@@ -105,7 +112,7 @@ namespace cinder {
 		//options << "keydecr='" << params[id]->vec[i].keyDec << "' ";
 		
 		// readonly
-		if ( params[id]->dummy )
+		if ( ! params[id]->editable )
 			c->setReadOnly( true );
 
 		// Save reference

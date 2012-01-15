@@ -2,7 +2,7 @@
 //  ciConfigGuiParams.h
 //
 //  Created by Roger Sodre on 08/04/2010
-//  Copyright 2010 Studio Avante. All rights reserved.
+//  Copyright 2011 Studio Avante. All rights reserved.
 //
 #pragma once
 
@@ -36,8 +36,8 @@ namespace cinder {
 		
 		// Virtuals
 		int		guiGetColumnWidth()	{ return ( mFontsize == 1 ? GUI_WIDTH_FONT_1 : ( mFontsize == 2 ? GUI_WIDTH_FONT_2 : GUI_WIDTH_FONT_3 ) ); }
-		void	guiAddGroup( std::string _name );
-		void	guiAddGroup( std::string _name, int x, int y, int w, int h, int wv=0 );
+		void	guiAddGroup( const std::string & _name );
+		void	guiAddGroup( const std::string & _name, int x, int y, int w, int h, int wv=0 );
 		void	guiAddSeparator();
 		void*	guiAddText( std::string text );
 		void	guiUpdateValueLabels(int id);

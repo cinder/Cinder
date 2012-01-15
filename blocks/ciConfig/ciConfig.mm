@@ -2,7 +2,7 @@
 //  ciConfig.mm
 //
 //  Created by Roger Sodre on 08/04/2010
-//  Copyright 2010 Studio Avante. All rights reserved.
+//  Copyright 2011 Studio Avante. All rights reserved.
 //
 
 
@@ -35,7 +35,7 @@
 #include <errno.h>
 
 #ifdef CINDER
-using namespace ci;
+using namespace cinder;
 using namespace ci::app;
 #endif
 
@@ -52,40 +52,50 @@ namespace cinder {
 		// init
 		parent = _parent;
 		saveTime = "using defaults";
-		currentFileName = this->getFullFilename("config.cfg");
 		inPostSetCallback = false;
 		bStarted = false;
+		
+		// make default filename based on app name
+		std::string mAppName = [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleNameKey] UTF8String];
+		currentFileName = this->getFullFilename(mAppName + ".cfg");
+		
 		
 		// Register key events
 #ifdef CINDER
 #ifdef CFG_CATCH_LOOP_EVENTS
-		App::get()->registerKeyDown( this, &ciConfig::onKeyDown );
+		// not for presets
+		if (parent == NULL)
+			App::get()->registerKeyDown( this, &ciConfig::onKeyDown );
 #endif
 #endif
 		
 		// init MIDI
 		midiPort = 0;
 		midiChannel = 1;
+		midiHub = NULL;
+		// Do not enable devices for presets (if has parent, it's a preset)
+		if (parent == NULL)
+		{
 #ifdef CFG_USE_MIDI
 #ifdef CINDER
-		midiHub = new midi::Hub();
+			midiHub = new midi::Hub();
 #else
-		midiHub = new ofxMidiHub(this);
+			midiHub = new ofxMidiHub(this);
 #endif
 #endif
-		
-		// init OSC
+			
+			// init OSC
 #ifdef CFG_USE_OSC
-		this->setOscSend(false);
-		this->setOscReceive(false);
+			this->setOscSend(false);
+			this->setOscReceive(false);
 #ifdef CINDER
-		if (parent == NULL)
 			this->setOscReceive(true);	// CINDER always receive OSC because have no MIDI
 #endif
 #ifdef CFG_CATCH_LOOP_EVENTS
-		ofAddListener(ofEvents.update, this, &ciConfig::oscCallback);
+			ofAddListener(ofEvents.update, this, &ciConfig::oscCallback);
 #endif
 #endif
+		}
 		
 		// init XML
 		//xmlInOut = new XMLInOut(applet);
@@ -101,8 +111,15 @@ namespace cinder {
 			params.pop_back();
 		}
 		
+		// free presets
+		std::map<char,ciConfig*>::const_iterator it;
+		for ( it = presets.begin() ; it != presets.end(); it++ )
+			if (it->second)
+				free (it->second);
+
 #ifdef CFG_USE_MIDI
-		delete midiHub;
+		if (midiHub)
+			delete midiHub;
 #endif
 		
 #ifdef CFG_USE_OSC
@@ -131,6 +148,10 @@ namespace cinder {
 	void ciConfig::update()
 	{
 		bStarted = true;
+		
+		// not for children (presets)
+		if (parent)
+			return;
 		
 #ifdef CINDER
 		// Watch if Params updated var pointers
@@ -170,6 +191,9 @@ namespace cinder {
 				if (p->watchInt != (int) this->get(id))
 					this->set( id, p->watchInt );
 			}
+			else if (p->isString())
+			{
+			}
 			else
 			{
 				if (p->watchFloat[0] != this->get(id))
@@ -202,9 +226,9 @@ namespace cinder {
 #ifdef CINDER
 	bool ciConfig::onKeyDown( app::KeyEvent event )
 	{
-		//printf("EVENT>> ciConfig::keyDown [%d] [%c]\n",event.getChar(),event.getChar());
-		int i;
-		switch( event.getChar() ) {
+		char c = event.getChar();
+		//printf("EVENT>> ciConfig::keyDown [%d] [%c]\n",c,c);
+		switch( c ) {
 			case 's':
 			case 'S':
 				if (event.isMetaDown()) // COMMAND
@@ -224,17 +248,19 @@ namespace cinder {
 			case '7' :
 			case '8' :
 			case '9' :
-				i = (int) (event.getChar() - '1');
-				if (i < presets.size())
+			case '0' :
 				{
-					// Save (COMMAND)
-					if (event.isMetaDown())
-						this->savePreset(i);
-					// Load
-					else
-						this->loadPreset(i);
+					if ( presets.find(c) != presets.end() )
+					{
+						// Save : COMMAND + SHIFT + NUMBER
+						if (event.isMetaDown() && event.isControlDown())
+							this->savePreset(c);
+						// Load : CONTROL + NUMBER
+						else if (event.isMetaDown())
+							this->loadPreset(c);
+					}
 				}
-				return true;
+				break;
 		}
 		return false;
 	}
@@ -441,6 +467,16 @@ namespace cinder {
 	// used by OSC as well
 	void ciConfig::parseMidiMessage(int channel, int note, int val)
 	{
+		if ( note < 0 || note > 127 )
+		{
+			printf("CFG MIDI IN ch[%d] note[%d] = [%d] INVALID NOTE!!!\n",channel,note,val);
+			return;
+		}
+		if ( val < 0 || val > 127 )
+		{
+			printf("CFG MIDI IN ch[%d] note[%d] = [%d] INVALID VALUE!!!\n",channel,note,val);
+			return;
+		}
 		float newProg = ((float)val / 127.0);
 		printf("CFG MIDI IN ch[%d] note[%d] = [%d/%.2f]",channel,note,val,newProg);
 		for (int id = 0 ; id < params.size() ; id++)
@@ -472,7 +508,7 @@ namespace cinder {
 				{
 					if (newProg == 1.0)
 					{
-						this->inc(id, i);
+						this->inc(id, i, true);
 						printf(" >> CFG id[%d/%d] = [%.6f] (%s)\n",id,i,p->vec[i].get(),p->name.c_str());
 					}
 					else
@@ -484,7 +520,7 @@ namespace cinder {
 				{
 					if (newProg == 1.0)
 					{
-						this->dec(id, i);
+						this->dec(id, i, true);
 						printf(" >> CFG id[%d/%d] = [%.6f] (%s)\n",id,i,p->vec[i].get(),p->name.c_str());
 					}
 					else
@@ -497,7 +533,7 @@ namespace cinder {
 					if (newProg == 1.0)
 					{
 						if (this->getProg(id, i) < 1.0)
-							this->inc(id, i);
+							this->inc(id, i, true);
 						else
 							this->setToMin(id);
 						printf(" >> CFG id[%d/%d] = [%.6f] (%s)\n",id,i,p->vec[i].get(),p->name.c_str());
@@ -839,57 +875,66 @@ namespace cinder {
 	// PRESETS
 	//
 	// Copy param from another cfg
-	void ciConfig::setPresets(int presetCount)
+	void ciConfig::makePresets(int presetCount, bool _auto )
 	{
-		char file[100];
-		for (int n = 0 ; n < presetCount ; n++)
+		char file[1024];
+		for (int n = 0 ; ( n < presetCount && n < 10 ) ; n++)
 		{
+			char key = PRESET_KEY(n);
 			ciConfig *pr = new ciConfig(this);
-			presets.push_back(pr);
+			presets[key] = pr;
 			// set file
 			string fmt = currentFileName;
-			fmt.replace(fmt.size()-4,4,"_preset_%d.cfg");
-			sprintf(file, fmt.c_str(), n+1);
+			fmt.replace(fmt.size()-4,4,"_preset_%c.cfg");
+			sprintf(file, fmt.c_str(), key);
 			pr->setFile(file);
+			printf("made preset [%s]\n",file);
 		}
+		// copy params
+		if (_auto)
+			for ( short i = 0 ; i < params.size() ; i++ )
+				if (params[i] != NULL)
+					this->addParamToPreset(i);
 	}
-	void ciConfig::presetAddParamFrom(ciConfig *src, int id)
+	void ciConfig::addParamToPreset(int id)
 	{
-		for (int n = 0 ; n < presets.size() ; n++)
+		std::map<char,ciConfig*>::const_iterator it;
+		for ( it = presets.begin() ; it != presets.end(); it++ )
 		{
-			ciConfig *pr = presets[n];
-			int t = src->getType(id);
+			//char key = (it->first);
+			ciConfig* pr = (it->second);
+			int t = this->getType(id);
 			switch (t)
 			{
 				case CFG_TYPE_FLOAT:
-					pr->addFloat(id, src->getName(id).c_str(), src->get(id), src->getMin(id), src->getMax(id));
+					pr->addFloat(id, this->getName(id).c_str(), this->get(id), this->getMin(id), this->getMax(id));
 					break;
 				case CFG_TYPE_DOUBLE:
-					pr->addDouble(id, src->getName(id).c_str(), src->getDouble(id), (double)src->getMin(id), (double)src->getMax(id));
+					pr->addDouble(id, this->getName(id).c_str(), this->getDouble(id), (double)this->getMin(id), (double)this->getMax(id));
 					break;
 				case CFG_TYPE_INTEGER:
-					pr->addInt(id, src->getName(id).c_str(), src->getInt(id), (int)src->getMin(id), (int)src->getMax(id));
+					pr->addInt(id, this->getName(id).c_str(), this->getInt(id), (int)this->getMin(id), (int)this->getMax(id));
 					break;
 				case CFG_TYPE_LONG:
-					pr->addLong(id, src->getName(id).c_str(), src->getLong(id), (long)src->getMin(id), (long)src->getMax(id));
+					pr->addLong(id, this->getName(id).c_str(), this->getLong(id), (long)this->getMin(id), (long)this->getMax(id));
 					break;
 				case CFG_TYPE_BOOLEAN:
-					pr->addBool(id, src->getName(id).c_str(), src->getBool(id));
+					pr->addBool(id, this->getName(id).c_str(), this->getBool(id));
 					break;
 				case CFG_TYPE_BYTE:
-					pr->addByte(id, src->getName(id).c_str(), src->getByte(id), (char)src->getMin(id), (char)src->getMax(id));
+					pr->addByte(id, this->getName(id).c_str(), this->getByte(id), (char)this->getMin(id), (char)this->getMax(id));
 					break;
 				case CFG_TYPE_COLOR:
-					pr->addColor(id, src->getName(id).c_str(), src->getColor(id));
+					pr->addColor(id, this->getName(id).c_str(), this->getColor(id));
 					break;
 				case CFG_TYPE_VECTOR:
-					pr->addVector(id, src->getName(id).c_str(), src->getVector(id), (char)src->getMin(id), (char)src->getMax(id));
+					pr->addVector(id, this->getName(id).c_str(), this->getVector(id), (char)this->getMin(id), (char)this->getMax(id));
 					break;
 				case CFG_TYPE_STRING:
-					pr->addString(id, src->getName(id).c_str(), src->getString(id));
+					pr->addString(id, this->getName(id).c_str(), this->getString(id));
 					break;
 				default:
-					printf("Config::presetAddParamFrom(int) ERROR invalid id[%d] type[%d]\n",id,t);
+					printf("Config::presetAddParamFrom() ERROR invalid id[%d] type[%d]\n",id,t);
 					break;
 			};
 		}
@@ -897,11 +942,12 @@ namespace cinder {
 	//
 	// Save / load
 	// i : preset number (1,2,...)
-	int ciConfig::savePreset(int i)
+	int ciConfig::savePreset(char c)
 	{
-		if (i <= presets.size())
+		std::map<char,ciConfig*>::const_iterator it = presets.find(c);
+		if ( it != presets.end() )
 		{
-			ciConfig *pr = presets[i];
+			ciConfig* pr = (it->second);
 			// copy from source
 			for (int id = 0 ; id < pr->params.size() ; id++ )
 				if (pr->params[id])
@@ -911,12 +957,13 @@ namespace cinder {
 		}
 		return 0;
 	}
-	int ciConfig::loadPreset(int i)
+	int ciConfig::loadPreset(char c)
 	{
 		int r = 0;
-		if (i <= presets.size())
+		std::map<char,ciConfig*>::const_iterator it = presets.find(c);
+		if ( it != presets.end() )
 		{
-			ciConfig *pr = presets[i];
+			ciConfig* pr = (it->second);
 			// load!
 			r = pr->load();
 			// copy back to source
@@ -1077,7 +1124,11 @@ namespace cinder {
 	{
 		// Set string!
 		if (params[id]->type == CFG_TYPE_STRING)
-			params[id]->strval = val;
+		{
+			params[id]->strval = string( val );
+			params[id]->updatePointers(0);
+			//this->post_set(id, 0);
+		}
 		// Set vector values
 		// val = "number,number,number"
 		else if (this->isVector(id))
@@ -1400,28 +1451,28 @@ namespace cinder {
 	// SAVE / READ utils
 	//
 	// Sets default file and load it
-	void ciConfig::setFile(const char *f, const char* path)
+	void ciConfig::setFile(const std::string & f, const std::string & path)
 	{
 		if (f[0] == '/')
 			currentFileName = f;
 		else
 			currentFileName = this->getFullFilename(f, path);
 	}
-	int ciConfig::useFile(const char *f, const char* path)
+	int ciConfig::useFile(const std::string & f, const std::string & path)
 	{
 		this->setFile(f, path);
 		return this->load();
 	}
 	//
 	// Get file name
-	string ciConfig::getFullFilename(const char *f, const char* path)
+	string ciConfig::getFullFilename(const std::string & f, const std::string & path)
 	{
 		// Use current
-		if (f == NULL)
+		if ( f.length() == 0 )
 			return currentFileName;
 		
 		// file has path
-		if ( strchr(f, '/') != NULL )
+		if ( strchr(f.c_str(), '/') != NULL )
 			return f;
 		
 		// Make filename
@@ -1430,22 +1481,15 @@ namespace cinder {
 #ifdef CINDER_COCOA_TOUCH
 		os << getHomeDirectory() << f;
 #else
-		if (path == NULL)
-#if defined(STANDALONE) || defined(RELEASE)
-			// Save besides your ".app"
-			
-			// TODO:: usar absolute path!!! 
-			//char path[1024];
-			//uint32_t size = sizeof(path);
-			//if (_NSGetExecutablePath(path, &size) == 0)
-			
+		if ( path.length() == 0 )
+		{
 			//os << "../../../" << f;
-			os << "./" << f;
-#else
-		// Save besides your project folder
-		//os << "../../../../../" << f;
-		os << "../../" << f;
-#endif
+			//os << "./" << f;
+
+			// Save besides your ".app"
+			std::string appPath = getPathDirectory( app::getAppPath() );
+			os << appPath << f;
+		}
 		else
 			os << path << f;
 #endif
@@ -1461,7 +1505,7 @@ namespace cinder {
 	//
 	// SAVE to file on data folder
 	// Return saved params
-	int ciConfig::readFile(const char *f)
+	int ciConfig::readFile(const std::string & f)
 	{
 		// Open file
 		string fullFilename = this->getFullFilename(f);
@@ -1543,7 +1587,7 @@ namespace cinder {
 	//
 	// SAVE to file on data folder
 	// Return saved params
-	int ciConfig::saveFile(const char *f)
+	int ciConfig::saveFile(const std::string & f)
 	{
 		// Open file
 		string fullFilename = this->getFullFilename(f);

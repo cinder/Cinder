@@ -2,12 +2,14 @@
 //  ciConfigGuiSimple.h
 //
 //  Created by Roger Sodre on 08/04/2010
-//  Copyright 2010 Studio Avante. All rights reserved.
+//  Copyright 2011 Studio Avante. All rights reserved.
 //
 #pragma once
 
 #include "ciConfigGuiBase.h"
 #include "SimpleGUI.h"
+
+using namespace ci::sgui;
 
 namespace cinder {
 	
@@ -29,11 +31,11 @@ namespace cinder {
 		// Virtuals
 		void	guiSetOffset( const Vec2f & o )		{ mGui->mOffset = o; }
 		int		guiGetColumnWidth()					{ return mGui->getColumnWidth(); }
-		void	guiAddGroup( std::string _name );
-		void*	guiAddPanel();
+		void	guiAddGroup( const std::string & _name );
+		void*	guiAddPanel( const std::string & _name="" );
 		void	guiAddSeparator();
 		void*	guiAddText( std::string text );
-		mowa::sgui::ButtonControl*	guiAddButton(const std::string &label, ciConfigGuiBase *obj, bool (ciConfigGuiBase::*callback)(ci::app::MouseEvent) );
+		ButtonControl*	guiAddButton(const std::string &label, ciConfigGuiBase *obj, bool (ciConfigGuiBase::*callback)(ci::app::MouseEvent) );
 		//template<typename T> CallbackId guiAddButton(const std::string &label, T *obj, bool (T::*callback)(MouseEvent) );
 		void	guiUpdateValueLabels(int id);
 		void	guiShow( bool b = true )			{ mGui->setEnabled(b); };
@@ -54,7 +56,7 @@ namespace cinder {
 		void	guiSetLabel(int id, int i, const std::string &label);
 		
 		// SimpleGui Params
-		mowa::sgui::SimpleGUI::SimpleGUI* mGui;
+		SimpleGUI::SimpleGUI* mGui;
 		
 		
 	};

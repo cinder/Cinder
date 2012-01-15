@@ -2,7 +2,7 @@
 //	ciConfig.h
 //
 //  Created by Roger Sodre on 08/04/2010
-//  Copyright 2010 Studio Avante. All rights reserved.
+//  Copyright 2011 Studio Avante. All rights reserved.
 //
 #pragma once
 
@@ -106,12 +106,25 @@ namespace cinder {
 #define	CFG_MAX_DATA_LEN		4096
 #define FLOAT_VEC				vector<float>
 
+#define CONFIG_PRESET_COUNT		10
+#define PRESET_KEY(i)			(i<CONFIG_PRESET_COUNT-1?'1'+i:(i==CONFIG_PRESET_COUNT-1?'0':0))
+
 // Cocoa
 // Convert NSString <-> C char* string
 #define STR2NSS(str)			([NSString stringWithUTF8String:(const char*)(str)])
 #define NSS2STR(nsstr)			((char*)[(nsstr) UTF8String])
 
+//
+// Types
+enum enumConfigFlags
+{
+	CFG_FLAG_NONE,
+	CFG_FLAG_DROP_DOWN,
+	// count
+	CFG_FLAG_COUNT
+};
 
+	
 //
 // Types
 enum enumConfigTypes
@@ -246,7 +259,9 @@ public:
 	short						type;
 	std::string					name;
 	std::map<int,std::string>	valueLabels;
-	bool						dummy;	// does not load/save
+	bool						dummy;		// does not load/save
+	bool						editable;
+	char						flag;
 	// Values
 	std::string				strval;
     union {	// share same memory, so vector[0] = value
@@ -257,12 +272,13 @@ public:
     };
 	// for cinder::param
 #ifdef CINDER
-	void	*guiControl;
-	float	watchFloat[3];
-	bool	watchBool;
-	int		watchInt;
-	Color	watchColor;
-	Vec3f	watchVector;
+	void		*guiControl;
+	float		watchFloat[3];
+	bool		watchBool;
+	int			watchInt;
+	Color		watchColor;
+	Vec3f		watchVector;
+	std::string	watchString;
 #endif
 	
 	ciConfigParam(short _pid, short _type, const std::string _name)
@@ -271,6 +287,7 @@ public:
 		type = _type;
 		name = _name;
 		dummy = false;
+		editable = true;
 		guiControl = NULL;
 		// init ciConfigValue here because union members cannot have constructors
 		for (int n = 0 ; n < 3 ; n++)
@@ -286,37 +303,21 @@ public:
 	}
 
 	// return current freshness - automatic UNFRESH
-	bool isBool()
-	{
-		return ( type == CFG_TYPE_BOOLEAN );
-	}
-	bool isColor()
-	{
-		return ( type == CFG_TYPE_COLOR );
-	}
-	bool isVector()
-	{
-		return ( type == CFG_TYPE_VECTOR );
-	}
-	bool isColorVector()
-	{
-		return ( type == CFG_TYPE_COLOR || type == CFG_TYPE_VECTOR );
-	}
-	bool isInt()
-	{
-		return ( type == CFG_TYPE_INTEGER || 
-				 type == CFG_TYPE_LONG || 
-				 type == CFG_TYPE_BYTE ||  
-				 type == CFG_TYPE_BOOLEAN );
-	}
-	
+	bool isBool()			{ return ( type == CFG_TYPE_BOOLEAN ); }
+	bool isColor()			{ return ( type == CFG_TYPE_COLOR ); }
+	bool isVector()			{ return ( type == CFG_TYPE_VECTOR ); }
+	bool isColorVector()	{ return ( type == CFG_TYPE_COLOR || type == CFG_TYPE_VECTOR );	}
+	bool isInt()			{ return ( type == CFG_TYPE_INTEGER || type == CFG_TYPE_LONG || type == CFG_TYPE_BYTE ||  type == CFG_TYPE_BOOLEAN ); }
+	bool isString()			{ return ( type == CFG_TYPE_STRING ); }
+
 	// Cinder Param ingtegration
 #ifdef CINDER
-	float*		getPointer(int i)	{ return &(watchFloat[i]); }
-	bool*		getPointerBool()	{ return &watchBool; }
-	int*		getPointerInt()		{ return &watchInt; }
-	Color*		getPointerColor()	{ return &watchColor; }
-	Vec3f*		getPointerVector()	{ return &watchVector; }
+	float*			getPointer(int i)	{ return &(watchFloat[i]); }
+	bool*			getPointerBool()	{ return &watchBool; }
+	int*			getPointerInt()		{ return &watchInt; }
+	Color*			getPointerColor()	{ return &watchColor; }
+	Vec3f*			getPointerVector()	{ return &watchVector; }
+	std::string*	getPointerString()	{ return &watchString; }
 	// update param pointers
 	void updatePointers(int i)
 	{
@@ -325,6 +326,9 @@ public:
 		{
 			watchBool = (bool) val;
 			watchInt = (int) val;
+			//printf("UPDATE WATCHER 0 watchString [%d] [%s]\n",(int)&watchString,watchString.c_str());
+			watchString.assign( strval );
+			//printf("UPDATE WATCHER 1 watchString [%d] [%s]\n",(int)&watchString,watchString.c_str());
 		}
 		watchFloat[i] = val;
 		watchColor[i] = val / 255.0f;
@@ -412,7 +416,8 @@ public:
 	
 	// Setters
 	void updateLastValue(int id, int i)	{ params[id]->vec[i].updateLastValue(); }
-	void setDummy(int id, bool _b=true)		{ params[id]->dummy = _b; }
+	void setDummy(int id, bool _e=false)			{ params[id]->dummy = true; params[id]->editable = _e; }
+	void setReadOnly(int id, bool _ro=true)			{ params[id]->editable = ! _ro; }
 	void setLimits(int id, float vmin, float vmax)	{ this->setLimits(id,0,vmin,vmax); }
 	void setLimitsR(int id, float vmin, float vmax) { this->setLimits(id,0,vmin,vmax); }
 	void setLimitsG(int id, float vmin, float vmax) { this->setLimits(id,1,vmin,vmax); }
@@ -472,7 +477,14 @@ public:
 	std::string getValueLabel(short id, int key);
 	virtual void guiUpdateValueLabels(int id) {}	// auto update GUI
 
+	// Generic flags
+	void setFlag(int id, char f)	{ params[id]->flag = f; }
+	bool testFlag(int id, char f)	{ return (params[id]->flag == f); }
+	char getFlag(int id)			{ return params[id]->flag; }
+
 	// Getters
+	short getParamCount()				{ return paramCount; }
+	ciConfigParam* getParamPtr(short i)	{ return params[i]; }
 	float getLastValue(int id, int i)	{ return params[id]->vec[i].getLastValue(); }
 	const std::string& getName(int id)	{ return params[id]->name; }
 	short getType(int id)		{ return params[id]->type; }
@@ -482,22 +494,24 @@ public:
 	bool isInt(short id)		{ return params[id]->isInt(); }				// integer type?
 	bool isColor(short id)		{ return params[id]->isColor(); }			// color type?
 	bool isVector(short id)		{ return params[id]->isVector(); }			// vector type?
+	bool isString(short id)		{ return params[id]->isString(); }			// vector type?
 	void unfresh()				{ freshness = false; }						// global freshness - automatic UNFRESH
 	//bool isFresh(int id, int i=0) { return params[id]->vec[i].fresh; }	// individual freshness
 #ifdef CINDER
 	// pointers
-	float* getPointer(int id, int i)	{ return (params[id]->getPointer(i)); }
-	float* getPointer(int id)			{ return this->getPointer(id,0); }
-	float* getPointerR(int id)			{ return this->getPointer(id,0); }
-	float* getPointerG(int id)			{ return this->getPointer(id,1); }
-	float* getPointerB(int id)			{ return this->getPointer(id,2); }
-	float* getPointerX(int id)			{ return this->getPointer(id,0); }
-	float* getPointerY(int id)			{ return this->getPointer(id,1); }
-	float* getPointerZ(int id)			{ return this->getPointer(id,2); }
-	bool* getPointerBool(int id)		{ return (params[id]->getPointerBool()); }
-	int* getPointerInt(int id)			{ return (params[id]->getPointerInt()); }
-	Color* getPointerColor(int id)		{ return (params[id]->getPointerColor()); }
-	Vec3f* getPointerVector(int id)		{ return (params[id]->getPointerVector()); }
+	float* getPointer(int id, int i)		{ return (params[id]->getPointer(i)); }
+	float* getPointer(int id)				{ return this->getPointer(id,0); }
+	float* getPointerR(int id)				{ return this->getPointer(id,0); }
+	float* getPointerG(int id)				{ return this->getPointer(id,1); }
+	float* getPointerB(int id)				{ return this->getPointer(id,2); }
+	float* getPointerX(int id)				{ return this->getPointer(id,0); }
+	float* getPointerY(int id)				{ return this->getPointer(id,1); }
+	float* getPointerZ(int id)				{ return this->getPointer(id,2); }
+	bool* getPointerBool(int id)			{ return (params[id]->getPointerBool()); }
+	int* getPointerInt(int id)				{ return (params[id]->getPointerInt()); }
+	Color* getPointerColor(int id)			{ return (params[id]->getPointerColor()); }
+	Vec3f* getPointerVector(int id)			{return (params[id]->getPointerVector()); }
+	std::string* getPointerString(int id)	{ return (params[id]->getPointerString()); }
 #endif
 	// Get limits
 	float getMin(int id)	{ return this->getMin(id, 0); }
@@ -596,22 +610,21 @@ public:
 	
 	//
 	// READ / SAVE to file
-	std::string getFullFilename(const char *filename, const char* path=NULL);
-	virtual int readFile(const char *filename);
-	virtual int saveFile(const char *filename);
-	const std::string getSaveTime()	{ return saveTime; }
+	std::string getFullFilename(const std::string & filename, const std::string & path="");
+	const std::string getSaveTime()			{ return saveTime; }
+	const std::string getCurrentFileName()	{ return currentFileName; }
 	// Shortcuts
-	virtual void setFile(const char *filename, const char* path=NULL);
-	virtual int useFile(const char *filename, const char* path=NULL);
-	virtual int save() { return this->saveFile(NULL); }
-	virtual int load() { return this->readFile(NULL); }
+	virtual void setFile(const std::string & filename, const std::string & path="");
+	virtual int useFile(const std::string & filename, const std::string & path="");
+	virtual int save() { return this->saveFile(); }
+	virtual int load() { return this->readFile(); }
 	
 	//
 	// Presets
-	void setPresets(int presetCount);
-	void presetAddParamFrom(ciConfig *src, int id);
-	int savePreset(int i);
-	int loadPreset(int i);
+	void makePresets(int presetCount=CONFIG_PRESET_COUNT, bool _auto=true);
+	void addParamToPreset(int id);
+	int savePreset(char c);
+	int loadPreset(char c);
 
 #ifdef __OBJC__
 	// Cococa integration
@@ -629,17 +642,17 @@ public:
 	
 protected:
 	// Parameter index
-	ciConfig		*parent;			// reference to parent config
+	ciConfig		*parent;				// reference to parent config
 	std::vector<ciConfigParam*>	params;
 	std::string		currentFileName;
 	std::string		saveTime;
 	short			paramCount;
 	bool			freshness;
-	bool			inPostSetCallback;	// flag not to fall into a callback loop
+	bool			inPostSetCallback;		// flag not to fall into a callback loop
 	bool			bStarted;
 
 	// presets
-	std::vector<ciConfig*>	presets;
+	std::map<char,ciConfig*>	presets;	// key = keyboard keys '1'..'0'
 	
 	
 	// MIDI
@@ -672,6 +685,8 @@ protected:
 	
 	//
 	// Methods
+	int readFile(const std::string & filename="");
+	int saveFile(const std::string & filename="");
 	void pushParam(int id, ciConfigParam* p);
 	bool isNumber(int id);
 	bool isVector(int id);

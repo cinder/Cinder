@@ -2,13 +2,13 @@
 //  ciConfigGuiParams.cpp
 //
 //  Created by Roger Sodre on 08/04/2010
-//  Copyright 2010 Studio Avante. All rights reserved.
+//  Copyright 2011 Studio Avante. All rights reserved.
 //
 
 #include "ciConfigGuiParams.h"
 #include <sys/time.h>
 
-using namespace ci;
+using namespace cinder;
 using namespace ci::app;
 using namespace std;
 
@@ -35,7 +35,7 @@ namespace cinder {
 	// SETTERS
 	//
 	// Virtual
-	void ciConfigGuiParams::guiAddGroup( std::string _name )
+	void ciConfigGuiParams::guiAddGroup( const std::string & _name )
 	{
 		int w = this->guiGetColumnWidth();
 		int h = getWindowHeight();
@@ -43,7 +43,7 @@ namespace cinder {
 		int y = 0;
 		this->guiAddGroup( _name, x, y, w, h );
 	}
-	void ciConfigGuiParams::guiAddGroup( std::string _name, int x, int y, int w, int h, int wv )
+	void ciConfigGuiParams::guiAddGroup( const std::string & _name, int x, int y, int w, int h, int wv )
 	{
 		static stringstream options;
 		options.str("");
