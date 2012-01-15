@@ -56,6 +56,7 @@ class Light {
 	void update( const Camera &relativeCamera ) const;
 
 	void setShadowParams( float aShadowFOV, float aShadowNear, float aShadowFar );
+	void setShadowParams( float aShadowFOV, float aShadowAspect, float aShadowNear, float aShadowFar );	// ROGER
 	void setShadowRenderMatrices() const;
 	Matrix44f getShadowTransformationMatrix( const Camera &camera ) const;
 	const CameraPersp&	getShadowCamera() const { return mShadowCam; }
