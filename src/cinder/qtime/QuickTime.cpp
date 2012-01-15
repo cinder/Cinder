@@ -301,6 +301,7 @@ float MovieBase::getCurrentTime() const
 void MovieBase::seekToTime( float seconds )
 {
 	::SetMovieTimeValue( getObj()->mMovie, ::TimeValue( seconds * ::GetMovieTimeScale( getObj()->mMovie ) ) );
+	::MoviesTask( getObj()->mMovie, 0 );	// ROGER
 }
 
 void MovieBase::seekToFrame( int frame )
