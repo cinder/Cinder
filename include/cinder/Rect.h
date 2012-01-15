@@ -32,7 +32,7 @@ namespace cinder {
 template<typename T>
 class RectT {
  public:
-	RectT() {}
+	RectT() :x1(0), y1(0), x2(0), y2(0) {}
 	/** Initializes the rectangle to be the bounding box of \a points **/
 	RectT( const std::vector<Vec2<T> > &points );
 	RectT( T aX1, T aY1, T aX2, T aY2 ) {
@@ -65,7 +65,7 @@ class RectT {
 	RectT		scaledCentered( T scale ) const;
 	void		scale( T scale );
 	RectT		scaled( T scale ) const;
-
+	
 	/** \brief Is a point \a pt inside the rectangle **/
 	template<typename Y>
 	bool		contains( const Vec2<Y> &pt ) const { return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }

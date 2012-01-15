@@ -37,7 +37,7 @@ class RectT;
 template<typename T>
 class AreaT {
  public:
-	AreaT() {}
+	AreaT() :x1(0), y1(0), x2(0), y2(0) {}
 	AreaT( const Vec2<T> &UL, const Vec2<T> &LR );
 	AreaT( T aX1, T aY1, T aX2, T aY2 )
 		{ set( aX1, aY1, aX2, aY2 ); }
