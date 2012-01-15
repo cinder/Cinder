@@ -2,7 +2,7 @@
     SyphonNameboundClient.h
 	Syphon (Implementations)
 	
-    Copyright 2011-2011 bangnoise (Tom Butterworth) & vade (Anton Marini).
+    Copyright 2010-2011 bangnoise (Tom Butterworth) & vade (Anton Marini).
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without

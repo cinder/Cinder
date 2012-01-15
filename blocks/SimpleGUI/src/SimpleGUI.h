@@ -1,4 +1,10 @@
-// MowaLibs
+//
+// GUI for Cinder based on SimpleGui
+// https://github.com/vorg/MowaLibs
+// http://forum.libcinder.org/topic/simplegui
+// Adapted by Roger Sodre
+//
+// === Original copyright from mowaLibs ===
 //
 // Copyright (c) 2011, Marcin Ignac / marcinignac.com
 //

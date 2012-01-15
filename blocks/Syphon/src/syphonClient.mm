@@ -103,7 +103,8 @@ void syphonClient::setServerName(std::string serverName)
 }
 
 //
-// Dont forget to unbind() !!! ... or else the client will remain locked
+// Dont forget to unbind() !!!!!
+// ... or else the client will remain locked
 void syphonClient::bind(int unit)
 {
     NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];

@@ -1,4 +1,10 @@
-// cinderLibs
+//
+// GUI for Cinder based on SimpleGui
+// https://github.com/vorg/MowaLibs
+// http://forum.libcinder.org/topic/simplegui
+// Adapted by Roger Sodre
+//
+// === Original copyright from mowaLibs ===
 //
 // Copyright (c) 2011, Marcin Ignac / marcinignac.com
 //
@@ -1088,9 +1094,9 @@ namespace cinder { namespace sgui {
 		activeAreaBase = Rectf(0, gapY, SimpleGUI::buttonSize.x, gapY);
 		for (int i = 0 ; i < items.size(); i++) {
 			items[i].activeAreaBase = Rectf(0,
-											 gapY + (SimpleGUI::buttonSize.y+SimpleGUI::padding.y)*i,
-											 SimpleGUI::buttonSize.x,
-											 gapY + (SimpleGUI::buttonSize.y+SimpleGUI::padding.y)*i + SimpleGUI::buttonSize.y );
+											gapY + (SimpleGUI::buttonSize.y+SimpleGUI::padding.y)*i,
+											SimpleGUI::buttonSize.x,
+											gapY + (SimpleGUI::buttonSize.y+SimpleGUI::padding.y)*i + SimpleGUI::buttonSize.y );
 			activeAreaBase.x2 = items[i].activeAreaBase.x2;
 			activeAreaBase.y2 = items[i].activeAreaBase.y2;
 		}
@@ -1203,9 +1209,9 @@ namespace cinder { namespace sgui {
 		this->lastDropped = dropped;
 		activeArea = activeAreaBase + pos;
 		dropButtonActiveArea = dropButtonActiveAreaBase + pos;
-
+		
 		this->drawHeader(pos);
-
+		
 		// current value back
 		Rectf b = Rectf( activeArea.getUpperLeft(), activeArea.getUpperLeft()+SimpleGUI::buttonSize);
 		gl::color(SimpleGUI::darkColor);
