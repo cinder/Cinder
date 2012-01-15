@@ -66,6 +66,11 @@ class RectT {
 	void		scale( T scale );
 	RectT		scaled( T scale ) const;
 	
+	// ROGER
+	RectT<T>	flippedX() { return RectT<T>(x2,y1,x1,y2); }
+	RectT<T>	flippedY() { return RectT<T>(x1,y2,x2,y1); }
+	RectT<T>	flippedXY() { return RectT<T>(x2,y2,x1,y1); }
+
 	/** \brief Is a point \a pt inside the rectangle **/
 	template<typename Y>
 	bool		contains( const Vec2<Y> &pt ) const { return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
