@@ -352,9 +352,11 @@ void Fbo::bindTexture( int textureUnit, int attachment )
 	updateMipmaps( false, attachment );
 }
 
-void Fbo::unbindTexture()
+void Fbo::unbindTexture( int textureUnit )
 {
+	glActiveTexture( GL_TEXTURE0 + textureUnit );	// ROGER
 	glBindTexture( getTarget(), 0 );
+	glActiveTexture( GL_TEXTURE0 );
 }
 
 void Fbo::bindDepthTexture( int textureUnit )
