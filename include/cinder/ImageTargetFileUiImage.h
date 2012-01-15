@@ -38,7 +38,7 @@ typedef std::shared_ptr<class ImageTargetFileUiImage> ImageTargetFileUiImageRef;
 
 class ImageTargetFileUiImage : public cocoa::ImageTargetCgImage {
   public:
-	static ImageTargetRef		createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
+	static ImageTargetRef		create( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
 
 	virtual void	finalize();
 	

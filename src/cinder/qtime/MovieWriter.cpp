@@ -187,7 +187,7 @@ const MovieWriter::Format& MovieWriter::Format::operator=( const Format &format 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MovieWriter
-MovieWriter::MovieWriter( const std::string &path, int32_t width, int32_t height, const Format &format )
+MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, const Format &format )
 	: mObj( std::shared_ptr<Obj>( new Obj( path, width, height, format ) ) )
 {
 }
@@ -198,7 +198,7 @@ MovieWriter::Obj::~Obj()
 		finish();
 }
 
-MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, const Format &format )
+MovieWriter::Obj::Obj( const fs::path &path, int32_t width, int32_t height, const Format &format )
 	: mPath( path ), mWidth( width ), mHeight( height ), mFormat( format ), mFinished( false )
 {	
     OSErr       err = noErr;
@@ -208,7 +208,7 @@ MovieWriter::Obj::Obj( const std::string &path, int32_t width, int32_t height, c
 	startQuickTime();
 
     //Create movie file
-	CFStringRef strDestMoviePath = ::CFStringCreateWithCString( kCFAllocatorDefault, path.c_str(), kCFStringEncodingUTF8 );
+	CFStringRef strDestMoviePath = ::CFStringCreateWithCString( kCFAllocatorDefault, path.string().c_str(), kCFStringEncodingUTF8 );
 	err = ::QTNewDataReferenceFromFullPathCFString( strDestMoviePath, kQTNativeDefaultPathStyle, 0, &dataRef, &dataRefType );
 	::CFRelease( strDestMoviePath );
 	if( err )
@@ -297,7 +297,7 @@ OSStatus MovieWriter::Obj::encodedFrameOutputCallback( void *refCon,
 	ImageDescriptionHandle imageDescription = NULL;
 	err = ICMCompressionSessionGetImageDescription( session, &imageDescription );
 	if( ! err ) {
-		Fixed gammaLevel = FloatToFixed( obj->mFormat.mGamma );
+		Fixed gammaLevel = qtime::floatToFixed( obj->mFormat.mGamma );
 		err = ICMImageDescriptionSetProperty(imageDescription,
 						kQTPropertyClass_ImageDescription,
 						kICMImageDescriptionPropertyID_GammaLevel,

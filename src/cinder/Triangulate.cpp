@@ -40,10 +40,22 @@ void stdFree( void* userData, void* ptr )
 	free( ptr );
 }
 
+Triangulator::Triangulator( const Path2d &path, float approximationScale )
+{	
+	allocate();
+	addPath( path, approximationScale );
+}
+
 Triangulator::Triangulator( const Shape2d &shape, float approximationScale )
 {	
 	allocate();
 	addShape( shape, approximationScale );
+}
+
+Triangulator::Triangulator( const PolyLine2f &polyLine )
+{	
+	allocate();
+	addPolyLine( polyLine );
 }
 
 Triangulator::Triangulator()
@@ -79,6 +91,11 @@ void Triangulator::addPath( const Path2d &path, float approximationScale )
 {
 	vector<Vec2f> subdivided = path.subdivide( approximationScale );
 	tessAddContour( mTess.get(), 2, &subdivided[0], sizeof(float) * 2, subdivided.size() );
+}
+
+void Triangulator::addPolyLine( const PolyLine2f &polyLine )
+{
+	tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, polyLine.size() );
 }
 
 TriMesh2d Triangulator::calcMesh( Winding winding )

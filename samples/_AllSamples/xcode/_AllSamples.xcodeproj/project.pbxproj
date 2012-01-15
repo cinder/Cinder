@@ -13,6 +13,19 @@
 			buildPhases = (
 			);
 			dependencies = (
+				009F6E6A14C0FE790036C292 /* PBXTargetDependency */,
+				009F6E6C14C0FE790036C292 /* PBXTargetDependency */,
+				009F6E6E14C0FE790036C292 /* PBXTargetDependency */,
+				009F6E7014C0FE790036C292 /* PBXTargetDependency */,
+				009F6E7214C0FE790036C292 /* PBXTargetDependency */,
+				009F6E7414C0FE790036C292 /* PBXTargetDependency */,
+				009F6E7614C0FE790036C292 /* PBXTargetDependency */,
+				009F6E7814C0FE790036C292 /* PBXTargetDependency */,
+				009F6E7A14C0FE790036C292 /* PBXTargetDependency */,
+				009F6E7C14C0FE790036C292 /* PBXTargetDependency */,
+				009F6E7E14C0FE790036C292 /* PBXTargetDependency */,
+				009F6E8014C0FE790036C292 /* PBXTargetDependency */,
+				009F6E8214C0FE790036C292 /* PBXTargetDependency */,
 				0005C96F1006813C004D82BC /* PBXTargetDependency */,
 				0005C9711006813C004D82BC /* PBXTargetDependency */,
 				0005CA7710068268004D82BC /* PBXTargetDependency */,
@@ -622,6 +635,160 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = ImageFileBasic;
 		};
+		009F6E1714C0FDEA0036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E0F14C0FDE90036C292 /* BasicAppendTween.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = BasicAppendTween;
+		};
+		009F6E2114C0FDF90036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = BasicTween;
+		};
+		009F6E2B14C0FE040036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E2314C0FE040036C292 /* CustomCallback.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = CustomCallback;
+		};
+		009F6E3514C0FE130036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E2D14C0FE120036C292 /* CustomLerp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = CustomLerp;
+		};
+		009F6E3F14C0FE1D0036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E3714C0FE1D0036C292 /* DragTween.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = DragTween;
+		};
+		009F6E4914C0FE2C0036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E4114C0FE2B0036C292 /* ImageAccordion.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ImageAccordion;
+		};
+		009F6E5314C0FE440036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E4B14C0FE430036C292 /* PaletteBrowser.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = PaletteBrowser;
+		};
+		009F6E5D14C0FE4E0036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E5514C0FE4D0036C292 /* TextInputTween.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = TextInputTween;
+		};
+		009F6E6714C0FE570036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E5F14C0FE570036C292 /* VisualDictionary.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = VisualDictionary;
+		};
+		009F6E6914C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E0F14C0FDE90036C292 /* BasicAppendTween.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = BasicAppendTween;
+		};
+		009F6E6B14C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = AudioAnalysisSample;
+		};
+		009F6E6D14C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E3714C0FE1D0036C292 /* DragTween.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = DragTween;
+		};
+		009F6E6F14C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E2314C0FE040036C292 /* CustomCallback.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = CustomCallback;
+		};
+		009F6E7114C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E2D14C0FE120036C292 /* CustomLerp.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = CustomLerp;
+		};
+		009F6E7314C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E5514C0FE4D0036C292 /* TextInputTween.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = TextInputTween;
+		};
+		009F6E7514C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = AudioGenerativeAdvanced;
+		};
+		009F6E7714C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = BasicTween;
+		};
+		009F6E7914C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = AudioPlayback;
+		};
+		009F6E7B14C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E4114C0FE2B0036C292 /* ImageAccordion.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ImageAccordion;
+		};
+		009F6E7D14C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E5F14C0FE570036C292 /* VisualDictionary.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = VisualDictionary;
+		};
+		009F6E7F14C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = AudioInputSample;
+		};
+		009F6E8114C0FE790036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6E4B14C0FE430036C292 /* PaletteBrowser.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = PaletteBrowser;
+		};
 		00A11A3F135A28BF00081873 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */;
@@ -832,6 +999,15 @@
 		009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SurfaceBasic.xcodeproj; path = ../../SurfaceBasic/xcode/SurfaceBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOMultipleTargets.xcodeproj; path = ../../FBOMultipleTargets/xcode/FBOMultipleTargets.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageFileBasic.xcodeproj; path = ../../ImageFileBasic/xcode/ImageFileBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
+		009F6E0F14C0FDE90036C292 /* BasicAppendTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicAppendTween.xcodeproj; path = ../../_timeline/BasicAppendTween/xcode/BasicAppendTween.xcodeproj; sourceTree = "<group>"; };
+		009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicTween.xcodeproj; path = ../../_timeline/BasicTween/xcode/BasicTween.xcodeproj; sourceTree = "<group>"; };
+		009F6E2314C0FE040036C292 /* CustomCallback.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CustomCallback.xcodeproj; path = ../../_timeline/CustomCallback/xcode/CustomCallback.xcodeproj; sourceTree = "<group>"; };
+		009F6E2D14C0FE120036C292 /* CustomLerp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CustomLerp.xcodeproj; path = ../../_timeline/CustomLerp/xcode/CustomLerp.xcodeproj; sourceTree = "<group>"; };
+		009F6E3714C0FE1D0036C292 /* DragTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DragTween.xcodeproj; path = ../../_timeline/DragTween/xcode/DragTween.xcodeproj; sourceTree = "<group>"; };
+		009F6E4114C0FE2B0036C292 /* ImageAccordion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageAccordion.xcodeproj; path = ../../_timeline/ImageAccordion/xcode/ImageAccordion.xcodeproj; sourceTree = "<group>"; };
+		009F6E4B14C0FE430036C292 /* PaletteBrowser.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PaletteBrowser.xcodeproj; path = ../../_timeline/PaletteBrowser/xcode/PaletteBrowser.xcodeproj; sourceTree = "<group>"; };
+		009F6E5514C0FE4D0036C292 /* TextInputTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextInputTween.xcodeproj; path = ../../_timeline/TextInputTween/xcode/TextInputTween.xcodeproj; sourceTree = "<group>"; };
+		009F6E5F14C0FE570036C292 /* VisualDictionary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VisualDictionary.xcodeproj; path = ../../_timeline/VisualDictionary/xcode/VisualDictionary.xcodeproj; sourceTree = "<group>"; };
 		00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EaseGallery.xcodeproj; path = ../../EaseGallery/xcode/EaseGallery.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoronoiGpu.xcodeproj; path = ../../VoronoiGpu/xcode/VoronoiGpu.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureAdvanced.xcodeproj; path = ../../CaptureAdvanced/xcode/CaptureAdvanced.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -852,6 +1028,7 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				009F6E0E14C0FDD20036C292 /* _timeline */,
 				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */,
 				C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */,
@@ -1221,6 +1398,94 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		009F6E0E14C0FDD20036C292 /* _timeline */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E5F14C0FE570036C292 /* VisualDictionary.xcodeproj */,
+				009F6E5514C0FE4D0036C292 /* TextInputTween.xcodeproj */,
+				009F6E4B14C0FE430036C292 /* PaletteBrowser.xcodeproj */,
+				009F6E4114C0FE2B0036C292 /* ImageAccordion.xcodeproj */,
+				009F6E3714C0FE1D0036C292 /* DragTween.xcodeproj */,
+				009F6E2D14C0FE120036C292 /* CustomLerp.xcodeproj */,
+				009F6E2314C0FE040036C292 /* CustomCallback.xcodeproj */,
+				009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */,
+				009F6E0F14C0FDE90036C292 /* BasicAppendTween.xcodeproj */,
+			);
+			name = _timeline;
+			sourceTree = "<group>";
+		};
+		009F6E1014C0FDE90036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E1814C0FDEA0036C292 /* BasicAppendTween.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009F6E1A14C0FDF80036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E2214C0FDF90036C292 /* BasicTween.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009F6E2414C0FE040036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E2C14C0FE040036C292 /* CustomCallback.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009F6E2E14C0FE120036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E3614C0FE130036C292 /* CustomLerp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009F6E3814C0FE1D0036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E4014C0FE1D0036C292 /* DragTween.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009F6E4214C0FE2B0036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E4A14C0FE2C0036C292 /* ImageAccordion.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009F6E4C14C0FE430036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E5414C0FE440036C292 /* PaletteBrowser.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009F6E5614C0FE4D0036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E5E14C0FE4E0036C292 /* TextInputTween.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009F6E6014C0FE570036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6E6814C0FE570036C292 /* VisualDictionary.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		00A11A33135A28BF00081873 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1380,8 +1645,16 @@
 					ProjectRef = 0005C95510068030004D82BC /* basicApp.xcodeproj */;
 				},
 				{
+					ProductGroup = 009F6E1014C0FDE90036C292 /* Products */;
+					ProjectRef = 009F6E0F14C0FDE90036C292 /* BasicAppendTween.xcodeproj */;
+				},
+				{
 					ProductGroup = 0005C95F1006804E004D82BC /* Products */;
 					ProjectRef = 0005C95E1006804E004D82BC /* BasicParticle.xcodeproj */;
+				},
+				{
+					ProductGroup = 009F6E1A14C0FDF80036C292 /* Products */;
+					ProjectRef = 009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C986100681AF004D82BC /* Products */;
@@ -1410,6 +1683,18 @@
 				{
 					ProductGroup = 0005C9A2100681CB004D82BC /* Products */;
 					ProjectRef = 0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */;
+				},
+				{
+					ProductGroup = 009F6E2414C0FE040036C292 /* Products */;
+					ProjectRef = 009F6E2314C0FE040036C292 /* CustomCallback.xcodeproj */;
+				},
+				{
+					ProductGroup = 009F6E2E14C0FE120036C292 /* Products */;
+					ProjectRef = 009F6E2D14C0FE120036C292 /* CustomLerp.xcodeproj */;
+				},
+				{
+					ProductGroup = 009F6E3814C0FE1D0036C292 /* Products */;
+					ProjectRef = 009F6E3714C0FE1D0036C292 /* DragTween.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C9AC100681D2004D82BC /* Products */;
@@ -1452,6 +1737,10 @@
 					ProjectRef = 0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */;
 				},
 				{
+					ProductGroup = 009F6E4214C0FE2B0036C292 /* Products */;
+					ProjectRef = 009F6E4114C0FE2B0036C292 /* ImageAccordion.xcodeproj */;
+				},
+				{
 					ProductGroup = 009F01FB1136D23400636E3C /* Products */;
 					ProjectRef = 009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */;
 				},
@@ -1482,6 +1771,10 @@
 				{
 					ProductGroup = 00D716F71021335A00894269 /* Products */;
 					ProjectRef = 00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */;
+				},
+				{
+					ProductGroup = 009F6E4C14C0FE430036C292 /* Products */;
+					ProjectRef = 009F6E4B14C0FE430036C292 /* PaletteBrowser.xcodeproj */;
 				},
 				{
 					ProductGroup = 00F0B32B1039DFFD003AB416 /* Products */;
@@ -1544,12 +1837,20 @@
 					ProjectRef = 009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */;
 				},
 				{
+					ProductGroup = 009F6E5614C0FE4D0036C292 /* Products */;
+					ProjectRef = 009F6E5514C0FE4D0036C292 /* TextInputTween.xcodeproj */;
+				},
+				{
 					ProductGroup = 0005CA541006823B004D82BC /* Products */;
 					ProjectRef = 0005CA531006823B004D82BC /* TextTest.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005CA5E10068241004D82BC /* Products */;
 					ProjectRef = 0005CA5D10068241004D82BC /* VBOSample.xcodeproj */;
+				},
+				{
+					ProductGroup = 009F6E6014C0FE570036C292 /* Products */;
+					ProjectRef = 009F6E5F14C0FE570036C292 /* VisualDictionary.xcodeproj */;
 				},
 				{
 					ProductGroup = 00AE0FE8113DF18C005AFB58 /* Products */;
@@ -1852,6 +2153,69 @@
 			remoteRef = 009F02021136D23400636E3C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		009F6E1814C0FDEA0036C292 /* BasicAppendTween.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BasicAppendTween.app;
+			remoteRef = 009F6E1714C0FDEA0036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009F6E2214C0FDF90036C292 /* BasicTween.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BasicTween.app;
+			remoteRef = 009F6E2114C0FDF90036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009F6E2C14C0FE040036C292 /* CustomCallback.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CustomCallback.app;
+			remoteRef = 009F6E2B14C0FE040036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009F6E3614C0FE130036C292 /* CustomLerp.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CustomLerp.app;
+			remoteRef = 009F6E3514C0FE130036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009F6E4014C0FE1D0036C292 /* DragTween.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DragTween.app;
+			remoteRef = 009F6E3F14C0FE1D0036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009F6E4A14C0FE2C0036C292 /* ImageAccordion.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ImageAccordion.app;
+			remoteRef = 009F6E4914C0FE2C0036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009F6E5414C0FE440036C292 /* PaletteBrowser.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = PaletteBrowser.app;
+			remoteRef = 009F6E5314C0FE440036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009F6E5E14C0FE4E0036C292 /* TextInputTween.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = TextInputTween.app;
+			remoteRef = 009F6E5D14C0FE4E0036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009F6E6814C0FE570036C292 /* VisualDictionary.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = VisualDictionary.app;
+			remoteRef = 009F6E6714C0FE570036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		00A11A40135A28BF00081873 /* EaseGallery.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2147,6 +2511,71 @@
 			isa = PBXTargetDependency;
 			name = ImageFileBasic;
 			targetProxy = 009F02041136D24300636E3C /* PBXContainerItemProxy */;
+		};
+		009F6E6A14C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BasicAppendTween;
+			targetProxy = 009F6E6914C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E6C14C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AudioAnalysisSample;
+			targetProxy = 009F6E6B14C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E6E14C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DragTween;
+			targetProxy = 009F6E6D14C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E7014C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CustomCallback;
+			targetProxy = 009F6E6F14C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E7214C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CustomLerp;
+			targetProxy = 009F6E7114C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E7414C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TextInputTween;
+			targetProxy = 009F6E7314C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E7614C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AudioGenerativeAdvanced;
+			targetProxy = 009F6E7514C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E7814C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BasicTween;
+			targetProxy = 009F6E7714C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E7A14C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AudioPlayback;
+			targetProxy = 009F6E7914C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E7C14C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ImageAccordion;
+			targetProxy = 009F6E7B14C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E7E14C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = VisualDictionary;
+			targetProxy = 009F6E7D14C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E8014C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AudioInputSample;
+			targetProxy = 009F6E7F14C0FE790036C292 /* PBXContainerItemProxy */;
+		};
+		009F6E8214C0FE790036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PaletteBrowser;
+			targetProxy = 009F6E8114C0FE790036C292 /* PBXContainerItemProxy */;
 		};
 		00A11A42135A28CA00081873 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

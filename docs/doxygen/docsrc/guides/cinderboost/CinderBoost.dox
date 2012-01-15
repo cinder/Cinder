@@ -9,9 +9,9 @@ Cinder makes use of a few key Boost libraries, primarily while we wait for our s
 \section setup Setting up Boost
 If you have downloaded one of the pre-built packages from the Cinder website, Boost is already included - you're all set. However if you are building Cinder yourself from <a href="http://github.com/cinder">github</a>, or you would like to upgrade your copy of Boost from the included version, these instructions will guide you through the process.\n\n
 
-If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.44. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a>\n
+If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.48. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a>\n
 \n
-Now you'll need to put Boost inside your Cinder folder, and <b>rename it \e boost</b>. Your cinder directory should be laid out similarly to the screenshot below. At this point you should be all done if you are using Boost version 1.44, which is the version Cinder is currently built against. If you are moving to a different version of Boost, follow the build \ref build "instructions below".\n
+Now you'll need to put Boost inside your Cinder folder, and <b>rename it \e boost</b>. Your cinder directory should be laid out similarly to the screenshot below. At this point you should be all done if you are using Boost version 1.48, which is the version Cinder is currently built against. If you are moving to a different version of Boost, follow the build \ref build "instructions below".\n
 \image html cinder_finder.png
 \n
 \section use Using Boost in Cinder
@@ -19,29 +19,29 @@ For the most part, Boost is used behind-the-scenes in Cinder automatically. In c
 
 In addition to <tt>shared_ptr</tt>, Cinder makes use of the <tt>thread</tt> class in Boost. This is promoted to the <tt>std::</tt> namespace in cinder/Thread.h. Much like <tt>shared_ptr</tt>, Boost's <tt>thread</tt> class has been accepted into the official C++ specification, and will be availabe in all conformant compilers soon. In the meantime however, Cinder makes use of Boost's implementation. This means you can write cross-platform multithreaded code easily in Cinder, using classes which are future-proof. If you are not already familiar with it, there are also several tutorials on the <tt>thread</tt> class as well. You might start with <a href="http://www.drdobbs.com/cpp/184401518">this article</a> in Dr. Dobb's, followed by its <a href="http://www.ddj.com/cpp/211600441">update article</a>.\n\n
 
-The <tt>shared_ptr</tt> library, like many Boost libraries, is a header-only library and consequently has no link dependencies. However <tt>thread</tt> does require users to link against both \c libboost_thread and \c libboost_date_time. On Mac OS X, these libraries are statically linked into Cinder itself, so users don't need to worry about explicitly linking against them once Cinder has been built. Under Windows, things aren't too different - the libraries use Visual C++'s autolinking mechanism to find the libraries automatically, so they don't need to be added to your project explicitly. As a convenience to users, Cinder's link dependencies are shipped with the downloadable archives in addition to being stored as binaries in the github repository. They are located in <em>cinder/lib/macosx</em> and <em>cinder/lib/msw</em>.\n\n
+The <tt>shared_ptr</tt> library, like many Boost libraries, is a header-only library and consequently has no link dependencies. However <tt>thread</tt> and some others do require users to link against them. On Mac OS X, these libraries are statically linked into Cinder itself, so users don't need to worry about explicitly linking against them once Cinder has been built. Under Windows, things aren't too different - the libraries use Visual C++'s autolinking mechanism to find the libraries automatically, so they don't need to be added to your project explicitly. As a convenience to users, Cinder's link dependencies are shipped with the downloadable archives in addition to being stored as binaries in the github repository. They are located in <em>cinder/lib/macosx</em> and <em>cinder/lib/msw</em>.\n\n
 
 
 \section build Building Boost (Advanced Users)
-If you would like to use a different version of Boost from the one that ships with Cinder, or use a compiler we don't directly support, you'll need to build two Boost libraries yourself. In order to do so you'll want to <a href="http://sourceforge.net/projects/boost/files/boost-jam/3.1.18/">download Boost.Jam</a> for your platform. This is a command line tool similar to CMake. After decompressing the zip file, move the bjam program into your boost directory. Now let's do some compiling.\n
+Here's how to compile Boost yourself. 
 \n
 <b>Mac OS X</b>:\n
 <tt>
 cd cinder/boost\n
-./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=x86 address-model=32 macosx-version=10.6 macosx-version-min=10.5 cflags=-fvisibility-inlines-hidden stage\n
+./bootstrap.sh --with-libraries=filesystem,thread,system,date_time,regex
+./b2 architecture=x86 address-model=32 macosx-version=10.6 stage
 cp stage/lib/*.a ../lib/macosx\n
 </tt>
 \em Note: If you need 64-bit support, change the <tt>address-model=32</tt> to <tt>address-model=32_64</tt>.\n
 \n
 <b>Windows</b>:\n
+From the Visual Studio Command Prompt:
 <tt>
 cd cinder\\boost\n
-bjam --toolset=msvc --with-date_time --with-filesystem --with-thread runtime-link=static link=static variant=release stage\n
-bjam --toolset=msvc --with-date_time --with-filesystem --with-thread runtime-link=static link=static variant=debug stage\n
+bootstrap\n
+b2 runtime-link=static --with-regex --with-thread --with-filesystem --with-date_time --with-system\n
 copy stage\\lib\\*.lib ..\\lib\\msw\n
 </tt>
-\em Note: If you need to build in Visual C++ 9.0, change the <tt>--toolset=msvc</tt> to <tt>--toolset=msvc-9.0</tt>.\n
-\n
 <b>iOS</b>:\n
 In order to build Boost for iOS, you'll need to append the following lines to your user-config.jam file, located at <em>cinder/boost/tools/build/v2/user-config.jam</em>.\n
 \code
@@ -60,13 +60,16 @@ using darwin : 4.2.1~iphonesim
 \n
 <em>iPhone Device</em>\n
 <tt>
-./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=arm target-os=iphone macosx-version=iphone-3.2 stage\n
+./bootstrap.sh --with-libraries=filesystem,thread,system,date_time,regex\n
+./b2 architecture=arm target-os=iphone macosx-version=iphone-4.3 stage\n
 cp stage/lib/*.a ../lib/ios\n
 </tt>
 \n
 <em>iPhone Simulator</em>\n
 <tt>
-./bjam --toolset=darwin --link=static --with-filesystem --with-date_time --with-thread architecture=x86 target-os=iphone macosx-version=iphonesim-3.2 stage\n
+./bootstrap.sh --with-libraries=filesystem,thread,system,date_time,regex\n
+./b2 architecture=x86 target-os=iphone macosx-version=iphonesim-4.3 stage\n
 cp stage/lib/*.a ../lib/ios-sim\n
 </tt>
+\em Note: to strip armv6, use <tt>lipo -remove armv6 lib/ios/libboost_regex.a -output lib/ios/libboost_regex.a</tt>
 */

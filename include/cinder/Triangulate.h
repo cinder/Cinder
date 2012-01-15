@@ -39,13 +39,19 @@ class Triangulator {
 
 	//! Default constructor
 	Triangulator();
+	//! Constructs using a Path2d. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space
+	Triangulator( const Path2d &path, float approximationScale = 1.0f );
 	//! Constructs using a Shape2d. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space
 	Triangulator( const Shape2d &shape, float approximationScale = 1.0f );
+	//! Constructs using a PolyLine2f.
+	Triangulator( const PolyLine2f &polyLine );
 
 	//! Adds a Shape2d to the tesselation. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space	
 	void		addShape( const Shape2d &path, float approximationScale = 1.0f );
 	//! Adds a Path2d to the tesselation. \a approximationScale represents how smooth the tesselation is, with 1.0 corresponding to 1:1 with screen space	
 	void		addPath( const Path2d &path, float approximationScale = 1.0f );
+	//! Adds a PolyLine2f to the tesselation.
+	void		addPolyLine( const PolyLine2f &polyLine );
 
 	//! Performs the tesselation, returning a TriMesh2d
 	TriMesh2d		calcMesh( Winding winding = WINDING_ODD );

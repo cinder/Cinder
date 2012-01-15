@@ -77,10 +77,10 @@ class AppImplMsw {
 	
 	static Buffer	loadResource( int id, const std::string &type );
 	
-	static std::string	getAppPath();	
-	static std::string	getOpenFilePath( const std::string &initialPath, std::vector<std::string> extensions );
-	static std::string	getSaveFilePath( const std::string &initialPath, std::vector<std::string> extensions );
-	static std::string	getFolderPath( const std::string &initialPath );
+	static fs::path		getAppPath();	
+	static fs::path		getOpenFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
+	static fs::path		getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
+	static fs::path		getFolderPath( const fs::path &initialPath );
 	
  protected:
 	class App	*mApp;

@@ -58,7 +58,7 @@ class SafeNsString {
   public:
 	SafeNsString() {}
 	//! Creates a SafeNsString using an existing NSString. This constructor automatically increments the retain count.
-	SafeNsString( const NSString *str );
+	SafeNsString( NSString *str );
 	//! Creates a SafeNsString by converting a std::string.
 	SafeNsString( const std::string &str );
 	
@@ -66,7 +66,7 @@ class SafeNsString {
 	operator std::string() const;
 	
   private:
-	static void safeRelease( const NSString *ptr );
+	static void safeRelease( NSString *ptr );
 	
 	std::shared_ptr<NSString>	mPtr;
 };

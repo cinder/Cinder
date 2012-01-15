@@ -68,7 +68,7 @@ void IStream::read( std::string *s )
 	*s = string( &chars[0] );
 }
 
-void IStream::read( ci::fs::path *p )
+void IStream::read( fs::path *p )
 {
 	std::string tempS;
 	read( &tempS );
@@ -153,7 +153,7 @@ void OStream::writeData( const void *src, size_t size )
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // IStreamFile
-IStreamFileRef IStreamFile::createRef( FILE *file, bool ownsFile, int32_t defaultBufferSize )
+IStreamFileRef IStreamFile::create( FILE *file, bool ownsFile, int32_t defaultBufferSize )
 {
 	return IStreamFileRef( new IStreamFile( file, ownsFile, defaultBufferSize ) );
 }
@@ -252,7 +252,7 @@ void IStreamFile::IORead( void *t, size_t size )
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // OStreamFile
-OStreamFileRef OStreamFile::createRef( FILE *file, bool ownsFile )
+OStreamFileRef OStreamFile::create( FILE *file, bool ownsFile )
 {
 	return OStreamFileRef( new OStreamFile( file, ownsFile ) );
 }
@@ -297,7 +297,7 @@ void OStreamFile::IOWrite( const void *t, size_t size )
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // IoStreamFile
-IoStreamFileRef IoStreamFile::createRef( FILE *file, bool ownsFile, int32_t defaultBufferSize )
+IoStreamFileRef IoStreamFile::create( FILE *file, bool ownsFile, int32_t defaultBufferSize )
 {
 	return IoStreamFileRef( new IoStreamFile( file, ownsFile, defaultBufferSize ) );
 }
@@ -403,7 +403,7 @@ void IoStreamFile::IOWrite( const void *t, size_t size )
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // StreamMem
-IStreamMemRef IStreamMem::createRef( const void *data, size_t size )
+IStreamMemRef IStreamMem::create( const void *data, size_t size )
 {
 	return IStreamMemRef( new IStreamMem( data, size ) );
 }
@@ -509,11 +509,11 @@ void OStreamMem::IOWrite( const void *t, size_t size )
 
 /////////////////////////////////////////////////////////////////////
 
-IStreamFileRef loadFileStream( const std::string &path )
+IStreamFileRef loadFileStream( const fs::path &path )
 {
-	FILE *f = fopen( path.c_str(), "rb" );
+	FILE *f = fopen( path.string().c_str(), "rb" );
 	if( f ) {
-		IStreamFileRef s = IStreamFile::createRef( f, true );
+		IStreamFileRef s = IStreamFile::create( f, true );
 		s->setFileName( path );
 		return s;
 	}
@@ -521,14 +521,14 @@ IStreamFileRef loadFileStream( const std::string &path )
 		return IStreamFileRef();
 }
 
-std::shared_ptr<OStreamFile> writeFileStream( const std::string &path, bool createParents )
+std::shared_ptr<OStreamFile> writeFileStream( const fs::path &path, bool createParents )
 {
 	if( createParents ) {
-		createDirectories( getPathDirectory( path ) );
+		createDirectories( path.parent_path() );
 	}
-	FILE *f = fopen( expandPath( path ).c_str(), "wb" );
+	FILE *f = fopen( expandPath( path ).string().c_str(), "wb" );
 	if( f ) {
-		OStreamFileRef s = OStreamFile::createRef( f, true );
+		OStreamFileRef s = OStreamFile::create( f, true );
 		s->setFileName( path );
 		return s;
 	}
@@ -536,11 +536,11 @@ std::shared_ptr<OStreamFile> writeFileStream( const std::string &path, bool crea
 		return std::shared_ptr<OStreamFile>();
 }
 
-IoStreamFileRef readWriteFileStream( const std::string &path )
+IoStreamFileRef readWriteFileStream( const fs::path &path )
 {
-	FILE *f = fopen( expandPath( path ).c_str(), "w+b" );
+	FILE *f = fopen( expandPath( path ).string().c_str(), "w+b" );
 	if( f ) {
-		IoStreamFileRef s = IoStreamFile::createRef( f, true );
+		IoStreamFileRef s = IoStreamFile::create( f, true );
 		s->setFileName( path );
 		return s;
 	}

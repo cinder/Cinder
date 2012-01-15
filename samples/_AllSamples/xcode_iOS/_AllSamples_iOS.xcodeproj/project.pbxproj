@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				009F6EAE14C0FEF30036C292 /* PBXTargetDependency */,
 				0087D1DC12CD7F1F002CD69F /* PBXTargetDependency */,
 				0087D32F12CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33112CD82C2002CD69F /* PBXTargetDependency */,
@@ -125,6 +126,20 @@
 			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = FBOBasic_iOS;
 		};
+		009F6EAB14C0FEEC0036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
+			remoteInfo = DragTween;
+		};
+		009F6EAD14C0FEF30036C292 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
+			remoteInfo = DragTween;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -135,12 +150,14 @@
 		0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic_iOS.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = iPhoneAccelerometer.xcodeproj; path = ../../iPhoneAccelerometer/xcode/iPhoneAccelerometer.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest_iOS.xcodeproj; path = ../../TextTest/xcode_iOS/TextTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DragTween.xcodeproj; path = ../../_timeline/DragTween/xcode_iOS/DragTween.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		0087D08412CD7DC5002CD69F = {
 			isa = PBXGroup;
 			children = (
+				009F6EA214C0FED70036C292 /* _timeline */,
 				0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */,
 				0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */,
 				0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */,
@@ -207,6 +224,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		009F6EA214C0FED70036C292 /* _timeline */ = {
+			isa = PBXGroup;
+			children = (
+				009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */,
+			);
+			name = _timeline;
+			sourceTree = "<group>";
+		};
+		009F6EA414C0FEEB0036C292 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009F6EAC14C0FEEC0036C292 /* DragTween.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXProject section */
@@ -236,6 +269,10 @@
 				{
 					ProductGroup = 0087D25712CD80A7002CD69F /* Products */;
 					ProjectRef = 0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */;
+				},
+				{
+					ProductGroup = 009F6EA414C0FEEB0036C292 /* Products */;
+					ProjectRef = 009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */;
 				},
 				{
 					ProductGroup = 0087D2D412CD81D3002CD69F /* Products */;
@@ -311,6 +348,13 @@
 			remoteRef = 0087D32912CD828A002CD69F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		009F6EAC14C0FEEC0036C292 /* DragTween.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DragTween.app;
+			remoteRef = 009F6EAB14C0FEEC0036C292 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXTargetDependency section */
@@ -348,6 +392,11 @@
 			isa = PBXTargetDependency;
 			name = FBOBasic_iOS;
 			targetProxy = 0087D33812CD82C2002CD69F /* PBXContainerItemProxy */;
+		};
+		009F6EAE14C0FEF30036C292 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DragTween;
+			targetProxy = 009F6EAD14C0FEF30036C292 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

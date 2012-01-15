@@ -78,7 +78,7 @@ class AppScreenSaver : public App {
 	//! Ignored for ScreenSavers
 	virtual void			quit() {}
 
-	virtual std::string		getAppPath();
+	virtual fs::path		getAppPath();
 
 #if defined( CINDER_MAC )
 	static void	executeLaunch( AppScreenSaver *app, class Renderer *renderer, const char *title ) { sInstance = app; App::executeLaunch( app, renderer, title, 0, 0 ); }

@@ -205,7 +205,7 @@ Vec2i AppBasic::getMousePos() const
 #endif
 }
 
-std::string AppBasic::getAppPath()
+fs::path AppBasic::getAppPath()
 {
 #if defined( CINDER_COCOA )
 	return [mImpl getAppPath];

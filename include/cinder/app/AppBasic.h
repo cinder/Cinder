@@ -155,7 +155,7 @@ class AppBasic : public App {
 	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }
 
 	//! Returns the path to the application on disk
-	virtual std::string			getAppPath();
+	virtual fs::path	getAppPath();
 
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond

@@ -23,7 +23,7 @@ class QTimeIterApp : public AppBasic {
 	void update();
 	void draw();
 
-	void loadMovieFile( const std::string &path );
+	void loadMovieFile( const fs::path &path );
 
 	qtime::MovieSurface	mMovie;
 	Surface				mSurface;
@@ -39,7 +39,7 @@ void QTimeIterApp::prepareSettings( Settings *settings )
 
 void QTimeIterApp::setup()
 {
-	string moviePath = getOpenFilePath();
+	fs::path moviePath = getOpenFilePath();
 	if( ! moviePath.empty() )
 		loadMovieFile( moviePath );
 }
@@ -50,7 +50,7 @@ void QTimeIterApp::keyDown( KeyEvent event )
 		setFullScreen( ! isFullScreen() );
 	}
 	else if( event.getChar() == 'o' ) {
-		string moviePath = getOpenFilePath();
+		fs::path moviePath = getOpenFilePath();
 		if( ! moviePath.empty() )
 			loadMovieFile( moviePath );
 	}
@@ -65,7 +65,7 @@ void QTimeIterApp::keyDown( KeyEvent event )
 		}
 		else if( event.getChar() == 's' ) {
 			if( mSurface ) {
-				string savePath = getSaveFilePath();
+				fs::path savePath = getSaveFilePath();
 				if( ! savePath.empty() ) {
 					writeImage( savePath, mSurface );
 				}
@@ -84,7 +84,7 @@ void QTimeIterApp::keyDown( KeyEvent event )
 	}
 }
 
-void QTimeIterApp::loadMovieFile( const string &moviePath )
+void QTimeIterApp::loadMovieFile( const fs::path &moviePath )
 {
 	try {
 		mMovie = qtime::MovieSurface( moviePath );

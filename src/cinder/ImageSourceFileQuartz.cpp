@@ -84,7 +84,7 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 	std::shared_ptr<const __CFDictionary> optionsDict( CFDictionaryCreate( kCFAllocatorDefault, (const void **)&keys, (const void **)&values, 1, NULL, NULL ), cocoa::safeCfRelease );
 
 	if( dataSourceRef->isFilePath() ) {
-		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath() );
+		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath().string() );
 		::CFURLRef urlRef = ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString, kCFURLPOSIXPathStyle, false );
 		sourceRef = std::shared_ptr<CGImageSource>( ::CGImageSourceCreateWithURL( urlRef, optionsDict.get() ), cocoa::safeCfRelease );
 		::CFRelease( pathString );

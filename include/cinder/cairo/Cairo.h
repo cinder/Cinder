@@ -39,6 +39,7 @@
 
 #include <string>
 #include <vector>
+#include <iomanip>
 
 // Forward declarations used by our cairo wrappers 
 struct _cairo_surface;
@@ -256,8 +257,8 @@ class Matrix
 	Matrix( double xx, double yx, double xy, double yy, double x0, double y0 );
 
 	// This is a sort of horrible technique, but we will replace this with the ci::Matrix32 that will exist one day
-	cairo_matrix_t&			getCairoMatrix() { return *reinterpret_cast<cairo_matrix_t*>( this ); }
-	const cairo_matrix_t&	getCairoMatrix() const { return *reinterpret_cast<const cairo_matrix_t*>( this ); }
+	cairo_matrix_t&			getCairoMatrix() { return *reinterpret_cast<cairo_matrix_t*>( &(this->xx) ); }
+	const cairo_matrix_t&	getCairoMatrix() const { return *reinterpret_cast<const cairo_matrix_t*>( &(this->xx) ); }
 
 	void	init( double xx, double yx, double xy, double yy, double x0, double y0 );
 	void		initIdentity();
@@ -268,16 +269,26 @@ class Matrix
 	void		scale( double sx, double sy );
 	void		rotate( double radians );
 	int32_t		invert();
-	
+
 	//! Transforms the point \a v by the matrix.
 	Vec2f	transformPoint( const Vec2f &v ) const;
 	//! Transforms the distance vector \a v by the matrix. This is similar to cairo_matrix_transform_point() except that the translation components of the transformation are ignored
 	Vec2f	transformDistance( const Vec2f &v ) const;
 
+	const Matrix& 	operator*=( const Matrix &rhs );
+
 	// this is designed to mimic cairo_matrix_t exactly
     double xx; double yx;
     double xy; double yy;
-    double x0; double y0;	
+    double x0; double y0;
+	
+	friend std::ostream& operator<<( std::ostream &lhs, const Matrix &rhs ) 
+	{
+		lhs << "|" << std::setw( 12 ) << std::setprecision( 5 ) << rhs.xx << " " << rhs.yx << "|" << std::endl;
+		lhs << "|" << std::setw( 12 ) << std::setprecision( 5 ) << rhs.xy << " " << rhs.yy << "|" << std::endl;
+		lhs << "|" << std::setw( 12 ) << std::setprecision( 5 ) << rhs.x0 << " " << rhs.y0 << "|" << std::endl;
+		return lhs;
+	}	
 };
 
 class Pattern {
@@ -540,6 +551,7 @@ class Context
 	Pattern*	getSource();
 
 	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Vec2i &dstOffset = Vec2i::zero() );
+	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Rectf &dstRect );	
 
 	void		setAntiAlias( int32_t antialias );
 	int32_t		getAntiAlias();
@@ -623,6 +635,7 @@ class Context
 	void        rectangle( double x, double y, double width, double height );
 	void        rectangle( const Rectf &r ) { rectangle( r.x1, r.y1, r.getWidth(), r.getHeight() ); }
 	void        rectangle( const Vec2f &upperLeft, const Vec2f &lowerRight );
+	void		roundedRectangle( const Rectf &r, float cornerRadius );
 	//void        glyphPath( const cairo_glyph_t *glyphs, int num_glyphs );
 	void        textPath( const char *utf8 );
 	void        relCurveTo( double dx1, double dy1, double dx2, double dy2, double dx3, double dy3 );
