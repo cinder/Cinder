@@ -130,6 +130,9 @@ class SurfaceImage : public SurfaceBase {
 	cinder::Surface&		getSurface() { return mCinderSurface; }
 	const cinder::Surface&	getSurface() const { return mCinderSurface; }
 
+	//! Call this when modifying the Surface's pixels outside of Cairo
+	void			markDirty();
+
  protected:
 	void	initCinderSurface( bool alpha, uint8_t *data, int32_t stride );
 	
@@ -269,13 +272,13 @@ class Matrix
 	void		scale( double sx, double sy );
 	void		rotate( double radians );
 	int32_t		invert();
-	
-	const Matrix& operator *=( const Matrix &rhs );
-	
+
 	//! Transforms the point \a v by the matrix.
 	Vec2f	transformPoint( const Vec2f &v ) const;
 	//! Transforms the distance vector \a v by the matrix. This is similar to cairo_matrix_transform_point() except that the translation components of the transformation are ignored
 	Vec2f	transformDistance( const Vec2f &v ) const;
+
+	const Matrix& 	operator*=( const Matrix &rhs );
 
 	// this is designed to mimic cairo_matrix_t exactly
     double xx; double yx;
@@ -551,6 +554,7 @@ class Context
 	Pattern*	getSource();
 
 	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Vec2i &dstOffset = Vec2i::zero() );
+	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Rectf &dstRect );	
 
 	void		setAntiAlias( int32_t antialias );
 	int32_t		getAntiAlias();
@@ -678,6 +682,8 @@ class Context
 	TextExtents	textExtents( const std::string &s );
 	//void        glyphExtents( const Glyph *glyphs, int num_glyphs, TextExtents *extents );	// glyphs is an array of cairo_glyph_t
 	//void		glyphExtents( const GlyphArray &glyphs, int num_glyphs, TextExtents *extents );
+
+	std::string	statusToString() const;
 
   protected:
 	cairo_t						*mCairo;

@@ -41,14 +41,23 @@ Timeline::Timeline()
 	mUseAbsoluteTime = true;
 }
 
+Timeline::Timeline( const Timeline &rhs )
+	: TimelineItem( rhs ), mDefaultAutoRemove( rhs.mDefaultAutoRemove ), mCurrentTime( rhs.mCurrentTime )
+{
+	for( s_const_iter iter = rhs.mItems.begin(); iter != rhs.mItems.end(); ++iter ) {
+		mItems.insert( make_pair( iter->first, iter->second->clone() ) );
+	}
+}
+
 void Timeline::step( float timestep )
 {
 	mCurrentTime += timestep;
-	stepTo( mCurrentTime );
+	stepTo( mCurrentTime, timestep < 0 );
 }
 
 void Timeline::stepTo( float absoluteTime )
 {	
+	bool reverse = mCurrentTime > absoluteTime;
 	mCurrentTime = absoluteTime;
 	
 	eraseMarked();
@@ -58,7 +67,7 @@ void Timeline::stepTo( float absoluteTime )
 	// Deleted items are never removed immediately, but are marked for deletion.
 	s_iter endItem = mItems.end();
 	for( s_iter iter = mItems.begin(); iter != endItem; ++iter ) {
-		iter->second->stepTo( mCurrentTime );
+		iter->second->stepTo( mCurrentTime, reverse );
 		if( iter->second->isComplete() && iter->second->getAutoRemove() )
 			iter->second->mMarkedForRemoval = true;
 	}

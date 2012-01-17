@@ -76,28 +76,77 @@ void AppImplMswBasic::run()
 	::SetForegroundWindow( mWnd );
 	::SetFocus( mWnd );
 
-	// initialize our next frame time to be definitely now
-	mNextFrameTime = -1;
-	
-	MSG msg;
+	// initialize our next frame time
+	mNextFrameTime = getElapsedSeconds();
+
+	// inner loop
 	while( ! mShouldQuit ) {
-		while( ::PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) {
-			::TranslateMessage( &msg );
-			::DispatchMessage( &msg ); 
-		}
+		// update and draw
+		mApp->privateUpdate__();
+		::RedrawWindow( mWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
+
+		// get current time in seconds
 		double currentSeconds = mApp->getElapsedSeconds();
-		if( currentSeconds >= mNextFrameTime ) {
-			mNextFrameTime = currentSeconds + 1.0 / mFrameRate;
-			mApp->privateUpdate__();
-			::RedrawWindow( mWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
+
+		// calculate time per frame in seconds
+		double secondsPerFrame = 1.0 / mFrameRate;
+
+		// determine if application was frozen for a while and adjust next frame time
+		double elapsedSeconds = currentSeconds - mNextFrameTime;
+		if(elapsedSeconds > 1.0) {
+			int numSkipFrames = (int)(elapsedSeconds / secondsPerFrame);
+			mNextFrameTime += (numSkipFrames * secondsPerFrame);
 		}
-		else
-			::Sleep( 0 );
+
+		// determine when next frame should be drawn
+		mNextFrameTime += secondsPerFrame;
+
+		// sleep and process messages until next frame
+		if(mNextFrameTime > currentSeconds)
+			sleep(mNextFrameTime - currentSeconds);
+		else {
+			MSG msg;
+			while( ::PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) {
+				::TranslateMessage( &msg );
+				::DispatchMessage( &msg );
+			}
+		}
 	}
 
 	killWindow( mFullScreen );
 	mApp->privateShutdown__();
 	delete mApp;
+}
+
+void AppImplMswBasic::sleep( double seconds )
+{
+	// create waitable timer
+	static HANDLE timer = ::CreateWaitableTimer( NULL, FALSE, NULL );
+
+	// specify relative wait time in units of 100 nanoseconds
+	LARGE_INTEGER waitTime;
+	waitTime.QuadPart = (LONGLONG)(seconds * -10000000);
+	if(waitTime.QuadPart >= 0) return;
+
+	// activate waitable timer
+	if ( !::SetWaitableTimer( timer, &waitTime, 0, NULL, NULL, FALSE ) )
+		return;
+
+	// handle events until specified time has elapsed
+	DWORD result;
+	MSG msg;
+	while( ! mShouldQuit ) {
+		result = ::MsgWaitForMultipleObjects( 1, &timer, false, INFINITE, QS_ALLINPUT );
+		if( result == (WAIT_OBJECT_0 + 1) ) {
+			// execute messages as soon as they arrive
+			while( ::PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) {
+				::TranslateMessage( &msg );
+				::DispatchMessage( &msg );
+			}
+			// resume waiting
+		}
+		else return; // time has elapsed
+	}
 }
 
 bool AppImplMswBasic::createWindow( int *width, int *height )
@@ -302,6 +351,7 @@ void AppImplMswBasic::setWindowSize( int aWindowWidth, int aWindowHeight )
 
 float AppImplMswBasic::setFrameRate( float aFrameRate )
 {
+	mFrameRate = aFrameRate;	// fix
 	return aFrameRate;
 }
 

@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{74202EDD-91D2-4D2A-B0B6-355CEB16E6BE}</ProjectGuid>
+    <ProjectGuid>{934238FD-1C01-41AE-A141-20B49245B9AD}</ProjectGuid>
     <RootNamespace>DragTweenApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

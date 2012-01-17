@@ -156,7 +156,7 @@ Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwners
 		result.setDeallocator( NSBitmapImageRepSurfaceDeallocator, const_cast<NSBitmapImageRep*>( rep ) );
 	return result;
 }
-#endif defined( CINDER_MAC )
+#endif // defined( CINDER_MAC )
 
 std::string convertCfString( CFStringRef str )
 {
