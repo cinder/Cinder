@@ -28,8 +28,10 @@
 
 namespace cinder { namespace audio {
 
+class Track;
+
 typedef int32_t					TrackId;
-typedef std::shared_ptr<class Track> TrackRef;
+typedef std::shared_ptr<class cinder::audio::Track> TrackRef;
 
 class OutputImpl;
 
