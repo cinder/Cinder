@@ -130,6 +130,9 @@ class SurfaceImage : public SurfaceBase {
 	cinder::Surface&		getSurface() { return mCinderSurface; }
 	const cinder::Surface&	getSurface() const { return mCinderSurface; }
 
+	//! Call this when modifying the Surface's pixels outside of Cairo
+	void			markDirty();
+
  protected:
 	void	initCinderSurface( bool alpha, uint8_t *data, int32_t stride );
 	
@@ -679,6 +682,8 @@ class Context
 	TextExtents	textExtents( const std::string &s );
 	//void        glyphExtents( const Glyph *glyphs, int num_glyphs, TextExtents *extents );	// glyphs is an array of cairo_glyph_t
 	//void		glyphExtents( const GlyphArray &glyphs, int num_glyphs, TextExtents *extents );
+
+	std::string	statusToString() const;
 
   protected:
 	cairo_t						*mCairo;
