@@ -765,28 +765,26 @@ void Texture::setCleanTexCoords( float maxU, float maxV )
 	}
 }
 
-	// ROGER
-	bool Texture::hasAlpha() const
-	{
-		switch (mObj->mInternalFormat) {
+bool Texture::hasAlpha() const
+{
+	switch( mObj->mInternalFormat ) {
 #if ! defined( CINDER_GLES )
-			case GL_RGBA8:
-			case GL_RGBA16:
-			case GL_RGBA32F_ARB:
-			case GL_LUMINANCE8_ALPHA8:
-			case GL_LUMINANCE16_ALPHA16:
-			case GL_LUMINANCE_ALPHA32F_ARB:
+		case GL_RGBA8:
+		case GL_RGBA16:
+		case GL_RGBA32F_ARB:
+		case GL_LUMINANCE8_ALPHA8:
+		case GL_LUMINANCE16_ALPHA16:
+		case GL_LUMINANCE_ALPHA32F_ARB:
 #endif
-			case GL_RGBA:
-			case GL_LUMINANCE_ALPHA:
-				return true;
-				break;
-			default:
-				return false;
-				break;
-		}
+		case GL_RGBA:
+		case GL_LUMINANCE_ALPHA:
+			return true;
+		break;
+		default:
+			return false;
+		break;
 	}
-	
+}
 	
 float Texture::getLeft() const
 {
