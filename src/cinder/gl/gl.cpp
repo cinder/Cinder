@@ -1371,7 +1371,7 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 	// justification: { left = -1, center = 0, right = 1 }
 	SaveColorState colorState;
 
-	static Font defaultFont( "Arial", 14 );
+	static Font defaultFont = Font::getDefault();
 	if( ! font )
 		font = defaultFont;
 

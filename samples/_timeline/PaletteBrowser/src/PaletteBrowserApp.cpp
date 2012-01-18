@@ -104,19 +104,10 @@ void PaletteBrowserApp::setup()
 
 void PaletteBrowserApp::initData( const fs::path &path )
 {
-	std::string line;
-	std::ifstream myfile( path.c_str() );
-	
-	if( myfile.is_open() ){
-		int i=0;
-		while( !myfile.eof() ){
-			std::getline( myfile, line );
-			createItem( line, i );
-			++i;
-		}
-		
-		myfile.close();
-	} else std::cout << "Unable to open file"; 
+	vector<string> lines = split( loadString( loadFile( path ) ), "\r\n" );
+
+	for( vector<string>::const_iterator lineIt = lines.begin(); lineIt != lines.end(); ++lineIt )
+		createItem( *lineIt, lineIt - lines.begin() );
 }
 
 void PaletteBrowserApp::createItem( const std::string &line, int lineNumber )

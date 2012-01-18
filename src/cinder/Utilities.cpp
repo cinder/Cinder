@@ -246,6 +246,16 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 	return result;
 }
 
+string loadString( DataSourceRef dataSource )
+{
+	Buffer loadedBuffer( dataSource );
+	size_t dataSize = loadedBuffer.getDataSize();
+	Buffer padded( dataSize + 1 );
+	memcpy( padded.getData(), loadedBuffer.getData(), dataSize );
+	(static_cast<uint8_t*>( padded.getData() ))[dataSize] = 0;
+	return string( static_cast<const char*>( padded.getData() ) );
+}
+
 wstring toUtf16( const string &utf8 )
 {
 #if defined( CINDER_MSW )
