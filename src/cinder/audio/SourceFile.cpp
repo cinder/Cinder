@@ -152,7 +152,7 @@ SourceFile::SourceFile( DataSourceRef dataSourceRef )
 	OSStatus err = noErr;
 	AudioFileID aFileRef;
 	if( dataSourceRef->isFilePath() ) {
-		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath() );
+		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath().string() );
 		::CFURLRef urlRef = ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString, kCFURLPOSIXPathStyle, false );
 		err = AudioFileOpenURL( urlRef, kAudioFileReadPermission, 0, &aFileRef );
 		::CFRelease( pathString );

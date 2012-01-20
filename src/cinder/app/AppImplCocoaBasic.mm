@@ -130,6 +130,7 @@
 	[win makeKeyAndOrderFront:nil];
 	[win setInitialFirstResponder:cinderView];
 	[win setAcceptsMouseMovedEvents:YES];
+	[win setOpaque:YES];
 	// we need to get told about it when the window changes screens so we can update the display link
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowChangedScreen:) name:NSWindowDidMoveNotification object:nil];
 	[cinderView setNeedsDisplay:YES];
@@ -328,8 +329,9 @@
 
 - (void)setFrameRate:(float)aFrameRate
 {
-	// TODO: Kill current timer and replace with a new one reflecting this
-//	return aFrameRate;
+    [animationTimer invalidate];
+    mFrameRate = aFrameRate;
+    [self startAnimationTimer];
 }
 
 - (void)windowDidResignKey:(NSNotification*)aNotification

@@ -116,7 +116,7 @@ ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSou
 
 	mImageDest = NULL;
 	if( dataTarget->providesFilePath() ) {
-		cocoa::SafeCfString pathString = cocoa::createSafeCfString( dataTarget->getFilePath() );
+		cocoa::SafeCfString pathString = cocoa::createSafeCfString( dataTarget->getFilePath().string() );
 		std::shared_ptr<const __CFURL> urlRef( ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString.get(), kCFURLPOSIXPathStyle, false ), cocoa::safeCfRelease );
 		mImageDest = ::CGImageDestinationCreateWithURL( urlRef.get(), uti.get(), 1, NULL );
 	}

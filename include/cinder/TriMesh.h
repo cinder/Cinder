@@ -76,6 +76,8 @@ class TriMesh {
 	/*! Creates a vertex which can be referred to with appendTriangle() or appendIndices() */
 	void		appendVertex( const Vec3f &v ) { mVertices.push_back( v ); }
 	/*! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() */
+	void		appendVertices( const Vec3f *verts, size_t num );
+	/*! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() */
 	void		appendVertices( const Vec4d *verts, size_t num );
 	/*! Appends a normal  */
 	void		appendNormal( const Vec3f &v ) { mNormals.push_back( v ); }
@@ -127,9 +129,9 @@ class TriMesh {
 	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
 	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	std::vector<size_t>&			getIndices() { return mIndices; }		
+	std::vector<uint32_t>&			getIndices() { return mIndices; }		
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	const std::vector<size_t>&		getIndices() const { return mIndices; }		
+	const std::vector<uint32_t>&	getIndices() const { return mIndices; }		
 
 	//! Calculates the bounding box of all vertices
 	AxisAlignedBox3f	calcBoundingBox() const;
@@ -150,7 +152,7 @@ class TriMesh {
 	std::vector<Color>		mColorsRGB;
 	std::vector<ColorA>		mColorsRGBA;
 	std::vector<Vec2f>		mTexCoords;
-	std::vector<size_t>		mIndices;
+	std::vector<uint32_t>	mIndices;
 };
 
 class TriMesh2d {
@@ -191,13 +193,23 @@ class TriMesh2d {
 	void		getTriangleVertices( size_t idx, Vec2f *a, Vec2f *b, Vec2f *c ) const;
 
 	//! Returns all the vertices for a mesh in a std::vector as Vec2f objects 
+	std::vector<Vec2f>&				getVertices() { return mVertices; }
+	//! Returns all the vertices for a mesh in a std::vector as Vec2f objects 
 	const std::vector<Vec2f>&		getVertices() const { return mVertices; }
+	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each triangle face in the mesh
+	std::vector<Color>&				getColorsRGB() { return mColorsRgb; }
 	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each triangle face in the mesh
 	const std::vector<Color>&		getColorsRGB() const { return mColorsRgb; }
 	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each triangle face in the mesh
+	std::vector<ColorA>&			getColorsRGBA() { return mColorsRgba; }
+	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each triangle face in the mesh
 	const std::vector<ColorA>&		getColorsRGBA() const { return mColorsRgba; }
 	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
+	std::vector<Vec2f>&				getTexCoords() { return mTexCoords; }	
+	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
 	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	
+	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
+	std::vector<size_t>&			getIndices() { return mIndices; }		
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
 	const std::vector<size_t>&		getIndices() const { return mIndices; }		
 

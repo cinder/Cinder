@@ -445,7 +445,7 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 	for( size_t p = 0; p < numVerts; ++p ) {
 		ostringstream os;
 		os << "v " << mesh.getVertices()[p].x << " " << mesh.getVertices()[p].y << " " << mesh.getVertices()[p].z << std::endl;
-		stream->write( os.str() );
+		stream->writeData( os.str().c_str(), os.str().length() );
 	}
 
 	const bool processTexCoords = mesh.hasTexCoords() && includeUVs;
@@ -453,7 +453,7 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 		for( size_t p = 0; p < numVerts; ++p ) {
 			ostringstream os;
 			os << "vt " << mesh.getTexCoords()[p].x << " " << mesh.getTexCoords()[p].y << std::endl;
-			stream->write( os.str() );
+			stream->writeData( os.str().c_str(), os.str().length() );
 		}
 	}
 	
@@ -462,12 +462,12 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 		for( size_t p = 0; p < numVerts; ++p ) {
 			ostringstream os;
 			os << "vn " << mesh.getNormals()[p].x << " " << mesh.getNormals()[p].y << " " << mesh.getNormals()[p].z << std::endl;
-			stream->write( os.str() );
+			stream->writeData( os.str().c_str(), os.str().length() );
 		}
 	}
 	
 	const size_t numTriangles = mesh.getNumTriangles();
-	const std::vector<size_t>& indices( mesh.getIndices() );
+	const std::vector<uint32_t>& indices( mesh.getIndices() );
 	for( size_t t = 0; t < numTriangles; ++t ) {
 		ostringstream os;
 		os << "f ";
@@ -492,7 +492,7 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 			os << indices[t*3+2]+1 << " ";			
 		}
 		os << std::endl;
-		stream->write( os.str() );
+		stream->writeData( os.str().c_str(), os.str().length() );
 	}
 }
 

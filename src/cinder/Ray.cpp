@@ -24,44 +24,7 @@
 
 namespace cinder {
 
-// algorithm adapted from: http://softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
-bool Ray::calcRayIntersection( const cinder::Ray &ray, float *result ) const
-{
-	const float THRESHOLD = 0.01f;
-	const float EPSILON = 0.000001f;
-
-	Vec3f u = mDirection;
-	Vec3f v = ray.getDirection();
-	Vec3f w = getOrigin() - ray.getOrigin();
-	float a = u.dot(u);		// always >= 0
-	float b = u.dot(v);
-	float c = v.dot(v);		// always >= 0
-	float d = u.dot(w);
-	float e = v.dot(w);
-	float D = a*c - b*b;	// always >= 0
-	float sc, tc;
-
-	// compute the line parameters of the two closest points
-	if(D < EPSILON) {			// the lines are almost parallel
-		sc = 0.0f;
-		tc = (b>c ? d/b : e/c);	// use the largest denominator
-	}
-	else {
-		sc = (b*e - c*d) / D;
-		tc = (a*e - b*d) / D;
-	}
-
-	// 'sc' contains the position on the ray that is closest to the other Ray
-	*result = sc;
-
-	// get the difference of the two closest points
-	Vec3f dP = ray.calcPosition(tc) - calcPosition(sc);
-
-	// check if rays intersect (|dP| < THRESHOLD)
-	return ( dP.lengthSquared() < THRESHOLD * THRESHOLD );
-}
-
- // algorithm from "Fast, Minimum Storage Ray-Triangle Intersection"
+// algorithm from "Fast, Minimum Storage Ray-Triangle Intersection"
 bool Ray::calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result ) const
 {
 	Vec3f edge1, edge2, tvec, pvec, qvec;
@@ -110,6 +73,17 @@ bool Ray::calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, cons
 	*result = edge2.dot( qvec ) * inv_det;
 	return true;
 #endif
+}
+
+bool Ray::calcPlaneIntersection( const Vec3f &planeOrigin, const Vec3f &planeNormal, float *result ) const
+{
+	float denom = planeNormal.dot(getDirection());
+
+	if(denom != 0.0f){
+		*result = planeNormal.dot(planeOrigin - getOrigin()) / denom;
+		return true;
+	}
+	return false;
 }
 
 } // namespace cinder

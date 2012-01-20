@@ -78,7 +78,7 @@ class ColorT
 		return * this;
 	}
 
-	Vec3f get( ColorModel cm );
+	Vec3f get( ColorModel cm ) const;
 
 	T& operator[]( int n )
 	{
@@ -108,6 +108,16 @@ class ColorT
 	const ColorT<T>&	operator-=( T rhs ) { r -= rhs; g -= rhs; b -= rhs; return *this; }
 	const ColorT<T>&	operator*=( T rhs ) { r *= rhs; g *= rhs; b *= rhs; return *this; }
 	const ColorT<T>&	operator/=( T rhs ) { r /= rhs; g /= rhs; b /= rhs; return *this; }
+
+	bool operator==( const ColorT<T>& rhs ) const
+	{
+		return ( r == rhs.r ) && ( g == rhs.g ) && ( b == rhs.b );
+	}
+
+	bool operator!=( const ColorT<T>& rhs ) const
+	{
+		return ! ( *this == rhs );
+	}
 
 	typename CHANTRAIT<T>::Accum dot( const ColorT<T> &rhs ) const
 	{
@@ -145,7 +155,7 @@ class ColorT
 		}
 	}
 
-	ColorT<T> lerp( T fact, const ColorT<T> &d ) const
+	ColorT<T> lerp( float fact, const ColorT<T> &d ) const
 	{
 		return ColorT<T>( r + ( d.r - r ) * fact, g + ( d.g - g ) * fact, b + ( d.b - b ) * fact );
 	}
@@ -163,6 +173,11 @@ class ColorT
 	static ColorT<T> white()
 	{
 		return ColorT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
+	}
+
+	static ColorT<T> gray( T value )
+	{
+		return ColorT<T>( value, value, value );
 	}
 
 	operator T*(){ return (T*) this; }
@@ -252,6 +267,16 @@ class ColorAT {
 	const ColorAT<T>&	operator*=( T rhs ) { r *= rhs; g *= rhs; b *= rhs; a *= rhs; return * this; }
 	const ColorAT<T>&	operator/=( T rhs ) { r /= rhs; g /= rhs; b /= rhs; a /= rhs;	return * this; }
 
+	bool operator==( const ColorAT<T>& rhs ) const
+	{
+		return ( r == rhs.r ) && ( g == rhs.g ) && ( b == rhs.b ) && ( a == rhs.a );
+	}
+
+	bool operator!=( const ColorAT<T>& rhs ) const
+	{
+	return ! ( *this == rhs );
+	}
+
 	float length() const
 	{
 		return math<float>::sqrt( static_cast<float>( r*r + g*g + b*b ) );
@@ -296,6 +321,11 @@ class ColorAT {
 	static ColorAT<T> white()
 	{
 		return ColorAT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
+	}
+
+	static ColorT<T> gray( T value )
+	{
+		return ColorAT<T>( value, value, value, CHANTRAIT<T>::max() );
 	}
 
 	operator T*(){ return (T*) this; }

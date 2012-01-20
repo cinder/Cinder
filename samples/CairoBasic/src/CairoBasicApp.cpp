@@ -63,11 +63,11 @@ class CairoBasicApp : public AppBasic {
 void CairoBasicApp::mouseDown( MouseEvent event )
 {	
 	// create a new flower
-	float radius = Rand::randFloat( 60, 90 );
-	int numPetals = Rand::randInt( 6, 50 );
-	float outerRadius = ( 2 * M_PI * radius ) / numPetals / 2 * Rand::randFloat( 0.9f, 1.0f );
-	float innerRadius = outerRadius * Rand::randFloat( 0.2f, 0.4f );
-	mFlowers.push_back( Flower( event.getPos(), radius, outerRadius, innerRadius, numPetals, ColorA( CM_HSV, Rand::randFloat(), 1, 1, 0.65f ) ) );
+	float radius = randFloat( 60, 90 );
+	int numPetals = randInt( 6, 50 );
+	float outerRadius = ( 2 * M_PI * radius ) / numPetals / 2 * randFloat( 0.9f, 1.0f );
+	float innerRadius = outerRadius * randFloat( 0.2f, 0.4f );
+	mFlowers.push_back( Flower( event.getPos(), radius, outerRadius, innerRadius, numPetals, ColorA( CM_HSV, randFloat(), 1, 1, 0.65f ) ) );
 }
 
 void CairoBasicApp::keyDown( KeyEvent event )

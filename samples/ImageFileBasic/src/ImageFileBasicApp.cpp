@@ -22,7 +22,7 @@ class ImageFileBasicApp : public AppBasic {
 void ImageFileBasicApp::setup()
 {
 	try {
-		std::string path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
+		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() ) {
 			mTexture = gl::Texture( loadImage( path ) );
 		}
@@ -41,9 +41,9 @@ void ImageFileBasicApp::keyDown( KeyEvent event )
 		setFullScreen( false );
 	}
 	else if( event.getChar() == 'o' ) {
-		std::string path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
+		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() )
-			mTexture = gl::Texture( loadImage( path ) );
+			mTexture = gl::Texture( loadImage( path.string() ) );
 	}
 }
 

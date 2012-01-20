@@ -1,3 +1,0 @@
-#include "..\\include\\Resources.h"
-
-RES_UPGADE_U_MOV		MOV			"..\\..\\..\\samples\\data\\Upgrade_U_small.mov"

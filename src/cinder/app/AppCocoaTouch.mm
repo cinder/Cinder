@@ -70,14 +70,28 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 	setupCocoaTouchWindow( app );
 }
 
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+	[app->mState->mCinderView stopAnimation];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+	[app->mState->mCinderView startAnimation];
+}
+
 - (void) applicationWillResignActive:(UIApplication *)application
 {
 //	[cinderView stopAnimation];
+    [app->mState->mCinderView stopAnimation];
+    app->willResignActive();
 }
 
 - (void) applicationDidBecomeActive:(UIApplication *)application
 {
 //	[cinderView startAnimation];
+    [app->mState->mCinderView startAnimation];
+    app->didBecomeActive();
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -182,9 +196,9 @@ double AppCocoaTouch::getElapsedSeconds() const
 	return ( currentTime - mState->mStartTime );
 }
 
-std::string AppCocoaTouch::getAppPath()
+fs::path AppCocoaTouch::getAppPath()
 { 
-	return [[[NSBundle mainBundle] bundlePath] UTF8String];
+	return fs::path([[[NSBundle mainBundle] bundlePath] UTF8String]);
 }
 
 void AppCocoaTouch::quit()

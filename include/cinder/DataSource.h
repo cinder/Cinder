@@ -26,6 +26,7 @@
 #include "cinder/Url.h"
 #include "cinder/Buffer.h"
 #include "cinder/Stream.h"
+#include "cinder/Filesystem.h"
 
 namespace cinder {
 
@@ -36,7 +37,7 @@ class DataSource {
 	virtual bool	isFilePath() = 0;
 	virtual bool	isUrl() = 0;
 	
-	const std::string&	getFilePath();
+	const fs::path&		getFilePath();
 	const Url&			getUrl();
 	const std::string&	getFilePathHint();
 
@@ -44,7 +45,7 @@ class DataSource {
 	virtual IStreamRef	createStream() = 0;
 
   protected:
-	DataSource( const std::string &aFilePath, const Url &aUrl )
+	DataSource( const fs::path &aFilePath, const Url &aUrl )
 		: mFilePath( aFilePath ), mUrl( aUrl ) 
 	{}
 	virtual ~DataSource() {}
@@ -54,7 +55,8 @@ class DataSource {
 	void	setFilePathHint( const std::string &aFilePathHint );
 	
 	Buffer				mBuffer;
-	std::string			mFilePath, mFilePathHint;
+	fs::path			mFilePath;
+	std::string			mFilePathHint;
 	Url					mUrl;
 };
 
@@ -63,7 +65,7 @@ typedef std::shared_ptr<class DataSourcePath>	DataSourcePathRef;
 
 class DataSourcePath : public DataSource {
   public:
-	static DataSourcePathRef	createRef( const std::string &path );
+	static DataSourcePathRef	create( const fs::path &path );
 
 	virtual bool	isFilePath() { return true; }
 	virtual bool	isUrl() { return false; }
@@ -71,20 +73,20 @@ class DataSourcePath : public DataSource {
 	virtual IStreamRef	createStream();
 
   protected:
-	DataSourcePath( const std::string &path );
+	explicit DataSourcePath( const fs::path &path );
 	
 	virtual	void	createBuffer();
 	
 	IStreamFileRef	mStream;	
 };
 
-DataSourcePathRef	loadFile( const std::string &path );
+DataSourceRef	loadFile( const fs::path &path );
 
 typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
 class DataSourceUrl : public DataSource {
   public:
-	static DataSourceUrlRef	createRef( const Url &Url );
+	static DataSourceUrlRef	create( const Url &Url );
 
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return true; }
@@ -99,14 +101,14 @@ class DataSourceUrl : public DataSource {
 	IStreamUrlRef	mStream;
 };
 
-DataSourceUrlRef		loadUrl( const Url &Url );
-inline DataSourceUrlRef	loadUrl( const std::string &urlString ) { return loadUrl( Url( urlString ) ); }
+DataSourceRef			loadUrl( const Url &Url );
+inline DataSourceRef	loadUrl( const std::string &urlString ) { return loadUrl( Url( urlString ) ); }
 
 typedef std::shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 
 class DataSourceBuffer : public DataSource {
   public:
-	static DataSourceBufferRef		createRef( Buffer buffer, const std::string &filePathHint = "" );
+	static DataSourceBufferRef		create( Buffer buffer, const std::string &filePathHint = "" );
 
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return false; }

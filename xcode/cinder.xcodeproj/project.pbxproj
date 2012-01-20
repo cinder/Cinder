@@ -366,6 +366,24 @@
 		00A115391357F42400081873 /* Easing.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A115381357F42400081873 /* Easing.h */; };
 		00A1153A1357F42400081873 /* Easing.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A115381357F42400081873 /* Easing.h */; };
 		00A1153B1357F42400081873 /* Easing.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A115381357F42400081873 /* Easing.h */; };
+		00A121DD1362774F00081873 /* Timeline.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DA1362774F00081873 /* Timeline.h */; };
+		00A121DE1362774F00081873 /* TimelineItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DB1362774F00081873 /* TimelineItem.h */; };
+		00A121DF1362774F00081873 /* Tween.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DC1362774F00081873 /* Tween.h */; };
+		00A121E01362774F00081873 /* Timeline.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DA1362774F00081873 /* Timeline.h */; };
+		00A121E11362774F00081873 /* TimelineItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DB1362774F00081873 /* TimelineItem.h */; };
+		00A121E21362774F00081873 /* Tween.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DC1362774F00081873 /* Tween.h */; };
+		00A121E31362774F00081873 /* Timeline.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DA1362774F00081873 /* Timeline.h */; };
+		00A121E41362774F00081873 /* TimelineItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DB1362774F00081873 /* TimelineItem.h */; };
+		00A121E51362774F00081873 /* Tween.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A121DC1362774F00081873 /* Tween.h */; };
+		00A121E91362778200081873 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E61362778200081873 /* Timeline.cpp */; };
+		00A121EA1362778200081873 /* TimelineItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E71362778200081873 /* TimelineItem.cpp */; };
+		00A121EB1362778200081873 /* Tween.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E81362778200081873 /* Tween.cpp */; };
+		00A121EC1362778200081873 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E61362778200081873 /* Timeline.cpp */; };
+		00A121ED1362778200081873 /* TimelineItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E71362778200081873 /* TimelineItem.cpp */; };
+		00A121EE1362778200081873 /* Tween.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E81362778200081873 /* Tween.cpp */; };
+		00A121EF1362778200081873 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E61362778200081873 /* Timeline.cpp */; };
+		00A121F01362778200081873 /* TimelineItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E71362778200081873 /* TimelineItem.cpp */; };
+		00A121F11362778200081873 /* Tween.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A121E81362778200081873 /* Tween.cpp */; };
 		00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
 		00A9CF010F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */; };
 		00AA5C870F64851C009CD67F /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
@@ -570,6 +588,15 @@
 		434708D91267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DA1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DB1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
+		4354C47C1357BBED00120EE3 /* TextureFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 4354C47B1357BBED00120EE3 /* TextureFont.h */; };
+		4354C47D1357BBF200120EE3 /* TextureFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 4354C47B1357BBED00120EE3 /* TextureFont.h */; };
+		4354C47E1357BBF300120EE3 /* TextureFont.h in Headers */ = {isa = PBXBuildFile; fileRef = 4354C47B1357BBED00120EE3 /* TextureFont.h */; };
+		4354C4801357BC1100120EE3 /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4354C47F1357BC1100120EE3 /* TextureFont.cpp */; };
+		4354C4811357BC1100120EE3 /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4354C47F1357BC1100120EE3 /* TextureFont.cpp */; };
+		4354C4821357BC1100120EE3 /* TextureFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4354C47F1357BC1100120EE3 /* TextureFont.cpp */; };
+		43C432401450A8DA0095B260 /* CinderMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43C4323F1450A8DA0095B260 /* CinderMath.cpp */; };
+		43C432411450A8DA0095B260 /* CinderMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43C4323F1450A8DA0095B260 /* CinderMath.cpp */; };
+		43C432421450A8DA0095B260 /* CinderMath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43C4323F1450A8DA0095B260 /* CinderMath.cpp */; };
 		43D8B2EC11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2ED11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
 		43D8B2EE11B0C85000B61EB6 /* AccelEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */; };
@@ -751,7 +778,7 @@
 		0071BD080FB9FA2C0092E7D6 /* Display.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Display.cpp; sourceTree = "<group>"; };
 		007438400EA7924F005DD3E6 /* Capture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Capture.cpp; sourceTree = "<group>"; };
 		007438DE0EA7975A005DD3E6 /* Capture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Capture.h; sourceTree = "<group>"; };
-		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
+		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = ../../../../../../Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		0076581B11226084005547DF /* CinderResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderResources.h; sourceTree = "<group>"; };
 		007B09730E9559960052257E /* Rand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rand.cpp; sourceTree = "<group>"; };
@@ -813,6 +840,12 @@
 		00A114031355369A00081873 /* tess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tess.h; sourceTree = "<group>"; };
 		00A114041355369A00081873 /* tesselator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tesselator.h; sourceTree = "<group>"; };
 		00A115381357F42400081873 /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
+		00A121DA1362774F00081873 /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
+		00A121DB1362774F00081873 /* TimelineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineItem.h; sourceTree = "<group>"; };
+		00A121DC1362774F00081873 /* Tween.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tween.h; sourceTree = "<group>"; };
+		00A121E61362778200081873 /* Timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timeline.cpp; sourceTree = "<group>"; };
+		00A121E71362778200081873 /* TimelineItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimelineItem.cpp; sourceTree = "<group>"; };
+		00A121E81362778200081873 /* Tween.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tween.cpp; sourceTree = "<group>"; };
 		00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */ = {isa = PBXFileReference; comments = "This is unused in Cinder since it has to be linked directly into the apps, but it's present for reference."; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppScreenSaver.cpp; path = app/AppScreenSaver.cpp; sourceTree = "<group>"; };
 		00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = app/AppImplCocoaScreenSaver.h; sourceTree = "<group>"; };
 		00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = app/AppImplCocoaRendererQuartz.mm; sourceTree = "<group>"; };
@@ -885,6 +918,9 @@
 		277C2CEF1366632B00178A29 /* MatrixAlgo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatrixAlgo.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
 		434708D81267EE4300AA7349 /* Blend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blend.cpp; path = ip/Blend.cpp; sourceTree = "<group>"; };
+		4354C47B1357BBED00120EE3 /* TextureFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureFont.h; path = gl/TextureFont.h; sourceTree = "<group>"; };
+		4354C47F1357BC1100120EE3 /* TextureFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFont.cpp; path = gl/TextureFont.cpp; sourceTree = "<group>"; };
+		43C4323F1450A8DA0095B260 /* CinderMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CinderMath.cpp; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
 		43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UrlImplCocoa.mm; sourceTree = "<group>"; };
@@ -1199,6 +1235,9 @@
 				00241AB30E830DBA004D34EB /* Vector.h */,
 				003832DE0E9C03CB00ACB120 /* Stream.h */,
 				00A115381357F42400081873 /* Easing.h */,
+				00A121DA1362774F00081873 /* Timeline.h */,
+				00A121DB1362774F00081873 /* TimelineItem.h */,
+				00A121DC1362774F00081873 /* Tween.h */,
 				00B729E7115DAC2B00CD71B9 /* Timer.h */,
 				00D92FE00EB8CC7200EE9D75 /* Url.h */,
 				43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */,
@@ -1245,6 +1284,7 @@
 				009EE4710F7A9FAC00F17CB1 /* PolyLine.cpp */,
 				00241ABC0E830DD5004D34EB /* Camera.cpp */,
 				00241ABD0E830DD5004D34EB /* Matrix.cpp */,
+				43C4323F1450A8DA0095B260 /* CinderMath.cpp */,
 				009EE56A0F803F5600F17CB1 /* BandedMatrix.cpp */,
 				009EE56B0F803F5600F17CB1 /* BSplineFit.cpp */,
 				009EE56C0F803F5600F17CB1 /* BSpline.cpp */,
@@ -1283,6 +1323,9 @@
 				00E7163711591A580071E506 /* ImageSourceFileUiImage.mm */,
 				00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */,
 				0039FBB2115AE69B00BA0BAD /* ImageTargetFileUiImage.mm */,
+				00A121E61362778200081873 /* Timeline.cpp */,
+				00A121E71362778200081873 /* TimelineItem.cpp */,
+				00A121E81362778200081873 /* Tween.cpp */,
 			);
 			name = cinder;
 			path = ../src/cinder;
@@ -1367,6 +1410,7 @@
 				00D9A07D0EA57C5100FF5AEB /* GlslProg.h */,
 				00C14F9A0ED51A3B00549EF3 /* Fbo.h */,
 				008ACC5A0FACCB1600CAAF4D /* Vbo.h */,
+				4354C47B1357BBED00120EE3 /* TextureFont.h */,
 				00C151E40ED9C02F00549EF3 /* DisplayList.h */,
 				00C1500E0ED670DC00549EF3 /* Material.h */,
 				00C1503E0ED8C5E600549EF3 /* Light.h */,
@@ -1384,6 +1428,7 @@
 				00CE73970E92DBF80059E09B /* gl.cpp */,
 				00C14F980ED51A2700549EF3 /* Fbo.cpp */,
 				008ACC5E0FACCB2200CAAF4D /* Vbo.cpp */,
+				4354C47F1357BC1100120EE3 /* TextureFont.cpp */,
 				00C150100ED6710500549EF3 /* Material.cpp */,
 				00C151DD0ED9BDF500549EF3 /* DisplayList.cpp */,
 				00FCDC1B10D434AC006140C7 /* TileRender.cpp */,
@@ -1626,7 +1671,11 @@
 				00A1141F1355369A00081873 /* sweep.h in Headers */,
 				00A114211355369A00081873 /* tess.h in Headers */,
 				00A114221355369A00081873 /* tesselator.h in Headers */,
+				4354C47D1357BBF200120EE3 /* TextureFont.h in Headers */,
 				00A1153A1357F42400081873 /* Easing.h in Headers */,
+				00A121E01362774F00081873 /* Timeline.h in Headers */,
+				00A121E11362774F00081873 /* TimelineItem.h in Headers */,
+				00A121E21362774F00081873 /* Tween.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1744,7 +1793,11 @@
 				00A1142E1355369A00081873 /* sweep.h in Headers */,
 				00A114301355369A00081873 /* tess.h in Headers */,
 				00A114311355369A00081873 /* tesselator.h in Headers */,
+				4354C47E1357BBF300120EE3 /* TextureFont.h in Headers */,
 				00A1153B1357F42400081873 /* Easing.h in Headers */,
+				00A121DD1362774F00081873 /* Timeline.h in Headers */,
+				00A121DE1362774F00081873 /* TimelineItem.h in Headers */,
+				00A121DF1362774F00081873 /* Tween.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1880,7 +1933,11 @@
 				00A114101355369A00081873 /* sweep.h in Headers */,
 				00A114121355369A00081873 /* tess.h in Headers */,
 				00A114131355369A00081873 /* tesselator.h in Headers */,
+				4354C47C1357BBED00120EE3 /* TextureFont.h in Headers */,
 				00A115391357F42400081873 /* Easing.h in Headers */,
+				00A121E31362774F00081873 /* Timeline.h in Headers */,
+				00A121E41362774F00081873 /* TimelineItem.h in Headers */,
+				00A121E51362774F00081873 /* Tween.h in Headers */,
 				277C2CF01366632B00178A29 /* Matrix22.h in Headers */,
 				277C2CF11366632B00178A29 /* Matrix33.h in Headers */,
 				277C2CF21366632B00178A29 /* Matrix44.h in Headers */,
@@ -2054,6 +2111,11 @@
 				00A1141C1355369A00081873 /* priorityq.c in Sources */,
 				00A1141E1355369A00081873 /* sweep.c in Sources */,
 				00A114201355369A00081873 /* tess.c in Sources */,
+				4354C4811357BC1100120EE3 /* TextureFont.cpp in Sources */,
+				43C432411450A8DA0095B260 /* CinderMath.cpp in Sources */,
+				00A121EC1362778200081873 /* Timeline.cpp in Sources */,
+				00A121ED1362778200081873 /* TimelineItem.cpp in Sources */,
+				00A121EE1362778200081873 /* Tween.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2139,6 +2201,11 @@
 				00A1142B1355369A00081873 /* priorityq.c in Sources */,
 				00A1142D1355369A00081873 /* sweep.c in Sources */,
 				00A1142F1355369A00081873 /* tess.c in Sources */,
+				4354C4821357BC1100120EE3 /* TextureFont.cpp in Sources */,
+				43C432421450A8DA0095B260 /* CinderMath.cpp in Sources */,
+				00A121E91362778200081873 /* Timeline.cpp in Sources */,
+				00A121EA1362778200081873 /* TimelineItem.cpp in Sources */,
+				00A121EB1362778200081873 /* Tween.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2245,6 +2312,11 @@
 				00A1140D1355369A00081873 /* priorityq.c in Sources */,
 				00A1140F1355369A00081873 /* sweep.c in Sources */,
 				00A114111355369A00081873 /* tess.c in Sources */,
+				4354C4801357BC1100120EE3 /* TextureFont.cpp in Sources */,
+				43C432401450A8DA0095B260 /* CinderMath.cpp in Sources */,
+				00A121EF1362778200081873 /* Timeline.cpp in Sources */,
+				00A121F01362778200081873 /* TimelineItem.cpp in Sources */,
+				00A121F11362778200081873 /* Tween.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2255,7 +2327,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -2266,7 +2338,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../lib/ios/libboost_thread.a,
@@ -2285,7 +2357,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = "$(ARCHS_UNIVERSAL_IPHONE_OS)";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2297,7 +2369,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2328,7 +2400,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -2359,7 +2431,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
@@ -2394,7 +2466,6 @@
 				INSTALL_PATH = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
 					../lib/macosx/libboost_date_time.a,
@@ -2431,7 +2502,6 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
-				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../lib/macosx/libboost_thread.a,
 					../lib/macosx/libboost_date_time.a,

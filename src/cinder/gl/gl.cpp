@@ -35,6 +35,7 @@
 #include "cinder/PolyLine.h"
 #include "cinder/Path2d.h"
 #include "cinder/Shape2d.h"
+#include "cinder/Triangulate.h"
 #include <cmath>
 #include <map>
 
@@ -680,6 +681,50 @@ void drawStrokedCircle( const Vec2f &center, float radius, int numSegments )
 	delete [] verts;
 }
 
+void drawSolidEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments )
+{
+	// automatically determine the number of segments from the circumference
+	if( numSegments <= 0 ) {
+		numSegments = (int)math<double>::floor( std::max(radiusX,radiusY) * M_PI * 2 );
+	}
+	if( numSegments < 2 ) numSegments = 2;
+	
+	GLfloat *verts = new float[(numSegments+2)*2];
+	verts[0] = center.x;
+	verts[1] = center.y;
+	for( int s = 0; s <= numSegments; s++ ) {
+		float t = s / (float)numSegments * 2.0f * 3.14159f;
+		verts[(s+1)*2+0] = center.x + math<float>::cos( t ) * radiusX;
+		verts[(s+1)*2+1] = center.y + math<float>::sin( t ) * radiusY;
+	}
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	delete [] verts;
+}
+
+void drawStrokedEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments )
+{
+	// automatically determine the number of segments from the circumference
+	if( numSegments <= 0 ) {
+		numSegments = (int)math<double>::floor( std::max(radiusX,radiusY) * M_PI * 2 );
+	}
+	if( numSegments < 2 ) numSegments = 2;
+	
+	GLfloat *verts = new float[numSegments*2];
+	for( int s = 0; s < numSegments; s++ ) {
+		float t = s / (float)numSegments * 2.0f * 3.14159f;
+		verts[s*2+0] = center.x + math<float>::cos( t ) * radiusX;
+		verts[s*2+1] = center.y + math<float>::sin( t ) * radiusY;
+	}
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_LINE_LOOP, 0, numSegments );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	delete [] verts;
+}
+
 void drawSolidRect( const Rectf &rect, bool textureRectangle )
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
@@ -714,6 +759,75 @@ void drawStrokedRect( const Rectf &rect )
 	glVertexPointer( 2, GL_FLOAT, 0, verts );
 	glDrawArrays( GL_LINE_LOOP, 0, 4 );
 	glDisableClientState( GL_VERTEX_ARRAY );
+}
+
+void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner )
+{
+	// automatically determine the number of segments from the circumference
+	if( numSegmentsPerCorner <= 0 ) {
+		numSegmentsPerCorner = (int)math<double>::floor( cornerRadius * M_PI * 2 / 4 );
+	}
+	if( numSegmentsPerCorner < 2 ) numSegmentsPerCorner = 2;
+
+	Vec2f center = r.getCenter();
+
+	GLfloat *verts = new float[(numSegmentsPerCorner+2)*2*4+4];
+	verts[0] = center.x;
+	verts[1] = center.y;
+	size_t tri = 1;
+	const float angleDelta = 1 / (float)numSegmentsPerCorner * M_PI / 2;
+	const float cornerCenterVerts[8] = { r.x2 - cornerRadius, r.y2 - cornerRadius, r.x1 + cornerRadius, r.y2 - cornerRadius,
+			r.x1 + cornerRadius, r.y1 + cornerRadius, r.x2 - cornerRadius, r.y1 + cornerRadius };
+	for( size_t corner = 0; corner < 4; ++corner ) {
+		float angle = corner * M_PI / 2.0f;
+		Vec2f cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
+		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
+			Vec2f pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius, cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
+			verts[tri*2+0] = pt.x;
+			verts[tri*2+1] = pt.y;
+			++tri;
+			angle += angleDelta;
+		}
+	}
+	// close it off
+	verts[tri*2+0] = r.x2;
+	verts[tri*2+1] = r.y2 - cornerRadius;
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_TRIANGLE_FAN, 0, (numSegmentsPerCorner+1) * 4 + 2 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	delete [] verts;
+}
+
+void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner )
+{
+	// automatically determine the number of segments from the circumference
+	if( numSegmentsPerCorner <= 0 ) {
+		numSegmentsPerCorner = (int)math<double>::floor( cornerRadius * M_PI * 2 / 4 );
+	}
+	if( numSegmentsPerCorner < 2 ) numSegmentsPerCorner = 2;
+
+	GLfloat *verts = new float[(numSegmentsPerCorner+2)*2*4];
+	size_t tri = 0;
+	const float angleDelta = 1 / (float)numSegmentsPerCorner * M_PI / 2;
+	const float cornerCenterVerts[8] = { r.x2 - cornerRadius, r.y2 - cornerRadius, r.x1 + cornerRadius, r.y2 - cornerRadius,
+			r.x1 + cornerRadius, r.y1 + cornerRadius, r.x2 - cornerRadius, r.y1 + cornerRadius };
+	for( size_t corner = 0; corner < 4; ++corner ) {
+		float angle = corner * M_PI / 2.0f;
+		Vec2f cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
+		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
+			Vec2f pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius, cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
+			verts[tri*2+0] = pt.x;
+			verts[tri*2+1] = pt.y;
+			++tri;
+			angle += angleDelta;
+		}
+	}
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, verts );
+	glDrawArrays( GL_LINE_LOOP, 0, tri );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	delete [] verts;
 }
 
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
@@ -981,17 +1095,93 @@ void draw( const Shape2d &shape2d, float approximationScale )
 }
 
 #if ! defined( CINDER_GLES )
+
 void drawSolid( const Path2d &path2d, float approximationScale )
 {
-	if( path2d.getNumSegments() == 0 )
-		return;
-	std::vector<Vec2f> points = path2d.subdivide( approximationScale );
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
-	glDrawArrays( GL_POLYGON, 0, points.size() );
-	glDisableClientState( GL_VERTEX_ARRAY );	
+	draw( Triangulator( path2d ).calcMesh() );
 }
 
+void drawSolid( const Shape2d &shape2d, float approximationScale )
+{
+	draw( Triangulator( shape2d ).calcMesh() );
+}
+
+void drawSolid( const PolyLine2f &polyLine )
+{
+	draw( Triangulator( polyLine ).calcMesh() );
+}
+
+// TriMesh2d
+void draw( const TriMesh2d &mesh )
+{
+	if( mesh.getNumVertices() <= 0 )
+		return;
+
+	glVertexPointer( 2, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
+	glEnableClientState( GL_VERTEX_ARRAY );
+
+	glDisableClientState( GL_NORMAL_ARRAY );
+	
+	if( mesh.hasColorsRgb() ) {
+		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else if( mesh.hasColorsRgba() ) {
+		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else 
+		glDisableClientState( GL_COLOR_ARRAY );	
+
+	if( mesh.hasTexCoords() ) {
+		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
+		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	}
+	else
+		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
+
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_COLOR_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+// TriMesh2d
+void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCount )
+{
+	glVertexPointer( 2, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
+	glEnableClientState( GL_VERTEX_ARRAY );
+
+	glDisableClientState( GL_NORMAL_ARRAY );
+
+	if( mesh.hasColorsRgb() ) {
+		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}
+	else if( mesh.hasColorsRgba() ) {
+		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
+		glEnableClientState( GL_COLOR_ARRAY );
+	}	
+	else 
+		glDisableClientState( GL_COLOR_ARRAY );
+	
+	if( mesh.hasTexCoords() ) {
+		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
+		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	}
+	else
+		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+		
+	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
+
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_NORMAL_ARRAY );
+	glDisableClientState( GL_COLOR_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+// TriMesh
 void draw( const TriMesh &mesh )
 {
 	glVertexPointer( 3, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
@@ -1029,6 +1219,7 @@ void draw( const TriMesh &mesh )
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 }
 
+// TriMesh2d
 void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount )
 {
 	glVertexPointer( 3, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
@@ -1174,10 +1365,13 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 namespace {
 void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
 {
+	if( str.empty() )
+		return;
+
 	// justification: { left = -1, center = 0, right = 1 }
 	SaveColorState colorState;
 
-	static Font defaultFont( "Arial", 14 );
+	static Font defaultFont = Font::getDefault();
 	if( ! font )
 		font = defaultFont;
 
@@ -1260,7 +1454,11 @@ BoolState::~BoolState()
 ClientBoolState::ClientBoolState( GLint target )
 	: mTarget( target )
 {
-	glGetBooleanv( target, &mOldValue );
+#if defined( CINDER_GLES )
+    mOldValue = glIsEnabled( target );
+#else  
+    glGetBooleanv( target, &mOldValue );
+#endif
 }
 
 ClientBoolState::~ClientBoolState()

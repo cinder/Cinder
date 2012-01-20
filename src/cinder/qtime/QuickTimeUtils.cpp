@@ -204,7 +204,7 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 	return result;
 }
 
-::Movie openMovieFromPath( const std::string &path )
+::Movie openMovieFromPath( const fs::path &path )
 {
 	::Movie result;
 	QTNewMoviePropertyElement movieProps[10];
@@ -212,7 +212,7 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 
 	moviePropCount = openMovieBaseProperties( movieProps );
 
-	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, path.c_str(), kCFStringEncodingUTF8 );
+	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, path.string().c_str(), kCFStringEncodingUTF8 );
 	shared_ptr<const __CFString> pathCF = shared_ptr<const __CFString>( basePathCF, ::CFRelease );
 	// Store the movie properties in the array
 	movieProps[moviePropCount].propClass = kQTPropertyClass_DataLocation;
@@ -555,7 +555,7 @@ CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertTo
 	return result;
 }
 
-#if ! defined( __LP64__ )
+#if defined( CINDER_MSW )
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageTargetGWorld
 ImageTargetGWorldRef ImageTargetGWorld::createRef( ImageSourceRef imageSource )
@@ -616,6 +616,6 @@ GWorldPtr createGWorld( ImageSourceRef imageSource )
 	return target->getGWorld();
 }
 
-#endif // ! defined( __LP64__ )
+#endif // defined( CINDER_MSW )
 
 } } // namespace cinder::qtime

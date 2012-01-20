@@ -169,7 +169,11 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "eventTest" */;
 			compatibilityVersion = "Xcode 3.0";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* eventTest */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -215,12 +219,11 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = eventTest_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_LDFLAGS = (
-					../../../lib/libcinder_d.a,
-				);
+				OTHER_LDFLAGS = ../../../lib/libcinder_d.a;
 				PRODUCT_NAME = eventTest;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -238,12 +241,11 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = eventTest_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_LDFLAGS = (
-					../../../lib/libcinder.a,
-				);
+				OTHER_LDFLAGS = ../../../lib/libcinder.a;
 				PRODUCT_NAME = eventTest;
 				WRAPPER_EXTENSION = app;
 			};

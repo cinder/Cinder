@@ -75,17 +75,39 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 
 	std::wstring wideUser = toUtf16( user );
 	std::wstring widePassword = toUtf16( password );
-
-	mConnection = std::shared_ptr<void>( ::InternetConnect( mSession.get(), host, urlComponents.nPort, (wideUser.empty()) ? NULL : wideUser.c_str(), (widePassword.empty()) ? NULL : widePassword.c_str(), urlComponents.nScheme, 0, NULL ),
+    
+    //check for HTTP and HTTPS here because they both require the same flag in InternetConnect()
+	if( ( urlComponents.nScheme == INTERNET_SCHEME_HTTP ) ||
+       ( urlComponents.nScheme == INTERNET_SCHEME_HTTPS ) ) {
+	mConnection = std::shared_ptr<void>( ::InternetConnect( mSession.get(), host, urlComponents.nPort, (wideUser.empty()) ? NULL : wideUser.c_str(), (widePassword.empty()) ? NULL : widePassword.c_str(), INTERNET_SERVICE_HTTP, 0, NULL ),
 										safeInternetCloseHandle );
+    }else{
+        //otherwise we just want to take our best shot at the Scheme type.
+        mConnection = std::shared_ptr<void>( ::InternetConnect( mSession.get(), host, urlComponents.nPort, (wideUser.empty()) ? NULL : wideUser.c_str(), (widePassword.empty()) ? NULL : widePassword.c_str(), urlComponents.nScheme, 0, NULL ),
+                                            safeInternetCloseHandle );
+    }
 	if( ! mConnection )
 		throw StreamExc();
-
-	if( ( urlComponents.nScheme == INTERNET_SCHEME_HTTP ) ||
-		( urlComponents.nScheme == INTERNET_SCHEME_HTTPS ) ) {
+    //http and https cases broken out incase someone wishes to modify connection based off of type.
+    //it is wrong to group http with https.
+    
+    //http
+    if(urlComponents.nScheme == INTERNET_SCHEME_HTTP ) {
+        static LPCTSTR lpszAcceptTypes[] = { L"*/*", NULL };
+        mRequest = std::shared_ptr<void>( ::HttpOpenRequest( mConnection.get(), L"GET", path, NULL, NULL, lpszAcceptTypes,
+                                                            INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_RELOAD, NULL ),
+                                         safeInternetCloseHandle );
+        if( ! mRequest )
+            throw StreamExc();
+        BOOL success = ::HttpSendRequest( mRequest.get(), NULL, 0, NULL, 0);
+        if( ! success )
+            throw StreamExc();
+    }
+    //https
+	else if(urlComponents.nScheme == INTERNET_SCHEME_HTTPS ) {
 			static LPCTSTR lpszAcceptTypes[] = { L"*/*", NULL };
 			mRequest = std::shared_ptr<void>( ::HttpOpenRequest( mConnection.get(), L"GET", path, NULL, NULL, lpszAcceptTypes,
-													INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_RELOAD, NULL ),
+													INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_RELOAD | INTERNET_FLAG_SECURE, NULL ),
 											safeInternetCloseHandle );
 			if( ! mRequest )
 				throw StreamExc();
@@ -93,6 +115,7 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 			if( ! success )
 				throw StreamExc();
 	}
+    //ftp
 	else if( urlComponents.nScheme == INTERNET_SCHEME_FTP ) {
 		mRequest = std::shared_ptr<void>( ::FtpOpenFile( mConnection.get(), path, GENERIC_READ, FTP_TRANSFER_TYPE_BINARY, NULL ),
 										safeInternetCloseHandle );

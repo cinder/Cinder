@@ -1,7 +1,8 @@
 /*
  Copyright (c) 2010, The Cinder Project, All rights reserved.
-
  This code is intended for use with the Cinder C++ library: http://libcinder.org
+
+ Portions Copyright (c) 2004, Laminar Research.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -445,7 +446,7 @@ vector<Vec2f> Path2d::subdivide( float approximationScale ) const
 	return result;
 }
 
-// This technique is due to Maxim Shemanarev: http://antigrain.com/research/adaptive_bezier/index.html, but removes tangent error estimates
+// This technique is due to Maxim Shemanarev but removes his tangent error estimates
 void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, int level, vector<Vec2f> *result ) const
 {
 	const int recursionLimit = 17;
@@ -498,7 +499,7 @@ void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, co
 	subdivideQuadratic( distanceToleranceSqr, p123, p23, p3, level + 1, result );
 }
 
-// This technique is due to Maxim Shemanarev: http://antigrain.com/research/adaptive_bezier/index.html, but removes tangent error estimates
+// This technique is due to Maxim Shemanarev but removes his tangent error estimates
 void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, const Vec2f &p4, int level, vector<Vec2f> *result ) const
 {
 	const int recursionLimit = 17;
@@ -596,8 +597,14 @@ void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const 
 	subdivideCubic( distanceToleranceSqr, p1, p12, p123, p1234, level + 1, result ); 
 	subdivideCubic( distanceToleranceSqr, p1234, p234, p34, p4, level + 1, result ); 
 }
-	
-Rectf	Path2d::calcBoundingBox() const
+
+void Path2d::scale( const Vec2f &amount, Vec2f scaleCenter )
+{
+	for( vector<Vec2f>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
+		*ptIt = scaleCenter + Vec2f( ( ptIt->x - scaleCenter.x ) * amount.x, ( ptIt->y - scaleCenter.y ) * amount.y );
+}
+
+Rectf Path2d::calcBoundingBox() const
 {
 	Rectf result( Vec2f::zero(), Vec2f::zero() );
 	if( ! mPoints.empty() )
@@ -607,6 +614,229 @@ Rectf	Path2d::calcBoundingBox() const
 	}
 	
 	return result;	
+}
+
+// calcPreciseBoundingBox helper routines
+namespace {
+int	calcQuadraticBezierMonotoneRegions( const Vec2f p[3], float resultT[2] )
+{
+	int resultIdx = 0;
+	float dx = p[0].x - 2 * p[1].x + p[2].x;
+	if( dx != 0 ) {
+		float t = ( p[0].x - p[1].x ) / dx;
+		if( t > 0 && t < 1 )
+			resultT[resultIdx++] = t;
+	}
+	float dy = p[0].y - 2 * p[1].y + p[2].y;
+	if( dy != 0 ) {
+		float t = ( p[0].y - p[1].y ) / dy;
+		if( t > 0 && t < 1 )
+			resultT[resultIdx++] = t;
+	}
+	
+	return resultIdx;
+}
+
+Vec2f calcQuadraticBezierPos( const Vec2f p[3], float t )
+{
+	float nt = 1 - t;
+	return Vec2f( nt * nt * p[0].x + 2 * nt * t * p[1].x +  t * t * p[2].x, nt * nt * p[0].y + 2 * nt * t * p[1].y +  t * t * p[2].y );
+}
+
+int	calcCubicBezierMonotoneRegions( const Vec2f p[4], float resultT[4] )
+{
+	float Ax = -p[0].x + 3 * p[1].x - 3 * p[2].x + p[3].x;
+	float Bx =  3 * p[0].x - 6 * p[1].x + 3 * p[2].x;
+	float Cx = -3 * p[0].x + 3 * p[1].x;
+	float ax = 3 * Ax;
+	float bx = 2 * Bx;
+	float cx = Cx;
+
+	float Ay = -p[0].y + 3 * p[1].y - 3 * p[2].y + p[3].y;
+	float By =  3 * p[0].y - 6 * p[1].y + 3 * p[2].y;
+	float Cy = -3 * p[0].y + 3 * p[1].y;
+	float ay = 3 * Ay;
+	float by = 2 * By;
+	float cy = Cy;
+
+	int resultIdx = 0;
+	float r1[2], r2[2];
+	int o1 = solveQuadratic( ax, bx, cx, r1 );
+	int o2 = solveQuadratic( ay, by, cy, r2 );
+
+	if( o1 > 0 && r1[0] > 0 && r1[0] < 1 ) resultT[resultIdx++] = r1[0];
+	if( o1 > 1 && r1[1] > 0 && r1[1] < 1 ) resultT[resultIdx++] = r1[1];
+
+	if( o2 > 0 && r2[0] > 0 && r2[0] < 1 ) resultT[resultIdx++] = r2[0];
+	if( o2 > 1 && r2[1] > 0 && r2[1] < 1 ) resultT[resultIdx++] = r2[1];
+
+	return resultIdx;
+}
+
+Vec2f calcCubicBezierPos( const Vec2f p[4], float t )
+{
+	float nt = 1 - t;
+	float w0 = nt * nt * nt;
+	float w1 = 3 * nt * nt * t;
+	float w2 = 3 * nt * t * t;
+	float w3 = t * t * t;
+	return Vec2f( w0 * p[0].x + w1 * p[1].x + w2 * p[2].x + w3 * p[3].x, w0 * p[0].y + w1 * p[1].y + w2 * p[2].y + w3 * p[3].y );
+}
+
+} // anonymous namespace
+
+Rectf Path2d::calcPreciseBoundingBox() const
+{
+	if( mPoints.empty() )
+		return Rectf();
+	else if( mPoints.size() == 1 )
+		return Rectf( mPoints[0], mPoints[0] );
+	else if( mPoints.size() == 2 )
+		return Rectf( mPoints[0], mPoints[1] );
+	
+	Rectf result( mPoints[0], mPoints[0] );
+	size_t firstPoint = 0;
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		switch( mSegments[s] ) {
+			case CUBICTO: {
+				float monotoneT[4];
+				int monotoneCnt = calcCubicBezierMonotoneRegions( &(mPoints[firstPoint]), monotoneT );
+				for( int monotoneIdx = 0; monotoneIdx < monotoneCnt; ++monotoneIdx )
+					result.include( calcCubicBezierPos( &(mPoints[firstPoint]), monotoneT[monotoneIdx] ) );
+				result.include( mPoints[firstPoint+0] );
+				result.include( mPoints[firstPoint+3] );
+			}
+			break;
+			case QUADTO: {
+				float monotoneT[2];
+				int monotoneCnt = calcQuadraticBezierMonotoneRegions( &(mPoints[firstPoint]), monotoneT );
+				for( int monotoneIdx = 0; monotoneIdx < monotoneCnt; ++monotoneIdx )
+					result.include( calcQuadraticBezierPos( &(mPoints[firstPoint]), monotoneT[monotoneIdx] ) );
+				result.include( mPoints[firstPoint+0] );
+				result.include( mPoints[firstPoint+2] );
+			}
+			break;
+			case LINETO:
+				result.include( mPoints[firstPoint] );
+				result.include( mPoints[firstPoint+1] );
+			break;
+			case CLOSE:
+			break;
+			default:
+				throw Path2dExc();
+		}
+		
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+	
+	return result;
+}
+
+// contains() helper routines
+namespace {
+float linearYatX( const Vec2f p[2], float x )
+{
+	if( p[0].x == p[1].x ) 	return p[0].y;
+	return p[0].y + (p[1].y - p[0].y) * (x - p[0].x) / (p[1].x - p[0].x);
+}
+
+size_t linearCrossings( const Vec2f p[2], const Vec2f &pt )
+{
+	if( (p[0].x < pt.x && pt.x <= p[1].x ) ||
+		(p[1].x < pt.x && pt.x <= p[0].x )) {
+		if( pt.y > linearYatX( p, pt.x ) )
+			return 1;
+	}
+	return 0;
+}
+
+size_t cubicBezierCrossings( const Vec2f p[4], const Vec2f &pt )
+{
+	float Ax =     -p[0].x + 3 * p[1].x - 3 * p[2].x + p[3].x;
+	float Bx =  3 * p[0].x - 6 * p[1].x + 3 * p[2].x;
+	float Cx = -3 * p[0].x + 3 * p[1].x;
+	float Dx =		p[0].x - pt.x;
+
+	float Ay =     -p[0].y + 3 * p[1].y - 3 * p[2].y + p[3].y;
+	float By =  3 * p[0].y - 6 * p[1].y + 3 * p[2].y;
+	float Cy = -3 * p[0].y + 3 * p[1].y;
+	float Dy =		p[0].y;
+
+	float roots[3];
+	int numRoots = solveCubic( Ax, Bx, Cx, Dx, roots );
+
+	if( numRoots < 1)
+		return 0;
+
+	int result = 0;
+	for( int n = 0; n < numRoots; ++n )
+		if( roots[n] > 0 && roots[n] < 1 )
+			if( Ay * roots[n] * roots[n] * roots[n] + By * roots[n] * roots[n] + Cy * roots[n] + Dy < pt.y )
+				++result;
+	
+	return result;
+}
+
+size_t quadraticBezierCrossings( const Vec2f p[3], const Vec2f &pt )
+{
+	float Ax = 1.0f * p[0].x - 2.0f * p[1].x + 1.0f * p[2].x;
+	float Bx = -2.0f * p[0].x + 2.0f * p[1].x;
+	float Cx = 1.0f * p[0].x - pt.x;
+
+	float Ay = 1.0f * p[0].y - 2.0f * p[1].y + 1.0f * p[2].y;
+	float By = -2.0f * p[0].y + 2.0f * p[1].y;
+	float Cy = 1.0f * p[0].y;
+
+	float roots[2];
+	int numRoots = solveQuadratic( Ax, Bx, Cx, roots );
+
+	if( numRoots < 1)
+		return 0;
+
+	int result = 0;
+	for( int n = 0; n < numRoots; ++n )
+		if (roots[n] > 0 && roots[n] < 1 )
+			if( Ay * roots[n] * roots[n] + By * roots[n] + Cy < pt.y )
+				++result;
+	
+	return result;
+}
+} // anonymous namespace
+
+
+bool Path2d::contains( const Vec2f &pt ) const
+{
+	if( mPoints.size() <= 2 )
+		return false;
+
+	size_t firstPoint = 0;
+	size_t crossings = 0;
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		switch( mSegments[s] ) {
+			case CUBICTO:
+				crossings += cubicBezierCrossings( &(mPoints[firstPoint]), pt );
+			break;
+			case QUADTO:
+				crossings += quadraticBezierCrossings( &(mPoints[firstPoint]), pt );
+			break;
+			case LINETO:
+				crossings += linearCrossings( &(mPoints[firstPoint]), pt );
+			break;
+			case CLOSE: // ignore - we always assume closed
+			break;
+			default:
+				;//throw Path2dExc();
+		}
+		
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
+
+	Vec2f temp[2];
+	temp[0] = mPoints[mPoints.size()-1];
+	temp[1] = mPoints[0];
+	crossings += linearCrossings( &(temp[0]), pt );
+	
+	return (crossings & 1) == 1;
 }
 
 } // namespace cinder

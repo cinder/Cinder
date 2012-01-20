@@ -54,6 +54,8 @@ class AppImplMswBasic : public AppImplMsw {
 	Display*	getDisplay() { return mDisplay; }
 	
  protected:
+	void		sleep( double seconds );
+
 	bool		createWindow( int *width, int *height );
 	void		killWindow( bool wasFullScreen );
 	void		enableMultiTouch();

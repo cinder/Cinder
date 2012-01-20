@@ -39,7 +39,7 @@ using namespace std;
 
 namespace cinder { namespace cocoa {
 
-SafeNsString::SafeNsString( const NSString *str )
+SafeNsString::SafeNsString( NSString *str )
 {
 	[str retain];
 	mPtr = shared_ptr<NSString>( str, safeRelease );
@@ -51,7 +51,7 @@ SafeNsString::SafeNsString( const std::string &str )
 	[mPtr.get() retain];
 }
 
-void SafeNsString::safeRelease( const NSString *ptr )
+void SafeNsString::safeRelease( NSString *ptr )
 {
 	if( ptr )
 		[ptr release];
@@ -156,7 +156,7 @@ Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwners
 		result.setDeallocator( NSBitmapImageRepSurfaceDeallocator, const_cast<NSBitmapImageRep*>( rep ) );
 	return result;
 }
-#endif defined( CINDER_MAC )
+#endif // defined( CINDER_MAC )
 
 std::string convertCfString( CFStringRef str )
 {
@@ -222,6 +222,39 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 	
 	CFRelease( strRef );
 	CFRelease( attributes );
+	
+	return attrString;
+}
+
+CFAttributedStringRef createCfAttributedString( const std::string &str, const Font &font, const ColorA &color, bool ligate )
+{
+	CGColorRef cgColor = createCgColor( color );
+	const int ligatures = ( ligate ) ? 1 : 0;
+    CFNumberRef ligaturesRef = ::CFNumberCreate( kCFAllocatorDefault, kCFNumberIntType, &ligatures );
+	const CFStringRef keys[] = {
+		kCTFontAttributeName,
+		kCTForegroundColorAttributeName,
+		kCTLigatureAttributeName
+	};
+	const CFTypeRef values[] = {
+		font.getCtFontRef(),
+		cgColor,
+		ligaturesRef
+	};
+	
+	// Create our attributes
+	CFDictionaryRef attributes = ::CFDictionaryCreate(kCFAllocatorDefault, (const void**)&keys, (const void**)&values, sizeof(keys)/sizeof(keys[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+	assert( attributes != NULL );
+
+	CGColorRelease( cgColor );
+	
+	// Create the attributed string
+	CFStringRef strRef = CFStringCreateWithCString( kCFAllocatorDefault, str.c_str(), kCFStringEncodingUTF8 );
+	CFAttributedStringRef attrString = ::CFAttributedStringCreate( kCFAllocatorDefault, strRef, attributes );
+	
+	CFRelease( strRef );
+	CFRelease( attributes );
+	CFRelease( ligaturesRef );
 	
 	return attrString;
 }

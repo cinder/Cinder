@@ -1,15 +1,47 @@
-/*! \page CinderResources Using Resources in Cinder
+/*! \page CinderResources Assets & Resources in Cinder
 \section intro Introduction
-Most applications need to reference information outside of their own code in order to do anything very interesting. This information might be in the form of images, sounds, video, XML or any other sort of data, and when these files are built-in to the application itself they are typically referred to as \e resources. In Cinder, resources are handled as transparently as possible. Adding them to your application is simple, and loading them is nearly identical to loading a normal file or URL. By using the platform-native techniques for storing resources (as opposed to say, an external \e data folder) you can ensure your application is self-contained, removing the need for installers or the possibility of users inadvertently deleting the files your app depends on.
+Most applications need to reference data outside their own code to do anything very interesting. Cinder offers two mechanisms for including data files with your app: \e assets and \e resources. These two techniques have a lot in common. The main difference is that resources are "baked" directly into your application, and assets are separate files living alongside your application. Assets can be easily modified separately from your code, and they take a lot less work to setup, especially on Windows. However, distribution and installation can be simpler with resources since there's no way for the data your application depends on to "go missing", and it reduces the chances that a user might modify your data unexpectedly.
 
 \section layout Project File Structure
-For both single-platform and cross-platform applications, we recommend keeping your resource files in their own directory. These files are as much a part of your app as its source code, and they'll generally be managed by your version control system (say, Subversion or git) just as your C++ code or anything else in your project is. Depicted below is how we usually structure the directories in the Cinder samples, and if you don't already have your own convention, this is probably a good one to adopt:\n\n
+TinderBox creates a project layout with separate folders for both assets and resources. Since these files are as much a part of your app as its source code, they'll generally be managed by your version control system (say, git or Subversion) just as your C++ code or anything else in your project is.\n\n
 \image html resources_file_structure.png
+
 \n
-We'll get into the specifics of some of these files in later sections.
+\section assets Assets
+Assets are quite simple to use. Simply place any file you'd like to reference from your application into the \e assets folder that TinderBox has created for you. To access this file from your code, you'll want to call \ref cinder::app::App::loadAsset "loadAsset()". This is a member function of your App, but if you'd like to call it from outside your App, call the \ref cinder::app::loadAsset "app::loadAsset()" variant. The function takes one parameter, which is the simply the name of the file you'd like to use. For example, to load a PNG file as a gl::Texture from your assets folder, you'd do something like this:
+\code
+mTexture = loadImage( loadAsset( "logo.png" ) );
+\endcode
 \n
-\section mac Resources on Mac OS X & Cocoa Touch
-Under Mac OS X as well as Cocoa Touch (which includes the iPhone and iPad) resources are just normal files which are contained inside the application bundle. If you haven't before, try opening up one of these bundles yourself. Simply context-click (right-click or control-click) an application in your \e Applications folder and choose <b>Show Package Contents</b>. Here's the results of doing this with iTunes:\n\n
+Additionally, if you need to know where an asset lives in the filesystem, you can call \ref cinder::app::App::getAssetPath "getAssetPath()".
+\code
+console() << "logo.png lives at: " << getAssetPath( "logo.png" ) << std::endl;
+// prints: "logo.png lives at /Users/andrewbell/SampleProject/assets/logo.png"
+\endcode
+\n
+You can also provide additional structure to your \e assets folder. For example, you might create a \e pictures subfolder that contains a \e photo1.jpg. You would load that like so:
+\code
+mPhoto1 = loadImage( loadAsset( "pictures/photo1.jpg" ) );
+\endcode
+\n
+
+\subsection shippingAssets How Assets Work
+It's worth understanding a bit about how assets work under the hood. The first time you attempt to load an asset or get its path, your Cinder application automatically attempts to find its \e assets directory. It begins by searching in the same folder in which your .app bundle or .exe lives. Next it searches its parent, on up 5 levels. The reason for such a deep search is due to the somewhat remote location where XCode and Visual C++ can output executables, depending on their configuration. When you are ready to ship your application, make sure you include both your application (.app on the Mac or .exe on Windows) and its assets folder. Note that if you are not using any assets, Cinder does not require the existence of an assets folder.
+\n\n
+
+\subsection assetsIOs Assets on iOS
+iOS applications of course cannot require a separate folder at runtime. However TinderBox-generated iOS applications automatically include their \e assets folder in their application's bundle, and the asset-discovery mechanism in Cinder on iOS knows to look here.
+\n\n
+
+\subsection assetsExternal Additional Asset Folders
+While Cinder will automatically look for a specific folder as the "official" assets directory, users can use \ref cinder::app::App::addAssetDirectory "addAssetDirectory()" in order to offer supplemental paths for searching for assets. \ref cinder::app::App::loadAsset "loadAsset()" and \ref cinder::app::App::getAssetPath "getAssetPath()" will search the official assets folder first, followed by any supplemental asset directories the user may have provided.
+\n\n
+
+That's all there is to know about assets. If you're a beginner with Cinder, this is probably the easiest technique for including data with your application. However it's worth being aware of how to use resources as well. While they're a bit more cumbersome to use, resources allow you to create applications which are entirely self-contained.
+\n
+
+\section mac Resources on Mac OS X & iOS
+Under Mac OS X as well as iOS, resources are just normal files which are contained inside the application bundle. If you haven't before, try opening up one of these bundles yourself. Context-click (right-click or control-click) an application in your \e Applications folder and choose <b>Show Package Contents</b>. Here's the results of doing this with iTunes:\n\n
 \image html resources_itunes_mac_show_package.png
 \n\n
 \image html resources_itunes_mac.png
@@ -19,7 +51,7 @@ Looking around inside of the application bundle, we see a \e Resources folder in
 A similar structure is maintained for iPhone and iPad apps, and it's the one Cinder uses for these platforms as well.
 \n\n
 \subsection macAdd Adding a Resource
-Adding a resource to your Mac or Cocoa Touch application couldn't be easier. Let's assume you've got an image you'd like to use in your app. The first step is to add this file as a resource in Xcode. First, pull up your project window in Xcode. Now, context-click the \e Resources folder and choose <b>Add | Existing Files...</b>.\n\n
+Adding a resource to your Mac or iOS application is straightforward. Let's assume you've got an image you'd like to use in your app. The first step is to add this file as a resource in Xcode. First, pull up your project window in Xcode. Now, context-click the \e Resources folder and choose <b>Add | Existing Files...</b>.\n\n
 
 \image html resources_mac_add_resource.png
 \n
@@ -29,7 +61,7 @@ Now select the file you'd like to add to your app from the Open dialog box that 
 \n
 
 \subsection macUse Using a Resource
-Now that we've got a resource in the application, how do we actually make use of it with Cinder code? For a Mac or Cocoa Touch-only application, we simply call the loadResource() function and pass it the name of the resource as a string. The result of this function (which is a \ref cinder::DataSource "DataSourceRef", a class you won't generally need to use directly) can be passed to most Cinder functions and constructors that know how to do I/O. In the case of our logo image example, we would call loadResource() on that file and then pass it to loadImage(). Then the result of loadImage() can be used to create a \ref cinder::gl::Texture "gl::Texture" or a \ref cinder::SurfaceT "Surface" like so:
+Now that we've got a resource in the application, how do we actually make use of it with Cinder code? For a Mac or iOS-only application, we simply call the loadResource() function and pass it the name of the resource as a string. The result of this function (which is a \ref cinder::DataSource "DataSourceRef", a class you won't generally need to use directly) can be passed to most Cinder functions and constructors that know how to do I/O. In the case of our logo image example, we would call loadResource() on that file and then pass it to loadImage(). Then the result of loadImage() can be used to create a \ref cinder::gl::Texture "gl::Texture" or a \ref cinder::SurfaceT "Surface" like so:
 \code
 gl::Texture myTexture( loadImage( loadResource( "Logo.jpg" ) ) );
 Surface mySurface( loadImage( loadResource( "Logo.jpg" ) ) );
@@ -39,7 +71,7 @@ or perhaps we want to create a QuickTime movie out of a resource called \e Flyin
 qtime::MovieGl myMovie( loadResource( "FlyingLogo.mov" ) );
 \endcode
 \n
-Pretty easy stuff. On the Cocoa side, that's all there is to it. In general, you can make use of the results of loadResource() about like you'd expect. However a handy function if you ever need to load a resource using a function which only accepts file paths is App::getResourcePath(). For example, calling this:
+Pretty easy stuff. On the Cocoa side, that's all there is to it. In general, you can make use of the results of loadResource() about like you'd expect. However a handy function if you ever need to load a resource using a function which only accepts file paths is \ref cinder::app::App::getResourcePath "App::getResourcePath()". For example, calling this:
 \code
 console() << getResourcePath( "Logo.jpg" ) << endl;
 \endcode
@@ -85,7 +117,7 @@ Surface mySurface( loadImage( loadResource( RES_SPLASHSCREEN_ID, "IMAGE" ) ) );
 \endcode
 \n
 \section xplatform Cross-Platform Resources
-As we've seen, Mac OS X and Windows handle resources slightly differently, but Cinder provides some tools which can simplify these differences. The most straightforward way to use the same code on both platforms is to call the variant of loadResource() which accepts both a Mac file path and a Windows ID/Type combination. Cinder will automatically pay attention to the relevant parameters for the platform you are compiling on. Calling this looks about like this:
+As we've seen, Mac OS X and Windows handle resources slightly differently, but Cinder provides some tools which can simplify these differences. The most straightforward way to use the same code on both platforms is to call the variant of loadResource() which accepts both a Mac file path and a Windows ID/Type combination. Cinder will automatically pay attention to the relevant parameters for the platform you are compiling on. Calling this version of loadResource() looks similar to the line below:
 \code
 loadResource( "Logo.jpg", RES_LOGO_ID, "IMAGE" );
 \endcode
@@ -127,6 +159,6 @@ gl::Texture myTexture( loadImage( loadResource( RES_LOGO ) ) );
 \n
 It's about the same, except now we simply pass the resource name to loadResource() and the right thing will happen on either platform.
 \n \n
-That's all there is to using cross-platform resources. It can be a bit of a pain to setup initially, but it's easy to maintain once you've got it going, and TinderBox should setup things appropriately automatically if you use it. And while you can use either style of resource definition, we prefer the <tt>CINDER_RESOURCE</tt> technique since it's less error-prone and makes for slightly more legible application code.
+That's all there is to using cross-platform resources. It can be a bit of a pain to setup initially, but it's easy to maintain once you've got it going. And while you can use either style of resource definition, we prefer the <tt>CINDER_RESOURCE</tt> technique since it's less error-prone and makes for slightly more legible application code.
 
 */
