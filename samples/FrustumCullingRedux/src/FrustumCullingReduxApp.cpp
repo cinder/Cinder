@@ -42,7 +42,7 @@ using namespace std;
 class FrustumCullingReduxApp 
 	: public AppBasic 
 {
-public:
+  public:
 	void prepareSettings( Settings *settings );
 	void setup();
 	void update();
@@ -54,7 +54,7 @@ public:
 	void keyDown( KeyEvent event );
 
 	void resize( ResizeEvent event );
-protected:
+  protected:
 	//! load the heart shaped mesh 
 	void			loadObject();
 	//! draws a grid to visualize the ground plane
@@ -65,7 +65,7 @@ protected:
 	void			toggleVerticalSync();
 	//! renders the help text
 	void			renderHelpToTexture();
-protected:
+  protected:
 	static const int NUM_OBJECTS = 1500;
 
 	//! keep track of time
@@ -150,7 +150,7 @@ void FrustumCullingReduxApp::setup()
 
 	//! load and compile shader
 	try {
-		mShader = gl::GlslProg( loadFile("../shaders/phong_vert.glsl"), loadFile("../shaders/phong_frag.glsl") );
+		mShader = gl::GlslProg( loadAsset("shaders/phong_vert.glsl"), loadAsset("shaders/phong_frag.glsl") );
 	}
 	catch( const std::exception &e ) {
 		app::console() << "Could not load and compile shader:" << e.what() << std::endl;
@@ -350,7 +350,7 @@ void FrustumCullingReduxApp::loadObject()
 
 	if(!fs::exists( meshFile )) {
 		// if you don't have a binary file, you can create one like this:
-		ObjLoader	loader( loadFile("../models/heart.obj") );
+		ObjLoader	loader( loadAsset("models/heart.obj") );
 					loader.load(&mTriMesh, true, true, true);
 
 		mTriMesh.write( writeFile(meshFile) );

@@ -89,6 +89,15 @@
 		003FABA71290ED38002D6860 /* AppNative.h in Headers */ = {isa = PBXBuildFile; fileRef = 003FABA61290ED38002D6860 /* AppNative.h */; };
 		003FABA81290ED38002D6860 /* AppNative.h in Headers */ = {isa = PBXBuildFile; fileRef = 003FABA61290ED38002D6860 /* AppNative.h */; };
 		003FABA91290ED38002D6860 /* AppNative.h in Headers */ = {isa = PBXBuildFile; fileRef = 003FABA61290ED38002D6860 /* AppNative.h */; };
+		004172FA14C9BE520070C0D1 /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 004172F914C9BE520070C0D1 /* Frustum.h */; };
+		004172FC14C9BE580070C0D1 /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 004172F914C9BE520070C0D1 /* Frustum.h */; };
+		004172FD14C9BE580070C0D1 /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 004172F914C9BE520070C0D1 /* Frustum.h */; };
+		004172FF14C9BE760070C0D1 /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004172FE14C9BE760070C0D1 /* Frustum.cpp */; };
+		0041730014C9BE760070C0D1 /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004172FE14C9BE760070C0D1 /* Frustum.cpp */; };
+		0041730114C9BE760070C0D1 /* Frustum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 004172FE14C9BE760070C0D1 /* Frustum.cpp */; };
+		0041730314C9BE8E0070C0D1 /* Plane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0041730214C9BE8E0070C0D1 /* Plane.cpp */; };
+		0041730414C9BE8E0070C0D1 /* Plane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0041730214C9BE8E0070C0D1 /* Plane.cpp */; };
+		0041730514C9BE8E0070C0D1 /* Plane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0041730214C9BE8E0070C0D1 /* Plane.cpp */; };
 		00419C6E11057CC6007EC9AD /* EdgeDetect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6511057CC6007EC9AD /* EdgeDetect.cpp */; };
 		00419C6F11057CC6007EC9AD /* Fill.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6611057CC6007EC9AD /* Fill.cpp */; };
 		00419C7011057CC6007EC9AD /* Flip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6711057CC6007EC9AD /* Flip.cpp */; };
@@ -745,6 +754,9 @@
 		003FAA9E1290CC90002D6860 /* Clipboard.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Clipboard.cpp; sourceTree = "<group>"; };
 		003FAAA21290CCB1002D6860 /* Clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clipboard.h; sourceTree = "<group>"; };
 		003FABA61290ED38002D6860 /* AppNative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppNative.h; path = app/AppNative.h; sourceTree = "<group>"; };
+		004172F914C9BE520070C0D1 /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
+		004172FE14C9BE760070C0D1 /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
+		0041730214C9BE8E0070C0D1 /* Plane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Plane.cpp; sourceTree = "<group>"; };
 		00419C6511057CC6007EC9AD /* EdgeDetect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EdgeDetect.cpp; path = ip/EdgeDetect.cpp; sourceTree = "<group>"; };
 		00419C6611057CC6007EC9AD /* Fill.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Fill.cpp; path = ip/Fill.cpp; sourceTree = "<group>"; };
 		00419C6711057CC6007EC9AD /* Flip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Flip.cpp; path = ip/Flip.cpp; sourceTree = "<group>"; };
@@ -1216,6 +1228,7 @@
 				277C2CEE1366632B00178A29 /* Matrix44.h */,
 				277C2CEF1366632B00178A29 /* MatrixAlgo.h */,
 				009EE5760F803F7A00F17CB1 /* BandedMatrix.h */,
+				004172F914C9BE520070C0D1 /* Frustum.h */,
 				009EE5740F803F7A00F17CB1 /* BSplineFit.h */,
 				009EE5750F803F7A00F17CB1 /* BSpline.h */,
 				00B1337610FBBB8900AC7369 /* Shape2d.h */,
@@ -1286,6 +1299,8 @@
 				00241ABD0E830DD5004D34EB /* Matrix.cpp */,
 				43C4323F1450A8DA0095B260 /* CinderMath.cpp */,
 				009EE56A0F803F5600F17CB1 /* BandedMatrix.cpp */,
+				0041730214C9BE8E0070C0D1 /* Plane.cpp */,
+				004172FE14C9BE760070C0D1 /* Frustum.cpp */,
 				009EE56B0F803F5600F17CB1 /* BSplineFit.cpp */,
 				009EE56C0F803F5600F17CB1 /* BSpline.cpp */,
 				001F52090FCF99A10021731E /* Path2d.cpp */,
@@ -1676,6 +1691,7 @@
 				00A121E01362774F00081873 /* Timeline.h in Headers */,
 				00A121E11362774F00081873 /* TimelineItem.h in Headers */,
 				00A121E21362774F00081873 /* Tween.h in Headers */,
+				004172FC14C9BE580070C0D1 /* Frustum.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1798,6 +1814,7 @@
 				00A121DD1362774F00081873 /* Timeline.h in Headers */,
 				00A121DE1362774F00081873 /* TimelineItem.h in Headers */,
 				00A121DF1362774F00081873 /* Tween.h in Headers */,
+				004172FD14C9BE580070C0D1 /* Frustum.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1942,6 +1959,7 @@
 				277C2CF11366632B00178A29 /* Matrix33.h in Headers */,
 				277C2CF21366632B00178A29 /* Matrix44.h in Headers */,
 				277C2CF31366632B00178A29 /* MatrixAlgo.h in Headers */,
+				004172FA14C9BE520070C0D1 /* Frustum.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2116,6 +2134,8 @@
 				00A121EC1362778200081873 /* Timeline.cpp in Sources */,
 				00A121ED1362778200081873 /* TimelineItem.cpp in Sources */,
 				00A121EE1362778200081873 /* Tween.cpp in Sources */,
+				0041730014C9BE760070C0D1 /* Frustum.cpp in Sources */,
+				0041730414C9BE8E0070C0D1 /* Plane.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2206,6 +2226,8 @@
 				00A121E91362778200081873 /* Timeline.cpp in Sources */,
 				00A121EA1362778200081873 /* TimelineItem.cpp in Sources */,
 				00A121EB1362778200081873 /* Tween.cpp in Sources */,
+				0041730114C9BE760070C0D1 /* Frustum.cpp in Sources */,
+				0041730514C9BE8E0070C0D1 /* Plane.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2317,6 +2339,8 @@
 				00A121EF1362778200081873 /* Timeline.cpp in Sources */,
 				00A121F01362778200081873 /* TimelineItem.cpp in Sources */,
 				00A121F11362778200081873 /* Tween.cpp in Sources */,
+				004172FF14C9BE760070C0D1 /* Frustum.cpp in Sources */,
+				0041730314C9BE8E0070C0D1 /* Plane.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
