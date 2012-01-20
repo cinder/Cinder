@@ -23,7 +23,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\InfoPanel.h">
+    <ClInclude Include="..\..\..\include\cinder\Cinder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -97,7 +97,7 @@
     <ClCompile Include="..\src\InfoPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\InfoPanel.h" />
+    <ClInclude Include="..\..\..\include\cinder\Cinder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

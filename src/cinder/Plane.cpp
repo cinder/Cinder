@@ -1,5 +1,6 @@
 /*
- Copyright (c) 2012, Paul Houx
+ Copyright (c) 2012, The Barbarian Group
+ Portions of this code (C) Paul Houx
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -98,7 +99,9 @@ void Plane::set(float a, float b, float c, float d)
 	}
 
 	mNormal.set(normal);
-	mNormal.normalize();
+	mNormal.normalize();	
+
+	mPoint.set(0.0f, 0.0f, 0.0f);
 
 	mDistance = d / length;
 }

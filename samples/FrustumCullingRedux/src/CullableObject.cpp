@@ -40,31 +40,33 @@ void CullableObject::setup()
 
 void CullableObject::update(double elapsed)
 {
+	//! rotate slowly around the y-axis (independent of frame rate)
 	mRotation.y += (float) elapsed;
 	setTransform( mPosition, mRotation, mScale );
 }
 
 void CullableObject::draw()
 {
-	// don't draw if culled
+	//! don't draw if culled
 	if(bIsCulled) return;
 
+	//! only draw if mesh is valid
 	if(mVboMesh) {
 		gl::color( Color::white() );
 
-		// enable and bind the textures
+		//! enable and bind the textures (optional, not used)
 		gl::enable(GL_TEXTURE_2D);
 		if(mDiffuse) mDiffuse.bind(0);
 		if(mNormal) mNormal.bind(1);
 		if(mSpecular) mSpecular.bind(2);
 
-		// draw the mesh 
+		//! draw the mesh 
 		gl::pushModelView();
 		gl::multModelView(mTransform);
 		gl::draw( mVboMesh );
 		gl::popModelView();
 
-		// unbind the textures
+		//! unbind the textures (optional, not used)
 		if(mSpecular) mSpecular.unbind();
 		if(mNormal) mNormal.unbind();
 		if(mDiffuse) mDiffuse.unbind();
@@ -78,6 +80,8 @@ void CullableObject::setTransform(const ci::Vec3f &position, const ci::Vec3f &ro
 	mRotation = rotation;
 	mScale = scale;
 
+	//! by creating a single transformation matrix, it will be very easy
+	//! to construct a world space bounding box for this object
 	mTransform = mTransform.identity();
 	mTransform.translate(position);
 	mTransform.rotate(rotation);

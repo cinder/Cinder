@@ -1,5 +1,6 @@
 /*
- Copyright (c) 2012, Paul Houx
+ Copyright (c) 2012, The Barbarian Group
+ Portions of this code (C) Paul Houx
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -114,9 +115,9 @@ bool Frustum::intersects(const Vec3f &center, float radius)
 bool Frustum::contains(AxisAlignedBox3f &box)
 {
 	for(size_t i=0; i<6; ++i) {
-		if (mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].normal())) < 0)
+		if (mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].getNormal())) < 0)
 			return false;
-		else if (mFrustumPlanes[i].distance(box.getNegative(mFrustumPlanes[i].normal())) < 0)
+		else if (mFrustumPlanes[i].distance(box.getNegative(mFrustumPlanes[i].getNormal())) < 0)
 			return false;
 	}
 
@@ -126,7 +127,7 @@ bool Frustum::contains(AxisAlignedBox3f &box)
 bool Frustum::intersects(AxisAlignedBox3f &box)
 {
 	for(size_t i=0; i<6; ++i) {
-		if (mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].normal())) < 0)
+		if (mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].getNormal())) < 0)
 			return false;
 	}
 

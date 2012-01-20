@@ -54,7 +54,7 @@ protected:
 	ci::Vec3f		mScale;
 
 	//! this matrix combines all translations, rotations and scaling
-	//! and can be used to easily calculate the bounding box
+	//! and can be used to easily calculate the world space bounding box
 	ci::Matrix44f	mTransform;
 
 	//! gl::Texture and gl::VboMesh both are implicitly shared pointers,
@@ -67,4 +67,3 @@ protected:
 	const ci::gl::Texture	mSpecular;
 	const ci::gl::VboMesh	mVboMesh;
 };
-

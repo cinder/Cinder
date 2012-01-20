@@ -20,9 +20,9 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/AxisAlignedBox.h"	// is a modified version of AxisAlignedBox
+#include "cinder/AxisAlignedBox.h"	
 #include "cinder/Filesystem.h"
-#include "cinder/Frustum.h"			// is an addition to vanilla Cinder
+#include "cinder/Frustum.h"			
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/ObjLoader.h"
@@ -55,14 +55,20 @@ public:
 
 	void resize( ResizeEvent event );
 protected:
+	//! load the heart shaped mesh 
 	void			loadObject();
+	//! draws a grid to visualize the ground plane
 	void			drawGrid(float size=100.0f, float step=10.0f);
+	//! returns TRUE if vertical sync is enabled
 	bool			hasVerticalSync();
+	//! toggles vertical sync on both Windows and Macs
 	void			toggleVerticalSync();
+	//! renders the help text
 	void			renderHelpToTexture();
 protected:
 	static const int NUM_OBJECTS = 1500;
 
+	//! keep track of time
 	double			mCurrentSeconds;
 
 	//! flags
@@ -80,6 +86,7 @@ protected:
 	ci::TriMesh		mTriMesh;
 	gl::VboMesh		mVboMesh;
 
+	//! caches the heart's bounding box in object space coordinates
 	AxisAlignedBox3f	mObjectBoundingBox;
 
 	//! render assets
@@ -100,9 +107,13 @@ protected:
 
 void FrustumCullingReduxApp::prepareSettings(Settings *settings)
 {
+	//! setup our window
 	settings->setWindowSize(1200, 675);
 	settings->setTitle("Frustum Culling Redux");
-	settings->setFrameRate(100.0f);
+	//! set the frame rate to something very high, so we can
+	//! easily see the effect frustum culling has on performance.
+	//! Disable vertical sync to achieve the actual frame rate.
+	settings->setFrameRate(300);
 }
 
 void FrustumCullingReduxApp::setup()
@@ -306,7 +317,8 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_c:
 		bPerformCulling = !bPerformCulling;
 		break;
-	case KeyEvent::KEY_f: {
+	case KeyEvent::KEY_f: 
+		{
 			bool verticalSyncEnabled = hasVerticalSync();
 			setFullScreen( !isFullScreen() );
 			if(!verticalSyncEnabled) {

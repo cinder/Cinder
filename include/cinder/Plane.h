@@ -1,5 +1,6 @@
 /*
- Copyright (c) 2012, Paul Houx
+ Copyright (c) 2012, The Barbarian Group
+ Portions of this code (C) Paul Houx
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -30,9 +31,9 @@ class Plane
 {
 public:
 	Plane(void);
-	Plane::Plane( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
-	Plane::Plane( const Vec3f &normal, const Vec3f &point );
-	Plane::Plane( float a, float b, float c, float d );
+	Plane( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
+	Plane( const Vec3f &normal, const Vec3f &point );
+	Plane( float a, float b, float c, float d );
 	virtual ~Plane(void);
 
 	//! Defines a plane using 3 points. 
@@ -42,15 +43,15 @@ public:
 	//! Defines a plane using 4 coefficients.
 	void	set( float a, float b, float c, float d );
 
-	const Vec3f&	point() const { return mPoint; };
-	const Vec3f&	normal() const { return mNormal; };
-	float				distance( const Vec3f &p ){ return (mDistance + mNormal.dot(p)); };
+	const Vec3f&	getPoint() const { return mPoint; };
+	const Vec3f&	getNormal() const { return mNormal; };
+	float			distance( const Vec3f &p ){ return (mDistance + mNormal.dot(p)); };
 
 protected:
 	Vec3f	mNormal;
 	Vec3f	mPoint;
 
-	float		mDistance;
+	float	mDistance;
 };
 
 class PlaneExc : public std::exception {
