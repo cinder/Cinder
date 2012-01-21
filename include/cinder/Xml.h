@@ -29,8 +29,8 @@
 #include "cinder/DataSource.h"
 #include "cinder/DataTarget.h"
 #include "cinder/Exception.h"
+#include "cinder/Utilities.h"
 
-#include <boost/lexical_cast.hpp>
 #include <iterator>
 #include <string>
 #include <vector>
@@ -145,6 +145,9 @@ class XmlTree {
 		template<typename T>
 		Attr&	operator=( const T& val ) { mValue = toString( val ); mXml->setAttribute( mName, mValue ); return *this; }
 		
+		template<typename T>
+		T		as() const { return fromString<T>( mValue ); }
+		
 		//! Returns the name of the attribute as a string.
 		const std::string&		getName() const { return mName; }
 		//! Returns the value of the attribute as a string.
@@ -152,7 +155,7 @@ class XmlTree {
 		/** \brief Returns the value of the attribute parsed as a T. Requires T to support the istream>> operator. 
 		<br><tt>float size = myAttr.getValue<float>( "size" );</tt> **/		
 		template<typename T>
-		T						getValue() const { return boost::lexical_cast<T>( mValue ); }
+		T						getValue() const { return fromString<T>( mValue ); }
 		
 		/** Sets the value of the attribute to \a value. **/
 		void					setValue( const std::string &value ) { mValue = value; }
