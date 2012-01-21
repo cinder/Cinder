@@ -9,3 +9,12 @@ Cinder supports Mac OS X, Windows and iOS-based devices. It requires XCode 3.2 o
 
 Cinder is released under the Modified BSD License.
 Please read Welcome.html inside this directory for more information.
+
+
+**This branch will see the addition and use of**
+
+* DirectX backend
+* Windows FFT support
+* Enhanced audio analysis
+* 64-bit support (with libs)
+* C++11 
