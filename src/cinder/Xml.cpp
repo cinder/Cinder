@@ -180,6 +180,13 @@ void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *resu
 				result->setDocType( item->value() );
 				continue;
 			}
+			case rapidxml::node_data: {
+				if( ! options.getIgnoreDataChildren() )
+					type = XmlTree::NODE_DATA;
+				else
+					continue;
+			}
+			break;
 			default:
 				continue;
 		}
@@ -307,6 +314,7 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		case XmlTree::NODE_ELEMENT: type = rapidxml::node_element; break;
 		case XmlTree::NODE_COMMENT: type = rapidxml::node_comment; break;
 		case XmlTree::NODE_CDATA: type = rapidxml::node_cdata; break;
+		case XmlTree::NODE_DATA: type = rapidxml::node_data; break;
 		
 		default: throw ExcUnknownNodeType();
 	}

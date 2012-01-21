@@ -161,13 +161,15 @@ class XmlTree {
 	//! Options for XML parsing. Passed to the XmlTree constructor.
 	class ParseOptions {
 	  public:
-		//! Default options. Disables parsing comments and enables collapsing CDATA.
-		ParseOptions() : mParseComments( false ), mCollapseCData( true ) {}
+		//! Default options. Disables parsing comments, enables collapsing CDATA, ignores data children.
+		ParseOptions() : mParseComments( false ), mCollapseCData( true ), mIgnoreDataChildren( true ) {}
 		
 		//! Sets whether XML comments are parsed or not.
 		ParseOptions& parseComments( bool parse = true ) { mParseComments = parse; return *this; }
 		//! Sets whether CDATA blocks are collapsed automatically or not.
 		ParseOptions& collapseCData( bool collapse = true ) { mCollapseCData = collapse; return *this; }
+		//! Sets whether data nodes are created as children, in addition to being available as the value of the parent. Default true.
+		ParseOptions& ignoreDataChildren( bool ignore = true ) { setIgnoreDataChildren( ignore ); return *this; }
 		
 		//! Returns whether XML comments are parsed or not.
 		bool	getParseComments() const { return mParseComments; }
@@ -177,13 +179,17 @@ class XmlTree {
 		bool	getCollapseCData() const { return mCollapseCData; }
 		//! Sets whether CDATA blocks are collapsed automatically or not.
 		void	setCollapseCData( bool collapseCData = true ) { mCollapseCData = collapseCData; }
+		//! Returns whether data nodes are created as children, in addition to being available as the value of the parent.
+		bool	getIgnoreDataChildren() const { return mIgnoreDataChildren; }
+		//! Sets whether data nodes are created as children, in addition to being available as the value of the parent.
+		void	setIgnoreDataChildren( bool ignore = true ) { mIgnoreDataChildren = ignore; }
 		
 	  private:
-		bool	mParseComments, mCollapseCData;
+		bool	mParseComments, mCollapseCData, mIgnoreDataChildren;
 	};
 
 	//! Enum listing all types of XML nodes understood by the parser.
-	typedef enum NodeType { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT };
+	typedef enum NodeType { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT, NODE_DATA };
 
 	//! Default constructor, creating an empty node.
 	XmlTree() : mParent( 0 ), mNodeType( NODE_ELEMENT ) {}
