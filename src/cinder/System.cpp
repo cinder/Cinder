@@ -164,18 +164,33 @@ void lockToLogicalProcessor( int n )
 	rc = ::SetProcessAffinityMask( GetCurrentProcess(), ProcessAffinityMask );
 }
 
+#if ( defined( _WIN64 ) )
+
+void cpuid64(int* p);
+
 void cpuidwrap( int * p, unsigned int param )
 {
-   __asm {
-             mov    edi, p
-             mov    eax, param
-             cpuid
-             mov    [edi+0d],  eax
-             mov    [edi+4d],  ebx
-             mov    [edi+8d],  ecx
-             mov    [edi+12d], edx
-         }
+  p[0] = param;
+  p[1] = 0;
+  cpuid64(p);
 }
+
+#else
+
+void cpuidwrap( int * p, unsigned int param )
+{
+  __asm {
+    mov    edi, p
+      mov    eax, param
+      cpuid
+      mov    [edi+0d],  eax
+      mov    [edi+4d],  ebx
+      mov    [edi+8d],  ecx
+      mov    [edi+12d], edx
+  }
+}
+
+#endif
 
 void cpuid( int whichlp, PLOGICALPROCESSORDATA p )
 {

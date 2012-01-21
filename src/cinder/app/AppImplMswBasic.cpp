@@ -491,6 +491,12 @@ unsigned int prepKeyEventModifiers()
 	return result;
 }
 
+#if ( defined( _WIN64 ) )
+#define APP_USERDATA GWLP_USERDATA
+#else
+#define APP_USERDATA GWL_USERDATA
+#endif
+
 extern "C" {
 LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 							UINT	uMsg,			// Message For This Window
@@ -502,10 +508,10 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 	// if the message is WM_NCCREATE we need to hide 'this' in the window long
 	if( uMsg == WM_NCCREATE ) {
 		impl = reinterpret_cast<AppImplMswBasic*>(((LPCREATESTRUCT)lParam)->lpCreateParams);
-		::SetWindowLongPtr( mWnd, GWL_USERDATA, (__int3264)(LONG_PTR)impl ); 
+		::SetWindowLongPtr( mWnd, APP_USERDATA, (__int3264)(LONG_PTR)impl ); 
 	}
 	else // the warning on this line is harmless
-		impl = reinterpret_cast<AppImplMswBasic*>( ::GetWindowLongPtr( mWnd, GWL_USERDATA ) );
+		impl = reinterpret_cast<AppImplMswBasic*>( ::GetWindowLongPtr( mWnd, APP_USERDATA ) );
 
 	if( ! impl )
 		return DefWindowProc( mWnd, uMsg, wParam, lParam );		
