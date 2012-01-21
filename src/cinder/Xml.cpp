@@ -197,7 +197,7 @@ void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *resu
 	}
 
 	for( rapidxml::xml_attribute<> *attr = node.first_attribute(); attr; attr = attr->next_attribute() )
-		result->getAttributes().push_back( XmlTree::Attr( attr->name(), attr->value() ) );
+		result->getAttributes().push_back( XmlTree::Attr( result, attr->name(), attr->value() ) );
 }
 
 void XmlTree::loadFromDataSource( DataSourceRef dataSource, XmlTree *result, const XmlTree::ParseOptions &parseOptions )
@@ -255,7 +255,7 @@ void XmlTree::setAttribute( const std::string &attrName, const std::string &valu
 			break;
 	
 	if( atIt == mAttributes.end() )
-		mAttributes.push_back( Attr( attrName, value ) );
+		mAttributes.push_back( Attr( this, attrName, value ) );
 	else
 		atIt->setValue( value );
 }

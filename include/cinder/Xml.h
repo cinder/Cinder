@@ -135,9 +135,15 @@ class XmlTree {
 	class Attr {
 	  public:
 		//! Constructs an XML attribute named \a name with the value \a value.
-		Attr( const std::string &name, const std::string &value )
-			: mName( name ), mValue( value )
+		Attr( XmlTree *xml, const std::string &name, const std::string &value )
+			: mXml( xml ), mName( name ), mValue( value )
 		{}
+
+		//! Returns an empty string for a non-existent attribute
+		operator const std::string&() const { return mValue; }
+		//! Assigns the Attr a new value, and creates it if it doesn't exist. The equivalent of calling <tt>setAttribute( this->getName(), toString( newValue ) )</tt>.
+		template<typename T>
+		Attr&	operator=( const T& val ) { mValue = toString( val ); mXml->setAttribute( mName, mValue ); return *this; }
 		
 		//! Returns the name of the attribute as a string.
 		const std::string&		getName() const { return mName; }
@@ -155,6 +161,7 @@ class XmlTree {
 		void					setValue( const T &value ) { mValue = boost::lexical_cast<std::string>( value ); }
 
 	  private:
+	  	XmlTree			*mXml;
 		std::string		mName, mValue;
 	};
 
@@ -274,6 +281,11 @@ class XmlTree {
 
 	//! Returns a reference to the node attribute named \a attrName. Throws AttrNotFoundExc if no attribute exists with that name.
 	const Attr&					getAttribute( const std::string &attrName ) const;
+
+	//! Returns an Attr accessor. If the attribute does not exists its Attr's value will be an empty string.
+	const Attr					operator[]( const std::string &attrName ) const {  if( hasAttribute( attrName ) ) return getAttribute(attrName); else return Attr( const_cast<XmlTree*>( this ), attrName, "" ); }
+	//! Returns an Attr accessor. If the attribute does not exists its Attr's value will be an empty string. Assigning the Attr is the equivalent of calling setAttribute( attrName ).
+	Attr						operator[]( const std::string &attrName ) {  if( hasAttribute( attrName ) ) return getAttribute(attrName); else return Attr( this, attrName, "" ); }
 
 	/** \brief Returns the value of the attribute \a attrName parsed as a T. Throws AttrNotFoundExc if no attribute exists with that name. Requires T to support the istream>> operator. 
 		<br><tt>float size = myNode.getAttributeValue<float>( "size" );</tt> **/
