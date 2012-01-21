@@ -290,6 +290,11 @@ class XmlTree {
 	//! Returns an Attr accessor. If the attribute does not exists its Attr's value will be an empty string. Assigning the Attr is the equivalent of calling setAttribute( attrName ).
 	Attr						operator[]( const std::string &attrName ) {  if( hasAttribute( attrName ) ) return getAttribute(attrName); else return Attr( this, attrName, "" ); }
 
+	//! Returns the first child that matches \a childName. Throws ExcChildNotFound if none matches.
+	const XmlTree&				operator/( const std::string &childName ) const { return getChild( childName ); }
+	//! Returns the first child that matches \a childName. Throws ExcChildNotFound if none matches.
+	XmlTree&					operator/( const std::string &childName ) { return getChild( childName ); }
+
 	/** \brief Returns the value of the attribute \a attrName parsed as a T. Throws AttrNotFoundExc if no attribute exists with that name. Requires T to support the istream>> operator. 
 		<br><tt>float size = myNode.getAttributeValue<float>( "size" );</tt> **/
 	template<typename T>
