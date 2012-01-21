@@ -16,4 +16,5 @@ Please read Welcome.html inside this directory for more information.
 * DirectX backend
 * Windows FFT support
 * Enhanced audio analysis
+* 64-bit support (with libs)
 * C++11 
