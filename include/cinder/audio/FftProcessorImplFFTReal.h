@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2009, The Barbarian Group
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -20,42 +20,24 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/audio/FftProcessor.h"
+#pragma once
 
-#if defined( CINDER_MSW )
-	#include "cinder/audio/FftProcessorImplFFTReal.h"
-	typedef cinder::audio::FftProcessorImplFFTReal		FftProcessorPlatformImpl;
-#elif defined( CINDER_MAC )
-	#include "cinder/audio/FftProcessorImplAccelerate.h"
-	typedef cinder::audio::FftProcessorImplAccelerate	FftProcessorPlatformImpl;
-#endif
+#include "cinder/audio/FftProcessor.h"
+#include "ffft/FFTRealFixLen.h"
 
 namespace cinder { namespace audio {
 
-std::shared_ptr<float> calculateFft( Buffer32fRef aBuffer, uint16_t aBandCount )
-{
-	if( ! aBuffer || ( aBuffer->mSampleCount < aBandCount * 2 ) ) {
-		//TODO: throw
-		return std::shared_ptr<float>();
-	}
-
-	FftProcessorRef processor = FftProcessor::createRef( aBandCount );
-	return processor->process( &( aBuffer->mData[ aBuffer->mSampleCount - ( aBandCount * 2 ) ] ) );
-}
-
-FftProcessorImpl::FftProcessorImpl( uint16_t aBandCount )
-	: mBandCount( aBandCount )
-{
-}
-
-FftProcessorRef FftProcessor::createRef( uint16_t aBandCount )
-{
-	return FftProcessorRef( new FftProcessor( aBandCount ) );
-}
-
-FftProcessor::FftProcessor( uint16_t aBandCount )
-{
-	mImpl = std::shared_ptr<FftProcessorImpl>( new FftProcessorPlatformImpl( aBandCount ) );
-}
+class FftProcessorImplFFTReal : public FftProcessorImpl {
+ public:
+	FftProcessorImplFFTReal( uint16_t aBandCount );
+	~FftProcessorImplFFTReal();
+	
+	std::shared_ptr<float> process( const float * inBuffer );
+ private:
+	
+	uint32_t			mLog2Size;
+	//FFTSetup			mFftSetup;
+	//DSPSplitComplex		mFftComplexBuffer;
+};
 
 }} //namespace

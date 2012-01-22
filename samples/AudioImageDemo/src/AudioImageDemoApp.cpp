@@ -15,11 +15,20 @@
 
 #include "Resources.h"
 
+#if defined (CINDER_MSW)
+
+#pragma warning(disable:4100)
+#include "ffft/FFTRealFixLen.h"
+static const uint32_t FFT_POWER_2    = 8;
+static const uint32_t BAND_COUNT     = 32;
+static const uint32_t SAMPLE_COUNT   = 256;
+#endif
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-static const int32_t MAX_IMAGE_SIZE = 500;
+static const uint32_t MAX_IMAGE_SIZE = 500;
 
 class AudioImageDemoApp : public AppBasic {
 public:
@@ -236,7 +245,40 @@ void AudioImageDemoApp::drawWaveForm()
 
 }
 
-#if defined(CINDER_MAC)
+
+#if 0//defined(CINDER_MSW)
+void AudioImageDemoApp::drawFft()
+{
+	static FFTRealFixLen<FFT_POWER_2> fft;
+	
+	float ht = 100.0f;
+
+	if( ! mPcmBuffer ) return;
+
+	std::vector<float> data(  mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT )->mSampleCount );
+	
+	//use the most recent Pcm data to calculate the Fft
+	fft.do_fft( mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT ), data.data() );
+	if( data.empty() )
+		return;
+	}
+
+	float * fftBuffer = data.data();
+
+	//draw the bands
+	for( int i = 0; i < ( BAND_COUNT ); i++ ) {
+		float barY = fftBuffer[i] / BAND_COUNT * ht;
+		glBegin( GL_QUADS );
+		glColor3f( 255.0f, 255.0f, 0.0f );
+		glVertex2f( i * 3, ht );
+		glVertex2f( i * 3 + 1, ht );
+		glColor3f( 0.0f, 255.0f, 0.0f );
+		glVertex2f( i * 3 + 1, ht - barY );
+		glVertex2f( i * 3, ht - barY );
+		glEnd();
+	}
+}
+#elif defined(CINDER_MAC)
 void AudioImageDemoApp::drawFft()
 {
 	float ht = 100.0f;

@@ -399,6 +399,9 @@
     <ClCompile Include="..\src\cinder\Tween.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\FftProcessorImplFFTReal.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -823,6 +826,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\TextureFont.h">
       <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\FftProcessorImplFFTReal.h">
+      <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

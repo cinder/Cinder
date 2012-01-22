@@ -160,7 +160,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\;..\..\..\include;..\..\..\boost;..\Resources;..\include;..\..\..\;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\;..\..\..\include;..\..\..\boost;..\Resources;..\include;..\..\..\;..\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>

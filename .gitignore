@@ -20,3 +20,11 @@ Debug/
 Release/
 ipch/
 /bullet
+/lib64
+/samples/AudioImageDemo/include/Resources.h
+/samples/AudioImageDemo/resources/culture.mp3
+/samples/AudioImageDemo/vc10/AudioImageDemo.opensdf
+/samples/AudioImageDemo/vc10/Resources.rc
+/samples/AudioImageDemo/vc10/cinder_app_icon.ico
+/samples/AudioImageDemo/vc10/resource.h
+/vc10/cinder.opensdf
