@@ -826,8 +826,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\src\cinder\cpuid.asm">
+    <MASM Include="..\src\cinder\cpuid64.asm">
       <Filter>Source Files</Filter>
-    </None>
+    </MASM>
   </ItemGroup>
 </Project>
