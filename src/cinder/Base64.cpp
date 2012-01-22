@@ -235,6 +235,8 @@ std::string toBase64( const Buffer &input, int charsPerLine )
 
 std::string toBase64( const void *input, size_t inputSize, int charsPerLine )
 {
+	if( inputSize == 0 ) return std::string();
+
 	if( charsPerLine != 0 )
 		charsPerLine -= charsPerLine % 4;
 	size_t lines = ( charsPerLine == 0 ) ? 0 : ( inputSize * 4 / 3 / charsPerLine + 1 ); // account for inserted carriage returns
@@ -265,10 +267,12 @@ Buffer fromBase64( const void *input, size_t inputSize )
 {
 	size_t outputSize = inputSize / 4 * 3;
 	Buffer result( outputSize );
-	base64_decodestate decs;
-	base64_init_decodestate( &decs );
-	int actualSize = base64_decode_block( reinterpret_cast<const char*>(input), inputSize, (char*)result.getData(), &decs );
-	result.setDataSize( actualSize );
+	if( inputSize >= 4 ) {
+		base64_decodestate decs;
+		base64_init_decodestate( &decs );
+		int actualSize = base64_decode_block( reinterpret_cast<const char*>(input), inputSize, (char*)result.getData(), &decs );
+		result.setDataSize( actualSize );
+	}
 	return result;
 }
 

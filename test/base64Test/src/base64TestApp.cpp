@@ -16,6 +16,8 @@ class base64TestApp : public AppBasic {
 
 std::string toString( Buffer b )
 {
+	if( b.getDataSize() == 0 )
+		return std::string();
 	char *temp = new char[b.getDataSize()+1];
 	memcpy( temp, b.getData(), b.getDataSize() );
 	temp[b.getDataSize()] = 0;
@@ -36,8 +38,8 @@ void base64TestApp::setup()
 			test += 'A' + ( t % 26 );
 		app::console() << "Len: " << a << std::endl;
 		for( int i = 0; i < 100; ++i ) { // test word wraps
-			std::string crunk = toBase64( test, i );
-			Buffer b = fromBase64(crunk);
+			std::string base64 = toBase64( test, i );
+			Buffer b = fromBase64(base64);
 			assert( toString( b ) == test );
 		}
 	}
