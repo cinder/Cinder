@@ -149,6 +149,9 @@ class XmlTree {
 		template<typename T>
 		T		as() const { return fromString<T>( mValue ); }
 		
+		//! Returns true if the Attr value is empty
+		bool	empty() const { return mValue.empty(); }
+		
 		//! Returns the name of the attribute as a string.
 		const std::string&		getName() const { return mName; }
 		//! Returns the value of the attribute as a string.
