@@ -318,9 +318,15 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		
 		default: throw ExcUnknownNodeType();
 	}
-	rapidxml::xml_node<char> *node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), NULL );
-	if( ! getValue().empty() )
-		node->append_node( doc.allocate_node( rapidxml::node_data, NULL, doc.allocate_string( getValue().c_str() ) ) );
+	rapidxml::xml_node<char> *node = 0;
+	if( type == rapidxml::node_data ) {
+		node = doc.allocate_node( type, NULL, doc.allocate_string( getValue().c_str() ) );
+	}
+	else {
+		node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), NULL );
+		if( ! getValue().empty() )
+			node->append_node( doc.allocate_node( rapidxml::node_data, NULL, doc.allocate_string( getValue().c_str() ) ) );
+	}
 	parent->append_node( node );
 
 	for( list<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
