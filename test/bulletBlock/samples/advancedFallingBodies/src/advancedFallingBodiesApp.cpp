@@ -7,12 +7,13 @@
 #include "cinder/AxisAlignedBox.h"
 #include "cinder/Sphere.h"
 #include "cinder/gl/GlslProg.h"
-#include "../blocks/bullet/CinderBullet.h"
+#include "../test/bulletBlock/CinderBullet.h"
 using namespace ci;
 using namespace ci::app;
 
 #include <list>
 using std::list;
+using std::shared_ptr;
 
 const int SPHERE_SEGS = 48;
 const double MAX_LIFETIME = 5.0;

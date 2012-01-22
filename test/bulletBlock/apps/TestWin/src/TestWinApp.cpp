@@ -43,4 +43,4 @@ void TestWinApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( TestWinApp, RendererGL )
+CINDER_APP_BASIC( TestWinApp, RendererGl )
