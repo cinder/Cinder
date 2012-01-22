@@ -38,10 +38,11 @@ struct QUATCONV {
 };
 
 template<typename T>
-class Quaternion
+class Quaternion 
 {
- public:
-	typedef T TYPE;
+public:
+	typedef T	TYPE;
+	typedef T	value_type;
  
 	Vec3<T>		v; // axisOfRotation.normalized() * sin( angleOfRotation / 2 )
 	T			w; // cos( angleOfRotation / 2 )
