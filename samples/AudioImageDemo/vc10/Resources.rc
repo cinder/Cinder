@@ -1,0 +1,4 @@
+#include "../include/Resources.h"
+
+RES_IMAGE
+RES_SONG
