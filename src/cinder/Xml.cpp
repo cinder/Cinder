@@ -247,7 +247,7 @@ const XmlTree::Attr& XmlTree::getAttribute( const string &attrName ) const
 	throw ExcAttrNotFound( *this, attrName );
 }
 
-void XmlTree::setAttribute( const std::string &attrName, const std::string &value )
+XmlTree& XmlTree::setAttribute( const std::string &attrName, const std::string &value )
 {
 	list<Attr>::iterator atIt;
 	for( atIt = mAttributes.begin(); atIt != mAttributes.end(); ++atIt )
@@ -258,6 +258,8 @@ void XmlTree::setAttribute( const std::string &attrName, const std::string &valu
 		mAttributes.push_back( Attr( this, attrName, value ) );
 	else
 		atIt->setValue( value );
+		
+	return *this;
 }
 
 bool XmlTree::hasAttribute( const std::string &attrName ) const

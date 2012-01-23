@@ -319,10 +319,10 @@ class XmlTree {
 	}
 
 	/** Sets the value of the attribute \a attrName to \a value. If the attribute does not exist it is appended. **/
-	void						setAttribute( const std::string &attrName, const std::string &value );
+	XmlTree&					setAttribute( const std::string &attrName, const std::string &value );
 	/** Sets the value of the attribute \a attrName to \a value, which is cast to a string first. Requires T to support the ostream<< operator. If the attribute does not exist it is appended. **/
 	template<typename T>
-	void						setAttribute( const std::string &attrName, const T &value ) { setAttribute( attrName, boost::lexical_cast<std::string>( value ) ); }
+	XmlTree&					setAttribute( const std::string &attrName, const T &value ) { return setAttribute( attrName, boost::lexical_cast<std::string>( value ) ); }
 	/** Returns whether the node has an attribute named \a attrName. **/
 	bool						hasAttribute( const std::string &attrName ) const;
 	/** Returns a path to this node, separated by the character \a separator. **/	
