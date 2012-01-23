@@ -32,13 +32,15 @@
 
 namespace cinder {
 
-Frustumf::Frustumf( const Camera &cam )
+template<typename T>
+Frustum<T>::Frustum( const Camera &cam )
 {
 	// set planes using camera
 	set( cam );
 }
 
-void Frustumf::set( const Camera &cam )
+template<typename T>
+void Frustum<T>::set( const Camera &cam )
 {
 	Vec3f ntl, ntr, nbl, nbr;
 	cam.getNearClipCoordinates( &ntl, &ntr, &nbl, &nbr );
@@ -54,15 +56,16 @@ void Frustumf::set( const Camera &cam )
 	mFrustumPlanes[FAR].set( ftr, ftl, fbl );
 }
 
-void Frustumf::set( const Camera &cam, const Vec3f &ntl, const Vec3f &ntr, const Vec3f &nbl, const Vec3f &nbr )
+template<typename T>
+void Frustum<T>::set( const Camera &cam, const Vec3<T> &ntl, const Vec3<T> &ntr, const Vec3<T> &nbl, const Vec3<T> &nbr )
 {
-	Vec3f eye = cam.getEyePoint();
-	float farClip = cam.getFarClip();
+	Vec3<T> eye = cam.getEyePoint();
+	T farClip = cam.getFarClip();
 
-	Vec3f ftl = (ntl - eye).normalized() * farClip;
-	Vec3f ftr = (ntr - eye).normalized() * farClip;
-	Vec3f fbl = (nbl - eye).normalized() * farClip;
-	Vec3f fbr = (nbr - eye).normalized() * farClip;
+	Vec3<T> ftl = (ntl - eye).normalized() * farClip;
+	Vec3<T> ftr = (ntr - eye).normalized() * farClip;
+	Vec3<T> fbl = (nbl - eye).normalized() * farClip;
+	Vec3<T> fbr = (nbr - eye).normalized() * farClip;
 
 	mFrustumPlanes[TOP].set( ntr, ntl, ftl );
 	mFrustumPlanes[BOTTOM].set( nbl, nbr, fbr );
@@ -72,7 +75,8 @@ void Frustumf::set( const Camera &cam, const Vec3f &ntl, const Vec3f &ntr, const
 	mFrustumPlanes[FAR].set( ftr, ftl, fbl );
 }
 
-bool Frustumf::contains(const Vec3f &loc) const
+template<typename T>
+bool Frustum<T>::contains( const Vec3<T> &loc ) const
 {
 	for( size_t i = 0; i < 6; ++i ) {
 		if( mFrustumPlanes[i].distance(loc) < 0 )
@@ -82,9 +86,10 @@ bool Frustumf::contains(const Vec3f &loc) const
 	return true;
 }
 
-bool Frustumf::contains( const Vec3f &center, float radius ) const
+template<typename T>
+bool Frustum<T>::contains( const Vec3<T> &center, T radius ) const
 {
-	float distance;
+	T distance;
 	for( size_t i = 0; i < 6; ++i ) {
 		distance = mFrustumPlanes[i].distance(center);
 		if( distance < -radius )
@@ -96,9 +101,10 @@ bool Frustumf::contains( const Vec3f &center, float radius ) const
 	return true;
 }
 
-bool Frustumf::intersects( const Vec3f &center, float radius ) const
+template<typename T>
+bool Frustum<T>::intersects( const Vec3<T> &center, T radius ) const
 {
-	float distance;
+	T distance;
 	for( size_t i = 0; i < 6; ++i ) {
 		distance = mFrustumPlanes[i].distance(center);
 		if( distance < -radius )
@@ -108,7 +114,8 @@ bool Frustumf::intersects( const Vec3f &center, float radius ) const
 	return true;
 }
 
-bool Frustumf::contains( const AxisAlignedBox3f &box ) const
+template<typename T>
+bool Frustum<T>::contains( const AxisAlignedBox3f &box ) const
 {
 	for( size_t i = 0; i < 6; ++i ) {
 		if( mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].getNormal())) < 0 )
@@ -120,7 +127,8 @@ bool Frustumf::contains( const AxisAlignedBox3f &box ) const
 	return true;
 }
 
-bool Frustumf::intersects( const AxisAlignedBox3f &box ) const
+template<typename T>
+bool Frustum<T>::intersects( const AxisAlignedBox3f &box ) const
 {
 	for( size_t i = 0; i < 6; ++i ) {
 		if( mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].getNormal())) < 0 )
@@ -129,5 +137,9 @@ bool Frustumf::intersects( const AxisAlignedBox3f &box ) const
 
 	return true;
 }
+
+template class Frustum<float>;
+template class Frustum<double>;
+
 
 } // namespace cinder

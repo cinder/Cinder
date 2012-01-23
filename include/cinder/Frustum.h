@@ -30,12 +30,20 @@
 
 #pragma once
 
+#if defined( CINDER_MSW )
+	#pragma push_macro( "NEAR" )
+	#undef NEAR
+	#pragma push_macro( "FAR" )
+	#undef FAR
+#endif
+
 namespace cinder {
 
-class Frustumf
+template<typename T>
+class Frustum
 {	
   public:
-	enum { NEARPLANE, FARPLANE, LEFTPLANE, RIGHTPLANE, TOPPLANE, BOTTOMPLANE };
+	enum { NEAR, FAR, LEFT, RIGHT, TOP, BOTTOM };
 
   public:
 	Frustum();
@@ -44,38 +52,46 @@ class Frustumf
 	//! Creates a frustum based on the camera's parameters.
 	void set( const Camera &cam );
 	//! Creates a frustum based on the camera's parameters and four corners of a portal.
-	void set( const Camera &cam, const Vec3f &ntl, const Vec3f &ntr, const Vec3f &nbl, const Vec3f &nbr );
+	void set( const Camera &cam, const Vec3<T> &ntl, const Vec3<T> &ntr, const Vec3<T> &nbl, const Vec3<T> &nbr );
 
 	//! Returns TRUE if point is within frustum.
-	bool contains( const Vec3f &loc ) const;
+	bool contains( const Vec3<T> &loc ) const;
 	//! Returns TRUE if the sphere is fully contained within frustum. See also 'intersects'.
 	bool contains( const Sphere &sphere ) const { return contains(sphere.getCenter(), sphere.getRadius()); };
 	//! Returns TRUE if the sphere is fully contained within frustum. See also 'intersects'.
-	bool contains( const Vec3f &center, float radius ) const;
+	bool contains( const Vec3<T> &center, T radius ) const;
 	//! Returns TRUE if the box is fully contained within frustum. See also 'intersects'.
 	bool contains( const AxisAlignedBox3f &box ) const;
 	//! Returns TRUE if the box is fully contained within frustum. See also 'intersects'.
-	bool contains( const Vec3f &center, const Vec3f &size ) const { 
+	bool contains( const Vec3<T> &center, const Vec3<T> &size ) const { 
 		AxisAlignedBox3f box(center-0.5f*size, center+0.5f*size);
 		return contains(box); 
 	};
 
 	//! Returns TRUE if point is within frustum.
-	bool intersects( const Vec3f &loc ) const { return contains(loc); };
+	bool intersects( const Vec3<T> &loc ) const { return contains(loc); };
 	//! Returns TRUE if the sphere is partially contained within frustum. See also 'contains'.
 	bool intersects( const Sphere &sphere ) const { return intersects(sphere.getCenter(), sphere.getRadius()); };
 	//! Returns TRUE if the sphere is partially contained within frustum. See also 'contains'.
-	bool intersects( const Vec3f &center, float radius ) const;
+	bool intersects( const Vec3<T> &center, T radius ) const;
 	//! Returns TRUE if the box is partially contained within frustum. See also 'contains'.
 	bool intersects( const AxisAlignedBox3f &box ) const;
 	//! Returns TRUE if the box is partially contained within frustum. See also 'contains'.
-	bool intersects( const Vec3f &center, const Vec3f &size ) const { 
+	bool intersects( const Vec3<T> &center, const Vec3<T> &size ) const { 
 		AxisAlignedBox3f box(center-0.5f*size, center+0.5f*size);
 		return intersects(box); 
 	};
 
   protected:
-	Plane	mFrustumPlanes[6];
+	Plane<T>	mFrustumPlanes[6];
 };
+
+typedef Frustum<float>		Frustumf;
+typedef Frustum<double>		Frustumd;
+
+#if defined( CINDER_MSW )
+	#pragma pop_macro( "FAR" )
+	#pragma pop_macro( "NEAR" )
+#endif
 
 } // namespace cinder

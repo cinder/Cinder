@@ -103,7 +103,7 @@ void Plane<T>::set( T a, T b, T c, T d )
 	mDistance = d / length;
 }
 
-template Plane<float> Planef;
-template Plane<double> Planed;
+template class Plane<float>;
+template class Plane<double>;
 
 } // namespace cinder
