@@ -23,7 +23,7 @@
 #pragma once
 
 #include "cinder/audio/FftProcessor.h"
-#include "ffft/FFTRealFixLen.h"
+#include "ffft/FFTReal.h"
 
 namespace cinder { namespace audio {
 
@@ -34,10 +34,9 @@ class FftProcessorImplFFTReal : public FftProcessorImpl {
 	
 	std::shared_ptr<float> process( const float * inBuffer );
  private:
-	
-	uint32_t			mLog2Size;
-	//FFTSetup			mFftSetup;
-	//DSPSplitComplex		mFftComplexBuffer;
+
+	typedef ffft::FFTReal<float> FFT;
+	std::shared_ptr<FFT> mFft;
 };
 
 }} //namespace

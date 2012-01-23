@@ -21,6 +21,7 @@
 */
 
 #include "cinder/audio/FftProcessorImplFFTreal.h"
+#include "cinder/Vector.h"
 
 namespace cinder { namespace audio {
 
@@ -30,43 +31,27 @@ FftProcessorImplFFTReal::FftProcessorImplFFTReal( uint16_t aBandCount )
 	if( mBandCount & ( mBandCount - 1 ) ) {
 		//TODO: not power of 2
 	}
-	
-	mLog2Size = log( (float)mBandCount * 2 ) / log( (float)2 );
 
-	// TODO: Implement
-
-	//mFftSetup = vDSP_create_fftsetup( mLog2Size, FFT_RADIX2 );  //n = 512, log2n = 9
-	
-	//mFftComplexBuffer.realp = (float *)malloc( mBandCount * sizeof( float ) );
-	//mFftComplexBuffer.imagp = (float *)malloc( mBandCount * sizeof( float ) );
+	mFft.reset( new FFT(mBandCount) );
 }
 
 FftProcessorImplFFTReal::~FftProcessorImplFFTReal()
 {
-	// TODO: Implement
-	//free( mFftComplexBuffer.realp );
-	//free( mFftComplexBuffer.imagp );
-	//vDSP_destroy_fftsetup( mFftSetup );
 }
 
 std::shared_ptr<float> FftProcessorImplFFTReal::process( const float * inData )
 {
-	//mFftComplexBuffer.realp = (float *)memset( mFftComplexBuffer.realp, 0, mBandCount );
-	//mFftComplexBuffer.imagp = (float *)memset( mFftComplexBuffer.imagp, 0, mBandCount );
-	
-	//vDSP_ctoz( (DSPComplex *)inData, 2 * sStride, &mFftComplexBuffer, 1, mBandCount );
-	//vDSP_fft_zrip( mFftSetup, &mFftComplexBuffer, 1, mLog2Size, FFT_FORWARD );
-	
-	float * outData = new float[mBandCount];
+	std::shared_ptr<float> outDataRef( new float[mBandCount], []( float * buffer ) { delete buffer; } );
+	float* outData = outDataRef.get();
 
-	// TODO: Implement
-	/*
-	for( int i = 0; i < mBandCount; i++ ) {
-		outData[i] = sqrt( ( mFftComplexBuffer.realp[i] * mFftComplexBuffer.realp[i] ) + ( mFftComplexBuffer.imagp[i] * mFftComplexBuffer.imagp[i] ) );
+	mFft->do_fft(outData, inData);
+
+	const uint16_t halfBand = mBandCount / 2;
+	for (int i=0; i < mBandCount/2; ++i) {
+		outData[i] = Vec2f(outData[i], outData[halfBand+i]).length();
 	}
-	*/
-	
-	return std::shared_ptr<float>( outData, []( float * buffer ) { delete buffer; } );
+
+	return outDataRef;
 }
 
 }} //namespace

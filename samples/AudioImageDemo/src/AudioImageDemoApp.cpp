@@ -15,15 +15,6 @@
 
 #include "Resources.h"
 
-#if defined (CINDER_MSW)
-
-#pragma warning(disable:4100)
-#include "ffft/FFTRealFixLen.h"
-static const uint32_t FFT_POWER_2    = 8;
-static const uint32_t BAND_COUNT     = 32;
-static const uint32_t SAMPLE_COUNT   = 256;
-#endif
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -39,8 +30,8 @@ public:
 	void keyDown( KeyEvent event );
 	void draw();
 	void update();
-	void openImageFile();
-	void openSoundFile();
+	void openImageFile( bool loadFromResource = false );
+	void openSoundFile( bool loadFromResource = false );
 
 private:
 	enum ColorSwitch {
@@ -75,60 +66,60 @@ void AudioImageDemoApp::setup()
 	// initialize the arcball with a semi-arbitrary rotation just to give an interesting angle
 	mArcball.setQuat( Quatf( Vec3f( 0.0577576f, -0.956794f, 0.284971f ), 3.68f ) );
 
-	openImageFile();
-	openSoundFile();
+	openImageFile(true);
+	openSoundFile(true);
 }
 
-void AudioImageDemoApp::openImageFile()
+void AudioImageDemoApp::openImageFile( bool loadFromResource )
 {
-	fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
-	if( ! path.empty() ) {
-		try {
-			Surface32f image = loadImage( path );
+	Surface32f image;
 
-			auto source = image.getBounds();
-			Area dest(0, 0, MAX_IMAGE_SIZE, MAX_IMAGE_SIZE);
-			auto fit = Area::proportionalFit(source, dest, false, false);
+	try {
+		image = loadFromResource ? loadImage( loadResource( RES_IMAGE ) ) : loadImage( getOpenFilePath( "", ImageIo::getLoadExtensions() ) );
+	} catch( ... ) {
+		std::cout << "Invalid image file.";
+	}
 
-			//if (source.getSize() != fit.getSize())
-			mImage = ip::resizeCopy( image, source, fit.getSize() );
+	if ( !!image )
+	{
+		auto source = image.getBounds();
+		Area dest(0, 0, MAX_IMAGE_SIZE, MAX_IMAGE_SIZE);
+		auto fit = Area::proportionalFit(source, dest, false, false);
 
-			mWidth = mImage.getWidth();
-			mHeight = mImage.getHeight();
+		//if (source.getSize() != fit.getSize())
+		mImage = ip::resizeCopy( image, source, fit.getSize() );
 
-			gl::VboMesh::Layout layout;
-			layout.setDynamicColorsRGB();
-			layout.setDynamicPositions();
-			mVboMesh = gl::VboMesh( mWidth * mHeight, 0, layout, GL_POINTS );
+		mWidth = mImage.getWidth();
+		mHeight = mImage.getHeight();
 
-			mVboColor = kColor;
-		}
-		catch( ... ) {
-			std::cout << "Invalid image file.";
-		}
+		gl::VboMesh::Layout layout;
+		layout.setDynamicColorsRGB();
+		layout.setDynamicPositions();
+		mVboMesh = gl::VboMesh( mWidth * mHeight, 0, layout, GL_POINTS );
+
+		mVboColor = kColor;
 	}
 }
 
-
-void AudioImageDemoApp::openSoundFile()
+void AudioImageDemoApp::openSoundFile( bool loadFromResource )
 {
-	fs::path path = getOpenFilePath( "" );
-	if( ! path.empty() ) {
+	audio::SourceRef sourceRef;
 
-		try {
-			auto newTrack = audio::Output::addTrack( audio::load( path.string() ), false );
-			if (mTrack)
-			{
-				mTrack->stop();
-				//audio::Output::removeTrack( 0 );
-			}
-			mTrack = newTrack;
-			mTrack->enablePcmBuffering( true );
-			mTrack->play();
-		}
-		catch( ... ) {
-			std::cout << "Invalid audio file.";
-		}
+	try {
+		sourceRef = loadFromResource ? audio::load( loadResource( RES_SONG ), "mp3" ) : audio::load( getOpenFilePath( "" ).string() );
+	} catch( ... ) {
+		std::cout << "Invalid song file.";
+		sourceRef.reset();
+	}
+
+	if ( sourceRef )
+	{
+		auto newTrack = audio::Output::addTrack( sourceRef, false );
+		if (mTrack)
+			mTrack->stop();
+		mTrack = newTrack;
+		mTrack->enablePcmBuffering( true );
+		mTrack->play();
 	}
 }
 
@@ -182,9 +173,9 @@ void AudioImageDemoApp::keyDown( KeyEvent event )
 
 void AudioImageDemoApp::draw()
 {
-	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+  gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
 
+#if 1
 	gl::pushModelView();
 	gl::translate( Vec3f( 0.0f, 0.0f, mHeight / 2.0f ) );
 	gl::rotate( mArcball.getQuat() );
@@ -192,17 +183,15 @@ void AudioImageDemoApp::draw()
 		gl::draw( mVboMesh );
 	gl::popModelView();
 
-#if 0
-	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
+#else 
 
-	glPushMatrix();
-	glTranslatef( 0.0, 0.0, 0.0 );
+  gl::pushModelView();
+	gl::translate( 0.0, 0.0, 0.0 );
 	drawWaveForm();
-#if defined( CINDER_MAC )
-	glTranslatef( 0.0, 200.0, 0.0 );
-	drawFft();
-#endif
-	glPopMatrix();
+	//gl::translate( 0.0, 200.0, 0.0 );
+	//drawFft();
+	gl::popModelView();
+
 #endif
 }
 
@@ -245,40 +234,6 @@ void AudioImageDemoApp::drawWaveForm()
 
 }
 
-
-#if 0//defined(CINDER_MSW)
-void AudioImageDemoApp::drawFft()
-{
-	static FFTRealFixLen<FFT_POWER_2> fft;
-	
-	float ht = 100.0f;
-
-	if( ! mPcmBuffer ) return;
-
-	std::vector<float> data(  mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT )->mSampleCount );
-	
-	//use the most recent Pcm data to calculate the Fft
-	fft.do_fft( mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT ), data.data() );
-	if( data.empty() )
-		return;
-	}
-
-	float * fftBuffer = data.data();
-
-	//draw the bands
-	for( int i = 0; i < ( BAND_COUNT ); i++ ) {
-		float barY = fftBuffer[i] / BAND_COUNT * ht;
-		glBegin( GL_QUADS );
-		glColor3f( 255.0f, 255.0f, 0.0f );
-		glVertex2f( i * 3, ht );
-		glVertex2f( i * 3 + 1, ht );
-		glColor3f( 0.0f, 255.0f, 0.0f );
-		glVertex2f( i * 3 + 1, ht - barY );
-		glVertex2f( i * 3, ht - barY );
-		glEnd();
-	}
-}
-#elif defined(CINDER_MAC)
 void AudioImageDemoApp::drawFft()
 {
 	float ht = 100.0f;
@@ -307,7 +262,6 @@ void AudioImageDemoApp::drawFft()
 		glEnd();
 	}
 }
-#endif
 
 void AudioImageDemoApp::updateData( AudioImageDemoApp::ColorSwitch whichColor, audio::PcmBuffer32fRef pcmBuffer )
 {
