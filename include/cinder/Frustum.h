@@ -1,5 +1,7 @@
 /*
- Copyright (c) 2012, The Barbarian Group
+ Copyright (c) 2011, The Cinder Project, All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+ 
  Portions of this code (C) Paul Houx
  All rights reserved.
 

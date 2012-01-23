@@ -1,5 +1,7 @@
 /*
- Copyright (c) 2012, The Barbarian Group
+ Copyright (c) 2011, The Cinder Project, All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+ 
  Portions of this code (C) Paul Houx
  All rights reserved.
 
@@ -29,7 +31,7 @@ namespace cinder {
 
 class Plane
 {
-public:
+  public:
 	Plane(void);
 	Plane( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
 	Plane( const Vec3f &normal, const Vec3f &point );
@@ -47,7 +49,7 @@ public:
 	const Vec3f&	getNormal() const { return mNormal; };
 	float			distance( const Vec3f &p ){ return (mDistance + mNormal.dot(p)); };
 
-protected:
+  protected:
 	Vec3f	mNormal;
 	Vec3f	mPoint;
 
