@@ -26,6 +26,7 @@
 #pragma once
 
 #include "cinder/Vector.h"
+#include <iostream>
 
 namespace cinder {
 
@@ -41,23 +42,28 @@ class Plane
 	//! Defines a plane using 3 points. 
 	void	set( const Vec3<T> &v1, const Vec3<T> &v2, const Vec3<T> &v3 );
 	//! Defines a plane using a normal vector and a point.
-	void	set( const Vec3<T> &normal, const Vec3<T> &point );
+	void	set( const Vec3<T> &point, const Vec3<T> &normal );
 	//! Defines a plane using 4 coefficients.
 	void	set( T a, T b, T c, T d );
 
-	const Vec3<T>&	getPoint() const { return mPoint; };
+	Vec3<T>			getPoint() const { return mNormal * mDistance; };
 	const Vec3<T>&	getNormal() const { return mNormal; };
-	float			distance( const Vec3f &p ) const { return (mDistance + mNormal.dot(p)); };
+	float			getDistance() const { return mDistance; }
+	float			distance( const Vec3f &p ) const { return (mNormal.dot(p) - mDistance); };
 
-  protected:
-	Vec3<T>	mNormal;
-	Vec3<T>	mPoint;
-
-	T	mDistance;
+	Vec3<T>		mNormal;
+	T			mDistance;
 };
 
 typedef Plane<float>	Planef;
 typedef Plane<double>	Planed;
+
+template<typename T>
+std::ostream& operator<<( std::ostream &o, const Plane<T> &p )
+{
+	return o << "(" << p.mNormal << ", " << p.mDistance << ")";
+}
+
 
 class PlaneExc : public std::exception {
  public:

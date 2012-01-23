@@ -48,58 +48,38 @@ Plane<T>::Plane( T a, T b, T c, T d )
 template<typename T>
 void Plane<T>::set( const Vec3<T> &v1, const Vec3<T> &v2, const Vec3<T> &v3 )
 {
-	Vec3<T> aux1(v1 - v2);
-	Vec3<T> aux2(v3 - v2);
-	Vec3<T> normal = aux2.cross(aux1);
+	Vec3<T> normal = (v2 - v1).cross( v3 - v1 );
 	
-	if( normal.lengthSquared() == 0 ) {
+	if( normal.lengthSquared() == 0 )
 		 // error! invalid parameters
 		throw PlaneExc();
-		return;
-	}
 
-	mNormal.set(normal);
-	mNormal.normalize();
-
-	mPoint.set(v2);
-
-	mDistance = -(mNormal.dot(mPoint));
+	mNormal = normal.normalized();
+	mDistance = mNormal.dot( v1 );
 }
 
 template<typename T>
 void Plane<T>::set( const Vec3<T> &point, const Vec3<T> &normal )
 {
-	if( normal.lengthSquared() == 0 ) {
+	if( normal.lengthSquared() == 0 )
 		 // error! invalid parameters
 		throw PlaneExc();
-		return;
-	}
 
-	mNormal.set(normal);
-	mNormal.normalize();
-
-	mPoint.set(point);
-
-	mDistance = -(mNormal.dot(mPoint));
+	mNormal = normal.normalized();
+	mDistance = mNormal.dot( point );
 }
 
 template<typename T>
 void Plane<T>::set( T a, T b, T c, T d )
 {
-	Vec3<T> normal(a, b, c);
-	
+	Vec3<T> normal( a, b, c );
+
 	T length = normal.length();
-	if( length == 0 ) {
+	if( length == 0 )
 		 // error! invalid parameters
 		throw PlaneExc();
-		return;
-	}
 
-	mNormal.set( normal );
-	mNormal.normalize();	
-
-	mPoint.set( 0.0f, 0.0f, 0.0f );
-
+	mNormal = normal.normalized();
 	mDistance = d / length;
 }
 
