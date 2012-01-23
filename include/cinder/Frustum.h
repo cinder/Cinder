@@ -35,11 +35,11 @@ namespace cinder {
 class Frustumf
 {	
   public:
-	enum { NEAR, FAR, LEFT, RIGHT, TOP, BOTTOM };
+	enum { NEARPLANE, FARPLANE, LEFTPLANE, RIGHTPLANE, TOPPLANE, BOTTOMPLANE };
 
   public:
-	Frustumf() {}
-	Frustumf( const Camera &cam );
+	Frustum();
+	Frustum( const Camera &cam );
 
 	//! Creates a frustum based on the camera's parameters.
 	void set( const Camera &cam );
@@ -75,9 +75,7 @@ class Frustumf
 	};
 
   protected:
-	Planef	mFrustumPlanes[6];
+	Plane	mFrustumPlanes[6];
 };
-
-typedef Frustumf	Frustum;
 
 } // namespace cinder

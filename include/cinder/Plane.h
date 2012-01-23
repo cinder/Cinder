@@ -29,33 +29,35 @@
 
 namespace cinder {
 
-class Planef
+template<typename T>
+class Plane
 {
   public:
-	Planef() {}
-	Planef( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
-	Planef( const Vec3f &point, const Vec3f &normal );
-	Planef( float a, float b, float c, float d );
+	Plane() {}
+	Plane( const Vec3<T> &v1, const Vec3<T> &v2, const Vec3<T> &v3 );
+	Plane( const Vec3<T> &point, const Vec3<T> &normal );
+	Plane( T a, T b, T c, T d );
 
 	//! Defines a plane using 3 points. 
-	void	set( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
+	void	set( const Vec3<T> &v1, const Vec3<T> &v2, const Vec3<T> &v3 );
 	//! Defines a plane using a normal vector and a point.
-	void	set( const Vec3f &normal, const Vec3f &point );
+	void	set( const Vec3<T> &normal, const Vec3<T> &point );
 	//! Defines a plane using 4 coefficients.
-	void	set( float a, float b, float c, float d );
+	void	set( T a, T b, T c, T d );
 
-	const Vec3f&	getPoint() const { return mPoint; };
-	const Vec3f&	getNormal() const { return mNormal; };
+	const Vec3<T>&	getPoint() const { return mPoint; };
+	const Vec3<T>&	getNormal() const { return mNormal; };
 	float			distance( const Vec3f &p ) const { return (mDistance + mNormal.dot(p)); };
 
   protected:
-	Vec3f	mNormal;
-	Vec3f	mPoint;
+	Vec3<T>	mNormal;
+	Vec3<T>	mPoint;
 
-	float	mDistance;
+	T	mDistance;
 };
 
-typedef Planef Plane;
+typedef Plane<float>	Planef;
+typedef Plane<double>	Planed;
 
 class PlaneExc : public std::exception {
  public:

@@ -27,26 +27,30 @@
 
 namespace cinder {
 
-Planef::Planef( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 )
+template<typename T>
+Plane<T>::Plane( const Vec3<T> &v1, const Vec3<T> &v2, const Vec3<T> &v3 )
 {
 	set( v1, v2, v3 );
 }
 
-Planef::Planef( const Vec3f &point, const Vec3f &normal )
+template<typename T>
+Plane<T>::Plane( const Vec3<T> &point, const Vec3<T> &normal )
 {
 	set( point, normal );
 }
 
-Planef::Planef( float a, float b, float c, float d )
+template<typename T>
+Plane<T>::Plane( T a, T b, T c, T d )
 {
 	set( a, b, c, d );
 }
 
-void Planef::set( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 )
+template<typename T>
+void Plane<T>::set( const Vec3<T> &v1, const Vec3<T> &v2, const Vec3<T> &v3 )
 {
-	Vec3f aux1(v1 - v2);
-	Vec3f aux2(v3 - v2);
-	Vec3f normal = aux2.cross(aux1);
+	Vec3<T> aux1(v1 - v2);
+	Vec3<T> aux2(v3 - v2);
+	Vec3<T> normal = aux2.cross(aux1);
 	
 	if( normal.lengthSquared() == 0 ) {
 		 // error! invalid parameters
@@ -62,7 +66,8 @@ void Planef::set( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 )
 	mDistance = -(mNormal.dot(mPoint));
 }
 
-void Planef::set( const Vec3f &point, const Vec3f &normal )
+template<typename T>
+void Plane<T>::set( const Vec3<T> &point, const Vec3<T> &normal )
 {
 	if( normal.lengthSquared() == 0 ) {
 		 // error! invalid parameters
@@ -78,11 +83,12 @@ void Planef::set( const Vec3f &point, const Vec3f &normal )
 	mDistance = -(mNormal.dot(mPoint));
 }
 
-void Planef::set( float a, float b, float c, float d )
+template<typename T>
+void Plane<T>::set( T a, T b, T c, T d )
 {
-	Vec3f normal(a, b, c);
+	Vec3<T> normal(a, b, c);
 	
-	float length = normal.length();
+	T length = normal.length();
 	if( length == 0 ) {
 		 // error! invalid parameters
 		throw PlaneExc();
@@ -96,5 +102,8 @@ void Planef::set( float a, float b, float c, float d )
 
 	mDistance = d / length;
 }
+
+template Plane<float> Planef;
+template Plane<double> Planed;
 
 } // namespace cinder
