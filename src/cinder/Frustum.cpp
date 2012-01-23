@@ -25,6 +25,11 @@
 
 #include "cinder/Frustum.h"
 
+#if defined( CINDER_MSW )
+	#undef NEAR
+	#undef FAR
+#endif
+
 namespace cinder {
 
 Frustumf::Frustumf( const Camera &cam )
@@ -41,12 +46,12 @@ void Frustumf::set( const Camera &cam )
 	Vec3f ftl, ftr, fbl, fbr;
 	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
 
-	mFrustumPlanes[TOPPLANE].set( ntr, ntl, ftl );
-	mFrustumPlanes[BOTTOMPLANE].set( nbl, nbr, fbr );
-	mFrustumPlanes[LEFTPLANE].set( ntl, nbl, fbl );
-	mFrustumPlanes[RIGHTPLANE].set( nbr, ntr, fbr );
-	mFrustumPlanes[NEARPLANE].set( ntl, ntr, nbr );
-	mFrustumPlanes[FARPLANE].set( ftr, ftl, fbl );
+	mFrustumPlanes[TOP].set( ntr, ntl, ftl );
+	mFrustumPlanes[BOTTOM].set( nbl, nbr, fbr );
+	mFrustumPlanes[LEFT].set( ntl, nbl, fbl );
+	mFrustumPlanes[RIGHT].set( nbr, ntr, fbr );
+	mFrustumPlanes[NEAR].set( ntl, ntr, nbr );
+	mFrustumPlanes[FAR].set( ftr, ftl, fbl );
 }
 
 void Frustumf::set( const Camera &cam, const Vec3f &ntl, const Vec3f &ntr, const Vec3f &nbl, const Vec3f &nbr )
@@ -59,12 +64,12 @@ void Frustumf::set( const Camera &cam, const Vec3f &ntl, const Vec3f &ntr, const
 	Vec3f fbl = (nbl - eye).normalized() * farClip;
 	Vec3f fbr = (nbr - eye).normalized() * farClip;
 
-	mFrustumPlanes[TOPPLANE].set( ntr, ntl, ftl );
-	mFrustumPlanes[BOTTOMPLANE].set( nbl, nbr, fbr );
-	mFrustumPlanes[LEFTPLANE].set( ntl, nbl, fbl );
-	mFrustumPlanes[RIGHTPLANE].set( nbr, ntr, fbr );
-	mFrustumPlanes[NEARPLANE].set( ntl, ntr, nbr );
-	mFrustumPlanes[FARPLANE].set( ftr, ftl, fbl );
+	mFrustumPlanes[TOP].set( ntr, ntl, ftl );
+	mFrustumPlanes[BOTTOM].set( nbl, nbr, fbr );
+	mFrustumPlanes[LEFT].set( ntl, nbl, fbl );
+	mFrustumPlanes[RIGHT].set( nbr, ntr, fbr );
+	mFrustumPlanes[NEAR].set( ntl, ntr, nbr );
+	mFrustumPlanes[FAR].set( ftr, ftl, fbl );
 }
 
 bool Frustumf::contains(const Vec3f &loc) const
