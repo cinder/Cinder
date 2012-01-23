@@ -29,14 +29,13 @@
 
 namespace cinder {
 
-class Plane
+class Planef
 {
   public:
-	Plane(void);
-	Plane( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
-	Plane( const Vec3f &normal, const Vec3f &point );
-	Plane( float a, float b, float c, float d );
-	virtual ~Plane(void);
+	Planef() {}
+	Planef( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
+	Planef( const Vec3f &point, const Vec3f &normal );
+	Planef( float a, float b, float c, float d );
 
 	//! Defines a plane using 3 points. 
 	void	set( const Vec3f &v1, const Vec3f &v2, const Vec3f &v3 );
@@ -47,7 +46,7 @@ class Plane
 
 	const Vec3f&	getPoint() const { return mPoint; };
 	const Vec3f&	getNormal() const { return mNormal; };
-	float			distance( const Vec3f &p ){ return (mDistance + mNormal.dot(p)); };
+	float			distance( const Vec3f &p ) const { return (mDistance + mNormal.dot(p)); };
 
   protected:
 	Vec3f	mNormal;
@@ -55,6 +54,8 @@ class Plane
 
 	float	mDistance;
 };
+
+typedef Planef Plane;
 
 class PlaneExc : public std::exception {
  public:

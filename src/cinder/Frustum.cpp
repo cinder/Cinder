@@ -24,27 +24,16 @@
 */
 
 #include "cinder/Frustum.h"
-#include "cinder/gl/gl.h"
 
 namespace cinder {
 
-Frustum::Frustum(void)
-{
-	// set planes using default perspective camera
-	set( CameraPersp() );
-}
-
-Frustum::Frustum(const Camera &cam)
+Frustumf::Frustumf( const Camera &cam )
 {
 	// set planes using camera
 	set( cam );
 }
 
-Frustum::~Frustum(void)
-{
-}
-
-void Frustum::set(const Camera &cam)
+void Frustumf::set( const Camera &cam )
 {
 	Vec3f ntl, ntr, nbl, nbr;
 	cam.getNearClipCoordinates( &ntl, &ntr, &nbl, &nbr );
@@ -52,15 +41,15 @@ void Frustum::set(const Camera &cam)
 	Vec3f ftl, ftr, fbl, fbr;
 	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
 
-	mFrustumPlanes[TOPPLANE].set(ntr, ntl, ftl);
-	mFrustumPlanes[BOTTOMPLANE].set(nbl, nbr, fbr);
-	mFrustumPlanes[LEFTPLANE].set(ntl, nbl, fbl);
-	mFrustumPlanes[RIGHTPLANE].set(nbr, ntr, fbr);
-	mFrustumPlanes[NEARPLANE].set(ntl, ntr, nbr);
-	mFrustumPlanes[FARPLANE].set(ftr, ftl, fbl);
+	mFrustumPlanes[TOPPLANE].set( ntr, ntl, ftl );
+	mFrustumPlanes[BOTTOMPLANE].set( nbl, nbr, fbr );
+	mFrustumPlanes[LEFTPLANE].set( ntl, nbl, fbl );
+	mFrustumPlanes[RIGHTPLANE].set( nbr, ntr, fbr );
+	mFrustumPlanes[NEARPLANE].set( ntl, ntr, nbr );
+	mFrustumPlanes[FARPLANE].set( ftr, ftl, fbl );
 }
 
-void Frustum::set(const Camera &cam, const Vec3f &ntl, const Vec3f &ntr, const Vec3f &nbl, const Vec3f &nbr)
+void Frustumf::set( const Camera &cam, const Vec3f &ntl, const Vec3f &ntr, const Vec3f &nbl, const Vec3f &nbr )
 {
 	Vec3f eye = cam.getEyePoint();
 	float farClip = cam.getFarClip();
@@ -70,66 +59,66 @@ void Frustum::set(const Camera &cam, const Vec3f &ntl, const Vec3f &ntr, const V
 	Vec3f fbl = (nbl - eye).normalized() * farClip;
 	Vec3f fbr = (nbr - eye).normalized() * farClip;
 
-	mFrustumPlanes[TOPPLANE].set(ntr, ntl, ftl);
-	mFrustumPlanes[BOTTOMPLANE].set(nbl, nbr, fbr);
-	mFrustumPlanes[LEFTPLANE].set(ntl, nbl, fbl);
-	mFrustumPlanes[RIGHTPLANE].set(nbr, ntr, fbr);
-	mFrustumPlanes[NEARPLANE].set(ntl, ntr, nbr);
-	mFrustumPlanes[FARPLANE].set(ftr, ftl, fbl);
+	mFrustumPlanes[TOPPLANE].set( ntr, ntl, ftl );
+	mFrustumPlanes[BOTTOMPLANE].set( nbl, nbr, fbr );
+	mFrustumPlanes[LEFTPLANE].set( ntl, nbl, fbl );
+	mFrustumPlanes[RIGHTPLANE].set( nbr, ntr, fbr );
+	mFrustumPlanes[NEARPLANE].set( ntl, ntr, nbr );
+	mFrustumPlanes[FARPLANE].set( ftr, ftl, fbl );
 }
 
-bool Frustum::contains(const Vec3f &loc)
+bool Frustumf::contains(const Vec3f &loc) const
 {
-	for(size_t i=0; i<6; ++i) {
-		if (mFrustumPlanes[i].distance(loc) < 0)
+	for( size_t i = 0; i < 6; ++i ) {
+		if( mFrustumPlanes[i].distance(loc) < 0 )
 			return false;
 	}
 
 	return true;
 }
 
-bool Frustum::contains(const Vec3f &center, float radius)
+bool Frustumf::contains( const Vec3f &center, float radius ) const
 {
 	float distance;
-	for(size_t i=0; i<6; ++i) {
+	for( size_t i = 0; i < 6; ++i ) {
 		distance = mFrustumPlanes[i].distance(center);
-		if (distance < -radius)
+		if( distance < -radius )
 			return false;
-		else if (distance < radius)
+		else if( distance < radius )
 			return false;
 	}
 
 	return true;
 }
 
-bool Frustum::intersects(const Vec3f &center, float radius)
+bool Frustumf::intersects( const Vec3f &center, float radius ) const
 {
 	float distance;
-	for(size_t i=0; i<6; ++i) {
+	for( size_t i = 0; i < 6; ++i ) {
 		distance = mFrustumPlanes[i].distance(center);
-		if (distance < -radius)
+		if( distance < -radius )
 			return false;
 	}
 
 	return true;
 }
 
-bool Frustum::contains(AxisAlignedBox3f &box)
+bool Frustumf::contains( const AxisAlignedBox3f &box ) const
 {
-	for(size_t i=0; i<6; ++i) {
-		if (mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].getNormal())) < 0)
+	for( size_t i = 0; i < 6; ++i ) {
+		if( mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].getNormal())) < 0 )
 			return false;
-		else if (mFrustumPlanes[i].distance(box.getNegative(mFrustumPlanes[i].getNormal())) < 0)
+		else if( mFrustumPlanes[i].distance(box.getNegative(mFrustumPlanes[i].getNormal())) < 0 )
 			return false;
 	}
 
 	return true;
 }
 
-bool Frustum::intersects(AxisAlignedBox3f &box)
+bool Frustumf::intersects( const AxisAlignedBox3f &box ) const
 {
-	for(size_t i=0; i<6; ++i) {
-		if (mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].getNormal())) < 0)
+	for( size_t i = 0; i < 6; ++i ) {
+		if( mFrustumPlanes[i].distance(box.getPositive(mFrustumPlanes[i].getNormal())) < 0 )
 			return false;
 	}
 

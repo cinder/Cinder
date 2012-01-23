@@ -43,8 +43,8 @@ class AxisAlignedBox3f {
 	const Vec3f&	getMax() const { return mExtents[1]; }
 
 	//! for use in frustum culling
-	Vec3f	getNegative( const Vec3f &normal );
-	Vec3f	getPositive( const Vec3f &normal );
+	Vec3f	getNegative( const Vec3f &normal ) const;
+	Vec3f	getPositive( const Vec3f &normal ) const;
 
 	//! converts axis-aligned box to another coordinate space
 	AxisAlignedBox3f transformed( const Matrix44f &transform );

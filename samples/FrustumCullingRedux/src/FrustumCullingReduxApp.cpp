@@ -22,7 +22,7 @@
 
 #include "cinder/AxisAlignedBox.h"	
 #include "cinder/Filesystem.h"
-#include "cinder/Frustum.h"			
+#include "cinder/Frustum.h"
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/ObjLoader.h"

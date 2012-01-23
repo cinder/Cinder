@@ -119,7 +119,7 @@ int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 }
 
 //!
-Vec3f AxisAlignedBox3f::getPositive(const Vec3f &normal)
+Vec3f AxisAlignedBox3f::getPositive(const Vec3f &normal) const
 {
 	Vec3f result = getMin();
 	Vec3f size = getSize();
@@ -136,7 +136,7 @@ Vec3f AxisAlignedBox3f::getPositive(const Vec3f &normal)
 	return(result);
 }
 
-Vec3f AxisAlignedBox3f::getNegative(const Vec3f &normal)
+Vec3f AxisAlignedBox3f::getNegative(const Vec3f &normal) const
 {
 	Vec3f result = getMin();
 	Vec3f size = getSize();
