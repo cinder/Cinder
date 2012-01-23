@@ -51,6 +51,9 @@ class Plane
 	float			getDistance() const { return mDistance; }
 	float			distance( const Vec3f &p ) const { return (mNormal.dot(p) - mDistance); };
 
+	Vec3<T>			reflectPoint( const Vec3<T> &p ) const { return mNormal * distance( p ) * -2 + p; }
+	Vec3<T>			reflectVector( const Vec3<T> &v ) const { return mNormal * mNormal.dot(v) * 2 - v; }
+
 	Vec3<T>		mNormal;
 	T			mDistance;
 };
