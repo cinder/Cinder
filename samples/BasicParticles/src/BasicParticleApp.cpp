@@ -67,6 +67,8 @@ void BasicParticleApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' )
 		setFullScreen( ! isFullScreen() );
+	else if( event.getChar() == 'v' )
+		gl::enableVerticalSync( ! gl::isVerticalSyncEnabled() );
 	else if( event.getChar() == 'x' )
 		mParticles.clear();
 }
