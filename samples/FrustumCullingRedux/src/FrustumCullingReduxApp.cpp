@@ -179,7 +179,7 @@ void FrustumCullingReduxApp::update()
 		mCullingCam = mRenderCam;
 
 	//! perform frustum culling **********************************************************************************
-	Frustum visibleWorld( mCullingCam );
+	Frustumf visibleWorld( mCullingCam );
 
 	for(int i=0;i<NUM_OBJECTS;++i) {
 		// update object (so it rotates slowly around its axis)
@@ -191,7 +191,7 @@ void FrustumCullingReduxApp::update()
 			AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( mObjects[i]->getTransform() );
 
 			// check if the bounding box intersects the visible world
-			mObjects[i]->setCulled( !visibleWorld.intersects( worldBoundingBox ) );
+			mObjects[i]->setCulled( ! visibleWorld.intersects( worldBoundingBox ) );
 		}
 		else {
 			mObjects[i]->setCulled( false );
