@@ -80,6 +80,9 @@ class Path2d {
 	const Vec2f&				getCurrentPoint() const { return mPoints.back(); }
 	void						setPoint( size_t index, const Vec2f &p ) { mPoints[index] = p; }
 
+	const std::vector<SegmentType>&	getSegments() const { return mSegments; }
+	std::vector<SegmentType>&		getSegments() { return mSegments; }
+
 	void			removeSegment( size_t segment );
 
 	enum SegmentType { MOVETO, LINETO, QUADTO, CUBICTO, CLOSE };
