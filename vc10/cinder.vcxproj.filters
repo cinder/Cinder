@@ -405,6 +405,7 @@
     <ClCompile Include="..\src\cinder\Tween.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\src\cinder\audio\FftProcessorImplFFTReal.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
@@ -413,6 +414,10 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\cpu\cpuid_32_64.cpp">
       <Filter>Source Files\cpu</Filter>
+=======
+    <ClCompile Include="..\src\cinder\Base64.cpp">
+      <Filter>Source Files</Filter>
+>>>>>>> upstream/master
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -839,6 +844,7 @@
     <ClInclude Include="..\include\cinder\gl\TextureFont.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\include\cinder\audio\FftProcessorImplFFTReal.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
@@ -853,5 +859,10 @@
     <MASM Include="..\src\cinder\cpu\cpuid64.asm">
       <Filter>Source Files\cpu</Filter>
     </MASM>
+=======
+    <ClInclude Include="..\include\cinder\Base64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+>>>>>>> upstream/master
   </ItemGroup>
 </Project>

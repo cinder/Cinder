@@ -119,6 +119,12 @@
 		005374F61194F584004D686E /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0005291F0FFBF4C200F19492 /* Text.cpp */; };
 		005374F71194F588004D686E /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
 		005374F81194F589004D686E /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
+		005C0CE914CBB3DB00A12CD2 /* Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 005C0CE814CBB3DB00A12CD2 /* Base64.h */; };
+		005C0CEA14CBB3DB00A12CD2 /* Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 005C0CE814CBB3DB00A12CD2 /* Base64.h */; };
+		005C0CEB14CBB3DB00A12CD2 /* Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 005C0CE814CBB3DB00A12CD2 /* Base64.h */; };
+		005C0CED14CBB47500A12CD2 /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005C0CEC14CBB47500A12CD2 /* Base64.cpp */; };
+		005C0CEE14CBB47500A12CD2 /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005C0CEC14CBB47500A12CD2 /* Base64.cpp */; };
+		005C0CEF14CBB47500A12CD2 /* Base64.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005C0CEC14CBB47500A12CD2 /* Base64.cpp */; };
 		006228E210C8248800A8191C /* DataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 006228E110C8248800A8191C /* DataSource.h */; };
 		006228E410C8273C00A8191C /* DataSource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006228E310C8273C00A8191C /* DataSource.cpp */; };
 		0062484F122F607500039A7A /* Filesystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484D122F607500039A7A /* Filesystem.h */; };
@@ -767,6 +773,8 @@
 		0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AxisAlignedBox.h; sourceTree = "<group>"; };
 		0049C1B31010E5A40015B4B9 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Renderer.h; path = app/Renderer.h; sourceTree = "<group>"; };
 		0049C1B61010E5B10015B4B9 /* Renderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Renderer.cpp; path = app/Renderer.cpp; sourceTree = "<group>"; };
+		005C0CE814CBB3DB00A12CD2 /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
+		005C0CEC14CBB47500A12CD2 /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Base64.cpp; sourceTree = "<group>"; };
 		006228E110C8248800A8191C /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
 		006228E310C8273C00A8191C /* DataSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataSource.cpp; sourceTree = "<group>"; };
 		0062484D122F607500039A7A /* Filesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Filesystem.h; sourceTree = "<group>"; };
@@ -1254,6 +1262,7 @@
 				EAC3D1A81011F2E700FFBC9E /* Serial.h */,
 				002F8F71103AFD9A0077CB91 /* System.h */,
 				C70E19FE106AA38700E63577 /* Buffer.h */,
+				005C0CE814CBB3DB00A12CD2 /* Base64.h */,
 				006228E110C8248800A8191C /* DataSource.h */,
 				00BC898C10D2BEA200D6DC59 /* DataTarget.h */,
 				009C864910F3D5CB006B6861 /* ImageIo.h */,
@@ -1316,6 +1325,7 @@
 				EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */,
 				002F8F74103AFEBF0077CB91 /* System.cpp */,
 				C70E1A01106AA39D00E63577 /* Buffer.cpp */,
+				005C0CEC14CBB47500A12CD2 /* Base64.cpp */,
 				006228E310C8273C00A8191C /* DataSource.cpp */,
 				00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */,
 				009FD54B10C9AEA100D63B1B /* ImageIo.cpp */,
@@ -1676,6 +1686,7 @@
 				00A121E01362774F00081873 /* Timeline.h in Headers */,
 				00A121E11362774F00081873 /* TimelineItem.h in Headers */,
 				00A121E21362774F00081873 /* Tween.h in Headers */,
+				005C0CEA14CBB3DB00A12CD2 /* Base64.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1798,6 +1809,7 @@
 				00A121DD1362774F00081873 /* Timeline.h in Headers */,
 				00A121DE1362774F00081873 /* TimelineItem.h in Headers */,
 				00A121DF1362774F00081873 /* Tween.h in Headers */,
+				005C0CEB14CBB3DB00A12CD2 /* Base64.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1942,6 +1954,7 @@
 				277C2CF11366632B00178A29 /* Matrix33.h in Headers */,
 				277C2CF21366632B00178A29 /* Matrix44.h in Headers */,
 				277C2CF31366632B00178A29 /* MatrixAlgo.h in Headers */,
+				005C0CE914CBB3DB00A12CD2 /* Base64.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2116,6 +2129,7 @@
 				00A121EC1362778200081873 /* Timeline.cpp in Sources */,
 				00A121ED1362778200081873 /* TimelineItem.cpp in Sources */,
 				00A121EE1362778200081873 /* Tween.cpp in Sources */,
+				005C0CEE14CBB47500A12CD2 /* Base64.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2206,6 +2220,7 @@
 				00A121E91362778200081873 /* Timeline.cpp in Sources */,
 				00A121EA1362778200081873 /* TimelineItem.cpp in Sources */,
 				00A121EB1362778200081873 /* Tween.cpp in Sources */,
+				005C0CEF14CBB47500A12CD2 /* Base64.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2317,6 +2332,7 @@
 				00A121EF1362778200081873 /* Timeline.cpp in Sources */,
 				00A121F01362778200081873 /* TimelineItem.cpp in Sources */,
 				00A121F11362778200081873 /* Tween.cpp in Sources */,
+				005C0CED14CBB47500A12CD2 /* Base64.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
