@@ -37,7 +37,8 @@ template< typename T >
 class Matrix33 
 {
 public:
-	typedef T TYPE;
+	typedef T	TYPE;
+	typedef T	value_type;
 	//
 	static const size_t DIM		= 3;
 	static const size_t DIM_SQ	= DIM*DIM;

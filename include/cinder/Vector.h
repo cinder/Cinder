@@ -76,6 +76,7 @@ class Vec2
 	T x,y;
 
 	typedef T							TYPE;
+	typedef T							value_type;
 	typedef typename VECTRAIT<T>::DIST	DIST;
 	static const int DIM = 2;
 
@@ -331,6 +332,7 @@ public:
 	T x,y,z;
 
 	typedef T								TYPE;
+	typedef T								value_type;
 	static const int DIM = 3;
 
 	Vec3() {}
@@ -713,7 +715,8 @@ class Vec4
  public:
 	T x,y,z,w;
 
-	typedef T TYPE;
+	typedef T							TYPE;
+	typedef T							value_type;
 	static const int DIM = 4;
 
 	Vec4()
