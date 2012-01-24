@@ -228,8 +228,8 @@ void clear( const ColorA &color, bool clearDepthBuffer )
 
 void enableVerticalSync( bool enable )
 {
-#if defined( CINDER_MAC )
 	GLint sync = ( enable ) ? 1 : 0;
+#if defined( CINDER_MAC )
 	::CGLSetParameter( ::CGLGetCurrentContext(), kCGLCPSwapInterval, &sync );
 #elif defined( CINDER_MSW )
 	if( WGL_EXT_swap_control )
