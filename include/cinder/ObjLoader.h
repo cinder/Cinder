@@ -22,10 +22,8 @@
 
 #pragma once
 
-#include "cinder/Filesystem.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Stream.h"
-#include "cinder/Utilities.h"
 
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -67,20 +65,6 @@ class ObjLoader {
 	 * \param loadTexCoords  should 2D texture coordinates be loaded or set to zero if not present. Default determines from the contents of the file
 	 * \param optimizeVertices  should the loader minimize the vertices by identifying shared vertices between faces.*/
 	void	load( size_t groupIndex, TriMesh *destTriMesh, boost::tribool loadNormals = boost::logic::indeterminate, boost::tribool loadTexCoords = boost::logic::indeterminate, bool optimizeVertices = true );
-	
-	//! Returns the number of vertices 
-	size_t getNumVertices(){ return mVertices.size(); };
-	//! Returns the number of normals
-	size_t getNumNormals(){ return mNormals.size(); };
-	//! Returns the number of texture coordinates
-	size_t getNumTexCoords(){ return mTexCoords.size(); };
-	//! Returns the number of groups
-	size_t getNumGroups(){ return mGroups.size(); };
-	
-	/**Exports each group as a TriMesh binary file. You can then use TriMesh::load() to load the mesh, which is a lot faster.
-	 * \param path path to where each group will be saved as a .msh file
-	 * \param replace if true, will replace existing files. Defaults to false*/ 
-	bool exportGroups(const std::string &path, bool replace=false);
 	
 	struct Face {
 		int					mNumVertices;
