@@ -166,7 +166,7 @@ Vec3f AxisAlignedBox3f::getNegative(const Vec3f &normal) const
 	return(result);
 }
 
-AxisAlignedBox3f AxisAlignedBox3f::transformed( const Matrix44f &transform )
+AxisAlignedBox3f AxisAlignedBox3f::transformed( const Matrix44f &transform ) const
 {
 	Vec3f verts[8];
 

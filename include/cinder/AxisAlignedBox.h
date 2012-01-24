@@ -50,7 +50,7 @@ class AxisAlignedBox3f {
 	Vec3f	getPositive( const Vec3f &normal ) const;
 
 	//! converts axis-aligned box to another coordinate space
-	AxisAlignedBox3f transformed( const Matrix44f &transform );
+	AxisAlignedBox3f transformed( const Matrix44f &transform ) const;
 	
 	static bool calcTriangleIntersection( const Ray &ray, const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result );
 
