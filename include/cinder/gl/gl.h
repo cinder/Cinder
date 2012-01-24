@@ -71,6 +71,13 @@ bool isExtensionAvailable( const std::string &extName );
 //! Clears the OpenGL color buffer using \a color and optionally clears the depth buffer when \a clearDepthBuffer
 void clear( const ColorA &color = ColorA::black(), bool clearDepthBuffer = true );
 
+//! Enables or disables wait for vertical sync
+void enableVerticalSync( bool enable = true );
+//! Disables wait for vertical sync
+inline void disableVerticalSync() { enableVerticalSync( false ); }
+//! Returns whether vertical sync is enabled for the current context
+bool isVerticalSyncEnabled();
+
 //! Sets the \c MODELVIEW and \c PROJECTION matrices to reflect the values of \a cam. Leaves the \c MatrixMode as \c MODELVIEW.
 void setMatrices( const Camera &cam );
 //! Sets the \c MODELVIEW matrix to reflect the values of \a cam. Leaves the \c MatrixMode as \c MODELVIEW.

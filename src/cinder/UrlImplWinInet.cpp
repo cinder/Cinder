@@ -50,7 +50,6 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 	urlComponents.dwStructSize = sizeof(urlComponents);
 	urlComponents.dwSchemeLength = 1;
 	urlComponents.dwHostNameLength = 1;
-	urlComponents.dwHostNameLength = 1;
 	urlComponents.dwUrlPathLength = 1;
 	BOOL success = ::InternetCrackUrl( wideUrl.c_str(), 0, 0, &urlComponents );
 	if( ! success )
