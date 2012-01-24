@@ -76,6 +76,12 @@
     <Filter Include="Source Files\libtess2">
       <UniqueIdentifier>{2d33008c-c675-44bd-a5bb-b5998abbf655}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\cpu">
+      <UniqueIdentifier>{b741bc74-fc5a-46c1-aaae-34a49c05caab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\cpu">
+      <UniqueIdentifier>{356d3a3b-ba69-4251-8af5-71e4ab7183b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -404,6 +410,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\FftProcessor.cpp">
       <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\cpu\cpuid_32_64.cpp">
+      <Filter>Source Files\cpu</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -836,10 +845,13 @@
     <ClInclude Include="..\include\cinder\audio\FftProcessor.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\cpu\cpuid_32_64.h">
+      <Filter>Header Files\cpu</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="..\src\cinder\cpuid64.asm">
-      <Filter>Source Files</Filter>
+    <MASM Include="..\src\cinder\cpu\cpuid64.asm">
+      <Filter>Source Files\cpu</Filter>
     </MASM>
   </ItemGroup>
 </Project>

@@ -45,6 +45,7 @@
 	#include <windows.h>
 	#include <windowsx.h>
 	#include <iphlpapi.h>
+	#include "cinder/cpu/cpuid_32_64.h"
 	#pragma comment(lib, "IPHLPAPI.lib")
 	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
 	#pragma push_macro( "_STDINT_H" )
@@ -166,13 +167,11 @@ void lockToLogicalProcessor( int n )
 
 #if ( defined( _WIN64 ) )
 
-void cpuid64(int* p);
-
 void cpuidwrap( int * p, unsigned int param )
 {
   p[0] = param;
   p[1] = 0;
-  cpuid64(p);
+  cpuid64((CPUID_ARGS*)p);
 }
 
 #else
