@@ -69,7 +69,7 @@ bool AxisAlignedBox3f::intersects( const Ray &ray )
 	return tmin > 0;
 }
 
-AxisAlignedBox3f AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
+void AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
 {
 	Vec3f minB = rhs.getMin();
 	if(minB.x < mExtents[0].x) mExtents[0].x = minB.x;
