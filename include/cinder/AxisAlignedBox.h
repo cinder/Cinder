@@ -38,6 +38,9 @@ class AxisAlignedBox3f {
 
 	Vec3f			getCenter() const { return ( mExtents[1] + mExtents[0] ) * 0.5f; }
 	Vec3f			getSize() const { return mExtents[1] - mExtents[0]; }
+
+	//! Expands the box so that it contains \a box
+	void			include( const AxisAlignedBox3f &box );
 	
 	const Vec3f&	getMin() const { return mExtents[0]; }
 	const Vec3f&	getMax() const { return mExtents[1]; }

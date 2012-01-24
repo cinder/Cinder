@@ -69,6 +69,19 @@ bool AxisAlignedBox3f::intersects( const Ray &ray )
 	return tmin > 0;
 }
 
+AxisAlignedBox3f AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
+{
+	Vec3f minB = rhs.getMin();
+	if(minB.x < mExtents[0].x) mExtents[0].x = minB.x;
+	if(minB.y < mExtents[0].y) mExtents[0].y = minB.y;
+	if(minB.z < mExtents[0].z) mExtents[0].z = minB.z;
+
+	Vec3f maxB = rhs.getMax();
+	if(maxB.x > mExtents[1].x) mExtents[1].x = maxB.x;
+	if(maxB.y > mExtents[1].y) mExtents[1].y = maxB.y;
+	if(maxB.z > mExtents[1].z) mExtents[1].z = maxB.z;
+}
+
 int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 {
 	int i = 0;
