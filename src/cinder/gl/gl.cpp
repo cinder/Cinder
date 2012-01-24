@@ -226,6 +226,33 @@ void clear( const ColorA &color, bool clearDepthBuffer )
 		glClear( GL_COLOR_BUFFER_BIT );
 }
 
+void enableVerticalSync( bool enable )
+{
+	GLint sync = ( enable ) ? 1 : 0;
+#if defined( CINDER_MAC )
+	::CGLSetParameter( ::CGLGetCurrentContext(), kCGLCPSwapInterval, &sync );
+#elif defined( CINDER_MSW )
+	if( WGL_EXT_swap_control )
+		::wglSwapIntervalEXT( sync );
+#endif
+}
+
+bool isVerticalSyncEnabled()
+{
+#if defined( CINDER_MAC )
+	GLint enabled;
+	::CGLGetParameter( ::CGLGetCurrentContext(), kCGLCPSwapInterval, &enabled );
+	return enabled > 0;
+#elif defined( CINDER_MSW )
+	if( WGL_EXT_swap_control )
+		return ::wglGetSwapIntervalEXT() > 0;
+	else
+		return true;
+#else
+	return true;
+#endif
+}
+
 void setModelView( const Camera &cam )
 {
 	glMatrixMode( GL_MODELVIEW );
