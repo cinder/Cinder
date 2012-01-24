@@ -310,9 +310,9 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 		break;
 	case KeyEvent::KEY_b:
 		if(event.isShiftDown())
-			bDrawPreciseBoundingBoxes = !bDrawPreciseBoundingBoxes;
+			bDrawPreciseBoundingBoxes = ! bDrawPreciseBoundingBoxes;
 		else
-			bDrawEstimatedBoundingBoxes = !bDrawEstimatedBoundingBoxes;
+			bDrawEstimatedBoundingBoxes = ! bDrawEstimatedBoundingBoxes;
 		break;
 	case KeyEvent::KEY_c:
 		bPerformCulling = !bPerformCulling;
@@ -345,19 +345,8 @@ void FrustumCullingReduxApp::resize( ResizeEvent event )
 
 void FrustumCullingReduxApp::loadObject()
 {
-	// load a binary mesh file, much faster than an OBJ file
-	fs::path meshFile("../models/heart.msh");
-
-	if(!fs::exists( meshFile )) {
-		// if you don't have a binary file, you can create one like this:
-		ObjLoader	loader( loadAsset("models/heart.obj") );
-					loader.load(&mTriMesh, true, true, true);
-
-		mTriMesh.write( writeFile(meshFile) );
-	}
-	else {
-		mTriMesh.read( loadFile(meshFile) );
-	}
+	ObjLoader loader( loadAsset("models/heart.obj") );
+	loader.load( &mTriMesh, true, true, true );
 
 	// create a Vbo, which greatly improves drawing speed
 	ci::gl::VboMesh::Layout layout;
