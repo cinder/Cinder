@@ -3,8 +3,6 @@
 #include "cinder/audio/Output.h"
 #include "cinder/audio/FftProcessor.h"
 #include "cinder/audio/PcmBuffer.h"
-
-#include "cinder/app/AppBasic.h"
 #include "cinder/ArcBall.h"
 #include "cinder/Rand.h"
 #include "cinder/Camera.h"
