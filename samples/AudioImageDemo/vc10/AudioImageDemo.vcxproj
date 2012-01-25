@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{74202EDD-91D2-4D2A-B0B6-355CEB16E6BE}</ProjectGuid>
+    <ProjectGuid>{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}</ProjectGuid>
     <RootNamespace>AudioImageDemoApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
