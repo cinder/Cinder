@@ -33,6 +33,8 @@ public:
 	void openImageFile( bool loadFromResource = false );
 	void openSoundFile( bool loadFromResource = false );
 
+	~AudioImageDemoApp();
+
 private:
 	enum ColorSwitch {
 		kColor, kRed, kGreen, kBlue
@@ -47,9 +49,12 @@ private:
 
 	uint32_t    mWidth, mHeight;
 
-	Surface32f		mImage;
-	gl::VboMesh		mVboMesh;
-	ColorSwitch   mVboColor;
+	Surface32f  mImage;
+	gl::VboMesh mVboMesh;
+	ColorSwitch mVboColor;
+	bool        mbShowFFT;
+	bool        mbModulateColorWithFFT;
+	Vec3f       mLowMidHighStrength;
 
 	///////////////////////////////////////////////////////////////////////////
 
@@ -61,13 +66,16 @@ void AudioImageDemoApp::setup()
 {
 	gl::enableAlphaBlending();
 	gl::enableDepthRead();
-	gl::enableDepthWrite();    
+	gl::enableDepthWrite();
 
 	// initialize the arcball with a semi-arbitrary rotation just to give an interesting angle
 	mArcball.setQuat( Quatf( Vec3f( 0.0577576f, -0.956794f, 0.284971f ), 3.68f ) );
 
 	openImageFile(true);
 	openSoundFile(true);
+
+	mbShowFFT              = true;
+	mbModulateColorWithFFT = true;
 }
 
 void AudioImageDemoApp::openImageFile( bool loadFromResource )
@@ -148,22 +156,28 @@ void AudioImageDemoApp::keyDown( KeyEvent event )
 {
 	switch( event.getChar() ) {
 	case 'r':
-		updateData( kRed );
+		mVboColor = kRed;
 		break;
 	case 'g':
-		updateData( kGreen );
+		mVboColor = kGreen;
 		break;
 	case 'b':
-		updateData( kBlue );
+		mVboColor = kBlue;
 		break;
 	case 'c':
-		updateData( kColor );
+		mVboColor = kColor;
 		break;
 	case 'o':
 		openImageFile();
 		break;
 	case 's':
 		openSoundFile();
+		break;
+	case 'f':
+		mbShowFFT = !mbShowFFT;
+		break;
+	case 'm':
+		mbModulateColorWithFFT = !mbModulateColorWithFFT;
 		break;
 	case 'p':
 		if (mTrack)
@@ -173,9 +187,18 @@ void AudioImageDemoApp::keyDown( KeyEvent event )
 
 void AudioImageDemoApp::draw()
 {
-  gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
+	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
 
-#if 1
+	if( mbShowFFT )
+	{
+		gl::pushModelView();
+		gl::translate( 0.0, 0.0, 0.0 );
+		drawWaveForm();
+		gl::translate( -100.0, 0.0, 0.0 );
+		drawFft();
+		gl::popModelView();
+	}
+	
 	gl::pushModelView();
 	gl::translate( Vec3f( 0.0f, 0.0f, mHeight / 2.0f ) );
 	gl::rotate( mArcball.getQuat() );
@@ -183,16 +206,6 @@ void AudioImageDemoApp::draw()
 		gl::draw( mVboMesh );
 	gl::popModelView();
 
-#else 
-
-  gl::pushModelView();
-	gl::translate( 0.0, 0.0, 0.0 );
-	drawWaveForm();
-	//gl::translate( 0.0, 200.0, 0.0 );
-	//drawFft();
-	gl::popModelView();
-
-#endif
 }
 
 void AudioImageDemoApp::update()
@@ -213,19 +226,19 @@ void AudioImageDemoApp::drawWaveForm()
 	audio::Buffer32fRef rightBuffer = mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_RIGHT );
 
 	int displaySize = getWindowWidth();
-	float scale = displaySize / (float)bufferLength;
+	float scale = displaySize / (float)bufferLength * .25f;
 
 	PolyLine<Vec2f>	leftBufferLine;
 	PolyLine<Vec2f>	rightBufferLine;
 
-	for( int i = 0; i < bufferLength; i++ ) {
+	for( uint32_t i = 0; i < bufferLength; i++ ) {
 		float x = ( i * scale );
 
 		//get the PCM value from the left channel buffer
-		float y = ( ( leftBuffer->mData[i] - 1 ) * - 100 );
+		float y = ( 50 + ( leftBuffer->mData[i] - 1 ) * - 30 );
 		leftBufferLine.push_back( Vec2f( x , y) );
 
-		y = ( ( rightBuffer->mData[i] - 1 ) * - 100 );
+		y = 50 + ( ( rightBuffer->mData[i] - 1 ) * - 30 );
 		rightBufferLine.push_back( Vec2f( x , y) );
 	}
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
@@ -234,33 +247,69 @@ void AudioImageDemoApp::drawWaveForm()
 
 }
 
+unsigned long lower_power_of_two(unsigned long v)
+{
+	v--;
+	v |= v >> 1;
+	v |= v >> 2;
+	v |= v >> 4;
+	v |= v >> 8;
+	v |= v >> 16;
+	v++;
+	return v >> 1;
+}
+
 void AudioImageDemoApp::drawFft()
 {
-	float ht = 100.0f;
+	float ht = 50.0f;
 	uint16_t bandCount = 32;
-
+	
 	if( ! mPcmBuffer ) return;
 
+	// Fit the samples to a 2^N size buffer
+	const uint32_t inSampleCount = lower_power_of_two( mPcmBuffer->getSampleCount() );
+	const uint32_t outSampleCount = inSampleCount / 2;
+
 	//use the most recent Pcm data to calculate the Fft
-	std::shared_ptr<float> fftRef = audio::calculateFft( mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT ), bandCount );
+	auto pcmData = mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT );
+
+	//process the samples
+	std::shared_ptr<float> fftRef = audio::calculateFft( pcmData, outSampleCount );
+
 	if( ! fftRef ) {
 		return;
 	}
 
+	//collect the energy across the samples
+	std::vector<float> normalizedBandData(bandCount, 0.f);
+	auto samplesPerBand    = outSampleCount / normalizedBandData.size();
+	auto invSamplesPerBand = 1.f / samplesPerBand;
+
+	//normalize samples by the number of samples per bin
 	float * fftBuffer = fftRef.get();
+	for (uint32_t i = 0; i < outSampleCount; ++i) 
+		normalizedBandData[ (uint32_t) ((float)i / samplesPerBand) ] += (fftBuffer[i] * invSamplesPerBand);
 
 	//draw the bands
-	for( int i = 0; i < ( bandCount ); i++ ) {
-		float barY = fftBuffer[i] / bandCount * ht;
+	const uint32_t bandsToDraw = (uint32_t)(.7f * bandCount);
+	const uint32_t bandOffset  = 1;
+	mLowMidHighStrength.zero();
+	for( uint32_t i = bandOffset; i < bandsToDraw + bandOffset; i++ ) {
+		mLowMidHighStrength[ (i-bandOffset) * 3 / ( bandsToDraw ) ] += fftBuffer[i];
+		float barY = (log(normalizedBandData[i]+1)) / bandCount * ht * 10;
 		glBegin( GL_QUADS );
 		glColor3f( 255.0f, 255.0f, 0.0f );
-		glVertex2f( i * 3, ht );
-		glVertex2f( i * 3 + 1, ht );
+		glVertex2f( (GLfloat)(bandCount*2 - i * 3), ht );
+		glVertex2f( (GLfloat)(bandCount*2 - i * 3 + 1), ht );
 		glColor3f( 0.0f, 255.0f, 0.0f );
-		glVertex2f( i * 3 + 1, ht - barY );
-		glVertex2f( i * 3, ht - barY );
+		glVertex2f( (GLfloat)(bandCount*2 - i * 3 + 1), ht + barY );
+		glVertex2f( (GLfloat)(bandCount*2 - i * 3), ht + barY );
 		glEnd();
 	}
+	mLowMidHighStrength *= (3.f / bandsToDraw);
+	mLowMidHighStrength.normalize();
+	mLowMidHighStrength += .5f;
+	mLowMidHighStrength.normalize();
 }
 
 void AudioImageDemoApp::updateData( AudioImageDemoApp::ColorSwitch whichColor, audio::PcmBuffer32fRef pcmBuffer )
@@ -277,7 +326,7 @@ void AudioImageDemoApp::updateData( AudioImageDemoApp::ColorSwitch whichColor, a
 	const audio::Buffer32fRef leftBuffer  = mPcmBuffer ? mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_LEFT ) : audio::Buffer32fRef();
 	const audio::Buffer32fRef rightBuffer = mPcmBuffer ? mPcmBuffer->getChannelData( audio::CHANNEL_FRONT_RIGHT ) : audio::Buffer32fRef();
 
-	const float iRadius2 = Vec2f(mImage.getWidth() / 2, mImage.getHeight() / 2).lengthSquared();
+	const float iRadius2 = Vec2f((float)mImage.getWidth() / 2, (float)mImage.getHeight() / 2).lengthSquared();
 	const float scale = (float)bufferLength / iRadius2;
 
 	while( pixelIter.line() ) {
@@ -305,6 +354,9 @@ void AudioImageDemoApp::updateData( AudioImageDemoApp::ColorSwitch whichColor, a
 				break;
 			}
 
+			if( mbModulateColorWithFFT )
+				color *= Color( CM_RGB, mLowMidHighStrength );
+
 			// the x and the z coordinates correspond to the pixel's x & y
 			float x = pixelIter.x() - mWidth / 2.0f;
 			float y = height * 60.0f;
@@ -322,6 +374,13 @@ void AudioImageDemoApp::updateData( AudioImageDemoApp::ColorSwitch whichColor, a
 			++vertexIter;
 		}
 	}
+
+	mLowMidHighStrength.zero();
+}
+
+AudioImageDemoApp::~AudioImageDemoApp()
+{
+
 }
 
 CINDER_APP_BASIC( AudioImageDemoApp, RendererGl )

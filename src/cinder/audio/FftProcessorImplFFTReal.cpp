@@ -26,29 +26,30 @@
 namespace cinder { namespace audio {
 
 FftProcessorImplFFTReal::FftProcessorImplFFTReal( uint16_t aBandCount )
-	: FftProcessorImpl( aBandCount )
+	: FftProcessorImpl( aBandCount ), mFftBuffer( mBandCount * 2 )
 {
 	if( mBandCount & ( mBandCount - 1 ) ) {
 		//TODO: not power of 2
 	}
 
-	mFft.reset( new FFT(mBandCount) );
+	mFft.reset( new FFT( mBandCount * 2 ) );
 }
 
 FftProcessorImplFFTReal::~FftProcessorImplFFTReal()
 {
+
 }
 
 std::shared_ptr<float> FftProcessorImplFFTReal::process( const float * inData )
 {
+	mFft->do_fft( mFftBuffer.data(), inData );
+
 	std::shared_ptr<float> outDataRef( new float[mBandCount], []( float * buffer ) { delete buffer; } );
 	float* outData = outDataRef.get();
-
-	mFft->do_fft(outData, inData);
-
-	const uint16_t halfBand = mBandCount / 2;
-	for (int i=0; i < mBandCount/2; ++i) {
-		outData[i] = Vec2f(outData[i], outData[halfBand+i]).length();
+	for( int i = 0; i < mBandCount; ++i ) {
+		float real_i = mFftBuffer[i];
+		float imag_i = ( i > 0 && i < (mBandCount-1) ) ? mFftBuffer[mBandCount + i] : 0.0f;
+		outData[i] = Vec2f( real_i, imag_i ).length();
 	}
 
 	return outDataRef;

@@ -37,6 +37,7 @@ class FftProcessorImplFFTReal : public FftProcessorImpl {
 
 	typedef ffft::FFTReal<float> FFT;
 	std::shared_ptr<FFT> mFft;
+	std::vector<float>   mFftBuffer;
 };
 
 }} //namespace

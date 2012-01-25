@@ -40,6 +40,9 @@ SourceRef load( const std::string &path, std::string extension )
 
 SourceRef load( DataSourceRef dataSource, std::string extension )
 {
+	if ( !dataSource || NULL == dataSource->getBuffer().getData() )
+		return SourceRef();
+
 	if( extension.empty() )
 		extension = getPathExtension( dataSource->getFilePathHint() );
 	
