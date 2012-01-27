@@ -31,7 +31,7 @@ class Arcball {
 	Arcball()
 	{
 		setNoConstraintAxis();
-		mCurrentQuat = mInitialQuat = Quatf( Vec3f::yAxis(), 0 );
+		mCurrentQuat = mInitialQuat = Quatf::identity();
 	}
 	Arcball( const Vec2i &aScreenSize )
 		: mWindowSize( aScreenSize )
@@ -39,7 +39,7 @@ class Arcball {
 		setCenter( Vec2f( mWindowSize.x / 2.0f, mWindowSize.y / 2.0f ) );
 		mRadius = std::min( (float)mWindowSize.x / 2, (float)mWindowSize.y / 2 );
 		setNoConstraintAxis();
-		mCurrentQuat = mInitialQuat = Quatf( Vec3f::yAxis(), 0 );
+		mCurrentQuat = mInitialQuat = Quatf::identity();
 	}
 	
 	void mouseDown( const Vec2i &mousePos )
@@ -62,7 +62,7 @@ class Arcball {
 		mCurrentQuat.normalize();
 	}
 	
-	void	resetQuat() { mCurrentQuat = mInitialQuat = Quatf( Vec3f::yAxis(), 0 ); }
+	void	resetQuat() { mCurrentQuat = mInitialQuat = Quatf::identity(); }
 	Quatf	getQuat() { return mCurrentQuat; }
 	void	setQuat( const Quatf &quat ) { mCurrentQuat = quat; }
 	

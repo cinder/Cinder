@@ -256,7 +256,7 @@ class XmlTree {
 	void						setValue( const std::string &value ) { mValue = value; }
 	//! Sets the value of the node to \a value which is converted to a string first. Requires T to support the ostream<< operator.
 	template<typename T>
-	T							setValue( const T &value ) { mValue = boost::lexical_cast<std::string>( value ); }
+	void						setValue( const T &value ) { mValue = boost::lexical_cast<std::string>( value ); }
 
 	//! Returns whether this node has a parent node.
 	bool						hasParent() const { return mParent != NULL; }
