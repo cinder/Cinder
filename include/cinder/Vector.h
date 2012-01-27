@@ -75,7 +75,7 @@ class Vec2
 	typedef typename VECTRAIT<T>::DIST	DIST;
 	static const int DIM = 2;
 
-	Vec2() {}
+	Vec2() :x(0), y(0) {}
 	Vec2( T nx, T ny ) : x( nx ), y( ny ) {}
 	Vec2( const Vec2<T>& src ) : x( src.x ), y( src.y ) {}
 	explicit Vec2( const T *d ) : x( d[0] ), y( d[1] ) {}
@@ -325,7 +325,7 @@ public:
 	typedef T								value_type;
 	static const int DIM = 3;
 
-	Vec3() {}
+	Vec3() :x(0), y(0), z(0) {}
 	Vec3( T nx, T ny, T nz )
 		: x( nx ), y( ny ), z( nz )
 	{}
@@ -1303,16 +1303,12 @@ template <typename T> bool isNaN( const Vec2<T>& a ) { return isNaN( a.x ) || is
 template <typename T> bool isNaN( const Vec3<T>& a ) { return isNaN( a.x ) || isNaN( a.y ) || isNaN( a.z ); }
 template <typename T> bool isNaN( const Vec4<T>& a ) { return isNaN( a.x ) || isNaN( a.y ) || isNaN( a.z ) || isNaN( a.w ); }
 
-typedef Vec2<int>		Vec2i;
-typedef Vec3<int>		Vec3i;
-typedef Vec4<int>		Vec4i;
-
 typedef Vec2<float>		Vec2f;
-typedef Vec3<float>		Vec3f;
-typedef Vec4<float>		Vec4f;
-
 typedef Vec2<double>	Vec2d;
+typedef Vec3<float>		Vec3f;
 typedef Vec3<double>	Vec3d;
+typedef Vec4<float>		Vec4f;
 typedef Vec4<double>	Vec4d;
+typedef Vec2<int>		Vec2i;
 
 } // namespace cinder
