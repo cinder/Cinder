@@ -59,8 +59,6 @@ class FrustumCullingReduxApp
 	void			loadObject();
 	//! draws a grid to visualize the ground plane
 	void			drawGrid(float size=100.0f, float step=10.0f);
-	//! returns TRUE if vertical sync is enabled
-	bool			hasVerticalSync();
 	//! toggles vertical sync on both Windows and Macs
 	void			toggleVerticalSync();
 	//! renders the help text
@@ -319,12 +317,9 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 		break;
 	case KeyEvent::KEY_f: 
 		{
-			bool verticalSyncEnabled = hasVerticalSync();
-			setFullScreen( !isFullScreen() );
-			if(!verticalSyncEnabled) {
-				// disable vertical sync again
-				toggleVerticalSync();
-			}
+			bool verticalSyncEnabled = gl::isVerticalSyncEnabled();
+			setFullScreen( ! isFullScreen() );
+			gl::enableVerticalSync( verticalSyncEnabled );
 		}
 		break;
 	case KeyEvent::KEY_h:
@@ -380,30 +375,9 @@ void FrustumCullingReduxApp::drawGrid(float size, float step)
 	}
 }
 
-bool FrustumCullingReduxApp::hasVerticalSync()
-{
-#ifdef WIN32
-	if( WGL_EXT_swap_control ) 
-		return (::wglGetSwapIntervalEXT() > 0);
-	else return true;
-#else
-	GLint verticalSyncEnabled;
-	CGLGetParameter( CGLGetCurrentContext(), kCGLCPSwapInterval, &verticalSyncEnabled );
-
-	return(verticalSyncEnabled > 0);
-#endif
-}
-
 void FrustumCullingReduxApp::toggleVerticalSync()
 {
-	GLint enableVerticalSync = hasVerticalSync() ? 0 : 1;
-
-#ifdef WIN32
-	if( WGL_EXT_swap_control ) 
-		  ::wglSwapIntervalEXT(enableVerticalSync);
-#else
-	CGLSetParameter( CGLGetCurrentContext(), kCGLCPSwapInterval, &enableVerticalSync );	
-#endif
+	gl::enableVerticalSync( ! gl::isVerticalSyncEnabled() );
 }
 
 void FrustumCullingReduxApp::renderHelpToTexture()
@@ -424,7 +398,7 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 	if(bDrawPreciseBoundingBoxes) layout.addLine("(B)+(Shift) Toggle precise bounding boxes (currently ON)");
 	else  layout.addLine("(B)+(Shift) Toggle precise bounding boxes (currently OFF)");
 
-	if(hasVerticalSync()) layout.addLine("(V) Toggle vertical sync (currently ON)");
+	if(gl::isVerticalSyncEnabled()) layout.addLine("(V) Toggle vertical sync (currently ON)");
 	else  layout.addLine("(V) Toggle vertical sync (currently OFF)");
 
 	if(bMoveCamera) layout.addLine("(Space) Toggle camera control (currently ON)");
