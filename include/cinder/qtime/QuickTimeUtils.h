@@ -23,6 +23,8 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#if ! defined( CINDER_64 )
+
 #include "cinder/Url.h"
 #include "cinder/Surface.h"
 #include "cinder/ImageIo.h"
@@ -50,8 +52,7 @@
 
 namespace cinder { namespace qtime {
 
-#if ! defined( __LP64__ )
-//! \cond
+	//! \cond
 bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 value );
 bool dictionarySetPixelBufferPixelFormatType( bool alpha, CFMutableDictionaryRef dict );
 bool dictionarySetPixelBufferSize( const unsigned int width, const unsigned int height, CFMutableDictionaryRef dict );
@@ -70,8 +71,6 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 static void CVPixelBufferDealloc( void *refcon );
 //! Makes a cinder::Surface form a CVPixelBufferRef, setting a proper deallocation function to free the CVPixelBufferRef upon the destruction of the Surface::Obj
 Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
-
-#endif // ! defined( __LP64__ )
 
 typedef std::shared_ptr<class ImageTargetCvPixelBuffer> ImageTargetCvPixelBufferRef;
 
@@ -126,3 +125,5 @@ GWorldPtr createGWorld( ImageSourceRef imageSource );
 #endif // defined( CINDER_MSW )
 
 } } // namespace cinder::qtime
+
+#endif // ! defined( CINDER_64 )
