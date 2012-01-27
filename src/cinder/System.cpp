@@ -166,7 +166,7 @@ void lockToLogicalProcessor( int n )
 
 void cpuidwrap( int * p, unsigned int param )
 {
-	__cpuid(p, param);
+	__cpuid( p, param );
 }
 
 void cpuid( int whichlp, PLOGICALPROCESSORDATA p )
