@@ -618,7 +618,8 @@ class Context
 	/*void		pathDestroy( class Path *path );
 	void		appendPath( const class Path *path );
 	*/
-	void		getCurrentPoint( double *x, double *y );
+	void		getCurrentPoint( double *x, double *y ) const;
+	Vec2f		getCurrentPoint() const;
 	void		newPath();
 	void		newSubPath();
 	void		closePath();
@@ -676,6 +677,7 @@ class Context
 	void        setScaledFont( const ScaledFont *scaled_font );
 	ScaledFont*	getScaledFont();
 	void        showText( const std::string &s );
+	void		textPath( const std::string &s );
 	//void        showGlyphs( const Glyph *glyphs, int num_glyphs );							// glyphs is an array of cairo_glyph_t
 	//void		showGlyphs( const GlyphArray &glyphs );
 	FontExtents	fontExtents();

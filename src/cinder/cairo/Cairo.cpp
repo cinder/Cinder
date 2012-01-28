@@ -1428,9 +1428,16 @@ void Context::copyPathFlat( cinder::Shape2d *resultPath )
 	cairo_path_destroy( path );
 }
 
-void Context::getCurrentPoint( double *x, double *y )
+void Context::getCurrentPoint( double *x, double *y ) const
 {
 	cairo_get_current_point( mCairo, x, y );
+}
+
+Vec2f Context::getCurrentPoint() const
+{
+	double x, y;
+	cairo_get_current_point( mCairo, &x, &y );
+	return Vec2f( (float)x, (float)y );
 }
 
 void Context::newPath()
@@ -1692,6 +1699,11 @@ ScaledFont*	Context::getScaledFont()
 void Context::showText( const std::string &s )
 {
 	cairo_show_text( mCairo, s.c_str() );
+}
+
+void Context::textPath( const std::string &s )
+{
+	cairo_text_path( mCairo, s.c_str() );
 }
 
 /*void Context::showGlyphs( const GlyphArray &glyphs )
