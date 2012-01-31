@@ -46,15 +46,6 @@
 	#include <windowsx.h>
 	#include <iphlpapi.h>
 	#pragma comment(lib, "IPHLPAPI.lib")
-	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
-	#pragma push_macro( "_STDINT_H" )
-		#undef __STDC_CONSTANT_MACROS
-		#if _MSC_VER >= 1600 // VC10 or greater
-			#define _STDINT_H
-		#endif
-		#include <QTML.h>
-	#pragma pop_macro( "_STDINT_H" )
-	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
 	namespace cinder {
 		void cpuidwrap( int *p, unsigned int param );
 	}

@@ -180,6 +180,13 @@ void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *resu
 				result->setDocType( item->value() );
 				continue;
 			}
+			case rapidxml::node_data: {
+				if( ! options.getIgnoreDataChildren() )
+					type = XmlTree::NODE_DATA;
+				else
+					continue;
+			}
+			break;
 			default:
 				continue;
 		}
@@ -190,7 +197,7 @@ void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *resu
 	}
 
 	for( rapidxml::xml_attribute<> *attr = node.first_attribute(); attr; attr = attr->next_attribute() )
-		result->getAttributes().push_back( XmlTree::Attr( attr->name(), attr->value() ) );
+		result->getAttributes().push_back( XmlTree::Attr( result, attr->name(), attr->value() ) );
 }
 
 void XmlTree::loadFromDataSource( DataSourceRef dataSource, XmlTree *result, const XmlTree::ParseOptions &parseOptions )
@@ -240,7 +247,7 @@ const XmlTree::Attr& XmlTree::getAttribute( const string &attrName ) const
 	throw ExcAttrNotFound( *this, attrName );
 }
 
-void XmlTree::setAttribute( const std::string &attrName, const std::string &value )
+XmlTree& XmlTree::setAttribute( const std::string &attrName, const std::string &value )
 {
 	list<Attr>::iterator atIt;
 	for( atIt = mAttributes.begin(); atIt != mAttributes.end(); ++atIt )
@@ -248,9 +255,11 @@ void XmlTree::setAttribute( const std::string &attrName, const std::string &valu
 			break;
 	
 	if( atIt == mAttributes.end() )
-		mAttributes.push_back( Attr( attrName, value ) );
+		mAttributes.push_back( Attr( this, attrName, value ) );
 	else
 		atIt->setValue( value );
+		
+	return *this;
 }
 
 bool XmlTree::hasAttribute( const std::string &attrName ) const
@@ -307,12 +316,19 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		case XmlTree::NODE_ELEMENT: type = rapidxml::node_element; break;
 		case XmlTree::NODE_COMMENT: type = rapidxml::node_comment; break;
 		case XmlTree::NODE_CDATA: type = rapidxml::node_cdata; break;
+		case XmlTree::NODE_DATA: type = rapidxml::node_data; break;
 		
 		default: throw ExcUnknownNodeType();
 	}
-	rapidxml::xml_node<char> *node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), NULL );
-	if( ! getValue().empty() )
-		node->append_node( doc.allocate_node( rapidxml::node_data, NULL, doc.allocate_string( getValue().c_str() ) ) );
+	rapidxml::xml_node<char> *node = 0;
+	if( type == rapidxml::node_data ) {
+		node = doc.allocate_node( type, NULL, doc.allocate_string( getValue().c_str() ) );
+	}
+	else {
+		node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), NULL );
+		if( ! getValue().empty() )
+			node->append_node( doc.allocate_node( rapidxml::node_data, NULL, doc.allocate_string( getValue().c_str() ) ) );
+	}
 	parent->append_node( node );
 
 	for( list<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )

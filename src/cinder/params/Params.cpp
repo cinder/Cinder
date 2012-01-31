@@ -25,11 +25,46 @@
 
 #include "AntTweakBar.h"
 
+#include <boost/assign/list_of.hpp>
+
 using namespace std;
 
 namespace cinder { namespace params {
 
 namespace {
+
+#undef DELETE
+
+#define SYNONYM(ck,ak) ((int)cinder::app::KeyEvent::KEY_ ## ck, TW_KEY_ ## ak)
+#define HOMONYM(k) SYNONYM(k,k)
+    std::map<int,TwKeySpecial> specialKeys = boost::assign::map_list_of
+        HOMONYM(RIGHT)
+        HOMONYM(LEFT)
+        HOMONYM(BACKSPACE)
+        HOMONYM(DELETE)
+        HOMONYM(TAB)
+        HOMONYM(F1)
+        HOMONYM(F2)
+        HOMONYM(F3)
+        HOMONYM(F4)
+        HOMONYM(F5)
+        HOMONYM(F6)
+        HOMONYM(F7)
+        HOMONYM(F8)
+        HOMONYM(F9)
+        HOMONYM(F10)
+        HOMONYM(F11)
+        HOMONYM(F12)
+        HOMONYM(F13)
+        HOMONYM(F14)
+        HOMONYM(F15)
+        HOMONYM(HOME)
+        HOMONYM(END)
+        SYNONYM(PAGEUP,PAGE_UP)
+        SYNONYM(PAGEDOWN,PAGE_DOWN)
+        ;
+#undef SYNONYM
+#undef HOMONYM
 
 bool mouseDown( app::MouseEvent event )
 {
@@ -76,7 +111,11 @@ bool keyDown( app::KeyEvent event )
 		kmod |= TW_KMOD_CTRL;
 	if( event.isAltDown() )
 		kmod |= TW_KMOD_ALT;
-	return TwKeyPressed( event.getChar(), kmod ) != 0;
+	return TwKeyPressed(
+            (specialKeys.count( event.getCode() ) > 0)
+                ? specialKeys[event.getCode()]
+                : event.getChar(),
+            kmod ) != 0;
 }
 
 bool resize( app::ResizeEvent event )

@@ -26,6 +26,7 @@
 #include <vector>
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
+#include "cinder/DataSource.h"
 #include <boost/lexical_cast.hpp>
 
 namespace cinder {
@@ -59,6 +60,9 @@ void deleteFile( const fs::path &path );
 std::vector<std::string> split( const std::string &str, char separator );
 //! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", " ," ) -> [ "one", "two", "three" ]</tt>
 std::vector<std::string> split( const std::string &str, const std::string &separators );
+
+//! Loads the contents of \a dataSource and returns it as a std::string
+std::string loadString( DataSourceRef dataSource );
 
 //! Returns a utf-16 encoded std::wstring by converting the utf-8 encoded string \a utf8
 std::wstring toUtf16( const std::string &utf8 );

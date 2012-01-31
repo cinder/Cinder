@@ -198,10 +198,10 @@ Vec2<Y>	AreaT<T>::closestPoint( const Vec2<Y> &pt ) const
 template<typename T>
 bool AreaT<T>::operator<( const AreaT<T> &aArea ) const
 {
-	if ( x1 != aArea.x1 ) return x1 < x1;
-	if ( y1 != aArea.y1 ) return y1 < y1;
-	if ( x2 != aArea.x2 ) return x2 < x2;
-	if ( y2 != aArea.y2 ) return y2 < y2;
+	if ( x1 != aArea.x1 ) return x1 < aArea.x1;
+	if ( y1 != aArea.y1 ) return y1 < aArea.y1;
+	if ( x2 != aArea.x2 ) return x2 < aArea.x2;
+	if ( y2 != aArea.y2 ) return y2 < aArea.y2;
 	
 	return false;
 }

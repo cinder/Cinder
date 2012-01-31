@@ -117,6 +117,8 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 			mTextures.push_back( gl::Texture( lumAlphaData.get(), GL_LUMINANCE_ALPHA, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 #else
 			mTextures.push_back( gl::Texture( surface, textureFormat ) );
+			if( mFormat.hasMipmapping() )
+				mTextures.back().setMinFilter( GL_LINEAR_MIPMAP_LINEAR );
 #endif
 			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
 			curOffset = Vec2i::zero();

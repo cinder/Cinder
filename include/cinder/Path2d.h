@@ -80,11 +80,14 @@ class Path2d {
 	const Vec2f&				getCurrentPoint() const { return mPoints.back(); }
 	void						setPoint( size_t index, const Vec2f &p ) { mPoints[index] = p; }
 
-	void			removeSegment( size_t segment );
-
 	enum SegmentType { MOVETO, LINETO, QUADTO, CUBICTO, CLOSE };
 	static const int sSegmentTypePointCounts[];
 	SegmentType		getSegmentType( size_t segment ) const { return mSegments[segment]; }
+
+	const std::vector<SegmentType>&	getSegments() const { return mSegments; }
+	std::vector<SegmentType>&		getSegments() { return mSegments; }
+
+	void			removeSegment( size_t segment );
 	
 	//! Returns the bounding box around all control points. As with Shape2d, note this is not necessarily the bounding box of the Path's shape.
 	Rectf	calcBoundingBox() const;

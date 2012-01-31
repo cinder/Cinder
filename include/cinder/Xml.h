@@ -29,8 +29,8 @@
 #include "cinder/DataSource.h"
 #include "cinder/DataTarget.h"
 #include "cinder/Exception.h"
+#include "cinder/Utilities.h"
 
-#include <boost/lexical_cast.hpp>
 #include <iterator>
 #include <string>
 #include <vector>
@@ -135,9 +135,22 @@ class XmlTree {
 	class Attr {
 	  public:
 		//! Constructs an XML attribute named \a name with the value \a value.
-		Attr( const std::string &name, const std::string &value )
-			: mName( name ), mValue( value )
+		Attr( XmlTree *xml, const std::string &name, const std::string &value )
+			: mXml( xml ), mName( name ), mValue( value )
 		{}
+
+		//! Returns an empty string for a non-existent attribute
+		operator const std::string&() const { return mValue; }
+		//! Assigns the Attr a new value, and creates it if it doesn't exist. The equivalent of calling <tt>setAttribute( this->getName(), toString( newValue ) )</tt>.
+		template<typename T>
+		Attr&	operator=( const T& val ) { mValue = toString( val ); mXml->setAttribute( mName, mValue ); return *this; }
+		
+		//! Returns the value of the attribute cast to T using ci::fromString().
+		template<typename T>
+		T		as() const { return fromString<T>( mValue ); }
+		
+		//! Returns true if the Attr value is empty
+		bool	empty() const { return mValue.empty(); }
 		
 		//! Returns the name of the attribute as a string.
 		const std::string&		getName() const { return mName; }
@@ -146,7 +159,7 @@ class XmlTree {
 		/** \brief Returns the value of the attribute parsed as a T. Requires T to support the istream>> operator. 
 		<br><tt>float size = myAttr.getValue<float>( "size" );</tt> **/		
 		template<typename T>
-		T						getValue() const { return boost::lexical_cast<T>( mValue ); }
+		T						getValue() const { return fromString<T>( mValue ); }
 		
 		/** Sets the value of the attribute to \a value. **/
 		void					setValue( const std::string &value ) { mValue = value; }
@@ -155,19 +168,22 @@ class XmlTree {
 		void					setValue( const T &value ) { mValue = boost::lexical_cast<std::string>( value ); }
 
 	  private:
+	  	XmlTree			*mXml;
 		std::string		mName, mValue;
 	};
 
 	//! Options for XML parsing. Passed to the XmlTree constructor.
 	class ParseOptions {
 	  public:
-		//! Default options. Disables parsing comments and enables collapsing CDATA.
-		ParseOptions() : mParseComments( false ), mCollapseCData( true ) {}
+		//! Default options. Disables parsing comments, enables collapsing CDATA, ignores data children.
+		ParseOptions() : mParseComments( false ), mCollapseCData( true ), mIgnoreDataChildren( true ) {}
 		
 		//! Sets whether XML comments are parsed or not.
 		ParseOptions& parseComments( bool parse = true ) { mParseComments = parse; return *this; }
 		//! Sets whether CDATA blocks are collapsed automatically or not.
 		ParseOptions& collapseCData( bool collapse = true ) { mCollapseCData = collapse; return *this; }
+		//! Sets whether data nodes are created as children, in addition to being available as the value of the parent. Default true.
+		ParseOptions& ignoreDataChildren( bool ignore = true ) { setIgnoreDataChildren( ignore ); return *this; }
 		
 		//! Returns whether XML comments are parsed or not.
 		bool	getParseComments() const { return mParseComments; }
@@ -177,13 +193,17 @@ class XmlTree {
 		bool	getCollapseCData() const { return mCollapseCData; }
 		//! Sets whether CDATA blocks are collapsed automatically or not.
 		void	setCollapseCData( bool collapseCData = true ) { mCollapseCData = collapseCData; }
+		//! Returns whether data nodes are created as children, in addition to being available as the value of the parent.
+		bool	getIgnoreDataChildren() const { return mIgnoreDataChildren; }
+		//! Sets whether data nodes are created as children, in addition to being available as the value of the parent.
+		void	setIgnoreDataChildren( bool ignore = true ) { mIgnoreDataChildren = ignore; }
 		
 	  private:
-		bool	mParseComments, mCollapseCData;
+		bool	mParseComments, mCollapseCData, mIgnoreDataChildren;
 	};
 
 	//! Enum listing all types of XML nodes understood by the parser.
-	typedef enum NodeType { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT };
+	typedef enum NodeType { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT, NODE_DATA };
 
 	//! Default constructor, creating an empty node.
 	XmlTree() : mParent( 0 ), mNodeType( NODE_ELEMENT ) {}
@@ -236,7 +256,7 @@ class XmlTree {
 	void						setValue( const std::string &value ) { mValue = value; }
 	//! Sets the value of the node to \a value which is converted to a string first. Requires T to support the ostream<< operator.
 	template<typename T>
-	T							setValue( const T &value ) { mValue = boost::lexical_cast<std::string>( value ); }
+	void						setValue( const T &value ) { mValue = boost::lexical_cast<std::string>( value ); }
 
 	//! Returns whether this node has a parent node.
 	bool						hasParent() const { return mParent != NULL; }
@@ -269,6 +289,16 @@ class XmlTree {
 	//! Returns a reference to the node attribute named \a attrName. Throws AttrNotFoundExc if no attribute exists with that name.
 	const Attr&					getAttribute( const std::string &attrName ) const;
 
+	//! Returns an Attr accessor. If the attribute does not exists its Attr's value will be an empty string.
+	const Attr					operator[]( const std::string &attrName ) const {  if( hasAttribute( attrName ) ) return getAttribute(attrName); else return Attr( const_cast<XmlTree*>( this ), attrName, "" ); }
+	//! Returns an Attr accessor. If the attribute does not exists its Attr's value will be an empty string. Assigning the Attr is the equivalent of calling setAttribute( attrName ).
+	Attr						operator[]( const std::string &attrName ) {  if( hasAttribute( attrName ) ) return getAttribute(attrName); else return Attr( this, attrName, "" ); }
+
+	//! Returns the first child that matches \a childName. Throws ExcChildNotFound if none matches.
+	const XmlTree&				operator/( const std::string &childName ) const { return getChild( childName ); }
+	//! Returns the first child that matches \a childName. Throws ExcChildNotFound if none matches.
+	XmlTree&					operator/( const std::string &childName ) { return getChild( childName ); }
+
 	/** \brief Returns the value of the attribute \a attrName parsed as a T. Throws AttrNotFoundExc if no attribute exists with that name. Requires T to support the istream>> operator. 
 		<br><tt>float size = myNode.getAttributeValue<float>( "size" );</tt> **/
 	template<typename T>
@@ -289,10 +319,10 @@ class XmlTree {
 	}
 
 	/** Sets the value of the attribute \a attrName to \a value. If the attribute does not exist it is appended. **/
-	void						setAttribute( const std::string &attrName, const std::string &value );
+	XmlTree&					setAttribute( const std::string &attrName, const std::string &value );
 	/** Sets the value of the attribute \a attrName to \a value, which is cast to a string first. Requires T to support the ostream<< operator. If the attribute does not exist it is appended. **/
 	template<typename T>
-	void						setAttribute( const std::string &attrName, const T &value ) { setAttribute( attrName, boost::lexical_cast<std::string>( value ) ); }
+	XmlTree&					setAttribute( const std::string &attrName, const T &value ) { return setAttribute( attrName, boost::lexical_cast<std::string>( value ) ); }
 	/** Returns whether the node has an attribute named \a attrName. **/
 	bool						hasAttribute( const std::string &attrName ) const;
 	/** Returns a path to this node, separated by the character \a separator. **/	
