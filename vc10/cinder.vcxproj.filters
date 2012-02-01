@@ -405,12 +405,6 @@
     <ClCompile Include="..\src\cinder\Tween.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\FftProcessorImplFFTReal.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\FftProcessor.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\Base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -838,12 +832,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\TextureFont.h">
       <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\FftProcessorImplFFTReal.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\FftProcessor.h">
-      <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Base64.h">
       <Filter>Header Files</Filter>

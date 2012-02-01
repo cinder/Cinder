@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -178,8 +178,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp" />
-    <ClCompile Include="..\src\cinder\audio\FftProcessor.cpp" />
-    <ClCompile Include="..\src\cinder\audio\FftProcessorImplFFTReal.cpp" />
     <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp" />
     <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp" />
     <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp" />
@@ -294,8 +292,6 @@
     <ClInclude Include="..\include\cinder\app\AppNative.h" />
     <ClInclude Include="..\include\cinder\app\Event.h" />
     <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
-    <ClInclude Include="..\include\cinder\audio\FftProcessor.h" />
-    <ClInclude Include="..\include\cinder\audio\FftProcessorImplFFTReal.h" />
     <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h" />
     <ClInclude Include="..\include\cinder\audio\PcmBuffer.h" />
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />

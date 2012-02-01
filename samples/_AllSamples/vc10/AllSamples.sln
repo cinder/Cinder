@@ -125,8 +125,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextInputTween", "..\..\_ti
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VisualDictionary", "..\..\_timeline\VisualDictionary\vc10\VisualDictionary.vcxproj", "{6012A6C4-5927-4CC8-8783-4995E1269D05}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AudioImageDemo", "..\..\AudioImageDemo\vc10\AudioImageDemo.vcxproj", "{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -615,14 +613,6 @@ Global
 		{6012A6C4-5927-4CC8-8783-4995E1269D05}.Release|Win32.Build.0 = Release|Win32
 		{6012A6C4-5927-4CC8-8783-4995E1269D05}.Release|x64.ActiveCfg = Release|x64
 		{6012A6C4-5927-4CC8-8783-4995E1269D05}.Release|x64.Build.0 = Release|x64
-		{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}.Debug|Win32.Build.0 = Debug|Win32
-		{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}.Debug|x64.ActiveCfg = Debug|x64
-		{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}.Debug|x64.Build.0 = Debug|x64
-		{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}.Release|Win32.ActiveCfg = Release|Win32
-		{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}.Release|Win32.Build.0 = Release|Win32
-		{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}.Release|x64.ActiveCfg = Release|x64
-		{2531EB2A-6ED5-4017-B7BD-65FD0931E1A5}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
