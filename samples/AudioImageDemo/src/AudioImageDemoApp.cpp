@@ -28,6 +28,10 @@ public:
 	void keyDown( KeyEvent event );
 	void draw();
 	void update();
+
+	///////////////////////////////////////////////////////////////////////////
+		
+	//void drawHelp()
 	void openImageFile( bool loadFromResource = false );
 	void openSoundFile( bool loadFromResource = false );
 
