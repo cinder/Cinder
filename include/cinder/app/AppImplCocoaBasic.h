@@ -65,11 +65,8 @@
 - (void)setWindowHeight:(int)windowHeight;
 - (void)setWindowSizeWithWidth:(int)w height:(int)h;
 - (void)handleResizeWithWidth:(int)w height:(int)h;   
-- (int)getWindowPositionX;
-- (void)setWindowPositionX:(int)x;
-- (int)getWindowPositionY;
-- (void)setWindowPositionY:(int)y;
-- (void)setWindowPositionWithLeft:(int)x top:(int)y;
+- (ci::Vec2i)getWindowPos;
+- (void)setWindowPosWithLeft:(int)x top:(int)y;
 - (float)getFrameRate;
 - (void)setFrameRate:(float)aFrameRate;
 - (bool)isFullScreen;

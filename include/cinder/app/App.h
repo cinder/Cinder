@@ -75,8 +75,14 @@ class App {
 		//! width and height of the window when applicable
 		void	setWindowSize( int aWindowSizeX, int aWindowSizeY );
 
-        //! position of the window on the screen
-        void    setWindowPosition( int aWindowPositionX, int aWindowPositionY );
+		//! Sets the position of the window on the screen
+		void    setWindowPos( int windowPositionX, int windowPositionY ) { setWindowPos( Vec2i( windowPositionX, windowPositionY ) ); }
+		//! Sets the position of the window on the screen
+		void    setWindowPos( const Vec2i &windowPos );
+		//! Returns whether a non-default window position has been requested
+		bool	isWindowPosSpecified() const { return mWindowPosSpecified; }
+		//! Marks the window position setting as unspecified, effectively requesting the default
+		void	unspecifyWindowPos() { mWindowPosSpecified = false; }
         
 		//! The maximum frameRate the update/draw loop will execute at, specified in frames per second. Default value is 30 FPS
 		void	setFrameRate( float aFrameRate );
@@ -95,14 +101,12 @@ class App {
 		//! the size of the application's window specified in pixels. \return cinder::Area( 0, 0, width in pixels, height in pixels )
 		Area	getWindowBounds() const { return Area( 0, 0, mWindowSizeX, mWindowSizeY ); }
 
-		//! position of the window in pixels on screen from left in pixels
-        int getWindowPositionX() const { return mWindowPositionX; }
-        
-		//! position of the window on screen from top in pixels
-        int getWindowPositionY() const { return mWindowPositionY; }
-		
-        //! position of the window on screen in pixels
-        Vec2i getWindowPosition() const { return Vec2i(mWindowPositionX, mWindowPositionY); }
+		//! Returns the position of the window in pixels on screen from left in pixels
+		int getWindowPosX() const { return mWindowPositionX; }
+		//! Returns the position of the window on screen from top in pixels
+		int getWindowPosY() const { return mWindowPositionY; }
+		//! Returns the position of the window on screen in pixels
+		Vec2i getWindowPos() const { return Vec2i( mWindowPositionX, mWindowPositionY ); }
         
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
 		const std::string& getTitle() const { return mTitle; }
@@ -123,7 +127,8 @@ class App {
 		bool			mShouldQuit; // defaults to false, facilitates early termination
 		int				mWindowSizeX, mWindowSizeY; // default: 640x480
 
-        int             mWindowPositionX, mWindowPositionY; // default: -1, -1
+		bool			mWindowPosSpecified;
+        int             mWindowPositionX, mWindowPositionY;
             
 		bool			mFullScreen; // window covers screen. default: false
 		float			mFrameRate;
@@ -269,16 +274,16 @@ class App {
 	/** Equivalent to \code Area( 0, 0, getWindowWidth(), getWindowHeight() ); \endcode **/	
 	Area				getWindowBounds() const { return Area( 0, 0, getWindowWidth(), getWindowHeight() ); }
 
-    //! Returns the X coordinate of the top-left-corner of the window if applicable.
-    virtual int         getWindowPositionX() const { return 0; }
-    //! Sets the X coordinate of the top-left corner of the window if applicable.
-    virtual void        setWindowPositionX( int x ) {}
-    //! Returns the Y coordinate of the top-left corner of the window if applicable.
-    virtual int         getWindowPositionY() const { return 0; }
-    //! Sets the Y coordinate of the top-left corner of the window if applicable.
-    virtual void        setWindowPositionY( int y ) {}
-    //! Sets the X & Y coordinates of the top-left corner of the window.
-    virtual void        setWindowPosition(int x, int y) {}
+	//! Returns the X & Y coordinate of the top-left-corner of the window contents.
+	virtual Vec2i		getWindowPos() const { return Vec2i::zero(); }
+	//! Returns the X coordinate of the top-left-corner of the window contents.
+	int         		getWindowPosX() const { return getWindowPos().x; }
+	//! Returns the Y coordinate of the top-left corner of the window contents.
+	int         		getWindowPosY() const { return getWindowPos().y; }
+	//! Sets the X & Y coordinates of the top-left corner of the window contents.
+	virtual void        setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
+	//! Sets the X & Y coordinates of the top-left corner of the window's contents.
+	virtual void        setWindowPos( const Vec2i &windowPos ) {}
     
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const = 0;
