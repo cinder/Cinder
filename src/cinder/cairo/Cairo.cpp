@@ -1521,6 +1521,18 @@ void Context::textPath( const char *utf8 )
 	cairo_text_path( mCairo, utf8 );
 }
 
+void Context::glyphPath( const std::vector<std::pair<uint16_t,Vec2f> > &glyphs )
+{
+	cairo_glyph_t *cairoGlyphs = new cairo_glyph_t[glyphs.size()];
+	for( size_t g = 0; g < glyphs.size(); ++g ) {
+		cairoGlyphs[g].index = glyphs[g].first;
+		cairoGlyphs[g].x = glyphs[g].second.x;
+		cairoGlyphs[g].y = glyphs[g].second.y;
+	}
+	cairo_glyph_path( mCairo, &cairoGlyphs[0], glyphs.size() );
+	delete [] cairoGlyphs;
+}
+
 void Context::relCurveTo( double dx1, double dy1, double dx2, double dy2, double dx3, double dy3 )
 {
 	cairo_rel_curve_to( mCairo, dx1, dy1, dx2, dy2, dx3, dy3 );
@@ -1589,9 +1601,9 @@ void Context::scale( double sx, double sy )
 	cairo_scale( mCairo, sx, sy );
 }
 
-void Context::rotate( double angle )
+void Context::rotate( double radians )
 {
-	cairo_rotate( mCairo, angle );
+	cairo_rotate( mCairo, radians );
 }
 
 void Context::transform( const Matrix &aMatrix )
@@ -1673,6 +1685,7 @@ void Context::setFont( const cinder::Font &font )
 	cairo_font_face_t *cairoFont = cairo_win32_font_face_create_for_logfontw( &font.getLogfont() );
 #endif
 	cairo_set_font_face( mCairo, cairoFont );
+	cairo_set_font_size( mCairo, font.getSize() );
 	cairo_font_face_destroy( cairoFont );
 }
 
