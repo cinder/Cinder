@@ -136,7 +136,7 @@ class Rand {
             }
             while (s >= 1.0f || s == 0.0f);
             
-            float m = sqrt(-2.0f * log(s)/s);
+            float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
             
             mNextNextGaussian       = v2 * m;
             mHaveNextNextGaussian   = true;
@@ -245,7 +245,7 @@ class Rand {
             }
             while (s >= 1.0f || s == 0.0f);
             
-            float m = sqrt(-2.0f * log(s)/s);
+            float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
             
             sNextNextGaussian       = v2 * m;
             sHaveNextNextGaussian   = true;
