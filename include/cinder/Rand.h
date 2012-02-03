@@ -118,6 +118,32 @@ class Rand {
 		float theta = nextFloat( (float)M_PI * 2.0f );
 		return Vec2f( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
+    
+    //! returns a random float via Gaussian distribution
+    float nextGaussian()
+    {
+        if (mHaveNextNextGaussian) {
+            mHaveNextNextGaussian = false;
+            return mNextNextGaussian;
+        }
+        else {
+            float v1, v2, s;
+            do {
+                v1 = 2.0f * nextFloat() - 1.0f;
+                v2 = 2.0f * nextFloat() - 1.0f;
+                
+                s = v1 * v1 + v2 * v2;
+            }
+            while (s >= 1.0f || s == 0.0f);
+            
+            float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
+            
+            mNextNextGaussian       = v2 * m;
+            mHaveNextNextGaussian   = true;
+            
+            return v1 * m;
+        }
+    }    
 	
 	// STATICS
 	//! Resets the static random generator to a random seed based on the clock
@@ -198,12 +224,43 @@ class Rand {
 		float theta = randFloat( (float)M_PI * 2.0f );
 		return Vec2f( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
+    
+    //! returns a random float via Gaussian distribution; refactor later
+    static float randGaussian() 
+    {
+        static bool  sHaveNextNextGaussian;
+        static float sNextNextGaussian;
+        
+        if (sHaveNextNextGaussian) {
+            sHaveNextNextGaussian = false;
+            return sNextNextGaussian;
+        }
+        else {
+            float v1, v2, s;
+            do {
+                v1 = 2.0f * sFloatGen() - 1.0f;
+                v2 = 2.0f * sFloatGen() - 1.0f;
+                
+                s = v1 * v1 + v2 * v2;
+            }
+            while (s >= 1.0f || s == 0.0f);
+            
+            float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
+            
+            sNextNextGaussian       = v2 * m;
+            sHaveNextNextGaussian   = true;
+            
+            return v1 * m;
+        }  
+    }     
 	
 private:
 	boost::mt19937 mBase;
 	boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > mFloatGen;	
 	boost::variate_generator<boost::mt19937&, boost::uniform_int<> > mIntGen;
-
+    float mNextNextGaussian;    
+    bool mHaveNextNextGaussian;
+    
 	static boost::mt19937 sBase;
 	static boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > sFloatGen;
 	static boost::variate_generator<boost::mt19937&, boost::uniform_int<> > sIntGen;
@@ -242,5 +299,7 @@ inline Vec3f randVec3f() { return Rand::randVec3f(); }
 //! returns a random Vec2f that represents a point on the unit circle
 inline Vec2f randVec2f() { return Rand::randVec2f(); }
 
+//! returns a random float via Gaussian distribution
+inline float randGaussian() { return Rand::randGaussian(); }    
 
 } // namespace cinder
