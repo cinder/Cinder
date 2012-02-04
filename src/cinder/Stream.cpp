@@ -235,7 +235,7 @@ void IStreamFile::IORead( void *t, size_t size )
 	}
 	else if( size > mDefaultBufferSize ) { // entirely outside of buffer, and too big to buffer anyway
 		fseek( mFile, static_cast<long>( mBufferOffset ), SEEK_SET );
-		if ( fread( t, size, 1, mFile ) != 1 )
+		if ( fread( t, 1, size, mFile ) == 0 )
 			throw StreamExc();
 		mBufferOffset += size;
 	}
