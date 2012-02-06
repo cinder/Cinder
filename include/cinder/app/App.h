@@ -281,7 +281,7 @@ class App {
 	//! Returns the Y coordinate of the top-left corner of the window contents.
 	int         		getWindowPosY() const { return getWindowPos().y; }
 	//! Sets the X & Y coordinates of the top-left corner of the window contents.
-	virtual void        setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
+	void        		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
 	//! Sets the X & Y coordinates of the top-left corner of the window's contents.
 	virtual void        setWindowPos( const Vec2i &windowPos ) {}
     
