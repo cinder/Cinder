@@ -487,6 +487,8 @@ App::Settings::Settings()
 	mShouldQuit = false;
 	mFullScreen = false;
 	mResizable = true;
+	mBorderless = false;
+	mAlwaysOnTop = false;
 	mWindowSizeX = 640;
 	mWindowSizeY = 480;
 	mWindowPosSpecified = false;
@@ -506,6 +508,7 @@ void App::Settings::setWindowPos( const Vec2i &pos )
 {
 	mWindowPositionX = pos.x;
 	mWindowPositionY = pos.y;
+	mWindowPosSpecified = true;
 }
 	
 void App::Settings::setFrameRate( float aFrameRate )

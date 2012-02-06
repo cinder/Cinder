@@ -58,6 +58,8 @@
 - (void)quit;
 
 - (void)createWindow;
+- (BOOL)canBecomeMainWindow;
+- (BOOL)canBecomeKeyWindow;
 
 - (int)getWindowWidth;
 - (void)setWindowWidth:(int)windowWidth;
