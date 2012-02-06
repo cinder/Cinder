@@ -106,9 +106,7 @@
 	
 	if( app->getSettings().isWindowPosSpecified() ) {
 		offsetX = app->getSettings().getWindowPosX();
-        CGFloat cgMenuBarHeight = [[[NSApplication sharedApplication] mainMenu] menuBarHeight];
-        int menuBarHeight = (int) cgMenuBarHeight + 1; 
-        offsetY = app->getSettings().getWindowPosY() + menuBarHeight;		
+		offsetY = mDisplay->getHeight() - app->getSettings().getWindowPosY() - app->getSettings().getWindowHeight();
 	}
         
 	NSRect winRect = NSMakeRect( offsetX, offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
@@ -318,8 +316,9 @@
 
 - (ci::Vec2i)getWindowPos
 {
-	NSRect content = [win contentRectForFrameRect:[win frame]];
-	return ci::Vec2i( content.origin.x, mDisplay->getHeight() - content.origin.y - content.size.height );
+	NSRect frame = [win frame];
+	NSRect content = [win contentRectForFrameRect:frame];
+	return ci::Vec2i( content.origin.x, mDisplay->getHeight() - frame.origin.y - content.size.height );
 }
 
 - (void)setWindowPosWithLeft:(int)x top:(int)y
@@ -331,8 +330,9 @@
     mWindowPositionY = y;
 	NSRect currentFrameRect = [win frame];
 	NSRect currentContentRect = [win contentRectForFrameRect:[win frame]];
-	NSRect targetFrameRect = [win frameRectForContentRect:NSMakeRect( x, p.y, currentContentRect.size.width, currentContentRect.size.height)];
-    [win setFrameTopLeftPoint:targetFrameRect.origin];
+	NSRect targetContentRect = NSMakeRect( p.x, p.y - currentContentRect.size.height, currentContentRect.size.width, currentContentRect.size.height);
+	NSRect targetFrameRect = [win frameRectForContentRect:targetContentRect];
+    [win setFrameOrigin:targetFrameRect.origin];
 }
 
 - (void)windowChangedScreen:(NSNotification*)inNotification
