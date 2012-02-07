@@ -445,6 +445,9 @@ class App {
 //@{
 //! Returns the width of the active App's window measured in pixels, or the screen when in full-screen mode.
 inline int	getWindowWidth() { return App::get()->getWindowWidth(); }
+//! Sets the position of the active App's window measured in pixels. Ignored in full-screen mode.
+inline void		setWindowPos( const Vec2i &windowPos ) { App::get()->setWindowPos( windowPos);  }
+inline void		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) );  }
 //! Sets the width of the active App's window measured in pixels. Ignored in full-screen mode.
 inline void	setWindowWidth( int windowWidth ) { App::get()->setWindowWidth( windowWidth ); }
 //! Returns the height of the active App's window measured in pixels, or the screen when in full-screen mode.
@@ -458,6 +461,8 @@ inline void		setWindowSize( int windowWidth, int windowHeight ) { App::get()->se
 inline Vec2f	getWindowCenter() { return App::get()->getWindowCenter(); }
 //! Returns the size of the active App's window or the screen in full-screen mode
 inline Vec2i	getWindowSize() { return App::get()->getWindowSize(); }
+//! Returns the position of the active App's window measured in pixels.
+inline Vec2i	getWindowPos() { return App::get()->getWindowPos(); }
 //! Returns the aspect ratio of the active App's window or the screen in full-screen mode
 inline float	getWindowAspectRatio() { return App::get()->getWindowAspectRatio(); }
 //! Returns the bounding area of the active App's window or the screen in full-screen mode.
