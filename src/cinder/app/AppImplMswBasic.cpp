@@ -156,23 +156,25 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	int bits = 32;
 
 	if( *width <= 0 ) {
-		*width = ::GetSystemMetrics( SM_CXSCREEN );
-		*height = ::GetSystemMetrics( SM_CYSCREEN );
+		*width = mDisplay->getWidth();
+		*height = mDisplay->getHeight();
 	}
 
 	WNDCLASS	wc;						// Windows Class Structure
 	RECT		WindowRect;				// Grabs Rectangle Upper Left / Lower Right Values
+	Area    DisplayArea = mDisplay->getArea();
+
 	if( mFullScreen ) {
-		WindowRect.left = 0L;
-		WindowRect.right = (long)*width;
-		WindowRect.top = 0L;
-		WindowRect.bottom = (long)*height;
+		WindowRect.left = DisplayArea.getX1();
+		WindowRect.right = DisplayArea.getX2();
+		WindowRect.top = DisplayArea.getY1();
+		WindowRect.bottom = DisplayArea.getY2();
 	}
 	else if ( mApp->getSettings().isWindowPosSpecified() ) { 
-		WindowRect.left = mApp->getSettings().getWindowPosX(); 
-		WindowRect.right = mApp->getSettings().getWindowPosX()  + *width;
-		WindowRect.top = mApp->getSettings().getWindowPosY();
-		WindowRect.bottom = mApp->getSettings().getWindowPosY() + *height;
+		WindowRect.left = DisplayArea.getX1() + mApp->getSettings().getWindowPosX(); 
+		WindowRect.right = DisplayArea.getX1()+ mApp->getSettings().getWindowPosX()  + *width;
+		WindowRect.top =  DisplayArea.getY1() + mApp->getSettings().getWindowPosY();
+		WindowRect.bottom = DisplayArea.getY1() + mApp->getSettings().getWindowPosY() + *height;
 	}
 	else {
 		WindowRect.left = ( getDisplay()->getWidth() - *width ) / 2;				//center window 
@@ -202,8 +204,8 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		DEVMODE dmScreenSettings;								
 		memset( &dmScreenSettings, 0, sizeof(dmScreenSettings) );	// Makes Sure Memory's Cleared
 		dmScreenSettings.dmSize = sizeof( dmScreenSettings );
-		dmScreenSettings.dmPelsWidth	= *width;
-		dmScreenSettings.dmPelsHeight	= *height;
+		dmScreenSettings.dmPelsWidth  = ::GetSystemMetrics( SM_CXSCREEN );
+		dmScreenSettings.dmPelsHeight  = ::GetSystemMetrics( SM_CYSCREEN );
 		dmScreenSettings.dmBitsPerPel	= bits;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
