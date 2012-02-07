@@ -43,6 +43,8 @@
 
 namespace cinder {
 
+typedef std::shared_ptr<class Display> 	DisplayRef;
+
 class Display {
  public:
 	~Display();
@@ -52,15 +54,15 @@ class Display {
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
 
 #if defined( CINDER_MAC )
-	NSScreen*			getNSScreen() const { return mScreen; }
-	CGDirectDisplayID	getCGDirectDisplayID() const { return mDirectDisplayID; }
+	NSScreen*			getNsScreen() const { return mScreen; }
+	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
 #endif
 
-	static std::shared_ptr<Display>							getMainDisplay();
-	static const std::vector<std::shared_ptr<Display> >&	getDisplays();
+	static DisplayRef						getMainDisplay();
+	static const std::vector<DisplayRef>&	getDisplays();
 	
 #if defined( CINDER_MAC )
-	static std::shared_ptr<Display>							findFromCGDirectDisplayID( CGDirectDisplayID displayID );
+	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
 #elif defined( CINDER_MSW )
 	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
 #endif
@@ -77,8 +79,8 @@ class Display {
 	
 	static void		enumerateDisplays();
 	
-	static std::vector<std::shared_ptr<Display> >	sDisplays;
-	static bool										sDisplaysInitialized;
+	static std::vector<DisplayRef>	sDisplays;
+	static bool						sDisplaysInitialized;
 };
 
 } // namespace cinder
