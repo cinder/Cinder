@@ -47,8 +47,6 @@ class AppImplMswBasic : public AppImplMsw {
 	void	setWindowWidth( int aWindowWidth );
 	void	setWindowHeight( int aWindowHeight );
 	void	setWindowSize( int aWindowWidth, int aWindowHeight );
-void	setWindowPos( const Vec2i &pos ) {}
-Vec2i	getWindowPos() const { return Vec2i::zero(); }
 	float	setFrameRate( float aFrameRate );
 	void	toggleFullScreen();
 	
