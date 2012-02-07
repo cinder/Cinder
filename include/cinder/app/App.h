@@ -83,6 +83,12 @@ class App {
 		bool	isWindowPosSpecified() const { return mWindowPosSpecified; }
 		//! Marks the window position setting as unspecified, effectively requesting the default
 		void	unspecifyWindowPos() { mWindowPosSpecified = false; }
+
+		bool	isBorderless() const { return mBorderless; }
+		void	setBorderless( bool borderless = true ) { mBorderless = borderless; }
+		bool	isAlwaysOnTop() const { return mAlwaysOnTop; }
+		void	setAlwaysOnTop( bool alwaysOnTop = true ) { mAlwaysOnTop = alwaysOnTop; }
+		
         
 		//! The maximum frameRate the update/draw loop will execute at, specified in frames per second. Default value is 30 FPS
 		void	setFrameRate( float aFrameRate );
@@ -133,6 +139,8 @@ class App {
 		bool			mFullScreen; // window covers screen. default: false
 		float			mFrameRate;
 		bool			mResizable; // window is Resizable. default: true
+		bool			mBorderless; // window is borderless (frameless / chromeless). default: false
+		bool			mAlwaysOnTop; // window is always on top. default: false
 		bool			mPowerManagement; // allow screensavers or power management to hide app. default: false
 		std::string		mTitle;
 	};
@@ -281,7 +289,7 @@ class App {
 	//! Returns the Y coordinate of the top-left corner of the window contents.
 	int         		getWindowPosY() const { return getWindowPos().y; }
 	//! Sets the X & Y coordinates of the top-left corner of the window contents.
-	virtual void        setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
+	void        		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
 	//! Sets the X & Y coordinates of the top-left corner of the window's contents.
 	virtual void        setWindowPos( const Vec2i &windowPos ) {}
     

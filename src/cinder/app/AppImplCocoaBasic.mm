@@ -29,6 +29,17 @@
 	- (void)setAppleMenu:(NSMenu *)menu;
 @end 
 
+// CinderWindow - necessary to enable a borderless window to receive keyboard events
+@interface CinderWindow : NSWindow {
+}
+- (BOOL)canBecomeMainWindow;
+- (BOOL)canBecomeKeyWindow;
+@end
+@implementation CinderWindow
+- (BOOL)canBecomeMainWindow { return YES; }
+- (BOOL)canBecomeKeyWindow { return YES; }
+@end
+
 @implementation AppImplCocoaBasic
 
 - (id)init:(cinder::app::AppBasic*)aApp 
@@ -106,20 +117,23 @@
 	
 	if( app->getSettings().isWindowPosSpecified() ) {
 		offsetX = app->getSettings().getWindowPosX();
-        CGFloat cgMenuBarHeight = [[[NSApplication sharedApplication] mainMenu] menuBarHeight];
-        int menuBarHeight = (int) cgMenuBarHeight + 1; 
-        offsetY = app->getSettings().getWindowPosY() + menuBarHeight;		
+		offsetY = mDisplay->getHeight() - app->getSettings().getWindowPosY() - app->getSettings().getWindowHeight();
 	}
         
 	NSRect winRect = NSMakeRect( offsetX, offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
-	unsigned int myStyleMask = NSTitledWindowMask;
-	
-	if( app->getSettings().isResizable() ) {
-		myStyleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+
+	unsigned int styleMask;
+	if( app->getSettings().isBorderless() ) {
+		styleMask = NSBorderlessWindowMask;
 	}
+	else if( app->getSettings().isResizable() ) {
+		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+	}
+	else
+		styleMask = NSTitledWindowMask;
     
-	win = [[NSWindow alloc] initWithContentRect:winRect
-									  styleMask:myStyleMask
+	win = [[CinderWindow alloc] initWithContentRect:winRect
+									  styleMask:styleMask
 										backing:NSBackingStoreBuffered
 										  defer:NO
 										 screen:mDisplay->getNSScreen()];
@@ -143,6 +157,8 @@
 	[win setInitialFirstResponder:cinderView];
 	[win setAcceptsMouseMovedEvents:YES];
 	[win setOpaque:YES];
+	if( app->getSettings().isAlwaysOnTop() )
+		[win setLevel: NSScreenSaverWindowLevel];
 	// we need to get told about it when the window changes screens so we can update the display link
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowChangedScreen:) name:NSWindowDidMoveNotification object:nil];
 	[cinderView setNeedsDisplay:YES];
@@ -318,8 +334,9 @@
 
 - (ci::Vec2i)getWindowPos
 {
-	NSRect content = [win contentRectForFrameRect:[win frame]];
-	return ci::Vec2i( content.origin.x, mDisplay->getHeight() - content.origin.y - content.size.height );
+	NSRect frame = [win frame];
+	NSRect content = [win contentRectForFrameRect:frame];
+	return ci::Vec2i( content.origin.x, mDisplay->getHeight() - frame.origin.y - content.size.height );
 }
 
 - (void)setWindowPosWithLeft:(int)x top:(int)y
@@ -331,8 +348,9 @@
     mWindowPositionY = y;
 	NSRect currentFrameRect = [win frame];
 	NSRect currentContentRect = [win contentRectForFrameRect:[win frame]];
-	NSRect targetFrameRect = [win frameRectForContentRect:NSMakeRect( x, p.y, currentContentRect.size.width, currentContentRect.size.height)];
-    [win setFrameTopLeftPoint:targetFrameRect.origin];
+	NSRect targetContentRect = NSMakeRect( p.x, p.y - currentContentRect.size.height, currentContentRect.size.width, currentContentRect.size.height);
+	NSRect targetFrameRect = [win frameRectForContentRect:targetContentRect];
+    [win setFrameOrigin:targetFrameRect.origin];
 }
 
 - (void)windowChangedScreen:(NSNotification*)inNotification

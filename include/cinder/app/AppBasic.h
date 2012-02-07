@@ -131,8 +131,8 @@ class AppBasic : public App {
 
 	//! Returns the X coordinate of the top-left-corner of the window.
 	virtual Vec2i	getWindowPos() const;
-	//! Sets the X & Y coordinates of the top-left corner of the window contents.
-	virtual void	setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
+
+	using App::setWindowPos;
 	//! Sets the X & Y coordinates of the top-left corner of the window.
 	virtual void	setWindowPos( const Vec2i &windowPos );
     
