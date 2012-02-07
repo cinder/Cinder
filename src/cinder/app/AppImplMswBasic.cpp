@@ -56,7 +56,7 @@ void AppImplMswBasic::run()
 	if( mApp->getSettings().isFullScreen() ) {
 		mFullScreen = true;
 		mWindowWidth = mApp->getSettings().getFullScreenWidth();
-		mWindowHeight = mApp->getSettings().getFullScreenHeight();	
+		mWindowHeight = mApp->getSettings().getFullScreenHeight();  
 	}
 	else {
 		mFullScreen = false;
@@ -166,11 +166,13 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		WindowRect.top = 0L;
 		WindowRect.bottom = (long)*height;
 	}
-	else { // center the window on the display if windowed
-		WindowRect.left = ( getDisplay()->getWidth() - *width ) / 2;
-		WindowRect.right = ( getDisplay()->getWidth() - *width ) / 2 + *width;
-		WindowRect.top = ( getDisplay()->getHeight() - *height ) / 2;
-		WindowRect.bottom = ( getDisplay()->getHeight() - *height ) / 2 + *height;
+	else { 
+		WindowRect.left = mApp->getSettings().getWindowPosX(); 
+		WindowRect.right = mApp->getSettings().getWindowPosX()  + *width;//(getDisplay()->getWidth() - *width);
+		WindowRect.top = mApp->getSettings().getWindowPosY();
+		WindowRect.bottom = mApp->getSettings().getWindowPosY() + *height;//( getDisplay()->getHeight() - *height ) / 2 + *height;
+
+		
 	}
 
 	mInstance			= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
@@ -336,6 +338,11 @@ void AppImplMswBasic::enableMultiTouch()
 			(*RegisterTouchWindow)( mWnd, 0 );
 		}
 	}
+}
+
+void AppImplMswBasic::setWindowPos( const Vec2i &aWindowPos )
+{
+	mWindowPosition = aWindowPos;
 }
 
 void AppImplMswBasic::setWindowWidth( int aWindowWidth )

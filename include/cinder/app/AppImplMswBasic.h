@@ -42,7 +42,8 @@ class AppImplMswBasic : public AppImplMsw {
 	class AppBasic*		getApp() { return mApp; }
 	
 	void	quit() { mShouldQuit = true; }
-	
+
+	void	setWindowPos( const Vec2i &aWindowPos );	
 	void	setWindowWidth( int aWindowWidth );
 	void	setWindowHeight( int aWindowHeight );
 	void	setWindowSize( int aWindowWidth, int aWindowHeight );
