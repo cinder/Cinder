@@ -42,7 +42,7 @@ Display::~Display()
 #endif
 }
 
-const vector<DisplayRef >&	Display::getDisplays()
+const vector<DisplayRef>&	Display::getDisplays()
 {
 	enumerateDisplays();
 	
@@ -101,6 +101,16 @@ void Display::enumerateDisplays()
 
 #elif defined( CINDER_MSW )
 
+DisplayRef Display::findFromHmonitor( HMONITOR hMonitor )
+{
+	const vector<DisplayRef>& displays = getDisplays();
+	for( vector<DisplayRef>::const_iterator displayIt = displays.begin(); displayIt != displays.end(); ++displayIt )
+		if( (*displayIt)->mMonitor == hMonitor )
+			return *displayIt;
+
+	return getMainDisplay(); // failure
+}
+
 BOOL CALLBACK Display::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
 {
 	vector<DisplayRef > *displaysVector = reinterpret_cast<vector<DisplayRef >*>( lParam );
@@ -126,7 +136,7 @@ void Display::enumerateDisplays()
 {
 	if( sDisplaysInitialized )
 		return;
-		
+
 	::EnumDisplayMonitors( NULL, NULL, enumMonitorProc, (LPARAM)&sDisplays );
 	
 	// ensure that the primary display is sDisplay[0]
