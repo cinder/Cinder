@@ -207,6 +207,10 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		mWindowStyle = WS_POPUP;										// Windows Style
 		::ShowCursor( TRUE );										// Hide Mouse Pointer
 	}
+	else if( mApp->getSettings().isBorderless() ) {
+		mWindowExStyle = WS_EX_APPWINDOW;
+		mWindowStyle = WS_POPUP;
+	}
 	else {
 		mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
 		mWindowStyle = ( mApp->getSettings().isResizable() ) ? WS_OVERLAPPEDWINDOW
@@ -239,6 +243,12 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	if( ! mDC ) {
 		killWindow( mFullScreen );
 		return false;
+	}
+
+	if( mApp->getSettings().isAlwaysOnTop() ) {
+		::SetWindowLongA( mWnd, GWL_STYLE, WS_POPUP );
+		::SetWindowLongA( mWnd, GWL_EXSTYLE, WS_EX_TOPMOST );
+		::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 	}
 
 	mApp->getRenderer()->setup( mApp, mWnd, mDC );
