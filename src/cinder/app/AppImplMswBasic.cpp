@@ -347,7 +347,6 @@ void AppImplMswBasic::enableMultiTouch()
 void AppImplMswBasic::setWindowPos( const Vec2i &aWindowPos )
 {
 	int screenWidth, screenHeight;
-	mWindowPosition = aWindowPos;
 
 	getScreenSize( mApp->getWindowWidth(), mApp->getWindowHeight(), &screenWidth, &screenHeight );
 	::SetWindowPos( mWnd, HWND_TOP, aWindowPos.x, aWindowPos.y, screenWidth, screenHeight, SWP_SHOWWINDOW );
