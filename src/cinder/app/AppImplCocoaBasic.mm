@@ -136,7 +136,7 @@
 									  styleMask:styleMask
 										backing:NSBackingStoreBuffered
 										  defer:NO
-										 screen:mDisplay->getNSScreen()];
+										 screen:mDisplay->getNsScreen()];
 
 	if( cinderView == nil ) {
 		cinderView = [[CinderView alloc] initWithFrame:NSMakeRect( 0, 0, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() ) app:app];
@@ -359,8 +359,8 @@
 	NSWindow *window = [inNotification object]; 
 	CGDirectDisplayID displayID = (CGDirectDisplayID)[[[[window screen] deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 
-	if( displayID != mDisplay->getCGDirectDisplayID() ) {
-		mDisplay = cinder::Display::findFromCGDirectDisplayID( displayID ).get();
+	if( displayID != mDisplay->getCgDirectDisplayId() ) {
+		mDisplay = cinder::Display::findFromCgDirectDisplayId( displayID ).get();
 	}
 }
 
