@@ -84,9 +84,13 @@ class App {
 		//! Marks the window position setting as unspecified, effectively requesting the default
 		void	unspecifyWindowPos() { mWindowPosSpecified = false; }
 
+		//! Returns whether the window will be created without a border (chrome/frame)
 		bool	isBorderless() const { return mBorderless; }
+		//! Sets the window to be created without a border (chrome/frame)
 		void	setBorderless( bool borderless = true ) { mBorderless = borderless; }
+		//! Returns whether the window always remains above all other windows
 		bool	isAlwaysOnTop() const { return mAlwaysOnTop; }
+		//! Sets whether the window always remains above all other windows
 		void	setAlwaysOnTop( bool alwaysOnTop = true ) { mAlwaysOnTop = alwaysOnTop; }
 		
         
@@ -106,7 +110,7 @@ class App {
 		Vec2i	getWindowSize() const { return Vec2i( mWindowSizeX, mWindowSizeY ); }
 		//! the size of the application's window specified in pixels. \return cinder::Area( 0, 0, width in pixels, height in pixels )
 		Area	getWindowBounds() const { return Area( 0, 0, mWindowSizeX, mWindowSizeY ); }
-
+		
 		//! Returns the position of the window in pixels on screen from left in pixels
 		int getWindowPosX() const { return mWindowPositionX; }
 		//! Returns the position of the window on screen from top in pixels
@@ -308,6 +312,15 @@ class App {
 	virtual bool		isFullScreen() const = 0;
 	//! Sets whether the active App is in full-screen mode based on \a fullScreen
 	virtual void		setFullScreen( bool aFullScreen ) = 0;
+
+	//! Returns whether the has no border (chrome/frame)
+	virtual bool		isBorderless() const { return false; }
+	//! Sets whether the window has a border (chrome/frame)
+	virtual void		setBorderless( bool borderless = true ) { }
+	//! Returns whether the window always remains above all other windows
+	virtual bool		isAlwaysOnTop() const { return false; }
+	//! Sets whether the window always remains above all other windows
+	virtual void		setAlwaysOnTop( bool alwaysOnTop = true ) { }
 
 	//! Returns the number of seconds which have elapsed since application launch
 	double				getElapsedSeconds() const { return mTimer.getSeconds(); }

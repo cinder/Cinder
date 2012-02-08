@@ -31,12 +31,14 @@
 
 #include "cinder/app/TouchEvent.h"
 
+@class CinderWindow;
+
 #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 @interface AppImplCocoaBasic : NSApplication<NSWindowDelegate,CinderViewMultiTouchDelegate> {
 #else
 @interface AppImplCocoaBasic : NSApplication {
 #endif
-	NSWindow				*win;
+	CinderWindow			*win;
 	CinderView				*cinderView;
 	
 	NSTimer					*animationTimer;
@@ -47,7 +49,7 @@
 	cinder::Display			*mDisplay;
 	int						mWindowWidth, mWindowHeight;
     int                     mWindowPositionX, mWindowPositionY;
-	BOOL					mFullScreen;
+	BOOL					mFullScreen, mBorderless, mAlwaysOnTop;
 	float					mFrameRate;
 }
 
@@ -58,8 +60,6 @@
 - (void)quit;
 
 - (void)createWindow;
-- (BOOL)canBecomeMainWindow;
-- (BOOL)canBecomeKeyWindow;
 
 - (int)getWindowWidth;
 - (void)setWindowWidth:(int)windowWidth;
@@ -74,6 +74,10 @@
 - (bool)isFullScreen;
 - (void)enterFullScreen;
 - (void)exitFullScreen;
+- (bool)isBorderless;
+- (void)setBorderless:(bool)borderless;
+- (bool)isAlwaysOnTop;
+- (void)setAlwaysOnTop:(bool)alwaysOnTop;
 - (std::string)getAppPath;
 - (CGPoint)mouseLocation;
 - (void)quit;

@@ -123,7 +123,8 @@
 	NSRect winRect = NSMakeRect( offsetX, offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
 
 	unsigned int styleMask;
-	if( app->getSettings().isBorderless() ) {
+	mBorderless = app->getSettings().isBorderless();
+	if( mBorderless ) {
 		styleMask = NSBorderlessWindowMask;
 	}
 	else if( app->getSettings().isResizable() ) {
@@ -157,7 +158,8 @@
 	[win setInitialFirstResponder:cinderView];
 	[win setAcceptsMouseMovedEvents:YES];
 	[win setOpaque:YES];
-	if( app->getSettings().isAlwaysOnTop() )
+	mAlwaysOnTop = app->getSettings().isAlwaysOnTop();
+	if( mAlwaysOnTop )
 		[win setLevel: NSScreenSaverWindowLevel];
 	// we need to get told about it when the window changes screens so we can update the display link
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowChangedScreen:) name:NSWindowDidMoveNotification object:nil];
@@ -200,6 +202,45 @@
 	mWindowWidth = static_cast<int>( bounds.size.width );
 	mWindowHeight = static_cast<int>( bounds.size.height );
 	mFullScreen = YES;
+}
+
+- (bool)isBorderless
+{
+	return mBorderless;
+}
+
+- (void)setBorderless:(bool)borderless
+{
+	if( mBorderless != borderless ) {
+		unsigned int styleMask;
+		mBorderless = borderless;
+		if( mBorderless ) {
+			styleMask = NSBorderlessWindowMask;
+		}
+		else if( app->getSettings().isResizable() ) {
+			styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+		}
+		else
+			styleMask = NSTitledWindowMask;
+		[win setStyleMask:styleMask];
+		[win makeFirstResponder:cinderView];
+		[win makeKeyWindow];
+		[win makeMainWindow];
+		[win setHasShadow:(! mBorderless)];
+	}
+}
+
+- (bool)isAlwaysOnTop
+{
+	return mAlwaysOnTop;
+}
+
+- (void)setAlwaysOnTop:(bool)alwaysOnTop
+{
+	if( mAlwaysOnTop != alwaysOnTop ) {
+		mAlwaysOnTop = alwaysOnTop;
+		[win setLevel:(mAlwaysOnTop)?NSScreenSaverWindowLevel:NSNormalWindowLevel];
+	}
 }
 
 - (std::string)getAppPath
@@ -346,7 +387,6 @@
     p.y = mDisplay->getHeight() - y;
     mWindowPositionX = x;
     mWindowPositionY = y;
-	NSRect currentFrameRect = [win frame];
 	NSRect currentContentRect = [win contentRectForFrameRect:[win frame]];
 	NSRect targetContentRect = NSMakeRect( p.x, p.y - currentContentRect.size.height, currentContentRect.size.width, currentContentRect.size.height);
 	NSRect targetFrameRect = [win frameRectForContentRect:targetContentRect];

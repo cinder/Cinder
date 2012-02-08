@@ -211,6 +211,42 @@ void AppBasic::setFullScreen( bool aFullScreen )
 	}
 }
 
+bool AppBasic::isBorderless() const
+{
+#if defined( CINDER_COCOA )
+	return [mImpl isBorderless];
+#elif defined( CINDER_MSW )
+	return mImpl->isBorderless();
+#endif	
+}
+
+void AppBasic::setBorderless( bool borderless )
+{
+#if defined( CINDER_COCOA )
+	[mImpl setBorderless:borderless];
+#elif defined( CINDER_MSW )
+	mImpl->setBorderless( borderless );
+#endif	
+}
+
+bool AppBasic::isAlwaysOnTop() const
+{
+#if defined( CINDER_COCOA )
+	return [mImpl isAlwaysOnTop];
+#elif defined( CINDER_MSW )
+	return mImpl->isAlwaysOnTop();
+#endif	
+}
+
+void AppBasic::setAlwaysOnTop( bool alwaysOnTop )
+{
+#if defined( CINDER_COCOA )
+	[mImpl setAlwaysOnTop:alwaysOnTop];
+#elif defined( CINDER_MSW )
+	mImpl->setAlwaysOnTop( alwaysOnTop );
+#endif	
+}
+
 Vec2i AppBasic::getMousePos() const
 {
 #if defined( CINDER_MAC )

@@ -145,6 +145,16 @@ class AppBasic : public App {
 	//! Sets whether the active App is in full-screen mode based on \a fullScreen
 	virtual void		setFullScreen( bool fullScreen );
 
+	//! Returns whether the has no border (chrome/frame)
+	virtual bool		isBorderless() const;
+	//! Sets whether the window has a border (chrome/frame)
+	virtual void		setBorderless( bool borderless = true );
+	//! Returns whether the window always remains above all other windows
+	virtual bool		isAlwaysOnTop() const;
+	//! Sets whether the window always remains above all other windows
+	virtual void		setAlwaysOnTop( bool alwaysOnTop = true );
+
+
 	//! Returns the current location of the mouse. Can be called outside the normal event loop.
 	Vec2i				getMousePos() const;
 	//! Hides the mouse cursor
