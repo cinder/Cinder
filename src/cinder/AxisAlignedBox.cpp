@@ -80,6 +80,18 @@ void AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
 	if(maxB.x > mExtents[1].x) mExtents[1].x = maxB.x;
 	if(maxB.y > mExtents[1].y) mExtents[1].y = maxB.y;
 	if(maxB.z > mExtents[1].z) mExtents[1].z = maxB.z;
+
+	// update vertices
+	Vec3f extent( mExtents[1].x - mExtents[0].x, mExtents[1].y - mExtents[0].y, mExtents[1].z - mExtents[0].z );
+	Vec3f mid( ( mExtents[0].x + mExtents[1].x ) / 2.0f, ( mExtents[0].y + mExtents[1].y ) / 2.0f, ( mExtents[0].z + mExtents[1].z ) / 2.0f );
+	mVerts[0] = Vec3f( -0.5f, -0.5f, 0.5f ) * extent +  mid;
+	mVerts[1] = Vec3f( 0.5f, -0.5f, 0.5f ) * extent + mid;
+	mVerts[2] = Vec3f( -0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[3] = Vec3f( 0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[4] = Vec3f( -0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[5] = Vec3f( 0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[6] = Vec3f( -0.5f, -0.5f, -0.5f ) * extent + mid;
+	mVerts[7] = Vec3f( 0.5f, -0.5f, -0.5f ) * extent + mid;
 }
 
 int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
