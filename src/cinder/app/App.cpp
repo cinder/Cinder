@@ -54,6 +54,9 @@ App::App()
 	mFpsLastSampleFrame = 0;
 	mFpsLastSampleTime = 0;
 	mAssetDirectoriesInitialized = false;
+    
+    mTabletPressure = 1.0f;
+    mTabletTilt = Vec2f::zero();
 }
 
 App::~App()
