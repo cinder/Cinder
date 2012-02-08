@@ -49,6 +49,8 @@ class AppImplMswBasic : public AppImplMsw {
 	void	setWindowSize( int aWindowWidth, int aWindowHeight );
 	float	setFrameRate( float aFrameRate );
 	void	toggleFullScreen();
+	void	setBorderless( bool borderless );
+	void	setAlwaysOnTop( bool alwaysOnTop );
 	
 	std::string getAppPath() const;
 	

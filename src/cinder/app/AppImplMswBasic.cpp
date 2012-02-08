@@ -64,6 +64,8 @@ void AppImplMswBasic::run()
 		mWindowHeight = mApp->getSettings().getWindowHeight();
 	}
 	
+	mBorderless = mApp->getSettings().isBorderless();
+	mAlwaysOnTop = mApp->getSettings().isAlwaysOnTop();
 	mFrameRate = mApp->getSettings().getFrameRate();
 	
 	createWindow( &mWindowWidth, &mWindowHeight );
@@ -209,7 +211,7 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		mWindowStyle = WS_POPUP;										// Windows Style
 		::ShowCursor( TRUE );										// Hide Mouse Pointer
 	}
-	else if( mApp->getSettings().isBorderless() ) {
+	else if( mBorderless ) {
 		mWindowExStyle = WS_EX_APPWINDOW;
 		mWindowStyle = WS_POPUP;
 	}
@@ -247,7 +249,7 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		return false;
 	}
 
-	if( mApp->getSettings().isAlwaysOnTop() ) {
+	if( mAlwaysOnTop ) {
 		::SetWindowLongA( mWnd, GWL_STYLE, WS_POPUP );
 		::SetWindowLongA( mWnd, GWL_EXSTYLE, WS_EX_TOPMOST );
 		::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
@@ -327,6 +329,42 @@ void AppImplMswBasic::toggleFullScreen()
 	
 	mApp->privateResize__( ResizeEvent( Vec2i( mApp->getWindowWidth(), mApp->getWindowHeight() ) ) );
 }
+
+void AppImplMswBasic::setBorderless( bool borderless )
+{
+	if( mBorderless != borderless ) {
+		mBorderless = borderless;
+		if( mBorderless ) {
+			mWindowExStyle = WS_EX_APPWINDOW;
+			mWindowStyle = WS_POPUP;
+		}
+		else {
+			mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
+			mWindowStyle = ( mApp->getSettings().isResizable() ) ? WS_OVERLAPPEDWINDOW
+				:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style
+		}
+		::SetWindowLongA( mWnd, GWL_STYLE, mWindowStyle );
+		::SetWindowLongA( mWnd, GWL_EXSTYLE, mWindowExStyle );
+	}
+}
+
+void AppImplMswBasic::setAlwaysOnTop( bool alwaysOnTop )
+{
+	if( mAlwaysOnTop != alwaysOnTop ) {
+		mAlwaysOnTop = alwaysOnTop;
+		if( mAlwaysOnTop ) {
+			/*::SetWindowLongA( mWnd, GWL_STYLE, WS_POPUP );
+			::SetWindowLongA( mWnd, GWL_EXSTYLE, WS_EX_TOPMOST );
+			::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );*/
+		}
+		else {
+			/*mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
+			mWindowStyle = ( mApp->getSettings().isResizable() ) ? WS_OVERLAPPEDWINDOW
+				:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style*/
+		}
+	}
+}
+
 
 void AppImplMswBasic::enableMultiTouch()
 {
