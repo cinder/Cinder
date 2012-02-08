@@ -63,6 +63,8 @@ App::~App()
 {
 }
 
+        
+    
 // Pseudo-private event handlers
 void App::privateMouseDown__( const MouseEvent &event )
 {
@@ -125,6 +127,11 @@ void App::privateKeyUp__( const KeyEvent &event )
 		handled = (cbIter->second)( event );		
 	if( ! handled )
 		keyUp( event );
+}
+    
+void App::privateSetTabletValues__(const float pressure,const Vec2f tilt ){
+    mTabletPressure = pressure;
+    mTabletTilt = tilt;
 }
 
 void App::privateResize__( const ResizeEvent &event )

@@ -274,6 +274,10 @@ class App {
 	//! Returns the number of animation frames which have elapsed since application launch
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
 	
+    //tablet
+    float   getTabletPressure() const { return mTabletPressure; }
+    Vec2f   getTabletTilt() const { return mTabletTilt; }
+    
 	// utilities
 	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). Throws ResourceLoadExc on failure. \sa \ref CinderResources
 	static DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType );
@@ -335,7 +339,8 @@ class App {
 	void	privateMouseDrag__( const MouseEvent &event );
 	void	privateKeyDown__( const KeyEvent &event );
 	void	privateKeyUp__( const KeyEvent &event );
-	void	privateFileDrop__( const FileDropEvent &event );
+    void    privateSetTabletValues__(const float pressure,const Vec2f tilt);	
+    void	privateFileDrop__( const FileDropEvent &event );
 
 	virtual void	privateSetup__();
 	virtual void	privateResize__( const ResizeEvent &event );	
@@ -375,6 +380,10 @@ class App {
 	static void				*sAutoReleasePool;
 #endif
 
+    //tablet
+    float                   mTabletPressure;
+    Vec2f                   mTabletTilt;
+    
 	Timer					mTimer;
 	uint32_t				mFrameCount;
 	float					mAverageFps;
