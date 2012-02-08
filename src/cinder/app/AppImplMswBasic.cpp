@@ -343,8 +343,19 @@ void AppImplMswBasic::setBorderless( bool borderless )
 			mWindowStyle = ( mApp->getSettings().isResizable() ) ? WS_OVERLAPPEDWINDOW
 				:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style
 		}
+
+		RECT windowRect;
+		::GetClientRect( mWnd, &windowRect );
+		windowRect.left += mWindowOffset.x; windowRect.right += mWindowOffset.x;
+		windowRect.top += mWindowOffset.y; windowRect.bottom += mWindowOffset.y;
+		::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
+
 		::SetWindowLongA( mWnd, GWL_STYLE, mWindowStyle );
 		::SetWindowLongA( mWnd, GWL_EXSTYLE, mWindowExStyle );
+		::SetWindowPos( mWnd, HWND_TOP, windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
+				SWP_FRAMECHANGED|SWP_SHOWWINDOW|SWP_NOOWNERZORDER );
+		if( mBorderless )
+			::InvalidateRect( 0, NULL, TRUE );
 	}
 }
 
