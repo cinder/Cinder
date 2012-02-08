@@ -64,6 +64,8 @@ class Display {
 #if defined( CINDER_MAC )
 	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
 #elif defined( CINDER_MSW )
+	//! Finds a Display based on its HMONITOR. Returns the primary display if it's not found
+	static DisplayRef			findFromHmonitor( HMONITOR hMonitor );
 	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
 #endif
 	
