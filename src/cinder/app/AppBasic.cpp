@@ -151,7 +151,25 @@ void AppBasic::setWindowSize( int windowWidth, int windowHeight )
 	mImpl->setWindowSize( windowWidth, windowHeight );
 #endif
 }
+ 
+Vec2i AppBasic::getWindowPos() const
+{
+#if defined( CINDER_COCOA )
+    return [mImpl getWindowPos];
+#elif defined( CINDER_MSW )
+    return mImpl->getWindowPos();
+#endif
+}
 
+void AppBasic::setWindowPos( const Vec2i &windowPos )
+{
+#if defined( CINDER_COCOA )
+	[mImpl setWindowPosWithLeft: windowPos.x top:windowPos.y];
+#elif defined( CINDER_MSW )
+	mImpl->setWindowPos( windowPos );
+#endif
+}
+    
 float AppBasic::getFrameRate() const
 {
 #if defined( CINDER_COCOA )

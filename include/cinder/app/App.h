@@ -75,6 +75,21 @@ class App {
 		//! width and height of the window when applicable
 		void	setWindowSize( int aWindowSizeX, int aWindowSizeY );
 
+		//! Sets the position of the window on the screen
+		void    setWindowPos( int windowPositionX, int windowPositionY ) { setWindowPos( Vec2i( windowPositionX, windowPositionY ) ); }
+		//! Sets the position of the window on the screen
+		void    setWindowPos( const Vec2i &windowPos );
+		//! Returns whether a non-default window position has been requested
+		bool	isWindowPosSpecified() const { return mWindowPosSpecified; }
+		//! Marks the window position setting as unspecified, effectively requesting the default
+		void	unspecifyWindowPos() { mWindowPosSpecified = false; }
+
+		bool	isBorderless() const { return mBorderless; }
+		void	setBorderless( bool borderless = true ) { mBorderless = borderless; }
+		bool	isAlwaysOnTop() const { return mAlwaysOnTop; }
+		void	setAlwaysOnTop( bool alwaysOnTop = true ) { mAlwaysOnTop = alwaysOnTop; }
+		
+        
 		//! The maximum frameRate the update/draw loop will execute at, specified in frames per second. Default value is 30 FPS
 		void	setFrameRate( float aFrameRate );
 
@@ -91,7 +106,14 @@ class App {
 		Vec2i	getWindowSize() const { return Vec2i( mWindowSizeX, mWindowSizeY ); }
 		//! the size of the application's window specified in pixels. \return cinder::Area( 0, 0, width in pixels, height in pixels )
 		Area	getWindowBounds() const { return Area( 0, 0, mWindowSizeX, mWindowSizeY ); }
-		
+
+		//! Returns the position of the window in pixels on screen from left in pixels
+		int getWindowPosX() const { return mWindowPositionX; }
+		//! Returns the position of the window on screen from top in pixels
+		int getWindowPosY() const { return mWindowPositionY; }
+		//! Returns the position of the window on screen in pixels
+		Vec2i getWindowPos() const { return Vec2i( mWindowPositionX, mWindowPositionY ); }
+        
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
 		const std::string& getTitle() const { return mTitle; }
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
@@ -110,9 +132,15 @@ class App {
 	  
 		bool			mShouldQuit; // defaults to false, facilitates early termination
 		int				mWindowSizeX, mWindowSizeY; // default: 640x480
+
+		bool			mWindowPosSpecified;
+        int             mWindowPositionX, mWindowPositionY;
+            
 		bool			mFullScreen; // window covers screen. default: false
 		float			mFrameRate;
 		bool			mResizable; // window is Resizable. default: true
+		bool			mBorderless; // window is borderless (frameless / chromeless). default: false
+		bool			mAlwaysOnTop; // window is always on top. default: false
 		bool			mPowerManagement; // allow screensavers or power management to hide app. default: false
 		std::string		mTitle;
 	};
@@ -253,6 +281,18 @@ class App {
 	//! Returns the bounding area of the App's window or the screen in full-screen mode.
 	/** Equivalent to \code Area( 0, 0, getWindowWidth(), getWindowHeight() ); \endcode **/	
 	Area				getWindowBounds() const { return Area( 0, 0, getWindowWidth(), getWindowHeight() ); }
+
+	//! Returns the X & Y coordinate of the top-left-corner of the window contents.
+	virtual Vec2i		getWindowPos() const { return Vec2i::zero(); }
+	//! Returns the X coordinate of the top-left-corner of the window contents.
+	int         		getWindowPosX() const { return getWindowPos().x; }
+	//! Returns the Y coordinate of the top-left corner of the window contents.
+	int         		getWindowPosY() const { return getWindowPos().y; }
+	//! Sets the X & Y coordinates of the top-left corner of the window contents.
+	void        		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
+	//! Sets the X & Y coordinates of the top-left corner of the window's contents.
+	virtual void        setWindowPos( const Vec2i &windowPos ) {}
+    
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const = 0;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
@@ -405,6 +445,9 @@ class App {
 //@{
 //! Returns the width of the active App's window measured in pixels, or the screen when in full-screen mode.
 inline int	getWindowWidth() { return App::get()->getWindowWidth(); }
+//! Sets the position of the active App's window measured in pixels. Ignored in full-screen mode.
+inline void		setWindowPos( const Vec2i &windowPos ) { App::get()->setWindowPos( windowPos);  }
+inline void		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) );  }
 //! Sets the width of the active App's window measured in pixels. Ignored in full-screen mode.
 inline void	setWindowWidth( int windowWidth ) { App::get()->setWindowWidth( windowWidth ); }
 //! Returns the height of the active App's window measured in pixels, or the screen when in full-screen mode.
@@ -418,6 +461,8 @@ inline void		setWindowSize( int windowWidth, int windowHeight ) { App::get()->se
 inline Vec2f	getWindowCenter() { return App::get()->getWindowCenter(); }
 //! Returns the size of the active App's window or the screen in full-screen mode
 inline Vec2i	getWindowSize() { return App::get()->getWindowSize(); }
+//! Returns the position of the active App's window measured in pixels.
+inline Vec2i	getWindowPos() { return App::get()->getWindowPos(); }
 //! Returns the aspect ratio of the active App's window or the screen in full-screen mode
 inline float	getWindowAspectRatio() { return App::get()->getWindowAspectRatio(); }
 //! Returns the bounding area of the active App's window or the screen in full-screen mode.

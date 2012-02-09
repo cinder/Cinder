@@ -57,6 +57,7 @@ class AppImplMsw {
 	AppImplMsw( class App *aApp );
 	virtual ~AppImplMsw();
 	
+	Vec2i			getWindowPos() const { return mWindowOffset; }
 	int				getWindowWidth() const { return mWindowWidth; }
 	int				getWindowHeight() const { return mWindowHeight; }
 	virtual void	setWindowWidth( int aWindowWidth ) { }
