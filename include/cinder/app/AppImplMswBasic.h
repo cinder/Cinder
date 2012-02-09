@@ -48,6 +48,8 @@ class AppImplMswBasic : public AppImplMsw {
 	void	setWindowSize( int aWindowWidth, int aWindowHeight );
 	float	setFrameRate( float aFrameRate );
 	void	toggleFullScreen();
+
+	void	privateSetWindowOffset__( const Vec2i &aWindowOffset );
 	
 	std::string getAppPath() const;
 	

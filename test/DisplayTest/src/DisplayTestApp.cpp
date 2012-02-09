@@ -1,17 +1,16 @@
-#include "flint/app/AppBasic.h"
-using namespace fli;
-using namespace fli::app;
+#include "cinder/app/AppBasic.h"
+using namespace ci;
+using namespace ci::app;
 
 #include <vector>
-using std::vector;
 #include <list>
-using std::list;
-#include <sstream>
+using namespace std;
 
 class DisplayTestApp : public AppBasic {
  public:
 	virtual void prepareSettings( Settings *settings );
 
+	void keyDown( KeyEvent event );
 	void mouseDrag( MouseEvent event );
 	void draw();
 	
@@ -21,30 +20,31 @@ class DisplayTestApp : public AppBasic {
 
 void DisplayTestApp::prepareSettings( Settings *settings )
 {
-	std::cout << "Startup: " << getDisplay().getWidth() << std::endl;
+	console() << "Startup: " << getDisplay().getWidth() << endl;
 
 	const vector<shared_ptr<Display> > &displays( Display::getDisplays() );
-#if defined( FLI_MAC )
-	std::ostream &os( std::cout );
-#else
-	std::stringstream os;
-#endif
+
 	for( vector<shared_ptr<Display> >::const_iterator it = displays.begin(); it != displays.end(); ++it ) {
 		Area a = (*it)->getArea();
-		os << "Display: " << a << " size: " << a.getWidth() << " x " << a.getHeight() << " @ depth: " << (*it)->getBitsPerPixel() << std::endl;
+		console() << "Display: " << a << " size: " << a.getWidth() << " x " << a.getHeight() << " @ depth: " << (*it)->getBitsPerPixel() << endl;
 	}
-#if defined( FLI_MSW )
-	OutputDebugStringA( os.str().c_str() );
-#endif
 
 	if( displays.size() > 1 )
 		settings->setDisplay( displays[1] );
 }
 
+void DisplayTestApp::keyDown( KeyEvent event )
+{
+	if( event.getChar() == 'f' ) {
+		setFullScreen( ! isFullScreen() );
+	}
+	
+}
+
 void DisplayTestApp::mouseDrag( MouseEvent event )
 {
 	// add wherever the user drags to the end of our list of points
-	mPoints.push_back( event.getVec2f() );
+	mPoints.push_back( event.getPos() );
 }
 
 void DisplayTestApp::draw()
@@ -66,4 +66,5 @@ void DisplayTestApp::draw()
 	glEnd();
 }
 
-FLI_APP_BASIC( DisplayTestApp )
+// This line tells Cinder to actually create the application
+CINDER_APP_BASIC( DisplayTestApp, RendererGl )
