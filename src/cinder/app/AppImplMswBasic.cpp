@@ -177,10 +177,10 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		WindowRect.bottom = DisplayArea.getY1() + mApp->getSettings().getWindowPosY() + *height;
 	}
 	else {
-		WindowRect.left = ( getDisplay()->getWidth() - *width ) / 2;				//center window 
-		WindowRect.right = ( getDisplay()->getWidth() - *width ) / 2 + *width;		
-		WindowRect.top = ( getDisplay()->getHeight() - *height ) / 2;
-		WindowRect.bottom = ( getDisplay()->getHeight() - *height ) / 2 + *height;
+		WindowRect.left = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2;				//center window 
+		WindowRect.right = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2 + *width;		
+		WindowRect.top = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2;
+		WindowRect.bottom = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2 + *height;
 	}
 
 	mInstance			= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
