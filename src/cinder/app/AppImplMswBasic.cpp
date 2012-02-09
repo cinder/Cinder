@@ -250,8 +250,7 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	}
 
 	if( mAlwaysOnTop ) {
-		::SetWindowLongA( mWnd, GWL_STYLE, WS_POPUP );
-		::SetWindowLongA( mWnd, GWL_EXSTYLE, WS_EX_TOPMOST );
+		::SetWindowLongA( mWnd, GWL_EXSTYLE, ::GetWindowLongA( mWnd, GWL_EXSTYLE ) | WS_EX_TOPMOST );
 		::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 	}
 
@@ -363,15 +362,14 @@ void AppImplMswBasic::setAlwaysOnTop( bool alwaysOnTop )
 {
 	if( mAlwaysOnTop != alwaysOnTop ) {
 		mAlwaysOnTop = alwaysOnTop;
+		LONG oldExStyle = ::GetWindowLongA( mWnd, GWL_EXSTYLE );
 		if( mAlwaysOnTop ) {
-			/*::SetWindowLongA( mWnd, GWL_STYLE, WS_POPUP );
-			::SetWindowLongA( mWnd, GWL_EXSTYLE, WS_EX_TOPMOST );
-			::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );*/
+			::SetWindowLongA( mWnd, GWL_EXSTYLE, oldExStyle | WS_EX_TOPMOST );
+			::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 		}
 		else {
-			/*mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
-			mWindowStyle = ( mApp->getSettings().isResizable() ) ? WS_OVERLAPPEDWINDOW
-				:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style*/
+			::SetWindowLongA( mWnd, GWL_EXSTYLE, oldExStyle &= (~WS_EX_TOPMOST) );
+			::SetWindowPos( mWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 		}
 	}
 }
