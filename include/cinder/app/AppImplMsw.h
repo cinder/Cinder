@@ -57,7 +57,7 @@ class AppImplMsw {
 	AppImplMsw( class App *aApp );
 	virtual ~AppImplMsw();
 	
-	Vec2i			getWindowPos() const { return mWindowPosition; }
+	Vec2i			getWindowPos() const { return mWindowOffset; }
 	int				getWindowWidth() const { return mWindowWidth; }
 	int				getWindowHeight() const { return mWindowHeight; }
 	virtual void	setWindowWidth( int aWindowWidth ) { }
@@ -88,7 +88,6 @@ class AppImplMsw {
  protected:
 	class App	*mApp;
 	int			mWindowWidth, mWindowHeight;	
-	Vec2i		mWindowPosition;
 	bool		mFullScreen, mBorderless, mAlwaysOnTop;
 	Vec2i		mWindowOffset;
 	float		mFrameRate;

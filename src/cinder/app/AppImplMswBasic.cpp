@@ -358,7 +358,7 @@ void AppImplMswBasic::setBorderless( bool borderless )
 		::SetWindowLongA( mWnd, GWL_STYLE, mWindowStyle );
 		::SetWindowLongA( mWnd, GWL_EXSTYLE, mWindowExStyle );
 		::SetWindowPos( mWnd, HWND_TOP, windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
-				SWP_FRAMECHANGED|SWP_SHOWWINDOW|SWP_NOOWNERZORDER );
+				SWP_FRAMECHANGED|SWP_SHOWWINDOW|SWP_NOZORDER );
 		if( mBorderless )
 			::InvalidateRect( 0, NULL, TRUE );
 	}
@@ -393,34 +393,40 @@ void AppImplMswBasic::enableMultiTouch()
 	}
 }
 
-void AppImplMswBasic::setWindowPos( const Vec2i &aWindowPos )
+void AppImplMswBasic::setWindowPos( const Vec2i &windowPos )
 {
-	int screenWidth, screenHeight;
-	mWindowPosition = aWindowPos;
-
-	getScreenSize( mApp->getWindowWidth(), mApp->getWindowHeight(), &screenWidth, &screenHeight );
-	::SetWindowPos( mWnd, HWND_TOP, aWindowPos.x, aWindowPos.y, screenWidth, screenHeight, SWP_SHOWWINDOW );
+	RECT clientArea;
+	clientArea.left = windowPos.x; clientArea.top = windowPos.y;
+	clientArea.right = windowPos.x + 1; clientArea.bottom = windowPos.y + 1; // we don't actually care about the lower-right
+	::AdjustWindowRectEx( &clientArea, mWindowStyle, FALSE, mWindowExStyle );
+	::SetWindowPos( mWnd, HWND_TOP, clientArea.left, clientArea.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER );
+	
+	POINT upperLeft;
+	upperLeft.x = upperLeft.y = 0;
+	::ClientToScreen( mWnd, &upperLeft );
+	mWindowOffset.x = upperLeft.x;
+	mWindowOffset.y = upperLeft.y;
 }
 
 void AppImplMswBasic::setWindowWidth( int aWindowWidth )
 {
 	int screenWidth, screenHeight;
 	getScreenSize( aWindowWidth, mApp->getWindowHeight(), &screenWidth, &screenHeight );
-	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE );
+	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE | SWP_NOZORDER );
 }
 
 void AppImplMswBasic::setWindowHeight( int aWindowHeight )
 {
 	int screenWidth, screenHeight;
 	getScreenSize( mApp->getWindowWidth(), aWindowHeight, &screenWidth, &screenHeight );
-	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE );
+	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE | SWP_NOZORDER );
 }
 
 void AppImplMswBasic::setWindowSize( int aWindowWidth, int aWindowHeight )
 {
 	int screenWidth, screenHeight;
 	getScreenSize( aWindowWidth, aWindowHeight, &screenWidth, &screenHeight );
-	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE );
+	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE | SWP_NOZORDER );
 }
 
 float AppImplMswBasic::setFrameRate( float aFrameRate )
