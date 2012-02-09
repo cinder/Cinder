@@ -161,26 +161,26 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	}
 
 	WNDCLASS	wc;						// Windows Class Structure
-	RECT		WindowRect;				// Grabs Rectangle Upper Left / Lower Right Values
+	RECT		windowRect;				// Grabs Rectangle Upper Left / Lower Right Values
 	Area    DisplayArea = mDisplay->getArea();
 
 	if( mFullScreen ) {
-		WindowRect.left = DisplayArea.getX1();
-		WindowRect.right = DisplayArea.getX2();
-		WindowRect.top = DisplayArea.getY1();
-		WindowRect.bottom = DisplayArea.getY2();
+		windowRect.left = DisplayArea.getX1();
+		windowRect.right = DisplayArea.getX2();
+		windowRect.top = DisplayArea.getY1();
+		windowRect.bottom = DisplayArea.getY2();
 	}
 	else if ( mApp->getSettings().isWindowPosSpecified() ) { 
-		WindowRect.left = DisplayArea.getX1() + mApp->getSettings().getWindowPosX(); 
-		WindowRect.right = DisplayArea.getX1()+ mApp->getSettings().getWindowPosX()  + *width;
-		WindowRect.top =  DisplayArea.getY1() + mApp->getSettings().getWindowPosY();
-		WindowRect.bottom = DisplayArea.getY1() + mApp->getSettings().getWindowPosY() + *height;
+		windowRect.left = DisplayArea.getX1() + mApp->getSettings().getWindowPosX(); 
+		windowRect.right = DisplayArea.getX1()+ mApp->getSettings().getWindowPosX()  + *width;
+		windowRect.top =  DisplayArea.getY1() + mApp->getSettings().getWindowPosY();
+		windowRect.bottom = DisplayArea.getY1() + mApp->getSettings().getWindowPosY() + *height;
 	}
 	else {
-		WindowRect.left = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2;				//center window 
-		WindowRect.right = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2 + *width;		
-		WindowRect.top = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2;
-		WindowRect.bottom = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2 + *height;
+		windowRect.left = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2;				//center window 
+		windowRect.right = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2 + *width;		
+		windowRect.top = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2;
+		windowRect.bottom = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2 + *height;
 	}
 
 	mInstance			= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
@@ -227,7 +227,7 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 			:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style
 	}
 
-	::AdjustWindowRectEx( &WindowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
+	::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
 
 	std::wstring unicodeTitle = toUtf16( mApp->getSettings().getTitle() ); 
 
@@ -236,9 +236,9 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		( mFullScreen ) ? FULLSCREEN_WIN_CLASS_NAME : WINDOWED_WIN_CLASS_NAME,
 		unicodeTitle.c_str(),						// Window Title
 		mWindowStyle,					// Required Window Style
-		WindowRect.left, WindowRect.top,								// Window Position
-		WindowRect.right-WindowRect.left,	// Calculate Window Width
-		WindowRect.bottom-WindowRect.top,	// Calculate Window Height
+		windowRect.left, windowRect.top,								// Window Position
+		windowRect.right - windowRect.left,	// Calculate Window Width
+		windowRect.bottom - windowRect.top,	// Calculate Window Height
 		NULL,								// No Parent Window
 		NULL,								// No Menu
 		mInstance,							// Instance
