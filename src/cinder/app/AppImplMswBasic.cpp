@@ -69,7 +69,12 @@ void AppImplMswBasic::run()
 	mFrameRate = mApp->getSettings().getFrameRate();
 	
 	createWindow( &mWindowWidth, &mWindowHeight );
-	
+
+	POINT upperLeft;
+	upperLeft.x = upperLeft.y = 0;
+	::ClientToScreen( mWnd, &upperLeft );
+	privateSetWindowOffset__( Vec2i( upperLeft.x, upperLeft.y ) );
+
 	mApp->privateSetup__();
 	mHasBeenInitialized = true;
 	mApp->privateResize__( ResizeEvent( Vec2i( mWindowWidth, mWindowHeight ) ) );
@@ -349,10 +354,14 @@ void AppImplMswBasic::setBorderless( bool borderless )
 				:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style
 		}
 
+		POINT upperLeft;
+		upperLeft.x = upperLeft.y = 0;
+		::ClientToScreen( mWnd, &upperLeft );
+
 		RECT windowRect;
 		::GetClientRect( mWnd, &windowRect );
-		windowRect.left += mWindowOffset.x; windowRect.right += mWindowOffset.x;
-		windowRect.top += mWindowOffset.y; windowRect.bottom += mWindowOffset.y;
+		windowRect.left += upperLeft.x; windowRect.right += upperLeft.x;
+		windowRect.top += upperLeft.y; windowRect.bottom += upperLeft.y;
 		::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
 
 		::SetWindowLongA( mWnd, GWL_STYLE, mWindowStyle );
