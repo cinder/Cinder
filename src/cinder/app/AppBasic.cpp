@@ -152,6 +152,48 @@ void AppBasic::setWindowSize( int windowWidth, int windowHeight )
 #endif
 }
 
+int AppBasic::getWindowPositionX() const
+{
+#if defined( CINDER_COCOA )
+	return [mImpl getWindowPositionX];
+#elif defined( CINDER_MSW )
+	return mImpl->getWindowPositionX();
+#endif
+}
+    
+void AppBasic::setWindowPositionX( int position )
+{
+#if defined( CINDER_COCOA )
+    [mImpl setWindowPositionX: position];
+#elif defined( CINDER_MSW )
+    mImpl->setWindowPositionX( position );
+#endif
+}
+    
+int AppBasic::getWindowPositionY() const
+{
+#if defined( CINDER_COCOA )
+    return [mImpl getWindowPositionY];
+#elif defined( CINDER_MSW )
+    return mImpl->getWindowPositionY();
+#endif
+}
+    
+void AppBasic::setWindowPositionY( int position )
+{
+#if defined( CINDER_COCOA )
+    [mImpl setWindowPositionY: position];
+#elif defined( CINDER_MSW )
+    mImpl->setWindowPositionY( position );
+#endif
+}
+    
+void AppBasic::setWindowPosition( int x, int y )
+{
+    setWindowPositionX(x);
+    setWindowPositionY(y);    
+}
+    
 float AppBasic::getFrameRate() const
 {
 #if defined( CINDER_COCOA )

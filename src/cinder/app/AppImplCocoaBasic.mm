@@ -102,13 +102,32 @@
 - (void)createWindow
 {
 	int offsetX = ( mDisplay->getWidth() - app->getSettings().getWindowWidth() ) / 2;
-	int offsetY = ( mDisplay->getHeight() - app->getSettings().getWindowHeight() ) / 2;	
-	NSRect winRect = NSMakeRect( offsetX, offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
+	int offsetY = ( mDisplay->getHeight() - app->getSettings().getWindowHeight() ) / 2;
+	
+    if(app->getSettings().getWindowPositionX() != -1) {
+        offsetX = app->getSettings().getWindowPositionX();
+    }
+    
+    if(app->getSettings().getWindowPositionY() != -1) {
+        offsetY = app->getSettings().getWindowPositionY();        
+        
+        CGFloat cgMenuBarHeight = [[[NSApplication sharedApplication] mainMenu] menuBarHeight];
+        int menuBarHeight = static_cast<int>(cgMenuBarHeight) + 1; 
+
+        if(!app->getSettings().isChromeless() && offsetY < menuBarHeight)
+            offsetY = menuBarHeight;
+    }
+        
+    int posY = (mDisplay->getHeight() - app->getSettings().getWindowHeight()) -offsetY;
+    NSLog(@"posY %i", posY);
+    
+	NSRect winRect = NSMakeRect( offsetX, posY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
 	unsigned int myStyleMask = NSTitledWindowMask;
 	
 	if( app->getSettings().isResizable() ) {
 		myStyleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
 	}
+    
 	win = [[NSWindow alloc] initWithContentRect:winRect
 									  styleMask:myStyleMask
 										backing:NSBackingStoreBuffered
@@ -125,7 +144,19 @@
 
 	mWindowWidth = static_cast<int>( winRect.size.width );
 	mWindowHeight = static_cast<int>( winRect.size.height );
+
+    mWindowPositionX = offsetX;
+    mWindowPositionY = offsetY;    
 		
+    // Override settings if window is chromeless
+    if( app->getSettings().isChromeless() ) {
+        [win setStyleMask: NSBorderlessWindowMask];
+        [win setLevel: NSScreenSaverWindowLevel];
+        [self setWindowPositionY: offsetY];
+    }
+    
+    NSLog(@"window position %i %i", mWindowPositionX, mWindowPositionY);
+    
 	[self startAnimationTimer];
 	[win makeKeyAndOrderFront:nil];
 	[win setInitialFirstResponder:cinderView];
@@ -138,6 +169,17 @@
 	if( app->getSettings().isMultiTouchEnabled() )
 		[cinderView setMultiTouchDelegate:self];
 #endif
+}
+
+// In order to receive keyboard events, we need to be able to be the key window.
+// By default this would be YES, except if we don't have a title bar, for example in fullscreen mode.  We want to always be able to become the key window and the main window.
+-(BOOL)canBecomeMainWindow {
+    return YES;
+}
+
+// Chromeless windows that use the NSBorderlessWindowMask can't become key by default. Override this method so that controls in this window will be enabled.
+- (BOOL)canBecomeKeyWindow {
+    return YES;
 }
 
 - (void)destroyWindow
@@ -302,6 +344,36 @@
 {
 	mWindowWidth = w;
 	mWindowHeight = h;
+}
+
+- (int)getWindowPositionX
+{
+    return mWindowPositionX;
+}
+
+- (void)setWindowPositionX:(int)x
+{
+    [self setWindowPositionWithLeft: x top: [self getWindowPositionY]];
+}
+
+- (int)getWindowPositionY
+{
+    return mWindowPositionY;    
+}
+
+- (void)setWindowPositionY:(int)y
+{
+    [self setWindowPositionWithLeft: [self getWindowPositionX] top: y];
+}
+
+- (void)setWindowPositionWithLeft:(int)x top:(int)y;
+{
+    NSPoint p;
+    p.x = x;
+    p.y = mDisplay->getHeight() - y;
+    mWindowPositionX = x;
+    mWindowPositionY = y;
+    [win setFrameTopLeftPoint: p];
 }
 
 - (void)windowChangedScreen:(NSNotification*)inNotification
