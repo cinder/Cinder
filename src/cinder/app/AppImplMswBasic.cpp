@@ -168,13 +168,17 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		WindowRect.top = 0L;
 		WindowRect.bottom = (long)*height;
 	}
-	else { 
+	else if ( mApp->getSettings().isWindowPosSpecified() ) { 
 		WindowRect.left = mApp->getSettings().getWindowPosX(); 
-		WindowRect.right = mApp->getSettings().getWindowPosX()  + *width;//(getDisplay()->getWidth() - *width);
+		WindowRect.right = mApp->getSettings().getWindowPosX()  + *width;
 		WindowRect.top = mApp->getSettings().getWindowPosY();
-		WindowRect.bottom = mApp->getSettings().getWindowPosY() + *height;//( getDisplay()->getHeight() - *height ) / 2 + *height;
-
-		
+		WindowRect.bottom = mApp->getSettings().getWindowPosY() + *height;
+	}
+	else {
+		WindowRect.left = ( getDisplay()->getWidth() - *width ) / 2;				//center window 
+		WindowRect.right = ( getDisplay()->getWidth() - *width ) / 2 + *width;		
+		WindowRect.top = ( getDisplay()->getHeight() - *height ) / 2;
+		WindowRect.bottom = ( getDisplay()->getHeight() - *height ) / 2 + *height;
 	}
 
 	mInstance			= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
@@ -389,7 +393,11 @@ void AppImplMswBasic::enableMultiTouch()
 
 void AppImplMswBasic::setWindowPos( const Vec2i &aWindowPos )
 {
+	int screenWidth, screenHeight;
 	mWindowPosition = aWindowPos;
+
+	getScreenSize( mApp->getWindowWidth(), mApp->getWindowHeight(), &screenWidth, &screenHeight );
+	::SetWindowPos( mWnd, HWND_TOP, aWindowPos.x, aWindowPos.y, screenWidth, screenHeight, SWP_SHOWWINDOW );
 }
 
 void AppImplMswBasic::setWindowWidth( int aWindowWidth )
