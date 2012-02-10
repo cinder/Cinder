@@ -57,6 +57,7 @@ class AppImplMsw {
 	AppImplMsw( class App *aApp );
 	virtual ~AppImplMsw();
 	
+	Vec2i			getWindowPos() const { return mWindowOffset; }
 	int				getWindowWidth() const { return mWindowWidth; }
 	int				getWindowHeight() const { return mWindowHeight; }
 	virtual void	setWindowWidth( int aWindowWidth ) { }
@@ -66,6 +67,8 @@ class AppImplMsw {
 	virtual float	setFrameRate( float aFrameRate ) { return -1.0f; }
 	bool			isFullScreen() const { return mFullScreen; }
 	virtual void	toggleFullScreen() {}
+	bool			isBorderless() const { return mBorderless; }
+	bool			isAlwaysOnTop() const { return mAlwaysOnTop; }
 	virtual Vec2i	mouseLocation();
 	virtual void	quit() = 0;
 	
@@ -85,7 +88,7 @@ class AppImplMsw {
  protected:
 	class App	*mApp;
 	int			mWindowWidth, mWindowHeight;	
-	bool		mFullScreen;
+	bool		mFullScreen, mBorderless, mAlwaysOnTop;
 	Vec2i		mWindowOffset;
 	float		mFrameRate;
 	ULONG_PTR	mGdiplusToken;
