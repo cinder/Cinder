@@ -204,9 +204,6 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	}
 
 	if( mFullScreen ) {
-		// NOTE: CDS_mFullscreen Gets Rid Of Start Bar.
-		::ChangeDisplaySettings( NULL, CDS_FULLSCREEN );
-
 		mWindowExStyle = WS_EX_APPWINDOW;								// Window Extended Style
 		mWindowStyle = WS_POPUP;										// Windows Style
 		::ShowCursor( TRUE );										// Hide Mouse Pointer
@@ -265,9 +262,6 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 void AppImplMswBasic::killWindow( bool wasFullScreen )
 {
 	mApp->getRenderer()->kill();
-
-	if( wasFullScreen )
-		::ChangeDisplaySettings( NULL, 0 );
 
 	if( mDC )
 		::ReleaseDC( mWnd, mDC );
