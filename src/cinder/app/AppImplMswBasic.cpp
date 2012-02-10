@@ -158,8 +158,6 @@ void AppImplMswBasic::sleep( double seconds )
 
 bool AppImplMswBasic::createWindow( int *width, int *height )
 {
-	int bits = 32;
-
 	if( *width <= 0 ) {
 		*width = mDisplay->getWidth();
 		*height = mDisplay->getHeight();
@@ -206,17 +204,8 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	}
 
 	if( mFullScreen ) {
-		DEVMODE dmScreenSettings;								
-		memset( &dmScreenSettings, 0, sizeof(dmScreenSettings) );	// Makes Sure Memory's Cleared
-		dmScreenSettings.dmSize = sizeof( dmScreenSettings );
-		dmScreenSettings.dmPelsWidth  = ::GetSystemMetrics( SM_CXSCREEN );
-		dmScreenSettings.dmPelsHeight  = ::GetSystemMetrics( SM_CYSCREEN );
-		dmScreenSettings.dmBitsPerPel	= bits;
-		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-
-		// Try To Set Selected Mode And Get Results.  NOTE: CDS_mFullscreen Gets Rid Of Start Bar.
-		if( ::ChangeDisplaySettings( &dmScreenSettings, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
-			return false;
+		// NOTE: CDS_mFullscreen Gets Rid Of Start Bar.
+		::ChangeDisplaySettings( NULL, CDS_FULLSCREEN );
 
 		mWindowExStyle = WS_EX_APPWINDOW;								// Window Extended Style
 		mWindowStyle = WS_POPUP;										// Windows Style
