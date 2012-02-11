@@ -55,8 +55,8 @@ void AppImplMswBasic::run()
 
 	if( mApp->getSettings().isFullScreen() ) {
 		mFullScreen = true;
-		mWindowWidth = mApp->getSettings().getFullScreenWidth();
-		mWindowHeight = mApp->getSettings().getFullScreenHeight();  
+		mWindowWidth = mDisplay->getWidth();
+		mWindowHeight = mDisplay->getHeight();  
 	}
 	else {
 		mFullScreen = false;
@@ -287,8 +287,8 @@ void AppImplMswBasic::toggleFullScreen()
 	
 	int windowWidth, windowHeight;
 	if( mApp->isFullScreen() ) {
-		windowWidth = mApp->getSettings().getFullScreenWidth();
-		windowHeight = mApp->getSettings().getFullScreenHeight();	
+		windowWidth = mDisplay->getWidth();
+		windowHeight = mDisplay->getHeight();	
 	}
 	else {
 		windowWidth = mApp->getSettings().getWindowWidth();
