@@ -206,7 +206,6 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	if( mFullScreen ) {
 		mWindowExStyle = WS_EX_APPWINDOW;								// Window Extended Style
 		mWindowStyle = WS_POPUP;										// Windows Style
-		::ShowCursor( TRUE );										// Hide Mouse Pointer
 	}
 	else if( mBorderless ) {
 		mWindowExStyle = WS_EX_APPWINDOW;
