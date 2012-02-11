@@ -295,11 +295,6 @@ void AppImplMswBasic::toggleFullScreen()
 		windowHeight = mApp->getSettings().getWindowHeight();
 	}
 
-	// prepare for a new one
-	if( prevFullScreen ) {
-		::ChangeDisplaySettings( NULL, 0 );
-	}
-
 	mApp->getRenderer()->prepareToggleFullScreen();
 	createWindow( &windowWidth, &windowHeight );
 	mApp->getRenderer()->finishToggleFullScreen();
