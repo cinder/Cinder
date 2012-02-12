@@ -487,9 +487,13 @@ App::Settings::Settings()
 	mShouldQuit = false;
 	mFullScreen = false;
 	mResizable = true;
+	mBorderless = false;
+	mAlwaysOnTop = false;
 	mWindowSizeX = 640;
 	mWindowSizeY = 480;
-		
+	mWindowPosSpecified = false;
+    mWindowPositionX = 0;
+    mWindowPositionY = 0;
 	mPowerManagement = false;
 	mFrameRate = 60.0f;
 }
@@ -498,6 +502,13 @@ void App::Settings::setWindowSize( int aWindowSizeX, int aWindowSizeY )
 {
 	mWindowSizeX = aWindowSizeX;
 	mWindowSizeY = aWindowSizeY;
+}
+    
+void App::Settings::setWindowPos( const Vec2i &pos )
+{
+	mWindowPositionX = pos.x;
+	mWindowPositionY = pos.y;
+	mWindowPosSpecified = true;
 }
 	
 void App::Settings::setFrameRate( float aFrameRate )

@@ -71,6 +71,7 @@ class CallbackMgr {
 		return cbId;	
 	}
 
+	void call() { for( iterator it = begin(); it != end(); ++it ) it->second(); }
 	template<typename A1>
 	void call( A1 a1 ) { for( iterator it = begin(); it != end(); ++it ) it->second( a1 ); }
 	template<typename A1, typename A2>

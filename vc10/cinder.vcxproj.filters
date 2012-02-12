@@ -390,6 +390,12 @@
     <ClCompile Include="..\src\cinder\gl\TextureFont.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\Frustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Plane.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\cinder\Timeline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -397,6 +403,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\Tween.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -823,6 +832,15 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\TextureFont.h">
       <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Base64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Frustum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Plane.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

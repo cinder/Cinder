@@ -1887,13 +1887,13 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	}
 
 
-	// Matrix44<T> invertTransform() const;
+	// Matrix44<T> orthonormalInverted() const;
 	{
 		bool result = false;
 
 		MatT c0(
-			(T) 0.45399, (T) 0.89101, (T) 0.00000, (T) 22.1904,
-			(T)-0.89101, (T) 0.45399, (T) 0.00000, (T)-22.5298,
+			(T) 0.45399, (T) 0.89101, (T) 0.00000, (T) -10.000,
+			(T)-0.89101, (T) 0.45399, (T) 0.00000, (T)-30.0000,
 			(T) 0.00000, (T) 0.00000, (T) 1.00000, (T)-45.0000,
 			(T) 0.00000, (T) 0.00000, (T) 0.00000, (T)  1.0000, true
 		);
@@ -1905,13 +1905,25 @@ template <typename T> void TestMatrix44( std::ostream& os )
 			(T) 0.00000, (T) 0.00000, (T) 0.00000, (T)  1.0000, true
 		);
 
-		m0.invertTransform();
+		result = ( c0.equalCompare( m0.orthonormalInverted(), 0.001f ) );
 
-		result = ( c0 == m0.invertTransform() );
-
-		os << (result ? "passed" : "FAILED") << " : " << "Matrix44<T> invertTransform() const;" << "\n";
+		os << (result ? "passed" : "FAILED") << " : " << "Matrix44<T> orthonormalInverted() const;" << "\n";
 	}
 
+	// Matrix44<T> orthonormalInverted() const;
+	{
+		bool result = false;
+
+		MatT m0(
+			(T) 0.45399, (T)-0.89101, (T) 0.00000, (T)-22.1904,
+			(T) 0.89101, (T) 0.45399, (T) 0.00000, (T) 22.5298,
+			(T) 0.00000, (T) 0.00000, (T) 1.00000, (T) 45.0000,
+			(T) 0.00000, (T) 0.00000, (T) 0.00000, (T)  1.0000, true
+		);
+
+		result = ( m0.inverted().equalCompare( m0.orthonormalInverted(), 0.001f ) );
+		os << (result ? "passed" : "FAILED") << " : " << "Matrix44<T> inverse() == orthonormalInverted() const;" << "\n";
+	}
 
 	// static Matrix44<T> identity();
 	{
