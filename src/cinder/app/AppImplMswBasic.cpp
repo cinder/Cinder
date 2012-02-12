@@ -67,7 +67,11 @@ void AppImplMswBasic::run()
 	mBorderless = mApp->getSettings().isBorderless();
 	mAlwaysOnTop = mApp->getSettings().isAlwaysOnTop();
 	mFrameRate = mApp->getSettings().getFrameRate();
-	
+
+	mWindowedPos = Vec2i( 
+		mDisplay->getArea().getX1() + ( mDisplay->getWidth() - mWindowWidth ) / 2,
+		mDisplay->getArea().getY1() + ( mDisplay->getHeight() - mWindowHeight ) / 2 );	// center window
+
 	createWindow( &mWindowWidth, &mWindowHeight );
 
 	POINT upperLeft;
@@ -180,10 +184,10 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		windowRect.bottom = DisplayArea.getY1() + mApp->getSettings().getWindowPosY() + *height;
 	}
 	else {
-		windowRect.left = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2;				//center window 
-		windowRect.right = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2 + *width;		
-		windowRect.top = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2;
-		windowRect.bottom = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2 + *height;
+		windowRect.left = mWindowedPos.x; 
+		windowRect.right = mWindowedPos.x + *width;
+		windowRect.top = mWindowedPos.y;
+		windowRect.bottom = mWindowedPos.y + *height;
 	}
 
 	mInstance			= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
@@ -287,7 +291,8 @@ void AppImplMswBasic::toggleFullScreen()
 	int windowWidth, windowHeight;
 	if( mApp->isFullScreen() ) {
 		windowWidth = mDisplay->getWidth();
-		windowHeight = mDisplay->getHeight();	
+		windowHeight = mDisplay->getHeight();
+		mWindowedPos = mWindowOffset;
 	}
 	else {
 		windowWidth = mApp->getSettings().getWindowWidth();
