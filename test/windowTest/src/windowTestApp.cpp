@@ -28,6 +28,7 @@ void WindowTestApp::prepareSettings( Settings *settings )
 		settings->setDisplay( Display::getDisplays()[1] );
 	settings->setBorderless();
 	settings->setAlwaysOnTop();
+//	settings->setFullScreen();
 }
 
 void WindowTestApp::mouseDrag( MouseEvent event )
@@ -56,8 +57,8 @@ void WindowTestApp::keyDown( KeyEvent event )
 
 void WindowTestApp::draw()
 {
-//app::console() << getWindowPos() << std::endl;
-//app::console() << getDisplay().getCgDirectDisplayId() << std::endl;
+//	app::console() << getWindowPos() << std::endl;
+//	app::console() << getDisplay().getArea() << std::endl;
 
 	gl::setMatricesWindow( getWindowSize() );
 	// this pair of lines is the standard way to clear the screen in OpenGL

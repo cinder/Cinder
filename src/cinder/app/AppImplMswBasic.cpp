@@ -68,9 +68,12 @@ void AppImplMswBasic::run()
 	mAlwaysOnTop = mApp->getSettings().isAlwaysOnTop();
 	mFrameRate = mApp->getSettings().getFrameRate();
 
-	mWindowedPos = Vec2i( 
-		mDisplay->getArea().getX1() + ( mDisplay->getWidth() - mWindowWidth ) / 2,
-		mDisplay->getArea().getY1() + ( mDisplay->getHeight() - mWindowHeight ) / 2 );	// center window
+	if( mApp->getSettings().isWindowPosSpecified() )
+		mWindowedPos = mApp->getSettings().getWindowPos();
+	else
+		mWindowedPos = Vec2i( 
+			mDisplay->getArea().getX1() + ( mDisplay->getWidth() - mApp->getSettings().getWindowWidth() ) / 2,
+			mDisplay->getArea().getY1() + ( mDisplay->getHeight() - mApp->getSettings().getWindowHeight() ) / 2 );	// center window
 
 	createWindow( &mWindowWidth, &mWindowHeight );
 
@@ -178,10 +181,10 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		windowRect.bottom = DisplayArea.getY2();
 	}
 	else if ( mApp->getSettings().isWindowPosSpecified() ) { 
-		windowRect.left = DisplayArea.getX1() + mApp->getSettings().getWindowPosX(); 
-		windowRect.right = DisplayArea.getX1()+ mApp->getSettings().getWindowPosX()  + *width;
-		windowRect.top =  DisplayArea.getY1() + mApp->getSettings().getWindowPosY();
-		windowRect.bottom = DisplayArea.getY1() + mApp->getSettings().getWindowPosY() + *height;
+		windowRect.left = mWindowedPos.x; 
+		windowRect.right = mWindowedPos.x  + *width;
+		windowRect.top =  mWindowedPos.y;
+		windowRect.bottom = mWindowedPos.y + *height;
 	}
 	else {
 		windowRect.left = mWindowedPos.x; 
@@ -253,6 +256,9 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		::SetWindowLongA( mWnd, GWL_EXSTYLE, ::GetWindowLongA( mWnd, GWL_EXSTYLE ) | WS_EX_TOPMOST );
 		::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 	}
+
+	// update display
+	mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) ).get();
 
 	mApp->getRenderer()->setup( mApp, mWnd, mDC );
 
