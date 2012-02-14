@@ -2094,7 +2094,7 @@ template <typename T> void TestMatrix44( std::ostream& os )
 
 		result = ( c0 == m0 ) && ( c0 == m1 );
 
-		os << (result ? "passed" : "FAILED") << " : " << "static Matrix44<T> createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w );" << "\n";
+		os << (result ? "passed" : "FAILED") << " : " << "static Matrix44<T> createRotationOnb( const Vec3/4<T>& u, const Vec3/4<T>& v, const Vec3/4<T>& w );" << "\n";
 	}
 
 	// static Matrix44<T> createScale( T s );
