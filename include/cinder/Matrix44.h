@@ -255,7 +255,7 @@ public:
 	static Matrix44<T>	createRotation( const Vec4<T> &eulerRadians ) { return createRotation( eulerRadians.xyz() ); }
 	// creates rotation matrix from ortho normal basis (u, v, n)
 	static Matrix44<T>	createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w );
-	static Matrix44<T>	createRotationOnb( const Vec4<T>& u, const Vec4<T>& v, const Vec4<T>& w ) { return createRotationONB( u.xyz(), v.xyz(), n.xyz() ); }
+	static Matrix44<T>	createRotationOnb( const Vec4<T>& u, const Vec4<T>& v, const Vec4<T>& w ) { return createRotationOnb( u.xyz(), v.xyz(), w.xyz() ); }
 
 	// creates scale matrix
 	static Matrix44<T>	createScale( T s );
