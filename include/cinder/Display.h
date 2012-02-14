@@ -53,6 +53,9 @@ class Display {
 	Area	getArea() const { return mArea; }
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
 
+	//! Returns whether the Display's coordinates contain \a pt.
+	bool	contains( const Vec2i &pt ) const { return mArea.contains( pt ); }
+
 #if defined( CINDER_MAC )
 	NSScreen*			getNsScreen() const { return mScreen; }
 	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
@@ -60,6 +63,8 @@ class Display {
 
 	static DisplayRef						getMainDisplay();
 	static const std::vector<DisplayRef>&	getDisplays();
+	//! Returns the Display which contains a given point. Returns a NULL DisplayRef on failure
+	static DisplayRef						getDisplayForPoint( const Vec2i &pt );
 	
 #if defined( CINDER_MAC )
 	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
