@@ -300,9 +300,6 @@ class Vec2
 		return Vec2<T>( 1, 1 );
 	}
 
-	operator T*(){ return (T*) this; }
-	operator const T*() const { return (const T*) this; }
-
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec2<T>& rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "]";
@@ -672,9 +669,6 @@ public:
 	Vec3<T> zzx() const { return Vec3<T>(z, z, x); }
 	Vec3<T> zzy() const { return Vec3<T>(z, z, y); }
 	Vec3<T> zzz() const { return Vec3<T>(z, z, z); }
-
-	operator T*(){ return (T*) this; }
-	operator const T*() const { return (const T*) this; }
 
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec3<T> rhs )
 	{
@@ -1239,9 +1233,6 @@ class Vec4
 	Vec4<T> wwwy() const { return Vec4<T>(w, w, w, y); }
 	Vec4<T> wwwz() const { return Vec4<T>(w, w, w, z); }
 	Vec4<T> wwww() const { return Vec4<T>(w, w, w, w); }
-
-	operator T*(){ return (T*) this; }
-	operator const T*() const { return (const T*) this; }
 
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec4<T>& rhs )
 	{

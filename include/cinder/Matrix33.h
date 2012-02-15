@@ -738,7 +738,7 @@ Matrix33<T> Matrix33<T>::inverted( T epsilon ) const
 
 	T det = m[0]*inv.m[0] + m[1]*inv.m[3] + m[2]*inv.m[6];
 
-	if( fabs( det ) < epsilon ) {
+	if( fabs( det ) > epsilon ) {
 		T invDet = (T)1/det;
 		inv.m[0] *= invDet;
 		inv.m[1] *= invDet;

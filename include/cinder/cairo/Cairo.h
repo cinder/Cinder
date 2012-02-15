@@ -618,7 +618,8 @@ class Context
 	/*void		pathDestroy( class Path *path );
 	void		appendPath( const class Path *path );
 	*/
-	void		getCurrentPoint( double *x, double *y );
+	void		getCurrentPoint( double *x, double *y ) const;
+	Vec2f		getCurrentPoint() const;
 	void		newPath();
 	void		newSubPath();
 	void		closePath();
@@ -653,7 +654,7 @@ class Context
 	void        translate( double tx, double ty );
 	void        translate( const Vec2f &v ) { translate( (double)v.x, (double)v.y ); }
 	void        scale( double sx, double sy );
-	void        rotate( double angle );
+	void        rotate( double radians );
 	void        transform( const Matrix &aMatrix );
 	void        setMatrix( const Matrix &aMatrix );
 	void        getMatrix( Matrix *aMatrix );
@@ -676,6 +677,9 @@ class Context
 	void        setScaledFont( const ScaledFont *scaled_font );
 	ScaledFont*	getScaledFont();
 	void        showText( const std::string &s );
+	void		textPath( const std::string &s );
+	//! Renders glyphs as returned by TextBox::measureGlyphs()
+	void		glyphPath( const std::vector<std::pair<uint16_t,Vec2f> > &glyphs );
 	//void        showGlyphs( const Glyph *glyphs, int num_glyphs );							// glyphs is an array of cairo_glyph_t
 	//void		showGlyphs( const GlyphArray &glyphs );
 	FontExtents	fontExtents();

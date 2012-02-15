@@ -46,12 +46,8 @@ class AppBasic : public App {
 		Settings();
 
 		void	setShouldQuit ( bool aShouldQuit = true );
-		void	setFullScreenSize( int aFullScreenSizeX, int aFullScreenSizeY );
 		void	setFullScreen( bool aFullScreen = true );
 		void	setResizable( bool aResizable = true );
-
-		int		getFullScreenWidth() const { return mFullScreenSizeX; }
-		int		getFullScreenHeight() const { return mFullScreenSizeY; }
 
 		/** Returns the display the window is currently on. If called from prepareSettings() returns the primary display **/
 		Display*	getDisplay() const { return mDisplay; }
@@ -74,7 +70,6 @@ class AppBasic : public App {
 #if defined( CINDER_MAC )
 		bool		mEnableSecondaryDisplayBlanking;
 #endif
-		int			mFullScreenSizeX, mFullScreenSizeY;
 		Display		*mDisplay;
 	};
 

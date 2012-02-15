@@ -107,7 +107,7 @@ void Particle::renderLineStripTrail()
 		float per = 1.0f - ( mInvLen * (float)i );
 
 		glColor4f( per, 0.2f, 0.0f, per * mAgePer * 0.2f );
-		glVertex3fv( mLoc[i] );
+		gl::vertex( mLoc[i] );
 	}
 	glEnd();
 }
@@ -127,8 +127,8 @@ void Particle::renderQuadStripTrail()
 		Vec3f off	= perp1 * ( mRadius * ( 1.0f - per ) * 0.25f  );
 
 		glColor4f( ( 1.0f - per ) * 0.75f, 0.15f, per * 0.5f, ( 1.0f - per ) * mAgePer * 0.25f );
-		glVertex3fv( mLoc[i] - off );
-		glVertex3fv( mLoc[i] + off );
+		gl::vertex( mLoc[i] - off );
+		gl::vertex( mLoc[i] + off );
 	}
 
 	glEnd();

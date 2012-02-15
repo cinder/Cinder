@@ -55,8 +55,8 @@ void AppImplMswBasic::run()
 
 	if( mApp->getSettings().isFullScreen() ) {
 		mFullScreen = true;
-		mWindowWidth = mApp->getSettings().getFullScreenWidth();
-		mWindowHeight = mApp->getSettings().getFullScreenHeight();  
+		mWindowWidth = mDisplay->getWidth();
+		mWindowHeight = mDisplay->getHeight();  
 	}
 	else {
 		mFullScreen = false;
@@ -67,7 +67,14 @@ void AppImplMswBasic::run()
 	mBorderless = mApp->getSettings().isBorderless();
 	mAlwaysOnTop = mApp->getSettings().isAlwaysOnTop();
 	mFrameRate = mApp->getSettings().getFrameRate();
-	
+
+	if( mApp->getSettings().isWindowPosSpecified() )
+		mWindowedPos = mApp->getSettings().getWindowPos();
+	else
+		mWindowedPos = Vec2i( 
+			mDisplay->getArea().getX1() + ( mDisplay->getWidth() - mApp->getSettings().getWindowWidth() ) / 2,
+			mDisplay->getArea().getY1() + ( mDisplay->getHeight() - mApp->getSettings().getWindowHeight() ) / 2 );	// center window
+
 	createWindow( &mWindowWidth, &mWindowHeight );
 
 	POINT upperLeft;
@@ -174,16 +181,16 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		windowRect.bottom = DisplayArea.getY2();
 	}
 	else if ( mApp->getSettings().isWindowPosSpecified() ) { 
-		windowRect.left = DisplayArea.getX1() + mApp->getSettings().getWindowPosX(); 
-		windowRect.right = DisplayArea.getX1()+ mApp->getSettings().getWindowPosX()  + *width;
-		windowRect.top =  DisplayArea.getY1() + mApp->getSettings().getWindowPosY();
-		windowRect.bottom = DisplayArea.getY1() + mApp->getSettings().getWindowPosY() + *height;
+		windowRect.left = mWindowedPos.x; 
+		windowRect.right = mWindowedPos.x  + *width;
+		windowRect.top =  mWindowedPos.y;
+		windowRect.bottom = mWindowedPos.y + *height;
 	}
 	else {
-		windowRect.left = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2;				//center window 
-		windowRect.right = DisplayArea.getX1() + ( getDisplay()->getWidth() - *width ) / 2 + *width;		
-		windowRect.top = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2;
-		windowRect.bottom = DisplayArea.getY1() + ( getDisplay()->getHeight() - *height ) / 2 + *height;
+		windowRect.left = mWindowedPos.x; 
+		windowRect.right = mWindowedPos.x + *width;
+		windowRect.top = mWindowedPos.y;
+		windowRect.bottom = mWindowedPos.y + *height;
 	}
 
 	mInstance			= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
@@ -204,12 +211,8 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	}
 
 	if( mFullScreen ) {
-		// NOTE: CDS_mFullscreen Gets Rid Of Start Bar.
-		::ChangeDisplaySettings( NULL, CDS_FULLSCREEN );
-
 		mWindowExStyle = WS_EX_APPWINDOW;								// Window Extended Style
 		mWindowStyle = WS_POPUP;										// Windows Style
-		::ShowCursor( TRUE );										// Hide Mouse Pointer
 	}
 	else if( mBorderless ) {
 		mWindowExStyle = WS_EX_APPWINDOW;
@@ -254,6 +257,9 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 	}
 
+	// update display
+	mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) ).get();
+
 	mApp->getRenderer()->setup( mApp, mWnd, mDC );
 
 	::DragAcceptFiles( mWnd, TRUE );
@@ -265,9 +271,6 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 void AppImplMswBasic::killWindow( bool wasFullScreen )
 {
 	mApp->getRenderer()->kill();
-
-	if( wasFullScreen )
-		::ChangeDisplaySettings( NULL, 0 );
 
 	if( mDC )
 		::ReleaseDC( mWnd, mDC );
@@ -293,17 +296,13 @@ void AppImplMswBasic::toggleFullScreen()
 	
 	int windowWidth, windowHeight;
 	if( mApp->isFullScreen() ) {
-		windowWidth = mApp->getSettings().getFullScreenWidth();
-		windowHeight = mApp->getSettings().getFullScreenHeight();	
+		windowWidth = mDisplay->getWidth();
+		windowHeight = mDisplay->getHeight();
+		mWindowedPos = mWindowOffset;
 	}
 	else {
 		windowWidth = mApp->getSettings().getWindowWidth();
 		windowHeight = mApp->getSettings().getWindowHeight();
-	}
-
-	// prepare for a new one
-	if( prevFullScreen ) {
-		::ChangeDisplaySettings( NULL, 0 );
 	}
 
 	mApp->getRenderer()->prepareToggleFullScreen();
