@@ -123,6 +123,8 @@ class Vec2
 		return (&x)[n];
 	}
 
+	T*	ptr() const { return &(const_cast<Vec4*>( this )->x); }
+
 	const Vec2<T>	operator+( const Vec2<T>& rhs ) const { return Vec2<T>( x + rhs.x, y + rhs.y ); }
 	const Vec2<T>	operator-( const Vec2<T>& rhs ) const { return Vec2<T>( x - rhs.x, y - rhs.y ); }
 	const Vec2<T>	operator*( const Vec2<T>& rhs ) const { return Vec2<T>( x * rhs.x, y * rhs.y ); }
@@ -384,6 +386,8 @@ public:
 		assert( n >= 0 && n <= 2 );
 		return (&x)[n];
 	}
+
+	T*	ptr() const { return &(const_cast<Vec4*>( this )->x); }
 
 	const Vec3<T>	operator+( const Vec3<T>& rhs ) const { return Vec3<T>( x + rhs.x, y + rhs.y, z + rhs.z ); }
 	const Vec3<T>	operator-( const Vec3<T>& rhs ) const { return Vec3<T>( x - rhs.x, y - rhs.y, z - rhs.z ); }
@@ -735,6 +739,8 @@ class Vec4
 		assert( n >= 0 && n <= 3 );
 		return (&x)[n];
 	}
+
+	T*	ptr() const { return &(const_cast<Vec4*>( this )->x); }
 
 	const Vec4<T>	operator+( const Vec4<T>& rhs ) const { return Vec4<T>( x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w ); }
 	const Vec4<T>	operator-( const Vec4<T>& rhs ) const { return Vec4<T>( x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w ); }
