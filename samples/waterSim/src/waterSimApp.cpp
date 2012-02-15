@@ -309,7 +309,7 @@ void WaterSimApp::draw()
 	glColor3f( 1.0f, 1.0f, 1.0f );
 	glBegin( GL_POINTS );
 	for( unsigned int i = 0; i < particles->x.size(); ++i )
-		glVertex2fv( particles->x[i] );
+		glVertex2fv( &(particles->x[i].x) );
 	glEnd();
 	
 	drawLogo();
