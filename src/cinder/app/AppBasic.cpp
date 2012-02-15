@@ -357,7 +357,6 @@ void AppBasic::privateTouchesEnded__( const TouchEvent &event )
 AppBasic::Settings::Settings()
 	: App::Settings()
 {
-	mFullScreenSizeX = mFullScreenSizeY = 0;
 	mDisplay = Display::getMainDisplay().get();
 	mEnableMultiTouch = false;
 #if defined( CINDER_MAC )
@@ -368,12 +367,6 @@ AppBasic::Settings::Settings()
 void AppBasic::Settings::setShouldQuit( bool aShouldQuit )
 {
 	mShouldQuit = aShouldQuit;
-}
-
-void AppBasic::Settings::setFullScreenSize( int aFullScreenSizeX, int aFullScreenSizeY )
-{
-	mFullScreenSizeX = aFullScreenSizeX;
-	mFullScreenSizeY = aFullScreenSizeY;
 }
 
 void AppBasic::Settings::setFullScreen( bool aFullScreen )

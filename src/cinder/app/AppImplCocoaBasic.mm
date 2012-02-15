@@ -76,7 +76,9 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	mDisplay = app->getSettings().getDisplay();
-	if( mDisplay == 0 )
+	if( app->getSettings().isWindowPosSpecified() )
+		mDisplay = cinder::Display::getDisplayForPoint( app->getSettings().getWindowPos() ).get();// failure is handled by next if-statement
+	if( ! mDisplay )
 		mDisplay = cinder::Display::getMainDisplay().get();
 	
 	mFrameRate = app->getSettings().getFrameRate();
@@ -117,7 +119,7 @@
 	
 	if( app->getSettings().isWindowPosSpecified() ) {
 		offsetX = app->getSettings().getWindowPosX();
-		offsetY = mDisplay->getHeight() - app->getSettings().getWindowPosY() - app->getSettings().getWindowHeight();
+		offsetY = cinder::Display::getMainDisplay()->getHeight() - app->getSettings().getWindowPosY() - app->getSettings().getWindowHeight();
 	}
         
 	NSRect winRect = NSMakeRect( offsetX, offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
@@ -137,7 +139,7 @@
 									  styleMask:styleMask
 										backing:NSBackingStoreBuffered
 										  defer:NO
-										 screen:mDisplay->getNsScreen()];
+										 screen:nil];//mDisplay->getNsScreen()];
 
 	if( cinderView == nil ) {
 		cinderView = [[CinderView alloc] initWithFrame:NSMakeRect( 0, 0, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() ) app:app];
@@ -377,14 +379,14 @@
 {
 	NSRect frame = [win frame];
 	NSRect content = [win contentRectForFrameRect:frame];
-	return ci::Vec2i( content.origin.x, mDisplay->getHeight() - frame.origin.y - content.size.height );
+	return ci::Vec2i( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
 }
 
 - (void)setWindowPosWithLeft:(int)x top:(int)y
 {
     NSPoint p;
     p.x = x;
-    p.y = mDisplay->getHeight() - y;
+    p.y = cinder::Display::getMainDisplay()->getHeight() - y;
     mWindowPositionX = x;
     mWindowPositionY = y;
 	NSRect currentContentRect = [win contentRectForFrameRect:[win frame]];

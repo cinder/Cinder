@@ -23,11 +23,12 @@ class WindowTestApp : public AppBasic {
 
 void WindowTestApp::prepareSettings( Settings *settings )
 {
-	settings->setWindowPos( 640, 42 );
+	settings->setWindowPos( 2201, 434 );
 	if( Display::getDisplays().size() > 1 ) // if a two monitor system, put this on the secondary
-		settings->setDisplay( Display::getDisplays()[1] );
+		settings->setDisplay( Display::getDisplays()[0] );
 	settings->setBorderless();
 	settings->setAlwaysOnTop();
+//	settings->setFullScreen();
 }
 
 void WindowTestApp::mouseDrag( MouseEvent event )
@@ -56,8 +57,8 @@ void WindowTestApp::keyDown( KeyEvent event )
 
 void WindowTestApp::draw()
 {
-//app::console() << getWindowPos() << std::endl;
-//app::console() << getDisplay().getCgDirectDisplayId() << std::endl;
+	app::console() << getWindowPos() << std::endl;
+//	app::console() << getDisplay().getArea() << std::endl;
 
 	gl::setMatricesWindow( getWindowSize() );
 	// this pair of lines is the standard way to clear the screen in OpenGL
@@ -77,4 +78,4 @@ void WindowTestApp::draw()
 }
 
 // This line tells Flint to actually create the application
-CINDER_APP_BASIC( WindowTestApp, RendererGl )
+CINDER_APP_BASIC( WindowTestApp, RendererGl(0) )

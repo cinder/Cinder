@@ -29,7 +29,7 @@ namespace cinder {
 
 template<typename T>
 class PolyLine {
- public:
+  public:
 	PolyLine() : mClosed( false ) {}
 	PolyLine( const std::vector<T> &aPoints ) : mPoints( aPoints ), mClosed( false ) {}
 	
@@ -55,8 +55,11 @@ class PolyLine {
 	T			getDerivative( float t ) const;
 
 	void		scale( const T &scaleFactor, T scaleCenter = T::zero() );
+
+	//! Returns whether the point \a pt is contained within the boundaries of the PolyLine
+	bool	contains( const Vec2f &pt ) const;
 	
- private:
+  private:
 	std::vector<T>			mPoints;
 	bool					mClosed;
 };

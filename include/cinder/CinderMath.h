@@ -119,14 +119,6 @@ struct math<float>
 #define M_PI           3.14159265358979323846
 #endif
 
-// ROGER
-#ifndef M_HALF_PI
-#define M_HALF_PI		1.57079633
-#endif
-#ifndef M_TWO_PI
-#define M_TWO_PI		6.28318531
-#endif
-	
 const double EPSILON_VALUE = 4.37114e-05;
 #define EPSILON EPSILON_VALUE
 

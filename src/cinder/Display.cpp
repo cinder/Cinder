@@ -49,6 +49,17 @@ const vector<DisplayRef>&	Display::getDisplays()
 	return sDisplays;
 }
 
+DisplayRef Display::getDisplayForPoint( const Vec2i &pt )
+{
+	const vector<DisplayRef>& displays = getDisplays();
+	for( vector<DisplayRef>::const_iterator displayIt = displays.begin(); displayIt != displays.end(); ++displayIt ) {
+		if( (*displayIt)->contains( pt ) )
+			return *displayIt;
+	}
+
+	return DisplayRef(); // failure
+}
+
 #if defined( CINDER_MAC )
 DisplayRef Display::findFromCgDirectDisplayId( CGDirectDisplayID displayID )
 {
