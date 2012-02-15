@@ -797,7 +797,7 @@ void MovieGl::Obj::newFrame( CVImageBufferRef cvImage )
 	bool flipped = ! CVOpenGLTextureIsFlipped( imgRef );
 	mTexture = gl::Texture( target, name, mWidth, mHeight, true );
 	Vec2f t0, lowerRight, t2, upperLeft;
-	CVOpenGLTextureGetCleanTexCoords( imgRef, t0, lowerRight, t2, upperLeft );
+	::CVOpenGLTextureGetCleanTexCoords( imgRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
 	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
 	mTexture.setFlipped( flipped );
 	mTexture.setDeallocator( CVOpenGLTextureDealloc, imgRef );
