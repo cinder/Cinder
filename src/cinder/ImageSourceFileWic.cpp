@@ -166,7 +166,9 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 	else if( guid == GUID_WICPixelFormat32bppGrayFloat ) {
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 );
 	}
-	
+	else
+		throw ImageIoExceptionFailedLoad(); // a format we can't process
+
 	return false;
 }
 
