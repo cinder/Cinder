@@ -46,6 +46,7 @@
 	
 	cinder::Display			*mDisplay;
 	int						mWindowWidth, mWindowHeight;
+    int                     mWindowPositionX, mWindowPositionY;
 	BOOL					mFullScreen;
 	float					mFrameRate;
 }
@@ -57,13 +58,17 @@
 - (void)quit;
 
 - (void)createWindow;
+- (BOOL)canBecomeMainWindow;
+- (BOOL)canBecomeKeyWindow;
 
 - (int)getWindowWidth;
 - (void)setWindowWidth:(int)windowWidth;
 - (int)getWindowHeight;
 - (void)setWindowHeight:(int)windowHeight;
 - (void)setWindowSizeWithWidth:(int)w height:(int)h;
-- (void)handleResizeWithWidth:(int)w height:(int)h;
+- (void)handleResizeWithWidth:(int)w height:(int)h;   
+- (ci::Vec2i)getWindowPos;
+- (void)setWindowPosWithLeft:(int)x top:(int)y;
 - (float)getFrameRate;
 - (void)setFrameRate:(float)aFrameRate;
 - (bool)isFullScreen;

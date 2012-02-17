@@ -56,7 +56,7 @@ void AppImplMswBasic::run()
 	if( mApp->getSettings().isFullScreen() ) {
 		mFullScreen = true;
 		mWindowWidth = mApp->getSettings().getFullScreenWidth();
-		mWindowHeight = mApp->getSettings().getFullScreenHeight();	
+		mWindowHeight = mApp->getSettings().getFullScreenHeight();  
 	}
 	else {
 		mFullScreen = false;
@@ -166,11 +166,13 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		WindowRect.top = 0L;
 		WindowRect.bottom = (long)*height;
 	}
-	else { // center the window on the display if windowed
-		WindowRect.left = ( getDisplay()->getWidth() - *width ) / 2;
-		WindowRect.right = ( getDisplay()->getWidth() - *width ) / 2 + *width;
-		WindowRect.top = ( getDisplay()->getHeight() - *height ) / 2;
-		WindowRect.bottom = ( getDisplay()->getHeight() - *height ) / 2 + *height;
+	else { 
+		WindowRect.left = mApp->getSettings().getWindowPosX(); 
+		WindowRect.right = mApp->getSettings().getWindowPosX()  + *width;//(getDisplay()->getWidth() - *width);
+		WindowRect.top = mApp->getSettings().getWindowPosY();
+		WindowRect.bottom = mApp->getSettings().getWindowPosY() + *height;//( getDisplay()->getHeight() - *height ) / 2 + *height;
+
+		
 	}
 
 	mInstance			= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
@@ -207,6 +209,10 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 		mWindowStyle = WS_POPUP;										// Windows Style
 		::ShowCursor( TRUE );										// Hide Mouse Pointer
 	}
+	else if( mApp->getSettings().isBorderless() ) {
+		mWindowExStyle = WS_EX_APPWINDOW;
+		mWindowStyle = WS_POPUP;
+	}
 	else {
 		mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
 		mWindowStyle = ( mApp->getSettings().isResizable() ) ? WS_OVERLAPPEDWINDOW
@@ -239,6 +245,12 @@ bool AppImplMswBasic::createWindow( int *width, int *height )
 	if( ! mDC ) {
 		killWindow( mFullScreen );
 		return false;
+	}
+
+	if( mApp->getSettings().isAlwaysOnTop() ) {
+		::SetWindowLongA( mWnd, GWL_STYLE, WS_POPUP );
+		::SetWindowLongA( mWnd, GWL_EXSTYLE, WS_EX_TOPMOST );
+		::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 	}
 
 	mApp->getRenderer()->setup( mApp, mWnd, mDC );
@@ -326,6 +338,11 @@ void AppImplMswBasic::enableMultiTouch()
 			(*RegisterTouchWindow)( mWnd, 0 );
 		}
 	}
+}
+
+void AppImplMswBasic::setWindowPos( const Vec2i &aWindowPos )
+{
+	mWindowPosition = aWindowPos;
 }
 
 void AppImplMswBasic::setWindowWidth( int aWindowWidth )
@@ -605,6 +622,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_MOVE:
 			if( impl->mHasBeenInitialized ) {
 				impl->privateSetWindowOffset__( Vec2i( LOSHORT(lParam), HISHORT(lParam) ) );
+				impl->mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) ).get();
 			}
 			return 0;
 		break;
