@@ -327,6 +327,10 @@ class App {
 	//! Returns the number of animation frames which have elapsed since application launch
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
 	
+    //tablet
+    float   getTabletPressure() const { return mTabletPressure; }
+    Vec2f   getTabletTilt() const { return mTabletTilt; }
+    
 	// utilities
 	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). Throws ResourceLoadExc on failure. \sa \ref CinderResources
 	static DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType );
@@ -357,6 +361,7 @@ class App {
 		\return the selected file path or an empty string if the user cancelled. **/
 	fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
 	//! Presents the user with a folder-open dialog and returns the selected folder.
+    std::vector<fs::path>  getMultiOpenFilePath(const fs::path &initialPath= "", std::vector<std::string> extensions = std::vector<std::string>() );
 	fs::path		getFolderPath(const fs::path &initialPath="");
 	//! Presents the user with a file-save dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
@@ -388,7 +393,8 @@ class App {
 	void	privateMouseDrag__( const MouseEvent &event );
 	void	privateKeyDown__( const KeyEvent &event );
 	void	privateKeyUp__( const KeyEvent &event );
-	void	privateFileDrop__( const FileDropEvent &event );
+    void    privateSetTabletValues__(const float pressure,const Vec2f tilt);	
+    void	privateFileDrop__( const FileDropEvent &event );
 
 	virtual void	privateSetup__();
 	virtual void	privateResize__( const ResizeEvent &event );	
@@ -428,6 +434,10 @@ class App {
 	static void				*sAutoReleasePool;
 #endif
 
+    //tablet
+    float                   mTabletPressure;
+    Vec2f                   mTabletTilt;
+    
 	Timer					mTimer;
 	uint32_t				mFrameCount;
 	float					mAverageFps;
@@ -519,10 +529,14 @@ inline fs::path		getAppPath() { return App::get()->getAppPath(); }
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
 inline fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getOpenFilePath( initialPath, extensions ); }
+inline std::vector<fs::path>		getMultiOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getMultiOpenFilePath( initialPath, extensions ); }
 //! Presents the user with a file-save dialog and returns the selected file path.
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
+#if defined( CINDER_MAC )
+    std::vector<std::string>  getMultiOpenFilePath(const std::string &initialPath= "", std::vector<std::string> extensions = std::vector<std::string>() );
+#endif  
 inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getSaveFilePath( initialPath, extensions ); }
 
 //! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW

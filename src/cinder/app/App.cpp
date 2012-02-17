@@ -54,12 +54,17 @@ App::App()
 	mFpsLastSampleFrame = 0;
 	mFpsLastSampleTime = 0;
 	mAssetDirectoriesInitialized = false;
+    
+    mTabletPressure = 1.0f;
+    mTabletTilt = Vec2f::zero();
 }
 
 App::~App()
 {
 }
 
+        
+    
 // Pseudo-private event handlers
 void App::privateMouseDown__( const MouseEvent &event )
 {
@@ -122,6 +127,11 @@ void App::privateKeyUp__( const KeyEvent &event )
 		handled = (cbIter->second)( event );		
 	if( ! handled )
 		keyUp( event );
+}
+    
+void App::privateSetTabletValues__(const float pressure,const Vec2f tilt ){
+    mTabletPressure = pressure;
+    mTabletTilt = tilt;
 }
 
 void App::privateResize__( const ResizeEvent &event )
@@ -350,6 +360,44 @@ fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> exten
 #endif
 }
 
+//mac only
+vector<fs::path> App::getMultiOpenFilePath(const fs::path &initialPath, vector<string> extensions)
+{
+    vector<fs::path> filenames;
+    
+    bool wasFullScreen = isFullScreen();
+    setFullScreen( false );
+    
+    NSOpenPanel *cinderOpen = [NSOpenPanel openPanel];
+    [cinderOpen setCanChooseFiles:YES];
+    [cinderOpen setCanChooseDirectories:NO];
+    [cinderOpen setAllowsMultipleSelection:YES];
+    
+    NSMutableArray *typesArray = nil;
+    if( ! extensions.empty() ) {
+        typesArray = [NSMutableArray arrayWithCapacity:extensions.size()];
+        for( vector<string>::const_iterator extIt = extensions.begin(); extIt != extensions.end(); ++extIt )
+            [typesArray addObject:[NSString stringWithUTF8String:extIt->c_str()]];
+    }
+    
+    NSString *directory = initialPath.empty() ? nil : [[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath];
+    int resultCode = [cinderOpen runModalForDirectory:directory file:nil types:typesArray];	
+    
+    setFullScreen( wasFullScreen );
+    restoreWindowContext();
+    
+    if( resultCode == NSOKButton ) {
+        NSArray *files = [cinderOpen filenames];
+        for (int i=0; i<[files count]; i++)
+        {
+            NSString *filename = [files objectAtIndex: i];
+            filenames.push_back([filename UTF8String]);
+        }
+    }
+    
+    return filenames;
+}    
+    
 fs::path App::getFolderPath( const fs::path &initialPath )
 {
 #if defined( CINDER_MAC )

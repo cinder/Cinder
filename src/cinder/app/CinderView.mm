@@ -233,6 +233,17 @@
 	
 	mods |= cinder::app::MouseEvent::LEFT_DOWN;
 	app->privateMouseUp__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, curPoint.x, y, mods, 0.0f, [theEvent modifierFlags] ) );
+    
+    // tablet
+    if(([theEvent type] == NSTabletPoint)
+       || ([theEvent subtype] == NSTabletPointEventSubtype))
+    {    
+        NSPoint tilt = [theEvent tilt];
+        app->privateSetTabletValues__([theEvent pressure],ci::Vec2f(tilt.x,tilt.y)  );    //works but just with pressure
+	}else{
+        //no further info about tilt
+        app->privateSetTabletValues__([theEvent pressure],ci::Vec2f(0.0f,0.0f)  );    //works but just with pressure
+    }
 }
 
 - (void)rightMouseUp:(NSEvent*)theEvent
@@ -262,6 +273,18 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	app->privateMouseMove__( cinder::app::MouseEvent( 0, curPoint.x, y, mods, 0.0f, [theEvent modifierFlags] ) );
+    
+    // tablet
+    if(([theEvent type] == NSTabletPoint)
+       || ([theEvent subtype] == NSTabletPointEventSubtype))
+    {    
+        NSPoint tilt = [theEvent tilt];
+        app->privateSetTabletValues__([theEvent pressure],ci::Vec2f(tilt.x,tilt.y)  );    //works but just with pressure
+	}else{
+        //no further info about tilt
+        app->privateSetTabletValues__([theEvent pressure],ci::Vec2f(0.0f,0.0f)  );    //works but just with pressure
+    }
+
 }
 
 - (void)rightMouseDragged:(NSEvent*)theEvent
@@ -292,6 +315,18 @@
 	
 	mods |= cinder::app::MouseEvent::LEFT_DOWN;
 	app->privateMouseDrag__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, curPoint.x, y, mods, 0.0f, [theEvent modifierFlags] ) );
+    
+    // tablet
+    if(([theEvent type] == NSTabletPoint)
+       || ([theEvent subtype] == NSTabletPointEventSubtype))
+    {    
+        NSPoint tilt = [theEvent tilt];
+        app->privateSetTabletValues__([theEvent pressure],ci::Vec2f(tilt.x,tilt.y)  );    //works but just with pressure
+	}else{
+        //no further info about tilt
+        app->privateSetTabletValues__([theEvent pressure],ci::Vec2f(0.0f,0.0f)  );    //works but just with pressure
+    }
+
 }
 
 - (void)scrollWheel:(NSEvent*)theEvent
