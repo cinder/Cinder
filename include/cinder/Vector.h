@@ -123,6 +123,8 @@ class Vec2
 		return (&x)[n];
 	}
 
+	T*	ptr() const { return &(const_cast<Vec2*>( this )->x); }
+
 	const Vec2<T>	operator+( const Vec2<T>& rhs ) const { return Vec2<T>( x + rhs.x, y + rhs.y ); }
 	const Vec2<T>	operator-( const Vec2<T>& rhs ) const { return Vec2<T>( x - rhs.x, y - rhs.y ); }
 	const Vec2<T>	operator*( const Vec2<T>& rhs ) const { return Vec2<T>( x * rhs.x, y * rhs.y ); }
@@ -300,9 +302,6 @@ class Vec2
 		return Vec2<T>( 1, 1 );
 	}
 
-	operator T*(){ return (T*) this; }
-	operator const T*() const { return (const T*) this; }
-
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec2<T>& rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "]";
@@ -387,6 +386,8 @@ public:
 		assert( n >= 0 && n <= 2 );
 		return (&x)[n];
 	}
+
+	T*	ptr() const { return &(const_cast<Vec3*>( this )->x); }
 
 	const Vec3<T>	operator+( const Vec3<T>& rhs ) const { return Vec3<T>( x + rhs.x, y + rhs.y, z + rhs.z ); }
 	const Vec3<T>	operator-( const Vec3<T>& rhs ) const { return Vec3<T>( x - rhs.x, y - rhs.y, z - rhs.z ); }
@@ -673,9 +674,6 @@ public:
 	Vec3<T> zzy() const { return Vec3<T>(z, z, y); }
 	Vec3<T> zzz() const { return Vec3<T>(z, z, z); }
 
-	operator T*(){ return (T*) this; }
-	operator const T*() const { return (const T*) this; }
-
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec3<T> rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "," << rhs.z  << "]";
@@ -741,6 +739,8 @@ class Vec4
 		assert( n >= 0 && n <= 3 );
 		return (&x)[n];
 	}
+
+	T*	ptr() const { return &(const_cast<Vec4*>( this )->x); }
 
 	const Vec4<T>	operator+( const Vec4<T>& rhs ) const { return Vec4<T>( x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w ); }
 	const Vec4<T>	operator-( const Vec4<T>& rhs ) const { return Vec4<T>( x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w ); }
@@ -1239,9 +1239,6 @@ class Vec4
 	Vec4<T> wwwy() const { return Vec4<T>(w, w, w, y); }
 	Vec4<T> wwwz() const { return Vec4<T>(w, w, w, z); }
 	Vec4<T> wwww() const { return Vec4<T>(w, w, w, w); }
-
-	operator T*(){ return (T*) this; }
-	operator const T*() const { return (const T*) this; }
 
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec4<T>& rhs )
 	{
