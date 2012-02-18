@@ -361,9 +361,11 @@ fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> exten
 }
 
 //mac only
-vector<fs::path> App::getMultiOpenFilePath(const fs::path &initialPath, vector<string> extensions)
+vector<fs::path> App::getOpenMultiFilePath(const fs::path &initialPath, vector<string> extensions)
 {
     vector<fs::path> filenames;
+#if defined( CINDER_MAC )
+    
     
     bool wasFullScreen = isFullScreen();
     setFullScreen( false );
@@ -396,6 +398,11 @@ vector<fs::path> App::getMultiOpenFilePath(const fs::path &initialPath, vector<s
     }
     
     return filenames;
+#elif defined( CINDER_MSW )     //TODO implement msw version
+	return AppImplMsw::getOpenFilePath( initialPath, extensions );
+#else
+	return filenames;
+#endif
 }    
     
 fs::path App::getFolderPath( const fs::path &initialPath )

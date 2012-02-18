@@ -347,8 +347,9 @@ class App {
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 		\return the selected file path or an empty string if the user cancelled. **/
 	fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
+    //! Same Dialog as above just with multiple file selection
+    std::vector<fs::path>  getOpenMultiFilePath(const fs::path &initialPath= "", std::vector<std::string> extensions = std::vector<std::string>() );
 	//! Presents the user with a folder-open dialog and returns the selected folder.
-    std::vector<fs::path>  getMultiOpenFilePath(const fs::path &initialPath= "", std::vector<std::string> extensions = std::vector<std::string>() );
 	fs::path		getFolderPath(const fs::path &initialPath="");
 	//! Presents the user with a file-save dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
@@ -511,7 +512,8 @@ inline fs::path		getAppPath() { return App::get()->getAppPath(); }
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
 inline fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getOpenFilePath( initialPath, extensions ); }
-inline std::vector<fs::path>		getMultiOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getMultiOpenFilePath( initialPath, extensions ); }
+    //! Same Dialog as above just with multiple file selection
+inline std::vector<fs::path>	getOpenMultiFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getOpenMultiFilePath( initialPath, extensions ); }
 //! Presents the user with a file-save dialog and returns the selected file path.
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
