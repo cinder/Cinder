@@ -2071,6 +2071,31 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		os << (result ? "passed" : "FAILED") << " : " << "static Matrix44<T> createRotation( const Vec3/4<T> &eulerRadians );" << "\n";
 	}
 
+	//static Matrix44<T> createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w );
+	{
+		bool result = false;
+
+		MatT c0(
+			(T)1, (T)0, (T)0, (T)0,
+			(T)0, (T)1, (T)0, (T)0,
+			(T)0, (T)0, (T)1, (T)0,
+			(T)0, (T)0, (T)0, (T)1
+		);
+
+		Vec3<T> u3 = Vec3<T>( 1, 0, 0 );
+		Vec3<T> v3 = Vec3<T>( 0, 1, 0 );
+		Vec3<T> w3 = Vec3<T>( 0, 0, 1 );
+		MatT m0 = MatT::createRotationOnb( u3, v3, w3 );
+
+		Vec3<T> u4 = Vec3<T>( 1, 0, 0 );
+		Vec3<T> v4 = Vec3<T>( 0, 1, 0 );
+		Vec3<T> w4 = Vec3<T>( 0, 0, 1 );
+		MatT m1 = MatT::createRotationOnb( u4, v4, w4 );
+
+		result = ( c0 == m0 ) && ( c0 == m1 );
+
+		os << (result ? "passed" : "FAILED") << " : " << "static Matrix44<T> createRotationOnb( const Vec3/4<T>& u, const Vec3/4<T>& v, const Vec3/4<T>& w );" << "\n";
+	}
 
 	// static Matrix44<T> createScale( T s );
 	{

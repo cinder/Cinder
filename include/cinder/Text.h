@@ -34,8 +34,8 @@
 
 // Core Text forward declarations
 #if defined( CINDER_COCOA )
-typedef struct __CTFrame;
-typedef struct __CTLine;
+struct __CTFrame;
+struct __CTLine;
 #endif
 
 namespace cinder {

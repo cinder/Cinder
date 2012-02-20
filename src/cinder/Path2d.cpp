@@ -752,18 +752,18 @@ size_t linearCrossings( const Vec2f p[2], const Vec2f &pt )
 
 size_t cubicBezierCrossings( const Vec2f p[4], const Vec2f &pt )
 {
-	float Ax =     -p[0].x + 3 * p[1].x - 3 * p[2].x + p[3].x;
-	float Bx =  3 * p[0].x - 6 * p[1].x + 3 * p[2].x;
-	float Cx = -3 * p[0].x + 3 * p[1].x;
-	float Dx =		p[0].x - pt.x;
+	double Ax =     -p[0].x + 3 * p[1].x - 3 * p[2].x + p[3].x;
+	double Bx =  3 * p[0].x - 6 * p[1].x + 3 * p[2].x;
+	double Cx = -3 * p[0].x + 3 * p[1].x;
+	double Dx =		p[0].x - pt.x;
 
-	float Ay =     -p[0].y + 3 * p[1].y - 3 * p[2].y + p[3].y;
-	float By =  3 * p[0].y - 6 * p[1].y + 3 * p[2].y;
-	float Cy = -3 * p[0].y + 3 * p[1].y;
-	float Dy =		p[0].y;
+	double Ay =     -p[0].y + 3 * p[1].y - 3 * p[2].y + p[3].y;
+	double By =  3 * p[0].y - 6 * p[1].y + 3 * p[2].y;
+	double Cy = -3 * p[0].y + 3 * p[1].y;
+	double Dy =		p[0].y;
 
-	float roots[3];
-	int numRoots = solveCubic( Ax, Bx, Cx, Dx, roots );
+	double roots[3];
+	int numRoots = solveCubic<double>( Ax, Bx, Cx, Dx, roots );
 
 	if( numRoots < 1)
 		return 0;

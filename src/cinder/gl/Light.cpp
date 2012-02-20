@@ -60,7 +60,7 @@ void Light::setDirection( const Vec3f &aDirection )
 {
 	mDirection = aDirection;
 	if( mType == DIRECTIONAL )
-		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( mDirection.x, mDirection.y, mDirection.z, 0.0f ) );
+		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( mDirection.x, mDirection.y, mDirection.z, 0.0f ).ptr() );
 	mShadowCam.lookAt( mPosition, mPosition + mDirection );
 }
 
@@ -68,7 +68,7 @@ void Light::setPosition( const Vec3f &aPosition )
 {
 	mPosition = aPosition;
 	if( mType != DIRECTIONAL )
-		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( mPosition.x, mPosition.y, mPosition.z, 1.0f ) );
+		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( mPosition.x, mPosition.y, mPosition.z, 1.0f ).ptr() );
 	mShadowCam.lookAt( mPosition, mPosition + mDirection );
 }
 
@@ -112,13 +112,13 @@ void Light::enable()
 	glLightfv( GL_LIGHT0 + mID, GL_DIFFUSE, mDiffuse );	
 	glLightfv( GL_LIGHT0 + mID, GL_SPECULAR, mSpecular );
 	if( mType == DIRECTIONAL )
-		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( mDirection.x, mDirection.y, mDirection.z, 0.0f ) );
+		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( mDirection.x, mDirection.y, mDirection.z, 0.0f ).ptr() );
 	else
-		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( mPosition.x, mPosition.y, mPosition.z, 1.0f ) );
+		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( mPosition.x, mPosition.y, mPosition.z, 1.0f ).ptr() );
 	glLightf( GL_LIGHT0 + mID, GL_CONSTANT_ATTENUATION, mConstantAttenuation );
 	glLightf( GL_LIGHT0 + mID, GL_LINEAR_ATTENUATION, mLinearAttenuation );
 	glLightf( GL_LIGHT0 + mID, GL_QUADRATIC_ATTENUATION, mQuadraticAttenuation );
-	glLightfv( GL_LIGHT0 + mID, GL_SPOT_DIRECTION, mDirection );
+	glLightfv( GL_LIGHT0 + mID, GL_SPOT_DIRECTION, &mDirection.x );
 	glLightf( GL_LIGHT0 + mID, GL_SPOT_CUTOFF, mSpotCutoff );
 	glLightf( GL_LIGHT0 + mID, GL_SPOT_EXPONENT, mSpotExponent );
 	
@@ -137,17 +137,17 @@ void Light::update( const Camera &relativeCamera ) const
 	
 	if( mType == POINT ) {
 		Vec3f relPos = relativeCamera.getInverseModelViewMatrix().transformPointAffine( mPosition );
-		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( relPos.x, relPos.y, relPos.z, 1.0f ) );
+		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( relPos.x, relPos.y, relPos.z, 1.0f ).ptr() );
 	}
 	else if( mType == DIRECTIONAL ) {
 		Vec3f relDir = relativeCamera.getInverseModelViewMatrix().transformVec( mDirection );
-		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( relDir.x, relDir.y, relDir.z, 0.0f ) );	
+		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( relDir.x, relDir.y, relDir.z, 0.0f ).ptr() );
 	}
 	else if( mType == SPOTLIGHT ) {
 		Vec3f relPos = relativeCamera.getInverseModelViewMatrix().transformPointAffine( Vec3f( mPosition.x, mPosition.y, mPosition.z ) );
-		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( relPos.x, relPos.y, relPos.z, 1.0f ) );
+		glLightfv( GL_LIGHT0 + mID, GL_POSITION, Vec4f( relPos.x, relPos.y, relPos.z, 1.0f ).ptr() );
 		Vec3f relSpotDir = relativeCamera.getInverseModelViewMatrix().transformPointAffine( Vec3f( mDirection.x, mDirection.y, mDirection.z ) );
-		glLightfv( GL_LIGHT0 + mID, GL_SPOT_DIRECTION, relSpotDir );
+		glLightfv( GL_LIGHT0 + mID, GL_SPOT_DIRECTION, &relSpotDir.x );
 	}
 }
 

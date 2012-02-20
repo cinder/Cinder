@@ -253,6 +253,9 @@ public:
 	// equivalent to rotate( zAxis, z ), then rotate( yAxis, y ) then rotate( xAxis, x )
 	static Matrix44<T>	createRotation( const Vec3<T> &eulerRadians );
 	static Matrix44<T>	createRotation( const Vec4<T> &eulerRadians ) { return createRotation( eulerRadians.xyz() ); }
+	// creates rotation matrix from ortho normal basis (u, v, n)
+	static Matrix44<T>	createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w );
+	static Matrix44<T>	createRotationOnb( const Vec4<T>& u, const Vec4<T>& v, const Vec4<T>& w ) { return createRotationOnb( u.xyz(), v.xyz(), w.xyz() ); }
 
 	// creates scale matrix
 	static Matrix44<T>	createScale( T s );
@@ -1177,6 +1180,17 @@ Matrix44<T> Matrix44<T>::createRotation( const Vec3<T> &eulerRadians )
 	ret.m[15] =  1;
 
 	return ret;
+}
+
+template<typename T>
+Matrix44<T>	Matrix44<T>::createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w )
+{
+	return Matrix44<T>(
+		u.x,  u.y, u.z, 0,
+		v.x,  v.y, v.z, 0,
+		w.x,  w.y, w.z, 0,
+		0,    0,   0, 1
+		);
 }
 
 template<typename T>
