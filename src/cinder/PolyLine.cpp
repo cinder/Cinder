@@ -59,6 +59,13 @@ void PolyLine<T>::scale( const T &scaleFactor, T scaleCenter )
 }
 
 template<typename T>
+void PolyLine<T>::offset( const T &offsetBy )
+{
+	for( typename std::vector<T>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
+		*ptIt += offsetBy;
+}
+
+template<typename T>
 T linearYatX( const Vec2<T> p[2], T x )
 {
 	if( p[0].x == p[1].x ) 	return p[0].y;

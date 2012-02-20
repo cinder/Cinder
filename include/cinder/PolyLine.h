@@ -55,6 +55,7 @@ class PolyLine {
 	T			getDerivative( float t ) const;
 
 	void		scale( const T &scaleFactor, T scaleCenter = T::zero() );
+	void		offset( const T &offsetBy );
 
 	//! Returns whether the point \a pt is contained within the boundaries of the PolyLine
 	bool	contains( const Vec2f &pt ) const;
