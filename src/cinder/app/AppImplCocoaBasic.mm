@@ -149,6 +149,9 @@
 	[win setDelegate:self];	
 	[win setContentView:cinderView];
 
+	const std::string& applicationName = app->getSettings().getTitle();
+	[win setTitle:[NSString stringWithUTF8String:applicationName.c_str()]];
+
 	mWindowWidth = static_cast<int>( winRect.size.width );
 	mWindowHeight = static_cast<int>( winRect.size.height );
 
