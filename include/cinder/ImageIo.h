@@ -82,7 +82,7 @@ class ImageIo {
 
 class ImageSource : public ImageIo {
   public:
-	ImageSource() : ImageIo(), mIsPremultiplied( false ), mPixelAspectRatio( 1 ) {}
+	ImageSource() : ImageIo(), mIsPremultiplied( false ), mPixelAspectRatio( 1 ), mCustomPixelInc( 0 ) {}
 	virtual ~ImageSource() {}  
 
 	class Options {
@@ -110,7 +110,9 @@ class ImageSource : public ImageIo {
   protected:
 	void		setPixelAspectRatio( float pixelAspectRatio ) { mPixelAspectRatio = pixelAspectRatio; }
 	void		setPremultiplied( bool premult = true ) { mIsPremultiplied = premult; }
-  
+	//! Allows declaration of a pixel increment different from what its ColorModel would imply. For example a non-planar Channel.
+	void		setCustomPixelInc( int8_t customPixelInc ) { mCustomPixelInc = customPixelInc; }
+
 	RowFunc		setupRowFunc( ImageTargetRef target );
 	void		setupRowFuncRgbSource( ImageTargetRef target );
 	void		setupRowFuncGraySource( ImageTargetRef target );
@@ -128,6 +130,7 @@ class ImageSource : public ImageIo {
 
 	float						mPixelAspectRatio;
 	bool						mIsPremultiplied;
+	int8_t						mCustomPixelInc;
 	
 	int8_t						mRowFuncSourceRed, mRowFuncSourceGreen, mRowFuncSourceBlue, mRowFuncSourceAlpha;
 	int8_t						mRowFuncTargetRed, mRowFuncTargetGreen, mRowFuncTargetBlue, mRowFuncTargetAlpha;

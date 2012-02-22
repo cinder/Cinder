@@ -278,6 +278,8 @@ ImageSource::RowFunc ImageSource::setupRowFuncForTypesAndTargetColorModel( Image
 	switch( mColorModel ) {
 		case CM_RGB: {
 			setupRowFuncRgbSource( target );
+			if( mCustomPixelInc != 0 )
+				mRowFuncSourceInc = mCustomPixelInc;
 			bool alpha = ( mRowFuncSourceAlpha != -1 ) && ( mRowFuncTargetAlpha != -1 );
 			if( alpha )
 				return &ImageSource::rowFuncSourceRgb<SD,TD,TCM,true>;
@@ -287,6 +289,8 @@ ImageSource::RowFunc ImageSource::setupRowFuncForTypesAndTargetColorModel( Image
 		break;
 		case CM_GRAY: {
 			setupRowFuncGraySource( target );
+			if( mCustomPixelInc != 0 )
+				mRowFuncSourceInc = mCustomPixelInc;
 			bool alpha = ( mRowFuncSourceAlpha != -1 ) && ( mRowFuncTargetAlpha != -1 );
 			if( alpha )
 				return &ImageSource::rowFuncSourceGray<SD,TD,TCM,true>;
