@@ -85,5 +85,46 @@ bool Ray::calcPlaneIntersection( const Vec3f &planeOrigin, const Vec3f &planeNor
 	}
 	return false;
 }
+    
+bool Ray::calcSphereIntersection( const Vec3f &center, const float radius, float *result ) const 
+{
+    const float a = dot(getDirection(), getDirection());
+    const float b = 2.0f * dot(getDirection(), getOrigin()-center);
+    const float c = dot(getOrigin()-center, getOrigin()-center) - radius*radius;
+    
+    const float discr = b*b - 4*a*c;
+    
+    if (discr < 0.0f) return false;
+    
+    const float distSq = sqrtf(discr);
+    float q;
+    if (b<0.0f)
+        q = (-b - distSq)*0.5f;
+    else
+        q = (-b + distSq)*0.5f;
+    
+    float t0 = q/a;
+    float t1 = c/q;
+    
+    if (t0>t1)
+    {
+        std::swap(t0, t1);
+    }
+    
+    if (t1<0.0f) return false;
+    if (t0<0.0f)
+    {
+        *result = t0;
+        return true;
+    }
+    else
+    {
+        *result = t1;
+        return true;
+    }
+    
+    return false;
+}
+
 
 } // namespace cinder
