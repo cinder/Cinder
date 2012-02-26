@@ -147,7 +147,7 @@ void OutputImplAudioUnit::Track::setTime( double aTime )
 
 PcmBuffer32fRef OutputImplAudioUnit::Track::getPcmBuffer()
 {
-	boost::mutex::scoped_lock( mPcmBufferMutex );
+	boost::mutex::scoped_lock lock( mPcmBufferMutex );
 	return mLoadedPcmBuffer;
 }
 
