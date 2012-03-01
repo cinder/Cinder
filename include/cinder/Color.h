@@ -323,7 +323,7 @@ class ColorAT {
 		return ColorAT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
 	}
 
-	static ColorT<T> gray( T value )
+	static ColorAT<T> gray( T value )
 	{
 		return ColorAT<T>( value, value, value, CHANTRAIT<T>::max() );
 	}
