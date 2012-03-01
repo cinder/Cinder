@@ -146,7 +146,7 @@ class TriMesh {
 	//! Fills or replaces the normal buffer with normals calculated from the vertex data
 	void		generateNormals();
 	//! Optimize data by sharing vertices that are close to each other
-	void		optimize();
+	void		optimize(float epsilon=1.0e-3f);
 	
  private:
 	std::vector<Vec3f>		mVertices;

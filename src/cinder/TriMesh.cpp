@@ -214,14 +214,11 @@ void TriMesh::generateNormals(void)
 		mNormals[i].normalize();
 }
 
-void TriMesh::optimize(void)
+void TriMesh::optimize(float epsilon)
 {
 	std::vector<ci::Vec3f>	vertices;
 	std::vector<ci::Vec2f>	texcoords;
 	std::vector<uint32_t>	indices;
-
-	// set distance where we consider a vertex to be the same
-	float epsilon = 1.0e-3f;
 
 	// for each index:
 	for(int i=0;i<mIndices.size();++i) {
@@ -230,7 +227,7 @@ void TriMesh::optimize(void)
 		// fetch the vertex this index is pointing to
 		Vec3f v = mVertices[index];
 
-		// find the first vertex that is practically the same
+		// find the first vertex that is practically the same (distance^2 < epsilon)
 		bool replaced = false;
 		for(int j=0;j<vertices.size();++j) {
 			if(vertices[j].distanceSquared(v) < epsilon) {
