@@ -109,6 +109,9 @@ class RectT {
 	const RectT<T>		operator*( T s ) const { return this->scaled( s ); }
 	const RectT<T>		operator/( T s ) const { return this->scaled( ((T)1) / s ); }
 
+	const RectT<T>		operator+( const RectT<T>& rhs ) const { return RectT<T>( x1 + rhs.x1, y1 + rhs.y1, x2 + rhs.x2, y2 + rhs.y2 ); }
+	const RectT<T>		operator-( const RectT<T>& rhs ) const { return RectT<T>( x1 - rhs.x1, y1 - rhs.y1, x2 - rhs.x2, y2 - rhs.y2 ); }
+
 	RectT<T>&		operator+=( const Vec2<T> &o ) { offset( o ); return *this; }
 	RectT<T>&		operator-=( const Vec2<T> &o ) { offset( -o ); return *this; }
 	RectT<T>&		operator*=( T s ) { scale( s ); return *this; }
