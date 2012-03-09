@@ -52,21 +52,37 @@ class GlslProg {
 	GLuint			getHandle() const { return mObj->mHandle; }
 
 	void	uniform( const std::string &name, int data );
+	void	uniform( const GLint &loc, int data );
 	void	uniform( const std::string &name, const Vec2i &data );
+	void	uniform( const GLint &loc, const Vec2i &data );
 	void	uniform( const std::string &name, const int *data, int count );		
-	void	uniform( const std::string &name, const Vec2i *data, int count );	
+	void	uniform( const GLint &loc, const int *data, int count );
+	void	uniform( const std::string &name, const Vec2i *data, int count );
+	void	uniform( const GLint &loc, const Vec2i *data, int count );
 	void	uniform( const std::string &name, float data );
+	void	uniform( const GLint &loc, float data );
 	void	uniform( const std::string &name, const Vec2f &data );
+	void	uniform( const GLint &loc, const Vec2f &data );
 	void	uniform( const std::string &name, const Vec3f &data );
+	void	uniform( const GLint &loc, const Vec3f &data );
 	void	uniform( const std::string &name, const Vec4f &data );
+	void	uniform( const GLint &loc, const Vec4f &data );
 	void	uniform( const std::string &name, const Color &data );
+	void	uniform( const GLint &loc, const Color &data );
 	void	uniform( const std::string &name, const ColorA &data );
+	void	uniform( const GLint &loc, const ColorA &data );
 	void	uniform( const std::string &name, const Matrix33f &data, bool transpose = false );
+	void	uniform( const GLint &loc, const Matrix33f &data, bool transpose = false );
 	void	uniform( const std::string &name, const Matrix44f &data, bool transpose = false );
+	void	uniform( const GLint &loc, const Matrix44f &data, bool transpose = false );
 	void	uniform( const std::string &name, const float *data, int count );
+	void	uniform( const GLint &loc, const float *data, int count );
 	void	uniform( const std::string &name, const Vec2f *data, int count );
+	void	uniform( const GLint &loc, const Vec2f *data, int count );
 	void	uniform( const std::string &name, const Vec3f *data, int count );
+	void	uniform( const GLint &loc, const Vec3f *data, int count );
 	void	uniform( const std::string &name, const Vec4f *data, int count );
+	void	uniform( const GLint &loc, const Vec4f *data, int count );
 
 	GLint	getUniformLocation( const std::string &name );
 	GLint	getAttribLocation( const std::string &name );

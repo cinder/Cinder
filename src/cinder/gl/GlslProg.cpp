@@ -140,96 +140,176 @@ std::string GlslProg::getShaderLog( GLuint handle ) const
 void GlslProg::uniform( const std::string &name, int data )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data );
+}
+
+void GlslProg::uniform( const GLint &loc, int data )
+{
 	glUniform1i( loc, data );
 }
 
 void GlslProg::uniform( const std::string &name, const Vec2i &data )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data );
+}
+
+void GlslProg::uniform( const GLint &loc, const Vec2i &data )
+{
 	glUniform2i( loc, data.x, data.y );
 }
 
 void GlslProg::uniform( const std::string &name, const int *data, int count )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data, count );
+}
+
+void GlslProg::uniform( const GLint &loc, const int *data, int count )
+{
 	glUniform1iv( loc, count, data );
 }
 
 void GlslProg::uniform( const std::string &name, const Vec2i *data, int count )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data, count );
+}
+
+void GlslProg::uniform( const GLint &loc, const Vec2i *data, int count )
+{
 	glUniform2iv( loc, count, &data[0].x );
 }
 
 void GlslProg::uniform( const std::string &name, float data )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data );
+}
+
+void GlslProg::uniform( const GLint &loc, float data )
+{
 	glUniform1f( loc, data );
 }
 
 void GlslProg::uniform( const std::string &name, const Vec2f &data )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data );
+}
+
+void GlslProg::uniform( const GLint &loc, const Vec2f &data )
+{
 	glUniform2f( loc, data.x, data.y );
 }
 
 void GlslProg::uniform( const std::string &name, const Vec3f &data )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data );
+}
+
+void GlslProg::uniform( const GLint &loc, const Vec3f &data )
+{
 	glUniform3f( loc, data.x, data.y, data.z );
 }
 
 void GlslProg::uniform( const std::string &name, const Vec4f &data )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data );
+}
+
+void GlslProg::uniform( const GLint &loc, const Vec4f &data )
+{
 	glUniform4f( loc, data.x, data.y, data.z, data.w );
 }
 
 void GlslProg::uniform( const std::string &name, const Color &data )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data );
+}
+
+void GlslProg::uniform( const GLint &loc, const Color &data )
+{
 	glUniform3f( loc, data.r, data.g, data.b );
 }
 
 void GlslProg::uniform( const std::string &name, const ColorA &data )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data );
+}
+
+void GlslProg::uniform( const GLint &loc, const ColorA &data )
+{
 	glUniform4f( loc, data.r, data.g, data.b, data.a );
 }
 
 void GlslProg::uniform( const std::string &name, const float *data, int count )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data, count );
+}
+
+void GlslProg::uniform( const GLint &loc, const float *data, int count )
+{
 	glUniform1fv( loc, count, data );
 }
 
 void GlslProg::uniform( const std::string &name, const Vec2f *data, int count )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data, count );
+}
+
+void GlslProg::uniform( const GLint &loc, const Vec2f *data, int count )
+{
 	glUniform2fv( loc, count, &data[0].x );
 }
 
 void GlslProg::uniform( const std::string &name, const Vec3f *data, int count )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data, count );
+}
+
+void GlslProg::uniform( const GLint &loc, const Vec3f *data, int count )
+{
 	glUniform3fv( loc, count, &data[0].x );
 }
 
 void GlslProg::uniform( const std::string &name, const Vec4f *data, int count )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data, count );
+}
+
+void GlslProg::uniform( const GLint &loc, const Vec4f *data, int count )
+{
 	glUniform4fv( loc, count, &data[0].x );
 }
 
 void GlslProg::uniform( const std::string &name, const Matrix33f &data, bool transpose )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data, transpose );
+}
+
+void GlslProg::uniform( const GLint &loc, const Matrix33f &data, bool transpose )
+{
 	glUniformMatrix3fv( loc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, data.m );
 }
 
 void GlslProg::uniform( const std::string &name, const Matrix44f &data, bool transpose )
 {
 	GLint loc = getUniformLocation( name );
+	uniform( loc, data, transpose );
+}
+
+void GlslProg::uniform( const GLint &loc, const Matrix44f &data, bool transpose )
+{
 	glUniformMatrix4fv( loc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, data.m );
 }
 
