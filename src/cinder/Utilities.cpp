@@ -50,6 +50,8 @@
 
 #include <vector>
 #include <boost/tokenizer.hpp>
+#include <boost/algorithm/string.hpp>
+
 using std::vector;
 using std::string;
 using std::wstring;
@@ -230,19 +232,18 @@ void deleteFile( const fs::path &path )
 #endif
 }
 
-std::vector<std::string> split( const std::string &str, char separator )
+std::vector<std::string> split( const std::string &str, char separator, bool compress )
 {
-	return split( str, string( 1, separator ) );
+	return split( str, string( 1, separator ), compress );
 }
 
-std::vector<std::string> split( const std::string &str, const std::string &separators )
+std::vector<std::string> split( const std::string &str, const std::string &separators, bool compress )
 {
 	vector<string> result;
-	typedef boost::tokenizer<boost::char_separator<char> >  tokenizer;
-	boost::char_separator<char> sep( separators.c_str() );
-	tokenizer tokens( str, sep );
-	for( tokenizer::iterator tokIt = tokens.begin(); tokIt != tokens.end(); ++tokIt )
-		result.push_back( *tokIt );
+
+	boost::algorithm::split( result, str, boost::is_any_of(separators), 
+		compress ? boost::token_compress_on : boost::token_compress_off );
+
 	return result;
 }
 
