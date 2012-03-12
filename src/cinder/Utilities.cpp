@@ -241,8 +241,10 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 {
 	vector<string> result;
 
-	return boost::algorithm::split( result, str, boost::is_any_of(separators), 
+	boost::algorithm::split( result, str, boost::is_any_of(separators), 
 		compress ? boost::token_compress_on : boost::token_compress_off );
+
+	return result;
 }
 
 string loadString( DataSourceRef dataSource )
