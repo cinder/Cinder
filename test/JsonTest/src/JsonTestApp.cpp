@@ -77,16 +77,16 @@ void JsonTestApp::mouseDown( MouseEvent event )
 	JsonTree library = JsonTree::makeObject( "library" );
 	JsonTree album = JsonTree::makeArray( "album" );
 	
-	album.push_back( JsonTree( "musician", string( "Sufjan Stevens" ) ) );
-	album.push_back( JsonTree( "year", string( "2004" ) ) );
-	album.push_back( JsonTree( "title", string( "Seven Swans" ) ) );
+	album.pushBack( JsonTree( "musician", string( "Sufjan Stevens" ) ) );
+	album.pushBack( JsonTree( "year", string( "2004" ) ) );
+	album.pushBack( JsonTree( "title", string( "Seven Swans" ) ) );
 
 	JsonTree tracks = JsonTree::makeArray( "tracks" );
 
 	for ( int32_t i = 0; i < 4; i ++ ) {
 		
 		JsonTree track;
-		track.push_back( JsonTree( "id", i ) );
+		track.pushBack( JsonTree( "id", i ) );
 		
 		JsonTree title;
 		switch ( i ) {
@@ -104,14 +104,14 @@ void JsonTestApp::mouseDown( MouseEvent event )
 			break;
 		}
 
-		track.push_back( title );
-		tracks.push_back( track );
+		track.pushBack( title );
+		tracks.pushBack( track );
 
 	}
 
-	album.push_back( tracks );
-	library.push_back( album );
-	doc.push_back( library );
+	album.pushBack( tracks );
+	library.pushBack( album );
+	doc.pushBack( library );
 
 	console() << doc;
 	
