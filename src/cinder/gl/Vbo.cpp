@@ -636,6 +636,25 @@ void VboMesh::bufferTexCoords2d( size_t unit, const std::vector<Vec2f> &texCoord
 	else
 		throw;
 }
+
+void VboMesh::bufferTexCoords3d( size_t unit, const std::vector<Vec3f> &texCoords )
+{
+	if( mObj->mLayout.hasDynamicTexCoords3d() ) {
+		if( mObj->mDynamicStride == 0 )
+			getDynamicVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec3f) * texCoords.size(), &(texCoords[0]) );
+		else
+			throw;
+	}
+	else if( mObj->mLayout.hasStaticTexCoords3d() ) {
+		if( mObj->mStaticStride == 0 ) { // planar data
+			getStaticVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec3f) * texCoords.size(), &(texCoords[0]) );
+		}
+		else
+			throw;
+	}
+	else
+		throw;
+}
 	
 void VboMesh::bufferColorsRGB( const std::vector<Color> &colors )
 {
