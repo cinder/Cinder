@@ -149,6 +149,15 @@ int	AppCocoaTouch::getWindowHeight() const
 	else
 		return ::CGRectGetHeight( bounds );
 }
+    
+//! Returns the iOS resolution multiplier (2.0 for current retina displays, 1.0 otherwise).
+float AppCocoaTouch::getContentScaleFactor() const
+{
+    if ([mState->mCinderView respondsToSelector:NSSelectorFromString(@"contentScaleFactor")]) {
+        return mState->mCinderView.contentScaleFactor;
+    }
+    return 1.0f;
+}
 
 //! Enables the accelerometer
 void AppCocoaTouch::enableAccelerometer( float updateFrequency, float filterFactor )

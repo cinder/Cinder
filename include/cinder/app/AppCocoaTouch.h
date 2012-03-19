@@ -104,6 +104,8 @@ class AppCocoaTouch : public App {
 	virtual int		getWindowWidth() const;
 	//! Returns the height of the App's window measured in pixels, or the screen when in full-screen mode.	
 	virtual int		getWindowHeight() const;
+	//! Returns the iOS resolution multiplier (typically 2.0f on retina displays, 1.0f otherwise)
+	virtual float	getContentScaleFactor() const;
 	//! Ignored on the iPhone.
 	void			setWindowWidth( int windowWidth ) {}
 	//! Ignored on the iPhone.
