@@ -156,7 +156,7 @@ class JsonTree {
 		If \a this is a value node, it will change to an object or an array. 
 		If \a newChild has a key, \a this becomes an object node. 
 		If not, \a this becomes an array node. **/
-    void                            push_back( const JsonTree &newChild );
+    void                            pushBack( const JsonTree &newChild );
     
 	/**! Writes this JsonTree to \a path with standard formatting. 
 		If \a createDocument is true then an implicit parent object node is created when necessary and \a this is treated as the root element. **/

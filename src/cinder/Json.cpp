@@ -48,7 +48,7 @@ JsonTree::JsonTree( const JsonTree &jsonTree )
 	mValueType = jsonTree.mValueType;
 
 	for( ConstIter childIt = jsonTree.begin(); childIt != jsonTree.end(); ++childIt ) {
-		push_back( *childIt );
+		pushBack( *childIt );
     }
 }
 
@@ -61,7 +61,7 @@ JsonTree& JsonTree::operator=( const JsonTree &jsonTree )
 	mValueType = jsonTree.mValueType;
 
 	for( ConstIter childIt = jsonTree.begin(); childIt != jsonTree.end(); ++childIt ) {
-		push_back( *childIt );
+		pushBack( *childIt );
     }
 
 	return *this;
@@ -160,7 +160,7 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
         if( value.isArray() ) {
             mNodeType = NODE_ARRAY;
             for ( uint32_t i = 0; i < value.size(); i++ ) {
-                push_back( JsonTree( "", value[ i ] ) );
+                pushBack( JsonTree( "", value[ i ] ) );
             }
         }
 		else if( value.isObject() ) {
@@ -168,7 +168,7 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
             Json::Value::Members members = value.getMemberNames();
             for( Json::Value::Members::const_iterator memberIt = members.begin(); memberIt != members.end(); ++memberIt ) {
 				string key = *memberIt;
-                push_back( JsonTree( key, value[ key ] ) );
+                pushBack( JsonTree( key, value[ key ] ) );
             }
         }
     }
@@ -220,7 +220,7 @@ Json::Value JsonTree::deserializeNative( const string &jsonString )
     }
 }
 
-void JsonTree::push_back( const JsonTree &newChild )
+void JsonTree::pushBack( const JsonTree &newChild )
 {
 	if( newChild.getKey() == "" )
 		mNodeType = NODE_ARRAY;
