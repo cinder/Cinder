@@ -74,7 +74,7 @@ System::System()
 		
 #if defined( CINDER_MSW )
 	int p[4];
-	cpuidwrap( p, 1 );
+	__cpuid( p, 1 );
 	mCPUID_EBX = p[1];
 	mCPUID_ECX = p[2];
 	mCPUID_EDX = p[3];
@@ -120,6 +120,7 @@ static T getSysCtlValue( const std::string &key )
 #endif
 
 #if defined( CINDER_MSW )
+
 typedef struct _LOGICALPROCESSORDATA
 {
    unsigned int nLargestStandardFunctionNumber;
@@ -157,15 +158,7 @@ void lockToLogicalProcessor( int n )
 
 void cpuidwrap( int * p, unsigned int param )
 {
-   __asm {
-             mov    edi, p
-             mov    eax, param
-             cpuid
-             mov    [edi+0d],  eax
-             mov    [edi+4d],  ebx
-             mov    [edi+8d],  ecx
-             mov    [edi+12d], edx
-         }
+	__cpuid( p, param );
 }
 
 void cpuid( int whichlp, PLOGICALPROCESSORDATA p )

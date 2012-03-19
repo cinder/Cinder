@@ -23,6 +23,8 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#if ! defined( CINDER_64 )
+
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Stream.h"
@@ -212,3 +214,5 @@ class MovieWriterExcAlreadyFinished : public MovieWriterExc {
 };
 
 } } // namespace cinder::qtime
+
+#endif // ! defined( CINDER_64 )

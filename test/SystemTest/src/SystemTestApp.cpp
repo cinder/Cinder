@@ -26,8 +26,11 @@ void SystemTestApp::setup()
 	console() << " has 64 bit:" << System::hasX86_64() << std::endl;
 	console() << " CPUs:" << System::getNumCpus() << std::endl;
 	console() << " Cores:" << System::getNumCores() << std::endl;
+
+#if ! defined( CINDER_64 )
 	console() << " QuickTime version: " << std::hex << qtime::getQuickTimeVersion() << std::dec << " (" << qtime::getQuickTimeVersionString() << ")" << std::endl;	
-	
+#endif
+
 	console() << "Network Adapters: " << std::endl;
 	vector<System::NetworkAdapter> adapters = System::getNetworkAdapters();
 	for( vector<System::NetworkAdapter>::const_iterator netIt = adapters.begin(); netIt != adapters.end(); ++netIt )

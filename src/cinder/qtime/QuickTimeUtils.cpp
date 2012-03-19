@@ -20,6 +20,9 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/Cinder.h"
+#if ! defined( CINDER_64 )
+
 #include "cinder/gl/gl.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
@@ -45,8 +48,6 @@
 using namespace std;
 
 namespace cinder { namespace qtime {
-
-#if ! defined( __LP64__ )
 
 bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 value )
 {
@@ -423,8 +424,6 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 	return result;
 }
 
-#endif // ! defined( __LP64__ )
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageTargetCgImage
 ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef imageSource, bool convertToYpCbCr )
@@ -619,3 +618,5 @@ GWorldPtr createGWorld( ImageSourceRef imageSource )
 #endif // defined( CINDER_MSW )
 
 } } // namespace cinder::qtime
+
+#endif // ! defined( CINDER_64 )

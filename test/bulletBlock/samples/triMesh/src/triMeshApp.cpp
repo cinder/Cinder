@@ -11,17 +11,17 @@
 #include "cinder/gl/Vbo.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Channel.h"
-#include "../blocks/bullet/CinderBullet.h"
+#include "../../Cinder/test/bulletBlock/CinderBullet.h"
 #include "cinder/TriMesh.h"
 #include "Resources.h"
 using namespace ci;
 using namespace ci::app;
 
 #include <list>
+using std::shared_ptr;
 using std::list;
 
 #define LB_ID 128
-
 
 const int SPHERE_SEGS = 48;
 const double MAX_LIFETIME = 5.0;

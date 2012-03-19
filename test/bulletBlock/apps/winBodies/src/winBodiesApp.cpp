@@ -4,10 +4,10 @@
 #include "cinder/gl/Material.h"
 #include "cinder/gl/Light.h"
 #include "cinder/Camera.h"
-#include "cinder/Box.h"
+#include "cinder/AxisAlignedBox.h"
 #include "cinder/Sphere.h"
 #include "cinder/gl/GlslProg.h"
-#include "../blocks/bullet/CinderBullet.h"
+#include "../../Cinder/test/bulletBlock/CinderBullet.h"
 using namespace ci;
 using namespace ci::app;
 
@@ -17,7 +17,7 @@ using std::list;
 const int SPHERE_SEGS = 48;
 const double MAX_LIFETIME = 5.0;
 
-
+#if 0
 void activateAllObjects(btDynamicsWorld *world)
 {
 	int i;
@@ -130,8 +130,8 @@ public:
 	btConstraintSolver*	m_solver;
 	btDefaultCollisionConfiguration* m_collisionConfiguration;
 
-	std::vector< shared_ptr<RigidObject> > mObjects;
-	shared_ptr<btRigidBody>	m_groundRigidBody;
+	std::vector< std::shared_ptr<RigidObject> > mObjects;
+	std::shared_ptr<btRigidBody>	m_groundRigidBody;
 };
 
 
@@ -192,7 +192,7 @@ void winBodiesApp::initPhysics()
 	btDefaultMotionState * groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0,0,0,1),btVector3(0,-1,0)));
 	btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0,groundMotionState,groundShape,btVector3(0,0,0));
 	
-	m_groundRigidBody = shared_ptr<btRigidBody>(new btRigidBody(groundRigidBodyCI));
+	m_groundRigidBody = std::shared_ptr<btRigidBody>(new btRigidBody(groundRigidBodyCI));
 	m_dynamicsWorld->addRigidBody(m_groundRigidBody.get());
 	
 	
@@ -287,7 +287,7 @@ void winBodiesApp::mouseDown( MouseEvent event )
 		Vec3f dimensions = Vec3f(sizex,sizey,sizez);
 		btRigidBody *body = bullet::createBox(m_dynamicsWorld, dimensions, Quatf(), Vec3f((float)xoff, height, (float)zoff));
 		
-		shared_ptr<RigidObject> c( new RigidCube(body, dimensions, m_dynamicsWorld) );
+		std::shared_ptr<RigidObject> c( new RigidCube(body, dimensions, m_dynamicsWorld) );
 		mObjects.push_back(c);
 		
 	} 
@@ -301,7 +301,7 @@ void winBodiesApp::mouseDown( MouseEvent event )
 		float fradius = (float) radius;
 		btRigidBody *body = bullet::createSphere(m_dynamicsWorld, fradius, Quatf(), Vec3f(float(xoff), height,float(zoff)));
 		
-		shared_ptr<RigidObject> s( new RigidSphere(body, fradius, m_dynamicsWorld) );
+		std::shared_ptr<RigidObject> s( new RigidSphere(body, fradius, m_dynamicsWorld) );
 		mObjects.push_back(s);
 	}
 
@@ -334,3 +334,4 @@ void winBodiesApp::exitPhysics()
 
 // This line tells Cinder to actually create the application
 CINDER_APP_BASIC( winBodiesApp, RendererGl )
+#endif

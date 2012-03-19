@@ -55,7 +55,7 @@ namespace cinder {
 	btBvhTriangleMeshShape* createStaticConcaveMeshShape(TriMesh mesh, Vec3f scale, float margin=0.05f)
 	{
 		std::vector<Vec3f> vertices = mesh.getVertices();
-		std::vector<size_t> indices = mesh.getIndices();
+		std::vector<uint32_t> indices = mesh.getIndices();
 		
 		btTriangleMesh *tmesh = new btTriangleMesh(true, false);
 		
@@ -143,8 +143,8 @@ namespace cinder {
 	
 		btRigidBody* create(btDynamicsWorld *world, AxisAlignedBox3f box, Quatf rotation, Vec3f position)
 	{
-		Vec3f min = box.min();
-		Vec3f max = box.max();
+		const Vec3f& min = box.getMin();
+		const Vec3f& max = box.getMax();
 		
 	//	Vec3d position = Vec3f( (min.x + max.x)/2.0f, (min.y + max.y) / 2.0f, (min.z + max.z) / 2.0f );
 		Vec3f size = Vec3f( abs(max.x - min.x), abs(max.y - min.y), abs(max.z - min.z) );

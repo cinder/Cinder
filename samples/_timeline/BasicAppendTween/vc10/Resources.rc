@@ -1,4 +1,4 @@
-#include "Resources.h"
+//#include "Resources.h"
 
 ID ICON "..\\resources\\cinder_app_icon.ico"
 

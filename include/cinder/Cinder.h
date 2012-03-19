@@ -43,10 +43,25 @@ using boost::uint64_t;
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 	#define CINDER_MSW
+	#if defined(_WIN64)
+		#define CINDER_64
+	#else
+		#define CINDER_32
+	#endif
 #elif defined(linux) || defined(__linux) || defined(__linux__)
 	#define CINDER_LINUX
+	#if defined(__x86_64__) || defined(__ppc64__)
+		#define CINDER_64
+	#else
+		#define CINDER_32
+	#endif
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 	#define CINDER_COCOA
+	#if defined(__LP64__)
+		#define CINDER_64
+	#else
+		#define CINDER_32
+	#endif
 	#include "TargetConditionals.h"
 	#if TARGET_OS_IPHONE
 		#define CINDER_COCOA_TOUCH
