@@ -122,6 +122,7 @@
     <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ip\Blend.cpp" />
     <ClCompile Include="..\src\cinder\CinderMath.cpp" />
+    <ClCompile Include="..\src\cinder\Json.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
     <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
     <ClCompile Include="..\src\cinder\Path2D.cpp" />
@@ -195,6 +196,9 @@
     <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwOpenGL.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp" />
+    <ClCompile Include="..\src\jsoncpp\json_reader.cpp" />
+    <ClCompile Include="..\src\jsoncpp\json_value.cpp" />
+    <ClCompile Include="..\src\jsoncpp\json_writer.cpp" />
     <ClCompile Include="..\src\libtess2\bucketalloc.c" />
     <ClCompile Include="..\src\libtess2\dict.c" />
     <ClCompile Include="..\src\libtess2\geom.c" />
@@ -218,6 +222,7 @@
     <ClInclude Include="..\include\cinder\Frustum.h" />
     <ClInclude Include="..\include\cinder\gl\TextureFont.h" />
     <ClInclude Include="..\include\cinder\ip\Blend.h" />
+    <ClInclude Include="..\include\cinder\Json.h" />
     <ClInclude Include="..\include\cinder\Matrix22.h" />
     <ClInclude Include="..\include\cinder\Matrix33.h" />
     <ClInclude Include="..\include\cinder\Matrix44.h" />
@@ -230,6 +235,14 @@
     <ClInclude Include="..\include\cinder\Triangulate.h" />
     <ClInclude Include="..\include\cinder\Tween.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
+    <ClInclude Include="..\include\json\autolink.h" />
+    <ClInclude Include="..\include\json\config.h" />
+    <ClInclude Include="..\include\json\features.h" />
+    <ClInclude Include="..\include\json\forwards.h" />
+    <ClInclude Include="..\include\json\json.h" />
+    <ClInclude Include="..\include\json\reader.h" />
+    <ClInclude Include="..\include\json\value.h" />
+    <ClInclude Include="..\include\json\writer.h" />
     <ClInclude Include="..\include\rapidxml\rapidxml.hpp" />
     <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp" />
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
@@ -340,6 +353,7 @@
     <ClInclude Include="..\include\cinder\qtime\QuickTime.h" />
     <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h" />
     <ClInclude Include="..\include\msw\videoInput\videoInput.h" />
+    <ClInclude Include="..\src\jsoncpp\json_batchallocator.h" />
     <ClInclude Include="..\src\libtess2\bucketalloc.h" />
     <ClInclude Include="..\src\libtess2\dict.h" />
     <ClInclude Include="..\src\libtess2\geom.h" />
@@ -348,6 +362,11 @@
     <ClInclude Include="..\src\libtess2\sweep.h" />
     <ClInclude Include="..\src\libtess2\tess.h" />
     <ClInclude Include="..\src\libtess2\tesselator.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\jsoncpp\json_internalarray.inl" />
+    <None Include="..\src\jsoncpp\json_internalmap.inl" />
+    <None Include="..\src\jsoncpp\json_valueiterator.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
