@@ -114,7 +114,7 @@ JsonTree::JsonTree( const string &key, int value )
 {
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_INT );
 }
-    
+
 JsonTree::JsonTree( const string &key, const std::string &value )
 {
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_STRING );
@@ -124,7 +124,7 @@ JsonTree::JsonTree( const std::string &key, const char *value )
 {
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_STRING );
 }
-    
+
 JsonTree::JsonTree( const string &key, unsigned int value )
 {
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_UINT );

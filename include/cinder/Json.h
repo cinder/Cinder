@@ -7,9 +7,9 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -43,146 +43,146 @@ class JsonTree {
   public:
 	
 	//! \cond
-    typedef std::list<JsonTree>::const_iterator ConstIter;
-    typedef std::list<JsonTree>::iterator Iter;
+	typedef std::list<JsonTree>::const_iterator ConstIter;
+	typedef std::list<JsonTree>::iterator Iter;
 	//! \endcond
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private:
-    
+	
 	//! \cond
-    typedef enum 
-    { 
-        NODE_UNKNOWN, NODE_NULL, NODE_ARRAY, NODE_OBJECT, NODE_VALUE
-    } NodeType;
+	typedef enum 
+	{ 
+		NODE_UNKNOWN, NODE_NULL, NODE_ARRAY, NODE_OBJECT, NODE_VALUE
+	} NodeType;
 
-    typedef enum 
-    { 
-        VALUE_BOOL, VALUE_DOUBLE, VALUE_INT, VALUE_STRING, VALUE_UINT 
-    } ValueType;
+	typedef enum 
+	{ 
+		VALUE_BOOL, VALUE_DOUBLE, VALUE_INT, VALUE_STRING, VALUE_UINT 
+	} ValueType;
 	//! \endcond
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public:
-    
+	
 	//! Creates a null JsonTree.
-    explicit JsonTree();
-    //! Parses the JSON contained in the string \a xmlString
+	explicit JsonTree();
+	//! Parses the JSON contained in the string \a xmlString
 	JsonTree( const JsonTree &jsonTree );
 	/** \brief Parses JSON contained in \a dataSource. Commonly used with the results of loadUrl(), loadFile() or loadResource().
 		<br><tt>JsonTree myDoc( loadUrl( "http://search.twitter.com/search.json?q=libcinder&rpp=10&result_type=recent" ) );</tt> **/
-    explicit JsonTree( DataSourceRef dataSource );
+	explicit JsonTree( DataSourceRef dataSource );
 	//! Parses the JSON contained in the string \a jsonString .
 	explicit JsonTree( const std::string &jsonString );
 	//! Creates a JsonTree with key \a key and boolean \a value .
-    explicit JsonTree( const std::string &key, bool value );
-    //! Creates a JsonTree with key \a key and double \a value .
+	explicit JsonTree( const std::string &key, bool value );
+	//! Creates a JsonTree with key \a key and double \a value .
 	explicit JsonTree( const std::string &key, double value );
-    //! Creates a JsonTree with key \a key and double \a value cast from float.
+	//! Creates a JsonTree with key \a key and double \a value cast from float.
 	explicit JsonTree( const std::string &key, float value );
-    //! Creates a JsonTree with key \a key and int \a value .
+	//! Creates a JsonTree with key \a key and int \a value .
 	explicit JsonTree( const std::string &key, int value );
-    //! Creates a JsonTree with key \a key and string \a value .
+	//! Creates a JsonTree with key \a key and string \a value .
 	explicit JsonTree( const std::string &key, const std::string &value );
 	//! Creates a JsonTree with key \a key and string \a value cast from const char*.
 	explicit JsonTree( const std::string &key, const char *value );
-    //! Creates a JsonTree with key \a key and unsigned int \a value .
+	//! Creates a JsonTree with key \a key and unsigned int \a value .
 	explicit JsonTree( const std::string &key, unsigned int value );
 	
 	/**! Creates a JsonTree with key \a key and an empty array. **/
-    static JsonTree                 makeArray( const std::string &key );
+	static JsonTree					makeArray( const std::string &key );
 	/**! Creates a JsonTree with key \a key as an empty object. **/
-	static JsonTree                 makeObject( const std::string &key );
-    
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	static JsonTree					makeObject( const std::string &key );
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//! Returns the JsonTree as a string with standard formatting.
-    std::string                     serialize() const;
+	std::string						serialize() const;
 
 	//! Returns an Iter to the first child of this node.
-    Iter                            begin();
-    //! Returns a ConstIter to the first child of this node.
-	ConstIter                       begin() const;
-    //! Returns an Iter which marks the end of the children of this node.
-	Iter                            end();
+	Iter							begin();
+	//! Returns a ConstIter to the first child of this node.
+	ConstIter						begin() const;
+	//! Returns an Iter which marks the end of the children of this node.
+	Iter							end();
 	//! Returns a ConstIter which marks the end of the children of this node.
-    ConstIter                       end() const;
+	ConstIter						end() const;
 
 	//! Assigns the JsonTree a new value, and creates it if it doesn't exist. 
-    JsonTree&                       operator=( const JsonTree &jsonTree );
-    
+	JsonTree&						operator=( const JsonTree &jsonTree );
+	
 	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
 		<br><tt>JsonTree node = myNode[ "path.to.child" ];</tt> **/
-    JsonTree&                       operator[]( const std::string &relativePath );
+	JsonTree&						operator[]( const std::string &relativePath );
 	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
 		<br><tt>JsonTree node = myNode[ "path.to.child" ];</tt> **/
-    const JsonTree&                 operator[]( const std::string &relativePath ) const;
+	const JsonTree&					operator[]( const std::string &relativePath ) const;
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-    JsonTree&                       operator[]( uint32_t index );
+	JsonTree&						operator[]( uint32_t index );
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-    const JsonTree&                 operator[]( uint32_t index ) const;
+	const JsonTree&					operator[]( uint32_t index ) const;
 	//! Streams the JsonTree \a json to std::ostream \a out with standard formatting.
-    friend std::ostream&            operator<<( std::ostream &out, const JsonTree &json );
-    
+	friend std::ostream&			operator<<( std::ostream &out, const JsonTree &json );
+	
 	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
 		<br><tt>JsonTree node = myNode.getChild( "path.to.child" );</tt> **/
-    JsonTree&                       getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' );
-    /**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
+	JsonTree&						getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' );
+	/**! Returns the child at \a relativePath. Throws ExcChildNotFound if none matches. 
 		<br><tt>JsonTree node = myNode.getChild( "path.to.child" );</tt> **/
-	const JsonTree&                 getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const;
-    //! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-	JsonTree&                       getChild( uint32_t index );
+	const JsonTree&					getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const;
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-    const JsonTree&                 getChild( uint32_t index ) const;
+	JsonTree&						getChild( uint32_t index );
+	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
+	const JsonTree&					getChild( uint32_t index ) const;
 	//! Returns a reference to the node's list of children nodes.
-    const std::list<JsonTree>&      getChildren() const;
+	const std::list<JsonTree>&		getChildren() const;
 
 	/**! Returns whether the child at \a relativePath exists. 
 		<br><tt>bool nodeExists = myNode.hasChild( "path.to.child" );</tt> **/
-	bool                            hasChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const;
-    //! Returns whether this node has a parent node.
-    bool                            hasChildren() const;
+	bool							hasChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const;
+	//! Returns whether this node has a parent node.
+	bool							hasChildren() const;
 
 	//! Returns a reference to the node which is the parent of this node.
-    JsonTree&						getParent();
+	JsonTree&						getParent();
 	//! Returns a reference to the node which is the parent of this node.
-    const JsonTree&					getParent() const;
+	const JsonTree&					getParent() const;
 	//! Returns whether this node has a parent node.
-    bool							hasParent() const;
+	bool							hasParent() const;
 
 	/**! Appends a copy of the node \a newChild to the children of this node.  
 		If \a this is a value node, it will change to an object or an array. 
 		If \a newChild has a key, \a this becomes an object node. 
 		If not, \a this becomes an array node. **/
-    void                            pushBack( const JsonTree &newChild );
-    
+	void							pushBack( const JsonTree &newChild );
+	
 	/**! Writes this JsonTree to \a path with standard formatting. 
 		If \a createDocument is true then an implicit parent object node is created when necessary and \a this is treated as the root element. **/
-    void                            write( const fs::path &path, bool createDocument = true );
+	void							write( const fs::path &path, bool createDocument = true );
 	/**! Writes this JsonTree to \a target with standard formatting. 
 		If \a createDocument is true then an implicit parent object node is created when necessary and \a this is treated as the root element. **/
-    void                            write( DataTargetRef target, bool createDocument = true );
+	void							write( DataTargetRef target, bool createDocument = true );
 
 	//! Returns the node's key as a string. Returns index if node does not have a key.
-    const std::string&              getKey() const;
-    
+	const std::string&				getKey() const;
+	
 	/**! Returns a path to this node, separated by the character \a separator. **/
-    std::string                     getPath( char separator = '.' ) const;
-    
+	std::string						getPath( char separator = '.' ) const;
+	
 	/**! \brief Returns the value of the node cast to T using ci::fromString().
 		<br><tt>float value = myNode.getValue<float>( "key" );</tt> **/
-    template <typename T> 
-    inline T                        getValue() const
-    {
-        try {
-            return fromString<T>( mValue );
-        } catch ( boost::bad_lexical_cast &) {
-            throw ExcNonConvertible( * this );
-        }
-        return (T)0; // Unreachable. Prevents warning.
-    }
+	template <typename T> 
+	inline T						getValue() const
+	{
+		try {
+			return fromString<T>( mValue );
+		} catch ( boost::bad_lexical_cast &) {
+			throw ExcNonConvertible( * this );
+		}
+		return (T)0; // Unreachable. Prevents warning.
+	}
 
 	//! Returns the value of the node.
 	const std::string&				getValue() const { return mValue; }
@@ -190,68 +190,68 @@ class JsonTree {
 private:
 
 	//! \cond
-    explicit JsonTree( const std::string &key, const Json::Value &value );
+	explicit JsonTree( const std::string &key, const Json::Value &value );
 
-    Json::Value                     createNativeDoc( bool createDocument = false ) const;
-    static Json::Value              deserializeNative( const std::string &jsonString );
-    static std::string              serializeNative( const Json::Value &value );
+	Json::Value						createNativeDoc( bool createDocument = false ) const;
+	static Json::Value				deserializeNative( const std::string &jsonString );
+	static std::string				serializeNative( const Json::Value &value );
    
-    void                            init( const std::string &key, const Json::Value &value, bool setType = false, 
-        NodeType nodeType = NODE_VALUE, ValueType valueType = VALUE_STRING );
-    
-    JsonTree*                       getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;
-    static bool                     isIndex( const std::string &key );
-    
-    std::list<JsonTree>             mChildren;
-    std::string                     mKey;
-    JsonTree						*mParent;
-    NodeType                        mNodeType;
-    std::string                     mValue;
-    ValueType                       mValueType;
+	void							init( const std::string &key, const Json::Value &value, bool setType = false, 
+		NodeType nodeType = NODE_VALUE, ValueType valueType = VALUE_STRING );
+	
+	JsonTree*						getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;
+	static bool						isIndex( const std::string &key );
+	
+	std::list<JsonTree>				mChildren;
+	std::string						mKey;
+	JsonTree						*mParent;
+	NodeType						mNodeType;
+	std::string						mValue;
+	ValueType						mValueType;
 	//! \cond
 
   public:
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	//! Base class for JsonTree exceptions.
-    class Exception : public cinder::Exception 
-    {
-    };
+	class Exception : public cinder::Exception 
+	{
+	};
 
 	//! Exception expressing the absence of an expected child node.
-    class ExcChildNotFound : public JsonTree::Exception {
-      public:
+	class ExcChildNotFound : public JsonTree::Exception {
+	  public:
 
-        ExcChildNotFound( const JsonTree &node, const std::string &key ) throw();
-        virtual const char* what() const throw() 
-        { 
-            return mMessage; 
-        }
+		ExcChildNotFound( const JsonTree &node, const std::string &key ) throw();
+		virtual const char* what() const throw() 
+		{ 
+			return mMessage; 
+		}
 
-      private:
-        char mMessage[ 2048 ];
-    };
+	  private:
+		char mMessage[ 2048 ];
+	};
 
 	//! Exception expressing the inability to convert a node's value to a requested type.
-    class ExcNonConvertible : public JsonTree::Exception {
-      public:
-        ExcNonConvertible( const JsonTree &node ) throw();
-        virtual const char* what() const throw() 
-        { 
-            return mMessage; 
-        }
+	class ExcNonConvertible : public JsonTree::Exception {
+	  public:
+		ExcNonConvertible( const JsonTree &node ) throw();
+		virtual const char* what() const throw() 
+		{ 
+			return mMessage; 
+		}
 
-      private:
-        char mMessage[ 2048 ];
-    };
+	  private:
+		char mMessage[ 2048 ];
+	};
 
 	//! Exception expressing the existence of errors in a JSON string.
-    class ExcJsonParserError : public JsonTree::Exception {
-    };
+	class ExcJsonParserError : public JsonTree::Exception {
+	};
 
 };
 
-std::ostream&                       operator<<( std::ostream &out, const JsonTree &json );
+std::ostream&						operator<<( std::ostream &out, const JsonTree &json );
 
 }
