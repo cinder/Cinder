@@ -621,6 +621,9 @@
 		43D8B2F011B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
 		43D8B2F111B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
 		43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
+		43E5E647151A719000E46E53 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E5E646151A719000E46E53 /* json_tool.h */; };
+		43E5E648151A719000E46E53 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E5E646151A719000E46E53 /* json_tool.h */; };
+		43E5E649151A719000E46E53 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E5E646151A719000E46E53 /* json_tool.h */; };
 		43ED0FDE12209488003AEB0B /* UrlImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */; };
 		43ED0FDF12209488003AEB0B /* UrlImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */; };
 		43ED0FE21220949A003AEB0B /* UrlImplCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */; };
@@ -965,6 +968,7 @@
 		43C4323F1450A8DA0095B260 /* CinderMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CinderMath.cpp; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
+		43E5E646151A719000E46E53 /* json_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_tool.h; sourceTree = "<group>"; };
 		43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UrlImplCocoa.mm; sourceTree = "<group>"; };
 		43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlImplCocoa.h; sourceTree = "<group>"; };
 		43F78EF11516DAB700EB63B5 /* Json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Json.cpp; sourceTree = "<group>"; };
@@ -1579,6 +1583,7 @@
 		43F78EDC1516DA9300EB63B5 /* jsoncpp */ = {
 			isa = PBXGroup;
 			children = (
+				43E5E646151A719000E46E53 /* json_tool.h */,
 				43F78EF91516DB2100EB63B5 /* json_batchallocator.h */,
 				43F78EFA1516DB2100EB63B5 /* json_internalarray.inl */,
 				43F78EFB1516DB2100EB63B5 /* json_internalmap.inl */,
@@ -1756,6 +1761,7 @@
 				0014408014CDB8D900D99000 /* Plane.h in Headers */,
 				43F78EF71516DAE200EB63B5 /* Json.h in Headers */,
 				43F78F011516DB2100EB63B5 /* json_batchallocator.h in Headers */,
+				43E5E648151A719000E46E53 /* json_tool.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1883,6 +1889,7 @@
 				0014408114CDB8D900D99000 /* Plane.h in Headers */,
 				43F78EF81516DAE200EB63B5 /* Json.h in Headers */,
 				43F78F021516DB2100EB63B5 /* json_batchallocator.h in Headers */,
+				43E5E649151A719000E46E53 /* json_tool.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2032,6 +2039,7 @@
 				0014407F14CDB8D900D99000 /* Plane.h in Headers */,
 				43F78EF61516DAE200EB63B5 /* Json.h in Headers */,
 				43F78F001516DB2100EB63B5 /* json_batchallocator.h in Headers */,
+				43E5E647151A719000E46E53 /* json_tool.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
