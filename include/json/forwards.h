@@ -1,7 +1,14 @@
+// Copyright 2007-2010 Baptiste Lepilleur
+// Distributed under MIT license, or public domain if desired and
+// recognized in your jurisdiction.
+// See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
+
 #ifndef JSON_FORWARDS_H_INCLUDED
 # define JSON_FORWARDS_H_INCLUDED
 
+#if !defined(JSON_IS_AMALGAMATION)
 # include "config.h"
+#endif // if !defined(JSON_IS_AMALGAMATION)
 
 namespace Json {
 
@@ -16,8 +23,7 @@ namespace Json {
    class Features;
 
    // value.h
-   typedef int Int;
-   typedef unsigned int UInt;
+   typedef unsigned int ArrayIndex;
    class StaticString;
    class Path;
    class PathArgument;
@@ -26,7 +32,6 @@ namespace Json {
    class ValueIterator;
    class ValueConstIterator;
 #ifdef JSON_VALUE_USE_INTERNAL_MAP
-   class ValueAllocator;
    class ValueMapAllocator;
    class ValueInternalLink;
    class ValueInternalArray;

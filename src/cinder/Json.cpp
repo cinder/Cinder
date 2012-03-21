@@ -33,6 +33,35 @@
 using namespace std;
 
 namespace cinder {
+	
+JsonTree::ParseOptions::ParseOptions() 
+: mIgnoreComments( true ), mIgnoreErrors( false ) 
+{
+}
+
+JsonTree::ParseOptions& JsonTree::ParseOptions::ignoreComments( bool ignore ) 
+{ 
+	mIgnoreComments = ignore; 
+	return *this; 
+}
+	
+JsonTree::ParseOptions& JsonTree::ParseOptions::ignoreErrors( bool ignore ) 
+{ 
+	mIgnoreErrors = ignore; 
+	return *this; 
+}
+
+bool JsonTree::ParseOptions::getIgnoreComments() const 
+{ 
+	return mIgnoreComments; 
+}
+	
+bool JsonTree::ParseOptions::getIgnoreErrors() const 
+{ 
+	return mIgnoreErrors; 
+}
+		
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 JsonTree::JsonTree()
 {
@@ -67,27 +96,23 @@ JsonTree& JsonTree::operator=( const JsonTree &jsonTree )
 	return *this;
 }
 
-JsonTree::JsonTree( DataSourceRef dataSource )
+JsonTree::JsonTree( DataSourceRef dataSource, ParseOptions parseOptions )
 {    
 	string jsonString = loadString( dataSource );
-	Json::Value value = deserializeNative( jsonString );
-	if( value.isNull() ) {
-		throw ExcJsonParserError();
-	}
+	Json::Value value = deserializeNative( jsonString, parseOptions );
 	init( "", value, true, NODE_OBJECT );
 }
 
-JsonTree::JsonTree( const std::string &jsonString )
+JsonTree::JsonTree( const std::string &jsonString, ParseOptions parseOptions )
 {
-    try {
-		Json::Reader reader;
-		Json::Value value;
-		reader.parse( jsonString, value );
-		init( "", value, true, NODE_OBJECT );
+	Json::Value value = deserializeNative( jsonString, parseOptions );
+	if ( value.isArray() ) {
+		init ( "", value, true, NODE_ARRAY );
+	} else if ( value.isObject() ) {
+		init ( "", value, true, NODE_OBJECT );
+	} else {
+		init ( "", value, true, NODE_NULL );
 	}
-	catch ( ... ) {
-		throw ExcJsonParserError();
-    }
 }
 
 JsonTree::JsonTree( const std::string &key, const Json::Value &value )
@@ -207,17 +232,30 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 }
 
 //! Converts a JSON string into a JsonCpp object
-Json::Value JsonTree::deserializeNative( const string &jsonString )
+Json::Value JsonTree::deserializeNative( const string &jsonString, ParseOptions parseOptions )
 {
+	Json::Features features;
+	features.allowComments_ = !parseOptions.getIgnoreComments();
+	features.strictRoot_ = !parseOptions.getIgnoreErrors();
+	Json::Reader reader( features );
+	Json::Value value;
     try {
-        Json::Reader reader;
-        Json::Value value;
-        reader.parse( jsonString, value );
-        return value;
+        reader.parse( jsonString, value, features.allowComments_ );
     }
 	catch ( ... ) {
-        throw ExcJsonParserError();
+		if( !parseOptions.getIgnoreErrors() ) {
+			string errorMessage = reader.getFormattedErrorMessages();
+			if( errorMessage.length() > 0 ) {
+				throw ExcJsonParserError( errorMessage );
+			}
+		}
     }
+	return value;
+}
+	
+void JsonTree::clear()
+{
+	mChildren.clear();
 }
 
 void JsonTree::pushBack( const JsonTree &newChild )
@@ -230,6 +268,50 @@ void JsonTree::pushBack( const JsonTree &newChild )
 	mChildren.push_back( newChild );
 	mChildren.back().mParent = this;
     mValue = "";
+}
+
+void JsonTree::removeChild( unsigned int index )
+{
+	if( index < mChildren.size() ) {
+		JsonTree::Iter pos = mChildren.begin();
+		for( uint32_t i = 0; i < index; i++, ++pos ) {
+		}
+		mChildren.erase( pos );
+	} else {
+		throw ExcChildNotFound( *this, toString( index ) );
+	}
+}
+	
+JsonTree::Iter JsonTree::removeChild( JsonTree::Iter pos )
+{
+	try {
+		return mChildren.erase( pos );
+	} catch ( ... ) {
+		throw ExcChildNotFound( *this, pos->getPath() );
+	}
+}
+
+void JsonTree::replaceChild( unsigned int index, const JsonTree &newChild )
+{
+	if ( index < mChildren.size() ) {
+		JsonTree::Iter oldChild = mChildren.begin();
+		for( uint32_t i = 0; i < index; i++, ++oldChild ) {
+		}
+		*oldChild = newChild;
+		oldChild->mParent = this;
+	} else {
+		throw ExcChildNotFound( *this, toString( index ) );
+	}
+}
+	
+void JsonTree::replaceChild( JsonTree::Iter pos, const JsonTree &newChild )
+{
+	try {
+		*pos = newChild;
+		pos->mParent = this;
+	} catch ( ... ) {
+		throw ExcChildNotFound( *this, toString( index ) );
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -530,7 +612,7 @@ string JsonTree::serializeNative( const Json::Value & value )
 		Json::StyledWriter writer;
 		return writer.write( value );
 	} catch ( ... ) {
-		throw ExcJsonParserError();
+		throw ExcJsonParserError( "Unable to serialize JsonCpp value." );
 	}
 }
 
@@ -560,7 +642,7 @@ void JsonTree::write( DataTargetRef target, bool createDocument )
 		jsonString += "\0";
 	}
 	catch ( ... ) {
-		throw ExcJsonParserError();
+		throw ExcJsonParserError( "Unable to serialize JsonTree." );
 	}
 
 	// Save data to file
@@ -580,6 +662,11 @@ JsonTree::ExcChildNotFound::ExcChildNotFound( const JsonTree &node, const string
 JsonTree::ExcNonConvertible::ExcNonConvertible( const JsonTree &node ) throw()
 {
 	sprintf( mMessage, "Unable to convert value for node: %s", node.getPath().c_str() );
+}
+
+JsonTree::ExcJsonParserError::ExcJsonParserError( const string &errorMessage ) throw()
+{
+	sprintf( mMessage, "Unable to parse JSON\n: %s", errorMessage.c_str() );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
