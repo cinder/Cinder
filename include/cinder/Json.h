@@ -66,6 +66,30 @@ class JsonTree {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public:
+
+	//! Options for JSON parsing. Passed to the JsonTree constructor.
+	class ParseOptions {
+	public:
+		//! Default options. Enables parsing errors.
+		ParseOptions();
+		//! Sets if JSON comments are ignored. Default true.
+		ParseOptions& ignoreComments( bool ignore = true );
+		//! Sets if JSON parse errors are ignored. Default true.
+		ParseOptions& ignoreErrors( bool ignore = true );
+		//! Returns whether JSON comments are ignored.
+		bool	getIgnoreComments() const;
+		//! Returns whether JSON parse errors are ignored.
+		bool	getIgnoreErrors() const;
+		
+	private:
+		//! \cond
+		bool	mIgnoreComments;
+		bool	mIgnoreErrors;
+		//! \endcond
+		
+	};
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	//! Creates a null JsonTree.
 	explicit JsonTree();
@@ -73,9 +97,9 @@ class JsonTree {
 	JsonTree( const JsonTree &jsonTree );
 	/** \brief Parses JSON contained in \a dataSource. Commonly used with the results of loadUrl(), loadFile() or loadResource().
 		<br><tt>JsonTree myDoc( loadUrl( "http://search.twitter.com/search.json?q=libcinder&rpp=10&result_type=recent" ) );</tt> **/
-	explicit JsonTree( DataSourceRef dataSource );
+	explicit JsonTree( DataSourceRef dataSource, ParseOptions parseOptions = ParseOptions() );
 	//! Parses the JSON contained in the string \a jsonString .
-	explicit JsonTree( const std::string &jsonString );
+	explicit JsonTree( const std::string &jsonString, ParseOptions parseOptions = ParseOptions() );
 	//! Creates a JsonTree with key \a key and boolean \a value .
 	explicit JsonTree( const std::string &key, bool value );
 	//! Creates a JsonTree with key \a key and double \a value .
@@ -120,9 +144,9 @@ class JsonTree {
 		<br><tt>JsonTree node = myNode[ "path.to.child" ];</tt> **/
 	const JsonTree&					operator[]( const std::string &relativePath ) const;
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-	JsonTree&						operator[]( uint32_t index );
+	JsonTree&						operator[]( unsigned int index );
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-	const JsonTree&					operator[]( uint32_t index ) const;
+	const JsonTree&					operator[]( unsigned int index ) const;
 	//! Streams the JsonTree \a json to std::ostream \a out with standard formatting.
 	friend std::ostream&			operator<<( std::ostream &out, const JsonTree &json );
 	
@@ -133,9 +157,9 @@ class JsonTree {
 		<br><tt>JsonTree node = myNode.getChild( "path.to.child" );</tt> **/
 	const JsonTree&					getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const;
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-	JsonTree&						getChild( uint32_t index );
+	JsonTree&						getChild( unsigned int index );
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-	const JsonTree&					getChild( uint32_t index ) const;
+	const JsonTree&					getChild( unsigned int index ) const;
 	//! Returns a reference to the node's list of children nodes.
 	const std::list<JsonTree>&		getChildren() const;
 
@@ -152,12 +176,22 @@ class JsonTree {
 	//! Returns whether this node has a parent node.
 	bool							hasParent() const;
 
+	//! Removes all child nodes
+	void							clear();
 	/**! Appends a copy of the node \a newChild to the children of this node.  
 		If \a this is a value node, it will change to an object or an array. 
 		If \a newChild has a key, \a this becomes an object node. 
 		If not, \a this becomes an array node. **/
 	void							pushBack( const JsonTree &newChild );
-	
+	//! Removes the child at \a index. Throws ExcChildNotFound if none matches.
+	void							removeChild( unsigned int index );
+	//! Removes the child at \a pos. Throws ExcChildNotFound if none matches.
+	Iter							removeChild( Iter pos );
+	//! Repalces the child at \a index with JsonTree \a newChild. Throws ExcChildNotFound if none matches.
+	void							replaceChild( unsigned int index, const JsonTree &newChild );
+	//! Repalces the child at \a pos with JsonTree \a newChild. Throws ExcChildNotFound if none matches.
+	void							replaceChild( Iter pos, const JsonTree &newChild );
+
 	/**! Writes this JsonTree to \a path with standard formatting. 
 		If \a createDocument is true then an implicit parent object node is created when necessary and \a this is treated as the root element. **/
 	void							write( const fs::path &path, bool createDocument = true );
@@ -193,7 +227,7 @@ private:
 	explicit JsonTree( const std::string &key, const Json::Value &value );
 
 	Json::Value						createNativeDoc( bool createDocument = false ) const;
-	static Json::Value				deserializeNative( const std::string &jsonString );
+	static Json::Value				deserializeNative( const std::string &jsonString, ParseOptions parseOptions );
 	static std::string				serializeNative( const Json::Value &value );
    
 	void							init( const std::string &key, const Json::Value &value, bool setType = false, 
@@ -222,7 +256,6 @@ private:
 	//! Exception expressing the absence of an expected child node.
 	class ExcChildNotFound : public JsonTree::Exception {
 	  public:
-
 		ExcChildNotFound( const JsonTree &node, const std::string &key ) throw();
 		virtual const char* what() const throw() 
 		{ 
@@ -246,8 +279,17 @@ private:
 		char mMessage[ 2048 ];
 	};
 
-	//! Exception expressing the existence of errors in a JSON string.
+	//! Exception expressing the existence of errors when serializing or deserializing JSON.
 	class ExcJsonParserError : public JsonTree::Exception {
+	public:
+		ExcJsonParserError( const std::string &errorMessage ) throw();
+		virtual const char* what() const throw() 
+		{ 
+			return mMessage; 
+		}
+		
+	private:
+		char mMessage[ 2048 ];
 	};
 
 };

@@ -1,7 +1,14 @@
+// Copyright 2007-2010 Baptiste Lepilleur
+// Distributed under MIT license, or public domain if desired and
+// recognized in your jurisdiction.
+// See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
+
 #ifndef JSON_WRITER_H_INCLUDED
 # define JSON_WRITER_H_INCLUDED
 
+#if !defined(JSON_IS_AMALGAMATION)
 # include "value.h"
+#endif // if !defined(JSON_IS_AMALGAMATION)
 # include <vector>
 # include <string>
 # include <iostream>
@@ -157,8 +164,12 @@ namespace Json {
       bool addChildValues_;
    };
 
+# if defined(JSON_HAS_INT64)
    std::string JSON_API valueToString( Int value );
    std::string JSON_API valueToString( UInt value );
+# endif // if defined(JSON_HAS_INT64)
+   std::string JSON_API valueToString( LargestInt value );
+   std::string JSON_API valueToString( LargestUInt value );
    std::string JSON_API valueToString( double value );
    std::string JSON_API valueToString( bool value );
    std::string JSON_API valueToQuotedString( const char *value );

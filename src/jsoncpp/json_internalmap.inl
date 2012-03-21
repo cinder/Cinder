@@ -1,5 +1,11 @@
+// Copyright 2007-2010 Baptiste Lepilleur
+// Distributed under MIT license, or public domain if desired and
+// recognized in your jurisdiction.
+// See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
+
 // included by json_value.cpp
-// everything is within Json namespace
+
+namespace Json {
 
 // //////////////////////////////////////////////////////////////////
 // //////////////////////////////////////////////////////////////////
@@ -415,7 +421,7 @@ ValueInternalMap::setNewItem( const char *key,
                               ValueInternalLink *link, 
                               BucketIndex index )
 {
-   char *duplicatedKey = valueAllocator()->makeMemberName( key );
+   char *duplicatedKey = makeMemberName( key );
    ++itemCount_;
    link->keys_[index] = duplicatedKey;
    link->items_[index].setItemUsed();
@@ -605,3 +611,5 @@ ValueInternalMap::distance( const IteratorState &x, const IteratorState &y )
       increment( it );
    return offset;
 }
+
+} // namespace Json

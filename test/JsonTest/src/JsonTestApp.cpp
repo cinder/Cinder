@@ -67,7 +67,13 @@ void JsonTestApp::setup()
     console() << firstTrackRef.getPath() << std::endl;
 	firstTrackRef = JsonTree( firstTrackRef.getKey(), string( "Replacement name" ) );
 	console() << doc.getChild( "library.albums[0].tracks[0].title" ) << std::endl;
-
+	
+	try {
+		JsonTree invalid( "%%%%%%%%" );
+	} catch ( JsonTree::ExcJsonParserError ex ) {
+		console() << ex.what() << std::endl;
+	}
+	
 }
 
 void JsonTestApp::mouseDown( MouseEvent event )
@@ -83,24 +89,30 @@ void JsonTestApp::mouseDown( MouseEvent event )
 
 	JsonTree tracks = JsonTree::makeArray( "tracks" );
 
-	for ( int32_t i = 0; i < 4; i ++ ) {
+	for ( int32_t i = 0; i < 6; i ++ ) {
 		
 		JsonTree track;
-		track.pushBack( JsonTree( "id", i ) );
+		track.pushBack( JsonTree( "id", i + 1 ) );
 		
 		JsonTree title;
 		switch ( i ) {
 		case 0:
-            title = JsonTree( "title", string( "All the Trees of the Field Will Clap Their Hands" ) );
+            title = JsonTree( "title", "All the Trees of the Field Will Clap Their Hands" );
 			break;
 		case 1:
-			title = JsonTree( "title", string( "The Dress Looks Nice on You" ) );
+			title = JsonTree( "title", "The Dress Looks Nice on You" );
 			break;
 		case 2:
-			title = JsonTree( "title", string( "In the Devil's Territory" ) );
+			title = JsonTree( "title", "In the Dev Hole's Territory" );
 			break;
 		case 3:
-			title = JsonTree( "title", string( "To Be Alone With You" ) );
+			title = JsonTree( "title", "To Be a Clone With You" );
+			break;
+		case 4:
+			title = JsonTree( "title", "To Be Removed" );
+			break;
+		case 5:
+			title = JsonTree( "title", "To Be Removed" );
 			break;
 		}
 
@@ -108,7 +120,31 @@ void JsonTestApp::mouseDown( MouseEvent event )
 		tracks.pushBack( track );
 
 	}
-
+	
+	for ( JsonTree::Iter trackIt = tracks.begin(); trackIt != tracks.end(); ++trackIt ) {
+		if ( trackIt->getChild( "id" ).getValue<int>() == 3 ) {
+			JsonTree track;
+			track.pushBack( JsonTree( "id", 3 ) );
+			track.pushBack( JsonTree( "title", "In the Devil's Territory" ) );
+			tracks.replaceChild( trackIt, track );
+		}
+	}
+	
+	JsonTree track;
+	track.pushBack( JsonTree( "id", 4 ) );
+	track.pushBack( JsonTree( "title", "To Be Alone With You" ) );
+	tracks.replaceChild( 3, track );
+	
+	tracks.removeChild( 4 );
+	
+	for ( JsonTree::Iter trackIt = tracks.begin(); trackIt != tracks.end(); ) {
+		if ( trackIt->getChild( "id" ).getValue<int>() == 6 ) {
+			trackIt = tracks.removeChild( trackIt );
+		} else {
+			++trackIt;
+		}
+	}
+	
 	album.pushBack( tracks );
 	library.pushBack( album );
 	doc.pushBack( library );
