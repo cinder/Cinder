@@ -150,7 +150,7 @@ JsonTree::JsonTree( const std::string &key, const char *value )
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_STRING );
 }
 
-JsonTree::JsonTree( const string &key, unsigned int value )
+JsonTree::JsonTree( const string &key, uint32_t value )
 {
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_UINT );
 }
@@ -270,7 +270,7 @@ void JsonTree::pushBack( const JsonTree &newChild )
     mValue = "";
 }
 
-void JsonTree::removeChild( unsigned int index )
+void JsonTree::removeChild( size_t index )
 {
 	if( index < mChildren.size() ) {
 		JsonTree::Iter pos = mChildren.begin();
@@ -291,7 +291,7 @@ JsonTree::Iter JsonTree::removeChild( JsonTree::Iter pos )
 	}
 }
 
-void JsonTree::replaceChild( unsigned int index, const JsonTree &newChild )
+void JsonTree::replaceChild( size_t index, const JsonTree &newChild )
 {
 	if ( index < mChildren.size() ) {
 		JsonTree::Iter oldChild = mChildren.begin();
@@ -310,7 +310,7 @@ void JsonTree::replaceChild( JsonTree::Iter pos, const JsonTree &newChild )
 		*pos = newChild;
 		pos->mParent = this;
 	} catch ( ... ) {
-		throw ExcChildNotFound( *this, toString( index ) );
+		throw ExcChildNotFound( *this, pos->getPath() );
 	}
 }
 
@@ -326,12 +326,12 @@ const JsonTree&	JsonTree::operator[]( const std::string &relativePath ) const
 	return getChild( relativePath );
 }
 
-JsonTree& JsonTree::operator[]( uint32_t index )
+JsonTree& JsonTree::operator[]( size_t index )
 {
 	return getChild( index );
 }
 
-const JsonTree&	JsonTree::operator[]( uint32_t index ) const
+const JsonTree&	JsonTree::operator[]( size_t index ) const
 {
 	return getChild( index );
 }
@@ -376,7 +376,7 @@ const JsonTree& JsonTree::getChild( const std::string &relativePath, bool caseSe
 	}
 }
 
-JsonTree& JsonTree::getChild( uint32_t index ) 
+JsonTree& JsonTree::getChild( size_t index ) 
 {
 	JsonTree *child = getNodePtr( toString( index ), false, '.' );
 	if ( child ) {
@@ -386,7 +386,7 @@ JsonTree& JsonTree::getChild( uint32_t index )
 	}
 }
 
-const JsonTree& JsonTree::getChild( uint32_t index ) const 
+const JsonTree& JsonTree::getChild( size_t index ) const 
 {
 	JsonTree *child = getNodePtr( toString( index ), false, '.' );
 	if ( child ) {

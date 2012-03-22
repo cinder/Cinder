@@ -69,19 +69,19 @@ class JsonTree {
 
 	//! Options for JSON parsing. Passed to the JsonTree constructor.
 	class ParseOptions {
-	public:
+	  public:
 		//! Default options. Enables parsing errors.
 		ParseOptions();
-		//! Sets if JSON comments are ignored. Default true.
+		//! Sets if JSON comments are ignored. Default \c true.
 		ParseOptions& ignoreComments( bool ignore = true );
-		//! Sets if JSON parse errors are ignored. Default true.
+		//! Sets if JSON parse errors are ignored. Default \c false.
 		ParseOptions& ignoreErrors( bool ignore = true );
 		//! Returns whether JSON comments are ignored.
 		bool	getIgnoreComments() const;
 		//! Returns whether JSON parse errors are ignored.
 		bool	getIgnoreErrors() const;
 		
-	private:
+	  private:
 		//! \cond
 		bool	mIgnoreComments;
 		bool	mIgnoreErrors;
@@ -112,8 +112,8 @@ class JsonTree {
 	explicit JsonTree( const std::string &key, const std::string &value );
 	//! Creates a JsonTree with key \a key and string \a value cast from const char*.
 	explicit JsonTree( const std::string &key, const char *value );
-	//! Creates a JsonTree with key \a key and unsigned int \a value .
-	explicit JsonTree( const std::string &key, unsigned int value );
+	//! Creates a JsonTree with key \a key and uint32_t \a value .
+	explicit JsonTree( const std::string &key, uint32_t value );
 	
 	/**! Creates a JsonTree with key \a key and an empty array. **/
 	static JsonTree					makeArray( const std::string &key );
@@ -144,9 +144,9 @@ class JsonTree {
 		<br><tt>JsonTree node = myNode[ "path.to.child" ];</tt> **/
 	const JsonTree&					operator[]( const std::string &relativePath ) const;
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-	JsonTree&						operator[]( unsigned int index );
+	JsonTree&						operator[]( size_t index );
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-	const JsonTree&					operator[]( unsigned int index ) const;
+	const JsonTree&					operator[]( size_t index ) const;
 	//! Streams the JsonTree \a json to std::ostream \a out with standard formatting.
 	friend std::ostream&			operator<<( std::ostream &out, const JsonTree &json );
 	
@@ -157,9 +157,9 @@ class JsonTree {
 		<br><tt>JsonTree node = myNode.getChild( "path.to.child" );</tt> **/
 	const JsonTree&					getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const;
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-	JsonTree&						getChild( unsigned int index );
+	JsonTree&						getChild( size_t index );
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
-	const JsonTree&					getChild( unsigned int index ) const;
+	const JsonTree&					getChild( size_t index ) const;
 	//! Returns a reference to the node's list of children nodes.
 	const std::list<JsonTree>&		getChildren() const;
 
@@ -184,11 +184,11 @@ class JsonTree {
 		If not, \a this becomes an array node. **/
 	void							pushBack( const JsonTree &newChild );
 	//! Removes the child at \a index. Throws ExcChildNotFound if none matches.
-	void							removeChild( unsigned int index );
+	void							removeChild( size_t index );
 	//! Removes the child at \a pos. Throws ExcChildNotFound if none matches.
 	Iter							removeChild( Iter pos );
 	//! Repalces the child at \a index with JsonTree \a newChild. Throws ExcChildNotFound if none matches.
-	void							replaceChild( unsigned int index, const JsonTree &newChild );
+	void							replaceChild( size_t index, const JsonTree &newChild );
 	//! Repalces the child at \a pos with JsonTree \a newChild. Throws ExcChildNotFound if none matches.
 	void							replaceChild( Iter pos, const JsonTree &newChild );
 
