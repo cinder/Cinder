@@ -72,18 +72,13 @@ class JsonTree {
 	  public:
 		//! Default options. Enables parsing errors.
 		ParseOptions();
-		//! Sets if JSON comments are ignored. Default \c true.
-		ParseOptions& ignoreComments( bool ignore = true );
 		//! Sets if JSON parse errors are ignored. Default \c false.
 		ParseOptions& ignoreErrors( bool ignore = true );
-		//! Returns whether JSON comments are ignored.
-		bool	getIgnoreComments() const;
 		//! Returns whether JSON parse errors are ignored.
 		bool	getIgnoreErrors() const;
 		
 	  private:
 		//! \cond
-		bool	mIgnoreComments;
 		bool	mIgnoreErrors;
 		//! \endcond
 		
@@ -116,9 +111,9 @@ class JsonTree {
 	explicit JsonTree( const std::string &key, uint32_t value );
 	
 	/**! Creates a JsonTree with key \a key and an empty array. **/
-	static JsonTree					makeArray( const std::string &key );
+	static JsonTree					makeArray( const std::string &key = "" );
 	/**! Creates a JsonTree with key \a key as an empty object. **/
-	static JsonTree					makeObject( const std::string &key );
+	static JsonTree					makeObject( const std::string &key = "" );
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
