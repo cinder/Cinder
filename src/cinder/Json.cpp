@@ -35,25 +35,14 @@ using namespace std;
 namespace cinder {
 	
 JsonTree::ParseOptions::ParseOptions() 
-: mIgnoreComments( true ), mIgnoreErrors( false ) 
+: mIgnoreErrors( false ) 
 {
-}
-
-JsonTree::ParseOptions& JsonTree::ParseOptions::ignoreComments( bool ignore ) 
-{ 
-	mIgnoreComments = ignore; 
-	return *this; 
 }
 	
 JsonTree::ParseOptions& JsonTree::ParseOptions::ignoreErrors( bool ignore ) 
 { 
 	mIgnoreErrors = ignore; 
 	return *this; 
-}
-
-bool JsonTree::ParseOptions::getIgnoreComments() const 
-{ 
-	return mIgnoreComments; 
 }
 	
 bool JsonTree::ParseOptions::getIgnoreErrors() const 
@@ -235,21 +224,22 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 Json::Value JsonTree::deserializeNative( const string &jsonString, ParseOptions parseOptions )
 {
 	Json::Features features;
-	features.allowComments_ = !parseOptions.getIgnoreComments();
+	features.allowComments_ = false;
 	features.strictRoot_ = !parseOptions.getIgnoreErrors();
 	Json::Reader reader( features );
 	Json::Value value;
     try {
-        reader.parse( jsonString, value, features.allowComments_ );
+        reader.parse( jsonString, value, false );
     }
 	catch ( ... ) {
-		if( !parseOptions.getIgnoreErrors() ) {
-			string errorMessage = reader.getFormattedErrorMessages();
-			if( errorMessage.length() > 0 ) {
-				throw ExcJsonParserError( errorMessage );
-			}
-		}
+		throw ExcJsonParserError( "Unknown error." );
     }
+	if( !parseOptions.getIgnoreErrors() ) {
+		string errorMessage = reader.getFormattedErrorMessages();
+		if( errorMessage.length() > 0 ) {
+			throw ExcJsonParserError( errorMessage );
+		}
+	}
 	return value;
 }
 	
