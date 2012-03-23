@@ -575,6 +575,9 @@
     <ClInclude Include="..\include\cinder\Thread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\ConcurrentCircularBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\cinder\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>

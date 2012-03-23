@@ -288,6 +288,7 @@
     <ClInclude Include="..\include\cinder\System.h" />
     <ClInclude Include="..\include\cinder\Text.h" />
     <ClInclude Include="..\include\cinder\Thread.h" />
+    <ClInclude Include="..\include\cinder\ConcurrentCircularBuffer.h" />
     <ClInclude Include="..\include\cinder\Timer.h" />
     <ClInclude Include="..\include\cinder\TriMesh.h" />
     <ClInclude Include="..\include\cinder\Url.h" />
