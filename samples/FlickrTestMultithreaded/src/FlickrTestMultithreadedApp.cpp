@@ -38,6 +38,7 @@ void FlickrTestMTApp::setup()
 
 void FlickrTestMTApp::loadImagesThreadFn()
 {
+	ci::ThreadSetup threadSetup; // instantiate this if you're talking to Cinder from a secondary thread
 	vector<Url>	urls;
 
 	// parse the image URLS from the XML feed and push them into 'urls'
@@ -62,7 +63,7 @@ void FlickrTestMTApp::loadImagesThreadFn()
 
 void FlickrTestMTApp::update()
 {
-	float timeSinceLastImage = getElapsedSeconds() - mLastTime;
+	double timeSinceLastImage = getElapsedSeconds() - mLastTime;
 	if( ( timeSinceLastImage > 2 ) && mSurfaces->isNotEmpty() ) {
 		Surface newSurface;
 		mSurfaces->popBack( &newSurface );
