@@ -66,6 +66,28 @@ class ConcurrentCircularBuffer {
 		mNotFullCond.notify_one();
 	}
 
+	//! Attempts to push \a item to the front of the buffer, but does not wait for an availability. Returns success as true or false.
+	bool tryPushFront( param_type item ) {
+		// param_type represents the "best" way to pass a parameter of type value_type to a method
+		std::unique_lock<std::mutex> lock( mMutex );
+		if( ! is_not_full_impl() )
+			return false;
+		mContainer.push_front( item );
+		++mNumUnread;
+		mNotEmptyCond.notify_one();	
+		return true;
+	}
+
+	//! Attempts to pop an item from the back of the buffer, but does not wait for an availability. Returns success as true or false.
+	bool tryPopBack( value_type* pItem ) {
+		std::unique_lock<std::mutex> lock( mMutex );
+		if( ! is_not_empty_impl() )
+			return false;
+		*pItem = mContainer[--mNumUnread];
+		mNotFullCond.notify_one();
+		return true;
+	}
+
 	bool isNotEmpty() {
 		std::unique_lock<std::mutex> lock( mMutex );
 		return is_not_empty_impl();
@@ -82,6 +104,9 @@ class ConcurrentCircularBuffer {
 		mNotFullCond.notify_all();
 		mNotEmptyCond.notify_all();
 	}
+	
+	//! Returns the number of items the buffer can hold
+	size_t size() const { return (size_t)mContainer.capacity(); }
 
   private:
 	ConcurrentCircularBuffer( const ConcurrentCircularBuffer& );              // Disabled copy constructor
