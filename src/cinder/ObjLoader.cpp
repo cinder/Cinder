@@ -55,8 +55,6 @@ ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bo
 ObjLoader::~ObjLoader()
 {
 }
-
-    
     
 void ObjLoader::parseMaterial( std::shared_ptr<IStream> material )
 {
@@ -73,7 +71,7 @@ void ObjLoader::parseMaterial( std::shared_ptr<IStream> material )
         stringstream ss( line );
         ss >> tag;
         if( tag == "newmtl" ) {
-            if (m.mName.length() > 0)
+            if( m.mName.length() > 0 )
                 mMaterials[m.mName] = m;
             
             ss >> m.mName;
@@ -87,7 +85,8 @@ void ObjLoader::parseMaterial( std::shared_ptr<IStream> material )
             ss >> m.Kd[0] >> m.Kd[1] >> m.Kd[2];
         }
     }
-    mMaterials[m.mName] = m;
+    if( m.mName.length() > 0 )
+        mMaterials[m.mName] = m;
 }
 
 void ObjLoader::parse( bool includeUVs )
