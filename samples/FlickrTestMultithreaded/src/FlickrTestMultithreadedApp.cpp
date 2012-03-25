@@ -1,6 +1,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Xml.h"
+#include "cinder/Timeline.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Thread.h"
 #include "cinder/ConcurrentCircularBuffer.h"
@@ -22,7 +23,8 @@ class FlickrTestMTApp : public AppBasic {
 
 	bool					mShouldQuit;
 	std::thread				mThread;
-	gl::Texture				mTexture;
+	gl::Texture				mTexture, mLastTexture;
+	Anim<float>				mFade;
 	double					mLastTime;
 };
 
@@ -64,18 +66,33 @@ void FlickrTestMTApp::loadImagesThreadFn()
 void FlickrTestMTApp::update()
 {
 	double timeSinceLastImage = getElapsedSeconds() - mLastTime;
-	if( ( timeSinceLastImage > 2 ) && mSurfaces->isNotEmpty() ) {
+	if( ( timeSinceLastImage > 2.5 ) && mSurfaces->isNotEmpty() ) {
+		mLastTexture = mTexture; // the "last" texture is now the current text
+		
 		Surface newSurface;
 		mSurfaces->popBack( &newSurface );
 		mTexture = gl::Texture( newSurface );
+		
 		mLastTime = getElapsedSeconds();
+		// blend from 0 to 1 over 1.5sec
+		timeline().apply( &mFade, 0.0f, 1.0f, 1.5f );
 	}	
 }
 
 void FlickrTestMTApp::draw()
 {	
+	gl::enableAlphaBlending();
 	gl::clear();
+	gl::color( Color::white() );
+	
+	if( mLastTexture ) {
+		gl::color( 1, 1, 1, 1.0f - mFade );
+		Rectf textureBounds = mLastTexture.getBounds();
+		Rectf drawBounds = textureBounds.getCenteredFit( getWindowBounds(), true );
+		gl::draw( mLastTexture, drawBounds );
+	}
 	if( mTexture ) {
+		gl::color( 1, 1, 1, mFade );
 		Rectf textureBounds = mTexture.getBounds();
 		Rectf drawBounds = textureBounds.getCenteredFit( getWindowBounds(), true );
 		gl::draw( mTexture, drawBounds );
