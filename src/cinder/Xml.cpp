@@ -142,6 +142,33 @@ list<XmlTree>::const_iterator XmlTree::findNextChildNamed( const list<XmlTree> &
 	return result;
 }
 
+XmlTree::XmlTree( const XmlTree &rhs )
+	: mNodeType( rhs.mNodeType ), mTag( rhs.mTag ), mValue( rhs.mValue ), mDocType( rhs.mDocType ),
+	 mParent( 0 ), mAttributes( rhs.mAttributes )
+{
+	for( XmlTree::ConstIter childIt = rhs.begin(); childIt != rhs.end(); ++childIt ) {
+		mChildren.push_back( *childIt );
+		mChildren.back().mParent = this;
+	}
+}
+
+XmlTree& XmlTree::operator=( const XmlTree &rhs )
+{
+	mNodeType = rhs.mNodeType;
+	mTag = rhs.mTag;
+	mValue = rhs.mValue;
+	mDocType = rhs.mDocType;
+	mParent = 0;
+	mAttributes = rhs.mAttributes;
+
+	for( XmlTree::ConstIter childIt = rhs.begin(); childIt != rhs.end(); ++childIt ) {
+		mChildren.push_back( *childIt );
+		mChildren.back().mParent = this;
+	}
+	
+	return *this;
+}
+
 XmlTree::XmlTree( const std::string &xmlString, ParseOptions parseOptions )
 {
 	std::string strCopy( xmlString );
@@ -299,6 +326,8 @@ XmlTree* XmlTree::getNodePtr( const string &relativePath, bool caseSensitive, ch
 
 	vector<string> pathComponents = split( relativePath, separator );
 	for( vector<string>::const_iterator pathIt = pathComponents.begin(); pathIt != pathComponents.end(); ++pathIt ) {
+		if( pathIt->empty() )
+			continue;
 		list<XmlTree>::const_iterator node = XmlTree::findNextChildNamed( curNode->getChildren(), curNode->getChildren().begin(), *pathIt, caseSensitive )	;
 		if( node != curNode->getChildren().end() )
 			curNode = const_cast<XmlTree*>( &(*node) );
