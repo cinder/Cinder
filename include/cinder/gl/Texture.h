@@ -82,6 +82,8 @@ class Texture {
 
 	//! Replaces the pixels of a texture with contents of \a surface. Expects \a surface's size to match the Texture's.
 	void			update( const Surface &surface );
+	//! Replaces the pixels of a texture with contents of \a surface. Expects \a surface's size to match the Texture's.
+	void			update( const Surface32f &surface );
 	/** \brief Replaces the pixels of a texture with contents of \a surface. Expects \a area's size to match the Texture's.
 		\todo Method for updating a subrectangle with an offset into the source **/
 	void			update( const Surface &surface, const Area &area );

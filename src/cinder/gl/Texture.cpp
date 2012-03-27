@@ -433,6 +433,26 @@ void Texture::update( const Surface &surface )
 #endif
 }
 
+void Texture::update( const Surface32f &surface )
+{
+	GLint dataFormat;
+	GLenum type;
+	SurfaceChannelOrderToDataFormatAndType( surface.getChannelOrder(), &dataFormat, &type );
+	if( ( surface.getWidth() != getWidth() ) || ( surface.getHeight() != getHeight() ) )
+		throw TextureDataExc( "Invalid Texture::update() surface dimensions" );
+
+	glBindTexture( mObj->mTarget, mObj->mTextureID );
+	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+#if ! defined( CINDER_GLES )
+	glPixelStorei( GL_UNPACK_ROW_LENGTH, surface.getRowBytes() / ( surface.getPixelInc() * sizeof(float)) );
+#endif
+	// @TODO: type does not seem to be pulling out the right value.. 
+	glTexImage2D( mObj->mTarget, 0, getInternalFormat(), getWidth(), getHeight(), 0, dataFormat, GL_FLOAT, surface.getData() );
+#if ! defined( CINDER_GLES )
+	glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+#endif
+}
+
 void Texture::update( const Surface &surface, const Area &area )
 {
 	GLint dataFormat;
