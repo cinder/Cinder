@@ -146,14 +146,26 @@ void rotate( const Quatf &quat );
 inline void rotate( float degrees ) { rotate( Vec3f( 0, 0, degrees ) ); }
 
 #if ! defined( CINDER_GLES )
-//! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
+//! Equivalent to glBegin() in immediate mode
+inline void begin( GLenum mode ) { glBegin( mode ); }
+//! Equivalent to glEnd() in immediate mode
+inline void end() { glEnd(); }
+//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
 inline void vertex( const Vec2f &v ) { glVertex2fv( &v.x ); }
-//! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
+//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
 inline void vertex( float x, float y ) { glVertex2f( x, y ); }
-//! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
+//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
 inline void vertex( const Vec3f &v ) { glVertex3fv( &v.x ); }
-//! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
+//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
 inline void vertex( float x, float y, float z ) { glVertex3f( x, y, z ); }
+//! Used between calls to gl::begin() and gl::end(), sets the 2D texture coordinate for the next vertex.
+inline void texCoord( float x, float y ) { glTexCoord2f( x, y ); }
+//! Used between calls to gl::begin() and gl::end(), sets the 2D texture coordinate for the next vertex.
+inline void texCoord( const Vec2f &v ) { glTexCoord2f( v.x, v.y ); }
+//! Used between calls to gl::begin() and gl::end(), sets the 3D texture coordinate for the next vertex.
+inline void texCoord( float x, float y, float z ) { glTexCoord3f( x, y, z ); }
+//! Used between calls to gl::begin() and gl::end(), sets the 3D texture coordinate for the next vertex.
+inline void texCoord( const Vec3f &v ) { glTexCoord3f( v.x, v.y, v.z ); }
 #endif // ! defined( CINDER_GLES )
 //! Sets the current color and the alpha value to 1.0
 inline void color( float r, float g, float b ) { glColor4f( r, g, b, 1.0f ); }

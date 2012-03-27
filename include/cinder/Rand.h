@@ -23,11 +23,14 @@
 #pragma once
 
 #pragma push_macro("nil")
+#pragma push_macro("Nil")
 #undef nil
+#undef Nil
 #include <boost/random.hpp>
 #include <boost/random/uniform_int.hpp>
 #include <boost/random/uniform_real.hpp>
 #include <boost/random/mersenne_twister.hpp>
+#pragma pop_macro("Nil")
 #pragma pop_macro("nil")
 
 #include "cinder/Vector.h"

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -75,6 +75,12 @@
     </Filter>
     <Filter Include="Source Files\libtess2">
       <UniqueIdentifier>{2d33008c-c675-44bd-a5bb-b5998abbf655}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\jsoncpp">
+      <UniqueIdentifier>{13c0913f-8fdb-4945-a68a-6b210c4e8d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\json">
+      <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -406,6 +412,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\Base64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\json_reader.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\json_value.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\json_writer.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Json.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -842,5 +860,46 @@
     <ClInclude Include="..\include\cinder\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\json\autolink.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\config.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\features.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\forwards.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\json.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\reader.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\value.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\writer.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\jsoncpp\json_batchallocator.h">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\jsoncpp\json_internalarray.inl">
+      <Filter>Source Files\jsoncpp</Filter>
+    </None>
+    <None Include="..\src\jsoncpp\json_internalmap.inl">
+      <Filter>Source Files\jsoncpp</Filter>
+    </None>
+    <None Include="..\src\jsoncpp\json_valueiterator.inl">
+      <Filter>Source Files\jsoncpp</Filter>
+    </None>
   </ItemGroup>
 </Project>

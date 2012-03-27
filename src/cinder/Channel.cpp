@@ -69,6 +69,8 @@ class ImageSourceChannel : public ImageSource {
 		mHeight = channel.getHeight();
 		setColorModel( ImageIo::CM_GRAY );
 		setChannelOrder( ImageIo::Y );
+		if( channel.getIncrement() != 1 )
+			setCustomPixelInc( channel.getIncrement() );
 		if( boost::is_same<T,uint8_t>::value ) {
 			setDataType( ImageIo::UINT8 );
 			mChannel8u = *reinterpret_cast<const Channel8u*>( &channel ); // register reference to 'channel'

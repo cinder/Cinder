@@ -92,6 +92,8 @@ class ColorT
 		return (&r)[n];
 	}
 
+	T*  ptr() const { return &(const_cast<ColorT*>( this )->r); }
+
 	ColorT<T>		operator+( const ColorT<T> &rhs ) const { return ColorT<T>( r + rhs.r, g + rhs.g, b + rhs.b ); }
 	ColorT<T>		operator-( const ColorT<T> &rhs ) const { return ColorT<T>( r - rhs.r, g - rhs.g, b - rhs.b ); }
 	ColorT<T>		operator*( const ColorT<T> &rhs ) const { return ColorT<T>( r * rhs.r, g * rhs.g, b * rhs.b ); }
@@ -250,6 +252,8 @@ class ColorAT {
 		return (&r)[n];
 	}
 
+	T*  ptr() const { return &(const_cast<ColorAT*>( this )->r); }
+
 	ColorAT<T>	operator+( const ColorAT<T> &rhs ) const { return ColorAT<T>( r + rhs.r, g + rhs.g, b + rhs.b, a + rhs.a ); }
 	ColorAT<T>	operator-( const ColorAT<T> &rhs ) const { return ColorAT<T>( r - rhs.r, g - rhs.g, b - rhs.b, a - rhs.a ); }
 	ColorAT<T>	operator*( const ColorAT<T> &rhs ) const { return ColorAT<T>( r * rhs.r, g * rhs.g, b * rhs.b, a * rhs.a ); }
@@ -323,7 +327,7 @@ class ColorAT {
 		return ColorAT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
 	}
 
-	static ColorT<T> gray( T value )
+	static ColorAT<T> gray( T value )
 	{
 		return ColorAT<T>( value, value, value, CHANTRAIT<T>::max() );
 	}

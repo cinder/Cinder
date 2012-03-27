@@ -101,6 +101,9 @@ class AreaT {
 	const AreaT<T>		operator+( const Vec2<T> &o ) const { return this->getOffset( o ); }
 	const AreaT<T>		operator-( const Vec2<T> &o ) const { return this->getOffset( -o ); }
 
+	const AreaT<T>		operator+( const AreaT<T>& rhs ) const { return AreaT<T>( x1 + rhs.x1, y1 + rhs.y1, x2 + rhs.x2, y2 + rhs.y2 ); }
+	const AreaT<T>		operator-( const AreaT<T>& rhs ) const { return AreaT<T>( x1 - rhs.x1, y1 - rhs.y1, x2 - rhs.x2, y2 - rhs.y2 ); }
+
 	AreaT<T>&		operator+=( const Vec2<T> &o ) { offset( o ); return *this; }
 	AreaT<T>&		operator-=( const Vec2<T> &o ) { offset( -o ); return *this; }
 

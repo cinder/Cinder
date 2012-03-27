@@ -621,6 +621,9 @@
 		43D8B2F011B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
 		43D8B2F111B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
 		43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */; };
+		43E5E647151A719000E46E53 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E5E646151A719000E46E53 /* json_tool.h */; };
+		43E5E648151A719000E46E53 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E5E646151A719000E46E53 /* json_tool.h */; };
+		43E5E649151A719000E46E53 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 43E5E646151A719000E46E53 /* json_tool.h */; };
 		43ED0FDE12209488003AEB0B /* UrlImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */; };
 		43ED0FDF12209488003AEB0B /* UrlImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */; };
 		43ED0FE21220949A003AEB0B /* UrlImplCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */; };
@@ -629,6 +632,24 @@
 		43ED0FE5122094AB003AEB0B /* Url.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D92FB70EB8AE5200EE9D75 /* Url.cpp */; };
 		43ED153C1221DF69003AEB0B /* Url.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D92FB70EB8AE5200EE9D75 /* Url.cpp */; };
 		43ED153D1221DF6C003AEB0B /* UrlImplCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */; };
+		43F78EF21516DAB700EB63B5 /* Json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EF11516DAB700EB63B5 /* Json.cpp */; };
+		43F78EF31516DAB700EB63B5 /* Json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EF11516DAB700EB63B5 /* Json.cpp */; };
+		43F78EF41516DAB700EB63B5 /* Json.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EF11516DAB700EB63B5 /* Json.cpp */; };
+		43F78EF61516DAE200EB63B5 /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
+		43F78EF71516DAE200EB63B5 /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
+		43F78EF81516DAE200EB63B5 /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
+		43F78F001516DB2100EB63B5 /* json_batchallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF91516DB2100EB63B5 /* json_batchallocator.h */; };
+		43F78F011516DB2100EB63B5 /* json_batchallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF91516DB2100EB63B5 /* json_batchallocator.h */; };
+		43F78F021516DB2100EB63B5 /* json_batchallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF91516DB2100EB63B5 /* json_batchallocator.h */; };
+		43F78F031516DB2100EB63B5 /* json_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EFC1516DB2100EB63B5 /* json_reader.cpp */; };
+		43F78F041516DB2100EB63B5 /* json_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EFC1516DB2100EB63B5 /* json_reader.cpp */; };
+		43F78F051516DB2100EB63B5 /* json_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EFC1516DB2100EB63B5 /* json_reader.cpp */; };
+		43F78F061516DB2100EB63B5 /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EFD1516DB2100EB63B5 /* json_value.cpp */; };
+		43F78F071516DB2100EB63B5 /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EFD1516DB2100EB63B5 /* json_value.cpp */; };
+		43F78F081516DB2100EB63B5 /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EFD1516DB2100EB63B5 /* json_value.cpp */; };
+		43F78F091516DB2100EB63B5 /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EFF1516DB2100EB63B5 /* json_writer.cpp */; };
+		43F78F0A1516DB2100EB63B5 /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EFF1516DB2100EB63B5 /* json_writer.cpp */; };
+		43F78F0B1516DB2100EB63B5 /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 43F78EFF1516DB2100EB63B5 /* json_writer.cpp */; };
 		5391FD680E957646002A13D5 /* KeyEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5391FD670E957646002A13D5 /* KeyEvent.h */; };
 		5391FE660E95CB01002A13D5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
@@ -947,8 +968,18 @@
 		43C4323F1450A8DA0095B260 /* CinderMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CinderMath.cpp; sourceTree = "<group>"; };
 		43D8B2EB11B0C85000B61EB6 /* AccelEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AccelEvent.h; path = app/AccelEvent.h; sourceTree = "<group>"; };
 		43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TouchEvent.h; path = app/TouchEvent.h; sourceTree = "<group>"; };
+		43E5E646151A719000E46E53 /* json_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_tool.h; sourceTree = "<group>"; };
 		43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = UrlImplCocoa.mm; sourceTree = "<group>"; };
 		43ED0FE11220949A003AEB0B /* UrlImplCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlImplCocoa.h; sourceTree = "<group>"; };
+		43F78EF11516DAB700EB63B5 /* Json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Json.cpp; sourceTree = "<group>"; };
+		43F78EF51516DAE200EB63B5 /* Json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Json.h; sourceTree = "<group>"; };
+		43F78EF91516DB2100EB63B5 /* json_batchallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = json_batchallocator.h; sourceTree = "<group>"; };
+		43F78EFA1516DB2100EB63B5 /* json_internalarray.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = json_internalarray.inl; sourceTree = "<group>"; };
+		43F78EFB1516DB2100EB63B5 /* json_internalmap.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = json_internalmap.inl; sourceTree = "<group>"; };
+		43F78EFC1516DB2100EB63B5 /* json_reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_reader.cpp; sourceTree = "<group>"; };
+		43F78EFD1516DB2100EB63B5 /* json_value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_value.cpp; sourceTree = "<group>"; };
+		43F78EFE1516DB2100EB63B5 /* json_valueiterator.inl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = json_valueiterator.inl; sourceTree = "<group>"; };
+		43F78EFF1516DB2100EB63B5 /* json_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = json_writer.cpp; sourceTree = "<group>"; };
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
 		C70E19FE106AA38700E63577 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E1A01106AA39D00E63577 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
@@ -1277,6 +1308,7 @@
 				00C071B20FF16261004801EA /* Font.h */,
 				000529000FFBE14900F19492 /* Text.h */,
 				001E3562115D5F14000C228C /* Xml.h */,
+				43F78EF51516DAE200EB63B5 /* Json.h */,
 				EAC3D1A81011F2E700FFBC9E /* Serial.h */,
 				002F8F71103AFD9A0077CB91 /* System.h */,
 				C70E19FE106AA38700E63577 /* Buffer.h */,
@@ -1342,6 +1374,7 @@
 				00C071AF0FF16244004801EA /* Font.cpp */,
 				0005291F0FFBF4C200F19492 /* Text.cpp */,
 				001E355E115D5EFA000C228C /* Xml.cpp */,
+				43F78EF11516DAB700EB63B5 /* Json.cpp */,
 				EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */,
 				002F8F74103AFEBF0077CB91 /* System.cpp */,
 				C70E1A01106AA39D00E63577 /* Buffer.cpp */,
@@ -1539,12 +1572,29 @@
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				43F78EDC1516DA9300EB63B5 /* jsoncpp */,
 				00A113F51355369A00081873 /* libtess2 */,
 				007CE1F1127BB11200799071 /* rapidxml */,
 				32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
+		};
+		43F78EDC1516DA9300EB63B5 /* jsoncpp */ = {
+			isa = PBXGroup;
+			children = (
+				43E5E646151A719000E46E53 /* json_tool.h */,
+				43F78EF91516DB2100EB63B5 /* json_batchallocator.h */,
+				43F78EFA1516DB2100EB63B5 /* json_internalarray.inl */,
+				43F78EFB1516DB2100EB63B5 /* json_internalmap.inl */,
+				43F78EFC1516DB2100EB63B5 /* json_reader.cpp */,
+				43F78EFD1516DB2100EB63B5 /* json_value.cpp */,
+				43F78EFE1516DB2100EB63B5 /* json_valueiterator.inl */,
+				43F78EFF1516DB2100EB63B5 /* json_writer.cpp */,
+			);
+			name = jsoncpp;
+			path = ../src/jsoncpp;
+			sourceTree = SOURCE_ROOT;
 		};
 		C7BA405B0FA8BEFD00AADC07 /* audio */ = {
 			isa = PBXGroup;
@@ -1709,6 +1759,9 @@
 				005C0CEA14CBB3DB00A12CD2 /* Base64.h in Headers */,
 				004172FC14C9BE580070C0D1 /* Frustum.h in Headers */,
 				0014408014CDB8D900D99000 /* Plane.h in Headers */,
+				43F78EF71516DAE200EB63B5 /* Json.h in Headers */,
+				43F78F011516DB2100EB63B5 /* json_batchallocator.h in Headers */,
+				43E5E648151A719000E46E53 /* json_tool.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1834,6 +1887,9 @@
 				005C0CEB14CBB3DB00A12CD2 /* Base64.h in Headers */,
 				004172FD14C9BE580070C0D1 /* Frustum.h in Headers */,
 				0014408114CDB8D900D99000 /* Plane.h in Headers */,
+				43F78EF81516DAE200EB63B5 /* Json.h in Headers */,
+				43F78F021516DB2100EB63B5 /* json_batchallocator.h in Headers */,
+				43E5E649151A719000E46E53 /* json_tool.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1981,6 +2037,9 @@
 				005C0CE914CBB3DB00A12CD2 /* Base64.h in Headers */,
 				004172FA14C9BE520070C0D1 /* Frustum.h in Headers */,
 				0014407F14CDB8D900D99000 /* Plane.h in Headers */,
+				43F78EF61516DAE200EB63B5 /* Json.h in Headers */,
+				43F78F001516DB2100EB63B5 /* json_batchallocator.h in Headers */,
+				43E5E647151A719000E46E53 /* json_tool.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2158,6 +2217,10 @@
 				005C0CEE14CBB47500A12CD2 /* Base64.cpp in Sources */,
 				0041730014C9BE760070C0D1 /* Frustum.cpp in Sources */,
 				0041730414C9BE8E0070C0D1 /* Plane.cpp in Sources */,
+				43F78EF31516DAB700EB63B5 /* Json.cpp in Sources */,
+				43F78F041516DB2100EB63B5 /* json_reader.cpp in Sources */,
+				43F78F071516DB2100EB63B5 /* json_value.cpp in Sources */,
+				43F78F0A1516DB2100EB63B5 /* json_writer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2251,6 +2314,10 @@
 				005C0CEF14CBB47500A12CD2 /* Base64.cpp in Sources */,
 				0041730114C9BE760070C0D1 /* Frustum.cpp in Sources */,
 				0041730514C9BE8E0070C0D1 /* Plane.cpp in Sources */,
+				43F78EF41516DAB700EB63B5 /* Json.cpp in Sources */,
+				43F78F051516DB2100EB63B5 /* json_reader.cpp in Sources */,
+				43F78F081516DB2100EB63B5 /* json_value.cpp in Sources */,
+				43F78F0B1516DB2100EB63B5 /* json_writer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2365,6 +2432,10 @@
 				005C0CED14CBB47500A12CD2 /* Base64.cpp in Sources */,
 				004172FF14C9BE760070C0D1 /* Frustum.cpp in Sources */,
 				0041730314C9BE8E0070C0D1 /* Plane.cpp in Sources */,
+				43F78EF21516DAB700EB63B5 /* Json.cpp in Sources */,
+				43F78F031516DB2100EB63B5 /* json_reader.cpp in Sources */,
+				43F78F061516DB2100EB63B5 /* json_value.cpp in Sources */,
+				43F78F091516DB2100EB63B5 /* json_writer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2436,8 +2507,9 @@
 		00CFD9DF1135C3520091E310 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALTERNATE_PERMISSIONS_FILES = i386;
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -2459,6 +2531,7 @@
 				);
 				PRODUCT_NAME = "cinder-iphone-sim_d";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = iphonesimulator;
 				VALID_ARCHS = i386;
 			};
 			name = Debug;
@@ -2466,8 +2539,9 @@
 		00CFD9E01135C3520091E310 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALTERNATE_PERMISSIONS_FILES = i386;
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2491,6 +2565,7 @@
 				);
 				PRODUCT_NAME = "cinder-iphone-sim";
 				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = iphonesimulator;
 				VALID_ARCHS = i386;
 			};
 			name = Release;
