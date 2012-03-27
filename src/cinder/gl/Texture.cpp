@@ -443,6 +443,15 @@ void Texture::update( const Surface &surface, const Area &area )
 	glTexSubImage2D( mObj->mTarget, 0, area.getX1(), area.getY1(), area.getWidth(), area.getHeight(), dataFormat, type, surface.getData( area.getUL() ) );
 }
 
+void Texture::update( const Channel32f &channel )
+{
+	if( ( channel.getWidth() != getWidth() ) || ( channel.getHeight() != getHeight() ) )
+		throw TextureDataExc( "Invalid Texture::update() channel dimensions" );
+
+	glBindTexture( mObj->mTarget, mObj->mTextureID );
+	glTexSubImage2D( mObj->mTarget, 0, 0, 0, getWidth(), getHeight(), GL_LUMINANCE, GL_FLOAT, channel.getData() );
+}
+
 void Texture::update( const Channel8u &channel, const Area &area )
 {
 	glBindTexture( mObj->mTarget, mObj->mTextureID );	
