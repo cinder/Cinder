@@ -1322,25 +1322,47 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 #endif // ! defined( CINDER_GLES )
 
 
-void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp )
+void drawBillboard( const Vec3f &pos, const Vec2f &size, float rotationDegrees,
+        const Vec3f &bbRight, const Vec3f &bbUp, GLfloat texCoords[] )
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
 	Vec3f verts[4];
 	glVertexPointer( 3, GL_FLOAT, 0, &verts[0].x );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	GLfloat texCoords[8] = { 0, 0, 0, 1, 1, 0, 1, 1 };
 	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
 
-	float sinA = math<float>::sin( toRadians( rotationDegrees ) );
-	float cosA = math<float>::cos( toRadians( rotationDegrees ) );
+    Matrix22f rot = Matrix22f::createScale(0.5f);
+    rot.rotate(toRadians(rotationDegrees));
+    Vec2f halfDiag1 = rot.postMultiply(size), halfDiag2 = rot.preMultiply(size);
 
-	verts[0] = pos + bbRight * ( -0.5f * scale.x * cosA - 0.5f * sinA * scale.y ) + bbUp * ( -0.5f * scale.x * sinA + 0.5f * cosA * scale.y );
-	verts[1] = pos + bbRight * ( -0.5f * scale.x * cosA - -0.5f * sinA * scale.y ) + bbUp * ( -0.5f * scale.x * sinA + -0.5f * cosA * scale.y );
-	verts[2] = pos + bbRight * ( 0.5f * scale.x * cosA - 0.5f * sinA * scale.y ) + bbUp * ( 0.5f * scale.x * sinA + 0.5f * cosA * scale.y );
-	verts[3] = pos + bbRight * ( 0.5f * scale.x * cosA - -0.5f * sinA * scale.y ) + bbUp * ( 0.5f * scale.x * sinA + -0.5f * cosA * scale.y );
+	verts[0] = pos - bbRight * halfDiag1.x - bbUp * halfDiag1.y;
+	verts[1] = pos - bbRight * halfDiag2.x + bbUp * halfDiag2.y;
+	verts[2] = pos + bbRight * halfDiag1.x + bbUp * halfDiag1.y;
+	verts[3] = pos + bbRight * halfDiag2.x - bbUp * halfDiag2.y;
 
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	glDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
 
+void drawBillboard(const Vec3f& pos, const Vec2f& size,
+        const Vec3f &bbRight, const Vec3f &bbUp, GLfloat texCoords[] )
+{
+    glEnableClientState( GL_VERTEX_ARRAY );
+    Vec3f verts[4];
+    glVertexPointer( 3, GL_FLOAT, 0, &verts[0].x );
+    glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+    glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
+
+    Vec3f sRight = 0.5f * bbRight * size.x;
+    Vec3f sUp = 0.5f * bbUp * size.y;
+
+	verts[0] = pos - sRight - sUp;
+	verts[1] = pos - sRight + sUp;
+	verts[2] = pos + sRight + sUp;
+	verts[3] = pos + sRight - sUp;
+
+    glDrawArrays( GL_TRIANGLE_FAN, 0, 4 );
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
 }
