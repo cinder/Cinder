@@ -1167,7 +1167,7 @@ void draw( const TriMesh2d &mesh )
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 #if defined ( CINDER_GLES )
 	GLushort * indices = new GLushort[ mesh.getIndices().size() ];
-	for ( uint32_t i = 0; i < mesh.getIndices().size(); i++ ) {
+	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
 	glDrawElements( GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
@@ -1209,14 +1209,12 @@ void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCoun
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 
 #if defined ( CINDER_GLES )
-	
 	GLushort * indices = new GLushort[ mesh.getIndices().size() ];
-	for ( uint32_t i = 0; i < mesh.getIndices().size(); i++ ) {
+	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
+	glDrawElements( GL_TRIANGLES, triangleCount * 3, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + ( startTriangle * 3 * sizeof( GLushort ) ) ) );
 	delete [] indices;
-	
 #else
 	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
 #endif
@@ -1260,9 +1258,9 @@ void draw( const TriMesh &mesh )
 #if defined ( CINDER_GLES )
 	GLushort * indices = new GLushort[ mesh.getIndices().size() ];
 	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
-		indices[ i ] = (GLushort)i;
+		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
+	glDrawElements( GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
 	delete [] indices;
 #else
 	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
@@ -1308,9 +1306,9 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 #if defined ( CINDER_GLES )
 	GLushort * indices = new GLushort[ mesh.getIndices().size() ];
 	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
-		indices[ i ] = (GLushort)i;
+		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, triangleCount * 3, GL_UNSIGNED_SHORT, (const GLvoid*)( &( indices[ startTriangle * 3 ] ) ) );
+	glDrawElements( GL_TRIANGLES, triangleCount * 3, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + ( startTriangle * 3 * sizeof( GLushort ) ) ) );
 	delete [] indices;
 #else
 	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
