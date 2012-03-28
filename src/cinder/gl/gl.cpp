@@ -1121,7 +1121,6 @@ void draw( const Shape2d &shape2d, float approximationScale )
 	glDisableClientState( GL_VERTEX_ARRAY );	
 }
 
-#if ! defined( CINDER_GLES )
 
 void drawSolid( const Path2d &path2d, float approximationScale )
 {
@@ -1166,7 +1165,15 @@ void draw( const TriMesh2d &mesh )
 	}
 	else
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+#if defined ( CINDER_GLES )
+	GLushort indices[ mesh.getIndices().size() ];
+	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
+		indices[ i ] = (GLushort)i;
+	}
+	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_SHORT, (const GLvoid *)indices );
+#else
 	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
+#endif
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
@@ -1199,9 +1206,17 @@ void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCoun
 	}
 	else
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-		
-	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
 
+#if defined ( CINDER_GLES )
+	GLushort indices[ mesh.getIndices().size() ];
+	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
+		indices[ i ] = (GLushort)i;
+	}
+	glDrawElements( GL_TRIANGLES, triangleCount * 3, GL_UNSIGNED_SHORT, (const GLvoid *)( &( indices[ startTriangle * 3 ] ) ) );
+#else
+	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
+#endif
+	
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
 	glDisableClientState( GL_COLOR_ARRAY );
@@ -1238,7 +1253,15 @@ void draw( const TriMesh &mesh )
 	}
 	else
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+#if defined ( CINDER_GLES )
+	GLushort indices[ mesh.getIndices().size() ];
+	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
+		indices[ i ] = (GLushort)i;
+	}
+	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_SHORT, (const GLvoid *)indices );
+#else
 	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
+#endif
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
@@ -1277,7 +1300,15 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 	else
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 		
+#if defined ( CINDER_GLES )
+	GLushort indices[ mesh.getIndices().size() ];
+	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
+		indices[ i ] = (GLushort)i;
+	}
+	glDrawElements( GL_TRIANGLES, triangleCount * 3, GL_UNSIGNED_SHORT, (const GLvoid *)( &( indices[ startTriangle * 3 ] ) ) );
+#else
 	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
+#endif
 
 	glDisableClientState( GL_VERTEX_ARRAY );
 	glDisableClientState( GL_NORMAL_ARRAY );
@@ -1285,6 +1316,7 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 }
 
+#if ! defined ( CINDER_GLES )
 void draw( const VboMesh &vbo )
 {
 	if( vbo.getNumIndices() > 0 )
@@ -1303,8 +1335,9 @@ void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int ve
 
 	vbo.enableClientStates();
 	vbo.bindAllData();
+	
 	glDrawRangeElements( vbo.getPrimitiveType(), vertexStart, vertexEnd, indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ) );
-
+	
 	gl::VboMesh::unbindBuffers();
 	vbo.disableClientStates();
 }
@@ -1318,8 +1351,7 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 	gl::VboMesh::unbindBuffers();
 	vbo.disableClientStates();
 }
-
-#endif // ! defined( CINDER_GLES )
+#endif
 
 
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp )
