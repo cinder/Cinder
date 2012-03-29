@@ -1216,7 +1216,7 @@ void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCoun
 	for ( size_t i = 0; i < max; i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + ( start ) ) );
+	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
 	delete [] indices;
 #else
 	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
@@ -1314,7 +1314,7 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 	for ( size_t i = 0; i < max; i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + ( start ) ) );
+	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
 	delete [] indices;
 #else
 	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
