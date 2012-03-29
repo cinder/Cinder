@@ -1209,13 +1209,14 @@ void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCoun
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 
 #if defined ( CINDER_GLES )
-	size_t start = math<size_t>::min( startTriangle * 3 * sizeof( GLushort ), 0xFFFF / sizeof( GLushort ) );
-	size_t count = math<size_t>::min( triangleCount * 3, 0xFFFF - start );
-	GLushort * indices = new GLushort[ mesh.getIndices().size() ];
-	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
+	size_t max = math<size_t>::min( mesh.getNumIndices(), 0xFFFF );
+	size_t start = math<size_t>::min( startTriangle * 3, max );
+	size_t count = math<size_t>::min( max - start, triangleCount * 3 );
+	GLushort * indices = new GLushort[ max ];
+	for ( size_t i = 0; i < max; i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
+	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + ( start ) ) );
 	delete [] indices;
 #else
 	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
@@ -1306,13 +1307,14 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 		
 #if defined ( CINDER_GLES )
-	size_t start = math<size_t>::min( startTriangle * 3 * sizeof( GLushort ), 0xFFFF / sizeof( GLushort ) );
-	size_t count = math<size_t>::min( triangleCount * 3, 0xFFFF - start );
-	GLushort * indices = new GLushort[ mesh.getIndices().size() ];
-	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
+	size_t max = math<size_t>::min( mesh.getNumIndices(), 0xFFFF );
+	size_t start = math<size_t>::min( startTriangle * 3, max );
+	size_t count = math<size_t>::min( max - start, triangleCount * 3 );
+	GLushort * indices = new GLushort[ max ];
+	for ( size_t i = 0; i < max; i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
+	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + ( start ) ) );
 	delete [] indices;
 #else
 	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
