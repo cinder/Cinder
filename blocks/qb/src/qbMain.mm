@@ -28,17 +28,24 @@ namespace cinder { namespace qb {
 		bInited					= false;
 		bDrawGui				= true;
 		bVerbose				= true;
-		bHideCursorFullscreen	= true;
+		bRenderControls			= true;
 		mFarThrowMultiplyer		= 2.1;
+		mDefaultCamera			= CAMERA_TYPE_PERSP;
 		mCameraNear				= 1.0f;		// Nao baixar muito para eviar Z-Fight
-		bFitScaleUp				= false;
+		mCameraScale			= Vec3f::one();
+		
+		mScreenName				= "QB";
+		mAppName				= [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleNameKey] UTF8String];
+		
 		for (int u = 0 ; u < QB_MAX_UNITS ; u++ )
 			mBoundSource[u]	= -1;
-		mAppName = [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleNameKey] UTF8String];
 	}
 	qbMain::~qbMain()
 	{
 		delete mConfig;
+		std::map<int,gl::Light*>::const_iterator it;
+		for ( it=mLights.begin() ; it != mLights.end() ; it++ )
+			delete (it->second);
 	}
 	
 	void qbMain::init( int _w, int _h, float _fr, bool _autoWindowSize )
@@ -82,6 +89,9 @@ namespace cinder { namespace qb {
 		// Make FBOs +  Cameras
 		// TODO: Explorar os samples
 		//mFboFormat.setSamples( 4 );		// uncomment this to enable 4x antialiasing
+		//mFboFormat.enableMipmapping();
+		//mFboFormat.setMinFilter(GL_LINEAR);
+		//mFboFormat.setMagFilter(GL_LINEAR);
 		this->resizeFbos();
 		this->resizeCameras();
 		
@@ -95,14 +105,14 @@ namespace cinder { namespace qb {
 		
 		
 		// Misc objects
-		mFontNormal = Font( "Helvetica", 12 );
-		mFontBit = Font( loadResource("pf_tempesta_seven.ttf"), 8 );
+		mFontHelvetica = Font( "Helvetica", 12 );
+		mFont = Font( loadResource("pf_tempesta_seven.ttf"), 8 );
 		mCorner = gl::Texture( loadImage( loadResource( "resize_corner.png" ) ) );
 		mBackgroundColor = Color::black();
 
 		// Make Syphon server
-		mSyphonIcon =  gl::Texture( loadImage( loadResource( "syphon.png" ) ) );
 		mSyphonServer.setName("Render");
+		mSyphonIcon =  gl::Texture( loadImage( loadResource( "syphon.png" ) ) );
 		
 		// Modul8 Syphon Client
 		mMSyphon.setup();
@@ -120,6 +130,12 @@ namespace cinder { namespace qb {
 		mShaderStereo.uniform( "u_texLeft",		(int) 0 );
 		mShaderStereo.uniform( "u_texRight",	(int) 1 );
 		mShaderStereo.unbind();
+		
+		// Default Material
+		mMaterial.setSpecular( Color( 1.0f, 1.0f, 1.0f ) );
+		mMaterial.setDiffuse( Color( 1.0f, 1.0f, 1.0f ) );
+		mMaterial.setAmbient( Color( 0.5f, 0.5f, 0.5f ) );
+		mMaterial.setShininess( 50.0f );
 
 		// Setup OpenGL
 		glPolygonOffset( 1.0f, 1.0f );
@@ -127,6 +143,13 @@ namespace cinder { namespace qb {
 		
 		bInited = true;
 	}
+	//
+	// DOME MASTER Helper
+	void qbMain::initDomeMaster()
+	{
+		mDomeMaster.setup( mRenderWidth, mRenderHeight );
+	}
+
 
 	
 	//////////////////////////////////////////////////////////////////
@@ -146,10 +169,20 @@ namespace cinder { namespace qb {
 		//printf("EVENT>> qbMain::keyDown [%d] [%c]\n",event.getChar(),event.getChar());
 		// Save (COMMAND)
 		switch( event.getChar() ) {
+			case 27:	// ESC
+				setFullScreen( ! isFullScreen() );
+				this->hideCursorOrNot();
+				break;
 			case 'h':
 			case 'H':
 				bDrawGui = ! mConfig->guiIsVisible();
 				mConfig->guiShow( bDrawGui );
+				this->hideCursorOrNot();
+				break;
+			case 'r':
+			case 'R':
+				if (event.isMetaDown()) // COMMAND
+					mConfig->reset();
 				break;
 			case ' ':
 				this->playSwitch();
@@ -172,12 +205,12 @@ namespace cinder { namespace qb {
 				break;
 			case 'x':
 			case 'X':
-				if (event.isMetaDown()) // COMMAND
+				if (event.isMetaDown() && bRenderControls) // COMMAND
 					this->renderSwitch();
 				break;
 			case 'z':
 			case 'Z':
-				if (event.isMetaDown()) // COMMAND
+				if (event.isMetaDown() && bRenderControls) // COMMAND
 					this->renderFinish();
 				break;
 			case 'c':
@@ -186,25 +219,24 @@ namespace cinder { namespace qb {
 					this->takeScreenshot();
 				break;
 			case 'p':
+				if (event.isMetaDown()) // COMMAND
+					mConfig->invert( QBCFG_PREVIEW_DOWNSCALE );
+				break;
 			case 'P':
 				if (event.isMetaDown()) // COMMAND
-					mConfig->invert( QBCFG_PREVIEW_FIT );
-				break;
-				//case 13:	// RETURN
-			case 27:	// ESC
-				setFullScreen( ! isFullScreen() );
-				if ( bHideCursorFullscreen )
-				{
-					if ( app::isFullScreen() )
-						AppBasic::get()->hideCursor();
-					else
-						AppBasic::get()->showCursor();
-				}
+					mConfig->invert( QBCFG_PREVIEW_UPSCALE );
 				break;
 		}
 		return false;
 	}
-	
+	void qbMain::hideCursorOrNot()
+	{
+		if ( app::isFullScreen() && ! bDrawGui )
+			AppBasic::get()->hideCursor();
+		else
+			AppBasic::get()->showCursor();
+	}
+
 	
 	//////////////////////////////////////////////////////////////////
 	//
@@ -222,6 +254,8 @@ namespace cinder { namespace qb {
 		mAspectRender = (mRenderWidth / (float)mRenderHeight);
 		mRenderSize = Vec2i( w, h );
 		mRenderBounds = Rectf( 0, 0, mRenderWidth, mRenderHeight );
+		if ( mDomeMaster.isEnabled() )
+			this->initDomeMaster();
 
 		// Resize FBOs
 		this->resizeFbos();
@@ -283,7 +317,7 @@ namespace cinder { namespace qb {
 			mFittingBounds = Rectf( 0, gap, mWindowWidth, mWindowHeight-gap );
 		}
 		// center render?
-		if ( !bFitScaleUp && mPreviewScale > 1.0 )
+		if ( ! mConfig->getBool(QBCFG_PREVIEW_UPSCALE) && mPreviewScale > 1.0 )
 		{
 			mFittingBounds *= (1.0 / mPreviewScale);
 			mFittingBounds += mRenderSize * (mPreviewScale-1.0) * 0.5f;
@@ -292,7 +326,7 @@ namespace cinder { namespace qb {
 		mFittingArea = Area( mRenderBounds );
 		
 		// Zoomed preview?
-		if ( ! mConfig->getBool(QBCFG_PREVIEW_FIT) && mPreviewScale < 1.0 )
+		if ( ! mConfig->getBool(QBCFG_PREVIEW_DOWNSCALE) && mPreviewScale < 1.0 )
 		{
 			Rectf b = mFittingBounds;
 			if ( b.getWidth() == mWindowWidth )
@@ -335,7 +369,7 @@ namespace cinder { namespace qb {
 		
 		// File in Bundle?
 		std::string strippedFile = getPathFileName( _f );
-		std::string bundleFile = App::get()->getResourcePath(strippedFile);
+		std::string bundleFile = App::get()->getResourcePath(strippedFile).string();
 		if ( bundleFile.length() > 0 )
 			return bundleFile;
 		
@@ -431,6 +465,11 @@ namespace cinder { namespace qb {
 		mCameraOffset = off;
 		if ( bInited ) this->resizeCameras();
 	}
+	void qbMain::setCameraScale( const Vec3f & sc )
+	{
+		mCameraScale = sc;
+		if ( bInited ) this->resizeCameras();
+	}
 	void qbMain::setCameraNear( const float n )
 	{
 		mCameraNear = n;
@@ -498,6 +537,7 @@ namespace cinder { namespace qb {
 		//printf("__LOOKAT  %.1f %.1f %.1f  >  %.1f %.1f %.1f\n",e.x,e.y,e.z,t.x,t.y,t.z);
 		gl::setMatrices( *mCameraActive );
 		gl::setViewport( mFboRender.getBounds() );
+		gl::scale(mCameraScale);
 	}
 	// place WINDOW camera to draw final FBO preview
 	void qbMain::placeCameraWindow()
@@ -565,6 +605,7 @@ namespace cinder { namespace qb {
 		mFbos[i] = gl::Fbo( mRenderWidth, mRenderHeight, true, true, true );
 	}
 
+	////////////////////////
 	//
 	// QB Sources
 	void qbMain::makeSource( int i, std::string _name, char _flags )
@@ -621,8 +662,48 @@ namespace cinder { namespace qb {
 			mBoundSource[unit] = -1;
 		}
 	}
+	void qbMain::unbindAllSources()
+	{
+		for (int u = 0 ; u < QB_MAX_UNITS ; u++)
+			this->unbindSource(u);
+	}
 
 	
+	////////////////////////
+	//
+	// Lights
+#define LIGHT_AMBIENT_MIN		Color( 0.0f, 0.0f, 0.0f )
+#define LIGHT_AMBIENT_MAX		Color( 0.9f, 0.9f, 0.9f )
+#define LIGHT_DIFFUSE_MIN		Color( 0.0f, 0.0f, 0.0f )
+#define LIGHT_DIFFUSE_MAX		Color( 0.9f, 0.9f, 0.9f )
+#define LIGHT_SPECULAR_MIN		Color( 0.1f, 0.1f, 0.1f )
+#define LIGHT_SPECULAR_MAX		Color( 1.0f, 1.0f, 1.0f )
+	void qbMain::makeLight( int i, int type, const Vec3f &eye, const Vec3f &target )
+	{
+		gl::Light * l = new gl::Light( type, 0 );
+		l->lookAt( eye, target );
+		mLights[i] = l;
+	}
+	void qbMain::enableLight( int i, float intensity )
+	{
+		glEnable( GL_LIGHTING );
+		gl::Light *l = mLights[i];
+		l->setAmbient( LIGHT_AMBIENT_MIN + ((LIGHT_AMBIENT_MAX-LIGHT_AMBIENT_MIN) * intensity) );
+		l->setDiffuse( LIGHT_DIFFUSE_MIN + ((LIGHT_DIFFUSE_MAX-LIGHT_DIFFUSE_MIN) * intensity) );
+		l->setSpecular( LIGHT_SPECULAR_MIN + ((LIGHT_SPECULAR_MAX-LIGHT_SPECULAR_MIN) * intensity) );
+		l->update( *mCameraActive );
+		l->enable();
+		mMaterial.apply();
+	}
+	void qbMain::disableLights()
+	{
+		// se desabilitar as luzes individuais, fode tudo
+		//std::map<int,gl::Light*>::const_iterator it;
+		//for ( it=mLights.begin() ; it != mLights.end() ; it++ )
+		//	(it->second)->disable();
+		glDisable( GL_LIGHTING );
+	}
+
 	
 	//////////////////////////////////////////////////////////////////
 	//
@@ -659,12 +740,14 @@ namespace cinder { namespace qb {
 			mMousePan.y = lmap( mm.y, (1.0f-pmax), (1.0f-pmin), 0.5f, 1.0f);
 		else
 			mMousePan.y = 1.0f;
-		if ( ! mConfig->getBool(QBCFG_PREVIEW_FIT) && ! mConfig->guiIsVisible() )
+		if ( ! mConfig->getBool(QBCFG_PREVIEW_DOWNSCALE) && ! mConfig->guiIsVisible() )
 		mFittingAreaPan = Vec2f( ( mFittingBounds.getWidth() < mRenderWidth ? (mRenderWidth - mFittingBounds.getWidth()) * mMousePan.x : 0.0), 
 								( mFittingBounds.getHeight() < mRenderHeight ? (mRenderHeight - mFittingBounds.getHeight()) * mMousePan.y : 0.0) );
 		//printf("pan  %.2f  %.2f\n",mMousePan.x,mMousePan.y);
 		// Metric mouse Pos
 		mMousePos = ( Vec2f(m - mFittingBounds.getUpperLeft() + this->getFittingArea().getUL()) / mPreviewScale ) * mMetricScale;
+		mMousePos += mCameraOffset.xy();
+		mMousePos *= mCameraScale.xy();
 		mConfig->set(DUMMY_MOUSE_X, mMousePos.x);
 		mConfig->set(DUMMY_MOUSE_Y, mMousePos.y);
 		
@@ -730,6 +813,11 @@ namespace cinder { namespace qb {
 	// Draw Final FBO to Window
 	void qbMain::finishAndDraw()
 	{
+		this->unbindAllSources();
+		
+		glNormal3f(0,0,1);
+		gl::color( Color::white() );
+
 		// Blend Stereo Channels?
 		if ( this->isCameraStereo() )
 			this->blendStereo();
@@ -740,12 +828,12 @@ namespace cinder { namespace qb {
 			this->bindFbo();
 			gl::setMatricesWindow( mFboRender.getSize() );
 			gl::setViewport( mFboRender.getBounds() );
-			gl::color( Color::white() );
 			gl::enableAlphaBlending();
 			// TODO:: FLIPAR AUTOMATICAMENTE
 			glPushMatrix();
 			glTranslatef(0,mFboRender.getHeight(),0);
 			glScalef(1.0, -1.0, 1.0);
+			gl::color( Color::white() );
 			mMSyphon.draw( mFboRender.getBounds() );
 			glPopMatrix();
 			gl::disableAlphaBlending();
@@ -812,7 +900,6 @@ namespace cinder { namespace qb {
 
 		}
 	}
-	
 	
 	
 } } // cinder::qb

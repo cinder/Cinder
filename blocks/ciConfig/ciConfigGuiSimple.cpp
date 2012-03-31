@@ -8,8 +8,13 @@
 #include "ciConfigGuiSimple.h"
 #include <sys/time.h>
 
+#ifdef QB
+#include "qbSource.h"
+#endif
+
+
 using namespace cinder;
-using namespace ci::app;
+using namespace cinder::app;
 using namespace std;
 
 namespace cinder {
@@ -74,8 +79,8 @@ namespace cinder {
 		if (i >= 0)
 		{
 			c = mGui->addParam(label, this->getPointer(id,i), this->getMin(id,i), this->getMax(id,i), this->get(id,i));
-			((FloatVarControl*)c)->setDisplayValue();
-			if (precision > 0)
+			c->setDisplayValue();
+			if (precision >= 0)
 				((FloatVarControl*)c)->setPrecision( precision );
 		}
 		else if (params[id]->valueLabels.size() > 0)
@@ -88,22 +93,26 @@ namespace cinder {
 		else if (this->isColor(id))
 			c = mGui->addParam(label, this->getPointerColor(id), Color( this->getColor(id) ));
 		else if (this->isVector(id))
-			// TODO... VECTOR TYPE
-			c = mGui->addParam(label, this->getPointerColor(id), Color( this->getColor(id) ));
+			c = mGui->addParam(label, this->getPointerVector(id), this->getVector(id) );
 		else if (this->isBool(id))
 			c = mGui->addParam(label, this->getPointerBool(id), this->getBool(id));
 		else if (this->isString(id))
 			c = mGui->addParam(label, this->getPointerString(id));
+		else if (this->isByte(id))
+		{
+			c = mGui->addParamFlag(label, this->getPointerByte(id), 8, this->getByte(id));
+			((IntVarControl*)c)->setDisplayValue();
+		}
 		else if (this->isInt(id))
 		{
 			c = mGui->addParam(label, this->getPointerInt(id), (int)this->getMin(id), (int)this->getMax(id), this->getInt(id));
-			((IntVarControl*)c)->setDisplayValue();
+			c->setDisplayValue();
 		}
 		else
 		{
 			c = mGui->addParam(label, this->getPointer(id), this->getMin(id), this->getMax(id), this->get(id));
-			((FloatVarControl*)c)->setDisplayValue();
-			if (precision > 0)
+			c->setDisplayValue();
+			if (precision >= 0)
 				((FloatVarControl*)c)->setPrecision( precision );
 		}
 		// TODO...
@@ -149,6 +158,25 @@ namespace cinder {
 		if (c)
 			c->update( params[id]->valueLabels );
 	}
+
+#ifdef QB
+	void ciConfigGuiSimple::guiAddParam( qb::qbSourceSelector * src, const std::string &label, int cfgIdSelector, int cfgIdTrigger )
+	{
+		mGui->addParam(label, this->getPointerInt(cfgIdSelector), (int)this->getMin(cfgIdSelector), (int)this->getMax(cfgIdSelector), this->getInt(cfgIdSelector));
+		
+		TextureVarControl* tc = (TextureVarControl*) mGui->addParam("", src->getTexturePointer());
+		tc->refreshRate = 0.1;
+		
+		mGui->addParam( "", src->getNamePointer() );
+		mGui->addParam( "", src->getDescPointer() );
+
+		// Triggers
+		src->useConfigSelector( cfgIdSelector, this );
+		if ( cfgIdTrigger >= 0 )
+			src->useConfigTrigger( cfgIdTrigger, this );
+	}
+#endif
+
 	
 	////////////////////////////////////////////////////////
 	//

@@ -19,6 +19,7 @@ namespace cinder { namespace qb {
 // Global access to QB Manager and QB Config
 #define _qb						(qb::__qb)
 #define _cfg					(*(qb::__qb.mConfig))
+#define _dome					(qb::__qb.mDomeMaster)
 
 // Render unit: The rendered scene size in pixels
 #define QB_RENDER_WIDTH			(_qb.getRenderWidth())
@@ -35,6 +36,7 @@ namespace cinder { namespace qb {
 #define QB_HEIGHT				(_qb.getMetricHeight())
 #define QB_THROW				(_qb.getMetricThrow())
 #define QB_ASPECT				(_qb.getMetricAspect())
+#define QB_SCALE				(_qb.getMetricScale())
 #define QB_SIZE					(_qb.getMetricSize())
 #define QB_BOUNDS				(_qb.getMetricBounds())
 #define QB_CENTER				(_qb.getMetricCenter())
@@ -49,7 +51,8 @@ namespace cinder { namespace qb {
 // misc
 #define QB_VERBOSE				(_qb.bVerbose)
 #define QB_APP_NAME				(_qb.getAppName())
-#define QB_CAPTURE_FOLDER		"~/CAPTURE/"
+#define QB_CAPTURE_FOLDER		"/Users/Roger/Desktop/CAPTURE/"
+#define QB_FONT					(_qb.mFont)
 
 // Flags
 #define TEST_FLAG(src,f)		((src)&(f))

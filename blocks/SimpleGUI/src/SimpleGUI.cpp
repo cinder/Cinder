@@ -57,14 +57,14 @@ namespace cinder { namespace sgui {
 	ColorA SimpleGUI::lightColor = ColorA(1, 1, 1, 1);
 	ColorA SimpleGUI::bgColor = ColorA(0, 0, 0, 0.8);
 	ColorA SimpleGUI::textColor = ColorA(1,1,1,1);	
-	Vec2f SimpleGUI::spacing = Vec2f(2, 0);
+	Vec2f SimpleGUI::spacing = Vec2f(3, 0);
 	Vec2f SimpleGUI::padding = Vec2f(3, 3);
 	Vec2f SimpleGUI::radioSize = Vec2f(10, 10);
 	Vec2f SimpleGUI::sliderSize = Vec2f(125, 10);
 	Vec2f SimpleGUI::labelSize = Vec2f(125, 10);
 	Vec2f SimpleGUI::buttonSize = Vec2f(125, 12);
 	Vec2f SimpleGUI::buttonGap = Vec2f(6, 0);
-	Vec2f SimpleGUI::separatorSize = Vec2f(125, 2);
+	Vec2f SimpleGUI::separatorSize = Vec2f(125, 3);
 	Vec2f SimpleGUI::thumbnailSize = Vec2f(125, 125 * 0.75);
 	
 	
@@ -111,6 +111,22 @@ namespace cinder { namespace sgui {
 		return control;
 	}
 	
+	// ROGER
+	ByteVarControl* SimpleGUI::addParam(const std::string& paramName, unsigned char* var, unsigned char defaultValue) {
+		ByteVarControl* control = new ByteVarControl(paramName, var, defaultValue);
+		control->parentGui = this;	
+		controls.push_back(control);
+		return control;
+	}
+	
+	// ROGER
+	FlagVarControl* SimpleGUI::addParamFlag(const std::string& paramName, unsigned char* var, int maxf, unsigned char defaultValue) {
+		FlagVarControl* control = new FlagVarControl(paramName, var, maxf, defaultValue);
+		control->parentGui = this;	
+		controls.push_back(control);
+		return control;
+	}
+	
 	BoolVarControl* SimpleGUI::addParam(const std::string& paramName, bool* var, bool defaultValue, int groupId) {
 		BoolVarControl* control = new BoolVarControl(paramName, var, defaultValue, groupId);
 		control->parentGui = this;	
@@ -119,13 +135,6 @@ namespace cinder { namespace sgui {
 	}
 	
 	// ROGER
-	ColorVarControl* SimpleGUI::addParam(const std::string& paramName, Color* var, Color defaultValue, int colorModel) {
-		ColorVarControl* control = new ColorVarControl(paramName, var, defaultValue, colorModel);
-		control->parentGui = this;	
-		controls.push_back(control);
-		return control;
-	}
-	
 	ColorVarControl* SimpleGUI::addParam(const std::string& paramName, ColorA* var, ColorA defaultValue, int colorModel) {
 		ColorVarControl* control = new ColorVarControl(paramName, var, defaultValue, colorModel);
 		control->parentGui = this;	
@@ -133,6 +142,19 @@ namespace cinder { namespace sgui {
 		return control;
 	}
 	
+	ColorVarControl* SimpleGUI::addParam(const std::string& paramName, Color* var, Color defaultValue, int colorModel) {
+		ColorVarControl* control = new ColorVarControl(paramName, var, defaultValue, colorModel);
+		control->parentGui = this;	
+		controls.push_back(control);
+		return control;
+	}
+	
+	VectorVarControl* SimpleGUI::addParam(const std::string& paramName, Vec3f* var, Vec3f const defaultValue) {
+		VectorVarControl* control = new VectorVarControl(paramName, var, defaultValue );
+		control->parentGui = this;	
+		controls.push_back(control);
+		return control;
+	}
 	TextureVarControl* SimpleGUI::addParam(const std::string& paramName, gl::Texture* var, float scale, bool flipVert) {
 		TextureVarControl* control = new TextureVarControl(paramName, var, scale, flipVert);
 		control->parentGui = this;	
@@ -355,7 +377,7 @@ namespace cinder { namespace sgui {
 				control->drawOffset = (newPos - position);
 				position = newPos;
 				if (control->panelToSwitch)
-					control->panelToSwitch->enabled = control->isOn();
+					control->panelToSwitch->enabled = ( control->invertSwitch ? ! control->isOn() : control->isOn() );
 			}
 			else
 				position += control->drawOffset;
@@ -534,15 +556,26 @@ namespace cinder { namespace sgui {
 		bgColor = SimpleGUI::bgColor;
 		drawOffset = Vec2f::zero();
 		this->panelToSwitch = NULL;
+		this->invertSwitch = false;
+		this->readOnly = false;
+		this->displayValue = false;
 	}
 	
 	void Control::setBackgroundColor(ColorA color) {
 		bgColor = color;
 	}
-	
+
+	void Control::setReadOnly(bool b)
+	{
+		readOnly=b;
+		if (b)
+			displayValue=true;
+		this->update();
+	}
+
 	//-----------------------------------------------------------------------------
 	
-	FloatVarControl::FloatVarControl(const std::string & name, float* var, float min, float max, float defaultValue) {
+	FloatVarControl::FloatVarControl(const std::string & name, float* var, float min, float max, float defaultValue) : Control() {
 		this->type = Control::FLOAT_VAR;
 		this->name = name;
 		this->var = var;
@@ -552,8 +585,6 @@ namespace cinder { namespace sgui {
 		*var = math<float>::clamp( defaultValue, min, max );
 		// ROGER
 		this->lastValue = *var;
-		this->readOnly = false;
-		this->displayValue = false;
 		this->formatAsTime = false;
 		this->update();
 	}
@@ -564,19 +595,11 @@ namespace cinder { namespace sgui {
 	
 	void FloatVarControl::setNormalizedValue(float value) {
 		float newValue = min + value*(max - min);
-		if (newValue != *var) {
+		if (newValue != *var)
 			*var = newValue;
-		}
 	}
 	
 	// ROGER
-	void FloatVarControl::setReadOnly(bool b)
-	{
-		readOnly=b;
-		if (b)
-			displayValue=true;
-		this->update();
-	}
 	void FloatVarControl::update()
 	{
 		activeAreaBase = Rectf(0, 
@@ -655,20 +678,16 @@ namespace cinder { namespace sgui {
 	
 	//-----------------------------------------------------------------------------
 	
-	IntVarControl::IntVarControl(const std::string & name, int* var, int min, int max, int defaultValue) {
+	IntVarControl::IntVarControl(const std::string & name, int* var, int min, int max, int defaultValue) : Control() {
 		this->type = Control::INT_VAR;
 		this->name = name;
 		this->var = var;
 		this->min = min;
 		this->max = max;
 		this->step = 1;
-		this->readOnly = false;
-		this->displayValue = false;
 		*var = math<int>::clamp( defaultValue, min, max );
 		// ROGER
 		this->lastValue = *var;
-		this->readOnly = false;
-		this->displayValue = false;
 		this->update();
 	}
 	
@@ -677,15 +696,11 @@ namespace cinder { namespace sgui {
 	}
 	
 	void IntVarControl::setNormalizedValue(float value) {
-		if (!readOnly)
-		{
-			int newValue = min + value*(max - min);
-			if (step > 1)
-				newValue -= ( newValue % step);
-			if (newValue != *var) {
-				*var = newValue;
-			}
-		}
+		int newValue = min + value*(max - min);
+		if (step > 1)
+			newValue -= ( newValue % step);
+		if (newValue != *var)
+			*var = newValue;
 	}
 	
 	// ROGER
@@ -693,13 +708,6 @@ namespace cinder { namespace sgui {
 		step = s;
 		if (step > 1)
 			*var -= ( *var % step);
-		this->update();
-	}
-	void IntVarControl::setReadOnly(bool b)
-	{
-		readOnly=b;
-		if (b)
-			displayValue=true;
 		this->update();
 	}
 	void IntVarControl::update()
@@ -823,8 +831,227 @@ namespace cinder { namespace sgui {
 	}
 	
 	//-----------------------------------------------------------------------------
+	// ROGER
+	ByteVarControl::ByteVarControl(const std::string & name, unsigned char* var, unsigned char defaultValue) : Control() {
+		this->type = Control::INT_VAR;
+		this->name = name;
+		this->var = var;
+		this->min = 0;
+		this->max = 255;
+		*var = math<unsigned char>::clamp( defaultValue, min, max );
+		// ROGER
+		displayChar = false;
+		displayHex = false;
+		this->lastValue = *var;
+		this->update();
+	}
 	
-	BoolVarControl::BoolVarControl(const std::string & name, bool* var, bool defaultValue, int groupId) {
+	float ByteVarControl::getNormalizedValue() {
+		return (float)(*var - min)/(float)(max - min);
+	}
+	
+	void ByteVarControl::setNormalizedValue(float value) {
+		unsigned char newValue = min + (unsigned char) (value * (max - min));
+		if (newValue != *var)
+			*var = newValue;
+	}
+	
+	void ByteVarControl::update()
+	{
+		activeAreaBase = Rectf(0, 
+							   SimpleGUI::labelSize.y + SimpleGUI::padding.y, 
+							   SimpleGUI::sliderSize.x, 
+							   SimpleGUI::labelSize.y + ( !readOnly ? SimpleGUI::padding.y + SimpleGUI::sliderSize.y : 0 ) );
+		
+		backArea = Rectf((-SimpleGUI::padding).x, 
+						 (-SimpleGUI::padding).y, 
+						 (SimpleGUI::sliderSize + SimpleGUI::padding).x, 
+						 (SimpleGUI::labelSize + SimpleGUI::padding + ( !readOnly ? SimpleGUI::sliderSize + SimpleGUI::padding : Vec2f::zero() ) ).y );
+	}
+	
+	
+	Vec2f ByteVarControl::draw(Vec2f pos) {
+		this->lastValue = *var;
+		
+		activeArea = activeAreaBase + pos;
+		
+		gl::color(SimpleGUI::bgColor);
+		gl::drawSolidRect( backArea + pos );
+		
+		gl::enableAlphaBlending();
+		gl::drawString(name, pos, SimpleGUI::textColor, SimpleGUI::textFont);
+		
+		// ROGER
+		if (displayValue)
+		{
+			std::stringstream ss;
+			ss << (int)(*var);
+			if (displayChar)
+			{
+				char ch[3];
+				sprintf(ch,"%c",(isprint(*var)?(*var):'?'));
+				ss << " / " << ch;
+			}
+			if (displayHex)
+			{
+				char hx[5];
+				sprintf(hx,"0x%x",(*var));
+				ss << " / " << hx;
+			}
+			gl::drawStringRight(ss.str(), pos+Vec2f(SimpleGUI::sliderSize.x,0), SimpleGUI::textColor, SimpleGUI::textFont);
+		}
+		if (!readOnly)
+		{
+			gl::color(SimpleGUI::darkColor);
+			gl::drawSolidRect(activeArea);
+			gl::color(SimpleGUI::lightColor);
+			gl::drawSolidRect(SimpleGUI::getScaledWidthRectf(activeArea, getNormalizedValue()));
+		}
+		gl::disableAlphaBlending();
+		
+		pos.y += backArea.getHeight() + SimpleGUI::spacing.y;	
+		return pos;	
+	}	
+	
+	std::string ByteVarControl::toString() {
+		std::stringstream ss;
+		ss << (int)(*var);
+		return ss.str();
+	}
+	
+	void ByteVarControl::fromString(std::string& strValue) {
+		*var = (unsigned char) boost::lexical_cast<int>(strValue);
+	}
+	
+	void ByteVarControl::onMouseDown(MouseEvent event) {
+		onMouseDrag(event);
+	}
+	
+	void ByteVarControl::onMouseDrag(MouseEvent event) {
+		if (!readOnly)
+		{
+			float value = (event.getPos().x - activeArea.x1)/(activeArea.x2 - activeArea.x1);
+			value = math<float>::max(0.0, math<float>::min(value, 1.0));
+			setNormalizedValue(value);
+		}
+	}
+	
+	//-----------------------------------------------------------------------------
+	// ROGER
+	FlagVarControl::FlagVarControl(const std::string & name, unsigned char* var, int maxf, unsigned char defaultValue) : ByteVarControl(name,var,defaultValue) {
+		this->touchedItem = -1;
+		this->setMaxFlags( maxf );
+	}
+	
+	void FlagVarControl::setMaxFlags(int maxf) {
+		this->maxFlags = maxf;
+		this->update();
+	}
+	
+	void FlagVarControl::update()
+	{
+		float gapY = SimpleGUI::labelSize.y + SimpleGUI::padding.y;
+		activeAreaBase = Rectf(0, gapY, SimpleGUI::radioSize.x, gapY + SimpleGUI::radioSize.y);
+		
+		items.clear();
+		for (int n = 0 ; n < maxFlags ; n ++ )
+		{
+			listVarItem _item = listVarItem();
+			_item.key = ( 0x1 << n );
+			_item.label = ci::toString<int>( n+1 );
+			items.push_back( _item );
+			
+			items[n].activeAreaBase = Rectf((SimpleGUI::radioSize+SimpleGUI::padding).x*n,
+											gapY,
+											(SimpleGUI::radioSize+SimpleGUI::padding).x*n + SimpleGUI::radioSize.x ,
+											gapY + SimpleGUI::radioSize.y );
+			activeAreaBase.x2 = items[n].activeAreaBase.x2;
+		}
+		
+		backArea = Rectf((-SimpleGUI::padding).x, 
+						 (-SimpleGUI::padding).y, 
+						 (SimpleGUI::sliderSize + SimpleGUI::padding).x, 
+						 (SimpleGUI::labelSize + SimpleGUI::padding + ( !readOnly ? SimpleGUI::sliderSize + SimpleGUI::padding : Vec2f::zero() ) ).y );
+	}
+	
+	Vec2f FlagVarControl::draw(Vec2f pos) {
+		this->lastValue = *var;
+		
+		activeArea = activeAreaBase + pos;
+		
+		gl::color(SimpleGUI::bgColor);
+		gl::drawSolidRect( backArea + pos );
+		
+		gl::enableAlphaBlending();
+		gl::drawString(name, pos, SimpleGUI::textColor, SimpleGUI::textFont);
+		
+		// ROGER
+		if (displayValue)
+		{
+			std::stringstream ss;
+			for (int i = 0 ; i < items.size() ; i++)
+				if ( *var & (unsigned char) items[i].key )
+					ss << (i+1);
+			if (displayHex)
+			{
+				char hx[5];
+				sprintf(hx,"0x%x",(*var));
+				ss << "/ " << hx;
+			}
+			gl::drawStringRight(ss.str(), pos+Vec2f(SimpleGUI::sliderSize.x,0), SimpleGUI::textColor, SimpleGUI::textFont);
+		}
+		if (!readOnly)
+		{
+			// RADIO
+			for (int i = 0 ; i < items.size() ; i++)
+			{
+				bool selected = ( *var & (unsigned char) items[i].key );
+				items[i].activeArea = items[i].activeAreaBase + pos;
+				gl::color( selected ? SimpleGUI::lightColor : SimpleGUI::darkColor );
+				gl::drawSolidRect(items[i].activeArea);
+			}
+		}
+		gl::disableAlphaBlending();
+		
+		pos.y += backArea.getHeight() + SimpleGUI::spacing.y;	
+		return pos;	
+	}	
+
+	void FlagVarControl::onMouseDown(MouseEvent event) {
+		this->touchedItem = -1;
+		this->touchedState = -1;
+		onMouseDrag(event);
+	}
+	
+	void FlagVarControl::onMouseDrag(MouseEvent event) {
+		if (!readOnly)
+		{
+			int item = -1;
+			for (int i = 0 ; i < items.size() ; i++) {
+				if (items[i].activeArea.contains(event.getPos())) {
+					item = i;
+					break;
+				}
+			}
+			if ( item >= 0 )
+			{
+				// Save 1st touched flag state to replicate action
+				if ( this->touchedState == -1 )
+					this->touchedState = ( *var & (unsigned char) items[item].key );
+				// set/unset
+				if ( this->touchedState == false )
+					(*this->var) |= items[item].key;		// turn ON
+				else
+					(*this->var) &= ~(items[item].key);		// turn OFF
+				touchedItem = item;
+			}
+		}
+	}
+	
+	
+	//-----------------------------------------------------------------------------
+	
+	BoolVarControl::BoolVarControl(const std::string & name, bool* var, bool defaultValue, int groupId) : Control() {
 		this->type = Control::BOOL_VAR;
 		this->name = name;
 		this->nameOff = name;
@@ -877,7 +1104,7 @@ namespace cinder { namespace sgui {
 	//-----------------------------------------------------------------------------
 	
 	// ROGER
-	ColorVarControl::ColorVarControl(const std::string & name, Color* var, Color defaultValue, int colorModel) {
+	ColorVarControl::ColorVarControl(const std::string & name, Color* var, Color defaultValue, int colorModel) : Control() {
 		this->type = Control::COLOR_VAR;
 		this->name = name;
 		this->var = var;
@@ -1040,12 +1267,115 @@ namespace cinder { namespace sgui {
 	}
 	
 	//-----------------------------------------------------------------------------
+	
+	// ROGER
+	VectorVarControl::VectorVarControl(const std::string & name, Vec3f* var, Vec3f defaultValue) : Control() {
+		this->type = Control::VECTOR_VAR;
+		this->name = name;
+		this->var = var;
+		*var = defaultValue;
+		activeTrack = 0;
+		// ROGER
+		this->lastValue = *var;
+		this->update();
+	}
+	
+	void VectorVarControl::update() {
+		for (int i = 0 ; i < 3 ; i++)
+			activeAreasBase[i] = Rectf(0,
+									   SimpleGUI::labelSize.y + SimpleGUI::sliderSize.y*i + SimpleGUI::padding.y*(i+1),
+									   SimpleGUI::sliderSize.x,
+									   SimpleGUI::sliderSize.y*(i+1) + SimpleGUI::padding.y*(i+1) + SimpleGUI::labelSize.y );
+		activeAreaBase = Rectf(
+							   0, 
+							   SimpleGUI::labelSize.y, 
+							   SimpleGUI::sliderSize.x, 
+							   SimpleGUI::sliderSize.y*3 + SimpleGUI::padding.y*3 + SimpleGUI::labelSize.y );
+		backArea = Rectf((-SimpleGUI::padding).x,
+						 (-SimpleGUI::padding).y,
+						 (SimpleGUI::sliderSize + SimpleGUI::padding).x,
+						 (SimpleGUI::labelSize + SimpleGUI::sliderSize*3 + SimpleGUI::padding*(3+1)).y );
+		previewArea = Rectf((SimpleGUI::sliderSize.x * 0.75),
+							0,
+							SimpleGUI::sliderSize.x,
+							SimpleGUI::sliderSize.y );
+	}
+	
+	Vec2f VectorVarControl::draw(Vec2f pos) {
+		this->lastValue = *var;
+		
+		activeArea = activeAreaBase + pos;
+		for (int i = 0 ; i < 3 ; i++)
+			activeAreas[i] = activeAreasBase[i] + pos;
+		
+		gl::color(SimpleGUI::bgColor);
+		gl::drawSolidRect(backArea+pos);
+		
+		gl::enableAlphaBlending();
+		gl::drawString(name, pos, SimpleGUI::textColor, SimpleGUI::textFont);
+		gl::disableAlphaBlending();
+		
+		// ROGER
+		gl::color( Color( var->x, var->y, var->z ) );
+		gl::drawSolidRect(previewArea+pos);
+		
+		gl::color(SimpleGUI::darkColor);
+		for (int i = 0 ; i < 3 ; i++)
+			gl::drawSolidRect(activeAreas[i]);
+		gl::color(SimpleGUI::lightColor);
+		for (int i = 0 ; i < 3 ; i++)
+		{
+			Rectf r = SimpleGUI::getScaledWidthRectf(activeAreas[i], (*var)[i]);
+			gl::drawLine(Vec2f(r.x2, r.y1), Vec2f(r.x2, r.y2));				
+		}
+		
+		pos.y += backArea.getHeight() + SimpleGUI::spacing.y;	
+		return pos;
+	}
+	
+	std::string VectorVarControl::toString() {
+		std::stringstream ss;
+		ss << var->x << " " << var->y << " " << var->z;
+		return ss.str();
+	}
+	
+	void VectorVarControl::fromString(std::string& strValue) {
+		std::vector<std::string> strs;
+		boost::split(strs, strValue, boost::is_any_of("\t "));
+		for (int i = 0 ; i < 3 ; i++)
+			*var[i] = boost::lexical_cast<double>(strs[i]);
+	}
+	
+	
+	void VectorVarControl::onMouseDown(MouseEvent event) {
+		for (int i = 0 ; i < 3 ; i++)
+		{
+			if (activeAreas[i].contains(event.getPos())) {
+				activeTrack = i+1;
+				break;
+			}
+		}
+		onMouseDrag(event);
+	}
+	
+	void VectorVarControl::onMouseDrag(MouseEvent event) {	
+		float value = (event.getPos().x - activeArea.x1)/(activeArea.x2 - activeArea.x1);
+		value = math<float>::max(0.0, math<float>::min(value, 1.0));	
+		
+		switch (activeTrack) {
+			case 1: var->x = value; break;
+			case 2: var->y = value; break;
+			case 3: var->z = value; break;
+		}
+	}
+	
+	//-----------------------------------------------------------------------------
 	// ROGER
 	
 	//-----------------------------------------------------------------------------
 	// LIST CONTROL
 	//
-	ListVarControl::ListVarControl(const std::string & name, int* var, const std::map<int,std::string> &valueLabels) {
+	ListVarControl::ListVarControl(const std::string & name, int* var, const std::map<int,std::string> &valueLabels) : Control() {
 		this->type = Control::LIST_VAR;
 		this->name = name;
 		this->var = var;
@@ -1290,13 +1620,14 @@ namespace cinder { namespace sgui {
 	
 	//-----------------------------------------------------------------------------	
 	
-	ButtonControl::ButtonControl(const std::string & name) {
+	ButtonControl::ButtonControl(const std::string & name) : Control() {
 		this->type = Control::BUTTON;
 		this->name = name;		
 		this->pressed = false;
 		this->lastPressed = this->pressed;
 		this->lastName = name;
 		// ROGER
+		this->callbackId = 0;
 		this->triggerUp = false;
 		activeAreaBase = Rectf(0,
 							   0,
@@ -1349,14 +1680,17 @@ namespace cinder { namespace sgui {
 	void ButtonControl::fireClick() {
 		MouseEvent event;
 		bool handled = false;
-		for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = callbacksClick.begin(); ( cbIter != callbacksClick.end() ) && ( ! handled ); ++cbIter ) {
-			handled = (cbIter->second)( event );
+		if ( callbackId )
+		{
+			for( CallbackMgr<bool (MouseEvent)>::iterator cbIter = callbacksClick.begin(); ( cbIter != callbacksClick.end() ) && ( ! handled ); ++cbIter ) {
+				handled = (cbIter->second)( event );
+			}
 		}
 	}
 	
 	//-----------------------------------------------------------------------------	
 	
-	LabelControl::LabelControl(const std::string & name) {
+	LabelControl::LabelControl(const std::string & name) : Control() {
 		this->name = name;
 		this->lastName = name;
 		this->var = NULL;
@@ -1420,7 +1754,7 @@ namespace cinder { namespace sgui {
 	
 	//-----------------------------------------------------------------------------		
 	
-	SeparatorControl::SeparatorControl() {
+	SeparatorControl::SeparatorControl() : Control() {
 		this->type = Control::SEPARATOR;
 		this->name = "Separator";
 		// ROGER
@@ -1447,7 +1781,7 @@ namespace cinder { namespace sgui {
 	
 	//-----------------------------------------------------------------------------		
 	
-	ColumnControl::ColumnControl(int x, int y) {
+	ColumnControl::ColumnControl(int x, int y) : Control() {
 		this->x = x;
 		this->y = y;
 		this->type = Control::COLUMN;
@@ -1468,7 +1802,7 @@ namespace cinder { namespace sgui {
 	
 	//-----------------------------------------------------------------------------		
 	
-	PanelControl::PanelControl(const std::string& panelName) {
+	PanelControl::PanelControl(const std::string& panelName) : Control() {
 		this->enabled = true;
 		this->lastEnabled = true;
 		this->type = Control::PANEL;
@@ -1482,7 +1816,7 @@ namespace cinder { namespace sgui {
 	
 	//-----------------------------------------------------------------------------
 	
-	TextureVarControl::TextureVarControl(const std::string & name, gl::Texture* var, float scale, bool flipVert) {
+	TextureVarControl::TextureVarControl(const std::string & name, gl::Texture* var, float scale, bool flipVert) : Control() {
 		this->type = Control::TEXTURE_VAR;
 		this->name = name;
 		this->var = var;

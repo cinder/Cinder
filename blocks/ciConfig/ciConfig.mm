@@ -53,12 +53,13 @@ namespace cinder {
 		parent = _parent;
 		saveTime = "using defaults";
 		inPostSetCallback = false;
+		postSetCallback_fn = NULL;
 		bStarted = false;
 		
 		// make default filename based on app name
+		fileExt = "cfg";
 		std::string mAppName = [[[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleNameKey] UTF8String];
-		currentFileName = this->getFullFilename(mAppName + ".cfg");
-		
+		currentFileName = this->getFullFilename(mAppName + "." + fileExt);
 		
 		// Register key events
 #ifdef CINDER
@@ -177,14 +178,17 @@ namespace cinder {
 				{
 					if (p->watchVector[i] != this->get(id, i))
 						this->set( id, i, p->watchVector[i] );
-					if (p->watchFloat[i] != this->get(id, i))
-						this->set( id, i, p->watchFloat[i] );
 				}
 			}
 			else if (p->isBool())
 			{
 				if (p->watchBool != (bool) this->get(id))
 					this->set( id, p->watchBool );
+			}
+			else if (p->isByte())
+			{
+				if (p->watchByte != (char) this->get(id))
+					this->set( id, p->watchByte );
 			}
 			else if (p->isInt())
 			{
@@ -795,41 +799,48 @@ namespace cinder {
 		this->pushParam(id, new ciConfigParam(id, CFG_TYPE_FLOAT, name));
 		this->setLimits(id, vmin, vmax);
 		this->set(id, val);
+		this->init(id);
 	}
 	void ciConfig::addDouble(short id, const string name, double val, double vmin, double vmax)
 	{
 		this->pushParam(id, new ciConfigParam(id, CFG_TYPE_DOUBLE, name));
 		this->setLimits(id, (float)vmin, (float)vmax);
 		this->set(id, val);
+		this->init(id);
 	}
 	void ciConfig::addInt(short id, const string name, int val, int vmin, int vmax)
 	{
 		this->pushParam(id, new ciConfigParam(id, CFG_TYPE_INTEGER, name));
 		this->setLimits(id, (float)vmin, (float)vmax);
 		this->set(id, val);
+		this->init(id);
 	}
 	void ciConfig::addLong(short id, const string name, long val, long vmin, long vmax)
 	{
 		this->pushParam(id, new ciConfigParam(id, CFG_TYPE_LONG, name));
 		this->setLimits(id, (float)vmin, (float)vmax);
 		this->set(id, val);
+		this->init(id);
 	}
 	void ciConfig::addBool(short id, const string name, bool val)
 	{
 		this->pushParam(id, new ciConfigParam(id, CFG_TYPE_BOOLEAN, name));
 		this->setLimits(id, 0.0f, 1.0f);
 		this->set(id, val );
+		this->init(id);
 	}
 	void ciConfig::addByte(short id, const string name, unsigned char val, unsigned char vmin, unsigned char vmax)
 	{
 		this->pushParam(id, new ciConfigParam(id, CFG_TYPE_BYTE, name));
 		this->setLimits(id, (float)vmin, (float)vmax);
 		this->set(id, (float) val);
+		this->init(id);
 	}
 	void ciConfig::addString(short id, const string name, const string val)
 	{
 		this->pushParam(id, new ciConfigParam(id, CFG_TYPE_STRING, name));
 		this->set(id, val);
+		this->init(id);
 	}
 #ifndef CINDER
 	void ciConfig::addColor(short id, const string name, int hex)
@@ -848,10 +859,12 @@ namespace cinder {
 		this->setLimitsG(id, 0.0f, 255.0f);
 		this->setLimitsB(id, 0.0f, 255.0f);
 		this->set(id, r, g, b);
+		this->init(id);
 	}
 	void ciConfig::addVector(short id, const string name, Vec3f p, float vmin, float vmax)
 	{
 		this->addVector(id, name, p.x, p.y, p.z, vmin, vmax);
+		this->init(id);
 	}
 	void ciConfig::addVector(short id, const string name, float x, float y, float z, float vmin, float vmax)
 	{
@@ -869,6 +882,23 @@ namespace cinder {
 		 #endif
 		 */
 		this->set(id, x, y, z);
+		this->init(id);
+	}
+	// reset to initial values
+	void ciConfig::init(int id)
+	{
+		if (params[id] != NULL)
+			params[id]->init();
+	}
+	void ciConfig::reset()
+	{
+		for ( short id = 0 ; id < params.size() ; id++ )
+		{
+			ciConfigParam *p = params[id];
+			if (p != NULL)
+				for (int i = 0 ; i < 3 ; i++)
+					this->set( id, i, p->vec[i].getInitialValue() );
+		}
 	}
 	
 	//
@@ -884,11 +914,12 @@ namespace cinder {
 			ciConfig *pr = new ciConfig(this);
 			presets[key] = pr;
 			// set file
+			int extsz = ( fileExt.length() + 1);
 			string fmt = currentFileName;
-			fmt.replace(fmt.size()-4,4,"_preset_%c.cfg");
-			sprintf(file, fmt.c_str(), key);
-			pr->setFile(file);
-			printf("made preset [%s]\n",file);
+			fmt.replace( fmt.size()-extsz, extsz, "_preset_%c."+fileExt );
+			sprintf( file, fmt.c_str(), key );
+			pr->setFile( file );
+			//printf("made preset [%s]\n",file);
 		}
 		// copy params
 		if (_auto)
@@ -1054,7 +1085,10 @@ namespace cinder {
 			if ( bStarted && !inPostSetCallback )
 			{
 				inPostSetCallback = true;
-				this->postSetCallback(id, i);
+				if ( postSetCallback_fn )
+					postSetCallback_fn(this, id, i);
+				else
+					this->postSetCallback(id, i);
 				inPostSetCallback = false;
 			}
 #ifdef CFG_USE_OSC
@@ -1445,10 +1479,19 @@ namespace cinder {
 	}
 	
 	
-	
 	/////////////////////////////////////////////////////////////////////////
 	//
 	// SAVE / READ utils
+	//
+	// Set the default file extension
+	void ciConfig::setFileExtension(const std::string e)
+	{
+		// Change current filename extension
+		if ( currentFileName.length() )
+			currentFileName.replace( currentFileName.size()-fileExt.length(), fileExt.length(), e );
+		// Set new extension
+		fileExt = e;
+	}
 	//
 	// Sets default file and load it
 	void ciConfig::setFile(const std::string & f, const std::string & path)
@@ -1487,7 +1530,7 @@ namespace cinder {
 			//os << "./" << f;
 
 			// Save besides your ".app"
-			std::string appPath = getPathDirectory( app::getAppPath() );
+			std::string appPath = getPathDirectory( app::getAppPath().string() );
 			os << appPath << f;
 		}
 		else

@@ -17,14 +17,15 @@ using namespace ci::sgui;
 qbConfig::qbConfig() : ciConfigGuiSimple()
 {
 	// Camera
-	this->addInt(QBCFG_CAMERA_TYPE, "QBCFG_CAMERA_TYPE", CAMERA_TYPE_PERSP, 0, CAMERA_TYPE_COUNT-1);
+	this->addInt(QBCFG_CAMERA_TYPE, "QBCFG_CAMERA_TYPE", _qb.mDefaultCamera, 0, CAMERA_TYPE_COUNT-1);
 	this->addBool(QBCFG_CAMERA_GROUND, "QBCFG_CAMERA_GROUND", false);
 	this->addFloat(QBCFG_METRIC_THROW, "QBCFG_METRIC_THROW", 1.0f, 0.1f, 1.0f);
 	// Animation
 	this->addBool(QBCFG_PLAYING, "QBCFG_PLAYING", true);
 	this->addBool(QBCFG_PLAY_BACKWARDS, "QBCFG_PLAY_BACKWARDS", false);
 	this->addBool(QBCFG_REALTIME_PREVIEW, "QBCFG_REALTIME_PREVIEW", true);
-	this->addBool(QBCFG_PREVIEW_FIT, "QBCFG_PREVIEW_FIT", true);
+	this->addBool(QBCFG_PREVIEW_DOWNSCALE, "QBCFG_PREVIEW_DOWNSCALE", true);
+	this->addBool(QBCFG_PREVIEW_UPSCALE, "QBCFG_PREVIEW_UPSCALE", false);
 	this->addFloat(QBCFG_CURRENT_TIME, "QBCFG_CURRENT_TIME", 0.0);
 	//this->setDummy(QBCFG_CURRENT_TIME);
 	// Render
@@ -49,6 +50,7 @@ qbConfig::qbConfig() : ciConfigGuiSimple()
 	this->addInt(DUMMY_CURRENT_FRAME, "DUMMY_CURRENT_FRAME", 0);
 	this->addString(DUMMY_RENDER_STATUS, "DUMMY_RENDER_STATUS", "");
 	this->addString(DUMMY_RENDER_PROGRESS, "DUMMY_RENDER_PROGRESS", "");
+	this->addString(DUMMY_RENDER_TIME, "DUMMY_RENDER_TIME", "");
 	//
 	this->setDummy(DUMMY_RENDER_WIDTH);
 	this->setDummy(DUMMY_RENDER_HEIGHT);
@@ -62,6 +64,7 @@ qbConfig::qbConfig() : ciConfigGuiSimple()
 	this->setDummy(DUMMY_CURRENT_FRAME);
 	this->setDummy(DUMMY_RENDER_STATUS);
 	this->setDummy(DUMMY_RENDER_PROGRESS);
+	this->setDummy(DUMMY_RENDER_TIME);
 	
 	//
 	// Midi
@@ -93,9 +96,9 @@ qbConfig::qbConfig() : ciConfigGuiSimple()
 	//Control *c;
 	FloatVarControl *cf;
 	// QB Tab
-	this->guiAddGroup("> QB");
-	this->guiAddButton("Load Config",		(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbLoad)->setTriggerUp();
-	this->guiAddButton("Save Config",		(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbSave)->setTriggerUp();
+	this->guiAddGroup("> "+_qb.mScreenName);
+	this->guiAddButton("Load Config",				(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbLoad)->setTriggerUp();
+	this->guiAddButton("Save Config",				(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbSave)->setTriggerUp();
 	this->guiAddParam(QBCFG_MODUL8_INPUT,			"Modul8 Input" );
 	this->guiAddParam(QBCFG_SYPHON_OUTPUT,			"Syphon Output" );
 	// Readonly
@@ -106,11 +109,12 @@ qbConfig::qbConfig() : ciConfigGuiSimple()
 	this->guiAddParam(DUMMY_QB_HEIGHT,				"Metric Height" );
 	this->guiAddParam(DUMMY_QB_THROW,				"Metric Throw" );
 	this->guiAddParam(DUMMY_PREVIEW_SCALE,			"Preview Scale", 2 );
-	this->guiAddParam(DUMMY_MOUSE_X,				"Mouse X" );
-	this->guiAddParam(DUMMY_MOUSE_Y,				"Mouse Y" );
+	this->guiAddParam(DUMMY_MOUSE_X,				"Mouse X", (_qb.getMetricScale() != 1.0 ? 2 : 0) );
+	this->guiAddParam(DUMMY_MOUSE_Y,				"Mouse Y", (_qb.getMetricScale() != 1.0 ? 2 : 0) );
 	this->guiAddSeparator();
+	this->guiAddParam(QBCFG_PREVIEW_DOWNSCALE,		"Downscale Preview");
+	this->guiAddParam(QBCFG_PREVIEW_UPSCALE,		"Upscale Preview");
 	this->guiAddParam(QBCFG_REALTIME_PREVIEW,		"Realtime Preview");
-	this->guiAddParam(QBCFG_PREVIEW_FIT,			"Fit Preview");
 	// Camera
 	this->guiAddSeparator();
 	this->setValueLabels(QBCFG_CAMERA_TYPE, LABELS_CAMERA_TYPE);
@@ -118,10 +122,15 @@ qbConfig::qbConfig() : ciConfigGuiSimple()
 	this->guiAddParam(QBCFG_CAMERA_TYPE,			"> CAMERA" );
 	this->guiAddParam(QBCFG_METRIC_THROW,			"Camera Throw" );
 	this->guiAddParam(QBCFG_CAMERA_GROUND,			"Camera on Ground" );
+	//
+	// ANIMATION + RENDER
+	//
+	renderPanel = this->mGui->addPanel("render");
+	//
 	// Animation
 	this->guiAddSeparator();
 	this->guiAddText("> ANIMATION");
-	this->guiAddButton("Rewind",			(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbRewind);
+	this->guiAddButton("Rewind",					(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbRewind);
 	// play/pause panels
 	buttonPlaySwitch = this->guiAddButton("Pause",	(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbPlaySwitch);
 	// info
@@ -135,20 +144,24 @@ qbConfig::qbConfig() : ciConfigGuiSimple()
 	//this->guiAddParam(QBCFG_CURRENT_TIME,		"Current Time", 2 );
 	//this->guiAddParam(DUMMY_CURRENT_FRAME,		"Current Frame" );
 	//
-	// RENDER Tab
+	// Render
 	this->guiAddSeparator();
 	this->guiAddText("> RENDER");
-	this->guiAddButton("Save Screenshot",	(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbScreenshot);
+	this->guiAddButton("Save Screenshot",			(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbScreenshot);
 	this->guiAddParam(QBCFG_TARGET_FRAMERATE,		"Render Framerate");
 	// play/pause panels
 	buttonRenderSwitch = this->guiAddButton("Start Render",	(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbRenderSwitch);
-	this->guiAddButton("Finish Render", (ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbRenderFinish);
+	this->guiAddButton("Finish Render",				(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbRenderFinish);
 	// Render texture
 	this->clearRenderTexture( Color::red() );
 	mTextureControl = (TextureVarControl*) this->mGui->addParam("", &mNullTexture);
 	mTextureControl->refreshRate = 0;
 	this->guiAddParam(DUMMY_RENDER_STATUS,			"");
 	this->guiAddParam(DUMMY_RENDER_PROGRESS,		"");
+	this->guiAddParam(DUMMY_RENDER_TIME,			"");
+	//
+	// Info
+	this->mGui->addPanel("fps");
 	this->guiAddSeparator();
 	this->guiAddParam(DUMMY_CURRENT_FPS,			"Current FPS", 1 );
 	
@@ -172,6 +185,7 @@ void qbConfig::update() {
 	// Render Labels
 	this->set( DUMMY_RENDER_STATUS, _qb.getRenderStatus() );
 	this->set( DUMMY_RENDER_PROGRESS, _qb.getRenderProgress() );
+	this->set( DUMMY_RENDER_TIME, _qb.getRenderTime() );
 }
 
 
@@ -289,7 +303,8 @@ void qbConfig::postSetCallback(int id, int i)
 		case QBCFG_METRIC_THROW:
 			_qb.resizeCameras();
 			break;
-		case QBCFG_PREVIEW_FIT:
+		case QBCFG_PREVIEW_DOWNSCALE:
+		case QBCFG_PREVIEW_UPSCALE:
 			_qb.resizePreview();
 			break;
 	}

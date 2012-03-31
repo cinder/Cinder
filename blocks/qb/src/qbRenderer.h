@@ -21,9 +21,10 @@ namespace cinder { namespace qb {
 		qbRenderer();
 		~qbRenderer();
 		
-		std::string &		getStatus()			{ return mStatus; }
-		std::string &		getProgress()		{ return mProgress; }
-		bool				isRendering()		{ return bIsRendering; }
+		std::string &		getStatus()				{ return mStatus; }
+		std::string &		getProgressString()		{ return mProgressString; }
+		std::string &		getTimeString()			{ return mTimeString; }
+		bool				isRendering()			{ return bIsRendering; }
 		float				getProg();
 		
 		void				setFolder( const std::string & _folder );
@@ -53,7 +54,8 @@ namespace cinder { namespace qb {
 		
 		qtime::MovieWriter	mMovieWriter;
 		std::string			mStatus;
-		std::string			mProgress;
+		std::string			mProgressString;
+		std::string			mTimeString;
 		std::string			mFolder;
 		std::string			mFileBaseMovie;
 		std::string			mFileBaseImage;
@@ -62,6 +64,7 @@ namespace cinder { namespace qb {
 		int					mFramesStill;
 		int					mFramesAdded;
 		int					mFramesStarted;		// for progress only
+		double				mTimeStart, mTimeElapsed;
 		bool				bOpened;
 		bool				bIsRendering;
 		

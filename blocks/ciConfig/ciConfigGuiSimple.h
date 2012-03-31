@@ -9,6 +9,13 @@
 #include "ciConfigGuiBase.h"
 #include "SimpleGUI.h"
 
+// Allow QB block params
+//#define QB
+
+namespace cinder { namespace qb {
+	class qbSourceSelector;
+} }
+
 using namespace ci::sgui;
 
 namespace cinder {
@@ -45,18 +52,23 @@ namespace cinder {
 		void	drawGui();
 		
 		// Generic params
-		void*	guiAddParam(int *val, const std::string &label, bool readOnly=false);
-		void*	guiAddParam(float *val, const std::string &label, int precision, bool readOnly=false);
+		void*	guiAddParam( int *val, const std::string &label, bool readOnly=false );
+		void*	guiAddParam( float *val, const std::string &label, int precision, bool readOnly=false );
+		
+		// QB Params
+#ifdef QB
+		void	guiAddParam( qb::qbSourceSelector * src, const std::string &label, int cfgIdSelector, int cfgIdTrigger=-1 );
+#endif
 
+		// SimpleGui Params
+		SimpleGUI::SimpleGUI* mGui;
+		
 		
 	protected:
 		
 		// Virtuals
 		void*	guiAddParamPrivate(int id, int i, const std::string &label, int precision);
 		void	guiSetLabel(int id, int i, const std::string &label);
-		
-		// SimpleGui Params
-		SimpleGUI::SimpleGUI* mGui;
 		
 		
 	};

@@ -12,6 +12,8 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/gl/Light.h"
+#include "cinder/gl/Material.h"
 #include "cinder/Camera.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
@@ -22,6 +24,8 @@
 #include "qbRenderer.h"
 #include "qbSource.h"
 #include "qbConfig.h"
+#include "qbLight.h"
+#include "qbDomeMaster.h"
 
 #define QB_MAX_UNITS	8
 
@@ -33,6 +37,7 @@ public:
 	qbMain();
 	~qbMain();
 	void	init( int _w, int _h, float _fr=60.0f, bool _autoWindowSize=true );
+	void	initDomeMaster();
 	bool	onResize( app::ResizeEvent event );
 	bool	onKeyDown( app::KeyEvent event );
 
@@ -54,7 +59,14 @@ public:
 	qbSourceSelector &	source( int i )				{ return mSources[i]; }
 	void	bindSource( int i, int unit=0 );
 	void	unbindSource(int unit=0);
+	void	unbindAllSources();
 	
+	// FBOs
+	void	makeLight( int i, int type, const Vec3f &eye=Vec3f(0,0,1), const Vec3f &target=Vec3f::zero() );
+	void	enableLight( int i, float intensity=1.0f );
+	void	disableLights();
+	gl::Light * light( int i )	{ return mLights[i]; }
+
 	// Setup
 	void	setFrameRate( float fr );
 	void	resizeRender( int w, int h );
@@ -63,10 +75,13 @@ public:
 	void	resizeWindow( int w, int h);
 	void	resizePreview();
 	void	setBackgroundColor( ci::Color _c )		{ mBackgroundColor = _c; }
+	void	enableRenderControls( bool e=true )		{ bRenderControls=e; mConfig->enableRenderControls(e); };
+
 
 	// camera setup
 	void	resizeCameras();
 	void	setCameraOffset( const Vec3f & off );
+	void	setCameraScale( const Vec3f & sc );
 	void	setCameraNear( const float n );
 	void	setCameraOnTheGround( const bool b=true );
 	void	setFarThrowMultiplyer( const float f );
@@ -74,7 +89,7 @@ public:
 	void	setCameraType( const int t );
 	void	setCameraStereo( bool b=true );
 	void	stereoSwitch();
-	
+
 	//
 	// GETTERS
 	//
@@ -83,7 +98,7 @@ public:
 	std::string getFilePath( const std::string & _f );
 	Vec2f &		getMousePos()			{ return mMousePos; }
 	// Render
-	float		getFrameRate()	{ return mConfig->getInt(QBCFG_TARGET_FRAMERATE); }
+	float		getFrameRate()			{ return mConfig->getInt(QBCFG_TARGET_FRAMERATE); }
 	int			getRenderWidth()		{ return mRenderWidth; }
 	int			getRenderHeight()		{ return mRenderHeight; }
 	int			getRenderAspect()		{ return mAspectRender; }
@@ -100,6 +115,7 @@ public:
 	float		getMetricHeight()		{ return mMetricHeight; }
 	int			getMetricThrow()		{ return mMetricThrow; }
 	float		getMetricAspect()		{ return mMetricAspect; }
+	float		getMetricScale()		{ return mMetricScale; }
 	Vec3f &		getMetricCenter()		{ return mMetricCenter; }
 	Vec2f &		getMetricSize()			{ return mMetricSize; }
 	Rectf &		getMetricBounds()		{ return mMetricBounds; }
@@ -107,6 +123,8 @@ public:
 	Camera*		getCamera()				{ return mCameraActive; }
 	float		getCameraNear()			{ return mCameraNear; }
 	float		getCameraFar()			{ return mCameraFar; }
+	Vec3f		getCameraOffset()		{ return mCameraOffset; }
+	Vec3f		getCameraScale()		{ return mCameraScale; }
 	float		getStereoSeparation()	{ return mStereoSep; }
 	int			getCameraType()			{ return mConfig->getInt(QBCFG_CAMERA_TYPE); }
 	bool		isCameraOrtho()			{ return (this->getCameraType() == CAMERA_TYPE_ORTHO); }
@@ -142,7 +160,8 @@ public:
 	// Renderer Getters
 	bool		isRendering()			{ return mRenderer.isRendering(); }
 	std::string & getRenderStatus()		{ return mRenderer.getStatus(); }
-	std::string & getRenderProgress()	{ return mRenderer.getProgress(); }
+	std::string & getRenderProgress()	{ return mRenderer.getProgressString(); }
+	std::string & getRenderTime()		{ return mRenderer.getTimeString(); }
 	int			getRenderSeconds()		{ return mConfig->getInt(QBCFG_RENDER_SECONDS); }
 	int			getRenderFrames()		{ return (int)(mConfig->get(QBCFG_RENDER_SECONDS) * mConfig->get(QBCFG_TARGET_FRAMERATE)); }
 	int			getRenderStillSeconds()	{ return mConfig->getInt(QBCFG_RENDER_STILL_SECONDS); }
@@ -177,10 +196,12 @@ public:
 	
 	//
 	// Public
-	qbConfig	*mConfig;
-	Font		mFontNormal, mFontBit;
-	bool		bVerbose;
-	bool		bHideCursorFullscreen;
+	qbConfig		*mConfig;
+	qbDomeMaster	mDomeMaster;
+	Font			mFontHelvetica, mFont;
+	std::string		mScreenName;
+	bool			bVerbose;
+	int				mDefaultCamera;
 
 private:
 	
@@ -188,27 +209,31 @@ private:
 	void		blendStereo();
 	void		setActiveCamera( int type=-1 );				// Select active camera
 	void		updateCamera( Vec3f off=Vec3f::zero() );
+	void		hideCursorOrNot();
 
 	// misc
-	bool					bInited;
-	bool					bDrawGui;
-	std::string				mAppName;
-	std::vector<std::string> mPathList;
+	bool						bInited;
+	bool						bDrawGui;
+	bool						bRenderControls;
+	std::string					mAppName;
+	std::vector<std::string>	mPathList;
 	
 	// QB
-	qbPlayhead				mPlayhead;
-	qbUpdatePool			mUpdatePool;
-	qbRenderer				mRenderer;
-	std::map<int,qbSourceSelector>	mSources;				// Active sources
-	int						mBoundSource[QB_MAX_UNITS];		// currently bound source
+	qbPlayhead					mPlayhead;
+	qbUpdatePool				mUpdatePool;
+	qbRenderer					mRenderer;
+	std::map<int,qbSourceSelector>	mSources;					// Active sources
+	int							mBoundSource[QB_MAX_UNITS];		// currently bound source
 	
 	// GL
-	gl::Fbo::Format			mFboFormat;
-	gl::Fbo					mFboRender;				// Final render FBO
-	gl::Fbo					mFboLeft, mFboRight;	// Stereo FBOs
-	std::map<int,gl::Fbo>	mFbos;					// Additional FBOs
-	gl::GlslProg			mShaderStereo;
-	ci::Color				mBackgroundColor;
+	ci::Color					mBackgroundColor;
+	gl::Fbo::Format				mFboFormat;
+	gl::Fbo						mFboRender;				// Final render FBO
+	gl::Fbo						mFboLeft, mFboRight;	// Stereo FBOs
+	std::map<int,gl::Fbo>		mFbos;					// Additional FBOs
+	std::map<int,gl::Light*>	mLights;				// Active lights
+	gl::Material				mMaterial;
+	gl::GlslProg				mShaderStereo;
 	
 	// Syphon Server
 	syphonClient		mMSyphon;
@@ -233,7 +258,6 @@ private:
 	Rectf				mFittingBounds;			// Bounds to fit render in window
 	Area				mFittingArea;			// Bounds to fit render in window
 	Vec2f				mFittingAreaPan;
-	bool				bFitScaleUp;
 	Vec2f				mMousePos;				// metric unit
 	Vec2f				mMousePan;				// metric unit
 	// Scene dimensions
@@ -256,6 +280,7 @@ private:
 	float				mCameraNear, mCameraFar;
 	float				mFarThrowMultiplyer;		// camera far = metric throw * this
 	Vec3f				mCameraOffset;				// camera eye offset
+	Vec3f				mCameraScale;				// coordinate scale
 	// stereo cam
 	float				mStereoSep;
 	float				mStereoDelta;

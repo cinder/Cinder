@@ -54,8 +54,13 @@ private:
 	int intValue4;
 	int intValue5;
 	int intValue6;
+	unsigned char byteValue1;
+	unsigned char byteValue2;
+	unsigned char byteValue3;
+	unsigned char flagValue;
 	
 public:
+	void prepareSettings( Settings *settings );
 	void setup();
 	void mouseDown( MouseEvent event );	
     void keyDown( KeyEvent event );
@@ -68,12 +73,19 @@ public:
 	bool removeFromList( MouseEvent event ); //this event handlers return bool because if they return false the event is marked as intercepted
 };
 
+void RogersGuiApp::prepareSettings( Settings *settings )
+{
+	settings->setWindowSize( 1024, 768 );
+}
+
 void RogersGuiApp::setup() {
     rotation = 0;
     screenshot = gl::Texture(getWindowWidth(), getWindowHeight()); //uninitialized texture with random pixels from GPU memory
 	IntVarControl *ic;
 	BoolVarControl *bc;
 	PanelControl *pc;
+	ByteVarControl *btc;
+	FlagVarControl *fc;
 	aString = "whatever";
 	
     gui = new SimpleGUI(this);
@@ -140,7 +152,7 @@ void RogersGuiApp::setup() {
     gui->addLabel("just a label");
 	
 	//
-	// LIST CONTROL
+	// INTS CONTROL
 	gui->addColumn();
 	gui->addLabel("> INTS");
     gui->addSeparator();
@@ -158,6 +170,24 @@ void RogersGuiApp::setup() {
 	ic = gui->addParam("Int Step 2", &intValue6, 0, 20, 0);
 	ic->setDisplayValue();
 	ic->setStep(2);														// !NEW! int step
+	
+	//
+	// BYTE CONTROL
+	gui->addColumn();
+	gui->addLabel("> BYTES");
+    gui->addSeparator();
+	gui->addParam("Byte", &byteValue1, 0)->setDisplayValue();			// !NEW! ranges from 0-255
+	btc = gui->addParam("Byte as char", &byteValue2, 0);				// !NEW! display as char
+	btc->setDisplayValue();
+	btc->displayChar = true;
+	btc = gui->addParam("Byte as hex", &byteValue3, 0);					// !NEW! display as hex
+	btc->setDisplayValue();
+	btc->displayHex = true;
+	// FLAGS
+    gui->addSeparator();
+	fc = gui->addParamFlag("Byte Flag", &flagValue, 8, 0x55);			// !NEW! Byte Flag
+	fc->setDisplayValue();
+	fc->displayHex = true;
 	
 	
 	gui->load(CONFIG_FILE); //we load settings after specifying all the 

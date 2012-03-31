@@ -80,7 +80,7 @@ namespace cinder { namespace qb {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDisable(GL_DEPTH_TEST);
 		gl::color( Color::white() );
-		gl::drawString( toString(text), Vec2f( x, y ), Color( 1, 1, 1 ), _qb.mFontNormal );
+		gl::drawString( toString(text), Vec2f( x, y ), Color( 1, 1, 1 ), _qb.mFontHelvetica );
 		glDisable(GL_BLEND);
 	}
 	

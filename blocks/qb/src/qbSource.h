@@ -17,7 +17,10 @@
 #include "cinderSyphon.h"
 
 #include "qbCube.h"
-#include "ciConfig.h"
+
+namespace cinder {
+class ciConfig;
+}
 
 //#define VERBOSE_SOURCE
 
@@ -52,7 +55,7 @@ namespace cinder { namespace qb {
 		virtual void		stop()				{ bPlaying = false; }
 		virtual void		rewind()			{}
 		bool				isPlaying()			{ return bPlaying; }
-		
+
 		virtual const int	getFrameCount()		{ return 1; }
 		virtual const int	getCurrentFrame()	{ return 0; }
 		virtual const float	getDuration()		{ return 0.0; }
@@ -75,8 +78,8 @@ namespace cinder { namespace qb {
 		const std::string	& getName()			{ return mName; }
 		const std::string	& getDesc()			{ return mDesc; }
 		const bool			hasAlpha()			{ return bHasAlpha; }
-		const bool			isRect()			{ return (mTex.getTarget() == GL_TEXTURE_RECTANGLE_ARB); }
-		const bool			isFlipped()			{ return mTex.isFlipped(); }
+		const bool			isRect()			{ return ( mTex ? (mTex.getTarget() == GL_TEXTURE_RECTANGLE_ARB) : false ); }
+		const bool			isFlipped()			{ return ( mTex ? mTex.isFlipped() : false ); }
 		const int			getWidth()			{ return (int)getSize().x; }
 		const int			getHeight()			{ return (int)getSize().y; }
 		const Vec2i			& getSize()			{ return mSize; }
@@ -211,13 +214,16 @@ namespace cinder { namespace qb {
 		const char	getFlags()						{ return mFlags; }
 		// Setters
 		void		setSource( qbSourceBase * newSrc );
-		// list / config shortcuts
-		void		setList( int _key, std::string _name );
-		void		useConfigSelector( int _id, ciConfig *_ptr=NULL );
-		void		useConfigTrigger( int _id, ciConfig *_ptr=NULL );
+		// ciConfig integration
+		void			setList( int _key, std::string _name );
+		void			useConfigSelector( int _id, ci::ciConfig *_ptr=NULL );
+		void			useConfigTrigger( int _id, ci::ciConfig *_ptr=NULL );
+		std::string		* getNamePointer()		{ return &mConfigName; }
+		std::string		* getDescPointer()		{ return &mConfigDesc; }
+		gl::Texture		* getTexturePointer()	{ return &mConfigTexture; }
 
 		// From actual source
-		void		update();
+		void			update();
 		const void		bind(int unit=0)			{ if (mSrc) mSrc->bind(unit); }
 		const void		unbind()					{ if (mSrc) mSrc->unbind(); }
 		const void		enableAlphaBlending()		{ if (mSrc) mSrc->enableAlphaBlending(); }
@@ -254,9 +260,12 @@ namespace cinder { namespace qb {
 	protected:
 		std::shared_ptr<qbSourceBase>		mSrc;
 		std::map<int,std::string>			mList;
-		ciConfig							*mConfigSelectorPtr, *mConfigTriggerPtr;
-		int									mConfigSelectorId, mConfigTriggerId;
 		char								mFlags;
+		// ciConfig integration
+		ci::ciConfig						*mConfigSelectorPtr, *mConfigTriggerPtr;
+		int									mConfigSelectorId, mConfigTriggerId;
+		std::string							mConfigName, mConfigDesc;
+		gl::Texture							mConfigTexture;
 		// dummies
 		gl::Texture			mNullTex;
 		Surface8u			mNullSurf;

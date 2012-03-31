@@ -9,6 +9,8 @@
 #include "qbCube.h"
 #include "cinder/Utilities.h"
 #include "cinder/Rand.h"
+#include "cinder/TriMesh.h"
+#include "cinder/Triangulate.h"
 
 #include <errno.h>
 
@@ -28,7 +30,7 @@ namespace cinder { namespace qb {
 			if ( std::find(mLayers.begin(), mLayers.end(), _poly.getLayerName()) == mLayers.end() )
 			{
 				mLayers.push_back( _poly.getLayerName() );
-				printf("___________NEW LAYER [%s]\n",_poly.getLayerName().c_str());
+				//printf("___________qbPolyGroup::addPoly:: NEW LAYER [%s]\n",_poly.getLayerName().c_str());
 			}
 		}
 	}
@@ -36,6 +38,11 @@ namespace cinder { namespace qb {
 	{
 		for (int p = 0 ; p < mPolys.size() ; p++)
 			qb::drawSolidPoly( mPolys[p] );
+	}
+	void qbPolyGroup::drawStroked()
+	{
+		for (int p = 0 ; p < mPolys.size() ; p++)
+			qb::drawStrokedPoly( mPolys[p] );
 	}
 	void qbPolyGroup::randomize()
 	{
@@ -80,7 +87,6 @@ namespace cinder { namespace qb {
 			return ( prog * 2.0f );
 		else
 			return ( 1.0 - ((prog-0.5f) * 2.0f) );
-			
 	}
 	
 	float qbPoly::getLoopingDistanceAt(float dist)
@@ -129,6 +135,7 @@ namespace cinder { namespace qb {
 		mVertices.empty();
 		bClosed = src.isClosed();
 		mLayerName = src.getLayerName();
+		mLayer = src.getLayer();
 		mName = src.getName();
 		int t = src.getType();
 		// convert quads to polygon?
@@ -150,14 +157,24 @@ namespace cinder { namespace qb {
 			this->finishOptimized();
 		}
 	}
+	void qbPoly::makeTriangle ( Vec3f v0, Vec3f v1, Vec3f v2 )
+	{
+		mType = QBPOLY_TRI;
+		mVertices.empty();
+		this->addVertex( v0 );
+		this->addVertex( v1 );
+		this->addVertex( v2 );
+		this->close();
+		this->finish();
+	}
 	void qbPoly::makeRect( Vec3f v, float w, float h )
 	{
 		mType = ( w == h ? QBPOLY_SQUARE : QBPOLY_RECT );
 		mVertices.empty();
 		this->addVertex( v + Vec3f( 0, 0, 0) );
 		this->addVertex( v + Vec3f( w, 0, 0) );
-		this->addVertex( v + Vec3f( 0, h, 0) );
 		this->addVertex( v + Vec3f( w, h, 0) );
+		this->addVertex( v + Vec3f( 0, h, 0) );
 		this->close();
 		//mBounds = Rectf( x, y, x+w, y+h );
 		//mPerimeter = (w * 2) + (h * 2);
@@ -227,6 +244,8 @@ namespace cinder { namespace qb {
 	{
 		this->calcBounds();
 		this->calcPerimeter();
+		// Make Cinder Mesh
+		this->makeMesh();
 	}
 	
 	// Optimize will 
@@ -323,6 +342,9 @@ namespace cinder { namespace qb {
 		}
 		
 		this->calcPerimeter();
+		
+		// Make Cinder Mesh
+		this->makeMesh();
 	}
 	
 	void qbPoly::calcPerimeter()
@@ -389,6 +411,24 @@ namespace cinder { namespace qb {
 	
 	
 	
+	//
+	// Coinder Mesh
+	void qbPoly::makeMesh()
+	{
+		Path2d path;
+		for (int v = 0 ; v < mVertices.size() ; v++)
+		{
+			if (v == 0)
+				path.moveTo( mVertices[v].xy() );
+			else
+				path.lineTo( mVertices[v].xy() );
+		}
+		if (bClosed)
+			path.close();
+		
+		TriMesh2d mesh = Triangulator( path ).calcMesh();
+		mMesh = gl::VboMesh( mesh );
+	}
 	
 } } // cinder::qb
 

@@ -11,6 +11,7 @@
 #include "cinder/Xml.h"
 #include "cinder/DataSource.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Vbo.h"
 #import <string>
 #import <vector>
 #import <list>
@@ -55,7 +56,7 @@ namespace cinder { namespace qb {
 	{
 	public:
 		
-		qbPoly() : mType(QBPOLY_NONE), bClosed(false) {}
+		qbPoly() : mType(QBPOLY_NONE), bClosed(false), mLayer(0) {}
 		
 		void copyFrom ( qbPoly & src, bool _asPolygons=false );
 		void addVertex (Vec3f _v );
@@ -63,6 +64,7 @@ namespace cinder { namespace qb {
 		void finishOptimized();
 		void randomize( int _max=10 );
 		void close();
+		void setLayer( const int n )					{ mLayer = n; }
 		void setLayerName( const std::string & n )		{ mLayerName = n; }
 		void setName( const std::string & n )			{ mName = n; }
 		
@@ -70,11 +72,13 @@ namespace cinder { namespace qb {
 		void makeCircle ( float x, float y, float rx, float ry )	{ this->makeCircle( Vec3f(x,y,0), rx, ry); }
 		//void makeLine ( float x0, float y0, float x1, float y1 )	{ this->makeLine( Vec3f(x0,y0,0), Vec3f(x1,y1,0)); }
 
+		void makeTriangle ( Vec3f v0, Vec3f v1, Vec3f v2 );
 		void makeRect ( Vec3f v, float w, float h );
 		void makeCircle ( Vec3f v, float rx, float ry );
 		//void makeLine ( Vec3f v0, Vec3f v0 );
 		void makeCurve ( Vec3f p0, Vec3f p1, Vec3f c0, Vec3f c1 );
 
+		int				getLayer()					{ return mLayer; }
 		std::string &	getLayerName()				{ return mLayerName; }
 		std::string &	getName()					{ return mName; }
 		Rectf &			getBounds()					{ return mBounds; }
@@ -99,16 +103,21 @@ namespace cinder { namespace qb {
 		void calcBounds();
 		void makeBounds (float x1, float y1, float x2, float y2);
 		
+		void makeMesh();
+		
 		std::vector<qbPolyVertex>	mVertices;
 		std::string					mLayerName;
 		std::string					mName;
 		Rectf						mBounds;
 		Vec3f						mCenter;
+		int							mLayer;
 		int							mType;
 		bool						bClosed;
 		float						mPerimeter;
 		//int						numLayer;
 		//int						numObj;
+
+		gl::VboMesh					mMesh;
 	};
 	
 	/////////////////////////////////
@@ -123,6 +132,7 @@ namespace cinder { namespace qb {
 		void		addPoly( qbPoly & _poly );
 		void		randomize();
 		void		draw();
+		void		drawStroked();
 		
 		int			getLayerCount()				{ return mLayers.size(); }
 		float		getPerimeter()				{ return mPerimeter; }
@@ -130,7 +140,7 @@ namespace cinder { namespace qb {
 		qbPoly &	getPoly( int n )			{ return mPolys[n]; }
 		
 	protected:
-		
+
 		std::vector<std::string>	mLayers;		// Layer names
 		std::vector<qbPoly>			mPolys;			// Polys
 		float						mPerimeter;		// Length from start to finish

@@ -43,18 +43,18 @@ namespace cinder { namespace qb {
 	
 	//
 	// Return polys loaded
-	int qbSvg::load( const DataSourceRef & _res )
+	int qbSvg::load( const DataSourceRef & _res, Vec2f destSize )
 	{
-		return this->parseSvg( XmlTree( _res ) );
+		return this->parseSvg( XmlTree( _res ), destSize );
 	}
-	int qbSvg::load( const std::string & _f )
+	int qbSvg::load( const std::string & _f, Vec2f destSize )
 	{
-		return this->parseSvg( XmlTree( _f ) );
+		return this->parseSvg( XmlTree( _f ), destSize );
 	}
 	
 	//
 	// Return polys loaded
-	int qbSvg::parseSvg( const XmlTree  & _doc ) {
+	int qbSvg::parseSvg( const XmlTree  & _doc, Vec2f destSize ) {
 		// grab SVG
 		if ( ! _doc.hasChild("svg") )
 		{
@@ -64,14 +64,44 @@ namespace cinder { namespace qb {
 		XmlTree svg = _doc.getChild( "svg" );
 		
 		// Get doc data
+		float w, h;
 		if ( svg.hasAttribute( "viewBox" ) )
 		{
-			std::vector<std::string> points = ci::split( svg.getAttributeValue<std::string>( "viewBox" ), " " );
-			mViewBox = Rectf( atof(points[0].c_str()), atof(points[1].c_str()), atof(points[2].c_str()), atof(points[3].c_str()) );
+			//
+			// ATENCAO :: VIEWBOX NAO EH BOUNDS!!!!!!!
+			//
+			// <min-x>, <min-y>, <width> and <height>
+			// http://www.w3.org/TR/SVG/coords.html#ViewBoxAttribute
+			std::vector<std::string> vals = ci::split( svg.getAttributeValue<std::string>( "viewBox" ), " " );
+			for (int n = 0 ; n < vals.size() ; n++)
+				printf(">>> VIEWBOX  %d/%d =  %s\n",n,(int)vals.size(),vals[n].c_str());
+			float x = atof(vals[0].c_str());
+			float y = atof(vals[1].c_str());
+			w = atof(vals[2].c_str());
+			h = atof(vals[3].c_str());
+			printf(">>> VIEWBOX  xywh  %.2f %.2f %.2f %.2f\n",x,y,w,h);
+			mViewBox = Rectf( x, y, w, h );
 		}
 		else if ( svg.hasAttribute( "width" ) && svg.hasAttribute( "height" ) )
-			mViewBox = Rectf( 0, 0, svg.getAttributeValue<float>( "width" ), svg.getAttributeValue<float>( "height" ) );
+		{
+			w = svg.getAttributeValue<float>( "width" );
+			h = svg.getAttributeValue<float>( "height" );
+			mViewBox = Rectf( 0, 0, w, h );
+		}
 		printf(">>> QBSVG : viewBox : %.2f, %.2f, %.2f, %.2f\n",mViewBox.getX1(),mViewBox.getX2(),mViewBox.getY1(),mViewBox.getY2());
+		
+		// Calc scale
+		if ( destSize != Vec2f::zero() )
+			mScale = Vec3f( destSize.x / w ,  destSize.y / h, 1.0f );
+		else
+			mScale = Vec3f::one();
+		printf(">>> QBSVG : scale : %.4f %.4f\n",mScale.x,mScale.y);
+		
+		// Update viewbox
+		mViewBox.x1 *= mScale.x;
+		mViewBox.x2 *= mScale.x;
+		mViewBox.y1 *= mScale.y;
+		mViewBox.y2 *= mScale.y;
 
 		// parse!!
 		this->parseSvgLayer( svg );
@@ -81,6 +111,7 @@ namespace cinder { namespace qb {
 	
 	//
 	// LAYER
+	int lay = -1;
 	void qbSvg::parseSvgLayer( const XmlTree  & _l ) {
 		// get a name
 		std::string layerName = "<" + _l.getTag() + ">";
@@ -103,7 +134,6 @@ namespace cinder { namespace qb {
 		for ( p = children.begin() ; p != children.end(); p++ )
 		{
 			qbPoly apoly;
-			apoly.setLayerName( mCurrLayerName );
 			// get a name
 			std::string tag = (*p).getTag();
 			if ( (*p).hasAttribute( "id" ) )
@@ -139,7 +169,19 @@ namespace cinder { namespace qb {
 			}
 			// Add poly!
 			if ( apoly.getType() != QBPOLY_NONE )
+			{
+				// set layer
+				if ( lay == -1 || mCurrLayerName != mLastLayerName )
+				{
+					lay++;
+					mLastLayerName = mCurrLayerName;
+					printf(">>> QBSVG : NEW LAYER %d [%s]\n",lay,mCurrLayerName.c_str());
+				}
+				apoly.setLayerName( mCurrLayerName );
+				apoly.setLayer( lay );
+				// Add poly!
 				this->addPoly( apoly );
+			}
 		}
 	}
 	//
@@ -155,7 +197,11 @@ namespace cinder { namespace qb {
 			std::vector<std::string> vals = ci::split( points[p], "," );
 			printf("    %d : points (%d) = [%s]\n",p,(int)vals.size(),points[p].c_str());
 			if (vals.size() == 2)
-				apoly->addVertex( SVG_xyz( atof(vals[0].c_str()), atof(vals[1].c_str()), ( vals.size()>2 ? atof(vals[2].c_str()) : 0 ) ) );
+			{
+				float x = atof(vals[0].c_str()) * mScale.x;
+				float y = atof(vals[1].c_str()) * mScale.y;
+				apoly->addVertex( SVG_xyz( x, y, 0.0f ) );
+			}
 		}
 		apoly->finishOptimized();
 		if ( _closed )
@@ -166,13 +212,21 @@ namespace cinder { namespace qb {
 	// <rect x="137" y="571.495" width="749.999" height="125.005"/>
 	void qbSvg::parseSvgRect( const XmlTree  & _p, qbPoly *apoly ) {
 		try {
-			float x = _p.getAttributeValue<float>( "x" );
-			float y = _p.getAttributeValue<float>( "y" );
-			float w = _p.getAttributeValue<float>( "width" );
-			float h = _p.getAttributeValue<float>( "height" );
+			float x = _p.getAttributeValue<float>( "x" ) * mScale.x;
+			float y = _p.getAttributeValue<float>( "y" ) * mScale.y;
+			float w = _p.getAttributeValue<float>( "width" ) * mScale.x;
+			float h = _p.getAttributeValue<float>( "height" ) * mScale.y;
 #ifdef VERBOSE_SVG
 			printf(">>> QBSVG : %s : %s : RECT xy %.1f %.1f  wh %.1f %.1f\n",mCurrLayerName.c_str(),apoly->getName().c_str(),x,y,w,h);
 #endif
+			/*
+			apoly->addVertex( SVG_xyz(x,y,0) );
+			apoly->addVertex( SVG_xyz(x+w,y,0) );
+			apoly->addVertex( SVG_xyz(x,y+h,0) );
+			apoly->addVertex( SVG_xyz(x+w,y+h,0) );
+			apoly->close();
+			apoly->finishOptimized();
+			 */
 			apoly->makeRect( SVG_xyz(x,y,0), w, h );
 		} catch ( XmlTree::Exception ) {
 			printf(">>> QBSVG : RECT exception\n");
@@ -183,10 +237,10 @@ namespace cinder { namespace qb {
 	// <line fill="none" stroke="#000000" stroke-miterlimit="10" x1="33.5" y1="338.5" x2="55.5" y2="445.5"/>
 	void qbSvg::parseSvgLine( const XmlTree  & _p, qbPoly *apoly ) {
 		try {
-			float x1 = _p.getAttributeValue<float>( "x1" );
-			float y1 = _p.getAttributeValue<float>( "y1" );
-			float x2 = _p.getAttributeValue<float>( "x2" );
-			float y2 = _p.getAttributeValue<float>( "y2" );
+			float x1 = _p.getAttributeValue<float>( "x1" ) * mScale.x;
+			float y1 = _p.getAttributeValue<float>( "y1" ) * mScale.y;
+			float x2 = _p.getAttributeValue<float>( "x2" ) * mScale.x;
+			float y2 = _p.getAttributeValue<float>( "y2" ) * mScale.y;
 #ifdef VERBOSE_SVG
 			printf(">>> QBSVG : %s : %s : LINE xy %.1f %.1f .. w %.1f %.1f\n",mCurrLayerName.c_str(),apoly->getName().c_str(),x1,y1,x2,y2);
 #endif
@@ -201,13 +255,14 @@ namespace cinder { namespace qb {
 	// <circle fill="none" stroke="#000000" stroke-miterlimit="10" cx="282" cy="380" r="45.5"/>
 	void qbSvg::parseSvgCircle( const XmlTree  & _p, qbPoly *apoly ) {
 		try {
-			float x = _p.getAttributeValue<float>( "cx" );
-			float y = _p.getAttributeValue<float>( "cy" );
-			float r = _p.getAttributeValue<float>( "r" );
+			float x = _p.getAttributeValue<float>( "cx" ) * mScale.x;
+			float y = _p.getAttributeValue<float>( "cy" ) * mScale.y;
+			float rx = _p.getAttributeValue<float>( "r" ) * mScale.x;
+			float ry = _p.getAttributeValue<float>( "r" ) * mScale.y;
 #ifdef VERBOSE_SVG
-			printf(">>> QBSVG : %s : %s : CIRCLE xy %.1f  r %.1f\n",mCurrLayerName.c_str(),apoly->getName().c_str(),x,y,r);
+			printf(">>> QBSVG : %s : %s : CIRCLE xy %.1f %.1f  r %.1f %.1f\n",mCurrLayerName.c_str(),apoly->getName().c_str(),x,y,rx,ry);
 #endif
-			apoly->makeCircle( SVG_xyz(x,y,0), r, r );
+			apoly->makeCircle( SVG_xyz(x,y,0), rx, ry );
 		} catch ( XmlTree::Exception ) {
 			printf(">>> QBSVG : CIRCLE exception\n");
 		}
@@ -216,12 +271,12 @@ namespace cinder { namespace qb {
 	// <ellipse fill="none" stroke="#000000" stroke-miterlimit="10" cx="407" cy="377.5" rx="16" ry="57.5"/>
 	void qbSvg::parseSvgEllipse( const XmlTree  & _p, qbPoly *apoly ) {
 		try {
-			float x = _p.getAttributeValue<float>( "cx" );
-			float y = _p.getAttributeValue<float>( "cy" );
-			float rx = _p.getAttributeValue<float>( "rx" );
-			float ry = _p.getAttributeValue<float>( "ry" );
+			float x = _p.getAttributeValue<float>( "cx" ) * mScale.x;
+			float y = _p.getAttributeValue<float>( "cy" ) * mScale.y;
+			float rx = _p.getAttributeValue<float>( "rx" ) * mScale.x;
+			float ry = _p.getAttributeValue<float>( "ry" ) * mScale.y;
 #ifdef VERBOSE_SVG
-			printf(">>> QBSVG : %s : %s : ELLIPSE xy %.1f  rxy %.1f %.1f\n",mCurrLayerName.c_str(),apoly->getName().c_str(),x,y,rx,ry);
+			printf(">>> QBSVG : %s : %s : ELLIPSE xy %.1f %.1f  rxy %.1f %.1f\n",mCurrLayerName.c_str(),apoly->getName().c_str(),x,y,rx,ry);
 #endif
 			apoly->makeCircle( SVG_xyz(x,y,0), rx, ry );
 		} catch ( XmlTree::Exception ) {
@@ -263,7 +318,7 @@ namespace cinder { namespace qb {
 					printf("            %c = [%s] = %d vals (",cmd,values.c_str(),(int)vals.size());
 					for (int n = 0 ; n < vals.size() ; n++)
 						 printf("%s%.1f",(n==0?" ":", "),vals[n]);
-					printf(" )\n",cmd,values.c_str());
+					printf(" )\n");
 #endif
 					switch (cmd)
 					{
@@ -276,7 +331,7 @@ namespace cinder { namespace qb {
 							// 2 points: (x y)
 							for (int n = 0 ; n < vals.size() / 2 ; n++)
 							{
-								v = Vec3f( vals[n+0], vals[n+1], 0 );
+								v = Vec3f( vals[n+0], vals[n+1], 0 ) * mScale;
 								if ( islower(cmd) )
 									v += last_v;
 								apoly->addVertex( SVG_Vec3f(v) );
@@ -289,7 +344,7 @@ namespace cinder { namespace qb {
 							// 1 point: (x)
 							for (int n = 0 ; n < vals.size() / 1 ; n++)
 							{
-								v = Vec3f( vals[n+0], last_v.y, 0 );
+								v = Vec3f( vals[n+0] * mScale.x, last_v.y, 0 );
 								if ( islower(cmd) )
 									v.x += last_v.x;
 								apoly->addVertex( SVG_Vec3f(v) );
@@ -302,7 +357,7 @@ namespace cinder { namespace qb {
 							// 1 point: (y)
 							for (int n = 0 ; n < vals.size() / 1 ; n++)
 							{
-								v = Vec3f( last_v.x, vals[n+0], 0 );
+								v = Vec3f( last_v.x, vals[n+0] * mScale.y, 0 );
 								if ( islower(cmd) )
 									v.y += last_v.y;
 								apoly->addVertex( SVG_Vec3f(v) );
@@ -315,9 +370,9 @@ namespace cinder { namespace qb {
 							// 6 points: (x1 y1 x2 y2 x y)
 							for (int n = 0 ; n < vals.size() / 6 ; n++)
 							{
-								c0 = Vec3f( vals[n+0], vals[n+1], 0 );
-								c1 = Vec3f( vals[n+2], vals[n+3], 0 );
-								v = Vec3f( vals[n+4], vals[n+5], 0 );
+								c0 = Vec3f( vals[n+0], vals[n+1], 0 ) * mScale;
+								c1 = Vec3f( vals[n+2], vals[n+3], 0 ) * mScale;
+								v = Vec3f( vals[n+4], vals[n+5], 0 ) * mScale;
 								if ( islower(cmd) )
 								{
 									v += last_v;
@@ -336,8 +391,8 @@ namespace cinder { namespace qb {
 							for (int n = 0 ; n < vals.size() / 4 ; n++)
 							{
 								c0 = last_v - Vec3f( last_c.x-last_v.x, last_c.y-last_v.y, 0);	// reflection
-								c1 = Vec3f( vals[n+0], vals[n+1], 0 );
-								v = Vec3f( vals[n+2], vals[n+3], 0 );
+								c1 = Vec3f( vals[n+0], vals[n+1], 0 ) * mScale;
+								v = Vec3f( vals[n+2], vals[n+3], 0 ) * mScale;
 								if ( islower(cmd) )
 								{
 									v += last_v;

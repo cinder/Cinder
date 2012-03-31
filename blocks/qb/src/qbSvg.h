@@ -18,14 +18,14 @@ namespace cinder { namespace qb {
 	public:
 		qbSvg() : qbPolyGroup() {};
 		
-		int		load( const DataSourceRef & _res );
-		int		load( const std::string & _f );
+		int		load( const DataSourceRef & _res, Vec2f destSize=Vec2f::zero() );
+		int		load( const std::string & _f, Vec2f destSize=Vec2f::zero() );
 		
 	protected:
 		
-		std::string	mCurrLayerName;
+		std::string	mCurrLayerName, mLastLayerName;
 		
-		int		parseSvg( const XmlTree  & _doc );
+		int		parseSvg( const XmlTree  & _doc, Vec2f destSize );
 		void	parseSvgLayer( const XmlTree  & _l );
 		void	parseSvgPolygon( const XmlTree  & _p, bool _closed, qbPoly * apoly );
 		void	parseSvgRect( const XmlTree  & _p, qbPoly * apoly );
@@ -34,6 +34,8 @@ namespace cinder { namespace qb {
 		void	parseSvgEllipse( const XmlTree  & _p, qbPoly * apoly );
 		void	parseSvgPath( const XmlTree  & _p, qbPoly * apoly );
 		std::vector<float> splitPathValues( std::string & _values );
+		
+		Vec3f	mScale;
 		
 	};
 	

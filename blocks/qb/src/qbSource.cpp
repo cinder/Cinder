@@ -7,8 +7,9 @@
 
 #include "cinder/Filesystem.h"
 
-#include "qb.h"
 #include "qbSource.h"
+#include "ciConfig.h"
+#include "qb.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -26,30 +27,38 @@ namespace cinder { namespace qb {
 		printf("SOURCE [%s]\n",_f.c_str());
 		// Syphn prefix
 		if ( _f.compare(0,8,"syphon::") == 0 )
-			return this->loadSyphon( _f.substr(8), "" );
-		
-		// Load by extension
-		std::string ext = getPathExtension( _f );
-		if ( ext.compare(0,3,"mov") == 0 || ext.compare(0,3,"MOV") == 0 )
 		{
-			qbSourceMovie *newSrc = new qbSourceMovie();
-			if ( newSrc->load(_f,mFlags) == false )
-			{
-				delete newSrc;
-				return false;
-			}
-			this->setSource(newSrc);
+			this->loadSyphon( _f.substr(8), "" );
 		}
 		else
 		{
-			qbSourceImage *newSrc = new qbSourceImage();
-			if ( newSrc->load(_f,mFlags) == false )
+			// Load by extension
+			std::string ext = getPathExtension( _f );
+			if ( ext.compare(0,3,"mov") == 0 || ext.compare(0,3,"MOV") == 0 )
 			{
-				delete newSrc;
-				return false;
+				qbSourceMovie *newSrc = new qbSourceMovie();
+				if ( newSrc->load(_f,mFlags) == false )
+				{
+					delete newSrc;
+					return false;
+				}
+				this->setSource(newSrc);
 			}
-			this->setSource(newSrc);
+			else
+			{
+				qbSourceImage *newSrc = new qbSourceImage();
+				if ( newSrc->load(_f,mFlags) == false )
+				{
+					delete newSrc;
+					return false;
+				}
+				this->setSource(newSrc);
+			}
 		}
+		// Update ciConfig
+		mConfigName = this->getName();
+		mConfigDesc = this->getDesc();
+		mConfigTexture = this->getTexture();
 		return true;
 	}
 	bool qbSourceSelector::loadSyphon( const std::string & _app, const std::string & _tex )
@@ -96,7 +105,7 @@ namespace cinder { namespace qb {
 		// Config Selector
 		if (mConfigSelectorId >= 0)
 		{
-			if ( mConfigSelectorPtr->isFresh(mConfigSelectorId) )
+			if ( mConfigSelectorPtr->isFresh(mConfigSelectorId ) )
 			{
 				int i = mConfigSelectorPtr->getInt(mConfigSelectorId);
 				if (mList.find(i) != mList.end())
@@ -119,6 +128,7 @@ namespace cinder { namespace qb {
 		}
 		// update Frame
 		mSrc->updateFrame();
+		mConfigTexture = this->getTexture();
 	}
 
 	
@@ -136,10 +146,10 @@ namespace cinder { namespace qb {
 		mSize = Vec2f::zero();
 		mTexFormat.setWrapS( GL_REPEAT );
 		mTexFormat.setWrapT( GL_REPEAT );
-		mTexFormat.enableMipmapping();
-		mTexFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
-		mTexFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);
-		mTexFormat.setTarget( GL_TEXTURE_RECTANGLE_ARB );	// like MovieGl/Syphon
+		mTexFormat.setTarget( GL_TEXTURE_RECTANGLE_ARB );		// compatible with MovieGl/Syphon
+		//mTexFormat.enableMipmapping();						// useless for RECTANGLE
+		//mTexFormat.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);		// useless for RECTANGLE
+		//mTexFormat.setMagFilter(GL_LINEAR_MIPMAP_LINEAR);		// useless for RECTANGLE
 		mUV = Vec2f::zero();
 		this->makeUV( 1.0f, 1.0f );
 #ifdef VERBOSE_SOURCE
@@ -159,18 +169,18 @@ namespace cinder { namespace qb {
 		Vec2f pp = p + Vec2f(3,0);
 		gl::enableAlphaBlending();
 		if ( mName.length() )
-			gl::drawString( mName, pp, Color::white(), _qb.mFontBit);
+			gl::drawString( mName, pp, Color::white(), _qb.mFont);
 		else
-			gl::drawString( "Source not loaded!", p, Color::white(), _qb.mFontBit);
+			gl::drawString( "Source not loaded!", p, Color::white(), _qb.mFont);
 		if ( mDesc.length() )
 		{
 			pp += Vec2f(0,10);
-			gl::drawString( mDesc, pp, Color::white(), _qb.mFontBit);
+			gl::drawString( mDesc, pp, Color::white(), _qb.mFont);
 		}
 		if ( mDesc2.length() )
 		{
 			pp += Vec2f(0,10);
-			gl::drawString( mDesc2, pp, Color::white(), _qb.mFontBit);
+			gl::drawString( mDesc2, pp, Color::white(), _qb.mFont);
 		}
 		gl::disableAlphaBlending();
 	}
@@ -269,6 +279,7 @@ namespace cinder { namespace qb {
 		mDesc = os.str();
 		mDesc2 = "";
 		mSpawnedAtFrame = getElapsedFrames();
+		this->play();	// Always playing
 		
 		printf("SOURCE Image [%s] loaded!\n",theFile.c_str());
 		return true;
@@ -288,7 +299,7 @@ namespace cinder { namespace qb {
 		
 		// try to load new movie
 		try {
-			printf("SRF FLAG %d [%s]\n",_flags,_f.c_str());
+			printf("SRC FLAG %d [%s]\n",_flags,_f.c_str());
 			
 			if ( TEST_FLAG( _flags, QBFAG_SURFACE) )
 			{
@@ -432,6 +443,7 @@ namespace cinder { namespace qb {
 		mName = os.str();
 		mDesc2 = "";
 		mSpawnedAtFrame = getElapsedFrames();
+		this->play();	// Always playing
 
 		printf("SOURCE Syphon [%s] loaded!\n",_app.c_str());
 		return true;

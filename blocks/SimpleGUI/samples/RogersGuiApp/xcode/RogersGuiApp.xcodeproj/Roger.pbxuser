@@ -2,8 +2,8 @@
 {
 	00BAE6590E7ED9C10018A608 /* RogersGuiApp.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1083, 3263}}";
-			sepNavSelRange = "{4609, 0}";
+			sepNavIntBoundsRect = "{{0, 0}, {1083, 2964}}";
+			sepNavSelRange = "{4649, 0}";
 			sepNavVisRange = "{3389, 2459}";
 			sepNavWindowFrame = "{{223, 74}, {1062, 778}}";
 		};
@@ -67,14 +67,14 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 343950225;
-			PBXWorkspaceStateSaveDate = 343950225;
+			PBXPerProjectTemplateStateSaveDate = 348354059;
+			PBXWorkspaceStateSaveDate = 348354059;
 		};
 		perUserProjectItems = {
 			DB19C37C147FF73300640E4C /* PBXTextBookmark */ = DB19C37C147FF73300640E4C /* PBXTextBookmark */;
 			DB19C3FF147FFFC500640E4C /* PBXTextBookmark */ = DB19C3FF147FFFC500640E4C /* PBXTextBookmark */;
 			DB8638D1143D4BD00049FCD8 /* PBXTextBookmark */ = DB8638D1143D4BD00049FCD8 /* PBXTextBookmark */;
-			DBCEC653148042CB0088EB72 /* PBXTextBookmark */ = DBCEC653148042CB0088EB72 /* PBXTextBookmark */;
+			DBBD6D3C14C379500022BF8F /* PBXTextBookmark */ = DBBD6D3C14C379500022BF8F /* PBXTextBookmark */;
 			DBE5200F148043A1003B0A7B /* PBXTextBookmark */ = DBE5200F148043A1003B0A7B /* PBXTextBookmark */;
 			DBE520221480443C003B0A7B /* PBXTextBookmark */ = DBE520221480443C003B0A7B /* PBXTextBookmark */;
 		};
@@ -108,7 +108,7 @@
 		fRef = DBDDDD481471DE3B00E9E44B /* SimpleGUI.h */;
 		name = "SimpleGUI.h: 239";
 		rLen = 0;
-		rLoc = 7392;
+		rLoc = 7575;
 		rType = 0;
 		vrLen = 1475;
 		vrLoc = 7288;
@@ -118,7 +118,7 @@
 		fRef = 93B36A7F1317006D0003A1EE /* SimpleGUI.cpp */;
 		name = "SimpleGUI.cpp: 703";
 		rLen = 0;
-		rLoc = 20393;
+		rLoc = 16915;
 		rType = 0;
 		vrLen = 1463;
 		vrLoc = 20063;
@@ -179,15 +179,15 @@
 		vrLen = 147;
 		vrLoc = 0;
 	};
-	DBCEC653148042CB0088EB72 /* PBXTextBookmark */ = {
+	DBBD6D3C14C379500022BF8F /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 00BAE6590E7ED9C10018A608 /* RogersGuiApp.cpp */;
-		name = "RogersGuiApp.cpp: 140";
+		name = "RogersGuiApp.cpp: 127";
 		rLen = 0;
-		rLoc = 5280;
+		rLoc = 4649;
 		rType = 0;
-		vrLen = 1868;
-		vrLoc = 4493;
+		vrLen = 2459;
+		vrLoc = 3389;
 	};
 	DBCEC656148042CB0088EB72 /* stl_function.h */ = {
 		isa = PBXFileReference;
@@ -195,11 +195,6 @@
 		name = stl_function.h;
 		path = "/Developer/SDKs/MacOSX10.6.sdk/usr/include/c++/4.2.1/bits/stl_function.h";
 		sourceTree = "<absolute>";
-		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {860, 9971}}";
-			sepNavSelRange = "{8207, 0}";
-			sepNavVisRange = "{7414, 1378}";
-		};
 	};
 	DBDDDD481471DE3B00E9E44B /* SimpleGUI.h */ = {
 		uiCtxt = {

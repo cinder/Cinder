@@ -49,6 +49,8 @@ namespace cinder { namespace sgui {
 	class Control;
 	class FloatVarControl;
 	class IntVarControl;
+	class ByteVarControl;
+	class FlagVarControl;
 	class BoolVarControl;
 	class ButtonControl;
 	class LabelControl;
@@ -57,6 +59,7 @@ namespace cinder { namespace sgui {
 	class PanelControl;
 	class TextureVarControl;
 	class ColorVarControl;
+	class VectorVarControl;
 	class ListVarControl;
 	class DropDownVarControl;
 	
@@ -115,9 +118,12 @@ namespace cinder { namespace sgui {
 		
 		FloatVarControl* 	addParam(const std::string& paramName, float* var, float min=0, float max=1, float defaultValue = 0);
 		IntVarControl*		addParam(const std::string& paramName, int* var, int min=0, int max=1, int defaultValue = 0);
+		ByteVarControl*		addParam(const std::string& paramName, unsigned char* var, unsigned char defaultValue = 0);
+		FlagVarControl*		addParamFlag(const std::string& paramName, unsigned char* var, int maxf=8, unsigned char defaultValue = 0);
 		BoolVarControl*		addParam(const std::string& paramName, bool* var, bool defaultValue = false, int groupId = -1);
-		ColorVarControl*	addParam(const std::string& paramName, Color* var, Color const defaultValue = ColorA(0, 1, 1, 1), int colorModel = RGB);	// ROGER
 		ColorVarControl*	addParam(const std::string& paramName, ColorA* var, ColorA const defaultValue = ColorA(0, 1, 1, 1), int colorModel = RGB);
+		ColorVarControl*	addParam(const std::string& paramName, Color* var, Color const defaultValue = ColorA(0, 1, 1, 1), int colorModel = RGB);	// ROGER
+		VectorVarControl*	addParam(const std::string& paramName, Vec3f* var, Vec3f const defaultValue = Vec3f::zero());	// ROGER
 		TextureVarControl*	addParam(const std::string& paramName, gl::Texture* var, float scale = 1.0, bool flipVert = false);
 		
 		// ROGER
@@ -166,6 +172,7 @@ namespace cinder { namespace sgui {
 			INT_VAR,
 			BOOL_VAR,
 			COLOR_VAR,
+			VECTOR_VAR,
 			TEXTURE_VAR,
 			LIST_VAR,
 			DROP_DOWN_VAR,
@@ -194,10 +201,12 @@ namespace cinder { namespace sgui {
 		SimpleGUI *parentGui;
 		// ROGER
 		bool readOnly;
+		bool displayValue;
 		Rectf activeAreaBase;
 		Rectf backArea;
 		Vec2f drawOffset;
 		PanelControl *panelToSwitch;
+		bool invertSwitch;
 		
 		Control();	
 		virtual ~Control() {};
@@ -210,11 +219,14 @@ namespace cinder { namespace sgui {
 		virtual void onMouseUp(MouseEvent event) {};
 		virtual void onMouseDrag(MouseEvent event) {};
 		// ROGER
-		virtual void setReadOnly(bool b=true)			{ readOnly = b; }
-		virtual bool hasChanged()						{ return false; }
-		virtual bool hasResized()						{ return false; }
-		virtual void switchPanel( PanelControl *p )		{ panelToSwitch = p; };		// Panel to switch ON/OFF with my value
-		virtual bool isOn()								{ return true; }			// used to switch panel
+		void setReadOnly(bool b=true);
+		void setDisplayValue(bool b=true)			{ displayValue = b; }
+		void switchPanel( PanelControl *p )			{ panelToSwitch = p; invertSwitch = false; }	// Panel to switch ON/OFF with my value
+		void switchPanelInv( PanelControl *p )		{ panelToSwitch = p; invertSwitch = true; }		// Panel to switch ON/OFF with my value
+		virtual void update()						{}
+		virtual bool hasChanged()					{ return false; }
+		virtual bool hasResized()					{ return false; }
+		virtual bool isOn()							{ return true; }		// used to switch panel
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -226,7 +238,6 @@ namespace cinder { namespace sgui {
 		float max;
 		// ROGER
 		float lastValue;
-		bool displayValue;
 		bool formatAsTime;
 		int precision;
 	public:
@@ -240,9 +251,7 @@ namespace cinder { namespace sgui {
 		void onMouseDrag(MouseEvent event);
 		// ROGER
 		void update();
-		void setReadOnly(bool b=true);
 		void setPrecision(int p)			{ precision = p; };
-		void setDisplayValue(bool b=true)	{ displayValue=b; }
 		void setFormatAsTime(bool b=true)	{ formatAsTime=b; }
 		bool hasChanged()					{ return (*var != lastValue); };
 		bool isOn()							{ return (*var); }		// used to switch panel
@@ -257,7 +266,6 @@ namespace cinder { namespace sgui {
 		int max;
 		// ROGER
 		int lastValue;
-		bool displayValue;
 		int step;
 		std::vector<listVarItem> items;
 
@@ -273,10 +281,52 @@ namespace cinder { namespace sgui {
 		// ROGER
 		void update();
 		void setStep(int s);
-		void setReadOnly(bool b=true);
-		void setDisplayValue(bool b=true)	{ displayValue = b; }
-		bool hasChanged()					{ return (*var != lastValue); }
-		bool isOn()							{ return (*var); }		// used to switch panel
+		bool hasChanged()		{ return (*var != lastValue); }
+		bool isOn()				{ return (*var); }		// used to switch panel
+	};
+	
+	//-----------------------------------------------------------------------------
+	// ROGER
+	class ByteVarControl : public Control {
+	public:
+		unsigned char* var;
+		unsigned char min;
+		unsigned char max;
+		unsigned char lastValue;
+		
+	public:
+		ByteVarControl(const std::string & name, unsigned char* var, unsigned char defaultValue = 0);
+		virtual float getNormalizedValue();
+		virtual void setNormalizedValue(float value);
+		virtual Vec2f draw(Vec2f pos);
+		virtual std::string toString();
+		virtual void fromString(std::string& strValue);
+		virtual void onMouseDown(MouseEvent event);
+		virtual void onMouseDrag(MouseEvent event);
+		// ROGER
+		bool displayChar;
+		bool displayHex;
+		virtual void update();
+		bool hasChanged()		{ return (*var != lastValue); }
+		bool isOn()				{ return (*var); }		// used to switch panel
+	};
+	
+	//-----------------------------------------------------------------------------
+	// ROGER
+	class FlagVarControl : public ByteVarControl {
+	private:
+		std::vector<listVarItem> items;
+		int maxFlags;
+		int touchedItem;
+		int touchedState;
+
+	public:
+		FlagVarControl(const std::string & name, unsigned char* var, int max=8, unsigned char defaultValue = 0);
+		void onMouseDown(MouseEvent event);
+		void onMouseDrag(MouseEvent event);
+		void update();
+		Vec2f draw(Vec2f pos);
+		void setMaxFlags(int maxf);
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -326,6 +376,29 @@ namespace cinder { namespace sgui {
 		// ROGER
 		void update();
 		bool hasChanged()		{ return ( alphaControl ? (*varA!=lastValueA) : (*var!=lastValue) ); };
+	};
+	
+	//-----------------------------------------------------------------------------
+	
+	class VectorVarControl : public Control {
+	public:
+		Vec3f*	var;
+		int		activeTrack;
+		// ROGER
+		Vec3f	lastValue;
+		Rectf	previewArea;
+		Rectf	activeAreas[4];
+		Rectf	activeAreasBase[4];
+	public:
+		VectorVarControl(const std::string & name, Vec3f* var, Vec3f defaultValue);
+		Vec2f draw(Vec2f pos);
+		std::string toString();	//saved as "r g b a"
+		void fromString(std::string& strValue); //expecting "r g b a"
+		void onMouseDown(MouseEvent event);	
+		void onMouseDrag(MouseEvent event);
+		// ROGER
+		void update();
+		bool hasChanged()		{ return (*var!=lastValue); };
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -394,7 +467,7 @@ namespace cinder { namespace sgui {
 		template<typename T>
 		void	registerClick( T *obj, bool (T::*callback)(MouseEvent) ) { callbackId = callbacksClick.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
 		//! Unregisters a callback for Click events.
-		void	unregisterClick() { callbacksClick.unregisterCb( callbackId ); }
+		void	unregisterClick() { callbacksClick.unregisterCb( callbackId ); callbackId = 0; }
 		
 		void fireClick();
 		

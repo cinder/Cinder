@@ -25,7 +25,8 @@ enum enumQBCfg
 	QBCFG_PLAYING,
 	QBCFG_PLAY_BACKWARDS,
 	QBCFG_REALTIME_PREVIEW,
-	QBCFG_PREVIEW_FIT,
+	QBCFG_PREVIEW_DOWNSCALE,
+	QBCFG_PREVIEW_UPSCALE,
 	QBCFG_CURRENT_TIME,
 	// Render
 	QBCFG_TARGET_FRAMERATE,
@@ -49,6 +50,7 @@ enum enumQBCfg
 	DUMMY_CURRENT_FRAME,
 	DUMMY_RENDER_STATUS,
 	DUMMY_RENDER_PROGRESS,
+	DUMMY_RENDER_TIME,
 	// # of params
 	QBCFG_COUNT
 };
@@ -83,6 +85,8 @@ public:
 
 	void	update();
 	
+	void	enableRenderControls( bool e=true )		{ renderPanel->enabled = e; }
+	
 	void	clearRenderTexture( const Color & c=Color::white() );
 	void	setRenderTexture( gl::Texture & frame );
 
@@ -91,9 +95,9 @@ public:
 
 private:
 	
+	sgui::PanelControl*			renderPanel;
 	sgui::ButtonControl*		buttonPlaySwitch;
 	sgui::ButtonControl*		buttonRenderSwitch;
-
 	sgui::TextureVarControl*	mTextureControl;
 
 	bool	cbLoad( ci::app::MouseEvent event );

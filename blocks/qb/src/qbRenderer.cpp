@@ -4,6 +4,7 @@
 //  Created by Roger Sodre on 01/07/2011
 //  Copyright 2011 Studio Avante. All rights reserved.
 //
+#include <stdlib.h>
 #include "qbRenderer.h"
 #include "qb.h"
 #include "cinder/Filesystem.h"
@@ -75,7 +76,8 @@ namespace cinder { namespace qb {
 		// Reset !
 		this->reset();
 		mStatus = "Renderer Ready";
-		mProgress = "Frames: 0";
+		mProgressString = "Frames: 0";
+		mTimeString = "Time: 0:00";
 		mFolder = QB_CAPTURE_FOLDER;
 	}
 	qbRenderer::~qbRenderer()
@@ -162,7 +164,7 @@ namespace cinder { namespace qb {
 	void qbRenderer::open()
 	{
 		if ( mFolder.length() == 0 )
-			this->setFolder( app::getAppPath() + "/.." );
+			this->setFolder( app::getAppPath().string() + "/.." );
 		
 		// Make file name
 		mFile = makeFileNameTime( mFolder, mFileBaseMovie );
@@ -198,6 +200,7 @@ namespace cinder { namespace qb {
 		mFramesStarted = mFramesAdded;
 		mFramesMax = ( _qb.getRenderSeconds() ? mFramesAdded+(int)(_qb.getRenderSeconds()*QB_FRAMERATE) : 0 );
 		mFramesStill =  (int)(_qb.getRenderStillSeconds()*QB_FRAMERATE);
+		mTimeStart = app::getElapsedSeconds();
 
 		// Start!
 		App::get()->setFrameRate( 1000.0 );
@@ -262,6 +265,7 @@ namespace cinder { namespace qb {
 			printf("%s\n",os.str().c_str());
 			this->commit( _aframe );
 			mFramesAdded++;
+			mTimeElapsed = app::getElapsedSeconds() - mTimeStart;
 			// Reached the end
 			if ( mFramesAdded == mFramesMax )
 			{
@@ -298,20 +302,40 @@ namespace cinder { namespace qb {
 	void qbRenderer::updateStatus()
 	{
 		std::ostringstream os;
+		if ( mFramesMax == 0)
+			os << "Rendering... (unlimited)";
+		else
+			os << "Rendering... "<<(int)(this->getProg()*100)<<"%";
+		mStatus = os.str();
+		
+		// Frame count
+		os.str("");
 		if ( bIsRendering )
 		{
-			if ( mFramesMax == 0)
-				os << "Frames: "<<mFramesAdded<<" (unlimited)";
-			else
-				os << "Frames: "<<mFramesAdded<<"/"<<mFramesMax<<"  "<<(int)(this->getProg()*100)<<"%";
+			// Progress
+			os << "Frames: " << mFramesAdded << " / " << ( mFramesMax == 0 ? std::string("?") : toString(mFramesMax) );
+			mProgressString = os.str();
+			// Time
+			double mTimeEstimated = ( mTimeElapsed / this->getProg() );
+			double mTimeRemaining = mTimeEstimated - mTimeElapsed;
+			os.str("");
+			os << "Time: " 
+				<< (int)(mTimeEstimated/60.0) << ":" << std::setfill('0') << std::setw(2) << (int)(mTimeEstimated-(int)(mTimeEstimated/60.0)) << " - "
+				<< (int)(mTimeElapsed/60.0) << ":" << std::setfill('0') << std::setw(2) << (int)(mTimeElapsed-(int)(mTimeEstimated/60.0)) << " = "
+				<< (int)(mTimeRemaining/60.0) << ":" << std::setfill('0') << std::setw(2) << (int)(mTimeRemaining-(int)(mTimeRemaining/60.0)) << " s";
+			mTimeString = os.str();
 		}
 		else
 		{
 			os.setf(std::ios::fixed);
 			os.precision(1);
-			os << "Frames: "<<mFramesAdded<<" / " << (mFramesAdded/QB_FRAMERATE) << " s";
+			os << "Frames: " << mFramesAdded;
+			mProgressString = os.str();
+			// Time
+			os.str("");
+			os << "Time: " << (int)mTimeElapsed << ":" << (int)((mTimeElapsed-(int)mTimeElapsed)*60) << " s";
+			mTimeString = os.str();
 		}
-		mProgress = os.str();
 	}
 
 	//

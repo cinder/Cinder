@@ -1,7 +1,7 @@
 TRogersGuiApp
 v7
 r0
-t343950337.490907
+t348354080.338504
 cCheck dependencies
 cProcessInfoPlistFile /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Info.plist Info.plist
 cCpResource build/Debug/ButtonsAndTextures.app/Contents/Resources/CinderApp.icns ../resources/CinderApp.icns
@@ -153,8 +153,8 @@ t1242688292
 s48842
 
 N/System/Library/Frameworks/Carbon.framework/Carbon
-c000000004C0FDD7E000000000000A5F0
-t1276108158
+c000000004E2093A0000000000000A5F0
+t1310757792
 s42480
 
 N/System/Library/Frameworks/Cocoa.framework/Cocoa
@@ -168,8 +168,8 @@ t1284748812
 s709680
 
 N/System/Library/Frameworks/OpenGL.framework/OpenGL
-c000000004DF9F72F0000000000043360
-t1308227375
+c000000004DEEB8140000000000043360
+t1307490324
 s275296
 
 N/System/Library/Frameworks/QTKit.framework/QTKit
@@ -188,9 +188,9 @@ t1298567866
 s22176
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../src/SimpleGUI.cpp
-c000000004ECFC7F0000000000000B196
-t1322239984
-s45462
+c000000004F133911000000000000B250
+t1326659857
+s45648
 i<iostream>
 i<sstream>
 i<fstream>
@@ -204,9 +204,9 @@ i"cinder/CinderMath.h"
 i"cinder/Rand.h"
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../src/SimpleGUI.h
-c000000004ECFBC6C0000000000003998
-t1322237036
-s14744
+c000000004F1339090000000000003A4F
+t1326659849
+s14927
 i<vector>
 i"cinder/app/App.h"
 i"cinder/Text.h"
@@ -219,8 +219,8 @@ t1298567866
 s114357
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../src/RogersGuiApp.cpp
-c000000004ECFC88E000000000000216A
-t1322240142
+c000000004F1337E6000000000000216A
+t1326659558
 s8554
 i"cinder/app/AppBasic.h"
 i"cinder/gl/gl.h"
@@ -236,41 +236,41 @@ s147
 i<Cocoa/Cocoa.h>
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app
-t1322257537
+t1326661280
 s102
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Info.plist
-t1322257523
+t1326661266
 s1260
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/MacOS/ButtonsAndTextures
-t1322257537
-s7864356
+t1326661280
+s7865384
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/PkgInfo
-t1322257523
+t1326661266
 s8
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Resources/CinderApp.icns
-t1322257523
+t1326661266
 s114357
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Resources/pf_tempesta_seven.ttf
-t1322257523
+t1326661266
 s22176
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/ButtonsAndTextures.LinkFileList
-c000000004ED00C73000000000000014B
-t1322257523
+c000000004F133E92000000000000014B
+t1326661266
 s331
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/RogersGuiApp.o
-t1322257527
-s767104
+t1326661270
+s767328
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/SimpleGUI.o
-t1322257528
-s1515972
+t1326661271
+s1516108
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/boost/boost/algorithm/string.hpp
 c00000000485A4BFC0000000000000425
@@ -7015,8 +7015,8 @@ s719
 i<boost/config.hpp>
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/include/cinder/Area.h
-c000000004EC1BB51000000000000148B
-t1321319249
+c000000004EE8D832000000000000148B
+t1323882546
 s5259
 i"cinder/Cinder.h"
 i"cinder/Vector.h"
@@ -7236,9 +7236,9 @@ s2626
 i"cinder/Vector.h"
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/include/cinder/Rect.h
-c000000004EC1BAB80000000000001867
-t1321319096
-s6247
+c000000004F1331150000000000001919
+t1326657813
+s6425
 i"cinder/Vector.h"
 i"cinder/Area.h"
 i<vector>
@@ -7413,9 +7413,9 @@ i"cinder/Vector.h"
 i<vector>
 
 N/Users/Roger/Dev/Cinder/cinder-rsodre/include/cinder/gl/Fbo.h
-c000000004D69C0360000000000003CD9
-t1298776118
-s15577
+c000000004EDF8FD30000000000003CF7
+t1323274195
+s15607
 i"cinder/Cinder.h"
 i"cinder/Exception.h"
 i"cinder/gl/gl.h"
@@ -7476,7 +7476,7 @@ i<sstream>
 i<string>
 
 N/var/folders/Ou/Ou7c5hWFFXuZG4VLf88b6++++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/ButtonsAndTextures_Prefix-dufxecmxoothntbpyrrgvsmwumvq/ButtonsAndTextures_Prefix.pch.gch
-t1322257459
+t1326661266
 s2515312
 
 NInfo.plist
@@ -7486,11 +7486,11 @@ s859
 
 CCheck dependencies
 r0
-lSLF07#2@18"Check dependencies343950323#343950323#0(0"0(0#1#0"8623919488#0"0#
+lSLF07#2@18"Check dependencies348354065#348354066#0(0"0(0#1#0"8636663328#0"0#
 
 CCompileC build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/RogersGuiApp.o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../src/RogersGuiApp.cpp normal i386 c++ com.apple.compilers.gcc.4_2
-s343950323.544705
-e343950327.732125
+s348354066.182607
+e348354070.562862
 r1
 xCompileC
 xbuild/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/RogersGuiApp.o
@@ -7499,11 +7499,11 @@ xnormal
 xi386
 xc++
 xcom.apple.compilers.gcc.4_2
-lSLF07#2@113"Compile /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../src/RogersGuiApp.cpp343950323#343950327#0(0"0(0#0#105"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../src/RogersGuiApp.cpp8624717184#2158"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c++ -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -fvisibility-inlines-hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-generated-files.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-own-target-headers.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-all-target-headers.hmap -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-project-headers.hmap -F/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -iquote../../../../../include -iquote../include -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/include -I../../../../../boost -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources/i386 -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources -include /var/folders/Ou/Ou7c5hWFFXuZG4VLf88b6++++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/ButtonsAndTextures_Prefix-dufxecmxoothntbpyrrgvsmwumvq/ButtonsAndTextures_Prefix.pch -c /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../src/RogersGuiApp.cpp -o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/RogersGuiApp.o0#
+lSLF07#2@113"Compile /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../src/RogersGuiApp.cpp348354066#348354070#0(0"0(0#0#105"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../src/RogersGuiApp.cpp8634449216#2158"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c++ -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -fvisibility-inlines-hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-generated-files.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-own-target-headers.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-all-target-headers.hmap -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-project-headers.hmap -F/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -iquote../../../../../include -iquote../include -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/include -I../../../../../boost -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources/i386 -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources -include /var/folders/Ou/Ou7c5hWFFXuZG4VLf88b6++++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/ButtonsAndTextures_Prefix-dufxecmxoothntbpyrrgvsmwumvq/ButtonsAndTextures_Prefix.pch -c /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../src/RogersGuiApp.cpp -o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/RogersGuiApp.o0#
 
 CCompileC build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/SimpleGUI.o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../src/SimpleGUI.cpp normal i386 c++ com.apple.compilers.gcc.4_2
-s343950323.545705
-e343950328.993003
+s348354066.184223
+e348354071.556053
 r1
 xCompileC
 xbuild/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/SimpleGUI.o
@@ -7512,48 +7512,48 @@ xnormal
 xi386
 xc++
 xcom.apple.compilers.gcc.4_2
-lSLF07#2@116"Compile /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../src/SimpleGUI.cpp343950323#343950328#0(0"0(0#0#108"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../src/SimpleGUI.cpp8623360096#2158"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c++ -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -fvisibility-inlines-hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-generated-files.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-own-target-headers.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-all-target-headers.hmap -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-project-headers.hmap -F/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -iquote../../../../../include -iquote../include -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/include -I../../../../../boost -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources/i386 -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources -include /var/folders/Ou/Ou7c5hWFFXuZG4VLf88b6++++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/ButtonsAndTextures_Prefix-dufxecmxoothntbpyrrgvsmwumvq/ButtonsAndTextures_Prefix.pch -c /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../src/SimpleGUI.cpp -o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/SimpleGUI.o0#
+lSLF07#2@116"Compile /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../src/SimpleGUI.cpp348354066#348354071#0(0"0(0#0#108"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../src/SimpleGUI.cpp8628852608#2158"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c++ -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -fvisibility-inlines-hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-generated-files.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-own-target-headers.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-all-target-headers.hmap -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-project-headers.hmap -F/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -iquote../../../../../include -iquote../include -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/include -I../../../../../boost -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources/i386 -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources -include /var/folders/Ou/Ou7c5hWFFXuZG4VLf88b6++++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/ButtonsAndTextures_Prefix-dufxecmxoothntbpyrrgvsmwumvq/ButtonsAndTextures_Prefix.pch -c /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../src/SimpleGUI.cpp -o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/SimpleGUI.o0#
 
 CCpResource build/Debug/ButtonsAndTextures.app/Contents/Resources/CinderApp.icns ../resources/CinderApp.icns
-s343950323.538864
-e343950323.544286
+s348354066.097148
+e348354066.103596
 r1
 xCpResource
 xbuild/Debug/ButtonsAndTextures.app/Contents/Resources/CinderApp.icns
 x../resources/CinderApp.icns
-lSLF07#2@32"Copy ../resources/CinderApp.icns343950323#343950323#0(0"0(0#0#109"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../resources/CinderApp.icns8625636352#497"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -resolve-src-symlinks /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../resources/CinderApp.icns /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Resources0#
+lSLF07#2@32"Copy ../resources/CinderApp.icns348354066#348354066#0(0"0(0#0#109"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../resources/CinderApp.icns8636663520#497"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -resolve-src-symlinks /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../resources/CinderApp.icns /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Resources0#
 
 CCpResource build/Debug/ButtonsAndTextures.app/Contents/Resources/pf_tempesta_seven.ttf ../../../resources/pf_tempesta_seven.ttf
-s343950323.539546
-e343950323.544435
+s348354066.098878
+e348354066.104013
 r1
 xCpResource
 xbuild/Debug/ButtonsAndTextures.app/Contents/Resources/pf_tempesta_seven.ttf
 x../../../resources/pf_tempesta_seven.ttf
-lSLF07#2@45"Copy ../../../resources/pf_tempesta_seven.ttf343950323#343950323#0(0"0(0#0#122"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../resources/pf_tempesta_seven.ttf8625639744#510"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -resolve-src-symlinks /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../resources/pf_tempesta_seven.ttf /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Resources0#
+lSLF07#2@45"Copy ../../../resources/pf_tempesta_seven.ttf348354066#348354066#0(0"0(0#0#122"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../resources/pf_tempesta_seven.ttf8629675712#510"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp -exclude .DS_Store -exclude CVS -exclude .svn -exclude .git -resolve-src-symlinks /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/../../../resources/pf_tempesta_seven.ttf /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Resources0#
 
 CLd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/MacOS/ButtonsAndTextures normal i386
-s343950328.993097
-e343950337.487910
+s348354071.556146
+e348354080.335383
 r1
 xLd
 x/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/MacOS/ButtonsAndTextures
 xnormal
 xi386
-lSLF07#2@155"Link /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/MacOS/ButtonsAndTextures343950328#343950337#0(0"0(0#0#0"8623873088#1012"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    setenv MACOSX_DEPLOYMENT_TARGET 10.5    /Developer/usr/bin/g++-4.2 -arch i386 -isysroot /Developer/SDKs/MacOSX10.6.sdk -L/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -F/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -filelist /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/ButtonsAndTextures.LinkFileList -mmacosx-version-min=10.5 ../../../../../lib/libcinder_d.a -framework Cocoa -framework OpenGL -framework Carbon -framework CoreVideo -framework QTKit -framework QuickTime -framework Accelerate -framework AudioToolbox -framework AudioUnit -framework CoreAudio -o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/MacOS/ButtonsAndTextures0#
+lSLF07#2@155"Link /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/MacOS/ButtonsAndTextures348354071#348354080#0(0"0(0#0#0"8627409024#1012"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    setenv MACOSX_DEPLOYMENT_TARGET 10.5    /Developer/usr/bin/g++-4.2 -arch i386 -isysroot /Developer/SDKs/MacOSX10.6.sdk -L/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -F/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -filelist /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/Objects-normal/i386/ButtonsAndTextures.LinkFileList -mmacosx-version-min=10.5 ../../../../../lib/libcinder_d.a -framework Cocoa -framework OpenGL -framework Carbon -framework CoreVideo -framework QTKit -framework QuickTime -framework Accelerate -framework AudioToolbox -framework AudioUnit -framework CoreAudio -o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/MacOS/ButtonsAndTextures0#
 
 CProcessInfoPlistFile /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Info.plist Info.plist
-s343950323.535183
-e343950323.538789
+s348354066.060860
+e348354066.097039
 r1
 xProcessInfoPlistFile
 x/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Info.plist
 xInfo.plist
-lSLF07#2@18"Process Info.plist343950323#343950323#0(0"0(0#0#92"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/Info.plist8621238272#453"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    builtin-infoPlistUtility Info.plist -genpkginfo /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/PkgInfo -expandbuildsettings -platform macosx -o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Info.plist0#
+lSLF07#2@18"Process Info.plist348354066#348354066#0(0"0(0#0#92"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/Info.plist31244010180771952#453"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    builtin-infoPlistUtility Info.plist -genpkginfo /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/PkgInfo -expandbuildsettings -platform macosx -o /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app/Contents/Info.plist0#
 
 CProcessPCH++ /var/folders/Ou/Ou7c5hWFFXuZG4VLf88b6++++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/ButtonsAndTextures_Prefix-dufxecmxoothntbpyrrgvsmwumvq/ButtonsAndTextures_Prefix.pch.gch ButtonsAndTextures_Prefix.pch normal i386 c++ com.apple.compilers.gcc.4_2
-s343950259.626257
-e343950260.041173
+s348354066.104110
+e348354066.182393
 r1
 xProcessPCH++
 x/var/folders/Ou/Ou7c5hWFFXuZG4VLf88b6++++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/ButtonsAndTextures_Prefix-dufxecmxoothntbpyrrgvsmwumvq/ButtonsAndTextures_Prefix.pch.gch
@@ -7562,13 +7562,13 @@ xnormal
 xi386
 xc++
 xcom.apple.compilers.gcc.4_2
-lSLF07#2@40"Precompile ButtonsAndTextures_Prefix.pch343950259#343950260#0(0"0(0#0#111"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/ButtonsAndTextures_Prefix.pch8601452896#1999"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c++-header -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -fvisibility-inlines-hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-generated-files.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-own-target-headers.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-all-target-headers.hmap -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-project-headers.hmap -F/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -iquote../../../../../include -iquote../include -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/include -I../../../../../boost -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources/i386 -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources -c /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/ButtonsAndTextures_Prefix.pch -o /var/folders/Ou/Ou7c5hWFFXuZG4VLf88b6++++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/ButtonsAndTextures_Prefix-dufxecmxoothntbpyrrgvsmwumvq/ButtonsAndTextures_Prefix.pch.gch0#
+lSLF07#2@40"Precompile ButtonsAndTextures_Prefix.pch348354066#348354066#0(0"0(0#0#111"/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/ButtonsAndTextures_Prefix.pch8623588416#1999"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    setenv LANG en_US.US-ASCII    /Developer/usr/bin/gcc-4.2 -x c++-header -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -fasm-blocks -O0 -Wreturn-type -Wunused-variable -isysroot /Developer/SDKs/MacOSX10.6.sdk -mfix-and-continue -fvisibility-inlines-hidden -mmacosx-version-min=10.5 -gdwarf-2 -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-generated-files.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-own-target-headers.hmap -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-all-target-headers.hmap -iquote /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/ButtonsAndTextures-project-headers.hmap -F/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug -iquote../../../../../include -iquote../include -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/include -I../../../../../boost -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources/i386 -I/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/RogersGuiApp.build/Debug/RogersGuiApp.build/DerivedSources -c /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/ButtonsAndTextures_Prefix.pch -o /var/folders/Ou/Ou7c5hWFFXuZG4VLf88b6++++TM/-Caches-/com.apple.Xcode.502/SharedPrecompiledHeaders/ButtonsAndTextures_Prefix-dufxecmxoothntbpyrrgvsmwumvq/ButtonsAndTextures_Prefix.pch.gch0#
 
 CTouch /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app
-s343950337.488094
-e343950337.490855
+s348354080.335576
+e348354080.338467
 r1
 xTouch
 x/Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app
-lSLF07#2@122"Touch /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app343950337#343950337#0(0"0(0#0#0"8623721696#228"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    /usr/bin/touch -c /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app0#
+lSLF07#2@122"Touch /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app348354080#348354080#0(0"0(0#0#0"8635016288#228"    cd /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode    /usr/bin/touch -c /Users/Roger/Dev/Cinder/cinder-rsodre/blocks/SimpleGUI/samples/RogersGuiApp/xcode/build/Debug/ButtonsAndTextures.app0#
 

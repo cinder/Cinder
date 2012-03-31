@@ -64,6 +64,7 @@ namespace cinder { namespace qb {
 	void drawStrokedCube();
 	void drawStrokedCube( const Vec3f & center, const Vec3f & size );
 	void drawStrokedCube( const Vec3f & center, const Vec3f & size, const Vec3f & rot );
+	void drawCubeVertex( const Vec3f & center, const Vec3f & size );
 	//
 	// Quads -- corrected by Bilinear Interpolation on shader
 	void drawQuad( const Vec2f & v0, const Vec2f & v1, const Vec2f & v2, const Vec2f & v3 );

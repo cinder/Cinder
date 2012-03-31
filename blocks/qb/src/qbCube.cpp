@@ -203,7 +203,7 @@ namespace cinder { namespace qb {
 	{
 		__qbDrawStrokedCube( (const GLfloat * )__qbWireCubeVerticesLines );
 	};
-
+	
 	
 	////////////////////////////////////////////////
 	//

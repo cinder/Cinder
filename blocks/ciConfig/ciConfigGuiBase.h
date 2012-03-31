@@ -67,10 +67,10 @@ namespace cinder {
 		void	guiShowHide()														{ this->guiShow( !this->guiIsVisible() ); };
 		void	guiHide()															{ this->guiShow(false); };
 		void	guiSetLabel(int id, const std::string &label)						{ this->guiSetLabel(id, -1, label); }
-		void*	guiAddParam(int id, const std::string &label="", int precision=0)	{ return this->guiAddParamPrivate(id, -1, label, precision); }	// -1 = auto
-		void*	guiAddParamX(int id, const std::string &label="", int precision=0)	{ return this->guiAddParamPrivate(id,  0, label, precision); }
-		void*	guiAddParamY(int id, const std::string &label="", int precision=0)	{ return this->guiAddParamPrivate(id,  1, label, precision); }
-		void*	guiAddParamZ(int id, const std::string &label="", int precision=0)	{ return this->guiAddParamPrivate(id,  2, label, precision); }
+		void*	guiAddParam(int id, const std::string &label="", int precision=-1)	{ return this->guiAddParamPrivate(id, -1, label, precision); }	// -1 = auto
+		void*	guiAddParamX(int id, const std::string &label="", int precision=-1)	{ return this->guiAddParamPrivate(id,  0, label, precision); }
+		void*	guiAddParamY(int id, const std::string &label="", int precision=-1)	{ return this->guiAddParamPrivate(id,  1, label, precision); }
+		void*	guiAddParamZ(int id, const std::string &label="", int precision=-1)	{ return this->guiAddParamPrivate(id,  2, label, precision); }
 
 		
 	protected:
