@@ -19,3 +19,6 @@ lib/cinder*.lib
 Debug/
 Release/
 ipch/
+
+# ROGER
+ROGER/
