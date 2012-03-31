@@ -28,6 +28,7 @@
  */
  
 #import "SyphonNameboundClient.h"
+#include <sys/time.h>
 
 @interface SyphonNameboundClient (Private)
 - (void)setClientFromSearchHavingLock:(BOOL)isLocked;
