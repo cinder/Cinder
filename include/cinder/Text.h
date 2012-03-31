@@ -34,8 +34,14 @@
 
 // Core Text forward declarations
 #if defined( CINDER_COCOA )
-typedef struct __CTFrame;
-typedef struct __CTLine;
+// ROGER - remove LLVM warning for foward declaration of struct
+//typedef struct __CTFrame;
+//typedef struct __CTLine;
+#if defined( CINDER_MAC )
+#include <ApplicationServices/ApplicationServices.h>
+#elif defined( CINDER_COCOA_TOUCH )
+#include <CoreText/CoreText.h>
+#endif
 #endif
 
 namespace cinder {
