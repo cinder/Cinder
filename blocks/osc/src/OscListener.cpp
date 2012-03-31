@@ -162,13 +162,13 @@ bool OscListener::getNextMessage( Message* message )
 
 	if (src_message == NULL)
 	{
-		console() << "OscListener:: NULL MESSAGE!" << std::endl;
+		app::console() << "OscListener:: NULL MESSAGE!" << std::endl;
 		return false;
 	}
 	
 	if (src_message->getAddress().size() == 0)
 	{
-		console() << "OscListener:: EMPTY ADDRESS!" << std::endl;
+		app::console() << "OscListener:: EMPTY ADDRESS!" << std::endl;
 		return false;
 	}
 	
