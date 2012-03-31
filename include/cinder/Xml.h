@@ -183,7 +183,7 @@ class XmlTree {
 	};
 
 	//! Enum listing all types of XML nodes understood by the parser.
-	typedef enum NodeType { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT };
+	typedef enum { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT } NodeType;
 
 	//! Default constructor, creating an empty node.
 	XmlTree() : mParent( 0 ), mNodeType( NODE_ELEMENT ) {}
