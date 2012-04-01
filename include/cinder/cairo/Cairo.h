@@ -696,7 +696,7 @@ class Context
 
 #if defined( CINDER_COCOA )
 SurfaceQuartz	createWindowSurface();
-#else
+#elif defined( CINDER_MSW )
 SurfaceGdi		createWindowSurface();
 #endif
 
