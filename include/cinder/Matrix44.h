@@ -37,7 +37,8 @@ template< typename T >
 class Matrix44 
 {
 public:
-	typedef T TYPE;
+	typedef T	TYPE;
+	typedef T	value_type;
 	//
 	static const size_t DIM		= 4;
 	static const size_t DIM_SQ	= DIM*DIM;
@@ -186,9 +187,13 @@ public:
 	Vec3<T>				postMultiply( const Vec3<T> &v ) const;
 	Vec4<T>				postMultiply( const Vec4<T> &v ) const;
 
-	// assumes the matrix is affine, i.e. the bottom row is [0 0 0 1]
+	//! Computes inverse; assumes the matrix is affine, i.e. the bottom row is [0 0 0 1]
 	void				affineInvert(){ *this = affineInverted(); }	
 	Matrix44<T>			affineInverted() const;
+	
+	//! Computes inverse; assumes the matrix is orthonormal
+	void				orthonormalInvert();
+	Matrix44<T>			orthonormalInverted() const { Matrix44<T> result( *this ); result.orthonormalInvert(); return result; }
 	
 	// post-multiplies column vector [rhs.x rhs.y rhs.z 1] and divides by w - same as operator*( const Vec3<T>& )
 	Vec3<T>				transformPoint( const Vec3<T> &rhs ) const;
@@ -248,6 +253,9 @@ public:
 	// equivalent to rotate( zAxis, z ), then rotate( yAxis, y ) then rotate( xAxis, x )
 	static Matrix44<T>	createRotation( const Vec3<T> &eulerRadians );
 	static Matrix44<T>	createRotation( const Vec4<T> &eulerRadians ) { return createRotation( eulerRadians.xyz() ); }
+	// creates rotation matrix from ortho normal basis (u, v, n)
+	static Matrix44<T>	createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w );
+	static Matrix44<T>	createRotationOnb( const Vec4<T>& u, const Vec4<T>& v, const Vec4<T>& w ) { return createRotationOnb( u.xyz(), v.xyz(), w.xyz() ); }
 
 	// creates scale matrix
 	static Matrix44<T>	createScale( T s );
@@ -1046,25 +1054,19 @@ Vec3<T> Matrix44<T>::transformVec( const Vec3<T> &rhs ) const
 	return Vec3<T>( x, y, z );
 }
 
-template< typename T >
-Matrix44<T> Matrix44<T>::invertTransform() const
+template< typename T > // thanks to @juj/MathGeoLib for fix
+void Matrix44<T>::orthonormalInvert()
 {
-	Matrix44<T> ret;
+	// transpose upper 3x3 (R->R^t)
+	std::swap( at(0,1), at(1,0) );
+	std::swap( at(0,2), at(2,0) );
+	std::swap( at(1,2), at(2,1) );
 
-	// inverse translation
-	ret.at( 0, 3 ) = -at( 0, 3 );
-	ret.at( 1, 3 ) = -at( 1, 3 );
-	ret.at( 2, 3 ) = -at( 2, 3 );
-	ret.at( 3, 3 ) =  at( 3, 3 );
-
-	// transpose rotation part
-	for( int i = 0; i < 3; i++ ) {
-		for( int j = 0; j < 3; j++ ) {
-			ret.at( j, i ) = at( i, j );
-		}
-	}
-
-	return ret;
+	// replace translation (T) with R^t(-T).
+	Vec3f newT( transformVec( Vec3f(-at(0,3),-at(1,3),-at(2,3)) ) );
+	at(0,3) = newT.x;
+	at(1,3) = newT.y;
+	at(2,3) = newT.z;
 }
 
 template<typename T>
@@ -1178,6 +1180,17 @@ Matrix44<T> Matrix44<T>::createRotation( const Vec3<T> &eulerRadians )
 	ret.m[15] =  1;
 
 	return ret;
+}
+
+template<typename T>
+Matrix44<T>	Matrix44<T>::createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w )
+{
+	return Matrix44<T>(
+		u.x,  u.y, u.z, 0,
+		v.x,  v.y, v.z, 0,
+		w.x,  w.y, w.z, 0,
+		0,    0,   0, 1
+		);
 }
 
 template<typename T>

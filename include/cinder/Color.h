@@ -92,6 +92,8 @@ class ColorT
 		return (&r)[n];
 	}
 
+	T*  ptr() const { return &(const_cast<ColorT*>( this )->r); }
+
 	ColorT<T>		operator+( const ColorT<T> &rhs ) const { return ColorT<T>( r + rhs.r, g + rhs.g, b + rhs.b ); }
 	ColorT<T>		operator-( const ColorT<T> &rhs ) const { return ColorT<T>( r - rhs.r, g - rhs.g, b - rhs.b ); }
 	ColorT<T>		operator*( const ColorT<T> &rhs ) const { return ColorT<T>( r * rhs.r, g * rhs.g, b * rhs.b ); }
@@ -276,6 +278,8 @@ class ColorAT {
 		return (&r)[n];
 	}
 
+	T*  ptr() const { return &(const_cast<ColorAT*>( this )->r); }
+
 	ColorAT<T>	operator+( const ColorAT<T> &rhs ) const { return ColorAT<T>( r + rhs.r, g + rhs.g, b + rhs.b, a + rhs.a ); }
 	ColorAT<T>	operator-( const ColorAT<T> &rhs ) const { return ColorAT<T>( r - rhs.r, g - rhs.g, b - rhs.b, a - rhs.a ); }
 	ColorAT<T>	operator*( const ColorAT<T> &rhs ) const { return ColorAT<T>( r * rhs.r, g * rhs.g, b * rhs.b, a * rhs.a ); }
@@ -376,7 +380,7 @@ class ColorAT {
 	}
 	
 
-	static ColorT<T> gray( T value )
+	static ColorAT<T> gray( T value )
 	{
 		return ColorAT<T>( value, value, value, CHANTRAIT<T>::max() );
 	}
@@ -386,8 +390,11 @@ class ColorAT {
 	operator ColorT<T>(){ return ColorT<T>( r, g, b ); }
 };
 
-// Free Functions
+// Operators
+template <typename T, typename Y> inline ColorT<T>  operator*( Y s, const ColorT<T>& c )  { return ColorT<T>( s*c.r, s*c.g, s*c.b ); }
+template <typename T, typename Y> inline ColorAT<T> operator*( Y s, const ColorAT<T>& c ) { return ColorAT<T>( s*c.r, s*c.g, s*c.b, s*c.a ); }
 
+// Free Functions
 extern ColorT<float> hsvToRGB( const Vec3f &hsv );
 extern Vec3f rgbToHSV( const ColorT<float> &c );
 

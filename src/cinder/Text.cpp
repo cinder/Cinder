@@ -257,7 +257,7 @@ TextLayout::TextLayout()
 	// force any globals we need to be initialized, particularly GDI+ on Windows
 	TextManager::instance();
 	
-	mCurrentFont = Font( "Arial", 14 );
+	mCurrentFont = Font::getDefault();
 	mCurrentColor = ColorA( 1, 1, 1, 0 );
 	mBackgroundColor = ColorA( 0, 0, 0, 0 );
 	mCurrentLeadingOffset = 0;

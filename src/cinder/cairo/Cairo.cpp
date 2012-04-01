@@ -190,7 +190,7 @@ SurfaceImage::SurfaceImage( cinder::Surface ciSurface )
 	: SurfaceBase( ciSurface.getWidth(), ciSurface.getHeight() )
 {
 	bool needsManualCopy = true;
-	cairo_format_t format = ( ciSurface.getChannelOrder() == cinder::SurfaceChannelOrder::BGRA ) ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24;
+	cairo_format_t format = ( ciSurface.getChannelOrder().hasAlpha() ) ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24;
 	bool legalRowBytes = cairo_format_stride_for_width( format, ciSurface.getWidth() ) == ciSurface.getRowBytes();
 	if( legalRowBytes && ( ciSurface.getChannelOrder() == cinder::SurfaceChannelOrder::BGRA ) ) {
 		mCairoSurface = cairo_image_surface_create_for_data( const_cast<unsigned char*>( ciSurface.getData() ), CAIRO_FORMAT_ARGB32, ciSurface.getWidth(), ciSurface.getHeight(), ciSurface.getRowBytes() );
@@ -208,14 +208,16 @@ SurfaceImage::SurfaceImage( cinder::Surface ciSurface )
 
 	if( needsManualCopy )
 		mCinderSurface.copyFrom( ciSurface, ciSurface.getBounds(), Vec2i::zero() );
+	cairo_surface_mark_dirty( mCairoSurface );
 }
 
 SurfaceImage::SurfaceImage( ImageSourceRef imageSource )
-	: SurfaceBase( imageSource->getWidth(), imageSource->getWidth() )
+	: SurfaceBase( imageSource->getWidth(), imageSource->getHeight() )
 {
-	mCairoSurface = cairo_image_surface_create( imageSource->hasAlpha() ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, imageSource->getWidth(), imageSource->getHeight() );
+	mCairoSurface = cairo_image_surface_create( imageSource->hasAlpha() ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24, imageSource->getWidth(), imageSource->getHeight() );
 	initCinderSurface( imageSource->hasAlpha(), cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
 	writeImage( (ImageTargetRef)mCinderSurface, imageSource );
+	cairo_surface_mark_dirty( mCairoSurface );
 }
 
 SurfaceImage::SurfaceImage( const SurfaceImage &other )
@@ -231,6 +233,11 @@ uint8_t* SurfaceImage::getData()
 int32_t SurfaceImage::getStride() const 
 {
 	return cairo_image_surface_get_stride( mCairoSurface );
+}
+
+void SurfaceImage::markDirty()
+{
+	cairo_surface_mark_dirty( mCairoSurface );
 }
 
 void SurfaceImage::initCinderSurface( bool alpha, uint8_t *data, int32_t stride )
@@ -1177,7 +1184,7 @@ void Context::copySurface( const SurfaceBase &surface, const Area &srcArea, cons
 	cairo_matrix_translate( &m, srcArea.getX1() - dstRect.getX1(), srcArea.getY1() - dstRect.getY1() );
 	cairo_pattern_set_matrix( sourcePattern, &m );
 	cairo_rectangle( mCairo, dstRect.getX1(), dstRect.getY1(), dstRect.getWidth(), dstRect.getHeight() );
-	cairo_fill( mCairo );	
+	cairo_fill( mCairo );
 	restore();
 }
 
@@ -1421,9 +1428,16 @@ void Context::copyPathFlat( cinder::Shape2d *resultPath )
 	cairo_path_destroy( path );
 }
 
-void Context::getCurrentPoint( double *x, double *y )
+void Context::getCurrentPoint( double *x, double *y ) const
 {
 	cairo_get_current_point( mCairo, x, y );
+}
+
+Vec2f Context::getCurrentPoint() const
+{
+	double x, y;
+	cairo_get_current_point( mCairo, &x, &y );
+	return Vec2f( (float)x, (float)y );
 }
 
 void Context::newPath()
@@ -1507,6 +1521,18 @@ void Context::textPath( const char *utf8 )
 	cairo_text_path( mCairo, utf8 );
 }
 
+void Context::glyphPath( const std::vector<std::pair<uint16_t,Vec2f> > &glyphs )
+{
+	cairo_glyph_t *cairoGlyphs = new cairo_glyph_t[glyphs.size()];
+	for( size_t g = 0; g < glyphs.size(); ++g ) {
+		cairoGlyphs[g].index = glyphs[g].first;
+		cairoGlyphs[g].x = glyphs[g].second.x;
+		cairoGlyphs[g].y = glyphs[g].second.y;
+	}
+	cairo_glyph_path( mCairo, &cairoGlyphs[0], glyphs.size() );
+	delete [] cairoGlyphs;
+}
+
 void Context::relCurveTo( double dx1, double dy1, double dx2, double dy2, double dx3, double dy3 )
 {
 	cairo_rel_curve_to( mCairo, dx1, dy1, dx2, dy2, dx3, dy3 );
@@ -1575,9 +1601,9 @@ void Context::scale( double sx, double sy )
 	cairo_scale( mCairo, sx, sy );
 }
 
-void Context::rotate( double angle )
+void Context::rotate( double radians )
 {
-	cairo_rotate( mCairo, angle );
+	cairo_rotate( mCairo, radians );
 }
 
 void Context::transform( const Matrix &aMatrix )
@@ -1659,6 +1685,7 @@ void Context::setFont( const cinder::Font &font )
 	cairo_font_face_t *cairoFont = cairo_win32_font_face_create_for_logfontw( &font.getLogfont() );
 #endif
 	cairo_set_font_face( mCairo, cairoFont );
+	cairo_set_font_size( mCairo, font.getSize() );
 	cairo_font_face_destroy( cairoFont );
 }
 
@@ -1685,6 +1712,11 @@ ScaledFont*	Context::getScaledFont()
 void Context::showText( const std::string &s )
 {
 	cairo_show_text( mCairo, s.c_str() );
+}
+
+void Context::textPath( const std::string &s )
+{
+	cairo_text_path( mCairo, s.c_str() );
 }
 
 /*void Context::showGlyphs( const GlyphArray &glyphs )
@@ -1723,6 +1755,11 @@ cairo::SurfaceQuartz createWindowSurface()
 	cairo_glyph_extents( mCairo, (cairo_glyph_t *)&glyphs.mGlyphs[0], (int)glyphs.mGlyphs.size(), extents->getCairoTextExtents() );
 }
 */
+
+std::string	Context::statusToString() const
+{
+	return std::string( cairo_status_to_string( cairo_status( mCairo ) ) );
+}
 
 } } // namespace cinder::cairo
 

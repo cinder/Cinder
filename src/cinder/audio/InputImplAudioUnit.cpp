@@ -332,7 +332,7 @@ void InputImplAudioUnit::setup()
 	//AudioDeviceGetProperty( nativeDeviceId, 0, true, kAudioDevicePropertyStreamConfiguration, &param, &aBufferList);
 	
 	//setup buffer for recieving data in the callback
-	mInputBufferData = (float *)malloc( sampleCount * desiredOutFormat.mBytesPerFrame );
+	mInputBufferData = (float *)malloc( sampleCount * desiredOutFormat.mBytesPerFrame * desiredOutFormat.mChannelsPerFrame );
 	float * inputBufferChannels[desiredOutFormat.mChannelsPerFrame];
 	for( int h = 0; h < desiredOutFormat.mChannelsPerFrame; h++ ) {
 		inputBufferChannels[h] = &mInputBufferData[h * sampleCount];

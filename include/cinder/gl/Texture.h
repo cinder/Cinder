@@ -82,11 +82,15 @@ class Texture {
 
 	//! Replaces the pixels of a texture with contents of \a surface. Expects \a surface's size to match the Texture's.
 	void			update( const Surface &surface );
+	//! Replaces the pixels of a texture with contents of \a surface. Expects \a surface's size to match the Texture's.
+	void			update( const Surface32f &surface );
 	/** \brief Replaces the pixels of a texture with contents of \a surface. Expects \a area's size to match the Texture's.
 		\todo Method for updating a subrectangle with an offset into the source **/
 	void			update( const Surface &surface, const Area &area );
+	//! Replaces the pixels of a texture with contents of \a channel. Expects \a channel's size to match the Texture's.
+	void			update( const Channel32f &channel );
 	//! Replaces the pixels of a texture with contents of \a channel. Expects \a area's size to match the Texture's.
-	void			update( const Channel8u &surface, const Area &area );
+	void			update( const Channel8u &channel, const Area &area );
 	
 	//! the width of the texture in pixels
 	GLint			getWidth() const;

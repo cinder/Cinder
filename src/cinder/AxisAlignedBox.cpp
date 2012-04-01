@@ -69,6 +69,31 @@ bool AxisAlignedBox3f::intersects( const Ray &ray )
 	return tmin > 0;
 }
 
+void AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
+{
+	Vec3f minB = rhs.getMin();
+	if(minB.x < mExtents[0].x) mExtents[0].x = minB.x;
+	if(minB.y < mExtents[0].y) mExtents[0].y = minB.y;
+	if(minB.z < mExtents[0].z) mExtents[0].z = minB.z;
+
+	Vec3f maxB = rhs.getMax();
+	if(maxB.x > mExtents[1].x) mExtents[1].x = maxB.x;
+	if(maxB.y > mExtents[1].y) mExtents[1].y = maxB.y;
+	if(maxB.z > mExtents[1].z) mExtents[1].z = maxB.z;
+
+	// update vertices
+	Vec3f extent( mExtents[1].x - mExtents[0].x, mExtents[1].y - mExtents[0].y, mExtents[1].z - mExtents[0].z );
+	Vec3f mid( ( mExtents[0].x + mExtents[1].x ) / 2.0f, ( mExtents[0].y + mExtents[1].y ) / 2.0f, ( mExtents[0].z + mExtents[1].z ) / 2.0f );
+	mVerts[0] = Vec3f( -0.5f, -0.5f, 0.5f ) * extent +  mid;
+	mVerts[1] = Vec3f( 0.5f, -0.5f, 0.5f ) * extent + mid;
+	mVerts[2] = Vec3f( -0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[3] = Vec3f( 0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[4] = Vec3f( -0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[5] = Vec3f( 0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[6] = Vec3f( -0.5f, -0.5f, -0.5f ) * extent + mid;
+	mVerts[7] = Vec3f( 0.5f, -0.5f, -0.5f ) * extent + mid;
+}
+
 int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 {
 	int i = 0;
@@ -118,6 +143,62 @@ int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 	return i;
 }
 
+//!
+Vec3f AxisAlignedBox3f::getPositive(const Vec3f &normal) const
+{
+	Vec3f result = getMin();
+	Vec3f size = getSize();
 
+	if (normal.x > 0)
+		result.x += size.x;
+
+	if (normal.y > 0)
+		result.y += size.y;
+
+	if (normal.z > 0)
+		result.z += size.z;
+
+	return(result);
+}
+
+Vec3f AxisAlignedBox3f::getNegative(const Vec3f &normal) const
+{
+	Vec3f result = getMin();
+	Vec3f size = getSize();
+
+	if (normal.x < 0)
+		result.x += size.x;
+
+	if (normal.y < 0)
+		result.y += size.y;
+
+	if (normal.z < 0)
+		result.z += size.z;
+
+	return(result);
+}
+
+AxisAlignedBox3f AxisAlignedBox3f::transformed( const Matrix44f &transform ) const
+{
+	Vec3f verts[8];
+
+	for(size_t i=0;i<8;i++) 
+		verts[i] = transform.transformPointAffine(mVerts[i]);
+
+	Vec3f min = verts[0];
+	Vec3f max = verts[0];
+	
+	for(size_t i=1;i<8;i++) {
+		if(verts[i].x < min.x) min.x = verts[i].x;
+		if(verts[i].y < min.y) min.y = verts[i].y;
+		if(verts[i].z < min.z) min.z = verts[i].z;
+
+		if(verts[i].x > max.x) max.x = verts[i].x;
+		if(verts[i].y > max.y) max.y = verts[i].y;
+		if(verts[i].z > max.z) max.z = verts[i].z;
+	}
+
+	return AxisAlignedBox3f(min, max);
+}
 
 } // namespace cinder
