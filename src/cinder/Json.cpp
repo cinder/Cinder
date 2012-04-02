@@ -78,6 +78,8 @@ JsonTree& JsonTree::operator=( const JsonTree &jsonTree )
 	mValue = jsonTree.mValue;
 	mValueType = jsonTree.mValueType;
 
+	mChildren.clear();
+
 	for( ConstIter childIt = jsonTree.begin(); childIt != jsonTree.end(); ++childIt ) {
 		pushBack( *childIt );
     }
