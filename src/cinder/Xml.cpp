@@ -161,6 +161,8 @@ XmlTree& XmlTree::operator=( const XmlTree &rhs )
 	mParent = 0;
 	mAttributes = rhs.mAttributes;
 
+	mChildren.clear();
+
 	for( XmlTree::ConstIter childIt = rhs.begin(); childIt != rhs.end(); ++childIt ) {
 		mChildren.push_back( *childIt );
 		mChildren.back().mParent = this;
