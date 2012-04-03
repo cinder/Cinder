@@ -432,7 +432,7 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 		::CGPoint startPoint = ::CGContextGetTextPosition( cgContext );
 		::CGContextShowText( cgContext, str.c_str(), str.length() );
 		::CGPoint endPoint = ::CGContextGetTextPosition( cgContext );
-		pixelSize = Vec2i( math<float>::ceil( endPoint.x - startPoint.x ), math<float>::ceil( font.getAscent() - font.getDescent() ) );
+		pixelSize = Vec2i( math<float>::ceil( endPoint.x - startPoint.x ), math<float>::ceil( font.getAscent() + font.getDescent() ) );
 		::CGContextRelease( cgContext );
 	}
 
@@ -443,11 +443,11 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 	::CGContextSelectFont( cgContext, font.getName().c_str(), font.getSize(), kCGEncodingMacRoman );
 	::CGContextSetTextDrawingMode( cgContext, kCGTextFill );
 	::CGContextSetRGBFillColor( cgContext, color.r, color.g, color.b, color.a );
-	::CGContextSetTextPosition( cgContext, 0, -font.getDescent() + 1 );
+	::CGContextSetTextPosition( cgContext, 0, font.getDescent() + 1 );
 	::CGContextShowText( cgContext, str.c_str(), str.length() );
 	
 	if( baselineOffset )
-		*baselineOffset = font.getDescent();
+		*baselineOffset = font.getAscent() - pixelSize.y;
 	if( actualSize )
 		*actualSize = pixelSize;
 	

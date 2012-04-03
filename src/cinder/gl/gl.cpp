@@ -1450,6 +1450,7 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 	Surface8u pow2Surface( renderStringPow2( str, font, color, &actualSize, &baselineOffset ) );
 	gl::Texture tex( pow2Surface );
 	tex.setCleanTexCoords( actualSize.x / (float)pow2Surface.getWidth(), actualSize.y / (float)pow2Surface.getHeight() );
+	baselineOffset += pow2Surface.getHeight();
 #else
 	gl::Texture tex( renderString( str, font, color, &baselineOffset ) );
 #endif
