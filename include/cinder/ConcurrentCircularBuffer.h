@@ -26,12 +26,13 @@
 #pragma once
 
 #include <boost/circular_buffer.hpp>
+#include <boost/noncopyable.hpp>
 #include "cinder/Thread.h"
 
 namespace cinder {
 
 template<typename T>
-class ConcurrentCircularBuffer {
+class ConcurrentCircularBuffer : public boost::noncopyable {
   public:
 	typedef boost::circular_buffer<T> container_type;
 	typedef typename container_type::size_type size_type;
@@ -109,9 +110,6 @@ class ConcurrentCircularBuffer {
 	size_t size() const { return (size_t)mContainer.capacity(); }
 
   private:
-	ConcurrentCircularBuffer( const ConcurrentCircularBuffer& );              // Disabled copy constructor
-	ConcurrentCircularBuffer& operator=( const ConcurrentCircularBuffer& ); // Disabled assign operator
-
 	bool is_not_empty_impl() const { return mNumUnread > 0; }
 	bool is_not_full_impl() const { return mNumUnread < mContainer.capacity(); }
 
