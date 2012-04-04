@@ -758,7 +758,7 @@ FontFace::FontFace( const std::string &faceName )
 	CFStringRef nameRef = CFStringCreateWithCString( kCFAllocatorDefault, faceName.c_str(), kCFStringEncodingUTF8 );
 	CGFontRef fontRef = CGFontCreateWithFontName( nameRef );
 	if( ! fontRef )
-		throw;
+		throw FontInvalidNameExc();
 	mCairoFontFace = cairo_quartz_font_face_create_for_cgfont( fontRef );
 	// Cairo releases the CGFontRef
 	CFRelease( nameRef );
