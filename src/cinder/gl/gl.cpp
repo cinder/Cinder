@@ -1494,7 +1494,7 @@ SaveTextureBindState::SaveTextureBindState( GLint target )
 		case GL_TEXTURE_CUBE_MAP: glGetIntegerv( GL_TEXTURE_BINDING_CUBE_MAP, &mOldID ); break;
 #endif
 		default:
-			throw;
+			throw gl::ExceptionUnknownTarget();
 	}
 }
 
