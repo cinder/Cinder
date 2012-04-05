@@ -59,7 +59,7 @@ class JsonTree {
 
 	typedef enum 
 	{ 
-		VALUE_BOOL, VALUE_DOUBLE, VALUE_INT, VALUE_STRING, VALUE_UINT 
+		VALUE_BOOL, VALUE_DOUBLE, VALUE_INT, VALUE_INT_64, VALUE_STRING, VALUE_UINT, VALUE_UINT_64
 	} ValueType;
 	//! \endcond
 
@@ -109,6 +109,10 @@ class JsonTree {
 	explicit JsonTree( const std::string &key, const char *value );
 	//! Creates a JsonTree with key \a key and uint32_t \a value .
 	explicit JsonTree( const std::string &key, uint32_t value );
+	//! Creates a JsonTree with key \a key and int64_t \a value .
+	explicit JsonTree( const std::string &key, int64_t value );
+	//! Creates a JsonTree with key \a key and uint64_t \a value .
+	explicit JsonTree( const std::string &key, uint64_t value );
 	
 	/**! Creates a JsonTree with key \a key and an empty array. **/
 	static JsonTree					makeArray( const std::string &key = "" );

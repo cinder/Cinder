@@ -56,23 +56,28 @@ void JsonTestApp::setup()
 	console() << doc.getChild( "library.owner" );
 	JsonTree &ownerCity = doc.getChild( "library.owner.city" );
 	string s = ownerCity.getPath();
-	console() << "Path: " << ownerCity.getPath() << "\n  Value: " << ownerCity.getValue<string>() << std::endl;
+	console() << "Path: " << ownerCity.getPath() << "\n  Value: " << ownerCity.getValue<string>() << endl;
 	console() << doc;
 	
 	JsonTree firstTrackCopy = doc.getChild( "library.albums[0].tracks[0].title" );
 	firstTrackCopy = JsonTree( firstTrackCopy.getKey(), string( "Replacement name" ) );
-	console() << doc.getChild( "library.albums[0].tracks[0]['title']" ) << std::endl;
+	console() << doc.getChild( "library.albums[0].tracks[0]['title']" ) << endl;
 
 	JsonTree &firstTrackRef = doc.getChild( "library.albums[0].tracks[2].title" );
-    console() << firstTrackRef.getPath() << std::endl;
+    console() << firstTrackRef.getPath() << endl;
 	firstTrackRef = JsonTree( firstTrackRef.getKey(), string( "Replacement name" ) );
-	console() << doc.getChild( "library.albums[0].tracks[0].title" ) << std::endl;
+	console() << doc.getChild( "library.albums[0].tracks[0].title" ) << endl;
 	
 	try {
 		JsonTree invalid( "%%%%%%%%" );
 	} catch ( JsonTree::ExcJsonParserError ex ) {
-		console() << ex.what() << std::endl;
+		console() << ex.what() << endl;
 	}
+	
+	JsonTree test64u( "uint64", uint64_t( math<uint64_t>::pow( 2, 64 ) - 1 ) );
+	console() << test64u << endl;
+	JsonTree test64( "int64", uint64_t( math<int64_t>::pow( 2, 64 ) - 1 ) );
+	console() << test64 << endl;
 	
 }
 
