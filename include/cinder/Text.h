@@ -151,7 +151,8 @@ class TextBox {
 
 	mutable std::vector<std::pair<std::shared_ptr<const __CTLine>,Vec2f> >	mLines;
 #elif defined( CINDER_MSW )
-	void			calculate() const;
+	std::vector<std::string>	calculateLineBreaks() const;
+	void						calculate() const;
 
 	mutable std::wstring	mWideText;
 #endif

@@ -67,11 +67,7 @@ void TextureFontApp::draw()
 
 	gl::color( ColorA( 1, 0.5f, 0.25f, 1.0f ) );
 
-#if defined( CINDER_COCOA )
 	mTextureFont->drawStringWrapped( str, boundsRect );
-#else
-	mTextureFont->drawString( str, boundsRect );
-#endif	
 
 	// Draw FPS
 	gl::color( Color::white() );

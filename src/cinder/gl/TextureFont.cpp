@@ -493,14 +493,12 @@ void TextureFont::drawString( const std::string &str, const Rectf &fitRect, cons
 	drawGlyphs( glyphMeasures, fitRect, fitRect.getUpperLeft() + offset, options );	
 }
 
-#if defined( CINDER_COCOA )
 void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
 	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
 	drawGlyphs( glyphMeasures, fitRect.getUpperLeft() + offset, options );
 }
-#endif
 
 Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &options ) const
 {

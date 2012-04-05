@@ -26,6 +26,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/CinderMath.h"
 #include "cinder/Matrix22.h"
+#include "cinder/MatrixAffine2.h"
 #include "cinder/Matrix33.h"
 #include "cinder/Matrix44.h"
 #include "cinder/MatrixAlgo.h"

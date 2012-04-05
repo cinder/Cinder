@@ -29,6 +29,8 @@
 
 namespace cinder {
 
+template<typename T> class MatrixAffine2;
+
 template<typename T>
 class RectT {
  public:
@@ -67,6 +69,9 @@ class RectT {
 	RectT		scaledCentered( T scale ) const;
 	void		scale( T scale );
 	RectT		scaled( T scale ) const;
+
+	//! Returns a copy of the Rect transformed by \a matrix. Represents the bounding box of the transformed Rect when \a matrix expresses non-scale/translate operations.
+	RectT		transformCopy( const class MatrixAffine2<T> &matrix ) const;
 
 	/** \brief Is a point \a pt inside the rectangle **/
 	template<typename Y>

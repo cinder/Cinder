@@ -66,12 +66,31 @@ void Shape2d::close()
 	mContours.back().close();
 }
 
+void Shape2d::append( const Shape2d &shape )
+{
+	for( vector<Path2d>::const_iterator pathIt = shape.getContours().begin(); pathIt != shape.getContours().end(); ++pathIt )
+		appendContour( *pathIt );
+}
+
 void Shape2d::scale( const Vec2f &amount, Vec2f scaleCenter )
 {
 	for( vector<Path2d>::iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
 		contIt->scale( amount, scaleCenter );
 }
 
+void Shape2d::transform( const MatrixAffine2f &matrix )
+{
+	for( vector<Path2d>::iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
+		contIt->transform( matrix );
+}
+
+Shape2d	Shape2d::transformCopy( const MatrixAffine2f &matrix ) const
+{
+	Shape2d result;
+	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
+		result.appendContour( contIt->transformCopy( matrix ) );
+	return result;
+}
 
 Rectf Shape2d::calcBoundingBox() const
 {

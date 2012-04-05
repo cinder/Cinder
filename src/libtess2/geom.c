@@ -79,7 +79,9 @@ TESSreal tesedgeSign( TESSvertex *u, TESSvertex *v, TESSvertex *w )
 	*/
 	TESSreal gapL, gapR;
 
-	assert( VertLeq( u, v ) && VertLeq( v, w ));
+//	assert( VertLeq( u, v ) && VertLeq( v, w ));
+	if( ! ( VertLeq( u, v ) && VertLeq( v, w )) )
+		return 0;// this is incorrect but prevents a crash with pernicious geometry
 
 	gapL = v->s - u->s;
 	gapR = w->s - v->s;
