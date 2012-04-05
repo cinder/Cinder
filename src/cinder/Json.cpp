@@ -146,6 +146,16 @@ JsonTree::JsonTree( const string &key, uint32_t value )
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_UINT );
 }
 
+JsonTree::JsonTree( const string &key, int64_t value )
+{
+	init( key, Json::Value( value ), true, NODE_VALUE, VALUE_INT_64 );
+}
+	
+JsonTree::JsonTree( const string &key, uint64_t value )
+{
+	init( key, Json::Value( value ), true, NODE_VALUE, VALUE_UINT_64 );
+}
+
 JsonTree JsonTree::makeArray( const std::string &key )
 {
 	JsonTree result;
@@ -189,34 +199,42 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
         }
     }
 	else {
-		if( value.isBool() ) {
-			mValue = toString( value.asBool() );
-			if( setType ) {
-				mValueType = VALUE_BOOL;
+		if ( valueType == VALUE_INT_64 ) {
+			mValue = toString( value.asInt64() );
+			mValueType = VALUE_INT_64;
+		} else if ( valueType == VALUE_UINT_64 ) {
+			mValue = toString( value.asUInt64() );
+			mValueType = VALUE_UINT_64;
+		} else {
+			if( value.isBool() ) {
+				mValue = toString( value.asBool() );
+				if( setType ) {
+					mValueType = VALUE_BOOL;
+				}
 			}
-		}
-		else if ( value.isDouble() ) { 
-			mValue = toString( value.asDouble() );
-			if ( setType ) {
-				mValueType = VALUE_DOUBLE;
+			else if ( value.isDouble() ) { 
+				mValue = toString( value.asDouble() );
+				if ( setType ) {
+					mValueType = VALUE_DOUBLE;
+				}
 			}
-		}
-		else if ( value.isInt() ) { 
-			mValue = toString( value.asInt() );
-			if ( setType ) {
-				mValueType = VALUE_INT;
+			else if ( value.isInt() ) { 
+				mValue = toString( value.asInt() );
+				if ( setType ) {
+					mValueType = VALUE_INT;
+				}
 			}
-		}
-		else if ( value.isString() ) { 
-			mValue = toString( value.asString() );
-			if ( setType ) {
-				mValueType = VALUE_STRING;
+			else if ( value.isString() ) { 
+				mValue = toString( value.asString() );
+				if ( setType ) {
+					mValueType = VALUE_STRING;
+				}
 			}
-		}
-		else if ( value.isUInt() ) { 
-			mValue = toString( value.asUInt() );
-			if ( setType ) {
-				mValueType = VALUE_UINT;
+			else if ( value.isUInt() ) { 
+				mValue = toString( value.asUInt() );
+				if ( setType ) {
+					mValueType = VALUE_UINT;
+				}
 			}
 		}
 	}
@@ -252,10 +270,11 @@ void JsonTree::clear()
 
 void JsonTree::pushBack( const JsonTree &newChild )
 {
-	if( newChild.getKey() == "" )
+	if( newChild.getKey() == "" ) {
 		mNodeType = NODE_ARRAY;
-	else
+	} else {
 		mNodeType = NODE_OBJECT;
+	}
 
 	mChildren.push_back( newChild );
 	mChildren.back().mParent = this;
@@ -438,8 +457,9 @@ string JsonTree::getPath( char separator ) const
 					break;
 				}
 			}
-			if( isArrayIndex )
+			if( isArrayIndex ) {
 				nodeName = '[' + toString( index ) + ']';
+			}
 		}
 		if( (! prevWasArrayIndex) && (! nodeName.empty()) && ( node != this ) ) {
 			result = nodeName + separator + result;
@@ -569,11 +589,17 @@ Json::Value JsonTree::createNativeDoc( bool createDocument ) const
 			case VALUE_INT:
 				value = Json::Value( fromString<int32_t>( mValue ) );
 				break;
+			case VALUE_INT_64:
+				value = Json::Value( fromString<int64_t>( mValue ) );
+				break;
 			case VALUE_STRING:
 				value = Json::Value( mValue );
 				break;
 			case VALUE_UINT:
 				value = Json::Value( fromString<uint32_t>( mValue ) );
+				break;
+			case VALUE_UINT_64:
+				value = Json::Value( fromString<uint64_t>( mValue ) );
 				break;
 			}
 		break;
