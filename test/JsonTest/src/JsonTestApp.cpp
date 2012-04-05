@@ -76,7 +76,7 @@ void JsonTestApp::setup()
 	
 	JsonTree test64u( "uint64", uint64_t( math<uint64_t>::pow( 2, 64 ) - 1 ) );
 	console() << test64u << endl;
-	JsonTree test64( "int64", uint64_t( math<int64_t>::pow( 2, 64 ) - 1 ) );
+	JsonTree test64( "int64", int64_t( math<int64_t>::pow( 2, 64 ) - 1 ) );
 	console() << test64 << endl;
 	
 }
