@@ -13,52 +13,23 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="libjson">
-      <UniqueIdentifier>{06857930-7752-4ebe-83bb-42b261f8caa2}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\GoodNightMorningApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\Json.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\TweetStream.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\libjson\json_reader.cpp">
-      <Filter>libjson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\libjson\json_value.cpp">
-      <Filter>libjson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\libjson\json_writer.cpp">
-      <Filter>libjson</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\libjson\json_batchallocator.h">
-      <Filter>libjson</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\libjson\json_internalarray.inl">
-      <Filter>libjson</Filter>
-    </None>
-    <None Include="..\src\libjson\json_internalmap.inl">
-      <Filter>libjson</Filter>
-    </None>
-    <None Include="..\src\libjson\json_valueiterator.inl">
-      <Filter>libjson</Filter>
-    </None>
   </ItemGroup>
 </Project>

@@ -105,23 +105,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\GoodNightMorningApp.cpp" />
-    <ClCompile Include="..\src\Json.cpp" />
-    <ClCompile Include="..\src\libjson\json_reader.cpp" />
-    <ClCompile Include="..\src\libjson\json_value.cpp" />
-    <ClCompile Include="..\src\libjson\json_writer.cpp" />
     <ClCompile Include="..\src\TweetStream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
-    <ClInclude Include="..\src\libjson\json_batchallocator.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\libjson\json_internalarray.inl" />
-    <None Include="..\src\libjson\json_internalmap.inl" />
-    <None Include="..\src\libjson\json_valueiterator.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
