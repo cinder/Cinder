@@ -4,6 +4,7 @@
 #include "cinder/Function.h"
 #include "cinder/Json.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Surface.h"
 
 #include <boost/algorithm/string/replace.hpp>
 

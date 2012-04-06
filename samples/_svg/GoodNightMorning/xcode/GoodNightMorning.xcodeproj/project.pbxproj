@@ -25,7 +25,6 @@
 /* Begin PBXFileReference section */
 		0040C3051513BE8700929075 /* TweetStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TweetStream.h; path = ../src/TweetStream.h; sourceTree = "<group>"; };
 		0040C3071513BEC100929075 /* TweetStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TweetStream.cpp; path = ../src/TweetStream.cpp; sourceTree = "<group>"; };
-		0040C3091513C30300929075 /* ConcurrentCircularBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConcurrentCircularBuffer.h; path = ../src/ConcurrentCircularBuffer.h; sourceTree = "<group>"; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		0097E3E40F3E9819005A4392 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -127,7 +126,6 @@
 			isa = PBXGroup;
 			children = (
 				32CA4F630368D1EE00C91783 /* GoodNightMorning_Prefix.pch */,
-				0040C3091513C30300929075 /* ConcurrentCircularBuffer.h */,
 				0040C3051513BE8700929075 /* TweetStream.h */,
 			);
 			name = Headers;

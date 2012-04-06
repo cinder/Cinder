@@ -1,7 +1,6 @@
 #pragma once
 
-#include "cinder/Surface.h"
-#include "ConcurrentCircularBuffer.h"
+#include "cinder/ConcurrentCircularBuffer.h"
 #include "cinder/Thread.h"
 
 #include <string>
