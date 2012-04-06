@@ -78,11 +78,7 @@ void TweetStream::serviceTweets()
 JsonTree queryTwitter( const std::string &query )
 {
 	Url url( "http://search.twitter.com/search.json" + query + "&rpp=10&result_type=recent", true );
-	string s = loadString( loadUrl( url ) );
-	FILE *f = fopen( ( getHomeDirectory() + "temp.json" ).c_str(), "wt" );
-	OStreamFileRef os = OStreamFile::create( f );
-	os->write( s );
-	return JsonTree( loadUrl( url ), JsonTree::ParseOptions().ignoreErrors() );
+	return JsonTree( loadUrl( url ) );
 }
 
 // Replaces XML escaped characters with their equivalents

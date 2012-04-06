@@ -85,7 +85,7 @@ void GoodNightMorningApp::newMorningTweet()
 	Tweet tweet = mMorningTweets->getNextTweet();
 
 	// Setup tweens for the tweet's position and opacity
-	mMorningTweetPos = 1.0f;
+	mMorningTweetPos = 0.8f;
 	timeline().apply( &mMorningTweetPos, 0.10f, 2.0f, EaseOutAtan() );
 	mMorningTween = timeline().appendTo( &mMorningTweetPos, -0.3f, 2.0f, EaseInAtan() ).delay( 1 );
 	mMorningTweetAlpha = 1.0f;
