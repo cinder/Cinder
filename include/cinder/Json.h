@@ -72,7 +72,7 @@ class JsonTree {
 	  public:
 		//! Default options. Enables parsing errors.
 		ParseOptions();
-		//! Sets if JSON parse errors are ignored. Default \c false.
+		//! Sets if JSON parse errors are ignored. Default \c true.
 		ParseOptions& ignoreErrors( bool ignore = true );
 		//! Returns whether JSON parse errors are ignored.
 		bool	getIgnoreErrors() const;
@@ -80,6 +80,28 @@ class JsonTree {
 	  private:
 		//! \cond
 		bool	mIgnoreErrors;
+		//! \endcond
+		
+	};
+	
+	//! Options for JSON writing. Passed to the \c write method.
+	class WriteOptions {
+	public:
+		//! Default options. Indents. Does not create root document.
+		WriteOptions();
+		//! Sets if JSON string is indented. Default \c true.
+		WriteOptions& createDocument( bool createDocument = true );
+		//! Sets if JSON string is indented. Default \c true.
+		WriteOptions& indented( bool indent = true );
+		//! Returns whether JSON string is indented.
+		bool	getCreateDocument() const;
+		//! Returns whether JSON string is indented.
+		bool	getIndented() const;
+		
+	private:
+		//! \cond
+		bool	mCreateDocument;
+		bool	mIndented;
 		//! \endcond
 		
 	};
@@ -192,11 +214,13 @@ class JsonTree {
 	void							replaceChild( Iter pos, const JsonTree &newChild );
 
 	/**! Writes this JsonTree to \a path with standard formatting. 
-		If \a createDocument is true then an implicit parent object node is created when necessary and \a this is treated as the root element. **/
-	void							write( const fs::path &path, bool createDocument = true );
-	/**! Writes this JsonTree to \a target with standard formatting. 
-		If \a createDocument is true then an implicit parent object node is created when necessary and \a this is treated as the root element. **/
-	void							write( DataTargetRef target, bool createDocument = true );
+	 If \a writeOptions creates a document then an implicit parent object node is created when necessary and \a this is treated as the root element.
+	 If \a writeOptions indents then the JSON string will be indented.**/
+	void							write( const fs::path &path, WriteOptions writeOptions = WriteOptions() );
+	/**! Writes this JsonTree to \a target. 
+		If \a writeOptions creates a document then an implicit parent object node is created when necessary and \a this is treated as the root element.
+	    If \a writeOptions indents then the JSON string will be indented.**/
+	void							write( DataTargetRef target, WriteOptions writeOptions = WriteOptions() );
 
 	//! Returns the node's key as a string. Returns index if node does not have a key.
 	const std::string&				getKey() const;
@@ -225,7 +249,7 @@ private:
 	//! \cond
 	explicit JsonTree( const std::string &key, const Json::Value &value );
 
-	Json::Value						createNativeDoc( bool createDocument = false ) const;
+	Json::Value						createNativeDoc( WriteOptions writeOptions = WriteOptions() ) const;
 	static Json::Value				deserializeNative( const std::string &jsonString, ParseOptions parseOptions );
 	static std::string				serializeNative( const Json::Value &value );
    

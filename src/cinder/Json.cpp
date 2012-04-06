@@ -49,6 +49,33 @@ bool JsonTree::ParseOptions::getIgnoreErrors() const
 { 
 	return mIgnoreErrors; 
 }
+
+JsonTree::WriteOptions::WriteOptions()
+: mCreateDocument( false ), mIndented( true )
+{
+}
+
+JsonTree::WriteOptions& JsonTree::WriteOptions::createDocument( bool createDocument )
+{
+	mCreateDocument = createDocument;
+	return *this;
+}
+
+JsonTree::WriteOptions& JsonTree::WriteOptions::indented( bool indent )
+{
+	mIndented = indent;
+	return *this;
+}
+
+bool JsonTree::WriteOptions::getCreateDocument() const
+{
+	return mCreateDocument;
+}
+
+bool JsonTree::WriteOptions::getIndented() const
+{
+	return mIndented;	
+}
 		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -555,7 +582,7 @@ bool JsonTree::isIndex( const string &key )
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Json::Value JsonTree::createNativeDoc( bool createDocument ) const
+Json::Value JsonTree::createNativeDoc( WriteOptions writeOptions ) const
 {
 	// Create JsonCpp value
 	Json::Value value( Json::nullValue );
@@ -608,7 +635,7 @@ Json::Value JsonTree::createNativeDoc( bool createDocument ) const
     }
     
 	// Return JsonCpp object
-    if ( createDocument && !value.isNull() ) { 
+    if ( writeOptions.getCreateDocument() && !value.isNull() ) { 
         Json::Value doc( Json::objectValue );
         doc[ mKey ] = value;
         return doc;
@@ -634,12 +661,12 @@ string JsonTree::serializeNative( const Json::Value & value )
 	}
 }
 
-void JsonTree::write( const fs::path &path, bool createDocument )
+void JsonTree::write( const fs::path &path, JsonTree::WriteOptions writeOptions )
 {
-	write( writeFile( path ), createDocument );
+	write( writeFile( path ), writeOptions );
 }
 
-void JsonTree::write( DataTargetRef target, bool createDocument )
+	void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions )
 {
 	// Declare output string
 	string jsonString = "";
@@ -647,11 +674,15 @@ void JsonTree::write( DataTargetRef target, bool createDocument )
 	try {
 		
 		// Create JsonCpp data to send to parser
-		Json::Value value = createNativeDoc( createDocument );
+		Json::Value value = createNativeDoc( writeOptions );
 
 		// This routine serializes JsonCpp data and formats it
 		Json::StyledWriter writer;
-		jsonString = writer.write( value.toStyledString() );
+		if( writeOptions.getIndented() ) {
+			jsonString = writer.write( value.toStyledString() );
+		} else {
+			jsonString = writer.write( value );
+		}
 		boost::replace_all( jsonString, "\\n", "\r\n" );
 		boost::replace_all( jsonString, "\\\"", "\"" );
 		if( jsonString.length() >= 3 ) {
@@ -691,8 +722,10 @@ JsonTree::ExcJsonParserError::ExcJsonParserError( const string &errorMessage ) t
 
 ostream& operator<<( ostream &out, const JsonTree &json )
 {
-    bool createDocument = json.mNodeType == JsonTree::NODE_VALUE;
-    Json::Value value = json.createNativeDoc( createDocument );
+	JsonTree::WriteOptions writeOptions;
+	bool createDocument = json.mNodeType == JsonTree::NODE_VALUE;
+	writeOptions.createDocument( createDocument );
+    Json::Value value = json.createNativeDoc( writeOptions );
 	string doc = JsonTree::serializeNative( value );
 	out << doc;
 	return out;
