@@ -74,10 +74,18 @@ void JsonTestApp::setup()
 		console() << ex.what() << endl;
 	}
 	
-	JsonTree test64u( "uint64", uint64_t( math<uint64_t>::pow( 2, 64 ) - 1 ) );
-	console() << test64u << endl;
-	JsonTree test64( "int64", int64_t( math<int64_t>::pow( 2, 64 ) - 1 ) );
-	console() << test64 << endl;
+	JsonTree test32u( "uint32", uint32_t( math<uint64_t>::pow( 2, 32 ) ) - 1 );
+	console() << test32u;
+	console() << test32u.getValue() << endl;
+	JsonTree test32( "int32", int32_t( math<int32_t>::pow( 2, 32 ) ) - 1 );
+	console() << test32;
+	console() << test32.getValue() << endl;
+	JsonTree test64u( "uint64", uint64_t( math<uint64_t>::pow( 2, 64 ) ) - 1 );
+	console() << test64u;
+	console() << test64u.getValue() << endl;
+	JsonTree test64( "int64", int64_t( math<int64_t>::pow( 2, 64 ) ) - 1 );
+	console() << test64;
+	console() << test64.getValue() << endl;
 	
 }
 
