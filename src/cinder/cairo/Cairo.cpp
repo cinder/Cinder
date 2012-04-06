@@ -289,7 +289,7 @@ SurfaceSvg::SurfaceSvg( const SurfaceSvg &other )
 SurfacePdf::SurfacePdf( const fs::path &filePath, double widthInPoints, double heightInPoints )
 	: SurfaceBase( (int32_t)widthInPoints, (int32_t)heightInPoints )
 {
-	mCairoSurface = cairo_pdf_surface_create( filePath.c_str(), widthInPoints, heightInPoints ); 
+	mCairoSurface = cairo_pdf_surface_create( filePath.string().c_str(), widthInPoints, heightInPoints ); 
 }
 
 SurfacePdf::SurfacePdf( const SurfacePdf &other )
@@ -307,7 +307,7 @@ void SurfacePdf::setSize( double widthInPoints, double heightInPoints )
 SurfacePs::SurfacePs( const fs::path &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 )
 	: SurfaceBase( (int32_t)widthInPoints, (int32_t)heightInPoints )
 {
-	mCairoSurface = cairo_ps_surface_create( filePath.c_str(), widthInPoints, heightInPoints ); 
+	mCairoSurface = cairo_ps_surface_create( filePath.string().c_str(), widthInPoints, heightInPoints ); 
 	cairo_ps_surface_restrict_to_level( mCairoSurface, ( enableLevel3 ) ? CAIRO_PS_LEVEL_3 : CAIRO_PS_LEVEL_2 );
 }
 
@@ -341,7 +341,7 @@ void SurfacePs::dscComment( const char *comment )
 SurfaceEps::SurfaceEps( const fs::path &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 )
 	: SurfaceBase( (int32_t)widthInPoints, (int32_t)heightInPoints )
 {
-	mCairoSurface = cairo_ps_surface_create( filePath.c_str(), widthInPoints, heightInPoints ); 
+	mCairoSurface = cairo_ps_surface_create( filePath.string().c_str(), widthInPoints, heightInPoints ); 
 	cairo_ps_surface_set_eps( mCairoSurface, TRUE );
 	cairo_ps_surface_restrict_to_level( mCairoSurface, ( enableLevel3 ) ? CAIRO_PS_LEVEL_3 : CAIRO_PS_LEVEL_2 );
 }
