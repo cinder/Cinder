@@ -680,11 +680,11 @@ void JsonTree::write( const fs::path &path, JsonTree::WriteOptions writeOptions 
 		Json::StyledWriter writer;
 		if( writeOptions.getIndented() ) {
 			jsonString = writer.write( value.toStyledString() );
+			boost::replace_all( jsonString, "\\n", "\r\n" );
+			boost::replace_all( jsonString, "\\\"", "\"" );
 		} else {
 			jsonString = writer.write( value );
 		}
-		boost::replace_all( jsonString, "\\n", "\r\n" );
-		boost::replace_all( jsonString, "\\\"", "\"" );
 		if( jsonString.length() >= 3 ) {
 			jsonString = jsonString.substr( 1, boost::trim_copy( jsonString ).length() - 2 );
 		}
