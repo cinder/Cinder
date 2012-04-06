@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -61,7 +61,7 @@
       <AdditionalIncludeDirectories>..\..\..\..\include;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder_d.lib;cairo-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib;..\..\..\..\lib\msw;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -69,7 +69,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
-      <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;LIBCPMT</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -89,7 +89,7 @@
       <AdditionalIncludeDirectories>..\..\..\..\include;..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cinder.lib;cairo-static.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\..\lib;..\..\..\..\lib\msw;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -111,7 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />
-  </ItemGroup>  
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
