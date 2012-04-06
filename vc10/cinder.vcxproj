@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -49,7 +49,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;..\src\libtess2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -75,7 +75,7 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;..\src\libtess2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -138,6 +138,7 @@
     <ClCompile Include="..\src\cinder\Sphere.cpp" />
     <ClCompile Include="..\src\cinder\Stream.cpp" />
     <ClCompile Include="..\src\cinder\Surface.cpp" />
+    <ClCompile Include="..\src\cinder\svg\Svg.cpp" />
     <ClCompile Include="..\src\cinder\System.cpp" />
     <ClCompile Include="..\src\cinder\Text.cpp" />
     <ClCompile Include="..\src\cinder\Timeline.cpp" />
@@ -146,6 +147,7 @@
     <ClCompile Include="..\src\cinder\Triangulate.cpp" />
     <ClCompile Include="..\src\cinder\TriMesh.cpp" />
     <ClCompile Include="..\src\cinder\Tween.cpp" />
+    <ClCompile Include="..\src\cinder\Unicode.cpp" />
     <ClCompile Include="..\src\cinder\Url.cpp" />
     <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp" />
     <ClCompile Include="..\src\cinder\Utilities.cpp" />
@@ -206,6 +208,9 @@
     <ClCompile Include="..\src\libtess2\priorityq.c" />
     <ClCompile Include="..\src\libtess2\sweep.c" />
     <ClCompile Include="..\src\libtess2\tess.c" />
+    <ClCompile Include="..\src\linebreak\linebreak.c" />
+    <ClCompile Include="..\src\linebreak\linebreakdata.c" />
+    <ClCompile Include="..\src\linebreak\linebreakdef.c" />
     <ClCompile Include="..\src\videoInput\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -230,10 +235,13 @@
     <ClInclude Include="..\include\cinder\Plane.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
+    <ClInclude Include="..\include\cinder\svg\Svg.h" />
+    <ClInclude Include="..\include\cinder\svg\SvgGl.h" />
     <ClInclude Include="..\include\cinder\Timeline.h" />
     <ClInclude Include="..\include\cinder\TimelineItem.h" />
     <ClInclude Include="..\include\cinder\Triangulate.h" />
     <ClInclude Include="..\include\cinder\Tween.h" />
+    <ClInclude Include="..\include\cinder\Unicode.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
     <ClInclude Include="..\include\json\autolink.h" />
     <ClInclude Include="..\include\json\config.h" />
