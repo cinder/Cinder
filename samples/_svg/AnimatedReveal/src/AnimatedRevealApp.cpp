@@ -5,7 +5,7 @@
 #include "cinder/cairo/Cairo.h"
 
 // enable this to automatically write a quicktime to your home directory
-#if 1
+#if 0
 	#define RECORD_MOVIE
 	#include "cinder/qtime/MovieWriter.h"
 #endif
@@ -58,7 +58,9 @@ void AnimatedRevealApp::load( const fs::path &path )
 			mDoc = svg::Doc::create( loadFile( path ) );
 			
 		mDone = false;
+#if defined( RECORD_MOVIE )
 		mMovie = qtime::MovieWriter( fs::path( getHomeDirectory() + "AnimatedReveal.mov" ), mDoc->getWidth(), mDoc->getHeight() );
+#endif
 	}
 	catch( ... ) {
 	}
@@ -127,8 +129,10 @@ void AnimatedRevealApp::update()
 	Surface frame = renderCairo( mDoc, SlowFillVisitor( mMinRenderElement, minArea, &mMinRenderElement, &mDone ) );
 #if defined( RECORD_MOVIE )
 	mMovie.addFrame( frame );
-	if( mDone )
+	if( mDone ) {
+		mMovie.addFrame( frame ); // otherwise we seem to lose the last frame
 		mMovie.finish();
+	}
 #endif
 	mTex = frame;
 }
