@@ -231,9 +231,9 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 				}
 			}
 			else if ( value.isUInt() ) { 
-				mValue = toString( value.asUInt() );
+				mValue = toString( value.asUInt64() );
 				if ( setType ) {
-					mValueType = VALUE_UINT;
+					mValueType = VALUE_UINT_64;
 				}
 			}
 		}
