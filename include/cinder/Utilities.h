@@ -47,6 +47,10 @@ std::string getPathDirectory( const std::string &path );
 std::string getPathFileName( const std::string &path );
 //! Returns the file extension of the file located at \a path
 std::string getPathExtension( const std::string &path );
+//! Returns unique, numbered pathname based on the provided path in the form some/filename-##.ext
+std::string getUniquePath( const fs::path &path, const std::string &sep = "-", int padding = 2, bool numberFirstFile = true );
+//! Returns a left-padded string based on the input string. e.g. ("two", 4, "0") returns "0two", ("four", 4, "0") returns "four"
+std::string leftPaddedString( const std::string &input, int minSize, const std::string pad="0" );
 //! Creates a directory at \a path and optionally creates any missing parent directories when \a createParents is \c true. Returns \c true upon success.
 bool createDirectories( const fs::path &path, bool createParents = true );
 
