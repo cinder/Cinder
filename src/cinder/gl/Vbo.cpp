@@ -292,9 +292,12 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 
 	if( hasStaticBuffer && staticDataPlanar ) { // Planar static buffer
 		size_t offset = 0;
+		bool doSetup = false;
 	
-		if( ! mObj->mBuffers[STATIC_BUFFER] )
+		if( ! mObj->mBuffers[STATIC_BUFFER] ) {
 			mObj->mBuffers[STATIC_BUFFER] = Vbo( GL_ARRAY_BUFFER );
+			doSetup = true;
+		}
 
 		if( mObj->mLayout.hasStaticPositions() ) {
 			mObj->mPositionOffset = offset;
@@ -335,7 +338,8 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		mObj->mStaticStride = 0;
 		
 		// setup the buffer to be the summed size
-		mObj->mBuffers[STATIC_BUFFER].bufferData( offset, NULL, GL_STATIC_DRAW );
+		if( doSetup )
+			mObj->mBuffers[STATIC_BUFFER].bufferData( offset, NULL, GL_STATIC_DRAW );
 	}
 	else if( hasStaticBuffer && ( ! staticDataPlanar ) ) { // Interleaved static buffer
 		size_t offset = 0;
