@@ -144,7 +144,7 @@ void EarthquakeApp::keyDown( KeyEvent event )
 		while( tr.nextTile() ) {
 			draw();
 		}
-		writeImage( getHomeDirectory() + "output.png", tr.getSurface() );
+		writeImage( getHomeDirectory() / "output.png", tr.getSurface() );
 	}
 }
 
@@ -235,7 +235,7 @@ void EarthquakeApp::draw()
 	}
 	
 	if( mSaveFrames ){
-		writeImage( getHomeDirectory() + "CinderScreengrabs" + getPathSeparator() + "Highoutput_" + toString( mCurrentFrame ) + ".png", copyWindowSurface() );
+		writeImage( getHomeDirectory() / "CinderScreengrabs" / ( "Highoutput_" + toString( mCurrentFrame ) + ".png" ), copyWindowSurface() );
 		mCurrentFrame++;
 	}
 }

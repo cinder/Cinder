@@ -34,13 +34,13 @@ namespace cinder {
 //! Returns a canonical version of \a path by expanding a "~" and symlinks on the Mac "..", "." and "//"
 fs::path expandPath( const fs::path &path );
 //! Returns a path to the user's home directory.
-std::string getHomeDirectory();
+fs::path getHomeDirectory();
 //! Returns a path to the user's documents directory.
-std::string getDocumentsDirectory();
+fs::path getDocumentsDirectory();
 //! Returns a path to the user's temporary directory.
-std::string getTemporaryDirectory();
+fs::path getTemporaryDirectory();
 //! Returns a path that is gauranteed to be unique and is suitable for creating a temporary file. An optional \a prefix parameters allows specification of a file name prefix, some portion of which will be incorporated into the result. Note a race condition that can exist between the uniqueness of the path and the creation of the file.
-std::string getTemporaryFilePath( const std::string &prefix = "" );
+fs::path getTemporaryFilePath( const std::string &prefix = "" );
 //! Returns the directory portion of file path \a path, the last component of which must be a file name or a terminating path separator. 
 std::string getPathDirectory( const std::string &path );
 //! Returns the file name portion of file path \a path. For example \c "C:\Images\Beyonce.jpg" returns \c "Beyonce.jpg".
