@@ -663,10 +663,10 @@ string JsonTree::serializeNative( const Json::Value & value )
 
 void JsonTree::write( const fs::path &path, JsonTree::WriteOptions writeOptions )
 {
-	write( writeFile( path ), writeOptions );
+	write( writeFile( path, true ), writeOptions );
 }
 
-	void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions )
+void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions )
 {
 	// Declare output string
 	string jsonString = "";
@@ -677,16 +677,17 @@ void JsonTree::write( const fs::path &path, JsonTree::WriteOptions writeOptions 
 		Json::Value value = createNativeDoc( writeOptions );
 
 		// This routine serializes JsonCpp data and formats it
-		Json::StyledWriter writer;
 		if( writeOptions.getIndented() ) {
+			Json::StyledWriter writer;
 			jsonString = writer.write( value.toStyledString() );
 			boost::replace_all( jsonString, "\\n", "\r\n" );
 			boost::replace_all( jsonString, "\\\"", "\"" );
+			if( jsonString.length() >= 3 ) {
+				jsonString = jsonString.substr( 1, boost::trim_copy( jsonString ).length() - 2 );
+			}
 		} else {
+			Json::FastWriter writer;
 			jsonString = writer.write( value );
-		}
-		if( jsonString.length() >= 3 ) {
-			jsonString = jsonString.substr( 1, boost::trim_copy( jsonString ).length() - 2 );
 		}
 		jsonString += "\0";
 	}
@@ -697,6 +698,7 @@ void JsonTree::write( const fs::path &path, JsonTree::WriteOptions writeOptions 
 	// Save data to file
 	OStreamRef os = target->getStream();
 	os->writeData( jsonString.c_str(), jsonString.length() );
+	
 }
 
 
