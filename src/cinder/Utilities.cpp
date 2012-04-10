@@ -48,6 +48,7 @@
 	#include "cinder/msw/StackWalker.h"
 #endif
 
+#include <sstream>
 #include <vector>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
@@ -188,7 +189,7 @@ std::string getPathExtension( const std::string &path )
 		return std::string();
 }
 
-std::string getUniquePath( const fs::path &path, const std::string &sep, int padding, bool numberFirstFile )
+fs::path getNextNumberedPath( const fs::path &path, int numberPadding )
 {
 	fs::path p( path );
 	string extension = p.extension().string();
@@ -196,25 +197,15 @@ std::string getUniquePath( const fs::path &path, const std::string &sep, int pad
 	fs::path parent_path = p.parent_path();
 
 	int count = 0;
-	if( numberFirstFile )
-		p = parent_path / ( stem + sep + leftPaddedString( toString(count++), padding ) + extension );
+	do {
+		std::stringstream ss;
+		ss.width(numberPadding);
+		ss.fill('0');
+		ss << std::right << count++;
+		p = parent_path / ( stem + ss.str() + extension );
+	} while (fs::exists( p ));
 
-	while ( fs::exists( p ) )
-	{
-		p = parent_path / ( stem + sep + leftPaddedString( toString(count++), padding ) + extension );
-	}
-
-	return p.generic_string();
-}
-
-std::string leftPaddedString( const std::string &input, int minSize, const std::string pad )
-{
-	std::string output(input);
-	while ( output.size() < minSize )
-	{
-		output = pad + output;
-	}
-	return output;
+	return p;
 }
 
 bool createDirectories( const fs::path &path, bool createParents )
