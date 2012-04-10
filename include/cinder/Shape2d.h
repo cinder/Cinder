@@ -25,6 +25,7 @@
 #include "cinder/Vector.h"
 #include "cinder/Rect.h"
 #include "cinder/Path2d.h"
+#include "cinder/MatrixAffine2.h"
 
 #include <vector>
 
@@ -57,11 +58,18 @@ class Shape2d {
 	
 	const Vec2f&	getCurrentPoint() const { return mContours.back().getCurrentPoint(); }
 	
+	//! Appends the contours of \a shape to this shape
+	void			append( const Shape2d &shape );
     void			appendContour( const Path2d &contour ) { mContours.push_back( contour ); }
 	void			removeContour( size_t i ) { mContours.erase( mContours.begin() + i ); }
 
 	//! Scales the Shape2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
 	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f::zero() );
+
+	//! Transforms the Shape2d by \a matrix.
+	void		transform( const MatrixAffine2f &matrix );
+	//! Returns a copy transformed by \a matrix.
+	Shape2d		transformCopy( const MatrixAffine2f &matrix ) const;
 
 	//! Returns the bounding box of the Shape's control points. Note that this is not necessarily the bounding box of the path's shape.
 	Rectf	calcBoundingBox() const;

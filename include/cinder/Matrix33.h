@@ -187,11 +187,6 @@ public:
 	template <template <typename> class VecT> 
 	void				rotate( const VecT<T> &from, const VecT<T> &to, const VecT<T> &worldUp ) { *this *= Matrix33<T>::createRotation( from, to, worldUp ); }
 
-	// concatenate scale (conceptually, scale is before 'this')
-	void				scale( T s );
-	void				scale( const Vec2<T> &v );
-	void				scale( const Vec3<T> &v );
-
 	// transposes rotation sub-matrix and inverts translation
 	Matrix33<T>			invertTransform() const;
 
@@ -772,30 +767,6 @@ Vec3<T> Matrix33<T>::postMultiply( const Vec3<T> &v ) const
 		m10*v.x + m11*v.y + m12*v.z,
 		m20*v.x + m21*v.y + m22*v.z
 		);
-}
-
-template< typename T >
-void Matrix33<T>::scale( T s )
-{
-	for( int i = 0; i < DIM_SQ; ++i ) {
-		m[i] *= s;
-	}
-}
-
-template< typename T >
-void Matrix33<T>::scale( const Vec2<T> &s )
-{
-	m[0] *= s.x; m[3] *= s.y;
-	m[1] *= s.x; m[4] *= s.y;
-	m[2] *= s.x; m[5] *= s.y;
-}
-
-template< typename T >
-void Matrix33<T>::scale( const Vec3<T> &s )
-{
-	m[0] *= s.x; m[3] *= s.y; m[6] *= s.z;
-	m[1] *= s.x; m[4] *= s.y; m[7] *= s.z;
-	m[2] *= s.x; m[5] *= s.y; m[8] *= s.z;
 }
 
 template< typename T >
