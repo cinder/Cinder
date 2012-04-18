@@ -610,6 +610,7 @@ FontFreeType::FontFreeType( TextEngineRef textEngine, const string &aName, float
 	: Font( textEngine, aName, aSize ), mFTData(new FTData)
 {
 	// XXX creating font from name not implemented
+	throw FontInvalidNameExc();
 }
 
 FontFreeType::FontFreeType( TextEngineRef textEngine, DataSourceRef dataSource, float size ) 
