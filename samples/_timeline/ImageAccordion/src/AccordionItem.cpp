@@ -38,10 +38,10 @@ AccordionItem::AccordionItem( Timeline &timeline, float x, float y, float height
 	
 	TextLayout layout;
 	layout.clear( ColorA( 0.6f, 0.6f, 0.6f, 0.0f ) );
-	layout.setFont( Font( boldFont, 26 ) );
+	layout.setFont( Font::create( boldFont, 26 ) );
 	layout.setColor( Color( 1, 1, 1 ) );
 	layout.addLine( mTitle );
-	layout.setFont( Font( normalFont, 16 ) );
+	layout.setFont( Font::create( normalFont, 16 ) );
 	layout.addLine( mSubtitle );
 	layout.setBorder(11, 6);
 	mText = gl::Texture( layout.render( true ) );

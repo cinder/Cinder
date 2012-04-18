@@ -34,7 +34,7 @@ void RotatingCubeApp::setup()
 		TextLayout layout;
 		layout.clear( Color( 0.3f, 0.3f, 0.3f ) );
 		layout.setColor( Color( 1, 1, 1 ) );
-		layout.setFont( Font( "Arial", 96 ) );
+		layout.setFont( Font::create( "Arial", 96 ) );
 		layout.addCenteredLine( "No Webcam" );
 		layout.addCenteredLine( "Detected" );
 		mTexture = gl::Texture( layout.render() );

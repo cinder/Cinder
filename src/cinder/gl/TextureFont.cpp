@@ -22,183 +22,33 @@
 
 #include "cinder/gl/TextureFont.h"
 
-#include "cinder/Text.h"
+#include "cinder/gl/TextureFontAtlas.h"
 #include "cinder/ip/Fill.h"
 #include "cinder/ip/Premultiply.h"
-	#include "cinder/ImageIo.h"
-	#include "cinder/Rand.h"
-	#include "cinder/Utilities.h"
-#if defined( CINDER_COCOA )
-	#include "cinder/cocoa/CinderCocoa.h"
-	#if defined( CINDER_MAC )
-		#include <ApplicationServices/ApplicationServices.h>
-	#endif
-#endif
+#include "cinder/ImageIo.h"
+#include "cinder/Rand.h"
+#include "cinder/Text.h"
+#include "cinder/TextEngine.h"
+#include "cinder/Utilities.h"
 
+#include <set>
+
+#include <utf8.h>
+#include <iterator>
 #include <set>
 
 using namespace std;
 
 namespace cinder { namespace gl {
 
-#if defined( CINDER_COCOA )
-TextureFont::TextureFont( const Font &font, const string &supportedChars, const TextureFont::Format &format )
-	: mFont( font ), mFormat( format )
+namespace {
+
+Vec2i getGlyphExtents( const FontRef font, const set<Font::Glyph> &glyphs )
 {
-	// get the glyph indices we'll need
-	vector<Font::Glyph>	tempGlyphs = font.getGlyphs( supportedChars );
-	set<Font::Glyph> glyphs( tempGlyphs.begin(), tempGlyphs.end() );
-	// determine the max glyph extents
-	Vec2f glyphExtents = Vec2f::zero();
-	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
-		Rectf bb = font.getGlyphBoundingBox( *glyphIt );
-		glyphExtents.x = std::max( glyphExtents.x, bb.getWidth() );
-		glyphExtents.y = std::max( glyphExtents.y, bb.getHeight() );
-	}
-
-	glyphExtents.x = ceil( glyphExtents.x );
-	glyphExtents.y = ceil( glyphExtents.y );
-
-	int glyphsWide = floor( mFormat.getTextureWidth() / (glyphExtents.x+3) );
-	int glyphsTall = floor( mFormat.getTextureHeight() / (glyphExtents.y+5) );	
-	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
-	Vec2i curOffset = Vec2i::zero();
-	CGGlyph renderGlyphs[glyphsWide*glyphsTall];
-	CGPoint renderPositions[glyphsWide*glyphsTall];
-	Surface surface( mFormat.getTextureWidth(), mFormat.getTextureHeight(), true );
-	ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );
-	ColorA white( 1, 1, 1, 1 );
-	::CGContextRef cgContext = cocoa::createCgBitmapContext( surface );
-	::CGContextSetRGBFillColor( cgContext, 1, 1, 1, 1 );
-	::CGContextSetFont( cgContext, font.getCgFontRef() );
-	::CGContextSetFontSize( cgContext, font.getSize() );
-	::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
-
-#if defined( CINDER_GLES )
-	std::shared_ptr<uint8_t> lumAlphaData( new uint8_t[mFormat.getTextureWidth()*mFormat.getTextureHeight()*2], checked_array_deleter<uint8_t>() );
-#endif
-
-	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
-		GlyphInfo newInfo;
-		newInfo.mTextureIndex = curTextureIndex;
-		Rectf bb = font.getGlyphBoundingBox( *glyphIt );
-		Vec2f ul = curOffset + Vec2f( 0, glyphExtents.y - bb.getHeight() );
-		Vec2f lr = curOffset + Vec2f( glyphExtents.x, glyphExtents.y );
-		newInfo.mTexCoords = Area( floor( ul.x ), floor( ul.y ), ceil( lr.x ) + 3, ceil( lr.y ) + 2 );
-		newInfo.mOriginOffset.x = floor(bb.x1) - 1;
-		newInfo.mOriginOffset.y = -(bb.getHeight()-1)-ceil( bb.y1+0.5f );
-		mGlyphMap[*glyphIt] = newInfo;
-		renderGlyphs[curGlyphIndex] = *glyphIt;
-		renderPositions[curGlyphIndex].x = curOffset.x - floor(bb.x1) + 1;
-		renderPositions[curGlyphIndex].y = surface.getHeight() - (curOffset.y + glyphExtents.y) - ceil(bb.y1+0.5f);
-		curOffset += Vec2i( glyphExtents.x + 3, 0 );
-		++glyphIt;
-		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
-			::CGContextShowGlyphsAtPositions( cgContext, renderGlyphs, renderPositions, curGlyphIndex );
-			
-			// pass premultiply and mipmapping preferences to Texture::Format
-			if( ! mFormat.getPremultiply() )
-				ip::unpremultiply( &surface );
-
-			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
-			textureFormat.setInternalFormat( GL_LUMINANCE_ALPHA );
-#if defined( CINDER_GLES )
-			// under iOS format and interalFormat must match, so let's make a block of LUMINANCE_ALPHA data
-			Surface8u::ConstIter iter( surface, surface.getBounds() );
-			size_t offset = 0;
-			while( iter.line() ) {
-				while( iter.pixel() ) {
-					lumAlphaData.get()[offset+0] = iter.r();
-					lumAlphaData.get()[offset+1] = iter.a();
-					offset += 2;
-				}
-			}
-			mTextures.push_back( gl::Texture( lumAlphaData.get(), GL_LUMINANCE_ALPHA, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
-#else
-			mTextures.push_back( gl::Texture( surface, textureFormat ) );
-			if( mFormat.hasMipmapping() )
-				mTextures.back().setMinFilter( GL_LINEAR_MIPMAP_LINEAR );
-#endif
-			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
-			curOffset = Vec2i::zero();
-			curGlyphIndex = 0;
-			++curTextureIndex;
-		}
-		else if( ( curGlyphIndex ) % glyphsWide == 0 ) { // wrap around
-			curOffset.x = 0;
-			curOffset.y += glyphExtents.y + 2;
-		}
-	}
-
-	::CGContextRelease( cgContext );
-}
-
-#elif defined( CINDER_MSW )
-
-set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedChars )
-{
-	set<Font::Glyph> result;
-
-	GCP_RESULTS gcpResults;
-	WCHAR *glyphIndices = NULL;
-
-	wstring utf16 = toUtf16( supportedChars );
-
-	::SelectObject( Font::getGlobalDc(), font.getHfont() );
-
-	gcpResults.lStructSize = sizeof(gcpResults);
-	gcpResults.lpOutString = NULL;
-	gcpResults.lpOrder = NULL;
-	gcpResults.lpCaretPos = NULL;
-	gcpResults.lpClass = NULL;
-
-	uint32_t bufferSize = std::max<uint32_t>( (uint32_t)(utf16.length() * 1.2f), 16);		// Initially guess number of chars plus a few
-	while( true ) {
-		if( glyphIndices ) {
-			free( glyphIndices );
-			glyphIndices = NULL;
-		}
-
-		glyphIndices = (WCHAR*)malloc( bufferSize * sizeof(WCHAR) );
-		gcpResults.nGlyphs = bufferSize;
-		gcpResults.lpDx = 0;
-		gcpResults.lpGlyphs = glyphIndices;
-
-		if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), utf16.c_str(), utf16.length(), 0,
-						&gcpResults, GCP_LIGATE | GCP_DIACRITIC | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
-			return set<Font::Glyph>(); // failure
-		}
-
-		if( gcpResults.lpGlyphs )
-			break;
-
-		// Too small a buffer, try again
-		bufferSize += bufferSize / 2;
-		if( bufferSize > INT_MAX) {
-			return set<Font::Glyph>(); // failure
-		}
-	}
-
-	for( UINT i = 0; i < gcpResults.nGlyphs; i++ )
-		result.insert( glyphIndices[i] );
-
-	if( glyphIndices )
-		free( glyphIndices );
-
-	return result;
-}
-
-TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Format &format )
-	: mFont( font ), mFormat( format )
-{
-	// get the glyph indices we'll need
-	set<Font::Glyph> glyphs = getNecessaryGlyphs( font, utf8Chars );
-	// determine the max glyph extents
 	Vec2i glyphExtents = Vec2f::zero();
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
 		try {
-			Rectf bb = font.getGlyphBoundingBox( *glyphIt );
+			Rectf bb = font->getGlyphBoundingBox( *glyphIt );
 			glyphExtents.x = std::max<int>( glyphExtents.x, bb.getWidth() );
 			glyphExtents.y = std::max<int>( glyphExtents.y, bb.getHeight() );
 		}
@@ -206,84 +56,50 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 		}
 	}
 
-	::SelectObject( Font::getGlobalDc(), mFont.getHfont() );
+	return glyphExtents;
+}
+ 
+} // anonymous namespace
 
-	if( ( glyphExtents.x == 0 ) || ( glyphExtents.y == 0 ) )
-		return;
+TextureFont::TextureFont( const FontRef font, const string &supportedChars, gl::TextureFontAtlasRef atlas )
+	: mFont( font )
+{
+	if (!atlas)
+		atlas = gl::TextureFontAtlas::create( getFormat() );
+	mFormat = atlas->getFormat();
 
-	int glyphsWide = mFormat.getTextureWidth() / glyphExtents.x;
-	int glyphsTall = mFormat.getTextureHeight() / glyphExtents.y;	
-	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
-	Vec2i curOffset = Vec2i::zero();
-
-	Channel channel( mFormat.getTextureWidth(), mFormat.getTextureHeight() );
-	ip::fill<uint8_t>( &channel, 0 );
-
-	GLYPHMETRICS gm = { 0, };
-	MAT2 identityMatrix = { {0,1},{0,0},{0,0},{0,1} };
-	size_t bufferSize = 1;
-	BYTE *pBuff = new BYTE[bufferSize];
-	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
-		DWORD dwBuffSize = ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_GRAY8_BITMAP | GGO_GLYPH_INDEX, &gm, 0, NULL, &identityMatrix );
-		if( dwBuffSize > bufferSize ) {
-			delete[] pBuff;
-			pBuff = new BYTE[dwBuffSize];
-			bufferSize = dwBuffSize;
-		}
-		else if( dwBuffSize == 0 ) {
-			++glyphIt;
-			continue;
-		}
-
-		if( ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_METRICS | GGO_GLYPH_INDEX, &gm, 0, NULL, &identityMatrix ) == GDI_ERROR ) {
-			continue;
-		}
-
-		if( ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_GRAY8_BITMAP | GGO_GLYPH_INDEX, &gm, dwBuffSize, pBuff, &identityMatrix ) == GDI_ERROR ) {
-			continue;
-		}
-
-		// convert 6bit to 8bit gray
-		for( INT p = 0; p < dwBuffSize; ++p )
-			pBuff[p] = ((uint32_t)pBuff[p]) * 255 / 64;
-
-		int32_t alignedRowBytes = ( gm.gmBlackBoxX & 3 ) ? ( gm.gmBlackBoxX + 4 - ( gm.gmBlackBoxX & 3 ) ) : gm.gmBlackBoxX;
-		Channel glyphChannel( gm.gmBlackBoxX, gm.gmBlackBoxY, alignedRowBytes, 1, pBuff );
-		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), curOffset );
-
-		GlyphInfo newInfo;
-		newInfo.mOriginOffset = Vec2f( gm.gmptGlyphOrigin.x, glyphExtents.y - gm.gmptGlyphOrigin.y );
-		newInfo.mTexCoords = Area( curOffset, curOffset + Vec2i( gm.gmBlackBoxX, gm.gmBlackBoxY ) );
-		newInfo.mTextureIndex = curTextureIndex;
-		mGlyphMap[*glyphIt] = newInfo;
-
-		curOffset += Vec2i( glyphExtents.x, 0 );
-		++glyphIt;
-		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
-			Surface tempSurface( channel, SurfaceConstraintsDefault(), true );
-			tempSurface.getChannelAlpha().copyFrom( channel, channel.getBounds() );
-			if( ! format.getPremultiply() )
-				ip::unpremultiply( &tempSurface );
-			
-			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
-			textureFormat.setInternalFormat( GL_LUMINANCE_ALPHA );
-			mTextures.push_back( gl::Texture( tempSurface, textureFormat ) );
-			ip::fill<uint8_t>( &channel, 0 );			
-			curOffset = Vec2i::zero();
-			curGlyphIndex = 0;
-			++curTextureIndex;
-		}
-		else if( ( curGlyphIndex ) % glyphsWide == 0 ) { // wrap around
-			curOffset.x = 0;
-			curOffset.y += glyphExtents.y;
-		}
+	set<Font::Glyph> glyphs;
+#if defined( CINDER_MSW )
+	if ( font->getTextEngine()->getEngineType() == TextEngine::GDIPLUS ) {
+		FontGdiPlusRef gdiFont = std::dynamic_pointer_cast<FontGdiPlus>(font);
+		glyphs = gdiFont->getNecessaryGlyphs( supportedChars );
+	}
+#endif
+	if ( glyphs.empty() ) {
+		vector<Font::Glyph>	tempGlyphs = font->getGlyphs( supportedChars );
+		glyphs = set<Font::Glyph>( tempGlyphs.begin(), tempGlyphs.end() );
 	}
 
-	delete [] pBuff;
-}
-#endif
+	// get the glyph indices we'll need
+	atlas->beginGlyphSet();
+	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
+		gl::TextureFont::GlyphInfo& info = mGlyphMap[*glyphIt] = atlas->addGlyph(font, *glyphIt);
+	}
+	mTextures = atlas->endGlyphSet();
 
+#if defined( CINDER_MSW )
+	if ( font->getTextEngine()->getEngineType() == TextEngine::GDIPLUS ) {
+		Vec2i glyphExtents = getGlyphExtents( font, glyphs );
+		for (boost::unordered_map<Font::Glyph, gl::TextureFont::GlyphInfo>::iterator it = mGlyphMap.begin();
+				it != mGlyphMap.end(); ++it) {
+			gl::TextureFont::GlyphInfo& info = it->second;
+			info.mOriginOffset.y += glyphExtents.y;
+		}
+	}
+#endif
+}
+
+#if ! defined( CINDER_GLES2 )
 void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baselineIn, const DrawOptions &options, const std::vector<ColorA8u> &colors )
 {
 	if( mTextures.empty() )
@@ -302,23 +118,19 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 	Vec2f baseline = baselineIn;
 
 	glEnableClientState( GL_VERTEX_ARRAY );
-	if( ! colors.empty() )
+	if ( colors.empty() )
+		glDisableClientState( GL_COLOR_ARRAY );
+	else
 		glEnableClientState( GL_COLOR_ARRAY );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
 	const float scale = options.getScale();
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
 		vector<float> verts, texCoords;
 		vector<ColorA8u> vertColors;
 		const gl::Texture &curTex = mTextures[texIdx];
-#if defined( CINDER_GLES )
-		vector<uint16_t> indices;
-		uint16_t curIdx = 0;
-		GLenum indexType = GL_UNSIGNED_SHORT;
-#else
-		vector<uint32_t> indices;
-		uint32_t curIdx = 0;
-		GLenum indexType = GL_UNSIGNED_INT;
-#endif
+		vector<gl::index_t> indices;
+		gl::index_t curIdx = 0;
 		if( options.getPixelSnap() )
 			baseline = Vec2f( floor( baseline.x ), floor( baseline.y ) );
 			
@@ -335,7 +147,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 			destRect.scale( scale );
 			destRect += glyphIt->second * scale;
 			destRect += Vec2f( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) ) * scale;
-			destRect += Vec2f( baseline.x, baseline.y - mFont.getAscent() * scale );
+			destRect += Vec2f( baseline.x, baseline.y - mFont->getAscent() * scale );
 			if( options.getPixelSnap() )
 				destRect -= Vec2f( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
 			
@@ -367,7 +179,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 		glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
 		if( ! colors.empty() )
 			glColorPointer( 4, GL_UNSIGNED_BYTE, 0, &vertColors[0] );
-		glDrawElements( GL_TRIANGLES, indices.size(), indexType, &indices[0] );
+		glDrawElements( GL_TRIANGLES, indices.size(), CINDER_GL_INDEX_TYPE, &indices[0] );
 	}
 }
 
@@ -386,23 +198,20 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
 	gl::enable( mTextures[0].getTarget() );
 	const float scale = options.getScale();
+
 	glEnableClientState( GL_VERTEX_ARRAY );
-	if( ! colors.empty() )
+	if ( colors.empty() )
+		glDisableClientState( GL_COLOR_ARRAY );
+	else
 		glEnableClientState( GL_COLOR_ARRAY );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
 		vector<float> verts, texCoords;
 		vector<ColorA8u> vertColors;
 		const gl::Texture &curTex = mTextures[texIdx];
-#if defined( CINDER_GLES )
-		vector<uint16_t> indices;
-		uint16_t curIdx = 0;
-		GLenum indexType = GL_UNSIGNED_SHORT;
-#else
-		vector<uint32_t> indices;
-		uint32_t curIdx = 0;
-		GLenum indexType = GL_UNSIGNED_INT;
-#endif
+		vector<gl::index_t> indices;
+		gl::index_t curIdx = 0;
 		if( options.getPixelSnap() )
 			offset = Vec2f( floor( offset.x ), floor( offset.y ) );
 
@@ -471,8 +280,24 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 		glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
 		if( ! colors.empty() )
 			glColorPointer( 4, GL_UNSIGNED_BYTE, 0, &vertColors[0] );
-		glDrawElements( GL_TRIANGLES, indices.size(), indexType, &indices[0] );
+		glDrawElements( GL_TRIANGLES, indices.size(), CINDER_GL_INDEX_TYPE, &indices[0] );
 	}
+}
+#endif
+
+#if ! defined( CINDER_GLES2 )
+TextureFontRef TextureFont::create( const FontRef font, TextureFontAtlasRef atlas, const std::string &supportedChars )
+{
+	return TextureFontRef( new TextureFont( font, supportedChars, atlas ) ); 
+}
+#endif
+
+// #endif
+
+#if ! defined( CINDER_GLES2 )
+TextureFontRef TextureFont::create( const FontRef font, const Format &format, const std::string &supportedChars )
+{
+	return TextureFontRef( new TextureFont( font, supportedChars, TextureFontAtlas::create( format ) ) ); 
 }
 
 void TextureFont::drawString( const std::string &str, const Vec2f &baseline, const DrawOptions &options )
@@ -489,22 +314,25 @@ void TextureFont::drawString( const std::string &str, const Rectf &fitRect, cons
 	drawGlyphs( glyphMeasures, fitRect, fitRect.getUpperLeft() + offset, options );	
 }
 
-#if defined( CINDER_COCOA )
 void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
 	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
 	drawGlyphs( glyphMeasures, fitRect.getUpperLeft() + offset, options );
+	//  XXX this call more closely matches the comment documentation.
+	//	drawGlyphs( glyphMeasures, fitRect, fitRect.getUpperLeft() + offset, options );
 }
-#endif
+#endif  // ! defined( CINDER_GLES2 )
 
 Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &options ) const
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
-#if defined( CINDER_COCOA )
+
+#if defined( CINDER_COCOA ) || defined( CINDER_ANDROID )
 	return tbox.measure();
 #else
 	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
+
 	if( ! glyphMeasures.empty() ) {
 		Vec2f result = glyphMeasures.back().second;
 		boost::unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphMeasures.back().first );

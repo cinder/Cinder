@@ -17,11 +17,11 @@ void InfoPanel::createTexture()
 {
 	TextLayout layout;
 	
-	layout.setFont( Font( "Arial-BoldMT", 14 ) );
+	layout.setFont( Font::create( "Arial-BoldMT", 14 ) );
 	layout.setColor( Color( 1.0f, 1.0f, 1.0f ) );
 	layout.addLine( "Frustum Culling" );
 	layout.addLine( " " );
-	layout.setFont( Font( "ArialMT", 10 ) );
+	layout.setFont( Font::create( "ArialMT", 10 ) );
 	layout.setColor( Color( 0.6f, 0.6f, 0.6f ) );
 	layout.addLine( "1	test spheres" );
 	layout.addLine( "2	test cubes" );

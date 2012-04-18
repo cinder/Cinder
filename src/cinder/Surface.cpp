@@ -333,6 +333,8 @@ void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, 
 		copyRawSameChannelOrder( srcSurface, srcDst.first, srcDst.second );
 	else if( hasAlpha() && srcSurface.hasAlpha() )
 		copyRawRgba( srcSurface, srcDst.first, srcDst.second );
+	else if( hasAlpha() && ( ! srcSurface.hasAlpha() ) )
+		copyRawRgbFullAlpha( srcSurface, srcDst.first, srcDst.second );
 	else
 		copyRawRgb( srcSurface, srcDst.first, srcDst.second );
 }
@@ -376,6 +378,37 @@ void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcAre
 			dst[dstBlue] = src[srcBlue];
 			dst[dstAlpha] = src[srcAlpha];
 			src += 4;
+			dst += 4;
+		}
+	}
+}
+
+template<typename T>
+void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset )
+{
+	const int32_t srcRowBytes = srcSurface.getRowBytes();
+	const int8_t srcPixelInc = srcSurface.getPixelInc();
+	uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
+	uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
+	uint8_t srcBlue = srcSurface.getChannelOrder().getBlueOffset();
+	const T fullAlpha = CHANTRAIT<T>::max();
+	
+	uint8_t dstRed = getChannelOrder().getRedOffset();
+	uint8_t dstGreen = getChannelOrder().getGreenOffset();
+	uint8_t dstBlue = getChannelOrder().getBlueOffset();
+	uint8_t dstAlpha = getChannelOrder().getAlphaOffset();
+	
+	int32_t width = srcArea.getWidth();
+	
+	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
+		const T *src = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcSurface.getData() + srcArea.x1 * 4 ) + ( srcArea.y1 + y ) * srcRowBytes );
+		T *dst = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( getData() + absoluteOffset.x * 4 ) + ( y + absoluteOffset.y ) * getRowBytes() );
+		for( int x = 0; x < width; ++x ) {
+			dst[dstRed] = src[srcRed];
+			dst[dstGreen] = src[srcGreen];
+			dst[dstBlue] = src[srcBlue];
+			dst[dstAlpha] = fullAlpha;
+			src += srcPixelInc;
 			dst += 4;
 		}
 	}

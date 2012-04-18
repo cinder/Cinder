@@ -78,6 +78,7 @@ void TimelineItem::stepTo( float newTime, bool reverse )
 		if( ( ! mHasStarted ) && ( ! reverse ) ) {
 			mHasStarted = true;
 			mHasReverseStarted = false;
+			mLastLoopIteration = 0;
 			loopStart();
 			start( false );
 		}

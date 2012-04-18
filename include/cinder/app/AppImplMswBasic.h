@@ -42,12 +42,15 @@ class AppImplMswBasic : public AppImplMsw {
 	class AppBasic*		getApp() { return mApp; }
 	
 	void	quit() { mShouldQuit = true; }
-	
+
+	void	setWindowPos( const Vec2i &aWindowPos );	
 	void	setWindowWidth( int aWindowWidth );
 	void	setWindowHeight( int aWindowHeight );
 	void	setWindowSize( int aWindowWidth, int aWindowHeight );
 	float	setFrameRate( float aFrameRate );
 	void	toggleFullScreen();
+	void	setBorderless( bool borderless );
+	void	setAlwaysOnTop( bool alwaysOnTop );
 	
 	std::string getAppPath() const;
 	
@@ -72,6 +75,7 @@ class AppImplMswBasic : public AppImplMsw {
 	HDC						mDC;
 	HINSTANCE				mInstance;
 	DWORD					mWindowStyle, mWindowExStyle;
+	Vec2i					mWindowedPos;
 	double					mNextFrameTime;
 	Display					*mDisplay;
 	std::map<DWORD,Vec2f>	mMultiTouchPrev;

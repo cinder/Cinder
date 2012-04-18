@@ -21,7 +21,7 @@ class TriangulationApp : public AppBasic {
 	void		setRandomFont();
 	void		setRandomGlyph();
 	
-	Font				mFont;
+	FontRef				mFont;
 	Shape2d				mShape;
 	vector<string>		mFontNames;
 	gl::VboMesh			mVboMesh;
@@ -49,8 +49,8 @@ void TriangulationApp::setup()
 	mParams.addParam( "Num Points", &mNumPoints, "", true );
 
 	mFontNames = Font::getNames();
-	mFont = Font( "Times", mFontSize );
-	mShape = mFont.getGlyphShape( mFont.getGlyphChar( 'A' ) );
+	mFont = Font::create( "Times", mFontSize );
+	mShape = mFont->getGlyphShape( mFont->getGlyphChar( 'A' ) );
 	
 	// setup VBO
 	gl::VboMesh::Layout layout;
@@ -69,15 +69,15 @@ void TriangulationApp::recalcMesh()
 void TriangulationApp::setRandomFont()
 {
 	// select a random font from those available on the system
-	mFont = Font( mFontNames[rand() % mFontNames.size()], mFontSize );
+	mFont = Font::create( mFontNames[rand() % mFontNames.size()], mFontSize );
 	setRandomGlyph();
 }
 
 void TriangulationApp::setRandomGlyph()
 {
-	size_t glyphIndex = rand() % mFont.getNumGlyphs();
+	size_t glyphIndex = rand() % mFont->getNumGlyphs();
 	try {
-		mShape = mFont.getGlyphShape( glyphIndex );
+		mShape = mFont->getGlyphShape( glyphIndex );
 		recalcMesh();
 	}
 	catch( FontGlyphFailureExc &exc  ) {

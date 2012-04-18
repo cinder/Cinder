@@ -211,7 +211,7 @@ void Timeline::remove( TimelineItemRef item )
 {
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
 		if( iter->second == item ) {
-			mItems.erase( iter );
+			iter->second->mMarkedForRemoval = true;
 			break;
 		}
 	}
@@ -223,8 +223,9 @@ void Timeline::removeTarget( void *target )
 		return;
 		
 	pair<s_iter,s_iter> range = mItems.equal_range( target );
-	mItems.erase( range.first, range.second );
-	
+	for( s_iter iter = range.first; iter != range.second; ++iter )
+		iter->second->mMarkedForRemoval = true;
+
 	setDurationDirty();
 }
 

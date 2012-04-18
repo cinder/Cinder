@@ -27,7 +27,6 @@ class CubeMappingApp : public AppBasic {
 	void prepareSettings( Settings *settings )
 	{
 		settings->setWindowSize( 1024, 768 );
-		settings->setFullScreenSize( 1024, 768 );
 		settings->setFullScreen( false );
 		settings->setResizable( true );
 		settings->setFrameRate( 30.0f );

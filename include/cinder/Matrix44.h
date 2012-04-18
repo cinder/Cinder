@@ -91,6 +91,7 @@ public:
 	Matrix44( const Matrix44<FromT>& src );
 
 	Matrix44( const Matrix22<T>& src );
+	explicit Matrix44( const MatrixAffine2<T> &src );
 	Matrix44( const Matrix33<T>& src );
 
 	Matrix44( const Matrix44<T>& src );
@@ -106,6 +107,7 @@ public:
 	
 	// remaining columns and rows will be filled with identity values
 	Matrix44<T>&		operator=( const Matrix22<T>& rhs );
+	Matrix44<T>&		operator=( const MatrixAffine2<T>& rhs );
 	Matrix44<T>&		operator=( const Matrix33<T>& rhs );
 
 	bool				equalCompare( const Matrix44<T>& rhs, T epsilon ) const;
@@ -253,6 +255,9 @@ public:
 	// equivalent to rotate( zAxis, z ), then rotate( yAxis, y ) then rotate( xAxis, x )
 	static Matrix44<T>	createRotation( const Vec3<T> &eulerRadians );
 	static Matrix44<T>	createRotation( const Vec4<T> &eulerRadians ) { return createRotation( eulerRadians.xyz() ); }
+	// creates rotation matrix from ortho normal basis (u, v, n)
+	static Matrix44<T>	createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w );
+	static Matrix44<T>	createRotationOnb( const Vec4<T>& u, const Vec4<T>& v, const Vec4<T>& w ) { return createRotationOnb( u.xyz(), v.xyz(), w.xyz() ); }
 
 	// creates scale matrix
 	static Matrix44<T>	createScale( T s );
@@ -342,6 +347,15 @@ Matrix44<T>::Matrix44( const Matrix22<T>& src )
 }
 
 template< typename T >
+Matrix44<T>::Matrix44( const MatrixAffine2<T>& src )
+{
+	m[ 0] = src.m[0]; m[ 4] = src.m[2]; m[ 8] = 0; m[12] = src.m[4];
+	m[ 1] = src.m[1]; m[ 5] = src.m[3]; m[ 9] = 0; m[13] = src.m[5];
+	m[ 2] = 0; 		  m[ 6] = 0; 		m[10] = 1; m[14] = 0;
+	m[ 3] = 0; 		  m[ 7] = 0; 		m[11] = 0; m[15] = 1;
+}
+
+template< typename T >
 Matrix44<T>::Matrix44( const Matrix33<T>& src )
 {
 	setToIdentity();
@@ -390,6 +404,18 @@ Matrix44<T>& Matrix44<T>::operator=( const Matrix22<T>& rhs )
 	m10 = rhs.m10; m11 = rhs.m11;
 	return *this;
 }
+
+template< typename T >
+Matrix44<T>& Matrix44<T>::operator=( const MatrixAffine2<T>& rhs )
+{
+	m[ 0] = rhs.m[0]; m[ 4] = rhs.m[2]; m[ 8] = 0; m[12] = rhs.m[4];
+	m[ 1] = rhs.m[1]; m[ 5] = rhs.m[3]; m[ 9] = 0; m[13] = rhs.m[5];
+	m[ 2] = 0; 		  m[ 6] = 0; 		m[10] = 1; m[14] = 0;
+	m[ 3] = 0; 		  m[ 7] = 0; 		m[11] = 0; m[15] = 1;
+	return *this;
+}
+
+
 
 template< typename T >
 Matrix44<T>& Matrix44<T>::operator=( const Matrix33<T>& rhs )
@@ -1177,6 +1203,17 @@ Matrix44<T> Matrix44<T>::createRotation( const Vec3<T> &eulerRadians )
 	ret.m[15] =  1;
 
 	return ret;
+}
+
+template<typename T>
+Matrix44<T>	Matrix44<T>::createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w )
+{
+	return Matrix44<T>(
+		u.x,  u.y, u.z, 0,
+		v.x,  v.y, v.z, 0,
+		w.x,  w.y, w.z, 0,
+		0,    0,   0, 1
+		);
 }
 
 template<typename T>

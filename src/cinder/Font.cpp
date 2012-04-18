@@ -30,6 +30,7 @@
 	#else
 		#import <Cocoa/Cocoa.h>
 	#endif
+	#include "cinder/TextEngineCoreText.h"
 #elif defined( CINDER_MSW )
 	#define max(a, b) (((a) > (b)) ? (a) : (b))
 	#define min(a, b) (((a) < (b)) ? (a) : (b))
@@ -40,206 +41,176 @@
 	#include "cinder/msw/CinderMsw.h"
 	#include "cinder/msw/CinderMswGdiPlus.h"
 	#pragma comment(lib, "gdiplus")
+	#include "cinder/TextEngineGdiPlus.h"
 #endif
+#include "cinder/TextEngineFreeType.h"
+
+//  Freetype 
+#include <utf8.h>
+#include <iterator>
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include FT_GLYPH_H
+
+struct FTData {
+	ci::Buffer        buffer;
+	FT_Face           face;
+};
+// #include <boost/unordered_map.hpp>
+#include <map>
+
+#include "cinder/TextEngine.h"
 #include "cinder/Utilities.h"
 
 using std::vector;
 using std::string;
 using std::wstring;
 using std::pair;
+using std::set;
 
 namespace cinder {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// FontManager
-class FontManager
-{
- public:
-	static FontManager*		instance();
-
-	const vector<string>&	getNames( bool forceRefresh );
-	Font					getDefault() const
-	{
-		if( ! mDefault )
-#if defined( CINDER_COCOA )        
-            mDefault = Font( "Helvetica", 12 );
-#elif defined( CINDER_MSW )    
-            mDefault = Font( "Arial", 12 );
-#endif
-		
-		return mDefault;
-	}
- private:
-	FontManager();
-	~FontManager();
-
-	static FontManager	*sInstance;
-
-	bool				mFontsEnumerated;
-	vector<string>		mFontNames;
-	mutable Font		mDefault;
-#if defined( CINDER_MSW )
-	HDC					getFontDc() const { return mFontDc; }
-	Gdiplus::Graphics*	getGraphics() const { return mGraphics; }
-	LONG				convertSizeToLogfontHeight( float size ) { return ::MulDiv( (long)size, -::GetDeviceCaps( mFontDc, LOGPIXELSY ), 96 ); }
-#endif
-	
-#if defined( CINDER_MAC )
-	NSFontManager		*nsFontManager;
-#elif defined( CINDER_MSW )
-	HDC					mFontDc;
-	Gdiplus::Graphics	*mGraphics;
-#endif
-
-	friend class Font;
-};
-
-FontManager *FontManager::sInstance = 0;
-
-FontManager::FontManager()
-{
-	mFontsEnumerated = false;
-#if defined( CINDER_MAC )
-	nsFontManager = [NSFontManager sharedFontManager];
-	[nsFontManager retain];
-#elif defined( CINDER_MSW )
-	mFontDc = ::CreateCompatibleDC( NULL );
-	mGraphics = new Gdiplus::Graphics( mFontDc );
-#endif
-}
-
-FontManager::~FontManager()
-{
-#if defined( CINDER_MAC )
-	[nsFontManager release];
-#endif
-}
-
-FontManager* FontManager::instance()
-{
-	if( ! FontManager::sInstance )
-		FontManager::sInstance = new FontManager();
-	
-	return sInstance;
-}
-
-#if defined( CINDER_MSW )
-int CALLBACK EnumFontFamiliesExProc( ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int FontType, LPARAM lParam )
-{
-	reinterpret_cast<vector<string>*>( lParam )->push_back( toUtf8( lpelfe->elfFullName ) );
-	return 1;
-}
-#endif
-
-const vector<string>& FontManager::getNames( bool forceRefresh )
-{
-	if( ( ! mFontsEnumerated ) || forceRefresh ) {
-		mFontNames.clear();
-#if defined( CINDER_MAC )
-		NSArray *fontArray = [nsFontManager availableFonts];
-		NSUInteger totalFonts = [fontArray count];
-		for( unsigned int i = 0; i < totalFonts; ++i ) {
-			NSString *str = [fontArray objectAtIndex:i];
-			mFontNames.push_back( string( [str UTF8String] ) );
-		}
-#elif defined( CINDER_COCOA_TOUCH )
-		NSArray *familyNames = [UIFont familyNames];
-		NSUInteger totalFamilies = [familyNames count];
-		for( unsigned int i = 0; i < totalFamilies; ++i ) {
-			NSString *familyName = [familyNames objectAtIndex:i];
-			NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
-			NSUInteger totalFonts = [fontNames count];
-			for( unsigned int f = 0; f < totalFonts; ++f ) {
-				NSString *fontName = [fontNames objectAtIndex:f];
-				mFontNames.push_back( string( [fontName UTF8String] ) );
-			}
-		}
-#elif defined( CINDER_MSW )
-		// consider enumerating character sets? DEFAULT_CHARSET potentially here
-		::LOGFONT lf = { 0, 0, 0, 0, 0, 0, 0, 0, ANSI_CHARSET, 0, 0, 0, 0, '\0' };
-		::EnumFontFamiliesEx( getFontDc(), &lf, (FONTENUMPROC)EnumFontFamiliesExProc, reinterpret_cast<LPARAM>( &mFontNames ), 0 );	
-#endif
-		mFontsEnumerated = true;
-	}
-	
-	return mFontNames;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Font
-Font::Font( const string &name, float size )
-	: mObj( new Font::Obj( name, size ) )
-{
-}
-
-Font::Font( DataSourceRef dataSource, float size )
-	: mObj( new Font::Obj( dataSource, size ) )
-{
-}
-
 const vector<string>& Font::getNames( bool forceRefresh )
 {
-	return FontManager::instance()->getNames( forceRefresh );
+	return TextEngine::instance()->getFontNames( forceRefresh );
 }
 
-Font Font::getDefault()
+FontRef Font::getDefault()
 {
-	return FontManager::instance()->getDefault();
+	return TextEngine::instance()->getDefaultFont();
+}
+
+TextEngineRef Font::getTextEngine() const
+{
+	return mTextEngine;
 }
 
 const std::string& Font::getName() const
 { 
-	return mObj->mName;
+	return mName;
 }
 
 float Font::getSize() const
 {
-	return mObj->mSize;
+	return mSize;
+}
+
+FontRef Font::create( const string aName, float size, TextEngineRef textEngine )
+{
+	if ( !textEngine ) {
+		textEngine = TextEngine::instance();
+	}
+
+	return textEngine->createFont( aName, size );
+}
+
+FontRef Font::create( DataSourceRef dataSource, float size, TextEngineRef textEngine )
+{
+	if ( !textEngine ) {
+		textEngine = TextEngine::instance();
+	}
+
+	return textEngine->createFont( dataSource, size );
+}
+
+Font::Font( TextEngineRef textEngine, const string &aName, float aSize ) 
+	: mTextEngine(textEngine), mName( aName ), mSize( aSize )
+{
+}
+
+Font::Font( TextEngineRef textEngine, DataSourceRef dataSource, float size ) 
+	: mTextEngine(textEngine), mSize( size )
+{
+}
+
+Font::~Font()
+{
+}
+
+FontInvalidNameExc::FontInvalidNameExc( const std::string &fontName ) throw()
+{
+	sprintf( mMessage, "%s", fontName.c_str() );
 }
 
 #if defined( CINDER_COCOA )
-std::string Font::getFullName() const
+FontCoreText::FontCoreText( TextEngineRef textEngine, const string &aName, float aSize ) 
+	: Font( textEngine, aName, aSize )
 {
-	CFStringRef fullName = ::CGFontCopyFullName( mObj->mCGFont );
+	CFStringRef cfName = cocoa::createCfString( mName.c_str() );
+	mCGFont = ::CGFontCreateWithFontName( cfName );
+	CFRelease( cfName );
+	if( mCGFont == 0 )
+		throw FontInvalidNameExc( aName );
+	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
+
+	::CFStringRef fullName = ::CGFontCopyFullName( mCGFont );
+	string result = cocoa::convertCfString( fullName );
+	::CFRelease( fullName );
+}
+
+FontCoreText::FontCoreText( TextEngineRef textEngine, DataSourceRef dataSource, float size ) 
+	: Font( textEngine, dataSource, size )
+{
+	Buffer buffer( dataSource->getBuffer() );
+	std::shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( NULL, buffer.getData(), buffer.getDataSize(), NULL ), ::CGDataProviderRelease );
+	if( ! dataProvider )
+		throw FontInvalidNameExc();
+	mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
+	if( ! mCGFont )
+		throw FontInvalidNameExc();
+	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
+}
+
+FontCoreText::~FontCoreText()
+{
+	::CGFontRelease( mCGFont );
+	::CFRelease( mCTFont );
+}
+
+std::string FontCoreText::getFullName() const
+{
+	CFStringRef fullName = ::CGFontCopyFullName( mCGFont );
 	string result = cocoa::convertCfString( fullName );
 	CFRelease( fullName );
 	return result;
 }
 
-float Font::getLeading() const
+float FontCoreText::getLeading() const
 {
-	return ::CGFontGetLeading( mObj->mCGFont ) / (float)::CGFontGetUnitsPerEm( mObj->mCGFont ) * mObj->mSize;
+	return ::CGFontGetLeading( mCGFont ) / (float)::CGFontGetUnitsPerEm( mCGFont ) * mSize;
 }
 
-float Font::getAscent() const
+float FontCoreText::getAscent() const
 {
-	return ::CGFontGetAscent( mObj->mCGFont ) / (float)::CGFontGetUnitsPerEm( mObj->mCGFont ) * mObj->mSize;
+	return ::CGFontGetAscent( mCGFont ) / (float)::CGFontGetUnitsPerEm( mCGFont ) * mSize;
 }
 
-float Font::getDescent() const
+float FontCoreText::getDescent() const
 {
-	return - ::CGFontGetDescent( mObj->mCGFont ) / (float)::CGFontGetUnitsPerEm( mObj->mCGFont ) * mObj->mSize;
+	return - ::CGFontGetDescent( mCGFont ) / (float)::CGFontGetUnitsPerEm( mCGFont ) * mSize;
 }
 
-size_t Font::getNumGlyphs() const
+size_t FontCoreText::getNumGlyphs() const
 {
-	return ::CGFontGetNumberOfGlyphs( mObj->mCGFont );
+	return ::CGFontGetNumberOfGlyphs( mCGFont );
 }
 
-Font::Glyph Font::getGlyphIndex( size_t index ) const
+Font::Glyph FontCoreText::getGlyphIndex( size_t index ) const
 {
-	return (Glyph)index;
+	return (Font::Glyph)index;
 }
 
-Font::Glyph Font::getGlyphChar( char c ) const
+Font::Glyph FontCoreText::getGlyphChar( char c ) const
 {
 	UniChar uc = c;
 	CGGlyph result;
-	::CTFontGetGlyphsForCharacters( mObj->mCTFont, &uc, &result, 1 );
+	::CTFontGetGlyphsForCharacters( mCTFont, &uc, &result, 1 );
 	return result;
 }
 
-vector<Font::Glyph> Font::getGlyphs( const string &s ) const
+vector<Font::Glyph> FontCoreText::getGlyphs( const string &s ) const
 {
 	vector<Font::Glyph> result;
 
@@ -256,255 +227,62 @@ vector<Font::Glyph> Font::getGlyphs( const string &s ) const
 		for( size_t t = 0; t < glyphCount; ++t )			
 			result.push_back( glyphBuffer[t] );
 	}
-	
+
 	::CFRelease( attrStr );
 	::CFRelease( line );
-	
+
 	return result;
 }
 
-Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
+Shape2d FontCoreText::getGlyphShape( Font::Glyph glyphIndex ) const
 {
-	CGPathRef path = CTFontCreatePathForGlyph( mObj->mCTFont, static_cast<CGGlyph>( glyphIndex ), NULL );
+	CGPathRef path = CTFontCreatePathForGlyph( mCTFont, static_cast<CGGlyph>( glyphIndex ), NULL );
 	Shape2d resultShape;
 	cocoa::convertCgPath( path, &resultShape, true );
 	CGPathRelease( path );
 	return resultShape;
 }
 
-Rectf Font::getGlyphBoundingBox( Glyph glyph ) const
+Rectf FontCoreText::getGlyphBoundingBox( Font::Glyph glyph ) const
 {
 	CGGlyph glyphs[1] = { glyph };
-	CGRect bounds = ::CTFontGetBoundingRectsForGlyphs( mObj->mCTFont, kCTFontDefaultOrientation, glyphs, NULL, 1 );
+	CGRect bounds = ::CTFontGetBoundingRectsForGlyphs( mCTFont, kCTFontDefaultOrientation, glyphs, NULL, 1 );
 	return Rectf( bounds.origin.x, bounds.origin.y, bounds.origin.x + bounds.size.width, bounds.origin.y + bounds.size.height );
 }
 
-CGFontRef Font::getCgFontRef() const
+CGFontRef FontCoreText::getCgFontRef() const
 {
-	return mObj->mCGFont;
+	return mCGFont;
 }
 
-CTFontRef Font::getCtFontRef() const
+CTFontRef FontCoreText::getCtFontRef() const
 {
-	return mObj->mCTFont;
-}
-
-#elif defined( CINDER_MSW )
-
-std::string Font::getFullName() const
-{
-	return mObj->mName;
-}
-
-float Font::getLeading() const
-{
-	return static_cast<float>( mObj->mTextMetric.tmInternalLeading + mObj->mTextMetric.tmExternalLeading );
-}
-
-float Font::getAscent() const
-{
-	return static_cast<float>( mObj->mTextMetric.tmAscent );
-}
-
-float Font::getDescent() const
-{
-	return static_cast<float>( mObj->mTextMetric.tmDescent );
-}
-
-size_t Font::getNumGlyphs() const
-{
-	return mObj->mNumGlyphs;
-}
-
-Font::Glyph Font::getGlyphChar( char c ) const
-{
-	WORD buffer[1];
-	WCHAR theChar[1] = { (WCHAR)c };
-	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
-	if( ::GetGlyphIndices( FontManager::instance()->getFontDc(), theChar, 1, buffer, GGI_MARK_NONEXISTING_GLYPHS ) == GDI_ERROR )
-		return 0;
-	
-	return (Glyph)buffer[0];
-}
-
-Font::Glyph Font::getGlyphIndex( size_t idx ) const
-{
-	size_t ct = 0;
-	bool found = false;
-	for( vector<pair<uint16_t,uint16_t> >::const_iterator rangeIt = mObj->mUnicodeRanges.begin(); rangeIt != mObj->mUnicodeRanges.end(); ++rangeIt ) {
-		if( ct + rangeIt->second - rangeIt->first >= idx ) {
-			ct = rangeIt->first + ( idx - ct );
-			found = true;
-			break;
-		}
-		else
-			ct += rangeIt->second - rangeIt->first;
-	}
-	
-	// this idx is invalid
-	if( ! found )
-		ct = 0;
-	
-	return (Glyph)ct;
-}
-
-vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
-{
-	wstring wideString = toUtf16( utf8String );
-	std::shared_ptr<WORD> buffer( new WORD[wideString.length()], checked_array_deleter<WORD>() );
-	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
-	DWORD numGlyphs = ::GetGlyphIndices( FontManager::instance()->getFontDc(), &wideString[0], (int)wideString.length(), buffer.get(), GGI_MARK_NONEXISTING_GLYPHS );
-	if( numGlyphs == GDI_ERROR )
-		return vector<Glyph>();
-	
-	vector<Glyph> result;
-	for( DWORD glyph = 0; glyph < numGlyphs; ++glyph )
-		result.push_back( (Glyph)buffer.get()[glyph] );
-	
-	return result;
-}
-
-Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
-{
-	Shape2d resultShape;
-	static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
-	GLYPHMETRICS metrics;
-	DWORD bytesGlyph = ::GetGlyphOutlineW( FontManager::instance()->getFontDc(), glyphIndex,
-							GGO_NATIVE | GGO_GLYPH_INDEX, &metrics, 0, NULL, &matrix);
-
-    if( bytesGlyph == GDI_ERROR )
-		throw FontGlyphFailureExc();
-
-	std::shared_ptr<uint8_t> buffer( new uint8_t[bytesGlyph], checked_array_deleter<uint8_t>() );
-	uint8_t *ptr = buffer.get();
-    if( ! buffer ) {
-		throw FontGlyphFailureExc();
-    }
-
-    if( ::GetGlyphOutlineW( FontManager::instance()->getFontDc(), glyphIndex,
-			  GGO_NATIVE | GGO_GLYPH_INDEX, &metrics, bytesGlyph, buffer.get(), &matrix) == GDI_ERROR ) {
-		throw FontGlyphFailureExc();
-    }
-
-	// This whole block is modified from code in Cairo's cairo-win32-font.c
-	resultShape.clear();
-	while( ptr < buffer.get() + bytesGlyph ) {
-		TTPOLYGONHEADER *header = (TTPOLYGONHEADER *)ptr;
-		unsigned char *endPoly = ptr + header->cb;
-
-		ptr += sizeof( TTPOLYGONHEADER );
-
-		resultShape.moveTo( msw::toVec2f( header->pfxStart ) ); 
-		while( ptr < endPoly ) {
-			TTPOLYCURVE *curve = reinterpret_cast<TTPOLYCURVE*>( ptr );
-			POINTFX *points = curve->apfx;
-			switch( curve->wType ) {
-				case TT_PRIM_LINE:
-					for( int i = 0; i < curve->cpfx; i++ ) {
-						resultShape.lineTo( msw::toVec2f( points[i] ) );
-					}
-				break;
-				case TT_PRIM_QSPLINE:
-					for( int i = 0; i < curve->cpfx - 1; i++ ) {
-						Vec2f p1 = resultShape.getCurrentPoint(), p2;
-						Vec2f c = msw::toVec2f( points[i] ), c1, c2;
-						if( i + 1 == curve->cpfx - 1 ) {
-							p2 = msw::toVec2f( points[i + 1] );
-						}
-						else {
-							// records with more than one curve use interpolation for control points, per http://support.microsoft.com/kb/q87115/
-							p2 = ( c + msw::toVec2f( points[i + 1] ) ) / 2.0f;
-						}
-	
-						c1 = 2.0f * c / 3.0f + p1 / 3.0f;
-						c2 = 2.0f * c / 3.0f + p2 / 3.0f;
-						resultShape.curveTo( c1, c2, p2 );
-					}
-				break;
-				case TT_PRIM_CSPLINE:
-					for( int i = 0; i < curve->cpfx - 2; i += 2 ) {
-						resultShape.curveTo( msw::toVec2f( points[i] ), msw::toVec2f( points[i + 1] ),
-								msw::toVec2f( points[i + 2] ) );
-					}
-				break;
-			}
-			ptr += sizeof( TTPOLYCURVE ) + sizeof( POINTFX ) * (curve->cpfx - 1);
-		}
-		resultShape.close();
-	}
-	
-	return resultShape;
-}
-
-Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
-{
-	static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
-	GLYPHMETRICS metrics;
-	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
-	DWORD bytesGlyph = ::GetGlyphOutlineW( FontManager::instance()->getFontDc(), glyphIndex,
-							GGO_METRICS | GGO_GLYPH_INDEX, &metrics, 0, NULL, &matrix);
-
-    if( bytesGlyph == GDI_ERROR )
-		throw FontGlyphFailureExc();
-
-	return Rectf( metrics.gmptGlyphOrigin.x, metrics.gmptGlyphOrigin.y,
-			metrics.gmptGlyphOrigin.x + metrics.gmBlackBoxX, metrics.gmptGlyphOrigin.y + (int)metrics.gmBlackBoxY );
+	return mCTFont;
 }
 
 #endif
 
-Font::Obj::Obj( const string &aName, float aSize )
-	: mName( aName ), mSize( aSize )
 #if defined( CINDER_MSW )
-	, mHfont( 0 )
-#endif
+FontGdiPlus::FontGdiPlus( TextEngineRef textEngine, const string &aName, float aSize ) 
+	: Font( textEngine, aName, aSize ), mHfont( 0 )
 {
-#if defined( CINDER_COCOA )
-	CFStringRef cfName = cocoa::createCfString( mName.c_str() );
-	mCGFont = ::CGFontCreateWithFontName( cfName );
-	CFRelease( cfName );
-	if( mCGFont == 0 )
-		throw FontInvalidNameExc( aName );
-	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
-	
-	::CFStringRef fullName = ::CGFontCopyFullName( mCGFont );
-	string result = cocoa::convertCfString( fullName );
-	::CFRelease( fullName );
-#else
-	FontManager::instance(); // force GDI+ init
+	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
 	assert( sizeof(wchar_t) == 2 );
-    wstring faceName = toUtf16( mName );
-    
+	wstring faceName = toUtf16( mName );
+
 	mHfont = ::CreateFont( -mSize * 72 / 96, 0, 0, 0, FW_DONTCARE, false, false, false,
-						DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
-						ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-						faceName.c_str() );
-	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
-//    mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
-	mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( FontManager::instance()->getFontDc(), mHfont ) );
-	
+			DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
+			ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+			faceName.c_str() );
+	::SelectObject( engine->getFontDc(), mHfont );
+	mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( engine->getFontDc(), mHfont ) );
+
 	finishSetup();
-#endif
 }
 
-Font::Obj::Obj( DataSourceRef dataSource, float size )
-	: mSize( size )
-#if defined( CINDER_MSW )
-	, mHfont( 0 )
-#endif
+FontGdiPlus::FontGdiPlus( TextEngineRef textEngine, DataSourceRef dataSource, float size ) 
+	: Font( textEngine, dataSource, size ), mHfont( 0 )
 {
-#if defined( CINDER_COCOA )
-	Buffer buffer( dataSource->getBuffer() );
-	std::shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( NULL, buffer.getData(), buffer.getDataSize(), NULL ), ::CGDataProviderRelease );
-	if( ! dataProvider )
-		throw FontInvalidNameExc();
-	mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
-	if( ! mCGFont )
-		throw FontInvalidNameExc();
-	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
-
-#elif defined( CINDER_MSW )
-	FontManager::instance(); // force GDI+ init
 	INT found = 0, count = 0;
 	WCHAR familyName[1024];
 	Gdiplus::PrivateFontCollection privateFontCollection;
@@ -527,7 +305,16 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 		((Gdiplus::FontFamily*)fontFamily.get())->GetFamilyName( familyName );
 
 		mName = toUtf8( familyName );
-		mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( ((Gdiplus::FontFamily*)fontFamily.get()), size * 72 / 96 /* Mac<->PC size conversion factor */ ) );
+		Gdiplus::FontStyle style = Gdiplus::FontStyleRegular;
+		if( ((Gdiplus::FontFamily*)fontFamily.get())->IsStyleAvailable( Gdiplus::FontStyleRegular ) )
+			style = Gdiplus::FontStyleRegular;
+		else if( ((Gdiplus::FontFamily*)fontFamily.get())->IsStyleAvailable( Gdiplus::FontStyleBold ) )
+			style = Gdiplus::FontStyleBold;
+		else if( ((Gdiplus::FontFamily*)fontFamily.get())->IsStyleAvailable( Gdiplus::FontStyleItalic ) )
+			style = Gdiplus::FontStyleItalic;
+		else if( ((Gdiplus::FontFamily*)fontFamily.get())->IsStyleAvailable( Gdiplus::FontStyleItalic | Gdiplus::FontStyleBold ) )
+			style = (Gdiplus::FontStyle)( Gdiplus::FontStyleItalic | Gdiplus::FontStyleBold );
+		mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( ((Gdiplus::FontFamily*)fontFamily.get()), size * 72 / 96 /* Mac<->PC size conversion factor */, style ) );
 	}
 	else
 		throw FontInvalidNameExc();
@@ -540,57 +327,449 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 		throw FontInvalidNameExc();
 
 	finishSetup();
-#endif
 }
 
-Font::Obj::~Obj()
+FontGdiPlus::~FontGdiPlus()
 {
-#if defined( CINDER_COCOA )
-	::CGFontRelease( mCGFont );
-	::CFRelease( mCTFont );
-#else
 	if( mHfont ) // this should be replaced with something exception-safe
 		::DeleteObject( mHfont ); 
-#endif
 }
 
-void Font::Obj::finishSetup()
+void FontGdiPlus::finishSetup()
 {
-#if defined( CINDER_MSW )
-	mGdiplusFont->GetLogFontW( FontManager::instance()->getGraphics(), &mLogFont );
+	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
+	mGdiplusFont->GetLogFontW( engine->getGraphics(), &mLogFont );
 
 	if( ! mHfont )
 		mHfont = ::CreateFontIndirectW( &mLogFont );
 	if( ! mHfont )
 		throw FontInvalidNameExc();
-	
-	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
 
-	if( ! ::GetTextMetrics( FontManager::instance()->getFontDc(), &mTextMetric ) )
+	::SelectObject( engine->getFontDc(), mHfont );
+
+	if( ! ::GetTextMetrics( engine->getFontDc(), &mTextMetric ) )
 		throw FontInvalidNameExc();
 
 	// build the unicode ranges vector
-	DWORD glyphSize = ::GetFontUnicodeRanges( FontManager::instance()->getFontDc(), NULL );
+	DWORD glyphSize = ::GetFontUnicodeRanges( engine->getFontDc(), NULL );
 	uint8_t *buffer = new uint8_t[glyphSize];
 	GLYPHSET *gs = (GLYPHSET*)buffer;
-	::GetFontUnicodeRanges( FontManager::instance()->getFontDc(), gs );
+	::GetFontUnicodeRanges( engine->getFontDc(), gs );
 	mNumGlyphs = gs->cGlyphsSupported;
 	for( DWORD r = 0; r < gs->cRanges; ++r )
 		mUnicodeRanges.push_back( std::make_pair( gs->ranges[r].wcLow, gs->ranges[r].wcLow + gs->ranges[r].cGlyphs ) );
 	delete [] buffer;
-#endif
 }
 
-#if defined( CINDER_MSW )
-HDC Font::getGlobalDc()
+std::string FontGdiPlus::getFullName() const
 {
-	return FontManager::instance()->getFontDc();
+	return mName;
+}
+
+float FontGdiPlus::getLeading() const
+{
+	return static_cast<float>( mTextMetric.tmInternalLeading + mTextMetric.tmExternalLeading );
+}
+
+float FontGdiPlus::getAscent() const
+{
+	return static_cast<float>( mTextMetric.tmAscent );
+}
+
+float FontGdiPlus::getDescent() const
+{
+	return static_cast<float>( mTextMetric.tmDescent );
+}
+
+size_t FontGdiPlus::getNumGlyphs() const
+{
+	return mNumGlyphs;
+}
+
+Font::Glyph FontGdiPlus::getGlyphChar( char c ) const
+{
+	WORD buffer[1];
+	WCHAR theChar[1] = { (WCHAR)c };
+	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
+	::SelectObject( engine->getFontDc(), mHfont );
+	if( ::GetGlyphIndices( engine->getFontDc(), theChar, 1, buffer, GGI_MARK_NONEXISTING_GLYPHS ) == GDI_ERROR )
+		return 0;
+
+	return (Font::Glyph) buffer[0];
+}
+
+Font::Glyph FontGdiPlus::getGlyphIndex( size_t idx ) const
+{
+	size_t ct = 0;
+	bool found = false;
+	for( vector<pair<uint16_t,uint16_t> >::const_iterator rangeIt = mUnicodeRanges.begin(); rangeIt != mUnicodeRanges.end(); ++rangeIt ) {
+		if( ct + rangeIt->second - rangeIt->first >= idx ) {
+			ct = rangeIt->first + ( idx - ct );
+			found = true;
+			break;
+		}
+		else
+			ct += rangeIt->second - rangeIt->first;
+	}
+
+	// this idx is invalid
+	if( ! found )
+		ct = 0;
+
+	return (Font::Glyph) ct;
+}
+
+vector<Font::Glyph> FontGdiPlus::getGlyphs( const string &utf8String ) const
+{
+	wstring wideString = toUtf16( utf8String );
+	std::shared_ptr<WORD> buffer( new WORD[wideString.length()], checked_array_deleter<WORD>() );
+	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
+	::SelectObject( engine->getFontDc(), mHfont );
+	DWORD numGlyphs = ::GetGlyphIndices( engine->getFontDc(), &wideString[0], (int)wideString.length(), buffer.get(), GGI_MARK_NONEXISTING_GLYPHS );
+	if( numGlyphs == GDI_ERROR )
+		return vector<Font::Glyph>();
+
+	vector<Font::Glyph> result;
+	for( DWORD glyph = 0; glyph < numGlyphs; ++glyph )
+		result.push_back( (Font::Glyph)buffer.get()[glyph] );
+
+	return result;
+}
+
+set<Font::Glyph> FontGdiPlus::getNecessaryGlyphs( const string &supportedChars )
+{
+	set<Font::Glyph> result;
+
+	GCP_RESULTS gcpResults;
+	WCHAR *glyphIndices = NULL;
+
+	wstring utf16 = toUtf16( supportedChars );
+
+	::SelectObject( getGlobalDc(), getHfont() );
+
+	gcpResults.lStructSize = sizeof(gcpResults);
+	gcpResults.lpOutString = NULL;
+	gcpResults.lpOrder = NULL;
+	gcpResults.lpCaretPos = NULL;
+	gcpResults.lpClass = NULL;
+
+	uint32_t bufferSize = std::max<uint32_t>( (uint32_t)(utf16.length() * 1.2f), 16);		// Initially guess number of chars plus a few
+	while( true ) {
+		if( glyphIndices ) {
+			free( glyphIndices );
+			glyphIndices = NULL;
+		}
+
+		glyphIndices = (WCHAR*)malloc( bufferSize * sizeof(WCHAR) );
+		gcpResults.nGlyphs = bufferSize;
+		gcpResults.lpDx = 0;
+		gcpResults.lpGlyphs = glyphIndices;
+
+		if( ! ::GetCharacterPlacementW( getGlobalDc(), utf16.c_str(), utf16.length(), 0,
+					&gcpResults, GCP_LIGATE | GCP_DIACRITIC | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
+			return set<Font::Glyph>(); // failure
+		}
+
+		if( gcpResults.lpGlyphs )
+			break;
+
+		// Too small a buffer, try again
+		bufferSize += bufferSize / 2;
+		if( bufferSize > INT_MAX) {
+			return set<Font::Glyph>(); // failure
+		}
+	}
+
+	for( UINT i = 0; i < gcpResults.nGlyphs; i++ )
+		result.insert( glyphIndices[i] );
+
+	if( glyphIndices )
+		free( glyphIndices );
+
+	return result;
+}
+
+Shape2d FontGdiPlus::getGlyphShape( Font::Glyph glyphIndex ) const
+{
+	Shape2d resultShape;
+	static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
+	GLYPHMETRICS metrics;
+	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
+	DWORD bytesGlyph = ::GetGlyphOutlineW( engine->getFontDc(), glyphIndex,
+			GGO_NATIVE | GGO_GLYPH_INDEX, &metrics, 0, NULL, &matrix);
+
+	if( bytesGlyph == GDI_ERROR )
+		throw FontGlyphFailureExc();
+
+	std::shared_ptr<uint8_t> buffer( new uint8_t[bytesGlyph], checked_array_deleter<uint8_t>() );
+	uint8_t *ptr = buffer.get();
+	if( ! buffer ) {
+		throw FontGlyphFailureExc();
+	}
+
+	if( ::GetGlyphOutlineW( engine->getFontDc(), glyphIndex,
+				GGO_NATIVE | GGO_GLYPH_INDEX, &metrics, bytesGlyph, buffer.get(), &matrix) == GDI_ERROR ) {
+		throw FontGlyphFailureExc();
+	}
+
+	// This whole block is modified from code in Cairo's cairo-win32-font.c
+	resultShape.clear();
+	while( ptr < buffer.get() + bytesGlyph ) {
+		TTPOLYGONHEADER *header = (TTPOLYGONHEADER *)ptr;
+		unsigned char *endPoly = ptr + header->cb;
+
+		ptr += sizeof( TTPOLYGONHEADER );
+
+		resultShape.moveTo( msw::toVec2f( header->pfxStart ) ); 
+		while( ptr < endPoly ) {
+			TTPOLYCURVE *curve = reinterpret_cast<TTPOLYCURVE*>( ptr );
+			POINTFX *points = curve->apfx;
+			switch( curve->wType ) {
+				case TT_PRIM_LINE:
+					for( int i = 0; i < curve->cpfx; i++ ) {
+						resultShape.lineTo( msw::toVec2f( points[i] ) );
+					}
+					break;
+				case TT_PRIM_QSPLINE:
+					for( int i = 0; i < curve->cpfx - 1; i++ ) {
+						Vec2f p1 = resultShape.getCurrentPoint(), p2;
+						Vec2f c = msw::toVec2f( points[i] ), c1, c2;
+						if( i + 1 == curve->cpfx - 1 ) {
+							p2 = msw::toVec2f( points[i + 1] );
+						}
+						else {
+							// records with more than one curve use interpolation for control points, per http://support.microsoft.com/kb/q87115/
+							p2 = ( c + msw::toVec2f( points[i + 1] ) ) / 2.0f;
+						}
+
+						c1 = 2.0f * c / 3.0f + p1 / 3.0f;
+						c2 = 2.0f * c / 3.0f + p2 / 3.0f;
+						resultShape.curveTo( c1, c2, p2 );
+					}
+					break;
+				case TT_PRIM_CSPLINE:
+					for( int i = 0; i < curve->cpfx - 2; i += 2 ) {
+						resultShape.curveTo( msw::toVec2f( points[i] ), msw::toVec2f( points[i + 1] ),
+								msw::toVec2f( points[i + 2] ) );
+					}
+					break;
+			}
+			ptr += sizeof( TTPOLYCURVE ) + sizeof( POINTFX ) * (curve->cpfx - 1);
+		}
+		resultShape.close();
+	}
+
+	return resultShape;
+}
+
+Rectf FontGdiPlus::getGlyphBoundingBox( Font::Glyph glyphIndex ) const
+{
+	static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
+	GLYPHMETRICS metrics;
+	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
+	::SelectObject( engine->getFontDc(), mHfont );
+	DWORD bytesGlyph = ::GetGlyphOutlineW( engine->getFontDc(), glyphIndex,
+			GGO_METRICS | GGO_GLYPH_INDEX, &metrics, 0, NULL, &matrix);
+
+	if( bytesGlyph == GDI_ERROR )
+		throw FontGlyphFailureExc();
+
+	return Rectf( metrics.gmptGlyphOrigin.x, metrics.gmptGlyphOrigin.y,
+			metrics.gmptGlyphOrigin.x + metrics.gmBlackBoxX, metrics.gmptGlyphOrigin.y + (int)metrics.gmBlackBoxY );
+}
+
+::LOGFONT FontGdiPlus::getLogfont() const
+{ 
+	return mLogFont; 
+}
+
+::HFONT FontGdiPlus::getHfont() const
+{ 
+	return mHfont; 
+}
+
+const Gdiplus::Font* FontGdiPlus::getGdiplusFont() const 
+{ 
+	return mGdiplusFont.get(); 
+}
+
+HDC FontGdiPlus::getGlobalDc()
+{
+	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
+	return engine->getFontDc();
+}
+
+Gdiplus::Graphics* FontGdiPlus::getGlobalGraphics()
+{
+	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
+	return engine->getGraphics();
 }
 #endif
 
-FontInvalidNameExc::FontInvalidNameExc( const std::string &fontName ) throw()
+FontFreeType::FontFreeType( TextEngineRef textEngine, const string &aName, float aSize )
+	: Font( textEngine, aName, aSize ), mFTData(new FTData)
 {
-	sprintf( mMessage, "%s", fontName.c_str() );
+	// XXX creating font from name not implemented
 }
+
+FontFreeType::FontFreeType( TextEngineRef textEngine, DataSourceRef dataSource, float size ) 
+	: Font( textEngine, dataSource, size ), mFTData(new FTData)
+{
+	TextEngineFreeTypeRef engine = std::dynamic_pointer_cast<TextEngineFreeType>(mTextEngine);
+
+	mFTData->buffer = dataSource->getBuffer();
+
+	memset( &(mFTData->face), 0, sizeof(FT_Face) );
+
+	FT_Matrix matrix = { (int)((1.0 /*/hres*/) * 0x10000L),
+		(int)((0.0)           * 0x10000L),
+		(int)((0.0)           * 0x10000L),
+		(int)((1.0)           * 0x10000L) };
+
+	FT_Open_Args args;
+	memset( &args, 0, sizeof(FT_Open_Args) );
+	args.memory_base = (FT_Byte*) mFTData->buffer.getData();
+	args.memory_size = mFTData->buffer.getDataSize();
+	args.flags  |= FT_OPEN_MEMORY;
+
+	int error = FT_Open_Face( engine->getFTLibrary(), &args, 0, &(mFTData->face) );
+
+	if ( error == FT_Err_Unknown_File_Format ) {
+		// CI_LOGI("Error opening font: unknown format");
+		throw FontInvalidNameExc();
+	}
+	else if ( error ) {
+		// CI_LOGI("Error opening font: unhandled");
+		throw FontInvalidNameExc();
+	}
+	else {
+		FT_Face& face = mFTData->face;
+		mName = string(face->family_name);
+		mNumGlyphs = face->num_glyphs;
+		// CI_LOGI("Opened font: family name %s", mName.c_str());
+		const int dpi = 72;  //  XXX query device capabilities
+		error = FT_Select_Charmap( face, FT_ENCODING_UNICODE );
+		//  XXX error handling
+		error = FT_Set_Char_Size( face, size * 64, 0, dpi, dpi );
+		FT_Set_Transform( face, &matrix, NULL );
+		mHasKerning = bool( face->face_flags & FT_FACE_FLAG_KERNING );
+	}
+}
+
+FontFreeType::~FontFreeType()
+{
+	FT_Done_Face( mFTData->face );
+}
+
+FT_Face& FontFreeType::getFTFace() const
+{
+	return mFTData->face;
+}
+
+const FontFreeType::GlyphMetrics& FontFreeType::getGlyphMetrics(Font::Glyph glyph) const
+{
+	std::map<Font::Glyph, GlyphMetrics>::const_iterator it = mGlyphMetrics.find(glyph);
+	if (it != mGlyphMetrics.end()) {
+		return it->second;
+	}
+
+	GlyphMetrics gm;
+	FT_Face face = getFTFace();
+	int error = FT_Load_Glyph(face, glyph, FT_LOAD_DEFAULT | FT_LOAD_FORCE_AUTOHINT);
+	FT_GlyphSlot slot = face->glyph;
+
+	if (error == 0) {
+		gm.mAdvance = Vec2f(slot->advance.x / 64.0f, slot->advance.y / 64.0f);
+	}
+
+	FT_Glyph ftglyph;
+	FT_BBox  bbox;
+	error = FT_Get_Glyph(slot, &ftglyph);
+	if (error == 0) {
+		FT_Glyph_Get_CBox(ftglyph, FT_GLYPH_BBOX_GRIDFIT, &bbox);
+		gm.mBounds = Rectf(bbox.xMin / 64.0f, bbox.yMin / 64.0f, bbox.xMax / 64.0f, bbox.yMax / 64.0f);
+		FT_Done_Glyph(ftglyph);
+	}
+	else {
+		// CI_LOGI("XXX error calling FT_Get_Glyph %d", glyph);
+		throw FontGlyphFailureExc();
+	}
+
+	GlyphMetrics& metrics = mGlyphMetrics[glyph] = gm;
+	// CI_LOGI("mAdvance %.1f,%.1f mBounds %.1f %.1f %.1f %.1f",
+	//         gm.mAdvance.x, gm.mAdvance.y,
+	//         gm.mBounds.x1,gm.mBounds.y1,gm.mBounds.x2,gm.mBounds.y2);
+	return metrics;
+}
+
+std::string FontFreeType::getFullName() const
+{
+	return mName;
+}
+
+float FontFreeType::getLeading() const
+{
+	FT_Face face = getFTFace();
+	return face->size->metrics.height / 64.0f;
+}
+
+float FontFreeType::getAscent() const
+{
+	FT_Face face = getFTFace();
+	return face->size->metrics.ascender / 64.0f;
+}
+
+float FontFreeType::getDescent() const
+{
+	FT_Face face = getFTFace();
+	return  (-face->size->metrics.descender) / 64.0f;
+}
+
+size_t FontFreeType::getNumGlyphs() const
+{
+	return mNumGlyphs;
+}
+
+Font::Glyph FontFreeType::getGlyphChar( char c ) const
+{
+	FT_Face face = getFTFace();
+	return (Font::Glyph) FT_Get_Char_Index(face, (int) c);
+}
+
+Font::Glyph FontFreeType::getGlyphIndex( size_t index ) const
+{
+	return (Font::Glyph) index;
+}
+
+vector<Font::Glyph> FontFreeType::getGlyphs( const string &utf8String ) const
+{
+	vector<int> utf32String;
+	vector<Font::Glyph> result;
+	utf8::utf8to32(utf8String.begin(), utf8String.end(), std::back_inserter(utf32String));
+	for (vector<int>::iterator it = utf32String.begin(); it != utf32String.end(); ++it) {
+		result.push_back(FT_Get_Char_Index(getFTFace(), *it));
+	}
+	return result;
+}
+
+Shape2d FontFreeType::getGlyphShape( Font::Glyph glyphIndex ) const
+{
+	// XXX TODO
+	Shape2d resultShape;
+	return resultShape;
+}
+
+Rectf FontFreeType::getGlyphBoundingBox( Font::Glyph glyphIndex ) const
+{
+	const GlyphMetrics& gm = getGlyphMetrics(glyphIndex);
+	return gm.mBounds;
+}
+
+const Vec2f FontFreeType::getAdvance(Font::Glyph glyph)
+{
+	const GlyphMetrics gm = getGlyphMetrics(glyph);
+	return gm.mAdvance;
+}
+
 
 } // namespace cinder

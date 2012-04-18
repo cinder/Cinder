@@ -18,18 +18,18 @@ class TextureFontApp : public AppNative {
 	void keyDown( KeyEvent event );
 	void draw();
 
-	Font				mFont;
+	FontRef				mFont;
 	gl::TextureFontRef	mTextureFont;
 };
 
 void TextureFontApp::setup()
 {
 #if defined( CINDER_COCOA_TOUCH )
-	mFont = Font( "Cochin-Italic", 24 );
+	mFont = Font::create( "Cochin-Italic", 24 );
 #elif defined( CINDER_COCOA )
-	mFont = Font( "BigCaslon-Medium", 24 );
+	mFont = Font::create( "BigCaslon-Medium", 24 );
 #else
-	mFont = Font( "Times New Roman", 24 );
+	mFont = Font::create( "Times New Roman", 24 );
 #endif
 	mTextureFont = gl::TextureFont::create( mFont );
 }
@@ -39,11 +39,11 @@ void TextureFontApp::keyDown( KeyEvent event )
 	switch( event.getChar() ) {
 		case '=':
 		case '+':
-			mFont = Font( mFont.getName(), mFont.getSize() + 1 );
+			mFont = Font::create( mFont->getName(), mFont->getSize() + 1 );
 			mTextureFont = gl::TextureFont::create( mFont );
 		break;
 		case '-':
-			mFont = Font( mFont.getName(), mFont.getSize() - 1 );
+			mFont = Font::create( mFont->getName(), mFont->getSize() - 1 );
 			mTextureFont = gl::TextureFont::create( mFont );
 		break;
 	}
@@ -51,8 +51,8 @@ void TextureFontApp::keyDown( KeyEvent event )
 
 void TextureFontApp::mouseDown( MouseEvent event )
 {
-	mFont = Font( Font::getNames()[Rand::randInt() % Font::getNames().size()], mFont.getSize() );
-	console() << mFont.getName() << std::endl;
+	mFont = Font::create( Font::getNames()[Rand::randInt() % Font::getNames().size()], mFont->getSize() );
+	console() << mFont->getName() << std::endl;
 	mTextureFont = gl::TextureFont::create( mFont );
 }
 
@@ -67,11 +67,7 @@ void TextureFontApp::draw()
 
 	gl::color( ColorA( 1, 0.5f, 0.25f, 1.0f ) );
 
-#if defined( CINDER_COCOA )
 	mTextureFont->drawStringWrapped( str, boundsRect );
-#else
-	mTextureFont->drawString( str, boundsRect );
-#endif	
 
 	// Draw FPS
 	gl::color( Color::white() );

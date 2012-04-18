@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -75,6 +75,21 @@
     </Filter>
     <Filter Include="Source Files\libtess2">
       <UniqueIdentifier>{2d33008c-c675-44bd-a5bb-b5998abbf655}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\jsoncpp">
+      <UniqueIdentifier>{13c0913f-8fdb-4945-a68a-6b210c4e8d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\json">
+      <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\svg">
+      <UniqueIdentifier>{74f66efa-5b4e-49f4-8ea2-21b75f65a52e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\svg">
+      <UniqueIdentifier>{93ad9a5c-9ccb-4f98-8d4c-bf21a522208f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\linebreak">
+      <UniqueIdentifier>{32843c15-443f-4fa7-ab9c-be6125f164f3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -408,6 +423,48 @@
     <ClCompile Include="..\src\cinder\Base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\json_reader.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\json_value.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\json_writer.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Json.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\BinPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\TextEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\TextEngineFreeType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\TextEngineGdiPlus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TextureFontAtlas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\svg\Svg.cpp">
+      <Filter>Source Files\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linebreak\linebreak.c">
+      <Filter>Source Files\linebreak</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linebreak\linebreakdata.c">
+      <Filter>Source Files\linebreak</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linebreak\linebreakdef.c">
+      <Filter>Source Files\linebreak</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Unicode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -573,6 +630,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ConcurrentCircularBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Timer.h">
@@ -842,5 +902,67 @@
     <ClInclude Include="..\include\cinder\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\json\autolink.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\config.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\features.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\forwards.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\json.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\reader.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\value.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\writer.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\jsoncpp\json_batchallocator.h">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\TextEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\TextureFontAtlas.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\TextEngineFreeType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\TextEngineGdiPlus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\svg\Svg.h">
+      <Filter>Header Files\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\svg\SvgGl.h">
+      <Filter>Header Files\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Unicode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\jsoncpp\json_internalarray.inl">
+      <Filter>Source Files\jsoncpp</Filter>
+    </None>
+    <None Include="..\src\jsoncpp\json_internalmap.inl">
+      <Filter>Source Files\jsoncpp</Filter>
+    </None>
+    <None Include="..\src\jsoncpp\json_valueiterator.inl">
+      <Filter>Source Files\jsoncpp</Filter>
+    </None>
   </ItemGroup>
 </Project>

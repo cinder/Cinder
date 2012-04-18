@@ -32,12 +32,6 @@
 #include <deque>
 #include <string>
 
-// Core Text forward declarations
-#if defined( CINDER_COCOA )
-typedef struct __CTFrame;
-typedef struct __CTLine;
-#endif
-
 namespace cinder {
 
 class TextLayout {
@@ -63,7 +57,7 @@ class TextLayout {
 	//! Appends string \a str to the current line. Assumes UTF-8 encoding.
 	void	append( const std::string &str );
 
-	void	setFont( const Font &font );
+	void	setFont( const FontRef font );
 	//! Sets the currently active color. Implicit opqaue alpha.
 	void	setColor( const Color &color );
 	//! Sets the currently active color and alpha.
@@ -79,7 +73,7 @@ class TextLayout {
 	
  private:
 	ColorA	mBackgroundColor;
-	Font	mCurrentFont;
+	FontRef	mCurrentFont;
 	ColorA	mCurrentColor;
 	float	mCurrentLeadingOffset;
 	int		mHorizontalBorder, mVerticalBorder;
@@ -94,37 +88,37 @@ class TextBox {
 	
 	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ), mLigate( true ) {}
 
-	TextBox				size( Vec2i sz ) { TextBox result( *this ); result.setSize( sz ); return result; }
-	TextBox				size( int width, int height ) { TextBox result( *this ); result.setSize( Vec2i( width, height ) ); return result; }
+	TextBox&			size( Vec2i sz ) { setSize( sz ); return *this; }
+	TextBox&			size( int width, int height ) { setSize( Vec2i( width, height ) ); return *this; }
 	Vec2i				getSize() const { return mSize; }
 	void				setSize( Vec2i sz ) { mSize = sz; mInvalid = true; }
 
-	TextBox				text( const std::string &t ) { TextBox result( *this ); result.setText( t ); return result; }
+	TextBox&			text( const std::string &t ) { setText( t ); return *this; }
 	const std::string&	getText() const { return mText; }
 	void				setText( const std::string &t ) { mText = t; mInvalid = true; }
 	void				appendText( const std::string &t ) { mText += t; mInvalid = true; }
 
-	TextBox				font( const Font &f ) { TextBox result( *this ); result.setFont( f ); return result; }
-	const Font&			getFont() const { return mFont; }
-	void				setFont( const Font &f ) { mFont = f; mInvalid = true; }
+	TextBox				font( const FontRef f ) { setFont( f ); return *this; }
+	const FontRef		getFont() const { return mFont; }
+	void				setFont( const FontRef f ) { mFont = f; mInvalid = true; }
 
-	TextBox				alignment( Alignment align ) { TextBox result( *this ); result.setAlignment( align ); return result; }
+	TextBox&			alignment( Alignment align ) { setAlignment( align ); return *this; }
 	Alignment			getAlignment() const { return mAlign; }
 	void				setAlignment( Alignment align ) { mAlign = align; mInvalid = true; }
 
-	TextBox				color( ColorA color ) { TextBox result( *this ); result.setColor( color ); return result; }
+	TextBox&			color( ColorA color ) { setColor( color ); return *this; }
 	ColorA				getColor() const { return mColor; }
 	void				setColor( ColorA color ) { mColor = color; mInvalid = true; }
 
-	TextBox				backgroundColor( ColorA bgColor ) { TextBox result( *this ); result.setBackgroundColor( bgColor ); return result; }
+	TextBox&			backgroundColor( ColorA bgColor ) { setBackgroundColor( bgColor ); return *this; }
 	ColorA				getBackgroundColor() const { return mBackgroundColor; }
 	void				setBackgroundColor( ColorA bgColor ) { mBackgroundColor = bgColor; }
 
-	TextBox				premultiplied( bool premult = true ) { TextBox result( *this ); result.setPremultiplied( premult ); return result; }
+	TextBox&			premultiplied( bool premult = true ) { setPremultiplied( premult ); return *this; }
 	bool				getPremultiplied() const { return mPremultiplied; }
 	void				setPremultiplied( bool premult ) { mPremultiplied = premult; }
 
-	TextBox				ligate( bool ligateText = true ) { TextBox result( *this ); result.setLigate( ligateText ); return result; }
+	TextBox&			ligate( bool ligateText = true ) { setLigate( ligateText ); return *this; }
 	bool				getLigate() const { return mLigate; }
 	void				setLigate( bool ligateText ) { mLigate = ligateText; }
 
@@ -135,26 +129,38 @@ class TextBox {
 
 	Surface				render( Vec2f offset = Vec2f::zero() );
 
+  public:
+	//  Interface for rendering a TextBox, implemented per platform by TextEngine
+	class Renderer
+	{
+	  public:
+		virtual Vec2f measure() const = 0;
+		virtual std::vector<std::pair<uint16_t,Vec2f> > measureGlyphs() const = 0;
+		virtual Surface render( Vec2f offset = Vec2f::zero() ) = 0;
+
+	  protected:
+		const TextBox& mTextBox;
+		Renderer( const TextBox& textbox );
+
+		bool  getInvalid() const;
+		void  setInvalid( bool invalid ) const;
+	};
+	typedef std::shared_ptr<class Renderer> RendererRef;
+
   protected:
+	friend class Renderer;    // accesses mInvalid
+
 	Alignment		mAlign;
 	Vec2i			mSize;
 	std::string		mText;
-	Font			mFont;
+	FontRef			mFont;
 	ColorA			mColor, mBackgroundColor;
 	bool			mPremultiplied;
 	bool			mLigate;
 	mutable bool	mInvalid;
 
-	mutable Vec2f	mCalculatedSize;
-#if defined( CINDER_COCOA )
-	void			createLines() const;
-
-	mutable std::vector<std::pair<std::shared_ptr<const __CTLine>,Vec2f> >	mLines;
-#elif defined( CINDER_MSW )
-	void			calculate() const;
-
-	mutable std::wstring	mWideText;
-#endif
+	RendererRef getRenderer() const;
+	mutable RendererRef mRenderer;
 };
 
 /** \brief Renders a single string and returns it as a Surface.
@@ -162,9 +168,9 @@ class TextBox {
 	Consider gl::drawString() as a more convenient alternative.
 **/
 #if defined( CINDER_COCOA_TOUCH )
-Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset = 0 );
+Surface renderStringPow2( const std::string &str, const FontRef font, const ColorA &color, Vec2i *actualSize, float *baselineOffset = 0 );
 #else
-Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset = 0 );
+Surface renderString( const std::string &str, const FontRef font, const ColorA &color, float *baselineOffset = 0 );
 #endif
 
 } // namespace cinder

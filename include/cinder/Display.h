@@ -43,6 +43,8 @@
 
 namespace cinder {
 
+typedef std::shared_ptr<class Display> 	DisplayRef;
+
 class Display {
  public:
 	~Display();
@@ -51,17 +53,24 @@ class Display {
 	Area	getArea() const { return mArea; }
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
 
+	//! Returns whether the Display's coordinates contain \a pt.
+	bool	contains( const Vec2i &pt ) const { return mArea.contains( pt ); }
+
 #if defined( CINDER_MAC )
-	NSScreen*			getNSScreen() const { return mScreen; }
-	CGDirectDisplayID	getCGDirectDisplayID() const { return mDirectDisplayID; }
+	NSScreen*			getNsScreen() const { return mScreen; }
+	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
 #endif
 
-	static std::shared_ptr<Display>							getMainDisplay();
-	static const std::vector<std::shared_ptr<Display> >&	getDisplays();
+	static DisplayRef						getMainDisplay();
+	static const std::vector<DisplayRef>&	getDisplays();
+	//! Returns the Display which contains a given point. Returns a NULL DisplayRef on failure
+	static DisplayRef						getDisplayForPoint( const Vec2i &pt );
 	
 #if defined( CINDER_MAC )
-	static std::shared_ptr<Display>							findFromCGDirectDisplayID( CGDirectDisplayID displayID );
+	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
 #elif defined( CINDER_MSW )
+	//! Finds a Display based on its HMONITOR. Returns the primary display if it's not found
+	static DisplayRef			findFromHmonitor( HMONITOR hMonitor );
 	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
 #endif
 	
@@ -77,8 +86,8 @@ class Display {
 	
 	static void		enumerateDisplays();
 	
-	static std::vector<std::shared_ptr<Display> >	sDisplays;
-	static bool										sDisplaysInitialized;
+	static std::vector<DisplayRef>	sDisplays;
+	static bool						sDisplaysInitialized;
 };
 
 } // namespace cinder

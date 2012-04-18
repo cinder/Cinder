@@ -203,11 +203,15 @@ class XmlTree {
 	};
 
 	//! Enum listing all types of XML nodes understood by the parser.
-	typedef enum NodeType { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT, NODE_DATA };
+	typedef enum { NODE_UNKNOWN, NODE_DOCUMENT, NODE_ELEMENT, NODE_CDATA, NODE_COMMENT, NODE_DATA } NodeType;
 
 	//! Default constructor, creating an empty node.
 	XmlTree() : mParent( 0 ), mNodeType( NODE_ELEMENT ) {}
-  
+
+	//! Copy constuctor
+	XmlTree( const XmlTree &rhs );
+	XmlTree& operator=( const XmlTree &rhs );
+	
 	/** \brief Parses XML contained in \a dataSource using the options \a parseOptions. Commonly used with the results of loadUrl(), loadFile() or loadResource().
 		<br><tt>XmlTree myDoc( loadUrl( "http://rss.cnn.com/rss/cnn_topstories.rss" ) );</tt> **/
 	explicit XmlTree( DataSourceRef dataSource, ParseOptions parseOptions = ParseOptions() ) {

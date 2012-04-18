@@ -23,7 +23,6 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/Text.h"
 #include "cinder/Font.h"
 #include "cinder/gl/Texture.h"
 
@@ -32,6 +31,8 @@
 
 namespace cinder { namespace gl {
 
+class TextureFontAtlas;
+typedef std::shared_ptr<TextureFontAtlas> TextureFontAtlasRef;
 typedef std::shared_ptr<class TextureFont>	TextureFontRef;
 
 class TextureFont {
@@ -100,18 +101,17 @@ class TextureFont {
 		float		mScale;
 	};
 
+	//! Creates a new TextureFontRef with font \a font, ensuring that glyphs necessary to render \a supportedChars are renderable, and font atlas \a atlas
+	static TextureFontRef		create( const FontRef font, TextureFontAtlasRef atlas, const std::string &supportedChars = TextureFont::defaultChars() );
 	//! Creates a new TextureFontRef with font \a font, ensuring that glyphs necessary to render \a supportedChars are renderable, and format \a format
-	static TextureFontRef		create( const Font &font, const Format &format = Format(), const std::string &supportedChars = TextureFont::defaultChars() )
-	{ return TextureFontRef( new TextureFont( font, supportedChars, format ) ); }
+	static TextureFontRef		create( const FontRef font, const Format &format = Format(), const std::string &supportedChars = TextureFont::defaultChars() );
 	
 	//! Draws string \a str at baseline \a baseline with DrawOptions \a options
 	void	drawString( const std::string &str, const Vec2f &baseline, const DrawOptions &options = DrawOptions() );
 	//! Draws string \a str fit inside \a fitRect, with internal offset \a offset and DrawOptions \a options
 	void	drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
-#if defined( CINDER_COCOA )
 	//! Draws word-wrapped string \a str fit inside \a fitRect, with internal offset \a offset and DrawOptions \a options. Mac & iOS only.
 	void	drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
-#endif
 	//! Draws the glyphs in \a glyphMeasures at baseline \a baseline with DrawOptions \a options. \a glyphMeasures is a vector of pairs of glyph indices and offsets for the glyph baselines
 	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline, const DrawOptions &options = DrawOptions(), const std::vector<ColorA8u> &colors = std::vector<ColorA8u>() );
 	//! Draws the glyphs in \a glyphMeasures clipped by \a clip, with \a offset added to each of the glyph offsets with DrawOptions \a options. \a glyphMeasures is a vector of pairs of glyph indices and offsets for the glyph baselines.
@@ -123,20 +123,22 @@ class TextureFont {
 	//! Returns the size in pixels necessary to render the word-wrapped string \a str fit inside \a fitRect with DrawOptions \a options. Mac & iOS only.
 	Vec2f	measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
 #endif
-    
+
 	//! Returns a vector of glyph/placement pairs representing \a str, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
 	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const DrawOptions &options ) const;
 	//! Returns a vector of glyph/placement pairs representing \a str fit inside \a fitRect, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
 	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const;
 
 	//! Returns the font the TextureFont represents
-	const Font&		getFont() const { return mFont; }
-    //! Returns the name of the font
-    std::string getName() const { return mFont.getName(); }
+	const FontRef	getFont() const { return mFont; }
+	//! Return the texture font format
+	const Format&   getFormat() const { return mFormat; }
+	//! Returns the name of the font
+	std::string getName() const { return mFont->getName(); }
 	//! Returns the ascent of the font
-	float	getAscent() const { return mFont.getAscent(); }
+	float	getAscent() const { return mFont->getAscent(); }
 	//! Returns the descent of the font
-	float	getDescent() const { return mFont.getDescent(); }
+	float	getDescent() const { return mFont->getDescent(); }
 	//! Returns whether the TextureFont output premultipled output. Default is \c false.
 	bool	isPremultiplied() const { return mFormat.getPremultiply(); }
 
@@ -145,17 +147,19 @@ class TextureFont {
 	static std::string		defaultChars() { return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890().?!,:;'\"&*=+-/\\@#_[]<>%^llflfiphrids\303\251\303\241\303\250\303\240"; }
 
   protected:
-	TextureFont( const Font &font, const std::string &supportedChars, const Format &format );
+	friend class TextureFontAtlas;
 
 	struct GlyphInfo {
 		uint8_t		mTextureIndex;
 		Area		mTexCoords;
 		Vec2f		mOriginOffset;
 	};
-	
+
+	TextureFont( const FontRef font, const std::string &supportedChars, TextureFontAtlasRef atlas );
+
 	boost::unordered_map<Font::Glyph, GlyphInfo>	mGlyphMap;
 	std::vector<gl::Texture>						mTextures;
-	Font											mFont;
+	FontRef											mFont;
 	Format											mFormat;
 };
 

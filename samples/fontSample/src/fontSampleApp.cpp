@@ -15,12 +15,12 @@ class fontSampleApp : public AppBasic {
 	void		draw();	
 
 	void		keyDown( KeyEvent event ) { if( event.getChar() == 'f' ) { setRandomFont(); setRandomGlyph(); } else setRandomGlyph(); }
-	void		mouseDown( MouseEvent event ) { writeImage( getHomeDirectory() + "wisteriaShot.jpg", copyWindowSurface() ); }
+	void		mouseDown( MouseEvent event ) { writeImage( getHomeDirectory() / "wisteriaShot.jpg", copyWindowSurface() ); }
 	
 	void		setRandomFont();
 	void		setRandomGlyph();
 	
-	Font			mFont;
+	FontRef			mFont;
 	Shape2d			mShape;
 	vector<string>	mFontNames;
 };
@@ -32,12 +32,12 @@ void fontSampleApp::setup()
 	for( vector<string>::const_iterator fontName = mFontNames.begin(); fontName != mFontNames.end(); ++fontName ) {
 #if 1
 // uncomment to exercise code to determine font properties
-		Font font( *fontName, 128 );
+		FontRef font = Font::create( *fontName, 128 );
 		// display some font properties
 		std::stringstream ss;
-		ss << font.getName() << " leading: " << font.getLeading() << " ascent: " << font.getAscent() << " descent: " << font.getDescent() << " glyphs: " << font.getNumGlyphs();
-		ss << "Glyph 'a' maps to " << font.getGlyphChar( 'a' );
-		vector<Font::Glyph> g = font.getGlyphs( "abc123" );
+		ss << font->getName() << " leading: " << font->getLeading() << " ascent: " << font->getAscent() << " descent: " << font->getDescent() << " glyphs: " << font->getNumGlyphs();
+		ss << "Glyph 'a' maps to " << font->getGlyphChar( 'a' );
+		vector<Font::Glyph> g = font->getGlyphs( "abc123" );
 		ss << g.size();
 		console() << ss.str();
 #endif
@@ -50,11 +50,11 @@ void fontSampleApp::setup()
 void fontSampleApp::setRandomFont()
 {
 	// select a random font from those available on the system
-	mFont = Font( mFontNames[rand() % mFontNames.size()], 256 );
+	mFont = Font::create( mFontNames[rand() % mFontNames.size()], 256 );
 
 	// exercise the code which determines which glyphs map to a given string
 	console() << "In this font, the string 'abc123' is glyphs: " << std::endl;
-	vector<Font::Glyph> glyphs = mFont.getGlyphs( "abc123" );
+	vector<Font::Glyph> glyphs = mFont->getGlyphs( "abc123" );
 	for( vector<Font::Glyph>::const_iterator it = glyphs.begin(); it != glyphs.end(); ++it )
 		console() << *it << " ";
 	console() << endl;
@@ -62,9 +62,9 @@ void fontSampleApp::setRandomFont()
 
 void fontSampleApp::setRandomGlyph()
 {
-	size_t glyphIndex = rand() % mFont.getNumGlyphs();
+	size_t glyphIndex = rand() % mFont->getNumGlyphs();
 	try {
-		mShape = mFont.getGlyphShape( glyphIndex );
+		mShape = mFont->getGlyphShape( glyphIndex );
 	}
 	catch( FontGlyphFailureExc &exc  ) {
 		console() << "Looks like glyph " << glyphIndex << " doesn't exist in this font." << std::endl;
@@ -156,14 +156,14 @@ void fontSampleApp::draw()
 	ctx.setFontSize( 18 );
 	ctx.moveTo( 10, getWindowHeight() - 10 );
 	ctx.setSourceRgb( 0.5f, 0.75f, 1.0f );
-	ctx.showText( mFont.getFullName() );
+	ctx.showText( mFont->getFullName() );
 	ctx.stroke();
 	
 	// draw a lower case 'a'
 #if 0
 	Shape2d aPath;
 	ctx.setSourceRgba( 0.5f, 0.75f, 1.0f, 0.2f );
-	mFont.getGlyphPath( mFont.getGlyph( 'a' ), &aPath );
+	mFont->getGlyphPath( mFont->getGlyph( 'a' ), &aPath );
 	ctx.translate( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f );
 	ctx.appendPath( aPath );
 	ctx.fill();
