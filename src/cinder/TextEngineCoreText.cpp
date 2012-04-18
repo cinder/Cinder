@@ -25,7 +25,7 @@ using std::vector;
 
 namespace cinder {
 
-TextEngineCoreText::TextEngineCoreText() : TextEngine( CORETEXT )
+TextEngineCoreText::TextEngineCoreText() : TextEngine( CORETEXT ), mFontsEnumerated( false )
 {
     nsFontManager = [NSFontManager sharedFontManager];
     [nsFontManager retain];

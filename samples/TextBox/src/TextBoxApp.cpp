@@ -19,15 +19,15 @@ class TextBoxApp : public AppNative {
 	
 	gl::Texture		mTextTexture;
 	Vec2f			mSize;
-	Font			mFont;
+	FontRef			mFont;
 };
 
 void TextBoxApp::setup()
 {
 #if defined( CINDER_COCOA )
-	mFont = Font( "Cochin-Italic", 32 );
+	mFont = Font::create( "Cochin-Italic", 32 );
 #else
-	mFont = Font( "Times New Roman", 32 );
+	mFont = Font::create( "Times New Roman", 32 );
 #endif
 	mSize = Vec2f( 100, 100 );
 	render();

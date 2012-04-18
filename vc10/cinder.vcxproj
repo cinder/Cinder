@@ -61,7 +61,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;libpng.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;pixman-1.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;libpng.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;pixman-1.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;freetype245MT_D.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\lib\msw;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>

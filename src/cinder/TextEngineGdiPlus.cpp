@@ -66,7 +66,7 @@ static int CALLBACK EnumFontFamiliesExProc( ENUMLOGFONTEX *lpelfe, NEWTEXTMETRIC
     return 1;
 }
 
-TextEngineGdiPlus::TextEngineGdiPlus() : TextEngine( GDIPLUS )
+TextEngineGdiPlus::TextEngineGdiPlus() : TextEngine( GDIPLUS ), mFontsEnumerated( false )
 {
     mFontDc = ::CreateCompatibleDC( NULL );
     mGraphics = new Gdiplus::Graphics( mFontDc );
