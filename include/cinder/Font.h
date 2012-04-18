@@ -29,103 +29,178 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <set>
 
 #if defined( CINDER_COCOA )
 	typedef struct CGFont *CGFontRef;
-	#if defined( CINDER_COCOA )
-		typedef const struct __CTFont * CTFontRef;
-	#endif
+	typedef const struct __CTFont * CTFontRef;
 #elif defined( CINDER_MSW )
 	#include <windows.h>
-	#undef min
-	#undef max
-
-	namespace Gdiplus {
-		class Font;
-	}
 #endif
+
+struct FTData;
 
 namespace cinder {
 
-//! Represents an instance of a font at a point size. \ImplShared
-class Font {
+typedef std::shared_ptr<class TextEngine> TextEngineRef;
+typedef std::shared_ptr<class Font> FontRef;
+
+//! Represents an instance of a font at a point size.
+class Font
+{
  public:
 	typedef uint16_t		Glyph;		
 
-	/** \brief constructs a null Font **/
-	Font() {}
-	/** \brief Constructs a Font from its name (Postscript name preferred) and its \a size in points
-		\note Assumes a point size relative to 72dpi on Cocoa but 96dpi on Windows. This creates rough parity between the platforms on type size, but in Windows this renders fonts smaller than normal. **/
-	Font( const std::string &aName, float size );
-	/** \brief Constructs a Font from a DataSource representing font data (such as a .ttf file) and its \a size in points.
-		\note Assumes a point size relative to 72dpi on Cocoa but 96dpi on Windows. This creates rough parity between the platforms on type size, but in Windows this renders fonts smaller than normal. **/
-	Font( DataSourceRef dataSource, float size );
-
+	TextEngineRef           getTextEngine() const;
 	const std::string&		getName() const;
-	std::string				getFullName() const;
 	float					getSize() const;
 
-	float					getLeading() const;
-	float					getAscent() const;
-	float					getDescent() const;
-	size_t					getNumGlyphs() const;
+	virtual std::string				getFullName() const = 0;
+	virtual float					getLeading() const = 0;
+	virtual float					getAscent() const = 0;
+	virtual float					getDescent() const = 0;
+	virtual size_t					getNumGlyphs() const = 0;
 
-	Glyph					getGlyphIndex( size_t idx ) const;
-	Glyph					getGlyphChar( char utf8Char ) const;
-	std::vector<Glyph>		getGlyphs( const std::string &utf8String ) const;
+	virtual Glyph					getGlyphIndex( size_t idx ) const = 0;
+	virtual Glyph					getGlyphChar( char utf8Char ) const = 0;
+	virtual std::vector<Glyph>		getGlyphs( const std::string &utf8String ) const = 0;
 	//! Returns a cinder::Shape2d representing the shape of the glyph at \a glyphIndex
-	Shape2d					getGlyphShape( Glyph glyphIndex ) const;
+	virtual Shape2d					getGlyphShape( Glyph glyphIndex ) const = 0;
 	//! Returns the bounding box of a Glyph, relative to the baseline as the origin
-	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
+	virtual Rectf					getGlyphBoundingBox( Glyph glyph ) const = 0;
 	
-	static const std::vector<std::string>&		getNames( bool forceRefresh = false );
-	static Font				getDefault();
+
+	static const std::vector<std::string>& getNames( bool forceRefresh = false );
+	static FontRef                         getDefault();
+
+	virtual ~Font();
+
+	static FontRef create( const std::string aName, float size, TextEngineRef textEngine = TextEngineRef() );
+	static FontRef create( DataSourceRef dataSource, float size, TextEngineRef textEngine = TextEngineRef() );
+
+ protected:
+	Font( TextEngineRef textEngine, const std::string &aName, float size );
+	Font( TextEngineRef textEngine, DataSourceRef dataSource, float size );
+
+	TextEngineRef mTextEngine;
+	std::string mName;
+	float       mSize;
+};
 
 #if defined( CINDER_COCOA )
-	CGFontRef				getCgFontRef() const;
-	CTFontRef				getCtFontRef() const;
-#elif defined( CINDER_MSW )
-	::LOGFONT				getLogfont() const { return mObj->mLogFont; }
-	::HFONT					getHfont() const { return mObj->mHfont; }
-	const Gdiplus::Font*	getGdiplusFont() const { return mObj->mGdiplusFont.get(); }
-	static HDC				getGlobalDc();
+class FontCoreText : public Font
+{
+  public:
+	~FontCoreText();
+
+	CGFontRef getCgFontRef() const;
+	CTFontRef getCtFontRef() const;
+
+	virtual std::string				getFullName() const;
+	virtual float					getLeading() const;
+	virtual float					getAscent() const;
+	virtual float					getDescent() const;
+	virtual size_t					getNumGlyphs() const;
+
+	virtual Glyph					getGlyphIndex( size_t idx ) const;
+	virtual Glyph					getGlyphChar( char utf8Char ) const;
+	virtual std::vector<Glyph>		getGlyphs( const std::string &utf8String ) const;
+	virtual Shape2d					getGlyphShape( Glyph glyphIndex ) const;
+	virtual Rectf					getGlyphBoundingBox( Glyph glyph ) const;
+	
+ protected:
+	friend class TextEngineCoreText;
+
+	CGFontRef				mCGFont;
+	const struct __CTFont*	mCTFont;
+
+	FontCoreText( TextEngineRef textEngine, const std::string &aName, float size );
+	FontCoreText( TextEngineRef textEngine, DataSourceRef dataSource, float size );
+};
+typedef std::shared_ptr<FontCoreText> FontCoreTextRef;
 #endif
 
- private:
-	class Obj {
-	 public:
-		Obj( const std::string &aName, float aSize );
-		Obj( DataSourceRef dataSource, float size );
-		~Obj();
-		
-		void		finishSetup();
-		
-		
-		std::string				mName;
-		float					mSize;
-#if defined( CINDER_COCOA )
-		CGFontRef				mCGFont;
-		const struct __CTFont*	mCTFont;
-#elif defined( CINDER_MSW )
-		::TEXTMETRIC					mTextMetric;
-		::LOGFONTW						mLogFont;
-		::HFONT							mHfont;
-		std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
-		std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
-		size_t					mNumGlyphs;
-#endif 		
-	};
-
-	std::shared_ptr<Obj>			mObj;
-	
+#if defined( CINDER_MSW )
+class FontGdiPlus : public Font
+{
   public:
- 	//@{
-	//! Emulates shared_ptr-like behavior
-	typedef std::shared_ptr<Obj> Font::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Font::mObj; }
-	void reset() { mObj.reset(); }
-	//@}
+	~FontGdiPlus();
+
+	::LOGFONT				getLogfont() const;
+	::HFONT					getHfont() const;
+	const Gdiplus::Font*	getGdiplusFont() const;
+	HDC						getGlobalDc();
+	std::set<Font::Glyph>	getNecessaryGlyphs( const std::string &supportedChars );
+
+	virtual std::string				getFullName() const;
+	virtual float					getLeading() const;
+	virtual float					getAscent() const;
+	virtual float					getDescent() const;
+	virtual size_t					getNumGlyphs() const;
+
+	virtual Glyph					getGlyphIndex( size_t idx ) const;
+	virtual Glyph					getGlyphChar( char utf8Char ) const;
+	virtual std::vector<Glyph>		getGlyphs( const std::string &utf8String ) const;
+	virtual Shape2d					getGlyphShape( Glyph glyphIndex ) const;
+	virtual Rectf					getGlyphBoundingBox( Glyph glyph ) const;
+	
+  protected:
+	friend class TextEngineGdiPlus;
+
+	::TEXTMETRIC					mTextMetric;
+	::LOGFONTW						mLogFont;
+	::HFONT							mHfont;
+	std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
+	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
+	size_t					mNumGlyphs;
+
+	FontGdiPlus( TextEngineRef textEngine, const std::string &aName, float size );
+	FontGdiPlus( TextEngineRef textEngine, DataSourceRef dataSource, float size );
+	void finishSetup();
 };
+typedef std::shared_ptr<FontGdiPlus> FontGdiPlusRef;
+#endif
+
+class FontFreeType : public Font
+{
+  public:
+	~FontFreeType();
+
+	struct GlyphMetrics {
+		Vec2f mAdvance;
+		Rectf mBounds;
+	};
+ 	FT_Face&		getFTFace() const;
+ 
+	const GlyphMetrics& getGlyphMetrics(Font::Glyph glyph) const;
+ 	const Vec2f         getAdvance(Font::Glyph glyph);
+
+	virtual std::string				getFullName() const;
+	virtual float					getLeading() const;
+	virtual float					getAscent() const;
+	virtual float					getDescent() const;
+	virtual size_t					getNumGlyphs() const;
+
+	virtual Glyph					getGlyphIndex( size_t idx ) const;
+	virtual Glyph					getGlyphChar( char utf8Char ) const;
+	virtual std::vector<Glyph>		getGlyphs( const std::string &utf8String ) const;
+	virtual Shape2d					getGlyphShape( Glyph glyphIndex ) const;
+	virtual Rectf					getGlyphBoundingBox( Glyph glyph ) const;
+	
+  protected:
+	friend class TextEngineFreeType;
+
+	std::shared_ptr<FTData>                     mFTData;
+	size_t                                      mNumGlyphs;
+	mutable std::map<Font::Glyph, GlyphMetrics> mGlyphMetrics;
+	bool                                        mHasKerning;
+
+	FontFreeType( TextEngineRef textEngine, const std::string &aName, float size );
+	FontFreeType( TextEngineRef textEngine, DataSourceRef dataSource, float size );
+};
+
+typedef std::shared_ptr<FontFreeType> FontFreeTypeRef;
 
 class FontInvalidNameExc : public cinder::Exception {
   public:
@@ -133,7 +208,7 @@ class FontInvalidNameExc : public cinder::Exception {
 	FontInvalidNameExc( const std::string &fontName ) throw();
 	virtual const char* what() const throw() { return mMessage; }	
   private:
-	char mMessage[2048];	
+	char mMessage[2048];
 };
 
 class FontGlyphFailureExc : public cinder::Exception {

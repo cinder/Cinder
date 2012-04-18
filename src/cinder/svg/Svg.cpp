@@ -1996,7 +1996,7 @@ void TextSpan::renderSelf( Renderer &renderer ) const
 std::vector<std::pair<uint16_t,Vec2f> > TextSpan::getGlyphMeasures() const
 {
 	if( ! mGlyphMeasures ) {
-		TextBox tbox = TextBox().font( *getFont() ).text( mString );
+		TextBox tbox = TextBox().font( getFont() ).text( mString );
 		mGlyphMeasures = shared_ptr<std::vector<std::pair<uint16_t,Vec2f> > >( 
 			new std::vector<std::pair<uint16_t,Vec2f> >( tbox.measureGlyphs() ) );
 	}
@@ -2048,18 +2048,18 @@ TextSpan::Attributes::Attributes( const XmlTree &xml )
 		mRotate = readValueList( xml["rotate"], false );
 }
 
-const std::shared_ptr<Font>	TextSpan::getFont() const
+const FontRef TextSpan::getFont() const
 {
 	if( ! mFont ) {
 		const vector<string> &fontFamilies = getFontFamilies();
 		float fontSize = getFontSize().asUser();		
 		for( vector<string>::const_iterator familyIt = fontFamilies.begin(); familyIt != fontFamilies.end(); ++familyIt ) {
 			try {
-				mFont = shared_ptr<Font>( new Font( *familyIt, fontSize ) );
+				mFont = Font::create( *familyIt, fontSize );
 				break;
 			}
 			catch( ... ) {
-				mFont = shared_ptr<Font>( new Font( Font::getDefault() ) );
+				mFont = Font::getDefault();
 			}
 		}
 	}

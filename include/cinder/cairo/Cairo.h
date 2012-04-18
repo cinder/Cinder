@@ -681,7 +681,7 @@ class Context
 	void        deviceToUserDistance( double *dx, double *dy );
 	
 // Text/font functions
-	void		setFont( const cinder::Font &font );
+	void        setFont( const cinder::FontRef font );
 	void        selectFontFace( const std::string &family, int32_t slant, int32_t weight );
 	void        setFontSize( double size );
 	void        setFontMatrix( const Matrix &matrix );

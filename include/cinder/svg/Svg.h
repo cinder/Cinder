@@ -393,7 +393,7 @@ class Node {
 	
 	static std::string	findStyleValue( const std::string &styleString, const std::string &key );
 	void				parseStyle( const std::string &value );
-    
+
   protected:
 	const Node		*mParent;
 	std::string		mId;
@@ -672,7 +672,7 @@ class TextSpan : public Node {
 	TextSpan( const Node *parent, const std::string &spanString );
 	
 	const std::string&							getString() const { return mString; }
-	const std::shared_ptr<Font>					getFont() const;
+	const FontRef								getFont() const;
 	//! Returns a vector of glyph IDs and positions for the string, ignoring rotation. Cached and lazily calculated.
 	std::vector<std::pair<uint16_t,Vec2f> > 	getGlyphMeasures() const;
 	Vec2f										getTextPen() const;
@@ -684,7 +684,7 @@ class TextSpan : public Node {
 	bool							mIgnoreAttributes; // TextSpans that are actually the contents of Text's attributes should be ignored
 	Attributes						mAttributes;
 	std::string						mString;
-	mutable std::shared_ptr<Font>	mFont;
+	mutable FontRef					mFont;
 	mutable std::shared_ptr<std::vector<std::pair<uint16_t,Vec2f> > > mGlyphMeasures;
 	mutable std::shared_ptr<Shape2d>	mShape;
 	
@@ -717,7 +717,7 @@ class Group : public Node {
 	~Group();
 
 	//! Recursively searches for a child element of type <tt>svg::T</tt> named \a id. Returns NULL on failure to find the object or if it is not of type T.
-    template<typename T>
+	template<typename T>
 	const T*				find( const std::string &id ) { return dynamic_cast<const T*>( findNode( id ) ); }
 	//! Recursively searches for a child element named \a id. Returns NULL on failure.
 	const Node*				findNode( const std::string &id, bool recurse = true ) const;
