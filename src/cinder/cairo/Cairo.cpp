@@ -1734,18 +1734,18 @@ void Context::getFontOptions( FontOptions *options )
 void Context::setFont( const cinder::FontRef font )
 {
 	TextEngineRef textEngine = font->getTextEngine();
+    cairo_font_face_t *cairoFont = NULL;
 #if defined( CINDER_COCOA )
 	if ( textEngine->getEngineType() == TextEngine::CORETEXT ) {
 		FontCoreTextRef ctFont = std::dynamic_pointer_cast<FontCoreText>( font );
-		cairo_font_face_t *cairoFont = cairo_quartz_font_face_create_for_cgfont( ctFont->getCgFontRef() );
+		cairoFont = cairo_quartz_font_face_create_for_cgfont( ctFont->getCgFontRef() );
 	}
 #elif defined( CINDER_MSW )
 	if ( textEngine->getEngineType() == TextEngine::GDIPLUS ) {
 		FontGdiPlusRef gdiFont = std::dynamic_pointer_cast<FontGdiPlus>( font ); 
-		cairo_font_face_t *cairoFont = cairo_win32_font_face_create_for_logfontw( &gdiFont->getLogfont() );
+		cairoFont = cairo_win32_font_face_create_for_logfontw( &gdiFont->getLogfont() );
 	}
 #endif
-	cairo_font_face_t* cairoFont;
 	cairo_set_font_face( mCairo, cairoFont );
 	cairo_set_font_size( mCairo, font->getSize() );
 	cairo_font_face_destroy( cairoFont );

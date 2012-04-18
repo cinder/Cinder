@@ -729,9 +729,9 @@ Font::Glyph FontFreeType::getGlyphChar( char c ) const
 	return (Font::Glyph) FT_Get_Char_Index(face, (int) c);
 }
 
-Font::Glyph FontFreeType::getGlyphIndex( size_t idx ) const
+Font::Glyph FontFreeType::getGlyphIndex( size_t index ) const
 {
-	return (Font::Glyph)index;
+	return (Font::Glyph) index;
 }
 
 vector<Font::Glyph> FontFreeType::getGlyphs( const string &utf8String ) const

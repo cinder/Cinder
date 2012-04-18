@@ -1432,7 +1432,7 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 }
 
 namespace {
-void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
+void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, FontRef font, int justification )
 {
 	if( str.empty() )
 		return;
@@ -1440,9 +1440,8 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 	// justification: { left = -1, center = 0, right = 1 }
 	SaveColorState colorState;
 
-	static Font defaultFont = Font::getDefault();
 	if( ! font )
-		font = defaultFont;
+        font = Font::getDefault();
 
 	float baselineOffset;
 #if defined( CINDER_COCOA_TOUCH )
@@ -1465,17 +1464,17 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 }
 } // anonymous namespace
 
-void drawString( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+void drawString( const std::string &str, const Vec2f &pos, const ColorA &color, FontRef font )
 {
 	drawStringHelper( str, pos, color, font, -1 );
 }
 
-void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color, FontRef font )
 {
 	drawStringHelper( str, pos, color, font, 0 );
 }
 
-void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color, FontRef font )
 {
 	drawStringHelper( str, pos, color, font, 1 );
 }

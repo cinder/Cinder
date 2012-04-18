@@ -37,9 +37,14 @@
 	typedef const struct __CTFont * CTFontRef;
 #elif defined( CINDER_MSW )
 	#include <windows.h>
+	namespace Gdiplus {
+		class Font;
+	}
 #endif
 
 struct FTData;
+struct FT_FaceRec_;
+typedef struct FT_FaceRec_* FT_Face;
 
 namespace cinder {
 
