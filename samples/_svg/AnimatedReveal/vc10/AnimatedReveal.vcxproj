@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{74202EDD-91D2-4D2A-B0B6-355CEB16E6BE}</ProjectGuid>
+    <ProjectGuid>{4C9C5B19-145C-42A1-A8F4-78DF328DDB24}</ProjectGuid>
     <RootNamespace>AnimatedRevealApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

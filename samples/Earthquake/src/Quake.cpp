@@ -36,10 +36,10 @@ Quake::Quake( float aLat, float aLong, float aMag, string aTitle )
 	
 	
 	if( mMag > 5.5 ){
-		layout.setFont( Font( "HelveticaNeue-Bold", mMag * mMag + 26.0f ) );
+		layout.setFont( Font::create( "HelveticaNeue-Bold", mMag * mMag + 26.0f ) );
 		layout.setColor( Color( 1, 0, 0 ) );
 	} else {
-		layout.setFont( Font( "HelveticaNeue-Bold", mMag * mMag + 10.0f ) );
+		layout.setFont( Font::create( "HelveticaNeue-Bold", mMag * mMag + 10.0f ) );
 		layout.setColor( Color( 1, 1, 1 ) );
 	}
 	layout.addCenteredLine( os.str() );
@@ -47,7 +47,7 @@ Quake::Quake( float aLat, float aLong, float aMag, string aTitle )
 	
 	if( mMag > 5.5 ){
 		layout.setLeadingOffset( -10 );
-		layout.setFont( Font( "HelveticaNeue", mMag + 16 ) );
+		layout.setFont( Font::create( "HelveticaNeue", mMag + 16 ) );
 		layout.setColor( Color( 1, 1, 1 ) );
 		layout.addCenteredLine( mTitle );
 	}

@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{74202EDD-91D2-4D2A-B0B6-355CEB16E6BE}</ProjectGuid>
+    <ProjectGuid>{7D290687-19C4-42B2-8AB5-84FDB172F341}</ProjectGuid>
     <RootNamespace>EuroMapApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

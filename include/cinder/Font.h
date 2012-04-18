@@ -39,6 +39,7 @@
 	#include <windows.h>
 	namespace Gdiplus {
 		class Font;
+		class Graphics;
 	}
 #endif
 
@@ -136,6 +137,7 @@ class FontGdiPlus : public Font
 	::HFONT					getHfont() const;
 	const Gdiplus::Font*	getGdiplusFont() const;
 	HDC						getGlobalDc();
+	Gdiplus::Graphics*		getGlobalGraphics();
 	std::set<Font::Glyph>	getNecessaryGlyphs( const std::string &supportedChars );
 
 	virtual std::string				getFullName() const;

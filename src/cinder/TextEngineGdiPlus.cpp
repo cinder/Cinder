@@ -19,47 +19,6 @@ using std::vector;
 
 namespace cinder {
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// GdiTextManager
-
-class GdiTextManager : private boost::noncopyable
-{
- public:
-	GdiTextManager();
-	~GdiTextManager();
-	static GdiTextManager*		instance();
-
-	HDC					getDc() { return mDummyDC; }
-	Gdiplus::Graphics*	getGraphics() { return mGraphics; }
-
- private:
-	static GdiTextManager	*sInstance;
-
-	HDC					mDummyDC;
-	Gdiplus::Graphics	*mGraphics;
-};
-
-GdiTextManager *GdiTextManager::sInstance = 0;
-
-GdiTextManager::GdiTextManager()
-{
-	mDummyDC = ::CreateCompatibleDC( 0 );
-	mGraphics = new Gdiplus::Graphics( mDummyDC );
-}
-
-GdiTextManager::~GdiTextManager()
-{
-	::DeleteDC( mDummyDC );
-}
-
-GdiTextManager* GdiTextManager::instance()
-{
-	if( ! GdiTextManager::sInstance )
-		GdiTextManager::sInstance = new GdiTextManager;
-		
-	return GdiTextManager::sInstance;
-}
-
 static int CALLBACK EnumFontFamiliesExProc( ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int FontType, LPARAM lParam )
 {
     reinterpret_cast<vector<string>*>( lParam )->push_back( toUtf8( lpelfe->elfFullName ) );
@@ -193,12 +152,13 @@ class TextBoxGdiPlusRenderer : public TextBox::Renderer
         if( alignment == TextBox::CENTER ) align = Gdiplus::StringAlignmentCenter;
         else if( alignment == TextBox::RIGHT ) align = Gdiplus::StringAlignmentFar;
         format.SetAlignment( align ); format.SetLineAlignment( align );
-        const Gdiplus::Font *gdiFont = std::dynamic_pointer_cast<FontGdiPlus>(mTextBox.getFont())->getGdiplusFont();
+        FontGdiPlusRef font = std::dynamic_pointer_cast<FontGdiPlus>(mTextBox.getFont());
+        const Gdiplus::Font *gdiFont = font->getGdiplusFont();
         Gdiplus::RectF sizeRect( 0, 0, 0, 0 ), outSize;
         sizeRect.Width = ( size.x <= 0 ) ? MAX_SIZE : size.x;
         sizeRect.Height = ( size.y <= 0 ) ? MAX_SIZE : size.y;
-        GdiTextManager::instance()->getGraphics()->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
-        GdiTextManager::instance()->getGraphics()->MeasureString( &mWideText[0], -1, gdiFont, sizeRect, &format, &outSize, NULL, NULL );
+        font->getGlobalGraphics()->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
+        font->getGlobalGraphics()->MeasureString( &mWideText[0], -1, gdiFont, sizeRect, &format, &outSize, NULL, NULL );
 
         mCalculatedSize = Vec2f(outSize.Width, outSize.Height);
         setInvalid( false );
@@ -218,7 +178,7 @@ class TextBoxGdiPlusRenderer : public TextBox::Renderer
             mutable vector<string> *mStrings;
         };
         struct LineMeasure {
-            LineMeasure( int maxWidth, const FontRef font ) : mMaxWidth( maxWidth ), mFont( std::dynamic_pointer_cast<FontGdiPlus>(font)->getGdiplusFont() ) {}
+            LineMeasure( int maxWidth, const FontRef font ) : mMaxWidth( maxWidth ), mFont( std::dynamic_pointer_cast<FontGdiPlus>(font) ) {}
             bool operator()( const char *line, size_t len ) const {
                 if( mMaxWidth >= MAX_SIZE ) return true; // too big anyway so just return true
                 Gdiplus::StringFormat format;
@@ -228,12 +188,13 @@ class TextBoxGdiPlusRenderer : public TextBox::Renderer
                 sizeRect.Height = MAX_SIZE;
 
                 std::wstring ws = toUtf16( string( line, len ) );
-                GdiTextManager::instance()->getGraphics()->MeasureString( &ws[0], -1, mFont, sizeRect, &format, &outSize, NULL, NULL );
+                mFont->getGlobalGraphics()->MeasureString( &ws[0], -1, mFont->getGdiplusFont(), sizeRect, &format, &outSize, NULL, NULL );
                 return outSize.Width <= mMaxWidth;
             }
 
             int					mMaxWidth;
-            const Gdiplus::Font	*mFont;
+            FontGdiPlusRef      mFont;
+            // const Gdiplus::Font	*mFont;
         };
         std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );
         Vec2f size = mTextBox.getSize();
@@ -334,7 +295,8 @@ class TextBoxGdiPlusRenderer : public TextBox::Renderer
 
         sizeY += 1;
         // prep our GDI and GDI+ resources
-        ::HDC dc = GdiTextManager::instance()->getDc();
+        FontGdiPlusRef font = std::dynamic_pointer_cast<FontGdiPlus>(mTextBox.getFont());
+        ::HDC dc = font->getGlobalDc();
         Surface result( (int)sizeX, (int)sizeY, true, SurfaceConstraintsGdiPlus() );
         result.setPremultiplied( mTextBox.getPremultiplied() );
         Gdiplus::Bitmap *offscreenBitmap = msw::createGdiplusBitmap( result );
@@ -344,7 +306,7 @@ class TextBoxGdiPlusRenderer : public TextBox::Renderer
         // fill the surface with the background color
         ColorA8u bgColor = mTextBox.getBackgroundColor();
         offscreenGraphics->Clear( Gdiplus::Color( bgColor.a, bgColor.r, bgColor.g, bgColor.b ) );
-        const Gdiplus::Font *font = std::dynamic_pointer_cast<FontGdiPlus>(mTextBox.getFont())->getGdiplusFont();;
+        const Gdiplus::Font *gdiFont = font->getGdiplusFont();
         ColorA8u nativeColor( mTextBox.getColor() );
         Gdiplus::StringFormat format;
         Gdiplus::StringAlignment align = Gdiplus::StringAlignmentNear;
@@ -353,7 +315,7 @@ class TextBoxGdiPlusRenderer : public TextBox::Renderer
         else if( alignment == TextBox::RIGHT ) align = Gdiplus::StringAlignmentFar;
         format.SetAlignment( align ); format.SetLineAlignment( align );
         Gdiplus::SolidBrush brush( Gdiplus::Color( nativeColor.a, nativeColor.r, nativeColor.g, nativeColor.b ) );
-        offscreenGraphics->DrawString( &mWideText[0], -1, font, Gdiplus::RectF( offset.x, offset.y, sizeX, sizeY ), &format, &brush );
+        offscreenGraphics->DrawString( &mWideText[0], -1, gdiFont, Gdiplus::RectF( offset.x, offset.y, sizeX, sizeY ), &format, &brush );
         
         ::GdiFlush();
 

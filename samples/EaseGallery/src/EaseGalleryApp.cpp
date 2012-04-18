@@ -17,7 +17,7 @@ struct EaseBox {
 	{
 		// create label
 		TextLayout text; text.clear( Color::white() ); text.setColor( Color(0.5f, 0.5f, 0.5f) );
-		try { text.setFont( Font( "Futura-CondensedMedium", 18 ) ); } catch( ... ) { text.setFont( Font( "Arial", 18 ) ); }
+		try { text.setFont( Font::create( "Futura-CondensedMedium", 18 ) ); } catch( ... ) { text.setFont( Font::create( "Arial", 18 ) ); }
 		text.addLine( name );
 		mLabelTex = gl::Texture( text.render( true ) );
 	}

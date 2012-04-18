@@ -40,7 +40,7 @@ class Item {
 	
 	int mIndex;
 
-	static void	setFonts( const ci::Font &smallFont, const ci::Font &bigFont );
+    static void	setFonts( const ci::FontRef smallFont, const ci::FontRef bigFont );
 	
   private:
 	// title
@@ -78,5 +78,5 @@ class Item {
 	// TODO: isBeingSelected is a sloppy fix
 	bool				mIsSelected, mIsBeingSelected;
 	
-	static ci::Font sSmallFont, sBigFont;	// small and large fonts for Text textures
+	static ci::FontRef sSmallFont, sBigFont;	// small and large fonts for Text textures
 };

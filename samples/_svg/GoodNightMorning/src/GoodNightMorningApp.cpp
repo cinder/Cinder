@@ -32,7 +32,7 @@ class GoodNightMorningApp : public AppBasic {
 	gl::Texture		mForegroundTex, mBackgroundTex;
 	Rectf			mDrawBounds;
 	svg::DocRef		mCityscapeSvg;
-	Font			mHeaderFont, mFont;
+	FontRef			mHeaderFont, mFont;
 	
 	Anim<float>		mMorningTweetPos, mNightTweetPos;
 	Anim<float>		mMorningTweetAlpha, mNightTweetAlpha;
@@ -50,8 +50,8 @@ void GoodNightMorningApp::prepareSettings( Settings *settings )
 void GoodNightMorningApp::setup()
 {
 	mCityscapeSvg = std::shared_ptr<svg::Doc>( new svg::Doc( loadAsset( "cityscape.svg" ) ) );
-	mFont = Font( loadAsset( "Lato-Bold.ttf" ), 14 );
-	mHeaderFont = Font( loadAsset( "Lato-Light.ttf" ), 14 );
+	mFont = Font::create( loadAsset( "Lato-Bold.ttf" ), 14 );
+	mHeaderFont = Font::create( loadAsset( "Lato-Light.ttf" ), 14 );
 	
 	mMorningTweets = shared_ptr<TweetStream>( new TweetStream( "\"Good morning\"" ) );
 	mNightTweets = shared_ptr<TweetStream>( new TweetStream( "\"Good night\"" ) );

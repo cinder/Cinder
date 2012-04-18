@@ -598,6 +598,12 @@ HDC FontGdiPlus::getGlobalDc()
 	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
 	return engine->getFontDc();
 }
+
+Gdiplus::Graphics* FontGdiPlus::getGlobalGraphics()
+{
+	TextEngineGdiPlusRef engine = std::dynamic_pointer_cast<TextEngineGdiPlus>(mTextEngine);
+	return engine->getGraphics();
+}
 #endif
 
 FontFreeType::FontFreeType( TextEngineRef textEngine, const string &aName, float aSize )
@@ -630,9 +636,11 @@ FontFreeType::FontFreeType( TextEngineRef textEngine, DataSourceRef dataSource, 
 
 	if ( error == FT_Err_Unknown_File_Format ) {
 		// CI_LOGI("Error opening font: unknown format");
+		throw FontInvalidNameExc();
 	}
 	else if ( error ) {
 		// CI_LOGI("Error opening font: unhandled");
+		throw FontInvalidNameExc();
 	}
 	else {
 		FT_Face& face = mFTData->face;
@@ -660,8 +668,6 @@ FT_Face& FontFreeType::getFTFace() const
 
 const FontFreeType::GlyphMetrics& FontFreeType::getGlyphMetrics(Font::Glyph glyph) const
 {
-	// XXX disabled metrics caching, need to fix const compatibility
-
 	std::map<Font::Glyph, GlyphMetrics>::const_iterator it = mGlyphMetrics.find(glyph);
 	if (it != mGlyphMetrics.end()) {
 		return it->second;
@@ -686,6 +692,7 @@ const FontFreeType::GlyphMetrics& FontFreeType::getGlyphMetrics(Font::Glyph glyp
 	}
 	else {
 		// CI_LOGI("XXX error calling FT_Get_Glyph %d", glyph);
+		throw FontGlyphFailureExc();
 	}
 
 	GlyphMetrics& metrics = mGlyphMetrics[glyph] = gm;
@@ -742,7 +749,6 @@ vector<Font::Glyph> FontFreeType::getGlyphs( const string &utf8String ) const
 	for (vector<int>::iterator it = utf32String.begin(); it != utf32String.end(); ++it) {
 		result.push_back(FT_Get_Char_Index(getFTFace(), *it));
 	}
-	// CI_LOGI("XXX getGlyphs utf8 size %d utf32 size %d utf16 size %d", utf8String.size(), utf32String.size(), result.size());
 	return result;
 }
 

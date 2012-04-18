@@ -65,8 +65,8 @@ void PaletteBrowserApp::prepareSettings( Settings *settings )
 void PaletteBrowserApp::setup()
 {
 	// fonts
-	Font smallFont = Font( loadAsset( "Signika-Regular.ttf" ), 16 );
-	Font bigFont   = Font( loadAsset( "Signika-Regular.ttf" ), 100 );
+	FontRef smallFont = Font::create( loadAsset( "Signika-Regular.ttf" ), 16 );
+	FontRef bigFont   = Font::create( loadAsset( "Signika-Regular.ttf" ), 100 );
 	Item::setFonts( smallFont, bigFont );
 	
 	// title text
