@@ -83,7 +83,7 @@ TextureFont::TextureFont( const FontRef font, const string &supportedChars, gl::
 	// get the glyph indices we'll need
 	atlas->beginGlyphSet();
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
-		gl::TextureFont::GlyphInfo& info = mGlyphMap[*glyphIt] = atlas->addGlyph(font, *glyphIt);
+		mGlyphMap[*glyphIt] = atlas->addGlyph(font, *glyphIt);
 	}
 	mTextures = atlas->endGlyphSet();
 

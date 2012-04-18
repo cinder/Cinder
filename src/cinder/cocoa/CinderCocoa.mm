@@ -198,7 +198,7 @@ CFURLRef createCfUrl( const Url &url )
 	return result;
 }
 
-CFAttributedStringRef createCfAttributedString( const std::string &str, const Font &font, const ColorA &color )
+CFAttributedStringRef createCfAttributedString( const std::string &str, const FontCoreText &font, const ColorA &color )
 {
 	CGColorRef cgColor = createCgColor( color );
 	const CFStringRef keys[] = {
@@ -230,7 +230,7 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 	return attrString;
 }
 
-CFAttributedStringRef createCfAttributedString( const std::string &str, const Font &font, const ColorA &color, bool ligate )
+CFAttributedStringRef createCfAttributedString( const std::string &str, const FontCoreText &font, const ColorA &color, bool ligate )
 {
 	CGColorRef cgColor = createCgColor( color );
 	const int ligatures = ( ligate ) ? 1 : 0;
