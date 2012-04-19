@@ -43,7 +43,7 @@ class TextLayout {
 	 */
 	TextLayout();
 
-	//! Sets the background color for the TextLayout. Implicit opqaue alpha.
+	//! Sets the background color for the TextLayout. Implicit opaque alpha.
 	void	clear( const Color &color );
 	//! Sets the background color and alpha for the TextLayout to unpremulitiplied color \a color
 	void	clear( const ColorA &color );	
@@ -58,7 +58,7 @@ class TextLayout {
 	void	append( const std::string &str );
 
 	void	setFont( const FontRef font );
-	//! Sets the currently active color. Implicit opqaue alpha.
+	//! Sets the currently active color. Implicit opaque alpha.
 	void	setColor( const Color &color );
 	//! Sets the currently active color and alpha.
 	void	setColor( const ColorA &color );
