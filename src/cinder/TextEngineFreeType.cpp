@@ -69,10 +69,13 @@ vector<pair<uint16_t,Vec2f> > measureGlyphsSize( const TextBox& textbox, Vec2f* 
     FontFreeTypeRef ftFont = std::dynamic_pointer_cast<FontFreeType>(font);
     vector<pair<uint16_t,Vec2f> > placements;
     vector<Font::Glyph> glyphs = font->getGlyphs(textbox.getText());
+    TextBox::Alignment alignment = textbox.getAlignment();
+    Vec2f textboxSize = textbox.getSize();
 
     if (!glyphs.empty()) {
         Font::Glyph* start = &glyphs[0];
         Font::Glyph* end = start + glyphs.size();
+        int lineStartIndex = 0;
 
         Vec2f pen(0, font->getAscent());
 
@@ -95,14 +98,31 @@ vector<pair<uint16_t,Vec2f> > measureGlyphsSize( const TextBox& textbox, Vec2f* 
               prevIndex = *it;
            }
 
-           if (pen.x > size->x) {
-              size->x = pen.x;
+           //  Adjust for text alignment
+           if ( alignment != TextBox::LEFT ) {
+               float alignOffset = 0;
+
+               if ( alignment == TextBox::RIGHT ) {
+                   alignOffset = textboxSize.x - pen.x;
+               }
+               else if ( alignment == TextBox::CENTER ) {
+                   alignOffset = (textboxSize.x - pen.x) * 0.5f;
+               }
+
+               for ( int i = lineStartIndex; i < lineStartIndex + lineLength; ++i ) {
+                   placements[i].second.x += alignOffset;
+               }
            }
-           pen.x = 0;
-           pen.y += stop < end ? font->getLeading() : font->getDescent();
+
+           if (pen.x > size->x)
+              size->x = pen.x;
            size->y = pen.y;
 
+           pen.x = 0;
+           pen.y += stop < end ? font->getLeading() : font->getDescent();
+
            start += lineLength;
+           lineStartIndex += lineLength;
         }
     }
 
