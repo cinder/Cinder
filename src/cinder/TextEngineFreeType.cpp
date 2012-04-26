@@ -251,24 +251,33 @@ FT_Library TextEngineFreeType::getFTLibrary() const
 
 class TextBoxFreeTypeRenderer : public TextBox::Renderer
 {
+  protected:
+    mutable Vec2f mMeasuredSize;
+    mutable vector<pair<uint16_t,Vec2f> > mGlyphMeasures;
+
   public:
     TextBoxFreeTypeRenderer( const TextBox& textbox ) : TextBox::Renderer( textbox )
     {
     }
 
-    virtual Vec2f measure() const
+    void calculate() const
     {
-        // XXX cache!
-        Vec2f measuredSize;
-        measureGlyphsSize(mTextBox, &measuredSize);
-        return measuredSize;
+        if ( getInvalid() ) {
+            mGlyphMeasures = measureGlyphsSize(mTextBox, &mMeasuredSize);
+            setInvalid( false );
+        }
     }
 
-    virtual vector<std::pair<uint16_t,Vec2f> > measureGlyphs() const
+    virtual Vec2f measure() const
     {
-        // XXX cache!
-        Vec2f measuredSize;
-        return measureGlyphsSize(mTextBox, &measuredSize);
+        calculate();
+        return mMeasuredSize;
+    }
+
+    virtual vector<pair<uint16_t,Vec2f> > measureGlyphs() const
+    {
+        calculate();
+        return mGlyphMeasures;
     }
 
     virtual Surface render( Vec2f offset )
