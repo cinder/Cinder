@@ -65,6 +65,7 @@ class Display {
 	static const std::vector<DisplayRef>&	getDisplays();
 	//! Returns the Display which contains a given point. Returns a NULL DisplayRef on failure
 	static DisplayRef						getDisplayForPoint( const Vec2i &pt );
+	static void								refresh();	// ROGER
 	
 #if defined( CINDER_MAC )
 	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
