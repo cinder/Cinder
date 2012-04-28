@@ -94,37 +94,37 @@ class TextBox {
 	
 	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ), mLigate( true ) {}
 
-	TextBox				size( Vec2i sz ) { TextBox result( *this ); result.setSize( sz ); return result; }
-	TextBox				size( int width, int height ) { TextBox result( *this ); result.setSize( Vec2i( width, height ) ); return result; }
+	TextBox&			size( Vec2i sz ) { setSize( sz ); return *this; }
+	TextBox&			size( int width, int height ) { setSize( Vec2i( width, height ) ); return *this; }
 	Vec2i				getSize() const { return mSize; }
 	void				setSize( Vec2i sz ) { mSize = sz; mInvalid = true; }
 
-	TextBox				text( const std::string &t ) { TextBox result( *this ); result.setText( t ); return result; }
+	TextBox&			text( const std::string &t ) { setText( t ); return *this; }
 	const std::string&	getText() const { return mText; }
 	void				setText( const std::string &t ) { mText = t; mInvalid = true; }
 	void				appendText( const std::string &t ) { mText += t; mInvalid = true; }
 
-	TextBox				font( const Font &f ) { TextBox result( *this ); result.setFont( f ); return result; }
+	TextBox&			font( const Font &f ) { setFont( f ); return *this; }
 	const Font&			getFont() const { return mFont; }
 	void				setFont( const Font &f ) { mFont = f; mInvalid = true; }
 
-	TextBox				alignment( Alignment align ) { TextBox result( *this ); result.setAlignment( align ); return result; }
+	TextBox&			alignment( Alignment align ) { setAlignment( align ); return *this; }
 	Alignment			getAlignment() const { return mAlign; }
 	void				setAlignment( Alignment align ) { mAlign = align; mInvalid = true; }
 
-	TextBox				color( ColorA color ) { TextBox result( *this ); result.setColor( color ); return result; }
+	TextBox&			color( ColorA color ) { setColor( color ); return *this; }
 	ColorA				getColor() const { return mColor; }
 	void				setColor( ColorA color ) { mColor = color; mInvalid = true; }
 
-	TextBox				backgroundColor( ColorA bgColor ) { TextBox result( *this ); result.setBackgroundColor( bgColor ); return result; }
+	TextBox&			backgroundColor( ColorA bgColor ) { setBackgroundColor( bgColor ); return *this; }
 	ColorA				getBackgroundColor() const { return mBackgroundColor; }
 	void				setBackgroundColor( ColorA bgColor ) { mBackgroundColor = bgColor; }
 
-	TextBox				premultiplied( bool premult = true ) { TextBox result( *this ); result.setPremultiplied( premult ); return result; }
+	TextBox&			premultiplied( bool premult = true ) { setPremultiplied( premult ); return *this; }
 	bool				getPremultiplied() const { return mPremultiplied; }
 	void				setPremultiplied( bool premult ) { mPremultiplied = premult; }
 
-	TextBox				ligate( bool ligateText = true ) { TextBox result( *this ); result.setLigate( ligateText ); return result; }
+	TextBox&			ligate( bool ligateText = true ) { setLigate( ligateText ); return *this; }
 	bool				getLigate() const { return mLigate; }
 	void				setLigate( bool ligateText ) { mLigate = ligateText; }
 
@@ -151,7 +151,8 @@ class TextBox {
 
 	mutable std::vector<std::pair<std::shared_ptr<const __CTLine>,Vec2f> >	mLines;
 #elif defined( CINDER_MSW )
-	void			calculate() const;
+	std::vector<std::string>	calculateLineBreaks() const;
+	void						calculate() const;
 
 	mutable std::wstring	mWideText;
 #endif

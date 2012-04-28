@@ -56,23 +56,36 @@ void JsonTestApp::setup()
 	console() << doc.getChild( "library.owner" );
 	JsonTree &ownerCity = doc.getChild( "library.owner.city" );
 	string s = ownerCity.getPath();
-	console() << "Path: " << ownerCity.getPath() << "\n  Value: " << ownerCity.getValue<string>() << std::endl;
+	console() << "Path: " << ownerCity.getPath() << "\n  Value: " << ownerCity.getValue<string>() << endl;
 	console() << doc;
 	
 	JsonTree firstTrackCopy = doc.getChild( "library.albums[0].tracks[0].title" );
 	firstTrackCopy = JsonTree( firstTrackCopy.getKey(), string( "Replacement name" ) );
-	console() << doc.getChild( "library.albums[0].tracks[0]['title']" ) << std::endl;
+	console() << doc.getChild( "library.albums[0].tracks[0]['title']" ) << endl;
 
 	JsonTree &firstTrackRef = doc.getChild( "library.albums[0].tracks[2].title" );
-    console() << firstTrackRef.getPath() << std::endl;
+    console() << firstTrackRef.getPath() << endl;
 	firstTrackRef = JsonTree( firstTrackRef.getKey(), string( "Replacement name" ) );
-	console() << doc.getChild( "library.albums[0].tracks[0].title" ) << std::endl;
+	console() << doc.getChild( "library.albums[0].tracks[0].title" ) << endl;
 	
 	try {
 		JsonTree invalid( "%%%%%%%%" );
 	} catch ( JsonTree::ExcJsonParserError ex ) {
-		console() << ex.what() << std::endl;
+		console() << ex.what() << endl;
 	}
+	
+	JsonTree test32u( "uint32", uint32_t( math<uint64_t>::pow( 2, 32 ) ) - 1 );
+	console() << test32u;
+	console() << test32u.getValue() << endl;
+	JsonTree test32( "int32", int32_t( math<int32_t>::pow( 2, 32 ) ) - 1 );
+	console() << test32;
+	console() << test32.getValue() << endl;
+	JsonTree test64u( "uint64", uint64_t( math<uint64_t>::pow( 2, 64 ) ) - 1 );
+	console() << test64u;
+	console() << test64u.getValue() << endl;
+	JsonTree test64( "int64", int64_t( math<int64_t>::pow( 2, 64 ) ) - 1 );
+	console() << test64;
+	console() << test64.getValue() << endl;
 	
 }
 
@@ -151,7 +164,8 @@ void JsonTestApp::mouseDown( MouseEvent event )
 
 	console() << doc;
 	
-	doc.write( writeFile( getDocumentsDirectory() + "testoutput.json" ), false );
+	doc.write( writeFile( getDocumentsDirectory() + "testoutput.json" ), JsonTree::WriteOptions() );
+	doc.write( writeFile( getDocumentsDirectory() + "testoutput_fast.json" ), JsonTree::WriteOptions().indented( false ) );
 
 }
 

@@ -527,7 +527,16 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 		((Gdiplus::FontFamily*)fontFamily.get())->GetFamilyName( familyName );
 
 		mName = toUtf8( familyName );
-		mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( ((Gdiplus::FontFamily*)fontFamily.get()), size * 72 / 96 /* Mac<->PC size conversion factor */ ) );
+		Gdiplus::FontStyle style = Gdiplus::FontStyleRegular;
+		if( ((Gdiplus::FontFamily*)fontFamily.get())->IsStyleAvailable( Gdiplus::FontStyleRegular ) )
+			style = Gdiplus::FontStyleRegular;
+		else if( ((Gdiplus::FontFamily*)fontFamily.get())->IsStyleAvailable( Gdiplus::FontStyleBold ) )
+			style = Gdiplus::FontStyleBold;
+		else if( ((Gdiplus::FontFamily*)fontFamily.get())->IsStyleAvailable( Gdiplus::FontStyleItalic ) )
+			style = Gdiplus::FontStyleItalic;
+		else if( ((Gdiplus::FontFamily*)fontFamily.get())->IsStyleAvailable( Gdiplus::FontStyleItalic | Gdiplus::FontStyleBold ) )
+			style = (Gdiplus::FontStyle)( Gdiplus::FontStyleItalic | Gdiplus::FontStyleBold );
+		mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( ((Gdiplus::FontFamily*)fontFamily.get()), size * 72 / 96 /* Mac<->PC size conversion factor */, style ) );
 	}
 	else
 		throw FontInvalidNameExc();

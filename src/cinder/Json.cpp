@@ -49,6 +49,33 @@ bool JsonTree::ParseOptions::getIgnoreErrors() const
 { 
 	return mIgnoreErrors; 
 }
+
+JsonTree::WriteOptions::WriteOptions()
+: mCreateDocument( false ), mIndented( true )
+{
+}
+
+JsonTree::WriteOptions& JsonTree::WriteOptions::createDocument( bool createDocument )
+{
+	mCreateDocument = createDocument;
+	return *this;
+}
+
+JsonTree::WriteOptions& JsonTree::WriteOptions::indented( bool indent )
+{
+	mIndented = indent;
+	return *this;
+}
+
+bool JsonTree::WriteOptions::getCreateDocument() const
+{
+	return mCreateDocument;
+}
+
+bool JsonTree::WriteOptions::getIndented() const
+{
+	return mIndented;	
+}
 		
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -77,6 +104,8 @@ JsonTree& JsonTree::operator=( const JsonTree &jsonTree )
 	mNodeType = jsonTree.mNodeType;
 	mValue = jsonTree.mValue;
 	mValueType = jsonTree.mValueType;
+
+	mChildren.clear();
 
 	for( ConstIter childIt = jsonTree.begin(); childIt != jsonTree.end(); ++childIt ) {
 		pushBack( *childIt );
@@ -144,6 +173,16 @@ JsonTree::JsonTree( const string &key, uint32_t value )
     init( key, Json::Value( value ), false, NODE_VALUE, VALUE_UINT );
 }
 
+JsonTree::JsonTree( const string &key, int64_t value )
+{
+	init( key, Json::Value( value ), true, NODE_VALUE, VALUE_INT );
+}
+	
+JsonTree::JsonTree( const string &key, uint64_t value )
+{
+	init( key, Json::Value( value ), true, NODE_VALUE, VALUE_UINT );
+}
+
 JsonTree JsonTree::makeArray( const std::string &key )
 {
 	JsonTree result;
@@ -200,7 +239,7 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 			}
 		}
 		else if ( value.isInt() ) { 
-			mValue = toString( value.asInt() );
+			mValue = toString( value.asLargestInt() );
 			if ( setType ) {
 				mValueType = VALUE_INT;
 			}
@@ -212,7 +251,7 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 			}
 		}
 		else if ( value.isUInt() ) { 
-			mValue = toString( value.asUInt() );
+			mValue = toString( value.asLargestUInt() );
 			if ( setType ) {
 				mValueType = VALUE_UINT;
 			}
@@ -250,10 +289,11 @@ void JsonTree::clear()
 
 void JsonTree::pushBack( const JsonTree &newChild )
 {
-	if( newChild.getKey() == "" )
+	if( newChild.getKey() == "" ) {
 		mNodeType = NODE_ARRAY;
-	else
+	} else {
 		mNodeType = NODE_OBJECT;
+	}
 
 	mChildren.push_back( newChild );
 	mChildren.back().mParent = this;
@@ -436,8 +476,9 @@ string JsonTree::getPath( char separator ) const
 					break;
 				}
 			}
-			if( isArrayIndex )
+			if( isArrayIndex ) {
 				nodeName = '[' + toString( index ) + ']';
+			}
 		}
 		if( (! prevWasArrayIndex) && (! nodeName.empty()) && ( node != this ) ) {
 			result = nodeName + separator + result;
@@ -533,7 +574,7 @@ bool JsonTree::isIndex( const string &key )
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Json::Value JsonTree::createNativeDoc( bool createDocument ) const
+Json::Value JsonTree::createNativeDoc( WriteOptions writeOptions ) const
 {
 	// Create JsonCpp value
 	Json::Value value( Json::nullValue );
@@ -565,13 +606,13 @@ Json::Value JsonTree::createNativeDoc( bool createDocument ) const
 				value = Json::Value( fromString<double>( mValue ) );
 				break;
 			case VALUE_INT:
-				value = Json::Value( fromString<int32_t>( mValue ) );
+				value = Json::Value( fromString<int64_t>( mValue ) );
 				break;
 			case VALUE_STRING:
 				value = Json::Value( mValue );
 				break;
 			case VALUE_UINT:
-				value = Json::Value( fromString<uint32_t>( mValue ) );
+				value = Json::Value( fromString<uint64_t>( mValue ) );
 				break;
 			}
 		break;
@@ -580,7 +621,7 @@ Json::Value JsonTree::createNativeDoc( bool createDocument ) const
     }
     
 	// Return JsonCpp object
-    if ( createDocument && !value.isNull() ) { 
+    if ( writeOptions.getCreateDocument() && !value.isNull() ) { 
         Json::Value doc( Json::objectValue );
         doc[ mKey ] = value;
         return doc;
@@ -606,12 +647,12 @@ string JsonTree::serializeNative( const Json::Value & value )
 	}
 }
 
-void JsonTree::write( const fs::path &path, bool createDocument )
+void JsonTree::write( const fs::path &path, JsonTree::WriteOptions writeOptions )
 {
-	write( writeFile( path ), createDocument );
+	write( writeFile( path, true ), writeOptions );
 }
 
-void JsonTree::write( DataTargetRef target, bool createDocument )
+void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions )
 {
 	// Declare output string
 	string jsonString = "";
@@ -619,15 +660,20 @@ void JsonTree::write( DataTargetRef target, bool createDocument )
 	try {
 		
 		// Create JsonCpp data to send to parser
-		Json::Value value = createNativeDoc( createDocument );
+		Json::Value value = createNativeDoc( writeOptions );
 
 		// This routine serializes JsonCpp data and formats it
-		Json::StyledWriter writer;
-		jsonString = writer.write( value.toStyledString() );
-		boost::replace_all( jsonString, "\\n", "\r\n" );
-		boost::replace_all( jsonString, "\\\"", "\"" );
-		if( jsonString.length() >= 3 ) {
-			jsonString = jsonString.substr( 1, boost::trim_copy( jsonString ).length() - 2 );
+		if( writeOptions.getIndented() ) {
+			Json::StyledWriter writer;
+			jsonString = writer.write( value.toStyledString() );
+			boost::replace_all( jsonString, "\\n", "\r\n" );
+			boost::replace_all( jsonString, "\\\"", "\"" );
+			if( jsonString.length() >= 3 ) {
+				jsonString = jsonString.substr( 1, boost::trim_copy( jsonString ).length() - 2 );
+			}
+		} else {
+			Json::FastWriter writer;
+			jsonString = writer.write( value );
 		}
 		jsonString += "\0";
 	}
@@ -638,6 +684,7 @@ void JsonTree::write( DataTargetRef target, bool createDocument )
 	// Save data to file
 	OStreamRef os = target->getStream();
 	os->writeData( jsonString.c_str(), jsonString.length() );
+	
 }
 
 
@@ -663,8 +710,10 @@ JsonTree::ExcJsonParserError::ExcJsonParserError( const string &errorMessage ) t
 
 ostream& operator<<( ostream &out, const JsonTree &json )
 {
-    bool createDocument = json.mNodeType == JsonTree::NODE_VALUE;
-    Json::Value value = json.createNativeDoc( createDocument );
+	JsonTree::WriteOptions writeOptions;
+	bool createDocument = json.mNodeType == JsonTree::NODE_VALUE;
+	writeOptions.createDocument( createDocument );
+    Json::Value value = json.createNativeDoc( writeOptions );
 	string doc = JsonTree::serializeNative( value );
 	out << doc;
 	return out;

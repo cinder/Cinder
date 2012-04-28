@@ -46,7 +46,7 @@ class Frustum
 	enum { NEAR, FAR, LEFT, RIGHT, TOP, BOTTOM };
 
   public:
-	Frustum();
+	Frustum() {}
 	Frustum( const Camera &cam );
 
 	//! Creates a frustum based on the camera's parameters.

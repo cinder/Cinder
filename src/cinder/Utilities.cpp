@@ -75,7 +75,7 @@ fs::path expandPath( const fs::path &path )
 	return fs::path( result );
 }
 
-std::string getHomeDirectory()
+fs::path getHomeDirectory()
 {
 	std::string result;
 
@@ -93,7 +93,7 @@ std::string getHomeDirectory()
 	return result;
 }
 
-std::string getDocumentsDirectory()
+fs::path getDocumentsDirectory()
 {
 	std::string result;
 
@@ -111,7 +111,7 @@ std::string getDocumentsDirectory()
 	return result;
 }
 
-std::string getTemporaryDirectory()
+fs::path getTemporaryDirectory()
 {
 #if defined( CINDER_COCOA )
 	NSString *docDir = ::NSTemporaryDirectory();
@@ -131,7 +131,7 @@ std::string getTemporaryDirectory()
 #endif
 }
 
-std::string getTemporaryFilePath( const std::string &prefix )
+fs::path getTemporaryFilePath( const std::string &prefix )
 {
 #if defined( CINDER_COCOA )
 	char path[2048];

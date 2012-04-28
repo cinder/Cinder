@@ -60,7 +60,7 @@ struct math
 	static T	pow   (T x, T y)	{return ::pow (double(x), double(y));}
 	static T	sqrt  (T x)		{return ::sqrt (double(x));}
 #if defined( _MSC_VER )
-	static T	cbrt( T x )		{ return ::pow( x, 1.0 / 3.0 ); }
+	static T	cbrt( T x )		{ return ( x > 0 ) ? (::pow( x, 1.0 / 3.0 )) : (- ::pow( -x, 1.0 / 3.0 ) ); }
 #else
 	static T	cbrt( T x )		{ return ::cbrt( x ); }
 #endif
@@ -96,7 +96,7 @@ struct math<float>
 	static float	pow   (float x, float y)	{return ::powf (x, y);}
 	static float	sqrt  (float x)			{return ::sqrtf (x);}
 #if defined( _MSC_VER )
-	static float	cbrt  (float x)			{return ::powf( x, 1.0f / 3.0f ); }
+	static float	cbrt( float x )		{ return ( x > 0 ) ? (::powf( x, 1.0f / 3.0f )) : (- ::powf( -x, 1.0f / 3.0f ) ); }
 #else
 	static float	cbrt  (float x)			{ return ::cbrtf( x ); }	
 #endif

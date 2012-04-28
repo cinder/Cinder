@@ -249,7 +249,7 @@ void HodginParticlesReduxApp::draw()
 	mInfoPanel.update( Vec2f( getWindowWidth(), getWindowHeight() ), mCounter );
 
 	if( mSaveFrames ){
-		writeImage( getHomeDirectory() + "HodginParticleRedux_" + toString( mCounter ) + ".png", copyWindowSurface() );
+		writeImage( getHomeDirectory() / ( "HodginParticleRedux_" + toString( mCounter ) + ".png" ), copyWindowSurface() );
 	}
 	
 	mCounter++;

@@ -82,6 +82,15 @@
     <Filter Include="Header Files\json">
       <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\svg">
+      <UniqueIdentifier>{74f66efa-5b4e-49f4-8ea2-21b75f65a52e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\svg">
+      <UniqueIdentifier>{93ad9a5c-9ccb-4f98-8d4c-bf21a522208f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\linebreak">
+      <UniqueIdentifier>{32843c15-443f-4fa7-ab9c-be6125f164f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -426,6 +435,21 @@
     <ClCompile Include="..\src\cinder\Json.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\svg\Svg.cpp">
+      <Filter>Source Files\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linebreak\linebreak.c">
+      <Filter>Source Files\linebreak</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linebreak\linebreakdata.c">
+      <Filter>Source Files\linebreak</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linebreak\linebreakdef.c">
+      <Filter>Source Files\linebreak</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Unicode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -591,6 +615,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ConcurrentCircularBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Timer.h">
@@ -889,6 +916,15 @@
     </ClInclude>
     <ClInclude Include="..\src\jsoncpp\json_batchallocator.h">
       <Filter>Source Files\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\svg\Svg.h">
+      <Filter>Header Files\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\svg\SvgGl.h">
+      <Filter>Header Files\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Unicode.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
