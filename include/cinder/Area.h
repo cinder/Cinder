@@ -96,6 +96,7 @@ class AreaT {
 	T				x1, y1, x2, y2;
 
 	bool			operator==( const AreaT<T> &aArea ) const { return ( ( x1 == aArea.x1 ) && ( y1 == aArea.y1 ) && ( x2 == aArea.x2 ) && ( y2 == aArea.y2 ) ); }
+	bool			operator!=( const AreaT<T> &aArea ) const { return ! (*this == aArea); }	// ROGER
 	bool			operator<( const AreaT<T> &aArea ) const;
 
 	const AreaT<T>		operator+( const Vec2<T> &o ) const { return this->getOffset( o ); }
