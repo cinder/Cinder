@@ -21,7 +21,8 @@ namespace cinder { namespace qb {
 		mCenterf = Vec3f( mCenter.x, mCenter.y, 0 );
 		mDiameter = h;
 		mRadius = h * 0.5;
-		
+		mGridStep = 10.0f;
+
 		// Make Length of each pixel to the center
 		mLength = (float*) realloc( mLength, sizeof(float) * w * h );
 		for ( int y = 0 ; y < h ; y++ )
@@ -159,7 +160,7 @@ namespace cinder { namespace qb {
 			Vec3f p1 = lp1 + t1 * ldir;
 			float t2 = (-b-sq_D)/(2*a);
 			Vec3f p2 = lp1 + t2 * ldir;
-			res = ( p1 - lp1 > p2 - lp1 ? p2 : p1 );	// return farthest
+			res = ( (p1 - lp1).length() > (p2 - lp1).length() ? p1 : p2 );	// return farthest
 		}
 		return res;
 	}
@@ -204,36 +205,98 @@ namespace cinder { namespace qb {
 	void qbDomeMaster::drawGrid()
 	{
 		glLineWidth( 1 );
-
+		
 		//glPushMatrix();
 		//glTranslatef( QB_CENTER );
-		float r = QB_HEIGHT * 0.5;
-		float seg = r / 45.0f;
-		// verticais
-		for ( float ang = 0.0f ; ang < 360.0 ; ang += 10.0f )
+		float seg = 1.0f / 90.0f;
+		// verticais (Longitude)
+		for ( float lng = 0.0f ; lng < 360.0f ; lng += mGridStep )
 		{
-			gl::color( ((int)ang % 30) == 0 ? Color::yellow()*0.9 : Color::white()*0.5 );
-			Vec3f p0 = Vec3f( cos(toRadians(ang)), sin(toRadians(ang)), 0 );
-			Vec3f p1 = Vec3f( 0, 0, r );
+			gl::color( ((int)lng % 30) == 0 ? Color::yellow()*0.9f : Color::white()*0.5f );
+			Vec3f p0 = XYZ_LATLNG( 0.0f, lng );
+			Vec3f p1 = XYZ_LATLNG( 90.0f, lng+mGridStep );
 			this->drawLineSegmented( p0, p1, seg );
 		}
-		// horizontais
+		// horizontais (Latutude)
 		gl::color( Color::white()*0.75 );
-		for ( float az = 0.0f ; az < 90.0f ; az += 10.0f )
+		for ( float lat = 0.0f ; lat < 90.0f ; lat += mGridStep )
 		{
-			float r = cos( toRadians(az) );
-			float z = sin( toRadians(az) );
-
-			for ( float ang = 0.0f ; ang < 360.0 ; ang += 10.0f )
+			for ( float lng = 0.0f ; lng < 360.0 ; lng += mGridStep )
 			{
-				Vec3f p0 = Vec3f( cos(toRadians(ang)) * r, sin(toRadians(ang)) * r, z );
-				Vec3f p1 = Vec3f( cos(toRadians(ang+15)) * r, sin(toRadians(ang+15)) * r, z );
+				Vec3f p0 = XYZ_LATLNG( lat, lng );
+				Vec3f p1 = XYZ_LATLNG( lat, lng+mGridStep );
 				this->drawLineSegmented( p0, p1, seg );
 			}
 		}
 		//glPopMatrix();
 	}
+	void qbDomeMaster::drawMesh( Vec2f uv )
+	{
+		//glPushMatrix();
+		//glTranslatef( QB_CENTER );
+		// horizontais (Latutude)
+		for ( float lat = 0.0f ; lat < 90.0f ; lat += mGridStep )
+		{
+			glBegin( GL_TRIANGLE_STRIP );
+			for ( float lng = 0.0f ; lng <= 360.0 ; lng += mGridStep )
+			{
+				Vec3f p0 = XYZ_LATLNG( lat, lng );
+				Vec3f p1 = XYZ_LATLNG( lat+mGridStep, lng );
+				Vec2f t0 = ( p0.xy() + Vec2f::one() ) * 0.5f * uv;
+				Vec2f t1 = ( p1.xy() + Vec2f::one() ) * 0.5f * uv;
+				glTexCoord2f( t0 );
+				glNormal3f( p0 );
+				glVertex3f( p0 );
+				glTexCoord2f( t1 );
+				glNormal3f( p1 );
+				glVertex3f( p1 );
+			}
+			glEnd();
+		}
+		//glPopMatrix();
+	}
 	
+	/////////////////////////////////////////////////////////////////////
+	//
+	// STATICS
+	//
+	// lat = horizontal = -90  .. +90
+	// lng = vertical   = -180 .. +180
+	Vec3f qbDomeMaster::getPosFromLatLng( float lat, float lng )
+	{
+		float r = cos( toRadians(lat) );
+		float x = cos(toRadians(lng)) * r;
+		float y = sin(toRadians(lng)) * r;
+		float z = sin( toRadians(lat) );
+		return Vec3f( x, y, z );
+	}
+	//
+	// CONVERSIONS
+	//
+	// st (Texel coord):	0.0 .. 1.0
+	// dc (Dome coord):		-1.0 .. 1.0
+	//
+	Vec2f qbDomeMaster::texelToDome( Vec2f st )
+	{
+		return Vec2f( st.x * 2.0f - 1.0f, (1.0-st.y) * 2.0f - 1.0f );
+	}
+	Vec2f qbDomeMaster::domeToTexel( Vec2f st )
+	{
+		return Vec2f( (st.x + 1.0f) * 0.5f, 1.0f - ((st.y + 1.0f) * 0.5f) );
+	}
+	float qbDomeMaster::domeRadius( Vec2f dc )
+	{
+		return sqrt( dc.x * dc.x + dc.y * dc.y );
+	}
+	float qbDomeMaster::getPixelAngle( Vec2f dc )
+	{
+		float a = -atan2( dc.y, dc.x ) ;
+		if ( a < 0.0f )
+			a += M_TWO_PI;
+		return a;
+	}
+	
+
 	
 } } // cinder::qb
 

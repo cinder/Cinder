@@ -82,6 +82,7 @@ namespace cinder { namespace sgui {
 		static ColorA lightColor;
 		static ColorA bgColor;
 		static ColorA textColor;
+		static ColorA mouseOverColor;
 		static Vec2f spacing;
 		static Vec2f padding;
 		static Vec2f radioSize;
@@ -97,12 +98,13 @@ namespace cinder { namespace sgui {
 			RGB,
 			HSV
 		};
-	public:
+
 		SimpleGUI(App* app);
 		~SimpleGUI();
 		bool	isSelected() { return selectedControl != NULL; }
 		std::vector<Control*>& getControls() { return controls; }	
 		
+		Control	*getMouseOverControl( Vec2i mousePos );
 		bool	onMouseDown(MouseEvent event);
 		bool	onMouseUp(MouseEvent event);
 		bool	onMouseDrag(MouseEvent event);
@@ -155,11 +157,14 @@ namespace cinder { namespace sgui {
 		// FBO
 		gl::Fbo		mFbo;
 		CallbackId	cbResize;
+		CallbackId	cbKeyDown;
 		bool		bUsingFbo;
 		bool		bShouldResize;
 		DropDownVarControl	*droppedList;
+		Control				*mouseControl;		// control with mouse over NOW
 		
 		bool		onResize( app::ResizeEvent event );
+		bool		onKeyDown( app::KeyEvent event );
 		
 	};
 	
@@ -207,6 +212,8 @@ namespace cinder { namespace sgui {
 		Vec2f drawOffset;
 		PanelControl *panelToSwitch;
 		bool invertSwitch;
+		bool mouseIsOver;
+		bool mouseMoved;
 		
 		Control();	
 		virtual ~Control() {};
@@ -223,10 +230,14 @@ namespace cinder { namespace sgui {
 		void setDisplayValue(bool b=true)			{ displayValue = b; }
 		void switchPanel( PanelControl *p )			{ panelToSwitch = p; invertSwitch = false; }	// Panel to switch ON/OFF with my value
 		void switchPanelInv( PanelControl *p )		{ panelToSwitch = p; invertSwitch = true; }		// Panel to switch ON/OFF with my value
+		bool hasChanged()							{ return this->valueHasChanged() || (mouseMoved && this->keyboardEnabled() && !readOnly); }
 		virtual void update()						{}
-		virtual bool hasChanged()					{ return false; }
+		virtual bool valueHasChanged()				{ return false; }
 		virtual bool hasResized()					{ return false; }
 		virtual bool isOn()							{ return true; }		// used to switch panel
+		virtual bool keyboardEnabled()				{ return false; }		// keyboard inc/dec
+		virtual void inc(int multi)					{}						// keyboard inc
+		virtual void dec(int multi)					{}						// keyboard dec
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -240,6 +251,7 @@ namespace cinder { namespace sgui {
 		float lastValue;
 		bool formatAsTime;
 		int precision;
+		float step;
 	public:
 		FloatVarControl(const std::string & name, float* var, float min=0, float max=1, float defaultValue = 0);
 		float getNormalizedValue();
@@ -251,10 +263,15 @@ namespace cinder { namespace sgui {
 		void onMouseDrag(MouseEvent event);
 		// ROGER
 		void update();
-		void setPrecision(int p)			{ precision = p; };
+		void setPrecision(int p);
 		void setFormatAsTime(bool b=true)	{ formatAsTime=b; }
-		bool hasChanged()					{ return (*var != lastValue); };
-		bool isOn()							{ return (*var); }		// used to switch panel
+		bool isOn()							{ return ( *var ); }		// used to switch panel
+		bool keyboardEnabled()				{ return true; }		// used to inc/dec values
+		bool valueHasChanged()				{ return ( this->displayedValue(*var) != this->displayedValue(lastValue) ); };
+		void inc(int multi)					{ *var = math<float>::clamp( (*var)+(step*multi), min, max ); }		// keyboard inc
+		void dec(int multi)					{ *var = math<float>::clamp( (*var)-(step*multi), min, max ); }		// keyboard dec
+	private:
+		float displayedValue( float v )		{ return (float)( ((int)(v / step)) * step ); }
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -281,8 +298,11 @@ namespace cinder { namespace sgui {
 		// ROGER
 		void update();
 		void setStep(int s);
-		bool hasChanged()		{ return (*var != lastValue); }
-		bool isOn()				{ return (*var); }		// used to switch panel
+		bool valueHasChanged()		{ return (*var != lastValue); }
+		bool isOn()					{ return (*var); }		// used to switch panel
+		bool keyboardEnabled()		{ return true; }		// used to inc/dec values
+		void inc(int multi)			{ *var = math<int>::clamp( (*var)+(step*multi), min, max ); }		// keyboard inc
+		void dec(int multi)			{ *var = math<int>::clamp( (*var)-(step*multi), min, max ); }		// keyboard dec
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -307,8 +327,8 @@ namespace cinder { namespace sgui {
 		bool displayChar;
 		bool displayHex;
 		virtual void update();
-		bool hasChanged()		{ return (*var != lastValue); }
-		bool isOn()				{ return (*var); }		// used to switch panel
+		bool valueHasChanged()		{ return (*var != lastValue); }
+		bool isOn()					{ return (*var); }		// used to switch panel
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -336,8 +356,8 @@ namespace cinder { namespace sgui {
 		bool* var;
 		int groupId;
 		// ROGER
-		bool lastValue;
 		std::string nameOff;
+		bool lastValue;
 	public:
 		BoolVarControl(const std::string & name, bool* var, bool defaultValue, int groupId);
 		Vec2f draw(Vec2f pos);	
@@ -345,8 +365,11 @@ namespace cinder { namespace sgui {
 		void fromString(std::string& strValue);
 		void onMouseDown(MouseEvent event);
 		// ROGER
-		bool hasChanged()		{ return (*var != lastValue); };
-		bool isOn()				{ return (*var); }		// used to switch panel
+		void update();
+		bool valueHasChanged()			{ return (*var != lastValue); };
+		bool isOn()						{ return (*var); }		// used to switch panel
+		void setAsButton(bool b=true)	{ asButton=b; this->update(); }
+		bool asButton;
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -375,7 +398,7 @@ namespace cinder { namespace sgui {
 		void onMouseDrag(MouseEvent event);
 		// ROGER
 		void update();
-		bool hasChanged()		{ return ( alphaControl ? (*varA!=lastValueA) : (*var!=lastValue) ); };
+		bool valueHasChanged()		{ return ( alphaControl ? (*varA!=lastValueA) : (*var!=lastValue) ); };
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -398,7 +421,7 @@ namespace cinder { namespace sgui {
 		void onMouseDrag(MouseEvent event);
 		// ROGER
 		void update();
-		bool hasChanged()		{ return (*var!=lastValue); };
+		bool valueHasChanged()		{ return (*var!=lastValue); };
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -422,9 +445,9 @@ namespace cinder { namespace sgui {
 		virtual void resize();
 		virtual Vec2f draw(Vec2f pos);
 		virtual void onMouseDown(MouseEvent event);
-		virtual bool hasChanged()	{ return (*var != lastValue); }
-		virtual bool hasResized()	{ return (items.size() != lastSize); }
-		bool isOn()					{ return (*var); }		// used to switch panel
+		virtual bool valueHasChanged()	{ return (*var != lastValue); }
+		virtual bool hasResized()		{ return (items.size() != lastSize); }
+		bool isOn()						{ return (*var); }		// used to switch panel
 	};
 	
 	class DropDownVarControl : public ListVarControl {
@@ -433,7 +456,7 @@ namespace cinder { namespace sgui {
 		void resize();
 		Vec2f draw(Vec2f pos);
 		void onMouseDown(MouseEvent event);
-		bool hasResized()		{ return (ListVarControl::hasResized() || lastDropped!=dropped); }
+		bool hasResized()		{ return (this->ListVarControl::hasResized() || lastDropped!=dropped); }
 		void open()				{ dropped = true; this->resize(); }
 		void close()			{ dropped = false; this->resize(); }
 		
@@ -473,7 +496,7 @@ namespace cinder { namespace sgui {
 		
 		// ROGER
 		void setTriggerUp(bool b=true)		{ triggerUp = b; }
-		bool hasChanged()					{ return (pressed!=lastPressed || name.compare(lastName)!=0); };
+		bool valueHasChanged()				{ return (pressed!=lastPressed || name.compare(lastName)!=0); };
 		bool isOn()							{ return (pressed); }		// used to switch panel
 
 	};
@@ -491,7 +514,7 @@ namespace cinder { namespace sgui {
 		std::string * var;
 		std::string lastName;
 		std::string lastVar;
-		bool hasChanged();
+		bool valueHasChanged();
 	};
 	
 	//-----------------------------------------------------------------------------
@@ -521,8 +544,8 @@ namespace cinder { namespace sgui {
 		bool enabled;
 		// ROGER
 		bool lastEnabled;
-		bool hasChanged()	{ return (enabled != lastEnabled); };
-		bool hasResized()	{ return this->hasChanged(); };
+		bool valueHasChanged()	{ return (enabled != lastEnabled); };
+		bool hasResized()		{ return this->valueHasChanged(); };
 	};
 	
 	
@@ -541,7 +564,7 @@ namespace cinder { namespace sgui {
 		float refreshRate;
 		double refreshTime;
 		void resizeTexture();
-		bool hasChanged();
+		bool valueHasChanged();
 		bool hasResized();
 		void refresh()			{ refreshTime = 0; }	// force refresh
 		bool isOn()				{ return (*var); }		// used to switch panel

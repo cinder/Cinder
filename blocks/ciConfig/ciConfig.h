@@ -306,12 +306,16 @@ public:
 	}
 
 	// return current freshness - automatic UNFRESH
-	bool isFresh( bool unfresh=true )
+	bool isFresh( bool _unfresh=true )
 	{
 		bool freshness = (vec[0].freshness || vec[1].freshness || vec[2].freshness);
-		if (unfresh)
-			vec[0].freshness = vec[1].freshness = vec[2].freshness = false; 
+		if (_unfresh)
+			this->unfresh();
 		return freshness; 
+	}
+	void unfresh()
+	{
+		vec[0].freshness = vec[1].freshness = vec[2].freshness = false; 
 	}
 
 	// return current freshness - automatic UNFRESH
@@ -507,16 +511,16 @@ public:
 	float getLastValue(int id, int i)	{ return params[id]->vec[i].getLastValue(); }
 	const std::string& getName(int id)	{ return params[id]->name; }
 	short getType(int id)				{ return params[id]->type; }
-	bool isFresh()						{ bool f=freshness; freshness = false; return f; }	// global freshness - automatic UNFRESH
-	bool isFresh(short id, bool unfresh=true)	{ return params[id]->isFresh(unfresh); }			// param freshness
 	bool isBool(short id)		{ return params[id]->isBool(); }			// bool type?
 	bool isByte(short id)		{ return params[id]->isByte(); }			// byte type?
 	bool isInt(short id)		{ return params[id]->isInt(); }				// integer type?
 	bool isColor(short id)		{ return params[id]->isColor(); }			// color type?
 	bool isVector(short id)		{ return params[id]->isVector(); }			// vector type?
 	bool isString(short id)		{ return params[id]->isString(); }			// vector type?
+	bool isFresh()						{ bool f=freshness; freshness = false; return f; }	// global freshness - automatic UNFRESH
+	bool isFresh(short id, bool _unfresh=true)	{ return params[id]->isFresh(_unfresh); }			// param freshness
 	void unfresh()				{ freshness = false; }						// global freshness - automatic UNFRESH
-	//bool isFresh(int id, int i=0) { return params[id]->vec[i].fresh; }	// individual freshness
+	void unfreshAll()			{ this->unfresh(); for (int id=0;id<params.size();id++) if (params[id]) params[id]->unfresh(); }
 #ifdef CINDER
 	// pointers
 	float* getPointer(int id, int i)		{ return (params[id]->getPointer(i)); }

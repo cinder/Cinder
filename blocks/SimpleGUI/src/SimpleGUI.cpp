@@ -38,6 +38,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include "SimpleGUI.h"
+#include "cinder/app/AppBasic.h"
 #include "cinder/Utilities.h"
 #include "cinder/Font.h"
 #include "cinder/CinderMath.h"
@@ -45,7 +46,8 @@
 
 #ifndef RELEASE
 //#define DEBUG_FBO
-//#define BLINK_FBO
+//#define BLINK_FBO				// uncomment to blink whole GUI when anything changes
+//#define BLINK_CONTROLS		// uncomment to color-blink controls when they change
 #endif
 
 namespace cinder { namespace sgui {
@@ -56,7 +58,8 @@ namespace cinder { namespace sgui {
 	ColorA SimpleGUI::darkColor = ColorA(0.3, 0.3, 0.3, 1);
 	ColorA SimpleGUI::lightColor = ColorA(1, 1, 1, 1);
 	ColorA SimpleGUI::bgColor = ColorA(0, 0, 0, 0.8);
-	ColorA SimpleGUI::textColor = ColorA(1,1,1,1);	
+	ColorA SimpleGUI::textColor = ColorA(1,1,1,1);
+	ColorA SimpleGUI::mouseOverColor = ColorA(0.75,0.75,0.75,1);
 	Vec2f SimpleGUI::spacing = Vec2f(3, 0);
 	Vec2f SimpleGUI::padding = Vec2f(3, 3);
 	Vec2f SimpleGUI::radioSize = Vec2f(10, 10);
@@ -71,6 +74,7 @@ namespace cinder { namespace sgui {
 	SimpleGUI::SimpleGUI(App* app) {
 		init(app);
 		enabled = true;
+		mouseControl = NULL;
 	}
 	// ROGER
 	SimpleGUI::~SimpleGUI() {
@@ -95,6 +99,7 @@ namespace cinder { namespace sgui {
 		bUsingFbo = true;
 		bShouldResize = true;
 		cbResize = App::get()->registerResize( this, &SimpleGUI::onResize );
+		cbKeyDown = App::get()->registerKeyDown( this, &SimpleGUI::onKeyDown );
 	}
 	
 	FloatVarControl* SimpleGUI::addParam(const std::string& paramName, float* var, float min, float max, float defaultValue) {
@@ -252,13 +257,46 @@ namespace cinder { namespace sgui {
 		bShouldResize = true;
 		return false;
 	}
+	bool SimpleGUI::onKeyDown( app::KeyEvent event )
+	{
+		if ( mouseControl )
+		{
+			switch( event.getCode() ) {
+				case KeyEvent::KEY_UP:
+				case KeyEvent::KEY_RIGHT:
+					mouseControl->inc( event.isShiftDown() ? 10 : 1 );
+					return true;
+				case KeyEvent::KEY_DOWN:
+				case KeyEvent::KEY_LEFT:
+					mouseControl->dec( event.isShiftDown() ? 10 : 1 );
+					return true;
+			}
+		}
+		return false;
+	}
 	//
 	// FBO
 	//
 	void SimpleGUI::draw() {	
 		gl::disableDepthRead();	
 		gl::disableDepthWrite();
-		
+
+		// check mouse over
+		mouseControl = this->getMouseOverControl( AppBasic::get()->getMousePos() );
+		for (std::vector<Control*>::iterator it = controls.begin() ; it != controls.end() ; it++) {
+			Control* control = *it;
+			if ( control == mouseControl )
+			{
+				control->mouseMoved = ( ! control->mouseIsOver );
+				control->mouseIsOver = true;
+			}
+			else
+			{
+				control->mouseMoved = control->mouseIsOver;
+				control->mouseIsOver = false;
+			}
+		}
+
 		if (bUsingFbo)
 		{
 			// Update Fbo
@@ -348,7 +386,7 @@ namespace cinder { namespace sgui {
 										(-SimpleGUI::padding).y,
 										(SimpleGUI::sliderSize + SimpleGUI::padding).x,
 										( mFbo.getSize().y - position.y ) );
-#ifdef DEBUG_FBO
+#ifdef BLINK_CONTROLS
 				gl::color( ColorA( Rand::randFloat(0.25,1.0), Rand::randFloat(0.25,1.0), Rand::randFloat(0.25,1.0), 0.7) );
 #else
 				gl::color( ColorA::zero() );
@@ -359,16 +397,16 @@ namespace cinder { namespace sgui {
 			if (control->type == Control::PANEL)
 			{
 				currPanel = (PanelControl*)control;
-				if (currPanel->hasChanged())
+				if (currPanel->valueHasChanged())
 				{
-					control->draw(position);	// draw to update hasChanged()
+					control->draw(position);	// draw to update valueHasChanged()
 					continue;
 				}
 			}
 			if (currPanel != NULL)
 				if (!currPanel->enabled)
 					continue;
-#ifdef DEBUG_FBO
+#ifdef BLINK_CONTROLS
 			SimpleGUI::bgColor = ColorA( Rand::randFloat(0.25,1.0), Rand::randFloat(0.25,1.0), Rand::randFloat(0.25,1.0), 0.7);
 #endif
 			if ( bForceRedraw || refreshPanel || control->hasChanged() || control->type == Control::COLUMN )
@@ -460,15 +498,11 @@ namespace cinder { namespace sgui {
 	}
 	
 	
-	bool SimpleGUI::onMouseDown(MouseEvent event) {
-		if (!enabled) return false;
-		
-		// ROGER - ignore disabled panels
+	Control * SimpleGUI::getMouseOverControl( Vec2i mousePos ) {
 		PanelControl* currPanel = NULL;
-		
 		for (std::vector<Control*>::iterator it = controls.begin() ; it != controls.end() ; it++) {
 			Control* control = *it;
-			// ROGER - ignore disabled panels
+			// ignore disabled panels
 			if (control->type == Control::PANEL) {
 				currPanel = (PanelControl*)control;
 			}
@@ -478,26 +512,36 @@ namespace cinder { namespace sgui {
 			if (currPanel != NULL && !currPanel->enabled) {
 				continue;
 			}
-			
 			// pass on mouse event
-			if (control->activeArea.contains(event.getPos())) {
-				selectedControl = control;
-				selectedControl->onMouseDown(event);
-				// Close lost DropDown List
-				if (droppedList && droppedList != selectedControl)
-				{
-					droppedList->close();
-					droppedList = NULL;
-				}
-				// Remember DropDown List
-				if (selectedControl->type == Control::DROP_DOWN_VAR)
-				{
-					DropDownVarControl *l = (DropDownVarControl*) selectedControl;
-					if ( l->dropped )
-						droppedList = l;
-				}
-				return true;
+			if (control->activeArea.contains(mousePos))
+				return control;
+		}
+		return NULL;
+	}
+	
+	
+	bool SimpleGUI::onMouseDown(MouseEvent event) {
+		if (!enabled) return false;
+		
+		// ROGER - pass on mouse event
+		Control* control = this->getMouseOverControl( event.getPos() );
+		if ( control ) {
+			selectedControl = control;
+			selectedControl->onMouseDown(event);
+			// Close lost DropDown List
+			if (droppedList && droppedList != selectedControl)
+			{
+				droppedList->close();
+				droppedList = NULL;
 			}
+			// Remember DropDown List
+			if (selectedControl->type == Control::DROP_DOWN_VAR)
+			{
+				DropDownVarControl *l = (DropDownVarControl*) selectedControl;
+				if ( l->dropped )
+					droppedList = l;
+			}
+			return true;
 		}
 		// Close open DropDown list
 		if (droppedList)
@@ -559,6 +603,7 @@ namespace cinder { namespace sgui {
 		this->invertSwitch = false;
 		this->readOnly = false;
 		this->displayValue = false;
+		this->mouseMoved = false;
 	}
 	
 	void Control::setBackgroundColor(ColorA color) {
@@ -581,7 +626,7 @@ namespace cinder { namespace sgui {
 		this->var = var;
 		this->min = min;
 		this->max = max;
-		this->precision = ( (max-min) <= 1.0 ? 2 : 1 );
+		this->setPrecision( (max-min) <= 1.0 ? 2 : 1 );
 		*var = math<float>::clamp( defaultValue, min, max );
 		// ROGER
 		this->lastValue = *var;
@@ -589,14 +634,22 @@ namespace cinder { namespace sgui {
 		this->update();
 	}
 	
+	void FloatVarControl::setPrecision(int p) {
+		this->precision = p;
+		this->step = (1.0f/pow(10.0f,p));
+	}
+
 	float FloatVarControl::getNormalizedValue() {
-		return (*var - min)/(max - min);
+		return ( this->displayedValue(*var) - min)/(max - min);
 	}
 	
 	void FloatVarControl::setNormalizedValue(float value) {
 		float newValue = min + value*(max - min);
-		if (newValue != *var)
+		if ( this->displayedValue(newValue) != this->displayedValue(*var) )
+		{
+			//printf("/// FLOAT  NEW [%s]  last %.5f  new %.5f\n",this->name.c_str(),this->displayedValue(*var),this->displayedValue(newValue));
 			*var = newValue;
+		}
 	}
 	
 	// ROGER
@@ -613,6 +666,8 @@ namespace cinder { namespace sgui {
 	}
 	
 	Vec2f FloatVarControl::draw(Vec2f pos) {
+		//printf("/// FLOAT  [%s]  last %.5f  curr %.5f\n",this->name.c_str(),this->displayedValue(*var),this->displayedValue(lastValue));
+		
 		this->lastValue = *var;
 		
 		activeArea = activeAreaBase + pos;
@@ -632,6 +687,11 @@ namespace cinder { namespace sgui {
 			gl::drawSolidRect(activeArea);
 			gl::color(SimpleGUI::lightColor);
 			gl::drawSolidRect(SimpleGUI::getScaledWidthRectf(activeArea, getNormalizedValue()));
+			if (this->mouseIsOver)
+			{
+				gl::color(SimpleGUI::mouseOverColor);
+				gl::drawStrokedRect(activeArea);
+			}
 		}
 		
 		pos.y += backArea.getHeight() + SimpleGUI::spacing.y;	
@@ -657,7 +717,7 @@ namespace cinder { namespace sgui {
 		else
 		{
 			ss.precision(this->precision);
-			ss << *var;
+			ss << this->displayedValue( *var );
 		}
 		return ss.str();
 	}
@@ -786,6 +846,11 @@ namespace cinder { namespace sgui {
 				gl::drawSolidRect(activeArea);
 				gl::color(SimpleGUI::lightColor);
 				gl::drawSolidRect(SimpleGUI::getScaledWidthRectf(activeArea, getNormalizedValue()));
+				if (this->mouseIsOver)
+				{
+					gl::color(SimpleGUI::mouseOverColor);
+					gl::drawStrokedRect(activeArea);
+				}
 			}
 		}
 		gl::disableAlphaBlending();
@@ -1059,12 +1124,27 @@ namespace cinder { namespace sgui {
 		this->groupId = groupId;
 		*var = defaultValue;
 		// ROGER
+		this->asButton = false;
 		this->lastValue = *var;
-		activeAreaBase = Rectf(0, 0, SimpleGUI::radioSize.x, SimpleGUI::radioSize.y);
-		backArea = Rectf((-SimpleGUI::padding).x,
-						 (-SimpleGUI::padding).y,
-						 (SimpleGUI::sliderSize + SimpleGUI::padding).x,
-						 (SimpleGUI::sliderSize + SimpleGUI::padding).y );
+		this->update();
+	}	
+	
+	void BoolVarControl::update() {
+		if (this->asButton)
+		{
+			activeAreaBase = Rectf(0,0,SimpleGUI::sliderSize.x,SimpleGUI::buttonSize.y );
+			backArea = Rectf((-SimpleGUI::padding).x,
+							 (-SimpleGUI::padding).y,
+							 (SimpleGUI::buttonSize + SimpleGUI::padding).x,
+							 (SimpleGUI::buttonSize + SimpleGUI::padding).y );
+		}
+		else {
+			activeAreaBase = Rectf(0, 0, SimpleGUI::radioSize.x, SimpleGUI::radioSize.y);
+			backArea = Rectf((-SimpleGUI::padding).x,
+							 (-SimpleGUI::padding).y,
+							 (SimpleGUI::sliderSize + SimpleGUI::padding).x,
+							 (SimpleGUI::sliderSize + SimpleGUI::padding).y );
+		}
 	}	
 	
 	Vec2f BoolVarControl::draw(Vec2f pos) {
@@ -1075,12 +1155,13 @@ namespace cinder { namespace sgui {
 		gl::color(SimpleGUI::bgColor);
 		gl::drawSolidRect(backArea + pos);
 		
-		gl::enableAlphaBlending();
-		gl::drawString( ((*var)?name:nameOff), Vec2f(pos.x + SimpleGUI::radioSize.x + SimpleGUI::padding.x*2, pos.y), SimpleGUI::textColor, SimpleGUI::textFont);					
-		gl::disableAlphaBlending();
-		
 		gl::color((*var) ? SimpleGUI::lightColor : SimpleGUI::darkColor);
 		gl::drawSolidRect(activeArea);
+		
+		float x = pos.x + ( asButton ? SimpleGUI::buttonGap.x : SimpleGUI::radioSize.x + SimpleGUI::padding.x*2 );
+		gl::enableAlphaBlending();
+		gl::drawString( ((*var)?name:nameOff), Vec2f(x, pos.y), (asButton&&(*var) ? SimpleGUI::darkColor : SimpleGUI::textColor), SimpleGUI::textFont);					
+		gl::disableAlphaBlending();
 		
 		pos.y += backArea.getHeight() + SimpleGUI::spacing.y;	
 		return pos;
@@ -1222,9 +1303,9 @@ namespace cinder { namespace sgui {
 		boost::split(strs, strValue, boost::is_any_of("\t "));
 		for (int i = 0 ; i < channelCount ; i++)
 			if (alphaControl)
-				*varA[i] = boost::lexical_cast<double>(strs[i]);
+				(*varA)[i] = boost::lexical_cast<double>(strs[i]);
 			else
-				*var[i] = boost::lexical_cast<double>(strs[i]);
+				(*var)[i] = boost::lexical_cast<double>(strs[i]);
 	}
 	
 	
@@ -1343,7 +1424,7 @@ namespace cinder { namespace sgui {
 		std::vector<std::string> strs;
 		boost::split(strs, strValue, boost::is_any_of("\t "));
 		for (int i = 0 ; i < 3 ; i++)
-			*var[i] = boost::lexical_cast<double>(strs[i]);
+			(*var)[i] = boost::lexical_cast<double>(strs[i]);
 	}
 	
 	
@@ -1712,7 +1793,7 @@ namespace cinder { namespace sgui {
 						 (SimpleGUI::labelSize + SimpleGUI::padding).y );
 	}
 	
-	bool LabelControl::hasChanged() {
+	bool LabelControl::valueHasChanged() {
 		if ( name.compare(lastName) != 0 )
 			return true;
 		if (var)
@@ -1804,7 +1885,7 @@ namespace cinder { namespace sgui {
 	
 	PanelControl::PanelControl(const std::string& panelName) : Control() {
 		this->enabled = true;
-		this->lastEnabled = true;
+		this->lastEnabled = true;	
 		this->type = Control::PANEL;
 		this->name = ( panelName.length() ? panelName : "Panel" );
 	}	
@@ -1828,7 +1909,7 @@ namespace cinder { namespace sgui {
 		this->resizeTexture();
 	}
 	
-	bool TextureVarControl::hasChanged()
+	bool TextureVarControl::valueHasChanged()
 	{
 		bool shouldRefresh = ( *var && ( refreshTime == 0.0 || (refreshRate > 0.0 && (getElapsedSeconds() - refreshTime) >= refreshRate)) ) ? true : false;
 		return (shouldRefresh || resized);

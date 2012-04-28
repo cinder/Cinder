@@ -29,6 +29,7 @@ namespace cinder { namespace qb {
 		bDrawGui				= true;
 		bVerbose				= true;
 		bRenderControls			= true;
+		bSyphonOutput			= true;
 		mFarThrowMultiplyer		= 2.1;
 		mDefaultCamera			= CAMERA_TYPE_PERSP;
 		mCameraNear				= 1.0f;		// Nao baixar muito para eviar Z-Fight
@@ -111,13 +112,16 @@ namespace cinder { namespace qb {
 		mBackgroundColor = Color::black();
 
 		// Make Syphon server
-		mSyphonServer.setName("Render");
-		mSyphonIcon =  gl::Texture( loadImage( loadResource( "syphon.png" ) ) );
+		if ( bSyphonOutput )
+		{
+			mSyphonServer.setName("Render");
+			mSyphonIcon =  gl::Texture( loadImage( loadResource( "syphon.png" ) ) );
+		}
 		
 		// Modul8 Syphon Client
-		mMSyphon.setup();
-		mMSyphon.setApplicationName( "Modul8" );
-		mMSyphon.setServerName("");
+		mSyphonModul8.setup();
+		mSyphonModul8.setApplicationName( "Modul8" );
+		mSyphonModul8.setServerName("");
 		
 		// start Timer!
 		mPlayhead.seekToTime( (double) mConfig->get(QBCFG_CURRENT_TIME) );
@@ -200,7 +204,7 @@ namespace cinder { namespace qb {
 				break;
 			case 'y':
 			case 'Y':
-				if (event.isMetaDown()) // COMMAND
+				if (event.isMetaDown() && bSyphonOutput) // COMMAND
 					mConfig->invert( QBCFG_SYPHON_OUTPUT );
 				break;
 			case 'x':
@@ -834,7 +838,7 @@ namespace cinder { namespace qb {
 			glTranslatef(0,mFboRender.getHeight(),0);
 			glScalef(1.0, -1.0, 1.0);
 			gl::color( Color::white() );
-			mMSyphon.draw( mFboRender.getBounds() );
+			mSyphonModul8.draw( mFboRender.getBounds() );
 			glPopMatrix();
 			gl::disableAlphaBlending();
 			this->unbindFbo();
@@ -846,7 +850,8 @@ namespace cinder { namespace qb {
 		{
 			if ( ! tex )
 				tex = mFboRender.getTexture();
-			mSyphonServer.publishTexture( tex );
+			if ( bSyphonOutput )
+				mSyphonServer.publishTexture( tex );
 		}
 		// Add to render
 		if ( mRenderer.isRendering() )

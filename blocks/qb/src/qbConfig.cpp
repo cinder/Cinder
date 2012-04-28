@@ -100,7 +100,8 @@ qbConfig::qbConfig() : ciConfigGuiSimple()
 	this->guiAddButton("Load Config",				(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbLoad)->setTriggerUp();
 	this->guiAddButton("Save Config",				(ciConfigGuiBase*)this, (bool(ciConfigGuiBase::*)(ci::app::MouseEvent)) &qbConfig::cbSave)->setTriggerUp();
 	this->guiAddParam(QBCFG_MODUL8_INPUT,			"Modul8 Input" );
-	this->guiAddParam(QBCFG_SYPHON_OUTPUT,			"Syphon Output" );
+	if ( _qb.bSyphonOutput )
+		this->guiAddParam(QBCFG_SYPHON_OUTPUT,			"Syphon Output" );
 	// Readonly
 	this->guiAddSeparator();
 	this->guiAddParam(DUMMY_RENDER_WIDTH,			"Render Width" );

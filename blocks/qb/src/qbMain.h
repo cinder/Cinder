@@ -201,6 +201,7 @@ public:
 	Font			mFontHelvetica, mFont;
 	std::string		mScreenName;
 	bool			bVerbose;
+	bool			bSyphonOutput;
 	int				mDefaultCamera;
 
 private:
@@ -236,8 +237,8 @@ private:
 	gl::GlslProg				mShaderStereo;
 	
 	// Syphon Server
-	syphonClient		mMSyphon;
 	syphonServer		mSyphonServer;
+	syphonClient		mSyphonModul8;
 	gl::Texture			mSyphonIcon;
 	gl::Texture			mCorner;
 	

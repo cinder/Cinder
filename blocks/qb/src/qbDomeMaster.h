@@ -12,7 +12,9 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 
-#define DXYI(X,Y)		((Y)*mSize.x+(X))
+#define DXYI(X,Y)				((Y)*mSize.x+(X))
+
+#define XYZ_LATLNG(lat,lng)		(qbDomeMaster::getPosFromLatLng(lat,lng))
 
 namespace cinder { namespace qb {
 	
@@ -49,6 +51,7 @@ namespace cinder { namespace qb {
 		void			drawNormals( Rectf bounds );
 		void			drawMask();
 		void			drawGrid();
+		void			drawMesh( Vec2f uv=Vec2f::one() );
 		void			drawProjectors();
 		
 		Vec2i			mSize;
@@ -56,6 +59,14 @@ namespace cinder { namespace qb {
 		Vec3f			mCenterf;
 		int				mRadius;
 		int				mDiameter;
+		float			mGridStep;
+		
+		// Static
+		static Vec3f	getPosFromLatLng( float lat, float lng );
+		static Vec2f	texelToDome( Vec2f st );
+		static Vec2f	domeToTexel( Vec2f dc );
+		static float	domeRadius( Vec2f dc );
+		static float	getPixelAngle( Vec2f dc );
 		
 		bool *			mMask;			// for x,y in a DM: Is inside circle?
 		float *			mLength;		// for x,y in a DM: distance from center
