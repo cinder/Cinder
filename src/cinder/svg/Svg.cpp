@@ -620,6 +620,7 @@ Node::Node( const Node *parent, const XmlTree &xml )
 {
 	mSpecifiesTransform = false;
 	mId = xml["id"];
+	mTag = xml.getTag();
 	if( xml.hasAttribute( "transform" ) ) {
 		mSpecifiesTransform = true;
 		mTransform = parseTransform( xml["transform"] );
