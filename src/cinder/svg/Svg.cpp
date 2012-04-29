@@ -1667,6 +1667,11 @@ Group::~Group()
 void Group::parse( const XmlTree &xml )
 {
 	for( XmlTree::ConstIter treeIt = xml.begin(); treeIt != xml.end(); ++treeIt ) {
+
+		// ROGER -- ignore hidden objects
+		if ( (*treeIt)["display"].getValue() == "none" )
+			continue;
+		
 		if( treeIt->getTag() == "g" )
 			mChildren.push_back( new Group( this, *treeIt ) );
 		else if( treeIt->getTag() == "path" )
