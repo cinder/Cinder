@@ -94,8 +94,10 @@ void Display::enumerateDisplays()
 	int screenCount = [screens count];
 	for( int i = 0; i < screenCount; ++i ) {
 		::NSScreen *screen = [screens objectAtIndex:i];
-		[screen retain]; // this is released in the destructor for Display
 		NSRect frame = [screen frame];
+		if ( frame.size.width == 0 || frame.size.height == 0)	// ROGER
+			continue;
+		[screen retain]; // this is released in the destructor for Display
 
 		DisplayRef newDisplay = DisplayRef( new Display );
 		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
@@ -170,5 +172,17 @@ DisplayRef Display::getMainDisplay()
 	enumerateDisplays();
 	return sDisplays[0];
 }
+
+	// ROGER
+	void Display::refresh()
+	{
+		if( sDisplaysInitialized )
+		{
+			sDisplays.clear();
+			sDisplaysInitialized = false;
+		}
+		enumerateDisplays();
+	}
+	
 
 } // namespace cinder

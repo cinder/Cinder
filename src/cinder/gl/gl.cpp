@@ -583,6 +583,7 @@ void drawColorCube( const Vec3f &center, const Vec3f &size )
 {
 	drawCubeImpl( center, size, true );
 }
+	
 
 void drawStrokedCube( const Vec3f &center, const Vec3f &size )
 {

@@ -126,6 +126,8 @@ class CameraPersp : public Camera {
 	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane ); // constructs screen-aligned camera
 	
 	void setPerspective( float horizFovDegrees, float aspectRatio, float nearPlane, float farPlane );
+	// ROGER
+	virtual void		calcProjectionFromGroundLevel();
 	
 	virtual bool		isPersp() const { return true; }
 

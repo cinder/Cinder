@@ -43,6 +43,13 @@ class Perlin
 	float	fBm( float x, float y ) const { return fBm( Vec2f( x, y ) ); }
 	float	fBm( const Vec3f &v ) const;
 	float	fBm( float x, float y, float z ) const { return fBm( Vec3f( x, y, z ) ); }
+	
+	// ROGER
+	// z ranging from 0 to t
+	// http://staffwww.itn.liu.se/~stegu/TNM022-2005/perlinnoiselinks/perlin-noise-math-faq.html#loop
+	float	fBmLoop( float x, float y, float z, float t ) const { return ( (t - z) * fBm(x, y, z) + (z) * fBm(x, y, z - t) ) / (t); }
+	
+	
 
 	/// Derivative of fractal Brownian motion, corresponding with the values returned by fBm()
 //	float	dfBm( float v ) const;

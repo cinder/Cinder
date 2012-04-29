@@ -132,7 +132,9 @@ Fbo::Format::Format()
 	mDepthBufferAsTexture = false;
 #else
 	mColorInternalFormat = GL_RGBA8;
-	mDepthInternalFormat = GL_DEPTH_COMPONENT24;
+	// ROGER: try to remove self shadowing
+	//mDepthInternalFormat = GL_DEPTH_COMPONENT24;
+	mDepthInternalFormat = GL_DEPTH_COMPONENT32F;
 	mDepthBufferAsTexture = true;
 #endif
 	mSamples = 0;
@@ -350,9 +352,11 @@ void Fbo::bindTexture( int textureUnit, int attachment )
 	updateMipmaps( false, attachment );
 }
 
-void Fbo::unbindTexture()
+void Fbo::unbindTexture( int textureUnit )
 {
+	glActiveTexture( GL_TEXTURE0 + textureUnit );	// ROGER
 	glBindTexture( getTarget(), 0 );
+	glActiveTexture( GL_TEXTURE0 );
 }
 
 void Fbo::bindDepthTexture( int textureUnit )
@@ -486,6 +490,7 @@ GLint Fbo::getMaxAttachments()
 {
 #if ! defined( CINDER_GLES )
 	if( sMaxAttachments < 0 ) {
+		// ROGER GL_MAX_COLOR_ATTACHMENTS >> GL_MAX_COLOR_ATTACHMENTS_EXT
 		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS_EXT, &sMaxAttachments );
 	}
 	

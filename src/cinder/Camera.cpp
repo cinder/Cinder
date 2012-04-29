@@ -275,6 +275,71 @@ void CameraPersp::calcProjection()
 	m[15] =  ( mFarClip + mNearClip ) / ( 2.0f * mFarClip*mNearClip );
 }
 
+	//
+	// ROGER
+	// Asymmetric Frustum - Perspective from ground level
+	// Dont forget to place lookAt() on ground level too!
+	// from: http://forum.libcinder.org/#topic/23286000000590029
+	// ref: http://paulbourke.net/miscellaneous/stereographics/stereorender/
+	// ref: http://www.songho.ca/opengl/gl_transform.html
+	void CameraPersp::calcProjectionFromGroundLevel()
+	{
+		// looking from the top
+		//mFrustumTop     =  2 * mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5);
+		//mFrustumBottom	=  0.0f;
+		//mFrustumRight	=  mFrustumTop * mAspectRatio / 2;
+		//mFrustumLeft	= -mFrustumRight;
+		
+		// looking from the botton
+		mFrustumTop     =  0.0f;
+		mFrustumBottom	= -2 * mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5);
+		mFrustumRight	= -mFrustumBottom * mAspectRatio / 2;
+		mFrustumLeft	= -mFrustumRight;
+		
+		float *m = mProjectionMatrix.m;
+		m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
+		m[ 4] =  0.0f;
+		m[ 8] =  ( mFrustumRight + mFrustumLeft ) / ( mFrustumRight - mFrustumLeft );
+		m[12] =  0.0f;
+		
+		m[ 1] =  0.0f;
+		m[ 5] =  2.0f * mNearClip / ( mFrustumTop - mFrustumBottom );
+		m[ 9] =  ( mFrustumTop + mFrustumBottom ) / ( mFrustumTop - mFrustumBottom );
+		m[13] =  0.0f;
+		
+		m[ 2] =  0.0f;
+		m[ 6] =  0.0f;
+		m[10] = -( mFarClip + mNearClip ) / ( mFarClip - mNearClip );
+		m[14] = -2.0f * mFarClip * mNearClip / ( mFarClip - mNearClip );
+		
+		m[ 3] =  0.0f;
+		m[ 7] =  0.0f;
+		m[11] = -1.0f;
+		m[15] =  0.0f;
+		
+		m = mInverseProjectionMatrix.m;
+		m[ 0] =  ( mFrustumRight - mFrustumLeft ) / ( 2.0f * mNearClip );
+		m[ 4] =  0.0f;
+		m[ 8] =  0.0f;
+		m[12] =  ( mFrustumRight + mFrustumLeft ) / ( 2.0f * mNearClip );
+		
+		m[ 1] =  0.0f;
+		m[ 5] =  ( mFrustumTop - mFrustumBottom ) / ( 2.0f * mNearClip );
+		m[ 9] =  0.0f;
+		m[13] =  ( mFrustumTop + mFrustumBottom ) / ( 2.0f * mNearClip );
+		
+		m[ 2] =  0.0f;
+		m[ 6] =  0.0f;
+		m[10] =  0.0f;
+		m[14] = -1.0f;
+		
+		m[ 3] =  0.0f;
+		m[ 7] =  0.0f;
+		m[11] = -( mFarClip - mNearClip ) / ( 2.0f * mFarClip*mNearClip );
+		m[15] =  ( mFarClip + mNearClip ) / ( 2.0f * mFarClip*mNearClip );
+	}
+	
+	
 CameraPersp	CameraPersp::getFrameSphere( const Sphere &worldSpaceSphere, int maxIterations ) const
 {
 	CameraPersp result = *this;

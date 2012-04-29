@@ -1781,7 +1781,10 @@ int ANT_CALL TwInit(ETwGraphAPI _GraphAPI, void *_Device)
     g_TwMgr = new CTwMgr(_GraphAPI, _Device);
 
     TwGenerateDefaultFonts();
-    g_TwMgr->m_CurrentFont = g_DefaultNormalFont;
+	// ROGER
+	// Default font size = SMALL
+    //g_TwMgr->m_CurrentFont = g_DefaultNormalFont;
+    g_TwMgr->m_CurrentFont = g_DefaultSmallFont;
 
     int Res = TwCreateGraph(_GraphAPI);
 
@@ -5242,7 +5245,10 @@ int ANT_CALL TwKeyPressed(int _Key, int _Modifiers)
             Order = i;
             */
 
-            if( Bar!=NULL && Bar->m_Visible && !Bar->IsMinimized() )
+			// ROGER
+			// Catch key events when minimized
+            //if( Bar!=NULL && Bar->m_Visible && !Bar->IsMinimized() )
+            if( Bar!=NULL && Bar->m_Visible )
             {
                 Handled = Bar->KeyPressed(_Key, _Modifiers);
                 if( g_TwMgr==NULL ) // Mgr might have been destroyed by the client inside a callback call

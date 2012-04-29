@@ -121,7 +121,7 @@ class Fbo {
 	//! Binds the color texture associated with an Fbo to its target. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. \a attachment specifies which color buffer in the case of multiple attachments.
 	void 			bindTexture( int textureUnit = 0, int attachment = 0 );
 	//! Unbinds the texture associated with an Fbo's target
-	void			unbindTexture();
+	void			unbindTexture( int textureUnit = 0 );	// ROGER
 	//! Binds the depth texture associated with an Fbo to its target.
 	void 			bindDepthTexture( int textureUnit = 0 );
 	//! Binds the Fbo as the currently active framebuffer, meaning it will receive the results of all subsequent rendering until it is unbound

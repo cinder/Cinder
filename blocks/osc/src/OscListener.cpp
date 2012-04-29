@@ -27,10 +27,10 @@
 #include "cinder/Thread.h" 
 #include "cinder/Utilities.h"
 #include "OscListener.h"
-#include "osc/OscTypes.h"
-#include "osc/OscPacketListener.h"
-#include "osc/OscReceivedElements.h"
-#include "ip/UdpSocket.h"
+#include "OscTypes.h"
+#include "OscPacketListener.h"
+#include "OscReceivedElements.h"
+#include "UdpSocket.h"
 
 #include <iostream>
 #include <assert.h>
@@ -159,9 +159,22 @@ bool OscListener::getNextMessage( Message* message )
 		return false;
 	
 	Message* src_message = mMessages.front();
-	message->copy( *src_message );
+
+	if (src_message == NULL)
+	{
+		app::console() << "OscListener:: NULL MESSAGE!" << std::endl;
+		return false;
+	}
 	
+	if (src_message->getAddress().size() == 0)
+	{
+		app::console() << "OscListener:: EMPTY ADDRESS!" << std::endl;
+		return false;
+	}
+	
+	message->copy( *src_message );
 	delete src_message;	
+	
 	mMessages.pop_front();
 	
 	return true;

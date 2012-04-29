@@ -103,6 +103,11 @@ void QuickTimeSampleApp::draw()
 		glDisable( GL_TEXTURE_RECTANGLE_ARB );
 		gl::draw( mInfoTexture, Vec2f( 20, getWindowHeight() - 20 - mInfoTexture.getHeight() ) );
 	}
+	
+	gl::color(Color(1,0,0));
+	gl::drawSolidRect( Rectf(0,0,320,240) );
+	gl::color(Color(1,1,1));
+	gl::draw( Surface( mMovie.getTexture() ), Rectf(0,0,320,240) );
 }
 
 CINDER_APP_BASIC( QuickTimeSampleApp, RendererGl(0) );

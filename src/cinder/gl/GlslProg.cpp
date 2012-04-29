@@ -52,7 +52,15 @@ GlslProg::Obj::~Obj()
         glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_INPUT_TYPE_EXT, geometryInputType);
         glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_OUTPUT_TYPE_EXT, geometryOutputType);
         glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, geometryOutputVertices);
-    }
+
+		// ROGER
+		if (geometryOutputVertices == 0)
+		{
+			int max;
+			glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &max);
+			glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, max);
+		}
+	}
     
 	link();
 }
@@ -74,6 +82,14 @@ GlslProg::GlslProg( const char *vertexShader, const char *fragmentShader, const 
         glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_INPUT_TYPE_EXT, geometryInputType);
         glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_OUTPUT_TYPE_EXT, geometryOutputType);
         glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, geometryOutputVertices);
+		
+		// ROGER
+		if (geometryOutputVertices == 0)
+		{
+			int max;
+			glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &max);
+			glProgramParameteriEXT(mObj->mHandle, GL_GEOMETRY_VERTICES_OUT_EXT, max);
+		}
     }
     
 	link();

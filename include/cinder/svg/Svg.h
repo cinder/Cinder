@@ -308,6 +308,8 @@ class Node {
 	const Node*			getParent() const { return mParent; }
 	//! Returns the ID of this Node when present. 
 	const std::string&	getId() const { return mId; }
+	//! Returns the TAG of this Node. 
+	const std::string&	getTag() const { return mTag; }
 	//! Returns a DOM-style path to this node.
 	std::string			getDomPath() const;
 	//! Returns the style elements defined on this Node but not inherited from ancestors.
@@ -397,6 +399,7 @@ class Node {
   protected:
 	const Node		*mParent;
 	std::string		mId;
+	std::string		mTag;
 	Style			mStyle;
 	bool			mSpecifiesTransform;
 	MatrixAffine2f	mTransform;

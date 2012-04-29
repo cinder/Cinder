@@ -352,6 +352,16 @@ void AppBasic::privateTouchesEnded__( const TouchEvent &event )
 		touchesEnded( event );
 }
 
+	// ROGER
+	bool AppBasic::isMinimized()
+	{
+#if defined( CINDER_MAC )
+		return [mImpl isMinimized];
+#else
+		return false;
+#endif
+	};
+	
 //////////////////////////////////////////////////////////////////////////////////////////////
 // AppBasic::Settings
 AppBasic::Settings::Settings()

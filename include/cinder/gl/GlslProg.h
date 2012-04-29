@@ -78,6 +78,7 @@ class GlslProg {
 	void			loadShader( const char *shaderSource, GLint shaderType );
 	void			attachShaders();
 	void			link();
+	void			setupGS( GLenum gsInput, GLenum gsOutput );
 
 	struct Obj {
 		Obj() : mHandle( 0 ) {}

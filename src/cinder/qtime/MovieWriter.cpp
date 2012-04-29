@@ -242,7 +242,7 @@ MovieWriter::Obj::Obj( const fs::path &path, int32_t width, int32_t height, cons
 	mCurrentTimeValue = 0;
 	mNumFrames = 0;
 }
-	
+
 void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float duration )
 {
 	if( mFinished )

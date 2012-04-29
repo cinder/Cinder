@@ -27,6 +27,8 @@
 #include "cinder/Function.h"
 
 #include <string>
+#include <sstream>
+#include <map>
 
 typedef struct CTwBar TwBar;
 
@@ -57,6 +59,10 @@ class InterfaceGl {
 	void	addText( const std::string &name = "", const std::string &optionsStr = "" );
 	void	addButton( const std::string &name, const std::function<void()> &callback, const std::string &optionsStr = "" );
 	void	setOptions( const std::string &name = "", const std::string &optionsStr = "" );
+	
+	// ROGER
+	void	setFontSize( int fontSize );
+	void	addParam( const std::string &name, const std::map<int,std::string> &valueLabels, int *param, const std::string &optionsStr, bool readOnly=false );
 
  protected:
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly ); 

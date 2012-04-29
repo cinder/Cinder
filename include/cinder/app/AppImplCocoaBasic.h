@@ -83,7 +83,8 @@
 - (void)quit;
 - (cinder::Display*)getDisplay;
 - (void)setDisplay:(cinder::Display*)aDisplay;
-
+	
+	
 #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 // multiTouch delegate methods
 - (void)touchesBegan:(ci::app::TouchEvent*)event;
@@ -92,5 +93,8 @@
 - (void)touchesEnded:(ci::app::TouchEvent*)event;
 - (void)setActiveTouches:(std::vector<ci::app::TouchEvent::Touch>*)touches;
 #endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+
+	// ROGER
+	- (bool)isMinimized;
 
 @end

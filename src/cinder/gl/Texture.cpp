@@ -958,6 +958,15 @@ void Texture::enableAndBind() const
 	glBindTexture( mObj->mTarget, mObj->mTextureID );
 }
 
+	// ROGER
+	void Texture::enableAndBind( GLuint textureUnit ) const
+	{
+		glEnable( mObj->mTarget );
+		glActiveTexture( GL_TEXTURE0 + textureUnit );
+		glBindTexture( mObj->mTarget, mObj->mTextureID );
+		glActiveTexture( GL_TEXTURE0 );
+	}
+	
 void Texture::disable() const
 {
 	glDisable( mObj->mTarget );
@@ -1108,7 +1117,9 @@ class ImageSourceTexture : public ImageSource {
 		mRowBytes = mWidth * ImageIo::channelOrderNumChannels( mChannelOrder ) * dataSize;
 		mData = shared_ptr<uint8_t>( new uint8_t[mRowBytes * mHeight], boost::checked_array_delete<uint8_t> );
 		gl::SaveTextureBindState( texture.getTarget() );
-		texture.bind();
+		BoolState saveEnabledState( texture.getTarget() );	// ROGER
+		texture.enableAndBind();							// ROGER
+		//texture.bind();									// ROGER
 		glPixelStorei( GL_PACK_ALIGNMENT, 1 );
 		glGetTexImage( texture.getTarget(), 0, format, dataType, mData.get() );
 	}

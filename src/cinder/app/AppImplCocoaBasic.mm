@@ -140,7 +140,6 @@
 										backing:NSBackingStoreBuffered
 										  defer:NO
 										 screen:nil];//mDisplay->getNsScreen()];
-
 	if( cinderView == nil ) {
 		cinderView = [[CinderView alloc] initWithFrame:NSMakeRect( 0, 0, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() ) app:app];
 		[cinderView retain];
@@ -457,6 +456,12 @@
 
 - (void)touchesCancelledWithEvent:(NSEvent *)event
 {
+}
+
+// ROGER
+- (bool)isMinimized
+{
+	return [win isMiniaturized];
 }
 
 @end

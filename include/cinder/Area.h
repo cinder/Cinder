@@ -37,7 +37,7 @@ class RectT;
 template<typename T>
 class AreaT {
  public:
-	AreaT() {}
+	AreaT() :x1(0), y1(0), x2(0), y2(0) {}
 	AreaT( const Vec2<T> &UL, const Vec2<T> &LR );
 	AreaT( T aX1, T aY1, T aX2, T aY2 )
 		{ set( aX1, aY1, aX2, aY2 ); }
@@ -96,6 +96,7 @@ class AreaT {
 	T				x1, y1, x2, y2;
 
 	bool			operator==( const AreaT<T> &aArea ) const { return ( ( x1 == aArea.x1 ) && ( y1 == aArea.y1 ) && ( x2 == aArea.x2 ) && ( y2 == aArea.y2 ) ); }
+	bool			operator!=( const AreaT<T> &aArea ) const { return ! (*this == aArea); }	// ROGER
 	bool			operator<( const AreaT<T> &aArea ) const;
 
 	const AreaT<T>		operator+( const Vec2<T> &o ) const { return this->getOffset( o ); }

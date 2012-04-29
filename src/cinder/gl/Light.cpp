@@ -159,6 +159,15 @@ void Light::setShadowParams( float aShadowFOV, float aShadowNear, float aShadowF
 	mShadowCam.setPerspective( mShadowFOV, 1.0f, mShadowNear, mShadowFar );	
 }
 
+	// ROGER
+	void Light::setShadowParams( float aShadowFOV, float aShadowAspect, float aShadowNear, float aShadowFar )
+	{
+		mShadowFOV = aShadowFOV;
+		mShadowNear = aShadowNear;
+		mShadowFar = aShadowFar;
+		mShadowCam.setPerspective( mShadowFOV, aShadowAspect, mShadowNear, mShadowFar );	
+	}
+
 void Light::setShadowRenderMatrices() const
 {
 	setMatrices( mShadowCam );

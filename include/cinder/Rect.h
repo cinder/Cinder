@@ -34,7 +34,7 @@ template<typename T> class MatrixAffine2;
 template<typename T>
 class RectT {
  public:
-	RectT() {}
+	RectT() :x1(0), y1(0), x2(0), y2(0) {}
 	/** Initializes the rectangle to be the bounding box of \a points **/
 	RectT( const std::vector<Vec2<T> > &points );
 	RectT( T aX1, T aY1, T aX2, T aY2 ) {
@@ -69,6 +69,11 @@ class RectT {
 	RectT		scaledCentered( T scale ) const;
 	void		scale( T scale );
 	RectT		scaled( T scale ) const;
+	
+	// ROGER
+	RectT<T>	flippedX() { return RectT<T>(x2,y1,x1,y2); }
+	RectT<T>	flippedY() { return RectT<T>(x1,y2,x2,y1); }
+	RectT<T>	flippedXY() { return RectT<T>(x2,y2,x1,y1); }
 
 	//! Returns a copy of the Rect transformed by \a matrix. Represents the bounding box of the transformed Rect when \a matrix expresses non-scale/translate operations.
 	RectT		transformCopy( const class MatrixAffine2<T> &matrix ) const;
