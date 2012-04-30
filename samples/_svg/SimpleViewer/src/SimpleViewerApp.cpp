@@ -70,7 +70,7 @@ void SimpleViewerApp::load( fs::path path )
 void SimpleViewerApp::draw()
 {
 	// clear out the window with black
-	gl::clear();
+	gl::clear( Color::gray( 0.5f ) );
 	gl::enableAlphaBlending();
 
 	if( mDoc ) {

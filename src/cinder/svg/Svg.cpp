@@ -224,6 +224,25 @@ Paint Style::sPaintBlack = svg::Paint( Color::black() );
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Paint
+Paint::Paint()
+	: mType( NONE ), mSpecifiesTransform( false )
+{
+	mStops.push_back( std::make_pair( 0.0f, ColorA8u::black() ) );
+}
+
+Paint::Paint( uint8_t type )
+	: mType( type ), mSpecifiesTransform( false )
+{
+	mStops.push_back( std::make_pair( 0.0f, ColorA8u::black() ) );
+}
+
+Paint::Paint( const ColorA8u &color )
+	: mType( COLOR ), mSpecifiesTransform( false )
+{
+	mStops.push_back( std::make_pair( 0.0f, color ) );
+}
+	
+
 Paint Paint::parse( const char *value, bool *specified, const Node *parentNode )
 {
 	*specified = false;
@@ -337,6 +356,9 @@ Style Style::makeGlobalDefaults()
 	result.setFontSize( getFontSizeDefault() );
 	result.setFontWeight( getFontWeightDefault() );
 	
+	result.setVisible( true );
+	result.setDisplayNone( false );
+	
 	return result;
 }
 
@@ -350,6 +372,8 @@ void Style::clear()
 	mSpecifiesLineCap = false;
 	mSpecifiesLineJoin = false;
 	mSpecifiesFontFamilies = mSpecifiesFontSize = mSpecifiesFontWeight = false;
+	mSpecifiesVisible = false;
+	mDisplayNone = false;
 }
 
 const std::vector<std::string>&	Style::getFontFamiliesDefault()
@@ -481,6 +505,22 @@ bool Style::parseProperty( const std::string &key, const std::string &value, con
 			mFontWeight = WEIGHT_BOLD;
 			mSpecifiesFontWeight = true;			
 		}
+		return true;
+	}
+	else if( key == "display" ) {
+		// we can't handle most of the possiblities yet; only 'none'
+		if( value == "none" )
+			mDisplayNone = true;
+		else
+			mDisplayNone = false;
+		return true;
+	}
+	else if( key == "visibility" ) {
+		mSpecifiesVisible = true;
+		if( value == "hidden" || value == "collapse" )
+			mVisible = false;
+		else
+			mVisible = true;
 		return true;
 	}
 	else
@@ -729,6 +769,12 @@ Value Node::getFontSize() const
 	else return Style::getFontSizeDefault();
 }
 
+bool Node::isVisible() const
+{
+	if( mStyle.specifiesVisible() ) return mStyle.isVisible();
+	else if( mParent ) return mParent->isVisible();
+	else return true;
+}
 
 Paint Node::parsePaint( const char *value, bool *specified, const Node *parentNode )
 {
@@ -1545,10 +1591,20 @@ Shape2d	Line::getShape() const
 Rect::Rect( const Node *parent, const XmlTree &xml )
 	: Node( parent, xml )
 {
-	mRect.x1 = xml.getAttributeValue<float>( "x", 0 );
-	mRect.y1 = xml.getAttributeValue<float>( "y", 0 );
-	float width = xml.getAttributeValue<float>( "width", 0 );
-	float height = xml.getAttributeValue<float>( "height", 0 );	
+	float width = 0, height = 0;
+	
+	if( xml.hasAttribute( "x" ) )
+		mRect.x1 = Value::parse( xml["x"] ).asUser();
+	else
+		mRect.x1 = 0;
+	if( xml.hasAttribute( "y" ) )
+		mRect.y1 = Value::parse( xml["y"] ).asUser();
+	else
+		mRect.y1 = 0;
+	if( xml.hasAttribute( "width" ) )
+		width = Value::parse( xml["width"] ).asUser();
+	if( xml.hasAttribute( "height" ) )
+		height = Value::parse( xml["height"] ).asUser();	
 	mRect.x2 = mRect.x1 + width;
 	mRect.y2 = mRect.y1 + height;
 	mBoundingBox = mRect;
@@ -1801,6 +1857,10 @@ void Group::renderSelf( Renderer &renderer ) const
 	for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
 		Style style = (*childIt)->getStyle();
 		if( ! renderer.visit( **childIt, &style ) )
+			continue;
+		if( (*childIt)->getStyle().isDisplayNone() ) // display: none we don't even descend groups
+			continue;
+		if( (! (*childIt)->isVisible()) && ( typeid(svg::Group) != typeid(**childIt) ) ) // if this isn't visible and isn't a group, just move along
 			continue;
 		(*childIt)->startRender( renderer, style );
 		(*childIt)->renderSelf( renderer );
