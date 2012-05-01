@@ -1869,6 +1869,22 @@ void Group::renderSelf( Renderer &renderer ) const
 	renderer.popGroup();
 }
 
+Rectf Group::calcBoundingBox() const
+{
+	bool empty = true;
+	Rectf result( 0, 0, 0, 0 );
+	for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
+		if( empty ) {
+			result = (*childIt)->getBoundingBox();
+			empty = false;
+		}
+		else
+			result.include( (*childIt)->getBoundingBox() );
+	}
+	
+	return result;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////
 // Use
 Use::Use( const Node *parent, const XmlTree &xml )

@@ -759,6 +759,7 @@ class Group : public Node {
 	Shape2d		getMergedShape2d() const;
 
 	virtual void	renderSelf( Renderer &renderer ) const;
+	virtual Rectf	calcBoundingBox() const;
 
 	virtual bool	isDrawable() const { return false; }
 	void 			parse( const XmlTree &xml );
