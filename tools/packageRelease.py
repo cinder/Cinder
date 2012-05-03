@@ -30,8 +30,6 @@ def copyIgnore( path, names ):
 
 def printUsage():
     print "Run from the root of the repository (having run vcvars):"
-    print "git checkout-index -a -f --prefix=../cinder_temp/"
-    print "cd ../cinder_temp"
     print "python tools/packageRelease.py (version number) (xcode|vc10)"
 
 def processExport( outputName, compilerName, version ):
@@ -39,7 +37,7 @@ def processExport( outputName, compilerName, version ):
     baseDir = os.getcwd()
     os.system( "git checkout-index -a -f --prefix=../cinder_temp/" )
     print "creating a clean clone of Cinder-OpenCV"
-    os.chdir( baseDir + os.sep + "blocks" + os.sep + "Cinder-OpenCV" )
+    os.chdir( baseDir + os.sep + "blocks" + os.sep + "opencv" )
     os.system( "git checkout-index -a -f --prefix=../../../cinder_temp/blocks/opencv/" )
     os.chdir( baseDir + os.sep + ".." + os.sep + "cinder_temp" )
     outputDir = baseDir + os.sep + ".." + os.sep + "cinder_" + version + "_" + outputName + os.sep
@@ -68,7 +66,7 @@ elif sys.argv[2] == 'xcode':
     os.system( "./fullbuild.sh" )
     shutil.rmtree( outputDir + "xcode/build" )
     os.chdir( outputDir + "lib" )
-    os.system( "strip -r *.a" )
+    os.system( "strip -S -r *.a" )
 elif sys.argv[2] == 'vc10':
     gCompiler = 'vc10'
     processExport( "vc2010", "vc10", sys.argv[1] )
