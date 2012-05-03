@@ -146,9 +146,9 @@ class Paint {
   public:
 	enum { NONE, COLOR, LINEAR_GRADIENT, RADIAL_GRADIENT };
 	
-	Paint() : mType( NONE ), mSpecifiesTransform( false ) { mStops.push_back( std::make_pair( 0.0f, ColorA8u::black() ) ); }
-	Paint( uint8_t type ) : mType( type ), mSpecifiesTransform( false ) { mStops.push_back( std::make_pair( 0.0f, ColorA8u::black() ) ); }
-	Paint( const ColorA8u &color ) : mType( COLOR ), mSpecifiesTransform( false ) { mStops.push_back( std::make_pair( 0.0f, color ) ); }
+	Paint();
+	Paint( uint8_t type );
+	Paint( const ColorA8u &color );
 	
 	static Paint 	parse( const char *value, bool *specified, const Node *parentNode );
 	
@@ -165,7 +165,7 @@ class Paint {
 	float			getRadius() const { return mRadius; } // radial-only
 	bool			useObjectBoundingBox() const { return mUseObjectBoundingBox; }
 	bool			specifiesTransform() const { return mSpecifiesTransform; }
-	MatrixAffine2f		getTransform() const { return mTransform; }
+	MatrixAffine2f	getTransform() const { return mTransform; }
 	
 	uint8_t									mType;
 	std::vector<std::pair<float,ColorA8u> >	mStops;
@@ -173,7 +173,7 @@ class Paint {
 	Vec2f				mCoords0, mCoords1;
 	float				mRadius;
 	bool				mUseObjectBoundingBox;
-	MatrixAffine2f			mTransform;
+	MatrixAffine2f		mTransform;
 	bool				mSpecifiesTransform;
 };
 
@@ -263,6 +263,14 @@ class Style {
 	void				setFontWeight( FontWeight weight ) { mSpecifiesFontWeight = true; mFontWeight = weight; }
 	static FontWeight	getFontWeightDefault() { return svg::WEIGHT_NORMAL; }
 
+	bool			specifiesVisible() const { return mSpecifiesVisible; }
+	bool			isVisible() const { return mVisible; }
+	void			setVisible( bool visible ) { mSpecifiesVisible = true; mVisible = visible; }
+	void			unspecifyVisible() { mSpecifiesVisible = false; }
+	
+	bool			isDisplayNone() const { return mDisplayNone; }
+	void			setDisplayNone( bool displayNone ) { mDisplayNone = displayNone; }
+
 	void 		startRender( Renderer &renderer, bool isNodeDrawable ) const;
 	void 		finishRender( Renderer &renderer, bool isNodeDrawable ) const;
 
@@ -292,8 +300,11 @@ class Style {
 	Value			mFontSize;
 	FontWeight		mFontWeight;
 	
+	// visibility
+	bool			mSpecifiesVisible, mVisible, mDisplayNone;
+	
   private:
-  	static Paint						sPaintNone, sPaintBlack;
+  	static Paint	sPaintNone, sPaintBlack;
 };
 
 //! Base class for an element of an SVG Document
@@ -375,6 +386,11 @@ class Node {
 	const std::vector<std::string>&		getFontFamilies() const;
 	//! Returns node's font size, or the first among its ancestors when it has none
 	Value			getFontSize() const;
+	//! Returns whether this Node is visible, or the first among its ancestors when unspecified
+	bool			isVisible() const;
+	//! Returns whether the Display property of this Node is set to 'None', preventing rendering of the node and its children
+	bool			isDisplayNone() const { return mStyle.isDisplayNone(); }
+
 
   protected:
 	Node( const Node *parent, const XmlTree &xml );
@@ -743,6 +759,7 @@ class Group : public Node {
 	Shape2d		getMergedShape2d() const;
 
 	virtual void	renderSelf( Renderer &renderer ) const;
+	virtual Rectf	calcBoundingBox() const;
 
 	virtual bool	isDrawable() const { return false; }
 	void 			parse( const XmlTree &xml );
