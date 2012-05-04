@@ -1950,8 +1950,8 @@ std::shared_ptr<Surface8u> Image::parseDataImage( const string &data )
 	if( semi == string::npos || comma == string::npos )
 		return std::shared_ptr<Surface8u>();
 	string mime = data.substr( dataOffset, semi - dataOffset ), extension;
-	if( mime == "image/png" ) extension == "png";
-	else if( mime == "image/jpeg" ) extension == "jpeg";	
+	if( mime == "image/png" ) extension = "png";
+	else if( mime == "image/jpeg" ) extension = "jpeg";	
 	int len = data.size() - comma - 1;
 	Buffer buf = fromBase64( &data[comma + 1], len );
 	try {
