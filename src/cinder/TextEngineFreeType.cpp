@@ -38,9 +38,11 @@ size_t linebreak(FontRef font, const Font::Glyph* text, const Font::Glyph* stop,
 
         w += /* font->getKerning(uni, *prevText) + */ ftFont->getAdvance(*prevText).x;
 
-        FontFreeType::GlyphMetrics metrics = ftFont->getGlyphMetrics(uni);
-        // float maxAdvance = metrics.mAdvance.x;
-        float maxAdvance = math<float>::max(metrics.mAdvance.x, metrics.mBounds.getWidth());
+        float maxAdvance = 0;
+        if (!eos) {
+           FontFreeType::GlyphMetrics metrics = ftFont->getGlyphMetrics(uni);
+           maxAdvance = math<float>::max(metrics.mAdvance.x, metrics.mBounds.getWidth());
+        }
 
         if ((!eos && w + maxAdvance > limit) || (eos && w > limit)) {
             if (currWS) {
