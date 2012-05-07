@@ -119,10 +119,8 @@ class TextureFont {
 
 	//! Returns the size in pixels necessary to render the string \a str with DrawOptions \a options.
 	Vec2f	measureString( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
-#if defined( CINDER_COCOA )
-	//! Returns the size in pixels necessary to render the word-wrapped string \a str fit inside \a fitRect with DrawOptions \a options. Mac & iOS only.
+	//! Returns the size in pixels necessary to render the word-wrapped string \a str fit inside \a fitRect with DrawOptions \a options. Mac, iOS and Android only.
 	Vec2f	measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
-#endif
 
 	//! Returns a vector of glyph/placement pairs representing \a str, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
 	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const DrawOptions &options ) const;
