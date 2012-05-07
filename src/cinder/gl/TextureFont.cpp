@@ -328,6 +328,7 @@ Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &opt
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
 
+#if defined( CINDER_MSW )
 	TextEngineRef engine = mFont->getTextEngine();
 	if ( engine && engine->getEngineType() == TextEngine::GDIPLUS ) {
 		vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
@@ -343,6 +344,7 @@ Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &opt
 			return Vec2f::zero();
 		}
 	}
+#endif
 
 	return tbox.measure();
 }
