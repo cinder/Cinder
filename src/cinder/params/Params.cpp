@@ -292,7 +292,7 @@ void InterfaceGl::addButton( const std::string &name, const std::function<void (
 	TwAddButton( mBar.get(), name.c_str(), implButtonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
 }
 
-void InterfaceGl::delParam( const std::string &name )
+void InterfaceGl::removeParam( const std::string &name )
 {
 	TwRemoveVar( mBar.get(), name.c_str() );
 }
