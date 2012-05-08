@@ -22,8 +22,10 @@
 
 #pragma once
 
+#include "cinder/Filesystem.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Stream.h"
+#include "cinder/Utilities.h"
 
 #include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
@@ -65,6 +67,13 @@ class ObjLoader {
 	 * \param loadTexCoords  should 2D texture coordinates be loaded or set to zero if not present. Default determines from the contents of the file
 	 * \param optimizeVertices  should the loader minimize the vertices by identifying shared vertices between faces.*/
 	void	load( size_t groupIndex, TriMesh *destTriMesh, boost::tribool loadNormals = boost::logic::indeterminate, boost::tribool loadTexCoords = boost::logic::indeterminate, bool optimizeVertices = true );
+
+        size_t getNumVertices(){ return mVertices.size(); };
+	size_t getNumNormals(){ return mNormals.size(); };
+	size_t getNumTexCoords(){ return mTexCoords.size(); };
+	size_t getNumGroups(){ return mGroups.size(); };
+
+        bool exportBinaries(const std::string &path, bool overwrite=false);
 	
 	struct Face {
 		int					mNumVertices;
