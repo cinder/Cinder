@@ -496,4 +496,12 @@ void ObjLoader::write( DataTargetRef dataTarget, const TriMesh &mesh, bool write
 	}
 }
 
+std::string ObjLoader::getGroupName(size_t groupIndex)
+{
+	if(groupIndex < 0 || groupIndex >= mGroups.size())
+		return "";
+
+	return mGroups[groupIndex].mName;
+}
+
 } // namespace cinder
