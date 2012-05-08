@@ -161,13 +161,13 @@ void initAntGl()
 }
 
 
-InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const ColorA color )
+InterfaceGl::InterfaceGl( const std::string &title, const std::string &optionsStr )
 {
 	initAntGl();
 	mBar = std::shared_ptr<TwBar>( TwNewBar( title.c_str() ), TwDeleteBar );
-	char optionsStr[1024];
-	sprintf( optionsStr, "`%s` size='%d %d' color='%d %d %d' alpha=%d", title.c_str(), size.x, size.y, (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255) );
-	TwDefine( optionsStr );
+	
+	std::string def = "`" + title + "` " + optionsStr;
+	TwDefine( def.c_str() );
 	
 	TwCopyStdStringToClientFunc( implStdStringToClient );
 }
