@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		001581AD15599B3F004389C9 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 001581AC15599B3F004389C9 /* AudioUnit.framework */; };
 		005374E41194F4B5004D686E /* cinder_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 005374E31194F4B5004D686E /* cinder_logo.png */; };
 		0053788D119624A4004D686E /* cinder_logo_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 0053788C119624A4004D686E /* cinder_logo_alpha.png */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		001581AC15599B3F004389C9 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		005374E31194F4B5004D686E /* cinder_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cinder_logo.png; path = ../../samples/data/cinder_logo.png; sourceTree = SOURCE_ROOT; };
 		0053788C119624A4004D686E /* cinder_logo_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cinder_logo_alpha.png; path = ../../samples/data/cinder_logo_alpha.png; sourceTree = SOURCE_ROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -37,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				001581AD15599B3F004389C9 /* AudioUnit.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
@@ -106,6 +109,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				001581AC15599B3F004389C9 /* AudioUnit.framework */,
 				28FD15070DC6FC5B0079059D /* QuartzCore.framework */,
 				28FD14FF0DC6FC520079059D /* OpenGLES.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,

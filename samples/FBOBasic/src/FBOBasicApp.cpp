@@ -22,6 +22,7 @@ class FBOBasicApp : public AppBase {
 	virtual void	setup();
 	virtual void	update();
 	virtual void	draw();
+	virtual void	mouseDown( MouseEvent event );
 
 	void			renderSceneToFbo();
 	
@@ -113,6 +114,13 @@ void FBOBasicApp::draw()
 #if ! defined( CINDER_GLES ) // OpenGL ES can't do depth textures, otherwise draw the FBO's
 	gl::draw( mFbo.getDepthTexture(), Rectf( 96, 0, 96 + 96, 96 ) );
 #endif
+	Surface whatever( 640, 460, false );
+	cocoa::writeToSavedPhotosAlbum( whatever );
+
+}
+
+void FBOBasicApp::mouseDown( MouseEvent event )
+{
 }
 
 #if defined( CINDER_COCOA_TOUCH )

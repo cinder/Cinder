@@ -44,4 +44,21 @@
 	TriMesh2D
 	Math Core Cleanup and Optimizations
 	Built-in Penner Easing Equations
-* 0.8.4dev	---
+* 0.8.4		May 11, 2012
+	SVG Parser
+	Timeline API
+	JSON Parser and Writer
+	Assets system
+	ConcurrentCircularBuffer class
+	Cairo improvements
+	Boolean operations on polygons
+	MatrixAffine2f/d class
+	Modifiers for window position, always-on-top and borderless
+	Frustum class
+	Plane class
+	Gaussian random randGaussian() and nextGaussian()
+	Dynamic vertical sync in OpenGL
+	Base64 encode and decode
+	Hit-testing on arbitrary Path2d and Shape2d's
+	Moved to fs::path class for filesystem paths
+	Upgraded to Boost 1.48
