@@ -32,7 +32,7 @@ def printUsage():
     print "Run from the root of the repository (having run vcvars):"
     print "python tools/packageRelease.py (version number) (xcode|vc10)"
 
-def processExport( outputName, compilerName, version ):
+def processExport( outputName, compilerName, version, doxygenPath ):
     print "creating a clean clone of cinder"
     baseDir = os.getcwd()
     os.system( "git checkout-index -a -f --prefix=../cinder_temp/" )
@@ -45,10 +45,10 @@ def processExport( outputName, compilerName, version ):
     shutil.copytree( ".", outputDir, ignore=copyIgnore )
     os.chdir( outputDir + "docs" + os.sep + "doxygen" )
     print "generating cinder docs " + outputDir
-    os.system( "doxygen Doxyfile" )
+    os.system( doxygenPath + " Doxyfile" )
     print "generating Cinder-OpenCV docs"
     os.chdir( outputDir + "blocks" + os.sep + "opencv" + os.sep + "docs" + os.sep + "doxygen" )
-    os.system( "/Applications/Doxygen.app/Contents/Resources/doxygen Doxyfile" )
+    os.system( doxygenPath + " Doxyfile" )
 #    os.remove( outputDir + "docs" + os.sep + "doxygen" + os.sep + "cinder.tag" )
     print "removing test"
     shutil.rmtree( outputDir + "test" )
@@ -61,14 +61,15 @@ if len(sys.argv) != 3:
     printUsage()
 elif sys.argv[2] == 'xcode':
     gCompiler = 'xcode'
-    outputDir = processExport( "mac", "xcode", sys.argv[1] )
+    outputDir = processExport( "mac", "xcode", sys.argv[1], "/Applications/Doxygen.app/Contents/Resources/doxygen" )
     os.chdir( outputDir + "xcode" )
     os.system( "./fullbuild.sh" )
     shutil.rmtree( outputDir + "xcode/build" )
     os.chdir( outputDir + "lib" )
+    # strip debug symbols
     os.system( "strip -S -r *.a" )
 elif sys.argv[2] == 'vc10':
     gCompiler = 'vc10'
-    processExport( "vc2010", "vc10", sys.argv[1] )
+    processExport( "vc2010", "vc10", sys.argv[1], "doxygen" )
 else:
     printUsage()
