@@ -125,7 +125,7 @@ void FlockingApp::draw()
 	mParticleController.draw();
 	
 	if( mSaveFrames ){
-		writeImage( getHomeDirectory() + "flocking/image_" + toString( getElapsedFrames() ) + ".png", copyWindowSurface() );
+		writeImage( getHomeDirectory() / "flocking" / ("image_" + toString( getElapsedFrames() ) + ".png"), copyWindowSurface() );
 	}
 	
 	// DRAW PARAMS WINDOW
