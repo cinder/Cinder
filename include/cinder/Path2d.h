@@ -26,6 +26,7 @@
 #include "cinder/BSpline.h"
 #include "cinder/Rect.h"
 #include "cinder/Exception.h"
+#include "cinder/MatrixAffine2.h"
 
 #include <vector>
 
@@ -72,6 +73,11 @@ class Path2d {
 	
 	//! Scales the Path2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
 	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f::zero() );
+	//! Transforms the Path2d by \a matrix.
+	void		transform( const MatrixAffine2f &matrix );
+	//! Returns a copy transformed by \a matrix.
+	Path2d		transformCopy( const MatrixAffine2f &matrix ) const;
+
 
 	const std::vector<Vec2f>&	getPoints() const { return mPoints; }
 	std::vector<Vec2f>&			getPoints() { return mPoints; }
@@ -80,11 +86,14 @@ class Path2d {
 	const Vec2f&				getCurrentPoint() const { return mPoints.back(); }
 	void						setPoint( size_t index, const Vec2f &p ) { mPoints[index] = p; }
 
-	void			removeSegment( size_t segment );
-
 	enum SegmentType { MOVETO, LINETO, QUADTO, CUBICTO, CLOSE };
 	static const int sSegmentTypePointCounts[];
 	SegmentType		getSegmentType( size_t segment ) const { return mSegments[segment]; }
+
+	const std::vector<SegmentType>&	getSegments() const { return mSegments; }
+	std::vector<SegmentType>&		getSegments() { return mSegments; }
+
+	void			removeSegment( size_t segment );
 	
 	//! Returns the bounding box around all control points. As with Shape2d, note this is not necessarily the bounding box of the Path's shape.
 	Rectf	calcBoundingBox() const;

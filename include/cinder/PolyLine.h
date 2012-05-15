@@ -29,7 +29,7 @@ namespace cinder {
 
 template<typename T>
 class PolyLine {
- public:
+  public:
 	PolyLine() : mClosed( false ) {}
 	PolyLine( const std::vector<T> &aPoints ) : mPoints( aPoints ), mClosed( false ) {}
 	
@@ -55,8 +55,21 @@ class PolyLine {
 	T			getDerivative( float t ) const;
 
 	void		scale( const T &scaleFactor, T scaleCenter = T::zero() );
+	void		offset( const T &offsetBy );
+
+	//! Returns whether the point \a pt is contained within the boundaries of the PolyLine
+	bool	contains( const Vec2f &pt ) const;
+
+	//! Calculates the boolean union of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
+	static std::vector<PolyLine> 	calcUnion( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );
+	//! Calculates the boolean intersection of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
+	static std::vector<PolyLine> 	calcIntersection( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );
+	//! Calculates the boolean XOR (symmetric difference) of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
+	static std::vector<PolyLine> 	calcXor( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );
+	//! Calculates the boolean difference of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
+	static std::vector<PolyLine> 	calcDifference( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );		
 	
- private:
+  private:
 	std::vector<T>			mPoints;
 	bool					mClosed;
 };

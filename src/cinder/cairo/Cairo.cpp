@@ -23,6 +23,9 @@
 */
 
 #include "cinder/cairo/Cairo.h"
+#include "cinder/svg/Svg.h"
+#include "cinder/ip/Premultiply.h"
+#include "cinder/Text.h"
 
 #include <cairo.h>
 #include <cairo-svg.h>
@@ -54,6 +57,8 @@ int32_t	SurfaceConstraintsCairo::getRowBytes( int requestedWidth, const SurfaceC
 } // namespace cinder
 
 namespace cinder { namespace cairo {
+
+class SvgRendererCairo;
 
 const int32_t	FONT_SLANT_NORMAL	= CAIRO_FONT_SLANT_NORMAL;
 const int32_t	FONT_SLANT_ITALIC	= CAIRO_FONT_SLANT_ITALIC;
@@ -170,7 +175,7 @@ SurfaceImage::SurfaceImage( int32_t width, int32_t height, bool hasAlpha )
 		mCairoSurface = cairo_image_surface_create( CAIRO_FORMAT_RGB24, width, height );
 	}
 
-	initCinderSurface( hasAlpha, cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
+	initCinderSurface( hasAlpha, mCairoSurface );
 }
 
 SurfaceImage::SurfaceImage( const uint8_t *dataPtr, int32_t width, int32_t height, int32_t stride, bool hasAlpha ) 
@@ -183,14 +188,14 @@ SurfaceImage::SurfaceImage( const uint8_t *dataPtr, int32_t width, int32_t heigh
 		mCairoSurface = cairo_image_surface_create_for_data( const_cast<unsigned char*>( dataPtr ), CAIRO_FORMAT_RGB24, width, height, stride );
 	}
 	
-	initCinderSurface( hasAlpha, cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
+	initCinderSurface( hasAlpha, mCairoSurface );
 }
 
 SurfaceImage::SurfaceImage( cinder::Surface ciSurface ) 
 	: SurfaceBase( ciSurface.getWidth(), ciSurface.getHeight() )
 {
 	bool needsManualCopy = true;
-	cairo_format_t format = ( ciSurface.getChannelOrder() == cinder::SurfaceChannelOrder::BGRA ) ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24;
+	cairo_format_t format = ( ciSurface.getChannelOrder().hasAlpha() ) ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24;
 	bool legalRowBytes = cairo_format_stride_for_width( format, ciSurface.getWidth() ) == ciSurface.getRowBytes();
 	if( legalRowBytes && ( ciSurface.getChannelOrder() == cinder::SurfaceChannelOrder::BGRA ) ) {
 		mCairoSurface = cairo_image_surface_create_for_data( const_cast<unsigned char*>( ciSurface.getData() ), CAIRO_FORMAT_ARGB32, ciSurface.getWidth(), ciSurface.getHeight(), ciSurface.getRowBytes() );
@@ -201,21 +206,23 @@ SurfaceImage::SurfaceImage( cinder::Surface ciSurface )
 		needsManualCopy = false;
 	}
 	else { // we can't natively represent this Surface configuration, so we'll just allocate one and manually copy it
-		mCairoSurface = cairo_image_surface_create( ciSurface.hasAlpha() ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, ciSurface.getWidth(), ciSurface.getHeight() );
+		mCairoSurface = cairo_image_surface_create( ciSurface.hasAlpha() ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24, ciSurface.getWidth(), ciSurface.getHeight() );
 	}
 	
-	initCinderSurface( ciSurface.hasAlpha(), cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
+	initCinderSurface( ciSurface.hasAlpha(), mCairoSurface );
 
 	if( needsManualCopy )
 		mCinderSurface.copyFrom( ciSurface, ciSurface.getBounds(), Vec2i::zero() );
+	cairo_surface_mark_dirty( mCairoSurface );
 }
 
 SurfaceImage::SurfaceImage( ImageSourceRef imageSource )
-	: SurfaceBase( imageSource->getWidth(), imageSource->getWidth() )
+	: SurfaceBase( imageSource->getWidth(), imageSource->getHeight() )
 {
-	mCairoSurface = cairo_image_surface_create( imageSource->hasAlpha() ? CAIRO_FORMAT_RGB24 : CAIRO_FORMAT_ARGB32, imageSource->getWidth(), imageSource->getHeight() );
-	initCinderSurface( imageSource->hasAlpha(), cairo_image_surface_get_data( mCairoSurface ), cairo_image_surface_get_stride( mCairoSurface ) );
+	mCairoSurface = cairo_image_surface_create( imageSource->hasAlpha() ? CAIRO_FORMAT_ARGB32 : CAIRO_FORMAT_RGB24, imageSource->getWidth(), imageSource->getHeight() );
+	initCinderSurface( imageSource->hasAlpha(), mCairoSurface );
 	writeImage( (ImageTargetRef)mCinderSurface, imageSource );
+	cairo_surface_mark_dirty( mCairoSurface );
 }
 
 SurfaceImage::SurfaceImage( const SurfaceImage &other )
@@ -233,8 +240,22 @@ int32_t SurfaceImage::getStride() const
 	return cairo_image_surface_get_stride( mCairoSurface );
 }
 
-void SurfaceImage::initCinderSurface( bool alpha, uint8_t *data, int32_t stride )
+void SurfaceImage::markDirty()
 {
+	cairo_surface_mark_dirty( mCairoSurface );
+}
+
+void SurfaceImage::surfaceDeallocator( void *data )
+{
+	cairo_surface_t *cairoSurface = reinterpret_cast<cairo_surface_t*>( data );
+	cairo_surface_destroy( cairoSurface );
+}
+
+void SurfaceImage::initCinderSurface( bool alpha, cairo_surface_t *cairoSurface )
+{
+	unsigned char *data = cairo_image_surface_get_data( cairoSurface );
+	int stride = cairo_image_surface_get_stride( cairoSurface );
+
 #if defined( BOOST_BIG_ENDIAN )
 	if( alpha )
 		mCinderSurface = Surface( data, mWidth, mHeight, stride, SurfaceChannelOrder::ARGB );
@@ -246,14 +267,16 @@ void SurfaceImage::initCinderSurface( bool alpha, uint8_t *data, int32_t stride 
 	else
 		mCinderSurface = Surface( data, mWidth, mHeight, stride, SurfaceChannelOrder::BGRX );
 #endif
+	mCinderSurface.setDeallocator( &SurfaceImage::surfaceDeallocator, cairoSurface );
+	cairo_surface_reference( cairoSurface ); // decremented by the mCinderSurface deallocator
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // SurfaceSvg
-SurfaceSvg::SurfaceSvg( const std::string &filePath, uint32_t width, uint32_t height )
+SurfaceSvg::SurfaceSvg( const fs::path &filePath, uint32_t width, uint32_t height )
 	: SurfaceBase( width, height )
 {
-	mCairoSurface = cairo_svg_surface_create( filePath.c_str(), width, height );
+	mCairoSurface = cairo_svg_surface_create( filePath.string().c_str(), width, height );
 }
 
 SurfaceSvg::SurfaceSvg( const SurfaceSvg &other )
@@ -263,10 +286,10 @@ SurfaceSvg::SurfaceSvg( const SurfaceSvg &other )
 
 /////////////////////////////////////////////////////////////////////////////
 // SurfacePdf
-SurfacePdf::SurfacePdf( const std::string& filePath, double widthInPoints, double heightInPoints )
+SurfacePdf::SurfacePdf( const fs::path &filePath, double widthInPoints, double heightInPoints )
 	: SurfaceBase( (int32_t)widthInPoints, (int32_t)heightInPoints )
 {
-	mCairoSurface = cairo_pdf_surface_create( filePath.c_str(), widthInPoints, heightInPoints ); 
+	mCairoSurface = cairo_pdf_surface_create( filePath.string().c_str(), widthInPoints, heightInPoints ); 
 }
 
 SurfacePdf::SurfacePdf( const SurfacePdf &other )
@@ -281,10 +304,10 @@ void SurfacePdf::setSize( double widthInPoints, double heightInPoints )
 
 /////////////////////////////////////////////////////////////////////////////
 // SurfacePs
-SurfacePs::SurfacePs( const std::string &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 )
+SurfacePs::SurfacePs( const fs::path &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 )
 	: SurfaceBase( (int32_t)widthInPoints, (int32_t)heightInPoints )
 {
-	mCairoSurface = cairo_ps_surface_create( filePath.c_str(), widthInPoints, heightInPoints ); 
+	mCairoSurface = cairo_ps_surface_create( filePath.string().c_str(), widthInPoints, heightInPoints ); 
 	cairo_ps_surface_restrict_to_level( mCairoSurface, ( enableLevel3 ) ? CAIRO_PS_LEVEL_3 : CAIRO_PS_LEVEL_2 );
 }
 
@@ -315,10 +338,10 @@ void SurfacePs::dscComment( const char *comment )
 
 /////////////////////////////////////////////////////////////////////////////
 // SurfaceEps
-SurfaceEps::SurfaceEps( const std::string &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 )
+SurfaceEps::SurfaceEps( const fs::path &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 )
 	: SurfaceBase( (int32_t)widthInPoints, (int32_t)heightInPoints )
 {
-	mCairoSurface = cairo_ps_surface_create( filePath.c_str(), widthInPoints, heightInPoints ); 
+	mCairoSurface = cairo_ps_surface_create( filePath.string().c_str(), widthInPoints, heightInPoints ); 
 	cairo_ps_surface_set_eps( mCairoSurface, TRUE );
 	cairo_ps_surface_restrict_to_level( mCairoSurface, ( enableLevel3 ) ? CAIRO_PS_LEVEL_3 : CAIRO_PS_LEVEL_2 );
 }
@@ -436,6 +459,16 @@ void Matrix::init( double xx_, double yx_, double xy_, double yy_, double x0_, d
 	y0 = y0_;
 }
 
+Matrix::Matrix( const cinder::MatrixAffine2f &m )
+{
+	xx = m.m[0];
+	yx = m.m[1];
+	xy = m.m[2];
+	yy = m.m[3];
+	x0 = m.m[4];
+	y0 = m.m[5];
+}
+
 void Matrix::initIdentity()
 {
 	cairo_matrix_init_identity( &getCairoMatrix() );
@@ -474,6 +507,14 @@ void Matrix::rotate( double radians )
 int32_t	Matrix::invert()
 {
 	return static_cast<int32_t>( cairo_matrix_invert( &getCairoMatrix() ) );
+}
+
+const Matrix& Matrix::operator*=( const Matrix &rhs )
+{
+	cairo_matrix_t r;
+	cairo_matrix_multiply( &r, &getCairoMatrix(), &rhs.getCairoMatrix() );
+	init( r.xx, r.yx, r.xy, r.yy, r.x0, r.y0 );
+	return *this;
 }
 
 Vec2f Matrix::transformPoint( const Vec2f &v ) const
@@ -743,7 +784,7 @@ FontFace::FontFace( const std::string &faceName )
 	CFStringRef nameRef = CFStringCreateWithCString( kCFAllocatorDefault, faceName.c_str(), kCFStringEncodingUTF8 );
 	CGFontRef fontRef = CGFontCreateWithFontName( nameRef );
 	if( ! fontRef )
-		throw;
+		throw FontInvalidNameExc();
 	mCairoFontFace = cairo_quartz_font_face_create_for_cgfont( fontRef );
 	// Cairo releases the CGFontRef
 	CFRelease( nameRef );
@@ -1152,7 +1193,25 @@ void Context::copySurface( const SurfaceBase &surface, const Area &srcArea, cons
 {
 	cairo_set_source_surface( mCairo, const_cast<SurfaceBase&>( surface ).getCairoSurface(), dstOffset.x - srcArea.getX1(), dstOffset.y - srcArea.getY1() );
 	cairo_rectangle( mCairo, dstOffset.x, dstOffset.y, srcArea.getWidth(), srcArea.getHeight() );
-	cairo_paint( mCairo );
+	cairo_fill( mCairo );
+}
+
+void Context::copySurface( const SurfaceBase &surface, const Area &srcArea, const Rectf &dstRect )
+{
+	if( ( dstRect.getWidth() == 0 ) || ( dstRect.getHeight() == 0 ) )
+		return;
+
+	save();
+	cairo_set_source_surface( mCairo, const_cast<SurfaceBase&>( surface ).getCairoSurface(), 0, 0 );
+	cairo_pattern_t *sourcePattern = cairo_get_source( mCairo );
+	cairo_matrix_t m;
+	cairo_matrix_init_identity( &m );
+	cairo_matrix_scale( &m, srcArea.getWidth() / (float)dstRect.getWidth(), srcArea.getHeight() / (float)dstRect.getHeight() );
+	cairo_matrix_translate( &m, srcArea.getX1() - dstRect.getX1(), srcArea.getY1() - dstRect.getY1() );
+	cairo_pattern_set_matrix( sourcePattern, &m );
+	cairo_rectangle( mCairo, dstRect.getX1(), dstRect.getY1(), dstRect.getWidth(), dstRect.getHeight() );
+	cairo_fill( mCairo );
+	restore();
 }
 
 Pattern* Context::getSource()
@@ -1395,9 +1454,16 @@ void Context::copyPathFlat( cinder::Shape2d *resultPath )
 	cairo_path_destroy( path );
 }
 
-void Context::getCurrentPoint( double *x, double *y )
+void Context::getCurrentPoint( double *x, double *y ) const
 {
 	cairo_get_current_point( mCairo, x, y );
+}
+
+Vec2f Context::getCurrentPoint() const
+{
+	double x, y;
+	cairo_get_current_point( mCairo, &x, &y );
+	return Vec2f( (float)x, (float)y );
 }
 
 void Context::newPath()
@@ -1481,6 +1547,27 @@ void Context::textPath( const char *utf8 )
 	cairo_text_path( mCairo, utf8 );
 }
 
+void Context::glyphPath( const std::vector<std::pair<uint16_t,Vec2f> > &glyphs )
+{
+	cairo_glyph_t *cairoGlyphs = new cairo_glyph_t[glyphs.size()];
+	for( size_t g = 0; g < glyphs.size(); ++g ) {
+		cairoGlyphs[g].index = glyphs[g].first;
+		cairoGlyphs[g].x = glyphs[g].second.x;
+		cairoGlyphs[g].y = glyphs[g].second.y;
+	}
+	cairo_glyph_path( mCairo, &cairoGlyphs[0], glyphs.size() );
+	delete [] cairoGlyphs;
+}
+
+void Context::glyphPath( uint16_t index, const Vec2f &offset )
+{
+	cairo_glyph_t glyph;
+	glyph.index = index;
+	glyph.x = offset.x;
+	glyph.y = offset.y;
+	cairo_glyph_path( mCairo, &glyph, 1 );
+}
+
 void Context::relCurveTo( double dx1, double dy1, double dx2, double dy2, double dx3, double dy3 )
 {
 	cairo_rel_curve_to( mCairo, dx1, dy1, dx2, dy2, dx3, dy3 );
@@ -1549,9 +1636,9 @@ void Context::scale( double sx, double sy )
 	cairo_scale( mCairo, sx, sy );
 }
 
-void Context::rotate( double angle )
+void Context::rotate( double radians )
 {
-	cairo_rotate( mCairo, angle );
+	cairo_rotate( mCairo, radians );
 }
 
 void Context::transform( const Matrix &aMatrix )
@@ -1559,14 +1646,31 @@ void Context::transform( const Matrix &aMatrix )
 	cairo_transform( mCairo, &aMatrix.getCairoMatrix() );
 }
 
+void Context::transform( const cinder::MatrixAffine2f &matrix )
+{
+	cairo_transform( mCairo, &cairo::Matrix( matrix ).getCairoMatrix() );
+}
+
 void Context::setMatrix( const Matrix &aMatrix )
 {
 	cairo_set_matrix( mCairo, &aMatrix.getCairoMatrix() );
 }
 
+void Context::setMatrix( const cinder::MatrixAffine2f &matrix )
+{
+	cairo_set_matrix( mCairo, &cairo::Matrix( matrix ).getCairoMatrix() );
+}
+
 void Context::getMatrix( Matrix *aMatrix )
 {
 	cairo_get_matrix( mCairo, &aMatrix->getCairoMatrix() );
+}
+
+MatrixAffine2f Context::getMatrix() const
+{
+	cairo_matrix_t temp;
+	cairo_get_matrix( mCairo, &temp );
+	return MatrixAffine2f( temp.xx, temp.yx, temp.xy, temp.yy, temp.x0, temp.y0 );
 }
 
 void Context::identityMatrix()
@@ -1633,6 +1737,7 @@ void Context::setFont( const cinder::Font &font )
 	cairo_font_face_t *cairoFont = cairo_win32_font_face_create_for_logfontw( &font.getLogfont() );
 #endif
 	cairo_set_font_face( mCairo, cairoFont );
+	cairo_set_font_size( mCairo, font.getSize() );
 	cairo_font_face_destroy( cairoFont );
 }
 
@@ -1659,6 +1764,11 @@ ScaledFont*	Context::getScaledFont()
 void Context::showText( const std::string &s )
 {
 	cairo_show_text( mCairo, s.c_str() );
+}
+
+void Context::textPath( const std::string &s )
+{
+	cairo_text_path( mCairo, s.c_str() );
 }
 
 /*void Context::showGlyphs( const GlyphArray &glyphs )
@@ -1697,6 +1807,345 @@ cairo::SurfaceQuartz createWindowSurface()
 	cairo_glyph_extents( mCairo, (cairo_glyph_t *)&glyphs.mGlyphs[0], (int)glyphs.mGlyphs.size(), extents->getCairoTextExtents() );
 }
 */
+
+std::string	Context::statusToString() const
+{
+	return std::string( cairo_status_to_string( cairo_status( mCairo ) ) );
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// SvgRendererCairo
+class SvgRendererCairo : public svg::Renderer {
+  public:
+	SvgRendererCairo( cairo::Context &ctx ) : svg::Renderer(), mCtx( ctx ) { 
+		mMatrixStack.push_back( mCtx.getMatrix() );
+		// An illegal (non-singular) matrix is irrecoverable in Cairo,
+		// but something we need to handle. This variable records it,
+		// see W3C Test coords-trans-09-t.svg
+		mMatrixStackContainsIllegal = false;
+
+		mFillStack.push_back( svg::Paint( Color::black() ) );
+		mStrokeStack.push_back( svg::Paint() );
+		mFillOpacityStack.push_back( 1.0f );
+		mStrokeOpacityStack.push_back( 1.0f );
+		mGroupOpacityStack.push_back( 1.0f );
+		
+		mStrokeWidthStack.push_back( 1.0f );
+		mCtx.setLineWidth( mStrokeWidthStack.back() );
+		mFillRuleStack.push_back( cairo::FILL_RULE_WINDING );
+		mCtx.setFillRule( mFillRuleStack.back() );
+		mLineCapStack.push_back( cairo::LINE_CAP_BUTT );
+		mCtx.setFillRule( mLineCapStack.back() );
+		mLineJoinStack.push_back( cairo::LINE_JOIN_MITER );
+		mCtx.setLineJoin( mLineJoinStack.back() );
+		
+		pushTextPen( Vec2f::zero() );
+		mTextRotationStack.push_back( 0 );		
+	}
+
+	bool	shouldRender( const svg::Node &node ) const {
+		return (! mMatrixStackContainsIllegal) && (( ! mFillStack.back().isNone() ) || ( ! mStrokeStack.back().isNone() ) );
+	}
+	
+	void	pushGroup( const svg::Group &group, float opacity ) {
+		mGroupOpacityStack.push_back( opacity );
+		if( opacity < 1.0f )
+			mCtx.pushGroup();
+	}
+
+	void	popGroup() {
+		if( mGroupOpacityStack.back() < 1.0f ) {
+			mCtx.popGroupToSource();
+			mCtx.paintWithAlpha( mGroupOpacityStack.back() );
+		}
+		mGroupOpacityStack.pop_back();
+	}
+	
+	bool	prepareSourceFill( const svg::Node &node ) { return prepareSource( node, mFillStack, mFillOpacityStack ); }
+	bool	prepareSourceStroke( const svg::Node &node ) { return prepareSource( node, mStrokeStack, mStrokeOpacityStack ); }
+	bool	prepareSource( const svg::Node &node, const std::vector<svg::Paint> &paintStack, const std::vector<float> &opacityStack ) {
+		if( paintStack.back().isNone() )
+			return false;
+		else if( paintStack.back().isLinearGradient() ) {
+			cairo::GradientLinear grad( paintStack.back().getCoords0(), paintStack.back().getCoords1() );
+			prepareGradientSource( node, paintStack.back(), grad, opacityStack.back() );
+			return true;
+		}
+		else if( paintStack.back().isRadialGradient() ) {
+			cairo::GradientRadial grad( paintStack.back().getCoords1(), 0, paintStack.back().getCoords0(), paintStack.back().getRadius() );
+			prepareGradientSource( node, paintStack.back(), grad, opacityStack.back() );
+			return true;
+		}
+		else { // solid color or other
+			ColorA color( paintStack.back().getColor() ); color.a = opacityStack.back();
+			mCtx.setSource( color );
+			return true;
+		}
+	}
+	void	prepareGradientSource( const svg::Node &node, const svg::Paint &paint, cairo::Gradient &grad, float opacity ) {
+		if( paint.useObjectBoundingBox() ) {
+			Rectf bb = node.getBoundingBox();
+			cairo::Matrix m; m.initIdentity();
+			float invWidth = ( bb.getWidth() != 0 ) ? ( 1 / bb.getWidth() ) : 0;
+			float invHeight = ( bb.getHeight() != 0 ) ? ( 1 / bb.getHeight() ) : 0;
+			m.scale( invWidth, invHeight );
+			m.translate( -bb.x1, -bb.y1 );
+			if( paint.specifiesTransform() ) {
+				m *= cairo::Matrix( paint.getTransform() );
+			}
+			grad.setMatrix( m );
+		}
+		else if( paint.specifiesTransform() ) {
+			cairo::Matrix m2( paint.getTransform() );
+			m2.invert();
+			grad.setMatrix( m2 );
+		}
+		for( size_t s = 0; s < paint.getNumColors(); ++s ) {
+			ColorA color = paint.getColor( s );
+			color.a *= opacity;
+			grad.addColorStop( paint.getOffset( s ), color );
+		}
+		mCtx.setSource( grad );		
+	}
+
+	void	strokeAndFill( const svg::Node &node ) {
+		if( prepareSourceFill( node ) ) {
+			if( ! mStrokeStack.back().isNone() )
+				mCtx.fillPreserve();
+			else
+				mCtx.fill();
+		}
+		if( prepareSourceStroke( node ) ) {
+			mCtx.stroke();
+		}	
+	}
+
+	void	drawPath( const svg::Path &path ) {
+		if( ! shouldRender( path ) )
+			return;
+		mCtx.appendPath( path.getShape2d() );
+		strokeAndFill( path );
+	}
+
+	void	drawPolyline( const svg::Polyline &polyline ) {
+		if( ! shouldRender( polyline ) )
+			return;
+		const ci::PolyLine2f &polyLine = polyline.getPolyLine();
+		if( ! polyLine.getPoints().empty() ) {
+			mCtx.moveTo( polyLine.getPoints()[0] );
+			for( size_t p = 1; p < polyLine.getPoints().size(); ++p )
+				mCtx.lineTo( polyLine.getPoints()[p] );
+			if( polyLine.isClosed() )
+				mCtx.closePath();
+			strokeAndFill( polyline );
+		}			
+	}
+
+	void	drawPolygon( const svg::Polygon &polygon ) {
+		if( ! shouldRender( polygon ) )
+			return;
+		const ci::PolyLine2f &polyLine = polygon.getPolyLine();
+		if( ! polyLine.getPoints().empty() ) {
+			mCtx.moveTo( polyLine.getPoints()[0] );
+			for( size_t p = 1; p < polyLine.getPoints().size(); ++p )
+				mCtx.lineTo( polyLine.getPoints()[p] );
+			if( polyLine.isClosed() )
+				mCtx.closePath();
+			strokeAndFill( polygon );
+		}			
+	}
+
+	void	drawLine( const svg::Line &line ) {
+		if( ! shouldRender( line ) )
+			return;	
+		if( prepareSourceStroke( line ) ) {
+			mCtx.line( line.getPoint1(), line.getPoint2() );
+			mCtx.stroke();
+		}
+	}
+
+	void	drawRect( const svg::Rect &rect ) {
+		if( ! shouldRender( rect ) )
+			return;	
+		mCtx.rectangle( rect.getRect() );
+		strokeAndFill( rect );
+	}
+
+	void	drawCircle( const svg::Circle &circle ) {
+		if( ! shouldRender( circle ) )
+			return;
+		mCtx.circle( circle.getCenter(), circle.getRadius() );
+		strokeAndFill( circle );
+	}
+
+	void	drawEllipse( const svg::Ellipse &ellipse ) {
+		if( ! shouldRender( ellipse ) )
+			return;	
+		if( ( ellipse.getRadiusX() < 0 ) || ( ellipse.getRadiusY() < 0 ) )
+			return;
+		mCtx.save();
+		mCtx.translate( ellipse.getCenter() );
+		mCtx.scale( ellipse.getRadiusX(), ellipse.getRadiusY() );
+		mCtx.arc( 0, 0, 1, 0, 2 * M_PI );
+		mCtx.restore();
+		strokeAndFill( ellipse );
+	}
+
+	void	drawImage( const svg::Image &image ) {
+		if( ! shouldRender( image ) )
+			return;
+		mCtx.save();
+		std::shared_ptr<Surface8u> surface = image.getSurface();
+		Surface8u premultCopy( surface->getWidth(), surface->getHeight(), surface->hasAlpha(), SurfaceConstraintsCairo() );
+		premultCopy.copyFrom( *surface, surface->getBounds() );
+		ip::premultiply( &premultCopy );
+		mCtx.copySurface( cairo::SurfaceImage( premultCopy ), surface->getBounds(), image.getRect() );
+		mCtx.restore();
+	}
+
+	void	drawTextSpan( const svg::TextSpan &span ) {
+		if( ! shouldRender( span ) )
+			return;
+					
+#if 0
+		/*std::vector<std::pair<uint16_t,Vec2f> > glyphs = span.getGlyphMeasures();
+		
+		Vec2f curPoint = mCtx.getCurrentPoint();
+		for( size_t g = 0; g < glyphs.size(); ++g ) {
+			mCtx.save();
+			mCtx.translate( glyphs[g].second.x + curPoint.x, curPoint.y );
+			mCtx.appendPath( font->getGlyphShape( glyphs[g].first ) );
+			mCtx.restore();				
+		}*/
+		mCtx.appendPath( span.getShape() );
+#else		
+		std::shared_ptr<Font> font = span.getFont();
+		mCtx.setFont( *font );
+
+		mCtx.moveTo( mTextPenStack.back() );
+		// we can use a text path when the rotate is empty
+		if( abs(mTextRotationStack.back()) < 0.0001f ) {
+			mCtx.textPath( span.getString() );
+			mTextPenStack.back() = mCtx.getCurrentPoint();
+		}
+		else {
+			mCtx.save();
+			cairo::Matrix fontMatrix, oldFontMatrix, rotationMatrix;
+			mCtx.getFontMatrix( &oldFontMatrix );
+			rotationMatrix.initRotate( toRadians( mTextRotationStack.back() ) );
+			fontMatrix = oldFontMatrix;
+			fontMatrix *= rotationMatrix;
+			mCtx.setFontMatrix( fontMatrix );
+			TextBox tbox = TextBox().font( *font ).text( span.getString() );
+			std::vector<std::pair<uint16_t,Vec2f> > glyphs = tbox.measureGlyphs();
+			Vec2f curPoint = mCtx.getCurrentPoint();
+			for( size_t g = 0; g < glyphs.size(); ++g ) {
+				mCtx.save();
+				mCtx.translate( glyphs[g].second.x + curPoint.x, /*glyphs[g].second.y + */curPoint.y );
+				glyphs[g].second.x = 0;
+				glyphs[g].second.y = 0;
+				mCtx.glyphPath( glyphs[g].first, Vec2f::zero() );
+				mCtx.restore();				
+			}
+			mTextPenStack.back() = mCtx.getCurrentPoint();
+			mCtx.restore();
+		}
+#endif
+		strokeAndFill( span );
+	}
+
+	void	pushMatrix( const MatrixAffine2f &top ) {
+		MatrixAffine2f m = mMatrixStack.back() * top;
+		mMatrixStack.push_back( m );
+		// verify the matrix is non-singular
+		if( ! m.isSingular() ) {
+			mCtx.setMatrix( m );
+			//mCtx.transform( mMatrixStack.back() );
+		}
+		else {
+			mMatrixStackContainsIllegal = true;
+		}
+	}
+	void	popMatrix() {
+		mMatrixStack.pop_back();
+		mMatrixStackContainsIllegal = false;
+		for( size_t s = 0; s < mMatrixStack.size(); ++s ) {
+			const MatrixAffine2f &m = mMatrixStack[s];
+			if( m.isSingular() ) {
+				mMatrixStackContainsIllegal = true;
+				break;
+			}
+		}
+		
+		if( ! mMatrixStackContainsIllegal ) {
+			mCtx.setMatrix( mMatrixStack.back() );
+		}
+	}
+	
+	void	pushStyle( const svg::Style &style ) {}	
+	void	popStyle( const svg::Style &style ) {}
+	
+	void	pushStroke( const svg::Paint &paint ) { mStrokeStack.push_back( paint ); }
+	void	popStroke() { mStrokeStack.pop_back(); }
+	void	pushFill( const svg::Paint &paint ) { mFillStack.push_back( paint ); }
+	void	popFill() { mFillStack.pop_back(); }
+	void	pushFillOpacity( float opacity ) { mFillOpacityStack.push_back( opacity ); }
+	void	popFillOpacity() { mFillOpacityStack.pop_back(); }
+	void	pushStrokeOpacity( float opacity ) { mStrokeOpacityStack.push_back( opacity ); }
+	void	popStrokeOpacity() { mStrokeOpacityStack.pop_back(); }
+
+	void	pushStrokeWidth( float width ) { mStrokeWidthStack.push_back( width ); mCtx.setLineWidth( width ); }
+	void	popStrokeWidth() { mStrokeWidthStack.pop_back(); mCtx.setLineWidth( mStrokeWidthStack.back() ); }
+	void	pushFillRule( svg::FillRule rule ) {
+			mFillRuleStack.push_back( rule == svg::FILL_RULE_EVENODD ? cairo::FILL_RULE_EVEN_ODD : cairo::FILL_RULE_WINDING );
+			mCtx.setFillRule( mFillRuleStack.back() );
+	}
+	void	popFillRule() { mFillRuleStack.pop_back(); mCtx.setFillRule( mFillRuleStack.back() ); }	
+	void	pushLineCap( svg::LineCap lineCap ) {
+			if( lineCap == cairo::LINE_CAP_BUTT ) mLineCapStack.push_back( cairo::LINE_CAP_BUTT );
+			else if( lineCap == cairo::LINE_CAP_ROUND ) mLineCapStack.push_back( cairo::LINE_CAP_ROUND );
+			else if( lineCap == cairo::LINE_CAP_SQUARE ) mLineCapStack.push_back( cairo::LINE_CAP_SQUARE );
+			mCtx.setLineCap( mLineCapStack.back() );
+	}
+	void	popLineCap() { mLineCapStack.pop_back(); mCtx.setLineCap( mLineCapStack.back() ); }	
+	void	pushLineJoin( svg::LineJoin lineJoin ) {
+			if( lineJoin == cairo::LINE_JOIN_MITER ) mLineJoinStack.push_back( cairo::LINE_JOIN_MITER );
+			else if( lineJoin == cairo::LINE_JOIN_ROUND ) mLineJoinStack.push_back( cairo::LINE_JOIN_ROUND );
+			else if( lineJoin == cairo::LINE_JOIN_BEVEL ) mLineJoinStack.push_back( cairo::LINE_JOIN_BEVEL );
+			mCtx.setLineJoin( mLineJoinStack.back() );
+	}
+	void	popLineJoin() { mLineJoinStack.pop_back(); mCtx.setLineJoin( mLineJoinStack.back() ); }		
+
+	void	pushTextPen( const Vec2f &penPos ) { mTextPenStack.push_back( penPos ); mCtx.moveTo( penPos ); }
+	void	popTextPen() { mTextPenStack.pop_back(); mCtx.moveTo( mTextPenStack.back() ); }
+	void	pushTextRotation( float rotation ) { mTextRotationStack.push_back( rotation ); }
+	void	popTextRotation() { mTextRotationStack.pop_back(); }
+
+	std::vector<MatrixAffine2f>		mMatrixStack;
+	bool						mMatrixStackContainsIllegal;
+	std::vector<svg::Paint>		mFillStack, mStrokeStack;
+	std::vector<float>			mFillOpacityStack, mStrokeOpacityStack;
+	std::vector<float>			mGroupOpacityStack;
+	std::vector<float>			mStrokeWidthStack;
+	std::vector<int32_t>		mFillRuleStack;
+	std::vector<int32_t>		mLineCapStack;
+	std::vector<int32_t>		mLineJoinStack;
+
+	std::vector<Vec2f>			mTextPenStack;
+	std::vector<float>			mTextRotationStack;
+
+	cairo::Context				&mCtx;
+	bool						mRenderingDisabled;
+	float						mGroupOpacity;
+};
+
+void Context::render( const svg::Node &node, const svg::RenderVisitor &visitor )
+{
+	SvgRendererCairo ren( *this );
+	if( visitor )
+		ren.setVisitor( visitor );
+	node.render( ren );
+}
 
 } } // namespace cinder::cairo
 

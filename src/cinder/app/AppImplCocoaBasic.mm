@@ -29,6 +29,17 @@
 	- (void)setAppleMenu:(NSMenu *)menu;
 @end 
 
+// CinderWindow - necessary to enable a borderless window to receive keyboard events
+@interface CinderWindow : NSWindow {
+}
+- (BOOL)canBecomeMainWindow;
+- (BOOL)canBecomeKeyWindow;
+@end
+@implementation CinderWindow
+- (BOOL)canBecomeMainWindow { return YES; }
+- (BOOL)canBecomeKeyWindow { return YES; }
+@end
+
 @implementation AppImplCocoaBasic
 
 - (id)init:(cinder::app::AppBasic*)aApp 
@@ -65,7 +76,9 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	mDisplay = app->getSettings().getDisplay();
-	if( mDisplay == 0 )
+	if( app->getSettings().isWindowPosSpecified() )
+		mDisplay = cinder::Display::getDisplayForPoint( app->getSettings().getWindowPos() ).get();// failure is handled by next if-statement
+	if( ! mDisplay )
 		mDisplay = cinder::Display::getMainDisplay().get();
 	
 	mFrameRate = app->getSettings().getFrameRate();
@@ -102,18 +115,31 @@
 - (void)createWindow
 {
 	int offsetX = ( mDisplay->getWidth() - app->getSettings().getWindowWidth() ) / 2;
-	int offsetY = ( mDisplay->getHeight() - app->getSettings().getWindowHeight() ) / 2;	
-	NSRect winRect = NSMakeRect( offsetX, offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
-	unsigned int myStyleMask = NSTitledWindowMask;
+	int offsetY = ( mDisplay->getHeight() - app->getSettings().getWindowHeight() ) / 2;
 	
-	if( app->getSettings().isResizable() ) {
-		myStyleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+	if( app->getSettings().isWindowPosSpecified() ) {
+		offsetX = app->getSettings().getWindowPosX();
+		offsetY = cinder::Display::getMainDisplay()->getHeight() - app->getSettings().getWindowPosY() - app->getSettings().getWindowHeight();
 	}
-	win = [[NSWindow alloc] initWithContentRect:winRect
-									  styleMask:myStyleMask
+        
+	NSRect winRect = NSMakeRect( offsetX, offsetY, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() );
+
+	unsigned int styleMask;
+	mBorderless = app->getSettings().isBorderless();
+	if( mBorderless ) {
+		styleMask = NSBorderlessWindowMask;
+	}
+	else if( app->getSettings().isResizable() ) {
+		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+	}
+	else
+		styleMask = NSTitledWindowMask;
+    
+	win = [[CinderWindow alloc] initWithContentRect:winRect
+									  styleMask:styleMask
 										backing:NSBackingStoreBuffered
 										  defer:NO
-										 screen:mDisplay->getNSScreen()];
+										 screen:nil];//mDisplay->getNsScreen()];
 
 	if( cinderView == nil ) {
 		cinderView = [[CinderView alloc] initWithFrame:NSMakeRect( 0, 0, app->getSettings().getWindowWidth(), app->getSettings().getWindowHeight() ) app:app];
@@ -125,12 +151,18 @@
 
 	mWindowWidth = static_cast<int>( winRect.size.width );
 	mWindowHeight = static_cast<int>( winRect.size.height );
+
+    mWindowPositionX = offsetX;
+    mWindowPositionY = offsetY;    
 		
 	[self startAnimationTimer];
 	[win makeKeyAndOrderFront:nil];
 	[win setInitialFirstResponder:cinderView];
 	[win setAcceptsMouseMovedEvents:YES];
 	[win setOpaque:YES];
+	mAlwaysOnTop = app->getSettings().isAlwaysOnTop();
+	if( mAlwaysOnTop )
+		[win setLevel: NSScreenSaverWindowLevel];
 	// we need to get told about it when the window changes screens so we can update the display link
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowChangedScreen:) name:NSWindowDidMoveNotification object:nil];
 	[cinderView setNeedsDisplay:YES];
@@ -172,6 +204,45 @@
 	mWindowWidth = static_cast<int>( bounds.size.width );
 	mWindowHeight = static_cast<int>( bounds.size.height );
 	mFullScreen = YES;
+}
+
+- (bool)isBorderless
+{
+	return mBorderless;
+}
+
+- (void)setBorderless:(bool)borderless
+{
+	if( mBorderless != borderless ) {
+		unsigned int styleMask;
+		mBorderless = borderless;
+		if( mBorderless ) {
+			styleMask = NSBorderlessWindowMask;
+		}
+		else if( app->getSettings().isResizable() ) {
+			styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+		}
+		else
+			styleMask = NSTitledWindowMask;
+		[win setStyleMask:styleMask];
+		[win makeFirstResponder:cinderView];
+		[win makeKeyWindow];
+		[win makeMainWindow];
+		[win setHasShadow:(! mBorderless)];
+	}
+}
+
+- (bool)isAlwaysOnTop
+{
+	return mAlwaysOnTop;
+}
+
+- (void)setAlwaysOnTop:(bool)alwaysOnTop
+{
+	if( mAlwaysOnTop != alwaysOnTop ) {
+		mAlwaysOnTop = alwaysOnTop;
+		[win setLevel:(mAlwaysOnTop)?NSScreenSaverWindowLevel:NSNormalWindowLevel];
+	}
 }
 
 - (std::string)getAppPath
@@ -304,14 +375,34 @@
 	mWindowHeight = h;
 }
 
+- (ci::Vec2i)getWindowPos
+{
+	NSRect frame = [win frame];
+	NSRect content = [win contentRectForFrameRect:frame];
+	return ci::Vec2i( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
+}
+
+- (void)setWindowPosWithLeft:(int)x top:(int)y
+{
+    NSPoint p;
+    p.x = x;
+    p.y = cinder::Display::getMainDisplay()->getHeight() - y;
+    mWindowPositionX = x;
+    mWindowPositionY = y;
+	NSRect currentContentRect = [win contentRectForFrameRect:[win frame]];
+	NSRect targetContentRect = NSMakeRect( p.x, p.y - currentContentRect.size.height, currentContentRect.size.width, currentContentRect.size.height);
+	NSRect targetFrameRect = [win frameRectForContentRect:targetContentRect];
+    [win setFrameOrigin:targetFrameRect.origin];
+}
+
 - (void)windowChangedScreen:(NSNotification*)inNotification
 {
     // If the video moves to a different screen, synchronize to the timing of that screen.
 	NSWindow *window = [inNotification object]; 
 	CGDirectDisplayID displayID = (CGDirectDisplayID)[[[[window screen] deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 
-	if( displayID != mDisplay->getCGDirectDisplayID() ) {
-		mDisplay = cinder::Display::findFromCGDirectDisplayID( displayID ).get();
+	if( displayID != mDisplay->getCgDirectDisplayId() ) {
+		mDisplay = cinder::Display::findFromCgDirectDisplayId( displayID ).get();
 	}
 }
 

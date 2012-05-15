@@ -71,10 +71,11 @@ class Vec2
 	T x,y;
 
 	typedef T							TYPE;
+	typedef T							value_type;
 	typedef typename VECTRAIT<T>::DIST	DIST;
 	static const int DIM = 2;
 
-	Vec2() {}
+	Vec2() :x(0), y(0) {}
 	Vec2( T nx, T ny ) : x( nx ), y( ny ) {}
 	Vec2( const Vec2<T>& src ) : x( src.x ), y( src.y ) {}
 	explicit Vec2( const T *d ) : x( d[0] ), y( d[1] ) {}
@@ -121,6 +122,8 @@ class Vec2
 		assert( n >= 0 && n <= 1 );
 		return (&x)[n];
 	}
+
+	T*	ptr() const { return &(const_cast<Vec2*>( this )->x); }
 
 	const Vec2<T>	operator+( const Vec2<T>& rhs ) const { return Vec2<T>( x + rhs.x, y + rhs.y ); }
 	const Vec2<T>	operator-( const Vec2<T>& rhs ) const { return Vec2<T>( x - rhs.x, y - rhs.y ); }
@@ -299,9 +302,6 @@ class Vec2
 		return Vec2<T>( 1, 1 );
 	}
 
-	operator T*(){ return (T*) this; }
-	operator const T*() const { return (const T*) this; }
-
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec2<T>& rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "]";
@@ -321,9 +321,10 @@ public:
 	T x,y,z;
 
 	typedef T								TYPE;
+	typedef T								value_type;
 	static const int DIM = 3;
 
-	Vec3() {}
+	Vec3() :x(0), y(0), z(0) {}
 	Vec3( T nx, T ny, T nz )
 		: x( nx ), y( ny ), z( nz )
 	{}
@@ -385,6 +386,8 @@ public:
 		assert( n >= 0 && n <= 2 );
 		return (&x)[n];
 	}
+
+	T*	ptr() const { return &(const_cast<Vec3*>( this )->x); }
 
 	const Vec3<T>	operator+( const Vec3<T>& rhs ) const { return Vec3<T>( x + rhs.x, y + rhs.y, z + rhs.z ); }
 	const Vec3<T>	operator-( const Vec3<T>& rhs ) const { return Vec3<T>( x - rhs.x, y - rhs.y, z - rhs.z ); }
@@ -671,9 +674,6 @@ public:
 	Vec3<T> zzy() const { return Vec3<T>(z, z, y); }
 	Vec3<T> zzz() const { return Vec3<T>(z, z, z); }
 
-	operator T*(){ return (T*) this; }
-	operator const T*() const { return (const T*) this; }
-
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec3<T> rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "," << rhs.z  << "]";
@@ -693,7 +693,8 @@ class Vec4
  public:
 	T x,y,z,w;
 
-	typedef T TYPE;
+	typedef T							TYPE;
+	typedef T							value_type;
 	static const int DIM = 4;
 
 	Vec4()
@@ -738,6 +739,8 @@ class Vec4
 		assert( n >= 0 && n <= 3 );
 		return (&x)[n];
 	}
+
+	T*	ptr() const { return &(const_cast<Vec4*>( this )->x); }
 
 	const Vec4<T>	operator+( const Vec4<T>& rhs ) const { return Vec4<T>( x + rhs.x, y + rhs.y, z + rhs.z, w + rhs.w ); }
 	const Vec4<T>	operator-( const Vec4<T>& rhs ) const { return Vec4<T>( x - rhs.x, y - rhs.y, z - rhs.z, w - rhs.w ); }
@@ -1237,9 +1240,6 @@ class Vec4
 	Vec4<T> wwwz() const { return Vec4<T>(w, w, w, z); }
 	Vec4<T> wwww() const { return Vec4<T>(w, w, w, w); }
 
-	operator T*(){ return (T*) this; }
-	operator const T*() const { return (const T*) this; }
-
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec4<T>& rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "," << rhs.z << "," << rhs.w << "]";
@@ -1301,15 +1301,13 @@ template <typename T> bool isNaN( const Vec3<T>& a ) { return isNaN( a.x ) || is
 template <typename T> bool isNaN( const Vec4<T>& a ) { return isNaN( a.x ) || isNaN( a.y ) || isNaN( a.z ) || isNaN( a.w ); }
 
 typedef Vec2<int>		Vec2i;
-typedef Vec3<int>		Vec3i;
-typedef Vec4<int>		Vec4i;
-
 typedef Vec2<float>		Vec2f;
-typedef Vec3<float>		Vec3f;
-typedef Vec4<float>		Vec4f;
-
 typedef Vec2<double>	Vec2d;
+typedef Vec3<int>		Vec3i;
+typedef Vec3<float>		Vec3f;
 typedef Vec3<double>	Vec3d;
+typedef Vec4<int>		Vec4i;
+typedef Vec4<float>		Vec4f;
 typedef Vec4<double>	Vec4d;
 
 } // namespace cinder

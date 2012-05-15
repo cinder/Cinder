@@ -240,6 +240,7 @@ class SurfaceT {
 
 	void	copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
 	void	copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
+	void 	copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
 	void	copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
  
  public:

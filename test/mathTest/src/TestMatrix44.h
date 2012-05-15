@@ -1887,13 +1887,13 @@ template <typename T> void TestMatrix44( std::ostream& os )
 	}
 
 
-	// Matrix44<T> invertTransform() const;
+	// Matrix44<T> orthonormalInverted() const;
 	{
 		bool result = false;
 
 		MatT c0(
-			(T) 0.45399, (T) 0.89101, (T) 0.00000, (T) 22.1904,
-			(T)-0.89101, (T) 0.45399, (T) 0.00000, (T)-22.5298,
+			(T) 0.45399, (T) 0.89101, (T) 0.00000, (T) -10.000,
+			(T)-0.89101, (T) 0.45399, (T) 0.00000, (T)-30.0000,
 			(T) 0.00000, (T) 0.00000, (T) 1.00000, (T)-45.0000,
 			(T) 0.00000, (T) 0.00000, (T) 0.00000, (T)  1.0000, true
 		);
@@ -1905,13 +1905,25 @@ template <typename T> void TestMatrix44( std::ostream& os )
 			(T) 0.00000, (T) 0.00000, (T) 0.00000, (T)  1.0000, true
 		);
 
-		m0.invertTransform();
+		result = ( c0.equalCompare( m0.orthonormalInverted(), 0.001f ) );
 
-		result = ( c0 == m0.invertTransform() );
-
-		os << (result ? "passed" : "FAILED") << " : " << "Matrix44<T> invertTransform() const;" << "\n";
+		os << (result ? "passed" : "FAILED") << " : " << "Matrix44<T> orthonormalInverted() const;" << "\n";
 	}
 
+	// Matrix44<T> orthonormalInverted() const;
+	{
+		bool result = false;
+
+		MatT m0(
+			(T) 0.45399, (T)-0.89101, (T) 0.00000, (T)-22.1904,
+			(T) 0.89101, (T) 0.45399, (T) 0.00000, (T) 22.5298,
+			(T) 0.00000, (T) 0.00000, (T) 1.00000, (T) 45.0000,
+			(T) 0.00000, (T) 0.00000, (T) 0.00000, (T)  1.0000, true
+		);
+
+		result = ( m0.inverted().equalCompare( m0.orthonormalInverted(), 0.001f ) );
+		os << (result ? "passed" : "FAILED") << " : " << "Matrix44<T> inverse() == orthonormalInverted() const;" << "\n";
+	}
 
 	// static Matrix44<T> identity();
 	{
@@ -2059,6 +2071,31 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		os << (result ? "passed" : "FAILED") << " : " << "static Matrix44<T> createRotation( const Vec3/4<T> &eulerRadians );" << "\n";
 	}
 
+	//static Matrix44<T> createRotationOnb( const Vec3<T>& u, const Vec3<T>& v, const Vec3<T>& w );
+	{
+		bool result = false;
+
+		MatT c0(
+			(T)1, (T)0, (T)0, (T)0,
+			(T)0, (T)1, (T)0, (T)0,
+			(T)0, (T)0, (T)1, (T)0,
+			(T)0, (T)0, (T)0, (T)1
+		);
+
+		Vec3<T> u3 = Vec3<T>( 1, 0, 0 );
+		Vec3<T> v3 = Vec3<T>( 0, 1, 0 );
+		Vec3<T> w3 = Vec3<T>( 0, 0, 1 );
+		MatT m0 = MatT::createRotationOnb( u3, v3, w3 );
+
+		Vec3<T> u4 = Vec3<T>( 1, 0, 0 );
+		Vec3<T> v4 = Vec3<T>( 0, 1, 0 );
+		Vec3<T> w4 = Vec3<T>( 0, 0, 1 );
+		MatT m1 = MatT::createRotationOnb( u4, v4, w4 );
+
+		result = ( c0 == m0 ) && ( c0 == m1 );
+
+		os << (result ? "passed" : "FAILED") << " : " << "static Matrix44<T> createRotationOnb( const Vec3/4<T>& u, const Vec3/4<T>& v, const Vec3/4<T>& w );" << "\n";
+	}
 
 	// static Matrix44<T> createScale( T s );
 	{

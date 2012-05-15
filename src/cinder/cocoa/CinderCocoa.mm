@@ -156,7 +156,7 @@ Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwners
 		result.setDeallocator( NSBitmapImageRepSurfaceDeallocator, const_cast<NSBitmapImageRep*>( rep ) );
 	return result;
 }
-#endif defined( CINDER_MAC )
+#endif // defined( CINDER_MAC )
 
 std::string convertCfString( CFStringRef str )
 {
@@ -218,6 +218,10 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 	
 	// Create the attributed string
 	CFStringRef strRef = CFStringCreateWithCString( kCFAllocatorDefault, str.c_str(), kCFStringEncodingUTF8 );
+	if( ! strRef ) { // failure
+		::CFRelease( attributes );
+		return NULL;
+	}
 	CFAttributedStringRef attrString = ::CFAttributedStringCreate( kCFAllocatorDefault, strRef, attributes );
 	
 	CFRelease( strRef );
@@ -249,12 +253,17 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 	CGColorRelease( cgColor );
 	
 	// Create the attributed string
-	CFStringRef strRef = CFStringCreateWithCString( kCFAllocatorDefault, str.c_str(), kCFStringEncodingUTF8 );
+	CFStringRef strRef = ::CFStringCreateWithCString( kCFAllocatorDefault, str.c_str(), kCFStringEncodingUTF8 );
+	if( ! strRef ) { // failure
+		::CFRelease( attributes );
+		::CFRelease( ligaturesRef );
+		return NULL;
+	}
 	CFAttributedStringRef attrString = ::CFAttributedStringCreate( kCFAllocatorDefault, strRef, attributes );
 	
-	CFRelease( strRef );
-	CFRelease( attributes );
-	CFRelease( ligaturesRef );
+	::CFRelease( strRef );
+	::CFRelease( attributes );
+	::CFRelease( ligaturesRef );
 	
 	return attrString;
 }

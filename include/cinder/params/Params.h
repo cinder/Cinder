@@ -45,6 +45,7 @@ class InterfaceGl {
 	
 	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, float *floatParam, const std::string &optionsStr = "", bool readOnly = false );
+	void	addParam( const std::string &name, double *doubleParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, int32_t *intParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, Vec3f *vectorParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, Quatf *quatParam, const std::string &optionsStr = "", bool readOnly = false );
@@ -56,6 +57,7 @@ class InterfaceGl {
 	void	addSeparator( const std::string &name = "", const std::string &optionsStr = "" );
 	void	addText( const std::string &name = "", const std::string &optionsStr = "" );
 	void	addButton( const std::string &name, const std::function<void()> &callback, const std::string &optionsStr = "" );
+	void	removeParam( const std::string &name );
 	void	setOptions( const std::string &name = "", const std::string &optionsStr = "" );
 
  protected:

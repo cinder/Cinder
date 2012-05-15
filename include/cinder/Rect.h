@@ -29,6 +29,8 @@
 
 namespace cinder {
 
+template<typename T> class MatrixAffine2;
+
 template<typename T>
 class RectT {
  public:
@@ -67,6 +69,9 @@ class RectT {
 	RectT		scaledCentered( T scale ) const;
 	void		scale( T scale );
 	RectT		scaled( T scale ) const;
+
+	//! Returns a copy of the Rect transformed by \a matrix. Represents the bounding box of the transformed Rect when \a matrix expresses non-scale/translate operations.
+	RectT		transformCopy( const class MatrixAffine2<T> &matrix ) const;
 
 	/** \brief Is a point \a pt inside the rectangle **/
 	template<typename Y>
@@ -108,6 +113,9 @@ class RectT {
 	const RectT<T>		operator-( const Vec2<T> &o ) const { return this->getOffset( -o ); }
 	const RectT<T>		operator*( T s ) const { return this->scaled( s ); }
 	const RectT<T>		operator/( T s ) const { return this->scaled( ((T)1) / s ); }
+
+	const RectT<T>		operator+( const RectT<T>& rhs ) const { return RectT<T>( x1 + rhs.x1, y1 + rhs.y1, x2 + rhs.x2, y2 + rhs.y2 ); }
+	const RectT<T>		operator-( const RectT<T>& rhs ) const { return RectT<T>( x1 - rhs.x1, y1 - rhs.y1, x2 - rhs.x2, y2 - rhs.y2 ); }
 
 	RectT<T>&		operator+=( const Vec2<T> &o ) { offset( o ); return *this; }
 	RectT<T>&		operator-=( const Vec2<T> &o ) { offset( -o ); return *this; }

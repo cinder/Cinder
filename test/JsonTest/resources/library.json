@@ -1,0 +1,50 @@
+{
+  "library": {
+    "max_id": 187916083297132540,
+    "owner": {
+	  "max_id": 187916083297132540, 
+      "name": "Andrew Bell",
+      "city": "New York"
+    },
+    "albums": [
+      {
+        "musician": "John Coltrane",
+        "year": "1989",
+        "title": "Ole Coltrane",
+        "tracks": [
+          {
+          "id": 0,
+          "title": "Ole"
+          },
+          {
+            "id": 1,
+            "title": "Dahomey Dance"
+          },
+          {
+            "id": 2,
+            "title": "Aisha"
+          },
+          {
+            "id": 3,
+            "title": "To Her Ladyship"
+          }
+        ]
+      },
+      {
+        "musician": "Burial + Four Tet",
+        "year": "2009",
+        "title": "Moth / Wolf Club",
+        "tracks": [
+          {
+            "id": 0,
+            "title": "Moth"
+          },
+          {
+            "id": 1,
+            "title": "Wolf"
+          }
+        ]
+      }
+    ]
+  }
+}

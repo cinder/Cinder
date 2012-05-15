@@ -95,9 +95,9 @@ void Particle::draw()
 void Particle::drawTail()
 {
 	gl::color( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
-	glVertex3fv( mPos );
+	gl::vertex( mPos );
 	gl::color( ColorA( 1.0f, 0.0f, 0.0f, 1.0f ) );
-	glVertex3fv( mTailPos );
+	gl::vertex( mTailPos );
 }
 
 void Particle::addNeighborPos( Vec3f pos )

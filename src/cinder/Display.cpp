@@ -32,8 +32,8 @@ using namespace std;
 
 namespace cinder {
 
-std::vector<shared_ptr<Display> >	Display::sDisplays;
-bool					Display::sDisplaysInitialized = false;
+std::vector<DisplayRef >	Display::sDisplays;
+bool						Display::sDisplaysInitialized = false;
 
 Display::~Display()
 {
@@ -42,18 +42,29 @@ Display::~Display()
 #endif
 }
 
-const vector<shared_ptr<Display> >&	Display::getDisplays()
+const vector<DisplayRef>&	Display::getDisplays()
 {
 	enumerateDisplays();
 	
 	return sDisplays;
 }
 
-#if defined( CINDER_MAC )
-shared_ptr<Display> Display::findFromCGDirectDisplayID( CGDirectDisplayID displayID )
+DisplayRef Display::getDisplayForPoint( const Vec2i &pt )
 {
-	for( vector<shared_ptr<Display> >::iterator dispIt = sDisplays.begin(); dispIt != sDisplays.end(); ++dispIt )
-		if( (*dispIt)->getCGDirectDisplayID() == displayID )
+	const vector<DisplayRef>& displays = getDisplays();
+	for( vector<DisplayRef>::const_iterator displayIt = displays.begin(); displayIt != displays.end(); ++displayIt ) {
+		if( (*displayIt)->contains( pt ) )
+			return *displayIt;
+	}
+
+	return DisplayRef(); // failure
+}
+
+#if defined( CINDER_MAC )
+DisplayRef Display::findFromCgDirectDisplayId( CGDirectDisplayID displayID )
+{
+	for( vector<DisplayRef >::iterator dispIt = sDisplays.begin(); dispIt != sDisplays.end(); ++dispIt )
+		if( (*dispIt)->getCgDirectDisplayId() == displayID )
 			return *dispIt;
 
 	// force refresh since we didn't find it
@@ -62,12 +73,12 @@ shared_ptr<Display> Display::findFromCGDirectDisplayID( CGDirectDisplayID displa
 	enumerateDisplays();
 	
 	// and try again
-	for( vector<shared_ptr<Display> >::iterator dispIt = sDisplays.begin(); dispIt != sDisplays.end(); ++dispIt )
-		if( (*dispIt)->getCGDirectDisplayID() == displayID )
+	for( vector<DisplayRef >::iterator dispIt = sDisplays.begin(); dispIt != sDisplays.end(); ++dispIt )
+		if( (*dispIt)->getCgDirectDisplayId() == displayID )
 			return *dispIt;
 
 	// couldn't find it, so return 0
-	return shared_ptr<Display>();
+	return DisplayRef();
 }
 
 void Display::enumerateDisplays()
@@ -86,7 +97,7 @@ void Display::enumerateDisplays()
 		[screen retain]; // this is released in the destructor for Display
 		NSRect frame = [screen frame];
 
-		shared_ptr<Display> newDisplay = shared_ptr<Display>( new Display );
+		DisplayRef newDisplay = DisplayRef( new Display );
 		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
 		newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 		newDisplay->mScreen = screen;
@@ -101,10 +112,20 @@ void Display::enumerateDisplays()
 
 #elif defined( CINDER_MSW )
 
+DisplayRef Display::findFromHmonitor( HMONITOR hMonitor )
+{
+	const vector<DisplayRef>& displays = getDisplays();
+	for( vector<DisplayRef>::const_iterator displayIt = displays.begin(); displayIt != displays.end(); ++displayIt )
+		if( (*displayIt)->mMonitor == hMonitor )
+			return *displayIt;
+
+	return getMainDisplay(); // failure
+}
+
 BOOL CALLBACK Display::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
 {
-	vector<shared_ptr<Display> > *displaysVector = reinterpret_cast<vector<shared_ptr<Display> >*>( lParam );
-	shared_ptr<Display> newDisplay( new Display );
+	vector<DisplayRef > *displaysVector = reinterpret_cast<vector<DisplayRef >*>( lParam );
+	DisplayRef newDisplay( new Display );
 	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
 	newDisplay->mMonitor = hMonitor;
 
@@ -126,7 +147,7 @@ void Display::enumerateDisplays()
 {
 	if( sDisplaysInitialized )
 		return;
-		
+
 	::EnumDisplayMonitors( NULL, NULL, enumMonitorProc, (LPARAM)&sDisplays );
 	
 	// ensure that the primary display is sDisplay[0]
@@ -144,7 +165,7 @@ void Display::enumerateDisplays()
 }
 #endif // defined( CINDER_MSW )
 
-shared_ptr<Display> Display::getMainDisplay()
+DisplayRef Display::getMainDisplay()
 {
 	enumerateDisplays();
 	return sDisplays[0];

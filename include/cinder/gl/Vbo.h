@@ -189,6 +189,7 @@ class VboMesh {
 	void						bufferPositions( const Vec3f *positions, size_t count );
 	void						bufferNormals( const std::vector<Vec3f> &normals );
 	void						bufferTexCoords2d( size_t unit, const std::vector<Vec2f> &texCoords );
+	void						bufferTexCoords3d( size_t unit, const std::vector<Vec3f> &texCoords );
 	void						bufferColorsRGB( const std::vector<Color> &colors );
 	void						bufferColorsRGBA( const std::vector<ColorA> &colors );
 	class VertexIter			mapVertexBuffer();

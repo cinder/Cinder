@@ -56,12 +56,22 @@ AppImplMsw::~AppImplMsw()
 
 void AppImplMsw::hideCursor()
 {
-	::ShowCursor( FALSE );
+	int counter;
+
+	while( (counter = ::ShowCursor(false)) > -1 );
+
+	// when repeatedly calling hideCursor(), keep counter at -1
+	if(counter < -1) while( ::ShowCursor(true) < -1 );
 }
 
 void AppImplMsw::showCursor()
 {
-	::ShowCursor( TRUE );
+	int counter;
+
+	while( (counter = ::ShowCursor(true)) < 0 );
+
+	// when repeatedly calling showCursor(), keep counter at 0
+	if(counter > 0) while( ::ShowCursor(false) > 0 );
 }
 
 Vec2i AppImplMsw::mouseLocation()

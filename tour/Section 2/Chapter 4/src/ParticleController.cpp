@@ -36,7 +36,7 @@ void ParticleController::applyForce( float zoneRadius, float lowerThresh, float 
 				} else if( percent < higherThresh ){	// Alignment
 					float threshDelta		= higherThresh - lowerThresh;
 					float adjustedPercent	= ( percent - lowerThresh )/threshDelta;
-					float F					= ( 1.0 - ( cos( adjustedPercent * twoPI ) * -0.5f + 0.5f ) ) * alignStrength;
+					float F					= ( 1.0f - ( cos( adjustedPercent * twoPI ) * -0.5f + 0.5f ) ) * alignStrength;
 					
 					p1->mAcc += p2->mVelNormal * F;
 					p2->mAcc += p1->mVelNormal * F;
@@ -44,7 +44,7 @@ void ParticleController::applyForce( float zoneRadius, float lowerThresh, float 
 				} else {								// Cohesion
 					float threshDelta		= 1.0f - higherThresh;
 					float adjustedPercent	= ( percent - higherThresh )/threshDelta;
-					float F					= ( 1.0 - ( cos( adjustedPercent * twoPI ) * -0.5f + 0.5f ) ) * attractStrength;
+					float F					= ( 1.0f - ( cos( adjustedPercent * twoPI ) * -0.5f + 0.5f ) ) * attractStrength;
 										
 					dir.normalize();
 					dir *= F;

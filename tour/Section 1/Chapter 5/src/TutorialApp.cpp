@@ -147,7 +147,7 @@ void TutorialApp::draw()
 	}
 	
 	if( mSaveFrames ){
-		writeImage( getHomeDirectory() + "image_" + toString( getElapsedFrames() ) + ".png", copyWindowSurface() );
+		writeImage( getHomeDirectory() / ( "image_" + toString( getElapsedFrames() ) + ".png" ), copyWindowSurface() );
 	}
 }
 

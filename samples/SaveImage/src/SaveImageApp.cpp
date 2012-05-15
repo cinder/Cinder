@@ -59,7 +59,7 @@ void SaveImageApp::setup()
 void SaveImageApp::mouseDown( MouseEvent event )
 {
 	// pull down the current window as a surface and pass it to writeImage
-	writeImage( getHomeDirectory() + "cinder" + getPathSeparator() + "saveImage_" + toString( mCurrentFrame ) + ".png", copyWindowSurface() );	
+	writeImage( getHomeDirectory() / "cinder" / "saveImage_" / ( toString( mCurrentFrame ) + ".png" ), copyWindowSurface() );	
 	mCurrentFrame++;
 }
 

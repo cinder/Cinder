@@ -151,7 +151,25 @@ void AppBasic::setWindowSize( int windowWidth, int windowHeight )
 	mImpl->setWindowSize( windowWidth, windowHeight );
 #endif
 }
+ 
+Vec2i AppBasic::getWindowPos() const
+{
+#if defined( CINDER_COCOA )
+    return [mImpl getWindowPos];
+#elif defined( CINDER_MSW )
+    return mImpl->getWindowPos();
+#endif
+}
 
+void AppBasic::setWindowPos( const Vec2i &windowPos )
+{
+#if defined( CINDER_COCOA )
+	[mImpl setWindowPosWithLeft: windowPos.x top:windowPos.y];
+#elif defined( CINDER_MSW )
+	mImpl->setWindowPos( windowPos );
+#endif
+}
+    
 float AppBasic::getFrameRate() const
 {
 #if defined( CINDER_COCOA )
@@ -191,6 +209,42 @@ void AppBasic::setFullScreen( bool aFullScreen )
 		mImpl->toggleFullScreen();
 #endif
 	}
+}
+
+bool AppBasic::isBorderless() const
+{
+#if defined( CINDER_COCOA )
+	return [mImpl isBorderless];
+#elif defined( CINDER_MSW )
+	return mImpl->isBorderless();
+#endif	
+}
+
+void AppBasic::setBorderless( bool borderless )
+{
+#if defined( CINDER_COCOA )
+	[mImpl setBorderless:borderless];
+#elif defined( CINDER_MSW )
+	mImpl->setBorderless( borderless );
+#endif	
+}
+
+bool AppBasic::isAlwaysOnTop() const
+{
+#if defined( CINDER_COCOA )
+	return [mImpl isAlwaysOnTop];
+#elif defined( CINDER_MSW )
+	return mImpl->isAlwaysOnTop();
+#endif	
+}
+
+void AppBasic::setAlwaysOnTop( bool alwaysOnTop )
+{
+#if defined( CINDER_COCOA )
+	[mImpl setAlwaysOnTop:alwaysOnTop];
+#elif defined( CINDER_MSW )
+	mImpl->setAlwaysOnTop( alwaysOnTop );
+#endif	
 }
 
 Vec2i AppBasic::getMousePos() const
@@ -303,7 +357,6 @@ void AppBasic::privateTouchesEnded__( const TouchEvent &event )
 AppBasic::Settings::Settings()
 	: App::Settings()
 {
-	mFullScreenSizeX = mFullScreenSizeY = 0;
 	mDisplay = Display::getMainDisplay().get();
 	mEnableMultiTouch = false;
 #if defined( CINDER_MAC )
@@ -314,12 +367,6 @@ AppBasic::Settings::Settings()
 void AppBasic::Settings::setShouldQuit( bool aShouldQuit )
 {
 	mShouldQuit = aShouldQuit;
-}
-
-void AppBasic::Settings::setFullScreenSize( int aFullScreenSizeX, int aFullScreenSizeY )
-{
-	mFullScreenSizeX = aFullScreenSizeX;
-	mFullScreenSizeY = aFullScreenSizeY;
 }
 
 void AppBasic::Settings::setFullScreen( bool aFullScreen )

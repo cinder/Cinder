@@ -15,7 +15,7 @@ class fontSampleApp : public AppBasic {
 	void		draw();	
 
 	void		keyDown( KeyEvent event ) { if( event.getChar() == 'f' ) { setRandomFont(); setRandomGlyph(); } else setRandomGlyph(); }
-	void		mouseDown( MouseEvent event ) { writeImage( getHomeDirectory() + "wisteriaShot.jpg", copyWindowSurface() ); }
+	void		mouseDown( MouseEvent event ) { writeImage( getHomeDirectory() / "wisteriaShot.jpg", copyWindowSurface() ); }
 	
 	void		setRandomFont();
 	void		setRandomGlyph();

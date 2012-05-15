@@ -1,4 +1,4 @@
-### Cinder 0.8.4dev: [http://libcinder.org](libcinder.org)
+### Cinder 0.8.4: [http://libcinder.org](libcinder.org)
 
 **Cinder is a peer-reviewed, free, open source C++ library for creative coding.**
 

@@ -58,23 +58,23 @@ void NormalMappingApp::drawQuad( ci::Rectf r )
 	glBegin( GL_TRIANGLE_STRIP );
 		glTexCoord2f( 0, 1 );
 		glNormal3f( 0, 0, 1 );
-		glVertexAttrib3fv( tangentUniformLoc, tangent );
-		glVertex2fv( r.getUpperLeft() );
+		glVertexAttrib3fv( tangentUniformLoc, &tangent.x );
+		gl::vertex( r.getUpperLeft() );
 
 		glTexCoord2f( 0, 0 );
 		glNormal3f( 0, 0, 1 );		
-		glVertexAttrib3fv( tangentUniformLoc, tangent );
-		glVertex2fv( r.getLowerLeft() );
+		glVertexAttrib3fv( tangentUniformLoc, &tangent.x );
+		gl::vertex( r.getLowerLeft() );
 
 		glTexCoord2f( 1, 1 );
 		glNormal3f( 0, 0, 1 );
-		glVertexAttrib3fv( tangentUniformLoc, tangent );
-		glVertex2fv( r.getUpperRight() );
+		glVertexAttrib3fv( tangentUniformLoc, &tangent.x );
+		gl::vertex( r.getUpperRight() );
 
 		glTexCoord2f( 1, 0 );
 		glNormal3f( 0, 0, 1 );
-		glVertexAttrib3fv( tangentUniformLoc, tangent );
-		glVertex2fv( r.getLowerRight() );
+		glVertexAttrib3fv( tangentUniformLoc, &tangent.x );
+		gl::vertex( r.getLowerRight() );
 	glEnd();
 }
 

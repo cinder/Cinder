@@ -40,7 +40,7 @@ void ParticleController::applyForceToParticles( float zoneRadius, float lowerThr
 				} else if( per < higherThresh ){	// Alignment
 					float threshDelta	= higherThresh - lowerThresh;
 					float adjPer		= ( per - lowerThresh )/threshDelta;
-					float F				= ( 1.0 - ( cos( adjPer * twoPI ) * -0.5f + 0.5f ) ) * alignStrength;
+					float F				= ( 1.0f - ( cos( adjPer * twoPI ) * -0.5f + 0.5f ) ) * alignStrength;
 			
 					p1->mAcc += p2->mVelNormal * F;
 					p2->mAcc += p1->mVelNormal * F;
@@ -48,7 +48,7 @@ void ParticleController::applyForceToParticles( float zoneRadius, float lowerThr
 				} else {							// Cohesion (prep)
 					float threshDelta	= 1.0f - higherThresh;
 					float adjPer		= ( per - higherThresh )/threshDelta;
-					float F				= ( 1.0 - ( cos( adjPer * twoPI ) * -0.5f + 0.5f ) ) * attractStrength;
+					float F				= ( 1.0f - ( cos( adjPer * twoPI ) * -0.5f + 0.5f ) ) * attractStrength;
 										
 					dir.normalize();
 					dir *= F;
@@ -134,7 +134,7 @@ void ParticleController::applyForceToPredators( float zoneRadius, float lowerThr
 				} else {							// Cohesion
 					float threshDelta	= 1.0f - higherThresh;
 					float adjPer		= ( per - higherThresh )/threshDelta;
-					float F				= ( 1.0 - ( cos( adjPer * twoPI ) * -0.5f + 0.5f ) ) * 0.1f;
+					float F				= ( 1.0f - ( cos( adjPer * twoPI ) * -0.5f + 0.5f ) ) * 0.1f;
 										
 					dir.normalize();
 					dir *= F;

@@ -144,8 +144,8 @@ void Particle::renderTrails()
 		Vec3f off = perp1 * ( radius * agePer * per * 0.1f );
 
 		glColor4f( per, per * 0.25f, 1.0f - per, per * 0.5f );
-		glVertex3fv( loc[i] - off );
-		glVertex3fv( loc[i] + off );
+		gl::vertex( loc[i] - off );
+		gl::vertex( loc[i] + off );
 	}
 
 	glEnd();

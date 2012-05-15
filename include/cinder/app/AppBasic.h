@@ -46,12 +46,8 @@ class AppBasic : public App {
 		Settings();
 
 		void	setShouldQuit ( bool aShouldQuit = true );
-		void	setFullScreenSize( int aFullScreenSizeX, int aFullScreenSizeY );
 		void	setFullScreen( bool aFullScreen = true );
 		void	setResizable( bool aResizable = true );
-
-		int		getFullScreenWidth() const { return mFullScreenSizeX; }
-		int		getFullScreenHeight() const { return mFullScreenSizeY; }
 
 		/** Returns the display the window is currently on. If called from prepareSettings() returns the primary display **/
 		Display*	getDisplay() const { return mDisplay; }
@@ -74,7 +70,6 @@ class AppBasic : public App {
 #if defined( CINDER_MAC )
 		bool		mEnableSecondaryDisplayBlanking;
 #endif
-		int			mFullScreenSizeX, mFullScreenSizeY;
 		Display		*mDisplay;
 	};
 
@@ -129,6 +124,13 @@ class AppBasic : public App {
 	//! Sets the size of the App's window. Ignored in full-screen mode.
 	void			setWindowSize( int windowWidth, int windowHeight );
 
+	//! Returns the X coordinate of the top-left-corner of the window.
+	virtual Vec2i	getWindowPos() const;
+
+	using App::setWindowPos;
+	//! Sets the X & Y coordinates of the top-left corner of the window.
+	virtual void	setWindowPos( const Vec2i &windowPos );
+    
 	//! Returns the maximum frame-rate the App will attempt to maintain measured in frames-per-second
 	virtual float		getFrameRate() const;
 	//! Sets the maximum frame-rate the App will attempt to maintain \ a frameRate frames-per-second
@@ -137,6 +139,16 @@ class AppBasic : public App {
 	virtual bool		isFullScreen() const;
 	//! Sets whether the active App is in full-screen mode based on \a fullScreen
 	virtual void		setFullScreen( bool fullScreen );
+
+	//! Returns whether the has no border (chrome/frame)
+	virtual bool		isBorderless() const;
+	//! Sets whether the window has a border (chrome/frame)
+	virtual void		setBorderless( bool borderless = true );
+	//! Returns whether the window always remains above all other windows
+	virtual bool		isAlwaysOnTop() const;
+	//! Sets whether the window always remains above all other windows
+	virtual void		setAlwaysOnTop( bool alwaysOnTop = true );
+
 
 	//! Returns the current location of the mouse. Can be called outside the normal event loop.
 	Vec2i				getMousePos() const;

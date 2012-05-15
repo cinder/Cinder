@@ -30,6 +30,8 @@
 #include "cinder/Shape2d.h"
 #include "cinder/Font.h"
 #include "cinder/ImageIo.h"
+#include "cinder/MatrixAffine2.h"
+#include "cinder/Function.h"
 
 #if defined( CINDER_COCOA_TOUCH )
 	#include <CoreGraphics/CoreGraphics.h>
@@ -39,6 +41,13 @@
 
 #include <string>
 #include <vector>
+#include <iomanip>
+
+namespace cinder { namespace svg {
+class Node;
+class Style;
+typedef std::function<bool(const Node&, Style *)> RenderVisitor;
+} } // namespace cinder::svg
 
 // Forward declarations used by our cairo wrappers 
 struct _cairo_surface;
@@ -129,8 +138,12 @@ class SurfaceImage : public SurfaceBase {
 	cinder::Surface&		getSurface() { return mCinderSurface; }
 	const cinder::Surface&	getSurface() const { return mCinderSurface; }
 
+	//! Call this when modifying the Surface's pixels outside of Cairo
+	void			markDirty();
+
  protected:
-	void	initCinderSurface( bool alpha, uint8_t *data, int32_t stride );
+	void		initCinderSurface( bool alpha, cairo_surface_t *cairoSurface );
+	static void surfaceDeallocator( void *data );
 	
 	cinder::Surface		mCinderSurface;
 };
@@ -140,7 +153,7 @@ class SurfaceImage : public SurfaceBase {
 class SurfaceSvg : public SurfaceBase {
  public:
 	SurfaceSvg() : SurfaceBase() {}
-	SurfaceSvg( const std::string &filePath, uint32_t aWidth, uint32_t aHeight );
+	SurfaceSvg( const fs::path &filePath, uint32_t aWidth, uint32_t aHeight );
 	SurfaceSvg( const SurfaceSvg &other );
 };
 
@@ -149,7 +162,7 @@ class SurfaceSvg : public SurfaceBase {
 class SurfacePdf : public SurfaceBase {
  public:
 	SurfacePdf() : SurfaceBase() {}
-	SurfacePdf( const std::string &filePath, double widthInPoints, double heightInPoints );
+	SurfacePdf( const fs::path &filePath, double widthInPoints, double heightInPoints );
 	SurfacePdf( const SurfacePdf &other );
 		
 	void	setSize( double widthInPoints, double heightInPoints );
@@ -160,7 +173,7 @@ class SurfacePdf : public SurfaceBase {
 class SurfacePs : public SurfaceBase {
  public:
 	SurfacePs() : SurfaceBase() {}
-	SurfacePs( const std::string &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 = true );
+	SurfacePs( const fs::path &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 = true );
 	SurfacePs( const SurfacePs &other );
 		
 	void	setSize( double widthInPoints, double heightInPoints );
@@ -181,7 +194,7 @@ class SurfacePs : public SurfaceBase {
 class SurfaceEps : public SurfaceBase {
  public:
 	SurfaceEps() : SurfaceBase() {}
-	SurfaceEps( const std::string &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 = true );
+	SurfaceEps( const fs::path &filePath, double widthInPoints, double heightInPoints, bool enableLevel3 = true );
 	SurfaceEps( const SurfaceEps &other );
 		
 	void	setSize( double widthInPoints, double heightInPoints );
@@ -254,12 +267,13 @@ class Matrix
   public:
 	Matrix();
 	Matrix( double xx, double yx, double xy, double yy, double x0, double y0 );
+	Matrix( const cinder::MatrixAffine2f &m );
 
 	// This is a sort of horrible technique, but we will replace this with the ci::Matrix32 that will exist one day
-	cairo_matrix_t&			getCairoMatrix() { return *reinterpret_cast<cairo_matrix_t*>( this ); }
-	const cairo_matrix_t&	getCairoMatrix() const { return *reinterpret_cast<const cairo_matrix_t*>( this ); }
+	cairo_matrix_t&			getCairoMatrix() { return *reinterpret_cast<cairo_matrix_t*>( &(this->xx) ); }
+	const cairo_matrix_t&	getCairoMatrix() const { return *reinterpret_cast<const cairo_matrix_t*>( &(this->xx) ); }
 
-	void	init( double xx, double yx, double xy, double yy, double x0, double y0 );
+	void		init( double xx, double yx, double xy, double yy, double x0, double y0 );
 	void		initIdentity();
 	void		initTranslate( double tx, double ty );
 	void		initScale( double sx, double sy );
@@ -268,16 +282,26 @@ class Matrix
 	void		scale( double sx, double sy );
 	void		rotate( double radians );
 	int32_t		invert();
-	
+
 	//! Transforms the point \a v by the matrix.
 	Vec2f	transformPoint( const Vec2f &v ) const;
 	//! Transforms the distance vector \a v by the matrix. This is similar to cairo_matrix_transform_point() except that the translation components of the transformation are ignored
 	Vec2f	transformDistance( const Vec2f &v ) const;
 
+	const Matrix& 	operator*=( const Matrix &rhs );
+
 	// this is designed to mimic cairo_matrix_t exactly
     double xx; double yx;
     double xy; double yy;
-    double x0; double y0;	
+    double x0; double y0;
+	
+	friend std::ostream& operator<<( std::ostream &lhs, const Matrix &rhs ) 
+	{
+		lhs << "|" << std::setw( 12 ) << std::setprecision( 5 ) << rhs.xx << " " << rhs.yx << "|" << std::endl;
+		lhs << "|" << std::setw( 12 ) << std::setprecision( 5 ) << rhs.xy << " " << rhs.yy << "|" << std::endl;
+		lhs << "|" << std::setw( 12 ) << std::setprecision( 5 ) << rhs.x0 << " " << rhs.y0 << "|" << std::endl;
+		return lhs;
+	}	
 };
 
 class Pattern {
@@ -540,6 +564,7 @@ class Context
 	Pattern*	getSource();
 
 	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Vec2i &dstOffset = Vec2i::zero() );
+	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Rectf &dstRect );	
 
 	void		setAntiAlias( int32_t antialias );
 	int32_t		getAntiAlias();
@@ -603,7 +628,8 @@ class Context
 	/*void		pathDestroy( class Path *path );
 	void		appendPath( const class Path *path );
 	*/
-	void		getCurrentPoint( double *x, double *y );
+	void		getCurrentPoint( double *x, double *y ) const;
+	Vec2f		getCurrentPoint() const;
 	void		newPath();
 	void		newSubPath();
 	void		closePath();
@@ -634,14 +660,20 @@ class Context
 	void		circle( double dx, double dy, double radius );
 	void		circle( const Vec2f &v, double radius ) { circle( (double)v.x, (double)v.y, radius ); }
 
+	//! Renders an svg::Node, with an optional visitor function to modify the style per-node.
+	void		render( const svg::Node &node, const svg::RenderVisitor &visitor = svg::RenderVisitor() );
+
 // Transformation functions
 	void        translate( double tx, double ty );
 	void        translate( const Vec2f &v ) { translate( (double)v.x, (double)v.y ); }
 	void        scale( double sx, double sy );
-	void        rotate( double angle );
+	void        rotate( double radians );
 	void        transform( const Matrix &aMatrix );
+	void        transform( const cinder::MatrixAffine2f &matrix );	
 	void        setMatrix( const Matrix &aMatrix );
+	void		setMatrix( const cinder::MatrixAffine2f &matrix );
 	void        getMatrix( Matrix *aMatrix );
+	MatrixAffine2f   getMatrix() const;	
 	void        identityMatrix();
 	void        userToDevice( double *x, double *y );
 	void        userToDeviceDistance( double *dx, double *dy );
@@ -661,12 +693,18 @@ class Context
 	void        setScaledFont( const ScaledFont *scaled_font );
 	ScaledFont*	getScaledFont();
 	void        showText( const std::string &s );
+	void		textPath( const std::string &s );
+	//! Renders glyphs as returned by TextBox::measureGlyphs()
+	void		glyphPath( const std::vector<std::pair<uint16_t,Vec2f> > &glyphs );
+	void		glyphPath( uint16_t index, const Vec2f &offset );
 	//void        showGlyphs( const Glyph *glyphs, int num_glyphs );							// glyphs is an array of cairo_glyph_t
 	//void		showGlyphs( const GlyphArray &glyphs );
 	FontExtents	fontExtents();
 	TextExtents	textExtents( const std::string &s );
 	//void        glyphExtents( const Glyph *glyphs, int num_glyphs, TextExtents *extents );	// glyphs is an array of cairo_glyph_t
 	//void		glyphExtents( const GlyphArray &glyphs, int num_glyphs, TextExtents *extents );
+
+	std::string	statusToString() const;
 
   protected:
 	cairo_t						*mCairo;
@@ -675,7 +713,7 @@ class Context
 
 #if defined( CINDER_COCOA )
 SurfaceQuartz	createWindowSurface();
-#else
+#elif defined( CINDER_MSW )
 SurfaceGdi		createWindowSurface();
 #endif
 
