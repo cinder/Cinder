@@ -73,13 +73,6 @@ class TouchEvent : public Event {
 	//! Returns a std::vector of Touch descriptors associated with this event
 	const std::vector<Touch>&	getTouches() const { return mTouches; }
 	
-	//! Returns a copy of a std::list of Touch descriptors associated with this event
-	const std::list<Touch>		getTouchesList() {
-		std::list<TouchEvent::Touch> touchesList;
-		std::copy( mTouches.begin(), mTouches.end(), std::back_inserter( touchesList ) );
-		return touchesList;
-	}
-	
   private:
 	std::vector<Touch>		mTouches;
 };
