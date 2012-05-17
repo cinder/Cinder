@@ -191,7 +191,8 @@ void Light::setDefaults()
 		mSpotCutoff = 180.0f;
 	else
 		mSpotCutoff = 1.0f;
-	mConstantAttenuation = mLinearAttenuation = mQuadraticAttenuation = 1.0f;
+	mConstantAttenuation = 1.0f;
+	mLinearAttenuation = mQuadraticAttenuation = 0.0f;
 }
 
 } // namespace gl
