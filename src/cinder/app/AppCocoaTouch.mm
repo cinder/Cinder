@@ -186,6 +186,10 @@ return 0;
 //! Sets the maximum frame-rate the App will attempt to maintain.
 void AppCocoaTouch::setFrameRate( float aFrameRate )
 {
+    NSInteger   i = (NSInteger)((60.0f / aFrameRate) + 0.5f);
+    if (i < 0)
+        i == 1;
+    [mState->mCinderView setAnimationFrameInterval:i];
 }
 
 //! Returns whether the App is in full-screen mode or not.
