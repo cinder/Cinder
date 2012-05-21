@@ -180,16 +180,34 @@ void AppCocoaTouch::disableAccelerometer() {
 //! Returns the maximum frame-rate the App will attempt to maintain.
 float AppCocoaTouch::getFrameRate() const
 {
-return 0;
+    CFTimeInterval frameDur = [mState->mCinderView frameDuration];
+    NSInteger interval = [mState->mCinderView animationFrameInterval];
+    if (interval <= 0 || frameDur <= 0)
+        return 0;   // Can happen, for example if you call getFrameRate() in setup()
+
+    return (float) (1.0 / (interval * frameDur));
+
 }
 
 //! Sets the maximum frame-rate the App will attempt to maintain.
 void AppCocoaTouch::setFrameRate( float aFrameRate )
 {
-    NSInteger   i = (NSInteger)((60.0f / aFrameRate) + 0.5f);
-    if (i < 0)
-        i == 1;
-    [mState->mCinderView setAnimationFrameInterval:i];
+    NSInteger interval = 1;
+
+    if ( aFrameRate > 0 ) {
+        CFTimeInterval frameDur = [mState->mCinderView frameDuration];
+        // Unfortunately, it's possible the frameDur will be zero before things start
+        // rolling (e.g. in setup()), so in that case we assume 1/60 second,
+        // which seems to be the case for all iOS devices anyhow.  If called
+        // later, this will have a correct value (0.01666...).
+        if ( frameDur <= 0 )
+            frameDur = 1.0 / 60.0;
+        interval = (NSInteger)(1.0 / (aFrameRate * frameDur) + 0.5f);
+        if (interval < 0)
+            interval = 1;
+    }
+        
+    [mState->mCinderView setAnimationFrameInterval:interval];
 }
 
 //! Returns whether the App is in full-screen mode or not.
