@@ -26,7 +26,6 @@
 #include "cinder/app/Event.h"
 #include "cinder/Vector.h"
 
-#include <list>
 #include <vector>
 
 namespace cinder { namespace app {
