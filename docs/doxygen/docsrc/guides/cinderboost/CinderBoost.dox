@@ -29,7 +29,7 @@ Here's how to compile Boost yourself.
 <tt>
 cd cinder/boost\n
 ./bootstrap.sh --with-libraries=filesystem,thread,system,date_time,regex
-./b2 architecture=x86 address-model=32 macosx-version=10.6 stage
+./b2 architecture=x86 address-model=32 stage
 cp stage/lib/*.a ../lib/macosx\n
 </tt>
 \em Note: If you need 64-bit support, change the <tt>address-model=32</tt> to <tt>address-model=32_64</tt>.\n
