@@ -28,6 +28,7 @@
 
 @synthesize animating;
 @synthesize appSetupCalled;
+@dynamic frameDuration;
 @dynamic animationFrameInterval;
 
 // Set in initWithFrame based on the renderer
@@ -116,6 +117,11 @@ static Boolean sIsEaglLayer;
 		
 		animating = FALSE;
 	}
+}
+
+- (CFTimeInterval) frameDuration
+{
+	return [displayLink duration];
 }
 
 - (NSInteger) animationFrameInterval

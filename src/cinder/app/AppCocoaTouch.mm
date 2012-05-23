@@ -180,12 +180,30 @@ void AppCocoaTouch::disableAccelerometer() {
 //! Returns the maximum frame-rate the App will attempt to maintain.
 float AppCocoaTouch::getFrameRate() const
 {
-return 0;
+    // We were using CADisplayLink "duration" property here, but it
+    // seems it is a varying value (related to how much time you actually
+    // have to render a frame) and not a fixed 1/60 (for exmample).
+    NSInteger interval = [mState->mCinderView animationFrameInterval];
+    if (interval <= 0)
+        return 0;   // Can this happen?
+
+    return (60.0f / interval);
 }
 
 //! Sets the maximum frame-rate the App will attempt to maintain.
 void AppCocoaTouch::setFrameRate( float aFrameRate )
 {
+    NSInteger interval = 1;
+
+    // On iOS, the refresh rate is set to 60fps.  If this changes, presumably
+    // we'd have a way of querying it.
+    if ( aFrameRate > 0 ) {
+        interval = (NSInteger)(60.0f / aFrameRate + 0.5f);
+        if (interval < 1)
+            interval = 1;
+    }
+
+    [mState->mCinderView setAnimationFrameInterval:interval];
 }
 
 //! Returns whether the App is in full-screen mode or not.

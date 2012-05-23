@@ -46,6 +46,7 @@
 }
 
 @property (readonly, nonatomic, getter=isAnimating) BOOL animating;
+@property (readonly, nonatomic) CFTimeInterval frameDuration;
 @property (nonatomic) NSInteger animationFrameInterval;
 @property (readwrite) BOOL appSetupCalled;
 
