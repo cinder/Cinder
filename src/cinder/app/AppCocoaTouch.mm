@@ -180,13 +180,14 @@ void AppCocoaTouch::disableAccelerometer() {
 //! Returns the maximum frame-rate the App will attempt to maintain.
 float AppCocoaTouch::getFrameRate() const
 {
-    CFTimeInterval frameDur = [mState->mCinderView frameDuration];
+    // We were using CADisplayLink "duration" property here, but it
+    // seems it is a varying value (related to how much time you actually
+    // have to render a frame) and not a fixed 1/60 (for exmample).
     NSInteger interval = [mState->mCinderView animationFrameInterval];
-    if (interval <= 0 || frameDur <= 0)
-        return 0;   // Can happen, for example if you call getFrameRate() in setup()
+    if (interval <= 0)
+        return 0;   // Can this happen?
 
-    return (float) (1.0 / (interval * frameDur));
-
+    return (60.0f / interval);
 }
 
 //! Sets the maximum frame-rate the App will attempt to maintain.
@@ -194,19 +195,14 @@ void AppCocoaTouch::setFrameRate( float aFrameRate )
 {
     NSInteger interval = 1;
 
+    // On iOS, the refresh rate is set to 60fps.  If this changes, presumably
+    // we'd have a way of querying it.
     if ( aFrameRate > 0 ) {
-        CFTimeInterval frameDur = [mState->mCinderView frameDuration];
-        // Unfortunately, it's possible the frameDur will be zero before things start
-        // rolling (e.g. in setup()), so in that case we assume 1/60 second,
-        // which seems to be the case for all iOS devices anyhow.  If called
-        // later, this will have a correct value (0.01666...).
-        if ( frameDur <= 0 )
-            frameDur = 1.0 / 60.0;
-        interval = (NSInteger)(1.0 / (aFrameRate * frameDur) + 0.5f);
-        if (interval < 0)
+        interval = (NSInteger)(60.0f / aFrameRate + 0.5f);
+        if (interval < 1)
             interval = 1;
     }
-        
+
     [mState->mCinderView setAnimationFrameInterval:interval];
 }
 
