@@ -61,6 +61,24 @@ void TriMesh::appendNormals( const Vec4d *normals, size_t num )
 		mNormals.push_back( Vec3f( (float)normals[v].x, (float)normals[v].y, (float)normals[v].z ) );
 }
 
+void TriMesh::appendColorsRGB( const Color *rgbs, size_t num )
+{
+	for( size_t v = 0; v < num; ++v )
+		mColorsRGB.push_back( Color( (float)rgbs[v].r, (float)rgbs[v].g, (float)rgbs[v].b ) );
+}
+
+void TriMesh::appendColorsRGBA( const ColorA *rgbas, size_t num )
+{
+	for( size_t v = 0; v < num; ++v )
+		mColorsRGBA.push_back( ColorA( (float)rgbas[v].r, (float)rgbas[v].g, (float)rgbas[v].b, (float)rgbas[v].a ) );
+}
+
+void TriMesh::appendTexCoords( const Vec2f *texcoords, size_t num )
+{
+	for( size_t v = 0; v < num; ++v )
+		mTexCoords.push_back( Vec2f( (float)texcoords[v].x, (float)texcoords[v].y ) );
+}
+
 void TriMesh::getTriangleVertices( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const
 {
 	*a = mVertices[ mIndices[idx * 3] ];
@@ -193,8 +211,8 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 void TriMesh2d::clear()
 {
 	mVertices.clear();
-	mColorsRgb.clear();
-	mColorsRgba.clear();
+	mColorsRGB.clear();
+	mColorsRGBA.clear();
 	mTexCoords.clear();
 	mIndices.clear();
 }
@@ -207,6 +225,24 @@ void TriMesh2d::appendVertices( const Vec2f *verts, size_t num )
 void TriMesh2d::appendIndices( uint32_t *indices, size_t num )
 {
 	mIndices.insert( mIndices.end(), indices, indices + num );
+}
+
+void TriMesh2d::appendColorsRGB( const Color *rgbs, size_t num )
+{
+	for( size_t v = 0; v < num; ++v )
+		mColorsRGB.push_back( Color( (float)rgbs[v].r, (float)rgbs[v].g, (float)rgbs[v].b ) );
+}
+
+void TriMesh2d::appendColorsRGBA( const ColorA *rgbas, size_t num )
+{
+	for( size_t v = 0; v < num; ++v )
+		mColorsRGBA.push_back( ColorA( (float)rgbas[v].r, (float)rgbas[v].g, (float)rgbas[v].b, (float)rgbas[v].a ) );
+}
+
+void TriMesh2d::appendTexCoords( const Vec2f *texcoords, size_t num )
+{
+	for( size_t v = 0; v < num; ++v )
+		mTexCoords.push_back( Vec2f( (float)texcoords[v].x, (float)texcoords[v].y ) );
 }
 
 void TriMesh2d::getTriangleVertices( size_t idx, Vec2f *a, Vec2f *b, Vec2f *c ) const
