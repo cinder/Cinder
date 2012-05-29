@@ -67,6 +67,8 @@ class GlslProg {
 	void	uniform( const std::string &name, const Vec2f *data, int count );
 	void	uniform( const std::string &name, const Vec3f *data, int count );
 	void	uniform( const std::string &name, const Vec4f *data, int count );
+	void	uniform( const std::string &name, const Matrix33f *data, int count, bool transpose = false );
+	void	uniform( const std::string &name, const Matrix44f *data, int count, bool transpose = false );
 
 	GLint	getUniformLocation( const std::string &name );
 	GLint	getAttribLocation( const std::string &name );
