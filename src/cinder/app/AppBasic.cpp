@@ -210,6 +210,15 @@ void AppBasic::setFullScreen( bool aFullScreen )
 #endif
 	}
 }
+	
+void AppBasic::getFocus()
+{
+#if defined( CINDER_COCOA )
+	return [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+#elif defined( CINDER_MSW )
+	// Something else
+#endif
+}
 
 bool AppBasic::isBorderless() const
 {
