@@ -63,11 +63,39 @@ void setupCocoaTouchWindow( AppCocoaTouch *app )
 
 @implementation CinderAppDelegateIPhone
 
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+    if (!url) {
+        return NO;
+    }
+    NSString *urlString = [url absoluteString];
+    std::string stringUrl = std::string([urlString UTF8String]);
+    return app->privateOpenURL__(cinder::app::OpenUrlEvent(stringUrl));
+}
 
-- (void) applicationDidFinishLaunching:(UIApplication *)application
+- (BOOL) application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	app = cinder::app::AppCocoaTouch::get();
 	setupCocoaTouchWindow( app );
+
+    // quite a complex set of behaviors can be triggered by this method
+    // @see http://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/Reference/Reference.html#//apple_ref/occ/intfm/UIApplicationDelegate/application:didFinishLaunchingWithOptions:
+    //
+
+    // TODO: 
+    // - handle UIApplicationLaunchOptionsRemoteNotificationKey when the app is opened from a remote notification
+    // - handle UIApplicationLaunchOptionsLocalNotificationKey when the app is opened from a local notification
+    // - handle UIApplicationLaunchOptionsLocationKey when the app is awakened by a location event
+    // - handle UIApplicationLaunchOptionsAnnotationKey when the app is launched by UIDocumentInteractionController to open a document
+
+    // in Cinder it might be more appropriate for apps to listen for UIApplicationDidFinishLaunchingNotification
+    // and inspect the resulting userInfo, rather than continuing to augment AppCocoaTouch for all possible cases
+
+    // TODO: for URLs opened by an app, should we be using UIApplicationLaunchOptionsSourceApplicationKey
+    // here to restrict which apps can open us?
+    
+    // for now we'll always say YES if an app opened an URL or file we claim to own in the plist...    
+    return (launchOptions != nil) && ([launchOptions objectForKey:UIApplicationLaunchOptionsURLKey] != nil);
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -220,6 +248,19 @@ void AppCocoaTouch::privatePrepareSettings__()
 	prepareSettings( &mSettings );
 }
 
+bool AppCocoaTouch::privateOpenURL__( const OpenUrlEvent &event )
+{
+    bool handled = false;
+    for( CallbackMgr<bool (OpenUrlEvent)>::iterator cbIter = mCallbacksOpenUrl.begin(); ( cbIter != mCallbacksOpenUrl.end() ) && ( ! handled ); ++cbIter ) {
+        handled = (cbIter->second)( event );
+    }
+    if (!handled) {
+        handled = urlOpened( event );
+    }
+    return handled;
+}
+    
+    
 void AppCocoaTouch::privateTouchesBegan__( const TouchEvent &event )
 {
 	bool handled = false;

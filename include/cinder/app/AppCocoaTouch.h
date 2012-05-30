@@ -26,7 +26,7 @@
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/app/AccelEvent.h"
-
+#include "cinder/app/OpenUrlEvent.h"
 
 namespace cinder { namespace app {
 
@@ -66,6 +66,8 @@ class AppCocoaTouch : public App {
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }	
 	//! Returns a Vec3d of the acceleration direction
 	virtual void		accelerated( AccelEvent event ) {}
+	//! called when the app is opened using a URL (must be set in plist)
+	virtual bool		urlOpened( OpenUrlEvent event ) { return false; }
 
 	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
 	CallbackId		registerTouchesBegan( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesBegan.registerCb( callback ); }
@@ -98,6 +100,11 @@ class AppCocoaTouch : public App {
 	CallbackId		registerAccelerated( T *obj, bool (T::*callback)(AccelEvent) ) { return mCallbacksAccelerated.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
 	//! Unregisters a callback for touchesEnded events.
 	void			unregisterAccelerated( CallbackId id ) { mCallbacksAccelerated.unregisterCb( id ); }
+
+    template<typename T>
+	CallbackId		registerOpenURL( T *obj, bool (T::*callback)(OpenUrlEvent) ) { return mCallbacksOpenUrl.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
+	//! Unregisters a callback for touchesEnded events.
+	void			unregisterOpenURL( CallbackId id ) { mCallbacksOpenUrl.unregisterCb( id ); }
 
 	
 	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
@@ -154,7 +161,8 @@ class AppCocoaTouch : public App {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
-	void		privatePrepareSettings__();
+	bool        privateOpenURL__( const OpenUrlEvent &event );
+    void		privatePrepareSettings__();
 	void		privateTouchesBegan__( const TouchEvent &event );
 	void		privateTouchesMoved__( const TouchEvent &event );
 	void		privateTouchesEnded__( const TouchEvent &event );
@@ -176,6 +184,7 @@ class AppCocoaTouch : public App {
 
 	CallbackMgr<bool (TouchEvent)>		mCallbacksTouchesBegan, mCallbacksTouchesMoved, mCallbacksTouchesEnded;
 	CallbackMgr<bool (AccelEvent)>		mCallbacksAccelerated;
+    CallbackMgr<bool (OpenUrlEvent)>	mCallbacksOpenUrl;
 
 	float					mAccelFilterFactor;
 	Vec3f					mLastAccel, mLastRawAccel;
