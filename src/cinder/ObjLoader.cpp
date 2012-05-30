@@ -112,8 +112,12 @@ void ObjLoader::parseFace( Group *group, const std::string &s, bool includeUVs )
 			secondSlashOffset = s.find( '/', firstSlashOffset + 1 );
 			if( secondSlashOffset > endOfTriple ) secondSlashOffset = string::npos;
 		}
-		else
+		else {
+			group->mHasTexCoords = false;
+			firstSlashOffset = endOfTriple;
+
 			secondSlashOffset = string::npos;
+		}
 		
 		// process the vertex index
 		int vertexIndex = lexical_cast<int>( s.substr( offset, firstSlashOffset - offset ) );
@@ -123,7 +127,7 @@ void ObjLoader::parseFace( Group *group, const std::string &s, bool includeUVs )
 			result.mVertexIndices.push_back( vertexIndex - 1 );
 			
 		// process the tex coord index
-		if( includeUVs && ( firstSlashOffset != string::npos ) ) {
+		if( includeUVs && ( firstSlashOffset != string::npos ) && group->mHasTexCoords ) {
 			size_t numSize = ( secondSlashOffset == string::npos ) ? ( endOfTriple - firstSlashOffset - 1 ) : secondSlashOffset - firstSlashOffset - 1;
 			if( numSize > 0 ) {
 				int texCoordIndex = lexical_cast<int>( s.substr( firstSlashOffset + 1, numSize ) );

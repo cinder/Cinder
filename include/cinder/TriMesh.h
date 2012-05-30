@@ -142,6 +142,11 @@ class TriMesh {
 	void		read( DataSourceRef in );
 	//! This allows to you write a mesh out to a data file. At present .obj and .dat files are supported.
 	void		write( DataTargetRef out ) const;
+
+	//! Fills or replaces the normal buffer with normals calculated from the vertex data
+	void		generateNormals();
+	//! Optimize data by sharing vertices that are close to each other
+	void		optimize(float epsilon=1.0e-3f);
 	
  private:
 	std::vector<Vec3f>		mVertices;

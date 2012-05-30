@@ -188,6 +188,74 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 	}
 }
 
+void TriMesh::generateNormals(void)
+{
+	mNormals.clear();
+
+	for(size_t i=0;i<mVertices.size();++i)
+		mNormals.push_back( Vec3f::zero() );
+
+    for(size_t i=0;i<getNumTriangles();++i)
+	{
+		Vec3f v0 = mVertices[ mIndices[i * 3] ];
+		Vec3f v1 = mVertices[ mIndices[i * 3 + 1] ];
+		Vec3f v2 = mVertices[ mIndices[i * 3 + 2] ];
+
+		Vec3f e0 = (v2 - v0).normalized();
+		Vec3f e1 = (v2 - v1).normalized();
+		Vec3f n = e0.cross(e1).normalized();
+
+		mNormals[ mIndices[i * 3] ] += n;
+		mNormals[ mIndices[i * 3 + 1] ] += n;
+		mNormals[ mIndices[i * 3 + 2] ] += n;
+	}
+
+	for(size_t i=0;i<mNormals.size();++i)
+		mNormals[i].normalize();
+}
+
+void TriMesh::optimize(float epsilon)
+{
+	std::vector<ci::Vec3f>	vertices;
+	std::vector<ci::Vec2f>	texcoords;
+	std::vector<uint32_t>	indices;
+
+	// for each index:
+	for(int i=0;i<mIndices.size();++i) {
+		uint32_t index = mIndices[i];
+
+		// fetch the vertex this index is pointing to
+		Vec3f v = mVertices[index];
+
+		// find the first vertex that is practically the same (distance^2 < epsilon)
+		bool replaced = false;
+		for(int j=0;j<vertices.size();++j) {
+			if(vertices[j].distanceSquared(v) < epsilon) {
+				// found one: use this vertex instead
+				indices.push_back(j);
+				replaced = true; 
+				break;
+			}
+		}
+
+		// if no vertex found, add this one to the list
+		if(!replaced) {
+			int j = vertices.size();
+			vertices.push_back(v);
+			texcoords.push_back( mTexCoords[index] );
+			indices.push_back(j);
+		}
+	}
+
+	// replace mesh with the newly optimized one
+	mVertices = vertices;
+	mTexCoords = texcoords;
+	mIndices = indices;
+
+	// generate normal vectors
+	generateNormals();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // TriMesh2d
 void TriMesh2d::clear()
