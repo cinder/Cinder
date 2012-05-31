@@ -98,7 +98,7 @@ class TextBox {
 	void				setText( const std::string &t ) { mText = t; mInvalid = true; }
 	void				appendText( const std::string &t ) { mText += t; mInvalid = true; }
 
-	TextBox				font( const FontRef f ) { setFont( f ); return *this; }
+	TextBox&				font( const FontRef f ) { setFont( f ); return *this; }
 	const FontRef		getFont() const { return mFont; }
 	void				setFont( const FontRef f ) { mFont = f; mInvalid = true; }
 

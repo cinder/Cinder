@@ -74,14 +74,14 @@ vector<pair<uint16_t,Vec2f> > measureGlyphsSize( const TextBox& textbox, Vec2f* 
     TextBox::Alignment alignment = textbox.getAlignment();
     Vec2f textboxSize = textbox.getSize();
 
+    *size = Vec2f(0, 0);
+
     if (!glyphs.empty()) {
         Font::Glyph* start = &glyphs[0];
         Font::Glyph* end = start + glyphs.size();
         int lineStartIndex = 0;
 
         Vec2f pen(0, font->getAscent());
-
-        *size = Vec2f(0, 0);
 
         while (start < end) {
            Font::Glyph prevIndex = 0;
