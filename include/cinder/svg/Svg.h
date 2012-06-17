@@ -735,6 +735,8 @@ class Group : public Node {
 	//! Recursively searches for a child element of type <tt>svg::T</tt> named \a id. Returns NULL on failure to find the object or if it is not of type T.
     template<typename T>
 	const T*				find( const std::string &id ) { return dynamic_cast<const T*>( findNode( id ) ); }
+	//! Recursively searches for a child element whose name contains \a idPartial. Returns NULL on failure. (null_ptr later?)
+	const Node*				findFuzzy( const std::string &idPartial, bool recurse = true ) const;
 	//! Recursively searches for a child element named \a id. Returns NULL on failure.
 	const Node*				findNode( const std::string &id, bool recurse = true ) const;
 	virtual const Node*		findInAncestors( const std::string &elementId ) const;
