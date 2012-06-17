@@ -1754,7 +1754,7 @@ void Group::parse( const XmlTree &xml )
 	}
 }
 
-const Node* Group::findFuzzy( const std::string &idPartial, bool recurse ) const
+const Node* Group::findNodeByIdContains( const std::string &idPartial, bool recurse ) const
 {
 	for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
 		if( (*childIt)->getId().find( idPartial ) != string::npos ) {
@@ -1763,7 +1763,7 @@ const Node* Group::findFuzzy( const std::string &idPartial, bool recurse ) const
 	}
 
 	if( mDefs ) {
-		const Node *result = mDefs->findFuzzy( idPartial, recurse );
+		const Node *result = mDefs->findNodeByIdContains( idPartial, recurse );
 		if( result )
 			return result;
 	}
@@ -1772,7 +1772,7 @@ const Node* Group::findFuzzy( const std::string &idPartial, bool recurse ) const
 		for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
 			if( typeid(**childIt) == typeid(Group) ) {
 				Group* group = static_cast<Group*>(*childIt);
-				const Node* result = group->findFuzzy( idPartial );
+				const Node* result = group->findNodeByIdContains( idPartial );
 				if( result )
 					return result;
 			}
