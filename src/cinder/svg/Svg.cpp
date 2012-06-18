@@ -1754,6 +1754,33 @@ void Group::parse( const XmlTree &xml )
 	}
 }
 
+const Node* Group::findNodeByIdContains( const std::string &idPartial, bool recurse ) const
+{
+	for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
+		if( (*childIt)->getId().find( idPartial ) != string::npos ) {
+			return *childIt;
+		}
+	}
+
+	if( mDefs ) {
+		const Node *result = mDefs->findNodeByIdContains( idPartial, recurse );
+		if( result )
+			return result;
+	}
+
+	if( recurse ) {
+		for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
+			if( typeid(**childIt) == typeid(Group) ) {
+				Group* group = static_cast<Group*>(*childIt);
+				const Node* result = group->findNodeByIdContains( idPartial );
+				if( result )
+					return result;
+			}
+		}
+	}
+	return NULL;
+}
+
 const Node* Group::findNode( const std::string &id, bool recurse ) const
 {
 	// see if any immediate children are named 'id'
