@@ -18,7 +18,7 @@ class msaFluidParticlesApp : public AppBasic {
 	void	keyDown( KeyEvent event );
 	void	mouseMove( MouseEvent event );
 	void	mouseDrag( MouseEvent event );
-	void	resize( int w, int h );
+	void	resize( ResizeEvent event );
 	
 	void	update();
 	void	draw();
@@ -116,9 +116,9 @@ void msaFluidParticlesApp::draw()
 }
 
 
-void msaFluidParticlesApp::resize( int w, int h )
+void msaFluidParticlesApp::resize( ResizeEvent event )
 {
-	particleSystem.setWindowSize( Vec2i( w, h ) );
+	particleSystem.setWindowSize( event.getSize() );
 	resizeFluid = true;
 }
 
