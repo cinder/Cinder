@@ -300,9 +300,14 @@ void InterfaceGl::removeParam( const std::string &name )
 void InterfaceGl::setOptions( const std::string &name, const std::string &optionsStr )
 {
 	std::string target = "`" + (std::string)TwGetBarName( mBar.get() ) + "`";
-	if( !( name.empty() ) )
-		target += "/`" + name + "`";
-
+	if( name == "GLOBAL" || name == "TW_HELP" ) {
+		target = name;
+	}
+	else {
+		target = "`" + (std::string)TwGetBarName( mBar.get() ) + "`";
+		if( !( name.empty() ) )
+			target += "/`" + name + "`";
+	}
 	TwDefine( ( target + " " + optionsStr ).c_str() );
 }
 
