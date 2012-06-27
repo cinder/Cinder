@@ -297,6 +297,11 @@ void InterfaceGl::removeParam( const std::string &name )
 	TwRemoveVar( mBar.get(), name.c_str() );
 }
 
+void InterfaceGl::clear()
+{
+	TwRemoveAllVars( mBar.get() );
+}
+
 void InterfaceGl::setOptions( const std::string &name, const std::string &optionsStr )
 {
 	std::string target = "`" + (std::string)TwGetBarName( mBar.get() ) + "`";
