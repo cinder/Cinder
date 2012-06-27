@@ -355,6 +355,9 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 	if( type == rapidxml::node_data ) {
 		node = doc.allocate_node( type, NULL, doc.allocate_string( getValue().c_str() ) );
 	}
+	else if( type == rapidxml::node_comment ) {
+		node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), doc.allocate_string( getValue().c_str() ) );
+	}
 	else {
 		node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), NULL );
 		if( ! getValue().empty() )
