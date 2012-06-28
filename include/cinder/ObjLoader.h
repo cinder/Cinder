@@ -85,7 +85,7 @@ class ObjLoader {
 	static void		write( DataTargetRef dataTarget, const TriMesh &mesh, bool writeNormals = true, bool writeUVs = true );
 	
     //! Returns the total number of groups.
-	size_t		getNumGroups() const { return mGroups.size(); };
+	size_t		getNumGroups() const { return mGroups.size(); }
 	
  private:
 	typedef boost::tuple<int,int> VertexPair;
