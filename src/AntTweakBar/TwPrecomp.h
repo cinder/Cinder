@@ -4,10 +4,9 @@
 //  @brief      Precompiled header
 //  @author     Philippe Decaudin - http://www.antisphere.com
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
+//              For conditions of distribution and use, see License.txt
 //
-//  notes:      Private header
-//              TAB=4
+//  note:       Private header
 //
 //  ---------------------------------------------------------------------------
 
@@ -24,10 +23,13 @@
 #   define _CRT_SECURE_NO_DEPRECATE // visual 8 secure crt warning
 #endif
 
-#include <stdio.h>
-#include <assert.h>
-#include <math.h>
-#include <float.h>
+#include <cstdio>
+#include <cassert>
+#include <cmath>
+#include <cfloat>
+#include <cstring>
+#include <cstdlib>
+#include <memory.h>
 
 #if defined(_MSC_VER) && _MSC_VER<=1200
 #   pragma warning(push, 3)
@@ -49,6 +51,7 @@
 #   include <GL/glx.h>
 #   include <X11/Xatom.h>
 #   include <unistd.h>
+#   include <malloc.h>
 #   undef _WIN32
 #   undef WIN32
 #   undef _WIN64

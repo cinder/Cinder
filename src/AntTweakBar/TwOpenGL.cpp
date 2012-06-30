@@ -3,9 +3,7 @@
 //  @file       TwOpenGL.cpp
 //  @author     Philippe Decaudin - http://www.antisphere.com
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
-//
-//  note:       TAB=4
+//              For conditions of distribution and use, see License.txt
 //
 //  ---------------------------------------------------------------------------
 
@@ -77,8 +75,14 @@ PFNGLBlendFuncSeparate _glBlendFuncSeparate = NULL;
 #ifndef GL_ACTIVE_TEXTURE_ARB
 #   define GL_ACTIVE_TEXTURE_ARB 0x84E0
 #endif
+#ifndef GL_CLIENT_ACTIVE_TEXTURE_ARB
+#   define GL_CLIENT_ACTIVE_TEXTURE_ARB 0x84E1
+#endif
 #ifndef GL_MAX_TEXTURE_UNITS_ARB
 #   define GL_MAX_TEXTURE_UNITS_ARB 0x84E2
+#endif
+#ifndef GL_MAX_TEXTURE_COORDS
+#   define GL_MAX_TEXTURE_COORDS 0x8871
 #endif
 #ifndef GL_TEXTURE_RECTANGLE_ARB
 #   define GL_TEXTURE_RECTANGLE_ARB 0x84F5
@@ -119,7 +123,7 @@ PFNGLBlendFuncSeparate _glBlendFuncSeparate = NULL;
         {
             sprintf(msg, "%s(%d) : [%s] GL_ERROR=0x%x\n", file, line, func, err);
             #ifdef ANT_WINDOWS
-                OutputDebugStringA(msg);
+                OutputDebugString(msg);
             #endif
             fprintf(stderr, msg);
         }
@@ -176,16 +180,16 @@ static void UnbindFont(GLuint _FontTexID)
 
 int CTwGraphOpenGL::Init()
 {
+    m_Drawing = false;
+    m_FontTexID = 0;
+    m_FontTex = NULL;
+    m_MaxClipPlanes = -1;
+
     if( LoadOpenGL()==0 )
     {
         g_TwMgr->SetLastError(g_ErrCantLoadOGL);
         return 0;
     }
-
-    m_Drawing = false;
-    m_FontTexID = 0;
-    m_FontTex = NULL;
-    m_MaxClipPlanes = -1;
 
     // Get extensions
     _glBindBufferARB = reinterpret_cast<PFNGLBindBufferARB>(_glGetProcAddress("glBindBufferARB"));
@@ -199,13 +203,7 @@ int CTwGraphOpenGL::Init()
     _glBlendEquationSeparate = reinterpret_cast<PFNGLBlendEquationSeparate>(_glGetProcAddress("glBlendEquationSeparate"));
     _glBlendFuncSeparate = reinterpret_cast<PFNGLBlendFuncSeparate>(_glGetProcAddress("glBlendFuncSeparate"));
 
-#if !defined(ANT_OSX)
-    const char *ext = (const char *)_glGetString(GL_EXTENSIONS);
-    if( ext!=0 && strlen(ext)>0 )
-        m_SupportTexRect = (strstr(ext, "GL_ARB_texture_rectangle")!=NULL);
-    else
-#endif
-        m_SupportTexRect = false;
+    m_SupportTexRect = false; // updated in BeginDraw
 
     return 1;
 }
@@ -239,16 +237,32 @@ void CTwGraphOpenGL::BeginDraw(int _WndWidth, int _WndHeight)
 
     CHECK_GL_ERROR;
 
+//#if !defined(ANT_OSX)
+    static bool s_SupportTexRectChecked = false;
+    if (!s_SupportTexRectChecked) 
+    {
+        const char *ext = (const char *)_glGetString(GL_EXTENSIONS);
+        if( ext!=0 && strlen(ext)>0 )
+            m_SupportTexRect = (strstr(ext, "GL_ARB_texture_rectangle")!=NULL);
+        s_SupportTexRectChecked = true;
+    }
+//#endif
+
     _glPushAttrib(GL_ALL_ATTRIB_BITS);
     _glPushClientAttrib(GL_CLIENT_ALL_ATTRIB_BITS);
 
     if( _glActiveTextureARB )
     {
         _glGetIntegerv(GL_ACTIVE_TEXTURE_ARB, &m_PrevActiveTextureARB);
-        int maxTexUnits = 1;
-        _glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &maxTexUnits);
-        maxTexUnits = max(1, min(32, maxTexUnits));
-        for( int i=0; i<maxTexUnits; ++i )
+        _glGetIntegerv(GL_CLIENT_ACTIVE_TEXTURE_ARB, &m_PrevClientActiveTextureARB);
+        GLint maxTexUnits = 1;
+        _glGetIntegerv(GL_MAX_TEXTURE_COORDS, &maxTexUnits); // was GL_MAX_TEXTURE_UNITS_ARB
+        if( maxTexUnits<1 ) 
+            maxTexUnits = 1;
+        else if( maxTexUnits > MAX_TEXTURES )
+            maxTexUnits = MAX_TEXTURES;
+        GLint i;
+        for( i=0; i<maxTexUnits; ++i )
         {
             _glActiveTextureARB(GL_TEXTURE0_ARB+i);
             m_PrevActiveTexture1D[i] = _glIsEnabled(GL_TEXTURE_1D);
@@ -259,6 +273,14 @@ void CTwGraphOpenGL::BeginDraw(int _WndWidth, int _WndHeight)
             _glDisable(GL_TEXTURE_3D);
         }
         _glActiveTextureARB(GL_TEXTURE0_ARB);
+
+        for( i=0; i<maxTexUnits; i++ )
+        {
+            _glClientActiveTextureARB(GL_TEXTURE0_ARB+i);
+            m_PrevClientTexCoordArray[i] = _glIsEnabled(GL_TEXTURE_COORD_ARRAY);
+            _glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        }
+        _glClientActiveTextureARB(GL_TEXTURE0_ARB);
     }
 
     _glMatrixMode(GL_TEXTURE);
@@ -323,7 +345,7 @@ void CTwGraphOpenGL::BeginDraw(int _WndWidth, int _WndHeight)
         if( m_MaxClipPlanes<0 || m_MaxClipPlanes>255 )
             m_MaxClipPlanes = 6;
     }
-    for( int i=0; i<m_MaxClipPlanes; ++i )
+    for( GLint i=0; i<m_MaxClipPlanes; ++i )
         _glDisable(GL_CLIP_PLANE0+i);
     m_PrevTexture = 0;
     _glGetIntegerv(GL_TEXTURE_BINDING_2D, &m_PrevTexture);
@@ -439,10 +461,14 @@ void CTwGraphOpenGL::EndDraw()
 
     if( _glActiveTextureARB )
     {
-        int maxTexUnits = 1;
-        _glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &maxTexUnits);
-        maxTexUnits = max(1, min(32, maxTexUnits));
-        for( int i=0; i<maxTexUnits; ++i )
+        GLint maxTexUnits = 1;
+        _glGetIntegerv(GL_MAX_TEXTURE_COORDS, &maxTexUnits); // was GL_MAX_TEXTURE_UNITS_ARB
+        if( maxTexUnits<1 ) 
+            maxTexUnits = 1;
+        else if( maxTexUnits > MAX_TEXTURES )
+            maxTexUnits = MAX_TEXTURES;
+        GLint i;
+        for( i=0; i<maxTexUnits; ++i )
         {
             _glActiveTextureARB(GL_TEXTURE0_ARB+i);
             if( m_PrevActiveTexture1D[i] )
@@ -453,6 +479,14 @@ void CTwGraphOpenGL::EndDraw()
                 _glEnable(GL_TEXTURE_3D);
         }
         _glActiveTextureARB(m_PrevActiveTextureARB);
+
+        for( i=0; i<maxTexUnits; ++i )
+        {
+            _glClientActiveTextureARB(GL_TEXTURE0_ARB+i);
+            if( m_PrevClientTexCoordArray[i] )
+                _glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        }
+        _glClientActiveTextureARB(m_PrevClientActiveTextureARB);
     }
 
     CHECK_GL_ERROR;
@@ -761,6 +795,19 @@ void CTwGraphOpenGL::RestoreViewport()
 
 //  ---------------------------------------------------------------------------
 
+void CTwGraphOpenGL::SetScissor(int _X0, int _Y0, int _Width, int _Height)
+{
+    if( _Width>0 && _Height>0 )
+    {
+        _glScissor(_X0-1, m_WndHeight-_Y0-_Height, _Width-1, _Height);
+        _glEnable(GL_SCISSOR_TEST);
+    }
+    else
+        _glDisable(GL_SCISSOR_TEST);
+}
+
+//  ---------------------------------------------------------------------------
+
 void CTwGraphOpenGL::DrawTriangles(int _NumTriangles, int *_Vertices, color32 *_Colors, Cull _CullMode)
 {
     assert(m_Drawing==true);
@@ -768,7 +815,7 @@ void CTwGraphOpenGL::DrawTriangles(int _NumTriangles, int *_Vertices, color32 *_
     const GLfloat dx = +0.0f;
     const GLfloat dy = +0.0f;
 
-    int prevCullFaceMode, prevFrontFace;
+    GLint prevCullFaceMode, prevFrontFace;
     _glGetIntegerv(GL_CULL_FACE_MODE, &prevCullFaceMode);
     _glGetIntegerv(GL_FRONT_FACE, &prevFrontFace);
     GLboolean prevCullEnable = _glIsEnabled(GL_CULL_FACE);
