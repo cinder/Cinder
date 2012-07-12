@@ -49,6 +49,8 @@ void XMLTestApp::setup()
 	for( XmlTree::ConstIter track = doc.begin("library/album/track"); track != doc.end(); ++track )
 		console() << track->getValue() << endl;
 
+	assert( (musicLibrary / "album")["musician"] == "John Coltrane" );
+
 	// test that /one/two is equivalent to one/two
 	vector<string> noLeadingSeparator, leadingSeparator;
 	for( XmlTree::ConstIter track = doc.begin("library/album/track"); track != doc.end(); ++track )

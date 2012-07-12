@@ -145,6 +145,11 @@ class XmlTree {
 		template<typename T>
 		Attr&	operator=( const T& val ) { mValue = toString( val ); mXml->setAttribute( mName, mValue ); return *this; }
 		
+		bool	operator==( const char *rhs ) const { return mValue == rhs; }
+		bool	operator==( const std::string &rhs ) const { return mValue == rhs; }
+		bool	operator!=( const char *rhs ) const { return mValue != rhs; }
+		bool	operator!=( const std::string &rhs ) const { return mValue != rhs; }
+		
 		//! Returns the value of the attribute cast to T using ci::fromString().
 		template<typename T>
 		T		as() const { return fromString<T>( mValue ); }
