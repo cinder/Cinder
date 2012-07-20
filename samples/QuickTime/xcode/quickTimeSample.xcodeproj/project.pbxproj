@@ -217,6 +217,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = ../../../lib/libcinder_d.a;
 				PRODUCT_NAME = quickTimeSample;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -240,6 +241,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "$(CINDER_PATH)/lib/libcinder.a";
 				PRODUCT_NAME = quickTimeSample;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -33,7 +33,7 @@
 
 #include <string>
 #include <vector>
-#include <list>
+#include <boost/container/list.hpp>
 
 //! \cond
 namespace rapidxml {
@@ -46,12 +46,17 @@ namespace cinder {
 
 class XmlTree {
   public:
+
+	//! \cond
+	typedef boost::container::list<XmlTree> container;
+	//! \endcond
+
 	//! A const iterator over the children of an XmlTree.
 	class ConstIter {
 	  public:
 		//! \cond
-		ConstIter( const std::list<XmlTree> *sequence );		
-		ConstIter( const std::list<XmlTree> *sequence, std::list<XmlTree>::const_iterator iter );		
+		ConstIter( const container *sequence );
+		ConstIter( const container *sequence, container::const_iterator iter );
 		ConstIter( const XmlTree &root, const std::string &filterPath, bool caseSensitive = false, char separator = '/' );
 		//! \endcond
 
@@ -79,13 +84,13 @@ class XmlTree {
 	  protected:
 		//! \cond
 		void	increment();
-		void	setToEnd( const std::list<XmlTree> *seq );
+		void	setToEnd( const container *seq );
 		bool	isDone() const;
 		
-		std::vector<const std::list<XmlTree>*>				mSequenceStack;
-		std::vector<std::list<XmlTree>::const_iterator>		mIterStack;
-		std::vector<std::string>							mFilter;
-		bool												mCaseSensitive;
+		std::vector<const container*>				mSequenceStack;
+		std::vector<container::const_iterator>		mIterStack;
+		std::vector<std::string>					mFilter;
+		bool										mCaseSensitive;
 		//! \endcond		
 	};
 
@@ -93,11 +98,11 @@ class XmlTree {
 	class Iter : public XmlTree::ConstIter {
 	  public:
 		//! \cond
-		Iter( std::list<XmlTree> *sequence )
+		Iter( container *sequence )
 			: ConstIter( sequence )
 		{}
 		
-		Iter( std::list<XmlTree> *sequence, std::list<XmlTree>::iterator iter )
+		Iter( container *sequence, container::iterator iter )
 			: ConstIter( sequence, iter )
 		{}
 	
@@ -285,9 +290,9 @@ class XmlTree {
 	//! Returns the first child that matches \a relativePath. Throws ExcChildNotFound if none matches.
 	const XmlTree&				getChild( const std::string &relativePath, bool caseSensitive = false, char separator = '/' ) const;
 	//! Returns a reference to the node's list of children nodes.
-	std::list<XmlTree>&			getChildren() { return mChildren; }
+	container&			getChildren() { return mChildren; }
 	//! Returns a reference to the node's list of children nodes.
-	const std::list<XmlTree>&	getChildren() const { return mChildren; }
+	const container&	getChildren() const { return mChildren; }
 
 	//! Returns a reference to the node's list of attributes.	
 	std::list<Attr>&			getAttributes() { return mAttributes; }
@@ -398,15 +403,15 @@ class XmlTree {
 	XmlTree*	getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;
 	void		appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::xml_node<char> *parent ) const;
 
-	static std::list<XmlTree>::const_iterator	findNextChildNamed( const std::list<XmlTree> &sequence, std::list<XmlTree>::const_iterator firstCandidate, const std::string &searchTag, bool caseSensitive );
+	static container::const_iterator	findNextChildNamed( const container &sequence, container::const_iterator firstCandidate, const std::string &searchTag, bool caseSensitive );
 
 	NodeType					mNodeType;
   	std::string					mTag;
 	std::string					mValue;
 	std::string					mDocType; // only used on NodeType::NODE_DOCUMENT
 	XmlTree						*mParent;
-	std::list<XmlTree>			mChildren;
-	std::list<Attr>			mAttributes;
+	container					mChildren;
+	std::list<Attr>				mAttributes;
 	
 	static void		loadFromDataSource( DataSourceRef dataSource, XmlTree *result, const ParseOptions &parseOptions );
 };
