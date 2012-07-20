@@ -34,7 +34,7 @@
 #include <iterator>
 #include <string>
 #include <vector>
-#include <list>
+#include <boost/container/list.hpp>
 
 //! \cond
 namespace rapidxml {
@@ -49,7 +49,7 @@ class XmlTree {
   public:
 
 	//! \cond
-	typedef std::list<XmlTree> container;
+	typedef boost::container::list<XmlTree> container;
 	//! \endcond
 
 	//! A const iterator over the children of an XmlTree.

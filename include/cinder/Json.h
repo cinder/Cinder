@@ -31,7 +31,7 @@
 
 #include <iterator>
 #include <string>
-#include <list>
+#include <boost/container/list.hpp>
 
 namespace Json {
 class Value;
@@ -43,7 +43,7 @@ class JsonTree {
   public:
 	
 	//! \cond
-	typedef std::list<JsonTree> Container;
+	typedef boost::container::list<JsonTree> Container;
 	typedef Container::const_iterator ConstIter;
 	typedef Container::iterator Iter;
 	//! \endcond
