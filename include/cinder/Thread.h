@@ -27,20 +27,25 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 #endif
 
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/recursive_mutex.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/condition_variable.hpp>
+#if defined( _LIBCPP_VERSION )
+	#include <thread>
+	#include <mutex>
+#else
+	#include <boost/thread/mutex.hpp>
+	#include <boost/thread/recursive_mutex.hpp>
+	#include <boost/thread/thread.hpp>
+	#include <boost/thread/condition_variable.hpp>
 
-// Promote classes from boost which will be part of std:: in C++1x where necessary
-namespace std {
-	using boost::mutex;
-	using boost::recursive_mutex;
-	using boost::thread;
-	using boost::lock_guard;
-	using boost::unique_lock;
-	using boost::condition_variable;
-}
+	// Promote classes from boost which will be part of std:: in C++1x where necessary
+	namespace std {
+		using boost::mutex;
+		using boost::recursive_mutex;
+		using boost::thread;
+		using boost::lock_guard;
+		using boost::unique_lock;
+		using boost::condition_variable;
+	}
+#endif
 
 namespace cinder {
 //! Create an instance of this class at the beginning of any multithreaded code that makes use of Cinder functionality
