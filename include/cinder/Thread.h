@@ -44,6 +44,9 @@
 		using boost::lock_guard;
 		using boost::unique_lock;
 		using boost::condition_variable;
+		namespace this_thread {
+			using boost::this_thread::yield;
+		}
 	}
 #endif
 
