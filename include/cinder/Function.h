@@ -28,7 +28,7 @@
 #include <vector>
 #include <utility>
 
-#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
+#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 ) || defined( _LIBCPP_VERSION )
 	#include <functional>
 #else
 	#if defined( CINDER_COCOA )
