@@ -54,6 +54,7 @@ void Camera::setOrientation( const Quatf &aOrientation )
 void Camera::setWorldUp( const Vec3f &aWorldUp )
 {
 	mWorldUp = aWorldUp;
+	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
 	calcModelView();
 }
 
