@@ -58,6 +58,8 @@ class InterfaceGl {
 	void	addText( const std::string &name = "", const std::string &optionsStr = "" );
 	void	addButton( const std::string &name, const std::function<void()> &callback, const std::string &optionsStr = "" );
 	void	removeParam( const std::string &name );
+	//! Removes all the variables, buttons and separators previously added.
+	void	clear();
 	void	setOptions( const std::string &name = "", const std::string &optionsStr = "" );
 
  protected:

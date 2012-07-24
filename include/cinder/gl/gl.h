@@ -133,9 +133,9 @@ inline void translate( float x, float y, float z ) { translate( Vec3f( x, y, z )
 //! Produces a scale by \a scale in the current matrix.
 void scale( const Vec3f &scl );
 //! Produces a scale by \a scl in the current matrix.
-inline void scale( const Vec2f &scl ) { scale( Vec3f( scl.x, scl.y, 0 ) ); }
+inline void scale( const Vec2f &scl ) { scale( Vec3f( scl.x, scl.y, 1 ) ); }
 //! Produces a scale by \a x and \a y in the current matrix.
-inline void scale( float x, float y ) { scale( Vec3f( x, y, 0 ) ); }
+inline void scale( float x, float y ) { scale( Vec3f( x, y, 1 ) ); }
 //! Produces a scale by \a x, \a y and \a z in the current matrix.
 inline void scale( float x, float y, float z ) { scale( Vec3f( x, y, z ) ); }
 
