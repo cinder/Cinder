@@ -90,6 +90,13 @@ class TriMesh {
 	/*! appends a texture coordinate in [-1,1] space to be applied to generated triangles. The coordinates are associated with the vertexes of the TriMesh, not the generated triangles when they are drawn */
 	void		appendTexCoord( const Vec2f &v ) { mTexCoords.push_back( v ); }
 	
+	/*! Appends multiple RGB colors to the TriMesh */ 
+	void		appendColorsRGB( const Color *rgbs, size_t num );
+	/*! Appends multiple RGBA colors to the TriMesh */
+	void		appendColorsRGBA( const ColorA *rgbas, size_t num );
+	/*! Appends multiple texcoords to the TriMesh */
+	void		appendTexCoords( const Vec2f *texcoords, size_t num );
+	
 	/*! after creating three vertices, pass the indices of the three vertices to create a triangle from them. Until this is done, unlike in an OpenGL triangle strip, the 
 	 triangle will not actually be generated and stored by the TriMesh
 	*/
@@ -170,6 +177,13 @@ class TriMesh2d {
 	void		appendColorRgba( const ColorA &rgba ) { mColorsRgba.push_back( rgba ); }
 	/*! appends a texture coordinate in [-1,1] space to be applied to generated triangles. The coordinates are associated with the vertexes of the TriMesh, not the generated triangles when they are drawn */
 	void		appendTexCoord( const Vec2f &v ) { mTexCoords.push_back( v ); }
+	
+	/*! Appends multiple RGB colors to the TriMesh */ 
+	void		appendColorsRgb( const Color *rgbs, size_t num );
+	/*! Appends multiple RGBA colors to the TriMesh */
+	void		appendColorsRgba( const ColorA *rgbas, size_t num );
+	/*! Appends multiple texcoords to the TriMesh */
+	void		appendTexCoords( const Vec2f *texcoords, size_t num );
 	
 	/*! after creating three vertices, pass the indices of the three vertices to create a triangle from them. Until this is done, unlike in an OpenGL triangle strip, the 
 	 triangle will not actually be generated and stored by the TriMesh
