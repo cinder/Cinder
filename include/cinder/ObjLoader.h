@@ -84,6 +84,9 @@ class ObjLoader {
 	//! Writes a new OBJ file to \a dataTarget. \warning - this method will be moved in the future
 	static void		write( DataTargetRef dataTarget, const TriMesh &mesh, bool writeNormals = true, bool writeUVs = true );
 	
+    //! Returns the total number of groups.
+	size_t		getNumGroups() const { return mGroups.size(); }
+	
  private:
 	typedef boost::tuple<int,int> VertexPair;
 	typedef boost::tuple<int,int,int> VertexTriple;

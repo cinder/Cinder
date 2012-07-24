@@ -64,6 +64,10 @@ XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, bo
 {
 	mFilter = split( filterPath, separator );
 
+	// we ignore a leading separator so that "/one/two" is equivalent to "one/two"
+	if( ( ! filterPath.empty() ) && ( filterPath[0] == separator ) && ( ! mFilter.empty() ) )
+		mFilter.erase( mFilter.begin() );
+
 	if( mFilter.empty() ) { // empty filter means nothing matches
 		setToEnd( &root.getChildren() );
 		return;

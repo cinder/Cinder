@@ -89,7 +89,6 @@
 - (void)touchesBegan:(ci::app::TouchEvent*)event;
 - (void)touchesMoved:(ci::app::TouchEvent*)event;
 - (void)touchesEnded:(ci::app::TouchEvent*)event;
-- (void)touchesEnded:(ci::app::TouchEvent*)event;
 - (void)setActiveTouches:(std::vector<ci::app::TouchEvent::Touch>*)touches;
 #endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
 
