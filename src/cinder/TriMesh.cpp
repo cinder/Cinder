@@ -190,22 +190,25 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 
 void TriMesh::recalculateNormals(void)
 {
-	mNormals.clear();
-	mNormals.resize( mVertices.size() );
+	mNormals.assign( mVertices.size(), Vec3f::zero() );
 
 	for(size_t i=0;i<getNumTriangles();++i)
 	{
-		Vec3f v0 = mVertices[ mIndices[i * 3] ];
-		Vec3f v1 = mVertices[ mIndices[i * 3 + 1] ];
-		Vec3f v2 = mVertices[ mIndices[i * 3 + 2] ];
+		uint32_t index0 = mIndices[i * 3];
+		uint32_t index1 = mIndices[i * 3 + 1];
+		uint32_t index2 = mIndices[i * 3 + 2];
+
+		Vec3f v0 = mVertices[ index0 ];
+		Vec3f v1 = mVertices[ index1 ];
+		Vec3f v2 = mVertices[ index2 ];
 
 		Vec3f e0 = v1 - v0;
 		Vec3f e1 = v2 - v0;
 		Vec3f normal = e0.cross(e1).normalized();
 
-		mNormals[ mIndices[i * 3] ] += normal;
-		mNormals[ mIndices[i * 3 + 1] ] += normal;
-		mNormals[ mIndices[i * 3 + 2] ] += normal;
+		mNormals[ index0 ] += normal;
+		mNormals[ index1 ] += normal;
+		mNormals[ index2 ] += normal;
 	}
 
 	for(size_t i=0;i<mNormals.size();++i)
