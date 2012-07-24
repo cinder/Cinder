@@ -99,4 +99,19 @@ void Timer::stop()
 	}
 }
 
+void Timer::resume()
+{	
+	if( mIsStopped ) {
+#if defined( CINDER_COCOA )
+		mStartTime = ::CFAbsoluteTimeGetCurrent() - getSeconds();
+#elif defined( CINDER_MSW )
+		::LARGE_INTEGER rawTime;
+		::QueryPerformanceCounter( &rawTime );
+		mStartTime = rawTime.QuadPart * mInvNativeFreq - getSeconds();
+#endif
+
+		mIsStopped = false;
+	}
+}
+
 } // namespace cinder

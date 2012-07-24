@@ -45,6 +45,9 @@ class Timer {
 	//! Ends timing
 	void	stop();
 
+	//! Resumes timing without resetting the timer
+	void	resume();
+
 	//! Returns whether the timer is currently running
 	bool	isStopped() const { return mIsStopped; }
 	
