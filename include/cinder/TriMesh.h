@@ -142,6 +142,9 @@ class TriMesh {
 	void		read( DataSourceRef in );
 	//! This allows to you write a mesh out to a data file. At present .obj and .dat files are supported.
 	void		write( DataTargetRef out ) const;
+
+	//! This allows you to automatically add or replace the normals by calculating them from the vertices and faces.
+	void		recalculateNormals();
 	
  private:
 	std::vector<Vec3f>		mVertices;
