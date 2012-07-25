@@ -32,7 +32,7 @@ class Material {
 	Material();
 	Material( const Color &aAmbient, const Color &aDiffuse = Color( 0, 0, 0 ), const Color &aSpecular = Color( 0, 0, 0 ),
 			float aShininess = 1.0f, const Color &aEmission = Color( 0, 0, 0 ), GLenum aFace = GL_FRONT );
-	
+
 	void	apply() const;
 	void	setAmbient( const Color &aAmbient ) { mAmbient = aAmbient; }
 	void	setDiffuse( const Color &aDiffuse ) { mDiffuse = aDiffuse; }
@@ -40,14 +40,21 @@ class Material {
 	void	setShininess( float aShininess ) { mShininess = aShininess; }
 	void	setEmission( const Color &aEmission ) { mEmission = aEmission; }
 	void	setFace( GLenum aFace ) { mFace = aFace; }
-	
+
+	Color	getAmbient() const { return mAmbient; }
+	Color	getDiffuse() const { return mDiffuse; }
+	Color	getSpecular() const { return mSpecular; }
+	float	getShininess() const { return mShininess; }
+	Color	getEmission() const { return mEmission; }
+	GLenum	getFace() const { return mFace; }
+
  protected:
 	Color			mAmbient;
 	Color			mDiffuse;
 	Color			mSpecular;
-	float			mShininess;		
+	float			mShininess;
 	Color			mEmission;
-	GLenum			mFace;	
+	GLenum			mFace;
 };
 
 } } // namesapce
