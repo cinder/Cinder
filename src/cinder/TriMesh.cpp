@@ -192,7 +192,8 @@ void TriMesh::recalculateNormals(void)
 {
 	mNormals.assign( mVertices.size(), Vec3f::zero() );
 
-	for(size_t i=0;i<getNumTriangles();++i)
+	size_t n = getNumTriangles();
+	for(size_t i=0;i<n;++i)
 	{
 		uint32_t index0 = mIndices[i * 3];
 		uint32_t index1 = mIndices[i * 3 + 1];
@@ -211,8 +212,7 @@ void TriMesh::recalculateNormals(void)
 		mNormals[ index2 ] += normal;
 	}
 
-	for(size_t i=0;i<mNormals.size();++i)
-		mNormals[i].normalize();
+	std::for_each( mNormals.begin(), mNormals.end(), std::mem_fun_ref(&Vec3f::normalize) );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
