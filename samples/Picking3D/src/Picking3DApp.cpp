@@ -98,6 +98,9 @@ class Picking3DApp : public AppBasic
 	// the model of a rubber ducky
 	TriMesh		mMesh;
 
+	// the object space bounding box of the mesh
+	AxisAlignedBox3f	mObjectBounds;
+
 	// transformations (translate, rotate, scale) of the model
 	Matrix44f	mTransform;
 
@@ -137,7 +140,10 @@ void Picking3DApp::setup()
 	//  (note: the mesh was created from an OBJ file
 	//  using the ObjLoader class. The data was then saved using the
 	//  TriMesh::write() method. Reading binary files is much quicker.)
-	mMesh.read( loadResource( RES_DUCKY_MESH ) );
+	mMesh.read( loadResource( RES_DUCKY_MESH ) );	
+
+	// get the object space bounding box of the model, for fast intersection testing
+	mObjectBounds = mMesh.calcBoundingBox();
 
 	// set up the camera
 	CameraPersp cam;
@@ -190,7 +196,7 @@ void Picking3DApp::draw()
 	drawGrid();
 
 	// bind the texture
-	mTexture.bind();
+	mTexture.enableAndBind();
 
 	// bind the shader and tell it to use our texture
 	mShader.bind();
@@ -212,7 +218,7 @@ void Picking3DApp::draw()
 	// perform 3D picking now, so we can draw the intersection as a sphere
 	Vec3f pickedPoint, pickedNormal;
 	if( performPicking( &pickedPoint, &pickedNormal ) ) {
-		gl::color( ColorAf(0.0f, 1.0f, 0.0f, 0.5f) );
+		gl::color( Color(0, 1, 0) );
 		// draw an arrow to the picked point along its normal
 		gl::drawVector( pickedPoint + pickedNormal, pickedPoint );
 
@@ -254,28 +260,35 @@ bool Picking3DApp::performPicking( Vec3f *pickedPoint, Vec3f *pickedNormal )
 	// where (0, 0) is in the LOWERleft corner, we have to flip the v-coordinate
 	Ray ray = cam.generateRay(u , 1.0f - v, cam.getAspectRatio() );
 
-	// get the bounding box of the model, for fast intersection testing
-	AxisAlignedBox3f objectBounds = mMesh.calcBoundingBox();
-
-	// draw this untransformed box in yellow
+	// draw the object space bounding box in yellow
 	gl::color( Color(1, 1, 0) );
-	gl::drawStrokedCube(objectBounds);
+	gl::drawStrokedCube(mObjectBounds);
 
 	// the coordinates of the bounding box are in object space, not world space,
 	// so if the model was translated, rotated or scaled, the bounding box would not
-	// reflect that.
-	AxisAlignedBox3f worldBounds = mMesh.calcBoundingBox(mTransform);
+	// reflect that. 
+	//
+	// One solution would be to pass the transformation to the calcBoundingBox() function: 
+	AxisAlignedBox3f worldBoundsExact = mMesh.calcBoundingBox(mTransform);		// slow
+
+	// draw this transformed box in orange
+	gl::color( Color(1, 0.5, 0) );
+	gl::drawStrokedCube(worldBoundsExact);
+	
+	// But if you already have an object space bounding box, it's much faster to
+	// approximate the world space bounding box like this:
+	AxisAlignedBox3f worldBoundsApprox = mObjectBounds.transformed(mTransform);	// fast
 
 	// draw this transformed box in cyan
 	gl::color( Color(0, 1, 1) );
-	gl::drawStrokedCube(worldBounds);
+	gl::drawStrokedCube(worldBoundsApprox);
+
+	// fast detection first - test against the bounding box itself
+	if( ! worldBoundsExact.intersects(ray) )
+		return false;
 
 	// set initial distance to something far, far away
 	float result = 1.0e6f;
-
-	// fast detection first - test against the bounding box itself
-	if( ! worldBounds.intersects(ray) )
-		return false;
 
 	// traverse triangle list and find the picked triangle
 	size_t polycount = mMesh.getNumTriangles();

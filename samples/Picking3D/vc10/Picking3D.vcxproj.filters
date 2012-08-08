@@ -23,16 +23,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\data\phong_frag.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="..\data\phong_vert.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ResourceCompile Include="Resources.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\resources\phong_frag.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\resources\phong_vert.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
