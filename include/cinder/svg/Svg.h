@@ -37,6 +37,7 @@
 #include "cinder/Function.h"
 
 #include <map>
+#include <boost/noncopyable.hpp>
 
 namespace cinder { namespace svg {
 
@@ -68,7 +69,7 @@ class Renderer {
 	
 	virtual ~Renderer() {}
 
-	void	setVisitor( const RenderVisitor &visitor ) { mVisitor = visitor; }
+	void	setVisitor( const std::function<bool(const Node&, svg::Style *)> &visitor );
 	
 	virtual	void	pushGroup( const Group &group, float opacity ) {}	
 	virtual void	popGroup() {}	
@@ -109,13 +110,14 @@ class Renderer {
 
 	bool		visit( const Node &node, svg::Style *style ) const {
 		if( mVisitor )
-			return mVisitor( node, style );
+			return (*mVisitor)( node, style );
 		else
 			return true;
 	}
 	
   protected:
-  	RenderVisitor		mVisitor;
+  	// this is a shared_ptr to work around a bug in Clang 4.0
+	std::shared_ptr<std::function<bool(const Node&, svg::Style *)> >		mVisitor;
 	
 	friend class svg::Node;
 };
@@ -726,7 +728,7 @@ class Text : public Node {
 };
 
 //! Represents a group of SVG elements. http://www.w3.org/TR/SVG/struct.html#Groups
-class Group : public Node {
+class Group : public Node, private boost::noncopyable {
   public:
 	Group( const Node *parent ) : Node( parent ) {}
 	Group( const Node *parent, const XmlTree &xml );

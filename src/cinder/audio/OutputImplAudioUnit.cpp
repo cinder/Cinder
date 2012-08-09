@@ -369,7 +369,7 @@ OutputImplAudioUnit::OutputImplAudioUnit()
 	
 	err = AudioUnitSetParameter( mMixerUnit, kMultiChannelMixerParam_Volume, kAudioUnitScope_Output, 0, CINDER_DEFAULT_VOLUME, 0 );
 	if( err ) {
-		std::cout << "error setting default volume" << std::cout;
+		std::cout << "error setting default volume" << std::endl;
 	}
 	
 	err = AUGraphStart( mGraph );

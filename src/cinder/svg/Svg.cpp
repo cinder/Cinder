@@ -218,6 +218,13 @@ vector<string> readStringList( const std::string &s, bool stripQuotes = false )
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////////
+// Renderer
+void Renderer::setVisitor( const function<bool(const Node&, svg::Style *)> &visitor )
+{
+	mVisitor = shared_ptr<function<bool(const Node&, svg::Style *)> >( new function<bool(const Node&, svg::Style *)>( visitor ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////
 // Statics
 Paint Style::sPaintNone = svg::Paint();
 Paint Style::sPaintBlack = svg::Paint( Color::black() );

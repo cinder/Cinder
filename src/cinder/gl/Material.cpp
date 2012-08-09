@@ -25,12 +25,12 @@
 namespace cinder { namespace gl {
 
 Material::Material()
-	: mAmbient( Color( 1.0f, 0.5f, 0.25f ) ), mDiffuse( Color( 0, 0, 0 ) ), mSpecular( Color( 0, 0, 0 ) ), mShininess( 1.0f ), mEmission( Color( 0, 0, 0 ) ), mFace( GL_FRONT )
+	: mAmbient( ColorA( 1.0f, 0.5f, 0.25f, 1.0f ) ), mDiffuse( ColorA( 0, 0, 0, 1 ) ), mSpecular( ColorA( 0, 0, 0, 1 ) ), mShininess( 1.0f ), mEmission( ColorA( 0, 0, 0, 1 ) ), mFace( GL_FRONT )
 {
 }
 
-Material::Material( const Color &aAmbient, const Color &aDiffuse, const Color &aSpecular,
-			float aShininess, const Color &aEmission, GLenum aFace )
+Material::Material( const ColorA &aAmbient, const ColorA &aDiffuse, const ColorA &aSpecular,
+			float aShininess, const ColorA &aEmission, GLenum aFace )
 	: mAmbient( aAmbient ), mDiffuse( aDiffuse ), mSpecular( aSpecular ), mShininess( aShininess ), mEmission( aEmission ), mFace( aFace )
 {
 }
