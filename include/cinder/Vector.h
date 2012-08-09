@@ -520,7 +520,7 @@ public:
 
 	Vec3<T> randomOrthogonal() const
 	{
-		if( dot( Vec3<T>::xAxis() ) >= (T)0.01 ) {
+		if( dot( Vec3<T>::xAxis() ) < (T)0.99 ) {
 			return cross( Vec3<T>::xAxis() );
 		}
 		else
