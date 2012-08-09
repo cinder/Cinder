@@ -69,7 +69,7 @@ class Renderer {
 	
 	virtual ~Renderer() {}
 
-	void	setVisitor( const RenderVisitor &visitor ) { mVisitor = visitor; }
+	void	setVisitor( const std::function<bool(const Node&, svg::Style *)> &visitor );
 	
 	virtual	void	pushGroup( const Group &group, float opacity ) {}	
 	virtual void	popGroup() {}	
@@ -110,13 +110,14 @@ class Renderer {
 
 	bool		visit( const Node &node, svg::Style *style ) const {
 		if( mVisitor )
-			return mVisitor( node, style );
+			return (*mVisitor)( node, style );
 		else
 			return true;
 	}
 	
   protected:
-  	RenderVisitor		mVisitor;
+  	// this is a shared_ptr to work around a bug in Clang 4.0
+	std::shared_ptr<std::function<bool(const Node&, svg::Style *)> >		mVisitor;
 	
 	friend class svg::Node;
 };
