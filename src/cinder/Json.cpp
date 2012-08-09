@@ -426,7 +426,7 @@ const JsonTree& JsonTree::getChild( size_t index ) const
 	}
 }
 
-const list<JsonTree>& JsonTree::getChildren() const 
+const JsonTree::Container& JsonTree::getChildren() const
 { 
 	return mChildren; 
 }
