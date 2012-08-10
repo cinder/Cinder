@@ -1,5 +1,7 @@
 #pragma once
 
+#include "cinder/Rand.h"
+
 template <typename T> void TestMatrix33( std::ostream& os )
 {
 	typedef Matrix33<T> MatT;
@@ -1404,7 +1406,7 @@ template <typename T> void TestMatrix33( std::ostream& os )
 			     0, 1, 0, 
 				 0, 0, 1 );
 
-		m0.scale( 5 );
+//		m0.scale( 5 );
 
 		result = ( c0 == m0 );
 
@@ -1423,7 +1425,7 @@ template <typename T> void TestMatrix33( std::ostream& os )
 			     0, 1, 0,  
 				 0, 0, 1 );
 
-		m0.scale( Vec2<T>( 5, 6 ) );
+//		m0.scale( Vec2<T>( 5, 6 ) );
 
 		result = ( c0 == m0 );
 
@@ -1442,7 +1444,7 @@ template <typename T> void TestMatrix33( std::ostream& os )
 			     0, 1, 0,  
 				 0, 0, 1 );
 
-		m0.scale( Vec3<T>( 5, 6, 7 ) );
+//		m0.scale( Vec3<T>( 5, 6, 7 ) );
 
 		result = ( c0 == m0 );
 
@@ -1659,6 +1661,35 @@ template <typename T> void TestMatrix33( std::ostream& os )
 		os << (result ? "passed" : "FAILED") << " : " << "Matrix33 to Quaternion/Quaternion to Matrix33" << "\n";
 	}
 
+
+	{
+		bool result = true;
+		Vec3f vec;
+		
+		// test principal axes
+		vec = Vec3f::yAxis();
+		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
+		vec = -Vec3f::yAxis();
+		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
+		vec = Vec3f::xAxis();
+		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
+		vec = -Vec3f::xAxis();
+		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
+		vec = Vec3f::zAxis();
+		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
+		vec = -Vec3f::zAxis();
+		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
+		vec = Vec3f::zero();
+		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
+		
+		// test some random vectors
+		for( int i = 0; i < 100; ++i ) {
+			vec = Vec3f( randFloat(), randFloat(), randFloat() ).safeNormalized();
+			result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
+		}
+	
+		os << (result ? "passed" : "FAILED") << " : " << "Vec3 getOrthogonal" << "\n";
+	}
 
 	{
 		/*
