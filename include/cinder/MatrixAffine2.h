@@ -608,6 +608,16 @@ void MatrixAffine2<T>::translate( const Vec2<T> &v )
 }
 
 template<typename T>
+void MatrixAffine2<T>::scale( T s )
+{
+	m[0] *= s;
+	m[1] *= s;
+		
+	m[2] *= s;
+	m[3] *= s;
+}
+	
+template<typename T>
 void MatrixAffine2<T>::scale( const Vec2<T> &s )
 {
 	m[0] *= s.x;
