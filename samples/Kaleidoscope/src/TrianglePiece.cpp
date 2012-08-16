@@ -67,9 +67,9 @@ void TrianglePiece::setVisible( bool vis )
 void TrianglePiece::update( gl::Texture tex, Vec2f pt1, Vec2f pt2, Vec2f pt3 )
 {	 
 	if( ! mTransOut ) {
-		texPt1 = pt1;
-		texPt2 = pt2;
-		texPt3 = pt3;
+		mTexVertices[0] = pt1;
+		mTexVertices[1] = pt2;
+		mTexVertices[2] = pt3;
 		mDrawTex = tex;
 	}
 	mReadyToDraw = true;
@@ -89,15 +89,23 @@ void TrianglePiece::draw()
 	
 	// draw the texture to the triangle
 	mDrawTex.enableAndBind();
-	glEnableClientState( GL_VERTEX_ARRAY );
+	/*glEnableClientState( GL_VERTEX_ARRAY );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &mVertices[0].x );
 	glTexCoordPointer( 2, GL_FLOAT, 0, &texPt1.x );	
 	glDrawArrays( GL_TRIANGLES, 0, 3 );
 	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );*/
+	
+	//gl::drawSolidTriangle(mVertices);
+	gl::drawSolidTriangle(mVertices, mTexVertices);
+	
 	mDrawTex.unbind();
 	glColor4f(1.0, 1.0, 1.0, 1.0);
+	
+	
+	gl::drawStrokedTriangle(mVertices[0], mVertices[1], mVertices[2]);
+	
 	glPopMatrix();
 }
 

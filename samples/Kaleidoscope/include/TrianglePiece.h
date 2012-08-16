@@ -29,8 +29,7 @@ class TrianglePiece {
 	
 	ci::gl::Texture mTempTex, mDrawTex;
 	
-	ci::Vec2f		mStartPt, mVertices[3];
-	ci::Vec2f		texPt1, texPt2, texPt3;
+	ci::Vec2f		mStartPt, mVertices[3], mTexVertices[3];
 	
 	float			mRotation;
 	ci::Anim<float> mAlpha;
