@@ -856,6 +856,45 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 	glDisableClientState( GL_VERTEX_ARRAY );
 	delete [] verts;
 }
+	
+void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 )
+{
+	Vec2f pts[3] = {pt1, pt2, pt3};
+	drawSolidTriangle( pts );
+}
+
+void drawSolidTriangle( Vec2f *pts )
+{
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
+	glDrawArrays( GL_TRIANGLES, 0, 3 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+}
+
+void drawSolidTriangle( Vec2f *pts, Vec2f *texCoord)
+{
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
+	glTexCoordPointer( 2, GL_FLOAT, 0, &texCoord[0].x );	
+	glDrawArrays( GL_TRIANGLES, 0, 3 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+void drawStrokedTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 )
+{
+	Vec2f pts[3] = {pt1, pt2, pt3};
+	drawStrokedTriangle( pts );
+}
+
+void drawStrokedTriangle( Vec2f *pts )
+{
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
+	glDrawArrays( GL_LINE_LOOP, 0, 3 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+}
 
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 {
