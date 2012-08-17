@@ -188,13 +188,12 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 	}
 }
 
-void TriMesh::recalculateNormals(void)
+void TriMesh::recalculateNormals()
 {
 	mNormals.assign( mVertices.size(), Vec3f::zero() );
 
 	size_t n = getNumTriangles();
-	for(size_t i=0;i<n;++i)
-	{
+	for( size_t i = 0; i < n; ++i ) {
 		uint32_t index0 = mIndices[i * 3];
 		uint32_t index1 = mIndices[i * 3 + 1];
 		uint32_t index2 = mIndices[i * 3 + 2];
