@@ -65,12 +65,12 @@ void TriMesh::appendNormals( const Vec4d *normals, size_t num )
 		mNormals.push_back( Vec3f( (float)normals[v].x, (float)normals[v].y, (float)normals[v].z ) );
 }
 
-void TriMesh::appendColorsRGB( const Color *rgbs, size_t num )
+void TriMesh::appendColorsRgb( const Color *rgbs, size_t num )
 {
 	mColorsRGB.insert( mColorsRGB.end(), rgbs, rgbs + num );
 }
 
-void TriMesh::appendColorsRGBA( const ColorA *rgbas, size_t num )
+void TriMesh::appendColorsRgba( const ColorA *rgbas, size_t num )
 {
 	mColorsRGBA.insert( mColorsRGBA.end(), rgbas, rgbas + num );
 }
