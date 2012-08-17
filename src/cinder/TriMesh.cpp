@@ -40,8 +40,7 @@ void TriMesh::clear()
 
 void TriMesh::appendVertices( const Vec3f *verts, size_t num )
 {
-	for( size_t v = 0; v < num; ++v )
-		mVertices.push_back( verts[v] );
+	mVertices.insert( mVertices.end(), verts, verts + num );
 }
 
 void TriMesh::appendVertices( const Vec4d *verts, size_t num )
@@ -55,10 +54,30 @@ void TriMesh::appendIndices( uint32_t *indices, size_t num )
 	mIndices.insert( mIndices.end(), indices, indices + num );
 }
 
+void TriMesh::appendNormals( const Vec3f *normals, size_t num )
+{
+	mNormals.insert( mNormals.end(), normals, normals + num );
+}
+
 void TriMesh::appendNormals( const Vec4d *normals, size_t num )
 {
 	for( size_t v = 0; v < num; ++v )
 		mNormals.push_back( Vec3f( (float)normals[v].x, (float)normals[v].y, (float)normals[v].z ) );
+}
+
+void TriMesh::appendColorsRGB( const Color *rgbs, size_t num )
+{
+	mColorsRGB.insert( mColorsRGB.end(), rgbs, rgbs + num );
+}
+
+void TriMesh::appendColorsRGBA( const ColorA *rgbas, size_t num )
+{
+	mColorsRGBA.insert( mColorsRGBA.end(), rgbas, rgbas + num );
+}
+
+void TriMesh::appendTexCoords( const Vec2f *texcoords, size_t num )
+{
+	mTexCoords.insert( mTexCoords.end(), texcoords, texcoords + num );
 }
 
 void TriMesh::getTriangleVertices( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const
@@ -233,6 +252,21 @@ void TriMesh2d::appendVertices( const Vec2f *verts, size_t num )
 void TriMesh2d::appendIndices( uint32_t *indices, size_t num )
 {
 	mIndices.insert( mIndices.end(), indices, indices + num );
+}
+
+void TriMesh2d::appendColorsRgb( const Color *rgbs, size_t num )
+{
+	mColorsRgb.insert( mColorsRgb.end(), rgbs, rgbs + num );
+}
+
+void TriMesh2d::appendColorsRgba( const ColorA *rgbas, size_t num )
+{
+	mColorsRgba.insert( mColorsRgba.end(), rgbas, rgbas + num );
+}
+
+void TriMesh2d::appendTexCoords( const Vec2f *texcoords, size_t num )
+{
+	mTexCoords.insert( mTexCoords.end(), texcoords, texcoords + num );
 }
 
 void TriMesh2d::getTriangleVertices( size_t idx, Vec2f *a, Vec2f *b, Vec2f *c ) const
