@@ -89,23 +89,9 @@ void TrianglePiece::draw()
 	
 	// draw the texture to the triangle
 	mDrawTex.enableAndBind();
-	/*glEnableClientState( GL_VERTEX_ARRAY );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, &mVertices[0].x );
-	glTexCoordPointer( 2, GL_FLOAT, 0, &texPt1.x );	
-	glDrawArrays( GL_TRIANGLES, 0, 3 );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );*/
-	
-	//gl::drawSolidTriangle(mVertices);
 	gl::drawSolidTriangle(mVertices, mTexVertices);
-	
 	mDrawTex.unbind();
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	
-	
-	gl::drawStrokedTriangle(mVertices[0], mVertices[1], mVertices[2]);
-	
+	glColor4f(1.0, 1.0, 1.0, 1.0);			// reset the color/alpha
 	glPopMatrix();
 }
 
