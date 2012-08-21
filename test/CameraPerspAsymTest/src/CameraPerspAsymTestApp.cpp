@@ -137,10 +137,10 @@ void CameraPerspAsymTestApp::keyDown( KeyEvent event )
 	switch( event.getCode() )
 	{
 	case KeyEvent::KEY_UP:
-		mLensShift.y -= 0.1f;
+		mLensShift.y += 0.1f;
 		break;
 	case KeyEvent::KEY_DOWN:
-		mLensShift.y += 0.1f;
+		mLensShift.y -= 0.1f;
 		break;
 	case KeyEvent::KEY_LEFT:
 		mLensShift.x -= 0.1f;
