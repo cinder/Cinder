@@ -333,10 +333,10 @@ void CameraPerspAsym::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Ve
 	float frustumLeft	= -frustumRight;
 
 	// perform lens shift
-	frustumTop = ci::lerp<float, float>(0.0f, 2.0f * frustumTop, 0.5f - mLensShiftY);
-	frustumBottom = ci::lerp<float, float>(2.0f * frustumBottom, 0.0f, 0.5f - mLensShiftY);
-	frustumRight = ci::lerp<float, float>(2.0f * frustumRight, 0.0f, 0.5f - mLensShiftX);
-	frustumLeft = ci::lerp<float, float>(0.0f, 2.0f * frustumLeft, 0.5f - mLensShiftX);
+	frustumTop = ci::lerp<float, float>(0.0f, 2.0f * frustumTop, 0.5f + 0.5f * mLensShiftY);
+	frustumBottom = ci::lerp<float, float>(2.0f * frustumBottom, 0.0f, 0.5f + 0.5f * mLensShiftY);
+	frustumRight = ci::lerp<float, float>(2.0f * frustumRight, 0.0f, 0.5f - 0.5f * mLensShiftX);
+	frustumLeft = ci::lerp<float, float>(0.0f, 2.0f * frustumLeft, 0.5f - 0.5f * mLensShiftX);
 
 	*topLeft		= mEyePoint + (mFarClip * viewDirection) + (frustumTop * mV) + (frustumLeft * mU);
 	*topRight		= mEyePoint + (mFarClip * viewDirection) + (frustumTop * mV) + (frustumRight * mU);
@@ -352,10 +352,10 @@ void CameraPerspAsym::calcProjection()
 	mFrustumLeft	= -mFrustumRight;
 
 	// perform lens shift
-	mFrustumTop = ci::lerp<float, float>(0.0f, 2.0f * mFrustumTop, 0.5f - mLensShiftY);
-	mFrustumBottom = ci::lerp<float, float>(2.0f * mFrustumBottom, 0.0f, 0.5f - mLensShiftY);
-	mFrustumRight = ci::lerp<float, float>(2.0f * mFrustumRight, 0.0f, 0.5f - mLensShiftX);
-	mFrustumLeft = ci::lerp<float, float>(0.0f, 2.0f * mFrustumLeft, 0.5f - mLensShiftX);
+	mFrustumTop = ci::lerp<float, float>(0.0f, 2.0f * mFrustumTop, 0.5f + 0.5f * mLensShiftY);
+	mFrustumBottom = ci::lerp<float, float>(2.0f * mFrustumBottom, 0.0f, 0.5f + 0.5f * mLensShiftY);
+	mFrustumRight = ci::lerp<float, float>(2.0f * mFrustumRight, 0.0f, 0.5f - 0.5f * mLensShiftX);
+	mFrustumLeft = ci::lerp<float, float>(0.0f, 2.0f * mFrustumLeft, 0.5f - 0.5f * mLensShiftX);
 
 	float *m = mProjectionMatrix.m;
 	m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
