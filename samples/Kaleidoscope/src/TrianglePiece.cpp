@@ -90,7 +90,6 @@ void TrianglePiece::draw()
 	// draw the texture to the triangle
 	mDrawTex.enableAndBind();
 	gl::drawSolidTriangle(mVertices, mTexVertices);
-	gl::drawSolidTriangle(mVertices);
 	mDrawTex.unbind();
 	glColor4f(1.0, 1.0, 1.0, 1.0);			// reset the color/alpha
 	glPopMatrix();
