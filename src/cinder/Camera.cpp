@@ -94,18 +94,15 @@ void Camera::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bot
 
 void Camera::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
 {
+	float ratio = mFarClip / mNearClip;
+
 	Vec3f viewDirection( mViewDirection );
 	viewDirection.normalize();
 
-	float frustumTop		=  mFarClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
-	float frustumBottom	= -frustumTop;
-	float frustumRight	=  frustumTop * mAspectRatio;
-	float frustumLeft	= -frustumRight;
-
-	*topLeft		= mEyePoint + (mFarClip * viewDirection) + (frustumTop * mV) + (frustumLeft * mU);
-	*topRight		= mEyePoint + (mFarClip * viewDirection) + (frustumTop * mV) + (frustumRight * mU);
-	*bottomLeft		= mEyePoint + (mFarClip * viewDirection) + (frustumBottom * mV) + (frustumLeft * mU);
-	*bottomRight	= mEyePoint + (mFarClip * viewDirection) + (frustumBottom * mV) + (frustumRight * mU);
+	*topLeft		= mEyePoint + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * mFrustumLeft * mU);
+	*topRight		= mEyePoint + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * mFrustumRight * mU);
+	*bottomLeft		= mEyePoint + (mFarClip * viewDirection) + (ratio * mFrustumBottom * mV) + (ratio * mFrustumLeft * mU);
+	*bottomRight	= mEyePoint + (mFarClip * viewDirection) + (ratio * mFrustumBottom * mV) + (ratio * mFrustumRight * mU);
 }
 
 void Camera::getFrustum( float *left, float *top, float *right, float *bottom, float *near, float *far ) const
@@ -225,12 +222,17 @@ void CameraPersp::setPerspective( float horizFovDegrees, float aspectRatio, floa
 	calcProjection();
 }
 
-void CameraPersp::calcProjection()
+void CameraPersp::calcFrustum()
 {
 	mFrustumTop		=  mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
 	mFrustumBottom	= -mFrustumTop;
 	mFrustumRight	=  mFrustumTop * mAspectRatio;
 	mFrustumLeft	= -mFrustumRight;
+}
+
+void CameraPersp::calcProjection()
+{
+	calcFrustum();
 
 	float *m = mProjectionMatrix.m;
 	m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
@@ -334,6 +336,11 @@ void CameraOrtho::setOrtho( float left, float right, float bottom, float top, fl
 	calcProjection();
 }
 
+void CameraOrtho::calcFrustum()
+{
+	// use SetOrtho instead
+}
+
 void CameraOrtho::calcProjection()
 {
 	float *m = mProjectionMatrix.m;
@@ -382,20 +389,80 @@ void CameraOrtho::calcProjection()
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraStereo
 
+Vec3f CameraStereo::getShiftedEyePoint() const
+{	
+	if(!mIsStereo)
+		return mEyePoint;
+
+	Quatf orientation( mOrientation );
+	Vec3f shift = orientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
+	
+	if(mIsLeft) 
+		return mEyePoint - shift;
+	else 
+		return mEyePoint + shift;
+}
+
+void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
+{
+	Vec3f viewDirection( mViewDirection );
+	viewDirection.normalize();
+
+	Vec3f eye( getShiftedEyePoint() );
+
+	*topLeft		= eye + (mNearClip * viewDirection) + (mFrustumTop * mV) + (mFrustumLeft * mU);
+	*topRight		= eye + (mNearClip * viewDirection) + (mFrustumTop * mV) + (mFrustumRight * mU);
+	*bottomLeft		= eye + (mNearClip * viewDirection) + (mFrustumBottom * mV) + (mFrustumLeft * mU);
+	*bottomRight	= eye + (mNearClip * viewDirection) + (mFrustumBottom * mV) + (mFrustumRight * mU);
+}
+
+void CameraStereo::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
+{
+	float ratio = mFarClip / mNearClip;
+
+	Vec3f viewDirection( mViewDirection );
+	viewDirection.normalize();
+
+	Vec3f eye( getShiftedEyePoint() );
+
+	*topLeft		= eye + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * mFrustumLeft * mU);
+	*topRight		= eye + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * mFrustumRight * mU);
+	*bottomLeft		= eye + (mFarClip * viewDirection) + (ratio * mFrustumBottom * mV) + (ratio * mFrustumLeft * mU);
+	*bottomRight	= eye + (mFarClip * viewDirection) + (ratio * mFrustumBottom * mV) + (ratio * mFrustumRight * mU);
+}
+
+void CameraStereo::calcFrustum()
+{
+	mFrustumTop		=  mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
+	mFrustumBottom	= -mFrustumTop;
+
+	if(!mIsStereo) {
+		mFrustumRight	=  mFrustumTop * mAspectRatio;
+		mFrustumLeft	= -mFrustumTop * mAspectRatio;
+	}
+	else if(mIsLeft) {
+		mFrustumRight	=  mFrustumTop * mAspectRatio + 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
+		mFrustumLeft	= -mFrustumTop * mAspectRatio + 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
+	}
+	else {
+		mFrustumRight	=  mFrustumTop * mAspectRatio - 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
+		mFrustumLeft	= -mFrustumTop * mAspectRatio - 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
+	}
+}
+
 void CameraStereo::calcModelView()
 {
-	mW = -mViewDirection.normalized(); //view
-	mU = mOrientation * Vec3f::xAxis(); // right
-	mV = mOrientation * Vec3f::yAxis(); //up
+	mW = -mViewDirection.normalized(); 
+	mU = mOrientation * Vec3f::xAxis(); 
+	mV = mOrientation * Vec3f::yAxis();
 
-	Vec3f shift = mU * (0.5f * mEyeSeparation);
-	if(mIsLeftEye) shift = -shift;
+	Vec3f eye( getShiftedEyePoint() );
 	
-	Vec3f d( -mEyePoint.dot( mU ), -mEyePoint.dot( mV ), -mEyePoint.dot( mW ) );
+	Vec3f d( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
 	float *m = mModelViewMatrix.m;
-	m[ 0] = mU.x; m[ 4] = mU.y; m[ 8] = mU.z; m[12] =  d.x + shift.x;
-	m[ 1] = mV.x; m[ 5] = mV.y; m[ 9] = mV.z; m[13] =  d.y + shift.y;
-	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z + shift.z;
+	m[ 0] = mU.x; m[ 4] = mU.y; m[ 8] = mU.z; m[12] =  d.x;
+	m[ 1] = mV.x; m[ 5] = mV.y; m[ 9] = mV.z; m[13] =  d.y;
+	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z;
 	m[ 3] = 0.0f; m[ 7] = 0.0f; m[11] = 0.0f; m[15] = 1.0f;
 
 	mInverseModelViewCached = false;
@@ -403,17 +470,7 @@ void CameraStereo::calcModelView()
 
 void CameraStereo::calcProjection()
 {
-	mFrustumTop		=  mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
-	mFrustumBottom	= -mFrustumTop;
-
-	if(mIsLeftEye) {
-		mFrustumRight	=  mFrustumTop * mAspectRatio - 0.5f * mEyeSeparation * mNearClip / mFocalLength;
-		mFrustumLeft	= -mFrustumTop * mAspectRatio - 0.5f * mEyeSeparation * mNearClip / mFocalLength;
-	}
-	else {
-		mFrustumRight	=  mFrustumTop * mAspectRatio + 0.5f * mEyeSeparation * mNearClip / mFocalLength;
-		mFrustumLeft	= -mFrustumTop * mAspectRatio + 0.5f * mEyeSeparation * mNearClip / mFocalLength;
-	}
+	calcFrustum();
 
 	float *m = mProjectionMatrix.m;
 	m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
