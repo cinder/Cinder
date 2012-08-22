@@ -251,7 +251,7 @@ void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 );
 void drawSolidTriangle( const Vec2f pts[3] );
 //! Renders a textured triangle.
 void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3, const Vec2f &texPt1, const Vec2f &texPt2, const Vec2f &texPt3 );
-void drawSolidTriangle( const Vec2f pts[3], Vec2f texCoord[3] );
+void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] );
 //! Renders a stroked triangle.
 void drawStrokedTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 );	
 void drawStrokedTriangle( const Vec2f pts[3] );
