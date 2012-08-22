@@ -248,7 +248,6 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 //! Renders a coordinate frame representation centered at the origin. Arrowheads are drawn at the end of each axis with radius \a headRadius and length \a headLength.
 //! Renders a solid triangle.
 void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 );
-<<<<<<< HEAD
 void drawSolidTriangle( const Vec2f pts[3] );
 //! Renders a textured triangle.
 void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3, const Vec2f &texPt1, const Vec2f &texPt2, const Vec2f &texPt3 );
@@ -256,15 +255,6 @@ void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] );
 //! Renders a stroked triangle.
 void drawStrokedTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 );	
 void drawStrokedTriangle( const Vec2f pts[3] );
-=======
-void drawSolidTriangle( Vec2f pts[3] );
-//! Renders a textured triangle.
-void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3, const Vec2f &texPt1, const Vec2f &texPt2, const Vec2f &texPt3 );
-void drawSolidTriangle( Vec2f pts[3], Vec2f texCoord[3] );
-//! Renders a stroked triangle.
-void drawStrokedTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 );	
-void drawStrokedTriangle( Vec2f pts[3] );
->>>>>>> c66ea9b... Made 3 the size of the array to expect when passing an array to triangle vector drawing methods. Added a texture drawing method that accepts 6 Vec2f params, 3 for triangle pos, 3 for texture coord.
 void drawCoordinateFrame( float axisLength = 1.0f, float headLength = 0.2f, float headRadius = 0.05f );
 //! Draws a vector starting at \a start and ending at \a end. An arrowhead is drawn at the end of radius \a headRadius and length \a headLength.
 void drawVector( const Vec3f &start, const Vec3f &end, float headLength = 0.2f, float headRadius = 0.05f );

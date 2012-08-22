@@ -863,11 +863,7 @@ void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 )
 	drawSolidTriangle( pts );
 }
 
-<<<<<<< HEAD
 void drawSolidTriangle( const Vec2f pts[3] )
-=======
-void drawSolidTriangle( Vec2f pts[3] )
->>>>>>> c66ea9b... Made 3 the size of the array to expect when passing an array to triangle vector drawing methods. Added a texture drawing method that accepts 6 Vec2f params, 3 for triangle pos, 3 for texture coord.
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
@@ -882,11 +878,7 @@ void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3, co
 	drawSolidTriangle( pts, texCoords );
 }
 	
-<<<<<<< HEAD
 void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] )
-=======
-void drawSolidTriangle( Vec2f pts[3], Vec2f texCoord[3] )
->>>>>>> c66ea9b... Made 3 the size of the array to expect when passing an array to triangle vector drawing methods. Added a texture drawing method that accepts 6 Vec2f params, 3 for triangle pos, 3 for texture coord.
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
@@ -903,11 +895,7 @@ void drawStrokedTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 )
 	drawStrokedTriangle( pts );
 }
 
-<<<<<<< HEAD
 void drawStrokedTriangle( const Vec2f pts[3] )
-=======
-void drawStrokedTriangle( Vec2f pts[3] )
->>>>>>> c66ea9b... Made 3 the size of the array to expect when passing an array to triangle vector drawing methods. Added a texture drawing method that accepts 6 Vec2f params, 3 for triangle pos, 3 for texture coord.
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
