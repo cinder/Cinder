@@ -148,4 +148,36 @@ class CameraOrtho : public Camera {
 	virtual void		calcProjection();
 };
 
+class CameraStereo : public CameraPersp {
+ public:
+	CameraStereo() 
+		: mFocalLength(1.0f), mEyeSeparation(0.06f), mIsLeftEye(true) {}
+	CameraStereo( int pixelWidth, int pixelHeight, float fov )
+		: CameraPersp( pixelWidth, pixelHeight, fov ), 
+		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsLeftEye(true) {} // constructs screen-aligned camera
+	CameraStereo( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane )
+		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), 
+		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsLeftEye(true) {} // constructs screen-aligned camera
+
+	float			getFocalLength() const { return mFocalLength; }
+	void			setFocalLength( float distance ) { mFocalLength = distance; calcProjection(); }
+
+	float			getEyeSeparation() const { return mEyeSeparation; }
+	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; calcProjection(); }
+
+	void			enableLeftEye() { mIsLeftEye = true; calcProjection(); }
+	bool			isLeftEyeEnabled() const { return mIsLeftEye; }
+
+	void			enableRightEye() { mIsLeftEye = false; calcProjection(); }
+	bool			isRightEyeEnabled() const { return !mIsLeftEye; }
+
+ protected:
+	virtual void	calcProjection();
+private:
+	bool			mIsLeftEye;
+
+	float			mFocalLength;
+	float			mEyeSeparation;
+};
+
 } // namespace cinder
