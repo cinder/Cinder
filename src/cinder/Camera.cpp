@@ -382,6 +382,25 @@ void CameraOrtho::calcProjection()
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraStereo
 
+void CameraStereo::calcModelView()
+{
+	mW = -mViewDirection.normalized(); //view
+	mU = mOrientation * Vec3f::xAxis(); // right
+	mV = mOrientation * Vec3f::yAxis(); //up
+
+	Vec3f shift = mU * (0.5f * mEyeSeparation);
+	if(mIsLeftEye) shift = -shift;
+	
+	Vec3f d( -mEyePoint.dot( mU ), -mEyePoint.dot( mV ), -mEyePoint.dot( mW ) );
+	float *m = mModelViewMatrix.m;
+	m[ 0] = mU.x; m[ 4] = mU.y; m[ 8] = mU.z; m[12] =  d.x + shift.x;
+	m[ 1] = mV.x; m[ 5] = mV.y; m[ 9] = mV.z; m[13] =  d.y + shift.y;
+	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z + shift.z;
+	m[ 3] = 0.0f; m[ 7] = 0.0f; m[11] = 0.0f; m[15] = 1.0f;
+
+	mInverseModelViewCached = false;
+}
+
 void CameraStereo::calcProjection()
 {
 	mFrustumTop		=  mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );

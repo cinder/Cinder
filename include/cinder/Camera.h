@@ -65,8 +65,9 @@ class Camera
 	void	setNearClip( float aNearClip ) { mNearClip = aNearClip; calcProjection(); }
 	float	getFarClip() const { return mFarClip; }
 	void	setFarClip( float aFarClip ) { mFarClip = aFarClip; calcProjection(); }
-	void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
-	void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+
+	virtual void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+	virtual void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
 
 	//! Returns the coordinates of the camera's frustum, suitable for passing to \c glFrustum
 	void	getFrustum( float *left, float *top, float *right, float *bottom, float *near, float *far ) const;
@@ -114,8 +115,8 @@ class Camera
 	
 	float		mFrustumLeft, mFrustumRight, mFrustumTop, mFrustumBottom;
 
-	void			calcModelView();
-	void			calcInverseModelView() const;
+	virtual void	calcModelView();
+			void	calcInverseModelView() const;
 	virtual void	calcProjection() = 0;
 };
 
@@ -151,27 +152,28 @@ class CameraOrtho : public Camera {
 class CameraStereo : public CameraPersp {
  public:
 	CameraStereo() 
-		: mFocalLength(1.0f), mEyeSeparation(0.06f), mIsLeftEye(true) {}
+		: mFocalLength(1.0f), mEyeSeparation(0.06f), mIsLeftEye(true) { calcModelView(); calcProjection(); }
 	CameraStereo( int pixelWidth, int pixelHeight, float fov )
 		: CameraPersp( pixelWidth, pixelHeight, fov ), 
-		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsLeftEye(true) {} // constructs screen-aligned camera
+		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsLeftEye(true) { calcModelView(); calcProjection(); } // constructs screen-aligned camera
 	CameraStereo( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane )
 		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), 
-		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsLeftEye(true) {} // constructs screen-aligned camera
+		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsLeftEye(true) { calcModelView(); calcProjection(); } // constructs screen-aligned camera
 
 	float			getFocalLength() const { return mFocalLength; }
 	void			setFocalLength( float distance ) { mFocalLength = distance; calcProjection(); }
 
 	float			getEyeSeparation() const { return mEyeSeparation; }
-	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; calcProjection(); }
+	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; calcModelView(); calcProjection(); }
 
-	void			enableLeftEye() { mIsLeftEye = true; calcProjection(); }
+	void			enableLeftEye() { mIsLeftEye = true; calcModelView(); calcProjection(); }
 	bool			isLeftEyeEnabled() const { return mIsLeftEye; }
 
-	void			enableRightEye() { mIsLeftEye = false; calcProjection(); }
+	void			enableRightEye() { mIsLeftEye = false; calcModelView(); calcProjection(); }
 	bool			isRightEyeEnabled() const { return !mIsLeftEye; }
 
  protected:
+	virtual void	calcModelView();
 	virtual void	calcProjection();
 private:
 	bool			mIsLeftEye;
