@@ -139,10 +139,12 @@ void OscListener::ProcessMessage( const ::osc::ReceivedMessage &m, const IpEndpo
 	
 	lock_guard<mutex> lock(mMutex);
 	
-	if( mMessageReceivedCbs.empty() )
+	if( mMessageReceivedCbs.empty() ){
 		mMessages.push_back( message );
-	else
+	}else{
 		mMessageReceivedCbs.call( message );
+		delete message;
+	}
 }
 
 bool OscListener::hasWaitingMessages() const
