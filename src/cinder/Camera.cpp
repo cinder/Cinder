@@ -43,7 +43,6 @@ void Camera::setViewDirection( const Vec3f &aViewDirection )
 	mViewDirection = aViewDirection.normalized();
 	mOrientation = Quatf( Vec3f( 0.0f, 0.0f, -1.0f ), mViewDirection );
 	mModelViewCached = false;
-	mInverseModelViewCached = false;
 }
 
 void Camera::setOrientation( const Quatf &aOrientation )
@@ -51,7 +50,6 @@ void Camera::setOrientation( const Quatf &aOrientation )
 	mOrientation = aOrientation.normalized();
 	mViewDirection = mOrientation * Vec3f( 0.0f, 0.0f, -1.0f );
 	mModelViewCached = false;
-	mInverseModelViewCached = false;
 }
 
 void Camera::setWorldUp( const Vec3f &aWorldUp )
@@ -59,7 +57,6 @@ void Camera::setWorldUp( const Vec3f &aWorldUp )
 	mWorldUp = aWorldUp.normalized();
 	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
 	mModelViewCached = false;
-	mInverseModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &target )
@@ -67,7 +64,6 @@ void Camera::lookAt( const Vec3f &target )
 	mViewDirection = ( target - mEyePoint ).normalized();
 	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
 	mModelViewCached = false;
-	mInverseModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target )
@@ -76,7 +72,6 @@ void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target )
 	mViewDirection = ( target - mEyePoint ).normalized();
 	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
 	mModelViewCached = false;
-	mInverseModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target, const Vec3f &aWorldUp )
@@ -86,12 +81,12 @@ void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target, const Vec3f &a
 	mViewDirection = ( target - mEyePoint ).normalized();
 	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
 	mModelViewCached = false;
-	mInverseModelViewCached = false;
 }
 
 void Camera::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
 {
-	// calcFrustum() should first be called
+	if( ! mProjectionCached )
+		calcProjection();
 
 	Vec3f viewDirection( mViewDirection );
 	viewDirection.normalize();
@@ -104,7 +99,8 @@ void Camera::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bot
 
 void Camera::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
 {
-	// calcFrustum() should first be called
+	if( ! mProjectionCached )
+		calcProjection();
 
 	float ratio = mFarClip / mNearClip;
 
@@ -119,6 +115,9 @@ void Camera::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bott
 
 void Camera::getFrustum( float *left, float *top, float *right, float *bottom, float *near, float *far ) const
 {
+	if( ! mProjectionCached )
+		calcProjection();
+
 	*left = mFrustumLeft;
 	*top = mFrustumTop;
 	*right = mFrustumRight;
@@ -129,8 +128,6 @@ void Camera::getFrustum( float *left, float *top, float *right, float *bottom, f
 
 Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) const
 {	
-	// calcFrustum() should first be called
-
 	float s = ( uPos - 0.5f ) * imagePlaneApectRatio;
 	float t = ( vPos - 0.5f );
 	float viewDistance = imagePlaneApectRatio / math<float>::abs( mFrustumRight - mFrustumLeft ) * mNearClip;
@@ -409,6 +406,9 @@ Vec3f CameraStereo::getShiftedEyePoint() const
 
 void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
 {
+	if( ! mProjectionCached )
+		calcProjection();
+
 	Vec3f viewDirection( mViewDirection );
 	viewDirection.normalize();
 
@@ -426,6 +426,9 @@ void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3
 
 void CameraStereo::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
 {
+	if( ! mProjectionCached )
+		calcProjection();
+
 	float ratio = mFarClip / mNearClip;
 
 	Vec3f viewDirection( mViewDirection );
