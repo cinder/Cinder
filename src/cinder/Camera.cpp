@@ -28,7 +28,8 @@ namespace cinder {
 void Camera::setEyePoint( const Vec3f &aEyePoint )
 {
 	mEyePoint = aEyePoint;
-	calcModelView();
+	mModelViewCached = false;
+	mInverseModelViewCached = false;
 }
 
 void Camera::setCenterOfInterestPoint( const Vec3f &centerOfInterestPoint )
@@ -41,27 +42,32 @@ void Camera::setViewDirection( const Vec3f &aViewDirection )
 {
 	mViewDirection = aViewDirection.normalized();
 	mOrientation = Quatf( Vec3f( 0.0f, 0.0f, -1.0f ), mViewDirection );
-	calcModelView();
+	mModelViewCached = false;
+	mInverseModelViewCached = false;
 }
 
 void Camera::setOrientation( const Quatf &aOrientation )
 {
 	mOrientation = aOrientation.normalized();
 	mViewDirection = mOrientation * Vec3f( 0.0f, 0.0f, -1.0f );
-	calcModelView();
+	mModelViewCached = false;
+	mInverseModelViewCached = false;
 }
 
 void Camera::setWorldUp( const Vec3f &aWorldUp )
 {
-	mWorldUp = aWorldUp;
-	calcModelView();
+	mWorldUp = aWorldUp.normalized();
+	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
+	mModelViewCached = false;
+	mInverseModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &target )
 {
 	mViewDirection = ( target - mEyePoint ).normalized();
 	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
-	calcModelView();
+	mModelViewCached = false;
+	mInverseModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target )
@@ -69,7 +75,8 @@ void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target )
 	mEyePoint = aEyePoint;
 	mViewDirection = ( target - mEyePoint ).normalized();
 	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
-	calcModelView();
+	mModelViewCached = false;
+	mInverseModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target, const Vec3f &aWorldUp )
@@ -78,11 +85,14 @@ void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target, const Vec3f &a
 	mWorldUp = aWorldUp.normalized();
 	mViewDirection = ( target - mEyePoint ).normalized();
 	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
-	calcModelView();
+	mModelViewCached = false;
+	mInverseModelViewCached = false;
 }
 
 void Camera::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
 {
+	// calcFrustum() should first be called
+
 	Vec3f viewDirection( mViewDirection );
 	viewDirection.normalize();
 
@@ -94,6 +104,8 @@ void Camera::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bot
 
 void Camera::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
 {
+	// calcFrustum() should first be called
+
 	float ratio = mFarClip / mNearClip;
 
 	Vec3f viewDirection( mViewDirection );
@@ -117,6 +129,8 @@ void Camera::getFrustum( float *left, float *top, float *right, float *bottom, f
 
 Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) const
 {	
+	// calcFrustum() should first be called
+
 	float s = ( uPos - 0.5f ) * imagePlaneApectRatio;
 	float t = ( vPos - 0.5f );
 	float viewDistance = imagePlaneApectRatio / math<float>::abs( mFrustumRight - mFrustumLeft ) * mNearClip;
@@ -125,14 +139,14 @@ Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) co
 
 void Camera::getBillboardVectors( Vec3f *right, Vec3f *up ) const
 {
-	right->set( mModelViewMatrix.m[0], mModelViewMatrix.m[4], mModelViewMatrix.m[8] );
-	up->set( mModelViewMatrix.m[1], mModelViewMatrix.m[5], mModelViewMatrix.m[9] );
+	right->set( getModelViewMatrix().m[0], getModelViewMatrix().m[4], getModelViewMatrix().m[8] );
+	up->set( getModelViewMatrix().m[1], getModelViewMatrix().m[5], getModelViewMatrix().m[9] );
 }
 
 Vec2f Camera::worldToScreen( const Vec3f &worldCoord, float screenWidth, float screenHeight ) const
 {
-	Vec3f eyeCoord = mModelViewMatrix.transformPointAffine( worldCoord );
-	Vec3f ndc = mProjectionMatrix.transformPoint( eyeCoord );
+	Vec3f eyeCoord = getModelViewMatrix().transformPointAffine( worldCoord );
+	Vec3f ndc = getProjectionMatrix().transformPoint( eyeCoord );
 	
 	return Vec2f( ( ndc.x + 1.0f ) / 2.0f * screenWidth, ( 1.0f - ( ndc.y + 1.0f ) / 2.0f ) * screenHeight );
 }
@@ -146,7 +160,7 @@ float Camera::getScreenRadius( const Sphere &sphere, float screenWidth, float sc
 	return screenPerimeter.distance( screenCenter );
 }
 
-void Camera::calcModelView()
+void Camera::calcModelView() const
 {
 	mW = -mViewDirection.normalized();
 	mU = mOrientation * Vec3f::xAxis();
@@ -159,6 +173,7 @@ void Camera::calcModelView()
 	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z;
 	m[ 3] = 0.0f; m[ 7] = 0.0f; m[11] = 0.0f; m[15] = 1.0f;
 
+	mModelViewCached = true;
 	mInverseModelViewCached = false;
 }
 
@@ -219,20 +234,15 @@ void CameraPersp::setPerspective( float horizFovDegrees, float aspectRatio, floa
 	mNearClip		= nearPlane;
 	mFarClip		= farPlane;
 
-	calcProjection();
+	mProjectionCached = false;
 }
 
-void CameraPersp::calcFrustum()
+void CameraPersp::calcProjection() const
 {
 	mFrustumTop		=  mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
 	mFrustumBottom	= -mFrustumTop;
 	mFrustumRight	=  mFrustumTop * mAspectRatio;
 	mFrustumLeft	= -mFrustumRight;
-}
-
-void CameraPersp::calcProjection()
-{
-	calcFrustum();
 
 	float *m = mProjectionMatrix.m;
 	m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
@@ -275,6 +285,8 @@ void CameraPersp::calcProjection()
 	m[ 7] =  0.0f;
 	m[11] = -( mFarClip - mNearClip ) / ( 2.0f * mFarClip*mNearClip );
 	m[15] =  ( mFarClip + mNearClip ) / ( 2.0f * mFarClip*mNearClip );
+
+	mProjectionCached = true;
 }
 
 CameraPersp	CameraPersp::getFrameSphere( const Sphere &worldSpaceSphere, int maxIterations ) const
@@ -320,8 +332,6 @@ CameraOrtho::CameraOrtho( float left, float right, float bottom, float top, floa
 	mFrustumBottom	= bottom;
 	mNearClip		= nearPlane;
 	mFarClip		= farPlane;
-
-	calcProjection();
 }
 
 void CameraOrtho::setOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane )
@@ -333,15 +343,10 @@ void CameraOrtho::setOrtho( float left, float right, float bottom, float top, fl
 	mNearClip		= nearPlane;
 	mFarClip		= farPlane;
 
-	calcProjection();
+	mProjectionCached = false;
 }
 
-void CameraOrtho::calcFrustum()
-{
-	// use SetOrtho instead
-}
-
-void CameraOrtho::calcProjection()
+void CameraOrtho::calcProjection() const
 {
 	float *m = mProjectionMatrix.m;
 	m[ 0] =  2.0f/(mFrustumRight - mFrustumLeft);
@@ -384,6 +389,8 @@ void CameraOrtho::calcProjection()
 	m[ 7] =  0.0f;
 	m[11] =  0.0f;
 	m[15] =  1.0f;
+
+	mProjectionCached = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -393,14 +400,11 @@ Vec3f CameraStereo::getShiftedEyePoint() const
 {	
 	if(!mIsStereo)
 		return mEyePoint;
-
-	Quatf orientation( mOrientation );
-	Vec3f shift = orientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
 	
 	if(mIsLeft) 
-		return mEyePoint - shift;
+		return mEyePoint - mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
 	else 
-		return mEyePoint + shift;
+		return mEyePoint + mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
 }
 
 void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
@@ -410,10 +414,14 @@ void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3
 
 	Vec3f eye( getShiftedEyePoint() );
 
-	*topLeft		= eye + (mNearClip * viewDirection) + (mFrustumTop * mV) + (mFrustumLeft * mU);
-	*topRight		= eye + (mNearClip * viewDirection) + (mFrustumTop * mV) + (mFrustumRight * mU);
-	*bottomLeft		= eye + (mNearClip * viewDirection) + (mFrustumBottom * mV) + (mFrustumLeft * mU);
-	*bottomRight	= eye + (mNearClip * viewDirection) + (mFrustumBottom * mV) + (mFrustumRight * mU);
+	float shift = 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
+	float left = mFrustumLeft + (mIsStereo ? (mIsLeft ? shift : -shift) : 0.0f);
+	float right = mFrustumRight + (mIsStereo ? (mIsLeft ? shift : -shift) : 0.0f);
+
+	*topLeft		= eye + (mNearClip * viewDirection) + (mFrustumTop * mV) + (left * mU);
+	*topRight		= eye + (mNearClip * viewDirection) + (mFrustumTop * mV) + (right * mU);
+	*bottomLeft		= eye + (mNearClip * viewDirection) + (mFrustumBottom * mV) + (left * mU);
+	*bottomRight	= eye + (mNearClip * viewDirection) + (mFrustumBottom * mV) + (right * mU);
 }
 
 void CameraStereo::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
@@ -425,53 +433,110 @@ void CameraStereo::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f
 
 	Vec3f eye( getShiftedEyePoint() );
 
-	*topLeft		= eye + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * mFrustumLeft * mU);
-	*topRight		= eye + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * mFrustumRight * mU);
-	*bottomLeft		= eye + (mFarClip * viewDirection) + (ratio * mFrustumBottom * mV) + (ratio * mFrustumLeft * mU);
-	*bottomRight	= eye + (mFarClip * viewDirection) + (ratio * mFrustumBottom * mV) + (ratio * mFrustumRight * mU);
-}
+	float shift = 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
+	float left = mFrustumLeft + (mIsStereo ? (mIsLeft ? shift : -shift) : 0.0f);
+	float right = mFrustumRight + (mIsStereo ? (mIsLeft ? shift : -shift) : 0.0f);
 
-void CameraStereo::calcFrustum()
+	*topLeft		= eye + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * left * mU);
+	*topRight		= eye + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * right * mU);
+	*bottomLeft		= eye + (mFarClip * viewDirection) + (ratio * mFrustumBottom * mV) + (ratio * left * mU);
+	*bottomRight	= eye + (mFarClip * viewDirection) + (ratio * mFrustumBottom * mV) + (ratio * right * mU);
+}
+	
+const Matrix44f& CameraStereo::getProjectionMatrix() const 
 {
-	mFrustumTop		=  mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
-	mFrustumBottom	= -mFrustumTop;
+	if( ! mProjectionCached )
+		calcProjection(); 
 
-	if(!mIsStereo) {
-		mFrustumRight	=  mFrustumTop * mAspectRatio;
-		mFrustumLeft	= -mFrustumTop * mAspectRatio;
-	}
-	else if(mIsLeft) {
-		mFrustumRight	=  mFrustumTop * mAspectRatio + 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
-		mFrustumLeft	= -mFrustumTop * mAspectRatio + 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
-	}
-	else {
-		mFrustumRight	=  mFrustumTop * mAspectRatio - 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
-		mFrustumLeft	= -mFrustumTop * mAspectRatio - 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
-	}
+	if( ! mIsStereo )
+		return mProjectionMatrix; 
+	else if( mIsLeft )
+		return mProjectionMatrixLeft; 
+	else
+		return mProjectionMatrixRight; 
+}
+	
+const Matrix44f& CameraStereo::getModelViewMatrix() const 
+{
+	if( ! mModelViewCached )
+		calcModelView(); 
+
+	if( ! mIsStereo )
+		return mModelViewMatrix; 
+	else if( mIsLeft )
+		return mModelViewMatrixLeft; 
+	else
+		return mModelViewMatrixRight; 
+}
+	
+const Matrix44f& CameraStereo::getInverseModelViewMatrix() const 
+{
+	if( ! mInverseModelViewCached )
+		calcInverseModelView();
+
+	if( ! mIsStereo )
+		return mInverseModelViewMatrix; 
+	else if( mIsLeft )
+		return mInverseModelViewMatrixLeft; 
+	else
+		return mInverseModelViewMatrixRight; 
 }
 
-void CameraStereo::calcModelView()
+void CameraStereo::calcModelView() const
 {
 	mW = -mViewDirection.normalized(); 
 	mU = mOrientation * Vec3f::xAxis(); 
-	mV = mOrientation * Vec3f::yAxis();
+	mV = mOrientation * Vec3f::yAxis();	
 
-	Vec3f eye( getShiftedEyePoint() );
-	
-	Vec3f d( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
+	// calculate mono matrix first
+	Vec3f d = Vec3f( -mEyePoint.dot( mU ), -mEyePoint.dot( mV ), -mEyePoint.dot( mW ) );
+
 	float *m = mModelViewMatrix.m;
 	m[ 0] = mU.x; m[ 4] = mU.y; m[ 8] = mU.z; m[12] =  d.x;
 	m[ 1] = mV.x; m[ 5] = mV.y; m[ 9] = mV.z; m[13] =  d.y;
 	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z;
 	m[ 3] = 0.0f; m[ 7] = 0.0f; m[11] = 0.0f; m[15] = 1.0f;
+	
+	// calculate left matrix
+	Vec3f eye = mEyePoint - mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
+	d = Vec3f( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
 
+	m = mModelViewMatrixLeft.m;
+	m[ 0] = mU.x; m[ 4] = mU.y; m[ 8] = mU.z; m[12] =  d.x;
+	m[ 1] = mV.x; m[ 5] = mV.y; m[ 9] = mV.z; m[13] =  d.y;
+	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z;
+	m[ 3] = 0.0f; m[ 7] = 0.0f; m[11] = 0.0f; m[15] = 1.0f;
+	
+	// calculate right matrix
+	eye = mEyePoint + mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
+	d = Vec3f( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
+
+	m = mModelViewMatrixRight.m;
+	m[ 0] = mU.x; m[ 4] = mU.y; m[ 8] = mU.z; m[12] =  d.x;
+	m[ 1] = mV.x; m[ 5] = mV.y; m[ 9] = mV.z; m[13] =  d.y;
+	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z;
+	m[ 3] = 0.0f; m[ 7] = 0.0f; m[11] = 0.0f; m[15] = 1.0f;
+
+	mModelViewCached = true;
 	mInverseModelViewCached = false;
 }
 
-void CameraStereo::calcProjection()
+void CameraStereo::calcInverseModelView() const
 {
-	calcFrustum();
+	mInverseModelViewMatrix = mModelViewMatrix.affineInverted();
+	mInverseModelViewMatrixLeft = mModelViewMatrixLeft.affineInverted();
+	mInverseModelViewMatrixRight = mModelViewMatrixRight.affineInverted();
+	mInverseModelViewCached = true;
+}
 
+void CameraStereo::calcProjection() const
+{
+	mFrustumTop		=  mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
+	mFrustumBottom	= -mFrustumTop;
+	mFrustumRight	=  mFrustumTop * mAspectRatio;
+	mFrustumLeft	= -mFrustumTop * mAspectRatio;
+
+	// calculate mono matrices first
 	float *m = mProjectionMatrix.m;
 	m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
 	m[ 4] =  0.0f;
@@ -513,6 +578,28 @@ void CameraStereo::calcProjection()
 	m[ 7] =  0.0f;
 	m[11] = -( mFarClip - mNearClip ) / ( 2.0f * mFarClip*mNearClip );
 	m[15] =  ( mFarClip + mNearClip ) / ( 2.0f * mFarClip*mNearClip );
+
+	// calculate left matrices
+	mProjectionMatrixLeft = mProjectionMatrix;
+	mInverseProjectionMatrixLeft = mInverseProjectionMatrix;
+
+	m = mProjectionMatrixLeft.m;
+	m[ 8] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mFocalLength) ) / ( mFrustumRight - mFrustumLeft );
+
+	m = mInverseProjectionMatrixLeft.m;
+	m[12] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mFocalLength) ) / ( 2.0f * mNearClip );	
+
+	// calculate right matrices
+	mProjectionMatrixRight = mProjectionMatrix;
+	mInverseProjectionMatrixRight = mInverseProjectionMatrix;
+
+	m = mProjectionMatrixRight.m;
+	m[ 8] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mFocalLength) ) / ( mFrustumRight - mFrustumLeft );
+
+	m = mInverseProjectionMatrixRight.m;
+	m[12] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mFocalLength) ) / ( 2.0f * mNearClip );
+	
+	mProjectionCached = true;
 }
 
 } // namespace cinder

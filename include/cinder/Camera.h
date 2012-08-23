@@ -33,7 +33,7 @@ namespace cinder {
 class Camera 
 {
  public:
-	Camera() : mInverseModelViewCached( false ), mWorldUp( Vec3f::yAxis() ) {}
+	Camera() : mModelViewCached(false), mProjectionCached(false), mInverseModelViewCached( false ), mWorldUp( Vec3f::yAxis() ) {}
 	virtual ~Camera() {}
 
 	Vec3f		getEyePoint() const { return mEyePoint; }
@@ -58,13 +58,13 @@ class Camera
 	void		setOrientation( const Quatf &aOrientation );
 
 	float	getFov() const { return mFov; }
-	void	setFov( float aFov ) { mFov = aFov; calcProjection(); }
+	void	setFov( float aFov ) { mFov = aFov;  mProjectionCached = false; }
 	float	getAspectRatio() const { return mAspectRatio; }
-	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; calcProjection(); }
+	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mProjectionCached = false; }
 	float	getNearClip() const { return mNearClip; }
-	void	setNearClip( float aNearClip ) { mNearClip = aNearClip; calcProjection(); }
+	void	setNearClip( float aNearClip ) { mNearClip = aNearClip; mProjectionCached = false; }
 	float	getFarClip() const { return mFarClip; }
-	void	setFarClip( float aFarClip ) { mFarClip = aFarClip; calcProjection(); }
+	void	setFarClip( float aFarClip ) { mFarClip = aFarClip; mProjectionCached = false; }
 
 	virtual void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
 	virtual void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
@@ -74,9 +74,9 @@ class Camera
 	//! Returns whether the camera represents a perspective projection instead of an orthographic
 	virtual bool isPersp() const = 0;
 	
-	const Matrix44f&	getProjectionMatrix() const { return mProjectionMatrix; }
-	const Matrix44f&	getModelViewMatrix() const { return mModelViewMatrix; }
-	const Matrix44f&	getInverseModelViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseModelView(); return mInverseModelViewMatrix; }
+	virtual const Matrix44f&	getProjectionMatrix() const { if( ! mProjectionCached ) calcProjection(); return mProjectionMatrix; }
+	virtual const Matrix44f&	getModelViewMatrix() const { if( ! mModelViewCached ) calcModelView(); return mModelViewMatrix; }
+	virtual const Matrix44f&	getInverseModelViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseModelView(); return mInverseModelViewMatrix; }
 
 	Ray		generateRay( float u, float v, float imagePlaneAspectRatio ) const;
 	void	getBillboardVectors( Vec3f *right, Vec3f *up ) const;
@@ -86,9 +86,9 @@ class Camera
  	//! Converts a world-space coordinate \a worldCoord to eye-space, also known as camera-space. -Z is along the view direction.
  	Vec3f worldToEye( const Vec3f &worldCoord ) { return getModelViewMatrix().transformPointAffine( worldCoord ); }
  	//! Converts a world-space coordinate \a worldCoord to the z axis of eye-space, also known as camera-space. -Z is along the view direction. Suitable for depth sorting.
- 	float worldToEyeDepth( const Vec3f &worldCoord ) const { return mModelViewMatrix.m[2] * worldCoord.x + mModelViewMatrix.m[6] * worldCoord.y + mModelViewMatrix.m[10] * worldCoord.z + mModelViewMatrix.m[14]; }
+ 	float worldToEyeDepth( const Vec3f &worldCoord ) const { return getModelViewMatrix().m[2] * worldCoord.x + getModelViewMatrix().m[6] * worldCoord.y + getModelViewMatrix().m[10] * worldCoord.z + getModelViewMatrix().m[14]; }
  	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates
- 	Vec3f worldToNdc( const Vec3f &worldCoord ) { Vec3f eye = getModelViewMatrix().transformPointAffine( worldCoord ); return mProjectionMatrix.transformPoint( eye ); }
+ 	Vec3f worldToNdc( const Vec3f &worldCoord ) { Vec3f eye = getModelViewMatrix().transformPointAffine( worldCoord ); return getProjectionMatrix().transformPoint( eye ); }
 
 
 	float	getScreenRadius( const class Sphere &sphere, float screenWidth, float screenHeight ) const;
@@ -99,26 +99,28 @@ class Camera
 	Quatf	mOrientation;
 	float	mCenterOfInterest;
 	Vec3f	mWorldUp;
-	Vec3f	mU;	// Right vector
-	Vec3f	mV;	// Readjust up-vector
-	Vec3f	mW;	// Negative view direction
 
-	float		mFov;
-	float		mAspectRatio;
-	float		mNearClip;		
-	float		mFarClip;
+	float	mFov;
+	float	mAspectRatio;
+	float	mNearClip;		
+	float	mFarClip;
 
-	Matrix44f			mProjectionMatrix, mInverseProjectionMatrix;
-	Matrix44f			mModelViewMatrix;
+	mutable Vec3f		mU;	// Right vector
+	mutable Vec3f		mV;	// Readjust up-vector
+	mutable Vec3f		mW;	// Negative view direction
+
+	mutable Matrix44f	mProjectionMatrix, mInverseProjectionMatrix;
+	mutable bool		mProjectionCached;
+	mutable Matrix44f	mModelViewMatrix;
+	mutable bool		mModelViewCached;
 	mutable Matrix44f	mInverseModelViewMatrix;
 	mutable bool		mInverseModelViewCached;
 	
-	float		mFrustumLeft, mFrustumRight, mFrustumTop, mFrustumBottom;
+	mutable float		mFrustumLeft, mFrustumRight, mFrustumTop, mFrustumBottom;
 
-	virtual void	calcFrustum() = 0;
-	virtual void	calcModelView();
-			void	calcInverseModelView() const;
-	virtual void	calcProjection() = 0;
+	virtual void	calcModelView() const;
+	virtual void	calcInverseModelView() const;
+	virtual void	calcProjection() const = 0;
 };
 
 class CameraPersp : public Camera {
@@ -129,13 +131,12 @@ class CameraPersp : public Camera {
 	
 	void setPerspective( float horizFovDegrees, float aspectRatio, float nearPlane, float farPlane );
 	
-	virtual bool		isPersp() const { return true; }
+	virtual bool	isPersp() const { return true; }
 
 	CameraPersp	getFrameSphere( const class Sphere &worldSpaceSphere, int maxIterations = 20 ) const;
 
  protected:
-	virtual void		calcFrustum();
-	virtual void		calcProjection();
+	virtual void	calcProjection() const ;
 };
 
 class CameraOrtho : public Camera {
@@ -145,53 +146,61 @@ class CameraOrtho : public Camera {
 
 	void setOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane );
 
-	virtual bool isPersp() const { return false; }
+	virtual bool	isPersp() const { return false; }
 	
  protected:
-	virtual void		calcFrustum();
-	virtual void		calcProjection();
+	virtual void	calcProjection() const;
 };
 
 class CameraStereo : public CameraPersp {
  public:
 	CameraStereo() 
-		: mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(true), mIsLeft(true) { calcModelView(); calcProjection(); }
+		: mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(true), mIsLeft(true) {}
 	CameraStereo( int pixelWidth, int pixelHeight, float fov )
 		: CameraPersp( pixelWidth, pixelHeight, fov ), 
-		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(true), mIsLeft(true) { calcModelView(); calcProjection(); } // constructs screen-aligned camera
+		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(true), mIsLeft(true) {} // constructs screen-aligned camera
 	CameraStereo( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane )
 		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), 
-		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(true), mIsLeft(true) { calcModelView(); calcProjection(); } // constructs screen-aligned camera
+		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(true), mIsLeft(true) {} // constructs screen-aligned camera
 
-	float				getFocalLength() const { return mFocalLength; }
-	void				setFocalLength( float distance ) { mFocalLength = distance; calcProjection(); }
+	float			getFocalLength() const { return mFocalLength; }
+	void			setFocalLength( float distance ) { mFocalLength = distance; mProjectionCached = false; }
 
-	float				getEyeSeparation() const { return mEyeSeparation; }
-	void				setEyeSeparation( float distance ) { mEyeSeparation = distance; calcModelView(); calcProjection(); }
+	float			getEyeSeparation() const { return mEyeSeparation; }
+	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; mModelViewCached = false; mProjectionCached = false; }
 
-	void				enableStereoLeft() { mIsStereo = true; mIsLeft = true; calcModelView(); calcProjection(); }
-	bool				isStereoLeftEnabled() const { return mIsStereo && mIsLeft; }
+	void			enableStereoLeft() { mIsStereo = true; mIsLeft = true; }
+	bool			isStereoLeftEnabled() const { return mIsStereo && mIsLeft; }
 
-	void				enableStereoRight() { mIsStereo = true; mIsLeft = false; calcModelView(); calcProjection(); }
-	bool				isStereoRightEnabled() const { return mIsStereo && !mIsLeft; }
+	void			enableStereoRight() { mIsStereo = true; mIsLeft = false; }
+	bool			isStereoRightEnabled() const { return mIsStereo && !mIsLeft; }
 
-	void				disableStereo() { mIsStereo = false; calcModelView(); calcProjection(); }
+	void			disableStereo() { mIsStereo = false; }
 
-	Vec3f				getShiftedEyePoint() const;
+	Vec3f			getShiftedEyePoint() const;
 
-	virtual void		getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
-	virtual void		getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+	virtual void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+	virtual void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+	
+	virtual const Matrix44f&	getProjectionMatrix() const;
+	virtual const Matrix44f&	getModelViewMatrix() const;
+	virtual const Matrix44f&	getInverseModelViewMatrix() const;
 
  protected:
-	virtual void		calcFrustum();
-	virtual void		calcModelView();
-	virtual void		calcProjection();
-private:
-	bool				mIsStereo;
-	bool				mIsLeft;
+	mutable Matrix44f	mProjectionMatrixLeft, mInverseProjectionMatrixLeft;
+	mutable Matrix44f	mProjectionMatrixRight, mInverseProjectionMatrixRight;
+	mutable Matrix44f	mModelViewMatrixLeft, mInverseModelViewMatrixLeft;
+	mutable Matrix44f	mModelViewMatrixRight, mInverseModelViewMatrixRight;
 
-	float				mFocalLength;
-	float				mEyeSeparation;
+	virtual void	calcModelView() const;
+	virtual void	calcInverseModelView() const;
+	virtual void	calcProjection() const;
+private:
+	bool			mIsStereo;
+	bool			mIsLeft;
+
+	float			mFocalLength;
+	float			mEyeSeparation;
 };
 
 } // namespace cinder
