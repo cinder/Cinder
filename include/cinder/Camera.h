@@ -65,8 +65,8 @@ class Camera
 	void	setNearClip( float aNearClip ) { mNearClip = aNearClip; calcProjection(); }
 	float	getFarClip() const { return mFarClip; }
 	void	setFarClip( float aFarClip ) { mFarClip = aFarClip; calcProjection(); }
-	void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
-	void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+	virtual void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+	virtual void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
 
 	//! Returns the coordinates of the camera's frustum, suitable for passing to \c glFrustum
 	void	getFrustum( float *left, float *top, float *right, float *bottom, float *near, float *far ) const;
@@ -133,6 +133,41 @@ class CameraPersp : public Camera {
 
  protected:
 	virtual void		calcProjection();
+};
+
+class CameraPerspAsym :
+	public CameraPersp
+{
+public:
+	CameraPerspAsym() : CameraPersp(), mLensShiftX(0.0f), mLensShiftY(0.0f) {}
+	CameraPerspAsym( int pixelWidth, int pixelHeight, float fov ) 
+		: CameraPersp( pixelWidth, pixelHeight, fov ), mLensShiftX(0.0f), mLensShiftY(0.0f) {}
+	CameraPerspAsym( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane ) 
+		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), mLensShiftX(0.0f), mLensShiftY(0.0f) {}
+
+	virtual ~CameraPerspAsym() {}
+
+	void				getLensShift( float *shiftX, float *shiftY ) const { *shiftX = mLensShiftX; *shiftY = mLensShiftY; }
+	Vec2f				getLensShift() const { return Vec2f( mLensShiftX, mLensShiftY ); }
+
+	void				setLensShift( float shiftX, float shiftY );
+	void				setLensShift( const Vec2f shift ) { setLensShift( shift.x, shift.y ); }
+	
+	float				getLensShiftX() const { return mLensShiftX; }
+	void				setLensShiftX( float shiftX ) { setLensShift( shiftX, mLensShiftY ); }
+	
+	float				getLensShiftY() const { return mLensShiftY; }
+	void				setLensShiftY( float shiftY ) { setLensShift( mLensShiftX, shiftY ); }
+
+	virtual bool		isPersp() const { return true; }
+	
+	virtual void		getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+	virtual void		getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+protected:
+	virtual void		calcProjection();
+protected:
+	float	mLensShiftX;
+	float	mLensShiftY;
 };
 
 class CameraOrtho : public Camera {

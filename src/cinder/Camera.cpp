@@ -300,6 +300,107 @@ CameraPersp	CameraPersp::getFrameSphere( const Sphere &worldSpaceSphere, int max
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
+// CameraPerspAsym
+
+
+void CameraPerspAsym::setLensShift(float shiftX, float shiftY)
+{
+	mLensShiftX = shiftX;
+	mLensShiftY = shiftY;
+
+	calcProjection();
+}
+
+void CameraPerspAsym::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
+{
+	Vec3f viewDirection( mViewDirection );
+	viewDirection.normalize();
+
+	*topLeft		= mEyePoint + (mNearClip * viewDirection) + (mFrustumTop * mV) + (mFrustumLeft * mU);
+	*topRight		= mEyePoint + (mNearClip * viewDirection) + (mFrustumTop * mV) + (mFrustumRight * mU);
+	*bottomLeft		= mEyePoint + (mNearClip * viewDirection) + (mFrustumBottom * mV) + (mFrustumLeft * mU);
+	*bottomRight	= mEyePoint + (mNearClip * viewDirection) + (mFrustumBottom * mV) + (mFrustumRight * mU);
+}
+
+void CameraPerspAsym::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
+{
+	Vec3f viewDirection( mViewDirection );
+	viewDirection.normalize();
+
+	float frustumTop	=  mFarClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
+	float frustumBottom	= -frustumTop;
+	float frustumRight	=  frustumTop * mAspectRatio;
+	float frustumLeft	= -frustumRight;
+
+	// perform lens shift
+	frustumTop = ci::lerp<float, float>(0.0f, 2.0f * frustumTop, 0.5f + 0.5f * mLensShiftY);
+	frustumBottom = ci::lerp<float, float>(2.0f * frustumBottom, 0.0f, 0.5f + 0.5f * mLensShiftY);
+	frustumRight = ci::lerp<float, float>(2.0f * frustumRight, 0.0f, 0.5f - 0.5f * mLensShiftX);
+	frustumLeft = ci::lerp<float, float>(0.0f, 2.0f * frustumLeft, 0.5f - 0.5f * mLensShiftX);
+
+	*topLeft		= mEyePoint + (mFarClip * viewDirection) + (frustumTop * mV) + (frustumLeft * mU);
+	*topRight		= mEyePoint + (mFarClip * viewDirection) + (frustumTop * mV) + (frustumRight * mU);
+	*bottomLeft		= mEyePoint + (mFarClip * viewDirection) + (frustumBottom * mV) + (frustumLeft * mU);
+	*bottomRight	= mEyePoint + (mFarClip * viewDirection) + (frustumBottom * mV) + (frustumRight * mU);
+}
+
+void CameraPerspAsym::calcProjection()
+{
+	mFrustumTop		=  mNearClip * math<float>::tan( (float)M_PI / 180.0f * mFov * 0.5f );
+	mFrustumBottom	= -mFrustumTop;
+	mFrustumRight	=  mFrustumTop * mAspectRatio;
+	mFrustumLeft	= -mFrustumRight;
+
+	// perform lens shift
+	mFrustumTop = ci::lerp<float, float>(0.0f, 2.0f * mFrustumTop, 0.5f + 0.5f * mLensShiftY);
+	mFrustumBottom = ci::lerp<float, float>(2.0f * mFrustumBottom, 0.0f, 0.5f + 0.5f * mLensShiftY);
+	mFrustumRight = ci::lerp<float, float>(2.0f * mFrustumRight, 0.0f, 0.5f - 0.5f * mLensShiftX);
+	mFrustumLeft = ci::lerp<float, float>(0.0f, 2.0f * mFrustumLeft, 0.5f - 0.5f * mLensShiftX);
+
+	float *m = mProjectionMatrix.m;
+	m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
+	m[ 4] =  0.0f;
+	m[ 8] =  ( mFrustumRight + mFrustumLeft ) / ( mFrustumRight - mFrustumLeft );
+	m[12] =  0.0f;
+
+	m[ 1] =  0.0f;
+	m[ 5] =  2.0f * mNearClip / ( mFrustumTop - mFrustumBottom );
+	m[ 9] =  ( mFrustumTop + mFrustumBottom ) / ( mFrustumTop - mFrustumBottom );
+	m[13] =  0.0f;
+
+	m[ 2] =  0.0f;
+	m[ 6] =  0.0f;
+	m[10] = -( mFarClip + mNearClip ) / ( mFarClip - mNearClip );
+	m[14] = -2.0f * mFarClip * mNearClip / ( mFarClip - mNearClip );
+
+	m[ 3] =  0.0f;
+	m[ 7] =  0.0f;
+	m[11] = -1.0f;
+	m[15] =  0.0f;
+
+	m = mInverseProjectionMatrix.m;
+	m[ 0] =  ( mFrustumRight - mFrustumLeft ) / ( 2.0f * mNearClip );
+	m[ 4] =  0.0f;
+	m[ 8] =  0.0f;
+	m[12] =  ( mFrustumRight + mFrustumLeft ) / ( 2.0f * mNearClip );
+
+	m[ 1] =  0.0f;
+	m[ 5] =  ( mFrustumTop - mFrustumBottom ) / ( 2.0f * mNearClip );
+	m[ 9] =  0.0f;
+	m[13] =  ( mFrustumTop + mFrustumBottom ) / ( 2.0f * mNearClip );
+
+	m[ 2] =  0.0f;
+	m[ 6] =  0.0f;
+	m[10] =  0.0f;
+	m[14] = -1.0f;
+
+	m[ 3] =  0.0f;
+	m[ 7] =  0.0f;
+	m[11] = -( mFarClip - mNearClip ) / ( 2.0f * mFarClip*mNearClip );
+	m[15] =  ( mFarClip + mNearClip ) / ( 2.0f * mFarClip*mNearClip );
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
 // CameraOrtho
 CameraOrtho::CameraOrtho()
 	: Camera()
