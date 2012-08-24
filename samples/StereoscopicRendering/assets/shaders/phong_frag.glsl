@@ -4,6 +4,7 @@ uniform sampler2D	tex0;
 
 varying vec3 v;
 varying vec3 N;
+varying vec3 r;
 
 void main()
 {	
@@ -28,6 +29,11 @@ void main()
 	Ispec *= pow(max(dot(R,E),0.0), shinyness);
 	Ispec = clamp(Ispec, 0.0, 1.0); 
 
+	// reflection term (fake ground reflection)
+	float m = 2.0 * sqrt(r.x * r.x + r.y * r.y + (r.z + 1.0) * (r.z + 1.0) );
+	float f = pow(0.5 - r.y / m, 5.0);
+	vec4 Irefl = vec4(f, f, f, 1.0) * specular;
+
 	// final color 
-	gl_FragColor = Iamb + Idiff + Ispec;	
+	gl_FragColor = Iamb + Irefl + Idiff + Ispec;	
 }

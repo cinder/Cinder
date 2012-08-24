@@ -76,10 +76,9 @@ private:
 	gl::GlslProg	mShader;
 
 	gl::VboMesh		mMesh;
-	gl::VboMesh		mBall;
+	gl::VboMesh		mNote;
 
 	void render();
-	void createBall();
 };
 
 void StereoscopicRenderingApp::prepareSettings( Settings *settings )
@@ -98,14 +97,11 @@ void StereoscopicRenderingApp::setup()
 	mIsStereo = true;
 
 	// setup the camera
-	mCamera.setEyePoint( Vec3f(-5, 1, -11) );
-	mCamera.setCenterOfInterestPoint( Vec3f::zero() );
+	mCamera.setEyePoint( Vec3f(-4.5f, 3.0f, -8.0f) );
+	mCamera.setCenterOfInterestPoint( Vec3f(0.4f, 1.6f, -0.1f) );
 	mCamera.setFov( 60.0f );
 
 	mMayaCam.setCurrentCam( mCamera );
-
-	// create a mesh for the balls
-	createBall();
 
 	try {
 		// load shader(s)
@@ -113,9 +109,12 @@ void StereoscopicRenderingApp::setup()
 
 		// load model(s)
 		TriMesh		mesh;
-		mesh.read( loadAsset("models/trombone.msh") );
 
+		mesh.read( loadAsset("models/trombone.msh") );
 		mMesh = gl::VboMesh( mesh );
+		
+		mesh.read( loadAsset("models/note.msh") );
+		mNote = gl::VboMesh( mesh ); 
 	}
 	catch( const std::exception &e ) {
 		// something went wrong, display error and quit
@@ -128,7 +127,7 @@ void StereoscopicRenderingApp::update()
 {
 	// auto-focus by calculating distance from object
 	float d = mCamera.getEyePoint().length();
-	float f = math<float>::min( 5.0f, d * 0.25f );
+	float f = math<float>::min( 5.0f, d * 0.4f );
 
 	// The setFocus() method will automatically calculate a fitting value eye separation.
 	// If you want to specify your own values, use setFocalLength() and setEyeSeparation().
@@ -137,8 +136,8 @@ void StereoscopicRenderingApp::update()
 
 void StereoscopicRenderingApp::draw()
 {
-	// white background
-	gl::clear( Color::white() ); 
+	// gray background
+	gl::clear( Color(0.8f, 0.8f, 0.8f) ); 
 
 	// enable 3D rendering
 	gl::enableDepthRead();
@@ -148,14 +147,14 @@ void StereoscopicRenderingApp::draw()
 	// stereoscopic rendering
 	if( mIsStereo ) {
 		// find dimensions of each viewport (side by side)
-		int w = getWindowWidth() / 2;
+		int w = getWindowWidth();
 		int h = getWindowHeight();
 
 		// store current viewport
 		glPushAttrib( GL_VIEWPORT_BIT );
 
 		// draw to left half of window only
-		gl::setViewport( Area(0, 0, w, h) );
+		gl::setViewport( Area(0, 0, w / 2, h) );
 
 		// activate left camera
 		mCamera.enableStereoLeft();
@@ -165,7 +164,7 @@ void StereoscopicRenderingApp::draw()
 		render();
 
 		// draw to right half of window only
-		gl::setViewport( Area(w, 0, w * 2, h) );
+		gl::setViewport( Area(w / 2, 0, w, h) );
 
 		// activate right camera
 		mCamera.enableStereoRight();
@@ -239,7 +238,9 @@ void StereoscopicRenderingApp::resize( ResizeEvent event )
 
 void StereoscopicRenderingApp::render()
 {	
-	if( mShader && mMesh && mBall ) {
+	float seconds = (float) getElapsedSeconds();
+
+	if( mShader && mMesh && mNote ) {
 		// enable phong shading
 		mShader.bind();	
 		
@@ -247,9 +248,10 @@ void StereoscopicRenderingApp::render()
 		gl::pushModelView();
 		{
 			gl::color( Color(0.7f, 0.6f, 0.0f) );
-			gl::rotate( Vec3f::yAxis() * 10.0f * (float) getElapsedSeconds() );
+			gl::rotate( Vec3f::yAxis() * 10.0f * seconds );
 			gl::draw( mMesh );
 
+			// reflection
 			gl::scale( 1.0f, -1.0f, 1.0f );
 			gl::draw( mMesh );
 		}
@@ -260,17 +262,27 @@ void StereoscopicRenderingApp::render()
 		for(int i=-100; i<=100; ++i) {
 			rnd.seed(i);
 
-			float t = rnd.nextFloat() * 200.0f + 2.0f * (float) getElapsedSeconds();
-			float z = fmodf( 10.0f * t, 200.0f ) - 100.0f;		
+			float t = rnd.nextFloat() * 200.0f + 2.0f * seconds;
+			float r = rnd.nextFloat() * 360.0f + 60.0f * seconds;
+			float z = fmodf( 5.0f * t, 200.0f ) - 100.0f;		
 
 			gl::pushModelView();
 			{
-				gl::color( Color( rnd.nextFloat(), rnd.nextFloat(), rnd.nextFloat() ) );
-				gl::translate( i * 0.5f, 0.15f + 1.0f * math<float>::abs( sinf(3.0f * t) ), -z );
-				gl::draw( mBall );
+				gl::color( Color( CM_HSV, rnd.nextFloat(), 1.0f, 1.0f ) );
 
-				gl::translate( 0.0f, 2.0f * (-0.15f - 1.0f * math<float>::abs( sinf(3.0f * t) )), 0.0f );
-				gl::draw( mBall );
+				gl::pushModelView();
+				gl::translate( i * 0.5f, 0.15f + 1.0f * math<float>::abs( sinf(3.0f * t) ), -z );
+				gl::rotate( Vec3f::yAxis() * r );
+				gl::draw( mNote );
+				gl::popModelView();
+				
+				// reflection
+				gl::pushModelView();
+				gl::scale( 1.0f, -1.0f, 1.0f );
+				gl::translate( i * 0.5f, 0.15f + 1.0f * math<float>::abs( sinf(3.0f * t) ), -z );
+				gl::rotate( Vec3f::yAxis() * r );
+				gl::draw( mNote );
+				gl::popModelView();
 			}
 			gl::popModelView();
 		}
@@ -290,85 +302,6 @@ void StereoscopicRenderingApp::render()
 		gl::drawLine( Vec3f((float) i, 0, -100), Vec3f((float) i, 0, 100) );
 		gl::drawLine( Vec3f(-100, 0, (float) i), Vec3f(100, 0, (float) i) );
 	}
-}
-
-void StereoscopicRenderingApp::createBall()
-{
-	const double TWO_PI = 2.0 * M_PI;
-	const double HALF_PI = 0.5 * M_PI;
-
-	const int slices = 24;
-	const int rings = 12;
-	const float radius = 0.15f;
-
-	// create data buffers
-	vector<Vec3f>		normals;
-	vector<Vec3f>		positions;
-	vector<Vec2f>		texCoords;
-	vector<uint32_t>	indices;
-
-	//	
-	int x, y;
-	for(x=0;x<=slices;++x) {
-		double theta = static_cast<double>(x) / slices * TWO_PI;
-
-		for(y=0;y<=rings;++y) {
-			double phi = static_cast<double>(y) / rings * M_PI;
-
-			normals.push_back( Vec3f(
-				static_cast<float>( sin(phi) * cos(theta) ),
-				static_cast<float>( cos(phi) ),
-				static_cast<float>( sin(phi) * sin(theta) ) ) );
-
-			positions.push_back( normals.back() * radius );
-
-			texCoords.push_back( Vec2f(
-				1.0f - static_cast<float>(x) / slices,
-				static_cast<float>(y) / rings ) );
-		}
-	}
-
-	//
-	int r = rings+1;
-	bool forward = false;
-	for(x=0;x<slices;++x) {
-        if(forward) {
-			// create jumps in the triangle strip by introducing degenerate polygons
-			indices.push_back(  x      * r + 0 );
-			indices.push_back(  x      * r + 0 );
-			// 
-            for(y=0;y<rings;++y) {
-                indices.push_back(  x      * r + y );
-                indices.push_back( (x + 1) * r + y );
-            }
-        }
-        else {
-			// create jumps in the triangle strip by introducing degenerate polygons
-			indices.push_back( (x + 1) * r + rings );
-			indices.push_back( (x + 1) * r + rings );
-			// 
-            for(y=rings;y>=0;--y) {
-                indices.push_back( (x + 1) * r + y );
-                indices.push_back(  x      * r + y );
-            }
-        }
-
-        forward = !forward;
-    }
-
-	// create the curved mesh
-	gl::VboMesh::Layout layout;	
-	layout.setStaticIndices();
-	layout.setStaticPositions();
-	layout.setStaticTexCoords2d();
-	layout.setStaticNormals();
-
-	mBall = gl::VboMesh(positions.size(), indices.size(), layout, GL_TRIANGLE_STRIP);
-
-	mBall.bufferNormals( normals );
-	mBall.bufferTexCoords2d( 0, texCoords );
-	mBall.bufferPositions( positions );
-	mBall.bufferIndices( indices );
 }
 
 CINDER_APP_BASIC( StereoscopicRenderingApp, RendererGl )
