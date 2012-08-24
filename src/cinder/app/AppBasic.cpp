@@ -92,7 +92,16 @@ void AppBasic::launch( const char *title, int argc, char * const argv[] )
 	}
 
 #if defined( CINDER_COCOA )
-	mImpl = [[::AppImplCocoaBasic alloc] init:this];
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    NSApplication * application = [NSApplication sharedApplication];
+
+    mImpl = [[AppImplCocoaBasic alloc] init:this];
+
+    [application setDelegate:mImpl];
+    [application run];
+
+    [pool drain];
+
 #else
 	mImpl = new AppImplMswBasic( this );	
 	mImpl->run();
