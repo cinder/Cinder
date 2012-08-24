@@ -97,8 +97,8 @@ void StereoscopicRenderingApp::setup()
 	mIsStereo = true;
 
 	// setup the camera
-	mCamera.setEyePoint( Vec3f(-4.5f, 3.0f, -8.0f) );
-	mCamera.setCenterOfInterestPoint( Vec3f(0.4f, 1.6f, -0.1f) );
+	mCamera.setEyePoint( Vec3f(0.2f, 1.3f, -11.5f) );
+	mCamera.setCenterOfInterestPoint( Vec3f(0.5f, 1.5f, -0.1f) );
 	mCamera.setFov( 60.0f );
 
 	mMayaCam.setCurrentCam( mCamera );
@@ -127,7 +127,7 @@ void StereoscopicRenderingApp::update()
 {
 	// auto-focus by calculating distance from object
 	float d = mCamera.getEyePoint().length();
-	float f = math<float>::min( 5.0f, d * 0.4f );
+	float f = math<float>::min( 5.0f, d * 0.5f );
 
 	// The setFocus() method will automatically calculate a fitting value eye separation.
 	// If you want to specify your own values, use setFocalLength() and setEyeSeparation().
@@ -290,18 +290,18 @@ void StereoscopicRenderingApp::render()
 		mShader.unbind();
 	}
 
-	// draw floor
-	gl::enableAlphaBlending();
-	gl::color( ColorA(1,1,1,0.75f) );
-	gl::drawCube( Vec3f(0.0f, -0.5f, 0.0f), Vec3f(200.0f, 1.0f, 200.0f) );
-	gl::disableAlphaBlending();
-
 	// draw grid
 	gl::color( Color(0.8f, 0.8f, 0.8f) );
 	for(int i=-100; i<=100; ++i) {
 		gl::drawLine( Vec3f((float) i, 0, -100), Vec3f((float) i, 0, 100) );
 		gl::drawLine( Vec3f(-100, 0, (float) i), Vec3f(100, 0, (float) i) );
 	}
+
+	// draw floor
+	gl::enableAlphaBlending();
+	gl::color( ColorA(1,1,1,0.75f) );
+	gl::drawCube( Vec3f(0.0f, -0.5f, 0.0f), Vec3f(200.0f, 1.0f, 200.0f) );
+	gl::disableAlphaBlending();
 }
 
 CINDER_APP_BASIC( StereoscopicRenderingApp, RendererGl )
