@@ -34,7 +34,7 @@
 @class CinderWindow;
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
-@interface AppImplCocoaBasic : NSApplication<NSWindowDelegate,CinderViewMultiTouchDelegate> {
+@interface AppImplCocoaBasic : NSObject<NSApplicationDelegate,NSWindowDelegate,CinderViewMultiTouchDelegate> {
 #else
 @interface AppImplCocoaBasic : NSApplication {
 #endif

@@ -44,10 +44,8 @@
 
 - (id)init:(cinder::app::AppBasic*)aApp 
 {	
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-	
-	[NSApplication sharedApplication];
-	
+	self = [super init];
+
 	[NSApp setMainMenu:[[NSMenu alloc] init]];
 	
 	const std::string& applicationName = aApp->getSettings().getTitle();
@@ -60,12 +58,8 @@
 	cinderView = nil;
 	win = nil;
 	mNeedsUpdate = YES;
-
-    [NSApp run];
-
-	[pool release];
 	
-    return 0;
+    return self;
 }
 
 - (void)dealloc
