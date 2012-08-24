@@ -670,7 +670,7 @@ public:
 	}
 
 	// transform a vector by the quaternion
-	const Vec3<T> operator*( const Vec3<T> &vec )
+	const Vec3<T> operator*( const Vec3<T> &vec ) const
 	{
 		T vMult = T( 2 ) * ( v.x * vec.x + v.y * vec.y + v.z * vec.z );
 		T crossMult = T( 2 ) * w;
