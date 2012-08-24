@@ -129,13 +129,27 @@ class CameraPersp : public Camera {
 	CameraPersp( int pixelWidth, int pixelHeight, float fov ); // constructs screen-aligned camera
 	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane ); // constructs screen-aligned camera
 	
-	void setPerspective( float horizFovDegrees, float aspectRatio, float nearPlane, float farPlane );
+	void	setPerspective( float horizFovDegrees, float aspectRatio, float nearPlane, float farPlane );
+	
+	void	getLensShift( float *horizontal, float *vertical ) const { *horizontal = mLensShift.x; *vertical = mLensShift.y; }
+	Vec2f	getLensShift() const { return Vec2f( mLensShift.x, mLensShift.y ); }
+
+	void	setLensShift( float horizontal, float vertical );
+	void	setLensShift( const Vec2f shift ) { setLensShift( shift.x, shift.y ); }
+
+	float	getLensShiftHorizontal() const { return mLensShift.x; }
+	void	setLensShiftHorizontal( float horizontal ) { setLensShift( horizontal, mLensShift.y ); }
+
+	float	getLensShiftVertical() const { return mLensShift.y; }
+	void	setLensShiftVertical( float vertical ) { setLensShift( mLensShift.x, vertical ); }
 	
 	virtual bool	isPersp() const { return true; }
 
 	CameraPersp	getFrameSphere( const class Sphere &worldSpaceSphere, int maxIterations = 20 ) const;
 
  protected:
+	Vec2f	mLensShift;
+
 	virtual void	calcProjection() const ;
 };
 
@@ -168,6 +182,9 @@ class CameraStereo : public CameraPersp {
 
 	float			getEyeSeparation() const { return mEyeSeparation; }
 	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; mModelViewCached = false; mProjectionCached = false; }
+
+	//! Attempts to setup an ideal focal length and eye distance.
+	void			setFocus( float distance ) { mFocalLength = distance; mEyeSeparation = mFocalLength / 30.0f; mModelViewCached = false; mProjectionCached = false; } 
 
 	void			enableStereoLeft() { mIsStereo = true; mIsLeft = true; }
 	bool			isStereoLeftEnabled() const { return mIsStereo && mIsLeft; }

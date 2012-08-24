@@ -29,7 +29,6 @@ void Camera::setEyePoint( const Vec3f &aEyePoint )
 {
 	mEyePoint = aEyePoint;
 	mModelViewCached = false;
-	mInverseModelViewCached = false;
 }
 
 void Camera::setCenterOfInterestPoint( const Vec3f &centerOfInterestPoint )
@@ -184,7 +183,7 @@ void Camera::calcInverseModelView() const
 // CameraPersp
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
-	: Camera()
+	: Camera(), mLensShift( Vec2f::zero() )
 {
 	float eyeX 		= pixelWidth / 2.0f;
 	float eyeY 		= pixelHeight / 2.0f;
@@ -200,7 +199,7 @@ CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
 }
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees, float nearPlane, float farPlane )
-	: Camera()
+	: Camera(), mLensShift( Vec2f::zero() )
 {
 	float halfFov, theTan, aspect;
 
@@ -217,7 +216,7 @@ CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees, flo
 
 // Creates a default camera resembling Maya Persp
 CameraPersp::CameraPersp()
-	: Camera()
+	: Camera(), mLensShift( Vec2f::zero() )
 {
 	lookAt( Vec3f( 28.0f, 21.0f, 28.0f ), Vec3f::zero(), Vec3f::yAxis() );
 	setCenterOfInterest( 44.822f );
@@ -240,6 +239,12 @@ void CameraPersp::calcProjection() const
 	mFrustumBottom	= -mFrustumTop;
 	mFrustumRight	=  mFrustumTop * mAspectRatio;
 	mFrustumLeft	= -mFrustumRight;
+
+	// perform lens shift
+	mFrustumTop = ci::lerp<float, float>(0.0f, 2.0f * mFrustumTop, 0.5f + 0.5f * mLensShift.y);
+	mFrustumBottom = ci::lerp<float, float>(2.0f * mFrustumBottom, 0.0f, 0.5f + 0.5f * mLensShift.y);
+	mFrustumRight = ci::lerp<float, float>(2.0f * mFrustumRight, 0.0f, 0.5f - 0.5f * mLensShift.x);
+	mFrustumLeft = ci::lerp<float, float>(0.0f, 2.0f * mFrustumLeft, 0.5f - 0.5f * mLensShift.x);
 
 	float *m = mProjectionMatrix.m;
 	m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
@@ -284,6 +289,14 @@ void CameraPersp::calcProjection() const
 	m[15] =  ( mFarClip + mNearClip ) / ( 2.0f * mFarClip*mNearClip );
 
 	mProjectionCached = true;
+}
+
+void CameraPersp::setLensShift(float horizontal, float vertical)
+{
+	mLensShift.x = horizontal;
+	mLensShift.y = vertical;
+
+	mProjectionCached = false;
 }
 
 CameraPersp	CameraPersp::getFrameSphere( const Sphere &worldSpaceSphere, int maxIterations ) const
@@ -415,8 +428,10 @@ void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3
 	Vec3f eye( getShiftedEyePoint() );
 
 	float shift = 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
-	float left = mFrustumLeft + (mIsStereo ? (mIsLeft ? shift : -shift) : 0.0f);
-	float right = mFrustumRight + (mIsStereo ? (mIsLeft ? shift : -shift) : 0.0f);
+	shift *= (mIsStereo ? (mIsLeft ? 1.0f : -1.0f) : 0.0f);
+
+	float left = mFrustumLeft + shift;
+	float right = mFrustumRight + shift;
 
 	*topLeft		= eye + (mNearClip * viewDirection) + (mFrustumTop * mV) + (left * mU);
 	*topRight		= eye + (mNearClip * viewDirection) + (mFrustumTop * mV) + (right * mU);
@@ -437,8 +452,10 @@ void CameraStereo::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f
 	Vec3f eye( getShiftedEyePoint() );
 
 	float shift = 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
-	float left = mFrustumLeft + (mIsStereo ? (mIsLeft ? shift : -shift) : 0.0f);
-	float right = mFrustumRight + (mIsStereo ? (mIsLeft ? shift : -shift) : 0.0f);
+	shift *= (mIsStereo ? (mIsLeft ? 1.0f : -1.0f) : 0.0f);
+
+	float left = mFrustumLeft + shift;
+	float right = mFrustumRight + shift;
 
 	*topLeft		= eye + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * left * mU);
 	*topRight		= eye + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * right * mU);
@@ -538,6 +555,8 @@ void CameraStereo::calcProjection() const
 	mFrustumBottom	= -mFrustumTop;
 	mFrustumRight	=  mFrustumTop * mAspectRatio;
 	mFrustumLeft	= -mFrustumTop * mAspectRatio;
+
+	// note: lens shift settings are ignored
 
 	// calculate mono matrices first
 	float *m = mProjectionMatrix.m;
