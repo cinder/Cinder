@@ -241,10 +241,15 @@ void CameraPersp::calcProjection() const
 	mFrustumLeft	= -mFrustumRight;
 
 	// perform lens shift
-	mFrustumTop = ci::lerp<float, float>(0.0f, 2.0f * mFrustumTop, 0.5f + 0.5f * mLensShift.y);
-	mFrustumBottom = ci::lerp<float, float>(2.0f * mFrustumBottom, 0.0f, 0.5f + 0.5f * mLensShift.y);
-	mFrustumRight = ci::lerp<float, float>(2.0f * mFrustumRight, 0.0f, 0.5f - 0.5f * mLensShift.x);
-	mFrustumLeft = ci::lerp<float, float>(0.0f, 2.0f * mFrustumLeft, 0.5f - 0.5f * mLensShift.x);
+	if( mLensShift.y != 0.0f ) {
+		mFrustumTop = ci::lerp<float, float>(0.0f, 2.0f * mFrustumTop, 0.5f + 0.5f * mLensShift.y);
+		mFrustumBottom = ci::lerp<float, float>(2.0f * mFrustumBottom, 0.0f, 0.5f + 0.5f * mLensShift.y);
+	}
+
+	if( mLensShift.x != 0.0f ) {
+		mFrustumRight = ci::lerp<float, float>(2.0f * mFrustumRight, 0.0f, 0.5f - 0.5f * mLensShift.x);
+		mFrustumLeft = ci::lerp<float, float>(0.0f, 2.0f * mFrustumLeft, 0.5f - 0.5f * mLensShift.x);
+	}
 
 	float *m = mProjectionMatrix.m;
 	m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
@@ -406,7 +411,7 @@ void CameraOrtho::calcProjection() const
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraStereo
 
-Vec3f CameraStereo::getShiftedEyePoint() const
+Vec3f CameraStereo::getEyePointShifted() const
 {	
 	if(!mIsStereo)
 		return mEyePoint;
@@ -425,7 +430,7 @@ void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3
 	Vec3f viewDirection( mViewDirection );
 	viewDirection.normalize();
 
-	Vec3f eye( getShiftedEyePoint() );
+	Vec3f eye( getEyePointShifted() );
 
 	float shift = 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
 	shift *= (mIsStereo ? (mIsLeft ? 1.0f : -1.0f) : 0.0f);
@@ -449,7 +454,7 @@ void CameraStereo::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f
 	Vec3f viewDirection( mViewDirection );
 	viewDirection.normalize();
 
-	Vec3f eye( getShiftedEyePoint() );
+	Vec3f eye( getEyePointShifted() );
 
 	float shift = 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
 	shift *= (mIsStereo ? (mIsLeft ? 1.0f : -1.0f) : 0.0f);
@@ -556,7 +561,7 @@ void CameraStereo::calcProjection() const
 	mFrustumRight	=  mFrustumTop * mAspectRatio;
 	mFrustumLeft	= -mFrustumTop * mAspectRatio;
 
-	// note: lens shift settings are ignored
+	// note: lens shift settings are ignored on purpose
 
 	// calculate mono matrices first
 	float *m = mProjectionMatrix.m;

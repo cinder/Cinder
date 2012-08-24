@@ -194,7 +194,7 @@ class CameraStereo : public CameraPersp {
 
 	void			disableStereo() { mIsStereo = false; }
 
-	Vec3f			getShiftedEyePoint() const;
+	Vec3f			getEyePointShifted() const;
 
 	virtual void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
 	virtual void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
