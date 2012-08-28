@@ -257,7 +257,7 @@ void StereoscopicRenderingApp::render()
 		}
 		gl::popModelView();	
 
-		// draw animated balls
+		// draw animated notes
 		Rand rnd;
 		for(int i=-100; i<=100; ++i) {
 			rnd.seed(i);
