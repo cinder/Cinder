@@ -27,6 +27,14 @@
 #include "cinder/Quaternion.h"
 #include "cinder/Ray.h"
 
+// needed by the CameraStereo class for auto-focus functionality
+#include "cinder/gl/gl.h"
+#include "cinder/gl/Fbo.h"
+
+// defined in gl.h, but causes a conflict with the clipping plane functions
+#undef near	
+#undef far
+
 namespace cinder {
 
 // By default the camera is looking down -Z
@@ -169,32 +177,41 @@ class CameraOrtho : public Camera {
 class CameraStereo : public CameraPersp {
  public:
 	CameraStereo() 
-		: mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(true), mIsLeft(true) {}
+		: mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(false), mIsLeft(true), 
+		mAutoFocusSpeed(0.05f), mAutoFocusDepth(1.2f) {}
 	CameraStereo( int pixelWidth, int pixelHeight, float fov )
 		: CameraPersp( pixelWidth, pixelHeight, fov ), 
-		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(true), mIsLeft(true) {} // constructs screen-aligned camera
+		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(false), mIsLeft(true), 
+		mAutoFocusSpeed(0.05f), mAutoFocusDepth(1.2f) {} // constructs screen-aligned camera
 	CameraStereo( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane )
 		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), 
-		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(true), mIsLeft(true) {} // constructs screen-aligned camera
+		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(false), mIsLeft(true), 
+		mAutoFocusSpeed(0.05f), mAutoFocusDepth(1.2f) {} // constructs screen-aligned camera
 
 	float			getFocalLength() const { return mFocalLength; }
 	void			setFocalLength( float distance ) { mFocalLength = distance; mProjectionCached = false; }
 
 	float			getEyeSeparation() const { return mEyeSeparation; }
 	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; mModelViewCached = false; mProjectionCached = false; }
-
-	//! Attempts to setup an ideal focal length and eye distance.
+	//! Returns the location of the currently enabled eye camera.
+	Vec3f			getEyePointShifted() const;
+	//! Attempts to set an ideal eye distance for the supplied focal length.
 	void			setFocus( float distance ) { mFocalLength = distance; mEyeSeparation = mFocalLength / 30.0f; mModelViewCached = false; mProjectionCached = false; } 
-
+	/** Attempts to set an ideal focal length and eye distance. Repeatedly call this function from your update() method.
+		If \a useDepthBuffer is TRUE, the depth buffer will be sampled and the focal length will be set to a value close 
+		to the minimum distance. May not work on all hardware, due to memory and driver limitations. 
+		If \a useDepthBuffer is set to FALSE, the distance from the camera to the center of interest is used 
+		to determine the focal length.
+	*/
+	void			autoFocus( bool useDepthBuffer=false );
+	//! Enables the left eye camera.
 	void			enableStereoLeft() { mIsStereo = true; mIsLeft = true; }
 	bool			isStereoLeftEnabled() const { return mIsStereo && mIsLeft; }
-
+	//! Enables the right eye camera.
 	void			enableStereoRight() { mIsStereo = true; mIsLeft = false; }
 	bool			isStereoRightEnabled() const { return mIsStereo && !mIsLeft; }
-
+	//! Disables stereoscopic rendering, converting the camera to a standard CameraPersp.
 	void			disableStereo() { mIsStereo = false; }
-
-	Vec3f			getEyePointShifted() const;
 
 	virtual void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
 	virtual void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
@@ -213,11 +230,24 @@ class CameraStereo : public CameraPersp {
 	virtual void	calcInverseModelView() const;
 	virtual void	calcProjection() const;
 private:
+	void			createBuffers( const Area &area );
+	void			destroyBuffers();
+public:
+	//! width and height of the auto focus sample 
+	static const int	AF_WIDTH = 50;
+	static const int	AF_HEIGHT = 50;
+private:
 	bool			mIsStereo;
 	bool			mIsLeft;
 
 	float			mFocalLength;
 	float			mEyeSeparation;
+
+	float					mAutoFocusSpeed;
+	float					mAutoFocusDepth;
+	gl::Fbo					mAutoFocusFboSmall;
+	gl::Fbo					mAutoFocusFboLarge;
+	std::vector<GLfloat>	mAutoFocusBuffer;        
 };
 
 } // namespace cinder
