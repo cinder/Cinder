@@ -178,15 +178,15 @@ class CameraStereo : public CameraPersp {
  public:
 	CameraStereo() 
 		: mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(false), mIsLeft(true), 
-		mAutoFocusSpeed(0.05f), mAutoFocusDepth(1.2f) {}
+		mAutoFocusSpeed(0.15f), mAutoFocusDepth(1.2f) {}
 	CameraStereo( int pixelWidth, int pixelHeight, float fov )
 		: CameraPersp( pixelWidth, pixelHeight, fov ), 
 		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(false), mIsLeft(true), 
-		mAutoFocusSpeed(0.05f), mAutoFocusDepth(1.2f) {} // constructs screen-aligned camera
+		mAutoFocusSpeed(0.15f), mAutoFocusDepth(1.2f) {} // constructs screen-aligned camera
 	CameraStereo( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane )
 		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), 
 		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(false), mIsLeft(true), 
-		mAutoFocusSpeed(0.05f), mAutoFocusDepth(1.2f) {} // constructs screen-aligned camera
+		mAutoFocusSpeed(0.15f), mAutoFocusDepth(1.2f) {} // constructs screen-aligned camera
 
 	float			getFocalLength() const { return mFocalLength; }
 	void			setFocalLength( float distance ) { mFocalLength = distance; mProjectionCached = false; }
@@ -243,8 +243,13 @@ private:
 	float			mFocalLength;
 	float			mEyeSeparation;
 
+	//! Determines how fast the auto focus function adjusts the focal length. Range is [0..1].
 	float					mAutoFocusSpeed;
+	/** Determines the depth effect. If greater than 1.0, some objects may come out of the screen.
+		If smaller than 1.0, most objects will appear to be at or inside the screen. 
+	*/
 	float					mAutoFocusDepth;
+
 	gl::Fbo					mAutoFocusFboSmall;
 	gl::Fbo					mAutoFocusFboLarge;
 	std::vector<GLfloat>	mAutoFocusBuffer;        

@@ -427,7 +427,7 @@ void CameraStereo::autoFocus(bool useDepthBuffer)
 
 	// determine sample area
 	Area area = gl::getViewport();
-	area.expand( -area.getWidth() / 4, -area.getHeight() / 8 );
+	area.expand( -area.getWidth() / 4, 0 );
 
 	// create or resize buffers
 	createBuffers( area );
