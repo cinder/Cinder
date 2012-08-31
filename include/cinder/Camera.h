@@ -126,6 +126,8 @@ class Camera
 	
 	mutable float		mFrustumLeft, mFrustumRight, mFrustumTop, mFrustumBottom;
 
+	inline void		calcMatrices() const;
+
 	virtual void	calcModelView() const;
 	virtual void	calcInverseModelView() const;
 	virtual void	calcProjection() const = 0;
@@ -234,8 +236,8 @@ private:
 	void			destroyBuffers();
 public:
 	//! width and height of the auto focus sample 
-	static const int	AF_WIDTH = 50;
-	static const int	AF_HEIGHT = 50;
+	static const int	AF_WIDTH = 64;
+	static const int	AF_HEIGHT = 64;
 private:
 	bool			mIsStereo;
 	bool			mIsLeft;
