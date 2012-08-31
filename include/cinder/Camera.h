@@ -179,33 +179,55 @@ class CameraOrtho : public Camera {
 class CameraStereo : public CameraPersp {
  public:
 	CameraStereo() 
-		: mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(false), mIsLeft(true), 
-		mAutoFocusSpeed(0.15f), mAutoFocusDepth(1.2f) {}
+		: mFocalLength(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true), 
+		mAutoFocusSpeed(1.0f), mAutoFocusDepth(1.0f) {}
 	CameraStereo( int pixelWidth, int pixelHeight, float fov )
 		: CameraPersp( pixelWidth, pixelHeight, fov ), 
-		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(false), mIsLeft(true), 
-		mAutoFocusSpeed(0.15f), mAutoFocusDepth(1.2f) {} // constructs screen-aligned camera
+		mFocalLength(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true), 
+		mAutoFocusSpeed(1.0f), mAutoFocusDepth(1.0f) {} // constructs screen-aligned camera
 	CameraStereo( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane )
 		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), 
-		mFocalLength(1.0f), mEyeSeparation(0.06f), mIsStereo(false), mIsLeft(true), 
-		mAutoFocusSpeed(0.15f), mAutoFocusDepth(1.2f) {} // constructs screen-aligned camera
+		mFocalLength(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true), 
+		mAutoFocusSpeed(1.0f), mAutoFocusDepth(1.0f) {} // constructs screen-aligned camera
 
+	//! Returns the current focal length, which is the distance at which there is no parallax.
 	float			getFocalLength() const { return mFocalLength; }
+	//! Sets the focal length of the camera, which is the distance at which there is no parallax.
 	void			setFocalLength( float distance ) { mFocalLength = distance; mProjectionCached = false; }
-
+	//! Returns the distance between the camera's for the left and right eyes.
 	float			getEyeSeparation() const { return mEyeSeparation; }
+	//! Sets the distance between the camera's for the left and right eyes. This affects the parallax effect. 
 	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; mModelViewCached = false; mProjectionCached = false; }
 	//! Returns the location of the currently enabled eye camera.
 	Vec3f			getEyePointShifted() const;
-	//! Attempts to set an ideal eye distance for the supplied focal length.
+
+	//! Attempts to set an ideal eye separation for the supplied focal length.
 	void			setFocus( float distance ) { mFocalLength = distance; mEyeSeparation = mFocalLength / 30.0f; mModelViewCached = false; mProjectionCached = false; } 
-	/** Attempts to set an ideal focal length and eye distance. Repeatedly call this function from your update() method.
+	/** Attempts to set an ideal focal length and eye separation. 
 		If \a useDepthBuffer is TRUE, the depth buffer will be sampled and the focal length will be set to a value close 
 		to the minimum distance. May not work on all hardware, due to memory and driver limitations. 
 		If \a useDepthBuffer is set to FALSE, the distance from the camera to the center of interest is used 
 		to determine the focal length.
+		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
 	*/
 	void			autoFocus( bool useDepthBuffer=false );
+
+	//! Returns the speed at which auto-focussing takes place.
+	float			getAutoFocusSpeed() const { return mAutoFocusSpeed; }
+	/** Sets the speed at which auto-focussing takes place. A value of 1.0 will immediately focus on the measured value.
+		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
+	*/
+	void			setAutoFocusSpeed( float factor ) { mAutoFocusSpeed = math<float>::clamp( factor, 0.01f, 1.0f); }
+
+	//! Returns the auto-focus depth. 
+	float			getAutoFocusDepth() const { return mAutoFocusDepth; }
+	/** Sets the auto-focus depth. A value of 1.0 will adjust the focal length in such a way that the nearest objects
+		are at the plane of the screen and cause no parallax. Lower values will cause objects to appear deeper into your 
+		screen (positive parallax). Values greater than 1.0 will cause objects to appear in front of your screen (negative parallax).
+		Avoid values much greater than 1.0 to reduce eye strain.
+	*/
+	void			setAutoFocusDepth( float factor ) { mAutoFocusDepth = math<float>::max( factor, 0.01f); }
+
 	//! Enables the left eye camera.
 	void			enableStereoLeft() { mIsStereo = true; mIsLeft = true; }
 	bool			isStereoLeftEnabled() const { return mIsStereo && mIsLeft; }
