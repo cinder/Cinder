@@ -259,7 +259,7 @@ private:
 public:
 	//! width and height of the auto focus sample 
 	static const int	AF_WIDTH = 64;
-	static const int	AF_HEIGHT = 64;
+	static const int	AF_HEIGHT = 128;
 private:
 	bool			mIsStereo;
 	bool			mIsLeft;

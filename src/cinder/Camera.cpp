@@ -465,22 +465,11 @@ void CameraStereo::autoFocus(bool useDepthBuffer)
 	/*// visual debugging (only works if CameraStereo::autoFocus(true) is called FROM WITHIN AppBasic::draw()!)
 	size_t p = itr - mAutoFocusBuffer.begin();
 	float x = (p % AF_WIDTH) / (float)AF_WIDTH * area.getWidth();
-	float y = (p / AF_WIDTH) / (float)AF_WIDTH * area.getHeight();
+	float y = (p / AF_WIDTH) / (float)AF_HEIGHT * area.getHeight();
 
 	gl::color( Color(1, 1, 0) );
 	gl::drawLine( Vec2f(area.getX1(), area.getY2() - y), Vec2f(area.getX2(), area.getY2() - y) );
 	gl::drawLine( Vec2f(area.getX1() + x, area.getY1()), Vec2f(area.getX1() + x, area.getY2()) );
-	//*/
-
-	/*// draw depth texture (only works well if very close (due to luminance being R+G+B > 1?))
-	mAutoFocusFboSmall.getDepthTexture().enableAndBind();
-	glPushAttrib( GL_TEXTURE_BIT );		
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
-	glTexParameteri( GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE );
-	gl::color( Color::white() );
-	gl::drawSolidRect( Rectf(0, 200, 200 * app::getWindowAspectRatio(), 0), false );
-	glPopAttrib();
-	mAutoFocusFboSmall.unbindTexture();
 	//*/
 }
 
@@ -494,9 +483,6 @@ void CameraStereo::createBuffers( const Area &area )
 		gl::Fbo::Format fmt;
 		fmt.enableColorBuffer(false);
 		fmt.enableDepthBuffer(true, false);
-		fmt.enableMipmapping(false);
-		fmt.setSamples(0);
-		fmt.setCoverageSamples(0);
 
 		mAutoFocusFboLarge = gl::Fbo( width, height, fmt );
 		mAutoFocusFboSmall = gl::Fbo( AF_WIDTH, AF_HEIGHT, fmt );
