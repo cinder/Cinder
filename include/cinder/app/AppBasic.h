@@ -167,7 +167,9 @@ class AppBasic : public App {
 	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }
 
 	//! Returns the path to the application on disk
+#if !defined( CINDER_MSW )
 	virtual fs::path	getAppPath();
+#endif
 
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond

@@ -166,7 +166,6 @@ void JsonTestApp::mouseDown( MouseEvent event )
 	
 	doc.write( writeFile( getDocumentsDirectory() / "testoutput.json" ), JsonTree::WriteOptions() );
 	doc.write( writeFile( getDocumentsDirectory() / "testoutput_fast.json" ), JsonTree::WriteOptions().indented( false ) );
-
 }
 
 CINDER_APP_BASIC( JsonTestApp, RendererGl )

@@ -268,14 +268,12 @@ Vec2i AppBasic::getMousePos() const
 #endif
 }
 
+#if defined( CINDER_COCOA )
 fs::path AppBasic::getAppPath()
 {
-#if defined( CINDER_COCOA )
 	return [mImpl getAppPath];
-#elif defined( CINDER_MSW )
-	return AppImplMsw::getAppPath();
-#endif
 }
+#endif
 
 void AppBasic::hideCursor()
 {

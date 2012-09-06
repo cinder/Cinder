@@ -108,28 +108,6 @@ Buffer AppImplMsw::loadResource( int id, const std::string &type )
 	return Buffer( dataPtr, dataSize );
 }
 
-fs::path AppImplMsw::getAppPath()
-{
-	char appPath[MAX_PATH] = "";
-
-	// fetch the path of the executable
-	::GetModuleFileNameA( 0, appPath, sizeof(appPath) - 1);
-
-	// get a pointer to the last occurrence of the windows path separator
-	char *appDir = strrchr( appPath, '\\' );
-	if( appDir ) {
-		++appDir;
-
-		// always expect the unexpected - this shouldn't be null but one never knows
-		if( appDir ) {
-			// null terminate the string
-			*appDir = 0;
-		}
-	}
-
-	return fs::path( std::string( appPath ) );
-}
-
 fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 	OPENFILENAMEA ofn;       // common dialog box structure

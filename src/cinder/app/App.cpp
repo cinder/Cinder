@@ -280,6 +280,17 @@ void App::addAssetDirectory( const fs::path &dirPath )
 	mAssetDirectories.push_back( dirPath );
 }
 
+#if defined( CINDER_MSW )
+fs::path App::getAppPath()
+{
+	// fetch the path of the executable
+	char appPath[ MAX_PATH ] = "";
+	::GetModuleFileNameA( 0, appPath, sizeof( appPath ) - 1 );
+	fs::path path = string( appPath );
+	return path.parent_path();
+}
+#endif
+
 #if defined( CINDER_COCOA )
 fs::path App::getResourcePath( const fs::path &rsrcRelativePath )
 {
