@@ -158,7 +158,7 @@
 	if( mAlwaysOnTop )
 		[win setLevel: NSScreenSaverWindowLevel];
 	// we need to get told about it when the window changes screens so we can update the display link
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowChangedScreen:) name:NSWindowDidMoveNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowChangedScreen:) name:NSWindowDidMoveNotification object:win];
 	[cinderView setNeedsDisplay:YES];
 #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5	
 	if( app->getSettings().isMultiTouchEnabled() )
