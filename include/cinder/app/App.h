@@ -350,7 +350,11 @@ class App {
 	void					addAssetDirectory( const fs::path &dirPath );
 	
 	//! Returns the path to the application on disk
+#if defined( CINDER_MSW )
+	static fs::path				getAppPath();
+#else
 	virtual fs::path			getAppPath() = 0;
+#endif
 	//! Presents the user with a file-open dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
@@ -513,7 +517,11 @@ inline fs::path				getAssetPath( const fs::path &relativePath ) { return App::ge
 inline void					addAssetDirectory( const fs::path &dirPath ) { App::get()->addAssetDirectory( dirPath ); }
 
 //! Returns the path to the active App on disk
+#if defined( CINDER_MSW )
+inline fs::path		getAppPath() { return App::getAppPath(); }
+#else
 inline fs::path		getAppPath() { return App::get()->getAppPath(); }
+#endif
 //! Presents the user with a file-open dialog and returns the selected file path.
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.

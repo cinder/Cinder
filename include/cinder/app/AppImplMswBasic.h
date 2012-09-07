@@ -52,8 +52,6 @@ class AppImplMswBasic : public AppImplMsw {
 	void	setBorderless( bool borderless );
 	void	setAlwaysOnTop( bool alwaysOnTop );
 	
-	std::string getAppPath() const;
-	
 	Display*	getDisplay() { return mDisplay; }
 	
  protected:
