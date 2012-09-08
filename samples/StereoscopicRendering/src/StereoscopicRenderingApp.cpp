@@ -39,6 +39,7 @@
 #include "cinder/app/AppBasic.h"
 
 #include "cinder/gl/gl.h"
+#include "cinder/gl/CameraStereoAutoFocuser.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Vbo.h"
 
@@ -55,6 +56,8 @@ using namespace std;
 
 class StereoscopicRenderingApp : public AppBasic {
 public:
+	typedef enum { SET_FOCAL_LENGTH, SET_FOCUS, AUTO_FOCUS_SIMPLE, AUTO_FOCUS_DEPTH } AutoFocusMethod;
+public:
 	void prepareSettings( Settings *settings );
 
 	void setup();	
@@ -70,8 +73,12 @@ public:
 private:
 	bool			mIsStereo;
 
+	AutoFocusMethod	mFocusMethod;
+
 	MayaCamUI		mMayaCam;
 	CameraStereo	mCamera;
+
+	gl::CameraStereoAutoFocuser	mAF;
 
 	gl::GlslProg	mShader;
 
@@ -95,6 +102,9 @@ void StereoscopicRenderingApp::setup()
 {
 	// enable stereoscopic rendering (press S to toggle)
 	mIsStereo = true;
+
+	// enable auto-focussing
+	mFocusMethod = AUTO_FOCUS_DEPTH;
 
 	// setup the camera
 	mCamera.setEyePoint( Vec3f(0.2f, 1.3f, -11.5f) );
@@ -125,13 +135,44 @@ void StereoscopicRenderingApp::setup()
 
 void StereoscopicRenderingApp::update()
 {
-	// auto-focus by calculating distance from object
-	float d = mCamera.getEyePoint().length();
-	float f = math<float>::min( 5.0f, d * 0.5f );
+	float d, f;
 
-	// The setFocus() method will automatically calculate a fitting value eye separation.
-	// If you want to specify your own values, use setFocalLength() and setEyeSeparation().
-	mCamera.setFocus( f );
+	switch( mFocusMethod )
+	{
+	case SET_FOCAL_LENGTH:
+		// auto-focus by calculating distance to center of interest
+		d = (mCamera.getCenterOfInterestPoint() - mCamera.getEyePoint()).length();
+		f = math<float>::min( 5.0f, d * 0.5f );
+
+		// The setFocalLength() method will not change the eye separation distance, 
+		// which may cause the parallax effect to become uncomfortably big. 
+		mCamera.setFocalLength( f );
+		mCamera.setEyeSeparation( 0.05f );
+		break;
+	case SET_FOCUS:
+		// auto-focus by calculating distance to center of interest
+		d = (mCamera.getCenterOfInterestPoint() - mCamera.getEyePoint()).length();
+		f = math<float>::min( 5.0f, d * 0.5f );
+
+		// The setFocus() method will automatically calculate a fitting value eye separation distance.
+		// There is still no guarantee that the parallax effect stays within comfortable levels,
+		// because there may be objects very near to the camera compared to the point we are looking at.
+		mCamera.setFocus( f );
+		break;
+	case AUTO_FOCUS_SIMPLE:
+		// Here, we use the gl::CameraStereoAutoFocuser class to determine the best focal length,
+		// based on the distance to the center of interest. This is very similar to the SET_FOCUS
+		// method. Use the UP and DOWN keys to adjust the intensity of the parallax effect.
+		mAF.autoFocus( mCamera, false );
+		break;
+	case AUTO_FOCUS_DEPTH:
+		// Here, we use the gl::CameraStereoAutoFocuser class to determine the best focal length,
+		// based on the contents of the current depth buffer. This is by far the best method of
+		// the four, because it guarantees the parallax effect will never be out of bounds.
+		// Use the UP and DOWN keys to adjust the intensity of the parallax effect.
+		mAF.autoFocus( mCamera, true );
+		break;
+	}
 }
 
 void StereoscopicRenderingApp::draw()
@@ -225,6 +266,32 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_v:
 		// toggle vertical sync
 		gl::enableVerticalSync( !gl::isVerticalSyncEnabled() );
+		break;
+	case KeyEvent::KEY_1:
+		mFocusMethod = SET_FOCAL_LENGTH;
+		break;
+	case KeyEvent::KEY_2:
+		mFocusMethod = SET_FOCUS;
+		break;
+	case KeyEvent::KEY_3:
+		mFocusMethod = AUTO_FOCUS_SIMPLE;
+		break;
+	case KeyEvent::KEY_4:
+		mFocusMethod = AUTO_FOCUS_DEPTH;
+		break;
+	case KeyEvent::KEY_UP:
+		// increase the parallax effect (towards negative parallax) 
+		if(mFocusMethod >= AUTO_FOCUS_SIMPLE)
+			mAF.setAutoFocusDepth( mAF.getAutoFocusDepth() + 0.05f );
+		break;
+	case KeyEvent::KEY_DOWN:
+		// decrease the parallax effect (towards positive parallax) 
+		if(mFocusMethod >= AUTO_FOCUS_SIMPLE)
+			mAF.setAutoFocusDepth( mAF.getAutoFocusDepth() - 0.05f );
+		break;
+	case KeyEvent::KEY_SPACE:
+		// reset the parallax effect to 'no parallax for the nearest object'
+		mAF.setAutoFocusDepth( 1.0f );
 		break;
 	}
 }
