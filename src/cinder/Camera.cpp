@@ -1,6 +1,9 @@
 /*
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
+ 
+ Portions of this code (C) Paul Houx
+ All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -416,92 +419,6 @@ void CameraOrtho::calcProjection() const
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraStereo
-
-void CameraStereo::autoFocus(bool useDepthBuffer)
-{
-	if( !mIsStereo )
-		return;
-
-	if( !useDepthBuffer )
-	{
-		// perform naive auto focussing based on distance from center of interest
-		float z = math<float>::max(mNearClip, getEyePoint().length() * mAutoFocusDepth);
-		setFocus( mFocalLength + mAutoFocusSpeed * (z - mFocalLength) );
-		
-		return;
-	}
-
-	// determine sample area
-	Area area = gl::getViewport();
-	area.expand( -area.getWidth() / 4, 0 );
-
-	// create or resize buffers
-	createBuffers( area );
-
-	// blit main depth buffer to auto focus fbo	(they need to be the same size for this to work!)
-	mAutoFocusFboLarge.blitFromScreen( area, mAutoFocusFboLarge.getBounds(), 
-		GL_NEAREST, GL_DEPTH_BUFFER_BIT );
-
-	// create a downsampled copy for the auto focus test
-	mAutoFocusFboLarge.blitTo(mAutoFocusFboSmall, mAutoFocusFboLarge.getBounds(), mAutoFocusFboSmall.getBounds(),
-		GL_NEAREST, GL_DEPTH_BUFFER_BIT );
-
-	// load depth samples into buffer
-	glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, mAutoFocusFboSmall.getId());
-	glReadPixels(0, 0, AF_WIDTH, AF_HEIGHT, GL_DEPTH_COMPONENT, GL_FLOAT, &mAutoFocusBuffer.front());
-	mAutoFocusFboSmall.unbindFramebuffer();
-
-	// find minimum value 
-	std::vector<GLfloat>::const_iterator itr = std::min_element(mAutoFocusBuffer.begin(), mAutoFocusBuffer.end());
-	
-	// convert to actual distance from camera
-	float depth = 2.0f * (*itr) - 1.0f;
-	depth = 2.0f * mNearClip * mFarClip / (mFarClip + mNearClip - depth * (mFarClip - mNearClip));
-	
-	// perform auto focussing
-	float z = math<float>::max(mNearClip, depth * mAutoFocusDepth);
-	setFocus( mFocalLength + mAutoFocusSpeed * (z - mFocalLength) );
-
-	/*// visual debugging (only works if CameraStereo::autoFocus(true) is called FROM WITHIN AppBasic::draw()!)
-	size_t p = itr - mAutoFocusBuffer.begin();
-	float x = (p % AF_WIDTH) / (float)AF_WIDTH * area.getWidth();
-	float y = (p / AF_WIDTH) / (float)AF_HEIGHT * area.getHeight();
-
-	gl::color( Color(1, 1, 0) );
-	gl::drawLine( Vec2f(area.getX1(), area.getY2() - y), Vec2f(area.getX2(), area.getY2() - y) );
-	gl::drawLine( Vec2f(area.getX1() + x, area.getY1()), Vec2f(area.getX1() + x, area.getY2()) );
-	//*/
-}
-
-void CameraStereo::createBuffers( const Area &area )
-{
-	int width = area.getWidth();
-	int height = area.getHeight();
-
-	if( !mAutoFocusFboLarge || !mAutoFocusFboSmall || mAutoFocusFboLarge.getWidth() != width || mAutoFocusFboLarge.getHeight() != height )
-	{
-		gl::Fbo::Format fmt;
-		fmt.enableColorBuffer(false);
-		fmt.enableDepthBuffer(true, false);
-
-		mAutoFocusFboLarge = gl::Fbo( width, height, fmt );
-		mAutoFocusFboSmall = gl::Fbo( AF_WIDTH, AF_HEIGHT, fmt );
-	}
-
-	int size = AF_WIDTH * AF_HEIGHT;
-	if( mAutoFocusBuffer.size() != size )
-	{
-		mAutoFocusBuffer.resize( size );
-		mAutoFocusBuffer.assign( size, 0.0f );
-	}
-}
-
-void CameraStereo::destroyBuffers()
-{
-	mAutoFocusBuffer.clear();
-	mAutoFocusFboSmall = gl::Fbo();
-	mAutoFocusFboLarge = gl::Fbo();
-}
 
 Vec3f CameraStereo::getEyePointShifted() const
 {	
