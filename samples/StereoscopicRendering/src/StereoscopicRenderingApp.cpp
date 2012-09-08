@@ -44,11 +44,14 @@
 #include "cinder/gl/Vbo.h"
 
 #include "cinder/Camera.h"
+#include "cinder/Font.h"
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/Rand.h"
 #include "cinder/TriMesh.h"
 #include "cinder/ObjLoader.h"
+
+#include <boost/format.hpp>
 
 using namespace ci;
 using namespace ci::app;
@@ -85,7 +88,10 @@ private:
 	gl::VboMesh		mMesh;
 	gl::VboMesh		mNote;
 
+	Font			mFont;
+
 	void render();
+	void renderUI();
 };
 
 void StereoscopicRenderingApp::prepareSettings( Settings *settings )
@@ -131,6 +137,8 @@ void StereoscopicRenderingApp::setup()
 		console() << e.what() << std::endl;
 		quit();
 	}
+
+	mFont = Font("Verdana", 36.0f);
 }
 
 void StereoscopicRenderingApp::update()
@@ -177,6 +185,10 @@ void StereoscopicRenderingApp::update()
 
 void StereoscopicRenderingApp::draw()
 {
+	// find dimensions of each viewport 
+	int w = getWindowWidth();
+	int h = getWindowHeight();
+
 	// gray background
 	gl::clear( Color(0.8f, 0.8f, 0.8f) ); 
 
@@ -187,10 +199,6 @@ void StereoscopicRenderingApp::draw()
 
 	// stereoscopic rendering
 	if( mIsStereo ) {
-		// find dimensions of each viewport (side by side)
-		int w = getWindowWidth();
-		int h = getWindowHeight();
-
 		// store current viewport
 		glPushAttrib( GL_VIEWPORT_BIT );
 
@@ -230,6 +238,26 @@ void StereoscopicRenderingApp::draw()
 	gl::popMatrices();
 	gl::disableDepthWrite();
 	gl::disableDepthRead();
+
+	// render 2D user interface
+	if( mIsStereo )
+	{
+		// store current viewport
+		glPushAttrib( GL_VIEWPORT_BIT );
+
+		// draw to left half of window only
+		gl::setViewport( Area(0, 0, w / 2, h) );
+		renderUI();
+
+		// draw to right half of window only
+		gl::setViewport( Area(w / 2, 0, w, h) );
+		renderUI();
+
+		// restore viewport
+		glPopAttrib();
+	}
+	else
+		renderUI();
 }
 
 void StereoscopicRenderingApp::mouseDown( MouseEvent event )
@@ -292,6 +320,14 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_SPACE:
 		// reset the parallax effect to 'no parallax for the nearest object'
 		mAF.setAutoFocusDepth( 1.0f );
+		break;
+	case KeyEvent::KEY_LEFT:
+		// reduce the auto focus speed
+		mAF.setAutoFocusSpeed( mAF.getAutoFocusSpeed() - 0.01f );
+		break;
+	case KeyEvent::KEY_RIGHT:
+		// increase the auto focus speed
+		mAF.setAutoFocusSpeed( mAF.getAutoFocusSpeed() + 0.01f );
 		break;
 	}
 }
@@ -368,6 +404,19 @@ void StereoscopicRenderingApp::render()
 	gl::enableAlphaBlending();
 	gl::color( ColorA(1,1,1,0.75f) );
 	gl::drawCube( Vec3f(0.0f, -0.5f, 0.0f), Vec3f(200.0f, 1.0f, 200.0f) );
+	gl::disableAlphaBlending();
+}
+
+void StereoscopicRenderingApp::renderUI()
+{	
+	float w = (float) getWindowWidth() * 0.5f;
+	float h = (float) getWindowHeight();
+
+	boost::format fmt = boost::format( "%.3f\n%.3f\n%.3f\n%.3f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getAutoFocusDepth() % mAF.getAutoFocusSpeed();
+
+	gl::enableAlphaBlending();
+	gl::drawString( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:", Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );
+	gl::drawStringRight( fmt.str(), Vec2f( w + 200.0f, h - 150.0f ), Color::black(), mFont );
 	gl::disableAlphaBlending();
 }
 
