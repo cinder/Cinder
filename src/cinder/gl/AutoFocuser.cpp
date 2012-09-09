@@ -24,23 +24,14 @@
 */
 
 #include "cinder/Camera.h"
-#include "cinder/gl/CameraStereoAutoFocuser.h"
+#include "cinder/gl/AutoFocuser.h"
 
 namespace cinder { namespace gl {
 	
-void CameraStereoAutoFocuser::autoFocus( CameraStereo &cam, bool useDepthBuffer )
+void AutoFocuser::autoFocus( CameraStereo &cam )
 {
 	if( ! cam.isStereoEnabled() )
 		return;
-
-	if( !useDepthBuffer )
-	{
-		// perform naive auto focussing based on distance from center of interest
-		float z = math<float>::max( cam.getNearClip(), cam.getEyePoint().length() * mAutoFocusDepth );
-		cam.setFocus( cam.getFocalLength() + mAutoFocusSpeed * ( z - cam.getFocalLength() ) );
-		
-		return;
-	}
 
 	// determine sample area
 	Area area = getAutoFocusArea();
@@ -49,37 +40,37 @@ void CameraStereoAutoFocuser::autoFocus( CameraStereo &cam, bool useDepthBuffer 
 	createBuffers( area );
 
 	// blit (multi-sampled) main depth buffer to (non-multi-sampled) auto focus fbo	(they need to be the same size for this to work!)
-	mAutoFocusFboLarge.blitFromScreen( area, mAutoFocusFboLarge.getBounds(), 
+	mFboLarge.blitFromScreen( area, mFboLarge.getBounds(), 
 		GL_NEAREST, GL_DEPTH_BUFFER_BIT );
 
 	// create a downsampled copy for the auto focus test
-	mAutoFocusFboLarge.blitTo(mAutoFocusFboSmall, mAutoFocusFboLarge.getBounds(), mAutoFocusFboSmall.getBounds(),
+	mFboLarge.blitTo(mFboSmall, mFboLarge.getBounds(), mFboSmall.getBounds(),
 		GL_NEAREST, GL_DEPTH_BUFFER_BIT );
 
 	// load depth samples into buffer
-	glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, mAutoFocusFboSmall.getId());
-	glReadPixels(0, 0, AF_WIDTH, AF_HEIGHT, GL_DEPTH_COMPONENT, GL_FLOAT, &mAutoFocusBuffer.front());
-	mAutoFocusFboSmall.unbindFramebuffer();
+	glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT, mFboSmall.getId());
+	glReadPixels(0, 0, AF_WIDTH, AF_HEIGHT, GL_DEPTH_COMPONENT, GL_FLOAT, &mBuffer.front());
+	mFboSmall.unbindFramebuffer();
 
 	// find minimum value 
-	std::vector<GLfloat>::const_iterator itr = std::min_element(mAutoFocusBuffer.begin(), mAutoFocusBuffer.end());
+	std::vector<GLfloat>::const_iterator itr = std::min_element(mBuffer.begin(), mBuffer.end());
 
-	size_t p = itr - mAutoFocusBuffer.begin();
-	mX = 0.5f + (int) ( (p % AF_WIDTH) / (float) AF_WIDTH * area.getWidth() );
-	mY = 0.5f + (int) ( (p / AF_WIDTH) / (float) AF_HEIGHT * area.getHeight() );
+	size_t p = itr - mBuffer.begin();
+	mNearest.x = 0.5f + (int) ( (p % AF_WIDTH) / (float) AF_WIDTH * area.getWidth() ) + 0.5f * AF_WIDTH;
+	mNearest.y = 0.5f + (int) ( (p / AF_WIDTH) / (float) AF_HEIGHT * area.getHeight() ) + 0.5f * AF_HEIGHT;
 	
 	// convert to actual distance from camera
 	float nearClip = cam.getNearClip();
 	float farClip = cam.getFarClip();
 	float depth = 2.0f * (*itr) - 1.0f;
-	depth = 2.0f * nearClip * farClip / ( farClip + nearClip - depth * ( farClip - nearClip ) );
+	mNearest.z = 2.0f * nearClip * farClip / ( farClip + nearClip - depth * ( farClip - nearClip ) );
 	
 	// perform auto focussing
-	float z = math<float>::max( nearClip, depth * mAutoFocusDepth );
-	cam.setFocus( cam.getFocalLength() + mAutoFocusSpeed * ( z - cam.getFocalLength() ) );
+	float z = math<float>::max( nearClip, mNearest.z * mDepth );
+	cam.setFocus( cam.getFocalLength() + mSpeed * ( z - cam.getFocalLength() ) );
 }
 
-inline Area	CameraStereoAutoFocuser::getAutoFocusArea() const
+inline Area	AutoFocuser::getAutoFocusArea() const
 {
 	Area area = gl::getViewport();
 	area.expand( -area.getWidth() / 4, 0 );
@@ -87,7 +78,7 @@ inline Area	CameraStereoAutoFocuser::getAutoFocusArea() const
 	return area;
 }
 
-void CameraStereoAutoFocuser::draw()
+void AutoFocuser::draw()
 {
 	// visual debugging 
 	Area area = getAutoFocusArea();
@@ -95,41 +86,41 @@ void CameraStereoAutoFocuser::draw()
 	glPushAttrib( GL_CURRENT_BIT | GL_LINE_BIT );
 	glLineWidth( 1.0f );
 	gl::color( Color(1, 1, 0) );
-	gl::drawLine( Vec2f( (float) area.getX1() + 0.5f, (float) area.getY2() - mY ), Vec2f( (float) area.getX2() + 0.5f, (float) area.getY2() - mY ) );
-	gl::drawLine( Vec2f( (float) area.getX1() + mX, (float) area.getY1() + 0.5f ), Vec2f( (float) area.getX1() + mX, (float) area.getY2() + 0.5f ) );
+	gl::drawLine( Vec2f( (float) area.getX1() + 0.5f, (float) area.getY2() - mNearest.y ), Vec2f( (float) area.getX2() + 0.5f, (float) area.getY2() - mNearest.y ) );
+	gl::drawLine( Vec2f( (float) area.getX1() + mNearest.x, (float) area.getY1() + 0.5f ), Vec2f( (float) area.getX1() + mNearest.x, (float) area.getY2() + 0.5f ) );
 	glPopAttrib();
 }
 
-void CameraStereoAutoFocuser::createBuffers( const Area &area )
+void AutoFocuser::createBuffers( const Area &area )
 {
 	int width = area.getWidth();
 	int height = area.getHeight();
 
-	if( !mAutoFocusFboLarge || !mAutoFocusFboSmall || mAutoFocusFboLarge.getWidth() != width || mAutoFocusFboLarge.getHeight() != height )
+	if( !mFboLarge || !mFboSmall || mFboLarge.getWidth() != width || mFboLarge.getHeight() != height )
 	{
 		gl::Fbo::Format fmt;
 		fmt.enableColorBuffer(false);
 		fmt.enableDepthBuffer(true, false);
 
-		mAutoFocusFboLarge = gl::Fbo( width, height, fmt );
-		mAutoFocusFboSmall = gl::Fbo( AF_WIDTH, AF_HEIGHT, fmt );
+		mFboLarge = gl::Fbo( width, height, fmt );
+		mFboSmall = gl::Fbo( AF_WIDTH, AF_HEIGHT, fmt );
 	}
 
 	int size = AF_WIDTH * AF_HEIGHT;
-	if( mAutoFocusBuffer.size() != size )
+	if( mBuffer.size() != size )
 	{
-		mAutoFocusBuffer.resize( size );
-		mAutoFocusBuffer.assign( size, 0.0f );
+		mBuffer.resize( size );
+		mBuffer.assign( size, 0.0f );
 	}
 }
 
-void CameraStereoAutoFocuser::destroyBuffers()
+void AutoFocuser::destroyBuffers()
 {
 	// clear buffer and deallocate memory
-	mAutoFocusBuffer.swap( std::vector<GLfloat>() );
+	mBuffer.swap( std::vector<GLfloat>() );
 
-	mAutoFocusFboSmall = gl::Fbo();
-	mAutoFocusFboLarge = gl::Fbo();
+	mFboSmall = gl::Fbo();
+	mFboLarge = gl::Fbo();
 }
 
 } } // namespace gl::cinder

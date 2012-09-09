@@ -35,11 +35,11 @@ namespace cinder {
 
 namespace cinder { namespace gl {
 
-class CameraStereoAutoFocuser {
+class AutoFocuser {
  public:
-	CameraStereoAutoFocuser() 
-		: mAutoFocusSpeed(1.0f), mAutoFocusDepth(1.0f) {}
-	~CameraStereoAutoFocuser() { destroyBuffers(); }
+	AutoFocuser() 
+		: mSpeed(1.0f), mDepth(1.0f) {}
+	~AutoFocuser() { destroyBuffers(); }
 
 	/** Attempts to set an ideal focal length and eye separation. 
 		\a cam is the CameraStereo you use to render the scene and which should be auto-focussed.
@@ -47,26 +47,30 @@ class CameraStereoAutoFocuser {
 		If \a useDepthBuffer is set to FALSE, the distance from the camera to the center of interest is used to determine the focal length.
 		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
 	*/
-	void					autoFocus( CameraStereo &cam, bool useDepthBuffer=false );
+	void					autoFocus( CameraStereo &cam );
 
 	//! Returns the speed at which auto-focussing takes place.
-	float					getAutoFocusSpeed() const { return mAutoFocusSpeed; }
+	float					getAutoFocusSpeed() const { return mSpeed; }
 
 	/** Sets the speed at which auto-focussing takes place. A value of 1.0 will immediately focus on the measured value.
 		Lower values will gradually adjust the focal length.
 		If your autoFocusSpeed is less than 1.0, repeatedly call the autoFocus() function from your update() method.
 	*/
-	void					setAutoFocusSpeed( float factor ) { mAutoFocusSpeed = math<float>::clamp( factor, 0.01f, 1.0f); }
+	void					setAutoFocusSpeed( float factor ) { mSpeed = math<float>::clamp( factor, 0.01f, 1.0f); }
 
 	//! Returns the auto-focus depth. 
-	float					getAutoFocusDepth() const { return mAutoFocusDepth; }
+	float					getAutoFocusDepth() const { return mDepth; }
 
 	/** Sets the auto-focus depth. A value of 1.0 will adjust the focal length in such a way that the nearest objects
 		are at the plane of the screen and cause no parallax. Lower values will cause the nearest objects to appear behind your 
 		screen (positive parallax). Values greater than 1.0 will cause objects to appear in front of your screen (negative parallax).
 		Avoid values much greater than 1.0 to reduce eye strain.
 	*/
-	void					setAutoFocusDepth( float factor ) { mAutoFocusDepth = math<float>::max( factor, 0.01f); }
+	void					setAutoFocusDepth( float factor ) { mDepth = math<float>::max( factor, 0.01f); }
+
+	//!
+	Vec2f					getNearestPixel() const { return Vec2f( mNearest.x, mNearest.y ); }
+	float					getNearestDepth() const { return mNearest.z; }
 
 	//!
 	inline Area				getAutoFocusArea() const;
@@ -78,18 +82,18 @@ private:
 	void					destroyBuffers();
 public:
 	//! width and height of the auto focus sample 
-	static const int		AF_WIDTH = 64;
+	static const int		AF_WIDTH = 128;
 	static const int		AF_HEIGHT = 128;
 private:
-	float					mAutoFocusSpeed;
-	float					mAutoFocusDepth;
+	float					mSpeed;
+	float					mDepth;
 
-	Fbo						mAutoFocusFboSmall;
-	Fbo						mAutoFocusFboLarge;
-	std::vector<GLfloat>	mAutoFocusBuffer; 
+	Fbo						mFboSmall;
+	Fbo						mFboLarge;
+	std::vector<GLfloat>	mBuffer; 
 
-	//! keeps track of the nearest pixel
-	float					mX, mY;
+	//! keeps track of the nearest depth and pixel
+	Vec3f					mNearest;
 };
 
 } } // namespace cinder::gl 

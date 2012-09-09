@@ -39,7 +39,7 @@
 #include "cinder/app/AppBasic.h"
 
 #include "cinder/gl/gl.h"
-#include "cinder/gl/CameraStereoAutoFocuser.h"
+#include "cinder/gl/AutoFocuser.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Vbo.h"
 
@@ -59,7 +59,7 @@ using namespace std;
 
 class StereoscopicRenderingApp : public AppBasic {
 public:
-	typedef enum { SET_FOCAL_LENGTH, SET_FOCUS, AUTO_FOCUS_SIMPLE, AUTO_FOCUS_DEPTH } AutoFocusMethod;
+	typedef enum { SET_FOCAL_LENGTH, SET_FOCUS, AUTO_FOCUS } FocusMethod;
 public:
 	void prepareSettings( Settings *settings );
 
@@ -76,12 +76,12 @@ public:
 private:
 	bool			mIsStereo;
 
-	AutoFocusMethod	mFocusMethod;
+	FocusMethod		mFocusMethod;
 
 	MayaCamUI		mMayaCam;
 	CameraStereo	mCamera;
 
-	gl::CameraStereoAutoFocuser	mAF;
+	gl::AutoFocuser	mAF;
 
 	gl::GlslProg	mShader;
 
@@ -110,7 +110,7 @@ void StereoscopicRenderingApp::setup()
 	mIsStereo = true;
 
 	// enable auto-focussing
-	mFocusMethod = AUTO_FOCUS_DEPTH;
+	mFocusMethod = AUTO_FOCUS;
 
 	// setup the camera
 	mCamera.setEyePoint( Vec3f(0.2f, 1.3f, -11.5f) );
@@ -162,23 +162,17 @@ void StereoscopicRenderingApp::update()
 		d = (mCamera.getCenterOfInterestPoint() - mCamera.getEyePoint()).length();
 		f = math<float>::min( 5.0f, d * 0.5f );
 
-		// The setFocus() method will automatically calculate a fitting value eye separation distance.
+		// The setFocus() method will automatically calculate a fitting value for the eye separation distance.
 		// There is still no guarantee that the parallax effect stays within comfortable levels,
 		// because there may be objects very near to the camera compared to the point we are looking at.
 		mCamera.setFocus( f );
 		break;
-	case AUTO_FOCUS_SIMPLE:
-		// Here, we use the gl::CameraStereoAutoFocuser class to determine the best focal length,
-		// based on the distance to the center of interest. This is very similar to the SET_FOCUS
-		// method. Use the UP and DOWN keys to adjust the intensity of the parallax effect.
-		mAF.autoFocus( mCamera, false );
-		break;
-	case AUTO_FOCUS_DEPTH:
-		// Here, we use the gl::CameraStereoAutoFocuser class to determine the best focal length,
+	case AUTO_FOCUS:
+		// Here, we use the gl::AutoFocuser class to determine the best focal length,
 		// based on the contents of the current depth buffer. This is by far the best method of
-		// the four, because it guarantees the parallax effect will never be out of bounds.
+		// the three, because it guarantees the parallax effect will never be out of bounds.
 		// Use the UP and DOWN keys to adjust the intensity of the parallax effect.
-		mAF.autoFocus( mCamera, true );
+		mAF.autoFocus( mCamera );
 		break;
 	}
 }
@@ -302,20 +296,17 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		mFocusMethod = SET_FOCUS;
 		break;
 	case KeyEvent::KEY_3:
-		mFocusMethod = AUTO_FOCUS_SIMPLE;
-		break;
-	case KeyEvent::KEY_4:
-		mFocusMethod = AUTO_FOCUS_DEPTH;
+		mFocusMethod = AUTO_FOCUS;
 		break;
 	case KeyEvent::KEY_UP:
 		// increase the parallax effect (towards negative parallax) 
-		if(mFocusMethod >= AUTO_FOCUS_SIMPLE)
-			mAF.setAutoFocusDepth( mAF.getAutoFocusDepth() + 0.05f );
+		if(mFocusMethod == AUTO_FOCUS)
+			mAF.setAutoFocusDepth( mAF.getAutoFocusDepth() + 0.01f );
 		break;
 	case KeyEvent::KEY_DOWN:
 		// decrease the parallax effect (towards positive parallax) 
-		if(mFocusMethod >= AUTO_FOCUS_SIMPLE)
-			mAF.setAutoFocusDepth( mAF.getAutoFocusDepth() - 0.05f );
+		if(mFocusMethod == AUTO_FOCUS)
+			mAF.setAutoFocusDepth( mAF.getAutoFocusDepth() - 0.01f );
 		break;
 	case KeyEvent::KEY_SPACE:
 		// reset the parallax effect to 'no parallax for the nearest object'
@@ -412,7 +403,7 @@ void StereoscopicRenderingApp::renderUI()
 	float w = (float) getWindowWidth() * 0.5f;
 	float h = (float) getWindowHeight();
 
-	boost::format fmt = boost::format( "%.3f\n%.3f\n%.3f\n%.3f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getAutoFocusDepth() % mAF.getAutoFocusSpeed();
+	boost::format fmt = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getAutoFocusDepth() % mAF.getAutoFocusSpeed();
 
 	gl::enableAlphaBlending();
 	gl::drawString( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:", Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );
