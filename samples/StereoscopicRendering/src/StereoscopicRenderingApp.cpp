@@ -319,24 +319,24 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_UP:
 		// increase the parallax effect (towards negative parallax) 
 		if(mFocusMethod == AUTO_FOCUS)
-			mAF.setAutoFocusDepth( mAF.getAutoFocusDepth() + 0.01f );
+			mAF.setDepth( mAF.getDepth() + 0.01f );
 		break;
 	case KeyEvent::KEY_DOWN:
 		// decrease the parallax effect (towards positive parallax) 
 		if(mFocusMethod == AUTO_FOCUS)
-			mAF.setAutoFocusDepth( mAF.getAutoFocusDepth() - 0.01f );
+			mAF.setDepth( mAF.getDepth() - 0.01f );
 		break;
 	case KeyEvent::KEY_SPACE:
 		// reset the parallax effect to 'no parallax for the nearest object'
-		mAF.setAutoFocusDepth( 1.0f );
+		mAF.setDepth( 1.0f );
 		break;
 	case KeyEvent::KEY_LEFT:
 		// reduce the auto focus speed
-		mAF.setAutoFocusSpeed( mAF.getAutoFocusSpeed() - 0.01f );
+		mAF.setSpeed( mAF.getSpeed() - 0.01f );
 		break;
 	case KeyEvent::KEY_RIGHT:
 		// increase the auto focus speed
-		mAF.setAutoFocusSpeed( mAF.getAutoFocusSpeed() + 0.01f );
+		mAF.setSpeed( mAF.getSpeed() + 0.01f );
 		break;
 	}
 }
@@ -421,7 +421,7 @@ void StereoscopicRenderingApp::renderUI()
 	float w = (float) getWindowWidth() * 0.5f;
 	float h = (float) getWindowHeight();
 
-	boost::format fmt = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getAutoFocusDepth() % mAF.getAutoFocusSpeed();
+	boost::format fmt = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
 
 	gl::enableAlphaBlending();
 	gl::drawString( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:", Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );

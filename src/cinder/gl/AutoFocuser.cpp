@@ -34,7 +34,7 @@ void AutoFocuser::autoFocus( CameraStereo &cam )
 		return;
 
 	// determine sample area
-	Area area = getAutoFocusArea();
+	Area area = getArea();
 
 	// create or resize buffers
 	createBuffers( area );
@@ -71,7 +71,7 @@ void AutoFocuser::autoFocus( CameraStereo &cam )
 	cam.setFocus( cam.getFocalLength() + mSpeed * ( z - cam.getFocalLength() ) );
 }
 
-inline Area	AutoFocuser::getAutoFocusArea() const
+inline Area	AutoFocuser::getArea() const
 {
 	Area area = gl::getViewport();
 	area.expand( -area.getWidth() / 4, 0 );
@@ -82,7 +82,7 @@ inline Area	AutoFocuser::getAutoFocusArea() const
 void AutoFocuser::draw()
 {
 	// visual debugging 
-	Area area = getAutoFocusArea();
+	Area area = getArea();
 
 	glPushAttrib( GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_LINE_BIT );
 	gl::enableAlphaBlending();

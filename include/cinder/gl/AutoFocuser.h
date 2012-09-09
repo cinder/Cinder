@@ -46,34 +46,26 @@ class AutoFocuser {
 		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
 	*/
 	void					autoFocus( CameraStereo &cam );
-
 	//! Returns the speed at which auto-focussing takes place.
-	float					getAutoFocusSpeed() const { return mSpeed; }
-
+	float					getSpeed() const { return mSpeed; }
 	/** Sets the speed at which auto-focussing takes place. A value of 1.0 will immediately focus on the measured value.
 		Lower values will gradually adjust the focal length.
 		If your autoFocusSpeed is less than 1.0, repeatedly call the autoFocus() function from your update() method.
 	*/
-	void					setAutoFocusSpeed( float factor ) { mSpeed = math<float>::clamp( factor, 0.01f, 1.0f); }
-
-	//! Returns the auto-focus depth. 
-	float					getAutoFocusDepth() const { return mDepth; }
-
+	void					setSpeed( float factor ) { mSpeed = math<float>::clamp( factor, 0.01f, 1.0f); }
+	//! Returns the auto-focus depth, which influences the parallax effect.  
+	float					getDepth() const { return mDepth; }
 	/** Sets the auto-focus depth. A value of 1.0 will adjust the focal length in such a way that the nearest objects
 		are at the plane of the screen and cause no parallax. Lower values will cause the nearest objects to appear behind your 
 		screen (positive parallax). Values greater than 1.0 will cause objects to appear in front of your screen (negative parallax).
-		Avoid values much greater than 1.0 to reduce eye strain.
+		Avoid values much greater than 2.0 to reduce eye strain.
 	*/
-	void					setAutoFocusDepth( float factor ) { mDepth = math<float>::max( factor, 0.01f); }
+	void					setDepth( float factor ) { mDepth = math<float>::max( factor, 0.01f); }
 
-	//!
-	Vec2f					getNearestPixel() const { return Vec2f( mNearest.x, mNearest.y ); }
-	float					getNearestDepth() const { return mNearest.z; }
+	//! Returns the sample area in window coordinates.
+	inline Area				getArea() const;
 
-	//!
-	inline Area				getAutoFocusArea() const;
-
-	//!
+	//! Draws a visualizer, showing the sample area and the location of the nearest pixel.
 	void					draw();
 private:
 	void					createBuffers( const Area &area );
