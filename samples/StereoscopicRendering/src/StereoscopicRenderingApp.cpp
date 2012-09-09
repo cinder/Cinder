@@ -76,6 +76,7 @@ public:
 private:
 	bool			mIsStereo;
 
+	bool			mDrawAutoFocus;
 	FocusMethod		mFocusMethod;
 
 	MayaCamUI		mMayaCam;
@@ -88,6 +89,7 @@ private:
 	gl::VboMesh		mMesh;
 	gl::VboMesh		mNote;
 
+	bool			mDrawUI;
 	Font			mFont;
 
 	void render();
@@ -111,6 +113,7 @@ void StereoscopicRenderingApp::setup()
 
 	// enable auto-focussing
 	mFocusMethod = AUTO_FOCUS;
+	mDrawAutoFocus = false;
 
 	// setup the camera
 	mCamera.setEyePoint( Vec3f(0.2f, 1.3f, -11.5f) );
@@ -139,6 +142,7 @@ void StereoscopicRenderingApp::setup()
 	}
 
 	mFont = Font("Verdana", 36.0f);
+	mDrawUI = true;
 }
 
 void StereoscopicRenderingApp::update()
@@ -234,24 +238,30 @@ void StereoscopicRenderingApp::draw()
 	gl::disableDepthRead();
 
 	// render 2D user interface
-	if( mIsStereo )
+	if( mDrawUI )
 	{
-		// store current viewport
-		glPushAttrib( GL_VIEWPORT_BIT );
+		if( mIsStereo )
+		{
+			// store current viewport
+			glPushAttrib( GL_VIEWPORT_BIT );
 
-		// draw to left half of window only
-		gl::setViewport( Area(0, 0, w / 2, h) );
-		renderUI();
+			// draw to left half of window only
+			gl::setViewport( Area(0, 0, w / 2, h) );
+			renderUI();
 
-		// draw to right half of window only
-		gl::setViewport( Area(w / 2, 0, w, h) );
-		renderUI();
+			// draw to right half of window only
+			gl::setViewport( Area(w / 2, 0, w, h) );
+			renderUI();
 
-		// restore viewport
-		glPopAttrib();
+			// restore viewport
+			glPopAttrib();
+		}
+		else
+			renderUI();
 	}
-	else
-		renderUI();
+
+	// draw auto focus visualizer
+	if( mIsStereo && mDrawAutoFocus ) mAF.draw();
 }
 
 void StereoscopicRenderingApp::mouseDown( MouseEvent event )
@@ -288,6 +298,14 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_v:
 		// toggle vertical sync
 		gl::enableVerticalSync( !gl::isVerticalSyncEnabled() );
+		break;
+	case KeyEvent::KEY_d:
+		// toggle visualizer
+		mDrawAutoFocus = !mDrawAutoFocus;
+		break;
+	case KeyEvent::KEY_u:
+		// toggle interface
+		mDrawUI = !mDrawUI;
 		break;
 	case KeyEvent::KEY_1:
 		mFocusMethod = SET_FOCAL_LENGTH;

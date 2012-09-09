@@ -39,7 +39,8 @@ void AutoFocuser::autoFocus( CameraStereo &cam )
 	// create or resize buffers
 	createBuffers( area );
 
-	// blit (multi-sampled) main depth buffer to (non-multi-sampled) auto focus fbo	(they need to be the same size for this to work!)
+	// blit (multi-sampled) main depth buffer to (non-multi-sampled) auto focus fbo	
+	// (they need to be the same size for this to work!)
 	mFboLarge.blitFromScreen( area, mFboLarge.getBounds(), 
 		GL_NEAREST, GL_DEPTH_BUFFER_BIT );
 
@@ -56,8 +57,8 @@ void AutoFocuser::autoFocus( CameraStereo &cam )
 	std::vector<GLfloat>::const_iterator itr = std::min_element(mBuffer.begin(), mBuffer.end());
 
 	size_t p = itr - mBuffer.begin();
-	mNearest.x = 0.5f + (int) ( (p % AF_WIDTH) / (float) AF_WIDTH * area.getWidth() ) + 0.5f * AF_WIDTH;
-	mNearest.y = 0.5f + (int) ( (p / AF_WIDTH) / (float) AF_HEIGHT * area.getHeight() ) + 0.5f * AF_HEIGHT;
+	mNearest.x = 0.5f + (int) ( (p % AF_WIDTH) / (float) AF_WIDTH * area.getWidth() );
+	mNearest.y = 0.5f + (int) ( (p / AF_WIDTH) / (float) AF_HEIGHT * area.getHeight() );
 	
 	// convert to actual distance from camera
 	float nearClip = cam.getNearClip();
@@ -83,9 +84,12 @@ void AutoFocuser::draw()
 	// visual debugging 
 	Area area = getAutoFocusArea();
 
-	glPushAttrib( GL_CURRENT_BIT | GL_LINE_BIT );
+	glPushAttrib( GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_LINE_BIT );
+	gl::enableAlphaBlending();
+	gl::color( ColorA( 1, 1, 1, 0.25f ) );
+	gl::drawSolidRect( area );
+	gl::color( ColorA(0, 0, 0, 0.75f) );
 	glLineWidth( 1.0f );
-	gl::color( Color(1, 1, 0) );
 	gl::drawLine( Vec2f( (float) area.getX1() + 0.5f, (float) area.getY2() - mNearest.y ), Vec2f( (float) area.getX2() + 0.5f, (float) area.getY2() - mNearest.y ) );
 	gl::drawLine( Vec2f( (float) area.getX1() + mNearest.x, (float) area.getY1() + 0.5f ), Vec2f( (float) area.getX1() + mNearest.x, (float) area.getY2() + 0.5f ) );
 	glPopAttrib();

@@ -43,8 +43,6 @@ class AutoFocuser {
 
 	/** Attempts to set an ideal focal length and eye separation. 
 		\a cam is the CameraStereo you use to render the scene and which should be auto-focussed.
-		If \a useDepthBuffer is TRUE, the depth buffer will be sampled to determine the distance to the nearest object.
-		If \a useDepthBuffer is set to FALSE, the distance from the camera to the center of interest is used to determine the focal length.
 		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
 	*/
 	void					autoFocus( CameraStereo &cam );
@@ -82,8 +80,8 @@ private:
 	void					destroyBuffers();
 public:
 	//! width and height of the auto focus sample 
-	static const int		AF_WIDTH = 128;
-	static const int		AF_HEIGHT = 128;
+	static const int		AF_WIDTH = 64;
+	static const int		AF_HEIGHT = 64;
 private:
 	float					mSpeed;
 	float					mDepth;
