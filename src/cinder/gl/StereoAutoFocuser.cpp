@@ -24,11 +24,11 @@
 */
 
 #include "cinder/Camera.h"
-#include "cinder/gl/AutoFocuser.h"
+#include "cinder/gl/StereoAutoFocuser.h"
 
 namespace cinder { namespace gl {
 	
-void AutoFocuser::autoFocus( CameraStereo *cam )
+void StereoAutoFocuser::autoFocus( CameraStereo *cam )
 {
 	if( ! cam->isStereoEnabled() )
 		return;
@@ -71,7 +71,7 @@ void AutoFocuser::autoFocus( CameraStereo *cam )
 	cam->setFocus( cam->getFocalLength() + mSpeed * ( z - cam->getFocalLength() ) );
 }
 
-Area AutoFocuser::getArea() const
+Area StereoAutoFocuser::getArea() const
 {
 	Area area = gl::getViewport();
 	area.expand( -area.getWidth() / 4, 0 );
@@ -79,7 +79,7 @@ Area AutoFocuser::getArea() const
 	return area;
 }
 
-void AutoFocuser::draw()
+void StereoAutoFocuser::draw()
 {
 	// visual debugging 
 	Area area = getArea();
@@ -95,7 +95,7 @@ void AutoFocuser::draw()
 	glPopAttrib();
 }
 
-void AutoFocuser::createBuffers( const Area &area )
+void StereoAutoFocuser::createBuffers( const Area &area )
 {
 	int width = area.getWidth();
 	int height = area.getHeight();
@@ -118,4 +118,4 @@ void AutoFocuser::createBuffers( const Area &area )
 	}
 }
 
-} } // namespace gl::cinder
+} } // namespace cinder::gl

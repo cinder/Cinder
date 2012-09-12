@@ -35,30 +35,27 @@ namespace cinder {
 
 namespace cinder { namespace gl {
 
-class AutoFocuser {
+class StereoAutoFocuser {
   public:
-	AutoFocuser() 
+	StereoAutoFocuser()
 		: mSpeed(1.0f), mDepth(1.0f) {}
 
 	/** Attempts to set an ideal focal length and eye separation. 
 		\a cam is the CameraStereo you use to render the scene and which should be auto-focussed.
-		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
-	*/
+		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method. */
 	void					autoFocus( CameraStereo *cam );
 	//! Returns the speed at which auto-focussing takes place.
 	float					getSpeed() const { return mSpeed; }
 	/** Sets the speed at which auto-focussing takes place. A value of 1.0 will immediately focus on the measured value.
 		Lower values will gradually adjust the focal length.
-		If your autoFocusSpeed is less than 1.0, repeatedly call the autoFocus() function from your update() method.
-	*/
+		If your autoFocusSpeed is less than 1.0, repeatedly call the autoFocus() function from your update() method. */
 	void					setSpeed( float factor ) { mSpeed = math<float>::clamp( factor, 0.01f, 1.0f); }
 	//! Returns the auto-focus depth, which influences the parallax effect.  
 	float					getDepth() const { return mDepth; }
 	/** Sets the auto-focus depth. A value of 1.0 will adjust the focal length in such a way that the nearest objects
 		are at the plane of the screen and cause no parallax. Lower values will cause the nearest objects to appear behind your 
 		screen (positive parallax). Values greater than 1.0 will cause objects to appear in front of your screen (negative parallax).
-		Avoid values much greater than 2.0 to reduce eye strain.
-	*/
+		Avoid values much greater than 2.0 to reduce eye strain. */
 	void					setDepth( float factor ) { mDepth = math<float>::max( factor, 0.01f); }
 
 	//! Returns the sample area in window coordinates.
