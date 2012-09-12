@@ -33,9 +33,8 @@
 namespace cinder {
 
 // By default the camera is looking down -Z
-class Camera 
-{
- public:
+class Camera {
+  public:
 	Camera() : mModelViewCached(false), mProjectionCached(false), mInverseModelViewCached( false ), mWorldUp( Vec3f::yAxis() ) {}
 	virtual ~Camera() {}
 
@@ -96,7 +95,7 @@ class Camera
 
 	float	getScreenRadius( const class Sphere &sphere, float screenWidth, float screenHeight ) const;
 
- protected: 
+  protected:
 	Vec3f	mEyePoint;
 	Vec3f	mViewDirection;
 	Quatf	mOrientation;
@@ -129,7 +128,7 @@ class Camera
 };
 
 class CameraPersp : public Camera {
- public:
+  public:
 	CameraPersp();
 	CameraPersp( int pixelWidth, int pixelHeight, float fov ); // constructs screen-aligned camera
 	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane ); // constructs screen-aligned camera
@@ -138,49 +137,43 @@ class CameraPersp : public Camera {
 	
 	/** Returns both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
-		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport.
-	*/
+		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	void	getLensShift( float *horizontal, float *vertical ) const { *horizontal = mLensShift.x; *vertical = mLensShift.y; }
 	/** Returns both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
-		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport.
-	*/
+		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	Vec2f	getLensShift() const { return Vec2f( mLensShift.x, mLensShift.y ); }
 	/** Sets both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
-		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport.
-	*/
+		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	void	setLensShift( float horizontal, float vertical );
 	/** Sets both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
-		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport.
-	*/
-	void	setLensShift( const Vec2f shift ) { setLensShift( shift.x, shift.y ); }
+		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
+	void	setLensShift( const Vec2f &shift ) { setLensShift( shift.x, shift.y ); }
 	//! Returns the horizontal lens shift. A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 	float	getLensShiftHorizontal() const { return mLensShift.x; }
 	/** Sets the horizontal lens shift. 
-		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
-	*/
+		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport. */
 	void	setLensShiftHorizontal( float horizontal ) { setLensShift( horizontal, mLensShift.y ); }
 	//! Returns the vertical lens shift. A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport.
 	float	getLensShiftVertical() const { return mLensShift.y; }
 	/** Sets the vertical lens shift. 
-		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport.
-	*/
+		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
 	void	setLensShiftVertical( float vertical ) { setLensShift( mLensShift.x, vertical ); }
 	
 	virtual bool	isPersp() const { return true; }
 
 	CameraPersp	getFrameSphere( const class Sphere &worldSpaceSphere, int maxIterations = 20 ) const;
 
- protected:
+  protected:
 	Vec2f	mLensShift;
 
-	virtual void	calcProjection() const ;
+	virtual void	calcProjection() const;
 };
 
 class CameraOrtho : public Camera {
- public:
+  public:
 	CameraOrtho();
 	CameraOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane );
 
@@ -188,12 +181,12 @@ class CameraOrtho : public Camera {
 
 	virtual bool	isPersp() const { return false; }
 	
- protected:
+  protected:
 	virtual void	calcProjection() const;
 };
 
 class CameraStereo : public CameraPersp {
- public:
+  public:
 	CameraStereo() 
 		: mFocalLength(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {}
 	CameraStereo( int pixelWidth, int pixelHeight, float fov )
@@ -234,7 +227,7 @@ class CameraStereo : public CameraPersp {
 	virtual const Matrix44f&	getModelViewMatrix() const;
 	virtual const Matrix44f&	getInverseModelViewMatrix() const;
 
- protected:
+  protected:
 	mutable Matrix44f	mProjectionMatrixLeft, mInverseProjectionMatrixLeft;
 	mutable Matrix44f	mProjectionMatrixRight, mInverseProjectionMatrixRight;
 	mutable Matrix44f	mModelViewMatrixLeft, mInverseModelViewMatrixLeft;
@@ -243,7 +236,7 @@ class CameraStereo : public CameraPersp {
 	virtual void	calcModelView() const;
 	virtual void	calcInverseModelView() const;
 	virtual void	calcProjection() const;
-private:
+  private:
 	bool			mIsStereo;
 	bool			mIsLeft;
 
