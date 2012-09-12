@@ -36,16 +36,15 @@ namespace cinder {
 namespace cinder { namespace gl {
 
 class AutoFocuser {
- public:
+  public:
 	AutoFocuser() 
 		: mSpeed(1.0f), mDepth(1.0f) {}
-	~AutoFocuser() { destroyBuffers(); }
 
 	/** Attempts to set an ideal focal length and eye separation. 
 		\a cam is the CameraStereo you use to render the scene and which should be auto-focussed.
 		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
 	*/
-	void					autoFocus( CameraStereo &cam );
+	void					autoFocus( CameraStereo *cam );
 	//! Returns the speed at which auto-focussing takes place.
 	float					getSpeed() const { return mSpeed; }
 	/** Sets the speed at which auto-focussing takes place. A value of 1.0 will immediately focus on the measured value.
@@ -63,18 +62,17 @@ class AutoFocuser {
 	void					setDepth( float factor ) { mDepth = math<float>::max( factor, 0.01f); }
 
 	//! Returns the sample area in window coordinates.
-	inline Area				getArea() const;
+	Area					getArea() const;
 
 	//! Draws a visualizer, showing the sample area and the location of the nearest pixel.
 	void					draw();
-private:
+  private:
 	void					createBuffers( const Area &area );
-	void					destroyBuffers();
-public:
+  public:
 	//! width and height of the auto focus sample 
 	static const int		AF_WIDTH = 64;
 	static const int		AF_HEIGHT = 64;
-private:
+  private:
 	float					mSpeed;
 	float					mDepth;
 
