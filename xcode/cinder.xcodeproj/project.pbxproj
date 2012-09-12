@@ -348,6 +348,8 @@
 		008CE8540E94693900644A05 /* Area.h in Headers */ = {isa = PBXBuildFile; fileRef = 008CE8530E94693900644A05 /* Area.h */; };
 		0091D8F10E81B9110029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F00E81B9110029341E /* OpenGL.framework */; };
 		0094F3460F6A120800EBED1B /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0094F3450F6A120800EBED1B /* ScreenSaver.framework */; };
+		0098C5501600D8E0009257D9 /* AutoFocuser.h in Headers */ = {isa = PBXBuildFile; fileRef = 0098C54F1600D8E0009257D9 /* AutoFocuser.h */; };
+		0098C5521600D8F1009257D9 /* AutoFocuser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0098C5511600D8F1009257D9 /* AutoFocuser.cpp */; };
 		009987160F79CFE20042F211 /* CinderCocoa.h in Headers */ = {isa = PBXBuildFile; fileRef = 009987150F79CFE20042F211 /* CinderCocoa.h */; };
 		0099871A0F79D0750042F211 /* CinderCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009987190F79D0750042F211 /* CinderCocoa.mm */; };
 		009C864A10F3D5CB006B6861 /* ImageIo.h in Headers */ = {isa = PBXBuildFile; fileRef = 009C864910F3D5CB006B6861 /* ImageIo.h */; };
@@ -895,6 +897,8 @@
 		008CE8530E94693900644A05 /* Area.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Area.h; sourceTree = "<group>"; };
 		0091D8F00E81B9110029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		0094F3450F6A120800EBED1B /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = /System/Library/Frameworks/ScreenSaver.framework; sourceTree = "<absolute>"; };
+		0098C54F1600D8E0009257D9 /* AutoFocuser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AutoFocuser.h; path = gl/AutoFocuser.h; sourceTree = "<group>"; };
+		0098C5511600D8F1009257D9 /* AutoFocuser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AutoFocuser.cpp; path = gl/AutoFocuser.cpp; sourceTree = "<group>"; };
 		009987150F79CFE20042F211 /* CinderCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CinderCocoa.h; path = cocoa/CinderCocoa.h; sourceTree = "<group>"; };
 		009987190F79D0750042F211 /* CinderCocoa.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderCocoa.mm; path = cocoa/CinderCocoa.mm; sourceTree = "<group>"; };
 		009C864910F3D5CB006B6861 /* ImageIo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageIo.h; sourceTree = "<group>"; };
@@ -1558,6 +1562,7 @@
 		00CE73910E92DBD60059E09B /* gl */ = {
 			isa = PBXGroup;
 			children = (
+				0098C54F1600D8E0009257D9 /* AutoFocuser.h */,
 				00CE73920E92DBE40059E09B /* gl.h */,
 				00CE73930E92DBE40059E09B /* GLee.h */,
 				00E45D080E94790F00B47EC2 /* Texture.h */,
@@ -1576,6 +1581,7 @@
 		00CE73960E92DBEB0059E09B /* gl */ = {
 			isa = PBXGroup;
 			children = (
+				0098C5511600D8F1009257D9 /* AutoFocuser.cpp */,
 				00C150A40ED8F88100549EF3 /* Light.cpp */,
 				00E45D0A0E94792600B47EC2 /* Texture.cpp */,
 				00D9A07B0EA57C3F00FF5AEB /* GlslProg.cpp */,
@@ -2135,6 +2141,7 @@
 				0034C32D151A5B9F003F2E30 /* linebreakdef.h in Headers */,
 				005B02FB152CD16E00F2C237 /* json_batchallocator.h in Headers */,
 				005B0301152CD16E00F2C237 /* json_tool.h in Headers */,
+				0098C5501600D8E0009257D9 /* AutoFocuser.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2546,6 +2553,7 @@
 				005B02FE152CD16E00F2C237 /* json_reader.cpp in Sources */,
 				005B0304152CD16E00F2C237 /* json_value.cpp in Sources */,
 				005B0307152CD16E00F2C237 /* json_writer.cpp in Sources */,
+				0098C5521600D8F1009257D9 /* AutoFocuser.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
