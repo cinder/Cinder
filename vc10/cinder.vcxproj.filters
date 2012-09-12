@@ -450,6 +450,9 @@
     <ClCompile Include="..\src\cinder\Unicode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\AutoFocuser.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -925,6 +928,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\Unicode.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\AutoFocuser.h">
+      <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
