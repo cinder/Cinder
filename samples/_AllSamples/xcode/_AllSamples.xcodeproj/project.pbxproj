@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				0098C6AC1600E8EB009257D9 /* PBXTargetDependency */,
 				002932C51530F5AD0022B1BF /* PBXTargetDependency */,
 				002932C71530F5AD0022B1BF /* PBXTargetDependency */,
 				002932C91530F5AD0022B1BF /* PBXTargetDependency */,
@@ -653,6 +654,20 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = quickTimeSample;
 		};
+		0098C6A91600E8E7009257D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0098C6A11600E8E7009257D9 /* StereoscopicRendering.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = StereoscopicRendering;
+		};
+		0098C6AB1600E8EB009257D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0098C6A11600E8E7009257D9 /* StereoscopicRendering.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = StereoscopicRendering;
+		};
 		009C40EA1120680A0053283A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */;
@@ -1060,6 +1075,7 @@
 		006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeWriter.xcodeproj; path = ../../QuickTimeWriter/xcode/QuickTimeWriter.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageHeightField.xcodeproj; path = ../../ImageHeightField/xcode/ImageHeightField.xcodeproj; sourceTree = SOURCE_ROOT; };
 		007BDE071118921D00BC750C /* RDiffusion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RDiffusion.xcodeproj; path = ../../RDiffusion/xcode/RDiffusion.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0098C6A11600E8E7009257D9 /* StereoscopicRendering.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = StereoscopicRendering.xcodeproj; path = ../../StereoscopicRendering/xcode/StereoscopicRendering.xcodeproj; sourceTree = "<group>"; };
 		009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SurfaceBasic.xcodeproj; path = ../../SurfaceBasic/xcode/SurfaceBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOMultipleTargets.xcodeproj; path = ../../FBOMultipleTargets/xcode/FBOMultipleTargets.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageFileBasic.xcodeproj; path = ../../ImageFileBasic/xcode/ImageFileBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1094,6 +1110,7 @@
 			children = (
 				0029329B1530F5480022B1BF /* _svg */,
 				009F6E0E14C0FDD20036C292 /* _timeline */,
+				0098C6A11600E8E7009257D9 /* StereoscopicRendering.xcodeproj */,
 				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */,
 				C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */,
@@ -1478,6 +1495,14 @@
 			isa = PBXGroup;
 			children = (
 				007BDE101118921E00BC750C /* RDiffusion.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0098C6A21600E8E7009257D9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0098C6AA1600E8E7009257D9 /* StereoscopicRendering.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1957,6 +1982,10 @@
 					ProjectRef = 002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */;
 				},
 				{
+					ProductGroup = 0098C6A21600E8E7009257D9 /* Products */;
+					ProjectRef = 0098C6A11600E8E7009257D9 /* StereoscopicRendering.xcodeproj */;
+				},
+				{
 					ProductGroup = 009C40E71120680A0053283A /* Products */;
 					ProjectRef = 009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */;
 				},
@@ -2282,6 +2311,13 @@
 			fileType = wrapper.application;
 			path = RDiffusion.app;
 			remoteRef = 007BDE0F1118921E00BC750C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0098C6AA1600E8E7009257D9 /* StereoscopicRendering.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = StereoscopicRendering.app;
+			remoteRef = 0098C6A91600E8E7009257D9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		009C40EB1120680A0053283A /* SurfaceBasic.app */ = {
@@ -2668,6 +2704,11 @@
 			isa = PBXTargetDependency;
 			name = quickTimeSample;
 			targetProxy = 007BDE141118924E00BC750C /* PBXContainerItemProxy */;
+		};
+		0098C6AC1600E8EB009257D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = StereoscopicRendering;
+			targetProxy = 0098C6AB1600E8EB009257D9 /* PBXContainerItemProxy */;
 		};
 		009C40ED112068140053283A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

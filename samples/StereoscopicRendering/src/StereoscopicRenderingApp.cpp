@@ -39,7 +39,7 @@
 #include "cinder/app/AppBasic.h"
 
 #include "cinder/gl/gl.h"
-#include "cinder/gl/AutoFocuser.h"
+#include "cinder/gl/StereoAutoFocuser.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Vbo.h"
 
@@ -58,9 +58,9 @@ using namespace ci::app;
 using namespace std;
 
 class StereoscopicRenderingApp : public AppBasic {
-public:
+  public:
 	typedef enum { SET_FOCAL_LENGTH, SET_FOCUS, AUTO_FOCUS } FocusMethod;
-public:
+  public:
 	void prepareSettings( Settings *settings );
 
 	void setup();	
@@ -73,7 +73,7 @@ public:
 	void keyDown( KeyEvent event );
 
 	void resize( ResizeEvent event );
-private:
+  private:
 	bool			mIsStereo;
 
 	bool			mDrawAutoFocus;
@@ -82,7 +82,7 @@ private:
 	MayaCamUI		mMayaCam;
 	CameraStereo	mCamera;
 
-	gl::AutoFocuser	mAF;
+	gl::StereoAutoFocuser	mAF;
 
 	gl::GlslProg	mShader;
 
@@ -176,7 +176,7 @@ void StereoscopicRenderingApp::update()
 		// based on the contents of the current depth buffer. This is by far the best method of
 		// the three, because it guarantees the parallax effect will never be out of bounds.
 		// Use the UP and DOWN keys to adjust the intensity of the parallax effect.
-		mAF.autoFocus( mCamera );
+		mAF.autoFocus( &mCamera );
 		break;
 	}
 }
