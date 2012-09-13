@@ -161,8 +161,10 @@ float Camera::getScreenRadius( const Sphere &sphere, float screenWidth, float sc
 void Camera::calcMatrices() const
 {
 	if( ! mModelViewCached ) calcModelView();
-	if( ! mInverseModelViewCached ) calcInverseModelView();
 	if( ! mProjectionCached ) calcProjection();
+
+	// note: calculation of the inverse modelview matrices is postponed until actually requested
+	//if( ! mInverseModelViewCached ) calcInverseModelView();
 }
 
 void Camera::calcModelView() const

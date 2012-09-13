@@ -51,6 +51,7 @@
 #include "cinder/TriMesh.h"
 #include "cinder/ObjLoader.h"
 
+#include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
 using namespace ci;
@@ -417,16 +418,31 @@ void StereoscopicRenderingApp::render()
 }
 
 void StereoscopicRenderingApp::renderUI()
-{	
-	float w = (float) getWindowWidth() * 0.5f;
-	float h = (float) getWindowHeight();
+{   
+    float w = (float) getWindowWidth() * 0.5f;
+    float h = (float) getWindowHeight();
 
-	boost::format fmt = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+    std::string labels( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:" );
+    boost::format fmt = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
 
-	gl::enableAlphaBlending();
-	gl::drawString( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:", Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );
-	gl::drawStringRight( fmt.str(), Vec2f( w + 200.0f, h - 150.0f ), Color::black(), mFont );
-	gl::disableAlphaBlending();
+#if(defined WIN32)
+    gl::enableAlphaBlending();
+    gl::drawString( labels, Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );
+    gl::drawStringRight( fmt.str(), Vec2f( w + 200.0f, h - 150.0f ), Color::black(), mFont );
+    gl::disableAlphaBlending();
+#else
+    // \n is not supported on the mac, so we draw separate strings
+    std::vector< std::string > left, right;
+    boost::split( left, labels, boost::is_any_of("\n") );
+    boost::split( right, fmt.str(), boost::is_any_of("\n") );
+
+    gl::enableAlphaBlending();
+    for(size_t i=0;i<4;++i) {       
+        gl::drawString( left[i], Vec2f( w - 200.0f, h - 150.0f + i * mFont.getSize() * 0.95f ), Color::black(), mFont );
+        gl::drawStringRight( right[i], Vec2f( w + 200.0f, h - 150.0f + i * mFont.getSize() * 0.95f ), Color::black(), mFont );
+    }
+    gl::disableAlphaBlending();
+#endif
 }
 
 CINDER_APP_BASIC( StereoscopicRenderingApp, RendererGl )
