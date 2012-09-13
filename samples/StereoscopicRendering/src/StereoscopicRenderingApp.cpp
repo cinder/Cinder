@@ -47,11 +47,11 @@
 #include "cinder/Font.h"
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
+#include "cinder/ObjLoader.h"
 #include "cinder/Rand.h"
 #include "cinder/TriMesh.h"
-#include "cinder/ObjLoader.h"
+#include "cinder/Utilities.h"
 
-#include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 
 using namespace ci;
@@ -423,23 +423,23 @@ void StereoscopicRenderingApp::renderUI()
     float h = (float) getWindowHeight();
 
     std::string labels( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:" );
-    boost::format fmt = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+    boost::format values = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
 
 #if(defined WIN32)
     gl::enableAlphaBlending();
     gl::drawString( labels, Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );
-    gl::drawStringRight( fmt.str(), Vec2f( w + 200.0f, h - 150.0f ), Color::black(), mFont );
+    gl::drawStringRight( values.str(), Vec2f( w + 200.0f, h - 150.0f ), Color::black(), mFont );
     gl::disableAlphaBlending();
 #else
     // \n is not supported on the mac, so we draw separate strings
     std::vector< std::string > left, right;
-    boost::split( left, labels, boost::is_any_of("\n") );
-    boost::split( right, fmt.str(), boost::is_any_of("\n") );
+	left = ci::split( labels, "\n", false );
+	right = ci::split( values.str(), "\n", false );
 
     gl::enableAlphaBlending();
     for(size_t i=0;i<4;++i) {       
-        gl::drawString( left[i], Vec2f( w - 200.0f, h - 150.0f + i * mFont.getSize() * 0.95f ), Color::black(), mFont );
-        gl::drawStringRight( right[i], Vec2f( w + 200.0f, h - 150.0f + i * mFont.getSize() * 0.95f ), Color::black(), mFont );
+        gl::drawString( left[i], Vec2f( w - 200.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
+        gl::drawStringRight( right[i], Vec2f( w + 200.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
     }
     gl::disableAlphaBlending();
 #endif
