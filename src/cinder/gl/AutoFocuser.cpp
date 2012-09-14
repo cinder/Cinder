@@ -73,10 +73,8 @@ void AutoFocuser::autoFocus( CameraStereo &cam )
 
 inline Area	AutoFocuser::getArea() const
 {
-	Area area = gl::getViewport();
-	area.expand( -area.getWidth() / 4, 0 );
-
-	return area;
+	// simply sample the whole screen
+	return gl::getViewport();
 }
 
 void AutoFocuser::draw()
