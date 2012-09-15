@@ -24,17 +24,14 @@
 */
 
 #include "cinder/Camera.h"
-#include "cinder/gl/AutoFocuser.h"
+#include "cinder/gl/StereoAutoFocuser.h"
 
 namespace cinder { namespace gl {
-	
-void AutoFocuser::autoFocus( CameraStereo &cam )
+
+void StereoAutoFocuser::autoFocus( CameraStereo &cam, Area &area )
 {
 	if( ! cam.isStereoEnabled() )
 		return;
-
-	// determine sample area
-	Area area = getArea();
 
 	// create or resize buffers
 	createBuffers( area );
@@ -57,8 +54,8 @@ void AutoFocuser::autoFocus( CameraStereo &cam )
 	std::vector<GLfloat>::const_iterator itr = std::min_element(mBuffer.begin(), mBuffer.end());
 
 	size_t p = itr - mBuffer.begin();
-	mNearest.x = 0.5f + (int) ( (p % AF_WIDTH) / (float) AF_WIDTH * area.getWidth() );
-	mNearest.y = 0.5f + (int) ( (p / AF_WIDTH) / (float) AF_HEIGHT * area.getHeight() );
+	mNearest.x = 0.5f + (int) ( (p % AF_WIDTH) / (float) AF_WIDTH * mArea.getWidth() );
+	mNearest.y = 0.5f + (int) ( (p / AF_WIDTH) / (float) AF_HEIGHT * mArea.getHeight() );
 	
 	// convert to actual distance from camera
 	float nearClip = cam.getNearClip();
@@ -71,32 +68,28 @@ void AutoFocuser::autoFocus( CameraStereo &cam )
 	cam.setFocus( cam.getFocalLength() + mSpeed * ( z - cam.getFocalLength() ) );
 }
 
-inline Area	AutoFocuser::getArea() const
-{
-	// simply sample the whole screen
-	return gl::getViewport();
-}
-
-void AutoFocuser::draw()
+void StereoAutoFocuser::draw()
 {
 	// visual debugging 
-	Area area = getArea();
-
 	glPushAttrib( GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_LINE_BIT );
 	gl::enableAlphaBlending();
-	gl::color( ColorA( 1, 1, 1, 0.25f ) );
-	gl::drawSolidRect( area );
-	gl::color( ColorA(0, 0, 0, 0.75f) );
-	glLineWidth( 1.0f );
-	gl::drawLine( Vec2f( (float) area.getX1() + 0.5f, (float) area.getY2() - mNearest.y ), Vec2f( (float) area.getX2() + 0.5f, (float) area.getY2() - mNearest.y ) );
-	gl::drawLine( Vec2f( (float) area.getX1() + mNearest.x, (float) area.getY1() + 0.5f ), Vec2f( (float) area.getX1() + mNearest.x, (float) area.getY2() + 0.5f ) );
+	gl::color( ColorA( 0, 1, 1, 0.1f ) );
+	gl::drawSolidRect( mArea );
+	gl::color( ColorA(0, 1, 1, 0.8f) );
+	glLineWidth( 2.0f );
+	gl::drawLine( Vec2f( (float) mArea.getX1() + 0.5f, (float) mArea.getY2() - mNearest.y ), 
+		Vec2f( (float) mArea.getX2() + 0.5f, (float) mArea.getY2() - mNearest.y ) );
+	gl::drawLine( Vec2f( (float) mArea.getX1() + mNearest.x, (float) mArea.getY1() + 0.5f ), 
+		Vec2f( (float) mArea.getX1() + mNearest.x, (float) mArea.getY2() + 0.5f ) );
 	glPopAttrib();
 }
 
-void AutoFocuser::createBuffers( const Area &area )
+void StereoAutoFocuser::createBuffers( const Area &area )
 {
-	int width = area.getWidth();
-	int height = area.getHeight();
+	mArea = area;
+
+	int width = mArea.getWidth();
+	int height = mArea.getHeight();
 
 	if( !mFboLarge || !mFboSmall || mFboLarge.getWidth() != width || mFboLarge.getHeight() != height )
 	{
@@ -116,7 +109,7 @@ void AutoFocuser::createBuffers( const Area &area )
 	}
 }
 
-void AutoFocuser::destroyBuffers()
+void StereoAutoFocuser::destroyBuffers()
 {
 	// clear buffer and deallocate memory
 	mBuffer.swap( std::vector<GLfloat>() );

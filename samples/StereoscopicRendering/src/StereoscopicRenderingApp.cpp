@@ -39,8 +39,8 @@
 #include "cinder/app/AppBasic.h"
 
 #include "cinder/gl/gl.h"
-#include "cinder/gl/AutoFocuser.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/StereoAutoFocuser.h"
 #include "cinder/gl/Vbo.h"
 
 #include "cinder/Camera.h"
@@ -83,7 +83,7 @@ private:
 	MayaCamUI		mMayaCam;
 	CameraStereo	mCamera;
 
-	gl::AutoFocuser	mAF;
+	gl::StereoAutoFocuser	mAF;
 
 	gl::GlslProg	mShader;
 
@@ -152,7 +152,8 @@ void StereoscopicRenderingApp::setup()
 
 void StereoscopicRenderingApp::update()
 {
-	float d, f;
+	float	d, f;
+	Area	area;
 
 	switch( mFocusMethod )
 	{
@@ -177,11 +178,33 @@ void StereoscopicRenderingApp::update()
 		mCamera.setFocus( f );
 		break;
 	case AUTO_FOCUS:
-		// Here, we use the gl::AutoFocuser class to determine the best focal length,
+		// Here, we use the gl::StereoAutoFocuser class to determine the best focal length,
 		// based on the contents of the current depth buffer. This is by far the best method of
 		// the three, because it guarantees the parallax effect will never be out of bounds.
+		// Depending on the rendering method, we can sample different area's of the screen
+		// to optimally detect details. This is not required, however.
 		// Use the UP and DOWN keys to adjust the intensity of the parallax effect.
-		mAF.autoFocus( mCamera );
+		switch( mRenderMethod ) 
+		{
+		case MONO:
+			break;
+		case ANAGLYPH_RED_CYAN:
+			// simply sample the whole screen
+			mAF.autoFocus( mCamera );
+			break;
+		case SIDE_BY_SIDE:
+			// sample half the left eye, half the right eye
+			area = gl::getViewport();
+			area.expand( -area.getWidth()/4, 0 );
+			mAF.autoFocus( mCamera, area );
+			break;
+		case OVER_UNDER:
+			// sample half the left eye, half the right eye
+			area = gl::getViewport();
+			area.expand( 0, -area.getHeight()/4 );
+			mAF.autoFocus( mCamera, area );
+			break;
+		}
 		break;
 	}
 }
