@@ -39,17 +39,18 @@
 #include "cinder/app/AppBasic.h"
 
 #include "cinder/gl/gl.h"
-#include "cinder/gl/StereoAutoFocuser.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/StereoAutoFocuser.h"
 #include "cinder/gl/Vbo.h"
 
 #include "cinder/Camera.h"
 #include "cinder/Font.h"
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
+#include "cinder/ObjLoader.h"
 #include "cinder/Rand.h"
 #include "cinder/TriMesh.h"
-#include "cinder/ObjLoader.h"
+#include "cinder/Utilities.h"
 
 #include <boost/format.hpp>
 
@@ -60,7 +61,8 @@ using namespace std;
 class StereoscopicRenderingApp : public AppBasic {
   public:
 	typedef enum { SET_FOCAL_LENGTH, SET_FOCUS, AUTO_FOCUS } FocusMethod;
-  public:
+	typedef enum { MONO, ANAGLYPH_RED_CYAN, SIDE_BY_SIDE, OVER_UNDER } RenderMethod;
+public:
 	void prepareSettings( Settings *settings );
 
 	void setup();	
@@ -73,11 +75,10 @@ class StereoscopicRenderingApp : public AppBasic {
 	void keyDown( KeyEvent event );
 
 	void resize( ResizeEvent event );
-  private:
-	bool			mIsStereo;
-
+private:
 	bool			mDrawAutoFocus;
 	FocusMethod		mFocusMethod;
+	RenderMethod	mRenderMethod;
 
 	MayaCamUI		mMayaCam;
 	CameraStereo	mCamera;
@@ -88,6 +89,8 @@ class StereoscopicRenderingApp : public AppBasic {
 
 	gl::VboMesh		mMesh;
 	gl::VboMesh		mNote;
+
+	Color			mBackgroundColor;
 
 	bool			mDrawUI;
 	Font			mFont;
@@ -108,8 +111,8 @@ void StereoscopicRenderingApp::prepareSettings( Settings *settings )
 
 void StereoscopicRenderingApp::setup()
 {
-	// enable stereoscopic rendering (press S to toggle)
-	mIsStereo = true;
+	// enable stereoscopic rendering
+	mRenderMethod = SIDE_BY_SIDE;
 
 	// enable auto-focussing
 	mFocusMethod = AUTO_FOCUS;
@@ -141,13 +144,16 @@ void StereoscopicRenderingApp::setup()
 		quit();
 	}
 
+	mBackgroundColor = Color( 0.8f, 0.8f, 0.8f );
+
 	mFont = Font("Verdana", 36.0f);
 	mDrawUI = true;
 }
 
 void StereoscopicRenderingApp::update()
 {
-	float d, f;
+	float	d, f;
+	Area	area;
 
 	switch( mFocusMethod )
 	{
@@ -172,11 +178,33 @@ void StereoscopicRenderingApp::update()
 		mCamera.setFocus( f );
 		break;
 	case AUTO_FOCUS:
-		// Here, we use the gl::AutoFocuser class to determine the best focal length,
+		// Here, we use the gl::StereoAutoFocuser class to determine the best focal length,
 		// based on the contents of the current depth buffer. This is by far the best method of
 		// the three, because it guarantees the parallax effect will never be out of bounds.
+		// Depending on the rendering method, we can sample different area's of the screen
+		// to optimally detect details. This is not required, however.
 		// Use the UP and DOWN keys to adjust the intensity of the parallax effect.
-		mAF.autoFocus( &mCamera );
+		switch( mRenderMethod ) 
+		{
+		case MONO:
+			break;
+		case ANAGLYPH_RED_CYAN:
+			// simply sample the whole screen
+			mAF.autoFocus( &mCamera );
+			break;
+		case SIDE_BY_SIDE:
+			// sample half the left eye, half the right eye
+			area = gl::getViewport();
+			area.expand( -area.getWidth()/4, 0 );
+			mAF.autoFocus( &mCamera, area );
+			break;
+		case OVER_UNDER:
+			// sample half the left eye, half the right eye
+			area = gl::getViewport();
+			area.expand( 0, -area.getHeight()/4 );
+			mAF.autoFocus( &mCamera, area );
+			break;
+		}
 		break;
 	}
 }
@@ -187,81 +215,97 @@ void StereoscopicRenderingApp::draw()
 	int w = getWindowWidth();
 	int h = getWindowHeight();
 
-	// gray background
-	gl::clear( Color(0.8f, 0.8f, 0.8f) ); 
-
-	// enable 3D rendering
-	gl::enableDepthRead();
-	gl::enableDepthWrite();
-	gl::pushMatrices();
-
+	// clear color and depth buffers
+	gl::clear( mBackgroundColor ); 
+	
 	// stereoscopic rendering
-	if( mIsStereo ) {
+	switch( mRenderMethod ) 
+	{
+	case MONO:
+		// render mono camera
+		mCamera.disableStereo();
+		render();
+
+		break;
+	case ANAGLYPH_RED_CYAN:
+		// initialize the accumulation buffer
+		glClearAccum( 0.0f, 0.0f, 0.0f, 0.0f );
+
+		// because glClear() does not respect the color mask, 
+		// clear the color and depth buffers using a red filtered background color
+		gl::clear( mBackgroundColor * Color( 1, 0, 0 ) );
+
+		// set up color mask to only draw red and render left camera
+		glColorMask( true, false, false, true );
+		mCamera.enableStereoLeft();
+		render();
+		glColorMask( true, true, true, true );
+
+		// load the scene into the accumulation buffer
+		glAccum( GL_LOAD, 1.0f );
+		
+		// because glClear() does not respect the color mask, 
+		// clear the color and depth buffers using a cyan filtered background color
+		gl::clear( mBackgroundColor * Color( 0, 1, 1 ) );
+		
+		// set up color mask to only draw cyan and render right camera
+		glColorMask( false, true, true, true );
+		mCamera.enableStereoRight();
+		render();
+		glColorMask( true, true, true, true );
+
+		// add the scene to the accumulation buffer
+		glAccum( GL_ACCUM, 1.0f );
+
+		// present the accumulation buffer to the screen
+		glAccum( GL_RETURN, 1.0f );
+		break;
+	case SIDE_BY_SIDE:
 		// store current viewport
 		glPushAttrib( GL_VIEWPORT_BIT );
 
 		// draw to left half of window only
 		gl::setViewport( Area(0, 0, w / 2, h) );
 
-		// activate left camera
+		// render left camera
 		mCamera.enableStereoLeft();
-		gl::setMatrices( mCamera );
-
-		// render scene
 		render();
 
 		// draw to right half of window only
 		gl::setViewport( Area(w / 2, 0, w, h) );
 
-		// activate right camera
+		// render right camera
 		mCamera.enableStereoRight();
-		gl::setMatrices( mCamera );
-
-		// render scene
 		render();
 
 		// restore viewport
 		glPopAttrib();
-	} 
-	else {
-		// activate mono camera
-		mCamera.disableStereo();
-		gl::setMatrices( mCamera );
+		break;
+	case OVER_UNDER:
+		// store current viewport
+		glPushAttrib( GL_VIEWPORT_BIT );
 
-		// render scene
+		// draw to top half of window only
+		gl::setViewport( Area(0, 0, w, h / 2) );
+
+		// render left camera
+		mCamera.enableStereoLeft();
 		render();
-	}
 
-	// restore 2D
-	gl::popMatrices();
-	gl::disableDepthWrite();
-	gl::disableDepthRead();
+		// draw to bottom half of window only
+		gl::setViewport( Area(0, h / 2, w, h) );
 
-	// render 2D user interface
-	if( mDrawUI )
-	{
-		if( mIsStereo )
-		{
-			// store current viewport
-			glPushAttrib( GL_VIEWPORT_BIT );
+		// render right camera
+		mCamera.enableStereoRight();
+		render();
 
-			// draw to left half of window only
-			gl::setViewport( Area(0, 0, w / 2, h) );
-			renderUI();
-
-			// draw to right half of window only
-			gl::setViewport( Area(w / 2, 0, w, h) );
-			renderUI();
-
-			// restore viewport
-			glPopAttrib();
-		}
-		else
-			renderUI();
+		// restore viewport
+		glPopAttrib();
+		break;
 	}
 
 	// draw auto focus visualizer
-	if( mIsStereo && mDrawAutoFocus ) mAF.draw();
+	if( mDrawAutoFocus ) mAF.draw();
 }
 
 void StereoscopicRenderingApp::mouseDown( MouseEvent event )
@@ -291,10 +335,6 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		// toggle full screen
 		setFullScreen( ! isFullScreen() );
 		break;
-	case KeyEvent::KEY_s:
-		// toggle stereoscopic rendering
-		mIsStereo = !mIsStereo;
-		break;
 	case KeyEvent::KEY_v:
 		// toggle vertical sync
 		gl::enableVerticalSync( !gl::isVerticalSyncEnabled() );
@@ -315,6 +355,18 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		break;
 	case KeyEvent::KEY_3:
 		mFocusMethod = AUTO_FOCUS;
+		break;
+	case KeyEvent::KEY_F1:
+		mRenderMethod = MONO;
+		break;
+	case KeyEvent::KEY_F2:
+		mRenderMethod = ANAGLYPH_RED_CYAN;
+		break;
+	case KeyEvent::KEY_F3:
+		mRenderMethod = SIDE_BY_SIDE;
+		break;
+	case KeyEvent::KEY_F4:
+		mRenderMethod = OVER_UNDER;
 		break;
 	case KeyEvent::KEY_UP:
 		// increase the parallax effect (towards negative parallax) 
@@ -351,6 +403,14 @@ void StereoscopicRenderingApp::resize( ResizeEvent event )
 void StereoscopicRenderingApp::render()
 {	
 	float seconds = (float) getElapsedSeconds();
+
+	// enable 3D rendering
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
+
+	// set 3D camera matrices
+	gl::pushMatrices();
+	gl::setMatrices( mCamera );
 
 	if( mShader && mMesh && mNote ) {
 		// enable phong shading
@@ -414,19 +474,42 @@ void StereoscopicRenderingApp::render()
 	gl::color( ColorA(1,1,1,0.75f) );
 	gl::drawCube( Vec3f(0.0f, -0.5f, 0.0f), Vec3f(200.0f, 1.0f, 200.0f) );
 	gl::disableAlphaBlending();
+
+	// restore 2D rendering
+	gl::popMatrices();
+	gl::disableDepthWrite();
+	gl::disableDepthRead();
+
+	// render UI
+	if( mDrawUI ) renderUI();
 }
 
 void StereoscopicRenderingApp::renderUI()
-{	
-	float w = (float) getWindowWidth() * 0.5f;
-	float h = (float) getWindowHeight();
+{   
+    float w = (float) getWindowWidth() * 0.5f;
+    float h = (float) getWindowHeight();
 
-	boost::format fmt = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+    std::string labels( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:" );
+    boost::format values = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
 
-	gl::enableAlphaBlending();
-	gl::drawString( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:", Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );
-	gl::drawStringRight( fmt.str(), Vec2f( w + 200.0f, h - 150.0f ), Color::black(), mFont );
-	gl::disableAlphaBlending();
+#if(defined WIN32)
+    gl::enableAlphaBlending();
+    gl::drawString( labels, Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );
+    gl::drawStringRight( values.str(), Vec2f( w + 200.0f, h - 150.0f ), Color::black(), mFont );
+    gl::disableAlphaBlending();
+#else
+    // \n is not supported on the mac, so we draw separate strings
+    std::vector< std::string > left, right;
+	left = ci::split( labels, "\n", false );
+	right = ci::split( values.str(), "\n", false );
+
+    gl::enableAlphaBlending();
+    for(size_t i=0;i<4;++i) {       
+        gl::drawString( left[i], Vec2f( w - 200.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
+        gl::drawStringRight( right[i], Vec2f( w + 200.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
+    }
+    gl::disableAlphaBlending();
+#endif
 }
 
 CINDER_APP_BASIC( StereoscopicRenderingApp, RendererGl )

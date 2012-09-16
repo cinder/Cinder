@@ -42,8 +42,10 @@ class StereoAutoFocuser {
 
 	/** Attempts to set an ideal focal length and eye separation. 
 		\a cam is the CameraStereo you use to render the scene and which should be auto-focussed.
-		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method. */
-	void					autoFocus( CameraStereo *cam );
+		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
+	*/
+	void					autoFocus( CameraStereo *cam ) { autoFocus( cam, ci::gl::getViewport() ); }
+	void					autoFocus( CameraStereo *cam, const Area &area );
 	//! Returns the speed at which auto-focussing takes place.
 	float					getSpeed() const { return mSpeed; }
 	/** Sets the speed at which auto-focussing takes place. A value of 1.0 will immediately focus on the measured value.
@@ -58,9 +60,6 @@ class StereoAutoFocuser {
 		Avoid values much greater than 2.0 to reduce eye strain. */
 	void					setDepth( float factor ) { mDepth = math<float>::max( factor, 0.01f); }
 
-	//! Returns the sample area in window coordinates.
-	Area					getArea() const;
-
 	//! Draws a visualizer, showing the sample area and the location of the nearest pixel.
 	void					draw();
   private:
@@ -72,6 +71,8 @@ class StereoAutoFocuser {
   private:
 	float					mSpeed;
 	float					mDepth;
+
+	Area					mArea;
 
 	Fbo						mFboSmall;
 	Fbo						mFboLarge;
