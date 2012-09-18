@@ -23,6 +23,9 @@ void TimelineTest::setup()
     mTimeline = timeline().create();
     timeline().add( mTimeline );
     mTimeline->setLoop( true );
+//	timeline().setPingPong();
+//	timeline().setAutoRemove(false);
+//	timeline().setLoop();
 }
 
 void TimelineTest::mouseDown( MouseEvent event )
@@ -39,6 +42,7 @@ void TimelineTest::keyDown( KeyEvent event )
 		case KeyEvent::KEY_s:
 //			mTimeline->setLoop(false);
 			mTimeline->apply( &mAnim, Vec2f( 100,100 ), 4.50f,  EaseOutCubic() ).pingPong();
+//			timeline().apply( &mAnim, Vec2f( 100,100 ), 4.50f,  EaseOutCubic() );
 			break;
 			
 		case KeyEvent::KEY_d:
