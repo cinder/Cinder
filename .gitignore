@@ -19,3 +19,7 @@ lib/cinder*.lib
 Debug/
 Release/
 ipch/
+
+# cjj testing stuff
+boost
+lib/TimelineTest.app
