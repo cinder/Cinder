@@ -38,15 +38,15 @@ class Timer {
 	//! Constructs a default timer which is initialized as running unless \a startOnConstruction is false
 	Timer( bool startOnConstruction );
 	
-	//! Begins timing
-	void	start();
+	//! Begins timing with an optional \a offset in seconds.
+	void	start( double offset=0.0 );
 	//! Returns the elapsed seconds if the timer is running, or the total time between calls to start() and stop() if it is stopped.
 	double	getSeconds() const;
 	//! Ends timing
 	void	stop();
 
-	//! Resumes timing without resetting the timer
-	void	resume();
+	//! Resumes timing without resetting the timer.
+	void	resume() { start( getSeconds() ); }
 
 	//! Returns whether the timer is currently running
 	bool	isStopped() const { return mIsStopped; }

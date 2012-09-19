@@ -57,14 +57,14 @@ Timer::Timer( bool startOnConstruction )
 	}
 }
 
-void Timer::start()
+void Timer::start( double offset )
 {	
 #if defined( CINDER_COCOA )
-	mStartTime = ::CFAbsoluteTimeGetCurrent();
+	mStartTime = ::CFAbsoluteTimeGetCurrent() - offset;
 #elif defined( CINDER_MSW )
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
-	mStartTime = rawTime.QuadPart * mInvNativeFreq;
+	mStartTime = rawTime.QuadPart * mInvNativeFreq - offset;
 #endif
 
 	mIsStopped = false;
@@ -96,21 +96,6 @@ void Timer::stop()
 		mEndTime = rawTime.QuadPart * mInvNativeFreq;
 #endif
 		mIsStopped = true;
-	}
-}
-
-void Timer::resume()
-{	
-	if( mIsStopped ) {
-#if defined( CINDER_COCOA )
-		mStartTime = ::CFAbsoluteTimeGetCurrent() - getSeconds();
-#elif defined( CINDER_MSW )
-		::LARGE_INTEGER rawTime;
-		::QueryPerformanceCounter( &rawTime );
-		mStartTime = rawTime.QuadPart * mInvNativeFreq - getSeconds();
-#endif
-
-		mIsStopped = false;
 	}
 }
 
