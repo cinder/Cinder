@@ -117,6 +117,10 @@ void Timeline::add( TimelineItemRef item )
 {
 	item->mParent = this;
 	item->mStartTime = mCurrentTime;
+	
+	// If this is not here, Timeline's that are added after being removed will immediately be removed again
+	item->mMarkedForRemoval = false;
+	
 	mItems.insert( make_pair( item->mTarget, item ) );
 	setDurationDirty();
 }
