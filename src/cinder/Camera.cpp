@@ -442,7 +442,7 @@ void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3
 
 	Vec3f eye( getEyePointShifted() );
 
-	float shift = 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
+	float shift = 0.5f * mEyeSeparation * (mNearClip / mConvergence);
 	shift *= (mIsStereo ? (mIsLeft ? 1.0f : -1.0f) : 0.0f);
 
 	float left = mFrustumLeft + shift;
@@ -465,7 +465,7 @@ void CameraStereo::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f
 
 	Vec3f eye( getEyePointShifted() );
 
-	float shift = 0.5f * mEyeSeparation * (mNearClip / mFocalLength);
+	float shift = 0.5f * mEyeSeparation * (mNearClip / mConvergence);
 	shift *= (mIsStereo ? (mIsLeft ? 1.0f : -1.0f) : 0.0f);
 
 	float left = mFrustumLeft + shift;
@@ -563,17 +563,17 @@ void CameraStereo::calcProjection() const
 
 	// calculate left matrices
 	float *m = mProjectionMatrixLeft.m;
-	m[ 8] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mFocalLength) ) / ( mFrustumRight - mFrustumLeft );
+	m[ 8] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mConvergence) ) / ( mFrustumRight - mFrustumLeft );
 
 	m = mInverseProjectionMatrixLeft.m;
-	m[12] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mFocalLength) ) / ( 2.0f * mNearClip );	
+	m[12] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mConvergence) ) / ( 2.0f * mNearClip );	
 
 	// calculate right matrices
 	m = mProjectionMatrixRight.m;
-	m[ 8] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mFocalLength) ) / ( mFrustumRight - mFrustumLeft );
+	m[ 8] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mConvergence) ) / ( mFrustumRight - mFrustumLeft );
 
 	m = mInverseProjectionMatrixRight.m;
-	m[12] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mFocalLength) ) / ( 2.0f * mNearClip );
+	m[12] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mConvergence) ) / ( 2.0f * mNearClip );
 	
 	mProjectionCached = true;
 }

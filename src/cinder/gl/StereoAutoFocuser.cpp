@@ -65,7 +65,7 @@ void StereoAutoFocuser::autoFocus( CameraStereo *cam, const Area &area )
 	
 	// perform auto focussing
 	float z = math<float>::max( nearClip, mNearest.z * mDepth );
-	cam->setFocus( cam->getFocalLength() + mSpeed * ( z - cam->getFocalLength() ) );
+	cam->setConvergence( cam->getConvergence() + mSpeed * ( z - cam->getConvergence() ), true );
 }
 
 void StereoAutoFocuser::draw()

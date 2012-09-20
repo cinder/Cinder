@@ -29,7 +29,7 @@
 	side-by-side stereoscopic and is supported by most 3D televisions. Simply connect your computer to
 	such a television, run the sample in full screen and enable the TV's 3D mode.
 
-	When creating your own stereoscopic application, be careful how you choose your focal length.
+	When creating your own stereoscopic application, be careful how you choose your convergence.
 	An excellent article can be found here:
 	http://paulbourke.net/miscellaneous/stereographics/stereorender/
 
@@ -60,8 +60,8 @@ using namespace std;
 
 class StereoscopicRenderingApp : public AppBasic {
   public:
-	typedef enum { SET_FOCAL_LENGTH, SET_FOCUS, AUTO_FOCUS } FocusMethod;
-	typedef enum { MONO, ANAGLYPH_RED_CYAN, SIDE_BY_SIDE, OVER_UNDER } RenderMethod;
+	typedef enum { SET_CONVERGENCE, SET_FOCUS, AUTO_FOCUS } FocusMethod;
+	typedef enum { MONO, SIDE_BY_SIDE, OVER_UNDER } RenderMethod;
 public:
 	void prepareSettings( Settings *settings );
 
@@ -157,14 +157,14 @@ void StereoscopicRenderingApp::update()
 
 	switch( mFocusMethod )
 	{
-	case SET_FOCAL_LENGTH:
+	case SET_CONVERGENCE:
 		// auto-focus by calculating distance to center of interest
 		d = (mCamera.getCenterOfInterestPoint() - mCamera.getEyePoint()).length();
 		f = math<float>::min( 5.0f, d * 0.5f );
 
-		// The setFocalLength() method will not change the eye separation distance, 
+		// The setConvergence() method will not change the eye separation distance, 
 		// which may cause the parallax effect to become uncomfortably big. 
-		mCamera.setFocalLength( f );
+		mCamera.setConvergence( f );
 		mCamera.setEyeSeparation( 0.05f );
 		break;
 	case SET_FOCUS:
@@ -172,10 +172,10 @@ void StereoscopicRenderingApp::update()
 		d = (mCamera.getCenterOfInterestPoint() - mCamera.getEyePoint()).length();
 		f = math<float>::min( 5.0f, d * 0.5f );
 
-		// The setFocus() method will automatically calculate a fitting value for the eye separation distance.
+		// The setConvergence( value, true ) method will automatically calculate a fitting value for the eye separation distance.
 		// There is still no guarantee that the parallax effect stays within comfortable levels,
 		// because there may be objects very near to the camera compared to the point we are looking at.
-		mCamera.setFocus( f );
+		mCamera.setConvergence( f, true );
 		break;
 	case AUTO_FOCUS:
 		// Here, we use the gl::StereoAutoFocuser class to determine the best focal length,
@@ -187,10 +187,6 @@ void StereoscopicRenderingApp::update()
 		switch( mRenderMethod ) 
 		{
 		case MONO:
-			break;
-		case ANAGLYPH_RED_CYAN:
-			// simply sample the whole screen
-			mAF.autoFocus( &mCamera );
 			break;
 		case SIDE_BY_SIDE:
 			// sample half the left eye, half the right eye
@@ -225,40 +221,6 @@ void StereoscopicRenderingApp::draw()
 		// render mono camera
 		mCamera.disableStereo();
 		render();
-
-		break;
-	case ANAGLYPH_RED_CYAN:
-		// initialize the accumulation buffer
-		glClearAccum( 0.0f, 0.0f, 0.0f, 0.0f );
-
-		// because glClear() does not respect the color mask, 
-		// clear the color and depth buffers using a red filtered background color
-		gl::clear( mBackgroundColor * Color( 1, 0, 0 ) );
-
-		// set up color mask to only draw red and render left camera
-		glColorMask( true, false, false, true );
-		mCamera.enableStereoLeft();
-		render();
-		glColorMask( true, true, true, true );
-
-		// load the scene into the accumulation buffer
-		glAccum( GL_LOAD, 1.0f );
-		
-		// because glClear() does not respect the color mask, 
-		// clear the color and depth buffers using a cyan filtered background color
-		gl::clear( mBackgroundColor * Color( 0, 1, 1 ) );
-		
-		// set up color mask to only draw cyan and render right camera
-		glColorMask( false, true, true, true );
-		mCamera.enableStereoRight();
-		render();
-		glColorMask( true, true, true, true );
-
-		// add the scene to the accumulation buffer
-		glAccum( GL_ACCUM, 1.0f );
-
-		// present the accumulation buffer to the screen
-		glAccum( GL_RETURN, 1.0f );
 		break;
 	case SIDE_BY_SIDE:
 		// store current viewport
@@ -348,7 +310,7 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		mDrawUI = !mDrawUI;
 		break;
 	case KeyEvent::KEY_1:
-		mFocusMethod = SET_FOCAL_LENGTH;
+		mFocusMethod = SET_CONVERGENCE;
 		break;
 	case KeyEvent::KEY_2:
 		mFocusMethod = SET_FOCUS;
@@ -360,12 +322,9 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		mRenderMethod = MONO;
 		break;
 	case KeyEvent::KEY_F2:
-		mRenderMethod = ANAGLYPH_RED_CYAN;
-		break;
-	case KeyEvent::KEY_F3:
 		mRenderMethod = SIDE_BY_SIDE;
 		break;
-	case KeyEvent::KEY_F4:
+	case KeyEvent::KEY_F3:
 		mRenderMethod = OVER_UNDER;
 		break;
 	case KeyEvent::KEY_UP:
@@ -490,7 +449,7 @@ void StereoscopicRenderingApp::renderUI()
     float h = (float) getWindowHeight();
 
     std::string labels( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:" );
-    boost::format values = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+    boost::format values = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getConvergence() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
 
 #if(defined WIN32)
     gl::enableAlphaBlending();
