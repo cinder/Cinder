@@ -35,7 +35,7 @@ void TimelineTest::setup()
 	
 	mTimeline = Timeline::create();
 	mTimeline->setDefaultAutoRemove( false );
-	mTimeline->setAutoRemove(true);
+	mTimeline->setAutoRemove(false);
 	
 	mTimeline2 = Timeline::create();
 	mTimeline2->setDefaultAutoRemove( false );
@@ -68,9 +68,13 @@ void TimelineTest::keyDown( KeyEvent event )
 			
 		case KeyEvent::KEY_s:
 			timeline().add( mTimeline );
-			mTimeline->apply( &mAnim, Vec2f( 0,0 ), Vec2f( 100,100 ), 2.50f, EaseOutCubic());
-			mTimeline->appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 100,300 ), 1.50f, EaseNone());
-			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), Vec2f( 0,0 ), 1.0f, EaseNone());
+//			mTimeline->apply( &mAnim, Vec2f( 0,0 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic());
+//			mTimeline->appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 100,300 ), 1.0f, EaseNone());
+//			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), Vec2f( 0,0 ), 1.0f, EaseNone());
+			mTimeline->apply( &mAnim, Vec2f( 100,100 ), 1.0f, EaseOutCubic());
+			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), 1.0f, EaseNone());
+			mTimeline->appendTo( &mAnim, Vec2f( 300,300 ), 1.0f, EaseNone());
+			mTimeline->appendPingPong();
 			break;
 			
 		case KeyEvent::KEY_d:

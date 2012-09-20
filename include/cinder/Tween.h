@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include <iostream>
+
 #include "cinder/Cinder.h"
 #include "cinder/TimelineItem.h"
 #include "cinder/CinderMath.h"
@@ -111,7 +113,7 @@ class TweenBase : public TimelineItem {
 	FinishFn		mFinishFunction, mReverseFinishFunction;
   
 	EaseFn		mEaseFunction;
-	float		mDuration;
+//	float		mDuration;	// masking the inherited mDuration property
 	bool		mCopyStartValue;
 };
 
@@ -223,11 +225,18 @@ class Tween : public TweenBase {
 			mReverseStartFunction();
 		else if( ( ! reverse ) && mStartFunction )
 			mStartFunction();
+		
+		std::cout << "Tween::start // " << mStartTime << " :: " << mStartValue << " --> " << mEndValue << " = " << mTarget << std::endl;
 	}
 	
 	virtual void update( float relativeTime )
 	{
 		*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
+		
+		if(true){
+//			std::cout << "Tween::update // " << mStartValue << " --> " << mEndValue << std::endl;
+		}
+		
 		if( mUpdateFunction )
 			mUpdateFunction();
 	}

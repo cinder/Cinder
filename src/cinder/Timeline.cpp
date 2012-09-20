@@ -23,6 +23,7 @@
 */
 
 #include "cinder/Timeline.h"
+#include "cinder/Vector.h"
 
 #include <vector>
 
@@ -72,6 +73,11 @@ void Timeline::stepTo( float absoluteTime )
 			iter->second->mMarkedForRemoval = true;
 	}
 	
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
+		Tween<Vec2f>* dude = static_cast<Tween<Vec2f>* >((iter)->second.get());
+		dude->mStartTime = dude->mStartTime;
+	}
+	
 	eraseMarked();	
 }
 
@@ -92,10 +98,15 @@ void Timeline::appendPingPong()
 {
 	vector<TimelineItemRef> toAppend;
 	
+	updateDuration();
+	
 	float duration = mDuration;
+	float tween_len, new_startTime;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
 		TimelineItemRef cloned = iter->second->cloneReverse();
-		cloned->mStartTime = duration + ( duration - ( cloned->mStartTime + cloned->mDuration ) );
+		tween_len = cloned->mStartTime + cloned->mDuration;
+		new_startTime = duration + ( duration - ( tween_len ) );
+		cloned->mStartTime = new_startTime;
 		toAppend.push_back( cloned );
 	}
 	
