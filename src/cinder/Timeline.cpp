@@ -149,6 +149,7 @@ void Timeline::eraseMarked()
 	bool needRecalc = false;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ) {
 		if( iter->second->mMarkedForRemoval ) {
+			iter->second->mParent = NULL;	// if not set, then it cannot be accurately evaluated
 			mItems.erase( iter++ );
 			needRecalc = true;
 		}
