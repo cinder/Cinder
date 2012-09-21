@@ -23,7 +23,6 @@
 */
 
 #include "cinder/Timeline.h"
-#include "cinder/Vector.h"
 
 #include <vector>
 
@@ -58,17 +57,6 @@ void Timeline::step( float timestep )
 
 void Timeline::stepTo( float absoluteTime )
 {
-	
-	
-	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
-		Tween<Vec2f>* dude = static_cast<Tween<Vec2f>* >((iter)->second.get());
-		//		dude->mStartTime = dude->mStartTime;
-		if(dude->mTarget != NULL){
-			Vec2f* val = (Vec2f*) dude->mTarget;
-			std::cout << "dude value = " << *val << std::endl;
-		}
-	}
-	
 	bool reverse = mCurrentTime > absoluteTime;
 	mCurrentTime = absoluteTime;
 	
@@ -104,15 +92,12 @@ void Timeline::appendPingPong()
 {
 	vector<TimelineItemRef> toAppend;
 	
-	updateDuration();
+	updateDuration();	// CJJ:	Did I add this?
 	
 	float duration = mDuration;
-	float tween_len, new_startTime;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
 		TimelineItemRef cloned = iter->second->cloneReverse();
-		tween_len = cloned->mStartTime + cloned->mDuration;
-		new_startTime = duration + ( duration - ( tween_len ) );
-		cloned->mStartTime = new_startTime;
+		cloned->mStartTime = duration + ( duration - ( cloned->mStartTime + cloned->mDuration ) );
 		toAppend.push_back( cloned );
 	}
 	
@@ -135,7 +120,7 @@ void Timeline::add( TimelineItemRef item )
 	item->mParent = this;
 	item->mStartTime = mCurrentTime;
 	
-	// If this is not here, Timeline's that are added after being removed will immediately be removed again
+	// CJJ:	If this is not here, Timeline's that are added after being removed will immediately be removed again
 	item->mMarkedForRemoval = false;
 	
 	mItems.insert( make_pair( item->mTarget, item ) );
@@ -155,7 +140,7 @@ void Timeline::eraseMarked()
 	bool needRecalc = false;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ) {
 		if( iter->second->mMarkedForRemoval ) {
-			iter->second->mParent = NULL;	// if not set, then it cannot be accurately evaluated
+			iter->second->mParent = NULL;	// CJJ:	if not set, then it cannot be accurately evaluated
 			mItems.erase( iter++ );
 			needRecalc = true;
 		}

@@ -55,7 +55,7 @@ void TimelineItem::stepTo( float newTime, bool reverse )
 	const float absTime = newTime - mStartTime;
 	const float endTime = mStartTime + mDuration;
 
-	updateDuration();
+	updateDuration();	// CJJ:	did I add this???
 
 	if( ( ! mHasReverseStarted ) && reverse && ( newTime < mStartTime ) ) {
 		mHasReverseStarted = true;
