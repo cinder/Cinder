@@ -769,6 +769,8 @@ Using Timeline you can create loops on a given animation. These can be standard 
 
 <h2>Standard Looping</h2>
 
+// TODO: MAKE SURE TO APPLY THE RIGHT AUTO REMOVAL SETTINGS!
+
 See below for a quick example creating an animation with standard looping using Timeline:
 
 \code
@@ -933,6 +935,8 @@ If you just need to specify the step size at which your timeline is updated you 
 	}
 \endcode
 
+// TODO: Consider consolidating this with the non-realtime section? These examples might be about the same...
+
 <br />
 <h2>Nesting Timelines</h2>
 
@@ -1039,9 +1043,13 @@ Seems useful, maybe should not be called out though...
 
 By default every tween that is added to a Timeline is removed when it is finished. However, you can override this behavior by using setDefaultAutoRemove(). This could be useful when you've created a series of tweens and want to keep them resident in the timeline even after they have played. A more concrete example might be an slide show animation where you want a user to be able to skip to any slide section and have slide transitions work as expected.
 
+// TODO: MAKE SURE NOT TO CONFUSE setAutoRemove and setDefaultAutoRemove !!
+
 <h2> Ping-ponging </h2>
 
 You can set an animation to playback in "ping-pong" mode using setPingPong(bool). This will automatically cycle between playing forward and reverse at the start and end (respectively) of the animation. This can be applied to an individual tween or a whole timeline. It can even be added to a timeline but without looping. Here are some demonstrations
+
+// TODO: MAKE SURE TO APPLY THE RIGHT AUTO REMOVAL SETTINGS!
 
 \code
 
@@ -1071,6 +1079,8 @@ timeline().appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 200,100 ), 1.25f );
 // If you just want to have a single, non-repeating ping-pong effect, you can use appendPingPong()
 
 // In this case, new tween objects are automatically created just for the ping pong, so it is not necessary to turn off the auto remove.
+// TODO: NOTE, THE ANIMATION BEHAVIOR HERE DEPENDS UPON TIMELINE UPDATES. IF WE SHORT CIRCUIT THE Tween::update METHOD, 
+// THEN ITS NOT NEEDED. IF WE DON'T HOWEVER, THEN THIS MUST BE SET TO true.
 timeline().setDefaultAutoRemove(true);	// this is the default behavior
 
 // now add tweens
@@ -1173,26 +1183,39 @@ Do we really need an example for this?
 
 <h2>Using the Tween::Options Object</h2>
 
-Any time you add an object to a timeline, a special Tween::Options object is returned. This allows one to apply additional changes to the tween. Futhermore, this object also conveniently provides support for method chaining. This has already been demonstrated in the callbacks section. Though, much more functionality is provided using the same entity. Here we will demonstrate the possibilties.
+Any time you add an object to a timeline, a special Tween::Options object is returned. This allows one to apply additional changes to the tween. This has already been demonstrated in the callbacks section. Though, much more functionality is provided using the same entity. Here we will demonstrate the possibilties.
 
 \code
 
-startFn( boost::bind() )
-reverseStartFn( boost::bind() )
-updateFn( boost::bind() )
-finishFn( boost::bind() )
-reverseFinishFn( boost::bind() )
-easeFn( EaseNone() )
-delay( float delay )
-autoRemove( bool yes? )
-loop( bool yes? )
-pingPong( bool yes? )
-timelineEnd( float offset = 0 )
-appendTo( mAnim<float> whatever, float offset = 0 )
-appendTo( mAnim<float> whatever )
-lerpFn( boost::bind() )
+Anim<float> mAnim;
+timeline().apply( &mAnim, 100.0, 1.0f ).startFn( boost::bind(&functionName) );			// adds a callback for the tween start
+timeline().apply( &mAnim, 100.0, 1.0f ).reverseStartFn( boost::bind(&functionName) );	// adds a callback for the tween start (when reversed)
+timeline().apply( &mAnim, 100.0, 1.0f ).updateFn( boost::bind(&functionName) );			// adds a callback for the tween update
+timeline().apply( &mAnim, 100.0, 1.0f ).finishFn( boost::bind(&functionName) );			// adds a callback at the end of the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).reverseFinishFn( boost::bind(&functionName) );	// adds a callback function for the tween start
+timeline().apply( &mAnim, 100.0, 1.0f ).easeFn( EaseNone() );							// sets the easing equation for the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).delay( float delay );							// applies a delay at the start of the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).autoRemove( bool yes? );						// toggles the tween removal from the timeline when finished
+timeline().apply( &mAnim, 100.0, 1.0f ).loop( bool yes? );								// toggles looping for the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).pingPong( bool yes? );							// toggles ping-ponging for the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).timelineEnd( float offset );					// modifies the tween start time (?)
+timeline().apply( &mAnim, 100.0, 1.0f ).appendTo( mAnim<float> whatever, offset );		// adds this tween to another one (or vice versa?)
+timeline().apply( &mAnim, 100.0, 1.0f ).appendTo( mAnim<float> whatever );				// adds this tween to another one using pointers
+timeline().apply( &mAnim, 100.0, 1.0f ).lerpFn( boost::bind() );						// supplies a alternative linear interpolation function
 
 \endcode
 <br />
 
+This Tween::Options object also conveniently provides support for method chaining. Here are a couple examples:
+
+\code
+
+// This assigns the start and end callback functions in a single line.
+timeline().apply( &mAnim, 100.0, 1.0f ).startFn( boost::bind(&startCallback) ).finishFn( boost::bind(&endCallback) );
+
+// This will apply a 1 second delay and apply the ping pong effect to the tween, all at once.
+timeline().apply( &mAnim, 100.0, 1.0f ).delay(1.0f).autoRemove(false).pingPong();
+
+\endcode
+<br />
 */

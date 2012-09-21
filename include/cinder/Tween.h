@@ -179,8 +179,9 @@ class Tween : public TweenBase {
 		Options&	pingPong( bool doPingPong = true ) { mTweenRef->setPingPong( doPingPong ); return *this; }
 		Options&	timelineEnd( float offset = 0 ) { TweenBase::Options::timelineEnd( *mTweenRef, offset ); return *this; }
 		template<typename Y>
-		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }	
-		Options&	appendTo( void *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget, offset ); return *this; }	
+		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }
+		// CJJ:	This method has the same signature as the one above, yet it acts like the Ptr variants instead. Consider rename?
+		Options&	appendToPtr( void *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget, offset ); return *this; }
 		Options&	lerpFn( const typename Tween<T>::LerpFn &lerpFn ) { mTweenRef->setLerpFn( lerpFn ); return *this; }
 		
 		operator TweenRef<T>() { return mTweenRef; }
