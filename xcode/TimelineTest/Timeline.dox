@@ -71,7 +71,7 @@
 
 Cinder provides a tweening engine called Timeline for creating full featured animations. Timeline has been designed to easily animate variables over time without having to keep track of them. Flash developers familiar with [Tween Lite](http://www.greensock.com/tweenlite/) can use this as a somewhat similar context when working with Timeline. Those familiar with After Effects (AE) can use this as a frame of reference to visualize how Timeline is used.
 
-<h2> Basic Usage </h2>
+<h1> Basic Usage </h1>
 
 The master class called Timeline manages a collection of *Anims*. Anims are objects that can be *tweened* or animated over time. Any Cinder application always contains a master timeline which is accessed similar to the way you would use console().
 
@@ -657,29 +657,53 @@ However, Timeline needs your callback function be in the following format:
 <br />
 
 <ul>
- <li> 1.) Free Function. This means your function must not be a member of a class or struct. Below is an example of timeline using a free function
+ <li> 1.) Free Function. This means your function must not be a member of a class or struct. Below is an example of timeline using a free function.
+ <li> 2.) Member methods. These are normal functions attached to an object. However, they should adopt the following signature to be supported.
+ <li> 3.) Functors. Functors are a class with one or more private members to store the state and with an overloaded operator () to execute the function. [http://www.newty.de](http://www.newty.de/fpt/functor.html) 
+ <li> 4.) Lambdas. If you're using C++0x, you can use Lambda expressions. Lambda expressions essentially is a function that has a body, but does not have a name. Lambda expressions also maintain state so it can access variables that are available to the enclosing scope. [Lambda Expressions in C++ - MSDN](http://msdn.microsoft.com/en-us/library/dd293608.aspx).
 </ul>
 
+Here's an example application which uses all four types of callbacks.
+
 \code
-class CustomCallbackApp : public AppBasic {
-  public:
-	void setup();
-	void memberFunction();
+#include <boost/bind.hpp>
+
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+struct Say {
+	Say( std::string message ) : mMessage( message ) {}
+	void operator()(){ app::console() << mMessage << std::endl; }
 	
-	Anim<Vec2f> mPos;
+	std::string mMessage;
+};
+
+class CustomCallbackApp : public AppBasic {
+public:
+    void setup();
+	void draw();
+    void memberFunction(const int param);
+    
+    Anim<Vec2f> mPos;
 };
 
 void freeFunction()
 {
-	//this is your free function, it can
-	//be any name just not a member of your class
-	
-	console() << "I'm being executed at the start of the animation" << std::endl;
+    // This is your free function, it can be
+    // any name just not a member of your class
+    
+    console() << "This is executed at the start of the first animation" << std::endl;
 }
 
-void CustomCallbackApp::memberFunction()
+void CustomCallbackApp::memberFunction(const int param)
 {
-  //just placed here to show the difference
+	// Just placed here to show the difference
+    console() << "This is executed at the end of the second animation - " << param << std::endl;
 }
 
 void CustomCallbackApp::setup()
@@ -688,32 +712,25 @@ void CustomCallbackApp::setup()
 	mPos = Vec2f( 0.0f, 0.0f );
 
 	//start animation when program begins
-	timeline().apply( &mCircle.mPos, Vec2f( 200.0f, 200.0f ), 2.0f, EaseInOutCubic() ).startFn(  freeFunction  );
+	timeline().apply( &mPos, Vec2f( 200.0f, 200.0f ), 2.0f, EaseInOutCubic() )
+		.startFn( freeFunction );
+	
+	timeline().appendTo( &mPos, Vec2f( 250.0f, 250.0f ), 2.0f, EaseInOutCubic() )
+		.finishFn(boost::bind(&CustomCallbackApp::memberFunction, this, 42))
+		//.startFn([]() { app::console() << "Lambda function example --only works with C++0x" << std::endl; });
+		.updateFn(Say( "Update using functor" ));
 }
- //maybe should place draw function in here....
 
+void CustomCallbackApp::draw()
+{
+	gl::clear();
+	
+    gl::color( Color(1.0, 0.0, 0.0) );
+    gl::drawSolidCircle( mPos, 10 );
+}
 
-\endcode
+CINDER_APP_BASIC( CustomCallbackApp, RendererGl )
 
-<br />
-
-<ul>
- <li> 2.) Functors. Functors are a class with one or more private members to store the state and with an overloaded operator () to execute the function. [http://www.newty.de](http://www.newty.de/fpt/functor.html) 
-</ul>
-
-\code
- ... include the real code here.
-
-\endcode
-
-<br />
-
-<ul>
- <li> 3.) Lambdas. If you're using C++0x <!-- maybe discuss if this is available for vs2010 and/or xcode -->, you can use Lambda expressions. Lambda expressions essentially is a function that has a body, but does not have a name. Lambda expressions also maintain state so it can access variables that are available to the enclosing scope. [Lambda Expressions in C++ - MSDN](http://msdn.microsoft.com/en-us/library/dd293608.aspx). See below for a simple example.
-</ul>
-
-\code
-	timeline().apply( ... ).startFn( []{ app::console() << "This tween is starting."; } );
 \endcode
 
 <br />
@@ -755,38 +772,59 @@ Using Timeline you can create loops on a given animation. These can be standard 
 See below for a quick example creating an animation with standard looping using Timeline:
 
 \code
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
 
 class LoopingExample : public AppBasic {
-  public:
-	void setup();
-	void mouseDown( MouseEvent event );	
-	void keyDown( KeyEvent event );
-	void draw();
-
-	Anim<Vec2f> mAnim;
-	TimelineRef mTimeline;
+public:
+    void setup();
+    void keyDown( KeyEvent event );
+    void draw();
+	
+    Anim<Vec2f> mAnim;
+    TimelineRef mTimeline;
 };
 
 void LoopingExample::setup()
 {
-	mTimeline = timeline().create();
-	timeline().add( mTimeline );
-	mTimeline->setLoop( true );
+    mTimeline = timeline().create();
+    timeline().add( mTimeline );
+    mTimeline->setLoop( true );
 }
 
-void LoopingExample::mouseDown( MouseEvent event )
+void LoopingExample::keyDown( KeyEvent event )
 {
-	mTimeline->apply( &mAnim, Vec2f( event.getPos() ), 4.50f,  EaseOutCubic() );
+	switch(event.getCode()){
+		case KeyEvent::KEY_a:
+			mTimeline->apply( &mAnim, Vec2f( event.getPos() ), 4.50f,  EaseOutCubic() );
+			break;
+			
+		case KeyEvent::KEY_s:
+			mTimeline->setLoop(false);
+			mTimeline->apply( &mAnim, Vec2f( event.getPos() ), 4.50f,  EaseOutCubic() ).loop();
+			break;
+			
+		case KeyEvent::KEY_d:
+			break;
+	}
 }
 
 void LoopingExample::draw()
 {
-	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
-
-	gl::color( Color(1.0, 0.0, 0.0) );
-	gl::drawSolidCircle( mAnim, 10 );
+    // clear out the window with black
+    gl::clear( Color( 0, 0, 0 ) );
+	
+    gl::color( Color(1.0, 0.0, 0.0) );
+    gl::drawSolidCircle( mAnim, 10 );
 }
+
+CINDER_APP_BASIC( LoopingExample, RendererGl )
+
 \endcode
 
 <br />
@@ -806,61 +844,62 @@ void LoopingExample::setup()
 
 <br />
 
-<h2> Advanced Usage </h2>
+<h1> Advanced Usage </h1>
 
 <br />
 <h2> Using Step or StepTo </h2>
 
 You can create your own Timeline and then advance it (using step() or stepTo()) however you please. If you are a Flash person, this is how you can create a frame-based Timeline instead of a time-based one.
-<br /><br />
+<br />
 
 <h2> Using StepTo </h2>
 
 You can use Timeline to "step" through a timeline that you've created. Below is an example...
 
 \code
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
 class LoopingExample : public AppBasic {
-  public:
+public:
 	void setup();
-	void mouseUp( MouseEvent event );	
 	void keyDown( KeyEvent event );
 	void draw();
-	void update();
-
+	
 	Anim<Vec2f> mAnim;
 	TimelineRef mTimeline;
 	float mStepTo;
 	float mStepSize;
 };
 
-
 void LoopingExample::setup()
 {
 	mAnim = Vec2f( 10.0f , 10.0f );
-
+	
 	mTimeline = Timeline::create();
 	mTimeline->setDefaultAutoRemove( false );
 	mTimeline->apply( &mAnim, Vec2f( 400, 400 ), 4.5f, cinder::EaseInBack() );
-
+	
 	mStepTo = 0.0;
 	mStepSize = .03;
-
 }
 
 void LoopingExample::draw()
 {
-
 	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
-
+	gl::clear( Color( 0, 0, 0 ) );
+	
 	gl::color( Color(1.0, 0.0, 0.0) );
 	gl::drawSolidCircle( mAnim, 10 );
-
 }
 
 void LoopingExample::keyDown( KeyEvent event )
 {
-
 	if ( event.getCode() == event.KEY_DOWN ){
 		mStepTo -= mStepSize;
 	}
@@ -869,8 +908,10 @@ void LoopingExample::keyDown( KeyEvent event )
 	}
 	
 	mTimeline->stepTo( mStepTo );
-
 }
+
+CINDER_APP_BASIC( LoopingExample, RendererGl )
+
 \endcode
 
 <br />
@@ -901,21 +942,144 @@ Below is a quick example of nesting timelines:
 
 \code
 
-Insert the updated code here....
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+class NestingTimelineExample : public AppBasic {
+public:
+    void setup();
+    void mouseDown( MouseEvent event );
+    void keyDown( KeyEvent event );
+    void draw();
+	
+	Anim<Vec2f> mAnim1;
+	Anim<Vec2f> mAnim2;
+	Anim<Vec2f> mAnim3;
+	
+	TimelineRef mTimeline;
+	TimelineRef mTimeline2;
+};
+
+void NestingTimelineExample::setup()
+{
+	Vec2f start = Vec2f(50.0f, 50.0f);
+	mAnim1 = mAnim2 = mAnim3 = start;
+	
+	mTimeline = timeline().create();
+	mTimeline2 = timeline().create();
+	mTimeline->setDefaultAutoRemove(false);
+	mTimeline2->setDefaultAutoRemove(false);
+	mTimeline->setPingPong(true);
+	mTimeline2->setPingPong(true);
+	
+	timeline().add( mTimeline );
+	mTimeline->add( mTimeline2 );
+}
+
+void NestingTimelineExample::mouseDown( MouseEvent event )
+{
+	Vec2f start = Vec2f(50.0f, 50.0f);
+	timeline().apply( &mAnim1, start, Vec2f( 100.0f, 100.0f ), 2.0f, EaseInOutCubic() );
+	mTimeline->apply( &mAnim2, start, Vec2f( 200.0f, 200.0f ), 2.0f, EaseInOutCubic() );
+	mTimeline2->apply( &mAnim3, start, Vec2f( 300.0f, 300.0f ), 2.0f, EaseInCubic() );
+	mTimeline2->appendTo( &mAnim3, Vec2f( 365.0f, 300.0f ), 3.0f, EaseOutCubic() );
+}
+
+void NestingTimelineExample::keyDown( KeyEvent event )
+{
+	static bool toggled = false;
+	// this does not work, parent is not set to null when timeline item is removed!
+//	if(mTimeline2->getParent() == NULL){
+	if(!toggled){
+		mTimeline->reset(true);
+		mAnim1.stop();
+		timeline().add( mTimeline );
+//		mTimeline->add( mTimeline2 );
+	}
+	else{
+		mTimeline->reset(false);
+		timeline().remove( mTimeline );
+//		mTimeline->remove( mTimeline2 );
+	}
+	
+	toggled = !toggled;
+}
+
+void NestingTimelineExample::draw()
+{
+    // clear out the window with black
+    gl::clear();
+	
+	//in the draw method
+	gl::color( Color( 1.0f, 0.0f, 0.0f ) );
+	gl::drawSolidCircle( mAnim1, 20.0f );
+	
+	gl::color( Color( 1.0f, 1.0f, 0.0f ) );
+	gl::drawSolidCircle( mAnim2, 10.0f );
+	
+	gl::color( Color( 0.0f, 1.0f, 0.0f ) );
+	gl::drawSolidCircle( mAnim3, 5.0f );
+}
+
+CINDER_APP_BASIC( NestingTimelineExample, RendererGl )
+
 \endcode
 <br />
 
 <h2>Create Timeline Items</h2>
 
-
+Seems useful, maybe should not be called out though...
 
 <h2> Auto Remove </h2>
 
-By default every tween that is added to a Timeline is removed when it is finished. However, you can override this behavior by using setDefaultAutoRemove(). By setting it to false, you can ???
+By default every tween that is added to a Timeline is removed when it is finished. However, you can override this behavior by using setDefaultAutoRemove(). This could be useful when you've created a series of tweens and want to keep them resident in the timeline even after they have played. A more concrete example might be an slide show animation where you want a user to be able to skip to any slide section and have slide transitions work as expected.
 
 <h2> Ping-ponging </h2>
 
-You can set an animation to playback in "ping-pong" mode using setPingPong(bool). This will automatically cycle between playing forward and reverse at the start and end (respectively) of the animation.
+You can set an animation to playback in "ping-pong" mode using setPingPong(bool). This will automatically cycle between playing forward and reverse at the start and end (respectively) of the animation. This can be applied to an individual tween or a whole timeline. It can even be added to a timeline but without looping. Here are some demonstrations
+
+\code
+
+// This will set the ping pong flag for a single tween
+timeline().apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic()).pingPong();
+
+\endcode
+<br />
+
+\code
+// this will ping pong the entire set of animations on the timeline 
+timeline().setPingPong(true);
+
+// BEWARE! If the timeline will remove tweens when they are finished by default, make sure you disable this so the tween are kept alive
+// Make sure you don't confuse this method with setAutoRemove() which refers to an object's parent rather than it's children.
+timeline().setDefaultAutoRemove(false);
+
+// now add tweens
+timeline().apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic());
+timeline().appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 200,100 ), 1.25f );
+
+\endcode
+<br />
+
+\code
+
+// If you just want to have a single, non-repeating ping-pong effect, you can use appendPingPong()
+
+// In this case, new tween objects are automatically created just for the ping pong, so it is not necessary to turn off the auto remove.
+timeline().setDefaultAutoRemove(true);	// this is the default behavior
+
+// now add tweens
+timeline().apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic());
+timeline().appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 200,100 ), 1.25f );
+timeline().appendPingPong();
+
+\endcode
+<br />
 
 <h2>Using TweenRef</h2>
 
@@ -933,7 +1097,55 @@ Instead of using Anim objects, you can optionally supply an object type directly
 
 \code
 
-Insert the updated code here....
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+class ApplyPtrExample : public AppBasic {
+public:
+    void setup();
+    void mouseDown( MouseEvent event );
+    void keyDown( KeyEvent event );
+    void draw();
+	
+	Vec2f mLocation;
+    TimelineRef mTimeline;
+};
+
+void ApplyPtrExample::setup()
+{
+    mTimeline = timeline().create();
+    timeline().add( mTimeline );
+	
+	mLocation = Vec2f();
+}
+
+void ApplyPtrExample::mouseDown( MouseEvent event )
+{
+	mTimeline->applyPtr(&mLocation, Vec2f(event.getPos()), 2.5f, EaseOutCubic());
+	
+}
+
+void ApplyPtrExample::keyDown( KeyEvent event )
+{
+	mTimeline->appendToPtr(&mLocation, Vec2f::zero(), 1.5f, EaseOutCubic());
+}
+
+void ApplyPtrExample::draw()
+{
+    // clear out the window with black
+    gl::clear( Color( 0, 0, 0 ) );
+	
+    gl::color( Color(1.0, 0.0, 0.0) );
+    gl::drawSolidCircle( mLocation, 10 );
+}
+
+CINDER_APP_BASIC( ApplyPtrExample, RendererGl )
+
 \endcode
 <br />
 
@@ -950,5 +1162,37 @@ Insert the updated code here....
 The Timeline implementation is not designed to be thread safe. But if you want to use Timeline on a separate thread, this can be done by keeping all of your animations and tween references on that thread. 
 
 <h2>Creating non-realtime animations</h2>
+
+By default the application timeline is updated using the system clock. However, there may be times when you don't want to use the system clock to drive animation. Non-realtime rendering is a good example of this use case scenario. For this you will want the application's notion of time to drive the update steps. Here is an example program that will typically take X seconds to render a single frame(?). We will compute the application's expected time on each update and use that to drive the animations.
+
+\code
+
+Do we really need an example for this?
+\endcode
+<br />
+
+<h2>Using the Tween::Options Object</h2>
+
+Any time you add an object to a timeline, a special Tween::Options object is returned. This allows one to apply additional changes to the tween. Futhermore, this object also conveniently provides support for method chaining. This has already been demonstrated in the callbacks section. Though, much more functionality is provided using the same entity. Here we will demonstrate the possibilties.
+
+\code
+
+startFn( boost::bind() )
+reverseStartFn( boost::bind() )
+updateFn( boost::bind() )
+finishFn( boost::bind() )
+reverseFinishFn( boost::bind() )
+easeFn( EaseNone() )
+delay( float delay )
+autoRemove( bool yes? )
+loop( bool yes? )
+pingPong( bool yes? )
+timelineEnd( float offset = 0 )
+appendTo( mAnim<float> whatever, float offset = 0 )
+appendTo( mAnim<float> whatever )
+lerpFn( boost::bind() )
+
+\endcode
+<br />
 
 */
