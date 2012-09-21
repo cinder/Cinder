@@ -14,6 +14,7 @@ public:
     void setup();
     void mouseDown( MouseEvent event );
     void keyDown( KeyEvent event );
+	void update();
     void draw();
 	
     Anim<Vec2f> mAnim;
@@ -30,7 +31,8 @@ void TimelineTest::setup()
 //    timeline().add( mTimeline );
 //    mTimeline->setLoop( true );
 	
-	mAnim = Vec2f::zero();
+	mAnim = Vec2f(10,10);
+	console() << "TimelineTest::setup // mAnim = " << mAnim << " = " << mAnim.ptr() << " -> " << mAnim.value() << std::endl;
 	mAnim2 = Vec2f(getWindowSize());
 	
 	mTimeline = Timeline::create();
@@ -68,12 +70,12 @@ void TimelineTest::keyDown( KeyEvent event )
 			
 		case KeyEvent::KEY_s:
 			timeline().add( mTimeline );
-//			mTimeline->apply( &mAnim, Vec2f( 0,0 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic());
-//			mTimeline->appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 100,300 ), 1.0f, EaseNone());
-//			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), Vec2f( 0,0 ), 1.0f, EaseNone());
-			mTimeline->apply( &mAnim, Vec2f( 100,100 ), 1.0f, EaseOutCubic());
-			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), 1.0f, EaseNone());
-			mTimeline->appendTo( &mAnim, Vec2f( 300,300 ), 1.0f, EaseNone());
+			assert(mAnim.ptr() == mTimeline->apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic()).getTarget());
+			assert(mAnim.ptr() == mTimeline->appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 100,300 ), 1.0f, EaseNone()).getTarget());
+			assert(mAnim.ptr() == mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), Vec2f( 10,10 ), 1.0f, EaseNone()).getTarget());
+//			mTimeline->apply( &mAnim, Vec2f( 100,100 ), 1.0f, EaseOutCubic());
+//			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), 1.0f, EaseNone());
+//			mTimeline->appendTo( &mAnim, Vec2f( 300,300 ), 1.0f, EaseNone());
 			mTimeline->appendPingPong();
 			break;
 			
@@ -99,6 +101,11 @@ void TimelineTest::keyDown( KeyEvent event )
 			mTimeline->reset(true);	// still no way to restart a timeline...
 			break;
 	}
+}
+
+void TimelineTest::update()
+{
+	console() << "mAnim = " << mAnim.ptr() << " -> " << *(mAnim.ptr()) << " ==? " << mAnim << std::endl;
 }
 
 void TimelineTest::draw()

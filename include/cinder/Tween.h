@@ -31,6 +31,7 @@
 #include "cinder/CinderMath.h"
 #include "cinder/Easing.h"
 #include "cinder/Function.h"
+#include "cinder/Vector.h"
 
 #include <list>
 #include <boost/utility.hpp>
@@ -182,6 +183,7 @@ class Tween : public TweenBase {
 		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }	
 		Options&	appendTo( void *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget, offset ); return *this; }	
 		Options&	lerpFn( const typename Tween<T>::LerpFn &lerpFn ) { mTweenRef->setLerpFn( lerpFn ); return *this; }
+		T*	getTarget() { return mTweenRef->getTarget(); }
 		
 		operator TweenRef<T>() { return mTweenRef; }
 
@@ -226,15 +228,20 @@ class Tween : public TweenBase {
 		else if( ( ! reverse ) && mStartFunction )
 			mStartFunction();
 		
-		std::cout << "Tween::start // " << mStartTime << " :: " << mStartValue << " --> " << mEndValue << " = " << mTarget << std::endl;
+		//Vec2f result = *(reinterpret_cast<Vec2f*>( mTarget ) );
+		//std::cout << "Tween::start // " << mStartTime << " :: " << mStartValue << " --> " << mEndValue << " = " << result << std::endl;
+		
+		std::cout << "	//	TWEEN START // " << std::endl;
 	}
 	
 	virtual void update( float relativeTime )
 	{
 		*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 		
-		if(true){
-//			std::cout << "Tween::update // " << mStartValue << " --> " << mEndValue << std::endl;
+		if(relativeTime < 1.0f){
+			Vec2f* result = (reinterpret_cast<Vec2f*>( mTarget ) );
+//			std::cout << "Tween::update // " << mStartValue << " --> " << mEndValue << " = " << result << " -> " << (*result) << std::endl;
+//			std::cout << "Tween::update // " << this->mComplete << " // " << result << " -> " << (*result) << std::endl;
 		}
 		
 		if( mUpdateFunction )
