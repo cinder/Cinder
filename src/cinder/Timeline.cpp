@@ -57,12 +57,23 @@ void Timeline::step( float timestep )
 }
 
 void Timeline::stepTo( float absoluteTime )
-{	
+{
+	
+	
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
+		Tween<Vec2f>* dude = static_cast<Tween<Vec2f>* >((iter)->second.get());
+		//		dude->mStartTime = dude->mStartTime;
+		if(dude->mTarget != NULL){
+			Vec2f* val = (Vec2f*) dude->mTarget;
+			std::cout << "dude value = " << *val << std::endl;
+		}
+	}
+	
 	bool reverse = mCurrentTime > absoluteTime;
 	mCurrentTime = absoluteTime;
 	
 	eraseMarked();
-	
+		
 	// we need to cache the end(). If a tween's update() fn or similar were to manipulate
 	// the list of items by adding new ones, we'll have invalidated our iterator.
 	// Deleted items are never removed immediately, but are marked for deletion.
@@ -71,11 +82,6 @@ void Timeline::stepTo( float absoluteTime )
 		iter->second->stepTo( mCurrentTime, reverse );
 		if( iter->second->isComplete() && iter->second->getAutoRemove() )
 			iter->second->mMarkedForRemoval = true;
-	}
-	
-	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
-		Tween<Vec2f>* dude = static_cast<Tween<Vec2f>* >((iter)->second.get());
-		dude->mStartTime = dude->mStartTime;
 	}
 	
 	eraseMarked();	

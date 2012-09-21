@@ -18,7 +18,7 @@ public:
     void draw();
 	
     Anim<Vec2f> mAnim;
-    Anim<Vec2f> mAnim2;
+    Anim<float> mAnim2;
     TimelineRef mTimeline;
     TimelineRef mTimeline2;
 	
@@ -33,7 +33,7 @@ void TimelineTest::setup()
 	
 	mAnim = Vec2f(10,10);
 	console() << "TimelineTest::setup // mAnim = " << mAnim << " = " << mAnim.ptr() << " -> " << mAnim.value() << std::endl;
-	mAnim2 = Vec2f(getWindowSize());
+	mAnim2 = 0;
 	
 	mTimeline = Timeline::create();
 	mTimeline->setDefaultAutoRemove( false );
@@ -41,7 +41,7 @@ void TimelineTest::setup()
 	
 	mTimeline2 = Timeline::create();
 	mTimeline2->setDefaultAutoRemove( false );
-	mTimeline2->setAutoRemove(true);
+	mTimeline2->setAutoRemove(false);
 	
 	/*
 	std::multimap<void*,uint32_t>::iterator it;
@@ -63,16 +63,20 @@ void TimelineTest::keyDown( KeyEvent event )
 {
 	switch(event.getCode()){
 		case KeyEvent::KEY_a:
+			timeline().add( mTimeline2 );
 //			mTimeline->apply( &mAnim, Vec2f( 0,0 ), 4.50f,  EaseOutCubic() );
 //			mTimeline->apply( &mAnim, Vec2f( 200, 50 ), Vec2f( 200, 200 ), 2.0f ).delay( 1.0f ).loop( true );
-			mTimeline2->apply( &mAnim2, Vec2f( 300, 50 ), Vec2f( 300, 200 ), 2.0f ).pingPong(true);
+			mTimeline2->apply( &mAnim2, 300.0f, 100.0f, 2.0f );
+			mTimeline2->appendTo( &mAnim2, 100.0f, 175.0f, 2.0f );
+			mTimeline2->appendTo( &mAnim2, 175.0f, 50.0f, 2.0f );
+			mTimeline2->appendPingPong();
 			break;
 			
 		case KeyEvent::KEY_s:
 			timeline().add( mTimeline );
-			assert(mAnim.ptr() == mTimeline->apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic()).getTarget());
-			assert(mAnim.ptr() == mTimeline->appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 100,300 ), 1.0f, EaseNone()).getTarget());
-			assert(mAnim.ptr() == mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), Vec2f( 10,10 ), 1.0f, EaseNone()).getTarget());
+			mTimeline->apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic());
+			mTimeline->appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 100,300 ), 1.0f, EaseNone());
+			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), Vec2f( 10,10 ), 1.0f, EaseNone());
 //			mTimeline->apply( &mAnim, Vec2f( 100,100 ), 1.0f, EaseOutCubic());
 //			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), 1.0f, EaseNone());
 //			mTimeline->appendTo( &mAnim, Vec2f( 300,300 ), 1.0f, EaseNone());
@@ -105,7 +109,7 @@ void TimelineTest::keyDown( KeyEvent event )
 
 void TimelineTest::update()
 {
-	console() << "mAnim = " << mAnim.ptr() << " -> " << *(mAnim.ptr()) << " ==? " << mAnim << std::endl;
+//	console() << "mAnim = " << mAnim.ptr() << " -> " << *(mAnim.ptr()) << " ==? " << mAnim << std::endl;
 }
 
 void TimelineTest::draw()
@@ -117,7 +121,7 @@ void TimelineTest::draw()
     gl::drawSolidCircle( mAnim, 10 );
 	
     gl::color( Color(1.0, 1.0, 0.0) );
-    gl::drawSolidCircle( mAnim2, 20 );
+    gl::drawSolidCircle( Vec2f(mAnim2, 150), 20 );
 }
 
 CINDER_APP_BASIC( TimelineTest, RendererGl )

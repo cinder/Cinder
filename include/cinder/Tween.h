@@ -236,16 +236,19 @@ class Tween : public TweenBase {
 	
 	virtual void update( float relativeTime )
 	{
-		*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
+		if(relativeTime >= 1.0) return;	// is this a bad idea?
 		
-		if(relativeTime < 1.0f){
-			Vec2f* result = (reinterpret_cast<Vec2f*>( mTarget ) );
-//			std::cout << "Tween::update // " << mStartValue << " --> " << mEndValue << " = " << result << " -> " << (*result) << std::endl;
-//			std::cout << "Tween::update // " << this->mComplete << " // " << result << " -> " << (*result) << std::endl;
-		}
+		*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 		
 		if( mUpdateFunction )
 			mUpdateFunction();
+		
+		
+		if(relativeTime < 1.0f){
+			Vec2f* result = (reinterpret_cast<Vec2f*>( mTarget ) );
+			std::cout << "Tween::update // " << mStartValue << " --> " << mEndValue << " = " << result << " -> " << (*result) << std::endl;
+//			std::cout << "Tween::update // " << this->mComplete << " // " << result << " -> " << (*result) << std::endl;
+		}
 	}
 	
 
