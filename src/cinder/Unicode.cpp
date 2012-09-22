@@ -114,4 +114,53 @@ void lineBreakUtf8( const char *line, const std::function<bool(const char *, siz
 	}
 }
 
+void findBreaksUtf8( const std::string &line, std::vector<size_t> *must, std::vector<size_t> *allow )
+{
+	const size_t length = line.size();
+	shared_ptr<char> brks = shared_ptr<char>( (char*)malloc( length ), free );
+
+	set_linebreaks_utf8( (const uint8_t*) line.c_str(), length, NULL, brks.get() );
+
+	//
+	must->clear();
+	allow->clear();
+
+	//
+	size_t byte = 0;
+	while( byte < length ) {
+		if( brks.get()[byte] == LINEBREAK_ALLOWBREAK )
+			allow->push_back( byte );
+		else if( brks.get()[byte] == LINEBREAK_MUSTBREAK ) {
+			must->push_back( byte );
+			allow->push_back( byte );
+		}
+
+		byte++;
+	}
 }
+
+void findBreaksUtf16( const std::wstring &line, std::vector<size_t> *must, std::vector<size_t> *allow )
+{
+	const size_t length = line.size();
+	shared_ptr<char> brks = shared_ptr<char>( (char*)malloc( length ), free );
+
+	set_linebreaks_utf16( (const uint16_t*) line.c_str(), length, NULL, brks.get() );
+
+	//
+	must->clear();
+	allow->clear();
+
+	size_t byte = 0;
+	while( byte < length ) {
+		if( brks.get()[byte] == LINEBREAK_ALLOWBREAK )
+			allow->push_back( byte );
+		else if( brks.get()[byte] == LINEBREAK_MUSTBREAK ) {
+			must->push_back( byte );
+			allow->push_back( byte );
+		}
+
+		byte++;
+	}
+}
+
+} // namespace ci
