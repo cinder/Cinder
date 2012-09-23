@@ -61,7 +61,7 @@ using namespace std;
 class StereoscopicRenderingApp : public AppBasic {
   public:
 	typedef enum { SET_CONVERGENCE, SET_FOCUS, AUTO_FOCUS } FocusMethod;
-	typedef enum { MONO, SIDE_BY_SIDE, OVER_UNDER } RenderMethod;
+	typedef enum { MONO, SIDE_BY_SIDE, OVER_UNDER, ANAGLYPH_RED_CYAN } RenderMethod;
 public:
 	void prepareSettings( Settings *settings );
 
@@ -146,7 +146,7 @@ void StereoscopicRenderingApp::setup()
 
 	mBackgroundColor = Color( 0.8f, 0.8f, 0.8f );
 
-	mFont = Font("Verdana", 36.0f);
+	mFont = Font("Verdana", 24.0f);
 	mDrawUI = true;
 }
 
@@ -199,6 +199,10 @@ void StereoscopicRenderingApp::update()
 			area = gl::getViewport();
 			area.expand( 0, -area.getHeight()/4 );
 			mAF.autoFocus( &mCamera, area );
+			break;
+		case ANAGLYPH_RED_CYAN:
+			// simply sample the whole screen
+			mAF.autoFocus( &mCamera );
 			break;
 		}
 		break;
@@ -264,6 +268,43 @@ void StereoscopicRenderingApp::draw()
 		// restore viewport
 		glPopAttrib();
 		break;
+
+#if(defined CINDER_MSW)
+	// MacOS X does not support accumulation buffer
+	case ANAGLYPH_RED_CYAN:
+		// initialize the accumulation buffer
+		glClearAccum( 0.0f, 0.0f, 0.0f, 0.0f );
+
+		// because glClear() does not respect the color mask, 
+		// clear the color (and depth) buffers using a red filtered background color
+		gl::clear( mBackgroundColor * Color( 1, 0, 0 ) );
+
+		// set up color mask to only draw red and render left camera
+		glColorMask( true, false, false, true );
+		mCamera.enableStereoLeft();
+		render();
+		glColorMask( true, true, true, true );
+
+		// load the scene into the accumulation buffer
+		glAccum( GL_LOAD, 1.0f );
+		
+		// because glClear() does not respect the color mask, 
+		// clear the color (and depth) buffers using a cyan filtered background color
+		gl::clear( mBackgroundColor * Color( 0, 1, 1 ) );
+		
+		// set up color mask to only draw cyan and render right camera
+		glColorMask( false, true, true, true );
+		mCamera.enableStereoRight();
+		render();
+		glColorMask( true, true, true, true );
+
+		// add the scene to the accumulation buffer
+		glAccum( GL_ACCUM, 1.0f );
+
+		// present the accumulation buffer to the screen
+		glAccum( GL_RETURN, 1.0f );
+		break;
+#endif
 	}
 
 	// draw auto focus visualizer
@@ -309,24 +350,6 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		// toggle interface
 		mDrawUI = !mDrawUI;
 		break;
-	case KeyEvent::KEY_1:
-		mFocusMethod = SET_CONVERGENCE;
-		break;
-	case KeyEvent::KEY_2:
-		mFocusMethod = SET_FOCUS;
-		break;
-	case KeyEvent::KEY_3:
-		mFocusMethod = AUTO_FOCUS;
-		break;
-	case KeyEvent::KEY_F1:
-		mRenderMethod = MONO;
-		break;
-	case KeyEvent::KEY_F2:
-		mRenderMethod = SIDE_BY_SIDE;
-		break;
-	case KeyEvent::KEY_F3:
-		mRenderMethod = OVER_UNDER;
-		break;
 	case KeyEvent::KEY_UP:
 		// increase the parallax effect (towards negative parallax) 
 		if(mFocusMethod == AUTO_FOCUS)
@@ -349,6 +372,31 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		// increase the auto focus speed
 		mAF.setSpeed( mAF.getSpeed() + 0.01f );
 		break;
+	case KeyEvent::KEY_1:
+		mFocusMethod = SET_CONVERGENCE;
+		break;
+	case KeyEvent::KEY_2:
+		mFocusMethod = SET_FOCUS;
+		break;
+	case KeyEvent::KEY_3:
+		mFocusMethod = AUTO_FOCUS;
+		break;
+	case KeyEvent::KEY_F1:
+		mRenderMethod = MONO;
+		break;
+	case KeyEvent::KEY_F2:
+		mRenderMethod = SIDE_BY_SIDE;
+		break;
+	case KeyEvent::KEY_F3:
+		mRenderMethod = OVER_UNDER;
+		break;
+
+#if(defined CINDER_MSW)
+	// MacOS X does not support accumulation buffer
+	case KeyEvent::KEY_F4:
+		mRenderMethod = ANAGLYPH_RED_CYAN;
+		break;
+#endif
 	}
 }
 
@@ -448,13 +496,26 @@ void StereoscopicRenderingApp::renderUI()
     float w = (float) getWindowWidth() * 0.5f;
     float h = (float) getWindowHeight();
 
-    std::string labels( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:" );
-    boost::format values = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getConvergence() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+	std::string renderMode, focusMode;
+	switch(mRenderMethod) {
+		case MONO: renderMode = "Mono"; break;
+		case SIDE_BY_SIDE: renderMode = "Side By Side"; break;
+		case OVER_UNDER: renderMode = "Over Under"; break;
+		case ANAGLYPH_RED_CYAN: renderMode = "Anaglyph Red Cyan"; break;
+	}
+	switch(mFocusMethod) {
+		case SET_CONVERGENCE: focusMode = "CameraStereo::setConvergence(d, false);"; break;
+		case SET_FOCUS: focusMode = "CameraStereo::setConvergence(d, true);"; break;
+		case AUTO_FOCUS: focusMode = "gl::StereoAutoFocuser::autoFocus(cam);"; break;
+	}
 
-#if(defined WIN32)
+    std::string labels( "Render mode (F1-F4):\nFocus mode (1-3):\nFocal Length:\nEye Distance:\nAuto Focus Depth (Up/Down):\nAuto Focus Speed (Left/Right):" );
+    boost::format values = boost::format( "%s\n%s\n%.2f\n%.2f\n%.2f\n%.2f" ) % renderMode % focusMode % mCamera.getConvergence() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+
+#if(defined CINDER_MSW)
     gl::enableAlphaBlending();
-    gl::drawString( labels, Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );
-    gl::drawStringRight( values.str(), Vec2f( w + 200.0f, h - 150.0f ), Color::black(), mFont );
+    gl::drawString( labels, Vec2f( w - 350.0f, h - 150.0f ), Color::black(), mFont );
+    gl::drawStringRight( values.str(), Vec2f( w + 350.0f, h - 150.0f ), Color::black(), mFont );
     gl::disableAlphaBlending();
 #else
     // \n is not supported on the mac, so we draw separate strings
@@ -464,8 +525,8 @@ void StereoscopicRenderingApp::renderUI()
 
     gl::enableAlphaBlending();
     for(size_t i=0;i<4;++i) {       
-        gl::drawString( left[i], Vec2f( w - 200.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
-        gl::drawStringRight( right[i], Vec2f( w + 200.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
+        gl::drawString( left[i], Vec2f( w - 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
+        gl::drawStringRight( right[i], Vec2f( w + 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
     }
     gl::disableAlphaBlending();
 #endif
