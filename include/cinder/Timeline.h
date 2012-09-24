@@ -170,7 +170,16 @@ class Timeline : public TimelineItem {
 	void reset( bool unsetStarted = false );
 
 	//! Sets the default \a autoRemove value for all future TimelineItems added to the Timeline
-	void	setDefaultAutoRemove( bool defaultAutoRemove ) { mDefaultAutoRemove = defaultAutoRemove; }
+	void	setDefaultAutoRemove( bool defaultAutoRemove ) {
+		if(defaultAutoRemove == mDefaultAutoRemove) return;
+		
+		mDefaultAutoRemove = defaultAutoRemove;
+		
+		// CJJ:	If this is not done, then setting this flag will only work if it's done prior to adding tweens.
+		for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter )
+			iter->second->setAutoRemove(mDefaultAutoRemove);
+	}
+	
 	//! Returns the default \a autoRemove value for all future TimelineItems added to the Timeline
 	bool	getDefaultAutoRemove() const { return mDefaultAutoRemove; }
 

@@ -1,26 +1,25 @@
-Introduction
+Introduction -> includes graphical representations
 Basic Usage
-	* Creating animations
+	Creating animations (new)
 	Using callbacks
 	Cues
 	Looping
 	Looping with cues
-	Easing Functions
+	Easing Functions -> includes javascript easing examples
 
 Intermediate Usage
+	Auto Removing Tweens
+	Nesting Timelines
 	Using Step or StepTo
 		Using StepTo
 		Using Step
-	Nesting Timelines
-	Auto Removing Tweens
 	Ping-ponging
 		
 Advanced Usage
 	Using TweenRef
-	Create Timeline Items
+	Creating Timeline Items
 	Using applyPtr and appendToPtr
 	Creating a timeline on separate threads
 	Creating non-realtime animations
-
-
-* Add alternate impl exampes using Tween::Options
+	Using a custom lerp and/or custom tweened data type
+	Using the Tween::Options object

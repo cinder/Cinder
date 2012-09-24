@@ -1,0 +1,245 @@
+/**
+\page guide_timeline_intermediate Timeline Guide: Intermediate usage
+
+<h1>Intermediate Usage</h1>
+
+<h2>Auto Removing Timeline Objects</h2>
+
+The Timeline class will automatically get rid of tweened objects when they've completed. Most of the time this is the behavior that you want. However, there are scenarios when you need the objects to remain. For instance, if you want a whole sequence of tweens in a timeline to loop, then you'll need to turn off removal of the animations added to that timeline. There are two ways to achieve this.
+
+\code
+timeline().setDefaultAutoRemove(false);
+\endcode
+<br />
+This will turn off the auto-removal behavior for the Timeline for the application. Keep in mind that this will continue to update all children tweens until the timeline is manually cleared using the Timeline::clear() method.
+
+An alternative is to toggle the auto removal of individual tweens as follows:
+\code
+timeline().apply( &mAnim, Vec2f( 200.0f, 200.0f ), 1.0f ).autoRemove(false);
+timeline().appendTo( &mAnim, Vec2f( 300.0f, 300.0f ), 1.0f ).autoRemove(false);
+timeline().appendTo( &mAnim, Vec2f( 365.0f, 300.0f ), 1.0f ).autoRemove(false);
+\endcode
+<br />
+
+This behavior is the same as above. But there is one important distinction. Setting a Tween's auto remove flag will only affect that tween, but setting the timeline's default auto remove flag will affect all of it's children tween objects. Also be sure not to confuse Timeline::setAutoRemove() and Timeline::setDefaultAutoRemove(). The first refers to behavior with respect to the Timeline's parent, the second refers to the behavior of the Timeline's children!
+
+<br />
+
+Some situations will require that you manually set these flags. For instance, looping a whole timeline that contains several tweens in sequence will require that the tweens are not automatically removed.
+
+<h2>Nesting Timelines</h2>
+
+You can nest Timelines. Create your own Timeline and add it to another Timeline. And then add that to another Timeline. This can be useful for adding and removing animation sequences at will. Just keep in mind any Anim object you use can only be a member of one Timeline at a time. If you apply() to it with a new Timeline it will de-register itself from the old one automatically.
+
+Below is a quick example of nesting timelines:
+
+\code
+
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+class NestingTimelineExample : public AppBasic {
+public:
+    void setup();
+    void mouseDown( MouseEvent event );
+    void keyDown( KeyEvent event );
+    void draw();
+	
+	Anim<Vec2f> mAnim1;
+	Anim<Vec2f> mAnim2;
+	Anim<Vec2f> mAnim3;
+	
+	TimelineRef mTimeline;
+	TimelineRef mTimeline2;
+};
+
+void NestingTimelineExample::setup()
+{
+	Vec2f start = Vec2f(50.0f, 50.0f);
+	mAnim1 = mAnim2 = mAnim3 = start;
+	
+	mTimeline = timeline().create();
+	mTimeline2 = timeline().create();
+	mTimeline->setDefaultAutoRemove(false);
+	mTimeline2->setDefaultAutoRemove(false);
+	mTimeline->setPingPong(true);
+	mTimeline2->setPingPong(true);
+	
+	timeline().add( mTimeline );
+	mTimeline->add( mTimeline2 );
+}
+
+void NestingTimelineExample::mouseDown( MouseEvent event )
+{
+	Vec2f start = Vec2f(50.0f, 50.0f);
+	timeline().apply( &mAnim1, start, Vec2f( 100.0f, 100.0f ), 2.0f, EaseInOutCubic() );
+	mTimeline->apply( &mAnim2, start, Vec2f( 200.0f, 200.0f ), 2.0f, EaseInOutCubic() );
+	mTimeline2->apply( &mAnim3, start, Vec2f( 300.0f, 300.0f ), 2.0f, EaseInCubic() );
+	mTimeline2->appendTo( &mAnim3, Vec2f( 365.0f, 300.0f ), 3.0f, EaseOutCubic() );
+}
+
+void NestingTimelineExample::keyDown( KeyEvent event )
+{
+	static bool toggled = false;
+	if(!toggled){
+		mTimeline->reset(true);
+		mAnim1.stop();
+		timeline().add( mTimeline );
+//		mTimeline->add( mTimeline2 );
+	}
+	else{
+		mTimeline->reset(false);
+		timeline().remove( mTimeline );
+//		mTimeline->remove( mTimeline2 );
+	}
+	
+	toggled = !toggled;
+}
+
+void NestingTimelineExample::draw()
+{
+    // clear out the window with black
+    gl::clear();
+	
+	//in the draw method
+	gl::color( Color( 1.0f, 0.0f, 0.0f ) );
+	gl::drawSolidCircle( mAnim1, 20.0f );
+	
+	gl::color( Color( 1.0f, 1.0f, 0.0f ) );
+	gl::drawSolidCircle( mAnim2, 10.0f );
+	
+	gl::color( Color( 0.0f, 1.0f, 0.0f ) );
+	gl::drawSolidCircle( mAnim3, 5.0f );
+}
+
+CINDER_APP_BASIC( NestingTimelineExample, RendererGl )
+
+\endcode
+<br />
+
+<h2> Using Step and StepTo </h2>
+
+You can create your own Timeline and then advance it (using step() or stepTo()) however you please. If you are a Flash person, this is how you can create a frame-based Timeline instead of a time-based one.
+<br />
+
+<h2> Using StepTo </h2>
+
+You can use Timeline to "step" through a timeline that you've created. Below is an example. Notice how we create our own Timeline and it is not added to the main application timeline.
+
+\code
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+class LoopingStepToExample : public AppBasic {
+public:
+	void setup();
+	void update();
+	void draw();
+	
+	Anim<Vec2f> mAnim;
+	TimelineRef mFrameBasedTimeline;
+	float mStepTime;
+	float mFrameTime;
+};
+
+void LoopingStepToExample::setup()
+{
+	mAnim = Vec2f::zero();
+	
+	mFrameBasedTimeline = Timeline::create();
+	mFrameBasedTimeline->apply( &mAnim, Vec2f(getWindowSize()), 3.5f, EaseInOutCubic() );
+	
+	mStepTime = 0.0;
+	mFrameTime = 1.0 / 30;	// set framerate to 30
+}
+
+void LoopingStepToExample::update()
+{
+	mStepTime += mFrameTime;
+	mFrameBasedTimeline->stepTo( mStepTime );
+}
+
+void LoopingStepToExample::draw()
+{
+	// clear out the window with black
+	gl::clear( Color( 0, 0, 0 ) );
+	
+	gl::color( Color(1.0, 0.0, 0.0) );
+	gl::drawSolidCircle( mAnim, 20 );
+}
+
+CINDER_APP_BASIC( LoopingStepToExample, RendererGl )
+
+\endcode
+<br />
+
+<h2>Using Step</h2>
+
+If you just need to specify the step size at which your timeline is updated you can use step( float stepSize  ). 
+
+\code
+void LoopingStepToExample::update()
+{
+	mFrameBasedTimeline->step( mFrameTime );
+}
+	
+\endcode
+<br />
+
+The above example would also allow one to create a non-realtime animation which would be valuable for situations where one is rendering video output from a Cinder project.
+
+<h2> Ping-ponging </h2>
+
+You can set an animation to playback in "ping-pong" as needed. This will automatically cycle between playing forward and reverse at the start and end (respectively) of the animation. This can be applied to an individual tween or a whole timeline. It can even be added to a timeline but without looping. Here are some demonstrations:
+
+\code
+
+// This will set the ping pong flag for a single tween
+timeline().apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic()).pingPong();
+
+\endcode
+<br />
+
+\code
+// this will ping pong the entire set of animations on the timeline 
+timeline().setPingPong(true);
+
+// WARNING: The timeline will remove tweens when they are finished by default. 
+// Make sure you disable this so the tweens are kept on the timeline even after they're finished.
+timeline().setDefaultAutoRemove(false);
+
+// now add tweens
+timeline().apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic());
+timeline().appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 200,100 ), 1.25f );
+\endcode
+<br />
+
+If you just want to have a single, non-repeating ping-pong effect, you can use appendPingPong()
+
+\code
+
+// In this case, new tween objects are automatically created just for the ping pong, so it is not necessary to turn off the auto remove.
+// TODO: NOTE, THE ANIMATION BEHAVIOR HERE DEPENDS UPON TIMELINE UPDATES. IF WE SHORT CIRCUIT THE Tween::update METHOD, 
+// THEN ITS NOT NEEDED. IF WE DON'T HOWEVER, THEN THIS MUST BE SET TO true.
+timeline().setDefaultAutoRemove(true);	// this is the default behavior
+
+// now add tweens
+timeline().apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic());
+timeline().appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 200,100 ), 1.25f );
+timeline().appendPingPong();
+
+\endcode
+<br />
+
+This covers most use cases for animating objects on the Cinder Timeline. However, there are some more \ref guide_timeline_advanced "advanced examples ahead."
+*/

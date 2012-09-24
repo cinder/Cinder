@@ -1,0 +1,214 @@
+/**
+\page guide_timeline_advanced Timeline Guide: Advanced usage
+
+<h1> Advanced Usage </h1>
+<h2>Using TweenRef</h2>
+
+One might face a scenario where it would be more convenient to add a tween to a timeline manually. This is also supported using TweenRef objects. The following is an example of this method:
+
+\code
+
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/Tween.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+class TimelineItemsExample : public AppBasic {
+public:
+    void setup();
+    void keyDown( KeyEvent event );
+    void draw();
+	
+	Vec2f mLocation;
+	TweenRef<Vec2f> twnRef;
+};
+
+void TimelineItemsExample::setup()
+{
+	twnRef = TweenRef<Vec2f>( new Tween<Vec2f>(&mLocation, Vec2f(200,200), 1.0, 1.0, EaseInOutQuad()) );
+}
+
+void TimelineItemsExample::keyDown( KeyEvent event )
+{
+	timeline().add(twnRef);
+}
+
+void TimelineItemsExample::draw()
+{
+    // clear out the window with black
+    gl::clear( Color( 0, 0, 0 ) );
+	
+    gl::color( Color(1.0, 0.0, 0.0) );
+    gl::drawSolidCircle( mLocation, 10 );
+}
+
+CINDER_APP_BASIC( TimelineItemsExample, RendererGl )
+\endcode
+<br />
+
+<h2>Using applyPtr and appendToPtr</h2>
+
+Instead of using Anim objects, you can optionally supply an object type directly by using applyPtr(). This method is almost the same as apply() except that the first parameter must be a raw pointer to an object to be tweened. Keep in mind that this approach should only be used when needed. If there is ever a situation in which the pointer is no longer valid, the program may result in undefined behavior. The following is an example.
+
+\code
+
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+class ApplyPtrExample : public AppBasic {
+public:
+    void setup();
+    void mouseDown( MouseEvent event );
+    void keyDown( KeyEvent event );
+    void draw();
+	
+	Vec2f mLocation;
+    TimelineRef mTimeline;
+};
+
+void ApplyPtrExample::setup()
+{
+    mTimeline = timeline().create();
+    timeline().add( mTimeline );
+	
+	mLocation = Vec2f();
+}
+
+void ApplyPtrExample::mouseDown( MouseEvent event )
+{
+	mTimeline->applyPtr(&mLocation, Vec2f(event.getPos()), 2.5f, EaseOutCubic());
+	
+}
+
+void ApplyPtrExample::keyDown( KeyEvent event )
+{
+	mTimeline->appendToPtr(&mLocation, Vec2f::zero(), 1.5f, EaseOutCubic());
+}
+
+void ApplyPtrExample::draw()
+{
+    // clear out the window with black
+    gl::clear( Color( 0, 0, 0 ) );
+	
+    gl::color( Color(1.0, 0.0, 0.0) );
+    gl::drawSolidCircle( mLocation, 10 );
+}
+
+CINDER_APP_BASIC( ApplyPtrExample, RendererGl )
+
+\endcode
+<br />
+
+<h2>Animating Custom Data Types</h2>
+
+By default the linear interpolation function used by tweens for animation is the following:
+
+\code
+template<typename T>
+T tweenLerp( const T &start, const T &end, float time )
+{
+	return start * ( 1 - time ) + end * time;
+}
+\endcode
+<br/>
+This template function will work for any data types that have the appropriate arithmetic operators; addition and multiplication. If you want to animate a custom data type you are only required to provide functions for those two operators. Here's an example:
+
+\code
+class ImaginaryNumber {
+public:
+	ImaginaryNumber(float real_part=0, float imaginary_part=0) : real(real_part), imaginary(imaginary_part) {}
+	
+	const ImaginaryNumber operator+( const ImaginaryNumber& rhs ) const {
+		return ImaginaryNumber( real + rhs.real, imaginary + rhs.imaginary );
+	}
+	const ImaginaryNumber operator*( const float& rhs ) const {
+		return ImaginaryNumber( real * rhs, imaginary * rhs );
+	}
+	
+	float real;
+	float imaginary;
+};
+
+// Now one could use Anim<ImaginaryNumber> objects as part of a Timeline animation.
+
+\endcode
+<br/>
+
+This custom data type ImaginaryNumber has the minimum amount of code necessary work properly within the default lerp function used by Timeline. It goes without saying that this specific class would be an impractical data type to use without some more constructors and overloaded operators. As an alternative, you could supply your own lerp function to achieve the same goals as the following example demonstrates:
+
+\code
+// Use your own data type
+Anim<MySpecialType> mSpecialTypeAnim;
+
+// Define your own lerp function of this form:
+MySpecialType specialLerpFn( const MySpecialType& start, const MySpecialType& end, float time )
+{
+	/* return whatever is appropriate for this type */
+}
+
+// Give Timeline a reference to your lerp function with your custom data type
+timeline().apply( &mSpecialTypeAnim, MySpecialType::endValue(), 1.0f ).lerpFn( boost::bind(specialLerpFn, _1, _2, _3) );
+\endcode
+<br/>
+
+<h2>Creating a timeline on a separate thread</h2>
+
+The Timeline implementation is not designed to be thread safe. But if you want to use Timeline on a separate thread, this can be done by keeping all of your animations and tween references on that thread. 
+
+<h2>Creating non-realtime animations</h2>
+
+By default the application timeline is updated using the system clock. However, there may be times when you don't want to use the system clock to drive animation. Non-realtime rendering is a good example of this use case scenario. For this you will want the application's notion of time to drive the update steps. Visit the StepTo section for an example.
+
+<h2>Using the Tween::Options Object</h2>
+
+Any time you add an Anim object to a timeline, a special Tween::Options object is returned. This allows one to apply additional changes to the tween. This has already been demonstrated in the callbacks section. Though, much more functionality is provided using the same entity. Here we will demonstrate the possibilties.
+
+\code
+
+// make sure you have some persistent Anim object to work with
+Anim<float> mAnim;
+
+// the following references to functionName would be non-member functions like the following:
+void functionName(){
+	// logic here
+}
+
+timeline().apply( &mAnim, 100.0, 1.0f ).startFn( boost::bind(functionName) );			// adds a callback for the tween start
+timeline().apply( &mAnim, 100.0, 1.0f ).reverseStartFn( boost::bind(functionName) );	// adds a callback for the tween start when reversed
+timeline().apply( &mAnim, 100.0, 1.0f ).updateFn( boost::bind(functionName) );			// adds a callback for the tween update
+timeline().apply( &mAnim, 100.0, 1.0f ).finishFn( boost::bind(functionName) );			// adds a callback at the end of the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).reverseFinishFn( boost::bind(functionName) );	// adds a callback for the tween ending when reversed
+timeline().apply( &mAnim, 100.0, 1.0f ).easeFn( EaseNone() );							// sets the easing equation for the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).delay( float delay );							// applies a delay at the start of the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).autoRemove( bool toggle );						// toggles the tween removal from the timeline when finished
+timeline().apply( &mAnim, 100.0, 1.0f ).loop( bool toggle );							// toggles looping for the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).pingPong( bool toggle );						// toggles ping-ponging for the tween
+timeline().apply( &mAnim, 100.0, 1.0f ).timelineEnd( float offset );					// modifies the tween start time (?)
+timeline().apply( &mAnim, 100.0, 1.0f ).appendTo( mAnim<float>* anim, offset );			// adds this tween to another one (or vice versa?)
+timeline().apply( &mAnim, 100.0, 1.0f ).appendTo( float* anim_pointer );				// adds this tween to another one using pointers
+
+\endcode
+<br />
+
+This Tween::Options object also conveniently provides support for method chaining. Here are a couple examples:
+
+\code
+
+// This assigns the start and end callback functions in a single line.
+timeline().apply( &mAnim, 100.0, 1.0f ).startFn( boost::bind(&startCallback) ).finishFn( boost::bind(&endCallback) );
+
+// This will apply a 1 second delay and apply the ping pong effect to the tween, all at once.
+timeline().apply( &mAnim, 100.0, 1.0f ).delay(1.0f).autoRemove(false).pingPong();
+
+\endcode
+<br />
+*/
