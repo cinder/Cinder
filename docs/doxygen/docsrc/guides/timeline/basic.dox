@@ -1,5 +1,5 @@
 /**
-\page guide_basic Timeline Guide: Introduction and Basic Use
+\page guide_timeline_basic Timeline Guide: Basic Usage
 
 \htmlonly
 <head>
@@ -67,22 +67,18 @@
 
 <h1>Cinder Timeline Guide</h1>
 
-<h2> Introduction </h2>
-
-Cinder provides a tweening engine called Timeline for creating fully featured animations. Timeline has been designed to easily animate variables over time without having to keep track of them. Flash developers familiar with [Tween Lite](http://www.greensock.com/tweenlite/) can use this as a somewhat similar context when working with Timeline. Those familiar with After Effects (AE) can use this as a frame of reference to visualize how Timeline is used.
-
 <h1> Basic Usage </h1>
 
-The Timeline object manages a collection of Anim objects. Anims are objects that can be *tweened* or animated over time. Any Cinder application always contains a master timeline which is accessed similar to the way you would use console().
+The \ref cinder::Texture "Timeline" object manages a collection of \ref cinder::Anim "Anim" objects. Anims are objects that can be <em>tweened</em> or animated over time. Any Cinder application always contains a master Timeline which is accessed similar to the way you would use console().
 
 <br />
-Before anything can be done first make sure timeline is included in your project:
+Before anything can be done first make sure Timeline is included in your project:
 
 \code
 #include "cinder/Timeline.h"
 \endcode
 
-After you've included Timeline see below for a very basic example using it:
+After you've included Timeline, you can write code like this to perform an animation:
 \code
 Anim<float> radius;
 radius = 0.0f;
@@ -112,13 +108,13 @@ timeline().apply( &radius, 100.0f, 1.5f, EaseOutCubic() );
 
 <br />
 
-In the example above the variable radius is an Anim object. The Anim type acts as a wrapper for the datatype you want to animate. In this case we're animating a floating point type. You can use any data type that supports all the arithmetic operators (including Vec2f, Vec4f, double, long int, etc). After you create the Anim type, you can use it just as you would use the datatype that it wraps. On the master timeline we use the the apply function to tween the radius to a final value of 10.0 over 1.5 seconds using the EaseOutCubic function.  
+In the example above the variable radius is an \ref cinder::Anim "Anim" object. The Anim type acts as a wrapper for the datatype you want to animate. In this case we're animating a floating point type. You can use any data type that supports all the arithmetic operators (including \ref cinder::Vec2f "Vec2f", \ref cinder::Vec4f "Vec4f", double, long int, etc). After you create the Anim type, you can use it just as you would use the datatype that it wraps. On the master Timeline we use the the apply() method to tween the radius to a final value of 10.0 over 1.5 seconds using the EaseOutCubic function.  
 
-It is important to note that the master timeline's apply function is accepting a <em>pointer</em> to the Anim radius along with the easing function used. The easing function is basically the equation that is applied to your Anim variable over time. This is described in more detail in the following section below.
+It is important to note that the master \ref cinder::Timeline::apply "Timeline's apply() function" is accepting a <em>pointer</em> to the Anim radius along with the easing function used. The easing function is basically the equation that is applied to your Anim variable over time. This is described in more detail in the following section below.
 
 <br />
 
-<h2>Ease Functions</h2>
+\section easeFn Ease Functions
 
 Using Timeline you can apply different easing equations to produce a desired effect to your anims.
 
@@ -663,7 +659,7 @@ Additionally, [Chris Mckenzie] (http://chrismckenzie.com/) has contributed a lis
 
 <br />
 
-<h2>Callbacks</h2>
+\section callbacks Callbacks
 
 Within Timeline, callbacks can be trigged during certain points within your animation. Say for example you want to run a function at the start, during each update, and/or completion of your animation.
 
@@ -671,7 +667,7 @@ Within Timeline, callbacks can be trigged during certain points within your anim
 Timeline needs your callback function be one of the following formats:
 
 <ul>
- <li> 1.) Free Function. This means your function must not be a member of a class or struct. Below is an example of timeline using a free function.
+ <li> 1.) Free Function. This means your function must not be a member of a class or struct. Below is an example of Timeline using a free function.
  <li> 2.) Member methods. These are normal functions attached to an object. However, they should adopt the following signature to be supported.
  <li> 3.) Functors. Functors are a class with one or more private members to store the state and with an overloaded operator () to execute the function. [http://www.newty.de](http://www.newty.de/fpt/functor.html) 
  <li> 4.) Lambdas. If you're using C++11, you can use Lambda expressions. Lambda expressions essentially is a function that has a body, but does not have a name. Lambda expressions also maintain state so it can access variables that are available to the enclosing scope. [Lambda Expressions in C++ - MSDN](http://msdn.microsoft.com/en-us/library/dd293608.aspx).
@@ -749,9 +745,9 @@ CINDER_APP_BASIC( CustomCallbackApp, RendererGl )
 
 <br />
 
-<h2>Cues</h2>
+\section cues Cues
 
-Using Timeline you can set up Cue points. These can help trigger certain events at specified times throughout your animation. For example, here is a Functor example that fires in 5 seconds after the animation has started.
+Using Timeline you can set up \ref cinder::Cue "Cues." These can help trigger certain events at specified times throughout your animation. For example, here is a Functor example that fires in 5 seconds after the animation has started.
 
 \code
 
@@ -767,7 +763,7 @@ timeline().add( Say( "Hi!" ), timeline().getCurrentTime() + 5 );
 \endcode
 
 <br />
-...or if you would like to use lambdas (assuming your compiler supports C++11):
+...or if you would like to use lambdas <em>assuming your compiler supports C++11:</em>
 
 \code
 
@@ -775,13 +771,13 @@ timeline().add( []{ app::console() << "Howdy"; }, timeline().getCurrentTime() + 
 
 \endcode
 
-<h2>Looping</h2>
+\section looping Looping
 
-Using Timeline you can create loops on a given animation. These can be standard loops or loops based on a cue.
+Using Timeline you can create loops on a given animation. These can be standard loops or loops based on a \ref cinder::Cue "Cue."
 
 <br />
 
-<h2>Standard Looping</h2>
+\section standardLooping Standard Looping
 
 See below for a quick example creating an animation with standard looping using Timeline:
 
@@ -840,9 +836,9 @@ CINDER_APP_BASIC( LoopingExample, RendererGl )
 
 <br />
 
-<h2>Looping with cues</h2>
+\section loopingWithCues Looping with Cues
 
-In Timeline you can also create loops with cues. In this example the Say functor will be ran 5 seconds after the timeline begins, after that, every 1.0 second it will be ran again. See below:
+In Timeline you can also create loops with cues. In this example the Say functor will be ran 5 seconds after the Timeline begins, after that, every 1.0 second it will run again.
 
 \code
 void LoopingExample::setup()
@@ -855,5 +851,5 @@ void LoopingExample::setup()
 
 <br />
 
-This covers the basic use case scenarios for animation in Cinder using the Timeline. There are more interesting cases in the \ref guide_timeline_intermediate "Next Section."
+This covers the basic use case scenarios for animation in Cinder using the Timeline. There are more interesting cases in the \ref guide_timeline_intermediate "next section: Intermediate Usage"
 */

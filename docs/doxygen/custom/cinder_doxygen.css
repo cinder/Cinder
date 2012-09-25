@@ -165,6 +165,8 @@ h1 {
 }
 
 .contents {
+	width: 880px;
+	margin: 0 auto;
 	line-height:1.5em;
 	background-color: #fff;
 	padding: 56px 38px;

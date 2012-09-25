@@ -1,0 +1,42 @@
+/**
+\page guide_intro Timeline Guide
+
+\section intro Introduction
+
+Cinder provides a tweening engine called Timeline for creating fully featured animations. Timeline has been designed to easily animate variables over time without having to keep track of them. Flash developers familiar with [Tween Lite](http://www.greensock.com/tweenlite/) can use this as a somewhat similar context when working with Timeline. Those familiar with After Effects (AE) can use this as a frame of reference to visualize how Timeline is used.
+\n
+Here's what we'll cover in this guide.
+\n
+<ol>
+<li> \ref guide_timeline_basic "Basic Usage" </li>
+<li> \ref easeFn "Ease Functions" </li>
+<li> \ref callbacks "Callbacks" </li>
+<li> \ref cues "Cues" </li>
+<li> \ref looping "Looping" </li>
+<li> \ref standardLooping "Standard Looping" </li>
+<li> \ref loopingWithCues "Looping with Cues" </li>
+</ol>
+
+<ol>
+<li> \ref guide_timeline_intermediate "Intermediate Usage" </li>
+<li> \ref autoRemovingTimelineItems "Auto Removing Tweens" </li>
+<li> \ref nestingTimelines "Nesting Timelines" </li>
+<li> \ref usingStepAndStepTo "Using Step and StepTo" </li>
+<li> \ref usingStepTo "Using StepTo" </li>
+<li> \ref usingStep "Using Step" </li>
+<li> \ref pingPonging "Ping-ponging" </li>
+</ol>
+
+<ol>
+<li> \ref guide_timeline_advanced "Advanced Usage" </li>
+<li> \ref usingTweenRef "Using TweenRef" </li>
+<li> \ref usingApplyPtrAndAppendToPtr "Using applyPtr and appendToPtr" </li>
+<li> \ref animatingCustomDataTypes "Animating Custom Data Types" </li>
+<li> \ref creatingTimelineMultithreading "Creating a timeline on a separate thread" </li>
+<li> \ref creatingNonRealtimeAnimations "Creating non-realtime animations" </li>
+<li> \ref usingTheTweenOptionsObject "Using the Tween::Options Object" </li>
+</ol>
+
+\ref guide_timeline_basic "Lets get started with the basics."
+
+*/
