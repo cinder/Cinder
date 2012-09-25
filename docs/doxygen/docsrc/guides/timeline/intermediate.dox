@@ -90,12 +90,12 @@ void NestingTimelineExample::keyDown( KeyEvent event )
 		mTimeline->reset(true);
 		mAnim1.stop();
 		timeline().add( mTimeline );
-//		mTimeline->add( mTimeline2 );
+		mTimeline->add( mTimeline2 );
 	}
 	else{
 		mTimeline->reset(false);
 		timeline().remove( mTimeline );
-//		mTimeline->remove( mTimeline2 );
+		mTimeline->remove( mTimeline2 );
 	}
 	
 	toggled = !toggled;
@@ -103,10 +103,8 @@ void NestingTimelineExample::keyDown( KeyEvent event )
 
 void NestingTimelineExample::draw()
 {
-    // clear out the window with black
-    gl::clear();
+    gl::clear();	// clear out the window with black
 	
-	//in the draw method
 	gl::color( Color( 1.0f, 0.0f, 0.0f ) );
 	gl::drawSolidCircle( mAnim1, 20.0f );
 	
@@ -229,9 +227,11 @@ If you just want to have a single, non-repeating ping-pong effect, you can use \
 
 \code
 
-// In this case, new tween objects are automatically created just for the ping pong, so it is not necessary to turn off the auto remove.
-// TODO: NOTE, THE ANIMATION BEHAVIOR HERE DEPENDS UPON TIMELINE UPDATES. IF WE SHORT CIRCUIT THE Tween::update METHOD, 
-// THEN ITS NOT NEEDED. IF WE DON'T HOWEVER, THEN THIS MUST BE SET TO true.
+// In this case, new tween objects are automatically created just for the ping pong, 
+// so it is not necessary to turn off the auto remove.
+// 
+// TODO: NOTE, THE ANIMATION BEHAVIOR HERE DEPENDS UPON TIMELINE UPDATES. IF WE SHORT 
+// CIRCUIT THE Tween::update METHOD, THEN ITS NOT NEEDED. OTHERWISE, THIS MUST BE SET TO true.
 timeline().setDefaultAutoRemove(true);	// this is the default behavior
 
 // now add tweens

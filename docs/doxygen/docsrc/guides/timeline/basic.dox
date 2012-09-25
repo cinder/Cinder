@@ -771,6 +771,8 @@ timeline().add( []{ app::console() << "Howdy"; }, timeline().getCurrentTime() + 
 
 \endcode
 
+One thing that is special about adding Cues to the Timeline is that the second parameter, which specifies timing, is not relative to the timeline's currently set time. So, here we're using the \ref cinder::Timeline::getCurrentTime "Timeline's getCurrentTime() method" to offset from. 
+
 \section looping Looping
 
 Using Timeline you can create loops on a given animation. These can be standard loops or loops based on a \ref cinder::Cue "Cue."
