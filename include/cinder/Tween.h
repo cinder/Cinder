@@ -230,7 +230,7 @@ class Tween : public TweenBase {
 	
 	virtual void update( float relativeTime )
 	{
-		if(relativeTime >= 1.0) return;	// CJJ:	is this a bad idea? It often makes usage simpler, but not sure if it breaks anything...
+		if(mComplete) return;	// This is valuable any time the tween has been set NOT to be auto removed, otherwise some strange behavior emerges
 		
 		*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 		if( mUpdateFunction )

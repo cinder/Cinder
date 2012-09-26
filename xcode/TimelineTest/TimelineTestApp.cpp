@@ -36,11 +36,11 @@ void TimelineTest::setup()
 	mAnim2 = 0;
 	
 	mTimeline = Timeline::create();
-	mTimeline->setDefaultAutoRemove( false );
+	mTimeline->setDefaultAutoRemove( true );
 	mTimeline->setAutoRemove(false);
 	
 	mTimeline2 = Timeline::create();
-	mTimeline2->setDefaultAutoRemove( false );
+	mTimeline2->setDefaultAutoRemove( true );
 	mTimeline2->setAutoRemove(false);
 	
 	/*
@@ -77,9 +77,6 @@ void TimelineTest::keyDown( KeyEvent event )
 			mTimeline->apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic());
 			mTimeline->appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 100,300 ), 1.0f, EaseNone());
 			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), Vec2f( 10,10 ), 1.0f, EaseNone());
-//			mTimeline->apply( &mAnim, Vec2f( 100,100 ), 1.0f, EaseOutCubic());
-//			mTimeline->appendTo( &mAnim, Vec2f( 100,300 ), 1.0f, EaseNone());
-//			mTimeline->appendTo( &mAnim, Vec2f( 300,300 ), 1.0f, EaseNone());
 			mTimeline->appendPingPong();
 			break;
 			
