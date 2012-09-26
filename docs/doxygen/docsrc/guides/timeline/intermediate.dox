@@ -231,7 +231,8 @@ If you just want to have a single, non-repeating ping-pong effect, you can use \
 // so it is not necessary to turn off the auto remove.
 // 
 // TODO: NOTE, THE ANIMATION BEHAVIOR HERE DEPENDS UPON TIMELINE UPDATES. IF WE SHORT 
-// CIRCUIT THE Tween::update METHOD, THEN ITS NOT NEEDED. OTHERWISE, THIS MUST BE SET TO true.
+// CIRCUIT THE Tween::update METHOD USING mComplete THEN ITS NOT NEEDED.
+// OTHERWISE, THIS MUST BE SET TO true.
 timeline().setDefaultAutoRemove(true);	// this is the default behavior
 
 // now add tweens

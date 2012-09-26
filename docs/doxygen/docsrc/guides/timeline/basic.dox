@@ -670,7 +670,7 @@ Timeline needs your callback function be one of the following formats:
  <li> 1.) Free Function. This means your function must not be a member of a class or struct. Below is an example of Timeline using a free function.
  <li> 2.) Member methods. These are normal functions attached to an object. However, they should adopt the following signature to be supported.
  <li> 3.) Functors. Functors are a class with one or more private members to store the state and with an overloaded operator () to execute the function. [http://www.newty.de](http://www.newty.de/fpt/functor.html) 
- <li> 4.) Lambdas. If you're using C++11, you can use Lambda expressions. Lambda expressions essentially is a function that has a body, but does not have a name. Lambda expressions also maintain state so it can access variables that are available to the enclosing scope. [Lambda Expressions in C++ - MSDN](http://msdn.microsoft.com/en-us/library/dd293608.aspx).
+ <li> 4.) Lambdas. Starting with C++11, you can use Lambda expressions. Lambda expressions essentially is a function that has a body, but does not have a name. Lambda expressions also maintain state so it can access variables that are available to the enclosing scope. [Lambda Expressions in C++ - MSDN](http://msdn.microsoft.com/en-us/library/dd293608.aspx).
 </ul>
 
 Here's an example application which uses all four types of callbacks.
@@ -727,7 +727,7 @@ void CustomCallbackApp::setup()
 	
 	timeline().appendTo( &mPos, Vec2f( 250.0f, 250.0f ), 2.0f, EaseInOutCubic() )
 		.finishFn(boost::bind(&CustomCallbackApp::memberFunction, this, 42))
-		//.startFn([]() { app::console() << "Lambda function example --only works with C++11" << std::endl; });
+		.startFn([]() { app::console() << "C++11 lambda function example" << std::endl; })
 		.updateFn(Say( "Update using functor" ));
 }
 
@@ -763,7 +763,7 @@ timeline().add( Say( "Hi!" ), timeline().getCurrentTime() + 5 );
 \endcode
 
 <br />
-...or if you would like to use lambdas <em>assuming your compiler supports C++11:</em>
+...or if you would like to use the C++11 lambda functions
 
 \code
 
