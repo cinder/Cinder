@@ -1,17 +1,17 @@
 /**
-\page guide_timeline_intermediate Timeline Guide: Intermediate usage
+\page guide_timeline_intermediate Timeline Guide: Intermediate Usage
 
 <h1>Intermediate Usage</h1>
 
-<h2>Auto Removing Timeline Objects</h2>
+\section autoRemovingTimelineItems Auto Removing Tweens
 
-The Timeline class will automatically get rid of tweened objects when they've completed. Most of the time this is the behavior that you want. However, there are scenarios when you need the objects to remain. For instance, if you want a whole sequence of tweens in a timeline to loop, then you'll need to turn off removal of the animations added to that timeline. There are two ways to achieve this.
+The \ref cinder::Timeline "Timeline class" will automatically get rid of tweened objects when they've completed. Most of the time this is the behavior that you want. However, there are scenarios when you need the objects to remain. For instance, if you want a whole sequence of tweens in a timeline to loop, then you'll need to turn off auto-removal of the animations added to that timeline. There are two ways to achieve this.
 
 \code
 timeline().setDefaultAutoRemove(false);
 \endcode
 <br />
-This will turn off the auto-removal behavior for the Timeline for the application. Keep in mind that this will continue to update all children tweens until the timeline is manually cleared using the Timeline::clear() method.
+This will turn off the auto-removal behavior for the Timeline for the application. Keep in mind that this will continue to update all children \ref cinder::Tween "tweens" until the Timeline is manually cleared using the \ref cinder::Timeline::clear() "clear()" method.
 
 An alternative is to toggle the auto removal of individual tweens as follows:
 \code
@@ -21,15 +21,15 @@ timeline().appendTo( &mAnim, Vec2f( 365.0f, 300.0f ), 1.0f ).autoRemove(false);
 \endcode
 <br />
 
-This behavior is the same as above. But there is one important distinction. Setting a Tween's auto remove flag will only affect that tween, but setting the timeline's default auto remove flag will affect all of it's children tween objects. Also be sure not to confuse Timeline::setAutoRemove() and Timeline::setDefaultAutoRemove(). The first refers to behavior with respect to the Timeline's parent, the second refers to the behavior of the Timeline's children!
+This behavior is the same as above. But there is one important distinction. Setting a \ref cinder::Tween::setAutoRemove "Tween's auto remove flag" will only affect that tween, but setting the \ref cinder::Tween::setDefaultAutoRemove "timeline's default auto remove flag" will affect all of it's children tween objects. Be sure not to confuse these two methods (\ref cinder::Timeline::setAutoRemove "setAutoRemove()" and \ref cinder::Timeline::setDefaultAutoRemove() "setDefaultAutoRemove()." The first refers to behavior with respect to the \ref cinder::Timeline::getParent "Timeline's parent", the second refers to the behavior of the \ref cinder::Timeline::mItems "Timeline's children"!
 
 <br />
 
 Some situations will require that you manually set these flags. For instance, looping a whole timeline that contains several tweens in sequence will require that the tweens are not automatically removed.
 
-<h2>Nesting Timelines</h2>
+\section nestingTimelines Nesting Timelines
 
-You can nest Timelines. Create your own Timeline and add it to another Timeline. And then add that to another Timeline. This can be useful for adding and removing animation sequences at will. Just keep in mind any Anim object you use can only be a member of one Timeline at a time. If you apply() to it with a new Timeline it will de-register itself from the old one automatically.
+You can also <em>nest timelines</em> meaning you create your own timeline instance and add it to another timeline. And then add that to another Timeline. This can be useful for adding and removing animation sequences at will. Just keep in mind any Anim object you use can only be a member of one Timeline at a time. If you \ref cinder::Timeline::apply "apply()" to it with a new Timeline it will de-register itself from the old one automatically.
 
 Below is a quick example of nesting timelines:
 
@@ -90,12 +90,12 @@ void NestingTimelineExample::keyDown( KeyEvent event )
 		mTimeline->reset(true);
 		mAnim1.stop();
 		timeline().add( mTimeline );
-//		mTimeline->add( mTimeline2 );
+		mTimeline->add( mTimeline2 );
 	}
 	else{
 		mTimeline->reset(false);
 		timeline().remove( mTimeline );
-//		mTimeline->remove( mTimeline2 );
+		mTimeline->remove( mTimeline2 );
 	}
 	
 	toggled = !toggled;
@@ -103,10 +103,8 @@ void NestingTimelineExample::keyDown( KeyEvent event )
 
 void NestingTimelineExample::draw()
 {
-    // clear out the window with black
-    gl::clear();
+    gl::clear();	// clear out the window with black
 	
-	//in the draw method
 	gl::color( Color( 1.0f, 0.0f, 0.0f ) );
 	gl::drawSolidCircle( mAnim1, 20.0f );
 	
@@ -122,12 +120,12 @@ CINDER_APP_BASIC( NestingTimelineExample, RendererGl )
 \endcode
 <br />
 
-<h2> Using Step and StepTo </h2>
+\section usingStepAndStepTo Using Step and StepTo
 
-You can create your own Timeline and then advance it (using step() or stepTo()) however you please. If you are a Flash person, this is how you can create a frame-based Timeline instead of a time-based one.
+You can create your own Timeline and then advance it using \ref cinder::Timeline::step "step()" or \ref cinder::Timeline::stepTo "stepTo()." If you are a Flash person, this is how you can create a frame-based Timeline instead of a time-based one.
 <br />
 
-<h2> Using StepTo </h2>
+\section usingStepTo Using StepTo
 
 You can use Timeline to "step" through a timeline that you've created. Below is an example. Notice how we create our own Timeline and it is not added to the main application timeline.
 
@@ -183,9 +181,9 @@ CINDER_APP_BASIC( LoopingStepToExample, RendererGl )
 \endcode
 <br />
 
-<h2>Using Step</h2>
+\section usingStep Using Step
 
-If you just need to specify the step size at which your timeline is updated you can use step( float stepSize  ). 
+If you just need to specify the step size at which your timeline is updated you can use \ref cinder::Timeline::step "step( float stepSize  )." 
 
 \code
 void LoopingStepToExample::update()
@@ -198,7 +196,7 @@ void LoopingStepToExample::update()
 
 The above example would also allow one to create a non-realtime animation which would be valuable for situations where one is rendering video output from a Cinder project.
 
-<h2> Ping-ponging </h2>
+\section pingPonging Ping-ponging
 
 You can set an animation to playback in "ping-pong" as needed. This will automatically cycle between playing forward and reverse at the start and end (respectively) of the animation. This can be applied to an individual tween or a whole timeline. It can even be added to a timeline but without looping. Here are some demonstrations:
 
@@ -206,9 +204,10 @@ You can set an animation to playback in "ping-pong" as needed. This will automat
 
 // This will set the ping pong flag for a single tween
 timeline().apply( &mAnim, Vec2f( 10,10 ), Vec2f( 100,100 ), 1.0f, EaseOutCubic()).pingPong();
-
 \endcode
 <br />
+
+Here's how you can ping-pong a whole timeline.
 
 \code
 // this will ping pong the entire set of animations on the timeline 
@@ -224,13 +223,15 @@ timeline().appendTo( &mAnim, Vec2f( 100,100 ), Vec2f( 200,100 ), 1.25f );
 \endcode
 <br />
 
-If you just want to have a single, non-repeating ping-pong effect, you can use appendPingPong()
+If you just want to have a single, non-repeating ping-pong effect, you can use \ref cinder::Timeline::appendPingPong() "appendPingPong()."
 
 \code
 
-// In this case, new tween objects are automatically created just for the ping pong, so it is not necessary to turn off the auto remove.
-// TODO: NOTE, THE ANIMATION BEHAVIOR HERE DEPENDS UPON TIMELINE UPDATES. IF WE SHORT CIRCUIT THE Tween::update METHOD, 
-// THEN ITS NOT NEEDED. IF WE DON'T HOWEVER, THEN THIS MUST BE SET TO true.
+// In this case, new tween objects are automatically created just for the ping pong, 
+// so it is not necessary to turn off the auto remove.
+// 
+// TODO: NOTE, THE ANIMATION BEHAVIOR HERE DEPENDS UPON TIMELINE UPDATES. IF WE SHORT 
+// CIRCUIT THE Tween::update METHOD, THEN ITS NOT NEEDED. OTHERWISE, THIS MUST BE SET TO true.
 timeline().setDefaultAutoRemove(true);	// this is the default behavior
 
 // now add tweens

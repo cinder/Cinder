@@ -92,7 +92,7 @@ void Timeline::appendPingPong()
 {
 	vector<TimelineItemRef> toAppend;
 	
-	updateDuration();	// CJJ:	Did I add this?
+	updateDuration();
 	
 	float duration = mDuration;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
