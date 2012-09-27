@@ -314,11 +314,11 @@ void StereoscopicRenderingApp::draw()
 		// draw the FBO's on top of each other using a special additive blending operation
 		gl::color( Color::white() );
 		
-		gl::draw( mAnaglyphLeft.getTexture(), Rectf(0,h,w,0) );	
+		gl::draw( mAnaglyphLeft.getTexture(), Rectf( 0, (float) h, (float) w, 0 ) );	
 
 		glEnable( GL_BLEND );
 		glBlendFunc( GL_ONE, GL_ONE );
-		gl::draw( mAnaglyphRight.getTexture(), Rectf(0,h,w,0) ); 
+		gl::draw( mAnaglyphRight.getTexture(), Rectf( 0, (float) h, (float) w, 0) ); 
 		glDisable( GL_BLEND );
 		break;
 	}

@@ -42,15 +42,10 @@ class StereoAutoFocuser {
 
 	/** Attempts to set an ideal convergence and eye separation. 
 		\a cam is the CameraStereo you use to render the scene and which should be auto-focussed.
-		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
-	*/
-	void					autoFocus( CameraStereo *cam ) { autoFocus( cam, ci::gl::getViewport(), GL_NONE ); }
-	/** Attempts to set an ideal convergence and eye separation. 
-		\a cam is the CameraStereo you use to render the scene and which should be auto-focussed.
 		\a area is the area that you want to sample.
 		If your autoFocusSpeed is less than 1.0, repeatedly call this function from your update() method.
 	*/
-	void					autoFocus( CameraStereo *cam, const Area &area ) { autoFocus( cam, area, GL_NONE ); }
+	void					autoFocus( CameraStereo *cam, const Area &area = gl::getViewport() ) { autoFocus( cam, area, GL_NONE ); }
 	/** Attempts to set an ideal convergence and eye separation. 
 		\a cam is the CameraStereo you use to render the scene and which should be auto-focussed.
 		\a buffer is the FBO depth buffer you want to sample.
@@ -73,11 +68,11 @@ class StereoAutoFocuser {
 
 	//! Draws a visualizer, showing the sample area and the location of the nearest pixel.
 	void					draw();
-  protected:
-	//! Perform auto focus by sampling the specified area of the specified depth buffer 
-	void					autoFocus( CameraStereo *cam, const Area &area, GLuint buffer );
   private:
 	void					createBuffers( const Area &area );
+
+	//! Perform auto focus by sampling the specified area of the specified depth buffer 
+	void					autoFocus( CameraStereo *cam, const Area &area, GLuint buffer );
   public:
 	//! width and height of the auto focus sample 
 	static const int		AF_WIDTH = 64;
