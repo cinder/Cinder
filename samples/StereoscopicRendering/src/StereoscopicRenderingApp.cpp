@@ -39,6 +39,7 @@
 #include "cinder/app/AppBasic.h"
 
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/StereoAutoFocuser.h"
 #include "cinder/gl/Vbo.h"
@@ -89,6 +90,9 @@ private:
 
 	gl::VboMesh		mMesh;
 	gl::VboMesh		mNote;
+
+	gl::Fbo			mAnaglyphLeft;
+	gl::Fbo			mAnaglyphRight;
 
 	Color			mBackgroundColor;
 
@@ -201,8 +205,8 @@ void StereoscopicRenderingApp::update()
 			mAF.autoFocus( &mCamera, area );
 			break;
 		case ANAGLYPH_RED_CYAN:
-			// simply sample the whole screen
-			mAF.autoFocus( &mCamera );
+			// sample the depth buffer of one of the FBO's
+			mAF.autoFocus( &mCamera, mAnaglyphLeft );
 			break;
 		}
 		break;
@@ -268,12 +272,13 @@ void StereoscopicRenderingApp::draw()
 		// restore viewport
 		glPopAttrib();
 		break;
-
-#if(defined CINDER_MSW)
-	// MacOS X does not support accumulation buffer
 	case ANAGLYPH_RED_CYAN:
-		// initialize the accumulation buffer
-		glClearAccum( 0.0f, 0.0f, 0.0f, 0.0f );
+		// store current viewport
+		glPushAttrib( GL_VIEWPORT_BIT );
+
+		// bind the left FBO and adjust the viewport to its bounds
+		mAnaglyphLeft.bindFramebuffer();
+		gl::setViewport( mAnaglyphLeft.getBounds() );
 
 		// because glClear() does not respect the color mask, 
 		// clear the color (and depth) buffers using a red filtered background color
@@ -285,8 +290,11 @@ void StereoscopicRenderingApp::draw()
 		render();
 		glColorMask( true, true, true, true );
 
-		// load the scene into the accumulation buffer
-		glAccum( GL_LOAD, 1.0f );
+		mAnaglyphLeft.unbindFramebuffer();
+		
+		// bind the right FBO and adjust the viewport to its bounds
+		mAnaglyphRight.bindFramebuffer();
+		gl::setViewport( mAnaglyphRight.getBounds() );
 		
 		// because glClear() does not respect the color mask, 
 		// clear the color (and depth) buffers using a cyan filtered background color
@@ -298,13 +306,21 @@ void StereoscopicRenderingApp::draw()
 		render();
 		glColorMask( true, true, true, true );
 
-		// add the scene to the accumulation buffer
-		glAccum( GL_ACCUM, 1.0f );
+		mAnaglyphRight.unbindFramebuffer();
 
-		// present the accumulation buffer to the screen
-		glAccum( GL_RETURN, 1.0f );
+		// restore viewport
+		glPopAttrib();
+
+		// draw the FBO's on top of each other using a special additive blending operation
+		gl::color( Color::white() );
+		
+		gl::draw( mAnaglyphLeft.getTexture(), Rectf(0,h,w,0) );	
+
+		glEnable( GL_BLEND );
+		glBlendFunc( GL_ONE, GL_ONE );
+		gl::draw( mAnaglyphRight.getTexture(), Rectf(0,h,w,0) ); 
+		glDisable( GL_BLEND );
 		break;
-#endif
 	}
 
 	// draw auto focus visualizer
@@ -390,13 +406,9 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_F3:
 		mRenderMethod = OVER_UNDER;
 		break;
-
-#if(defined CINDER_MSW)
-	// MacOS X does not support accumulation buffer
 	case KeyEvent::KEY_F4:
 		mRenderMethod = ANAGLYPH_RED_CYAN;
 		break;
-#endif
 	}
 }
 
@@ -405,6 +417,14 @@ void StereoscopicRenderingApp::resize( ResizeEvent event )
 	// make sure the camera's aspect ratio remains correct
 	mCamera.setAspectRatio( event.getAspectRatio() );	
 	mMayaCam.setCurrentCam( mCamera );
+
+	// create/resize the FBO's required for anaglyph rendering
+	gl::Fbo::Format fmt;
+	fmt.setMagFilter( GL_LINEAR );
+	fmt.setSamples(8);
+
+	mAnaglyphLeft = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
+	mAnaglyphRight = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
 }
 
 void StereoscopicRenderingApp::render()
