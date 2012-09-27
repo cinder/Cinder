@@ -29,7 +29,7 @@
 	side-by-side stereoscopic and is supported by most 3D televisions. Simply connect your computer to
 	such a television, run the sample in full screen and enable the TV's 3D mode.
 
-	When creating your own stereoscopic application, be careful how you choose your focal length.
+	When creating your own stereoscopic application, be careful how you choose your convergence.
 	An excellent article can be found here:
 	http://paulbourke.net/miscellaneous/stereographics/stereorender/
 
@@ -39,6 +39,7 @@
 #include "cinder/app/AppBasic.h"
 
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/StereoAutoFocuser.h"
 #include "cinder/gl/Vbo.h"
@@ -60,8 +61,8 @@ using namespace std;
 
 class StereoscopicRenderingApp : public AppBasic {
   public:
-	typedef enum { SET_FOCAL_LENGTH, SET_FOCUS, AUTO_FOCUS } FocusMethod;
-	typedef enum { MONO, ANAGLYPH_RED_CYAN, SIDE_BY_SIDE, OVER_UNDER } RenderMethod;
+	typedef enum { SET_CONVERGENCE, SET_FOCUS, AUTO_FOCUS } FocusMethod;
+	typedef enum { MONO, SIDE_BY_SIDE, OVER_UNDER, ANAGLYPH_RED_CYAN } RenderMethod;
 public:
 	void prepareSettings( Settings *settings );
 
@@ -89,6 +90,9 @@ private:
 
 	gl::VboMesh		mMesh;
 	gl::VboMesh		mNote;
+
+	gl::Fbo			mAnaglyphLeft;
+	gl::Fbo			mAnaglyphRight;
 
 	Color			mBackgroundColor;
 
@@ -146,7 +150,7 @@ void StereoscopicRenderingApp::setup()
 
 	mBackgroundColor = Color( 0.8f, 0.8f, 0.8f );
 
-	mFont = Font("Verdana", 36.0f);
+	mFont = Font("Verdana", 24.0f);
 	mDrawUI = true;
 }
 
@@ -157,14 +161,14 @@ void StereoscopicRenderingApp::update()
 
 	switch( mFocusMethod )
 	{
-	case SET_FOCAL_LENGTH:
+	case SET_CONVERGENCE:
 		// auto-focus by calculating distance to center of interest
 		d = (mCamera.getCenterOfInterestPoint() - mCamera.getEyePoint()).length();
 		f = math<float>::min( 5.0f, d * 0.5f );
 
-		// The setFocalLength() method will not change the eye separation distance, 
+		// The setConvergence() method will not change the eye separation distance, 
 		// which may cause the parallax effect to become uncomfortably big. 
-		mCamera.setFocalLength( f );
+		mCamera.setConvergence( f );
 		mCamera.setEyeSeparation( 0.05f );
 		break;
 	case SET_FOCUS:
@@ -172,10 +176,10 @@ void StereoscopicRenderingApp::update()
 		d = (mCamera.getCenterOfInterestPoint() - mCamera.getEyePoint()).length();
 		f = math<float>::min( 5.0f, d * 0.5f );
 
-		// The setFocus() method will automatically calculate a fitting value for the eye separation distance.
+		// The setConvergence( value, true ) method will automatically calculate a fitting value for the eye separation distance.
 		// There is still no guarantee that the parallax effect stays within comfortable levels,
 		// because there may be objects very near to the camera compared to the point we are looking at.
-		mCamera.setFocus( f );
+		mCamera.setConvergence( f, true );
 		break;
 	case AUTO_FOCUS:
 		// Here, we use the gl::StereoAutoFocuser class to determine the best focal length,
@@ -188,10 +192,6 @@ void StereoscopicRenderingApp::update()
 		{
 		case MONO:
 			break;
-		case ANAGLYPH_RED_CYAN:
-			// simply sample the whole screen
-			mAF.autoFocus( &mCamera );
-			break;
 		case SIDE_BY_SIDE:
 			// sample half the left eye, half the right eye
 			area = gl::getViewport();
@@ -203,6 +203,10 @@ void StereoscopicRenderingApp::update()
 			area = gl::getViewport();
 			area.expand( 0, -area.getHeight()/4 );
 			mAF.autoFocus( &mCamera, area );
+			break;
+		case ANAGLYPH_RED_CYAN:
+			// sample the depth buffer of one of the FBO's
+			mAF.autoFocus( &mCamera, mAnaglyphLeft );
 			break;
 		}
 		break;
@@ -225,40 +229,6 @@ void StereoscopicRenderingApp::draw()
 		// render mono camera
 		mCamera.disableStereo();
 		render();
-
-		break;
-	case ANAGLYPH_RED_CYAN:
-		// initialize the accumulation buffer
-		glClearAccum( 0.0f, 0.0f, 0.0f, 0.0f );
-
-		// because glClear() does not respect the color mask, 
-		// clear the color and depth buffers using a red filtered background color
-		gl::clear( mBackgroundColor * Color( 1, 0, 0 ) );
-
-		// set up color mask to only draw red and render left camera
-		glColorMask( true, false, false, true );
-		mCamera.enableStereoLeft();
-		render();
-		glColorMask( true, true, true, true );
-
-		// load the scene into the accumulation buffer
-		glAccum( GL_LOAD, 1.0f );
-		
-		// because glClear() does not respect the color mask, 
-		// clear the color and depth buffers using a cyan filtered background color
-		gl::clear( mBackgroundColor * Color( 0, 1, 1 ) );
-		
-		// set up color mask to only draw cyan and render right camera
-		glColorMask( false, true, true, true );
-		mCamera.enableStereoRight();
-		render();
-		glColorMask( true, true, true, true );
-
-		// add the scene to the accumulation buffer
-		glAccum( GL_ACCUM, 1.0f );
-
-		// present the accumulation buffer to the screen
-		glAccum( GL_RETURN, 1.0f );
 		break;
 	case SIDE_BY_SIDE:
 		// store current viewport
@@ -301,6 +271,55 @@ void StereoscopicRenderingApp::draw()
 
 		// restore viewport
 		glPopAttrib();
+		break;
+	case ANAGLYPH_RED_CYAN:
+		// store current viewport
+		glPushAttrib( GL_VIEWPORT_BIT );
+
+		// bind the left FBO and adjust the viewport to its bounds
+		mAnaglyphLeft.bindFramebuffer();
+		gl::setViewport( mAnaglyphLeft.getBounds() );
+
+		// because glClear() does not respect the color mask, 
+		// clear the color (and depth) buffers using a red filtered background color
+		gl::clear( mBackgroundColor * Color( 1, 0, 0 ) );
+
+		// set up color mask to only draw red and render left camera
+		glColorMask( true, false, false, true );
+		mCamera.enableStereoLeft();
+		render();
+		glColorMask( true, true, true, true );
+
+		mAnaglyphLeft.unbindFramebuffer();
+		
+		// bind the right FBO and adjust the viewport to its bounds
+		mAnaglyphRight.bindFramebuffer();
+		gl::setViewport( mAnaglyphRight.getBounds() );
+		
+		// because glClear() does not respect the color mask, 
+		// clear the color (and depth) buffers using a cyan filtered background color
+		gl::clear( mBackgroundColor * Color( 0, 1, 1 ) );
+		
+		// set up color mask to only draw cyan and render right camera
+		glColorMask( false, true, true, true );
+		mCamera.enableStereoRight();
+		render();
+		glColorMask( true, true, true, true );
+
+		mAnaglyphRight.unbindFramebuffer();
+
+		// restore viewport
+		glPopAttrib();
+
+		// draw the FBO's on top of each other using a special additive blending operation
+		gl::color( Color::white() );
+		
+		gl::draw( mAnaglyphLeft.getTexture(), Rectf( 0, (float) h, (float) w, 0 ) );	
+
+		glEnable( GL_BLEND );
+		glBlendFunc( GL_ONE, GL_ONE );
+		gl::draw( mAnaglyphRight.getTexture(), Rectf( 0, (float) h, (float) w, 0) ); 
+		glDisable( GL_BLEND );
 		break;
 	}
 
@@ -347,27 +366,6 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		// toggle interface
 		mDrawUI = !mDrawUI;
 		break;
-	case KeyEvent::KEY_1:
-		mFocusMethod = SET_FOCAL_LENGTH;
-		break;
-	case KeyEvent::KEY_2:
-		mFocusMethod = SET_FOCUS;
-		break;
-	case KeyEvent::KEY_3:
-		mFocusMethod = AUTO_FOCUS;
-		break;
-	case KeyEvent::KEY_F1:
-		mRenderMethod = MONO;
-		break;
-	case KeyEvent::KEY_F2:
-		mRenderMethod = ANAGLYPH_RED_CYAN;
-		break;
-	case KeyEvent::KEY_F3:
-		mRenderMethod = SIDE_BY_SIDE;
-		break;
-	case KeyEvent::KEY_F4:
-		mRenderMethod = OVER_UNDER;
-		break;
 	case KeyEvent::KEY_UP:
 		// increase the parallax effect (towards negative parallax) 
 		if(mFocusMethod == AUTO_FOCUS)
@@ -390,6 +388,27 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		// increase the auto focus speed
 		mAF.setSpeed( mAF.getSpeed() + 0.01f );
 		break;
+	case KeyEvent::KEY_1:
+		mFocusMethod = SET_CONVERGENCE;
+		break;
+	case KeyEvent::KEY_2:
+		mFocusMethod = SET_FOCUS;
+		break;
+	case KeyEvent::KEY_3:
+		mFocusMethod = AUTO_FOCUS;
+		break;
+	case KeyEvent::KEY_F1:
+		mRenderMethod = MONO;
+		break;
+	case KeyEvent::KEY_F2:
+		mRenderMethod = SIDE_BY_SIDE;
+		break;
+	case KeyEvent::KEY_F3:
+		mRenderMethod = OVER_UNDER;
+		break;
+	case KeyEvent::KEY_F4:
+		mRenderMethod = ANAGLYPH_RED_CYAN;
+		break;
 	}
 }
 
@@ -398,6 +417,14 @@ void StereoscopicRenderingApp::resize( ResizeEvent event )
 	// make sure the camera's aspect ratio remains correct
 	mCamera.setAspectRatio( event.getAspectRatio() );	
 	mMayaCam.setCurrentCam( mCamera );
+
+	// create/resize the FBO's required for anaglyph rendering
+	gl::Fbo::Format fmt;
+	fmt.setMagFilter( GL_LINEAR );
+	fmt.setSamples(8);
+
+	mAnaglyphLeft = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
+	mAnaglyphRight = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
 }
 
 void StereoscopicRenderingApp::render()
@@ -489,13 +516,26 @@ void StereoscopicRenderingApp::renderUI()
     float w = (float) getWindowWidth() * 0.5f;
     float h = (float) getWindowHeight();
 
-    std::string labels( "Focal Length:\nEye Distance:\nAuto Focus Depth:\nAuto Focus Speed:" );
-    boost::format values = boost::format( "%.2f\n%.2f\n%.2f\n%.2f" ) % mCamera.getFocalLength() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+	std::string renderMode, focusMode;
+	switch(mRenderMethod) {
+		case MONO: renderMode = "Mono"; break;
+		case SIDE_BY_SIDE: renderMode = "Side By Side"; break;
+		case OVER_UNDER: renderMode = "Over Under"; break;
+		case ANAGLYPH_RED_CYAN: renderMode = "Anaglyph Red Cyan"; break;
+	}
+	switch(mFocusMethod) {
+		case SET_CONVERGENCE: focusMode = "CameraStereo::setConvergence(d, false);"; break;
+		case SET_FOCUS: focusMode = "CameraStereo::setConvergence(d, true);"; break;
+		case AUTO_FOCUS: focusMode = "gl::StereoAutoFocuser::autoFocus(cam);"; break;
+	}
 
-#if(defined WIN32)
+    std::string labels( "Render mode (F1-F4):\nFocus mode (1-3):\nFocal Length:\nEye Distance:\nAuto Focus Depth (Up/Down):\nAuto Focus Speed (Left/Right):" );
+    boost::format values = boost::format( "%s\n%s\n%.2f\n%.2f\n%.2f\n%.2f" ) % renderMode % focusMode % mCamera.getConvergence() % mCamera.getEyeSeparation() % mAF.getDepth() % mAF.getSpeed();
+
+#if(defined CINDER_MSW)
     gl::enableAlphaBlending();
-    gl::drawString( labels, Vec2f( w - 200.0f, h - 150.0f ), Color::black(), mFont );
-    gl::drawStringRight( values.str(), Vec2f( w + 200.0f, h - 150.0f ), Color::black(), mFont );
+    gl::drawString( labels, Vec2f( w - 350.0f, h - 150.0f ), Color::black(), mFont );
+    gl::drawStringRight( values.str(), Vec2f( w + 350.0f, h - 150.0f ), Color::black(), mFont );
     gl::disableAlphaBlending();
 #else
     // \n is not supported on the mac, so we draw separate strings
@@ -505,8 +545,8 @@ void StereoscopicRenderingApp::renderUI()
 
     gl::enableAlphaBlending();
     for(size_t i=0;i<4;++i) {       
-        gl::drawString( left[i], Vec2f( w - 200.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
-        gl::drawStringRight( right[i], Vec2f( w + 200.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
+        gl::drawString( left[i], Vec2f( w - 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
+        gl::drawStringRight( right[i], Vec2f( w + 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
     }
     gl::disableAlphaBlending();
 #endif
