@@ -59,6 +59,10 @@ class InputImplAudioUnit : public InputImpl {
 	uint32_t getSampleRate() const { return mSampleRate; };
 	uint16_t getChannelCount() const { return mChannelCount; };
 	
+    //dp
+    void getAllSampleData(float* buff, int buffSizeInFloats, int* samples);
+    //dp
+    
 	static const std::vector<InputDeviceRef>&	getDevices( bool forceRefresh );
 	static InputDeviceRef getDefaultDevice();
 #if defined( CINDER_MAC )

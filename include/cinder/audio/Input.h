@@ -58,6 +58,11 @@ class InputImpl {
 	
 	virtual uint32_t getSampleRate() const = 0;
 	virtual uint16_t getChannelCount() const = 0;
+    
+    //dp
+    virtual void getAllSampleData(float* buff, int buffSizeInFloats, int* samples) { }
+    //dp
+    
  protected:
 	InputImpl( InputDeviceRef aDevice ) {}
 };
@@ -82,6 +87,10 @@ class Input {
 	uint32_t getSampleRate() { return mImpl->getSampleRate(); };
 	//! Returns the number of channels of the captured audio data
 	uint16_t getChannelCount() { return mImpl->getChannelCount(); };
+    
+    //dp
+    void getAllSampleData(float* buff, int buffSizeInFloats, int* samples) { mImpl->getAllSampleData(buff, buffSizeInFloats, samples); }
+    //dp
 	
 	//! Returns a vector of all Devices connected to the system. If \a forceRefresh then the system will be polled for connected devices.
 	static const std::vector<InputDeviceRef>&	getDevices( bool forceRefresh = false );
