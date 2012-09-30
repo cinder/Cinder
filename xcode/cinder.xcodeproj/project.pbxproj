@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -2043,8 +2043,11 @@
 /* Begin PBXProject section */
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "cinder" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -2379,7 +2382,6 @@
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2441,7 +2443,6 @@
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2504,12 +2505,12 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
@@ -2545,6 +2546,7 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
@@ -2583,7 +2585,6 @@
 				);
 				OBJROOT = build/;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				PREBINDING = NO;
 				SYMROOT = ../lib;
 				USER_HEADER_SEARCH_PATHS = ../include;
 			};
@@ -2606,7 +2607,6 @@
 				);
 				OBJROOT = build/;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				PREBINDING = NO;
 				SYMROOT = ../lib;
 				USER_HEADER_SEARCH_PATHS = ../include;
 			};
