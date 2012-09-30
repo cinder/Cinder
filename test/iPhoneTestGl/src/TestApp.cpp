@@ -37,9 +37,6 @@ void TestApp::setup()
 	//mTex = gl::Texture( loadImage( DataSourceBuffer::createRef( buffer, ".jpg" ) ) );
 	mTex = gl::Texture( loadImage( loadUrl( Url( "http://images.apple.com/home/images/promo_iphone_case_program_20100723.jpg" ) ) ) );
 
-	XmlDocument doc( loadUrlStream( "http://www.feedparser.org/docs/http-authentication.html", "test", "basic" ) );
-	console() << doc << std::endl;
-
 	console() << "System version: " << System::getOsMajorVersion() << "." << System::getOsMinorVersion() << "." << System::getOsBugFixVersion() << std::endl;
 	
 console() << "size: " << getWindowSize() << std::endl;	

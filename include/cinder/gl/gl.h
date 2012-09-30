@@ -34,6 +34,7 @@
 	#define CINDER_GLES1
 #endif
 
+#include "cinder/Exception.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Matrix.h"
 #include "cinder/Vector.h"
@@ -146,14 +147,26 @@ void rotate( const Quatf &quat );
 inline void rotate( float degrees ) { rotate( Vec3f( 0, 0, degrees ) ); }
 
 #if ! defined( CINDER_GLES )
-//! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
+//! Equivalent to glBegin() in immediate mode
+inline void begin( GLenum mode ) { glBegin( mode ); }
+//! Equivalent to glEnd() in immediate mode
+inline void end() { glEnd(); }
+//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
 inline void vertex( const Vec2f &v ) { glVertex2fv( &v.x ); }
-//! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
+//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
 inline void vertex( float x, float y ) { glVertex2f( x, y ); }
-//! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
+//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
 inline void vertex( const Vec3f &v ) { glVertex3fv( &v.x ); }
-//! Used between calls to \c glBegin and \c glEnd, appends a vertex to the current primitive.
+//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
 inline void vertex( float x, float y, float z ) { glVertex3f( x, y, z ); }
+//! Used between calls to gl::begin() and gl::end(), sets the 2D texture coordinate for the next vertex.
+inline void texCoord( float x, float y ) { glTexCoord2f( x, y ); }
+//! Used between calls to gl::begin() and gl::end(), sets the 2D texture coordinate for the next vertex.
+inline void texCoord( const Vec2f &v ) { glTexCoord2f( v.x, v.y ); }
+//! Used between calls to gl::begin() and gl::end(), sets the 3D texture coordinate for the next vertex.
+inline void texCoord( float x, float y, float z ) { glTexCoord3f( x, y, z ); }
+//! Used between calls to gl::begin() and gl::end(), sets the 3D texture coordinate for the next vertex.
+inline void texCoord( const Vec3f &v ) { glTexCoord3f( v.x, v.y, v.z ); }
 #endif // ! defined( CINDER_GLES )
 //! Sets the current color and the alpha value to 1.0
 inline void color( float r, float g, float b ) { glColor4f( r, g, b, 1.0f ); }
@@ -251,8 +264,6 @@ void draw( const class Path2d &path2d, float approximationScale = 1.0f );
 //! Draws a Shape2d \a shape2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
 void draw( const class Shape2d &shape2d, float approximationScale = 1.0f );
 
-#if ! defined( CINDER_GLES )
-
 //! Draws a solid (filled) Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const class Path2d &path2d, float approximationScale = 1.0f );
 //! Draws a solid (filled) Shape2d \a shape2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
@@ -269,14 +280,16 @@ void draw( const TriMesh &mesh );
 //! Draws a range of triangles starting with triangle # \a startTriangle and a count of \a triangleCount from cinder::TriMesh \a mesh at the origin.
 void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount );
 //! Draws a cinder::gl::VboMesh \a mesh at the origin.
+
+#if ! defined ( CINDER_GLES )
 void draw( const VboMesh &vbo );
 //! Draws a range of vertices and elements of cinder::gl::VboMesh \a mesh at the origin. Default parameters for \a vertexStart and \a vertexEnd imply the VboMesh's full range of vertices.
 void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 );
 //! Draws a range of elements from a cinder::gl::VboMesh \a vbo.
 void drawArrays( const VboMesh &vbo, GLint first, GLsizei count );
 //!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.
-#endif // ! defined( CINDER_GLES )
-
+#endif
+	
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp );
 //! Draws \a texture on the XY-plane
 void draw( const Texture &texture );
@@ -342,6 +355,12 @@ struct SaveFramebufferBinding {
 //! Initializes the GLee library. This is generally called automatically by the application and is only necessary if you need to use GLee before your app's setup() method is called.
 void initializeGlee();
 #endif
+
+class Exception : public cinder::Exception {
+};
+
+class ExceptionUnknownTarget : public Exception {
+};
 
 } } // namespace cinder::gl 
 

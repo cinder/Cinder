@@ -214,6 +214,11 @@ void InterfaceGl::addParam( const std::string &name, float *param, const std::st
 	implAddParam( name, param, TW_TYPE_FLOAT, optionsStr, readOnly );
 } 
 
+void InterfaceGl::addParam( const std::string &name, double *param, const std::string &optionsStr, bool readOnly )
+{
+	implAddParam( name, param, TW_TYPE_DOUBLE, optionsStr, readOnly );
+} 
+
 void InterfaceGl::addParam( const std::string &name, int32_t *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParam( name, param, TW_TYPE_INT32, optionsStr, readOnly );
@@ -285,6 +290,11 @@ void InterfaceGl::addButton( const std::string &name, const std::function<void (
 	std::shared_ptr<std::function<void ()> > callbackPtr( new std::function<void ()>( callback ) );
 	mButtonCallbacks.push_back( callbackPtr );
 	TwAddButton( mBar.get(), name.c_str(), implButtonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
+}
+
+void InterfaceGl::removeParam( const std::string &name )
+{
+	TwRemoveVar( mBar.get(), name.c_str() );
 }
 
 void InterfaceGl::setOptions( const std::string &name, const std::string &optionsStr )

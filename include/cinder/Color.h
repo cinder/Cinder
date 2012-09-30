@@ -92,6 +92,8 @@ class ColorT
 		return (&r)[n];
 	}
 
+	T*  ptr() const { return &(const_cast<ColorT*>( this )->r); }
+
 	ColorT<T>		operator+( const ColorT<T> &rhs ) const { return ColorT<T>( r + rhs.r, g + rhs.g, b + rhs.b ); }
 	ColorT<T>		operator-( const ColorT<T> &rhs ) const { return ColorT<T>( r - rhs.r, g - rhs.g, b - rhs.b ); }
 	ColorT<T>		operator*( const ColorT<T> &rhs ) const { return ColorT<T>( r * rhs.r, g * rhs.g, b * rhs.b ); }
@@ -180,6 +182,15 @@ class ColorT
 		return ColorT<T>( value, value, value );
 	}
 
+	//! Returns a color from a hexadecimal-encoded RGB triple. For example, red is 0xFF0000
+	static ColorT<T> hex( uint32_t hexValue )
+	{
+		uint8_t red = ( hexValue >> 16 ) & 255;
+		uint8_t green = ( hexValue >> 8 ) & 255;
+		uint8_t blue = hexValue & 255;		
+		return ColorT<T>( CHANTRAIT<T>::convert( red ), CHANTRAIT<T>::convert( green ), CHANTRAIT<T>::convert( blue ) );
+	}
+
 	operator T*(){ return (T*) this; }
 	operator const T*() const { return (const T*) this; }
 };
@@ -249,6 +260,8 @@ class ColorAT {
 		assert( n >= 0 && n <= 3 );
 		return (&r)[n];
 	}
+
+	T*  ptr() const { return &(const_cast<ColorAT*>( this )->r); }
 
 	ColorAT<T>	operator+( const ColorAT<T> &rhs ) const { return ColorAT<T>( r + rhs.r, g + rhs.g, b + rhs.b, a + rhs.a ); }
 	ColorAT<T>	operator-( const ColorAT<T> &rhs ) const { return ColorAT<T>( r - rhs.r, g - rhs.g, b - rhs.b, a - rhs.a ); }
@@ -323,9 +336,28 @@ class ColorAT {
 		return ColorAT<T>( CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max(), CHANTRAIT<T>::max() );
 	}
 
-	static ColorAT<T> gray( T value )
+	static ColorAT<T> gray( T value, T alpha = CHANTRAIT<T>::max() )
 	{
-		return ColorAT<T>( value, value, value, CHANTRAIT<T>::max() );
+		return ColorAT<T>( value, value, value, alpha );
+	}
+
+	//! Returns a ColorA from a hexadecimal-encoded RGB triple. For example, red is 0xFF0000
+	static ColorAT<T> hex( uint32_t hexValue )
+	{
+		uint8_t red = ( hexValue >> 16 ) & 255;
+		uint8_t green = ( hexValue >> 8 ) & 255;
+		uint8_t blue = hexValue & 255;		
+		return ColorAT<T>( CHANTRAIT<T>::convert( red ), CHANTRAIT<T>::convert( green ), CHANTRAIT<T>::convert( blue ), CHANTRAIT<T>::max() );
+	}
+
+	//! Returns a ColorA from a hexadecimal-encoded ARGB ordering. For example, 50% transparent red is 0x80FF0000
+	static ColorAT<T> hexA( uint32_t hexValue )
+	{
+		uint8_t alpha = ( hexValue >> 24 ) & 255;;
+		uint8_t red = ( hexValue >> 16 ) & 255;
+		uint8_t green = ( hexValue >> 8 ) & 255;
+		uint8_t blue = hexValue & 255;
+		return ColorAT<T>( CHANTRAIT<T>::convert( red ), CHANTRAIT<T>::convert( green ), CHANTRAIT<T>::convert( blue ), CHANTRAIT<T>::convert( alpha ) );
 	}
 
 	operator T*(){ return (T*) this; }

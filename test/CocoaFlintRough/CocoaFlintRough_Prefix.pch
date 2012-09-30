@@ -1,9 +1,0 @@
-//
-// Prefix header for all source files of the 'CocoaFlintRough' target in the 'CocoaFlintRough' project
-//
-
-#include "flint/gl/GLee.h"
-
-#ifdef __OBJC__
-    #import <Cocoa/Cocoa.h>
-#endif

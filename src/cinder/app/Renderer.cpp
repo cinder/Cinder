@@ -327,6 +327,7 @@ Renderer2d::Renderer2d( bool doubleBuffer )
 void Renderer2d::setup( App *app, HWND wnd, HDC dc )
 {
 	mApp = app;
+	mWnd = wnd;
 	mImpl = new AppImplMswRendererGdi( app, mDoubleBuffer );
 	mImpl->initialize( wnd, dc );
 }

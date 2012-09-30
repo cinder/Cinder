@@ -98,12 +98,14 @@
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
 	@synchronized( self ) {
-		long long expectedSize = [response expectedContentLength];
+		// we're ignoring this now because sometimes it's incorrect
+/*		long long expectedSize = [response expectedContentLength];
 		if( expectedSize == NSURLResponseUnknownLength )
 			mSize = 0;
 		else
-			mSize = expectedSize;
-
+			mSize = expectedSize;*/
+		
+		mSize = 0;
 		mResponseReceived = YES;
 	}
 }
@@ -154,9 +156,7 @@
 {
 	@synchronized( self ) {
 		int roomInBuffer = mBufferSize - mBufferedBytes;
-
-		size_t size = [data length];
-		
+		size_t size = [data length];	
 		if( (off_t)size > roomInBuffer ) {
 			// not enough space in buffer
 			int oldBufferSize = mBufferSize;

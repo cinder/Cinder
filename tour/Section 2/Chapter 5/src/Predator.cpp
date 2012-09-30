@@ -105,10 +105,9 @@ void Predator::draw()
 
 void Predator::drawTail()
 {
-	glVertex3fv( mPos[0] );
-	glVertex3fv( mPos[1] );
+	gl::vertex( mPos[0] );
+	gl::vertex( mPos[1] );
 }
-
 
 void Predator::addNeighborPos( Vec3f pos )
 {

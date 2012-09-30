@@ -13,6 +13,10 @@
 			buildPhases = (
 			);
 			dependencies = (
+				002932C51530F5AD0022B1BF /* PBXTargetDependency */,
+				002932C71530F5AD0022B1BF /* PBXTargetDependency */,
+				002932C91530F5AD0022B1BF /* PBXTargetDependency */,
+				002932CB1530F5AD0022B1BF /* PBXTargetDependency */,
 				009F6E6A14C0FE790036C292 /* PBXTargetDependency */,
 				009F6E6C14C0FE790036C292 /* PBXTargetDependency */,
 				009F6E6E14C0FE790036C292 /* PBXTargetDependency */,
@@ -480,6 +484,62 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = CairoBasic;
+		};
+		002932A41530F5660022B1BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0029329C1530F5660022B1BF /* AnimatedReveal.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = AnimatedReveal;
+		};
+		002932AE1530F5720022B1BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 002932A61530F5720022B1BF /* EuroMap.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = EuroMap;
+		};
+		002932B81530F57E0022B1BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = GoodNightMorning;
+		};
+		002932C21530F58A0022B1BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = SimpleViewer;
+		};
+		002932C41530F5AD0022B1BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0029329C1530F5660022B1BF /* AnimatedReveal.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = AnimatedReveal;
+		};
+		002932C61530F5AD0022B1BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = SimpleViewer;
+		};
+		002932C81530F5AD0022B1BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 002932A61530F5720022B1BF /* EuroMap.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = EuroMap;
+		};
+		002932CA1530F5AD0022B1BF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = GoodNightMorning;
 		};
 		0039FB31115AD31B00BA0BAD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -988,6 +1048,10 @@
 		000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NormalMapping.xcodeproj; path = ../../NormalMapping/xcode/NormalMapping.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Picking3D.xcodeproj; path = ../../Picking3D/xcode/Picking3D.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00236D981130E4C7006C991F /* CairoBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CairoBasic.xcodeproj; path = ../../CairoBasic/xcode/CairoBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
+		0029329C1530F5660022B1BF /* AnimatedReveal.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AnimatedReveal.xcodeproj; path = ../../_svg/AnimatedReveal/xcode/AnimatedReveal.xcodeproj; sourceTree = "<group>"; };
+		002932A61530F5720022B1BF /* EuroMap.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EuroMap.xcodeproj; path = ../../_svg/EuroMap/xcode/EuroMap.xcodeproj; sourceTree = "<group>"; };
+		002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoodNightMorning.xcodeproj; path = ../../_svg/GoodNightMorning/xcode/GoodNightMorning.xcodeproj; sourceTree = "<group>"; };
+		002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SimpleViewer.xcodeproj; path = ../../_svg/SimpleViewer/xcode/SimpleViewer.xcodeproj; sourceTree = "<group>"; };
 		0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MandelbrotGLSL.xcodeproj; path = ../../MandelbrotGLSL/xcode/MandelbrotGLSL.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Buddhabrot.xcodeproj; path = ../../Buddhabrot/xcode/Buddhabrot.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1028,6 +1092,7 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				0029329B1530F5480022B1BF /* _svg */,
 				009F6E0E14C0FDD20036C292 /* _timeline */,
 				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */,
@@ -1306,6 +1371,49 @@
 			isa = PBXGroup;
 			children = (
 				00236DA11130E4C7006C991F /* CairoBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0029329B1530F5480022B1BF /* _svg */ = {
+			isa = PBXGroup;
+			children = (
+				002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */,
+				002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */,
+				002932A61530F5720022B1BF /* EuroMap.xcodeproj */,
+				0029329C1530F5660022B1BF /* AnimatedReveal.xcodeproj */,
+			);
+			name = _svg;
+			sourceTree = "<group>";
+		};
+		0029329D1530F5660022B1BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				002932A51530F5660022B1BF /* AnimatedReveal.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		002932A71530F5720022B1BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				002932AF1530F5720022B1BF /* EuroMap.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		002932B11530F57D0022B1BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				002932B91530F57E0022B1BF /* GoodNightMorning.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		002932BB1530F5890022B1BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				002932C31530F58A0022B1BF /* SimpleViewer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1617,6 +1725,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 0029329D1530F5660022B1BF /* Products */;
+					ProjectRef = 0029329C1530F5660022B1BF /* AnimatedReveal.xcodeproj */;
+				},
+				{
 					ProductGroup = 0005C9741006817F004D82BC /* Products */;
 					ProjectRef = 0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */;
 				},
@@ -1705,6 +1817,10 @@
 					ProjectRef = 00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */;
 				},
 				{
+					ProductGroup = 002932A71530F5720022B1BF /* Products */;
+					ProjectRef = 002932A61530F5720022B1BF /* EuroMap.xcodeproj */;
+				},
+				{
 					ProductGroup = 0005C9B6100681D9004D82BC /* Products */;
 					ProjectRef = 0005C9B5100681D9004D82BC /* eventTest.xcodeproj */;
 				},
@@ -1727,6 +1843,10 @@
 				{
 					ProductGroup = 00F0B3581039F84C003AB416 /* Products */;
 					ProjectRef = 00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */;
+				},
+				{
+					ProductGroup = 002932B11530F57D0022B1BF /* Products */;
+					ProjectRef = 002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C9DA100681F2004D82BC /* Products */;
@@ -1831,6 +1951,10 @@
 				{
 					ProductGroup = 0005CA4210068230004D82BC /* Products */;
 					ProjectRef = 0005CA4110068230004D82BC /* shadowMap.xcodeproj */;
+				},
+				{
+					ProductGroup = 002932BB1530F5890022B1BF /* Products */;
+					ProjectRef = 002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */;
 				},
 				{
 					ProductGroup = 009C40E71120680A0053283A /* Products */;
@@ -2074,6 +2198,34 @@
 			fileType = wrapper.application;
 			path = CairoBasic.app;
 			remoteRef = 00236DA01130E4C7006C991F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		002932A51530F5660022B1BF /* AnimatedReveal.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = AnimatedReveal.app;
+			remoteRef = 002932A41530F5660022B1BF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		002932AF1530F5720022B1BF /* EuroMap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = EuroMap.app;
+			remoteRef = 002932AE1530F5720022B1BF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		002932B91530F57E0022B1BF /* GoodNightMorning.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = GoodNightMorning.app;
+			remoteRef = 002932B81530F57E0022B1BF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		002932C31530F58A0022B1BF /* SimpleViewer.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = SimpleViewer.app;
+			remoteRef = 002932C21530F58A0022B1BF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0039FB32115AD31B00BA0BAD /* FBOBasic.app */ = {
@@ -2456,6 +2608,26 @@
 			isa = PBXTargetDependency;
 			name = CairoBasic;
 			targetProxy = 00236DA21130E4D8006C991F /* PBXContainerItemProxy */;
+		};
+		002932C51530F5AD0022B1BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AnimatedReveal;
+			targetProxy = 002932C41530F5AD0022B1BF /* PBXContainerItemProxy */;
+		};
+		002932C71530F5AD0022B1BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SimpleViewer;
+			targetProxy = 002932C61530F5AD0022B1BF /* PBXContainerItemProxy */;
+		};
+		002932C91530F5AD0022B1BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EuroMap;
+			targetProxy = 002932C81530F5AD0022B1BF /* PBXContainerItemProxy */;
+		};
+		002932CB1530F5AD0022B1BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GoodNightMorning;
+			targetProxy = 002932CA1530F5AD0022B1BF /* PBXContainerItemProxy */;
 		};
 		0039FB34115AD32700BA0BAD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

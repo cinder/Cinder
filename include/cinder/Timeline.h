@@ -41,8 +41,6 @@ typedef std::shared_ptr<class Timeline>		TimelineRef;
 	
 class Timeline : public TimelineItem {		
   public:
-  	Timeline();
-	
 	//! Creates a new timeline, defaulted to infinite
 	static TimelineRef	create() { TimelineRef result( new Timeline() ); result->setInfinite( true ); return result; }
 
@@ -190,6 +188,8 @@ class Timeline : public TimelineItem {
 	//! \endcond
 	
   protected:  
+  	Timeline();
+	
 	virtual void reverse();
 	virtual TimelineItemRef cloneReverse() const;
 	virtual TimelineItemRef clone() const;

@@ -84,22 +84,22 @@ void bsplineApp::keyDown( KeyEvent event ) {
 		calcLength();
 	}
 	else if( event.getChar() == 'i' ) { // export to png image
-		writeImage( getHomeDirectory() + "bsplineOutput.png", copyWindowSurface() );
+		writeImage( getHomeDirectory() / "bsplineOutput.png", copyWindowSurface() );
 	}
 	else if( event.getChar() == 's' ) { // export to svg
-		cairo::Context ctx( cairo::SurfaceSvg( getHomeDirectory() + "output.svg", getWindowWidth(), getWindowHeight() ) );
+		cairo::Context ctx( cairo::SurfaceSvg( getHomeDirectory() / "output.svg", getWindowWidth(), getWindowHeight() ) );
 		drawBSpline( ctx );
 	}
 	else if( event.getChar() == 'e' ) { // export to eps
-		cairo::Context ctx( cairo::SurfaceEps( getHomeDirectory() + "output.eps", getWindowWidth(), getWindowHeight() ) );
+		cairo::Context ctx( cairo::SurfaceEps( getHomeDirectory() / "output.eps", getWindowWidth(), getWindowHeight() ) );
 		drawBSpline( ctx );
 	}
 	else if( event.getChar() == 'f' ) { // export to pdf
-		cairo::Context ctx( cairo::SurfacePdf( getHomeDirectory() + "output.pdf", getWindowWidth(), getWindowHeight() ) );
+		cairo::Context ctx( cairo::SurfacePdf( getHomeDirectory() / "output.pdf", getWindowWidth(), getWindowHeight() ) );
 		drawBSpline( ctx );
 	}
 	else if( event.getChar() == 'p' ) { // export to postscript
-		cairo::Context ctx( cairo::SurfacePs( getHomeDirectory() + "output.ps", getWindowWidth(), getWindowHeight() ) );
+		cairo::Context ctx( cairo::SurfacePs( getHomeDirectory() / "output.ps", getWindowWidth(), getWindowHeight() ) );
 		drawBSpline( ctx );
 	}
 }

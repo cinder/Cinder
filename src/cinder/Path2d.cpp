@@ -604,6 +604,20 @@ void Path2d::scale( const Vec2f &amount, Vec2f scaleCenter )
 		*ptIt = scaleCenter + Vec2f( ( ptIt->x - scaleCenter.x ) * amount.x, ( ptIt->y - scaleCenter.y ) * amount.y );
 }
 
+void Path2d::transform( const MatrixAffine2f &matrix )
+{
+	for( vector<Vec2f>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
+		*ptIt = matrix.transformPoint( *ptIt );
+}
+
+Path2d Path2d::transformCopy( const MatrixAffine2f &matrix ) const
+{
+	Path2d result = *this;
+	for( vector<Vec2f>::iterator ptIt = result.mPoints.begin(); ptIt != result.mPoints.end(); ++ptIt )
+		*ptIt = matrix.transformPoint( *ptIt );
+	return result;
+}
+
 Rectf Path2d::calcBoundingBox() const
 {
 	Rectf result( Vec2f::zero(), Vec2f::zero() );
