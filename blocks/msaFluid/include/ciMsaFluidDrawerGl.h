@@ -89,6 +89,17 @@ class ciMsaFluidDrawerGl {
 	int getDrawMode();
 	const char* getDrawModeName();
 
+    void bindTexture() {
+#ifdef FLUID_TEXTURE
+        tex.enableAndBind();
+#endif
+    }
+    void unbindTexture() {
+#ifdef FLUID_TEXTURE
+        tex.disable();
+#endif
+    }
+    
 	
 	int					drawMode;
 
