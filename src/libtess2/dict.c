@@ -89,7 +89,7 @@ DictNode *dictInsertBefore( Dict *dict, DictNode *node, DictKey key )
 }
 
 /* really tessDictListDelete */
-void dictDelete( Dict *dict, DictNode *node ) /*ARGSUSED*/
+void tdictDelete( Dict *dict, DictNode *node ) /*ARGSUSED*/
 {
 	node->next->prev = node->prev;
 	node->prev->next = node->next;
