@@ -129,6 +129,26 @@ BOOL CALLBACK Display::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect,
 	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
 	newDisplay->mMonitor = hMonitor;
 
+	// let's see if this works
+	DISPLAY_DEVICE dd;
+	memset( &dd, 0, sizeof( DISPLAY_DEVICE ) );
+	dd.cb = sizeof( DISPLAY_DEVICE );
+
+	int i = 0;
+	while(EnumDisplayDevices(NULL, i, &dd, 0)) {
+		// device name and string should now contain information on the device
+
+		if( dd.StateFlags | DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) 
+		{ 
+			if( EnumDisplayDevices(dd.DeviceName, 0, &dd, 0) ) 
+			{ 
+				// device name and string should now contain information on the monitor connected to the device
+			} 
+		}
+
+		i++;
+	}
+
 	// retrieve the depth of the display
 	MONITORINFOEX mix;
 	memset( &mix, 0, sizeof( MONITORINFOEX ) );
