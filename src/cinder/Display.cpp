@@ -28,10 +28,6 @@ using namespace std;
 #	include <Cocoa/Cocoa.h>
 #endif
 
-#if defined( CINDER_MSW )
-#include "Strsafe.h"
-#endif
-
 namespace cinder {
 
 std::vector<DisplayRef >	Display::sDisplays;
@@ -132,21 +128,20 @@ BOOL CALLBACK Display::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect,
 	newDisplay->mMonitor = hMonitor;
 
 	// let's see if this works
-	DISPLAY_DEVICE dd;
-	memset( &dd, 0, sizeof( DISPLAY_DEVICE ) );
-	dd.cb = sizeof( DISPLAY_DEVICE );
+	DISPLAY_DEVICE device;
+	memset( &device, 0, sizeof( DISPLAY_DEVICE ) );
+	device.cb = sizeof( DISPLAY_DEVICE );
 	
-	wchar_t szSaveDeviceName[33];  // 32 + 1 for the null-terminator 
 	int i = 0;
-	while(EnumDisplayDevices(NULL, i, &dd, 0)) {
+	while( EnumDisplayDevices(NULL, i, &device, 0) ) {
 		// device name and string should now contain information on the device
 
-		if( dd.StateFlags | DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) 
+		DISPLAY_DEVICE monitor = device;
+		if( device.StateFlags | DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) 
 		{ 
-			HRESULT hr = StringCchCopy(szSaveDeviceName, 33, dd.DeviceName);
-
-			EnumDisplayDevices(szSaveDeviceName, 0, &dd, 0);
-			// device name and string should now contain information on the monitor connected to the device
+			if( EnumDisplayDevices(device.DeviceName, 0, &monitor, 0) ) {
+				// device name and string should now contain information on the monitor connected to the device
+			}
 		}
 
 		i++;
