@@ -263,8 +263,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
 				PREBINDING = NO;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
 			};
 			name = Debug;
@@ -279,8 +279,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
 				PREBINDING = NO;
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
 			};
 			name = Release;

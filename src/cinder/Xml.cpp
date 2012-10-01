@@ -47,13 +47,13 @@ bool tagsMatch( const std::string &tag1, const std::string &tag2, bool caseSensi
 }
 } // anonymous namespace
 
-XmlTree::ConstIter::ConstIter( const std::list<XmlTree> *sequence )
+XmlTree::ConstIter::ConstIter( const Container *sequence )
 {
 	mSequenceStack.push_back( sequence );
 	mIterStack.push_back( sequence->begin() );
 }
 
-XmlTree::ConstIter::ConstIter( const std::list<XmlTree> *sequence, std::list<XmlTree>::const_iterator iter )
+XmlTree::ConstIter::ConstIter( const Container *sequence, Container::const_iterator iter )
 {
 	mSequenceStack.push_back( sequence );
 	mIterStack.push_back( iter );
@@ -63,6 +63,10 @@ XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, bo
 	: mCaseSensitive( caseSensitive )
 {
 	mFilter = split( filterPath, separator );
+
+	// we ignore a leading separator so that "/one/two" is equivalent to "one/two"
+	if( ( ! filterPath.empty() ) && ( filterPath[0] == separator ) && ( ! mFilter.empty() ) )
+		mFilter.erase( mFilter.begin() );
 
 	if( mFilter.empty() ) { // empty filter means nothing matches
 		setToEnd( &root.getChildren() );
@@ -75,7 +79,7 @@ XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, bo
 		else
 			mSequenceStack.push_back( &mIterStack.back()->getChildren() );
 		
-		list<XmlTree>::const_iterator child = findNextChildNamed( *mSequenceStack.back(), mSequenceStack.back()->begin(), *filterComp, mCaseSensitive );
+		Container::const_iterator child = findNextChildNamed( *mSequenceStack.back(), mSequenceStack.back()->begin(), *filterComp, mCaseSensitive );
 		if( child != (mSequenceStack.back())->end() )
 			mIterStack.push_back( child );
 		else { // failed to find an item that matches this part of the filter; mark as finished and return
@@ -86,7 +90,7 @@ XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, bo
 }
 
 // sets the iterator to be pointing to the end, meaning iteration is done
-void XmlTree::ConstIter::setToEnd( const list<XmlTree> *seq )
+void XmlTree::ConstIter::setToEnd( const Container *seq )
 {
 	mSequenceStack.clear();
 	mSequenceStack.push_back( seq );
@@ -107,7 +111,7 @@ void XmlTree::ConstIter::increment()
 	
 		bool found = false;
 		do {
-			list<XmlTree>::const_iterator next = findNextChildNamed( *mSequenceStack.back(), mIterStack.back(), mFilter[mSequenceStack.size()-1], mCaseSensitive );
+			Container::const_iterator next = findNextChildNamed( *mSequenceStack.back(), mIterStack.back(), mFilter[mSequenceStack.size()-1], mCaseSensitive );
 			if( next == mSequenceStack.back()->end() ) { // we've finished this part of the sequence stack
 				if( mSequenceStack.size() > 1 ) { // we might already be done, in which case incrementing would be bad
 					mIterStack.pop_back();
@@ -130,9 +134,9 @@ void XmlTree::ConstIter::increment()
 	}
 }
 
-list<XmlTree>::const_iterator XmlTree::findNextChildNamed( const list<XmlTree> &sequence, list<XmlTree>::const_iterator firstCandidate, const string &searchTag, bool caseSensitive )
+XmlTree::Container::const_iterator XmlTree::findNextChildNamed( const Container &sequence, Container::const_iterator firstCandidate, const string &searchTag, bool caseSensitive )
 {
-	list<XmlTree>::const_iterator result = firstCandidate;
+	Container::const_iterator result = firstCandidate;
 	while( result != sequence.end() ) {
 		if( tagsMatch( result->getTag(), searchTag, caseSensitive ) )
 			break;
@@ -330,7 +334,7 @@ XmlTree* XmlTree::getNodePtr( const string &relativePath, bool caseSensitive, ch
 	for( vector<string>::const_iterator pathIt = pathComponents.begin(); pathIt != pathComponents.end(); ++pathIt ) {
 		if( pathIt->empty() )
 			continue;
-		list<XmlTree>::const_iterator node = XmlTree::findNextChildNamed( curNode->getChildren(), curNode->getChildren().begin(), *pathIt, caseSensitive )	;
+		Container::const_iterator node = XmlTree::findNextChildNamed( curNode->getChildren(), curNode->getChildren().begin(), *pathIt, caseSensitive )	;
 		if( node != curNode->getChildren().end() )
 			curNode = const_cast<XmlTree*>( &(*node) );
 		else
@@ -355,6 +359,9 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 	if( type == rapidxml::node_data ) {
 		node = doc.allocate_node( type, NULL, doc.allocate_string( getValue().c_str() ) );
 	}
+	else if( type == rapidxml::node_comment ) {
+		node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), doc.allocate_string( getValue().c_str() ) );
+	}
 	else {
 		node = doc.allocate_node( type, doc.allocate_string( getTag().c_str() ), NULL );
 		if( ! getValue().empty() )
@@ -365,7 +372,7 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 	for( list<Attr>::const_iterator attrIt = mAttributes.begin(); attrIt != mAttributes.end(); ++attrIt )
 		node->append_attribute( doc.allocate_attribute( doc.allocate_string( attrIt->getName().c_str() ), doc.allocate_string( attrIt->getValue().c_str() ) ) );
 		
-	for( list<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
+	for( Container::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
 		childIt->appendRapidXmlNode( doc, node );
 }
 
@@ -379,7 +386,7 @@ shared_ptr<rapidxml::xml_document<char> > XmlTree::createRapidXmlDoc( bool creat
 			result->append_node( result->allocate_node( rapidxml::node_doctype, "", result->allocate_string( mDocType.c_str() ) ) );
 
 		if( isDocument() ) {
-			for( list<XmlTree>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
+			for( Container::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
 				childIt->appendRapidXmlNode( *result, result.get() );
 		}
 		else {

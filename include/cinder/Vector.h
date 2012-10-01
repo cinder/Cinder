@@ -518,13 +518,13 @@ public:
 			return *this;
 	}
 
-	Vec3<T> randomOrthogonal() const
+	//! Returns a vector which is orthogonal to \a this
+	Vec3<T> getOrthogonal() const
 	{
-		if( dot( Vec3<T>::xAxis() ) < (T)0.99 ) {
-			return cross( Vec3<T>::xAxis() );
-		}
+		if( math<T>::abs( y ) < (T)0.99 ) // abs(dot(u, Y)), somewhat arbitrary epsilon
+			return Vec3<T>( -z, 0, x ); // cross( this, Y )
 		else
-			return cross( Vec3<T>::yAxis() );
+			return Vec3<T>( 0, z, -y ); // cross( this, X )
 	}
 
 	void rotateX( T angle )

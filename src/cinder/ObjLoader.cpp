@@ -170,7 +170,10 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 			secondSlashOffset = string::npos;
 		
 		// process the vertex index
-		int vertexIndex = lexical_cast<int>( s.substr( offset, firstSlashOffset - offset ) );
+		int vertexIndex = (firstSlashOffset != string::npos) ? 
+            lexical_cast<int>( s.substr( offset, firstSlashOffset - offset ) ) : 
+            lexical_cast<int>( s.substr( offset, endOfTriple - offset));
+        
 		if( vertexIndex < 0 )
 			result.mVertexIndices.push_back( group->mBaseVertexOffset + vertexIndex );
 		else

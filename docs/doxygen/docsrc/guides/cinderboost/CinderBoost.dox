@@ -29,7 +29,7 @@ Here's how to compile Boost yourself.
 <tt>
 cd cinder/boost\n
 ./bootstrap.sh --with-libraries=filesystem,thread,system,date_time,regex
-./b2 architecture=x86 address-model=32 macosx-version=10.6 stage
+./b2 architecture=x86 address-model=32 stage
 cp stage/lib/*.a ../lib/macosx\n
 </tt>
 \em Note: If you need 64-bit support, change the <tt>address-model=32</tt> to <tt>address-model=32_64</tt>.\n
@@ -72,4 +72,59 @@ cp stage/lib/*.a ../lib/ios\n
 cp stage/lib/*.a ../lib/ios-sim\n
 </tt>
 \em Note: to strip armv6, use <tt>lipo -remove armv6 lib/ios/libboost_regex.a -output lib/ios/libboost_regex.a</tt>
-*/
+\n
+\n
+
+<b>Clang / libc++ / C++ (OS X and iOS)</b>:\n
+
+\em Note: In order to utilize libc++ / C++11 in your cinder app, you first have to make some changes to the project build settings (of both cinder.xcodeproj and your app project file), since it requires minimum sdk versions above those cinder is currently targeting.  You must:
+\n
+
+<ul>
+	<li>Set the Deployment Target:
+		<ul>
+			<li> (OS X) 10.7 </li>
+			<li> (iOS) 5.0 </li>
+		</ul>
+	</li>
+	<li>Enable C++11 / libc++. Under Apple LLVM Compiler 4.1 - Language:
+		<ul>
+			<li>set 'C++ Language Dialect' to 'C++11'</li>
+			<li>set C++ Standard Library' to 'libc++</li>
+		</ul>
+	</li>
+</ul>
+\n
+To build the boost binaries, first add the following to your user-config.jam:
+
+\code
+using clang : osx
+: xcrun clang -arch i386 -arch x86_64 -stdlib=libc++ -std=c++11
+;
+
+using clang : ios
+: xcrun clang -arch armv7 -stdlib=libc++ -std=c++11 -miphoneos-version-min=5.0 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS5.1.sdk
+;
+\endcode
+\n
+
+\em Note: the path needed by -isysroot may be different in your configuration. To find out the correct path, you can build an iOS app (best to first enable libc++ / C++) in Xcode and look at the build log for any compiled .cpp file.  Within the details you will find the actual command used, which contains an '-isysroot /path/to/iphone/sdk..'.\n
+\n
+Then run (from cinder/boost dir, after already calling the same ./bootstrap.sh command from above):\n
+\n
+<em>for OS X:</em>\n
+
+<tt>
+./b2 -a -j4 toolset=clang-osx link=static stage\n
+cp stage/lib/*.a ../lib/macosx\n
+</tt>
+\n
+<em>for iOS:</em>\n
+<tt>
+./b2 -a -j4 toolset=clang-ios link=static stage\n
+cp stage/lib/*.a ../lib/ios\n
+</tt>
+*/i
+
+
+
