@@ -54,7 +54,9 @@ class Display {
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
 
 	std::string	getDeviceString() const { return mDeviceString; }
+	std::string	getDeviceID() const { return mDeviceID; }
 	std::string	getMonitorString() const { return mMonitorString; }
+	std::string	getMonitorID() const { return mMonitorID; }
 
 	//! Returns whether the Display's coordinates contain \a pt.
 	bool	contains( const Vec2i &pt ) const { return mArea.contains( pt ); }
@@ -88,7 +90,9 @@ class Display {
 #endif
 
 	std::string		mDeviceString;
+	std::string		mDeviceID;
 	std::string		mMonitorString;
+	std::string		mMonitorID;
 	
 	static void		enumerateDisplays();
 	

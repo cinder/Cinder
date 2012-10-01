@@ -161,8 +161,10 @@ void Display::enumerateDisplays()
 			// device name and string should now contain information on the device
 			#ifdef UNICODE
 					sDisplays[i]->mDeviceString = toUtf8( std::wstring( device.DeviceString ) );
+					sDisplays[i]->mDeviceID = toUtf8( std::wstring( device.DeviceID ) );
 			#else
 					sDisplays[i]->mDeviceString = std::string( device.DeviceString ) );
+					sDisplays[i]->mDeviceID = std::string( device.DeviceID );
 			#endif
 
 			DISPLAY_DEVICE monitor = device;
@@ -172,8 +174,10 @@ void Display::enumerateDisplays()
 					// device name and string should now contain information on the monitor connected to the device
 					#ifdef UNICODE
 							sDisplays[i]->mMonitorString = toUtf8( std::wstring( monitor.DeviceString ) );
+							sDisplays[i]->mMonitorID = toUtf8( std::wstring( monitor.DeviceID ) );
 					#else
 							sDisplays[i]->mMonitorString = std::string( monitor.DeviceString ) );
+							sDisplays[i]->mMonitorID = std::string( monitor.DeviceID );
 					#endif
 				}
 			}
