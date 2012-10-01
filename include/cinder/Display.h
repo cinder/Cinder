@@ -53,6 +53,9 @@ class Display {
 	Area	getArea() const { return mArea; }
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
 
+	std::string	getDeviceString() const { return mDeviceString; }
+	std::string	getMonitorString() const { return mMonitorString; }
+
 	//! Returns whether the Display's coordinates contain \a pt.
 	bool	contains( const Vec2i &pt ) const { return mArea.contains( pt ); }
 
@@ -83,6 +86,9 @@ class Display {
 #elif defined( CINDER_MSW )
 	HMONITOR			mMonitor;
 #endif
+
+	std::string		mDeviceString;
+	std::string		mMonitorString;
 	
 	static void		enumerateDisplays();
 	

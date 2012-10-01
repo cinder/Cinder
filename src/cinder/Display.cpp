@@ -21,6 +21,7 @@
 */
 
 #include "cinder/Display.h"
+#include "cinder/Utilities.h"
 #include <map>
 using namespace std;
 
@@ -100,6 +101,8 @@ void Display::enumerateDisplays()
 		newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 		newDisplay->mScreen = screen;
 		newDisplay->mBitsPerPixel = NSBitsPerPixelFromDepth( [screen depth] );
+
+		// TODO: retrieve device and monitor name (if possible)
 		
 		sDisplays.push_back( newDisplay );
 	}
@@ -127,26 +130,6 @@ BOOL CALLBACK Display::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect,
 	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
 	newDisplay->mMonitor = hMonitor;
 
-	// let's see if this works
-	DISPLAY_DEVICE device;
-	memset( &device, 0, sizeof( DISPLAY_DEVICE ) );
-	device.cb = sizeof( DISPLAY_DEVICE );
-	
-	int i = 0;
-	while( EnumDisplayDevices(NULL, i, &device, 0) ) {
-		// device name and string should now contain information on the device
-
-		DISPLAY_DEVICE monitor = device;
-		if( device.StateFlags | DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) 
-		{ 
-			if( EnumDisplayDevices(device.DeviceName, 0, &monitor, 0) ) {
-				// device name and string should now contain information on the monitor connected to the device
-			}
-		}
-
-		i++;
-	}
-
 	// retrieve the depth of the display
 	MONITORINFOEX mix;
 	memset( &mix, 0, sizeof( MONITORINFOEX ) );
@@ -167,6 +150,35 @@ void Display::enumerateDisplays()
 		return;
 
 	::EnumDisplayMonitors( NULL, NULL, enumMonitorProc, (LPARAM)&sDisplays );
+		
+	// retrieve device and monitor name
+	DISPLAY_DEVICE device;
+	memset( &device, 0, sizeof( DISPLAY_DEVICE ) );
+	device.cb = sizeof( DISPLAY_DEVICE );
+	
+	for(size_t i = 0; i<sDisplays.size(); ++ i) {
+		if( EnumDisplayDevices(NULL, i, &device, 0) ) {
+			// device name and string should now contain information on the device
+			#ifdef UNICODE
+					sDisplays[i]->mDeviceString = toUtf8( std::wstring( device.DeviceString ) );
+			#else
+					sDisplays[i]->mDeviceString = std::string( device.DeviceString ) );
+			#endif
+
+			DISPLAY_DEVICE monitor = device;
+			if( device.StateFlags | DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) 
+			{ 
+				if( EnumDisplayDevices(device.DeviceName, 0, &monitor, 0) ) {
+					// device name and string should now contain information on the monitor connected to the device
+					#ifdef UNICODE
+							sDisplays[i]->mMonitorString = toUtf8( std::wstring( monitor.DeviceString ) );
+					#else
+							sDisplays[i]->mMonitorString = std::string( monitor.DeviceString ) );
+					#endif
+				}
+			}
+		}
+	}
 	
 	// ensure that the primary display is sDisplay[0]
 	const POINT ptZero = { 0, 0 };
