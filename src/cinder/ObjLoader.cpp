@@ -337,11 +337,11 @@ void ObjLoader::loadInternalNoOptimize( const Group &group, TriMesh *destTriMesh
                 if( group.mFaces[f].mMaterial ) {
                     const Material *m = group.mFaces[f].mMaterial;
                     Color rgb(m->Kd[0], m->Kd[1], m->Kd[2]);
-                    destTriMesh->appendColorRGB( rgb );
+                    destTriMesh->appendColorRgb( rgb );
                 }
                 else {
                     Color rgb(1, 1, 1);
-                    destTriMesh->appendColorRGB( rgb );
+                    destTriMesh->appendColorRgb( rgb );
                 }
             }
 		}
@@ -395,7 +395,7 @@ void ObjLoader::loadInternalNormalsTextures( const Group &group, map<VertexTripl
 					destTriMesh->appendNormal( mNormals[group.mFaces[f].mNormalIndices[v]] );
 					destTriMesh->appendTexCoord( mTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
                     if( hasColors )
-                        destTriMesh->appendColorRGB( rgb );
+                        destTriMesh->appendColorRgb( rgb );
 				}
 				// the unique ID of the vertex is appended for this vert
 				faceIndices.push_back( result.first->second );
@@ -413,7 +413,7 @@ void ObjLoader::loadInternalNormalsTextures( const Group &group, map<VertexTripl
 				else
 					destTriMesh->appendTexCoord( mTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
                 if( hasColors )
-                    destTriMesh->appendColorRGB( rgb );
+                    destTriMesh->appendColorRgb( rgb );
 			}
 		}
 
@@ -461,7 +461,7 @@ void ObjLoader::loadInternalNormals( const Group &group, map<VertexPair,int> &un
 					destTriMesh->appendVertex( mVertices[group.mFaces[f].mVertexIndices[v]] );
 					destTriMesh->appendNormal( mNormals[group.mFaces[f].mNormalIndices[v]] );
                     if( hasColors )
-                        destTriMesh->appendColorRGB( rgb );
+                        destTriMesh->appendColorRgb( rgb );
 				}
 				// the unique ID of the vertex is appended for this vert
 				faceIndices.push_back( result.first->second );
@@ -475,7 +475,7 @@ void ObjLoader::loadInternalNormals( const Group &group, map<VertexPair,int> &un
 				else
 					destTriMesh->appendNormal( mNormals[group.mFaces[f].mNormalIndices[v]] );
                 if( hasColors )
-                    destTriMesh->appendColorRGB( rgb );
+                    destTriMesh->appendColorRgb( rgb );
 			}
 		}
 
@@ -518,7 +518,7 @@ void ObjLoader::loadInternalTextures( const Group &group, map<VertexPair,int> &u
 					destTriMesh->appendVertex( mVertices[group.mFaces[f].mVertexIndices[v]] );
 					destTriMesh->appendTexCoord( mTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
                     if( hasColors )
-                        destTriMesh->appendColorRGB( rgb );
+                        destTriMesh->appendColorRgb( rgb );
 				}
 				// the unique ID of the vertex is appended for this vert
 				faceIndices.push_back( result.first->second );
@@ -532,7 +532,7 @@ void ObjLoader::loadInternalTextures( const Group &group, map<VertexPair,int> &u
 				else
 					destTriMesh->appendTexCoord( mTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
                 if( hasColors )
-                    destTriMesh->appendColorRGB( rgb );
+                    destTriMesh->appendColorRgb( rgb );
 			}
 		}
 
@@ -568,7 +568,7 @@ void ObjLoader::loadInternal( const Group &group, map<int,int> &uniqueVerts, Tri
 			if( result.second ) { // we've got a new, unique vertex here, so let's append it
 				destTriMesh->appendVertex( mVertices[group.mFaces[f].mVertexIndices[v]] );
                 if( hasColors )
-                    destTriMesh->appendColorRGB( rgb );
+                    destTriMesh->appendColorRgb( rgb );
 			}
 			// the unique ID of the vertex is appended for this vert
 			faceIndices.push_back( result.first->second );
