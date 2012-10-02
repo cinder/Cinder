@@ -54,6 +54,8 @@ public:
     unsigned long address;
     int port;
 
+    bool IsMulticastAddress() const { return ((address >> 24) & 0xFF) >= 224 && ((address >> 24) & 0xFF) <= 239; }
+
 	enum { ADDRESS_STRING_LENGTH=17 };
 	void AddressAsString( char *s ) const;
 

@@ -27,49 +27,55 @@
 	CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 	WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef OSC_HOSTENDIANNESS_H
-#define OSC_HOSTENDIANNESS_H
+#include "IpEndpointName.h"
 
-/*
-    Make sure either OSC_HOST_LITTLE_ENDIAN or OSC_HOST_BIG_ENDIAN is defined
+#include <cstdio>
 
-    If you know a way to enhance the detection below for Linux and/or MacOSX
-    please let me know! I've tried a few things which don't work.
-*/
+#include "NetworkingUtils.h"
 
-#if defined(OSC_HOST_LITTLE_ENDIAN) || defined(OSC_HOST_BIG_ENDIAN)
 
-// you can define one of the above symbols from the command line
-// then you don't have to edit this file.
+unsigned long IpEndpointName::GetHostByName( const char *s )
+{
+	return ::GetHostByName(s);
+}
 
-#elif defined(__WIN32__) || defined(WIN32) || defined(WINCE)
 
-// assume that __WIN32__ is only defined on little endian systems
+void IpEndpointName::AddressAsString( char *s ) const
+{
+	if( address == ANY_ADDRESS ){
+		sprintf( s, "<any>" );
+	}else{
+		sprintf( s, "%d.%d.%d.%d",
+				(int)((address >> 24) & 0xFF),
+				(int)((address >> 16) & 0xFF),
+				(int)((address >> 8) & 0xFF),
+				(int)(address & 0xFF) );
+	}
+}
 
-#define OSC_HOST_LITTLE_ENDIAN 1
-#undef OSC_HOST_BIG_ENDIAN
 
-#elif defined(__APPLE__)
-
-#if defined(__LITTLE_ENDIAN__)
-
-#define OSC_HOST_LITTLE_ENDIAN 1
-#undef OSC_HOST_BIG_ENDIAN
-
-#elif defined(__BIG_ENDIAN__)
-
-#define OSC_HOST_BIG_ENDIAN 1
-#undef OSC_HOST_LITTLE_ENDIAN
-
-#endif
-
-#endif
-
-#if !defined(OSC_HOST_LITTLE_ENDIAN) && !defined(OSC_HOST_BIG_ENDIAN)
-
-#error please edit OSCHostEndianness.h to configure endianness
-
-#endif
-
-#endif /* OSC_HOSTENDIANNESS_H */
-
+void IpEndpointName::AddressAndPortAsString( char *s ) const
+{
+	if( port == ANY_PORT ){
+		if( address == ANY_ADDRESS ){
+			sprintf( s, "<any>:<any>" );
+		}else{
+			sprintf( s, "%d.%d.%d.%d:<any>",
+				(int)((address >> 24) & 0xFF),
+				(int)((address >> 16) & 0xFF),
+				(int)((address >> 8) & 0xFF),
+				(int)(address & 0xFF) );
+		}
+	}else{
+		if( address == ANY_ADDRESS ){
+			sprintf( s, "<any>:%d", port );
+		}else{
+			sprintf( s, "%d.%d.%d.%d:%d",
+				(int)((address >> 24) & 0xFF),
+				(int)((address >> 16) & 0xFF),
+				(int)((address >> 8) & 0xFF),
+				(int)(address & 0xFF),
+				(int)port );
+		}
+	}	
+}

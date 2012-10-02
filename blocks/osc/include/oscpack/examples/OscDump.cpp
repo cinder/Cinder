@@ -27,49 +27,59 @@
 	CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 	WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-#ifndef OSC_HOSTENDIANNESS_H
-#define OSC_HOSTENDIANNESS_H
 
 /*
-    Make sure either OSC_HOST_LITTLE_ENDIAN or OSC_HOST_BIG_ENDIAN is defined
-
-    If you know a way to enhance the detection below for Linux and/or MacOSX
-    please let me know! I've tried a few things which don't work.
+    OscDump prints incoming Osc packets. Unlike the Berkeley dumposc program
+    OscDump uses a different printing format which indicates the type of each
+    message argument.
 */
 
-#if defined(OSC_HOST_LITTLE_ENDIAN) || defined(OSC_HOST_BIG_ENDIAN)
 
-// you can define one of the above symbols from the command line
-// then you don't have to edit this file.
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
 
-#elif defined(__WIN32__) || defined(WIN32) || defined(WINCE)
+#include "osc/OscReceivedElements.h"
+#include "osc/OscPrintReceivedElements.h"
 
-// assume that __WIN32__ is only defined on little endian systems
+#include "ip/UdpSocket.h"
+#include "ip/PacketListener.h"
 
-#define OSC_HOST_LITTLE_ENDIAN 1
-#undef OSC_HOST_BIG_ENDIAN
 
-#elif defined(__APPLE__)
+class OscDumpPacketListener : public PacketListener{
+public:
+	virtual void ProcessPacket( const char *data, int size, 
+			const IpEndpointName& remoteEndpoint )
+	{
+		std::cout << osc::ReceivedPacket( data, size );
+	}
+};
 
-#if defined(__LITTLE_ENDIAN__)
+int main(int argc, char* argv[])
+{
+	if( argc >= 2 && strcmp( argv[1], "-h" ) == 0 ){
+        std::cout << "usage: OscDump [port]\n";
+        return 0;
+    }
 
-#define OSC_HOST_LITTLE_ENDIAN 1
-#undef OSC_HOST_BIG_ENDIAN
+	int port = 7000;
 
-#elif defined(__BIG_ENDIAN__)
+	if( argc >= 2 )
+		port = atoi( argv[1] );
 
-#define OSC_HOST_BIG_ENDIAN 1
-#undef OSC_HOST_LITTLE_ENDIAN
+	OscDumpPacketListener listener;
+    UdpListeningReceiveSocket s(
+            IpEndpointName( IpEndpointName::ANY_ADDRESS, port ),
+            &listener );
 
-#endif
+	std::cout << "listening for input on port " << port << "...\n";
+	std::cout << "press ctrl-c to end\n";
 
-#endif
+	s.RunUntilSigInt();
 
-#if !defined(OSC_HOST_LITTLE_ENDIAN) && !defined(OSC_HOST_BIG_ENDIAN)
+	std::cout << "finishing.\n";	
 
-#error please edit OSCHostEndianness.h to configure endianness
+    return 0;
+}
 
-#endif
-
-#endif /* OSC_HOSTENDIANNESS_H */
 
