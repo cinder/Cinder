@@ -62,3 +62,4 @@
 	Hit-testing on arbitrary Path2d and Shape2d's
 	Moved to fs::path class for filesystem paths
 	Upgraded to Boost 1.48
+* 0.8.5		---

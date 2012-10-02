@@ -2,7 +2,7 @@
 
  This class is for drawing a fluidsolver using the openFrameworks texture
 
- /***********************************************************************
+ ***********************************************************************
 
  Copyright (c) 2008, 2009, Memo Akten, www.memo.tv
  *** The Mega Super Awesome Visuals Company ***
@@ -40,6 +40,7 @@
 using namespace cinder;
 
 #define FLUID_TEXTURE
+//#define RENDER
 
 ciMsaFluidDrawerGl::ciMsaFluidDrawerGl() {
 	//	printf("ciMsaFluidDrawerGl::ciMsaFluidDrawer()\n");
@@ -184,6 +185,8 @@ void ciMsaFluidDrawerGl::draw(float x, float y, float renderWidth, float renderH
 void ciMsaFluidDrawerGl::drawColor(float x, float y, float renderWidth, float renderHeight, bool withAlpha) {
 	int fw = _fluidSolver->getWidth();
 	int fh = _fluidSolver->getHeight();
+    if (!fw || !fh)
+        return;
 
 	ci::Vec2f vel;
 	ci::Color color;
@@ -206,15 +209,24 @@ void ciMsaFluidDrawerGl::drawColor(float x, float y, float renderWidth, float re
 		}
 	}
 
-#ifdef FLUID_TEXTURE
-	tex.update( _surface );
-	gl::draw( tex, Rectf( x, y, x + renderWidth, y + renderHeight ) );
+    try {
+#ifdef FLUID_TEXTURE    
+        tex.update( _surface );
 #endif
+#ifdef RENDER
+        gl::draw( tex, Rectf( x, y, x + renderWidth, y + renderHeight ) );
+#endif
+    }
+    catch(...) {
+        // tex.update can throw if the surface dimensions aren't initialized
+    }
 }
 
 void ciMsaFluidDrawerGl::drawMotion(float x, float y, float renderWidth, float renderHeight, bool withAlpha) {
 	int fw = _fluidSolver->getWidth();
 	int fh = _fluidSolver->getHeight();
+    if (!fw || !fh)
+        return;
 
 	ci::Vec2f vel;
 	int index = 0;
@@ -233,6 +245,8 @@ void ciMsaFluidDrawerGl::drawMotion(float x, float y, float renderWidth, float r
 
 #ifdef FLUID_TEXTURE
 	tex.update( _surface );
+#endif
+#ifdef RENDER
 	gl::draw( tex, Rectf( x, y, x + renderWidth, y + renderHeight ) );
 #endif
 }
@@ -241,6 +255,8 @@ void ciMsaFluidDrawerGl::drawMotion(float x, float y, float renderWidth, float r
 void ciMsaFluidDrawerGl::drawSpeed(float x, float y, float renderWidth, float renderHeight, bool withAlpha) {
 	int fw = _fluidSolver->getWidth();
 	int fh = _fluidSolver->getHeight();
+    if (!fw || !fh)
+        return;
 
 	ci::Vec2f vel;
 	int index = 0;
@@ -258,6 +274,8 @@ void ciMsaFluidDrawerGl::drawSpeed(float x, float y, float renderWidth, float re
 
 #ifdef FLUID_TEXTURE
 	tex.update( _surface );
+#endif
+#ifdef RENDER
 	gl::draw( tex, Rectf( x, y, x + renderWidth, y + renderHeight ) );
 #endif
 }
@@ -266,6 +284,8 @@ void ciMsaFluidDrawerGl::drawSpeed(float x, float y, float renderWidth, float re
 void ciMsaFluidDrawerGl::drawVectors(float x, float y, float renderWidth, float renderHeight, float velThreshold) {
 	int fw = _fluidSolver->getWidth();
 	int fh = _fluidSolver->getHeight();
+    if (!fw || !fh)
+        return;
 
 //	int xStep = renderWidth / 10;		// every 10 pixels
 //	int yStep = renderHeight / 10;		// every 10 pixels

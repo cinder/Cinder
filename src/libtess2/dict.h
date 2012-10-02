@@ -46,7 +46,7 @@ void dictDeleteDict( TESSalloc* alloc, Dict *dict );
 */
 DictNode *dictSearch( Dict *dict, DictKey key );
 DictNode *dictInsertBefore( Dict *dict, DictNode *node, DictKey key );
-void dictDelete( Dict *dict, DictNode *node );
+void tdictDelete( Dict *dict, DictNode *node );
 
 #define dictKey(n)	((n)->key)
 #define dictSucc(n)	((n)->next)

@@ -185,8 +185,10 @@ TimelineItemRef Timeline::findLast( void *target )
 
 float Timeline::findEndTimeOf( void *target, bool *found )
 {
+	pair<s_iter,s_iter> range = mItems.equal_range( target );
+
 	s_iter result = mItems.end();
-	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
+	for( s_iter iter = range.first; iter != range.second; ++iter ) {
 		if( iter->second->getTarget() == target ) {
 			if( result == mItems.end() )
 				result = iter;

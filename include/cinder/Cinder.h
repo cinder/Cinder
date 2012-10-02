@@ -24,6 +24,7 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/version.hpp>
+#include <boost/config.hpp>
 
 #if BOOST_VERSION < 104800
 	#error "Cinder requires Boost version 1.48 or later"
@@ -64,7 +65,7 @@ using boost::uint64_t;
 } // namespace cinder
 
 
-#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
+#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 ) || defined( _LIBCPP_VERSION )
 	#include <memory>
 #elif defined( CINDER_COCOA )
 	#include <tr1/memory>
@@ -89,7 +90,7 @@ using boost::uint64_t;
 	}
 #endif
 
-#include <boost/shared_ptr.hpp> // necessary for checked_array_deleter
+#include <boost/checked_delete.hpp> // necessary for checked_array_deleter
 using boost::checked_array_deleter;
 
 // if compiler supports r-value references, #define CINDER_RVALUE_REFERENCES

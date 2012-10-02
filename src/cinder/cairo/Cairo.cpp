@@ -2139,7 +2139,7 @@ class SvgRendererCairo : public svg::Renderer {
 	float						mGroupOpacity;
 };
 
-void Context::render( const svg::Node &node, const svg::RenderVisitor &visitor )
+void Context::render( const svg::Node &node, const std::function<bool(const svg::Node&, svg::Style *)> &visitor )
 {
 	SvgRendererCairo ren( *this );
 	if( visitor )

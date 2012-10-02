@@ -146,7 +146,7 @@ static void DeleteRegion( TESStesselator *tess, ActiveRegion *reg )
 		assert( reg->eUp->winding == 0 );
 	}
 	reg->eUp->activeRegion = NULL;
-	dictDelete( tess->dict, reg->nodeUp );
+	tdictDelete( tess->dict, reg->nodeUp );
 	bucketFree( tess->regionPool, reg );
 }
 

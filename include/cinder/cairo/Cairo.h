@@ -32,6 +32,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/MatrixAffine2.h"
 #include "cinder/Function.h"
+#include "cinder/svg/Svg.h"
 
 #if defined( CINDER_COCOA_TOUCH )
 	#include <CoreGraphics/CoreGraphics.h>
@@ -42,12 +43,6 @@
 #include <string>
 #include <vector>
 #include <iomanip>
-
-namespace cinder { namespace svg {
-class Node;
-class Style;
-typedef std::function<bool(const Node&, Style *)> RenderVisitor;
-} } // namespace cinder::svg
 
 // Forward declarations used by our cairo wrappers 
 struct _cairo_surface;
@@ -661,7 +656,7 @@ class Context
 	void		circle( const Vec2f &v, double radius ) { circle( (double)v.x, (double)v.y, radius ); }
 
 	//! Renders an svg::Node, with an optional visitor function to modify the style per-node.
-	void		render( const svg::Node &node, const svg::RenderVisitor &visitor = svg::RenderVisitor() );
+	void		render( const svg::Node &node, const std::function<bool(const svg::Node&, svg::Style *)> &visitor = std::function<bool(const svg::Node&, svg::Style *)>() );
 
 // Transformation functions
 	void        translate( double tx, double ty );

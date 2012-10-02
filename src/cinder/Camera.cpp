@@ -144,7 +144,7 @@ Vec2f Camera::worldToScreen( const Vec3f &worldCoord, float screenWidth, float s
 float Camera::getScreenRadius( const Sphere &sphere, float screenWidth, float screenHeight ) const
 {
 	Vec2f screenCenter( worldToScreen( sphere.getCenter(), screenWidth, screenHeight ) );	
-	Vec3f orthog = mViewDirection.randomOrthogonal().normalized();
+	Vec3f orthog = mViewDirection.getOrthogonal().normalized();
 	Vec2f screenPerimeter = worldToScreen( sphere.getCenter() + sphere.getRadius() * orthog, screenWidth, screenHeight );
 	return screenPerimeter.distance( screenCenter );
 }

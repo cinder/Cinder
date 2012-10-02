@@ -34,7 +34,7 @@
 @class CinderWindow;
 
 #if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
-@interface AppImplCocoaBasic : NSApplication<NSWindowDelegate,CinderViewMultiTouchDelegate> {
+@interface AppImplCocoaBasic : NSObject<NSApplicationDelegate,NSWindowDelegate,CinderViewMultiTouchDelegate> {
 #else
 @interface AppImplCocoaBasic : NSApplication {
 #endif
@@ -88,7 +88,6 @@
 // multiTouch delegate methods
 - (void)touchesBegan:(ci::app::TouchEvent*)event;
 - (void)touchesMoved:(ci::app::TouchEvent*)event;
-- (void)touchesEnded:(ci::app::TouchEvent*)event;
 - (void)touchesEnded:(ci::app::TouchEvent*)event;
 - (void)setActiveTouches:(std::vector<ci::app::TouchEvent::Touch>*)touches;
 #endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5

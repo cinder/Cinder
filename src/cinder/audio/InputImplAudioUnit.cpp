@@ -69,19 +69,31 @@ InputImplAudioUnit::~InputImplAudioUnit()
 	if( mInputBufferData )
 		free( mInputBufferData );
 }
-	
+    
+float* audioData2 = 0;
+size_t audioData2Size = 0;  // in floats
+size_t audioData2Curr = 0;
+
 void InputImplAudioUnit::start()
 {
-	if( mIsCapturing ) return;
-	
-	setup();
+    if( mIsCapturing ) return;
 
-	OSStatus err = AudioOutputUnitStart( mInputUnit );
-	if( err != noErr ) {
-		std::cout << "Error starting input unit" << std::endl;
-		throw;
-	}
-	mIsCapturing = true;
+    if (!audioData2) {
+        audioData2Size = 1000000;
+        audioData2 = (float*) malloc(sizeof(float) * audioData2Size);
+        audioData2Curr = 0;
+    }
+    
+    setup();
+    
+    OSStatus err = AudioOutputUnitStart( mInputUnit );
+    
+    if( err != noErr ) {
+        std::cout << "Error starting input unit" << std::endl;
+        throw;
+    }
+    
+    mIsCapturing = true;
 }
 
 void InputImplAudioUnit::stop()
@@ -90,8 +102,8 @@ void InputImplAudioUnit::stop()
 
 	OSStatus err = AudioOutputUnitStop( mInputUnit );
 	if( err != noErr ) {
-		std::cout << "Error stoping input unit" << std::endl;
-		return; //throw? this is called from the desctructor
+		std::cout << "Error stopping input unit" << std::endl;
+		return; //throw? this is called from the destructor
 	}
 	mIsCapturing = false;
 }
@@ -134,33 +146,54 @@ OSStatus InputImplAudioUnit::inputCallback( void *inRefCon, AudioUnitRenderActio
 	//AudioBufferList theInputBuffer;
 	
 	OSStatus err = AudioUnitRender( theInput->mInputUnit,
-                    ioActionFlags,
-                    inTimeStamp,
-                    inBusNumber,     //will be '1' for input data
-                    inNumberFrames, //# of frames requested
-                    theInput->mInputBuffer );
+                                    ioActionFlags,
+                                    inTimeStamp,
+                                    inBusNumber,     //will be '1' for input data
+                                    inNumberFrames, //# of frames requested
+                                    theInput->mInputBuffer );
 	
 	if( err != noErr ) {
 		std::cout << "Error rendering input code" << std::endl;
-		//throw;
 		return noErr;
 	}
 	
 	theInput->mBufferMutex.lock();
 	
-	//copy data from the input buffer to the circular buffer
-	for( int i = 0; i < theInput->mInputBuffer->mNumberBuffers; i++ ) {
-		float * start = reinterpret_cast<float *>( theInput->mInputBuffer->mBuffers[i].mData );
-		
-		theInput->mCircularBuffers[i]->insert( start, ( theInput->mInputBuffer->mBuffers[i].mDataByteSize / sizeof(float) ) );
-		
-		//float * end = start + inNumberFrames;
-		//theInput->mBuffers[i]->insert( theInput->mBuffers[i]->end(), start, end );
-	}
+    // guard against stop being called while the mutex was being acquired, especially during shutdown
+	if( theInput->isCapturing() ) {
+        //copy data from the input buffer to the circular buffer
+        for( int i = 0; i < theInput->mInputBuffer->mNumberBuffers; i++ ) {
+            float * start = reinterpret_cast<float *>( theInput->mInputBuffer->mBuffers[i].mData );
+            
+            theInput->mCircularBuffers[i]->insert( start, ( theInput->mInputBuffer->mBuffers[i].mDataByteSize / sizeof(float) ) );
+            
+            //dp
+            if (audioData2) {
+                if (audioData2Curr + inNumberFrames >= audioData2Size)
+                    audioData2Curr = 0;
+                memcpy(&audioData2[audioData2Curr], start, sizeof(float) * inNumberFrames);
+                audioData2Curr += inNumberFrames;
+            }
+            //dp
+        }
+    }
 	
 	theInput->mBufferMutex.unlock();
 	
 	return noErr;
+}
+    
+void InputImplAudioUnit::getAllSampleData(float* buff, int buffSizeInFloats, int* samples)
+{
+	mBufferMutex.lock();
+    
+    // don't copy too much
+    int i = buffSizeInFloats < audioData2Curr ? buffSizeInFloats : audioData2Curr;
+    *samples = i;
+    memcpy(buff, audioData2, sizeof(float) * i);
+    audioData2Curr = 0; // mark it all as read
+
+	mBufferMutex.unlock();
 }
 
 void InputImplAudioUnit::setup() 
@@ -331,7 +364,7 @@ void InputImplAudioUnit::setup()
 	//AudioBufferList aBufferList;
 	//AudioDeviceGetProperty( nativeDeviceId, 0, true, kAudioDevicePropertyStreamConfiguration, &param, &aBufferList);
 	
-	//setup buffer for recieving data in the callback
+	//setup buffer for receiving data in the callback
 	mInputBufferData = (float *)malloc( sampleCount * desiredOutFormat.mBytesPerFrame * desiredOutFormat.mChannelsPerFrame );
 	float * inputBufferChannels[desiredOutFormat.mChannelsPerFrame];
 	for( int h = 0; h < desiredOutFormat.mChannelsPerFrame; h++ ) {
