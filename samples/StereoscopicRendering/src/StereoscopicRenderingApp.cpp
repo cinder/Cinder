@@ -524,9 +524,9 @@ void StereoscopicRenderingApp::renderUI()
 		case ANAGLYPH_RED_CYAN: renderMode = "Anaglyph Red Cyan"; break;
 	}
 	switch(mFocusMethod) {
-		case SET_CONVERGENCE: focusMode = "CameraStereo::setConvergence(d, false);"; break;
-		case SET_FOCUS: focusMode = "CameraStereo::setConvergence(d, true);"; break;
-		case AUTO_FOCUS: focusMode = "gl::StereoAutoFocuser::autoFocus(cam);"; break;
+		case SET_CONVERGENCE: focusMode = "setConvergence(d, false)"; break;
+		case SET_FOCUS: focusMode = "setConvergence(d, true)"; break;
+		case AUTO_FOCUS: focusMode = "autoFocus(cam)"; break;
 	}
 
     std::string labels( "Render mode (F1-F4):\nFocus mode (1-3):\nFocal Length:\nEye Distance:\nAuto Focus Depth (Up/Down):\nAuto Focus Speed (Left/Right):" );
