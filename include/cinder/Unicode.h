@@ -19,4 +19,9 @@ void		lineBreakUtf8( const char *str, const std::function<bool(const char *, siz
 void		findBreaksUtf8( const std::string &line, std::vector<size_t> *must, std::vector<size_t> *allow );
 //! Populates the \a must and \a allow vectors with string positions, indicating where a line break is required or allowed.
 void		findBreaksUtf16( const std::wstring &line, std::vector<size_t> *must, std::vector<size_t> *allow );
+
+//! Returns TRUE if \a ch is considered whitespace
+bool		isWhitespaceUtf8( const char ch );
+//! Returns TRUE if \a ch is considered whitespace
+bool		isWhitespaceUtf16( const short ch );
 }
