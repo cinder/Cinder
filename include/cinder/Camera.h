@@ -188,27 +188,29 @@ class CameraOrtho : public Camera {
 class CameraStereo : public CameraPersp {
   public:
 	CameraStereo() 
-		: mFocalLength(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {}
+		: mConvergence(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {}
 	CameraStereo( int pixelWidth, int pixelHeight, float fov )
 		: CameraPersp( pixelWidth, pixelHeight, fov ), 
-		mFocalLength(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {} // constructs screen-aligned camera
+		mConvergence(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {} // constructs screen-aligned camera
 	CameraStereo( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane )
 		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), 
-		mFocalLength(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {} // constructs screen-aligned camera
+		mConvergence(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {} // constructs screen-aligned camera
 
-	//! Returns the current focal length, which is the distance at which there is no parallax.
-	float			getFocalLength() const { return mFocalLength; }
-	//! Sets the focal length of the camera, which is the distance at which there is no parallax.
-	void			setFocalLength( float distance ) { mFocalLength = distance; mProjectionCached = false; }
+	//! Returns the current convergence, which is the distance at which there is no parallax.
+	float			getConvergence() const { return mConvergence; }
+	//! Sets the convergence of the camera, which is the distance at which there is no parallax.
+	void			setConvergence( float distance, bool adjustEyeSeparation=false ) { 
+		mConvergence = distance; mProjectionCached = false;
+
+		if(adjustEyeSeparation) 
+			mEyeSeparation = mConvergence / 30.0f;
+	}
 	//! Returns the distance between the camera's for the left and right eyes.
 	float			getEyeSeparation() const { return mEyeSeparation; }
 	//! Sets the distance between the camera's for the left and right eyes. This affects the parallax effect. 
 	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; mModelViewCached = false; mProjectionCached = false; }
 	//! Returns the location of the currently enabled eye camera.
 	Vec3f			getEyePointShifted() const;
-
-	//! Attempts to set an ideal eye separation for the supplied focal length.
-	void			setFocus( float distance ) { mFocalLength = distance; mEyeSeparation = mFocalLength / 30.0f; mModelViewCached = false; mProjectionCached = false; } 
 	
 	//! Enables the left eye camera.
 	void			enableStereoLeft() { mIsStereo = true; mIsLeft = true; }
@@ -240,7 +242,7 @@ class CameraStereo : public CameraPersp {
 	bool			mIsStereo;
 	bool			mIsLeft;
 
-	float			mFocalLength;
+	float			mConvergence;
 	float			mEyeSeparation;
 };
 

@@ -28,7 +28,7 @@
 
 namespace cinder { namespace gl {
 
-void StereoAutoFocuser::autoFocus( CameraStereo *cam, const Area &area )
+void StereoAutoFocuser::autoFocus( CameraStereo *cam, const Area &area, GLuint buffer )
 {
 	if( ! cam->isStereoEnabled() )
 		return;
@@ -36,10 +36,18 @@ void StereoAutoFocuser::autoFocus( CameraStereo *cam, const Area &area )
 	// create or resize buffers
 	createBuffers( area );
 
-	// blit (multi-sampled) main depth buffer to (non-multi-sampled) auto focus fbo	
+	// blit (multi-sampled) depth buffer to (non-multi-sampled) auto focus fbo	
 	// (they need to be the same size for this to work!)
-	mFboLarge.blitFromScreen( area, mFboLarge.getBounds(), 
-		GL_NEAREST, GL_DEPTH_BUFFER_BIT );
+	{
+		SaveFramebufferBinding saveFboBinding;
+
+		Area dstArea = mFboLarge.getBounds();
+
+		glBindFramebufferEXT( GL_READ_FRAMEBUFFER_EXT, buffer );
+		glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, mFboLarge.getId() );	
+		glBlitFramebufferEXT( area.getX1(), area.getY1(), area.getX2(), area.getY2(), 
+			dstArea.getX1(), dstArea.getY1(), dstArea.getX2(), dstArea.getY2(), GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+	}
 
 	// create a downsampled copy for the auto focus test
 	mFboLarge.blitTo( mFboSmall, mFboLarge.getBounds(), mFboSmall.getBounds(),
@@ -65,7 +73,7 @@ void StereoAutoFocuser::autoFocus( CameraStereo *cam, const Area &area )
 	
 	// perform auto focussing
 	float z = math<float>::max( nearClip, mNearest.z * mDepth );
-	cam->setFocus( cam->getFocalLength() + mSpeed * ( z - cam->getFocalLength() ) );
+	cam->setConvergence( cam->getConvergence() + mSpeed * ( z - cam->getConvergence() ), true );
 }
 
 void StereoAutoFocuser::draw()
