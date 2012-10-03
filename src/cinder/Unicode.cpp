@@ -161,6 +161,30 @@ void findBreaksUtf16( const std::wstring &line, std::vector<size_t> *must, std::
 
 		byte++;
 	}
+} 
+
+bool isWhitespaceUtf8( const char ch )
+{ 
+	return isWhitespaceUtf16( (short) ch ); 
+}
+
+bool isWhitespaceUtf16( const short ch )
+{
+	// see: http://en.wikipedia.org/wiki/Whitespace_character
+	static const short unicode_whitespace[] = {
+		0x0009, 0x000A, 0x000B, 0x000C, 0x000D,
+		0x0020, 0x0085, 0x00A0, 0x1680, 0x180E,
+		0x2000, 0x2001, 0x2002, 0x2003, 0x2004,
+		0x2005, 0x2006, 0x2007, 0x2008, 0x2009,
+		0x200A, 0x2028, 0x2029, 0x202F, 0x205F, 0x3000
+	};
+
+	for(size_t i=0;i<26;++i) {
+		if( unicode_whitespace[i] == ch )
+			return true;
+	}
+
+	return false;
 }
 
 } // namespace ci
