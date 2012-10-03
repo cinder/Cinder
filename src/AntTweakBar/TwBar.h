@@ -15,9 +15,9 @@
 #if !defined ANT_TW_BAR_INCLUDED
 #define ANT_TW_BAR_INCLUDED
 
-#include <AntTweakBar.h>
+#include "AntTweakBar.h"
 #include "TwColors.h"
-  
+
 #define ANT_TWEAK_BAR_DLL L"AntTweakBar"
 
 

@@ -1,0 +1,18 @@
+Thoughts, updates on Cinder Timeline.
+
+FIXES:
+ *	The Tween class include an mDuration property that is a duplicate for the TimelineItem base class mDuration property!
+ *	Timeline::eraseMarked() method must reset child element's parent pointer to NULL!
+ *	Timeline::add() method must reset it's input parameter's mMarkedForRemoval property to false!
+
+QUESTIONS:
+ *	Should the TimelineItem::stepTo() method continue to call update() method on Tween's that have finished (meaning relativeTime > 1.0) but not been marked for removal?
+ *	Shouldn't there be a Timeline method to restart it? Seems fairly easy to implement and valuable.
+
+NOTES:
+ *	Timeline::appendPingPong() will probably never work unless input start values are supplied to the tweens of that Timeline.
+ *	Demonstrate the ways one can use the Tween::Options class to do all kinds of fun stuff.
+ *	Make note of the confusing/gotcha naming convention on Timeline for setAutoRemove() vs setDefaultAutoRemove(). Very important!
+
+EXISTING PROBLEM:
+ * 	Anim object appears to lose updates to Tween mTarget value in a particular case using appendPingPong()

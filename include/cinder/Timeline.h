@@ -171,6 +171,7 @@ class Timeline : public TimelineItem {
 
 	//! Sets the default \a autoRemove value for all future TimelineItems added to the Timeline
 	void	setDefaultAutoRemove( bool defaultAutoRemove ) { mDefaultAutoRemove = defaultAutoRemove; }
+	
 	//! Returns the default \a autoRemove value for all future TimelineItems added to the Timeline
 	bool	getDefaultAutoRemove() const { return mDefaultAutoRemove; }
 

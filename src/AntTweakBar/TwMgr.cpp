@@ -11,7 +11,7 @@
 
 
 #include "TwPrecomp.h"
-#include <AntTweakBar.h>
+#include "AntTweakBar.h"
 #include "TwMgr.h"
 #include "TwBar.h"
 #include "TwFonts.h"

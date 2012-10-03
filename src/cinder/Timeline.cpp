@@ -56,12 +56,12 @@ void Timeline::step( float timestep )
 }
 
 void Timeline::stepTo( float absoluteTime )
-{	
+{
 	bool reverse = mCurrentTime > absoluteTime;
 	mCurrentTime = absoluteTime;
 	
 	eraseMarked();
-	
+		
 	// we need to cache the end(). If a tween's update() fn or similar were to manipulate
 	// the list of items by adding new ones, we'll have invalidated our iterator.
 	// Deleted items are never removed immediately, but are marked for deletion.
@@ -92,6 +92,8 @@ void Timeline::appendPingPong()
 {
 	vector<TimelineItemRef> toAppend;
 	
+	updateDuration();
+	
 	float duration = mDuration;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
 		TimelineItemRef cloned = iter->second->cloneReverse();
@@ -117,6 +119,10 @@ void Timeline::add( TimelineItemRef item )
 {
 	item->mParent = this;
 	item->mStartTime = mCurrentTime;
+	
+	// CJJ:	If this is not here, Timeline's that are added after being removed will immediately be removed again
+	item->mMarkedForRemoval = false;
+	
 	mItems.insert( make_pair( item->mTarget, item ) );
 	setDurationDirty();
 }
@@ -134,6 +140,7 @@ void Timeline::eraseMarked()
 	bool needRecalc = false;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ) {
 		if( iter->second->mMarkedForRemoval ) {
+			iter->second->mParent = NULL;	// CJJ:	if not set, then it cannot be accurately evaluated
 			mItems.erase( iter++ );
 			needRecalc = true;
 		}

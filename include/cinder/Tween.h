@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include <iostream>
+
 #include "cinder/Cinder.h"
 #include "cinder/TimelineItem.h"
 #include "cinder/CinderMath.h"
@@ -111,7 +113,7 @@ class TweenBase : public TimelineItem {
 	FinishFn		mFinishFunction, mReverseFinishFunction;
   
 	EaseFn		mEaseFunction;
-	float		mDuration;
+//	float		mDuration;	// CJJ:	masking the inherited mDuration property
 	bool		mCopyStartValue;
 };
 
@@ -178,8 +180,9 @@ class Tween : public TweenBase {
 		Options&	infinite( bool doInfinite = true ) { mTweenRef->setInfinite( doInfinite ); return *this; }
 		Options&	timelineEnd( float offset = 0 ) { TweenBase::Options::timelineEnd( *mTweenRef, offset ); return *this; }
 		template<typename Y>
-		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }	
-		Options&	appendTo( void *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget, offset ); return *this; }	
+		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }
+		// CJJ:	This method has the same signature as the one above, yet it acts like the Ptr variants instead. Consider rename?
+		Options&	appendToPtr( void *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget, offset ); return *this; }
 		Options&	lerpFn( const typename Tween<T>::LerpFn &lerpFn ) { mTweenRef->setLerpFn( lerpFn ); return *this; }
 		
 		operator TweenRef<T>() { return mTweenRef; }
@@ -228,6 +231,8 @@ class Tween : public TweenBase {
 	
 	virtual void update( float relativeTime )
 	{
+		if(mComplete) return;	// This is valuable any time the tween has been set NOT to be auto removed, otherwise some strange behavior emerges
+		
 		*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 		if( mUpdateFunction )
 			mUpdateFunction();

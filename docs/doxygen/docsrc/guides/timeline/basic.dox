@@ -1,0 +1,857 @@
+/**
+\page guide_timeline_basic Timeline Guide: Basic Usage
+
+\htmlonly
+<head>
+	 <style>
+		div.block{
+		  position:absolute;
+		  background-color:#800000;
+		  left:50px;
+		  width:50px;
+		  height:50px;
+		  margin:5px;
+		}
+		
+		div.col1{
+		  position:absolute;
+		  background-color:#800000;
+		  left:50px;
+		  width:50px;
+		  height:50px;
+		  margin:5px;
+		}			
+		
+		div.col2{
+		  position:absolute;
+		  background-color:#800000;
+		  left:350px;
+		  width:50px;
+		  height:50px;
+		  margin:5px;
+		}
+
+		div.col3{
+		  position:absolute;
+		  background-color:#800000;
+		  left:610px;
+		  width:50px;
+		  height:50px;
+		  margin:5px;
+		}		
+		
+		div.Circle{
+		  position:absolute;
+		  left:50px;
+		  margin:5px;
+		  
+			width:0px;
+			height:0px;
+			display:block;
+			border-radius:50px;
+			-moz-border-radius:50px;
+			-webkit-border-radius:50px;
+			-khtml-border-radius:50px;
+			font-size:20px;
+			color:#fff;
+			line-height:100px;
+			text-align:center;
+			background:#800000		  
+		}
+ 
+	 </style>
+	<script type="text/javascript" src="jquery-1.2.1.js"></script>  
+	<script src="jquery.easing.1.3.js" type="text/javascript"></script> 
+</head>
+\endhtmlonly
+
+<h1>Cinder Timeline Guide</h1>
+
+<h1> Basic Usage </h1>
+
+The \ref cinder::Texture "Timeline" object manages a collection of \ref cinder::Anim "Anim" objects. Anims are objects that can be <em>tweened</em> or animated over time. Any Cinder application always contains a master Timeline which is accessed similar to the way you would use console().
+
+<br />
+Before anything can be done first make sure Timeline is included in your project:
+
+\code
+#include "cinder/Timeline.h"
+\endcode
+
+After you've included Timeline, you can write code like this to perform an animation:
+\code
+Anim<float> radius;
+radius = 0.0f;
+timeline().apply( &radius, 100.0f, 1.5f, EaseOutCubic() );
+\endcode
+
+<br />
+
+<!-- maybe show how this is represented in the draw function as well -->
+\htmlonly
+	
+	<button id="basicExampleButton">&raquo;</button> 
+	<div class="Circle" id="basicExampleDiv"></div>	
+	
+	<script type="text/javascript">  
+	$("#basicExampleButton").click(function(){
+	  $("#basicExampleDiv").animate({ 	"width": "0px",
+										"height": "0px"
+									}, 0, "easeInQuad");
+	  $("#basicExampleDiv").animate({ 	"width": "+=100px",
+										"height": "+=100px"
+									}, 1500, "easeOutCubic");
+	});
+	</script>
+	<br /><br /><br /><br /><br /><br />
+\endhtmlonly
+
+<br />
+
+In the example above the variable radius is an \ref cinder::Anim "Anim" object. The Anim type acts as a wrapper for the datatype you want to animate. In this case we're animating a floating point type. You can use any data type that supports all the arithmetic operators (including \ref cinder::Vec2f "Vec2f", \ref cinder::Vec4f "Vec4f", double, long int, etc). After you create the Anim type, you can use it just as you would use the datatype that it wraps. On the master Timeline we use the the apply() method to tween the radius to a final value of 10.0 over 1.5 seconds using the EaseOutCubic function.  
+
+It is important to note that the master \ref cinder::Timeline::apply "Timeline's apply() function" is accepting a <em>pointer</em> to the Anim radius along with the easing function used. The easing function is basically the equation that is applied to your Anim variable over time. This is described in more detail in the following section below.
+
+<br />
+
+\section easeFn Ease Functions
+
+Using Timeline you can apply different easing equations to produce a desired effect to your anims.
+
+\htmlonly
+<script type="text/javascript"> 
+
+	var easeAmt = "+=200";
+	var easeTime = 2500;
+	var col1Pos = "50px";
+	var col2Pos = "350px";
+	var col3Pos = "610px";
+
+	function easeAll(){
+		$("#easeInQuadDiv").animate({"left": col1Pos}, 0, "" );
+		$("#easeInQuadDiv").animate({"left": easeAmt}, easeTime, "easeInQuad");
+		$("#easeOutQuadDiv").animate({"left": col2Pos}, 0, "" );
+		$("#easeOutQuadDiv").animate({"left": easeAmt}, easeTime, "easeOutQuad");
+		$("#easeInCubicDiv").animate({"left": col3Pos}, 0, "" );
+		$("#easeInCubicDiv").animate({"left": easeAmt}, easeTime, "easeInCubic");
+		$("#easeOutCubicDiv").animate({"left": col1Pos}, 0, "" );
+		$("#easeOutCubicDiv").animate({"left": easeAmt}, easeTime, "easeOutCubic");
+		$("#easeInQuartDiv").animate({"left": col2Pos}, 0, "" );
+		$("#easeInQuartDiv").animate({"left": easeAmt}, easeTime, "easeInQuart");
+		$("#easeOutQuartDiv").animate({"left": col3Pos}, 0, "" );
+		$("#easeOutQuartDiv").animate({"left": easeAmt}, easeTime, "easeOutQuart");
+		$("#easeInOutQuartDiv").animate({"left": col1Pos}, 0, "" );
+		$("#easeInOutQuartDiv").animate({"left": easeAmt}, easeTime, "easeInOutQuart");
+		$("#easeInQuintDiv").animate({"left": col2Pos}, 0, "" );
+		$("#easeInQuintDiv").animate({"left": easeAmt}, easeTime, "easeInQuint");
+		$("#easeOutQuintDiv").animate({"left": col3Pos}, 0, "" );
+		$("#easeOutQuintDiv").animate({"left": easeAmt}, easeTime, "easeOutQuint");
+		$("#easeInOutQuintDiv").animate({"left": col1Pos}, 0, "" );
+		$("#easeInOutQuintDiv").animate({"left": easeAmt}, easeTime, "easeInOutQuint");
+		$("#easeInExpoDiv").animate({"left": col2Pos}, 0, "" );
+		$("#easeInExpoDiv").animate({"left": easeAmt}, easeTime, "easeInExpo");
+		$("#easeOutExpoDiv").animate({"left": col3Pos}, 0, "" );
+		$("#easeOutExpoDiv").animate({"left": easeAmt}, easeTime, "easeOutExpo");
+		$("#easeInCircDiv").animate({"left": col1Pos}, 0, "" );
+		$("#easeInCircDiv").animate({"left": easeAmt}, easeTime, "easeInCirc");
+		$("#easeOutCircDiv").animate({"left": col2Pos}, 0, "" );
+		$("#easeOutCircDiv").animate({"left": easeAmt}, easeTime, "easeOutCirc");
+		$("#easeInOutCircDiv").animate({"left": col3Pos}, 0, "" );
+		$("#easeInOutCircDiv").animate({"left": easeAmt}, easeTime, "easeInOutCirc");
+		$("#easeInSineDiv").animate({"left": col1Pos}, 0, "" );
+		$("#easeInSineDiv").animate({"left": easeAmt}, easeTime, "easeInSine");
+		$("#easeOutSineDiv").animate({"left": col2Pos}, 0, "" );
+		$("#easeOutSineDiv").animate({"left": easeAmt}, easeTime, "easeOutSine");
+		$("#easeInOutSineDiv").animate({"left": col3Pos}, 0, "" );
+		$("#easeInOutSineDiv").animate({"left": easeAmt}, easeTime, "easeInOutSine");
+		$("#easeInBackDiv").animate({"left": col1Pos}, 0, "" );
+		$("#easeInBackDiv").animate({"left": easeAmt}, easeTime, "easeInBack");
+		$("#easeOutBackDiv").animate({"left": col2Pos}, 0, "" );
+		$("#easeOutBackDiv").animate({"left": easeAmt}, easeTime, "easeOutBack");
+		$("#easeInOutBackDiv").animate({"left": col3Pos}, 0, "" );
+		$("#easeInOutBackDiv").animate({"left": easeAmt}, easeTime, "easeInOutBack");
+		$("#easeInElasticDiv").animate({"left": col1Pos}, 0, "" );
+		$("#easeInElasticDiv").animate({"left": easeAmt}, easeTime, "easeInElastic");
+		$("#easeOutElasticDiv").animate({"left": col2Pos}, 0, "" );
+		$("#easeOutElasticDiv").animate({"left": easeAmt}, easeTime, "easeOutElastic");
+		$("#easeInOutElasticDiv").animate({"left": col3Pos}, 0, "" );
+		$("#easeInOutElasticDiv").animate({"left": easeAmt}, easeTime, "easeInOutElastic");
+		$("#easeInBounceDiv").animate({"left": col1Pos}, 0, "" );
+		$("#easeInBounceDiv").animate({"left": easeAmt}, easeTime, "easeInBounce");
+		$("#easeOutBounceDiv").animate({"left": col2Pos}, 0, "" );
+		$("#easeOutBounceDiv").animate({"left": easeAmt}, easeTime, "easeOutBounce");
+		$("#easeInOutBounceDiv").animate({"left": col3Pos}, 0, "" );
+		$("#easeInOutBounceDiv").animate({"left": easeAmt}, easeTime, "easeInOutBounce");
+	}
+	
+</script>
+<button id="easeAllButton">Ease All</button> 
+<script type="text/javascript">  
+	$("#easeAllButton").click(function(){
+		easeAll();
+	});
+</script>
+
+<table width="900" height="1000" border="1">
+	<tr>
+		<td colspan="3"> Linear (EaseNone)
+		<button id="easeNoneButton">&raquo;</button> 
+		<div class="col1" id="easeNoneDiv">
+		</div>	
+			
+		<script type="text/javascript">  				
+		$("#easeNoneButton").click(function(){
+		  $("#easeNoneDiv").animate({"left": col1Pos}, 0, "" );
+		  $("#easeNoneDiv").animate({"left": easeAmt}, easeTime, "linear");
+		});
+			
+		$("#easeNoneResetButton").click(function(){
+		 $("#easeNoneDiv").animate({"left": col1Pos}, 0, "" );
+		});
+		</script>
+		<br /><br /><br />
+		</td>
+	</tr>
+	<tr>
+		<td> EaseInQuad
+
+			<br />
+			<button id="easeInQuadButton">&raquo;</button> 
+			<div class="col1" id="easeInQuadDiv">
+			</div>	
+			
+			<script type="text/javascript">  				
+			$("#easeInQuadButton").click(function(){
+			  $("#easeInQuadDiv").animate({"left": col1Pos}, 0, "" );
+			  $("#easeInQuadDiv").animate({"left": easeAmt}, easeTime, "easeInQuad");
+			});
+			
+			$("#easeInQuadResetButton").click(function(){
+			 $("#easeInQuadDiv").animate({"left": col1Pos}, 0, "" );
+			});
+			</script>
+			<br /><br /><br />
+		</td>
+		<td> EaseOutQuad
+
+			<br />
+			<button id="easeOutQuadButton">&raquo;</button>
+			<div class="col2" id="easeOutQuadDiv">
+			</div>	
+
+			<script type="text/javascript">  
+			$("#easeOutQuadButton").click(function(){
+			  $("#easeOutQuadDiv").animate({"left": col2Pos}, 0, "" );
+			  $("#easeOutQuadDiv").animate({"left": easeAmt}, easeTime, "easeOutQuad");
+			});
+			</script>
+			<br /><br /><br />
+		</td>
+		<td > EaseInCubic
+
+			<br />
+			<button id="easeInCubicButton">&raquo;</button>
+			<div class="col3" id="easeInCubicDiv">
+			</div>	
+
+			<script type="text/javascript">  
+			$("#easeInCubicButton").click(function(){
+			  $("#easeInCubicDiv").animate({"left": col3Pos}, 0, "" );
+			  $("#easeInCubicDiv").animate({"left": easeAmt}, easeTime, "easeInCubic");
+			});
+			</script>
+			<br /><br /><br />
+		</td>	
+	</tr>
+	<tr>
+	<td> EaseOutCubic
+
+		<br />
+		<button id="easeOutCubicButton">&raquo;</button>
+		<div class="col1" id="easeOutCubicDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeOutCubicButton").click(function(){
+		  $("#easeOutCubicDiv").animate({"left": col1Pos}, 0, "" );
+		  $("#easeOutCubicDiv").animate({"left": easeAmt}, easeTime, "easeOutCubic");
+		});
+		</script>
+		<br /><br /><br />
+	</td>	
+	<td> EaseInQuart
+
+		<br />
+		<button id="easeInQuartButton">&raquo;</button>
+		<div class="col2" id="easeInQuartDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInQuartButton").click(function(){
+		  $("#easeInQuartDiv").animate({"left": col2Pos}, 0, "" );
+		  $("#easeInQuartDiv").animate({"left": easeAmt}, easeTime, "easeInQuart");
+		});
+		</script>
+		<br /><br /><br />
+	</td>	
+	<td> EaseOutQuart
+
+		<br />
+		<button id="easeOutQuartButton">&raquo;</button>
+		<div class="col3" id="easeOutQuartDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeOutQuartButton").click(function(){
+		  $("#easeOutQuartDiv").animate({"left": col3Pos}, 0, "" );
+		  $("#easeOutQuartDiv").animate({"left": easeAmt}, easeTime, "easeOutQuart");
+		});
+		</script>
+		<br /><br /><br />
+	  </td>	
+	</tr>
+	<tr>	
+	<td> EaseInOutQuart
+
+		<br />
+		<button id="easeInOutQuartButton">&raquo;</button>
+		<div class="col1" id="easeInOutQuartDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInOutQuartButton").click(function(){
+		  $("#easeInOutQuartDiv").animate({"left": col1Pos}, 0, "" );
+		  $("#easeInOutQuartDiv").animate({"left": easeAmt}, easeTime, "easeInOutQuart");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseInQuint
+
+		<br />
+		<button id="easeInQuintButton">&raquo;</button>
+		<div class="col2" id="easeInQuintDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInQuintButton").click(function(){
+		  $("#easeInQuintDiv").animate({"left": col2Pos}, 0, "" );
+		  $("#easeInQuintDiv").animate({"left": easeAmt}, easeTime, "easeInQuint");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseOutQuint
+
+		<br />
+		<button id="easeOutQuintButton">&raquo;</button>
+		<div class="col3" id="easeOutQuintDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeOutQuintButton").click(function(){
+		  $("#easeOutQuintDiv").animate({"left": col3Pos}, 0, "" );
+		  $("#easeOutQuintDiv").animate({"left": easeAmt}, easeTime, "easeOutQuint");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	</tr>
+	<tr>
+	<td> EaseInOutQuint
+
+		<br />
+		<button id="easeInOutQuintButton">&raquo;</button>
+		<div class="col1" id="easeInOutQuintDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInOutQuintButton").click(function(){
+		  $("#easeInOutQuintDiv").animate({"left": col1Pos}, 0, "" );
+		  $("#easeInOutQuintDiv").animate({"left": easeAmt}, easeTime, "easeInOutQuint");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseInExpo
+
+		<br />
+		<button id="easeInExpoButton">&raquo;</button>
+		<div class="col2" id="easeInExpoDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInExpoButton").click(function(){
+		  $("#easeInExpoDiv").animate({"left": col2Pos}, 0, "" );
+		  $("#easeInExpoDiv").animate({"left": easeAmt}, easeTime, "easeInExpo");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseOutExpo
+
+		<br />
+		<button id="easeOutExpoButton">&raquo;</button>
+		<div class="col3" id="easeOutExpoDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeOutExpoButton").click(function(){
+		  $("#easeOutExpoDiv").animate({"left": col3Pos}, 0, "" );
+		  $("#easeOutExpoDiv").animate({"left": easeAmt}, easeTime, "easeOutExpo");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	</tr>
+	<tr>
+	<td> EaseInCirc
+
+		<br />
+		<button id="easeInCircButton">&raquo;</button>
+		<div class="col1" id="easeInCircDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInCircButton").click(function(){
+		  $("#easeInCircDiv").animate({"left": col1Pos}, 0, "" );
+		  $("#easeInCircDiv").animate({"left": easeAmt}, easeTime, "easeInCirc");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseOutCirc
+
+		<br />
+		<button id="easeOutCircButton">&raquo;</button>
+		<div class="col2" id="easeOutCircDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeOutCircButton").click(function(){
+		  $("#easeOutCircDiv").animate({"left": col2Pos}, 0, "" );
+		  $("#easeOutCircDiv").animate({"left": easeAmt}, easeTime, "easeOutCirc");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseInOutCirc
+
+		<br />
+		<button id="easeInOutCircButton">&raquo;</button>
+		<div class="col3" id="easeInOutCircDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInOutCircButton").click(function(){
+		  $("#easeInOutCircDiv").animate({"left": col3Pos}, 0, "" );
+		  $("#easeInOutCircDiv").animate({"left": easeAmt}, easeTime, "easeInOutCirc");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	</tr>
+	
+	<tr>
+	<td> EaseInSine
+
+		<br />
+		<button id="easeInSineButton">&raquo;</button>
+		<div class="col1" id="easeInSineDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInSineButton").click(function(){
+		  $("#easeInSineDiv").animate({"left": col1Pos}, 0, "" );
+		  $("#easeInSineDiv").animate({"left": easeAmt}, easeTime, "easeInSine");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseOutSine
+
+		<br />
+		<button id="easeOutSineButton">&raquo;</button>
+		<div class="col2" id="easeOutSineDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeOutSineButton").click(function(){
+		  $("#easeOutSineDiv").animate({"left": col2Pos}, 0, "" );
+		  $("#easeOutSineDiv").animate({"left": easeAmt}, easeTime, "easeOutSine");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseInOutSine
+
+		<br />
+		<button id="easeInOutSineButton">&raquo;</button>
+		<div class="col3" id="easeInOutSineDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInOutSineButton").click(function(){
+		  $("#easeInOutSineDiv").animate({"left": col3Pos}, 0, "" );
+		  $("#easeInOutSineDiv").animate({"left": easeAmt}, easeTime, "easeInOutSine");
+		});
+		</script>
+		<br /><br /><br />
+	</td>		
+	</tr>
+	
+	<tr>
+	<td> EaseInBack
+
+		<br />
+		<button id="easeInBackButton">&raquo;</button>
+		<div class="col1" id="easeInBackDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInBackButton").click(function(){
+		  $("#easeInBackDiv").animate({"left": col1Pos}, 0, "" );
+		  $("#easeInBackDiv").animate({"left": easeAmt}, easeTime, "easeInBack");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseOutBack
+
+		<br />
+		<button id="easeOutBackButton">&raquo;</button>
+		<div class="col2" id="easeOutBackDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeOutBackButton").click(function(){
+		  $("#easeOutBackDiv").animate({"left": col2Pos}, 0, "" );
+		  $("#easeOutBackDiv").animate({"left": easeAmt}, easeTime, "easeOutBack");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseInOutBack
+
+		<br />
+		<button id="easeInOutBackButton">&raquo;</button>
+		<div class="col3" id="easeInOutBackDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInOutBackButton").click(function(){
+		  $("#easeInOutBackDiv").animate({"left": col3Pos}, 0, "" );
+		  $("#easeInOutBackDiv").animate({"left": easeAmt}, easeTime, "easeInOutBack");
+		});
+		</script>
+		<br /><br /><br />
+	</td>		
+	</tr>
+	
+	<tr>	
+	<td> EaseInElastic
+
+		<br />
+		<button id="easeInElasticButton">&raquo;</button>
+		<div class="col1" id="easeInElasticDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInElasticButton").click(function(){
+		  $("#easeInElasticDiv").animate({"left": col1Pos}, 0, "" );
+		  $("#easeInElasticDiv").animate({"left": easeAmt}, easeTime, "easeInElastic");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseOutElastic
+
+		<br />
+		<button id="easeOutElasticButton">&raquo;</button>
+		<div class="col2" id="easeOutElasticDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeOutElasticButton").click(function(){
+		  $("#easeOutElasticDiv").animate({"left": col2Pos}, 0, "" );
+		  $("#easeOutElasticDiv").animate({"left": easeAmt}, easeTime, "easeOutElastic");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseInOutElastic
+
+		<br />
+		<button id="easeInOutElasticButton">&raquo;</button>
+		<div class="col3" id="easeInOutElasticDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInOutElasticButton").click(function(){
+		  $("#easeInOutElasticDiv").animate({"left": col3Pos}, 0, "" );
+		  $("#easeInOutElasticDiv").animate({"left": easeAmt}, easeTime, "easeInOutElastic");
+		});
+		</script>
+		<br /><br /><br />
+	</td>		
+	</tr>
+	
+	<tr>
+	<td> EaseInBounce
+
+		<br />
+		<button id="easeInBounceButton">&raquo;</button>
+		<div class="col1" id="easeInBounceDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInBounceButton").click(function(){
+		  $("#easeInBounceDiv").animate({"left": col1Pos}, 0, "" );
+		  $("#easeInBounceDiv").animate({"left": easeAmt}, easeTime, "easeInBounce");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseOutBounce
+
+		<br />
+		<button id="easeOutBounceButton">&raquo;</button>
+		<div class="col2" id="easeOutBounceDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeOutBounceButton").click(function(){
+		  $("#easeOutBounceDiv").animate({"left": col2Pos}, 0, "" );
+		  $("#easeOutBounceDiv").animate({"left": easeAmt}, easeTime, "easeOutBounce");
+		});
+		</script>
+		<br /><br /><br />
+	</td>
+	<td> EaseInOutBounce
+
+		<br />
+		<button id="easeInOutBounceButton">&raquo;</button>
+		<div class="col3" id="easeInOutBounceDiv">
+		</div>	
+
+		<script type="text/javascript">  
+		$("#easeInOutBounceButton").click(function(){
+		  $("#easeInOutBounceDiv").animate({"left": col3Pos}, 0, "" );
+		  $("#easeInOutBounceDiv").animate({"left": easeAmt}, easeTime, "easeInOutBounce");
+		});
+		</script>
+		<br /><br /><br />
+	</td>		
+	</tr>
+
+</table>
+\endhtmlonly
+
+<br />
+
+Additionally, [Chris Mckenzie] (http://chrismckenzie.com/) has contributed a list of easing equations:
+
+<ul>
+	<li> EaseInAtan
+	<li> EaseOutAtan
+	<li> EaseInOutAtan
+</ul>
+
+<br />
+
+\section callbacks Callbacks
+
+Within Timeline, callbacks can be trigged during certain points within your animation. Say for example you want to run a function at the start, during each update, and/or completion of your animation.
+
+<br />
+Timeline needs your callback function be one of the following formats:
+
+<ul>
+ <li> 1.) Free Function. This means your function must not be a member of a class or struct. Below is an example of Timeline using a free function.
+ <li> 2.) Member methods. These are normal functions attached to an object. However, they should adopt the following signature to be supported.
+ <li> 3.) Functors. Functors are a class with one or more private members to store the state and with an overloaded operator () to execute the function. [http://www.newty.de](http://www.newty.de/fpt/functor.html) 
+ <li> 4.) Lambdas. Starting with C++11, you can use Lambda expressions. Lambda expressions essentially is a function that has a body, but does not have a name. Lambda expressions also maintain state so it can access variables that are available to the enclosing scope. [Lambda Expressions in C++ - MSDN](http://msdn.microsoft.com/en-us/library/dd293608.aspx).
+</ul>
+
+Here's an example application which uses all four types of callbacks.
+
+\code
+#include <boost/bind.hpp>
+
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+struct Say {
+	Say( std::string message ) : mMessage( message ) {}
+	void operator()(){ app::console() << mMessage << std::endl; }
+	
+	std::string mMessage;
+};
+
+class CustomCallbackApp : public AppBasic {
+public:
+    void setup();
+	void draw();
+    void memberFunction(const int param);
+    
+    Anim<Vec2f> mPos;
+};
+
+void freeFunction()
+{
+    // This is your free function, it can be
+    // any name just not a member of your class
+    
+    console() << "This is executed at the start of the first animation" << std::endl;
+}
+
+void CustomCallbackApp::memberFunction(const int param)
+{
+	// Just placed here to show the difference
+    console() << "This is executed at the end of the second animation - " << param << std::endl;
+}
+
+void CustomCallbackApp::setup()
+{
+	//initialize mPos
+	mPos = Vec2f( 0.0f, 0.0f );
+
+	//start animation when program begins
+	timeline().apply( &mPos, Vec2f( 200.0f, 200.0f ), 2.0f, EaseInOutCubic() )
+		.startFn( freeFunction );
+	
+	timeline().appendTo( &mPos, Vec2f( 250.0f, 250.0f ), 2.0f, EaseInOutCubic() )
+		.finishFn(boost::bind(&CustomCallbackApp::memberFunction, this, 42))
+		.startFn([]() { app::console() << "C++11 lambda function example" << std::endl; })
+		.updateFn(Say( "Update using functor" ));
+}
+
+void CustomCallbackApp::draw()
+{
+	gl::clear();
+	
+    gl::color( Color(1.0, 0.0, 0.0) );
+    gl::drawSolidCircle( mPos, 10 );
+}
+
+CINDER_APP_BASIC( CustomCallbackApp, RendererGl )
+
+\endcode
+
+<br />
+
+\section cues Cues
+
+Using Timeline you can set up \ref cinder::Cue "Cues." These can help trigger certain events at specified times throughout your animation. For example, here is a Functor example that fires in 5 seconds after the animation has started.
+
+\code
+
+struct Say { // Simple functor to print stuff to the console
+  Say( std::string message ) : mMessage( message ) {}
+  void operator()(){ app::console() << mMessage << std::endl; }
+
+  std::string mMessage;
+};
+
+timeline().add( Say( "Hi!" ), timeline().getCurrentTime() + 5 );
+
+\endcode
+
+<br />
+...or if you would like to use the C++11 lambda functions
+
+\code
+
+timeline().add( []{ app::console() << "Howdy"; }, timeline().getCurrentTime() + 5 );
+
+\endcode
+
+One thing that is special about adding Cues to the Timeline is that the second parameter, which specifies timing, is not relative to the timeline's currently set time. So, here we're using the \ref cinder::Timeline::getCurrentTime "Timeline's getCurrentTime() method" to offset from. 
+
+\section looping Looping
+
+Using Timeline you can create loops on a given animation. These can be standard loops or loops based on a \ref cinder::Cue "Cue."
+
+<br />
+
+\section standardLooping Standard Looping
+
+See below for a quick example creating an animation with standard looping using Timeline:
+
+\code
+#include "cinder/app/AppBasic.h"
+#include "cinder/Timeline.h"
+#include "cinder/gl/gl.h"
+
+using namespace ci;
+using namespace ci::app;
+using namespace std;
+
+class LoopingExample : public AppBasic {
+public:
+    void setup();
+    void keyDown( KeyEvent event );
+    void draw();
+	
+    Anim<Vec2f> mAnim;
+    TimelineRef mTimeline;
+};
+
+void LoopingExample::setup()
+{
+    mTimeline = timeline().create();
+    timeline().add( mTimeline );
+    mTimeline->setLoop( true );
+}
+
+void LoopingExample::keyDown( KeyEvent event )
+{
+	switch(event.getCode()){
+		case KeyEvent::KEY_a:
+			mTimeline->apply( &mAnim, Vec2f( event.getPos() ), 4.50f,  EaseOutCubic() );
+			break;
+			
+		case KeyEvent::KEY_s:
+			mTimeline->setLoop(false);
+			mTimeline->apply( &mAnim, Vec2f( event.getPos() ), 4.50f,  EaseOutCubic() ).loop();
+			break;
+	}
+}
+
+void LoopingExample::draw()
+{
+    // clear out the window with black
+    gl::clear( Color( 0, 0, 0 ) );
+	
+    gl::color( Color(1.0, 0.0, 0.0) );
+    gl::drawSolidCircle( mAnim, 10 );
+}
+
+CINDER_APP_BASIC( LoopingExample, RendererGl )
+
+\endcode
+
+<br />
+
+\section loopingWithCues Looping with Cues
+
+In Timeline you can also create loops with cues. In this example the Say functor will be ran 5 seconds after the Timeline begins, after that, every 1.0 second it will run again.
+
+\code
+void LoopingExample::setup()
+{
+	CueRef cue = timeline().add( Say( "Hi!" ), timeline().getCurrentTime() + 5 );
+	cue->setDuration( 1.0f );
+	cue->setLoop( );
+}
+\endcode
+
+<br />
+
+This covers the basic use case scenarios for animation in Cinder using the Timeline. There are more interesting cases in the \ref guide_timeline_intermediate "next section: Intermediate Usage"
+*/

@@ -15,7 +15,7 @@
 #if !defined ANT_TW_MGR_INCLUDED
 #define ANT_TW_MGR_INCLUDED
 
-#include <AntTweakBar.h>
+#include "AntTweakBar.h"
 #define ANT_CALL TW_CALL
 
 #include "TwColors.h"
