@@ -175,6 +175,7 @@ class Tween : public TweenBase {
 		Options&	autoRemove( bool remove = true ) { mTweenRef->setAutoRemove( remove ); return *this; }
 		Options&	loop( bool doLoop = true ) { mTweenRef->setLoop( doLoop ); return *this; }
 		Options&	pingPong( bool doPingPong = true ) { mTweenRef->setPingPong( doPingPong ); return *this; }
+		Options&	infinite( bool doInfinite = true ) { mTweenRef->setInfinite( doInfinite ); return *this; }
 		Options&	timelineEnd( float offset = 0 ) { TweenBase::Options::timelineEnd( *mTweenRef, offset ); return *this; }
 		template<typename Y>
 		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }	
