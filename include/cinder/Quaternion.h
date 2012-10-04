@@ -301,6 +301,7 @@ public:
 
 	void set( const Vec3<T> &axis, T radians )
 	{
+		radians = ci::math<T>::wrap(radians, 0, 2 * T(M_PI));
 		w = math<T>::cos( radians / 2 );
 		v = axis.normalized() * math<T>::sin( radians / 2 );
 	}

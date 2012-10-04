@@ -73,6 +73,10 @@ struct math
 	static T	min(T x, T y)				{return ( x < y ) ? x : y; }
 	static T	max(T x, T y)				{return ( x > y ) ? x : y; }
 	static T	clamp(T x, T min=0, T max=1)	{return ( x < min ) ? min : ( ( x > max ) ? max : x );}
+
+	//! similar to Matlab's mod - result is always positive: mod(-3, 4) = 1
+	static T	mod (T x, T y)	{if (0 == y) return x; return double(x) - double(y) * ::floor(double(x)/double(y));}
+	static T	wrap (T x, T min=0, T max=1)	{return mod(x - min, max - min) + min;}
 };
 
 
@@ -113,6 +117,10 @@ struct math<float>
 	static float min(float x, float y)					{return ( x < y ) ? x : y; }
 	static float max(float x, float y)					{return ( x > y ) ? x : y; }
 	static float clamp(float x, float min=0, float max=1)	{return ( x < min ) ? min : ( ( x > max ) ? max : x );}
+	
+	//! similar to Matlab's mod - result is always positive: mod(-3, 4) = 1
+	static float mod (float x, float y)	{if (0.0f == y) return x; return x - y * ::floorf(x/y);}
+	static float wrap (float x, float min=0, float max=1)	{return mod(x - min, max - min) + min;}
 };
 
 #ifndef M_PI
