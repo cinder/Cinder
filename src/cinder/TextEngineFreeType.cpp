@@ -67,37 +67,45 @@ size_t linebreak(FontRef font, const Font::Glyph* text, const Font::Glyph* stop,
 
 vector<pair<uint16_t,Vec2f> > measureGlyphsSize( const TextBox& textbox, Vec2f* size )
 {
-    FontRef font = textbox.getFont();
-    FontFreeTypeRef ftFont = std::dynamic_pointer_cast<FontFreeType>(font);
     vector<pair<uint16_t,Vec2f> > placements;
-    vector<Font::Glyph> glyphs = font->getGlyphs(textbox.getText());
+    FontRef font                 = textbox.getFont();
+    FontFreeTypeRef ftFont       = std::dynamic_pointer_cast<FontFreeType>( font );
+    vector<Font::Glyph> glyphs   = font->getGlyphs( textbox.getText() );
     TextBox::Alignment alignment = textbox.getAlignment();
-    Vec2f textboxSize = textbox.getSize();
+    Vec2f textboxSize            = textbox.getSize();
 
     *size = Vec2f(0, 0);
 
-    if (!glyphs.empty()) {
+    if ( !glyphs.empty() ) {
         Font::Glyph* start = &glyphs[0];
-        Font::Glyph* end = start + glyphs.size();
+        Font::Glyph* end   = start + glyphs.size();
         int lineStartIndex = 0;
 
         Vec2f pen(0, font->getAscent());
 
-        while (start < end) {
-           Font::Glyph prevIndex = 0;
+        while ( start < end ) {
+           Font::Glyph prevGlyph = 0;
 
-           int lineLength = textbox.getSize().x == TextBox::GROW ? glyphs.size() : linebreak(font, start, end, textbox.getSize().x);
+           int lineLength = textboxSize.x == TextBox::GROW ? glyphs.size() : linebreak( font, start, end, textboxSize.x );
            Font::Glyph* stop = start + lineLength;
 
-           for (Font::Glyph* it = start; it != stop; ++it) {
-              // if (prevIndex) {
-              //    float kerning = font->getKerning(*it, prevIndex);
+           for ( Font::Glyph* it = start; it <= stop; ++it ) {
+              // if (prevGlyph) {
+              //    float kerning = font->getKerning(*it, prevGlyph);
               //    pen.x += kerning;
               // }
 
-              placements.push_back(std::make_pair(*it, pen));
-              pen += ftFont->getAdvance(*it);
-              prevIndex = *it;
+              if (it == stop) {
+                  if (prevGlyph) {
+                      FontFreeType::GlyphMetrics metrics = ftFont->getGlyphMetrics(prevGlyph);
+                      pen.x += math<float>::max( 0, metrics.mBounds.getWidth() - metrics.mAdvance.x );
+                  }
+                  break;
+              }
+
+              placements.push_back( std::make_pair( *it, pen ) );
+              pen += ftFont->getAdvance( *it );
+              prevGlyph = *it;
            }
 
            //  Adjust for text alignment
@@ -116,8 +124,7 @@ vector<pair<uint16_t,Vec2f> > measureGlyphsSize( const TextBox& textbox, Vec2f* 
                }
            }
 
-           if (pen.x > size->x)
-              size->x = pen.x;
+           size->x = math<float>::max( pen.x, size->x );
            size->y = pen.y;
 
            pen.x = 0;
@@ -194,11 +201,11 @@ const vector<std::string>& TextEngineFreeType::getFontNames( bool forceRefresh )
 FontRef TextEngineFreeType::getDefaultFont()
 {
 #if defined( CINDER_ANDROID )
-		if( ! mDefaultFont )
-			mDefaultFont = createFont(loadFile("/system/fonts/DroidSans.ttf"), 12);
-		return mDefaultFont;
+	if( ! mDefaultFont )
+		mDefaultFont = createFont(loadFile("/system/fonts/DroidSans.ttf"), 12);
+	return mDefaultFont;
 #else
-        return FontRef();
+	return FontRef();
 #endif
 }
 
