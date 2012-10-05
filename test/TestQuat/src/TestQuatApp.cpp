@@ -24,6 +24,8 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 
+#include <boost/format.hpp>
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -57,20 +59,23 @@ void TestQuatApp::prepareSettings(Settings *settings)
 
 void TestQuatApp::setup()
 {
-	mRadians = 0.0f;
+	mRadians = toRadians( -106.5f );
 	mQuaternion.set( Vec3f::zAxis(), mRadians );
 }
 
 void TestQuatApp::update()
 {
+	// pendulum-style
+	float step = 0.02f * math<float>::sin( getElapsedFrames() * 0.004f );
+
 	// wait until both the yellow (float) and red (quaternion) circles
 	// have gone round once, then notice how the red one simply stops,
 	// unless the new code is used.
 
-	mRadians += 0.02f;
+	mRadians += step;
 
 	// the following line is where things don't work as expected:
-	mQuaternion.set( Vec3f::zAxis(), mQuaternion.getAngle() + 0.02f );
+	mQuaternion.set( Vec3f::zAxis(), mQuaternion.getAngle() + step );
 }
 
 void TestQuatApp::draw()
@@ -80,6 +85,14 @@ void TestQuatApp::draw()
 	gl::color( Color(0.5f, 0.5f, 0.5f) );
 	gl::drawStrokedCircle( 0.5f * getWindowSize(), 100.0f, 120 );
 	gl::drawStrokedCircle( 0.5f * getWindowSize(), 120.0f, 120 );
+
+	gl::enableAlphaBlending();
+	gl::drawStringCentered( 
+		(boost::format("%.0f degrees") % toDegrees(mRadians)).str(), 
+		Vec2f(0.5f * getWindowWidth(), 0.5f * getWindowHeight() + 140.0f), 
+		Color(0.5f, 0.5f, 0.5f), 
+		Font("Verdana", 24.0f) );
+	gl::disableAlphaBlending();
 
 	gl::color( Color(1, 0.75f, 0) );
 	float x = 0.5f * getWindowWidth() + 100.0f * math<float>::sin(mRadians);
@@ -114,7 +127,6 @@ void TestQuatApp::mouseUp( MouseEvent event )
 
 void TestQuatApp::keyDown( KeyEvent event )
 {
-	setup();
 }
 
 void TestQuatApp::keyUp( KeyEvent event )
