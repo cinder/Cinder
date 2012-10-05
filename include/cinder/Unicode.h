@@ -23,5 +23,5 @@ void		findBreaksUtf16( const std::wstring &line, std::vector<size_t> *must, std:
 //! Returns TRUE if \a ch is considered whitespace
 bool		isWhitespaceUtf8( const char ch );
 //! Returns TRUE if \a ch is considered whitespace
-bool		isWhitespaceUtf16( const short ch );
+bool		isWhitespaceUtf16( const wchar_t ch );
 }
