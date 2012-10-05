@@ -68,14 +68,10 @@ void TestQuatApp::update()
 	// pendulum-style
 	float step = 0.02f * math<float>::sin( getElapsedFrames() * 0.004f );
 
-	// wait until both the yellow (float) and red (quaternion) circles
-	// have gone round once, then notice how the red one simply stops,
-	// unless the new code is used.
-
 	mRadians += step;
 
 	// the following line is where things don't work as expected:
-	mQuaternion.set( Vec3f::zAxis(), mQuaternion.getAngle() + step );
+	mQuaternion.set( Vec3f::zAxis(), mRadians );
 }
 
 void TestQuatApp::draw()
