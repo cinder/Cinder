@@ -435,6 +435,21 @@
     <ClCompile Include="..\src\cinder\Json.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\BinPack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\TextEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\TextEngineFreeType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\TextEngineGdiPlus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TextureFontAtlas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\cinder\svg\Svg.cpp">
       <Filter>Source Files\svg</Filter>
     </ClCompile>
@@ -916,6 +931,18 @@
     </ClInclude>
     <ClInclude Include="..\src\jsoncpp\json_batchallocator.h">
       <Filter>Source Files\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\TextEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\TextureFontAtlas.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\TextEngineFreeType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\TextEngineGdiPlus.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\svg\Svg.h">
       <Filter>Header Files\svg</Filter>

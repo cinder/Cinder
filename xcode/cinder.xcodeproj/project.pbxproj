@@ -652,6 +652,17 @@
 		277C2CF11366632B00178A29 /* Matrix33.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CED1366632B00178A29 /* Matrix33.h */; };
 		277C2CF21366632B00178A29 /* Matrix44.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEE1366632B00178A29 /* Matrix44.h */; };
 		277C2CF31366632B00178A29 /* MatrixAlgo.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEF1366632B00178A29 /* MatrixAlgo.h */; };
+		378727C2153F1B330013945D /* BinPack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 378727BE153F1B330013945D /* BinPack.cpp */; };
+		378727C3153F1B330013945D /* TextEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 378727BF153F1B330013945D /* TextEngine.cpp */; };
+		378727C4153F1B330013945D /* TextEngineCoreText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 378727C0153F1B330013945D /* TextEngineCoreText.cpp */; };
+		378727C5153F1B330013945D /* TextEngineFreeType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 378727C1153F1B330013945D /* TextEngineFreeType.cpp */; };
+		378727C7153F1B4C0013945D /* TextureFontAtlas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 378727C6153F1B4C0013945D /* TextureFontAtlas.cpp */; };
+		378727C9153F1BA60013945D /* BinPack.h in Headers */ = {isa = PBXBuildFile; fileRef = 378727C8153F1BA60013945D /* BinPack.h */; };
+		378727CE153F1BB70013945D /* TextEngine.h in Headers */ = {isa = PBXBuildFile; fileRef = 378727CA153F1BB70013945D /* TextEngine.h */; };
+		378727CF153F1BB70013945D /* TextEngineCoreText.h in Headers */ = {isa = PBXBuildFile; fileRef = 378727CB153F1BB70013945D /* TextEngineCoreText.h */; };
+		378727D0153F1BB70013945D /* TextEngineFreeType.h in Headers */ = {isa = PBXBuildFile; fileRef = 378727CC153F1BB70013945D /* TextEngineFreeType.h */; };
+		378727D1153F1BB70013945D /* TextEngineGdiPlus.h in Headers */ = {isa = PBXBuildFile; fileRef = 378727CD153F1BB70013945D /* TextEngineGdiPlus.h */; };
+		378727D3153F1BE70013945D /* TextureFontAtlas.h in Headers */ = {isa = PBXBuildFile; fileRef = 378727D2153F1BE70013945D /* TextureFontAtlas.h */; };
 		434708D91267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DA1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DB1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
@@ -1013,6 +1024,17 @@
 		277C2CEE1366632B00178A29 /* Matrix44.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Matrix44.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		277C2CEF1366632B00178A29 /* MatrixAlgo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatrixAlgo.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
+		378727BE153F1B330013945D /* BinPack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BinPack.cpp; sourceTree = "<group>"; };
+		378727BF153F1B330013945D /* TextEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextEngine.cpp; sourceTree = "<group>"; };
+		378727C0153F1B330013945D /* TextEngineCoreText.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = TextEngineCoreText.cpp; sourceTree = "<group>"; };
+		378727C1153F1B330013945D /* TextEngineFreeType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextEngineFreeType.cpp; sourceTree = "<group>"; };
+		378727C6153F1B4C0013945D /* TextureFontAtlas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFontAtlas.cpp; path = gl/TextureFontAtlas.cpp; sourceTree = "<group>"; };
+		378727C8153F1BA60013945D /* BinPack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinPack.h; sourceTree = "<group>"; };
+		378727CA153F1BB70013945D /* TextEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextEngine.h; sourceTree = "<group>"; };
+		378727CB153F1BB70013945D /* TextEngineCoreText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextEngineCoreText.h; sourceTree = "<group>"; };
+		378727CC153F1BB70013945D /* TextEngineFreeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextEngineFreeType.h; sourceTree = "<group>"; };
+		378727CD153F1BB70013945D /* TextEngineGdiPlus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextEngineGdiPlus.h; sourceTree = "<group>"; };
+		378727D2153F1BE70013945D /* TextureFontAtlas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureFontAtlas.h; path = gl/TextureFontAtlas.h; sourceTree = "<group>"; };
 		434708D81267EE4300AA7349 /* Blend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blend.cpp; path = ip/Blend.cpp; sourceTree = "<group>"; };
 		4354C47B1357BBED00120EE3 /* TextureFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextureFont.h; path = gl/TextureFont.h; sourceTree = "<group>"; };
 		4354C47F1357BC1100120EE3 /* TextureFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFont.cpp; path = gl/TextureFont.cpp; sourceTree = "<group>"; };
@@ -1344,6 +1366,7 @@
 				008876550F957E7300FD55C5 /* Arcball.h */,
 				00887AC00F9C279700FD55C5 /* MayaCamUI.h */,
 				00F3BD1F0EBF89B700382AC1 /* Utilities.h */,
+				378727C8153F1BA60013945D /* BinPack.h */,
 				003FAAA21290CCB1002D6860 /* Clipboard.h */,
 				007438DE0EA7975A005DD3E6 /* Capture.h */,
 				C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */,
@@ -1395,6 +1418,10 @@
 				0071BD040FB9F4AD0092E7D6 /* Display.h */,
 				00C071B20FF16261004801EA /* Font.h */,
 				000529000FFBE14900F19492 /* Text.h */,
+				378727CA153F1BB70013945D /* TextEngine.h */,
+				378727CB153F1BB70013945D /* TextEngineCoreText.h */,
+				378727CC153F1BB70013945D /* TextEngineFreeType.h */,
+				378727CD153F1BB70013945D /* TextEngineGdiPlus.h */,
 				0034C310151A5752003F2E30 /* Unicode.h */,
 				001E3562115D5F14000C228C /* Xml.h */,
 				43F78EF51516DAE200EB63B5 /* Json.h */,
@@ -1426,6 +1453,7 @@
 				00C152760EDB92C900549EF3 /* cairo */,
 				00C938F90ECCB8A2000238B1 /* qtime */,
 				00CE73960E92DBEB0059E09B /* gl */,
+				378727BE153F1B330013945D /* BinPack.cpp */,
 				0032FD2A10BB472E00C63A9D /* Exception.cpp */,
 				007B09730E9559960052257E /* Rand.cpp */,
 				008CE8410E94679D00644A05 /* Area.cpp */,
@@ -1463,6 +1491,9 @@
 				0071BD080FB9FA2C0092E7D6 /* Display.cpp */,
 				00C071AF0FF16244004801EA /* Font.cpp */,
 				0005291F0FFBF4C200F19492 /* Text.cpp */,
+				378727BF153F1B330013945D /* TextEngine.cpp */,
+				378727C0153F1B330013945D /* TextEngineCoreText.cpp */,
+				378727C1153F1B330013945D /* TextEngineFreeType.cpp */,
 				0034C317151A5B7F003F2E30 /* Unicode.cpp */,
 				001E355E115D5EFA000C228C /* Xml.cpp */,
 				43F78EF11516DAB700EB63B5 /* Json.cpp */,
@@ -1565,6 +1596,7 @@
 				00C14F9A0ED51A3B00549EF3 /* Fbo.h */,
 				008ACC5A0FACCB1600CAAF4D /* Vbo.h */,
 				4354C47B1357BBED00120EE3 /* TextureFont.h */,
+				378727D2153F1BE70013945D /* TextureFontAtlas.h */,
 				00C151E40ED9C02F00549EF3 /* DisplayList.h */,
 				00C1500E0ED670DC00549EF3 /* Material.h */,
 				00C1503E0ED8C5E600549EF3 /* Light.h */,
@@ -1583,6 +1615,7 @@
 				00C14F980ED51A2700549EF3 /* Fbo.cpp */,
 				008ACC5E0FACCB2200CAAF4D /* Vbo.cpp */,
 				4354C47F1357BC1100120EE3 /* TextureFont.cpp */,
+				378727C6153F1B4C0013945D /* TextureFontAtlas.cpp */,
 				00C150100ED6710500549EF3 /* Material.cpp */,
 				00C151DD0ED9BDF500549EF3 /* DisplayList.cpp */,
 				00FCDC1B10D434AC006140C7 /* TileRender.cpp */,
@@ -2135,6 +2168,12 @@
 				0034C32D151A5B9F003F2E30 /* linebreakdef.h in Headers */,
 				005B02FB152CD16E00F2C237 /* json_batchallocator.h in Headers */,
 				005B0301152CD16E00F2C237 /* json_tool.h in Headers */,
+				378727C9153F1BA60013945D /* BinPack.h in Headers */,
+				378727CE153F1BB70013945D /* TextEngine.h in Headers */,
+				378727CF153F1BB70013945D /* TextEngineCoreText.h in Headers */,
+				378727D0153F1BB70013945D /* TextEngineFreeType.h in Headers */,
+				378727D1153F1BB70013945D /* TextEngineGdiPlus.h in Headers */,
+				378727D3153F1BE70013945D /* TextureFontAtlas.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2546,6 +2585,11 @@
 				005B02FE152CD16E00F2C237 /* json_reader.cpp in Sources */,
 				005B0304152CD16E00F2C237 /* json_value.cpp in Sources */,
 				005B0307152CD16E00F2C237 /* json_writer.cpp in Sources */,
+				378727C2153F1B330013945D /* BinPack.cpp in Sources */,
+				378727C3153F1B330013945D /* TextEngine.cpp in Sources */,
+				378727C4153F1B330013945D /* TextEngineCoreText.cpp in Sources */,
+				378727C5153F1B330013945D /* TextEngineFreeType.cpp in Sources */,
+				378727C7153F1B4C0013945D /* TextureFontAtlas.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2700,6 +2744,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					../boost,
+					../include/macosx/png,
+					../include/macosx/cairo,
+					../include/jsoncpp,
+					../include/freetype,
+					"../include/utf8-cpp",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = YES;
@@ -2712,6 +2764,7 @@
 					../lib/macosx/libpng14.a,
 					../lib/macosx/libcairo.a,
 					../lib/macosx/libz.a,
+					../lib/macosx/libfreetype.a,
 					"../lib/ios-sim/libboost_regex.a",
 				);
 				PRODUCT_NAME = cinder_d;
@@ -2736,6 +2789,14 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					../boost,
+					../include/macosx/png,
+					../include/macosx/cairo,
+					../include/jsoncpp,
+					../include/freetype,
+					"../include/utf8-cpp",
+				);
 				INSTALL_PATH = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = YES;
@@ -2749,6 +2810,7 @@
 					../lib/macosx/libpng14.a,
 					../lib/macosx/libcairo.a,
 					../lib/macosx/libz.a,
+					../lib/macosx/libfreetype.a,
 					"../lib/ios-sim/libboost_regex.a",
 				);
 				PRODUCT_NAME = cinder;

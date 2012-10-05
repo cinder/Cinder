@@ -59,7 +59,7 @@ void TextInputTweenApp::setup()
 	gl::enableAlphaBlending();
 	
 	// font
-	Font customFont( Font( loadResource( RES_CUSTOM_FONT ), 100 ) );
+	FontRef customFont = Font::create( loadResource( RES_CUSTOM_FONT ), 100 );
 	gl::TextureFont::Format f;
 	f.enableMipmapping( true );
 	mTextureFont = gl::TextureFont::create( customFont, f );

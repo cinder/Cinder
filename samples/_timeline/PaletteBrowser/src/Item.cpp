@@ -11,8 +11,8 @@
 using namespace ci;
 using namespace std;
 
-Font Item::sSmallFont;
-Font Item::sBigFont;
+FontRef Item::sSmallFont;
+FontRef Item::sBigFont;
 
 Item::Item( int index, Vec2f pos, const string &title, const string &desc, Surface palette )
 	: mIndex(index), mTitle( title ), mDesc( desc ), mPalette(palette)
@@ -266,7 +266,7 @@ bool Item::isBelowTextThreshold() const
 	return false;
 }
 
-void Item::setFonts( const Font &smallFont, const Font &bigFont )
+void Item::setFonts( const FontRef smallFont, const FontRef bigFont )
 {
 	sSmallFont	= smallFont;
 	sBigFont	= bigFont;

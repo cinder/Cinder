@@ -41,7 +41,7 @@ void CaptureApp::setup()
 
 				// render the name as a texture
 				TextLayout layout;
-				layout.setFont( Font( "Arial", 24 ) );
+				layout.setFont( Font::create( "Arial", 24 ) );
 				layout.setColor( Color( 1, 1, 1 ) );
 				layout.addLine( device->getName() );
 				mNameTextures.push_back( gl::Texture( layout.render( true ) ) );

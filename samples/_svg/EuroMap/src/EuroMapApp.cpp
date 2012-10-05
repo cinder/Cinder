@@ -47,7 +47,7 @@ void EuroMapApp::setup()
 	mMapDoc = svg::Doc::create( loadAsset( "Europe.svg" ) );
 	mMapTex = renderSvgToTexture( mMapDoc, getWindowSize() );
 	
-	mFont = gl::TextureFont::create( Font( loadAsset( "Dosis-Medium.ttf" ), 36 ) );
+	mFont = gl::TextureFont::create( Font::create( loadAsset( "Dosis-Medium.ttf" ), 36 ) );
 	
 	mCurrentCountry = 0;
 }

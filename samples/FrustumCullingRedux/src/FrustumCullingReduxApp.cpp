@@ -383,7 +383,7 @@ void FrustumCullingReduxApp::toggleVerticalSync()
 void FrustumCullingReduxApp::renderHelpToTexture()
 {
 	TextLayout layout;
-	layout.setFont( Font("Arial", 18) );
+	layout.setFont( Font::create("Arial", 18) );
 	layout.setColor( ColorA(1.0f, 1.0f, 1.0f, 1.0f) );
 	layout.setLeadingOffset(3.0f);
 

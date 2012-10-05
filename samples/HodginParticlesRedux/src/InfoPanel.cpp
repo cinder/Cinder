@@ -17,11 +17,11 @@ void InfoPanel::createTexture()
 {
 	TextLayout layout;
 	
-	layout.setFont( Font( "Arial-BoldMT", 14 ) );
+	layout.setFont( Font::create( "Arial-BoldMT", 14 ) );
 	layout.setColor( Color( 1.0f, 1.0f, 0.0f ) );
 	layout.addLine( "Hodgin Particles Redux" );
 	
-	layout.setFont( Font( "ArialMT", 10 ) );
+	layout.setFont( Font::create( "ArialMT", 10 ) );
 	layout.setColor( Color( 1.0f, 0.7f, 0.0f ) );
 	layout.addLine( "click and drag to create particles" );
 	layout.setColor( Color( 0.5f, 0.2f, 0.0f ) );

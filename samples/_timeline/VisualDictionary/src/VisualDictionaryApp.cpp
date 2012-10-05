@@ -101,10 +101,10 @@ void VisualDictionaryApp::setup()
 	mDictionary = shared_ptr<Dictionary>( new Dictionary( loadResource( RES_DICTIONARY ) ) );
 
 	// give the WordNodes their font
-	WordNode::setFont( gl::TextureFont::create( Font( loadResource( RES_FONT ), 34 ), gl::TextureFont::Format().enableMipmapping( true ) ) );
+	WordNode::setFont( gl::TextureFont::create( Font::create( loadResource( RES_FONT ), 34 ), gl::TextureFont::Format().enableMipmapping( true ) ) );
 
 	// give CenterState its font
-	CenterState::setFont( gl::TextureFont::create( Font( loadResource( RES_FONT ), 150 ), gl::TextureFont::Format().enableMipmapping( true ) ) );
+	CenterState::setFont( gl::TextureFont::create( Font::create( loadResource( RES_FONT ), 150 ), gl::TextureFont::Format().enableMipmapping( true ) ) );
 	
 	initialize();
 }

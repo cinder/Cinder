@@ -66,6 +66,14 @@ namespace cinder {
 
 namespace cinder { namespace gl {
 
+#if defined( CINDER_MSW ) || defined( CINDER_MAC ) || defined( CINDER_NACL )
+	typedef uint32_t index_t;
+	#define CINDER_GL_INDEX_TYPE GL_UNSIGNED_INT
+#elif defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+	typedef uint16_t index_t;
+	#define CINDER_GL_INDEX_TYPE GL_UNSIGNED_SHORT
+#endif
+
 //! Returns whether a particular OpenGL extension is available. Caches results
 bool isExtensionAvailable( const std::string &extName );
 
@@ -301,11 +309,11 @@ void draw( const Texture &texture, const Rectf &rect );
 void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect );
 
 //! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
-void drawString( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+void drawString( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), FontRef font = FontRef() );
 //! Draws a string \a str with the horizontal center of its baseline located at \a pos. Optional \a font and \a color affect the style
-void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), FontRef font = FontRef() );
 //! Draws a right-justified string \a str with the center of its  located at \a pos. Optional \a font and \a color affect the style
-void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), FontRef font = FontRef() );
 
 
 //! Convenience class designed to push and pop the currently bound texture for a given texture unit

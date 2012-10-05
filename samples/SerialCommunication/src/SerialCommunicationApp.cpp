@@ -115,7 +115,7 @@ void SerialCommunicationApp::update()
 		
 		
 		TextLayout simple;
-		simple.setFont( Font( "Arial Black", 24 ) );
+		simple.setFont( Font::create( "Arial Black", 24 ) );
 		simple.setColor( Color( .7, .7, .2 ) );
 		simple.addLine( lastString );
 		simple.setLeadingOffset( 0 );
