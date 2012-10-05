@@ -125,7 +125,6 @@ vector<pair<uint16_t,Vec2f> > measureGlyphsSize( const TextBox& textbox, Vec2f* 
            }
 
            size->x = math<float>::max( pen.x, size->x );
-           size->y = pen.y;
 
            pen.x = 0;
            pen.y += stop < end ? font->getLeading() : font->getDescent();
@@ -133,6 +132,7 @@ vector<pair<uint16_t,Vec2f> > measureGlyphsSize( const TextBox& textbox, Vec2f* 
            start += lineLength;
            lineStartIndex += lineLength;
         }
+        size->y = pen.y;
     }
 
     return placements;
