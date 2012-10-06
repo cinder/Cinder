@@ -70,7 +70,6 @@ void TestQuatApp::update()
 
 	mRadians += step;
 
-	// the following line is where things don't work as expected:
 	mQuaternion.set( Vec3f::zAxis(), mRadians );
 }
 
@@ -96,9 +95,8 @@ void TestQuatApp::draw()
 	gl::drawSolidCircle( Vec2f(x, y), 4.0f );
 	
 	gl::color( Color(1, 0, 0) );
-	x = 0.5f * getWindowWidth() + 120.0f * math<float>::sin(mQuaternion.getAngle());
-	y = 0.5f * getWindowHeight() - 120.0f * math<float>::cos(mQuaternion.getAngle());
-	gl::drawSolidCircle( Vec2f(x, y), 4.0f );
+	Vec3f p(0, -120, 0);	p = mQuaternion * p;
+	gl::drawSolidCircle( 0.5f * getWindowSize() + Vec2f(p.x, p.y), 4.0f );
 }
 
 void TestQuatApp::resize( ResizeEvent event )
