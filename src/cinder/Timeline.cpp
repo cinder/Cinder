@@ -39,6 +39,8 @@ Timeline::Timeline()
 	: TimelineItem( 0, 0, 0, 0 ), mDefaultAutoRemove( true ), mCurrentTime( 0 )
 {
 	mUseAbsoluteTime = true;
+	mComplete = true;
+	mAutoRemove = false;
 }
 
 Timeline::Timeline( const Timeline &rhs )
@@ -56,23 +58,33 @@ void Timeline::step( float timestep )
 }
 
 void Timeline::stepTo( float absoluteTime )
-{	
+{
 	bool reverse = mCurrentTime > absoluteTime;
 	mCurrentTime = absoluteTime;
 	
 	eraseMarked();
-	
+		
 	// we need to cache the end(). If a tween's update() fn or similar were to manipulate
 	// the list of items by adding new ones, we'll have invalidated our iterator.
 	// Deleted items are never removed immediately, but are marked for deletion.
+	bool items_complete = true;
 	s_iter endItem = mItems.end();
 	for( s_iter iter = mItems.begin(); iter != endItem; ++iter ) {
 		iter->second->stepTo( mCurrentTime, reverse );
+		items_complete = items_complete? items_complete && iter->second->isComplete(): false;
 		if( iter->second->isComplete() && iter->second->getAutoRemove() )
 			iter->second->mMarkedForRemoval = true;
 	}
+
+	if(mFinishFunction && !mComplete && items_complete){
+		mFinishFunction();
+	}
+	if(mStartFunction && mComplete && !items_complete){
+		mStartFunction();
+	}
+	mComplete = items_complete;
 	
-	eraseMarked();	
+	eraseMarked();
 }
 
 CueRef Timeline::add( std::function<void ()> action, float atTime )
@@ -91,6 +103,8 @@ void Timeline::clear()
 void Timeline::appendPingPong()
 {
 	vector<TimelineItemRef> toAppend;
+	
+	updateDuration();
 	
 	float duration = mDuration;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
@@ -117,13 +131,16 @@ void Timeline::add( TimelineItemRef item )
 {
 	item->mParent = this;
 	item->mStartTime = mCurrentTime;
+	
+	item->mMarkedForRemoval = false;
+	
 	mItems.insert( make_pair( item->mTarget, item ) );
 	setDurationDirty();
 }
 
 void Timeline::insert( TimelineItemRef item )
 {
-	item->mParent = this;
+	item->mParent = this;	
 	mItems.insert( make_pair( item->mTarget, item ) );
 	setDurationDirty();
 }
@@ -134,6 +151,7 @@ void Timeline::eraseMarked()
 	bool needRecalc = false;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ) {
 		if( iter->second->mMarkedForRemoval ) {
+			iter->second->mParent = NULL;
 			mItems.erase( iter++ );
 			needRecalc = true;
 		}
@@ -269,6 +287,7 @@ void Timeline::replaceTarget( void *target, void *replacementTarget )
 void Timeline::reset( bool unsetStarted )
 {
 	TimelineItem::reset( unsetStarted );
+	mComplete = true;
 	
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter )
 		iter->second->reset( unsetStarted );

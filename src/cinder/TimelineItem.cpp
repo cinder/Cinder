@@ -111,7 +111,7 @@ void TimelineItem::stepTo( float newTime, bool reverse )
 		}
 	}
 	else if( ( ! mLoop ) && ( ! mInfinite ) ) { // newTime >= endTime
-		if( ( ! mComplete ) && ( ! reverse ) ) {
+		if( ( ! mComplete ) && ( ! reverse ) && ( ! mPingPong ) ) {
 			mComplete = true;
 			mReverseComplete = false;
 			complete( false );

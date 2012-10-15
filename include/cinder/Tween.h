@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include <iostream>
+
 #include "cinder/Cinder.h"
 #include "cinder/TimelineItem.h"
 #include "cinder/CinderMath.h"
@@ -111,7 +113,6 @@ class TweenBase : public TimelineItem {
 	FinishFn		mFinishFunction, mReverseFinishFunction;
   
 	EaseFn		mEaseFunction;
-	float		mDuration;
 	bool		mCopyStartValue;
 };
 
@@ -177,8 +178,8 @@ class Tween : public TweenBase {
 		Options&	pingPong( bool doPingPong = true ) { mTweenRef->setPingPong( doPingPong ); return *this; }
 		Options&	timelineEnd( float offset = 0 ) { TweenBase::Options::timelineEnd( *mTweenRef, offset ); return *this; }
 		template<typename Y>
-		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }	
-		Options&	appendTo( void *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget, offset ); return *this; }	
+		Options&	appendTo( Anim<Y> *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget->ptr(), offset ); return *this; }
+		Options&	appendToPtr( void *endTarget, float offset = 0 ) { TweenBase::Options::appendTo( *mTweenRef, endTarget, offset ); return *this; }
 		Options&	lerpFn( const typename Tween<T>::LerpFn &lerpFn ) { mTweenRef->setLerpFn( lerpFn ); return *this; }
 		
 		operator TweenRef<T>() { return mTweenRef; }
@@ -227,6 +228,8 @@ class Tween : public TweenBase {
 	
 	virtual void update( float relativeTime )
 	{
+		if(mComplete) return;
+		
 		*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 		if( mUpdateFunction )
 			mUpdateFunction();

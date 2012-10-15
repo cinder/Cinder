@@ -41,6 +41,8 @@ typedef std::shared_ptr<class Timeline>		TimelineRef;
 	
 class Timeline : public TimelineItem {		
   public:
+	typedef std::function<void ()>		CallbackFn;
+	
 	//! Creates a new timeline, defaulted to infinite
 	static TimelineRef	create() { TimelineRef result( new Timeline() ); result->setInfinite( true ); return result; }
 
@@ -164,6 +166,9 @@ class Timeline : public TimelineItem {
 	//! Replaces the target of all TimelineItems whose target matches \a target, with \a replacementTarget
 	void				replaceTarget( void *target, void *replacementTarget );
 	
+	void				startFunction(CallbackFn fn) { mStartFunction = fn; }
+	void				finishFunction(CallbackFn fn) { mFinishFunction = fn; }
+	
 	//! Remove all tweens from the Timeline. Do not call from callback fn's.
 	void clear();
 	//! Sets the time to zero, marks all tweens as not completed, and if \a unsetStarted, marks the tweens as not started. Do not call from callback fn's.
@@ -171,6 +176,7 @@ class Timeline : public TimelineItem {
 
 	//! Sets the default \a autoRemove value for all future TimelineItems added to the Timeline
 	void	setDefaultAutoRemove( bool defaultAutoRemove ) { mDefaultAutoRemove = defaultAutoRemove; }
+	
 	//! Returns the default \a autoRemove value for all future TimelineItems added to the Timeline
 	bool	getDefaultAutoRemove() const { return mDefaultAutoRemove; }
 
@@ -193,16 +199,18 @@ class Timeline : public TimelineItem {
 	virtual void reverse();
 	virtual TimelineItemRef cloneReverse() const;
 	virtual TimelineItemRef clone() const;
-	virtual void start( bool reverse ) {} // no-op
+	virtual void start( bool reverse ) {}	//{ if(mStartFunction) mStartFunction(); }
 	virtual void loopStart();
 	virtual void update( float absTime );
-	virtual void complete( bool reverse ) {} // no-op
+	virtual void complete( bool reverse ) {}	// { if(mFinishFunction) mFinishFunction(); }
 
 	void						eraseMarked();
 	virtual float				calcDuration() const;
 
 	bool						mDefaultAutoRemove;
 	float						mCurrentTime;
+	
+	CallbackFn					mStartFunction, mFinishFunction;
 	
 	std::multimap<void*,TimelineItemRef>		mItems;
 	
