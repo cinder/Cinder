@@ -24,8 +24,6 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "cinder/Cinder.h"
 #include "cinder/TimelineItem.h"
 #include "cinder/CinderMath.h"
