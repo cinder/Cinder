@@ -166,8 +166,14 @@ class Timeline : public TimelineItem {
 	//! Replaces the target of all TimelineItems whose target matches \a target, with \a replacementTarget
 	void				replaceTarget( void *target, void *replacementTarget );
 	
-	void				startFunction(CallbackFn fn) { mStartFunction = fn; }
-	void				finishFunction(CallbackFn fn) { mFinishFunction = fn; }
+	//! Assigns a callback function to be invoked when animation begins
+	void				setStartFn(CallbackFn fn) { mStartFunction = fn; }
+	//! Assigns a callback function to be invoked when all Timeline tweens are completed
+	void				setFinishFn(CallbackFn fn) { mFinishFunction = fn; }
+	//! Returns the currently bound callback function for the start of the Timeline
+	CallbackFn			getStartFn() const { return mStartFunction; }
+	//! Returns the currently bound callback function for the end of the Timeline
+	CallbackFn			getFinishFn() const { return mFinishFunction; }
 	
 	//! Remove all tweens from the Timeline. Do not call from callback fn's.
 	void clear();
@@ -199,10 +205,10 @@ class Timeline : public TimelineItem {
 	virtual void reverse();
 	virtual TimelineItemRef cloneReverse() const;
 	virtual TimelineItemRef clone() const;
-	virtual void start( bool reverse ) {}	//{ if(mStartFunction) mStartFunction(); }
+	virtual void start( bool reverse ) {} // no-op
 	virtual void loopStart();
 	virtual void update( float absTime );
-	virtual void complete( bool reverse ) {}	// { if(mFinishFunction) mFinishFunction(); }
+	virtual void complete( bool reverse ) {} // no-op
 
 	void						eraseMarked();
 	virtual float				calcDuration() const;
