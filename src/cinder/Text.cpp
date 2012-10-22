@@ -203,13 +203,28 @@ void Line::calcExtents()
 		format.SetAlignment( Gdiplus::StringAlignmentNear ); format.SetLineAlignment( Gdiplus::StringAlignmentNear );
 		Gdiplus::RectF sizeRect;
 		const Gdiplus::Font *font = runIt->mFont.getGdiplusFont();
-		TextManager::instance()->getGraphics()->MeasureString( &runIt->mWideText[0], -1, font, Gdiplus::PointF( 0, 0 ), &format, &sizeRect );
+		TextManager::instance()->getGraphics()->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
+
+		if (next(runIt) < mRuns.end()) {
+			Gdiplus::CharacterRange charRanges[1] = { Gdiplus::CharacterRange(0, runIt->mWideText.length()) };
+			format.SetMeasurableCharacterRanges(1, charRanges);
+			format.SetTrimming(Gdiplus::StringTrimmingNone);
+			format.SetFormatFlags( Gdiplus::StringFormatFlagsNoClip | Gdiplus::StringFormatFlagsMeasureTrailingSpaces );
 		
+			Gdiplus::Region* pCharRangeRegions = new Gdiplus::Region[1];
+			TextManager::instance()->getGraphics()->MeasureCharacterRanges(&runIt->mWideText[0], runIt->mWideText.length(), font, sizeRect, &format, 1, pCharRangeRegions);	
+			pCharRangeRegions[0].GetBounds(&sizeRect, TextManager::instance()->getGraphics());
+			delete[] pCharRangeRegions;
+		}
+		else {
+			TextManager::instance()->getGraphics()->MeasureString( &runIt->mWideText[0], -1, font, Gdiplus::PointF( 0, 0 ), &format, &sizeRect );
+		}
+				
 		runIt->mWidth = sizeRect.Width;
 		runIt->mAscent = runIt->mFont.getAscent();
 		runIt->mDescent = runIt->mFont.getDescent();
 		runIt->mLeading = runIt->mFont.getLeading();
-		
+
 		mWidth += sizeRect.Width;
 		mAscent = std::max( runIt->mFont.getAscent(), mAscent );
 		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
