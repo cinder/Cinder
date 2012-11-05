@@ -213,11 +213,10 @@ INT CALLBACK getFolderPathBrowseCallbackProc( HWND hwnd, UINT uMsg, LPARAM lp, L
 
 fs::path AppImplMsw::getFolderPath( const fs::path &initialPath )
 {
-	wstring initialPathWide( toUtf16( initialPath.string() ) );
 	string result;
 
 	::BROWSEINFO bi = { 0 };
-	bi.lParam = reinterpret_cast<LPARAM>( initialPathWide.c_str() );
+	bi.lParam = reinterpret_cast<LPARAM>( initialPath.wstring().c_str() );
 	bi.lpfn = getFolderPathBrowseCallbackProc;
 	bi.lpszTitle = L"Pick a Directory";
 	::LPITEMIDLIST pidl = ::SHBrowseForFolder( &bi );
