@@ -77,6 +77,8 @@ public:
 
 	void resize( ResizeEvent event );
 private:
+	void createFbo();
+
 	void renderAnaglyph( const Vec2i &size, const ColorA &left, const ColorA &right );
 	void renderSideBySide( const Vec2i &size );
 	void renderOverUnder( const Vec2i &size );
@@ -325,18 +327,23 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		break;
 	case KeyEvent::KEY_F1:
 		mRenderMethod = MONO;
+		createFbo();
 		break;
 	case KeyEvent::KEY_F2:
 		mRenderMethod = ANAGLYPH_RED_CYAN;
+		createFbo();
 		break;
 	case KeyEvent::KEY_F3:
 		mRenderMethod = SIDE_BY_SIDE;
+		createFbo();
 		break;
 	case KeyEvent::KEY_F4:
 		mRenderMethod = OVER_UNDER;
+		createFbo();
 		break;
 	case KeyEvent::KEY_F5:
 		mRenderMethod = INTERLACED_HORIZONTAL;
+		createFbo();
 		break;
 	}
 }
@@ -347,13 +354,31 @@ void StereoscopicRenderingApp::resize( ResizeEvent event )
 	mCamera.setAspectRatio( event.getAspectRatio() );	
 	mMayaCam.setCurrentCam( mCamera );
 
-	// create/resize the FBO's required for anaglyph rendering
+	// create/resize the Frame Buffer Object required for some of the render methods
+	createFbo();
+}
+
+void StereoscopicRenderingApp::createFbo()
+{
+	Vec2i size = getWindowSize();
+
+	// 
 	gl::Fbo::Format fmt;
 	fmt.setMagFilter( GL_LINEAR );
 	fmt.setSamples(16);
 	fmt.setCoverageSamples(16);
 
-	mFbo = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
+	switch( mRenderMethod )
+	{
+	case ANAGLYPH_RED_CYAN: 
+		// by doubling the horizontal resolution, we can effectively render
+		// both the left and right eye views side by side at full resolution
+		mFbo = gl::Fbo( size.x * 2, size.y, fmt ); 
+		break;
+	default:
+		mFbo = gl::Fbo( size.x, size.y, fmt ); 
+		break;
+	}
 }
 
 void StereoscopicRenderingApp::renderAnaglyph(  const Vec2i &size, const ColorA &left, const ColorA &right )
@@ -363,10 +388,6 @@ void StereoscopicRenderingApp::renderAnaglyph(  const Vec2i &size, const ColorA 
 	gl::clear( mColorBackground );
 
 	// render the scene using the side-by-side technique
-	//
-	// Alternatively, you could render the scene to 2 separate FBO's and adjust
-	// the shader accordingly in order to use the full resolution, but this requires
-	// more memory and will lower the frame rate a bit. 
 	renderSideBySide( mFbo.getSize() );
 
 	// unbind the FBO
@@ -382,7 +403,7 @@ void StereoscopicRenderingApp::renderAnaglyph(  const Vec2i &size, const ColorA 
 	// which conveniently is exactly what the following line does
 	gl::draw( mFbo.getTexture(), Rectf(0, float(size.y), float(size.x), 0) );
 
-	// disable the interlace shader
+	// disable the anaglyph shader
 	mShaderAnaglyph.unbind();
 }
 
