@@ -62,7 +62,7 @@ using namespace std;
 class StereoscopicRenderingApp : public AppBasic {
   public:
 	typedef enum { SET_CONVERGENCE, SET_FOCUS, AUTO_FOCUS } FocusMethod;
-	typedef enum { MONO, SIDE_BY_SIDE, OVER_UNDER, ANAGLYPH_RED_CYAN } RenderMethod;
+	typedef enum { MONO, ANAGLYPH_RED_CYAN, SIDE_BY_SIDE, OVER_UNDER, INTERLACED_HORIZONTAL } RenderMethod;
 public:
 	void prepareSettings( Settings *settings );
 
@@ -77,30 +77,37 @@ public:
 
 	void resize( ResizeEvent event );
 private:
-	bool			mDrawAutoFocus;
-	FocusMethod		mFocusMethod;
-	RenderMethod	mRenderMethod;
-
-	MayaCamUI		mMayaCam;
-	CameraStereo	mCamera;
-
-	gl::StereoAutoFocuser	mAF;
-
-	gl::GlslProg	mShader;
-
-	gl::VboMesh		mMesh;
-	gl::VboMesh		mNote;
-
-	gl::Fbo			mAnaglyphLeft;
-	gl::Fbo			mAnaglyphRight;
-
-	Color			mBackgroundColor;
-
-	bool			mDrawUI;
-	Font			mFont;
+	void renderAnaglyph( const Color &left, const Color &right );
+	void renderSideBySide();
+	void renderOverUnder();
+	void renderInterlacedHorizontal();
 
 	void render();
 	void renderUI();
+private:
+	bool					mDrawUI;
+	bool					mDrawAutoFocus;
+
+	FocusMethod				mFocusMethod;
+	RenderMethod			mRenderMethod;
+
+	MayaCamUI				mMayaCam;
+	CameraStereo			mCamera;
+
+	gl::StereoAutoFocuser	mAF;
+
+	gl::GlslProg			mShaderPhong;
+	gl::GlslProg			mShaderInterlaced;
+
+	gl::VboMesh				mMeshTrombone;
+	gl::VboMesh				mMeshNote;
+
+	gl::Fbo					mFboA;
+	gl::Fbo					mFboB;
+
+	Color					mColorBackground;
+
+	Font					mFont;
 };
 
 void StereoscopicRenderingApp::prepareSettings( Settings *settings )
@@ -131,16 +138,17 @@ void StereoscopicRenderingApp::setup()
 
 	try {
 		// load shader(s)
-		mShader = gl::GlslProg( loadAsset("shaders/phong_vert.glsl"), loadAsset("shaders/phong_frag.glsl") );
+		mShaderPhong = gl::GlslProg( loadAsset("shaders/phong_vert.glsl"), loadAsset("shaders/phong_frag.glsl") );
+		mShaderInterlaced = gl::GlslProg( loadAsset("shaders/interlaced_vert.glsl"), loadAsset("shaders/interlaced_frag.glsl") );
 
 		// load model(s)
 		TriMesh		mesh;
 
 		mesh.read( loadAsset("models/trombone.msh") );
-		mMesh = gl::VboMesh( mesh );
+		mMeshTrombone = gl::VboMesh( mesh );
 		
 		mesh.read( loadAsset("models/note.msh") );
-		mNote = gl::VboMesh( mesh ); 
+		mMeshNote = gl::VboMesh( mesh ); 
 	}
 	catch( const std::exception &e ) {
 		// something went wrong, display error and quit
@@ -148,7 +156,7 @@ void StereoscopicRenderingApp::setup()
 		quit();
 	}
 
-	mBackgroundColor = Color( 0.8f, 0.8f, 0.8f );
+	mColorBackground = Color( 0.8f, 0.8f, 0.8f );
 
 	mFont = Font("Verdana", 24.0f);
 	mDrawUI = true;
@@ -206,7 +214,7 @@ void StereoscopicRenderingApp::update()
 			break;
 		case ANAGLYPH_RED_CYAN:
 			// sample the depth buffer of one of the FBO's
-			mAF.autoFocus( &mCamera, mAnaglyphLeft );
+			mAF.autoFocus( &mCamera, mFboA );
 			break;
 		}
 		break;
@@ -215,12 +223,8 @@ void StereoscopicRenderingApp::update()
 
 void StereoscopicRenderingApp::draw()
 {
-	// find dimensions of each viewport 
-	int w = getWindowWidth();
-	int h = getWindowHeight();
-
 	// clear color and depth buffers
-	gl::clear( mBackgroundColor ); 
+	gl::clear( mColorBackground ); 
 	
 	// stereoscopic rendering
 	switch( mRenderMethod ) 
@@ -230,96 +234,17 @@ void StereoscopicRenderingApp::draw()
 		mCamera.disableStereo();
 		render();
 		break;
+	case ANAGLYPH_RED_CYAN:
+		renderAnaglyph( Color(1, 0, 0), Color(0, 1, 1) );
+		break;
 	case SIDE_BY_SIDE:
-		// store current viewport
-		glPushAttrib( GL_VIEWPORT_BIT );
-
-		// draw to left half of window only
-		gl::setViewport( Area(0, 0, w / 2, h) );
-
-		// render left camera
-		mCamera.enableStereoLeft();
-		render();
-
-		// draw to right half of window only
-		gl::setViewport( Area(w / 2, 0, w, h) );
-
-		// render right camera
-		mCamera.enableStereoRight();
-		render();
-
-		// restore viewport
-		glPopAttrib();
+		renderSideBySide();
 		break;
 	case OVER_UNDER:
-		// store current viewport
-		glPushAttrib( GL_VIEWPORT_BIT );
-
-		// draw to top half of window only
-		gl::setViewport( Area(0, 0, w, h / 2) );
-
-		// render left camera
-		mCamera.enableStereoLeft();
-		render();
-
-		// draw to bottom half of window only
-		gl::setViewport( Area(0, h / 2, w, h) );
-
-		// render right camera
-		mCamera.enableStereoRight();
-		render();
-
-		// restore viewport
-		glPopAttrib();
+		renderOverUnder();
 		break;
-	case ANAGLYPH_RED_CYAN:
-		// store current viewport
-		glPushAttrib( GL_VIEWPORT_BIT );
-
-		// bind the left FBO and adjust the viewport to its bounds
-		mAnaglyphLeft.bindFramebuffer();
-		gl::setViewport( mAnaglyphLeft.getBounds() );
-
-		// because glClear() does not respect the color mask, 
-		// clear the color (and depth) buffers using a red filtered background color
-		gl::clear( mBackgroundColor * Color( 1, 0, 0 ) );
-
-		// set up color mask to only draw red and render left camera
-		glColorMask( true, false, false, true );
-		mCamera.enableStereoLeft();
-		render();
-		glColorMask( true, true, true, true );
-
-		mAnaglyphLeft.unbindFramebuffer();
-		
-		// bind the right FBO and adjust the viewport to its bounds
-		mAnaglyphRight.bindFramebuffer();
-		gl::setViewport( mAnaglyphRight.getBounds() );
-		
-		// because glClear() does not respect the color mask, 
-		// clear the color (and depth) buffers using a cyan filtered background color
-		gl::clear( mBackgroundColor * Color( 0, 1, 1 ) );
-		
-		// set up color mask to only draw cyan and render right camera
-		glColorMask( false, true, true, true );
-		mCamera.enableStereoRight();
-		render();
-		glColorMask( true, true, true, true );
-
-		mAnaglyphRight.unbindFramebuffer();
-
-		// restore viewport
-		glPopAttrib();
-
-		// draw the FBO's on top of each other using a special additive blending operation
-		gl::color( Color::white() );
-		
-		gl::draw( mAnaglyphLeft.getTexture(), Rectf( 0, (float) h, (float) w, 0 ) );	
-
-		glEnable( GL_BLEND );
-		glBlendFunc( GL_ONE, GL_ONE );
-		gl::draw( mAnaglyphRight.getTexture(), Rectf( 0, (float) h, (float) w, 0) ); 
-		glDisable( GL_BLEND );
+	case INTERLACED_HORIZONTAL:
+		renderInterlacedHorizontal();
 		break;
 	}
 
@@ -401,13 +326,16 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 		mRenderMethod = MONO;
 		break;
 	case KeyEvent::KEY_F2:
-		mRenderMethod = SIDE_BY_SIDE;
+		mRenderMethod = ANAGLYPH_RED_CYAN;
 		break;
 	case KeyEvent::KEY_F3:
-		mRenderMethod = OVER_UNDER;
+		mRenderMethod = SIDE_BY_SIDE;
 		break;
 	case KeyEvent::KEY_F4:
-		mRenderMethod = ANAGLYPH_RED_CYAN;
+		mRenderMethod = OVER_UNDER;
+		break;
+	case KeyEvent::KEY_F5:
+		mRenderMethod = INTERLACED_HORIZONTAL;
 		break;
 	}
 }
@@ -420,11 +348,153 @@ void StereoscopicRenderingApp::resize( ResizeEvent event )
 
 	// create/resize the FBO's required for anaglyph rendering
 	gl::Fbo::Format fmt;
-	fmt.setMagFilter( GL_LINEAR );
+	fmt.setMagFilter( GL_NEAREST );
 	fmt.setSamples(8);
+	fmt.setCoverageSamples(16);
 
-	mAnaglyphLeft = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
-	mAnaglyphRight = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
+	mFboA = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
+	mFboB = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
+}
+
+void StereoscopicRenderingApp::renderAnaglyph( const Color &left, const Color &right )
+{	
+	// find dimensions of each viewport 
+	int w = getWindowWidth();
+	int h = getWindowHeight();
+
+	// store current viewport
+	glPushAttrib( GL_VIEWPORT_BIT );
+
+	// bind the left FBO and adjust the viewport to its bounds
+	mFboA.bindFramebuffer();
+	gl::setViewport( mFboA.getBounds() );
+
+	// because glClear() does not respect the color mask, 
+	// clear the color (and depth) buffers using a red filtered background color
+	gl::clear( mColorBackground * left );
+
+	// set up color mask and render left camera
+	glColorMask( (left.r > 0), (left.g > 0), (left.b > 0), true );
+	mCamera.enableStereoLeft();
+	render();
+	glColorMask( true, true, true, true );
+
+	mFboA.unbindFramebuffer();
+		
+	// bind the right FBO and adjust the viewport to its bounds
+	mFboB.bindFramebuffer();
+	gl::setViewport( mFboB.getBounds() );
+		
+	// because glClear() does not respect the color mask, 
+	// clear the color (and depth) buffers using a cyan filtered background color
+	gl::clear( mColorBackground * right );
+		
+	// set up color mask and render right camera
+	glColorMask( (right.r > 0), (right.g > 0), (right.b > 0), true );
+	mCamera.enableStereoRight();
+	render();
+	glColorMask( true, true, true, true );
+
+	mFboB.unbindFramebuffer();
+
+	// restore viewport
+	glPopAttrib();
+
+	// draw the FBO's on top of each other using a special additive blending operation
+	gl::color( Color::white() );
+		
+	gl::draw( mFboA.getTexture(), Rectf( 0, (float) h, (float) w, 0 ) );	
+
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_ONE, GL_ONE );
+	gl::draw( mFboB.getTexture(), Rectf( 0, (float) h, (float) w, 0) ); 
+	glDisable( GL_BLEND );
+}
+
+void StereoscopicRenderingApp::renderSideBySide()
+{	
+	// find dimensions of each viewport 
+	int w = getWindowWidth();
+	int h = getWindowHeight();
+
+	// store current viewport
+	glPushAttrib( GL_VIEWPORT_BIT );
+
+	// draw to left half of window only
+	gl::setViewport( Area(0, 0, w / 2, h) );
+
+	// render left camera
+	mCamera.enableStereoLeft();
+	render();
+
+	// draw to right half of window only
+	gl::setViewport( Area(w / 2, 0, w, h) );
+
+	// render right camera
+	mCamera.enableStereoRight();
+	render();
+
+	// restore viewport
+	glPopAttrib();
+}
+
+void StereoscopicRenderingApp::renderOverUnder()
+{
+	// find dimensions of each viewport 
+	int w = getWindowWidth();
+	int h = getWindowHeight();
+
+	// store current viewport
+	glPushAttrib( GL_VIEWPORT_BIT );
+
+	// draw to top half of window only
+	gl::setViewport( Area(0, 0, w, h / 2) );
+
+	// render left camera
+	mCamera.enableStereoLeft();
+	render();
+
+	// draw to bottom half of window only
+	gl::setViewport( Area(0, h / 2, w, h) );
+
+	// render right camera
+	mCamera.enableStereoRight();
+	render();
+
+	// restore viewport
+	glPopAttrib();
+}
+
+void StereoscopicRenderingApp::renderInterlacedHorizontal()
+{
+	// find dimensions of each viewport 
+	int w = getWindowWidth();
+	int h = getWindowHeight();
+
+	// bind the FBO and clear its buffer
+	mFboA.bindFramebuffer();
+	gl::clear( mColorBackground );
+
+	// render the scene using the over-under technique
+	// (note: this requires the FBO to have exactly the same dimensions as the window. If not,
+	//  you'll have to change the renderOverUnder() method.)
+	renderOverUnder();
+
+	// unbind the FBO
+	mFboA.unbindFramebuffer();
+
+	// enable the interlace shader
+	mShaderInterlaced.bind();
+	mShaderInterlaced.uniform( "tex0", 0 );
+	mShaderInterlaced.uniform( "window_origin", Vec2f( getWindowPos() ) );
+	mShaderInterlaced.uniform( "window_size", Vec2f( getWindowSize() ) );
+
+	// bind the FBO texture and draw a full screen rectangle,
+	// which conveniently is exactly what the following line does
+	gl::draw( mFboA.getTexture(), Rectf(0, float(h), float(w), 0) );
+
+	// disable the interlace shader
+	mShaderInterlaced.unbind();
 }
 
 void StereoscopicRenderingApp::render()
@@ -439,20 +509,20 @@ void StereoscopicRenderingApp::render()
 	gl::pushMatrices();
 	gl::setMatrices( mCamera );
 
-	if( mShader && mMesh && mNote ) {
+	if( mShaderPhong && mMeshTrombone && mMeshNote ) {
 		// enable phong shading
-		mShader.bind();	
+		mShaderPhong.bind();	
 		
 		// draw trombone
 		gl::pushModelView();
 		{
 			gl::color( Color(0.7f, 0.6f, 0.0f) );
 			gl::rotate( Vec3f::yAxis() * 10.0f * seconds );
-			gl::draw( mMesh );
+			gl::draw( mMeshTrombone );
 
 			// reflection
 			gl::scale( 1.0f, -1.0f, 1.0f );
-			gl::draw( mMesh );
+			gl::draw( mMeshTrombone );
 		}
 		gl::popModelView();	
 
@@ -472,7 +542,7 @@ void StereoscopicRenderingApp::render()
 				gl::pushModelView();
 				gl::translate( i * 0.5f, 0.15f + 1.0f * math<float>::abs( sinf(3.0f * t) ), -z );
 				gl::rotate( Vec3f::yAxis() * r );
-				gl::draw( mNote );
+				gl::draw( mMeshNote );
 				gl::popModelView();
 				
 				// reflection
@@ -480,13 +550,13 @@ void StereoscopicRenderingApp::render()
 				gl::scale( 1.0f, -1.0f, 1.0f );
 				gl::translate( i * 0.5f, 0.15f + 1.0f * math<float>::abs( sinf(3.0f * t) ), -z );
 				gl::rotate( Vec3f::yAxis() * r );
-				gl::draw( mNote );
+				gl::draw( mMeshNote );
 				gl::popModelView();
 			}
 			gl::popModelView();
 		}
 
-		mShader.unbind();
+		mShaderPhong.unbind();
 	}
 
 	// draw grid
@@ -522,6 +592,7 @@ void StereoscopicRenderingApp::renderUI()
 		case SIDE_BY_SIDE: renderMode = "Side By Side"; break;
 		case OVER_UNDER: renderMode = "Over Under"; break;
 		case ANAGLYPH_RED_CYAN: renderMode = "Anaglyph Red Cyan"; break;
+		case INTERLACED_HORIZONTAL: renderMode = "Interlaced Horizontal"; break;
 	}
 	switch(mFocusMethod) {
 		case SET_CONVERGENCE: focusMode = "setConvergence(d, false)"; break;
