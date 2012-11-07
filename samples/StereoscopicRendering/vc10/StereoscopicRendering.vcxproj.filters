@@ -45,5 +45,11 @@
     <None Include="..\assets\shaders\interlaced_frag.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\assets\shaders\anaglyph_vert.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\assets\shaders\anaglyph_frag.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -77,7 +77,7 @@ public:
 
 	void resize( ResizeEvent event );
 private:
-	void renderAnaglyph( const Color &left, const Color &right );
+	void renderAnaglyph( const ColorA &left, const ColorA &right );
 	void renderSideBySide();
 	void renderOverUnder();
 	void renderInterlacedHorizontal();
@@ -97,13 +97,13 @@ private:
 	gl::StereoAutoFocuser	mAF;
 
 	gl::GlslProg			mShaderPhong;
+	gl::GlslProg			mShaderAnaglyph;
 	gl::GlslProg			mShaderInterlaced;
 
 	gl::VboMesh				mMeshTrombone;
 	gl::VboMesh				mMeshNote;
 
-	gl::Fbo					mFboA;
-	gl::Fbo					mFboB;
+	gl::Fbo					mFbo;
 
 	Color					mColorBackground;
 
@@ -139,6 +139,7 @@ void StereoscopicRenderingApp::setup()
 	try {
 		// load shader(s)
 		mShaderPhong = gl::GlslProg( loadAsset("shaders/phong_vert.glsl"), loadAsset("shaders/phong_frag.glsl") );
+		mShaderAnaglyph = gl::GlslProg( loadAsset("shaders/anaglyph_vert.glsl"), loadAsset("shaders/anaglyph_frag.glsl") );
 		mShaderInterlaced = gl::GlslProg( loadAsset("shaders/interlaced_vert.glsl"), loadAsset("shaders/interlaced_frag.glsl") );
 
 		// load model(s)
@@ -214,7 +215,7 @@ void StereoscopicRenderingApp::update()
 			break;
 		case ANAGLYPH_RED_CYAN:
 			// sample the depth buffer of one of the FBO's
-			mAF.autoFocus( &mCamera, mFboA );
+			mAF.autoFocus( &mCamera, mFbo );
 			break;
 		}
 		break;
@@ -348,67 +349,47 @@ void StereoscopicRenderingApp::resize( ResizeEvent event )
 
 	// create/resize the FBO's required for anaglyph rendering
 	gl::Fbo::Format fmt;
-	fmt.setMagFilter( GL_NEAREST );
-	fmt.setSamples(8);
+	fmt.setMagFilter( GL_LINEAR );
+	fmt.setSamples(16);
 	fmt.setCoverageSamples(16);
 
-	mFboA = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
-	mFboB = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
+	mFbo = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
 }
 
-void StereoscopicRenderingApp::renderAnaglyph( const Color &left, const Color &right )
+void StereoscopicRenderingApp::renderAnaglyph( const ColorA &left, const ColorA &right )
 {	
 	// find dimensions of each viewport 
 	int w = getWindowWidth();
 	int h = getWindowHeight();
 
-	// store current viewport
-	glPushAttrib( GL_VIEWPORT_BIT );
+	// bind the FBO and clear its buffer
+	mFbo.bindFramebuffer();
+	gl::clear( mColorBackground );
 
-	// bind the left FBO and adjust the viewport to its bounds
-	mFboA.bindFramebuffer();
-	gl::setViewport( mFboA.getBounds() );
+	// render the scene using the side-by-side technique
+	// (note: this requires the FBO to have exactly the same dimensions as the window. If not,
+	//  you'll have to change the renderSideBySide() method.)
+	//
+	// Alternatively, you could render the scene to 2 separate FBO's and adjust
+	// the shader accordingly in order to use the full resolution, but this requires
+	// more memory and will lower the frame rate a bit. 
+	renderSideBySide();
 
-	// because glClear() does not respect the color mask, 
-	// clear the color (and depth) buffers using a red filtered background color
-	gl::clear( mColorBackground * left );
+	// unbind the FBO
+	mFbo.unbindFramebuffer();
 
-	// set up color mask and render left camera
-	glColorMask( (left.r > 0), (left.g > 0), (left.b > 0), true );
-	mCamera.enableStereoLeft();
-	render();
-	glColorMask( true, true, true, true );
+	// enable the anaglyph shader
+	mShaderAnaglyph.bind();
+	mShaderAnaglyph.uniform( "tex0", 0 );
+	mShaderAnaglyph.uniform( "clr_left", left );
+	mShaderAnaglyph.uniform( "clr_right", right );	//*/
 
-	mFboA.unbindFramebuffer();
-		
-	// bind the right FBO and adjust the viewport to its bounds
-	mFboB.bindFramebuffer();
-	gl::setViewport( mFboB.getBounds() );
-		
-	// because glClear() does not respect the color mask, 
-	// clear the color (and depth) buffers using a cyan filtered background color
-	gl::clear( mColorBackground * right );
-		
-	// set up color mask and render right camera
-	glColorMask( (right.r > 0), (right.g > 0), (right.b > 0), true );
-	mCamera.enableStereoRight();
-	render();
-	glColorMask( true, true, true, true );
+	// bind the FBO texture and draw a full screen rectangle,
+	// which conveniently is exactly what the following line does
+	gl::draw( mFbo.getTexture(), Rectf(0, float(h), float(w), 0) );
 
-	mFboB.unbindFramebuffer();
-
-	// restore viewport
-	glPopAttrib();
-
-	// draw the FBO's on top of each other using a special additive blending operation
-	gl::color( Color::white() );
-		
-	gl::draw( mFboA.getTexture(), Rectf( 0, (float) h, (float) w, 0 ) );	
-
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_ONE, GL_ONE );
-	gl::draw( mFboB.getTexture(), Rectf( 0, (float) h, (float) w, 0) ); 
-	glDisable( GL_BLEND );
+	// disable the interlace shader
+	mShaderAnaglyph.unbind();
 }
 
 void StereoscopicRenderingApp::renderSideBySide()
@@ -472,7 +453,7 @@ void StereoscopicRenderingApp::renderInterlacedHorizontal()
 	int h = getWindowHeight();
 
 	// bind the FBO and clear its buffer
-	mFboA.bindFramebuffer();
+	mFbo.bindFramebuffer();
 	gl::clear( mColorBackground );
 
 	// render the scene using the over-under technique
@@ -481,7 +462,7 @@ void StereoscopicRenderingApp::renderInterlacedHorizontal()
 	renderOverUnder();
 
 	// unbind the FBO
-	mFboA.unbindFramebuffer();
+	mFbo.unbindFramebuffer();
 
 	// enable the interlace shader
 	mShaderInterlaced.bind();
@@ -491,7 +472,7 @@ void StereoscopicRenderingApp::renderInterlacedHorizontal()
 
 	// bind the FBO texture and draw a full screen rectangle,
 	// which conveniently is exactly what the following line does
-	gl::draw( mFboA.getTexture(), Rectf(0, float(h), float(w), 0) );
+	gl::draw( mFbo.getTexture(), Rectf(0, float(h), float(w), 0) );
 
 	// disable the interlace shader
 	mShaderInterlaced.unbind();

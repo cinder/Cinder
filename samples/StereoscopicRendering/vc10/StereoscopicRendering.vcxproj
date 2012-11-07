@@ -113,6 +113,8 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\assets\shaders\anaglyph_frag.glsl" />
+    <None Include="..\assets\shaders\anaglyph_vert.glsl" />
     <None Include="..\assets\shaders\interlaced_frag.glsl" />
     <None Include="..\assets\shaders\interlaced_vert.glsl" />
     <None Include="..\assets\shaders\phong_frag.glsl" />

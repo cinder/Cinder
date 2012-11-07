@@ -5,7 +5,7 @@ uniform sampler2D	tex0;
 uniform vec2		window_origin;
 uniform vec2		window_size;
 
-// used to find the correct half of the texture to sample
+// find the correct half of the texture to sample (over-under FBO)
 const vec2			half = vec2(1.0, 0.5);
 const vec2			offset = vec2(0.0, 0.5);
 
