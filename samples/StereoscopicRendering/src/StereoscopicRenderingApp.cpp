@@ -77,10 +77,10 @@ public:
 
 	void resize( ResizeEvent event );
 private:
-	void renderAnaglyph( const ColorA &left, const ColorA &right );
-	void renderSideBySide();
-	void renderOverUnder();
-	void renderInterlacedHorizontal();
+	void renderAnaglyph( const Vec2i &size, const ColorA &left, const ColorA &right );
+	void renderSideBySide( const Vec2i &size );
+	void renderOverUnder( const Vec2i &size );
+	void renderInterlacedHorizontal( const Vec2i &size );
 
 	void render();
 	void renderUI();
@@ -236,16 +236,16 @@ void StereoscopicRenderingApp::draw()
 		render();
 		break;
 	case ANAGLYPH_RED_CYAN:
-		renderAnaglyph( Color(1, 0, 0), Color(0, 1, 1) );
+		renderAnaglyph( getWindowSize(), Color(1, 0, 0), Color(0, 1, 1) );
 		break;
 	case SIDE_BY_SIDE:
-		renderSideBySide();
+		renderSideBySide( getWindowSize() );
 		break;
 	case OVER_UNDER:
-		renderOverUnder();
+		renderOverUnder( getWindowSize() );
 		break;
 	case INTERLACED_HORIZONTAL:
-		renderInterlacedHorizontal();
+		renderInterlacedHorizontal( getWindowSize() );
 		break;
 	}
 
@@ -356,24 +356,18 @@ void StereoscopicRenderingApp::resize( ResizeEvent event )
 	mFbo = gl::Fbo( event.getWidth(), event.getHeight(), fmt );
 }
 
-void StereoscopicRenderingApp::renderAnaglyph( const ColorA &left, const ColorA &right )
+void StereoscopicRenderingApp::renderAnaglyph(  const Vec2i &size, const ColorA &left, const ColorA &right )
 {	
-	// find dimensions of each viewport 
-	int w = getWindowWidth();
-	int h = getWindowHeight();
-
 	// bind the FBO and clear its buffer
 	mFbo.bindFramebuffer();
 	gl::clear( mColorBackground );
 
 	// render the scene using the side-by-side technique
-	// (note: this requires the FBO to have exactly the same dimensions as the window. If not,
-	//  you'll have to change the renderSideBySide() method.)
 	//
 	// Alternatively, you could render the scene to 2 separate FBO's and adjust
 	// the shader accordingly in order to use the full resolution, but this requires
 	// more memory and will lower the frame rate a bit. 
-	renderSideBySide();
+	renderSideBySide( mFbo.getSize() );
 
 	// unbind the FBO
 	mFbo.unbindFramebuffer();
@@ -382,34 +376,30 @@ void StereoscopicRenderingApp::renderAnaglyph( const ColorA &left, const ColorA 
 	mShaderAnaglyph.bind();
 	mShaderAnaglyph.uniform( "tex0", 0 );
 	mShaderAnaglyph.uniform( "clr_left", left );
-	mShaderAnaglyph.uniform( "clr_right", right );	//*/
+	mShaderAnaglyph.uniform( "clr_right", right );	
 
 	// bind the FBO texture and draw a full screen rectangle,
 	// which conveniently is exactly what the following line does
-	gl::draw( mFbo.getTexture(), Rectf(0, float(h), float(w), 0) );
+	gl::draw( mFbo.getTexture(), Rectf(0, float(size.y), float(size.x), 0) );
 
 	// disable the interlace shader
 	mShaderAnaglyph.unbind();
 }
 
-void StereoscopicRenderingApp::renderSideBySide()
+void StereoscopicRenderingApp::renderSideBySide( const Vec2i &size )
 {	
-	// find dimensions of each viewport 
-	int w = getWindowWidth();
-	int h = getWindowHeight();
-
 	// store current viewport
 	glPushAttrib( GL_VIEWPORT_BIT );
 
 	// draw to left half of window only
-	gl::setViewport( Area(0, 0, w / 2, h) );
+	gl::setViewport( Area(0, 0, size.x / 2, size.y) );
 
 	// render left camera
 	mCamera.enableStereoLeft();
 	render();
 
 	// draw to right half of window only
-	gl::setViewport( Area(w / 2, 0, w, h) );
+	gl::setViewport( Area(size.x / 2, 0, size.x, size.y) );
 
 	// render right camera
 	mCamera.enableStereoRight();
@@ -419,24 +409,20 @@ void StereoscopicRenderingApp::renderSideBySide()
 	glPopAttrib();
 }
 
-void StereoscopicRenderingApp::renderOverUnder()
+void StereoscopicRenderingApp::renderOverUnder( const Vec2i &size )
 {
-	// find dimensions of each viewport 
-	int w = getWindowWidth();
-	int h = getWindowHeight();
-
 	// store current viewport
 	glPushAttrib( GL_VIEWPORT_BIT );
 
 	// draw to top half of window only
-	gl::setViewport( Area(0, 0, w, h / 2) );
+	gl::setViewport( Area(0, 0, size.x, size.y / 2) );
 
 	// render left camera
 	mCamera.enableStereoLeft();
 	render();
 
 	// draw to bottom half of window only
-	gl::setViewport( Area(0, h / 2, w, h) );
+	gl::setViewport( Area(0, size.y / 2, size.x, size.y) );
 
 	// render right camera
 	mCamera.enableStereoRight();
@@ -446,20 +432,14 @@ void StereoscopicRenderingApp::renderOverUnder()
 	glPopAttrib();
 }
 
-void StereoscopicRenderingApp::renderInterlacedHorizontal()
+void StereoscopicRenderingApp::renderInterlacedHorizontal( const Vec2i &size )
 {
-	// find dimensions of each viewport 
-	int w = getWindowWidth();
-	int h = getWindowHeight();
-
 	// bind the FBO and clear its buffer
 	mFbo.bindFramebuffer();
 	gl::clear( mColorBackground );
 
 	// render the scene using the over-under technique
-	// (note: this requires the FBO to have exactly the same dimensions as the window. If not,
-	//  you'll have to change the renderOverUnder() method.)
-	renderOverUnder();
+	renderOverUnder( mFbo.getSize() );
 
 	// unbind the FBO
 	mFbo.unbindFramebuffer();
@@ -472,7 +452,7 @@ void StereoscopicRenderingApp::renderInterlacedHorizontal()
 
 	// bind the FBO texture and draw a full screen rectangle,
 	// which conveniently is exactly what the following line does
-	gl::draw( mFbo.getTexture(), Rectf(0, float(h), float(w), 0) );
+	gl::draw( mFbo.getTexture(), Rectf(0, float(size.y), float(size.x), 0) );
 
 	// disable the interlace shader
 	mShaderInterlaced.unbind();
