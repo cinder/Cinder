@@ -292,16 +292,21 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 
 #if ! defined ( CINDER_GLES )
 //! 
-void draw( const VboMesh &vbo, size_t instanceCount = 1 );
+void draw( const VboMesh &vbo );
 //! Draws a range of vertices and elements of cinder::gl::VboMesh \a mesh at the origin. Default parameters for \a vertexStart and \a vertexEnd imply the VboMesh's full range of vertices.
 void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 );
-//! 
-void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, size_t instanceCount = 1 );
 //! Draws a range of elements from a cinder::gl::VboMesh \a vbo.
-void drawArrays( const VboMesh &vbo, GLint first, GLsizei count, size_t instanceCount = 1 );
-//!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.
+void drawArrays( const VboMesh &vbo, GLint first, GLsizei count );
+
+//! 
+void drawInstanced( const VboMesh &vbo, size_t instanceCount );
+//! 
+void drawRangeInstanced( const VboMesh &vbo, size_t startIndex, size_t indexCount, size_t instanceCount );
+//! 
+void drawArraysInstanced( const VboMesh &vbo, GLint first, GLsizei count, size_t instanceCount );
 #endif
-	
+
+//!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp );
 //! Draws \a texture on the XY-plane
 void draw( const Texture &texture );
