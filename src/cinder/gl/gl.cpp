@@ -1381,12 +1381,12 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 }
 
 #if ! defined ( CINDER_GLES )
-void draw( const VboMesh &vbo )
+void draw( const VboMesh &vbo, size_t instanceCount )
 {
 	if( vbo.getNumIndices() > 0 )
-		drawRange( vbo, (size_t)0, vbo.getNumIndices() );
+		drawRange( vbo, (size_t)0, vbo.getNumIndices(), instanceCount );
 	else
-		drawArrays( vbo, 0, vbo.getNumVertices() );
+		drawArrays( vbo, 0, vbo.getNumVertices(), instanceCount );
 }
 
 void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart, int vertexEnd )
@@ -1399,18 +1399,51 @@ void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int ve
 
 	vbo.enableClientStates();
 	vbo.bindAllData();
-	
+
 	glDrawRangeElements( vbo.getPrimitiveType(), vertexStart, vertexEnd, indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ) );
 	
 	gl::VboMesh::unbindBuffers();
 	vbo.disableClientStates();
 }
 
-void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
+void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, size_t instanceCount )
+{
+	if( vbo.getNumIndices() <= 0 )
+		return;
+
+	vbo.enableClientStates();
+	vbo.bindAllData();
+	
+#if( defined GLEE_H_DEFINED_glDrawElementsInstancedARB )
+	if( instanceCount > 1 )
+		glDrawElementsInstancedARB( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
+	else
+#elif( defined GLEE_H_DEFINED_glDrawElementsInstancedEXT )
+	if( instanceCount > 1 )
+		glDrawElementsInstancedEXT( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
+	else
+#endif
+		glDrawElements( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ) );
+	
+	gl::VboMesh::unbindBuffers();
+	vbo.disableClientStates();
+}
+
+void drawArrays( const VboMesh &vbo, GLint first, GLsizei count, size_t instanceCount )
 {
 	vbo.enableClientStates();
 	vbo.bindAllData();
-	glDrawArrays( vbo.getPrimitiveType(), first, count );
+	
+#if( defined GLEE_H_DEFINED_glDrawArraysInstancedARB )
+	if( instanceCount > 1 )
+		glDrawArraysInstancedARB( vbo.getPrimitiveType(), first, count, instanceCount );
+	else
+#elif( defined GLEE_H_DEFINED_glDrawArraysInstancedEXT )
+	if( instanceCount > 1 )
+		glDrawArraysInstancedEXT( vbo.getPrimitiveType(), first, count, instanceCount );
+	else
+#endif
+		glDrawArrays( vbo.getPrimitiveType(), first, count );
 
 	gl::VboMesh::unbindBuffers();
 	vbo.disableClientStates();

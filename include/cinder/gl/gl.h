@@ -291,11 +291,14 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 //! Draws a cinder::gl::VboMesh \a mesh at the origin.
 
 #if ! defined ( CINDER_GLES )
-void draw( const VboMesh &vbo );
+//! 
+void draw( const VboMesh &vbo, size_t instanceCount = 1 );
 //! Draws a range of vertices and elements of cinder::gl::VboMesh \a mesh at the origin. Default parameters for \a vertexStart and \a vertexEnd imply the VboMesh's full range of vertices.
 void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 );
+//! 
+void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, size_t instanceCount = 1 );
 //! Draws a range of elements from a cinder::gl::VboMesh \a vbo.
-void drawArrays( const VboMesh &vbo, GLint first, GLsizei count );
+void drawArrays( const VboMesh &vbo, GLint first, GLsizei count, size_t instanceCount = 1 );
 //!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.
 #endif
 	
