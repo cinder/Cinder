@@ -72,17 +72,22 @@ void InstancedVboRenderingApp::setup()
 {
 	mDrawInstanced = true;
 
+	// disable vertical sync, so we can see the impact
+	// of instanced rendering on the frame rate
+	gl::disableVerticalSync();
+
+	// initialize camera
 	CameraPersp	cam;
 	cam.setEyePoint( Vec3f(60, 70, 20) );
 	cam.setCenterOfInterestPoint( Vec3f(70, 65, 0) );
 	cam.setFov( 60.0f );
 	mCamera.setCurrentCam( cam );
 
+	// load shader
 	try { mShader = gl::GlslProg( loadAsset("phong_vert.glsl"), loadAsset("phong_frag.glsl") ); }
 	catch( const std::exception &e ) { console() << e.what() << std::endl; }
 
-	gl::disableVerticalSync();
-
+	// load hexagon mesh and render help
 	loadMesh();
 	renderHelp();
 }
@@ -93,23 +98,28 @@ void InstancedVboRenderingApp::update()
 
 void InstancedVboRenderingApp::draw()
 {
-	// the model_matrix will animate each hexagon by rotating it a bit (same for all hexagons)
-	Matrix44f model_matrix; //model_matrix *= Quatf( Vec3f::xAxis(), 0.2f * float( sin( 0.5 * getElapsedSeconds() ) ) );
-
-	// the offset_matrix tells the shader how to position each instance relative to the others ( 3.0 * x + 1.5 * mod(y, 2), 0.866025 * y, 0.0 )
+	// the offset_matrix tells the shader how to position 
+	// each hexagon relative to the others ( 3.0 * x + 1.5 * mod(y, 2), 0.866025 * y, 0.0 )
 	float scale = 1.025f;
-	const Matrix44f offset_matrix( 3.0f * scale, 0.0f, 0.0f, 0.0f, 0.0f, 0.866025f * scale, 0.0f, 0.0f, 1.5f * scale, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, false );
+	const Matrix44f offset_matrix( 
+		3.0f * scale, 0.0f, 1.5f * scale, 0.0f, 
+		0.0f, 0.866025f * scale, 0.0f, 0.0f, 
+		0.0f, 0.0f, 0.0f, 0.0f, 
+		0.0f, 0.0f, 0.0f, 0.0f, true );
 
-	//
+	// clear the window
 	gl::clear();
 
+	// activate our camera
 	gl::pushMatrices();
 	gl::setMatrices( mCamera.getCamera() );
 
+	// set render states
 	gl::enable( GL_CULL_FACE );
 	gl::enableAlphaBlending();
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
+	gl::color( Color::white() );
 
 	if(mHexagon && mShader ) {
 		// bind the shader, which will do all the hard work for us
@@ -117,40 +127,48 @@ void InstancedVboRenderingApp::draw()
 		mShader.uniform( "offset_matrix", offset_matrix );
 		mShader.uniform( "row_size", 50.0f );
 
-		gl::color( Color::white() );
-
 		if( mDrawInstanced ) 
 		{
-			gl::pushModelView();
-			gl::multModelView( model_matrix );
+			// we do all positioning in the shader,
+			// and therefor we only need a single draw call
+			// to render 10000 instances. It's fast,
+			// but a little less flexible.
 			gl::drawInstanced( mHexagon, 10000 );
-			gl::popModelView();
 		}
 		else
 		{
+			// this is what we need to do if we draw each 
+			// instance separately. It's slower, because you
+			// need a separate draw call for each instance.
+			// However, it's easier and more flexible.
 			for(int x=0;x<50;x++) 
 			{ 
-				for(int y=0;y<200;y++) {
+				for(int y=0;y<200;y++) 
+				{
 					Vec3f p( float(x), float(y), math<float>::fmod( float(y), 2.0f ) );
 
 					gl::pushModelView();
 					gl::translate( offset_matrix.transformPointAffine(p) ); 
-					gl::multModelView( model_matrix );	
 					gl::draw( mHexagon );
 					gl::popModelView();
 				}
 			}
 		}
+
+		// unbind the shader
 		mShader.unbind();
 	}
 	
+	// reset render states
 	gl::disableDepthWrite();
 	gl::disableDepthRead();
 	gl::disableAlphaBlending();
 	gl::disable( GL_CULL_FACE );
 
+	// restore 2D drawing
 	gl::popMatrices();
 
+	// draw help
 	gl::enableAlphaBlending();
 	gl::draw( mHelpTexture );
 	gl::disableAlphaBlending();
@@ -158,6 +176,7 @@ void InstancedVboRenderingApp::draw()
 
 void InstancedVboRenderingApp::resize( ResizeEvent event )
 {
+	// adjust the camera aspect ratio
 	CameraPersp cam = mCamera.getCamera();
 	cam.setAspectRatio( event.getAspectRatio() );
 	mCamera.setCurrentCam( cam );
@@ -170,7 +189,6 @@ void InstancedVboRenderingApp::loadMesh()
 
 	try {
 		loader.load( &mesh, true, false, false );
-		//mesh.recalculateNormals();
 		mHexagon = gl::VboMesh( mesh );
 	}
 	catch( const std::exception &e ) {
