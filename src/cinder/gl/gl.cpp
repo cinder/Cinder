@@ -856,6 +856,11 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 	glDisableClientState( GL_VERTEX_ARRAY );
 	delete [] verts;
 }
+	
+void drawPoint( const Vec2f &pt )
+{
+	drawSolidRect( Rectf( pt.x, pt.y, pt.x+1, pt.y+1 ) );
+}
 
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 {
