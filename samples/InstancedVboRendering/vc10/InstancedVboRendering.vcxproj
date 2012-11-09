@@ -115,9 +115,6 @@
   <ItemGroup>
     <None Include="..\assets\phong_frag.glsl" />
     <None Include="..\assets\phong_vert.glsl" />
-    <None Include="..\assets\wireframe_frag.glsl" />
-    <None Include="..\assets\wireframe_geom.glsl" />
-    <None Include="..\assets\wireframe_vert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

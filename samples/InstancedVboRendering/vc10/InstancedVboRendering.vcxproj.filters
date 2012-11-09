@@ -18,7 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\GridFlipApp.cpp">
+    <ClCompile Include="..\src\InstancedVboRenderingApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -37,15 +37,6 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="..\assets\phong_frag.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="..\assets\wireframe_vert.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="..\assets\wireframe_frag.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="..\assets\wireframe_geom.glsl">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

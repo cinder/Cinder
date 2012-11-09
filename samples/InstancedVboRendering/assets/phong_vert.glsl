@@ -1,16 +1,17 @@
 #version 120
 #extension GL_EXT_draw_instanced : enable
 
-uniform mat4 offset_matrix;
+uniform float	row_size;
+uniform mat4	offset_matrix;
 
-varying vec3 V;
-varying vec3 N;
+varying vec3	V;
+varying vec3	N;
 
 void main()
 {
 	// based on the instance ID, determine the position of this hexagon 
-	float x = mod( gl_InstanceID, 100.0 );
-	float y = floor( float(gl_InstanceID) / 100.0 );
+	float x = mod( gl_InstanceID, row_size );
+	float y = floor( float(gl_InstanceID) / row_size );
 	vec4 position = gl_Vertex + offset_matrix * vec4( x, y, mod( y, 2.0 ), 0.0 );
 
 	// pass the vertex position to the fragment shader
