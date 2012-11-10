@@ -12,7 +12,7 @@ void main()
 	// based on the instance ID, determine the position of this hexagon 
 	float x = mod( gl_InstanceID, row_size );
 	float y = floor( float(gl_InstanceID) / row_size );
-	vec4 position = gl_Vertex + offset_matrix * vec4( x, y, mod( y, 2.0 ), 0.0 );
+	vec4 position = gl_Vertex + offset_matrix * vec4( x, y, 0.0, mod( y, 2.0 ) );
 
 	// pass the vertex position to the fragment shader
 	V = vec3(gl_ModelViewMatrix * position);

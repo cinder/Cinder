@@ -24,6 +24,7 @@
 #include "cinder/ObjLoader.h"
 #include "cinder/Text.h"
 #include "cinder/TriMesh.h"
+#include "cinder/Utilities.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -87,24 +88,25 @@ void InstancedVboRenderingApp::setup()
 	try { mShader = gl::GlslProg( loadAsset("phong_vert.glsl"), loadAsset("phong_frag.glsl") ); }
 	catch( const std::exception &e ) { console() << e.what() << std::endl; }
 
-	// load hexagon mesh and render help
+	// load hexagon mesh
 	loadMesh();
-	renderHelp();
 }
 
 void InstancedVboRenderingApp::update()
 {
+	// update the help panel
+	renderHelp();
 }
 
 void InstancedVboRenderingApp::draw()
 {
-	// the offset_matrix tells the shader how to position 
-	// each hexagon relative to the others ( 3.0 * x + 1.5 * mod(y, 2), 0.866025 * y, 0.0 )
-	float scale = 1.025f;
+	// the offset_matrix instructs the shader how to position 
+	// each hexagon relative to the others. The position of each
+	// hexagon is defined as ( 3.0 * x + 1.5 * mod(y, 2), 0.866025 * y, z )
 	const Matrix44f offset_matrix( 
-		3.0f * scale, 0.0f, 1.5f * scale, 0.0f, 
-		0.0f, 0.866025f * scale, 0.0f, 0.0f, 
-		0.0f, 0.0f, 0.0f, 0.0f, 
+		3.0f, 0.0f, 0.0f, 1.5f, 
+		0.0f, 0.866025f, 0.0f, 0.0f, 
+		0.0f, 0.0f, 1.0f, 0.0f, 
 		0.0f, 0.0f, 0.0f, 0.0f, true );
 
 	// clear the window
@@ -145,10 +147,10 @@ void InstancedVboRenderingApp::draw()
 			{ 
 				for(int y=0;y<200;y++) 
 				{
-					Vec3f p( float(x), float(y), math<float>::fmod( float(y), 2.0f ) );
+					Vec4f p = offset_matrix * Vec4f( float(x), float(y), 0.0f, math<float>::fmod( float(y), 2.0f ) );
 
 					gl::pushModelView();
-					gl::translate( offset_matrix.transformPointAffine(p) ); 
+					gl::translate( p.x, p.y, p.z ); 
 					gl::draw( mHexagon );
 					gl::popModelView();
 				}
@@ -170,7 +172,7 @@ void InstancedVboRenderingApp::draw()
 
 	// draw help
 	gl::enableAlphaBlending();
-	gl::draw( mHelpTexture );
+	gl::draw( mHelpTexture, Vec2f( 0.5f * getWindowWidth() - 200.0f, getWindowHeight() - 125.0f ) );
 	gl::disableAlphaBlending();
 }
 
@@ -184,7 +186,7 @@ void InstancedVboRenderingApp::resize( ResizeEvent event )
 
 void InstancedVboRenderingApp::loadMesh()
 {
-	ObjLoader	loader( loadAsset("hexagon_smooth.obj") );
+	ObjLoader	loader( loadAsset("hexagon.obj") );
 	TriMesh		mesh;
 
 	try {
@@ -198,7 +200,10 @@ void InstancedVboRenderingApp::loadMesh()
 
 void InstancedVboRenderingApp::renderHelp()
 {
-	TextBox textbox = TextBox().font( Font( "Arial", 24.0f ) );
+	TextBox textbox = TextBox().font( Font( "Verdana", 20.0f ) ).backgroundColor( ColorA(0, 0, 0, 0.5f) ).size(400, 100).alignment( TextBox::CENTER );
+
+	textbox.appendText( "Average frame rate: " + toString( int( getAverageFps() + 0.5f ) ) + "\n\n" );
+
 	if( gl::isVerticalSyncEnabled() )
 		textbox.appendText( "(V) Toggle Vertical Sync (currently ON)\n" );
 	else
@@ -239,8 +244,6 @@ void InstancedVboRenderingApp::keyDown( KeyEvent event )
 		gl::enableVerticalSync( ! gl::isVerticalSyncEnabled() );
 		break;
 	}
-
-	renderHelp();
 }
 
 CINDER_APP_BASIC( InstancedVboRenderingApp, RendererGl )
