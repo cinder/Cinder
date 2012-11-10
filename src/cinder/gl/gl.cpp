@@ -1433,13 +1433,17 @@ void drawRangeInstanced( const VboMesh &vbo, size_t startIndex, size_t indexCoun
 	vbo.enableClientStates();
 	vbo.bindAllData();
 	
-	if( glDrawElementsInstancedEXT )
-		glDrawElementsInstancedEXT( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
-	else if( glDrawElementsInstancedARB )
-		glDrawElementsInstancedARB( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
-	else
-		glDrawElements( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ) );
-	
+#if( defined glDrawElementsInstanced )
+	glDrawElementsInstanced( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
+#elif( defined glDrawElementsInstancedEXT )
+	glDrawElementsInstancedEXT( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
+#elif( defined glDrawElementsInstancedARB )
+	glDrawElementsInstancedARB( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
+#else
+	// fall back to rendering a single instance
+	glDrawElements( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ) );
+#endif
+
 	gl::VboMesh::unbindBuffers();
 	vbo.disableClientStates();
 }
@@ -1449,12 +1453,16 @@ void drawArraysInstanced( const VboMesh &vbo, GLint first, GLsizei count, size_t
 	vbo.enableClientStates();
 	vbo.bindAllData();
 	
-	if( glDrawArraysInstancedEXT )
-		glDrawArraysInstancedEXT( vbo.getPrimitiveType(), first, count, instanceCount );
-	else if( glDrawArraysInstancedARB )
-		glDrawArraysInstancedARB( vbo.getPrimitiveType(), first, count, instanceCount );
-	else
-		glDrawArrays( vbo.getPrimitiveType(), first, count );
+#if( defined glDrawArraysInstanced )
+	glDrawArraysInstanced( vbo.getPrimitiveType(), first, count, instanceCount );
+#elif( defined glDrawArraysInstancedEXT )
+	glDrawArraysInstancedEXT( vbo.getPrimitiveType(), first, count, instanceCount );
+#elif( defined glDrawArraysInstancedARB )
+	glDrawArraysInstancedARB( vbo.getPrimitiveType(), first, count, instanceCount );
+#else
+	// fall back to rendering a single instance
+	glDrawArrays( vbo.getPrimitiveType(), first, count );
+#endif
 
 	gl::VboMesh::unbindBuffers();
 	vbo.disableClientStates();
