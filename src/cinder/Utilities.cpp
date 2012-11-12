@@ -48,6 +48,7 @@
 	#include "cinder/msw/StackWalker.h"
 #endif
 
+#include <sstream>
 #include <vector>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
@@ -186,6 +187,25 @@ std::string getPathExtension( const std::string &path )
 	}
 	else
 		return std::string();
+}
+
+fs::path getNextNumberedPath( const fs::path &path, int numberPadding )
+{
+	fs::path p( path );
+	string extension = p.extension().string();
+	string stem = p.stem().string();
+	fs::path parent_path = p.parent_path();
+
+	int count = 0;
+	do {
+		std::stringstream ss;
+		ss.width(numberPadding);
+		ss.fill('0');
+		ss << std::right << count++;
+		p = parent_path / ( stem + ss.str() + extension );
+	} while (fs::exists( p ));
+
+	return p;
 }
 
 bool createDirectories( const fs::path &path, bool createParents )
