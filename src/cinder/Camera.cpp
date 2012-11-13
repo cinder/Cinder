@@ -358,6 +358,12 @@ CameraOrtho::CameraOrtho( float left, float right, float bottom, float top, floa
 	mFrustumBottom	= bottom;
 	mNearClip		= nearPlane;
 	mFarClip		= farPlane;
+	
+	mProjectionCached = false;
+	mModelViewCached = true;
+	mModelViewMatrix.setToIdentity();
+	mInverseModelViewCached = true;
+	mInverseModelViewMatrix.setToIdentity();
 }
 
 void CameraOrtho::setOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane )
