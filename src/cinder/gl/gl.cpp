@@ -1433,12 +1433,10 @@ void drawRangeInstanced( const VboMesh &vbo, size_t startIndex, size_t indexCoun
 	vbo.enableClientStates();
 	vbo.bindAllData();
 	
-#if( defined glDrawElementsInstanced )
-	glDrawElementsInstanced( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
-#elif( defined glDrawElementsInstancedEXT )
-	glDrawElementsInstancedEXT( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
-#elif( defined glDrawElementsInstancedARB )
+#if( defined GL_ARB_draw_instanced )
 	glDrawElementsInstancedARB( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
+#elif( defined GL_EXT_draw_instanced )
+	glDrawElementsInstancedEXT( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ), instanceCount );
 #else
 	// fall back to rendering a single instance
 	glDrawElements( vbo.getPrimitiveType(), indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ) );
@@ -1453,12 +1451,10 @@ void drawArraysInstanced( const VboMesh &vbo, GLint first, GLsizei count, size_t
 	vbo.enableClientStates();
 	vbo.bindAllData();
 	
-#if( defined glDrawArraysInstanced )
-	glDrawArraysInstanced( vbo.getPrimitiveType(), first, count, instanceCount );
-#elif( defined glDrawArraysInstancedEXT )
-	glDrawArraysInstancedEXT( vbo.getPrimitiveType(), first, count, instanceCount );
-#elif( defined glDrawArraysInstancedARB )
+#if( defined GL_ARB_draw_instanced )
 	glDrawArraysInstancedARB( vbo.getPrimitiveType(), first, count, instanceCount );
+#elif( defined GL_EXT_draw_instanced )
+	glDrawArraysInstancedEXT( vbo.getPrimitiveType(), first, count, instanceCount );
 #else
 	// fall back to rendering a single instance
 	glDrawArrays( vbo.getPrimitiveType(), first, count );
