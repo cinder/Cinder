@@ -90,6 +90,9 @@ void InstancedVboRenderingApp::setup()
 
 	// load hexagon mesh
 	loadMesh();
+
+	// 
+	setFpsSampleInterval( 0.25 );
 }
 
 void InstancedVboRenderingApp::update()
@@ -123,11 +126,13 @@ void InstancedVboRenderingApp::draw()
 	gl::enableDepthWrite();
 	gl::color( Color::white() );
 
+	const float row_count = 50.0f;
+
 	if(mHexagon && mShader ) {
 		// bind the shader, which will do all the hard work for us
 		mShader.bind();
 		mShader.uniform( "offset_matrix", offset_matrix );
-		mShader.uniform( "row_size", 50.0f );
+		mShader.uniform( "row_size", row_count );
 
 		if( mDrawInstanced ) 
 		{
@@ -139,21 +144,21 @@ void InstancedVboRenderingApp::draw()
 		}
 		else
 		{
-			// this is what we need to do if we draw each 
+			// this is what we need to do if we draw each
 			// instance separately. It's slower, because you
 			// need a separate draw call for each instance.
 			// However, it's easier and more flexible.
-			for(int x=0;x<50;x++) 
+			for(int i=0;i<10000;i++) 
 			{ 
-				for(int y=0;y<200;y++) 
-				{
-					Vec4f p = offset_matrix * Vec4f( float(x), float(y), 0.0f, math<float>::fmod( float(y), 2.0f ) );
+				float x = math<float>::fmod( i, row_count );
+				float y = math<float>::floor( i / row_count );
+				Vec4f p = offset_matrix * Vec4f( x, y, 0.0f, math<float>::fmod( float(y), 2.0f ) );
 
-					gl::pushModelView();
-					gl::translate( p.x, p.y, p.z ); 
-					gl::draw( mHexagon );
-					gl::popModelView();
-				}
+				gl::pushModelView();
+				gl::translate( p.x, p.y, p.z ); 
+
+				gl::draw( mHexagon );
+				gl::popModelView();
 			}
 		}
 
