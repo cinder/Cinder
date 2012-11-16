@@ -112,15 +112,17 @@
 
 - (void)threadEntry:(id)arg
 {
+	ci::IStreamUrlImplCocoa *impl = ((IStreamUrlImplCocoaDelegate*)self)->mImpl;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
+	NSURLRequestCachePolicy cachePolicy = (impl->getOptions().getIgnoreCache())? NSURLRequestReloadIgnoringLocalCacheData : NSURLRequestUseProtocolCachePolicy;
 	NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:mUrl.c_str()]]
-								cachePolicy:NSURLRequestUseProtocolCachePolicy
-								timeoutInterval:30.0];								
+								cachePolicy:cachePolicy
+								timeoutInterval:impl->getOptions().getTimeout()];
 
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self];
 	if( ! connection ) {
-		[pool release];
+		[pool drain];
 		return;
 	}
 		
@@ -134,7 +136,7 @@
 		
 	// we fill the buffer just to get things rolling*/
 	[connection release];
-	[pool release];
+	[pool drain];
 }
 
 -(void)connection:(NSURLConnection *)connection
@@ -313,8 +315,8 @@
 
 namespace cinder {
 
-IStreamUrlImplCocoa::IStreamUrlImplCocoa( const std::string &url, const std::string &user, const std::string &password )
-	: IStreamUrlImpl( user, password )
+IStreamUrlImplCocoa::IStreamUrlImplCocoa( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
+	: IStreamUrlImpl( user, password, options )
 {
 	mDelegate = [[IStreamUrlImplCocoaDelegate alloc] initWithImpl:this url:Url(url, true) user:user password:password];
 	
