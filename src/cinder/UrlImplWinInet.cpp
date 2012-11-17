@@ -39,8 +39,8 @@ void safeInternetCloseHandle( HINTERNET hInternet )
 		::InternetCloseHandle( hInternet );
 }
 
-IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std::string &user, const std::string &password )
-	: IStreamUrlImpl( user, password ), mIsFinished( false ), mBuffer( 0 ), mBufferFileOffset( 0 )
+IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
+	: IStreamUrlImpl( user, password, options ), mIsFinished( false ), mBuffer( 0 ), mBufferFileOffset( 0 )
 {
 	std::wstring wideUrl = toUtf16( url );
 
@@ -91,22 +91,26 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
     //it is wrong to group http with https.
     
     //http
-    if(urlComponents.nScheme == INTERNET_SCHEME_HTTP ) {
-        static LPCTSTR lpszAcceptTypes[] = { L"*/*", NULL };
-        mRequest = std::shared_ptr<void>( ::HttpOpenRequest( mConnection.get(), L"GET", path, NULL, NULL, lpszAcceptTypes,
-                                                            INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_RELOAD, NULL ),
+	DWORD flags = INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES;
+	if( options.getIgnoreCache() )
+		flags |= INTERNET_FLAG_RELOAD;
+	if( urlComponents.nScheme == INTERNET_SCHEME_HTTP ) {
+		static LPCTSTR lpszAcceptTypes[] = { L"*/*", NULL };
+
+		mRequest = std::shared_ptr<void>( ::HttpOpenRequest( mConnection.get(), L"GET", path, NULL, NULL, lpszAcceptTypes,
+                                                            flags, NULL ),
                                          safeInternetCloseHandle );
-        if( ! mRequest )
-            throw StreamExc();
-        BOOL success = ::HttpSendRequest( mRequest.get(), NULL, 0, NULL, 0);
-        if( ! success )
-            throw StreamExc();
-    }
+		if( ! mRequest )
+			throw StreamExc();
+		BOOL success = ::HttpSendRequest( mRequest.get(), NULL, 0, NULL, 0);
+		if( ! success )
+			throw StreamExc();
+	}
     //https
 	else if(urlComponents.nScheme == INTERNET_SCHEME_HTTPS ) {
 			static LPCTSTR lpszAcceptTypes[] = { L"*/*", NULL };
 			mRequest = std::shared_ptr<void>( ::HttpOpenRequest( mConnection.get(), L"GET", path, NULL, NULL, lpszAcceptTypes,
-													INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES | INTERNET_FLAG_RELOAD | INTERNET_FLAG_SECURE, NULL ),
+													flags | INTERNET_FLAG_SECURE, NULL ),
 											safeInternetCloseHandle );
 			if( ! mRequest )
 				throw StreamExc();

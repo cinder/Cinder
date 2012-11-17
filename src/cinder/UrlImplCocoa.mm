@@ -116,11 +116,11 @@
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	NSURLRequestCachePolicy cachePolicy = (impl->getOptions().getIgnoreCache())? NSURLRequestReloadIgnoringLocalCacheData : NSURLRequestUseProtocolCachePolicy;
-	NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:mUrl.c_str()]]
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:mUrl.c_str()]]
 								cachePolicy:cachePolicy
 								timeoutInterval:impl->getOptions().getTimeout()];
 
-	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self];
+	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	if( ! connection ) {
 		[pool drain];
 		return;
