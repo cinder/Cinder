@@ -90,6 +90,11 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
     //http and https cases broken out incase someone wishes to modify connection based off of type.
     //it is wrong to group http with https.
     
+	unsigned long timeoutMillis = static_cast<unsigned long>( options.getTimeout() * 1000 );
+	::InternetSetOptionW( mConnection.get(), INTERNET_OPTION_RECEIVE_TIMEOUT, &timeoutMillis, sizeof(unsigned long) );
+	::InternetSetOptionW( mConnection.get(), INTERNET_OPTION_CONNECT_TIMEOUT, &timeoutMillis, sizeof(unsigned long) );
+	::InternetSetOptionW( mConnection.get(), INTERNET_OPTION_SEND_TIMEOUT, &timeoutMillis, sizeof(unsigned long) );
+
     //http
 	DWORD flags = INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_COOKIES;
 	if( options.getIgnoreCache() )
