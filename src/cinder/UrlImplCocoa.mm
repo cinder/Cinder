@@ -221,16 +221,13 @@
 
 - (bool)isEof
 {
-	bool result;
 	@synchronized( self ) {
 		if( mDidFail ) {
 			mStillConnected = NO;
 			throw cinder::UrlLoadExc( mStatusCode, mErrorString );
 		}
-
-		result = ( mBufferedBytes - mBufferOffset == 0 ) && ( ! mStillConnected );
+		return ( mBufferedBytes - mBufferOffset == 0 ) && ( ! mStillConnected );
 	}
-	return result;
 }
 
 - (off_t)getSize
@@ -262,9 +259,8 @@
 		else { // moving forward off the end of the buffer - keep buffering til we're in range
 			return -1; // need to implement this		
 		}
+		return 0;
 	}
-	
-	return 0;
 }
 
 - (void)seekAbsolute:(off_t)absoluteOffset
