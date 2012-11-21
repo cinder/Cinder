@@ -340,7 +340,7 @@ class PatternSurface : public Pattern {
 	//! Initializes with a null PatternSurface
 	PatternSurface() : Pattern() {}
 	PatternSurface( SurfaceBase &surface );
-	PatternSurface( ci::Surface cinderSurface );
+	PatternSurface( cinder::Surface cinderSurface );
 	PatternSurface( ImageSourceRef imageSource );
 };
 
