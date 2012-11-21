@@ -40,6 +40,9 @@
 	off_t				mSize;
 	BOOL				mStillConnected;
 	BOOL				mResponseReceived;
+	BOOL				mDidFail;
+	std::string			mErrorString;
+	int					mStatusCode;
 }
 
 - (id)initWithImpl:(ci::IStreamUrlImplCocoa*)impl url:(ci::Url)url user:(std::string)user password:(std::string)password;
@@ -84,6 +87,8 @@
 	mBufferFileOffset = 0;
 	mStillConnected = YES;
 	mResponseReceived = NO;
+	mDidFail = NO;
+	mStatusCode = 0;
 	mSize = 0;
 
 	return self;
@@ -107,6 +112,16 @@
 		
 		mSize = 0;
 		mResponseReceived = YES;
+
+		if( [response isKindOfClass:[NSHTTPURLResponse class]] ) {
+			NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+			mStatusCode = [httpResponse statusCode];
+			if( mStatusCode >= 400) {
+				mErrorString = "HTTP error: ";
+				mErrorString += [[NSHTTPURLResponse localizedStringForStatusCode:mStatusCode] cStringUsingEncoding:NSUTF8StringEncoding];
+				mDidFail = YES;
+			}
+		}
 	}
 }
 
@@ -182,6 +197,9 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
+	mErrorString = std::string( [[error localizedDescription] cStringUsingEncoding:NSUTF8StringEncoding] );
+	mStatusCode = [error code];
+	mDidFail = YES;
 	mStillConnected = NO;
 	mResponseReceived = YES;
 }
@@ -203,11 +221,13 @@
 
 - (bool)isEof
 {
-	bool result;
 	@synchronized( self ) {
-		result = ( mBufferedBytes - mBufferOffset == 0 ) && ( ! mStillConnected );
+		if( mDidFail ) {
+			mStillConnected = NO;
+			throw cinder::UrlLoadExc( mStatusCode, mErrorString );
+		}
+		return ( mBufferedBytes - mBufferOffset == 0 ) && ( ! mStillConnected );
 	}
-	return result;
 }
 
 - (off_t)getSize
@@ -239,9 +259,8 @@
 		else { // moving forward off the end of the buffer - keep buffering til we're in range
 			return -1; // need to implement this		
 		}
+		return 0;
 	}
-	
-	return 0;
 }
 
 - (void)seekAbsolute:(off_t)absoluteOffset
