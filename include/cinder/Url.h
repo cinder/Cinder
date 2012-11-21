@@ -143,4 +143,17 @@ class IStreamUrl : public IStream {
 IStreamUrlRef		loadUrlStream( const Url &url, const UrlOptions &options = UrlOptions() );
 IStreamUrlRef		loadUrlStream( const std::string &url, const std::string &user = "", const std::string &password = "", const UrlOptions &options = UrlOptions() );
 
+//! Exception for failed Url loading
+class UrlLoadExc : public Exception {
+public:
+	UrlLoadExc( int statusCode, const std::string &description );
+
+	virtual const char * what() const throw() { return mMessage; }
+	int statusCode() { return mStatusCode; }
+
+private:
+	char mMessage[4096];
+	int mStatusCode;
+};
+
 } // namespace cinder
