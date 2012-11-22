@@ -113,6 +113,7 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\assets\instanced_phong_vert.glsl" />
     <None Include="..\assets\phong_frag.glsl" />
     <None Include="..\assets\phong_vert.glsl" />
   </ItemGroup>

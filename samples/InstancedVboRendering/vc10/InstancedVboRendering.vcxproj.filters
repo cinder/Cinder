@@ -39,5 +39,8 @@
     <None Include="..\assets\phong_frag.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\assets\instanced_phong_vert.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
