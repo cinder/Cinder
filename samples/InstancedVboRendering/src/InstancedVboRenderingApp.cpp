@@ -68,7 +68,7 @@ private:
 
 	gl::Texture		mHelpTexture;
 
-	std::vector< Matrix44f >	mTransforms;
+	std::vector< Matrix44f >	mModelMatrices;
 };
 
 void InstancedVboRenderingApp::prepareSettings(Settings *settings)
@@ -87,23 +87,24 @@ void InstancedVboRenderingApp::setup()
 
 	// initialize camera
 	CameraPersp	cam;
-	cam.setEyePoint( Vec3f(48, 12, 60) );
-	cam.setCenterOfInterestPoint( Vec3f(48, 12, 0) );
+	cam.setEyePoint( Vec3f(12, 24, 12) );
+	cam.setCenterOfInterestPoint( Vec3f(18, 24, 0) );
 	cam.setFov( 60.0f );
 	mCamera.setCurrentCam( cam );
 
 	// initialize transforms for every instance
-	mTransforms.resize( NUM_INSTANCES );
+	mModelMatrices.resize( NUM_INSTANCES );
+
 	for(size_t i=0;i<NUM_INSTANCES;++i)
 	{
 		float y = math<float>::floor( i / ROW_COUNT );
 		float x = 3.0f * math<float>::fmod( i, ROW_COUNT ) + 1.5f * math<float>::fmod( y, 2.0f );
 		y *= 0.866025f;
 
-		Matrix44f m;
-		m.translate( Vec3f(x, y, 0.0f) );
-		m.rotate( Rand::randFloat() * Vec3f::xAxis() );
-		mTransforms[i] = m;
+		Matrix44f model;
+		model.translate( Vec3f(x, y, 0.0f) );
+		model.rotate( Rand::randFloat() * Vec3f::xAxis() );
+		mModelMatrices[i] = model;
 	}
 
 	// load shader
@@ -113,8 +114,8 @@ void InstancedVboRenderingApp::setup()
 	}
 	catch( const std::exception &e ) { console() << e.what() << std::endl; }
 
-	// create uniform buffer to store locations
-	GLint ulocation = mShaderInstanced.getUniformLocation( "offset" );
+	// create uniform buffer to store model matrices
+	GLint ulocation = mShaderInstanced.getUniformLocation( "model_matrix" );
 	if( ulocation != -1 )
 	{
 		mShaderInstanced.bind();
@@ -122,7 +123,7 @@ void InstancedVboRenderingApp::setup()
 		GLuint ubuffer;
 		glGenBuffers(1, &ubuffer);
 		glBindBuffer(GL_UNIFORM_BUFFER_EXT, ubuffer);
-		glBufferData(GL_UNIFORM_BUFFER_EXT, usize, &mTransforms.front(), GL_STATIC_READ);
+		glBufferData(GL_UNIFORM_BUFFER_EXT, usize, &mModelMatrices.front(), GL_STATIC_READ);
 		glUniformBufferEXT( mShaderInstanced.getHandle(), ulocation, ubuffer );
 		mShaderInstanced.unbind();
 	}
@@ -182,7 +183,7 @@ void InstancedVboRenderingApp::draw()
 			for(int i=0;i<NUM_INSTANCES;i++) 
 			{ 
 				gl::pushModelView();
-				gl::multModelView( mTransforms[i] );
+				gl::multModelView( mModelMatrices[i] );
 				gl::draw( mHexagon );
 				gl::popModelView();
 			}

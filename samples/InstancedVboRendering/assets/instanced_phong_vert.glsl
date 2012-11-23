@@ -2,20 +2,18 @@
 #extension GL_EXT_bindable_uniform: enable
 #extension GL_EXT_draw_instanced : enable
 
-bindable uniform mat4	offset[1024];
+bindable uniform mat4	model_matrix[1024];
 
-varying vec3	V;
+varying vec4	V;
 varying vec3	N;
 
 void main()
 {
-	// based on the instance ID, determine the position of this hexagon 
-	vec4 position = offset[gl_InstanceID] * gl_Vertex;
+	// based on the instance ID, determine the position of this vertex 
+	V = gl_ModelViewMatrix * model_matrix[gl_InstanceID] * gl_Vertex;
 
-	// pass the vertex position to the fragment shader
-	V = vec3(gl_ModelViewMatrix * position);
-	// pass the normal to the fragment shader      
-	N = normalize(gl_NormalMatrix * gl_Normal);
+	// do the same for the normal vector (note: this calculation is only correct if your model is NOT scaled!)
+	N = normalize( gl_NormalMatrix * vec3( model_matrix[gl_InstanceID] * vec4( gl_Normal, 0.0 ) ) );
 	
-	gl_Position = gl_ModelViewProjectionMatrix * position;
+	gl_Position = gl_ProjectionMatrix * V;
 }

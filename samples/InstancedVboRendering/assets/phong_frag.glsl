@@ -1,6 +1,6 @@
 #version 110
 
-varying vec3 V;
+varying vec4 V;
 varying vec3 N;
 
 void main()
@@ -11,8 +11,8 @@ void main()
 	const float shininess = 25.0;
 
 	// calculate lighting vectors
-	vec3 L = normalize( light - V );   
-	vec3 E = normalize( -V ); 
+	vec3 L = normalize( light - V.xyz );   
+	vec3 E = normalize( -V.xyz ); 
 	vec3 R = normalize( -reflect(L,N) );  
 
 	// ambient term 
