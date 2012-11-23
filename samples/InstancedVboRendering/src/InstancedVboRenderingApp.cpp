@@ -36,8 +36,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#define NUM_INSTANCES 1024	// this is the maximum possible size for most GPU's (1024*64 bytes = 64KB)
-#define ROW_COUNT 16
+#define NUM_INSTANCES 5000	
+#define ROW_COUNT 40
 
 class InstancedVboRenderingApp : public AppBasic {
 public:
@@ -55,6 +55,7 @@ public:
 	void keyDown( KeyEvent event );
 private:
 	void loadMesh();
+	void initializeBuffer();
 	void renderHelp();
 private:
 	bool			mDrawInstanced;
@@ -64,7 +65,9 @@ private:
 	gl::GlslProg	mShader;
 	gl::GlslProg	mShaderInstanced;
 
-	gl::VboMesh		mHexagon;
+	gl::VboMesh		mVboMesh;
+	gl::Vbo			mBuffer;
+	GLuint			mVAO;
 
 	gl::Texture		mHelpTexture;
 
@@ -87,8 +90,8 @@ void InstancedVboRenderingApp::setup()
 
 	// initialize camera
 	CameraPersp	cam;
-	cam.setEyePoint( Vec3f(12, 24, 12) );
-	cam.setCenterOfInterestPoint( Vec3f(18, 24, 0) );
+	cam.setEyePoint( Vec3f(60, 60, 60) );
+	cam.setCenterOfInterestPoint( Vec3f(60, 60, 0) );
 	cam.setFov( 60.0f );
 	mCamera.setCurrentCam( cam );
 
@@ -114,19 +117,8 @@ void InstancedVboRenderingApp::setup()
 	}
 	catch( const std::exception &e ) { console() << e.what() << std::endl; }
 
-	// create uniform buffer to store model matrices
-	GLint ulocation = mShaderInstanced.getUniformLocation( "model_matrix" );
-	if( ulocation != -1 )
-	{
-		mShaderInstanced.bind();
-		GLint usize = glGetUniformBufferSizeEXT( mShaderInstanced.getHandle(), ulocation );
-		GLuint ubuffer;
-		glGenBuffers(1, &ubuffer);
-		glBindBuffer(GL_UNIFORM_BUFFER_EXT, ubuffer);
-		glBufferData(GL_UNIFORM_BUFFER_EXT, usize, &mModelMatrices.front(), GL_STATIC_READ);
-		glUniformBufferEXT( mShaderInstanced.getHandle(), ulocation, ubuffer );
-		mShaderInstanced.unbind();
-	}
+	// create a vertex array object 
+	initializeBuffer();
 
 	// load hexagon mesh
 	loadMesh();
@@ -152,23 +144,27 @@ void InstancedVboRenderingApp::draw()
 
 	// set render states
 	gl::enable( GL_CULL_FACE );
-	gl::enableAlphaBlending();
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 	gl::color( Color::white() );
 
-	if(mHexagon ) {
-
-		if( mDrawInstanced && mShaderInstanced ) 
+	if(mVboMesh ) 
+	{
+		if( mDrawInstanced && mShaderInstanced && mBuffer ) 
 		{
 			// bind the shader, which will do all the hard work for us
 			mShaderInstanced.bind();
 
+			// bind the buffer containing the model matrix for each instance
+			glBindVertexArray(mVAO);
+
 			// we do all positioning in the shader,
 			// and therefor we only need a single draw call
-			// to render 10000 instances. It's fast,
+			// to render all instances. It's fast,
 			// but a little less flexible.
-			gl::drawInstanced( mHexagon, NUM_INSTANCES );
+			gl::drawInstanced( mVboMesh, NUM_INSTANCES );
+			
+			glBindVertexArray(0);
 
 			mShaderInstanced.unbind();
 		}
@@ -184,18 +180,19 @@ void InstancedVboRenderingApp::draw()
 			{ 
 				gl::pushModelView();
 				gl::multModelView( mModelMatrices[i] );
-				gl::draw( mHexagon );
+				gl::draw( mVboMesh );
 				gl::popModelView();
 			}
 
 			mShader.unbind();
 		}
-	}
+
+		mVboMesh.unbindBuffers();
+	}			
 	
 	// reset render states
 	gl::disableDepthWrite();
 	gl::disableDepthRead();
-	gl::disableAlphaBlending();
 	gl::disable( GL_CULL_FACE );
 
 	// restore 2D drawing
@@ -222,10 +219,37 @@ void InstancedVboRenderingApp::loadMesh()
 
 	try {
 		loader.load( &mesh, true, false, false );
-		mHexagon = gl::VboMesh( mesh );
+		mVboMesh = gl::VboMesh( mesh );
 	}
 	catch( const std::exception &e ) {
 		console() << e.what() << std::endl;
+	}
+}
+
+void InstancedVboRenderingApp::initializeBuffer()
+{
+	// retrieve attribute location from the shader
+	GLint ulocation = mShaderInstanced.getAttribLocation( "model_matrix" );
+	if( ulocation != -1 )
+	{ 
+		glGenVertexArrays(1, &mVAO);   
+		glBindVertexArray(mVAO);
+
+		// create array buffer to store model matrices
+		mBuffer = gl::Vbo( GL_ARRAY_BUFFER );
+
+		// setup the buffer to contain space for all matrices
+		mBuffer.bind();
+		for (unsigned int i = 0; i < 4 ; i++) {
+			glEnableVertexAttribArray(ulocation + i);
+			glVertexAttribPointer(ulocation + i, 4, GL_FLOAT, GL_FALSE, sizeof(Matrix44f), (const GLvoid*)(sizeof(GLfloat) * i * 4));
+			glVertexAttribDivisor(ulocation + i, 1);
+		}
+
+		mBuffer.bufferData( mModelMatrices.size() * sizeof(Matrix44f), &mModelMatrices.front(), GL_STATIC_READ );
+		mBuffer.unbind();
+
+		glBindVertexArray(0);
 	}
 }
 
@@ -267,6 +291,9 @@ void InstancedVboRenderingApp::keyDown( KeyEvent event )
 		break;
 	case KeyEvent::KEY_f:
 		setFullScreen( ! isFullScreen() );
+
+		// when switching to/from full screen, the buffer or shader might be lost
+		initializeBuffer();
 		break;
 	case KeyEvent::KEY_i:
 		mDrawInstanced = !mDrawInstanced;
