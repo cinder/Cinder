@@ -45,6 +45,7 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
 	
 	RendererGl	*mRenderer;
 	bool		mWasFullScreen;
+	bool		mWasVerticalSynced;
 	HGLRC		mRC, mPrevRC;
 	HDC			mDC;
 };
