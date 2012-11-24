@@ -41,6 +41,7 @@ AppImplMswRendererGl::AppImplMswRendererGl( App *aApp, RendererGl *aRenderer )
 void AppImplMswRendererGl::prepareToggleFullScreen()
 {
 	mPrevRC = mRC;
+	mWasVerticalSynced = gl::isVerticalSyncEnabled();
 }
 
 void AppImplMswRendererGl::finishToggleFullScreen()
@@ -48,6 +49,8 @@ void AppImplMswRendererGl::finishToggleFullScreen()
 	if( mPrevRC ) {
 		::wglDeleteContext( mPrevRC );
 	}
+
+	gl::enableVerticalSync( mWasVerticalSynced );
 }
 
 void AppImplMswRendererGl::defaultResize() const
