@@ -19,7 +19,7 @@ void main()
 	vec4 ambient = vec4(0.0, 0.0, 0.0, 1.0);    
 
 	// diffuse term
-	vec4 diffuse = vec4(0.9, 0.5, 0.1, 1.0);
+	vec4 diffuse = vec4(0.9, 0.6, 0.3, 1.0);
 	diffuse *= max( dot(N,L), 0.0 );
 	diffuse = clamp( diffuse, 0.0, 1.0 );     
 

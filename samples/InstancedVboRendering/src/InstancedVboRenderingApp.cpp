@@ -20,6 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/ObjLoader.h"
 #include "cinder/Rand.h"
@@ -36,8 +37,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-#define NUM_INSTANCES 5000	
-#define ROW_COUNT 40
+#define NUM_INSTANCES		4800	
+#define INSTANCES_PER_ROW	40
 
 class InstancedVboRenderingApp : public AppBasic {
 public:
@@ -54,24 +55,35 @@ public:
 	
 	void keyDown( KeyEvent event );
 private:
+	// loads the hexagon mesh into a VBO using ObjLoader
 	void loadMesh();
+	// creates a Vertex Array Object containing 
+	// a transform matrix for each instance
 	void initializeBuffer();
+	// renders a help text to a Texture
 	void renderHelp();
 private:
 	bool			mDrawInstanced;
 
+	// our controlable camera
 	MayaCamUI		mCamera;
 
+	// we're using two shaders: a standard, non-instanced one and an instanced one
 	gl::GlslProg	mShader;
 	gl::GlslProg	mShaderInstanced;
 
+	// VBO containing one hexagon mesh
 	gl::VboMesh		mVboMesh;
+	// a VBO containing a list of matrices, 
+	// that we can apply as a vertex shader attribute
 	gl::Vbo			mBuffer;
+	// a vertex array object that encapsulates our buffer
 	GLuint			mVAO;
 
-	gl::Texture		mHelpTexture;
-
+	// transform matrices for each instance we're rendering
 	std::vector< Matrix44f >	mModelMatrices;
+
+	gl::Texture		mHelpTexture;
 };
 
 void InstancedVboRenderingApp::prepareSettings(Settings *settings)
@@ -90,27 +102,38 @@ void InstancedVboRenderingApp::setup()
 
 	// initialize camera
 	CameraPersp	cam;
-	cam.setEyePoint( Vec3f(60, 60, 60) );
-	cam.setCenterOfInterestPoint( Vec3f(60, 60, 0) );
+	cam.setEyePoint( Vec3f(50, 50, 60) );
+	cam.setCenterOfInterestPoint( Vec3f(50, 50, 0) );
 	cam.setFov( 60.0f );
 	mCamera.setCurrentCam( cam );
 
+	// load an image
+	Surface image( loadImage( loadAsset("andrew_bell.jpg") ) );
+
 	// initialize transforms for every instance
-	mModelMatrices.resize( NUM_INSTANCES );
+	mModelMatrices.reserve( NUM_INSTANCES );
 
 	for(size_t i=0;i<NUM_INSTANCES;++i)
 	{
-		float y = math<float>::floor( i / ROW_COUNT );
-		float x = 3.0f * math<float>::fmod( i, ROW_COUNT ) + 1.5f * math<float>::fmod( y, 2.0f );
-		y *= 0.866025f;
+		// determine position for this hexagon
+		float x = math<float>::fmod( float(i), INSTANCES_PER_ROW );
+		float y = math<float>::floor( float(i) / INSTANCES_PER_ROW );
 
+		// get pixel luminance from image and convert to angle
+		Vec2f pixel = Vec2f( 1.0f - x / INSTANCES_PER_ROW, 1.0f - y / (3 * INSTANCES_PER_ROW) );
+		Vec2i pos = pixel * Vec2f( image.getSize() );
+		ColorA clr = image.getPixel( pos );
+		float luminance = 0.3f * clr.r + 0.59f * clr.g + 0.11f * clr.b;
+		float angle = math<float>::acos( luminance );
+
+		// create transform matrix, then rotate and translate it
 		Matrix44f model;
-		model.translate( Vec3f(x, y, 0.0f) );
-		model.rotate( Rand::randFloat() * Vec3f::xAxis() );
-		mModelMatrices[i] = model;
+		model.translate( Vec3f( 3.0f * x + 1.5f * math<float>::fmod( y, 2.0f ) , 0.866025f * y, 0.0f ) );
+		model.rotate( Vec3f::xAxis(), angle );
+		mModelMatrices.push_back( model );
 	}
 
-	// load shader
+	// load shaders
 	try { 
 		mShader = gl::GlslProg( loadAsset("phong_vert.glsl"), loadAsset("phong_frag.glsl") ); 
 		mShaderInstanced = gl::GlslProg( loadAsset("instanced_phong_vert.glsl"), loadAsset("phong_frag.glsl") ); 
@@ -123,7 +146,7 @@ void InstancedVboRenderingApp::setup()
 	// load hexagon mesh
 	loadMesh();
 
-	// 
+	// calculate FPS 4 times a second
 	setFpsSampleInterval( 0.25 );
 }
 
@@ -155,7 +178,9 @@ void InstancedVboRenderingApp::draw()
 			// bind the shader, which will do all the hard work for us
 			mShaderInstanced.bind();
 
-			// bind the buffer containing the model matrix for each instance
+			// bind the buffer containing the model matrix for each instance,
+			// this will allow us to pass this information as a vertex shader attribute.
+			// See: initializeBuffer()
 			glBindVertexArray(mVAO);
 
 			// we do all positioning in the shader,
@@ -164,18 +189,22 @@ void InstancedVboRenderingApp::draw()
 			// but a little less flexible.
 			gl::drawInstanced( mVboMesh, NUM_INSTANCES );
 			
+			// unbind vertex array object containing our buffer
 			glBindVertexArray(0);
 
+			// unbind shader
 			mShaderInstanced.unbind();
 		}
-		else
+		else if( mShader )
 		{
+			// bind shader
 			mShader.bind();
 
 			// this is what we need to do if we draw each
-			// instance separately. It's slower, because you
-			// need a separate draw call for each instance.
-			// However, it's easier and more flexible.
+			// instance separately. It's slower for static objects, 
+			// because you need a separate draw call for each instance.
+			// However, it's easier, more flexible and usually faster
+			// for dynamic objects.
 			for(int i=0;i<NUM_INSTANCES;i++) 
 			{ 
 				gl::pushModelView();
@@ -183,10 +212,12 @@ void InstancedVboRenderingApp::draw()
 				gl::draw( mVboMesh );
 				gl::popModelView();
 			}
-
+			
+			// unbind shader
 			mShader.unbind();
 		}
 
+		// make sure our VBO is no longer bound
 		mVboMesh.unbindBuffers();
 	}			
 	
@@ -199,9 +230,12 @@ void InstancedVboRenderingApp::draw()
 	gl::popMatrices();
 
 	// draw help
-	gl::enableAlphaBlending();
-	gl::draw( mHelpTexture, Vec2f( 0.5f * getWindowWidth() - 200.0f, getWindowHeight() - 125.0f ) );
-	gl::disableAlphaBlending();
+	if( mHelpTexture )
+	{
+		gl::enableAlphaBlending();
+		gl::draw( mHelpTexture, Vec2f( 0.5f * getWindowWidth() - 200.0f, getWindowHeight() - 125.0f ) );
+		gl::disableAlphaBlending();
+	}
 }
 
 void InstancedVboRenderingApp::resize( ResizeEvent event )
@@ -228,27 +262,51 @@ void InstancedVboRenderingApp::loadMesh()
 
 void InstancedVboRenderingApp::initializeBuffer()
 {
+	// To pass the model matrix for each instance, we will use
+	// a custom vertex shader attribute. Using an attribute will
+	// give us more freedom and more storage capacity than using
+	// a uniform buffer, which often has a capacity limit of 64KB
+	// or less, which is just enough for 1024 instances.
+	//
+	// Because we want the attribute to stay the same for all
+	// vertices of an instance, we set the divisor to '1' instead
+	// of '0', so the attribute will only change after all
+	// vertices of the instance have been drawn.
+
 	// retrieve attribute location from the shader
+	// (note: make sure the shader is loaded and compiled before calling this function)
 	GLint ulocation = mShaderInstanced.getAttribLocation( "model_matrix" );
+
+	// if found...
 	if( ulocation != -1 )
 	{ 
+		// create vertex array object to hold our buffer
+		// (note: this is required for OpenGL 3.1 and above)
 		glGenVertexArrays(1, &mVAO);   
 		glBindVertexArray(mVAO);
 
 		// create array buffer to store model matrices
 		mBuffer = gl::Vbo( GL_ARRAY_BUFFER );
 
-		// setup the buffer to contain space for all matrices
+		// setup the buffer to contain space for all matrices.
+		// we need 4 attributes to contain the 16 floats of a single matrix,
+		// because the maximum size of an attribute is 4 floats (16 bytes).
+		// When adding a 'mat4' attribute, OpenGL will make sure that 
+		// the attribute locations are sequential, e.g.: 3, 4, 5 and 6
 		mBuffer.bind();
 		for (unsigned int i = 0; i < 4 ; i++) {
 			glEnableVertexAttribArray(ulocation + i);
-			glVertexAttribPointer(ulocation + i, 4, GL_FLOAT, GL_FALSE, sizeof(Matrix44f), (const GLvoid*)(sizeof(GLfloat) * i * 4));
-			glVertexAttribDivisor(ulocation + i, 1);
+			glVertexAttribPointer( ulocation + i, 4, GL_FLOAT, GL_FALSE, sizeof(Matrix44f), (const GLvoid*) (4 * sizeof(GLfloat) * i) );
+
+			// get the next matrix after each instance, instead of each vertex
+			glVertexAttribDivisor( ulocation + i, 1 );
 		}
 
+		// fill the buffer with our data
 		mBuffer.bufferData( mModelMatrices.size() * sizeof(Matrix44f), &mModelMatrices.front(), GL_STATIC_READ );
 		mBuffer.unbind();
 
+		// unbind the VAO
 		glBindVertexArray(0);
 	}
 }
@@ -284,16 +342,20 @@ void InstancedVboRenderingApp::mouseDrag( MouseEvent event )
 
 void InstancedVboRenderingApp::keyDown( KeyEvent event )
 {
+
 	switch( event.getCode() )
 	{
 	case KeyEvent::KEY_ESCAPE:
 		quit();
 		break;
-	case KeyEvent::KEY_f:
+	case KeyEvent::KEY_f:	{
+		// toggle full screen
+		bool wasVerticalSynced = gl::isVerticalSyncEnabled();
 		setFullScreen( ! isFullScreen() );
+		gl::enableVerticalSync( wasVerticalSynced );
 
 		// when switching to/from full screen, the buffer or shader might be lost
-		initializeBuffer();
+		initializeBuffer();	}
 		break;
 	case KeyEvent::KEY_i:
 		mDrawInstanced = !mDrawInstanced;
