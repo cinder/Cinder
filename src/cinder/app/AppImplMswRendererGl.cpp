@@ -236,6 +236,10 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC 
 		return false;								
 	}
 
+	if( glewInit() != 0 ){									// Try to initialize GLEW
+		return false;
+	}
+
 	if( ( ! sMultisampleSupported ) && ( mRenderer->getAntiAliasing() > RendererGl::AA_NONE ) )  {
 		int level = initMultisample( pfd, mRenderer->getAntiAliasing(), dc );
 		mRenderer->setAntiAliasing( RendererGl::AA_NONE + level );
