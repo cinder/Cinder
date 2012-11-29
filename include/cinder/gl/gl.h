@@ -28,7 +28,7 @@
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
 #elif defined( CINDER_MSW )
-	#include "cinder/gl/GLee.h"
+//
 #else
 	#define CINDER_GLES
 	#define CINDER_GLES1
@@ -48,7 +48,8 @@
 	#include <windows.h>
 	#undef min
 	#undef max
-	#include <gl/gl.h>
+	#include "glew/glew.h"
+	#include "glew/wglew.h"
 #elif defined( CINDER_COCOA_TOUCH )
 	#include <OpenGLES/ES1/gl.h>
 	#include <OpenGLES/ES1/glext.h>
@@ -373,8 +374,8 @@ struct SaveFramebufferBinding {
 };
 
 #if defined( CINDER_MSW )
-//! Initializes the GLee library. This is generally called automatically by the application and is only necessary if you need to use GLee before your app's setup() method is called.
-void initializeGlee();
+//! Initializes the GLEW library. This is generally called automatically by the application and is only necessary if you need to use GLEW before your app's setup() method is called.
+void initializeGlew();
 #endif
 
 class Exception : public cinder::Exception {
