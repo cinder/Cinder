@@ -220,6 +220,7 @@ void FrustumCullingReduxApp::draw()
 	light.setDiffuse( Color::white() );
 	light.setSpecular( Color::white() );
 	light.enable();
+	light.update( mRenderCam );
 
 	// bind shader 
 	if(mShader) {
