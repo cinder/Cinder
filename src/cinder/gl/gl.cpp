@@ -67,7 +67,7 @@ void initializeGlew() {
 			CGLDestroyPixelFormat( pixelFormat ); // 7
 			CGLSetCurrentContext( myCGLContext ); // 8
 			if ( myCGLContext ) {
-				GLeeInit();
+				glewInit();
 			}
 			CGLDestroyContext(myCGLContext);
 		}
@@ -177,7 +177,7 @@ void initializeGlew() {
 	}
 	
 	if( wglMakeCurrent( hdc, hglrc ) ) {
-		GLenum err = glewInit();
+		glewInit();
 	}
 	wglMakeCurrent( NULL, NULL ); 
 
