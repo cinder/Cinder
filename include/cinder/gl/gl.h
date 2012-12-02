@@ -28,8 +28,13 @@
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
 #elif defined( CINDER_MSW )
+	#if !defined( GLEW_STATIC )
+		#define GLEW_STATIC 1
+	#endif
 	#include "glew/glew.h"
 	#include "glew/wglew.h"
+	#undef min
+	#undef max
 #else
 	#define CINDER_GLES
 	#define CINDER_GLES1
