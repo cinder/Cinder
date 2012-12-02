@@ -28,7 +28,8 @@
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glext.h>
 #elif defined( CINDER_MSW )
-//
+	#include "glew/glew.h"
+	#include "glew/wglew.h"
 #else
 	#define CINDER_GLES
 	#define CINDER_GLES1
@@ -48,8 +49,6 @@
 	#include <windows.h>
 	#undef min
 	#undef max
-	#include "glew/glew.h"
-	#include "glew/wglew.h"
 #elif defined( CINDER_COCOA_TOUCH )
 	#include <OpenGLES/ES1/gl.h>
 	#include <OpenGLES/ES1/glext.h>
