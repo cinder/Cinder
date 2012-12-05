@@ -422,7 +422,7 @@ public:
 		float cosTheta = dot( end );
 
 		// initialize result
-		Quaternion<T> result = t * end;
+		Quaternion<T> result = end * t;
 
 		// if "angle" between quaternions is less than 90 degrees
 		if( cosTheta >= EPSILON ) {
