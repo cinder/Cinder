@@ -240,7 +240,8 @@ void Serial::writeBytes( const void *data, size_t numBytes )
 		if( ! ::WriteFile( mObj->mDeviceHandle, data, numBytes - totalBytesWritten, &bytesWritten, 0 ) )
 			throw SerialExcWriteFailure();
 #endif
-		totalBytesWritten += bytesWritten;
+		if( bytesWritten != -1 )
+			totalBytesWritten += bytesWritten;
 	}
 }
 
