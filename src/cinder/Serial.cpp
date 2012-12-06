@@ -258,7 +258,8 @@ void Serial::readBytes( void *data, size_t numBytes )
 		if( ! ::ReadFile( mObj->mDeviceHandle, data, numBytes - totalBytesRead, &bytesRead, 0 ) )
 			throw SerialExcReadFailure();
 #endif
-		totalBytesRead += bytesRead;
+		if( bytesRead != -1 )
+			totalBytesRead += bytesRead;
 		
 		// yield thread time to the system
 		thread::yield();
