@@ -549,7 +549,15 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 std::string System::getIpAddress()
 {
 	vector<System::NetworkAdapter> adapters = getNetworkAdapters();
-	std::string result = "127.0.0.1";
+
+#if defined( CINDER_COCOA )
+	for( vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt ) {
+		if( adaptIt->getName() == "en0" )
+			return adaptIt->getIpAddress();
+	}
+#endif
+
+	std::string result = "127.0.0.1";	
 	for( vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt ) {
 		if( (adaptIt->getIpAddress() != "127.0.0.1") && (adaptIt->getIpAddress() != "0.0.0.0") )
 			result = adaptIt->getIpAddress();
