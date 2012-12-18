@@ -668,4 +668,16 @@ struct EaseInOutAtan {
 	float mA, mInv2M;
 };
 
+//! Easing equation for step, hold the value until the end.
+inline float easeStep( float t )
+{
+    if ( t == 1.0f )
+        return 1.0f;
+    else
+        return 0.0f;
+}
+
+//! Easing equation for step, hold the value until the end.
+struct EaseStep{ float operator()( float t ) const { return easeStep( t ); } };
+
 } // namespace cinder
