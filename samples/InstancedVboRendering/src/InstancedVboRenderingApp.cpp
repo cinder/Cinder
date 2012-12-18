@@ -179,7 +179,7 @@ void InstancedVboRenderingApp::draw()
 				float y = math<float>::floor( float(i) / INSTANCES_PER_ROW );
 
 				// sample color from image
-				Vec2f pixel = Vec2f( 1.0f - x / INSTANCES_PER_ROW, 1.0f - y / (3 * INSTANCES_PER_ROW) ) * Vec2f( mImageSurface.getSize() );
+				Vec2f pixel = Vec2f( x / INSTANCES_PER_ROW, 1.0f - y / (3 * INSTANCES_PER_ROW) ) * Vec2f( mImageSurface.getSize() );
 				ColorA clr = mImageSurface.getPixel( Vec2i( pixel ) );
 
 				// convert to luminance and calculate corresponding angle in radians

@@ -15,7 +15,7 @@ void main()
 	float y = floor( gl_InstanceID / INSTANCES_PER_ROW );
 
 	// sample color from image
-	vec2 pixel = vec2( 1.0 - x / INSTANCES_PER_ROW, 1.0 - y / (3 * INSTANCES_PER_ROW) );
+	vec2 pixel = vec2( x / INSTANCES_PER_ROW, 1.0 - y / (3 * INSTANCES_PER_ROW) );
 	vec4 clr = texture2D( tex0, pixel );
 
 	// convert to luminance and calculate corresponding angle in radians
