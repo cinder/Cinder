@@ -66,7 +66,7 @@ namespace {
 #undef SYNONYM
 #undef HOMONYM
 
-bool mouseDown( app::MouseEvent event )
+void mouseDown( app::MouseEvent &event )
 {
 	TwMouseButtonID button;
 	if( event.isLeft() )
@@ -75,10 +75,10 @@ bool mouseDown( app::MouseEvent event )
 		button = TW_MOUSE_RIGHT;
 	else
 		button = TW_MOUSE_MIDDLE;
-	return TwMouseButton( TW_MOUSE_PRESSED, button ) != 0;
+	event.setHandled( TwMouseButton( TW_MOUSE_PRESSED, button ) != 0 );
 }
 
-bool mouseUp( app::MouseEvent event )
+void mouseUp( app::MouseEvent &event )
 {
 	TwMouseButtonID button;
 	if( event.isLeft() )
@@ -87,22 +87,22 @@ bool mouseUp( app::MouseEvent event )
 		button = TW_MOUSE_RIGHT;
 	else
 		button = TW_MOUSE_MIDDLE;
-	return TwMouseButton( TW_MOUSE_RELEASED, button ) != 0;
+	event.setHandled( TwMouseButton( TW_MOUSE_RELEASED, button ) != 0 );
 }
 
-bool mouseWheel( app::MouseEvent event )
+void mouseWheel( app::MouseEvent &event )
 {
 	static float sWheelPos = 0;
 	sWheelPos += event.getWheelIncrement();
-	return TwMouseWheel( (int)(sWheelPos) ) != 0;
+	event.setHandled( TwMouseWheel( (int)(sWheelPos) ) != 0 );
 }
 
-bool mouseMove( app::MouseEvent event )
+void mouseMove( app::MouseEvent &event )
 {
-	return TwMouseMotion( event.getX(), event.getY() ) != 0;
+	event.setHandled( TwMouseMotion( event.getX(), event.getY() ) != 0 );
 }
 
-bool keyDown( app::KeyEvent event )
+void keyDown( app::KeyEvent &event )
 {
 	int kmod = 0;
 	if( event.isShiftDown() )
@@ -111,17 +111,16 @@ bool keyDown( app::KeyEvent event )
 		kmod |= TW_KMOD_CTRL;
 	if( event.isAltDown() )
 		kmod |= TW_KMOD_ALT;
-	return TwKeyPressed(
+	event.setHandled( TwKeyPressed(
             (specialKeys.count( event.getCode() ) > 0)
                 ? specialKeys[event.getCode()]
                 : event.getChar(),
-            kmod ) != 0;
+            kmod ) != 0 );
 }
 
-bool resize( cinder::app::WindowRef window )
+void resize( cinder::app::WindowRef window )
 {
 	TwWindowSize( window->getWidth(), window->getHeight() );
-	return false;
 }
 
 void TW_CALL implStdStringToClient( std::string& destinationClientString, const std::string& sourceLibraryString )
