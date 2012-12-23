@@ -51,7 +51,7 @@ namespace cinder {
 
 namespace cinder { namespace cocoa {
 
-typedef std::shared_ptr<const struct __CFString> SafeCfString;
+typedef std::shared_ptr<struct __CFString> SafeCfString;
 
 //! Represents an exception-safe Cocoa NSString which behaves like a shared_ptr but can implicitly cast itself to NSString*
 class SafeNsString {
@@ -106,6 +106,9 @@ void safeCocoaRelease( void *nsObject );
 /** \brief Creates a CGBitmapContext that represents a cinder::Surface8u. Users must call CGContextRelease() to free the result.
 	\note CGBitmapContexts only support premultiplied alpha **/
 CGContextRef createCgBitmapContext( const Surface8u &surface );
+
+//! Returns the current CoreGraphics context for the active window. Requires the current Renderer to be a Renderer2d. Does not need to be released.
+CGContextRef getWindowContext();
 
 #if defined( CINDER_MAC )
 /** \brief Converts an NSBitmapImageRep into a cinder::Surface8u

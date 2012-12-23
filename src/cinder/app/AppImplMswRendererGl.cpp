@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -55,8 +56,13 @@ void AppImplMswRendererGl::finishToggleFullScreen()
 
 void AppImplMswRendererGl::defaultResize() const
 {
-	glViewport( 0, 0, mApp->getWindowWidth(), mApp->getWindowHeight() );
-	cinder::CameraPersp cam( mApp->getWindowWidth(), mApp->getWindowHeight(), 60.0f );
+	::RECT clientRect;
+	::GetClientRect( mWnd, &clientRect );
+	int width = clientRect.right - clientRect.left;
+	int height = clientRect.bottom - clientRect.top;
+
+	glViewport( 0, 0, width, height );
+	cinder::CameraPersp cam( width, height, 60.0f );
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadMatrixf( cam.getProjectionMatrix().m );
@@ -64,7 +70,7 @@ void AppImplMswRendererGl::defaultResize() const
 	glMatrixMode( GL_MODELVIEW );
 	glLoadMatrixf( cam.getModelViewMatrix().m );
 	glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
-	glTranslatef( 0.0f, (float)-mApp->getWindowHeight(), 0.0f );       // shift origin up to upper-left corner.
+	glTranslatef( 0.0f, (float)-height, 0.0f );       // shift origin up to upper-left corner.
 }
 
 void AppImplMswRendererGl::swapBuffers() const
@@ -152,9 +158,9 @@ bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc )
 {
 	if( ( ! sMultisampleSupported ) && mRenderer->getAntiAliasing() ) {
 		// first create a dummy window and use it to determine if we can do antialiasing
-		int width = mApp->getWindowWidth();
-		int height = mApp->getWindowHeight();
-		HWND dummyWnd = createDummyWindow( &width, &height, mApp->isFullScreen() );
+		int width = 640;
+		int height = 480;
+		HWND dummyWnd = createDummyWindow( &width, &height, false );
 		HDC dummyDC = ::GetDC( dummyWnd );
 		
 		bool result = initializeInternal( dummyWnd, dummyDC );

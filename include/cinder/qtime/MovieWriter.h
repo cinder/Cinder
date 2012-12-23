@@ -23,9 +23,9 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/qtime/QuickTime.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Stream.h"
+#include "cinder/qtime/QuickTime.h"
 
 #include <string>
 

@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -33,8 +34,8 @@ namespace cinder { namespace app {
 class MouseEvent : public Event {
   public:
 	MouseEvent() : Event() {}
-	MouseEvent( int aInitiator, int aX, int aY, unsigned int aModifiers, float aWheelIncrement, uint32_t aNativeModifiers )
-		: Event(), mInitiator( aInitiator ), mX( aX ), mY( aY ), mModifiers( aModifiers ), mWheelIncrement( aWheelIncrement ), mNativeModifiers( aNativeModifiers )
+	MouseEvent( WindowRef win, int aInitiator, int aX, int aY, unsigned int aModifiers, float aWheelIncrement, uint32_t aNativeModifiers )
+		: Event( win ), mInitiator( aInitiator ), mX( aX ), mY( aY ), mModifiers( aModifiers ), mWheelIncrement( aWheelIncrement ), mNativeModifiers( aNativeModifiers )
 	{}
 	
 	//! Returns the X coordinate of the mouse event

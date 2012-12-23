@@ -27,14 +27,18 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 #endif
 
-#if defined( _LIBCPP_VERSION )
+#if (defined( _MSC_VER ) && ( _MSC_VER >= 1700 )) || defined( _LIBCPP_VERSION )
 	#include <thread>
 	#include <mutex>
+	#include <condition_variable>
+	#include <future>
 #else
 	#include <boost/thread/mutex.hpp>
 	#include <boost/thread/recursive_mutex.hpp>
 	#include <boost/thread/thread.hpp>
 	#include <boost/thread/condition_variable.hpp>
+	#define BOOST_THREAD_PROVIDES_FUTURE
+	#include <boost/thread/future.hpp>
 
 	// Promote classes from boost which will be part of std:: in C++1x where necessary
 	namespace std {
@@ -46,7 +50,11 @@
 		using boost::condition_variable;
 		namespace this_thread {
 			using boost::this_thread::yield;
+			using boost::this_thread::get_id;
 		}
+		using boost::future;
+		using boost::packaged_task;
+		using boost::promise;
 	}
 #endif
 

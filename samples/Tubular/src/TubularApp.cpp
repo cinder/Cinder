@@ -75,7 +75,7 @@ class TubularApp : public AppBasic {
 	void keyDown( KeyEvent event );
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
-	void resize( ResizeEvent event );
+	void resize();
 	void update();
 	void draw();
 	
@@ -184,7 +184,7 @@ void TubularApp::mouseDrag( MouseEvent event )
 	mArcball.mouseDrag( P );
 }
 
-void TubularApp::resize( ResizeEvent event )
+void TubularApp::resize()
 {
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 	gl::setMatrices( mCam );	

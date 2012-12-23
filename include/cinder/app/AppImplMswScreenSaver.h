@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -31,6 +32,8 @@
 
 namespace cinder { namespace app {
 
+class WindowImplMswScreenSaver;
+
 class AppImplMswScreenSaver : public AppImplMsw {
  public:
 	AppImplMswScreenSaver( class AppScreenSaver *aApp, HWND aWnd );
@@ -38,16 +41,38 @@ class AppImplMswScreenSaver : public AppImplMsw {
 	
 	void		run();
 	void		quit() {} // we can't really force a quit
-	
-	//TODO: something real
-	double		getElapsedSeconds() const { return -1.0; }
-	
+		
 	LRESULT eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 	
+	virtual WindowRef	getWindow() const;
+	//! Returns the number of Windows the app has open
+	virtual size_t		getNumWindows() const;
+	//! Gets a Window by index, in the range [0, getNumWindows()).
+	virtual WindowRef	getWindowIndex( size_t index ) const;
+
+	bool				isPreview() const;
+
+	// ignore
+	virtual void			closeWindow( class WindowImplMsw *windowImpl ) {}
+	// ignore
+	virtual void			setForegroundWindow( WindowRef window ) {}
+
  protected:
-	class AppScreenSaver	*mApp;
-	HWND					mWnd;
-	HDC						mDC;
+	class AppScreenSaver						*mApp;
+	bool										mPreview;
+	bool										mDebugMode;
+	std::list<WindowImplMswScreenSaver*>		mWindows;
+	std::list<BlankingWindowRef>				mBlankingWindows;
 };
+
+class WindowImplMswScreenSaver : public WindowImplMsw {
+  public:
+	WindowImplMswScreenSaver( HWND hwnd, RendererRef renderer, AppImplMswScreenSaver *appImpl )
+		: WindowImplMsw( hwnd, renderer, appImpl ) {}
+
+  protected:
+	friend AppImplMswScreenSaver;
+};
+
 
 } } // namespace cinder::app

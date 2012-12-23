@@ -76,11 +76,12 @@ void SimpleViewerApp::draw()
 	if( mDoc ) {
 		gl::color( Color::white() );
 		
-		if( mTex )
+		if( mTex ) {
 			if( mUseCairo )
 				gl::draw( mTex );
-		else
-			gl::draw( *mDoc );
+			else
+				gl::draw( *mDoc );
+		}
 	}
 	else {
 		gl::drawStringCentered( "Drag & Drop an SVG file", getWindowCenter() );

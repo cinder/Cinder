@@ -255,7 +255,6 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 		
 		mEarth.addQuake( locationVector.x, locationVector.y, magnitude, title );		
 	}
-	console() << xml << std::endl;
 	
 	//mEarth.addQuake( 37.7f, -122.0f, 8.6f, "San Francisco" );
 }

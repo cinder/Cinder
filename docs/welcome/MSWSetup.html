@@ -30,7 +30,7 @@ $(function() {
 		<br/>
 		<h2>Microsoft Visual C++</h2>
 		<p>
-		Cinder is designed for either Microsoft Visual Studio 2008 or 2010, and works with both the
+		Cinder is designed for Microsoft Visual Studio 2010, and works with both the
 		commercial versions and the freely available <em>Express</em> editions. If you don't already have one of those versions installed, 
 		we'll walk you through setting up the free 2010 edition.<br/>
 		</p><br/>
@@ -83,36 +83,12 @@ $(function() {
 		</center>
 		<br />
 		
-		<h2>QuickTime SDK</h2>
-		
-		<p>Lastly, you'll need to grab the <a href="https://connect.apple.com/cgi-bin/WebObjects/MemberSite.woa/wa/getSoftware?bundleID=19910">QuickTime SDK 7.3 from Apple</a>, which requires you to have a free ADC account. If you don't have an account, follow the <em>Join now</em> link in the lower right corner, and follow the <em>Learn more</em> link under the "Register as an Apple Developer" heading on the next page. From there, select the <em>Get Started</em> page, and then select <em>Create an Apple ID</em> on the one after that. After creating your account, you can login to the original site and download the QuickTime 7.3 SDK.</p>
-		<br />
-		<p>Cinder expects QuickTime to exist in the same directory it does, in a directory called <em>QuickTimeSDK-7.3.</em> Be sure to install it accordingly when prompted by the installer.</p>
-		<br />
-		<center>
-		<div id="qtime_image">
-			<a href="msw_images/qtime/step1.png" title="To download the QuickTime SDK you'll need an ADC account. You can create one by following the <em>Join now</em> link in the lower right corner.">
-				<img src="msw_images/qtime/step1_thumb.png" /></a>
-			<a href="msw_images/qtime/step2.png" title="To continue with the process of creating an account, scroll to the bottom of the page and click the <em>Learn more</em> link.">
-				<img src="msw_images/qtime/step2_thumb.png" /></a>
-			<a href="msw_images/qtime/step3.png" title="To create an account, click the <em>Get Started</em> button on the page that follows.">
-				<img src="msw_images/qtime/step3_thumb.png" /></a>
-			<a href="msw_images/qtime/step4.png" title="Select <em>Create an Apple ID</em> on the page that follows.">
-				<img src="msw_images/qtime/step4_thumb.png" /></a>
-			<a href="msw_images/qtime/step5.png" title="After creating an account, return to the original page and use your new account to login. Then select the <em>QuickTime 7.3 SDK for Windows</em> link.">
-				<img src="msw_images/qtime/step5_thumb.png" /></a>
-			<a href="msw_images/qtime/step6.png" title="Launch the installer, and when prompted for an installation path select the same directory that Cinder lives in (Cinder's parent directory, not inside Cinder itself.)">
-				<img src="msw_images/qtime/step6_thumb.png" /></a>
-		</div>
-		</center>
-		<br />
-
 		<p>Once you're done, your directories should look roughly like this:</p><br />
 		<center><img alt="folders" src="msw_images/folders.png"></center>
 		<br />
 		<p>If you are using one of our <a href="http://libcinder.org/download/">packaged releases</a>, you should be all set.</p>
 		<br>
-		<p>Let's try opening and building one of the samples. From Windows Explorer, navigate to the <em>cinder\samples\QuickTime\vc10</em> folder (or <em>vc9</em> if you're using Visual C++ 2008) and double-click <em>quickTimeSample.sln</em>.</p>
+		<p>Let's try opening and building one of the samples. From Windows Explorer, navigate to the <em>cinder\samples\QuickTime\vc10</em> folder and double-click <em>quickTimeSample.sln</em>.</p>
 		<br>
 		<p>Under the <em>Debug</em> menu select <em>Start Debugging</em> and click <em>Yes</em>
 		when prompted to build the project. The QuickTime sample will launch
@@ -126,7 +102,7 @@ $(function() {
 		experiment. And if you haven't read Robert Hodgin's <em>Hello, Cinder</em> tutorial, you should go <a href="../html/hello_cinder.html"> do that first</a>. </p>
 
 		<h2><a name="tinderbox">TinderBox</a></h2>
-		<p>TinderBox is our GUI tool for creating Cinder projects quickly and easily. It can generate Xcode as well as Visual C++ 2008 and 2010 projects. It is located at <em>cinder/tools/TinderBox</em> in our packaged releases. A guide to creating projects using TinderBox is <a href="MSWNewProject.html#tinderbox">available here</a>.
+		<p>TinderBox is our GUI tool for creating Cinder projects quickly and easily. It can generate Xcode as well as Visual C++ 2010 projects. It is located at <em>cinder/tools/TinderBox</em> in our packaged releases. A guide to creating projects using TinderBox is <a href="MSWNewProject.html#tinderbox">available here</a>.
 		
 		<h2><a name="advanced">Cinder + Git</a></h2>
 		If you would like to keep up with the latest Cinder development, the project is <a href="http://github.com/cinder">hosted on github</a>. A guide for setting up Cinder using git is <a href="GitSetup.html">available here</a>.

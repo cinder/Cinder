@@ -26,8 +26,8 @@
 #include <boost/version.hpp>
 #include <boost/config.hpp>
 
-#if BOOST_VERSION < 104800
-	#error "Cinder requires Boost version 1.48 or later"
+#if BOOST_VERSION < 105200
+	#error "Cinder requires Boost version 1.52 or later"
 #endif
 
 namespace cinder {
@@ -51,6 +51,11 @@ using boost::uint64_t;
 	#include "TargetConditionals.h"
 	#if TARGET_OS_IPHONE
 		#define CINDER_COCOA_TOUCH
+		#if TARGET_IPHONE_SIMULATOR
+			#define CINDER_COCOA_TOUCH_SIMULATOR
+		#else
+			#define CINDER_COCOA_TOUCH_DEVICE
+		#endif
 	#else
 		#define CINDER_MAC
 	#endif
@@ -65,30 +70,34 @@ using boost::uint64_t;
 } // namespace cinder
 
 
-#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 ) || defined( _LIBCPP_VERSION )
+#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
 	#include <memory>
-#elif defined( CINDER_COCOA )
-	#include <tr1/memory>
+	#include <boost/signals2.hpp>
+	#if _MSC_VER >= 1700
+		#include <chrono>
+	#else
+		#include <boost/chrono.hpp>
+	#endif
 	namespace std {
-		using std::tr1::shared_ptr;
-		using std::tr1::weak_ptr;		
-		using std::tr1::static_pointer_cast;
-		using std::tr1::dynamic_pointer_cast;
-		using std::tr1::const_pointer_cast;
-		using std::tr1::enable_shared_from_this;
+	    using namespace std::tr1::placeholders;
 	}
+#elif defined( CINDER_COCOA ) && defined( _LIBCPP_VERSION ) // libc++
+	#include <chrono>
+	#include <functional>
+	namespace std {
+		using namespace std::placeholders;
+	}
+	#include <memory>
+	#include <boost/signals2.hpp>
+#elif defined( CINDER_COCOA ) // libstdc++
+	#error "Cinder requires libc++ on Mac OS X and iOS"
 #else
-	#include <boost/shared_ptr.hpp>
-	#include <boost/enable_shared_from_this.hpp>
-	namespace std {
-		using boost::shared_ptr; // future-proof shared_ptr by putting it into std::
-		using boost::weak_ptr;
-		using boost::static_pointer_cast;
-		using boost::dynamic_pointer_cast;
-		using boost::const_pointer_cast;
-		using boost::enable_shared_from_this;		
-	}
+	#error "Unkown platform configuration"
 #endif
+
+namespace cinder { namespace signals {
+	using namespace boost::signals2;
+} } // cinder::signals
 
 #include <boost/checked_delete.hpp> // necessary for checked_array_deleter
 using boost::checked_array_deleter;

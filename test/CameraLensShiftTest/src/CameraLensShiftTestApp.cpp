@@ -24,7 +24,7 @@ public:
 
 	void keyDown( KeyEvent event );
 
-	void resize( ResizeEvent event );
+	void resize();
 private:
 	void render();
 private:
@@ -153,7 +153,7 @@ void CameraLensShiftTestApp::keyDown( KeyEvent event )
 	}
 }
 
-void CameraLensShiftTestApp::resize( ResizeEvent event )
+void CameraLensShiftTestApp::resize()
 {
 	mCamera.setAspectRatio( event.getAspectRatio() * 0.5f );
 

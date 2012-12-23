@@ -566,5 +566,26 @@ std::string System::getIpAddress()
 	return result;
 }
 
+#if defined( CINDER_COCOA_TOUCH )
+bool System::isDeviceIphone()
+{
+	if( ! instance()->mCachedValues[IS_IPHONE] ) {
+		instance()->mCachedValues[IS_IPHONE] = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
+	}
+	
+	return instance()->mCachedValues[IS_IPHONE];
+}
+
+bool System::isDeviceIpad()
+{
+	if( ! instance()->mCachedValues[IS_IPAD] ) {
+		instance()->mCachedValues[IS_IPAD] = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
+	}
+	
+	return instance()->mCachedValues[IS_IPAD]; 
+}
+
+#endif
+
 
 } // namespace cinder

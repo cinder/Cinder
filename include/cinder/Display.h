@@ -24,14 +24,21 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Area.h"
+#include "cinder/Function.h"
 
 #if defined( CINDER_MAC )
-#	include <CoreVideo/CoreVideo.h>
-#	if defined( __OBJC__ )
+	#if defined( __OBJC__ )
 		@class NSScreen;
-#	else
+	#else
 		class NSScreen;
-#	endif
+	#endif
+	typedef uint32_t CGDirectDisplayID;
+#elif defined( CINDER_COCOA_TOUCH )
+	#if defined( __OBJC__ )
+		@class UIScreen;
+	#else
+		class UIScreen;
+	#endif
 #elif defined( CINDER_MSW )
 	#include <windows.h>
 	#undef min
@@ -46,12 +53,20 @@ namespace cinder {
 typedef std::shared_ptr<class Display> 	DisplayRef;
 
 class Display {
- public:
+  public:
 	~Display();
 	int		getWidth() const { return mArea.getWidth(); }
 	int		getHeight() const { return mArea.getHeight(); }
-	Area	getArea() const { return mArea; }
+	//! Returns the size of the Display in pixels
+	Vec2i			getSize() const { return Vec2i( getWidth(), getHeight() ); }
+	//! Returns the Display aspect ratio, which is its width / height
+	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
+	//! Returns the bounding Area of the Surface in pixels: [0,0]-(width,height)
+	Area			getBounds() const { return mArea; }
+
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
+	//! Returns the factor which multiplies points to pixels. 2.0f for high-density (Retina) displays; 1.0f for others
+	float	getContentScale() const;
 
 	//! Returns whether the Display's coordinates contain \a pt.
 	bool	contains( const Vec2i &pt ) const { return mArea.contains( pt ); }
@@ -59,6 +74,12 @@ class Display {
 #if defined( CINDER_MAC )
 	NSScreen*			getNsScreen() const { return mScreen; }
 	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
+#elif defined( CINDER_COCOA_TOUCH )
+	UIScreen*			getUiScreen() const { return mUiScreen; }
+	//! Returns a vector of resolutions the Display supports
+	const std::vector<Vec2i>&	getSupportedResolutions() const { return mSupportedResolutions; }
+	//! Sets the resolution of the Display. Rounds to the nearest supported resolution.
+	void				setResolution( const Vec2i &resolution );
 #endif
 
 	static DisplayRef						getMainDisplay();
@@ -68,18 +89,36 @@ class Display {
 	
 #if defined( CINDER_MAC )
 	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
+	static DisplayRef			findFromNsScreen( NSScreen *nsScreen );
 #elif defined( CINDER_MSW )
 	//! Finds a Display based on its HMONITOR. Returns the primary display if it's not found
 	static DisplayRef			findFromHmonitor( HMONITOR hMonitor );
 	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
 #endif
+
+	friend std::ostream& operator<<( std::ostream &o, const Display &display )
+	{
+		return o << display.mArea << " @ " << display.mBitsPerPixel << "bpp @ scale " << display.mContentScale;
+	}	
 	
- private:
+#if defined( CINDER_COCOA_TOUCH )
+	//! Returns the signal emitted when a display is connected or disconnected
+	signals::signal<void()>&	getSignalDisplaysChanged() { return mSignalDisplaysChanged; }
+	template<typename T, typename Y>
+	void						connectDisplaysChanged( T fn, Y *inst ) { getSignalDisplaysChanged().connect( std::bind( fn, inst ) ); }
+#endif
+	
+  private:
 	Area		mArea;
 	int			mBitsPerPixel;
+	float		mContentScale;
 #if defined( CINDER_MAC )
 	NSScreen			*mScreen;
 	CGDirectDisplayID	mDirectDisplayID;
+#elif defined( CINDER_COCOA_TOUCH )
+	UIScreen				*mUiScreen;
+	std::vector<Vec2i>		mSupportedResolutions;
+	signals::signal<void()>	mSignalDisplaysChanged;
 #elif defined( CINDER_MSW )
 	HMONITOR			mMonitor;
 #endif

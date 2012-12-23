@@ -49,8 +49,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParamsBasic", "..\..\Params
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "perlinTest", "..\..\perlinTest\vc10\perlinTest.vcxproj", "{7B516CAF-6977-4BD1-8A93-232D9C7F23BE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quickTimeSample", "..\..\QuickTime\vc10\quickTimeSample.vcxproj", "{27257FEF-9BF1-4F0B-9AF5-EB38E9B5E8EF}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTimeAdvApp", "..\..\QuickTimeAdvanced\vc10\QTimeAdvApp.vcxproj", "{C937D670-DDDF-4DB6-ABFD-387E69098F2A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuickTimeIteration", "..\..\QuickTimeIteration\vc10\QuickTimeIteration.vcxproj", "{EB039199-F436-4239-9258-399EE1AA14BF}"
@@ -237,10 +235,6 @@ Global
 		{7B516CAF-6977-4BD1-8A93-232D9C7F23BE}.Debug|Win32.Build.0 = Debug|Win32
 		{7B516CAF-6977-4BD1-8A93-232D9C7F23BE}.Release|Win32.ActiveCfg = Release|Win32
 		{7B516CAF-6977-4BD1-8A93-232D9C7F23BE}.Release|Win32.Build.0 = Release|Win32
-		{27257FEF-9BF1-4F0B-9AF5-EB38E9B5E8EF}.Debug|Win32.ActiveCfg = Debug|Win32
-		{27257FEF-9BF1-4F0B-9AF5-EB38E9B5E8EF}.Debug|Win32.Build.0 = Debug|Win32
-		{27257FEF-9BF1-4F0B-9AF5-EB38E9B5E8EF}.Release|Win32.ActiveCfg = Release|Win32
-		{27257FEF-9BF1-4F0B-9AF5-EB38E9B5E8EF}.Release|Win32.Build.0 = Release|Win32
 		{C937D670-DDDF-4DB6-ABFD-387E69098F2A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C937D670-DDDF-4DB6-ABFD-387E69098F2A}.Debug|Win32.Build.0 = Debug|Win32
 		{C937D670-DDDF-4DB6-ABFD-387E69098F2A}.Release|Win32.ActiveCfg = Release|Win32

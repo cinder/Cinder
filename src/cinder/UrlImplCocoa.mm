@@ -120,7 +120,7 @@
 
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self];
 	if( ! connection ) {
-		[pool release];
+		[pool drain];
 		return;
 	}
 		
@@ -134,7 +134,7 @@
 		
 	// we fill the buffer just to get things rolling*/
 	[connection release];
-	[pool release];
+	[pool drain];
 }
 
 -(void)connection:(NSURLConnection *)connection

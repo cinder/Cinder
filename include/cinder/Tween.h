@@ -276,6 +276,9 @@ class AnimBase {
   public:
   	//! removes self from Timeline
 	void 	stop();
+
+	//! returns false if any tweens are active on 'this', otherwise true
+	bool isComplete() const;
 	
 	//! returns the parent timeline for the Anim<> or NULL if there is none
 	TimelineRef	getParent() const { return mParentTimeline; }

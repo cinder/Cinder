@@ -118,9 +118,9 @@ bool keyDown( app::KeyEvent event )
             kmod ) != 0;
 }
 
-bool resize( app::ResizeEvent event )
+bool resize( cinder::app::WindowRef window )
 {
-	TwWindowSize( event.getWidth(), event.getHeight() );
+	TwWindowSize( window->getWidth(), window->getHeight() );
 	return false;
 }
 
@@ -135,15 +135,7 @@ class AntMgr {
 	AntMgr() {
 		if( ! TwInit( TW_OPENGL, NULL ) ) {
 			throw Exception();
-		}
-		
-		app::App::get()->registerMouseDown( mouseDown );
-		app::App::get()->registerMouseUp( mouseUp );
-		app::App::get()->registerMouseWheel( mouseWheel );		
-		app::App::get()->registerMouseMove( mouseMove );
-		app::App::get()->registerMouseDrag( mouseMove );
-		app::App::get()->registerKeyDown( keyDown );
-		app::App::get()->registerResize( resize );
+		}		
 	}
 	
 	~AntMgr() {
@@ -160,16 +152,36 @@ void initAntGl()
 		mgr = std::shared_ptr<AntMgr>( new AntMgr );
 }
 
-
 InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const ColorA color )
 {
+	init( app::App::get()->getWindow(), title, size, color );
+}
+
+InterfaceGl::InterfaceGl( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color )
+{
+	init( window, title, size, color );
+}
+
+void InterfaceGl::init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color )
+{
 	initAntGl();
+	
+	mWindow = window;
+
 	mBar = std::shared_ptr<TwBar>( TwNewBar( title.c_str() ), TwDeleteBar );
 	char optionsStr[1024];
 	sprintf( optionsStr, "`%s` size='%d %d' color='%d %d %d' alpha=%d", title.c_str(), size.x, size.y, (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255) );
 	TwDefine( optionsStr );
 	
-	TwCopyStdStringToClientFunc( implStdStringToClient );
+	TwCopyStdStringToClientFunc( implStdStringToClient );	
+
+	mWindow->getSignalMouseDown().connect( mouseDown );
+	mWindow->getSignalMouseUp().connect( mouseUp );
+	mWindow->getSignalMouseWheel().connect( mouseWheel );
+	mWindow->getSignalMouseMove().connect( mouseMove );
+	mWindow->getSignalMouseDrag().connect( mouseMove );
+	mWindow->getSignalKeyDown().connect( keyDown );
+	mWindow->getSignalResize().connect( std::bind( resize, mWindow ) );
 }
 
 void InterfaceGl::draw()

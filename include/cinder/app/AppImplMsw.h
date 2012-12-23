@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -24,8 +25,15 @@
 
 #include "cinder/Stream.h"
 #include "cinder/Vector.h"
+#include "cinder/app/MouseEvent.h"
+#include "cinder/app/KeyEvent.h"
+#include "cinder/app/TouchEvent.h"
+#include "cinder/app/Renderer.h"
+#include "cinder/Display.h"
+#include "cinder/app/Window.h"
 #include <string>
 #include <vector>
+#include <list>
 #include <windows.h>
 #undef min
 #undef max
@@ -57,23 +65,14 @@ class AppImplMsw {
 	AppImplMsw( class App *aApp );
 	virtual ~AppImplMsw();
 	
-	Vec2i			getWindowPos() const { return mWindowOffset; }
-	int				getWindowWidth() const { return mWindowWidth; }
-	int				getWindowHeight() const { return mWindowHeight; }
-	virtual void	setWindowWidth( int aWindowWidth ) { }
-	virtual void	setWindowHeight( int aWindowHeight ) { }
-	virtual void	setWindowSize( int aWindowWidth, int aWindowHeight ) {}
+	class App*		getApp() { return mApp; }
+
 	float			getFrameRate() const { return mFrameRate; }
 	virtual float	setFrameRate( float aFrameRate ) { return -1.0f; }
-	bool			isFullScreen() const { return mFullScreen; }
-	virtual void	toggleFullScreen() {}
-	bool			isBorderless() const { return mBorderless; }
-	bool			isAlwaysOnTop() const { return mAlwaysOnTop; }
-	virtual Vec2i	mouseLocation();
 	virtual void	quit() = 0;
-	
-	virtual void	privateSetWindowOffset__( const Vec2i &aWindowOffset ) { mWindowOffset = aWindowOffset; }
-	
+
+	virtual WindowRef	getWindow() const { return mActiveWindow; }
+	void				setWindow( WindowRef window ) { mActiveWindow = window; }
 	
 	static void	hideCursor();
 	static void	showCursor();
@@ -85,13 +84,96 @@ class AppImplMsw {
 	static fs::path		getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
 	static fs::path		getFolderPath( const fs::path &initialPath );
 	
- protected:
-	class App	*mApp;
-	int			mWindowWidth, mWindowHeight;	
-	bool		mFullScreen, mBorderless, mAlwaysOnTop;
-	Vec2i		mWindowOffset;
-	float		mFrameRate;
-	ULONG_PTR	mGdiplusToken;
+  protected:
+	bool					setupHasBeenCalled() const { return mSetupHasBeenCalled; }
+	virtual void			closeWindow( class WindowImplMsw *windowImpl ) = 0;
+	virtual void			setForegroundWindow( WindowRef window ) = 0;
+
+	class App				*mApp;
+	float					mFrameRate;
+	WindowRef				mActiveWindow;
+	bool					mSetupHasBeenCalled;
+	ULONG_PTR				mGdiplusToken;
+
+	friend class WindowImplMsw;
+	friend LRESULT CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
+};
+
+class WindowImplMsw {
+  public:
+	WindowImplMsw( const Window::Format &format, AppImplMsw *appImpl );
+	WindowImplMsw( HWND hwnd, RendererRef renderer, AppImplMsw *appImpl );
+
+	virtual bool		isFullScreen() { return mFullScreen; }
+	virtual void		setFullScreen( bool fullScreen );
+	virtual Vec2i		getSize() const { return Vec2i( mWindowWidth, mWindowHeight ); }
+	virtual void		setSize( const Vec2i &size );
+	virtual Vec2i		getPos() const { return mWindowOffset; }
+	virtual void		setPos( const Vec2i &pos );
+	virtual void		close();
+	virtual std::string	getTitle() const;
+	virtual void		setTitle( const std::string &title );
+	virtual void		hide();
+	virtual void		show();
+	virtual bool		isHidden() const;
+	virtual DisplayRef	getDisplay() const { return mDisplay; }
+	virtual RendererRef	getRenderer() const { return mRenderer; }
+	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
+	virtual void*		getNative() { return mWnd; }
+
+	void			enableMultiTouch();
+	bool			isBorderless() const { return mBorderless; }
+	void			setBorderless( bool borderless );
+	bool			isAlwaysOnTop() const { return mAlwaysOnTop; }
+	void			setAlwaysOnTop( bool alwaysOnTop );
+
+	AppImplMsw*				getAppImpl() { return mAppImpl; }
+	WindowRef				getWindow() { return mWindowRef; }
+	virtual void			keyDown( const KeyEvent &event );
+	virtual void			draw();
+	virtual void			redraw();
+	virtual void			resize();
+
+	void			privateClose();
+  protected:
+	void			createWindow( const Vec2i &windowSize, const std::string &title );
+	void			completeCreation();
+	static void		registerWindowClass();
+	void			getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight );
+	void			onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam );
+	void			toggleFullScreen();
+
+	AppImplMsw				*mAppImpl;
+	WindowRef				mWindowRef;
+  	HWND					mWnd;
+	HDC						mDC;
+	DWORD					mWindowStyle, mWindowExStyle;
+	Vec2i					mWindowOffset;
+	bool					mHidden;
+	int						mWindowWidth, mWindowHeight;
+	bool					mFullScreen, mBorderless, mAlwaysOnTop, mResizable;
+	Vec2i					mWindowedPos, mWindowedSize;
+	DisplayRef				mDisplay;
+	RendererRef				mRenderer;
+	std::map<DWORD,Vec2f>			mMultiTouchPrev;
+	std::vector<TouchEvent::Touch>	mActiveTouches;
+	bool					mIsDragging;
+
+	friend AppImplMsw;
+	friend LRESULT CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
+};
+
+typedef std::shared_ptr<class BlankingWindow>		BlankingWindowRef;
+
+class BlankingWindow {
+  public:
+	static BlankingWindowRef	create( DisplayRef display ) { return BlankingWindowRef( new BlankingWindow( display ) ); }
+	BlankingWindow( DisplayRef display );
+
+  protected:
+	static void		registerWindowClass();
+	
+	HWND			mWnd;
 };
 
 } } // namespace cinder::app

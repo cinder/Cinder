@@ -24,15 +24,13 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Surface.h"
-#include <windows.h>
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#define min(a, b) (((a) < (b)) ? (a) : (b))
+#include <Windows.h>
+#include <objidl.h>
+#include <gdiplus.h>
 #undef min
 #undef max
-
-// forward declarations
-namespace Gdiplus {
-	class Bitmap;
-	typedef INT PixelFormat;
-}
 
 namespace cinder { namespace msw {
 

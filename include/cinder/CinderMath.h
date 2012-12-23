@@ -40,7 +40,7 @@ struct math
 	static T	acos  (T x)		{return ::acos (double(x));}
 	static T	asin  (T x)		{return ::asin (double(x));}
 	static T	atan  (T x)		{return ::atan (double(x));}
-	static T	atan2 (T x, T y)	{return ::atan2 (double(x), double(y));}
+	static T	atan2 (T y, T x)	{return ::atan2 (double(y), double(x));}
 	static T	cos   (T x)		{return ::cos (double(x));}
 	static T	sin   (T x)		{return ::sin (double(x));}
 	static T	tan   (T x)		{return ::tan (double(x));}
@@ -82,7 +82,7 @@ struct math<float>
 	static float	acos  (float x)			{return ::acosf (x);}
 	static float	asin  (float x)			{return ::asinf (x);}
 	static float	atan  (float x)			{return ::atanf (x);}
-	static float	atan2 (float x, float y)	{return ::atan2f (x, y);}
+	static float	atan2 (float y, float x)	{return ::atan2f (y, x);}
 	static float	cos   (float x)			{return ::cosf (x);}
 	static float	sin   (float x)			{return ::sinf (x);}
 	static float	tan   (float x)			{return ::tanf (x);}

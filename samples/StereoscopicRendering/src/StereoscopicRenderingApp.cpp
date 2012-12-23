@@ -75,7 +75,7 @@ public:
 
 	void keyDown( KeyEvent event );
 
-	void resize( ResizeEvent event );
+	void resize();
 private:
 	void createFbo();
 
@@ -348,10 +348,10 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 	}
 }
 
-void StereoscopicRenderingApp::resize( ResizeEvent event )
+void StereoscopicRenderingApp::resize()
 {
 	// make sure the camera's aspect ratio remains correct
-	mCamera.setAspectRatio( event.getAspectRatio() );	
+	mCamera.setAspectRatio( getWindowAspectRatio() );
 	mMayaCam.setCurrentCam( mCamera );
 
 	// create/resize the Frame Buffer Object required for some of the render methods
