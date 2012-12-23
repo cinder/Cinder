@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0056F2F71686CE46008B0D98 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0056F2F61686CE46008B0D98 /* ImageIO.framework */; };
+		0056F2F91686CE60008B0D98 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0056F2F81686CE60008B0D98 /* MobileCoreServices.framework */; };
 		00A4DF3215ACD59300D38787 /* InstagramStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A4DF2F15ACD59300D38787 /* InstagramStream.cpp */; };
 		00A4DF3315ACD59300D38787 /* TextRibbon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A4DF3015ACD59300D38787 /* TextRibbon.cpp */; };
 		00A4DF3415ACD59300D38787 /* TrianglePiece.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00A4DF3115ACD59300D38787 /* TrianglePiece.cpp */; };
@@ -27,6 +29,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0056F2F61686CE46008B0D98 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		0056F2F81686CE60008B0D98 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		00A4DF2F15ACD59300D38787 /* InstagramStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InstagramStream.cpp; path = ../src/InstagramStream.cpp; sourceTree = "<group>"; };
 		00A4DF3015ACD59300D38787 /* TextRibbon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextRibbon.cpp; path = ../src/TextRibbon.cpp; sourceTree = "<group>"; };
 		00A4DF3115ACD59300D38787 /* TrianglePiece.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TrianglePiece.cpp; path = ../src/TrianglePiece.cpp; sourceTree = "<group>"; };
@@ -58,6 +62,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0056F2F91686CE60008B0D98 /* MobileCoreServices.framework in Frameworks */,
+				0056F2F71686CE46008B0D98 /* ImageIO.framework in Frameworks */,
 				C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */,
 				C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
@@ -107,6 +113,7 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				0056F2F81686CE60008B0D98 /* MobileCoreServices.framework */,
 				00CFDFB81138492F0091E310 /* Headers */,
 				00CFDFA7113848F40091E310 /* Source */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -139,6 +146,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0056F2F61686CE46008B0D98 /* ImageIO.framework */,
 				C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */,
 				C7FB19D5124BC0D70045AFD3 /* CoreText.framework */,
 				C727C02B121B400300192073 /* CoreMedia.framework */,
@@ -226,7 +234,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
@@ -236,7 +243,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "Instascope-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"",
 					"-lz",
@@ -254,7 +261,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				COPY_PHASE_STRIP = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -262,7 +268,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "Instascope-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone.a\"",
 					"-lz",
@@ -281,6 +287,8 @@
 			buildSettings = {
 				ARCHS = armv7;
 				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
@@ -300,6 +308,8 @@
 			buildSettings = {
 				ARCHS = armv7;
 				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
