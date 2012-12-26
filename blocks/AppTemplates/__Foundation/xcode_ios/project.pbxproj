@@ -220,14 +220,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"",
-					"-lz",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"",
-					"-lz",
-				);
+				CINDER_PATH = "_TBOX_CINDER_PATH_";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";				
 			};
 			name = Debug;
 		};
@@ -251,14 +246,9 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
-				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone.a\"",
-					"-lz",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
-					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"",
-					"-lz",
-				);
+				CINDER_PATH = "_TBOX_CINDER_PATH_";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";				
 			};
 			name = Release;
 		};
@@ -270,9 +260,14 @@
 				INFOPLIST_FILE = "Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
-				CINDER_PATH = "_TBOX_CINDER_PATH_";
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"",
+					"-lz",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"",
+					"-lz",
+				);				
 			};
 			name = Debug;
 		};
@@ -284,9 +279,14 @@
 				INFOPLIST_FILE = "Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
-				CINDER_PATH = "_TBOX_CINDER_PATH_";
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/libcinder-iphone.a\"",
+					"-lz",
+				);
+				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
+					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"",
+					"-lz",
+				);
 			};
 			name = Release;
 		};
