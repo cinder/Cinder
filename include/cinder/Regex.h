@@ -26,12 +26,9 @@
 
 #if (defined( _MSC_VER ) && ( _MSC_VER >= 1700 )) || defined( _LIBCPP_VERSION )
 	#include <regex>
-d
 #else
 	#include <boost/regex.hpp>
 	namespace std {
 		using boost::regex;
 	}
 #endif
-
-} // namespace std
