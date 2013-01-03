@@ -59,8 +59,13 @@ App::Settings::Settings()
 {
 	mShouldQuit = false;
 	mPowerManagement = false;
-	mFrameRateEnabled = false;
+	mFrameRateEnabled = true;
 	mFrameRate = 60.0f;
+}
+
+void App::Settings::disableFrameRate()
+{
+	mFrameRateEnabled = false;
 }
 
 void App::Settings::setFrameRate( float aFrameRate )

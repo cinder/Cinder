@@ -191,11 +191,11 @@ class App {
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
 		void	setTitle( const std::string &title ) { mTitle = title; }
 
-		//! Sets maximum frameRate the update/draw loop will execute at, specified in frames per second. FrameRate limiting is off by default.
-		void	setFrameRate( float aFrameRate );
-		//! Disables the frameRate limiting, which is off by default. Restore using setFrameRate(). See also enableVerticalSync(). FrameRate limiting is off by default.
+		//! Sets maximum frameRate the update/draw loop will execute at, specified in frames per second. FrameRate limiting is on by default, at 60 FPS.
+		void	setFrameRate( float frameRate );
+		//! Disables the frameRate limiting, which is on by default. Restore using setFrameRate(). See also enableVerticalSync().
 		void	disableFrameRate();
-		//! Returns whether frameRate limiting is enabled.
+		//! Returns whether frameRate limiting is enabled. On by default, at 60 FPS.
 		bool	isFrameRateEnabled() const { return mFrameRateEnabled; }
 		//! maximum frameRate of the application specified in frames per second
 		float	getFrameRate() const { return mFrameRate; }
