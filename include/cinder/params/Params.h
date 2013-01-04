@@ -30,18 +30,25 @@
 
 typedef struct CTwBar TwBar;
 
-namespace cinder { namespace params {
+namespace cinder {
 
+namespace app {
+  class Window;
+  typedef std::shared_ptr<Window>		WindowRef;
+}
+
+namespace params {
+  
 typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 
 class InterfaceGl {
   public:
 	InterfaceGl() {}
 	InterfaceGl( const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
-	InterfaceGl( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	InterfaceGl( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 	
 	static InterfaceGlRef create( const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
-	static InterfaceGlRef create( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	static InterfaceGlRef create( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 
 	static void		draw();
 
