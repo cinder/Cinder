@@ -1,0 +1,73 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{91FCE7A8-04EB-4A13-B54D-17516025FDB8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\QuickTime">
+      <UniqueIdentifier>{E14C052C-E48D-4E2A-9D07-1B9B2334E165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\QuickTime\src">
+      <UniqueIdentifier>{7DA8EB39-E16F-4FE7-A711-340C61564711}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\QuickTime\include">
+      <UniqueIdentifier>{42F629D5-EC43-47BE-9AC4-D4D442B759D7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\QuickTime\include\cinder">
+      <UniqueIdentifier>{47FA20F0-7AED-4860-9EC0-27D3EB601C25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\QuickTime\include\cinder\qtime">
+      <UniqueIdentifier>{613DF072-2DF9-4E9B-BAF2-8E935D457A2F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\QuickTimeBasicApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\QuickTimeBasicApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\blocks\QuickTime\src\QuickTime.cpp">
+      <Filter>Blocks\QuickTime\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\blocks\QuickTime\src\QuickTimeUtils.cpp">
+      <Filter>Blocks\QuickTime\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\blocks\QuickTime\src\MovieWriter.cpp">
+      <Filter>Blocks\QuickTime\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\blocks\QuickTime\include\cinder\qtime\QuickTime.h">
+      <Filter>Blocks\QuickTime\include\cinder\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\blocks\QuickTime\include\cinder\qtime\QuickTimeUtils.h">
+      <Filter>Blocks\QuickTime\include\cinder\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\blocks\QuickTime\include\cinder\qtime\MovieWriter.h">
+      <Filter>Blocks\QuickTime\include\cinder\qtime</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
