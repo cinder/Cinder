@@ -22,7 +22,7 @@ void _TBOX_PREFIX_App::setup()
     FMOD::System_Create( &mSystem );
     mSystem->init( 32, FMOD_INIT_NORMAL | FMOD_INIT_ENABLE_PROFILE, NULL );
 
-    mSystem->createSound( getAssetPath( "Blank__Kytt_-_08_-_RSPN.mp3" ).c_str(), FMOD_SOFTWARE, NULL, &mSound );
+    mSystem->createSound( getAssetPath( "Blank__Kytt_-_08_-_RSPN.mp3" ).string().c_str(), FMOD_SOFTWARE, NULL, &mSound );
 	mSound->setMode( FMOD_LOOP_NORMAL );
 
 	mSystem->playSound( FMOD_CHANNEL_FREE, mSound, false, &mChannel );
@@ -47,3 +47,5 @@ void _TBOX_PREFIX_App::draw()
     glVertexPointer( 2, GL_FLOAT, 0, &vertices[0] );
     glDrawArrays( GL_LINE_STRIP, 0, vertices.size() );
 }
+
+CINDER_APP_BASIC( _TBOX_PREFIX_App, RendererGl )
