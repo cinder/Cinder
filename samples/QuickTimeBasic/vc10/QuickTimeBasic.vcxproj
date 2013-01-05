@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -101,15 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\QuickTimeBasicApp.cpp" />
-    <ClCompile Include="..\..\..\blocks\QuickTime\src\QuickTime.cpp" />
-    <ClCompile Include="..\..\..\blocks\QuickTime\src\QuickTimeUtils.cpp" />
-    <ClCompile Include="..\..\..\blocks\QuickTime\src\MovieWriter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
-    <ClInclude Include="..\..\..\blocks\QuickTime\include\cinder\qtime\QuickTime.h" />
-    <ClInclude Include="..\..\..\blocks\QuickTime\include\cinder\qtime\QuickTimeUtils.h" />
-    <ClInclude Include="..\..\..\blocks\QuickTime\include\cinder\qtime\MovieWriter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
