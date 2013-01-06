@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -170,6 +171,7 @@ static void initKeyTable()
 	sTableInited = true;
 }
 
+#if ! defined( CINDER_COCOA_TOUCH )
 int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 {
 	if( ! sTableInited )
@@ -181,6 +183,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 	else
 		return KeyEvent::KEY_UNKNOWN;
 }
+#endif
 
 #elif defined( CINDER_MSW )
 

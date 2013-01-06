@@ -52,9 +52,7 @@ void TriangulationApp::setup()
 	mFont = Font( "Times", mFontSize );
 	mShape = mFont.getGlyphShape( mFont.getGlyphChar( 'A' ) );
 	
-	// setup VBO
-	gl::VboMesh::Layout layout;
-	layout.setStaticPositions();
+	// load VBO
 	recalcMesh();
 }
 

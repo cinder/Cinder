@@ -33,7 +33,6 @@
 
 #include <string>
 #include <vector>
-#include <boost/container/list.hpp>
 
 //! \cond
 namespace rapidxml {
@@ -48,7 +47,7 @@ class XmlTree {
   public:
 
 	//! \cond
-	typedef boost::container::list<XmlTree> Container;
+	typedef std::list<std::unique_ptr<XmlTree> > Container;
 	//! \endcond
 
 	//! A const iterator over the children of an XmlTree.
@@ -61,9 +60,9 @@ class XmlTree {
 		//! \endcond
 
 		//! Returns a reference to the XmlTree the iterator currently points to.
-		const XmlTree&		operator*() const { return *mIterStack.back(); }
+		const XmlTree&		operator*() const { return **mIterStack.back(); }
 		//! Returns a pointer to the XmlTree the iterator currently points to.
-		const XmlTree*		operator->() const { return &(*mIterStack.back()); }
+		const XmlTree*		operator->() const { return &(**mIterStack.back()); }
 
 		//! Increments the iterator to the next child. If using a non-empty filterPath increments to the next child which matches the filterPath.
 		ConstIter& operator++() {
@@ -113,9 +112,9 @@ class XmlTree {
 
 		
 		//! Returns a reference to the XmlTree the iterator currently points to.
-		XmlTree&		operator*() const { return const_cast<XmlTree&>(*mIterStack.back()); }
+		XmlTree&		operator*() const { return const_cast<XmlTree&>(**mIterStack.back()); }
 		//! Returns a pointer to the XmlTree the iterator currently points to.
-		XmlTree*		operator->() const { return const_cast<XmlTree*>( &(*mIterStack.back()) ); }
+		XmlTree*		operator->() const { return const_cast<XmlTree*>( &(**mIterStack.back()) ); }
 
 		//! Increments the iterator to the next child. If using a non-empty filterPath increments to the next child which matches the filterPath.
 		Iter& operator++() {

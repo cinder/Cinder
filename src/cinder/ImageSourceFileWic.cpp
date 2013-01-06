@@ -50,7 +50,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	
     // Create WIC factory
     IWICImagingFactory *IWICFactoryP = NULL;
-    hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&IWICFactoryP) );
+	hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&IWICFactoryP) );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedLoad();
 	std::shared_ptr<IWICImagingFactory> IWICFactory = msw::makeComShared( IWICFactoryP );
@@ -59,7 +59,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	IWICBitmapDecoder *decoderP = NULL;
 	if( dataSourceRef->isFilePath() ) {
 		hr = IWICFactory->CreateDecoderFromFilename(
-				toUtf16( dataSourceRef->getFilePath().string() ).c_str(),                      // Image to be decoded
+				dataSourceRef->getFilePath().wstring().c_str(),                      // Image to be decoded
 				NULL,                            // Do not prefer a particular vendor
 				GENERIC_READ,                    // Desired read access to the file
 				WICDecodeMetadataCacheOnDemand,  // Cache metadata when needed

@@ -24,16 +24,14 @@
 #include "cinder/app/CinderViewCocoaTouch.h"
 #include "cinder/cocoa/CinderCocoa.h"
 
-@implementation CinderViewCocoaTouch
+#import <QuartzCore/QuartzCore.h>
 
-@synthesize animating;
-@synthesize appSetupCalled;
-@dynamic animationFrameInterval;
+@implementation CinderViewCocoaTouch
 
 // Set in initWithFrame based on the renderer
 static Boolean sIsEaglLayer;
 
-+ (Class) layerClass
++ (Class)layerClass
 {
 	if( sIsEaglLayer )
 		return [CAEAGLLayer class];
@@ -41,98 +39,67 @@ static Boolean sIsEaglLayer;
 		return [CALayer class];
 }
 
-- (id)initWithFrame:(CGRect)frame app:(ci::app::AppCocoaTouch*)app renderer:(ci::app::Renderer*)renderer
+- (id)initWithFrame:(CGRect)frame app:(ci::app::AppCocoaTouch*)app renderer:(ci::app::RendererRef)renderer sharedRenderer:(ci::app::RendererRef)sharedRenderer contentScale:(float)contentScale
 {
 	// This needs to get setup immediately as +layerClass will be called when the view is initialized
 	sIsEaglLayer = renderer->isEaglLayer();
 	
 	if( (self = [super initWithFrame:frame]) ) {
-		animating = FALSE;
-		appSetupCalled = FALSE;
-		animationFrameInterval = 1;
-		displayLink = nil;
 		mApp = app;
 		mRenderer = renderer;
-		if( [[UIScreen mainScreen] respondsToSelector:@selector(scale:)] &&
-				[self respondsToSelector:@selector(setContentScaleFactor:)] )
-			[self setContentScaleFactor:[[UIScreen mainScreen] scale]];
 
-		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self );
+		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self, sharedRenderer );
 		
 		self.multipleTouchEnabled = mApp->getSettings().isMultiTouchEnabled();
 	}
+
+	mDelegate = nil;
+	
+	mKeyboardVisible = false;
+	mKeyboardTextField = nil;
 	
     return self;
 }
 
-- (void) layoutSubviews
+- (void)setDelegate:(id<CinderViewCocoaTouchDelegate>)delegate
+{
+	mDelegate = delegate;
+}
+
+- (ci::app::RendererRef)getRenderer
+{
+	return mRenderer;
+}
+
+- (void)layoutSubviews
 {
 	[super layoutSubviews];
 	
 	CGRect bounds = [self bounds];
+	if( ! mApp->getSettings().isHighDensityDisplayEnabled() )
+		self.layer.contentsScale = 1.0f;
 	mRenderer->setFrameSize( bounds.size.width, bounds.size.height );
-	if( appSetupCalled ) {
-		mApp->privateResize__( ci::app::ResizeEvent( ci::Vec2i( bounds.size.width, bounds.size.height ) ) );
-		[self drawView:nil];	
-	}
+
+	[mDelegate resize];
+	[self drawView];
 }
 
 - (void)drawRect:(CGRect)rect
 {
 	mRenderer->startDraw();
-	mApp->privateUpdate__();
-	mApp->privateDraw__();
+	[mDelegate draw];
 	mRenderer->finishDraw();
 }
 
-- (void)drawView:(id)sender
+- (void)drawView
 {
 	if( sIsEaglLayer ) {
 		mRenderer->startDraw();
-		mApp->privateUpdate__();
-		mApp->privateDraw__();
+		[mDelegate draw];
 		mRenderer->finishDraw();
 	}
 	else
 		[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:self waitUntilDone:NO];
-}
-
-- (void) startAnimation
-{
-	if( ! animating ) {
-		displayLink = [NSClassFromString(@"CADisplayLink") displayLinkWithTarget:self selector:@selector(drawView:)];
-		[displayLink setFrameInterval:animationFrameInterval];
-		[displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-		
-		animating = TRUE;
-	}
-}
-
-- (void)stopAnimation
-{
-	if( animating ) {
-		[displayLink invalidate];
-		displayLink = nil;
-		
-		animating = FALSE;
-	}
-}
-
-- (NSInteger) animationFrameInterval
-{
-	return animationFrameInterval;
-}
-
-- (void) setAnimationFrameInterval:(NSInteger)frameInterval
-{
-	if ( frameInterval >= 1 ) {
-		animationFrameInterval = frameInterval;
-		
-		if( animating ) {
-			[self stopAnimation];
-			[self startAnimation];
-		}
-	}
 }
 
 - (void)dealloc
@@ -147,8 +114,8 @@ static Boolean sIsEaglLayer;
 	while( found ) {
 		candidateId++;
 		found = false;
-		for( std::map<UITouch*,uint32_t>::const_iterator mapIt = mTouchIdMap.begin(); mapIt != mTouchIdMap.end(); ++mapIt ) {
-			if( mapIt->second == candidateId ) {
+		for( const auto &touchId : mTouchIdMap ) {
+			if( touchId.second == candidateId ) {
 				found = true;
 				break;
 			}
@@ -162,7 +129,7 @@ static Boolean sIsEaglLayer;
 
 - (void)removeTouchFromMap:(UITouch*)touch
 {
-	std::map<UITouch*,uint32_t>::iterator found( mTouchIdMap.find( touch ) );
+	auto found( mTouchIdMap.find( touch ) );
 	if( found == mTouchIdMap.end() )
 		;//std::cout << "Couldn' find touch in map?" << std::endl;
 	else
@@ -171,7 +138,7 @@ static Boolean sIsEaglLayer;
 
 - (uint32_t)findTouchInMap:(UITouch*)touch
 {
-	std::map<UITouch*,uint32_t>::const_iterator found( mTouchIdMap.find( touch ) );
+	const auto found( mTouchIdMap.find( touch ) );
 	if( found == mTouchIdMap.end() ) {
 		;//std::cout << "Couldn' find touch in map?" << std::endl;
 		return 0;
@@ -182,22 +149,21 @@ static Boolean sIsEaglLayer;
 
 - (void)updateActiveTouches
 {
-	static float contentScale = [self respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ? self.contentScaleFactor : 1;
+	const float contentScale = [self contentScaleFactor];
 
-	std::vector<ci::app::TouchEvent::Touch> activeTouches;
-	for( std::map<UITouch*,uint32_t>::const_iterator touchIt = mTouchIdMap.begin(); touchIt != mTouchIdMap.end(); ++touchIt ) {
-		CGPoint pt = [touchIt->first locationInView:self];
-		CGPoint prevPt = [touchIt->first previousLocationInView:self];
-		activeTouches.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ) * contentScale, ci::Vec2f( prevPt.x, prevPt.y ) * contentScale, touchIt->second, [touchIt->first timestamp], touchIt->first ) );
+	mActiveTouches.clear();
+	for( const auto &touch : mTouchIdMap ) {
+		CGPoint pt = [touch.first locationInView:self];
+		CGPoint prevPt = [touch.first previousLocationInView:self];
+		mActiveTouches.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ) * contentScale, ci::Vec2f( prevPt.x, prevPt.y ) * contentScale, touch.second, [touch.first timestamp], touch.first ) );
 	}
-	mApp->privateSetActiveTouches__( activeTouches );
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Event handlers
-- (void) touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	static float contentScale = [self respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ? self.contentScaleFactor : 1;
+	const float contentScale = [self contentScaleFactor];
 	
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
@@ -207,22 +173,25 @@ static Boolean sIsEaglLayer;
 			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ) * contentScale, ci::Vec2f( prevPt.x, prevPt.y ) * contentScale, [self addTouchToMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
-		if( ! touchList.empty() )
-			mApp->privateTouchesBegan__( ci::app::TouchEvent( touchList ) );
+		if( ! touchList.empty() ) {
+			ci::app::TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
+			[mDelegate touchesBegan:&touchEvent];
+		}
 	}
 	else {
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];		
 			int mods = 0;
 			mods |= cinder::app::MouseEvent::LEFT_DOWN;
-			mApp->privateMouseDown__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x * contentScale, pt.y * contentScale, mods, 0.0f, 0 ) );
+			cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, pt.x * contentScale, pt.y * contentScale, mods, 0.0f, 0 );
+			[mDelegate mouseDown:&mouseEvent];
 		}
 	}
 }
 
-- (void) touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	static float contentScale = [self respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ? self.contentScaleFactor : 1;
+	const float contentScale = [self contentScaleFactor];
 
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
@@ -232,22 +201,25 @@ static Boolean sIsEaglLayer;
 			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ) * contentScale, ci::Vec2f( prevPt.x, prevPt.y ) * contentScale, [self findTouchInMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
-		if( ! touchList.empty() )
-			mApp->privateTouchesMoved__( ci::app::TouchEvent( touchList ) );
+		if( ! touchList.empty() ) {
+			ci::app::TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
+			[mDelegate touchesMoved:&touchEvent];
+		}
 	}
 	else {
 		for( UITouch *touch in touches ) {
-			CGPoint pt = [touch locationInView:self];		
+			CGPoint pt = [touch locationInView:self];
 			int mods = 0;
 			mods |= cinder::app::MouseEvent::LEFT_DOWN;
-			mApp->privateMouseDrag__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x * contentScale, pt.y * contentScale, mods, 0.0f, 0 ) );
+			cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, pt.x * contentScale, pt.y * contentScale, mods, 0.0f, 0 );
+			[mDelegate mouseDrag:&mouseEvent];
 		}
 	}
 }
 
-- (void) touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	static float contentScale = [self respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ? self.contentScaleFactor : 1;
+	const float contentScale = [self contentScaleFactor];
 
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
@@ -258,23 +230,135 @@ static Boolean sIsEaglLayer;
 			[self removeTouchFromMap:touch];
 		}
 		[self updateActiveTouches];
-		if( ! touchList.empty() )
-			mApp->privateTouchesEnded__( ci::app::TouchEvent( touchList ) );
+		if( ! touchList.empty() ) {
+			ci::app::TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
+			[mDelegate touchesEnded:&touchEvent];
+		}
 	}
 	else {
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];		
 			int mods = 0;
 			mods |= cinder::app::MouseEvent::LEFT_DOWN;
-			mApp->privateMouseUp__( cinder::app::MouseEvent( cinder::app::MouseEvent::LEFT_DOWN, pt.x * contentScale, pt.y * contentScale, mods, 0.0f, 0 ) );
+			cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, pt.x * contentScale, pt.y * contentScale, mods, 0.0f, 0 );
+			[mDelegate mouseUp:&mouseEvent];
 		}
 	}
 }
 
-- (void) touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event
+- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event
 {
 	[self touchesEnded:touches withEvent:event];
 }
 
+- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches
+{
+	return mActiveTouches;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Advanced Keyboard
+- (void)showKeyboard
+{
+	if( mKeyboardVisible )
+		return;
+	
+	if( ! mKeyboardTextField ) {
+		mKeyboardTextField = [[UITextField alloc] initWithFrame: CGRectZero];
+		mKeyboardTextField.delegate = self;
+
+		mKeyboardTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+		mKeyboardTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+		mKeyboardTextField.enablesReturnKeyAutomatically = NO;
+		mKeyboardTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+		mKeyboardTextField.keyboardType = UIKeyboardTypeDefault;
+		mKeyboardTextField.returnKeyType = UIReturnKeyDefault;
+		mKeyboardTextField.secureTextEntry = NO;
+
+		mKeyboardTextField.hidden = YES;
+		[self addSubview: mKeyboardTextField];
+		[mKeyboardTextField release];
+	}
+	
+	mKeyboardVisible = YES;
+	mKeyboardTextField.text = @"";
+	[mKeyboardTextField becomeFirstResponder];
+}
+
+- (void)hideKeyboard
+{
+	if( ! mKeyboardVisible )
+		return;
+
+	mKeyboardVisible = NO;
+	[mKeyboardTextField resignFirstResponder];
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// UIKeyInput Protocol Methods
+- (BOOL)canBecomeFirstResponder
+{
+	return NO;
+}
+
+- (void)insertText:(NSString *)text
+{
+	int n = [text length];
+	for( int i = 0; i < n; i++ ) {
+		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, [text characterAtIndex:i], 0, 0 );
+		[mDelegate keyDown:&keyEvent];
+	}
+}
+
+- (void)deleteBackward
+{
+	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_BACKSPACE, '\b', 0, 0 );
+	[mDelegate keyDown:&keyEvent];
+}
+
+- (BOOL)hasText
+{
+	return YES;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// UITextField Protocol Methods
+- (BOOL)textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+	NSMutableString *currentString = [[textField.text mutableCopy] autorelease];
+	// if we are getting a backspace, the length of the range can't be trusted to map to the length of a composed character (such as emoji)
+	if( [string length] == 0 ) {
+		NSRange delRange = [currentString rangeOfComposedCharacterSequenceAtIndex:range.location];
+		[currentString deleteCharactersInRange:delRange];
+	}
+	else
+		[currentString replaceCharactersInRange:range withString:string];
+
+	//update our keyboardString
+	const char *utf8KeyboardChar = [currentString UTF8String];
+	if( utf8KeyboardChar ) {
+		std::string keyboardString( utf8KeyboardChar );
+		[mDelegate setKeyboardString:&keyboardString];
+	}
+
+    if( [string length] == 0 ) {
+		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_BACKSPACE, '\b', 0, 0 );	
+		[mDelegate keyDown:&keyEvent];
+    }
+    else {		
+		for( int i = 0; i < [string length]; i++) {
+			cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, [string characterAtIndex:i], 0, 0 );	
+			[mDelegate keyDown:&keyEvent];
+		}
+	}
+	
+    return YES; /* don't allow the edit! (keep placeholder text there) */
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField*)textField
+{
+	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_RETURN, '\n', 0, 0 );	
+	return YES;
+}
 
 @end

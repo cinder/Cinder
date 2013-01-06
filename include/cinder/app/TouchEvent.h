@@ -30,7 +30,7 @@
 
 namespace cinder { namespace app {
 
-//! Represents a mouse event
+//! Represents a touch event
 class TouchEvent : public Event {
   public:
 	class Touch {
@@ -64,16 +64,16 @@ class TouchEvent : public Event {
 		void		*mNative;
 	};
   
-	TouchEvent() : Event() {}
-	TouchEvent( const std::vector<Touch> &touches )
-		: Event(), mTouches( touches )
+	TouchEvent( WindowRef win, const std::vector<Touch> &touches )
+		: Event( win ), mTouches( touches )
 	{}
 	
 	//! Returns a std::vector of Touch descriptors associated with this event
 	const std::vector<Touch>&	getTouches() const { return mTouches; }
-	
+
   private:
 	std::vector<Touch>		mTouches;
+	bool					mHandled;
 };
 
 inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )

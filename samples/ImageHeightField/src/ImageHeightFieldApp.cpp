@@ -12,7 +12,7 @@ using namespace ci::app;
 class ImageHFApp : public AppBasic {
  public:
 	void    setup();
-	void    resize( ResizeEvent event );
+	void    resize();
 	void    mouseDown( MouseEvent event );
 	void    mouseDrag( MouseEvent event );
 	void    keyDown( KeyEvent event );
@@ -64,7 +64,7 @@ void ImageHFApp::openFile()
 	}
 }
 
-void ImageHFApp::resize( ResizeEvent event )
+void ImageHFApp::resize()
 {
 	mArcball.setWindowSize( getWindowSize() );
 	mArcball.setCenter( Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );

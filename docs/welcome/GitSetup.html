@@ -92,8 +92,8 @@ $(function() {
 		<p>If you aren't familiar with git, the only command you need to remember is <code>git pull</code> which, when executed from your new cinder_master directory, will update your copy of Cinder. Doing forget to rebuild Cinder (described below) whenever you do this.</p>
 		<h2>Downloading Boost</h2>
 		
-		<p>You'll also need to download the same Boost version Cinder is built against, currently version 1.48, which you can 
-		<a href="http://sourceforge.net/projects/boost/files/boost/1.48.0/">download here</a>. After dearchiving it, take the resulting directory, put it in your Cinder directory and rename it <em>boost</em>. You don't need to build Boost, but these headers are necessary to build Cinder. It is also possible to copy the <em>boost</em> directory from one of our prepackaged Cinder releases as a shortcut.</p>
+		<p>You'll also need to download the same Boost version Cinder is built against, currently version 1.52, which you can 
+		<a href="http://sourceforge.net/projects/boost/files/boost/1.52.0/">download here</a>. After dearchiving it, take the resulting directory, put it in your Cinder directory and rename it <em>boost</em>. You don't need to build Boost, but these headers are necessary to build Cinder. It is also possible to copy the <em>boost</em> directory from one of our prepackaged Cinder releases as a shortcut.</p>
 		<br>
 		<h2>Building on Mac OS X</h2>
 		The most straightforward way to build both the Debug and Release configurations of the Mac OS X, iOS and iOS Simulator targets is to run the script located at <em>cinder/xcode/fullbuild.sh</em>
@@ -114,7 +114,7 @@ $(function() {
 		
 		<h2>Building on Windows</h2>	
 		<p>To build Cinder on Windows, first make sure you've got the rest of your development environment setup as described in the <a href="MSWSetup.html">Windows Setup</a> document. Next, open up the Visual Studio 
-		solution in <em>cinder\vc10\cinder.sln</em> (or <em>cinder\vc9\cinder.sln</em> if you are still using Visual C++ 2008). Under the <em>Build</em> menu select 
+		solution in <em>cinder\vc10\cinder.sln</em>. Under the <em>Build</em> menu select 
 		<em>Batch Build</em>, and click the checkboxes corresponding to both the 
 		<em>Debug</em> and <em>Release</em> build configurations, and then hit the <em>Build</em> button. If you don't have a <em>Batch Build</em> menu item, make sure you have Visual C++ in expert mode, which is toggled under the menu item <em>Tools | Settings | Expert Settings</em>.</p>
 		<br />

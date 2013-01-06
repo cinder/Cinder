@@ -549,7 +549,15 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 std::string System::getIpAddress()
 {
 	vector<System::NetworkAdapter> adapters = getNetworkAdapters();
-	std::string result = "127.0.0.1";
+
+#if defined( CINDER_COCOA )
+	for( vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt ) {
+		if( adaptIt->getName() == "en0" )
+			return adaptIt->getIpAddress();
+	}
+#endif
+
+	std::string result = "127.0.0.1";	
 	for( vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt ) {
 		if( (adaptIt->getIpAddress() != "127.0.0.1") && (adaptIt->getIpAddress() != "0.0.0.0") )
 			result = adaptIt->getIpAddress();
@@ -557,6 +565,27 @@ std::string System::getIpAddress()
 	
 	return result;
 }
+
+#if defined( CINDER_COCOA_TOUCH )
+bool System::isDeviceIphone()
+{
+	if( ! instance()->mCachedValues[IS_IPHONE] ) {
+		instance()->mCachedValues[IS_IPHONE] = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone;
+	}
+	
+	return instance()->mCachedValues[IS_IPHONE];
+}
+
+bool System::isDeviceIpad()
+{
+	if( ! instance()->mCachedValues[IS_IPAD] ) {
+		instance()->mCachedValues[IS_IPAD] = [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
+	}
+	
+	return instance()->mCachedValues[IS_IPAD]; 
+}
+
+#endif
 
 
 } // namespace cinder

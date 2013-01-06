@@ -30,13 +30,26 @@
 
 typedef struct CTwBar TwBar;
 
-namespace cinder { namespace params {
+namespace cinder {
+
+namespace app {
+  class Window;
+  typedef std::shared_ptr<Window>		WindowRef;
+}
+
+namespace params {
+  
+typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 
 class InterfaceGl {
- public:
+  public:
 	InterfaceGl() {}
 	InterfaceGl( const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	InterfaceGl( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 	
+	static InterfaceGlRef create( const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	static InterfaceGlRef create( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+
 	static void		draw();
 
 	void	show( bool visible = true );
@@ -62,9 +75,11 @@ class InterfaceGl {
 	void	clear();
 	void	setOptions( const std::string &name = "", const std::string &optionsStr = "" );
 
- protected:
+  protected:
+	void	init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color );
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly ); 
 
+	app::WindowRef									mWindow;
 	std::shared_ptr<TwBar>							mBar;
 	std::vector<std::shared_ptr<std::function<void()> > >	mButtonCallbacks;
 };

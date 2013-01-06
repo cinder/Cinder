@@ -150,11 +150,13 @@ class Timeline : public TimelineItem {
 	//! Returns the number of items in the Timeline
 	size_t				getNumItems() const { return mItems.size(); }
 	//! Returns the first item in the timeline the target of which matches \a target
-	TimelineItemRef		find( void *target );
+	TimelineItemRef		find( void *target ) const;
 	//! Returns the latest-starting item in the timeline the target of which matches \a target
-	TimelineItemRef		findLast( void *target );
+	TimelineItemRef		findLast( void *target ) const;
+	//! Returns the latest-end item in the timeline the target of which matches \a target
+	TimelineItemRef		findLastEnd( void *target ) const;
 	//! Returns the end of the latest-ending item in the timeline the target of which matches \a target, or the current time if it's not found. \a found can store whether a related item was found.
-	float				findEndTimeOf( void *target, bool *found = NULL );
+	float				findEndTimeOf( void *target, bool *found = NULL ) const;
 	//! Removes the TimelineItem \a item from the Timeline. Safe to use from callback fn's.
 	void				remove( TimelineItemRef item );
 	//! Removes all TimelineItems whose target matches \a target

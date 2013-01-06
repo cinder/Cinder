@@ -156,9 +156,9 @@ float Timeline::calcDuration() const
 	return duration;
 }
 
-TimelineItemRef Timeline::find( void *target )
+TimelineItemRef Timeline::find( void *target ) const
 {
-	s_iter iter = mItems.begin();
+	s_const_iter iter = mItems.begin();
 	while( iter != mItems.end() ) {
 		if( iter->second->getTarget() == target )
 			return iter->second;
@@ -168,10 +168,10 @@ TimelineItemRef Timeline::find( void *target )
 	return TimelineItemRef(); // failed returns null tween
 }
 
-TimelineItemRef Timeline::findLast( void *target )
+TimelineItemRef Timeline::findLast( void *target ) const
 {
-	s_iter result = mItems.end();
-	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
+	s_const_iter result = mItems.end();
+	for( s_const_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
 		if( iter->second->getTarget() == target ) {
 			if( result == mItems.end() )
 				result = iter;
@@ -183,12 +183,32 @@ TimelineItemRef Timeline::findLast( void *target )
 	return (result == mItems.end() ) ? TimelineItemRef() : result->second;
 }
 
-float Timeline::findEndTimeOf( void *target, bool *found )
+TimelineItemRef Timeline::findLastEnd( void *target ) const
 {
-	pair<s_iter,s_iter> range = mItems.equal_range( target );
+	pair<s_const_iter,s_const_iter> range = mItems.equal_range( target );
 
-	s_iter result = mItems.end();
-	for( s_iter iter = range.first; iter != range.second; ++iter ) {
+	s_const_iter result = mItems.end();
+	for( s_const_iter iter = range.first; iter != range.second; ++iter ) {
+		if( iter->second->getTarget() == target ) {
+			if( result == mItems.end() )
+				result = iter;
+			else if( iter->second->getEndTime() > result->second->getEndTime() )
+				result = iter;
+		}
+	}
+	
+	if( result != mItems.end() )
+		return result->second;
+	else
+		return TimelineItemRef();
+}
+
+float Timeline::findEndTimeOf( void *target, bool *found ) const
+{
+	pair<s_const_iter,s_const_iter> range = mItems.equal_range( target );
+
+	s_const_iter result = mItems.end();
+	for( s_const_iter iter = range.first; iter != range.second; ++iter ) {
 		if( iter->second->getTarget() == target ) {
 			if( result == mItems.end() )
 				result = iter;

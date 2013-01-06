@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -32,7 +33,7 @@
 	app = aApp;
 	
 	view = aCinderView;
-	currentRef = nil;
+	mCurrentRef = nil;
 	
 	return self;
 }
@@ -59,20 +60,21 @@
 
 - (void)makeCurrentContext
 {
-	currentRef = UIGraphicsGetCurrentContext();
-	CGContextRetain( currentRef );
+	mCurrentRef = ::UIGraphicsGetCurrentContext();
+	if( ! mCurrentRef )
+		return;
+
+	::CGContextRetain( mCurrentRef );
 	// iOS with high res display automatically scales the CTM by the contentScaleFactor
 	// we'll undo this so that the CTM is 1:1
-	if( [view respondsToSelector:NSSelectorFromString(@"contentScaleFactor")] ) {
-		float scale = 1.0f / view.contentScaleFactor;
-		CGContextScaleCTM( currentRef, scale, scale );
-	}
-	
+	float scale = 1.0f / view.contentScaleFactor;
+	::CGContextScaleCTM( mCurrentRef, scale, scale );
 }
 
 - (void)flushBuffer
 {
-	CGContextRelease( currentRef );
+	if( mCurrentRef )
+		::CGContextRelease( mCurrentRef );
 }
 
 - (void)defaultResize
@@ -81,7 +83,7 @@
 
 - (CGContextRef)getCGContextRef
 {
-	return currentRef;
+	return mCurrentRef;
 }
 
 - (BOOL)isFlipped

@@ -30,15 +30,17 @@
 namespace cinder {
 
 class CaptureImplQtKitDevice : public Capture::Device {
- public:
+  public:
 	CaptureImplQtKitDevice( QTCaptureDevice* device );
 	~CaptureImplQtKitDevice() {}
 	
 	bool						checkAvailable() const;
 	bool						isConnected() const;
 	Capture::DeviceIdentifier	getUniqueId() const { return mUniqueId; }
- private:
+	void*						getNative() const { return mDevice; }
+  private:
 	Capture::DeviceIdentifier	mUniqueId;
+	QTCaptureDevice*			mDevice;
 };
 
 } //namespace

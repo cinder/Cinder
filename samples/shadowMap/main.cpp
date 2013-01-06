@@ -30,7 +30,7 @@ class ShadowMapSample : public AppBasic {
 	void setup();
 	void drawQuad( const float size );
 	void keyDown( KeyEvent event );
-	void resize( ResizeEvent event );
+	void resize();
 	void initShadowMap();
 	void updateShadowMap();
 	void draw();
@@ -130,9 +130,9 @@ void ShadowMapSample::keyDown( ci::app::KeyEvent event )
 	}
 }
 
-void ShadowMapSample::resize( ResizeEvent event )
+void ShadowMapSample::resize()
 {
-	glViewport( 0, 0, event.getWidth(), event.getHeight() );
+	glViewport( 0, 0, getWindowWidth(), getWindowHeight() );
 	mCamera->setPerspective( 45.0f, getWindowAspectRatio(), 0.1f, 100.0f );
 }
 

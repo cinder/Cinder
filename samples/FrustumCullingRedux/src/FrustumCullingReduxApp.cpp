@@ -39,8 +39,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class FrustumCullingReduxApp 
-	: public AppBasic 
+class FrustumCullingReduxApp : public AppBasic 
 {
   public:
 	void prepareSettings( Settings *settings );
@@ -52,8 +51,7 @@ class FrustumCullingReduxApp
 	void mouseDrag( MouseEvent event );
 
 	void keyDown( KeyEvent event );
-
-	void resize( ResizeEvent event );
+	
   protected:
 	//! load the heart shaped mesh 
 	void			loadObject();
@@ -63,6 +61,7 @@ class FrustumCullingReduxApp
 	void			toggleVerticalSync();
 	//! renders the help text
 	void			renderHelpToTexture();
+  
   protected:
 	static const int NUM_OBJECTS = 1500;
 
@@ -220,6 +219,7 @@ void FrustumCullingReduxApp::draw()
 	light.setDiffuse( Color::white() );
 	light.setSpecular( Color::white() );
 	light.enable();
+	light.update( mRenderCam );
 
 	// bind shader 
 	if(mShader) {
@@ -332,10 +332,6 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 	
 	// update info
 	renderHelpToTexture();
-}
-
-void FrustumCullingReduxApp::resize( ResizeEvent event )
-{
 }
 
 void FrustumCullingReduxApp::loadObject()

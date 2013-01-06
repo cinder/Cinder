@@ -27,9 +27,9 @@
 #endif
 
 #include "cinder/app/App.h"
+#include "cinder/Utilities.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/qtime/QuickTimeUtils.h"
-#include "cinder/Utilities.h"
 
 #if defined( CINDER_MAC )
 	#include <QTKit/QTKit.h>

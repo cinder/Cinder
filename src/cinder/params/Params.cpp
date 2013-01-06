@@ -66,7 +66,7 @@ namespace {
 #undef SYNONYM
 #undef HOMONYM
 
-bool mouseDown( app::MouseEvent event )
+void mouseDown( app::MouseEvent &event )
 {
 	TwMouseButtonID button;
 	if( event.isLeft() )
@@ -75,10 +75,10 @@ bool mouseDown( app::MouseEvent event )
 		button = TW_MOUSE_RIGHT;
 	else
 		button = TW_MOUSE_MIDDLE;
-	return TwMouseButton( TW_MOUSE_PRESSED, button ) != 0;
+	event.setHandled( TwMouseButton( TW_MOUSE_PRESSED, button ) != 0 );
 }
 
-bool mouseUp( app::MouseEvent event )
+void mouseUp( app::MouseEvent &event )
 {
 	TwMouseButtonID button;
 	if( event.isLeft() )
@@ -87,22 +87,22 @@ bool mouseUp( app::MouseEvent event )
 		button = TW_MOUSE_RIGHT;
 	else
 		button = TW_MOUSE_MIDDLE;
-	return TwMouseButton( TW_MOUSE_RELEASED, button ) != 0;
+	event.setHandled( TwMouseButton( TW_MOUSE_RELEASED, button ) != 0 );
 }
 
-bool mouseWheel( app::MouseEvent event )
+void mouseWheel( app::MouseEvent &event )
 {
 	static float sWheelPos = 0;
 	sWheelPos += event.getWheelIncrement();
-	return TwMouseWheel( (int)(sWheelPos) ) != 0;
+	event.setHandled( TwMouseWheel( (int)(sWheelPos) ) != 0 );
 }
 
-bool mouseMove( app::MouseEvent event )
+void mouseMove( app::MouseEvent &event )
 {
-	return TwMouseMotion( event.getX(), event.getY() ) != 0;
+	event.setHandled( TwMouseMotion( event.getX(), event.getY() ) != 0 );
 }
 
-bool keyDown( app::KeyEvent event )
+void keyDown( app::KeyEvent &event )
 {
 	int kmod = 0;
 	if( event.isShiftDown() )
@@ -111,17 +111,16 @@ bool keyDown( app::KeyEvent event )
 		kmod |= TW_KMOD_CTRL;
 	if( event.isAltDown() )
 		kmod |= TW_KMOD_ALT;
-	return TwKeyPressed(
+	event.setHandled( TwKeyPressed(
             (specialKeys.count( event.getCode() ) > 0)
                 ? specialKeys[event.getCode()]
                 : event.getChar(),
-            kmod ) != 0;
+            kmod ) != 0 );
 }
 
-bool resize( app::ResizeEvent event )
+void resize( cinder::app::WindowRef window )
 {
-	TwWindowSize( event.getWidth(), event.getHeight() );
-	return false;
+	TwWindowSize( window->getWidth(), window->getHeight() );
 }
 
 void TW_CALL implStdStringToClient( std::string& destinationClientString, const std::string& sourceLibraryString )
@@ -135,15 +134,7 @@ class AntMgr {
 	AntMgr() {
 		if( ! TwInit( TW_OPENGL, NULL ) ) {
 			throw Exception();
-		}
-		
-		app::App::get()->registerMouseDown( mouseDown );
-		app::App::get()->registerMouseUp( mouseUp );
-		app::App::get()->registerMouseWheel( mouseWheel );		
-		app::App::get()->registerMouseMove( mouseMove );
-		app::App::get()->registerMouseDrag( mouseMove );
-		app::App::get()->registerKeyDown( keyDown );
-		app::App::get()->registerResize( resize );
+		}		
 	}
 	
 	~AntMgr() {
@@ -160,16 +151,36 @@ void initAntGl()
 		mgr = std::shared_ptr<AntMgr>( new AntMgr );
 }
 
-
 InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const ColorA color )
 {
+	init( app::App::get()->getWindow(), title, size, color );
+}
+
+InterfaceGl::InterfaceGl( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color )
+{
+	init( window, title, size, color );
+}
+
+void InterfaceGl::init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color )
+{
 	initAntGl();
+	
+	mWindow = window;
+
 	mBar = std::shared_ptr<TwBar>( TwNewBar( title.c_str() ), TwDeleteBar );
 	char optionsStr[1024];
 	sprintf( optionsStr, "`%s` size='%d %d' color='%d %d %d' alpha=%d", title.c_str(), size.x, size.y, (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255) );
 	TwDefine( optionsStr );
 	
-	TwCopyStdStringToClientFunc( implStdStringToClient );
+	TwCopyStdStringToClientFunc( implStdStringToClient );	
+
+	mWindow->getSignalMouseDown().connect( mouseDown );
+	mWindow->getSignalMouseUp().connect( mouseUp );
+	mWindow->getSignalMouseWheel().connect( mouseWheel );
+	mWindow->getSignalMouseMove().connect( mouseMove );
+	mWindow->getSignalMouseDrag().connect( mouseMove );
+	mWindow->getSignalKeyDown().connect( keyDown );
+	mWindow->getSignalResize().connect( std::bind( resize, mWindow ) );
 }
 
 void InterfaceGl::draw()

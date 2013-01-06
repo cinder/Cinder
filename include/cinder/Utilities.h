@@ -83,6 +83,9 @@ template<typename T>
 inline std::string toString( const T &t ) { return boost::lexical_cast<std::string>( t ); }
 template<typename T>
 inline T fromString( const std::string &s ) { return boost::lexical_cast<T>( s ); }
+// This specialization seems to only be necessary with more recent versions of Boost
+template<>
+inline Url fromString( const std::string &s ) { return Url( s ); }
 
 //! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 std::vector<std::string> stackTrace();

@@ -30,10 +30,12 @@
 #include "cinder/Utilities.h"
 
 #include <string>
-#include <boost/container/list.hpp>
+// Addresses a bug in Container.List that shipped with Boost 1.52
+#include "boost/container/cinder_fixed_list.hpp"
+//#include <boost/container/list.hpp>
 
 namespace Json {
-class Value;
+	class Value;
 }
 
 namespace cinder {
@@ -43,6 +45,7 @@ class JsonTree {
 	
 	//! \cond
 	typedef boost::container::list<JsonTree> Container;
+
 	typedef Container::const_iterator ConstIter;
 	typedef Container::iterator Iter;
 	//! \endcond
@@ -265,7 +268,7 @@ private:
 	NodeType						mNodeType;
 	std::string						mValue;
 	ValueType						mValueType;
-	//! \cond
+	//! \endcond
 
   public:
 

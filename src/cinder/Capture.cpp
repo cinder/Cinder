@@ -25,7 +25,10 @@
 #if defined( CINDER_MAC )
 	#import "cinder/CaptureImplQtKit.h"
 	typedef CaptureImplQtKit	CapturePlatformImpl;
-#elif defined( CINDER_COCOA_TOUCH )
+#elif defined( CINDER_COCOA_TOUCH_SIMULATOR )
+	#include "cinder/CaptureImplCocoaDummy.h"
+	typedef CaptureImplCocoaDummy	CapturePlatformImpl;
+#elif defined( CINDER_COCOA_TOUCH_DEVICE )
 	#import "cinder/CaptureImplAvFoundation.h"
 	typedef CaptureImplAvFoundation	CapturePlatformImpl;
 #elif defined( CINDER_MSW )
@@ -35,6 +38,7 @@
 
 #include <set>
 using namespace std;
+
 
 namespace cinder {
 
@@ -162,5 +166,5 @@ const Capture::DeviceRef Capture::getDevice() const {
 	return mObj->mImpl->getDevice();
 #endif
 }
-	
+
 } //namespace cinder

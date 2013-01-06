@@ -13,11 +13,11 @@
 			buildPhases = (
 			);
 			dependencies = (
+				0095452B1680EA00008ECA02 /* PBXTargetDependency */,
 				009F6EAE14C0FEF30036C292 /* PBXTargetDependency */,
 				0087D1DC12CD7F1F002CD69F /* PBXTargetDependency */,
 				0087D32F12CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33112CD82C2002CD69F /* PBXTargetDependency */,
-				0087D33312CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33512CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33712CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33912CD82C2002CD69F /* PBXTargetDependency */,
@@ -70,13 +70,6 @@
 			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
 			remoteInfo = FBOBasic_iOS;
 		};
-		0087D2E512CD81EB002CD69F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
-			remoteInfo = iPhoneAccelerometer;
-		};
 		0087D32912CD828A002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */;
@@ -98,13 +91,6 @@
 			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = TextTest_iOS;
 		};
-		0087D33212CD82C2002CD69F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
-			remoteInfo = iPhoneAccelerometer;
-		};
 		0087D33412CD82C2002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */;
@@ -125,6 +111,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = FBOBasic_iOS;
+		};
+		009545281680E9E5008ECA02 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = MotionBasic;
+		};
+		0095452A1680EA00008ECA02 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = MotionBasic;
 		};
 		009F6EAB14C0FEEC0036C292 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -148,8 +148,8 @@
 		0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = captureTest_iOS.xcodeproj; path = ../../captureTest/xcode/captureTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ClipboardBasic_iOS.xcodeproj; path = ../../ClipboardBasic/xcode_iOS/ClipboardBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic_iOS.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = iPhoneAccelerometer.xcodeproj; path = ../../iPhoneAccelerometer/xcode/iPhoneAccelerometer.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest_iOS.xcodeproj; path = ../../TextTest/xcode_iOS/TextTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
+		009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MotionBasic.xcodeproj; path = ../../MotionBasic/xcode_ios/MotionBasic.xcodeproj; sourceTree = "<group>"; };
 		009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DragTween.xcodeproj; path = ../../_timeline/DragTween/xcode_iOS/DragTween.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -158,8 +158,8 @@
 			isa = PBXGroup;
 			children = (
 				009F6EA214C0FED70036C292 /* _timeline */,
+				009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */,
 				0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */,
-				0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */,
 				0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */,
 				0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */,
 				0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */,
@@ -208,18 +208,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0087D2E212CD81EB002CD69F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0087D2E612CD81EB002CD69F /* iPhoneAccelerometer.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		0087D32612CD828A002CD69F /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				0087D32A12CD828A002CD69F /* TextTest_iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009545211680E9E4008ECA02 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009545291680E9E5008ECA02 /* MotionBasic.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -279,8 +279,8 @@
 					ProjectRef = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
 				},
 				{
-					ProductGroup = 0087D2E212CD81EB002CD69F /* Products */;
-					ProjectRef = 0087D2E112CD81EB002CD69F /* iPhoneAccelerometer.xcodeproj */;
+					ProductGroup = 009545211680E9E4008ECA02 /* Products */;
+					ProjectRef = 009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 0087D1AF12CD7E7A002CD69F /* Products */;
@@ -334,18 +334,18 @@
 			remoteRef = 0087D2D712CD81D3002CD69F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0087D2E612CD81EB002CD69F /* iPhoneAccelerometer.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = iPhoneAccelerometer.app;
-			remoteRef = 0087D2E512CD81EB002CD69F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		0087D32A12CD828A002CD69F /* TextTest_iOS.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = TextTest_iOS.app;
 			remoteRef = 0087D32912CD828A002CD69F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009545291680E9E5008ECA02 /* MotionBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MotionBasic.app;
+			remoteRef = 009545281680E9E5008ECA02 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		009F6EAC14C0FEEC0036C292 /* DragTween.app */ = {
@@ -373,11 +373,6 @@
 			name = TextTest_iOS;
 			targetProxy = 0087D33012CD82C2002CD69F /* PBXContainerItemProxy */;
 		};
-		0087D33312CD82C2002CD69F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = iPhoneAccelerometer;
-			targetProxy = 0087D33212CD82C2002CD69F /* PBXContainerItemProxy */;
-		};
 		0087D33512CD82C2002CD69F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ClipboardBasic_iOS;
@@ -392,6 +387,11 @@
 			isa = PBXTargetDependency;
 			name = FBOBasic_iOS;
 			targetProxy = 0087D33812CD82C2002CD69F /* PBXContainerItemProxy */;
+		};
+		0095452B1680EA00008ECA02 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MotionBasic;
+			targetProxy = 0095452A1680EA00008ECA02 /* PBXContainerItemProxy */;
 		};
 		009F6EAE14C0FEF30036C292 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

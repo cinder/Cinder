@@ -28,21 +28,6 @@
 #include <vector>
 #include <utility>
 
-#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 ) || defined( _LIBCPP_VERSION )
-	#include <functional>
-#else
-	#if defined( CINDER_COCOA )
-		#include <tr1/functional>
-	#else
-		#include <boost/tr1/functional.hpp>
-	#endif
-	namespace std {
-		using std::tr1::function;
-		using std::tr1::bind;
-		using namespace std::tr1::placeholders;
-	}
-#endif
-
 namespace cinder {
 
 //! Represents a unique identifier for a callback

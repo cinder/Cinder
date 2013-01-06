@@ -55,7 +55,7 @@ class EaseGalleryApp : public AppBasic {
   public:
 	void setup();
 	void draw();
-	void resize( ResizeEvent event );
+	void resize();
 	void sizeRectangles();
 	
 	vector<EaseBox>		mEaseBoxes;
@@ -123,7 +123,7 @@ void EaseGalleryApp::setup()
 	sizeRectangles();
 }
 
-void EaseGalleryApp::resize( ResizeEvent event )
+void EaseGalleryApp::resize()
 {
 	sizeRectangles();
 }

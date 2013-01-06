@@ -159,7 +159,7 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 			}
 			if( copyColorRGBA ) {
 				*(reinterpret_cast<ColorA*>(ptr)) = triMesh.getColorsRGBA()[v];
-				ptr += sizeof( Color );
+				ptr += sizeof( ColorA );
 			}
 			if( copyTexCoord2D ) {
 				*(reinterpret_cast<Vec2f*>(ptr)) = triMesh.getTexCoords()[v];
@@ -222,7 +222,7 @@ VboMesh::VboMesh( const TriMesh2d &triMesh, Layout layout )
 			}
 			if( copyColorRGBA ) {
 				*(reinterpret_cast<ColorA*>(ptr)) = triMesh.getColorsRGBA()[v];
-				ptr += sizeof( Color );
+				ptr += sizeof( ColorA );
 			}
 			if( copyTexCoord2D ) {
 				*(reinterpret_cast<Vec2f*>(ptr)) = triMesh.getTexCoords()[v];
