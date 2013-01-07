@@ -945,6 +945,10 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_TOUCH:
 			impl->onTouch( mWnd, wParam, lParam );
 		break;
+		case WM_SETCURSOR:
+			// allow the use of ::SetCursor()
+			return TRUE;
+        break;
 	}
 
 	// unhandled messages To DefWindowProc
