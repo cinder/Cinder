@@ -65,7 +65,8 @@
 	[fmt getValues:&aaSamples forAttribute:NSOpenGLPFASamples forVirtualScreen:0];
 	renderer->setAntiAliasing( aaSamples );
 
-	view = [[AppImplCocoaTransparentGlView alloc] initWithFrame:frame pixelFormat:fmt];
+	NSRect bounds = NSMakeRect( 0, 0, frame.size.width, frame.size.height );
+	view = [[AppImplCocoaTransparentGlView alloc] initWithFrame:bounds pixelFormat:fmt];
 if( ! view )
 	NSLog( @"Unable to allocate GL view" );
 
