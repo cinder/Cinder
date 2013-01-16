@@ -420,7 +420,7 @@
 
 - (float)getContentScale
 {
-	return [mWin backingScaleFactor];
+	return [mCinderView contentScaleFactor];
 }
 
 - (void)setPos:(cinder::Vec2i)pos

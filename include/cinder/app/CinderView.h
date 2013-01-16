@@ -93,4 +93,7 @@
 - (void)updateActiveTouches:(NSEvent *)event;
 - (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
 
+- (float)contentScaleFactor;
+
+
 @end
