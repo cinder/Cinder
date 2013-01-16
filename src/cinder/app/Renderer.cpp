@@ -86,11 +86,11 @@ std::cout << "Deleting renderer" << std::endl;
 		::CFRelease( mImpl );
 }
 
-void RendererGl::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer )
+void RendererGl::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
 {
 	mApp = aApp;
 	RendererGlRef sharedGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[AppImplCocoaRendererGl alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp renderer:this sharedRenderer:sharedGl];
+	mImpl = [[AppImplCocoaRendererGl alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
 	// This is necessary for Objective-C garbage collection to do the right thing
 	::CFRetain( mImpl );
 }
@@ -294,7 +294,7 @@ Renderer2d::~Renderer2d()
 	::CFRelease( mImpl );
 }
 
-void Renderer2d::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/ )
+void Renderer2d::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
 {
 	mApp = aApp;
 	mImpl = [[AppImplCocoaRendererQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp];

@@ -203,7 +203,7 @@ class App {
 		Settings();
 		virtual ~Settings() {}	  
 
-	  protected:	  
+	  protected:
 		bool			mShouldQuit; // defaults to false, facilitates early termination
 
 		// A vector of Windows which have been requested using prepareWindow. An empty vector implies defaults.

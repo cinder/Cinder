@@ -100,6 +100,7 @@
 - (cinder::Vec2i)getPos;
 - (float)getContentScale;
 - (void)setPos:(cinder::Vec2i)pos;
+- (float)getContentScale;
 - (void)close;
 - (NSString *)getTitle;
 - (void)setTitle:(NSString *)title;
@@ -134,6 +135,6 @@
 - (void)fileDrop:(cinder::app::FileDropEvent*)event;
 - (cinder::app::WindowRef)getWindowRef;
 
-+ (WindowImplBasicCocoa*)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic*)appImpl;
++ (WindowImplBasicCocoa*)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic*)appImpl withRetina:(BOOL)retinaEnabled;
 
 @end

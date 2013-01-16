@@ -58,6 +58,8 @@
 	BOOL						mReadyToDraw; // don't allow draw until setup() and resize() have been called
 	BOOL						mReceivesEvents;
 	cinder::app::RendererRef	mRenderer;
+	
+	float						mContentScaleFactor;
 
 	NSMutableDictionary					*mTouchIdMap;
 	std::map<uint32_t,cinder::Vec2f>	mTouchPrevPointMap;

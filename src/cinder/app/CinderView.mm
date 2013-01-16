@@ -67,7 +67,13 @@
 - (void)setupRendererWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
 {
 	mRenderer = renderer;
-	mRenderer->setup( mApp, NSRectToCGRect( frame ), self, sharedRenderer );
+	mRenderer->setup( mApp, NSRectToCGRect( frame ), self, sharedRenderer, mApp->getSettings().isHighDensityDisplayEnabled() );
+	
+	if ( mApp->getSettings().isHighDensityDisplayEnabled() ) {
+		mContentScaleFactor = self.window.backingScaleFactor;
+	} else {
+		mContentScaleFactor = 1.0f;
+	}
 
 	// register for drop events
 	if( mReceivesEvents )
@@ -79,6 +85,16 @@
 		[self setWantsRestingTouches:YES];
 		if( ! mTouchIdMap )
 			mTouchIdMap = [[NSMutableDictionary alloc] initWithCapacity:10];
+	}
+}
+
+- (void)viewDidChangeBackingProperties
+{
+	if ( mApp->getSettings().isHighDensityDisplayEnabled() ) {
+		mContentScaleFactor = self.window.backingScaleFactor;
+		mRenderer->defaultResize();
+	} else {
+		mContentScaleFactor = 1.0f;
 	}
 }
 

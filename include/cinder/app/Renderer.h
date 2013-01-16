@@ -74,7 +74,7 @@ class Renderer {
 	
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		virtual void	setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer ) = 0;
+		virtual void	setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retianEnabled ) = 0;
 		virtual CGContextRef			getCgContext() { throw; } // the default behavior is failure
 		virtual CGLContextObj			getCglContext() { throw; } // the default behavior is failure
 		virtual CGLPixelFormatObj		getCglPixelFormat() { throw; } // the default behavior is failure
@@ -126,7 +126,7 @@ class RendererGl : public Renderer {
  
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		virtual void setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer );
+		virtual void setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retianEnabled );
 		virtual CGLContextObj			getCglContext();
 		virtual CGLPixelFormatObj		getCglPixelFormat();
 		virtual NSOpenGLContext*		getNsOpenGlContext();		
@@ -182,7 +182,7 @@ class Renderer2d : public Renderer {
 		virtual void setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer );
 	#else
 		~Renderer2d();
-		virtual void setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer );
+		virtual void setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
 	#endif
 
 	virtual CGContextRef			getCgContext();
