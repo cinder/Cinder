@@ -200,23 +200,31 @@
 
 - (void)keyDown:(NSEvent*)theEvent
 {
-	char c		= [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+	NSString *chars = [theEvent characters];
+	uint32_t c32	= ([chars length] > 0 ) ? [chars characterAtIndex:0] : 0;
+	NSString *charsNoMods	= [theEvent charactersIgnoringModifiers];
+	char c					= ([charsNoMods length] > 0 ) ? [charsNoMods characterAtIndex:0] : 0;
+	
 	int code	= [theEvent keyCode];
 	int mods	= [self prepKeyEventModifiers:theEvent];
 	
-	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::translateNativeKeyCode( code ),
-									(char)c, mods, code);	
+	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::translateNativeKeyCode( code ), c32,
+									c, mods, code);	
 	[mDelegate keyDown:&keyEvent];
 }
 
 - (void)keyUp:(NSEvent*)theEvent
 {
-	char c		= [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+	NSString *chars = [theEvent characters];
+	uint32_t c32	= ([chars length] > 0 ) ? [chars characterAtIndex:0] : 0;
+	NSString *charsNoMods	= [theEvent charactersIgnoringModifiers];
+	char c					= ([charsNoMods length] > 0 ) ? [charsNoMods characterAtIndex:0] : 0;
+
 	int code	= [theEvent keyCode];
 	int mods	= [self prepKeyEventModifiers:theEvent];
 	
 	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::translateNativeKeyCode( code ),
-									(char)c, mods, code );
+									c32, c, mods, code );
 	[mDelegate keyUp:&keyEvent];
 }
 
