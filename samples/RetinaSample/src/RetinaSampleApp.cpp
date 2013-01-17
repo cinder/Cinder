@@ -35,7 +35,7 @@ void RetinaSampleApp::setup()
 void RetinaSampleApp::mouseDrag( MouseEvent event )
 {
 	console() << event.getPos()	<< endl;
-	mPoints.push_back( event.getPos() / getWindowContentScale() );
+	mPoints.push_back( event.getPos() );
 }
 
 void RetinaSampleApp::mouseDown( MouseEvent event )
@@ -54,32 +54,35 @@ void RetinaSampleApp::displayChange()
 {
 	console() << "Window display changed: " << getWindow()->getDisplay()->getBounds() << std::endl;
 	console() << "ContentScale = " << getWindowContentScale() << endl;
+	console() << "getWindowCenter() = " << getWindowCenter() << endl;
+	console() << "getWindow()->toPixels( 1.0f ) = " << getWindow()->toPixels( 1.0f ) << endl;
 
 }
 
 void RetinaSampleApp::draw()
 {
 	
-	float c = getWindowContentScale();
+	// float c = getWindowContentScale();
 	
 	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 	gl::color( 1.0f, 0.5f, 0.25f );
 	
 	gl::pushMatrices();
 		gl::begin( GL_LINE_STRIP );
+		glLineWidth( getWindow()->toPixels( 1.0f ) );
 		for( auto pointIter = mPoints.begin(); pointIter != mPoints.end(); ++pointIter ) {
-			gl::vertex( *pointIter * c);
+			gl::vertex( *pointIter );
 		}
 		gl::end();
 	gl::popMatrices();
 	
 	gl::pushMatrices();
 		glColor3f( 1.0f, 0.2f, 0.15f );
-		gl::translate( getWindowCenter() * c );
+		gl::translate( getWindowCenter() );
 		gl::rotate( getElapsedSeconds() * 5 );
-		gl::scale(c,c);
 		gl::drawSolidRect( Rectf( -100, -100, 100, 100 ) );
 	gl::popMatrices();
+	
 }
 
 CINDER_APP_NATIVE( RetinaSampleApp, RendererGl )

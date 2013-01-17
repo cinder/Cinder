@@ -139,12 +139,13 @@ if( ! view )
 
 - (void)defaultResize
 {
+	/*
 	NSRect backingBounds = [view convertRectToBacking:[view bounds]];
 	GLsizei pixelWidth = (GLsizei)(backingBounds.size.width), pixelHeight = (GLsizei)(backingBounds.size.height);
 	
 	cinder::gl::setMatricesWindow( pixelWidth, pixelHeight );
+	*/
 	
-	/*
 	NSSize nsSize = [view frame].size;
 	glViewport( 0, 0, nsSize.width, nsSize.height );
 	cinder::CameraPersp cam( nsSize.width, nsSize.height, 60.0f );
@@ -156,7 +157,7 @@ if( ! view )
 	glLoadMatrixf( cam.getModelViewMatrix().m );
 	glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
 	glTranslatef( 0.0f, (float)-nsSize.height, 0.0f );       // shift origin up to upper-left corner.
-	*/
+	
 }
 
 - (BOOL)acceptsFirstResponder
