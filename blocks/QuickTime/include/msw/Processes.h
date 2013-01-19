@@ -425,11 +425,14 @@ GetNextProcess(ProcessSerialNumber * PSN)                     THREEWORDINLINE(0x
  *    CarbonLib:        in CarbonLib 1.0 and later
  *    Mac OS X:         in version 10.0 and later
  */
+
+// Cinder change. This leads to a symbol conflict on Win 8.
+#if 0
 EXTERN_API( OSErr )
 GetProcessInformation(
   const ProcessSerialNumber *  PSN,
   ProcessInfoRec *             info)                          THREEWORDINLINE(0x3F3C, 0x003A, 0xA88F);
-
+#endif
 
 /*
  *  ProcessInformationCopyDictionary()
