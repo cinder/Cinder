@@ -3,27 +3,27 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0087DAF416ABA13B009BE131 /* RayMarcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0087DAF316ABA13B009BE131 /* RayMarcher.cpp */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
 		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		04C206C1CFB8490FAADCFA90 /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6A2668065254D3BB279382F /* Cairo.cpp */; };
+		3224B63A8723495E82F5A242 /* RayMarcherApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD4A18384B774045B2AFA709 /* RayMarcherApp.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
-		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		13AB44E45658418D9FD6ABAB /* Cairo.h in Headers */ = {isa = PBXBuildFile; fileRef = EFBDE83631844292BE8C9B5B /* Cairo.h */; };
-		04C206C1CFB8490FAADCFA90 /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6A2668065254D3BB279382F /* Cairo.cpp */; };
-		218F262CF1544C66822F0C1D /* RayMarcher_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 77B48100B1414DF89AC20CB0 /* RayMarcher_Prefix.pch */; };
 		6CD7155DDA7F4A7CAFE3ED6F /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = E49660B52CA3485BAEA53C5C /* CinderApp.icns */; };
-		C99061A53BBB49A497CC330C /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = FB60DBE3CD884CEB86DD0C92 /* Resources.h */; };
-		3224B63A8723495E82F5A242 /* RayMarcherApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD4A18384B774045B2AFA709 /* RayMarcherApp.cpp */; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0087DAF316ABA13B009BE131 /* RayMarcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RayMarcher.cpp; path = ../src/RayMarcher.cpp; sourceTree = "<group>"; };
+		0087DAF616ABA142009BE131 /* RayMarcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RayMarcher.h; path = ../include/RayMarcher.h; sourceTree = "<group>"; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -34,14 +34,14 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
+		77B48100B1414DF89AC20CB0 /* RayMarcher_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = RayMarcher_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* RayMarcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RayMarcher.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AD4A18384B774045B2AFA709 /* RayMarcherApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/RayMarcherApp.cpp; sourceTree = "<group>"; name = RayMarcherApp.cpp; };
-		FB60DBE3CD884CEB86DD0C92 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		E49660B52CA3485BAEA53C5C /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
-		A58CAF06B44F409BAA650DFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
-		77B48100B1414DF89AC20CB0 /* RayMarcher_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = RayMarcher_Prefix.pch; sourceTree = "<group>"; name = RayMarcher_Prefix.pch; };
-		C6A2668065254D3BB279382F /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../../../blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; name = Cairo.cpp; };
-		EFBDE83631844292BE8C9B5B /* Cairo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../../../blocks/Cairo/include/cinder/cairo/Cairo.h; sourceTree = "<group>"; name = Cairo.h; };
+		A58CAF06B44F409BAA650DFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AD4A18384B774045B2AFA709 /* RayMarcherApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = RayMarcherApp.cpp; path = ../src/RayMarcherApp.cpp; sourceTree = "<group>"; };
+		C6A2668065254D3BB279382F /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Cairo.cpp; path = ../../../blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; };
+		E49660B52CA3485BAEA53C5C /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		EFBDE83631844292BE8C9B5B /* Cairo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cairo.h; path = ../../../blocks/Cairo/include/cinder/cairo/Cairo.h; sourceTree = "<group>"; };
+		FB60DBE3CD884CEB86DD0C92 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,12 +63,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				0A686D0894564188A0F20DC2 /* Cairo */,
+			);
+			name = Blocks;
+			sourceTree = "<group>";
+		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				0087DAF316ABA13B009BE131 /* RayMarcher.cpp */,
 				AD4A18384B774045B2AFA709 /* RayMarcherApp.cpp */,
 			);
 			name = Source;
+			sourceTree = "<group>";
+		};
+		0A686D0894564188A0F20DC2 /* Cairo */ = {
+			isa = PBXGroup;
+			children = (
+				7FFE28CB9E48496F942F4108 /* src */,
+				21E0237D067544769A2083FC /* include */,
+			);
+			name = Cairo;
 			sourceTree = "<group>";
 		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
@@ -95,12 +113,28 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		105F6D2CAC31407686531C06 /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				6B63E137C1B74DA4A5FD6C48 /* cairo */,
+			);
+			name = cinder;
+			sourceTree = "<group>";
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				8D1107320486CEB800E47090 /* RayMarcher.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		21E0237D067544769A2083FC /* include */ = {
+			isa = PBXGroup;
+			children = (
+				105F6D2CAC31407686531C06 /* cinder */,
+			);
+			name = include;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* RayMarcher */ = {
@@ -116,58 +150,10 @@
 			name = RayMarcher;
 			sourceTree = "<group>";
 		};
-		7FFE28CB9E48496F942F4108 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				C6A2668065254D3BB279382F /* Cairo.cpp */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		6B63E137C1B74DA4A5FD6C48 /* cairo */ = {
-			isa = PBXGroup;
-			children = (
-				EFBDE83631844292BE8C9B5B /* Cairo.h */,
-			);
-			name = cairo;
-			sourceTree = "<group>";
-		};
-		105F6D2CAC31407686531C06 /* cinder */ = {
-			isa = PBXGroup;
-			children = (
-				6B63E137C1B74DA4A5FD6C48 /* cairo */,
-			);
-			name = cinder;
-			sourceTree = "<group>";
-		};
-		21E0237D067544769A2083FC /* include */ = {
-			isa = PBXGroup;
-			children = (
-				105F6D2CAC31407686531C06 /* cinder */,
-			);
-			name = include;
-			sourceTree = "<group>";
-		};
-		0A686D0894564188A0F20DC2 /* Cairo */ = {
-			isa = PBXGroup;
-			children = (
-				7FFE28CB9E48496F942F4108 /* src */,
-				21E0237D067544769A2083FC /* include */,
-			);
-			name = Cairo;
-			sourceTree = "<group>";
-		};
-		01B97315FEAEA392516A2CEA /* Blocks */ = {
-			isa = PBXGroup;
-			children = (
-				0A686D0894564188A0F20DC2 /* Cairo */,
-			);
-			name = Blocks;
-			sourceTree = "<group>";
-		};
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				0087DAF616ABA142009BE131 /* RayMarcher.h */,
 				FB60DBE3CD884CEB86DD0C92 /* Resources.h */,
 				77B48100B1414DF89AC20CB0 /* RayMarcher_Prefix.pch */,
 			);
@@ -190,6 +176,22 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6B63E137C1B74DA4A5FD6C48 /* cairo */ = {
+			isa = PBXGroup;
+			children = (
+				EFBDE83631844292BE8C9B5B /* Cairo.h */,
+			);
+			name = cairo;
+			sourceTree = "<group>";
+		};
+		7FFE28CB9E48496F942F4108 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C6A2668065254D3BB279382F /* Cairo.cpp */,
+			);
+			name = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -218,7 +220,7 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "RayMarcher" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "rayMarcher" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -255,6 +257,7 @@
 			files = (
 				3224B63A8723495E82F5A242 /* RayMarcherApp.cpp in Sources */,
 				04C206C1CFB8490FAADCFA90 /* Cairo.cpp in Sources */,
+				0087DAF416ABA13B009BE131 /* RayMarcher.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,8 +268,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -282,8 +285,8 @@
 					../../../blocks/Cairo/lib/macosx/libpng14.a,
 				);
 				PRODUCT_NAME = RayMarcher;
-				WRAPPER_EXTENSION = app;
 				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
@@ -310,19 +313,19 @@
 				);
 				PRODUCT_NAME = RayMarcher;
 				STRIP_INSTALLED_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
 				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				CINDER_PATH = "../../..";
+				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -331,21 +334,18 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = (
-					"\"$(CINDER_PATH)/include\" ../include",
-					../../../blocks/Cairo/include,
-				);
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../blocks/Cairo/include";
 			};
 			name = Debug;
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				CINDER_PATH = "../../..";
+				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -354,10 +354,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = (
-					"\"$(CINDER_PATH)/include\" ../include",
-					../../../blocks/Cairo/include,
-				);
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../blocks/Cairo/include";
 			};
 			name = Release;
 		};
@@ -373,7 +370,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "RayMarcher" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "rayMarcher" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
