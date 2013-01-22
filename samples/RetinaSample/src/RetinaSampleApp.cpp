@@ -55,7 +55,7 @@ void RetinaSampleApp::displayChange()
 	console() << "Window display changed: " << getWindow()->getDisplay()->getBounds() << std::endl;
 	console() << "ContentScale = " << getWindowContentScale() << endl;
 	console() << "getWindowCenter() = " << getWindowCenter() << endl;
-	console() << "getWindow()->toPixels( 1.0f ) = " << getWindow()->toPixels( 1.0f ) << endl;
+	console() << "getWindow()->toPixels( 1.0f ) = " << toPixels( 1.0f ) << endl;
 
 }
 

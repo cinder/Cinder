@@ -311,7 +311,7 @@ class App {
 	Area				getWindowBounds() const { return Area( 0, 0, getWindowWidth(), getWindowHeight() ); }
 	//! Returns the contentScale of the App's window
 	float				getWindowContentScale() const { return getWindow()->getContentScale(); }
-
+	
 	//! Returns the X & Y coordinate of the top-left-corner of the window contents.
 	Vec2i				getWindowPos() const { return getWindow()->getPos(); }
 	//! Returns the X coordinate of the top-left-corner of the window contents.
@@ -542,6 +542,29 @@ inline void		setFrameRate( float frameRate ) { App::get()->setFrameRate( frameRa
 inline bool		isFullScreen() { return App::get()->isFullScreen(); }
 //! Sets whether the active App is in full-screen mode based on \a fullScreen
 inline void		setFullScreen( bool fullScreen = true ) { App::get()->setFullScreen( fullScreen ); }
+
+// toPixels & fromPixels inline utils
+//! Returns a scalar mapped from points to pixels
+inline float	toPixels( float s ) { return getWindow()->toPixels( s ); }
+//! Returns a Vec2f mapped from points to pixels
+inline Vec2f	toPixels( Vec2f s ) { return getWindow()->toPixels( s ); }
+//! Returns a Vec2i mapped from points to pixels
+inline	Vec2i	toPixels( Vec2i s ) { return app::getWindow()->toPixels( s ); }
+//! Returns an Area mapped from points to pixels
+inline	Area	toPixels( const Area &a ) { return getWindow()->toPixels( a ); }
+//! Returns an Rectf mapped from points to pixels
+inline	Rectf	toPixels( const Rectf &a ) { return getWindow()->toPixels( a ); }
+//! Returns a scalar mapped from pixels to points
+inline	float	toPoints( float s ) { return getWindow()->toPoints( s ); }
+//! Returns a Vec2f mapped from pixels to points
+inline	Vec2f	toPoints( Vec2f s ) { return getWindow()->toPoints( s ); }
+//! Returns a Vec2i mapped from pixels to points
+inline	Vec2i	toPoints( Vec2i s ) { return getWindow()->toPoints( s ); }
+//! Returns an Area mapped from pixels to points
+inline	Area	toPoints( const Area &a ) { return getWindow()->toPoints( a ); }
+//! Returns an Rectf mapped from pixels to points
+inline	Rectf	toPoints( const Rectf &a ) { return getWindow()->toPoints( a ); }
+
 
 //! Returns the number seconds which have elapsed since the active App launched.
 inline double	getElapsedSeconds() { return App::get()->getElapsedSeconds(); }
