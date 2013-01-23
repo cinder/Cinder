@@ -45,8 +45,13 @@
 	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
 										[NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
 
-	mBackingWidth = 0;
-	mBackingHeight = 0;
+	mBackingWidth	= 0;
+	mBackingHeight	= 0;
+	
+	mPointsWidth	= 0;
+	mPointsHeight	= 0;
+	
+	
 	mMsaaSamples = cinder::app::RendererGl::sAntiAliasingSamples[renderer->getAntiAliasing()];
 	mUsingMsaa = mMsaaSamples > 0;
 
@@ -143,7 +148,14 @@
 	else {
 		glBindFramebufferOES( GL_FRAMEBUFFER_OES, mViewFramebuffer );
 	}
-    glViewport( 0, 0, mBackingWidth, mBackingHeight );
+    
+	//glViewport( 0, 0, mBackingWidth, mBackingHeight );
+	glViewport( 0, 0, mCinderView.frame.size.width, mCinderView.frame.size.height );
+	
+	
+// std::cout << "mBacking [" << mBackingWidth << ", " << mBackingHeight << "]" << std::endl;
+// std::cout << "frame size [" << mCinderView.frame.size.width << ", " << mCinderView.frame.size.height << "]" << std::endl;
+
 }
 
 - (void)flushBuffer
@@ -169,7 +181,11 @@
 
 - (void)defaultResize
 {
-	cinder::gl::setMatricesWindow( mBackingWidth, mBackingHeight );
+	// NOTE: This code appears to do nothing?
+	// cinder::gl::setMatricesWindow( mBackingWidth, mBackingHeight );
+	// cinder::gl::setMatricesWindow( mCinderView.frame.size.width, mCinderView.frame.size.height );
+	// std::cout << "defaultResize() frame size [" << mCinderView.frame.size.width << ", " << mCinderView.frame.size.height << "]" << std::endl;
+
 }
 
 - (BOOL)needsDrawRect

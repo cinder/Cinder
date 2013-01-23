@@ -34,6 +34,10 @@
 
 	// The pixel dimensions of the CAEAGLLayer
 	GLint 			mBackingWidth, mBackingHeight;
+	
+	// The dimensions of the CAEAGLLayer in points
+	GLint			mPointsWidth, mPointsHeight;
+	
 	// The OpenGL names for the framebuffer and renderbuffer used to render to this view
 	GLuint 			mViewFramebuffer, mViewRenderBuffer, mDepthRenderBuffer;
 	GLuint			mMsaaFramebuffer, mMsaaRenderBuffer;

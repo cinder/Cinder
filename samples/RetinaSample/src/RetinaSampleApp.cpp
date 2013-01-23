@@ -80,7 +80,7 @@ void RetinaSampleApp::draw()
 		glColor3f( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );
 		gl::rotate( getElapsedSeconds() * 5 );
-		gl::drawSolidRect( Rectf( -100, -100, 100, 100 ) );
+		gl::drawSolidRect( Rectf( toPixels( Area( -100, -100, 100, 100 ) ) ) );
 	gl::popMatrices();
 	
 }
