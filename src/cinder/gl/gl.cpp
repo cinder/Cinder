@@ -373,7 +373,6 @@ void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft 
 #endif
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-	glViewport( 0, 0, screenWidth, screenHeight );
 }
 
 Area getViewport()

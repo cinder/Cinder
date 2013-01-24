@@ -149,9 +149,8 @@
 		glBindFramebufferOES( GL_FRAMEBUFFER_OES, mViewFramebuffer );
 	}
     
-	 glViewport( 0, 0, mBackingWidth, mBackingHeight );
-	// glViewport( 0, 0, mCinderView.frame.size.width, mCinderView.frame.size.height );
-
+	glViewport( 0, 0, mBackingWidth, mBackingHeight );
+	
 }
 
 - (void)flushBuffer
@@ -177,13 +176,8 @@
 
 - (void)defaultResize
 {
-	// NOTE: This code appears to do nothing?
-	// cinder::gl::setMatricesWindow( mBackingWidth, mBackingHeight );
-	cinder::gl::setMatricesWindow( mCinderView.frame.size.width, mCinderView.frame.size.height );
-
-	
-	std::cout << "mBacking [" << mBackingWidth << ", " << mBackingHeight << "]" << std::endl;
-	std::cout << "frame size [" << mCinderView.frame.size.width << ", " << mCinderView.frame.size.height << "]" << std::endl;
+	glViewport( 0, 0, mBackingWidth, mBackingHeight );
+	ci::gl::setMatricesWindowPersp( mCinderView.frame.size.width, mCinderView.frame.size.height );
 }
 
 - (BOOL)needsDrawRect
