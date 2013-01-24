@@ -74,9 +74,9 @@ void unpremultiply<uint8_t>( SurfaceT<uint8_t> *surface )
 			// which in 8bit pixel arithmetic is to multiply by 255 and divide by the alpha
 			uint8_t alpha = dstPtr[alphaOffset];
 			if( alpha ) {
-				dstPtr[redOffset] = dstPtr[redOffset] * 255 / alpha;
-				dstPtr[greenOffset] = dstPtr[greenOffset] * 255 / alpha;
-				dstPtr[blueOffset] = dstPtr[blueOffset] * 255 / alpha;
+				dstPtr[redOffset] = std::min<int>( dstPtr[redOffset] * 255 / alpha, 255 );
+				dstPtr[greenOffset] = std::min<int>( dstPtr[greenOffset] * 255 / alpha, 255 );
+				dstPtr[blueOffset] = std::min<int>( dstPtr[blueOffset] * 255 / alpha, 255 );
 			}
 			dstPtr += pixelInc;
 		}

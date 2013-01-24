@@ -306,14 +306,15 @@ static Boolean sIsEaglLayer;
 {
 	int n = [text length];
 	for( int i = 0; i < n; i++ ) {
-		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, [text characterAtIndex:i], 0, 0 );
+		unichar c = [text characterAtIndex:i];
+		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, c, c, 0, 0 );
 		[mDelegate keyDown:&keyEvent];
 	}
 }
 
 - (void)deleteBackward
 {
-	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_BACKSPACE, '\b', 0, 0 );
+	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
 	[mDelegate keyDown:&keyEvent];
 }
 
@@ -343,12 +344,13 @@ static Boolean sIsEaglLayer;
 	}
 
     if( [string length] == 0 ) {
-		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_BACKSPACE, '\b', 0, 0 );	
+		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );	
 		[mDelegate keyDown:&keyEvent];
     }
     else {		
 		for( int i = 0; i < [string length]; i++) {
-			cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, [string characterAtIndex:i], 0, 0 );	
+			unichar c = [string characterAtIndex:i];
+			cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, c, c, 0, 0 );	
 			[mDelegate keyDown:&keyEvent];
 		}
 	}
@@ -358,7 +360,7 @@ static Boolean sIsEaglLayer;
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField
 {
-	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_RETURN, '\n', 0, 0 );	
+	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_RETURN, '\n', '\n', 0, 0 );	
 	return YES;
 }
 

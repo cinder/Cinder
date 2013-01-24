@@ -31,14 +31,14 @@ namespace cinder{ namespace app{
 //! Represents a keyboard event
 class KeyEvent : public Event {
   public:	
-	KeyEvent( WindowRef win, int aCode, uint32_t aChar, unsigned int aModifiers, unsigned int aNativeKeyCode )
-		: Event( win ), mCode( aCode ), mChar( aChar ), mModifiers( aModifiers ), mNativeKeyCode( aNativeKeyCode )
+	KeyEvent( WindowRef win, int aCode, uint32_t aChar32, char aChar, unsigned int aModifiers, unsigned int aNativeKeyCode )
+		: Event( win ), mCode( aCode ), mChar32( aChar32 ), mChar( aChar ), mModifiers( aModifiers ), mNativeKeyCode( aNativeKeyCode )
 	{}
 
 	//! Returns the ASCII character associated with the event.
 	char		getChar() const { return mChar; }
 	//! Returns the UTF-32 character associated with the event.
-	uint32_t	getCharUtf32() const { return mChar; } 
+	uint32_t	getCharUtf32() const { return mChar32; } 
 #if ! defined( CINDER_COCOA_TOUCH )
 	//! Returns the key code associated with the event, which maps into the enum listed below
 	int			getCode() const { return mCode; }
@@ -221,7 +221,8 @@ class KeyEvent : public Event {
 	
   protected:
 	int				mCode;
-	uint32_t		mChar;
+	uint32_t		mChar32;
+	char			mChar;
 	unsigned int	mModifiers;
 	unsigned int	mNativeKeyCode;
 	WindowRef		mWindow;

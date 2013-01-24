@@ -266,7 +266,10 @@ class App {
 	//! Quits the application gracefully
 	virtual void	quit() = 0;
 
+	//! Emitted at the start of each application update cycle
+	signals::signal<void()>&	getSignalUpdate() { return mSignalUpdate; }
 
+	//! Emitted prior to the application shutting down
 	signals::signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
 	void 						emitShutdown();
 
@@ -485,7 +488,7 @@ class App {
 
 	std::shared_ptr<Timeline>	mTimeline;
 
-	signals::signal<void()>		mSignalShutdown;
+	signals::signal<void()>		mSignalUpdate, mSignalShutdown;
 	
 	std::shared_ptr<boost::asio::io_service>	mIo;
 	std::shared_ptr<void>						mIoWork; // boost::asio::io_service::work, but can't fwd declare member class

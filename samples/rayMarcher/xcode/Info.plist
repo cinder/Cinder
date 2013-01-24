@@ -7,9 +7,9 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string></string>
+	<string>CinderApp.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.barbariangroup.rayMarcher</string>
+	<string>org.libcinder.RayMarcher</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

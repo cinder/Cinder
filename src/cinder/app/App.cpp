@@ -119,6 +119,8 @@ void App::privateUpdate__()
 	// service boost::asio::io_service
 	mIo->poll();
 
+	mSignalUpdate();
+
 	update();
 	mFrameCount++;
 

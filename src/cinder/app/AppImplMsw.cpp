@@ -692,18 +692,18 @@ int prepNativeKeyCode( WPARAM wParam )
 	return result;
 }
 
-char mapVirtualKey( WPARAM wParam )
+WCHAR mapVirtualKey( WPARAM wParam )
 {
 	BYTE keyboardState[256];
 	::GetKeyboardState( keyboardState );
-	WORD result[4];
+	WCHAR result[4];
 
 	// the control key messes up the ToAscii result, so we zero it out
 	keyboardState[VK_CONTROL] = 0;
 	
-	int resultLength = ::ToAscii( wParam, ::MapVirtualKey( wParam, 0 ), keyboardState, result, 0 );
-	if( resultLength == 1 )
-		return (char)result[0];
+	int resultLength = ::ToUnicode( wParam, ::MapVirtualKey( wParam, 0 ), keyboardState, result, 4, 0 );
+	if( resultLength >= 1 )
+		return result[0];
 	else
 		return 0;
 }
@@ -807,17 +807,19 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			return 0;
 		break;
 		case WM_SYSKEYDOWN:
-		case WM_KEYDOWN: { 
+		case WM_KEYDOWN: {
+			WCHAR c = mapVirtualKey( wParam );
 			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
-							mapVirtualKey( wParam ), prepKeyEventModifiers(), (int)wParam );
+							c, c, prepKeyEventModifiers(), (int)wParam );
 			impl->getWindow()->emitKeyDown( &event );
 			return 0;
 		}
 		break;
 		case WM_SYSKEYUP:
 		case WM_KEYUP: {
+			WCHAR c = mapVirtualKey( wParam );
 			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
-							mapVirtualKey( wParam ), prepKeyEventModifiers(), (int)wParam );
+							c, c, prepKeyEventModifiers(), (int)wParam );
 			impl->getWindow()->emitKeyUp( &event );
 			return 0;
 		}
