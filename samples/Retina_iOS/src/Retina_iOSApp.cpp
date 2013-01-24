@@ -116,9 +116,9 @@ void RetinaSampleApp::touchesEnded( TouchEvent event )
 }
 
 void RetinaSampleApp::draw()
-{	
+{
+	gl::pushMatrices();
 	gl::enableAlphaBlending();
-	gl::setMatricesWindow( getWindowSize() );
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
 	
 	for( map<uint32_t,TouchPoint>::const_iterator activeIt = mActivePoints.begin(); activeIt != mActivePoints.end(); ++activeIt ) {
@@ -136,12 +136,14 @@ void RetinaSampleApp::draw()
 	// draw yellow circles at the active touch points
 	gl::color( Color( 1, 1, 0 ) );
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = getActiveTouches().begin(); touchIt != getActiveTouches().end(); ++touchIt )
-		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
+		gl::drawStrokedCircle( touchIt->getPos(), toPoints( 20.0f ) );
 	
 	gl::translate( getWindowCenter() );
 	gl::rotate( getElapsedSeconds() * 5 );
 	// gl::drawSolidRect( Rectf( toPixels( Area( -100, -100, 100, 100 ) ) ) );
 	gl::drawSolidRect( Rectf( -100, -100, 100, 100 ) );
+	gl::popMatrices();
+
 }
 
 CINDER_APP_NATIVE( RetinaSampleApp, RendererGl )

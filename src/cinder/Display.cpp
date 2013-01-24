@@ -135,7 +135,7 @@ void Display::enumerateDisplays()
 		CGRect frame = [screen bounds];
 
 		DisplayRef newDisplay = DisplayRef( new Display );
-		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width * screen.scale, frame.origin.y + frame.size.height * screen.scale );
+		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
 		newDisplay->mUiScreen = screen;
 		newDisplay->mBitsPerPixel = 24;
 		newDisplay->mContentScale = screen.scale;
