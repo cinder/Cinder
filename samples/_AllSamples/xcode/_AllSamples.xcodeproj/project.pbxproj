@@ -1339,7 +1339,7 @@
 		0005C98F100681B5004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0005C997100681B5004D82BC /* bspline.app */,
+				0005C997100681B5004D82BC /* BSpline.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1387,7 +1387,7 @@
 		0005C9D1100681E9004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0005C9D8100681EA004D82BC /* fontSample.app */,
+				0005C9D8100681EA004D82BC /* FontSample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1419,7 +1419,7 @@
 		0005CA0010068206004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0005CA0710068206004D82BC /* perlinTest.app */,
+				0005CA0710068206004D82BC /* PerlinTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1427,7 +1427,7 @@
 		0005CA1310068210004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0005CA1C10068210004D82BC /* rayMarcher.app */,
+				0005CA1C10068210004D82BC /* RayMarcher.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2296,10 +2296,10 @@
 			remoteRef = 0005C98C100681AF004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005C997100681B5004D82BC /* bspline.app */ = {
+		0005C997100681B5004D82BC /* BSpline.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = bspline.app;
+			path = BSpline.app;
 			remoteRef = 0005C996100681B5004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -2338,10 +2338,10 @@
 			remoteRef = 0005C9CE100681E3004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005C9D8100681EA004D82BC /* fontSample.app */ = {
+		0005C9D8100681EA004D82BC /* FontSample.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = fontSample.app;
+			path = FontSample.app;
 			remoteRef = 0005C9D7100681EA004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -2366,17 +2366,17 @@
 			remoteRef = 0005C9FD10068200004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005CA0710068206004D82BC /* perlinTest.app */ = {
+		0005CA0710068206004D82BC /* PerlinTest.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = perlinTest.app;
+			path = PerlinTest.app;
 			remoteRef = 0005CA0610068206004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005CA1C10068210004D82BC /* rayMarcher.app */ = {
+		0005CA1C10068210004D82BC /* RayMarcher.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = rayMarcher.app;
+			path = RayMarcher.app;
 			remoteRef = 0005CA1B10068210004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
