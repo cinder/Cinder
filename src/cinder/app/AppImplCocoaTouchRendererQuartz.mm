@@ -65,10 +65,6 @@
 		return;
 
 	::CGContextRetain( mCurrentRef );
-	// iOS with high res display automatically scales the CTM by the contentScaleFactor
-	// we'll undo this so that the CTM is 1:1
-	float scale = 1.0f / view.contentScaleFactor;
-	::CGContextScaleCTM( mCurrentRef, scale, scale );
 }
 
 - (void)flushBuffer
