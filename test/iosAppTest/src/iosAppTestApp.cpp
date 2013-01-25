@@ -166,7 +166,7 @@ void iosAppTestApp::setup()
 	
 	mCubeRotation.setToIdentity();
 
-	mFont = gl::TextureFont::create( Font( "Helvetica", 20 * getWindowContentScale() ) );
+	mFont = gl::TextureFont::create( Font( "Helvetica", 16 ) );
 
 	// Create a blue-green gradient as an OpenGL texture
 	Surface8u surface( 256, 256, false );
@@ -417,10 +417,10 @@ void iosAppTestApp::draw()
 //
 	gl::disableDepthRead();
 	gl::color( Color( 0.0f, 1.0f, 0.0f ) );
-	mFont->drawString( "Orient: " + orientationString( getInterfaceOrientation() ) + ", # Win: " + toString( getNumWindows() ), Vec2f( 10.0f, 60.0f ) );
+	mFont->drawString( orientationString( getInterfaceOrientation() ) + "@ " + toString( getWindowContentScale() ), Vec2f( 10.0f, 60.0f ) );
 //	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), Vec2f( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?
 
 	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", Vec2f( 10.0f, 90.0f ) );
 }
 
-CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl(RendererGl::AA_MSAA_4) )
+CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl(RendererGl::AA_NONE) )
