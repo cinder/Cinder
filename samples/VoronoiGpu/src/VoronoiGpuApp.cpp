@@ -11,7 +11,7 @@ using namespace std;
 
 class VoronoiGpuApp : public AppBasic {
  public:
-	void prepareSettings( Settings *settings ) { settings->enableHighDensityDisplay(); }
+	void prepareSettings( Settings *settings ) { settings->enableHighDensityDisplay( true ); }
 	void setup();
 	void calculateVoronoiTexture();
 	
@@ -28,6 +28,13 @@ class VoronoiGpuApp : public AppBasic {
 void VoronoiGpuApp::setup()
 {
 	mShowDistance = true;
+	// register window changed display callback
+	getWindow()->getSignalDisplayChange().connect( [this] { calculateVoronoiTexture(); } );
+	
+	mPoints.push_back( Vec2i( 100, 100 ) );
+	mPoints.push_back( Vec2i( 200, 120 ) );
+	mPoints.push_back( Vec2i( 130, 140 ) );	
+	mPoints.push_back( Vec2i( 200, 200 ) );
 }
 
 void VoronoiGpuApp::calculateVoronoiTexture()
