@@ -38,11 +38,11 @@ class MouseEvent : public Event {
 		: Event( win ), mInitiator( aInitiator ), mX( aX ), mY( aY ), mModifiers( aModifiers ), mWheelIncrement( aWheelIncrement ), mNativeModifiers( aNativeModifiers )
 	{}
 	
-	//! Returns the X coordinate of the mouse event
+	//! Returns the X coordinate of the mouse event measured in points
 	int			getX() const { return mX; }
-	//! Returns the Y coordinate of the mouse event
+	//! Returns the Y coordinate of the mouse event measured in points
 	int			getY() const { return mY; }
-	//! Returns the coordinates of the mouse event
+	//! Returns the coordinates of the mouse event measured in points
 	Vec2i		getPos() const { return Vec2i( mX, mY ); }
 	//! Returns whether the initiator for the event was the left mouse button
 	bool		isLeft() const { return ( mInitiator & LEFT_DOWN ) ? true : false; }

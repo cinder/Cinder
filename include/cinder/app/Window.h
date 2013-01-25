@@ -109,28 +109,49 @@ class Window : public std::enable_shared_from_this<Window> {
 #endif
 		{}
 
+		//! Returns the Display the Window will be created on. Defaults to the primary display.
 		DisplayRef	getDisplay() const { return mDisplay; }
+		//! Sets the Display the Window will be created on. Defaults to the primary display.
 		void		setDisplay( DisplayRef display ) { mDisplay = display; }
+		//! Sets the Display the Window will be created on. Defaults to the primary display.
 		Format&		display( DisplayRef displayRef ) { mDisplay = displayRef; return *this; }
+		//! Returns whether the Window will be created full-screen. Default is \c false.
 		bool		isFullScreen() const { return mFullScreen; }
+		//! Sets whether the Window will be created full-screen. Default is \c false.
 		void		setFullScreen( bool fullScreen = true ) { mFullScreen = fullScreen; }
+		//! Sets whether the Window will be created full-screen. Default is \c false.
 		Format&		fullScreen( bool fs = true ) { mFullScreen = fs; return *this; }
+		//! Returns the size in points at which the Window will be created. Default is 640 x 480.
 		Vec2i		getSize() const { return mSize; }
+		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
 		void		setSize( const Vec2i &size ) { mSize = size; }
+		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
 		void		setSize( int32_t width, int32_t height ) { mSize = Vec2i( width, height ); }
+		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
 		Format&		size( const Vec2i &s ) { mSize = s; return *this; }
+		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
 		Format&		size( int32_t width, int32_t height ) { mSize = Vec2i( width, height ); return *this; }
 
+		//! Returns the position in points at which the Window will be created. Default is centered on the display.
 		Vec2i		getPos() const { return mPos; }
+		//! Sets the position in points at which the Window will be created. Default is centered on the display.
 		void		setPos( const Vec2i &pos ) { mPos = pos; mPosSpecified = true; }
+		//! Sets the position in points at which the Window will be created. Default is centered on the display.
 		void		setPos( int32_t x, int32_t y ) { mPos = Vec2i( x, y ); mPosSpecified = true; }
+		//! Sets the position in points at which the Window will be created. Default is centered on the display.
 		Format&		pos( const Vec2i &pos ) { mPos = pos; mPosSpecified = true; return *this; }
+		//! Sets the position in points at which the Window will be created. Default is centered on the display.
 		Format&		pos( int32_t x, int32_t y ) { mPos = Vec2i( x, y ); mPosSpecified = true; return *this; }
+		//! Returns whether a non-default position has been requested for the Window.
 		bool		isPosSpecified() const { return mPosSpecified; }
+		//! Unspecifies a non-default position for the window, effectively requestion the deafault position.
 		void		unspecifyPos() { mPosSpecified = false; }
 
+		//! Returns the Renderer which will be instantiated for the Window. Defaults to an instance of the App's default renderer (specified in the app-instantiation macro).
 		RendererRef	getRenderer() const { return mRenderer; }
+		//! Sets the Renderer which will be instantiated for the Window.
 		void		setRenderer( RendererRef renderer ) { mRenderer = renderer; }
+		//! Sets the Renderer which will be instantiated for the Window.
 		Format&		renderer( RendererRef r ) { mRenderer = r; return *this; }
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -138,22 +159,34 @@ class Window : public std::enable_shared_from_this<Window> {
 		UIViewController*	getRootViewController() { return mRootViewController;}
 		//! Sets the root UIViewController for the associated UIWindow on iOS. Use this to enable a view heirarchy that contains native components at the root and later add Cinder's UIView / UIViewController
 		void				setRootViewController( UIViewController *v ) { mRootViewController = v; }
-		//! Chainable convenience method, same functionality as setRootViewController
+		//! Sets the root UIViewController for the associated UIWindow on iOS. Use this to enable a view heirarchy that contains native components at the root and later add Cinder's UIView / UIViewController
 		Format&				rootViewController( UIViewController *v ) { mRootViewController = v; return *this; }
 #endif
 
+		//! Returns whether the Window created will be resizable. Defaults to \c true.
 		bool		isResizable() const { return mResizable; }
+		//! Sets whether the Window created will be resizable. Defaults to \c true.
 		void		setResizable( bool resizable = true ) { mResizable = resizable; }
+		//! Sets whether the Window created will be resizable. Defaults to \c true.
 		Format&		resizable( bool res = true ) { mResizable = res; return *this; }
+		//! Returns whether the Window created will have no border. Defaults to \c false.
 		bool		isBorderless() const { return mBorderless; }
+		//! Sets whether the Window created will have no border. Defaults to \c false.
 		void		setBorderless( bool borderless = true ) { mBorderless = borderless; }
+		//! Sets whether the Window created will have no border. Defaults to \c false.
 		Format&		borderless( bool border = true ) { mBorderless = border; return *this; }
+		//! Returns whether the Window created will always be above all other windows, including other applications' windows. Defaults to \c false.
 		bool		isAlwaysOnTop() const { return mAlwaysOnTop; }
+		//! Sets whether the Window created will always be above all other windows, including other applications' windows. Defaults to \c false.
 		void		setAlwaysOnTop( bool alwaysOnTop = true ) { mAlwaysOnTop = alwaysOnTop; }
+		//! Sets whether the Window created will always be above all other windows, including other applications' windows. Defaults to \c false.
 		Format&		alwaysOnTop( bool top = true ) { mAlwaysOnTop = top; return *this; }
 
+		//! Returns the title of the Window as a UTF-8 string.
 		std::string getTitle() const { return mTitle; }
+		//! Sets the title of the Window as a UTF-8 string.
 		void		setTitle( const std::string &title ) { mTitle = title; }
+		//! Sets the title of the Window as a UTF-8 string.
 		Format&		title( const std::string &t ) { mTitle = t; return *this; }
 		
 	  private:
@@ -171,30 +204,30 @@ class Window : public std::enable_shared_from_this<Window> {
 	};
 
 	//! Returns whether the Window is full-screen or not
-	bool	isFullScreen();
+	bool	isFullScreen() const;
 	//! Sets the Window to be full-screen or not
 	void	setFullScreen( bool fullScreen = true );
-	//! Returns the width of the Window in pixels
+	//! Returns the width of the Window in points
 	int32_t	getWidth() const { return getSize().x; }
-	//! Returns the height of the Window in pixels
+	//! Returns the height of the Window in points
 	int32_t	getHeight() const { return getSize().y; }
 	//! Returns the Window aspect ratio, which is its width / height
 	float	getAspectRatio() const { return getSize().x / (float)getSize().y; }
-	//! Returns the bounding Area of the Window in pixels: [0,0]-(width,height)
+	//! Returns the bounding Area of the Window in points: [0,0]-(width,height)
 	Area	getBounds() const { return Area( 0, 0, getSize().x, getSize().y ); }
-	//! Gets the size of the Window measured in pixels
+	//! Gets the size of the Window measured in points
 	virtual Vec2i	getSize() const;
-	//! Sets the size of the Window to ( \a width, \a height ) measured in pixels
+	//! Sets the size of the Window to ( \a width, \a height ) measured in points
 	void	setSize( int32_t width, int32_t height ) { setSize( Vec2i( width, height ) ); }
-	//! Sets the size of the Window to \a size measured in pixels
+	//! Sets the size of the Window to \a size measured in points
 	void	setSize( const Vec2i &size );
-	//! Gets the position of the Window's upper left corner
+	//! Gets the position of the Window's upper-left corner measured in points
 	Vec2i	getPos() const;
-	//! Sets the position of the Window's upper left corner to (\a x, \a y).
+	//! Sets the position of the Window's upper-left corner to (\a x, \a y) measured in points.
 	void	setPos( int32_t x, int32_t y ) const { setPos( Vec2i( x, y ) ); }
-	//! Sets the position of the Window's upper left corner to \a pos.
+	//! Sets the position of the Window's upper-left corner to \a pos measured in points.
 	void	setPos( const Vec2i &pos ) const;
-	//! Returns the center of the Window in its own coordinate system
+	//! Returns the center of the Window in its own coordinate system measured in points
 	Vec2f	getCenter() const { return Vec2f( getWidth() / 2.0f, getHeight() / 2.0f ); }
 	
 	//! Returns the multiplier (typically 2 on high-density (Retina) displays, 1 otherwise) mapping points to pixels
@@ -207,7 +240,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	Vec2i	toPixels( Vec2i s ) const { return Vec2i( (int32_t)(s.x * getContentScale()), (int32_t)(s.y * getContentScale()) ); }	
 	//! Returns an Area mapped from points to pixels by multiplying by getContentScale()
 	Area	toPixels( const Area &a ) const { const float s = getContentScale(); return Area( (int32_t)(a.x1 * s), (int32_t)(a.y1 * s), (int32_t)(a.x2 * s), (int32_t)(a.y2 * s) ); }
-	//! Returns an Rectf mapped from points to pixels by multiplying by getContentScale()
+	//! Returns a Rectf mapped from points to pixels by multiplying by getContentScale()
 	Rectf	toPixels( const Rectf &a ) const { return a * getContentScale(); }
 	//! Returns a scalar mapped from pixels to points by dividing by getContentScale()
 	float	toPoints( float s ) const { return s / getContentScale(); }
@@ -217,12 +250,12 @@ class Window : public std::enable_shared_from_this<Window> {
 	Vec2i	toPoints( Vec2i s ) const { return Vec2i( (int32_t)(s.x / getContentScale()), (int32_t)(s.y / getContentScale()) ); }	
 	//! Returns an Area mapped from pixels to points by dividing by getContentScale()
 	Area	toPoints( const Area &a ) const { const float s = 1.0f / getContentScale(); return Area( (int32_t)(a.x1 * s), (int32_t)(a.y1 * s), (int32_t)(a.x2 * s), (int32_t)(a.y2 * s) ); }
-	//! Returns an Rectf mapped from pixels to points by dividing by getContentScale()
+	//! Returns a Rectf mapped from pixels to points by dividing by getContentScale()
 	Rectf	toPoints( const Rectf &a ) const { return a / getContentScale(); }
 	
-	//! Returns the Window's title
+	//! Returns the Window's title as a UTF-8 string.
 	std::string		getTitle() const;
-	//! Sets the Window's title
+	//! Sets the Window's title as a UTF-8 string.
 	void			setTitle( const std::string &title );
 	
 	//! Returns whether the window has a border (chrome/frame)

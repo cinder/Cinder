@@ -31,7 +31,7 @@
 
 namespace cinder { namespace app {
 
-bool Window::isFullScreen()
+bool Window::isFullScreen() const
 {
 	testValid();
 	

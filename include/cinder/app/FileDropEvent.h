@@ -39,11 +39,11 @@ class FileDropEvent : public Event {
 		: Event( win ), mX( aX ), mY( aY ), mFiles( aFiles )
 	{}
 	
-	//! Returns the X coordinate of the mouse during the event
+	//! Returns the X coordinate measured in points of the mouse during the event
 	int			getX() const { return mX; }
-	//! Returns the Y coordinate of the mouse during the event	
+	//! Returns the Y coordinate measured in points of the mouse during the event	
 	int			getY() const { return mY; }
-	//! Returns the coordinates of the mouse during the event
+	//! Returns the coordinates measured in points of the mouse during the event
 	Vec2i		getPos() const { return Vec2i( mX, mY ); }
 
 	//! Returns the vector of file paths which were dropped
