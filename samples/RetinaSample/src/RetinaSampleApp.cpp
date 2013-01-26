@@ -26,13 +26,20 @@ class RetinaSampleApp : public AppNative {
 void RetinaSampleApp::prepareSettings( Settings *settings )
 {
 	settings->enableHighDensityDisplay();
+	settings->enableMultiTouch( false );
+	
+	// on iOS we want to make a Window per monitor
+#if defined( CINDER_COCOA_TOUCH )
+	for( auto display : Display::getDisplays() )
+		settings->prepareWindow( Window::Format().display( display ) );
+#endif
 }
 
 void RetinaSampleApp::setup()
 {
 	// this should have mipmapping enabled in a real app but leaving it disabled
-	// helps us see the change in going from Retina to non-Retina
-	mLogo = loadImage( loadResource( "CinderApp.icns" ) );
+	// since helps us see the change in going from Retina to non-Retina
+	mLogo = loadImage( loadResource( "CinderAppIcon.png" ) );
 
 	// A font suitable for 24points at both Retina and non-Retina
 	mFont = gl::TextureFont::create( Font( "Helvetica", 24 * 2 ), gl::TextureFont::Format().enableMipmapping() );
@@ -50,7 +57,6 @@ void RetinaSampleApp::displayChange()
 	console() << "Window display changed: " << getWindow()->getDisplay()->getBounds() << std::endl;
 	console() << "ContentScale = " << getWindowContentScale() << endl;
 	console() << "getWindowCenter() = " << getWindowCenter() << endl;
-	console() << "toPixels( 1.0f ) = " << toPixels( 1.0f ) << endl;
 }
 
 void RetinaSampleApp::draw()
@@ -60,7 +66,7 @@ void RetinaSampleApp::draw()
 	
 	gl::pushMatrices();
 		gl::color( 1.0f, 0.5f, 0.25f );
-		glLineWidth( toPixels( 1.0f ) );
+		gl::lineWidth( toPixels( 1.0f ) );
 		gl::draw( mPoints );
 	gl::popMatrices();
 	
