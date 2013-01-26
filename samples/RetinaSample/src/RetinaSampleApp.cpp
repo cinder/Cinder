@@ -68,8 +68,8 @@ void RetinaSampleApp::draw()
 	gl::color( 1.0f, 0.5f, 0.25f );
 	
 	gl::pushMatrices();
-		gl::begin( GL_LINE_STRIP );
 		glLineWidth( getWindow()->toPixels( 1.0f ) );
+		gl::begin( GL_LINE_STRIP );
 		for( auto pointIter = mPoints.begin(); pointIter != mPoints.end(); ++pointIter ) {
 			gl::vertex( *pointIter );
 		}
