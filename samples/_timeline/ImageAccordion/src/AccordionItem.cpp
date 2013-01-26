@@ -68,10 +68,10 @@ void AccordionItem::animTo( float newX, float newWidth, bool revealText )
 void AccordionItem::update()
 {
 	// sample area of image texture to render
-	mImageArea = Area(quickRound(mX), quickRound(mY), quickRound(mX + mWidth), round(mY + mHeight));
+	mImageArea = Area(quickRound(mX), quickRound(mY), quickRound(mX + mWidth), quickRound(mY + mHeight));
 	
 	// rectangle to render text texture
-	mTextRect = Rectf(quickRound(mX), quickRound(mY), quickRound( mX + math<float>::min( mWidth, mText.getWidth() ) ), round( mY + math<float>::min( mHeight, mText.getHeight() ) ) );
+	mTextRect = Rectf(quickRound(mX), quickRound(mY), quickRound( mX + math<float>::min( mWidth, mText.getWidth() ) ), quickRound( mY + math<float>::min( mHeight, mText.getHeight() ) ) );
 	// sample area of text texture to render
 	mTextArea = Area(0, 0, mTextRect.getWidth(), mTextRect.getHeight() );
 }
