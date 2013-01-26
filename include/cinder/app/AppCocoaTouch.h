@@ -57,11 +57,6 @@ class AppCocoaTouch : public App {
 		Settings()
 			: App::Settings(), mEnableMultiTouch( true ), mEnableStatusBar( false )
 		{
-#if defined( CINDER_COCOA_TOUCH )
-			mEnableHighDensityDisplay = true;
-#else
-			mEnableHighDensityDisplay = false;
-#endif
 			mPowerManagement = false;
 		}
 
