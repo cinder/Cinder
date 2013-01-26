@@ -84,4 +84,4 @@ void RetinaSampleApp::draw()
 		gl::TextureFont::DrawOptions().scale( 0.5f ).pixelSnap( false ) );
 }
 
-CINDER_APP_NATIVE( RetinaSampleApp, RendererGl )
+CINDER_APP_NATIVE( RetinaSampleApp, RendererGl(0) )
