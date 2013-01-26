@@ -10,7 +10,6 @@ class RetinaSampleApp : public AppNative {
 	void prepareSettings( Settings *settings ) override;
 	void setup();
 	void mouseDrag( MouseEvent event );
-	void mouseDown( MouseEvent event );
 	void keyDown( KeyEvent event );
 	void displayChange();
 	void draw();
@@ -21,10 +20,8 @@ class RetinaSampleApp : public AppNative {
 
 void RetinaSampleApp::prepareSettings( Settings *settings )
 {
-	settings->setWindowSize( 800, 600 );
 	settings->enableHighDensityDisplay();
-	console() << "settings->getHighDensityDisplayEnabled()= " << settings->isHighDensityDisplayEnabled() << endl;
-	
+	console() << "settings->getHighDensityDisplayEnabled()= " << settings->isHighDensityDisplayEnabled() << endl;	
 }
 
 void RetinaSampleApp::setup()
@@ -34,14 +31,7 @@ void RetinaSampleApp::setup()
 
 void RetinaSampleApp::mouseDrag( MouseEvent event )
 {
-	console() << event.getPos()	<< endl;
 	mPoints.push_back( event.getPos() );
-}
-
-void RetinaSampleApp::mouseDown( MouseEvent event )
-{
-	console() << "getWindowContentScale = " << getWindowContentScale() << endl;
-	console() << event.getPos()	<< endl;
 }
 
 void RetinaSampleApp::keyDown( KeyEvent event )
@@ -56,20 +46,16 @@ void RetinaSampleApp::displayChange()
 	console() << "ContentScale = " << getWindowContentScale() << endl;
 	console() << "getWindowCenter() = " << getWindowCenter() << endl;
 	console() << "getWindow()->toPixels( 1.0f ) = " << toPixels( 1.0f ) << endl;
-
 }
 
 void RetinaSampleApp::draw()
 {
-	
-	// float c = getWindowContentScale();
-	
 	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 	gl::color( 1.0f, 0.5f, 0.25f );
 	
 	gl::pushMatrices();
-		gl::begin( GL_LINE_STRIP );
 		glLineWidth( getWindow()->toPixels( 1.0f ) );
+		gl::begin( GL_LINE_STRIP );
 		for( auto pointIter = mPoints.begin(); pointIter != mPoints.end(); ++pointIter ) {
 			gl::vertex( *pointIter );
 		}
@@ -80,9 +66,8 @@ void RetinaSampleApp::draw()
 		glColor3f( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );
 		gl::rotate( getElapsedSeconds() * 5 );
-		gl::drawSolidRect( Rectf( toPixels( Area( -100, -100, 100, 100 ) ) ) );
+		gl::drawSolidRect( Rectf( Area( -100, -100, 100, 100 ) ) );
 	gl::popMatrices();
-	
 }
 
 CINDER_APP_NATIVE( RetinaSampleApp, RendererGl )
