@@ -696,7 +696,7 @@ WCHAR mapVirtualKey( WPARAM wParam )
 {
 	BYTE keyboardState[256];
 	::GetKeyboardState( keyboardState );
-	WCHAR result[4];
+	WCHAR result[4] = { 0, 0, 0, 0 };
 
 	// the control key messes up the ToAscii result, so we zero it out
 	keyboardState[VK_CONTROL] = 0;
