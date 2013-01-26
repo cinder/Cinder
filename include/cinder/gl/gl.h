@@ -215,6 +215,9 @@ void enableDepthRead( bool enable = true );
 //! Enables writing to the depth buffer when \a enable.
 void enableDepthWrite( bool enable = true );
 
+//! Specifies the rasterized width of both aliased and antialiased lines.
+inline void lineWidth( float width ) { glLineWidth( width ); }
+
 //! Draws a line from \a start to \a end
 void drawLine( const Vec2f &start, const Vec2f &end );
 //! Draws a line from \a start to \a end
