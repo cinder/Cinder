@@ -4,7 +4,7 @@
 //  @brief      OpenGL graph functions
 //  @author     Philippe Decaudin - http://www.antisphere.com
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
+//              For conditions of distribution and use, see License.txt
 //
 //  notes:      Private header
 //              TAB=4
@@ -41,6 +41,7 @@ public:
 
     virtual void        ChangeViewport(int _X0, int _Y0, int _Width, int _Height, int _OffsetX, int _OffsetY);
     virtual void        RestoreViewport();
+    virtual void        SetScissor(int _X0, int _Y0, int _Width, int _Height);
 
 protected:
     bool                m_Drawing;
@@ -57,10 +58,13 @@ protected:
     GLboolean           m_PrevFragmentProgramARB;
     GLuint              m_PrevProgramObjectARB;
     GLboolean           m_PrevTexture3D;
-    GLboolean           m_PrevActiveTexture1D[32];
-    GLboolean           m_PrevActiveTexture2D[32];
-    GLboolean           m_PrevActiveTexture3D[32];
+    enum EMaxTextures   { MAX_TEXTURES = 128 };
+    GLboolean           m_PrevActiveTexture1D[MAX_TEXTURES];
+    GLboolean           m_PrevActiveTexture2D[MAX_TEXTURES];
+    GLboolean           m_PrevActiveTexture3D[MAX_TEXTURES];
+    GLboolean           m_PrevClientTexCoordArray[MAX_TEXTURES];
     GLint               m_PrevActiveTextureARB;
+    GLint               m_PrevClientActiveTextureARB;
     bool                m_SupportTexRect;
     GLboolean           m_PrevTexRectARB;
     GLint               m_PrevBlendEquation;
