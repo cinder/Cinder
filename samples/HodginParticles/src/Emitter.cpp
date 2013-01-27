@@ -9,7 +9,7 @@ using std::list;
 extern void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha );
 extern float floorLevel;
 extern bool ALLOWTRAILS, ALLOWFLOOR;
-extern gl::Texture *particleImg, *emitterImg;
+extern gl::TextureRef particleImg, emitterImg;
 
 Emitter::Emitter()
 {
@@ -26,7 +26,7 @@ void Emitter::exist( Vec2i mouseLoc )
 	iterateListExist();
 	render();
 
-	glDisable( GL_TEXTURE_2D );
+	gl::disable( GL_TEXTURE_2D );
 	if( ALLOWTRAILS )
 		iterateListRenderTrails();
 }
@@ -55,7 +55,7 @@ void Emitter::setPosition()
 
 void Emitter::iterateListExist()
 {
-	glEnable( GL_TEXTURE_2D );
+	gl::enable( GL_TEXTURE_2D );
 	particleImg->bind();
 
 	for( list<Particle>::iterator it = particles.begin(); it != particles.end(); ) {
