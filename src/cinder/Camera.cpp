@@ -186,6 +186,8 @@ void Camera::calcModelView() const
 
 void Camera::calcInverseModelView() const
 {
+	if( ! mModelViewCached ) calcModelView();
+
 	mInverseModelViewMatrix = mModelViewMatrix.affineInverted();
 	mInverseModelViewCached = true;
 }
@@ -550,6 +552,8 @@ void CameraStereo::calcModelView() const
 
 void CameraStereo::calcInverseModelView() const
 {
+	if( ! mModelViewCached ) calcModelView();
+
 	mInverseModelViewMatrix = mModelViewMatrix.affineInverted();
 	mInverseModelViewMatrixLeft = mModelViewMatrixLeft.affineInverted();
 	mInverseModelViewMatrixRight = mModelViewMatrixRight.affineInverted();
