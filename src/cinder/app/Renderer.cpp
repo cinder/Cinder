@@ -81,7 +81,6 @@ void RendererGl::setAntiAliasing( int aAntiAliasing )
 #if defined( CINDER_MAC )
 RendererGl::~RendererGl()
 {
-std::cout << "Deleting renderer" << std::endl;
 	if( mImpl )
 		::CFRelease( mImpl );
 }

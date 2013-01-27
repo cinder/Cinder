@@ -648,10 +648,6 @@ void AppCocoaTouch::emitDidRotate()
 	if( mAppImpl->mApp->getSettings().isHighDensityDisplayEnabled() )
 		mContentScale = mUiWindow.screen.scale;
 	
-std::cout << "from AppCocoaTouch.mm isHighDensityDisplayEnabled() = " << mAppImpl->mApp->getSettings().isHighDensityDisplayEnabled() << std::endl;
-std::cout << "from AppCocoaTouch.mm mUiWindow.screen.scale = " << mUiWindow.screen.scale << std::endl;
-std::cout << "from AppCocoaTouch.mm mcontentScale = " << mContentScale << std::endl;
-	
 	mCinderView = [[CinderViewCocoaTouch alloc] initWithFrame:screenBoundsCgRect app:mAppImpl->mApp renderer:format.getRenderer() sharedRenderer:sharedRenderer contentScale:mContentScale];
 	[mCinderView setDelegate:self];
 	mSize = cinder::Vec2i( screenBoundsCgRect.size.width, screenBoundsCgRect.size.height );
