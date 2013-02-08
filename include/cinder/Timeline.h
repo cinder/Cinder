@@ -219,7 +219,7 @@ class Cue : public TimelineItem {
 
 	CueRef	create( const std::function<void ()> &fn, float atTime = 0 ) { return CueRef( new Cue( fn, atTime ) ); }
 
-	void					setFn( std::function<void ()> fn ) { mFunction = fn; }
+	void					setFn( const std::function<void ()> &fn ) { mFunction = fn; }
 	std::function<void ()>	getFn() const { return mFunction; }
 	
   protected:
