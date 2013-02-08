@@ -124,10 +124,10 @@ class Timeline : public TimelineItem {
 	}
 
 	//! add a cue to the Timeline add the start-time \a atTime
-	CueRef add( std::function<void ()> action, float atTime );
+	CueRef add( const std::function<void ()> &action, float atTime );
 
 	template<typename T>
-	FnTweenRef<T> applyFn( std::function<void (T)> fn, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
+	FnTweenRef<T> applyFn( const std::function<void (T)> &fn, T startValue, T endValue, float duration, const EaseFn &easeFunction = easeNone, const typename Tween<T>::LerpFn &lerpFunction = &tweenLerp<T> ) {
 		FnTweenRef<T> newTween( new FnTween<T>( fn, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 		newTween->setAutoRemove( mDefaultAutoRemove );
 		apply( newTween );
@@ -215,9 +215,9 @@ class Timeline : public TimelineItem {
 
 class Cue : public TimelineItem {
   public:
-	Cue( std::function<void ()> fn, float atTime = 0 );
+	Cue( const std::function<void ()> &fn, float atTime = 0 );
 
-	CueRef	create( std::function<void ()> fn, float atTime = 0 ) { return CueRef( new Cue( fn, atTime ) ); }
+	CueRef	create( const std::function<void ()> &fn, float atTime = 0 ) { return CueRef( new Cue( fn, atTime ) ); }
 
 	void					setFn( std::function<void ()> fn ) { mFunction = fn; }
 	std::function<void ()>	getFn() const { return mFunction; }

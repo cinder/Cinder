@@ -75,7 +75,7 @@ void Timeline::stepTo( float absoluteTime )
 	eraseMarked();	
 }
 
-CueRef Timeline::add( std::function<void ()> action, float atTime )
+CueRef Timeline::add( const std::function<void ()> &action, float atTime )
 {
 	CueRef newCue( new Cue( action, atTime ) );
 	newCue->setAutoRemove( mDefaultAutoRemove );
@@ -334,7 +334,7 @@ void Timeline::itemTimeChanged( TimelineItem *item )
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // Cue
-Cue::Cue( std::function<void ()> fn, float atTime )
+Cue::Cue( const std::function<void ()> &fn, float atTime )
 	: TimelineItem( 0, 0, atTime, 0 ), mFunction( fn )
 {
 }
