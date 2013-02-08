@@ -1,11 +1,9 @@
-### Cinder 0.8.5dev: [http://libcinder.org](libcinder.org)
+### Cinder 0.8.5dev: [libcinder.org](http://libcinder.org)
 
 **Cinder is a peer-reviewed, free, open source C++ library for creative coding.**
 
-To get started with Cinder from github, please read [this document](http://libcinder.org/docs/welcome/GitSetup.html). You might also prefer
-one of our [pre-packaged downloads](http://libcinder.org/download/).
+To get started with Cinder from GitHub, please read [git setup document](http://libcinder.org/docs/welcome/GitSetup.html). You might also prefer one of our [pre-packaged downloads](http://libcinder.org/download/).
 
-Cinder supports Mac OS X, Windows and iOS-based devices. It requires XCode 3.2 or later on the Mac, and Visual C++ 2010 on Windows.
+Cinder supports Mac OS X, Windows and iOS-based devices. It requires Xcode 4.4 or later for development on the Mac, and Visual C++ 2010 or later on Windows.
 
-Cinder is released under the Modified BSD License.
-Please read Welcome.html inside this directory for more information.
+Cinder is released under the Modified BSD License. Please read the [welcome document](Welcome.html) for more information.
