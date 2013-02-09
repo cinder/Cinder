@@ -69,9 +69,10 @@
 	mRenderer = renderer;
 	mRenderer->setup( mApp, NSRectToCGRect( frame ), self, sharedRenderer, mApp->getSettings().isHighDensityDisplayEnabled() );
 	
-	if ( mApp->getSettings().isHighDensityDisplayEnabled() ) {
+	if( mApp->getSettings().isHighDensityDisplayEnabled() ) {
 		mContentScaleFactor = self.window.backingScaleFactor;
-	} else {
+	}
+	else {
 		mContentScaleFactor = 1.0f;
 	}
 
@@ -93,13 +94,14 @@
 	return mContentScaleFactor;
 }
 
-
 - (void)viewDidChangeBackingProperties
 {
-	if ( mApp->getSettings().isHighDensityDisplayEnabled() ) {
+	// note: mApp may not be set at init time, which is when this is called in some cases
+	if( mApp && mApp->getSettings().isHighDensityDisplayEnabled() ) {
 		mContentScaleFactor = self.window.backingScaleFactor;
 		mRenderer->defaultResize();
-	} else {
+	}
+	else {
 		mContentScaleFactor = 1.0f;
 	}
 }
