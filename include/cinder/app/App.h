@@ -427,9 +427,9 @@ class App {
 
 	//! Returns the default Renderer which will be used when creating a new Window. Set by the app instantiation macro automatically.
 	RendererRef	getDefaultRenderer() const { return mDefaultRenderer; }
-	/** \return a copy of the window's contents as a Surface8u **/
+	/** \return a copy of the current window's contents as a Surface8u **/
 	Surface	copyWindowSurface();
-	/** \return a copy of the Area \a area from the window's contents as a Surface8u **/
+	/** \return a copy of the Area \a area (measured in pixels) from the current window's contents as a Surface8u **/
 	Surface	copyWindowSurface( const Area &area );
 	//! Restores the current rendering context to be the App's window or the screen in full-screen mode. Generally this is only necessary if the app has displayed a dialog box or some other external window.
 	void	restoreWindowContext();
