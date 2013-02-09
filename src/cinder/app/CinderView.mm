@@ -159,12 +159,9 @@
 - (void)setFrameSize:(NSSize)newSize
 {
 	[super setFrameSize:newSize];
-	mRenderer->setFrameSize( newSize.width, newSize.height );
-	
-	NSRect bounds = [self bounds];
-	bounds.size = [self convertSize:bounds.size toView:nil];
 
 	if( mReadyToDraw ) {
+		mRenderer->setFrameSize( newSize.width, newSize.height );
 		mRenderer->makeCurrentContext();
 		mRenderer->defaultResize();
 		[mDelegate resize];
