@@ -96,7 +96,8 @@
 
 - (void)viewDidChangeBackingProperties
 {
-	if ( mApp->getSettings().isHighDensityDisplayEnabled() ) {
+	// note: mApp may not be set at init time, which is when this is called in some cases
+	if ( mApp && mApp->getSettings().isHighDensityDisplayEnabled() ) {
 		mContentScaleFactor = self.window.backingScaleFactor;
 		mRenderer->defaultResize();
 	} else {

@@ -515,6 +515,7 @@ void AppCocoaView::prepareLaunch( RendererRef defaultRenderer )
 
 void AppCocoaView::setupCinderView( CinderView *cinderView, cinder::app::RendererRef renderer )
 {
+	[cinderView setApp:this];
 	[mImpl setupCinderView:cinderView renderer:renderer];
 }
 
