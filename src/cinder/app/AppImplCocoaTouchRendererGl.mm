@@ -177,7 +177,7 @@
 - (void)defaultResize
 {
 	glViewport( 0, 0, mBackingWidth, mBackingHeight );
-	ci::gl::setMatricesWindowPersp( mCinderView.frame.size.width, mCinderView.frame.size.height );
+	ci::gl::setMatricesWindowPersp( mCinderView.bounds.size.width, mCinderView.bounds.size.height );
 }
 
 - (BOOL)needsDrawRect

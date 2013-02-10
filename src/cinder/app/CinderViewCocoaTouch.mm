@@ -163,9 +163,6 @@ static Boolean sIsEaglLayer;
 // Event handlers
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	// const float contentScale = [self contentScaleFactor];
-	std::cout << "touchesBegan" << std::endl;
-	
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {

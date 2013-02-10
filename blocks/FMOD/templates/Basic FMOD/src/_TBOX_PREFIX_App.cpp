@@ -1,6 +1,7 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
+
 #include "FMOD.hpp"
 
 using namespace ci;
@@ -48,4 +49,4 @@ void _TBOX_PREFIX_App::draw()
     glDrawArrays( GL_LINE_STRIP, 0, vertices.size() );
 }
 
-CINDER_APP_BASIC( _TBOX_PREFIX_App, RendererGl )
+CINDER_APP_NATIVE( _TBOX_PREFIX_App, RendererGl )

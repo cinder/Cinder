@@ -431,7 +431,7 @@ void App::dispatchAsync( const std::function<void()> &fn )
 
 Surface	App::copyWindowSurface()
 {
-	return getWindow()->getRenderer()->copyWindowSurface( getWindowBounds() );
+	return getWindow()->getRenderer()->copyWindowSurface( getWindow()->toPixels( getWindow()->getBounds() ) );
 }
 
 Surface	App::copyWindowSurface( const Area &area )

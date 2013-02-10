@@ -81,7 +81,6 @@ void RendererGl::setAntiAliasing( int aAntiAliasing )
 #if defined( CINDER_MAC )
 RendererGl::~RendererGl()
 {
-std::cout << "Deleting renderer" << std::endl;
 	if( mImpl )
 		::CFRelease( mImpl );
 }
@@ -122,7 +121,7 @@ Surface RendererGl::copyWindowSurface( const Area &area )
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindowHeight() - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );		
 	ip::flipVertical( &s );
 	return s;
@@ -198,7 +197,7 @@ Surface	RendererGl::copyWindowSurface( const Area &area )
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindowHeight() - area.y2, area.getWidth(), area.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
 	ip::flipVertical( &s );
 
@@ -262,7 +261,7 @@ Surface	RendererGl::copyWindowSurface( const Area &area )
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindowHeight() - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
 	ip::flipVertical( &s );
 	return s;
