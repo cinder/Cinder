@@ -6,6 +6,7 @@
 	author="Cinder Project"
 	license="GPL, Commercial"
 	summary="FMOD library"
+	version="4.44.06"
 	>
 	<includePath>include</includePath>
 	<platform os="macosx">
