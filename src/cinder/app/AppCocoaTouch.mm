@@ -615,6 +615,29 @@ void AppCocoaTouch::emitDidRotate()
 	mSignalDidRotate();
 }
 
+std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs )
+{
+	switch( rhs ) {
+		case InterfaceOrientation::Portrait:			lhs << "Portrait";				break;
+		case InterfaceOrientation::PortraitUpsideDown:	lhs << "PortraitUpsideDown";	break;
+		case InterfaceOrientation::LandscapeLeft:		lhs << "LandscapeLeft";			break;
+		case InterfaceOrientation::LandscapeRight:		lhs << "LandscapeRight";		break;
+		default: lhs << "Error";
+	}
+	return lhs;
+}
+
+float getOrientationDegrees( InterfaceOrientation orientation )
+{
+	switch( orientation ) {
+		case InterfaceOrientation::Portrait:			return 0.0f;
+		case InterfaceOrientation::PortraitUpsideDown:	return 180.0f;
+		case InterfaceOrientation::LandscapeLeft:		return 90.0f;
+		case InterfaceOrientation::LandscapeRight:		return 270.0f;
+		default: return 0.0f;
+	}
+}
+
 } } // namespace cinder::app
 
 @implementation WindowImplCocoaTouch;

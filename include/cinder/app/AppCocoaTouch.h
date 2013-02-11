@@ -48,6 +48,9 @@ enum InterfaceOrientation {
 	All						= (PortraitAll | LandscapeAll)
 };
 
+extern std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs );
+float getOrientationDegrees( InterfaceOrientation orientation ); // ???: rename this toDegrees / toRadians? They will be in a different namespace than Utilies.h's free-standing functions
+
 typedef	signals::signal<uint32_t (), BitwiseAndEventCombiner<uint32_t> >		EventSignalSupportedOrientations;
 
 class AppCocoaTouch : public App {
