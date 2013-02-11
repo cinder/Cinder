@@ -64,7 +64,7 @@ void ObjLoader::parseMaterial( std::shared_ptr<IStream> material )
 
     while( ! material->isEof() ) {
         string line = material->readLine();
-        if( line[0] == '#' )
+        if( line.empty() || line[0] == '#' )
             continue;
 
         string tag;
@@ -102,7 +102,7 @@ void ObjLoader::parse( bool includeUVs )
 	while( ! mStream->isEof() ) {
 		lineNumber++;
 		string line = mStream->readLine(), tag;
-        if( line[0] == '#')
+        if( line.empty() || line[0] == '#' )
             continue;
         
 		stringstream ss( line );
