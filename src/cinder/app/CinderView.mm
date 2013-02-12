@@ -111,24 +111,36 @@
 	return mFullScreen;
 }
 
-- (void)setFullScreen:(BOOL)fullScreen withSecondaryBlanking:(BOOL)secondaryBlanking onNsScreen:(NSScreen*)screen
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options
 {
 	if( fullScreen == mFullScreen )
 		return;
 
-	if( fullScreen ) {
-		NSDictionary *options = nil;
-		if( ! secondaryBlanking )
-			options = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:NSFullScreenModeAllScreens];
-		[self enterFullScreenMode:screen withOptions:options];
-		mFullScreen = true;
+	if( ! options->isKioskModeEnabled() ) {
+		bool hasFullScreenButton = [[self window] collectionBehavior] & NSWindowCollectionBehaviorFullScreenPrimary;
+		if( !hasFullScreenButton ) {
+			NSLog(@"%s no fullscreen button, adding one anyway.", __PRETTY_FUNCTION__);
+			[[self window] setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+		}
+		[[self window] toggleFullScreen:nil];
 	}
 	else {
-		[self exitFullScreenModeWithOptions:nil];
-		[[self window] becomeKeyWindow];
-		[[self window] makeFirstResponder:self];
-		mFullScreen = false;	
+		if( fullScreen ) {
+			NSDictionary *dict = nil;
+			if( ! options->isSecondaryDisplayBlankingEnabled() )
+				dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:NSFullScreenModeAllScreens];
+			NSScreen *screen = ( options->getDisplay() ? options->getDisplay()->getNsScreen() : [[self window] screen] );
+			[self enterFullScreenMode:screen withOptions:dict];
+		}
+		else {
+			[self exitFullScreenModeWithOptions:nil];
+			[[self window] becomeKeyWindow];
+			[[self window] makeFirstResponder:self];
+		}
 	}
+
+	mFullScreen = fullScreen;
+	NSLog(@"%s fullScreen: %d ", __PRETTY_FUNCTION__, fullScreen);
 }
 
 - (void)draw

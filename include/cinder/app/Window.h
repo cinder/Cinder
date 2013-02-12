@@ -36,6 +36,7 @@
 namespace cinder { namespace app {
 
 class Window;
+class FullScreenOptions;
 typedef std::shared_ptr<Window>		WindowRef;
 
 } } // namespace cinder::app
@@ -50,6 +51,7 @@ typedef std::shared_ptr<Window>		WindowRef;
 		@required
 		- (BOOL)isFullScreen;
 		- (void)setFullScreen:(BOOL)fullScreen;
+		- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 		- (cinder::Vec2i)getSize;
 		- (void)setSize:(cinder::Vec2i)size;
 		- (cinder::Vec2i)getPos;
@@ -95,6 +97,24 @@ typedef	 signals::signal<void()>											EventSignalWindow;
 //! Thrown when an operation is performed on a WindowRef which refers to an invalid Window
 class ExcInvalidWindow : public cinder::Exception {
 	virtual const char * what() const throw() { return "Invalid Window"; }
+};
+
+struct FullScreenOptions {
+	FullScreenOptions() : mKioskMode( false ), mSecondaryDisplayBlanking( false ), mAllScreens( false )
+	{}
+
+	FullScreenOptions&	kioskMode( bool enable = true )					{ mKioskMode = enable; return *this; }
+	FullScreenOptions&	secondaryDisplayBlanking( bool enable = true )	{ mSecondaryDisplayBlanking = enable; return *this; }
+	FullScreenOptions&	allScreens( bool enable = true )				{ mAllScreens = enable; return *this; }
+
+	DisplayRef			getDisplay()									const { return mDisplay; }
+	bool				isKioskModeEnabled()							const { return mKioskMode; }
+	bool				isSecondaryDisplayBlankingEnabled()				const { return mSecondaryDisplayBlanking; }
+	bool				isAllScreensEnabled()							const { return mAllScreens; }
+
+private:
+	DisplayRef mDisplay;
+	bool mKioskMode, mSecondaryDisplayBlanking, mAllScreens;
 };
 
 class Window : public std::enable_shared_from_this<Window> {
@@ -212,7 +232,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	//! Returns whether the Window is full-screen or not
 	bool	isFullScreen() const;
 	//! Sets the Window to be full-screen or not
-	void	setFullScreen( bool fullScreen = true );
+	void	setFullScreen( bool fullScreen = true, const FullScreenOptions& options = FullScreenOptions() );
 	//! Returns the width of the Window in points
 	int32_t	getWidth() const { return getSize().x; }
 	//! Returns the height of the Window in points

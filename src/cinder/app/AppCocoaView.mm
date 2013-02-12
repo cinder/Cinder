@@ -40,6 +40,7 @@
 - (void)dealloc;
 - (BOOL)isFullScreen;
 - (void)setFullScreen:(BOOL)fullScreen;
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 - (cinder::Vec2i)getSize;
 - (void)setSize:(cinder::Vec2i)size;
 - (cinder::Vec2i)getPos;
@@ -208,7 +209,13 @@
 
 - (void)setFullScreen:(BOOL)fullScreen
 {
-	[mCinderView setFullScreen:fullScreen withSecondaryBlanking:NO onNsScreen:[[mCinderView window] screen]];
+	const cinder::app::FullScreenOptions options;
+	[self setFullScreen:fullScreen options:&options];
+}
+
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options
+{
+	[mCinderView setFullScreen:fullScreen options:options];
 }
 
 - (cinder::Vec2i)getSize

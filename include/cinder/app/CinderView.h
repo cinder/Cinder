@@ -75,7 +75,7 @@
 - (void)setDelegate:(id<CinderViewDelegate>)delegate;
 
 - (BOOL)isFullScreen;
-- (void)setFullScreen:(BOOL)fullScreen withSecondaryBlanking:(BOOL)secondaryBlanking onNsScreen:(NSScreen*)screen;
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 
 - (void)draw;
 - (void)makeCurrentContext;
