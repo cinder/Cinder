@@ -27,6 +27,11 @@
 #include "cinder/cocoa/CinderCocoa.h"
 #import <Cocoa/Cocoa.h>
 
+@interface CinderView ()
+- (void)windowDidEnterFullScreen:(NSNotification *)notification;
+- (void)windowDidExitFullScreen:(NSNotification *)notification;
+@end
+
 @implementation CinderView
 @synthesize readyToDraw = mReadyToDraw;
 @synthesize receivesEvents = mReceivesEvents;
@@ -42,7 +47,7 @@
 
 	mTouchIdMap = nil;
 	mDelegate = nil;
-	
+
 	return self;
 }
 
@@ -87,6 +92,10 @@
 		if( ! mTouchIdMap )
 			mTouchIdMap = [[NSMutableDictionary alloc] initWithCapacity:10];
 	}
+
+	// listen to window fullscreen notifications so we can keep state consistent when user is manipulating the window mode via system controls
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidEnterFullScreen:) name:NSWindowDidEnterFullScreenNotification object:[self window]];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidExitFullScreen:) name:NSWindowDidExitFullScreenNotification object:[self window]];
 }
 
 - (float)contentScaleFactor
@@ -116,29 +125,32 @@
 	if( fullScreen == mFullScreen )
 		return;
 
-	if( ! options->isKioskModeEnabled() ) {
+    // ignore kiosk mode flag if exiting fullscreen and use stored setting
+    mFullScreenModeKiosk = ( fullScreen ? options->isKioskModeEnabled() : mFullScreenModeKiosk );
+	if( ! mFullScreenModeKiosk ) {
 		bool hasFullScreenButton = [[self window] collectionBehavior] & NSWindowCollectionBehaviorFullScreenPrimary;
 		if( !hasFullScreenButton ) {
-			NSLog(@"%s no fullscreen button, adding one anyway.", __PRETTY_FUNCTION__);
 			[[self window] setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 		}
 		[[self window] toggleFullScreen:nil];
 	}
-	else {
-		if( fullScreen ) {
-			NSDictionary *dict = nil;
-			if( ! options->isSecondaryDisplayBlankingEnabled() )
-				dict = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:NSFullScreenModeAllScreens];
-			NSScreen *screen = ( options->getDisplay() ? options->getDisplay()->getNsScreen() : [[self window] screen] );
-			[self enterFullScreenMode:screen withOptions:dict];
-		}
-		else {
-			[self exitFullScreenModeWithOptions:nil];
-			[[self window] becomeKeyWindow];
-			[[self window] makeFirstResponder:self];
-		}
-	}
+	else if( fullScreen ) {
+        // Kiosk Mode
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        if( ! options->isSecondaryDisplayBlankingEnabled() )
+            [dict setObject:@NO forKey:NSFullScreenModeAllScreens];
+		if( ! options->isAllScreensEnabled() ) // TODO: rename
+			[dict setObject:[NSNumber numberWithUnsignedInteger:( NSApplicationPresentationHideMenuBar | NSApplicationPresentationHideDock )] forKey:NSFullScreenModeApplicationPresentationOptions];
 
+        NSScreen *screen = ( options->getDisplay() ? options->getDisplay()->getNsScreen() : [[self window] screen] );
+        [self enterFullScreenMode:screen withOptions:dict];
+    }
+    else {
+        [self exitFullScreenModeWithOptions:nil];
+        [[self window] becomeKeyWindow];
+        [[self window] makeFirstResponder:self];
+    }
+    
 	mFullScreen = fullScreen;
 	NSLog(@"%s fullScreen: %d ", __PRETTY_FUNCTION__, fullScreen);
 }
@@ -193,6 +205,7 @@
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super dealloc];
 }
 
@@ -626,6 +639,17 @@
 - (void)setApp:(cinder::app::App *)app
 {
 	mApp = app;
+}
+
+- (void)windowDidEnterFullScreen:(NSNotification *)notification
+{
+	mFullScreenModeKiosk = NO; // this notification only comes via, non kiosk, 10.7+ mode
+	mFullScreen = YES;
+}
+
+- (void)windowDidExitFullScreen:(NSNotification *)notification
+{
+	mFullScreen = NO;
 }
 
 @end

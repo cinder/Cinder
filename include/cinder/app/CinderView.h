@@ -51,10 +51,11 @@
 - (cinder::app::WindowRef)getWindowRef;
 @end
 
-@interface CinderView : NSView
-{
+@interface CinderView : NSView {
+  @private
 	cinder::app::App			*mApp;
 	BOOL						mFullScreen;
+	BOOL						mFullScreenModeKiosk;
 	BOOL						mReadyToDraw; // don't allow draw until setup() and resize() have been called
 	BOOL						mReceivesEvents;
 	cinder::app::RendererRef	mRenderer;
