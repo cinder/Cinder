@@ -57,7 +57,7 @@ void BasicApp::prepareSettings( Settings *settings )
 	settings->enablePowerManagement( false );
 	settings->enableQuitOnLastWindowClose( false );
 	settings->setFullScreen( false );
-	settings->setWindowSize( 100, 500 );
+	settings->setWindowSize( 800, 500 );
 //	settings->prepareWindow( Window::Format().resizable( false ).renderer( RendererGl::create() ).fullScreen( true ) );
 }
 
@@ -87,7 +87,6 @@ bool BasicApp::shouldQuit()
 
 void BasicApp::update()
 {
-	console() << getMousePos() << " ";
 }
 
 void BasicApp::anotherTest( MouseEvent event )
@@ -153,6 +152,10 @@ void BasicApp::keyDown( KeyEvent event )
 	if( event.getChar() == 'f' ) {
 		console() << "Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
 		getWindow()->setFullScreen( ! getWindow()->isFullScreen() );
+	}
+	else if( event.getChar() == 'k' ) {
+		console() << "(Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
+		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().kioskMode().secondaryDisplayBlanking( false ) );
 	}
 	else if( event.getCode() == KeyEvent::KEY_LEFT )
 		getWindow()->setPos( getWindow()->getPos().x - 1, getWindow()->getPos().y );
