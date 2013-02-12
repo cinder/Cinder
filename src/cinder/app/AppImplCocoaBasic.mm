@@ -698,7 +698,11 @@
 	winImpl->mPos = ci::Vec2i( contentRect.origin.x, cinder::Display::getMainDisplay()->getHeight() - [winImpl->mWin frame].origin.y - contentRect.size.height );
 
 	[winImpl->mWin setLevel:(winImpl->mAlwaysOnTop)?NSScreenSaverWindowLevel:NSNormalWindowLevel];
-	
+
+	if( winFormat.isFullScreenButtonEnabled() ) {
+		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary]; // ???: add NSWindowCollectionBehaviorFullScreenAuxiliary?
+		NSLog(@"%s enabled fullscreen button", __PRETTY_FUNCTION__);
+	}
 	if( ! winFormat.getRenderer() )
 		winFormat.setRenderer( appImpl->mApp->getDefaultRenderer()->clone() );
 	// for some renderers, ok really just GL, we want an existing renderer so we can steal its context to share with. If this comes back with NULL that's fine - we're first

@@ -103,7 +103,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	struct Format {
 		Format( RendererRef renderer = RendererRef(), DisplayRef display = Display::getMainDisplay(), bool fullScreen = false, Vec2i size = Vec2i( 640, 480 ), Vec2i pos = Vec2i::zero() )
 			: mRenderer( renderer ), mFullScreen( fullScreen ), mDisplay( display ), mSize( size ), mPos( pos ), mPosSpecified( false ),
-			mResizable( true ), mBorderless( false ), mAlwaysOnTop( false )
+			mResizable( true ), mBorderless( false ), mAlwaysOnTop( false ), mFullScreenButtonEnabled( false )
 #if defined( CINDER_COCOA_TOUCH )
 			, mRootViewController( NULL )
 #endif
@@ -181,6 +181,12 @@ class Window : public std::enable_shared_from_this<Window> {
 		void		setAlwaysOnTop( bool alwaysOnTop = true ) { mAlwaysOnTop = alwaysOnTop; }
 		//! Sets whether the Window created will always be above all other windows, including other applications' windows. Defaults to \c false.
 		Format&		alwaysOnTop( bool top = true ) { mAlwaysOnTop = top; return *this; }
+		//! On Mac OS X enables the native full screen toggle button. Defaults to \c false.
+		void		enableFullScreenButton( bool enabled = true ) { mFullScreenButtonEnabled = enabled; }
+		//! On Mac OS X enables the native full screen toggle button. Defaults to \c false.
+		Format&		fullScreenButton( bool enabled = true ) { mFullScreenButtonEnabled = enabled; return *this; }
+		//! On Mac OS X returns whether the native full screen toggle button is displayed. Defaults to \c false.
+		bool		isFullScreenButtonEnabled() const { return mFullScreenButtonEnabled; }
 
 		//! Returns the title of the Window as a UTF-8 string.
 		std::string getTitle() const { return mTitle; }
@@ -188,14 +194,14 @@ class Window : public std::enable_shared_from_this<Window> {
 		void		setTitle( const std::string &title ) { mTitle = title; }
 		//! Sets the title of the Window as a UTF-8 string.
 		Format&		title( const std::string &t ) { mTitle = t; return *this; }
-		
+
 	  private:
 		RendererRef				mRenderer;
 		bool					mFullScreen;		
 		DisplayRef				mDisplay;
 		Vec2i					mSize, mPos;
 		bool					mPosSpecified;
-		bool					mResizable, mBorderless, mAlwaysOnTop;
+		bool					mResizable, mBorderless, mAlwaysOnTop, mFullScreenButtonEnabled;
 		std::string				mTitle;
 
 #if defined( CINDER_COCOA_TOUCH )
