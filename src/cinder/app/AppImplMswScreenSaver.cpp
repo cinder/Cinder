@@ -30,8 +30,12 @@ namespace cinder { namespace app {
 
 static const int TIMER_ID = 1;
 
-AppImplMswScreenSaver::AppImplMswScreenSaver( AppScreenSaver *aApp, HWND aWnd )
+AppImplMswScreenSaver::AppImplMswScreenSaver( AppScreenSaver *aApp )
 	: AppImplMsw( aApp ), mApp( aApp )
+{
+}
+
+void AppImplMswScreenSaver::init( HWND aWnd )
 {
 	// determine if this is a preview, which will be signified by /p:(HWND as integer)
 	LPWSTR *szArglist;

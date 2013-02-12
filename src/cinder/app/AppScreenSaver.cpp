@@ -60,7 +60,8 @@ void AppScreenSaver::launch( HWND hWnd )
 {
 	prepareSettings( &mSettings );
 
-	mImpl = new AppImplMswScreenSaver( this, hWnd );
+	mImpl = new AppImplMswScreenSaver( this );
+	mImpl->init( hWnd );
 	mImpl->run();
 // NOTHING AFTER THIS LINE RUNS
 }

@@ -36,9 +36,10 @@ class WindowImplMswScreenSaver;
 
 class AppImplMswScreenSaver : public AppImplMsw {
  public:
-	AppImplMswScreenSaver( class AppScreenSaver *aApp, HWND aWnd );
+	AppImplMswScreenSaver( class AppScreenSaver *aApp );
 	virtual ~AppImplMswScreenSaver() {}
 	
+	void		init( HWND aWnd );
 	void		run();
 	void		quit() {} // we can't really force a quit
 		
