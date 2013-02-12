@@ -160,8 +160,10 @@
 {
 	[super setFrameSize:newSize];
 
-	if( mReadyToDraw ) {
+	if( mRenderer )
 		mRenderer->setFrameSize( newSize.width, newSize.height );
+
+	if( mReadyToDraw ) {
 		mRenderer->makeCurrentContext();
 		mRenderer->defaultResize();
 		[mDelegate resize];
