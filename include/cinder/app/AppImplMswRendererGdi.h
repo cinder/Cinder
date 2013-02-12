@@ -38,7 +38,7 @@ class AppImplMswRendererGdi : public AppImplMswRenderer {
  public:
 	AppImplMswRendererGdi( App *aApp, bool doubleBuffer );
 
-	virtual bool	initialize( HWND wnd, HDC dc );
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill() {}
 	virtual void	defaultResize() const;
 	virtual void	swapBuffers() const;

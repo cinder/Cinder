@@ -154,7 +154,7 @@ HWND createDummyWindow( int *width, int *height, bool fullscreen )
 	return wnd;
 }
 
-bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc )
+bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	if( ( ! sMultisampleSupported ) && mRenderer->getAntiAliasing() ) {
 		// first create a dummy window and use it to determine if we can do antialiasing
@@ -163,7 +163,7 @@ bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc )
 		HWND dummyWnd = createDummyWindow( &width, &height, false );
 		HDC dummyDC = ::GetDC( dummyWnd );
 		
-		bool result = initializeInternal( dummyWnd, dummyDC );
+		bool result = initializeInternal( dummyWnd, dummyDC, NULL );
 		
 		::ReleaseDC( dummyWnd, dummyDC );
 		::DestroyWindow( dummyWnd );
@@ -174,10 +174,13 @@ bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc )
 		// now do it again but with newly created multisample settings
 	}
 	
-	return initializeInternal( wnd, dc );
+	RendererGl *sharedRendererGl = dynamic_cast<RendererGl*>( sharedRenderer.get() );
+	HGLRC sharedRC = ( sharedRenderer ) ? sharedRendererGl->mImpl->mRC : NULL;
+
+	return initializeInternal( wnd, dc, sharedRC );
 }
 
-bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc )
+bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC )
 {
 	int pixelFormat;
 	mWnd = wnd;
@@ -244,13 +247,14 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc )
 		}
 	}
 
-	if( mPrevRC ) {
+	if( mPrevRC )
 		BOOL success = ::wglCopyContext( mPrevRC, mRC, GL_ALL_ATTRIB_BITS );
-	}
 
-	if( mPrevRC ) {
-		wglShareLists( mPrevRC, mRC );
-	}
+	if( mPrevRC )
+		::wglShareLists( mPrevRC, mRC );
+	
+	if( sharedRC )
+		::wglShareLists( sharedRC, mRC );
 
 	return true;									// Success
 }

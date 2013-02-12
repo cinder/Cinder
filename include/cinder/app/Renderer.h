@@ -74,7 +74,7 @@ class Renderer {
 	
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		virtual void	setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retianEnabled ) = 0;
+		virtual void	setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) = 0;
 		virtual CGContextRef			getCgContext() { throw; } // the default behavior is failure
 		virtual CGLContextObj			getCglContext() { throw; } // the default behavior is failure
 		virtual CGLPixelFormatObj		getCglPixelFormat() { throw; } // the default behavior is failure
@@ -87,7 +87,7 @@ class Renderer {
 	virtual void	setFrameSize( int width, int height ) {}		
 
 #elif defined( CINDER_MSW )
-	virtual void setup( App *aApp, HWND wnd, HDC dc ) = 0;
+	virtual void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
 
 	virtual void prepareToggleFullScreen() {}
 	virtual void finishToggleFullScreen() {}
@@ -126,7 +126,7 @@ class RendererGl : public Renderer {
  
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		virtual void setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retianEnabled );
+		virtual void setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
 		virtual CGLContextObj			getCglContext();
 		virtual CGLPixelFormatObj		getCglPixelFormat();
 		virtual NSOpenGLContext*		getNsOpenGlContext();		
@@ -137,7 +137,7 @@ class RendererGl : public Renderer {
 	#endif
 	virtual void	setFrameSize( int width, int height );
 #elif defined( CINDER_MSW )
-	virtual void	setup( App *aApp, HWND wnd, HDC dc );
+	virtual void	setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill();
 	virtual HWND	getHwnd() { return mWnd; }
 	virtual void	prepareToggleFullScreen();
@@ -166,6 +166,7 @@ class RendererGl : public Renderer {
 #elif defined( CINDER_MSW )
 	class AppImplMswRendererGl	*mImpl;
 	HWND						mWnd;
+	friend class				AppImplMswRendererGl;
 #endif
 };
 
@@ -214,7 +215,7 @@ class Renderer2d : public Renderer {
 	static Renderer2dRef	create( bool doubleBuffer = true ) { return Renderer2dRef( new Renderer2d( doubleBuffer ) ); }
 	virtual RendererRef		clone() const { return Renderer2dRef( new Renderer2d( *this ) ); }
 	
-	virtual void setup( App *aApp, HWND wnd, HDC dc );
+	virtual void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void kill();
 	
 	virtual HWND	getHwnd() { return mWnd; }

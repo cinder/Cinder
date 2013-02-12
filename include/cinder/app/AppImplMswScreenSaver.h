@@ -67,8 +67,8 @@ class AppImplMswScreenSaver : public AppImplMsw {
 
 class WindowImplMswScreenSaver : public WindowImplMsw {
   public:
-	WindowImplMswScreenSaver( HWND hwnd, RendererRef renderer, AppImplMswScreenSaver *appImpl )
-		: WindowImplMsw( hwnd, renderer, appImpl ) {}
+	WindowImplMswScreenSaver( HWND hwnd, RendererRef renderer, RendererRef sharedRenderer, AppImplMswScreenSaver *appImpl )
+		: WindowImplMsw( hwnd, renderer, sharedRenderer, appImpl ) {}
 
   protected:
 	friend AppImplMswScreenSaver;

@@ -101,8 +101,8 @@ class AppImplMsw {
 
 class WindowImplMsw {
   public:
-	WindowImplMsw( const Window::Format &format, AppImplMsw *appImpl );
-	WindowImplMsw( HWND hwnd, RendererRef renderer, AppImplMsw *appImpl );
+	WindowImplMsw( const Window::Format &format, RendererRef sharedRenderer, AppImplMsw *appImpl );
+	WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef sharedRenderer, AppImplMsw *appImpl );
 
 	virtual bool		isFullScreen() { return mFullScreen; }
 	virtual void		setFullScreen( bool fullScreen );
@@ -136,7 +136,7 @@ class WindowImplMsw {
 
 	void			privateClose();
   protected:
-	void			createWindow( const Vec2i &windowSize, const std::string &title );
+	void			createWindow( const Vec2i &windowSize, const std::string &title, RendererRef sharedRenderer );
 	void			completeCreation();
 	static void		registerWindowClass();
 	void			getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight );

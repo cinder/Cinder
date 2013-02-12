@@ -210,13 +210,14 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( App *aApp, HWND wnd, HDC dc )
+void RendererGl::setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
 	mApp = aApp;
 	if( ! mImpl )
 		mImpl = new AppImplMswRendererGl( mApp, this );
-	mImpl->initialize( wnd, dc );
+
+	mImpl->initialize( wnd, dc, sharedRenderer );
 }
 
 void RendererGl::kill()
@@ -368,12 +369,12 @@ Renderer2d::Renderer2d( bool doubleBuffer )
 {
 }
 
-void Renderer2d::setup( App *app, HWND wnd, HDC dc )
+void Renderer2d::setup( App *app, HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
 	mApp = app;
 	mWnd = wnd;
 	mImpl = new AppImplMswRendererGdi( app, mDoubleBuffer );
-	mImpl->initialize( wnd, dc );
+	mImpl->initialize( wnd, dc, RendererRef() /* we don't use shared renderers on GDI */ );
 }
 
 void Renderer2d::kill()

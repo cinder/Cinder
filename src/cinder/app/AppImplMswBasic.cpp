@@ -136,7 +136,7 @@ WindowRef AppImplMswBasic::createWindow( Window::Format format )
 	if( ! format.getRenderer() )
 		format.setRenderer( mApp->getDefaultRenderer()->clone() );
 
-	mWindows.push_back( new WindowImplMswBasic( format, this ) );
+	mWindows.push_back( new WindowImplMswBasic( format, mApp->findSharedRenderer( format.getRenderer() ), this ) );
 
 	// emit initial resize if we have fired setup
 	if( mSetupHasBeenCalled )

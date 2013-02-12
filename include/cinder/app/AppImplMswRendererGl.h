@@ -32,7 +32,7 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
  public:
 	AppImplMswRendererGl( App *aApp, RendererGl *aRenderer );
 	
-	virtual bool	initialize( HWND wnd, HDC dc );
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
 	virtual void	kill();
@@ -41,7 +41,7 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
 	virtual void	makeCurrentContext();
 
  protected:
-	bool	initializeInternal( HWND wnd, HDC dc );
+	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
 	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
 	
 	RendererGl	*mRenderer;

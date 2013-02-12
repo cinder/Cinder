@@ -314,7 +314,7 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 
 ///////////////////////////////////////////////////////////////////////////////
 // WindowImplMsw
-WindowImplMsw::WindowImplMsw( const Window::Format &format, AppImplMsw *appImpl )
+WindowImplMsw::WindowImplMsw( const Window::Format &format, RendererRef sharedRenderer, AppImplMsw *appImpl )
 	: mWindowOffset( 0, 0 ), mAppImpl( appImpl ), mIsDragging( false ), mHidden( false )
 {	
 	mFullScreen = format.isFullScreen();
@@ -334,14 +334,14 @@ WindowImplMsw::WindowImplMsw( const Window::Format &format, AppImplMsw *appImpl 
 		mWindowOffset = mWindowedPos = ( displaySize - mWindowedSize ) / 2;
 	}
 
-	createWindow( Vec2i( mWindowWidth, mWindowHeight ), format.getTitle() );
+	createWindow( Vec2i( mWindowWidth, mWindowHeight ), format.getTitle(), sharedRenderer );
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 	
 	completeCreation();
 }
 
-WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, AppImplMsw *appImpl )
+WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef sharedRenderer, AppImplMsw *appImpl )
 	: mWnd( hwnd ), mRenderer( renderer ), mAppImpl( appImpl ), mIsDragging( false )
 {
 	RECT rect;
@@ -354,12 +354,12 @@ WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, AppImplMsw *appIm
 
 	mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
-	mRenderer->setup( mAppImpl->getApp(), mWnd, mDC );
+	mRenderer->setup( mAppImpl->getApp(), mWnd, mDC, sharedRenderer );
 
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 }
 
-void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &title )
+void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &title, RendererRef sharedRenderer )
 {
 	RECT windowRect;
 	Area displayArea = mDisplay->getBounds();
@@ -428,7 +428,7 @@ void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &ti
 	// update display
 	mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
-	mRenderer->setup( mAppImpl->getApp(), mWnd, mDC );
+	mRenderer->setup( mAppImpl->getApp(), mWnd, mDC, sharedRenderer );
 }
 
 void WindowImplMsw::completeCreation()
@@ -494,7 +494,8 @@ void WindowImplMsw::toggleFullScreen()
 	}
 
 	getRenderer()->prepareToggleFullScreen();
-	createWindow( newWindowSize, getTitle() );
+	// we don't need to share a renderer because we're not really creating a window per se
+	createWindow( newWindowSize, getTitle(), RendererRef() );
 	getRenderer()->finishToggleFullScreen();
 
 	::ReleaseDC( oldWnd, oldDC );

@@ -52,7 +52,7 @@ AppImplMswScreenSaver::AppImplMswScreenSaver( AppScreenSaver *aApp, HWND aWnd )
 	mPreview = ( utf8Args.size() > 2 ) && ( utf8Args[1] == "/p" );
 
 	if( mPreview ) {
-		mWindows.push_back( new WindowImplMswScreenSaver( aWnd, mApp->getDefaultRenderer()->clone(), this ) );
+		mWindows.push_back( new WindowImplMswScreenSaver( aWnd, mApp->getDefaultRenderer()->clone(), mApp->findSharedRenderer( mApp->getDefaultRenderer() ), this ) );
 	}
 	else {
 		for( auto dispIt = Display::getDisplays().begin(); dispIt != Display::getDisplays().end(); ++dispIt ) {
@@ -62,7 +62,7 @@ AppImplMswScreenSaver::AppImplMswScreenSaver( AppScreenSaver *aApp, HWND aWnd )
 					Area displayArea = Display::getMainDisplay()->getBounds();
 					::SetWindowPos( aWnd, NULL, displayArea.getX1(), displayArea.getY1(), displayArea.getWidth(), displayArea.getHeight(), SWP_NOOWNERZORDER );
 				}
-				mWindows.push_back( new WindowImplMswScreenSaver( aWnd, mApp->getDefaultRenderer()->clone(), this ) );
+				mWindows.push_back( new WindowImplMswScreenSaver( aWnd, mApp->getDefaultRenderer()->clone(), mApp->findSharedRenderer( mApp->getDefaultRenderer() ), this ) );
 				if( mDebugMode ) {
 					// make the window bottom-most rather than top-most
 					long style = ::GetWindowLong( aWnd, GWL_STYLE );

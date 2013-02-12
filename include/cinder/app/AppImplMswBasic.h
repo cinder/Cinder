@@ -78,8 +78,8 @@ class AppImplMswBasic : public AppImplMsw {
 
 class WindowImplMswBasic : public WindowImplMsw {
   public:
-	WindowImplMswBasic( const Window::Format &format, AppImplMswBasic *appImpl )
-		: WindowImplMsw( format, appImpl ) {}
+	WindowImplMswBasic( const Window::Format &format, RendererRef sharedRenderer, AppImplMswBasic *appImpl )
+		: WindowImplMsw( format, sharedRenderer, appImpl ) {}
 
   protected:
 	friend AppImplMswBasic;

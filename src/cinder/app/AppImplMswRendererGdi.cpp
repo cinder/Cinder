@@ -78,7 +78,7 @@ void AppImplMswRendererGdi::makeCurrentContext()
 	}
 }
 
-bool AppImplMswRendererGdi::initialize( HWND wnd, HDC dc )
+bool AppImplMswRendererGdi::initialize( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
 	mWnd = wnd;
 	return true;

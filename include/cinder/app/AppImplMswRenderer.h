@@ -38,7 +38,7 @@ class AppImplMswRenderer {
  public:
 	AppImplMswRenderer( App *aApp ) : mApp( aApp ) {}
 	
-	virtual bool	initialize( HWND wnd, HDC dc ) = 0;
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
 	virtual void	prepareToggleFullScreen() {}
 	virtual void	finishToggleFullScreen() {}
 	virtual void	kill() = 0;
