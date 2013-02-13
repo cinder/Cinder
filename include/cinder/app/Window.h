@@ -99,17 +99,25 @@ class ExcInvalidWindow : public cinder::Exception {
 	virtual const char * what() const throw() { return "Invalid Window"; }
 };
 
+//! Options passed when entering fullscreen.
 struct FullScreenOptions {
 	FullScreenOptions() : mKioskMode( false ), mSecondaryDisplayBlanking( true ), mExclusive( false )
 	{}
 
+	//! (OS X only) Sets the fullscreen mode to 'kiosk', which means don't use the 10.7 way of animating to fullscreen. Default is \c false.
 	FullScreenOptions&	kioskMode( bool enable = true )					{ mKioskMode = enable; return *this; }
+	//! Sets whether secondary displays should be disabled. Default is \c true.
 	FullScreenOptions&	secondaryDisplayBlanking( bool enable = true )	{ mSecondaryDisplayBlanking = enable; return *this; }
+	//! (OS X only) Sets whether the \t Window related to these options is the only accessible window. Default is \c false.
 	FullScreenOptions&	exclusive( bool enable = true )					{ mExclusive = enable; return *this; }
 
+	//! Returns the display on which the fullscreen should occur
 	DisplayRef			getDisplay()									const { return mDisplay; }
+	//! Returns whether kiosk mode is enabled.
 	bool				isKioskModeEnabled()							const { return mKioskMode; }
+	//! Returns whether blanking of secondary displays in enabled. Default is \c true.
 	bool				isSecondaryDisplayBlankingEnabled()				const { return mSecondaryDisplayBlanking; }
+	//! Returns whether the \t Window related to these options is the only accessible window.
 	bool				isExclusive()									const { return mExclusive; }
 
 private:
