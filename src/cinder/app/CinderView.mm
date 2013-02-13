@@ -129,7 +129,7 @@
     mFullScreenModeKiosk = ( fullScreen ? options->isKioskModeEnabled() : mFullScreenModeKiosk );
 	if( ! mFullScreenModeKiosk ) {
 		bool hasFullScreenButton = [[self window] collectionBehavior] & NSWindowCollectionBehaviorFullScreenPrimary;
-		if( !hasFullScreenButton ) {
+		if( ! hasFullScreenButton ) {
 			[[self window] setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 		}
 		[[self window] toggleFullScreen:nil];

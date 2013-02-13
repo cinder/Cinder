@@ -106,12 +106,14 @@ struct FullScreenOptions {
 
 	//! (OS X only) Sets the fullscreen mode to 'kiosk', which means don't use the 10.7 way of animating to fullscreen. Default is \c false.
 	FullScreenOptions&	kioskMode( bool enable = true )					{ mKioskMode = enable; return *this; }
-	//! Sets whether secondary displays should be disabled. Default is \c true.
+	//! Sets whether secondary displays should be blanked (made black). Default is \c true.
 	FullScreenOptions&	secondaryDisplayBlanking( bool enable = true )	{ mSecondaryDisplayBlanking = enable; return *this; }
 	//! (OS X only) Sets whether the \t Window related to these options is the only accessible window. Default is \c false.
 	FullScreenOptions&	exclusive( bool enable = true )					{ mExclusive = enable; return *this; }
+	//! Sets the display which will be used in fullscreen mode. Defaults to the \t Window's current \t Display. Ignored on Mac OS X outside of kiosk mode.
+	FullScreenOptions&	display( DisplayRef display )					{ mDisplay = display; return *this; }
 
-	//! Returns the display on which the fullscreen should occur
+	//! Returns the display on which the fullscreen should occur. A NULL value implies the default, which is the \t Window's current \t Display.
 	DisplayRef			getDisplay()									const { return mDisplay; }
 	//! Returns whether kiosk mode is enabled.
 	bool				isKioskModeEnabled()							const { return mKioskMode; }
@@ -120,9 +122,9 @@ struct FullScreenOptions {
 	//! Returns whether the \t Window related to these options is the only accessible window.
 	bool				isExclusive()									const { return mExclusive; }
 
-private:
-	DisplayRef mDisplay;
-	bool mKioskMode, mSecondaryDisplayBlanking, mExclusive;
+  private:
+	DisplayRef	mDisplay;
+	bool		mKioskMode, mSecondaryDisplayBlanking, mExclusive;
 };
 
 class Window : public std::enable_shared_from_this<Window> {

@@ -152,11 +152,12 @@ void BasicApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' ) {
 		console() << "Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
-		getWindow()->setFullScreen( ! getWindow()->isFullScreen() );
+		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
 	}
 	else if( event.getChar() == 'k' ) {
 		console() << "(kiosk) Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
 		FullScreenOptions fullScreenOptions = FullScreenOptions().kioskMode();
+		FullScreenOptions().display( Display::getDisplays()[1] );
 		if( event.isMetaDown() )
 			fullScreenOptions.secondaryDisplayBlanking( false );
 		if( event.isControlDown() )
