@@ -51,10 +51,11 @@
 - (cinder::app::WindowRef)getWindowRef;
 @end
 
-@interface CinderView : NSView
-{
+@interface CinderView : NSView {
+  @private
 	cinder::app::App			*mApp;
 	BOOL						mFullScreen;
+	BOOL						mFullScreenModeKiosk;
 	BOOL						mReadyToDraw; // don't allow draw until setup() and resize() have been called
 	BOOL						mReceivesEvents;
 	cinder::app::RendererRef	mRenderer;
@@ -75,7 +76,7 @@
 - (void)setDelegate:(id<CinderViewDelegate>)delegate;
 
 - (BOOL)isFullScreen;
-- (void)setFullScreen:(BOOL)fullScreen withSecondaryBlanking:(BOOL)secondaryBlanking onNsScreen:(NSScreen*)screen;
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 
 - (void)draw;
 - (void)makeCurrentContext;
