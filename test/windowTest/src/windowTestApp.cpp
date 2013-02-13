@@ -59,6 +59,7 @@ void BasicApp::prepareSettings( Settings *settings )
 	settings->setFullScreen( false );
 	settings->setWindowSize( 800, 500 );
 //	settings->prepareWindow( Window::Format().resizable( false ).renderer( RendererGl::create() ).fullScreen( true ) );
+	settings->prepareWindow( Window::Format().fullScreenButton() );
 }
 
 void BasicApp::setup()
@@ -154,8 +155,13 @@ void BasicApp::keyDown( KeyEvent event )
 		getWindow()->setFullScreen( ! getWindow()->isFullScreen() );
 	}
 	else if( event.getChar() == 'k' ) {
-		console() << "(Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
-		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().kioskMode().secondaryDisplayBlanking( false ) );
+		console() << "(kiosk) Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
+		FullScreenOptions fullScreenOptions = FullScreenOptions().kioskMode();
+		if( event.isMetaDown() )
+			fullScreenOptions.secondaryDisplayBlanking( false );
+		if( event.isControlDown() )
+			fullScreenOptions.exclusive();
+		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), fullScreenOptions );
 	}
 	else if( event.getCode() == KeyEvent::KEY_LEFT )
 		getWindow()->setPos( getWindow()->getPos().x - 1, getWindow()->getPos().y );
