@@ -20,6 +20,7 @@
 	<headerPattern>src/Box2D/Dynamics/Joints/*.h</headerPattern>
 	<sourcePattern>src/Box2D/Rope/*.cpp</sourcePattern>
 	<headerPattern>src/Box2D/Rope/*.h</headerPattern>
+	<header>src/Box2D/Box2d.h</header>
 	<copyExclude>samples</copyExclude>
 	<copyExclude>templates</copyExclude>
 	<includePath system="true">src</includePath>
