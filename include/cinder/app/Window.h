@@ -36,7 +36,7 @@
 namespace cinder { namespace app {
 
 class Window;
-class FullScreenOptions;
+struct FullScreenOptions;
 typedef std::shared_ptr<Window>		WindowRef;
 
 } } // namespace cinder::app
