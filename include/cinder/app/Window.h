@@ -100,21 +100,21 @@ class ExcInvalidWindow : public cinder::Exception {
 };
 
 struct FullScreenOptions {
-	FullScreenOptions() : mKioskMode( false ), mSecondaryDisplayBlanking( false ), mAllScreens( false )
+	FullScreenOptions() : mKioskMode( false ), mSecondaryDisplayBlanking( true ), mExclusive( false )
 	{}
 
 	FullScreenOptions&	kioskMode( bool enable = true )					{ mKioskMode = enable; return *this; }
 	FullScreenOptions&	secondaryDisplayBlanking( bool enable = true )	{ mSecondaryDisplayBlanking = enable; return *this; }
-	FullScreenOptions&	allScreens( bool enable = true )				{ mAllScreens = enable; return *this; }
+	FullScreenOptions&	exclusive( bool enable = true )					{ mExclusive = enable; return *this; }
 
 	DisplayRef			getDisplay()									const { return mDisplay; }
 	bool				isKioskModeEnabled()							const { return mKioskMode; }
 	bool				isSecondaryDisplayBlankingEnabled()				const { return mSecondaryDisplayBlanking; }
-	bool				isAllScreensEnabled()							const { return mAllScreens; }
+	bool				isExclusive()									const { return mExclusive; }
 
 private:
 	DisplayRef mDisplay;
-	bool mKioskMode, mSecondaryDisplayBlanking, mAllScreens;
+	bool mKioskMode, mSecondaryDisplayBlanking, mExclusive;
 };
 
 class Window : public std::enable_shared_from_this<Window> {

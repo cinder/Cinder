@@ -138,21 +138,21 @@
         // Kiosk Mode
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         if( ! options->isSecondaryDisplayBlankingEnabled() )
-            [dict setObject:@NO forKey:NSFullScreenModeAllScreens];
-		if( ! options->isAllScreensEnabled() ) // TODO: rename
+            [dict setObject:[NSNumber numberWithBool:NO] forKey:NSFullScreenModeAllScreens];
+		if( ! options->isExclusive() )
 			[dict setObject:[NSNumber numberWithUnsignedInteger:( NSApplicationPresentationHideMenuBar | NSApplicationPresentationHideDock )] forKey:NSFullScreenModeApplicationPresentationOptions];
 
         NSScreen *screen = ( options->getDisplay() ? options->getDisplay()->getNsScreen() : [[self window] screen] );
         [self enterFullScreenMode:screen withOptions:dict];
     }
     else {
+		// Exit kiosk
         [self exitFullScreenModeWithOptions:nil];
         [[self window] becomeKeyWindow];
         [[self window] makeFirstResponder:self];
     }
     
 	mFullScreen = fullScreen;
-	NSLog(@"%s fullScreen: %d ", __PRETTY_FUNCTION__, fullScreen);
 }
 
 - (void)draw
