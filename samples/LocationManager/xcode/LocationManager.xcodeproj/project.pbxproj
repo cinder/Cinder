@@ -19,6 +19,7 @@
 		6150B45EE73D4BF5AB84724E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F62C00872346DCAA1CE56B /* CoreLocation.framework */; };
 		647DA82AE16D4D65B6E6C411 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 78149D2AA9A941B7B645F0B3 /* CinderApp.icns */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		D8A720CE16CC2DFF004E5298 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8A720CD16CC2DFE004E5298 /* QuickTime.framework */; };
 		DA86C34190F941469651CEA7 /* LocationManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D89C8430EF7B42E4BD5440A6 /* LocationManager.cpp */; };
 /* End PBXBuildFile section */
 
@@ -42,6 +43,7 @@
 		8D1107320486CEB800E47090 /* LocationManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocationManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5582EF569E54B1E9D775CE8 /* LocationManager_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = LocationManager_Prefix.pch; sourceTree = "<group>"; };
 		D89C8430EF7B42E4BD5440A6 /* LocationManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = LocationManager.cpp; path = ../../../blocks/LocationManager/src/cinder/LocationManager.cpp; sourceTree = "<group>"; };
+		D8A720CD16CC2DFE004E5298 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
 		F179A28758CB49958A26146E /* LocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LocationManager.h; path = ../../../blocks/LocationManager/src/cinder/LocationManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -50,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8A720CE16CC2DFF004E5298 /* QuickTime.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -92,6 +95,8 @@
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				16F62C00872346DCAA1CE56B /* CoreLocation.framework */,
+				D8A720CD16CC2DFE004E5298 /* QuickTime.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -150,7 +155,6 @@
 			children = (
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
-				16F62C00872346DCAA1CE56B /* CoreLocation.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -255,7 +259,6 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				CLANG_CXX_LIBRARY = "libc++";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -277,7 +280,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				CLANG_CXX_LIBRARY = "libc++";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -300,6 +302,7 @@
 				ARCHS = i386;
 				CINDER_PATH = ../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
@@ -316,6 +319,7 @@
 				ARCHS = i386;
 				CINDER_PATH = ../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
