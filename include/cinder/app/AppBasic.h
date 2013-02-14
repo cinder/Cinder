@@ -73,13 +73,6 @@ class AppBasic : public App {
 		//! Sets the display for the default window
 		void		setDisplay( DisplayRef display ) { mDefaultWindowFormat.setDisplay( display ); }
 
-#if defined( CINDER_MAC )
-		/** Enables or disables blanking of secondary displays in fullscreen Apps. Enabled by default. **/
-		void	enableSecondaryDisplayBlanking( bool enable = false ) { mEnableSecondaryDisplayBlanking = enable; }
-		/** Returns whether blanking of secondary displays in enabled in fullscreen Apps. Enabled by default. **/
-		bool	isSecondaryDisplayBlankingEnabled() const { return mEnableSecondaryDisplayBlanking; }	
-#endif
-		
 #if defined( CINDER_MSW )
 		//! If enabled MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
 		void	enableConsoleWindow( bool enable = true ) { mEnableMswConsole = enable; }
@@ -100,9 +93,7 @@ class AppBasic : public App {
 	 private:
 		bool		mEnableMultiTouch;
 		bool		mQuitOnLastWindowClose;
-#if defined( CINDER_MAC )
-		bool		mEnableSecondaryDisplayBlanking;
-#elif defined( CINDER_MSW )
+#if defined( CINDER_MSW )
 		bool		mEnableMswConsole;
 #endif
 	};
