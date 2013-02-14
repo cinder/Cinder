@@ -50,7 +50,6 @@ typedef std::shared_ptr<Window>		WindowRef;
 	@protocol WindowImplCocoa
 		@required
 		- (BOOL)isFullScreen;
-		- (void)setFullScreen:(BOOL)fullScreen;
 		- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 		- (cinder::Vec2i)getSize;
 		- (void)setSize:(cinder::Vec2i)size;
@@ -137,7 +136,9 @@ class Window : public std::enable_shared_from_this<Window> {
 #if defined( CINDER_COCOA_TOUCH )
 			, mRootViewController( NULL )
 #endif
-		{}
+		{
+			mFullScreenOptions.kioskMode( true );
+		}
 
 		//! Returns the Display the Window will be created on. Defaults to the primary display.
 		DisplayRef	getDisplay() const { return mDisplay; }
@@ -147,8 +148,10 @@ class Window : public std::enable_shared_from_this<Window> {
 		Format&		display( DisplayRef displayRef ) { mDisplay = displayRef; return *this; }
 		//! Returns whether the Window will be created full-screen. Default is \c false.
 		bool		isFullScreen() const { return mFullScreen; }
-		//! Sets whether the Window will be created full-screen. Default is \c false.
-		void		setFullScreen( bool fullScreen = true ) { mFullScreen = fullScreen; }
+		//! Returns the \a options associated with fullscreen at startup.
+		const FullScreenOptions& getFullScreenOptions() const { return mFullScreenOptions; }
+		//! Sets whether the Window will be created full-screen with FullScreenOptions \a options. Default is \c false. If \t true, FullScreenOptions mode defaults to kiosk.
+		void		setFullScreen( bool fullScreen = true, const FullScreenOptions &options = FullScreenOptions() ) { mFullScreen = fullScreen; mFullScreenOptions = options; }
 		//! Sets whether the Window will be created full-screen. Default is \c false.
 		Format&		fullScreen( bool fs = true ) { mFullScreen = fs; return *this; }
 		//! Returns the size in points at which the Window will be created. Default is 640 x 480.
@@ -227,7 +230,8 @@ class Window : public std::enable_shared_from_this<Window> {
 
 	  private:
 		RendererRef				mRenderer;
-		bool					mFullScreen;		
+		bool					mFullScreen;
+		FullScreenOptions		mFullScreenOptions;
 		DisplayRef				mDisplay;
 		Vec2i					mSize, mPos;
 		bool					mPosSpecified;

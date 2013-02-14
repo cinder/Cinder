@@ -215,7 +215,7 @@ static ShutdownStatic shutdownStatic;
 	return YES;
 }
 
-- (void)setFullScreen:(BOOL)fullScreen
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options
 { // NO-OP
 }
 
