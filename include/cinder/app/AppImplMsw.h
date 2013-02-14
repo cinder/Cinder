@@ -141,7 +141,7 @@ class WindowImplMsw {
 	static void		registerWindowClass();
 	void			getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight );
 	void			onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam );
-	void			toggleFullScreen( const app::FullScreenOptions &options );
+	virtual void	toggleFullScreen( const app::FullScreenOptions &options );
 
 	AppImplMsw				*mAppImpl;
 	WindowRef				mWindowRef;
@@ -169,6 +169,8 @@ class BlankingWindow {
   public:
 	static BlankingWindowRef	create( DisplayRef display ) { return BlankingWindowRef( new BlankingWindow( display ) ); }
 	BlankingWindow( DisplayRef display );
+
+	void	destroy();
 
   protected:
 	static void		registerWindowClass();

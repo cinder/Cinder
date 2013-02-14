@@ -154,14 +154,15 @@ void BasicApp::keyDown( KeyEvent event )
 		console() << "Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
 		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
 	}
-	else if( event.getChar() == 'k' ) {
+	else if( event.getChar() == 'o' ) {
 		console() << "(kiosk) Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
 		FullScreenOptions fullScreenOptions = FullScreenOptions().kioskMode();
-		FullScreenOptions().display( Display::getDisplays()[1] );
-		if( event.isMetaDown() )
-			fullScreenOptions.secondaryDisplayBlanking( false );
 		if( event.isControlDown() )
-			fullScreenOptions.exclusive();
+			fullScreenOptions.secondaryDisplayBlanking( false );
+		else
+			fullScreenOptions.secondaryDisplayBlanking( true );
+		//if( event.isControlDown() )
+		//	fullScreenOptions.exclusive();
 		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), fullScreenOptions );
 	}
 	else if( event.getCode() == KeyEvent::KEY_LEFT )

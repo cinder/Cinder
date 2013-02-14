@@ -184,6 +184,26 @@ void AppImplMswBasic::setForegroundWindow( WindowRef window )
 	mForegroundWindow = window;
 }
 
+// This creates a full-screen blanking (all black) Window on each display besides 'fullScreenDisplay'
+void AppImplMswBasic::setupBlankingWindows( DisplayRef fullScreenDisplay )
+{
+	destroyBlankingWindows();
+
+	for( auto displayIt = Display::getDisplays().begin(); displayIt != Display::getDisplays().end(); ++displayIt ) {
+		if( *displayIt == fullScreenDisplay )
+			continue;
+		mBlankingWindows.push_back( BlankingWindowRef( new BlankingWindow( *displayIt ) ) );
+	}
+}
+
+void AppImplMswBasic::destroyBlankingWindows()
+{
+	for( auto winIt = mBlankingWindows.begin(); winIt != mBlankingWindows.end(); ++winIt )
+		(*winIt)->destroy();
+
+	mBlankingWindows.clear();
+}
+
 float AppImplMswBasic::setFrameRate( float aFrameRate )
 {
 	mFrameRate = aFrameRate;
@@ -202,5 +222,19 @@ bool AppImplMswBasic::isFrameRateEnabled() const
 	return mFrameRateEnabled;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// WindowImplMswBasic
+void WindowImplMswBasic::toggleFullScreen( const app::FullScreenOptions &options )
+{
+	// if we were full-screen, destroy our blanking windows
+	if( mFullScreen )
+		mAppImplBasic->destroyBlankingWindows();
+
+	WindowImplMsw::toggleFullScreen( options );
+
+	// if we've entered full-screen, setup our blanking windows if necessary
+	if( options.isSecondaryDisplayBlankingEnabled() && mFullScreen )
+		mAppImplBasic->setupBlankingWindows( getDisplay() );
+}
 
 } } // namespace cinder::app

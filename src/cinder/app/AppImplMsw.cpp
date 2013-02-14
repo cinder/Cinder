@@ -1030,7 +1030,7 @@ BlankingWindow::BlankingWindow( DisplayRef display )
 		reinterpret_cast<LPVOID>( this ) )) )
 	{
 		//killWindow();							// Reset The Display
-		return;		
+		return;
 	}
 
 	::ShowWindow( mWnd, SW_SHOW );
@@ -1090,5 +1090,10 @@ LRESULT CALLBACK BlankingWndProc( HWND wnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	}
 }
 
+void BlankingWindow::destroy()
+{
+	if( mWnd )
+		::DestroyWindow( mWnd );
+}
 
 } } // namespace cinder::app
