@@ -81,7 +81,7 @@
 		WindowImplBasicCocoa *winImpl = [ WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mApp->getSettings().isHighDensityDisplayEnabled() ];
 		[mWindows addObject:winImpl];
 		if( format.isFullScreen() )
-			[winImpl setFullScreen:YES];
+			[winImpl setFullScreen:YES options:&format.getFullScreenOptions()];
 	}
 	
 	mFrameRate = mApp->getSettings().getFrameRate();
@@ -148,7 +148,7 @@
 	WindowImplBasicCocoa *winImpl = [ WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mApp->getSettings().isHighDensityDisplayEnabled() ];
 	[mWindows addObject:winImpl];
 	if( format.isFullScreen() )
-		[winImpl setFullScreen:YES];
+		[winImpl setFullScreen:YES options:&format.getFullScreenOptions()];
 
 	// pass the window its first resize
 	[winImpl->mCinderView makeCurrentContext];
@@ -377,12 +377,6 @@
 - (BOOL)isFullScreen
 {
 	return [mCinderView isFullScreen];
-}
-
-- (void)setFullScreen:(BOOL)fullScreen
-{
-	const cinder::app::FullScreenOptions options;
-	[self setFullScreen:fullScreen options:&options];
 }
 
 - (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;

@@ -145,8 +145,8 @@ class App {
 
 		//! Returns whether the default window is fullscreen
 		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
-		//! Sets whether the default window is fullscreen
-		void	setFullScreen( bool fullScreen = true ) { mDefaultWindowFormat.setFullScreen( fullScreen ); }
+		//! Sets whether the default window is fullscreen at startup with FullScreenOptions \a options. Kiosk Mode is enabled by default.
+		void	setFullScreen( bool fullScreen = true, const FullScreenOptions &options = FullScreenOptions() ) { mDefaultWindowFormat.setFullScreen( fullScreen, options ); }
 
 		//! Returns whether the default window is resizable
 		bool	isResizable() const { return mDefaultWindowFormat.isResizable(); }
