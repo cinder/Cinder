@@ -59,7 +59,7 @@ void BasicApp::prepareSettings( Settings *settings )
 	settings->setFullScreen( false );
 	settings->setWindowSize( 800, 500 );
 //	settings->prepareWindow( Window::Format().resizable( false ).renderer( RendererGl::create() ).fullScreen( true ) );
-	settings->prepareWindow( Window::Format().fullScreenButton() );
+	settings->prepareWindow( Window::Format().fullScreen().fullScreenButton() );
 }
 
 void BasicApp::setup()

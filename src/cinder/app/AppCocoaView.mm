@@ -39,7 +39,6 @@
 - (WindowImplCocoaView*)init:(CinderView*)cinderView format:(cinder::app::Window::Format)winFormat appImpl:(AppImplCocoaView*)appImpl;
 - (void)dealloc;
 - (BOOL)isFullScreen;
-- (void)setFullScreen:(BOOL)fullScreen;
 - (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 - (cinder::Vec2i)getSize;
 - (void)setSize:(cinder::Vec2i)size;
@@ -205,12 +204,6 @@
 - (BOOL)isFullScreen
 {
 	return [mCinderView isFullScreen];
-}
-
-- (void)setFullScreen:(BOOL)fullScreen
-{
-	const cinder::app::FullScreenOptions options;
-	[self setFullScreen:fullScreen options:&options];
 }
 
 - (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options
