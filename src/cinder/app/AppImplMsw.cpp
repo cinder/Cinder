@@ -334,7 +334,7 @@ WindowImplMsw::WindowImplMsw( const Window::Format &format, RendererRef sharedRe
 		mWindowOffset = mWindowedPos = ( displaySize - mWindowedSize ) / 2;
 	}
 
-	createWindow( Vec2i( mWindowWidth, mWindowHeight ), format.getTitle(), sharedRenderer );
+	createWindow( Vec2i( mWindowWidth, mWindowHeight ), format.getTitle(), mDisplay, sharedRenderer );
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 	
@@ -359,10 +359,10 @@ WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef share
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 }
 
-void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &title, RendererRef sharedRenderer )
+void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &title, const DisplayRef display, RendererRef sharedRenderer )
 {
 	RECT windowRect;
-	Area displayArea = mDisplay->getBounds();
+	Area displayArea = display->getBounds();
 
 	if( mFullScreen ) {
 		windowRect.left = displayArea.getX1();
@@ -469,13 +469,13 @@ void WindowImplMsw::registerWindowClass()
 	sRegistered = true;
 }
 
-void WindowImplMsw::setFullScreen( bool fullScreen )
+void WindowImplMsw::setFullScreen( bool fullScreen, const app::FullScreenOptions &options )
 {
 	if( mFullScreen != fullScreen )
-		toggleFullScreen();
+		toggleFullScreen( options );
 }
 
-void WindowImplMsw::toggleFullScreen()
+void WindowImplMsw::toggleFullScreen( const app::FullScreenOptions &options )
 {
 	Vec2i newWindowSize;
 	bool prevFullScreen = mFullScreen;
@@ -494,8 +494,11 @@ void WindowImplMsw::toggleFullScreen()
 	}
 
 	getRenderer()->prepareToggleFullScreen();
+	DisplayRef display = options.getDisplay();
+	if( ! display ) // use the default, which is this Window's display
+		display = mDisplay;
 	// we don't need to share a renderer because we're not really creating a window per se
-	createWindow( newWindowSize, getTitle(), RendererRef() );
+	createWindow( newWindowSize, getTitle(), display, RendererRef() );
 	getRenderer()->finishToggleFullScreen();
 
 	::ReleaseDC( oldWnd, oldDC );

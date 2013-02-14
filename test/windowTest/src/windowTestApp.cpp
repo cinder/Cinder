@@ -64,8 +64,8 @@ void BasicApp::prepareSettings( Settings *settings )
 
 void BasicApp::setup()
 {
-	for( auto& display : Display::getDisplays() )
-		console() << "Resolution: " << display->getSize() << std::endl;
+//	for( auto& display : Display::getDisplays() )
+//		console() << "Resolution: " << display->getSize() << std::endl;
 
 	getWindow()->setUserData( new WindowData );
 

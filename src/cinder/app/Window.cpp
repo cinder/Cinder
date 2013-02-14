@@ -42,14 +42,14 @@ bool Window::isFullScreen() const
 #endif
 }
 
-void Window::setFullScreen( bool fullScreen, const FullScreenOptions& options )
+void Window::setFullScreen( bool fullScreen, const FullScreenOptions &options )
 {
 	testValid();
 	
 #if defined( CINDER_COCOA )
 	[mImpl setFullScreen:fullScreen options:&options];
 #elif defined( CINDER_MSW )
-	mImpl->setFullScreen( fullScreen );
+	mImpl->setFullScreen( fullScreen, options );
 #endif
 }
 
