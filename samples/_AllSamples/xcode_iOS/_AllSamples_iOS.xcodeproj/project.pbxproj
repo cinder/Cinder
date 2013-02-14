@@ -13,13 +13,14 @@
 			buildPhases = (
 			);
 			dependencies = (
+				009709F116CC6AC9005DC014 /* PBXTargetDependency */,
+				009709F316CC6AC9005DC014 /* PBXTargetDependency */,
 				0095452B1680EA00008ECA02 /* PBXTargetDependency */,
 				009F6EAE14C0FEF30036C292 /* PBXTargetDependency */,
 				0087D1DC12CD7F1F002CD69F /* PBXTargetDependency */,
 				0087D32F12CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33112CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33512CD82C2002CD69F /* PBXTargetDependency */,
-				0087D33712CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33912CD82C2002CD69F /* PBXTargetDependency */,
 			);
 			name = AllSamples_iOS;
@@ -48,13 +49,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = AudioInputSample;
-		};
-		0087D24312CD807D002CD69F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
-			remoteInfo = captureTest;
 		};
 		0087D25A12CD80A7002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -98,13 +92,6 @@
 			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = ClipboardBasic_iOS;
 		};
-		0087D33612CD82C2002CD69F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
-			remoteInfo = captureTest;
-		};
 		0087D33812CD82C2002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
@@ -126,6 +113,34 @@
 			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
 			remoteInfo = MotionBasic;
 		};
+		009709E816CC6AB4005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = CaptureBasic;
+		};
+		009709EE16CC6AC1005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = LocationManager;
+		};
+		009709F016CC6AC9005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = CaptureBasic;
+		};
+		009709F216CC6AC9005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = LocationManager;
+		};
 		009F6EAB14C0FEEC0036C292 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */;
@@ -145,11 +160,12 @@
 /* Begin PBXFileReference section */
 		0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MultiTouch_iOS.xcodeproj; path = ../../MultiTouchBasic/xcode/MultiTouch_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioInputSample_iOS.xcodeproj; path = ../../AudioInputSample/xcode/AudioInputSample_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = captureTest_iOS.xcodeproj; path = ../../captureTest/xcode/captureTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ClipboardBasic_iOS.xcodeproj; path = ../../ClipboardBasic/xcode_iOS/ClipboardBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic_iOS.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest_iOS.xcodeproj; path = ../../TextTest/xcode_iOS/TextTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MotionBasic.xcodeproj; path = ../../MotionBasic/xcode_ios/MotionBasic.xcodeproj; sourceTree = "<group>"; };
+		009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureBasic.xcodeproj; path = ../../CaptureBasic/xcode_ios/CaptureBasic.xcodeproj; sourceTree = "<group>"; };
+		009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LocationManager.xcodeproj; path = ../../LocationManager/xcode_ios/LocationManager.xcodeproj; sourceTree = "<group>"; };
 		009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DragTween.xcodeproj; path = ../../_timeline/DragTween/xcode_iOS/DragTween.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -157,12 +173,13 @@
 		0087D08412CD7DC5002CD69F = {
 			isa = PBXGroup;
 			children = (
+				009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */,
+				009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */,
 				009F6EA214C0FED70036C292 /* _timeline */,
 				009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */,
 				0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */,
 				0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */,
 				0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */,
-				0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */,
 				0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */,
 				0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */,
 			);
@@ -180,14 +197,6 @@
 			isa = PBXGroup;
 			children = (
 				0087D1DA12CD7F1A002CD69F /* AudioInputSample.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0087D24012CD807D002CD69F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0087D24412CD807D002CD69F /* captureTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -220,6 +229,22 @@
 			isa = PBXGroup;
 			children = (
 				009545291680E9E5008ECA02 /* MotionBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009709E516CC6AB4005DC014 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009709E916CC6AB4005DC014 /* CaptureBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009709EB16CC6AC1005DC014 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009709EF16CC6AC1005DC014 /* LocationManager.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -263,8 +288,8 @@
 					ProjectRef = 0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */;
 				},
 				{
-					ProductGroup = 0087D24012CD807D002CD69F /* Products */;
-					ProjectRef = 0087D23F12CD807D002CD69F /* captureTest_iOS.xcodeproj */;
+					ProductGroup = 009709E516CC6AB4005DC014 /* Products */;
+					ProjectRef = 009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 0087D25712CD80A7002CD69F /* Products */;
@@ -277,6 +302,10 @@
 				{
 					ProductGroup = 0087D2D412CD81D3002CD69F /* Products */;
 					ProjectRef = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
+				},
+				{
+					ProductGroup = 009709EB16CC6AC1005DC014 /* Products */;
+					ProjectRef = 009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */;
 				},
 				{
 					ProductGroup = 009545211680E9E4008ECA02 /* Products */;
@@ -313,13 +342,6 @@
 			remoteRef = 0087D1D912CD7F1A002CD69F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0087D24412CD807D002CD69F /* captureTest.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = captureTest.app;
-			remoteRef = 0087D24312CD807D002CD69F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		0087D25B12CD80A7002CD69F /* ClipboardBasic_iOS.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -346,6 +368,20 @@
 			fileType = wrapper.application;
 			path = MotionBasic.app;
 			remoteRef = 009545281680E9E5008ECA02 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009709E916CC6AB4005DC014 /* CaptureBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CaptureBasic.app;
+			remoteRef = 009709E816CC6AB4005DC014 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009709EF16CC6AC1005DC014 /* LocationManager.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = LocationManager.app;
+			remoteRef = 009709EE16CC6AC1005DC014 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		009F6EAC14C0FEEC0036C292 /* DragTween.app */ = {
@@ -378,11 +414,6 @@
 			name = ClipboardBasic_iOS;
 			targetProxy = 0087D33412CD82C2002CD69F /* PBXContainerItemProxy */;
 		};
-		0087D33712CD82C2002CD69F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = captureTest;
-			targetProxy = 0087D33612CD82C2002CD69F /* PBXContainerItemProxy */;
-		};
 		0087D33912CD82C2002CD69F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FBOBasic_iOS;
@@ -392,6 +423,16 @@
 			isa = PBXTargetDependency;
 			name = MotionBasic;
 			targetProxy = 0095452A1680EA00008ECA02 /* PBXContainerItemProxy */;
+		};
+		009709F116CC6AC9005DC014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CaptureBasic;
+			targetProxy = 009709F016CC6AC9005DC014 /* PBXContainerItemProxy */;
+		};
+		009709F316CC6AC9005DC014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LocationManager;
+			targetProxy = 009709F216CC6AC9005DC014 /* PBXContainerItemProxy */;
 		};
 		009F6EAE14C0FEF30036C292 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
