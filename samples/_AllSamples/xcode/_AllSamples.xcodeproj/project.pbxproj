@@ -13,6 +13,8 @@
 			buildPhases = (
 			);
 			dependencies = (
+				009709D516CC676F005DC014 /* PBXTargetDependency */,
+				009709D716CC676F005DC014 /* PBXTargetDependency */,
 				00886BB4164DD247005B1855 /* PBXTargetDependency */,
 				00886BA2164DD1BE005B1855 /* PBXTargetDependency */,
 				00886B86164DD1AD005B1855 /* PBXTargetDependency */,
@@ -59,7 +61,6 @@
 				0005CA9310068268004D82BC /* PBXTargetDependency */,
 				0005CA9710068268004D82BC /* PBXTargetDependency */,
 				0005CA9B10068268004D82BC /* PBXTargetDependency */,
-				0005CA9D10068268004D82BC /* PBXTargetDependency */,
 				0005CA9F10068268004D82BC /* PBXTargetDependency */,
 				0005CAA310068268004D82BC /* PBXTargetDependency */,
 				0005CAA710068268004D82BC /* PBXTargetDependency */,
@@ -150,13 +151,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = bspline;
-		};
-		0005C99F100681C5004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C998100681C5004D82BC /* captureTest.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = captureTest;
 		};
 		0005C9A9100681CB004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -395,13 +389,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = Earthquake;
-		};
-		0005CA9C10068268004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C998100681C5004D82BC /* captureTest.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = captureTest;
 		};
 		0005CA9E10068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -780,6 +767,34 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = Wisteria;
+		};
+		009709CC16CC6736005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = CaptureBasic;
+		};
+		009709D216CC6742005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709CE16CC6741005DC014 /* LocationManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = LocationManager;
+		};
+		009709D416CC676F005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709CE16CC6741005DC014 /* LocationManager.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = LocationManager;
+		};
+		009709D616CC676F005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = CaptureBasic;
 		};
 		009C40EA1120680A0053283A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1160,7 +1175,6 @@
 		0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ArcballDemo.xcodeproj; path = ../../ArcballDemo/xcode/ArcballDemo.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C985100681AF004D82BC /* bezierPath.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bezierPath.xcodeproj; path = ../../bezierPath/xcode/bezierPath.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C98E100681B5004D82BC /* bspline.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bspline.xcodeproj; path = ../../bspline/xcode/bspline.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005C998100681C5004D82BC /* captureTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = captureTest.xcodeproj; path = ../../captureTest/xcode/captureTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CubeMapping.xcodeproj; path = ../../cubeMapping/xcode/CubeMapping.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Earthquake.xcodeproj; path = ../../Earthquake/xcode/Earthquake.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9B5100681D9004D82BC /* eventTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = eventTest.xcodeproj; path = ../../eventTest/xcode/eventTest.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1204,6 +1218,8 @@
 		00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Tubular.xcodeproj; path = ../../Tubular/xcode/Tubular.xcodeproj; sourceTree = "<group>"; };
 		00886B87164DD1B9005B1855 /* Triangulation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Triangulation.xcodeproj; path = ../../Triangulation/xcode/Triangulation.xcodeproj; sourceTree = "<group>"; };
 		00886BA9164DD242005B1855 /* Wisteria.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Wisteria.xcodeproj; path = ../../Wisteria/xcode/Wisteria.xcodeproj; sourceTree = "<group>"; };
+		009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureBasic.xcodeproj; path = ../../CaptureBasic/xcode/CaptureBasic.xcodeproj; sourceTree = "<group>"; };
+		009709CE16CC6741005DC014 /* LocationManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LocationManager.xcodeproj; path = ../../LocationManager/xcode/LocationManager.xcodeproj; sourceTree = "<group>"; };
 		009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SurfaceBasic.xcodeproj; path = ../../SurfaceBasic/xcode/SurfaceBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOMultipleTargets.xcodeproj; path = ../../FBOMultipleTargets/xcode/FBOMultipleTargets.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageFileBasic.xcodeproj; path = ../../ImageFileBasic/xcode/ImageFileBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1236,6 +1252,8 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				009709CE16CC6741005DC014 /* LocationManager.xcodeproj */,
+				009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */,
 				00886BA9164DD242005B1855 /* Wisteria.xcodeproj */,
 				00886B87164DD1B9005B1855 /* Triangulation.xcodeproj */,
 				00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */,
@@ -1299,7 +1317,6 @@
 				0005C95510068030004D82BC /* basicApp.xcodeproj */,
 				0005C985100681AF004D82BC /* bezierPath.xcodeproj */,
 				0005C98E100681B5004D82BC /* bspline.xcodeproj */,
-				0005C998100681C5004D82BC /* captureTest.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1340,14 +1357,6 @@
 			isa = PBXGroup;
 			children = (
 				0005C997100681B5004D82BC /* BSpline.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0005C999100681C5004D82BC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0005C9A0100681C5004D82BC /* captureTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1707,6 +1716,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		009709C916CC6735005DC014 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009709CD16CC6736005DC014 /* CaptureBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009709CF16CC6741005DC014 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009709D316CC6742005DC014 /* LocationManager.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		009C40E71120680A0053283A /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2017,8 +2042,8 @@
 					ProjectRef = 00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */;
 				},
 				{
-					ProductGroup = 0005C999100681C5004D82BC /* Products */;
-					ProjectRef = 0005C998100681C5004D82BC /* captureTest.xcodeproj */;
+					ProductGroup = 009709C916CC6735005DC014 /* Products */;
+					ProjectRef = 009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C9A2100681CB004D82BC /* Products */;
@@ -2119,6 +2144,10 @@
 				{
 					ProductGroup = 00F0B3361039F6F4003AB416 /* Products */;
 					ProjectRef = 00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 009709CF16CC6741005DC014 /* Products */;
+					ProjectRef = 009709CE16CC6741005DC014 /* LocationManager.xcodeproj */;
 				},
 				{
 					ProductGroup = 0039FB39115AD33F00BA0BAD /* Products */;
@@ -2301,13 +2330,6 @@
 			fileType = wrapper.application;
 			path = BSpline.app;
 			remoteRef = 0005C996100681B5004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0005C9A0100681C5004D82BC /* captureTest.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = captureTest.app;
-			remoteRef = 0005C99F100681C5004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0005C9AA100681CB004D82BC /* CubeMapping.app */ = {
@@ -2611,6 +2633,20 @@
 			remoteRef = 00886BB1164DD242005B1855 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		009709CD16CC6736005DC014 /* CaptureBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CaptureBasic.app;
+			remoteRef = 009709CC16CC6736005DC014 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009709D316CC6742005DC014 /* LocationManager.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = LocationManager.app;
+			remoteRef = 009709D216CC6742005DC014 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		009C40EB1120680A0053283A /* SurfaceBasic.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2886,11 +2922,6 @@
 			name = Earthquake;
 			targetProxy = 0005CA9A10068268004D82BC /* PBXContainerItemProxy */;
 		};
-		0005CA9D10068268004D82BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = captureTest;
-			targetProxy = 0005CA9C10068268004D82BC /* PBXContainerItemProxy */;
-		};
 		0005CA9F10068268004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TextTest;
@@ -3035,6 +3066,16 @@
 			isa = PBXTargetDependency;
 			name = Wisteria;
 			targetProxy = 00886BB3164DD247005B1855 /* PBXContainerItemProxy */;
+		};
+		009709D516CC676F005DC014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LocationManager;
+			targetProxy = 009709D416CC676F005DC014 /* PBXContainerItemProxy */;
+		};
+		009709D716CC676F005DC014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CaptureBasic;
+			targetProxy = 009709D616CC676F005DC014 /* PBXContainerItemProxy */;
 		};
 		009C40ED112068140053283A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
