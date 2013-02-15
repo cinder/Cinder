@@ -29,9 +29,9 @@
 #import <OpenGL/OpenGL.h>
 
 // This seems to be missing for unknown reasons
-@interface NSApplication(MissingFunction)
-	- (void)setAppleMenu:(NSMenu *)menu;
-@end 
+@interface NSApplication (CinderAdditions)
+- (void)setAppleMenu:(NSMenu *)menu;
+@end
 
 // CinderWindow - necessary to enable a borderless window to receive keyboard events
 @interface CinderWindow : NSWindow {
@@ -49,23 +49,26 @@
 @synthesize windows = mWindows;
 
 - (id)init:(cinder::app::AppBasic*)aApp
-{	
+{
 	self = [super init];
-	
-	NSMenu *mainMenu = [[NSMenu alloc] init];
-	[NSApp setMainMenu:mainMenu];
-	
-	self.windows = [NSMutableArray array];
-	
-	const std::string& applicationName = aApp->getSettings().getTitle();
-	[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
-	
-	[NSApp setDelegate:self];
-	
-	mApp = aApp;
-	mApp->privateSetImpl__( self );
-	mNeedsUpdate = YES;
-	
+	if ( self )
+	{
+		NSMenu *mainMenu = [[NSMenu alloc] init];
+		[NSApp setMainMenu:mainMenu];
+		[mainMenu release];
+
+		self.windows = [NSMutableArray array];
+
+		const std::string& applicationName = aApp->getSettings().getTitle();
+		[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
+
+		[NSApp setDelegate:self];
+
+		mApp = aApp;
+		mApp->privateSetImpl__( self );
+		mNeedsUpdate = YES;
+	}
+
     return self;
 }
 
