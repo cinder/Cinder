@@ -56,16 +56,16 @@ void BasicApp::prepareSettings( Settings *settings )
 {
 	settings->enablePowerManagement( false );
 	settings->enableQuitOnLastWindowClose( false );
-	settings->setFullScreen( false );
+//	settings->setFullScreen( false );
 	settings->setWindowSize( 800, 500 );
 //	settings->prepareWindow( Window::Format().resizable( false ).renderer( RendererGl::create() ).fullScreen( true ) );
-	settings->prepareWindow( Window::Format().fullScreen().fullScreenButton() );
+//	settings->prepareWindow( Window::Format().fullScreen().fullScreenButton() );
 }
 
 void BasicApp::setup()
 {
-//	for( auto& display : Display::getDisplays() )
-//		console() << "Resolution: " << display->getSize() << std::endl;
+	for( auto& display : Display::getDisplays() )
+		console() << "Resolution: " << display->getBounds() << std::endl;
 
 	getWindow()->setUserData( new WindowData );
 
@@ -197,6 +197,15 @@ void BasicApp::keyDown( KeyEvent event )
 	}
 	else if( event.getChar() == 't' ) {
 		getWindow()->setAlwaysOnTop( ! getWindow()->isAlwaysOnTop() );
+	}
+	else if( event.getChar() == 's' ) {
+		getWindow()->setBorderless();
+		getWindow()->spanAllDisplays();
+		console() << "Spanning Area: " << Display::getSpanningArea() << std::endl;
+		console() << "Bounds: " << getWindow()->getBounds() << std::endl;
+		//getWindow()->setPos( Vec2i( -1680 + 1, 0 + 1 ) );
+//		getWindow()->setSize( 1440, 900 );
+//		getWindow()->setPos( 0, 0 );
 	}
 }
 

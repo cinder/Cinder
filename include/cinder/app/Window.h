@@ -261,14 +261,16 @@ class Window : public std::enable_shared_from_this<Window> {
 	void	setSize( int32_t width, int32_t height ) { setSize( Vec2i( width, height ) ); }
 	//! Sets the size of the Window to \a size measured in points
 	void	setSize( const Vec2i &size );
-	//! Gets the position of the Window's upper-left corner measured in points
+	//! Gets the position of the Window's upper-left corner measured in points, relative to the primary display's upper-left corner.
 	Vec2i	getPos() const;
-	//! Sets the position of the Window's upper-left corner to (\a x, \a y) measured in points.
+	//! Sets the position of the Window's upper-left corner relative to the primary display's upper-left corner to (\a x, \a y) measured in points.
 	void	setPos( int32_t x, int32_t y ) const { setPos( Vec2i( x, y ) ); }
-	//! Sets the position of the Window's upper-left corner to \a pos measured in points.
+	//! Sets the position of the Window's upper-left corner relative to the primary display's upper-left to \a pos measured in points.
 	void	setPos( const Vec2i &pos ) const;
 	//! Returns the center of the Window in its own coordinate system measured in points
 	Vec2f	getCenter() const { return Vec2f( getWidth() / 2.0f, getHeight() / 2.0f ); }
+	//! Sets the position and size of the Window so that it spans all connected displays
+	void	spanAllDisplays();
 	
 	//! Returns the multiplier (typically 2 on high-density (Retina) displays, 1 otherwise) mapping points to pixels
 	float	getContentScale() const;
