@@ -55,15 +55,19 @@ typedef std::shared_ptr<class Display> 	DisplayRef;
 class Display {
   public:
 	~Display();
-	int		getWidth() const { return mArea.getWidth(); }
-	int		getHeight() const { return mArea.getHeight(); }
-	//! Returns the size of the Display in pixels
+
+	//! Returns the width of the screen measured in points
+	int				getWidth() const { return mArea.getWidth(); }
+	//! Returns the height of the screen measured in points
+	int				getHeight() const { return mArea.getHeight(); }
+	//! Returns the size of the Display measured in points
 	Vec2i			getSize() const { return Vec2i( getWidth(), getHeight() ); }
 	//! Returns the Display aspect ratio, which is its width / height
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
-	//! Returns the bounding Area of the Surface in pixels: [0,0]-(width,height)
+	//! Returns the bounding Area of the Display in points, measured relative to primary display's upper-left corner.
 	Area			getBounds() const { return mArea; }
 
+	//! Returns the bits per pixel for the display. Typically 24 bits.
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
 	//! Returns the factor which multiplies points to pixels. 2.0f for high-density (Retina) displays; 1.0f for others
 	float	getContentScale() const;
@@ -82,10 +86,14 @@ class Display {
 	void				setResolution( const Vec2i &resolution );
 #endif
 
+	//! Returns the system's primary display
 	static DisplayRef						getMainDisplay();
+	//! Returns a vector of all displays connected to the system
 	static const std::vector<DisplayRef>&	getDisplays();
-	//! Returns the Display which contains a given point. Returns a NULL DisplayRef on failure
+	//! Returns the Display which contains a given point, measured relative to the upper-left corner of the primary display. Returns a NULL DisplayRef on failure
 	static DisplayRef						getDisplayForPoint( const Vec2i &pt );
+	//! Returns the Area which spans all Displays
+	static Area								getSpanningArea();
 	
 #if defined( CINDER_MAC )
 	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );

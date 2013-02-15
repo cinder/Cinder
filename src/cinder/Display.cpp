@@ -62,6 +62,16 @@ DisplayRef Display::getDisplayForPoint( const Vec2i &pt )
 	return DisplayRef(); // failure
 }
 
+Area Display::getSpanningArea()
+{
+	Area result = (*Display::getDisplays().begin())->getBounds();
+	for( vector<DisplayRef>::const_iterator displayIt = (Display::getDisplays().begin())++; displayIt != Display::getDisplays().end(); ++displayIt ) {
+		result.include( (*displayIt)->getBounds() );
+	}
+	
+	return result;
+}
+
 #if defined( CINDER_MAC )
 DisplayRef Display::findFromCgDirectDisplayId( CGDirectDisplayID displayID )
 {
@@ -97,6 +107,7 @@ void Display::enumerateDisplays()
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	NSArray *screens = [NSScreen screens];
+	Area primaryScreenArea;
 	int screenCount = [screens count];
 	for( int i = 0; i < screenCount; ++i ) {
 		::NSScreen *screen = [screens objectAtIndex:i];
@@ -109,6 +120,16 @@ void Display::enumerateDisplays()
 		newDisplay->mScreen = screen;
 		newDisplay->mBitsPerPixel = NSBitsPerPixelFromDepth( [screen depth] );
 		newDisplay->mContentScale = [screen backingScaleFactor];
+
+		// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
+		if( i == 0 ) {
+			primaryScreenArea = newDisplay->mArea;
+		}
+		else {
+			int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
+			newDisplay->mArea.offset( Vec2i( 0, heightDelta ) );
+		}
+
 		
 		sDisplays.push_back( newDisplay );
 	}
