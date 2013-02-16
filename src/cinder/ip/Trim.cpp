@@ -82,8 +82,9 @@ Area findNonTransparentArea( const SurfaceT<T> &surface, const Area &unclippedBo
 			break;
 		}
 	}
-		
-	return Area( leftColumn, topLine, rightColumn, bottomLine );
+	
+	// we add one to right and bottom because Area represents an inclusive range on top/left and exclusive range on bottom/right
+	return Area( leftColumn, topLine, rightColumn + 1, bottomLine + 1 );
 }
 
 #define TRIM_PROTOTYPES(r,data,T)\
