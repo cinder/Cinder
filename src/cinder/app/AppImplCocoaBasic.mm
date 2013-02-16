@@ -688,7 +688,7 @@
 		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
 	else
 		styleMask = NSTitledWindowMask;
-	winImpl->mWin = [[NSWindow alloc] initWithContentRect:winRect
+	winImpl->mWin = [[CinderWindow alloc] initWithContentRect:winRect
 									  styleMask:styleMask
 										backing:NSBackingStoreBuffered
 										  defer:NO
