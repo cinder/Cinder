@@ -36,6 +36,7 @@
 namespace cinder { namespace app {
 
 class Window;
+struct FullScreenOptions;
 typedef std::shared_ptr<Window>		WindowRef;
 
 } } // namespace cinder::app
@@ -49,7 +50,7 @@ typedef std::shared_ptr<Window>		WindowRef;
 	@protocol WindowImplCocoa
 		@required
 		- (BOOL)isFullScreen;
-		- (void)setFullScreen:(BOOL)fullScreen;
+		- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 		- (cinder::Vec2i)getSize;
 		- (void)setSize:(cinder::Vec2i)size;
 		- (cinder::Vec2i)getPos;
@@ -97,17 +98,47 @@ class ExcInvalidWindow : public cinder::Exception {
 	virtual const char * what() const throw() { return "Invalid Window"; }
 };
 
+//! Options passed when entering fullscreen.
+struct FullScreenOptions {
+	FullScreenOptions() : mKioskMode( false ), mSecondaryDisplayBlanking( true ), mExclusive( false )
+	{}
+
+	//! (OS X only) Sets the fullscreen mode to 'kiosk', which means don't use the 10.7 way of animating to fullscreen. Default is \c false.
+	FullScreenOptions&	kioskMode( bool enable = true )					{ mKioskMode = enable; return *this; }
+	//! Sets whether secondary displays should be blanked (made black). Default is \c true.
+	FullScreenOptions&	secondaryDisplayBlanking( bool enable = true )	{ mSecondaryDisplayBlanking = enable; return *this; }
+	//! (OS X only) Sets whether the \t Window related to these options is the only accessible window. Default is \c false.
+	FullScreenOptions&	exclusive( bool enable = true )					{ mExclusive = enable; return *this; }
+	//! Sets the display which will be used in fullscreen mode. Defaults to the \t Window's current \t Display. Ignored on Mac OS X outside of kiosk mode.
+	FullScreenOptions&	display( DisplayRef display )					{ mDisplay = display; return *this; }
+
+	//! Returns the display on which the fullscreen should occur. A NULL value implies the default, which is the \t Window's current \t Display.
+	DisplayRef			getDisplay()									const { return mDisplay; }
+	//! Returns whether kiosk mode is enabled.
+	bool				isKioskModeEnabled()							const { return mKioskMode; }
+	//! Returns whether blanking of secondary displays in enabled. Default is \c true.
+	bool				isSecondaryDisplayBlankingEnabled()				const { return mSecondaryDisplayBlanking; }
+	//! Returns whether the \t Window related to these options is the only accessible window.
+	bool				isExclusive()									const { return mExclusive; }
+
+  private:
+	DisplayRef	mDisplay;
+	bool		mKioskMode, mSecondaryDisplayBlanking, mExclusive;
+};
+
 class Window : public std::enable_shared_from_this<Window> {
   public:
 	// Parameters for a Window, which are used to create the physical window by the App
 	struct Format {
 		Format( RendererRef renderer = RendererRef(), DisplayRef display = Display::getMainDisplay(), bool fullScreen = false, Vec2i size = Vec2i( 640, 480 ), Vec2i pos = Vec2i::zero() )
 			: mRenderer( renderer ), mFullScreen( fullScreen ), mDisplay( display ), mSize( size ), mPos( pos ), mPosSpecified( false ),
-			mResizable( true ), mBorderless( false ), mAlwaysOnTop( false )
+			mResizable( true ), mBorderless( false ), mAlwaysOnTop( false ), mFullScreenButtonEnabled( false )
 #if defined( CINDER_COCOA_TOUCH )
 			, mRootViewController( NULL )
 #endif
-		{}
+		{
+			mFullScreenOptions.kioskMode( true );
+		}
 
 		//! Returns the Display the Window will be created on. Defaults to the primary display.
 		DisplayRef	getDisplay() const { return mDisplay; }
@@ -117,8 +148,10 @@ class Window : public std::enable_shared_from_this<Window> {
 		Format&		display( DisplayRef displayRef ) { mDisplay = displayRef; return *this; }
 		//! Returns whether the Window will be created full-screen. Default is \c false.
 		bool		isFullScreen() const { return mFullScreen; }
-		//! Sets whether the Window will be created full-screen. Default is \c false.
-		void		setFullScreen( bool fullScreen = true ) { mFullScreen = fullScreen; }
+		//! Returns the \a options associated with fullscreen at startup.
+		const FullScreenOptions& getFullScreenOptions() const { return mFullScreenOptions; }
+		//! Sets whether the Window will be created full-screen with FullScreenOptions \a options. Default is \c false. If \t true, FullScreenOptions mode defaults to kiosk.
+		void		setFullScreen( bool fullScreen = true, const FullScreenOptions &options = FullScreenOptions() ) { mFullScreen = fullScreen; mFullScreenOptions = options; }
 		//! Sets whether the Window will be created full-screen. Default is \c false.
 		Format&		fullScreen( bool fs = true ) { mFullScreen = fs; return *this; }
 		//! Returns the size in points at which the Window will be created. Default is 640 x 480.
@@ -181,6 +214,12 @@ class Window : public std::enable_shared_from_this<Window> {
 		void		setAlwaysOnTop( bool alwaysOnTop = true ) { mAlwaysOnTop = alwaysOnTop; }
 		//! Sets whether the Window created will always be above all other windows, including other applications' windows. Defaults to \c false.
 		Format&		alwaysOnTop( bool top = true ) { mAlwaysOnTop = top; return *this; }
+		//! On Mac OS X enables the native full screen toggle button. Defaults to \c false.
+		void		enableFullScreenButton( bool enabled = true ) { mFullScreenButtonEnabled = enabled; }
+		//! On Mac OS X enables the native full screen toggle button. Defaults to \c false.
+		Format&		fullScreenButton( bool enabled = true ) { mFullScreenButtonEnabled = enabled; return *this; }
+		//! On Mac OS X returns whether the native full screen toggle button is displayed. Defaults to \c false.
+		bool		isFullScreenButtonEnabled() const { return mFullScreenButtonEnabled; }
 
 		//! Returns the title of the Window as a UTF-8 string.
 		std::string getTitle() const { return mTitle; }
@@ -188,14 +227,15 @@ class Window : public std::enable_shared_from_this<Window> {
 		void		setTitle( const std::string &title ) { mTitle = title; }
 		//! Sets the title of the Window as a UTF-8 string.
 		Format&		title( const std::string &t ) { mTitle = t; return *this; }
-		
+
 	  private:
 		RendererRef				mRenderer;
-		bool					mFullScreen;		
+		bool					mFullScreen;
+		FullScreenOptions		mFullScreenOptions;
 		DisplayRef				mDisplay;
 		Vec2i					mSize, mPos;
 		bool					mPosSpecified;
-		bool					mResizable, mBorderless, mAlwaysOnTop;
+		bool					mResizable, mBorderless, mAlwaysOnTop, mFullScreenButtonEnabled;
 		std::string				mTitle;
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -206,7 +246,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	//! Returns whether the Window is full-screen or not
 	bool	isFullScreen() const;
 	//! Sets the Window to be full-screen or not
-	void	setFullScreen( bool fullScreen = true );
+	void	setFullScreen( bool fullScreen = true, const FullScreenOptions& options = FullScreenOptions() );
 	//! Returns the width of the Window in points
 	int32_t	getWidth() const { return getSize().x; }
 	//! Returns the height of the Window in points
@@ -221,14 +261,16 @@ class Window : public std::enable_shared_from_this<Window> {
 	void	setSize( int32_t width, int32_t height ) { setSize( Vec2i( width, height ) ); }
 	//! Sets the size of the Window to \a size measured in points
 	void	setSize( const Vec2i &size );
-	//! Gets the position of the Window's upper-left corner measured in points
+	//! Gets the position of the Window's upper-left corner measured in points, relative to the primary display's upper-left corner.
 	Vec2i	getPos() const;
-	//! Sets the position of the Window's upper-left corner to (\a x, \a y) measured in points.
+	//! Sets the position of the Window's upper-left corner relative to the primary display's upper-left corner to (\a x, \a y) measured in points.
 	void	setPos( int32_t x, int32_t y ) const { setPos( Vec2i( x, y ) ); }
-	//! Sets the position of the Window's upper-left corner to \a pos measured in points.
+	//! Sets the position of the Window's upper-left corner relative to the primary display's upper-left to \a pos measured in points.
 	void	setPos( const Vec2i &pos ) const;
 	//! Returns the center of the Window in its own coordinate system measured in points
 	Vec2f	getCenter() const { return Vec2f( getWidth() / 2.0f, getHeight() / 2.0f ); }
+	//! Sets the position and size of the Window so that it spans all connected displays
+	void	spanAllDisplays();
 	
 	//! Returns the multiplier (typically 2 on high-density (Retina) displays, 1 otherwise) mapping points to pixels
 	float	getContentScale() const;

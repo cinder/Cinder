@@ -145,8 +145,8 @@ class App {
 
 		//! Returns whether the default window is fullscreen
 		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
-		//! Sets whether the default window is fullscreen
-		void	setFullScreen( bool fullScreen = true ) { mDefaultWindowFormat.setFullScreen( fullScreen ); }
+		//! Sets whether the default window is fullscreen at startup with FullScreenOptions \a options. Kiosk Mode is enabled by default.
+		void	setFullScreen( bool fullScreen = true, const FullScreenOptions &options = FullScreenOptions() ) { mDefaultWindowFormat.setFullScreen( fullScreen, options ); }
 
 		//! Returns whether the default window is resizable
 		bool	isResizable() const { return mDefaultWindowFormat.isResizable(); }
@@ -339,7 +339,7 @@ class App {
 	//! Returns whether the App is in full-screen mode or not.
 	bool				isFullScreen() const { return getWindow()->isFullScreen(); }
 	//! Sets whether the active App is in full-screen mode based on \a fullScreen
-	void				setFullScreen( bool aFullScreen ) { getWindow()->setFullScreen( aFullScreen ); }
+	void				setFullScreen( bool aFullScreen, const FullScreenOptions &options = FullScreenOptions() ) { getWindow()->setFullScreen( aFullScreen, options ); }
 
 	//! Returns the number of seconds which have elapsed since application launch
 	double				getElapsedSeconds() const { return mTimer.getSeconds(); }

@@ -155,6 +155,29 @@ bool AreaT<T>::intersects( const AreaT<T> &area ) const
 }
 
 template<typename T>
+void AreaT<T>::include( const Vec2<T> &point )
+{
+	if( x1 > point.x ) x1 = point.x;
+	if( x2 < point.x ) x2 = point.x;
+	if( y1 > point.y ) y1 = point.y;
+	if( y2 < point.y ) y2 = point.y;
+}
+
+template<typename T>
+void AreaT<T>::include( const std::vector<Vec2<T> > &points )
+{
+	for( size_t s = 0; s < points.size(); ++s )
+		include( points[s] );
+}
+
+template<typename T>
+void AreaT<T>::include( const AreaT<T> &area )
+{
+	include( Vec2<T>( area.x1, area.y1 ) );
+	include( Vec2<T>( area.x2, area.y2 ) );
+}
+
+template<typename T>
  template<typename Y>
 float AreaT<T>::distance( const Vec2<Y> &pt ) const
 {

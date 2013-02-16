@@ -260,9 +260,7 @@ AppBasic::Settings::Settings()
 	: App::Settings(),
 		mEnableMultiTouch( false ), mQuitOnLastWindowClose( true )
 {
-#if defined( CINDER_MAC )
-	mEnableSecondaryDisplayBlanking = true; 
-#elif defined( CINDER_MSW )
+#if defined( CINDER_MSW )
 	mEnableMswConsole = false;
 #endif
 }

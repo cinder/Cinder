@@ -42,14 +42,14 @@ bool Window::isFullScreen() const
 #endif
 }
 
-void Window::setFullScreen( bool fullScreen )
+void Window::setFullScreen( bool fullScreen, const FullScreenOptions &options )
 {
 	testValid();
 	
 #if defined( CINDER_COCOA )
-	[mImpl setFullScreen:fullScreen];
+	[mImpl setFullScreen:fullScreen options:&options];
 #elif defined( CINDER_MSW )
-	mImpl->setFullScreen( fullScreen );
+	mImpl->setFullScreen( fullScreen, options );
 #endif
 }
 
@@ -95,6 +95,14 @@ void Window::setPos( const Vec2i &pos ) const
 #elif defined( CINDER_MSW )
 	mImpl->setPos( pos );
 #endif
+}
+
+void Window::spanAllDisplays()
+{
+	Area spanning = Display::getSpanningArea();
+	
+	setSize( Vec2i( spanning.getWidth(), spanning.getHeight() ) );	
+	setPos( spanning.getUL() );
 }
 
 float Window::getContentScale() const

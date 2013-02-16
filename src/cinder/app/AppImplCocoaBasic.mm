@@ -75,13 +75,13 @@
 	std::vector<cinder::app::Window::Format> formats( mApp->getSettings().getWindowFormats() );
 	if( formats.empty() )
 		formats.push_back( mApp->getSettings().getDefaultWindowFormat() );
-	
+
 	// create all the requested windows
 	for( const auto &format : formats ) {
 		WindowImplBasicCocoa *winImpl = [ WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mApp->getSettings().isHighDensityDisplayEnabled() ];
 		[mWindows addObject:winImpl];
 		if( format.isFullScreen() )
-			[winImpl setFullScreen:YES];
+			[winImpl setFullScreen:YES options:&format.getFullScreenOptions()];
 	}
 	
 	mFrameRate = mApp->getSettings().getFrameRate();
@@ -148,7 +148,7 @@
 	WindowImplBasicCocoa *winImpl = [ WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mApp->getSettings().isHighDensityDisplayEnabled() ];
 	[mWindows addObject:winImpl];
 	if( format.isFullScreen() )
-		[winImpl setFullScreen:YES];
+		[winImpl setFullScreen:YES options:&format.getFullScreenOptions()];
 
 	// pass the window its first resize
 	[winImpl->mCinderView makeCurrentContext];
@@ -379,21 +379,20 @@
 	return [mCinderView isFullScreen];
 }
 
-- (void)setFullScreen:(BOOL)fullScreen
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 {
 	if( fullScreen == [mCinderView isFullScreen] )
 		return;
 
+	[mCinderView setFullScreen:fullScreen options:options];
+
 	if( fullScreen ) {
-		BOOL secondaryBlanking = mAppImpl->mApp->getSettings().isSecondaryDisplayBlankingEnabled();
-		[mCinderView setFullScreen:YES withSecondaryBlanking:secondaryBlanking onNsScreen:[[mCinderView window] screen]];
-		
+		// ???: necessary? won't this be set in resize?
 		NSRect bounds = [mCinderView bounds];
 		mSize.x = static_cast<int>( bounds.size.width );
 		mSize.y = static_cast<int>( bounds.size.height );	
 	}
 	else {
-		[mCinderView setFullScreen:NO withSecondaryBlanking:NO onNsScreen:nil];
 		[mWin becomeKeyWindow];
 		[mWin makeFirstResponder:mCinderView];
 	}
@@ -406,11 +405,14 @@
 
 - (void)setSize:(cinder::Vec2i)size
 {
-	mSize = size;
-	NSSize newSize;
-	newSize.width = mSize.x;
-	newSize.height = mSize.y;
-	[mWin setContentSize:newSize];
+	// this compensates for the Mac wanting to resize from the lower-left corner
+	ci::Vec2i sizeDelta = size - mSize;
+	NSRect r = [mWin frame];
+	r.size.width += sizeDelta.x;
+	r.size.height += sizeDelta.y;
+	r.origin.y -= sizeDelta.y;
+	[mWin setFrame:r display:YES];
+
 }
 
 - (cinder::Vec2i)getPos
@@ -698,6 +700,9 @@
 	winImpl->mPos = ci::Vec2i( contentRect.origin.x, cinder::Display::getMainDisplay()->getHeight() - [winImpl->mWin frame].origin.y - contentRect.size.height );
 
 	[winImpl->mWin setLevel:(winImpl->mAlwaysOnTop)?NSScreenSaverWindowLevel:NSNormalWindowLevel];
+
+	if( winFormat.isFullScreenButtonEnabled() )
+		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 	
 	if( ! winFormat.getRenderer() )
 		winFormat.setRenderer( appImpl->mApp->getDefaultRenderer()->clone() );

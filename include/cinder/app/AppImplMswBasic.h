@@ -54,6 +54,9 @@ class AppImplMswBasic : public AppImplMsw {
 	WindowRef	getForegroundWindow() const;
 	fs::path	getAppPath() const;
 	
+	void		setupBlankingWindows( DisplayRef fullScreenDisplay );
+	void		destroyBlankingWindows();
+
   private:
 	void		sleep( double seconds );
 
@@ -70,6 +73,7 @@ class AppImplMswBasic : public AppImplMsw {
 	bool					mFrameRateEnabled;
 
 	std::list<class WindowImplMswBasic*>	mWindows;
+	std::list<BlankingWindowRef>			mBlankingWindows;
 	WindowRef								mForegroundWindow;
 
 	friend LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
@@ -79,9 +83,12 @@ class AppImplMswBasic : public AppImplMsw {
 class WindowImplMswBasic : public WindowImplMsw {
   public:
 	WindowImplMswBasic( const Window::Format &format, RendererRef sharedRenderer, AppImplMswBasic *appImpl )
-		: WindowImplMsw( format, sharedRenderer, appImpl ) {}
+		: WindowImplMsw( format, sharedRenderer, appImpl ), mAppImplBasic( appImpl ) {}
+
+	virtual void WindowImplMswBasic::toggleFullScreen( const app::FullScreenOptions &options );
 
   protected:
+	AppImplMswBasic		*mAppImplBasic;
 	friend AppImplMswBasic;
 };
 

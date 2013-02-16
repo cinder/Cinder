@@ -71,6 +71,9 @@ class WindowImplMswScreenSaver : public WindowImplMsw {
 	WindowImplMswScreenSaver( HWND hwnd, RendererRef renderer, RendererRef sharedRenderer, AppImplMswScreenSaver *appImpl )
 		: WindowImplMsw( hwnd, renderer, sharedRenderer, appImpl ) {}
 
+	// no-op
+	virtual void		setFullScreen( bool fullScreen, const app::FullScreenOptions &options );
+
   protected:
 	friend AppImplMswScreenSaver;
 };

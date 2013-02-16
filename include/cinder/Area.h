@@ -82,6 +82,13 @@ class AreaT {
 	bool			contains( const Vec2<Y> &offset ) const { return contains( Vec2<T>( (T)math<Y>::ceil( offset. x ), (T)math<Y>::ceil( offset.y ) ) ); }
 	bool			intersects( const AreaT<T> &area ) const;
 
+	//! Expands the Area to include \a point in its interior
+	void		include( const Vec2<T> &point );
+	//! Expands the Area to include all points in \a points in its interior
+	void		include( const std::vector<Vec2<T> > &points );
+	//! Expands the Area to include \a rect in its interior
+	void		include( const AreaT &area );
+
 	//! Returns the distance between the point \a pt and the rectangle. Points inside the Area return \c 0.
 	template<typename Y>
 	float		distance( const Vec2<Y> &pt ) const;
