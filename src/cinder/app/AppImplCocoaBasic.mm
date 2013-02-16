@@ -405,11 +405,14 @@
 
 - (void)setSize:(cinder::Vec2i)size
 {
-	mSize = size;
-	NSSize newSize;
-	newSize.width = mSize.x;
-	newSize.height = mSize.y;
-	[mWin setContentSize:newSize];
+	// this compensates for the Mac wanting to resize from the lower-left corner
+	ci::Vec2i sizeDelta = size - mSize;
+	NSRect r = [mWin frame];
+	r.size.width += sizeDelta.x;
+	r.size.height += sizeDelta.y;
+	r.origin.y -= sizeDelta.y;
+	[mWin setFrame:r display:YES];
+
 }
 
 - (cinder::Vec2i)getPos
