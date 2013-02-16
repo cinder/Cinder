@@ -48,7 +48,6 @@ Surface8u convertUiImage( UIImage *uiImage, bool assumeOwnership )
 	
 	Surface8u result( createImageSource( imageRef ) );
 	if( assumeOwnership ) {
-		[uiImage retain];
 		result.setDeallocator( cocoa::safeCocoaRelease, uiImage );
 	}
 	

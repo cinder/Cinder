@@ -55,7 +55,7 @@
 	[layer renderInContext:UIGraphicsGetCurrentContext()];
 	UIImage *viewImage = ::UIGraphicsGetImageFromCurrentImageContext();
 	::UIGraphicsEndImageContext();
-	return viewImage;
+	return [viewImage retain];
 }
 
 - (void)makeCurrentContext
