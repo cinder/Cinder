@@ -132,6 +132,9 @@
 		if( ! hasFullScreenButton ) {
 			[[self window] setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 		}
+		if( fullScreen ) { // we need to force the window to be resizable if entering fullscreen
+			[[self window] setStyleMask:([[self window] styleMask] | NSResizableWindowMask)];
+		}
 		[[self window] toggleFullScreen:nil];
 	}
 	else if( fullScreen ) {
