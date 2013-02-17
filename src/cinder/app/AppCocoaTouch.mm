@@ -80,7 +80,6 @@ namespace cinder { namespace app {
 
 AppCocoaTouch*				AppCocoaTouch::sInstance = 0;
 
-
 static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation orientation )
 {
 	switch(orientation) {

@@ -48,9 +48,7 @@ enum InterfaceOrientation {
 	All						= (PortraitAll | LandscapeAll)
 };
 
-extern std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs );
-float getOrientationDegrees( InterfaceOrientation orientation ); // ???: rename this toDegrees / toRadians? They will be in a different namespace than Utilies.h's free-standing functions
-
+//! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
 typedef	signals::signal<uint32_t (), BitwiseAndEventCombiner<uint32_t> >		EventSignalSupportedOrientations;
 
 class AppCocoaTouch : public App {
@@ -93,11 +91,17 @@ class AppCocoaTouch : public App {
 	signals::signal<void()>&	getSignalMemoryWarning() { return mSignalMemoryWarning; }
 	void 						emitMemoryWarning();
 
+	//! Returns the signal emitted when an orientation change may occur, allowing the user to specify which orientatinos are permitted (any connection can forbit a given orientatino).  The connected std::function must return a \t InterfaceOrientation bitmask. 
 	EventSignalSupportedOrientations&	getSignalSupportedOrientations() { return mSignalSupportedOrientations; }
+	//! Emits asignal to ask the user what orientations are supported.
 	uint32_t							emitSupportedOrientations();
+	//! Returns the signal emitted when the interface is about to rotate to a new orientation. At this time, the Window's bounds and orientation have already been updated.
 	signals::signal<void()>&			getSignalWillRotate() { return mSignalWillRotate; }
+	//! Emits the signal to notify the user that the orientation will change.
 	void								emitWillRotate();
+	//! Returns the signal emitted when the interface is finished rotating to a new orientation.
 	signals::signal<void()>&			getSignalDidRotate() { return mSignalDidRotate; }
+	//! Emits the signal to notify the user that the orientation did change.
 	void								emitDidRotate();
 
 	WindowRef 		createWindow( const Window::Format &format );
@@ -209,6 +213,11 @@ class AppCocoaTouch : public App {
 
 	bool					mIsKeyboardVisible;
 };
+
+//! Stream \t InterfacefaceOrientation enum to std::ostream
+extern std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs );
+//! returns the degrees rotation from Portrait for the provided \a orientation
+float getOrientationDegrees( InterfaceOrientation orientation );
 
 } } // namespace cinder::app
 
