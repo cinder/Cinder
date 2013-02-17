@@ -363,6 +363,19 @@ void getClippedScaledRects( const Area &srcSurfaceBounds, const Rectf &srcRect, 
 }
 
 template<typename T>
+RectT<T> RectT<T>::splitSubRect( int totalW, int totalH, int selectW, int selectH ) const
+{
+	T origW = x2 - x1;
+	T origH = y2 - y1;
+
+	float tileW = origW / ( float ) totalW;
+	float tileH = origH / ( float ) totalH;
+
+	return RectT<T>( (T) x1 + tileW * selectW, (T) y1 + tileH * selectH, (T) x1 + tileW * ( selectW + 1 ), (T) y1 + tileH * ( selectH + 1 ) );
+}
+
+
+template<typename T>
 std::ostream& operator<< ( std::ostream& o, const RectT<T>& rect )
 {
 	return o << "(" << rect.x1 << ", " << rect.y1 << ")-(" << rect.x2 << ", " << rect.y2 << ")";

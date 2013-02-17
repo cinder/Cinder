@@ -102,6 +102,10 @@ class RectT {
 	/** \return Scaled copy with the same aspect ratio centered relative to and scaled to fit inside \a other. If \a expand then the rectangle is expanded if it is smaller than \a other */
 	RectT		getCenteredFit( const RectT &other, bool expand ) const;
 
+	/** Return a sub-rectangle by dividing the rectangle to equal sub-rectangles horizontally and vertically **/
+	RectT		splitSubRect( int totalW, int totalH, int selectW, int selectH ) const;
+
+	
 	/** Expands the Rect to include \a point in its interior **/
 	void		include( const Vec2<T> &point );
 	/** Expands the Rect to include all points in \a points in its interior **/
@@ -127,8 +131,7 @@ class RectT {
 	friend std::ostream& operator<<( std::ostream &o, const RectT &rect )
 	{
 		return o << "(" << rect.x1 << ", " << rect.y1 << ")-(" << rect.x2 << ", " << rect.y2 << ")";
-	}	
-
+	}
 };
 
 typedef RectT<float>	Rectf;
