@@ -274,6 +274,12 @@ pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcAre
 	return std::make_pair( clippedSrc, newDstLT );
 }
 
+template <>
+Vec2f AreaRational::getCenter() const
+{
+	return Vec2f( boost::rational_cast<float>( x1 + x2 ) / 2.0f, boost::rational_cast<float>( y1 + y2 ) / 2.0f );
+}
+
 template class AreaT<int32_t>;
 template class AreaT<boost::rational<int32_t> >;
 template float AreaT<int32_t>::distance( const Vec2i &pt ) const;
