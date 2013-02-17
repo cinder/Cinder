@@ -111,8 +111,10 @@ class AppCocoaTouch : public App {
 	//! Gets a Window by index, in the range [0, getNumWindows()).
 	virtual app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
 
-	//! Returns the current \t InterfaceOrientation for the active \t Window. It is already updated by the time the slot related to \a getSignalWillRotate() is called.
-	InterfaceOrientation getInterfaceOrientation() const;
+	//! Returns the  \t InterfaceOrientation for the device \t Window.
+	InterfaceOrientation	getOrientation() const;
+	//! Returns the current \t InterfaceOrientation for the active \t Window.
+	InterfaceOrientation	getWindowOrientation() const;
 
 	//! Enables the device's proximity sensor, which can return whether the device is close to the user or not. Use in conjunction with proximityIsClose() or getSignalProximitySensor()
 	void enableProximitySensor();

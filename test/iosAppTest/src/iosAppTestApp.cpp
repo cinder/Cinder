@@ -252,13 +252,13 @@ uint32_t iosAppTestApp::supportPortraitOrientations()
 
 void iosAppTestApp::willRotate()
 {
-	InterfaceOrientation orientation = getInterfaceOrientation();
+	InterfaceOrientation orientation = getOrientation();
 	console() << __PRETTY_FUNCTION__ << "orientation:" << orientation << std::endl;
 }
 
 void iosAppTestApp::didRotate()
 {
-	InterfaceOrientation orientation = getInterfaceOrientation();
+	InterfaceOrientation orientation = getOrientation();
 	console() << __PRETTY_FUNCTION__ << "orientation:" << orientation << std::endl;
 }
 
@@ -417,7 +417,7 @@ void iosAppTestApp::draw()
 //
 	gl::disableDepthRead();
 	gl::color( Color( 0.0f, 1.0f, 0.0f ) );
-	mFont->drawString( orientationString( getInterfaceOrientation() ) + "@ " + toString( getWindowContentScale() ), Vec2f( 10.0f, 60.0f ) );
+	mFont->drawString( orientationString( getWindowOrientation() ) + "@ " + toString( getWindowContentScale() ), Vec2f( 10.0f, 60.0f ) );
 //	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), Vec2f( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?
 
 	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", Vec2f( 10.0f, 90.0f ) );

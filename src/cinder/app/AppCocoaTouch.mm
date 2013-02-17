@@ -428,10 +428,16 @@ WindowRef AppCocoaTouch::getWindowIndex( size_t index ) const
 	return (*iter)->mWindowRef;
 }
 
-InterfaceOrientation AppCocoaTouch::getInterfaceOrientation() const
+InterfaceOrientation AppCocoaTouch::getOrientation() const
 {
 	WindowImplCocoaTouch *deviceWindow = [mImpl getDeviceWindow];
-	return convertInterfaceOrientation( deviceWindow.interfaceOrientation );
+	return convertInterfaceOrientation( [deviceWindow interfaceOrientation] );
+}
+
+InterfaceOrientation AppCocoaTouch::getWindowOrientation() const
+{
+	WindowImplCocoaTouch *window = mImpl->mActiveWindow;
+	return convertInterfaceOrientation( [window interfaceOrientation] );
 }
 
 void AppCocoaTouch::enableProximitySensor()
