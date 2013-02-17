@@ -28,6 +28,7 @@
 namespace cinder {
 
 MotionImplCoreMotion::MotionImplCoreMotion()
+	: mSensorMode( MotionManager::SensorMode::Gyroscope )
 {
 	mMotionManager = [[CMMotionManager alloc] init];
 }
@@ -49,29 +50,57 @@ bool MotionImplCoreMotion::isMotionDataAvailable()
 	return ( isMotionUpdatesActive() && mMotionManager.deviceMotion );
 }
 
+bool MotionImplCoreMotion::isGyroAvailable()
+{
+	return static_cast<bool>( mMotionManager.gyroAvailable );
+}
+
+bool MotionImplCoreMotion::isAccelAvailable()
+{
+	return static_cast<bool>( mMotionManager.accelerometerAvailable );
+}
+
 bool MotionImplCoreMotion::isNorthReliable()
 {
 	NSUInteger available = [CMMotionManager availableAttitudeReferenceFrames];
 	return (available & CMAttitudeReferenceFrameXTrueNorthZVertical) || (available & CMAttitudeReferenceFrameXMagneticNorthZVertical) ? true : false;
 }
 
+void MotionImplCoreMotion::setSensorMode( MotionManager::SensorMode mode )
+{
+	if( mode == MotionManager::SensorMode::Gyroscope && ! isGyroAvailable() ) {
+		mSensorMode = MotionManager::SensorMode::Accelerometer;
+	}
+	if( mode == MotionManager::SensorMode::Accelerometer && ! isAccelAvailable() )
+		throw ExcNoSensors();
+
+	mSensorMode = mode;
+}
+
 void MotionImplCoreMotion::startMotionUpdates()
 {
-    if( ! mMotionManager.deviceMotionAvailable )
-        return;
+	if( mSensorMode == MotionManager::SensorMode::Gyroscope ) {
+		if( mMotionManager.deviceMotionAvailable ) {
+			NSUInteger availableReferenceFrames = [CMMotionManager availableAttitudeReferenceFrames];
+			CMAttitudeReferenceFrame referenceFrame;
+			if (availableReferenceFrames & CMAttitudeReferenceFrameXTrueNorthZVertical)
+				referenceFrame = CMAttitudeReferenceFrameXTrueNorthZVertical;
+			else if (availableReferenceFrames & CMAttitudeReferenceFrameXMagneticNorthZVertical)
+				referenceFrame = CMAttitudeReferenceFrameXMagneticNorthZVertical;
+			else if (availableReferenceFrames & CMAttitudeReferenceFrameXArbitraryCorrectedZVertical)
+				referenceFrame = CMAttitudeReferenceFrameXArbitraryCorrectedZVertical;
+			else
+				referenceFrame = CMAttitudeReferenceFrameXArbitraryZVertical;
 
-	NSUInteger availableReferenceFrames = [CMMotionManager availableAttitudeReferenceFrames];
-	CMAttitudeReferenceFrame referenceFrame;
-	if (availableReferenceFrames & CMAttitudeReferenceFrameXTrueNorthZVertical)
-		referenceFrame = CMAttitudeReferenceFrameXTrueNorthZVertical;
-	else if (availableReferenceFrames & CMAttitudeReferenceFrameXMagneticNorthZVertical)
-		referenceFrame = CMAttitudeReferenceFrameXMagneticNorthZVertical;
-	else if (availableReferenceFrames & CMAttitudeReferenceFrameXArbitraryCorrectedZVertical)
-		referenceFrame = CMAttitudeReferenceFrameXArbitraryCorrectedZVertical;
-	else
-		referenceFrame = CMAttitudeReferenceFrameXArbitraryZVertical;
-
-	[mMotionManager startDeviceMotionUpdatesUsingReferenceFrame:referenceFrame];
+			[mMotionManager startDeviceMotionUpdatesUsingReferenceFrame:referenceFrame];
+			return;
+		}
+		else {
+			setSensorMode( MotionManager::SensorMode::Accelerometer );
+		}
+	}
+	// accelerometer mode
+	[mMotionManager startAccelerometerUpdates];
 }
 
 void MotionImplCoreMotion::stopMotionUpdates()
@@ -143,11 +172,25 @@ ci::Vec3f MotionImplCoreMotion::getRotationRate( app::InterfaceOrientation orien
 
 ci::Vec3f MotionImplCoreMotion::getAcceleration( app::InterfaceOrientation orientation )
 {
-	if( ! isMotionDataAvailable() )
+	if( mSensorMode == MotionManager::SensorMode::Gyroscope ) {
+		if( ! isMotionDataAvailable() )
+			return Vec3f::zero();
+
+		::CMAcceleration accel = mMotionManager.deviceMotion.userAcceleration;
+		return vecOrientationCorrected( Vec3f( accel.x, accel.y, accel.z ), orientation );
+	}
+
+	// accelerometer mode
+	if( ! mMotionManager.accelerometerData )
 		return Vec3f::zero();
 
-	::CMAcceleration accel = mMotionManager.deviceMotion.userAcceleration;
-	return vecOrientationCorrected( Vec3f( accel.x, accel.y, accel.z ), orientation );
+	const float kAccelFilterFactor = 0.3f;
+	::CMAcceleration accelCM = mMotionManager.accelerometerData.acceleration;
+	Vec3f accel = Vec3f( accelCM.x, accelCM.y, accelCM.z );
+	Vec3f accelFiltered = mLastAccel * (1.0f - kAccelFilterFactor) + accel * kAccelFilterFactor;
+	mLastAccel = accel;
+	
+	return vecOrientationCorrected( accelFiltered, orientation );
 }
 
 } // namespace cinder
