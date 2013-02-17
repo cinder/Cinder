@@ -178,9 +178,24 @@ void RectT<T>::scale( T s )
 }
 
 template<typename T>
+void RectT<T>::scale( const Vec2<T> &scale )
+{
+	x1 *= scale.x;
+	y1 *= scale.y;
+	x2 *= scale.x;
+	y2 *= scale.y;
+}
+
+template<typename T>
 RectT<T> RectT<T>::scaled( T s ) const
 {
 	return RectT<T>( x1 * s, y1 * s, x2 * s, y2 * s );
+}
+
+template<typename T>
+RectT<T> RectT<T>::scaled( const Vec2<T> &scale ) const
+{
+	return RectT<T>( x1 * scale.x, y1 * scale.y, x2 * scale.x, y2 * scale.y );
 }
 
 template<typename T>
@@ -361,6 +376,19 @@ void getClippedScaledRects( const Area &srcSurfaceBounds, const Rectf &srcRect, 
 	// this is not kosher, but sometimes we need to fudge things on the src to keep it in bounds
 	resultSrcRect->clipBy( Rectf( srcSurfaceBounds ) );
 }
+
+template<typename T>
+RectT<T> RectT<T>::splitSubRect( int totalW, int totalH, int selectW, int selectH ) const
+{
+	T origW = x2 - x1;
+	T origH = y2 - y1;
+
+	float tileW = origW / ( float ) totalW;
+	float tileH = origH / ( float ) totalH;
+
+	return RectT<T>( (T) x1 + tileW * selectW, (T) y1 + tileH * selectH, (T) x1 + tileW * ( selectW + 1 ), (T) y1 + tileH * ( selectH + 1 ) );
+}
+
 
 template<typename T>
 std::ostream& operator<< ( std::ostream& o, const RectT<T>& rect )
