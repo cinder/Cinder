@@ -81,7 +81,6 @@ static Boolean sIsEaglLayer;
 	mRenderer->setFrameSize( bounds.size.width, bounds.size.height );
 
 	[mDelegate resize];
-	[self drawView];
 }
 
 - (void)drawRect:(CGRect)rect
