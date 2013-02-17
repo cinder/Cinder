@@ -38,7 +38,7 @@
 - (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp;
 - (NSView*)view;
 
-- (NSBitmapImageRep*)getContents:(cinder::Area)area NS_RETURNS_RETAINED;
+- (NSBitmapImageRep*)getContents:(cinder::Area)area;
 
 - (void)makeCurrentContext;
 - (void)flushBuffer;

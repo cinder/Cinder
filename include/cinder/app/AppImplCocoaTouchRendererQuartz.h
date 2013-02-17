@@ -33,7 +33,7 @@
 - (id)initWithFrame:(CGRect)frame cinderView:(UIView*)aCinderView app:(cinder::app::App*)aApp;
 - (UIView*)view;
 
-- (UIImage*)getContents:(cinder::Area)area NS_RETURNS_RETAINED;
+- (UIImage*)getContents:(cinder::Area)area;
 
 - (void)makeCurrentContext;
 - (void)flushBuffer;

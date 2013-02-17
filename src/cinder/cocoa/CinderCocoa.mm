@@ -166,7 +166,10 @@ Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwners
 	Surface8u result( data, width, height, rowBytes, co );
 	// If requested, point the result's deallocator to the appropriate function. This will get called when the Surface::Obj is destroyed
 	if( assumeOwnership )
+	{
+		[rep retain];
 		result.setDeallocator( NSBitmapImageRepSurfaceDeallocator, const_cast<NSBitmapImageRep*>( rep ) );
+	}
 	return result;
 }
 #endif // defined( CINDER_MAC )
