@@ -50,6 +50,7 @@ class AreaT {
 	T				getWidth() const { return x2 - x1; }
 	T				getHeight() const { return y2 - y1; }
 	Vec2<T>			getSize() const { return Vec2<T>( x2 - x1, y2 - y1 ); }
+	Vec2f			getCenter() const { return Vec2f( ( x1 + x2 ) / 2.0f, ( y1 + y2 ) / 2.0f ); }
 	T				calcArea() const { return getWidth() * getHeight(); }
 	
 	void			clipBy( const AreaT<T> &clip );
@@ -126,5 +127,7 @@ typedef AreaT<int32_t>						Area;
 typedef AreaT<boost::rational<int32_t> >	AreaRational;
 
 extern std::pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const Vec2i &dstLT );
+
+template <> Vec2f AreaRational::getCenter() const;
 
 } // namespace cinder
