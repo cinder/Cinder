@@ -19,7 +19,9 @@ class MotionBasicApp : public AppCocoaTouch {
 
 void MotionBasicApp::setup()
 {
-	MotionManager::enable( 60.0f );
+	console() << "gyro available: " << MotionManager::isGyroAvailable() << std::endl;
+	
+	MotionManager::enable( 60.0f, MotionManager::SensorMode::Accelerometer );
 
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 	mCam.lookAt( Vec3f( 0, 0, 3 ), Vec3f::zero() );
@@ -27,8 +29,13 @@ void MotionBasicApp::setup()
 
 void MotionBasicApp::update()
 {
-	mModelView = MotionManager::getRotationMatrix().inverted();
-	mCam.lookAt( Vec3f( 0, 0, 3 ), Vec3f::zero() );
+	if( MotionManager::getSensorMode() == MotionManager::SensorMode::Gyroscope ) {
+		mModelView = MotionManager::getRotationMatrix().inverted();
+	} else {
+		Vec3f accel = MotionManager::getAcceleration();
+		mModelView = Quatf( Vec3f( 0, -1, 0 ), accel.normalized() ).toMatrix44();
+	}
+
 
     if( MotionManager::isShaking( 1.5f ) ) {
 		std::cout << "isShaking!\n";

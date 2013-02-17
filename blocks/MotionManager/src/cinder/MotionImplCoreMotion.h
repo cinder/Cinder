@@ -27,6 +27,8 @@
 #include "cinder/Quaternion.h"
 #include "cinder/app/AppCocoaTouch.h"
 
+#include "MotionManager.h"
+
 #if defined( __OBJC__ )
 	@class CMMotionManager;
 	@class NSOperationQueue;
@@ -44,10 +46,14 @@ class MotionImplCoreMotion {
 
     bool isMotionUpdatesActive();
 	bool isMotionDataAvailable();
+	bool isGyroAvailable();
+	bool isAccelAvailable();
 	bool isNorthReliable();
     void startMotionUpdates();
     void stopMotionUpdates();
-
+	void setSensorMode( MotionManager::SensorMode mode );
+	MotionManager::SensorMode	getSensorMode() { return mSensorMode; }
+	
 	void setUpdateFrequency( float updateFrequency );
 	void setShowsCalibrationView( bool shouldShow );
 
@@ -58,6 +64,8 @@ class MotionImplCoreMotion {
 
   private:
 	CMMotionManager *mMotionManager;
+	MotionManager::SensorMode mSensorMode;
+	ci::Vec3f mLastAccel;
 };
 
 } // namespace cinder
