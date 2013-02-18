@@ -80,7 +80,6 @@ namespace cinder { namespace app {
 
 AppCocoaTouch*				AppCocoaTouch::sInstance = 0;
 
-
 static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation orientation )
 {
 	switch(orientation) {
@@ -429,10 +428,16 @@ WindowRef AppCocoaTouch::getWindowIndex( size_t index ) const
 	return (*iter)->mWindowRef;
 }
 
-InterfaceOrientation AppCocoaTouch::getInterfaceOrientation() const
+InterfaceOrientation AppCocoaTouch::getOrientation() const
 {
 	WindowImplCocoaTouch *deviceWindow = [mImpl getDeviceWindow];
-	return convertInterfaceOrientation( deviceWindow.interfaceOrientation );
+	return convertInterfaceOrientation( [deviceWindow interfaceOrientation] );
+}
+
+InterfaceOrientation AppCocoaTouch::getWindowOrientation() const
+{
+	WindowImplCocoaTouch *window = mImpl->mActiveWindow;
+	return convertInterfaceOrientation( [window interfaceOrientation] );
 }
 
 void AppCocoaTouch::enableProximitySensor()
@@ -613,6 +618,29 @@ void AppCocoaTouch::emitWillRotate()
 void AppCocoaTouch::emitDidRotate()
 {
 	mSignalDidRotate();
+}
+
+std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs )
+{
+	switch( rhs ) {
+		case InterfaceOrientation::Portrait:			lhs << "Portrait";				break;
+		case InterfaceOrientation::PortraitUpsideDown:	lhs << "PortraitUpsideDown";	break;
+		case InterfaceOrientation::LandscapeLeft:		lhs << "LandscapeLeft";			break;
+		case InterfaceOrientation::LandscapeRight:		lhs << "LandscapeRight";		break;
+		default: lhs << "Error";
+	}
+	return lhs;
+}
+
+float getOrientationDegrees( InterfaceOrientation orientation )
+{
+	switch( orientation ) {
+		case InterfaceOrientation::Portrait:			return 0.0f;
+		case InterfaceOrientation::PortraitUpsideDown:	return 180.0f;
+		case InterfaceOrientation::LandscapeLeft:		return 90.0f;
+		case InterfaceOrientation::LandscapeRight:		return 270.0f;
+		default: return 0.0f;
+	}
 }
 
 } } // namespace cinder::app

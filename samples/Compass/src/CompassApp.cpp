@@ -71,7 +71,7 @@ void CompassApp::resize()
 
 void CompassApp::update()
 {
-	mCam.setOrientation( MotionManager::getRotation( getInterfaceOrientation() ) );
+	mCam.setOrientation( MotionManager::getRotation( getOrientation() ) );
 }
 
 void CompassApp::draw()
