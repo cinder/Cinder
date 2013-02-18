@@ -91,9 +91,9 @@ class AppCocoaTouch : public App {
 	signals::signal<void()>&	getSignalMemoryWarning() { return mSignalMemoryWarning; }
 	void 						emitMemoryWarning();
 
-	//! Returns the signal emitted when an orientation change may occur, allowing the user to specify which orientatinos are permitted (any connection can forbit a given orientatino).  The connected std::function must return a \t InterfaceOrientation bitmask. 
+	//! Returns the signal emitted when an orientation change may occur, allowing the user to specify which orientations are permitted (any connection can forbid a given orientation).  The connected std::function must return an \t InterfaceOrientation bitmask. 
 	EventSignalSupportedOrientations&	getSignalSupportedOrientations() { return mSignalSupportedOrientations; }
-	//! Emits asignal to ask the user what orientations are supported.
+	//! Emits a signal to ask the user what orientations are supported.
 	uint32_t							emitSupportedOrientations();
 	//! Returns the signal emitted when the interface is about to rotate to a new orientation. At this time, the Window's bounds and orientation have already been updated.
 	signals::signal<void()>&			getSignalWillRotate() { return mSignalWillRotate; }
