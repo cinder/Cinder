@@ -49,7 +49,7 @@
 
 // WindowImplCocoa Methods
 - (BOOL)isFullScreen;
-- (void)setFullScreen:(BOOL)fullScreen;
+- (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions*)options;
 - (cinder::Vec2i)getSize;
 - (void)setSize:(cinder::Vec2i)size;
 - (cinder::Vec2i)getPos;
@@ -756,7 +756,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	return YES;
 }
 
-- (void)setFullScreen:(BOOL)fullScreen;
+- (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions*)options
 { // NO-OP
 }
 
@@ -765,7 +765,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	return mSize;
 }
 
-- (void)setSize:(cinder::Vec2i)size;
+- (void)setSize:(cinder::Vec2i)size
 { // NO-OP
 }
 
