@@ -158,6 +158,9 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 	while( offset < length ) {
 		size_t endOfTriple, firstSlashOffset, secondSlashOffset;
 	
+		while( s[offset] == ' ' )
+			++offset;
+	
 		// find the end of this triple "v/vt/vn"
 		endOfTriple = s.find( ' ', offset );
 		if( endOfTriple == string::npos ) endOfTriple = length;
