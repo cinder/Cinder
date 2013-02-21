@@ -29,15 +29,7 @@ void MotionBasicApp::setup()
 
 void MotionBasicApp::update()
 {
-	if( MotionManager::getSensorMode() == MotionManager::SensorMode::Gyroscope ) {
-		mModelView = MotionManager::getRotationMatrix().inverted();
-	} else {
-		Vec3f accel = MotionManager::getAcceleration();
-		mModelView = Quatf( Vec3f( 0, 0, -1 ), accel.normalized() ).toMatrix44();
-	}
-	
 	mModelView = MotionManager::getRotationMatrix().inverted();
-
 
     if( MotionManager::isShaking( 1.5f ) ) {
 		std::cout << "isShaking!\n";
