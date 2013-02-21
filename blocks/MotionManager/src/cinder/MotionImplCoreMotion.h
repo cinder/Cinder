@@ -57,15 +57,20 @@ class MotionImplCoreMotion {
 	void setUpdateFrequency( float updateFrequency );
 	void setShowsCalibrationView( bool shouldShow );
 
-	ci::Vec3f getGravityDirection( app::InterfaceOrientation orientation );
-    ci::Quatf getRotation( app::InterfaceOrientation orientation );
-	ci::Vec3f getRotationRate( app::InterfaceOrientation orientation );
-	ci::Vec3f getAcceleration( app::InterfaceOrientation orientation );
+	ci::Vec3f	getGravityDirection( app::InterfaceOrientation orientation );
+    ci::Quatf	getRotation( app::InterfaceOrientation orientation );
+	ci::Vec3f	getRotationRate( app::InterfaceOrientation orientation );
+	ci::Vec3f	getAcceleration( app::InterfaceOrientation orientation );
+
+	float		getAccelFilter() const { return mAccelFilter; }
+	void		setAccelFilter( float filtering ) { mAccelFilter = filtering; }
 
   private:
-	CMMotionManager *mMotionManager;
-	MotionManager::SensorMode mSensorMode;
-	ci::Vec3f mLastAccel;
+	CMMotionManager				*mMotionManager;
+	MotionManager::SensorMode	mSensorMode;
+
+	ci::Vec3f					mLastAccel;
+	float						mAccelFilter;
 };
 
 } // namespace cinder

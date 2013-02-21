@@ -76,12 +76,20 @@ class MotionManager {
 	//! The amount the device is currently shaking. \note This is only calculated when isShaking() has been called.
 	static float    getShakeDelta() { return get()->mShakeDelta; }
 
+	//! Only applies in accelerometer-only mode. Returns the amount the accelerometer data is filtered, in the range [0-1). \c 0 means unfiltered, \c 0.99 is very smoothed (but less responsive). Default is \c 0.3.
+	static float	getAccelerometerFilter() { return get()->getAccelerometerFilterImpl(); }	
+	//! Only applies in accelerometer-only mode. Returns the amount the accelerometer data is filtered, in the range [0-1). \c 0 means unfiltered, \c 0.99 is very smoothed (but less responsive). Default is \c 0.3.
+	static void		setAccelerometerFilter( float filtering ) { get()->setAccelerometerFilterImpl( filtering ); }
+
   protected:
 	MotionManager() : mShakeDelta( 0.0f ) {}
 	static MotionManager*		get();
 
   private:
-    bool isShakingImpl( float minShakeDeltaThreshold );
+    bool	isShakingImpl( float minShakeDeltaThreshold );
+	float	getAccelerometerFilterImpl();
+	void	setAccelerometerFilterImpl( float filtering );
+
 
 	std::shared_ptr<MotionImplCoreMotion>	mImpl;
 	float mShakeDelta;

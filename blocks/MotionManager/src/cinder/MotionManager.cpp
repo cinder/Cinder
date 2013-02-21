@@ -23,6 +23,7 @@
 
 #include "MotionManager.h"
 #include "MotionImplCoreMotion.h"
+#include "cinder/CinderMath.h"
 
 namespace cinder {
 
@@ -120,6 +121,16 @@ bool MotionManager::isShakingImpl( float minShakeDeltaThreshold )
     }
     mPrevAcceleration = accel;
     return isShaking;
+}
+
+float MotionManager::getAccelerometerFilterImpl()
+{
+	return mImpl->getAccelFilter();
+}
+
+void MotionManager::setAccelerometerFilterImpl( float filtering )
+{
+	mImpl->setAccelFilter( math<float>::clamp( filtering, 0, 0.999f ) );
 }
 
 } // namespace cinder

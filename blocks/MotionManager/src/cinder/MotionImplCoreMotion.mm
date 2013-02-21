@@ -28,7 +28,7 @@
 namespace cinder {
 
 MotionImplCoreMotion::MotionImplCoreMotion()
-	: mSensorMode( MotionManager::SensorMode::Gyroscope )
+	: mSensorMode( MotionManager::SensorMode::Gyroscope ), mLastAccel( 0, 0, 0 ), mAccelFilter( 0.3f )
 {
 	mMotionManager = [[CMMotionManager alloc] init];
 }
@@ -148,7 +148,7 @@ Quatf MotionImplCoreMotion::getRotation( app::InterfaceOrientation orientation )
 	static const Quatf kCorrectionRotation = Quatf( Vec3f( -1.0f, 0.0f, 0.0f ), kPiOverTwo ) * Quatf( Vec3f( 0.0f, 1.0f, 0.0f ), kPiOverTwo );
 
 	if( ! isMotionDataAvailable() )
-		return Quatf::identity();
+		return Quatf( Vec3f( 0, -1, 0 ), mLastAccel.normalized() );
 
 	::CMQuaternion cq = mMotionManager.deviceMotion.attitude.quaternion;
 	Quatf quat = Quatf( cq.w, cq.x, cq.y, cq.z ) * kCorrectionRotation;
@@ -184,11 +184,10 @@ ci::Vec3f MotionImplCoreMotion::getAcceleration( app::InterfaceOrientation orien
 	if( ! mMotionManager.accelerometerData )
 		return Vec3f::zero();
 
-	const float kAccelFilterFactor = 0.3f;
 	::CMAcceleration accelCM = mMotionManager.accelerometerData.acceleration;
 	Vec3f accel = Vec3f( accelCM.x, accelCM.y, accelCM.z );
-	Vec3f accelFiltered = mLastAccel * (1.0f - kAccelFilterFactor) + accel * kAccelFilterFactor;
-	mLastAccel = accel;
+	Vec3f accelFiltered = mLastAccel * mAccelFilter + accel * (1.0f - mAccelFilter);
+	mLastAccel = accelFiltered;
 	
 	return vecOrientationCorrected( accelFiltered, orientation );
 }
