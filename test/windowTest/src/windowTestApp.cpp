@@ -237,7 +237,7 @@ void BasicApp::windowDraw()
 	glBegin( GL_LINE_STRIP );
 	const vector<Vec2f> &points = getWindow()->getUserData<WindowData>()->mPoints;
 	for( auto pointIter = points.begin(); pointIter != points.end(); ++pointIter ) {
-		gl::vertex( *pointIter + Vec2f( 0, getElapsedSeconds() ) );
+		gl::vertex( *pointIter /*+ Vec2f( 0, getElapsedSeconds() )*/ );
 	}
 	glEnd();
 	

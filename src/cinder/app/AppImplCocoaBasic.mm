@@ -97,11 +97,6 @@
 		winIt->mWindowRef->emitResize();
 	}	
 	
-	// mark all windows as ready to draw
-	for( WindowImplBasicCocoa* winIt in mWindows ) {
-		[winIt->mCinderView setReadyToDraw:YES];
-	}
-	
 	// make the first window the active window
 	[self setActiveWindow:[mWindows objectAtIndex:0]];
 	[self startAnimationTimer];
@@ -136,6 +131,11 @@
 
 	// issue update() event
 	mApp->privateUpdate__();
+
+	// mark all windows as ready to draw; this really only matters the first time, to ensure the first update() fires before draw()
+	for( WindowImplBasicCocoa* winIt in mWindows ) {
+		[winIt->mCinderView setReadyToDraw:YES];
+	}
 	
 	// walk all windows and draw them
 	for( WindowImplBasicCocoa* winIt in mWindows ) {
