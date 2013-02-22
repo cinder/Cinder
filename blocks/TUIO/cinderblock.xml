@@ -11,8 +11,7 @@
 	<header>include/TuioClient.h</header>
 	<header>include/TuioCursor.h</header>
 	<header>include/TuioObject.h</header>
-	<header>include/TuioProfileBase.h</header>			
-	<copyExclude>samples</copyExclude>
+	<header>include/TuioProfileBase.h</header>
 	<includePath>include</includePath>
 </block>
 </cinder>

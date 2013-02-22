@@ -24,6 +24,5 @@
 	<platform os="msw">
 		<sourcePattern>src/ip/win32/*.cpp</sourcePattern>
 	</platform>	
-	<copyExclude>samples</copyExclude>
 </block>
 </cinder>

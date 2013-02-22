@@ -17,7 +17,6 @@
 		<staticLibrary>lib/msw/CVClient.lib</staticLibrary>
 		<staticLibrary>lib/msw/QTMLClient.lib</staticLibrary>
 	</platform>
-	<copyExclude>samples</copyExclude>
 	<includePath>include</includePath>	
 </block>
 </cinder>

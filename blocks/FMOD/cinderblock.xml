@@ -23,7 +23,6 @@
 	<platform os="ios" sdk="simulator">
 		<staticLibrary>lib/ios/libfmodex_iphonesimulator.a</staticLibrary>
 	</platform>
-	<copyExclude>templates</copyExclude>
 </block>
 <template>templates/Basic FMOD/template.xml</template>
 </cinder>

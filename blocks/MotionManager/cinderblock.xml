@@ -14,7 +14,6 @@
 	<platform os="ios">
 		<framework sdk="true">CoreMotion.framework</framework>
 	</platform>
-	<copyExclude>samples</copyExclude>
 	<includePath>src</includePath>	
 </block>
 </cinder>

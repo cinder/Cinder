@@ -17,7 +17,6 @@
 	<platform os="ios">
 		<framework sdk="true">CoreLocation.framework</framework>
 	</platform>
-	<copyExclude>samples</copyExclude>
 	<includePath>src</includePath>	
 </block>
 </cinder>
