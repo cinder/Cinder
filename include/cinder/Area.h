@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <utility>
+#include <vector>
 #include <boost/rational.hpp>
 
 namespace cinder {
