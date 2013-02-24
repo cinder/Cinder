@@ -71,15 +71,11 @@ using std::uint64_t;
 
 #if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
 	#include <memory>
-	#include <boost/signals2.hpp>
 	#if _MSC_VER >= 1700
 		#include <chrono>
 	#else
 		#include <boost/chrono.hpp>
 	#endif
-	namespace std {
-	    using namespace std::tr1::placeholders;
-	}
 #elif defined( CINDER_COCOA ) && defined( _LIBCPP_VERSION ) // libc++
 	#include <chrono>
 	#include <memory>
