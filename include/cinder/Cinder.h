@@ -88,15 +88,6 @@ using std::uint64_t;
 #include <boost/checked_delete.hpp> // necessary for checked_array_deleter
 using boost::checked_array_deleter;
 
-// if compiler supports r-value references, #define CINDER_RVALUE_REFERENCES
-#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
-	#define CINDER_RVALUE_REFERENCES
-#elif defined( __clang__ )
-	#if __has_feature(cxx_rvalue_references)
-		#define CINDER_RVALUE_REFERENCES
-	#endif
-#endif
-
 // Create a namepace alias as shorthand for cinder::
 #if ! defined( CINDER_NO_NS_ALIAS )
 	namespace ci = cinder;

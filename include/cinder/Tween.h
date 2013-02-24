@@ -322,7 +322,6 @@ class Anim : public AnimBase {
 		return *this;
   	}
 
-#if defined( CINDER_RVALUE_REFERENCES )
 	Anim( Anim &&rhs ) // move constructor
 		: AnimBase( &mValue )
 	{
@@ -338,7 +337,6 @@ class Anim : public AnimBase {
 		}
 		return *this;
 	}
-#endif
 
 	Anim<T>& operator=( T value ) { mValue = value; return *this; }
 
