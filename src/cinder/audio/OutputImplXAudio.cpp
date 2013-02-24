@@ -122,7 +122,7 @@ void OutputImplXAudio::Track::play()
 	//mLoader->start();
 	//fillBufferCallback();
 	mIsPlaying = true;
-	mQueueThread = std::shared_ptr<std::thread>( new std::thread( boost::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
+	mQueueThread = std::shared_ptr<std::thread>( new std::thread( std::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
 
 	::HRESULT hr = mSourceVoice->Start( 0, XAUDIO2_COMMIT_NOW );
 	if( FAILED( hr ) ) {
