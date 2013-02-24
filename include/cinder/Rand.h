@@ -57,18 +57,31 @@ class Rand {
 	{
 		return mBase();
 	}
-	
+
 	//! returns a random integer in the range [0,v)
 	int32_t nextInt( int32_t v )
 	{
 		if( v <= 0 ) return 0;
 		return mBase() % v;
 	}
-	
+
+	//! returns a random unsigned integer in the range [0, v)
+	uint32_t nextUint( uint32_t v )
+	{
+		if( v == 0 ) return 0;
+		return mBase() % v;
+	}
+
 	//! returns a random integer in the range [a,b)
 	int32_t nextInt( int32_t a, int32_t b )
 	{
 		return nextInt( b - a ) + a;
+	}
+
+	//! returns a random unsigned integer in the range [a, b)
+	uint32_t nextUint( uint32_t a, uint32_t b )
+	{
+		return nextUint( b - a ) + a;
 	}
 	
 	//! returns a random float in the range [0.0f,1.0f)
