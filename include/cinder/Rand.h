@@ -81,6 +81,7 @@ class Rand {
 	//! returns a random unsigned integer in the range [a, b)
 	uint32_t nextUint( uint32_t a, uint32_t b )
 	{
+		if( b < a ) return a;
 		return nextUint( b - a ) + a;
 	}
 	
