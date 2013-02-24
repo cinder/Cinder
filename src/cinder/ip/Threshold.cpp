@@ -24,6 +24,8 @@
 #include "cinder/ChanTraits.h"
 
 #include <stdlib.h>
+#include <boost/preprocessor/seq.hpp>
+
 
 namespace cinder { namespace ip {
 

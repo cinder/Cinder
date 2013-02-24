@@ -32,6 +32,8 @@ using std::vector;
 using std::pair;
 #include <limits>
 #include <fstream>
+#include <boost/preprocessor/seq.hpp>
+
 
 namespace cinder { namespace ip {
 
