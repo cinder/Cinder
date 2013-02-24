@@ -34,7 +34,7 @@ Area::Area( const Vec2i &UL, const Vec2i &LR )
 
 Area::Area( const RectT<float> &r )
 {
-	set( r.x1, r.y1, r.x2, r.y2 );
+	set( (int32_t)r.x1, (int32_t)r.y1, (int32_t)r.x2, (int32_t)r.y2 );
 }
 
 void Area::set( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2 )
@@ -173,10 +173,10 @@ template<typename Y>
 Vec2<Y>	Area::closestPoint( const Vec2<Y> &pt ) const
 {
 	Vec2<Y> result = pt;
-	if( pt.x < x1 ) result.x = x1;
-	else if( pt.x > x2 ) result.x = x2;
-	if( pt.y < y1 ) result.y = y1;
-	else if( pt.y > y2 ) result.y = y2;
+	if( pt.x < (Y)x1 ) result.x = (Y)x1;
+	else if( pt.x > (Y)x2 ) result.x = (Y)x2;
+	if( pt.y < (Y)y1 ) result.y = (Y)y1;
+	else if( pt.y > (Y)y2 ) result.y = (Y)y2;
 	return result;
 }
 
