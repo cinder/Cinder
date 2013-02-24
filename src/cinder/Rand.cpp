@@ -42,12 +42,12 @@ void Rand::randomize()
 #endif
 }
 
-void Rand::randSeed( uint32_t seed )
+void Rand::randSeed( unsigned long seed )
 {
 	sBase = std::mt19937( seed );
 }
 
-void Rand::seed( uint32_t seedValue )
+void Rand::seed( unsigned long seedValue )
 {
 	mBase = std::mt19937( seedValue );
 }
