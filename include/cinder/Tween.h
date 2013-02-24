@@ -31,7 +31,6 @@
 #include "cinder/Function.h"
 
 #include <list>
-#include <boost/utility.hpp>
 
 namespace cinder {
 
