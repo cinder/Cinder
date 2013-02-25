@@ -64,6 +64,13 @@ class Rand {
 		if( v <= 0 ) return 0;
 		return mBase() % v;
 	}
+
+	//! returns a random integer in the range [0,v)
+	uint32_t nextUint( uint32_t v )
+	{
+		if( v == 0 ) return 0;
+		return mBase() % v;
+	}
 	
 	//! returns a random integer in the range [a,b)
 	int32_t nextInt( int32_t a, int32_t b )
@@ -174,6 +181,13 @@ class Rand {
 	static int32_t randInt( int32_t v )
 	{
 		if( v <= 0 ) return 0;
+		else return sBase() % v;
+	}
+
+	//! returns a random integer in the range [0,v)
+	static uint32_t randUint( uint32_t v )
+	{
+		if( v == 0 ) return 0;
 		else return sBase() % v;
 	}
 	
