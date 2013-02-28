@@ -23,9 +23,10 @@
 		<setting name="MACH_O_TYPE">mh_bundle</setting>
 		<setting name="ARCHS">x86_64</setting>
 		<setting name="VALID_ARCHS">x86_64</setting>
+		<setting name="GCC_ENABLE_OBJC_GC">supported</setting>
 	</platform>
 	<platform os="msw">
-		<outputExtension>scr</outputExtension>
+		<outputExtension>sCr</outputExtension>
 		<staticLibrary absolute="true">scrnsavw.lib</staticLibrary>
 		<staticLibrary absolute="true">comctl32.lib</staticLibrary>
 	</platform>
