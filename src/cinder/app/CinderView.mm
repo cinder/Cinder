@@ -279,16 +279,19 @@
 	[mDelegate keyUp:&keyEvent];
 }
 
-// TODO: this isn't implemented yet
 - (void)flagsChanged:(NSEvent*)theEvent
 {
-/*	char c		= 0;
-	int code	= [theEvent keyCode];
-	int mods	= [self prepKeyEventModifiers:theEvent];
-
-	NSLog( @"%@", theEvent );	
-	cinder::app::KeyEvent keyEvent = cinder::app::KeyEvent (cinder::app::KeyEvent::translateNativeKeyCode( code ), (char)c, mods, code);	
-	[mDelegate keyDown:&keyEvent];*/
+	int code = [theEvent keyCode];
+	int mods = [self prepKeyEventModifiers:theEvent];
+	
+    if (mods == 0) {
+		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::translateNativeKeyCode( code ), 0, 0, mods, code);
+		[mDelegate keyUp:&keyEvent];
+    }
+    else {
+		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::translateNativeKeyCode( code ), 0, 0, mods, code);
+		[mDelegate keyDown:&keyEvent];
+    }
 }
 
 - (void)mouseDown:(NSEvent*)theEvent
