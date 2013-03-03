@@ -30,6 +30,7 @@
 #if defined( CINDER_MSW )
 	#undef min
 	#undef max
+	#include <float.h>
 #endif
 
 namespace cinder {
@@ -245,3 +246,10 @@ template<typename T>
 int solveCubic( T a, T b, T c, T d, T result[3] );
 
 } // namespace cinder
+
+#if defined( _MSC_VER )
+namespace std {
+	inline bool isfinite( float arg ) { return _finite( arg ) != 0; }
+	inline bool isfinite( double arg ) { return _finite( arg ) != 0; }
+}
+#endif
