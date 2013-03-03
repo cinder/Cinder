@@ -155,6 +155,8 @@ static void initKeyTable()
 	sKeyTable[0x3B] = KeyEvent::KEY_LCTRL;
 	sKeyTable[0x3D] = KeyEvent::KEY_RALT;
 	sKeyTable[0x3A] = KeyEvent::KEY_LALT;
+	sKeyTable[0x37] = KeyEvent::KEY_LMETA;
+	sKeyTable[0x36] = KeyEvent::KEY_RMETA;
 	// sKeyTable[VK_RWIN] = KeyEvent::KEY_RSUPER;
 	// sKeyTable[VK_LWIN] = KeyEvent::KEY_LSUPER;
 	
