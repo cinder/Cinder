@@ -400,8 +400,8 @@ void Window::emitKeyUp( KeyEvent *event )
 
 void Window::emitDraw()
 {
-	mSignalDraw();
 	getApp()->draw();
+	mSignalDraw();
 	mSignalPostDraw();
 }
 
