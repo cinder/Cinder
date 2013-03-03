@@ -30,7 +30,6 @@
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/app/FileDropEvent.h"
-#include "cinder/Stream.h"
 #include "cinder/Display.h"
 #include "cinder/DataSource.h"
 #include "cinder/Timer.h"

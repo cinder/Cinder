@@ -15,6 +15,10 @@
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		00DC4DD348E2454BA6997EE1 /* RandTest_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 387CC74E6E8F4E7881E7C932 /* RandTest_Prefix.pch */; };
+		98759328D62C432FA00D9A6E /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 2E572DAE368045A1BE84F713 /* CinderApp.icns */; };
+		8E4D3C172D544B97A559DEC0 /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = ED2158064C2D40D3ADCE0B80 /* Resources.h */; };
+		3C79E808C4154563985B0973 /* RandTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C114C65120394026A889D0EB /* RandTestApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,7 +32,12 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* _TBOX_PREFIX_.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = _TBOX_PREFIX_.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* RandTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C114C65120394026A889D0EB /* RandTestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/RandTestApp.cpp; sourceTree = "<group>"; name = RandTestApp.cpp; };
+		ED2158064C2D40D3ADCE0B80 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
+		2E572DAE368045A1BE84F713 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		A7E0D33ADEE749A782286FAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
+		387CC74E6E8F4E7881E7C932 /* RandTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = RandTest_Prefix.pch; sourceTree = "<group>"; name = RandTest_Prefix.pch; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +62,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				C114C65120394026A889D0EB /* RandTestApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -84,12 +94,12 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* _TBOX_PREFIX_.app */,
+				8D1107320486CEB800E47090 /* RandTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* _TBOX_PREFIX_ */ = {
+		29B97314FDCFA39411CA2CEA /* RandTest */ = {
 			isa = PBXGroup;
 			children = (
 				01B97315FEAEA392516A2CEA /* Blocks */,
@@ -99,7 +109,7 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
-			name = _TBOX_PREFIX_;
+			name = RandTest;
 			sourceTree = "<group>";
 		};
 		01B97315FEAEA392516A2CEA /* Blocks */ = {
@@ -112,6 +122,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				ED2158064C2D40D3ADCE0B80 /* Resources.h */,
+				387CC74E6E8F4E7881E7C932 /* RandTest_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -119,6 +131,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				2E572DAE368045A1BE84F713 /* CinderApp.icns */,
+				A7E0D33ADEE749A782286FAB /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -135,9 +149,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* _TBOX_PREFIX_ */ = {
+		8D1107260486CEB800E47090 /* RandTest */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "_TBOX_PREFIX_" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "RandTest" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -147,10 +161,10 @@
 			);
 			dependencies = (
 			);
-			name = _TBOX_PREFIX_;
+			name = RandTest;
 			productInstallPath = "$(HOME)/Applications";
-			productName = _TBOX_PREFIX_;
-			productReference = 8D1107320486CEB800E47090 /* _TBOX_PREFIX_.app */;
+			productName = RandTest;
+			productReference = 8D1107320486CEB800E47090 /* RandTest.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -158,8 +172,8 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "_TBOX_PREFIX_" */;
-			compatibilityVersion = "Xcode 3.2";
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "RandTest" */;
+			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -168,11 +182,11 @@
 				French,
 				German,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* _TBOX_PREFIX_ */;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* RandTest */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* _TBOX_PREFIX_ */,
+				8D1107260486CEB800E47090 /* RandTest */,
 			);
 		};
 /* End PBXProject section */
@@ -182,6 +196,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98759328D62C432FA00D9A6E /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,6 +207,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3C79E808C4154563985B0973 /* RandTestApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,17 +223,13 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);				
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = _TBOX_PREFIX__Prefix.pch;
+				GCC_PREFIX_HEADER = RandTest_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
-				PRODUCT_NAME = _TBOX_PREFIX_;
+				PRODUCT_NAME = RandTest;
 				WRAPPER_EXTENSION = app;
 				SYMROOT = ./build;
 			};
@@ -234,12 +246,12 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = _TBOX_PREFIX__Prefix.pch;
+				GCC_PREFIX_HEADER = RandTest_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
-				PRODUCT_NAME = _TBOX_PREFIX_;
+				PRODUCT_NAME = RandTest;
 				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 				SYMROOT = ./build;
@@ -250,10 +262,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";				
+				CLANG_CXX_LIBRARY = "libc++";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				CINDER_PATH = "_TBOX_CINDER_PATH_";
+				CINDER_PATH = "../../..";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
@@ -267,10 +279,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";				
+				CLANG_CXX_LIBRARY = "libc++";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				CINDER_PATH = "_TBOX_CINDER_PATH_";
+				CINDER_PATH = "../../..";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
@@ -283,7 +295,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "_TBOX_PREFIX_" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "RandTest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
@@ -292,7 +304,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "_TBOX_PREFIX_" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "RandTest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,

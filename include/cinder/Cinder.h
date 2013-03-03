@@ -22,23 +22,22 @@
 
 #pragma once
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <boost/version.hpp>
-#include <boost/config.hpp>
 
 #if BOOST_VERSION < 105200
 	#error "Cinder requires Boost version 1.52 or later"
 #endif
 
 namespace cinder {
-using boost::int8_t;
-using boost::uint8_t;
-using boost::int16_t;
-using boost::uint16_t;
-using boost::int32_t;
-using boost::uint32_t;
-using boost::int64_t;
-using boost::uint64_t;
+using std::int8_t;
+using std::uint8_t;
+using std::int16_t;
+using std::uint16_t;
+using std::int32_t;
+using std::uint32_t;
+using std::int64_t;
+using std::uint64_t;
 
 #define CINDER_CINDER
 
@@ -72,44 +71,22 @@ using boost::uint64_t;
 
 #if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
 	#include <memory>
-	#include <boost/signals2.hpp>
 	#if _MSC_VER >= 1700
 		#include <chrono>
 	#else
 		#include <boost/chrono.hpp>
 	#endif
-	namespace std {
-	    using namespace std::tr1::placeholders;
-	}
 #elif defined( CINDER_COCOA ) && defined( _LIBCPP_VERSION ) // libc++
 	#include <chrono>
-	#include <functional>
-	namespace std {
-		using namespace std::placeholders;
-	}
 	#include <memory>
-	#include <boost/signals2.hpp>
 #elif defined( CINDER_COCOA ) // libstdc++
 	#error "Cinder requires libc++ on Mac OS X and iOS"
 #else
 	#error "Unkown platform configuration"
 #endif
 
-namespace cinder { namespace signals {
-	using namespace boost::signals2;
-} } // cinder::signals
-
 #include <boost/checked_delete.hpp> // necessary for checked_array_deleter
 using boost::checked_array_deleter;
-
-// if compiler supports r-value references, #define CINDER_RVALUE_REFERENCES
-#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
-	#define CINDER_RVALUE_REFERENCES
-#elif defined( __clang__ )
-	#if __has_feature(cxx_rvalue_references)
-		#define CINDER_RVALUE_REFERENCES
-	#endif
-#endif
 
 // Create a namepace alias as shorthand for cinder::
 #if ! defined( CINDER_NO_NS_ALIAS )

@@ -28,6 +28,16 @@
 #include <vector>
 #include <utility>
 
+#include <boost/signals2.hpp>
+namespace cinder { namespace signals {
+	using namespace boost::signals2;
+} } // cinder::signals
+
+#include <functional>
+namespace std {
+	using namespace std::placeholders;
+}
+
 namespace cinder {
 
 //! Represents a unique identifier for a callback

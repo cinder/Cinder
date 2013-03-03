@@ -24,8 +24,6 @@
 
 #include "cinder/Cinder.h"
 
-#include <boost/preprocessor/seq.hpp>
-
 namespace cinder {
 
 template<typename T>

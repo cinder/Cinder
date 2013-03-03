@@ -22,6 +22,8 @@
 
 #include "cinder/ip/Trim.h"
 
+#include <boost/preprocessor/seq.hpp>
+
 namespace cinder { namespace ip {
 
 template<typename T>

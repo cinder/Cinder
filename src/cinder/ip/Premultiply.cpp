@@ -23,6 +23,8 @@
 #include "cinder/ip/Premultiply.h"
 #include "cinder/ChanTraits.h"
 
+#include <boost/preprocessor/seq.hpp>
+
 namespace cinder { namespace ip {
 
 // this is a candidate for sse2

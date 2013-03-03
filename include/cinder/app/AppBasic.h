@@ -53,7 +53,6 @@ class AppBasic : public App {
 
 		void	setShouldQuit ( bool aShouldQuit = true );
 		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
-		void	setFullScreen( bool fullScreen = true ) { mDefaultWindowFormat.setFullScreen( fullScreen ); }
 
 		//! Returns whether the default window is resizable
 		bool	isResizable() const { return mDefaultWindowFormat.isResizable(); }

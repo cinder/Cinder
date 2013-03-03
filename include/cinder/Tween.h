@@ -29,9 +29,9 @@
 #include "cinder/CinderMath.h"
 #include "cinder/Easing.h"
 #include "cinder/Function.h"
+#include "cinder/Quaternion.h"
 
 #include <list>
-#include <boost/utility.hpp>
 
 namespace cinder {
 
@@ -50,6 +50,28 @@ T tweenLerp( const T &start, const T &end, float time )
 {
 	return start * ( 1 - time ) + end * time;
 }
+
+// Specialization of tweenLerp for Quaternions to use slerping
+template<>
+inline Quatf tweenLerp( const Quatf &start, const Quatf &end, float time )
+{
+	Quatf val = start.slerp( time, end ).normalized();
+	if( std::isfinite( val.getAxis().x ) && std::isfinite( val.getAxis().y ) && std::isfinite( val.getAxis().z ) )
+		return val;
+	else
+		return Quatf::identity();
+}
+
+template<>
+inline Quatd tweenLerp( const Quatd &start, const Quatd &end, float time )
+{
+	Quatd val = start.slerp( time, end ).normalized();
+	if( std::isfinite( val.getAxis().x ) && std::isfinite( val.getAxis().y ) && std::isfinite( val.getAxis().z ) )
+		return val;
+	else
+		return Quatd::identity();
+}
+
 
 class TweenBase : public TimelineItem {
   public:
@@ -323,7 +345,6 @@ class Anim : public AnimBase {
 		return *this;
   	}
 
-#if defined( CINDER_RVALUE_REFERENCES )
 	Anim( Anim &&rhs ) // move constructor
 		: AnimBase( &mValue )
 	{
@@ -339,7 +360,6 @@ class Anim : public AnimBase {
 		}
 		return *this;
 	}
-#endif
 
 	Anim<T>& operator=( T value ) { mValue = value; return *this; }
 

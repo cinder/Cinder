@@ -27,68 +27,65 @@
 
 #include <iostream>
 #include <utility>
-#include <boost/rational.hpp>
+#include <vector>
 
 namespace cinder {
 
 template<typename T>
 class RectT;
 
-template<typename T>
-class AreaT {
+class Area {
  public:
-	AreaT() {}
-	AreaT( const Vec2<T> &UL, const Vec2<T> &LR );
-	AreaT( T aX1, T aY1, T aX2, T aY2 )
+	Area() {}
+	Area( const Vec2i &UL, const Vec2i &LR );
+	Area( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2 )
 		{ set( aX1, aY1, aX2, aY2 ); }
-	template<typename Y>
-	explicit AreaT( const AreaT<Y> &aAreaBase );
-	explicit AreaT( const RectT<float> &r );
+	explicit Area( const RectT<float> &r );
 
-	void			set( T aX1, T aY1, T aX2, T aY2 );
+	void			set( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2 );
 		
-	T				getWidth() const { return x2 - x1; }
-	T				getHeight() const { return y2 - y1; }
-	Vec2<T>			getSize() const { return Vec2<T>( x2 - x1, y2 - y1 ); }
-	Vec2f			getCenter() const { return Vec2f( ( x1 + x2 ) / 2.0f, ( y1 + y2 ) / 2.0f ); }
-	T				calcArea() const { return getWidth() * getHeight(); }
+	int32_t		getWidth() const { return x2 - x1; }
+	int32_t		getHeight() const { return y2 - y1; }
+	Vec2i		getSize() const { return Vec2i( x2 - x1, y2 - y1 ); }
+	Vec2f		getCenter() const { return Vec2f( ( x1 + x2 ) / 2.0f, ( y1 + y2 ) / 2.0f ); }
+	int32_t		calcArea() const { return getWidth() * getHeight(); }
 	
-	void			clipBy( const AreaT<T> &clip );
-	AreaT<T>		getClipBy( const AreaT<T> &clip ) const;
+	void			clipBy( const Area &clip );
+	Area		getClipBy( const Area &clip ) const;
 
-	//! Translates the AreaT by \a off
-	void			offset( const Vec2<T> &off );
-	//! Returns a copy of the AreaT translated by \a off
-	AreaT<T>		getOffset( const Vec2<T> &off ) const;
-	//! Translates the AreaT so that its upper-left corner is \a newUL
-	void			moveULTo( const Vec2<T> &newUL );
-	//! Returns a copy of the AreaT translated so that its upper-left corner is \a newUL
-	AreaT<T>		getMoveULTo( const Vec2<T> &newUL ) const;
-	//! Expands the AreaT by \a expandX horizontally and \a expandY vertically. \a expandX is subtracted from \c x1 and added to \c x2 and \a expandY is subtracted from \c y1 and added to \c y2.
-	void			expand( T expandX, T expandY ) { x1 -= expandX; x2 += expandX; y1 -= expandY; y2 += expandY; }
+	//! Translates the Area by \a off
+	void			offset( const Vec2i &off );
+	//! Returns a copy of the Area translated by \a off
+	Area		getOffset( const Vec2i &off ) const;
+	//! Translates the Area so that its upper-left corner is \a newUL
+	void			moveULTo( const Vec2i &newUL );
+	//! Returns a copy of the Area translated so that its upper-left corner is \a newUL
+	Area		getMoveULTo( const Vec2i &newUL ) const;
+	//! Expands the Area by \a expandX horizontally and \a expandY vertically. \a expandX is subtracted from \c x1 and added to \c x2 and \a expandY is subtracted from \c y1 and added to \c y2.
+	void			expand( int32_t expandX, int32_t expandY ) { x1 -= expandX; x2 += expandX; y1 -= expandY; y2 += expandY; }
 
-	T				getX1() const { return x1; }
-	void			setX1( T aX1 ) { x1 = aX1; }
-	T				getY1() const { return y1; }
-	void			setY1( T aY1 ) { y1 = aY1; }
-	T				getX2() const { return x2; }
-	void			setX2( T aX2 ) { x2 = aX2; }
-	T				getY2() const { return y2; }
-	void			setY2( T aY2 ) { y2 = aY2; }
-	Vec2<T>			getUL() const { return Vec2<T>( x1, y1 ); } // left-top offset
-	Vec2<T>			getLR() const { return Vec2<T>( x2, y2 ); } // right-bottom offset
+	int32_t			getX1() const { return x1; }
+	void			setX1( int32_t aX1 ) { x1 = aX1; }
+	int32_t			getY1() const { return y1; }
+	void			setY1( int32_t aY1 ) { y1 = aY1; }
+	int32_t			getX2() const { return x2; }
+	void			setX2( int32_t aX2 ) { x2 = aX2; }
+	int32_t			getY2() const { return y2; }
+	void			setY2( int32_t aY2 ) { y2 = aY2; }
+	Vec2i			getUL() const { return Vec2i( x1, y1 ); } // left-top offset
+	Vec2i			getLR() const { return Vec2i( x2, y2 ); } // right-bottom offset
 
-	bool			contains( const Vec2<T> &offset ) const;
+	bool			contains( const Vec2i &offset ) const;
 	template<typename Y>
-	bool			contains( const Vec2<Y> &offset ) const { return contains( Vec2<T>( (T)math<Y>::ceil( offset. x ), (T)math<Y>::ceil( offset.y ) ) ); }
-	bool			intersects( const AreaT<T> &area ) const;
+	bool			contains( const Vec2<Y> &offset ) const { return contains( Vec2i( (int32_t)math<Y>::ceil( offset. x ), (int32_t)math<Y>::ceil( offset.y ) ) ); }
+	bool			intersects( const Area &area ) const;
 
 	//! Expands the Area to include \a point in its interior
-	void		include( const Vec2<T> &point );
+	void		include( const Vec2i &point );
 	//! Expands the Area to include all points in \a points in its interior
-	void		include( const std::vector<Vec2<T> > &points );
+	void		include( const std::vector<Vec2i > &points );
 	//! Expands the Area to include \a rect in its interior
-	void		include( const AreaT &area );
+	void		include( const Area &area );
 
 	//! Returns the distance between the point \a pt and the rectangle. Points inside the Area return \c 0.
 	template<typename Y>
@@ -101,33 +98,28 @@ class AreaT {
 	template<typename Y>
 	Vec2<Y>		closestPoint( const Vec2<Y> &pt ) const;
 
-	T				x1, y1, x2, y2;
+	int32_t			x1, y1, x2, y2;
 
-	bool			operator==( const AreaT<T> &aArea ) const { return ( ( x1 == aArea.x1 ) && ( y1 == aArea.y1 ) && ( x2 == aArea.x2 ) && ( y2 == aArea.y2 ) ); }
-	bool			operator<( const AreaT<T> &aArea ) const;
+	bool			operator==( const Area &aArea ) const { return ( ( x1 == aArea.x1 ) && ( y1 == aArea.y1 ) && ( x2 == aArea.x2 ) && ( y2 == aArea.y2 ) ); }
+	bool			operator<( const Area &aArea ) const;
 
-	const AreaT<T>		operator+( const Vec2<T> &o ) const { return this->getOffset( o ); }
-	const AreaT<T>		operator-( const Vec2<T> &o ) const { return this->getOffset( -o ); }
+	const Area		operator+( const Vec2i &o ) const { return this->getOffset( o ); }
+	const Area		operator-( const Vec2i &o ) const { return this->getOffset( -o ); }
 
-	const AreaT<T>		operator+( const AreaT<T>& rhs ) const { return AreaT<T>( x1 + rhs.x1, y1 + rhs.y1, x2 + rhs.x2, y2 + rhs.y2 ); }
-	const AreaT<T>		operator-( const AreaT<T>& rhs ) const { return AreaT<T>( x1 - rhs.x1, y1 - rhs.y1, x2 - rhs.x2, y2 - rhs.y2 ); }
+	const Area		operator+( const Area& rhs ) const { return Area( x1 + rhs.x1, y1 + rhs.y1, x2 + rhs.x2, y2 + rhs.y2 ); }
+	const Area		operator-( const Area& rhs ) const { return Area( x1 - rhs.x1, y1 - rhs.y1, x2 - rhs.x2, y2 - rhs.y2 ); }
 
-	AreaT<T>&		operator+=( const Vec2<T> &o ) { offset( o ); return *this; }
-	AreaT<T>&		operator-=( const Vec2<T> &o ) { offset( -o ); return *this; }
+	Area&		operator+=( const Vec2i &o ) { offset( o ); return *this; }
+	Area&		operator-=( const Vec2i &o ) { offset( -o ); return *this; }
 
-	static AreaT<T>	proportionalFit( const AreaT<T> &srcArea, const AreaT<T> &dstArea, bool center, bool expand = false );
+	static Area	proportionalFit( const Area &srcArea, const Area &dstArea, bool center, bool expand = false );
 
-	friend std::ostream& operator<<( std::ostream &o, const AreaT<T> &area )
+	friend std::ostream& operator<<( std::ostream &o, const Area &area )
 	{
 		return o << "(" << area.x1 << ", " << area.y1 << ")-(" << area.x2 << ", " << area.y2 << ")";
 	}	
 };
 
-typedef AreaT<int32_t>						Area;
-typedef AreaT<boost::rational<int32_t> >	AreaRational;
-
 extern std::pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const Vec2i &dstLT );
-
-template <> Vec2f AreaRational::getCenter() const;
 
 } // namespace cinder
