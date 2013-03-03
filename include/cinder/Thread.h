@@ -26,6 +26,9 @@
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 #endif
+#if defined( CINDER_MAC )
+	#include <objc/objc-auto.h>
+#endif
 
 #if (defined( _MSC_VER ) && ( _MSC_VER >= 1700 )) || defined( _LIBCPP_VERSION )
 	#include <thread>
@@ -63,6 +66,9 @@ namespace cinder {
 class ThreadSetup {
   public:
 	ThreadSetup() {
+#if defined( CINDER_MAC )
+		objc_registerThreadWithCollector();
+#endif
 	}
 	
 	~ThreadSetup() {	
