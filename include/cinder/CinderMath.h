@@ -25,11 +25,11 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include <math.h>
-#include <limits.h>
+#include <cmath>
+#include <climits>
 #if defined( CINDER_MSW )
-#undef min
-#undef max
+	#undef min
+	#undef max
 #endif
 
 namespace cinder {

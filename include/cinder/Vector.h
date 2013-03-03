@@ -1296,9 +1296,9 @@ template <typename T> T dot( const Vec4<T>& a, const Vec4<T>& b ) { return a.dot
 template <typename T> Vec3<T> cross( const Vec3<T>& a, const Vec3<T>& b ) { return a.cross( b ); }
 template <typename T> Vec4<T> cross( const Vec4<T>& a, const Vec4<T>& b ) { return a.cross( b ); }
 
-template <typename T> bool isNaN( const Vec2<T>& a ) { return isNaN( a.x ) || isNaN( a.y ); }
-template <typename T> bool isNaN( const Vec3<T>& a ) { return isNaN( a.x ) || isNaN( a.y ) || isNaN( a.z ); }
-template <typename T> bool isNaN( const Vec4<T>& a ) { return isNaN( a.x ) || isNaN( a.y ) || isNaN( a.z ) || isNaN( a.w ); }
+template <typename T> bool isNaN( const Vec2<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ); }
+template <typename T> bool isNaN( const Vec3<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ); }
+template <typename T> bool isNaN( const Vec4<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ) || std::isnan( a.w ); }
 
 typedef Vec2<int>		Vec2i;
 typedef Vec2<float>		Vec2f;
