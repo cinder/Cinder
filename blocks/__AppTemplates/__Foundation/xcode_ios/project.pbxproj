@@ -157,7 +157,7 @@
 		00692BC614FF149000D0A05E /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 00692BC914FF149000D0A05E /* Build configuration list for PBXProject "_TBOX_PREFIX_" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
