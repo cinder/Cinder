@@ -87,31 +87,31 @@ DataSourceRef loadFile( const fs::path &path )
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceUrl
-DataSourceUrlRef DataSourceUrl::create( const Url &url )
+DataSourceUrlRef DataSourceUrl::create( const Url &url, const UrlOptions &options )
 {
-	return DataSourceUrlRef( new DataSourceUrl( url ) );
+	return DataSourceUrlRef( new DataSourceUrl( url, options ) );
 }
 
-DataSourceUrl::DataSourceUrl( const Url &url )
-	: DataSource( "", url )
+DataSourceUrl::DataSourceUrl( const Url &url, const UrlOptions &options )
+	: DataSource( "", url ), mOptions( options )
 {
 	setFilePathHint( url.str() );
 }
 
 void DataSourceUrl::createBuffer()
 {
-	IStreamUrlRef stream = loadUrlStream( mUrl );
+	IStreamUrlRef stream = loadUrlStream( mUrl, mOptions );
 	mBuffer = loadStreamBuffer( stream );
 }
 
 IStreamRef DataSourceUrl::createStream()
 {
-	return loadUrlStream( mUrl );
+	return loadUrlStream( mUrl, mOptions );
 }
 
-DataSourceRef loadUrl( const Url &url )
+DataSourceRef loadUrl( const Url &url, const UrlOptions &options )
 {
-	return DataSourceUrl::create( url );
+	return DataSourceUrl::create( url, options );
 }
 
 /////////////////////////////////////////////////////////////////////////////

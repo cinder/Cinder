@@ -38,7 +38,7 @@ namespace cinder {
 
 class IStreamUrlImplCocoa : public IStreamUrlImpl {
   public:
-	IStreamUrlImplCocoa( const std::string &url, const std::string &user, const std::string &password );
+	IStreamUrlImplCocoa( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options );
 	~IStreamUrlImplCocoa();
 
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize );
