@@ -145,15 +145,15 @@ IStreamUrlRef		loadUrlStream( const std::string &url, const std::string &user = 
 
 //! Exception for failed Url loading
 class UrlLoadExc : public Exception {
-public:
-	UrlLoadExc( int statusCode, const std::string &description );
+  public:
+	UrlLoadExc( int statusCode, const std::string &message );
 
-	virtual const char * what() const throw() { return mMessage; }
-	int statusCode() { return mStatusCode; }
+	virtual const char * what() const throw() { return mMessage.c_str(); }
+	int statusCode() const { return mStatusCode; }
 
-private:
-	char mMessage[4096];
-	int mStatusCode;
+  private:
+	std::string		mMessage;
+	int				mStatusCode;
 };
 
 } // namespace cinder

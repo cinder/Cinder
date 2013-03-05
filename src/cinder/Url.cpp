@@ -91,10 +91,9 @@ IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, co
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // UrlLoadExc
-UrlLoadExc::UrlLoadExc( int code, const std::string &description )
+UrlLoadExc::UrlLoadExc( int code, const std::string &message )
+	: mMessage( message ), mStatusCode( code )
 {
-	mStatusCode = code;
-	strncpy( mMessage, description.c_str(), sizeof(mMessage) );
 }
 
 } // namespace cinder

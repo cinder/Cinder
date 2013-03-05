@@ -222,12 +222,13 @@
 - (bool)isEof
 {
 	@synchronized( self ) {
-		if( mDidFail ) {
-			mStillConnected = NO;
-			throw cinder::UrlLoadExc( mStatusCode, mErrorString );
-		}
-		return ( mBufferedBytes - mBufferOffset == 0 ) && ( ! mStillConnected );
+		if( ! mDidFail )
+			return ( mBufferedBytes - mBufferOffset == 0 ) && ( ! mStillConnected );
+
+		mStillConnected = NO;
 	}
+	
+	throw cinder::UrlLoadExc( mStatusCode, mErrorString );
 }
 
 - (off_t)getSize
