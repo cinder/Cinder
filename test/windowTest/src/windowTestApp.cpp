@@ -150,6 +150,12 @@ void BasicApp::windowMouseDown( MouseEvent &mouseEvt )
 
 void BasicApp::keyDown( KeyEvent event )
 {
+	if( event.getCode() == KeyEvent::KEY_RSHIFT ) {
+		console() << "Right shift down" << std::endl;
+	}
+	else if( event.getCode() == KeyEvent::KEY_LCTRL ) {
+		console() << "Left control down" << std::endl;
+	}
 	if( event.getChar() == 'f' ) {
 		console() << "Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
 		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
