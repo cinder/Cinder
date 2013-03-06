@@ -39,6 +39,17 @@ void safeInternetCloseHandle( HINTERNET hInternet )
 		::InternetCloseHandle( hInternet );
 }
 
+void testAndThrowHttpStatus( HINTERNET hInternet )
+{
+	DWORD status;
+	DWORD statusSize( sizeof(status) );
+	::HttpQueryInfo( hInternet, HTTP_QUERY_FLAG_NUMBER|HTTP_QUERY_STATUS_CODE,
+					&status, &statusSize, NULL );
+	if( status >= 400 ) {
+		throw UrlLoadExc( status, "HTTP Server Error" );
+	}
+}
+
 IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 	: IStreamUrlImpl( user, password, options ), mIsFinished( false ), mBuffer( 0 ), mBufferFileOffset( 0 )
 {
@@ -106,22 +117,24 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
                                                             flags, NULL ),
                                          safeInternetCloseHandle );
 		if( ! mRequest )
-			throw StreamExc();
+			throw UrlLoadExc( 0, "Unknown URL load error" );
 		BOOL success = ::HttpSendRequest( mRequest.get(), NULL, 0, NULL, 0);
 		if( ! success )
-			throw StreamExc();
+			throw UrlLoadExc( 0, "Unknown URL load error" );
+		testAndThrowHttpStatus( mRequest.get() );
 	}
     //https
 	else if(urlComponents.nScheme == INTERNET_SCHEME_HTTPS ) {
-			static LPCTSTR lpszAcceptTypes[] = { L"*/*", NULL };
-			mRequest = std::shared_ptr<void>( ::HttpOpenRequest( mConnection.get(), L"GET", path, NULL, NULL, lpszAcceptTypes,
-													flags | INTERNET_FLAG_SECURE, NULL ),
+		static LPCTSTR lpszAcceptTypes[] = { L"*/*", NULL };
+		mRequest = std::shared_ptr<void>( ::HttpOpenRequest( mConnection.get(), L"GET", path, NULL, NULL, lpszAcceptTypes,
+											flags | INTERNET_FLAG_SECURE, NULL ),
 											safeInternetCloseHandle );
-			if( ! mRequest )
-				throw StreamExc();
-			BOOL success = ::HttpSendRequest( mRequest.get(), NULL, 0, NULL, 0);
-			if( ! success )
-				throw StreamExc();
+		if( ! mRequest )
+			throw UrlLoadExc( 0, "Unknown URL load error" );
+		BOOL success = ::HttpSendRequest( mRequest.get(), NULL, 0, NULL, 0);
+		if( ! success )
+			throw UrlLoadExc( 0, "Unknown URL load error" );
+		testAndThrowHttpStatus( mRequest.get() );
 	}
     //ftp
 	else if( urlComponents.nScheme == INTERNET_SCHEME_FTP ) {
