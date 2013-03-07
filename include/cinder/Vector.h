@@ -714,7 +714,17 @@ class Vec4
 		: x( static_cast<T>( src.x ) ), y( static_cast<T>( src.y ) ), z( static_cast<T>( src.z ) ),w( static_cast<T>( src.w ) )
 	{}
 	explicit Vec4( const T *d ) : x( d[0] ), y( d[1] ), z( d[2] ), w( d[3] ) {}
-
+	
+	void set( T ax, T ay, T az, T aw )
+	{
+		x = ax; y = ay; z = az; w = aw;
+	}
+	
+	void set( const Vec4<T> &rhs )
+	{
+		x = rhs.x; y = rhs.y; z = rhs.z; w = rhs.w;
+	}
+	
 	Vec4<T>& operator=( const Vec4<T>& rhs )
 	{
 		x = rhs.x; y = rhs.y; z = rhs.z; w = rhs.w;
