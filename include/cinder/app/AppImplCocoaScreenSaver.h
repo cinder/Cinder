@@ -58,6 +58,7 @@
 - (float)getFrameRate;
 - (void)setFrameRate:(float)frameRate;
 - (cinder::fs::path)getAppPath;
+- (void)removeCinderView:(WindowImplCocoaScreenSaver*)win;
 - (void)finalCleanup;
 
 @end
@@ -65,7 +66,6 @@
 @interface WindowImplCocoaScreenSaver : ScreenSaverView<WindowImplCocoa,CinderViewDelegate> {
   @public
 	CinderView							*mCinderView;	
-	AppImplCocoaScreenSaver				*mAppImpl;
 	cinder::app::WindowRef				mWindowRef;
 	cinder::DisplayRef					mDisplay;
 
@@ -73,11 +73,11 @@
 	BOOL								mResizeCalled;
 	BOOL								mIsMainView;
 	BOOL								mHasDrawnSinceLastUpdate;
-	BOOL								mReadyToBeDestroyed;
 }
 
 // ScreenSaverView methods
 - (void)drawRect:(NSRect)rect;
+- (void)instantiateView:(NSRect)rect;
 
 // WindowImplCocoa methods
 - (BOOL)isFullScreen;

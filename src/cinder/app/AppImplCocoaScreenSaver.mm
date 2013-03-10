@@ -21,95 +21,51 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-/* 	OK - this is complicated. We get (potentially) multiple initWithFrame: calls; one per screen.
-	In order to accommodate this, we need to instantiate a singleton AppImpl in initWithFrame:.
-	The next call we'll receive will be an animateOneFrame:, which we pass on up to the appImpl.
-	It in turn will call App::setup() if it hasn't been called yet. It also ignores all animateOneFrame:
-	calls that aren't for the main window. It calls update() once, and then draw() once per Window.
-*/
-
 #import "cinder/app/AppImplCocoaScreenSaver.h"
 
 #import <Foundation/NSThread.h>
 
 static AppImplCocoaScreenSaver *sAppImplInstance = nil;
-AppImplCocoaScreenSaver* getAppImpl( BOOL *isMainWindow );
-
-
-/* Yet another mess. How do we fire our app's shutdown() method and delete it?
-   The class below fires inconsistently when previewing the screensaver, but consistently when it
-   is "live". However the WindowCloseNotification fires consistently in preview and *not* when we're live.
-   One of the two should fire and allow us to [sAppImplInstance finalCleanup].
-   For my own records, I have attempted to use viewDidUnload, NSThreadWillExitNotification and
-   NSApplicationWillTerminate, but all are inconsistent.
-   Why can't we do this with [ScreenSaverView stopAnimation]? When ending the preview, we have only stopped
-   animations, but we'll shortly thereafter be started again as a preview, so we can't know whether a given
-   [stopAnimation:] is the last one we'll receive or not.
-*/
-class ShutdownStatic {
-  public:
-  	~ShutdownStatic() {
-		if( sAppImplInstance ) {
-			[sAppImplInstance finalCleanup];
-		}
-	}
-};
-static ShutdownStatic shutdownStatic;
+AppImplCocoaScreenSaver* getAppImpl();
 
 @implementation WindowImplCocoaScreenSaver
 
 //////////////////////////////////////////////////////////////////////////////////////
 // ScreenSaverView methods
-- (id)initWithFrame:(NSRect)frame isPreview:(BOOL)isPreview
+- (void)instantiateView:(NSRect)rect
 {
-	self = [super initWithFrame:frame isPreview:isPreview];
-	// This returns a pointer to the app, instantiating it if we are the first ScreenSaverView.
-	BOOL isMainWindow;
-	mAppImpl = getAppImpl( &isMainWindow );
-
-	NSRect newFrame = frame;
-	// Slam the origin values
-	newFrame.origin = NSZeroPoint;
-
-	mIsMainView = isMainWindow;
 	mResizeCalled = NO;
-	mReadyToBeDestroyed = NO;
 	mHasDrawnSinceLastUpdate = YES; // in order to force an update later
-	// we may get another initFrame call later with a new preview value. But whatever the most recent isPreview value is is the correct one
-	mPreview = isPreview;
-	BOOL blankingWindow = mAppImpl->mApp->getSettings().isSecondaryDisplayBlankingEnabled() && ( ! isMainWindow );
+	BOOL blankingWindow = getAppImpl()->mApp->getSettings().isSecondaryDisplayBlankingEnabled() && ( ! mIsMainView );
 
 	if( ! blankingWindow ) {
-		cinder::app::RendererRef renderer = mAppImpl->mApp->getDefaultRenderer()->clone();
-		cinder::app::RendererRef sharedRenderer = mAppImpl->mApp->findSharedRenderer( renderer );
-		mCinderView = [[CinderView alloc] initWithFrame:newFrame app:mAppImpl->mApp renderer:renderer sharedRenderer:sharedRenderer];
+		cinder::app::RendererRef renderer = getAppImpl()->mApp->getDefaultRenderer()->clone();
+		cinder::app::RendererRef sharedRenderer = getAppImpl()->mApp->findSharedRenderer( renderer );
+		mCinderView = [[CinderView alloc] initWithFrame:rect app:getAppImpl()->mApp renderer:renderer sharedRenderer:sharedRenderer];
 		[mCinderView setDelegate:self];
-		mWindowRef = cinder::app::Window::privateCreate__( self, mAppImpl->mApp );
 
 		[self setAutoresizesSubviews:YES];
 		[self addSubview:mCinderView];
 
 		[mCinderView release]; // addSubview incs the retainCount and the parent assumes ownership
 		
-		[self setAnimationTimeInterval:1 / [mAppImpl getFrameRate]];
+		[self setAnimationTimeInterval:1 / [getAppImpl() getFrameRate]];
 	}
 	else {
 		// a blanking window is just a black window with no CinderView
 		mCinderView = nil;
 		[self setAnimationTimeInterval:-1];
 	}
-
-	[mAppImpl addWindow:self];
-	if( mIsMainView )
-		[mAppImpl setActiveWindow:self];
-
-    return self;
 }
 
--(void)windowClosing:(NSNotification*)notification {
-	if( sAppImplInstance && ( [self isPreview] == 1 ) ) {
-		[sAppImplInstance finalCleanup];
-	}
+- (id)initWithFrame:(NSRect)frame isPreview:(BOOL)isPreview
+{
+	self = [super initWithFrame:frame isPreview:isPreview];
+
+	mPreview = isPreview;
+	mCinderView = nil;
+
+    return self;
 }
 
 - (void)setFrameSize:(NSSize)newSize
@@ -124,8 +80,10 @@ static ShutdownStatic shutdownStatic;
 
 - (void)drawRect:(NSRect)rect
 {
-	if( ! sAppImplInstance )
+	if( ! sAppImplInstance ) {
+		[super drawRect:rect]; // draws black by default
 		return;
+	}
 
 	if( ( ! mCinderView ) || ( ! mCinderView.readyToDraw ) ) {
 		[super drawRect:rect]; // draws black by default
@@ -138,7 +96,7 @@ static ShutdownStatic shutdownStatic;
 	if( ! sAppImplInstance ) // ignore until we have an instance
 		return;
 
-	[mAppImpl animateOneFrame:self];
+	[getAppImpl() animateOneFrame:self];
 }
 
 - (BOOL)isOpaque
@@ -148,53 +106,33 @@ static ShutdownStatic shutdownStatic;
 
 - (void)startAnimation
 {
-	if( ! sAppImplInstance )
-		return;
+	mWindowRef = cinder::app::Window::privateCreate__( self, getAppImpl()->mApp );
+	[getAppImpl() addWindow:self];
 
-	// see note on ShutdownStatic
-	NSWindow *parentWindow = [self window];
-	if( parentWindow ) {
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowClosing:) name:NSWindowWillCloseNotification object:parentWindow];
-	}
-
-
-	[super startAnimation];
+	// determine if this is the main view
 	bool found = false;
 	for( std::list<WindowImplCocoaScreenSaver*>::const_iterator winIt = sAppImplInstance->mWindows.begin(); winIt != sAppImplInstance->mWindows.end(); ++winIt )
 		if( (*winIt)->mIsMainView )
 			found = true;
-	
-	if( ! found ) {
+	if( ! found )
 		mIsMainView = YES;
-	}
+
+	NSRect newFrame = [self frame];
+	newFrame.origin = NSZeroPoint;
+	[self instantiateView:newFrame];
+
+	[super startAnimation];
 }
 
 - (void)stopAnimation
 {
-	if( ! sAppImplInstance )
-		return;
-
 	[super stopAnimation];
-
-	mIsMainView = NO;
-}
-
-- (void)viewWillMoveToWindow:(NSWindow*)win
-{
-	[super viewWillMoveToWindow:win];
-	if( win == nil ) {
-		mIsMainView = NO;
-		// have we already been here?
-		mReadyToBeDestroyed = YES;
-	}
+	[getAppImpl() removeCinderView:self];
 }
 
 - (BOOL)hasConfigureSheet
 {
-	if( ! sAppImplInstance )
-		return NO;
-
-    return mAppImpl->mApp->getSettings().getProvidesMacConfigDialog();
+    return getAppImpl()->mApp->getSettings().getProvidesMacConfigDialog();
 }
 
 - (NSWindow*)configureSheet
@@ -202,8 +140,8 @@ static ShutdownStatic shutdownStatic;
 	if( ! sAppImplInstance )
 		return nil;
 
-	if( mAppImpl->mApp->getSettings().getProvidesMacConfigDialog() )
-		return static_cast<NSWindow*>( mAppImpl->mApp->createMacConfigDialog() );
+	if( getAppImpl()->mApp->getSettings().getProvidesMacConfigDialog() )
+		return static_cast<NSWindow*>( getAppImpl()->mApp->createMacConfigDialog() );
 	else
 	    return nil;
 }
@@ -306,14 +244,14 @@ static ShutdownStatic shutdownStatic;
 // CinderViewDelegate methods
 - (void)resize
 {
-	[mAppImpl setActiveWindow:self];
+	[getAppImpl() setActiveWindow:self];
 	mWindowRef->emitResize();
 }
 
 - (void)draw
 {
 	if( [self isAnimating] ) {
-		[mAppImpl setActiveWindow:self];
+		[getAppImpl() setActiveWindow:self];
 		mWindowRef->emitDraw();
 	}
 }
@@ -377,30 +315,18 @@ static ShutdownStatic shutdownStatic;
 { // NO-OP
 }
 
--(void)dealloc
-{
-	[super dealloc];
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 @end
 
 
-AppImplCocoaScreenSaver* getAppImpl( BOOL *isMainWindow )
+AppImplCocoaScreenSaver* getAppImpl()
 {
-	BOOL firstCall = NO;
 	if( ! sAppImplInstance ) {
 		sAppImplInstance = [[AppImplCocoaScreenSaver alloc] init];
 		sAppImplInstance->mApp = ScreenSaverFactoryMethod( (void*)sAppImplInstance );
-		firstCall = YES;
 		sAppImplInstance->mFrameRate = sAppImplInstance->mApp->getSettings().getFrameRate();
+		sAppImplInstance->mSetupCalled = NO;
 	}
 	
-	*isMainWindow = YES;
-	for( const auto &win : sAppImplInstance->mWindows ) {
-		if( win->mIsMainView )
-			*isMainWindow = NO;
-	}
 	return sAppImplInstance;
 }
 
@@ -412,27 +338,14 @@ AppImplCocoaScreenSaver* getAppImpl( BOOL *isMainWindow )
 	self = [super init];
 	
 	mApp = NULL;
-	mSetupCalled = NO;
 	
 	return self;
 }
 
 - (void)addWindow:(WindowImplCocoaScreenSaver*)windowImpl
 {
-	// we also clean up any "old" windows. We do this here so that context sharing can have inherited their contexts
-	for( auto winIt = sAppImplInstance->mWindows.begin(); winIt != sAppImplInstance->mWindows.end(); ) {
-		if( (*winIt)->mReadyToBeDestroyed ) {
-			[self setActiveWindow:*winIt];
-			(*winIt)->mWindowRef->emitClose();
-			[(*winIt) release];
-			winIt = sAppImplInstance->mWindows.erase( winIt );
-		}
-		else
-			++winIt;
-	}
-
 	[windowImpl retain];
-	mWindows.push_back( windowImpl );
+	mWindows.push_back( windowImpl );	
 }
 
 - (BOOL)isPreview
@@ -514,7 +427,7 @@ AppImplCocoaScreenSaver* getAppImpl( BOOL *isMainWindow )
 	// determine if all of our windows have drawn since the last update, and update if so
 	BOOL allWindowsDrawn = YES;
 	for( auto &win : mWindows ) {
-		if( [win isAnimating]  && ( ! win->mHasDrawnSinceLastUpdate ) ) {
+		if( win->mCinderView && [win isAnimating] && ( ! win->mHasDrawnSinceLastUpdate ) ) {
 			allWindowsDrawn = NO;
 			break;
 		}
@@ -534,15 +447,37 @@ AppImplCocoaScreenSaver* getAppImpl( BOOL *isMainWindow )
 	}
 }
 
+- (void)removeCinderView:(WindowImplCocoaScreenSaver*)win
+{
+	// issue a close signal against this window
+	[self setActiveWindow:win];
+	win->mWindowRef->emitClose();
+
+	// release its Cinder View
+	[win->mCinderView removeFromSuperview];
+	win->mCinderView = nil;
+	
+	// if no Windows have CinderViews anymore that means we need to finalCleanup
+	BOOL foundACinderView = NO;
+	for( auto &win : mWindows ) {
+		if( win->mCinderView != nil )
+			foundACinderView = YES;
+	}
+	
+	if( ! foundACinderView ) {
+		[self finalCleanup];
+	}
+	else { // if we're not going away, let's make sure we have a main view
+		for( auto &win : mWindows ) {
+			if( win->mCinderView != nil )
+				win->mIsMainView = YES;
+		}
+	}
+}
+
 - (void)finalCleanup
 {
 	if( sAppImplInstance ) {
-		// emit closes on all our windows
-		for( auto &win : mWindows ) {
-			[self setActiveWindow:win];
-			win->mWindowRef->emitClose();
-			[win release];
-		}
 		mApp->emitShutdown();	
 		delete sAppImplInstance->mApp;
 		[sAppImplInstance release];

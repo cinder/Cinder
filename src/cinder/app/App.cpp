@@ -458,7 +458,8 @@ RendererRef App::findSharedRenderer( RendererRef searchRenderer ) const
 		return RendererRef();
 
 	for( size_t winIdx = 0; winIdx < getNumWindows(); ++winIdx ) {
-		if( typeid( *(getWindowIndex( winIdx )->getRenderer()) ) == typeid(*searchRenderer) )
+		RendererRef thisRenderer = getWindowIndex( winIdx )->getRenderer();
+		if( thisRenderer && (typeid( *thisRenderer ) == typeid(*searchRenderer)) )
 			return getWindowIndex( winIdx )->getRenderer();
 	}
 	

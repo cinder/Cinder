@@ -39,7 +39,6 @@
 - (id)initWithFrame:(NSRect)frame
 {
 	self = [super initWithFrame:frame];
-
 	mApp = NULL;
 	mReadyToDraw = NO;
 	mReceivesEvents = YES;
@@ -54,7 +53,6 @@
 - (id)initWithFrame:(NSRect)frame app:(cinder::app::App*)aApp renderer:(cinder::app::RendererRef)aRenderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
 {
 	self = [super initWithFrame:frame];
-	
 	mApp = aApp;
 	mRenderer = aRenderer;
 	mReadyToDraw = NO;

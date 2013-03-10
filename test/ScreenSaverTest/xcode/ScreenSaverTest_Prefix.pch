@@ -16,3 +16,4 @@
 #define CocoaRendererQuartzView CocoaRendererQuartzView_ScreenSaverTest
 #define AppImplCocoaScreenSaver AppImplCocoaScreenSaver_ScreenSaverTest
 #define WindowImplCocoaScreenSaver WindowImplCocoaScreenSaver_ScreenSaverTest
+#define sAppImplInstance sAppImplInstance_ScreenSaverTest
