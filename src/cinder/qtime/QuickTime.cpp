@@ -26,12 +26,14 @@
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 #include "cinder/Cinder.h"
-#include "cinder/Utilities.h"
 
-#include <sstream>
+// this has a conflict with Boost 1.53, so instead just declare the symbol extern
+// #include "cinder/Utilities.h"
+namespace cinder {
+	extern void sleep( float milliseconds );
+}
 
 #if defined( CINDER_MAC )
-	#include "cinder/app/App.h"
 	#include <QTKit/QTKit.h>
 	#include <QTKit/QTMovie.h>
 	#include <CoreVideo/CoreVideo.h>
