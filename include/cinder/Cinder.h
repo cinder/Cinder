@@ -25,8 +25,8 @@
 #include <cstdint>
 #include <boost/version.hpp>
 
-#if BOOST_VERSION < 105200
-	#error "Cinder requires Boost version 1.52 or later"
+#if BOOST_VERSION < 105300
+	#error "Cinder requires Boost version 1.53 or later"
 #endif
 
 namespace cinder {

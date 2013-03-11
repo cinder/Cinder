@@ -7,9 +7,9 @@ The <a href="http://boost.org">Boost libraries</a> are a collection of peer-revi
 \section setup Setting up Boost
 If you have downloaded one of the pre-built packages from the Cinder website, Boost is already included - you're all set. However if you are building Cinder yourself from <a href="http://github.com/cinder">github</a>, or you would like to upgrade your copy of Boost from the included version, these instructions will guide you through the process.\n\n
 
-If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.52. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a>\n
+If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.53. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a>\n
 \n
-Now you'll need to put Boost inside your Cinder folder, and <b>rename it \e boost</b>. Your cinder directory should be laid out similarly to the screenshot below. At this point you should be all done if you are using Boost version 1.52, which is the version Cinder is currently built against. If you are moving to a different version of Boost, follow the build instructions below.\n
+Now you'll need to put Boost inside your Cinder folder, and <b>rename it \e boost</b>. Your cinder directory should be laid out similarly to the screenshot below. At this point you should be all done if you are using Boost version 1.53, which is the version Cinder is currently built against. If you are moving to a different version of Boost, follow the build instructions below.\n
 \image html cinder_finder.png
 \n
 
@@ -30,7 +30,7 @@ using clang : ios
 ;
 
 using clang : ios_sim
-: xcrun clang -arch i386 -stdlibc=lib++ -std=c++11 -miphoneos-version-min=5.0 -fvisibility-inlines-hidden -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk/
+: xcrun clang -arch i386 -stdlib=libc++ -std=c++11 -miphoneos-version-min=5.0 -fvisibility-inlines-hidden -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk/
 ;
 \endcode
 

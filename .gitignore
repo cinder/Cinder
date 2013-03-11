@@ -7,7 +7,6 @@
 xcuserdata/
 .DS_Store
 
-boost/
 build/
 lib/libcinder*.a
 lib/cinder*.lib

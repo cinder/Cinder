@@ -30,9 +30,7 @@
 #include "cinder/Utilities.h"
 
 #include <string>
-// Addresses a bug in Container.List that shipped with Boost 1.52
-#include "boost/container/cinder_fixed_list.hpp"
-//#include <boost/container/list.hpp>
+#include <boost/container/list.hpp>
 
 namespace Json {
 	class Value;
