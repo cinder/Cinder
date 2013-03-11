@@ -4,3 +4,6 @@
 [submodule "tools/TinderBox-Win"]
 	path = tools/TinderBox-Win
 	url = git://github.com/cinder/TinderBox-Win.git
+[submodule "boost"]
+	path = boost
+	url = git://github.com/cinder/Cinder.git
