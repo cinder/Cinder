@@ -6,4 +6,4 @@
 	url = git://github.com/cinder/TinderBox-Win.git
 [submodule "boost"]
 	path = boost
-	url = git://github.com/cinder/Cinder.git
+	url = git://github.com/cinder/Cinder-Boost.git
