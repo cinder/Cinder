@@ -23,7 +23,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FBOBasic", "..\..\FBOBasic\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flickrTest", "..\..\flickrTest\vc11\flickrTest.vcxproj", "{9A070488-429E-4682-BB76-46B4175ED2B9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fontSample", "..\..\fontSample\vc11\fontSample.vcxproj", "{C8CADF7C-051D-484D-9C6A-08082D2A388A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fontSample", "..\..\fontSample\vc11\fontSample.vcxproj", "{CEAE8C59-175B-465C-B7BA-655D6D8C77B0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLSLLighting", "..\..\GLSLLighting\vc11\GLSLLighting.vcxproj", "{1496D68C-4629-402E-B96F-7B4E536D7E20}"
 EndProject
@@ -45,7 +45,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OpenGLLighting", "..\..\Ope
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParamsBasic", "..\..\ParamsBasic\vc11\ParamsBasic.vcxproj", "{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "perlinTest", "..\..\perlinTest\vc11\perlinTest.vcxproj", "{7B516CAF-6977-4BD1-8A93-232D9C7F23BE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "perlinTest", "..\..\perlinTest\vc11\perlinTest.vcxproj", "{ECB64D66-2649-4C1A-AC1A-FDD64AB62D94}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QTimeAdvApp", "..\..\QuickTimeAdvanced\vc11\QTimeAdvApp.vcxproj", "{C937D670-DDDF-4DB6-ABFD-387E69098F2A}"
 EndProject
@@ -183,10 +183,10 @@ Global
 		{9A070488-429E-4682-BB76-46B4175ED2B9}.Debug|Win32.Build.0 = Debug|Win32
 		{9A070488-429E-4682-BB76-46B4175ED2B9}.Release|Win32.ActiveCfg = Release|Win32
 		{9A070488-429E-4682-BB76-46B4175ED2B9}.Release|Win32.Build.0 = Release|Win32
-		{C8CADF7C-051D-484D-9C6A-08082D2A388A}.Debug|Win32.ActiveCfg = Debug|Win32
-		{C8CADF7C-051D-484D-9C6A-08082D2A388A}.Debug|Win32.Build.0 = Debug|Win32
-		{C8CADF7C-051D-484D-9C6A-08082D2A388A}.Release|Win32.ActiveCfg = Release|Win32
-		{C8CADF7C-051D-484D-9C6A-08082D2A388A}.Release|Win32.Build.0 = Release|Win32
+		{CEAE8C59-175B-465C-B7BA-655D6D8C77B0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CEAE8C59-175B-465C-B7BA-655D6D8C77B0}.Debug|Win32.Build.0 = Debug|Win32
+		{CEAE8C59-175B-465C-B7BA-655D6D8C77B0}.Release|Win32.ActiveCfg = Release|Win32
+		{CEAE8C59-175B-465C-B7BA-655D6D8C77B0}.Release|Win32.Build.0 = Release|Win32
 		{1496D68C-4629-402E-B96F-7B4E536D7E20}.Debug|Win32.ActiveCfg = Debug|Win32
 		{1496D68C-4629-402E-B96F-7B4E536D7E20}.Debug|Win32.Build.0 = Debug|Win32
 		{1496D68C-4629-402E-B96F-7B4E536D7E20}.Release|Win32.ActiveCfg = Release|Win32
@@ -227,10 +227,10 @@ Global
 		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Debug|Win32.Build.0 = Debug|Win32
 		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Release|Win32.ActiveCfg = Release|Win32
 		{B2EE0762-5BCB-4880-9BE4-1A5B0FD467E8}.Release|Win32.Build.0 = Release|Win32
-		{7B516CAF-6977-4BD1-8A93-232D9C7F23BE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{7B516CAF-6977-4BD1-8A93-232D9C7F23BE}.Debug|Win32.Build.0 = Debug|Win32
-		{7B516CAF-6977-4BD1-8A93-232D9C7F23BE}.Release|Win32.ActiveCfg = Release|Win32
-		{7B516CAF-6977-4BD1-8A93-232D9C7F23BE}.Release|Win32.Build.0 = Release|Win32
+		{ECB64D66-2649-4C1A-AC1A-FDD64AB62D94}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ECB64D66-2649-4C1A-AC1A-FDD64AB62D94}.Debug|Win32.Build.0 = Debug|Win32
+		{ECB64D66-2649-4C1A-AC1A-FDD64AB62D94}.Release|Win32.ActiveCfg = Release|Win32
+		{ECB64D66-2649-4C1A-AC1A-FDD64AB62D94}.Release|Win32.Build.0 = Release|Win32
 		{C937D670-DDDF-4DB6-ABFD-387E69098F2A}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C937D670-DDDF-4DB6-ABFD-387E69098F2A}.Debug|Win32.Build.0 = Debug|Win32
 		{C937D670-DDDF-4DB6-ABFD-387E69098F2A}.Release|Win32.ActiveCfg = Release|Win32
