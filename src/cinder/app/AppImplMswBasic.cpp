@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -32,63 +33,29 @@
 using std::vector;
 using std::string;
 
-#define LOSHORT(l)           ((SHORT)(l))
-#define HISHORT(l)           ((SHORT)(((DWORD)(l) >> 16) & 0xFFFF))
-
 namespace cinder { namespace app {
 
-static const wchar_t *WINDOWED_WIN_CLASS_NAME = TEXT("CinderWinClass");
-static const wchar_t *FULLSCREEN_WIN_CLASS_NAME = TEXT("CinderWinFSClass");
-
 AppImplMswBasic::AppImplMswBasic( AppBasic *aApp )
-	: AppImplMsw( aApp ), mApp( aApp ), mHasBeenInitialized( false )
+	: AppImplMsw( aApp ), mApp( aApp )
 {
 	mShouldQuit = false;
-	mIsDragging = false;
 }
 
 void AppImplMswBasic::run()
 {
-	mDisplay = mApp->getSettings().getDisplay();
-	if( ! mDisplay )
-		mDisplay = cinder::Display::getMainDisplay().get();
-
-	if( mApp->getSettings().isFullScreen() ) {
-		mFullScreen = true;
-		mWindowWidth = mDisplay->getWidth();
-		mWindowHeight = mDisplay->getHeight();  
-	}
-	else {
-		mFullScreen = false;
-		mWindowWidth = mApp->getSettings().getWindowWidth();
-		mWindowHeight = mApp->getSettings().getWindowHeight();
-	}
-	
-	mBorderless = mApp->getSettings().isBorderless();
-	mAlwaysOnTop = mApp->getSettings().isAlwaysOnTop();
 	mFrameRate = mApp->getSettings().getFrameRate();
+	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
 
-	if( mApp->getSettings().isWindowPosSpecified() )
-		mWindowedPos = mApp->getSettings().getWindowPos();
-	else
-		mWindowedPos = Vec2i( 
-			mDisplay->getArea().getX1() + ( mDisplay->getWidth() - mApp->getSettings().getWindowWidth() ) / 2,
-			mDisplay->getArea().getY1() + ( mDisplay->getHeight() - mApp->getSettings().getWindowHeight() ) / 2 );	// center window
-
-	createWindow( &mWindowWidth, &mWindowHeight );
-
-	POINT upperLeft;
-	upperLeft.x = upperLeft.y = 0;
-	::ClientToScreen( mWnd, &upperLeft );
-	privateSetWindowOffset__( Vec2i( upperLeft.x, upperLeft.y ) );
+	auto formats = mApp->getSettings().getWindowFormats();
+	if( formats.empty() )
+		formats.push_back( mApp->getSettings().getDefaultWindowFormat() );
+	for( auto format = formats.begin(); format != formats.end(); ++format )
+		createWindow( *format );
 
 	mApp->privateSetup__();
-	mHasBeenInitialized = true;
-	mApp->privateResize__( ResizeEvent( Vec2i( mWindowWidth, mWindowHeight ) ) );
-
-	::ShowWindow( mWnd, SW_SHOW );
-	::SetForegroundWindow( mWnd );
-	::SetFocus( mWnd );
+	mSetupHasBeenCalled = true;
+	for( auto windowIt = mWindows.begin(); windowIt != mWindows.end(); ++windowIt )
+		(*windowIt)->resize();
 
 	// initialize our next frame time
 	mNextFrameTime = getElapsedSeconds();
@@ -97,7 +64,8 @@ void AppImplMswBasic::run()
 	while( ! mShouldQuit ) {
 		// update and draw
 		mApp->privateUpdate__();
-		::RedrawWindow( mWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW );
+		for( auto windowIt = mWindows.begin(); windowIt != mWindows.end(); ++windowIt )
+			(*windowIt)->redraw();
 
 		// get current time in seconds
 		double currentSeconds = mApp->getElapsedSeconds();
@@ -107,7 +75,7 @@ void AppImplMswBasic::run()
 
 		// determine if application was frozen for a while and adjust next frame time
 		double elapsedSeconds = currentSeconds - mNextFrameTime;
-		if(elapsedSeconds > 1.0) {
+		if( elapsedSeconds > 1.0 ) {
 			int numSkipFrames = (int)(elapsedSeconds / secondsPerFrame);
 			mNextFrameTime += (numSkipFrames * secondsPerFrame);
 		}
@@ -116,7 +84,7 @@ void AppImplMswBasic::run()
 		mNextFrameTime += secondsPerFrame;
 
 		// sleep and process messages until next frame
-		if(mNextFrameTime > currentSeconds)
+		if( ( mFrameRateEnabled ) && ( mNextFrameTime > currentSeconds ) )
 			sleep(mNextFrameTime - currentSeconds);
 		else {
 			MSG msg;
@@ -127,8 +95,8 @@ void AppImplMswBasic::run()
 		}
 	}
 
-	killWindow( mFullScreen );
-	mApp->privateShutdown__();
+//	killWindow( mFullScreen );
+	mApp->emitShutdown();
 	delete mApp;
 }
 
@@ -163,562 +131,110 @@ void AppImplMswBasic::sleep( double seconds )
 	}
 }
 
-bool AppImplMswBasic::createWindow( int *width, int *height )
+WindowRef AppImplMswBasic::createWindow( Window::Format format )
 {
-	if( *width <= 0 ) {
-		*width = mDisplay->getWidth();
-		*height = mDisplay->getHeight();
-	}
+	if( ! format.getRenderer() )
+		format.setRenderer( mApp->getDefaultRenderer()->clone() );
 
-	WNDCLASS	wc;						// Windows Class Structure
-	RECT		windowRect;				// Grabs Rectangle Upper Left / Lower Right Values
-	Area    DisplayArea = mDisplay->getArea();
+	mWindows.push_back( new WindowImplMswBasic( format, mApp->findSharedRenderer( format.getRenderer() ), this ) );
 
-	if( mFullScreen ) {
-		windowRect.left = DisplayArea.getX1();
-		windowRect.right = DisplayArea.getX2();
-		windowRect.top = DisplayArea.getY1();
-		windowRect.bottom = DisplayArea.getY2();
-	}
-	else if ( mApp->getSettings().isWindowPosSpecified() ) { 
-		windowRect.left = mWindowedPos.x; 
-		windowRect.right = mWindowedPos.x  + *width;
-		windowRect.top =  mWindowedPos.y;
-		windowRect.bottom = mWindowedPos.y + *height;
-	}
-	else {
-		windowRect.left = mWindowedPos.x; 
-		windowRect.right = mWindowedPos.x + *width;
-		windowRect.top = mWindowedPos.y;
-		windowRect.bottom = mWindowedPos.y + *height;
-	}
+	// emit initial resize if we have fired setup
+	if( mSetupHasBeenCalled )
+		mWindows.back()->getWindow()->emitResize();
 
-	mInstance			= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
-	wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;	// Redraw On Size, And Own DC For Window.
-	wc.lpfnWndProc		= WndProc;						// WndProc Handles Messages
-	wc.cbClsExtra		= 0;									// No Extra Window Data
-	wc.cbWndExtra		= 0;									// No Extra Window Data
-	wc.hInstance		= mInstance;							// Set The Instance
-	wc.hIcon			= ::LoadIcon( NULL, IDI_WINLOGO );		// Load The Default Icon
-	wc.hCursor			= ::LoadCursor( NULL, IDC_ARROW );		// Load The Arrow Pointer
-	wc.hbrBackground	= NULL;									// No Background Required For GL
-	wc.lpszMenuName		= NULL;									// We Don't Want A Menu
-	wc.lpszClassName	= ( mFullScreen ) ? FULLSCREEN_WIN_CLASS_NAME : WINDOWED_WIN_CLASS_NAME;
-
-	if( ! ::RegisterClass( &wc ) ) {								// Attempt To Register The Window Class
-		DWORD err = ::GetLastError();
-		return false;											
-	}
-
-	if( mFullScreen ) {
-		mWindowExStyle = WS_EX_APPWINDOW;								// Window Extended Style
-		mWindowStyle = WS_POPUP;										// Windows Style
-	}
-	else if( mBorderless ) {
-		mWindowExStyle = WS_EX_APPWINDOW;
-		mWindowStyle = WS_POPUP;
-	}
-	else {
-		mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
-		mWindowStyle = ( mApp->getSettings().isResizable() ) ? WS_OVERLAPPEDWINDOW
-			:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style
-	}
-
-	::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
-
-	std::wstring unicodeTitle = toUtf16( mApp->getSettings().getTitle() ); 
-
-	// Create The Window
-	if( ! ( mWnd = ::CreateWindowEx( mWindowExStyle,						// Extended Style For The Window
-		( mFullScreen ) ? FULLSCREEN_WIN_CLASS_NAME : WINDOWED_WIN_CLASS_NAME,
-		unicodeTitle.c_str(),						// Window Title
-		mWindowStyle,					// Required Window Style
-		windowRect.left, windowRect.top,								// Window Position
-		windowRect.right - windowRect.left,	// Calculate Window Width
-		windowRect.bottom - windowRect.top,	// Calculate Window Height
-		NULL,								// No Parent Window
-		NULL,								// No Menu
-		mInstance,							// Instance
-		reinterpret_cast<LPVOID>( this ) )) )
-
-	{
-		//killWindow();							// Reset The Display
-		return false;								
-	}
-
-	mDC = ::GetDC( mWnd );
-	if( ! mDC ) {
-		killWindow( mFullScreen );
-		return false;
-	}
-
-	if( mAlwaysOnTop ) {
-		::SetWindowLongA( mWnd, GWL_EXSTYLE, ::GetWindowLongA( mWnd, GWL_EXSTYLE ) | WS_EX_TOPMOST );
-		::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
-	}
-
-	// update display
-	mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) ).get();
-
-	mApp->getRenderer()->setup( mApp, mWnd, mDC );
-
-	::DragAcceptFiles( mWnd, TRUE );
-	enableMultiTouch();
-
-	return true;									// Success
+	return mWindows.back()->getWindow();
 }
 
-void AppImplMswBasic::killWindow( bool wasFullScreen )
+void AppImplMswBasic::closeWindow( WindowImplMsw *windowImpl )
 {
-	mApp->getRenderer()->kill();
+	auto winIt = find( mWindows.begin(), mWindows.end(), windowImpl );
+	if( winIt != mWindows.end() ) {
+		windowImpl->getWindow()->emitClose();
+		windowImpl->privateClose();
+		delete windowImpl;
+		mWindows.erase( winIt );
+	}
 
-	if( mDC )
-		::ReleaseDC( mWnd, mDC );
-
-	if( mWnd )
-		::DestroyWindow( mWnd );
-
-	if( wasFullScreen )
-		::UnregisterClass( FULLSCREEN_WIN_CLASS_NAME, mInstance );
-	else
-		::UnregisterClass( WINDOWED_WIN_CLASS_NAME, mInstance );
-
-	mWnd = 0;
+	if( mWindows.empty() && mApp->getSettings().isQuitOnLastWindowCloseEnabled() )
+		mShouldQuit = true;
 }
 
-void AppImplMswBasic::toggleFullScreen()
+size_t AppImplMswBasic::getNumWindows() const
 {
-	bool prevFullScreen = mFullScreen;
-	HDC oldDC = mDC;
-	HWND oldWnd = mWnd;
+	return mWindows.size();
+}
+
+WindowRef AppImplMswBasic::getWindowIndex( size_t index )
+{
+	if( index >= mWindows.size() )
+		return cinder::app::WindowRef();
 	
-	mFullScreen = ! mFullScreen;
-	
-	int windowWidth, windowHeight;
-	if( mApp->isFullScreen() ) {
-		windowWidth = mDisplay->getWidth();
-		windowHeight = mDisplay->getHeight();
-		mWindowedPos = mWindowOffset;
-	}
-	else {
-		windowWidth = mApp->getSettings().getWindowWidth();
-		windowHeight = mApp->getSettings().getWindowHeight();
-	}
-
-	mApp->getRenderer()->prepareToggleFullScreen();
-	createWindow( &windowWidth, &windowHeight );
-	mApp->getRenderer()->finishToggleFullScreen();
-
-	::ReleaseDC( oldWnd, oldDC );
-	::DestroyWindow( oldWnd ); 
-	if( prevFullScreen )
-		::UnregisterClass( FULLSCREEN_WIN_CLASS_NAME, mInstance );
-	else
-		::UnregisterClass( WINDOWED_WIN_CLASS_NAME, mInstance );
-
-	mWindowWidth = windowWidth;
-	mWindowHeight = windowHeight;
-
-	::ShowWindow( mWnd, SW_SHOW );
-	::SetForegroundWindow( mWnd );
-	::SetFocus( mWnd );
-	::DragAcceptFiles( mWnd, TRUE );
-	enableMultiTouch();
-	
-	mApp->privateResize__( ResizeEvent( Vec2i( mApp->getWindowWidth(), mApp->getWindowHeight() ) ) );
+	std::list<WindowImplMswBasic*>::iterator iter = mWindows.begin();
+	std::advance( iter, index );
+	return (*iter)->mWindowRef;
 }
 
-void AppImplMswBasic::setBorderless( bool borderless )
+WindowRef AppImplMswBasic::getForegroundWindow() const
 {
-	if( mBorderless != borderless ) {
-		mBorderless = borderless;
-		if( mBorderless ) {
-			mWindowExStyle = WS_EX_APPWINDOW;
-			mWindowStyle = WS_POPUP;
-		}
-		else {
-			mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
-			mWindowStyle = ( mApp->getSettings().isResizable() ) ? WS_OVERLAPPEDWINDOW
-				:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style
-		}
+	return mForegroundWindow;
+}
 
-		POINT upperLeft;
-		upperLeft.x = upperLeft.y = 0;
-		::ClientToScreen( mWnd, &upperLeft );
+void AppImplMswBasic::setForegroundWindow( WindowRef window )
+{
+	mForegroundWindow = window;
+}
 
-		RECT windowRect;
-		::GetClientRect( mWnd, &windowRect );
-		windowRect.left += upperLeft.x; windowRect.right += upperLeft.x;
-		windowRect.top += upperLeft.y; windowRect.bottom += upperLeft.y;
-		::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
+// This creates a full-screen blanking (all black) Window on each display besides 'fullScreenDisplay'
+void AppImplMswBasic::setupBlankingWindows( DisplayRef fullScreenDisplay )
+{
+	destroyBlankingWindows();
 
-		::SetWindowLongA( mWnd, GWL_STYLE, mWindowStyle );
-		::SetWindowLongA( mWnd, GWL_EXSTYLE, mWindowExStyle );
-		::SetWindowPos( mWnd, HWND_TOP, windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
-				SWP_FRAMECHANGED|SWP_SHOWWINDOW|SWP_NOZORDER );
-		if( mBorderless )
-			::InvalidateRect( 0, NULL, TRUE );
+	for( auto displayIt = Display::getDisplays().begin(); displayIt != Display::getDisplays().end(); ++displayIt ) {
+		if( *displayIt == fullScreenDisplay )
+			continue;
+		mBlankingWindows.push_back( BlankingWindowRef( new BlankingWindow( *displayIt ) ) );
 	}
 }
 
-void AppImplMswBasic::setAlwaysOnTop( bool alwaysOnTop )
+void AppImplMswBasic::destroyBlankingWindows()
 {
-	if( mAlwaysOnTop != alwaysOnTop ) {
-		mAlwaysOnTop = alwaysOnTop;
-		LONG oldExStyle = ::GetWindowLongA( mWnd, GWL_EXSTYLE );
-		if( mAlwaysOnTop ) {
-			::SetWindowLongA( mWnd, GWL_EXSTYLE, oldExStyle | WS_EX_TOPMOST );
-			::SetWindowPos( mWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
-		}
-		else {
-			::SetWindowLongA( mWnd, GWL_EXSTYLE, oldExStyle &= (~WS_EX_TOPMOST) );
-			::SetWindowPos( mWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
-		}
-	}
-}
+	for( auto winIt = mBlankingWindows.begin(); winIt != mBlankingWindows.end(); ++winIt )
+		(*winIt)->destroy();
 
-
-void AppImplMswBasic::enableMultiTouch()
-{
-	if( mApp->getSettings().isMultiTouchEnabled() ) {
-		// we need to make sure this version of User32 even has MultiTouch symbols, so we'll do that with GetProcAddress
-		BOOL (WINAPI *RegisterTouchWindow)( HWND, ULONG);
-		*(DWORD *)&RegisterTouchWindow = (DWORD)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
-		if( RegisterTouchWindow ) {
-			(*RegisterTouchWindow)( mWnd, 0 );
-		}
-	}
-}
-
-void AppImplMswBasic::setWindowPos( const Vec2i &windowPos )
-{
-	RECT clientArea;
-	clientArea.left = windowPos.x; clientArea.top = windowPos.y;
-	clientArea.right = windowPos.x + 1; clientArea.bottom = windowPos.y + 1; // we don't actually care about the lower-right
-	::AdjustWindowRectEx( &clientArea, mWindowStyle, FALSE, mWindowExStyle );
-	::SetWindowPos( mWnd, HWND_TOP, clientArea.left, clientArea.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER );
-	
-	POINT upperLeft;
-	upperLeft.x = upperLeft.y = 0;
-	::ClientToScreen( mWnd, &upperLeft );
-	mWindowOffset.x = upperLeft.x;
-	mWindowOffset.y = upperLeft.y;
-}
-
-void AppImplMswBasic::setWindowWidth( int aWindowWidth )
-{
-	int screenWidth, screenHeight;
-	getScreenSize( aWindowWidth, mApp->getWindowHeight(), &screenWidth, &screenHeight );
-	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE | SWP_NOZORDER );
-}
-
-void AppImplMswBasic::setWindowHeight( int aWindowHeight )
-{
-	int screenWidth, screenHeight;
-	getScreenSize( mApp->getWindowWidth(), aWindowHeight, &screenWidth, &screenHeight );
-	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE | SWP_NOZORDER );
-}
-
-void AppImplMswBasic::setWindowSize( int aWindowWidth, int aWindowHeight )
-{
-	int screenWidth, screenHeight;
-	getScreenSize( aWindowWidth, aWindowHeight, &screenWidth, &screenHeight );
-	::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE | SWP_NOZORDER );
+	mBlankingWindows.clear();
 }
 
 float AppImplMswBasic::setFrameRate( float aFrameRate )
 {
-	mFrameRate = aFrameRate;	// fix
+	mFrameRate = aFrameRate;
+	mFrameRateEnabled = true;
+	mNextFrameTime = mApp->getElapsedSeconds();
 	return aFrameRate;
 }
 
-void AppImplMswBasic::getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight )
+void AppImplMswBasic::disableFrameRate()
 {
-	RECT windowRect;
-	windowRect.left = windowRect.top = 0;
-	windowRect.right = clientWidth;
-	windowRect.bottom = clientHeight;
-	::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );
-	*resultWidth = windowRect.right - windowRect.left;
-	*resultHeight = windowRect.bottom - windowRect.top;
+	mFrameRateEnabled = false;
 }
 
-void AppImplMswBasic::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
+bool AppImplMswBasic::isFrameRateEnabled() const
 {
-	// pull these symbols dynamically out of the user32.dll
-	static BOOL (WINAPI *GetTouchInputInfo)( HTOUCHINPUT, UINT, PTOUCHINPUT, int ) = NULL;
-	if( ! GetTouchInputInfo )
-		*(size_t *)&GetTouchInputInfo = (size_t)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "GetTouchInputInfo" );
-	static BOOL (WINAPI *CloseTouchInputHandle)( HTOUCHINPUT ) = NULL;
-	if( ! CloseTouchInputHandle )
-		*(size_t *)&CloseTouchInputHandle = (size_t)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "CloseTouchInputHandle" );
-
-	bool handled = false;
-	double currentTime = getApp()->getElapsedSeconds(); // we don't trust the device's sense of time
-	unsigned int numInputs = LOWORD( wParam );
-	std::shared_ptr<TOUCHINPUT> pInputs = std::shared_ptr<TOUCHINPUT>( new TOUCHINPUT[numInputs], checked_array_deleter<TOUCHINPUT>() );
-	if( pInputs ) {
-		vector<TouchEvent::Touch> beganTouches, movedTouches, endTouches, activeTouches;
-		if( GetTouchInputInfo((HTOUCHINPUT)lParam, numInputs, pInputs.get(), sizeof(TOUCHINPUT) ) ) {
-			for( unsigned int i = 0; i < numInputs; i++ ) {
-				const TOUCHINPUT &ti = pInputs.get()[i];
-				if( ti.dwID != 0 ) {
-					POINT pt;
-					// this has a small problem, which is that we lose the subpixel precision of the touch points.
-					// However ScreenToClient doesn't support floating or fixed point either, so we're stuck 
-					// unless we write our own ScreenToClient, which actually should be doable
-					pt.x = TOUCH_COORD_TO_PIXEL( ti.x );
-					pt.y = TOUCH_COORD_TO_PIXEL( ti.y );
-					::ScreenToClient( hWnd, &pt );
-					if( ti.dwFlags & 0x0004/*TOUCHEVENTF_UP*/ ) {
-						Vec2f prevPos = mMultiTouchPrev[ti.dwID];
-						endTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), prevPos, ti.dwID, currentTime, &pInputs.get()[i] ) );
-						mMultiTouchPrev.erase( ti.dwID );
-					}
-					else if( ti.dwFlags & 0x0002/*TOUCHEVENTF_DOWN*/ ) {
-						beganTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
-						mMultiTouchPrev[ti.dwID] = Vec2f( (float)pt.x, (float)pt.y );
-						activeTouches.push_back( beganTouches.back() );
-					}
-					else if( ti.dwFlags & 0x0001/*TOUCHEVENTF_MOVE*/ ) {
-						movedTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), mMultiTouchPrev[ti.dwID], ti.dwID, currentTime, &pInputs.get()[i] ) );
-						activeTouches.push_back( movedTouches.back() );
-						mMultiTouchPrev[ti.dwID] = Vec2f( (float)pt.x, (float)pt.y );
-					}
-				}
-            }
-            
-            getApp()->privateSetActiveTouches__( activeTouches );
-            
-            // we need to post the event here so that our pInputs array is still valid since we've passed addresses into it as the native pointers
-            if( ! beganTouches.empty() )
-				getApp()->privateTouchesBegan__( beganTouches );
-			if( ! movedTouches.empty() )
-				getApp()->privateTouchesMoved__( movedTouches );
-			if( ! endTouches.empty() )
-				getApp()->privateTouchesEnded__( endTouches );
-			
-            handled = ( ! beganTouches.empty() ) || ( ! movedTouches.empty() ) || ( ! endTouches.empty() );
-            CloseTouchInputHandle( (HTOUCHINPUT)lParam ); // this is exception-unsafe; we need some RAII goin' on there
-        }
-        else {
-			// for now we'll just ignore an error
-        }
-	}
-
-    if( ! handled ) {
-        // if we didn't handle the message, let DefWindowProc handle it
-        ::DefWindowProc( hWnd, WM_TOUCH, wParam, lParam );
-    }
+	return mFrameRateEnabled;
 }
 
-unsigned int prepMouseEventModifiers( WPARAM wParam )
+///////////////////////////////////////////////////////////////////////////////
+// WindowImplMswBasic
+void WindowImplMswBasic::toggleFullScreen( const app::FullScreenOptions &options )
 {
-	unsigned int result = 0;
-	if( wParam & MK_CONTROL ) result |= MouseEvent::CTRL_DOWN;
-	if( wParam & MK_LBUTTON ) result |= MouseEvent::LEFT_DOWN;
-	if( wParam & MK_MBUTTON ) result |= MouseEvent::MIDDLE_DOWN;
-	if( wParam & MK_RBUTTON ) result |= MouseEvent::RIGHT_DOWN;
-	if( wParam & MK_SHIFT ) result |= MouseEvent::SHIFT_DOWN;
-	if( ::GetKeyState( VK_MENU ) < 0 ) result |= MouseEvent::ALT_DOWN;	
-	if( (::GetKeyState( VK_LWIN ) < 0) || (::GetKeyState( VK_RWIN ) < 0) ) result |= MouseEvent::META_DOWN;
-	return result;
+	// if we were full-screen, destroy our blanking windows
+	if( mFullScreen )
+		mAppImplBasic->destroyBlankingWindows();
+
+	WindowImplMsw::toggleFullScreen( options );
+
+	// if we've entered full-screen, setup our blanking windows if necessary
+	if( options.isSecondaryDisplayBlankingEnabled() && mFullScreen )
+		mAppImplBasic->setupBlankingWindows( getDisplay() );
 }
-
-// Certain key codes need to be refined, for example VK_MENU needs to be
-// converted into VK_LALT or VK_RALT
-int prepNativeKeyCode( WPARAM wParam )
-{
-	unsigned int result = (int)wParam;
-	if( wParam == VK_MENU ) {
-		result = ( ::GetKeyState( VK_RMENU ) ) ? VK_RMENU : VK_LMENU;
-	}
-	else if( wParam == VK_SHIFT ) {
-		result = ( ::GetKeyState( VK_RSHIFT ) ) ? VK_RSHIFT : VK_LSHIFT;	
-	}
-	else if( wParam == VK_CONTROL ) {
-		result = ( ::GetKeyState( VK_RCONTROL ) ) ? VK_RCONTROL : VK_LCONTROL;		
-	}
-	return result;
-}
-
-char mapVirtualKey( WPARAM wParam )
-{
-	BYTE keyboardState[256];
-	::GetKeyboardState( keyboardState );
-	WORD result[4];
-
-	// the control key messes up the ToAscii result, so we zero it out
-	keyboardState[VK_CONTROL] = 0;
-	
-	int resultLength = ::ToAscii( wParam, ::MapVirtualKey( wParam, 0 ), keyboardState, result, 0 );
-	if( resultLength == 1 )
-		return (char)result[0];
-	else
-		return 0;
-}
-
-unsigned int prepKeyEventModifiers()
-{
-	unsigned int result = 0;
-	if( ::GetKeyState( VK_CONTROL ) & 0x8000 ) result |= KeyEvent::CTRL_DOWN;
-	if( ::GetKeyState( VK_SHIFT ) & 0x8000 ) result |= KeyEvent::SHIFT_DOWN;
-	if( ( ::GetKeyState( VK_LMENU ) & 0x8000 ) || ( ::GetKeyState( VK_RMENU ) & 0x8000 ) ) result |= KeyEvent::ALT_DOWN;	
-	if( ( ::GetKeyState( VK_LWIN ) < 0 ) || ( ::GetKeyState( VK_RWIN ) < 0 ) ) result |= KeyEvent::META_DOWN;
-	return result;
-}
-
-extern "C" {
-LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
-							UINT	uMsg,			// Message For This Window
-							WPARAM	wParam,			// Additional Message Information
-							LPARAM	lParam)			// Additional Message Information
-{
-	AppImplMswBasic* impl = 0;
-	
-	// if the message is WM_NCCREATE we need to hide 'this' in the window long
-	if( uMsg == WM_NCCREATE ) {
-		impl = reinterpret_cast<AppImplMswBasic*>(((LPCREATESTRUCT)lParam)->lpCreateParams);
-		::SetWindowLongPtr( mWnd, GWL_USERDATA, (__int3264)(LONG_PTR)impl ); 
-	}
-	else // the warning on this line is harmless
-		impl = reinterpret_cast<AppImplMswBasic*>( ::GetWindowLongPtr( mWnd, GWL_USERDATA ) );
-
-	if( ! impl )
-		return DefWindowProc( mWnd, uMsg, wParam, lParam );		
-
-	switch( uMsg ) {									// Check For Windows Messages
-		case WM_SYSCOMMAND:							// Intercept System Commands
-			switch( wParam ) {							// Check System Calls
-				case SC_SCREENSAVE:					// Screensaver Trying To Start?
-				case SC_MONITORPOWER:				// Monitor Trying To Enter Powersave?
-					if( impl->getApp()->getSettings().getPowerManagement() )
-						return 0;							// prevent
-			}
-		break;
-		case WM_CLOSE:								// Did We Receive A Close Message?
-			::PostQuitMessage(0);					// Send A Quit Message
-			impl->quit();
-			return 0;
-		break;
-		case WM_SYSKEYDOWN:
-		case WM_KEYDOWN:							// Is A Key Being Held Down? 
-			impl->getApp()->privateKeyDown__( KeyEvent( KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
-					mapVirtualKey( wParam ), prepKeyEventModifiers(), (int)wParam ) );
-			return 0;								// Jump Back
-		break;
-		case WM_SYSKEYUP:
-		case WM_KEYUP:								// Has A Key Been Released?
-			impl->getApp()->privateKeyUp__( KeyEvent( KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
-					mapVirtualKey( wParam ), prepKeyEventModifiers(), (int)wParam ) );
-			return 0;								// Jump Back
-		break;
-		
-		// mouse events
-		case WM_LBUTTONDOWN:
-			::SetCapture( mWnd );
-			impl->mIsDragging = true;
-			impl->getApp()->privateMouseDown__( MouseEvent( MouseEvent::LEFT_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) ) );
-			return 0;
-		break;
-		case WM_RBUTTONDOWN:
-			::SetCapture( mWnd );
-			impl->mIsDragging = true;
-			impl->getApp()->privateMouseDown__( MouseEvent( MouseEvent::RIGHT_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) ) );
-			return 0;
-		break;		
-		case WM_MBUTTONDOWN:
-			::SetCapture( mWnd );
-			impl->mIsDragging = true;		
-			impl->getApp()->privateMouseDown__( MouseEvent( MouseEvent::MIDDLE_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) ) );
-			return 0;
-		break;
-		case WM_LBUTTONUP:
-			::ReleaseCapture();
-			impl->mIsDragging = false;		
-			impl->getApp()->privateMouseUp__( MouseEvent( MouseEvent::LEFT_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) ) );
-			return 0;
-		break;
-		case WM_RBUTTONUP:
-			::ReleaseCapture();
-			impl->mIsDragging = false;		
-			impl->getApp()->privateMouseUp__( MouseEvent( MouseEvent::RIGHT_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) ) );
-			return 0;
-		break;		
-		case WM_MBUTTONUP:
-			::ReleaseCapture();
-			impl->mIsDragging = false;	
-			impl->getApp()->privateMouseUp__( MouseEvent( MouseEvent::MIDDLE_DOWN, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) ) );
-			return 0;
-		break;
-		case WM_MOUSEWHEEL:
-			impl->getApp()->privateMouseWheel__( MouseEvent( 0, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ),
-					GET_WHEEL_DELTA_WPARAM( wParam ) / 120.0f, static_cast<unsigned int>( wParam ) ) );			
-		break;
-		case WM_KILLFOCUS:
-			// if we lose capture during a drag, post a mouseup event as a notifier
-			if( impl->mIsDragging ) {
-				impl->getApp()->privateMouseUp__( MouseEvent( 0, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ), 0.0f, static_cast<unsigned int>( wParam ) ) );
-			}
-			impl->mIsDragging = false;
-		break;
-		case WM_MOUSEMOVE:
-			if( impl->mIsDragging ) {
-				impl->getApp()->privateMouseDrag__( MouseEvent( 0, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ),
-						0.0f, static_cast<unsigned int>( wParam ) ) );						
-}
-			else
-				impl->getApp()->privateMouseMove__( MouseEvent( 0, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ),
-						0.0f, static_cast<unsigned int>( wParam ) ) );						
-		break;
-		case WM_SIZE:
-			if( impl->mHasBeenInitialized ) {
-				impl->mWindowWidth = LOWORD(lParam);
-				impl->mWindowHeight = HIWORD(lParam);
-				impl->getApp()->privateResize__( ResizeEvent( Vec2i( impl->mWindowWidth, impl->mWindowHeight ) ) );
-			}
-			return 0;
-		break;
-		case WM_MOVE:
-			if( impl->mHasBeenInitialized ) {
-				impl->privateSetWindowOffset__( Vec2i( LOSHORT(lParam), HISHORT(lParam) ) );
-				impl->mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) ).get();
-			}
-			return 0;
-		break;
-		case WM_DROPFILES: {
-			HDROP dropH = (HDROP)wParam;
-			POINT dropPoint;
-			char fileName[8192];
-			vector<fs::path> files;
-			
-			int droppedFileCount = ::DragQueryFile( dropH, 0xFFFFFFFF, 0, 0 );
-			for( int i = 0; i < droppedFileCount; ++i ) {
-				::DragQueryFileA( dropH, i, fileName, 8192 );
-				files.push_back( std::string( fileName ) );
-			}
-
-			::DragQueryPoint( dropH, &dropPoint );
-			::DragFinish( dropH );
-
-			FileDropEvent dropEvent( dropPoint.x, dropPoint.y, files );
-			impl->getApp()->privateFileDrop__( dropEvent );
-			return 0;
-		}
-		break;
-		case WM_PAINT:
-			impl->getApp()->getRenderer()->startDraw();
-			impl->getApp()->draw();
-			impl->getApp()->getRenderer()->finishDraw();
-		break;
-		case WM_TOUCH:
-			impl->onTouch( mWnd, wParam, lParam );
-		break;
-	}
-
-	// unhandled messages To DefWindowProc
-	return DefWindowProc( mWnd, uMsg, wParam, lParam );
-}
-} // extern "C"
 
 } } // namespace cinder::app

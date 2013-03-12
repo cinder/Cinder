@@ -26,13 +26,12 @@
 #include "cinder/msw/CinderMSW.h"
 #include "cinder/CinderMath.h"
 #include "cinder/audio/FftProcessor.h"
+#include "cinder/Thread.h"
 
 #include <windows.h>
 #undef min
 #undef max
 #include <xaudio2.h>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
 
 namespace cinder { namespace audio {
 
@@ -108,13 +107,13 @@ class OutputImplXAudio : public OutputImpl
 		uint32_t						mCurrentBuffer;
 		uint64_t						mCurrentTime;
 
-		HANDLE								mBufferEndEvent;
-		std::shared_ptr<boost::thread>		mQueueThread;
+		HANDLE							mBufferEndEvent;
+		std::shared_ptr<std::thread>	mQueueThread;
 
 		bool mIsPcmBuffering;
 		PcmBuffer32fRef	mLoadingPcmBuffer;
 		PcmBuffer32fRef	mLoadedPcmBuffer;
-		boost::mutex	mPcmBufferMutex;
+		std::mutex	mPcmBufferMutex;
 
 		class SourceCallback : public IXAudio2VoiceCallback
 		{

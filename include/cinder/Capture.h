@@ -27,38 +27,46 @@
 #include "cinder/Exception.h"
 
 #if defined( CINDER_MAC )
-#	if defined( __OBJC__ )
+	#if defined( __OBJC__ )
 		@class CaptureImplQtKit;
 		@class QTCaptureDevice;
-#	else
+	#else
 		class CaptureImplQtKit;
 		class QTCaptureDevice;
-#	endif
-
-#elif defined( CINDER_COCOA_TOUCH )
-#	if defined( __OBJC__ )
+	#endif
+#elif defined( CINDER_COCOA_TOUCH_SIMULATOR )
+	#if defined( __OBJC__ )
+		@class CaptureImplCocoaDummy;
+	#else
+		class CaptureImplCocoaDummy;
+	#endif
+#elif defined( CINDER_COCOA_TOUCH_DEVICE )
+	#if defined( __OBJC__ )
 		@class CaptureImplAvFoundation;
-		//@class QTCaptureDevice;
-#	else
+	#else
 		class CaptureImplAvFoundation;
-		//class QTCaptureDevice;
-#	endif
+	#endif
+#elif defined( CINDER_MSW )
+	namespace cinder {
+		class CaptureImplDirectShow;
+	}
 #endif
 
 #include <map>
 
 namespace cinder {
 
-#if defined( CINDER_MSW )
-	class CaptureImplDirectShow;
-#endif
+typedef std::shared_ptr<class Capture>	CaptureRef;
 
 class Capture {
- public:
+  public:
 	class Device;
 	typedef std::shared_ptr<Device> DeviceRef;
-	
+
+	static CaptureRef	create( int32_t width, int32_t height, const DeviceRef device = DeviceRef() ) { return CaptureRef( new Capture( width, height, device ) ); }
+
 	Capture() {}
+	//! \deprecated Call Capture::create() instead
 	Capture( int32_t width, int32_t height, const DeviceRef device = DeviceRef() );
 	~Capture() {}
 
@@ -113,6 +121,14 @@ class Capture {
 		virtual bool						isConnected() const = 0;
 		//! Returns the OS-specific unique identifier
 		virtual Capture::DeviceIdentifier	getUniqueId() const = 0;
+		//! Returns an OS-specific pointer. QTCaptureDevice* on Mac OS X, AVCaptureDevice* on iOS. Not implemented on MSW.
+#if defined( CINDER_COCOA )
+		virtual void*		getNative() const = 0;
+#endif
+#if defined( CINDER_COCOA_TOUCH )
+		//! Returns whether device is front-facing. False implies rear-facing.
+		virtual bool		isFrontFacing() const = 0;
+#endif
 	 protected:
 		Device() {}
 		std::string		mName;
@@ -125,7 +141,9 @@ class Capture {
 
 #if defined( CINDER_MAC ) 
 		CaptureImplQtKit				*mImpl;
-#elif defined( CINDER_COCOA_TOUCH )
+#elif defined( CINDER_COCOA_TOUCH_SIMULATOR )
+		CaptureImplCocoaDummy			*mImpl;
+#elif defined( CINDER_COCOA_TOUCH_DEVICE )
 		CaptureImplAvFoundation			*mImpl;
 #elif defined( CINDER_MSW )
 		CaptureImplDirectShow			*mImpl;

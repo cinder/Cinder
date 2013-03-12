@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<template name="CocoaView OpenGL"
+	id = "org.libcinder.apptemplates.cocoaviewopengl"
+	>
+	<supports os="macosx" />
+	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
+	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_Delegate.mm</source>
+	<source>src/main.m</source>
+	<header replaceContents="true" replaceName="true">include/_TBOX_PREFIX_App.h</header>
+	<header replaceContents="true" replaceName="true">include/_TBOX_PREFIX_Delegate.h</header>
+	<header replaceContents="true">include/Resources.h</header>
+	<header replaceName="true" isPCH="true">xcode/_TBOX_PREFIX__Prefix.pch</header>	
+	<resource>resources/CinderApp.icns</resource>
+	<resource replaceContents="true">xcode/en.lproj/MainMenu.xib</resource>
+	<resource replaceContents="true" buildExclude="true">xcode/Info.plist</resource>
+</template>
+</cinder>

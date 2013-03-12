@@ -23,7 +23,12 @@
 #include "cinder/ImageTargetFileQuartz.h"
 #include "cinder/cocoa/CinderCocoa.h"
 
-#include <ApplicationServices/ApplicationServices.h>
+#if defined( CINDER_COCOA_TOUCH )
+	#include <ImageIO/ImageIO.h>
+	#include <MobileCoreServices/MobileCoreServices.h>
+#else
+	#include <CoreServices/CoreServices.h>
+#endif
 
 using namespace std;
 
@@ -117,11 +122,11 @@ ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSou
 	mImageDest = NULL;
 	if( dataTarget->providesFilePath() ) {
 		cocoa::SafeCfString pathString = cocoa::createSafeCfString( dataTarget->getFilePath().string() );
-		std::shared_ptr<const __CFURL> urlRef( ::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString.get(), kCFURLPOSIXPathStyle, false ), cocoa::safeCfRelease );
+		const std::shared_ptr<__CFURL> urlRef( (__CFURL*)::CFURLCreateWithFileSystemPath( kCFAllocatorDefault, pathString.get(), kCFURLPOSIXPathStyle, false ), cocoa::safeCfRelease );
 		mImageDest = ::CGImageDestinationCreateWithURL( urlRef.get(), uti.get(), 1, NULL );
 	}
 	else if( dataTarget->providesUrl() ) {
-		std::shared_ptr<const __CFURL> urlRef( cocoa::createCfUrl( dataTarget->getUrl() ), cocoa::safeCfRelease );
+		std::shared_ptr<__CFURL> urlRef( (__CFURL*)cocoa::createCfUrl( dataTarget->getUrl() ), cocoa::safeCfRelease );
 		mImageDest = ::CGImageDestinationCreateWithURL( urlRef.get(), uti.get(), 1, NULL );
 	
 	}

@@ -77,7 +77,7 @@ XmlTree::ConstIter::ConstIter( const XmlTree &root, const string &filterPath, bo
 		if( mIterStack.empty() ) // first item
 			mSequenceStack.push_back( &root.getChildren() );
 		else
-			mSequenceStack.push_back( &mIterStack.back()->getChildren() );
+			mSequenceStack.push_back( &(*mIterStack.back())->getChildren() );
 		
 		Container::const_iterator child = findNextChildNamed( *mSequenceStack.back(), mSequenceStack.back()->begin(), *filterComp, mCaseSensitive );
 		if( child != (mSequenceStack.back())->end() )
@@ -123,8 +123,8 @@ void XmlTree::ConstIter::increment()
 			}
 			else if( mSequenceStack.size() < mFilter.size() ) { // we're not on a leaf, so push this onto the stack
 				mIterStack[mIterStack.size()-1] = next;
-				mSequenceStack.push_back( &next->getChildren() );
-				mIterStack.push_back( next->getChildren().begin() );
+				mSequenceStack.push_back( &(*next)->getChildren() );
+				mIterStack.push_back( (*next)->getChildren().begin() );
 			}
 			else {
 				mIterStack[mIterStack.size()-1] = next;
@@ -138,7 +138,7 @@ XmlTree::Container::const_iterator XmlTree::findNextChildNamed( const Container 
 {
 	Container::const_iterator result = firstCandidate;
 	while( result != sequence.end() ) {
-		if( tagsMatch( result->getTag(), searchTag, caseSensitive ) )
+		if( tagsMatch( (*result)->getTag(), searchTag, caseSensitive ) )
 			break;
 		else
 			++result;
@@ -151,8 +151,8 @@ XmlTree::XmlTree( const XmlTree &rhs )
 	 mParent( 0 ), mAttributes( rhs.mAttributes )
 {
 	for( XmlTree::ConstIter childIt = rhs.begin(); childIt != rhs.end(); ++childIt ) {
-		mChildren.push_back( *childIt );
-		mChildren.back().mParent = this;
+		mChildren.push_back( unique_ptr<XmlTree>( new XmlTree( *childIt ) ) );
+		mChildren.back()->mParent = this;
 	}
 }
 
@@ -168,8 +168,8 @@ XmlTree& XmlTree::operator=( const XmlTree &rhs )
 	mChildren.clear();
 
 	for( XmlTree::ConstIter childIt = rhs.begin(); childIt != rhs.end(); ++childIt ) {
-		mChildren.push_back( *childIt );
-		mChildren.back().mParent = this;
+		mChildren.push_back( unique_ptr<XmlTree>( new XmlTree( *childIt ) ) );
+		mChildren.back()->mParent = this;
 	}
 	
 	return *this;
@@ -224,9 +224,9 @@ void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *resu
 				continue;
 		}
 		
-		result->getChildren().push_back( XmlTree() );
-		parseItem( *item, result, &result->getChildren().back(), options );
-		result->getChildren().back().setNodeType( type );
+		result->getChildren().push_back( unique_ptr<XmlTree>( new XmlTree ) );
+		parseItem( *item, result, result->getChildren().back().get(), options );
+		result->getChildren().back()->setNodeType( type );
 	}
 
 	for( rapidxml::xml_attribute<> *attr = node.first_attribute(); attr; attr = attr->next_attribute() )
@@ -322,8 +322,8 @@ string	XmlTree::getPath( char separator ) const
 
 void XmlTree::push_back( const XmlTree &newChild )
 {
-	mChildren.push_back( newChild );
-	mChildren.back().mParent = this;
+	mChildren.push_back( unique_ptr<XmlTree>( new XmlTree( newChild ) ) );
+	mChildren.back()->mParent = this;
 }
 
 XmlTree* XmlTree::getNodePtr( const string &relativePath, bool caseSensitive, char separator ) const
@@ -336,7 +336,7 @@ XmlTree* XmlTree::getNodePtr( const string &relativePath, bool caseSensitive, ch
 			continue;
 		Container::const_iterator node = XmlTree::findNextChildNamed( curNode->getChildren(), curNode->getChildren().begin(), *pathIt, caseSensitive )	;
 		if( node != curNode->getChildren().end() )
-			curNode = const_cast<XmlTree*>( &(*node) );
+			curNode = const_cast<XmlTree*>( node->get() );
 		else
 			return 0;
 	}
@@ -373,7 +373,7 @@ void XmlTree::appendRapidXmlNode( rapidxml::xml_document<char> &doc, rapidxml::x
 		node->append_attribute( doc.allocate_attribute( doc.allocate_string( attrIt->getName().c_str() ), doc.allocate_string( attrIt->getValue().c_str() ) ) );
 		
 	for( Container::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
-		childIt->appendRapidXmlNode( doc, node );
+		(*childIt)->appendRapidXmlNode( doc, node );
 }
 
 shared_ptr<rapidxml::xml_document<char> > XmlTree::createRapidXmlDoc( bool createDocument ) const
@@ -387,7 +387,7 @@ shared_ptr<rapidxml::xml_document<char> > XmlTree::createRapidXmlDoc( bool creat
 
 		if( isDocument() ) {
 			for( Container::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt )
-				childIt->appendRapidXmlNode( *result, result.get() );
+				(*childIt)->appendRapidXmlNode( *result, result.get() );
 		}
 		else {
 			appendRapidXmlNode( *result, result.get() );

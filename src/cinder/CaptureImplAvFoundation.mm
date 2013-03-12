@@ -22,16 +22,18 @@
 
 #import "cinder/CaptureImplAvFoundation.h"
 #include "cinder/cocoa/CinderCocoa.h"
-#include <dlfcn.h>
+#include "cinder/Vector.h"
+#import <AVFoundation/AVFoundation.h>
 
 namespace cinder {
 
-CaptureImplAvFoundationDevice::CaptureImplAvFoundationDevice( AVCaptureDevice * device )
+CaptureImplAvFoundationDevice::CaptureImplAvFoundationDevice( AVCaptureDevice *device )
 	: Capture::Device()
 {
 	mUniqueId = cocoa::convertNsString( [device uniqueID] );
 	mName = cocoa::convertNsString( [device localizedName] );
 	mNativeDevice = [device retain];
+	mFrontFacing = device.position == AVCaptureDevicePositionFront;
 }
 
 CaptureImplAvFoundationDevice::~CaptureImplAvFoundationDevice()
@@ -72,13 +74,10 @@ static BOOL sDevicesEnumerated = false;
 
 	sDevices.clear();
 	
-	Class clsAVCaptureDevice = NSClassFromString(@"AVCaptureDevice");
-	if( clsAVCaptureDevice != nil ) {
-		NSArray * devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-		for( int i = 0; i < [devices count]; i++ ) {
-			AVCaptureDevice * device = [devices objectAtIndex:i];
-			sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplAvFoundationDevice( device ) ) );
-		}
+	NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
+	for( int i = 0; i < [devices count]; i++ ) {
+		AVCaptureDevice *device = [devices objectAtIndex:i];
+		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplAvFoundationDevice( device ) ) );
 	}
 	sDevicesEnumerated = true;
 	return sDevices;
@@ -89,10 +88,14 @@ static BOOL sDevicesEnumerated = false;
 	if( ( self = [super init] ) ) {
 
 		mDevice = device;
-		if( mDevice ) {
-			mDeviceUniqueId = [NSString stringWithUTF8String:device->getUniqueId().c_str()];
-			[mDeviceUniqueId retain];
+		if( ! mDevice ) {
+			if( [CaptureImplAvFoundation getDevices:NO].empty() )
+				throw cinder::CaptureExcInitFail();
+			mDevice = [CaptureImplAvFoundation getDevices:NO][0];
 		}
+		
+		mDeviceUniqueId = [NSString stringWithUTF8String:mDevice->getUniqueId().c_str()];
+		[mDeviceUniqueId retain];
 		
 		mIsCapturing = false;
 		mWidth = width;
@@ -118,37 +121,24 @@ static BOOL sDevicesEnumerated = false;
 
 - (bool)prepareStartCapture 
 {
-	// AVFramework is weak-linked to maintain support for iOS 3.2, 
-	// so if these symbols don't exist, don't start the capture
-	Class clsAVCaptureSession = NSClassFromString(@"AVCaptureSession");
-	Class clsAVCaptureDevice = NSClassFromString(@"AVCaptureDevice");
-	Class clsAVCaptureDeviceInput = NSClassFromString(@"AVCaptureDeviceInput");
-	Class clsAVCaptureVideoDataOutput = NSClassFromString(@"AVCaptureVideoDataOutput");
-	Class clsAVCaptureConnection = NSClassFromString(@"AVCaptureConnection");
-	if( clsAVCaptureSession == nil || 
-		clsAVCaptureDevice == nil || 
-		clsAVCaptureDeviceInput == nil || 
-		clsAVCaptureVideoDataOutput == nil ||
-		clsAVCaptureConnection == nil ) 
-	{
-		return false;
-	}
+    NSError *error = nil;
 
-    NSError * error = nil;
+    mSession = [[AVCaptureSession alloc] init];
 
-    mSession = [[clsAVCaptureSession alloc] init];
-
-    // Configure the session to produce lower resolution video frames, if your 
-    // processing algorithm can cope. We'll specify medium quality for the
-    // chosen device.
-	mSession.sessionPreset = AVCaptureSessionPresetMedium;
+	if( cinder::Vec2i( mWidth, mHeight ) == cinder::Vec2i( 640, 480 ) )
+		mSession.sessionPreset = AVCaptureSessionPreset640x480;
+	else if( cinder::Vec2i( mWidth, mHeight ) == cinder::Vec2i( 1280, 720 ) )
+		mSession.sessionPreset = AVCaptureSessionPreset1280x720;
+	else
+		mSession.sessionPreset = AVCaptureSessionPresetMedium;
 
     // Find a suitable AVCaptureDevice
-    AVCaptureDevice * device = nil;
+    AVCaptureDevice *device = nil;
 	if( ! mDeviceUniqueId ) {
-		device = [clsAVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-	} else {
-		device = [clsAVCaptureDevice deviceWithUniqueID:mDeviceUniqueId];
+		device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
+	}
+	else {
+		device = [AVCaptureDevice deviceWithUniqueID:mDeviceUniqueId];
 	}
 	
 	if( ! device ) {
@@ -156,14 +146,15 @@ static BOOL sDevicesEnumerated = false;
 	}
 
     // Create a device input with the device and add it to the session.
-    AVCaptureDeviceInput * input = [clsAVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
     if( ! input ) {
         throw cinder::CaptureExcInitFail();
     }
     [mSession addInput:input];
 
     // Create a VideoDataOutput and add it to the session
-    AVCaptureVideoDataOutput * output = [[[clsAVCaptureVideoDataOutput alloc] init] autorelease];
+    AVCaptureVideoDataOutput *output = [[[AVCaptureVideoDataOutput alloc] init] autorelease];
+
     [mSession addOutput:output];
 	
 	//adjust connection settings
@@ -177,7 +168,7 @@ static BOOL sDevicesEnumerated = false;
 			connection.videoOrientation = AVCaptureVideoOrientationPortrait;
 		}
 	}*/
-	
+
     // Configure your output.
     dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);
     [output setSampleBufferDelegate:self queue:queue];
@@ -185,7 +176,6 @@ static BOOL sDevicesEnumerated = false;
 
     // Specify the pixel format
     output.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
-
 
     // If you wish to cap the frame rate to a known value, such as 15 fps, set 
     // minFrameDuration.

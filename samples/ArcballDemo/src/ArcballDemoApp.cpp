@@ -8,7 +8,7 @@ using namespace ci::app;
 class ArcballDemoApp : public AppBasic {
  public:	
 	void setup();
-	void resize( ResizeEvent event );
+	void resize();
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
 	void keyDown( KeyEvent event );
@@ -35,7 +35,7 @@ void ArcballDemoApp::setup()
 	mCurrentMouseDown = mInitialMouseDown = Vec2i( 200, 200 );
 }
 
-void ArcballDemoApp::resize( ResizeEvent event )
+void ArcballDemoApp::resize()
 {
 	mArcball.setWindowSize( getWindowSize() );
 	mArcball.setCenter( getWindowCenter() );

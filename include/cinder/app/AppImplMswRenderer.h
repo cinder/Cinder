@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -37,7 +38,7 @@ class AppImplMswRenderer {
  public:
 	AppImplMswRenderer( App *aApp ) : mApp( aApp ) {}
 	
-	virtual bool	initialize( HWND wnd, HDC dc ) = 0;
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
 	virtual void	prepareToggleFullScreen() {}
 	virtual void	finishToggleFullScreen() {}
 	virtual void	kill() = 0;

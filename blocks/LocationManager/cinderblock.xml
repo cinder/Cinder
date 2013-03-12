@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="LocationManager"
+	id="org.libcinder.location_manager"
+	author="Cinder Project"
+	summary="CoreLocation support for iOS and Mac OS X."
+	core="true"
+	>
+	<supports os="ios" />
+	<supports os="macosx" />
+	<source compileAs="mm">src/cinder/LocationManager.cpp</source>
+	<header>src/cinder/LocationManager.h</header>
+	<platform os="macosx">
+		<framework sdk="true">CoreLocation.framework</framework>
+	</platform>
+	<platform os="ios">
+		<framework sdk="true">CoreLocation.framework</framework>
+	</platform>
+	<includePath>src</includePath>	
+</block>
+</cinder>

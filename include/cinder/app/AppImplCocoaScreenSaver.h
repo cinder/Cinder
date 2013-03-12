@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -27,21 +28,81 @@
 
 #include "cinder/app/AppScreenSaver.h"
 #import "cinder/app/CinderView.h"
+#import "cinder/app/Window.h"
 
 #include <string>
 
+@class WindowImplCocoaScreenSaver;
 
-@interface AppImplCocoaScreenSaver : ScreenSaverView {
-	CinderView							*cinderView;	
-	class cinder::app::AppScreenSaver	*app;
+@interface AppImplCocoaScreenSaver : NSObject {
+  @public
+	cinder::app::AppScreenSaver					*mApp;
+	std::list<WindowImplCocoaScreenSaver*>		mWindows;
+	WindowImplCocoaScreenSaver					*mActiveWindow;
+	float										mFrameRate;
+
+	BOOL										mSetupCalled;
+}
+
+- (AppImplCocoaScreenSaver*)init;
+- (void)addWindow:(WindowImplCocoaScreenSaver*)windowImpl;
+- (BOOL)isPreview;
+
+- (size_t)getNumWindows;
+- (cinder::app::WindowRef)getWindowIndex:(size_t)index;
+- (cinder::app::WindowRef)getWindow;
+- (void)setActiveWindow:(WindowImplCocoaScreenSaver*)activeWindow;
+
+- (void)animateOneFrame:(WindowImplCocoaScreenSaver*)callee;
+
+- (float)getFrameRate;
+- (void)setFrameRate:(float)frameRate;
+- (cinder::fs::path)getAppPath;
+- (void)removeCinderView:(WindowImplCocoaScreenSaver*)win;
+- (void)finalCleanup;
+
+@end
+
+@interface WindowImplCocoaScreenSaver : ScreenSaverView<WindowImplCocoa,CinderViewDelegate> {
+  @public
+	CinderView							*mCinderView;	
+	cinder::app::WindowRef				mWindowRef;
+	cinder::DisplayRef					mDisplay;
+
+	BOOL								mPreview;	
+	BOOL								mResizeCalled;
+	BOOL								mIsMainView;
+	BOOL								mHasDrawnSinceLastUpdate;
 }
 
 // ScreenSaverView methods
 - (void)drawRect:(NSRect)rect;
-- (void)setFrameRate:(float)aFrameRate;
-- (float)getFrameRate;
-- (int)getWindowWidth;
-- (int)getWindowHeight;
-- (std::string)getAppPath;
+- (void)instantiateView:(NSRect)rect;
+
+// WindowImplCocoa methods
+- (BOOL)isFullScreen;
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
+- (cinder::Vec2i)getSize;
+- (void)setSize:(cinder::Vec2i)size;
+- (cinder::Vec2i)getPos;
+- (void)setPos:(cinder::Vec2i)pos;
+- (float)getContentScale;
+- (void)close;
+- (std::string)getTitle;
+- (void)setTitle:(std::string)title;
+- (BOOL)isBorderless;
+- (void)setBorderless:(BOOL)borderless;
+- (BOOL)isAlwaysOnTop;
+- (void)setAlwaysOnTop:(BOOL)alwaysOnTop;
+- (cinder::DisplayRef)getDisplay;
+- (cinder::app::RendererRef)getRenderer;
+- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
+- (void*)getNative;
+- (void)hide;
+- (void)show;
+
+// CinderViewDelegate methods
+- (void)draw;
+- (cinder::app::WindowRef)getWindowRef;
 
 @end

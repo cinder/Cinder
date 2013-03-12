@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="MotionManager"
+	id="org.libcinder.motion_manager"
+	author="Cinder Project"
+	summary="Device motion support for iOS using the Core Motion framework."
+	core="true"
+	>
+	<supports os="ios" />
+	<source>src/cinder/MotionManager.cpp</source>
+	<source>src/cinder/MotionImplCoreMotion.mm</source>
+	<headerPattern>src/cinder/*.h</headerPattern>
+	<platform os="ios">
+		<framework sdk="true">CoreMotion.framework</framework>
+	</platform>
+	<includePath>src</includePath>	
+</block>
+</cinder>

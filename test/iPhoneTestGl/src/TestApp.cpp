@@ -18,6 +18,9 @@ void TestApp::setup()
 {
 	mCubeRotation.setToIdentity();
 
+	for( auto &display : Display::getDisplays() )
+		console() << display;
+
 	Surface8u surface( 256, 256, false );
 	Surface8u::Iter iter = surface.getIter();
 	while( iter.line() ) {
@@ -35,11 +38,11 @@ void TestApp::setup()
 	mFont = Font( "Arial", 56 );
 	//Buffer buffer = loadStreamBuffer( loadFileStream( getResourcePath( "Beyonce.jpg" ) ) );
 	//mTex = gl::Texture( loadImage( DataSourceBuffer::createRef( buffer, ".jpg" ) ) );
-	mTex = gl::Texture( loadImage( loadUrl( Url( "http://images.apple.com/home/images/promo_iphone_case_program_20100723.jpg" ) ) ) );
+//	mTex = gl::Texture( loadImage( loadUrl( Url( "http://images.apple.com/home/images/hero_imac.jpg" ) ) ) );
 
 	console() << "System version: " << System::getOsMajorVersion() << "." << System::getOsMinorVersion() << "." << System::getOsBugFixVersion() << std::endl;
 	
-console() << "size: " << getWindowSize() << std::endl;	
+console() << "size: " << getWindowSize() << " @ " << getWindow()->getContentScale() << std::endl;	
 }
 
 void TestApp::resize( int width, int height )
@@ -51,9 +54,10 @@ console() << "path: " << getAppPath() << std::endl;
 console() << "Frames: " << getElapsedFrames() << std::endl;
 }
 
-void TestApp::mouseDown( MouseEvent event )
+void TestApp::touchesBegan( TouchEvent event )
 {
-	std::cout << "Mouse down @ " << event.getPos() << std::endl;
+	Vec2f pt = event.getTouches()[0].getPos();
+	std::cout << "Mouse down @ " << pt << " points: " << getWindow()->toPoints( pt ) << std::endl;
 //	writeImage( getDocumentsDirectory() + "whatever.png", copyWindowSurface() );
 	Surface8u surface( 256, 256, false );
 	Surface8u::Iter iter = surface.getIter();
@@ -65,7 +69,7 @@ void TestApp::mouseDown( MouseEvent event )
 		}
 	}
 
-	cocoa::writeToSavedPhotosAlbum( surface );
+//	cocoa::writeToSavedPhotosAlbum( surface );
 }
 
 void TestApp::update()
@@ -78,7 +82,6 @@ void TestApp::draw()
 	gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
 	gl::enableAlphaBlending();
 	gl::enableDepthRead();
-console() << getWindowWidth() << std::endl;	
 	/*mTex.bind();
 	gl::setMatrices( mCam );
 	glPushMatrix();

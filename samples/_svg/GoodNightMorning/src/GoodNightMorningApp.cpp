@@ -19,7 +19,7 @@ class GoodNightMorningApp : public AppBasic {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
-	void resize( ResizeEvent event );
+	void resize();
 	void update();
 	void draw();
 	void drawTweets();
@@ -128,7 +128,7 @@ gl::Texture renderSvgGroupToTexture( const svg::Doc &doc, const std::string &gro
 	return gl::Texture( srfImg.getSurface() );
 }
 
-void GoodNightMorningApp::resize( ResizeEvent event )
+void GoodNightMorningApp::resize()
 {
 	Rectf svgBounds = mCityscapeSvg->getBounds(); // get the native bounds of the SVG
 	// fit the SVG proportionally into the window

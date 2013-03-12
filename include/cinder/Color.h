@@ -58,6 +58,16 @@ class ColorT
 	ColorT( const ColorT<FromT> &src ) 
 		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ) 
 	{}
+	
+	void set( T ar, T ag, T ab )
+	{
+		r = ar; g = ag; b = ab;
+	}
+	
+	void set( const ColorT<T> &rhs )
+	{
+		r = rhs.r; g = rhs.g; b = rhs.b;
+	}
 
 	void	set( ColorModel cm, const Vec3f &v );
 
@@ -230,6 +240,16 @@ class ColorAT {
 		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ), a( CHANTRAIT<T>::convert( src.a ) )
 	{}
 
+	void set( T ar, T ag, T ab , T aa )
+	{
+		r = ar; g = ag; b = ab; a = aa;
+	}
+	
+	void set( const ColorAT<T> &rhs )
+	{
+		r = rhs.r; g = rhs.g; b = rhs.b; a = rhs.a;
+	}
+	
 	ColorAT<T> operator=( const ColorAT<T>& rhs ) 
 	{
 		r = rhs.r;

@@ -86,6 +86,19 @@ void AnimBase::setReplace( const AnimBase &rhs )
 	}	
 }
 
+bool AnimBase::isComplete() const
+{
+	if( ! mParentTimeline )
+		return true;
+	else {
+		TimelineItemRef lastTween = mParentTimeline->findLastEnd( mVoidPtr );
+		if( lastTween )
+			return lastTween->isComplete();
+		else
+			return true;
+	}
+}
+
 void AnimBase::stop()
 {
 	if( mParentTimeline )

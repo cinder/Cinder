@@ -65,28 +65,35 @@ std::string Url::encode( const std::string &unescaped )
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // IStreamUrl
-IStreamUrlRef IStreamUrl::create( const Url &url, const std::string &user, const std::string &password )
+IStreamUrlRef IStreamUrl::create( const Url &url, const std::string &user, const std::string &password, const UrlOptions &options )
 {
-	return IStreamUrlRef( new IStreamUrl( url.str(), user, password ) );
+	return IStreamUrlRef( new IStreamUrl( url.str(), user, password, options ) );
 }
 
-IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const std::string &password )
+IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 	: IStream()
 {
 	setFileName( url );
-	mImpl = std::shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password ) );
+	mImpl = std::shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password, options ) );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // loadUrl
-IStreamUrlRef loadUrlStream( const Url &url )
+IStreamUrlRef loadUrlStream( const Url &url, const UrlOptions &options )
 {
-	return IStreamUrl::create( url, "", "" );
+	return IStreamUrl::create( url, "", "", options );
 }
 
-IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, const std::string &password )
+IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 {
-	return IStreamUrl::create( Url( url ), user, password );
+	return IStreamUrl::create( Url( url ), user, password, options );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+// UrlLoadExc
+UrlLoadExc::UrlLoadExc( int code, const std::string &message )
+	: mMessage( message ), mStatusCode( code )
+{
 }
 
 } // namespace cinder

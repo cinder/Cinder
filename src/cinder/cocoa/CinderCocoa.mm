@@ -29,6 +29,7 @@
 	#import <Cocoa/Cocoa.h>
 	#import <CoreVideo/CVPixelBuffer.h>
 	#import <AppKit/AppKit.h>
+	#include <objc/objc-auto.h>
 #else
 	#import <UIKit/UIKit.h>
 	#import <CoreText/CoreText.h>
@@ -81,6 +82,9 @@ void SafeNsData::safeRelease( const NSData *ptr )
 
 SafeNsAutoreleasePool::SafeNsAutoreleasePool()
 {
+#if defined( CINDER_MAC )
+	objc_registerThreadWithCollector();
+#endif	
 	[NSThread currentThread]; // register this thread with garbage collection
 	mPool = [[NSAutoreleasePool alloc] init];
 }
@@ -134,6 +138,15 @@ CGContextRef createCgBitmapContext( const Surface8u &surface )
 	return context;
 }
 
+CGContextRef getWindowContext()
+{
+#if defined( CINDER_MAC )
+	return (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+#else
+	return ::UIGraphicsGetCurrentContext();
+#endif
+}
+
 // This will get called when the Surface::Obj is destroyed
 static void NSBitmapImageRepSurfaceDeallocator( void *refcon )
 {
@@ -180,7 +193,7 @@ SafeCfString createSafeCfString( const std::string &str )
 {
 	CFStringRef result = CFStringCreateWithCString( kCFAllocatorDefault, str.c_str(), kCFStringEncodingUTF8 );
 	if( result )
-		return SafeCfString( result, safeCfRelease );
+		return SafeCfString( (__CFString*)result, safeCfRelease );
 	else
 		return SafeCfString();
 }
@@ -462,6 +475,10 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 					case kCGImageAlphaNoneSkipLast:
 						setChannelOrder( (swapEndian) ? ImageIo::XBGR : ImageIo::RGBX );
 					break;
+					case kCGImageAlphaOnly:
+						setColorModel( ImageSource::CM_GRAY );
+						setChannelOrder( ImageIo::Y );							
+					break;
 				}
 			break;
 			case kCGColorSpaceModelIndexed: {
@@ -486,7 +503,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 void ImageSourceCgImage::load( ImageTargetRef target )
 {
 	int32_t rowBytes = ::CGImageGetBytesPerRow( mImageRef.get() );
-	shared_ptr<const __CFData> pixels( ::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) ), safeCfRelease );
+	const std::shared_ptr<__CFData> pixels( (__CFData*)::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) ), safeCfRelease );
 	
 	if( ! pixels )
 		throw ImageIoExceptionFailedLoad();

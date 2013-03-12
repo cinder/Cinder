@@ -8,7 +8,7 @@ using namespace ci::app;
 class TweakBarApp : public AppBasic {
  public:
 	void setup();
-	void resize( ResizeEvent event );
+	void resize();
 	void draw();
 	void button();
 	
@@ -48,7 +48,7 @@ void TweakBarApp::button()
 	mParams.setOptions( "text", "label=`Clicked!`" );
 }
 
-void TweakBarApp::resize( ResizeEvent event )
+void TweakBarApp::resize()
 {
 	mCam.setAspectRatio( getWindowAspectRatio() );
 }

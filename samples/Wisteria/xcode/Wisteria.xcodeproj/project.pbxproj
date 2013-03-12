@@ -3,44 +3,45 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0043E7AB16A9BBC100DC6015 /* Branch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0043E7AA16A9BBC100DC6015 /* Branch.cpp */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
-		0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0097E3E40F3E9819005A4392 /* QuickTime.framework */; };
-		00BAE65A0E7ED9C10018A608 /* WisteriaApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* WisteriaApp.cpp */; };
-		00C080B510010CC5004801EA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C080B110010CC5004801EA /* Accelerate.framework */; };
-		00C080B610010CC5004801EA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C080B210010CC5004801EA /* AudioToolbox.framework */; };
-		00C080B710010CC5004801EA /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C080B310010CC5004801EA /* AudioUnit.framework */; };
-		00C080B810010CC5004801EA /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C080B410010CC5004801EA /* CoreAudio.framework */; };
-		00C080BE10010D26004801EA /* Branch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C080BD10010D26004801EA /* Branch.cpp */; };
+		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
+		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
+		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
+		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
-		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
+		6373FB6CAE774D10B86D893F /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 69FC52E9AA96444281FD1C84 /* Cairo.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		ACF40B3804ED43C6BBB09754 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 24C15149EB9B47269B72B334 /* CinderApp.icns */; };
+		CF603FCBBAA04E74B0D8DD5E /* WisteriaApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CB215AF3F9B4FDB90AA0A19 /* WisteriaApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0043E7AA16A9BBC100DC6015 /* Branch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Branch.cpp; path = ../src/Branch.cpp; sourceTree = "<group>"; };
+		0043E7AD16A9BBC900DC6015 /* Branch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Branch.h; path = ../include/Branch.h; sourceTree = "<group>"; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		0097E3E40F3E9819005A4392 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
-		00BAE6590E7ED9C10018A608 /* WisteriaApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WisteriaApp.cpp; path = ../src/WisteriaApp.cpp; sourceTree = SOURCE_ROOT; };
-		00C080B110010CC5004801EA /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
-		00C080B210010CC5004801EA /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		00C080B310010CC5004801EA /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
-		00C080B410010CC5004801EA /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		00C080BC10010D0D004801EA /* Branch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Branch.h; path = ../include/Branch.h; sourceTree = SOURCE_ROOT; };
-		00C080BD10010D26004801EA /* Branch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Branch.cpp; path = ../src/Branch.cpp; sourceTree = SOURCE_ROOT; };
+		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		24C15149EB9B47269B72B334 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		32CA4F630368D1EE00C91783 /* Wisteria_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wisteria_Prefix.pch; sourceTree = "<group>"; };
+		2DECFD63FC524F5CBAA8F239 /* Cairo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cairo.h; path = ../../../blocks/Cairo/include/cinder/cairo/Cairo.h; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
-		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		69FC52E9AA96444281FD1C84 /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Cairo.cpp; path = ../../../blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; };
+		6CB215AF3F9B4FDB90AA0A19 /* WisteriaApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = WisteriaApp.cpp; path = ../src/WisteriaApp.cpp; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Wisteria.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wisteria.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AA6BFAB56794821BC10AF6C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A88187A6CE364E4C827F5389 /* Wisteria_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Wisteria_Prefix.pch; sourceTree = "<group>"; };
+		C16E3D9C43124517A7BA9D89 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,33 +51,31 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
-				53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
 				5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */,
-				0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */,
-				00C080B510010CC5004801EA /* Accelerate.framework in Frameworks */,
-				00C080B610010CC5004801EA /* AudioToolbox.framework in Frameworks */,
-				00C080B710010CC5004801EA /* AudioUnit.framework in Frameworks */,
-				00C080B810010CC5004801EA /* CoreAudio.framework in Frameworks */,
+				00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */,
+				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
+				00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */,
+				00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00C080BB10010CFC004801EA /* Include */ = {
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				00C080BC10010D0D004801EA /* Branch.h */,
+				8976A89B0FF048F98580E4CC /* Cairo */,
 			);
-			name = Include;
+			name = Blocks;
 			sourceTree = "<group>";
 		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				00C080BD10010D26004801EA /* Branch.cpp */,
-				00BAE6590E7ED9C10018A608 /* WisteriaApp.cpp */,
+				0043E7AA16A9BBC100DC6015 /* Branch.cpp */,
+				6CB215AF3F9B4FDB90AA0A19 /* WisteriaApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -84,14 +83,12 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				00C080B110010CC5004801EA /* Accelerate.framework */,
-				00C080B210010CC5004801EA /* AudioToolbox.framework */,
-				00C080B310010CC5004801EA /* AudioUnit.framework */,
-				00C080B410010CC5004801EA /* CoreAudio.framework */,
-				0097E3E40F3E9819005A4392 /* QuickTime.framework */,
+				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
+				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
+				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
+				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
-				53E3CDFB0E86099300238D2B /* Carbon.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
@@ -102,7 +99,6 @@
 			isa = PBXGroup;
 			children = (
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
-				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
@@ -119,9 +115,9 @@
 		29B97314FDCFA39411CA2CEA /* Wisteria */ = {
 			isa = PBXGroup;
 			children = (
-				00C080BB10010CFC004801EA /* Include */,
+				01B97315FEAEA392516A2CEA /* Blocks */,
+				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
-				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -129,18 +125,21 @@
 			name = Wisteria;
 			sourceTree = "<group>";
 		};
-		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				32CA4F630368D1EE00C91783 /* Wisteria_Prefix.pch */,
+				0043E7AD16A9BBC900DC6015 /* Branch.h */,
+				C16E3D9C43124517A7BA9D89 /* Resources.h */,
+				A88187A6CE364E4C827F5389 /* Wisteria_Prefix.pch */,
 			);
-			name = "Other Sources";
+			name = Headers;
 			sourceTree = "<group>";
 		};
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107310486CEB800E47090 /* Info.plist */,
+				24C15149EB9B47269B72B334 /* CinderApp.icns */,
+				9AA6BFAB56794821BC10AF6C /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -152,6 +151,47 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2B93046A0FC54A3D9504C226 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				9D97BB5319624ACBB89DEF8E /* cinder */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		4639030457404C308B5B4025 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				69FC52E9AA96444281FD1C84 /* Cairo.cpp */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+		8976A89B0FF048F98580E4CC /* Cairo */ = {
+			isa = PBXGroup;
+			children = (
+				4639030457404C308B5B4025 /* src */,
+				2B93046A0FC54A3D9504C226 /* include */,
+			);
+			name = Cairo;
+			sourceTree = "<group>";
+		};
+		93D4870C00C249E7A3A7C6FC /* cairo */ = {
+			isa = PBXGroup;
+			children = (
+				2DECFD63FC524F5CBAA8F239 /* Cairo.h */,
+			);
+			name = cairo;
+			sourceTree = "<group>";
+		};
+		9D97BB5319624ACBB89DEF8E /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				93D4870C00C249E7A3A7C6FC /* cairo */,
+			);
+			name = cinder;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -181,8 +221,15 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Wisteria" */;
-			compatibilityVersion = "Xcode 3.0";
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Wisteria */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -197,6 +244,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACF40B3804ED43C6BBB09754 /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,8 +255,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00BAE65A0E7ED9C10018A608 /* WisteriaApp.cpp in Sources */,
-				00C080BE10010D26004801EA /* Branch.cpp in Sources */,
+				CF603FCBBAA04E74B0D8DD5E /* WisteriaApp.cpp in Sources */,
+				6373FB6CAE774D10B86D893F /* Cairo.cpp in Sources */,
+				0043E7AB16A9BBC100DC6015 /* Branch.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,11 +267,11 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Wisteria_Prefix.pch;
@@ -230,23 +279,26 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
-					"$(CINDER_PATH)/lib/libcinder_d.a",
-					"",
+					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
+					../../../blocks/Cairo/lib/macosx/libcairo.a,
+					"../../../blocks/Cairo/lib/macosx/libpixman-1.a",
+					../../../blocks/Cairo/lib/macosx/libpng14.a,
 				);
 				PRODUCT_NAME = Wisteria;
+				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
-				ZERO_LINK = YES;
 			};
 			name = Debug;
 		};
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Wisteria_Prefix.pch;
@@ -254,10 +306,14 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
-					"$(CINDER_PATH)/lib/libcinder.a",
-					"",
+					"\"$(CINDER_PATH)/lib/libcinder.a\"",
+					../../../blocks/Cairo/lib/macosx/libcairo.a,
+					"../../../blocks/Cairo/lib/macosx/libpixman-1.a",
+					../../../blocks/Cairo/lib/macosx/libpng14.a,
 				);
 				PRODUCT_NAME = Wisteria;
+				STRIP_INSTALLED_PRODUCT = YES;
+				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -268,13 +324,17 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				PREBINDING = NO;
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/boost\"",
+					../../../blocks/Cairo/include/macosx,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../blocks/Cairo/include";
 			};
 			name = Debug;
 		};
@@ -284,13 +344,17 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				PREBINDING = NO;
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/boost\"",
+					../../../blocks/Cairo/include/macosx,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../blocks/Cairo/include";
 			};
 			name = Release;
 		};

@@ -26,6 +26,7 @@
 #pragma once
 
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/svg/Svg.h"
 #include "cinder/Triangulate.h"
 

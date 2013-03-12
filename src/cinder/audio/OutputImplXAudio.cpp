@@ -122,7 +122,7 @@ void OutputImplXAudio::Track::play()
 	//mLoader->start();
 	//fillBufferCallback();
 	mIsPlaying = true;
-	mQueueThread = std::shared_ptr<boost::thread>( new boost::thread( boost::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
+	mQueueThread = std::shared_ptr<std::thread>( new std::thread( std::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
 
 	::HRESULT hr = mSourceVoice->Start( 0, XAUDIO2_COMMIT_NOW );
 	if( FAILED( hr ) ) {
@@ -159,7 +159,7 @@ float OutputImplXAudio::Track::getVolume() const
 
 PcmBuffer32fRef OutputImplXAudio::Track::getPcmBuffer()
 {
-	boost::mutex::scoped_lock( mPcmBufferMutex );
+	std::lock_guard<std::mutex> lock( mPcmBufferMutex );
 	return mLoadedPcmBuffer;
 }
 
@@ -207,7 +207,7 @@ void OutputImplXAudio::Track::fillBuffer()
 		if( mIsPcmBuffering ) {
 			uint32_t sampleCount = buffer.mDataByteSize / mVoiceDescription.nBlockAlign;
 			if( ! mLoadingPcmBuffer || ( mLoadingPcmBuffer->getSampleCount() + sampleCount > mLoadingPcmBuffer->getMaxSampleCount() ) ) {
-				boost::mutex::scoped_lock lock( mPcmBufferMutex );
+				std::lock_guard<std::mutex> lock( mPcmBufferMutex );
 				//TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second), also make sure the buffer isn't going to be larger than this? perhaps wrap data across buffers?
 				uint32_t bufferSampleCount = 2500;
 				if( mLoadingPcmBuffer ) {

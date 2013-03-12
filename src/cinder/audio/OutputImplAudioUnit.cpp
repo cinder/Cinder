@@ -147,7 +147,7 @@ void OutputImplAudioUnit::Track::setTime( double aTime )
 
 PcmBuffer32fRef OutputImplAudioUnit::Track::getPcmBuffer()
 {
-	boost::mutex::scoped_lock lock( mPcmBufferMutex );
+	std::lock_guard<std::mutex> lock( mPcmBufferMutex );
 	return mLoadedPcmBuffer;
 }
 
@@ -191,7 +191,7 @@ OSStatus OutputImplAudioUnit::Track::renderCallback( void * audioTrack, AudioUni
 	//add data to the PCM buffer if it's enabled
 	if( theTrack->mIsPcmBuffering ) {
 		if( ! theTrack->mLoadingPcmBuffer || ( theTrack->mLoadingPcmBuffer->getSampleCount() + ( ioData->mBuffers[0].mDataByteSize / sizeof(float) ) > theTrack->mLoadingPcmBuffer->getMaxSampleCount() ) ) {
-			boost::mutex::scoped_lock lock( theTrack->mPcmBufferMutex );
+			std::lock_guard<std::mutex> lock( theTrack->mPcmBufferMutex );
 			uint32_t bufferSampleCount = 1470; //TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second)
 			theTrack->mLoadedPcmBuffer = theTrack->mLoadingPcmBuffer;
 			theTrack->mLoadingPcmBuffer = PcmBuffer32fRef( new PcmBuffer32f( bufferSampleCount, theTrack->mTarget->getChannelCount(), theTrack->mTarget->isInterleaved() ) );

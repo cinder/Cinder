@@ -26,7 +26,7 @@
 namespace cinder {
 
 CaptureImplQtKitDevice::CaptureImplQtKitDevice( QTCaptureDevice* device )
-	: Capture::Device()
+	: Capture::Device(), mDevice( device )
 {
 	mUniqueId = cocoa::convertNsString( [device uniqueID] );
 	mName = cocoa::convertNsString( [device localizedDisplayName] );
@@ -58,40 +58,6 @@ bool CaptureImplQtKitDevice::isConnected() const
 } //namespace
 
 static void frameDeallocator( void *refcon );
-
-/*- (void)attributes
-{
-	NSLog( @"--------Device Attributes--------" );
-	for ( id key in [mDevice deviceAttributes] )
-	{
-		char * readOnly = "Writable";
-		if( [mDevice attributeIsReadOnly: key] ) {
-			readOnly = "Read Only";
-		}
-		NSLog( @" %@ : %@ <%s>", key, [[mDevice deviceAttributes] objectForKey:key], readOnly );
-	}
-	
-	
-	NSLog( @"--------Device Formats--------" );
-	NSArray * deviceFormats = [mDevice formatDescriptions];
-	for ( int i = 0; i < [deviceFormats count]; i++  )
-	{
-		QTFormatDescription * desc = [deviceFormats objectAtIndex: i];
-		
-		NSLog( @"QuickTime Sample Description: %@", [desc quickTimeSampleDescription] );
-		NSLog( @"Media Type: %@", [desc mediaType] );
-		NSLog( @"Description: %@", [desc localizedFormatSummary] );
-		//NSLog( @"FormatType: %@", [desc formatType] );
-		
-		
-		for ( id key in [desc formatDescriptionAttributes] ) 
-		{
-			NSLog( @" %@ : %@", key, [desc attributeForKey: key] );
-		}
-	}
-	NSLog(@"------------");
-}
-*/
 
 static std::vector<cinder::Capture::DeviceRef> sDevices;
 static BOOL sDevicesEnumerated = false;

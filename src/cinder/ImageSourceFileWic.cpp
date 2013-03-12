@@ -50,7 +50,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	
     // Create WIC factory
     IWICImagingFactory *IWICFactoryP = NULL;
-    hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&IWICFactoryP) );
+	hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&IWICFactoryP) );
 	if( ! SUCCEEDED( hr ) )
 		throw ImageIoExceptionFailedLoad();
 	std::shared_ptr<IWICImagingFactory> IWICFactory = msw::makeComShared( IWICFactoryP );

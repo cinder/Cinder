@@ -21,29 +21,33 @@
 */
 
 #import <UIKit/UIKit.h>
-#import <QuartzCore/QuartzCore.h>
 
 #import "cinder/app/App.h"
 #import "cinder/app/Renderer.h"
 
 @interface AppImplCocoaTouchRendererGl : NSObject
 {
-	cinder::app::RendererGl			*renderer;
-	cinder::app::App				*app;
-	UIView							*cinderView;
-	
-	EAGLContext *context;	
+	cinder::app::RendererGl			*mRenderer; // equivalent of a weak_ptr; 'renderer' owns this // TODO: remove, this is unused
+	cinder::app::App				*mApp;
+	UIView							*mCinderView;
+	EAGLContext						*mContext;
+
 	// The pixel dimensions of the CAEAGLLayer
-	GLint backingWidth;
-	GLint backingHeight;	
+	GLint 			mBackingWidth, mBackingHeight;
+	
+	// The dimensions of the CAEAGLLayer in points
+	GLint			mPointsWidth, mPointsHeight;
+	
 	// The OpenGL names for the framebuffer and renderbuffer used to render to this view
-	GLuint defaultFramebuffer, colorRenderbuffer, depthRenderbuffer;	
+	GLuint 			mViewFramebuffer, mViewRenderBuffer, mDepthRenderBuffer;
+	GLuint			mMsaaFramebuffer, mMsaaRenderBuffer;
+	BOOL			mUsingMsaa;
+	int				mMsaaSamples;
 }
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer;
-- (void)allocateGraphics;
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer;
 
-- (void)layoutSubviews;
+- (EAGLContext*)getEaglContext;
 - (void)makeCurrentContext;
 - (void)flushBuffer;
 - (void)setFrameSize:(CGSize)newSize;

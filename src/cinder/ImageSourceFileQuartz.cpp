@@ -23,8 +23,12 @@
 #include "cinder/ImageSourceFileQuartz.h"
 #include "cinder/cocoa/CinderCocoa.h"
 
-#include <ApplicationServices/ApplicationServices.h>
-#import <Foundation/Foundation.h>
+#if defined( CINDER_COCOA_TOUCH )
+	#include <MobileCoreServices/MobileCoreServices.h>
+	#include <ImageIO/ImageIO.h>
+#else
+	#include <CoreServices/CoreServices.h>
+#endif
 
 namespace cinder {
 
@@ -81,7 +85,7 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 	
 	::CFStringRef keys[1] = { kCGImageSourceShouldAllowFloat };
 	::CFBooleanRef values[1] = { kCFBooleanTrue };
-	std::shared_ptr<const __CFDictionary> optionsDict( CFDictionaryCreate( kCFAllocatorDefault, (const void **)&keys, (const void **)&values, 1, NULL, NULL ), cocoa::safeCfRelease );
+	const std::shared_ptr<__CFDictionary> optionsDict( (__CFDictionary*)CFDictionaryCreate( kCFAllocatorDefault, (const void **)&keys, (const void **)&values, 1, NULL, NULL ), cocoa::safeCfRelease );
 
 	if( dataSourceRef->isFilePath() ) {
 		::CFStringRef pathString = cocoa::createCfString( dataSourceRef->getFilePath().string() );
@@ -114,8 +118,8 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 	else
 		throw ImageIoExceptionFailedLoad();
 
-	std::shared_ptr<const __CFDictionary> imageProperties( ::CGImageSourceCopyProperties( sourceRef.get(), NULL ), ::CFRelease );
-	std::shared_ptr<const __CFDictionary> imageIndexProperties( ::CGImageSourceCopyPropertiesAtIndex( sourceRef.get(), options.getIndex(), NULL ), ::CFRelease );
+	const std::shared_ptr<__CFDictionary> imageProperties( (__CFDictionary*)::CGImageSourceCopyProperties( sourceRef.get(), NULL ), ::CFRelease );
+	const std::shared_ptr<__CFDictionary> imageIndexProperties( (__CFDictionary*)::CGImageSourceCopyPropertiesAtIndex( sourceRef.get(), options.getIndex(), NULL ), ::CFRelease );
 
 	return ImageSourceFileQuartzRef( new ImageSourceFileQuartz( imageRef.get(), options, imageProperties, imageIndexProperties ) );
 }

@@ -25,14 +25,19 @@ class HodginParticlesApp : public AppBasic {
 	Renderer* prepareRenderer() { return new RendererGl( RendererGl::AA_MSAA_2 ); }
 	void prepareSettings( Settings *settings );
 	void setup();
+	
 	void mouseDown( MouseEvent event );	
 	void mouseUp( MouseEvent event );
+	void mouseMove( MouseEvent event );
+	void mouseDrag( MouseEvent event );
 	void keyDown( KeyEvent event );	
+	
 	void update();
 	void draw();
 	
-	Emitter emitter;
-	bool mouseIsDown;
+	Emitter		mEmitter;
+	bool		mouseIsDown;
+	Vec2i		mMousePos;
 };
 
 void HodginParticlesApp::prepareSettings( Settings *settings )
@@ -46,17 +51,30 @@ void HodginParticlesApp::setup()
 {
 	particleImg = new gl::Texture( loadImage( loadResource( RES_PARTICLE ) ) );
 	emitterImg = new gl::Texture( loadImage( loadResource( RES_EMITTER ) ) );
+
 	mouseIsDown = false;
+	mMousePos = getWindowCenter();
 }
 
 void HodginParticlesApp::mouseDown( MouseEvent event )
 {
 	mouseIsDown = true;
+	mMousePos = event.getPos();
 }
 
 void HodginParticlesApp::mouseUp( MouseEvent event )
 {
 	mouseIsDown = false;
+}
+
+void HodginParticlesApp::mouseMove( MouseEvent event )
+{
+	mMousePos = event.getPos();
+}
+
+void HodginParticlesApp::mouseDrag( MouseEvent event )
+{
+	mMousePos = event.getPos();
 }
 
 void HodginParticlesApp::keyDown( KeyEvent event )
@@ -79,10 +97,10 @@ void HodginParticlesApp::update()
 	
 	if( mouseIsDown ) {
 		if( ALLOWTRAILS && ALLOWFLOOR ) {
-			emitter.addParticles( 5 * CINDER_FACTOR );
+			mEmitter.addParticles( 5 * CINDER_FACTOR );
 		}
 		else {
-			emitter.addParticles( 10 * CINDER_FACTOR );
+			mEmitter.addParticles( 10 * CINDER_FACTOR );
 		}
 	}
 }
@@ -102,7 +120,7 @@ void HodginParticlesApp::draw()
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
 	
-	emitter.exist( getMousePos() );	
+	mEmitter.exist( mMousePos );	
 }
 
 // It would be faster to just make QUADS calls directly to the loc

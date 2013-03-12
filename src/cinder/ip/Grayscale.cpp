@@ -23,6 +23,9 @@
 #include "cinder/ip/Grayscale.h"
 #include "cinder/ChanTraits.h"
 
+#include <boost/preprocessor/seq.hpp>
+
+
 namespace cinder { namespace ip {
 
 template<typename T>

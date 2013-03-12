@@ -1,0 +1,19 @@
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+#endif
+
+// What manner of devilry is this?
+// Unfortunately due to a deep design flaw in Objective-C based plugin schemes
+// such as Mac OS X's screensaver mechanism, runtime class name collisions are
+// essentially unsolvable. So we need navigate around this by
+//   a) including all of Cinder's obj-c classes directly in the project and
+//   b) renaming them to something unique using the preprocessor. Awful.
+
+#define CinderView CinderView_ScreenSaverTest
+#define AppImplCocoaRendererGl AppImplCocoaRendererGl_ScreenSaverTest
+#define AppImplCocoaRendererQuartz AppImplCocoaRendererQuartz_ScreenSaverTest
+#define AppImplCocoaTransparentGlView AppImplCocoaTransparentGlView_ScreenSaverTest
+#define CocoaRendererQuartzView CocoaRendererQuartzView_ScreenSaverTest
+#define AppImplCocoaScreenSaver AppImplCocoaScreenSaver_ScreenSaverTest
+#define WindowImplCocoaScreenSaver WindowImplCocoaScreenSaver_ScreenSaverTest
+#define sAppImplInstance sAppImplInstance_ScreenSaverTest

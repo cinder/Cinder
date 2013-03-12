@@ -33,7 +33,7 @@
 #include <boost/container/list.hpp>
 
 namespace Json {
-class Value;
+	class Value;
 }
 
 namespace cinder {
@@ -43,6 +43,7 @@ class JsonTree {
 	
 	//! \cond
 	typedef boost::container::list<JsonTree> Container;
+
 	typedef Container::const_iterator ConstIter;
 	typedef Container::iterator Iter;
 	//! \endcond
@@ -265,7 +266,7 @@ private:
 	NodeType						mNodeType;
 	std::string						mValue;
 	ValueType						mValueType;
-	//! \cond
+	//! \endcond
 
   public:
 

@@ -27,41 +27,17 @@
 using std::pair;
 
 namespace cinder {
-
-template<typename T>
-AreaT<T>::AreaT( const Vec2<T> &UL, const Vec2<T> &LR )
+Area::Area( const Vec2i &UL, const Vec2i &LR )
 {
 	set( UL.x, UL.y, LR.x, LR.y );
 }
 
-template<typename T>
-AreaT<T>::AreaT( const RectT<float> &r )
+Area::Area( const RectT<float> &r )
 {
-	set( r.x1, r.y1, r.x2, r.y2 );
+	set( (int32_t)r.x1, (int32_t)r.y1, (int32_t)r.x2, (int32_t)r.y2 );
 }
 
-template<>
- template<>
-AreaT<int32_t>::AreaT( const AreaT<boost::rational<int32_t> > &aAreaBase )
-{
-	x1 = aAreaBase.x1.numerator() / aAreaBase.x1.denominator();
-	y1 = aAreaBase.y1.numerator() / aAreaBase.y1.denominator();
-	x2 = aAreaBase.x2.numerator() / aAreaBase.x2.denominator();
-	y2 = aAreaBase.y2.numerator() / aAreaBase.y2.denominator();
-}
-
-template<>
- template<>
-AreaT<boost::rational<int32_t> >::AreaT( const AreaT<int32_t> &aAreaBase )
-{
-	x1 = aAreaBase.x1;
-	y1 = aAreaBase.y1;
-	x2 = aAreaBase.x2;
-	y2 = aAreaBase.y2;
-}
-
-template<typename T>
-void AreaT<T>::set( T aX1, T aY1, T aX2, T aY2 )
+void Area::set( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2 )
 {
 	if ( aX1 <= aX2 ) {
 		x1 = aX1;
@@ -82,8 +58,7 @@ void AreaT<T>::set( T aX1, T aY1, T aX2, T aY2 )
 	}
 }
 
-template<typename T>
-void AreaT<T>::clipBy( const AreaT<T> &clip )
+void Area::clipBy( const Area &clip )
 {
 	if ( x1 < clip.x1 )
 		x1 = clip.x1;
@@ -104,16 +79,14 @@ void AreaT<T>::clipBy( const AreaT<T> &clip )
 		y2 = clip.y2;
 }
 
-template<typename T>
-AreaT<T> AreaT<T>::getClipBy( const AreaT<T> &clip ) const
+Area Area::getClipBy( const Area &clip ) const
 {
-	AreaT<T> result( *this );
+	Area result( *this );
 	result.clipBy( clip );
 	return result;
 }
 
-template<typename T>
-void AreaT<T>::offset( const Vec2<T> &o )
+void Area::offset( const Vec2i &o )
 {
 	x1 += o.x;
 	x2 += o.x;
@@ -121,32 +94,27 @@ void AreaT<T>::offset( const Vec2<T> &o )
 	y2 += o.y;
 }
 
-template<typename T>
-AreaT<T> AreaT<T>::getOffset( const Vec2<T> &offset ) const
+Area Area::getOffset( const Vec2i &offset ) const
 {
-	return AreaT<T>( x1 + offset.x, y1 + offset.y, x2 + offset.x, y2 + offset.y );
+	return Area( x1 + offset.x, y1 + offset.y, x2 + offset.x, y2 + offset.y );
 }
 
-template<typename T>
-void AreaT<T>::moveULTo( const Vec2<T> &newUL )
+void Area::moveULTo( const Vec2i &newUL )
 {
 	set( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
 }
 
-template<typename T>
-AreaT<T> AreaT<T>::getMoveULTo( const Vec2<T> &newUL ) const
+Area Area::getMoveULTo( const Vec2i &newUL ) const
 {
-	return AreaT<T>( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
+	return Area( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
 }
 
-template<typename T>
-bool AreaT<T>::contains( const Vec2<T> &offset ) const
+bool Area::contains( const Vec2i &offset ) const
 {
 	return ( ( offset.x >= x1 ) && ( offset.x < x2 ) && ( offset.y >= y1 ) && ( offset.y < y2 ) );
 }
 
-template<typename T>
-bool AreaT<T>::intersects( const AreaT<T> &area ) const
+bool Area::intersects( const Area &area ) const
 {
 	if( ( x1 >= area.x2 ) || ( x2 < area.x1 ) || ( y1 >= area.y2 ) || ( y2 < area.y1 ) )
 		return false;
@@ -154,9 +122,28 @@ bool AreaT<T>::intersects( const AreaT<T> &area ) const
 		return true;
 }
 
-template<typename T>
- template<typename Y>
-float AreaT<T>::distance( const Vec2<Y> &pt ) const
+void Area::include( const Vec2i &point )
+{
+	if( x1 > point.x ) x1 = point.x;
+	if( x2 < point.x ) x2 = point.x;
+	if( y1 > point.y ) y1 = point.y;
+	if( y2 < point.y ) y2 = point.y;
+}
+
+void Area::include( const std::vector<Vec2i > &points )
+{
+	for( size_t s = 0; s < points.size(); ++s )
+		include( points[s] );
+}
+
+void Area::include( const Area &area )
+{
+	include( Vec2i( area.x1, area.y1 ) );
+	include( Vec2i( area.x2, area.y2 ) );
+}
+
+template<typename Y>
+float Area::distance( const Vec2<Y> &pt ) const
 {
 	float squaredDistance = 0;
 	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
@@ -170,9 +157,8 @@ float AreaT<T>::distance( const Vec2<Y> &pt ) const
 		return 0;
 }
 
-template<typename T>
- template<typename Y>
-float AreaT<T>::distanceSquared( const Vec2<Y> &pt ) const
+template<typename Y>
+float Area::distanceSquared( const Vec2<Y> &pt ) const
 {
 	float squaredDistance = 0;
 	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
@@ -183,20 +169,18 @@ float AreaT<T>::distanceSquared( const Vec2<Y> &pt ) const
 	return squaredDistance;
 }
 
-template<typename T>
- template<typename Y>
-Vec2<Y>	AreaT<T>::closestPoint( const Vec2<Y> &pt ) const
+template<typename Y>
+Vec2<Y>	Area::closestPoint( const Vec2<Y> &pt ) const
 {
 	Vec2<Y> result = pt;
-	if( pt.x < x1 ) result.x = x1;
-	else if( pt.x > x2 ) result.x = x2;
-	if( pt.y < y1 ) result.y = y1;
-	else if( pt.y > y2 ) result.y = y2;
+	if( pt.x < (Y)x1 ) result.x = (Y)x1;
+	else if( pt.x > (Y)x2 ) result.x = (Y)x2;
+	if( pt.y < (Y)y1 ) result.y = (Y)y1;
+	else if( pt.y > (Y)y2 ) result.y = (Y)y2;
 	return result;
 }
 
-template<typename T>
-bool AreaT<T>::operator<( const AreaT<T> &aArea ) const
+bool Area::operator<( const Area &aArea ) const
 {
 	if ( x1 != aArea.x1 ) return x1 < aArea.x1;
 	if ( y1 != aArea.y1 ) return y1 < aArea.y1;
@@ -206,11 +190,9 @@ bool AreaT<T>::operator<( const AreaT<T> &aArea ) const
 	return false;
 }
 
-
-template<typename T>
-AreaT<T> AreaT<T>::proportionalFit( const AreaT<T> &srcArea, const AreaT<T> &dstArea, bool center, bool expand )
+Area Area::proportionalFit( const Area &srcArea, const Area &dstArea, bool center, bool expand )
 {
-	T resultWidth, resultHeight;
+	int32_t resultWidth, resultHeight;
 	if( srcArea.getWidth() >= srcArea.getHeight() ) { // wider than tall
 		resultWidth = ( expand ) ? dstArea.getWidth() : std::min( dstArea.getWidth(), srcArea.getWidth() );
 		resultHeight = resultWidth * srcArea.getHeight() / srcArea.getWidth();
@@ -228,9 +210,9 @@ AreaT<T> AreaT<T>::proportionalFit( const AreaT<T> &srcArea, const AreaT<T> &dst
 		}
 	}
 	
-	AreaT<T> resultArea( 0, 0, resultWidth, resultHeight );
+	Area resultArea( 0, 0, resultWidth, resultHeight );
 	if ( center )
-		resultArea.offset( Vec2<T>( ( dstArea.getWidth() - resultWidth ) / 2, ( dstArea.getHeight() - resultHeight ) / 2 ) );
+		resultArea.offset( Vec2i( ( dstArea.getWidth() - resultWidth ) / 2, ( dstArea.getHeight() - resultHeight ) / 2 ) );
 	resultArea.offset( dstArea.getUL() );
 	return resultArea;
 }
@@ -251,13 +233,11 @@ pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcAre
 	return std::make_pair( clippedSrc, newDstLT );
 }
 
-template class AreaT<int32_t>;
-template class AreaT<boost::rational<int32_t> >;
-template float AreaT<int32_t>::distance( const Vec2i &pt ) const;
-template float AreaT<int32_t>::distance( const Vec2f &pt ) const;
-template float AreaT<int32_t>::distanceSquared( const Vec2i &pt ) const;
-template float AreaT<int32_t>::distanceSquared( const Vec2f &pt ) const;
-template Vec2i AreaT<int32_t>::closestPoint( const Vec2i &pt ) const;
-template Vec2f AreaT<int32_t>::closestPoint( const Vec2f &pt ) const;
+template float Area::distance( const Vec2i &pt ) const;
+template float Area::distance( const Vec2f &pt ) const;
+template float Area::distanceSquared( const Vec2i &pt ) const;
+template float Area::distanceSquared( const Vec2f &pt ) const;
+template Vec2i Area::closestPoint( const Vec2i &pt ) const;
+template Vec2f Area::closestPoint( const Vec2f &pt ) const;
 
 } // namespace cinder

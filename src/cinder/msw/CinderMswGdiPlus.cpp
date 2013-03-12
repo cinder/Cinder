@@ -22,11 +22,7 @@
 
 #include "cinder/msw/CinderMswGdiPlus.h"
 #include <windows.h>
-#define max(a, b) (((a) > (b)) ? (a) : (b))
-#define min(a, b) (((a) < (b)) ? (a) : (b))
-#include <gdiplus.h>
-#undef min
-#undef max
+
 
 namespace cinder { namespace msw {
 

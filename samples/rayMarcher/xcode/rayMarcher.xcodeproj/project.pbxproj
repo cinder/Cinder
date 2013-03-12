@@ -3,44 +3,45 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0087DAF416ABA13B009BE131 /* RayMarcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0087DAF316ABA13B009BE131 /* RayMarcher.cpp */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
-		0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0097E3E40F3E9819005A4392 /* QuickTime.framework */; };
-		00BAE65A0E7ED9C10018A608 /* rayMarcherApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* rayMarcherApp.cpp */; };
-		00C075D00FF33C04004801EA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C075CC0FF33C04004801EA /* Accelerate.framework */; };
-		00C075D10FF33C04004801EA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C075CD0FF33C04004801EA /* AudioToolbox.framework */; };
-		00C075D20FF33C04004801EA /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C075CE0FF33C04004801EA /* AudioUnit.framework */; };
-		00C075D30FF33C04004801EA /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C075CF0FF33C04004801EA /* CoreAudio.framework */; };
-		00D2F3EA0F90384B00A7189A /* RayMarcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D2F3E90F90384B00A7189A /* RayMarcher.cpp */; };
+		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
+		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
+		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
+		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		04C206C1CFB8490FAADCFA90 /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6A2668065254D3BB279382F /* Cairo.cpp */; };
+		3224B63A8723495E82F5A242 /* RayMarcherApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD4A18384B774045B2AFA709 /* RayMarcherApp.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
-		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
+		6CD7155DDA7F4A7CAFE3ED6F /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = E49660B52CA3485BAEA53C5C /* CinderApp.icns */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0087DAF316ABA13B009BE131 /* RayMarcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RayMarcher.cpp; path = ../src/RayMarcher.cpp; sourceTree = "<group>"; };
+		0087DAF616ABA142009BE131 /* RayMarcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RayMarcher.h; path = ../include/RayMarcher.h; sourceTree = "<group>"; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		0097E3E40F3E9819005A4392 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
-		00BAE6590E7ED9C10018A608 /* rayMarcherApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = rayMarcherApp.cpp; path = ../src/rayMarcherApp.cpp; sourceTree = SOURCE_ROOT; };
-		00C075CC0FF33C04004801EA /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
-		00C075CD0FF33C04004801EA /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		00C075CE0FF33C04004801EA /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
-		00C075CF0FF33C04004801EA /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		00D2F3E40F90362700A7189A /* RayMarcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RayMarcher.h; path = ../include/RayMarcher.h; sourceTree = SOURCE_ROOT; };
-		00D2F3E90F90384B00A7189A /* RayMarcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RayMarcher.cpp; path = ../src/RayMarcher.cpp; sourceTree = SOURCE_ROOT; };
+		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		32CA4F630368D1EE00C91783 /* rayMarcher_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rayMarcher_Prefix.pch; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
-		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* rayMarcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = rayMarcher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		77B48100B1414DF89AC20CB0 /* RayMarcher_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = RayMarcher_Prefix.pch; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* RayMarcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RayMarcher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A58CAF06B44F409BAA650DFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AD4A18384B774045B2AFA709 /* RayMarcherApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = RayMarcherApp.cpp; path = ../src/RayMarcherApp.cpp; sourceTree = "<group>"; };
+		C6A2668065254D3BB279382F /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Cairo.cpp; path = ../../../blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; };
+		E49660B52CA3485BAEA53C5C /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		EFBDE83631844292BE8C9B5B /* Cairo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cairo.h; path = ../../../blocks/Cairo/include/cinder/cairo/Cairo.h; sourceTree = "<group>"; };
+		FB60DBE3CD884CEB86DD0C92 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,48 +51,53 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
-				53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
 				5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */,
-				0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */,
-				00C075D00FF33C04004801EA /* Accelerate.framework in Frameworks */,
-				00C075D10FF33C04004801EA /* AudioToolbox.framework in Frameworks */,
-				00C075D20FF33C04004801EA /* AudioUnit.framework in Frameworks */,
-				00C075D30FF33C04004801EA /* CoreAudio.framework in Frameworks */,
+				00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */,
+				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
+				00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */,
+				00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00D2F3E30F9035F400A7189A /* Headers */ = {
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				00D2F3E40F90362700A7189A /* RayMarcher.h */,
+				0A686D0894564188A0F20DC2 /* Cairo */,
 			);
-			name = Headers;
+			name = Blocks;
 			sourceTree = "<group>";
 		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				00D2F3E90F90384B00A7189A /* RayMarcher.cpp */,
-				00BAE6590E7ED9C10018A608 /* rayMarcherApp.cpp */,
+				0087DAF316ABA13B009BE131 /* RayMarcher.cpp */,
+				AD4A18384B774045B2AFA709 /* RayMarcherApp.cpp */,
 			);
 			name = Source;
+			sourceTree = "<group>";
+		};
+		0A686D0894564188A0F20DC2 /* Cairo */ = {
+			isa = PBXGroup;
+			children = (
+				7FFE28CB9E48496F942F4108 /* src */,
+				21E0237D067544769A2083FC /* include */,
+			);
+			name = Cairo;
 			sourceTree = "<group>";
 		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				00C075CC0FF33C04004801EA /* Accelerate.framework */,
-				00C075CD0FF33C04004801EA /* AudioToolbox.framework */,
-				00C075CE0FF33C04004801EA /* AudioUnit.framework */,
-				00C075CF0FF33C04004801EA /* CoreAudio.framework */,
-				0097E3E40F3E9819005A4392 /* QuickTime.framework */,
+				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
+				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
+				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
+				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
-				53E3CDFB0E86099300238D2B /* Carbon.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
@@ -102,45 +108,63 @@
 			isa = PBXGroup;
 			children = (
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
-				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		105F6D2CAC31407686531C06 /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				6B63E137C1B74DA4A5FD6C48 /* cairo */,
+			);
+			name = cinder;
+			sourceTree = "<group>";
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* rayMarcher.app */,
+				8D1107320486CEB800E47090 /* RayMarcher.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* rayMarcher */ = {
+		21E0237D067544769A2083FC /* include */ = {
 			isa = PBXGroup;
 			children = (
-				00D2F3E30F9035F400A7189A /* Headers */,
+				105F6D2CAC31407686531C06 /* cinder */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* RayMarcher */ = {
+			isa = PBXGroup;
+			children = (
+				01B97315FEAEA392516A2CEA /* Blocks */,
+				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
-				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
-			name = rayMarcher;
+			name = RayMarcher;
 			sourceTree = "<group>";
 		};
-		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				32CA4F630368D1EE00C91783 /* rayMarcher_Prefix.pch */,
+				0087DAF616ABA142009BE131 /* RayMarcher.h */,
+				FB60DBE3CD884CEB86DD0C92 /* Resources.h */,
+				77B48100B1414DF89AC20CB0 /* RayMarcher_Prefix.pch */,
 			);
-			name = "Other Sources";
+			name = Headers;
 			sourceTree = "<group>";
 		};
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107310486CEB800E47090 /* Info.plist */,
+				E49660B52CA3485BAEA53C5C /* CinderApp.icns */,
+				A58CAF06B44F409BAA650DFE /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -154,12 +178,28 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6B63E137C1B74DA4A5FD6C48 /* cairo */ = {
+			isa = PBXGroup;
+			children = (
+				EFBDE83631844292BE8C9B5B /* Cairo.h */,
+			);
+			name = cairo;
+			sourceTree = "<group>";
+		};
+		7FFE28CB9E48496F942F4108 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				C6A2668065254D3BB279382F /* Cairo.cpp */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* rayMarcher */ = {
+		8D1107260486CEB800E47090 /* RayMarcher */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "rayMarcher" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "RayMarcher" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -169,10 +209,10 @@
 			);
 			dependencies = (
 			);
-			name = rayMarcher;
+			name = RayMarcher;
 			productInstallPath = "$(HOME)/Applications";
-			productName = rayMarcher;
-			productReference = 8D1107320486CEB800E47090 /* rayMarcher.app */;
+			productName = RayMarcher;
+			productReference = 8D1107320486CEB800E47090 /* RayMarcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -181,13 +221,20 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "rayMarcher" */;
-			compatibilityVersion = "Xcode 3.0";
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
-			mainGroup = 29B97314FDCFA39411CA2CEA /* rayMarcher */;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* RayMarcher */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* rayMarcher */,
+				8D1107260486CEB800E47090 /* RayMarcher */,
 			);
 		};
 /* End PBXProject section */
@@ -197,6 +244,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6CD7155DDA7F4A7CAFE3ED6F /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,8 +255,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00BAE65A0E7ED9C10018A608 /* rayMarcherApp.cpp in Sources */,
-				00D2F3EA0F90384B00A7189A /* RayMarcher.cpp in Sources */,
+				3224B63A8723495E82F5A242 /* RayMarcherApp.cpp in Sources */,
+				04C206C1CFB8490FAADCFA90 /* Cairo.cpp in Sources */,
+				0087DAF416ABA13B009BE131 /* RayMarcher.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -218,54 +267,53 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = rayMarcher_Prefix.pch;
+				GCC_PREFIX_HEADER = RayMarcher_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					../../../lib,
-				);
 				OTHER_LDFLAGS = (
-					../../../lib/libcinder_d.a,
-					"",
+					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
+					../../../blocks/Cairo/lib/macosx/libcairo.a,
+					"../../../blocks/Cairo/lib/macosx/libpixman-1.a",
+					../../../blocks/Cairo/lib/macosx/libpng14.a,
 				);
-				PRODUCT_NAME = rayMarcher;
+				PRODUCT_NAME = RayMarcher;
+				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
-				ZERO_LINK = YES;
 			};
 			name = Debug;
 		};
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = rayMarcher_Prefix.pch;
+				GCC_PREFIX_HEADER = RayMarcher_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					../../../lib,
-				);
 				OTHER_LDFLAGS = (
-					../../../lib/libcinder.a,
-					"",
+					"\"$(CINDER_PATH)/lib/libcinder.a\"",
+					../../../blocks/Cairo/lib/macosx/libcairo.a,
+					"../../../blocks/Cairo/lib/macosx/libpixman-1.a",
+					../../../blocks/Cairo/lib/macosx/libpng14.a,
 				);
-				PRODUCT_NAME = rayMarcher;
+				PRODUCT_NAME = RayMarcher;
+				STRIP_INSTALLED_PRODUCT = YES;
+				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -273,37 +321,47 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				PREBINDING = NO;
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/boost\"",
+					../../../blocks/Cairo/include/macosx,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "../include $(CINDER_PATH)/include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../blocks/Cairo/include";
 			};
 			name = Debug;
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				PREBINDING = NO;
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/boost\"",
+					../../../blocks/Cairo/include/macosx,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "../include $(CINDER_PATH)/include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../blocks/Cairo/include";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "rayMarcher" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "RayMarcher" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,

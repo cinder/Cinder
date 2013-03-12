@@ -1,0 +1,24 @@
+//
+// Prefix header for all source files of the 'basicApp' target in the 'basicApp' project
+//
+#import <Availability.h>
+
+#ifndef __IPHONE_4_3
+#warning "This project uses features only available in iOS SDK 4.3 and later."
+#endif
+
+#ifdef __OBJC__
+	#import <UIKit/UIKit.h>
+	#import <Foundation/Foundation.h>
+#endif
+
+#include "cinder/Cinder.h"
+
+#include "cinder/app/AppCocoaTouch.h"
+
+#include "cinder/gl/gl.h"
+
+#include "cinder/CinderMath.h"
+#include "cinder/Matrix.h"
+#include "cinder/Vector.h"
+#include "cinder/Quaternion.h"

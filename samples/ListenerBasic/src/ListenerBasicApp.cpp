@@ -25,7 +25,7 @@ void ListenerBasicApp::setup()
 {
 	// This installs a listener which intercepts mouse-down events
 	// when the user clicks inside the square
-	mSquare = new SquareListener( this );
+	mSquare = new SquareListener( getWindow() );
 }
 
 void ListenerBasicApp::mouseDown( MouseEvent event )
