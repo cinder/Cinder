@@ -177,7 +177,6 @@ if( ! view )
 			NSOpenGLPFADoubleBuffer,
 			NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24,
 /*kCGLPFAStencilSize, (CGLPixelFormatAttribute) 8,*/
-	        NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
 			(NSOpenGLPixelFormatAttribute)0
 		};
 		
