@@ -171,6 +171,7 @@ if( ! view )
 
 + (NSOpenGLPixelFormat*)defaultPixelFormat:(int)antialiasLevel
 {
+	NSOpenGLPixelFormat *result = nil;
 	if( antialiasLevel == cinder::app::RendererGl::AA_NONE ) {
 		NSOpenGLPixelFormatAttribute attributes [] = {
 			NSOpenGLPFAWindow,
@@ -179,9 +180,8 @@ if( ! view )
 /*kCGLPFAStencilSize, (CGLPixelFormatAttribute) 8,*/
 			(NSOpenGLPixelFormatAttribute)0
 		};
-		
-		return [[[NSOpenGLPixelFormat alloc] 
-				 initWithAttributes:attributes] autorelease];
+
+		result = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
 	}
 	else {
 		NSOpenGLPixelFormatAttribute attributes [] = {
@@ -196,10 +196,11 @@ if( ! view )
 			(NSOpenGLPixelFormatAttribute)0
 		};
 		
-		NSOpenGLPixelFormat *result = [[NSOpenGLPixelFormat alloc] 
-											initWithAttributes:attributes];
-		return [result autorelease];
+		result = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
 	}
+
+	assert( result );
+	return [result autorelease];
 }
 
 @end
