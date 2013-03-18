@@ -210,7 +210,7 @@ static void initKeyTable()
 	sKeyTable[VK_SPACE] = KeyEvent::KEY_SPACE;
 	sKeyTable[0xDE] = KeyEvent::KEY_QUOTE;
 	sKeyTable[0xBC] = KeyEvent::KEY_COMMA;
-	sKeyTable[0xDD] = KeyEvent::KEY_MINUS;
+	sKeyTable[0xBD] = KeyEvent::KEY_MINUS;
 	sKeyTable[0xBE] = KeyEvent::KEY_PERIOD;
 	sKeyTable[0xBF] = KeyEvent::KEY_SLASH;
 	sKeyTable['0'] = KeyEvent::KEY_0;
