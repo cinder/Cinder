@@ -105,7 +105,7 @@ class TriMesh {
 	void		appendTriangle( size_t v0, size_t v1, size_t v2 )
 	{ mIndices.push_back( v0 ); mIndices.push_back( v1 ); mIndices.push_back( v2 ); }
 	//! Appends \a num vertices to the TriMesh pointed to by \a indices
-	void		appendIndices( uint32_t *indices, size_t num );
+	void		appendIndices( const uint32_t *indices, size_t num );
 
 	//! Returns the total number of indices contained by a TriMesh. This should be number of triangles/3
 	size_t		getNumIndices() const { return mIndices.size(); }
@@ -196,7 +196,7 @@ class TriMesh2d {
 	void		appendTriangle( size_t v0, size_t v1, size_t v2 )
 	{ mIndices.push_back( v0 ); mIndices.push_back( v1 ); mIndices.push_back( v2 ); }
 	//! Appends \a num vertices to the TriMesh2d pointed to by \a indices
-	void		appendIndices( uint32_t *indices, size_t num );
+	void		appendIndices( const uint32_t *indices, size_t num );
 	
 	//! Returns the total number of indices contained by a TriMesh. This should be number of triangles/3
 	size_t		getNumIndices() const { return mIndices.size(); }

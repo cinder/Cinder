@@ -49,7 +49,7 @@ void TriMesh::appendVertices( const Vec4d *verts, size_t num )
 		mVertices.push_back( Vec3f( (float)verts[v].x, (float)verts[v].y, (float)verts[v].z ) );
 }
 
-void TriMesh::appendIndices( uint32_t *indices, size_t num )
+void TriMesh::appendIndices( const uint32_t *indices, size_t num )
 {
 	mIndices.insert( mIndices.end(), indices, indices + num );
 }
@@ -249,7 +249,7 @@ void TriMesh2d::appendVertices( const Vec2f *verts, size_t num )
 	mVertices.insert( mVertices.end(), verts, verts + num );
 }
 
-void TriMesh2d::appendIndices( uint32_t *indices, size_t num )
+void TriMesh2d::appendIndices( const uint32_t *indices, size_t num )
 {
 	mIndices.insert( mIndices.end(), indices, indices + num );
 }
