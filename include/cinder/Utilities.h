@@ -27,6 +27,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
+#undef check
 #include <boost/lexical_cast.hpp>
 
 namespace cinder {
