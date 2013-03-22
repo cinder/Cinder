@@ -20,6 +20,10 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/Cinder.h"
+// Cinder Audio on MSW is not supported with VC11 when targeting < Windows 8 with v110
+#if ( ! defined( CINDER_MSW ) ) || ( _MSC_VER < 1700 ) || defined( _USING_V110_SDK71_ ) || ( _WIN32_WINNT >= 0x0602 )
+
 #include "cinder/audio/OutputImplXAudio.h"
 
 namespace cinder { namespace audio {
@@ -293,3 +297,5 @@ void OutputImplXAudio::removeTrack( TrackId trackId )
 }*/
 
 }} //namespaces
+
+#endif // testing against VC11 Windows<8
