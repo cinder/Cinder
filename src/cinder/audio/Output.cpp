@@ -20,6 +20,10 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/Cinder.h"
+// Cinder Audio on MSW is not supported with VC11 when targeting < Windows 8
+#if ( ! defined( CINDER_MSW ) ) || ( _MSC_VER < 1700 ) || defined( _USING_V110_SDK71_ ) || ( _WIN32_WINNT >= 0x0602 )
+
 #include "cinder/audio/Output.h"
 
 #if defined( CINDER_COCOA )
@@ -48,3 +52,4 @@ OutputImpl* Output::instance()
 
 }} //namespace
 
+#endif // testing against VC11 Windows<8
