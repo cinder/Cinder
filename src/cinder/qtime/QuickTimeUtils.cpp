@@ -106,6 +106,8 @@ bool dictionarySetPixelBufferOptions( unsigned int width, unsigned int height, b
 				}
 			}
 		}
+        
+        CFRelease( pixelBufferDict );
 	}
 	
 	return setPixelBufferOptions;
