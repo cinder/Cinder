@@ -690,6 +690,8 @@ void MovieSurface::allocateVisualContext()
 	CFMutableDictionaryRef visualContextOptions = initQTVisualContextOptions( getObj()->mWidth, getObj()->mHeight, hasAlpha() );
 	OSStatus status = ::QTPixelBufferContextCreate( kCFAllocatorDefault, visualContextOptions, &(getObj()->mVisualContext) );
 
+	::CFRelease( visualContextOptions );
+
 	if( status == noErr )
 		::SetMovieVisualContext( getObj()->mMovie, getObj()->mVisualContext );
 	else
@@ -775,6 +777,7 @@ void MovieGl::allocateVisualContext()
 #else
 	CFMutableDictionaryRef visualContextOptions = initQTVisualContextOptions( getObj()->mWidth, getObj()->mHeight, hasAlpha() );
 	::QTPixelBufferContextCreate( kCFAllocatorDefault, visualContextOptions, &(getObj()->mVisualContext) );
+	::CFRelease( visualContextOptions );
 
 	::SetMovieVisualContext( getObj()->mMovie, getObj()->mVisualContext );
 #endif
