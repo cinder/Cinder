@@ -26,6 +26,10 @@
 #include "cinder/audio/Io.h"
 #include "cinder/Exception.h"
 
+#if defined( CINDER_MSW ) && ( _MSC_VER >= 1700 ) && ( _WIN32_WINNT < 0x0602 ) && ( ! defined( _USING_V110_SDK71_ ) )
+	#error "Cinder Audio is only supported targeting Windows 8 with Visual C++ 2012 v110 compiler"
+#endif
+
 namespace cinder { namespace audio {
 
 class Track;
