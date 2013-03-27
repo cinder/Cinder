@@ -33,7 +33,7 @@ TrianglePiece::TrianglePiece( Vec2f _startPt, Vec2f _pt1, Vec2f _pt2, Vec2f _pt3
 	mTransOut = false;
 }
 
-void TrianglePiece::reset( float _delay, gl::Texture tempTex )
+void TrianglePiece::reset( float _delay, gl::TextureRef tempTex )
 {
 	mTempTex = tempTex;	
 	setTransition(_delay);
@@ -64,7 +64,7 @@ void TrianglePiece::setVisible( bool vis )
 	mVisible = vis;
 }
 
-void TrianglePiece::update( gl::Texture tex, Vec2f pt1, Vec2f pt2, Vec2f pt3 )
+void TrianglePiece::update( gl::TextureRef tex, Vec2f pt1, Vec2f pt2, Vec2f pt3 )
 {	 
 	if( ! mTransOut ) {
 		mTexVertices[0] = pt1;
@@ -88,9 +88,9 @@ void TrianglePiece::draw()
 	glColor4f(1.0, 1.0, 1.0, mAlpha);
 	
 	// draw the texture to the triangle
-	mDrawTex.enableAndBind();
+	mDrawTex->enableAndBind();
 	gl::drawSolidTriangle(mVertices, mTexVertices);
-	mDrawTex.unbind();
+	mDrawTex->unbind();
 	glColor4f(1.0, 1.0, 1.0, 1.0);			// reset the color/alpha
 	glPopMatrix();
 }

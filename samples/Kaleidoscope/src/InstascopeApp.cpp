@@ -46,9 +46,9 @@ class InstascopeApp : public AppNative {
 	void	mirrorIn();
 	void	imageLoaded();
 	
-	gl::Texture					mNewTex;				// the loaded texture
-	gl::Texture					mBgTexture;				// texture for the still image
-	gl::Texture					mMirrorTexture;			// texture for the mirror
+	gl::TextureRef				mNewTex;				// the loaded texture
+	gl::TextureRef				mBgTexture;				// texture for the still image
+	gl::TextureRef				mMirrorTexture;			// texture for the mirror
 	
 	vector<TrianglePiece>		mTriPieces;				// stores alll of the kaleidoscope mirror pieces
 	Anim<Vec2f>					mSamplePt;				// location of the piece of the image that is being sampled for the kaleidoscope
@@ -190,7 +190,7 @@ void InstascopeApp::checkImageLoaded()
 	mLoadingTexture = true;
 	mTextureLoaded = false;
 	
-	gl::Texture tex = gl::Texture(mCurInstagram.getImage());
+	gl::TextureRef tex = gl::Texture::create( mCurInstagram.getImage() );
 	if( ! mCurInstagram.getImage().getData() )
 		return;
 	
@@ -291,9 +291,9 @@ void InstascopeApp::updateMirrors( vector<TrianglePiece> *vec )
 	mSamplePt2 = mtrx.transformPoint(mSamplePt2);
 	mSamplePt3 = mtrx.transformPoint(mSamplePt3);
 	
-	mSamplePt1 /= mMirrorTexture.getSize();
-	mSamplePt2 /= mMirrorTexture.getSize();
-	mSamplePt3 /= mMirrorTexture.getSize();
+	mSamplePt1 /= mMirrorTexture->getSize();
+	mSamplePt2 /= mMirrorTexture->getSize();
+	mSamplePt3 /= mMirrorTexture->getSize();
 	
 	// loop through all the pieces and pass along the current texture and it's coordinates
 	int outCount = 0;
@@ -325,7 +325,7 @@ void InstascopeApp::mirrorIn()
 {
 	// redefine the bg texture
 	mBgTexture = mNewTex;
-	mBgTexture.setFlipped( false );
+	mBgTexture->setFlipped( false );
 	mTextRibbon->update( TAG, mCurInstagram.getUser() );
 }
 
@@ -337,7 +337,7 @@ void InstascopeApp::draw()
 	gl::enableAlphaBlending( PREMULT );
 	
 	if( mBgTexture )
-		gl::draw( mBgTexture, Rectf( mBgTexture.getBounds() ).getCenteredFit( getWindowBounds(), true ) );
+		gl::draw( mBgTexture, Rectf( mBgTexture->getBounds() ).getCenteredFit( getWindowBounds(), true ) );
 	
 	drawMirrors( &mTriPieces );
 	mTextRibbon->draw();
