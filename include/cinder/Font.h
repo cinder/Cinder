@@ -26,6 +26,15 @@
 #include "cinder/Shape2d.h"
 #include "cinder/Exception.h"
 #include "cinder/DataSource.h"
+#include <ft2build.h>
+
+// Note: generic is a reserved word in winrt c++/cx
+// need to redefine it for freetype.h
+#define generic GenericFromFreeTypeLibrary
+#include FT_FREETYPE_H
+#undef generic
+
+#include FT_GLYPH_H
 
 #include <string>
 #include <vector>
@@ -77,6 +86,8 @@ class Font {
 	Shape2d					getGlyphShape( Glyph glyphIndex ) const;
 	//! Returns the bounding box of a Glyph, relative to the baseline as the origin
 	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
+
+	FT_Face					getFace() const { return mObj->mFace; }
 	
 	static const std::vector<std::string>&		getNames( bool forceRefresh = false );
 	static Font				getDefault();
@@ -112,8 +123,13 @@ class Font {
 		::HFONT							mHfont;
 		std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
 		std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
-		size_t					mNumGlyphs;
+		void *mFileData;
+#elif defined( CINDER_WINRT )
+		std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
+		void *mFileData;
 #endif 		
+		size_t					mNumGlyphs;
+		FT_Face mFace;
 	};
 
 	std::shared_ptr<Obj>			mObj;
