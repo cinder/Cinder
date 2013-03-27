@@ -1,12 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winrtParticles", "basicApp.vcxproj", "{E736DB50-AA1F-4057-AC09-F8CE5619EDB6}"
-	ProjectSection(ProjectDependencies) = postProject
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB} = {7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinder", "..\..\..\..\winrt\cinder.vcxproj", "{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testTextureBinding", "basicApp.vcxproj", "{E736DB50-AA1F-4057-AC09-F8CE5619EDB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,18 +31,6 @@ Global
 		{E736DB50-AA1F-4057-AC09-F8CE5619EDB6}.Release|x64.ActiveCfg = Release|x64
 		{E736DB50-AA1F-4057-AC09-F8CE5619EDB6}.Release|x64.Build.0 = Release|x64
 		{E736DB50-AA1F-4057-AC09-F8CE5619EDB6}.Release|x64.Deploy.0 = Release|x64
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Debug|ARM.ActiveCfg = Debug|ARM
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Debug|ARM.Build.0 = Debug|ARM
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Debug|Win32.ActiveCfg = Debug|Win32
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Debug|Win32.Build.0 = Debug|Win32
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Debug|x64.ActiveCfg = Debug|x64
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Debug|x64.Build.0 = Debug|x64
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Release|ARM.ActiveCfg = Release|ARM
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Release|ARM.Build.0 = Release|ARM
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Release|Win32.ActiveCfg = Release|Win32
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Release|Win32.Build.0 = Release|Win32
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Release|x64.ActiveCfg = Release|x64
-		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,7 +3,6 @@
 #include "cinder/Rand.h"
 #include "cinder/Perlin.h"
 #include "cinder/Font.h"
-#include "cinder/dx/DxTextureFont.h"
 
 #include "cinder/dx/DxTexture.h"
 #include "cinder/dx/dx.h"
@@ -47,7 +46,7 @@ class BasicApp : public AppBasic {
 	float		mGravity;
 
 
-	Font				mFont;
+	Font		mFont;
 	dx::Texture imgParticle, imgEmitter;
 
 	vector<Particle>	mParticles;
@@ -103,7 +102,6 @@ void BasicApp::setup()
 	mPerlin = Perlin();
 
 	mFont = Font( "Arial", 24.0f );
-	mTextureFont = dx::TextureFont::create( mFont );
 
 	imgParticle = dx::Texture( loadImage( loadAsset("particle.png")));
 	imgEmitter  = dx::Texture( loadImage( loadAsset("emitter.png")));
@@ -211,13 +209,7 @@ void BasicApp::draw()
 
 	std::stringstream s;
 	s << "Framerate:" << getAverageFps() << "  Particles: " << count;
-
-#if 0
-	dx::color( Color::white() );
-	mTextureFont->drawString(s.str(), Vec2f( 10.0f, 20.0f ));  
-#else
 	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color::white(),mFont);
-#endif
 
 
 }
