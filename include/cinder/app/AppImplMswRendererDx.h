@@ -73,7 +73,7 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 	AppImplMswRendererDx( App *aApp, RendererDx *aRenderer );
 	
 #if defined( CINDER_MSW )
-	virtual bool	initialize( HWND wnd, HDC dc );
+	virtual bool	initialize( HWND wnd, HDC dc,  RendererRef sharedRenderer );
 #elif defined( CINDER_WINRT)
 	virtual bool	initialize( DX_WINDOW_TYPE wnd );
 #endif

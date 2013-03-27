@@ -260,7 +260,7 @@ void AppImplMswRendererDx::enableDepthWriting(bool enable)
 }
 
 #if defined( CINDER_MSW )
-bool AppImplMswRendererDx::initialize( HWND wnd, HDC )
+bool AppImplMswRendererDx::initialize( HWND wnd, HDC,  RendererRef sharedRenderer )
 {
 	// TODO: see if DX can do antialiasing automatically
 	bool success = initializeInternal( wnd );
