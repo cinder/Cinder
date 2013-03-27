@@ -56,7 +56,11 @@ OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
 {
 	::HRESULT hr;
 
+#if defined( CINDER_WINRT )
+	mBufferEndEvent = ::CreateEventEx(NULL, FALSE, FALSE, NULL);
+#else
 	mBufferEndEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+#endif
 
 	mTrackId = mOutput->availableTrackId();
 	mVoiceCallback.mTrack = this;
@@ -175,7 +179,11 @@ void OutputImplXAudio::Track::fillBuffer()
 	while( 1 ) {	
 		mSourceVoice->GetState( &state );
 		if( state.BuffersQueued >= OutputImplXAudio::Track::sMaxBufferCount ) {
+#if defined( CINDER_WINRT )
+			::WaitForSingleObjectEx( mBufferEndEvent, INFINITE, true );
+#else
 			::WaitForSingleObject( mBufferEndEvent, INFINITE );
+#endif
 		}
 
 		if( ! mIsPlaying ) {

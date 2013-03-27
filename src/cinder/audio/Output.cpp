@@ -29,7 +29,7 @@
 #if defined( CINDER_COCOA )
 	#include "cinder/audio/OutputImplAudioUnit.h"
 	typedef cinder::audio::OutputImplAudioUnit	OutputPlatformImpl;
-#elif defined( CINDER_MSW )
+#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 	#include "cinder/audio/OutputImplXAudio.h"
 	typedef cinder::audio::OutputImplXAudio	OutputPlatformImpl;
 #endif
