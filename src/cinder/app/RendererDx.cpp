@@ -21,13 +21,13 @@ RendererDx::~RendererDx()
 
 
 #if defined( CINDER_MSW )
-void RendererDx::setup( App *aApp, HWND wnd, HDC dc )
+void RendererDx::setup( App *aApp, HWND wnd, HDC dc,  RendererRef sharedRenderer)
 {
 	mWnd = wnd;
 	mApp = aApp;
 	if( ! mImpl )
 		mImpl = new AppImplMswRendererDx( mApp, this );
-	mImpl->initialize( wnd, dc );
+	mImpl->initialize( wnd, dc, sharedRenderer );
 }
 #elif defined( CINDER_WINRT )
 void RendererDx::setup( App *aApp, DX_WINDOW_TYPE wnd)
