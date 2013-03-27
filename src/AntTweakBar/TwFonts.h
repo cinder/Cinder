@@ -4,10 +4,9 @@
 //  @brief      Bitmaps fonts
 //  @author     Philippe Decaudin - http://www.antisphere.com
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
+//              For conditions of distribution and use, see License.txt
 //
-//  notes:      Private header
-//              TAB=4
+//  note:       Private header
 //
 //  ---------------------------------------------------------------------------
 
@@ -58,6 +57,7 @@ CTexFont *TwGenerateFont(const unsigned char *_Bitmap, int _BmWidth, int _BmHeig
 extern CTexFont *g_DefaultSmallFont;
 extern CTexFont *g_DefaultNormalFont;
 extern CTexFont *g_DefaultLargeFont;
+extern CTexFont *g_DefaultFixed1Font;
 
 void TwGenerateDefaultFonts();
 void TwDeleteDefaultFonts();

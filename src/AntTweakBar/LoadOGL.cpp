@@ -3,9 +3,7 @@
 //  @file       LoadOGL.cpp
 //  @author     Philippe Decaudin - http://www.antisphere.com
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
-//
-//  note:       TAB=4
+//              For conditions of distribution and use, see License.txt
 //
 //  ---------------------------------------------------------------------------
 
@@ -16,7 +14,7 @@
 
 //  ---------------------------------------------------------------------------
 
-#define ANT_NB_OGL_FUNC_MAX 512
+#define ANT_NB_OGL_FUNC_MAX 1024
 
 struct COGLFuncRec
 {
