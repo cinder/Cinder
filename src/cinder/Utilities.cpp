@@ -52,6 +52,7 @@
 	#include <agile.h>
 	using namespace Windows::Storage;
 	using namespace Windows::System;
+	using namespace cinder::winrt;
 #endif
 
 #include <vector>

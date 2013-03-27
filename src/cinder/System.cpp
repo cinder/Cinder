@@ -57,6 +57,7 @@
 	using namespace Windows::ApplicationModel;
 	using namespace Windows::Networking;
 	using namespace Windows::Networking::Connectivity;
+	using namespace cinder::winrt;
 #endif
 
 #include <string>
