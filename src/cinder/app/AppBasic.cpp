@@ -26,6 +26,9 @@
 
 #if defined( CINDER_MAC )
 	#import "cinder/app/AppImplCocoaBasic.h"
+#elif defined( CINDER_WINRT )
+	#include "cinder/app/AppImplWinRTBasic.h"
+
 #elif defined( CINDER_MSW )
 	#include <Shellapi.h>
 	#include "cinder/Utilities.h"
@@ -78,6 +81,12 @@ void AppBasic::executeLaunch( AppBasic *app, RendererRef renderer, const char *t
 	// Free memory allocated for CommandLineToArgvW arguments.
 	::LocalFree( szArglist );
 }
+#elif defined( CINDER_WINRT )
+void AppBasic::executeLaunch( AppBasic *app, RendererRef renderer, const char *title )
+{
+	sInstance = app;
+	App::executeLaunch( app, renderer, title, 0, NULL );
+}
 #endif
 
 void AppBasic::launch( const char *title, int argc, char * const argv[] )
@@ -118,6 +127,9 @@ void AppBasic::launch( const char *title, int argc, char * const argv[] )
     [application run];
 
     [pool drain];
+#elif defined( CINDER_WINRT )
+	mImpl = new AppImplWinRTBasic( this );	
+	mImpl->run();
 #else
 	mImpl = new AppImplMswBasic( this );	
 	mImpl->run();
@@ -138,6 +150,8 @@ WindowRef AppBasic::createWindow( const Window::Format &format )
 	return [mImpl createWindow:format];
 #elif defined( CINDER_MSW )
 	return mImpl->createWindow( format );
+#elif defined( CINDER_WINRT )
+	throw (std::string(__FUNCTION__) + " not implemented on WinRT").c_str();
 #endif
 }
 
@@ -145,7 +159,7 @@ float AppBasic::getFrameRate() const
 {
 #if defined( CINDER_COCOA )
 	return [mImpl getFrameRate];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->getFrameRate();
 #endif
 }
@@ -154,7 +168,7 @@ void AppBasic::setFrameRate( float aFrameRate )
 {
 #if defined( CINDER_COCOA )
 	[mImpl setFrameRate:aFrameRate];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->setFrameRate( aFrameRate );
 #endif
 }
@@ -163,7 +177,7 @@ void AppBasic::disableFrameRate()
 {
 #if defined( CINDER_COCOA )
 	[mImpl disableFrameRate];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->disableFrameRate();
 #endif
 }
@@ -172,7 +186,7 @@ bool AppBasic::isFrameRateEnabled() const
 {
 #if defined( CINDER_COCOA )
 	return [mImpl isFrameRateEnabled];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->isFrameRateEnabled();
 #endif
 }
@@ -181,6 +195,8 @@ fs::path AppBasic::getAppPath() const
 {
 #if defined( CINDER_COCOA )
 	return [mImpl getAppPath];
+#elif defined( CINDER_WINRT )
+	return AppImplWinRT::getAppPath();
 #elif defined( CINDER_MSW )
 	return AppImplMsw::getAppPath();
 #endif
@@ -190,6 +206,8 @@ size_t AppBasic::getNumWindows() const
 {
 #if defined( CINDER_COCOA )
 	return [mImpl getNumWindows];
+#elif defined( CINDER_WINRT )
+	return 1;
 #elif defined( CINDER_MSW )
 	return mImpl->getNumWindows();
 #endif
@@ -199,6 +217,8 @@ WindowRef AppBasic::getWindowIndex( size_t index ) const
 {
 #if defined( CINDER_COCOA )
 	return [mImpl getWindowIndex:index];
+#elif defined( CINDER_WINRT )
+	return mImpl->getWindow();
 #elif defined( CINDER_MSW )
 	return mImpl->getWindowIndex( index );
 #endif
@@ -208,7 +228,7 @@ WindowRef AppBasic::getWindow() const
 {
 #if defined( CINDER_COCOA )
 	return [mImpl getWindow];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->getWindow();
 #endif
 }
@@ -217,6 +237,8 @@ WindowRef AppBasic::getForegroundWindow() const
 {
 #if defined( CINDER_COCOA )
 	return [mImpl getForegroundWindow];
+#elif defined( CINDER_WINRT )
+	return mImpl->getWindow();
 #elif defined( CINDER_MSW )
 	return mImpl->getForegroundWindow();
 #endif
@@ -226,6 +248,8 @@ void AppBasic::hideCursor()
 {
 #if defined( CINDER_MAC )
 	[NSCursor hide];
+#elif defined( CINDER_WINRT )
+	AppImplWinRT::hideCursor();
 #elif defined( CINDER_MSW )
 	AppImplMsw::hideCursor();
 #endif
@@ -235,6 +259,8 @@ void AppBasic::showCursor()
 {
 #if defined( CINDER_MAC )
 	[NSCursor unhide];
+#elif defined( CINDER_WINRT )
+	AppImplWinRT::showCursor();
 #elif defined( CINDER_MSW )
 	AppImplMsw::showCursor();
 #endif
