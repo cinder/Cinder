@@ -129,7 +129,7 @@
       <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,9 +151,10 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
+      <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -173,7 +174,8 @@
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -195,9 +197,10 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
+      <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -215,7 +218,8 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -233,9 +237,10 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
+      <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -550,12 +555,12 @@
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsWinRT>
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsWinRT>
-      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">false</BufferSecurityCheck>
-      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">false</BufferSecurityCheck>
-      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</BufferSecurityCheck>
+      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</BufferSecurityCheck>
+      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</BufferSecurityCheck>
+      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BufferSecurityCheck>
       <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BufferSecurityCheck>
-      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</BufferSecurityCheck>
-      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</BufferSecurityCheck>
+      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BufferSecurityCheck>
+      <BufferSecurityCheck Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BufferSecurityCheck>
       <SDLCheck Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</SDLCheck>
     </ClCompile>
     <ClCompile Include="..\src\freetype\base\fttype1.c">
