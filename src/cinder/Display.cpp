@@ -191,8 +191,26 @@ void Display::setResolution( const Vec2i &resolution )
 	
 	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
 }
+#elif defined( CINDER_WINRT )
+void Display::enumerateDisplays()
+{
+	DisplayRef newDisplay = DisplayRef( new Display );
+#if 0
+	newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width * screen.scale, frame.origin.y + frame.size.height * screen.scale );
+	newDisplay->mUiScreen = screen;
+	newDisplay->mBitsPerPixel = 24;
+	newDisplay->mContentScale = screen.scale;
 
+	NSArray *resolutions = [screen availableModes];
+	for( int i = 0; i < [resolutions count]; ++i ) {
+		::UIScreenMode *mode = [resolutions objectAtIndex:i];
+		newDisplay->mSupportedResolutions.push_back( Vec2i( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
+	}
 
+#endif // 0
+
+	sDisplays.push_back( newDisplay );
+}
 #elif defined( CINDER_MSW )
 
 DisplayRef Display::findFromHmonitor( HMONITOR hMonitor )
