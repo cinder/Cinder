@@ -24,7 +24,7 @@
 #if defined( CINDER_COCOA )
 #	include <mach/mach.h>
 #	include <mach/mach_time.h>
-#elif defined( CINDER_MSW ) 
+#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 #	include <windows.h>
 #endif
 
@@ -37,6 +37,8 @@ void Rand::randomize()
 {
 #if defined( CINDER_COCOA )
 	sBase = std::mt19937( mach_absolute_time() );
+#elif defined( CINDER_WINRT)
+	sBase = std::mt19937( static_cast<unsigned long>(::GetTickCount64()) );
 #else
 	sBase = std::mt19937( ::GetTickCount() );
 #endif
