@@ -22,7 +22,11 @@
 */
 
 #include "cinder/app/Renderer.h"
-#include "cinder/gl/gl.h"
+
+#if !defined( CINDER_WINRT)
+	#include "cinder/gl/gl.h"
+#endif
+
 #include "cinder/app/App.h"
 
 #if defined( CINDER_COCOA )
@@ -41,6 +45,7 @@
 	#include "cinder/app/AppImplMsw.h"
 	#include "cinder/app/AppImplMswRendererGl.h"
 	#include "cinder/app/AppImplMswRendererGdi.h"
+	#include "cinder/app/AppImplMswRendererDx.h"
 #endif
 #include "cinder/ip/Flip.h"
 

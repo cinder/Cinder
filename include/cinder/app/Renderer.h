@@ -24,9 +24,20 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/gl/gl.h"  // necessary to give GLee the jump on Cocoa.h
+#include "cinder/MatrixStack.h"
+
+#if !defined( CINDER_WINRT )
+	#include "cinder/gl/gl.h"  // necessary to give GLee the jump on Cocoa.h
+#endif
 #include "cinder/Surface.h"
 #include "cinder/Display.h"
+
+#if defined( CINDER_MSW )
+	typedef HWND DX_WINDOW_TYPE;
+#elif defined( CINDER_WINRT )
+	#include <agile.h>
+	typedef Platform::Agile<Windows::UI::Core::CoreWindow>	DX_WINDOW_TYPE;
+#endif
 
 #if defined( CINDER_MAC )
 	#include <ApplicationServices/ApplicationServices.h>
@@ -63,14 +74,23 @@
 
 namespace cinder { namespace app {
 
+class Window;
+typedef std::shared_ptr<Window>		WindowRef;
+
 class App;
 
 typedef std::shared_ptr<class Renderer>		RendererRef;
 class Renderer {
  public:
+	enum RendererType
+	{
+		RENDERER_GL,
+		RENDERER_DX
+	};
 	virtual ~Renderer() {};
 	
 	virtual RendererRef	clone() const = 0;
+	virtual RendererType getRendererType() const { return RENDERER_GL; }
 	
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
@@ -95,6 +115,12 @@ class Renderer {
 
 	virtual HWND				getHwnd() = 0;
 	virtual HDC					getDc() { return NULL; }
+#elif defined( CINDER_WINRT)
+	virtual void setup( App *aApp, DX_WINDOW_TYPE wnd) = 0;
+
+	virtual void prepareToggleFullScreen() {}
+	virtual void finishToggleFullScreen() {}
+	virtual void kill() {}
 #endif
 
 	virtual Surface	copyWindowSurface( const Area &area ) = 0;
@@ -111,6 +137,7 @@ class Renderer {
 	App			*mApp;
 };
 
+#if !defined( CINDER_WINRT )
 typedef std::shared_ptr<class RendererGl>	RendererGlRef;
 class RendererGl : public Renderer {
   public:
@@ -239,6 +266,56 @@ class Renderer2d : public Renderer {
 	HDC				mDC;
 };
 
+#endif
+#endif // !defined( CINDER_WINRT )
+
+#if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
+
+typedef std::shared_ptr<class RendererDx>	RendererDxRef;
+class RendererDx : public Renderer {
+ public:
+	RendererDx( int aAntiAliasing = AA_MSAA_16 );
+	~RendererDx();
+	
+	static RendererDxRef	create( int antiAliasing = AA_MSAA_16  ) { return RendererDxRef( new RendererDx( antiAliasing ) ); }
+	virtual RendererRef		clone() const { return RendererDxRef( new RendererDx( *this ) ); }
+	virtual RendererType	getRendererType() const override { return RENDERER_DX; }
+
+#if defined ( CINDER_MSW )
+	virtual void	setup( App *aApp, HWND wnd, HDC dc );
+	virtual HWND	getHwnd() { return mWnd; }
+#elif defined( CINDER_WINRT )
+	virtual void	setup( App *aApp, DX_WINDOW_TYPE wnd);
+#endif
+
+	virtual void	kill();
+	virtual void	prepareToggleFullScreen();
+	virtual void	finishToggleFullScreen();
+
+	enum	{ AA_NONE = 0, AA_MSAA_2, AA_MSAA_4, AA_MSAA_6, AA_MSAA_8, AA_MSAA_16, AA_MSAA_32 };
+	static const int	sAntiAliasingSamples[];
+	void				setAntiAliasing( int aAntiAliasing );
+	int					getAntiAliasing() const { return mAntiAliasing; }
+
+	virtual void	startDraw();
+	virtual void	finishDraw();
+	virtual void	defaultResize();
+	virtual Surface	copyWindowSurface( const Area &area );
+	virtual void	makeCurrentContext();
+
+	MatrixStack &getModelView() { return mModelView; }
+	MatrixStack &getProjection() { return mProjection; }
+
+	class AppImplMswRendererDx	*mImpl;
+	
+ protected:
+	RendererDx( const RendererDx &renderer );
+
+	int				mAntiAliasing;
+	DX_WINDOW_TYPE	mWnd;
+	MatrixStack		mModelView;
+	MatrixStack		mProjection;
+};
 #endif
 
 } } // namespace cinder::app
