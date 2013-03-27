@@ -140,6 +140,8 @@ class Line {
 	void render( CGContextRef &cgContext, float currentY, float xBorder, float maxWidth );
 #elif defined( CINDER_MSW )
 	void render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth );
+#elif defined( CINDER_WINRT )
+	void render(Channel &channel, float currentY, float xBorder, float maxWidth);
 #endif
 
 	enum { LEFT, RIGHT, CENTERED };
@@ -216,6 +218,23 @@ void Line::calcExtents()
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
 		mHeight = std::max( mHeight, sizeRect.Height );
 	}
+#elif defined( CINDER_WINRT )
+	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
+	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
+		FT_Face face = runIt->mFont.getFace();
+		
+		int width = 0;
+		for(string::iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
+		{
+			FT_Load_Char(face, *strIt, FT_LOAD_DEFAULT);
+			width += face->glyph->advance.x;
+		}
+		mWidth += width / 64.0f;
+		mAscent = std::max( runIt->mFont.getAscent(), mAscent );
+		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
+		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
+		mHeight = std::max( mHeight, face->bbox.yMax / 64.0f );
+	}
 #endif
 
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
@@ -248,6 +267,29 @@ void Line::render( Gdiplus::Graphics *graphics, float currentY, float xBorder, f
 		Gdiplus::SolidBrush brush( Gdiplus::Color( nativeColor.a, nativeColor.r, nativeColor.g, nativeColor.b ) );
 		graphics->DrawString( &runIt->mWideText[0], -1, font, Gdiplus::PointF( currentX, currentY + (mAscent - runIt->mAscent) ), &brush );
 		currentX += runIt->mWidth;
+	}
+}
+
+#elif defined( CINDER_WINRT )
+
+void Line::render(Channel &channel, float currentY, float xBorder, float maxWidth)
+{
+	float currentX = xBorder;
+	if( mJustification == CENTERED )
+		currentX = ( maxWidth - mWidth ) / 2.0f;
+	else if( mJustification == RIGHT )
+		currentX = maxWidth - mWidth - xBorder;
+	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
+		FT_Face face = runIt->mFont.getFace();
+		for(string::const_iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
+		{
+			FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
+			uint8_t *pBuff = face->glyph->bitmap.buffer;
+			FT_Glyph_Metrics &metrics = face->glyph->metrics;
+			int32_t alignedRowBytes = face->glyph->bitmap.pitch;
+			Channel glyphChannel( metrics.width >> 6, metrics.height >> 6, alignedRowBytes, 1, pBuff );
+			channel.copyFrom( glyphChannel, glyphChannel.getBounds(), Vec2i((int)currentX + (metrics.horiBearingX >> 6), (int)currentY + ((face->height - metrics.horiBearingY) >> 6)) );
+		}
 	}
 }
 
@@ -414,7 +456,18 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	GdiFlush();
 
 	delete offscreenBitmap;
-	delete offscreenGraphics;		
+	delete offscreenGraphics;
+#elif defined( CINDER_WINRT )
+	Channel channel( pixelWidth, pixelHeight );
+	ip::fill<uint8_t>( &channel, 0 );
+	float currentY = (float)mVerticalBorder;
+	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		currentY += (*lineIt)->mLeadingOffset + (*lineIt)->mLeading;
+		(*lineIt)->render( channel, currentY, (float)mHorizontalBorder, (float)pixelWidth );
+		currentY += (*lineIt)->mLeading;
+	}
+	result = Surface(channel, SurfaceConstraintsDefault(), true);
+	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
 #endif
 
 	return result;
@@ -457,7 +510,7 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 	::CGContextRelease( cgContext );
 	return result;
 }
-#elif defined( CINDER_MAC) || defined( CINDER_MSW )
+#elif defined( CINDER_MAC) || defined( CINDER_MSW ) || defined( CINDER_WINRT )
 Surface renderString( const string &str, const Font &font, const ColorA &color, float *baselineOffset )
 {
 	Line line;
@@ -512,7 +565,24 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	::GdiFlush();
 
 	delete offscreenBitmap;
-	delete offscreenGraphics;		
+	delete offscreenGraphics;
+#elif defined( CINDER_WINRT )
+	Channel channel( pixelWidth, pixelHeight );
+	ip::fill<uint8_t>( &channel, 0 );
+	FT_Face face = font.getFace();
+	int offset = 0;
+	for(string::const_iterator strIt = str.begin(); strIt != str.end(); ++strIt)
+	{
+		FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
+		uint8_t *pBuff = face->glyph->bitmap.buffer;
+		FT_Glyph_Metrics &metrics = face->glyph->metrics;
+		int32_t alignedRowBytes = face->glyph->bitmap.pitch;
+		Channel glyphChannel( face->glyph->bitmap.width, face->glyph->bitmap.rows, alignedRowBytes, 1, pBuff );
+		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), Vec2i(offset + (metrics.horiBearingX >> 6), (face->height - metrics.horiBearingY) >> 6) );
+		offset += metrics.horiAdvance >> 6;
+	}
+	Surface result(channel, SurfaceConstraintsDefault(), true);
+	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
 #endif	
 
 	if( baselineOffset )
@@ -676,22 +746,28 @@ vector<string> TextBox::calculateLineBreaks() const
 		mutable vector<string> *mStrings;
 	};
 	struct LineMeasure {
-		LineMeasure( int maxWidth, const Font &font ) : mMaxWidth( maxWidth ), mFont( font.getGdiplusFont() ) {}
+		LineMeasure( int maxWidth, const Font &font ) : mMaxWidth( maxWidth ), mFont( font ) {}
 		bool operator()( const char *line, size_t len ) const {
 			if( mMaxWidth >= MAX_SIZE ) return true; // too big anyway so just return true
-			Gdiplus::StringFormat format;
-			format.SetAlignment( Gdiplus::StringAlignmentNear );
-			Gdiplus::RectF sizeRect( 0, 0, 0, 0 ), outSize;
-			sizeRect.Width = MAX_SIZE;
-			sizeRect.Height = MAX_SIZE;
+			//Gdiplus::StringFormat format;
+			//format.SetAlignment( Gdiplus::StringAlignmentNear );
+			//Gdiplus::RectF sizeRect( 0, 0, 0, 0 ), outSize;
+			//sizeRect.Width = MAX_SIZE;
+			//sizeRect.Height = MAX_SIZE;
 
-			std::wstring ws = toUtf16( string( line, len ) );
-			TextManager::instance()->getGraphics()->MeasureString( &ws[0], -1, mFont, sizeRect, &format, &outSize, NULL, NULL );
-			return outSize.Width <= mMaxWidth;
+			//std::wstring ws = toUtf16( string( line, len ) );
+			//TextManager::instance()->getGraphics()->MeasureString( &ws[0], -1, mFont, sizeRect, &format, &outSize, NULL, NULL );
+			int stringWidth = 0;
+			for(size_t i = 0; i < len; ++i)
+			{
+				FT_Load_Char(mFont.getFace(), line[i], FT_LOAD_DEFAULT);
+				stringWidth += mFont.getFace()->glyph->advance.x >> 6;
+			}
+			return stringWidth <= mMaxWidth;
 		}
 
 		int					mMaxWidth;
-		const Gdiplus::Font	*mFont;
+		const Font	&mFont;
 	};
 	std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );		
 	lineBreakUtf8( mText.c_str(), LineMeasure( ( mSize.x > 0 ) ? mSize.x : MAX_SIZE, mFont ), lineFn );
@@ -706,69 +782,71 @@ vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
 	if( mText.empty() )
 		return result;
 
-	GCP_RESULTSW gcpResults;
-	WCHAR *glyphIndices = NULL;
-	int *dx = NULL;
+	//GCP_RESULTSW gcpResults;
+	//WCHAR *glyphIndices = NULL;
+	//int *dx = NULL;
 
-	::SelectObject( Font::getGlobalDc(), mFont.getHfont() );
+	//::SelectObject( Font::getGlobalDc(), mFont.getHfont() );
 	
 	vector<string> mLines = calculateLineBreaks();
 	
 	float curY = 0;
 	for( vector<string>::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
-		std::wstring wideText = toUtf16( *lineIt );
+		//std::wstring wideText = toUtf16( *lineIt );
 
-		gcpResults.lStructSize = sizeof (gcpResults);
-		gcpResults.lpOutString = NULL;
-		gcpResults.lpOrder = NULL;
-		gcpResults.lpCaretPos = NULL;
-		gcpResults.lpClass = NULL;
+		//gcpResults.lStructSize = sizeof (gcpResults);
+		//gcpResults.lpOutString = NULL;
+		//gcpResults.lpOrder = NULL;
+		//gcpResults.lpCaretPos = NULL;
+		//gcpResults.lpClass = NULL;
 
-		uint32_t bufferSize = std::max<uint32_t>( wideText.length() * 1.2, 16);		/* Initially guess number of chars plus a few */
-		while( true ) {
-			if( glyphIndices ) {
-				free( glyphIndices );
-				glyphIndices = NULL;
-			}
-			if( dx ) {
-				free( dx );
-				dx = NULL;
-			}
+		//uint32_t bufferSize = std::max<uint32_t>( wideText.length() * 1.2, 16);		/* Initially guess number of chars plus a few */
+		//while( true ) {
+		//	if( glyphIndices ) {
+		//		free( glyphIndices );
+		//		glyphIndices = NULL;
+		//	}
+		//	if( dx ) {
+		//		free( dx );
+		//		dx = NULL;
+		//	}
 
-			glyphIndices = (WCHAR*)malloc( bufferSize * sizeof(WCHAR) );
-			dx = (int*)malloc( bufferSize * sizeof(int) );
-			gcpResults.nGlyphs = bufferSize;
-			gcpResults.lpDx = dx;
-			gcpResults.lpGlyphs = glyphIndices;
+		//	glyphIndices = (WCHAR*)malloc( bufferSize * sizeof(WCHAR) );
+		//	dx = (int*)malloc( bufferSize * sizeof(int) );
+		//	gcpResults.nGlyphs = bufferSize;
+		//	gcpResults.lpDx = dx;
+		//	gcpResults.lpGlyphs = glyphIndices;
 
-			if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), &wideText[0], wideText.length(), 0,
-							&gcpResults, GCP_DIACRITIC | GCP_LIGATE | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
-				return vector<pair<uint16_t,Vec2f> >(); // failure
-			}
+		//	if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), &wideText[0], wideText.length(), 0,
+		//					&gcpResults, GCP_DIACRITIC | GCP_LIGATE | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
+		//		return vector<pair<uint16_t,Vec2f> >(); // failure
+		//	}
 
-			if( gcpResults.lpDx && gcpResults.lpGlyphs )
-				break;
+		//	if( gcpResults.lpDx && gcpResults.lpGlyphs )
+		//		break;
 
-			// Too small a buffer, try again
-			bufferSize += bufferSize / 2;
-			if( bufferSize > INT_MAX) {
-				return vector<pair<uint16_t,Vec2f> >(); // failure
-			}
-		}
+		//	// Too small a buffer, try again
+		//	bufferSize += bufferSize / 2;
+		//	if( bufferSize > INT_MAX) {
+		//		return vector<pair<uint16_t,Vec2f> >(); // failure
+		//	}
+		//}
 
 		int xPos = 0;
-		for( int i = 0; i < gcpResults.nGlyphs; i++ ) {
-			result.push_back( std::make_pair( glyphIndices[i], Vec2f( xPos, curY ) ) );
-			xPos += dx[i];
+		for( unsigned i = 0; i < lineIt->size(); i++ ) {
+			FT_Load_Char(mFont.getFace(), (*lineIt)[i], FT_LOAD_DEFAULT);
+			FT_Face face = mFont.getFace();
+			result.push_back( std::make_pair( FT_Get_Char_Index(face, (*lineIt)[i]), Vec2f( xPos + (face->glyph->metrics.horiBearingX >> 6), curY + ((face->bbox.yMax - face->glyph->metrics.horiBearingY) >> 6) ) ) );
+			xPos += mFont.getFace()->glyph->advance.x >> 6;
 		}
 
-		curY += mFont.getAscent() + mFont.getDescent();
+		curY += mFont.getLeading();
 	}
 
-	if( glyphIndices )
-		free( glyphIndices );
-	if( dx )
-		free( dx );
+	//if( glyphIndices )
+	//	free( glyphIndices );
+	//if( dx )
+	//	free( dx );
 
 	return result;
 }
