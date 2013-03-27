@@ -24,12 +24,12 @@ NSWindow* getConfigDialogMac( cinder::app::AppScreenSaver *app, Configuration *c
 {	
 	if( ! sController ) {
 		sController = [[ConfigWindowController alloc] initWithWindowNibName:@"MacConfigDialog"];
-		sController->config = config;
-		sController->app = app;
 	}
-	
+	sController->config = config;
+	sController->app = app;
+
 	loadConfigMac( app, config );
-	
+
 	return [sController window];
 }
 
