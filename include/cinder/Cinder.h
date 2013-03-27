@@ -89,6 +89,8 @@ using std::uint64_t;
 	#endif
 #elif defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
 	#include <memory>
+	#include <vector>
+	#include <functional>
 	#if _MSC_VER >= 1700
 		#include <chrono>
 	#else
