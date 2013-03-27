@@ -41,11 +41,17 @@
 	#import <Foundation/NSFileManager.h>
 	#include <cxxabi.h>
 	#include <execinfo.h>
-#else
+#elif defined( CINDER_MSW )
 	#include <windows.h>
 	#include <Shlwapi.h>
 	#include <shlobj.h>
 	#include "cinder/msw/StackWalker.h"
+#elif defined( CINDER_WINRT )
+	#include "cinder/WinRTUtils.h"
+	#include <wrl/client.h>
+	#include <agile.h>
+	using namespace Windows::Storage;
+	using namespace Windows::System;
 #endif
 
 #include <vector>
@@ -66,6 +72,8 @@ fs::path expandPath( const fs::path &path )
 	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
 	NSString *resultPath = [pathNS stringByStandardizingPath];
 	result = string( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
+#elif defined( CINDER_WINRT )
+	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	char buffer[MAX_PATH];
 	::PathCanonicalizeA( buffer, path.string().c_str() );
@@ -83,6 +91,10 @@ fs::path getHomeDirectory()
 	NSString *home = ::NSHomeDirectory();
 	result = [home cStringUsingEncoding:NSUTF8StringEncoding];
 	result += "/";
+#elif defined( CINDER_WINRT )
+	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
+	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
+	result = PlatformStringToString(folder->Path);
 #else
 	char buffer[MAX_PATH];
 	::SHGetFolderPathA( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
@@ -101,6 +113,10 @@ fs::path getDocumentsDirectory()
 	NSArray *arrayPaths = ::NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
 	NSString *docDir = [arrayPaths objectAtIndex:0];
 	return cocoa::convertNsString( docDir ) + "/";
+#elif defined( CINDER_WINRT )
+	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
+	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
+	result = PlatformStringToString(folder->Path);
 #else
 	char buffer[MAX_PATH];
 	::SHGetFolderPathA( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
@@ -116,6 +132,9 @@ fs::path getTemporaryDirectory()
 #if defined( CINDER_COCOA )
 	NSString *docDir = ::NSTemporaryDirectory();
 	return cocoa::convertNsString( docDir );
+#elif defined( CINDER_WINRT )
+	auto folder = (Windows::Storage::ApplicationData::Current)->TemporaryFolder;
+	return PlatformStringToString(folder->Path);
 #else
 	DWORD result = ::GetTempPathW( 0, L"" );
 	if( ! result )
@@ -137,6 +156,8 @@ fs::path getTemporaryFilePath( const std::string &prefix )
 	char path[2048];
 	sprintf( path, "%s%sXXXXXX", getTemporaryDirectory().c_str(), prefix.c_str() );
 	return string( mktemp( path ) );
+#elif defined( CINDER_WINRT )
+	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	TCHAR tempFileName[MAX_PATH]; 
 	DWORD result = ::GetTempPathW( 0, L"" );
@@ -198,6 +219,8 @@ bool createDirectories( const fs::path &path, bool createParents )
 #if defined( CINDER_COCOA )
 	NSString *pathNS = [NSString stringWithCString:dirPath.c_str() encoding:NSUTF8StringEncoding];
 	return static_cast<bool>( [[NSFileManager defaultManager] createDirectoryAtPath:pathNS withIntermediateDirectories:YES attributes:nil error:nil] );
+#elif defined( CINDER_WINRT )
+	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	return ::SHCreateDirectoryExA( NULL, dirPath.string().c_str(), NULL ) == ERROR_SUCCESS;
 #endif
@@ -208,7 +231,7 @@ void launchWebBrowser( const Url &url )
 #if defined( CINDER_COCOA )
 	NSString *nsString = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
 	NSURL *nsUrl = [NSURL URLWithString:nsString];
-#elif defined( CINDER_MSW )
+#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 	wstring urlStr = toUtf16( url.str() );
 #endif
 
@@ -218,6 +241,9 @@ void launchWebBrowser( const Url &url )
 	[[NSWorkspace sharedWorkspace] openURL:nsUrl ];
 #elif defined( CINDER_MSW )
 	ShellExecute( NULL, L"open", urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
+#elif defined( CINDER_WINRT )
+	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));
+	Windows::System::Launcher::LaunchUriAsync(uri);
 #endif
 }
 
@@ -225,6 +251,11 @@ void deleteFile( const fs::path &path )
 {
 #if defined( CINDER_COCOA )
 	unlink( path.c_str() );
+#elif defined( CINDER_WINRT )
+	std::wstring t(toUtf16(path));
+	if( ! ::DeleteFile( t.c_str() ) ) {
+		DWORD err = GetLastError();
+	}
 #else
 	if( ! ::DeleteFileW( path.wstring().c_str() ) ) {
 		DWORD err = GetLastError();
@@ -259,7 +290,7 @@ string loadString( DataSourceRef dataSource )
 
 wstring toUtf16( const string &utf8 )
 {
-#if defined( CINDER_MSW )
+#if (defined( CINDER_MSW ) ||  defined( CINDER_WINRT ))
 	int wideSize = ::MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), -1, NULL, 0 );
 	if( wideSize == ERROR_NO_UNICODE_TRANSLATION ) {
 		throw std::exception( "Invalid UTF-8 sequence." );
@@ -283,7 +314,7 @@ wstring toUtf16( const string &utf8 )
 
 string toUtf8( const wstring &utf16 )
 {
-#if defined( CINDER_MSW )
+#if (defined( CINDER_MSW ) ||  defined( CINDER_WINRT ))
 	int utf8Size = ::WideCharToMultiByte( CP_UTF8, 0, utf16.c_str(), -1, NULL, 0, NULL, NULL );
 	if( utf8Size == 0 ) {
 		throw std::exception( "Error in UTF-16 to UTF-8 conversion." );
@@ -308,6 +339,8 @@ void sleep( float milliseconds )
 {
 #if defined( CINDER_MSW )
 	::Sleep( static_cast<int>( milliseconds ) );
+#elif defined( CINDER_WINRT )
+	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	useconds_t microsecs = milliseconds * 1000;
 	::usleep( microsecs );
@@ -361,6 +394,8 @@ vector<string> stackTrace()
 #if defined( CINDER_MSW )
 	CinderStackWalker csw;
 	return csw.getEntries();
+#elif defined( CINDER_WINRT )
+	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	std::vector<std::string> result;
 	static const int MAX_DEPTH = 128;
