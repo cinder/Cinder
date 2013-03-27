@@ -33,6 +33,10 @@ using std::string;
 
 namespace cinder {
 
+#if defined ( CINDER_WINRT )
+	#pragma warning(push) 
+	#pragma warning(disable:4996) 
+#endif
 //////////////////////////////////////////////////////////////////////////
 template<typename T>
 void OStream::writeBig( T t )
@@ -617,5 +621,9 @@ Buffer loadStreamBuffer( IStreamRef is )
 	template void IStream::readLittle<T>( T *t );
 
 BOOST_PP_SEQ_FOR_EACH( STREAM_PROTOTYPES, ~, (int8_t)(uint8_t)(int16_t)(uint16_t)(int32_t)(uint32_t)(float)(double) )
+
+#if defined (CINDER_WINRT )
+	#pragma warning(pop) 
+#endif
 
 } // namespace dt
