@@ -23,6 +23,11 @@
 #include "cinder/app/App.h"
 #include "cinder/params/Params.h"
 
+#if defined( CINDER_MSW )
+#include "cinder/dx/dx.h"
+#include "cinder/app/AppImplMswRendererDx.h"
+#endif
+
 #include "AntTweakBar.h"
 
 #include <boost/assign/list_of.hpp>
@@ -132,9 +137,15 @@ void TW_CALL implStdStringToClient( std::string& destinationClientString, const 
 class AntMgr {
   public:
 	AntMgr() {
+#if defined( CINDER_MSW )
+		app::Renderer::RendererType rendererType = app::App::get()->getRenderer()->getRendererType();
+		if( ! TwInit( (rendererType == app::Renderer::RENDERER_GL) ? TW_OPENGL : TW_DIRECT3D11, (rendererType == app::Renderer::RENDERER_GL) ? NULL : dx::getDxRenderer()->md3dDevice ) )
+			throw Exception();
+#else
 		if( ! TwInit( TW_OPENGL, NULL ) ) {
 			throw Exception();
-		}		
+		}
+#endif
 	}
 	
 	~AntMgr() {
