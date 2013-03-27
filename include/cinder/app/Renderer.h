@@ -269,7 +269,7 @@ class Renderer2d : public Renderer {
 #endif
 #endif // !defined( CINDER_WINRT )
 
-#if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
+#if defined( USE_DIRECTX )
 
 typedef std::shared_ptr<class RendererDx>	RendererDxRef;
 class RendererDx : public Renderer {
@@ -282,7 +282,7 @@ class RendererDx : public Renderer {
 	virtual RendererType	getRendererType() const override { return RENDERER_DX; }
 
 #if defined ( CINDER_MSW )
-	virtual void	setup( App *aApp, HWND wnd, HDC dc );
+	virtual void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual HWND	getHwnd() { return mWnd; }
 #elif defined( CINDER_WINRT )
 	virtual void	setup( App *aApp, DX_WINDOW_TYPE wnd);

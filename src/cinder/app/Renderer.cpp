@@ -45,7 +45,9 @@
 	#include "cinder/app/AppImplMsw.h"
 	#include "cinder/app/AppImplMswRendererGl.h"
 	#include "cinder/app/AppImplMswRendererGdi.h"
-	#include "cinder/app/AppImplMswRendererDx.h"
+	#if defined( USE_DIRECTX )
+		#include "cinder/app/AppImplMswRendererDx.h"
+	#endif
 #endif
 #include "cinder/ip/Flip.h"
 
