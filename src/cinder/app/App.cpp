@@ -34,12 +34,18 @@
 		#import <Cocoa/Cocoa.h>
 	#endif
 	#include "cinder/cocoa/CinderCocoa.h"
+#elif defined( CINDER_WINRT )
+	#include "cinder/app/AppImplWinRT.h"
+	#include <thread>
+	#include <filesystem>
 #elif defined( CINDER_MSW )
 	#include "cinder/msw/OutputDebugStringStream.h"
 	#include "cinder/app/AppImplMsw.h"
 #endif
 
+#if !defined ( CINDER_WINRT )
 #include <boost/asio.hpp>
+#endif
 
 using namespace std;
 
@@ -96,20 +102,24 @@ App::App()
 	mFpsLastSampleFrame = 0;
 	mFpsLastSampleTime = 0;
 	mAssetDirectoriesInitialized = false;
-	
+
+#if !defined( CINDER_WINRT )
 	mIo = shared_ptr<boost::asio::io_service>( new boost::asio::io_service() );
 	mIoWork = shared_ptr<boost::asio::io_service::work>( new boost::asio::io_service::work( *mIo ) );
-	
+#endif
+
 	// due to an issue with boost::filesystem's static initialization on Windows, 
 	// it's necessary to create a fs::path here in case of secondary threads doing the same thing simultaneously
-#if defined( CINDER_MSW )
+#if (defined( CINDER_MSW ) || defined ( CINDER_WINRT ))
 	fs::path dummyPath( "dummy" );
 #endif
 }
 
 App::~App()
 {
+#if !defined( CINDER_WINRT )
 	mIo->stop();
+#endif
 }
 
 void App::privateSetup__()
@@ -121,8 +131,10 @@ void App::privateSetup__()
 
 void App::privateUpdate__()
 {
+#if !defined( CINDER_WINRT )
 	// service boost::asio::io_service
 	mIo->poll();
+#endif
 
 	mSignalUpdate();
 
@@ -152,6 +164,8 @@ DataSourceRef App::loadResource( const string &macPath, int mswID, const string 
 {
 #if defined( CINDER_COCOA )
 	return loadResource( macPath );
+#elif defined( CINDER_WINRT )
+	return DataSourceBuffer::create( AppImplWinRT::loadResource( mswID, mswType ), macPath );
 #else
 	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ), macPath );
 #endif
@@ -165,6 +179,11 @@ DataSourceRef App::loadResource( const string &macPath )
 		throw ResourceLoadExc( macPath );
 	else
 		return DataSourcePath::create( resourcePath );
+}
+#elif defined( CINDER_WINRT )
+DataSourceRef App::loadResource( int mswID, const string &mswType )
+{
+	return DataSourceBuffer::create( AppImplWinRT::loadResource( mswID, mswType ) );
 }
 #else
 
@@ -202,6 +221,12 @@ void App::prepareAssetLoading()
 		}
 #endif		
 
+
+#if defined( CINDER_WINRT )
+		fs::path curPath = appPath;
+		fs::path curAssetPath = curPath / fs::path("assets");
+		mAssetDirectories.push_back( curAssetPath );
+#else
 		// first search the local directory, then its parent, up to 5 levels up
 		int parentCt = 0;
 		for( fs::path curPath = appPath; 
@@ -217,6 +242,7 @@ void App::prepareAssetLoading()
 				break;
 			}
 		}
+#endif
 				
 		mAssetDirectoriesInitialized = true;
 	}
@@ -289,6 +315,13 @@ fs::path App::getResourcePath()
 
 #endif
 
+#if defined CINDER_WINRT
+
+void App::getOpenFilePath( const fs::path &initialPath, std::vector<std::string> extensions, std::function<void (fs::path)> f)
+{
+	AppImplWinRT::getOpenFilePath( initialPath, extensions, f );
+}
+#else
 fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 #if defined( CINDER_MAC )
@@ -327,7 +360,16 @@ fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> exten
 	return fs::path();
 #endif
 }
+#endif
 
+
+#if defined CINDER_WINRT
+
+void App::getFolderPath( const fs::path &initialPath,  std::vector<std::string> extensions, std::function<void (fs::path)> f)
+{
+	AppImplWinRT::getFolderPath( initialPath, extensions, f );
+}
+#else
 fs::path App::getFolderPath( const fs::path &initialPath )
 {
 #if defined( CINDER_MAC )
@@ -359,7 +401,15 @@ fs::path App::getFolderPath( const fs::path &initialPath )
 	return fs::path();
 #endif
 }
+#endif
 
+#if defined ( CINDER_WINRT )
+
+void App::getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions, std::function<void (fs::path)> f)
+{
+	AppImplWinRT::getSaveFilePath( initialPath, extensions, f );
+}
+#else
 fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 #if defined( CINDER_MAC )
@@ -412,6 +462,7 @@ fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> exten
 	return fs::path();
 #endif
 }
+#endif
 
 std::ostream& App::console()
 {
@@ -429,10 +480,12 @@ bool App::isPrimaryThread()
 	return std::this_thread::get_id() == sPrimaryThreadId;
 }
 
+#if !defined( CINDER_WINRT )
 void App::dispatchAsync( const std::function<void()> &fn )
 {
 	io_service().post( fn );
 }
+#endif
 
 Surface	App::copyWindowSurface()
 {
@@ -523,7 +576,11 @@ ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string
 
 AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
 {
+#if defined( CINDER_WINRT )
+	strncpy_s( mMessage, relativePath.string().c_str(), sizeof(mMessage) );
+#else
 	strncpy( mMessage, relativePath.string().c_str(), sizeof(mMessage) );
+#endif
 }
 
 } } // namespace cinder::app

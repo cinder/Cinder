@@ -30,11 +30,16 @@
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/app/FileDropEvent.h"
+
 #include "cinder/Display.h"
 #include "cinder/DataSource.h"
 #include "cinder/Timer.h"
 #include "cinder/Function.h"
+
+#if !defined( CINDER_WINRT )
 #include "cinder/Thread.h"
+#endif
+
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
 		#if defined( __OBJC__ )
@@ -53,6 +58,8 @@
 //	class CinderView;
 #elif defined( CINDER_MSW )
 	#include "cinder/msw/OutputDebugStringStream.h"
+#elif defined( CINDER_WINRT)
+	#include "cinder/msw/OutputDebugStringStream.h"
 #endif
 
 #include <vector>
@@ -62,9 +69,11 @@ namespace cinder {
 class Timeline;
 } // namespace cinder
 
+#if !defined( CINDER_WINRT )
 namespace boost { namespace asio {
 class io_service;
 } } // namespace boost::asio
+#endif
 
 namespace cinder { namespace app { 
 
@@ -375,20 +384,50 @@ class App {
 #if defined( CINDER_COCOA )
 	//! Returns the application's bundle (.app) or a screenSaver's bundle (.saver) for AppScreenSaver
 	virtual NSBundle*			getBundle() const;
-#endif
-	//! Presents the user with a file-open dialog and returns the selected file path.
+#endif\
+
+#if defined( CINDER_WINRT )
+	//! Presents the user with a file-open dialog and returns the selected file path in the spcified callback method.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
-		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
-		\return the selected file path or an empty string if the user cancelled. **/
-	fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
-	//! Presents the user with a folder-open dialog and returns the selected folder.
+		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
+		If the active app is in snapped mode it will be unsnapped to present the dialog.
+		\return void. The selected file path or an empty string  if the user cancelled will be returned in the \a f callback. **/
+	void getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
+#else
+	//! Presents the user with a folder-open dialog and returns the selected folder path in the spcified callback.
+	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
+		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
+		If the active app is in snapped mode it will be unsnapped to present the dialog.
+		\return void. The selected folder path or an empty string if the user cancelled will be returned in the \a f callback. **/
+	fs::path getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
+#endif
+
+#if defined( CINDER_WINRT )
+	//! Presents the user with a folder-open dialog and returns the selected folder path with the spcified callback.
+	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
+		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
+		If the active app is in snapped mode it will be unsnapped to present the dialog.
+		\return void. The selected folder path or an empty string if the user cancelled will be returned in the \a f callback. **/
+	void getFolderPath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
+#else
+//! Presents the user with a folder-open dialog and returns the selected folder.
 	fs::path		getFolderPath(const fs::path &initialPath="");
+#endif
+
+#if defined( CINDER_WINRT )
+	//! Presents the user with a file-save dialog and returns the selected file path with the specified callback.
+	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
+		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
+		If the active app is in snapped mode it will be unsnapped to present the dialog.
+		\return void. The selected file path or an empty string if the user cancelled will be returned in the \a f callback. **/
+	void getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
+#else	
 	//! Presents the user with a file-save dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 		\return the selected file path or an empty string if the user cancelled. **/
 	fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
-
+#endif
 	//! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
 	std::ostream&	console();
 	
@@ -398,6 +437,7 @@ class App {
 	//! Return \c true if the calling thread is the Application's primary thread
 	static bool		isPrimaryThread();
 
+#if !defined( CINDER_WINRT )
 	//! Returns a reference to the App's boost::asio::io_service()
 	boost::asio::io_service&	io_service() { return *mIo; }
 	
@@ -423,6 +463,7 @@ class App {
 			return fute.get();
 		}
 	}
+#endif //!defined( CINDER_WINRT )
 
 	//! Returns the default Renderer which will be used when creating a new Window. Set by the app instantiation macro automatically.
 	RendererRef	getDefaultRenderer() const { return mDefaultRenderer; }
@@ -467,6 +508,9 @@ class App {
 #if defined( CINDER_MSW )
 	friend class AppImplMsw;
 	std::shared_ptr<std::ostream>	mOutputStream;
+#elif defined( CINDER_WINRT )
+	friend class AppImplWinRT;
+	std::shared_ptr<std::ostream>	mOutputStream;
 #endif
 
   private:
@@ -487,10 +531,12 @@ class App {
 	std::shared_ptr<Timeline>	mTimeline;
 
 	signals::signal<void()>		mSignalUpdate, mSignalShutdown;
-	
+
+#if !defined( CINDER_WINRT )
 	std::shared_ptr<boost::asio::io_service>	mIo;
 	std::shared_ptr<void>						mIoWork; // boost::asio::io_service::work, but can't fwd declare member class
-	
+#endif // !defined( CINDER_WINRT )
+
 	// have we already setup the default path to assets?
 	bool						mAssetDirectoriesInitialized;
 	// Path to directories which contain assets
@@ -594,12 +640,22 @@ inline fs::path		getAppPath() { return App::get()->getAppPath(); }
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
+
+#if defined( CINDER_WINRT )
+inline void getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr ) { return App::get()->getOpenFilePath( initialPath, extensions, f ); }
+#else
 inline fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getOpenFilePath( initialPath, extensions ); }
+#endif
+
 //! Presents the user with a file-save dialog and returns the selected file path.
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
+#if defined( CINDER_WINRT )
+inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(),std::function<void (fs::path)> f = nullptr) { App::get()->getSaveFilePath( initialPath, extensions, f ); }
+#else
 inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getSaveFilePath( initialPath, extensions ); }
+#endif
 
 //! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
 /** On Mac OS X all output is echoed either to the Debugger Console in XCode or the system console
