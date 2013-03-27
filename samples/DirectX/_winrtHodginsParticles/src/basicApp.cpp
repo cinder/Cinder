@@ -1,6 +1,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/Perlin.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Font.h"
 
 #include "Particle.h"
 #include "Emitter.h"
@@ -36,6 +37,7 @@ class BasicApp : public AppBasic {
 	void update();
 	void draw();
 	
+	Font		mFont;
 	Emitter		mEmitter;
 	bool		mouseIsDown;
 	Vec2i		mMousePos;
@@ -52,7 +54,7 @@ void BasicApp::setup()
 {
 	particleImg = new dx::Texture( loadImage(loadAsset("particle.png")));
 	emitterImg = new dx::Texture( loadImage( loadAsset("emitter.png")));
-
+	mFont = Font( "Arial", 24.0f );
 	mouseIsDown = false;
 	mMousePos = getWindowCenter();
 }
@@ -125,6 +127,9 @@ void BasicApp::draw()
 	dx::enableAdditiveBlending();
 	
 	mEmitter.exist( mMousePos );	
+	std::stringstream s;
+	s << "Framerate:" << getAverageFps();
+	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color::white(),mFont);
 }
 
 // It would be faster to just make QUADS calls directly to the loc
