@@ -24,12 +24,21 @@
 
 #include "cinder/Cinder.h"
 
-#define BOOST_FILESYSTEM_VERSION 3
-#define BOOST_FILESYSTEM_NO_DEPRECATED
-#include <boost/filesystem.hpp>
+
+#if defined( CINDER_WINRT )
+	#include <filesystem>
+#else
+	#define BOOST_FILESYSTEM_VERSION 3
+	#define BOOST_FILESYSTEM_NO_DEPRECATED
+	#include <boost/filesystem.hpp>
+#endif
 
 namespace cinder {
 
-namespace fs = boost::filesystem;
+#if defined( CINDER_WINRT )
+	namespace fs = std::tr2::sys;
+#else
+	namespace fs = boost::filesystem;
+#endif
 
 } // namespace cinder
