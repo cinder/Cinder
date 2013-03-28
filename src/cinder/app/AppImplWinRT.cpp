@@ -284,6 +284,7 @@ void AppImplWinRT::getSaveFilePath( const fs::path &initialPath,std::vector<std:
 WindowImplWinRT::WindowImplWinRT( const Window::Format &format, AppImplWinRT *appImpl )
 	: mWindowOffset( 0, 0 ), mAppImpl( appImpl ), mIsDragging( false ), mHidden( false ), mTouchId(0), mIsMultiTouchEnabled(false)
 {	
+	mTitle = "";
 	mFullScreen = format.isFullScreen();
 	mDisplay = format.getDisplay();
 	mRenderer = format.getRenderer();
@@ -311,6 +312,7 @@ WindowImplWinRT::WindowImplWinRT( const Window::Format &format, AppImplWinRT *ap
 WindowImplWinRT::WindowImplWinRT( DX_WINDOW_TYPE hwnd, RendererRef renderer, AppImplWinRT *appImpl )
 	: mWnd( hwnd ), mRenderer( renderer ), mAppImpl( appImpl ), mIsDragging( false ), mTouchId(0), mIsMultiTouchEnabled(false)
 {
+	mTitle = "";
 
 	float width, height;
 	GetPlatformWindowDimensions(hwnd.Get(), &width, &height);
@@ -408,14 +410,13 @@ std::string	WindowImplWinRT::getTitle() const
 
 void WindowImplWinRT::setTitle( const std::string &title )
 {
-
+	mTitle = title;
 }
 
 void WindowImplWinRT::setSize( const Vec2i &windowSize )
 {
-	int screenWidth, screenHeight;
-	getScreenSize( windowSize.x, windowSize.y, &screenWidth, &screenHeight );
-	//::SetWindowPos( mWnd, HWND_TOP, 0, 0, screenWidth, screenHeight, SWP_NOMOVE | SWP_NOZORDER );
+	mWindowWidth = windowSize.x;
+	mWindowHeight = windowSize.y;
 }
 
 void WindowImplWinRT::close()

@@ -247,8 +247,11 @@ void AppImplWinRTBasic::handlePointerUp(PointerEventArgs^ args)
 	mWindow->handlePointerUp(args);
 }
 
-void AppImplWinRTBasic::UpdateForWindowSizeChange()
+void AppImplWinRTBasic::UpdateForWindowSizeChange(CoreWindow^ window)
 {
+	float width, height;
+	GetPlatformWindowDimensions(window,&width,&height);	
+	mWindow->getWindow()->setSize((int)width, (int)height);
 	mWindow->getWindow()->emitResize();
 }
 

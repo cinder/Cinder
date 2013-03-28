@@ -166,7 +166,7 @@ void WinRTApp::Uninitialize()
 
 void WinRTApp::OnWindowSizeChanged(CoreWindow^ sender, WindowSizeChangedEventArgs^ args)
 {
-	mApp->UpdateForWindowSizeChange();
+	mApp->UpdateForWindowSizeChange(sender);
 }
 
 void WinRTApp::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEventArgs^ args)
