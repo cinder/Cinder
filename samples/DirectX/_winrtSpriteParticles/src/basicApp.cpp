@@ -50,8 +50,6 @@ class BasicApp : public AppBasic {
 	dx::Texture imgParticle, imgEmitter;
 
 	vector<Particle>	mParticles;
-
-	dx::TextureFontRef	mTextureFont;
 };
 
 void BasicApp::prepareSettings(Settings *settings)
