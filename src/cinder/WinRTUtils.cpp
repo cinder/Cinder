@@ -36,8 +36,10 @@ using namespace Windows::UI::Popups;
 using namespace Platform;
 using namespace Windows::UI::ViewManagement;
 
+
 namespace cinder { 	namespace winrt {
 
+#define DEFAULT_DPI 96.0f;
 
 // Method to convert a length in device-independent pixels (DIPs) to a length in physical pixels.
 float ConvertDipsToPixels(float dips)
@@ -100,8 +102,13 @@ bool ensureUnsnapped()
     return unsnapped;
 }
 
+float getScaleFactor() {
+	return DisplayProperties::LogicalDpi / DEFAULT_DPI;
+}
+
+
 float getScaledDPIValue(float v) {
-	auto dipFactor = DisplayProperties::LogicalDpi / 96.0f;
+	auto dipFactor = DisplayProperties::LogicalDpi / DEFAULT_DPI;
 	return v * dipFactor;
 }
 

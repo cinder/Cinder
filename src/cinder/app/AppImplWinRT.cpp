@@ -320,7 +320,7 @@ WindowImplWinRT::WindowImplWinRT( DX_WINDOW_TYPE hwnd, RendererRef renderer, App
 	mWindowWidth = static_cast<int>(width);
 	mWindowHeight = static_cast<int>(height);
 
-	mDisplay = nullptr;
+	mDisplay = Display::getMainDisplay();
 
 	mRenderer->setup( mAppImpl->getApp(), mWnd);
 

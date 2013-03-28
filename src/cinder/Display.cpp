@@ -28,6 +28,11 @@ using namespace std;
 	#include <Cocoa/Cocoa.h>
 #elif defined( CINDER_COCOA_TOUCH )
 	#include <UIKit/UIKit.h>
+#elif defined( CINDER_WINRT)
+	#include "cinder/WinRTUtils.h"
+	using namespace cinder::winrt;
+	using namespace Windows::UI::Core;
+	using namespace Windows::Graphics::Display;
 #endif
 
 namespace cinder {
@@ -194,20 +199,18 @@ void Display::setResolution( const Vec2i &resolution )
 #elif defined( CINDER_WINRT )
 void Display::enumerateDisplays()
 {
+	CoreWindow^ window = CoreWindow::GetForCurrentThread();
 	DisplayRef newDisplay = DisplayRef( new Display );
-#if 0
-	newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width * screen.scale, frame.origin.y + frame.size.height * screen.scale );
-	newDisplay->mUiScreen = screen;
-	newDisplay->mBitsPerPixel = 24;
-	newDisplay->mContentScale = screen.scale;
+	if(window != nullptr)
+	{
+		float width, height;
 
-	NSArray *resolutions = [screen availableModes];
-	for( int i = 0; i < [resolutions count]; ++i ) {
-		::UIScreenMode *mode = [resolutions objectAtIndex:i];
-		newDisplay->mSupportedResolutions.push_back( Vec2i( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
+		GetPlatformWindowDimensions(window, &width,&height);
+
+		newDisplay->mArea = Area( 0, 0, (int)width, (int)height );
+		newDisplay->mBitsPerPixel = 24;
+		newDisplay->mContentScale = getScaleFactor();
 	}
-
-#endif // 0
 
 	sDisplays.push_back( newDisplay );
 }

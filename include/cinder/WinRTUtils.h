@@ -8,5 +8,6 @@ namespace cinder { namespace winrt {
 	void GetPlatformWindowDimensions(Windows::UI::Core::CoreWindow^ wnd, float* width, float* height);
 	std::string PlatformStringToString(Platform::String^ path);
 	bool ensureUnsnapped();
+	float getScaleFactor();
 	float getScaledDPIValue(float v);
 }}
