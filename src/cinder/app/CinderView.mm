@@ -38,8 +38,10 @@
 
 - (id)initWithFrame:(NSRect)frame
 {
-	self = [super initWithFrame:frame];
+	// setting this first so that when viewDidChangeBackingProperties fires we have a valid mApp
 	mApp = NULL;
+	
+	self = [super initWithFrame:frame];
 	mReadyToDraw = NO;
 	mReceivesEvents = YES;
 	mFullScreen = NO;
@@ -52,8 +54,10 @@
 
 - (id)initWithFrame:(NSRect)frame app:(cinder::app::App*)aApp renderer:(cinder::app::RendererRef)aRenderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
 {
-	self = [super initWithFrame:frame];
+	// setting this first so that when viewDidChangeBackingProperties fires we have a valid mApp
 	mApp = aApp;
+
+	self = [super initWithFrame:frame];
 	mRenderer = aRenderer;
 	mReadyToDraw = NO;
 	mReceivesEvents = mApp->receivesEvents();

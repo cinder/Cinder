@@ -723,7 +723,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 {
 	// Only rotate after setup. On secondary monitors we don't support any rotation
 	if( ! mAppImpl->mSetupHasFired || mDisplay != cinder::Display::getMainDisplay() ) {
-		return UIInterfaceOrientationMaskPortrait;
+		return UIInterfaceOrientationMaskAll;
 	}
 
 	uint32_t supportedOrientations = mAppImpl->mApp->emitSupportedOrientations();
