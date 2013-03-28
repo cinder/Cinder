@@ -34,7 +34,7 @@
 	#define CINDER_GLES1
 #endif
 
-//#define CINDER_GL_LEGACY
+#define CINDER_GL_LEGACY
 
 #include "cinder/Exception.h"
 #include "cinder/Quaternion.h"

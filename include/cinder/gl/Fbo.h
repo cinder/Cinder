@@ -241,8 +241,8 @@ class Fbo {
 		GLuint				mResolveFramebufferId;
 		std::vector<Renderbuffer>	mMultisampleColorRenderbuffers;
 		Renderbuffer				mMultisampleDepthRenderbuffer;
-		std::vector<TextureRef>		mColorTextures;
-		TextureRef					mDepthTexture;
+		std::vector<Texture>		mColorTextures;
+		Texture						mDepthTexture;
 		Renderbuffer				mDepthRenderbuffer;
 		mutable bool		mNeedsResolve, mNeedsMipmapUpdate;
 	};
