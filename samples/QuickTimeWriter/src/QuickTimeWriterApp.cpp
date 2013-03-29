@@ -17,8 +17,8 @@ class QuickTimeWriterApp : public AppBasic {
 	void draw();
 	
 	// This will maintain a list of points which we will draw line segments between
-	list<Vec2f>			mPoints;
-	qtime::MovieWriter	mMovieWriter;
+	list<Vec2f>				mPoints;
+	qtime::MovieWriterRef	mMovieWriter;
 };
 
 void QuickTimeWriterApp::setup()
@@ -32,7 +32,7 @@ void QuickTimeWriterApp::setup()
 
 	qtime::MovieWriter::Format format;
 	if( qtime::MovieWriter::getUserCompressionSettings( &format, loadImage( loadResource( RES_PREVIEW_IMAGE ) ) ) ) {
-		mMovieWriter = qtime::MovieWriter( path, getWindowWidth(), getWindowHeight(), format );
+		mMovieWriter = qtime::MovieWriter::create( path, getWindowWidth(), getWindowHeight(), format );
 	}
 }
 
@@ -47,20 +47,20 @@ void QuickTimeWriterApp::draw()
 	gl::clear( Color( 0.05f, 0.1f, 0.2f ) );
 
 	// We'll set the color to an orange color
-	glColor3f( 1.0f, 0.5f, 0.25f );
+	gl::color( 1.0f, 0.5f, 0.25f );
 	
 	// now tell OpenGL we've got a series of points it should draw lines between
-	glBegin( GL_LINE_STRIP );
+	gl::begin( GL_LINE_STRIP );
 	// iterate across our list of points, and pass each one to OpenGL
 	for( list<Vec2f>::iterator pointIter = mPoints.begin(); pointIter != mPoints.end(); ++pointIter ) {
-		glVertex2f( pointIter->x, pointIter->y );
+		gl::vertex( pointIter->x, pointIter->y );
 	}
 	// tell OpenGL to actually draw the lines now
-	glEnd();
+	gl::end();
 	
 	// add this frame to our movie
 	if( mMovieWriter )
-		mMovieWriter.addFrame( copyWindowSurface() );
+		mMovieWriter->addFrame( copyWindowSurface() );
 }
 
 // This line tells Cinder to actually create the application
