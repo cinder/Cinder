@@ -34,8 +34,6 @@
 	#define CINDER_GLES1
 #endif
 
-#define CINDER_GL_LEGACY
-
 #include "cinder/Exception.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Matrix.h"
@@ -64,6 +62,7 @@ namespace cinder {
 	namespace gl {
 		 class VboMesh; class Texture;
 		 typedef std::shared_ptr<Texture>	TextureRef;
+ 		 typedef std::shared_ptr<VboMesh>	VboMeshRef;
 	}
 } // namespace cinder
 
@@ -298,26 +297,29 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 
 #if ! defined ( CINDER_GLES )
 void draw( const VboMesh &vbo );
+inline void draw( const VboMeshRef &vbo ) { draw( *vbo ); }
 //! Draws a range of vertices and elements of cinder::gl::VboMesh \a mesh at the origin. Default parameters for \a vertexStart and \a vertexEnd imply the VboMesh's full range of vertices.
 void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 );
+inline void drawRange( const VboMeshRef &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 ) { drawRange( *vbo, startIndex, indexCount, vertexStart, vertexEnd ); }
 //! Draws a range of elements from a cinder::gl::VboMesh \a vbo.
 void drawArrays( const VboMesh &vbo, GLint first, GLsizei count );
-//!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.
+inline void drawArrays( const VboMeshRef &vbo, GLint first, GLsizei count ) { drawArrays( *vbo, first, count ); }
 #endif
-	
+
+//!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.	
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp );
 //! Draws \a texture on the XY-plane
 void draw( const Texture &texture );
-inline void draw( const TextureRef texture ) { draw( *texture ); }
+inline void draw( const TextureRef &texture ) { draw( *texture ); }
 //! Draws \a texture on the XY-plane at \a pos
 void draw( const Texture &texture, const Vec2f &pos );
-inline void draw( const TextureRef texture, const Vec2f &pos ) { draw( *texture, pos ); }
+inline void draw( const TextureRef &texture, const Vec2f &pos ) { draw( *texture, pos ); }
 //! Draws \a texture on the XY-plane in the rectangle defined by \a rect
 void draw( const Texture &texture, const Rectf &rect );
-inline void draw( const TextureRef texture, const Rectf &rect ) { draw( *texture, rect ); }
+inline void draw( const TextureRef &texture, const Rectf &rect ) { draw( *texture, rect ); }
 //! Draws the pixels inside \a srcArea of \a texture on the XY-plane in the rectangle defined by \a destRect
 void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect );
-inline void draw( const TextureRef texture, const Area &srcArea, const Rectf &destRect ) { draw( *texture, srcArea, destRect ); }
+inline void draw( const TextureRef &texture, const Area &srcArea, const Rectf &destRect ) { draw( *texture, srcArea, destRect ); }
 
 //! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
 void drawString( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );

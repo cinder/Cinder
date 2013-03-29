@@ -25,8 +25,8 @@ class VboSampleApp : public AppBasic {
 
 	static const int VERTICES_X = 250, VERTICES_Z = 50;
 
-	gl::VboMesh		mVboMesh, mVboMesh2;
-	gl::Texture		mTexture;
+	gl::VboMeshRef	mVboMesh, mVboMesh2;
+	gl::TextureRef	mTexture;
 	CameraPersp		mCamera;
 };
 
@@ -39,7 +39,7 @@ void VboSampleApp::setup()
 	layout.setStaticIndices();
 	layout.setDynamicPositions();
 	layout.setStaticTexCoords2d();
-	mVboMesh = gl::VboMesh( totalVertices, totalQuads * 4, layout, GL_QUADS );
+	mVboMesh = gl::VboMesh::create( totalVertices, totalQuads * 4, layout, GL_QUADS );
 	
 	// buffer our static data - the texcoords and the indices
 	vector<uint32_t> indices;
@@ -58,14 +58,14 @@ void VboSampleApp::setup()
 		}
 	}
 	
-	mVboMesh.bufferIndices( indices );
-	mVboMesh.bufferTexCoords2d( 0, texCoords );
+	mVboMesh->bufferIndices( indices );
+	mVboMesh->bufferTexCoords2d( 0, texCoords );
 	
 	// make a second Vbo that uses the statics from the first
-	mVboMesh2 = gl::VboMesh( totalVertices, totalQuads * 4, mVboMesh.getLayout(), GL_QUADS, &mVboMesh.getIndexVbo(), &mVboMesh.getStaticVbo(), NULL );
-	mVboMesh2.setTexCoordOffset( 0, mVboMesh.getTexCoordOffset( 0 ) );
+	mVboMesh2 = gl::VboMesh::create( totalVertices, totalQuads * 4, mVboMesh->getLayout(), GL_QUADS, &mVboMesh->getIndexVbo(), &mVboMesh->getStaticVbo(), NULL );
+	mVboMesh2->setTexCoordOffset( 0, mVboMesh->getTexCoordOffset( 0 ) );
 	
-	mTexture = gl::Texture( loadImage( loadResource( RES_IMAGE ) ) );
+	mTexture = gl::Texture::create( loadImage( loadResource( RES_IMAGE ) ) );
 }
 
 void VboSampleApp::update()
@@ -78,7 +78,7 @@ void VboSampleApp::update()
 	float offset = getElapsedSeconds() * timeFreq;
 
 	// dynmaically generate our new positions based on a simple sine wave
-	gl::VboMesh::VertexIter iter = mVboMesh.mapVertexBuffer();
+	gl::VboMesh::VertexIter iter = mVboMesh->mapVertexBuffer();
 	for( int x = 0; x < VERTICES_X; ++x ) {
 		for( int z = 0; z < VERTICES_Z; ++z ) {
 			float height = sin( z / (float)VERTICES_Z * zFreq + x / (float)VERTICES_X * xFreq + offset ) / 5.0f;
@@ -88,7 +88,7 @@ void VboSampleApp::update()
 	}
 
 	// dynmaically generate our new positions based on a simple sine wave for mesh2
-	gl::VboMesh::VertexIter iter2 = mVboMesh2.mapVertexBuffer();
+	gl::VboMesh::VertexIter iter2 = mVboMesh2->mapVertexBuffer();
 	for( int x = 0; x < VERTICES_X; ++x ) {
 		for( int z = 0; z < VERTICES_Z; ++z ) {
 			float height = sin( z / (float)VERTICES_Z * zFreq * 2 + x / (float)VERTICES_X * xFreq * 3 + offset ) / 10.0f;
@@ -104,7 +104,7 @@ void VboSampleApp::draw()
 	gl::clear( Color( 0.15f, 0.15f, 0.15f ) );
 
 	gl::scale( Vec3f( 10, 10, 10 ) );
-	mTexture.enableAndBind();
+	mTexture->enableAndBind();
 	gl::draw( mVboMesh );
 	gl::draw( mVboMesh2 );
 }

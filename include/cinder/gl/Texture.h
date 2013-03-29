@@ -60,11 +60,7 @@ class Texture {
 	//! Constructs a Texture based on an externally initialized OpenGL texture. \a doNotDispose specifies whether the Texture destructor is responsible for disposing of the associated OpenGL resource.
 	static TextureRef create( GLenum target, GLuint textureId, int width, int height, bool doNotDispose ) { return std::make_shared<Texture>( target, textureId, width, height, doNotDispose ); }
 
-#if defined( CINDER_GL_LEGACY )
   public:
-#else
-  private:
-#endif
 	//! Default initializer. Points to a null Obj
 	Texture() {}
 	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. **/
