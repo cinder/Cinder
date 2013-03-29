@@ -56,6 +56,10 @@ class InterfaceGl {
 	void	hide();
 	bool	isVisible() const;
 	
+	void	maximize( bool maximized = true );
+	void	minimize();
+	bool	isMaximized();
+	
 	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, float *floatParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, double *doubleParam, const std::string &optionsStr = "", bool readOnly = false );
