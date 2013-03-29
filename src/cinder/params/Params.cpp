@@ -196,8 +196,7 @@ void InterfaceGl::show( bool visible )
 
 void InterfaceGl::hide()
 {
-	int32_t visibleInt = 0;
-	TwSetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
+	show( false );
 }
 
 bool InterfaceGl::isVisible() const
