@@ -293,9 +293,9 @@ void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCoun
 void draw( const TriMesh &mesh );
 //! Draws a range of triangles starting with triangle # \a startTriangle and a count of \a triangleCount from cinder::TriMesh \a mesh at the origin.
 void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount );
-//! Draws a cinder::gl::VboMesh \a mesh at the origin.
 
 #if ! defined ( CINDER_GLES )
+//! Draws a cinder::gl::VboMesh \a mesh at the origin.
 void draw( const VboMesh &vbo );
 inline void draw( const VboMeshRef &vbo ) { draw( *vbo ); }
 //! Draws a range of vertices and elements of cinder::gl::VboMesh \a mesh at the origin. Default parameters for \a vertexStart and \a vertexEnd imply the VboMesh's full range of vertices.
