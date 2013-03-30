@@ -38,7 +38,7 @@ struct EventCombiner {
 	template<typename InputIterator>
 	void	operator()( InputIterator first, InputIterator last ) const
 	{
-		while( ( first != last ) && ( ! mEvent->isHandled() ) ) {
+		while( ( first != last ) && mEvent->isPropagating() ) {
 			*first++;
 		}
 	}
@@ -52,23 +52,28 @@ typedef std::shared_ptr<Window>		WindowRef;
 //! Base class for all Events
 class Event {
   public:
-	//! Returns whether this event has been marked as handled by one of its slots, terminating the normal iteration of the event's slots
+	//! Returns whether this event has been marked as handled by one of its slots
 	bool		isHandled() const { return mHandled; }
-	//! Marks the event as handled, terminating the normal iteration of the event's slots
+	//! Marks the event as handled
 	void		setHandled( bool handled = true ) { mHandled = handled; }
+	//! Returns whether event should continue normal iteration
+	bool		isPropagating() const { return mPropagating; }
+	//! Stop normal iteration of the event's slots
+	void		stopPropagation() { mPropagating = false; }
 
 	//! Returns the Window in which the MouseEvent occurred
 	WindowRef	getWindow() const { return mWindow; }
 	void		setWindow( const WindowRef &window ) { mWindow = window; }
 
   protected:
-	Event() : mHandled( false ) {}
-	Event( WindowRef window ) : mWindow( window ), mHandled( false ) {}
+	Event() : mHandled( false ), mPropagating( true ) {}
+	Event( WindowRef window ) : mWindow( window ), mHandled( false ), mPropagating( true ) {}
 
   public:
 	virtual ~Event() {}
 	
 	bool			mHandled;
+	bool			mPropagating;
 	WindowRef		mWindow;
 };
 
