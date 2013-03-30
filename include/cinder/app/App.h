@@ -35,10 +35,7 @@
 #include "cinder/DataSource.h"
 #include "cinder/Timer.h"
 #include "cinder/Function.h"
-
-#if !defined( CINDER_WINRT )
 #include "cinder/Thread.h"
-#endif
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
