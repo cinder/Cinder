@@ -1,8 +1,10 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/Utilities.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Surface.h"
 #include "cinder/dx/DxTexture.h"
 #include "cinder/dx/dx.h"
+
 
 // Uncomment this line to enable specialized PNG handling
 //#include "cinder/ImageSourcePng.h"
@@ -16,8 +18,10 @@ class ImageFileBasicApp : public AppBasic {
 	void setup();
 	void keyDown( KeyEvent event );
 	void draw();
-	
+	Surface surface;
+
 	dx::Texture		mTexture;	
+
 };
 
 void ImageFileBasicApp::setup()
@@ -40,11 +44,16 @@ void ImageFileBasicApp::setup()
 					the selected image into the Apps temp directory, load the image into the texture, 
 					and then delete the temporary copy of the image.
 				*/
+
 				dx::Texture::loadImageAsync(path, this->mTexture);
 
 				/*	Note: if you are loading images from your Assets directory, then it is okay
 					to use: dx::Texture( loadImage( path ) );
-					//this->mTexture = dx::Texture( loadImage( path ) );
+					this->mTexture = dx::Texture( loadImage( path ) );
+				*/
+
+				/*	FYI: This is how you would load an image outside of the Application folder into a Surface 
+					Surface::loadImageAsync(path, this->surface);
 				*/
 			}
 		});

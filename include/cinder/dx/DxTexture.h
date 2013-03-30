@@ -63,6 +63,9 @@ class Texture {
 	Texture( ImageSourceRef imageSource, Format format = Format() );
 
 #if defined( CINDER_WINRT )
+	/** \brief Constructs asynchronously a texture based on a imamge located \a path. The loaded texture is returned in \a texture. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. 
+		If you are creating a texture from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
+	**/
 	static void loadImageAsync(const fs::path path, dx::Texture &texture, const Format format = Format());
 #endif
 

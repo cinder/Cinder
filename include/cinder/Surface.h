@@ -30,6 +30,7 @@
 #include "cinder/Channel.h"
 #include "cinder/ChanTraits.h"
 #include "cinder/Color.h"
+#include "cinder/FileSystem.h"
 
 #include <boost/logic/tribool.hpp>
 
@@ -127,6 +128,13 @@ class SurfaceT {
 	 <tt>Surface mySurface = Surface( loadImage( loadResource( RES ) );</tt>
 	 */
 	SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
+
+#if defined( CINDER_WINRT )
+	/** \brief Constructs asynchronously a Surface from an images located at \a path. The loaded Surface is returned in \a surface.
+		If you are creating a Surface from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
+	**/
+	static void loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
+#endif
 
 	operator ImageSourceRef() const;
 	operator ImageTargetRef();

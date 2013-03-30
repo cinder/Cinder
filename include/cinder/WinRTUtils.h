@@ -13,6 +13,8 @@ namespace cinder { namespace winrt {
 	bool ensureUnsnapped();
 	float getScaleFactor();
 	float getScaledDPIValue(float v);
+	int getUniqueID();
+	std::string getUniqueIDString();
 
 	void deleteFileAsync( const std::tr2::sys::path &path);
 	Concurrency::task<Windows::Storage::StorageFile^> copyFileToTempDirAsync(const std::tr2::sys::path &path);

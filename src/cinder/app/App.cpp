@@ -485,6 +485,13 @@ void App::dispatchAsync( const std::function<void()> &fn )
 {
 	io_service().post( fn );
 }
+#else
+void App::dispatchAsync( const std::function<void()> &fn )
+{
+	std::async(fn);
+}
+
+
 #endif
 
 Surface	App::copyWindowSurface()

@@ -30,6 +30,9 @@
 
 #include "cinder/WinRTUtils.h"
 #include <math.h>
+#include <atomic>
+#include <sstream>
+#include <ppltasks.h>
 
 
 using namespace Windows::Graphics::Display;
@@ -166,9 +169,26 @@ Concurrency::task<StorageFile^> copyFileToTempDirAsync(const sys::path &path)
     {
 		// Then copy the file...asynchronously
  		auto folder = (Windows::Storage::ApplicationData::Current)->TemporaryFolder;
-		return f->CopyAsync(folder, f->Name, Windows::Storage::NameCollisionOption::ReplaceExisting);
+		return f->CopyAsync(folder, f->Name, Windows::Storage::NameCollisionOption::GenerateUniqueName);
     });
+
+
 }
+
+std::string getUniqueIDString()
+{
+	std::stringstream ss;
+	ss << getUniqueID();
+	return ss.str();
+}
+
+
+int getUniqueID()  
+{  
+	static std::atomic<int> ID(0);  
+	return ++ID;  
+}
+
 
 
 }} //namespace cinder::winrt

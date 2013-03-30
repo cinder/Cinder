@@ -173,27 +173,27 @@ Texture::Texture( ImageSourceRef imageSource, Format format )
 #if defined( CINDER_WINRT )
 void Texture::loadImageAsync(const fs::path path, dx::Texture &texture, const Format format)
 {
-	auto loadImageTask = create_task([path]() -> ImageSourceRef
+	auto loadImageTask = create_task([path, format]() -> ImageSourceRef
 	{
 		return loadImage(path);
 	});
 
 	  // Task-based continuation.
-    auto c2 = loadImageTask.then([path, &texture](task<ImageSourceRef> previousTask)
+    auto c2 = loadImageTask.then([path, &texture, format](task<ImageSourceRef> previousTask)
     {
         // We do expect to get here because task-based continuations 
         // are scheduled even when the antecedent task throws. 
         try
         {
-			texture = Texture(previousTask.get());
+			texture = Texture(previousTask.get(),format);
         }
         catch (const ImageIoExceptionFailedLoad&)
         {
 			auto copyTask = winrt::copyFileToTempDirAsync(path);
-			copyTask.then([&texture](StorageFile^ file) 
+			copyTask.then([&texture, format](StorageFile^ file) 
 			{
 				fs::path temp = fs::path(toUtf8(file->Path->Data()));
-				texture = Texture(loadImage(fs::path(temp)));
+				texture = Texture(loadImage(fs::path(temp)), format);
 				winrt::deleteFileAsync(temp);
 			});
         }
