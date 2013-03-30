@@ -82,7 +82,6 @@ class FontManager
 	bool				mFontsEnumerated;
 	vector<string>		mFontNames;
 	mutable Font		mDefault;
-	FT_Library			mLibrary;
 #if defined( CINDER_MSW )
 	HDC					getFontDc() const { return mFontDc; }
 	Gdiplus::Graphics*	getGraphics() const { return mGraphics; }
@@ -94,6 +93,8 @@ class FontManager
 #elif defined( CINDER_MSW )
 	HDC					mFontDc;
 	Gdiplus::Graphics	*mGraphics;
+#elif defined( CINDER_WINRT )
+	FT_Library			mLibrary;
 #endif
 
 	friend class Font;
@@ -110,17 +111,19 @@ FontManager::FontManager()
 #elif defined( CINDER_MSW )
 	mFontDc = ::CreateCompatibleDC( NULL );
 	mGraphics = new Gdiplus::Graphics( mFontDc );
-#endif
+#elif defined( CINDER_WINRT )
 	if(FT_Init_FreeType(&mLibrary))
 		throw FontInvalidNameExc("Failed to initialize freetype");
+#endif
 }
 
 FontManager::~FontManager()
 {
 #if defined( CINDER_MAC )
 	[nsFontManager release];
-#endif
+#elif defined( CINDER_WINRT )
 	FT_Done_FreeType(mLibrary);
+#endif
 }
 
 FontManager* FontManager::instance()
@@ -310,20 +313,17 @@ std::string Font::getFullName() const
 
 float Font::getLeading() const
 {
-	return (float)(mObj->mFace->height >> 6);
-	//return static_cast<float>( mObj->mTextMetric.tmInternalLeading + mObj->mTextMetric.tmExternalLeading );
+	return static_cast<float>( mObj->mTextMetric.tmInternalLeading + mObj->mTextMetric.tmExternalLeading );
 }
 
 float Font::getAscent() const
 {
-	return (float)(mObj->mFace->ascender >> 6);
-	//return static_cast<float>( mObj->mTextMetric.tmAscent );
+	return static_cast<float>( mObj->mTextMetric.tmAscent );
 }
 
 float Font::getDescent() const
 {
-	return (float)(mObj->mFace->descender >> 6);
-	//return static_cast<float>( mObj->mTextMetric.tmDescent );
+	return static_cast<float>( mObj->mTextMetric.tmDescent );
 }
 
 size_t Font::getNumGlyphs() const
@@ -333,7 +333,6 @@ size_t Font::getNumGlyphs() const
 
 Font::Glyph Font::getGlyphChar( char c ) const
 {
-	return FT_Get_Char_Index(mObj->mFace, c);
 	WORD buffer[1];
 	WCHAR theChar[1] = { (WCHAR)c };
 	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
@@ -366,12 +365,6 @@ Font::Glyph Font::getGlyphIndex( size_t idx ) const
 
 vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
 {
-	{
-		vector<Glyph> result;
-		for(unsigned i = 0; i < utf8String.size(); ++i)
-			result.push_back((Glyph)FT_Get_Char_Index(mObj->mFace, utf8String[i]));
-		return result;
-	}
 	wstring wideString = toUtf16( utf8String );
 	std::shared_ptr<WORD> buffer( new WORD[wideString.length()], checked_array_deleter<WORD>() );
 	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
@@ -460,28 +453,17 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 
 Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
 {
-	{
-		FT_Load_Glyph(mObj->mFace, glyphIndex, FT_LOAD_DEFAULT);
-		FT_GlyphSlot glyph = mObj->mFace->glyph;
-		FT_Glyph_Metrics &metrics = glyph->metrics;
-		return Rectf(
-			(float)(metrics.horiBearingX >> 6),
-			(float)((metrics.horiBearingY - metrics.height) >> 6),
-			(float)((metrics.horiBearingX + metrics.width) >> 6),
-			(float)(metrics.horiBearingY >> 6)
-		);
-	}
-	//static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
-	//GLYPHMETRICS metrics;
-	//::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
-	//DWORD bytesGlyph = ::GetGlyphOutlineW( FontManager::instance()->getFontDc(), glyphIndex,
-	//						GGO_METRICS | GGO_GLYPH_INDEX, &metrics, 0, NULL, &matrix);
+	static const MAT2 matrix = { { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, -1 } };
+	GLYPHMETRICS metrics;
+	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
+	DWORD bytesGlyph = ::GetGlyphOutlineW( FontManager::instance()->getFontDc(), glyphIndex,
+							GGO_METRICS | GGO_GLYPH_INDEX, &metrics, 0, NULL, &matrix);
 
- //   if( bytesGlyph == GDI_ERROR )
-	//	throw FontGlyphFailureExc();
+    if( bytesGlyph == GDI_ERROR )
+		throw FontGlyphFailureExc();
 
-	//return Rectf( metrics.gmptGlyphOrigin.x, metrics.gmptGlyphOrigin.y,
-	//		metrics.gmptGlyphOrigin.x + metrics.gmBlackBoxX, metrics.gmptGlyphOrigin.y + (int)metrics.gmBlackBoxY );
+	return Rectf( metrics.gmptGlyphOrigin.x, metrics.gmptGlyphOrigin.y,
+			metrics.gmptGlyphOrigin.x + metrics.gmBlackBoxX, metrics.gmptGlyphOrigin.y + (int)metrics.gmBlackBoxY );
 }
 
 #elif defined( CINDER_WINRT )
@@ -587,21 +569,20 @@ Font::Obj::Obj( const string &aName, float aSize )
 	string result = cocoa::convertCfString( fullName );
 	::CFRelease( fullName );
 #elif defined( CINDER_MSW )
-	//FontManager::instance(); // force GDI+ init
-	//assert( sizeof(wchar_t) == 2 );
- //   wstring faceName = toUtf16( mName );
- //   
-	//mHfont = ::CreateFont( -mSize * 72 / 96, 0, 0, 0, FW_DONTCARE, false, false, false,
-	//					DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
-	//					ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-	//					faceName.c_str() );
-	//::SelectObject( FontManager::instance()->getFontDc(), mHfont );
- //   mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
-	//mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( FontManager::instance()->getFontDc(), mHfont ) );
+	FontManager::instance(); // force GDI+ init
+	assert( sizeof(wchar_t) == 2 );
+    wstring faceName = toUtf16( mName );
+    
+	mHfont = ::CreateFont( -mSize * 72 / 96, 0, 0, 0, FW_DONTCARE, false, false, false,
+						DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
+						ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+						faceName.c_str() );
+	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
+    mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
+	mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( FontManager::instance()->getFontDc(), mHfont ) );
 	
 	finishSetup();
-#endif
-#if defined( CINDER_MSW ) || defined( CINDER_WINRT )
+#elif defined( CINDER_WINRT )
 	//gotta go through a long tedious process just to get a font file
 
 	//create the factory
@@ -677,13 +658,7 @@ Font::Obj::Obj( const string &aName, float aSize )
 	fontFamily->Release();
 	fontCollection->Release();
 	writeFactory->Release();
-
-	return;
 #endif
-	if(FT_New_Face(FontManager::instance()->mLibrary, aName.c_str(), 0, &mFace))
-		throw FontInvalidNameExc("Failed to create a face");
-	FT_Set_Char_Size(mFace, 0, (int)aSize * 64, 0, 72);
-
 }
 
 Font::Obj::Obj( DataSourceRef dataSource, float size )
@@ -748,9 +723,10 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 		throw FontInvalidNameExc();
 
 	finishSetup();
-#endif
+#elif defined( CINDER_WINRT )
 	FT_New_Memory_Face(FontManager::instance()->mLibrary, (FT_Byte*)dataSource->getBuffer().getData(), dataSource->getBuffer().getDataSize(), 0, &mFace);
 	FT_Set_Pixel_Sizes(mFace, 0, (int)size);
+#endif
 }
 
 Font::Obj::~Obj()
@@ -761,9 +737,10 @@ Font::Obj::~Obj()
 #elif defined( CINDER_MSW )
 	if( mHfont ) // this should be replaced with something exception-safe
 		::DeleteObject( mHfont ); 
-#endif
+#elif defined( CINDER_WINRT )
 	FT_Done_Face(mFace);
 	free(mFileData);
+#endif
 }
 
 void Font::Obj::finishSetup()
