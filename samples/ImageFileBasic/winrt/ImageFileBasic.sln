@@ -2,6 +2,9 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImageFileBasic", "ImageFileBasic.vcxproj", "{80F3F015-969E-4B39-BAA4-2410F3B49CAF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB} = {7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinder", "..\..\..\winrt\cinder.vcxproj", "{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}"
 EndProject
