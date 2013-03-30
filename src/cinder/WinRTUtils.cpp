@@ -31,10 +31,16 @@
 #include "cinder/WinRTUtils.h"
 #include <math.h>
 
+
 using namespace Windows::Graphics::Display;
 using namespace Windows::UI::Popups;
 using namespace Platform;
 using namespace Windows::UI::ViewManagement;
+using namespace Windows::Storage;
+using namespace Concurrency;
+
+using namespace std;
+using namespace std::tr2;
 
 
 namespace cinder { 	namespace winrt {
@@ -89,6 +95,25 @@ std::string PlatformStringToString(Platform::String^ s) {
 	return std::string(t.begin(),t.end());
 }
 
+Platform::String^ toPlatformString( const string &utf8 )
+{
+	int wideSize = ::MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), -1, NULL, 0 );
+	if( wideSize == ERROR_NO_UNICODE_TRANSLATION ) {
+		throw std::exception( "Invalid UTF-8 sequence." );
+	}
+	else if( wideSize == 0 ) {
+		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
+	}
+
+	vector<wchar_t> resultString( wideSize );
+	int convResult = ::MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), -1, &resultString[0], wideSize );
+	if( convResult != wideSize ) {
+		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
+	}
+
+	return ref new Platform::String(&resultString[0]);
+}
+
 bool ensureUnsnapped()
 {
     // FilePicker APIs will not work if the application is in a snapped state.
@@ -106,10 +131,44 @@ float getScaleFactor() {
 	return DisplayProperties::LogicalDpi / DEFAULT_DPI;
 }
 
-
 float getScaledDPIValue(float v) {
 	auto dipFactor = DisplayProperties::LogicalDpi / DEFAULT_DPI;
 	return v * dipFactor;
 }
 
-}}
+void deleteFileAsync(const sys::path &path)
+{
+	if(path.empty()) {
+		throw std::exception( "Must specify path to file to delete." );
+	}
+
+	String^ p = toPlatformString(path);
+
+	create_task(StorageFile::GetFileFromPathAsync (p)).then([] (StorageFile^ file) 
+	{
+		try {
+			file->DeleteAsync();
+		}  
+		catch (Exception^ ex)
+        {
+			OutputDebugString(std::wstring(ex->Message->Data()).c_str());
+        }
+	});
+}
+
+Concurrency::task<StorageFile^> copyFileToTempDirAsync(const sys::path &path)
+{
+	String^ p = toPlatformString(path);
+
+	// get the temporary StorageFolder
+
+	return create_task(StorageFile::GetFileFromPathAsync(p)).then([&](StorageFile^ f)
+    {
+		// Then copy the file...asynchronously
+ 		auto folder = (Windows::Storage::ApplicationData::Current)->TemporaryFolder;
+		return f->CopyAsync(folder, f->Name, Windows::Storage::NameCollisionOption::ReplaceExisting);
+    });
+}
+
+
+}} //namespace cinder::winrt
