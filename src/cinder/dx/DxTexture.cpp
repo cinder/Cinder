@@ -35,12 +35,13 @@
 #include "cinder/dx/DDSTextureLoader.h"
 
 #if defined( CINDER_WINRT )
-#include <ppltasks.h>
-#include "cinder/WinRTUtils.h"
-#include "cinder/Utilities.h"
-using namespace Windows::Storage;
-using namespace Concurrency;
+	#include <ppltasks.h>
+	#include "cinder/WinRTUtils.h"
+	#include "cinder/Utilities.h"
+	using namespace Windows::Storage;
+	using namespace Concurrency;
 #endif
+
 using namespace std;
 
 namespace cinder {
