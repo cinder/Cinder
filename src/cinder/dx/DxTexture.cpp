@@ -34,6 +34,13 @@
 #include "cinder/app/AppImplMswRendererDx.h"
 #include "cinder/dx/DDSTextureLoader.h"
 
+#if defined( CINDER_WINRT )
+#include <ppltasks.h>
+#include "cinder/WinRTUtils.h"
+#include "cinder/Utilities.h"
+using namespace Windows::Storage;
+using namespace Concurrency;
+#endif
 using namespace std;
 
 namespace cinder {
@@ -162,6 +169,39 @@ Texture::Texture( ImageSourceRef imageSource, Format format )
 {
 	init( imageSource, format );
 }
+
+#if defined( CINDER_WINRT )
+void Texture::loadImageAsync(const fs::path path, dx::Texture &texture, const Format format)
+{
+	auto loadImageTask = create_task([path]() -> ImageSourceRef
+	{
+		return loadImage(path);
+	});
+
+	  // Task-based continuation.
+    auto c2 = loadImageTask.then([path, &texture](task<ImageSourceRef> previousTask)
+    {
+        // We do expect to get here because task-based continuations 
+        // are scheduled even when the antecedent task throws. 
+        try
+        {
+			texture = Texture(previousTask.get());
+        }
+        catch (const ImageIoExceptionFailedLoad&)
+        {
+			auto copyTask = winrt::copyFileToTempDirAsync(path);
+			copyTask.then([&texture](StorageFile^ file) 
+			{
+				fs::path temp = fs::path(toUtf8(file->Path->Data()));
+				texture = Texture(loadImage(fs::path(temp)));
+				winrt::deleteFileAsync(temp);
+			});
+        }
+    });
+}
+#endif
+
+
 
 void Texture::init( const unsigned char *data, DXGI_FORMAT dataFormat, const Format &format )
 {
