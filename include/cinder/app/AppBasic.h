@@ -228,6 +228,7 @@ class AppBasic : public App {
 	}
 #elif defined( CINDER_WINRT )
 	#define CINDER_APP_BASIC( APP, RENDERER )														\
+	[Platform::MTAThread]																			\
 	int main(Platform::Array<Platform::String^>^) {													\
 		cinder::app::AppBasic::prepareLaunch();														\
 		cinder::app::AppBasic *app = new APP;														\
