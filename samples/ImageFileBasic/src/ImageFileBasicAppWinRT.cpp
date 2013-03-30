@@ -5,6 +5,7 @@
 #include "cinder/dx/DxTexture.h"
 #include "cinder/dx/dx.h"
 
+#include <future>
 
 // Uncomment this line to enable specialized PNG handling
 //#include "cinder/ImageSourcePng.h"
@@ -13,17 +14,37 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+ImageSourceRef loadImageTask(fs::path path) {
+	return loadImage(path);
+}
+
+
+
+
+
 class ImageFileBasicApp : public AppBasic {
   public:
 	void setup();
 	void keyDown( KeyEvent event );
 	void draw();
 	Surface surface;
+	void loadTextureTask(std::shared_future<ImageSourceRef> f);
 
 	dx::Texture		mTexture;	
 
+
 };
 
+void ImageFileBasicApp::loadTextureTask(std::shared_future<ImageSourceRef> f) {
+
+	try {
+		ImageSourceRef imageRef = f.get();
+		this->mTexture =  dx::Texture(imageRef);
+	}
+	catch (ImageIoExceptionFailedLoad e) {
+		throw e;
+	}
+}
 void ImageFileBasicApp::setup()
 {
 	try {
@@ -36,6 +57,7 @@ void ImageFileBasicApp::setup()
 		extensions.push_back(".png");
 		extensions.push_back(".jpg");
 
+
 		getOpenFilePath( "", extensions, [this](fs::path path){
 			if( ! path.empty() ) {
 				/*	Windows 8 Store Apps file access is highly sandboxed. In order to open 
@@ -45,7 +67,19 @@ void ImageFileBasicApp::setup()
 					and then delete the temporary copy of the image.
 				*/
 
-				dx::Texture::loadImageAsync(path, this->mTexture);
+				loadImageAsync(path, [this](ImageSourceRef imageRef){
+					this->mTexture = dx::Texture( imageRef );
+				});
+
+
+#if 0
+				fs::path p = getAssetPath("Logo.png");
+				auto task1 = std::async(std::launch::async,loadImageTask, p);
+				auto task2 = std::async(std::launch::async,&ImageFileBasicApp::loadTextureTask, this,shared_future<ImageSourceRef>(std::move(task1)));
+
+#endif // 0
+
+				//dx::Texture::loadImageAsync(path, this->mTexture);
 
 				/*	Note: if you are loading images from your Assets directory, then it is okay
 					to use: dx::Texture( loadImage( path ) );
