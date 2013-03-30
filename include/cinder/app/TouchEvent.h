@@ -73,7 +73,6 @@ class TouchEvent : public Event {
 
   private:
 	std::vector<Touch>		mTouches;
-	bool					mHandled;
 };
 
 inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )
