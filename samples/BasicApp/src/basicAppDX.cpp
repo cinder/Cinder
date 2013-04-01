@@ -1,6 +1,8 @@
 #include "cinder/app/AppBasic.h"
 #include <list>
 #include "cinder/dx/dx.h"
+#include "cinder/Surface.h"
+#include "cinder/dx/DxTexture.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -38,6 +40,9 @@ void BasicApp::draw()
 		dx::vertex( *pointIter );
 	}
 	dx::end();
+	Surface s = getRenderer()->copyWindowSurface(Area(Vec2i(0, 0), Vec2i(500, 500)));
+	dx::Texture tex(s);
+	dx::draw(tex, Rectf(100, 100, 600, 600));
 }
 
 // This line tells Cinder to actually create the application

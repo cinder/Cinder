@@ -2717,6 +2717,7 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 			applyDxFixedPipeline(verts, 4, TEXTURE_VERTEX, TEXTURE_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 			texture.bind();
 			dx->mDeviceContext->Draw(4, 0);
+			texture.unbind();
 		}
 	}
 //#endif

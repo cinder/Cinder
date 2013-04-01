@@ -103,7 +103,7 @@ void RendererDx::defaultResize()
 
 Surface	RendererDx::copyWindowSurface( const Area &area )
 {
-	Surface s( area.getWidth(), area.getHeight(), false );
+	Surface s( area.getWidth(), area.getHeight(), true );
 	//glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
 	mImpl->mDeviceContext->Flush();
 	//GLint oldPackAlignment;
@@ -111,8 +111,44 @@ Surface	RendererDx::copyWindowSurface( const Area &area )
 	//glPixelStorei( GL_PACK_ALIGNMENT, 1 );
 	//glReadPixels( area.x1, mApp->getWindowHeight() - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
 	//glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
+	D3D11_TEXTURE2D_DESC desc;
+	desc.Width = area.getWidth();
+	desc.Height = area.getHeight();
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_STAGING;
+	desc.BindFlags = 0;
+	desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	desc.MiscFlags = 0;
 
-	ip::flipVertical( &s );
+	ID3D11Texture2D *texture;
+	mImpl->md3dDevice->CreateTexture2D(&desc, NULL, &texture);
+
+	D3D11_BOX box;
+	box.front = 0;
+	box.back = 1;
+	box.left = area.x1;
+	box.right = area.x2;
+	box.top = area.y1;
+	box.bottom = area.y2;
+
+	ID3D11Texture2D *framebuffer;
+	mImpl->mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&framebuffer);
+
+	mImpl->mDeviceContext->CopySubresourceRegion(texture, 0, 0, 0, 0, framebuffer, 0, &box);
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	mImpl->mDeviceContext->Map(texture, 0, D3D11_MAP_READ, 0, &mappedResource);
+	memcpy(s.getData(), mappedResource.pData, area.calcArea() * 4);
+	mImpl->mDeviceContext->Unmap(texture, 0);
+
+	texture->Release();
+	framebuffer->Release();
+
+	//ip::flipVertical( &s );
 	return s;
 }
 
