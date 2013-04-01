@@ -51,10 +51,10 @@ class GlslProg {
 
 	static GlslProgRef create( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef(), DataSourceRef geometryShader = DataSourceRef(), 
 		GLint geometryInputType = GL_POINTS, GLint geometryOutputType = GL_TRIANGLES, GLint geometryOutputVertices = 0 )
-		{ return std::make_shared<GlslProg>( vertexShader, fragmentShader, geometryShader, geometryInputType, geometryOutputType, geometryOutputVertices ); }
+		{ return std::shared_ptr<GlslProg>( new GlslProg( vertexShader, fragmentShader, geometryShader, geometryInputType, geometryOutputType, geometryOutputVertices ) ); }
 	static GlslProgRef create( const char *vertexShader, const char *fragmentShader = 0, const char *geometryShader = 0,
 		GLint geometryInputType = GL_POINTS, GLint geometryOutputType = GL_TRIANGLES, GLint geometryOutputVertices = 0 )
-		{ return std::make_shared<GlslProg>( vertexShader, fragmentShader, geometryShader, geometryInputType, geometryOutputType, geometryOutputVertices ); }
+		{ return std::shared_ptr<GlslProg>( new GlslProg( vertexShader, fragmentShader, geometryShader, geometryInputType, geometryOutputType, geometryOutputVertices ) ); }
 
 
 	void			bind() const;
