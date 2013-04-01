@@ -1908,14 +1908,18 @@ Rectf Group::calcBoundingBox() const
 	bool empty = true;
 	Rectf result( 0, 0, 0, 0 );
 	for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
-		if( empty ) {
-			result = (*childIt)->getBoundingBox();
-			empty = false;
+		Rectf childBounds = (*childIt)->getBoundingBox();
+		// only use child area if it exists (text nodes return [0,0,0,0])
+		if( childBounds.calcArea() != 0 ) {
+			if( empty ) {
+				result = childBounds;
+				empty = false;
+			}
+			else {
+				result.include( childBounds );
+			}
 		}
-		else
-			result.include( (*childIt)->getBoundingBox() );
 	}
-	
 	return result;
 }
 
