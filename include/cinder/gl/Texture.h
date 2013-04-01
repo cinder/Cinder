@@ -33,12 +33,34 @@
 
 namespace cinder { namespace gl {
 
+class Texture;
+typedef std::shared_ptr<Texture>	TextureRef;
+
 /** \brief Represents an OpenGL Texture. \ImplShared
 \see \ref guide_Images "Images in Cinder" */
 class Texture {
   public:
 	struct Format;
-	
+
+	// Create analogs for constructors
+	//! Constructs a Texture of size(\a width, \a height)
+	static TextureRef create( int width, int height, Format format = Format() ) { return std::make_shared<Texture>( width, height, format ); }
+	//! Constructs a Texture of size(\a width, \a height). Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
+	static TextureRef create( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() ) { return std::make_shared<Texture>( data, dataFormat, width, height, format ); }
+	//! Constructs a Texture based on the contents of \a surface.
+	static TextureRef create( const Surface8u &surface, Format format = Format() ) { return std::make_shared<Texture>( surface, format ); }
+	//! Constructs a Texture based on the contents of \a surface
+	static TextureRef create( const Surface32f &surface, Format format = Format() ) { return std::make_shared<Texture>( surface, format ); }
+	//! Constructs a Texture based on the contents of \a channel.
+	static TextureRef create( const Channel8u &channel, Format format = Format() ) { return std::make_shared<Texture>( channel, format ); }
+	//! Constructs a Texture based on the contents of \a channel.
+	static TextureRef create( const Channel32f &channel, Format format = Format() ) { return std::make_shared<Texture>( channel, format ); }
+	//! Constructs a texture based on \a imageSource
+	static TextureRef create( ImageSourceRef imageSource, Format format = Format() ) { return std::make_shared<Texture>( imageSource, format ); }
+	//! Constructs a Texture based on an externally initialized OpenGL texture. \a doNotDispose specifies whether the Texture destructor is responsible for disposing of the associated OpenGL resource.
+	static TextureRef create( GLenum target, GLuint textureId, int width, int height, bool doNotDispose ) { return std::make_shared<Texture>( target, textureId, width, height, doNotDispose ); }
+
+  public:
 	//! Default initializer. Points to a null Obj
 	Texture() {}
 	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. **/
@@ -58,6 +80,7 @@ class Texture {
 	//! Constructs a Texture based on an externally initialized OpenGL texture. \a aDoNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
 	Texture( GLenum aTarget, GLuint aTextureID, int aWidth, int aHeight, bool aDoNotDispose );
 
+  public:
 	//! Determines whether the Texture will call glDeleteTextures() to free the associated texture objects on destruction
 	void			setDoNotDispose( bool aDoNotDispose = true ) { mObj->mDoNotDispose = aDoNotDispose; }
 	//! Installs an optional callback which fires when the texture is destroyed. Useful for integrating with external APIs

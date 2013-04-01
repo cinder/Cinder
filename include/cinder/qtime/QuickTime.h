@@ -59,6 +59,9 @@
 
 namespace cinder { namespace qtime {
 
+class MovieLoader;
+typedef std::shared_ptr<MovieLoader>	MovieLoaderRef;
+
 class MovieBase {
  public:
 	virtual		~MovieBase() {}	
@@ -204,15 +207,25 @@ class MovieBase {
 	virtual Obj*		getObj() const = 0;
 };
 
+class MovieSurface;
+typedef std::shared_ptr<MovieSurface>	MovieSurfaceRef;
+
 class MovieSurface : public MovieBase {
  public:
 	MovieSurface() : MovieBase() {}
 	MovieSurface( const fs::path &path );
 	MovieSurface( const class MovieLoader &loader );
-	//! Constructs a MovieGl from a block of memory of size \a dataSize pointed to by \a data, which must not be disposed of during the lifetime of the movie.
+	//! Constructs a MovieSurface from a block of memory of size \a dataSize pointed to by \a data, which must not be disposed of during the lifetime of the movie.
 	/** \a fileNameHint and \a mimeTypeHint provide important hints to QuickTime about the contents of the file. Omit both of them at your peril. "video/quicktime" is often a good choice for \a mimeTypeHint. **/
 	MovieSurface( const void *data, size_t dataSize, const std::string &fileNameHint, const std::string &mimeTypeHint = "" );
 	MovieSurface( DataSourceRef dataSource, const std::string mimeTypeHint = "" );
+
+	static MovieSurfaceRef create( const fs::path &path ) { return std::shared_ptr<MovieSurface>( new MovieSurface( path ) ); }
+	static MovieSurfaceRef create( const MovieLoaderRef &loader );
+	static MovieSurfaceRef create( const void *data, size_t dataSize, const std::string &fileNameHint, const std::string &mimeTypeHint = "" )
+		 { return std::shared_ptr<MovieSurface>( new MovieSurface( data, dataSize, fileNameHint, mimeTypeHint ) ); }
+	static MovieSurfaceRef create( DataSourceRef dataSource, const std::string mimeTypeHint = "" )
+		 { return std::shared_ptr<MovieSurface>( new MovieSurface( dataSource, mimeTypeHint ) ); }
 
 	//! Returns the Surface8u representing the Movie's current frame
 	Surface		getSurface();
@@ -241,6 +254,8 @@ class MovieSurface : public MovieBase {
 	//@}
 };
 
+class MovieGl;
+typedef std::shared_ptr<MovieGl>	MovieGlRef;
 /** \brief QuickTime movie playback as OpenGL textures
  *	Textures are always bound to the \c GL_TEXTURE_RECTANGLE_ARB target
  *	\remarks On Mac OS X, the destination CGLContext must be the current context when the MovieGl is constructed. If that doesn't mean anything to you, you should be fine. A call to app::restoreWindowContext() can be used to force this to be the case.
@@ -254,6 +269,13 @@ class MovieGl : public MovieBase {
 	/** \a fileNameHint and \a mimeTypeHint provide important hints to QuickTime about the contents of the file. Omit both of them at your peril. "video/quicktime" is often a good choice for \a mimeTypeHint. **/
 	MovieGl( const void *data, size_t dataSize, const std::string &fileNameHint, const std::string &mimeTypeHint = "" );
 	MovieGl( DataSourceRef dataSource, const std::string mimeTypeHint = "" );
+
+	static MovieGlRef create( const fs::path &path ) { return std::shared_ptr<MovieGl>( new MovieGl( path ) ); }
+	static MovieGlRef create( const MovieLoaderRef &loader );
+	static MovieGlRef create( const void *data, size_t dataSize, const std::string &fileNameHint, const std::string &mimeTypeHint = "" )
+		 { return std::shared_ptr<MovieGl>( new MovieGl( data, dataSize, fileNameHint, mimeTypeHint ) ); }
+	static MovieGlRef create( DataSourceRef dataSource, const std::string mimeTypeHint = "" )
+		 { return std::shared_ptr<MovieGl>( new MovieGl( dataSource, mimeTypeHint ) ); }
 
 	//! Returns the gl::Texture representing the Movie's current frame, bound to the \c GL_TEXTURE_RECTANGLE_ARB target
 	const gl::Texture	getTexture();
@@ -290,6 +312,8 @@ class MovieLoader {
   public:
 	MovieLoader() {}
 	MovieLoader( const Url &url );
+
+	static MovieLoaderRef	create( const Url &url ) { return std::shared_ptr<MovieLoader>( new MovieLoader( url ) ); }
 
 	//! Returns whether the movie is in a loaded state, implying its structures are ready for reading but it may not be ready for playback	
 	bool	checkLoaded() const;

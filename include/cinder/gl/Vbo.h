@@ -67,6 +67,9 @@ class Vbo {
 	//@}  
 };
 
+class VboMesh;
+typedef std::shared_ptr<VboMesh>	VboMeshRef;
+
 class VboMesh {
  public:
 	enum { NONE, STATIC, DYNAMIC };
@@ -171,6 +174,13 @@ class VboMesh {
 	VboMesh( size_t numVertices, size_t numIndices, Layout layout, GLenum primitiveType );
 	/*** Creates a VboMesh with \a numVertices vertices and \a numIndices indices. Accepts pointers to preexisting buffers, which may be NULL to request allocation **/
 	VboMesh( size_t numVertices, size_t numIndices, Layout layout, GLenum primitiveType, Vbo *indexBuffer, Vbo *staticBuffer, Vbo *dynamicBuffer );
+
+	static VboMeshRef	create( const TriMesh &triMesh, Layout layout = Layout() ) { return std::shared_ptr<VboMesh>( new VboMesh( triMesh, layout ) ); }
+	static VboMeshRef	create( const TriMesh2d &triMesh, Layout layout = Layout() ) { return std::shared_ptr<VboMesh>( new VboMesh( triMesh, layout ) ); }
+	static VboMeshRef	create( size_t numVertices, size_t numIndices, Layout layout, GLenum primitiveType ) { return std::shared_ptr<VboMesh>( new VboMesh( numVertices, numIndices, layout, primitiveType ) ); }
+	static VboMeshRef	create( size_t numVertices, size_t numIndices, Layout layout, GLenum primitiveType, Vbo *indexBuffer, Vbo *staticBuffer, Vbo *dynamicBuffer ) 
+		{ return std::shared_ptr<VboMesh>( new VboMesh( numVertices, numIndices, layout, primitiveType, indexBuffer, staticBuffer, dynamicBuffer ) ); }
+
 
 	size_t	getNumIndices() const { return mObj->mNumIndices; }
 	size_t	getNumVertices() const { return mObj->mNumVertices; }
