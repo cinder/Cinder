@@ -58,7 +58,7 @@ class InterfaceGl {
 	
 	void	maximize( bool maximized = true );
 	void	minimize();
-	bool	isMaximized();
+	bool	isMaximized() const;
 	
 	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, float *floatParam, const std::string &optionsStr = "", bool readOnly = false );

@@ -217,7 +217,7 @@ void InterfaceGl::minimize()
 	maximize( false );
 }
 
-bool InterfaceGl::isMaximized()
+bool InterfaceGl::isMaximized() const
 {
 	int32_t maximizedInt;
 	TwGetParam( mBar.get(), NULL, "iconified", TW_PARAM_INT32, 1, &maximizedInt );
