@@ -5,7 +5,6 @@
 #include "cinder/dx/DxTexture.h"
 #include "cinder/dx/dx.h"
 
-#include <future>
 
 // Uncomment this line to enable specialized PNG handling
 //#include "cinder/ImageSourcePng.h"
@@ -13,10 +12,6 @@
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-
-ImageSourceRef loadImageTask(fs::path path) {
-	return loadImage(path);
-}
 
 
 
@@ -27,24 +22,12 @@ class ImageFileBasicApp : public AppBasic {
 	void setup();
 	void keyDown( KeyEvent event );
 	void draw();
-	Surface surface;
-	void loadTextureTask(std::shared_future<ImageSourceRef> f);
-
 	dx::Texture		mTexture;	
 
 
 };
 
-void ImageFileBasicApp::loadTextureTask(std::shared_future<ImageSourceRef> f) {
 
-	try {
-		ImageSourceRef imageRef = f.get();
-		this->mTexture =  dx::Texture(imageRef);
-	}
-	catch (ImageIoExceptionFailedLoad e) {
-		throw e;
-	}
-}
 void ImageFileBasicApp::setup()
 {
 	try {
@@ -62,7 +45,7 @@ void ImageFileBasicApp::setup()
 			if( ! path.empty() ) {
 				/*	Windows 8 Store Apps file access is highly sandboxed. In order to open 
 					a file outside of your Application's directory (such as the Pictures Directory), 
-					you will need to use dx::Texture::loadImageAsync method. It will copy
+					you will need to use the loadImageAsync()  method. If necessary, it will copy
 					the selected image into the Apps temp directory, load the image into the texture, 
 					and then delete the temporary copy of the image.
 				*/
@@ -72,13 +55,7 @@ void ImageFileBasicApp::setup()
 				});
 
 
-#if 0
-				fs::path p = getAssetPath("Logo.png");
-				auto task1 = std::async(std::launch::async,loadImageTask, p);
-				auto task2 = std::async(std::launch::async,&ImageFileBasicApp::loadTextureTask, this,shared_future<ImageSourceRef>(std::move(task1)));
-
-#endif // 0
-
+				/* You can also load a texture asychronously like this
 				//dx::Texture::loadImageAsync(path, this->mTexture);
 
 				/*	Note: if you are loading images from your Assets directory, then it is okay
@@ -87,7 +64,7 @@ void ImageFileBasicApp::setup()
 				*/
 
 				/*	FYI: This is how you would load an image outside of the Application folder into a Surface 
-					Surface::loadImageAsync(path, this->surface);
+					Surface::loadImageAsync(path, this->mSurface);
 				*/
 			}
 		});
