@@ -8,7 +8,7 @@
 //
 // Name                 Index   Mask Register SysValue  Format   Used
 // -------------------- ----- ------ -------- -------- ------- ------
-// POSITION                 0   xyz         0     NONE   float       
+// POSITION                 0   xyzw        0     NONE   float       
 // NORMAL                   0   xyz         1     NONE   float       
 // COLOR                    0   xyzw        2     NONE   float       
 // TEXCOORD                 0   xy          3     NONE   float       
@@ -45,10 +45,10 @@ ret
 
 const BYTE StandardVboLayoutrgbaVS[] =
 {
-     68,  88,  66,  67, 132, 177, 
-    101, 146, 174,  16, 199, 250, 
-     14,  65, 173,  75, 137, 124, 
-     96,  19,   1,   0,   0,   0, 
+     68,  88,  66,  67, 252,  77, 
+    134, 202, 232, 191, 121, 217, 
+    139, 205,  47,  74,  15, 136, 
+     19, 212,   1,   0,   0,   0, 
     168,   1,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     160,   0,   0,   0, 228,   0, 
@@ -89,7 +89,7 @@ const BYTE StandardVboLayoutrgbaVS[] =
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   3,   0, 
       0,   0,   0,   0,   0,   0, 
-      7,   0,   0,   0, 113,   0, 
+     15,   0,   0,   0, 113,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   3,   0, 
       0,   0,   1,   0,   0,   0, 

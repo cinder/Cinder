@@ -6,7 +6,7 @@ cbuffer cbChangeOnResize : register( b0 )
 
 struct VS_INPUT
 {
-	float3 pos : POSITION;
+	float4 pos : POSITION;
 	float3 normal : NORMAL;
 	float2 uv : TEXCOORD;
 	float4 color : COLOR;
@@ -27,7 +27,7 @@ struct PS_INPUT
 PS_INPUT VS( VS_INPUT input )
 {
 	PS_INPUT output;
-	output.pos = mul( ModelView, float4( input.pos, 1 ) );
+	output.pos = mul( ModelView, input.pos );
 	output.pos = mul( Projection, output.pos );
 	output.color = input.color;
 

@@ -500,7 +500,10 @@ void end()
 //	else
 	{
 		auto dx = getDxRenderer();
-
+		dx->mProjection.push();
+		dx->mProjection.top() = Matrix44f::identity();
+		dx->mModelView.push();
+		dx->mModelView.top() = Matrix44f::identity();
 		if(!dx->mImmediateModeVerts.empty())
 		{
 			ID3D11ShaderResourceView *view;
@@ -601,6 +604,8 @@ void end()
 			}
 			dx->mDeviceContext->Draw(dx->mImmediateModeVerts.size(), 0);
 		}
+		dx->mProjection.pop();
+		dx->mModelView.pop();
 	}
 //#endif
 }
@@ -611,7 +616,7 @@ void vertex( const Vec2f &v )
 	//	glVertex2fv(&v.x);
 	auto dx = getDxRenderer();
 
-	dx->mImmediateModeVerts.push_back(FixedVertex(Vec3f(v, 0), dx->mCurrentNormal, dx->mCurrentUV, dx->mCurrentColor));
+	dx->mImmediateModeVerts.push_back(FixedVertex(dx->mProjection.top() * dx->mModelView.top() * Vec4f(v.x, v.y, 0.0f, 1.0f), dx->mCurrentNormal, dx->mCurrentUV, dx->mCurrentColor));
 }
 
 void vertex( float x, float y )
@@ -619,7 +624,7 @@ void vertex( float x, float y )
 	//if(usingGL())
 	//	glVertex2f(x, y);
 	auto dx = getDxRenderer();
-	dx->mImmediateModeVerts.push_back(FixedVertex(Vec3f(x, y, 0), dx->mCurrentNormal, dx->mCurrentUV, dx->mCurrentColor));
+	dx->mImmediateModeVerts.push_back(FixedVertex(dx->mProjection.top() * dx->mModelView.top() * Vec4f(x, y, 0.0f, 1.0f), dx->mCurrentNormal, dx->mCurrentUV, dx->mCurrentColor));
 }
 
 void vertex( const Vec3f &v )
@@ -627,7 +632,7 @@ void vertex( const Vec3f &v )
 	//if(usingGL())
 	//	glVertex3fv(&v.x);
 	auto dx = getDxRenderer();
-	dx->mImmediateModeVerts.push_back(FixedVertex(v, dx->mCurrentNormal, dx->mCurrentUV, dx->mCurrentColor));
+	dx->mImmediateModeVerts.push_back(FixedVertex(dx->mProjection.top() * dx->mModelView.top() * Vec4f(v, 1), dx->mCurrentNormal, dx->mCurrentUV, dx->mCurrentColor));
 }
 
 void vertex( float x, float y, float z )
@@ -635,7 +640,7 @@ void vertex( float x, float y, float z )
 	//if(usingGL())
 	//	glVertex3f(x, y, z);
 	auto dx = getDxRenderer();
-	dx->mImmediateModeVerts.push_back(FixedVertex(Vec3f(x, y, z), dx->mCurrentNormal, dx->mCurrentUV, dx->mCurrentColor));
+	dx->mImmediateModeVerts.push_back(FixedVertex(dx->mProjection.top() * dx->mModelView.top() * Vec4f(x, y, z, 1), dx->mCurrentNormal, dx->mCurrentUV, dx->mCurrentColor));
 }
 
 void texCoord( float x, float y )

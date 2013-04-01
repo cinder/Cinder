@@ -1,6 +1,6 @@
 struct rgbaVS_INPUT
 {
-	float3 pos : POSITION;
+	float4 pos : POSITION;
 	float3 normal : NORMAL;
 	float4 color : COLOR;
 	float2 uv : TEXCOORD;
@@ -8,7 +8,7 @@ struct rgbaVS_INPUT
 
 struct rgbVS_INPUT
 {
-	float3 pos : POSITION;
+	float4 pos : POSITION;
 	float3 normal : NORMAL;
 	float3 color : COLOR;
 	float2 uv : TEXCOORD;

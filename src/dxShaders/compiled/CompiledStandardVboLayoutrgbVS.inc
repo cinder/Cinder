@@ -8,7 +8,7 @@
 //
 // Name                 Index   Mask Register SysValue  Format   Used
 // -------------------- ----- ------ -------- -------- ------- ------
-// POSITION                 0   xyz         0     NONE   float       
+// POSITION                 0   xyzw        0     NONE   float       
 // NORMAL                   0   xyz         1     NONE   float       
 // COLOR                    0   xyz         2     NONE   float       
 // TEXCOORD                 0   xy          3     NONE   float       
@@ -45,10 +45,10 @@ ret
 
 const BYTE StandardVboLayoutrgbVS[] =
 {
-     68,  88,  66,  67, 232, 150, 
-    221,  85,  61, 127, 140,  26, 
-    213,  18, 167, 224, 158,  33, 
-    102,  32,   1,   0,   0,   0, 
+     68,  88,  66,  67,  26, 143, 
+    194, 137, 145, 123, 246,  50, 
+     76,  60,  83, 237, 185, 105, 
+    174, 220,   1,   0,   0,   0, 
     168,   1,   0,   0,   4,   0, 
       0,   0,  48,   0,   0,   0, 
     160,   0,   0,   0, 228,   0, 
@@ -89,7 +89,7 @@ const BYTE StandardVboLayoutrgbVS[] =
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   3,   0, 
       0,   0,   0,   0,   0,   0, 
-      7,   0,   0,   0, 113,   0, 
+     15,   0,   0,   0, 113,   0, 
       0,   0,   0,   0,   0,   0, 
       0,   0,   0,   0,   3,   0, 
       0,   0,   1,   0,   0,   0, 

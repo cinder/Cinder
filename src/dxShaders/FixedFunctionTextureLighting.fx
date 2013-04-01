@@ -36,7 +36,7 @@ SamplerState samLinear : register( s0 );
 
 struct VS_INPUT
 {
-	float3 pos : POSITION;
+	float4 pos : POSITION;
 	float3 normal : NORMAL;
 	float2 uv : TEXCOORD;
 	float4 color : COLOR;
@@ -94,12 +94,12 @@ float3 DirLight(Light light, float3 color, float3 normal, float3 vertex, float3 
 PS_INPUT VS( VS_INPUT input )
 {
 	PS_INPUT output;
-	output.pos = mul( ModelView, float4( input.pos, 1 ) );
+	output.pos = mul( ModelView, input.pos );
 	output.pos = mul( Projection, output.pos );
 	output.normal = mul( ModelView, float4( input.normal, 0 ) ).xyz;
 	output.uv = input.uv;
 	output.color = input.color;
-	output.posView = mul( ModelView, float4( input.pos, 1 ) ).xyz;
+	output.posView = mul( ModelView, input.pos ).xyz;
 
 	float3 normal = normalize( output.normal );
 	float3 vertToEye = normalize( -output.posView );
