@@ -34,6 +34,7 @@
 #include "cinder/Surface.h"
 #include "cinder/Rect.h"
 #include "cinder/Stream.h"
+#include "cinder/FileSystem.h"
 
 #include <vector>
 #include <utility>
@@ -60,6 +61,14 @@ class Texture {
 	Texture( const Surface32f &surface, Format format = Format() );
 	/** \brief Constructs a texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. **/
 	Texture( ImageSourceRef imageSource, Format format = Format() );
+
+#if defined( CINDER_WINRT )
+	/** \brief Constructs asynchronously a texture based on a imamge located \a path. The loaded texture is returned in \a texture. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. 
+		If you are creating a texture from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
+	**/
+	static void loadImageAsync(const fs::path path, dx::Texture &texture, const Format format = Format());
+#endif
+
 	//! Constructs a Texture based on an externally initialized OpenGL texture. \a aDoNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
 	//Texture( GLenum aTarget, GLuint aTextureID, int aWidth, int aHeight, bool aDoNotDispose );
 

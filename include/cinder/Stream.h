@@ -105,9 +105,9 @@ class OStream : public virtual StreamBase {
 
 typedef std::shared_ptr<class OStream>	OStreamRef;
 
-class IStream : public virtual StreamBase {
+class IStreamCinder : public virtual StreamBase {
  public:
-	virtual ~IStream() {};
+	virtual ~IStreamCinder() {};
 
 	template<typename T>
 	void		read( T *t ) { IORead( t, sizeof(T) ); }
@@ -132,18 +132,18 @@ class IStream : public virtual StreamBase {
 	virtual bool		isEof() const = 0;
 
  protected:
-	IStream() : StreamBase() {}
+	IStreamCinder() : StreamBase() {}
 
 	virtual void		IORead( void *t, size_t size ) = 0;
 		
 	static const int	MINIMUM_BUFFER_SIZE = 8; // minimum bytes of random access a stream must offer relative to the file start
 };
-typedef std::shared_ptr<IStream>		IStreamRef;
+typedef std::shared_ptr<IStreamCinder>		IStreamRef;
 
 
-class IoStream : public IStream, public OStream {
+class IoStream : public IStreamCinder, public OStream {
  public:
-	IoStream() : IStream(), OStream() {}
+	IoStream() : IStreamCinder(), OStream() {}
 	virtual ~IoStream() {}
 };
 typedef std::shared_ptr<IoStream>		IoStreamRef;
@@ -151,7 +151,7 @@ typedef std::shared_ptr<IoStream>		IoStreamRef;
 
 typedef std::shared_ptr<class IStreamFile>	IStreamFileRef;
 
-class IStreamFile : public IStream {
+class IStreamFile : public IStreamCinder {
  public:
 	//! Creates a new IStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
 	static IStreamFileRef create( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
@@ -248,7 +248,7 @@ class IoStreamFile : public IoStream {
 
 
 typedef std::shared_ptr<class IStreamMem>	IStreamMemRef;
-class IStreamMem : public IStream {
+class IStreamMem : public IStreamCinder {
  public:
 	//! Creates a new IStreamMemRef from the memory pointed to by \a data which is of size \a size bytes.
 	static IStreamMemRef		create( const void *data, size_t size );
@@ -308,13 +308,13 @@ class OStreamMem : public OStream {
 // This class is a utility to save and restore a stream's state
 class IStreamStateRestore {
  public:
-	IStreamStateRestore( IStream &aStream ) : mStream( aStream ), mOffset( aStream.tell() ) {}
+	IStreamStateRestore( IStreamCinder &aStream ) : mStream( aStream ), mOffset( aStream.tell() ) {}
 	~IStreamStateRestore() {
 		mStream.seekAbsolute( mOffset );
 	}
 	
  private:
-	IStream		&mStream;
+	IStreamCinder		&mStream;
 	off_t		mOffset;
 };
 

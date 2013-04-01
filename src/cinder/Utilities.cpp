@@ -248,15 +248,17 @@ void launchWebBrowser( const Url &url )
 #endif
 }
 
+void deleteFileAsync( const fs::path &path, std::function<void (fs::path)> callback)
+{
+
+}
+
 void deleteFile( const fs::path &path )
 {
 #if defined( CINDER_COCOA )
 	unlink( path.c_str() );
 #elif defined( CINDER_WINRT )
-	std::wstring t(toUtf16(path));
-	if( ! ::DeleteFile( t.c_str() ) ) {
-		DWORD err = GetLastError();
-	}
+	winrt::deleteFileAsync(path);
 #else
 	if( ! ::DeleteFileW( path.wstring().c_str() ) ) {
 		DWORD err = GetLastError();

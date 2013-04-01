@@ -83,7 +83,7 @@ IStreamUrlRef IStreamUrl::create( const Url &url, const std::string &user, const
 }
 
 IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
-	: IStream()
+	: IStreamCinder()
 {
 	setFileName( url );
 	mImpl = std::shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password, options ) );

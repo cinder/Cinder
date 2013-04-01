@@ -35,10 +35,7 @@
 #include "cinder/DataSource.h"
 #include "cinder/Timer.h"
 #include "cinder/Function.h"
-
-#if !defined( CINDER_WINRT )
 #include "cinder/Thread.h"
-#endif
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
@@ -440,7 +437,8 @@ class App {
 #if !defined( CINDER_WINRT )
 	//! Returns a reference to the App's boost::asio::io_service()
 	boost::asio::io_service&	io_service() { return *mIo; }
-	
+#endif //!defined( CINDER_WINRT )
+
 	
 	
 	//! Executes a std::function on the App's primary thread ahead of the next update()
@@ -463,7 +461,6 @@ class App {
 			return fute.get();
 		}
 	}
-#endif //!defined( CINDER_WINRT )
 
 	//! Returns the default Renderer which will be used when creating a new Window. Set by the app instantiation macro automatically.
 	RendererRef	getDefaultRenderer() const { return mDefaultRenderer; }

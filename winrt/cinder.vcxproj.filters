@@ -59,6 +59,9 @@
     <Filter Include="Source Files\audio">
       <UniqueIdentifier>{53f55ec7-be93-46ef-8e52-9e2f42769ad9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\svg">
+      <UniqueIdentifier>{f9498b84-b81b-4f07-a22f-840a680be33d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\app\Renderer.h">
@@ -686,6 +689,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\System.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\svg\Svg.cpp">
+      <Filter>Source Files\svg</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

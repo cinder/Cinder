@@ -138,66 +138,6 @@ fs::path AppImplWinRT::getAppPath()
 	return fs::path(PlatformStringToString(output));
 }
 
-inline Concurrency::task<Platform::String^> SelectFileCopyToTempFolderAsync(FileOpenPicker^ openPicker);
-
-void AppImplWinRT::getOpenFilePath( const fs::path &initialPath,std::vector<std::string> extensions,std::function<void (fs::path)> f)
-{
-    // FilePicker APIs will not work if the application is in a snapped state.
-    // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
-	if(!ensureUnsnapped()) {
-		return;
-	}
-
-	FileOpenPicker^ openPicker = ref new FileOpenPicker();
-    openPicker->ViewMode = PickerViewMode::Thumbnail;
-    openPicker->SuggestedStartLocation = PickerLocationId::PicturesLibrary;
-
-	if( extensions.empty() ) {
-        openPicker->FileTypeFilter->Append(".jpg");
-        openPicker->FileTypeFilter->Append(".jpeg");
-        openPicker->FileTypeFilter->Append(".png");
-	} 
-	else {
-		for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
-			std::wstring temp(iter->begin(), iter->end());
-			openPicker->FileTypeFilter->Append( ref new Platform::String(temp.c_str()));
-		}
-	}
-
-	auto fileTask = SelectFileCopyToTempFolderAsync(openPicker);
-	auto completionTask = fileTask.then([f](task<Platform::String^> t) {
-		Platform::String^ filePath;
-		try
-        {
-			filePath = t.get();
-        }
-        catch (const task_canceled)
-        {
-			 // user cancelled Pick File operation. Return empty string
-			filePath = ref new Platform::String(L"");
-        }
-		f(fs::path(PlatformStringToString(filePath)));
-	});
-}
-
-// Function that selects a file using the File Picker and then copies it to the App's temp folder
-// so WIC can open it.
-inline Concurrency::task<Platform::String^> SelectFileCopyToTempFolderAsync(FileOpenPicker^ openPicker)
-{
-    return create_task(openPicker->PickSingleFileAsync()).then([&](StorageFile^ file)
-	{
-		if(!file) // user cancelled Pick File operation
-			cancel_current_task();
-
-		// copy selected file to temp folder
-		auto folder = (Windows::Storage::ApplicationData::Current)->TemporaryFolder;
-		return file->CopyAsync(folder, file->Name, Windows::Storage::NameCollisionOption::ReplaceExisting);
-	}).then([] (StorageFile^ tempFile) -> Platform::String^ 
-	{
-		return 	ref new Platform::String(tempFile->Path->Data());
-	});
-}
-
 void AppImplWinRT::getFolderPath( const fs::path &initialPath,  std::vector<std::string> extensions, std::function<void (fs::path)> f)
 {
 	if(extensions.size() == 0) {
@@ -222,6 +162,38 @@ void AppImplWinRT::getFolderPath( const fs::path &initialPath,  std::vector<std:
         if (folder)
         {
 			f(fs::path(toUtf8(folder->Path->Data())));
+        }
+        else
+        {
+			f(fs::path(""));
+        }
+    });
+}
+
+void AppImplWinRT::getOpenFilePath( const fs::path &initialPath,  std::vector<std::string> extensions, std::function<void (fs::path)> f)
+{
+	if(extensions.size() == 0) {
+		throw std::exception( "Must specify at least one file extension in extensions argument" );
+	}
+
+	// FilePicker APIs will not work if the application is in a snapped state.
+    // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
+	if(!ensureUnsnapped()) {
+		return;
+	}
+    FileOpenPicker^ picker = ref new FileOpenPicker();
+    picker->SuggestedStartLocation = PickerLocationId::Desktop;
+ 
+	for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
+		std::wstring temp(iter->begin(), iter->end());
+		picker->FileTypeFilter->Append( ref new Platform::String(temp.c_str()));
+	}
+
+    create_task(picker->PickSingleFileAsync()).then([f](StorageFile^ file)
+    {
+        if (file)
+        {
+			f(fs::path(toUtf8(file->Path->Data())));
         }
         else
         {

@@ -60,7 +60,6 @@ AppImplWinRTBasic::AppImplWinRTBasic( AppBasic *aApp )
 	mShouldQuit = false;
 }
 
-[Platform::MTAThread]
 void AppImplWinRTBasic::run()
 {
 	auto direct3DApplicationSource = ref new Direct3DApplicationSource(); 

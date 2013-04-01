@@ -61,7 +61,7 @@ void OStream::writeLittle( T t )
 }
 
 //////////////////////////////////////////////////////////////////////////
-void IStream::read( std::string *s )
+void IStreamCinder::read( std::string *s )
 {
 	std::vector<char> chars;
 	char c;
@@ -72,7 +72,7 @@ void IStream::read( std::string *s )
 	*s = string( &chars[0] );
 }
 
-void IStream::read( fs::path *p )
+void IStreamCinder::read( fs::path *p )
 {
 	std::string tempS;
 	read( &tempS );
@@ -80,7 +80,7 @@ void IStream::read( fs::path *p )
 }
 
 template<typename T>
-void IStream::readBig( T *t )
+void IStreamCinder::readBig( T *t )
 {
 #ifdef BOOST_BIG_ENDIAN
 	read( t );
@@ -91,7 +91,7 @@ void IStream::readBig( T *t )
 }
 
 template<typename T>
-void IStream::readLittle( T *t )
+void IStreamCinder::readLittle( T *t )
 {
 #ifdef CINDER_LITTLE_ENDIAN
 	read( t );
@@ -103,14 +103,14 @@ void IStream::readLittle( T *t )
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-void IStream::readFixedString( char *t, size_t size, bool nullTerminate )
+void IStreamCinder::readFixedString( char *t, size_t size, bool nullTerminate )
 {
 	IORead( t, size );
 	if ( nullTerminate )
 		t[size-1] = 0;
 }
 
-void IStream::readFixedString( std::string *t, size_t size )
+void IStreamCinder::readFixedString( std::string *t, size_t size )
 {
 	boost::scoped_array<char> buffer( new char[size+1] );
 
@@ -119,7 +119,7 @@ void IStream::readFixedString( std::string *t, size_t size )
 	*t = buffer.get();
 }
 
-std::string IStream::readLine()
+std::string IStreamCinder::readLine()
 {
 	string result;
 	int8_t ch;
@@ -140,7 +140,7 @@ std::string IStream::readLine()
 	return result;
 }
 
-void IStream::readData( void *t, size_t size )
+void IStreamCinder::readData( void *t, size_t size )
 {
 	IORead( t, size );
 }
@@ -163,7 +163,7 @@ IStreamFileRef IStreamFile::create( FILE *file, bool ownsFile, int32_t defaultBu
 }
 
 IStreamFile::IStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
-	: IStream(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
+	: IStreamCinder(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
 	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
 	mBufferFileOffset = std::numeric_limits<off_t>::min();
@@ -423,7 +423,7 @@ IStreamMemRef IStreamMem::create( const void *data, size_t size )
 }
 
 IStreamMem::IStreamMem( const void *aData, size_t aDataSize )
-	: IStream(), mData( reinterpret_cast<const uint8_t*>( aData ) ), mDataSize( aDataSize )
+	: IStreamCinder(), mData( reinterpret_cast<const uint8_t*>( aData ) ), mDataSize( aDataSize )
 {
 	mOffset = 0;
 }
@@ -615,10 +615,10 @@ Buffer loadStreamBuffer( IStreamRef is )
 	template void OStream::writeEndian<T>( T t, uint8_t endian ); \
 	template void OStream::writeBig<T>( T t ); \
 	template void OStream::writeLittle<T>( T t ); \
-	template void IStream::read<T>( T *t ); \
-	template void IStream::readEndian<T>( T *t, uint8_t endian ); \
-	template void IStream::readBig<T>( T *t ); \
-	template void IStream::readLittle<T>( T *t );
+	template void IStreamCinder::read<T>( T *t ); \
+	template void IStreamCinder::readEndian<T>( T *t, uint8_t endian ); \
+	template void IStreamCinder::readBig<T>( T *t ); \
+	template void IStreamCinder::readLittle<T>( T *t );
 
 BOOST_PP_SEQ_FOR_EACH( STREAM_PROTOTYPES, ~, (int8_t)(uint8_t)(int16_t)(uint16_t)(int32_t)(uint32_t)(float)(double) )
 
