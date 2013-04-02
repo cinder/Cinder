@@ -546,4 +546,10 @@ vector<pair<uint16_t,Vec2f> > TextureFont::getGlyphPlacements( const std::string
 	return tbox.measureGlyphs();
 }
 
+vector<pair<uint16_t,Vec2f> > TextureFont::getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
+{
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
+	return tbox.measureGlyphs();
+}
+
 } } // namespace cinder::gl
