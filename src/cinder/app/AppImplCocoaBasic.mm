@@ -708,6 +708,10 @@
 
 	[winImpl->mWin setLevel:(winImpl->mAlwaysOnTop)?NSScreenSaverWindowLevel:NSNormalWindowLevel];
 
+	// title
+	if( ! winFormat.getTitle().empty() )
+		[winImpl->mWin setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
+
 	if( winFormat.isFullScreenButtonEnabled() )
 		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
 	
