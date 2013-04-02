@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C++ Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasicAppMultiWindow", "BasicAppMultiWindow.vcxproj", "{F9BC1D7C-4EF4-44B2-A6CE-CFBA4B92FD31}"
 EndProject
 Global
