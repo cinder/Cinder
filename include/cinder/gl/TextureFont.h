@@ -127,11 +127,11 @@ class TextureFont {
 #endif
     
 	//! Returns a vector of glyph/placement pairs representing \a str, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
-	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const DrawOptions &options ) const;
+	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
 	//! Returns a vector of glyph/placement pairs representing \a str fit inside \a fitRect, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
-	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const;
+	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
 	//! Returns a  word-wrapped vector of glyph/placement pairs representing \a str fit inside \a fitRect, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching. Mac & iOS only.
-	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const;
+	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
 
 	//! Returns the font the TextureFont represents
 	const Font&		getFont() const { return mFont; }
