@@ -110,7 +110,7 @@ class TextureFont {
 	
 	//! Draws string \a str at baseline \a baseline with DrawOptions \a options
 	void	drawString( const std::string &str, const Vec2f &baseline, const DrawOptions &options = DrawOptions() );
-	//! Draws string \a str fit inside \a fitRect, with internal offset \a offset and DrawOptions \a options
+	//! Draws string \a str fit inside \a fitRect vertically, with internal offset \a offset and DrawOptions \a options
 	void	drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
 	//! Draws word-wrapped string \a str fit inside \a fitRect, with internal offset \a offset and DrawOptions \a options. Mac & iOS only.
 	void	drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
