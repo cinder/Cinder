@@ -4,6 +4,8 @@
 #include "cinder/Rand.h"
 #include "cinder/Font.h"
 
+#include "cinder/Camera.h"
+
 #include "cinder/dx/dx.h"
 #include "cinder/dx/DxTexture.h"
 
@@ -36,6 +38,11 @@ class BasicApp : public AppBasic {
 	dx::Texture *BillboardImg;
 	vector<Billboard>	mBillboards;
 
+	Matrix44f		mModelView;
+	CameraPersp		mCam;
+
+	float			mFOV;	
+
 };
 
 void BasicApp::prepareSettings( Settings *settings )
@@ -45,14 +52,18 @@ void BasicApp::prepareSettings( Settings *settings )
 
 void BasicApp::setup()
 {
-	BillboardImg = new dx::Texture( loadImage(loadAsset("testPattern.png")));
+	BillboardImg = new dx::Texture( loadImage(loadAsset("imgBillboard.png")));
 
-	mFont = Font( "Arial", 24.0f );
+	mFont = Font( "Arial", 12.0f );
 	addBillboards();
 	mPointerPosition = Vec2f::zero();
 	mPointerTarget = getWindowCenter();
 	mPointerVelocity = Vec2f::zero();
 
+	mFOV = 90.0f;
+
+	mCam.setPerspective( mFOV, 1.77f, 1, 1000 );
+	mCam.lookAt( Vec3f( 0, 0, -200 ), Vec3f::zero(), -Vec3f::yAxis() );
 }
 
 void BasicApp::keyDown( KeyEvent event)
@@ -63,12 +74,23 @@ void BasicApp::keyDown( KeyEvent event)
 	{
 		addBillboards();
 	}
+
+	if ( ( key == 'a' ) || ( key == 'A' ) ) {
+		mFOV += 5.0f;
+		mCam.setPerspective( mFOV, 1.77f, 1, 1000 );
+	}
+
+	if ( ( key == 's'  ) || ( key == 'S' ) ) {
+		mFOV -= 5.0f;
+		mCam.setPerspective( mFOV, 1.77f, 1, 1000 );
+	}
+
 }
 
 void BasicApp::addBillboards() {
 	for ( int i = 0; i < 50; i++) 
 	{
-		mBillboards.push_back( Billboard( Vec3f(Rand::randFloat(560,1360), Rand::randFloat(240,840), Rand::randPosNegFloat(-10,10)),  Rand::randPosNegFloat(-1,1), Rand::randPosNegFloat(-1,1)  ) );
+		mBillboards.push_back( Billboard( Vec3f(Rand::randPosNegFloat(-100,100), Rand::randFloat(-100,100), Rand::randPosNegFloat(-100,100)),  Rand::randPosNegFloat(-1,1), Rand::randPosNegFloat(-.3,.3)  ) );
 	}
 }
 
@@ -109,12 +131,17 @@ void BasicApp::draw()
 
 	auto count = 0;
 
-	dx::clear( Color(0,0,0), true);
-	//dx::enableAdditiveBlending();
+	dx::clear( Color(0.33f,0.42f,0.184f), true);
 
+	dx::setMatrices( mCam );
+
+	//dx::enableAdditiveBlending();
+	//dx::enableAdditiveBlending();
 	dx::disableAlphaBlending();
 
 	BillboardImg->bind();
+
+	dx::begin( GL_QUADS );
 
 	float rotationY = 3.14*(.5f-(mPointerPosition.x/1920.0f));
 	float rotationX = 3.14*-(.5f-(mPointerPosition.y/1080.0f));
@@ -125,20 +152,26 @@ void BasicApp::draw()
 		dx::translate( billboard.position.x, billboard.position.y, billboard.position.z );
 		dx::rotate(Quatf(billboard.xRotation, billboard.yRotation, 0));
 
-		dx::begin( GL_QUADS );
-			dx::texCoord(0,0);	dx::vertex( -64, -64);
-			dx::texCoord(1,0);	dx::vertex(  64, -64);
-			dx::texCoord(1,1);	dx::vertex(  64,  64);
-			dx::texCoord(0,1);	dx::vertex( -64,  64);
-		dx::end();
+			dx::texCoord(0,0);	dx::vertex( -3.2, -3.2);
+			dx::texCoord(1,0);	dx::vertex(  3.2, -3.2);
+			dx::texCoord(1,1);	dx::vertex(  3.2,  3.2);
+			dx::texCoord(0,1);	dx::vertex( -3.2,  3.2);
 		dx::popMatrices();
 
 		count++;
 	}
+	
+	dx::end();
 
-	std::stringstream s;
-	s << "Press 'Q' to add more Quads.   Total Quads: " << count << "    Framerate:" << getAverageFps();
-	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color::white(),mFont);
+
+	dx::pushMatrices();	
+		dx::translate( -50, -50, 100 );
+		//dx::scale(.5f, .5f, .5f);
+		std::stringstream s;
+		s << "Press 'Q' to add more Quads.   Total Quads: " << count << "    Framerate:" << getAverageFps() << "  FOV:"  << mFOV;
+		dx::drawString(s.str(),Vec2f(0.0f,0.0f),Color::white(),mFont);
+	dx::popMatrices();
+
 }
 
 // This line tells Cinder to actually create the application

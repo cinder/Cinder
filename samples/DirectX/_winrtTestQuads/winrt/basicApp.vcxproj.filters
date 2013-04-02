@@ -41,5 +41,8 @@
     <Image Include="Assets\testPattern.png">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="Assets\imgBillboard.png">
+      <Filter>Assets</Filter>
+    </Image>
   </ItemGroup>
 </Project>
