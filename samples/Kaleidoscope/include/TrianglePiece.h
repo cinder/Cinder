@@ -15,9 +15,9 @@ class TrianglePiece {
   public:
 	TrianglePiece( ci::Vec2f _startPt, ci::Vec2f _pt1, ci::Vec2f _pt2, ci::Vec2f _pt3, float _rotation, ci::Vec2f _scale );
 
-	void		update( ci::gl::Texture tex, ci::Vec2f pt1, ci::Vec2f pt2, ci::Vec2f pt3 );
+	void		update( ci::gl::TextureRef tex, ci::Vec2f pt1, ci::Vec2f pt2, ci::Vec2f pt3 );
 	void		draw();
-	void		reset( float _delay, ci::gl::Texture tempTex );
+	void		reset( float _delay, ci::gl::TextureRef tempTex );
 	void		setTransition( float _delay );
 	void		setTransitionOut( float _delay );
 	bool		isOut() const;
@@ -27,7 +27,7 @@ class TrianglePiece {
 	void		setVisible( bool vis );
 	void		outComplete();
 	
-	ci::gl::Texture mTempTex, mDrawTex;
+	ci::gl::TextureRef	mTempTex, mDrawTex;
 	
 	ci::Vec2f		mStartPt, mVertices[3], mTexVertices[3];
 	

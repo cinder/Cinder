@@ -15,7 +15,7 @@ class CaptureBasicApp : public AppNative {
 	void draw();
 
 	CaptureRef			mCapture;
-	gl::Texture			mTexture;
+	gl::TextureRef		mTexture;
 };
 
 void CaptureBasicApp::setup()
@@ -51,7 +51,7 @@ void CaptureBasicApp::keyDown( KeyEvent event )
 void CaptureBasicApp::update()
 {
 	if( mCapture && mCapture->checkNewFrame() ) {
-		mTexture = gl::Texture( mCapture->getSurface() );
+		mTexture = gl::Texture::create( mCapture->getSurface() );
 	}
 }
 

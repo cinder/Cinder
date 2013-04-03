@@ -146,7 +146,7 @@ void Window::setTitle( const std::string &title )
 	testValid();
 	
 #if defined( CINDER_COCOA )
-	[mImpl setTitle:[NSString stringWithUTF8String:title.c_str() ]];
+	[mImpl setTitle:[NSString stringWithUTF8String:title.c_str()]];
 #else
 	mImpl->setTitle( title );
 #endif

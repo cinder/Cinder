@@ -726,6 +726,11 @@ Surface MovieSurface::getSurface()
 
 /////////////////////////////////////////////////////////////////////////////////
 // MovieGl
+MovieGlRef MovieGl::create( const MovieLoaderRef &loader )
+{
+	return std::shared_ptr<MovieGl>( new MovieGl( *loader ) );
+}
+
 MovieGl::Obj::Obj()
 	: MovieBase::Obj()
 {

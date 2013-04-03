@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C++ Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SaveImage", "SaveImage.vcxproj", "{2B2A9DEC-8E3E-4AB3-AB59-265D5ECEC064}"
 EndProject
 Global

@@ -10,7 +10,7 @@ print "Replacing " + sys.argv[2] + " with " + sys.argv[3]
 
 for root, dirs, files in os.walk(sys.argv[1]):
     for name in files:
-        if name[name.rfind("."):] != ".pbxproj":
+        if name[name.rfind("."):] != ".sln" or join(root, name).find( "/vc11" ) == -1:
             continue
         f = open( join(root, name), "r" )
         fileLines = f.readlines(10000000)

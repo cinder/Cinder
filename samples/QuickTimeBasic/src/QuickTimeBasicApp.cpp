@@ -22,8 +22,8 @@ class QuickTimeSampleApp : public AppBasic {
 
 	void loadMovieFile( const fs::path &path );
 
-	gl::Texture					mFrameTexture, mInfoTexture;
-	qtime::MovieGl				mMovie;
+	gl::Texture				mFrameTexture, mInfoTexture;
+	qtime::MovieGlRef		mMovie;
 };
 
 void QuickTimeSampleApp::setup()
@@ -44,34 +44,34 @@ void QuickTimeSampleApp::keyDown( KeyEvent event )
 			loadMovieFile( moviePath );
 	}
 	else if( event.getChar() == '1' )
-		mMovie.setRate( 0.5f );
+		mMovie->setRate( 0.5f );
 	else if( event.getChar() == '2' )
-		mMovie.setRate( 2 );
+		mMovie->setRate( 2 );
 }
 
 void QuickTimeSampleApp::loadMovieFile( const fs::path &moviePath )
 {
 	try {
 		// load up the movie, set it to loop, and begin playing
-		mMovie = qtime::MovieGl( moviePath );
-		mMovie.setLoop();
-		mMovie.play();
+		mMovie = qtime::MovieGl::create( moviePath );
+		mMovie->setLoop();
+		mMovie->play();
 		
 		// create a texture for showing some info about the movie
 		TextLayout infoText;
 		infoText.clear( ColorA( 0.2f, 0.2f, 0.2f, 0.5f ) );
 		infoText.setColor( Color::white() );
 		infoText.addCenteredLine( moviePath.filename().string() );
-		infoText.addLine( toString( mMovie.getWidth() ) + " x " + toString( mMovie.getHeight() ) + " pixels" );
-		infoText.addLine( toString( mMovie.getDuration() ) + " seconds" );
-		infoText.addLine( toString( mMovie.getNumFrames() ) + " frames" );
-		infoText.addLine( toString( mMovie.getFramerate() ) + " fps" );
+		infoText.addLine( toString( mMovie->getWidth() ) + " x " + toString( mMovie->getHeight() ) + " pixels" );
+		infoText.addLine( toString( mMovie->getDuration() ) + " seconds" );
+		infoText.addLine( toString( mMovie->getNumFrames() ) + " frames" );
+		infoText.addLine( toString( mMovie->getFramerate() ) + " fps" );
 		infoText.setBorder( 4, 2 );
 		mInfoTexture = gl::Texture( infoText.render( true ) );
 	}
 	catch( ... ) {
 		console() << "Unable to load the movie." << std::endl;
-		mMovie.reset();
+		mMovie->reset();
 		mInfoTexture.reset();
 	}
 
@@ -86,7 +86,7 @@ void QuickTimeSampleApp::fileDrop( FileDropEvent event )
 void QuickTimeSampleApp::update()
 {
 	if( mMovie )
-		mFrameTexture = mMovie.getTexture();
+		mFrameTexture = mMovie->getTexture();
 }
 
 void QuickTimeSampleApp::draw()

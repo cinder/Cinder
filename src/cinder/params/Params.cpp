@@ -207,8 +207,7 @@ void InterfaceGl::show( bool visible )
 
 void InterfaceGl::hide()
 {
-	int32_t visibleInt = 0;
-	TwSetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
+	show( false );
 }
 
 bool InterfaceGl::isVisible() const
@@ -216,6 +215,24 @@ bool InterfaceGl::isVisible() const
 	int32_t visibleInt;
 	TwGetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
 	return visibleInt != 0;
+}
+	
+void InterfaceGl::maximize( bool maximized )
+{
+	int32_t maximizedInt = ( maximized ) ? 0 : 1;
+	TwSetParam( mBar.get(), NULL, "iconified", TW_PARAM_INT32, 1, &maximizedInt );
+}
+
+void InterfaceGl::minimize()
+{
+	maximize( false );
+}
+
+bool InterfaceGl::isMaximized() const
+{
+	int32_t maximizedInt;
+	TwGetParam( mBar.get(), NULL, "iconified", TW_PARAM_INT32, 1, &maximizedInt );
+	return maximizedInt == 0;
 }
 
 void InterfaceGl::implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )

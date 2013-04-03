@@ -16,8 +16,8 @@ class ImageFileTestApp : public AppBasic {
 	void update();
 	void draw();
 	
-	gl::Texture		mTexture;	
-	gl::GlslProg	mShader;
+	gl::TextureRef	mTexture;	
+	gl::GlslProgRef	mShader;
 	float			mAngle;
 };
 
@@ -25,14 +25,14 @@ class ImageFileTestApp : public AppBasic {
 void ImageFileTestApp::setup()
 {
 	try {
-		mTexture = gl::Texture( loadImage( loadResource( RES_IMAGE_JPG ) ) );
+		mTexture = gl::Texture::create( loadImage( loadResource( RES_IMAGE_JPG ) ) );
 	}
 	catch( ... ) {
 		std::cout << "unable to load the texture file!" << std::endl;
 	}
 	
 	try {
-		mShader = gl::GlslProg( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_BLUR_FRAG ) );
+		mShader = gl::GlslProg::create( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_BLUR_FRAG ) );
 	}
 	catch( gl::GlslProgCompileExc &exc ) {
 		std::cout << "Shader compile error: " << std::endl;
@@ -61,13 +61,13 @@ void ImageFileTestApp::draw()
 {
 	gl::clear();
 
-	mTexture.enableAndBind();
-	mShader.bind();
-	mShader.uniform( "tex0", 0 );
-	mShader.uniform( "sampleOffset", Vec2f( cos( mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
+	mTexture->enableAndBind();
+	mShader->bind();
+	mShader->uniform( "tex0", 0 );
+	mShader->uniform( "sampleOffset", Vec2f( cos( mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
 	gl::drawSolidRect( getWindowBounds() );
 
-	mTexture.unbind();
+	mTexture->unbind();
 }
 
 
