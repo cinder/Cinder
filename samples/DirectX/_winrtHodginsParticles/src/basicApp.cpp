@@ -14,14 +14,18 @@ using namespace ci::app;
 
 // global variables
 int			counter = 0;
+
+int			quadCount = 0;
+
 float		floorLevel = 400.0f;
 dx::Texture *particleImg, *emitterImg;
 bool		ALLOWFLOOR = false;
 bool		ALLOWGRAVITY = false;
 bool		ALLOWPERLIN = false;
 bool		ALLOWTRAILS = false;
+
 Vec3f		gravity( 0, 0.35f, 0 );
-const int	CINDER_FACTOR = 10; // how many times more particles than the Java version
+const int	CINDER_FACTOR = 5; // how many times more particles than the Java version
 
 class BasicApp : public AppBasic {
   public:
@@ -45,9 +49,9 @@ class BasicApp : public AppBasic {
 
 void BasicApp::prepareSettings( Settings *settings )
 {
-	settings->setWindowSize( 1024, 768 );
+	//settings->setWindowSize( 1024, 768 );
 	settings->setFrameRate( 60.0f );
-	settings->setFullScreen( false );
+	//settings->setFullScreen( false );
 }
 
 void BasicApp::setup()
@@ -97,6 +101,8 @@ void BasicApp::keyDown( KeyEvent event )
 void BasicApp::update()
 {
 	counter++;
+
+	mEmitter.update(mMousePos);
 	
 	if( mouseIsDown ) {
 		if( ALLOWTRAILS && ALLOWFLOOR ) {
@@ -106,49 +112,42 @@ void BasicApp::update()
 			mEmitter.addParticles( 10 * CINDER_FACTOR );
 		}
 	}
+
 }
 
 void BasicApp::draw()
 {
 	dx::clear( Color(0,0,0), true);
-//	glClearColor( 0, 0, 0, 0 );
-//	glClear( GL_COLOR_BUFFER_BIT );
-	
+	dx::color( 1.0, 1.0, 1.0, 1.0 );
+
+	quadCount = 0;
+
 	// to accommodate resizable screen, we'll recalculate where the floor should be every frame just in case it's changed
 	floorLevel = 2 / 3.0f * getWindowHeight();
-	
-	// Turns on additive blending so we can draw a bunch of glowing images without
-	// needing to do any depth testing.
-	
-	//glDepthMask( GL_FALSE );
-	//glDisable( GL_DEPTH_TEST );
-	//glEnable( GL_BLEND );
-	//glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+			
 	dx::enableAdditiveBlending();
 	
-	mEmitter.exist( mMousePos );	
+	mEmitter.render();
+
+	dx::color( 1.0, 1.0, 1.0, 1.0 );
 	std::stringstream s;
-	s << "Framerate:" << getAverageFps();
+	s << "Framerate:" << getAverageFps() << " QUAD count:" << quadCount;
 	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color::white(),mFont);
 }
 
-// It would be faster to just make QUADS calls directly to the loc
-// without dealing with pushing and popping for every particle. The reason
-// I am doing it this longer way is due to a billboarding problem which will come
-// up later on.
 void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha )
 {
+	quadCount++;
 
 	dx::pushMatrices();
 	dx::translate( _loc.x, _loc.y, _loc.z );
-	dx::begin( GL_QUADS );
-		dx::texCoord(0,0);	dx::vertex( -25, -25);
-		dx::texCoord(1,0);	dx::vertex(  25, -25);
-		dx::texCoord(1,1);	dx::vertex(  25,  25);
-		dx::texCoord(0,1);	dx::vertex( -25,  25);
-	dx::end();
+	dx::scale( _diam, _diam, _diam );
+	dx::color( _col.r, _col.g, _col.b, _alpha );
+	dx::texCoord(0,0);	dx::vertex( -.5, -.5);
+	dx::texCoord(1,0);	dx::vertex(  .5, -.5);
+	dx::texCoord(1,1);	dx::vertex(  .5,  .5);
+	dx::texCoord(0,1);	dx::vertex( -.5,  .5);
 	dx::popMatrices();
-
 }
 
 // This line tells Cinder to actually create the application

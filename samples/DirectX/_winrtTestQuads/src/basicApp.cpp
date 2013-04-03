@@ -68,7 +68,8 @@ void BasicApp::setup()
 
 void BasicApp::keyDown( KeyEvent event)
 {
-		char key = event.getChar();
+
+	char key = event.getChar();
 	
 	if( ( key == 'q' ) || ( key == 'Q' ) )
 	{
@@ -85,6 +86,18 @@ void BasicApp::keyDown( KeyEvent event)
 		mCam.setPerspective( mFOV, 1.77f, 1, 1000 );
 	}
 
+	if ( ( key == 'w'  ) || ( key == 'W' ) ) {
+		Vec3f pos = mCam.getEyePoint();
+		pos.z += 25.0f;
+		mCam.setEyePoint(pos);
+	}
+
+
+	if ( ( key == 'z'  ) || ( key == 'Z' ) ) {
+		Vec3f pos = mCam.getEyePoint();
+		pos.z -= 25.0f;
+		mCam.setEyePoint(pos);
+	}
 }
 
 void BasicApp::addBillboards() {
