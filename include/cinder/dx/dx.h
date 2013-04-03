@@ -344,4 +344,9 @@ class Exception : public cinder::Exception {
 class ExceptionUnknownTarget : public Exception {
 };
 
+class DrawingTooManyVerticesException : public Exception {
+public:
+	virtual const char *what() const { return "Drawing more vertices than the vertex buffer supports"; }	
+};
+
 } } // namespace cinder::dx

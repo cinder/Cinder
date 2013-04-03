@@ -737,7 +737,7 @@ void VboMesh::bindAllData() const
 		//mObj->mBuffers[INDEX_BUFFER].bind();
 		bindIndexBuffer();
 	}
-	
+	auto dx = getDxRenderer();
 	int elementCount = 0;
 	for( int buffer = STATIC_BUFFER; buffer <= DYNAMIC_BUFFER; ++buffer ) {
 		if( ! mObj->mBuffers[buffer] ) continue;
@@ -748,38 +748,38 @@ void VboMesh::bindAllData() const
 		ID3D11Buffer *actualBuffer = mObj->mBuffers[buffer].getId();
 
 		if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticPositions() : mObj->mLayout.hasDynamicPositions() )
-			getDxRenderer()->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
 			//glVertexPointer( 3, GL_FLOAT, stride, (const GLvoid*)mObj->mPositionOffset );
 		
 		offset = mObj->mNormalOffset;
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) )
-			getDxRenderer()->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
 			//glNormalPointer( GL_FLOAT, stride, ( const GLvoid *)mObj->mNormalOffset );
 
 		offset = (mObj->mLayout.hasStaticColorsRGB()) ? mObj->mColorRGBOffset : mObj->mColorRGBAOffset;
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) )
-			getDxRenderer()->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
 			//glColorPointer( 3, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBOffset );
 		else if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGBA() : mObj->mLayout.hasDynamicColorsRGBA() ) )
-			getDxRenderer()->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
 			//glColorPointer( 4, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBAOffset );
 
 
 		for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 			offset = mObj->mTexCoordOffset[t];
 			if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d( t ) : mObj->mLayout.hasDynamicTexCoords2d( t ) ) {
-				getDxRenderer()->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+				dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
 				//glClientActiveTexture( GL_TEXTURE0 + t );
 				//glTexCoordPointer( 2, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );
 			}
 			else if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords3d( t ) : mObj->mLayout.hasDynamicTexCoords3d( t ) ) {
-				getDxRenderer()->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+				dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
 				//glClientActiveTexture( GL_TEXTURE0 + t );
 				//glTexCoordPointer( 3, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );
 			}
 		}	
 	}
-	getDxRenderer()->mDeviceContext->IASetInputLayout(mObj->mInputLayout);
+	dx->mDeviceContext->IASetInputLayout(mObj->mInputLayout);
 //
 //	for( int buffer = STATIC_BUFFER; buffer <= DYNAMIC_BUFFER; ++buffer ) {
 //		if( ! mObj->mBuffers[buffer] ) continue;

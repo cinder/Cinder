@@ -504,37 +504,39 @@ void end()
 		dx->mProjection.top() = Matrix44f::identity();
 		dx->mModelView.push();
 		dx->mModelView.top() = Matrix44f::identity();
-		if(!dx->mImmediateModeVerts.empty())
+		size_t vertexCount = dx->mImmediateModeVerts.size();
+		if(vertexCount)
 		{
 			ID3D11ShaderResourceView *view;
 			dx->mDeviceContext->PSGetShaderResources(0, 1, &view);
 			ID3D11VertexShader *vs = (view) ? TEXTURE_VERTEX : COLOR_VERTEX;
 			ID3D11PixelShader *ps = (view) ? TEXTURE_PIXEL : COLOR_PIXEL;
+			D3D_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
 			switch(dx->mImmediateModePrimitive)
 			{
 				case GL_POINTS:
-					applyDxFixedPipeline(&dx->mImmediateModeVerts[0], dx->mImmediateModeVerts.size(), vs, ps, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+					topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
 					break;
 
 				case GL_LINES:
-					applyDxFixedPipeline(&dx->mImmediateModeVerts[0], dx->mImmediateModeVerts.size(), vs, ps, D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+					topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
 					break;
 					
 				case GL_LINE_STRIP:
-					applyDxFixedPipeline(&dx->mImmediateModeVerts[0], dx->mImmediateModeVerts.size(), vs, ps, D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+					topology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
 					break;
 
 				case GL_LINE_LOOP:
 					dx->mImmediateModeVerts.push_back(dx->mImmediateModeVerts[0]);
-					applyDxFixedPipeline(&dx->mImmediateModeVerts[0], dx->mImmediateModeVerts.size(), vs, ps, D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
+					topology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
 					break;
 
 				case GL_TRIANGLES:
-					applyDxFixedPipeline(&dx->mImmediateModeVerts[0], dx->mImmediateModeVerts.size(), vs, ps, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 					break;
 
 				case GL_TRIANGLE_STRIP:
-					applyDxFixedPipeline(&dx->mImmediateModeVerts[0], dx->mImmediateModeVerts.size(), vs, ps, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 					break;
 					
 				case GL_POLYGON: //have no flipping clue how to do this but it seems to act like triangle fan
@@ -550,7 +552,7 @@ void end()
 						newVerts.push_back(dx->mImmediateModeVerts[i]);
 					}
 					dx->mImmediateModeVerts = newVerts;
-					applyDxFixedPipeline(&dx->mImmediateModeVerts[0], dx->mImmediateModeVerts.size(), vs, ps, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 					break;
 				}
 
@@ -569,7 +571,7 @@ void end()
 						newVerts.push_back(dx->mImmediateModeVerts[i+3]);
 					}
 					dx->mImmediateModeVerts = newVerts;
-					applyDxFixedPipeline(&dx->mImmediateModeVerts[0], dx->mImmediateModeVerts.size(), vs, ps, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 					break;
 				}
 
@@ -598,11 +600,19 @@ void end()
 						newVerts.push_back(dx->mImmediateModeVerts[i-0]);
 					}
 					dx->mImmediateModeVerts = newVerts;
-					applyDxFixedPipeline(&dx->mImmediateModeVerts[0], dx->mImmediateModeVerts.size(), vs, ps, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 					break;
 				}
 			}
-			dx->mDeviceContext->Draw(dx->mImmediateModeVerts.size(), 0);
+			int batches = 0;
+			vertexCount = dx->mImmediateModeVerts.size();
+			for(int verticesProcessed = 0; verticesProcessed < (int)vertexCount - D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT; verticesProcessed += D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, ++batches)
+			{
+				applyDxFixedPipeline(&dx->mImmediateModeVerts[verticesProcessed], vertexCount , vs, ps, topology);
+				dx->mDeviceContext->Draw(std::min(vertexCount, (size_t)D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT), verticesProcessed);
+			}
+			applyDxFixedPipeline(&dx->mImmediateModeVerts[D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT * batches], vertexCount % D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, vs, ps, topology);
+			dx->mDeviceContext->Draw(vertexCount % D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT * batches);
 		}
 		dx->mProjection.pop();
 		dx->mModelView.pop();
@@ -2739,25 +2749,13 @@ void batchTextureEnd()
 		applyDxFixedPipeline(&vertices[0], vertices.size(), TEXTURE_VERTEX, TEXTURE_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		const size_t vertexCount = vertices.size();
 		int batches = 0;
-		if(dx->mFeatureLevel == D3D_FEATURE_LEVEL_9_2)
-		{
-			for(int verticesProcessed = 0; verticesProcessed < (int)vertexCount - D3D_FL9_2_IA_PRIMITIVE_MAX_COUNT; verticesProcessed += D3D_FL9_2_IA_PRIMITIVE_MAX_COUNT, ++batches)
-				dx->mDeviceContext->Draw(std::min(vertexCount, (size_t)D3D_FL9_2_IA_PRIMITIVE_MAX_COUNT), verticesProcessed);
-			dx->mDeviceContext->Draw(vertexCount % D3D_FL9_2_IA_PRIMITIVE_MAX_COUNT, D3D_FL9_2_IA_PRIMITIVE_MAX_COUNT * batches);
-		}
-		else if(dx->mFeatureLevel == D3D_FEATURE_LEVEL_9_1)
-		{
-			for(int verticesProcessed = 0; verticesProcessed < (int)vertexCount - D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT; verticesProcessed += D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, ++batches)
-				dx->mDeviceContext->Draw(std::min(vertexCount, (size_t)D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT), verticesProcessed);
-			dx->mDeviceContext->Draw(vertexCount % D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT * batches);
-		}
-		else
-			dx->mDeviceContext->Draw(vertexCount, 0);
+		for(int verticesProcessed = 0; verticesProcessed < (int)vertexCount - D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT; verticesProcessed += D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, ++batches)
+			dx->mDeviceContext->Draw(std::min(vertexCount, (size_t)D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT), verticesProcessed);
+		dx->mDeviceContext->Draw(vertexCount % D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT * batches);
 	}
 	dx->mBatchedTextures.clear();
 	dx->mCurrentBatchTexture = nullptr;
-	getDxRenderer()->clearRenderFlag(app::AppImplMswRendererDx::BATCH_TEXTURE);
-
+	dx->clearRenderFlag(app::AppImplMswRendererDx::BATCH_TEXTURE);
 }
 
 namespace {

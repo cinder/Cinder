@@ -348,7 +348,7 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory( &bd, sizeof(bd) );
 	bd.Usage = D3D11_USAGE_DYNAMIC;
-	bd.ByteWidth = 1 << 19;
+	bd.ByteWidth = D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT * sizeof(FixedVertex) * 3;
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	hr = md3dDevice->CreateBuffer( &bd, NULL, &mVertexBuffer );
@@ -357,6 +357,7 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 
 	// create index buffer
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	bd.ByteWidth = D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT * sizeof(int);
 	hr = md3dDevice->CreateBuffer( &bd, NULL, &mIndexBuffer );
 	if(hr != S_OK)
 		return false;
