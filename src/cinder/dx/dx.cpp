@@ -82,6 +82,66 @@ app::AppImplMswRendererDx *getDxRenderer()
 	return ((app::RendererDx*)(&*app::App::get()->getRenderer()))->mImpl;
 }
 
+static void drawQuads()
+{
+	auto dx = getDxRenderer();
+
+	size_t vertexCount = dx->mImmediateModeVerts.size();
+    if(vertexCount < 4) {
+		return;
+	}
+
+	ID3D11ShaderResourceView *view;
+	dx->mDeviceContext->PSGetShaderResources(0, 1, &view);
+	ID3D11VertexShader *vs = (view) ? TEXTURE_VERTEX : COLOR_VERTEX;
+	ID3D11PixelShader *ps = (view) ? TEXTURE_PIXEL : COLOR_PIXEL;
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	dx->mDeviceContext->Map(dx->mCBMatrices, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	reinterpret_cast<Matrix44f*>(mappedResource.pData)[0] = dx->mProjection.top();
+	reinterpret_cast<Matrix44f*>(mappedResource.pData)[1] = dx->mModelView.top();
+	dx->mDeviceContext->Unmap(dx->mCBMatrices, 0);
+	if(dx->mLightingEnabled)
+		dx->mDeviceContext->VSSetConstantBuffers(1, 1, &dx->mCBLights);
+	dx->mDeviceContext->VSSetShader(vs, NULL, 0);
+	dx->mDeviceContext->VSSetConstantBuffers(0, 1, &dx->mCBMatrices);
+	dx->mDeviceContext->PSSetShader(ps, NULL, 0);
+	dx->mDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	size_t size =  sizeof(FixedVertex);
+	FixedVertex *vertices = dx->mImmediateModeVerts.data();
+
+	while(vertexCount > 0) 
+	{
+		size_t index = 0;
+		size_t count = 0;
+		dx->mDeviceContext->Map(dx->mVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+		FixedVertex *pData = static_cast<FixedVertex *>(mappedResource.pData);
+		while(count < D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT && vertexCount > 0)
+		{
+			memcpy(pData++, &vertices[index+0], sizeof(FixedVertex));
+			memcpy(pData++, &vertices[index+1], sizeof(FixedVertex));
+			memcpy(pData++, &vertices[index+2], sizeof(FixedVertex));
+			memcpy(pData++, &vertices[index+0], sizeof(FixedVertex));
+			memcpy(pData++, &vertices[index+2], sizeof(FixedVertex));
+			memcpy(pData++, &vertices[index+3], sizeof(FixedVertex));
+			vertexCount -= 4;
+			count += 6;
+			index += 4;
+		}
+
+		UINT stride = sizeof(FixedVertex);
+		UINT offset = 0;
+		dx->mDeviceContext->IASetVertexBuffers(0, 1, &dx->mVertexBuffer, &stride, &offset);
+		dx->mDeviceContext->IASetInputLayout(dx->mFixedLayout);
+		dx->mDeviceContext->Unmap(dx->mVertexBuffer, 0);
+		dx->mDeviceContext->Draw(count, 0);
+	}
+}
+
+
+
+
 static void applyDxFixedPipeline(const FixedVertex *verts, UINT elements, ID3D11VertexShader *vs, ID3D11PixelShader *ps, D3D_PRIMITIVE_TOPOLOGY topology)
 {
 	auto dx = getDxRenderer();
@@ -500,18 +560,29 @@ void end()
 //	else
 	{
 		auto dx = getDxRenderer();
+		size_t vertexCount = dx->mImmediateModeVerts.size();
+		if(vertexCount == 0)
+			return;
+
+		std::vector<FixedVertex> *vertexBuffer = &dx->mImmediateModeVerts;
+		std::vector<FixedVertex> newVerts;
+
 		dx->mProjection.push();
 		dx->mProjection.top() = Matrix44f::identity();
 		dx->mModelView.push();
 		dx->mModelView.top() = Matrix44f::identity();
-		size_t vertexCount = dx->mImmediateModeVerts.size();
-		if(vertexCount)
+		if(dx->mImmediateModePrimitive == GL_QUADS) {
+			// optimized draw routine for GL_QUADS
+			drawQuads();
+		}
+		else
 		{
 			ID3D11ShaderResourceView *view;
 			dx->mDeviceContext->PSGetShaderResources(0, 1, &view);
 			ID3D11VertexShader *vs = (view) ? TEXTURE_VERTEX : COLOR_VERTEX;
 			ID3D11PixelShader *ps = (view) ? TEXTURE_PIXEL : COLOR_PIXEL;
 			D3D_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+
 			switch(dx->mImmediateModePrimitive)
 			{
 				case GL_POINTS:
@@ -539,47 +610,53 @@ void end()
 					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 					break;
 					
+				//TODO: need to optimize this
 				case GL_POLYGON: //have no flipping clue how to do this but it seems to act like triangle fan
 				case GL_TRIANGLE_FAN:
 				{
 					if(dx->mImmediateModeVerts.size() < 3)
 						break;
-					std::vector<FixedVertex> newVerts;
 					for(unsigned i = 2; i < dx->mImmediateModeVerts.size(); ++i)
 					{
 						newVerts.push_back(dx->mImmediateModeVerts[0]);
 						newVerts.push_back(dx->mImmediateModeVerts[i-1]);
 						newVerts.push_back(dx->mImmediateModeVerts[i]);
 					}
-					dx->mImmediateModeVerts = newVerts;
+					vertexBuffer = &newVerts;
 					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 					break;
 				}
 
+#if 0
 				case GL_QUADS:
-				{
-					if(dx->mImmediateModeVerts.size() < 4)
-						break;
-					std::vector<FixedVertex> newVerts;
-					for(unsigned i = 0; i < dx->mImmediateModeVerts.size(); i += 4)
 					{
-						newVerts.push_back(dx->mImmediateModeVerts[i+0]);
-						newVerts.push_back(dx->mImmediateModeVerts[i+1]);
-						newVerts.push_back(dx->mImmediateModeVerts[i+2]);
-						newVerts.push_back(dx->mImmediateModeVerts[i+0]);
-						newVerts.push_back(dx->mImmediateModeVerts[i+2]);
-						newVerts.push_back(dx->mImmediateModeVerts[i+3]);
-					}
-					dx->mImmediateModeVerts = newVerts;
-					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-					break;
-				}
+						if(dx->mImmediateModeVerts.size() < 4)
+							break;
 
+
+						newVerts.reserve(dx->mImmediateModeVerts.size() * 2);
+						for(unsigned i = 0; i < dx->mImmediateModeVerts.size(); i += 4)
+						{
+							newVerts.push_back(dx->mImmediateModeVerts[i+0]);
+							newVerts.push_back(dx->mImmediateModeVerts[i+1]);
+							newVerts.push_back(dx->mImmediateModeVerts[i+2]);
+							newVerts.push_back(dx->mImmediateModeVerts[i+0]);
+							newVerts.push_back(dx->mImmediateModeVerts[i+2]);
+							newVerts.push_back(dx->mImmediateModeVerts[i+3]);
+						}
+						vertexBuffer = &newVerts;
+						topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+						break;
+					}  
+#endif // 0
+
+				//TODO: need to optimize this
 				case GL_QUAD_STRIP:
 				{
 					if(dx->mImmediateModeVerts.size() < 4)
 						break;
-					std::vector<FixedVertex> newVerts;
+					newVerts.reserve(dx->mImmediateModeVerts.size() * 2);
+
 					newVerts.push_back(dx->mImmediateModeVerts[0]);
 					newVerts.push_back(dx->mImmediateModeVerts[1]);
 					newVerts.push_back(dx->mImmediateModeVerts[3]);
@@ -599,20 +676,28 @@ void end()
 						newVerts.push_back(dx->mImmediateModeVerts[i+1]);
 						newVerts.push_back(dx->mImmediateModeVerts[i-0]);
 					}
-					dx->mImmediateModeVerts = newVerts;
+					vertexBuffer = &newVerts;
 					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 					break;
 				}
 			}
-			int batches = 0;
-			vertexCount = dx->mImmediateModeVerts.size();
-			for(int verticesProcessed = 0; verticesProcessed < (int)vertexCount - D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT; verticesProcessed += D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, ++batches)
+			vertexCount = vertexBuffer->size();
+			size_t verticesProcessed = 0;
+			FixedVertex* fv = vertexBuffer->data();
+
+			while(vertexCount >= D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT) 
 			{
-				applyDxFixedPipeline(&dx->mImmediateModeVerts[verticesProcessed], vertexCount , vs, ps, topology);
-				dx->mDeviceContext->Draw(std::min(vertexCount, (size_t)D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT), verticesProcessed);
+				applyDxFixedPipeline(&fv[verticesProcessed], D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT , vs, ps, topology);
+				dx->mDeviceContext->Draw(D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, 0);
+				verticesProcessed += D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT;
+				vertexCount -= D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT;
 			}
-			applyDxFixedPipeline(&dx->mImmediateModeVerts[D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT * batches], vertexCount % D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, vs, ps, topology);
-			dx->mDeviceContext->Draw(vertexCount % D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT * batches);
+
+			if(vertexCount > 0) 
+			{
+				applyDxFixedPipeline(&fv[verticesProcessed], vertexCount, vs, ps, topology);
+				dx->mDeviceContext->Draw(vertexCount, 0);
+			}
 		}
 		dx->mProjection.pop();
 		dx->mModelView.pop();
