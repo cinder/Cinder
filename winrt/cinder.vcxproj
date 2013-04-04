@@ -262,6 +262,7 @@
     <ClInclude Include="..\include\cinder\app\Renderer.h" />
     <ClInclude Include="..\include\cinder\app\Window.h" />
     <ClInclude Include="..\include\cinder\app\WinRTApp.h" />
+    <ClInclude Include="..\include\cinder\Arcball.h" />
     <ClInclude Include="..\include\cinder\Area.h" />
     <ClInclude Include="..\include\cinder\AxisAlignedBox.h" />
     <ClInclude Include="..\include\cinder\BSpline.h" />
@@ -296,6 +297,7 @@
     <ClInclude Include="..\include\cinder\ip\Threshold.h" />
     <ClInclude Include="..\include\cinder\ip\Trim.h" />
     <ClInclude Include="..\include\cinder\Path2d.h" />
+    <ClInclude Include="..\include\cinder\Quaternion.h" />
     <ClInclude Include="..\include\cinder\Ray.h" />
     <ClInclude Include="..\include\cinder\Rect.h" />
     <ClInclude Include="..\include\cinder\Stream.h" />
