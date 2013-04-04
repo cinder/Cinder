@@ -117,7 +117,8 @@ static void drawQuads()
 		size_t count = 0;
 		dx->mDeviceContext->Map(dx->mVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 		FixedVertex *pData = static_cast<FixedVertex *>(mappedResource.pData);
-		while(count < D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT && vertexCount > 0)
+		size_t end = (vertexCount >= D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT) ? D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT : vertexCount;
+		while(count < end)
 		{
 			memcpy(pData++, &vertices[index+0], sizeof(FixedVertex));
 			memcpy(pData++, &vertices[index+1], sizeof(FixedVertex));
@@ -129,13 +130,16 @@ static void drawQuads()
 			count += 6;
 			index += 4;
 		}
-
-		UINT stride = sizeof(FixedVertex);
-		UINT offset = 0;
-		dx->mDeviceContext->IASetVertexBuffers(0, 1, &dx->mVertexBuffer, &stride, &offset);
-		dx->mDeviceContext->IASetInputLayout(dx->mFixedLayout);
 		dx->mDeviceContext->Unmap(dx->mVertexBuffer, 0);
-		dx->mDeviceContext->Draw(count, 0);
+
+		if(count > 0) 
+		{
+			UINT stride = sizeof(FixedVertex);
+			UINT offset = 0;
+			dx->mDeviceContext->IASetVertexBuffers(0, 1, &dx->mVertexBuffer, &stride, &offset);
+			dx->mDeviceContext->IASetInputLayout(dx->mFixedLayout);
+			dx->mDeviceContext->Draw(count, 0);
+		}
 	}
 }
 
