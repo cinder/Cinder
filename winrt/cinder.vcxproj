@@ -368,6 +368,7 @@
     <ClCompile Include="..\src\cinder\ip\Resize.cpp" />
     <ClCompile Include="..\src\cinder\ip\Threshold.cpp" />
     <ClCompile Include="..\src\cinder\ip\Trim.cpp" />
+    <ClCompile Include="..\src\cinder\Json.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
     <ClCompile Include="..\src\cinder\MatrixStack.cpp" />
     <ClCompile Include="..\src\cinder\msw\CinderMsw.cpp" />
@@ -377,6 +378,7 @@
     <ClCompile Include="..\src\cinder\PolyLine.cpp" />
     <ClCompile Include="..\src\cinder\Rand.cpp" />
     <ClCompile Include="..\src\cinder\Ray.cpp" />
+    <ClCompile Include="..\src\cinder\Shape2d.cpp" />
     <ClCompile Include="..\src\cinder\Stream.cpp" />
     <ClCompile Include="..\src\cinder\Surface.cpp" />
     <ClCompile Include="..\src\cinder\svg\Svg.cpp" />
