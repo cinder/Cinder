@@ -35,6 +35,7 @@ class TouchEvent : public Event {
   public:
 	class Touch {
 	  public:
+		Touch() {}
 		Touch( const Vec2f &pos, const Vec2f &prevPos, uint32_t id, double time, void *native )
 			: mPos( pos ), mPrevPos( prevPos ), mId( id ), mTime( time ), mNative( native ) {}
 	
@@ -63,7 +64,9 @@ class TouchEvent : public Event {
 		double		mTime;
 		void		*mNative;
 	};
-  
+
+	TouchEvent() : Event()
+	{}
 	TouchEvent( WindowRef win, const std::vector<Touch> &touches )
 		: Event( win ), mTouches( touches )
 	{}
