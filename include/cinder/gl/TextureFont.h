@@ -110,7 +110,7 @@ class TextureFont {
 	
 	//! Draws string \a str at baseline \a baseline with DrawOptions \a options
 	void	drawString( const std::string &str, const Vec2f &baseline, const DrawOptions &options = DrawOptions() );
-	//! Draws string \a str fit inside \a fitRect, with internal offset \a offset and DrawOptions \a options
+	//! Draws string \a str fit inside \a fitRect vertically, with internal offset \a offset and DrawOptions \a options
 	void	drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
 	//! Draws word-wrapped string \a str fit inside \a fitRect, with internal offset \a offset and DrawOptions \a options. Mac & iOS only.
 	void	drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
@@ -127,9 +127,11 @@ class TextureFont {
 #endif
     
 	//! Returns a vector of glyph/placement pairs representing \a str, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
-	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const DrawOptions &options ) const;
+	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
 	//! Returns a vector of glyph/placement pairs representing \a str fit inside \a fitRect, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
-	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const;
+	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
+	//! Returns a  word-wrapped vector of glyph/placement pairs representing \a str fit inside \a fitRect, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching. Mac & iOS only.
+	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
 
 	//! Returns the font the TextureFont represents
 	const Font&		getFont() const { return mFont; }
