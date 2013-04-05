@@ -368,7 +368,6 @@
     <ClCompile Include="..\src\cinder\ip\Resize.cpp" />
     <ClCompile Include="..\src\cinder\ip\Threshold.cpp" />
     <ClCompile Include="..\src\cinder\ip\Trim.cpp" />
-    <ClCompile Include="..\src\cinder\Json.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
     <ClCompile Include="..\src\cinder\MatrixStack.cpp" />
     <ClCompile Include="..\src\cinder\msw\CinderMsw.cpp" />

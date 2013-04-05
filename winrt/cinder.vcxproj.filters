@@ -699,9 +699,6 @@
     <ClCompile Include="..\src\cinder\svg\Svg.cpp">
       <Filter>Source Files\svg</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\Json.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\Shape2d.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
