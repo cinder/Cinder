@@ -37,7 +37,8 @@ class TouchEvent : public Event {
 	  public:
 		Touch() {}
 		Touch( const Vec2f &pos, const Vec2f &prevPos, uint32_t id, double time, void *native )
-			: mPos( pos ), mPrevPos( prevPos ), mId( id ), mTime( time ), mNative( native ) {}
+			: mPos( pos ), mPrevPos( prevPos ), mId( id ), mTime( time ), mNative( native )
+		{}
 	
 		//! Returns the x position of the touch measured in points
 		float		getX() const { return mPos.x; }
@@ -65,7 +66,8 @@ class TouchEvent : public Event {
 		void		*mNative;
 	};
 
-	TouchEvent() : Event()
+	TouchEvent()
+		: Event()
 	{}
 	TouchEvent( WindowRef win, const std::vector<Touch> &touches )
 		: Event( win ), mTouches( touches )
@@ -73,6 +75,8 @@ class TouchEvent : public Event {
 	
 	//! Returns a std::vector of Touch descriptors associated with this event
 	const std::vector<Touch>&	getTouches() const { return mTouches; }
+	//! Returns a std::vector of Touch descriptors associated with this event
+	std::vector<Touch>&			getTouches() { return mTouches; }
 
   private:
 	std::vector<Touch>		mTouches;
