@@ -50,7 +50,7 @@ class InterfaceGl {
 	static InterfaceGlRef create( const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 	static InterfaceGlRef create( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 
-	static void		draw();
+	void	draw();
 
 	void	show( bool visible = true );
 	void	hide();
@@ -83,8 +83,10 @@ class InterfaceGl {
 	void	init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color );
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly ); 
 
-	app::WindowRef									mWindow;
-	std::shared_ptr<TwBar>							mBar;
+	app::WindowRef			mWindow;
+	std::shared_ptr<TwBar>	mBar;
+	int						mTwWindowId;
+	
 	std::vector<std::shared_ptr<std::function<void()> > >	mButtonCallbacks;
 };
 

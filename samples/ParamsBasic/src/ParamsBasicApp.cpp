@@ -74,7 +74,7 @@ void TweakBarApp::draw()
 	gl::drawCube( Vec3f::zero(), Vec3f( mObjSize, mObjSize, mObjSize ) );
 
 	// Draw the interface
-	params::InterfaceGl::draw();
+	mParams.draw();
 }
 
 CINDER_APP_BASIC( TweakBarApp, RendererGl )

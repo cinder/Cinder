@@ -67,8 +67,10 @@ namespace {
 #undef SYNONYM
 #undef HOMONYM
 
-void mouseDown( app::WindowRef win, app::MouseEvent &event )
+void mouseDown( app::WindowRef win, int twWindowId, app::MouseEvent &event )
 {
+	TwSetCurrentWindow( twWindowId );
+
 	TwMouseButtonID button;
 	if( event.isLeft() )
 		button = TW_MOUSE_LEFT;
@@ -79,8 +81,10 @@ void mouseDown( app::WindowRef win, app::MouseEvent &event )
 	event.setHandled( TwMouseButton( TW_MOUSE_PRESSED, button ) != 0 );
 }
 
-void mouseUp( app::WindowRef win, app::MouseEvent &event )
+void mouseUp( app::WindowRef win, int twWindowId, app::MouseEvent &event )
 {
+	TwSetCurrentWindow( twWindowId );
+
 	TwMouseButtonID button;
 	if( event.isLeft() )
 		button = TW_MOUSE_LEFT;
@@ -91,20 +95,26 @@ void mouseUp( app::WindowRef win, app::MouseEvent &event )
 	event.setHandled( TwMouseButton( TW_MOUSE_RELEASED, button ) != 0 );
 }
 
-void mouseWheel( app::WindowRef win, app::MouseEvent &event )
+void mouseWheel( app::WindowRef win, int twWindowId, app::MouseEvent &event )
 {
+	TwSetCurrentWindow( twWindowId );
+
 	static float sWheelPos = 0;
 	sWheelPos += event.getWheelIncrement();
 	event.setHandled( TwMouseWheel( (int)(sWheelPos) ) != 0 );
 }
 
-void mouseMove( app::WindowRef win, app::MouseEvent &event )
+void mouseMove( app::WindowRef win, int twWindowId, app::MouseEvent &event )
 {
+	TwSetCurrentWindow( twWindowId );
+
 	event.setHandled( TwMouseMotion( win->toPixels( event.getX() ), win->toPixels( event.getY() ) ) != 0 );
 }
 
-void keyDown( app::KeyEvent &event )
+void keyDown( int twWindowId, app::KeyEvent &event )
 {
+	TwSetCurrentWindow( twWindowId );
+
 	int kmod = 0;
 	if( event.isShiftDown() )
 		kmod |= TW_KMOD_SHIFT;
@@ -119,8 +129,10 @@ void keyDown( app::KeyEvent &event )
             kmod ) != 0 );
 }
 
-void resize( cinder::app::WindowRef window )
+void resize( cinder::app::WindowRef window, int twWindowId )
 {
+	TwSetCurrentWindow( twWindowId );
+
 	TwWindowSize( window->toPixels( window->getWidth() ), window->toPixels( window->getHeight() ) );
 }
 
@@ -148,11 +160,13 @@ class AntMgr {
 
 } // anonymous namespace
 
-void initAntGl( app::WindowRef win )
+int initAntGl( app::WindowRef win )
 {
-	static std::shared_ptr<AntMgr> mgr;
-	if( ! mgr )
-		mgr = std::shared_ptr<AntMgr>( new AntMgr( (int)win->getContentScale() ) );
+	static std::shared_ptr<AntMgr> sMgr;
+	static int sWindowId = 0;
+	if( ! sMgr )
+		sMgr = std::shared_ptr<AntMgr>( new AntMgr( (int)win->getContentScale() ) );
+	return sWindowId++;
 }
 
 InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const ColorA color )
@@ -167,33 +181,39 @@ InterfaceGl::InterfaceGl( app::WindowRef window, const std::string &title, const
 
 void InterfaceGl::init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color )
 {
-	initAntGl( window );
-	
+	mTwWindowId = initAntGl( window );
+	TwSetCurrentWindow( mTwWindowId );
+		
 	mWindow = window;
 
 	mBar = std::shared_ptr<TwBar>( TwNewBar( title.c_str() ), TwDeleteBar );
+	TwWindowSize( window->toPixels( window->getWidth() ), window->toPixels( window->getHeight() ) );	
 	char optionsStr[1024];
 	sprintf( optionsStr, "`%s` size='%d %d' color='%d %d %d' alpha=%d", title.c_str(), size.x, size.y, (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255) );
 	TwDefine( optionsStr );
 	
 	TwCopyStdStringToClientFunc( implStdStringToClient );	
 
-	mWindow->getSignalMouseDown().connect( std::bind( mouseDown, mWindow, std::placeholders::_1 ) );
-	mWindow->getSignalMouseUp().connect( std::bind( mouseUp, mWindow, std::placeholders::_1 ) );
-	mWindow->getSignalMouseWheel().connect( std::bind( mouseWheel, mWindow, std::placeholders::_1 ) );
-	mWindow->getSignalMouseMove().connect( std::bind( mouseMove, mWindow, std::placeholders::_1 ) );
-	mWindow->getSignalMouseDrag().connect( std::bind( mouseMove, mWindow, std::placeholders::_1 ) );
-	mWindow->getSignalKeyDown().connect( keyDown );
-	mWindow->getSignalResize().connect( std::bind( resize, mWindow ) );
+	mWindow->getSignalMouseDown().connect( std::bind( mouseDown, mWindow, mTwWindowId, std::placeholders::_1 ) );
+	mWindow->getSignalMouseUp().connect( std::bind( mouseUp, mWindow, mTwWindowId, std::placeholders::_1 ) );
+	mWindow->getSignalMouseWheel().connect( std::bind( mouseWheel, mWindow, mTwWindowId, std::placeholders::_1 ) );
+	mWindow->getSignalMouseMove().connect( std::bind( mouseMove, mWindow, mTwWindowId, std::placeholders::_1 ) );
+	mWindow->getSignalMouseDrag().connect( std::bind( mouseMove, mWindow, mTwWindowId, std::placeholders::_1 ) );
+	mWindow->getSignalKeyDown().connect( std::bind( keyDown, mTwWindowId, std::placeholders::_1 ) );
+	mWindow->getSignalResize().connect( std::bind( resize, mWindow, mTwWindowId ) );
 }
 
 void InterfaceGl::draw()
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	TwDraw();
 }
 
 void InterfaceGl::show( bool visible )
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	int32_t visibleInt = ( visible ) ? 1 : 0;
 	TwSetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
 }
@@ -205,6 +225,8 @@ void InterfaceGl::hide()
 
 bool InterfaceGl::isVisible() const
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	int32_t visibleInt;
 	TwGetParam( mBar.get(), NULL, "visible", TW_PARAM_INT32, 1, &visibleInt );
 	return visibleInt != 0;
@@ -212,6 +234,8 @@ bool InterfaceGl::isVisible() const
 	
 void InterfaceGl::maximize( bool maximized )
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	int32_t maximizedInt = ( maximized ) ? 0 : 1;
 	TwSetParam( mBar.get(), NULL, "iconified", TW_PARAM_INT32, 1, &maximizedInt );
 }
@@ -223,6 +247,8 @@ void InterfaceGl::minimize()
 
 bool InterfaceGl::isMaximized() const
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	int32_t maximizedInt;
 	TwGetParam( mBar.get(), NULL, "iconified", TW_PARAM_INT32, 1, &maximizedInt );
 	return maximizedInt == 0;
@@ -230,6 +256,8 @@ bool InterfaceGl::isMaximized() const
 
 void InterfaceGl::implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
 {
+	TwSetCurrentWindow( mTwWindowId );
+		
 	if( readOnly )
 		TwAddVarRO( mBar.get(), name.c_str(), (TwType)type, param, optionsStr.c_str() );
 	else
@@ -283,6 +311,8 @@ void InterfaceGl::addParam( const std::string &name, std::string *param, const s
 
 void InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly )
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	TwEnumVal *ev = new TwEnumVal[enumNames.size()];
 	for( size_t v = 0; v < enumNames.size(); ++v ) {
 		ev[v].Value = v;
@@ -301,11 +331,15 @@ void InterfaceGl::addParam( const std::string &name, const std::vector<std::stri
 
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	TwAddSeparator( mBar.get(), name.c_str(), optionsStr.c_str() );
 }
 
 void InterfaceGl::addText( const std::string &name, const std::string &optionsStr )
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	TwAddButton( mBar.get(), name.c_str(), NULL, NULL, optionsStr.c_str() );
 }
 
@@ -319,6 +353,8 @@ void TW_CALL implButtonCallback( void *clientData )
 
 void InterfaceGl::addButton( const std::string &name, const std::function<void ()> &callback, const std::string &optionsStr )
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	std::shared_ptr<std::function<void ()> > callbackPtr( new std::function<void ()>( callback ) );
 	mButtonCallbacks.push_back( callbackPtr );
 	TwAddButton( mBar.get(), name.c_str(), implButtonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
@@ -326,16 +362,22 @@ void InterfaceGl::addButton( const std::string &name, const std::function<void (
 
 void InterfaceGl::removeParam( const std::string &name )
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	TwRemoveVar( mBar.get(), name.c_str() );
 }
 
 void InterfaceGl::clear()
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	TwRemoveAllVars( mBar.get() );
 }
 
 void InterfaceGl::setOptions( const std::string &name, const std::string &optionsStr )
 {
+	TwSetCurrentWindow( mTwWindowId );
+	
 	std::string target = "`" + (std::string)TwGetBarName( mBar.get() ) + "`";
 	if( !( name.empty() ) )
 		target += "/`" + name + "`";
