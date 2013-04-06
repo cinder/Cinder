@@ -1,17 +1,15 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwBar.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
-//
-//  note:       TAB=4 
+//              For conditions of distribution and use, see License.txt
 //
 //  ---------------------------------------------------------------------------
 
 
 #include "TwPrecomp.h"
-#include "AntTweakBar.h"
+#include <AntTweakBar.h>
 #include "TwMgr.h"
 #include "TwBar.h"
 #include "TwColors.h"
@@ -48,6 +46,21 @@ PerfTimer g_BarTimer;
 const float  FLOAT_MAX  = 3.0e+38f;
 const double DOUBLE_MAX = 1.0e+308;
 const double DOUBLE_EPS = 1.0e-307;
+
+bool IsCustomType(int _Type)
+{
+    return (g_TwMgr && _Type>=TW_TYPE_CUSTOM_BASE && _Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size());
+}
+
+bool IsCSStringType(int _Type)
+{
+    return (_Type>TW_TYPE_CSSTRING_BASE && _Type<=TW_TYPE_CSSTRING_MAX);
+}
+
+bool IsEnumType(int _Type)
+{
+    return (g_TwMgr && _Type>=TW_TYPE_ENUM_BASE && _Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size());
+}
 
 //  ---------------------------------------------------------------------------
 
@@ -183,9 +196,9 @@ void CTwVarAtom::ValueToString(string *_Str) const
             else
                 Val = *(bool *)m_Ptr;
             if( Val )
-                *_Str = (m_Val.m_Bool.m_TrueString!=NULL) ? m_Val.m_Bool.m_TrueString : "ON";
+                *_Str = (m_Val.m_Bool.m_TrueString!=NULL) ? m_Val.m_Bool.m_TrueString : "1";
             else
-                *_Str = (m_Val.m_Bool.m_FalseString!=NULL) ? m_Val.m_Bool.m_FalseString : "OFF";
+                *_Str = (m_Val.m_Bool.m_FalseString!=NULL) ? m_Val.m_Bool.m_FalseString : "0";
         }
         break;
     case TW_TYPE_BOOL8:
@@ -196,9 +209,9 @@ void CTwVarAtom::ValueToString(string *_Str) const
             else
                 Val = *(char *)m_Ptr;
             if( Val )
-                *_Str = (m_Val.m_Bool.m_TrueString!=NULL) ? m_Val.m_Bool.m_TrueString : "ON";
+                *_Str = (m_Val.m_Bool.m_TrueString!=NULL) ? m_Val.m_Bool.m_TrueString : "1";
             else
-                *_Str = (m_Val.m_Bool.m_FalseString!=NULL) ? m_Val.m_Bool.m_FalseString : "OFF";
+                *_Str = (m_Val.m_Bool.m_FalseString!=NULL) ? m_Val.m_Bool.m_FalseString : "0";
         }
         break;
     case TW_TYPE_BOOL16:
@@ -209,9 +222,9 @@ void CTwVarAtom::ValueToString(string *_Str) const
             else
                 Val = *(short *)m_Ptr;
             if( Val )
-                *_Str = (m_Val.m_Bool.m_TrueString!=NULL) ? m_Val.m_Bool.m_TrueString : "ON";
+                *_Str = (m_Val.m_Bool.m_TrueString!=NULL) ? m_Val.m_Bool.m_TrueString : "1";
             else
-                *_Str = (m_Val.m_Bool.m_FalseString!=NULL) ? m_Val.m_Bool.m_FalseString : "OFF";
+                *_Str = (m_Val.m_Bool.m_FalseString!=NULL) ? m_Val.m_Bool.m_FalseString : "0";
         }
         break;
     case TW_TYPE_BOOL32:
@@ -222,9 +235,9 @@ void CTwVarAtom::ValueToString(string *_Str) const
             else
                 Val = *(int *)m_Ptr;
             if( Val )
-                *_Str = (m_Val.m_Bool.m_TrueString!=NULL) ? m_Val.m_Bool.m_TrueString : "ON";
+                *_Str = (m_Val.m_Bool.m_TrueString!=NULL) ? m_Val.m_Bool.m_TrueString : "1";
             else
-                *_Str = (m_Val.m_Bool.m_FalseString!=NULL) ? m_Val.m_Bool.m_FalseString : "OFF";
+                *_Str = (m_Val.m_Bool.m_FalseString!=NULL) ? m_Val.m_Bool.m_FalseString : "0";
         }
         break;
     case TW_TYPE_CHAR:
@@ -435,7 +448,7 @@ void CTwVarAtom::ValueToString(string *_Str) const
         break;
     */
     default:
-        if( m_Type>=TW_TYPE_ENUM_BASE && m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size() )
+        if( IsEnumType(m_Type) )
         {
             unsigned int Val = 0;
             if( UseGet )
@@ -453,9 +466,9 @@ void CTwVarAtom::ValueToString(string *_Str) const
                 *_Str = Tmp;
             }
         }
-        else if( m_Type>=TW_TYPE_CSSTRING_BASE && m_Type<=TW_TYPE_CSSTRING_MAX )
+        else if( IsCSStringType(m_Type) )
         {
-            char *Val;
+            char *Val = NULL;
             if( UseGet )
             {
                 int n = TW_CSSTRING_SIZE(m_Type);
@@ -474,7 +487,7 @@ void CTwVarAtom::ValueToString(string *_Str) const
         }
         else if( m_Type==TW_TYPE_CDSTRING || m_Type==TW_TYPE_CDSTDSTRING )
         {
-            char *Val;
+            char *Val = NULL;
             if( UseGet )
                 m_GetCallback(&Val , m_ClientData);
             else
@@ -484,7 +497,7 @@ void CTwVarAtom::ValueToString(string *_Str) const
             else
                 *_Str = "";
         }
-        else if( m_Type>=TW_TYPE_CUSTOM_BASE && m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size() )
+        else if( IsCustom() ) // m_Type>=TW_TYPE_CUSTOM_BASE && m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size() )
         {
             *_Str = "";
         }
@@ -690,7 +703,7 @@ double CTwVarAtom::ValueToDouble() const
         break;
     */
     default:
-        if( m_Type>=TW_TYPE_ENUM_BASE && m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size() )
+        if( IsEnumType(m_Type) )
         {
             unsigned int Val = 0;
             if( UseGet )
@@ -834,7 +847,7 @@ void CTwVarAtom::ValueFromDouble(double _Val)
         }
         break;
     default:
-        if( m_Type>=TW_TYPE_ENUM_BASE && m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size() )
+        if( IsEnumType(m_Type) )
         {
             unsigned int Val = (unsigned int)_Val;
             if( UseSet )
@@ -1016,8 +1029,12 @@ int CTwVar::SetAttrib(int _AttribID, const char *_Value, TwBar *_Bar, struct CTw
                             size_t ml = g_TwMgr->m_Structs[Idx].m_Members[im].m_Name.length();
                             if( nl>=ml && strcmp(g_TwMgr->m_Structs[Idx].m_Members[im].m_Name.c_str(), m_Name.c_str()+(nl-ml))==0 )
                             {
+                                // TODO: would have to be applied to other vars already created
                                 if( _AttribID==V_LABEL )
+                                {
                                     g_TwMgr->m_Structs[Idx].m_Members[im].m_Label = _Value;
+//                                    m_Label = _Value;
+                                }
                                 else // V_HELP
                                     g_TwMgr->m_Structs[Idx].m_Members[im].m_Help = _Value;
                                 break;
@@ -1492,12 +1509,13 @@ int CTwVarAtom::SetAttrib(int _AttribID, const char *_Value, TwBar *_Bar, struct
             }
         }
     case VA_ENUM:
-        if( _Value && strlen(_Value)>0 && m_Type>=TW_TYPE_ENUM_BASE && m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size() )
+        if( _Value && strlen(_Value)>0 && IsEnumType(m_Type) )
         {
             const char *s = _Value;
             int n = 0, i = 0;
             unsigned int u;
             bool Cont;
+            g_TwMgr->m_Enums[m_Type-TW_TYPE_ENUM_BASE].m_Entries.clear(); // anyway reset entries
             do
             {
                 Cont = false;
@@ -1567,7 +1585,7 @@ int CTwVarAtom::SetAttrib(int _AttribID, const char *_Value, TwBar *_Bar, struct
     case VA_VALUE:
         if( _Value!=NULL && strlen(_Value)>0 ) // do not check ReadOnly here.
         {
-            if( !( m_Type==TW_TYPE_BUTTON || (m_Type>=TW_TYPE_CUSTOM_BASE && m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) ) )
+            if( !( m_Type==TW_TYPE_BUTTON || IsCustom() ) ) // || (m_Type>=TW_TYPE_CUSTOM_BASE && m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) ) )
             {
                 if( m_Type==TW_TYPE_CDSTRING || m_Type==TW_TYPE_CDSTDSTRING )
                 {
@@ -1589,7 +1607,7 @@ int CTwVarAtom::SetAttrib(int _AttribID, const char *_Value, TwBar *_Bar, struct
                         }
                     }
                 }
-                else if( m_Type>=TW_TYPE_CSSTRING_BASE && m_Type<=TW_TYPE_CSSTRING_MAX )
+                else if( IsCSStringType(m_Type) )
                 {
                     int n = TW_CSSTRING_SIZE(m_Type);
                     if( n>0 )
@@ -1754,7 +1772,7 @@ ERetType CTwVarAtom::GetAttrib(int _AttribID, TwBar *_Bar, CTwVarGroup *_VarPare
             return RET_ERROR;
         }
     case VA_ENUM:
-        if( m_Type>=TW_TYPE_ENUM_BASE && m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size() )
+        if( IsEnumType(m_Type) )
         {
             CTwMgr::CEnum::CEntries::iterator it = g_TwMgr->m_Enums[m_Type-TW_TYPE_ENUM_BASE].m_Entries.begin();
             for( ; it != g_TwMgr->m_Enums[m_Type-TW_TYPE_ENUM_BASE].m_Entries.end(); ++it )
@@ -1778,9 +1796,9 @@ ERetType CTwVarAtom::GetAttrib(int _AttribID, TwBar *_Bar, CTwVarGroup *_VarPare
         g_TwMgr->SetLastError(g_ErrInvalidAttrib);
         return RET_ERROR;
     case VA_VALUE:
-        if( !( m_Type==TW_TYPE_BUTTON || (m_Type>=TW_TYPE_CUSTOM_BASE && m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) ) )
+        if( !( m_Type==TW_TYPE_BUTTON || IsCustom() ) ) // || (m_Type>=TW_TYPE_CUSTOM_BASE && m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) ) )
         {
-            if( m_Type==TW_TYPE_CDSTRING || m_Type==TW_TYPE_CDSTDSTRING || (m_Type>=TW_TYPE_CSSTRING_BASE && m_Type<=TW_TYPE_CSSTRING_MAX) )
+            if( m_Type==TW_TYPE_CDSTRING || m_Type==TW_TYPE_CDSTDSTRING || IsCSStringType(m_Type) )
             {
                 string str;
                 ValueToString(&str);
@@ -2190,7 +2208,7 @@ void CTwVarAtom::Increment(int _Step)
                     return;
             }
         }
-        else if( m_Type>=TW_TYPE_ENUM_BASE && m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size() )
+        else if( IsEnumType(m_Type) )
         {
             assert(_Step==1 || _Step==-1);
             unsigned int v = 0;
@@ -2321,10 +2339,10 @@ void CTwVarAtom::SetDefaults()
 
     // special types
     if(    m_Type==TW_TYPE_BUTTON 
-        || (m_Type>=TW_TYPE_ENUM_BASE && m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size()) 
-        || (m_Type>=TW_TYPE_CSSTRING_BASE && m_Type<=TW_TYPE_CSSTRING_MAX) 
+        || IsEnumType(m_Type) // (m_Type>=TW_TYPE_ENUM_BASE && m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size()) 
+        || IsCSStringType(m_Type) // (m_Type>=TW_TYPE_CSSTRING_BASE && m_Type<=TW_TYPE_CSSTRING_MAX) 
         || m_Type==TW_TYPE_CDSTDSTRING 
-        || (m_Type>=TW_TYPE_CUSTOM_BASE && m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) )
+        || IsCustom() ) // (m_Type>=TW_TYPE_CUSTOM_BASE && m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) )
         m_NoSlider = true;
 }
 
@@ -2919,9 +2937,9 @@ size_t CTwVar::GetDataSize(TwType _Type)
             return size;
             */
         }
-        else if( g_TwMgr && _Type>=TW_TYPE_ENUM_BASE && _Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size() )
+        else if( g_TwMgr && IsEnumType(_Type) )
             return 4;
-        else if( _Type>=TW_TYPE_CSSTRING_BASE && _Type<=TW_TYPE_CSSTRING_MAX )
+        else if( IsCSStringType(_Type) )
             return TW_CSSTRING_SIZE(_Type);
         else if( _Type==TW_TYPE_CDSTDSTRING )
             return (g_TwMgr!=0) ? g_TwMgr->m_ClientStdStringStructSize : sizeof(std::string);
@@ -2972,6 +2990,8 @@ CTwBar::CTwBar(const char *_Name)
     //m_Font = g_DefaultLargeFont;
     m_TitleWidth = 0;
     m_Sep = 1;
+//#pragma warning "lineSep WIP"
+    m_LineSep = 1;
     m_ValuesWidth = 10*(m_Font->m_CharHeight/2); // about 10 characters
     m_NbHierLines = 0;
     m_NbDisplayedLines = 0;
@@ -3000,6 +3020,7 @@ CTwBar::CTwBar(const char *_Name)
     m_MouseDragValWidth = false;
     m_MouseOriginX = 0;
     m_MouseOriginY = 0;
+    m_ValuesWidthRatio = 0;
     m_VarHasBeenIncr = true;
     m_FirstLine0 = 0;
     m_HighlightedLine = -1;
@@ -3019,6 +3040,9 @@ CTwBar::CTwBar(const char *_Name)
     m_HighlightMinimize = false;
     m_HighlightFont = false;
     m_HighlightValWidth = false;
+    m_HighlightLabelsHeader = false;
+    m_HighlightValuesHeader = false;
+    m_ButtonAlign = g_TwMgr->m_ButtonAlign;
 
     m_IsMinimized = false;
     m_MinNumber = 0;
@@ -3039,6 +3063,7 @@ CTwBar::CTwBar(const char *_Name)
     m_LabelsTextObj = g_TwMgr->m_Graph->NewTextObj();
     m_ValuesTextObj = g_TwMgr->m_Graph->NewTextObj();
     m_ShortcutTextObj = g_TwMgr->m_Graph->NewTextObj();
+    m_HeadersTextObj = g_TwMgr->m_Graph->NewTextObj();
     m_ShortcutLine = -1;
 
     m_RotoMinRadius = 24;
@@ -3064,6 +3089,8 @@ CTwBar::~CTwBar()
         g_TwMgr->m_Graph->DeleteTextObj(m_ValuesTextObj);
     if( m_ShortcutTextObj )
         g_TwMgr->m_Graph->DeleteTextObj(m_ShortcutTextObj);
+    if( m_HeadersTextObj )
+        g_TwMgr->m_Graph->DeleteTextObj(m_HeadersTextObj);
 }
 
 //  ---------------------------------------------------------------------------
@@ -3096,6 +3123,7 @@ enum EBarAttribs
     BAR_POSITION,
     BAR_REFRESH,
     BAR_FONT_SIZE,
+    BAR_FONT_STYLE,
     BAR_VALUES_WIDTH,
     BAR_ICON_POS,
     BAR_ICON_ALIGN,
@@ -3107,7 +3135,8 @@ enum EBarAttribs
     BAR_ALWAYS_TOP,
     BAR_ALWAYS_BOTTOM,
     BAR_COLOR_SCHEME,
-    BAR_CONTAINED
+    BAR_CONTAINED,
+    BAR_BUTTON_ALIGN
 };
 
 int CTwBar::HasAttrib(const char *_Attrib, bool *_HasValue) const
@@ -3131,6 +3160,8 @@ int CTwBar::HasAttrib(const char *_Attrib, bool *_HasValue) const
         return BAR_REFRESH;
     else if( _stricmp(_Attrib, "fontsize")==0 )
         return BAR_FONT_SIZE;
+    else if( _stricmp(_Attrib, "fontstyle")==0 )
+        return BAR_FONT_STYLE;
     else if( _stricmp(_Attrib, "valueswidth")==0 )
         return BAR_VALUES_WIDTH;
     else if( _stricmp(_Attrib, "iconpos")==0 )
@@ -3159,6 +3190,8 @@ int CTwBar::HasAttrib(const char *_Attrib, bool *_HasValue) const
         return BAR_COLOR_SCHEME;
     else if( _stricmp(_Attrib, "contained")==0 )
         return BAR_CONTAINED;
+    else if( _stricmp(_Attrib, "buttonalign")==0 )
+        return BAR_BUTTON_ALIGN;
 
     *_HasValue = false;
     if( _stricmp(_Attrib, "show")==0 ) // for backward compatibility
@@ -3334,18 +3367,27 @@ int CTwBar::SetAttrib(int _AttribID, const char *_Value)
     case BAR_VALUES_WIDTH:
         if( _Value && strlen(_Value)>0 )
         {
-            int w;
-            int n = sscanf(_Value, "%d", &w);
-            if( n==1 && w>0 )
+            if( _stricmp(_Value, "fit")==0 )
             {
-                m_ValuesWidth = w;
+                m_ValuesWidth = VALUES_WIDTH_FIT;
                 NotUpToDate();
                 return 1;
-            }
+            } 
             else
             {
-                g_TwMgr->SetLastError(g_ErrBadValue);
-                return 0;
+                int w;
+                int n = sscanf(_Value, "%d", &w);
+                if( n==1 && w>0 )
+                {
+                    m_ValuesWidth = w;
+                    NotUpToDate();
+                    return 1;
+                }
+                else
+                {
+                    g_TwMgr->SetLastError(g_ErrBadValue);
+                    return 0;
+                }
             }
         }
         else
@@ -3355,6 +3397,8 @@ int CTwBar::SetAttrib(int _AttribID, const char *_Value)
         }
     case BAR_FONT_SIZE:
         return g_TwMgr->SetAttrib(MGR_FONT_SIZE, _Value);
+    case BAR_FONT_STYLE:
+        return g_TwMgr->SetAttrib(MGR_FONT_STYLE, _Value);
     case BAR_ICON_POS:
         return g_TwMgr->SetAttrib(MGR_ICON_POS, _Value);
     case BAR_ICON_ALIGN:
@@ -3574,6 +3618,35 @@ int CTwBar::SetAttrib(int _AttribID, const char *_Value)
             g_TwMgr->SetLastError(g_ErrNoValue);
             return 0;
         }
+    case BAR_BUTTON_ALIGN:
+        if( _Value && strlen(_Value)>0 )
+        {
+            if( _stricmp(_Value, "left")==0 )
+            {
+                m_ButtonAlign = BUTTON_ALIGN_LEFT;
+                return 1;
+            }
+            else if( _stricmp(_Value, "center")==0 )
+            {
+                m_ButtonAlign = BUTTON_ALIGN_CENTER;
+                return 1;
+            }
+            if( _stricmp(_Value, "right")==0 )
+            {
+                m_ButtonAlign = BUTTON_ALIGN_RIGHT;
+                return 1;
+            }
+            else
+            {
+                g_TwMgr->SetLastError(g_ErrBadValue);
+                return 0;
+            }
+        }
+        else
+        {
+            g_TwMgr->SetLastError(g_ErrNoValue);
+            return 0;
+        }
     default:
         g_TwMgr->SetLastError(g_ErrUnknownAttrib);
         return 0;
@@ -3633,6 +3706,8 @@ ERetType CTwBar::GetAttrib(int _AttribID, std::vector<double>& outDoubles, std::
         return RET_DOUBLE;
     case BAR_FONT_SIZE:
         return g_TwMgr->GetAttrib(MGR_FONT_SIZE, outDoubles, outString);
+    case BAR_FONT_STYLE:
+        return g_TwMgr->GetAttrib(MGR_FONT_STYLE, outDoubles, outString);
     case BAR_ICON_POS:
         return g_TwMgr->GetAttrib(MGR_ICON_POS, outDoubles, outString);
     case BAR_ICON_ALIGN:
@@ -3667,6 +3742,14 @@ ERetType CTwBar::GetAttrib(int _AttribID, std::vector<double>& outDoubles, std::
     case BAR_CONTAINED:
         outDoubles.push_back(m_Contained);
         return RET_DOUBLE;
+    case BAR_BUTTON_ALIGN:
+        if( m_ButtonAlign==BUTTON_ALIGN_LEFT )
+            outString << "left";
+        else if( m_ButtonAlign==BUTTON_ALIGN_CENTER )
+            outString << "center";
+        else
+            outString << "right";
+        return RET_STRING;
     default:
         g_TwMgr->SetLastError(g_ErrUnknownAttrib);
         return RET_ERROR;
@@ -3717,7 +3800,7 @@ void CTwBar::UpdateColors()
 
     m_ColShortcutText = lightText ? 0xffffb060 : 0xff802000;
     m_ColShortcutBg = lightText ? Color32FromARGBf(0.4f*a, 0.2f, 0.2f, 0.2f) : Color32FromARGBf(0.4f*a, 0.8f, 0.8f, 0.8f);
-    m_ColInfoText = lightText ? Color32FromARGBf(1.0f, 0.7f, 0.7f, 0.7f) : Color32FromARGBf(1.0f, 0.3f, 0.3f, 0.3f);
+    m_ColInfoText = Color32FromARGBf(1.0f, 0.5f, 0.5f, 0.5f);
 
     m_ColRoto = lightText ? Color32FromARGBf(0.8f, 0.85f, 0.85f, 0.85f) : Color32FromARGBf(0.8f, 0.1f, 0.1f, 0.1f);
     m_ColRotoVal = Color32FromARGBf(1, 1.0f, 0.2f, 0.2f);
@@ -3738,12 +3821,12 @@ void CTwBar::UpdateColors()
     ColorHLSToRGBf(h, l-0.1f, s, &r, &g, &b);
     m_ColBg2 = Color32FromARGBf(a, r, g, b);
     
-    ColorHLSToRGBf(h, l-0.35f, s, &r, &g, &b);
-    m_ColTitleBg = Color32FromARGBf(a+0.4f, r, g, b);
+    ColorHLSToRGBf(h, l-0.15f, s, &r, &g, &b);
+    m_ColTitleBg = Color32FromARGBf(a+0.9f, r, g, b);
     m_ColTitleText = lightText ? COLOR32_WHITE : COLOR32_BLACK;
     m_ColTitleShadow = lightText ? 0x40000000 : 0x00000000;
-    ColorHLSToRGBf(h, l-0.4f, s, &r, &g, &b);
-    m_ColTitleHighBg = Color32FromARGBf(a+0.4f, r, g, b);
+    ColorHLSToRGBf(h, l-0.25f, s, &r, &g, &b);
+    m_ColTitleHighBg = Color32FromARGBf(a+0.8f, r, g, b);
     ColorHLSToRGBf(h, l-0.3f, s, &r, &g, &b);
     m_ColTitleUnactiveBg = Color32FromARGBf(a+0.2f, r, g, b);
 
@@ -3942,7 +4025,7 @@ void CTwBar::ListLabels(vector<string>& _Labels, vector<color32>& _Colors, vecto
         _BgColors.push_back(bg);
         if( _HasBgColors!=NULL && bg!=0 )
             *_HasBgColors = true;
-        bool IsCustom = !m_HierTags[h].m_Var->IsGroup() && (static_cast<const CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type>=TW_TYPE_CUSTOM_BASE && static_cast<const CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size());
+        bool IsCustom = m_HierTags[h].m_Var->IsCustom(); // !m_HierTags[h].m_Var->IsGroup() && (static_cast<const CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type>=TW_TYPE_CUSTOM_BASE && static_cast<const CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size());
         if( !IsCustom )
         {
             string& CurrentLabel = _Labels[_Labels.size()-1];
@@ -3952,8 +4035,10 @@ void CTwBar::ListLabels(vector<string>& _Labels, vector<color32>& _Colors, vecto
             {
                 if( static_cast<const CTwVarAtom *>(m_HierTags[h].m_Var)->m_Val.m_Button.m_Callback==NULL )
                     WidthMax = _GroupWidthMax;
-                else
+                else if( m_ButtonAlign == BUTTON_ALIGN_RIGHT )
                     WidthMax = _GroupWidthMax - 2*IncrBtnWidth(m_Font->m_CharHeight);
+                else
+                    WidthMax = _AtomWidthMax;
             }
             //else if( m_HighlightedLine==h && m_DrawRotoBtn )
             //  WidthMax = _AtomWidthMax - IncrBtnWidth(m_Font->m_CharHeight);
@@ -3965,20 +4050,21 @@ void CTwBar::ListLabels(vector<string>& _Labels, vector<color32>& _Colors, vecto
                     CurrentLabel += ' ';
                     x += Space;
                 }
-            for( i=0; i<Len; ++i )
-            {
-                ch = (Etc==0) ? Text[i] : '.';
-                CurrentLabel += ch;
-                x += _Font->m_CharWidth[(int)ch];
-                if( Etc>0 )
+            if( x+(NbEtc+2)*_Font->m_CharWidth[(int)'.']<WidthMax || m_HierTags[h].m_Var->m_DontClip)
+                for( i=0; i<Len; ++i )
                 {
-                    ++Etc;
-                    if( Etc>NbEtc )
-                        break;
-                }
-                else if( i<Len-2 && x+(NbEtc+2)*_Font->m_CharWidth[(int)'.']>=WidthMax && !(m_HierTags[h].m_Var->m_DontClip))
-                    Etc = 1;
-            }       
+                    ch = (Etc==0) ? Text[i] : '.';
+                    CurrentLabel += ch;
+                    x += _Font->m_CharWidth[(int)ch];
+                    if( Etc>0 )
+                    {
+                        ++Etc;
+                        if( Etc>NbEtc )
+                            break;
+                    }
+                    else if( i<Len-2 && x+(NbEtc+2)*_Font->m_CharWidth[(int)'.']>=WidthMax && !(m_HierTags[h].m_Var->m_DontClip))
+                        Etc = 1;
+                }       
         }
     }
 }
@@ -4030,11 +4116,18 @@ void CTwBar::ListValues(vector<string>& _Values, vector<color32>& _Colors, vecto
                     IsMax = (v>=vmax);
                     IsMin = (v<=vmin);
                 }
+                if( Atom->m_Type==TW_TYPE_BOOLCPP || Atom->m_Type==TW_TYPE_BOOL8 || Atom->m_Type==TW_TYPE_BOOL16 || Atom->m_Type==TW_TYPE_BOOL32 )
+                {
+                    if (ValStr=="1")
+                        ValStr = "\x7f"; // check sign
+                    else if (ValStr=="0")
+                        ValStr = " -"; //"\x97"; // uncheck sign
+                }
                 if(    (Atom->m_Type==TW_TYPE_CDSTRING && Atom->m_SetCallback==NULL && g_TwMgr->m_CopyCDStringToClient==NULL)
                     || (Atom->m_Type==TW_TYPE_CDSTDSTRING && Atom->m_SetCallback==NULL)
                     || (Atom->m_Type==TW_TYPE_STDSTRING && Atom->m_SetCallback==NULL && g_TwMgr->m_CopyStdStringToClient==NULL) )
                     IsROText = true;
-                if( Atom->m_Type==TW_TYPE_HELP_ATOM || Atom->m_Type==TW_TYPE_HELP_GRP || Atom->m_Type==TW_TYPE_BUTTON || (Atom->m_Type>=TW_TYPE_CUSTOM_BASE && Atom->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) )
+                if( Atom->m_Type==TW_TYPE_HELP_ATOM || Atom->m_Type==TW_TYPE_HELP_GRP || Atom->m_Type==TW_TYPE_BUTTON || Atom->IsCustom() ) // (Atom->m_Type>=TW_TYPE_CUSTOM_BASE && Atom->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) )
                     HasBgColor = false;
                 AcceptEdit = EditInPlaceAcceptVar(Atom) || (Atom->m_Type==TW_TYPE_SHORTCUT);
             }
@@ -4122,6 +4215,76 @@ void CTwBar::ListValues(vector<string>& _Values, vector<color32>& _Colors, vecto
 
 //  ---------------------------------------------------------------------------
 
+int CTwBar::ComputeLabelsWidth(const CTexFont *_Font)
+{
+    int Len, i, x, s;
+    const unsigned char *Text;
+    int LabelsWidth = 0;    
+    int Space = _Font->m_CharWidth[(int)' '];
+    int LevelSpace = max(_Font->m_CharHeight-6, 4); // space used by DrawHierHandles
+
+    int nh = (int)m_HierTags.size();
+    for( int h=0; h<nh; ++h )
+    {
+        Len = (int)m_HierTags[h].m_Var->m_Label.length();
+        if( Len>0 )
+            Text = (const unsigned char *)(m_HierTags[h].m_Var->m_Label.c_str());
+        else
+        {
+            Text = (const unsigned char *)(m_HierTags[h].m_Var->m_Name.c_str());
+            Len = (int)m_HierTags[h].m_Var->m_Name.length();
+        }
+        x = 0;
+        bool IsCustom = m_HierTags[h].m_Var->IsCustom(); // !m_HierTags[h].m_Var->IsGroup() && (static_cast<const CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type>=TW_TYPE_CUSTOM_BASE && static_cast<const CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size());
+        if( !IsCustom )
+        {
+            if( Space>0 )
+                for( s=0; s<m_HierTags[h].m_Level*LevelSpace; s+=Space )
+                    x += Space;
+            for( i=0; i<Len; ++i )
+                x += _Font->m_CharWidth[(int)Text[i]];
+            x += 3*Space; // add little margin
+        }
+        if (x > LabelsWidth)
+            LabelsWidth = x;
+    }
+
+    return LabelsWidth;
+}
+
+int CTwBar::ComputeValuesWidth(const CTexFont *_Font)
+{
+    CTwFPU fpu; // force fpu precision
+
+    const CTwVarAtom *Atom = NULL;
+    string ValStr;
+    int Len, i, x;
+    int Space = _Font->m_CharWidth[(int)' '];
+    const unsigned char *Text;
+    int ValuesWidth = 0;
+
+    int nh = (int)m_HierTags.size();
+    for( int h=0; h<nh; ++h )
+        if( !m_HierTags[h].m_Var->IsGroup() )
+        {
+            Atom = static_cast<const CTwVarAtom *>(m_HierTags[h].m_Var);
+            Atom->ValueToString(&ValStr);
+
+            Len = (int)ValStr.length();
+            Text = (const unsigned char *)(ValStr.c_str());
+            x = 0;
+            for( i=0; i<Len; ++i )
+                x += _Font->m_CharWidth[(int)Text[i]];
+            x += 2*Space; // add little margin
+            if (x > ValuesWidth)
+                ValuesWidth = x;
+        }
+
+    return ValuesWidth;
+}
+
+//  ---------------------------------------------------------------------------
+
 static int ClampText(string& _Text, const CTexFont *_Font, int _WidthMax)
 {
     int Len = (int)_Text.length();
@@ -4153,6 +4316,9 @@ void CTwBar::Update()
     assert(m_Font);
     ITwGraph *Gr = g_TwMgr->m_Graph;
 
+    if( g_TwMgr->m_WndWidth<=0 || g_TwMgr->m_WndHeight<=0 )
+        return; // graphic window is not ready
+
     bool DoEndDraw = false;
     if( !Gr->IsDrawing() )
     {
@@ -4160,6 +4326,12 @@ void CTwBar::Update()
         DoEndDraw = true;
     }
 
+    bool ValuesWidthFit = false;
+    if( m_ValuesWidth==VALUES_WIDTH_FIT )
+    {
+        ValuesWidthFit = true;
+        m_ValuesWidth = 0;
+    }
     int PrevPosY = m_PosY;
     int vpx, vpy, vpw, vph;
     vpx = 0;
@@ -4215,6 +4387,8 @@ void CTwBar::Update()
             m_ValuesWidth = m_Width-4*m_Font->m_CharHeight;
             Modif = true;
         }
+        if (ValuesWidthFit)
+            Modif = true;
         if( Modif && m_IsHelpBar )
         {
             g_TwMgr->m_HelpBarNotUpToDate = true;
@@ -4259,7 +4433,7 @@ void CTwBar::Update()
         m_VarY2 = m_Height-1;
     }
 
-    int NbLines = (m_VarY1-m_VarY0+1)/(m_Font->m_CharHeight+m_Sep);
+    int NbLines = (m_VarY1-m_VarY0+1)/(m_Font->m_CharHeight+m_LineSep);
     if( NbLines<= 0 )
         NbLines = 1;
     if( !m_IsMinimized )
@@ -4270,6 +4444,21 @@ void CTwBar::Update()
             m_HierTags.resize(NbLines); // remove the last dummy tag
         m_NbHierLines = LineNum;
         m_NbDisplayedLines = (int)m_HierTags.size();
+
+        if( ValuesWidthFit )
+        {
+            m_ValuesWidth = ComputeValuesWidth(m_Font);
+            if( m_ValuesWidth<2*m_Font->m_CharHeight )
+                m_ValuesWidth = 2*m_Font->m_CharHeight; // enough to draw buttons
+            if( m_ValuesWidth>m_VarX2 - m_VarX0 )
+                m_ValuesWidth = max(m_VarX2 - m_VarX0 - m_Font->m_CharHeight, 0);
+            m_VarX1 = m_VarX2 - m_ValuesWidth;
+            if( m_VarX1<m_VarX0+32 )
+                m_VarX1 = m_VarX0+32;
+            if( m_VarX1>m_VarX2 )
+                m_VarX1 = m_VarX2;
+            m_ValuesWidth = m_VarX2 - m_VarX1;
+        }
     }
 
     // scroll bar
@@ -4321,9 +4510,9 @@ void CTwBar::Update()
         ListLabels(Labels, Colors, BgColors, &HasBgColors, m_Font, m_VarX1-m_VarX0, m_VarX2-m_VarX0);
         assert( Labels.size()==Colors.size() && Labels.size()==BgColors.size() );
         if( Labels.size()>0 )
-            Gr->BuildText(m_LabelsTextObj, &(Labels[0]), &(Colors[0]), &(BgColors[0]), (int)Labels.size(), m_Font, 1, HasBgColors ? m_VarX1-m_VarX0-m_Font->m_CharHeight+2 : 0);
+            Gr->BuildText(m_LabelsTextObj, &(Labels[0]), &(Colors[0]), &(BgColors[0]), (int)Labels.size(), m_Font, m_LineSep, HasBgColors ? m_VarX1-m_VarX0-m_Font->m_CharHeight+2 : 0);
         else
-            Gr->BuildText(m_LabelsTextObj, NULL, NULL, NULL, 0, m_Font, 1, 0);
+            Gr->BuildText(m_LabelsTextObj, NULL, NULL, NULL, 0, m_Font, m_LineSep, 0);
 
         // Should draw click button?
         m_DrawClickBtn    = ( m_VarX2-m_VarX1>4*IncrBtnWidth(m_Font->m_CharHeight)
@@ -4352,8 +4541,7 @@ void CTwBar::Update()
                               && m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size()
                               && m_HierTags[m_HighlightedLine].m_Var!=NULL 
                               && !m_HierTags[m_HighlightedLine].m_Var->IsGroup()
-                              && static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_Type>=TW_TYPE_ENUM_BASE 
-                              && static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size()
+                              && IsEnumType(static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_Type)
                               && !static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_ReadOnly );
 
         // Should draw [<>] button (bool)?
@@ -4386,9 +4574,9 @@ void CTwBar::Update()
         ListValues(Values, Colors, BgColors, m_Font, m_VarX2-m_VarX1);
         assert( BgColors.size()==Values.size() && Colors.size()==Values.size() );
         if( Values.size()>0 )
-            Gr->BuildText(m_ValuesTextObj, &(Values[0]), &(Colors[0]), &(BgColors[0]), (int)Values.size(), m_Font, 1, m_VarX2-m_VarX1);
+            Gr->BuildText(m_ValuesTextObj, &(Values[0]), &(Colors[0]), &(BgColors[0]), (int)Values.size(), m_Font, m_LineSep, m_VarX2-m_VarX1);
         else
-            Gr->BuildText(m_ValuesTextObj, NULL, NULL, NULL, 0, m_Font, 1, m_VarX2-m_VarX1);
+            Gr->BuildText(m_ValuesTextObj, NULL, NULL, NULL, 0, m_Font, m_LineSep, m_VarX2-m_VarX1);
 
         // Build key shortcut text
         string Shortcut;
@@ -4416,6 +4604,13 @@ void CTwBar::Update()
         }
         ClampText(Shortcut, m_Font, m_Width-3*m_Font->m_CharHeight);
         Gr->BuildText(m_ShortcutTextObj, &Shortcut, NULL, NULL, 1, m_Font, 0, 0);
+
+        // build headers text
+        if (m_HighlightLabelsHeader || m_HighlightValuesHeader) {
+            std::string HeadersText = "Fit column content";
+            ClampText(HeadersText, m_Font, m_Width-3*m_Font->m_CharHeight);
+            Gr->BuildText(m_HeadersTextObj, &HeadersText, NULL, NULL, 1, m_Font, 0, 0);
+        }
     }
 
     if( DoEndDraw )
@@ -4471,7 +4666,7 @@ void CTwBar::DrawHierHandle()
                 {
                     color32 cb = (Grp->m_StructType==TW_TYPE_HELP_STRUCT) ? m_ColStructBg : m_ColGrpBg;
                     //Gr->DrawRect(x0+dx-1, y0, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1, cb);
-                    Gr->DrawRect(x2+dx+3, y0, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1, cb);
+                    Gr->DrawRect(x2+dx+3, y0, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1+m_LineSep-1, cb);
                 }
 
                 if( m_DrawHandles )
@@ -4481,7 +4676,7 @@ void CTwBar::DrawHierHandle()
                 }
 
                 //Gr->DrawRect(x0+1,y0+dh0+1,x2-1,y0+dh1-1, (h==m_HighlightedLine) ? m_ColHighBtn : m_ColBtn);
-                Gr->DrawRect(dx+x0,y0+dh0, dx+x2,y0+dh1, (h==m_HighlightedLine) ? m_ColHighFold : m_ColFold);
+                Gr->DrawRect(dx+x0, y0+dh0, dx+x2, y0+dh1, (h==m_HighlightedLine) ? m_ColHighFold : m_ColFold);
                 if( m_DrawHandles )
                 {
                     Gr->DrawLine(dx+x0,y0+dh0, dx+x2,y0+dh0, m_ColLine);
@@ -4532,7 +4727,7 @@ void CTwBar::DrawHierHandle()
             }
             */
 
-            y0 = y1+1;
+            y0 = y1+m_LineSep;
         }
     }
 
@@ -4622,7 +4817,7 @@ void CTwBar::DrawHierHandle()
             Gr->DrawLine(xm, m_PosY+3+wm, xm, m_PosY+3, m_ColLine);
             Gr->DrawLine(xm+wm+1, m_PosY+4, xm+wm+1, m_PosY+4+wm, m_ColLineShadow);
             Gr->DrawLine(xm+wm+1, m_PosY+4+wm, xm, m_PosY+4+wm, m_ColLineShadow);
-            Gr->DrawLine(xm+wm/3+((wm<9)?1:0), m_PosY+4+wm/3-((wm<9)?0:1), xm+wm/2+1, m_PosY+2+wm-1, m_ColTitleText, true);
+            Gr->DrawLine(xm+wm/3+((wm<9)?1:0)-1, m_PosY+4+wm/3-((wm<9)?0:1), xm+wm/2, m_PosY+2+wm-1, m_ColTitleText, true);
             Gr->DrawLine(xm+wm-wm/3+((wm<9)?0:1), m_PosY+4+wm/3-((wm<9)?0:1), xm+wm/2, m_PosY+2+wm-1, m_ColTitleText, true);
         }
 
@@ -4645,7 +4840,7 @@ void CTwBar::DrawHierHandle()
 
 //  ---------------------------------------------------------------------------
 
-void CTwBar::Draw()
+void CTwBar::Draw(int _DrawPart)
 {
     PERF( PerfTimer Timer; double DT; )
 
@@ -4674,25 +4869,6 @@ void CTwBar::Draw()
         int y = m_PosY+1;
         int LevelSpace = max(m_Font->m_CharHeight-6, 4); // space used by DrawHierHandles
 
-        // Draw title
-        if( !m_IsPopupList )
-        {
-            PERF( Timer.Reset(); )
-            Gr->DrawRect(m_PosX, m_PosY, m_PosX+m_Width-1, m_PosY+m_Font->m_CharHeight+1, (m_HighlightTitle||m_MouseDragTitle) ? m_ColTitleHighBg : (m_DrawHandles ? m_ColTitleBg : m_ColTitleUnactiveBg));
-            const color32 COL0 = 0x50ffffff;
-            const color32 COL1 = 0x501f1f1f;
-            Gr->DrawRect(m_PosX, m_PosY, m_PosX+m_Width-1, y, COL0, COL0, COL1, COL1);
-            if( m_ColTitleShadow!=0 )
-                Gr->DrawText(m_TitleTextObj, m_PosX+(m_Width-m_TitleWidth)/2+1, m_PosY+1, m_ColTitleShadow, 0);
-            Gr->DrawText(m_TitleTextObj, m_PosX+(m_Width-m_TitleWidth)/2, m_PosY, m_ColTitleText, 0);
-            y = m_PosY+m_Font->m_CharHeight+1;
-            Gr->DrawLine(m_PosX, y, m_PosX+m_Width-1, y, 0x80afafaf);
-            y++;
-            PERF( DT = Timer.GetTime(); printf("Title=%.4fms ", 1000.0*DT); )
-        }
-
-        // Draw background
-        PERF( Timer.Reset(); )
         color32 colBg = m_ColBg, colBg1 = m_ColBg1, colBg2 = m_ColBg2;
         if( m_DrawHandles || m_IsPopupList )
         {
@@ -4706,367 +4882,439 @@ void CTwBar::Draw()
             if( (colBg2>>24)<alphaMin )
                 colBg2 = (colBg2&0xffffff)|(alphaMin<<24);
         }
-        Gr->DrawRect(m_PosX, y, m_PosX+m_Width-1, m_PosY+m_Height-1, colBg2, colBg1, colBg1, colBg);
-        //Gr->DrawRect(m_PosX, y, m_PosX+m_VarX0-5, m_PosY+m_Height-1, m_ColHierBg);
-        Gr->DrawRect(m_PosX+m_VarX2+3, y, m_PosX+m_Width-1, m_PosY+m_Height-1, m_ColHierBg);
-        // Draw highlighted line
-        if( m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && m_HierTags[m_HighlightedLine].m_Var!=NULL
-            && (m_HierTags[m_HighlightedLine].m_Var->IsGroup() || (!static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_ReadOnly && !m_IsHelpBar 
-            && !(static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_Type>=TW_TYPE_CUSTOM_BASE && static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()))) )
-        {
-            int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep);
-            Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1, m_ColHighBg0, m_ColHighBg0, m_ColHighBg1, m_ColHighBg1);
-            int eps = (g_TwMgr->m_GraphAPI==TW_OPENGL) ? 1 : 0;
-            if( !m_EditInPlace.m_Active )
-                Gr->DrawLine(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+m_Font->m_CharHeight+eps, m_PosX+m_VarX2, y0+m_Font->m_CharHeight+eps, m_ColUnderline);
-        }
-        else if( m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && !m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
-        {
-            int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep);
-            color32 col = ColorBlend(m_ColHighBg0, m_ColHighBg1, 0.5f);
-            CTwVarAtom *Atom = static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var);
-            if( !(Atom->m_Type>=TW_TYPE_CUSTOM_BASE && Atom->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) 
-                && !(Atom->m_Type==TW_TYPE_BUTTON && Atom->m_Val.m_Button.m_Callback==NULL) )
-                Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1, col);
-            else
-                Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level+4, y0+m_Font->m_CharHeight-1, col);
-        }
-        color32 clight = 0x5FFFFFFF; // bar contour
-        Gr->DrawLine(m_PosX, m_PosY, m_PosX, m_PosY+m_Height, clight);
-        Gr->DrawLine(m_PosX, m_PosY, m_PosX+m_Width, m_PosY, clight);
-        Gr->DrawLine(m_PosX+m_Width, m_PosY, m_PosX+m_Width, m_PosY+m_Height, clight);
-        Gr->DrawLine(m_PosX, m_PosY+m_Height, m_PosX+m_Width, m_PosY+m_Height, clight);
-        int dshad = 3;  // bar shadows
-        color32 cshad = (((m_Color>>24)/2)<<24) & 0xFF000000;
-        Gr->DrawRect(m_PosX, m_PosY+m_Height, m_PosX+dshad, m_PosY+m_Height+dshad, 0, cshad, 0, 0);
-        Gr->DrawRect(m_PosX+dshad+1, m_PosY+m_Height, m_PosX+m_Width-1, m_PosY+m_Height+dshad, cshad, cshad, 0, 0);
-        Gr->DrawRect(m_PosX+m_Width, m_PosY+m_Height, m_PosX+m_Width+dshad, m_PosY+m_Height+dshad, cshad, 0, 0, 0);
-        Gr->DrawRect(m_PosX+m_Width, m_PosY, m_PosX+m_Width+dshad, m_PosY+dshad, 0, 0, cshad, 0);
-        Gr->DrawRect(m_PosX+m_Width, m_PosY+dshad+1, m_PosX+m_Width+dshad, m_PosY+m_Height-1, cshad, 0, cshad, 0);
-        PERF( DT = Timer.GetTime(); printf("Bg=%.4fms ", 1000.0*DT); )
 
-        // Draw hierarchy handle
-        PERF( Timer.Reset(); )
-        DrawHierHandle();
-        PERF( DT = Timer.GetTime(); printf("Handles=%.4fms ", 1000.0*DT); )
-
-        // Draw labels
-        PERF( Timer.Reset(); )
-        Gr->DrawText(m_LabelsTextObj, m_PosX+LevelSpace+6, m_PosY+m_VarY0, 0 /*m_ColLabelText*/, 0);
-        PERF( DT = Timer.GetTime(); printf("Labels=%.4fms ", 1000.0*DT); )
-
-        // Draw values
+        // Draw title
         if( !m_IsPopupList )
         {
             PERF( Timer.Reset(); )
-            Gr->DrawText(m_ValuesTextObj, m_PosX+m_VarX1, m_PosY+m_VarY0, 0 /*m_ColValText*/, 0 /*m_ColValBg*/);
-            PERF( DT = Timer.GetTime(); printf("Values=%.4fms ", 1000.0*DT); )
+            if( _DrawPart&DRAW_BG )
+            {
+                //Gr->DrawRect(m_PosX, m_PosY, m_PosX+m_Width-1, m_PosY+m_Font->m_CharHeight+1, (m_HighlightTitle||m_MouseDragTitle) ? m_ColTitleHighBg : (m_DrawHandles ? m_ColTitleBg : m_ColTitleUnactiveBg));
+                if( m_HighlightTitle || m_MouseDragTitle )
+                    Gr->DrawRect(m_PosX, m_PosY, m_PosX+m_Width-1, m_PosY+m_Font->m_CharHeight+1, m_ColTitleHighBg);
+                else if (m_DrawHandles)
+                    Gr->DrawRect(m_PosX, m_PosY, m_PosX+m_Width-1, m_PosY+m_Font->m_CharHeight+1, m_ColTitleBg, m_ColTitleBg, colBg2, colBg1);
+                else
+                    Gr->DrawRect(m_PosX, m_PosY, m_PosX+m_Width-1, m_PosY+m_Font->m_CharHeight+1, m_ColTitleBg, m_ColTitleBg, colBg2, colBg1);
+            }
+            if( _DrawPart&DRAW_CONTENT )
+            {
+                const color32 COL0 = 0x50ffffff;
+                const color32 COL1 = 0x501f1f1f;
+                Gr->DrawRect(m_PosX, m_PosY, m_PosX+m_Width-1, y, COL0, COL0, COL1, COL1);
+                if( m_ColTitleShadow!=0 )
+                    Gr->DrawText(m_TitleTextObj, m_PosX+(m_Width-m_TitleWidth)/2+1, m_PosY+1, m_ColTitleShadow, 0);
+                Gr->DrawText(m_TitleTextObj, m_PosX+(m_Width-m_TitleWidth)/2, m_PosY, m_ColTitleText, 0);
+            }
+            y = m_PosY+m_Font->m_CharHeight+1;
+            if( _DrawPart&DRAW_CONTENT && m_DrawHandles )
+                Gr->DrawLine(m_PosX, y, m_PosX+m_Width-1, y, 0x30ffffff); // 0x80afafaf);
+            y++;
+            PERF( DT = Timer.GetTime(); printf("Title=%.4fms ", 1000.0*DT); )
         }
 
-        // Draw preview for color values and draw buttons and custom types
-        int h, nh = (int)m_HierTags.size();
-        int yh = m_PosY+m_VarY0;
-        int bw = IncrBtnWidth(m_Font->m_CharHeight);
-        for( h=0; h<nh; ++h )
+        // Draw background
+        PERF( Timer.Reset(); )
+        if( _DrawPart&DRAW_BG )
         {
-            if( m_HierTags[h].m_Var->IsGroup() )
+            Gr->DrawRect(m_PosX, y, m_PosX+m_Width-1, m_PosY+m_Height-1, colBg2, colBg1, colBg1, colBg);
+            //Gr->DrawRect(m_PosX, y, m_PosX+m_VarX0-5, m_PosY+m_Height-1, m_ColHierBg);
+            Gr->DrawRect(m_PosX+m_VarX2+3, y, m_PosX+m_Width-1, m_PosY+m_Height-1, m_ColHierBg);
+        }
+
+        if( _DrawPart&DRAW_CONTENT )
+        {
+            // Draw highlighted line
+            if( m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && m_HierTags[m_HighlightedLine].m_Var!=NULL
+                && (m_HierTags[m_HighlightedLine].m_Var->IsGroup() 
+                    || (!static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_ReadOnly && !m_IsHelpBar 
+                        && !m_HierTags[m_HighlightedLine].m_Var->IsCustom() ) ) ) // !(static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_Type>=TW_TYPE_CUSTOM_BASE && static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var)->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()))) )
             {
-                const CTwVarGroup * Grp = static_cast<const CTwVarGroup *>(m_HierTags[h].m_Var);
-                if( Grp->m_SummaryCallback==CColorExt::SummaryCB && Grp->m_StructValuePtr!=NULL )
-                {
-                    // draw color value
-                    if( Grp->m_Vars.size()>0 && Grp->m_Vars[0]!=NULL && !Grp->m_Vars[0]->IsGroup() )
-                        static_cast<CTwVarAtom *>(Grp->m_Vars[0])->ValueToDouble(); // force ext update
-                    int ydecal = (g_TwMgr->m_GraphAPI==TW_OPENGL) ? 1 : 0;
-                    const int checker = 8;
-                    for( int c=0; c<checker; ++c )
-                        Gr->DrawRect(m_PosX+m_VarX1+(c*(m_VarX2-m_VarX1))/checker, yh+1+ydecal+((c%2)*(m_Font->m_CharHeight-2))/2, m_PosX+m_VarX1-1+((c+1)*(m_VarX2-m_VarX1))/checker, yh+ydecal+(((c%2)+1)*(m_Font->m_CharHeight-2))/2, 0xffffffff);
-                    Gr->DrawRect(m_PosX+m_VarX1, yh+1+ydecal, m_PosX+m_VarX2-1, yh+ydecal+m_Font->m_CharHeight-2, 0xbfffffff);
-                    const CColorExt *colExt = static_cast<const CColorExt *>(Grp->m_StructValuePtr);
-                    color32 col = Color32FromARGBi((colExt->m_HasAlpha ? colExt->A : 255), colExt->R, colExt->G, colExt->B);
-                    if( col!=0 )
-                        Gr->DrawRect(m_PosX+m_VarX1, yh+1+ydecal, m_PosX+m_VarX2-1, yh+ydecal+m_Font->m_CharHeight-2, col);
-                    /*
-                    Gr->DrawLine(m_PosX+m_VarX1-1, yh, m_PosX+m_VarX2+1, yh, 0xff000000);
-                    Gr->DrawLine(m_PosX+m_VarX1-1, yh+m_Font->m_CharHeight, m_PosX+m_VarX2+1, yh+m_Font->m_CharHeight, 0xff000000);
-                    Gr->DrawLine(m_PosX+m_VarX1-1, yh, m_PosX+m_VarX1-1, yh+m_Font->m_CharHeight, 0xff000000);
-                    Gr->DrawLine(m_PosX+m_VarX2, yh, m_PosX+m_VarX2, yh+m_Font->m_CharHeight, 0xff000000);
-                    */
-                }
-                //else if( Grp->m_SummaryCallback==CustomTypeSummaryCB && Grp->m_StructValuePtr!=NULL )
-                //{
-                //}
+                int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep);
+                Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1+m_LineSep-1, m_ColHighBg0, m_ColHighBg0, m_ColHighBg1, m_ColHighBg1);
+                int eps = (g_TwMgr->m_GraphAPI==TW_OPENGL || g_TwMgr->m_GraphAPI==TW_OPENGL_CORE) ? 1 : 0;
+                if( !m_EditInPlace.m_Active )
+                    Gr->DrawLine(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+m_Font->m_CharHeight+m_LineSep-1+eps, m_PosX+m_VarX2, y0+m_Font->m_CharHeight+m_LineSep-1+eps, m_ColUnderline);
             }
-            else if( static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type==TW_TYPE_BUTTON && !m_IsPopupList )
+            else if( m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && !m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
             {
-                // draw button
-                int cbx0 = m_PosX+m_VarX2-2*bw+bw/2, cby0 = yh+2, cbx1 = m_PosX+m_VarX2-2-bw/2, cby1 = yh+m_Font->m_CharHeight-4;
-                if( !static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_ReadOnly )
+                int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep);
+                color32 col = ColorBlend(m_ColHighBg0, m_ColHighBg1, 0.5f);
+                CTwVarAtom *Atom = static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var);
+                if( !Atom->IsCustom() // !(Atom->m_Type>=TW_TYPE_CUSTOM_BASE && Atom->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) 
+                    && !(Atom->m_Type==TW_TYPE_BUTTON && Atom->m_Val.m_Button.m_Callback==NULL) )
+                    Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+m_VarX2, y0+m_Font->m_CharHeight-1+m_LineSep-1, col);
+                else
+                    Gr->DrawRect(m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level, y0+1, m_PosX+LevelSpace+6+LevelSpace*m_HierTags[m_HighlightedLine].m_Level+4, y0+m_Font->m_CharHeight-1+m_LineSep-1, col);
+            }
+            color32 clight = 0x5FFFFFFF; // bar contour
+            Gr->DrawLine(m_PosX, m_PosY, m_PosX, m_PosY+m_Height, clight);
+            Gr->DrawLine(m_PosX, m_PosY, m_PosX+m_Width, m_PosY, clight);
+            Gr->DrawLine(m_PosX+m_Width, m_PosY, m_PosX+m_Width, m_PosY+m_Height, clight);
+            Gr->DrawLine(m_PosX, m_PosY+m_Height, m_PosX+m_Width, m_PosY+m_Height, clight);
+            int dshad = 3;  // bar shadows
+            color32 cshad = (((m_Color>>24)/2)<<24) & 0xFF000000;
+            Gr->DrawRect(m_PosX, m_PosY+m_Height, m_PosX+dshad, m_PosY+m_Height+dshad, 0, cshad, 0, 0);
+            Gr->DrawRect(m_PosX+dshad+1, m_PosY+m_Height, m_PosX+m_Width-1, m_PosY+m_Height+dshad, cshad, cshad, 0, 0);
+            Gr->DrawRect(m_PosX+m_Width, m_PosY+m_Height, m_PosX+m_Width+dshad, m_PosY+m_Height+dshad, cshad, 0, 0, 0);
+            Gr->DrawRect(m_PosX+m_Width, m_PosY, m_PosX+m_Width+dshad, m_PosY+dshad, 0, 0, cshad, 0);
+            Gr->DrawRect(m_PosX+m_Width, m_PosY+dshad+1, m_PosX+m_Width+dshad, m_PosY+m_Height-1, cshad, 0, cshad, 0);
+            PERF( DT = Timer.GetTime(); printf("Bg=%.4fms ", 1000.0*DT); )
+
+            // Draw hierarchy handle
+            PERF( Timer.Reset(); )
+            DrawHierHandle();
+            PERF( DT = Timer.GetTime(); printf("Handles=%.4fms ", 1000.0*DT); )
+
+            // Draw labels
+            PERF( Timer.Reset(); )
+            Gr->DrawText(m_LabelsTextObj, m_PosX+LevelSpace+6, m_PosY+m_VarY0, 0 /*m_ColLabelText*/, 0);
+            PERF( DT = Timer.GetTime(); printf("Labels=%.4fms ", 1000.0*DT); )
+
+            // Draw values
+            if( !m_IsPopupList )
+            {
+                PERF( Timer.Reset(); )
+                Gr->DrawText(m_ValuesTextObj, m_PosX+m_VarX1, m_PosY+m_VarY0, 0 /*m_ColValText*/, 0 /*m_ColValBg*/);
+                PERF( DT = Timer.GetTime(); printf("Values=%.4fms ", 1000.0*DT); )
+            }
+
+            // Draw preview for color values and draw buttons and custom types
+            int h, nh = (int)m_HierTags.size();
+            int yh = m_PosY+m_VarY0;
+            int bw = IncrBtnWidth(m_Font->m_CharHeight);
+            for( h=0; h<nh; ++h )
+            {
+                if( m_HierTags[h].m_Var->IsGroup() )
                 {
-                    double BtnAutoDelta = g_TwMgr->m_Timer.GetTime() - m_HighlightClickBtnAuto;
-                    if( (m_HighlightClickBtn || (BtnAutoDelta>=0 && BtnAutoDelta<0.1)) && h==m_HighlightedLine )
+                    const CTwVarGroup * Grp = static_cast<const CTwVarGroup *>(m_HierTags[h].m_Var);
+                    if( Grp->m_SummaryCallback==CColorExt::SummaryCB && Grp->m_StructValuePtr!=NULL )
                     {
-                        cbx0--; cby0--; cbx1--; cby1--;
-                        Gr->DrawRect(cbx0+2, cby0+2, cbx1+2, cby1+2, m_ColHighBtn);
-                        Gr->DrawLine(cbx0+3, cby1+3, cbx1+4, cby1+3, 0xAF000000);
-                        Gr->DrawLine(cbx1+3, cby0+3, cbx1+3, cby1+3, 0xAF000000);                       
-                        Gr->DrawLine(cbx0+2, cby0+2, cbx0+2, cby1+2, m_ColLine);
-                        Gr->DrawLine(cbx0+2, cby1+2, cbx1+2, cby1+2, m_ColLine);
-                        Gr->DrawLine(cbx1+2, cby1+2, cbx1+2, cby0+2, m_ColLine);
-                        Gr->DrawLine(cbx1+2, cby0+2, cbx0+2, cby0+2, m_ColLine);
+                        // draw color value
+                        if( Grp->m_Vars.size()>0 && Grp->m_Vars[0]!=NULL && !Grp->m_Vars[0]->IsGroup() )
+                            static_cast<CTwVarAtom *>(Grp->m_Vars[0])->ValueToDouble(); // force ext update
+                        int ydecal = (g_TwMgr->m_GraphAPI==TW_OPENGL || g_TwMgr->m_GraphAPI==TW_OPENGL_CORE) ? 1 : 0;
+                        const int checker = 8;
+                        for( int c=0; c<checker; ++c )
+                            Gr->DrawRect(m_PosX+m_VarX1+(c*(m_VarX2-m_VarX1))/checker, yh+1+ydecal+((c%2)*(m_Font->m_CharHeight-2))/2, m_PosX+m_VarX1-1+((c+1)*(m_VarX2-m_VarX1))/checker, yh+ydecal+(((c%2)+1)*(m_Font->m_CharHeight-2))/2, 0xffffffff);
+                        Gr->DrawRect(m_PosX+m_VarX1, yh+1+ydecal, m_PosX+m_VarX2-1, yh+ydecal+m_Font->m_CharHeight-2, 0xbfffffff);
+                        const CColorExt *colExt = static_cast<const CColorExt *>(Grp->m_StructValuePtr);
+                        color32 col = Color32FromARGBi((colExt->m_HasAlpha ? colExt->A : 255), colExt->R, colExt->G, colExt->B);
+                        if( col!=0 )
+                            Gr->DrawRect(m_PosX+m_VarX1, yh+1+ydecal, m_PosX+m_VarX2-1, yh+ydecal+m_Font->m_CharHeight-2, col);
+                        /*
+                        Gr->DrawLine(m_PosX+m_VarX1-1, yh, m_PosX+m_VarX2+1, yh, 0xff000000);
+                        Gr->DrawLine(m_PosX+m_VarX1-1, yh+m_Font->m_CharHeight, m_PosX+m_VarX2+1, yh+m_Font->m_CharHeight, 0xff000000);
+                        Gr->DrawLine(m_PosX+m_VarX1-1, yh, m_PosX+m_VarX1-1, yh+m_Font->m_CharHeight, 0xff000000);
+                        Gr->DrawLine(m_PosX+m_VarX2, yh, m_PosX+m_VarX2, yh+m_Font->m_CharHeight, 0xff000000);
+                        */
+                    }
+                    //else if( Grp->m_SummaryCallback==CustomTypeSummaryCB && Grp->m_StructValuePtr!=NULL )
+                    //{
+                    //}
+                }
+                else if( static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type==TW_TYPE_BUTTON && !m_IsPopupList )
+                {
+                    // draw button
+                    int cbx0, cbx1;
+                    if( m_ButtonAlign == BUTTON_ALIGN_LEFT )
+                    {
+                        cbx0 = m_PosX+m_VarX1+2;
+                        cbx1 = m_PosX+m_VarX1+bw;
+                    }
+                    else if( m_ButtonAlign == BUTTON_ALIGN_CENTER )
+                    {
+                        cbx0 = m_PosX+(m_VarX1+m_VarX2)/2-bw/2+1;
+                        cbx1 = m_PosX+(m_VarX1+m_VarX2)/2+bw/2-1;
                     }
                     else
                     {
-                        Gr->DrawRect(cbx0+2, cby1+1, cbx1+2, cby1+2, (h==m_HighlightedLine)?0xAF000000:0x7F000000);
-                        Gr->DrawRect(cbx1+1, cby0+2, cbx1+2, cby1, (h==m_HighlightedLine)?0xAF000000:0x7F000000);
-                        Gr->DrawRect(cbx0, cby0, cbx1, cby1, (h==m_HighlightedLine)?m_ColHighBtn:m_ColBtn);
-                        Gr->DrawLine(cbx0, cby0, cbx0, cby1, m_ColLine);
-                        Gr->DrawLine(cbx0, cby1, cbx1, cby1, m_ColLine);
-                        Gr->DrawLine(cbx1, cby1, cbx1, cby0, m_ColLine);
-                        Gr->DrawLine(cbx1, cby0, cbx0, cby0, m_ColLine);
+                        cbx0 = m_PosX+m_VarX2-2*bw+bw/2;
+                        cbx1 = m_PosX+m_VarX2-2-bw/2;
                     }
-                }
-                else if( static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Val.m_Button.m_Callback!=NULL )
-                {
-                    Gr->DrawRect(cbx0+1, cby0+1, cbx1+1, cby1+1, m_ColBtn);
-                }
-                else if( static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Val.m_Button.m_Separator==1 )
-                {
-                    int LevelSpace = max(m_Font->m_CharHeight-6, 4); // space used by DrawHierHandles
-                    Gr->DrawLine(m_PosX+m_VarX0+m_HierTags[h].m_Level*LevelSpace, yh+m_Font->m_CharHeight/2, m_PosX+m_VarX2, yh+m_Font->m_CharHeight/2, m_ColSeparator );
-                }
-            }
-            else if( static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type>=TW_TYPE_CUSTOM_BASE && static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size() )
-            {   // record custom types
-                CTwMgr::CMemberProxy *mProxy = static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Val.m_Custom.m_MemberProxy;
-                if( mProxy!=NULL && mProxy->m_StructProxy!=NULL )
-                {
-                    CustomMap::iterator it = m_CustomRecords.find(mProxy->m_StructProxy);
-                    int xMin = m_PosX + m_VarX0 + m_HierTags[h].m_Level*LevelSpace;
-                    int xMax = m_PosX + m_VarX2 - 2;
-                    int yMin = yh + 1;
-                    int yMax = yh + m_Font->m_CharHeight;
-                    if( it==m_CustomRecords.end() )
+                    int cby0 = yh+3;
+                    int cby1 = yh+m_Font->m_CharHeight-3;
+                    if( !static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_ReadOnly )
                     {
-                        std::pair<CTwMgr::CStructProxy*, CCustomRecord> pr;
-                        pr.first = mProxy->m_StructProxy;
-                        pr.second.m_IndexMin = pr.second.m_IndexMax = mProxy->m_MemberIndex;
-                        pr.second.m_XMin = xMin; 
-                        pr.second.m_XMax = xMax;
-                        pr.second.m_YMin = yMin;
-                        pr.second.m_YMax = yMax;
-                        pr.second.m_Y0 = 0; // will be filled by the draw loop below
-                        pr.second.m_Y1 = 0; // will be filled by the draw loop below
-                        pr.second.m_Var = mProxy->m_VarParent;
-                        m_CustomRecords.insert(pr);
+                        double BtnAutoDelta = g_TwMgr->m_Timer.GetTime() - m_HighlightClickBtnAuto;
+                        if( (m_HighlightClickBtn || (BtnAutoDelta>=0 && BtnAutoDelta<0.1)) && h==m_HighlightedLine )
+                        {
+                            cbx0--; cby0--; cbx1--; cby1--;
+                            Gr->DrawRect(cbx0+2, cby0+2, cbx1+2, cby1+2, m_ColHighBtn);
+                            Gr->DrawLine(cbx0+3, cby1+3, cbx1+4, cby1+3, 0xAF000000);
+                            Gr->DrawLine(cbx1+3, cby0+3, cbx1+3, cby1+3, 0xAF000000);                       
+                            Gr->DrawLine(cbx0+2, cby0+2, cbx0+2, cby1+2, m_ColLine);
+                            Gr->DrawLine(cbx0+2, cby1+2, cbx1+2, cby1+2, m_ColLine);
+                            Gr->DrawLine(cbx1+2, cby1+2, cbx1+2, cby0+2, m_ColLine);
+                            Gr->DrawLine(cbx1+2, cby0+2, cbx0+2, cby0+2, m_ColLine);
+                        }
+                        else
+                        {
+                            Gr->DrawRect(cbx0+2, cby1+1, cbx1+2, cby1+2, (h==m_HighlightedLine)?0xAF000000:0x7F000000);
+                            Gr->DrawRect(cbx1+1, cby0+2, cbx1+2, cby1, (h==m_HighlightedLine)?0xAF000000:0x7F000000);
+                            Gr->DrawRect(cbx0, cby0, cbx1, cby1, (h==m_HighlightedLine)?m_ColHighBtn:m_ColBtn);
+                            Gr->DrawLine(cbx0, cby0, cbx0, cby1, m_ColLine);
+                            Gr->DrawLine(cbx0, cby1, cbx1, cby1, m_ColLine);
+                            Gr->DrawLine(cbx1, cby1, cbx1, cby0, m_ColLine);
+                            Gr->DrawLine(cbx1, cby0, cbx0, cby0, m_ColLine);
+                        }
                     }
-                    else
+                    else if( static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Val.m_Button.m_Callback!=NULL )
                     {
-                        it->second.m_IndexMin = min(it->second.m_IndexMin, mProxy->m_MemberIndex);
-                        it->second.m_IndexMax = min(it->second.m_IndexMax, mProxy->m_MemberIndex);
-                        it->second.m_XMin = min(it->second.m_XMin, xMin);
-                        it->second.m_XMax = max(it->second.m_XMax, xMax);
-                        it->second.m_YMin = min(it->second.m_YMin, yMin);
-                        it->second.m_YMax = max(it->second.m_YMax, yMax);
-                        it->second.m_Y0 = 0;
-                        it->second.m_Y1 = 0;
-                        assert( it->second.m_Var==mProxy->m_VarParent );
+                        Gr->DrawRect(cbx0+1, cby0+1, cbx1+1, cby1+1, m_ColBtn);
                     }
-                }
-            }
-
-            yh += m_Font->m_CharHeight+m_Sep;
-        }
-
-        // Draw custom types
-        for( CustomMap::iterator it = m_CustomRecords.begin(); it!=m_CustomRecords.end(); ++it )
-        {
-            CTwMgr::CStructProxy *sProxy = it->first;
-            assert( sProxy!=NULL );
-            CCustomRecord& r = it->second;
-            if( sProxy->m_CustomDrawCallback!=NULL )
-            {
-                int y0 = r.m_YMin - max(r.m_IndexMin - sProxy->m_CustomIndexFirst, 0)*(m_Font->m_CharHeight + m_Sep);
-                int y1 = y0 + max(sProxy->m_CustomIndexLast - sProxy->m_CustomIndexFirst + 1, 0)*(m_Font->m_CharHeight + m_Sep) - 2;
-                if( y0<y1 )
-                {
-                    r.m_Y0 = y0;
-                    r.m_Y1 = y1;
-                    Gr->ChangeViewport(r.m_XMin, r.m_YMin, r.m_XMax-r.m_XMin+1, r.m_YMax-r.m_YMin+1, 0, y0-r.m_YMin+1);
-                    sProxy->m_CustomDrawCallback(r.m_XMax-r.m_XMin, y1-y0, sProxy->m_StructExtData, sProxy->m_StructClientData, this, r.m_Var);
-                    Gr->RestoreViewport();
-                }
-            }
-        }
-
-        if( m_DrawHandles && !m_IsPopupList )
-        {
-            // Draw -/+/o/click/v buttons
-            if( (m_DrawIncrDecrBtn || m_DrawClickBtn || m_DrawListBtn || m_DrawBoolBtn || m_DrawRotoBtn) && m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() )
-            {
-                int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep);
-                if( m_DrawIncrDecrBtn )
-                {
-                    bool IsMin = false;
-                    bool IsMax = false;
-                    if( !m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
+                    else if( static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Val.m_Button.m_Separator==1 )
                     {
-                        const CTwVarAtom *Atom = static_cast<const CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var);
-                        double v, vmin, vmax;
-                        v = Atom->ValueToDouble();
-                        Atom->MinMaxStepToDouble(&vmin, &vmax, NULL);
-                        IsMax = (v>=vmax);
-                        IsMin = (v<=vmin);
+                        int LevelSpace = max(m_Font->m_CharHeight-6, 4); // space used by DrawHierHandles
+                        Gr->DrawLine(m_PosX+m_VarX0+m_HierTags[h].m_Level*LevelSpace, yh+m_Font->m_CharHeight/2, m_PosX+m_VarX2, yh+m_Font->m_CharHeight/2, m_ColSeparator );
+                    }
+                }
+                else if( m_HierTags[h].m_Var->IsCustom() ) //static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type>=TW_TYPE_CUSTOM_BASE && static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size() )
+                {   // record custom types
+                    CTwMgr::CMemberProxy *mProxy = static_cast<CTwVarAtom *>(m_HierTags[h].m_Var)->m_Val.m_Custom.m_MemberProxy;
+                    if( mProxy!=NULL && mProxy->m_StructProxy!=NULL )
+                    {
+                        CustomMap::iterator it = m_CustomRecords.find(mProxy->m_StructProxy);
+                        int xMin = m_PosX + m_VarX0 + m_HierTags[h].m_Level*LevelSpace;
+                        int xMax = m_PosX + m_VarX2 - 2;
+                        int yMin = yh + 1;
+                        int yMax = yh + m_Font->m_CharHeight;
+                        if( it==m_CustomRecords.end() )
+                        {
+                            std::pair<CTwMgr::CStructProxy*, CCustomRecord> pr;
+                            pr.first = mProxy->m_StructProxy;
+                            pr.second.m_IndexMin = pr.second.m_IndexMax = mProxy->m_MemberIndex;
+                            pr.second.m_XMin = xMin; 
+                            pr.second.m_XMax = xMax;
+                            pr.second.m_YMin = yMin;
+                            pr.second.m_YMax = yMax;
+                            pr.second.m_Y0 = 0; // will be filled by the draw loop below
+                            pr.second.m_Y1 = 0; // will be filled by the draw loop below
+                            pr.second.m_Var = mProxy->m_VarParent;
+                            m_CustomRecords.insert(pr);
+                        }
+                        else
+                        {
+                            it->second.m_IndexMin = min(it->second.m_IndexMin, mProxy->m_MemberIndex);
+                            it->second.m_IndexMax = min(it->second.m_IndexMax, mProxy->m_MemberIndex);
+                            it->second.m_XMin = min(it->second.m_XMin, xMin);
+                            it->second.m_XMax = max(it->second.m_XMax, xMax);
+                            it->second.m_YMin = min(it->second.m_YMin, yMin);
+                            it->second.m_YMax = max(it->second.m_YMax, yMax);
+                            it->second.m_Y0 = 0;
+                            it->second.m_Y1 = 0;
+                            assert( it->second.m_Var==mProxy->m_VarParent );
+                        }
+                    }
+                }
+
+                yh += m_Font->m_CharHeight+m_LineSep;
+            }
+
+            // Draw custom types
+            for( CustomMap::iterator it = m_CustomRecords.begin(); it!=m_CustomRecords.end(); ++it )
+            {
+                CTwMgr::CStructProxy *sProxy = it->first;
+                assert( sProxy!=NULL );
+                CCustomRecord& r = it->second;
+                if( sProxy->m_CustomDrawCallback!=NULL )
+                {
+                    int y0 = r.m_YMin - max(r.m_IndexMin - sProxy->m_CustomIndexFirst, 0)*(m_Font->m_CharHeight + m_LineSep);
+                    int y1 = y0 + max(sProxy->m_CustomIndexLast - sProxy->m_CustomIndexFirst + 1, 0)*(m_Font->m_CharHeight + m_LineSep) - 2;
+                    if( y0<y1 )
+                    {
+                        r.m_Y0 = y0;
+                        r.m_Y1 = y1;
+                        Gr->ChangeViewport(r.m_XMin, r.m_YMin, r.m_XMax-r.m_XMin+1, r.m_YMax-r.m_YMin+1, 0, y0-r.m_YMin+1);
+                        sProxy->m_CustomDrawCallback(r.m_XMax-r.m_XMin, y1-y0, sProxy->m_StructExtData, sProxy->m_StructClientData, this, r.m_Var);
+                        Gr->RestoreViewport();
+                    }
+                }
+            }
+
+            if( m_DrawHandles && !m_IsPopupList )
+            {
+                // Draw -/+/o/click/v buttons
+                if( (m_DrawIncrDecrBtn || m_DrawClickBtn || m_DrawListBtn || m_DrawBoolBtn || m_DrawRotoBtn) && m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() )
+                {
+                    int y0 = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep);
+                    if( m_DrawIncrDecrBtn )
+                    {
+                        bool IsMin = false;
+                        bool IsMax = false;
+                        if( !m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
+                        {
+                            const CTwVarAtom *Atom = static_cast<const CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var);
+                            double v, vmin, vmax;
+                            v = Atom->ValueToDouble();
+                            Atom->MinMaxStepToDouble(&vmin, &vmax, NULL);
+                            IsMax = (v>=vmax);
+                            IsMin = (v<=vmin);
+                        }
+
+                        /*
+                        Gr->DrawRect(m_PosX+m_VarX2-2*bw+1, y0+1, m_PosX+m_VarX2-bw-1, y0+m_Font->m_CharHeight-2, (m_HighlightDecrBtn && !IsMin)?m_ColHighBtn:m_ColBtn);
+                        Gr->DrawRect(m_PosX+m_VarX2-bw+1, y0+1, m_PosX+m_VarX2-1, y0+m_Font->m_CharHeight-2, (m_HighlightIncrBtn && !IsMax)?m_ColHighBtn:m_ColBtn);
+                        // [-]
+                        Gr->DrawLine(m_PosX+m_VarX2-2*bw+3+(bw>8?1:0), y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw-2-(bw>8?1:0), y0+m_Font->m_CharHeight/2, IsMin?m_ColValTextRO:m_ColTitleText);
+                        // [+]
+                        Gr->DrawLine(m_PosX+m_VarX2-bw+3, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-2, y0+m_Font->m_CharHeight/2, IsMax?m_ColValTextRO:m_ColTitleText);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw/2, y0+m_Font->m_CharHeight/2-bw/2+2, m_PosX+m_VarX2-bw/2, y0+m_Font->m_CharHeight/2+bw/2-1, IsMax?m_ColValTextRO:m_ColTitleText);
+                        */
+                        Gr->DrawRect(m_PosX+m_VarX2-3*bw+1, y0+1, m_PosX+m_VarX2-2*bw-1, y0+m_Font->m_CharHeight-2, (m_HighlightDecrBtn && !IsMin)?m_ColHighBtn:m_ColBtn);
+                        Gr->DrawRect(m_PosX+m_VarX2-2*bw+1, y0+1, m_PosX+m_VarX2-bw-1, y0+m_Font->m_CharHeight-2, (m_HighlightIncrBtn && !IsMax)?m_ColHighBtn:m_ColBtn);
+                        // [-]
+                        Gr->DrawLine(m_PosX+m_VarX2-3*bw+3+(bw>8?1:0), y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-2*bw-2-(bw>8?1:0), y0+m_Font->m_CharHeight/2, IsMin?m_ColValTextRO:m_ColTitleText);
+                        // [+]
+                        Gr->DrawLine(m_PosX+m_VarX2-2*bw+3, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw-2, y0+m_Font->m_CharHeight/2, IsMax?m_ColValTextRO:m_ColTitleText);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw-bw/2, y0+m_Font->m_CharHeight/2-bw/2+2, m_PosX+m_VarX2-bw-bw/2, y0+m_Font->m_CharHeight/2+bw/2-1, IsMax?m_ColValTextRO:m_ColTitleText);
+                    }
+                    else if( m_DrawListBtn )
+                    {
+                        // [v]
+                        int eps = 1;
+                        int dx = -1;
+                        Gr->DrawRect(m_PosX+m_VarX2-bw+1, y0+1, m_PosX+m_VarX2-1, y0+m_Font->m_CharHeight-2, m_HighlightListBtn?m_ColHighBtn:m_ColBtn);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw+4+dx, y0+m_Font->m_CharHeight/2-eps, m_PosX+m_VarX2-bw/2+1+dx, y0+m_Font->m_CharHeight-4, m_ColTitleText, true);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw/2+1+dx, y0+m_Font->m_CharHeight-4, m_PosX+m_VarX2-2+dx, y0+m_Font->m_CharHeight/2-1, m_ColTitleText, true);
+                    }
+                    else if( m_DrawBoolBtn )
+                    {
+                        Gr->DrawRect(m_PosX+m_VarX2-bw+1, y0+1, m_PosX+m_VarX2-1, y0+m_Font->m_CharHeight-2, m_HighlightBoolBtn?m_ColHighBtn:m_ColBtn);
+                        // [x]
+                        //Gr->DrawLine(m_PosX+m_VarX2-bw/2-bw/6, y0+m_Font->m_CharHeight/2-bw/6, m_PosX+m_VarX2-bw/2+bw/6, y0+m_Font->m_CharHeight/2+bw/6, m_ColTitleText, true);
+                        //Gr->DrawLine(m_PosX+m_VarX2-bw/2-bw/6, y0+m_Font->m_CharHeight/2+bw/6, m_PosX+m_VarX2-bw/2+bw/6, y0+m_Font->m_CharHeight/2-bw/6, m_ColTitleText, true);
+                        // [<>]
+                        int s = bw/4;
+                        int eps = 1;
+                        Gr->DrawLine(m_PosX+m_VarX2-bw/2-1, y0+m_Font->m_CharHeight/2-s, m_PosX+m_VarX2-bw/2-s-1, y0+m_Font->m_CharHeight/2, m_ColTitleText, true);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw/2-s-1, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw/2-eps, y0+m_Font->m_CharHeight/2+s+1-eps, m_ColTitleText, true);
+                        //Gr->DrawLine(m_PosX+m_VarX2-bw/2+1, y0+m_Font->m_CharHeight/2+s, m_PosX+m_VarX2-bw/2+s+1, y0+m_Font->m_CharHeight/2, m_ColTitleText, true);
+                        //Gr->DrawLine(m_PosX+m_VarX2-bw/2+s+1, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw/2+1, y0+m_Font->m_CharHeight/2-s, m_ColTitleText, true);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw/2+2, y0+m_Font->m_CharHeight/2-s, m_PosX+m_VarX2-bw/2+s+2, y0+m_Font->m_CharHeight/2, m_ColTitleText, true);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw/2+s+2, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw/2+1+eps, y0+m_Font->m_CharHeight/2+s+1-eps, m_ColTitleText, true);
                     }
 
-                    /*
-                    Gr->DrawRect(m_PosX+m_VarX2-2*bw+1, y0+1, m_PosX+m_VarX2-bw-1, y0+m_Font->m_CharHeight-2, (m_HighlightDecrBtn && !IsMin)?m_ColHighBtn:m_ColBtn);
-                    Gr->DrawRect(m_PosX+m_VarX2-bw+1, y0+1, m_PosX+m_VarX2-1, y0+m_Font->m_CharHeight-2, (m_HighlightIncrBtn && !IsMax)?m_ColHighBtn:m_ColBtn);
-                    // [-]
-                    Gr->DrawLine(m_PosX+m_VarX2-2*bw+3+(bw>8?1:0), y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw-2-(bw>8?1:0), y0+m_Font->m_CharHeight/2, IsMin?m_ColValTextRO:m_ColTitleText);
-                    // [+]
-                    Gr->DrawLine(m_PosX+m_VarX2-bw+3, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-2, y0+m_Font->m_CharHeight/2, IsMax?m_ColValTextRO:m_ColTitleText);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw/2, y0+m_Font->m_CharHeight/2-bw/2+2, m_PosX+m_VarX2-bw/2, y0+m_Font->m_CharHeight/2+bw/2-1, IsMax?m_ColValTextRO:m_ColTitleText);
-                    */
-                    Gr->DrawRect(m_PosX+m_VarX2-3*bw+1, y0+1, m_PosX+m_VarX2-2*bw-1, y0+m_Font->m_CharHeight-2, (m_HighlightDecrBtn && !IsMin)?m_ColHighBtn:m_ColBtn);
-                    Gr->DrawRect(m_PosX+m_VarX2-2*bw+1, y0+1, m_PosX+m_VarX2-bw-1, y0+m_Font->m_CharHeight-2, (m_HighlightIncrBtn && !IsMax)?m_ColHighBtn:m_ColBtn);
-                    // [-]
-                    Gr->DrawLine(m_PosX+m_VarX2-3*bw+3+(bw>8?1:0), y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-2*bw-2-(bw>8?1:0), y0+m_Font->m_CharHeight/2, IsMin?m_ColValTextRO:m_ColTitleText);
-                    // [+]
-                    Gr->DrawLine(m_PosX+m_VarX2-2*bw+3, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw-2, y0+m_Font->m_CharHeight/2, IsMax?m_ColValTextRO:m_ColTitleText);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw-bw/2, y0+m_Font->m_CharHeight/2-bw/2+2, m_PosX+m_VarX2-bw-bw/2, y0+m_Font->m_CharHeight/2+bw/2-1, IsMax?m_ColValTextRO:m_ColTitleText);
+                    if( m_DrawRotoBtn )
+                    {
+                        // [o] rotoslider button
+                        /*
+                        Gr->DrawRect(m_PosX+m_VarX1-bw-1, y0+1, m_PosX+m_VarX1-3, y0+m_Font->m_CharHeight-2, m_HighlightRotoBtn?m_ColHighBtn:m_ColBtn);
+                        Gr->DrawLine(m_PosX+m_VarX1-bw+bw/2-2, y0+m_Font->m_CharHeight/2-1, m_PosX+m_VarX1-bw+bw/2-1, y0+m_Font->m_CharHeight/2-1, m_ColTitleText);
+                        Gr->DrawLine(m_PosX+m_VarX1-bw+bw/2-3, y0+m_Font->m_CharHeight/2+0, m_PosX+m_VarX1-bw+bw/2+0, y0+m_Font->m_CharHeight/2+0, m_ColTitleText);
+                        Gr->DrawLine(m_PosX+m_VarX1-bw+bw/2-3, y0+m_Font->m_CharHeight/2+1, m_PosX+m_VarX1-bw+bw/2+0, y0+m_Font->m_CharHeight/2+1, m_ColTitleText);
+                        Gr->DrawLine(m_PosX+m_VarX1-bw+bw/2-2, y0+m_Font->m_CharHeight/2+2, m_PosX+m_VarX1-bw+bw/2-1, y0+m_Font->m_CharHeight/2+2, m_ColTitleText);
+                        */
+                        /*
+                        Gr->DrawRect(m_PosX+m_VarX2-3*bw+1, y0+1, m_PosX+m_VarX2-2*bw-1, y0+m_Font->m_CharHeight-2, m_HighlightRotoBtn?m_ColHighBtn:m_ColBtn);
+                        Gr->DrawLine(m_PosX+m_VarX2-3*bw+bw/2+0, y0+m_Font->m_CharHeight/2-1, m_PosX+m_VarX2-3*bw+bw/2+1, y0+m_Font->m_CharHeight/2-1, m_ColTitleText);
+                        Gr->DrawLine(m_PosX+m_VarX2-3*bw+bw/2-1, y0+m_Font->m_CharHeight/2+0, m_PosX+m_VarX2-3*bw+bw/2+2, y0+m_Font->m_CharHeight/2+0, m_ColTitleText);
+                        Gr->DrawLine(m_PosX+m_VarX2-3*bw+bw/2-1, y0+m_Font->m_CharHeight/2+1, m_PosX+m_VarX2-3*bw+bw/2+2, y0+m_Font->m_CharHeight/2+1, m_ColTitleText);
+                        Gr->DrawLine(m_PosX+m_VarX2-3*bw+bw/2+0, y0+m_Font->m_CharHeight/2+2, m_PosX+m_VarX2-3*bw+bw/2+1, y0+m_Font->m_CharHeight/2+2, m_ColTitleText);
+                        */
+                        int dy = 0;
+                        Gr->DrawRect(m_PosX+m_VarX2-bw+1, y0+1, m_PosX+m_VarX2-1, y0+m_Font->m_CharHeight-2, m_HighlightRotoBtn?m_ColHighBtn:m_ColBtn);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw+bw/2+0, y0+m_Font->m_CharHeight/2-1+dy, m_PosX+m_VarX2-bw+bw/2+1, y0+m_Font->m_CharHeight/2-1+dy, m_ColTitleText, true);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw+bw/2-1, y0+m_Font->m_CharHeight/2+0+dy, m_PosX+m_VarX2-bw+bw/2+2, y0+m_Font->m_CharHeight/2+0+dy, m_ColTitleText, true);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw+bw/2-1, y0+m_Font->m_CharHeight/2+1+dy, m_PosX+m_VarX2-bw+bw/2+2, y0+m_Font->m_CharHeight/2+1+dy, m_ColTitleText, true);
+                        Gr->DrawLine(m_PosX+m_VarX2-bw+bw/2+0, y0+m_Font->m_CharHeight/2+2+dy, m_PosX+m_VarX2-bw+bw/2+1, y0+m_Font->m_CharHeight/2+2+dy, m_ColTitleText, true);
+                    }
                 }
-                else if( m_DrawListBtn )
+                
+
+                // Draw value width slider
+                if( !m_HighlightValWidth )
                 {
-                    // [v]
-                    //int eps = (g_TwMgr->m_GraphAPI!=TW_OPENGL) ? 1 : 0;
-                    int eps = 0;
-                    int dx = -1;
-                    Gr->DrawRect(m_PosX+m_VarX2-bw+1, y0+1, m_PosX+m_VarX2-1, y0+m_Font->m_CharHeight-2, m_HighlightListBtn?m_ColHighBtn:m_ColBtn);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw+4+dx, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw/2+1+dx, y0+m_Font->m_CharHeight-4, m_ColTitleText, true);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw/2+1+dx, y0+m_Font->m_CharHeight-4, m_PosX+m_VarX2-2+dx, y0+m_Font->m_CharHeight/2-1-eps, m_ColTitleText, true);
+                    color32 col = m_DarkText ? COLOR32_WHITE : m_ColTitleText;
+                    Gr->DrawRect(m_PosX+m_VarX1-2, m_PosY+m_VarY0-8, m_PosX+m_VarX1-1, m_PosY+m_VarY0-4, col);
+                    Gr->DrawLine(m_PosX+m_VarX1-1, m_PosY+m_VarY0-3, m_PosX+m_VarX1, m_PosY+m_VarY0-3, m_ColLineShadow);
+                    Gr->DrawLine(m_PosX+m_VarX1, m_PosY+m_VarY0-3, m_PosX+m_VarX1, m_PosY+m_VarY0-8, m_ColLineShadow);
                 }
-                else if( m_DrawBoolBtn )
+                else
                 {
-                    Gr->DrawRect(m_PosX+m_VarX2-bw+1, y0+1, m_PosX+m_VarX2-1, y0+m_Font->m_CharHeight-2, m_HighlightBoolBtn?m_ColHighBtn:m_ColBtn);
-                    // [x]
-                    //Gr->DrawLine(m_PosX+m_VarX2-bw/2-bw/6, y0+m_Font->m_CharHeight/2-bw/6, m_PosX+m_VarX2-bw/2+bw/6, y0+m_Font->m_CharHeight/2+bw/6, m_ColTitleText, true);
-                    //Gr->DrawLine(m_PosX+m_VarX2-bw/2-bw/6, y0+m_Font->m_CharHeight/2+bw/6, m_PosX+m_VarX2-bw/2+bw/6, y0+m_Font->m_CharHeight/2-bw/6, m_ColTitleText, true);
-                    // [<>]
-                    int s = bw/4;
-                    Gr->DrawLine(m_PosX+m_VarX2-bw/2-1, y0+m_Font->m_CharHeight/2-s, m_PosX+m_VarX2-bw/2-s-1, y0+m_Font->m_CharHeight/2, m_ColTitleText, true);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw/2-s-1, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw/2, y0+m_Font->m_CharHeight/2+s+1, m_ColTitleText, true);
-                    //Gr->DrawLine(m_PosX+m_VarX2-bw/2+1, y0+m_Font->m_CharHeight/2+s, m_PosX+m_VarX2-bw/2+s+1, y0+m_Font->m_CharHeight/2, m_ColTitleText, true);
-                    //Gr->DrawLine(m_PosX+m_VarX2-bw/2+s+1, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw/2+1, y0+m_Font->m_CharHeight/2-s, m_ColTitleText, true);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw/2+2, y0+m_Font->m_CharHeight/2-s, m_PosX+m_VarX2-bw/2+s+2, y0+m_Font->m_CharHeight/2, m_ColTitleText, true);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw/2+s+2, y0+m_Font->m_CharHeight/2, m_PosX+m_VarX2-bw/2+1, y0+m_Font->m_CharHeight/2+s+1, m_ColTitleText, true);
+                    color32 col = m_DarkText ? COLOR32_WHITE : m_ColTitleText;
+                    Gr->DrawRect(m_PosX+m_VarX1-2, m_PosY+m_VarY0-8, m_PosX+m_VarX1-1, m_PosY+m_VarY1, col);
+                    Gr->DrawLine(m_PosX+m_VarX1-1, m_PosY+m_VarY1+1, m_PosX+m_VarX1, m_PosY+m_VarY1+1, m_ColLineShadow);
+                    Gr->DrawLine(m_PosX+m_VarX1, m_PosY+m_VarY1+1, m_PosX+m_VarX1, m_PosY+m_VarY0-8, m_ColLineShadow);
                 }
 
-                if( m_DrawRotoBtn )
+                // Draw labels & values headers
+                if (m_HighlightLabelsHeader) 
                 {
-                    // [o] rotoslider button
-                    /*
-                    Gr->DrawRect(m_PosX+m_VarX1-bw-1, y0+1, m_PosX+m_VarX1-3, y0+m_Font->m_CharHeight-2, m_HighlightRotoBtn?m_ColHighBtn:m_ColBtn);
-                    Gr->DrawLine(m_PosX+m_VarX1-bw+bw/2-2, y0+m_Font->m_CharHeight/2-1, m_PosX+m_VarX1-bw+bw/2-1, y0+m_Font->m_CharHeight/2-1, m_ColTitleText);
-                    Gr->DrawLine(m_PosX+m_VarX1-bw+bw/2-3, y0+m_Font->m_CharHeight/2+0, m_PosX+m_VarX1-bw+bw/2+0, y0+m_Font->m_CharHeight/2+0, m_ColTitleText);
-                    Gr->DrawLine(m_PosX+m_VarX1-bw+bw/2-3, y0+m_Font->m_CharHeight/2+1, m_PosX+m_VarX1-bw+bw/2+0, y0+m_Font->m_CharHeight/2+1, m_ColTitleText);
-                    Gr->DrawLine(m_PosX+m_VarX1-bw+bw/2-2, y0+m_Font->m_CharHeight/2+2, m_PosX+m_VarX1-bw+bw/2-1, y0+m_Font->m_CharHeight/2+2, m_ColTitleText);
-                    */
-                    /*
-                    Gr->DrawRect(m_PosX+m_VarX2-3*bw+1, y0+1, m_PosX+m_VarX2-2*bw-1, y0+m_Font->m_CharHeight-2, m_HighlightRotoBtn?m_ColHighBtn:m_ColBtn);
-                    Gr->DrawLine(m_PosX+m_VarX2-3*bw+bw/2+0, y0+m_Font->m_CharHeight/2-1, m_PosX+m_VarX2-3*bw+bw/2+1, y0+m_Font->m_CharHeight/2-1, m_ColTitleText);
-                    Gr->DrawLine(m_PosX+m_VarX2-3*bw+bw/2-1, y0+m_Font->m_CharHeight/2+0, m_PosX+m_VarX2-3*bw+bw/2+2, y0+m_Font->m_CharHeight/2+0, m_ColTitleText);
-                    Gr->DrawLine(m_PosX+m_VarX2-3*bw+bw/2-1, y0+m_Font->m_CharHeight/2+1, m_PosX+m_VarX2-3*bw+bw/2+2, y0+m_Font->m_CharHeight/2+1, m_ColTitleText);
-                    Gr->DrawLine(m_PosX+m_VarX2-3*bw+bw/2+0, y0+m_Font->m_CharHeight/2+2, m_PosX+m_VarX2-3*bw+bw/2+1, y0+m_Font->m_CharHeight/2+2, m_ColTitleText);
-                    */
-                    int dy = 0;
-                    Gr->DrawRect(m_PosX+m_VarX2-bw+1, y0+1, m_PosX+m_VarX2-1, y0+m_Font->m_CharHeight-2, m_HighlightRotoBtn?m_ColHighBtn:m_ColBtn);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw+bw/2+0, y0+m_Font->m_CharHeight/2-1+dy, m_PosX+m_VarX2-bw+bw/2+1, y0+m_Font->m_CharHeight/2-1+dy, m_ColTitleText, true);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw+bw/2-1, y0+m_Font->m_CharHeight/2+0+dy, m_PosX+m_VarX2-bw+bw/2+2, y0+m_Font->m_CharHeight/2+0+dy, m_ColTitleText, true);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw+bw/2-1, y0+m_Font->m_CharHeight/2+1+dy, m_PosX+m_VarX2-bw+bw/2+2, y0+m_Font->m_CharHeight/2+1+dy, m_ColTitleText, true);
-                    Gr->DrawLine(m_PosX+m_VarX2-bw+bw/2+0, y0+m_Font->m_CharHeight/2+2+dy, m_PosX+m_VarX2-bw+bw/2+1, y0+m_Font->m_CharHeight/2+2+dy, m_ColTitleText, true);
+                    Gr->DrawRect(m_PosX+m_VarX0, m_PosY+m_Font->m_CharHeight+2, m_PosX+m_VarX1-4, m_PosY+m_VarY0-1, m_ColHighBg0, m_ColHighBg0, m_ColHighBg1, m_ColHighBg1);
+                }
+                if (m_HighlightValuesHeader) 
+                {
+                    Gr->DrawRect(m_PosX+m_VarX1+2, m_PosY+m_Font->m_CharHeight+2, m_PosX+m_VarX2, m_PosY+m_VarY0-1, m_ColHighBg0, m_ColHighBg0, m_ColHighBg1, m_ColHighBg1);
                 }
             }
-            
 
-            // Draw value width slider
-            if( !m_HighlightValWidth )
+            // Draw key shortcut text
+            if( m_HighlightedLine>=0 && m_HighlightedLine==m_ShortcutLine && !m_IsPopupList && !m_EditInPlace.m_Active )
             {
-                color32 col = m_DarkText ? COLOR32_WHITE : m_ColTitleText;
-                Gr->DrawRect(m_PosX+m_VarX1-2, m_PosY+m_VarY0-8, m_PosX+m_VarX1-1, m_PosY+m_VarY0-4, col);
-                Gr->DrawLine(m_PosX+m_VarX1-1, m_PosY+m_VarY0-3, m_PosX+m_VarX1, m_PosY+m_VarY0-3, m_ColLineShadow);
-                Gr->DrawLine(m_PosX+m_VarX1, m_PosY+m_VarY0-3, m_PosX+m_VarX1, m_PosY+m_VarY0-8, m_ColLineShadow);
-            }
-            else
-            {
-                color32 col = m_DarkText ? COLOR32_WHITE : m_ColTitleText;
-                Gr->DrawRect(m_PosX+m_VarX1-2, m_PosY+m_VarY0-8, m_PosX+m_VarX1-1, m_PosY+m_VarY1, col);
-                Gr->DrawLine(m_PosX+m_VarX1-1, m_PosY+m_VarY1+1, m_PosX+m_VarX1, m_PosY+m_VarY1+1, m_ColLineShadow);
-                Gr->DrawLine(m_PosX+m_VarX1, m_PosY+m_VarY1+1, m_PosX+m_VarX1, m_PosY+m_VarY0-8, m_ColLineShadow);
-            }
-        }
-
-        // Draw key shortcut text
-        if( m_HighlightedLine>=0 && m_HighlightedLine==m_ShortcutLine && !m_IsPopupList && !m_EditInPlace.m_Active )
-        {
-            PERF( Timer.Reset(); )  
-            Gr->DrawRect(m_PosX+m_Font->m_CharHeight-2, m_PosY+m_VarY1+1, m_PosX+m_Width-m_Font->m_CharHeight-2, m_PosY+m_VarY1+1+m_Font->m_CharHeight, m_ColShortcutBg);
-            Gr->DrawText(m_ShortcutTextObj, m_PosX+m_Font->m_CharHeight, m_PosY+m_VarY1+1, m_ColShortcutText, 0);
-            PERF( DT = Timer.GetTime(); printf("Shortcut=%.4fms ", 1000.0*DT); )
-        }
-        else if( m_IsHelpBar )
-        {
-            if( g_TwMgr->m_KeyPressedTextObj && g_TwMgr->m_KeyPressedStr.size()>0 ) // Draw key pressed
-            {
-                if( g_TwMgr->m_KeyPressedBuildText )
-                {
-                    string Str = g_TwMgr->m_KeyPressedStr;
-                    ClampText(Str, m_Font, m_Width-2*m_Font->m_CharHeight);
-                    g_TwMgr->m_Graph->BuildText(g_TwMgr->m_KeyPressedTextObj, &Str, NULL, NULL, 1, g_TwMgr->m_HelpBar->m_Font, 0, 0);
-                    g_TwMgr->m_KeyPressedBuildText = false;
-                    g_TwMgr->m_KeyPressedTime = (float)g_BarTimer.GetTime();
-                }
-                if( (float)g_BarTimer.GetTime()>g_TwMgr->m_KeyPressedTime+1.0f ) // draw key pressed at least 1 second
-                    g_TwMgr->m_KeyPressedStr = "";
                 PERF( Timer.Reset(); )  
                 Gr->DrawRect(m_PosX+m_Font->m_CharHeight-2, m_PosY+m_VarY1+1, m_PosX+m_Width-m_Font->m_CharHeight-2, m_PosY+m_VarY1+1+m_Font->m_CharHeight, m_ColShortcutBg);
-                Gr->DrawText(g_TwMgr->m_KeyPressedTextObj, m_PosX+m_Font->m_CharHeight, m_PosY+m_VarY1+1, m_ColShortcutText, 0);
-                PERF( DT = Timer.GetTime(); printf("KeyPressed=%.4fms ", 1000.0*DT); )  
+                Gr->DrawText(m_ShortcutTextObj, m_PosX+m_Font->m_CharHeight, m_PosY+m_VarY1+1, m_ColShortcutText, 0);
+                PERF( DT = Timer.GetTime(); printf("Shortcut=%.4fms ", 1000.0*DT); )
             }
-            else
+            else if( (m_HighlightLabelsHeader || m_HighlightValuesHeader) && !m_IsPopupList && !m_EditInPlace.m_Active )
             {
-                if( g_TwMgr->m_InfoBuildText )
-                {
-                    string Info = "> AntTweakBar";
-                    char Ver[64];
-                    sprintf(Ver, " (v%d.%02d)", TW_VERSION/100, TW_VERSION%100);
-                    Info += Ver;
-                    ClampText(Info, m_Font, m_Width-2*m_Font->m_CharHeight);
-                    g_TwMgr->m_Graph->BuildText(g_TwMgr->m_InfoTextObj, &Info, NULL, NULL, 1, g_TwMgr->m_HelpBar->m_Font, 0, 0);
-                    g_TwMgr->m_InfoBuildText = false;
-                }
-                PERF( Timer.Reset(); )  
                 Gr->DrawRect(m_PosX+m_Font->m_CharHeight-2, m_PosY+m_VarY1+1, m_PosX+m_Width-m_Font->m_CharHeight-2, m_PosY+m_VarY1+1+m_Font->m_CharHeight, m_ColShortcutBg);
-                Gr->DrawText(g_TwMgr->m_InfoTextObj, m_PosX+m_Font->m_CharHeight, m_PosY+m_VarY1+1, m_ColInfoText, 0);
-                PERF( DT = Timer.GetTime(); printf("Info=%.4fms ", 1000.0*DT); )
+                Gr->DrawText(m_HeadersTextObj, m_PosX+m_Font->m_CharHeight, m_PosY+m_VarY1+1, m_ColShortcutText, 0);
+            }
+            else if( m_IsHelpBar )
+            {
+                if( g_TwMgr->m_KeyPressedTextObj && g_TwMgr->m_KeyPressedStr.size()>0 ) // Draw key pressed
+                {
+                    if( g_TwMgr->m_KeyPressedBuildText )
+                    {
+                        string Str = g_TwMgr->m_KeyPressedStr;
+                        ClampText(Str, m_Font, m_Width-2*m_Font->m_CharHeight);
+                        g_TwMgr->m_Graph->BuildText(g_TwMgr->m_KeyPressedTextObj, &Str, NULL, NULL, 1, g_TwMgr->m_HelpBar->m_Font, 0, 0);
+                        g_TwMgr->m_KeyPressedBuildText = false;
+                        g_TwMgr->m_KeyPressedTime = (float)g_BarTimer.GetTime();
+                    }
+                    if( (float)g_BarTimer.GetTime()>g_TwMgr->m_KeyPressedTime+1.0f ) // draw key pressed at least 1 second
+                        g_TwMgr->m_KeyPressedStr = "";
+                    PERF( Timer.Reset(); )  
+                    Gr->DrawRect(m_PosX+m_Font->m_CharHeight-2, m_PosY+m_VarY1+1, m_PosX+m_Width-m_Font->m_CharHeight-2, m_PosY+m_VarY1+1+m_Font->m_CharHeight, m_ColShortcutBg);
+                    Gr->DrawText(g_TwMgr->m_KeyPressedTextObj, m_PosX+m_Font->m_CharHeight, m_PosY+m_VarY1+1, m_ColShortcutText, 0);
+                    PERF( DT = Timer.GetTime(); printf("KeyPressed=%.4fms ", 1000.0*DT); )  
+                }
+                else
+                {
+                    if( g_TwMgr->m_InfoBuildText )
+                    {
+                        string Info = "atb ";
+                        char Ver[64];
+                        sprintf(Ver, " %d.%02d", TW_VERSION/100, TW_VERSION%100);
+                        Info += Ver;
+                        ClampText(Info, m_Font, m_Width-2*m_Font->m_CharHeight);
+                        g_TwMgr->m_Graph->BuildText(g_TwMgr->m_InfoTextObj, &Info, NULL, NULL, 1, g_TwMgr->m_HelpBar->m_Font, 0, 0);
+                        g_TwMgr->m_InfoBuildText = false;
+                    }
+                    PERF( Timer.Reset(); )  
+                    Gr->DrawRect(m_PosX+m_Font->m_CharHeight-2, m_PosY+m_VarY1+1, m_PosX+m_Width-m_Font->m_CharHeight-2, m_PosY+m_VarY1+1+m_Font->m_CharHeight, m_ColShortcutBg);
+                    Gr->DrawText(g_TwMgr->m_InfoTextObj, m_PosX+m_Font->m_CharHeight, m_PosY+m_VarY1+1, m_ColInfoText, 0);
+                    PERF( DT = Timer.GetTime(); printf("Info=%.4fms ", 1000.0*DT); )
+                }
+            }
+
+            if( !m_IsPopupList )
+            {
+                // Draw RotoSlider
+                RotoDraw();
+
+                // Draw EditInPlace
+                EditInPlaceDraw();
+            }
+
+            if( g_TwMgr->m_PopupBar!=NULL && this!=g_TwMgr->m_PopupBar )
+            {
+                // darken bar if a popup bar is displayed
+                Gr->DrawRect(m_PosX, m_PosY, m_PosX+m_Width-1, m_PosY+m_Height-1, 0x1F000000);
             }
         }
-
-        if( !m_IsPopupList )
-        {
-            // Draw RotoSlider
-            RotoDraw();
-
-            // Draw EditInPlace
-            EditInPlaceDraw();
-        }
-
-        if( g_TwMgr->m_PopupBar!=NULL && this!=g_TwMgr->m_PopupBar )
-        {
-            // darken bar if a popup bar is displayed
-            Gr->DrawRect(m_PosX, m_PosY, m_PosX+m_Width-1, m_PosY+m_Height-1, 0x1F000000);
-        }
-
     }
     else // minimized
     {
@@ -5161,11 +5409,17 @@ void CTwBar::Draw()
         if( m_HighlightMaximize )
         {
             // Draw title
-            Gr->DrawRect(m_MinPosX, m_MinPosY, m_MinPosX+m_Font->m_CharHeight, m_MinPosY+m_Font->m_CharHeight, m_ColTitleUnactiveBg);
-            Gr->DrawRect(m_MinPosX+MinXOffset, m_MinPosY+MinYOffset, m_MinPosX+MinXOffset+m_TitleWidth+m_Font->m_CharHeight, m_MinPosY+MinYOffset+m_Font->m_CharHeight, m_ColTitleUnactiveBg);
-            if( m_ColTitleShadow!=0 )
-                Gr->DrawText(m_TitleTextObj, m_MinPosX+MinXOffset+m_Font->m_CharHeight/2, m_MinPosY+1+MinYOffset, m_ColTitleShadow, 0);
-            Gr->DrawText(m_TitleTextObj, m_MinPosX+MinXOffset+m_Font->m_CharHeight/2, m_MinPosY+MinYOffset, m_ColTitleText, 0);
+            if( _DrawPart&DRAW_BG )
+            {
+                Gr->DrawRect(m_MinPosX, m_MinPosY, m_MinPosX+m_Font->m_CharHeight, m_MinPosY+m_Font->m_CharHeight, m_ColTitleUnactiveBg);
+                Gr->DrawRect(m_MinPosX+MinXOffset, m_MinPosY+MinYOffset, m_MinPosX+MinXOffset+m_TitleWidth+m_Font->m_CharHeight, m_MinPosY+MinYOffset+m_Font->m_CharHeight, m_ColTitleUnactiveBg);
+            }
+            if( _DrawPart&DRAW_CONTENT )
+            {
+                if( m_ColTitleShadow!=0 )
+                    Gr->DrawText(m_TitleTextObj, m_MinPosX+MinXOffset+m_Font->m_CharHeight/2, m_MinPosY+1+MinYOffset, m_ColTitleShadow, 0);
+                Gr->DrawText(m_TitleTextObj, m_MinPosX+MinXOffset+m_Font->m_CharHeight/2, m_MinPosY+MinYOffset, m_ColTitleText, 0);
+            }
         }
 
         if( !m_IsHelpBar )
@@ -5173,33 +5427,41 @@ void CTwBar::Draw()
             // Draw maximize button
             int xm = m_MinPosX+2, wm=m_Font->m_CharHeight-6;
             wm = (wm<6) ? 6 : wm;
-            Gr->DrawRect(xm+1, m_MinPosY+4, xm+wm-1, m_MinPosY+3+wm, m_HighlightMaximize?m_ColHighBtn:m_ColBtn);
-            Gr->DrawLine(xm, m_MinPosY+3, xm+wm, m_MinPosY+3, m_ColLine);
-            Gr->DrawLine(xm+wm, m_MinPosY+3, xm+wm, m_MinPosY+3+wm, m_ColLine);
-            Gr->DrawLine(xm+wm, m_MinPosY+3+wm, xm, m_MinPosY+3+wm, m_ColLine);
-            Gr->DrawLine(xm, m_MinPosY+3+wm, xm, m_MinPosY+3, m_ColLine);
-            Gr->DrawLine(xm+wm+1, m_MinPosY+4, xm+wm+1, m_MinPosY+4+wm, m_ColLineShadow);
-            Gr->DrawLine(xm+wm+1, m_MinPosY+4+wm, xm, m_MinPosY+4+wm, m_ColLineShadow);
-            Gr->DrawLine(xm+wm/3, m_MinPosY+3+wm-wm/3, xm+wm/2+1, m_MinPosY+6, m_ColTitleText, true);
-            Gr->DrawLine(xm+wm-wm/3+1, m_MinPosY+3+wm-wm/3, xm+wm/2, m_MinPosY+6, m_ColTitleText, true);
+            if( _DrawPart&DRAW_BG )
+                Gr->DrawRect(xm+1, m_MinPosY+4, xm+wm-1, m_MinPosY+3+wm, m_HighlightMaximize?m_ColHighBtn:m_ColBtn);
+            if( _DrawPart&DRAW_CONTENT )
+            {
+                Gr->DrawLine(xm, m_MinPosY+3, xm+wm, m_MinPosY+3, m_ColLine);
+                Gr->DrawLine(xm+wm, m_MinPosY+3, xm+wm, m_MinPosY+3+wm, m_ColLine);
+                Gr->DrawLine(xm+wm, m_MinPosY+3+wm, xm, m_MinPosY+3+wm, m_ColLine);
+                Gr->DrawLine(xm, m_MinPosY+3+wm, xm, m_MinPosY+3, m_ColLine);
+                Gr->DrawLine(xm+wm+1, m_MinPosY+4, xm+wm+1, m_MinPosY+4+wm, m_ColLineShadow);
+                Gr->DrawLine(xm+wm+1, m_MinPosY+4+wm, xm, m_MinPosY+4+wm, m_ColLineShadow);
+                Gr->DrawLine(xm+wm/3-1, m_MinPosY+3+wm-wm/3, xm+wm/2, m_MinPosY+6, m_ColTitleText, true);
+                Gr->DrawLine(xm+wm-wm/3+1, m_MinPosY+3+wm-wm/3, xm+wm/2, m_MinPosY+6, m_ColTitleText, true);
+            }
         }
         else
         {
             // Draw help button
             int xm = m_MinPosX+2, wm=m_Font->m_CharHeight-6;
             wm = (wm<6) ? 6 : wm;
-            Gr->DrawRect(xm+1, m_MinPosY+4, xm+wm-1, m_MinPosY+3+wm, m_HighlightMaximize?m_ColHighBtn:m_ColBtn);
-            Gr->DrawLine(xm, m_MinPosY+3, xm+wm, m_MinPosY+3, m_ColLine);
-            Gr->DrawLine(xm+wm, m_MinPosY+3, xm+wm, m_MinPosY+3+wm, m_ColLine);
-            Gr->DrawLine(xm+wm, m_MinPosY+3+wm, xm, m_MinPosY+3+wm, m_ColLine);
-            Gr->DrawLine(xm, m_MinPosY+3+wm, xm, m_MinPosY+3, m_ColLine);
-            Gr->DrawLine(xm+wm+1, m_MinPosY+4, xm+wm+1, m_MinPosY+4+wm, m_ColLineShadow);
-            Gr->DrawLine(xm+wm+1, m_MinPosY+4+wm, xm, m_MinPosY+4+wm, m_ColLineShadow);
-            Gr->DrawLine(xm+wm/2-wm/6, m_MinPosY+3+wm/4, xm+wm-wm/3, m_MinPosY+3+wm/4, m_ColTitleText);
-            Gr->DrawLine(xm+wm-wm/3, m_MinPosY+3+wm/4, xm+wm-wm/3, m_MinPosY+3+wm/2, m_ColTitleText);
-            Gr->DrawLine(xm+wm-wm/3, m_MinPosY+3+wm/2, xm+wm/2, m_MinPosY+3+wm/2, m_ColTitleText);
-            Gr->DrawLine(xm+wm/2, m_MinPosY+3+wm/2, xm+wm/2, m_MinPosY+3+wm-wm/4, m_ColTitleText);
-            Gr->DrawLine(xm+wm/2, m_MinPosY+3+wm-wm/4+1, xm+wm/2, m_MinPosY+3+wm-wm/4+2, m_ColTitleText);
+            if( _DrawPart&DRAW_BG )
+                Gr->DrawRect(xm+1, m_MinPosY+4, xm+wm-1, m_MinPosY+3+wm, m_HighlightMaximize?m_ColHighBtn:m_ColBtn);
+            if( _DrawPart&DRAW_CONTENT )
+            {
+                Gr->DrawLine(xm, m_MinPosY+3, xm+wm, m_MinPosY+3, m_ColLine);
+                Gr->DrawLine(xm+wm, m_MinPosY+3, xm+wm, m_MinPosY+3+wm, m_ColLine);
+                Gr->DrawLine(xm+wm, m_MinPosY+3+wm, xm, m_MinPosY+3+wm, m_ColLine);
+                Gr->DrawLine(xm, m_MinPosY+3+wm, xm, m_MinPosY+3, m_ColLine);
+                Gr->DrawLine(xm+wm+1, m_MinPosY+4, xm+wm+1, m_MinPosY+4+wm, m_ColLineShadow);
+                Gr->DrawLine(xm+wm+1, m_MinPosY+4+wm, xm, m_MinPosY+4+wm, m_ColLineShadow);
+                Gr->DrawLine(xm+wm/2-wm/6, m_MinPosY+3+wm/4, xm+wm-wm/3, m_MinPosY+3+wm/4, m_ColTitleText);
+                Gr->DrawLine(xm+wm-wm/3, m_MinPosY+3+wm/4, xm+wm-wm/3, m_MinPosY+3+wm/2, m_ColTitleText);
+                Gr->DrawLine(xm+wm-wm/3, m_MinPosY+3+wm/2, xm+wm/2, m_MinPosY+3+wm/2, m_ColTitleText);
+                Gr->DrawLine(xm+wm/2, m_MinPosY+3+wm/2, xm+wm/2, m_MinPosY+3+wm-wm/4, m_ColTitleText);
+                Gr->DrawLine(xm+wm/2, m_MinPosY+3+wm-wm/4+1, xm+wm/2, m_MinPosY+3+wm-wm/4+2, m_ColTitleText);
+            }
         }
     }
 }
@@ -5243,10 +5505,12 @@ bool CTwBar::MouseMotion(int _X, int _Y)
             m_HighlightMinimize = false;
             m_HighlightFont = false;
             m_HighlightValWidth = false;
+            m_HighlightLabelsHeader = false;
+            m_HighlightValuesHeader = false;
             //if( InBar && _X>m_PosX+m_Font->m_CharHeight+1 && _X<m_PosX+m_VarX2 && _Y>=m_PosY+m_VarY0 && _Y<m_PosY+m_VarY1 )
             if( InBar && _X>m_PosX+2 && _X<m_PosX+m_VarX2 && _Y>=m_PosY+m_VarY0 && _Y<m_PosY+m_VarY1 )
-            {
-                m_HighlightedLine = (_Y-m_PosY-m_VarY0)/(m_Font->m_CharHeight+m_Sep);
+            {   // mouse over var line
+                m_HighlightedLine = (_Y-m_PosY-m_VarY0)/(m_Font->m_CharHeight+m_LineSep);
                 if( m_HighlightedLine>=(int)m_HierTags.size() )
                     m_HighlightedLine = -1;
                 else if(m_HighlightedLine>=0)
@@ -5306,20 +5570,34 @@ bool CTwBar::MouseMotion(int _X, int _Y)
                 }
             }
             else if( InBar && m_Movable && !m_IsPopupList && _X>=m_PosX+2*m_Font->m_CharHeight && _X<m_PosX+m_Width-2*m_Font->m_CharHeight && _Y<m_PosY+m_Font->m_CharHeight )
-            {
+            {   // mouse over title
                 m_HighlightTitle = true;
                 ANT_SET_CURSOR(Move);
             }
-            else if ( InBar && !m_IsPopupList && _X>=m_PosX+m_VarX1-3 && _X<m_PosX+m_VarX1+3 && _Y>m_PosY+m_Font->m_CharHeight && _Y<m_PosY+m_VarY0 )
-            {
+            else if ( InBar && !m_IsPopupList && _X>=m_PosX+m_VarX1-5 && _X<m_PosX+m_VarX1+5 && _Y>m_PosY+m_Font->m_CharHeight && _Y<m_PosY+m_VarY0 )
+            {   // mouse over ValuesWidth handle
                 m_HighlightValWidth = true;
                 ANT_SET_CURSOR(WE);
+            }
+            else if ( InBar && !m_IsPopupList && !m_IsHelpBar && _X>=m_PosX+m_VarX0 && _X<m_PosX+m_VarX1-5 && _Y>m_PosY+m_Font->m_CharHeight && _Y<m_PosY+m_VarY0 )
+            {   // mouse over left column header
+                m_HighlightLabelsHeader = true;
+                ANT_SET_CURSOR(Arrow);
+            }
+            else if ( InBar && !m_IsPopupList && _X>=m_PosX+m_VarX1+5 && _X<m_PosX+m_VarX2 && _Y>m_PosY+m_Font->m_CharHeight && _Y<m_PosY+m_VarY0 )
+            {   // mouse over right column header
+                m_HighlightValuesHeader = true;
+                ANT_SET_CURSOR(Arrow);
             }
             //else if( InBar && m_NbDisplayedLines<m_NbHierLines && _X>=m_PosX && _X<m_PosX+m_Font->m_CharHeight && _Y>=m_ScrollY0 && _Y<m_ScrollY1 )
             else if( InBar && m_NbDisplayedLines<m_NbHierLines && _X>=m_PosX+m_VarX2+2 && _X<m_PosX+m_Width-2 && _Y>=m_ScrollY0 && _Y<m_ScrollY1 )
             {
                 m_HighlightScroll = true;
+              #ifdef ANT_WINDOWS
                 ANT_SET_CURSOR(NS);
+              #else
+                ANT_SET_CURSOR(Arrow);
+              #endif
             }
             else if( InBar && _X>=m_PosX+m_VarX2+2 && _X<m_PosX+m_Width-2 && _Y>=m_PosY+m_VarY0 && _Y<m_ScrollY0 )
             {
@@ -5350,7 +5628,7 @@ bool CTwBar::MouseMotion(int _X, int _Y)
                 ANT_SET_CURSOR(Arrow);
             }
             else if( m_IsHelpBar && InBar && _X>=m_PosX+m_VarX0 && _X<m_PosX+m_Width-m_Font->m_CharHeight && _Y>m_PosY+m_Height-m_Font->m_CharHeight && _Y<m_PosY+m_Height )
-                ANT_SET_CURSOR(Hand);   // web link
+                ANT_SET_CURSOR(Arrow); //(Hand);   // web link
             else // if( InBar )
                 ANT_SET_CURSOR(Arrow);
         }
@@ -5458,7 +5736,11 @@ bool CTwBar::MouseMotion(int _X, int _Y)
                         m_FirstLine = m_FirstLine0+dl;
                     NotUpToDate();
                 }
+              #ifdef ANT_WINDOWS
                 ANT_SET_CURSOR(NS);
+              #else
+                ANT_SET_CURSOR(Arrow);
+              #endif
                 Handled = true;
                 m_DrawHandles = true;
             }
@@ -5497,6 +5779,8 @@ bool CTwBar::MouseMotion(int _X, int _Y)
                         m_Height = h;
                     }
                 }
+                if (m_ValuesWidthRatio > 0) 
+                    m_ValuesWidth = int(m_ValuesWidthRatio * m_Width + 0.5);
                 ANT_SET_CURSOR(TopLeft);
                 NotUpToDate();
                 if( m_IsHelpBar )
@@ -5539,6 +5823,8 @@ bool CTwBar::MouseMotion(int _X, int _Y)
                         m_Height = h;
                     }
                 }
+                if (m_ValuesWidthRatio > 0) 
+                    m_ValuesWidth = int(m_ValuesWidthRatio * m_Width + 0.5);
                 ANT_SET_CURSOR(TopRight);
                 NotUpToDate();
                 if( m_IsHelpBar )
@@ -5581,6 +5867,8 @@ bool CTwBar::MouseMotion(int _X, int _Y)
                         m_Width = w;
                     }
                 }
+                if (m_ValuesWidthRatio > 0) 
+                    m_ValuesWidth = int(m_ValuesWidthRatio * m_Width + 0.5);
                 ANT_SET_CURSOR(BottomLeft);
                 NotUpToDate();
                 if( m_IsHelpBar )
@@ -5618,6 +5906,8 @@ bool CTwBar::MouseMotion(int _X, int _Y)
                     if( m_PosY+m_Height>vpy+vph )
                         m_Height = vpy+vph-m_PosY;
                 }
+                if (m_ValuesWidthRatio > 0) 
+                    m_ValuesWidth = int(m_ValuesWidthRatio * m_Width + 0.5);
                 ANT_SET_CURSOR(BottomRight);
                 NotUpToDate();
                 if( m_IsHelpBar )
@@ -5648,7 +5938,11 @@ bool CTwBar::MouseMotion(int _X, int _Y)
             if( !m_IsHelpBar )
                 ANT_SET_CURSOR(Arrow);
             else
+              #ifdef ANT_WINDOWS
                 ANT_SET_CURSOR(Help);
+              #else
+                ANT_SET_CURSOR(Arrow);
+              #endif
             Handled = true;
         }
         else
@@ -5712,14 +6006,15 @@ static void ANT_CALL PopupCallback(void *_ClientData)
         unsigned int Enum = *(unsigned int *)&_ClientData;
         CTwVarAtom *Var = g_TwMgr->m_PopupBar->m_VarEnumLinkedToPopupList;
         CTwBar *Bar = g_TwMgr->m_PopupBar->m_BarLinkedToPopupList;
-        if( Bar!=NULL && Var!=NULL && !Var->m_ReadOnly && (Var->m_Type>=TW_TYPE_ENUM_BASE && Var->m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size()) )
+        if( Bar!=NULL && Var!=NULL && !Var->m_ReadOnly && IsEnumType(Var->m_Type) )
         {
             Var->ValueFromDouble(Enum);
             //Bar->UnHighlightLine();
             Bar->HaveFocus(true);
             Bar->NotUpToDate();
         }
-        TwDeleteBar(g_TwMgr->m_PopupBar);
+        if( g_TwMgr->m_PopupBar!=NULL ) // check again because it might have been destroyed by an enum callback
+            TwDeleteBar(g_TwMgr->m_PopupBar);
         g_TwMgr->m_PopupBar = NULL;
     }
 }
@@ -5743,9 +6038,10 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
         Handled = (_X>=m_PosX && _X<m_PosX+m_Width && _Y>=m_PosY && _Y<m_PosY+m_Height);
         if( _Button==TW_MOUSE_LEFT && m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && m_HierTags[m_HighlightedLine].m_Var )
         {
+            bool OnFocus = (m_HighlightedLine==(_Y-m_PosY-m_VarY0)/(m_Font->m_CharHeight+m_LineSep) && Handled);
             if( m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
             {
-                if( _Pressed && !g_TwMgr->m_IsRepeatingMousePressed )
+                if( _Pressed && !g_TwMgr->m_IsRepeatingMousePressed && OnFocus )
                 {
                     CTwVarGroup *Grp = static_cast<CTwVarGroup *>(m_HierTags[m_HighlightedLine].m_Var);
                     Grp->m_Open = !Grp->m_Open;
@@ -5778,14 +6074,14 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                 if( !Var->m_NoSlider && !Var->m_ReadOnly && m_HighlightRotoBtn )
                 {
                     // begin rotoslider
-                    if( _X>m_PosX+m_VarX1 )
+                    if( _X>m_PosX+m_VarX1 && OnFocus )
                         RotoOnLButtonDown(m_PosX+m_VarX2-(1*IncrBtnWidth(m_Font->m_CharHeight))/2, _Y);
                     else
                         RotoOnLButtonDown(_X, _Y);
                     m_MouseDrag = true;
                     m_MouseDragVar = true;
                 }
-                else if( (Var->m_Type==TW_TYPE_BOOL8 || Var->m_Type==TW_TYPE_BOOL16 || Var->m_Type==TW_TYPE_BOOL32 || Var->m_Type==TW_TYPE_BOOLCPP) && !Var->m_ReadOnly )
+                else if( (Var->m_Type==TW_TYPE_BOOL8 || Var->m_Type==TW_TYPE_BOOL16 || Var->m_Type==TW_TYPE_BOOL32 || Var->m_Type==TW_TYPE_BOOLCPP) && !Var->m_ReadOnly && OnFocus )
                 {
                     Var->Increment(1);
                     //m_HighlightClickBtn = true;
@@ -5801,7 +6097,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                     m_MouseDrag = false;
                 }
                 //else if( (Var->m_Type==TW_TYPE_ENUM8 || Var->m_Type==TW_TYPE_ENUM16 || Var->m_Type==TW_TYPE_ENUM32) && !Var->m_ReadOnly )
-                else if( (Var->m_Type>=TW_TYPE_ENUM_BASE && Var->m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size()) && !Var->m_ReadOnly && !g_TwMgr->m_IsRepeatingMousePressed )
+                else if( IsEnumType(Var->m_Type) && !Var->m_ReadOnly && !g_TwMgr->m_IsRepeatingMousePressed && OnFocus )
                 {
                     m_MouseDragVar = false;
                     m_MouseDrag = false;
@@ -5817,8 +6113,9 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                     g_TwMgr->m_PopupBar->m_Color = m_Color;
                     g_TwMgr->m_PopupBar->m_DarkText = m_DarkText;
                     g_TwMgr->m_PopupBar->m_PosX = m_PosX + m_VarX1 - 2;
-                    g_TwMgr->m_PopupBar->m_PosY = m_PosY + m_VarY0 + (m_HighlightedLine+1)*(m_Font->m_CharHeight+m_Sep);
+                    g_TwMgr->m_PopupBar->m_PosY = m_PosY + m_VarY0 + (m_HighlightedLine+1)*(m_Font->m_CharHeight+m_LineSep);
                     g_TwMgr->m_PopupBar->m_Width = m_Width - 2*m_Font->m_CharHeight;
+                    g_TwMgr->m_PopupBar->m_LineSep = g_TwMgr->m_PopupBar->m_Sep;
                     int popHeight0 = (int)e.m_Entries.size()*(m_Font->m_CharHeight+m_Sep) + m_Font->m_CharHeight/2+2;
                     int popHeight = popHeight0;
                     if( g_TwMgr->m_PopupBar->m_PosY+popHeight+2 > g_TwMgr->m_WndHeight )
@@ -5850,7 +6147,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                     }
                     g_TwMgr->m_HelpBarNotUpToDate = false;
                 }
-                else if( (Var->m_ReadOnly && (Var->m_Type==TW_TYPE_CDSTRING || Var->m_Type==TW_TYPE_CDSTDSTRING || Var->m_Type==TW_TYPE_STDSTRING || (Var->m_Type>TW_TYPE_CSSTRING_BASE && Var->m_Type<=TW_TYPE_CSSTRING_MAX)) && EditInPlaceAcceptVar(Var))
+                else if( (Var->m_ReadOnly && (Var->m_Type==TW_TYPE_CDSTRING || Var->m_Type==TW_TYPE_CDSTDSTRING || Var->m_Type==TW_TYPE_STDSTRING || IsCSStringType(Var->m_Type)) && EditInPlaceAcceptVar(Var))
                          || (!Var->m_ReadOnly && EditInPlaceAcceptVar(Var)) )
                     {
                         int dw = 0;
@@ -5858,7 +6155,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                         //  dw = 2*IncrBtnWidth(m_Font->m_CharHeight);
                         if( !m_EditInPlace.m_Active || m_EditInPlace.m_Var!=Var )
                         {
-                            EditInPlaceStart(Var, m_VarX1, m_VarY0+(m_HighlightedLine)*(m_Font->m_CharHeight+m_Sep), m_VarX2-m_VarX1-dw-1);
+                            EditInPlaceStart(Var, m_VarX1, m_VarY0+(m_HighlightedLine)*(m_Font->m_CharHeight+m_LineSep), m_VarX2-m_VarX1-dw-1);
                             if( EditInPlaceIsReadOnly() )
                                 EditInPlaceMouseMove(_X, _Y, false);
                             m_MouseDrag = false;
@@ -5940,7 +6237,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
         }
         else if( _Pressed && !m_MouseDrag && m_Movable && !m_IsPopupList 
                  && ( (_Button==TW_MOUSE_LEFT && _X>=m_PosX+2*m_Font->m_CharHeight && _X<m_PosX+m_Width-2*m_Font->m_CharHeight && _Y>=m_PosY && _Y<m_PosY+m_Font->m_CharHeight)
-                      || _Button==TW_MOUSE_MIDDLE && _X>=m_PosX && _X<m_PosX+m_Width && _Y>=m_PosY && _Y<m_PosY+m_Height) )
+                      || (_Button==TW_MOUSE_MIDDLE && _X>=m_PosX && _X<m_PosX+m_Width && _Y>=m_PosY && _Y<m_PosY+m_Height) ) )
         {
             m_MouseDrag = true;
             m_MouseDragTitle = true;
@@ -5955,7 +6252,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
             m_MouseDragTitle = false;
             ANT_SET_CURSOR(Arrow);
         }
-        else if ( _Pressed && !m_MouseDrag && !m_IsPopupList && _Button==TW_MOUSE_LEFT && _X>=m_PosX+m_VarX1-3 && _X<m_PosX+m_VarX1+3 && _Y>m_PosY+m_Font->m_CharHeight && _Y<m_PosY+m_VarY0 )
+        else if( _Pressed && !m_MouseDrag && !m_IsPopupList && _Button==TW_MOUSE_LEFT && _X>=m_PosX+m_VarX1-3 && _X<m_PosX+m_VarX1+3 && _Y>m_PosY+m_Font->m_CharHeight && _Y<m_PosY+m_VarY0 )
         {
             m_MouseDrag = true;
             m_MouseDragValWidth = true;
@@ -5976,7 +6273,11 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
             m_MouseOriginX = _X;
             m_MouseOriginY = _Y;
             m_FirstLine0 = m_FirstLine;
+          #ifdef ANT_WINDOWS
             ANT_SET_CURSOR(NS);
+          #else
+            ANT_SET_CURSOR(Arrow);
+          #endif
         }
         else if( !_Pressed && m_MouseDragScroll )
         {
@@ -6006,6 +6307,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
             m_MouseDragResizeUL = true;
             m_MouseOriginX = _X;
             m_MouseOriginY = _Y;
+            m_ValuesWidthRatio = (m_Width>0) ? (double)m_ValuesWidth/m_Width : 0;
             ANT_SET_CURSOR(TopLeft);
         }
         else if( !_Pressed && m_MouseDragResizeUL )
@@ -6020,6 +6322,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
             m_MouseDragResizeUR = true;
             m_MouseOriginX = _X;
             m_MouseOriginY = _Y;
+            m_ValuesWidthRatio = (m_Width>0) ? (double)m_ValuesWidth/m_Width : 0;
             ANT_SET_CURSOR(TopRight);
         }
         else if( !_Pressed && m_MouseDragResizeUR )
@@ -6034,6 +6337,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
             m_MouseDragResizeLL = true;
             m_MouseOriginX = _X;
             m_MouseOriginY = _Y;
+            m_ValuesWidthRatio = (m_Width>0) ? (double)m_ValuesWidth/m_Width : 0;
             ANT_SET_CURSOR(BottomLeft);
         }
         else if( !_Pressed && m_MouseDragResizeLL )
@@ -6048,12 +6352,37 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
             m_MouseDragResizeLR = true;
             m_MouseOriginX = _X;
             m_MouseOriginY = _Y;
+            m_ValuesWidthRatio = (m_Width>0) ? (double)m_ValuesWidth/m_Width : 0;
             ANT_SET_CURSOR(BottomRight);
         }
         else if( !_Pressed && m_MouseDragResizeLR )
         {
             m_MouseDrag = false;
             m_MouseDragResizeLR = false;
+            ANT_SET_CURSOR(Arrow);
+        }
+        else if( _Pressed && !m_IsPopupList && _Button==TW_MOUSE_LEFT && m_HighlightLabelsHeader )
+        {
+            int w = ComputeLabelsWidth(m_Font);
+            if( w<m_Font->m_CharHeight )
+                w = m_Font->m_CharHeight;
+            m_ValuesWidth = m_VarX2 - m_VarX0 - w;
+            if( m_ValuesWidth<m_Font->m_CharHeight )
+                m_ValuesWidth = m_Font->m_CharHeight;
+            if( m_ValuesWidth>m_VarX2 - m_VarX0 )
+                m_ValuesWidth = max(m_VarX2 - m_VarX0 - m_Font->m_CharHeight, 0);
+            NotUpToDate();
+            ANT_SET_CURSOR(Arrow);
+        }
+        else if( _Pressed && !m_IsPopupList && _Button==TW_MOUSE_LEFT && m_HighlightValuesHeader )
+        {
+            int w = ComputeValuesWidth(m_Font);
+            if( w<2*m_Font->m_CharHeight )
+                w = 2*m_Font->m_CharHeight; // enough to draw a button
+            m_ValuesWidth = w;
+            if( m_ValuesWidth>m_VarX2 - m_VarX0 )
+                m_ValuesWidth = max(m_VarX2 - m_VarX0 - m_Font->m_CharHeight, 0);
+            NotUpToDate();
             ANT_SET_CURSOR(Arrow);
         }
         else if( _Pressed && g_TwMgr->m_FontResizable && !m_IsPopupList && _X>=m_PosX+m_Font->m_CharHeight && _X<m_PosX+2*m_Font->m_CharHeight && _Y>m_PosY && _Y<m_PosY+m_Font->m_CharHeight )
@@ -6092,27 +6421,28 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
         }
         else if( m_IsHelpBar && _Pressed && !g_TwMgr->m_IsRepeatingMousePressed && _X>=m_PosX+m_VarX0 && _X<m_PosX+m_Width-m_Font->m_CharHeight && _Y>m_PosY+m_Height-m_Font->m_CharHeight && _Y<m_PosY+m_Height )
         {
+            /*
+            const char *WebPage = "http://";
             #if defined ANT_WINDOWS
-				const wchar_t *WebPage = L"http://www.antisphere.com/Wiki/tools:anttweakbar";
-                ShellExecute(NULL, L"open", WebPage, NULL, NULL, SW_SHOWNORMAL);
-            #elif defined ANT_UNIX         
-				// brute force: try all the possible browsers (I don't know how to find the default one; someone?)
-                char DefaultBrowsers[] = "firefox,mozilla,konqueror,galeon,opera,dillo,netscape";
+                ShellExecute(NULL, "open", WebPage, NULL, NULL, SW_SHOWNORMAL);
+            #elif defined ANT_UNIX
+                // brute force: try all the possible browsers (I don't know how to find the default one; someone?)
+                char DefaultBrowsers[] = "firefox,chrome,opera,mozilla,konqueror,galeon,dillo,netscape";
                 char *browser = strtok(DefaultBrowsers, ",");
                 char cmd[256];
                 while(browser)
                 {
                     snprintf(cmd, sizeof(cmd), "%s \"%s\" 1>& null &", browser, WebPage);
-                    system(cmd);
+                    if( system(cmd) ) {} // avoiding warn_unused_result
                     browser = strtok(NULL, ","); // grab the next browser
                 }
             #elif defined ANT_OSX
-				const char *WebPage = "http://www.antisphere.com/Wiki/tools:anttweakbar";
                 char cmd[256];
                 snprintf(cmd, sizeof(cmd), "open \"%s\" 1>& null &", WebPage);
-                system(cmd);
+                if( system(cmd) ) {} // avoiding warn_unused_result
             #endif
             ANT_SET_CURSOR(Hand);
+            */
         }
         else
         {
@@ -6205,9 +6535,8 @@ CTwVarAtom *CTwVarGroup::FindShortcut(int _Key, int _Modifiers, bool *_DoIncr)
 {
     CTwVarAtom *Atom;
     int Mask = 0xffffffff;
-    //if( _Key>' ' && _Key<256 ) // don't test SHIFT if _Key is a common key
-     ;//   Mask &= ~TW_KMOD_SHIFT;
-	// CINDER: not sure what the above line did but it was bad for us
+    if( _Key>' ' && _Key<256 ) // don't test SHIFT if _Key is a common key
+        Mask &= ~TW_KMOD_SHIFT;
 
     // don't test KMOD_NUM and KMOD_CAPS modifiers coming from SDL
     Mask &= ~(0x1000);  // 0x1000 is the KMOD_NUM value defined in SDL_keysym.h
@@ -6320,7 +6649,7 @@ bool CTwBar::KeyPressed(int _Key, int _Modifiers)
         }
         else
         {
-            bool BarActive = m_DrawHandles || m_IsPopupList;
+            bool BarActive = (m_DrawHandles || m_IsPopupList) && !m_IsMinimized;
             bool DoIncr = true;
             CTwVarAtom *Atom = m_VarRoot.FindShortcut(_Key, _Modifiers, &DoIncr);
             if( Atom!=NULL && Atom->m_Visible )
@@ -6345,7 +6674,7 @@ bool CTwBar::KeyPressed(int _Key, int _Modifiers)
                         CTwVarAtom *Atom = static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var);
                         bool Accept = !Atom->m_NoSlider || Atom->m_Type==TW_TYPE_BUTTON 
                                       || Atom->m_Type==TW_TYPE_BOOL8 || Atom->m_Type==TW_TYPE_BOOL16 || Atom->m_Type==TW_TYPE_BOOL32 || Atom->m_Type==TW_TYPE_BOOLCPP
-                                      || (Atom->m_Type>=TW_TYPE_ENUM_BASE && Atom->m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size());
+                                      || IsEnumType(Atom->m_Type);
                         if( !Atom->IsReadOnly() && !m_IsPopupList && Accept )
                         {
                             Atom->Increment(+1);
@@ -6373,7 +6702,7 @@ bool CTwBar::KeyPressed(int _Key, int _Modifiers)
                         CTwVarAtom *Atom = static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var);
                         bool Accept = !Atom->m_NoSlider || Atom->m_Type==TW_TYPE_BUTTON 
                                       || Atom->m_Type==TW_TYPE_BOOL8 || Atom->m_Type==TW_TYPE_BOOL16 || Atom->m_Type==TW_TYPE_BOOL32 || Atom->m_Type==TW_TYPE_BOOLCPP
-                                      || (Atom->m_Type>=TW_TYPE_ENUM_BASE && Atom->m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size());
+                                      || IsEnumType(Atom->m_Type);
                         if( !Atom->IsReadOnly() && Accept && !m_IsPopupList )
                         {
                             Atom->Increment(-1);
@@ -6412,10 +6741,10 @@ bool CTwBar::KeyPressed(int _Key, int _Modifiers)
                                 m_HighlightClickBtnAuto = g_TwMgr->m_Timer.GetTime();
                                 NotUpToDate();
                             } 
-                            else // if( Atom->m_Type>=TW_TYPE_ENUM_BASE && Atom->m_Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size() )
+                            else // if( IsEnumType(Atom->m_Type) )
                             {
                                 // simulate a mouse click
-                                int y = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep) + m_Font->m_CharHeight/2;
+                                int y = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep) + m_Font->m_CharHeight/2;
                                 int x = m_PosX + m_VarX1 + 2;
                                 if( x>m_PosX+m_VarX2-2 ) 
                                     x = m_PosX + m_VarX2 - 2;
@@ -6506,6 +6835,34 @@ bool CTwBar::KeyPressed(int _Key, int _Modifiers)
 
 //  ---------------------------------------------------------------------------
 
+bool CTwBar::KeyTest(int _Key, int _Modifiers)
+{
+    assert(g_TwMgr->m_Graph && g_TwMgr->m_WndHeight>0 && g_TwMgr->m_WndWidth>0);
+    bool Handled = false;
+    if( !m_UpToDate )
+        Update();
+
+    if( _Key>0 && _Key<TW_KEY_LAST )
+    {
+        if( m_EditInPlace.m_Active )
+            Handled = true;
+        else
+        {
+            bool BarActive = (m_DrawHandles || m_IsPopupList) && !m_IsMinimized;
+            bool DoIncr;
+            CTwVarAtom *Atom = m_VarRoot.FindShortcut(_Key, _Modifiers, &DoIncr);
+            if( Atom!=NULL && Atom->m_Visible )
+                Handled = true;
+            else if( BarActive && ( _Key==TW_KEY_RIGHT || _Key==TW_KEY_LEFT || _Key==TW_KEY_UP || _Key==TW_KEY_DOWN
+                                    || _Key==TW_KEY_RETURN || (_Key==TW_KEY_ESCAPE && m_IsPopupList) ) )
+                Handled = true;
+        }
+    }
+    return Handled;
+}
+
+//  ---------------------------------------------------------------------------
+
 bool CTwBar::Show(CTwVar *_Var)
 {
     if( _Var==NULL || !_Var->m_Visible )
@@ -6520,7 +6877,7 @@ bool CTwBar::Show(CTwVar *_Var)
         int l = LineInHier(&m_VarRoot, _Var);
         if( l>=0 )
         {
-            int NbLines = (m_VarY1-m_VarY0+1)/(m_Font->m_CharHeight+m_Sep);
+            int NbLines = (m_VarY1-m_VarY0+1)/(m_Font->m_CharHeight+m_LineSep);
             if( NbLines<= 0 )
                 NbLines = 1;
             if( l<m_FirstLine || l>=m_FirstLine+NbLines )
@@ -6863,7 +7220,7 @@ void CTwBar::RotoOnLButtonDown(int _X, int _Y)
     if( !m_Roto.m_Active && m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && m_HierTags[m_HighlightedLine].m_Var && !m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
     {
         m_Roto.m_Var = static_cast<CTwVarAtom *>(m_HierTags[m_HighlightedLine].m_Var);
-        int y = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_Sep) + m_Font->m_CharHeight/2;
+        int y = m_PosY + m_VarY0 + m_HighlightedLine*(m_Font->m_CharHeight+m_LineSep) + m_Font->m_CharHeight/2;
         m_Roto.m_Origin = CPoint(p.x, y); //r.CenterPoint().y);
         m_Roto.m_Current = p;
         m_Roto.m_Active = true;
@@ -7055,7 +7412,7 @@ bool CTwBar::EditInPlaceAcceptVar(const CTwVarAtom* _Var)
         return true;
     if( _Var->m_Type==TW_TYPE_CDSTRING || _Var->m_Type==TW_TYPE_CDSTDSTRING || _Var->m_Type==TW_TYPE_STDSTRING )
         return true;
-    if( _Var->m_Type>=TW_TYPE_CSSTRING_BASE && _Var->m_Type<=TW_TYPE_CSSTRING_MAX )
+    if( IsCSStringType(_Var->m_Type) )
         return true;
 
     return false;
@@ -7112,7 +7469,7 @@ void CTwBar::EditInPlaceEnd(bool _Commit)
                     g_TwMgr->m_CopyStdStringToClient(*StringPtr, m_EditInPlace.m_String);
             }
         }
-        else if( m_EditInPlace.m_Var->m_Type>=TW_TYPE_CSSTRING_BASE && m_EditInPlace.m_Var->m_Type<=TW_TYPE_CSSTRING_MAX )
+        else if( IsCSStringType(m_EditInPlace.m_Var->m_Type) )
         {
             int n = TW_CSSTRING_SIZE(m_EditInPlace.m_Var->m_Type);
             if( n>0 )
