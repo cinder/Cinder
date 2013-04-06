@@ -6,7 +6,8 @@ using namespace ci;
 using namespace ci::app;
 
 class TweakBarApp : public AppBasic {
- public:
+  public:
+	void prepareSettings( Settings *settings ) { settings->enableHighDensityDisplay(); }
 	void setup();
 	void resize();
 	void draw();
@@ -31,7 +32,7 @@ void TweakBarApp::setup()
 	mCam.lookAt( Vec3f( -20, 0, 0 ), Vec3f::zero() );
 
 	// Setup the parameters
-	mParams = params::InterfaceGl( "App parameters", Vec2i( 200, 400 ) );
+	mParams = params::InterfaceGl( getWindow(), "App parameters", toPixels( Vec2i( 200, 400 ) ) );
 	mParams.addParam( "Cube Size", &mObjSize, "min=0.1 max=20.5 step=0.5 keyIncr=z keyDecr=Z" );
 	mParams.addParam( "Cube Rotation", &mObjOrientation );
 	mParams.addParam( "Cube Color", &mColor, "" );	

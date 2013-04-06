@@ -22,6 +22,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/params/Params.h"
+#include "cinder/Utilities.h"
 
 #include "AntTweakBar.h"
 
@@ -66,7 +67,7 @@ namespace {
 #undef SYNONYM
 #undef HOMONYM
 
-void mouseDown( app::MouseEvent &event )
+void mouseDown( app::WindowRef win, app::MouseEvent &event )
 {
 	TwMouseButtonID button;
 	if( event.isLeft() )
@@ -78,7 +79,7 @@ void mouseDown( app::MouseEvent &event )
 	event.setHandled( TwMouseButton( TW_MOUSE_PRESSED, button ) != 0 );
 }
 
-void mouseUp( app::MouseEvent &event )
+void mouseUp( app::WindowRef win, app::MouseEvent &event )
 {
 	TwMouseButtonID button;
 	if( event.isLeft() )
@@ -90,16 +91,16 @@ void mouseUp( app::MouseEvent &event )
 	event.setHandled( TwMouseButton( TW_MOUSE_RELEASED, button ) != 0 );
 }
 
-void mouseWheel( app::MouseEvent &event )
+void mouseWheel( app::WindowRef win, app::MouseEvent &event )
 {
 	static float sWheelPos = 0;
 	sWheelPos += event.getWheelIncrement();
 	event.setHandled( TwMouseWheel( (int)(sWheelPos) ) != 0 );
 }
 
-void mouseMove( app::MouseEvent &event )
+void mouseMove( app::WindowRef win, app::MouseEvent &event )
 {
-	event.setHandled( TwMouseMotion( event.getX(), event.getY() ) != 0 );
+	event.setHandled( TwMouseMotion( win->toPixels( event.getX() ), win->toPixels( event.getY() ) ) != 0 );
 }
 
 void keyDown( app::KeyEvent &event )
@@ -120,7 +121,7 @@ void keyDown( app::KeyEvent &event )
 
 void resize( cinder::app::WindowRef window )
 {
-	TwWindowSize( window->getWidth(), window->getHeight() );
+	TwWindowSize( window->toPixels( window->getWidth() ), window->toPixels( window->getHeight() ) );
 }
 
 void TW_CALL implStdStringToClient( std::string& destinationClientString, const std::string& sourceLibraryString )
@@ -131,7 +132,10 @@ void TW_CALL implStdStringToClient( std::string& destinationClientString, const 
 
 class AntMgr {
   public:
-	AntMgr() {
+	AntMgr( int fontScale ) {
+		// we have to do a fontscale set *before* TwInit:
+		if( fontScale > 1 )
+			TwDefine( (string(" GLOBAL fontscaling= ") + toString( fontScale )).c_str() );
 		if( ! TwInit( TW_OPENGL, NULL ) ) {
 			throw Exception();
 		}		
@@ -144,11 +148,11 @@ class AntMgr {
 
 } // anonymous namespace
 
-void initAntGl()
+void initAntGl( app::WindowRef win )
 {
 	static std::shared_ptr<AntMgr> mgr;
 	if( ! mgr )
-		mgr = std::shared_ptr<AntMgr>( new AntMgr );
+		mgr = std::shared_ptr<AntMgr>( new AntMgr( (int)win->getContentScale() ) );
 }
 
 InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const ColorA color )
@@ -163,7 +167,7 @@ InterfaceGl::InterfaceGl( app::WindowRef window, const std::string &title, const
 
 void InterfaceGl::init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color )
 {
-	initAntGl();
+	initAntGl( window );
 	
 	mWindow = window;
 
@@ -174,11 +178,11 @@ void InterfaceGl::init( app::WindowRef window, const std::string &title, const V
 	
 	TwCopyStdStringToClientFunc( implStdStringToClient );	
 
-	mWindow->getSignalMouseDown().connect( mouseDown );
-	mWindow->getSignalMouseUp().connect( mouseUp );
-	mWindow->getSignalMouseWheel().connect( mouseWheel );
-	mWindow->getSignalMouseMove().connect( mouseMove );
-	mWindow->getSignalMouseDrag().connect( mouseMove );
+	mWindow->getSignalMouseDown().connect( std::bind( mouseDown, mWindow, std::placeholders::_1 ) );
+	mWindow->getSignalMouseUp().connect( std::bind( mouseUp, mWindow, std::placeholders::_1 ) );
+	mWindow->getSignalMouseWheel().connect( std::bind( mouseWheel, mWindow, std::placeholders::_1 ) );
+	mWindow->getSignalMouseMove().connect( std::bind( mouseMove, mWindow, std::placeholders::_1 ) );
+	mWindow->getSignalMouseDrag().connect( std::bind( mouseMove, mWindow, std::placeholders::_1 ) );
 	mWindow->getSignalKeyDown().connect( keyDown );
 	mWindow->getSignalResize().connect( std::bind( resize, mWindow ) );
 }
