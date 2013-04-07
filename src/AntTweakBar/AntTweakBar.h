@@ -24,6 +24,9 @@
 
 #define TW_VERSION  116 // Version Mmm : M=Major mm=minor (e.g., 102 is version 1.02)
 
+// Cinder: forcing static
+#define TW_STATIC
+
 
 #ifdef  __cplusplus
 #   if defined(_MSC_VER)
@@ -57,12 +60,13 @@
 #if defined TW_EXPORTS
 #   define TW_API TW_EXPORT_API
 #elif defined TW_STATIC
-#   define TW_API
+#   define TW_API TW_CALL
 #   if defined(_MSC_VER) && !defined(TW_NO_LIB_PRAGMA)
+// Cinder: these imports are disabled as Ant is baked into libcinder
 #       ifdef _WIN64
-#           pragma comment(lib, "AntTweakBarStatic64")
+//#           pragma comment(lib, "AntTweakBarStatic64")
 #       else
-#           pragma comment(lib, "AntTweakBarStatic")
+//#           pragma comment(lib, "AntTweakBarStatic")
 #       endif
 #   endif
 #else

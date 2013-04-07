@@ -16,10 +16,6 @@
 
 #include "TwPrecomp.h"
 
-#if ! defined( ANT_OSX )
-#error "bonk"
-#endif
-
 #define ANT_GL_DECL(_Ret, _Fct, _Params) \
     extern "C" { typedef _Ret (APIENTRY* PFN##_Fct)_Params; } \
     namespace GL { extern PFN##_Fct _##_Fct; } \

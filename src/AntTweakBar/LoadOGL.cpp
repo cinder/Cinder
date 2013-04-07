@@ -385,7 +385,7 @@ namespace GL { PFNGLGetProcAddress _glGetProcAddress = NULL; }
             return 1; // "OpenGL library already loaded"
         }
     
-        g_OGLModule = LoadLibrary("OPENGL32.DLL");
+        g_OGLModule = LoadLibrary(L"OPENGL32.DLL");
         if( g_OGLModule )
         {
             // Info(VERB_LOW, "Load %d OpenGL functions", g_NbOGLFunc);

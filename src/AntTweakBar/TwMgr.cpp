@@ -1748,6 +1748,8 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
     case TW_OPENGL:
         g_TwMgr->m_Graph = new CTwGraphOpenGL;
         break;
+// Cinder: we don't support D3D or OpenGL Core yet
+#if 0
     case TW_OPENGL_CORE:
         g_TwMgr->m_Graph = new CTwGraphOpenGLCore;
         break;
@@ -1784,8 +1786,8 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
             }
         #endif // ANT_WINDOWS
         break;
+#endif
     }
-
     if( g_TwMgr->m_Graph==NULL )
     {
         g_TwMgr->SetLastError(g_ErrUnknownAPI);
@@ -2869,9 +2871,9 @@ void ANT_CALL TwGlobalError(const char *_ErrorMessage)  // to be called when g_T
     {
         fprintf(stderr, "ERROR(AntTweakBar) >> %s\n", _ErrorMessage);
     #ifdef ANT_WINDOWS
-        OutputDebugString("ERROR(AntTweakBar) >> ");
-        OutputDebugString(_ErrorMessage);
-        OutputDebugString("\n");
+        OutputDebugStringA("ERROR(AntTweakBar) >> ");
+        OutputDebugStringA(_ErrorMessage);
+        OutputDebugStringA("\n");
     #endif // ANT_WINDOWS
     }
     else
@@ -2902,14 +2904,14 @@ void CTwMgr::SetLastError(const char *_ErrorMessage)    // _ErrorMessage must be
     #ifdef ANT_WINDOWS
         if( m_CurrentDbgFile!=NULL && strlen(m_CurrentDbgFile)>0 && m_CurrentDbgLine>0 )
         {
-            OutputDebugString(m_CurrentDbgFile);
+            OutputDebugStringA(m_CurrentDbgFile);
             char sl[32];
             sprintf(sl, "(%d): ", m_CurrentDbgLine);
-            OutputDebugString(sl);
+            OutputDebugStringA(sl);
         }
-        OutputDebugString("ERROR(AntTweakBar) >> ");
-        OutputDebugString(m_LastError);
-        OutputDebugString("\n");
+        OutputDebugStringA("ERROR(AntTweakBar) >> ");
+        OutputDebugStringA(m_LastError);
+        OutputDebugStringA("\n");
     #endif // ANT_WINDOWS
     }
     else

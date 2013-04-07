@@ -17,7 +17,7 @@
 #include <AntTweakBar.h>
 #include "TwColors.h"
   
-#define ANT_TWEAK_BAR_DLL "AntTweakBar"
+#define ANT_TWEAK_BAR_DLL L"AntTweakBar"
 
 
 //  ---------------------------------------------------------------------------

@@ -140,7 +140,7 @@ PFNGLGetVertexAttribiv _glGetVertexAttribiv = NULL;
         {
             sprintf(msg, "%s(%d) : [%s] GL_ERROR=0x%x\n", file, line, func, err);
             #ifdef ANT_WINDOWS
-                OutputDebugString(msg);
+                OutputDebugStringA(msg);
             #endif
             fprintf(stderr, msg);
         }
