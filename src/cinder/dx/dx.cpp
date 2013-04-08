@@ -2552,6 +2552,17 @@ void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int ve
 	if( vertexEnd < 0 ) vertexEnd = vbo.getNumVertices();
 
 	auto dx = getDxRenderer();
+	ID3D11VertexShader *vs = NULL;
+	//dx->mDeviceContext->VSGetShader(&vs, NULL, NULL);
+	//if(vs)
+	//	vs->Release();
+	//else
+	{
+		vs = COLOR_VERTEX;
+		ID3D11PixelShader *ps = COLOR_PIXEL;
+		dx->mDeviceContext->VSSetShader(vs, NULL, 0);
+		dx->mDeviceContext->PSSetShader(ps, NULL, 0);
+	}
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	dx->mDeviceContext->Map(dx->mCBMatrices, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	reinterpret_cast<Matrix44f*>(mappedResource.pData)[0] = dx->mProjection.top();
@@ -2577,6 +2588,17 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 	if( count < 0 ) count = vbo.getNumVertices();
 
 	auto dx = getDxRenderer();
+	ID3D11VertexShader *vs = NULL;
+	//dx->mDeviceContext->VSGetShader(&vs, NULL, NULL);
+	//if(vs)
+	//	vs->Release();
+	//else
+	{
+		vs = COLOR_VERTEX;
+		ID3D11PixelShader *ps = COLOR_PIXEL;
+		dx->mDeviceContext->VSSetShader(vs, NULL, 0);
+		dx->mDeviceContext->PSSetShader(ps, NULL, 0);
+	}
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	dx->mDeviceContext->Map(dx->mCBMatrices, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	reinterpret_cast<Matrix44f*>(mappedResource.pData)[0] = dx->mProjection.top();

@@ -33,7 +33,7 @@ namespace cinder { namespace dx {
 
 class Vbo {
  public:
-	Vbo();
+	Vbo(bool createBuffer = false);
 	
 	//void		bind();
 	//void		unbind();
@@ -163,6 +163,7 @@ class VboMesh {
 		//std::vector<GLint>			mCustomStaticLocations;
 		//std::vector<GLint>			mCustomDynamicLocations;
 		ID3D11InputLayout*			mInputLayout;
+		bool						mUseQuads;
 	};
 
   public:
@@ -173,8 +174,10 @@ class VboMesh {
 	explicit VboMesh( const TriMesh2d &triMesh, Layout layout = Layout() );
 	/*** Creates a VboMesh with \a numVertices vertices and \a numIndices indices. Dynamic data is stored interleaved and static data is planar. **/
 	VboMesh( size_t numVertices, size_t numIndices, Layout layout, D3D11_PRIMITIVE_TOPOLOGY primitiveType );
+	VboMesh( size_t numVertices, size_t numIndices, Layout layout, bool useQuads );
 	/*** Creates a VboMesh with \a numVertices vertices and \a numIndices indices. Accepts pointers to preexisting buffers, which may be NULL to request allocation **/
 	VboMesh( size_t numVertices, size_t numIndices, Layout layout, D3D11_PRIMITIVE_TOPOLOGY primitiveType, Vbo *indexBuffer, Vbo *staticBuffer, Vbo *dynamicBuffer );
+	VboMesh( size_t numVertices, size_t numIndices, Layout layout, GLenum primitiveType, Vbo *indexBuffer, Vbo *staticBuffer, Vbo *dynamicBuffer );
 
 	size_t						getNumIndices() const { return mObj->mNumIndices; }
 	size_t						getNumVertices() const { return mObj->mNumVertices; }

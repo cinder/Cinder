@@ -281,6 +281,7 @@
     <ClInclude Include="..\include\cinder\dx\DxTexture.h" />
     <ClInclude Include="..\include\cinder\dx\FontEnumerator.h" />
     <ClInclude Include="..\include\cinder\dx\gldx.h" />
+    <ClInclude Include="..\include\cinder\dx\HlslProg.h" />
     <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h" />
     <ClInclude Include="..\include\cinder\Exception.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />

@@ -256,6 +256,9 @@
     <ClInclude Include="targetver.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\HlslProg.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\App.cpp">

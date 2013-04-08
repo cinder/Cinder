@@ -33,8 +33,7 @@
 
 namespace Shaders
 {
-	#include "CompiledStandardVboLayoutrgbVS.inc"
-	#include "CompiledStandardVboLayoutrgbaVS.inc"
+	#include "CompiledStandardVboLayoutVS.inc"
 }
 
 using namespace std;
@@ -46,7 +45,7 @@ int		VboMesh::Layout::sCustomAttrSizes[TOTAL_CUSTOM_ATTR_TYPES] = { 4, 8, 12, 16
 GLint	VboMesh::Layout::sCustomAttrNumComponents[TOTAL_CUSTOM_ATTR_TYPES] = { 1, 2, 3, 4 };
 GLenum	VboMesh::Layout::sCustomAttrTypes[TOTAL_CUSTOM_ATTR_TYPES] = { GL_FLOAT, GL_FLOAT, GL_FLOAT, GL_FLOAT };
 
-Vbo::Obj::Obj() : mId(NULL)
+Vbo::Obj::Obj() : mTarget((D3D11_BIND_FLAG)0), mId(NULL)
 {
 }
 
@@ -55,9 +54,10 @@ Vbo::Obj::~Obj()
 	if(mId) mId->Release();
 }
 
-Vbo::Vbo()
+Vbo::Vbo(bool createBuffer)
 {
-	mObj = shared_ptr<Vbo::Obj>( new Obj() );
+	if(createBuffer)
+		mObj = shared_ptr<Vbo::Obj>( new Obj() );
 }
 
 //void Vbo::bind()
@@ -92,14 +92,19 @@ void Vbo::bufferData( size_t size, const void *data, D3D11_USAGE usage, D3D11_BI
 
 void Vbo::bufferSubData( ptrdiff_t offset, size_t size, const void *data )
 {
-	D3D11_BOX box;
-	box.left = offset;
-	box.right = size;
-	box.bottom = 1;
-	box.top = 0;
-	box.front = 0;
-	box.back = 1;
-	getDxRenderer()->mDeviceContext->UpdateSubresource(mObj->mId, 0, &box, data, 0, 0);
+	//D3D11_BOX box;
+	//box.left = offset;
+	//box.right = offset + size;
+	//box.bottom = 1;
+	//box.top = 0;
+	//box.front = 0;
+	//box.back = 1;
+	//getDxRenderer()->mDeviceContext->UpdateSubresource(mObj->mId, 0, &box, data, 0, 0);
+	auto dx = getDxRenderer();
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	dx->mDeviceContext->Map(mObj->mId, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	memcpy((char*)mappedResource.pData + offset, data, size);
+	dx->mDeviceContext->Unmap(mObj->mId, 0);
 }
 
 uint8_t* Vbo::map( D3D11_MAP access )
@@ -133,7 +138,7 @@ bool VboMesh::Layout::hasDynamicTexCoords() const
 	return false;
 }
 
-VboMesh::Obj::Obj() : mInputLayout(NULL)
+VboMesh::Obj::Obj() : mInputLayout(NULL), mUseQuads(false)
 {
 }
 
@@ -293,6 +298,33 @@ VboMesh::VboMesh( size_t numVertices, size_t numIndices, Layout layout, D3D11_PR
 	//unbindBuffers();	
 }
 
+VboMesh::VboMesh( size_t numVertices, size_t numIndices, Layout layout, bool useQuads )
+	: mObj( shared_ptr<Obj>( new Obj ) )
+{
+	mObj->mLayout = layout;
+	mObj->mPrimitiveType = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	mObj->mNumIndices = numIndices;
+	mObj->mNumVertices = numVertices;
+	if(useQuads && !layout.hasIndices())
+		mObj->mNumVertices = numVertices / 4 * 6;
+	mObj->mUseQuads = true;
+
+	initializeBuffers( true );
+	
+	// allocate buffer for indices
+	if( mObj->mLayout.hasIndices() )
+	{
+		int indexBufferSize;
+		if(useQuads)
+			indexBufferSize = sizeof(uint32_t) * mObj->mNumIndices / 4 * 6;
+		else
+			indexBufferSize = sizeof(uint32_t) * mObj->mNumIndices;
+		mObj->mBuffers[INDEX_BUFFER].bufferData( indexBufferSize, NULL, /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+	}
+	
+	//unbindBuffers();	
+}
+
 VboMesh::VboMesh( size_t numVertices, size_t numIndices, Layout layout, D3D11_PRIMITIVE_TOPOLOGY primitiveType, Vbo *indexBuffer, Vbo *staticBuffer, Vbo *dynamicBuffer )
 	: mObj( shared_ptr<Obj>( new Obj ) )
 {
@@ -328,49 +360,16 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 	bool hasDynamicBuffer = mObj->mLayout.hasDynamicPositions() || mObj->mLayout.hasDynamicNormals() || mObj->mLayout.hasDynamicColorsRGB() || mObj->mLayout.hasDynamicColorsRGBA() || mObj->mLayout.hasDynamicTexCoords() || ( ! mObj->mLayout.mCustomDynamic.empty() );
 
 	if( ( mObj->mLayout.hasStaticIndices() || mObj->mLayout.hasDynamicIndices() ) && ( ! mObj->mBuffers[INDEX_BUFFER] ) )
-		mObj->mBuffers[INDEX_BUFFER] = Vbo();
+		mObj->mBuffers[INDEX_BUFFER] = Vbo(true);
 		
 	D3D11_INPUT_ELEMENT_DESC ieDesc[ATTR_TOTAL];
-
-	ieDesc[0].SemanticName = "POSITION";
-	ieDesc[0].SemanticIndex = 0;
-	ieDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	ieDesc[0].InputSlot = 0;
-	ieDesc[0].AlignedByteOffset = 0;
-	ieDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	ieDesc[0].InstanceDataStepRate = 0;
-	
-	ieDesc[1].SemanticName = "NORMAL";
-	ieDesc[1].SemanticIndex = 0;
-	ieDesc[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-	ieDesc[1].InputSlot = 0;
-	ieDesc[1].AlignedByteOffset = 0;
-	ieDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	ieDesc[1].InstanceDataStepRate = 0;
-	
-	ieDesc[2].SemanticName = "COLOR";
-	ieDesc[2].SemanticIndex = 0;
-	ieDesc[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	ieDesc[2].InputSlot = 0;
-	ieDesc[2].AlignedByteOffset = 0;
-	ieDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	ieDesc[2].InstanceDataStepRate = 0;
-	
-	ieDesc[3].SemanticName = "TEXCOORD";
-	ieDesc[3].SemanticIndex = 0;
-	ieDesc[3].Format = DXGI_FORMAT_R32G32_FLOAT;
-	ieDesc[3].InputSlot = 0;
-	ieDesc[3].AlignedByteOffset = 0;
-	ieDesc[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-	ieDesc[3].InstanceDataStepRate = 0;
-
 	int elementCount = 0;
 	if( hasStaticBuffer && staticDataPlanar ) { // Planar static buffer
 		size_t offset = 0;
 		bool doSetup = false;
 	
 		if( ! mObj->mBuffers[STATIC_BUFFER] ) {
-			mObj->mBuffers[STATIC_BUFFER] = Vbo();
+			mObj->mBuffers[STATIC_BUFFER] = Vbo(true);
 			doSetup = true;
 		}
 
@@ -386,7 +385,10 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			++elementCount;
 
 			mObj->mPositionOffset = offset;
-			offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+				offset += sizeof(GLfloat) * 3 * mObj->mNumVertices / 4 * 6;
+			else
+				offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
 		}
 		
 		if( mObj->mLayout.hasStaticNormals() ) {
@@ -400,12 +402,14 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			++elementCount;
 
 			mObj->mNormalOffset = offset;
-			offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+				offset += sizeof(GLfloat) * 3 * mObj->mNumVertices / 4 * 6;
+			else
+				offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
 		}
 
 		if( mObj->mLayout.hasStaticColorsRGB() ) {
-			if(!mObj->mLayout.hasStaticColorsRGBA())
-			{
+			if(!mObj->mLayout.hasStaticColorsRGBA()) {
 				ieDesc[elementCount].SemanticName = "COLOR";
 				ieDesc[elementCount].SemanticIndex = 0;
 				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
@@ -415,9 +419,12 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 				ieDesc[elementCount].InstanceDataStepRate = 0;
 				++elementCount;
 			}
-
+			
 			mObj->mColorRGBOffset = offset;
-			offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+				offset += sizeof(GLfloat) * 3 * mObj->mNumVertices / 4 * 6;
+			else
+				offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
 		}
 
 		if( mObj->mLayout.hasStaticColorsRGBA() ) {
@@ -431,7 +438,10 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			++elementCount;
 
 			mObj->mColorRGBAOffset = offset;
-			offset += sizeof(GLfloat) * 4 * mObj->mNumVertices;
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+				offset += sizeof(GLfloat) * 4 * mObj->mNumVertices / 4 * 6;
+			else
+				offset += sizeof(GLfloat) * 4 * mObj->mNumVertices;
 		}
 		
 		for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
@@ -446,17 +456,34 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 				++elementCount;
 
 				mObj->mTexCoordOffset[t] = offset;
-				offset += sizeof(GLfloat) * 2 * mObj->mNumVertices;
+				if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+					offset += sizeof(GLfloat) * 2 * mObj->mNumVertices / 4 * 6;
+				else
+					offset += sizeof(GLfloat) * 2 * mObj->mNumVertices;
 			}
 			else if( mObj->mLayout.hasStaticTexCoords3d( t ) ) {
+				ieDesc[elementCount].SemanticName = "TEXCOORD";
+				ieDesc[elementCount].SemanticIndex = t;
+				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				ieDesc[elementCount].InputSlot = elementCount;
+				ieDesc[elementCount].AlignedByteOffset = 0;
+				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+				ieDesc[elementCount].InstanceDataStepRate = 0;
+				++elementCount;
 				mObj->mTexCoordOffset[t] = offset;
-				offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
+				if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+					offset += sizeof(GLfloat) * 3 * mObj->mNumVertices / 4 * 6;
+				else
+					offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
 			}
 		}
 
 		for( size_t c = 0; c < mObj->mLayout.mCustomStatic.size(); ++c ) {
 			mObj->mLayout.mCustomStatic[c].second = offset;
-			offset += VboMesh::Layout::sCustomAttrSizes[mObj->mLayout.mCustomStatic[c].first] * mObj->mNumVertices;
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+				offset += VboMesh::Layout::sCustomAttrSizes[mObj->mLayout.mCustomStatic[c].first] * mObj->mNumVertices / 4 * 6;
+			else
+				offset += VboMesh::Layout::sCustomAttrSizes[mObj->mLayout.mCustomStatic[c].first] * mObj->mNumVertices;
 		}
 		
 		mObj->mStaticStride = 0;
@@ -469,7 +496,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		size_t offset = 0;
 
 		if( ! mObj->mBuffers[STATIC_BUFFER] )
-			mObj->mBuffers[STATIC_BUFFER] = Vbo();
+			mObj->mBuffers[STATIC_BUFFER] = Vbo(true);
 
 		if( mObj->mLayout.hasStaticPositions() ) {
 			ieDesc[elementCount].SemanticName = "POSITION";
@@ -544,7 +571,15 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 				offset += sizeof(GLfloat) * 2;
 			}
 			else if( mObj->mLayout.hasStaticTexCoords3d( t ) ) {
-				mObj->mTexCoordOffset[t] = offset;
+				ieDesc[elementCount].SemanticName = "TEXCOORD";
+				ieDesc[elementCount].SemanticIndex = t;
+				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				ieDesc[elementCount].InputSlot = elementCount;
+				ieDesc[elementCount].AlignedByteOffset = offset;
+				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+				ieDesc[elementCount].InstanceDataStepRate = 0;
+				++elementCount;
+
 				offset += sizeof(GLfloat) * 3;
 			}
 		}
@@ -557,7 +592,12 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		mObj->mStaticStride = offset;
 		
 		// setup the buffer to be the summed size
-		mObj->mBuffers[STATIC_BUFFER].bufferData( mObj->mStaticStride * mObj->mNumVertices, NULL, /*D3D11_USAGE_DEFAULT*/D3D11_USAGE_DYNAMIC, D3D11_BIND_VERTEX_BUFFER, /*(D3D11_CPU_ACCESS_FLAG)0*/D3D11_CPU_ACCESS_WRITE );
+		int bufferSize;
+		if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			bufferSize = mObj->mStaticStride * mObj->mNumVertices / 4 * 6;
+		else
+			bufferSize = mObj->mStaticStride * mObj->mNumVertices;
+		mObj->mBuffers[STATIC_BUFFER].bufferData( bufferSize, NULL, /*D3D11_USAGE_DEFAULT*/D3D11_USAGE_DYNAMIC, D3D11_BIND_VERTEX_BUFFER, /*(D3D11_CPU_ACCESS_FLAG)0*/D3D11_CPU_ACCESS_WRITE );
 	}
 	else {
 		mObj->mStaticStride = 0;
@@ -567,13 +607,13 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		size_t offset = 0;
 
 		if( ! mObj->mBuffers[DYNAMIC_BUFFER] )
-			mObj->mBuffers[DYNAMIC_BUFFER] = Vbo();
+			mObj->mBuffers[DYNAMIC_BUFFER] = Vbo(true);
 		
 		if( mObj->mLayout.hasDynamicPositions() ) {
 			ieDesc[elementCount].SemanticName = "POSITION";
 			ieDesc[elementCount].SemanticIndex = 0;
 			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			ieDesc[elementCount].InputSlot = 0;
+			ieDesc[elementCount].InputSlot = elementCount;
 			ieDesc[elementCount].AlignedByteOffset = offset;
 			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			ieDesc[elementCount].InstanceDataStepRate = 0;
@@ -587,7 +627,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			ieDesc[elementCount].SemanticName = "NORMAL";
 			ieDesc[elementCount].SemanticIndex = 0;
 			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			ieDesc[elementCount].InputSlot = 0;
+			ieDesc[elementCount].InputSlot = elementCount;
 			ieDesc[elementCount].AlignedByteOffset = offset;
 			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			ieDesc[elementCount].InstanceDataStepRate = 0;
@@ -603,7 +643,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 				ieDesc[elementCount].SemanticName = "COLOR";
 				ieDesc[elementCount].SemanticIndex = 0;
 				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-				ieDesc[elementCount].InputSlot = 0;
+				ieDesc[elementCount].InputSlot = elementCount;
 				ieDesc[elementCount].AlignedByteOffset = offset;
 				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 				ieDesc[elementCount].InstanceDataStepRate = 0;
@@ -617,7 +657,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			ieDesc[elementCount].SemanticName = "COLOR";
 			ieDesc[elementCount].SemanticIndex = 0;
 			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			ieDesc[elementCount].InputSlot = 0;
+			ieDesc[elementCount].InputSlot = elementCount;
 			ieDesc[elementCount].AlignedByteOffset = offset;
 			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 			ieDesc[elementCount].InstanceDataStepRate = 0;
@@ -632,7 +672,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 				ieDesc[elementCount].SemanticName = "TEXCOORD";
 				ieDesc[elementCount].SemanticIndex = t;
 				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32_FLOAT;
-				ieDesc[elementCount].InputSlot = 0;
+				ieDesc[elementCount].InputSlot = elementCount;
 				ieDesc[elementCount].AlignedByteOffset = offset;
 				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 				ieDesc[elementCount].InstanceDataStepRate = 0;
@@ -642,6 +682,15 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 				offset += sizeof(GLfloat) * 2;
 			}
 			else if( mObj->mLayout.hasDynamicTexCoords3d( t ) ) {
+				ieDesc[elementCount].SemanticName = "TEXCOORD";
+				ieDesc[elementCount].SemanticIndex = t;
+				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				ieDesc[elementCount].InputSlot = elementCount;
+				ieDesc[elementCount].AlignedByteOffset = offset;
+				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+				ieDesc[elementCount].InstanceDataStepRate = 0;
+				++elementCount;
+
 				mObj->mTexCoordOffset[t] = offset;
 				offset += sizeof(GLfloat) * 3;
 			}
@@ -654,14 +703,19 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 
 		mObj->mDynamicStride = offset;
 		
-		// setup the buffer to be the summed size
-		mObj->mBuffers[DYNAMIC_BUFFER].bufferData( mObj->mDynamicStride * mObj->mNumVertices, NULL, D3D11_USAGE_DYNAMIC, D3D11_BIND_VERTEX_BUFFER, D3D11_CPU_ACCESS_WRITE );
+		// setup the buffer to be the summed sizeint bufferSize;
+		int bufferSize;
+		if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			bufferSize = mObj->mDynamicStride * mObj->mNumVertices / 4 * 6;
+		else
+			bufferSize = mObj->mDynamicStride * mObj->mNumVertices;
+		mObj->mBuffers[DYNAMIC_BUFFER].bufferData( bufferSize, NULL, D3D11_USAGE_DYNAMIC, D3D11_BIND_VERTEX_BUFFER, D3D11_CPU_ACCESS_WRITE );
 	}
 	else {
 		mObj->mDynamicStride = 0;
 	}
 
-	HRESULT hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, std::max(elementCount, 4), (mObj->mLayout.hasColorsRGB()) ? Shaders::StandardVboLayoutrgbVS : Shaders::StandardVboLayoutrgbaVS, (mObj->mLayout.hasColorsRGB()) ? sizeof(Shaders::StandardVboLayoutrgbVS) : sizeof(Shaders::StandardVboLayoutrgbaVS), &mObj->mInputLayout);
+	HRESULT hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, elementCount, Shaders::StandardVboLayoutVS, sizeof(Shaders::StandardVboLayoutVS), &mObj->mInputLayout);
 	if(hr != S_OK)
 		__debugbreak();
 	// initialize all the custom attribute locations
@@ -747,33 +801,55 @@ void VboMesh::bindAllData() const
 		UINT offset = mObj->mPositionOffset;
 		ID3D11Buffer *actualBuffer = mObj->mBuffers[buffer].getId();
 
-		if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticPositions() : mObj->mLayout.hasDynamicPositions() )
+		if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticPositions() : mObj->mLayout.hasDynamicPositions() ) {
+			UINT oldStride = stride;
+			stride = std::max(stride, sizeof(float) * 3);
 			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			stride = oldStride;
 			//glVertexPointer( 3, GL_FLOAT, stride, (const GLvoid*)mObj->mPositionOffset );
+		}
 		
 		offset = mObj->mNormalOffset;
-		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) )
+		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) ) {
+			UINT oldStride = stride;
+			stride = std::max(stride, sizeof(float) * 3);
 			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			stride = oldStride;
 			//glNormalPointer( GL_FLOAT, stride, ( const GLvoid *)mObj->mNormalOffset );
+		}
 
 		offset = (mObj->mLayout.hasStaticColorsRGB()) ? mObj->mColorRGBOffset : mObj->mColorRGBAOffset;
-		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) )
+		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) ) {
+			UINT oldStride = stride;
+			stride = std::max(stride, sizeof(float) * 3);
 			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			stride = oldStride;
 			//glColorPointer( 3, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBOffset );
-		else if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGBA() : mObj->mLayout.hasDynamicColorsRGBA() ) )
+		}
+		else if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGBA() : mObj->mLayout.hasDynamicColorsRGBA() ) ) {
+			UINT oldStride = stride;
+			stride = std::max(stride, sizeof(float) * 4);
 			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			stride = oldStride;
 			//glColorPointer( 4, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBAOffset );
-
+		}
 
 		for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 			offset = mObj->mTexCoordOffset[t];
+			
 			if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d( t ) : mObj->mLayout.hasDynamicTexCoords2d( t ) ) {
+				UINT oldStride = stride;
+				stride = std::max(stride, sizeof(float) * 2);
 				dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+				stride = oldStride;
 				//glClientActiveTexture( GL_TEXTURE0 + t );
 				//glTexCoordPointer( 2, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );
 			}
 			else if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords3d( t ) : mObj->mLayout.hasDynamicTexCoords3d( t ) ) {
+				UINT oldStride = stride;
+				stride = std::max(stride, sizeof(float) * 3);
 				dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+				stride = oldStride;
 				//glClientActiveTexture( GL_TEXTURE0 + t );
 				//glTexCoordPointer( 3, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );
 			}
@@ -814,7 +890,24 @@ void VboMesh::bindIndexBuffer() const
 
 void VboMesh::bufferIndices( const std::vector<uint32_t> &indices )
 {
-	mObj->mBuffers[INDEX_BUFFER].bufferData( sizeof(uint32_t) * indices.size(), &(indices[0]), /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+	if(mObj->mUseQuads)
+	{
+		size_t quadIndexCount = indices.size() / 4 * 6;
+		uint32_t *quadIndices = new uint32_t[quadIndexCount];
+		for(unsigned i = 0, j = 0; i < indices.size(); i += 4, j += 6)
+		{
+			quadIndices[j+0] = indices[i+0];
+			quadIndices[j+1] = indices[i+1];
+			quadIndices[j+2] = indices[i+2];
+			quadIndices[j+3] = indices[i+0];
+			quadIndices[j+4] = indices[i+2];
+			quadIndices[j+5] = indices[i+3];
+		}
+		mObj->mBuffers[INDEX_BUFFER].bufferData( sizeof(uint32_t) * quadIndexCount, quadIndices, /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+		delete [] quadIndices;
+	}
+	else
+		mObj->mBuffers[INDEX_BUFFER].bufferData( sizeof(uint32_t) * indices.size(), &(indices[0]), /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
 }
 
 void VboMesh::bufferPositions( const std::vector<Vec3f> &positions )
@@ -825,14 +918,43 @@ void VboMesh::bufferPositions( const std::vector<Vec3f> &positions )
 void VboMesh::bufferPositions( const Vec3f *positions, size_t count )
 {
 	if( mObj->mLayout.hasDynamicPositions() ) {
-		if( mObj->mDynamicStride == 0 )
-			getDynamicVbo().bufferSubData( mObj->mPositionOffset, sizeof(Vec3f) * count, positions );
+		if( mObj->mDynamicStride == 0 ) {
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getDynamicVbo();
+				for(size_t i = 0, j = 0; i < count; i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mPositionOffset + (j+0) * sizeof(Vec3f), sizeof(Vec3f), positions+i+0);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+1) * sizeof(Vec3f), sizeof(Vec3f), positions+i+1);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+2) * sizeof(Vec3f), sizeof(Vec3f), positions+i+2);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+3) * sizeof(Vec3f), sizeof(Vec3f), positions+i+0);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+4) * sizeof(Vec3f), sizeof(Vec3f), positions+i+2);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+5) * sizeof(Vec3f), sizeof(Vec3f), positions+i+3);
+				}
+			}
+			else
+				getDynamicVbo().bufferSubData( mObj->mPositionOffset, sizeof(Vec3f) * count, positions );
+		}
 		else
 			throw;
 	}
 	else if( mObj->mLayout.hasStaticPositions() ) {
 		if( mObj->mStaticStride == 0 ) { // planar data
-			getStaticVbo().bufferSubData( mObj->mPositionOffset, sizeof(Vec3f) * count, positions );
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getStaticVbo();
+				for(size_t i = 0, j = 0; i < count; i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mPositionOffset + (j+0) * sizeof(Vec3f), sizeof(Vec3f), positions+i+0);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+1) * sizeof(Vec3f), sizeof(Vec3f), positions+i+1);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+2) * sizeof(Vec3f), sizeof(Vec3f), positions+i+2);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+3) * sizeof(Vec3f), sizeof(Vec3f), positions+i+0);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+4) * sizeof(Vec3f), sizeof(Vec3f), positions+i+2);
+					vbo.bufferSubData(mObj->mPositionOffset + (j+5) * sizeof(Vec3f), sizeof(Vec3f), positions+i+3);
+				}
+			}
+			else
+				getStaticVbo().bufferSubData( mObj->mPositionOffset, sizeof(Vec3f) * count, positions );
 		}
 		else
 			throw;
@@ -844,14 +966,43 @@ void VboMesh::bufferPositions( const Vec3f *positions, size_t count )
 void VboMesh::bufferNormals( const std::vector<Vec3f> &normals )
 {
 	if( mObj->mLayout.hasDynamicNormals() ) {
-		if( mObj->mDynamicStride == 0 )
-			getDynamicVbo().bufferSubData( mObj->mNormalOffset, sizeof(Vec3f) * normals.size(), &(normals[0]) );
+		if( mObj->mDynamicStride == 0 ) {
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getDynamicVbo();
+				for(size_t i = 0, j = 0; i < normals.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mNormalOffset + (j+0) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+0]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+1) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+1]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+2) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+2]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+3) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+0]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+4) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+2]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+5) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+3]);
+				}
+			}
+			else
+				getDynamicVbo().bufferSubData( mObj->mNormalOffset, sizeof(Vec3f) * normals.size(), &(normals[0]) );
+		}
 		else
 			throw;
 	}
 	else if( mObj->mLayout.hasStaticNormals() ) {
 		if( mObj->mStaticStride == 0 ) { // planar data
-			getStaticVbo().bufferSubData( mObj->mNormalOffset, sizeof(Vec3f) * normals.size(), &(normals[0]) );
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getStaticVbo();
+				for(size_t i = 0, j = 0; i < normals.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mNormalOffset + (j+0) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+0]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+1) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+1]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+2) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+2]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+3) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+0]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+4) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+2]);
+					vbo.bufferSubData(mObj->mNormalOffset + (j+5) * sizeof(Vec3f), sizeof(Vec3f), &normals[i+3]);
+				}
+			}
+			else
+				getStaticVbo().bufferSubData( mObj->mNormalOffset, sizeof(Vec3f) * normals.size(), &(normals[0]) );
 		}
 		else
 			throw;
@@ -863,14 +1014,43 @@ void VboMesh::bufferNormals( const std::vector<Vec3f> &normals )
 void VboMesh::bufferTexCoords2d( size_t unit, const std::vector<Vec2f> &texCoords )
 {
 	if( mObj->mLayout.hasDynamicTexCoords2d(unit) ) {
-		if( mObj->mDynamicStride == 0 )
-			getDynamicVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec2f) * texCoords.size(), &(texCoords[0]) );
+		if( mObj->mDynamicStride == 0 ) {
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getDynamicVbo();
+				for(size_t i = 0, j = 0; i < texCoords.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+0) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+0]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+1) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+1]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+2) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+2]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+3) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+0]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+4) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+2]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+5) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+3]);
+				}
+			}
+			else
+				getDynamicVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec2f) * texCoords.size(), &(texCoords[0]) );
+		}
 		else
 			throw;
 	}
 	else if( mObj->mLayout.hasStaticTexCoords2d(unit) ) {
 		if( mObj->mStaticStride == 0 ) { // planar data
-			getStaticVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec2f) * texCoords.size(), &(texCoords[0]) );
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getStaticVbo();
+				for(size_t i = 0, j = 0; i < texCoords.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+0) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+0]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+1) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+1]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+2) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+2]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+3) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+0]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+4) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+2]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+5) * sizeof(Vec2f), sizeof(Vec2f), &texCoords[i+3]);
+				}
+			}
+			else
+				getStaticVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec2f) * texCoords.size(), &(texCoords[0]) );
 		}
 		else
 			throw;
@@ -882,14 +1062,43 @@ void VboMesh::bufferTexCoords2d( size_t unit, const std::vector<Vec2f> &texCoord
 void VboMesh::bufferTexCoords3d( size_t unit, const std::vector<Vec3f> &texCoords )
 {
 	if( mObj->mLayout.hasDynamicTexCoords3d(unit) ) {
-		if( mObj->mDynamicStride == 0 )
-			getDynamicVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec3f) * texCoords.size(), &(texCoords[0]) );
+		if( mObj->mDynamicStride == 0 ) {
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getDynamicVbo();
+				for(size_t i = 0, j = 0; i < texCoords.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+0) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+0]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+1) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+1]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+2) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+2]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+3) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+0]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+4) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+2]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+5) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+3]);
+				}
+			}
+			else
+				getDynamicVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec3f) * texCoords.size(), &(texCoords[0]) );
+		}
 		else
 			throw;
 	}
 	else if( mObj->mLayout.hasStaticTexCoords3d(unit) ) {
 		if( mObj->mStaticStride == 0 ) { // planar data
-			getStaticVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec3f) * texCoords.size(), &(texCoords[0]) );
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getStaticVbo();
+				for(size_t i = 0, j = 0; i < texCoords.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+0) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+0]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+1) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+1]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+2) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+2]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+3) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+0]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+4) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+2]);
+					vbo.bufferSubData(mObj->mTexCoordOffset[unit] + (j+5) * sizeof(Vec3f), sizeof(Vec3f), &texCoords[i+3]);
+				}
+			}
+			else
+				getStaticVbo().bufferSubData( mObj->mTexCoordOffset[unit], sizeof(Vec3f) * texCoords.size(), &(texCoords[0]) );
 		}
 		else
 			throw;
@@ -901,14 +1110,43 @@ void VboMesh::bufferTexCoords3d( size_t unit, const std::vector<Vec3f> &texCoord
 void VboMesh::bufferColorsRGB( const std::vector<Color> &colors )
 {
 	if( mObj->mLayout.hasDynamicColorsRGB() ) {
-		if( mObj->mDynamicStride == 0 )
-			getDynamicVbo().bufferSubData( mObj->mColorRGBOffset, sizeof(Color) * colors.size(), &(colors[0]) );
+		if( mObj->mDynamicStride == 0 ) {
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getDynamicVbo();
+				for(size_t i = 0, j = 0; i < colors.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+0) * sizeof(Color), sizeof(Color), &colors[i+0]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+1) * sizeof(Color), sizeof(Color), &colors[i+1]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+2) * sizeof(Color), sizeof(Color), &colors[i+2]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+3) * sizeof(Color), sizeof(Color), &colors[i+0]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+4) * sizeof(Color), sizeof(Color), &colors[i+2]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+5) * sizeof(Color), sizeof(Color), &colors[i+3]);
+				}
+			}
+			else
+				getDynamicVbo().bufferSubData( mObj->mColorRGBOffset, sizeof(Color) * colors.size(), &(colors[0]) );
+		}
 		else
 			throw;
 	}
 	else if( mObj->mLayout.hasStaticColorsRGB() ) {
 		if( mObj->mStaticStride == 0 ) { // planar data
-			getStaticVbo().bufferSubData( mObj->mColorRGBOffset, sizeof(Color) * colors.size(), &(colors[0]) );
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getStaticVbo();
+				for(size_t i = 0, j = 0; i < colors.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+0) * sizeof(Color), sizeof(Color), &colors[i+0]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+1) * sizeof(Color), sizeof(Color), &colors[i+1]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+2) * sizeof(Color), sizeof(Color), &colors[i+2]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+3) * sizeof(Color), sizeof(Color), &colors[i+0]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+4) * sizeof(Color), sizeof(Color), &colors[i+2]);
+					vbo.bufferSubData(mObj->mColorRGBOffset + (j+5) * sizeof(Color), sizeof(Color), &colors[i+3]);
+				}
+			}
+			else
+				getStaticVbo().bufferSubData( mObj->mColorRGBOffset, sizeof(Color) * colors.size(), &(colors[0]) );
 		}
 		else
 			throw;
@@ -920,14 +1158,43 @@ void VboMesh::bufferColorsRGB( const std::vector<Color> &colors )
 void VboMesh::bufferColorsRGBA( const std::vector<ColorA> &colors )
 {
 	if( mObj->mLayout.hasDynamicColorsRGBA() ) {
-		if( mObj->mDynamicStride == 0 )
-			getDynamicVbo().bufferSubData( mObj->mColorRGBAOffset, sizeof(ColorA) * colors.size(), &(colors[0]) );
+		if( mObj->mDynamicStride == 0 ) {
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getDynamicVbo();
+				for(size_t i = 0, j = 0; i < colors.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+0) * sizeof(ColorA), sizeof(ColorA), &colors[i+0]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+1) * sizeof(ColorA), sizeof(ColorA), &colors[i+1]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+2) * sizeof(ColorA), sizeof(ColorA), &colors[i+2]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+3) * sizeof(ColorA), sizeof(ColorA), &colors[i+0]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+4) * sizeof(ColorA), sizeof(ColorA), &colors[i+2]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+5) * sizeof(ColorA), sizeof(ColorA), &colors[i+3]);
+				}
+			}
+			else
+				getDynamicVbo().bufferSubData( mObj->mColorRGBAOffset, sizeof(ColorA) * colors.size(), &(colors[0]) );
+		}
 		else
 			throw;
 	}
 	else if( mObj->mLayout.hasStaticColorsRGBA() ) {
 		if( mObj->mStaticStride == 0 ) { // planar data
-			getStaticVbo().bufferSubData( mObj->mColorRGBAOffset, sizeof(ColorA) * colors.size(), &(colors[0]) );
+			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
+			{
+				Vbo &vbo = getStaticVbo();
+				for(size_t i = 0, j = 0; i < colors.size(); i += 4, j += 6)
+				{
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+0) * sizeof(ColorA), sizeof(ColorA), &colors[i+0]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+1) * sizeof(ColorA), sizeof(ColorA), &colors[i+1]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+2) * sizeof(ColorA), sizeof(ColorA), &colors[i+2]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+3) * sizeof(ColorA), sizeof(ColorA), &colors[i+0]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+4) * sizeof(ColorA), sizeof(ColorA), &colors[i+2]);
+					vbo.bufferSubData(mObj->mColorRGBAOffset + (j+5) * sizeof(ColorA), sizeof(ColorA), &colors[i+3]);
+				}
+			}
+			else
+				getStaticVbo().bufferSubData( mObj->mColorRGBAOffset, sizeof(ColorA) * colors.size(), &(colors[0]) );
 		}
 		else
 			throw;
@@ -983,6 +1250,8 @@ VboMesh::VertexIter::Obj::Obj( const VboMesh &mesh )
 	//glBufferDataARB( GL_ARRAY_BUFFER, mesh.mObj->mDynamicStride * mesh.mObj->mNumVertices, NULL, GL_STREAM_DRAW );
 	//mData = mVbo.map( GL_WRITE_ONLY );
 	//mData = reinterpret_cast<uint8_t*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
+	mVbo.bufferData(mesh.mObj->mDynamicStride * mesh.mObj->mNumVertices, NULL, D3D11_USAGE_DYNAMIC, D3D11_BIND_VERTEX_BUFFER, D3D11_CPU_ACCESS_WRITE);
+	mData = mVbo.map(D3D11_MAP_WRITE_DISCARD);
 	mDataEnd = mData + mesh.mObj->mDynamicStride * mesh.getNumVertices();
 }
 

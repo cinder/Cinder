@@ -40,12 +40,16 @@ void BasicApp::setup()
 	layout.setStaticIndices();
 	layout.setDynamicPositions();
 	layout.setStaticTexCoords2d();
+	layout.setStaticColorsRGBA();
+	layout.setStaticNormals();
 
-	mVboMesh = dx::VboMesh( totalVertices, totalQuadIndices, layout, GL_QUADS );
+	mVboMesh = dx::VboMesh( totalVertices, totalQuadIndices, layout, true );
 
 	// buffer our static data - the texcoords and the indices
 	vector<uint32_t> indices;
 	vector<Vec2f> texCoords;
+	vector<Vec3f> normals;
+	vector<ColorA> colors;
 	for( int x = 0; x < VERTICES_X; ++x ) {
 		for( int z = 0; z < VERTICES_Z; ++z ) {
 			// create a quad for each vertex, except for along the bottom and right edges
@@ -57,15 +61,23 @@ void BasicApp::setup()
 			}
 			// the texture coordinates are mapped to [0,1.0)
 			texCoords.push_back( Vec2f( x / (float)VERTICES_X, z / (float)VERTICES_Z ) );
+			normals.push_back(Vec3f(0, 0, 0));
+			colors.push_back(ColorA(1, 1, 1, 0.2f));
 		}
 	}
 
 	mVboMesh.bufferIndices( indices );
-	mVboMesh2.bufferTexCoords2d( 0, texCoords );
+	mVboMesh.bufferTexCoords2d( 0, texCoords );
+	mVboMesh.bufferNormals(normals);
+	mVboMesh.bufferColorsRGBA(colors);
 
 	// make a second VBO that uses the statics from the first
-	mVboMesh2 = dx::VboMesh( totalVertices, totalQuadIndices, mVboMesh.getLayout(), GL_QUADS );
+	mVboMesh2 = dx::VboMesh( totalVertices, totalQuadIndices, mVboMesh.getLayout(), true );
 	mVboMesh2.setTexCoordOffset( 0, mVboMesh.getTexCoordOffset( 0 ) );
+	mVboMesh2.bufferIndices( indices );
+	mVboMesh2.bufferTexCoords2d( 0, texCoords );
+	mVboMesh2.bufferNormals(normals);
+	mVboMesh2.bufferColorsRGBA(colors);
 
 	mTexture = dx::Texture( loadImage( loadAsset( "testPattern.png" ) ) );
 
@@ -108,7 +120,7 @@ void BasicApp::draw()
 
 	dx::scale( Vec3f(10, 10, 10 ) );
 	mTexture.bind();
-	dx::draw( mVboMesh );
+	//dx::draw( mVboMesh );
 	dx::draw( mVboMesh2 );
 
 	std::stringstream s;

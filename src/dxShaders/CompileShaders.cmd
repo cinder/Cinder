@@ -21,8 +21,7 @@ call :CompileShader FixedFunctionTexture ps PS
 call :CompileShader FixedFunctionTextureLighting vs VS
 call :CompileShader FixedFunctionTextureLighting ps PS
 
-call :CompileShader StandardVboLayout vs rgbVS
-call :CompileShader StandardVboLayout vs rgbaVS
+call :CompileShader StandardVboLayout vs VS
 
 echo.
 
