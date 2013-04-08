@@ -34,7 +34,7 @@ namespace osc{
 BundleInitiator BeginBundleImmediate(1);
 BundleTerminator EndBundle;
 MessageTerminator EndMessage;
-NilType Nil;
+NilType OscNil;
 InfinitumType Infinitum;
 
 } // namespace osc
