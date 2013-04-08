@@ -311,8 +311,6 @@
 		007439930EA7BB47005DD3E6 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007439920EA7BB47005DD3E6 /* QTKit.framework */; };
 		0074399E0EA7BB7D005DD3E6 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */; };
 		0076581C11226084005547DF /* CinderResources.h in Headers */ = {isa = PBXBuildFile; fileRef = 0076581B11226084005547DF /* CinderResources.h */; };
-		0078239F1710B13D00B47F9C /* LoadOGLCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0078239D1710B13D00B47F9C /* LoadOGLCore.cpp */; };
-		007823A01710B13D00B47F9C /* TwOpenGLCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0078239E1710B13D00B47F9C /* TwOpenGLCore.cpp */; };
 		007A7B13158D098D00BEAD18 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007A7B12158D098D00BEAD18 /* Window.cpp */; };
 		007A7B14158D098D00BEAD18 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007A7B12158D098D00BEAD18 /* Window.cpp */; };
 		007A7B15158D098D00BEAD18 /* Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007A7B12158D098D00BEAD18 /* Window.cpp */; };
@@ -870,8 +868,6 @@
 		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = ../../../../../../Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		0076581B11226084005547DF /* CinderResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderResources.h; sourceTree = "<group>"; };
-		0078239D1710B13D00B47F9C /* LoadOGLCore.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = LoadOGLCore.cpp; path = ../src/AntTweakBar/LoadOGLCore.cpp; sourceTree = "<group>"; };
-		0078239E1710B13D00B47F9C /* TwOpenGLCore.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = TwOpenGLCore.cpp; path = ../src/AntTweakBar/TwOpenGLCore.cpp; sourceTree = "<group>"; };
 		007A7B12158D098D00BEAD18 /* Window.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Window.cpp; path = app/Window.cpp; sourceTree = "<group>"; };
 		007A7B16158D09A600BEAD18 /* Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Window.h; path = app/Window.h; sourceTree = "<group>"; };
 		007B09730E9559960052257E /* Rand.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Rand.cpp; sourceTree = "<group>"; };
@@ -1226,8 +1222,6 @@
 		003ADB681038972200ACF6F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				0078239D1710B13D00B47F9C /* LoadOGLCore.cpp */,
-				0078239E1710B13D00B47F9C /* TwOpenGLCore.cpp */,
 				003ADB891038974A00ACF6F2 /* TwMgr.cpp */,
 				003ADB8A1038974A00ACF6F2 /* TwPrecomp.cpp */,
 				003ADB8B1038974A00ACF6F2 /* LoadOGL.cpp */,
@@ -2520,8 +2514,6 @@
 				00954491167D2A3E008ECA02 /* MovieWriter.cpp in Sources */,
 				00954492167D2A3E008ECA02 /* QuickTime.cpp in Sources */,
 				00954493167D2A3E008ECA02 /* QuickTimeUtils.cpp in Sources */,
-				0078239F1710B13D00B47F9C /* LoadOGLCore.cpp in Sources */,
-				007823A01710B13D00B47F9C /* TwOpenGLCore.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

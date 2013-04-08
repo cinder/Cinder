@@ -14,7 +14,8 @@
 #include "TwBar.h"
 #include "TwFonts.h"
 #include "TwOpenGL.h"
-#include "TwOpenGLCore.h"
+// Cinder doesn't support OpenGLCore yet
+// #include "TwOpenGLCore.h"
 #ifdef ANT_WINDOWS
 #   include "TwDirect3D9.h"
 #   include "TwDirect3D10.h"
