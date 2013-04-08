@@ -120,7 +120,7 @@ extern MessageTerminator EndMessage;
 struct NilType{
 };
 
-extern NilType Nil;
+extern NilType OscNil;
 
 
 struct InfinitumType{
