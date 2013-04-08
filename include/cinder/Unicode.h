@@ -12,6 +12,6 @@ uint32_t	nextCharUtf8( const char *str, size_t *inOutByte, size_t lengthInBytes 
 //! Returns the index in bytes of the next character in \a str, advanced by \a numChars characters. Optimize operation by supplying a non-default \a lengthInBytes of \a str.
 size_t		advanceCharUtf8( const char *str, size_t numChars, size_t lengthInBytes = 0 );
 
-void		lineBreakUtf8( const char *str, std::vector<uint8_t> *breaks );
+void		lineBreakUtf8( const char *str, const std::function<bool(const char *, size_t)> &measureFn, std::function<void(const char *,size_t)> lineProcessFn );
 
 }
