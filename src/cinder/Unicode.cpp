@@ -114,4 +114,75 @@ void lineBreakUtf8( const char *line, const std::function<bool(const char *, siz
 	}
 }
 
+void findBreaksUtf8( const std::string &line, std::vector<size_t> *must, std::vector<size_t> *allow )
+{
+	const size_t length = line.size();
+	shared_ptr<char> brks = shared_ptr<char>( (char*)malloc( length ), free );
+
+	set_linebreaks_utf8( (const uint8_t*) line.c_str(), length, NULL, brks.get() );
+
+	//
+	must->clear();
+	allow->clear();
+
+	//
+	size_t byte = 0;
+	while( byte < length ) {
+		if( brks.get()[byte] == LINEBREAK_ALLOWBREAK )
+			allow->push_back( byte );
+		else if( brks.get()[byte] == LINEBREAK_MUSTBREAK ) {
+			must->push_back( byte );
+			allow->push_back( byte );
+		}
+
+		byte++;
+	}
 }
+
+void findBreaksUtf16( const std::wstring &line, std::vector<size_t> *must, std::vector<size_t> *allow )
+{
+	const size_t length = line.size();
+	shared_ptr<char> brks = shared_ptr<char>( (char*)malloc( length ), free );
+
+	set_linebreaks_utf16( (const uint16_t*) line.c_str(), length, NULL, brks.get() );
+
+	//
+	must->clear();
+	allow->clear();
+
+	size_t byte = 0;
+	while( byte < length ) {
+		if( brks.get()[byte] == LINEBREAK_ALLOWBREAK )
+			allow->push_back( byte );
+		else if( brks.get()[byte] == LINEBREAK_MUSTBREAK ) {
+			must->push_back( byte );
+			allow->push_back( byte );
+		}
+
+		byte++;
+	}
+} 
+
+bool isWhitespaceUtf8( const char ch )
+{ 
+	return isWhitespaceUtf16( (short) ch ); 
+}
+
+bool isWhitespaceUtf16( const wchar_t ch )
+{
+	// see: http://en.wikipedia.org/wiki/Whitespace_character, 
+	// make sure the values are in ascending order, 
+	// otherwise the binary search won't work
+	static const wchar_t arr[] = {
+		0x0009, 0x000A, 0x000B, 0x000C, 0x000D,
+		0x0020, 0x0085, 0x00A0, 0x1680, 0x180E,
+		0x2000, 0x2001, 0x2002, 0x2003, 0x2004,
+		0x2005, 0x2006, 0x2007, 0x2008, 0x2009,
+		0x200A, 0x2028, 0x2029, 0x202F, 0x205F, 0x3000
+	};
+	static const vector<wchar_t> whitespace(arr, arr + sizeof(arr) / sizeof(arr[0]) );
+
+	return std::binary_search( whitespace.begin(), whitespace.end(), ch );
+}
+
+} // namespace ci
