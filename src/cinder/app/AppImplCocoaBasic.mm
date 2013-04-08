@@ -321,7 +321,12 @@
 
 - (void)quit
 {
-	[NSApp terminate:self];
+	// in certain scenarios self seems to have be deallocated inside terminate:
+	// so we call this here and then pass nil to terminate: instead
+	if( ! mApp->privateShouldQuit() )
+		return;
+
+	[NSApp terminate:nil];
 }
 
 - (float)getFrameRate
