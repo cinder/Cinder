@@ -258,6 +258,12 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\dx\HlslProg.h">
       <Filter>Header Files\dx</Filter>
+	</ClInclude>
+    <ClInclude Include="..\include\cinder\Arcball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Quaternion.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -695,6 +701,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\svg\Svg.cpp">
       <Filter>Source Files\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Shape2d.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

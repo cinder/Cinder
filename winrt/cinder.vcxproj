@@ -262,6 +262,7 @@
     <ClInclude Include="..\include\cinder\app\Renderer.h" />
     <ClInclude Include="..\include\cinder\app\Window.h" />
     <ClInclude Include="..\include\cinder\app\WinRTApp.h" />
+    <ClInclude Include="..\include\cinder\Arcball.h" />
     <ClInclude Include="..\include\cinder\Area.h" />
     <ClInclude Include="..\include\cinder\AxisAlignedBox.h" />
     <ClInclude Include="..\include\cinder\BSpline.h" />
@@ -297,6 +298,7 @@
     <ClInclude Include="..\include\cinder\ip\Threshold.h" />
     <ClInclude Include="..\include\cinder\ip\Trim.h" />
     <ClInclude Include="..\include\cinder\Path2d.h" />
+    <ClInclude Include="..\include\cinder\Quaternion.h" />
     <ClInclude Include="..\include\cinder\Ray.h" />
     <ClInclude Include="..\include\cinder\Rect.h" />
     <ClInclude Include="..\include\cinder\Stream.h" />
@@ -376,6 +378,7 @@
     <ClCompile Include="..\src\cinder\PolyLine.cpp" />
     <ClCompile Include="..\src\cinder\Rand.cpp" />
     <ClCompile Include="..\src\cinder\Ray.cpp" />
+    <ClCompile Include="..\src\cinder\Shape2d.cpp" />
     <ClCompile Include="..\src\cinder\Stream.cpp" />
     <ClCompile Include="..\src\cinder\Surface.cpp" />
     <ClCompile Include="..\src\cinder\svg\Svg.cpp" />
