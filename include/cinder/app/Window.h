@@ -165,15 +165,15 @@ class Window : public std::enable_shared_from_this<Window> {
 		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
 		Format&		size( int32_t width, int32_t height ) { mSize = Vec2i( width, height ); return *this; }
 
-		//! Returns the position in points at which the Window will be created. Default is centered on the display.
+		//! Returns the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		Vec2i		getPos() const { return mPos; }
-		//! Sets the position in points at which the Window will be created. Default is centered on the display.
+		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		void		setPos( const Vec2i &pos ) { mPos = pos; mPosSpecified = true; }
-		//! Sets the position in points at which the Window will be created. Default is centered on the display.
+		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		void		setPos( int32_t x, int32_t y ) { mPos = Vec2i( x, y ); mPosSpecified = true; }
-		//! Sets the position in points at which the Window will be created. Default is centered on the display.
+		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		Format&		pos( const Vec2i &pos ) { mPos = pos; mPosSpecified = true; return *this; }
-		//! Sets the position in points at which the Window will be created. Default is centered on the display.
+		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		Format&		pos( int32_t x, int32_t y ) { mPos = Vec2i( x, y ); mPosSpecified = true; return *this; }
 		//! Returns whether a non-default position has been requested for the Window.
 		bool		isPosSpecified() const { return mPosSpecified; }
