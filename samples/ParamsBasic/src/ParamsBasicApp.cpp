@@ -14,7 +14,7 @@ class TweakBarApp : public AppBasic {
 	void button();
 	
 	CameraPersp				mCam;
-	params::InterfaceGl		mParams;
+	params::InterfaceGlRef	mParams;
 	float					mObjSize;
 	Quatf					mObjOrientation;
 	Vec3f					mLightDirection;
@@ -32,21 +32,21 @@ void TweakBarApp::setup()
 	mCam.lookAt( Vec3f( -20, 0, 0 ), Vec3f::zero() );
 
 	// Setup the parameters
-	mParams = params::InterfaceGl( getWindow(), "App parameters", toPixels( Vec2i( 200, 400 ) ) );
-	mParams.addParam( "Cube Size", &mObjSize, "min=0.1 max=20.5 step=0.5 keyIncr=z keyDecr=Z" );
-	mParams.addParam( "Cube Rotation", &mObjOrientation );
-	mParams.addParam( "Cube Color", &mColor, "" );	
-	mParams.addSeparator();	
-	mParams.addParam( "Light Direction", &mLightDirection, "" );
-	mParams.addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
-	mParams.addText( "text", "label=`This is a label without a parameter.`" );
-	mParams.addParam( "String ", &mString, "" );
+	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( Vec2i( 200, 400 ) ) );
+	mParams->addParam( "Cube Size", &mObjSize, "min=0.1 max=20.5 step=0.5 keyIncr=z keyDecr=Z" );
+	mParams->addParam( "Cube Rotation", &mObjOrientation );
+	mParams->addParam( "Cube Color", &mColor, "" );	
+	mParams->addSeparator();	
+	mParams->addParam( "Light Direction", &mLightDirection, "" );
+	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
+	mParams->addText( "text", "label=`This is a label without a parameter.`" );
+	mParams->addParam( "String ", &mString, "" );
 }
 
 void TweakBarApp::button()
 {
 	app::console() << "Clicked!" << std::endl;
-	mParams.setOptions( "text", "label=`Clicked!`" );
+	mParams->setOptions( "text", "label=`Clicked!`" );
 }
 
 void TweakBarApp::resize()
@@ -74,7 +74,7 @@ void TweakBarApp::draw()
 	gl::drawCube( Vec3f::zero(), Vec3f( mObjSize, mObjSize, mObjSize ) );
 
 	// Draw the interface
-	mParams.draw();
+	mParams->draw();
 }
 
 CINDER_APP_BASIC( TweakBarApp, RendererGl )
