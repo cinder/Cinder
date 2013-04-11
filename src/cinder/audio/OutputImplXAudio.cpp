@@ -117,6 +117,8 @@ OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
 OutputImplXAudio::Track::~Track()
 {
 	stop();
+	if( mQueueThread )
+		mQueueThread->detach();
 	delete [] mDecodedBuffers;
 	CloseHandle( mBufferEndEvent );
 }
@@ -125,6 +127,12 @@ void OutputImplXAudio::Track::play()
 {
 	//mLoader->start();
 	//fillBufferCallback();
+	if( mIsPlaying ) {
+		stop();
+		if( mQueueThread )
+			mQueueThread->detach(); // blow away old thread that was filling samples
+	}
+
 	mIsPlaying = true;
 	mQueueThread = std::shared_ptr<std::thread>( new std::thread( std::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
 
@@ -141,7 +149,6 @@ void OutputImplXAudio::Track::stop()
 	mSourceVoice->Stop( 0, XAUDIO2_COMMIT_NOW ); //might not really need this
 	mIsPlaying = false;
 	SetEvent( mBufferEndEvent ); //signals event to end queuethread
-	mQueueThread->join();
 	mSourceVoice->FlushSourceBuffers();
 }
 
