@@ -65,7 +65,7 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 
 	struct FixedVertex
 	{
-		FixedVertex(Vec4f POS = Vec4f(), Vec3f NORM = Vec3f(), Vec2f UV = Vec2f(), Vec4f COLOR = Vec4f()) : pos(POS), norm(NORM), uv(UV), color(COLOR) {}
+		FixedVertex(Vec4f POS = Vec4f(0, 0, 0, 1), Vec3f NORM = Vec3f(), Vec2f UV = Vec2f(), Vec4f COLOR = Vec4f()) : pos(POS), norm(NORM), uv(UV), color(COLOR) {}
 		FixedVertex(Vec3f POS, Vec3f NORM = Vec3f(), Vec2f UV = Vec2f(), Vec4f COLOR = Vec4f()) : pos(Vec4f(POS, 1)), norm(NORM), uv(UV), color(COLOR) {}
 		FixedVertex(Vec2f POS, Vec3f NORM = Vec3f(), Vec2f UV = Vec2f(), Vec4f COLOR = Vec4f()) : pos(Vec4f(POS.x, POS.y, 0, 1)), norm(NORM), uv(UV), color(COLOR) {}
 		Vec4f pos;

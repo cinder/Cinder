@@ -55,6 +55,7 @@ namespace cinder { namespace dx {
 set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedChars )
 {
 	//freetype block of code////////////////////////////////////////////////////
+#if defined( CINDER_WINRT )
 	{
 		set<Font::Glyph> result;
 		for(unsigned i = 0; i < supportedChars.size(); ++i)
@@ -62,58 +63,61 @@ set<Font::Glyph> getNecessaryGlyphs( const Font &font, const string &supportedCh
 		return result;
 	}
 	////////////////////////////////////////////////////////////////////////////
+#elif defined( CINDER_MSW )
 
-	//set<Font::Glyph> result;
+	set<Font::Glyph> result;
 
-	//GCP_RESULTS gcpResults;
-	//WCHAR *glyphIndices = NULL;
+	GCP_RESULTS gcpResults;
+	WCHAR *glyphIndices = NULL;
 
-	//wstring utf16 = toUtf16( supportedChars );
+	wstring utf16 = toUtf16( supportedChars );
 
-	//::SelectObject( Font::getGlobalDc(), font.getHfont() );
+	::SelectObject( Font::getGlobalDc(), font.getHfont() );
 
-	//gcpResults.lStructSize = sizeof(gcpResults);
-	//gcpResults.lpOutString = NULL;
-	//gcpResults.lpOrder = NULL;
-	//gcpResults.lpCaretPos = NULL;
-	//gcpResults.lpClass = NULL;
+	gcpResults.lStructSize = sizeof(gcpResults);
+	gcpResults.lpOutString = NULL;
+	gcpResults.lpOrder = NULL;
+	gcpResults.lpCaretPos = NULL;
+	gcpResults.lpClass = NULL;
 
-	//uint32_t bufferSize = std::max<uint32_t>( (uint32_t)(utf16.length() * 1.2f), 16);		// Initially guess number of chars plus a few
-	//while( true ) {
-	//	if( glyphIndices ) {
-	//		free( glyphIndices );
-	//		glyphIndices = NULL;
-	//	}
+	uint32_t bufferSize = std::max<uint32_t>( (uint32_t)(utf16.length() * 1.2f), 16);		// Initially guess number of chars plus a few
+	while( true ) {
+		if( glyphIndices ) {
+			free( glyphIndices );
+			glyphIndices = NULL;
+		}
 
-	//	glyphIndices = (WCHAR*)malloc( bufferSize * sizeof(WCHAR) );
-	//	gcpResults.nGlyphs = bufferSize;
-	//	gcpResults.lpDx = 0;
-	//	gcpResults.lpGlyphs = glyphIndices;
+		glyphIndices = (WCHAR*)malloc( bufferSize * sizeof(WCHAR) );
+		gcpResults.nGlyphs = bufferSize;
+		gcpResults.lpDx = 0;
+		gcpResults.lpGlyphs = glyphIndices;
 
-	//	if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), utf16.c_str(), utf16.length(), 0,
-	//					&gcpResults, GCP_LIGATE | GCP_DIACRITIC | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
-	//		return set<Font::Glyph>(); // failure
-	//	}
+		if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), utf16.c_str(), utf16.length(), 0,
+						&gcpResults, GCP_LIGATE | GCP_DIACRITIC | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
+			return set<Font::Glyph>(); // failure
+		}
 
-	//	if( gcpResults.lpGlyphs )
-	//		break;
+		if( gcpResults.lpGlyphs )
+			break;
 
-	//	// Too small a buffer, try again
-	//	bufferSize += bufferSize / 2;
-	//	if( bufferSize > INT_MAX) {
-	//		return set<Font::Glyph>(); // failure
-	//	}
-	//}
+		// Too small a buffer, try again
+		bufferSize += bufferSize / 2;
+		if( bufferSize > INT_MAX) {
+			return set<Font::Glyph>(); // failure
+		}
+	}
 
-	//for( UINT i = 0; i < gcpResults.nGlyphs; i++ )
-	//	result.insert( glyphIndices[i] );
+	for( UINT i = 0; i < gcpResults.nGlyphs; i++ )
+		result.insert( glyphIndices[i] );
 
-	//if( glyphIndices )
-	//	free( glyphIndices );
+	if( glyphIndices )
+		free( glyphIndices );
 
-	//return result;
+	return result;
+#endif
 }
 
+#if defined( CINDER_WINRT )
 TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Format &format )
 	: mFont( font ), mFormat( format )
 {
@@ -208,6 +212,101 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 		}
 	}
 }
+#elif defined( CINDER_MSW )
+TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Format &format )
+	: mFont( font ), mFormat( format )
+{
+	// get the glyph indices we'll need
+	set<Font::Glyph> glyphs = getNecessaryGlyphs( font, utf8Chars );
+	// determine the max glyph extents
+	Vec2i glyphExtents = Vec2f::zero();
+	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
+		try {
+			Rectf bb = font.getGlyphBoundingBox( *glyphIt );
+			glyphExtents.x = std::max<int>( glyphExtents.x, bb.getWidth() );
+			glyphExtents.y = std::max<int>( glyphExtents.y, bb.getHeight() );
+		}
+		catch( FontGlyphFailureExc &e ) {
+		}
+	}
+
+	::SelectObject( Font::getGlobalDc(), mFont.getHfont() );
+
+	if( ( glyphExtents.x == 0 ) || ( glyphExtents.y == 0 ) )
+		return;
+
+	int glyphsWide = mFormat.getTextureWidth() / glyphExtents.x;
+	int glyphsTall = mFormat.getTextureHeight() / glyphExtents.y;	
+	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
+	Vec2i curOffset = Vec2i::zero();
+
+	Channel channel( mFormat.getTextureWidth(), mFormat.getTextureHeight() );
+	ip::fill<uint8_t>( &channel, 0 );
+
+	GLYPHMETRICS gm = { 0, };
+	MAT2 identityMatrix = { {0,1},{0,0},{0,0},{0,1} };
+	size_t bufferSize = 1;
+	BYTE *pBuff = new BYTE[bufferSize];
+	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
+		DWORD dwBuffSize = ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_GRAY8_BITMAP | GGO_GLYPH_INDEX, &gm, 0, NULL, &identityMatrix );
+		if( dwBuffSize > bufferSize ) {
+			delete[] pBuff;
+			pBuff = new BYTE[dwBuffSize];
+			bufferSize = dwBuffSize;
+		}
+		else if( dwBuffSize == 0 ) {
+			++glyphIt;
+			continue;
+		}
+
+		if( ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_METRICS | GGO_GLYPH_INDEX, &gm, 0, NULL, &identityMatrix ) == GDI_ERROR ) {
+			continue;
+		}
+
+		if( ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_GRAY8_BITMAP | GGO_GLYPH_INDEX, &gm, dwBuffSize, pBuff, &identityMatrix ) == GDI_ERROR ) {
+			continue;
+		}
+
+		// convert 6bit to 8bit gray
+		for( INT p = 0; p < dwBuffSize; ++p )
+			pBuff[p] = ((uint32_t)pBuff[p]) * 255 / 64;
+
+		int32_t alignedRowBytes = ( gm.gmBlackBoxX & 3 ) ? ( gm.gmBlackBoxX + 4 - ( gm.gmBlackBoxX & 3 ) ) : gm.gmBlackBoxX;
+		Channel glyphChannel( gm.gmBlackBoxX, gm.gmBlackBoxY, alignedRowBytes, 1, pBuff );
+		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), curOffset );
+
+		GlyphInfo newInfo;
+		newInfo.mOriginOffset = Vec2f( gm.gmptGlyphOrigin.x, glyphExtents.y - gm.gmptGlyphOrigin.y );
+		newInfo.mTexCoords = Area( curOffset, curOffset + Vec2i( gm.gmBlackBoxX, gm.gmBlackBoxY ) );
+		newInfo.mTextureIndex = curTextureIndex;
+		mGlyphMap[*glyphIt] = newInfo;
+
+		curOffset += Vec2i( glyphExtents.x, 0 );
+		++glyphIt;
+		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
+			Surface tempSurface( channel, SurfaceConstraintsDefault(), true );
+			tempSurface.getChannelAlpha().copyFrom( channel, channel.getBounds() );
+			if( ! format.getPremultiply() )
+				ip::unpremultiply( &tempSurface );
+			
+			dx::Texture::Format textureFormat = dx::Texture::Format();
+			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
+			textureFormat.setInternalFormat( DXGI_FORMAT_R8G8B8A8_UNORM );
+			mTextures.push_back( dx::Texture( tempSurface, textureFormat ) );
+			ip::fill<uint8_t>( &channel, 0 );			
+			curOffset = Vec2i::zero();
+			curGlyphIndex = 0;
+			++curTextureIndex;
+		}
+		else if( ( curGlyphIndex ) % glyphsWide == 0 ) { // wrap around
+			curOffset.x = 0;
+			curOffset.y += glyphExtents.y;
+		}
+	}
+
+	delete [] pBuff;
+}
+#endif
 
 void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baselineIn, const DrawOptions &options, const std::vector<ColorA8u> &colors )
 {

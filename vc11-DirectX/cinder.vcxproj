@@ -102,9 +102,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\AntTweakBar\LoadOGLCore.cpp" />
-    <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp" />
-    <ClCompile Include="..\src\AntTweakBar\TwOpenGLCore.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswRendererDx.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp" />
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp" />
@@ -201,13 +198,6 @@
     <ClCompile Include="..\src\cinder\msw\CinderMswGdiPlus.cpp" />
     <ClCompile Include="..\src\cinder\msw\StackWalker.cpp" />
     <ClCompile Include="..\src\cinder\params\Params.cpp" />
-    <ClCompile Include="..\src\AntTweakBar\LoadOGL.cpp" />
-    <ClCompile Include="..\src\AntTweakBar\TwBar.cpp" />
-    <ClCompile Include="..\src\AntTweakBar\TwColors.cpp" />
-    <ClCompile Include="..\src\AntTweakBar\TwFonts.cpp" />
-    <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp" />
-    <ClCompile Include="..\src\AntTweakBar\TwOpenGL.cpp" />
-    <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp" />
     <ClCompile Include="..\src\freetype\autofit\autofit.c" />
     <ClCompile Include="..\src\freetype\base\ftbase.c" />
     <ClCompile Include="..\src\freetype\base\ftbbox.c" />
@@ -322,22 +312,6 @@
     <ClInclude Include="..\include\json\writer.h" />
     <ClInclude Include="..\include\rapidxml\rapidxml.hpp" />
     <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp" />
-    <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
-    <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h" />
-    <ClInclude Include="..\src\AntTweakBar\LoadOGL.h" />
-    <ClInclude Include="..\src\AntTweakBar\LoadOGLCore.h" />
-    <ClInclude Include="..\src\AntTweakBar\resource.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwBar.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwColors.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwDirect3D10.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwDirect3D9.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwFonts.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwGraph.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwMgr.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwOpenGL.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwOpenGLCore.h" />
-    <ClInclude Include="..\src\AntTweakBar\TwPrecomp.h" />
     <ClInclude Include="..\include\cinder\Arcball.h" />
     <ClInclude Include="..\include\cinder\Area.h" />
     <ClInclude Include="..\include\cinder\AxisAlignedBox.h" />

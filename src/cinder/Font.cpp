@@ -41,7 +41,6 @@
 	#undef max
 	#include "cinder/msw/CinderMsw.h"
 	#include "cinder/msw/CinderMswGdiPlus.h"
-	#include <dwrite.h>
 	#pragma comment(lib, "gdiplus")
 #elif defined( CINDER_WINRT )
 	#include <dwrite.h>
