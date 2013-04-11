@@ -542,7 +542,13 @@ vector<pair<uint16_t,Vec2f> > TextureFont::getGlyphPlacements( const std::string
 
 vector<pair<uint16_t,Vec2f> > TextureFont::getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
 {
-	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, fitRect.getWidth() ).ligate( options.getLigate() );
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, fitRect.getHeight() ).ligate( options.getLigate() );
+	return tbox.measureGlyphs();
+}
+
+vector<pair<uint16_t,Vec2f> > TextureFont::getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
+{
+	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
 	return tbox.measureGlyphs();
 }
 

@@ -6,9 +6,9 @@
 //              that can be readily integrated into OpenGL and DirectX 
 //              applications in order to interactively tweak parameters.
 //
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //
-//  @doc        http://www.antisphere.com/Wiki/tools:anttweakbar
+//  @doc        http://anttweakbar.sourceforge.net/doc
 //
 //  @license    This file is part of the AntTweakBar library.
 //              AntTweakBar is a free software released under the zlib license.
@@ -22,7 +22,10 @@
 
 #include <stddef.h>
 
-#define TW_VERSION  115 // Version Mmm : M=Major mm=minor (e.g., 102 is version 1.02)
+#define TW_VERSION  116 // Version Mmm : M=Major mm=minor (e.g., 102 is version 1.02)
+
+// Cinder: forcing static
+#define TW_STATIC
 
 
 #ifdef  __cplusplus
@@ -57,12 +60,13 @@
 #if defined TW_EXPORTS
 #   define TW_API TW_EXPORT_API
 #elif defined TW_STATIC
-#   define TW_API
+#   define TW_API TW_CALL
 #   if defined(_MSC_VER) && !defined(TW_NO_LIB_PRAGMA)
+// Cinder: these imports are disabled as Ant is baked into libcinder
 #       ifdef _WIN64
-#           pragma comment(lib, "AntTweakBarStatic64")
+//#           pragma comment(lib, "AntTweakBarStatic64")
 #       else
-#           pragma comment(lib, "AntTweakBarStatic")
+//#           pragma comment(lib, "AntTweakBarStatic")
 #       endif
 #   endif
 #else
@@ -90,7 +94,7 @@ TW_API int          TW_CALL TwSetTopBar(const TwBar *bar);
 TW_API TwBar *      TW_CALL TwGetTopBar();
 TW_API int          TW_CALL TwSetBottomBar(const TwBar *bar);
 TW_API TwBar *      TW_CALL TwGetBottomBar();
-TW_API const char * TW_CALL TwGetBarName(TwBar *bar);
+TW_API const char * TW_CALL TwGetBarName(const TwBar *bar);
 TW_API int          TW_CALL TwGetBarCount();
 TW_API TwBar *      TW_CALL TwGetBarByIndex(int barIndex);
 TW_API TwBar *      TW_CALL TwGetBarByName(const char *barName);
@@ -123,8 +127,8 @@ typedef enum ETwType
     TW_TYPE_COLOR4F,    // 4 floats color. Order is RGBA.
     TW_TYPE_CDSTRING,   // Null-terminated C Dynamic String (pointer to an array of char dynamically allocated with malloc/realloc/strdup)
 #ifdef __cplusplus
-# if defined(_MSC_VER) && (_MSC_VER > 1500)
-    TW_TYPE_STDSTRING = (0x2ffe0000+sizeof(std::string)),  // VS2010 or higher C++ STL string (std::string)
+# if defined(_MSC_VER) && (_MSC_VER == 1600)
+    TW_TYPE_STDSTRING = (0x2ffe0000+sizeof(std::string)),  // VS2010 C++ STL string (std::string)
 # else
     TW_TYPE_STDSTRING = (0x2fff0000+sizeof(std::string)),  // C++ STL string (std::string)
 # endif

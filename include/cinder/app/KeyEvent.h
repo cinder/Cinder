@@ -30,7 +30,9 @@ namespace cinder{ namespace app{
 
 //! Represents a keyboard event
 class KeyEvent : public Event {
-  public:	
+  public:
+	KeyEvent() : Event()
+	{}
 	KeyEvent( WindowRef win, int aCode, uint32_t aChar32, char aChar, unsigned int aModifiers, unsigned int aNativeKeyCode )
 		: Event( win ), mCode( aCode ), mChar32( aChar32 ), mChar( aChar ), mModifiers( aModifiers ), mNativeKeyCode( aNativeKeyCode )
 	{}

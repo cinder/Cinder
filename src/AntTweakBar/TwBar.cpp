@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwBar.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -3800,7 +3800,7 @@ void CTwBar::UpdateColors()
 
     m_ColShortcutText = lightText ? 0xffffb060 : 0xff802000;
     m_ColShortcutBg = lightText ? Color32FromARGBf(0.4f*a, 0.2f, 0.2f, 0.2f) : Color32FromARGBf(0.4f*a, 0.8f, 0.8f, 0.8f);
-    m_ColInfoText = lightText ? Color32FromARGBf(1.0f, 0.7f, 0.7f, 0.7f) : Color32FromARGBf(1.0f, 0.3f, 0.3f, 0.3f);
+    m_ColInfoText = Color32FromARGBf(1.0f, 0.5f, 0.5f, 0.5f);
 
     m_ColRoto = lightText ? Color32FromARGBf(0.8f, 0.85f, 0.85f, 0.85f) : Color32FromARGBf(0.8f, 0.1f, 0.1f, 0.1f);
     m_ColRotoVal = Color32FromARGBf(1, 1.0f, 0.2f, 0.2f);
@@ -4315,6 +4315,9 @@ void CTwBar::Update()
     assert(m_UpToDate==false);
     assert(m_Font);
     ITwGraph *Gr = g_TwMgr->m_Graph;
+
+    if( g_TwMgr->m_WndWidth<=0 || g_TwMgr->m_WndHeight<=0 )
+        return; // graphic window is not ready
 
     bool DoEndDraw = false;
     if( !Gr->IsDrawing() )
@@ -5282,9 +5285,9 @@ void CTwBar::Draw(int _DrawPart)
                 {
                     if( g_TwMgr->m_InfoBuildText )
                     {
-                        string Info = "> AntTweakBar";
+                        string Info = "atb ";
                         char Ver[64];
-                        sprintf(Ver, " (v%d.%02d)", TW_VERSION/100, TW_VERSION%100);
+                        sprintf(Ver, " %d.%02d", TW_VERSION/100, TW_VERSION%100);
                         Info += Ver;
                         ClampText(Info, m_Font, m_Width-2*m_Font->m_CharHeight);
                         g_TwMgr->m_Graph->BuildText(g_TwMgr->m_InfoTextObj, &Info, NULL, NULL, 1, g_TwMgr->m_HelpBar->m_Font, 0, 0);
@@ -6010,7 +6013,8 @@ static void ANT_CALL PopupCallback(void *_ClientData)
             Bar->HaveFocus(true);
             Bar->NotUpToDate();
         }
-        TwDeleteBar(g_TwMgr->m_PopupBar);
+        if( g_TwMgr->m_PopupBar!=NULL ) // check again because it might have been destroyed by an enum callback
+            TwDeleteBar(g_TwMgr->m_PopupBar);
         g_TwMgr->m_PopupBar = NULL;
     }
 }
@@ -6034,9 +6038,10 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
         Handled = (_X>=m_PosX && _X<m_PosX+m_Width && _Y>=m_PosY && _Y<m_PosY+m_Height);
         if( _Button==TW_MOUSE_LEFT && m_HighlightedLine>=0 && m_HighlightedLine<(int)m_HierTags.size() && m_HierTags[m_HighlightedLine].m_Var )
         {
+            bool OnFocus = (m_HighlightedLine==(_Y-m_PosY-m_VarY0)/(m_Font->m_CharHeight+m_LineSep) && Handled);
             if( m_HierTags[m_HighlightedLine].m_Var->IsGroup() )
             {
-                if( _Pressed && !g_TwMgr->m_IsRepeatingMousePressed )
+                if( _Pressed && !g_TwMgr->m_IsRepeatingMousePressed && OnFocus )
                 {
                     CTwVarGroup *Grp = static_cast<CTwVarGroup *>(m_HierTags[m_HighlightedLine].m_Var);
                     Grp->m_Open = !Grp->m_Open;
@@ -6069,14 +6074,14 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                 if( !Var->m_NoSlider && !Var->m_ReadOnly && m_HighlightRotoBtn )
                 {
                     // begin rotoslider
-                    if( _X>m_PosX+m_VarX1 )
+                    if( _X>m_PosX+m_VarX1 && OnFocus )
                         RotoOnLButtonDown(m_PosX+m_VarX2-(1*IncrBtnWidth(m_Font->m_CharHeight))/2, _Y);
                     else
                         RotoOnLButtonDown(_X, _Y);
                     m_MouseDrag = true;
                     m_MouseDragVar = true;
                 }
-                else if( (Var->m_Type==TW_TYPE_BOOL8 || Var->m_Type==TW_TYPE_BOOL16 || Var->m_Type==TW_TYPE_BOOL32 || Var->m_Type==TW_TYPE_BOOLCPP) && !Var->m_ReadOnly )
+                else if( (Var->m_Type==TW_TYPE_BOOL8 || Var->m_Type==TW_TYPE_BOOL16 || Var->m_Type==TW_TYPE_BOOL32 || Var->m_Type==TW_TYPE_BOOLCPP) && !Var->m_ReadOnly && OnFocus )
                 {
                     Var->Increment(1);
                     //m_HighlightClickBtn = true;
@@ -6092,7 +6097,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
                     m_MouseDrag = false;
                 }
                 //else if( (Var->m_Type==TW_TYPE_ENUM8 || Var->m_Type==TW_TYPE_ENUM16 || Var->m_Type==TW_TYPE_ENUM32) && !Var->m_ReadOnly )
-                else if( IsEnumType(Var->m_Type) && !Var->m_ReadOnly && !g_TwMgr->m_IsRepeatingMousePressed )
+                else if( IsEnumType(Var->m_Type) && !Var->m_ReadOnly && !g_TwMgr->m_IsRepeatingMousePressed && OnFocus )
                 {
                     m_MouseDragVar = false;
                     m_MouseDrag = false;
@@ -6417,7 +6422,7 @@ bool CTwBar::MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y
         else if( m_IsHelpBar && _Pressed && !g_TwMgr->m_IsRepeatingMousePressed && _X>=m_PosX+m_VarX0 && _X<m_PosX+m_Width-m_Font->m_CharHeight && _Y>m_PosY+m_Height-m_Font->m_CharHeight && _Y<m_PosY+m_Height )
         {
             /*
-            const char *WebPage = "http://www.antisphere.com/Wiki/tools:anttweakbar";
+            const char *WebPage = "http://";
             #if defined ANT_WINDOWS
                 ShellExecute(NULL, "open", WebPage, NULL, NULL, SW_SHOWNORMAL);
             #elif defined ANT_UNIX

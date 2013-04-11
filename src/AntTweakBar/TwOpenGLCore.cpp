@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwOpenGLCore.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -39,7 +39,7 @@ extern const char *g_ErrCantUnloadOGL;
         {
             sprintf(msg, "%s(%d) : [%s] GL_CORE_ERROR=0x%x\n", file, line, func, err);
             #ifdef ANT_WINDOWS
-                OutputDebugStringA(msg);
+                OutputDebugString(msg);
             #endif
             fprintf(stderr, msg);
         }
@@ -98,9 +98,9 @@ static GLuint CompileShader(GLuint shader)
         GLchar strInfoLog[256];
         _glGetShaderInfoLog(shader, sizeof(strInfoLog), NULL, strInfoLog); CHECK_GL_ERROR;
 #ifdef ANT_WINDOWS
-        OutputDebugStringA("Compile failure: ");
-        OutputDebugStringA(strInfoLog);
-        OutputDebugStringA("\n");
+        OutputDebugString("Compile failure: ");
+        OutputDebugString(strInfoLog);
+        OutputDebugString("\n");
 #endif
         fprintf(stderr, "Compile failure: %s\n", strInfoLog);
         shader = 0;
@@ -123,9 +123,9 @@ static GLuint LinkProgram(GLuint program)
         GLchar strInfoLog[256];
         _glGetProgramInfoLog(program, sizeof(strInfoLog), NULL, strInfoLog); CHECK_GL_ERROR;
 #ifdef ANT_WINDOWS
-        OutputDebugStringA("Linker failure: ");
-        OutputDebugStringA(strInfoLog);
-        OutputDebugStringA("\n");
+        OutputDebugString("Linker failure: ");
+        OutputDebugString(strInfoLog);
+        OutputDebugString("\n");
 #endif
         fprintf(stderr, "Linker failure: %s\n", strInfoLog);
         program = 0;
@@ -265,7 +265,13 @@ int CTwGraphOpenGLCore::Init()
         "in vec2 fuv;"
         "in vec4 fcolor;"
         "out vec4 outColor;"
+// texture2D is deprecated and replaced by texture with GLSL 3.30 but it seems 
+// that on Mac Lion backward compatibility is not ensured.
+#if defined(ANT_OSX) && (MAC_OS_X_VERSION_MAX_ALLOWED >= 1070)
+        "void main() { outColor.rgb = fcolor.bgr; outColor.a = fcolor.a * texture(tex, fuv).r; }"
+#else
         "void main() { outColor.rgb = fcolor.bgr; outColor.a = fcolor.a * texture2D(tex, fuv).r; }"
+#endif
     };
     m_TriTexFS = _glCreateShader(GL_FRAGMENT_SHADER);
     _glShaderSource(m_TriTexFS, 1, triTexFS, NULL);

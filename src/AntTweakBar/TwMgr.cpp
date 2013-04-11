@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwMgr.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -14,7 +14,8 @@
 #include "TwBar.h"
 #include "TwFonts.h"
 #include "TwOpenGL.h"
-#include "TwOpenGLCore.h"
+// Cinder doesn't support OpenGLCore yet
+// #include "TwOpenGLCore.h"
 #ifdef ANT_WINDOWS
 #   include "TwDirect3D9.h"
 #   include "TwDirect3D10.h"
@@ -41,6 +42,7 @@ int g_InitWndWidth = -1;
 int g_InitWndHeight = -1;
 TwCopyCDStringToClient  g_InitCopyCDStringToClient = NULL;
 TwCopyStdStringToClient g_InitCopyStdStringToClient = NULL;
+float g_FontScaling = 1.0f;
 
 // multi-windows
 const int TW_MASTER_WINDOW_ID = 0;
@@ -734,7 +736,7 @@ void ANT_CALL CQuaternionExt::SummaryCB(char *_SummaryString, size_t _SummaryMax
     if( ext )
     {
         if( ext->m_AAMode )
-            _snprintf(_SummaryString, _SummaryMaxLength, "V={%.2f,%.2f,%.2f} A=%.0f°", ext->Vx, ext->Vy, ext->Vz, ext->Angle);
+            _snprintf(_SummaryString, _SummaryMaxLength, "V={%.2f,%.2f,%.2f} A=%.0f%c", ext->Vx, ext->Vy, ext->Vz, ext->Angle, 176);
         else if( ext->m_IsDir )
         {
             //float d[] = {1, 0, 0};
@@ -1624,12 +1626,12 @@ void CQuaternionExt::MouseLeaveCB(void *structExtValue, void *clientData, TwBar 
 //  ---------------------------------------------------------------------------
 //  Convertion between VC++ Debug/Release std::string
 //  (Needed because VC++ adds some extra info to std::string in Debug mode!)
-//  And resolve binary std::string incompatibility between VS2008- and VS2010+
+//  And resolve binary std::string incompatibility between VS2010 and other VS versions
 //  ---------------------------------------------------------------------------
 
 #ifdef _MSC_VER
-// VS2008 and lower store the string allocator pointer at the beginning
-// VS2010 and higher store the string allocator pointer at the end
+// VS2010 store the string allocator pointer at the end
+// VS2008 VS2012 and others store the string allocator pointer at the beginning
 static void FixVS2010StdStringLibToClient(void *strPtr)
 {
     char *ptr = (char *)strPtr;
@@ -1747,6 +1749,8 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
     case TW_OPENGL:
         g_TwMgr->m_Graph = new CTwGraphOpenGL;
         break;
+// Cinder: we don't support D3D or OpenGL Core yet
+#if 0
     case TW_OPENGL_CORE:
         g_TwMgr->m_Graph = new CTwGraphOpenGLCore;
         break;
@@ -1783,8 +1787,8 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
             }
         #endif // ANT_WINDOWS
         break;
+#endif
     }
-
     if( g_TwMgr->m_Graph==NULL )
     {
         g_TwMgr->SetLastError(g_ErrUnknownAPI);
@@ -1915,7 +1919,7 @@ int ANT_CALL TwInit(ETwGraphAPI _GraphAPI, void *_Device)
     g_Wnds[TW_MASTER_WINDOW_ID] = g_TwMasterMgr;
     g_TwMgr = g_TwMasterMgr;
 
-    TwGenerateDefaultFonts();
+    TwGenerateDefaultFonts(g_FontScaling);
     g_TwMgr->m_CurrentFont = g_DefaultNormalFont;
 
     int Res = TwCreateGraph(_GraphAPI);
@@ -2107,6 +2111,7 @@ int ANT_CALL TwDraw()
         {
             g_TwMgr->m_IsRepeatingMousePressed = true;
             g_TwMgr->m_LastMousePressedTime = g_TwMgr->m_Timer.GetTime();
+            TwMouseMotion(g_TwMgr->m_LastMouseX,g_TwMgr->m_LastMouseY);
             TwMouseButton(TW_MOUSE_PRESSED, g_TwMgr->m_LastMousePressedButtonID);
         }
     }
@@ -3354,7 +3359,7 @@ TwState ANT_CALL TwGetBarState(const TwBar *_Bar)
 
 //  ---------------------------------------------------------------------------
 
-const char * ANT_CALL TwGetBarName(TwBar *_Bar)
+const char * ANT_CALL TwGetBarName(const TwBar *_Bar)
 {
     if( g_TwMgr==NULL )
     {
@@ -4458,7 +4463,6 @@ int ParseToken(string& _Token, const char *_Def, int& Line, int& Column, bool _K
     }
     // read token
     int QuoteLine=0, QuoteColumn=0;
-    const char *QuoteCur;
     char Quote = 0;
     bool AddChar;
     bool LineJustIncremented = false;
@@ -4472,7 +4476,6 @@ int ParseToken(string& _Token, const char *_Def, int& Line, int& Column, bool _K
             Quote = *Cur;
             QuoteLine = Line;
             QuoteColumn = Column;
-            QuoteCur = Cur;
             AddChar = _KeepQuotes;
         }
         else if ( Quote!=0 && *Cur==Quote )
@@ -4639,6 +4642,33 @@ static inline std::string ErrorPosition(bool _MultiLine, int _Line, int _Column)
 int ANT_CALL TwDefine(const char *_Def)
 {
     CTwFPU fpu; // force fpu precision
+
+    // hack to scale fonts artificially (for retina display for instance)
+    if( g_TwMgr==NULL && _Def!=NULL )
+    {
+        size_t l = strlen(_Def);
+        const char *eq = strchr(_Def, '=');
+        if( eq!=NULL && eq!=_Def && l>0 && l<512 )
+        {
+            char *a = new char[l+1];
+            char *b = new char[l+1];
+            if( sscanf(_Def, "%s%s", a, b)==2 && strcmp(a, "GLOBAL")==0 )
+            {
+                if( strchr(b, '=') != NULL )
+                    *strchr(b, '=') = '\0';
+                double scal = 1.0;
+                if( _stricmp(b, "fontscaling")==0 && sscanf(eq+1, "%lf", &scal)==1 && scal>0 )
+                {
+                    g_FontScaling = (float)scal;
+                    delete[] a;
+                    delete[] b;
+                    return 1;
+                }
+            }
+            delete[] a;
+            delete[] b;
+        }
+    }
 
     if( g_TwMgr==NULL )
     {
@@ -6212,7 +6242,7 @@ void CTwMgr::CreateCursors()
         m_CursorHand = ::LoadCursor(NULL ,MAKEINTRESOURCE(IDC_UPARROW));
     #endif
     int cur;
-    HMODULE hdll = GetModuleHandleA(ANT_TWEAK_BAR_DLL);
+    HMODULE hdll = GetModuleHandle(ANT_TWEAK_BAR_DLL);
     if( hdll==NULL )
         g_UseCurRsc = false;    // force the use of built-in cursors (not using resources)
     if( g_UseCurRsc )
@@ -6268,7 +6298,7 @@ CTwMgr::CCursor CTwMgr::PixmapCursor(int _CurIdx)
         xors[y] = pict[y];
     }
 
-    HMODULE hdll = GetModuleHandleA(ANT_TWEAK_BAR_DLL);
+    HMODULE hdll = GetModuleHandle(ANT_TWEAK_BAR_DLL);
     CCursor cursor = ::CreateCursor(hdll, g_CurHot[_CurIdx][0], g_CurHot[_CurIdx][1], 32, 32, ands, xors);
  
     return cursor;

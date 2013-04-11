@@ -2,7 +2,7 @@
 //
 //  @file       TwDirect3D11.h
 //  @brief      Direct3D11 graphic functions
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //

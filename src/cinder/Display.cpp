@@ -272,6 +272,11 @@ void Display::enumerateDisplays()
 }
 #endif // defined( CINDER_MSW )
 
+Vec2i Display::getSystemCoordinate( const Vec2i &displayRelativeCoordinate ) const
+{
+	return mArea.getUL() + displayRelativeCoordinate;
+}
+
 DisplayRef Display::getMainDisplay()
 {
 	enumerateDisplays();

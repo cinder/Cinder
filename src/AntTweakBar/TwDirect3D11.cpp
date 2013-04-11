@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwDirect3D11.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -32,12 +32,39 @@ const char *g_ErrCreateSampler11 = "Direct3D11 sampler state creation failed";
 //  vertex and pixel shaders are compiled offline in a pre-build step using
 //  the fxc.exe compiler (from the DirectX SDK Aug'09 or later)
 
-#include "TwDirect3D11_LineRectVS.h"
-#include "TwDirect3D11_LineRectCstColorVS.h"
-#include "TwDirect3D11_LineRectPS.h"
-#include "TwDirect3D11_TextVS.h"
-#include "TwDirect3D11_TextCstColorVS.h"
-#include "TwDirect3D11_TextPS.h"
+#ifdef _WIN64
+#   ifdef _DEBUG
+#       include "debug64\TwDirect3D11_LineRectVS.h"
+#       include "debug64\TwDirect3D11_LineRectCstColorVS.h"
+#       include "debug64\TwDirect3D11_LineRectPS.h"
+#       include "debug64\TwDirect3D11_TextVS.h"
+#       include "debug64\TwDirect3D11_TextCstColorVS.h"
+#       include "debug64\TwDirect3D11_TextPS.h"
+#   else
+#       include "release64\TwDirect3D11_LineRectVS.h"
+#       include "release64\TwDirect3D11_LineRectCstColorVS.h"
+#       include "release64\TwDirect3D11_LineRectPS.h"
+#       include "release64\TwDirect3D11_TextVS.h"
+#       include "release64\TwDirect3D11_TextCstColorVS.h"
+#       include "release64\TwDirect3D11_TextPS.h"
+#   endif
+#else
+#   ifdef _DEBUG
+#       include "debug32\TwDirect3D11_LineRectVS.h"
+#       include "debug32\TwDirect3D11_LineRectCstColorVS.h"
+#       include "debug32\TwDirect3D11_LineRectPS.h"
+#       include "debug32\TwDirect3D11_TextVS.h"
+#       include "debug32\TwDirect3D11_TextCstColorVS.h"
+#       include "debug32\TwDirect3D11_TextPS.h"
+#   else
+#       include "release32\TwDirect3D11_LineRectVS.h"
+#       include "release32\TwDirect3D11_LineRectCstColorVS.h"
+#       include "release32\TwDirect3D11_LineRectPS.h"
+#       include "release32\TwDirect3D11_TextVS.h"
+#       include "release32\TwDirect3D11_TextCstColorVS.h"
+#       include "release32\TwDirect3D11_TextPS.h"
+#   endif
+#endif
 
 //  ---------------------------------------------------------------------------
 

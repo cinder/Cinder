@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwFonts.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -60,7 +60,7 @@ static int NextPow2(int _n)
 
 const char *g_ErrBadFontHeight = "Cannot determine font height while reading font bitmap (check first pixel column)";
 
-CTexFont *TwGenerateFont(const unsigned char *_Bitmap, int _BmWidth, int _BmHeight)
+CTexFont *TwGenerateFont(const unsigned char *_Bitmap, int _BmWidth, int _BmHeight, float _Scaling)
 {
     // find height of the font
     int x, y;
@@ -135,7 +135,7 @@ CTexFont *TwGenerateFont(const unsigned char *_Bitmap, int _BmWidth, int _BmHeig
     // - Second, build the texture
     CTexFont *TexFont = new CTexFont;
     TexFont->m_NbCharRead = ch-32;
-    TexFont->m_CharHeight = h;
+    TexFont->m_CharHeight = (int)(_Scaling*h+0.5f);
     TexFont->m_TexWidth = NextPow2(lmax);
     TexFont->m_TexHeight = NextPow2(14*(h+MARGIN_Y));
     TexFont->m_TexBytes = new unsigned char[TexFont->m_TexWidth*TexFont->m_TexHeight];
@@ -174,7 +174,7 @@ CTexFont *TwGenerateFont(const unsigned char *_Bitmap, int _BmWidth, int _BmHeig
                 TexFont->m_CharU1[ch+32] = (float(xx)+du)/float(TexFont->m_TexWidth);
                 TexFont->m_CharV0[ch+32] = (float(r*(h+MARGIN_Y))+dv)/float(TexFont->m_TexHeight);
                 TexFont->m_CharV1[ch+32] = (float(r*(h+MARGIN_Y)+h)+dv)/float(TexFont->m_TexHeight);
-                TexFont->m_CharWidth[ch+32] = x1[ch]-x0[ch]+1;
+                TexFont->m_CharWidth[ch+32] = (int)(_Scaling*(x1[ch]-x0[ch]+1)+0.5f);
                 xx += MARGIN_X;
             }
 
@@ -4869,15 +4869,15 @@ static const unsigned char s_FontFixed1[] = {
 };
 
 
-void TwGenerateDefaultFonts()
+void TwGenerateDefaultFonts(float _Scaling)
 {
-    g_DefaultSmallFont = TwGenerateFont(s_Font0, FONT0_BM_W, FONT0_BM_H);
+    g_DefaultSmallFont = TwGenerateFont(s_Font0, FONT0_BM_W, FONT0_BM_H, _Scaling);
     assert(g_DefaultSmallFont && g_DefaultSmallFont->m_NbCharRead==224);
-    g_DefaultNormalFont = TwGenerateFont(s_Font1AA, FONT1AA_BM_W, FONT1AA_BM_H);
+    g_DefaultNormalFont = TwGenerateFont(s_Font1AA, FONT1AA_BM_W, FONT1AA_BM_H, _Scaling);
     assert(g_DefaultNormalFont && g_DefaultNormalFont->m_NbCharRead==224);
-    g_DefaultLargeFont = TwGenerateFont(s_Font2AA, FONT2AA_BM_W, FONT2AA_BM_H);
+    g_DefaultLargeFont = TwGenerateFont(s_Font2AA, FONT2AA_BM_W, FONT2AA_BM_H, _Scaling);
     assert(g_DefaultLargeFont && g_DefaultLargeFont->m_NbCharRead==224);
-    g_DefaultFixed1Font = TwGenerateFont(s_FontFixed1, FONTFIXED1_BM_W, FONTFIXED1_BM_H);
+    g_DefaultFixed1Font = TwGenerateFont(s_FontFixed1, FONTFIXED1_BM_W, FONTFIXED1_BM_H, _Scaling);
     assert(g_DefaultFixed1Font && g_DefaultFixed1Font->m_NbCharRead==224);
 }
 

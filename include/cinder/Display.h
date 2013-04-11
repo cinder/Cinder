@@ -66,6 +66,9 @@ class Display {
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounding Area of the Display in points, measured relative to primary display's upper-left corner.
 	Area			getBounds() const { return mArea; }
+	
+	//! Returns the system position (relative to the system's primary display's upper-left corner) of a Display-relative \a displayRelativeCoordinate. The results are suitable for use with app::Window's position functions.
+	Vec2i			getSystemCoordinate( const Vec2i &displayRelativeCoordinate ) const;
 
 	//! Returns the bits per pixel for the display. Typically 24 bits.
 	int		getBitsPerPixel() const { return mBitsPerPixel; }

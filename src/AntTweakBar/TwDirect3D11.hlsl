@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwDirect3D11.hlsl
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //	@brief		AntTweakBar shaders and techniques for Direct3D11 support
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt

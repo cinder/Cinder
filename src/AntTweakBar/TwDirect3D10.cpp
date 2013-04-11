@@ -1,7 +1,7 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwDirect3D10.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
 //              For conditions of distribution and use, see License.txt
 //
@@ -48,7 +48,7 @@ static int LoadDirect3D10()
     if( g_D3D10Module!=NULL )
         return 1; // Direct3D10 library already loaded
 
-    g_D3D10Module = LoadLibrary(L"D3D10.DLL");
+    g_D3D10Module = LoadLibrary("D3D10.DLL");
     if( g_D3D10Module )
     {
         int res = 1;

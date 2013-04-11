@@ -245,6 +245,8 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 	[center addObserver:self selector:@selector(screenDidConnect:) name:UIScreenDidConnectNotification object:nil];
 	[center addObserver:self selector:@selector(screenDidDisconnect:) name:UIScreenDidDisconnectNotification object:nil];
 	
+	mAnimationFrameInterval = std::max<float>( 1.0f, floor( 60.0f / mApp->getSettings().getFrameRate() + 0.5f ) );
+	
 	// build our list of requested formats; an empty list implies we should make the default window format
 	std::vector<cinder::app::Window::Format> formats( mApp->getSettings().getWindowFormats() );
 	if( formats.empty() )

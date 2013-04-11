@@ -108,12 +108,12 @@ class ExcInvalidWindow : public cinder::Exception {
 
 //! Options passed when entering fullscreen.
 struct FullScreenOptions {
-	FullScreenOptions() : mKioskMode( true ), mSecondaryDisplayBlanking( true ), mExclusive( false )
+	FullScreenOptions() : mKioskMode( true ), mSecondaryDisplayBlanking( false ), mExclusive( false )
 	{}
 
 	//! (OS X only) Sets the fullscreen mode to 'kiosk', which means don't use the 10.7 way of animating to fullscreen. Default is \c true.
 	FullScreenOptions&	kioskMode( bool enable = true )					{ mKioskMode = enable; return *this; }
-	//! Sets whether secondary displays should be blanked (made black). Default is \c true.
+	//! Sets whether secondary displays should be blanked (made black). Default is \c false.
 	FullScreenOptions&	secondaryDisplayBlanking( bool enable = true )	{ mSecondaryDisplayBlanking = enable; return *this; }
 	//! (OS X only) Sets whether the \t Window related to these options is the only accessible window. Default is \c false.
 	FullScreenOptions&	exclusive( bool enable = true )					{ mExclusive = enable; return *this; }
@@ -124,7 +124,7 @@ struct FullScreenOptions {
 	DisplayRef			getDisplay()									const { return mDisplay; }
 	//! Returns whether kiosk mode is enabled.
 	bool				isKioskModeEnabled()							const { return mKioskMode; }
-	//! Returns whether blanking of secondary displays in enabled. Default is \c true.
+	//! Returns whether blanking of secondary displays in enabled. Default is \c false.
 	bool				isSecondaryDisplayBlankingEnabled()				const { return mSecondaryDisplayBlanking; }
 	//! Returns whether the \t Window related to these options is the only accessible window.
 	bool				isExclusive()									const { return mExclusive; }
@@ -173,15 +173,15 @@ class Window : public std::enable_shared_from_this<Window> {
 		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
 		Format&		size( int32_t width, int32_t height ) { mSize = Vec2i( width, height ); return *this; }
 
-		//! Returns the position in points at which the Window will be created. Default is centered on the display.
+		//! Returns the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		Vec2i		getPos() const { return mPos; }
-		//! Sets the position in points at which the Window will be created. Default is centered on the display.
+		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		void		setPos( const Vec2i &pos ) { mPos = pos; mPosSpecified = true; }
-		//! Sets the position in points at which the Window will be created. Default is centered on the display.
+		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		void		setPos( int32_t x, int32_t y ) { mPos = Vec2i( x, y ); mPosSpecified = true; }
-		//! Sets the position in points at which the Window will be created. Default is centered on the display.
+		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		Format&		pos( const Vec2i &pos ) { mPos = pos; mPosSpecified = true; return *this; }
-		//! Sets the position in points at which the Window will be created. Default is centered on the display.
+		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
 		Format&		pos( int32_t x, int32_t y ) { mPos = Vec2i( x, y ); mPosSpecified = true; return *this; }
 		//! Returns whether a non-default position has been requested for the Window.
 		bool		isPosSpecified() const { return mPosSpecified; }
