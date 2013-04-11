@@ -169,14 +169,24 @@ int initAntGl( app::WindowRef win )
 	return sWindowId++;
 }
 
-InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const ColorA color )
+InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const ColorA &color )
 {
 	init( app::App::get()->getWindow(), title, size, color );
 }
 
-InterfaceGl::InterfaceGl( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color )
+InterfaceGl::InterfaceGl( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA &color )
 {
 	init( window, title, size, color );
+}
+
+InterfaceGlRef InterfaceGl::create( const std::string &title, const Vec2i &size, const ColorA &color )
+{
+	return shared_ptr<InterfaceGl>( new InterfaceGl( title, size, color ) );
+}
+
+InterfaceGlRef InterfaceGl::create( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA &color )
+{
+	return shared_ptr<InterfaceGl>( new InterfaceGl( window, title, size, color ) );
 }
 
 void InterfaceGl::init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color )
