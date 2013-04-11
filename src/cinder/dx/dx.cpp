@@ -2658,7 +2658,7 @@ void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int ve
 	else if(hasColors && hasUVs)
 		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionColorTextureLightVS : dx->mVboPositionColorTextureVS, NULL, 0);
 	else if(hasColors)
-		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionNormalColorLightVS : dx->mVboPositionNormalColorVS, NULL, 0);
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionColorLightVS : dx->mVboPositionColorVS, NULL, 0);
 	else if(hasUVs)
 		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionTextureLightVS : dx->mVboPositionTextureVS, NULL, 0);
 	else
@@ -2709,7 +2709,7 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 	else if(hasColors && hasUVs)
 		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionColorTextureLightVS : dx->mVboPositionColorTextureVS, NULL, 0);
 	else if(hasColors)
-		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionNormalColorLightVS : dx->mVboPositionNormalColorVS, NULL, 0);
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionColorLightVS : dx->mVboPositionColorVS, NULL, 0);
 	else if(hasUVs)
 		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionTextureLightVS : dx->mVboPositionTextureVS, NULL, 0);
 	else

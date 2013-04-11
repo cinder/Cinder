@@ -95,19 +95,19 @@ void BasicApp::mouseDrag( MouseEvent event )
 void BasicApp::keyDown( KeyEvent event )
 {
 	switch( event.getChar() ) {
-		case 'r':
+		case 'R':
 			updateData( kRed );
 		break;
-		case 'g':
+		case 'G':
 			updateData( kGreen );
 		break;
-		case 'b':
+		case 'B':
 			updateData( kBlue );
 		break;
-		case 'c':
+		case 'C':
 			updateData( kColor );
 		break;
-		case 'o':
+		case 'O':
 			openFile();
 		break;
 	}
@@ -159,7 +159,7 @@ void BasicApp::draw()
 	dx::clear( Color( 0, 0, 0 ), true );
 
 	dx::pushModelView();
-	dx::translate( Vec3f( 0.0f, 0.0f, mHeight / 2.0f ) );
+	dx::translate( Vec3f( 800.0f, 500.0f, mHeight / 2.0f ) );
 	//dx::rotate( mArcball.getQuat() );
 	if ( mVboMesh )
 		dx::draw( mVboMesh );

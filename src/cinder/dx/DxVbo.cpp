@@ -748,7 +748,7 @@ void VboMesh::bindAllData() const
 			//glVertexPointer( 3, GL_FLOAT, stride, (const GLvoid*)mObj->mPositionOffset );
 		}
 		
-		offset = mObj->mNormalOffset;
+		offset = (buffer == STATIC_BUFFER) ? mObj->mNormalOffset : 0;
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) ) {
 			UINT oldStride = stride;
 			stride = std::max(stride, sizeof(float) * 3);
@@ -758,6 +758,7 @@ void VboMesh::bindAllData() const
 		}
 
 		offset = (mObj->mLayout.hasStaticColorsRGB()) ? mObj->mColorRGBOffset : mObj->mColorRGBAOffset;
+		offset = (buffer == STATIC_BUFFER) ? offset : 0;
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) ) {
 			UINT oldStride = stride;
 			stride = std::max(stride, sizeof(float) * 3);
@@ -774,7 +775,7 @@ void VboMesh::bindAllData() const
 		}
 
 		for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
-			offset = mObj->mTexCoordOffset[t];
+			offset = (buffer == STATIC_BUFFER) ? mObj->mTexCoordOffset[t] : 0;
 			
 			if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d( t ) : mObj->mLayout.hasDynamicTexCoords2d( t ) ) {
 				UINT oldStride = stride;
