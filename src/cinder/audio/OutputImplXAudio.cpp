@@ -52,7 +52,7 @@ TargetOutputImplXAudio::TargetOutputImplXAudio( const WAVEFORMATEX *aOutDescript
 }
 
 OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
-	: cinder::audio::Track(), mSource( source ), mOutput( output ), mIsPcmBuffering( false )
+	: cinder::audio::Track(), mSource( source ), mOutput( output ), mIsPcmBuffering( false ), mIsPlaying( false )
 {
 	::HRESULT hr;
 
