@@ -145,6 +145,24 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 	ID3D11VertexShader *mFixedTextureLightVertexShader;
 	ID3D11PixelShader *mFixedTextureLightPixelShader;
 
+	ID3D11VertexShader *mVboPositionVS;
+	ID3D11VertexShader *mVboPositionNormalVS;
+	ID3D11VertexShader *mVboPositionTextureVS;
+	ID3D11VertexShader *mVboPositionColorVS;
+	ID3D11VertexShader *mVboPositionNormalTextureVS;
+	ID3D11VertexShader *mVboPositionNormalColorVS;
+	ID3D11VertexShader *mVboPositionColorTextureVS;
+	ID3D11VertexShader *mVboPositionNormalColorTextureVS;
+
+	ID3D11VertexShader *mVboPositionLightVS;
+	ID3D11VertexShader *mVboPositionNormalLightVS;
+	ID3D11VertexShader *mVboPositionTextureLightVS;
+	ID3D11VertexShader *mVboPositionColorLightVS;
+	ID3D11VertexShader *mVboPositionNormalTextureLightVS;
+	ID3D11VertexShader *mVboPositionNormalColorLightVS;
+	ID3D11VertexShader *mVboPositionColorTextureLightVS;
+	ID3D11VertexShader *mVboPositionNormalColorTextureLightVS;
+
 	ID3D11InputLayout *mFixedLayout;
 	ID3D11Buffer *mVertexBuffer;
 	ID3D11Buffer *mIndexBuffer;

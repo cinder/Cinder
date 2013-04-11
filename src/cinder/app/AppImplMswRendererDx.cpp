@@ -50,6 +50,24 @@ namespace Shaders {
 	#include "CompiledFixedFunctionTexturePS.inc"
 	#include "CompiledFixedFunctionTextureLightingVS.inc"
 	#include "CompiledFixedFunctionTextureLightingPS.inc"
+
+	#include "CompiledStandardVboLayoutPositionVS.inc"
+	#include "CompiledStandardVboLayoutPositionNormalVS.inc"
+	#include "CompiledStandardVboLayoutPositionTextureVS.inc"
+	#include "CompiledStandardVboLayoutPositionColorVS.inc"
+	#include "CompiledStandardVboLayoutPositionNormalTextureVS.inc"
+	#include "CompiledStandardVboLayoutPositionNormalColorVS.inc"
+	#include "CompiledStandardVboLayoutPositionColorTextureVS.inc"
+	#include "CompiledStandardVboLayoutPositionNormalColorTextureVS.inc"
+
+	#include "CompiledStandardVboLayoutPositionLightVS.inc"
+	#include "CompiledStandardVboLayoutPositionNormalLightVS.inc"
+	#include "CompiledStandardVboLayoutPositionTextureLightVS.inc"
+	#include "CompiledStandardVboLayoutPositionColorLightVS.inc"
+	#include "CompiledStandardVboLayoutPositionNormalTextureLightVS.inc"
+	#include "CompiledStandardVboLayoutPositionNormalColorLightVS.inc"
+	#include "CompiledStandardVboLayoutPositionColorTextureLightVS.inc"
+	#include "CompiledStandardVboLayoutPositionNormalColorTextureLightVS.inc"
 }
 
 namespace cinder { namespace app {
@@ -79,6 +97,22 @@ AppImplMswRendererDx::AppImplMswRendererDx( App *aApp, RendererDx *aRenderer )
   mFixedTexturePixelShader( NULL ),
   mFixedTextureLightVertexShader( NULL ),
   mFixedTextureLightPixelShader( NULL ),
+  mVboPositionVS( NULL ),
+  mVboPositionNormalVS( NULL ),
+  mVboPositionColorVS( NULL ),
+  mVboPositionTextureVS( NULL ),
+  mVboPositionNormalColorVS( NULL ),
+  mVboPositionNormalTextureVS( NULL ),
+  mVboPositionColorTextureVS( NULL ),
+  mVboPositionNormalColorTextureVS( NULL ),
+  mVboPositionLightVS( NULL ),
+  mVboPositionNormalLightVS( NULL ),
+  mVboPositionColorLightVS( NULL ),
+  mVboPositionTextureLightVS( NULL ),
+  mVboPositionNormalColorLightVS( NULL ),
+  mVboPositionNormalTextureLightVS( NULL ),
+  mVboPositionColorTextureLightVS( NULL ),
+  mVboPositionNormalColorTextureLightVS( NULL ),
   mFixedLayout( NULL ),
   mVertexBuffer( NULL ),
   mIndexBuffer( NULL ),
@@ -134,6 +168,22 @@ void AppImplMswRendererDx::releaseNonDeviceResources()
 	if(mFixedTexturePixelShader) mFixedTexturePixelShader->Release(); mFixedTexturePixelShader = NULL;
 	if(mFixedTextureLightVertexShader) mFixedTextureLightVertexShader->Release(); mFixedTextureLightVertexShader = NULL;
 	if(mFixedTextureLightPixelShader) mFixedTextureLightPixelShader->Release(); mFixedTextureLightPixelShader = NULL;
+	if(mVboPositionVS) mVboPositionVS->Release(); mVboPositionVS = NULL;
+	if(mVboPositionNormalVS) mVboPositionNormalVS->Release(); mVboPositionNormalVS = NULL;
+	if(mVboPositionTextureVS) mVboPositionTextureVS->Release(); mVboPositionTextureVS = NULL;
+	if(mVboPositionColorVS) mVboPositionColorVS->Release(); mVboPositionColorVS = NULL;
+	if(mVboPositionNormalColorVS) mVboPositionNormalColorVS->Release(); mVboPositionNormalColorVS = NULL;
+	if(mVboPositionNormalTextureVS) mVboPositionNormalTextureVS->Release(); mVboPositionNormalTextureVS = NULL;
+	if(mVboPositionColorTextureVS) mVboPositionColorTextureVS->Release(); mVboPositionColorTextureVS = NULL;
+	if(mVboPositionNormalColorTextureVS) mVboPositionNormalColorTextureVS->Release(); mVboPositionNormalColorTextureVS = NULL;
+	if(mVboPositionLightVS) mVboPositionLightVS->Release(); mVboPositionLightVS = NULL;
+	if(mVboPositionNormalLightVS) mVboPositionNormalLightVS->Release(); mVboPositionNormalLightVS = NULL;
+	if(mVboPositionTextureLightVS) mVboPositionTextureLightVS->Release(); mVboPositionTextureLightVS = NULL;
+	if(mVboPositionColorLightVS) mVboPositionColorLightVS->Release(); mVboPositionColorLightVS = NULL;
+	if(mVboPositionNormalColorLightVS) mVboPositionNormalColorLightVS->Release(); mVboPositionNormalColorLightVS = NULL;
+	if(mVboPositionNormalTextureLightVS) mVboPositionNormalTextureLightVS->Release(); mVboPositionNormalTextureLightVS = NULL;
+	if(mVboPositionColorTextureLightVS) mVboPositionColorTextureLightVS->Release(); mVboPositionColorTextureLightVS = NULL;
+	if(mVboPositionNormalColorTextureLightVS) mVboPositionNormalColorTextureLightVS->Release(); mVboPositionNormalColorTextureLightVS = NULL;
 	if(mFixedLayout) mFixedLayout->Release(); mFixedLayout = NULL;
 	if(mVertexBuffer) mVertexBuffer->Release(); mVertexBuffer = NULL;
 	if(mIndexBuffer) mIndexBuffer->Release(); mIndexBuffer = NULL;
@@ -341,6 +391,57 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 	if(hr != S_OK)
 		return false;
 	hr = md3dDevice->CreatePixelShader(Shaders::FixedFunctionTextureLightingPS, sizeof(Shaders::FixedFunctionTextureLightingPS), NULL, &mFixedTextureLightPixelShader);
+	if(hr != S_OK)
+		return false;
+
+	// create the vbo shaders
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionVS, sizeof(Shaders::StandardVboLayoutPositionVS), NULL, &mVboPositionVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalVS, sizeof(Shaders::StandardVboLayoutPositionNormalVS), NULL, &mVboPositionNormalVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionColorVS, sizeof(Shaders::StandardVboLayoutPositionColorVS), NULL, &mVboPositionColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionTextureVS, sizeof(Shaders::StandardVboLayoutPositionTextureVS), NULL, &mVboPositionTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalColorVS, sizeof(Shaders::StandardVboLayoutPositionNormalColorVS), NULL, &mVboPositionNormalColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalTextureVS, sizeof(Shaders::StandardVboLayoutPositionNormalTextureVS), NULL, &mVboPositionNormalTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionColorTextureVS, sizeof(Shaders::StandardVboLayoutPositionColorTextureVS), NULL, &mVboPositionColorTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalColorTextureVS, sizeof(Shaders::StandardVboLayoutPositionNormalColorTextureVS), NULL, &mVboPositionNormalColorTextureVS);
+	if(hr != S_OK)
+		return false;
+
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionLightVS, sizeof(Shaders::StandardVboLayoutPositionLightVS), NULL, &mVboPositionLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalLightVS, sizeof(Shaders::StandardVboLayoutPositionNormalLightVS), NULL, &mVboPositionNormalLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionColorLightVS, sizeof(Shaders::StandardVboLayoutPositionColorLightVS), NULL, &mVboPositionColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionTextureLightVS, sizeof(Shaders::StandardVboLayoutPositionTextureLightVS), NULL, &mVboPositionTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalColorLightVS, sizeof(Shaders::StandardVboLayoutPositionNormalColorLightVS), NULL, &mVboPositionNormalColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalTextureLightVS, sizeof(Shaders::StandardVboLayoutPositionNormalTextureLightVS), NULL, &mVboPositionNormalTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionColorTextureLightVS, sizeof(Shaders::StandardVboLayoutPositionColorTextureLightVS), NULL, &mVboPositionColorTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalColorTextureLightVS, sizeof(Shaders::StandardVboLayoutPositionNormalColorTextureLightVS), NULL, &mVboPositionNormalColorTextureLightVS);
 	if(hr != S_OK)
 		return false;
 

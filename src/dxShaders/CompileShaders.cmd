@@ -23,6 +23,26 @@ call :CompileShader FixedFunctionTextureLighting ps PS
 
 call :CompileShader StandardVboLayout vs VS
 
+call :CompileShader StandardVboLayout vs PositionVS
+call :CompileShader StandardVboLayout vs PositionNormalVS
+call :CompileShader StandardVboLayout vs PositionTextureVS
+call :CompileShader StandardVboLayout vs PositionColorVS
+call :CompileShader StandardVboLayout vs PositionNormalTextureVS
+call :CompileShader StandardVboLayout vs PositionNormalColorVS
+call :CompileShader StandardVboLayout vs PositionColorTextureVS
+call :CompileShader StandardVboLayout vs PositionNormalColorVS
+call :CompileShader StandardVboLayout vs PositionNormalColorTextureVS
+
+call :CompileShader StandardVboLayout vs PositionLightVS
+call :CompileShader StandardVboLayout vs PositionNormalLightVS
+call :CompileShader StandardVboLayout vs PositionTextureLightVS
+call :CompileShader StandardVboLayout vs PositionColorLightVS
+call :CompileShader StandardVboLayout vs PositionNormalTextureLightVS
+call :CompileShader StandardVboLayout vs PositionNormalColorLightVS
+call :CompileShader StandardVboLayout vs PositionColorTextureLightVS
+call :CompileShader StandardVboLayout vs PositionNormalColorLightVS
+call :CompileShader StandardVboLayout vs PositionNormalColorTextureLightVS
+
 echo.
 
 if %error% == 0 (

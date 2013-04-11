@@ -40,8 +40,8 @@ void BasicApp::setup()
 	layout.setStaticIndices();
 	layout.setDynamicPositions();
 	layout.setStaticTexCoords2d();
-	layout.setStaticColorsRGBA();
-	layout.setStaticNormals();
+	//layout.setStaticColorsRGBA();
+	//layout.setStaticNormals();
 
 	mVboMesh = dx::VboMesh( totalVertices, totalQuadIndices, layout, true );
 
@@ -68,16 +68,16 @@ void BasicApp::setup()
 
 	mVboMesh.bufferIndices( indices );
 	mVboMesh.bufferTexCoords2d( 0, texCoords );
-	mVboMesh.bufferNormals(normals);
-	mVboMesh.bufferColorsRGBA(colors);
+	//mVboMesh.bufferNormals(normals);
+	//mVboMesh.bufferColorsRGBA(colors);
 
 	// make a second VBO that uses the statics from the first
 	mVboMesh2 = dx::VboMesh( totalVertices, totalQuadIndices, mVboMesh.getLayout(), true );
 	mVboMesh2.setTexCoordOffset( 0, mVboMesh.getTexCoordOffset( 0 ) );
 	mVboMesh2.bufferIndices( indices );
 	mVboMesh2.bufferTexCoords2d( 0, texCoords );
-	mVboMesh2.bufferNormals(normals);
-	mVboMesh2.bufferColorsRGBA(colors);
+	//mVboMesh2.bufferNormals(normals);
+	//mVboMesh2.bufferColorsRGBA(colors);
 
 	mTexture = dx::Texture( loadImage( loadAsset( "testPattern.png" ) ) );
 

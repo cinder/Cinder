@@ -132,12 +132,10 @@ void HlslProg::bind() const
 
 void HlslProg::unbind()
 {
-	if(mObj->mVS)
-		getDxRenderer()->mDeviceContext->VSSetShader(NULL, NULL, 0);
-	if(mObj->mPS)
-		getDxRenderer()->mDeviceContext->PSSetShader(NULL, NULL, 0);
-	if(mObj->mGS)
-		getDxRenderer()->mDeviceContext->GSSetShader(NULL, NULL, 0);
+	auto dx = getDxRenderer();
+	dx->mDeviceContext->VSSetShader(NULL, NULL, 0);
+	dx->mDeviceContext->PSSetShader(NULL, NULL, 0);
+	dx->mDeviceContext->GSSetShader(NULL, NULL, 0);
 }
 
 void HlslProg::CreateCBufferVertex(UINT slot, UINT size)

@@ -2641,17 +2641,32 @@ void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int ve
 	if( vertexEnd < 0 ) vertexEnd = vbo.getNumVertices();
 
 	auto dx = getDxRenderer();
-	ID3D11VertexShader *vs = NULL;
-	//dx->mDeviceContext->VSGetShader(&vs, NULL, NULL);
-	//if(vs)
-	//	vs->Release();
-	//else
-	{
-		vs = COLOR_VERTEX;
-		ID3D11PixelShader *ps = COLOR_PIXEL;
-		dx->mDeviceContext->VSSetShader(vs, NULL, 0);
-		dx->mDeviceContext->PSSetShader(ps, NULL, 0);
-	}
+	ID3D11ShaderResourceView *view;
+	dx->mDeviceContext->PSGetShaderResources(0, 1, &view);
+	bool hasNormals = vbo.getLayout().hasNormals();
+	bool hasColors = vbo.getLayout().hasColorsRGB() || vbo.getLayout().hasColorsRGBA();
+	bool hasUVs = vbo.getLayout().hasTexCoords(0);
+	bool lightsEnabled = dx->mLightingEnabled;
+	if(hasNormals && hasColors && hasUVs)
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionNormalColorTextureLightVS : dx->mVboPositionNormalColorTextureVS, NULL, 0);
+	else if(hasNormals && hasColors)
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionNormalColorLightVS : dx->mVboPositionNormalColorVS, NULL, 0);
+	else if(hasNormals && hasUVs)
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionNormalTextureLightVS : dx->mVboPositionNormalTextureVS, NULL, 0);
+	else if(hasNormals)
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionNormalLightVS : dx->mVboPositionNormalVS, NULL, 0);
+	else if(hasColors && hasUVs)
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionColorTextureLightVS : dx->mVboPositionColorTextureVS, NULL, 0);
+	else if(hasColors)
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionNormalColorLightVS : dx->mVboPositionNormalColorVS, NULL, 0);
+	else if(hasUVs)
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionTextureLightVS : dx->mVboPositionTextureVS, NULL, 0);
+	else
+		dx->mDeviceContext->VSSetShader((lightsEnabled) ? dx->mVboPositionLightVS : dx->mVboPositionVS, NULL, 0);
+	if(view)
+		dx->mDeviceContext->PSSetShader(TEXTURE_PIXEL, NULL, 0);
+	else
+		dx->mDeviceContext->PSSetShader(COLOR_PIXEL, NULL , 0);
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	dx->mDeviceContext->Map(dx->mCBMatrices, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	reinterpret_cast<Matrix44f*>(mappedResource.pData)[0] = dx->mProjection.top();

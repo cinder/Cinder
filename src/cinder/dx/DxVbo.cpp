@@ -363,6 +363,39 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		mObj->mBuffers[INDEX_BUFFER] = Vbo(true);
 		
 	D3D11_INPUT_ELEMENT_DESC ieDesc[ATTR_TOTAL];
+
+	ieDesc[0].SemanticName = "POSITION";
+	ieDesc[0].SemanticIndex = 0;
+	ieDesc[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	ieDesc[0].InputSlot = 0;
+	ieDesc[0].AlignedByteOffset = 0;
+	ieDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	ieDesc[0].InstanceDataStepRate = 0;
+
+	ieDesc[1].SemanticName = "NORMAL";
+	ieDesc[1].SemanticIndex = 0;
+	ieDesc[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	ieDesc[1].InputSlot = 1;
+	ieDesc[1].AlignedByteOffset = 0;
+	ieDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	ieDesc[1].InstanceDataStepRate = 0;
+
+	ieDesc[2].SemanticName = "COLOR";
+	ieDesc[2].SemanticIndex = 0;
+	ieDesc[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	ieDesc[2].InputSlot = 2;
+	ieDesc[2].AlignedByteOffset = 0;
+	ieDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	ieDesc[2].InstanceDataStepRate = 0;
+
+	ieDesc[3].SemanticName = "TEXCOORD";
+	ieDesc[3].SemanticIndex = 0;
+	ieDesc[3].Format = DXGI_FORMAT_R32G32_FLOAT;
+	ieDesc[3].InputSlot = 3;
+	ieDesc[3].AlignedByteOffset = 0;
+	ieDesc[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	ieDesc[3].InstanceDataStepRate = 0;
+
 	int elementCount = 0;
 	if( hasStaticBuffer && staticDataPlanar ) { // Planar static buffer
 		size_t offset = 0;
@@ -375,15 +408,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 
 
 		if( mObj->mLayout.hasStaticPositions() ) {
-			ieDesc[elementCount].SemanticName = "POSITION";
-			ieDesc[elementCount].SemanticIndex = 0;
-			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			ieDesc[elementCount].InputSlot = elementCount;
-			ieDesc[elementCount].AlignedByteOffset = 0;
-			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			ieDesc[elementCount].InstanceDataStepRate = 0;
 			++elementCount;
-
 			mObj->mPositionOffset = offset;
 			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
 				offset += sizeof(GLfloat) * 3 * mObj->mNumVertices / 4 * 6;
@@ -392,15 +417,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		}
 		
 		if( mObj->mLayout.hasStaticNormals() ) {
-			ieDesc[elementCount].SemanticName = "NORMAL";
-			ieDesc[elementCount].SemanticIndex = 0;
-			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			ieDesc[elementCount].InputSlot = elementCount;
-			ieDesc[elementCount].AlignedByteOffset = 0;
-			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			ieDesc[elementCount].InstanceDataStepRate = 0;
 			++elementCount;
-
 			mObj->mNormalOffset = offset;
 			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
 				offset += sizeof(GLfloat) * 3 * mObj->mNumVertices / 4 * 6;
@@ -410,13 +427,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 
 		if( mObj->mLayout.hasStaticColorsRGB() ) {
 			if(!mObj->mLayout.hasStaticColorsRGBA()) {
-				ieDesc[elementCount].SemanticName = "COLOR";
-				ieDesc[elementCount].SemanticIndex = 0;
-				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-				ieDesc[elementCount].InputSlot = elementCount;
-				ieDesc[elementCount].AlignedByteOffset = 0;
-				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-				ieDesc[elementCount].InstanceDataStepRate = 0;
+				ieDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 				++elementCount;
 			}
 			
@@ -428,15 +439,8 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		}
 
 		if( mObj->mLayout.hasStaticColorsRGBA() ) {
-			ieDesc[elementCount].SemanticName = "COLOR";
-			ieDesc[elementCount].SemanticIndex = 0;
-			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			ieDesc[elementCount].InputSlot = elementCount;
-			ieDesc[elementCount].AlignedByteOffset = 0;
-			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			ieDesc[elementCount].InstanceDataStepRate = 0;
+			ieDesc[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			++elementCount;
-
 			mObj->mColorRGBAOffset = offset;
 			if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
 				offset += sizeof(GLfloat) * 4 * mObj->mNumVertices / 4 * 6;
@@ -446,13 +450,9 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		
 		for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 			if( mObj->mLayout.hasStaticTexCoords2d( t ) ) {
-				ieDesc[elementCount].SemanticName = "TEXCOORD";
-				ieDesc[elementCount].SemanticIndex = t;
-				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32_FLOAT;
-				ieDesc[elementCount].InputSlot = elementCount;
-				ieDesc[elementCount].AlignedByteOffset = 0;
-				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-				ieDesc[elementCount].InstanceDataStepRate = 0;
+				ieDesc[3].SemanticIndex = t;
+				ieDesc[3].InputSlot = 3 + t;
+				ieDesc[3].Format = DXGI_FORMAT_R32G32_FLOAT;
 				++elementCount;
 
 				mObj->mTexCoordOffset[t] = offset;
@@ -462,13 +462,9 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 					offset += sizeof(GLfloat) * 2 * mObj->mNumVertices;
 			}
 			else if( mObj->mLayout.hasStaticTexCoords3d( t ) ) {
-				ieDesc[elementCount].SemanticName = "TEXCOORD";
-				ieDesc[elementCount].SemanticIndex = t;
-				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-				ieDesc[elementCount].InputSlot = elementCount;
-				ieDesc[elementCount].AlignedByteOffset = 0;
-				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-				ieDesc[elementCount].InstanceDataStepRate = 0;
+				ieDesc[3].SemanticIndex = t;
+				ieDesc[3].InputSlot = 3 + t;
+				ieDesc[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
 				++elementCount;
 				mObj->mTexCoordOffset[t] = offset;
 				if(mObj->mUseQuads && !mObj->mLayout.hasIndices())
@@ -499,13 +495,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			mObj->mBuffers[STATIC_BUFFER] = Vbo(true);
 
 		if( mObj->mLayout.hasStaticPositions() ) {
-			ieDesc[elementCount].SemanticName = "POSITION";
-			ieDesc[elementCount].SemanticIndex = 0;
-			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			ieDesc[elementCount].InputSlot = elementCount;
-			ieDesc[elementCount].AlignedByteOffset = offset;
-			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			ieDesc[elementCount].InstanceDataStepRate = 0;
+			ieDesc[0].AlignedByteOffset = offset;
 			++elementCount;
 
 			mObj->mPositionOffset = offset;
@@ -513,13 +503,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		}
 		
 		if( mObj->mLayout.hasStaticNormals() ) {
-			ieDesc[elementCount].SemanticName = "NORMAL";
-			ieDesc[elementCount].SemanticIndex = 0;
-			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			ieDesc[elementCount].InputSlot = elementCount;
-			ieDesc[elementCount].AlignedByteOffset = offset;
-			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			ieDesc[elementCount].InstanceDataStepRate = 0;
+			ieDesc[1].AlignedByteOffset = offset;
 			++elementCount;
 
 			mObj->mNormalOffset = offset;
@@ -529,13 +513,8 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		if( mObj->mLayout.hasStaticColorsRGB() ) {
 			if(!mObj->mLayout.hasStaticColorsRGBA())
 			{
-				ieDesc[elementCount].SemanticName = "COLOR";
-				ieDesc[elementCount].SemanticIndex = 0;
-				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-				ieDesc[elementCount].InputSlot = elementCount;
-				ieDesc[elementCount].AlignedByteOffset = offset;
-				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-				ieDesc[elementCount].InstanceDataStepRate = 0;
+				ieDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				ieDesc[2].AlignedByteOffset = offset;
 				++elementCount;
 			}
 
@@ -543,13 +522,8 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			offset += sizeof(GLfloat) * 3;
 		}
 		else if( mObj->mLayout.hasStaticColorsRGBA() ) {
-			ieDesc[elementCount].SemanticName = "COLOR";
-			ieDesc[elementCount].SemanticIndex = 0;
-			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			ieDesc[elementCount].InputSlot = elementCount;
-			ieDesc[elementCount].AlignedByteOffset = offset;
-			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			ieDesc[elementCount].InstanceDataStepRate = 0;
+			ieDesc[2].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			ieDesc[2].AlignedByteOffset = offset;
 			++elementCount;
 
 			mObj->mColorRGBAOffset = offset;
@@ -558,26 +532,20 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		
 		for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 			if( mObj->mLayout.hasStaticTexCoords2d( t ) ) {
-				ieDesc[elementCount].SemanticName = "TEXCOORD";
-				ieDesc[elementCount].SemanticIndex = t;
-				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32_FLOAT;
-				ieDesc[elementCount].InputSlot = elementCount;
-				ieDesc[elementCount].AlignedByteOffset = offset;
-				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-				ieDesc[elementCount].InstanceDataStepRate = 0;
+				ieDesc[3].SemanticIndex = t;
+				ieDesc[3].Format = DXGI_FORMAT_R32G32_FLOAT;
+				ieDesc[3].InputSlot = 3 + t;
+				ieDesc[3].AlignedByteOffset = offset;
 				++elementCount;
 
 				mObj->mTexCoordOffset[t] = offset;
 				offset += sizeof(GLfloat) * 2;
 			}
 			else if( mObj->mLayout.hasStaticTexCoords3d( t ) ) {
-				ieDesc[elementCount].SemanticName = "TEXCOORD";
 				ieDesc[elementCount].SemanticIndex = t;
 				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-				ieDesc[elementCount].InputSlot = elementCount;
+				ieDesc[elementCount].InputSlot = 3 + t;
 				ieDesc[elementCount].AlignedByteOffset = offset;
-				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-				ieDesc[elementCount].InstanceDataStepRate = 0;
 				++elementCount;
 
 				offset += sizeof(GLfloat) * 3;
@@ -610,13 +578,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			mObj->mBuffers[DYNAMIC_BUFFER] = Vbo(true);
 		
 		if( mObj->mLayout.hasDynamicPositions() ) {
-			ieDesc[elementCount].SemanticName = "POSITION";
-			ieDesc[elementCount].SemanticIndex = 0;
-			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			ieDesc[elementCount].InputSlot = elementCount;
-			ieDesc[elementCount].AlignedByteOffset = offset;
-			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			ieDesc[elementCount].InstanceDataStepRate = 0;
+			ieDesc[0].AlignedByteOffset = offset;
 			++elementCount;
 
 			mObj->mPositionOffset = offset;
@@ -624,13 +586,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		}
 		
 		if( mObj->mLayout.hasDynamicNormals() ) {
-			ieDesc[elementCount].SemanticName = "NORMAL";
-			ieDesc[elementCount].SemanticIndex = 0;
-			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			ieDesc[elementCount].InputSlot = elementCount;
-			ieDesc[elementCount].AlignedByteOffset = offset;
-			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			ieDesc[elementCount].InstanceDataStepRate = 0;
+			ieDesc[1].AlignedByteOffset = offset;
 			++elementCount;
 
 			mObj->mNormalOffset = offset;
@@ -640,13 +596,8 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		if( mObj->mLayout.hasDynamicColorsRGB() ) {
 			if(!mObj->mLayout.hasDynamicColorsRGBA())
 			{
-				ieDesc[elementCount].SemanticName = "COLOR";
-				ieDesc[elementCount].SemanticIndex = 0;
-				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-				ieDesc[elementCount].InputSlot = elementCount;
-				ieDesc[elementCount].AlignedByteOffset = offset;
-				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-				ieDesc[elementCount].InstanceDataStepRate = 0;
+				ieDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				ieDesc[2].AlignedByteOffset = offset;
 				++elementCount;
 			}
 
@@ -654,13 +605,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			offset += sizeof(GLfloat) * 3;
 		}
 		else if( mObj->mLayout.hasDynamicColorsRGBA() ) {
-			ieDesc[elementCount].SemanticName = "COLOR";
-			ieDesc[elementCount].SemanticIndex = 0;
-			ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			ieDesc[elementCount].InputSlot = elementCount;
-			ieDesc[elementCount].AlignedByteOffset = offset;
-			ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-			ieDesc[elementCount].InstanceDataStepRate = 0;
+			ieDesc[2].AlignedByteOffset = offset;
 			++elementCount;
 
 			mObj->mColorRGBAOffset = offset;
@@ -669,26 +614,20 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		
 		for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 			if( mObj->mLayout.hasDynamicTexCoords2d( t ) ) {
-				ieDesc[elementCount].SemanticName = "TEXCOORD";
-				ieDesc[elementCount].SemanticIndex = t;
-				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32_FLOAT;
-				ieDesc[elementCount].InputSlot = elementCount;
-				ieDesc[elementCount].AlignedByteOffset = offset;
-				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-				ieDesc[elementCount].InstanceDataStepRate = 0;
+				ieDesc[3].SemanticIndex = t;
+				ieDesc[3].Format = DXGI_FORMAT_R32G32_FLOAT;
+				ieDesc[3].InputSlot = 3 + t;
+				ieDesc[3].AlignedByteOffset = offset;
 				++elementCount;
 
 				mObj->mTexCoordOffset[t] = offset;
 				offset += sizeof(GLfloat) * 2;
 			}
 			else if( mObj->mLayout.hasDynamicTexCoords3d( t ) ) {
-				ieDesc[elementCount].SemanticName = "TEXCOORD";
-				ieDesc[elementCount].SemanticIndex = t;
-				ieDesc[elementCount].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-				ieDesc[elementCount].InputSlot = elementCount;
-				ieDesc[elementCount].AlignedByteOffset = offset;
-				ieDesc[elementCount].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-				ieDesc[elementCount].InstanceDataStepRate = 0;
+				ieDesc[3].SemanticIndex = t;
+				ieDesc[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+				ieDesc[3].InputSlot = 3 + t;
+				ieDesc[3].AlignedByteOffset = offset;
 				++elementCount;
 
 				mObj->mTexCoordOffset[t] = offset;
@@ -715,7 +654,7 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		mObj->mDynamicStride = 0;
 	}
 
-	HRESULT hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, elementCount, Shaders::StandardVboLayoutVS, sizeof(Shaders::StandardVboLayoutVS), &mObj->mInputLayout);
+	HRESULT hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, std::max(elementCount, 4), Shaders::StandardVboLayoutVS, sizeof(Shaders::StandardVboLayoutVS), &mObj->mInputLayout);
 	if(hr != S_OK)
 		__debugbreak();
 	// initialize all the custom attribute locations
@@ -804,7 +743,7 @@ void VboMesh::bindAllData() const
 		if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticPositions() : mObj->mLayout.hasDynamicPositions() ) {
 			UINT oldStride = stride;
 			stride = std::max(stride, sizeof(float) * 3);
-			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			dx->mDeviceContext->IASetVertexBuffers(0, 1, &actualBuffer, &stride, &offset);
 			stride = oldStride;
 			//glVertexPointer( 3, GL_FLOAT, stride, (const GLvoid*)mObj->mPositionOffset );
 		}
@@ -813,7 +752,7 @@ void VboMesh::bindAllData() const
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) ) {
 			UINT oldStride = stride;
 			stride = std::max(stride, sizeof(float) * 3);
-			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			dx->mDeviceContext->IASetVertexBuffers(1, 1, &actualBuffer, &stride, &offset);
 			stride = oldStride;
 			//glNormalPointer( GL_FLOAT, stride, ( const GLvoid *)mObj->mNormalOffset );
 		}
@@ -822,14 +761,14 @@ void VboMesh::bindAllData() const
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) ) {
 			UINT oldStride = stride;
 			stride = std::max(stride, sizeof(float) * 3);
-			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			dx->mDeviceContext->IASetVertexBuffers(2, 1, &actualBuffer, &stride, &offset);
 			stride = oldStride;
 			//glColorPointer( 3, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBOffset );
 		}
 		else if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGBA() : mObj->mLayout.hasDynamicColorsRGBA() ) ) {
 			UINT oldStride = stride;
 			stride = std::max(stride, sizeof(float) * 4);
-			dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+			dx->mDeviceContext->IASetVertexBuffers(2, 1, &actualBuffer, &stride, &offset);
 			stride = oldStride;
 			//glColorPointer( 4, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBAOffset );
 		}
@@ -840,7 +779,7 @@ void VboMesh::bindAllData() const
 			if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d( t ) : mObj->mLayout.hasDynamicTexCoords2d( t ) ) {
 				UINT oldStride = stride;
 				stride = std::max(stride, sizeof(float) * 2);
-				dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+				dx->mDeviceContext->IASetVertexBuffers(3 + elementCount++, 1, &actualBuffer, &stride, &offset);
 				stride = oldStride;
 				//glClientActiveTexture( GL_TEXTURE0 + t );
 				//glTexCoordPointer( 2, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );
@@ -848,7 +787,7 @@ void VboMesh::bindAllData() const
 			else if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords3d( t ) : mObj->mLayout.hasDynamicTexCoords3d( t ) ) {
 				UINT oldStride = stride;
 				stride = std::max(stride, sizeof(float) * 3);
-				dx->mDeviceContext->IASetVertexBuffers(elementCount++, 1, &actualBuffer, &stride, &offset);
+				dx->mDeviceContext->IASetVertexBuffers(3 + elementCount++, 1, &actualBuffer, &stride, &offset);
 				stride = oldStride;
 				//glClientActiveTexture( GL_TEXTURE0 + t );
 				//glTexCoordPointer( 3, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );

@@ -46,7 +46,7 @@ class HlslProg {
 	HlslProg( const BYTE *vertexShader, UINT vertexShaderSize, const BYTE *fragmentShader, UINT fragmentShaderSize, const BYTE *geometryShader, UINT geometryShaderSize );
 
 	void			bind() const;
-	void			unbind();
+	static void		unbind();
 
 	ID3D11VertexShader *GetVertexShader() { return mObj->mVS; }
 	ID3D11PixelShader *GetPixelShader() { return mObj->mPS; }
