@@ -40,9 +40,12 @@ void BasicApp::draw()
 		dx::vertex( *pointIter );
 	}
 	dx::end();
+#if 0
 	Surface s = getRenderer()->copyWindowSurface(Area(Vec2i(0, 0), Vec2i(500, 500)));
 	dx::Texture tex(s);
-	dx::draw(tex, Rectf(100, 100, 600, 600));
+	dx::draw(tex, Rectf(100, 100, 600, 600));  
+#endif // 0
+
 }
 
 // This line tells Cinder to actually create the application
