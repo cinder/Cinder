@@ -6,20 +6,29 @@
 // Copyright (c) Microsoft Corporation. All rights reserved
 //----------------------------------------------------------------------
 
-cbuffer SimpleConstantBuffer : register( b0 )
+//for constant buffers register b0 will always be reserved for the projection and model-view matrices
+cbuffer cbMatrices : register( b0 )
 {
-    matrix model;
-    matrix view;
-    matrix projection;
+	matrix Projection;
+	matrix ModelView;
 };
 
+//all other constant buffers are user-defined
+//cbuffer cbColor : register(b1)
+//{
+//	float4 userColor;
+//};
+
+//all vertex shader input must be laid out like this
 struct sVSInput
 {
-    float3 pos : POSITION;
-    float3 norm : NORMAL;
-    float2 tex : TEXCOORD0;
+	float4 pos : POSITION;
+	float3 norm : NORMAL;
+	float2 tex : TEXCOORD;
+	float4 color : COLOR;
 };
 
+//this can be laid however
 struct sPSInput
 {
     float4 pos : SV_POSITION;
@@ -30,13 +39,12 @@ struct sPSInput
 sPSInput SimpleVertexShader( sVSInput input )
 {
     sPSInput output;
-    float4 temp = float4( input.pos, 1.0f );
-    temp = mul( temp, model );
-    temp = mul( temp, view );
-    temp = mul( temp, projection );
+    float4 temp = input.pos;
+    temp = mul( ModelView, temp );
+    temp = mul( Projection, temp );
     output.pos = temp;
     output.tex = input.tex;
-    output.norm = mul( float4( input.norm, 1.0f ), model ).xyz;
+    output.norm = mul( ModelView, float4( input.norm, 0.0f ) ).xyz;
     return output;
 }
 

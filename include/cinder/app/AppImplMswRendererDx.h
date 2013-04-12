@@ -76,7 +76,8 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 
 	enum RenderStateFlag
 	{
-		BATCH_TEXTURE = 1
+		BATCH_TEXTURE = 1,
+		CUSTOM_SHADER_ACTIVE = 2
 	};
 
 	AppImplMswRendererDx( App *aApp, RendererDx *aRenderer );

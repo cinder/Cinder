@@ -5,6 +5,8 @@
 #include "cinder/Font.h"
 
 #include "cinder/dx/HlslProg.h"
+#include "hlsl_vert.h"
+#include "hlsl_pixel.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -32,7 +34,10 @@ void BasicApp::setup()
 
 	try 
 	{
-		mShader = dx::HlslProg( loadAsset("vert.hlsl"), loadAsset("pixel.hlsl") );
+		mShader = dx::HlslProg( hlsl_vert, sizeof(hlsl_vert), hlsl_pixel, sizeof(hlsl_pixel), NULL, 0 );
+
+		//create a constant buffer for the vertex shader so we can set uniforms in the shader
+		mShader.CreateCBufferFragment(1, sizeof(Vec4f));
 	} catch ( dx::HlslProgCompileExc &exc ) {
 		std::cout << "Shader Compile Error: " << std::endl;
 		std::cout << exc.what();
@@ -72,10 +77,18 @@ void BasicApp::draw()
 	// mShader.uniform( "tex0", 0 );
 	// mShader.uniform( "sampleOffset", Vec2f( cos(mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
 
+	//get a pointer to the cbuffer to set uniforms
+	void *vertexCBuffer = mShader.MapCBufferFragment(1);
+	ColorA color(1, 0.5f, 0, 1);
+	memcpy(vertexCBuffer, &color, sizeof(color));
 
-	dx::drawSolidRect( Rectf(100,100,800,800 ));
+	//unmap the cbuffer so it can be used
+	mShader.UnmapCBufferFragment(1);
+
+	dx::draw( mTexture, Vec2f());
 
 	mTexture.unbind();
+	dx::HlslProg::unbind();
 
 	std::stringstream s;
 	s << "Framerate:" << getAverageFps();

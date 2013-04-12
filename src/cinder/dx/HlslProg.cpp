@@ -111,23 +111,27 @@ HlslProg::HlslProg( const BYTE *vertexShader, UINT vertexShaderSize, const BYTE 
 
 void HlslProg::bind() const
 {
+	auto dx = getDxRenderer();
 	//bind the shaders
 	if(mObj->mVS)
-		getDxRenderer()->mDeviceContext->VSSetShader(mObj->mVS, NULL, 0);
+		dx->mDeviceContext->VSSetShader(mObj->mVS, NULL, 0);
 	if(mObj->mPS)
-		getDxRenderer()->mDeviceContext->PSSetShader(mObj->mPS, NULL, 0);
+		dx->mDeviceContext->PSSetShader(mObj->mPS, NULL, 0);
 	if(mObj->mGS)
-		getDxRenderer()->mDeviceContext->GSSetShader(mObj->mGS, NULL, 0);
+		dx->mDeviceContext->GSSetShader(mObj->mGS, NULL, 0);
 
 	//bind the buffers
 	for(unsigned i = 0; i < mObj->mCBuffersVertex.size(); ++i)
-		getDxRenderer()->mDeviceContext->VSSetConstantBuffers(mObj->mCBuffersVertex[i]->mSlot, 1, &mObj->mCBuffersVertex[i]->mCBuffer);
+		dx->mDeviceContext->VSSetConstantBuffers(mObj->mCBuffersVertex[i]->mSlot, 1, &mObj->mCBuffersVertex[i]->mCBuffer);
 	
 	for(unsigned i = 0; i < mObj->mCBuffersFragment.size(); ++i)
-		getDxRenderer()->mDeviceContext->PSSetConstantBuffers(mObj->mCBuffersFragment[i]->mSlot, 1, &mObj->mCBuffersFragment[i]->mCBuffer);
+		dx->mDeviceContext->PSSetConstantBuffers(mObj->mCBuffersFragment[i]->mSlot, 1, &mObj->mCBuffersFragment[i]->mCBuffer);
 		
 	for(unsigned i = 0; i < mObj->mCBuffersGeometry.size(); ++i)
-		getDxRenderer()->mDeviceContext->GSSetConstantBuffers(mObj->mCBuffersGeometry[i]->mSlot, 1, &mObj->mCBuffersGeometry[i]->mCBuffer);
+		dx->mDeviceContext->GSSetConstantBuffers(mObj->mCBuffersGeometry[i]->mSlot, 1, &mObj->mCBuffersGeometry[i]->mCBuffer);
+
+	
+	dx->setRenderFlag(app::AppImplMswRendererDx::CUSTOM_SHADER_ACTIVE);
 }
 
 void HlslProg::unbind()
@@ -136,6 +140,7 @@ void HlslProg::unbind()
 	dx->mDeviceContext->VSSetShader(NULL, NULL, 0);
 	dx->mDeviceContext->PSSetShader(NULL, NULL, 0);
 	dx->mDeviceContext->GSSetShader(NULL, NULL, 0);
+	dx->clearRenderFlag(app::AppImplMswRendererDx::CUSTOM_SHADER_ACTIVE);
 }
 
 void HlslProg::CreateCBufferVertex(UINT slot, UINT size)

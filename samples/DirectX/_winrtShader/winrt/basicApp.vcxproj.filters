@@ -41,11 +41,11 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Assets\pixel.hlsl">
+    <FxCompile Include="Assets\vert.hlsl">
       <Filter>Assets</Filter>
-    </Text>
-    <Text Include="Assets\vert.hlsl">
+    </FxCompile>
+    <FxCompile Include="Assets\pixel.hlsl">
       <Filter>Assets</Filter>
-    </Text>
+    </FxCompile>
   </ItemGroup>
 </Project>
