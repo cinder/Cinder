@@ -67,7 +67,7 @@ class TimelineItem : public std::enable_shared_from_this<TimelineItem>
 	void			setInfinite( bool infinite = true ) { mInfinite = infinite; }
 
 	//! Returns the time of the item's competion, equivalent to getStartTime() + getDuration().
-	float			getEndTime() const { return mStartTime + mDuration; }
+	float			getEndTime() const { return mStartTime + getDuration(); }
 
 	//! Returns a pointer to the item's parent Timeline
 	class Timeline*		getParent() const { return mParent; }
