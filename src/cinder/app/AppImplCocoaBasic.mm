@@ -418,6 +418,7 @@
 	r.origin.y -= sizeDelta.y;
 	[mWin setFrame:r display:YES];
 
+	mSize = size;
 }
 
 - (cinder::Vec2i)getPos
