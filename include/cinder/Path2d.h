@@ -103,6 +103,11 @@ class Path2d {
 	//! Returns whether the point \a pt is contained within the boundaries of the path
 	bool	contains( const Vec2f &pt ) const;
 
+	static int		calcQuadraticBezierMonotoneRegions( const Vec2f p[3], float resultT[2] );
+	static Vec2f	calcQuadraticBezierPos( const Vec2f p[3], float t );
+	static int		calcCubicBezierMonotoneRegions( const Vec2f p[4], float resultT[4] );
+	static Vec2f	calcCubicBezierPos( const Vec2f p[4], float t );
+
 	friend class Shape2d;
 	friend std::ostream& operator<<( std::ostream &out, const Path2d &p );
   private:

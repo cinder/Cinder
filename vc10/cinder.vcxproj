@@ -114,6 +114,7 @@
     <ClCompile Include="..\src\cinder\Channel.cpp" />
     <ClCompile Include="..\src\cinder\Clipboard.cpp" />
     <ClCompile Include="..\src\cinder\Color.cpp" />
+    <ClCompile Include="..\src\cinder\ConvexHull.cpp" />
     <ClCompile Include="..\src\cinder\DataSource.cpp" />
     <ClCompile Include="..\src\cinder\DataTarget.cpp" />
     <ClCompile Include="..\src\cinder\Display.cpp" />
@@ -287,6 +288,7 @@
     <ClInclude Include="..\include\cinder\Easing.h" />
     <ClInclude Include="..\include\cinder\CinderResources.h" />
     <ClInclude Include="..\include\cinder\Color.h" />
+    <ClInclude Include="..\include\cinder\ConvexHull.h" />
     <ClInclude Include="..\include\cinder\DataSource.h" />
     <ClInclude Include="..\include\cinder\DataTarget.h" />
     <ClInclude Include="..\include\cinder\Display.h" />
