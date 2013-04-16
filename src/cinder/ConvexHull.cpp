@@ -20,7 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "ConvexHull.h"
+#include "cinder/ConvexHull.h"
 
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
@@ -39,7 +39,7 @@ PolyLine<Vec2<T> > toPolyLine( const polygon &p )
 	PolyLine<Vec2<T> > result;
 
 	for( auto pt = p.outer().begin(); pt != p.outer().end(); ++pt )
-		result.push_back( Vec2<T>( boost::geometry::get<0>(*pt), boost::geometry::get<1>(*pt) ) );
+		result.push_back( Vec2<T>( (T)boost::geometry::get<0>(*pt), (T)boost::geometry::get<1>(*pt) ) );
 
 	
 	return result;
