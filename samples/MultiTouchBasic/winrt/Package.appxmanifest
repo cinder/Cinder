@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="2fc9d4c2-3757-42d1-816d-732c0fca756d" Publisher="CN=dalestam" Version="1.0.0.0" />
+  <Identity Name="2fc9d4c2-3757-42d1-816d-732c0fca756e" Publisher="CN=dalestam" Version="1.0.0.0" />
   <Properties>
     <DisplayName>basicApp</DisplayName>
     <PublisherDisplayName>dalestam</PublisherDisplayName>
