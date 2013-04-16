@@ -37,14 +37,14 @@ class BasicApp : public AppBasic {
 
 void BasicApp::setup()
 {
-	mFontSize = 256;
+	mFontSize = 24;
 	mDrawWireframe = true;
 	mZoom = 1.0f;
 	mOldPrecision = mPrecision = 1.0f;
 	mNumPoints = 0;
 	mFontNames = Font::getNames();
 	mFont = Font( "Arial", mFontSize );
-	mShape = mFont.getGlyphShape( mFont.getGlyphChar('A'));
+	mShape = mFont.getGlyphShape( mFont.getGlyphChar('g'));
 
 	// load VBO
 	recalcMesh();

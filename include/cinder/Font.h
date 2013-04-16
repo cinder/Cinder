@@ -33,6 +33,7 @@
 // need to redefine it for freetype.h
 #define generic GenericFromFreeTypeLibrary
 #include FT_FREETYPE_H
+#include FT_OUTLINE_H
 #undef generic
 
 #include FT_GLYPH_H

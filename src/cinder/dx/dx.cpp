@@ -488,10 +488,17 @@ void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft 
 //		glViewport( 0, 0, screenWidth, screenHeight );
 //	}
 	auto dx = getDxRenderer();
-	dx->mProjection.top().setToIdentity();
 	if(originUpperLeft)
 	{
 		CameraOrtho ortho(0, (float)screenWidth, (float)screenHeight, 0, -1, 1);
+		dx->mProjection.top() = ortho.getProjectionMatrix();
+		float invFarMinusNear = 1.0f / (ortho.getFarClip() - ortho.getNearClip());
+		dx->mProjection.top().m22 = invFarMinusNear;
+		dx->mProjection.top().m23 = -ortho.getNearClip() * invFarMinusNear;
+	}
+	else
+	{
+		CameraOrtho ortho(0, (float)screenWidth, 0, (float)screenHeight, -1, 1);
 		dx->mProjection.top() = ortho.getProjectionMatrix();
 		float invFarMinusNear = 1.0f / (ortho.getFarClip() - ortho.getNearClip());
 		dx->mProjection.top().m22 = invFarMinusNear;
@@ -915,13 +922,41 @@ void disableAlphaTest()
 #if ! defined( CINDER_GLES )
 void enableWireframe()
 {
-	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+	auto dx = getDxRenderer();
+	if(dx->mDefaultRenderState) dx->mDefaultRenderState->Release();
+	D3D11_RASTERIZER_DESC rd;
+	rd.FillMode = D3D11_FILL_WIREFRAME;
+	rd.CullMode = D3D11_CULL_NONE;
+	rd.FrontCounterClockwise = TRUE;
+	rd.DepthBias = 0;
+	rd.DepthBiasClamp = 0;
+	rd.SlopeScaledDepthBias = 0;
+	rd.DepthClipEnable = TRUE;
+	rd.ScissorEnable = FALSE;
+	rd.MultisampleEnable = FALSE;
+	rd.AntialiasedLineEnable = FALSE;
+	dx->md3dDevice->CreateRasterizerState( &rd, &dx->mDefaultRenderState );
+	dx->mDeviceContext->RSSetState( dx->mDefaultRenderState );
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 }
 
 void disableWireframe()
 {
-	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+	auto dx = getDxRenderer();
+	if(dx->mDefaultRenderState) dx->mDefaultRenderState->Release();
+	D3D11_RASTERIZER_DESC rd;
+	rd.FillMode = D3D11_FILL_SOLID;
+	rd.CullMode = D3D11_CULL_NONE;
+	rd.FrontCounterClockwise = TRUE;
+	rd.DepthBias = 0;
+	rd.DepthBiasClamp = 0;
+	rd.SlopeScaledDepthBias = 0;
+	rd.DepthClipEnable = TRUE;
+	rd.ScissorEnable = FALSE;
+	rd.MultisampleEnable = FALSE;
+	rd.AntialiasedLineEnable = FALSE;
+	dx->md3dDevice->CreateRasterizerState( &rd, &dx->mDefaultRenderState );
+	dx->mDeviceContext->RSSetState( dx->mDefaultRenderState );
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 }
 #endif

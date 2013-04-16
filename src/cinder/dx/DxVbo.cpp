@@ -245,7 +245,7 @@ VboMesh::VboMesh( const TriMesh2d &triMesh, Layout layout )
 	
 	// upload the verts
 	for( int buffer = STATIC_BUFFER; buffer <= DYNAMIC_BUFFER; ++buffer ) {
-		if( ! mObj->mBuffers[buffer] ||mObj->mBuffers[buffer].getId())
+		if( ! mObj->mBuffers[buffer] || !mObj->mBuffers[buffer].getId())
 			continue;
 		
 		uint8_t *ptr = mObj->mBuffers[buffer].map( D3D11_MAP_WRITE_DISCARD );

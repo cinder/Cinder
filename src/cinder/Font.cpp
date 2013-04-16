@@ -528,12 +528,51 @@ vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
 	return result;
 }
 
+static int ftShape2dMoveTo(const FT_Vector *to, void *user)
+{
+	Shape2d *shape = reinterpret_cast<Shape2d*>(user);
+	shape->moveTo((float)to->x / 4096.f, (float)to->y / 4096.f);
+	return 0;
+}
+
+static int ftShape2dLineTo(const FT_Vector *to, void *user)
+{
+	Shape2d *shape = reinterpret_cast<Shape2d*>(user);
+	shape->lineTo((float)to->x / 4096.f, (float)to->y / 4096.f);
+	return 0;
+}
+
+static int ftShape2dConicTo(const FT_Vector *control, const FT_Vector *to, void *user)
+{
+	Shape2d *shape = reinterpret_cast<Shape2d*>(user);
+	shape->quadTo((float)control->x / 4096.f, (float)control->y / 4096.f, (float)to->x / 4096.f, (float)to->y / 4096.f);
+	return 0;
+}
+
+static int ftShape2dCubicTo(const FT_Vector *control1, const FT_Vector *control2, const FT_Vector *to, void *user)
+{
+	Shape2d *shape = reinterpret_cast<Shape2d*>(user);
+	shape->curveTo((float)control1->x / 4096.f, (float)control1->y / 4096.f, (float)control2->x / 4096.f, (float)control2->y / 4096.f, (float)to->x / 4096.f, (float)to->y / 4096.f);
+	return 0;
+}
+
 Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 {
-	//TODO: figure out how to do this function with freetype
-	throw FontInvalidNameExc("getGlyphShape hasn't been implemented yet");
+	FT_Face face = mObj->mFace;
+	FT_Load_Glyph(face, glyphIndex, FT_LOAD_DEFAULT);
+	FT_GlyphSlot glyph = face->glyph;
+	FT_Outline outline = glyph->outline;
+	FT_Outline_Funcs funcs;
+	funcs.move_to = ftShape2dMoveTo;
+	funcs.line_to = ftShape2dLineTo;
+	funcs.conic_to = ftShape2dConicTo;
+	funcs.cubic_to = ftShape2dCubicTo;
+	funcs.shift = 6;
+	funcs.delta = 0;
 
 	Shape2d resultShape;
+	FT_Outline_Decompose(&outline, &funcs, &resultShape);
+	resultShape.close();
 	return resultShape;
 }
 
@@ -643,8 +682,8 @@ Font::Obj::Obj( const string &aName, float aSize )
 	void *fragmentContext;
 	if(!SUCCEEDED(fontFileStream->ReadFileFragment(&fragmentStart, 0, fileSize, &fragmentContext)))
 		throw FontInvalidNameExc("Failed to get the raw font file data for " + aName);
-	mFileData = malloc(fileSize);
-	memcpy(mFileData, fragmentStart, fileSize);
+	mFileData = malloc((size_t)fileSize);
+	memcpy(mFileData, fragmentStart, (size_t)fileSize);
 	if(FT_New_Memory_Face(FontManager::instance()->mLibrary, reinterpret_cast<FT_Byte*>(mFileData), static_cast<FT_Long>(fileSize), 0, &mFace))
 		throw FontInvalidNameExc("Failed to create a face for " + aName);
 	FT_Set_Char_Size(mFace, 0, (int)aSize * 64, 0, 72);
