@@ -98,7 +98,7 @@ void init_water_drop( Grid &grid, Particles &particles, int na, int nb, int drop
 						project(grid, x, y, phi, -0.75*grid.h/na, center);
 						phi=fluidphi(grid, x, y, dropType, center );
 						project(grid, x, y, phi, -0.75*grid.h/na, center);
-						phi=fluidphi(grid, x, y, dropType, center );
+						/*phi=fluidphi(grid, x, y, dropType, center );*/
 
 					}
 					particles.add_particle( Vec2f(x,y), Vec2f(0,0) );

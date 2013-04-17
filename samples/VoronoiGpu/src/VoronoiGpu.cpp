@@ -93,7 +93,7 @@ ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::Vec2i> &points, int
 	// ping-pong between the two FBOs
 	voronoiShader.bind();
 	voronoiShader.uniform( "tex0", 0 );
-	int curFbo;
+	int curFbo = 0;
 	int numPasses = log2ceil( std::max( width, height ) );
 	for( int pass = 1; pass <= numPasses; ++pass ) {
 		voronoiShader.uniform( "sampleScale", Vec2f( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
@@ -135,7 +135,7 @@ ci::Channel32f calcDistanceMapGpu( const vector<Vec2i> &points, int width, int h
 	// ping-pong between the two FBOs
 	voronoiShader.bind();
 	voronoiShader.uniform( "tex0", 0 );
-	int curFbo;
+	int curFbo = 0;
 	int numPasses = log2ceil( std::max( width, height ) );
 	for( int pass = 1; pass <= numPasses; ++pass ) {
 		voronoiShader.uniform( "sampleScale", Vec2f( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
