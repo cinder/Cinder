@@ -38,12 +38,6 @@
     <ResourceCompile Include="winrtParticles.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\emitter.png">
-      <Filter>Assets</Filter>
-    </Image>
-    <Image Include="Assets\particle.png">
-      <Filter>Assets</Filter>
-    </Image>
     <Image Include="Assets\testPattern.png">
       <Filter>Assets</Filter>
     </Image>
