@@ -81,8 +81,7 @@ class MayaCamUI {
 			Vec3f mW = mInitialCam.getViewDirection().normalized();
 			bool invertMotion = ( mInitialCam.getOrientation() * Vec3f::yAxis() ).y < 0.0f;
 			Vec3f mU = Vec3f::yAxis().cross( mW ).normalized();
-			Vec3f mV = mW.cross( mU ).normalized();
-			
+
 			if( invertMotion ) {
 				deltaX = -deltaX;
 				deltaY = -deltaY;
