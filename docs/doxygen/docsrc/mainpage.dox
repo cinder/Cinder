@@ -6,9 +6,12 @@ If you are just getting started, we recommend you begin with the \ref helloCinde
 \section guides Guides
 <a href="../welcome/MacSetup.html">Setup Cinder on Mac OS X</a><BR>
 <a href="../welcome/MSWSetup.html">Setup Cinder on Windows</a><BR>
+<a href="../welcome/GitSetup.html">Cinder + Git</a><BR>
 <BR>
 <a href="../welcome/TinderBox.html">TinderBox: Cinder's Project Creation Tool</a><BR>
 <a href="../welcome/CinderBlocks.html">CinderBlocks: Prepackaged Libraries for Cinder</a><BR>
+<BR>
+<a href="../welcome/MSWNotes.html">Windows Notes</a><BR>
 <BR>
 \ref helloCinder "Hello, Cinder" \n
 \ref CinderResources "Assets & Resources in Cinder" \n
