@@ -79,9 +79,9 @@ class AppBasic : public App {
 		bool	isConsoleWindowEnabled() const { return mEnableMswConsole; }
 #endif
 
-		//! Registers the app to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7 and Mac OS X trackpad.
+		//! Registers the app to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
 		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
-		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7 and Mac OS X trackpad.
+		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
 		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
 
 		//! Sets whether the app quits automatically when its last window is closed. Enabled by default.

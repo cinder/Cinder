@@ -11,6 +11,7 @@ using namespace ci::app;
 void MyCinderApp::prepareSettings( Settings *settings )
 {
 	testCbo.setState( TestCallbackOrder::PREPARESETTINGS );
+	settings->enableMultiTouch( true );
 }
 
 void MyCinderApp::setup()
@@ -69,7 +70,6 @@ void MyCinderApp::shutdown()
 void MyCinderApp::mouseDown( MouseEvent event )
 {
 	console() << "Down: " << event.getPos() << std::endl;
-	quit();
 }
 
 void MyCinderApp::mouseUp( MouseEvent event )
@@ -85,6 +85,11 @@ void MyCinderApp::mouseDrag( MouseEvent event )
 void MyCinderApp::mouseMove( MouseEvent event )
 {
 	console() << "Move:" << event.getPos() << std::endl;	
+}
+
+void MyCinderApp::touchesMoved( TouchEvent event )
+{
+	console() << "Touches Moved:" << event << std::endl;	
 }
 
 void MyCinderApp::keyDown( KeyEvent event )

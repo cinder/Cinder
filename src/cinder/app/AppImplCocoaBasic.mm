@@ -634,6 +634,11 @@
 	mWindowRef->emitKeyUp( event );
 }
 
+- (BOOL)wantsMultiTouch
+{
+	return mAppImpl->mApp->getSettings().isMultiTouchEnabled();
+}
+
 - (void)touchesBegan:(cinder::app::TouchEvent*)event
 {
 	[mAppImpl setActiveWindow:self];

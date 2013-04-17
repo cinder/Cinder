@@ -88,7 +88,7 @@
 		[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
 
 	// register for touch events
-	if( mDelegate ) {
+	if( mDelegate && [mDelegate wantsMultiTouch] ) {
 		[self setAcceptsTouchEvents:YES];
 		[self setWantsRestingTouches:YES];
 		if( ! mTouchIdMap )
@@ -488,11 +488,10 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // MultiTouch
-
 - (void)setDelegate:(id<CinderViewDelegate>)delegate
 {
 	mDelegate = delegate;
-	if( delegate ) {
+	if( delegate && [delegate wantsMultiTouch] ) {
 		[self setAcceptsTouchEvents:YES];
 		if( ! mTouchIdMap )
 			mTouchIdMap = [[NSMutableDictionary alloc] initWithCapacity:10];

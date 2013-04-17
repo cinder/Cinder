@@ -44,6 +44,7 @@
 - (void)mouseWheel:(cinder::app::MouseEvent*)event;
 - (void)keyDown:(cinder::app::KeyEvent*)event;
 - (void)keyUp:(cinder::app::KeyEvent*)event;
+- (BOOL)wantsMultiTouch;
 - (void)touchesBegan:(cinder::app::TouchEvent*)event;
 - (void)touchesMoved:(cinder::app::TouchEvent*)event;
 - (void)touchesEnded:(cinder::app::TouchEvent*)event;

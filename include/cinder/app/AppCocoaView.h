@@ -37,7 +37,18 @@ namespace cinder { namespace app {
 
 class AppCocoaView : public App {
   public:
-	typedef cinder::app::App::Settings Settings;
+	class Settings : public App::Settings {
+  	  public:
+		Settings();
+
+		//! Registers the app to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
+		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
+		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
+		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
+		
+	  private:
+		bool		mEnableMultiTouch;
+	};
   
 	AppCocoaView();
 	
@@ -67,7 +78,7 @@ class AppCocoaView : public App {
 	virtual WindowRef	getWindowIndex( size_t index ) const override;
 	
   protected:
-	App::Settings		mSettings;
+	Settings			mSettings;
 	AppImplCocoaView	*mImpl;
 };
 

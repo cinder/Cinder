@@ -156,6 +156,11 @@
 	mWindowRef->emitKeyDown( event );
 }
 
+- (BOOL)wantsMultiTouch
+{
+	return mAppImpl->mApp->getSettings().isMultiTouchEnabled();
+}
+
 - (void)keyUp:(cinder::app::KeyEvent*)event
 {
 	[mAppImpl setActiveWindow:self];
@@ -503,7 +508,12 @@ namespace cinder { namespace app {
 
 AppCocoaView::AppCocoaView()
 	: App()
-{	
+{
+}
+
+AppCocoaView::Settings::Settings()
+	: App::Settings(), mEnableMultiTouch( false )
+{
 }
 
 void AppCocoaView::prepareLaunch( RendererRef defaultRenderer )

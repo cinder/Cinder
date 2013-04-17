@@ -42,6 +42,8 @@ class MyCinderApp : public cinder::app::AppCocoaView {
 	void				mouseDrag( ci::app::MouseEvent event );
 	void				mouseMove( ci::app::MouseEvent event );
 
+	virtual void		touchesMoved( ci::app::TouchEvent event ) override;
+
 	void				keyDown( ci::app::KeyEvent event );
 	
 	void				fileDrop( ci::app::FileDropEvent event );
