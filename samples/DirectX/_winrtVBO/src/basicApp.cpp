@@ -27,7 +27,7 @@ class BasicApp : public AppBasic {
 
 void BasicApp::setup()
 {
-	mFont = Font( "Arial", 24.0f );
+	mFont = Font( "Arial", 18  );
 
 	int totalVertices = VERTICES_X * VERTICES_Z;
 	int totalQuads = ( VERTICES_X - 1 ) * ( VERTICES_Z - 1);
@@ -75,8 +75,6 @@ void BasicApp::setup()
 
 void BasicApp::update()
 {
-	dx::setMatrices( mCamera );
-
 	const float timeFreq = 2.50f;
 	const float zFreq = 2.0f;
 	const float xFreq = 5.0f;
@@ -107,15 +105,21 @@ void BasicApp::draw()
 	dx::clear( Color( 0.15f, 0.15f, 0.15f ), true );
 	dx::enableAlphaBlending();
 
-	std::stringstream s;
-	s << "Framerate:" << getAverageFps();
-	dx::drawString(s.str(),Vec2f(100.0f,100.0f),Color::white(),mFont);
+	dx::pushMatrices();
+	dx::setMatrices( mCamera );
 
 	dx::scale( Vec3f(10, 10, 10 ) );
 	mTexture.bind();
 	dx::draw( mVboMesh );
 	dx::draw( mVboMesh2 );
 
+	dx::popMatrices();
+
+
+	std::stringstream s;
+	s << "Framerate:" << getAverageFps();
+	dx::color( Color::white() );
+	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color(0.0f, 0.0f, 1.0f) ,mFont);
 }
 
 // This line tells Cinder to actually create the application

@@ -161,10 +161,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\basicApp.cpp" />
-    <ClCompile Include="Particle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Particle.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
