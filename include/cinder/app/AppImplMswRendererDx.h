@@ -134,6 +134,7 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 	ID3D11DepthStencilView *mDepthStencilView;
 	ID3D11Buffer *mCBMatrices;
 	ID3D11Buffer *mCBLights;
+	ID3D11Buffer *mCBFixedParameters;
 	ID3D11BlendState *mBlendState;
 	D3D11_BLEND_DESC mBlendDesc;
 

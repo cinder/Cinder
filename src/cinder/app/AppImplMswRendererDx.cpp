@@ -120,6 +120,7 @@ AppImplMswRendererDx::AppImplMswRendererDx( App *aApp, RendererDx *aRenderer )
   mDepthStencilState( NULL ),
   mCBMatrices( NULL ),
   mCBLights( NULL ),
+  mCBFixedParameters( NULL ),
   mBlendState( NULL ),
   mStateFlags(0),
   mVsyncEnable( false ),
@@ -189,6 +190,7 @@ void AppImplMswRendererDx::releaseNonDeviceResources()
 	if(mIndexBuffer) mIndexBuffer->Release(); mIndexBuffer = NULL;
 	if(mCBMatrices) mCBMatrices->Release(); mCBMatrices = NULL;
 	if(mCBLights) mCBLights->Release(); mCBLights = NULL;
+	if(mCBFixedParameters) mCBFixedParameters->Release(); mCBFixedParameters = NULL;
 	if(mBlendState) mBlendState->Release(); mBlendState = NULL;
 	if(mDefaultRenderState) mDefaultRenderState->Release(); mDefaultRenderState = NULL;
 	if(mDepthStencilState) mDepthStencilState->Release(); mDepthStencilState = NULL;
@@ -474,6 +476,12 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 	// create fixed lighting buffer
 	bd.ByteWidth = sizeof(LightData) * 8;
 	hr = md3dDevice->CreateBuffer( &bd, NULL, &mCBLights );
+	if(hr != S_OK)
+		return false;
+
+	// create fixed function parameters
+	bd.ByteWidth = sizeof(Vec4f) * 3;
+	hr = md3dDevice->CreateBuffer( &bd, NULL, &mCBFixedParameters );
 	if(hr != S_OK)
 		return false;
 

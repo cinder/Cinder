@@ -2740,7 +2740,14 @@ void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int ve
 	reinterpret_cast<Matrix44f*>(mappedResource.pData)[0] = dx->mProjection.top();
 	reinterpret_cast<Matrix44f*>(mappedResource.pData)[1] = dx->mModelView.top();
 	dx->mDeviceContext->Unmap(dx->mCBMatrices, 0);
+	dx->mDeviceContext->Map(dx->mCBFixedParameters, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	reinterpret_cast<Vec4f*>(mappedResource.pData)[0] = dx->mCurrentNormal;
+	reinterpret_cast<Vec4f*>(mappedResource.pData)[1] = Vec4f(dx->mCurrentUV.x, dx->mCurrentUV.y, 0, 0);
+	reinterpret_cast<Vec4f*>(mappedResource.pData)[2] = dx->mCurrentColor;
+	dx->mDeviceContext->Unmap(dx->mCBFixedParameters, 0);
 	dx->mDeviceContext->VSSetConstantBuffers(0, 1, &dx->mCBMatrices);
+	dx->mDeviceContext->VSSetConstantBuffers(1, 1, &dx->mCBLights);
+	dx->mDeviceContext->VSSetConstantBuffers(2, 1, &dx->mCBFixedParameters);
 	dx->mDeviceContext->IASetPrimitiveTopology(vbo.getPrimitiveType());
 	vbo.bindAllData();
 	dx->mDeviceContext->DrawIndexed(indexCount, startIndex, vertexStart);
@@ -2794,7 +2801,14 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 	reinterpret_cast<Matrix44f*>(mappedResource.pData)[0] = dx->mProjection.top();
 	reinterpret_cast<Matrix44f*>(mappedResource.pData)[1] = dx->mModelView.top();
 	dx->mDeviceContext->Unmap(dx->mCBMatrices, 0);
+	dx->mDeviceContext->Map(dx->mCBFixedParameters, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	reinterpret_cast<Vec4f*>(mappedResource.pData)[0] = dx->mCurrentNormal;
+	reinterpret_cast<Vec4f*>(mappedResource.pData)[1] = Vec4f(dx->mCurrentUV.x, dx->mCurrentUV.y, 0, 0);
+	reinterpret_cast<Vec4f*>(mappedResource.pData)[2] = dx->mCurrentColor;
+	dx->mDeviceContext->Unmap(dx->mCBFixedParameters, 0);
 	dx->mDeviceContext->VSSetConstantBuffers(0, 1, &dx->mCBMatrices);
+	dx->mDeviceContext->VSSetConstantBuffers(1, 1, &dx->mCBLights);
+	dx->mDeviceContext->VSSetConstantBuffers(2, 1, &dx->mCBFixedParameters);
 	dx->mDeviceContext->IASetPrimitiveTopology(vbo.getPrimitiveType());
 	vbo.bindAllData();
 	dx->mDeviceContext->Draw(count, first);
@@ -2994,13 +3008,16 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 	dx::Texture tex( renderString( str, font, color, &baselineOffset ) );
 //#endif
 	//glColor4ub( 255, 255, 255, 255 );
-
+	auto dx = getDxRenderer();
+	Vec4f oldColor = dx->mCurrentColor;
+	dx::color(color);
 	if( justification == -1 ) // left
 		draw( tex, pos - Vec2f( 0, baselineOffset ) );
 	else if( justification == 0 ) // center
 		draw( tex, pos - Vec2f( tex.getWidth() * 0.5f, baselineOffset ) );	
 	else // right
 		draw( tex, pos - Vec2f( (float)tex.getWidth(), baselineOffset ) );
+	dx->mCurrentColor = oldColor;
 }
 } // anonymous namespace
 

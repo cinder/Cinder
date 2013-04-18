@@ -31,12 +31,12 @@ cbuffer cbLights : register( b1 )
 	Light lights[MAX_LIGHTS];
 };
 
-//cbuffer cbFixedFunctionParameters : register( b2 )
-//{
-//	float3 ffNormal;
-//	float4 ffColor;
-//	float2 ffUV;
-//};
+cbuffer cbFixedFunctionParameters : register( b2 )
+{
+	float4 ffNormal;
+	float4 ffUV;
+	float4 ffColor;
+};
 
 struct VS_INPUT
 {
@@ -74,37 +74,37 @@ PS_INPUT Common(float4 pos, float3 normal, float2 uv, float4 color)
 
 PS_INPUT PositionVS(VS_INPUT input)
 {
-	return Common(input.pos, float3(0, 0, 1), float2(0, 0), float4(1, 1, 1, 1));
+	return Common(input.pos, ffNormal.xyz, ffUV.xy, ffColor);
 }
 
 PS_INPUT PositionColorVS(VS_INPUT input)
 {
-	return Common(input.pos, float3(0, 0, 1), float2(0, 0), input.color);
+	return Common(input.pos, ffNormal.xyz, ffUV.xy, input.color);
 }
 
 PS_INPUT PositionNormalVS(VS_INPUT input)
 {
-	return Common(input.pos, input.normal, float2(0, 0), float4(1, 1, 1, 1));
+	return Common(input.pos, input.normal, ffUV.xy, ffColor);
 }
 
 PS_INPUT PositionTextureVS(VS_INPUT input)
 {
-	return Common(input.pos, float3(0, 0, 1), input.uv, float4(1, 1, 1, 1));
+	return Common(input.pos, ffNormal.xyz, input.uv, ffColor);
 }
 
 PS_INPUT PositionNormalColorVS(VS_INPUT input)
 {
-	return Common(input.pos, input.normal, float2(0, 0), input.color);
+	return Common(input.pos, input.normal, ffUV.xy, input.color);
 }
 
 PS_INPUT PositionNormalTextureVS(VS_INPUT input)
 {
-	return Common(input.pos, input.normal, input.uv, float4(1, 1, 1, 1));
+	return Common(input.pos, input.normal, input.uv, ffColor);
 }
 
 PS_INPUT PositionColorTextureVS(VS_INPUT input)
 {
-	return Common(input.pos, float3(0, 0, 0), input.uv, input.color);
+	return Common(input.pos, ffNormal.xyz, input.uv, input.color);
 }
 
 PS_INPUT PositionNormalColorTextureVS(VS_INPUT input)
@@ -172,37 +172,37 @@ PS_INPUT CommonLight(float4 pos, float3 normal, float2 uv, float4 color)
 
 PS_INPUT PositionLightVS(VS_INPUT input)
 {
-	return CommonLight(input.pos, float3(0, 0, 1), float2(0, 0), float4(1, 1, 1, 1));
+	return CommonLight(input.pos, ffNormal.xyz, ffUV.xy, ffColor);
 }
 
 PS_INPUT PositionColorLightVS(VS_INPUT input)
 {
-	return CommonLight(input.pos, float3(0, 0, 1), float2(0, 0), input.color);
+	return CommonLight(input.pos, ffNormal.xyz, ffUV.xy, input.color);
 }
 
 PS_INPUT PositionNormalLightVS(VS_INPUT input)
 {
-	return CommonLight(input.pos, input.normal, float2(0, 0), float4(1, 1, 1, 1));
+	return CommonLight(input.pos, input.normal, ffUV.xy, ffColor);
 }
 
 PS_INPUT PositionTextureLightVS(VS_INPUT input)
 {
-	return CommonLight(input.pos, float3(0, 0, 1), input.uv, float4(1, 1, 1, 1));
+	return CommonLight(input.pos, ffNormal.xyz, input.uv, ffColor);
 }
 
 PS_INPUT PositionNormalColorLightVS(VS_INPUT input)
 {
-	return CommonLight(input.pos, input.normal, float2(0, 0), input.color);
+	return CommonLight(input.pos, input.normal, ffUV.xy, input.color);
 }
 
 PS_INPUT PositionNormalTextureLightVS(VS_INPUT input)
 {
-	return CommonLight(input.pos, input.normal, input.uv, float4(1, 1, 1, 1));
+	return CommonLight(input.pos, input.normal, input.uv, ffColor);
 }
 
 PS_INPUT PositionColorTextureLightVS(VS_INPUT input)
 {
-	return CommonLight(input.pos, float3(0, 0, 1), input.uv, input.color);
+	return CommonLight(input.pos, ffNormal.xyz, input.uv, input.color);
 }
 
 PS_INPUT PositionNormalColorTextureLightVS(VS_INPUT input)

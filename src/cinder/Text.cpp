@@ -580,7 +580,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 		FT_Glyph_Metrics &metrics = face->glyph->metrics;
 		int32_t alignedRowBytes = face->glyph->bitmap.pitch;
 		Channel glyphChannel( face->glyph->bitmap.width, face->glyph->bitmap.rows, alignedRowBytes, 1, pBuff );
-		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), Vec2i(offset + (metrics.horiBearingX >> 6), (face->height - metrics.horiBearingY) >> 6) );
+		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), Vec2i(offset + (metrics.horiBearingX >> 6), (face->ascender + face->descender - metrics.horiBearingY) >> 6) );
 		offset += metrics.horiAdvance >> 6;
 	}
 	Surface result(channel, SurfaceConstraintsDefault(), true);
