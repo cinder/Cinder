@@ -29,7 +29,4 @@
   <ItemGroup>
     <ClCompile Include="..\src\basicApp.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
 </Project>
