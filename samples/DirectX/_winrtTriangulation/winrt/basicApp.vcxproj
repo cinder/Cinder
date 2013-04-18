@@ -147,13 +147,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Image Include="Assets\emitter.png" />
     <Image Include="Assets\Logo.png" />
-    <Image Include="Assets\particle.png" />
     <Image Include="Assets\SmallLogo.png" />
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\SplashScreen.png" />
-    <Image Include="Assets\testPattern.png" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -163,14 +160,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\basicApp.cpp" />
-    <ClCompile Include="Particle.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Particle.h" />
     <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="winrtParticles.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

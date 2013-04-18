@@ -14,55 +14,62 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+const int	MAX_ZOOM = 3;
+const int	MAX_PRECISION = 6;
+
 class BasicApp : public AppBasic {
 
   public:
 
 	void			setup();
 	void			draw();
-	void		    keyDown( KeyEvent event ) { setRandomFont(); }
-
+	void		    keyDown( KeyEvent event );
+	void			randomizeFont(char keyTyped);
 	void			recalcMesh();
-	void			setRandomGlyph();
-	void			setRandomFont();
 
-	Font			mFont;
+	Font			mGlyphFont;
 	Font			mOutputFont;
-
-	//params::InterfaceGl	mParams;
+	Font			mOutputTitle;
 
 	Shape2d			mShape;
 	vector<string>	mFontNames;
-
 	dx::VboMesh		mVboMesh;
 
+	void			cyclePrecision();
+	void			cycleZoom();
+	void			toggleWireframe();
+	void			toggleFill();
+
 	bool			mDrawWireframe;
+	bool			mDrawFill;
 	int				mFontSize;
 	float			mZoom;
-	float			mPrecision, mOldPrecision;
-	int32_t			mNumPoints;
+	float			mPrecision;
 
+	int32_t			mNumPoints;
 	int32_t			mFontIndex;
 };
 
 void BasicApp::setup()
 {
-	srand (time(NULL));
-
 	mFontSize = 256;
 	mDrawWireframe = true;
-	mZoom = 3.0f;
-	mOldPrecision = mPrecision = 2.0f;
+	mDrawFill = true;
+	mZoom = 2.0f;
+	mPrecision = 2.0f;
+
 	mNumPoints = 0;
-	mFontNames = Font::getNames();
-	
-	mFont = Font( "Segoe UI", mFontSize );
-	mOutputFont = Font("Arial", 18);
+	mOutputTitle = Font("Segoe UI", 36);
+	mOutputFont = Font("Arial", 16);
+
 	mFontIndex = 0;
+	mFontNames.push_back("Franklin Gothic");
+	mFontNames.push_back("Times New Roman");
+	mFontNames.push_back("Impact");
+	mFontNames.push_back("Segoe UI");
+	mFontNames.push_back("Consolas");
 
-	mShape = mFont.getGlyphShape( mFont.getGlyphChar('A'));
-
-	// load VBO
+	randomizeFont('K');
 	recalcMesh();
 }
 
@@ -71,112 +78,104 @@ void BasicApp::recalcMesh()
 	TriMesh2d mesh = Triangulator( mShape, mPrecision ).calcMesh( Triangulator::WINDING_ODD );
 	mNumPoints = mesh.getNumIndices();
 	mVboMesh = dx::VboMesh( mesh );
-	mOldPrecision = mPrecision;
 }
 
-void BasicApp::setRandomGlyph()
+void BasicApp::randomizeFont(char keyTyped)
 {
-	size_t glyphIndex = mFont.getNumGlyphs();
-		
-	try {
-		//mShape = mFont.getGlyphShape( glyphIndex );
-		mShape = mFont.getGlyphShape( mFont.getGlyphChar('r'));
-
-		recalcMesh();
-	}
-	catch ( FontGlyphFailureExc &exc ) 
-	{
-		console() << "Looks like glyph " << glyphIndex << " doesn't exist in this font." << std::endl;
-	}
-}
-
-void BasicApp::setRandomFont()
-{
-
-	//mFont = Font( mFontNames[rand() % mFontNames.size()], mFontSize );
-
 	mFontIndex++;
-	mFontIndex %= 5;
-	mFontIndex = 100;
-
-	mFont = Font( "Segoe UI", mFontSize );
-	setRandomGlyph();
-
-	return;
-
-	mShape = mFont.getGlyphShape( mFont.getGlyphChar('B'));
+	mFontIndex %= mFontNames.size();
+	mGlyphFont = Font( mFontNames[mFontIndex], (float)mFontSize );
+	mShape = mGlyphFont.getGlyphShape( mGlyphFont.getGlyphChar(keyTyped));
 	recalcMesh();
-
-	switch ( mFontIndex )
-	{
-		case 0:
-	mFont = Font( "Segoe UI", mFontSize );
-		break;
-		case 1:
-				mFont = Font( "Segoe UI", mFontSize );
-
-			mFont = Font( "Cambria", mFontSize );
-		break;
-		case 2:
-		mFont = Font( "Segoe UI", mFontSize );
-	mFont = Font( "Consolas", mFontSize );
-		break;
-		case 3:
-		mFont = Font( "Arial", mFontSize );
-		break;
-		case 4:
-		mFont = Font( "Impact", mFontSize );
-		break;
-	}
-
-	//setRandomGlyph();
 }
 
-/*
+void BasicApp::cyclePrecision() {
+	mPrecision += 1.0;
+	if ( mPrecision > MAX_PRECISION ) 
+		mPrecision = 1.0f;
+	recalcMesh();
+}
+
+void BasicApp::toggleWireframe() {
+	mDrawWireframe = !mDrawWireframe;
+}
+
+void BasicApp::toggleFill() {
+	mDrawFill = !mDrawFill;
+}
+
+void BasicApp::cycleZoom() {
+	mZoom += 1.0;
+	if ( mZoom > MAX_ZOOM ) {
+		mZoom = 1.0f;
+	}
+}
+
 void BasicApp::keyDown( KeyEvent event )
 {
-	switch( event.getChar() ) {
-		case 'r':
+	switch ( event.getChar() )
+	{
+		case 'p':
+		case 'P':
+			cyclePrecision();
+			return;
+		case 'w':
+		case 'W':
+			toggleWireframe();
+			return;
+		case 'z':
+		case 'Z':
+			cycleZoom();
+			return;
+		case 'f':
+		case 'F':
+			toggleFill();
+			return;
 
-			break;
+	}
+
+	if ( event.getCode() >= 33 && event.getCode() <= 126 ) 
+	{
+		randomizeFont(event.getChar());
 	}
 }
-*/
+
+
 void BasicApp::draw()
 {
-	if ( mOldPrecision != mPrecision )
-			recalcMesh();
 
-	dx::clear( Color( 0.1, 0, 0 ), true );
+	dx::clear( Color( 0, 0, 0 ), true );
 	dx::pushModelView();
 
-	dx::translate(getWindowCenter() * Vec2f( 0.7f, 0.7f ));
-	// glyph is currenty returned upside down, so you can invert like this for now
-	// ( notice the Y is scaled at negative 100% suggested value ):
-	// dx::scale( Vec3f( mZoom, -mZoom, mZoom ) );
+	dx::translate(getWindowCenter() * Vec2f( 1.06f - (mZoom*.12f), 1.1f + (mZoom*.12f) ));
 
-	dx::scale( Vec3f( mZoom, mZoom, mZoom ) );
-
-	dx::color( Color( 0.65f, 0.4f, 0.0f ) );
-	dx::draw( mVboMesh );
-
-	dx::translate(150.0f, 0.0f);
+	// The glyphs are returning upside down, so we are 
+	// flipping the Y scale for now and adjusting the translation point above...
+	//dx::scale( Vec3f( mZoom, mZoom, mZoom ) );
+	dx::scale( Vec3f( mZoom, -mZoom, mZoom ) );
+   
+	if ( mDrawFill ) {
+		dx::color( Color( 1.0f, 0.0f, 0.0f ) );
+		dx::draw( mVboMesh );
+	}
 
 	if ( mDrawWireframe ) {
 		dx::enableWireframe();
-		dx::color( Color(1.0f, 0.0f, 0.0f) );
+		dx::color( Color(1.0f, 1.0f, 1.0f) );
 		dx::draw( mVboMesh );
 		dx::disableWireframe();
 	}
 
 	dx::popModelView();
 
-	std::stringstream s;
-	s << "Press any key to toggle Font Face and Glyph  [ " << getAverageFps() << " FPS ]";
-	dx::color( Color::white() );
-	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color(0.0f, 0.0f, 0.1f) ,mOutputFont);
+	std::stringstream s1;
+	s1 << "Press 'w' to toggle the wireframe, 'f' to toggle the fill, 'p' to cycle through precisions, and 'z' to cycle through zoom levels. All other letters will cycle through selected fonts. ";
+	std::stringstream s2;
+	s2 << "Precision: " << mPrecision << "     Indices: " << mNumPoints << "     Fill: " << mDrawFill << "     Wireframe: " << mDrawWireframe << "      Zoom: " << mZoom << "     FPS: " << getAverageFps() << "     Font: " << mFontNames[mFontIndex];
 
-	//mParams.draw();
+	dx::drawString("WinRT: Testing getGlyphShape(), Shape2D and VBOMesh", Vec2f(30.0f, 50.f), Color::white(), mOutputTitle) ;
+	dx::drawString(s1.str(), Vec2f(30.0, 90.0f), Color::white(), mOutputFont);
+	dx::drawString(s2.str(), Vec2f(30.0, 120.0f), Color(0.0f, 1.0f, 0.6f), mOutputFont);
 }
 
 CINDER_APP_BASIC( BasicApp, RendererDx )

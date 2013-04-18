@@ -14,8 +14,8 @@
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Sprite Particles">
-      <VisualElements DisplayName="Sprite Particles" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Particle Emitter using dx::draw() with a dx::texture created from local assets." ForegroundText="light" BackgroundColor="#0c0000">
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="basic App">
+      <VisualElements DisplayName="Font Glyphs" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="generating a VBOMesh from a Shape2D retrieved from a font glyph call." ForegroundText="light" BackgroundColor="#0c0000">
         <DefaultTile ShowName="allLogos" />
         <SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#0c0000" />
       </VisualElements>
