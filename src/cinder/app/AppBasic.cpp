@@ -257,8 +257,7 @@ bool AppBasic::privateShouldQuit()
 //////////////////////////////////////////////////////////////////////////////////////////////
 // AppBasic::Settings
 AppBasic::Settings::Settings()
-	: App::Settings(),
-		mEnableMultiTouch( false ), mQuitOnLastWindowClose( true )
+	: App::Settings(), mQuitOnLastWindowClose( true )
 {
 #if defined( CINDER_MSW )
 	mEnableMswConsole = false;

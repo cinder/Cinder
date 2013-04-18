@@ -11,7 +11,7 @@ using namespace ci::app;
 void MyCinderApp::prepareSettings( Settings *settings )
 {
 	testCbo.setState( TestCallbackOrder::PREPARESETTINGS );
-	settings->enableMultiTouch( true );
+	settings->enableMultiTouch( false );
 }
 
 void MyCinderApp::setup()

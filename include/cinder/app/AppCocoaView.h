@@ -41,13 +41,7 @@ class AppCocoaView : public App {
   	  public:
 		Settings();
 
-		//! Registers the app to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
-		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
-		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
-		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
-		
 	  private:
-		bool		mEnableMultiTouch;
 	};
   
 	AppCocoaView();

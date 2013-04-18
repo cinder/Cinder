@@ -56,15 +56,10 @@ class AppCocoaTouch : public App {
 	class Settings : public App::Settings {
 	  public:
 		Settings()
-			: App::Settings(), mEnableMultiTouch( true ), mEnableStatusBar( false )
+			: App::Settings(), mEnableStatusBar( false )
 		{
 			mPowerManagement = false;
 		}
-
-		//! Registers the app to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
-		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
-		//! Returns whether the app is registered to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
-		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
 
 		//! Determines whether the system status bar is visible initially. Default is \c false.
 		void		enableStatusBar( bool enable = true ) { mEnableStatusBar = enable; }
@@ -72,7 +67,7 @@ class AppCocoaTouch : public App {
 		bool		isStatusBarEnabled() const { return mEnableStatusBar; }
 		
 	  private:
-		bool		mEnableMultiTouch, mEnableStatusBar;
+		bool		mEnableStatusBar;
 	};
 
 	AppCocoaTouch();

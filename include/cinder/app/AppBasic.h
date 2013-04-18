@@ -79,18 +79,12 @@ class AppBasic : public App {
 		bool	isConsoleWindowEnabled() const { return mEnableMswConsole; }
 #endif
 
-		//! Registers the app to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
-		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
-		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
-		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
-
 		//! Sets whether the app quits automatically when its last window is closed. Enabled by default.
 		void		enableQuitOnLastWindowClose( bool enable = true ) { mQuitOnLastWindowClose = enable; }
 		//! Returns whether the app quits automatically when its last window is closed. Enabled by default.
 		bool		isQuitOnLastWindowCloseEnabled() const { return mQuitOnLastWindowClose; }
 
 	 private:
-		bool		mEnableMultiTouch;
 		bool		mQuitOnLastWindowClose;
 #if defined( CINDER_MSW )
 		bool		mEnableMswConsole;

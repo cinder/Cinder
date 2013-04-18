@@ -156,11 +156,6 @@
 	mWindowRef->emitKeyDown( event );
 }
 
-- (BOOL)wantsMultiTouch
-{
-	return mAppImpl->mApp->getSettings().isMultiTouchEnabled();
-}
-
 - (void)keyUp:(cinder::app::KeyEvent*)event
 {
 	[mAppImpl setActiveWindow:self];
@@ -512,7 +507,7 @@ AppCocoaView::AppCocoaView()
 }
 
 AppCocoaView::Settings::Settings()
-	: App::Settings(), mEnableMultiTouch( false )
+	: App::Settings()
 {
 }
 
