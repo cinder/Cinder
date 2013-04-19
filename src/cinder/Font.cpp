@@ -573,6 +573,7 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 	Shape2d resultShape;
 	FT_Outline_Decompose(&outline, &funcs, &resultShape);
 	resultShape.close();
+	resultShape.scale(Vec2f(1, -1));
 	return resultShape;
 }
 

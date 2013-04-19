@@ -69,7 +69,7 @@ void BasicApp::setup()
 	mFontNames.push_back("Segoe UI");
 	mFontNames.push_back("Consolas");
 
-	randomizeFont('K');
+	randomizeFont('A');
 	recalcMesh();
 }
 
@@ -152,7 +152,7 @@ void BasicApp::draw()
 	// The glyphs are returning upside down, so we are 
 	// flipping the Y scale for now and adjusting the translation point above...
 	//dx::scale( Vec3f( mZoom, mZoom, mZoom ) );
-	dx::scale( Vec3f( mZoom, -mZoom, mZoom ) );
+	dx::scale( Vec3f( mZoom, mZoom, mZoom ) );
    
 	if ( mDrawFill ) {
 		dx::color( Color( 1.0f, 0.0f, 0.0f ) );
