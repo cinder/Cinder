@@ -59,8 +59,8 @@ void BasicApp::setup()
 	mPrecision = 2.0f;
 
 	mNumPoints = 0;
-	mOutputTitle = Font("Segoe UI", 36);
-	mOutputFont = Font("Arial", 16);
+	mOutputTitle = Font("Segoe UI", 40);
+	mOutputFont = Font("Segoe UI", 20);
 
 	mFontIndex = 0;
 	mFontNames.push_back("Franklin Gothic");
@@ -144,14 +144,13 @@ void BasicApp::keyDown( KeyEvent event )
 void BasicApp::draw()
 {
 
-	dx::clear( Color( 0, 0, 0 ), true );
+	dx::clear( Color( 0.1, 0.1, 0.1 ), true );
+	dx::enableAlphaBlending();
+
 	dx::pushModelView();
 
 	dx::translate(getWindowCenter() * Vec2f( 1.06f - (mZoom*.12f), 1.1f + (mZoom*.12f) ));
 
-	// The glyphs are returning upside down, so we are 
-	// flipping the Y scale for now and adjusting the translation point above...
-	//dx::scale( Vec3f( mZoom, mZoom, mZoom ) );
 	dx::scale( Vec3f( mZoom, mZoom, mZoom ) );
    
 	if ( mDrawFill ) {
@@ -173,9 +172,9 @@ void BasicApp::draw()
 	std::stringstream s2;
 	s2 << "Precision: " << mPrecision << "     Indices: " << mNumPoints << "     Fill: " << mDrawFill << "     Wireframe: " << mDrawWireframe << "      Zoom: " << mZoom << "     FPS: " << getAverageFps() << "     Font: " << mFontNames[mFontIndex];
 
-	dx::drawString("WinRT: Testing getGlyphShape(), Shape2D and VBOMesh", Vec2f(30.0f, 50.f), Color::white(), mOutputTitle) ;
-	dx::drawString(s1.str(), Vec2f(30.0, 90.0f), Color::white(), mOutputFont);
-	dx::drawString(s2.str(), Vec2f(30.0, 120.0f), Color(0.0f, 1.0f, 0.6f), mOutputFont);
+	dx::drawString("WinRT: Testing getGlyphShape(), Shape2D and VBOMesh", Vec2f(30.0f, 60.f), Color::white(), mOutputTitle) ;
+	dx::drawString(s1.str(), Vec2f(30.0, 100.0f), Color::white(), mOutputFont);
+	dx::drawString(s2.str(), Vec2f(30.0, 130.0f), Color(0.0f, 1.0f, 0.6f), mOutputFont);
 }
 
 CINDER_APP_BASIC( BasicApp, RendererDx )
