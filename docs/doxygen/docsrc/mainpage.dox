@@ -3,6 +3,7 @@
 \section welcome Welcome
 If you are just getting started, we recommend you begin with the \ref helloCinder "Hello, Cinder" guide. If you'd like to just get a sense of what's in Cinder, take a look at the <a href="namespaces.html">Namespace list</a>. And don't forget, the samples are still the best way to learn Cinder for now as we work to fill out the documentation.
 <BR>
+<BR>
 \section guides Guides
 <a href="../welcome/MacSetup.html">Setup Cinder on Mac OS X</a><BR>
 <a href="../welcome/MSWSetup.html">Setup Cinder on Windows</a><BR>
