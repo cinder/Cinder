@@ -35,7 +35,7 @@ def copyIgnore( path, names ):
             result.append( name )
         elif name == 'Readme.md':
         	result.append( name )
-        elif name == 'scripts":
+        elif name == 'scripts':
         	result.append( name )
         elif re.search( ".git.*", name ) != None:
             result.append( name )
@@ -67,6 +67,11 @@ def processExport( outputName, compilerName, version, doxygenPath ):
     shutil.rmtree( outputDir + "test" )
     print "copying boost headers"
     shutil.copytree( baseDir + os.sep + "boost" + os.sep + "boost", outputDir + "boost" + os.sep + "boost" )
+    print "copying TinderBox"
+    if gPlatform == 'msw':
+        shutil.copytree( baseDir + "\\tools\\TinderBox-Win", outputDir + "\\tools\\TinderBox-Win" )
+    else:
+        shutil.copytree( baseDir + "/tools/TinderBox-Mac", outputDir + "/tools/TinderBox-Mac" )
     return outputDir
     
 
