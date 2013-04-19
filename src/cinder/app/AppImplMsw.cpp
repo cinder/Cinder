@@ -434,7 +434,8 @@ void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &ti
 void WindowImplMsw::completeCreation()
 {
 	::DragAcceptFiles( mWnd, TRUE );
-	enableMultiTouch();
+	if( mAppImpl->mApp->getSettings().isMultiTouchEnabled() )
+		enableMultiTouch();
 
 	::ShowWindow( mWnd, SW_SHOW );
 	::SetForegroundWindow( mWnd );
