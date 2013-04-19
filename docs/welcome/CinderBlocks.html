@@ -3,7 +3,7 @@
 <head>
 	<link rel="stylesheet" href="stylesheets/cinder.css" type="text/css" media="screen" />
 	<meta http-equiv="content-type" content="text/html; charset=windows-1252">
-	<title>TinderBox</title>
+	<title>CinderBlocks</title>
 </head>
 <body>
 
@@ -180,15 +180,15 @@
   </div>
 
   <div>
-    <b>&lt;source&gt;:</b> A source file, typically a .cpp or .mm file
+    <code><b>&lt;source&gt;:</b></code> A source file, typically a .cpp or .mm file
   </div>
 
   <div>
-    <b>&lt;header&gt;:&nbsp;</b>A header file, typically a .h file
+    <code><b>&lt;header&gt;:&nbsp;</b></code>A header file, typically a .h file
   </div>
 
   <div>
-    <b>&lt;resource&gt;:</b>&nbsp;A resource file. Added to Resources.rc on Windows, and
+    <code><b>&lt;resource&gt;:</b></code>&nbsp;A resource file. Added to Resources.rc on Windows, and
     added to the Resources group and build phase in Xcode.
   </div>
 
@@ -208,17 +208,17 @@
   </div>
 
   <div>
-    <b>&lt;asset&gt;:</b> An asset file, added to the project's <i>assets</i>
-    directory<br />
+    <code><b>&lt;asset&gt;:</b></code> An asset file, added to the project's <i>assets</i>
+    directory. <b>Note:</b> Uniquely, assets are copied to the project's <em>assets</em> folder regardless of the install type the user has selected for the CinderBlock.<br />
   </div>
 
   <div>
-    <b>&lt;framework&gt;:</b> A Mac OS/iOS framework (Mac/iOS-only). May also be used
+    <code><b>&lt;framework&gt;:</b></code> A Mac OS/iOS framework (Mac/iOS-only). May also be used
     with a System or SDK-relative dynamic library such as libiconv.dylib
   </div>
 
   <div>
-    <b>&lt;buildCopy&gt;:</b> A file which is copied to the folder containing the build
+    <code><b>&lt;buildCopy&gt;:</b></code> A file which is copied to the folder containing the build
     product as part of the build process - typically a DLL or dylib. On Mac OS/iOS this
     is the Contents/MacOS folder inside the output bundle.<br />
   </div>
@@ -282,7 +282,7 @@
   </div>
 
   <div>
-    <b>&lt;includePath&gt;:</b> Adds a directory to the output be searched for #include
+    <code><b>&lt;includePath&gt;:</b></code> Adds a directory to the output be searched for #include
     statements
   </div>
 
@@ -293,38 +293,38 @@
   </div>
 
   <div>
-    <b>&lt;frameworkPath&gt;:&nbsp;</b>Adds a directory to the output be searched for
+    <code><b>&lt;frameworkPath&gt;:&nbsp;</b></code>Adds a directory to the output be searched for
     Mac/iOS frameworks (Mac/iOS-only)
   </div>
 
   <div>
-    <b>&lt;libraryPath&gt;:&nbsp;</b>Adds a directory to the output be searched for
+    <code><b>&lt;libraryPath&gt;:&nbsp;</b></code> Adds a directory to the output be searched for
     static libraries
   </div>
 
   <div>
-    <b>&lt;staticLibrary&gt;:&nbsp;</b>Adds a Mac/iOS .a or Windows .lib static library
+    <code><b>&lt;staticLibrary&gt;:&nbsp;</b></code> Adds a Mac/iOS .a or Windows .lib static library
     to the project<br />
   </div>
 
   <div>
-    <b>&lt;dynamicLibrary&gt;:</b> Adds a Mac/iOS .dylib or Windows .dll dynamic library
+    <code><b>&lt;dynamicLibrary&gt;:</b></code> Adds a Mac/iOS .dylib or Windows .dll dynamic library
     to the project
   </div>
 
   <div>
-    <b>&lt;headerPattern&gt;:</b> Adds as headers all files matching the pattern,
+    <code><b>&lt;headerPattern&gt;:</b></code> Adds as headers all files matching the pattern,
     including wildcards (*) &lt;headerPattern&gt;include/*.h&lt;/headerPattern&gt;.<br />
   </div>
 
   <div>
-    <b>&lt;sourcePattern&gt;:&nbsp;</b>Adds as source all files&nbsp;matching the
+    <code><b>&lt;sourcePattern&gt;:&nbsp;</b></code> Adds as source all files&nbsp;matching the
     pattern, including wildcards (*)
     &lt;sourcePattern&gt;src/*.cpp&lt;/sourcePattern&gt;.
   </div>
 
   <div>
-    <b>&lt;setting&gt;:</b>&nbsp;Allows modification of an Xcode setting (Mac-only). The
+    <code><b>&lt;setting&gt;:</b></code>&nbsp;Allows modification of an Xcode setting (Mac-only). The
     value of the element becomes the value of the setting.
   </div>
 
@@ -333,7 +333,7 @@
   </div>
 
   <div>
-    <b>&lt;outputExtension&gt;:</b>&nbsp;Specifies the file extension of the build
+    <code><b>&lt;outputExtension&gt;:</b></code>&nbsp;Specifies the file extension of the build
     product, i.e. ".scr" for Windows screensavers
   </div>
 
@@ -346,7 +346,7 @@
   </div>
 
   <div>
-    <b>&lt;platform&gt;:</b> Specifies an OS, compiler, build configuration or iOS SDK.
+    <code><b>&lt;platform&gt;:</b></code> Specifies an OS, compiler, build configuration or iOS SDK.
     Explained further below.<b><br /></b>
   </div>
 
@@ -369,7 +369,7 @@
   </div>
 
   <div>
-    <b>&lt;supports&gt;:</b> When a non-zero number of &lt;supports&gt; tags, specifies
+    <code><b>&lt;supports&gt;:</b></code> When a non-zero number of &lt;supports&gt; tags, specifies
     which operating systems a block supports; one config per tag
   </div>
 
@@ -383,7 +383,7 @@
   </div>
 
   <div>
-    <b>&lt;requires&gt;:</b> Specifies a CinderBlock which a project template or
+    <code><b>&lt;requires&gt;:</b></code> Specifies a CinderBlock which a project template or
     CinderBlock requires, identified by its reverse-dns ID
   </div>
 
