@@ -2,15 +2,9 @@
 #include "cinder/dx/dx.h"
 #include "cinder/dx/DxTexture.h"
 #include "cinder/dx/DxTextureFont.h"
-
 #include "cinder/Text.h"
 #include "cinder/Rand.h"
-
 #include "cinder/Utilities.h"
-
-#include "cinder/Perlin.h"
-
-#define TOTAL_PARTICLES 500
 
 using namespace ci;
 using namespace ci::app;
@@ -35,13 +29,11 @@ class BasicApp : public AppBasic {
 
 void BasicApp::prepareSettings(Settings *settings)
 {
-	settings->setFrameRate(4.0f);
+	settings->setFrameRate(60.0f);
 }
 
 void BasicApp::mouseDown( MouseEvent event )
 {
-	
-
 	mFont = Font( Font::getNames()[Rand::randInt() % Font::getNames().size()], 24 );
 	console() << mFont.getName() << std::endl;
 	mTextureFont = dx::TextureFont::create( mFont );
@@ -75,11 +67,11 @@ void BasicApp::draw()
 {
 	dx::setMatricesWindow( getWindowSize() );
 	dx::enableAlphaBlending();
-	dx::clear( Color( 0, 0, 0 ) );
+	dx::clear( Color( 0.2, 0.2, 0.2 ) );
 	dx::pushModelView();
 		
-	Rectf boundsRect( 40, mTextureFont->getAscent() + 40, getWindowWidth() - 40, getWindowHeight() - 40 );
-	dx::color( ColorA( 1, 0.5f, 0.25f, 1.0f ) );
+	Rectf boundsRect( getWindowWidth()*.2, mTextureFont->getAscent() + getWindowHeight()*.2, getWindowWidth()*.8, getWindowHeight() - getWindowHeight()*.8 );
+	dx::color( ColorA( 1, 0.7f, 0.9f, 1.0f ) );
 	
 	// drawString() RENDERS AT NEAR 60 FPS
 	// mTextureFont->drawString(str, boundsRect );

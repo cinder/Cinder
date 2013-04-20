@@ -32,10 +32,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Particle.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="winrtParticles.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\emitter.png">

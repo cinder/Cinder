@@ -1,5 +1,5 @@
 #include "cinder/app/AppBasic.h"
-// #include "cinder/Arcball.h"
+#include "cinder/Arcball.h"
 #include "cinder/Rand.h"
 #include "cinder/Camera.h"
 #include "cinder/Surface.h"
@@ -38,7 +38,7 @@ class BasicApp : public AppBasic {
 	void updateData( ColorSwitch whichColor );
 
 	CameraPersp		mCam;
-	//Arcball			mArcball;
+	Arcball			mArcball;
 
 	uint32_t		mWidth, mHeight;
 	Surface32f		mImage;
@@ -52,10 +52,10 @@ void BasicApp::setup()
 
 	dx::enableAlphaBlending();
 
-	//mArcball.setQuat( Quatf( Vec3f( 0.0577576f, -0.956794f, 0.284971f ), 3.68f ) );
-	//mArcball.setWindowSize( getWindowSize() );
-	//mArcball.setCenter( Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
-	//mArcball.setRadius( getWindowHeight() / 2.0f );
+	mArcball.setQuat( Quatf( Vec3f( 0.0577576f, -0.956794f, 0.284971f ), 3.68f ) );
+	mArcball.setWindowSize( getWindowSize() );
+	mArcball.setCenter( Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
+	mArcball.setRadius( getWindowHeight() / 2.0f );
 
 	mCam.lookAt( Vec3f( 0.0f, 0.0f, -150 ), Vec3f::zero() );
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
@@ -67,8 +67,7 @@ void BasicApp::setup()
 void BasicApp::openFile() {
 
 	
-	mImage = loadImage( loadAsset( "testPattern.png" ) );
-	//mTexture = dx::Texture( mImage );
+	mImage = loadImage( loadAsset( "mona.jpg" ) );
 
 	mWidth = mImage.getWidth();
 	mHeight = mImage.getHeight();
@@ -84,12 +83,12 @@ void BasicApp::openFile() {
 
 void BasicApp::mouseDown( MouseEvent event )
 {
-   // mArcball.mouseDown( event.getPos() );
+   mArcball.mouseDown( event.getPos() );
 }
 
 void BasicApp::mouseDrag( MouseEvent event )
 {
-    // mArcball.mouseDrag( event.getPos() );
+    mArcball.mouseDrag( event.getPos() );
 }
 
 void BasicApp::keyDown( KeyEvent event )
@@ -106,9 +105,6 @@ void BasicApp::keyDown( KeyEvent event )
 		break;
 		case 'C':
 			updateData( kColor );
-		break;
-		case 'O':
-			openFile();
 		break;
 	}
 }
@@ -147,7 +143,7 @@ void BasicApp::updateData( BasicApp::ColorSwitch whichColor )
 			float x = pixelIter.x() - mWidth / 2.0f;
 			float z = pixelIter.y() - mHeight / 2.0f;
 
-            vertexIter.setPosition( x, height * 30.0f, z );
+            vertexIter.setPosition( x, height * 60.0f, z );
 			vertexIter.setColorRGB( color );
 			++vertexIter;
 		}
@@ -160,7 +156,7 @@ void BasicApp::draw()
 
 	dx::pushModelView();
 	dx::translate( Vec3f( 800.0f, 500.0f, mHeight / 2.0f ) );
-	//dx::rotate( mArcball.getQuat() );
+	dx::rotate( mArcball.getQuat() );
 	if ( mVboMesh )
 		dx::draw( mVboMesh );
 	dx::popModelView();
