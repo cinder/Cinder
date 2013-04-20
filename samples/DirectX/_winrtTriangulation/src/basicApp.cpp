@@ -8,7 +8,7 @@
 #include "cinder/dx/DxTexture.h"
 #include "cinder/Rand.h"
 
-//#include "cinder/params/Params.h"
+#include "cinder/params/Params.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -26,6 +26,8 @@ class BasicApp : public AppBasic {
 	void		    keyDown( KeyEvent event );
 	void			randomizeFont(char keyTyped);
 	void			recalcMesh();
+	void			setRandomFont();
+	void			setRandomGlyph();
 
 	Font			mGlyphFont;
 	Font			mOutputFont;
@@ -34,6 +36,7 @@ class BasicApp : public AppBasic {
 	Shape2d			mShape;
 	vector<string>	mFontNames;
 	dx::VboMesh		mVboMesh;
+	params::InterfaceGl	mParams;
 
 	void			cyclePrecision();
 	void			cycleZoom();
@@ -71,7 +74,34 @@ void BasicApp::setup()
 
 	randomizeFont('A');
 	recalcMesh();
+
+	mParams = params::InterfaceGl( "Parameters", Vec2i( 220, 170 ) );
+	mParams.addParam( "Draw Wireframe", &mDrawWireframe, "min=1 max=2000 keyIncr== keyDecr=-" );
+	//mParams.addButton( "Random Font", bind( &BasicApp::setRandomFont, this ), "key=f" );
+	//mParams.addButton( "Random Glyph", bind( &BasicApp::setRandomGlyph, this ) );
+	mParams.addParam( "Zoom", &mZoom, "min=0.01 max=20 keyIncr=z keyDecr=Z" );
+	mParams.addParam( "Precision", &mPrecision, "min=0.01 max=20 keyIncr=p keyDecr=P" );
+	mParams.addParam( "Num Points", &mNumPoints, "", true );
 }
+
+//void BasicApp::setRandomFont()
+//{
+//	// select a random font from those available on the system
+//	mFont = Font( mFontNames[rand() % mFontNames.size()], mFontSize );
+//	setRandomGlyph();
+//}
+//
+//void BasicApp::setRandomGlyph()
+//{
+//	size_t glyphIndex = rand() % mFont.getNumGlyphs();
+//	try {
+//		mShape = mFont.getGlyphShape( glyphIndex );
+//		recalcMesh();
+//	}
+//	catch( FontGlyphFailureExc &exc  ) {
+//		console() << "Looks like glyph " << glyphIndex << " doesn't exist in this font." << std::endl;
+//	}
+//}
 
 void BasicApp::recalcMesh() 
 {
@@ -176,6 +206,8 @@ void BasicApp::draw()
 	dx::drawString("WinRT: Testing getGlyphShape(), Shape2D and VBOMesh", Vec2f(30.0f, 50.f), Color::white(), mOutputTitle) ;
 	dx::drawString(s1.str(), Vec2f(30.0, 90.0f), Color::white(), mOutputFont);
 	dx::drawString(s2.str(), Vec2f(30.0, 120.0f), Color(0.0f, 1.0f, 0.6f), mOutputFont);
+
+	mParams.draw();
 }
 
 CINDER_APP_BASIC( BasicApp, RendererDx )

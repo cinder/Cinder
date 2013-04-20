@@ -62,6 +62,15 @@
     <Filter Include="Source Files\svg">
       <UniqueIdentifier>{f9498b84-b81b-4f07-a22f-840a680be33d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\params">
+      <UniqueIdentifier>{a14ae023-f189-44a3-adc4-aae1e417ec7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\params">
+      <UniqueIdentifier>{2c09a40f-9985-4719-959d-78b2c7fd1429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AntTweakBar">
+      <UniqueIdentifier>{36b2c259-6e9a-48fb-9480-9369b069a7b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\app\Renderer.h">
@@ -258,12 +267,66 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\dx\HlslProg.h">
       <Filter>Header Files\dx</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="..\include\cinder\Arcball.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Quaternion.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\params\Params.h">
+      <Filter>Header Files\params</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\d3d10vs2003.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\resource.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwBar.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwColors.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_LineRectCstColorVS.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_LineRectPS.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_LineRectVS.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_TextCstColorVS.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_TextPS.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_TextVS.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwFonts.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwGraph.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwMgr.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwPrecomp.h">
+      <Filter>Source Files\AntTweakBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -704,6 +767,27 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\Shape2d.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\params\Params.cpp">
+      <Filter>Source Files\params</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwBar.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwColors.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwFonts.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

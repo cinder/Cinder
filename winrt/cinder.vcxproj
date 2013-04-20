@@ -126,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
@@ -150,7 +150,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>FT2_BUILD_LIBRARY;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
@@ -297,6 +297,7 @@
     <ClInclude Include="..\include\cinder\ip\Resize.h" />
     <ClInclude Include="..\include\cinder\ip\Threshold.h" />
     <ClInclude Include="..\include\cinder\ip\Trim.h" />
+    <ClInclude Include="..\include\cinder\params\Params.h" />
     <ClInclude Include="..\include\cinder\Path2d.h" />
     <ClInclude Include="..\include\cinder\Quaternion.h" />
     <ClInclude Include="..\include\cinder\Ray.h" />
@@ -311,6 +312,23 @@
     <ClInclude Include="..\include\cinder\Unicode.h" />
     <ClInclude Include="..\include\cinder\Utilities.h" />
     <ClInclude Include="..\include\cinder\WinRTUtils.h" />
+    <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
+    <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h" />
+    <ClInclude Include="..\src\AntTweakBar\d3d10vs2003.h" />
+    <ClInclude Include="..\src\AntTweakBar\resource.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwBar.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwColors.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_LineRectCstColorVS.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_LineRectPS.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_LineRectVS.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_TextCstColorVS.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_TextPS.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11_TextVS.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwFonts.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwGraph.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwMgr.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwPrecomp.h" />
     <ClInclude Include="..\src\libtess2\bucketalloc.h" />
     <ClInclude Include="..\src\libtess2\dict.h" />
     <ClInclude Include="..\src\libtess2\geom.h" />
@@ -322,6 +340,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\AntTweakBar\TwBar.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwColors.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwFonts.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp" />
     <ClCompile Include="..\src\cinder\app\App.cpp" />
     <ClCompile Include="..\src\cinder\app\AppBasic.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswRendererDx.cpp" />
@@ -372,6 +396,7 @@
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
     <ClCompile Include="..\src\cinder\MatrixStack.cpp" />
     <ClCompile Include="..\src\cinder\msw\CinderMsw.cpp" />
+    <ClCompile Include="..\src\cinder\params\Params.cpp" />
     <ClCompile Include="..\src\cinder\Path2d.cpp" />
     <ClCompile Include="..\src\cinder\Perlin.cpp" />
     <ClCompile Include="..\src\cinder\Plane.cpp" />

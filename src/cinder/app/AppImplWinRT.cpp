@@ -659,7 +659,7 @@ void WindowImplWinRT::handleMouseDown(PointerEventArgs^ args)
 	mIsDragging = true;		
 	float x = getScaledDPIValue(p->Position.X);
 	float y = getScaledDPIValue(p->Position.Y);
-	MouseEvent event( getWindow(), 0, static_cast<int>(x), static_cast<int>(y), prepPointerEventModifiers( args ), 0.0f, 0L);
+	MouseEvent event( getWindow(), prepPointerEventModifiers( args ), static_cast<int>(x), static_cast<int>(y), prepPointerEventModifiers( args ), 0.0f, 0L);
 	getWindow()->emitMouseDown( &event );
 }
 
@@ -688,7 +688,7 @@ void WindowImplWinRT::handleMouseMoved(PointerEventArgs^ args)
 	PointerPoint^ p = args->CurrentPoint;
 	float x = getScaledDPIValue(p->Position.X);
 	float y = getScaledDPIValue(p->Position.Y);
-	MouseEvent event( getWindow(), 0, static_cast<int>(x), static_cast<int>(y), prepPointerEventModifiers( args ), 0.0f, 0L);
+	MouseEvent event( getWindow(), prepPointerEventModifiers( args ), static_cast<int>(x), static_cast<int>(y), prepPointerEventModifiers( args ), 0.0f, 0L);
 	if(mIsDragging)		
 		getWindow()->emitMouseDrag( &event );
 	else
@@ -716,7 +716,7 @@ void WindowImplWinRT::handleMouseUp(PointerEventArgs^ args)
 	float x = getScaledDPIValue(p->Position.X);
 	float y = getScaledDPIValue(p->Position.Y);
 	mIsDragging = false;		
-	MouseEvent event( getWindow(), 0, static_cast<int>(x), static_cast<int>(y), prepPointerEventModifiers( args ), 0.0f, 0L);
+	MouseEvent event( getWindow(), prepPointerEventModifiers( args ), static_cast<int>(x), static_cast<int>(y), prepPointerEventModifiers( args ), 0.0f, 0L);
 	getWindow()->emitMouseUp( &event );
 }
 
