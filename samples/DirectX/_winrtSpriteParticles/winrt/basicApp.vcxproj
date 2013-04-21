@@ -147,9 +147,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Image Include="Assets\emitter.png" />
+    <Image Include="Assets\bkg.jpg" />
+    <Image Include="Assets\heptagon.png" />
+    <Image Include="Assets\heptagons.png" />
     <Image Include="Assets\Logo.png" />
-    <Image Include="Assets\particle.png" />
     <Image Include="Assets\SmallLogo.png" />
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\SplashScreen.png" />

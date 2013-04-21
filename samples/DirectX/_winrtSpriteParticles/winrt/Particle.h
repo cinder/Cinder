@@ -6,17 +6,16 @@
 class Particle
 {
 public:
-	Particle(float _floor);
+	Particle(int _textureID);
 
-	void Update(float _gravity, bool _isFloorActive, cinder::Vec2f _noise );
+	void Update(float width, float height);
 
-	void Reset(cinder::Vec2f _position, cinder::Vec2f _velocity, int _life);
+	void Reset(cinder::Vec2f _position, cinder::Vec2f _velocity);
 
-	int						life;
-	bool					isDead;
-	float					floor;
+	int						textureID;
 
 	cinder::Vec2f 			position;
+
 	cinder::Vec2f 			velocity;
 
 };

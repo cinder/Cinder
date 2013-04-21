@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="2fc9d4c2-3757-42d1-816d-732c0fca756d" Publisher="CN=dalestam" Version="1.0.0.0" />
+  <Identity Name="2fc9d4c2-3757-42d1-816d-732c0fca656d" Publisher="CN=dalestam" Version="1.0.0.0" />
   <Properties>
     <DisplayName>basicApp</DisplayName>
     <PublisherDisplayName>dalestam</PublisherDisplayName>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Sprite Particles">
-      <VisualElements DisplayName="Sprite Particles" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Particle Emitter using dx::draw() with a dx::texture created from local assets." ForegroundText="light" BackgroundColor="#0c0000">
+      <VisualElements DisplayName="Sprite Particles" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Sample application drawing sprite particles and illustrating some basic Cinder functionality using the DirectX renderer." ForegroundText="light" BackgroundColor="#0c0000">
         <DefaultTile ShowName="allLogos" />
         <SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#0c0000" />
       </VisualElements>

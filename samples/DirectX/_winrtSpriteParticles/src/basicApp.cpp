@@ -1,17 +1,12 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Rand.h"
-#include "cinder/Perlin.h"
 #include "cinder/Font.h"
-
 #include "cinder/dx/DxTexture.h"
 #include "cinder/dx/dx.h"
-
 #include "Particle.h"
 
-#define TOTAL_PARTICLES 1000
-#define NEW_PARTICLES 5
-#define FLOOR_LEVEL 900
+#define TOTAL_PARTICLES 300
 
 using namespace ci;
 using namespace ci::app;
@@ -19,37 +14,19 @@ using namespace std;
 
 class BasicApp : public AppBasic {
   public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void update();
-	void draw();
-	
-	void keyDown( KeyEvent event);
-	void mouseDown( MouseEvent event );
-	void mouseMove( MouseEvent event );
-	void mouseDrag( MouseEvent event );
-	void mouseUp( MouseEvent event );
-	void updateParticleIndex();
+	void				prepareSettings( Settings *settings );
+	void				setup();
+	void				update();
+	void				draw();
 
-	Perlin		mPerlin;
-
-	bool		mIsPressed;
-	bool		mIsFloorActive;
-	bool		mIsPerlinActive;
-	bool		mIsDirty;
-
-	Vec2f		mPointerTarget;
-	Vec2f		mPointerPosition;
-	Vec2f		mPointerVelocity;
-
-	int			mParticleIndex;
-	float		mGravity;
-
-
-	Font		mFont;
-	dx::Texture imgParticle, imgEmitter;
+	dx::Texture			imgParticle;
+	dx::Texture			imgBkg;
 
 	vector<Particle>	mParticles;
+	vector<Area>		mTextureAreas;
+
+	Font				mFont;
+	Area				mBounds;
 };
 
 void BasicApp::prepareSettings(Settings *settings)
@@ -57,120 +34,36 @@ void BasicApp::prepareSettings(Settings *settings)
 	settings->setFrameRate(60.0f);
 }
 
-void BasicApp::mouseDown( MouseEvent event )
-{
-	mIsPressed = true;
-	mPointerTarget = event.getPos();
-}
-
-void BasicApp::mouseUp( MouseEvent event )
-{
-	mIsPressed = false;
-}
-
-void BasicApp::mouseMove( MouseEvent event )
-{
-	mPointerTarget = event.getPos();
-}
-
-void BasicApp::mouseDrag( MouseEvent event )
-{
-	mPointerTarget = event.getPos();
-}
-
-void BasicApp::keyDown( KeyEvent event )
-{
-	switch ( event.getChar() )
-	{
-		case 'G':
-			if ( mGravity == 0.0f) { mGravity = 0.45f; } 
-			else { mGravity = 0.0f; }
-			break;
-		case 'F':
-			mIsFloorActive = !mIsFloorActive;
-			break;
-		case 'P':
-			mIsPerlinActive = !mIsPerlinActive;
-			break;
-	}
-}
-
 void BasicApp::setup()
 {
-	mPerlin = Perlin();
+	mFont = Font( "Segoe UI", 18.0f );
 
-	mFont = Font( "Arial", 24.0f );
-
-	imgParticle = dx::Texture( loadImage( loadAsset("particle.png")));
-	imgEmitter  = dx::Texture( loadImage( loadAsset("emitter.png")));
-
-	mGravity = 0.0f;
-	mIsFloorActive = true;
-	mIsPerlinActive = true;
-	mIsDirty = false;	
+	imgParticle = dx::Texture( loadImage( loadAsset("heptagons.png")));
+	imgBkg = dx::Texture( loadImage( loadAsset("bkg.jpg")));
 
 	for ( int i = 0; i < TOTAL_PARTICLES; i++) 
 	{
-		mParticles.push_back(Particle((float)FLOOR_LEVEL));
+		Particle p = Particle(i);
+		Vec2f newPosition( Rand::randFloat(0.0f, (float)getWindowWidth()),  Rand::randFloat(0.0f, (float)getWindowHeight()) );
+		Vec2f newVelocity( Rand::randPosNegFloat(-3.0f, 3.0f), Rand::randPosNegFloat(-3.0f, 3.0f ));
+		p.Reset(newPosition, newVelocity);
+		mParticles.push_back(p);
 	}
 
-	mParticleIndex = 0;
-
-	mPointerPosition = Vec2f::zero();
-	mPointerVelocity = Vec2f::zero();
-	mPointerTarget = getWindowCenter();
-
-	mIsPressed = false;	
+	mTextureAreas.push_back(Area(Vec2i(0,0), Vec2i(256, 256)));
+	mTextureAreas.push_back(Area(Vec2i(256,0), Vec2i(512, 256)));
+	mTextureAreas.push_back(Area(Vec2i(0,256), Vec2i(256, 512)));
+	mTextureAreas.push_back(Area(Vec2i(256,256), Vec2i(512, 512)));
+	mBounds = getWindowBounds();
 }
 
 void BasicApp::update()
 {
-	Vec2f delta = mPointerTarget - mPointerPosition;
-	delta *= .25;
-	mPointerVelocity += delta;
-	mPointerPosition += mPointerVelocity;
-	mPointerVelocity *= .83f;
-
-	if ( mIsFloorActive && mPointerPosition.y > FLOOR_LEVEL )
-	{
-		mPointerPosition.y = FLOOR_LEVEL;
-		mPointerVelocity.y = 0;
-	}
-
 	for ( Particle &particle: mParticles )  
 	{
-		Vec2f noiseVector = Vec2f::zero();
-
-		if ( !particle.isDead ) 
-
-			if ( mIsPerlinActive ) 
-			{	
-				float noise = mPerlin.fBm( Vec3f( particle.position.x *.005f,  particle.position.y *.005f, particle.life / 200.0f ) );
-				float angle = noise * 15.0f;
-				noiseVector = Vec2f( cos(angle), sin(angle) );
-			}
-
-			particle.Update(mGravity, mIsFloorActive, noiseVector);
-	}
-	
-	if ( mIsPressed )
-	{
-		for ( int i = 0; i < NEW_PARTICLES; i++) 
-		{
-			Vec2f newPosition( mPointerPosition.x + Rand::randFloat(-2.0f, 2.0f), mPointerPosition.y + Rand::randFloat(-2.0f, 2.0f) );
-			Vec2f newVelocity( mPointerVelocity.x * .25f + Rand::randFloat(-5.0f, 5.0f), mPointerVelocity.y * .25f + Rand::randFloat(-5.0f, 5.0f) );
-			mParticles[mParticleIndex].Reset(newPosition, newVelocity, 100 + Rand::randInt(100));
-			updateParticleIndex();
-		}
+		particle.Update(mBounds.x2, mBounds.y2);
 	}
 
-}
-
-void BasicApp::updateParticleIndex() 
-{
-	mParticleIndex++;
-	if ( mParticleIndex >= TOTAL_PARTICLES ) 
-		mParticleIndex = 0; 
 }
 
 void BasicApp::draw()
@@ -181,35 +74,22 @@ void BasicApp::draw()
 	//dx::enableAlphaBlending();
 	dx::enableAdditiveBlending();
 
-	float particleSize = 50.0f;
-
-	if( imgEmitter )
-	{
-		Vec2f emitterRadius( particleSize*2.0f, particleSize*2.0f);
-		dx::draw( imgEmitter, Rectf( mPointerPosition - emitterRadius, mPointerPosition + emitterRadius) );
-	}
+	if ( imgBkg ) dx::draw( imgBkg, getWindowBounds() );
 
 	if ( imgParticle )
 	{
 		dx::batchTextureBegin();
+		Vec2f particleRadius(64.0f, 64.0f);
 		for ( Particle particle : mParticles )
 		{
-			if ( !particle.isDead ) 
-			{
-				particleSize = 50.0f * particle.life/200.0f;
-				Vec2f particleRadius(particleSize, particleSize);
-				dx::draw( imgParticle, Rectf( particle.position - particleRadius, particle.position + particleRadius ) );
-				count++;
-			}
+			dx::draw( imgParticle, mTextureAreas[particle.textureID], Rectf( particle.position - particleRadius, particle.position + particleRadius ) );
 		}
 		dx::batchTextureEnd();
 	}
 
 	std::stringstream s;
-	s << "Framerate:" << getAverageFps() << "  Particles: " << count;
+	s << "Framerate:" << getAverageFps();
 	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color::white(),mFont);
-
-
 }
 
 // This line tells Cinder to actually create the application
