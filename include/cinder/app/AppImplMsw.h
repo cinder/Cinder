@@ -103,6 +103,7 @@ class WindowImplMsw {
   public:
 	WindowImplMsw( const Window::Format &format, RendererRef sharedRenderer, AppImplMsw *appImpl );
 	WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef sharedRenderer, AppImplMsw *appImpl );
+	virtual ~WindowImplMsw() {}
 
 	virtual bool		isFullScreen() { return mFullScreen; }
 	virtual void		setFullScreen( bool fullScreen, const app::FullScreenOptions &options );

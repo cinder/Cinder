@@ -429,7 +429,8 @@ class Window : public std::enable_shared_from_this<Window> {
 	template<typename T>
 	T*			getUserData() { return static_cast<T*>( mUserData.get() ); }
 	//! Sets the window-specific data associated with this Window. The variable is \c deleted upon destruction of the Window.
-	void		setUserData( void *userData ) { mUserData = std::shared_ptr<void>( userData ); }
+	template<typename T>
+	void		setUserData( T *userData ) { mUserData = std::shared_ptr<void>( std::shared_ptr<T>( userData ) ); }
 	
 	//! Returns whether this Window is valid. \c false means it should no longer be used (neither read nor write)
 	bool	isValid() const { return ! mValid; }

@@ -151,7 +151,7 @@ void AppImplMswBasic::closeWindow( WindowImplMsw *windowImpl )
 	if( winIt != mWindows.end() ) {
 		windowImpl->getWindow()->emitClose();
 		windowImpl->privateClose();
-		delete windowImpl;
+		delete windowImpl; // this corresponds to winIt
 		mWindows.erase( winIt );
 	}
 
