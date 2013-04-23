@@ -228,8 +228,8 @@ void InstascopeApp::imageLoaded()
 	}
 	
 	// This defines the length of time that we're in each phase
-	timeline().add(bind(&InstascopeApp::changePhase, this, 0), timeline().getCurrentTime() + delayOffset);
-	timeline().add(bind(&InstascopeApp::changePhase, this, 1), timeline().getCurrentTime() + delayOffset + MIRROR_DUR);
+	timeline().add( [&] { changePhase(0); }, timeline().getCurrentTime() + delayOffset);
+	timeline().add( [&] { changePhase(1); }, timeline().getCurrentTime() + delayOffset + MIRROR_DUR);
 }
 
 void InstascopeApp::resetSample()
