@@ -59,7 +59,7 @@ InstagramStream::InstagramStream(ci::Vec2f loc, float dist, int minTs, int maxTs
 mCanceled( false ),
 mClientId( clientId )
 {
-	startThread(INSTAGRAM_API_URL + "/v1/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&distance=" + toString(dist) + "&min_timestamp=" + toString(minTs) + "&max_timestamp=" + toString(maxTs) + "&client_id="+ mClientId);
+	startThread(INSTAGRAM_API_URL + "/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&distance=" + toString(dist) + "&min_timestamp=" + toString(minTs) + "&max_timestamp=" + toString(maxTs) + "&client_id="+ mClientId);
 }
 
 InstagramStream::InstagramStream(ci::Vec2f loc, float dist, std::string clientId )
@@ -67,7 +67,7 @@ InstagramStream::InstagramStream(ci::Vec2f loc, float dist, std::string clientId
 mCanceled( false ),
 mClientId( clientId )
 {
-	startThread(INSTAGRAM_API_URL + "/v1/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&distance=" + toString(dist) + "&client_id="+ mClientId);
+	startThread(INSTAGRAM_API_URL + "/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&distance=" + toString(dist) + "&client_id="+ mClientId);
 }
 
 InstagramStream::InstagramStream(ci::Vec2f loc, std::string clientId )
@@ -75,7 +75,7 @@ InstagramStream::InstagramStream(ci::Vec2f loc, std::string clientId )
 mCanceled( false ),
 mClientId( clientId )
 {
-	startThread(INSTAGRAM_API_URL + "/v1/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&client_id="+ mClientId);
+	startThread(INSTAGRAM_API_URL + "/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&client_id="+ mClientId);
 }
 
 void InstagramStream::startThread(string url){
@@ -157,10 +157,10 @@ void InstagramStream::serviceGrams(string url)
 		if( resultIt != searchResults.end() ) {
 			try {
 				
-				string userName = (*resultIt)["user"].getChild("username").getValue();
+				string userName = (*resultIt)["user"]["username"].getValue();
 				
 				// get the URL and load this instagram image
-				string imageUrl = (*resultIt)["images"].getChild("standard_resolution").getChild("url").getValue();
+				string imageUrl = (*resultIt)["images"]["standard_resolution"]["url"].getValue();
 				Surface image( loadImage( loadUrl( imageUrl ) ) );
 				// string imageUrl = "http://distilleryimage5.s3.amazonaws.com/1dd174cca14611e1af7612313813f8e8_7.jpg"; // Test image
 				mBuffer.pushFront( Instagram( userName, imageUrl, image ) );
