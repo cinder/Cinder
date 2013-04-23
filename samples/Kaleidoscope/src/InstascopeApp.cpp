@@ -86,11 +86,11 @@ void InstascopeApp::setup()
 	mTextRibbon = new TextRibbon();
 	
 	// Popular images stream
-	mInstaStream = shared_ptr<InstagramStream>( new InstagramStream( CLIENT_ID) );
+	mInstaStream = make_shared<InstagramStream>( CLIENT_ID );
 	// Image stream of a particular tag
-	// mInstaStream = shared_ptr<InstagramStream>( new InstagramStream( TAG, CLIENT_ID) );
+	// mInstaStream = make_shared<InstagramStream>( TAG, CLIENT_ID );
 	// Image stream in a particular area
-	// mInstaStream = shared_ptr<InstagramStream>( new InstagramStream( Vec2f(40.720467,-74.00603), 5000, CLIENT_ID) );
+	// mInstaStream = make_shared<InstagramStream>( Vec2f(40.720467,-74.00603), 5000, CLIENT_ID );
 
 	continueCycle();
 }

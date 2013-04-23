@@ -79,7 +79,7 @@ mClientId( clientId )
 }
 
 void InstagramStream::startThread(string url){
-	mThread = shared_ptr<thread>( new thread( bind( &InstagramStream::serviceGrams, this, url ) ) );
+	mThread = make_shared<thread>( bind( &InstagramStream::serviceGrams, this, url ) );
 }
 
 InstagramStream::~InstagramStream()
