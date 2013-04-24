@@ -173,7 +173,20 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 #elif defined( CINDER_WINRT )
 		Platform::Array<Platform::String^>^ fontNames = FontEnumeration::FontEnumerator().ListSystemFonts();
 		for(unsigned i = 0; i < fontNames->Length; ++i)
-			mFontNames.push_back(std::string(fontNames[i]->Begin(), fontNames[i]->End()));
+		{
+			//mFontNames.push_back(std::string(fontNames[i]->Begin(), fontNames[i]->End())); //this doesn't work in release mode
+			const wchar_t *start = fontNames[i]->Begin();
+			const wchar_t *end = fontNames[i]->End();
+			mFontNames.push_back(std::string(start, end));
+			//int length = end - start;
+			//char *str = new char[length + 1];
+			//char *itr = str;
+			//for(; start != end; ++start)
+			//	*itr++ = *start;
+			//*itr = 0;
+			//mFontNames.push_back(std::string(str));
+			//delete [] str;
+		}
 #endif
 		mFontsEnumerated = true;
 	}
