@@ -1,11 +1,9 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       LoadOGL.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
-//
-//  note:       TAB=4
+//              For conditions of distribution and use, see License.txt
 //
 //  ---------------------------------------------------------------------------
 
@@ -16,7 +14,7 @@
 
 //  ---------------------------------------------------------------------------
 
-#define ANT_NB_OGL_FUNC_MAX 512
+#define ANT_NB_OGL_FUNC_MAX 1024
 
 struct COGLFuncRec
 {
@@ -496,6 +494,7 @@ namespace GL { PFNGLGetProcAddress _glGetProcAddress = NULL; }
     #include <dlfcn.h>
 
     static void *gl_dyld = NULL;
+    static const char *gl_prefix = "_";
     void *NSGLGetProcAddressNew(const GLubyte *name) 
     {
         void *proc=NULL;
@@ -505,7 +504,7 @@ namespace GL { PFNGLGetProcAddress _glGetProcAddress = NULL; }
         }
         if (gl_dyld) 
         {
-            NSString *sym = [[NSString alloc] initWithFormat: @"_%s",name];
+            NSString *sym = [[NSString alloc] initWithFormat: @"%s%s",gl_prefix,name];
             proc = dlsym(gl_dyld,[sym UTF8String]);
             [sym release];
         }
@@ -515,7 +514,20 @@ namespace GL { PFNGLGetProcAddress _glGetProcAddress = NULL; }
     int LoadOpenGL() 
     {
         _glGetProcAddress = reinterpret_cast<GL::PFNGLGetProcAddress>(NSGLGetProcAddressNew);
-        return 1;
+		
+		// try to load a symbol
+		if (_glGetProcAddress("glBindBufferARB") == NULL)
+		{
+			// remove the symbols underscore prefix (OSX 10.7 and later)
+			gl_prefix = "";
+			if (_glGetProcAddress("glBindBufferARB") == NULL)
+			{
+				// fail: fall back to underscore 
+		        gl_prefix = "_";
+			}
+		}		
+		
+		return 1;
     }
 
     int UnloadOpenGL() 

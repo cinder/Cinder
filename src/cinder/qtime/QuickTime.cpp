@@ -26,12 +26,17 @@
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 #include "cinder/Cinder.h"
-#include "cinder/Utilities.h"
+#include "cinder/app/App.h"
 
 #include <sstream>
 
+// this has a conflict with Boost 1.53, so instead just declare the symbol extern
+// #include "cinder/Utilities.h"
+namespace cinder {
+	extern void sleep( float milliseconds );
+}
+
 #if defined( CINDER_MAC )
-	#include "cinder/app/App.h"
 	#include <QTKit/QTKit.h>
 	#include <QTKit/QTMovie.h>
 	#include <CoreVideo/CoreVideo.h>
@@ -685,6 +690,8 @@ void MovieSurface::allocateVisualContext()
 	CFMutableDictionaryRef visualContextOptions = initQTVisualContextOptions( getObj()->mWidth, getObj()->mHeight, hasAlpha() );
 	OSStatus status = ::QTPixelBufferContextCreate( kCFAllocatorDefault, visualContextOptions, &(getObj()->mVisualContext) );
 
+	::CFRelease( visualContextOptions );
+
 	if( status == noErr )
 		::SetMovieVisualContext( getObj()->mMovie, getObj()->mVisualContext );
 	else
@@ -719,6 +726,11 @@ Surface MovieSurface::getSurface()
 
 /////////////////////////////////////////////////////////////////////////////////
 // MovieGl
+MovieGlRef MovieGl::create( const MovieLoaderRef &loader )
+{
+	return std::shared_ptr<MovieGl>( new MovieGl( *loader ) );
+}
+
 MovieGl::Obj::Obj()
 	: MovieBase::Obj()
 {
@@ -770,6 +782,7 @@ void MovieGl::allocateVisualContext()
 #else
 	CFMutableDictionaryRef visualContextOptions = initQTVisualContextOptions( getObj()->mWidth, getObj()->mHeight, hasAlpha() );
 	::QTPixelBufferContextCreate( kCFAllocatorDefault, visualContextOptions, &(getObj()->mVisualContext) );
+	::CFRelease( visualContextOptions );
 
 	::SetMovieVisualContext( getObj()->mMovie, getObj()->mVisualContext );
 #endif

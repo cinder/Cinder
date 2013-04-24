@@ -169,7 +169,11 @@
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SystemTest" */;
 			compatibilityVersion = "Xcode 3.0";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* SystemTest */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -219,6 +223,7 @@
 					"-lcurl",
 				);
 				PRODUCT_NAME = SystemTest;
+				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -243,6 +248,7 @@
 					"-lcurl",
 				);
 				PRODUCT_NAME = SystemTest;
+				SDKROOT = macosx;
 				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};

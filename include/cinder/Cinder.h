@@ -22,22 +22,28 @@
 
 #pragma once
 
-#include <boost/cstdint.hpp>
+#include <cstdint>
 #include <boost/version.hpp>
 
-#if BOOST_VERSION < 104800
-	#error "Cinder requires Boost version 1.48 or later"
+#if BOOST_VERSION < 105300
+	#error "Cinder requires Boost version 1.53 or later"
 #endif
 
+//  CINDER_VERSION % 100 is the patch level
+//  CINDER_VERSION / 100 % 1000 is the minor version
+//  CINDER_VERSION / 100000 is the major version
+#define CINDER_VERSION		805
+#define CINDER_VERSION_STR	"0.8.5"
+
 namespace cinder {
-using boost::int8_t;
-using boost::uint8_t;
-using boost::int16_t;
-using boost::uint16_t;
-using boost::int32_t;
-using boost::uint32_t;
-using boost::int64_t;
-using boost::uint64_t;
+using std::int8_t;
+using std::uint8_t;
+using std::int16_t;
+using std::uint16_t;
+using std::int32_t;
+using std::uint32_t;
+using std::int64_t;
+using std::uint64_t;
 
 #define CINDER_CINDER
 
@@ -50,6 +56,11 @@ using boost::uint64_t;
 	#include "TargetConditionals.h"
 	#if TARGET_OS_IPHONE
 		#define CINDER_COCOA_TOUCH
+		#if TARGET_IPHONE_SIMULATOR
+			#define CINDER_COCOA_TOUCH_SIMULATOR
+		#else
+			#define CINDER_COCOA_TOUCH_DEVICE
+		#endif
 	#else
 		#define CINDER_MAC
 	#endif
@@ -66,40 +77,22 @@ using boost::uint64_t;
 
 #if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
 	#include <memory>
-#elif defined( CINDER_COCOA )
-	#include <tr1/memory>
-	namespace std {
-		using std::tr1::shared_ptr;
-		using std::tr1::weak_ptr;		
-		using std::tr1::static_pointer_cast;
-		using std::tr1::dynamic_pointer_cast;
-		using std::tr1::const_pointer_cast;
-		using std::tr1::enable_shared_from_this;
-	}
-#else
-	#include <boost/shared_ptr.hpp>
-	#include <boost/enable_shared_from_this.hpp>
-	namespace std {
-		using boost::shared_ptr; // future-proof shared_ptr by putting it into std::
-		using boost::weak_ptr;
-		using boost::static_pointer_cast;
-		using boost::dynamic_pointer_cast;
-		using boost::const_pointer_cast;
-		using boost::enable_shared_from_this;		
-	}
-#endif
-
-#include <boost/shared_ptr.hpp> // necessary for checked_array_deleter
-using boost::checked_array_deleter;
-
-// if compiler supports r-value references, #define CINDER_RVALUE_REFERENCES
-#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
-	#define CINDER_RVALUE_REFERENCES
-#elif defined( __clang__ )
-	#if __has_feature(cxx_rvalue_references)
-		#define CINDER_RVALUE_REFERENCES
+	#if _MSC_VER >= 1700
+		#include <chrono>
+	#else
+		#include <boost/chrono.hpp>
 	#endif
+#elif defined( CINDER_COCOA ) && defined( _LIBCPP_VERSION ) // libc++
+	#include <chrono>
+	#include <memory>
+#elif defined( CINDER_COCOA ) // libstdc++
+	#error "Cinder requires libc++ on Mac OS X and iOS"
+#else
+	#error "Unkown platform configuration"
 #endif
+
+#include <boost/checked_delete.hpp> // necessary for checked_array_deleter
+using boost::checked_array_deleter;
 
 // Create a namepace alias as shorthand for cinder::
 #if ! defined( CINDER_NO_NS_ALIAS )

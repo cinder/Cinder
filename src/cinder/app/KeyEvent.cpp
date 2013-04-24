@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -154,6 +155,8 @@ static void initKeyTable()
 	sKeyTable[0x3B] = KeyEvent::KEY_LCTRL;
 	sKeyTable[0x3D] = KeyEvent::KEY_RALT;
 	sKeyTable[0x3A] = KeyEvent::KEY_LALT;
+	sKeyTable[0x37] = KeyEvent::KEY_LMETA;
+	sKeyTable[0x36] = KeyEvent::KEY_RMETA;
 	// sKeyTable[VK_RWIN] = KeyEvent::KEY_RSUPER;
 	// sKeyTable[VK_LWIN] = KeyEvent::KEY_LSUPER;
 	
@@ -170,6 +173,7 @@ static void initKeyTable()
 	sTableInited = true;
 }
 
+#if ! defined( CINDER_COCOA_TOUCH )
 int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 {
 	if( ! sTableInited )
@@ -181,6 +185,7 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 	else
 		return KeyEvent::KEY_UNKNOWN;
 }
+#endif
 
 #elif defined( CINDER_MSW )
 
@@ -205,7 +210,7 @@ static void initKeyTable()
 	sKeyTable[VK_SPACE] = KeyEvent::KEY_SPACE;
 	sKeyTable[0xDE] = KeyEvent::KEY_QUOTE;
 	sKeyTable[0xBC] = KeyEvent::KEY_COMMA;
-	sKeyTable[0xDD] = KeyEvent::KEY_MINUS;
+	sKeyTable[0xBD] = KeyEvent::KEY_MINUS;
 	sKeyTable[0xBE] = KeyEvent::KEY_PERIOD;
 	sKeyTable[0xBF] = KeyEvent::KEY_SLASH;
 	sKeyTable['0'] = KeyEvent::KEY_0;

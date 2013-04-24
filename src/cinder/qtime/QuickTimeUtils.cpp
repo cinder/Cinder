@@ -510,15 +510,15 @@ void ImageTargetCvPixelBuffer::finalize()
 // Assumes RGB order 8 bit unsinged input, results in Rec. 601 YpCbCr
 void ImageTargetCvPixelBuffer::convertDataToYpCbCr()
 {
-	for( uint32_t y = 0; y < mHeight; ++y ) {
+	for( int32_t y = 0; y < mHeight; ++y ) {
 		uint8_t *data = reinterpret_cast<uint8_t*>( getRowPointer( y ) );
-		for( uint32_t x = 0; x < mWidth; ++x ) {
+		for( int32_t x = 0; x < mWidth; ++x ) {
 			float r = data[x*3+0] / 255.0f;
 			float g = data[x*3+1] / 255.0f;
 			float b = data[x*3+2] / 255.0f;
-			uint8_t yp = 16 + ( 65.481f * r + 128.553f * g + 24.966f * b );
-			uint8_t cb = 128 + ( -37.797f * r + -74.203f * g + 112 * b );
-			uint8_t cr = 128 + ( 112 * r + -93.786f * g + -18.214f * b );
+			uint8_t yp = 16 + (int)( 65.481f * r + 128.553f * g + 24.966f * b );
+			uint8_t cb = 128 + (int)( -37.797f * r + -74.203f * g + 112 * b );
+			uint8_t cr = 128 + (int)( 112 * r + -93.786f * g + -18.214f * b );
 			data[x*3+0] = yp;
 			data[x*3+1] = cb;
 			data[x*3+2] = cr;
@@ -529,15 +529,15 @@ void ImageTargetCvPixelBuffer::convertDataToYpCbCr()
 // Assumes RGBA order 8 bit unsigned input, results in Rec. 601 YpCbCrA
 void ImageTargetCvPixelBuffer::convertDataToAYpCbCr()
 {
-	for( uint32_t y = 0; y < mHeight; ++y ) {
+	for( int32_t y = 0; y < mHeight; ++y ) {
 		uint8_t *data = reinterpret_cast<uint8_t*>( getRowPointer( y ) );
-		for( uint32_t x = 0; x < mWidth; ++x ) {
+		for( int32_t x = 0; x < mWidth; ++x ) {
 			float r = data[x*4+0] / 255.0f;
 			float g = data[x*4+1] / 255.0f;
 			float b = data[x*4+2] / 255.0f;
-			uint8_t yp = 16 + ( 65.481f * r + 128.553f * g + 24.966f * b );
-			uint8_t cb = 128 + ( -37.797f * r + -74.203f * g + 112 * b );
-			uint8_t cr = 128 + ( 112 * r + -93.786f * g + -18.214f * b );
+			uint8_t yp = 16 + (int)( 65.481f * r + 128.553f * g + 24.966f * b );
+			uint8_t cb = 128 + (int)( -37.797f * r + -74.203f * g + 112 * b );
+			uint8_t cr = 128 + (int)( 112 * r + -93.786f * g + -18.214f * b );
 			data[x*4+0] = cb;
 			data[x*4+1] = yp;
 			data[x*4+2] = cr;

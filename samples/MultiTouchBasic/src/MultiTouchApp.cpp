@@ -80,6 +80,7 @@ console() << "Began: " << event << std::endl;
 
 void MultiTouchApp::touchesMoved( TouchEvent event )
 {
+console() << "Moved: " << event << std::endl;
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt )
 		mActivePoints[touchIt->getId()].addPoint( touchIt->getPos() );
 }
@@ -107,6 +108,7 @@ void MultiTouchApp::mouseDrag( MouseEvent event )
 void MultiTouchApp::draw()
 {
 	gl::enableAlphaBlending();
+	gl::setMatricesWindow( getWindowSize() );
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
 
 	for( map<uint32_t,TouchPoint>::const_iterator activeIt = mActivePoints.begin(); activeIt != mActivePoints.end(); ++activeIt ) {

@@ -1,0 +1,6 @@
+#pragma once
+#include "..\Resources.h"
+
+RES_IMAGE_JPG
+RES_PASSTHRU_VERT
+RES_BLUR_FRAG

@@ -18,10 +18,10 @@ class CaptureApp : public AppBasic {
 	void draw();
 	
  private:
-	vector<Capture>		mCaptures;
-	vector<gl::Texture>	mTextures;
-	vector<gl::Texture>	mNameTextures;
-	vector<Surface>		mRetainedSurfaces;
+	vector<CaptureRef>		mCaptures;
+	vector<gl::TextureRef>	mTextures;
+	vector<gl::TextureRef>	mNameTextures;
+	vector<Surface>			mRetainedSurfaces;
 };
 
 void CaptureApp::setup()
@@ -33,18 +33,18 @@ void CaptureApp::setup()
 		console() << "Found Device " << device->getName() << " ID: " << device->getUniqueId() << std::endl;
 		try {
 			if( device->checkAvailable() ) {
-				mCaptures.push_back( Capture( WIDTH, HEIGHT, device ) );
-				mCaptures.back().start();
+				mCaptures.push_back( Capture::create( WIDTH, HEIGHT, device ) );
+				mCaptures.back()->start();
 			
 				// placeholder text
-				mTextures.push_back( gl::Texture() );
+				mTextures.push_back( gl::TextureRef() );
 
 				// render the name as a texture
 				TextLayout layout;
 				layout.setFont( Font( "Arial", 24 ) );
 				layout.setColor( Color( 1, 1, 1 ) );
 				layout.addLine( device->getName() );
-				mNameTextures.push_back( gl::Texture( layout.render( true ) ) );
+				mNameTextures.push_back( gl::Texture::create( layout.render( true ) ) );
 			}
 			else
 				console() << "device is NOT available" << std::endl;
@@ -60,12 +60,12 @@ void CaptureApp::keyDown( KeyEvent event )
 	if( event.getChar() == 'f' )
 		setFullScreen( ! isFullScreen() );
 	else if( event.getChar() == ' ' ) {
-		mCaptures.back().isCapturing() ? mCaptures.back().stop() : mCaptures.back().start();
+		mCaptures.back()->isCapturing() ? mCaptures.back()->stop() : mCaptures.back()->start();
 	}
 	else if( event.getChar() == 'r' ) {
 		// retain a random surface to exercise the surface caching code
 		int device = rand() % ( mCaptures.size() );
-		mRetainedSurfaces.push_back( mCaptures[device].getSurface() );
+		mRetainedSurfaces.push_back( mCaptures[device]->getSurface() );
 		console() << mRetainedSurfaces.size() << " surfaces retained." << std::endl;
 	}
 	else if( event.getChar() == 'u' ) {
@@ -78,10 +78,10 @@ void CaptureApp::keyDown( KeyEvent event )
 
 void CaptureApp::update()
 {
-	for( vector<Capture>::iterator cIt = mCaptures.begin(); cIt != mCaptures.end(); ++cIt ) {
-		if( cIt->checkNewFrame() ) {
-			Surface8u surf = cIt->getSurface();
-			mTextures[cIt - mCaptures.begin()] = gl::Texture( surf );
+	for( vector<CaptureRef>::iterator cIt = mCaptures.begin(); cIt != mCaptures.end(); ++cIt ) {
+		if( (*cIt)->checkNewFrame() ) {
+			Surface8u surf = (*cIt)->getSurface();
+			mTextures[cIt - mCaptures.begin()] = gl::Texture::create( surf );
 		}
 	}
 }
@@ -97,7 +97,7 @@ void CaptureApp::draw()
 	float width = getWindowWidth() / mCaptures.size();	
 	float height = width / ( WIDTH / (float)HEIGHT );
 	float x = 0, y = ( getWindowHeight() - height ) / 2.0f;
-	for( vector<Capture>::iterator cIt = mCaptures.begin(); cIt != mCaptures.end(); ++cIt ) {	
+	for( vector<CaptureRef>::iterator cIt = mCaptures.begin(); cIt != mCaptures.end(); ++cIt ) {	
 		// draw the latest frame
 		gl::color( Color::white() );
 		if( mTextures[cIt-mCaptures.begin()] )

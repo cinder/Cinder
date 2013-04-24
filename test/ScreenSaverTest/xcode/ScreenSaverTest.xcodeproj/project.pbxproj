@@ -1,0 +1,470 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0002847915C4463E00549D03 /* cinder_logo_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 0002847815C4463E00549D03 /* cinder_logo_alpha.png */; };
+		0016361A15BE02E30057D930 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0016361915BE02E30057D930 /* CoreLocation.framework */; };
+		0029EEFD15C6FCF500EE5A05 /* Configuration.h in Headers */ = {isa = PBXBuildFile; fileRef = 0029EEFC15C6FCF500EE5A05 /* Configuration.h */; };
+		00861C8D15C4E5870090CC41 /* MacConfigDialog.xib in Resources */ = {isa = PBXBuildFile; fileRef = 00861C8C15C4E5870090CC41 /* MacConfigDialog.xib */; };
+		00861C9115C4F2B80090CC41 /* MacConfigDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = 00861C8F15C4F2B80090CC41 /* MacConfigDialog.h */; };
+		00861C9215C4F2B80090CC41 /* MacConfigDialog.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00861C9015C4F2B80090CC41 /* MacConfigDialog.mm */; };
+		00880A3711630C7F00F731D1 /* ScreenSaverTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00880A3611630C7F00F731D1 /* ScreenSaverTestApp.cpp */; };
+		00880A4111630CB400F731D1 /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00880A3F11630CB400F731D1 /* AppScreenSaver.h */; };
+		00880A4211630CB400F731D1 /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00880A4011630CB400F731D1 /* AppImplCocoaScreenSaver.h */; };
+		00880A4811630CDA00F731D1 /* AppImplCocoaScreenSaver.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00880A4611630CDA00F731D1 /* AppImplCocoaScreenSaver.mm */; };
+		00880A4911630CDA00F731D1 /* AppScreenSaver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00880A4711630CDA00F731D1 /* AppScreenSaver.cpp */; };
+		00880A6011630D7900F731D1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00880A5411630D7900F731D1 /* Accelerate.framework */; };
+		00880A6111630D7900F731D1 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00880A5511630D7900F731D1 /* AudioToolbox.framework */; };
+		00880A6211630D7900F731D1 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00880A5611630D7900F731D1 /* AudioUnit.framework */; };
+		00880A6311630D7900F731D1 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00880A5711630D7900F731D1 /* CoreAudio.framework */; };
+		00880A6511630D7900F731D1 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00880A5911630D7900F731D1 /* ApplicationServices.framework */; };
+		00880A6711630D7900F731D1 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00880A5B11630D7900F731D1 /* CoreVideo.framework */; };
+		00880A6911630D7900F731D1 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00880A5D11630D7900F731D1 /* OpenGL.framework */; };
+		008E2C72161E9E82000EE49B /* thumbnail.png in Resources */ = {isa = PBXBuildFile; fileRef = 008E2C70161E9E82000EE49B /* thumbnail.png */; };
+		008E2C73161E9E82000EE49B /* thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 008E2C71161E9E82000EE49B /* thumbnail@2x.png */; };
+		00C9A19111679DFE0086E7FD /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C9A19011679DFE0086E7FD /* QTKit.framework */; };
+		00C9A1D61167C7810086E7FD /* AppImplCocoaRendererGl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00C9A1D21167C7810086E7FD /* AppImplCocoaRendererGl.mm */; };
+		00C9A1D71167C7810086E7FD /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00C9A1D31167C7810086E7FD /* AppImplCocoaRendererQuartz.mm */; };
+		00C9A1D91167C7810086E7FD /* CinderView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00C9A1D51167C7810086E7FD /* CinderView.mm */; };
+		00C9A1DD1167C7B50086E7FD /* AppImplCocoaRendererGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C9A1DA1167C7B50086E7FD /* AppImplCocoaRendererGl.h */; };
+		00C9A1DE1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C9A1DB1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h */; };
+		00C9A1DF1167C7B50086E7FD /* CinderView.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C9A1DC1167C7B50086E7FD /* CinderView.h */; };
+		8D255AC70486D3F9007BF209 /* ScreenSaverTest_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32DBCFA80370C50100C91783 /* ScreenSaverTest_Prefix.pch */; };
+		8D255ACA0486D3F9007BF209 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
+		8D255ACE0486D3F9007BF209 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
+		8D255ACF0486D3F9007BF209 /* ScreenSaver.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06F27B2DFFEEEFEF11CA0E56 /* ScreenSaver.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0002847815C4463E00549D03 /* cinder_logo_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cinder_logo_alpha.png; path = ../../../samples/data/cinder_logo_alpha.png; sourceTree = "<group>"; };
+		0016361915BE02E30057D930 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		0029EEFC15C6FCF500EE5A05 /* Configuration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Configuration.h; path = ../include/Configuration.h; sourceTree = "<group>"; };
+		00861C8C15C4E5870090CC41 /* MacConfigDialog.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MacConfigDialog.xib; path = resources/MacConfigDialog.xib; sourceTree = "<group>"; };
+		00861C8F15C4F2B80090CC41 /* MacConfigDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MacConfigDialog.h; path = ../src/MacConfigDialog.h; sourceTree = "<group>"; };
+		00861C9015C4F2B80090CC41 /* MacConfigDialog.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = MacConfigDialog.mm; path = ../src/MacConfigDialog.mm; sourceTree = "<group>"; };
+		00880A3611630C7F00F731D1 /* ScreenSaverTestApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = ScreenSaverTestApp.cpp; path = ../src/ScreenSaverTestApp.cpp; sourceTree = SOURCE_ROOT; };
+		00880A3F11630CB400F731D1 /* AppScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppScreenSaver.h; path = ../../../include/cinder/app/AppScreenSaver.h; sourceTree = SOURCE_ROOT; };
+		00880A4011630CB400F731D1 /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = ../../../include/cinder/app/AppImplCocoaScreenSaver.h; sourceTree = SOURCE_ROOT; };
+		00880A4611630CDA00F731D1 /* AppImplCocoaScreenSaver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaScreenSaver.mm; path = ../../../src/cinder/app/AppImplCocoaScreenSaver.mm; sourceTree = SOURCE_ROOT; };
+		00880A4711630CDA00F731D1 /* AppScreenSaver.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppScreenSaver.cpp; path = ../../../src/cinder/app/AppScreenSaver.cpp; sourceTree = SOURCE_ROOT; };
+		00880A5411630D7900F731D1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		00880A5511630D7900F731D1 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		00880A5611630D7900F731D1 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		00880A5711630D7900F731D1 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		00880A5811630D7900F731D1 /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = /System/Library/Frameworks/ScreenSaver.framework; sourceTree = "<absolute>"; };
+		00880A5911630D7900F731D1 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		00880A5B11630D7900F731D1 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		00880A5D11630D7900F731D1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		008E2C70161E9E82000EE49B /* thumbnail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = thumbnail.png; path = resources/thumbnail.png; sourceTree = "<group>"; };
+		008E2C71161E9E82000EE49B /* thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "thumbnail@2x.png"; path = "resources/thumbnail@2x.png"; sourceTree = "<group>"; };
+		00C9A19011679DFE0086E7FD /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		00C9A19E11679F0E0086E7FD /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		00C9A1D21167C7810086E7FD /* AppImplCocoaRendererGl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererGl.mm; path = ../../../src/cinder/app/AppImplCocoaRendererGl.mm; sourceTree = SOURCE_ROOT; };
+		00C9A1D31167C7810086E7FD /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = ../../../src/cinder/app/AppImplCocoaRendererQuartz.mm; sourceTree = SOURCE_ROOT; };
+		00C9A1D51167C7810086E7FD /* CinderView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderView.mm; path = ../../../src/cinder/app/CinderView.mm; sourceTree = SOURCE_ROOT; };
+		00C9A1DA1167C7B50086E7FD /* AppImplCocoaRendererGl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererGl.h; path = ../../../include/cinder/app/AppImplCocoaRendererGl.h; sourceTree = SOURCE_ROOT; };
+		00C9A1DB1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererQuartz.h; path = ../../../include/cinder/app/AppImplCocoaRendererQuartz.h; sourceTree = SOURCE_ROOT; };
+		00C9A1DC1167C7B50086E7FD /* CinderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CinderView.h; path = ../../../include/cinder/app/CinderView.h; sourceTree = SOURCE_ROOT; };
+		06F27B2DFFEEEFEF11CA0E56 /* ScreenSaver.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScreenSaver.framework; path = /System/Library/Frameworks/ScreenSaver.framework; sourceTree = "<absolute>"; };
+		089C1672FE841209C02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		089C167FFE841241C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		32DBCFA80370C50100C91783 /* ScreenSaverTest_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenSaverTest_Prefix.pch; sourceTree = "<group>"; };
+		8D255AD20486D3F9007BF209 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8D255AD30486D3F9007BF209 /* ScreenSaverTest.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenSaverTest.saver; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D255ACD0486D3F9007BF209 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0016361A15BE02E30057D930 /* CoreLocation.framework in Frameworks */,
+				8D255ACE0486D3F9007BF209 /* Cocoa.framework in Frameworks */,
+				8D255ACF0486D3F9007BF209 /* ScreenSaver.framework in Frameworks */,
+				00880A6011630D7900F731D1 /* Accelerate.framework in Frameworks */,
+				00880A6111630D7900F731D1 /* AudioToolbox.framework in Frameworks */,
+				00880A6211630D7900F731D1 /* AudioUnit.framework in Frameworks */,
+				00880A6311630D7900F731D1 /* CoreAudio.framework in Frameworks */,
+				00880A6511630D7900F731D1 /* ApplicationServices.framework in Frameworks */,
+				00880A6711630D7900F731D1 /* CoreVideo.framework in Frameworks */,
+				00880A6911630D7900F731D1 /* OpenGL.framework in Frameworks */,
+				00C9A19111679DFE0086E7FD /* QTKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00880A3C11630CA300F731D1 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				00861C8F15C4F2B80090CC41 /* MacConfigDialog.h */,
+				0029EEFC15C6FCF500EE5A05 /* Configuration.h */,
+				00880A3D11630CB400F731D1 /* cinder */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		00880A3D11630CB400F731D1 /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				00880A3E11630CB400F731D1 /* app */,
+			);
+			name = cinder;
+			sourceTree = SOURCE_ROOT;
+		};
+		00880A3E11630CB400F731D1 /* app */ = {
+			isa = PBXGroup;
+			children = (
+				00C9A1DA1167C7B50086E7FD /* AppImplCocoaRendererGl.h */,
+				00C9A1DB1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h */,
+				00C9A1DC1167C7B50086E7FD /* CinderView.h */,
+				00880A3F11630CB400F731D1 /* AppScreenSaver.h */,
+				00880A4011630CB400F731D1 /* AppImplCocoaScreenSaver.h */,
+			);
+			name = app;
+			sourceTree = SOURCE_ROOT;
+		};
+		00880A4411630CDA00F731D1 /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				00880A4511630CDA00F731D1 /* app */,
+			);
+			name = cinder;
+			sourceTree = SOURCE_ROOT;
+		};
+		00880A4511630CDA00F731D1 /* app */ = {
+			isa = PBXGroup;
+			children = (
+				00C9A1D21167C7810086E7FD /* AppImplCocoaRendererGl.mm */,
+				00C9A1D31167C7810086E7FD /* AppImplCocoaRendererQuartz.mm */,
+				00C9A1D51167C7810086E7FD /* CinderView.mm */,
+				00880A4611630CDA00F731D1 /* AppImplCocoaScreenSaver.mm */,
+				00880A4711630CDA00F731D1 /* AppScreenSaver.cpp */,
+			);
+			name = app;
+			sourceTree = SOURCE_ROOT;
+		};
+		089C166AFE841209C02AAC07 /* ScreenSaverTest */ = {
+			isa = PBXGroup;
+			children = (
+				00880A3C11630CA300F731D1 /* Headers */,
+				08FB77AFFE84173DC02AAC07 /* Source */,
+				32DBCFA70370C4F300C91783 /* Other Sources */,
+				089C167CFE841241C02AAC07 /* Resources */,
+				089C1671FE841209C02AAC07 /* Frameworks and Libraries */,
+				19C28FB8FE9D52D311CA2CBB /* Products */,
+			);
+			name = ScreenSaverTest;
+			sourceTree = "<group>";
+		};
+		089C1671FE841209C02AAC07 /* Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */,
+				1058C7AEFEA557BF11CA2CBB /* Other Frameworks */,
+			);
+			name = "Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		089C167CFE841241C02AAC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				008E2C70161E9E82000EE49B /* thumbnail.png */,
+				008E2C71161E9E82000EE49B /* thumbnail@2x.png */,
+				0002847815C4463E00549D03 /* cinder_logo_alpha.png */,
+				8D255AD20486D3F9007BF209 /* Info.plist */,
+				089C167DFE841241C02AAC07 /* InfoPlist.strings */,
+				00861C8C15C4E5870090CC41 /* MacConfigDialog.xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		08FB77AFFE84173DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				00880A3611630C7F00F731D1 /* ScreenSaverTestApp.cpp */,
+				00861C9015C4F2B80090CC41 /* MacConfigDialog.mm */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0016361915BE02E30057D930 /* CoreLocation.framework */,
+				00880A5411630D7900F731D1 /* Accelerate.framework */,
+				00880A5511630D7900F731D1 /* AudioToolbox.framework */,
+				00880A5611630D7900F731D1 /* AudioUnit.framework */,
+				00880A5711630D7900F731D1 /* CoreAudio.framework */,
+				00880A5811630D7900F731D1 /* ScreenSaver.framework */,
+				00880A5911630D7900F731D1 /* ApplicationServices.framework */,
+				00880A5B11630D7900F731D1 /* CoreVideo.framework */,
+				00880A5D11630D7900F731D1 /* OpenGL.framework */,
+				1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */,
+				06F27B2DFFEEEFEF11CA0E56 /* ScreenSaver.framework */,
+				00C9A19011679DFE0086E7FD /* QTKit.framework */,
+				00C9A19E11679F0E0086E7FD /* QuickTime.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7AEFEA557BF11CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				089C1672FE841209C02AAC07 /* Foundation.framework */,
+				089C167FFE841241C02AAC07 /* AppKit.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FB8FE9D52D311CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D255AD30486D3F9007BF209 /* ScreenSaverTest.saver */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		32DBCFA70370C4F300C91783 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				00880A4411630CDA00F731D1 /* cinder */,
+				32DBCFA80370C50100C91783 /* ScreenSaverTest_Prefix.pch */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		8D255AC60486D3F9007BF209 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D255AC70486D3F9007BF209 /* ScreenSaverTest_Prefix.pch in Headers */,
+				00880A4111630CB400F731D1 /* AppScreenSaver.h in Headers */,
+				00880A4211630CB400F731D1 /* AppImplCocoaScreenSaver.h in Headers */,
+				00C9A1DD1167C7B50086E7FD /* AppImplCocoaRendererGl.h in Headers */,
+				00C9A1DE1167C7B50086E7FD /* AppImplCocoaRendererQuartz.h in Headers */,
+				00C9A1DF1167C7B50086E7FD /* CinderView.h in Headers */,
+				00861C9115C4F2B80090CC41 /* MacConfigDialog.h in Headers */,
+				0029EEFD15C6FCF500EE5A05 /* Configuration.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		8D255AC50486D3F9007BF209 /* ScreenSaverTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EF7AD72D08BB986600CE4634 /* Build configuration list for PBXNativeTarget "ScreenSaverTest" */;
+			buildPhases = (
+				8D255AC60486D3F9007BF209 /* Headers */,
+				8D255AC90486D3F9007BF209 /* Resources */,
+				8D255ACB0486D3F9007BF209 /* Sources */,
+				8D255ACD0486D3F9007BF209 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ScreenSaverTest;
+			productInstallPath = "$(HOME)/Library/Screen Savers";
+			productName = ScreenSaverTest;
+			productReference = 8D255AD30486D3F9007BF209 /* ScreenSaverTest.saver */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		089C1669FE841209C02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0450;
+			};
+			buildConfigurationList = EF7AD73108BB986600CE4634 /* Build configuration list for PBXProject "ScreenSaverTest" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 089C166AFE841209C02AAC07 /* ScreenSaverTest */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D255AC50486D3F9007BF209 /* ScreenSaverTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D255AC90486D3F9007BF209 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D255ACA0486D3F9007BF209 /* InfoPlist.strings in Resources */,
+				0002847915C4463E00549D03 /* cinder_logo_alpha.png in Resources */,
+				00861C8D15C4E5870090CC41 /* MacConfigDialog.xib in Resources */,
+				008E2C72161E9E82000EE49B /* thumbnail.png in Resources */,
+				008E2C73161E9E82000EE49B /* thumbnail@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D255ACB0486D3F9007BF209 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				00880A3711630C7F00F731D1 /* ScreenSaverTestApp.cpp in Sources */,
+				00880A4911630CDA00F731D1 /* AppScreenSaver.cpp in Sources */,
+				00C9A1D61167C7810086E7FD /* AppImplCocoaRendererGl.mm in Sources */,
+				00C9A1D71167C7810086E7FD /* AppImplCocoaRendererQuartz.mm in Sources */,
+				00C9A1D91167C7810086E7FD /* CinderView.mm in Sources */,
+				00880A4811630CDA00F731D1 /* AppImplCocoaScreenSaver.mm in Sources */,
+				00861C9215C4F2B80090CC41 /* MacConfigDialog.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		089C167DFE841241C02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C167EFE841241C02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		EF7AD72E08BB986600CE4634 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXPORTED_SYMBOLS_FILE = "";
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ScreenSaverTest_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
+				PRODUCT_NAME = ScreenSaverTest;
+				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = YES;
+				STRIP_STYLE = all;
+				SYMROOT = ./build;
+				VALID_ARCHS = x86_64;
+				WRAPPER_EXTENSION = saver;
+			};
+			name = Debug;
+		};
+		EF7AD72F08BB986600CE4634 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXPORTED_SYMBOLS_FILE = exported_symbols.txt;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ScreenSaverTest_Prefix.pch;
+				INFOPLIST_FILE = Info.plist;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
+				PRODUCT_NAME = ScreenSaverTest;
+				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = YES;
+				STRIP_STYLE = all;
+				SYMROOT = ./build;
+				VALID_ARCHS = x86_64;
+				WRAPPER_EXTENSION = saver;
+			};
+			name = Release;
+		};
+		EF7AD73208BB986600CE4634 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+				VALID_ARCHS = x86_64;
+			};
+			name = Debug;
+		};
+		EF7AD73308BB986600CE4634 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+				VALID_ARCHS = x86_64;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EF7AD72D08BB986600CE4634 /* Build configuration list for PBXNativeTarget "ScreenSaverTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF7AD72E08BB986600CE4634 /* Debug */,
+				EF7AD72F08BB986600CE4634 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EF7AD73108BB986600CE4634 /* Build configuration list for PBXProject "ScreenSaverTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EF7AD73208BB986600CE4634 /* Debug */,
+				EF7AD73308BB986600CE4634 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 089C1669FE841209C02AAC07 /* Project object */;
+}

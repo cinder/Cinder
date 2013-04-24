@@ -631,8 +631,7 @@ Rectf Path2d::calcBoundingBox() const
 }
 
 // calcPreciseBoundingBox helper routines
-namespace {
-int	calcQuadraticBezierMonotoneRegions( const Vec2f p[3], float resultT[2] )
+int	Path2d::calcQuadraticBezierMonotoneRegions( const Vec2f p[3], float resultT[2] )
 {
 	int resultIdx = 0;
 	float dx = p[0].x - 2 * p[1].x + p[2].x;
@@ -651,13 +650,13 @@ int	calcQuadraticBezierMonotoneRegions( const Vec2f p[3], float resultT[2] )
 	return resultIdx;
 }
 
-Vec2f calcQuadraticBezierPos( const Vec2f p[3], float t )
+Vec2f Path2d::calcQuadraticBezierPos( const Vec2f p[3], float t )
 {
 	float nt = 1 - t;
 	return Vec2f( nt * nt * p[0].x + 2 * nt * t * p[1].x +  t * t * p[2].x, nt * nt * p[0].y + 2 * nt * t * p[1].y +  t * t * p[2].y );
 }
 
-int	calcCubicBezierMonotoneRegions( const Vec2f p[4], float resultT[4] )
+int	Path2d::calcCubicBezierMonotoneRegions( const Vec2f p[4], float resultT[4] )
 {
 	float Ax = -p[0].x + 3 * p[1].x - 3 * p[2].x + p[3].x;
 	float Bx =  3 * p[0].x - 6 * p[1].x + 3 * p[2].x;
@@ -687,7 +686,7 @@ int	calcCubicBezierMonotoneRegions( const Vec2f p[4], float resultT[4] )
 	return resultIdx;
 }
 
-Vec2f calcCubicBezierPos( const Vec2f p[4], float t )
+Vec2f Path2d::calcCubicBezierPos( const Vec2f p[4], float t )
 {
 	float nt = 1 - t;
 	float w0 = nt * nt * nt;
@@ -696,8 +695,6 @@ Vec2f calcCubicBezierPos( const Vec2f p[4], float t )
 	float w3 = t * t * t;
 	return Vec2f( w0 * p[0].x + w1 * p[1].x + w2 * p[2].x + w3 * p[3].x, w0 * p[0].y + w1 * p[1].y + w2 * p[2].y + w3 * p[3].y );
 }
-
-} // anonymous namespace
 
 Rectf Path2d::calcPreciseBoundingBox() const
 {

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -13,6 +13,19 @@
 			buildPhases = (
 			);
 			dependencies = (
+				009709D516CC676F005DC014 /* PBXTargetDependency */,
+				009709D716CC676F005DC014 /* PBXTargetDependency */,
+				00886BB4164DD247005B1855 /* PBXTargetDependency */,
+				00886BA2164DD1BE005B1855 /* PBXTargetDependency */,
+				00886B86164DD1AD005B1855 /* PBXTargetDependency */,
+				00AE22CD164C50AE007D532C /* PBXTargetDependency */,
+				002CFBDC1644BE4300C1A31D /* PBXTargetDependency */,
+				00712F631627A484005FC5A0 /* PBXTargetDependency */,
+				00712F651627A484005FC5A0 /* PBXTargetDependency */,
+				00712F671627A484005FC5A0 /* PBXTargetDependency */,
+				00712F691627A484005FC5A0 /* PBXTargetDependency */,
+				00712F6B1627A484005FC5A0 /* PBXTargetDependency */,
+				00712F2F1627A41C005FC5A0 /* PBXTargetDependency */,
 				002932C51530F5AD0022B1BF /* PBXTargetDependency */,
 				002932C71530F5AD0022B1BF /* PBXTargetDependency */,
 				002932C91530F5AD0022B1BF /* PBXTargetDependency */,
@@ -48,9 +61,7 @@
 				0005CA9310068268004D82BC /* PBXTargetDependency */,
 				0005CA9710068268004D82BC /* PBXTargetDependency */,
 				0005CA9B10068268004D82BC /* PBXTargetDependency */,
-				0005CA9D10068268004D82BC /* PBXTargetDependency */,
 				0005CA9F10068268004D82BC /* PBXTargetDependency */,
-				0005CAA110068268004D82BC /* PBXTargetDependency */,
 				0005CAA310068268004D82BC /* PBXTargetDependency */,
 				0005CAA710068268004D82BC /* PBXTargetDependency */,
 				0005CAA910068268004D82BC /* PBXTargetDependency */,
@@ -66,7 +77,6 @@
 				00F0B36B1039F869003AB416 /* PBXTargetDependency */,
 				000B6788103CB3E4003D463F /* PBXTargetDependency */,
 				007BDE131118924E00BC750C /* PBXTargetDependency */,
-				007BDE151118924E00BC750C /* PBXTargetDependency */,
 				009C40ED112068140053283A /* PBXTargetDependency */,
 				00236DA31130E4D8006C991F /* PBXTargetDependency */,
 				009F02051136D24300636E3C /* PBXTargetDependency */,
@@ -141,13 +151,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = bspline;
-		};
-		0005C99F100681C5004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C998100681C5004D82BC /* captureTest.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = captureTest;
 		};
 		0005C9A9100681CB004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -275,13 +278,6 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = waterSim;
 		};
-		0005CA7310068258004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005CA6F10068258004D82BC /* Wisteria.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = Wisteria;
-		};
 		0005CA7610068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0005CA4110068230004D82BC /* shadowMap.xcodeproj */;
@@ -394,26 +390,12 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = Earthquake;
 		};
-		0005CA9C10068268004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C998100681C5004D82BC /* captureTest.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = captureTest;
-		};
 		0005CA9E10068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0005CA531006823B004D82BC /* TextTest.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = TextTest;
-		};
-		0005CAA010068268004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005CA6F10068258004D82BC /* Wisteria.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = Wisteria;
 		};
 		0005CAA210068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -541,6 +523,20 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = GoodNightMorning;
 		};
+		002CFBD91644BE2C00C1A31D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = StereoscopicRendering;
+		};
+		002CFBDB1644BE4300C1A31D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = StereoscopicRendering;
+		};
 		0039FB31115AD31B00BA0BAD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */;
@@ -632,6 +628,90 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = ImageHeightField;
 		};
+		00712F2C1627A417005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = FlickrTestMultithreaded;
+		};
+		00712F2E1627A41C005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = FlickrTestMultithreaded;
+		};
+		00712F381627A43A005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = FrustumCulling;
+		};
+		00712F421627A444005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = FrustumCullingRedux;
+		};
+		00712F4C1627A45B005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F441627A45A005FC5A0 /* Instascope.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = Instascope;
+		};
+		00712F561627A46A005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = PolygonBoolean;
+		};
+		00712F601627A47B005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = QuaternionAccum;
+		};
+		00712F621627A484005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = FrustumCulling;
+		};
+		00712F641627A484005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = PolygonBoolean;
+		};
+		00712F661627A484005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F441627A45A005FC5A0 /* Instascope.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = Instascope;
+		};
+		00712F681627A484005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = QuaternionAccum;
+		};
+		00712F6A1627A484005FC5A0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = FrustumCullingRedux;
+		};
 		007BDE0F1118921E00BC750C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 007BDE071118921D00BC750C /* RDiffusion.xcodeproj */;
@@ -646,12 +726,75 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = RDiffusion;
 		};
-		007BDE141118924E00BC750C /* PBXContainerItemProxy */ = {
+		00886B83164DD1AA005B1855 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 00F5014610CD9FEB002CB18B /* quickTimeSample.xcodeproj */;
+			containerPortal = 00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = Tubular;
+		};
+		00886B85164DD1AD005B1855 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = quickTimeSample;
+			remoteInfo = Tubular;
+		};
+		00886B8F164DD1BA005B1855 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00886B87164DD1B9005B1855 /* Triangulation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = Triangulation;
+		};
+		00886BA1164DD1BE005B1855 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00886B87164DD1B9005B1855 /* Triangulation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = Triangulation;
+		};
+		00886BB1164DD242005B1855 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00886BA9164DD242005B1855 /* Wisteria.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = Wisteria;
+		};
+		00886BB3164DD247005B1855 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00886BA9164DD242005B1855 /* Wisteria.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = Wisteria;
+		};
+		009709CC16CC6736005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = CaptureBasic;
+		};
+		009709D216CC6742005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709CE16CC6741005DC014 /* LocationManager.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = LocationManager;
+		};
+		009709D416CC676F005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709CE16CC6741005DC014 /* LocationManager.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = LocationManager;
+		};
+		009709D616CC676F005DC014 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = CaptureBasic;
 		};
 		009C40EA1120680A0053283A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -877,6 +1020,20 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = VoronoiGpu;
 		};
+		00AE22CA164C5095007D532C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = QuickTimeBasic;
+		};
+		00AE22CC164C50AE007D532C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = QuickTimeBasic;
+		};
 		00B10219101A5CC90078D775 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */;
@@ -982,13 +1139,6 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = QTimeAdvApp;
 		};
-		00F5014E10CD9FEB002CB18B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00F5014610CD9FEB002CB18B /* quickTimeSample.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = quickTimeSample;
-		};
 		C7FB1E95124BF2E00045AFD2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */;
@@ -1025,7 +1175,6 @@
 		0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ArcballDemo.xcodeproj; path = ../../ArcballDemo/xcode/ArcballDemo.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C985100681AF004D82BC /* bezierPath.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bezierPath.xcodeproj; path = ../../bezierPath/xcode/bezierPath.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C98E100681B5004D82BC /* bspline.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bspline.xcodeproj; path = ../../bspline/xcode/bspline.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005C998100681C5004D82BC /* captureTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = captureTest.xcodeproj; path = ../../captureTest/xcode/captureTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CubeMapping.xcodeproj; path = ../../cubeMapping/xcode/CubeMapping.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Earthquake.xcodeproj; path = ../../Earthquake/xcode/Earthquake.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9B5100681D9004D82BC /* eventTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = eventTest.xcodeproj; path = ../../eventTest/xcode/eventTest.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1044,7 +1193,6 @@
 		0005CA531006823B004D82BC /* TextTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest.xcodeproj; path = ../../TextTest/xcode/TextTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA5D10068241004D82BC /* VBOSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VBOSample.xcodeproj; path = ../../VBOSample/xcode/VBOSample.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA6610068252004D82BC /* waterSim.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = waterSim.xcodeproj; path = ../../waterSim/xcode/waterSim.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005CA6F10068258004D82BC /* Wisteria.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Wisteria.xcodeproj; path = ../../Wisteria/xcode/Wisteria.xcodeproj; sourceTree = SOURCE_ROOT; };
 		000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NormalMapping.xcodeproj; path = ../../NormalMapping/xcode/NormalMapping.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Picking3D.xcodeproj; path = ../../Picking3D/xcode/Picking3D.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00236D981130E4C7006C991F /* CairoBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CairoBasic.xcodeproj; path = ../../CairoBasic/xcode/CairoBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1052,6 +1200,7 @@
 		002932A61530F5720022B1BF /* EuroMap.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EuroMap.xcodeproj; path = ../../_svg/EuroMap/xcode/EuroMap.xcodeproj; sourceTree = "<group>"; };
 		002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoodNightMorning.xcodeproj; path = ../../_svg/GoodNightMorning/xcode/GoodNightMorning.xcodeproj; sourceTree = "<group>"; };
 		002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SimpleViewer.xcodeproj; path = ../../_svg/SimpleViewer/xcode/SimpleViewer.xcodeproj; sourceTree = "<group>"; };
+		002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = StereoscopicRendering.xcodeproj; path = ../../StereoscopicRendering/xcode/StereoscopicRendering.xcodeproj; sourceTree = "<group>"; };
 		0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MandelbrotGLSL.xcodeproj; path = ../../MandelbrotGLSL/xcode/MandelbrotGLSL.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Buddhabrot.xcodeproj; path = ../../Buddhabrot/xcode/Buddhabrot.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1059,7 +1208,18 @@
 		005930D31185636300C890F2 /* AudioGenerative.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioGenerative.xcodeproj; path = ../../AudioGenerative/xcode/AudioGenerative.xcodeproj; sourceTree = SOURCE_ROOT; };
 		006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeWriter.xcodeproj; path = ../../QuickTimeWriter/xcode/QuickTimeWriter.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageHeightField.xcodeproj; path = ../../ImageHeightField/xcode/ImageHeightField.xcodeproj; sourceTree = SOURCE_ROOT; };
+		00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FlickrTestMultithreaded.xcodeproj; path = ../../FlickrTestMultithreaded/xcode/FlickrTestMultithreaded.xcodeproj; sourceTree = "<group>"; };
+		00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrustumCulling.xcodeproj; path = ../../FrustumCulling/xcode/FrustumCulling.xcodeproj; sourceTree = "<group>"; };
+		00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrustumCullingRedux.xcodeproj; path = ../../FrustumCullingRedux/xcode/FrustumCullingRedux.xcodeproj; sourceTree = "<group>"; };
+		00712F441627A45A005FC5A0 /* Instascope.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Instascope.xcodeproj; path = ../../Kaleidoscope/xcode/Instascope.xcodeproj; sourceTree = "<group>"; };
+		00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PolygonBoolean.xcodeproj; path = ../../PolygonBoolean/xcode/PolygonBoolean.xcodeproj; sourceTree = "<group>"; };
+		00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuaternionAccum.xcodeproj; path = ../../QuaternionAccum/xcode/QuaternionAccum.xcodeproj; sourceTree = "<group>"; };
 		007BDE071118921D00BC750C /* RDiffusion.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RDiffusion.xcodeproj; path = ../../RDiffusion/xcode/RDiffusion.xcodeproj; sourceTree = SOURCE_ROOT; };
+		00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Tubular.xcodeproj; path = ../../Tubular/xcode/Tubular.xcodeproj; sourceTree = "<group>"; };
+		00886B87164DD1B9005B1855 /* Triangulation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Triangulation.xcodeproj; path = ../../Triangulation/xcode/Triangulation.xcodeproj; sourceTree = "<group>"; };
+		00886BA9164DD242005B1855 /* Wisteria.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Wisteria.xcodeproj; path = ../../Wisteria/xcode/Wisteria.xcodeproj; sourceTree = "<group>"; };
+		009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureBasic.xcodeproj; path = ../../CaptureBasic/xcode/CaptureBasic.xcodeproj; sourceTree = "<group>"; };
+		009709CE16CC6741005DC014 /* LocationManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LocationManager.xcodeproj; path = ../../LocationManager/xcode/LocationManager.xcodeproj; sourceTree = "<group>"; };
 		009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SurfaceBasic.xcodeproj; path = ../../SurfaceBasic/xcode/SurfaceBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOMultipleTargets.xcodeproj; path = ../../FBOMultipleTargets/xcode/FBOMultipleTargets.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageFileBasic.xcodeproj; path = ../../ImageFileBasic/xcode/ImageFileBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1074,6 +1234,7 @@
 		009F6E5F14C0FE570036C292 /* VisualDictionary.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VisualDictionary.xcodeproj; path = ../../_timeline/VisualDictionary/xcode/VisualDictionary.xcodeproj; sourceTree = "<group>"; };
 		00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EaseGallery.xcodeproj; path = ../../EaseGallery/xcode/EaseGallery.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoronoiGpu.xcodeproj; path = ../../VoronoiGpu/xcode/VoronoiGpu.xcodeproj; sourceTree = SOURCE_ROOT; };
+		00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeBasic.xcodeproj; path = ../../QuickTimeBasic/xcode/QuickTimeBasic.xcodeproj; sourceTree = "<group>"; };
 		00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureAdvanced.xcodeproj; path = ../../CaptureAdvanced/xcode/CaptureAdvanced.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLLighting.xcodeproj; path = ../../OpenGLLighting/xcode/OpenGLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParamsBasic.xcodeproj; path = ../../ParamsBasic/xcode/ParamsBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1081,7 +1242,6 @@
 		00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QTimeAdvApp.xcodeproj; path = ../../QuickTimeAdvanced/xcode/QTimeAdvApp.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeIteration.xcodeproj; path = ../../QuickTimeIteration/xcode/QuickTimeIteration.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLSLLighting.xcodeproj; path = ../../GLSLLighting/xcode/GLSLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
-		00F5014610CD9FEB002CB18B /* quickTimeSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = quickTimeSample.xcodeproj; path = ../../QuickTime/xcode/quickTimeSample.xcodeproj; sourceTree = SOURCE_ROOT; };
 		C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioAnalysisSample.xcodeproj; path = ../../AudioAnalysisSample/xcode/AudioAnalysisSample.xcodeproj; sourceTree = SOURCE_ROOT; };
 		C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioGenerativeAdvanced.xcodeproj; path = ../../AudioGenerativeAdvanced/xcode/AudioGenerativeAdvanced.xcodeproj; sourceTree = SOURCE_ROOT; };
 		C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioInputSample.xcodeproj; path = ../../AudioInputSample/xcode/AudioInputSample.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1092,8 +1252,21 @@
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				009709CE16CC6741005DC014 /* LocationManager.xcodeproj */,
+				009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */,
+				00886BA9164DD242005B1855 /* Wisteria.xcodeproj */,
+				00886B87164DD1B9005B1855 /* Triangulation.xcodeproj */,
+				00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */,
+				00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */,
 				0029329B1530F5480022B1BF /* _svg */,
 				009F6E0E14C0FDD20036C292 /* _timeline */,
+				002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */,
+				00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */,
+				00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */,
+				00712F441627A45A005FC5A0 /* Instascope.xcodeproj */,
+				00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */,
+				00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */,
+				00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */,
 				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */,
 				C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */,
@@ -1111,7 +1284,6 @@
 				00236D981130E4C7006C991F /* CairoBasic.xcodeproj */,
 				009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */,
 				007BDE071118921D00BC750C /* RDiffusion.xcodeproj */,
-				00F5014610CD9FEB002CB18B /* quickTimeSample.xcodeproj */,
 				000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */,
 				00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */,
 				00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */,
@@ -1122,7 +1294,6 @@
 				00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */,
 				00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */,
 				0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */,
-				0005CA6F10068258004D82BC /* Wisteria.xcodeproj */,
 				0005CA6610068252004D82BC /* waterSim.xcodeproj */,
 				0005CA5D10068241004D82BC /* VBOSample.xcodeproj */,
 				0005CA531006823B004D82BC /* TextTest.xcodeproj */,
@@ -1146,7 +1317,6 @@
 				0005C95510068030004D82BC /* basicApp.xcodeproj */,
 				0005C985100681AF004D82BC /* bezierPath.xcodeproj */,
 				0005C98E100681B5004D82BC /* bspline.xcodeproj */,
-				0005C998100681C5004D82BC /* captureTest.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1186,15 +1356,7 @@
 		0005C98F100681B5004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0005C997100681B5004D82BC /* bspline.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0005C999100681C5004D82BC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0005C9A0100681C5004D82BC /* captureTest.app */,
+				0005C997100681B5004D82BC /* BSpline.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1234,7 +1396,7 @@
 		0005C9D1100681E9004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0005C9D8100681EA004D82BC /* fontSample.app */,
+				0005C9D8100681EA004D82BC /* FontSample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1266,7 +1428,7 @@
 		0005CA0010068206004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0005CA0710068206004D82BC /* perlinTest.app */,
+				0005CA0710068206004D82BC /* PerlinTest.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1274,7 +1436,7 @@
 		0005CA1310068210004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0005CA1C10068210004D82BC /* rayMarcher.app */,
+				0005CA1C10068210004D82BC /* RayMarcher.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1339,14 +1501,6 @@
 			isa = PBXGroup;
 			children = (
 				0005CA6E10068252004D82BC /* waterSim.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0005CA7010068258004D82BC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0005CA7410068258004D82BC /* Wisteria.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1418,6 +1572,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		002CFBD21644BE2B00C1A31D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				002CFBDA1644BE2C00C1A31D /* StereoscopicRendering.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		0039FB29115AD31B00BA0BAD /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1474,10 +1636,98 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00712F251627A416005FC5A0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00712F2D1627A417005FC5A0 /* FlickrTestMultithreaded.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00712F311627A439005FC5A0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00712F391627A43A005FC5A0 /* FrustumCulling.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00712F3B1627A443005FC5A0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00712F431627A444005FC5A0 /* FrustumCullingRedux.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00712F451627A45A005FC5A0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00712F4D1627A45B005FC5A0 /* Instascope.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00712F4F1627A46A005FC5A0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00712F571627A46A005FC5A0 /* PolygonBoolean.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00712F591627A47B005FC5A0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00712F611627A47B005FC5A0 /* QuaternionAccum.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		007BDE081118921D00BC750C /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				007BDE101118921E00BC750C /* RDiffusion.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00886B7C164DD1A9005B1855 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00886B84164DD1AA005B1855 /* Tubular.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00886B88164DD1B9005B1855 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00886B90164DD1BA005B1855 /* Triangulation.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00886BAA164DD242005B1855 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00886BB2164DD242005B1855 /* Wisteria.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009709C916CC6735005DC014 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009709CD16CC6736005DC014 /* CaptureBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		009709CF16CC6741005DC014 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				009709D316CC6742005DC014 /* LocationManager.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1610,6 +1860,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00AE22C3164C5094007D532C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00AE22CB164C5095007D532C /* QuickTimeBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		00B10216101A5CC90078D775 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1666,14 +1924,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		00F5014710CD9FEB002CB18B /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00F5014F10CD9FEB002CB18B /* quickTimeSample.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		C7FB1E8F124BF2E00045AFD2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1711,8 +1961,11 @@
 /* Begin PBXProject section */
 		0005C93C10067FF4004D82BC /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = 0005C93F10067FF4004D82BC /* Build configuration list for PBXProject "_AllSamples" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1789,8 +2042,8 @@
 					ProjectRef = 00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */;
 				},
 				{
-					ProductGroup = 0005C999100681C5004D82BC /* Products */;
-					ProjectRef = 0005C998100681C5004D82BC /* captureTest.xcodeproj */;
+					ProductGroup = 009709C916CC6735005DC014 /* Products */;
+					ProjectRef = 009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C9A2100681CB004D82BC /* Products */;
@@ -1837,8 +2090,20 @@
 					ProjectRef = 0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */;
 				},
 				{
+					ProductGroup = 00712F251627A416005FC5A0 /* Products */;
+					ProjectRef = 00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */;
+				},
+				{
 					ProductGroup = 0005C9D1100681E9004D82BC /* Products */;
 					ProjectRef = 0005C9D0100681E9004D82BC /* fontSample.xcodeproj */;
+				},
+				{
+					ProductGroup = 00712F311627A439005FC5A0 /* Products */;
+					ProjectRef = 00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */;
+				},
+				{
+					ProductGroup = 00712F3B1627A443005FC5A0 /* Products */;
+					ProjectRef = 00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */;
 				},
 				{
 					ProductGroup = 00F0B3581039F84C003AB416 /* Products */;
@@ -1873,8 +2138,16 @@
 					ProjectRef = 0005C9EC100681FC004D82BC /* imageWriterSample.xcodeproj */;
 				},
 				{
+					ProductGroup = 00712F451627A45A005FC5A0 /* Products */;
+					ProjectRef = 00712F441627A45A005FC5A0 /* Instascope.xcodeproj */;
+				},
+				{
 					ProductGroup = 00F0B3361039F6F4003AB416 /* Products */;
 					ProjectRef = 00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 009709CF16CC6741005DC014 /* Products */;
+					ProjectRef = 009709CE16CC6741005DC014 /* LocationManager.xcodeproj */;
 				},
 				{
 					ProductGroup = 0039FB39115AD33F00BA0BAD /* Products */;
@@ -1909,16 +2182,24 @@
 					ProjectRef = 00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */;
 				},
 				{
+					ProductGroup = 00712F4F1627A46A005FC5A0 /* Products */;
+					ProjectRef = 00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */;
+				},
+				{
 					ProductGroup = 00F0B3451039F821003AB416 /* Products */;
 					ProjectRef = 00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */;
 				},
 				{
-					ProductGroup = 00F0B34F1039F830003AB416 /* Products */;
-					ProjectRef = 00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */;
+					ProductGroup = 00712F591627A47B005FC5A0 /* Products */;
+					ProjectRef = 00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */;
 				},
 				{
-					ProductGroup = 00F5014710CD9FEB002CB18B /* Products */;
-					ProjectRef = 00F5014610CD9FEB002CB18B /* quickTimeSample.xcodeproj */;
+					ProductGroup = 00AE22C3164C5094007D532C /* Products */;
+					ProjectRef = 00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 00F0B34F1039F830003AB416 /* Products */;
+					ProjectRef = 00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */;
 				},
 				{
 					ProductGroup = 006A1FBE11D7F85F00941A5E /* Products */;
@@ -1957,6 +2238,10 @@
 					ProjectRef = 002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */;
 				},
 				{
+					ProductGroup = 002CFBD21644BE2B00C1A31D /* Products */;
+					ProjectRef = 002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */;
+				},
+				{
 					ProductGroup = 009C40E71120680A0053283A /* Products */;
 					ProjectRef = 009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */;
 				},
@@ -1967,6 +2252,14 @@
 				{
 					ProductGroup = 0005CA541006823B004D82BC /* Products */;
 					ProjectRef = 0005CA531006823B004D82BC /* TextTest.xcodeproj */;
+				},
+				{
+					ProductGroup = 00886B88164DD1B9005B1855 /* Products */;
+					ProjectRef = 00886B87164DD1B9005B1855 /* Triangulation.xcodeproj */;
+				},
+				{
+					ProductGroup = 00886B7C164DD1A9005B1855 /* Products */;
+					ProjectRef = 00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005CA5E10068241004D82BC /* Products */;
@@ -1985,8 +2278,8 @@
 					ProjectRef = 0005CA6610068252004D82BC /* waterSim.xcodeproj */;
 				},
 				{
-					ProductGroup = 0005CA7010068258004D82BC /* Products */;
-					ProjectRef = 0005CA6F10068258004D82BC /* Wisteria.xcodeproj */;
+					ProductGroup = 00886BAA164DD242005B1855 /* Products */;
+					ProjectRef = 00886BA9164DD242005B1855 /* Wisteria.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -2032,18 +2325,11 @@
 			remoteRef = 0005C98C100681AF004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005C997100681B5004D82BC /* bspline.app */ = {
+		0005C997100681B5004D82BC /* BSpline.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = bspline.app;
+			path = BSpline.app;
 			remoteRef = 0005C996100681B5004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0005C9A0100681C5004D82BC /* captureTest.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = captureTest.app;
-			remoteRef = 0005C99F100681C5004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0005C9AA100681CB004D82BC /* CubeMapping.app */ = {
@@ -2074,10 +2360,10 @@
 			remoteRef = 0005C9CE100681E3004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005C9D8100681EA004D82BC /* fontSample.app */ = {
+		0005C9D8100681EA004D82BC /* FontSample.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = fontSample.app;
+			path = FontSample.app;
 			remoteRef = 0005C9D7100681EA004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -2102,17 +2388,17 @@
 			remoteRef = 0005C9FD10068200004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005CA0710068206004D82BC /* perlinTest.app */ = {
+		0005CA0710068206004D82BC /* PerlinTest.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = perlinTest.app;
+			path = PerlinTest.app;
 			remoteRef = 0005CA0610068206004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005CA1C10068210004D82BC /* rayMarcher.app */ = {
+		0005CA1C10068210004D82BC /* RayMarcher.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = rayMarcher.app;
+			path = RayMarcher.app;
 			remoteRef = 0005CA1B10068210004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -2172,13 +2458,6 @@
 			remoteRef = 0005CA6D10068252004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005CA7410068258004D82BC /* Wisteria.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = Wisteria.app;
-			remoteRef = 0005CA7310068258004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		000B6785103CB3C5003D463F /* NormalMapping.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2226,6 +2505,13 @@
 			fileType = wrapper.application;
 			path = SimpleViewer.app;
 			remoteRef = 002932C21530F58A0022B1BF /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		002CFBDA1644BE2C00C1A31D /* StereoscopicRendering.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = StereoscopicRendering.app;
+			remoteRef = 002CFBD91644BE2C00C1A31D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0039FB32115AD31B00BA0BAD /* FBOBasic.app */ = {
@@ -2277,11 +2563,88 @@
 			remoteRef = 00705E731018F3F700DD615B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		00712F2D1627A417005FC5A0 /* FlickrTestMultithreaded.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FlickrTestMultithreaded.app;
+			remoteRef = 00712F2C1627A417005FC5A0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00712F391627A43A005FC5A0 /* FrustumCulling.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FrustumCulling.app;
+			remoteRef = 00712F381627A43A005FC5A0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00712F431627A444005FC5A0 /* FrustumCullingRedux.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FrustumCullingRedux.app;
+			remoteRef = 00712F421627A444005FC5A0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00712F4D1627A45B005FC5A0 /* Instascope.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Instascope.app;
+			remoteRef = 00712F4C1627A45B005FC5A0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00712F571627A46A005FC5A0 /* PolygonBoolean.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = PolygonBoolean.app;
+			remoteRef = 00712F561627A46A005FC5A0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00712F611627A47B005FC5A0 /* QuaternionAccum.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = QuaternionAccum.app;
+			remoteRef = 00712F601627A47B005FC5A0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		007BDE101118921E00BC750C /* RDiffusion.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = RDiffusion.app;
 			remoteRef = 007BDE0F1118921E00BC750C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00886B84164DD1AA005B1855 /* Tubular.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Tubular.app;
+			remoteRef = 00886B83164DD1AA005B1855 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00886B90164DD1BA005B1855 /* Triangulation.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Triangulation.app;
+			remoteRef = 00886B8F164DD1BA005B1855 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00886BB2164DD242005B1855 /* Wisteria.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Wisteria.app;
+			remoteRef = 00886BB1164DD242005B1855 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009709CD16CC6736005DC014 /* CaptureBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CaptureBasic.app;
+			remoteRef = 009709CC16CC6736005DC014 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		009709D316CC6742005DC014 /* LocationManager.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = LocationManager.app;
+			remoteRef = 009709D216CC6742005DC014 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		009C40EB1120680A0053283A /* SurfaceBasic.app */ = {
@@ -2382,6 +2745,13 @@
 			remoteRef = 00AE0FEB113DF18C005AFB58 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		00AE22CB164C5095007D532C /* QuickTimeBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = QuickTimeBasic.app;
+			remoteRef = 00AE22CA164C5095007D532C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		00B1021A101A5CC90078D775 /* CaptureAdvanced.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2429,13 +2799,6 @@
 			fileType = wrapper.application;
 			path = GLSLLighting.app;
 			remoteRef = 00F0B35E1039F84C003AB416 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		00F5014F10CD9FEB002CB18B /* quickTimeSample.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = quickTimeSample.app;
-			remoteRef = 00F5014E10CD9FEB002CB18B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		C7FB1E96124BF2E00045AFD2 /* AudioAnalysisSample.app */ = {
@@ -2559,20 +2922,10 @@
 			name = Earthquake;
 			targetProxy = 0005CA9A10068268004D82BC /* PBXContainerItemProxy */;
 		};
-		0005CA9D10068268004D82BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = captureTest;
-			targetProxy = 0005CA9C10068268004D82BC /* PBXContainerItemProxy */;
-		};
 		0005CA9F10068268004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TextTest;
 			targetProxy = 0005CA9E10068268004D82BC /* PBXContainerItemProxy */;
-		};
-		0005CAA110068268004D82BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Wisteria;
-			targetProxy = 0005CAA010068268004D82BC /* PBXContainerItemProxy */;
 		};
 		0005CAA310068268004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2629,6 +2982,11 @@
 			name = GoodNightMorning;
 			targetProxy = 002932CA1530F5AD0022B1BF /* PBXContainerItemProxy */;
 		};
+		002CFBDC1644BE4300C1A31D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = StereoscopicRendering;
+			targetProxy = 002CFBDB1644BE4300C1A31D /* PBXContainerItemProxy */;
+		};
 		0039FB34115AD32700BA0BAD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = FBOBasic;
@@ -2659,15 +3017,65 @@
 			name = QuickTimeWriter;
 			targetProxy = 006A1FC911D7F87600941A5E /* PBXContainerItemProxy */;
 		};
+		00712F2F1627A41C005FC5A0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FlickrTestMultithreaded;
+			targetProxy = 00712F2E1627A41C005FC5A0 /* PBXContainerItemProxy */;
+		};
+		00712F631627A484005FC5A0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FrustumCulling;
+			targetProxy = 00712F621627A484005FC5A0 /* PBXContainerItemProxy */;
+		};
+		00712F651627A484005FC5A0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = PolygonBoolean;
+			targetProxy = 00712F641627A484005FC5A0 /* PBXContainerItemProxy */;
+		};
+		00712F671627A484005FC5A0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Instascope;
+			targetProxy = 00712F661627A484005FC5A0 /* PBXContainerItemProxy */;
+		};
+		00712F691627A484005FC5A0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = QuaternionAccum;
+			targetProxy = 00712F681627A484005FC5A0 /* PBXContainerItemProxy */;
+		};
+		00712F6B1627A484005FC5A0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FrustumCullingRedux;
+			targetProxy = 00712F6A1627A484005FC5A0 /* PBXContainerItemProxy */;
+		};
 		007BDE131118924E00BC750C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = RDiffusion;
 			targetProxy = 007BDE121118924E00BC750C /* PBXContainerItemProxy */;
 		};
-		007BDE151118924E00BC750C /* PBXTargetDependency */ = {
+		00886B86164DD1AD005B1855 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = quickTimeSample;
-			targetProxy = 007BDE141118924E00BC750C /* PBXContainerItemProxy */;
+			name = Tubular;
+			targetProxy = 00886B85164DD1AD005B1855 /* PBXContainerItemProxy */;
+		};
+		00886BA2164DD1BE005B1855 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Triangulation;
+			targetProxy = 00886BA1164DD1BE005B1855 /* PBXContainerItemProxy */;
+		};
+		00886BB4164DD247005B1855 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Wisteria;
+			targetProxy = 00886BB3164DD247005B1855 /* PBXContainerItemProxy */;
+		};
+		009709D516CC676F005DC014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LocationManager;
+			targetProxy = 009709D416CC676F005DC014 /* PBXContainerItemProxy */;
+		};
+		009709D716CC676F005DC014 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CaptureBasic;
+			targetProxy = 009709D616CC676F005DC014 /* PBXContainerItemProxy */;
 		};
 		009C40ED112068140053283A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2759,6 +3167,11 @@
 			name = VoronoiGpu;
 			targetProxy = 00AE0FF2113DF1F2005AFB58 /* PBXContainerItemProxy */;
 		};
+		00AE22CD164C50AE007D532C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = QuickTimeBasic;
+			targetProxy = 00AE22CC164C50AE007D532C /* PBXContainerItemProxy */;
+		};
 		00B1021D101A5CDC0078D775 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ImageHeightField;
@@ -2831,7 +3244,6 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PRODUCT_NAME = Samples;
 				ZERO_LINK = NO;
 			};

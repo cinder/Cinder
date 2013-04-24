@@ -20,6 +20,10 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/Cinder.h"
+// Cinder Audio on MSW is not supported with VC11 when targeting < Windows 8 with v110
+#if ( ! defined( CINDER_MSW ) ) || ( _MSC_VER < 1700 ) || defined( _USING_V110_SDK71_ ) || ( _WIN32_WINNT >= 0x0602 )
+
 #include "cinder/audio/OutputImplXAudio.h"
 
 namespace cinder { namespace audio {
@@ -48,7 +52,7 @@ TargetOutputImplXAudio::TargetOutputImplXAudio( const WAVEFORMATEX *aOutDescript
 }
 
 OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
-	: cinder::audio::Track(), mSource( source ), mOutput( output ), mIsPcmBuffering( false )
+	: cinder::audio::Track(), mSource( source ), mOutput( output ), mIsPcmBuffering( false ), mIsPlaying( false )
 {
 	::HRESULT hr;
 
@@ -113,6 +117,8 @@ OutputImplXAudio::Track::Track( SourceRef source, OutputImplXAudio * output )
 OutputImplXAudio::Track::~Track()
 {
 	stop();
+	if( mQueueThread )
+		mQueueThread->detach();
 	delete [] mDecodedBuffers;
 	CloseHandle( mBufferEndEvent );
 }
@@ -121,8 +127,14 @@ void OutputImplXAudio::Track::play()
 {
 	//mLoader->start();
 	//fillBufferCallback();
+	if( mIsPlaying ) {
+		stop();
+		if( mQueueThread )
+			mQueueThread->detach(); // blow away old thread that was filling samples
+	}
+
 	mIsPlaying = true;
-	mQueueThread = std::shared_ptr<boost::thread>( new boost::thread( boost::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
+	mQueueThread = std::shared_ptr<std::thread>( new std::thread( std::bind( &OutputImplXAudio::Track::fillBuffer, this ) ) );
 
 	::HRESULT hr = mSourceVoice->Start( 0, XAUDIO2_COMMIT_NOW );
 	if( FAILED( hr ) ) {
@@ -137,7 +149,6 @@ void OutputImplXAudio::Track::stop()
 	mSourceVoice->Stop( 0, XAUDIO2_COMMIT_NOW ); //might not really need this
 	mIsPlaying = false;
 	SetEvent( mBufferEndEvent ); //signals event to end queuethread
-	mQueueThread->join();
 	mSourceVoice->FlushSourceBuffers();
 }
 
@@ -159,7 +170,7 @@ float OutputImplXAudio::Track::getVolume() const
 
 PcmBuffer32fRef OutputImplXAudio::Track::getPcmBuffer()
 {
-	boost::mutex::scoped_lock( mPcmBufferMutex );
+	std::lock_guard<std::mutex> lock( mPcmBufferMutex );
 	return mLoadedPcmBuffer;
 }
 
@@ -207,7 +218,7 @@ void OutputImplXAudio::Track::fillBuffer()
 		if( mIsPcmBuffering ) {
 			uint32_t sampleCount = buffer.mDataByteSize / mVoiceDescription.nBlockAlign;
 			if( ! mLoadingPcmBuffer || ( mLoadingPcmBuffer->getSampleCount() + sampleCount > mLoadingPcmBuffer->getMaxSampleCount() ) ) {
-				boost::mutex::scoped_lock lock( mPcmBufferMutex );
+				std::lock_guard<std::mutex> lock( mPcmBufferMutex );
 				//TODO: make this settable, 1470 ~= 44100(samples/sec)/30(frmaes/second), also make sure the buffer isn't going to be larger than this? perhaps wrap data across buffers?
 				uint32_t bufferSampleCount = 2500;
 				if( mLoadingPcmBuffer ) {
@@ -293,3 +304,5 @@ void OutputImplXAudio::removeTrack( TrackId trackId )
 }*/
 
 }} //namespaces
+
+#endif // testing against VC11 Windows<8

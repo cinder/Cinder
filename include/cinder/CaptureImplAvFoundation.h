@@ -29,25 +29,28 @@
 namespace cinder {
 
 class CaptureImplAvFoundationDevice : public Capture::Device {
- public:
-	CaptureImplAvFoundationDevice( AVCaptureDevice * device );
+  public:
+	CaptureImplAvFoundationDevice( AVCaptureDevice *device );
 	~CaptureImplAvFoundationDevice();
 	
 	bool						checkAvailable() const;
 	bool						isConnected() const;
 	Capture::DeviceIdentifier	getUniqueId() const { return mUniqueId; }
- private:
+	bool						isFrontFacing() const { return mFrontFacing; }
+	void*						getNative() const { return mNativeDevice; }
+  private:
 	Capture::DeviceIdentifier	mUniqueId;
-	AVCaptureDevice			* mNativeDevice;
+	AVCaptureDevice				*mNativeDevice;
+	bool						mFrontFacing;
 };
 
 } //namespace
 
 @interface CaptureImplAvFoundation : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate> {
-	AVCaptureSession				* mSession;
+	AVCaptureSession				*mSession;
 	CVPixelBufferRef				mWorkingPixelBuffer;
 	cinder::Surface8u				mCurrentFrame;
-	NSString						* mDeviceUniqueId;
+	NSString						*mDeviceUniqueId;
 	
 	cinder::Capture::DeviceRef		mDevice;
 	bool							mHasNewFrame;

@@ -29,12 +29,11 @@
 #include "cinder/Exception.h"
 #include "cinder/Utilities.h"
 
-#include <iterator>
 #include <string>
-#include <list>
+#include <boost/container/list.hpp>
 
 namespace Json {
-class Value;
+	class Value;
 }
 
 namespace cinder {
@@ -43,8 +42,10 @@ class JsonTree {
   public:
 	
 	//! \cond
-	typedef std::list<JsonTree>::const_iterator ConstIter;
-	typedef std::list<JsonTree>::iterator Iter;
+	typedef boost::container::list<JsonTree> Container;
+
+	typedef Container::const_iterator ConstIter;
+	typedef Container::iterator Iter;
 	//! \endcond
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,7 +183,7 @@ class JsonTree {
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
 	const JsonTree&					getChild( size_t index ) const;
 	//! Returns a reference to the node's list of children nodes.
-	const std::list<JsonTree>&		getChildren() const;
+	const Container&		getChildren() const;
 
 	/**! Returns whether the child at \a relativePath exists. 
 		<br><tt>bool nodeExists = myNode.hasChild( "path.to.child" );</tt> **/
@@ -259,13 +260,13 @@ private:
 	JsonTree*						getNodePtr( const std::string &relativePath, bool caseSensitive, char separator ) const;
 	static bool						isIndex( const std::string &key );
 	
-	std::list<JsonTree>				mChildren;
+	Container						mChildren;
 	std::string						mKey;
 	JsonTree						*mParent;
 	NodeType						mNodeType;
 	std::string						mValue;
 	ValueType						mValueType;
-	//! \cond
+	//! \endcond
 
   public:
 

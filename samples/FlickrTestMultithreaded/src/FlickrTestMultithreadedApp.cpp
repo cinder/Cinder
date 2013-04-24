@@ -22,7 +22,7 @@ class FlickrTestMTApp : public AppBasic {
 	ConcurrentCircularBuffer<Surface>	*mSurfaces;
 
 	bool					mShouldQuit;
-	std::thread				mThread;
+	shared_ptr<thread>		mThread;
 	gl::Texture				mTexture, mLastTexture;
 	Anim<float>				mFade;
 	double					mLastTime;
@@ -34,7 +34,7 @@ void FlickrTestMTApp::setup()
 	mShouldQuit = false;
 	mSurfaces = new ConcurrentCircularBuffer<Surface>( 5 ); // room for 5 images
 	// create and launch the thread
-	mThread = thread( bind( &FlickrTestMTApp::loadImagesThreadFn, this ) );
+	mThread = shared_ptr<thread>( new thread( bind( &FlickrTestMTApp::loadImagesThreadFn, this ) ) );
 	mLastTime = getElapsedSeconds();
 }
 
@@ -46,8 +46,10 @@ void FlickrTestMTApp::loadImagesThreadFn()
 	// parse the image URLS from the XML feed and push them into 'urls'
 	const Url sunFlickrGroup = Url( "http://api.flickr.com/services/feeds/groups_pool.gne?id=52242317293@N01&format=rss_200" );
 	const XmlTree xml( loadUrl( sunFlickrGroup ) );
-	for( XmlTree::ConstIter item = xml.begin( "rss/channel/item" ); item != xml.end(); ++item )
-		urls.push_back( ( ( *item / "media:content" ) ).getAttributeValue<Url>( "url" ) );
+	for( XmlTree::ConstIter item = xml.begin( "rss/channel/item" ); item != xml.end(); ++item ) {
+		const XmlTree &urlXml = ( ( *item / "media:content" ) );
+		urls.push_back( Url( urlXml["url"] ) );
+	}
 
 	// load images as Surfaces into our ConcurrentCircularBuffer
 	// don't create gl::Textures on a background thread
@@ -103,7 +105,7 @@ void FlickrTestMTApp::shutdown()
 {
 	mShouldQuit = true;
 	mSurfaces->cancel();
-	mThread.join();
+	mThread->join();
 }
 
 CINDER_APP_BASIC( FlickrTestMTApp, RendererGl )

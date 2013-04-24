@@ -32,6 +32,8 @@ using std::vector;
 using std::pair;
 #include <limits>
 #include <fstream>
+#include <boost/preprocessor/seq.hpp>
+
 
 namespace cinder { namespace ip {
 
@@ -348,7 +350,7 @@ template<typename T>
 SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &dstSize, const FilterBase &filter )
 {
 	SurfaceT<T> result( dstSize.x, dstSize.y, srcSurface.hasAlpha(), srcSurface.getChannelOrder() );
-	resize( srcSurface, srcSurface.getBounds(), &result, result.getBounds(), filter );
+	resize( srcSurface, srcArea, &result, result.getBounds(), filter );
 	return result;
 }
 

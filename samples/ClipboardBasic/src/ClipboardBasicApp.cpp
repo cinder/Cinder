@@ -19,11 +19,13 @@ class ClipboardBasicApp : public AppNative {
 
 void ClipboardBasicApp::keyDown( KeyEvent event )
 {
+#if ! defined( CINDER_COCOA_TOUCH )
 	if( event.getChar() == 'c' && event.isAccelDown() ) {
 		Clipboard::setImage( loadImage( loadResource( RES_CINDER_LOGO ) ) );
 		// to copy the contents of the window, you might do something like
 		// Clipboard::setImage( copyWindowSurface() );
 	}
+#endif
 }
 
 void ClipboardBasicApp::draw()

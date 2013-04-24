@@ -25,7 +25,7 @@
 
 @interface AppImplCocoaTouchRendererQuartz : NSObject
 {
-	CGContextRef				currentRef;
+	CGContextRef				mCurrentRef;
 	UIView						*view;
 	cinder::app::App			*app;
 }

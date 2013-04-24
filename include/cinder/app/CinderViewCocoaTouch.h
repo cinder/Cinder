@@ -23,7 +23,6 @@
 #pragma once
 
 #import <UIKit/UIKit.h>
-#import <QuartzCore/QuartzCore.h>
 
 #include "cinder/gl/gl.h"
 #include "cinder/app/AppCocoaTouch.h"
@@ -31,35 +30,51 @@
 
 #include <map>
 
-@interface CinderViewCocoaTouch : UIView
-{    
-  @private
-	BOOL animating;
-	NSInteger animationFrameInterval;
+@protocol CinderViewCocoaTouchDelegate
+@required
+- (void)resize;
+- (void)draw;
+- (void)mouseDown:(cinder::app::MouseEvent*)event;
+- (void)mouseDrag:(cinder::app::MouseEvent*)event;
+- (void)mouseUp:(cinder::app::MouseEvent*)event;
+- (void)keyDown:(cinder::app::KeyEvent*)event;
+- (void)setKeyboardString:(const std::string *)keyboardString;
+- (void)touchesBegan:(cinder::app::TouchEvent*)event;
+- (void)touchesMoved:(cinder::app::TouchEvent*)event;
+- (void)touchesEnded:(cinder::app::TouchEvent*)event;
+- (cinder::app::WindowRef)getWindowRef;
+@end
 
-	id							displayLink;
-	ci::app::AppCocoaTouch		*mApp;
-	ci::app::Renderer			*mRenderer;
-	std::map<UITouch*,uint32_t>	mTouchIdMap;
-	ci::Vec3d					mAcceleration;
-	BOOL						appSetupCalled;
+
+@interface CinderViewCocoaTouch : UIView <UIKeyInput, UITextFieldDelegate>
+{
+	ci::app::AppCocoaTouch						*mApp;
+	id<CinderViewCocoaTouchDelegate>			mDelegate;
+
+	ci::app::RendererRef						mRenderer;
+	std::map<UITouch*,uint32_t>					mTouchIdMap;
+	std::vector<cinder::app::TouchEvent::Touch> mActiveTouches;
+	
+	UITextField									*mKeyboardTextField; // only used for advanced keyboard
+	BOOL										mKeyboardVisible;
+	NSMutableString								*mKeyboardString;
 }
 
-@property (readonly, nonatomic, getter=isAnimating) BOOL animating;
-@property (nonatomic) NSInteger animationFrameInterval;
-@property (readwrite) BOOL appSetupCalled;
+- (id)initWithFrame:(CGRect)frame app:(cinder::app::AppCocoaTouch*)app renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer contentScale:(float)contentScale;
+- (void)setDelegate:(id<CinderViewCocoaTouchDelegate>)delegate;
+- (ci::app::RendererRef)getRenderer;
 
-- (id)initWithFrame:(CGRect)frame app:(cinder::app::AppCocoaTouch*)app renderer:(cinder::app::Renderer*)renderer;
-- (void)drawRect:(CGRect)rect;
-- (void)startAnimation;
-- (void)layoutSubviews;
-- (void)drawView:(id)sender;
-- (void)stopAnimation;
+- (void)drawView;
 
 - (uint32_t)addTouchToMap:(UITouch*)touch;
 - (void)removeTouchFromMap:(UITouch*)touch;
 - (uint32_t)findTouchInMap:(UITouch*)touch;
 - (void)updateActiveTouches;
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event;
+- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
+
+// Advanced Keyboard
+- (void)showKeyboard;
+- (void)hideKeyboard;
 
 @end

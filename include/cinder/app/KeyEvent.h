@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -29,26 +30,32 @@ namespace cinder{ namespace app{
 
 //! Represents a keyboard event
 class KeyEvent : public Event {
-  public:	
-	KeyEvent( int aCode, char aChar, unsigned int aModifiers, unsigned int aNativeKeyCode )
-		: Event(), mCode( aCode ), mChar( aChar ), mModifiers( aModifiers ), mNativeKeyCode( aNativeKeyCode ) {}
+  public:
+	KeyEvent() : Event()
+	{}
+	KeyEvent( WindowRef win, int aCode, uint32_t aChar32, char aChar, unsigned int aModifiers, unsigned int aNativeKeyCode )
+		: Event( win ), mCode( aCode ), mChar32( aChar32 ), mChar( aChar ), mModifiers( aModifiers ), mNativeKeyCode( aNativeKeyCode )
+	{}
 
-	//! Returns the key code associated with the event, which maps into the enum listed below
-	int		getCode() const { return mCode; }
 	//! Returns the ASCII character associated with the event.
-	char	getChar() const { return mChar; }
+	char		getChar() const { return mChar; }
+	//! Returns the UTF-32 character associated with the event.
+	uint32_t	getCharUtf32() const { return mChar32; } 
+#if ! defined( CINDER_COCOA_TOUCH )
+	//! Returns the key code associated with the event, which maps into the enum listed below
+	int			getCode() const { return mCode; }
 	//! Returns whether the Shift key was pressed during the event.
-	bool	isShiftDown() const { return (mModifiers & SHIFT_DOWN) ? true : false; }
+	bool		isShiftDown() const { return (mModifiers & SHIFT_DOWN) ? true : false; }
 	//! Returns whether the Alt (or Option) key was pressed during the event.
-	bool	isAltDown() const { return (mModifiers & ALT_DOWN) ? true : false; }
+	bool		isAltDown() const { return (mModifiers & ALT_DOWN) ? true : false; }
 	//! Returns whether the Control key was pressed during the event.
-	bool	isControlDown() const { return (mModifiers & CTRL_DOWN) ? true : false; }
+	bool		isControlDown() const { return (mModifiers & CTRL_DOWN) ? true : false; }
 	//! Returns whether the meta key was pressed during the event. Maps to the Windows key on Windows and the Command key on Mac OS X.
-	bool	isMetaDown() const { return (mModifiers & META_DOWN) ? true : false; }	
+	bool		isMetaDown() const { return (mModifiers & META_DOWN) ? true : false; }	
 	//! Returns whether the accelerator key was pressed during the event. Maps to the Control key on Windows and the Command key on Mac OS X.
-	bool	isAccelDown() const { return (mModifiers & ACCEL_DOWN) ? true : false; }	
+	bool		isAccelDown() const { return (mModifiers & ACCEL_DOWN) ? true : false; }	
 	//! Returns the platform-native key-code. Advanced users only.
-	int		getNativeKeyCode() const { return mNativeKeyCode; }
+	int			getNativeKeyCode() const { return mNativeKeyCode; }
 	
 	//! Maps a platform-native key-code to the key code enum
 	static int		translateNativeKeyCode( int nativeKeyCode );
@@ -63,6 +70,7 @@ class KeyEvent : public Event {
 			ACCEL_DOWN	= META_DOWN
 #endif
 			};
+#endif
 	
 	// Key codes
 	enum {
@@ -215,9 +223,11 @@ class KeyEvent : public Event {
 	
   protected:
 	int				mCode;
+	uint32_t		mChar32;
 	char			mChar;
 	unsigned int	mModifiers;
 	unsigned int	mNativeKeyCode;
+	WindowRef		mWindow;
 };
 
 } } // namespace cinder::app

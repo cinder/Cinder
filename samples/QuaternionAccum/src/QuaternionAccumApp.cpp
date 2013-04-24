@@ -19,7 +19,7 @@ class QuaternionAccumApp : public AppBasic {
   public:
 	void setup();
 	void update();
-	void resize( ResizeEvent event );
+	void resize();
 	void mouseDown( MouseEvent event );
 	
 	void createRandomBspline();
@@ -52,7 +52,7 @@ void QuaternionAccumApp::setup()
 	mLastTime = getElapsedSeconds();
 }
 
-void QuaternionAccumApp::resize( ResizeEvent event )
+void QuaternionAccumApp::resize()
 {
 	mCam = CameraPersp( getWindowWidth(), getWindowHeight(), 40.0f );
 	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.1f, 100.0f );

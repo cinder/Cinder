@@ -12,7 +12,7 @@ using namespace ci::app;
 // global variables
 int			counter = 0;
 float		floorLevel = 400.0f;
-gl::Texture *particleImg, *emitterImg;
+gl::TextureRef particleImg, emitterImg;
 bool		ALLOWFLOOR = false;
 bool		ALLOWGRAVITY = false;
 bool		ALLOWPERLIN = false;
@@ -25,14 +25,19 @@ class HodginParticlesApp : public AppBasic {
 	Renderer* prepareRenderer() { return new RendererGl( RendererGl::AA_MSAA_2 ); }
 	void prepareSettings( Settings *settings );
 	void setup();
+	
 	void mouseDown( MouseEvent event );	
 	void mouseUp( MouseEvent event );
+	void mouseMove( MouseEvent event );
+	void mouseDrag( MouseEvent event );
 	void keyDown( KeyEvent event );	
+	
 	void update();
 	void draw();
 	
-	Emitter emitter;
-	bool mouseIsDown;
+	Emitter		mEmitter;
+	bool		mouseIsDown;
+	Vec2i		mMousePos;
 };
 
 void HodginParticlesApp::prepareSettings( Settings *settings )
@@ -44,19 +49,32 @@ void HodginParticlesApp::prepareSettings( Settings *settings )
 
 void HodginParticlesApp::setup()
 {
-	particleImg = new gl::Texture( loadImage( loadResource( RES_PARTICLE ) ) );
-	emitterImg = new gl::Texture( loadImage( loadResource( RES_EMITTER ) ) );
+	particleImg = gl::Texture::create( loadImage( loadResource( RES_PARTICLE ) ) );
+	emitterImg = gl::Texture::create( loadImage( loadResource( RES_EMITTER ) ) );
+
 	mouseIsDown = false;
+	mMousePos = getWindowCenter();
 }
 
 void HodginParticlesApp::mouseDown( MouseEvent event )
 {
 	mouseIsDown = true;
+	mMousePos = event.getPos();
 }
 
 void HodginParticlesApp::mouseUp( MouseEvent event )
 {
 	mouseIsDown = false;
+}
+
+void HodginParticlesApp::mouseMove( MouseEvent event )
+{
+	mMousePos = event.getPos();
+}
+
+void HodginParticlesApp::mouseDrag( MouseEvent event )
+{
+	mMousePos = event.getPos();
 }
 
 void HodginParticlesApp::keyDown( KeyEvent event )
@@ -79,30 +97,23 @@ void HodginParticlesApp::update()
 	
 	if( mouseIsDown ) {
 		if( ALLOWTRAILS && ALLOWFLOOR ) {
-			emitter.addParticles( 5 * CINDER_FACTOR );
+			mEmitter.addParticles( 5 * CINDER_FACTOR );
 		}
 		else {
-			emitter.addParticles( 10 * CINDER_FACTOR );
+			mEmitter.addParticles( 10 * CINDER_FACTOR );
 		}
 	}
 }
 
 void HodginParticlesApp::draw()
 {
-	glClearColor( 0, 0, 0, 0 );
-	glClear( GL_COLOR_BUFFER_BIT );
+	gl::clear();
+	gl::enableAdditiveBlending();
 	
 	// to accommodate resizable screen, we'll recalculate where the floor should be every frame just in case it's changed
 	floorLevel = 2 / 3.0f * getWindowHeight();
 	
-	// Turns on additive blending so we can draw a bunch of glowing images without
-	// needing to do any depth testing.
-	glDepthMask( GL_FALSE );
-	glDisable( GL_DEPTH_TEST );
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE );
-	
-	emitter.exist( getMousePos() );	
+	mEmitter.exist( mMousePos );	
 }
 
 // It would be faster to just make QUADS calls directly to the loc
@@ -111,17 +122,17 @@ void HodginParticlesApp::draw()
 // up later on.
 void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha )
 {
-	glPushMatrix();
-	glTranslatef( _loc.x, _loc.y, _loc.z );
-	glScalef( _diam, _diam, _diam );
-	glColor4f( _col.r, _col.g, _col.b, _alpha );
-	glBegin( GL_QUADS );
-		glTexCoord2f(0, 0);    glVertex2f(-.5, -.5);
-		glTexCoord2f(1, 0);    glVertex2f( .5, -.5);
-		glTexCoord2f(1, 1);    glVertex2f( .5,  .5);
-		glTexCoord2f(0, 1);    glVertex2f(-.5,  .5);
-	glEnd();
-	glPopMatrix();
+	gl::pushMatrices();
+	gl::translate( _loc.x, _loc.y, _loc.z );
+	gl::scale( _diam, _diam, _diam );
+	gl::color( _col.r, _col.g, _col.b, _alpha );
+	gl::begin( GL_QUADS );
+		gl::texCoord(0, 0);    gl::vertex(-.5, -.5);
+		gl::texCoord(1, 0);    gl::vertex( .5, -.5);
+		gl::texCoord(1, 1);    gl::vertex( .5,  .5);
+		gl::texCoord(0, 1);    gl::vertex(-.5,  .5);
+	gl::end();
+	gl::popMatrices();
 }
 
 

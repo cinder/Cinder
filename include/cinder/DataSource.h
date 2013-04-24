@@ -86,23 +86,26 @@ typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
 class DataSourceUrl : public DataSource {
   public:
-	static DataSourceUrlRef	create( const Url &Url );
+	static DataSourceUrlRef	create( const Url &Url, const UrlOptions &options = UrlOptions() );
 
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return true; }
 
 	virtual IStreamRef	createStream();
 
+	const UrlOptions&	getOptions() const { return mOptions; }
+
   protected:
-	DataSourceUrl( const Url &Url );
+	DataSourceUrl( const Url &Url, const UrlOptions &options );
 	
 	virtual	void	createBuffer();
 
+	UrlOptions		mOptions;
 	IStreamUrlRef	mStream;
 };
 
-DataSourceRef			loadUrl( const Url &Url );
-inline DataSourceRef	loadUrl( const std::string &urlString ) { return loadUrl( Url( urlString ) ); }
+DataSourceRef			loadUrl( const Url &Url, const UrlOptions &options = UrlOptions() );
+inline DataSourceRef	loadUrl( const std::string &urlString, const UrlOptions &options = UrlOptions() ) { return loadUrl( Url( urlString ), options ); }
 
 typedef std::shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 

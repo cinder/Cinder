@@ -30,25 +30,27 @@
 
 namespace cinder { namespace app {
 
-//! Represents a mouse event
+//! Represents a touch event
 class TouchEvent : public Event {
   public:
 	class Touch {
 	  public:
+		Touch() {}
 		Touch( const Vec2f &pos, const Vec2f &prevPos, uint32_t id, double time, void *native )
-			: mPos( pos ), mPrevPos( prevPos ), mId( id ), mTime( time ), mNative( native ) {}
+			: mPos( pos ), mPrevPos( prevPos ), mId( id ), mTime( time ), mNative( native )
+		{}
 	
-		//! Returns the x position of the touch measured in pixels
+		//! Returns the x position of the touch measured in points
 		float		getX() const { return mPos.x; }
-		//! Returns the y position of the touch measured in pixels
+		//! Returns the y position of the touch measured in points
 		float		getY() const { return mPos.y; }		
-		//! Returns the position of the touch measured in pixels
+		//! Returns the position of the touch measured in points
 		Vec2f		getPos() const { return mPos; }
-		//! Returns the previous x position of the touch measured in pixels
+		//! Returns the previous x position of the touch measured in points
 		float		getPrevX() const { return mPrevPos.x; }
-		//! Returns the previous y position of the touch measured in pixels
+		//! Returns the previous y position of the touch measured in points
 		float		getPrevY() const { return mPrevPos.y; }		
-		//! Returns the previous position of the touch measured in pixels
+		//! Returns the previous position of the touch measured in points
 		Vec2f		getPrevPos() const { return mPrevPos; }
 		//! Returns an ID unique for the lifetime of the touch
 		uint32_t	getId() const { return mId; }
@@ -63,17 +65,22 @@ class TouchEvent : public Event {
 		double		mTime;
 		void		*mNative;
 	};
-  
-	TouchEvent() : Event() {}
-	TouchEvent( const std::vector<Touch> &touches )
-		: Event(), mTouches( touches )
+
+	TouchEvent()
+		: Event()
+	{}
+	TouchEvent( WindowRef win, const std::vector<Touch> &touches )
+		: Event( win ), mTouches( touches )
 	{}
 	
 	//! Returns a std::vector of Touch descriptors associated with this event
 	const std::vector<Touch>&	getTouches() const { return mTouches; }
-	
+	//! Returns a std::vector of Touch descriptors associated with this event
+	std::vector<Touch>&			getTouches() { return mTouches; }
+
   private:
 	std::vector<Touch>		mTouches;
+	bool					mHandled;
 };
 
 inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )

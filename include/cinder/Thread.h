@@ -26,27 +26,49 @@
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 #endif
+#if defined( CINDER_MAC )
+	#include <objc/objc-auto.h>
+#endif
 
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/recursive_mutex.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/condition_variable.hpp>
+#if (defined( _MSC_VER ) && ( _MSC_VER >= 1700 )) || defined( _LIBCPP_VERSION )
+	#include <thread>
+	#include <mutex>
+	#include <condition_variable>
+	#include <future>
+#else
+	#include <boost/thread/mutex.hpp>
+	#include <boost/thread/recursive_mutex.hpp>
+	#include <boost/thread/thread.hpp>
+	#include <boost/thread/condition_variable.hpp>
+	#define BOOST_THREAD_PROVIDES_FUTURE
+	#include <boost/thread/future.hpp>
 
-// Promote classes from boost which will be part of std:: in C++1x where necessary
-namespace std {
-	using boost::mutex;
-	using boost::recursive_mutex;
-	using boost::thread;
-	using boost::lock_guard;
-	using boost::unique_lock;
-	using boost::condition_variable;
-}
+	// Promote classes from boost which will be part of std:: in C++1x where necessary
+	namespace std {
+		using boost::mutex;
+		using boost::recursive_mutex;
+		using boost::thread;
+		using boost::lock_guard;
+		using boost::unique_lock;
+		using boost::condition_variable;
+		namespace this_thread {
+			using boost::this_thread::yield;
+			using boost::this_thread::get_id;
+		}
+		using boost::future;
+		using boost::packaged_task;
+		using boost::promise;
+	}
+#endif
 
 namespace cinder {
 //! Create an instance of this class at the beginning of any multithreaded code that makes use of Cinder functionality
 class ThreadSetup {
   public:
 	ThreadSetup() {
+#if defined( CINDER_MAC )
+		objc_registerThreadWithCollector();
+#endif
 	}
 	
 	~ThreadSetup() {	

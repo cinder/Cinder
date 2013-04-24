@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -31,27 +32,25 @@
 
 #include "cinder/app/TouchEvent.h"
 
-@class CinderWindow;
+#include <list>
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
-@interface AppImplCocoaBasic : NSObject<NSApplicationDelegate,NSWindowDelegate,CinderViewMultiTouchDelegate> {
-#else
-@interface AppImplCocoaBasic : NSApplication {
-#endif
-	CinderWindow			*win;
-	CinderView				*cinderView;
+@class CinderWindow; // inherits from NSWindow
+@class WindowImplBasicCocoa;
+
+@interface AppImplCocoaBasic : NSObject <NSApplicationDelegate,NSWindowDelegate> {
+  @public
+	NSTimer							*mAnimationTimer;
+	class cinder::app::AppBasic		*mApp;
 	
-	NSTimer					*animationTimer;
-	class cinder::app::AppBasic	*app;
+	BOOL							mNeedsUpdate;
+	BOOL							mFrameRateEnabled;
+	float							mFrameRate;
 	
-	BOOL					mNeedsUpdate;
-	
-	cinder::Display			*mDisplay;
-	int						mWindowWidth, mWindowHeight;
-    int                     mWindowPositionX, mWindowPositionY;
-	BOOL					mFullScreen, mBorderless, mAlwaysOnTop;
-	float					mFrameRate;
+	NSMutableArray					*mWindows;
+	WindowImplBasicCocoa			*mActiveWindow;
 }
+
+@property(retain, nonatomic) NSMutableArray *windows;
 
 - (id)init:(cinder::app::AppBasic*)aApp;
 - (void)setApplicationMenu: (NSString*) applicationName;
@@ -59,38 +58,83 @@
 - (void)applicationWillTerminate:(NSNotification *)notification;
 - (void)quit;
 
-- (void)createWindow;
+- (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format;
 
-- (int)getWindowWidth;
-- (void)setWindowWidth:(int)windowWidth;
-- (int)getWindowHeight;
-- (void)setWindowHeight:(int)windowHeight;
-- (void)setWindowSizeWithWidth:(int)w height:(int)h;
-- (void)handleResizeWithWidth:(int)w height:(int)h;   
-- (ci::Vec2i)getWindowPos;
-- (void)setWindowPosWithLeft:(int)x top:(int)y;
 - (float)getFrameRate;
 - (void)setFrameRate:(float)aFrameRate;
-- (bool)isFullScreen;
-- (void)enterFullScreen;
-- (void)exitFullScreen;
-- (bool)isBorderless;
-- (void)setBorderless:(bool)borderless;
+- (void)disableFrameRate;
+- (bool)isFrameRateEnabled;
+- (std::string)getAppPath;
+- (void)quit;
+
+- (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)match;
+- (cinder::app::WindowRef)getWindow;
+- (cinder::app::WindowRef)getForegroundWindow;
+- (size_t)getNumWindows;
+- (cinder::app::WindowRef)getWindowIndex:(size_t)index;
+- (void)setActiveWindow:(WindowImplBasicCocoa*)win;
+- (WindowImplBasicCocoa*)findWindowImpl:(NSWindow*)window;
+
+@end
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+@interface WindowImplBasicCocoa : NSObject<NSWindowDelegate,CinderViewDelegate,WindowImplCocoa> {
+  @public
+	AppImplCocoaBasic					*mAppImpl;
+	NSWindow							*mWin;
+	CinderView							*mCinderView;
+	cinder::app::WindowRef				mWindowRef;
+	cinder::DisplayRef					mDisplay;
+	cinder::Vec2i						mSize, mPos;
+	BOOL								mResizable, mBorderless, mAlwaysOnTop, mHidden;
+}
+
+
+// WindowImplCocoa methods
+- (void)dealloc;
+- (BOOL)isFullScreen;
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
+- (cinder::Vec2i)getSize;
+- (void)setSize:(cinder::Vec2i)size;
+- (cinder::Vec2i)getPos;
+- (float)getContentScale;
+- (void)setPos:(cinder::Vec2i)pos;
+- (float)getContentScale;
+- (void)close;
+- (NSString *)getTitle;
+- (void)setTitle:(NSString *)title;
+- (BOOL)isBorderless;
+- (void)setBorderless:(BOOL)borderless;
 - (bool)isAlwaysOnTop;
 - (void)setAlwaysOnTop:(bool)alwaysOnTop;
-- (std::string)getAppPath;
-- (CGPoint)mouseLocation;
-- (void)quit;
-- (cinder::Display*)getDisplay;
-- (void)setDisplay:(cinder::Display*)aDisplay;
+- (void)hide;
+- (void)show;
+- (BOOL)isHidden;
+- (cinder::DisplayRef)getDisplay;
+- (cinder::app::RendererRef)getRenderer;
+- (void*)getNative;
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
-// multiTouch delegate methods
-- (void)touchesBegan:(ci::app::TouchEvent*)event;
-- (void)touchesMoved:(ci::app::TouchEvent*)event;
-- (void)touchesEnded:(ci::app::TouchEvent*)event;
-- (void)touchesEnded:(ci::app::TouchEvent*)event;
-- (void)setActiveTouches:(std::vector<ci::app::TouchEvent::Touch>*)touches;
-#endif // MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
+- (void)windowMovedNotification:(NSNotification*)inNotification;
+- (void)windowWillCloseNotification:(NSNotification*)inNotification;
+
+// CinderViewDelegate methods
+- (void)resize;
+- (void)draw;
+- (void)mouseDown:(cinder::app::MouseEvent*)event;
+- (void)mouseDrag:(cinder::app::MouseEvent*)event;
+- (void)mouseUp:(cinder::app::MouseEvent*)event;
+- (void)mouseMove:(cinder::app::MouseEvent*)event;
+- (void)mouseWheel:(cinder::app::MouseEvent*)event;
+- (void)keyDown:(cinder::app::KeyEvent*)event;
+- (void)keyUp:(cinder::app::KeyEvent*)event;
+- (void)touchesBegan:(cinder::app::TouchEvent*)event;
+- (void)touchesMoved:(cinder::app::TouchEvent*)event;
+- (void)touchesEnded:(cinder::app::TouchEvent*)event;
+- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
+- (void)fileDrop:(cinder::app::FileDropEvent*)event;
+- (cinder::app::WindowRef)getWindowRef;
+
++ (WindowImplBasicCocoa*)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic*)appImpl withRetina:(BOOL)retinaEnabled;
 
 @end

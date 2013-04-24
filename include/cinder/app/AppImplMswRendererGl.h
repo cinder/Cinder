@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -31,7 +32,7 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
  public:
 	AppImplMswRendererGl( App *aApp, RendererGl *aRenderer );
 	
-	virtual bool	initialize( HWND wnd, HDC dc );
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
 	virtual void	kill();
@@ -40,11 +41,12 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
 	virtual void	makeCurrentContext();
 
  protected:
-	bool	initializeInternal( HWND wnd, HDC dc );
+	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
 	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
 	
 	RendererGl	*mRenderer;
 	bool		mWasFullScreen;
+	bool		mWasVerticalSynced;
 	HGLRC		mRC, mPrevRC;
 	HDC			mDC;
 };

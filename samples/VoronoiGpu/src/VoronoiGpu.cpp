@@ -9,6 +9,7 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/ip/Fill.h"
 #include "cinder/Rand.h"
+#include "cinder/app/App.h"
 
 using namespace std;
 using namespace ci;
@@ -63,7 +64,7 @@ gl::Texture encodePoints( const vector<Vec2i> &points, int width, int height )
 	Surface32f result( width, height, false );
 	ip::fill( &result, Colorf( -65535.0f, -65535.0f, 0 ) ); // seed the result with a huge distance that will easily be "beaten" by any given site
 	for( vector<Vec2i>::const_iterator ptIt = points.begin(); ptIt != points.end(); ++ptIt )
-		result.setPixel( *ptIt, Color( (float)ptIt->x, (float)ptIt->y, 0 ) );
+		result.setPixel( *ptIt, Color( (float)app::toPixels( ptIt->x ), (float)app::toPixels( ptIt->y ), 0 ) );
 	
 	return gl::Texture( result );
 }
@@ -92,7 +93,7 @@ ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::Vec2i> &points, int
 	// ping-pong between the two FBOs
 	voronoiShader.bind();
 	voronoiShader.uniform( "tex0", 0 );
-	int curFbo;
+	int curFbo = 0;
 	int numPasses = log2ceil( std::max( width, height ) );
 	for( int pass = 1; pass <= numPasses; ++pass ) {
 		voronoiShader.uniform( "sampleScale", Vec2f( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
@@ -134,7 +135,7 @@ ci::Channel32f calcDistanceMapGpu( const vector<Vec2i> &points, int width, int h
 	// ping-pong between the two FBOs
 	voronoiShader.bind();
 	voronoiShader.uniform( "tex0", 0 );
-	int curFbo;
+	int curFbo = 0;
 	int numPasses = log2ceil( std::max( width, height ) );
 	for( int pass = 1; pass <= numPasses; ++pass ) {
 		voronoiShader.uniform( "sampleScale", Vec2f( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );

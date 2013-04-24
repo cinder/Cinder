@@ -61,6 +61,8 @@ namespace cinder {
 	class Camera; class TriMesh2d; class TriMesh; class Sphere;
 	namespace gl {
 		 class VboMesh; class Texture;
+		 typedef std::shared_ptr<Texture>	TextureRef;
+ 		 typedef std::shared_ptr<VboMesh>	VboMeshRef;
 	}
 } // namespace cinder
 
@@ -133,9 +135,9 @@ inline void translate( float x, float y, float z ) { translate( Vec3f( x, y, z )
 //! Produces a scale by \a scale in the current matrix.
 void scale( const Vec3f &scl );
 //! Produces a scale by \a scl in the current matrix.
-inline void scale( const Vec2f &scl ) { scale( Vec3f( scl.x, scl.y, 0 ) ); }
+inline void scale( const Vec2f &scl ) { scale( Vec3f( scl.x, scl.y, 1 ) ); }
 //! Produces a scale by \a x and \a y in the current matrix.
-inline void scale( float x, float y ) { scale( Vec3f( x, y, 0 ) ); }
+inline void scale( float x, float y ) { scale( Vec3f( x, y, 1 ) ); }
 //! Produces a scale by \a x, \a y and \a z in the current matrix.
 inline void scale( float x, float y, float z ) { scale( Vec3f( x, y, z ) ); }
 
@@ -215,6 +217,9 @@ void enableDepthRead( bool enable = true );
 //! Enables writing to the depth buffer when \a enable.
 void enableDepthWrite( bool enable = true );
 
+//! Specifies the rasterized width of both aliased and antialiased lines.
+inline void lineWidth( float width ) { glLineWidth( width ); }
+
 //! Draws a line from \a start to \a end
 void drawLine( const Vec2f &start, const Vec2f &end );
 //! Draws a line from \a start to \a end
@@ -246,6 +251,15 @@ void drawStrokedRect( const Rectf &rect );
 void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner = 0 );
 void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner = 0 );
 //! Renders a coordinate frame representation centered at the origin. Arrowheads are drawn at the end of each axis with radius \a headRadius and length \a headLength.
+//! Renders a solid triangle.
+void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 );
+void drawSolidTriangle( const Vec2f pts[3] );
+//! Renders a textured triangle.
+void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3, const Vec2f &texPt1, const Vec2f &texPt2, const Vec2f &texPt3 );
+void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] );
+//! Renders a stroked triangle.
+void drawStrokedTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 );	
+void drawStrokedTriangle( const Vec2f pts[3] );
 void drawCoordinateFrame( float axisLength = 1.0f, float headLength = 0.2f, float headRadius = 0.05f );
 //! Draws a vector starting at \a start and ending at \a end. An arrowhead is drawn at the end of radius \a headRadius and length \a headLength.
 void drawVector( const Vec3f &start, const Vec3f &end, float headLength = 0.2f, float headRadius = 0.05f );
@@ -279,26 +293,33 @@ void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCoun
 void draw( const TriMesh &mesh );
 //! Draws a range of triangles starting with triangle # \a startTriangle and a count of \a triangleCount from cinder::TriMesh \a mesh at the origin.
 void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount );
-//! Draws a cinder::gl::VboMesh \a mesh at the origin.
 
 #if ! defined ( CINDER_GLES )
+//! Draws a cinder::gl::VboMesh \a mesh at the origin.
 void draw( const VboMesh &vbo );
+inline void draw( const VboMeshRef &vbo ) { draw( *vbo ); }
 //! Draws a range of vertices and elements of cinder::gl::VboMesh \a mesh at the origin. Default parameters for \a vertexStart and \a vertexEnd imply the VboMesh's full range of vertices.
 void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 );
+inline void drawRange( const VboMeshRef &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 ) { drawRange( *vbo, startIndex, indexCount, vertexStart, vertexEnd ); }
 //! Draws a range of elements from a cinder::gl::VboMesh \a vbo.
 void drawArrays( const VboMesh &vbo, GLint first, GLsizei count );
-//!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.
+inline void drawArrays( const VboMeshRef &vbo, GLint first, GLsizei count ) { drawArrays( *vbo, first, count ); }
 #endif
-	
+
+//!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.	
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp );
 //! Draws \a texture on the XY-plane
 void draw( const Texture &texture );
+inline void draw( const TextureRef &texture ) { draw( *texture ); }
 //! Draws \a texture on the XY-plane at \a pos
 void draw( const Texture &texture, const Vec2f &pos );
+inline void draw( const TextureRef &texture, const Vec2f &pos ) { draw( *texture, pos ); }
 //! Draws \a texture on the XY-plane in the rectangle defined by \a rect
 void draw( const Texture &texture, const Rectf &rect );
+inline void draw( const TextureRef &texture, const Rectf &rect ) { draw( *texture, rect ); }
 //! Draws the pixels inside \a srcArea of \a texture on the XY-plane in the rectangle defined by \a destRect
 void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect );
+inline void draw( const TextureRef &texture, const Area &srcArea, const Rectf &destRect ) { draw( *texture, srcArea, destRect ); }
 
 //! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
 void drawString( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );

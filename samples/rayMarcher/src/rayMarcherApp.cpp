@@ -22,7 +22,7 @@ class rayMarcherApp : public AppBasic {
 	void		mouseDown( MouseEvent event );
 	void		mouseDrag( MouseEvent event );
 	void		keyDown( KeyEvent event );	
-	void		resize( ResizeEvent event );
+	void		resize();
 	void		update();
 	void		draw();
 
@@ -71,7 +71,7 @@ void rayMarcherApp::keyDown( KeyEvent event )
 	}
 }
 
-void rayMarcherApp::resize( ResizeEvent event )
+void rayMarcherApp::resize()
 {
 	mImageSurface = std::shared_ptr<Surface8u>( new Surface8u( getWindowWidth(), getWindowHeight(), false ) );
 	mImageTexture = gl::Texture( *mImageSurface );

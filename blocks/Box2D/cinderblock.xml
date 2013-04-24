@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="Box2D"
+	id="org.libcinder.box2d"
+	author="Cinder Project"
+	summary="Box2D"
+	>
+	<sourcePattern>src/Box2D/Collision/*.cpp</sourcePattern>
+	<headerPattern>src/Box2D/Collision/*.h</headerPattern>
+	<sourcePattern>src/Box2D/Collision/Shapes/*.cpp</sourcePattern>
+	<headerPattern>src/Box2D/Collision/Shapes/*.h</headerPattern>
+	<sourcePattern>src/Box2D/Common/*.cpp</sourcePattern>
+	<headerPattern>src/Box2D/Common/*.h</headerPattern>
+	<sourcePattern>src/Box2D/Dynamics/*.cpp</sourcePattern>
+	<headerPattern>src/Box2D/Dynamics/*.h</headerPattern>
+	<sourcePattern>src/Box2D/Dynamics/Contacts/*.cpp</sourcePattern>
+	<headerPattern>src/Box2D/Dynamics/Contacts/*.h</headerPattern>
+	<sourcePattern>src/Box2D/Dynamics/Joints/*.cpp</sourcePattern>
+	<headerPattern>src/Box2D/Dynamics/Joints/*.h</headerPattern>
+	<sourcePattern>src/Box2D/Rope/*.cpp</sourcePattern>
+	<headerPattern>src/Box2D/Rope/*.h</headerPattern>
+	<header>src/Box2D/Box2d.h</header>
+	<includePath system="true">src</includePath>
+</block>
+<template>templates/Basic Box2D/template.xml</template>
+</cinder>

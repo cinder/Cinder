@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Cinder Project (http://libcinder.org)
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -23,16 +24,52 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/Function.h"
 
 namespace cinder { namespace app {
 
+template<typename T>
+struct EventCombiner {
+	typedef void	result_type;
+
+	EventCombiner() : mEvent( 0 ) {}
+	EventCombiner( const T *event ) : mEvent( event ) {}
+
+	template<typename InputIterator>
+	void	operator()( InputIterator first, InputIterator last ) const
+	{
+		while( ( first != last ) && ( ! mEvent->isHandled() ) ) {
+			*first++;
+		}
+	}
+	
+	const T		*mEvent;
+};
+
+class Window;
+typedef std::shared_ptr<Window>		WindowRef;
+
 //! Base class for all Events
 class Event {
+  public:
+	//! Returns whether this event has been marked as handled by one of its slots, terminating the normal iteration of the event's slots
+	bool		isHandled() const { return mHandled; }
+	//! Marks the event as handled, terminating the normal iteration of the event's slots
+	void		setHandled( bool handled = true ) { mHandled = handled; }
+
+	//! Returns the Window in which the MouseEvent occurred
+	WindowRef	getWindow() const { return mWindow; }
+	void		setWindow( const WindowRef &window ) { mWindow = window; }
+
   protected:
-	Event() {}
+	Event() : mHandled( false ) {}
+	Event( WindowRef window ) : mWindow( window ), mHandled( false ) {}
 
   public:
 	virtual ~Event() {}
+	
+	bool			mHandled;
+	WindowRef		mWindow;
 };
 
 } } // namespace cinder::app

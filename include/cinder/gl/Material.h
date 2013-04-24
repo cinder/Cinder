@@ -30,24 +30,31 @@ namespace cinder { namespace gl {
 class Material {
  public:
 	Material();
-	Material( const Color &aAmbient, const Color &aDiffuse = Color( 0, 0, 0 ), const Color &aSpecular = Color( 0, 0, 0 ),
-			float aShininess = 1.0f, const Color &aEmission = Color( 0, 0, 0 ), GLenum aFace = GL_FRONT );
-	
+	Material( const ColorA &aAmbient, const ColorA &aDiffuse = ColorA( 0, 0, 0, 1 ), const ColorA &aSpecular = ColorA( 0, 0, 0, 1 ),
+			float aShininess = 1.0f, const ColorA &aEmission = ColorA( 0, 0, 0, 1 ), GLenum aFace = GL_FRONT );
+
 	void	apply() const;
-	void	setAmbient( const Color &aAmbient ) { mAmbient = aAmbient; }
-	void	setDiffuse( const Color &aDiffuse ) { mDiffuse = aDiffuse; }
-	void	setSpecular( const Color &aSpecular ) { mSpecular = aSpecular; }
+	void	setAmbient( const ColorA &aAmbient ) { mAmbient = aAmbient; }
+	void	setDiffuse( const ColorA &aDiffuse ) { mDiffuse = aDiffuse; }
+	void	setSpecular( const ColorA &aSpecular ) { mSpecular = aSpecular; }
 	void	setShininess( float aShininess ) { mShininess = aShininess; }
-	void	setEmission( const Color &aEmission ) { mEmission = aEmission; }
+	void	setEmission( const ColorA &aEmission ) { mEmission = aEmission; }
 	void	setFace( GLenum aFace ) { mFace = aFace; }
-	
+
+	ColorA	getAmbient() const { return mAmbient; }
+	ColorA	getDiffuse() const { return mDiffuse; }
+	ColorA	getSpecular() const { return mSpecular; }
+	float	getShininess() const { return mShininess; }
+	ColorA	getEmission() const { return mEmission; }
+	GLenum	getFace() const { return mFace; }
+
  protected:
-	Color			mAmbient;
-	Color			mDiffuse;
-	Color			mSpecular;
-	float			mShininess;		
-	Color			mEmission;
-	GLenum			mFace;	
+	ColorA			mAmbient;
+	ColorA			mDiffuse;
+	ColorA			mSpecular;
+	float			mShininess;
+	ColorA			mEmission;
+	GLenum			mFace;
 };
 
 } } // namesapce

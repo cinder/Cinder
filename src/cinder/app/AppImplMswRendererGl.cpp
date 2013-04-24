@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -41,6 +42,7 @@ AppImplMswRendererGl::AppImplMswRendererGl( App *aApp, RendererGl *aRenderer )
 void AppImplMswRendererGl::prepareToggleFullScreen()
 {
 	mPrevRC = mRC;
+	mWasVerticalSynced = gl::isVerticalSyncEnabled();
 }
 
 void AppImplMswRendererGl::finishToggleFullScreen()
@@ -48,12 +50,19 @@ void AppImplMswRendererGl::finishToggleFullScreen()
 	if( mPrevRC ) {
 		::wglDeleteContext( mPrevRC );
 	}
+
+	gl::enableVerticalSync( mWasVerticalSynced );
 }
 
 void AppImplMswRendererGl::defaultResize() const
 {
-	glViewport( 0, 0, mApp->getWindowWidth(), mApp->getWindowHeight() );
-	cinder::CameraPersp cam( mApp->getWindowWidth(), mApp->getWindowHeight(), 60.0f );
+	::RECT clientRect;
+	::GetClientRect( mWnd, &clientRect );
+	int width = clientRect.right - clientRect.left;
+	int height = clientRect.bottom - clientRect.top;
+
+	glViewport( 0, 0, width, height );
+	cinder::CameraPersp cam( width, height, 60.0f );
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadMatrixf( cam.getProjectionMatrix().m );
@@ -61,7 +70,7 @@ void AppImplMswRendererGl::defaultResize() const
 	glMatrixMode( GL_MODELVIEW );
 	glLoadMatrixf( cam.getModelViewMatrix().m );
 	glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
-	glTranslatef( 0.0f, (float)-mApp->getWindowHeight(), 0.0f );       // shift origin up to upper-left corner.
+	glTranslatef( 0.0f, (float)-height, 0.0f );       // shift origin up to upper-left corner.
 }
 
 void AppImplMswRendererGl::swapBuffers() const
@@ -145,16 +154,16 @@ HWND createDummyWindow( int *width, int *height, bool fullscreen )
 	return wnd;
 }
 
-bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc )
+bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	if( ( ! sMultisampleSupported ) && mRenderer->getAntiAliasing() ) {
 		// first create a dummy window and use it to determine if we can do antialiasing
-		int width = mApp->getWindowWidth();
-		int height = mApp->getWindowHeight();
-		HWND dummyWnd = createDummyWindow( &width, &height, mApp->isFullScreen() );
+		int width = 640;
+		int height = 480;
+		HWND dummyWnd = createDummyWindow( &width, &height, false );
 		HDC dummyDC = ::GetDC( dummyWnd );
 		
-		bool result = initializeInternal( dummyWnd, dummyDC );
+		bool result = initializeInternal( dummyWnd, dummyDC, NULL );
 		
 		::ReleaseDC( dummyWnd, dummyDC );
 		::DestroyWindow( dummyWnd );
@@ -165,10 +174,13 @@ bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc )
 		// now do it again but with newly created multisample settings
 	}
 	
-	return initializeInternal( wnd, dc );
+	RendererGl *sharedRendererGl = dynamic_cast<RendererGl*>( sharedRenderer.get() );
+	HGLRC sharedRC = ( sharedRenderer ) ? sharedRendererGl->mImpl->mRC : NULL;
+
+	return initializeInternal( wnd, dc, sharedRC );
 }
 
-bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc )
+bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC )
 {
 	int pixelFormat;
 	mWnd = wnd;
@@ -235,13 +247,14 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc )
 		}
 	}
 
-	if( mPrevRC ) {
+	if( mPrevRC )
 		BOOL success = ::wglCopyContext( mPrevRC, mRC, GL_ALL_ATTRIB_BITS );
-	}
 
-	if( mPrevRC ) {
-		wglShareLists( mPrevRC, mRC );
-	}
+	if( mPrevRC )
+		::wglShareLists( mPrevRC, mRC );
+	
+	if( sharedRC )
+		::wglShareLists( sharedRC, mRC );
 
 	return true;									// Success
 }

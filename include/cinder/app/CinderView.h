@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -27,58 +28,73 @@
 
 #import <AppKit/NSView.h>
 #import <Foundation/Foundation.h>
-#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
-	#import <AppKit/NSTouch.h> 
-	#include "cinder/app/TouchEvent.h"
-#endif
+#import <AppKit/NSTouch.h> 
+#include "cinder/app/TouchEvent.h"
 
 #include <map>
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
-@protocol CinderViewMultiTouchDelegate
-- (void)touchesBegan:(ci::app::TouchEvent*)event;
-- (void)touchesMoved:(ci::app::TouchEvent*)event;
-- (void)touchesEnded:(ci::app::TouchEvent*)event;
-- (void)touchesEnded:(ci::app::TouchEvent*)event;
-- (void)setActiveTouches:(std::vector<ci::app::TouchEvent::Touch>*)touches;
+@protocol CinderViewDelegate
+@required
+- (void)resize;
+- (void)draw;
+- (void)mouseDown:(cinder::app::MouseEvent*)event;
+- (void)mouseDrag:(cinder::app::MouseEvent*)event;
+- (void)mouseUp:(cinder::app::MouseEvent*)event;
+- (void)mouseMove:(cinder::app::MouseEvent*)event;
+- (void)mouseWheel:(cinder::app::MouseEvent*)event;
+- (void)keyDown:(cinder::app::KeyEvent*)event;
+- (void)keyUp:(cinder::app::KeyEvent*)event;
+- (void)touchesBegan:(cinder::app::TouchEvent*)event;
+- (void)touchesMoved:(cinder::app::TouchEvent*)event;
+- (void)touchesEnded:(cinder::app::TouchEvent*)event;
+- (void)fileDrop:(cinder::app::FileDropEvent*)event;
+- (cinder::app::WindowRef)getWindowRef;
 @end
-#endif
 
-@interface CinderView : NSView
-{
-@public
-	cinder::app::App	*app;
-	BOOL				stayFullScreen;
-	BOOL				appSetupCalled;
-	BOOL				receivesEvents;
+@interface CinderView : NSView {
+  @private
+	cinder::app::App			*mApp;
+	BOOL						mFullScreen;
+	BOOL						mFullScreenModeKiosk;
+	BOOL						mReadyToDraw; // don't allow draw until setup() and resize() have been called
+	BOOL						mReceivesEvents;
+	cinder::app::RendererRef	mRenderer;
+	
+	float						mContentScaleFactor;
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5	
 	NSMutableDictionary					*mTouchIdMap;
-	std::map<uint32_t,ci::Vec2f>		mTouchPrevPointMap;
-	id<CinderViewMultiTouchDelegate>	mMultiTouchDelegate;
-#endif
+	std::map<uint32_t,cinder::Vec2f>	mTouchPrevPointMap;
+	std::vector<cinder::app::TouchEvent::Touch> mActiveTouches;
+	id<CinderViewDelegate>				mDelegate;
 }
 
-@property (readwrite) BOOL appSetupCalled;
+@property (readwrite) BOOL readyToDraw;
 @property (readwrite) BOOL receivesEvents;
 
-- (id)initWithFrame:(NSRect)frame app:(cinder::app::App*)aApp;
-- (id)initFullScreenWithApp:(cinder::app::App*)aApp;
-- (void)setupRenderer:(NSRect)frame;
+- (id)initWithFrame:(NSRect)frame app:(cinder::app::App*)aApp renderer:(cinder::app::RendererRef)aRenderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
+- (void)setupRendererWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
+- (void)setDelegate:(id<CinderViewDelegate>)delegate;
+
+- (BOOL)isFullScreen;
+- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 
 - (void)draw;
+- (void)makeCurrentContext;
 
-- (void)setup:(cinder::app::App *)aApp;
+//- (void)setup:(cinder::app::App *)aApp;
 - (void)setApp:(cinder::app::App *)aApp;
 
 - (void)applicationWillResignActive:(NSNotification *)aNotification;
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED > MAC_OS_X_VERSION_10_5
-- (void)setMultiTouchDelegate:(id<CinderViewMultiTouchDelegate>)multiTouchDelegate;
-- (uint32_t)addTouchToMap:(NSTouch *)touch withPoint:(ci::Vec2f)point;
+- (cinder::app::RendererRef)getRenderer;
+
+- (uint32_t)addTouchToMap:(NSTouch *)touch withPoint:(cinder::Vec2f)point;
 - (void)removeTouchFromMap:(NSTouch *)touch;
-- (std::pair<uint32_t,ci::Vec2f>)updateTouch:(NSTouch *)touch withPoint:(ci::Vec2f)point;
+- (std::pair<uint32_t,cinder::Vec2f>)updateTouch:(NSTouch *)touch withPoint:(cinder::Vec2f)point;
 - (void)updateActiveTouches:(NSEvent *)event;
-#endif
+- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
+
+- (float)contentScaleFactor;
+
 
 @end

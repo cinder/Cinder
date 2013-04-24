@@ -23,10 +23,10 @@
 #pragma once
 
 #include "cinder/audio/Output.h"
+#include "cinder/Thread.h"
 #include <CoreAudio/CoreAudioTypes.h>
 #include <AudioUnit/AudioUnit.h>
 #include <AudioToolbox/AUGraph.h>
-#include <boost/thread/mutex.hpp>
 #if defined( CINDER_MAC) && (MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7)
 	#include <CoreAudio/AudioHardware.h>
 #endif
@@ -121,7 +121,7 @@ class OutputImplAudioUnit : public OutputImpl {
 		
 		PcmBuffer32fRef	mLoadingPcmBuffer;
 		PcmBuffer32fRef	mLoadedPcmBuffer;
-		boost::mutex	mPcmBufferMutex;
+		std::mutex	mPcmBufferMutex;
 	};
 	
 	std::map<TrackId,std::shared_ptr<OutputImplAudioUnit::Track> >	mTracks;

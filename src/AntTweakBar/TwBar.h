@@ -2,12 +2,11 @@
 //
 //  @file       TwBar.h
 //  @brief      Tweak bar and var classes.
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
+//              For conditions of distribution and use, see License.txt
 //
-//  notes:      Private header
-//              TAB=4
+//  note:       Private header
 //
 //  ---------------------------------------------------------------------------
 
@@ -23,6 +22,8 @@
 
 //  ---------------------------------------------------------------------------
 
+bool IsCustomType(int _Type);
+
 struct CTwVar
 {
     std::string             m_Name;
@@ -37,6 +38,7 @@ struct CTwVar
     const color32 *         m_BgColorPtr;
 
     virtual bool            IsGroup() const = 0;
+    virtual bool            IsCustom() const { return false; }
     virtual const CTwVar *  Find(const char *_Name, struct CTwVarGroup **_Parent, int *_Index) const = 0;
     virtual int             HasAttrib(const char *_Attrib, bool *_HasValue) const;
     virtual int             SetAttrib(int _AttribID, const char *_Value, TwBar *_Bar, struct CTwVarGroup *_VarParent, int _VarIndex);
@@ -115,6 +117,7 @@ struct CTwVarAtom : CTwVar
     UVal                    m_Val;
 
     virtual bool            IsGroup() const { return false; }
+    virtual bool            IsCustom() const { return IsCustomType(m_Type); }
     virtual void            ValueToString(std::string *_Str) const;
     virtual double          ValueToDouble() const;
     virtual void            ValueFromDouble(double _Val);
@@ -171,6 +174,7 @@ struct CTwBar
     const CTexFont *        m_Font;
     int                     m_ValuesWidth;
     int                     m_Sep;
+    int                     m_LineSep;
     int                     m_FirstLine;
     float                   m_UpdatePeriod;
     bool                    m_IsHelpBar;
@@ -185,8 +189,9 @@ struct CTwBar
 
     CTwVarGroup             m_VarRoot;
 
+    enum EDrawPart          { DRAW_BG=(1<<0), DRAW_CONTENT=(1<<1), DRAW_ALL=DRAW_BG|DRAW_CONTENT };
+    void                    Draw(int _DrawPart=DRAW_ALL);
     void                    NotUpToDate();
-    void                    Draw();
     const CTwVar *          Find(const char *_Name, CTwVarGroup **_Parent=NULL, int *_Index=NULL) const;
     CTwVar *                Find(const char *_Name, CTwVarGroup **_Parent=NULL, int *_Index=NULL);
     int                     HasAttrib(const char *_Attrib, bool *_HasValue) const;
@@ -196,6 +201,7 @@ struct CTwBar
     bool                    MouseButton(ETwMouseButtonID _Button, bool _Pressed, int _X, int _Y);
     bool                    MouseWheel(int _Pos, int _PrevPos, int _MouseX, int _MouseY);
     bool                    KeyPressed(int _Key, int _Modifiers);
+    bool                    KeyTest(int _Key, int _Modifiers);
     bool                    IsMinimized() const { return m_IsMinimized; }
     bool                    IsDragging() const  { return m_MouseDrag; }
     bool                    Show(CTwVar *_Var); // display the line associated to _Var
@@ -279,6 +285,7 @@ protected:
     bool                    m_MouseDragValWidth;
     int                     m_MouseOriginX;
     int                     m_MouseOriginY;
+    double                  m_ValuesWidthRatio;
     bool                    m_VarHasBeenIncr;
     int                     m_FirstLine0;
     int                     m_HighlightedLine;
@@ -298,6 +305,8 @@ protected:
     bool                    m_HighlightMinimize;
     bool                    m_HighlightFont;
     bool                    m_HighlightValWidth;
+    bool                    m_HighlightLabelsHeader;
+    bool                    m_HighlightValuesHeader;
     bool                    m_DrawHandles;
 
     bool                    m_IsMinimized;
@@ -309,6 +318,7 @@ protected:
     bool                    m_DrawClickBtn;
     bool                    m_DrawListBtn;
     bool                    m_DrawBoolBtn;
+    EButtonAlign            m_ButtonAlign;
 
     struct CHierTag
     {
@@ -323,9 +333,14 @@ protected:
     void *                  m_ValuesTextObj;
     void *                  m_ShortcutTextObj;
     int                     m_ShortcutLine;
+    void *                  m_HeadersTextObj;
     void                    ListLabels(std::vector<std::string>& _Labels, std::vector<color32>& _Colors, std::vector<color32>& _BgColors, bool *_HasBgColors, const CTexFont *_Font, int _AtomWidthMax, int _GroupWidthMax);
     void                    ListValues(std::vector<std::string>& _Values, std::vector<color32>& _Colors, std::vector<color32>& _BgColors, const CTexFont *_Font, int _WidthMax);
+    int                     ComputeLabelsWidth(const CTexFont *_Font);
+    int                     ComputeValuesWidth(const CTexFont *_Font);
     void                    DrawHierHandle();
+
+    enum EValuesWidthFit    { VALUES_WIDTH_FIT = -5555 };
   
     // RotoSlider
     struct  CPoint 

@@ -88,7 +88,7 @@ class Picking3DApp : public AppBasic
 	void mouseMove( MouseEvent event );
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
-	void resize( ResizeEvent event );
+	void resize();
 
   protected:
 	// shader and texture for our model
@@ -346,7 +346,7 @@ void Picking3DApp::mouseDrag( MouseEvent event )
 	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
 }
 
-void Picking3DApp::resize( ResizeEvent event )
+void Picking3DApp::resize()
 {
 	// adjust aspect ratio
 	CameraPersp cam = mMayaCam.getCamera();

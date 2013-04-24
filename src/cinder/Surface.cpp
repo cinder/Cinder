@@ -24,6 +24,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/ip/Fill.h"
 
+#include <boost/preprocessor/seq.hpp>
 #include <boost/type_traits/is_same.hpp>
 using boost::tribool;
 

@@ -2,12 +2,11 @@
 //
 //  @file       TwMgr.h
 //  @brief      Tweak bar manager.
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
+//              For conditions of distribution and use, see License.txt
 //
-//  notes:      Private header
-//              TAB=4
+//  note:       Private header
 //
 //  ---------------------------------------------------------------------------
 
@@ -71,6 +70,12 @@ enum ERetType
     RET_STRING
 };
 
+enum EButtonAlign   
+{ 
+    BUTTON_ALIGN_LEFT, 
+    BUTTON_ALIGN_CENTER, 
+    BUTTON_ALIGN_RIGHT 
+};
 
 //  ---------------------------------------------------------------------------
 //  AntTweakBar Manager
@@ -80,6 +85,7 @@ struct CTwMgr
 {
     ETwGraphAPI         m_GraphAPI;
     void *              m_Device;
+    int                 m_WndID;
     class ITwGraph *    m_Graph;
     int                 m_WndWidth;
     int                 m_WndHeight;
@@ -105,6 +111,9 @@ struct CTwMgr
     std::string         m_BarAlwaysOnBottom;
     bool                m_UseOldColorScheme;
     bool                m_Contained;
+    EButtonAlign        m_ButtonAlign;
+    bool                m_OverlapContent;
+    bool                m_Terminating;
 
     std::string         m_Help;
     TwBar *             m_HelpBar;
@@ -131,7 +140,7 @@ struct CTwMgr
     //bool              IsProcessing() const            { return m_Processing);
     //void              SetProcessing(bool processing)  { m_Processing = processing; }
 
-                        CTwMgr(ETwGraphAPI _GraphAPI, void *_Device);
+                        CTwMgr(ETwGraphAPI _GraphAPI, void *_Device, int _WndID);
                         ~CTwMgr();
 
     struct CStructMember
@@ -255,7 +264,7 @@ struct CTwMgr
     std::vector<CCDStdStringRecord> m_CDStdStringRecords;
     void                UnrollCDStdString(std::vector<CCDStdStringRecord>& _Records, TwType _Type, void *_Data);
     void                RestoreCDStdString(const std::vector<CCDStdStringRecord>& _Records);
-    std::vector<char>   m_CDStdStringCopyBuffer;
+    std::map<void *, std::vector<char> > m_CDStdStringCopyBuffers;
 
     struct CCustom      // custom var type
     {
@@ -271,6 +280,7 @@ struct CTwMgr
     double              m_RepeatMousePressedPeriod;
     bool                m_CanRepeatMousePressed;
     bool                m_IsRepeatingMousePressed;
+    double              m_LastDrawTime;
 
     #if defined(ANT_WINDOWS)
         typedef HCURSOR CCursor;
@@ -309,6 +319,7 @@ struct CTwMgr
     TwCopyCDStringToClient  m_CopyCDStringToClient;
     TwCopyStdStringToClient m_CopyStdStringToClient;
     size_t              m_ClientStdStringStructSize;
+    TwType              m_ClientStdStringBaseType;
 
 protected:
     int                 m_NbMinimizedBars;
@@ -342,6 +353,24 @@ const TwType TW_TYPE_CSSTRING_BASE  = TW_TYPE_CSSTRING(0);          // defined a
 const TwType TW_TYPE_CSSTRING_MAX   = TW_TYPE_CSSTRING(0xfffffff);
 #define TW_CSSTRING_SIZE(type)      ((int)((type)&0xfffffff))
 const TwType TW_TYPE_CUSTOM_BASE    = TwType(0x40000000);
+const TwType TW_TYPE_STDSTRING_VS2008 = TwType(0x2fff0000);
+const TwType TW_TYPE_STDSTRING_VS2010 = TwType(0x2ffe0000);
+
+extern "C" int ANT_CALL TwSetLastError(const char *_StaticErrorMessage);
+
+//const TwGraphAPI TW_OPENGL_CORE = (TwGraphAPI)5; // WIP (note: OpenGL Core Profil requires OpenGL 3.2 or later)
+
+// Clipping helper
+struct CRect 
+{ 
+    int X, Y, W, H;
+    CRect() : X(0), Y(0), W(0), H(0) {}
+    CRect(int _X, int _Y, int _W, int _H) : X(_X), Y(_Y), W(_W), H(_H) {}
+    bool operator==(const CRect& _Rect) { return (Empty() && _Rect.Empty()) || (X==_Rect.X && Y==_Rect.Y && W==_Rect.W && H==_Rect.H); }
+    bool Empty(int _Margin=0) const { return (W<=_Margin || H<=_Margin); }
+    bool Subtract(const CRect& _Rect, std::vector<CRect>& _OutRects) const;
+    bool Subtract(const std::vector<CRect>& _Rects, std::vector<CRect>& _OutRects) const;
+};
 
 
 //  ---------------------------------------------------------------------------
@@ -353,12 +382,15 @@ enum EMgrAttribs
 {
     MGR_HELP = 1,
     MGR_FONT_SIZE,
+    MGR_FONT_STYLE,
     MGR_ICON_POS,
     MGR_ICON_ALIGN,
     MGR_ICON_MARGIN,
     MGR_FONT_RESIZABLE,
     MGR_COLOR_SCHEME,
-    MGR_CONTAINED
+    MGR_CONTAINED,
+    MGR_BUTTON_ALIGN,
+    MGR_OVERLAP
 };
 
 
@@ -438,6 +470,8 @@ struct CQuaternionExt
     static void          QuatFromDir(double *outQx, double *outQy, double *outQz, double *outQs, double dx, double dy, double dz);
     inline void          Permute(float *outX, float *outY, float *outZ, float x, float y, float z);
     inline void          PermuteInv(float *outX, float *outY, float *outZ, float x, float y, float z);
+    inline void          Permute(double *outX, double *outY, double *outZ, double x, double y, double z);
+    inline void          PermuteInv(double *outX, double *outY, double *outZ, double x, double y, double z);
     bool                 m_Highlighted;
     bool                 m_Rotating;
     double               m_OrigQuat[4];

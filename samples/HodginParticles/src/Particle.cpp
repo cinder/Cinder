@@ -114,7 +114,7 @@ void Particle::render()
 
 void Particle::renderTrails()
 {
-	glBegin( GL_QUAD_STRIP );
+	gl::begin( GL_QUAD_STRIP );
 
 	for( int i = 0; i < len - 2; i++ ) {
 		float per     = 1.0f - i / (float)(len-1);
@@ -143,12 +143,12 @@ void Particle::renderTrails()
 			  
 		Vec3f off = perp1 * ( radius * agePer * per * 0.1f );
 
-		glColor4f( per, per * 0.25f, 1.0f - per, per * 0.5f );
+		gl::color( per, per * 0.25f, 1.0f - per, per * 0.5f );
 		gl::vertex( loc[i] - off );
 		gl::vertex( loc[i] + off );
 	}
 
-	glEnd();
+	gl::end();
 }
 
 void Particle::setAge()

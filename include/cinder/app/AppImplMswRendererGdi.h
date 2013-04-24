@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -37,7 +38,7 @@ class AppImplMswRendererGdi : public AppImplMswRenderer {
  public:
 	AppImplMswRendererGdi( App *aApp, bool doubleBuffer );
 
-	virtual bool	initialize( HWND wnd, HDC dc );
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill() {}
 	virtual void	defaultResize() const;
 	virtual void	swapBuffers() const;

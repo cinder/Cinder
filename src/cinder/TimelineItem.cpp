@@ -58,6 +58,9 @@ void TimelineItem::stepTo( float newTime, bool reverse )
 	updateDuration();
 
 	if( ( ! mHasReverseStarted ) && reverse && ( newTime < mStartTime ) ) {
+		// first update the current time to be the start time
+		update( ( mUseAbsoluteTime ) ? mStartTime : 0 );
+		// then issue reverse start
 		mHasReverseStarted = true;
 		mHasStarted = false;
 		start( true );

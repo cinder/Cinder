@@ -26,7 +26,7 @@ class RDiffusionApp : public AppBasic {
 	void	mouseUp( MouseEvent event );
 	void	resetFBOs();
 	
-	params::InterfaceGl		mParams;
+	params::InterfaceGlRef	mParams;
 		
 	int				mCurrentFBO;
 	int				mOtherFBO;
@@ -81,11 +81,11 @@ void RDiffusionApp::setup()
 	mMousePressed = false;
 	
 	// Setup the parameters
-	mParams = params::InterfaceGl( "Parameters", Vec2i( 175, 100 ) );
-	mParams.addParam( "Reaction u", &mReactionU, "min=0.0 max=0.4 step=0.01 keyIncr=u keyDecr=U" );
-	mParams.addParam( "Reaction v", &mReactionV, "min=0.0 max=0.4 step=0.01 keyIncr=v keyDecr=V" );
-	mParams.addParam( "Reaction k", &mReactionK, "min=0.0 max=1.0 step=0.001 keyIncr=k keyDecr=K" );	
-	mParams.addParam( "Reaction f", &mReactionF, "min=0.0 max=1.0 step=0.001 keyIncr=f keyDecr=F" );
+	mParams = params::InterfaceGl::create( "Parameters", Vec2i( 175, 100 ) );
+	mParams->addParam( "Reaction u", &mReactionU, "min=0.0 max=0.4 step=0.01 keyIncr=u keyDecr=U" );
+	mParams->addParam( "Reaction v", &mReactionV, "min=0.0 max=0.4 step=0.01 keyIncr=v keyDecr=V" );
+	mParams->addParam( "Reaction k", &mReactionK, "min=0.0 max=1.0 step=0.001 keyIncr=k keyDecr=K" );	
+	mParams->addParam( "Reaction f", &mReactionF, "min=0.0 max=1.0 step=0.001 keyIncr=f keyDecr=F" );
 	
 	gl::Fbo::Format format;
 	format.enableDepthBuffer( false );
@@ -150,7 +150,7 @@ void RDiffusionApp::draw()
 	gl::setViewport( getWindowBounds() );
 	gl::draw( mFBOs[mCurrentFBO].getTexture(), getWindowBounds() );
 	
-	params::InterfaceGl::draw();
+	mParams->draw();
 }
 
 void RDiffusionApp::resetFBOs()

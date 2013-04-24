@@ -4,19 +4,18 @@
 #include "cinder/Vector.h"
 
 class SquareListener {
- public:
-	SquareListener( ci::app::App *app );
-	~SquareListener();
+  public:
+	SquareListener( ci::app::WindowRef window );
  
-	bool	mouseDown( ci::app::MouseEvent event );
-	bool	mouseDrag( ci::app::MouseEvent event );
+	void	mouseDown( ci::app::MouseEvent &event );
+	void	mouseDrag( ci::app::MouseEvent &event );
 	
 	void	draw();
 	
- private:
+  private:
 	ci::Rectf		mRect;
 	bool			mSelected;
 	
-	ci::app::App	*mApp;
-	ci::CallbackId	mCbMouseDown, mCbMouseDrag;
+	ci::app::WindowRef				mWindow;
+	ci::signals::scoped_connection	mCbMouseDown, mCbMouseDrag;
 };
