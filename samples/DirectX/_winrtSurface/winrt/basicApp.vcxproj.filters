@@ -30,7 +30,7 @@
     <ClCompile Include="..\src\basicApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\testPattern.png">
+    <Image Include="Assets\mona.jpg">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>
