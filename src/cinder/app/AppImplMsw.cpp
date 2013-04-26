@@ -566,7 +566,10 @@ std::string	WindowImplMsw::getTitle() const
 void WindowImplMsw::setTitle( const std::string &title )
 {
 	std::wstring titleWide = toUtf16( title );
-	::SetWindowText( mWnd, &titleWide[0] );
+	if( titleWide.empty() )
+		::SetWindowText( mWnd, L"" );
+	else
+		::SetWindowText( mWnd, &titleWide[0] );
 }
 
 void WindowImplMsw::setSize( const Vec2i &windowSize )
