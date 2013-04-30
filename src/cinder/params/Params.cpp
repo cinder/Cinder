@@ -72,7 +72,7 @@ namespace {
 #undef SYNONYM
 #undef HOMONYM
 
-void mouseDown( app::WindowRef win, int twWindowId, app::MouseEvent &event )
+void mouseDown( int twWindowId, app::MouseEvent &event )
 {
 	TwSetCurrentWindow( twWindowId );
 
@@ -86,7 +86,7 @@ void mouseDown( app::WindowRef win, int twWindowId, app::MouseEvent &event )
 	event.setHandled( TwMouseButton( TW_MOUSE_PRESSED, button ) != 0 );
 }
 
-void mouseUp( app::WindowRef win, int twWindowId, app::MouseEvent &event )
+void mouseUp( int twWindowId, app::MouseEvent &event )
 {
 	TwSetCurrentWindow( twWindowId );
 
@@ -100,7 +100,7 @@ void mouseUp( app::WindowRef win, int twWindowId, app::MouseEvent &event )
 	event.setHandled( TwMouseButton( TW_MOUSE_RELEASED, button ) != 0 );
 }
 
-void mouseWheel( app::WindowRef win, int twWindowId, app::MouseEvent &event )
+void mouseWheel( int twWindowId, app::MouseEvent &event )
 {
 	TwSetCurrentWindow( twWindowId );
 
@@ -109,11 +109,14 @@ void mouseWheel( app::WindowRef win, int twWindowId, app::MouseEvent &event )
 	event.setHandled( TwMouseWheel( (int)(sWheelPos) ) != 0 );
 }
 
-void mouseMove( app::WindowRef win, int twWindowId, app::MouseEvent &event )
+void mouseMove( weak_ptr<app::Window> winWeak, int twWindowId, app::MouseEvent &event )
 {
 	TwSetCurrentWindow( twWindowId );
 
-	event.setHandled( TwMouseMotion( win->toPixels( event.getX() ), win->toPixels( event.getY() ) ) != 0 );
+	auto win = winWeak.lock();
+	if( win ) {
+		event.setHandled( TwMouseMotion( win->toPixels( event.getX() ), win->toPixels( event.getY() ) ) != 0 );
+	}
 }
 
 void keyDown( int twWindowId, app::KeyEvent &event )
@@ -134,11 +137,13 @@ void keyDown( int twWindowId, app::KeyEvent &event )
             kmod ) != 0 );
 }
 
-void resize( cinder::app::WindowRef window, int twWindowId )
+void resize( weak_ptr<app::Window> winWeak, int twWindowId )
 {
 	TwSetCurrentWindow( twWindowId );
 
-	TwWindowSize( window->toPixels( window->getWidth() ), window->toPixels( window->getHeight() ) );
+	auto win = winWeak.lock();
+	if( win )
+		TwWindowSize( win->toPixels( win->getWidth() ), win->toPixels( win->getHeight() ) );
 }
 
 void TW_CALL implStdStringToClient( std::string& destinationClientString, const std::string& sourceLibraryString )
@@ -168,12 +173,19 @@ class AntMgr {
 	}
 };
 
+void tweakBarDeleter( int windowId, TwBar *bar )
+{
+	TwSetCurrentWindow( windowId );
+	TwDeleteBar( bar );
+}
+
 } // anonymous namespace
 
-int initAntGl( app::WindowRef win )
+int initAntGl( weak_ptr<app::Window> winWeak )
 {
 	static std::shared_ptr<AntMgr> sMgr;
 	static int sWindowId = 0;
+	auto win = winWeak.lock();
 	if( ! sMgr )
 		sMgr = std::shared_ptr<AntMgr>( new AntMgr( (int)win->getContentScale() ) );
 	return sWindowId++;
@@ -206,21 +218,21 @@ void InterfaceGl::init( app::WindowRef window, const std::string &title, const V
 		
 	mWindow = window;
 
-	mBar = std::shared_ptr<TwBar>( TwNewBar( title.c_str() ), TwDeleteBar );
-	TwWindowSize( window->toPixels( window->getWidth() ), window->toPixels( window->getHeight() ) );	
+	mBar = std::shared_ptr<TwBar>( TwNewBar( title.c_str() ), std::bind( tweakBarDeleter, mTwWindowId, std::placeholders::_1 ) );
+	TwWindowSize( window->toPixels( window->getWidth() ), window->toPixels( window->getHeight() ) );
 	char optionsStr[1024];
 	sprintf( optionsStr, "`%s` size='%d %d' color='%d %d %d' alpha=%d", title.c_str(), size.x, size.y, (int)(color.r * 255), (int)(color.g * 255), (int)(color.b * 255), (int)(color.a * 255) );
 	TwDefine( optionsStr );
 	
 	TwCopyStdStringToClientFunc( implStdStringToClient );	
 
-	mWindow->getSignalMouseDown().connect( std::bind( mouseDown, mWindow, mTwWindowId, std::placeholders::_1 ) );
-	mWindow->getSignalMouseUp().connect( std::bind( mouseUp, mWindow, mTwWindowId, std::placeholders::_1 ) );
-	mWindow->getSignalMouseWheel().connect( std::bind( mouseWheel, mWindow, mTwWindowId, std::placeholders::_1 ) );
-	mWindow->getSignalMouseMove().connect( std::bind( mouseMove, mWindow, mTwWindowId, std::placeholders::_1 ) );
-	mWindow->getSignalMouseDrag().connect( std::bind( mouseMove, mWindow, mTwWindowId, std::placeholders::_1 ) );
-	mWindow->getSignalKeyDown().connect( std::bind( keyDown, mTwWindowId, std::placeholders::_1 ) );
-	mWindow->getSignalResize().connect( std::bind( resize, mWindow, mTwWindowId ) );
+	window->getSignalMouseDown().connect( std::bind( mouseDown, mTwWindowId, std::placeholders::_1 ) );
+	window->getSignalMouseUp().connect( std::bind( mouseUp, mTwWindowId, std::placeholders::_1 ) );
+	window->getSignalMouseWheel().connect( std::bind( mouseWheel, mTwWindowId, std::placeholders::_1 ) );
+	window->getSignalMouseMove().connect( std::bind( mouseMove, mWindow, mTwWindowId, std::placeholders::_1 ) );
+	window->getSignalMouseDrag().connect( std::bind( mouseMove, mWindow, mTwWindowId, std::placeholders::_1 ) );
+	window->getSignalKeyDown().connect( std::bind( keyDown, mTwWindowId, std::placeholders::_1 ) );
+	window->getSignalResize().connect( std::bind( resize, mWindow, mTwWindowId ) );
 }
 
 void InterfaceGl::draw()

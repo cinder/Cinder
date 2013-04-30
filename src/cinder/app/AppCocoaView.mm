@@ -503,7 +503,12 @@ namespace cinder { namespace app {
 
 AppCocoaView::AppCocoaView()
 	: App()
-{	
+{
+}
+
+AppCocoaView::Settings::Settings()
+	: App::Settings()
+{
 }
 
 void AppCocoaView::prepareLaunch( RendererRef defaultRenderer )

@@ -1,15 +1,72 @@
-* 0.8.0		April 26, 2010
-	Initial release
-* 0.8.1		May 21, 2010
-	MultiTouch in Windows 7 and Cocoa Touch
-	Visual C++ 2010 support
-	OSC by HŽctor S‡nchez-Pajares
-	MSAFluid - a port of Mehmet Atken's Fluid Simulation
-	Audio Synthesis
-	enableSecondaryDisplay - Mac OS X setting for optional display blanking
-	WinInet support - replacement of libCurl on Windows with native API
-	Text rendering on iPhone
-	gl::drawString()
+* 0.8.6		---
+* 0.8.5		Apr 24, 2013
+	Rewritten TinderBox with CinderBlock support
+	Multi-window support
+	Redesigned event system based on Boost.Signals
+	Screensaver support on Mac and Windows
+	Cocoa-driven GUI application type
+	ASIO integration with app-driven io_service
+	Standardized on libc++ for Mac OS X and iOS
+	OSC refactored to eliminate static lib, multicast support added
+	LocationManager support on Mac OS X and iOS
+	Runtime-enabled external console on Windows
+	Full support for Retina displays on iOS and Mac OS X	
+	Support for new armv7s architecture introduced with the iPhone 5
+	iOS external displays including HDMI/VGA adapters and AirPlay
+	iOS orientation changes API
+	iOS international keyboard support
+	iOS MotionManager support for accelerometer + gyroscope integrated orientation
+	iOS proximity sensor support
+	iOS battery level and plug state change event signals
+	iOS dynamic hide/show status bar
+	iOS full suite of foreground/background/memory warning event signals
+	iOS runtime detection of device type
+	iOS capture support for front and rear cameras, and higher resolution cameras
+	iOS hooks for integration with a larger native Cocoa GUI
+	new Convex Hull calculation and sample
+	More robust handling of HTTP error conditions
+	More sophisticated fullscreen application options including optional kiosk mode
+	FMOD CinderBlock built-in
+	Support for .mtl files in ObjLoader courtesy of Nick Porcino
+	Stereoscopic camera support and matching sample courtesy of Paul Houx
+	New Kaleidoscope sample courtesy of Greg Kepler
+	CINDER_VERSION, CINDER_COCOA_TOUCH_SIMULATOR, CINDER_COCOA_TOUCH_DEVICE preprocessor defines
+	Support for both v110 and v110_xp toolsets in Visual C++ 2012
+	Support for 64-bit builds on Mac (minus QuickTime)
+	Requires Mac OS 10.7+, XCode 4.4+
+	Upgraded to Boost 1.53
+* 0.8.4		May 11, 2012
+	SVG Parser
+	Timeline API
+	JSON Parser and Writer
+	Assets system
+	ConcurrentCircularBuffer class
+	Cairo improvements
+	Boolean operations on polygons
+	MatrixAffine2f/d class
+	Modifiers for window position, always-on-top and borderless
+	Frustum class
+	Plane class
+	Gaussian random randGaussian() and nextGaussian()
+	Dynamic vertical sync in OpenGL
+	Base64 encode and decode
+	Hit-testing on arbitrary Path2d and Shape2d's
+	Moved to fs::path class for filesystem paths
+	Upgraded to Boost 1.48
+* 0.8.3		July 15, 2011
+	Part 2 of Robert Hodgin's "Hello Cinder" tutorial
+	Text Layout Improvements
+	TextureFont Class
+	New XML Parsing and Export API
+	OBJ Exporting
+	Clipboard Support
+	Sophisticated Path Subdivision
+	16-bit Image Pipeline
+	Parallel Transport Frame
+	Triangulation API
+	TriMesh2D
+	Math Core Cleanup and Optimizations
+	Built-in Penner Easing Equations
 * 0.8.2		Oct 14, 2010
 	OpenCV 2.1 Support on Mac OS X, iOS and Windows
 	Microphone input on Mac OS X & iOS
@@ -30,36 +87,15 @@
 	Upgraded Cairo to 1.10.0
 	Upgraded to Boost 1.44
 	Removed Mac OS X GLee dependency
-* 0.8.3		July 15, 2011
-	Part 2 of Robert Hodgin's "Hello Cinder" tutorial
-	Text Layout Improvements
-	TextureFont Class
-	New XML Parsing and Export API
-	OBJ Exporting
-	Clipboard Support
-	Sophisticated Path Subdivision
-	16-bit Image Pipeline
-	Parallel Transport Frame
-	Triangulation API
-	TriMesh2D
-	Math Core Cleanup and Optimizations
-	Built-in Penner Easing Equations
-* 0.8.4		May 11, 2012
-	SVG Parser
-	Timeline API
-	JSON Parser and Writer
-	Assets system
-	ConcurrentCircularBuffer class
-	Cairo improvements
-	Boolean operations on polygons
-	MatrixAffine2f/d class
-	Modifiers for window position, always-on-top and borderless
-	Frustum class
-	Plane class
-	Gaussian random randGaussian() and nextGaussian()
-	Dynamic vertical sync in OpenGL
-	Base64 encode and decode
-	Hit-testing on arbitrary Path2d and Shape2d's
-	Moved to fs::path class for filesystem paths
-	Upgraded to Boost 1.48
-* 0.8.5		---
+* 0.8.1		May 21, 2010
+	MultiTouch in Windows 7 and Cocoa Touch
+	Visual C++ 2010 support
+	OSC by HŽctor S‡nchez-Pajares
+	MSAFluid - a port of Mehmet Atken's Fluid Simulation
+	Audio Synthesis
+	enableSecondaryDisplay - Mac OS X setting for optional display blanking
+	WinInet support - replacement of libCurl on Windows with native API
+	Text rendering on iPhone
+	gl::drawString()
+* 0.8.0		April 26, 2010
+	Initial release

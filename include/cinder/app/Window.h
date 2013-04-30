@@ -140,7 +140,8 @@ class Window : public std::enable_shared_from_this<Window> {
 	struct Format {
 		Format( RendererRef renderer = RendererRef(), DisplayRef display = Display::getMainDisplay(), bool fullScreen = false, Vec2i size = Vec2i( 640, 480 ), Vec2i pos = Vec2i::zero() )
 			: mRenderer( renderer ), mFullScreen( fullScreen ), mDisplay( display ), mSize( size ), mPos( pos ), mPosSpecified( false ),
-			mResizable( true ), mBorderless( false ), mAlwaysOnTop( false ), mFullScreenButtonEnabled( false )
+			mResizable( true ), mBorderless( false ), mAlwaysOnTop( false ), mFullScreenButtonEnabled( false ),
+			mTitleSpecified( false ), mTitle( "" )
 #if defined( CINDER_COCOA_TOUCH )
 			, mRootViewController( NULL )
 #endif
@@ -185,7 +186,7 @@ class Window : public std::enable_shared_from_this<Window> {
 		Format&		pos( int32_t x, int32_t y ) { mPos = Vec2i( x, y ); mPosSpecified = true; return *this; }
 		//! Returns whether a non-default position has been requested for the Window.
 		bool		isPosSpecified() const { return mPosSpecified; }
-		//! Unspecifies a non-default position for the window, effectively requestion the deafault position.
+		//! Unspecifies a non-default position for the window, effectively requestion the default position.
 		void		unspecifyPos() { mPosSpecified = false; }
 
 		//! Returns the Renderer which will be instantiated for the Window. Defaults to an instance of the App's default renderer (specified in the app-instantiation macro).
@@ -232,9 +233,14 @@ class Window : public std::enable_shared_from_this<Window> {
 		//! Returns the title of the Window as a UTF-8 string.
 		std::string getTitle() const { return mTitle; }
 		//! Sets the title of the Window as a UTF-8 string.
-		void		setTitle( const std::string &title ) { mTitle = title; }
+		void		setTitle( const std::string &title ) { mTitle = title; mTitleSpecified = true; }
 		//! Sets the title of the Window as a UTF-8 string.
-		Format&		title( const std::string &t ) { mTitle = t; return *this; }
+		Format&		title( const std::string &t ) { setTitle( t ); return *this; }
+		//! Returns whether a non-default title has been requested for the Window.
+		bool		isTitleSpecified() const { return mTitleSpecified; }
+		//! Unspecifies a non-default title for the window, effectively requestion the default title.
+		void		unspecifyTitle() { mTitleSpecified = false; }
+
 
 	  private:
 		RendererRef				mRenderer;
@@ -245,6 +251,7 @@ class Window : public std::enable_shared_from_this<Window> {
 		bool					mPosSpecified;
 		bool					mResizable, mBorderless, mAlwaysOnTop, mFullScreenButtonEnabled;
 		std::string				mTitle;
+		bool					mTitleSpecified;
 
 #if defined( CINDER_COCOA_TOUCH )
 		UIViewController *mRootViewController;
@@ -439,7 +446,8 @@ class Window : public std::enable_shared_from_this<Window> {
 	template<typename T>
 	T*			getUserData() { return static_cast<T*>( mUserData.get() ); }
 	//! Sets the window-specific data associated with this Window. The variable is \c deleted upon destruction of the Window.
-	void		setUserData( void *userData ) { mUserData = std::shared_ptr<void>( userData ); }
+	template<typename T>
+	void		setUserData( T *userData ) { mUserData = std::shared_ptr<void>( std::shared_ptr<T>( userData ) ); }
 	
 	//! Returns whether this Window is valid. \c false means it should no longer be used (neither read nor write)
 	bool	isValid() const { return ! mValid; }

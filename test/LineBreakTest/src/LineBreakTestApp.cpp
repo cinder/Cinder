@@ -55,7 +55,24 @@ void LineBreakTestApp::setup()
 {
 	font = Font( "Arial", 24 );
 
-//	const char *s = "just some stuff\n\nthat\nis longer than one line";
+	const char *s8 = "One sees great things from the valley";
+	console() << s8 << std::endl;
+	vector<uint8_t> utf8Breaks;
+	calcLinebreaksUtf8( s8, &utf8Breaks );
+	for( auto it = utf8Breaks.begin(); it != utf8Breaks.end(); ++it )
+		console() << (int)*it;
+	console() << std::endl;
+
+	// the Mac treats wchar_t as a 32-bit value, so we can't just type-cast to uint16_t; can on the PC though
+	vector<uint16_t> s16;
+	for( int i = 0; i < strlen( s8 ); ++i )
+		s16.push_back( s8[i] );
+	console() << s8 << std::endl;	
+	vector<uint8_t> utf16Breaks;
+	calcLinebreaksUtf16( &s16[0], s16.size(), &utf16Breaks );
+	for( auto it = utf16Breaks.begin(); it != utf16Breaks.end(); ++it )
+		console() << (int)*it;
+	console() << std::endl;
 }
 
 void LineBreakTestApp::mouseDrag( MouseEvent event )
@@ -81,7 +98,7 @@ void LineBreakTestApp::draw()
 //	const char *s = "消費増税\n\n法案をめぐる事前事前事前審査を行っていた民主党税調などの合同総会は２８日未明、「名目３％程度、実質２％程度」の経済成長率の数値目標を付則に盛り込んだ新たな修正案を了承し、前原誠司政調会長に対応を一任した。野内閣は３０日に閣議決定を行う。";
 //	for( size_t l = 1; l < 30; ++l ) {
 	//	std::cout << l << ":" << std::endl;
-		lineBreakUtf8( s,std::bind( lineWidth, _1, _2, maxWidth ), print );
+		lineBreakUtf8( s,std::bind( lineWidth, std::placeholders::_1, std::placeholders::_2, maxWidth ), print );
 //	}
 	gl::color( ColorA( 1, 0, 0, 0.5 ) );
 	TextBox box;

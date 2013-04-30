@@ -91,7 +91,6 @@ class AppBasic : public App {
 		bool		isQuitOnLastWindowCloseEnabled() const { return mQuitOnLastWindowClose; }
 
 	 private:
-		bool		mEnableMultiTouch;
 		bool		mQuitOnLastWindowClose;
 #if defined( CINDER_MSW )
 		bool		mEnableMswConsole;

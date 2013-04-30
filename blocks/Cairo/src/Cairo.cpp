@@ -784,8 +784,9 @@ FontFace::FontFace( cairo_font_face_t *aCairoFontFace ) : mCairoFontFace( aCairo
 FontFace::FontFace( const std::string &faceName )
 {
 #if defined( CAIRO_HAS_QUARTZ_FONT )
-	CFStringRef nameRef = CFStringCreateWithCString( kCFAllocatorDefault, faceName.c_str(), kCFStringEncodingUTF8 );
-	CGFontRef fontRef = CGFontCreateWithFontName( nameRef );
+	mCairoFontFace = NULL; // in case we throw below
+	CFStringRef nameRef = ::CFStringCreateWithCString( kCFAllocatorDefault, faceName.c_str(), kCFStringEncodingUTF8 );
+	CGFontRef fontRef = ::CGFontCreateWithFontName( nameRef );
 	if( ! fontRef )
 		throw FontInvalidNameExc();
 	mCairoFontFace = cairo_quartz_font_face_create_for_cgfont( fontRef );

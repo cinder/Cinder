@@ -50,7 +50,7 @@ void TrianglePiece::setTransition( float _delay )
 	else{
 		// transition in
 		app::timeline().apply( &mAlpha, 1.0f, randFloat(0.2f, 0.7f), EaseInQuint()).delay(0.5f + _delay).
-					startFn(bind(&TrianglePiece::setVisible, this, true));
+					startFn( [&] { setVisible( true ); } );
 	}
 }
 

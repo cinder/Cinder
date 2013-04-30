@@ -186,6 +186,11 @@ class App {
 		//! Sets the Window::Format which will be used if no calls are made to Settings::prepareWindow()
 		void				setDefaultWindowFormat( const Window::Format &format ) { mDefaultWindowFormat = format; }
 
+		//! Registers the app to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
+		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
+		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
+		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
+
 		//! a value of \c true allows screensavers or the system's power management to hide the app. Default value is \c false on desktop, and \c true on mobile
 		void	enablePowerManagement( bool aPowerManagement = true );
 		//! is power management enabled, allowing screensavers and the system's power management to hide the application
@@ -220,6 +225,7 @@ class App {
 		float			mFrameRate;
 		bool			mPowerManagement; // allow screensavers or power management to hide app. default: false
 		bool			mEnableHighDensityDisplay;
+		bool			mEnableMultiTouch;
 		std::string		mTitle;
 		
 		friend class App;

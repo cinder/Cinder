@@ -48,7 +48,7 @@
 - (void)addCinderViewAsBarButton
 {
 	[self addEmptyViewControllerToFront];
-	UIViewController *front = self.viewControllers[0];
+	UIViewController *front = [self.viewControllers objectAtIndex:0];
 	UIView *cinderView = (__bridge UIView *)ci::app::getWindow()->getNative();
 	cinderView.frame = CGRectMake( 0, 0, 60, self.navigationBar.frame.size.height );
 	front.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:cinderView];

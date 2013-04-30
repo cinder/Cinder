@@ -115,6 +115,9 @@ class ObjLoader {
     //! Returns the total number of groups.
 	size_t		getNumGroups() const { return mGroups.size(); }
 	
+	//! Returns a vector<> of the Groups in the OBJ.
+	const std::vector<Group>&		getGroups() const { return mGroups; }
+	
  private:
 	typedef boost::tuple<int,int> VertexPair;
 	typedef boost::tuple<int,int,int> VertexTriple;
@@ -133,7 +136,7 @@ class ObjLoader {
 	std::vector<Vec3f>			    mVertices, mNormals;
 	std::vector<Vec2f>			    mTexCoords;
 	std::vector<Group>			    mGroups;
-    std::map<std::string, Material> mMaterials;
+	std::map<std::string, Material> mMaterials;
 };
 
 } // namespace cinder

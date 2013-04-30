@@ -27,7 +27,9 @@
 #include "cinder/Exception.h"
 
 #if defined( CINDER_MSW ) && ( _MSC_VER >= 1700 ) && ( _WIN32_WINNT < 0x0602 ) && ( ! defined( _USING_V110_SDK71_ ) )
-	#error "Cinder Audio is only supported targeting Windows 8 with Visual C++ 2012 v110 compiler"
+	#error "Cinder Audio is only supported targeting Windows 8 with Visual C++ 2012 v110 compiler. Please see 'Windows Notes' in the docs."
+#elif defined( CINDER_MSW ) && ( _WIN32_WINNT >= 0x0602 ) && ( ! defined( _USING_V110_SDK71_ ) )
+	#pragma comment( lib, "xaudio2.lib" )
 #endif
 
 namespace cinder { namespace audio {

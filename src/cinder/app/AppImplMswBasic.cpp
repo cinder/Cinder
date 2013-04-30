@@ -49,8 +49,11 @@ void AppImplMswBasic::run()
 	auto formats = mApp->getSettings().getWindowFormats();
 	if( formats.empty() )
 		formats.push_back( mApp->getSettings().getDefaultWindowFormat() );
-	for( auto format = formats.begin(); format != formats.end(); ++format )
+	for( auto format = formats.begin(); format != formats.end(); ++format ) {
+		if( ! format->isTitleSpecified() )
+			format->setTitle( mApp->getSettings().getTitle() );
 		createWindow( *format );
+	}
 
 	mApp->privateSetup__();
 	mSetupHasBeenCalled = true;
@@ -151,7 +154,7 @@ void AppImplMswBasic::closeWindow( WindowImplMsw *windowImpl )
 	if( winIt != mWindows.end() ) {
 		windowImpl->getWindow()->emitClose();
 		windowImpl->privateClose();
-		delete windowImpl;
+		delete windowImpl; // this corresponds to winIt
 		mWindows.erase( winIt );
 	}
 
