@@ -18,7 +18,7 @@ class BasicApp : public AppBasic {
 	dx::Texture		mTexture;
 	Font			mFont;
 
-	Vec2i			mMousePosition;
+	Vec2f			mMousePosition;
 	Vec2f			mFollowerPosition;
 
 };
@@ -43,7 +43,7 @@ void BasicApp::update()
 	// Where you want to be MINUS where you are it the total distance.
 	// Unless you want to cover the entire distance in one huge step, 
 	// multiply by a small percentage. 
-	Vec2f animationStep = (mMousePosition - mFollowerPosition)*.2;
+	Vec2f animationStep = (mMousePosition - mFollowerPosition)*.2f;
 	// Then ADD that step to your current position.
 	// Since we are working with percentages of the whole, and not absolute
 	// fractions, the percentage of the distance remaining will always be relative,
@@ -69,25 +69,29 @@ void BasicApp::draw()
 	if ( mTexture )
 		dx::draw( mTexture, Rectf(getWindowBounds()) );
 
+	Vec2f radius(8.0f, 8.0f);
+	Vec2f smallerRadius(6.0f, 6.0f);
+
 	// lets draw some shapes to show the immediate position of any screen pointer
-	dx::color( Color(1.0f, 1.0f, 1.0f) );
+	// we will draw some semi-transparent cross hairs...
+	dx::color( ColorA(1.0f, 1.0f, 1.0f, 0.3f) );
 	dx::drawLine( Vec2f( 0, mMousePosition.y), Vec2f(getWindowWidth(), mMousePosition.y ) );
 	dx::drawLine( Vec2f( mMousePosition.x, 0), Vec2f(mMousePosition.x, getWindowHeight() ) );
-	dx::drawStrokedCircle( mMousePosition, 14.0f );
-
+	// and a solid white targeting square...
+	dx::color( Color::white());
+	dx::drawSolidRect( Rectf( mMousePosition - radius, mMousePosition + radius) );
+	
 	// lets also illustrate the animation logic we added in update() and visualize the 
-	// follower as a square while it eases to the pointer target ring.
+	// follower as a square while it eases to the immediate pointer target
 	dx::color( Color(1.0f, 0.4f, 0.8f ) );
-	Vec2f radius(5.0f, 5.0f);
-	Vec2f upperLeft = mFollowerPosition - radius;
-	Vec2f lowerRight = mFollowerPosition + radius;
-	dx::drawSolidRect( Rectf( upperLeft, lowerRight ));
+	dx::drawSolidRect( Rectf( mFollowerPosition - smallerRadius, mFollowerPosition + smallerRadius ) );
 
-	// additional geometries
-	dx::drawStrokedCircle( Vec2f( 100.0f, 100.0f ), 50.0f, 7 );
-	dx::drawSolidCircle( Vec2f( 100.0f, 100.0f ), 40.0f, 7 );
-	dx::drawSolidTriangle( Vec2f( 50.0f, 10.0f ), Vec2f( 30.0f, 30.0f), Vec2f(70.0f, 30.0f)); 
-
+	// lets explore drawing some additional, static geometries as well...
+	dx::color( ColorA( 0.0f, 1.0f, 1.0f, 0.5) );
+	dx::drawStrokedCircle( Vec2f( 40.0f, 90.0f ), 30.0f, 7 );
+	dx::drawSolidCircle( Vec2f(   40.0f, 90.0f ), 20.0f, 7 );
+	dx::drawSolidTriangle( Vec2f( 40.0f, 144.0f ), Vec2f( 14.0f, 196.0f), Vec2f(66.0f, 196.0f)); 
+	dx::drawStrokedRect( Rectf(10.0f, 140.0f, 70.0f, 200.0f ) );
 
 	// here is a simple way of drawing basic messages on the screen
 	std::stringstream s;
