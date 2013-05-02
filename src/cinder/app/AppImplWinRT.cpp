@@ -38,7 +38,6 @@
 #include <Windows.h>
 #include <CommDlg.h>
 #include <ShellAPI.h>
-#include <Shlobj.h>
 #include <collection.h>
 #include <ppltasks.h>
 

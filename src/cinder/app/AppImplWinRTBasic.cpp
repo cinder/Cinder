@@ -33,9 +33,6 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/Utilities.h"
 #include "cinder/app/WinRTApp.h"
-
-#include <windowsx.h>
-#include <winuser.h>
 #include "cinder/WinRTUtils.h"
 
 using std::vector;

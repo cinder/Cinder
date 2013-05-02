@@ -31,7 +31,10 @@
 #include "cinder/dx/dx.h"
 #include "cinder/app/App.h"
 #include "cinder/Camera.h"
+
+#if ! defined( CINDER_WINRT )
 #include <windowsx.h>
+#endif
 
 #if defined( CINDER_WINRT )
 #include "cinder/WinRTUtils.h"
