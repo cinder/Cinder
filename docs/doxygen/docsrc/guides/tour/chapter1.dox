@@ -106,7 +106,7 @@ As we mentioned before, including images directly in your app as resources is on
 The following code will attempt to create an image from a file selected by means of a standard open dialog box. Once you select a file, assuming the file is a valid image, a texture is created. Otherwise, an exception is thrown and we print an error message (we'll discuss console() more in a bit).
 \code
 try {
-	std::string p = getOpenFilePath( "", ImageIo::getLoadExtensions() );
+	fs::path p = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 	if( ! p.empty() ) { // an empty string means the user canceled
 		myImage = gl::Texture( loadImage( p ) );
 	}
@@ -136,9 +136,9 @@ Drawing shapes is just as easy. If you want to draw a circle of a radius of x, y
 gl::drawSolidCircle( Vec2f( 15.0f, 25.0f ), 50.0f );
 \endcode
 \n
-The circle that is created is actually an OpenGL \c TRIANGLE_FAN. The number of triangles comprising the fan can be controlled by an optional third parameter. If left blank, the circle will be created with as much detail as is needed based on the circle's radius. For example, the following code will create a filled hexagon. Note that the detail parameter represents the number of vertices to draw. Since we are drawing a triangle fan, we need to include the center point which brings the total vertices to 7, not 6.
+The circle that is created is actually an OpenGL \c TRIANGLE_FAN. The number of triangles comprising the fan can be controlled by an optional third parameter. If left blank, the circle will be created with as much detail as is needed based on the circle's radius. For example, the following code will create a filled hexagon.
 \code
-gl::drawSolidCircle( Vec2f( 15.0f, 25.0f ), 50.0f, 7 );
+gl::drawSolidCircle( Vec2f( 15.0f, 25.0f ), 50.0f, 6 );
 \endcode
 \n
 There are similar methods for drawing all manner of basic geometry, both 2D and 3D. Check the reference for the full list.\n
