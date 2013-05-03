@@ -1371,10 +1371,10 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	{
 		auto dx = getDxRenderer();
 		FixedVertex *verts = new FixedVertex[3*(1+numSegments)];
-		for( int s = 0; s <= numSegments; s++ ) {
+		for( int s = 0; s < numSegments; s++ ) {
 			float t1 = s / (float)numSegments * 2.0f * 3.14159f;
 			float t2 = (s+1) / (float)numSegments * 2.0f * 3.14159f;
-			verts[s*3].pos = Vec3f(center, 0);
+			verts[s*3].pos = Vec4f(center.x, center.y, 0, 1);
 			verts[s*3].norm = dx->mCurrentNormal;
 			verts[s*3].uv = dx->mCurrentUV;
 			verts[s*3].color = dx->mCurrentColor;
@@ -1385,7 +1385,7 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 			verts[s*3+2].pos.y += math<float>::sin( t2 ) * radius;
 		}
 
-		applyDxFixedPipeline( verts, 3 * (1 + numSegments), COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+		applyDxFixedPipeline( verts, 3 * numSegments, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
 		dx->mDeviceContext->Draw((1 + numSegments) * 3, 0);
 		delete [] verts;
 	}
