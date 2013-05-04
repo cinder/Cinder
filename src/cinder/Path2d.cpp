@@ -361,6 +361,9 @@ void Path2d::removeSegment( size_t segment )
 
 Vec2f Path2d::getPosition( float t ) const
 {
+	if( mPoints.empty() )
+		throw Path2dExc();
+
 	if( t <= 0 )
 		return mPoints[0];
 	else if( t >= 1 )
@@ -376,6 +379,9 @@ Vec2f Path2d::getPosition( float t ) const
 
 Vec2f Path2d::getSegmentPosition( size_t segment, float t ) const
 {
+	if( mSegments.empty() )
+		throw Path2dExc();
+
 	size_t firstPoint = 0;
 	for( size_t s = 0; s < segment; ++s )
 		firstPoint += sSegmentTypePointCounts[mSegments[s]];
