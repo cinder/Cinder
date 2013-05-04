@@ -27,10 +27,10 @@
 #include "cinder/Cinder.h"
 #include <cmath>
 #include <climits>
+#include <cfloat>
 #if defined( CINDER_MSW )
 	#undef min
 	#undef max
-	#include <float.h>
 #endif
 
 namespace cinder {
