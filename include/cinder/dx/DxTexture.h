@@ -43,24 +43,26 @@
 
 namespace cinder { namespace dx {
 
+class Texture;
+typedef std::shared_ptr<Texture>	TextureRef;
+
 /** \brief Represents an OpenGL Texture. \ImplShared
 \see \ref guide_Images "Images in Cinder" */
 class Texture {
   public:
 	struct Format;
-	
-	//! Default initializer. Points to a null Obj
-	Texture() {}
-	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. **/
-	Texture( int aWidth, int aHeight, Format format = Format() );
-	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
-	Texture( const unsigned char *data, DXGI_FORMAT dataFormat, int aWidth, int aHeight, Format format = Format() );
-	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	Texture( const Surface8u &surface, Format format = Format() );
-	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	Texture( const Surface32f &surface, Format format = Format() );
-	/** \brief Constructs a texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. **/
-	Texture( ImageSourceRef imageSource, Format format = Format() );
+
+	/** Constructs a texture of size(\a width, \a height) */
+	static TextureRef	create( int width, int height, Format format = Format() ) { return TextureRef( new Texture( width, height, format ) ); }
+	/** Constructs a texture of size(\a width, \a height). Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat */
+	static TextureRef	create( const unsigned char *data, DXGI_FORMAT dataFormat, int width, int height, Format format = Format() )
+						{ return TextureRef( new Texture( data, dataFormat, width, height, format ) ); }
+	/** Constructs a texture based on the contents of \a surface */
+	static TextureRef	create( const Surface8u &surface, Format format = Format() ) { return TextureRef( new Texture( surface, format ) ); }
+	/** Constructs a texture based on the contents of \a surface. */
+	static TextureRef	create( const Surface32f &surface, Format format = Format() ) { return TextureRef( new Texture( surface, format ) ); }
+	/** \brief Constructs a texture based on \a imageSource.  */
+	static TextureRef	create( ImageSourceRef imageSource, Format format = Format() ) { return TextureRef( new Texture( imageSource, format ) ); }
 
 #if defined( CINDER_WINRT )
 	/** \brief Constructs asynchronously a texture based on a imamge located \a path. The loaded texture is returned in \a texture. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. 
@@ -146,7 +148,7 @@ class Texture {
 	void			unbind( UINT textureUnit = 0 ) const;
 
 	//!	Creates a new Texture from raw DirectDraw Stream data
-	static Texture	loadDds( IStreamRef ddsStream, Format format );
+	static TextureRef	loadDds( IStreamRef ddsStream, Format format );
 
 	//! Converts a SurfaceChannelOrder into an appropriate OpenGL dataFormat and type
 	static void		SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, GLint *dataFormat, GLenum *type );
@@ -155,10 +157,7 @@ class Texture {
 	//! Returns whether a give OpenGL dataFormat contains color channels
 	static bool		dataFormatHasColor( GLint dataFormat );
 
-	//! Creates a clone of this texture which does not have ownership, but points to the same resource
-	Texture			weakClone() const;
-
-#if ! defined( CINDER_GLES )	
+#if ! defined( CINDER_GLES )
 	//! Returns an ImageSource pointing to this Texture
 	operator	ImageSourceRef() const;
 #endif
@@ -222,6 +221,18 @@ class Texture {
 	};
 
  protected:
+	Texture() {}
+	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. **/
+	Texture( int aWidth, int aHeight, Format format = Format() );
+	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
+	Texture( const unsigned char *data, DXGI_FORMAT dataFormat, int aWidth, int aHeight, Format format = Format() );
+	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	Texture( const Surface8u &surface, Format format = Format() );
+	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	Texture( const Surface32f &surface, Format format = Format() );
+	/** \brief Constructs a texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. **/
+	Texture( ImageSourceRef imageSource, Format format = Format() );
+	 
 	void	init( const unsigned char *data, DXGI_FORMAT dataFormat, const Format &format );	
 	void	init( const float *data, DXGI_FORMAT dataFormat, const Format &format );
 	void	init( ImageSourceRef imageSource, const Format &format );	
@@ -258,6 +269,7 @@ class Texture {
 	//@}  
 };
 
+/*
 class TextureCache {
  public:
 	TextureCache() {}
@@ -290,7 +302,7 @@ class TextureCache {
 	void reset() { mObj.reset(); }
 	//@}	
 };
-
+*/
 
 class SurfaceConstraintsGLTexture : public SurfaceConstraints {
  public:

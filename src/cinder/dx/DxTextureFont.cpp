@@ -200,8 +200,8 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			dx::Texture::Format textureFormat = dx::Texture::Format();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 			textureFormat.setInternalFormat( DXGI_FORMAT_R8G8B8A8_UNORM );
-			mTextures.push_back( dx::Texture( tempSurface, textureFormat ) );
-			ip::fill<uint8_t>( &channel, 0 );			
+			mTextures.push_back( dx::Texture::create( tempSurface, textureFormat ) );
+			ip::fill<uint8_t>( &channel, 0 );
 			curOffset = Vec2i::zero();
 			curGlyphIndex = 0;
 			++curTextureIndex;
@@ -335,7 +335,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
 		vector<float> verts, texCoords;
 		vector<ColorA8u> vertColors;
-		const dx::Texture &curTex = mTextures[texIdx];
+		const dx::TextureRef &curTex = mTextures[texIdx];
 		vector<uint32_t> indices;
 		uint32_t curIdx = 0;
 		if( options.getPixelSnap() )
@@ -349,7 +349,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 			const GlyphInfo &glyphInfo = glyphInfoIt->second;
 			
 			Rectf destRect( glyphInfo.mTexCoords );
-			Rectf srcCoords = curTex.getAreaTexCoords( glyphInfo.mTexCoords );
+			Rectf srcCoords = curTex->getAreaTexCoords( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect.scale( scale );
 			destRect += glyphIt->second * scale;
@@ -387,7 +387,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 		//if( ! colors.empty() )
 		//	glColorPointer( 4, GL_UNSIGNED_BYTE, 0, &vertColors[0] );
 		//glDrawElements( GL_TRIANGLES, indices.size(), indexType, &indices[0] );
-		dx::draw(curTex, verts, texCoords, vertColors, indices);
+		dx::draw( curTex, verts, texCoords, vertColors, indices);
 	}
 }
 
@@ -415,7 +415,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
 		vector<float> verts, texCoords;
 		vector<ColorA8u> vertColors;
-		const dx::Texture &curTex = mTextures[texIdx];
+		const dx::TextureRef &curTex = mTextures[texIdx];
 		vector<uint32_t> indices;
 		uint32_t curIdx = 0;
 		if( options.getPixelSnap() )
@@ -427,7 +427,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 				continue;
 				
 			const GlyphInfo &glyphInfo = glyphInfoIt->second;
-			Rectf srcTexCoords = curTex.getAreaTexCoords( glyphInfo.mTexCoords );
+			Rectf srcTexCoords = curTex->getAreaTexCoords( glyphInfo.mTexCoords );
 			Rectf destRect( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect.scale( scale );
@@ -451,8 +451,8 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 			if( clipped.x1 >= clipped.x2 || clipped.y1 >= clipped.y2 )
 				continue;
 			
-			Vec2f coordScale( 1 / (float)destRect.getWidth() / curTex.getWidth() * glyphInfo.mTexCoords.getWidth(),
-				1 / (float)destRect.getHeight() / curTex.getHeight() * glyphInfo.mTexCoords.getHeight() );
+			Vec2f coordScale( 1 / (float)destRect.getWidth() / curTex->getWidth() * glyphInfo.mTexCoords.getWidth(),
+				1 / (float)destRect.getHeight() / curTex->getHeight() * glyphInfo.mTexCoords.getHeight() );
 			srcTexCoords.x1 = srcTexCoords.x1 + ( clipped.x1 - destRect.x1 ) * coordScale.x;
 			srcTexCoords.x2 = srcTexCoords.x1 + ( clipped.x2 - clipped.x1 ) * coordScale.x;
 			srcTexCoords.y1 = srcTexCoords.y1 + ( clipped.y1 - destRect.y1 ) * coordScale.y;

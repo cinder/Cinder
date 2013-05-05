@@ -2864,12 +2864,12 @@ void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees,
 //#endif
 }
 
-void draw( const Texture &texture )
+void draw( const TextureRef &texture )
 {
-	draw( texture, Area( texture.getCleanBounds() ), texture.getCleanBounds() );
+	draw( texture, Area( texture->getCleanBounds() ), texture->getCleanBounds() );
 }
 
-void draw( const Texture &texture, const Vec2f &pos )
+void draw( const TextureRef &texture, const Vec2f &pos )
 {
 	//this group of code draws the texture using a center anchor
 	//Vec2f extents(texture.getCleanWidth() * 0.5f, texture.getCleanHeight() * 0.5f);
@@ -2877,15 +2877,15 @@ void draw( const Texture &texture, const Vec2f &pos )
 	//Vec2f upperRight = pos + extents;
 	//draw( texture, texture.getCleanBounds(), Rectf( lowerLeft, upperRight ) );
 
-	draw( texture, texture.getCleanBounds(), Rectf( pos.x, pos.y, pos.x + texture.getCleanWidth(), pos.y + texture.getCleanHeight() ) ); 
+	draw( texture, texture->getCleanBounds(), Rectf( pos.x, pos.y, pos.x + texture->getCleanWidth(), pos.y + texture->getCleanHeight() ) ); 
 }
 
-void draw( const Texture &texture, const Rectf &rect )
+void draw( const TextureRef &texture, const Rectf &rect )
 {
-	draw( texture, texture.getCleanBounds(), rect );
+	draw( texture, texture->getCleanBounds(), rect );
 }
 
-void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
+void draw( const TextureRef &texture, const Area &srcArea, const Rectf &destRect )
 {
 //	if(usingGL())
 //	{
@@ -2919,7 +2919,7 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 //	else
 	{
 		auto dx = getDxRenderer();
-		const Rectf srcCoords = texture.getAreaTexCoords( srcArea );
+		const Rectf srcCoords = texture->getAreaTexCoords( srcArea );
 		
 		if(dx->getRenderFlag(app::AppImplMswRendererDx::BATCH_TEXTURE))
 		{
@@ -2931,9 +2931,9 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 				FixedVertex(Vec3f(destRect.getX2(), destRect.getY2(), 0), dx->mCurrentNormal, Vec2f(srcCoords.getX2(), srcCoords.getY2()), dx->mCurrentColor),
 				FixedVertex(Vec3f(destRect.getX1(), destRect.getY2(), 0), dx->mCurrentNormal, Vec2f(srcCoords.getX1(), srcCoords.getY2()), dx->mCurrentColor)
 			};
-			if(dx->mCurrentBatchTexture != &texture) {
-				dx->mCurrentBatchTexture = &texture;
-				dx->mBatchedTextures.push_back(std::pair<const Texture*, std::vector<FixedVertex>>(&texture, std::vector<FixedVertex>(verts, verts + 6)));
+			if(dx->mCurrentBatchTexture != texture.get() ) {
+				dx->mCurrentBatchTexture = texture.get();
+				dx->mBatchedTextures.push_back(std::pair<const Texture*, std::vector<FixedVertex>>( texture.get(), std::vector<FixedVertex>(verts, verts + 6)));
 			}
 			else
 			{
@@ -2951,9 +2951,9 @@ void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
 				FixedVertex(Vec3f(destRect.getX1(), destRect.getY2(), 0), dx->mCurrentNormal, Vec2f(srcCoords.getX1(), srcCoords.getY2()), dx->mCurrentColor)
 			};
 			applyDxFixedPipeline(verts, 4, TEXTURE_VERTEX, TEXTURE_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-			texture.bind();
+			texture->bind();
 			dx->mDeviceContext->Draw(4, 0);
-			texture.unbind();
+			texture->unbind();
 		}
 	}
 //#endif
@@ -3005,7 +3005,7 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 //	tex.setCleanTexCoords( actualSize.x / (float)pow2Surface.getWidth(), actualSize.y / (float)pow2Surface.getHeight() );
 //	baselineOffset += pow2Surface.getHeight();
 //#else
-	dx::Texture tex( renderString( str, font, color, &baselineOffset ) );
+	dx::TextureRef tex = dx::Texture::create( renderString( str, font, color, &baselineOffset ) );
 //#endif
 	//glColor4ub( 255, 255, 255, 255 );
 	auto dx = getDxRenderer();
@@ -3014,9 +3014,9 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 	if( justification == -1 ) // left
 		draw( tex, pos - Vec2f( 0, baselineOffset ) );
 	else if( justification == 0 ) // center
-		draw( tex, pos - Vec2f( tex.getWidth() * 0.5f, baselineOffset ) );	
+		draw( tex, pos - Vec2f( tex->getWidth() * 0.5f, baselineOffset ) );	
 	else // right
-		draw( tex, pos - Vec2f( (float)tex.getWidth(), baselineOffset ) );
+		draw( tex, pos - Vec2f( (float)tex->getWidth(), baselineOffset ) );
 	dx->mCurrentColor = oldColor;
 }
 } // anonymous namespace
@@ -3036,7 +3036,7 @@ void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &co
 	drawStringHelper( str, pos, color, font, 1 );
 }
 
-void draw( const Texture &texture, const std::vector<float> &verts, const std::vector<float> &texCoords, const std::vector<ColorA8u> &vertColors, const std::vector<uint32_t> &indices )
+void draw( const TextureRef &texture, const std::vector<float> &verts, const std::vector<float> &texCoords, const std::vector<ColorA8u> &vertColors, const std::vector<uint32_t> &indices )
 {
 	std::vector<FixedVertex> wholeVertices(verts.size() / 2);
 	auto dx = getDxRenderer();
@@ -3049,7 +3049,7 @@ void draw( const Texture &texture, const std::vector<float> &verts, const std::v
 		wholeVertices[i].uv.y = texCoords[i * 2 + 1];
 		wholeVertices[i].color = (vertColors.size()) ? Vec4f(vertColors[i].r / 255.0f, vertColors[i].g / 255.0f, vertColors[i].b / 255.0f, vertColors[i].a / 255.0f) : dx->mCurrentColor;
 	}
-	texture.bind();
+	texture->bind();
 	applyDxFixedPipeline(&wholeVertices[0], wholeVertices.size(), TEXTURE_VERTEX, TEXTURE_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D11_MAPPED_SUBRESOURCE subresource;
 	dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);

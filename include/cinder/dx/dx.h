@@ -59,6 +59,7 @@ namespace cinder {
 	namespace dx {
 		class VboMesh;
 		class Texture;
+		typedef std::shared_ptr<Texture>	TextureRef;
 		class Light;
 	}
 	namespace app {
@@ -317,15 +318,15 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count );
 	
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp );
 //! Draws \a texture on the XY-plane
-void draw( const Texture &texture );
+void draw( const TextureRef &texture );
 //! Draws \a texture on the XY-plane at \a pos
-void draw( const Texture &texture, const Vec2f &pos );
+void draw( const TextureRef &texture, const Vec2f &pos );
 //! Draws \a texture on the XY-plane in the rectangle defined by \a rect
-void draw( const Texture &texture, const Rectf &rect );
+void draw( const TextureRef &texture, const Rectf &rect );
 //! Draws the pixels inside \a srcArea of \a texture on the XY-plane in the rectangle defined by \a destRect
-void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect );
+void draw( const TextureRef &texture, const Area &srcArea, const Rectf &destRect );
 //! Draws a bunch of textured triangles as specified by the function caller
-void draw( const Texture &texture, const std::vector<float> &verts, const std::vector<float> &texCoords, const std::vector<ColorA8u> &vertColors, const std::vector<uint32_t> &indices );
+void draw( const TextureRef &texture, const std::vector<float> &verts, const std::vector<float> &texCoords, const std::vector<ColorA8u> &vertColors, const std::vector<uint32_t> &indices );
 //! Sets the render state to batch texture draw calls until the end for optimal performance
 void batchTextureBegin();
 //! Draws all the batched textures

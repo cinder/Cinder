@@ -764,29 +764,20 @@ bool Texture::dataFormatHasColor( GLint dataFormat )
 	return true;
 }
 
-Texture Texture::loadDds( IStreamRef ddsStream, Format format )
+TextureRef Texture::loadDds( IStreamRef ddsStream, Format format )
 {
-	Texture texture;
+	TextureRef texture( new Texture() );
 	app::AppImplMswRendererDx *dxRenderer = reinterpret_cast<app::AppImplMswRendererDx*>(reinterpret_cast<app::RendererDx*>(&*app::App::get()->getRenderer())->mImpl);
 	uint8_t *data = (uint8_t*)malloc(ddsStream->size());
 	if(!data)
 		throw TextureDataExc("Not enough memory to load DDS");
 	ddsStream->read(data);
-	DirectX::CreateDDSTextureFromMemory(dxRenderer->md3dDevice, data, ddsStream->size(), (ID3D11Resource**)&texture.mObj->mDxTexture, &texture.mObj->mSRV);
+	DirectX::CreateDDSTextureFromMemory(dxRenderer->md3dDevice, data, ddsStream->size(), (ID3D11Resource**)&texture->mObj->mDxTexture, &texture->mObj->mSRV);
 	free(data);
-	texture.mObj->mDoNotDispose = false;
-	texture.mObj->mWidth = texture.getWidth();
-	texture.mObj->mHeight = texture.getHeight();
+	texture->mObj->mDoNotDispose = false;
+	texture->mObj->mWidth = texture->getWidth();
+	texture->mObj->mHeight = texture->getHeight();
 	return texture;
-}
-
-Texture	Texture::weakClone() const
-{
-	throw TextureDataExc("Haven't implemented Texture::weakClone yet");
-	//gl::Texture result = Texture( mObj->mTarget, mObj->mTextureID, mObj->mWidth, mObj->mHeight, true );
-	//result.mObj->mInternalFormat = mObj->mInternalFormat;
-	//result.mObj->mFlipped = mObj->mFlipped;	
-	//return result;
 }
 
 void Texture::setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon )
@@ -959,11 +950,13 @@ void Texture::unbind( UINT textureUnit ) const
 
 /////////////////////////////////////////////////////////////////////////////////
 // TextureCache
+/*
 TextureCache::TextureCache( const Surface8u &prototypeSurface, const Texture::Format &format )
 	: mObj( shared_ptr<Obj>( new Obj( prototypeSurface, format ) ) )
 {
 	
 }
+
 
 dx::Texture	TextureCache::cache( const Surface8u &data )
 {
@@ -1015,6 +1008,7 @@ void TextureCache::Obj::TextureCacheDeallocator( void *aDeallocatorRefcon )
 	refconPair->first->markTextureAsFree( refconPair->second );
 	delete refconPair;
 }
+*/
 
 /////////////////////////////////////////////////////////////////////////////////
 // ImageTargetGLTexture
