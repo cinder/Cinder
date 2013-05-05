@@ -217,7 +217,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
@@ -236,7 +236,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders\compiled;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
