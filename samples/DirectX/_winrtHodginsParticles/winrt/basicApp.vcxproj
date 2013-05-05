@@ -162,10 +162,6 @@
   <ItemGroup>
     <ClInclude Include="Particle.h" />
     <ClInclude Include="Emitter.h" />
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="winrtParticles.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
