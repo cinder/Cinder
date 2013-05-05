@@ -26,8 +26,7 @@ class BasicApp : public AppBasic {
 	void			draw();
 	void			openFile();
 
-	dx::Texture		mTexture;
-	Font			mFont;
+	Font				mFont;
 
   private:
 
@@ -43,7 +42,6 @@ class BasicApp : public AppBasic {
 	uint32_t		mWidth, mHeight;
 	Surface32f		mImage;
 	dx::VboMesh		mVboMesh;
-
 };
 
 void BasicApp::setup()
@@ -64,9 +62,8 @@ void BasicApp::setup()
 	openFile();
 }
 
-void BasicApp::openFile() {
-
-	
+void BasicApp::openFile()
+{
 	mImage = loadImage( loadAsset( "mona.jpg" ) );
 
 	mWidth = mImage.getWidth();
@@ -78,17 +75,16 @@ void BasicApp::openFile() {
 	mVboMesh = dx::VboMesh( mWidth * mHeight, 0, layout, D3D_PRIMITIVE_TOPOLOGY_POINTLIST );
 
 	updateData( kColor );		
-
 }
 
 void BasicApp::mouseDown( MouseEvent event )
 {
-   mArcball.mouseDown( event.getPos() );
+	mArcball.mouseDown( event.getPos() );
 }
 
 void BasicApp::mouseDrag( MouseEvent event )
 {
-    mArcball.mouseDrag( event.getPos() );
+	mArcball.mouseDrag( event.getPos() );
 }
 
 void BasicApp::keyDown( KeyEvent event )

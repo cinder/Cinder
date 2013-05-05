@@ -13,7 +13,7 @@ class BasicApp : public AppBasic {
   public:
 	void setup();
 	void draw();	
-	dx::Texture		mProcessedImageTex;
+	dx::TextureRef	mProcessedImageTex;
 	Vec2i			mImageCenter;
 };
 
@@ -101,8 +101,8 @@ Surface processImage( const Surface input )
 void BasicApp::setup()
 {
 		Surface processedImage( processImage( loadImage( loadAsset("mona.jpg") ) ) );
-		mProcessedImageTex = dx::Texture( processedImage );
-		mImageCenter = Vec2i( getWindowCenter().x - mProcessedImageTex.getWidth()*.5 , getWindowCenter().y - mProcessedImageTex.getHeight()*.5);
+		mProcessedImageTex = dx::Texture::create( processedImage );
+		mImageCenter = Vec2i( getWindowCenter().x - mProcessedImageTex->getWidth()*.5 , getWindowCenter().y - mProcessedImageTex->getHeight()*.5);
 }
 
 void BasicApp::draw()

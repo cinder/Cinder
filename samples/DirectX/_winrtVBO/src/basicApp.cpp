@@ -19,7 +19,7 @@ class BasicApp : public AppBasic {
 	static const int VERTICES_X = 250, VERTICES_Z = 50;
 
 	dx::VboMesh		mVboMesh, mVboMesh2;
-	dx::Texture		mTexture;
+	dx::TextureRef	mTexture;
 	CameraPersp		mCamera;
 
 	Font		mFont;
@@ -70,7 +70,7 @@ void BasicApp::setup()
 	mVboMesh2.bufferIndices( indices );
 	mVboMesh2.bufferTexCoords2d( 0, texCoords );
 
-	mTexture = dx::Texture( loadImage( loadAsset( "testPattern.png" ) ) );
+	mTexture = dx::Texture::create( loadImage( loadAsset( "testPattern.png" ) ) );
 }
 
 void BasicApp::update()
@@ -109,7 +109,7 @@ void BasicApp::draw()
 	dx::setMatrices( mCamera );
 
 	dx::scale( Vec3f(10, 10, 10 ) );
-	mTexture.bind();
+	mTexture->bind();
 	dx::draw( mVboMesh );
 	dx::draw( mVboMesh2 );
 

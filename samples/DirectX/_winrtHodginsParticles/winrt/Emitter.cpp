@@ -7,7 +7,7 @@ using std::list;
 extern void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha );
 extern float floorLevel;
 extern bool ALLOWTRAILS, ALLOWFLOOR;
-extern dx::Texture *particleImg, *emitterImg;
+extern dx::TextureRef particleImg, emitterImg;
 
 #define TOTAL_PARTICLES 1000
 

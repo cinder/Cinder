@@ -19,7 +19,7 @@ class BasicApp : public AppBasic {
 	void update();
 	void draw();
 	
-	dx::Texture		mTexture;
+	dx::TextureRef	mTexture;
 	dx::HlslProg	mShader;
 	float			mAngle;
 
@@ -30,7 +30,7 @@ void BasicApp::setup()
 {
 	mFont = Font( "Arial", 24.0f );
 
-	mTexture = dx::Texture( loadImage ( loadAsset( "testPattern.png" ) ) );
+	mTexture = dx::Texture::create( loadImage ( loadAsset( "testPattern.png" ) ) );
 
 	try 
 	{
@@ -64,7 +64,7 @@ void BasicApp::draw()
 	dx::clear( Color( 0, 0, 0 ), true );
 	dx::enableAlphaBlending();
 
-	mTexture.bind();
+	mTexture->bind();
 	mShader.bind();
 
 	// *************************************
@@ -72,7 +72,7 @@ void BasicApp::draw()
 	// *************************************
 	// BELOW IS FROM THE GLSL CINDER SAMPLE. I'M USING SIMPLE SHADERS FOR TESTING
 	// BUT WHAT ABOUT THE WORLDVIEWPROJECTION MATRIX AND mTexture? HOW DO I KNOW IN THE 
-	// SHADER WHAT PARAMETER mTexture.bind() HAS ACTUALLY BOUND TO?
+	// SHADER WHAT PARAMETER mTexture->bind() HAS ACTUALLY BOUND TO?
 
 	// mShader.uniform( "tex0", 0 );
 	// mShader.uniform( "sampleOffset", Vec2f( cos(mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
@@ -87,7 +87,7 @@ void BasicApp::draw()
 
 	dx::draw( mTexture, Vec2f());
 
-	mTexture.unbind();
+	mTexture->unbind();
 	dx::HlslProg::unbind();
 
 	std::stringstream s;

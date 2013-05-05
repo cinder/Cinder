@@ -17,12 +17,12 @@ int			counter = 0;
 
 int			quadCount = 0;
 
-float		floorLevel = 400.0f;
-dx::Texture *particleImg, *emitterImg;
-bool		ALLOWFLOOR = false;
-bool		ALLOWGRAVITY = false;
-bool		ALLOWPERLIN = false;
-bool		ALLOWTRAILS = false;
+float			floorLevel = 400.0f;
+dx::TextureRef	particleImg, emitterImg;
+bool			ALLOWFLOOR = false;
+bool			ALLOWGRAVITY = false;
+bool			ALLOWPERLIN = false;
+bool			ALLOWTRAILS = false;
 
 Vec3f		gravity( 0, 0.35f, 0 );
 const int	CINDER_FACTOR = 5; // how many times more particles than the Java version
@@ -56,8 +56,8 @@ void BasicApp::prepareSettings( Settings *settings )
 
 void BasicApp::setup()
 {
-	particleImg = new dx::Texture( loadImage(loadAsset("particle.png")));
-	emitterImg = new dx::Texture( loadImage( loadAsset("emitter.png")));
+	particleImg = dx::Texture::create( loadImage(loadAsset("particle.png")));
+	emitterImg = dx::Texture::create( loadImage( loadAsset("emitter.png")));
 	mFont = Font( "Arial", 24.0f );
 	mouseIsDown = false;
 	mMousePos = getWindowCenter();

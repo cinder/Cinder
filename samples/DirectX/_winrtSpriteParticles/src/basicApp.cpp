@@ -19,8 +19,8 @@ class BasicApp : public AppBasic {
 	void				update();
 	void				draw();
 
-	dx::Texture			imgParticle;
-	dx::Texture			imgBkg;
+	dx::TextureRef		imgParticle;
+	dx::TextureRef		imgBkg;
 
 	vector<Particle>	mParticles;
 	vector<Area>		mTextureAreas;
@@ -38,8 +38,8 @@ void BasicApp::setup()
 {
 	mFont = Font( "Segoe UI", 18.0f );
 
-	imgParticle = dx::Texture( loadImage( loadAsset("heptagons.png")));
-	imgBkg = dx::Texture( loadImage( loadAsset("bkg.jpg")));
+	imgParticle = dx::Texture::create( loadImage( loadAsset("heptagons.png") ) );
+	imgBkg = dx::Texture::create( loadImage( loadAsset("bkg.jpg") ) );
 
 	for ( int i = 0; i < TOTAL_PARTICLES; i++) 
 	{
@@ -74,10 +74,10 @@ void BasicApp::draw()
 	//dx::enableAlphaBlending();
 	dx::enableAdditiveBlending();
 
-	if ( imgBkg ) dx::draw( imgBkg, getWindowBounds() );
+	if ( imgBkg )
+		dx::draw( imgBkg, getWindowBounds() );
 
-	if ( imgParticle )
-	{
+	if( imgParticle ) {
 		dx::batchTextureBegin();
 		Vec2f particleRadius(64.0f, 64.0f);
 		for ( Particle particle : mParticles )
