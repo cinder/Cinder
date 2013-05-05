@@ -742,7 +742,7 @@ void VboMesh::bindAllData() const
 
 		if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticPositions() : mObj->mLayout.hasDynamicPositions() ) {
 			UINT oldStride = stride;
-			stride = std::max(stride, sizeof(float) * 3);
+			stride = std::max<UINT>(stride, sizeof(float) * 3);
 			dx->mDeviceContext->IASetVertexBuffers(0, 1, &actualBuffer, &stride, &offset);
 			stride = oldStride;
 			//glVertexPointer( 3, GL_FLOAT, stride, (const GLvoid*)mObj->mPositionOffset );
@@ -751,7 +751,7 @@ void VboMesh::bindAllData() const
 		offset = (buffer == STATIC_BUFFER) ? mObj->mNormalOffset : 0;
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) ) {
 			UINT oldStride = stride;
-			stride = std::max(stride, sizeof(float) * 3);
+			stride = std::max<UINT>(stride, sizeof(float) * 3);
 			dx->mDeviceContext->IASetVertexBuffers(1, 1, &actualBuffer, &stride, &offset);
 			stride = oldStride;
 			//glNormalPointer( GL_FLOAT, stride, ( const GLvoid *)mObj->mNormalOffset );
@@ -761,14 +761,14 @@ void VboMesh::bindAllData() const
 		offset = (buffer == STATIC_BUFFER) ? offset : 0;
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) ) {
 			UINT oldStride = stride;
-			stride = std::max(stride, sizeof(float) * 3);
+			stride = std::max<UINT>(stride, sizeof(float) * 3);
 			dx->mDeviceContext->IASetVertexBuffers(2, 1, &actualBuffer, &stride, &offset);
 			stride = oldStride;
 			//glColorPointer( 3, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBOffset );
 		}
 		else if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGBA() : mObj->mLayout.hasDynamicColorsRGBA() ) ) {
 			UINT oldStride = stride;
-			stride = std::max(stride, sizeof(float) * 4);
+			stride = std::max<UINT>(stride, sizeof(float) * 4);
 			dx->mDeviceContext->IASetVertexBuffers(2, 1, &actualBuffer, &stride, &offset);
 			stride = oldStride;
 			//glColorPointer( 4, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBAOffset );
@@ -779,7 +779,7 @@ void VboMesh::bindAllData() const
 			
 			if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d( t ) : mObj->mLayout.hasDynamicTexCoords2d( t ) ) {
 				UINT oldStride = stride;
-				stride = std::max(stride, sizeof(float) * 2);
+				stride = std::max<UINT>(stride, sizeof(float) * 2);
 				dx->mDeviceContext->IASetVertexBuffers(3 + elementCount++, 1, &actualBuffer, &stride, &offset);
 				stride = oldStride;
 				//glClientActiveTexture( GL_TEXTURE0 + t );
@@ -787,7 +787,7 @@ void VboMesh::bindAllData() const
 			}
 			else if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords3d( t ) : mObj->mLayout.hasDynamicTexCoords3d( t ) ) {
 				UINT oldStride = stride;
-				stride = std::max(stride, sizeof(float) * 3);
+				stride = std::max<UINT>(stride, sizeof(float) * 3);
 				dx->mDeviceContext->IASetVertexBuffers(3 + elementCount++, 1, &actualBuffer, &stride, &offset);
 				stride = oldStride;
 				//glClientActiveTexture( GL_TEXTURE0 + t );
