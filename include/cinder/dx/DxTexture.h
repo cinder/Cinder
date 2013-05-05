@@ -64,6 +64,8 @@ class Texture {
 	/** \brief Constructs a texture based on \a imageSource.  */
 	static TextureRef	create( ImageSourceRef imageSource, Format format = Format() ) { return TextureRef( new Texture( imageSource, format ) ); }
 
+	~Texture();
+
 #if defined( CINDER_WINRT )
 	/** \brief Constructs asynchronously a texture based on a imamge located \a path. The loaded texture is returned in \a texture. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. 
 		If you are creating a texture from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
@@ -75,9 +77,7 @@ class Texture {
 	//Texture( GLenum aTarget, GLuint aTextureID, int aWidth, int aHeight, bool aDoNotDispose );
 
 	//! Determines whether the Texture will call glDeleteTextures() to free the associated texture objects on destruction
-	void			setDoNotDispose( bool aDoNotDispose = true ) { mObj->mDoNotDispose = aDoNotDispose; }
-	//! Installs an optional callback which fires when the texture is destroyed. Useful for integrating with external APIs
-	void			setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon );
+	void			setDoNotDispose( bool aDoNotDispose = true ) { mDoNotDispose = aDoNotDispose; }
 	//! Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c D3D11_TEXTURE_ADDRESS_WRAP, \c D3D11_TEXTURE_ADDRESS_MIRROR, \c D3D11_TEXTURE_ADDRESS_CLAMP, \c D3D11_TEXTURE_ADDRESS_BORDER and \c D3D11_TEXTURE_ADDRESS_MIRROR_ONCE.
 	void			setWrap( D3D11_TEXTURE_ADDRESS_MODE wrapS, D3D11_TEXTURE_ADDRESS_MODE wrapT ) { setWrapS( wrapS ); setWrapT( wrapT ); }
 	/** \brief Sets the horizontal wrapping behavior when a texture coordinate falls outside the range of [0,1].
@@ -136,11 +136,11 @@ class Texture {
 	//! the Texture's internal format, which is the format that OpenGL stores the texture data in memory. Common values include \c GL_RGB, \c GL_RGBA and \c GL_LUMINANCE
 	DXGI_FORMAT		getInternalFormat() const;
 	//! the target associated with texture. Typical values are \c GL_TEXTURE_2D and \c GL_TEXTURE_RECTANGLE_ARB
-	//GLenum			getTarget() const { return mObj->mTarget; }
+	//GLenum			getTarget() const { return mTarget; }
 	//!	whether the texture is flipped vertically
-	bool			isFlipped() const { return mObj->mFlipped; }
+	bool			isFlipped() const { return mFlipped; }
 	//!	Marks the texture as being flipped vertically or not
-	void			setFlipped( bool aFlipped = true ) { mObj->mFlipped = aFlipped; }
+	void			setFlipped( bool aFlipped = true ) { mFlipped = aFlipped; }
 
 	//!	Binds the Texture's texture to its target in the multitexturing unit \c GL_TEXTURE0 + \a textureUnit
 	void 			bind( UINT textureUnit = 0 ) const;
@@ -221,9 +221,9 @@ class Texture {
 	};
 
  protected:
-	Texture() {}
+	Texture();
 	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. **/
-	Texture( int aWidth, int aHeight, Format format = Format() );
+	Texture( int width, int height, Format format = Format() );
 	/** \brief Constructs a texture of size(\a aWidth, \a aHeight), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
 	Texture( const unsigned char *data, DXGI_FORMAT dataFormat, int aWidth, int aHeight, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
@@ -232,41 +232,30 @@ class Texture {
 	Texture( const Surface32f &surface, Format format = Format() );
 	/** \brief Constructs a texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. **/
 	Texture( ImageSourceRef imageSource, Format format = Format() );
-	 
+
+	void	init( int width, int height );
 	void	init( const unsigned char *data, DXGI_FORMAT dataFormat, const Format &format );	
 	void	init( const float *data, DXGI_FORMAT dataFormat, const Format &format );
 	void	init( ImageSourceRef imageSource, const Format &format );	
 		 	
-	struct Obj {
-		Obj() : mWidth( -1 ), mHeight( -1 ), mCleanWidth( -1 ), mCleanHeight( -1 ), mInternalFormat( (DXGI_FORMAT)-1 ), mFlipped( false ), mDeallocatorFunc( 0 ), mDxTexture(NULL), mSamplerState(NULL), mSRV(NULL)
+/*		Obj() : mWidth( -1 ), mHeight( -1 ), mCleanWidth( -1 ), mCleanHeight( -1 ), mInternalFormat( (DXGI_FORMAT)-1 ), mFlipped( false ), mDeallocatorFunc( 0 ), mDxTexture(NULL), mSamplerState(NULL), mSRV(NULL)
 		{}
 		Obj( int aWidth, int aHeight ) : mInternalFormat( (DXGI_FORMAT)-1 ), mWidth( aWidth ), mHeight( aHeight ), mCleanWidth( aWidth ), mCleanHeight( aHeight ), mFlipped( false ), mDeallocatorFunc( 0 ), mDxTexture(NULL), mSamplerState(NULL), mSRV(NULL)
 		{}
-		~Obj();
+		~Obj();*/
 
-		mutable GLint		mWidth, mHeight, mCleanWidth, mCleanHeight;
-		float				mMaxU, mMaxV;
-		mutable DXGI_FORMAT	mInternalFormat;
-		//GLenum				mTarget;
-		bool				mDoNotDispose;
-		bool				mFlipped;	
-		void				(*mDeallocatorFunc)(void *refcon);
-		void				*mDeallocatorRefcon;
+	mutable UINT	mWidth, mHeight;
+	mutable UINT	mCleanWidth, mCleanHeight;
+	float			mMaxU, mMaxV;
+	DXGI_FORMAT		mInternalFormat;
 
-		ID3D11Texture2D *mDxTexture;
-		D3D11_SAMPLER_DESC mSamplerDesc;
-		ID3D11SamplerState *mSamplerState;
-		ID3D11ShaderResourceView *mSRV;
-	};
-	std::shared_ptr<Obj>		mObj;
+	bool			mDoNotDispose;
+	bool			mFlipped;	
 
-  public:
-	//@{
-	//! Emulates shared_ptr-like behavior
-	typedef std::shared_ptr<Obj> Texture::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Texture::mObj; }
-	void reset() { mObj.reset(); }
-	//@}  
+	ID3D11Texture2D				*mDxTexture;
+	D3D11_SAMPLER_DESC			mSamplerDesc;
+	ID3D11SamplerState			*mSamplerState;
+	ID3D11ShaderResourceView	*mSRV;
 };
 
 /*

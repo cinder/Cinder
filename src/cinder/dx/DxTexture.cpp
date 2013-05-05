@@ -90,48 +90,49 @@ Texture::Format::Format()
 
 /////////////////////////////////////////////////////////////////////////////////
 // Texture::Obj
-Texture::Obj::~Obj()
+Texture::~Texture()
 {
-	if( mDeallocatorFunc )
-		(*mDeallocatorFunc)( mDeallocatorRefcon );
-
-	if( ( mDxTexture ) && ( ! mDoNotDispose ) ) {
+	if( mDxTexture && ( ! mDoNotDispose ) ) {
 		mDxTexture->Release();
 	}
-	if(mSamplerState) mSamplerState->Release();
-	if(mSRV) mSRV->Release();
+	if( mSamplerState ) mSamplerState->Release();
+	if( mSRV ) mSRV->Release();
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////
 // Texture
-Texture::Texture( int aWidth, int aHeight, Format format )
-	: mObj( shared_ptr<Obj>( new Obj( aWidth, aHeight ) ) )
+Texture::Texture()
 {
+	init( -1, -1 );
+}
+Texture::Texture( int width, int height, Format format )
+{
+	init( width, height );
 	if( format.mInternalFormat == -1 )
 		format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	mObj->mInternalFormat = format.mInternalFormat;
-	//mObj->mTarget = format.mTarget;
+	mInternalFormat = format.mInternalFormat;
+	//mTarget = format.mTarget;
 	init( (unsigned char*)0, DXGI_FORMAT_R8G8B8A8_UNORM, format );
 }
 
-Texture::Texture( const unsigned char *data, DXGI_FORMAT dataFormat, int aWidth, int aHeight, Format format )
-	: mObj( shared_ptr<Obj>( new Obj( aWidth, aHeight ) ) )
+Texture::Texture( const unsigned char *data, DXGI_FORMAT dataFormat, int width, int height, Format format )
 {
+	init( width, height );
 	if( format.mInternalFormat == -1 )
 		format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	mObj->mInternalFormat = format.mInternalFormat;
-	//mObj->mTarget = format.mTarget;
+	mInternalFormat = format.mInternalFormat;
+	//mTarget = format.mTarget;
 	init( data, dataFormat, format );
 }	
 
 Texture::Texture( const Surface8u &surface, Format format )
-	: mObj( shared_ptr<Obj>( new Obj( surface.getWidth(), surface.getHeight() ) ) )
 {
+	init( surface.getWidth(), surface.getHeight() );
 	if( format.mInternalFormat < 0 )
 		format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	mObj->mInternalFormat = format.mInternalFormat;
-	//mObj->mTarget = format.mTarget;
+	mInternalFormat = format.mInternalFormat;
+	//mTarget = format.mTarget;
 
 	GLint dataFormat;
 	GLenum type;
@@ -141,11 +142,9 @@ Texture::Texture( const Surface8u &surface, Format format )
 }
 
 Texture::Texture( const Surface32f &surface, Format format )
-	: mObj( shared_ptr<Obj>( new Obj( surface.getWidth(), surface.getHeight() ) ) )
 {
-#if defined( CINDER_MAC )
-	bool supportsTextureFloat = gl::isExtensionAvailable( "GL_ARB_texture_float" );
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
+	init( surface.getWidth(), surface.getHeight() );
+#if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 	bool supportsTextureFloat = true;//GLEE_ARB_texture_float != 0;
 #endif
 
@@ -159,14 +158,13 @@ Texture::Texture( const Surface32f &surface, Format format )
 		format.mInternalFormat = surface.hasAlpha() ? GL_RGBA : GL_RGB;
 #endif	
 	}
-	mObj->mInternalFormat = format.mInternalFormat;
-	//mObj->mTarget = format.mTarget;
+	mInternalFormat = format.mInternalFormat;
+	//mTarget = format.mTarget;
 
 	init( surface.getData(), surface.hasAlpha()?DXGI_FORMAT_R32G32B32A32_FLOAT:DXGI_FORMAT_R32G32B32_FLOAT, format );	
 }
 
 Texture::Texture( ImageSourceRef imageSource, Format format )
-	: mObj( shared_ptr<Obj>( new Obj ) )
 {
 	init( imageSource, format );
 }
@@ -202,33 +200,44 @@ void Texture::loadImageAsync(const fs::path path, dx::Texture &texture, const Fo
 }
 #endif
 
-
+void Texture::init( int width, int height )
+{
+	mWidth = width;
+	mHeight = height;
+	mCleanWidth = width;
+	mCleanHeight = height;
+	mInternalFormat = (DXGI_FORMAT)-1;
+	mFlipped = false;
+	mDxTexture = NULL;
+	mSamplerState = NULL;
+	mSRV = NULL;
+}
 
 void Texture::init( const unsigned char *data, DXGI_FORMAT dataFormat, const Format &format )
 {
-	mObj->mDoNotDispose = false;
+	mDoNotDispose = false;
 
-	mObj->mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	mObj->mSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	mObj->mSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	mObj->mSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	mObj->mSamplerDesc.MipLODBias = 0;
-	mObj->mSamplerDesc.MaxAnisotropy = 1;
-	mObj->mSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	mObj->mSamplerDesc.BorderColor[0] = 0;
-	mObj->mSamplerDesc.BorderColor[1] = 0;
-	mObj->mSamplerDesc.BorderColor[2] = 0;
-	mObj->mSamplerDesc.BorderColor[3] = 0;
-	mObj->mSamplerDesc.MinLOD = 0;
-	mObj->mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	HRESULT hr = getDxRenderer()->md3dDevice->CreateSamplerState(&mObj->mSamplerDesc, &mObj->mSamplerState);
+	mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	mSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	mSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	mSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	mSamplerDesc.MipLODBias = 0;
+	mSamplerDesc.MaxAnisotropy = 1;
+	mSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	mSamplerDesc.BorderColor[0] = 0;
+	mSamplerDesc.BorderColor[1] = 0;
+	mSamplerDesc.BorderColor[2] = 0;
+	mSamplerDesc.BorderColor[3] = 0;
+	mSamplerDesc.MinLOD = 0;
+	mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	HRESULT hr = getDxRenderer()->md3dDevice->CreateSamplerState(&mSamplerDesc, &mSamplerState);
 	if(hr != S_OK)
 		__debugbreak();
 
 	D3D11_SUBRESOURCE_DATA subData;
 	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = mObj->mWidth;
-	desc.Height = mObj->mHeight;
+	desc.Width = mWidth;
+	desc.Height = mHeight;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.Format = dataFormat;
@@ -239,9 +248,9 @@ void Texture::init( const unsigned char *data, DXGI_FORMAT dataFormat, const For
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	subData.pSysMem = data;
-	subData.SysMemPitch = mObj->mWidth * 4;
-	subData.SysMemSlicePitch = subData.SysMemPitch * mObj->mHeight;
-	hr = getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mObj->mDxTexture);
+	subData.SysMemPitch = mWidth * 4;
+	subData.SysMemSlicePitch = subData.SysMemPitch * mHeight;
+	hr = getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
 	if(hr != S_OK)
 		__debugbreak();
 
@@ -250,50 +259,50 @@ void Texture::init( const unsigned char *data, DXGI_FORMAT dataFormat, const For
 	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	SRVDesc.Texture2D.MostDetailedMip = 0;
 	SRVDesc.Texture2D.MipLevels = -1;
-	getDxRenderer()->md3dDevice->CreateShaderResourceView(mObj->mDxTexture, &SRVDesc, &mObj->mSRV);
+	getDxRenderer()->md3dDevice->CreateShaderResourceView(mDxTexture, &SRVDesc, &mSRV);
 }
 
 void Texture::init( const float *data, DXGI_FORMAT dataFormat, const Format &format )
 {
-	mObj->mDoNotDispose = false;
+	mDoNotDispose = false;
 
-	mObj->mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	mObj->mSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	mObj->mSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	mObj->mSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	mObj->mSamplerDesc.MipLODBias = 0;
-	mObj->mSamplerDesc.MaxAnisotropy = 1;
-	mObj->mSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	mObj->mSamplerDesc.BorderColor[0] = 0;
-	mObj->mSamplerDesc.BorderColor[1] = 0;
-	mObj->mSamplerDesc.BorderColor[2] = 0;
-	mObj->mSamplerDesc.BorderColor[3] = 0;
-	mObj->mSamplerDesc.MinLOD = 0;
-	mObj->mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	HRESULT hr = getDxRenderer()->md3dDevice->CreateSamplerState(&mObj->mSamplerDesc, &mObj->mSamplerState);
+	mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	mSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	mSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	mSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	mSamplerDesc.MipLODBias = 0;
+	mSamplerDesc.MaxAnisotropy = 1;
+	mSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	mSamplerDesc.BorderColor[0] = 0;
+	mSamplerDesc.BorderColor[1] = 0;
+	mSamplerDesc.BorderColor[2] = 0;
+	mSamplerDesc.BorderColor[3] = 0;
+	mSamplerDesc.MinLOD = 0;
+	mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	HRESULT hr = getDxRenderer()->md3dDevice->CreateSamplerState(&mSamplerDesc, &mSamplerState);
 	if(hr != S_OK)
 		__debugbreak();
 
 	D3D11_SUBRESOURCE_DATA subData;
 	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = mObj->mWidth;
-	desc.Height = mObj->mHeight;
+	desc.Width = mWidth;
+	desc.Height = mHeight;
 	desc.MipLevels = 0;
 	desc.ArraySize = 1;
 	desc.Format = dataFormat;
 	switch(dataFormat)
 	{
 		case DXGI_FORMAT_R32G32B32A32_FLOAT:
-			subData.SysMemPitch = 4 * 4 * mObj->mWidth;
+			subData.SysMemPitch = 4 * 4 * mWidth;
 			break;
 
 		case DXGI_FORMAT_R32G32B32_FLOAT:
-			subData.SysMemPitch = 3 * 4 * mObj->mWidth;
+			subData.SysMemPitch = 3 * 4 * mWidth;
 			break;
 
 		case DXGI_FORMAT_R32_FLOAT:
 			desc.Format = DXGI_FORMAT_R32_FLOAT;
-			subData.SysMemPitch = 4 * mObj->mWidth;
+			subData.SysMemPitch = 4 * mWidth;
 			break;
 	}
 	desc.SampleDesc.Count = 1;
@@ -303,16 +312,16 @@ void Texture::init( const float *data, DXGI_FORMAT dataFormat, const Format &for
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	subData.pSysMem = data;
-	subData.SysMemSlicePitch = subData.SysMemPitch * mObj->mHeight;
-	getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mObj->mDxTexture);
+	subData.SysMemSlicePitch = subData.SysMemPitch * mHeight;
+	getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
 }
 
 void Texture::init( ImageSourceRef imageSource, const Format &format )
 {
-	mObj->mDoNotDispose = false;
-	//mObj->mTarget = format.mTarget;
-	mObj->mWidth = mObj->mCleanWidth = imageSource->getWidth();
-	mObj->mHeight = mObj->mCleanHeight = imageSource->getHeight();
+	mDoNotDispose = false;
+	//mTarget = format.mTarget;
+	mWidth = mCleanWidth = imageSource->getWidth();
+	mHeight = mCleanHeight = imageSource->getHeight();
 
 	bool supportsTextureFloat = true;//GLEE_ARB_texture_float != 0;
 	
@@ -322,32 +331,32 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 #if ! defined( CINDER_GLES )
 			case ImageIo::CM_RGB:
 				if( imageSource->getDataType() == ImageIo::UINT8 )
-					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+					mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 				else if( imageSource->getDataType() == ImageIo::UINT16 )
-					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R16G16B16A16_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+					mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R16G16B16A16_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 				else if( imageSource->getDataType() == ImageIo::FLOAT32 && supportsTextureFloat )
-					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R32G32B32_FLOAT;
+					mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R32G32B32_FLOAT;
 				else
-					mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+					mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 			break;
 			case ImageIo::CM_GRAY:
 				throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 				//if( imageSource->getDataType() == ImageIo::UINT8 )
-				//	mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE8_ALPHA8 : GL_LUMINANCE8;
+				//	mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE8_ALPHA8 : GL_LUMINANCE8;
 				//else if( imageSource->getDataType() == ImageIo::UINT16 )
-				//	mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE16_ALPHA16 : GL_LUMINANCE16;
+				//	mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE16_ALPHA16 : GL_LUMINANCE16;
 				//else if( imageSource->getDataType() == ImageIo::FLOAT32 && supportsTextureFloat )
-				//	mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA32F_ARB : GL_LUMINANCE32F_ARB;
+				//	mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA32F_ARB : GL_LUMINANCE32F_ARB;
 				//else
-				//	mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
+				//	mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
 			break;
 #else
 			case ImageIo::CM_RGB:
-				mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+				mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 			break;
 			case ImageIo::CM_GRAY:
 				throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
-				//mObj->mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
+				//mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
 			break;
 			
 #endif
@@ -357,7 +366,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 		}
 	}
 	else {
-		mObj->mInternalFormat = format.mInternalFormat;
+		mInternalFormat = format.mInternalFormat;
 	}
 
 	// setup an appropriate dataFormat/ImageTargetTexture based on the image's color space
@@ -381,35 +390,35 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 		break;
 	}
 
-	//if( mObj->mTarget == GL_TEXTURE_2D ) {
-		mObj->mMaxU = mObj->mMaxV = 1.0f;
+	//if( mTarget == GL_TEXTURE_2D ) {
+		mMaxU = mMaxV = 1.0f;
 	//}
 	//else {
-	//	mObj->mMaxU = (float)mObj->mWidth;
-	//	mObj->mMaxV = (float)mObj->mHeight;
+	//	mMaxU = (float)mWidth;
+	//	mMaxV = (float)mHeight;
 	//}
 		
-	mObj->mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	mObj->mSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	mObj->mSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	mObj->mSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	mObj->mSamplerDesc.MipLODBias = 0;
-	mObj->mSamplerDesc.MaxAnisotropy = 1;
-	mObj->mSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
-	mObj->mSamplerDesc.BorderColor[0] = 0;
-	mObj->mSamplerDesc.BorderColor[1] = 0;
-	mObj->mSamplerDesc.BorderColor[2] = 0;
-	mObj->mSamplerDesc.BorderColor[3] = 0;
-	mObj->mSamplerDesc.MinLOD = 0;
-	mObj->mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	HRESULT hr = getDxRenderer()->md3dDevice->CreateSamplerState(&mObj->mSamplerDesc, &mObj->mSamplerState);
+	mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	mSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	mSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	mSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	mSamplerDesc.MipLODBias = 0;
+	mSamplerDesc.MaxAnisotropy = 1;
+	mSamplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+	mSamplerDesc.BorderColor[0] = 0;
+	mSamplerDesc.BorderColor[1] = 0;
+	mSamplerDesc.BorderColor[2] = 0;
+	mSamplerDesc.BorderColor[3] = 0;
+	mSamplerDesc.MinLOD = 0;
+	mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	HRESULT hr = getDxRenderer()->md3dDevice->CreateSamplerState(&mSamplerDesc, &mSamplerState);
 	if(hr != S_OK)
 		__debugbreak();
 
 	D3D11_SUBRESOURCE_DATA subData;
 	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = mObj->mWidth;
-	desc.Height = mObj->mHeight;
+	desc.Width = mWidth;
+	desc.Height = mHeight;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.SampleDesc.Count = 1;
@@ -422,19 +431,19 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 		shared_ptr<ImageTargetGLTexture<uint8_t> > target = ImageTargetGLTexture<uint8_t>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
 		subData.pSysMem = target->getData();
-		subData.SysMemPitch = 4 * mObj->mWidth;
+		subData.SysMemPitch = 4 * mWidth;
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		subData.SysMemSlicePitch = 0;//subData.SysMemPitch * mObj->mHeight;
-		getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mObj->mDxTexture);
+		subData.SysMemSlicePitch = 0;//subData.SysMemPitch * mHeight;
+		getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
 	}
 	else if( imageSource->getDataType() == ImageIo::UINT16 ) {
 		shared_ptr<ImageTargetGLTexture<uint16_t> > target = ImageTargetGLTexture<uint16_t>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
 		subData.pSysMem = target->getData();
-		subData.SysMemPitch = 4 * 2 * mObj->mWidth;
+		subData.SysMemPitch = 4 * 2 * mWidth;
 		desc.Format = DXGI_FORMAT_R16G16B16A16_UNORM;
-		subData.SysMemSlicePitch = subData.SysMemPitch * mObj->mHeight;
-		getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mObj->mDxTexture);
+		subData.SysMemSlicePitch = subData.SysMemPitch * mHeight;
+		getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
 	}
 	else {
 		shared_ptr<ImageTargetGLTexture<float> > target = ImageTargetGLTexture<float>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
@@ -443,15 +452,15 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 		if(dataFormat == GL_RGBA)
 		{
 			desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			subData.SysMemPitch = 4 * 4 * mObj->mWidth;
+			subData.SysMemPitch = 4 * 4 * mWidth;
 		}
 		else
 		{
 			desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			subData.SysMemPitch = 3 * 4 * mObj->mWidth;
+			subData.SysMemPitch = 3 * 4 * mWidth;
 		}
-		subData.SysMemSlicePitch = subData.SysMemPitch * mObj->mHeight;
-		getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mObj->mDxTexture);
+		subData.SysMemSlicePitch = subData.SysMemPitch * mHeight;
+		getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
 	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
@@ -459,7 +468,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	SRVDesc.Texture2D.MostDetailedMip = 0;
 	SRVDesc.Texture2D.MipLevels = -1;
-	getDxRenderer()->md3dDevice->CreateShaderResourceView(mObj->mDxTexture, &SRVDesc, &mObj->mSRV);
+	getDxRenderer()->md3dDevice->CreateShaderResourceView(mDxTexture, &SRVDesc, &mSRV);
 }
 
 void Texture::update( const Surface &surface )
@@ -471,12 +480,12 @@ void Texture::update( const Surface &surface )
 		throw TextureDataExc( "Invalid Texture::update() surface dimensions" );
 	auto dx = getDxRenderer();
 	HRESULT hr;
-	mObj->mDxTexture->Release();
-	mObj->mSRV->Release();
+	mDxTexture->Release();
+	mSRV->Release();
 	D3D11_SUBRESOURCE_DATA subData;
 	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = mObj->mWidth;
-	desc.Height = mObj->mHeight;
+	desc.Width = mWidth;
+	desc.Height = mHeight;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	switch(dataFormat)
@@ -486,12 +495,12 @@ void Texture::update( const Surface &surface )
 			{
 				case GL_UNSIGNED_BYTE:
 					desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-					subData.SysMemPitch = 4 * mObj->mWidth;
+					subData.SysMemPitch = 4 * mWidth;
 					break;
 
 				case GL_FLOAT:
 					desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-					subData.SysMemPitch = 4 * 4 * mObj->mWidth;
+					subData.SysMemPitch = 4 * 4 * mWidth;
 					break;
 			}
 			break;
@@ -501,12 +510,12 @@ void Texture::update( const Surface &surface )
 			{
 				case GL_UNSIGNED_BYTE:
 					desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-					subData.SysMemPitch = 4 * mObj->mWidth;
+					subData.SysMemPitch = 4 * mWidth;
 					break;
 
 				case GL_FLOAT:
 					desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-					subData.SysMemPitch = 3 * 4 * mObj->mWidth;
+					subData.SysMemPitch = 3 * 4 * mWidth;
 					break;
 			}
 			break;
@@ -516,12 +525,12 @@ void Texture::update( const Surface &surface )
 			{
 				case GL_UNSIGNED_BYTE:
 					desc.Format = DXGI_FORMAT_R8_UNORM;
-					subData.SysMemPitch = mObj->mWidth;
+					subData.SysMemPitch = mWidth;
 					break;
 
 				case GL_FLOAT:
 					desc.Format = DXGI_FORMAT_R32_FLOAT;
-					subData.SysMemPitch = 4 * mObj->mWidth;
+					subData.SysMemPitch = 4 * mWidth;
 					break;
 			}
 			break;
@@ -533,18 +542,18 @@ void Texture::update( const Surface &surface )
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	subData.pSysMem = surface.getData();
-	subData.SysMemSlicePitch = subData.SysMemPitch * mObj->mHeight;
+	subData.SysMemSlicePitch = subData.SysMemPitch * mHeight;
 	if(type != GL_UNSIGNED_BYTE || dataFormat != GL_RGB)
-		hr = dx->md3dDevice->CreateTexture2D(&desc, &subData, &mObj->mDxTexture);
+		hr = dx->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
 	else
 	{
-		hr = dx->md3dDevice->CreateTexture2D(&desc, 0, &mObj->mDxTexture);
-		for(int y = 0; y < mObj->mHeight; ++y)
-			for(int x = 0; x < mObj->mWidth; ++x)
+		hr = dx->md3dDevice->CreateTexture2D(&desc, 0, &mDxTexture);
+		for(int y = 0; y < mHeight; ++y)
+			for(int x = 0; x < mWidth; ++x)
 			{
 				unsigned char color[4] = {255, 255, 255, 255};
 				for(int i = 0; i < 3; ++i)
-					color[i] = surface.getData()[y * 3 * mObj->mWidth + x * 3 + i];
+					color[i] = surface.getData()[y * 3 * mWidth + x * 3 + i];
 				D3D11_BOX box;
 				box.left = x;
 				box.right = x + 1;
@@ -552,7 +561,7 @@ void Texture::update( const Surface &surface )
 				box.bottom = y + 1;
 				box.front = 0;
 				box.back = 1;
-				dx->mDeviceContext->UpdateSubresource(mObj->mDxTexture, 0, &box, color, 4 * mObj->mWidth, 0);
+				dx->mDeviceContext->UpdateSubresource(mDxTexture, 0, &box, color, 4 * mWidth, 0);
 			}
 	}
 	if(hr != S_OK)
@@ -563,7 +572,7 @@ void Texture::update( const Surface &surface )
 	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	SRVDesc.Texture2D.MostDetailedMip = 0;
 	SRVDesc.Texture2D.MipLevels = -1;
-	dx->md3dDevice->CreateShaderResourceView(mObj->mDxTexture, &SRVDesc, &mObj->mSRV);
+	dx->md3dDevice->CreateShaderResourceView(mDxTexture, &SRVDesc, &mSRV);
 }
 
 void Texture::update( const Surface32f &surface )
@@ -574,29 +583,29 @@ void Texture::update( const Surface32f &surface )
 	if( ( surface.getWidth() != getWidth() ) || ( surface.getHeight() != getHeight() ) )
 		throw TextureDataExc( "Invalid Texture::update() surface dimensions" );
 
-	mObj->mDxTexture->Release();
-	mObj->mSRV->Release();
+	mDxTexture->Release();
+	mSRV->Release();
 	D3D11_SUBRESOURCE_DATA subData;
 	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = mObj->mWidth;
-	desc.Height = mObj->mHeight;
+	desc.Width = mWidth;
+	desc.Height = mHeight;
 	desc.MipLevels = 0;
 	desc.ArraySize = 1;
 	switch(dataFormat)
 	{
 		case GL_RGBA:
 			desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			subData.SysMemPitch = 4 * 4 * mObj->mWidth;
+			subData.SysMemPitch = 4 * 4 * mWidth;
 			break;
 
 		case GL_RGB:
 			desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			subData.SysMemPitch = 3 * 4 * mObj->mWidth;
+			subData.SysMemPitch = 3 * 4 * mWidth;
 			break;
 
 		case GL_LUMINANCE:
 			desc.Format = DXGI_FORMAT_R32_FLOAT;
-			subData.SysMemPitch = 4 * mObj->mWidth;
+			subData.SysMemPitch = 4 * mWidth;
 			break;
 	}
 	desc.SampleDesc.Count = 1;
@@ -606,8 +615,8 @@ void Texture::update( const Surface32f &surface )
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 	subData.pSysMem = surface.getData();
-	subData.SysMemSlicePitch = subData.SysMemPitch * mObj->mHeight;
-	getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mObj->mDxTexture);
+	subData.SysMemSlicePitch = subData.SysMemPitch * mHeight;
+	getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
 
 }
 
@@ -627,11 +636,11 @@ void Texture::update( const Surface &surface, const Area &area )
 		box.front = 0;
 		box.back = 1;
 		if(dataFormat == GL_RGB)
-			dx->mDeviceContext->UpdateSubresource(mObj->mDxTexture, 0, &box, surface.getData( area.getUL() ), 12 * mObj->mWidth, 0);
+			dx->mDeviceContext->UpdateSubresource(mDxTexture, 0, &box, surface.getData( area.getUL() ), 12 * mWidth, 0);
 		else if(dataFormat == GL_RGBA)
-			dx->mDeviceContext->UpdateSubresource(mObj->mDxTexture, 0, &box, surface.getData( area.getUL() ), 16 * mObj->mWidth, 0);
+			dx->mDeviceContext->UpdateSubresource(mDxTexture, 0, &box, surface.getData( area.getUL() ), 16 * mWidth, 0);
 		else
-			dx->mDeviceContext->UpdateSubresource(mObj->mDxTexture, 0, &box, surface.getData( area.getUL() ), 4 * mObj->mWidth, 0);
+			dx->mDeviceContext->UpdateSubresource(mDxTexture, 0, &box, surface.getData( area.getUL() ), 4 * mWidth, 0);
 	}
 	else
 	{
@@ -642,12 +651,12 @@ void Texture::update( const Surface &surface, const Area &area )
 			width = 4;
 		if(type == GL_UNSIGNED_SHORT)
 			width *= 2;
-		for(int y = 0; y < mObj->mHeight; ++y)
-			for(int x = 0; x < mObj->mWidth; ++x)
+		for(int y = 0; y < mHeight; ++y)
+			for(int x = 0; x < mWidth; ++x)
 			{
 				unsigned char color[4] = {0, 0, 0, 255};
 				for(int i = 0; i < width; ++i)
-					color[i] = surface.getData()[y * width * mObj->mWidth + x * width + i];
+					color[i] = surface.getData()[y * width * mWidth + x * width + i];
 				D3D11_BOX box;
 				box.left = x;
 				box.right = x + 1;
@@ -655,7 +664,7 @@ void Texture::update( const Surface &surface, const Area &area )
 				box.bottom = y + 1;
 				box.front = 0;
 				box.back = 1;
-				dx->mDeviceContext->UpdateSubresource(mObj->mDxTexture, 0, &box, color, 4 * mObj->mWidth, 0);
+				dx->mDeviceContext->UpdateSubresource(mDxTexture, 0, &box, color, 4 * mWidth, 0);
 			}
 	}
 }
@@ -672,7 +681,7 @@ void Texture::update( const Channel32f &channel )
 	box.bottom = getHeight();
 	box.front = 0;
 	box.back = 1;
-	getDxRenderer()->mDeviceContext->UpdateSubresource(mObj->mDxTexture, 0, &box, channel.getData(), getWidth() * 4, 0);
+	getDxRenderer()->mDeviceContext->UpdateSubresource(mDxTexture, 0, &box, channel.getData(), getWidth() * 4, 0);
 }
 
 void Texture::update( const Channel8u &channel, const Area &area )
@@ -696,10 +705,10 @@ void Texture::update( const Channel8u &channel, const Area &area )
 				src += inc;
 			}
 		}
-		getDxRenderer()->mDeviceContext->UpdateSubresource(mObj->mDxTexture, 0, &box, data.get(), area.getWidth(), 0);
+		getDxRenderer()->mDeviceContext->UpdateSubresource(mDxTexture, 0, &box, data.get(), area.getWidth(), 0);
 	}
 	else
-		getDxRenderer()->mDeviceContext->UpdateSubresource(mObj->mDxTexture, 0, &box, channel.getData( area.getUL() ), area.getWidth(), 0);
+		getDxRenderer()->mDeviceContext->UpdateSubresource(mDxTexture, 0, &box, channel.getData( area.getUL() ), area.getWidth(), 0);
 }
 
 void Texture::SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, GLint *dataFormat, GLenum *type )
@@ -772,59 +781,53 @@ TextureRef Texture::loadDds( IStreamRef ddsStream, Format format )
 	if(!data)
 		throw TextureDataExc("Not enough memory to load DDS");
 	ddsStream->read(data);
-	DirectX::CreateDDSTextureFromMemory(dxRenderer->md3dDevice, data, ddsStream->size(), (ID3D11Resource**)&texture->mObj->mDxTexture, &texture->mObj->mSRV);
+	DirectX::CreateDDSTextureFromMemory(dxRenderer->md3dDevice, data, ddsStream->size(), (ID3D11Resource**)&texture->mDxTexture, &texture->mSRV);
 	free(data);
-	texture->mObj->mDoNotDispose = false;
-	texture->mObj->mWidth = texture->getWidth();
-	texture->mObj->mHeight = texture->getHeight();
+	texture->mDoNotDispose = false;
+	texture->mWidth = texture->getWidth();
+	texture->mHeight = texture->getHeight();
 	return texture;
-}
-
-void Texture::setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon )
-{
-	mObj->mDeallocatorFunc = aDeallocatorFunc;
-	mObj->mDeallocatorRefcon = aDeallocatorRefcon;
 }
 
 void Texture::setWrapS( D3D11_TEXTURE_ADDRESS_MODE wrapS )
 {
-	mObj->mSamplerState->Release();
-	mObj->mSamplerDesc.AddressU = wrapS;
-	getDxRenderer()->md3dDevice->CreateSamplerState(&mObj->mSamplerDesc, &mObj->mSamplerState);
+	mSamplerState->Release();
+	mSamplerDesc.AddressU = wrapS;
+	getDxRenderer()->md3dDevice->CreateSamplerState(&mSamplerDesc, &mSamplerState);
 }
 
 void Texture::setWrapT( D3D11_TEXTURE_ADDRESS_MODE wrapT )
 {
-	mObj->mSamplerState->Release();
-	mObj->mSamplerDesc.AddressV = wrapT;
-	getDxRenderer()->md3dDevice->CreateSamplerState(&mObj->mSamplerDesc, &mObj->mSamplerState);
+	mSamplerState->Release();
+	mSamplerDesc.AddressV = wrapT;
+	getDxRenderer()->md3dDevice->CreateSamplerState(&mSamplerDesc, &mSamplerState);
 }
 
 void Texture::setFilter( D3D11_FILTER filter )
 {
-	mObj->mSamplerState->Release();
-	mObj->mSamplerDesc.Filter = filter;
-	getDxRenderer()->md3dDevice->CreateSamplerState(&mObj->mSamplerDesc, &mObj->mSamplerState);
+	mSamplerState->Release();
+	mSamplerDesc.Filter = filter;
+	getDxRenderer()->md3dDevice->CreateSamplerState(&mSamplerDesc, &mSamplerState);
 }
 
 void Texture::setCleanTexCoords( float maxU, float maxV )
 {
-	mObj->mMaxU = maxU;
-	mObj->mMaxV = maxV;
+	mMaxU = maxU;
+	mMaxV = maxV;
 	
-	//if( mObj->mTarget == GL_TEXTURE_2D ) {
-		mObj->mCleanWidth = (GLint)(getWidth() * maxU);
-		mObj->mCleanHeight = (GLint)(getHeight() * maxV);
+	//if( mTarget == GL_TEXTURE_2D ) {
+		mCleanWidth = (GLint)(getWidth() * maxU);
+		mCleanHeight = (GLint)(getHeight() * maxV);
 	//}
 	//else {
-	//	mObj->mCleanWidth = (int32_t)maxU;
-	//	mObj->mCleanHeight = (int32_t)maxV;
+	//	mCleanWidth = (int32_t)maxU;
+	//	mCleanHeight = (int32_t)maxV;
 	//}
 }
 
 bool Texture::hasAlpha() const
 {
-	switch( mObj->mInternalFormat ) {
+	switch( mInternalFormat ) {
 #if ! defined( CINDER_GLES )
 		case GL_RGBA8:
 		case GL_RGBA16:
@@ -850,61 +853,61 @@ float Texture::getLeft() const
 
 float Texture::getRight() const
 {
-	return mObj->mMaxU;
+	return mMaxU;
 }
 
 float Texture::getTop() const
 {
-	return ( mObj->mFlipped ) ? getMaxV() : 0.0f;
+	return ( mFlipped ) ? getMaxV() : 0.0f;
 }
 
 DXGI_FORMAT Texture::getInternalFormat() const
 {
 	D3D11_TEXTURE2D_DESC desc;
-	mObj->mDxTexture->GetDesc(&desc);
+	mDxTexture->GetDesc(&desc);
 	return desc.Format;
 }
 
 UINT Texture::getWidth() const
 {
 	//D3D11_TEXTURE2D_DESC desc;
-	//mObj->mDxTexture->GetDesc(&desc);
+	//mDxTexture->GetDesc(&desc);
 	//return desc.Width;
-	return mObj->mWidth;
+	return mWidth;
 }
 
 UINT Texture::getHeight() const
 {
 	//D3D11_TEXTURE2D_DESC desc;
-	//mObj->mDxTexture->GetDesc(&desc);
+	//mDxTexture->GetDesc(&desc);
 	//return desc.Height;
-	return mObj->mHeight;
+	return mHeight;
 }
 
 UINT Texture::getCleanWidth() const
 {
-	if( mObj->mCleanWidth == -1 ) {
-		mObj->mCleanWidth = getWidth();
-		mObj->mCleanWidth = mObj->mWidth;
+	if( mCleanWidth == -1 ) {
+		mWidth = getWidth();
+		mCleanWidth = mWidth;
 	}
 
-	return mObj->mCleanWidth;
+	return mCleanWidth;
 }
 
 UINT Texture::getCleanHeight() const
 {
-	if( mObj->mCleanHeight == -1 ) {
-		mObj->mHeight = getHeight();
-		mObj->mCleanHeight = mObj->mHeight;		
+	if( mCleanHeight == -1 ) {
+		mHeight = getHeight();
+		mCleanHeight = mHeight;		
 	}
-	return mObj->mHeight;
+	return mHeight;
 }
 
 Rectf Texture::getAreaTexCoords( const Area &area ) const
 {
 	Rectf result;
 
-	//if( mObj->mTarget == GL_TEXTURE_2D ) {
+	//if( mTarget == GL_TEXTURE_2D ) {
 		result.x1 = area.x1 / (float)getWidth();
 		result.x2 = area.x2 / (float)getWidth();
 		result.y1 = area.y1 / (float)getHeight();
@@ -914,7 +917,7 @@ Rectf Texture::getAreaTexCoords( const Area &area ) const
 	//	result = Rectf( area );
 	//}
 	
-	if( mObj->mFlipped ) {
+	if( mFlipped ) {
 		std::swap( result.y1, result.y2 );
 	}
 	
@@ -923,23 +926,23 @@ Rectf Texture::getAreaTexCoords( const Area &area ) const
 
 float Texture::getBottom() const
 {
-	return ( mObj->mFlipped ) ? 0.0f : getMaxV();
+	return ( mFlipped ) ? 0.0f : getMaxV();
 }
 
 float Texture::getMaxU() const
 { 
-	return mObj->mMaxU;
+	return mMaxU;
 }
 
 float Texture::getMaxV() const
 {
-	return mObj->mMaxV;
+	return mMaxV;
 }
 
 void Texture::bind( UINT textureUnit ) const
 {
-	getDxRenderer()->mDeviceContext->PSSetShaderResources(textureUnit, 1, &mObj->mSRV);
-	getDxRenderer()->mDeviceContext->PSSetSamplers(textureUnit, 1, &mObj->mSamplerState);
+	getDxRenderer()->mDeviceContext->PSSetShaderResources(textureUnit, 1, &mSRV);
+	getDxRenderer()->mDeviceContext->PSSetSamplers(textureUnit, 1, &mSamplerState);
 }
 
 void Texture::unbind( UINT textureUnit ) const
@@ -964,7 +967,7 @@ dx::Texture	TextureCache::cache( const Surface8u &data )
 	
 	// find an available slot and update that if possible
 	bool found = false;
-	for( vector<pair<int,Texture> >::iterator texIt = mObj->mTextures.begin(); texIt != mObj->mTextures.end(); ++texIt ) {
+	for( vector<pair<int,Texture> >::iterator texIt = mTextures.begin(); texIt != mTextures.end(); ++texIt ) {
 		if( texIt->first == -1 ) { // this texture is available, let's use it!
 			resultPair = &(*texIt);
 			resultPair->second.update( data );			
@@ -975,11 +978,11 @@ dx::Texture	TextureCache::cache( const Surface8u &data )
 	
 	// we didn't find an available slot, so let's make a new texture
 	if( ! found ) {
-		mObj->mTextures.push_back( make_pair( -1, dx::Texture( data, mObj->mFormat ) ) );
-		resultPair = &mObj->mTextures.back();
+		mTextures.push_back( make_pair( -1, dx::Texture( data, mFormat ) ) );
+		resultPair = &mTextures.back();
 	}
 
-	resultPair->first = mObj->mNextId++;
+	resultPair->first = mNextId++;
 	Texture result = resultPair->second.weakClone();
 	
 	pair<shared_ptr<TextureCache::Obj>,int> *refcon = new pair<shared_ptr<TextureCache::Obj>,int>( mObj, resultPair->first );
