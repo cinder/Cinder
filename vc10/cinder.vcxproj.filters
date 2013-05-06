@@ -456,12 +456,6 @@
     <ClCompile Include="..\src\glew\glew.c">
       <Filter>Source Files\glew</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\glew\glewinfo.c">
-      <Filter>Source Files\glew</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\glew\visualinfo.c">
-      <Filter>Source Files\glew</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">

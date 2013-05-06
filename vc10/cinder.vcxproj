@@ -203,8 +203,6 @@
     <ClCompile Include="..\src\AntTweakBar\TwOpenGL.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp" />
     <ClCompile Include="..\src\glew\glew.c" />
-    <ClCompile Include="..\src\glew\glewinfo.c" />
-    <ClCompile Include="..\src\glew\visualinfo.c" />
     <ClCompile Include="..\src\jsoncpp\json_reader.cpp" />
     <ClCompile Include="..\src\jsoncpp\json_value.cpp" />
     <ClCompile Include="..\src\jsoncpp\json_writer.cpp" />

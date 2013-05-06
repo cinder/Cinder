@@ -85,6 +85,12 @@
     <Filter Include="Source Files\qtime">
       <UniqueIdentifier>{c8db6b91-0c81-4c5b-ae73-994db8d58d64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\glew">
+      <UniqueIdentifier>{6ef99a5e-9765-43dd-b765-b53702f4be8f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\glew">
+      <UniqueIdentifier>{1397e94c-eafe-4cdf-82c1-461b8b7582e4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -247,9 +253,6 @@
       <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\gl.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\GLee.c">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\GlslProg.cpp">
@@ -449,6 +452,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp">
       <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\glew\glew.c">
+      <Filter>Source Files\glew</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -707,9 +713,6 @@
     <ClInclude Include="..\include\cinder\gl\gl.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\GLee.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\gl\GlslProg.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
@@ -931,6 +934,12 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h">
       <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\glew\wglew.h">
+      <Filter>Header Files\glew</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\glew\glew.h">
+      <Filter>Header Files\glew</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
