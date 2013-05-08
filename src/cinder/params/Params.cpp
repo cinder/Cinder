@@ -185,10 +185,15 @@ int initAntGl( weak_ptr<app::Window> winWeak )
 {
 	static std::shared_ptr<AntMgr> sMgr;
 	static int sWindowId = 0;
+	static std::map<app::Window *, int> sWindowIds;
 	auto win = winWeak.lock();
 	if( ! sMgr )
 		sMgr = std::shared_ptr<AntMgr>( new AntMgr( (int)win->getContentScale() ) );
-	return sWindowId++;
+	app::Window *winPtr = win.get();
+	auto it = sWindowIds.find( winPtr );
+	if( it == sWindowIds.end() )
+		sWindowIds[ winPtr ] = sWindowId++;
+	return sWindowIds[ winPtr ];
 }
 
 InterfaceGl::InterfaceGl( const std::string &title, const Vec2i &size, const ColorA &color )
