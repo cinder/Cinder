@@ -3,6 +3,9 @@
 <template name="Basic OpenGL"
 	id = "org.libcinder.apptemplates.basicopengl"
 	>
+	<supports os="macosx" />
+	<supports os="ios" />
+	<supports os="msw" />
 	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
 	<header replaceContents="true" isResourceHeader="true">include/Resources.h</header>
 	<platform os="macosx">
