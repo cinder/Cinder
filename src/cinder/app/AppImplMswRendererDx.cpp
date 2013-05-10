@@ -249,8 +249,10 @@ void AppImplMswRendererDx::swapBuffers() const
 	//handle device lost
 	if(hr == DXGI_ERROR_DEVICE_REMOVED)
 		const_cast<AppImplMswRendererDx*>(this)->handleLostDevice();
-	mDeviceContext->DiscardView(mMainFramebuffer);
-	mDeviceContext->DiscardView(mDepthStencilView);
+#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+	mDeviceContext->DiscardView( mMainFramebuffer );
+	mDeviceContext->DiscardView( mDepthStencilView );
+#endif
 }
 
 void AppImplMswRendererDx::makeCurrentContext()

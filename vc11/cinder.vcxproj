@@ -51,8 +51,8 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;..\src\DxShaders\compiled;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -78,8 +78,8 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;..\src\DxShaders\compiled;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -99,8 +99,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\cinder\app\AppImplMswRendererDx.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp" />
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp" />
+    <ClCompile Include="..\src\cinder\app\RendererDx.cpp" />
     <ClCompile Include="..\src\cinder\app\Window.cpp" />
     <ClCompile Include="..\src\cinder\Area.cpp" />
     <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp" />
@@ -122,6 +124,14 @@
     <ClCompile Include="..\src\cinder\DataSource.cpp" />
     <ClCompile Include="..\src\cinder\DataTarget.cpp" />
     <ClCompile Include="..\src\cinder\Display.cpp" />
+    <ClCompile Include="..\src\cinder\dx\DDSTextureLoader.cpp" />
+    <ClCompile Include="..\src\cinder\dx\dx.cpp" />
+    <ClCompile Include="..\src\cinder\dx\DxFbo.cpp" />
+    <ClCompile Include="..\src\cinder\dx\DxLight.cpp" />
+    <ClCompile Include="..\src\cinder\dx\DxTexture.cpp" />
+    <ClCompile Include="..\src\cinder\dx\DxTextureFont.cpp" />
+    <ClCompile Include="..\src\cinder\dx\DxVbo.cpp" />
+    <ClCompile Include="..\src\cinder\dx\HlslProg.cpp" />
     <ClCompile Include="..\src\cinder\Exception.cpp" />
     <ClCompile Include="..\src\cinder\Font.cpp" />
     <ClCompile Include="..\src\cinder\Frustum.cpp" />
@@ -135,6 +145,7 @@
     <ClCompile Include="..\src\cinder\CinderMath.cpp" />
     <ClCompile Include="..\src\cinder\Json.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
+    <ClCompile Include="..\src\cinder\MatrixStack.cpp" />
     <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
     <ClCompile Include="..\src\cinder\Path2D.cpp" />
     <ClCompile Include="..\src\cinder\Perlin.cpp" />
@@ -222,8 +233,10 @@
     <ClCompile Include="..\src\videoInput\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\cinder\app\AppImplMswRendererDx.h" />
     <ClInclude Include="..\include\cinder\app\AppNative.h" />
     <ClInclude Include="..\include\cinder\app\Event.h" />
+    <ClInclude Include="..\include\cinder\app\RendererDx.h" />
     <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
     <ClInclude Include="..\include\cinder\app\Window.h" />
     <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h" />
@@ -232,6 +245,17 @@
     <ClInclude Include="..\include\cinder\Base64.h" />
     <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\include\cinder\Clipboard.h" />
+    <ClInclude Include="..\include\cinder\dx\DDS.h" />
+    <ClInclude Include="..\include\cinder\dx\DDSTextureLoader.h" />
+    <ClInclude Include="..\include\cinder\dx\dx.h" />
+    <ClInclude Include="..\include\cinder\dx\DxFbo.h" />
+    <ClInclude Include="..\include\cinder\dx\DxLight.h" />
+    <ClInclude Include="..\include\cinder\dx\DxTexture.h" />
+    <ClInclude Include="..\include\cinder\dx\DxTextureFont.h" />
+    <ClInclude Include="..\include\cinder\dx\DxVbo.h" />
+    <ClInclude Include="..\include\cinder\dx\gldx.h" />
+    <ClInclude Include="..\include\cinder\dx\HlslProg.h" />
+    <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />
     <ClInclude Include="..\include\cinder\Frustum.h" />
     <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h" />
@@ -242,6 +266,7 @@
     <ClInclude Include="..\include\cinder\Matrix33.h" />
     <ClInclude Include="..\include\cinder\Matrix44.h" />
     <ClInclude Include="..\include\cinder\MatrixAlgo.h" />
+    <ClInclude Include="..\include\cinder\MatrixStack.h" />
     <ClInclude Include="..\include\cinder\Plane.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
