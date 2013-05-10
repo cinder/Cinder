@@ -292,7 +292,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			dx::Texture::Format textureFormat = dx::Texture::Format();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 			textureFormat.setInternalFormat( DXGI_FORMAT_R8G8B8A8_UNORM );
-			mTextures.push_back( dx::Texture( tempSurface, textureFormat ) );
+			mTextures.push_back( dx::Texture::create( tempSurface, textureFormat ) );
 			ip::fill<uint8_t>( &channel, 0 );			
 			curOffset = Vec2i::zero();
 			curGlyphIndex = 0;
