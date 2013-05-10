@@ -128,7 +128,11 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 	D3D_FEATURE_LEVEL mFeatureLevel;
 	ID3D11Device1 *md3dDevice;
 	ID3D11DeviceContext1 *mDeviceContext;
+  #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
 	IDXGISwapChain1 *mSwapChain;
+  #else
+	IDXGISwapChain *mSwapChain;
+  #endif
 	ID3D11RenderTargetView *mMainFramebuffer;
 	ID3D11Texture2D *mDepthStencilTexture;
 	ID3D11DepthStencilView *mDepthStencilView;
