@@ -84,7 +84,6 @@ private:
 	bool		mFrameRateEnabled;
 	bool		mIsVisible;
 	class WindowImplWinRTBasic* mWindow;
-	WindowRef				mForegroundWindow;
 
 	// MultiTouch
 	std::map<DWORD,Vec2f>			mMultiTouchPrev;
