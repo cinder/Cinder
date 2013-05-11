@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererDx.h"
 #include "cinder/dx/dx.h"
 #include "cinder/dx/DxTexture.h"
 #include "cinder/dx/DxTextureFont.h"

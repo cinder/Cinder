@@ -156,7 +156,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="basicApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\basicApp.cpp" />

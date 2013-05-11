@@ -24,9 +24,6 @@
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="basicApp_TemporaryKey.pfx" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\src\basicApp.cpp" />
   </ItemGroup>
 </Project>
