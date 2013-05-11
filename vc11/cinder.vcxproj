@@ -99,6 +99,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswRendererDx.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp" />
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp" />
@@ -296,6 +297,7 @@
     <ClInclude Include="..\src\AntTweakBar\resource.h" />
     <ClInclude Include="..\src\AntTweakBar\TwBar.h" />
     <ClInclude Include="..\src\AntTweakBar\TwColors.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h" />
     <ClInclude Include="..\src\AntTweakBar\TwFonts.h" />
     <ClInclude Include="..\src\AntTweakBar\TwGraph.h" />
     <ClInclude Include="..\src\AntTweakBar\TwMgr.h" />

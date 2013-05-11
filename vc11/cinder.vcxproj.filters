@@ -489,6 +489,9 @@
     <ClCompile Include="..\src\cinder\MatrixStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1012,6 +1015,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\MatrixStack.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h">
+      <Filter>Source Files\AntTweakBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
