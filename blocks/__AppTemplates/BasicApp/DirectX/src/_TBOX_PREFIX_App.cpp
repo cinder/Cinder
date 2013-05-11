@@ -1,5 +1,5 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/dx/dx.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -28,7 +28,7 @@ void _TBOX_PREFIX_App::update()
 void _TBOX_PREFIX_App::draw()
 {
 	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
+	dx::clear( Color( 0, 0, 0 ) ); 
 }
 
-CINDER_APP_NATIVE( _TBOX_PREFIX_App, RendererGl )
+CINDER_APP_NATIVE( _TBOX_PREFIX_App, RendererDx )

@@ -12,6 +12,10 @@
 	</platform>
 	<platform os="winrt">
 		<file replaceContents="true">vc2012_winrt/Package.appxmanifest</file>
+		<file>vc2012_winrt/Assets/Logo.png</file>
+		<file>vc2012_winrt/Assets/SmallLogo.png</file>
+		<file>vc2012_winrt/Assets/SplashScreen.png</file>
+		<file>vc2012_winrt/Assets/StoreLogo.png</file>
 	</platform>
 </template>
 </cinder>
