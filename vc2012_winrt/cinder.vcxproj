@@ -272,6 +272,7 @@
     <ClInclude Include="..\include\cinder\Channel.h" />
     <ClInclude Include="..\include\cinder\Cinder.h" />
     <ClInclude Include="..\include\cinder\CinderMath.h" />
+    <ClInclude Include="..\include\cinder\CinderResources.h" />
     <ClInclude Include="..\include\cinder\DataSource.h" />
     <ClInclude Include="..\include\cinder\DataTarget.h" />
     <ClInclude Include="..\include\cinder\Display.h" />

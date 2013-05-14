@@ -328,6 +328,9 @@
     <ClInclude Include="..\src\AntTweakBar\TwPrecomp.h">
       <Filter>Source Files\AntTweakBar</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\CinderResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\App.cpp">
