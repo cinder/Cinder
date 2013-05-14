@@ -1,9 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="2fc9d4c2-3757-42d1-816d-732c0fca900d" Publisher="CN=dalestam" Version="1.0.0.0" />
+  <Identity Name="d6e41012-0921-4d96-8d61-131a49e9b982" Publisher="CN=cinderuser" Version="1.0.0.0" />
   <Properties>
-    <DisplayName>basicApp</DisplayName>
-    <PublisherDisplayName>dalestam</PublisherDisplayName>
+    <DisplayName>winrtSurface</DisplayName>
+    <PublisherDisplayName>cinderuser</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>
@@ -14,8 +14,8 @@
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="basicApp">
-      <VisualElements DisplayName="Surface Pixels" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Demonstrating Surface objects and pixel iteration" ForegroundText="light" BackgroundColor="#0c0000">
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="winrtSurface">
+      <VisualElements DisplayName="winrtSurface" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Created with Cinder." ForegroundText="light" BackgroundColor="#0c0000">
         <DefaultTile ShowName="allLogos" />
         <SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#0c0000" />
       </VisualElements>
