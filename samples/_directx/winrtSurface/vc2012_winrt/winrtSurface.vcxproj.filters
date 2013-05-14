@@ -15,13 +15,39 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\_TBOX_PREFIX_App.cpp">
+    <ClCompile Include="..\src\winrtSurfaceApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\winrtSurfaceApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>  
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Logo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\SmallLogo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\resources\mona.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
 </Project>

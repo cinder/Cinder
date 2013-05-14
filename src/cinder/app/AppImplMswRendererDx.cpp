@@ -235,16 +235,24 @@ void AppImplMswRendererDx::swapBuffers() const
 	parameters.pScrollOffset = nullptr;
 
 	HRESULT hr;
-	if(mVsyncEnable)
-		hr = mSwapChain->Present1(1, 0, &parameters);
+#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+	if( mVsyncEnable )
+		hr = mSwapChain->Present1( 1, 0, &parameters );
 	else
-		hr = mSwapChain->Present1(0, 0, &parameters);
-
+		hr = mSwapChain->Present1( 0, 0, &parameters );
+#else
+	if( mVsyncEnable )
+		hr = mSwapChain->Present( 1, 0 );
+	else
+		hr = mSwapChain->Present( 0, 0 );
+#endif
 	//handle device lost
 	if(hr == DXGI_ERROR_DEVICE_REMOVED)
 		const_cast<AppImplMswRendererDx*>(this)->handleLostDevice();
-	mDeviceContext->DiscardView(mMainFramebuffer);
-	mDeviceContext->DiscardView(mDepthStencilView);
+#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+	mDeviceContext->DiscardView( mMainFramebuffer );
+	mDeviceContext->DiscardView( mDepthStencilView );
+#endif
 }
 
 void AppImplMswRendererDx::makeCurrentContext()
@@ -580,11 +588,19 @@ bool AppImplMswRendererDx::createDeviceResources()
 	if( hr != S_OK )
 		return false;
 
+  #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
 	hr = device->QueryInterface(__uuidof(ID3D11Device1), (void**)&md3dDevice);
+  #else
+	hr = device->QueryInterface(__uuidof(ID3D11Device), (void**)&md3dDevice);
+  #endif
 	if( hr != S_OK )
 		return false;
 
+  #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
 	hr = context->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&mDeviceContext);
+  #else
+	hr = context->QueryInterface(__uuidof(ID3D11DeviceContext), (void**)&mDeviceContext);
+  #endif
 	if( hr != S_OK )
 		return false;
 	context->Release();
@@ -605,6 +621,21 @@ bool AppImplMswRendererDx::createFramebufferResources()
 	}
 	else
 	{
+		IDXGIDevice1 *dxgiDevice;
+		hr = md3dDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
+		if( hr != S_OK )
+			return false;
+		IDXGIAdapter *dxgiAdapter;
+		hr = dxgiDevice->GetAdapter(&dxgiAdapter);
+		if( hr != S_OK )
+			return false;
+		
+ #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+		IDXGIFactory2 *dxgiFactory;
+		hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
+		if( hr != S_OK )
+			return false;
+
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
 		swapChainDesc.Width = static_cast<UINT>(width); // Match the size of the window.
 		swapChainDesc.Height = static_cast<UINT>(height);
@@ -617,22 +648,35 @@ bool AppImplMswRendererDx::createFramebufferResources()
 		swapChainDesc.Scaling = DXGI_SCALING_NONE;
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; // All Windows Store apps must use this SwapEffect.
 		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-		IDXGIDevice1 *dxgiDevice;
-		hr = md3dDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
+  #if defined( CINDER_MSW )
+		hr = dxgiFactory->CreateSwapChainForHwnd( md3dDevice, mWnd, &swapChainDesc, NULL, NULL, &mSwapChain );
+  #elif defined( CINDER_WINRT )
+		hr = dxgiFactory->CreateSwapChainForCoreWindow( md3dDevice, reinterpret_cast<IUnknown*>(mWnd.Get()), &swapChainDesc, nullptr, &mSwapChain );
+  #endif
+#else
+		IDXGIFactory1 *dxgiFactory;
+		hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory1), (void**)&dxgiFactory);
 		if( hr != S_OK )
 			return false;
-		IDXGIAdapter *dxgiAdapter;
-		hr = dxgiDevice->GetAdapter(&dxgiAdapter);
-		if( hr != S_OK )
-			return false;
-		IDXGIFactory2 *dxgiFactory;
-		hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
-		if( hr != S_OK )
-			return false;
-#if defined( CINDER_MSW )
-		hr = dxgiFactory->CreateSwapChainForHwnd(md3dDevice, mWnd, &swapChainDesc, NULL, NULL, &mSwapChain);
-#elif defined( CINDER_WINRT )
-		hr = dxgiFactory->CreateSwapChainForCoreWindow(md3dDevice, reinterpret_cast<IUnknown*>(mWnd.Get()), &swapChainDesc, nullptr, &mSwapChain);
+		
+		DXGI_SWAP_CHAIN_DESC swapChainDesc = {0};
+		swapChainDesc.BufferDesc.Width = static_cast<UINT>(width); // Match the size of the window.
+		swapChainDesc.BufferDesc.Height = static_cast<UINT>(height);
+		swapChainDesc.BufferDesc.RefreshRate.Numerator = 60;
+		swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+		swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // This is the most common swap chain format.
+		swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		swapChainDesc.SampleDesc.Count = 1; // Don't use multi-sampling.
+		swapChainDesc.SampleDesc.Quality = 0;
+		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		swapChainDesc.BufferCount = 2; // Use double-buffering to minimize latency.
+		swapChainDesc.OutputWindow = mWnd;
+		swapChainDesc.Windowed = TRUE;
+		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+		swapChainDesc.Flags = 0;
+		
+		hr = dxgiFactory->CreateSwapChain( md3dDevice, &swapChainDesc, &mSwapChain );
 #endif
 		if( hr != S_OK )
 			return false;

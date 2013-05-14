@@ -371,7 +371,11 @@ class App {
 	static fs::path				getResourcePath( const fs::path &rsrcRelativePath );
 	//! Returns the absolute file path to the bundle's resources folder. \sa \ref CinderResources
 	static fs::path				getResourcePath();
-#else
+#elif defined( CINDER_WINRT )
+	//! Returns a DataSource to an application resource stored in the Assets folder (on WinRT only). Equivalent on this platform to calling loadAsset(). \sa \ref CinderResources
+	static DataSourceRef	loadResource( const std::string &assetPath ) { return App::get()->loadAsset( assetPath ); }
+
+#elif defined( CINDER_MSW )
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
 	static DataSourceRef		loadResource( int mswID, const std::string &mswType );
 #endif
@@ -626,7 +630,10 @@ inline DataSourceRef		loadResource( const std::string &macPath, int mswID, const
 #if defined( CINDER_COCOA )
 	//! Returns a DataSource to an application resource. \a macPath is a path relative to the bundle's resources folder. \sa \ref CinderResources
 	inline DataSourceRef	loadResource( const std::string &macPath ) { return App::loadResource( macPath ); }
-#else
+#elif defined( CINDER_WINRT )
+	//! Returns a DataSource to an application resource stored in the Assets folder (on WinRT only). Equivalent on this platform to calling loadAsset(). \sa \ref CinderResources
+	inline DataSourceRef	loadResource( const std::string &assetPath ) { return App::get()->loadAsset( assetPath ); }
+#elif defined( CINDER_MSW )
 	//! Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
 	inline DataSourceRef	loadResource( int mswID, const std::string &mswType ) { return App::loadResource( mswID, mswType ); }
 #endif
@@ -656,7 +663,7 @@ inline fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
 #if defined( CINDER_WINRT )
-inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(),std::function<void (fs::path)> f = nullptr) { App::get()->getSaveFilePath( initialPath, extensions, f ); }
+inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr) { App::get()->getSaveFilePath( initialPath, extensions, f ); }
 #else
 inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getSaveFilePath( initialPath, extensions ); }
 #endif

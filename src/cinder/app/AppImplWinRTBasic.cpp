@@ -195,17 +195,17 @@ size_t AppImplWinRTBasic::getNumWindows() const
 
 WindowRef AppImplWinRTBasic::getWindowIndex( size_t index )
 {
-	return cinder::app::WindowRef();
+	return getWindow();
 }
 
 WindowRef AppImplWinRTBasic::getForegroundWindow() const
 {
-	return cinder::app::WindowRef();
+	return getWindow();
 }
 
 void AppImplWinRTBasic::setForegroundWindow( WindowRef window )
 {
-	mForegroundWindow = window;
+	//mForegroundWindow = window;
 }
 
 float AppImplWinRTBasic::setFrameRate( float aFrameRate )

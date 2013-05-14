@@ -1,8 +1,9 @@
 #include "cinder/app/AppBasic.h"
-#include <list>
+#include "cinder/app/RendererDx.h"
 #include "cinder/dx/dx.h"
 #include "cinder/Surface.h"
 #include "cinder/dx/DxTexture.h"
+#include <list>
 
 using namespace ci;
 using namespace ci::app;

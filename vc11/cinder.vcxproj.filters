@@ -85,6 +85,12 @@
     <Filter Include="Source Files\qtime">
       <UniqueIdentifier>{c8db6b91-0c81-4c5b-ae73-994db8d58d64}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\dx">
+      <UniqueIdentifier>{1a305511-2204-4100-81d9-aecef552ae09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dx">
+      <UniqueIdentifier>{aaf12809-97ce-4c25-bb74-4c111e438a25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -449,6 +455,42 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp">
       <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMswRendererDx.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DDSTextureLoader.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\dx.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxFbo.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxLight.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxTexture.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxTextureFont.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxVbo.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\HlslProg.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\MatrixStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -931,6 +973,51 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h">
       <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DDS.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DDSTextureLoader.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\dx.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxFbo.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxLight.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxTexture.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxTextureFont.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxVbo.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\gldx.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\HlslProg.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMswRendererDx.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\RendererDx.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\MatrixStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h">
+      <Filter>Source Files\AntTweakBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

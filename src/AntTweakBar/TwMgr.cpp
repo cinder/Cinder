@@ -13,9 +13,8 @@
 #include "TwMgr.h"
 #include "TwBar.h"
 #include "TwFonts.h"
-#if !defined( USE_DIRECTX )
 #include "TwOpenGL.h"
-#endif
+
 // Cinder doesn't support OpenGLCore yet
 // #include "TwOpenGLCore.h"
 #ifdef ANT_WINDOWS
@@ -1749,9 +1748,7 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
     switch( _GraphAPI )
     {
     case TW_OPENGL:
-#if !defined( USE_DIRECTX )
         g_TwMgr->m_Graph = new CTwGraphOpenGL;
-#endif
         break;
 // Cinder: we don't support D3D or OpenGL Core yet
 #if 0

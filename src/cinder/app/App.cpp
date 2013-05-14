@@ -183,12 +183,7 @@ DataSourceRef App::loadResource( const string &macPath )
 	else
 		return DataSourcePath::create( resourcePath );
 }
-#elif defined( CINDER_WINRT )
-DataSourceRef App::loadResource( int mswID, const string &mswType )
-{
-	return DataSourceBuffer::create( AppImplWinRT::loadResource( mswID, mswType ) );
-}
-#else
+#elif defined( CINDER_MSW )
 
 DataSourceRef App::loadResource( int mswID, const string &mswType )
 {
@@ -226,8 +221,9 @@ void App::prepareAssetLoading()
 
 
 #if defined( CINDER_WINRT )
+		mAssetDirectories.push_back( appPath );
 		fs::path curPath = appPath;
-		fs::path curAssetPath = curPath / fs::path("assets");
+		fs::path curAssetPath = curPath / fs::path( "Assets" );
 		mAssetDirectories.push_back( curAssetPath );
 #else
 		// first search the local directory, then its parent, up to 5 levels up

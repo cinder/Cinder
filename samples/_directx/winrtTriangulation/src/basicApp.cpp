@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererDx.h"
 #include "cinder/Font.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Triangulate.h"

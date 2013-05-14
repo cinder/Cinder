@@ -1,9 +1,10 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererDx.h"
 #include "cinder/ImageIo.h"
-#include "cinder/Font.h"
 #include "cinder/dx/dx.h"
-#include "cinder/dx/DxVbo.h"
 #include "cinder/dx/DxTexture.h"
+
+#include "Resources.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -13,6 +14,7 @@ class BasicApp : public AppBasic {
   public:
 	void setup();
 	void draw();	
+
 	dx::TextureRef	mProcessedImageTex;
 	Vec2i			mImageCenter;
 };
@@ -100,16 +102,15 @@ Surface processImage( const Surface input )
 
 void BasicApp::setup()
 {
-		Surface processedImage( processImage( loadImage( loadAsset("mona.jpg") ) ) );
-		mProcessedImageTex = dx::Texture::create( processedImage );
-		mImageCenter = Vec2i( getWindowCenter().x - mProcessedImageTex->getWidth()*.5 , getWindowCenter().y - mProcessedImageTex->getHeight()*.5);
+	Surface processedImage( processImage( loadImage( loadResource( RES_IMAGE ) ) ) );
+	mProcessedImageTex = dx::Texture::create( processedImage );
+	mImageCenter = Vec2i( getWindowCenter().x - mProcessedImageTex->getWidth() / 2, getWindowCenter().y - mProcessedImageTex->getHeight() / 2 );
 }
 
 void BasicApp::draw()
 {
-	dx::clear( Color(0,0,0), false);
+	dx::clear( Color::black(), false );
 	dx::draw( mProcessedImageTex, mImageCenter );
 }
 
-// This line tells Cinder to actually create the application
 CINDER_APP_BASIC( BasicApp, RendererDx )
