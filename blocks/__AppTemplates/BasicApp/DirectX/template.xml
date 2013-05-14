@@ -9,6 +9,7 @@
 	<header replaceContents="true" isResourceHeader="true">include/Resources.h</header>
 	<platform os="msw">
 		<resource type="ICON" id="1">resources/cinder_app_icon.ico</resource>
+		<staticLibrary absolute="true">d3d11.lib</staticLibrary>
 	</platform>
 	<platform os="winrt">
 		<file replaceContents="true">vc2012_winrt/Package.appxmanifest</file>

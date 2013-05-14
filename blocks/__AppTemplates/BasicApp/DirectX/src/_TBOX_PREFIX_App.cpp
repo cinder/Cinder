@@ -1,4 +1,5 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererDx.h"
 #include "cinder/dx/dx.h"
 
 using namespace ci;
