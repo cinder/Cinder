@@ -39,7 +39,7 @@ void BasicApp::setup()
 	mVboMesh = dx::VboMesh( totalVertices, totalQuads * 4, layout, true );
 
 	// buffer our static data - the texcoords and the indices
-	vector<uint32_t> indices;
+	vector<uint16_t> indices;
 	vector<Vec2f> texCoords;
 	vector<Vec3f> normals;
 	vector<ColorA> colors;

@@ -173,7 +173,13 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 			
 	// upload the indices
 	if(!triMesh.getIndices().empty())
-		getIndexVbo().bufferData( sizeof(uint32_t) * triMesh.getNumIndices(), &(triMesh.getIndices()[0]), /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+    {
+        std::vector<uint16_t> indices(triMesh.getIndices().size());
+        std::vector<size_t>::const_iterator it = triMesh.getIndices().begin();
+        for(unsigned i = 0; i < indices.size(); ++i, ++it)
+            indices[i] = *it;
+		getIndexVbo().bufferData( sizeof(uint16_t) * triMesh.getNumIndices(), &(indices[0]), /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+    }
 	
 	// upload the verts
 	for( int buffer = STATIC_BUFFER; buffer <= DYNAMIC_BUFFER; ++buffer ) {
@@ -241,7 +247,13 @@ VboMesh::VboMesh( const TriMesh2d &triMesh, Layout layout )
 			
 	// upload the indices
 	if(!triMesh.getIndices().empty())
-		getIndexVbo().bufferData( sizeof(uint32_t) * triMesh.getNumIndices(), &(triMesh.getIndices()[0]), /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+    {
+        std::vector<uint16_t> indices(triMesh.getIndices().size());
+        std::vector<size_t>::const_iterator it = triMesh.getIndices().begin();
+        for(unsigned i = 0; i < indices.size(); ++i, ++it)
+            indices[i] = *it;
+		getIndexVbo().bufferData( sizeof(uint16_t) * triMesh.getNumIndices(), &(indices[0]), /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+    }
 	
 	// upload the verts
 	for( int buffer = STATIC_BUFFER; buffer <= DYNAMIC_BUFFER; ++buffer ) {
@@ -293,7 +305,7 @@ VboMesh::VboMesh( size_t numVertices, size_t numIndices, Layout layout, D3D11_PR
 	
 	// allocate buffer for indices
 	if( mObj->mLayout.hasIndices() )
-		mObj->mBuffers[INDEX_BUFFER].bufferData( sizeof(uint32_t) * mObj->mNumIndices, NULL, /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+		mObj->mBuffers[INDEX_BUFFER].bufferData( sizeof(uint16_t) * mObj->mNumIndices, NULL, /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
 	
 	//unbindBuffers();	
 }
@@ -316,9 +328,9 @@ VboMesh::VboMesh( size_t numVertices, size_t numIndices, Layout layout, bool use
 	{
 		int indexBufferSize;
 		if(useQuads)
-			indexBufferSize = sizeof(uint32_t) * mObj->mNumIndices / 4 * 6;
+			indexBufferSize = sizeof(uint16_t) * mObj->mNumIndices / 4 * 6;
 		else
-			indexBufferSize = sizeof(uint32_t) * mObj->mNumIndices;
+			indexBufferSize = sizeof(uint16_t) * mObj->mNumIndices;
 		mObj->mBuffers[INDEX_BUFFER].bufferData( indexBufferSize, NULL, /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
 	}
 	
@@ -818,7 +830,7 @@ void VboMesh::bindAllData() const
 
 void VboMesh::bindIndexBuffer() const
 {
-	getDxRenderer()->mDeviceContext->IASetIndexBuffer(mObj->mBuffers[INDEX_BUFFER].getId(), DXGI_FORMAT_R32_UINT, 0);
+	getDxRenderer()->mDeviceContext->IASetIndexBuffer(mObj->mBuffers[INDEX_BUFFER].getId(), DXGI_FORMAT_R16_UINT, 0);
 	//mObj->mBuffers[INDEX_BUFFER].bind();
 }
 
@@ -828,12 +840,12 @@ void VboMesh::bindIndexBuffer() const
 //	glBindBuffer( GL_ARRAY_BUFFER, 0 );
 //}
 
-void VboMesh::bufferIndices( const std::vector<uint32_t> &indices )
+void VboMesh::bufferIndices( const std::vector<uint16_t> &indices )
 {
 	if(mObj->mUseQuads)
 	{
 		size_t quadIndexCount = indices.size() / 4 * 6;
-		uint32_t *quadIndices = new uint32_t[quadIndexCount];
+		uint16_t *quadIndices = new uint16_t[quadIndexCount];
 		for(unsigned i = 0, j = 0; i < indices.size(); i += 4, j += 6)
 		{
 			quadIndices[j+0] = indices[i+0];
@@ -843,11 +855,11 @@ void VboMesh::bufferIndices( const std::vector<uint32_t> &indices )
 			quadIndices[j+4] = indices[i+2];
 			quadIndices[j+5] = indices[i+3];
 		}
-		mObj->mBuffers[INDEX_BUFFER].bufferData( sizeof(uint32_t) * quadIndexCount, quadIndices, /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+		mObj->mBuffers[INDEX_BUFFER].bufferData( sizeof(uint16_t) * quadIndexCount, quadIndices, /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
 		delete [] quadIndices;
 	}
 	else
-		mObj->mBuffers[INDEX_BUFFER].bufferData( sizeof(uint32_t) * indices.size(), &(indices[0]), /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
+		mObj->mBuffers[INDEX_BUFFER].bufferData( sizeof(uint16_t) * indices.size(), &(indices[0]), /*(mObj->mLayout.hasStaticIndices()) ? D3D11_USAGE_DEFAULT : */D3D11_USAGE_DYNAMIC, D3D11_BIND_INDEX_BUFFER, /*(mObj->mLayout.hasStaticIndices()) ? (D3D11_CPU_ACCESS_FLAG)0 : */D3D11_CPU_ACCESS_WRITE );
 }
 
 void VboMesh::bufferPositions( const std::vector<Vec3f> &positions )

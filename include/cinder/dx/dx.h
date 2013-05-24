@@ -325,7 +325,7 @@ void draw( const Texture &texture, const Rectf &rect );
 //! Draws the pixels inside \a srcArea of \a texture on the XY-plane in the rectangle defined by \a destRect
 void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect );
 //! Draws a bunch of textured triangles as specified by the function caller
-void draw( const Texture &texture, const std::vector<float> &verts, const std::vector<float> &texCoords, const std::vector<ColorA8u> &vertColors, const std::vector<uint32_t> &indices );
+void draw( const Texture &texture, const std::vector<float> &verts, const std::vector<float> &texCoords, const std::vector<ColorA8u> &vertColors, const std::vector<uint16_t> &indices );
 //! Sets the render state to batch texture draw calls until the end for optimal performance
 void batchTextureBegin();
 //! Draws all the batched textures

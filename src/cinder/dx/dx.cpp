@@ -2435,11 +2435,15 @@ void draw( const TriMesh2d &mesh )
 		applyDxFixedPipeline(verts, vertCount, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		D3D11_MAPPED_SUBRESOURCE subresource;
 		dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-		memcpy(subresource.pData, &mesh.getIndices()[0], sizeof(GLuint) * mesh.getIndices().size());
+        std::vector<uint16_t> indices(mesh.getIndices().size());
+        std::vector<size_t>::const_iterator it = mesh.getIndices().begin();
+        for(unsigned i = 0; i < indices.size(); ++i, ++it)
+            indices[i] = *it;
+		memcpy(subresource.pData, &indices[0], sizeof(uint16_t) * mesh.getIndices().size());
 		dx->mDeviceContext->Unmap(dx->mIndexBuffer, 0);
 		//D3D11_BOX box = { 0, 0, 0, sizeof(GLuint) * mesh.getIndices().size(), 1, 1 };
 		//dx->mDeviceContext->UpdateSubresource(dx->mIndexBuffer, 0, &box, &mesh.getIndices()[0], 0, 0);
-		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 		dx->mDeviceContext->DrawIndexed(mesh.getIndices().size(), 0, 0);
 		delete [] verts;
 	}
@@ -2514,11 +2518,15 @@ void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCoun
 		applyDxFixedPipeline(verts, vertCount, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		D3D11_MAPPED_SUBRESOURCE subresource;
 		dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-		memcpy(subresource.pData, &mesh.getIndices()[0], sizeof(GLuint) * mesh.getIndices().size());
+        std::vector<uint16_t> indices(mesh.getIndices().size());
+        std::vector<size_t>::const_iterator it = mesh.getIndices().begin();
+        for(unsigned i = 0; i < indices.size(); ++i, ++it)
+            indices[i] = *it;
+		memcpy(subresource.pData, &indices[0], sizeof(uint16_t) * mesh.getIndices().size());
 		dx->mDeviceContext->Unmap(dx->mIndexBuffer, 0);
 		//D3D11_BOX box = { 0, 0, 0, sizeof(GLuint) * mesh.getIndices().size(), 1, 1 };
 		//dx->mDeviceContext->UpdateSubresource(dx->mIndexBuffer, 0, &box, &mesh.getIndices()[0], 0, 0);
-		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 		dx->mDeviceContext->DrawIndexed(triangleCount * 3, startTriangle, 0);
 		delete [] verts;
 	}
@@ -2594,11 +2602,15 @@ void draw( const TriMesh &mesh )
 		applyDxFixedPipeline(verts, vertCount, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		D3D11_MAPPED_SUBRESOURCE subresource;
 		dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-		memcpy(subresource.pData, &mesh.getIndices()[0], sizeof(GLuint) * mesh.getIndices().size());
+        std::vector<uint16_t> indices(mesh.getIndices().size());
+        std::vector<size_t>::const_iterator it = mesh.getIndices().begin();
+        for(unsigned i = 0; i < indices.size(); ++i, ++it)
+            indices[i] = *it;
+		memcpy(subresource.pData, &indices[0], sizeof(uint16_t) * mesh.getIndices().size());
 		dx->mDeviceContext->Unmap(dx->mIndexBuffer, 0);
 		//D3D11_BOX box = { 0, 0, 0, sizeof(GLuint) * mesh.getIndices().size(), 1, 1 };
 		//dx->mDeviceContext->UpdateSubresource(dx->mIndexBuffer, 0, &box, &mesh.getIndices()[0], 0, 0);
-		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 		dx->mDeviceContext->DrawIndexed(mesh.getIndices().size(), 0, 0);
 		delete [] verts;
 	}
@@ -2678,11 +2690,15 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 		applyDxFixedPipeline(verts, vertCount, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		D3D11_MAPPED_SUBRESOURCE subresource;
 		dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-		memcpy(subresource.pData, &mesh.getIndices()[0], sizeof(GLuint) * mesh.getIndices().size());
+        std::vector<uint16_t> indices(mesh.getIndices().size());
+        std::vector<size_t>::const_iterator it = mesh.getIndices().begin();
+        for(unsigned i = 0; i < indices.size(); ++i, ++it)
+            indices[i] = *it;
+		memcpy(subresource.pData, &indices[0], sizeof(uint16_t) * mesh.getIndices().size());
 		dx->mDeviceContext->Unmap(dx->mIndexBuffer, 0);
 		//D3D11_BOX box = { 0, 0, 0, sizeof(GLuint) * mesh.getIndices().size(), 1, 1 };
 		//dx->mDeviceContext->UpdateSubresource(dx->mIndexBuffer, 0, &box, &mesh.getIndices()[0], 0, 0);
-		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 		dx->mDeviceContext->DrawIndexed(triangleCount * 3, startTriangle, 0);
 		delete [] verts;
 	}
@@ -3036,7 +3052,7 @@ void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &co
 	drawStringHelper( str, pos, color, font, 1 );
 }
 
-void draw( const Texture &texture, const std::vector<float> &verts, const std::vector<float> &texCoords, const std::vector<ColorA8u> &vertColors, const std::vector<uint32_t> &indices )
+void draw( const Texture &texture, const std::vector<float> &verts, const std::vector<float> &texCoords, const std::vector<ColorA8u> &vertColors, const std::vector<uint16_t> &indices )
 {
 	std::vector<FixedVertex> wholeVertices(verts.size() / 2);
 	auto dx = getDxRenderer();
@@ -3053,9 +3069,9 @@ void draw( const Texture &texture, const std::vector<float> &verts, const std::v
 	applyDxFixedPipeline(&wholeVertices[0], wholeVertices.size(), TEXTURE_VERTEX, TEXTURE_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	D3D11_MAPPED_SUBRESOURCE subresource;
 	dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-	memcpy(subresource.pData, &indices[0], sizeof(uint32_t) * indices.size());
+	memcpy(subresource.pData, &indices[0], sizeof(uint16_t) * indices.size());
 	dx->mDeviceContext->Unmap(dx->mIndexBuffer, 0);
-	dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	dx->mDeviceContext->DrawIndexed(indices.size(), 0, 0);
 }
 

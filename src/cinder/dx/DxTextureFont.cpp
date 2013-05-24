@@ -336,7 +336,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 		vector<float> verts, texCoords;
 		vector<ColorA8u> vertColors;
 		const dx::Texture &curTex = mTextures[texIdx];
-		vector<uint32_t> indices;
+		vector<uint16_t> indices;
 		uint32_t curIdx = 0;
 		if( options.getPixelSnap() )
 			baseline = Vec2f( floor( baseline.x ), floor( baseline.y ) );
@@ -416,7 +416,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 		vector<float> verts, texCoords;
 		vector<ColorA8u> vertColors;
 		const dx::Texture &curTex = mTextures[texIdx];
-		vector<uint32_t> indices;
+		vector<uint16_t> indices;
 		uint32_t curIdx = 0;
 		if( options.getPixelSnap() )
 			offset = Vec2f( floor( offset.x ), floor( offset.y ) );

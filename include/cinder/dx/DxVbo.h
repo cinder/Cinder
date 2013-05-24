@@ -191,7 +191,7 @@ class VboMesh {
 	void			bindAllData() const;
 	//static void		unbindBuffers();
 
-	void						bufferIndices( const std::vector<uint32_t> &indices );
+	void						bufferIndices( const std::vector<uint16_t> &indices );
 	void						bufferPositions( const std::vector<Vec3f> &positions );
 	void						bufferPositions( const Vec3f *positions, size_t count );
 	void						bufferNormals( const std::vector<Vec3f> &normals );
