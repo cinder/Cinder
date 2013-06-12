@@ -102,7 +102,7 @@ class TriMesh {
 	/*! after creating three vertices, pass the indices of the three vertices to create a triangle from them. Until this is done, unlike in an OpenGL triangle strip, the 
 	 triangle will not actually be generated and stored by the TriMesh
 	*/
-	void		appendTriangle( size_t v0, size_t v1, size_t v2 )
+	void		appendTriangle( uint32_t v0, uint32_t v1, uint32_t v2 )
 	{ mIndices.push_back( v0 ); mIndices.push_back( v1 ); mIndices.push_back( v2 ); }
 	//! Appends \a num vertices to the TriMesh pointed to by \a indices
 	void		appendIndices( const uint32_t *indices, size_t num );
@@ -193,7 +193,7 @@ class TriMesh2d {
 	/*! after creating three vertices, pass the indices of the three vertices to create a triangle from them. Until this is done, unlike in an OpenGL triangle strip, the 
 	 triangle will not actually be generated and stored by the TriMesh
 	*/
-	void		appendTriangle( size_t v0, size_t v1, size_t v2 )
+	void		appendTriangle( uint32_t v0, uint32_t v1, uint32_t v2 )
 	{ mIndices.push_back( v0 ); mIndices.push_back( v1 ); mIndices.push_back( v2 ); }
 	//! Appends \a num vertices to the TriMesh2d pointed to by \a indices
 	void		appendIndices( const uint32_t *indices, size_t num );
@@ -225,9 +225,9 @@ class TriMesh2d {
 	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
 	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	std::vector<size_t>&			getIndices() { return mIndices; }		
+	std::vector<uint32_t>&			getIndices() { return mIndices; }
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	const std::vector<size_t>&		getIndices() const { return mIndices; }		
+	const std::vector<uint32_t>&	getIndices() const { return mIndices; }
 
 	//! Calculates the bounding box of all vertices
 	Rectf	calcBoundingBox() const;
@@ -237,7 +237,7 @@ class TriMesh2d {
 	std::vector<Color>		mColorsRgb;
 	std::vector<ColorA>		mColorsRgba;
 	std::vector<Vec2f>		mTexCoords;
-	std::vector<size_t>		mIndices;
+	std::vector<uint32_t>	mIndices;
 };
 
 } // namespace cinder
