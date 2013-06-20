@@ -24,6 +24,7 @@
 #include "cinder/app/AppImplCocoaBasic.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/app/Window.h"
+#include "cinder/Display.h"
 #import "cinder/cocoa/CinderCocoa.h"
 
 #import <OpenGL/OpenGL.h>
@@ -99,6 +100,10 @@
 	
 	// make the first window the active window
 	[self setActiveWindow:[mWindows objectAtIndex:0]];
+
+	// Register for display change notifications
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(screenChange:) name:NSApplicationDidChangeScreenParametersNotification object:nil];
+	
 	[self startAnimationTimer];
 }
 
@@ -286,6 +291,8 @@
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+
 	// we need to close all existing windows
 	while( [mWindows count] > 0 ) {
 		// this counts on windowWillCloseNotification: firing and in turn calling releaseWindow
@@ -365,6 +372,11 @@
 
 - (void)touchesCancelledWithEvent:(NSEvent *)event
 {
+}
+
+- (void)screenChange:(NSNotification*) notification
+{
+	cinder::Display::rescanDisplays();
 }
 
 @end

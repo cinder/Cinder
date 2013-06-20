@@ -112,12 +112,12 @@ class Display {
 		return o << display.mArea << " @ " << display.mBitsPerPixel << "bpp @ scale " << display.mContentScale;
 	}	
 	
-#if defined( CINDER_COCOA_TOUCH )
+	//! Call to force a rescan of the display list
+	static void rescanDisplays();
 	//! Returns the signal emitted when a display is connected or disconnected
-	signals::signal<void()>&	getSignalDisplaysChanged() { return mSignalDisplaysChanged; }
+	static signals::signal<void()>&	getSignalDisplaysChanged() { return sSignalDisplaysChanged; }
 	template<typename T, typename Y>
-	void						connectDisplaysChanged( T fn, Y *inst ) { getSignalDisplaysChanged().connect( std::bind( fn, inst ) ); }
-#endif
+	static void						connectDisplaysChanged( T fn, Y *inst ) { getSignalDisplaysChanged().connect( std::bind( fn, inst ) ); }
 	
   private:
 	Area		mArea;
@@ -129,7 +129,6 @@ class Display {
 #elif defined( CINDER_COCOA_TOUCH )
 	UIScreen				*mUiScreen;
 	std::vector<Vec2i>		mSupportedResolutions;
-	signals::signal<void()>	mSignalDisplaysChanged;
 #elif defined( CINDER_MSW )
 	HMONITOR			mMonitor;
 #endif
@@ -138,6 +137,7 @@ class Display {
 	
 	static std::vector<DisplayRef>	sDisplays;
 	static bool						sDisplaysInitialized;
+	static signals::signal<void()>	sSignalDisplaysChanged;
 };
 
 } // namespace cinder

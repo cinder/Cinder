@@ -34,6 +34,7 @@ namespace cinder {
 
 std::vector<DisplayRef >	Display::sDisplays;
 bool						Display::sDisplaysInitialized = false;
+signals::signal<void()>		Display::sSignalDisplaysChanged;
 
 Display::~Display()
 {
@@ -44,6 +45,14 @@ Display::~Display()
 #endif
 }
 
+void Display::rescanDisplays()
+{
+	sDisplaysInitialized = false;
+	sDisplays.clear();
+	enumerateDisplays();
+	sSignalDisplaysChanged();
+}
+	
 const vector<DisplayRef>&	Display::getDisplays()
 {
 	enumerateDisplays();
