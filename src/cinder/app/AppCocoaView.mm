@@ -375,6 +375,8 @@
 	
 	// register for notification of application termination
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
+	// Register for display change notifications
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(screenChange:) name:NSApplicationDidChangeScreenParametersNotification object:nil];
 	
 	return self;
 }
@@ -495,6 +497,11 @@
 - (bool)isFrameRateEnabled
 {
 	return mFrameRateEnabled;
+}
+
+- (void)screenChange:(NSNotification*) notification
+{
+	cinder::Display::rescanDisplays();
 }
 
 @end
