@@ -955,6 +955,11 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		case WM_TOUCH:
 			impl->onTouch( mWnd, wParam, lParam );
 		break;
+		case WM_DEVICECHANGE:
+			// This will fire too much (USB inserts, etc..), but I didn't see
+			// a display specific message to hook (WM_DISPLAYCHANGE is for resolution changes.)
+			Display::markDisplaysDirty();
+			break;
 	}
 
 	// unhandled messages To DefWindowProc
