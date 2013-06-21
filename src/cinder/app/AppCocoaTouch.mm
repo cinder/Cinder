@@ -212,13 +212,13 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)screenDidConnect:(NSNotification *)aNotification
 {
 	NSLog(@"A new screen got connected: %@", [aNotification object]);
-	//cinder::Display::markDisplaysDirty();
+	cinder::Display::markDisplaysDirty();
 }
 
 - (void)screenDidDisconnect:(NSNotification *)aNotification
 {
     NSLog(@"A screen got disconnected: %@", [aNotification object]);
-//	cinder::Display::markDisplaysDirty();
+	cinder::Display::markDisplaysDirty();
 }
 
 - (void)updatePowerManagement

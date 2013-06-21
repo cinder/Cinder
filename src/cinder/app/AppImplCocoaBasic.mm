@@ -376,7 +376,7 @@
 
 - (void)screenChange:(NSNotification*) notification
 {
-	cinder::Display::rescanDisplays();
+	cinder::Display::markDisplaysDirty();
 }
 
 @end

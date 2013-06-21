@@ -113,7 +113,7 @@ class Display {
 	}	
 	
 	//! Call to force a rescan of the display list
-	static void rescanDisplays();
+	static void markDisplaysDirty();
 	//! Returns the signal emitted when a display is connected or disconnected
 	static signals::signal<void()>&	getSignalDisplaysChanged() { return sSignalDisplaysChanged; }
 	template<typename T, typename Y>

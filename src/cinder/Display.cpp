@@ -45,11 +45,9 @@ Display::~Display()
 #endif
 }
 
-void Display::rescanDisplays()
+void Display::markDisplaysDirty()
 {
 	sDisplaysInitialized = false;
-	sDisplays.clear();
-	enumerateDisplays();
 	sSignalDisplaysChanged();
 }
 	
@@ -112,6 +110,8 @@ void Display::enumerateDisplays()
 	if( sDisplaysInitialized )
 		return;
 	
+	sDisplays.clear();
+	
 	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
@@ -153,7 +153,7 @@ void Display::enumerateDisplays()
 {
 	if( sDisplaysInitialized )
 		return;
-
+	sDisplays.clear();
 	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
@@ -240,7 +240,7 @@ void Display::enumerateDisplays()
 {
 	if( sDisplaysInitialized )
 		return;
-
+	sDisplays.clear();
 	::EnumDisplayMonitors( NULL, NULL, enumMonitorProc, (LPARAM)&sDisplays );
 	
 	// ensure that the primary display is sDisplay[0]
