@@ -657,7 +657,12 @@ class Image : public Node {
 
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
-	virtual Rectf	calcBoundingBox() const { return mRect; }
+	virtual Rectf	calcBoundingBox() const {
+	// offset the rectangle to get correct rendering bounds of element (otherwise starts from 0, 0 regardless)
+		Vec2f offset( 0, 0 );
+		offset = mTransform.transformPoint( offset );
+	 return mRect + offset;
+	 }
   
 	static std::shared_ptr<Surface8u>	parseDataImage( const std::string &data );
 
