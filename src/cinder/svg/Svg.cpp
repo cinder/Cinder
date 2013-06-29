@@ -1908,7 +1908,7 @@ Rectf Group::calcBoundingBox() const
 	bool empty = true;
 	Rectf result( 0, 0, 0, 0 );
 	for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
-		Rectf childBounds = (*childIt)->getBoundingBox();
+		Rectf childBounds = (*childIt)->getBoundingBoxAbsolute();
 		// only use child area if it exists (text nodes return [0,0,0,0])
 		if( childBounds.calcArea() > 0 ) {
 			if( empty ) {
