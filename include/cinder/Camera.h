@@ -61,6 +61,9 @@ class Camera {
 
 	float	getFov() const { return mFov; }
 	void	setFov( float aFov ) { mFov = aFov;  mProjectionCached = false; }
+	float	getFovHorizontal() const { return toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(mFov) * 0.5f ) * mAspectRatio ) ); }
+	void	setFovHorizontal( float aFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(aFov) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
+
 	float	getAspectRatio() const { return mAspectRatio; }
 	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mProjectionCached = false; }
 	float	getNearClip() const { return mNearClip; }
