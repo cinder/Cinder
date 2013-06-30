@@ -59,8 +59,9 @@ class Camera {
 	Quatf		getOrientation() const { return mOrientation; }
 	void		setOrientation( const Quatf &aOrientation );
 
-	float	getFov() const { return mFov; }
-	void	setFov( float aFov ) { mFov = aFov;  mProjectionCached = false; }
+	float	getFov( bool vertical = true ) const { return vertical ? mFov : toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(mFov) * 0.5f ) * mAspectRatio ) ); }
+	void	setFov( float aFov, bool vertical = true ) { mFov = vertical ? aFov : toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(aFov) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
+
 	float	getAspectRatio() const { return mAspectRatio; }
 	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mProjectionCached = false; }
 	float	getNearClip() const { return mNearClip; }
