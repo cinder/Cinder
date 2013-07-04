@@ -30,6 +30,8 @@
 #include "cinder/Stream.h"
 #include "cinder/Utilities.h"
 
+#include <cstdlib>
+
 using namespace std;
 
 namespace cinder {
@@ -603,7 +605,7 @@ Json::Value JsonTree::createNativeDoc( WriteOptions writeOptions ) const
 				value = Json::Value( fromString<bool>( mValue ) );
 				break;
 			case VALUE_DOUBLE:
-				value = Json::Value( fromString<double>( mValue ) );
+				value = Json::Value( atof( mValue.c_str() ) );
 				break;
 			case VALUE_INT:
 				value = Json::Value( fromString<int64_t>( mValue ) );
