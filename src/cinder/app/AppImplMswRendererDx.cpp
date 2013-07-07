@@ -45,32 +45,126 @@ using namespace cinder::winrt;
 #endif
 
 namespace Shaders {
-	#include "CompiledFixedFunctionVS.inc"
-	#include "CompiledFixedFunctionPS.inc"
-	#include "CompiledFixedFunctionLightingVS.inc"
-	#include "CompiledFixedFunctionLightingPS.inc"
-	#include "CompiledFixedFunctionTextureVS.inc"
-	#include "CompiledFixedFunctionTexturePS.inc"
-	#include "CompiledFixedFunctionTextureLightingVS.inc"
-	#include "CompiledFixedFunctionTextureLightingPS.inc"
 
-	#include "CompiledStandardVboLayoutPositionVS.inc"
-	#include "CompiledStandardVboLayoutPositionNormalVS.inc"
-	#include "CompiledStandardVboLayoutPositionTextureVS.inc"
-	#include "CompiledStandardVboLayoutPositionColorVS.inc"
-	#include "CompiledStandardVboLayoutPositionNormalTextureVS.inc"
-	#include "CompiledStandardVboLayoutPositionNormalColorVS.inc"
-	#include "CompiledStandardVboLayoutPositionColorTextureVS.inc"
-	#include "CompiledStandardVboLayoutPositionNormalColorTextureVS.inc"
+	// DirectX 9.1
+	namespace Dx9_1 {
+		#include "compiled_4_0_level_9_1/CompiledFixedFunctionVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledFixedFunctionPS.inc"
+		#include "compiled_4_0_level_9_1/CompiledFixedFunctionLightingVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledFixedFunctionLightingPS.inc"
+		#include "compiled_4_0_level_9_1/CompiledFixedFunctionTextureVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledFixedFunctionTexturePS.inc"
+		#include "compiled_4_0_level_9_1/CompiledFixedFunctionTextureLightingVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledFixedFunctionTextureLightingPS.inc"
 
-	#include "CompiledStandardVboLayoutPositionLightVS.inc"
-	#include "CompiledStandardVboLayoutPositionNormalLightVS.inc"
-	#include "CompiledStandardVboLayoutPositionTextureLightVS.inc"
-	#include "CompiledStandardVboLayoutPositionColorLightVS.inc"
-	#include "CompiledStandardVboLayoutPositionNormalTextureLightVS.inc"
-	#include "CompiledStandardVboLayoutPositionNormalColorLightVS.inc"
-	#include "CompiledStandardVboLayoutPositionColorTextureLightVS.inc"
-	#include "CompiledStandardVboLayoutPositionNormalColorTextureLightVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionNormalVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionTextureVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionColorVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionNormalTextureVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionNormalColorVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionColorTextureVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionNormalColorTextureVS.inc"
+
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionLightVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionNormalLightVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionTextureLightVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionColorLightVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionNormalTextureLightVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionNormalColorLightVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionColorTextureLightVS.inc"
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutPositionNormalColorTextureLightVS.inc"
+	}
+
+	// DirectX 9.3
+	namespace Dx9_3 {
+		#include "compiled_4_0_level_9_3/CompiledFixedFunctionVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledFixedFunctionPS.inc"
+		#include "compiled_4_0_level_9_3/CompiledFixedFunctionLightingVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledFixedFunctionLightingPS.inc"
+		#include "compiled_4_0_level_9_3/CompiledFixedFunctionTextureVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledFixedFunctionTexturePS.inc"
+		#include "compiled_4_0_level_9_3/CompiledFixedFunctionTextureLightingVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledFixedFunctionTextureLightingPS.inc"
+
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionNormalVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionTextureVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionColorVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionNormalTextureVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionNormalColorVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionColorTextureVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionNormalColorTextureVS.inc"
+
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionLightVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionNormalLightVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionTextureLightVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionColorLightVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionNormalTextureLightVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionNormalColorLightVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionColorTextureLightVS.inc"
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutPositionNormalColorTextureLightVS.inc"
+	}
+
+	// DirectX 10.0 and 10.1
+	namespace Dx10 {
+		#include "compiled_4_1/CompiledFixedFunctionVS.inc"
+		#include "compiled_4_1/CompiledFixedFunctionPS.inc"
+		#include "compiled_4_1/CompiledFixedFunctionLightingVS.inc"
+		#include "compiled_4_1/CompiledFixedFunctionLightingPS.inc"
+		#include "compiled_4_1/CompiledFixedFunctionTextureVS.inc"
+		#include "compiled_4_1/CompiledFixedFunctionTexturePS.inc"
+		#include "compiled_4_1/CompiledFixedFunctionTextureLightingVS.inc"
+		#include "compiled_4_1/CompiledFixedFunctionTextureLightingPS.inc"
+
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionNormalVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionTextureVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionColorVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionNormalTextureVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionNormalColorVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionColorTextureVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionNormalColorTextureVS.inc"
+
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionLightVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionNormalLightVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionTextureLightVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionColorLightVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionNormalTextureLightVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionNormalColorLightVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionColorTextureLightVS.inc"
+		#include "compiled_4_1/CompiledStandardVboLayoutPositionNormalColorTextureLightVS.inc"
+	}
+
+	// DirectX 11.0 and 11.1
+	namespace Dx11 {
+		#include "compiled_5_0/CompiledFixedFunctionVS.inc"
+		#include "compiled_5_0/CompiledFixedFunctionPS.inc"
+		#include "compiled_5_0/CompiledFixedFunctionLightingVS.inc"
+		#include "compiled_5_0/CompiledFixedFunctionLightingPS.inc"
+		#include "compiled_5_0/CompiledFixedFunctionTextureVS.inc"
+		#include "compiled_5_0/CompiledFixedFunctionTexturePS.inc"
+		#include "compiled_5_0/CompiledFixedFunctionTextureLightingVS.inc"
+		#include "compiled_5_0/CompiledFixedFunctionTextureLightingPS.inc"
+
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionNormalVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionTextureVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionColorVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionNormalTextureVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionNormalColorVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionColorTextureVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionNormalColorTextureVS.inc"
+
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionLightVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionNormalLightVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionTextureLightVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionColorLightVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionNormalTextureLightVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionNormalColorLightVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionColorTextureLightVS.inc"
+		#include "compiled_5_0/CompiledStandardVboLayoutPositionNormalColorTextureLightVS.inc"
+	}
 }
 
 namespace cinder { namespace app {
@@ -366,7 +460,20 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 		return false;
 
 	// create fixed function vertex shader
-	HRESULT hr = md3dDevice->CreateVertexShader(Shaders::FixedFunctionVS, sizeof(Shaders::FixedFunctionVS), NULL, &mFixedColorVertexShader);
+	HRESULT hr = E_FAIL;
+	// hr = md3dDevice->CreateVertexShader(Shaders::FixedFunctionVS, sizeof(Shaders::FixedFunctionVS), NULL, &mFixedColorVertexShader);
+	if( D3D_FEATURE_LEVEL_9_1 == mFeatureLevel ) {
+		hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::FixedFunctionVS, sizeof(Shaders::Dx9_1::FixedFunctionVS), NULL, &mFixedColorVertexShader);
+	}
+	else if( D3D_FEATURE_LEVEL_9_3 == mFeatureLevel ) {
+		hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::FixedFunctionVS, sizeof(Shaders::Dx9_3::FixedFunctionVS), NULL, &mFixedColorVertexShader);
+	}
+	else if( D3D_FEATURE_LEVEL_10_1 == mFeatureLevel ) {
+		hr = md3dDevice->CreateVertexShader(Shaders::Dx10::FixedFunctionVS, sizeof(Shaders::Dx10::FixedFunctionVS), NULL, &mFixedColorVertexShader);
+	}
+	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel || D3D_FEATURE_LEVEL_11_1 == mFeatureLevel ) {
+		hr = md3dDevice->CreateVertexShader(Shaders::Dx11::FixedFunctionVS, sizeof(Shaders::Dx11::FixedFunctionVS), NULL, &mFixedColorVertexShader);
+	}				
 	if(hr != S_OK)
 		return false;
 
@@ -377,86 +484,44 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 36, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
-	hr = md3dDevice->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), Shaders::FixedFunctionVS, sizeof(Shaders::FixedFunctionVS), &mFixedLayout);
+	//hr = md3dDevice->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), Shaders::FixedFunctionVS, sizeof(Shaders::FixedFunctionVS), &mFixedLayout);
+	if( D3D_FEATURE_LEVEL_9_1 == mFeatureLevel ) {
+		hr = md3dDevice->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), Shaders::Dx9_1::FixedFunctionVS, sizeof(Shaders::Dx9_1::FixedFunctionVS), &mFixedLayout);
+	}
+	else if( D3D_FEATURE_LEVEL_9_3 == mFeatureLevel ) {
+		hr = md3dDevice->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), Shaders::Dx9_3::FixedFunctionVS, sizeof(Shaders::Dx9_3::FixedFunctionVS), &mFixedLayout);
+	}
+	else if( D3D_FEATURE_LEVEL_10_1 == mFeatureLevel ) {
+		hr = md3dDevice->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), Shaders::Dx10::FixedFunctionVS, sizeof(Shaders::Dx10::FixedFunctionVS), &mFixedLayout);
+	}
+	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel || D3D_FEATURE_LEVEL_11_1 == mFeatureLevel ) {
+		hr = md3dDevice->CreateInputLayout(layout, sizeof(layout) / sizeof(layout[0]), Shaders::Dx11::FixedFunctionVS, sizeof(Shaders::Dx11::FixedFunctionVS), &mFixedLayout);
+	}		
 	if(hr != S_OK)
 		return false;
 	mDeviceContext->IASetInputLayout(mFixedLayout);
 
-	// create fixed function fragment shader
-	hr = md3dDevice->CreatePixelShader(Shaders::FixedFunctionPS, sizeof(Shaders::FixedFunctionPS), NULL, &mFixedColorPixelShader);
-	if(hr != S_OK)
-		return false;
+	// create shaders
+	bool bShadersSucceeded = false;
+	if( D3D_FEATURE_LEVEL_9_1 == mFeatureLevel ) {
+		bShadersSucceeded = createShadersFeatureLevel_9_1();	
+	}
+	else if( D3D_FEATURE_LEVEL_9_3 == mFeatureLevel ) {
+		bShadersSucceeded = createShadersFeatureLevel_9_3();	
+	}
+	else if( D3D_FEATURE_LEVEL_10_1 == mFeatureLevel ) {
+		bShadersSucceeded = createShadersFeatureLevel_10_1();
+	}
+	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel ) {
+		bShadersSucceeded = createShadersFeatureLevel_11_0();
+	}
+	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel ) {
+		bShadersSucceeded = createShadersFeatureLevel_11_1();
+	}
 
-	// create the other fixed function shaders
-	hr = md3dDevice->CreateVertexShader(Shaders::FixedFunctionLightingVS, sizeof(Shaders::FixedFunctionLightingVS), NULL, &mFixedColorLightVertexShader);
-	if(hr != S_OK)
+	if( ! bShadersSucceeded ) {
 		return false;
-	hr = md3dDevice->CreatePixelShader(Shaders::FixedFunctionLightingPS, sizeof(Shaders::FixedFunctionLightingPS), NULL, &mFixedColorLightPixelShader);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::FixedFunctionTextureVS, sizeof(Shaders::FixedFunctionTextureVS), NULL, &mFixedTextureVertexShader);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreatePixelShader(Shaders::FixedFunctionTexturePS, sizeof(Shaders::FixedFunctionTexturePS), NULL, &mFixedTexturePixelShader);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::FixedFunctionTextureLightingVS, sizeof(Shaders::FixedFunctionTextureLightingVS), NULL, &mFixedTextureLightVertexShader);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreatePixelShader(Shaders::FixedFunctionTextureLightingPS, sizeof(Shaders::FixedFunctionTextureLightingPS), NULL, &mFixedTextureLightPixelShader);
-	if(hr != S_OK)
-		return false;
-
-	// create the vbo shaders
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionVS, sizeof(Shaders::StandardVboLayoutPositionVS), NULL, &mVboPositionVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalVS, sizeof(Shaders::StandardVboLayoutPositionNormalVS), NULL, &mVboPositionNormalVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionColorVS, sizeof(Shaders::StandardVboLayoutPositionColorVS), NULL, &mVboPositionColorVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionTextureVS, sizeof(Shaders::StandardVboLayoutPositionTextureVS), NULL, &mVboPositionTextureVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalColorVS, sizeof(Shaders::StandardVboLayoutPositionNormalColorVS), NULL, &mVboPositionNormalColorVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalTextureVS, sizeof(Shaders::StandardVboLayoutPositionNormalTextureVS), NULL, &mVboPositionNormalTextureVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionColorTextureVS, sizeof(Shaders::StandardVboLayoutPositionColorTextureVS), NULL, &mVboPositionColorTextureVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalColorTextureVS, sizeof(Shaders::StandardVboLayoutPositionNormalColorTextureVS), NULL, &mVboPositionNormalColorTextureVS);
-	if(hr != S_OK)
-		return false;
-
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionLightVS, sizeof(Shaders::StandardVboLayoutPositionLightVS), NULL, &mVboPositionLightVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalLightVS, sizeof(Shaders::StandardVboLayoutPositionNormalLightVS), NULL, &mVboPositionNormalLightVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionColorLightVS, sizeof(Shaders::StandardVboLayoutPositionColorLightVS), NULL, &mVboPositionColorLightVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionTextureLightVS, sizeof(Shaders::StandardVboLayoutPositionTextureLightVS), NULL, &mVboPositionTextureLightVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalColorLightVS, sizeof(Shaders::StandardVboLayoutPositionNormalColorLightVS), NULL, &mVboPositionNormalColorLightVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalTextureLightVS, sizeof(Shaders::StandardVboLayoutPositionNormalTextureLightVS), NULL, &mVboPositionNormalTextureLightVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionColorTextureLightVS, sizeof(Shaders::StandardVboLayoutPositionColorTextureLightVS), NULL, &mVboPositionColorTextureLightVS);
-	if(hr != S_OK)
-		return false;
-	hr = md3dDevice->CreateVertexShader(Shaders::StandardVboLayoutPositionNormalColorTextureLightVS, sizeof(Shaders::StandardVboLayoutPositionNormalColorTextureLightVS), NULL, &mVboPositionNormalColorTextureLightVS);
-	if(hr != S_OK)
-		return false;
+	}
 
 	// create vertex buffer
 	D3D11_BUFFER_DESC bd;
@@ -563,14 +628,18 @@ bool AppImplMswRendererDx::createDeviceResources()
 #endif
 	D3D_FEATURE_LEVEL featureLevels[] =
     {
-    //    D3D_FEATURE_LEVEL_11_0,
-    //    D3D_FEATURE_LEVEL_10_1,
-    //    D3D_FEATURE_LEVEL_10_0,
+#if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
+		// This requires Windows 8.
+		D3D_FEATURE_LEVEL_11_1,
+#endif
+        D3D_FEATURE_LEVEL_11_0,
+        D3D_FEATURE_LEVEL_10_1,
+        //D3D_FEATURE_LEVEL_10_0,
 		D3D_FEATURE_LEVEL_9_3,
-		D3D_FEATURE_LEVEL_9_2,
+		//D3D_FEATURE_LEVEL_9_2,
 		D3D_FEATURE_LEVEL_9_1
     };
-	mFeatureLevel = D3D_FEATURE_LEVEL_11_0;
+	mFeatureLevel = D3D_FEATURE_LEVEL_11_1;
 	ID3D11Device *device;
 	ID3D11DeviceContext *context;
 	HRESULT hr = D3D11CreateDevice(
@@ -636,6 +705,16 @@ bool AppImplMswRendererDx::createFramebufferResources()
 		if( hr != S_OK )
 			return false;
 
+		// Check to see if the OS is Windows 8 or later. If it's not, then that means
+		// compiling/running on Windows 7 SP1. We use this to set the appropriate
+		// flags for Windows7 SP 1's DirectX 11.1 support.
+		//
+		OSVERSIONINFOEX osver;
+		ZeroMemory( &osver, sizeof(OSVERSIONINFOEX) );
+		osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+		GetVersionEx( (OSVERSIONINFO*)&osver );
+		bool isWin8 = (osver.dwMajorVersion >= 6) && (osver.dwMinorVersion >= 2);
+
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
 		swapChainDesc.Width = static_cast<UINT>(width); // Match the size of the window.
 		swapChainDesc.Height = static_cast<UINT>(height);
@@ -645,7 +724,16 @@ bool AppImplMswRendererDx::createFramebufferResources()
 		swapChainDesc.SampleDesc.Quality = 0;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		swapChainDesc.BufferCount = 2; // Use double-buffering to minimize latency.
-		swapChainDesc.Scaling = DXGI_SCALING_NONE;
+		if( isWin8 ) {
+			swapChainDesc.Scaling = DXGI_SCALING_NONE;			
+		}
+		else {
+			//
+			// Win7 doesn't support DXGI_SCALING_NONE:
+			//    http://msdn.microsoft.com/en-us/library/windows/desktop/hh404557(v=vs.85).aspx
+			//
+			swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
+		}
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; // All Windows Store apps must use this SwapEffect.
 		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
   #if defined( CINDER_MSW )
@@ -733,6 +821,343 @@ bool AppImplMswRendererDx::createFramebufferResources()
 	setViewport(0, 0, static_cast<UINT>(width), static_cast<UINT>(height));
 
 	return true;
+}
+
+bool AppImplMswRendererDx::createShadersFeatureLevel_9_1()
+{
+	HRESULT hr;
+
+	// create fixed function fragment shader
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx9_1::FixedFunctionPS, sizeof(Shaders::Dx9_1::FixedFunctionPS), NULL, &mFixedColorPixelShader);
+	if(hr != S_OK)
+		return false;
+
+	// create the other fixed function shaders
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::FixedFunctionLightingVS, sizeof(Shaders::Dx9_1::FixedFunctionLightingVS), NULL, &mFixedColorLightVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx9_1::FixedFunctionLightingPS, sizeof(Shaders::Dx9_1::FixedFunctionLightingPS), NULL, &mFixedColorLightPixelShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::FixedFunctionTextureVS, sizeof(Shaders::Dx9_1::FixedFunctionTextureVS), NULL, &mFixedTextureVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx9_1::FixedFunctionTexturePS, sizeof(Shaders::Dx9_1::FixedFunctionTexturePS), NULL, &mFixedTexturePixelShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::FixedFunctionTextureLightingVS, sizeof(Shaders::Dx9_1::FixedFunctionTextureLightingVS), NULL, &mFixedTextureLightVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx9_1::FixedFunctionTextureLightingPS, sizeof(Shaders::Dx9_1::FixedFunctionTextureLightingPS), NULL, &mFixedTextureLightPixelShader);
+	if(hr != S_OK)
+		return false;
+
+	// create the vbo shaders
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionVS), NULL, &mVboPositionVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionNormalVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionNormalVS), NULL, &mVboPositionNormalVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionColorVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionColorVS), NULL, &mVboPositionColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionTextureVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionTextureVS), NULL, &mVboPositionTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionNormalColorVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionNormalColorVS), NULL, &mVboPositionNormalColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionNormalTextureVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionNormalTextureVS), NULL, &mVboPositionNormalTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionColorTextureVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionColorTextureVS), NULL, &mVboPositionColorTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionNormalColorTextureVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionNormalColorTextureVS), NULL, &mVboPositionNormalColorTextureVS);
+	if(hr != S_OK)
+		return false;
+
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionLightVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionLightVS), NULL, &mVboPositionLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionNormalLightVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionNormalLightVS), NULL, &mVboPositionNormalLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionColorLightVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionColorLightVS), NULL, &mVboPositionColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionTextureLightVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionTextureLightVS), NULL, &mVboPositionTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionNormalColorLightVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionNormalColorLightVS), NULL, &mVboPositionNormalColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionNormalTextureLightVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionNormalTextureLightVS), NULL, &mVboPositionNormalTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionColorTextureLightVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionColorTextureLightVS), NULL, &mVboPositionColorTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_1::StandardVboLayoutPositionNormalColorTextureLightVS, sizeof(Shaders::Dx9_1::StandardVboLayoutPositionNormalColorTextureLightVS), NULL, &mVboPositionNormalColorTextureLightVS);
+	if(hr != S_OK)
+		return false;
+
+	return true;
+}
+
+bool AppImplMswRendererDx::createShadersFeatureLevel_9_3()
+{
+	HRESULT hr;
+
+	// create fixed function fragment shader
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx9_3::FixedFunctionPS, sizeof(Shaders::Dx9_3::FixedFunctionPS), NULL, &mFixedColorPixelShader);
+	if(hr != S_OK)
+		return false;
+
+	// create the other fixed function shaders
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::FixedFunctionLightingVS, sizeof(Shaders::Dx9_3::FixedFunctionLightingVS), NULL, &mFixedColorLightVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx9_3::FixedFunctionLightingPS, sizeof(Shaders::Dx9_3::FixedFunctionLightingPS), NULL, &mFixedColorLightPixelShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::FixedFunctionTextureVS, sizeof(Shaders::Dx9_3::FixedFunctionTextureVS), NULL, &mFixedTextureVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx9_3::FixedFunctionTexturePS, sizeof(Shaders::Dx9_3::FixedFunctionTexturePS), NULL, &mFixedTexturePixelShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::FixedFunctionTextureLightingVS, sizeof(Shaders::Dx9_3::FixedFunctionTextureLightingVS), NULL, &mFixedTextureLightVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx9_3::FixedFunctionTextureLightingPS, sizeof(Shaders::Dx9_3::FixedFunctionTextureLightingPS), NULL, &mFixedTextureLightPixelShader);
+	if(hr != S_OK)
+		return false;
+
+	// create the vbo shaders
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionVS), NULL, &mVboPositionVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionNormalVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionNormalVS), NULL, &mVboPositionNormalVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionColorVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionColorVS), NULL, &mVboPositionColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionTextureVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionTextureVS), NULL, &mVboPositionTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionNormalColorVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionNormalColorVS), NULL, &mVboPositionNormalColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionNormalTextureVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionNormalTextureVS), NULL, &mVboPositionNormalTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionColorTextureVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionColorTextureVS), NULL, &mVboPositionColorTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionNormalColorTextureVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionNormalColorTextureVS), NULL, &mVboPositionNormalColorTextureVS);
+	if(hr != S_OK)
+		return false;
+
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionLightVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionLightVS), NULL, &mVboPositionLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionNormalLightVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionNormalLightVS), NULL, &mVboPositionNormalLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionColorLightVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionColorLightVS), NULL, &mVboPositionColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionTextureLightVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionTextureLightVS), NULL, &mVboPositionTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionNormalColorLightVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionNormalColorLightVS), NULL, &mVboPositionNormalColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionNormalTextureLightVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionNormalTextureLightVS), NULL, &mVboPositionNormalTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionColorTextureLightVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionColorTextureLightVS), NULL, &mVboPositionColorTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx9_3::StandardVboLayoutPositionNormalColorTextureLightVS, sizeof(Shaders::Dx9_3::StandardVboLayoutPositionNormalColorTextureLightVS), NULL, &mVboPositionNormalColorTextureLightVS);
+	if(hr != S_OK)
+		return false;
+
+	return true;
+}
+
+bool AppImplMswRendererDx::createShadersFeatureLevel_10_1()
+{
+	HRESULT hr;
+
+	// create fixed function fragment shader
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx10::FixedFunctionPS, sizeof(Shaders::Dx10::FixedFunctionPS), NULL, &mFixedColorPixelShader);
+	if(hr != S_OK)
+		return false;
+
+	// create the other fixed function shaders
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::FixedFunctionLightingVS, sizeof(Shaders::Dx10::FixedFunctionLightingVS), NULL, &mFixedColorLightVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx10::FixedFunctionLightingPS, sizeof(Shaders::Dx10::FixedFunctionLightingPS), NULL, &mFixedColorLightPixelShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::FixedFunctionTextureVS, sizeof(Shaders::Dx10::FixedFunctionTextureVS), NULL, &mFixedTextureVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx10::FixedFunctionTexturePS, sizeof(Shaders::Dx10::FixedFunctionTexturePS), NULL, &mFixedTexturePixelShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::FixedFunctionTextureLightingVS, sizeof(Shaders::Dx10::FixedFunctionTextureLightingVS), NULL, &mFixedTextureLightVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx10::FixedFunctionTextureLightingPS, sizeof(Shaders::Dx10::FixedFunctionTextureLightingPS), NULL, &mFixedTextureLightPixelShader);
+	if(hr != S_OK)
+		return false;
+
+	// create the vbo shaders
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionVS), NULL, &mVboPositionVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionNormalVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionNormalVS), NULL, &mVboPositionNormalVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionColorVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionColorVS), NULL, &mVboPositionColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionTextureVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionTextureVS), NULL, &mVboPositionTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionNormalColorVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionNormalColorVS), NULL, &mVboPositionNormalColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionNormalTextureVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionNormalTextureVS), NULL, &mVboPositionNormalTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionColorTextureVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionColorTextureVS), NULL, &mVboPositionColorTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionNormalColorTextureVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionNormalColorTextureVS), NULL, &mVboPositionNormalColorTextureVS);
+	if(hr != S_OK)
+		return false;
+
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionLightVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionLightVS), NULL, &mVboPositionLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionNormalLightVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionNormalLightVS), NULL, &mVboPositionNormalLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionColorLightVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionColorLightVS), NULL, &mVboPositionColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionTextureLightVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionTextureLightVS), NULL, &mVboPositionTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionNormalColorLightVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionNormalColorLightVS), NULL, &mVboPositionNormalColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionNormalTextureLightVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionNormalTextureLightVS), NULL, &mVboPositionNormalTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionColorTextureLightVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionColorTextureLightVS), NULL, &mVboPositionColorTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx10::StandardVboLayoutPositionNormalColorTextureLightVS, sizeof(Shaders::Dx10::StandardVboLayoutPositionNormalColorTextureLightVS), NULL, &mVboPositionNormalColorTextureLightVS);
+	if(hr != S_OK)
+		return false;
+
+	return true;
+}
+
+bool AppImplMswRendererDx::createShadersFeatureLevel_11_0()
+{
+	HRESULT hr;
+
+	// create fixed function fragment shader
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx11::FixedFunctionPS, sizeof(Shaders::Dx11::FixedFunctionPS), NULL, &mFixedColorPixelShader);
+	if(hr != S_OK)
+		return false;
+
+	// create the other fixed function shaders
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::FixedFunctionLightingVS, sizeof(Shaders::Dx11::FixedFunctionLightingVS), NULL, &mFixedColorLightVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx11::FixedFunctionLightingPS, sizeof(Shaders::Dx11::FixedFunctionLightingPS), NULL, &mFixedColorLightPixelShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::FixedFunctionTextureVS, sizeof(Shaders::Dx11::FixedFunctionTextureVS), NULL, &mFixedTextureVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx11::FixedFunctionTexturePS, sizeof(Shaders::Dx11::FixedFunctionTexturePS), NULL, &mFixedTexturePixelShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::FixedFunctionTextureLightingVS, sizeof(Shaders::Dx11::FixedFunctionTextureLightingVS), NULL, &mFixedTextureLightVertexShader);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreatePixelShader(Shaders::Dx11::FixedFunctionTextureLightingPS, sizeof(Shaders::Dx11::FixedFunctionTextureLightingPS), NULL, &mFixedTextureLightPixelShader);
+	if(hr != S_OK)
+		return false;
+
+	// create the vbo shaders
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionVS), NULL, &mVboPositionVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionNormalVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionNormalVS), NULL, &mVboPositionNormalVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionColorVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionColorVS), NULL, &mVboPositionColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionTextureVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionTextureVS), NULL, &mVboPositionTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionNormalColorVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionNormalColorVS), NULL, &mVboPositionNormalColorVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionNormalTextureVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionNormalTextureVS), NULL, &mVboPositionNormalTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionColorTextureVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionColorTextureVS), NULL, &mVboPositionColorTextureVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionNormalColorTextureVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionNormalColorTextureVS), NULL, &mVboPositionNormalColorTextureVS);
+	if(hr != S_OK)
+		return false;
+
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionLightVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionLightVS), NULL, &mVboPositionLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionNormalLightVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionNormalLightVS), NULL, &mVboPositionNormalLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionColorLightVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionColorLightVS), NULL, &mVboPositionColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionTextureLightVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionTextureLightVS), NULL, &mVboPositionTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionNormalColorLightVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionNormalColorLightVS), NULL, &mVboPositionNormalColorLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionNormalTextureLightVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionNormalTextureLightVS), NULL, &mVboPositionNormalTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionColorTextureLightVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionColorTextureLightVS), NULL, &mVboPositionColorTextureLightVS);
+	if(hr != S_OK)
+		return false;
+	hr = md3dDevice->CreateVertexShader(Shaders::Dx11::StandardVboLayoutPositionNormalColorTextureLightVS, sizeof(Shaders::Dx11::StandardVboLayoutPositionNormalColorTextureLightVS), NULL, &mVboPositionNormalColorTextureLightVS);
+	if(hr != S_OK)
+		return false;
+
+	return true;
+}
+
+bool AppImplMswRendererDx::createShadersFeatureLevel_11_1()
+{
+	return createShadersFeatureLevel_11_0();
 }
 
 void AppImplMswRendererDx::handleLostDevice()

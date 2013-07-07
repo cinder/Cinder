@@ -42,27 +42,48 @@ namespace cinder { namespace dx {
 class HlslProg {
   public:
 	HlslProg() {}
-	HlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef(), DataSourceRef geometryShader = DataSourceRef());
+	//! Constructs a shader from compiled object bytecode
+	HlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef(), DataSourceRef geometryShader = DataSourceRef() );
+	//! Constructs a shader from compiled object bytecode
 	HlslProg( const BYTE *vertexShader, UINT vertexShaderSize, const BYTE *fragmentShader, UINT fragmentShaderSize, const BYTE *geometryShader, UINT geometryShaderSize );
+
+	//! Constructs a shader from source. Can only be during development for Windows Store Apps.
+	HlslProg( 
+		const std::string& vertexShaderName, DataSourceRef vertexShader, 
+		const std::string& fragmentShaderName = "", DataSourceRef fragmentShader = DataSourceRef(), 
+		const std::string& geometryShaderName = "", DataSourceRef geometryShader = DataSourceRef() 
+	);
+
+	//! Constructs a shader from source. Can only be during development for Windows Store Apps.
+	HlslProg( 
+		const std::string& vertexShaderName, const BYTE *vertexShader, UINT vertexShaderSize, 
+		const std::string& fragmentShaderName, const BYTE *fragmentShader, UINT fragmentShaderSize, 
+		const std::string& geometryShaderName, const BYTE *geometryShader, UINT geometryShaderSize 
+	);
 
 	void			bind() const;
 	static void		unbind();
 
-	ID3D11VertexShader *GetVertexShader() { return mObj->mVS; }
-	ID3D11PixelShader *GetPixelShader() { return mObj->mPS; }
-	ID3D11GeometryShader *GetGeometryShader() { return mObj->mGS; }
+	ID3D11VertexShader*		GetVertexShader() { return mObj->mVS; }
+	ID3D11PixelShader*		GetPixelShader() { return mObj->mPS; }
+	ID3D11GeometryShader*	GetGeometryShader() { return mObj->mGS; }
+	ID3D11ComputeShader*	GetComputeShader() { return mObj->mCS; }
 
-	void CreateCBufferVertex(UINT slot, UINT size);
-	void *MapCBufferVertex(UINT slot);
-	void UnmapCBufferVertex(UINT slot);
+	void	CreateCBufferVertex(UINT slot, UINT size);
+	void*	MapCBufferVertex(UINT slot);
+	void	UnmapCBufferVertex(UINT slot);
 
-	void CreateCBufferFragment(UINT slot, UINT size);
-	void *MapCBufferFragment(UINT slot);
-	void UnmapCBufferFragment(UINT slot);
+	void	CreateCBufferFragment(UINT slot, UINT size);
+	void*	MapCBufferFragment(UINT slot);
+	void	UnmapCBufferFragment(UINT slot);
 
-	void CreateCBufferGeometry(UINT slot, UINT size);
-	void *MapCBufferGeometry(UINT slot);
-	void UnmapCBufferGeometry(UINT slot);
+	void	CreateCBufferGeometry(UINT slot, UINT size);
+	void*	MapCBufferGeometry(UINT slot);
+	void	UnmapCBufferGeometry(UINT slot);
+
+	void	CreateCBufferCompute(UINT slot, UINT size);
+	void*	MapCBufferCompute(UINT slot);
+	void	UnmapCBufferCompute(UINT slot);
 
   protected:
 	struct Cbo	//constant buffer object
@@ -75,17 +96,19 @@ class HlslProg {
 	};
 
 	struct Obj {
-		Obj() : mVS(NULL), mPS(NULL), mGS(NULL) {}
+		Obj() : mVS( nullptr ), mPS( nullptr ), mGS( nullptr ), mCS( nullptr ) {}
 		~Obj();
 		
 		//GLuint						mHandle;
 		//std::map<std::string,int>	mUniformLocs;
-		ID3D11VertexShader *mVS;
-		ID3D11PixelShader *mPS;
-		ID3D11GeometryShader *mGS;
+		ID3D11VertexShader*		mVS;
+		ID3D11PixelShader*		mPS;
+		ID3D11GeometryShader*	mGS;
+		ID3D11ComputeShader*	mCS;
 		std::vector<std::shared_ptr<Cbo>> mCBuffersVertex;
 		std::vector<std::shared_ptr<Cbo>> mCBuffersFragment;
 		std::vector<std::shared_ptr<Cbo>> mCBuffersGeometry;
+		std::vector<std::shared_ptr<Cbo>> mCBuffersCompute;
 	};
  
 	std::shared_ptr<Obj>	mObj;

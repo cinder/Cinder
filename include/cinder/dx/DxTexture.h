@@ -43,6 +43,14 @@
 
 namespace cinder { namespace dx {
 
+enum CinderDxgiChannel {
+	CINDER_DXGI_CHAHNNEL_UNKNOWN,
+	CINDER_DXGI_CHAHNNEL_8_UNORM,
+	CINDER_DXGI_CHAHNNEL_16_FLOAT,
+	CINDER_DXGI_CHAHNNEL_32_FLOAT
+};
+
+
 class Texture;
 typedef std::shared_ptr<Texture>	TextureRef;
 
@@ -61,6 +69,10 @@ class Texture {
 	static TextureRef	create( const Surface8u &surface, Format format = Format() ) { return TextureRef( new Texture( surface, format ) ); }
 	/** Constructs a texture based on the contents of \a surface. */
 	static TextureRef	create( const Surface32f &surface, Format format = Format() ) { return TextureRef( new Texture( surface, format ) ); }
+	//! Constructs a Texture based on the contents of \a channel.
+	static TextureRef create( const Channel8u &channel, Format format = Format() ) { return TextureRef( new Texture( channel, format ) ); }
+	//! Constructs a Texture based on the contents of \a channel.
+	static TextureRef create( const Channel32f &channel, Format format = Format() ) { return TextureRef( new Texture( channel, format ) ); }
 	/** \brief Constructs a texture based on \a imageSource.  */
 	static TextureRef	create( ImageSourceRef imageSource, Format format = Format() ) { return TextureRef( new Texture( imageSource, format ) ); }
 
@@ -100,6 +112,8 @@ class Texture {
 	/** \brief Replaces the pixels of a texture with contents of \a surface. Expects \a area's size to match the Texture's.
 		\todo Method for updating a subrectangle with an offset into the source **/
 	void			update( const Surface &surface, const Area &area );
+	//! Replaces the pixels of a texture with contents of \a channel. Expects \a channel's size to match the Texture's.
+	void			update( const Channel &channel );
 	//! Replaces the pixels of a texture with contents of \a channel. Expects \a channel's size to match the Texture's.
 	void			update( const Channel32f &channel );
 	//! Replaces the pixels of a texture with contents of \a channel. Expects \a area's size to match the Texture's.
@@ -150,12 +164,18 @@ class Texture {
 	//!	Creates a new Texture from raw DirectDraw Stream data
 	static TextureRef	loadDds( IStreamRef ddsStream, Format format );
 
-	//! Converts a SurfaceChannelOrder into an appropriate OpenGL dataFormat and type
-	static void		SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, GLint *dataFormat, GLenum *type );
-	//! Returns whether a given OpenGL dataFormat contains an alpha channel
-	static bool		dataFormatHasAlpha( GLint dataFormat );
+	//! Converts a SurfaceChannelOrder into an appropriate DXGI dataFormat and type
+	//static void		SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, GLint *dataFormat, GLenum *type );
+	static void		SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, DXGI_FORMAT *dataFormat, CinderDxgiChannel* type, bool isSurface32f = false );
+
+	//! Returns whether a given DXGI dataFormat contains an alpha channel
+	//static bool		dataFormatHasAlpha( GLint dataFormat );
+	static bool		dataFormatHasAlpha( DXGI_FORMAT dataFormat );
 	//! Returns whether a give OpenGL dataFormat contains color channels
-	static bool		dataFormatHasColor( GLint dataFormat );
+	//static bool		dataFormatHasColor( GLint dataFormat );
+	static bool		dataFormatHasColor( DXGI_FORMAT dataFormat );
+	//! Returns the number of channels for the given DXGI dataFormat
+	static uint32_t	numChannels( DXGI_FORMAT dataFormat );
 
 #if ! defined( CINDER_GLES )
 	//! Returns an ImageSource pointing to this Texture
@@ -230,6 +250,10 @@ class Texture {
 	Texture( const Surface8u &surface, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
 	Texture( const Surface32f &surface, Format format = Format() );
+	/** \brief Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	Texture( const Channel8u &channel, Format format = Format() );
+	/** \brief Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	Texture( const Channel32f &channel, Format format = Format() );
 	/** \brief Constructs a texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. **/
 	Texture( ImageSourceRef imageSource, Format format = Format() );
 

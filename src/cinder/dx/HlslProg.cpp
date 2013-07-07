@@ -84,6 +84,24 @@ HlslProg::HlslProg( const BYTE *vertexShader, UINT vertexShaderSize, const BYTE 
 		getDxRenderer()->md3dDevice->CreateGeometryShader(geometryShader, geometryShaderSize, NULL, &mObj->mGS);
 }
 
+HlslProg::HlslProg( 
+	const std::string& vertexShaderName, DataSourceRef vertexShader, 
+	const std::string& fragmentShaderName, DataSourceRef fragmentShader, 
+	const std::string& geometryShaderName, DataSourceRef geometryShader
+)
+: mObj( shared_ptr<Obj>( new Obj ) )
+{
+}
+
+HlslProg::HlslProg( 
+	const std::string& vertexShaderName, const BYTE *vertexShader, UINT vertexShaderSize, 
+	const std::string& fragmentShaderName, const BYTE *fragmentShader, UINT fragmentShaderSize, 
+	const std::string& geometryShaderName, const BYTE *geometryShader, UINT geometryShaderSize 
+)
+: mObj( shared_ptr<Obj>( new Obj ) )
+{
+}
+
 //void HlslProg::loadShader( Buffer shaderSourceBuffer, GLint shaderType )
 //{
 //	// we need to duplicate the contents of the buffer and append a null-terminator

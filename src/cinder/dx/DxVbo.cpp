@@ -33,7 +33,27 @@
 
 namespace Shaders
 {
-	#include "CompiledStandardVboLayoutVS.inc"
+	//#include "CompiledStandardVboLayoutVS.inc"
+
+	// DirectX 9.1
+	namespace Dx9_1 {
+		#include "compiled_4_0_level_9_1/CompiledStandardVboLayoutVS.inc"
+	}
+
+	// DirectX 9.3
+	namespace Dx9_3 {
+		#include "compiled_4_0_level_9_3/CompiledStandardVboLayoutVS.inc"
+	}
+
+	// DirectX 10.0 and 10.1
+	namespace Dx10 {
+		#include "compiled_4_1/CompiledStandardVboLayoutVS.inc"
+	}
+
+	// DirectX 11.0 and 11.1
+	namespace Dx11 {
+		#include "compiled_5_0/CompiledStandardVboLayoutVS.inc"
+	}
 }
 
 using namespace std;
@@ -654,9 +674,25 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		mObj->mDynamicStride = 0;
 	}
 
-	HRESULT hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, std::max(elementCount, 4), Shaders::StandardVboLayoutVS, sizeof(Shaders::StandardVboLayoutVS), &mObj->mInputLayout);
-	if(hr != S_OK)
+	//HRESULT hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, std::max(elementCount, 4), Shaders::StandardVboLayoutVS, sizeof(Shaders::StandardVboLayoutVS), &mObj->mInputLayout);
+	HRESULT hr = E_FAIL;
+	if( D3D_FEATURE_LEVEL_9_1 == getDxRenderer()->mFeatureLevel ) {
+		hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, std::max(elementCount, 4), Shaders::Dx9_1::StandardVboLayoutVS, sizeof(Shaders::Dx9_1::StandardVboLayoutVS), &mObj->mInputLayout);
+	}
+	else if( D3D_FEATURE_LEVEL_9_3 == getDxRenderer()->mFeatureLevel ) {
+		hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, std::max(elementCount, 4), Shaders::Dx9_3::StandardVboLayoutVS, sizeof(Shaders::Dx9_3::StandardVboLayoutVS), &mObj->mInputLayout);
+	}
+	else if( D3D_FEATURE_LEVEL_10_1 == getDxRenderer()->mFeatureLevel ) {
+		hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, std::max(elementCount, 4), Shaders::Dx10::StandardVboLayoutVS, sizeof(Shaders::Dx10::StandardVboLayoutVS), &mObj->mInputLayout);
+	}
+	else if( D3D_FEATURE_LEVEL_11_0 == getDxRenderer()->mFeatureLevel || D3D_FEATURE_LEVEL_11_1 == getDxRenderer()->mFeatureLevel ) {
+		hr = getDxRenderer()->md3dDevice->CreateInputLayout(ieDesc, std::max(elementCount, 4), Shaders::Dx11::StandardVboLayoutVS, sizeof(Shaders::Dx11::StandardVboLayoutVS), &mObj->mInputLayout);
+	}		
+		
+	if(hr != S_OK) {
 		__debugbreak();
+	}
+
 	// initialize all the custom attribute locations
 	//if( ! mObj->mLayout.mCustomStatic.empty() )
 	//	mObj->mCustomStaticLocations = vector<GLint>( mObj->mLayout.mCustomStatic.size(), -1 );
