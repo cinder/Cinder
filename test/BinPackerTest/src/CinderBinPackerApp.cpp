@@ -2,6 +2,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 #include "cinder/BinPacker.h"
+#include "cinder/Utilities.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -9,28 +10,53 @@ using namespace std;
 
 class CinderBinPackerApp : public AppNative {
 public:
+	void prepareSettings( Settings *settings );
 	void setup();
 	void keyDown( KeyEvent event );	
 	void update();
 	void draw();
 
 	BinPacker					mBinPacker;
-	std::vector<Area>			mRectangles;
-	std::vector<BinPacker::Pack>	mPacks;
+	std::vector<Area>			mUnpacked;
+	std::vector<Area>			mPacked;
 };
+
+void CinderBinPackerApp::prepareSettings(Settings *settings)
+{
+	settings->setWindowSize(512, 512);
+}
 
 void CinderBinPackerApp::setup()
 {
-	mBinPacker = BinPacker().setMaxBinCount(4);
+	mBinPacker.setSize( 128, 128 );
+	//mBinPacker.enableRotation();
 }
 
 void CinderBinPackerApp::keyDown( KeyEvent event )
 {
-	int size = Rand::randInt(16,64);
-	mRectangles.push_back( Area(0, 0, size, size << 1) );
+	// add an Area of random size to mUnpacked
+	mUnpacked.push_back( Area(0, 0, Rand::randInt(8, 32), Rand::randInt(8, 32)) );
 
-	try { mBinPacker.pack( mRectangles ); }
-	catch(...) { }
+	// show the total number of Area's in the window title bar
+	getWindow()->setTitle( "CinderBinPackerApp " + ci::toString( mUnpacked.size() ) );
+
+	try
+	{ 
+		// mPacked will contain all Area's of mUnpacked in the exact same order,
+		// but moved to a different spot in the bin. If rotated, (x1,y1) will be
+		// the lower left corner and (x2,y2) will be the upper right corner of the Area.
+		mPacked = mBinPacker.pack( mUnpacked ); 
+	}
+	catch(...) 
+	{  
+		// the bin is not large enough to contain all Area's, so let's
+		// double the size...
+		int size = mBinPacker.getWidth();
+		mBinPacker.setSize( size << 1, size << 1 );
+
+		/// ...and try again
+		mPacked = mBinPacker.pack( mUnpacked ); 
+	}
 }
 
 void CinderBinPackerApp::update()
@@ -39,29 +65,18 @@ void CinderBinPackerApp::update()
 
 void CinderBinPackerApp::draw()
 {
-	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) ); 
 
-	Rand rnd;
-	for(unsigned j=0;j<mBinPacker.getMaxBinCount();++j)
-	{
-		gl::pushModelView();
-		gl::translate( j * mBinPacker.getWidth(), 0.0f, 0.0f );
-		
-		mPacks = mBinPacker.getPacks(j);
-		for(unsigned i=0;i<mPacks.size();++i) {
-			rnd.seed(mPacks[i].id+12345);
-			gl::color( Color( (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f ) );
-			gl::drawSolidRect( Rectf( mPacks[i].area ) );
-		}
+	// draw the borders of the bin
+	gl::color( Color( 1, 1, 0 ) );
+	gl::drawStrokedRect( Rectf( Vec2f::zero(), mBinPacker.getSize() ) );
 
-		gl::color( 1, 1, 0 );
-
-		std::vector<Area> packs = mBinPacker.getBin(j);
-		for(unsigned i=0;i<packs.size();++i)
-			gl::drawStrokedRect( Rectf( packs[i] ) );
-
-		gl::popModelView();
+	// draw all packed Area's
+	Rand rnd;	
+	for(unsigned i=0;i<mPacked.size();++i) {
+		rnd.seed(i+12345);
+		gl::color( Color( (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f ) );
+		gl::drawSolidRect( Rectf( mPacked[i] ) );
 	}
 }
 
