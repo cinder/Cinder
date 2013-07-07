@@ -1,7 +1,31 @@
+/*
+ Copyright (c) 2010, The Barbarian Group
+ All rights reserved.
+ 
+ Portions of this code (C) Paul Houx
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #pragma once
 
 #include "cinder/Area.h"
-
 #include <vector>
 
 namespace cinder {
@@ -9,23 +33,9 @@ namespace cinder {
 class BinPacker
 {
 public:
-	struct Pack {
-		int32_t	id;
-		int32_t	bin;
-		Area	area;
-	};
-
-	BinPacker() : mBinWidth(512), mBinHeight(512), mMaxBinCount(1), mAllowRotation(true) {}
-	BinPacker( int width, int height, int count = 1, bool allowRotation = false ) :
-		mBinWidth(width), mBinHeight(height), mMaxBinCount(count), mAllowRotation(allowRotation) {}
-		
-	//! 
-	BinPacker&	setMaxBinCount( unsigned count ) { mMaxBinCount = count; return *this; }
-	//! 
-	unsigned	getMaxBinCount() const { return mMaxBinCount; }
-
-	//!
-	unsigned	getBinCount() const { return m_bins.size(); }
+	BinPacker() : mBinWidth(512), mBinHeight(512), mAllowRotation(false) {}
+	BinPacker( int width, int height, bool allowRotation = false ) :
+		mBinWidth(width), mBinHeight(height), mAllowRotation(allowRotation) {}
 
 	//!
 	BinPacker&	setSize( unsigned width, unsigned height ) { mBinWidth = width; mBinHeight = height; return *this; }
@@ -42,71 +52,65 @@ public:
 	//!
 	bool		isRotationEnabled() const { return mAllowRotation; }
 
-
-    int pack( const std::vector<Area> &rects );
-
-	std::vector<Pack> getPacks( unsigned bin = 0 ) const;
-	std::vector<Area> getBin( unsigned bin = 0 ) const;
+	//!
+    std::vector<Area>	pack( const std::vector<Area> &rects );
 
 private:
-
-	int		mMaxBinCount;
-	int		mBinWidth;
-	int		mBinHeight;
-	bool	mAllowRotation;
-
     struct Rect
     {
-        Rect(int w, int h)
-            : x(0), y(0), w(w), h(h), ID(-1), rotated(false), packed(false)
-        {
-            children[0] = -1;
-            children[1] = -1;
-        }
-
-        Rect(int x, int y, int w, int h, int ID = 1)
-            : x(x), y(y), w(w), h(h), ID(ID), rotated(false), packed(false)
-        {
-            children[0] = -1;
-            children[1] = -1;
-        }
-        
-        int GetArea() const {
-            return w * h;
-        }
-        
-        void Rotate() {
-            std::swap(w, h);
-            rotated = !rotated;
-        }
-        
-        bool operator<(const Rect& rect) const {
-            return GetArea() < rect.GetArea();
-        }
-
         int  x;
         int  y;
         int  w;
         int  h;
-        int  ID;
+        int  order;
         int  children[2];
         bool rotated;
         bool packed;
+
+        Rect(int w, int h, int order = -1)
+            : x(0), y(0), w(w), h(h), order(order), rotated(false), packed(false)
+        {
+            children[0] = -1;
+            children[1] = -1;
+        }
+
+        Rect(int x, int y, int w, int h, int order = -1)
+            : x(x), y(y), w(w), h(h), order(order), rotated(false), packed(false)
+        {
+            children[0] = -1;
+            children[1] = -1;
+        }
+        
+        int getArea() const {
+            return w * h;
+        }
+        
+        void rotate() {
+            std::swap(w, h);
+            rotated = !rotated;
+        }
+        
+        bool operator<(const Rect& rhs) const {
+            return getArea() < rhs.getArea();
+        }
     };
+
+private:
+	int					mBinWidth;
+	int					mBinHeight;
+	bool				mAllowRotation;
+    
+    int					mNumPacked;
+    std::vector<Rect>	mRects;
+    std::vector<Rect>	mBins;
 
     void clear();
     void fill(int pack);
     void split(int pack, int rect);
     bool fits(Rect& rect1, const Rect& rect2);
-    void addPackToArray(int pack, std::vector<Pack>& array) const;
     
     bool rectIsValid(int i) const;
     bool packIsValid(int i) const;
-    
-    int               m_numPacked;
-    std::vector<Rect> m_rects;
-    std::vector<Rect> m_packs;
-    std::vector<int>  m_bins;
 };
 
 class BinPackerTooSmallExc : public std::exception {
