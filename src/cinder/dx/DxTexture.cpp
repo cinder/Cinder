@@ -87,6 +87,7 @@ Texture::Format::Format()
 	mFilter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	mMipmapping = false;
 	mInternalFormat = (DXGI_FORMAT)-1;
+	mRenderTarget = false;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -110,18 +111,21 @@ Texture::Texture()
 Texture::Texture( int width, int height, Format format )
 {
 	init( width, height );
-	if( format.mInternalFormat == -1 )
+	if( format.mInternalFormat == -1 ) {
 		format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	}
 	mInternalFormat = format.mInternalFormat;
 	//mTarget = format.mTarget;
-	init( (unsigned char*)0, DXGI_FORMAT_R8G8B8A8_UNORM, format );
+	//init( (unsigned char*)0, DXGI_FORMAT_R8G8B8A8_UNORM, format );
+	init( (unsigned char*)nullptr, DXGI_FORMAT_R8G8B8A8_UNORM, format );
 }
 
 Texture::Texture( const unsigned char *data, DXGI_FORMAT dataFormat, int width, int height, Format format )
 {
 	init( width, height );
-	if( format.mInternalFormat == -1 )
+	if( format.mInternalFormat == -1 ) {
 		format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	}
 	mInternalFormat = format.mInternalFormat;
 	//mTarget = format.mTarget;
 	init( data, dataFormat, format );
@@ -130,8 +134,9 @@ Texture::Texture( const unsigned char *data, DXGI_FORMAT dataFormat, int width, 
 Texture::Texture( const Surface8u &surface, Format format )
 {
 	init( surface.getWidth(), surface.getHeight() );
-	if( format.mInternalFormat < 0 )
+	if( format.mInternalFormat < 0 ) {
 		format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	}
 	mInternalFormat = format.mInternalFormat;
 	//mTarget = format.mTarget;
 
@@ -152,14 +157,12 @@ Texture::Texture( const Surface32f &surface, Format format )
 #endif
 
 	if( format.mInternalFormat < 0 ) {
-#if ! defined( CINDER_GLES )
-		if( supportsTextureFloat )
+		if( supportsTextureFloat ) {
 			format.mInternalFormat = surface.hasAlpha() ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R32G32B32_FLOAT;
-		else
+		}
+		else {
 			format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-#else
-		format.mInternalFormat = surface.hasAlpha() ? GL_RGBA : GL_RGB;
-#endif	
+		}
 	}
 	mInternalFormat = format.mInternalFormat;
 	//mTarget = format.mTarget;
@@ -279,7 +282,9 @@ void Texture::init( int width, int height )
 	mCleanHeight = height;
 	mInternalFormat = (DXGI_FORMAT)-1;
 	mFlipped = false;
+
 	mDxTexture = NULL;
+	::ZeroMemory( &mSamplerDesc, sizeof(D3D11_SAMPLER_DESC) );
 	mSamplerState = NULL;
 	mSRV = NULL;
 }
@@ -288,6 +293,7 @@ void Texture::init( const unsigned char *data, DXGI_FORMAT dataFormat, const For
 {
 	mDoNotDispose = false;
 
+	::ZeroMemory( &mSamplerDesc, sizeof(D3D11_SAMPLER_DESC) );
 	mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	mSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	mSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -306,42 +312,57 @@ void Texture::init( const unsigned char *data, DXGI_FORMAT dataFormat, const For
 		__debugbreak();
 	}
 
-	D3D11_SUBRESOURCE_DATA subData;
-	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = mWidth;
-	desc.Height = mHeight;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.Format = dataFormat;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE; 
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
+	D3D11_TEXTURE2D_DESC texDesc;
+	::ZeroMemory( &texDesc, sizeof(D3D11_TEXTURE2D_DESC) );
+	texDesc.Width = mWidth;
+	texDesc.Height = mHeight;
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.Format = dataFormat;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; 
+	if( format.isRenderTarget() ) {
+		texDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
+	}
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
 
-	uint32_t numComponents = numChannels( dataFormat );
-	subData.pSysMem = data;
-	subData.SysMemPitch = mWidth*numComponents;
-	subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
-
-	hr = getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
-	if(hr != S_OK) {
-		__debugbreak();
+	uint32_t numChannels = dataFormatNumChannels( dataFormat );
+	
+	if( nullptr != data ) {
+		D3D11_SUBRESOURCE_DATA subData;
+		::ZeroMemory( &subData, sizeof(D3D11_SUBRESOURCE_DATA) );
+		subData.pSysMem = data;
+		subData.SysMemPitch = mWidth*sizeof(unsigned char)*numChannels;
+		subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
+		hr = getDxRenderer()->md3dDevice->CreateTexture2D( &texDesc, &subData, &mDxTexture );
+		if(hr != S_OK) {
+			__debugbreak();
+		}
+	}
+	else {
+		hr = getDxRenderer()->md3dDevice->CreateTexture2D( &texDesc, nullptr, &mDxTexture );
+		if(hr != S_OK) {
+			__debugbreak();
+		}
 	}
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-	SRVDesc.Format = desc.Format;
-	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2D.MostDetailedMip = 0;
-	SRVDesc.Texture2D.MipLevels = -1;
-	getDxRenderer()->md3dDevice->CreateShaderResourceView(mDxTexture, &SRVDesc, &mSRV);
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	::ZeroMemory( &srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC) );
+	srvDesc.Format = texDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = -1;
+	getDxRenderer()->md3dDevice->CreateShaderResourceView( mDxTexture, &srvDesc, &mSRV );
 }
 
 void Texture::init( const float *data, DXGI_FORMAT dataFormat, const Format &format )
 {
 	mDoNotDispose = false;
 
+	::ZeroMemory( &mSamplerDesc, sizeof(D3D11_SAMPLER_DESC) );
 	mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	mSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	mSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -356,50 +377,43 @@ void Texture::init( const float *data, DXGI_FORMAT dataFormat, const Format &for
 	mSamplerDesc.MinLOD = 0;
 	mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	HRESULT hr = getDxRenderer()->md3dDevice->CreateSamplerState(&mSamplerDesc, &mSamplerState);
-	if(hr != S_OK)
+	if(hr != S_OK) {
 		__debugbreak();
+	}
 
-	D3D11_SUBRESOURCE_DATA subData;
 	D3D11_TEXTURE2D_DESC desc;
+	::ZeroMemory( &desc, sizeof(D3D11_TEXTURE2D_DESC) );
 	desc.Width = mWidth;
 	desc.Height = mHeight;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
 	desc.Format = dataFormat;
-	switch(dataFormat)
-	{
-		case DXGI_FORMAT_R32G32B32A32_FLOAT:
-			subData.SysMemPitch = 4 * 4 * mWidth;
-			break;
-
-		case DXGI_FORMAT_R32G32B32_FLOAT:
-			subData.SysMemPitch = 3 * 4 * mWidth;
-			break;
-
-		case DXGI_FORMAT_R32_FLOAT:
-			desc.Format = DXGI_FORMAT_R32_FLOAT;
-			subData.SysMemPitch = 4 * mWidth;
-			break;
-	}
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
 	desc.Usage = D3D11_USAGE_DEFAULT;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE; 
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
+
+	uint32_t numChannels = dataFormatNumChannels( dataFormat );
+
+	D3D11_SUBRESOURCE_DATA subData;
+	::ZeroMemory( &subData, sizeof(D3D11_SUBRESOURCE_DATA) );
 	subData.pSysMem = data;
-	subData.SysMemSlicePitch = subData.SysMemPitch * mHeight;
+	subData.SysMemPitch = mWidth*sizeof(float)*numChannels;
+	subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
 	hr = getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
 	if(hr != S_OK) {
 		__debugbreak();
 	}
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-	SRVDesc.Format = desc.Format;
-	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2D.MostDetailedMip = 0;
-	SRVDesc.Texture2D.MipLevels = -1;
-	hr = getDxRenderer()->md3dDevice->CreateShaderResourceView(mDxTexture, &SRVDesc, &mSRV);
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	::ZeroMemory( &srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC) );
+	srvDesc.Format = desc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = -1;
+	hr = getDxRenderer()->md3dDevice->CreateShaderResourceView(mDxTexture, &srvDesc, &mSRV);
 	if(hr != S_OK) {
 		__debugbreak();
 	}
@@ -417,19 +431,37 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	// Set the internal format based on the image's color space
 	if( format.isAutoInternalFormat() ) {
 		switch( imageSource->getColorModel() ) {
-#if ! defined( CINDER_GLES )
 			case ImageIo::CM_RGB:
-				if( imageSource->getDataType() == ImageIo::UINT8 )
-					mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
-				else if( imageSource->getDataType() == ImageIo::UINT16 )
-					mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R16G16B16A16_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
-				else if( imageSource->getDataType() == ImageIo::FLOAT32 && supportsTextureFloat )
+				if( imageSource->getDataType() == ImageIo::UINT8 ) {
+					//mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+					if( ! imageSource->hasAlpha() ) {
+						throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+					}
+					mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+				}
+				else if( imageSource->getDataType() == ImageIo::UINT16 ) {
+					//mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R16G16B16A16_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+					if( ! imageSource->hasAlpha() ) {
+						throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+					}
+					mInternalFormat = DXGI_FORMAT_R16G16B16A16_UNORM;
+				}
+				else if( imageSource->getDataType() == ImageIo::FLOAT32 && supportsTextureFloat ) {
 					mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R32G32B32_FLOAT;
-				else
-					mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+				}
+				else {
+					//mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+					if( ! imageSource->hasAlpha() ) {
+						throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+					}
+					mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+				}
 			break;
+
 			case ImageIo::CM_GRAY:
+				//@TODO: Add code to expand gray images to all 4 channels
 				throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+
 				//if( imageSource->getDataType() == ImageIo::UINT8 )
 				//	mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE8_ALPHA8 : GL_LUMINANCE8;
 				//else if( imageSource->getDataType() == ImageIo::UINT16 )
@@ -439,16 +471,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 				//else
 				//	mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
 			break;
-#else
-			case ImageIo::CM_RGB:
-				mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
-			break;
-			case ImageIo::CM_GRAY:
-				throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
-				//mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
-			break;
-			
-#endif
+
 			default:
 				throw ImageIoExceptionIllegalColorModel();
 			break;
@@ -459,23 +482,60 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	}
 
 	// setup an appropriate dataFormat/ImageTargetTexture based on the image's color space
-	GLint dataFormat;
+	//GLint dataFormat;
+	DXGI_FORMAT dataFormat = DXGI_FORMAT_UNKNOWN;
 	ImageIo::ChannelOrder channelOrder;
 	bool isGray = false;
 	switch( imageSource->getColorModel() ) {
-		case ImageSource::CM_RGB:
-			dataFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : GL_RGB;
-			channelOrder = ( imageSource->hasAlpha() ) ? ImageIo::RGBA : ImageIo::RGB;
+		case ImageSource::CM_RGB: {
+			//dataFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : GL_RGB;
+			//channelOrder = ImageIo::RGBA : ImageIo::RGB;
+
+			bool isFloat = ( ImageSource::FLOAT32 == imageSource->getDataType() );
+			if( ! isFloat &&  ! imageSource->hasAlpha() ) {
+				throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+			}
+
+			switch( imageSource->getDataType() ) {
+			case ImageSource::UINT8:
+				dataFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			break;
+
+			case ImageSource::UINT16:
+				dataFormat = DXGI_FORMAT_R16G16B16A16_UNORM;
+			break;
+
+			case ImageSource::FLOAT32:
+				dataFormat = imageSource->hasAlpha() ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R32G32B32_FLOAT;
+			break;
+
+			default:
+			break;
+			}
+
+			channelOrder = ImageIo::RGBA;
+		}
 		break;
+
 		case ImageSource::CM_GRAY:
 			throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 			//dataFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
 			//channelOrder = ( imageSource->hasAlpha() ) ? ImageIo::YA : ImageIo::Y;
 			//isGray = true;
 		break;
-		default: // if this is some other color space, we'll have to punt and go w/ RGB
-			dataFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
-			channelOrder = ( imageSource->hasAlpha() ) ? ImageIo::RGBA : ImageIo::RGB;
+
+		// if this is some other color space, we'll have to punt and go w/ RGBA
+		default: 
+		{			
+			//dataFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+			//channelOrder = ( imageSource->hasAlpha() ) ? ImageIo::RGBA : ImageIo::RGB;
+			if( ! imageSource->hasAlpha() ) {
+				throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+			}
+
+			dataFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+			channelOrder = ImageIo::RGBA;
+		}
 		break;
 	}
 
@@ -487,6 +547,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	//	mMaxV = (float)mHeight;
 	//}
 		
+	::ZeroMemory( &mSamplerDesc, sizeof(D3D11_SAMPLER_DESC) );
 	mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	mSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	mSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -501,63 +562,77 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	mSamplerDesc.MinLOD = 0;
 	mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	HRESULT hr = getDxRenderer()->md3dDevice->CreateSamplerState(&mSamplerDesc, &mSamplerState);
-	if(hr != S_OK)
+	if(hr != S_OK) {
 		__debugbreak();
+	}
+
+	D3D11_TEXTURE2D_DESC texDesc;
+	::ZeroMemory( &texDesc, sizeof(D3D11_TEXTURE2D_DESC) );
+	texDesc.Width = mWidth;
+	texDesc.Height = mHeight;
+	texDesc.MipLevels = 1;
+	texDesc.ArraySize = 1;
+	texDesc.SampleDesc.Count = 1;
+	texDesc.SampleDesc.Quality = 0;
+	texDesc.Usage = D3D11_USAGE_DEFAULT;
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; 
+	texDesc.CPUAccessFlags = 0;
+	texDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA subData;
-	D3D11_TEXTURE2D_DESC desc;
-	desc.Width = mWidth;
-	desc.Height = mHeight;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.SampleDesc.Count = 1;
-	desc.SampleDesc.Quality = 0;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE; 
-	desc.CPUAccessFlags = 0;
-	desc.MiscFlags = 0;
+	::ZeroMemory( &subData, sizeof(D3D11_SUBRESOURCE_DATA) );
+
 	if( imageSource->getDataType() == ImageIo::UINT8 ) {
-		shared_ptr<ImageTargetGLTexture<uint8_t> > target = ImageTargetGLTexture<uint8_t>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
+		const int numChannels = 4;
+		shared_ptr<ImageTargetGLTexture<uint8_t>> target = ImageTargetGLTexture<uint8_t>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
 		subData.pSysMem = target->getData();
-		subData.SysMemPitch = 4 * mWidth;
-		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		subData.SysMemSlicePitch = 0;//subData.SysMemPitch * mHeight;
-		getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
+		subData.SysMemPitch = numChannels*sizeof(uint8_t)*mWidth;
+		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		//OLD: - is there a bug or something? 
+		// subData.SysMemSlicePitch = 0;//subData.SysMemPitch * mHeight;
+		//
+		subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
+		getDxRenderer()->md3dDevice->CreateTexture2D(&texDesc, &subData, &mDxTexture);
 	}
 	else if( imageSource->getDataType() == ImageIo::UINT16 ) {
-		shared_ptr<ImageTargetGLTexture<uint16_t> > target = ImageTargetGLTexture<uint16_t>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
+		const int numChannels = 4;
+		shared_ptr<ImageTargetGLTexture<uint16_t>> target = ImageTargetGLTexture<uint16_t>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
 		subData.pSysMem = target->getData();
-		subData.SysMemPitch = 4 * 2 * mWidth;
-		desc.Format = DXGI_FORMAT_R16G16B16A16_UNORM;
-		subData.SysMemSlicePitch = subData.SysMemPitch * mHeight;
-		getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
+		subData.SysMemPitch = numChannels*sizeof(uint16_t)*mWidth;
+		texDesc.Format = DXGI_FORMAT_R16G16B16A16_UNORM;
+		subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
+		getDxRenderer()->md3dDevice->CreateTexture2D(&texDesc, &subData, &mDxTexture);
 	}
 	else {
-		shared_ptr<ImageTargetGLTexture<float> > target = ImageTargetGLTexture<float>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
+		const int numChannels = dataFormatNumChannels( dataFormat );
+		shared_ptr<ImageTargetGLTexture<float>> target = ImageTargetGLTexture<float>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
 		subData.pSysMem = target->getData();
-		if(dataFormat == GL_RGBA)
-		{
-			desc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			subData.SysMemPitch = 4 * 4 * mWidth;
-		}
-		else
-		{
-			desc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
-			subData.SysMemPitch = 3 * 4 * mWidth;
-		}
-		subData.SysMemSlicePitch = subData.SysMemPitch * mHeight;
-		getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
+		texDesc.Format = dataFormat;
+		subData.SysMemPitch = numChannels*sizeof(float)*mWidth;
+		//if(dataFormat == GL_RGBA) {
+		//	const int numChannels = 4;
+		//	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		//	subData.SysMemPitch = numChannels*sizeof(float)*mWidth;
+		//}
+		//else {
+		//	const int numChannels = 3;
+		//	texDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+		//	subData.SysMemPitch = numChannels*sizeof(float)*mWidth;
+		//}
+		subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
+		getDxRenderer()->md3dDevice->CreateTexture2D(&texDesc, &subData, &mDxTexture);
 	}
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc;
-	SRVDesc.Format = desc.Format;
-	SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	SRVDesc.Texture2D.MostDetailedMip = 0;
-	SRVDesc.Texture2D.MipLevels = -1;
-	getDxRenderer()->md3dDevice->CreateShaderResourceView(mDxTexture, &SRVDesc, &mSRV);
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	::ZeroMemory( &srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC) );
+	srvDesc.Format = texDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = -1;
+	getDxRenderer()->md3dDevice->CreateShaderResourceView(mDxTexture, &srvDesc, &mSRV);
 }
 
 void Texture::update( const Surface &surface )
@@ -580,7 +655,7 @@ void Texture::update( const Surface &surface )
 
 	auto dx = getDxRenderer();
 
-	UINT srcRowPitch = surface.getWidth()*numChannels( dataFormat )*sizeof(uint8_t);
+	UINT srcRowPitch = surface.getWidth()*dataFormatNumChannels( dataFormat )*sizeof(uint8_t);
 	UINT srcDepthPitch = 0;
 	dx->mDeviceContext->UpdateSubresource( mDxTexture, 0, &box, surface.getData(), srcRowPitch, srcDepthPitch );
 }
@@ -605,7 +680,7 @@ void Texture::update( const Surface32f &surface )
 
 	auto dx = getDxRenderer();
 
-	UINT srcRowPitch = surface.getWidth()*numChannels( dataFormat )*sizeof(float);
+	UINT srcRowPitch = surface.getWidth()*dataFormatNumChannels( dataFormat )*sizeof(float);
 	UINT srcDepthPitch = 0;
 	dx->mDeviceContext->UpdateSubresource( mDxTexture, 0, &box, surface.getData(), srcRowPitch, srcDepthPitch );
 }
@@ -628,7 +703,7 @@ void Texture::update( const Surface &surface, const Area &area )
 
 	auto dx = getDxRenderer();
 
-	UINT srcRowPitch = surface.getWidth()*numChannels( dataFormat )*sizeof(uint8_t);
+	UINT srcRowPitch = surface.getWidth()*dataFormatNumChannels( dataFormat )*sizeof(uint8_t);
 	UINT srcDepthPitch = 0;
 	dx->mDeviceContext->UpdateSubresource( mDxTexture, 0, &box, surface.getData( area.getUL() ), srcRowPitch, srcDepthPitch );
 }
@@ -808,6 +883,7 @@ bool Texture::dataFormatHasColor( DXGI_FORMAT dataFormat )
 {
 	switch( dataFormat ) {
 	case DXGI_FORMAT_R8G8B8A8_UNORM:
+	case DXGI_FORMAT_R16G16B16A16_UNORM:
 	case DXGI_FORMAT_R16G16B16A16_FLOAT:
 	case DXGI_FORMAT_R32G32B32_FLOAT:
 	case DXGI_FORMAT_R32G32B32A32_FLOAT:
@@ -817,27 +893,36 @@ bool Texture::dataFormatHasColor( DXGI_FORMAT dataFormat )
 	return false;
 }
 
-uint32_t Texture::numChannels( DXGI_FORMAT dataFormat ) 
+uint32_t Texture::dataFormatNumChannels( DXGI_FORMAT dataFormat ) 
 {
 	uint32_t result = 0;
 	switch( dataFormat ) {
-		// 1 Channel
-	case DXGI_FORMAT_R8_UNORM			: result = 1; break;
-	case DXGI_FORMAT_R16_FLOAT			: result = 1; break;
-	case DXGI_FORMAT_R32_FLOAT			: result = 1; break;
+	// 1 Channel
+	case DXGI_FORMAT_R8_UNORM:
+	case DXGI_FORMAT_R16_FLOAT:
+	case DXGI_FORMAT_R32_FLOAT:
+		result = 1;
+	break;
 
-		// 2 Channels
-	case DXGI_FORMAT_R8G8_UNORM			: result = 2; break;
-	case DXGI_FORMAT_R16G16_FLOAT		: result = 2; break;
-	case DXGI_FORMAT_R32G32_FLOAT		: result = 2; break;
+	// 2 Channels
+	case DXGI_FORMAT_R8G8_UNORM:
+	case DXGI_FORMAT_R16G16_FLOAT:
+	case DXGI_FORMAT_R32G32_FLOAT:
+		result = 2;
+	break;
 
-		// 3 Channels
-	case DXGI_FORMAT_R32G32B32_FLOAT	: result = 3; break;
+	// 3 Channels
+	case DXGI_FORMAT_R32G32B32_FLOAT: 
+		result = 3; 
+	break;
 
-		// 4 Channels
-	case DXGI_FORMAT_R8G8B8A8_UNORM		: result = 4; break;
-	case DXGI_FORMAT_R16G16B16A16_FLOAT	: result = 4; break;
-	case DXGI_FORMAT_R32G32B32A32_FLOAT	: result = 4; break;
+	// 4 Channels
+	case DXGI_FORMAT_R8G8B8A8_UNORM:
+	case DXGI_FORMAT_R16G16B16A16_UNORM:
+	case DXGI_FORMAT_R16G16B16A16_FLOAT:
+	case DXGI_FORMAT_R32G32B32A32_FLOAT:
+		result = 4;
+	break;
 	}
 	return result;
 }
@@ -896,23 +981,18 @@ void Texture::setCleanTexCoords( float maxU, float maxV )
 
 bool Texture::hasAlpha() const
 {
+	bool result = false;
+
 	switch( mInternalFormat ) {
-#if ! defined( CINDER_GLES )
-		case GL_RGBA8:
-		case GL_RGBA16:
-		case GL_RGBA32F_ARB:
-		case GL_LUMINANCE8_ALPHA8:
-		case GL_LUMINANCE16_ALPHA16:
-		case GL_LUMINANCE_ALPHA32F_ARB:
-#endif
-		case GL_RGBA:
-		case GL_LUMINANCE_ALPHA:
-			return true;
-		break;
-		default:
-			return false;
-		break;
+	case DXGI_FORMAT_R8G8B8A8_UNORM:
+	case DXGI_FORMAT_R16G16B16A16_UNORM:
+	case DXGI_FORMAT_R16G16B16A16_FLOAT:
+	case DXGI_FORMAT_R32G32B32A32_FLOAT:
+		result = true;
+	break;
 	}
+
+	return result;
 }
 	
 float Texture::getLeft() const
@@ -933,6 +1013,7 @@ float Texture::getTop() const
 DXGI_FORMAT Texture::getInternalFormat() const
 {
 	D3D11_TEXTURE2D_DESC desc;
+	::ZeroMemory( &desc, sizeof(D3D11_TEXTURE2D_DESC) );
 	mDxTexture->GetDesc(&desc);
 	return desc.Format;
 }

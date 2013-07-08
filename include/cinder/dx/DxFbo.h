@@ -29,6 +29,9 @@
 
 namespace cinder { namespace dx {
 
+class Fbo;
+typedef std::shared_ptr<Fbo> FboRef;
+
 //! Represents an OpenGL Renderbuffer, used primarily in conjunction with FBOs. Supported on OpenGL ES but multisampling is currently ignored. \ImplShared
 class Renderbuffer {
   public:
@@ -94,6 +97,11 @@ class Fbo {
 	//! Creates an FBO \a width pixels wide and \a height pixels high, with an optional alpha channel, color buffer and depth buffer
 	Fbo( int width, int height, bool alpha, bool color = true, bool depth = true );
 
+	//! Creates an FBO \a width pixels wide and \a height pixels high, using Fbo::Format \a format
+	static FboRef create( int width, int height, Format format = Format() );
+	//! Creates an FBO \a width pixels wide and \a height pixels high, with an optional alpha channel, color buffer and depth buffer
+	static FboRef create( int width, int height, bool alpha, bool color = true, bool depth = true );
+
 	//! Returns the width of the FBO in pixels
 	int				getWidth() const { return mObj->mWidth; }
 	//! Returns the height of the FBO in pixels
@@ -110,7 +118,8 @@ class Fbo {
 	//GLenum			getTarget() const { return mObj->mFormat.mTarget; }
 
 	//! Returns a reference to the color texture of the FBO. \a attachment specifies which attachment in the case of multiple color buffers
-	ID3D11Texture2D*&	getTexture( int attachment = 0 );
+	//ID3D11Texture2D*&	getTexture( int attachment = 0 );
+	dx::TextureRef	getTexture( int attachment = 0 );
 	//! Returns a reference to the depth texture of the FBO.
 	ID3D11Texture2D*&	getDepthTexture();	
 	
@@ -234,8 +243,9 @@ class Fbo {
 		//Renderbuffer				mMultisampleDepthRenderbuffer;
 
 		std::vector<ID3D11RenderTargetView*>	mRenderTargets;
-		std::vector<ID3D11Texture2D*>			mColorTextures;
-		std::vector<ID3D11ShaderResourceView*>	mColorSRVs;
+		//std::vector<ID3D11Texture2D*>			mColorTextures;
+		//std::vector<ID3D11ShaderResourceView*>	mColorSRVs;
+		std::vector<dx::TextureRef>				mColorTextures;
 		ID3D11Texture2D*						mDepthTexture;
 		ID3D11DepthStencilView*					mDepthView;
 		//Renderbuffer				mDepthRenderbuffer;

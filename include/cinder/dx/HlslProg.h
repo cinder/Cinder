@@ -38,31 +38,66 @@
 
 namespace cinder { namespace dx {
 
+class HlslProg;
+typedef std::shared_ptr<HlslProg> HlslProgRef;
+
 //! Represents a DirectX HLSL shader. \ImplShared
 class HlslProg {
-  public:
+public:
+	
 	HlslProg() {}
 	//! Constructs a shader from compiled object bytecode
-	HlslProg( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef(), DataSourceRef geometryShader = DataSourceRef() );
+	HlslProg( 
+		DataSourceRef vertexShader, 
+		DataSourceRef fragmentShader, 
+		DataSourceRef geometryShader = DataSourceRef() 
+	);
 	//! Constructs a shader from compiled object bytecode
-	HlslProg( const BYTE *vertexShader, UINT vertexShaderSize, const BYTE *fragmentShader, UINT fragmentShaderSize, const BYTE *geometryShader, UINT geometryShaderSize );
-
+	HlslProg( 
+		const BYTE *vertexShader, UINT vertexShaderSize, 
+		const BYTE *fragmentShader, UINT fragmentShaderSize, 
+		const BYTE *geometryShader = nullptr, UINT geometryShaderSize = 0
+	);
 	//! Constructs a shader from source. Can only be during development for Windows Store Apps.
 	HlslProg( 
-		const std::string& vertexShaderName, DataSourceRef vertexShader, 
-		const std::string& fragmentShaderName = "", DataSourceRef fragmentShader = DataSourceRef(), 
-		const std::string& geometryShaderName = "", DataSourceRef geometryShader = DataSourceRef() 
+		const std::string& vertexEntryPoint, DataSourceRef vertexShader, 
+		const std::string& fragmentEntryPoint, DataSourceRef fragmentShader, 
+		const std::string& geometryEntryPoint = "", DataSourceRef geometryShader = DataSourceRef() 
 	);
-
 	//! Constructs a shader from source. Can only be during development for Windows Store Apps.
 	HlslProg( 
-		const std::string& vertexShaderName, const BYTE *vertexShader, UINT vertexShaderSize, 
-		const std::string& fragmentShaderName, const BYTE *fragmentShader, UINT fragmentShaderSize, 
-		const std::string& geometryShaderName, const BYTE *geometryShader, UINT geometryShaderSize 
+		const std::string& vertexEntryPoint, const char *vertexShader, 
+		const std::string& fragmentEntryPoint, const char *fragmentShader,
+		const std::string& geometryEntryPoint = "", const char *geometryShader = nullptr
 	);
 
-	void			bind() const;
-	static void		unbind();
+	//! Constructs a shader from compiled object bytecode
+	static HlslProgRef create ( 
+		DataSourceRef vertexShader, 
+		DataSourceRef fragmentShader, 
+		DataSourceRef geometryShader = DataSourceRef() 
+	);
+	//! Constructs a shader from compiled object bytecode
+	static HlslProgRef create( 
+		const BYTE *vertexShader, UINT vertexShaderSize, 
+		const BYTE *fragmentShader, UINT fragmentShaderSize, 
+		const BYTE *geometryShader = nullptr, UINT geometryShaderSize = 0
+	);
+	//! Constructs a shader from source. Can only be during development for Windows Store Apps.
+	static HlslProgRef create( 
+		const std::string& vertexEntryPoint, DataSourceRef vertexShaderSrc, 
+		const std::string& fragmentEntryPoint, DataSourceRef fragmentShaderSrc, 
+		const std::string& geometryEntryPoint = "", DataSourceRef geometryShaderSrc = DataSourceRef() 
+	);
+	//! Constructs a shader from source. Can only be during development for Windows Store Apps.
+	static HlslProgRef create( 
+		const std::string& vertexEntryPoint, const char *vertexShaderSrc, 
+		const std::string& fragmentEntryPoint, const char *fragmentShaderSrc,
+		const std::string& geometryEntryPoint = "", const char *geometryShaderSrc = nullptr
+	);
+
+	void					bind() const;
+	static void				unbind();
 
 	ID3D11VertexShader*		GetVertexShader() { return mObj->mVS; }
 	ID3D11PixelShader*		GetPixelShader() { return mObj->mPS; }
@@ -85,7 +120,7 @@ class HlslProg {
 	void*	MapCBufferCompute(UINT slot);
 	void	UnmapCBufferCompute(UINT slot);
 
-  protected:
+protected:
 	struct Cbo	//constant buffer object
 	{
 		Cbo(UINT slot, UINT size);
@@ -113,7 +148,14 @@ class HlslProg {
  
 	std::shared_ptr<Obj>	mObj;
 
-  public:
+private:
+	void initFromSource( 
+		const std::string& vertexShaderName, const char *vertexShaderSrc, 
+		const std::string& fragmentShaderName, const char *fragmentShaderSrc,
+		const std::string& geometryShaderName, const char *geometryShaderSrc
+	);
+
+public:
 	//@{
 	//! Emulates shared_ptr-like behavior
 	typedef std::shared_ptr<Obj> HlslProg::*unspecified_bool_type;
@@ -123,20 +165,20 @@ class HlslProg {
 };
 
 class HlslProgCompileExc : public std::exception {
- public:	
+public:	
 	HlslProgCompileExc( const std::string &log, GLint aShaderType ) throw();
 	virtual const char* what() const throw()
 	{
 		return mMessage;
 	}
 
- private:
+private:
 	char	mMessage[16001];
 	GLint	mShaderType;
 };
 
 class HlslNullProgramExc : public std::exception {
- public:	
+public:	
 	virtual const char* what() const throw()
 	{
 		return "Hlsl: Attempt to use null shader";
@@ -145,7 +187,7 @@ class HlslNullProgramExc : public std::exception {
 };
 
 class HlslDuplicateCBufferExc : public std::exception {
- public:
+public:
 	virtual const char* what() const throw()
 	{
 		return "Hlsl: Attempt to create a duplicate constant buffer";

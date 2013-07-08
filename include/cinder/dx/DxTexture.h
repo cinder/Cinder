@@ -63,16 +63,15 @@ class Texture {
 	/** Constructs a texture of size(\a width, \a height) */
 	static TextureRef	create( int width, int height, Format format = Format() ) { return TextureRef( new Texture( width, height, format ) ); }
 	/** Constructs a texture of size(\a width, \a height). Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat */
-	static TextureRef	create( const unsigned char *data, DXGI_FORMAT dataFormat, int width, int height, Format format = Format() )
-						{ return TextureRef( new Texture( data, dataFormat, width, height, format ) ); }
+	static TextureRef	create( const unsigned char *data, DXGI_FORMAT dataFormat, int width, int height, Format format = Format() ) { return TextureRef( new Texture( data, dataFormat, width, height, format ) ); }
 	/** Constructs a texture based on the contents of \a surface */
 	static TextureRef	create( const Surface8u &surface, Format format = Format() ) { return TextureRef( new Texture( surface, format ) ); }
 	/** Constructs a texture based on the contents of \a surface. */
 	static TextureRef	create( const Surface32f &surface, Format format = Format() ) { return TextureRef( new Texture( surface, format ) ); }
 	//! Constructs a Texture based on the contents of \a channel.
-	static TextureRef create( const Channel8u &channel, Format format = Format() ) { return TextureRef( new Texture( channel, format ) ); }
+	static TextureRef	create( const Channel8u &channel, Format format = Format() ) { return TextureRef( new Texture( channel, format ) ); }
 	//! Constructs a Texture based on the contents of \a channel.
-	static TextureRef create( const Channel32f &channel, Format format = Format() ) { return TextureRef( new Texture( channel, format ) ); }
+	static TextureRef	create( const Channel32f &channel, Format format = Format() ) { return TextureRef( new Texture( channel, format ) ); }
 	/** \brief Constructs a texture based on \a imageSource.  */
 	static TextureRef	create( ImageSourceRef imageSource, Format format = Format() ) { return TextureRef( new Texture( imageSource, format ) ); }
 
@@ -95,7 +94,7 @@ class Texture {
 	/** \brief Sets the horizontal wrapping behavior when a texture coordinate falls outside the range of [0,1].
 		Possible values are \c D3D11_TEXTURE_ADDRESS_WRAP, \c D3D11_TEXTURE_ADDRESS_MIRROR, \c D3D11_TEXTURE_ADDRESS_CLAMP, \c D3D11_TEXTURE_ADDRESS_BORDER and \c D3D11_TEXTURE_ADDRESS_MIRROR_ONCE. **/
 	void			setWrapS( D3D11_TEXTURE_ADDRESS_MODE wrapS );
-	/** \brief Sets the verical wrapping behavior when a texture coordinate falls outside the range of [0,1].
+	/** \brief Sets the vertical wrapping behavior when a texture coordinate falls outside the range of [0,1].
 		Possible values are \c D3D11_TEXTURE_ADDRESS_WRAP, \c D3D11_TEXTURE_ADDRESS_MIRROR, \c D3D11_TEXTURE_ADDRESS_CLAMP, \c D3D11_TEXTURE_ADDRESS_BORDER and \c D3D11_TEXTURE_ADDRESS_MIRROR_ONCE. **/
 	void			setWrapT( D3D11_TEXTURE_ADDRESS_MODE wrapT );
 	/** \brief Sets the filtering behavior when a texture is displayed at a different resolution than its native resolution.
@@ -175,7 +174,10 @@ class Texture {
 	//static bool		dataFormatHasColor( GLint dataFormat );
 	static bool		dataFormatHasColor( DXGI_FORMAT dataFormat );
 	//! Returns the number of channels for the given DXGI dataFormat
-	static uint32_t	numChannels( DXGI_FORMAT dataFormat );
+	static uint32_t	dataFormatNumChannels( DXGI_FORMAT dataFormat );
+
+	ID3D11Texture2D*			getDxTexture() { return mDxTexture; }
+	ID3D11ShaderResourceView*	getDxShaderResourceView() { return mSRV; }
 
 #if ! defined( CINDER_GLES )
 	//! Returns an ImageSource pointing to this Texture
@@ -206,7 +208,7 @@ class Texture {
 		/** \brief Sets the horizontal wrapping behavior when a texture coordinate falls outside the range of [0,1].
 			Possible values are \c GL_CLAMP, \c GL_REPEAT and \c GL_CLAMP_TO_EDGE. The default is \c GL_CLAMP_TO_EDGE **/
 		void	setWrapS( D3D11_TEXTURE_ADDRESS_MODE wrapS ) { mWrapS = wrapS; }
-		/** \brief Sets the verical wrapping behavior when a texture coordinate falls outside the range of [0,1].
+		/** \brief Sets the vertical wrapping behavior when a texture coordinate falls outside the range of [0,1].
 			Possible values are \c GL_CLAMP, \c GL_REPEAT and \c GL_CLAMP_TO_EDGE. The default is \c GL_CLAMP_TO_EDGE. **/
 		void	setWrapT( D3D11_TEXTURE_ADDRESS_MODE wrapT ) { mWrapT = wrapT; }
 		/** \brief Sets the filtering behavior when a texture is displayed at a lower resolution than its native resolution. Default is \c GL_LINEAR
@@ -230,12 +232,18 @@ class Texture {
 		//! Returns the texture minifying function, which is used whenever the pixel being textured maps to an area greater than one texture element.
 		D3D11_FILTER				getFilter() const { return mFilter; }
 		
+		//! Returns true if render target flag is set
+		bool	isRenderTarget() const { return mRenderTarget; }
+		//! Enables or disables render target. Default is disabled.
+		void	enableRenderTarget( bool bEnableRenderTarget = true ) { mRenderTarget = bEnableRenderTarget; }
+
 	  protected:
 		//GLenum						mTarget;
 		D3D11_TEXTURE_ADDRESS_MODE	mWrapS, mWrapT;
 		D3D11_FILTER				mFilter;
 		bool						mMipmapping;
 		DXGI_FORMAT					mInternalFormat;
+		bool						mRenderTarget;
 		
 		friend class Texture;
 	};
@@ -268,13 +276,13 @@ class Texture {
 		{}
 		~Obj();*/
 
-	mutable UINT	mWidth, mHeight;
-	mutable UINT	mCleanWidth, mCleanHeight;
-	float			mMaxU, mMaxV;
-	DXGI_FORMAT		mInternalFormat;
+	mutable UINT				mWidth, mHeight;
+	mutable UINT				mCleanWidth, mCleanHeight;
+	float						mMaxU, mMaxV;
+	DXGI_FORMAT					mInternalFormat;
 
-	bool			mDoNotDispose;
-	bool			mFlipped;	
+	bool						mDoNotDispose;
+	bool						mFlipped;	
 
 	ID3D11Texture2D				*mDxTexture;
 	D3D11_SAMPLER_DESC			mSamplerDesc;

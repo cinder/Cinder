@@ -144,40 +144,6 @@ void TexturesApp::keyDown( KeyEvent event )
 	}
 	break;
 	}
-
-
-/*
-	switch( event.getCode() ) {
-	case KeyEvent::KEY_1: 
-	{
-		Channel8u chan8u = getSurface().getChannel( 0 )
-		Channel32f chan32f = Channel32f( chan8u );
-		if( mTex && DXGI_FORMAT_R32_FLOAT == mTex->getInternalFormat() ) {
-			mTex->update( chan32f );			
-		}
-		else {
-			mTex = grfx::Texture::create( chan32f );
-		}
-	}
-	break;
-
-	case KeyEvent::KEY_2:
-	{
-		Channel8u chan8u = mSurf8u.getChannel( 1 );
-		Channel32f chan32f = Channel32f( chan8u );
-		mTex = grfx::Texture::create( chan32f );
-	}
-	break;
-
-	case KeyEvent::KEY_3:
-	{
-		Channel8u chan8u = mSurf8u.getChannel( 2 );
-		Channel32f chan32f = Channel32f( chan8u );
-		mTex = grfx::Texture::create( chan32f );
-	}
-	break;
-	}
-*/
 }
 
 void TexturesApp::mouseDown( MouseEvent event )
