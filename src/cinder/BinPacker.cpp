@@ -70,6 +70,60 @@ std::vector<Area> BinPacker::pack( const std::vector<Area> &rects)
 	return result;
 }
 
+void BinPacker::pack( std::vector<Area*> &rects)
+{
+    clear();
+
+    // add rects to member array, and check to make sure none is too big
+    for (size_t i = 0; i < rects.size(); ++i) {
+		if (rects[i]->getWidth() > mBinWidth || rects[i]->getHeight() > mBinHeight) {
+            throw BinPackerTooSmallExc();
+        }
+		mRects.push_back(Rect(rects[i]->getWidth(), rects[i]->getHeight(), i));
+    }
+
+    // sort from greatest to least area
+    std::sort(mRects.rbegin(), mRects.rend());
+
+	// disable rotation; subsequent calling of this in-place function would 
+	// not be possible otherwise
+	bool allowRotation = mAllowRotation;
+	mAllowRotation = false;
+
+    // pack   
+    mBins.push_back(Rect(mBinWidth, mBinHeight));
+    fill(0);
+
+	// restore rotation
+	mAllowRotation = allowRotation;
+
+	// check if all rects were packed
+	if(mNumPacked < (int)mRects.size()) 
+		throw BinPackerTooSmallExc();
+
+	// 
+	for(unsigned i=0;i<mBins.size();++i)
+	{
+		// skip empty bins
+		if( mBins[i].order < 0 ) continue;
+
+		if(mBins[i].rotated) 
+		{
+			rects[ mBins[i].order ]->x1 = mBins[i].x;
+			rects[ mBins[i].order ]->y1 = mBins[i].y + mBins[i].h;
+			rects[ mBins[i].order ]->x2 = mBins[i].x + mBins[i].w;
+			rects[ mBins[i].order ]->y2 = mBins[i].y;
+		}
+		else
+		{
+			rects[ mBins[i].order ]->x1 = mBins[i].x;
+			rects[ mBins[i].order ]->y1 = mBins[i].y;
+			rects[ mBins[i].order ]->x2 = mBins[i].x + mBins[i].w;
+			rects[ mBins[i].order ]->y2 = mBins[i].y + mBins[i].h;
+		}
+	}
+}
+
 void BinPacker::clear()
 {
     mNumPacked = 0;
