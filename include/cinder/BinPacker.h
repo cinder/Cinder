@@ -54,6 +54,8 @@ public:
 
 	//!
     std::vector<Area>	pack( const std::vector<Area> &rects );
+	//! in-place
+	void				pack( std::vector<Area*> &rects );
 
 private:
     struct Rect
