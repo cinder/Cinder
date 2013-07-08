@@ -32,6 +32,7 @@
 #include "cinder/app/App.h"
 #include "cinder/Camera.h"
 
+#include <windows.h>
 #if ! defined( CINDER_WINRT )
 #include <windowsx.h>
 #endif
@@ -705,6 +706,19 @@ bool AppImplMswRendererDx::createFramebufferResources()
 		if( hr != S_OK )
 			return false;
 
+		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
+		swapChainDesc.Width = static_cast<UINT>(width); // Match the size of the window.
+		swapChainDesc.Height = static_cast<UINT>(height);
+		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // This is the most common swap chain format.
+		swapChainDesc.Stereo = false;
+		swapChainDesc.SampleDesc.Count = 1; // Don't use multi-sampling.
+		swapChainDesc.SampleDesc.Quality = 0;
+		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		swapChainDesc.BufferCount = 2; // Use double-buffering to minimize latency.
+
+  #if defined( CINDER_WINRT )
+		swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
+  #else
 		// Check to see if the OS is Windows 8 or later. If it's not, then that means
 		// compiling/running on Windows 7 SP1. We use this to set the appropriate
 		// flags for Windows7 SP 1's DirectX 11.1 support.
@@ -715,15 +729,6 @@ bool AppImplMswRendererDx::createFramebufferResources()
 		GetVersionEx( (OSVERSIONINFO*)&osver );
 		bool isWin8 = (osver.dwMajorVersion >= 6) && (osver.dwMinorVersion >= 2);
 
-		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
-		swapChainDesc.Width = static_cast<UINT>(width); // Match the size of the window.
-		swapChainDesc.Height = static_cast<UINT>(height);
-		swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // This is the most common swap chain format.
-		swapChainDesc.Stereo = false;
-		swapChainDesc.SampleDesc.Count = 1; // Don't use multi-sampling.
-		swapChainDesc.SampleDesc.Quality = 0;
-		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		swapChainDesc.BufferCount = 2; // Use double-buffering to minimize latency.
 		if( isWin8 ) {
 			swapChainDesc.Scaling = DXGI_SCALING_NONE;			
 		}
@@ -734,12 +739,15 @@ bool AppImplMswRendererDx::createFramebufferResources()
 			//
 			swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
 		}
+  #endif
+
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; // All Windows Store apps must use this SwapEffect.
 		swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-  #if defined( CINDER_MSW )
-		hr = dxgiFactory->CreateSwapChainForHwnd( md3dDevice, mWnd, &swapChainDesc, NULL, NULL, &mSwapChain );
-  #elif defined( CINDER_WINRT )
+
+  #if defined( CINDER_WINRT )
 		hr = dxgiFactory->CreateSwapChainForCoreWindow( md3dDevice, reinterpret_cast<IUnknown*>(mWnd.Get()), &swapChainDesc, nullptr, &mSwapChain );
+  #else 
+		hr = dxgiFactory->CreateSwapChainForHwnd( md3dDevice, mWnd, &swapChainDesc, NULL, NULL, &mSwapChain );
   #endif
 #else
 		IDXGIFactory1 *dxgiFactory;

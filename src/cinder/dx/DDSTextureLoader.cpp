@@ -78,6 +78,7 @@
 #define DXGI_1_2_FORMATS
 #endif
 
+#include "cinder/Cinder.h"
 #include "cinder/dx/DDSTextureLoader.h"
 
 #include "cinder/dx/dds.h"
