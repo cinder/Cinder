@@ -26,20 +26,25 @@
 #pragma once
 
 #include "cinder/Area.h"
+
 #include <vector>
+#include <map>
 
 namespace cinder {
 
-class BinPacker
+class BinPackerBase
 {
 public:
-	BinPacker() : mBinWidth(512), mBinHeight(512), mAllowRotation(false) {}
-	BinPacker( int width, int height, bool allowRotation = false ) :
-		mBinWidth(width), mBinHeight(height), mAllowRotation(allowRotation) {}
+	BinPackerBase() : mBinWidth(512), mBinHeight(512) { clear(); }
+	BinPackerBase( int width, int height ) :
+		mBinWidth(width), mBinHeight(height) { clear(); }
+
+	virtual ~BinPackerBase() {}	
 
 	//!
-	BinPacker&	setSize( unsigned width, unsigned height ) { mBinWidth = width; mBinHeight = height; return *this; }
-	BinPacker&	setSize( const Vec2i &size ) { mBinWidth = size.x; mBinHeight = size.y; return *this; }
+	virtual BinPackerBase&	setSize( unsigned width, unsigned height ) = 0;
+	virtual BinPackerBase&	setSize( const Vec2i &size ) = 0;
+	
 	//!
 	Vec2i		getSize() const { return Vec2i( mBinWidth, mBinHeight ); }
 	//!
@@ -47,17 +52,7 @@ public:
 	//!
 	int			getHeight() const { return mBinHeight; }
 
-	//!
-	BinPacker&	enableRotation( bool enabled = true ) { mAllowRotation = enabled; return *this; }
-	//!
-	bool		isRotationEnabled() const { return mAllowRotation; }
-
-	//!
-    std::vector<Area>	pack( const std::vector<Area> &rects );
-	//! in-place
-	void				pack( std::vector<Area*> &rects );
-
-private:
+protected:
     struct Rect
     {
         int  x;
@@ -66,18 +61,17 @@ private:
         int  h;
         int  order;
         int  children[2];
-        bool rotated;
         bool packed;
 
         Rect(int w, int h, int order = -1)
-            : x(0), y(0), w(w), h(h), order(order), rotated(false), packed(false)
+            : x(0), y(0), w(w), h(h), order(order), packed(false)
         {
             children[0] = -1;
             children[1] = -1;
         }
 
         Rect(int x, int y, int w, int h, int order = -1)
-            : x(x), y(y), w(w), h(h), order(order), rotated(false), packed(false)
+            : x(x), y(y), w(w), h(h), order(order), packed(false)
         {
             children[0] = -1;
             children[1] = -1;
@@ -87,37 +81,71 @@ private:
             return w * h;
         }
         
-        void rotate() {
-            std::swap(w, h);
-            rotated = !rotated;
-        }
-        
         bool operator<(const Rect& rhs) const {
             return getArea() < rhs.getArea();
         }
     };
 
-private:
+protected:
 	int					mBinWidth;
 	int					mBinHeight;
-	bool				mAllowRotation;
     
     int					mNumPacked;
     std::vector<Rect>	mRects;
-    std::vector<Rect>	mBins;
+    std::vector<Rect>	mPacks;
 
-    void clear();
+    virtual void clear();
+
     void fill(int pack);
     void split(int pack, int rect);
-    bool fits(Rect& rect1, const Rect& rect2);
+    bool fits(Rect& rect1, const Rect& rect2) const;
     
     bool rectIsValid(int i) const;
     bool packIsValid(int i) const;
 };
 
+class BinPacker : public BinPackerBase
+{
+public:
+	BinPacker() : BinPackerBase(512, 512) {}
+	BinPacker( int width, int height ) : BinPackerBase(width, height) {}
+
+	~BinPacker() {}
+
+	//!
+	virtual BinPacker&	setSize( unsigned width, unsigned height ) { mBinWidth = width; mBinHeight = height; return *this; }
+	virtual BinPacker&	setSize( const Vec2i &size ) { mBinWidth = size.x; mBinHeight = size.y; return *this; }
+
+	//!
+    std::vector<Area>	pack( const std::vector<Area> &rects );
+	//! in-place
+	void				pack( std::vector<Area*> &rects );
+};
+
+class MultiBinPacker : public BinPackerBase
+{
+public:
+	MultiBinPacker() : BinPackerBase(512, 512) {}
+	MultiBinPacker( int width, int height ) 
+		: BinPackerBase(width, height) {}
+
+	~MultiBinPacker() {}
+
+	//!
+	MultiBinPacker&	setSize( unsigned width, unsigned height ) { mBinWidth = width; mBinHeight = height; return *this; }
+	MultiBinPacker&	setSize( const Vec2i &size ) { mBinWidth = size.x; mBinHeight = size.y; return *this; }
+
+	//!
+    std::vector< std::map<unsigned, Area> >	pack( const std::vector<Area> &rects );
+protected:
+    void clear();
+
+	std::vector<unsigned>	mBins;
+};
+
 class BinPackerTooSmallExc : public std::exception {
  public:
-	virtual const char* what() const throw() { return "BinPacker: Pack size is too small to fit all rectangles."; } 
+	virtual const char* what() const throw() { return "Bin size is too small to fit all rectangles."; } 
 };
 
 } // namespace cinder
