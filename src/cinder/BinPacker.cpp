@@ -29,109 +29,26 @@
 
 namespace cinder {
 
-std::vector<Area> BinPacker::pack( const std::vector<Area> &rects)
-{
-    clear();
-
-    // add rects to member array, and check to make sure none is too big
-    for (size_t i = 0; i < rects.size(); ++i) {
-		if (rects[i].getWidth() > mBinWidth || rects[i].getHeight() > mBinHeight) {
-            throw BinPackerTooSmallExc();
-        }
-		mRects.push_back(Rect(rects[i].getWidth(), rects[i].getHeight(), i));
-    }
-
-    // sort from greatest to least area
-    std::sort(mRects.rbegin(), mRects.rend());
-
-    // pack   
-    mBins.push_back(Rect(mBinWidth, mBinHeight));
-    fill(0);
-
-	// check if all rects were packed
-	if(mNumPacked < (int)mRects.size()) 
-		throw BinPackerTooSmallExc();
-
-	// return result
-	std::vector<Area>	result;
-	result.resize( rects.size() );
-
-	for(unsigned i=0;i<mBins.size();++i)
-	{
-		// skip empty bins
-		if( mBins[i].order < 0 ) continue;
-
-		if(mBins[i].rotated)
-			result[ mBins[i].order ] = Area( mBins[i].x, mBins[i].y + mBins[i].h, mBins[i].x + mBins[i].w, mBins[i].y );
-		else
-			result[ mBins[i].order ] = Area( mBins[i].x, mBins[i].y, mBins[i].x + mBins[i].w, mBins[i].y + mBins[i].h );
-	}
-
-	return result;
-}
-
-void BinPacker::pack( std::vector<Area*> &rects)
-{
-    clear();
-
-    // add rects to member array, and check to make sure none is too big
-    for (size_t i = 0; i < rects.size(); ++i) {
-		if (rects[i]->getWidth() > mBinWidth || rects[i]->getHeight() > mBinHeight) {
-            throw BinPackerTooSmallExc();
-        }
-		mRects.push_back(Rect(rects[i]->getWidth(), rects[i]->getHeight(), i));
-    }
-
-    // sort from greatest to least area
-    std::sort(mRects.rbegin(), mRects.rend());
-
-	// disable rotation; subsequent calling of this in-place function would 
-	// not be possible otherwise
-	bool allowRotation = mAllowRotation;
-	mAllowRotation = false;
-
-    // pack   
-    mBins.push_back(Rect(mBinWidth, mBinHeight));
-    fill(0);
-
-	// restore rotation
-	mAllowRotation = allowRotation;
-
-	// check if all rects were packed
-	if(mNumPacked < (int)mRects.size()) 
-		throw BinPackerTooSmallExc();
-
-	// 
-	for(unsigned i=0;i<mBins.size();++i)
-	{
-		// skip empty bins
-		if( mBins[i].order < 0 ) continue;
-
-		if(mBins[i].rotated) 
-		{
-			rects[ mBins[i].order ]->x1 = mBins[i].x;
-			rects[ mBins[i].order ]->y1 = mBins[i].y + mBins[i].h;
-			rects[ mBins[i].order ]->x2 = mBins[i].x + mBins[i].w;
-			rects[ mBins[i].order ]->y2 = mBins[i].y;
-		}
-		else
-		{
-			rects[ mBins[i].order ]->x1 = mBins[i].x;
-			rects[ mBins[i].order ]->y1 = mBins[i].y;
-			rects[ mBins[i].order ]->x2 = mBins[i].x + mBins[i].w;
-			rects[ mBins[i].order ]->y2 = mBins[i].y + mBins[i].h;
-		}
-	}
-}
-
-void BinPacker::clear()
+void BinPackerBase::clear()
 {
     mNumPacked = 0;
     mRects.clear();
-    mBins.clear();
+    mPacks.clear();
 }
 
-void BinPacker::fill(int pack)
+bool BinPackerBase::fits(Rect& rect1, const Rect& rect2) const
+{
+    // Check to see if rect1 fits in rect2, and rotate rect1 if that will
+    // enable it to fit.
+
+    if (rect1.w <= rect2.w && rect1.h <= rect2.h) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void BinPackerBase::fill(int pack)
 {
     assert(packIsValid(pack));
 
@@ -142,19 +59,19 @@ void BinPacker::fill(int pack)
         // If it's not already packed
         if (!mRects[j].packed) {
             // If it fits in the current working area
-            if (fits(mRects[j], mBins[i])) {
+            if (fits(mRects[j], mPacks[i])) {
                 // Store in lower-left of working area, split, and recurse
                 ++mNumPacked;
                 split(i, j);
-                fill(mBins[i].children[0]);
-                fill(mBins[i].children[1]);
+                fill(mPacks[i].children[0]);
+                fill(mPacks[i].children[1]);
                 return;
             }
         }
     }
 }
 
-void BinPacker::split(int pack, int rect)
+void BinPackerBase::split(int pack, int rect)
 {
     assert(packIsValid(pack));
     assert(rectIsValid(rect));
@@ -166,10 +83,10 @@ void BinPacker::split(int pack, int rect)
     // to the rect we're storing, such that we get the largest possible child
     // area.
 
-    Rect left = mBins[i];
-    Rect right = mBins[i];
-    Rect bottom = mBins[i];
-    Rect top = mBins[i];
+    Rect left = mPacks[i];
+    Rect right = mPacks[i];
+    Rect bottom = mPacks[i];
+    Rect top = mPacks[i];
 
     left.y += mRects[j].h;
     left.w = mRects[j].w;
@@ -195,58 +112,175 @@ void BinPacker::split(int pack, int rect)
 
     if (maxLeftRightArea > maxBottomTopArea) {
         if (left.getArea() > right.getArea()) {
-            mBins.push_back(left);
-            mBins.push_back(right);
+            mPacks.push_back(left);
+            mPacks.push_back(right);
         } else {
-            mBins.push_back(right);
-            mBins.push_back(left);
+            mPacks.push_back(right);
+            mPacks.push_back(left);
         }
     } else {
         if (bottom.getArea() > top.getArea()) {
-            mBins.push_back(bottom);
-            mBins.push_back(top);
+            mPacks.push_back(bottom);
+            mPacks.push_back(top);
         } else {
-            mBins.push_back(top);
-            mBins.push_back(bottom);
+            mPacks.push_back(top);
+            mPacks.push_back(bottom);
         }
     }
 
     // This pack area now represents the rect we've just stored, so save the
     // relevant info to it, and assign children.
-    mBins[i].w = mRects[j].w;
-    mBins[i].h = mRects[j].h;
-    mBins[i].order = mRects[j].order;
-    mBins[i].rotated = mRects[j].rotated;
-    mBins[i].children[0] = mBins.size() - 2;
-    mBins[i].children[1] = mBins.size() - 1;
+    mPacks[i].w = mRects[j].w;
+    mPacks[i].h = mRects[j].h;
+    mPacks[i].order = mRects[j].order;
+    mPacks[i].children[0] = mPacks.size() - 2;
+    mPacks[i].children[1] = mPacks.size() - 1;
 
     // Done with the rect
     mRects[j].packed = true;
 }
 
-bool BinPacker::fits(Rect& rect1, const Rect& rect2)
-{
-    // Check to see if rect1 fits in rect2, and rotate rect1 if that will
-    // enable it to fit.
-
-    if (rect1.w <= rect2.w && rect1.h <= rect2.h) {
-        return true;
-    } else if (mAllowRotation && rect1.h <= rect2.w && rect1.w <= rect2.h) {
-        rect1.rotate();
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool BinPacker::rectIsValid(int i) const
+bool BinPackerBase::rectIsValid(int i) const
 {
     return i >= 0 && i < (int)mRects.size();
 }
 
-bool BinPacker::packIsValid(int i) const
+bool BinPackerBase::packIsValid(int i) const
 {
-    return i >= 0 && i < (int)mBins.size();
+    return i >= 0 && i < (int)mPacks.size();
+}
+
+std::vector<Area> BinPacker::pack( const std::vector<Area> &rects)
+{
+    clear();
+
+    // add rects to member array, and check to make sure none is too big
+    for (size_t i = 0; i < rects.size(); ++i) {
+		if (rects[i].getWidth() > mBinWidth || rects[i].getHeight() > mBinHeight) {
+            throw BinPackerTooSmallExc();
+        }
+		mRects.push_back(Rect(rects[i].getWidth(), rects[i].getHeight(), i));
+    }
+
+    // sort from greatest to least area
+    std::sort(mRects.rbegin(), mRects.rend());
+
+    // pack   
+    mPacks.push_back(Rect(mBinWidth, mBinHeight));
+    fill(0);
+
+	// check if all rects were packed
+	if(mNumPacked < (int)mRects.size()) 
+		throw BinPackerTooSmallExc();
+
+	// return result
+	std::vector<Area>	result;
+	result.resize( rects.size() );
+
+	for(unsigned i=0;i<mPacks.size();++i)
+	{
+		// skip empty bins
+		if( mPacks[i].order < 0 ) continue;
+
+		result[ mPacks[i].order ] = Area( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h );
+	}
+
+	return result;
+}
+
+void BinPacker::pack( std::vector<Area*> &rects)
+{
+    clear();
+
+    // add rects to member array, and check to make sure none is too big
+    for (size_t i = 0; i < rects.size(); ++i) {
+		if (rects[i]->getWidth() > mBinWidth || rects[i]->getHeight() > mBinHeight) {
+            throw BinPackerTooSmallExc();
+        }
+		mRects.push_back(Rect(rects[i]->getWidth(), rects[i]->getHeight(), i));
+    }
+
+    // sort from greatest to least area
+    std::sort(mRects.rbegin(), mRects.rend());
+
+    // pack   
+    mPacks.push_back(Rect(mBinWidth, mBinHeight));
+    fill(0);
+
+	// check if all rects were packed
+	if(mNumPacked < (int)mRects.size()) 
+		throw BinPackerTooSmallExc();
+
+	// 
+	for(unsigned i=0;i<mPacks.size();++i)
+	{
+		// skip empty bins
+		if( mPacks[i].order < 0 ) continue;
+
+		rects[ mPacks[i].order ]->x1 = mPacks[i].x;
+		rects[ mPacks[i].order ]->y1 = mPacks[i].y;
+		rects[ mPacks[i].order ]->x2 = mPacks[i].x + mPacks[i].w;
+		rects[ mPacks[i].order ]->y2 = mPacks[i].y + mPacks[i].h;
+	}
+}
+
+std::vector< std::map<unsigned, Area> > MultiBinPacker::pack( const std::vector<Area> &rects)
+{
+    clear();
+
+    // add rects to member array, and check to make sure none is too big
+    for (size_t i = 0; i < rects.size(); ++i) {
+		if (rects[i].getWidth() > mBinWidth || rects[i].getHeight() > mBinHeight) {
+            throw BinPackerTooSmallExc();
+        }
+		mRects.push_back(Rect(rects[i].getWidth(), rects[i].getHeight(), i));
+    }
+
+    // sort from greatest to least area
+    std::sort(mRects.rbegin(), mRects.rend());
+
+    // Pack
+    while (mNumPacked < (int) mRects.size() ) 
+	{
+        int i = mPacks.size();
+        mPacks.push_back(Rect(mBinWidth, mBinHeight));
+        mBins.push_back(i);
+        fill(i);
+    }
+
+	if(mNumPacked < (int) mRects.size()) 
+		throw BinPackerTooSmallExc();	
+
+	// return result
+	std::vector< std::map<unsigned, Area> >	result;
+	result.reserve( mBins.size() );
+
+	for(unsigned j=0;j<mBins.size();++j)
+	{
+		std::map<unsigned, Area>	bin;
+
+		// calculate size 
+		unsigned lower = mBins[j];
+		unsigned upper = mBins.size() > j+1 ? mBins[j+1] : mPacks.size();
+
+		for(unsigned i=lower;i<upper;++i)
+		{
+			// skip empty bins
+			if( mPacks[i].order < 0 ) continue;
+
+			bin.insert( std::pair<unsigned, Area>( mPacks[i].order, Area( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h ) ) );
+		}
+
+		result.push_back( bin );
+	}
+
+	return result;
+}
+
+void MultiBinPacker::clear()
+{
+    BinPackerBase::clear();
+	mBins.clear();
 }
 
 } // namespace cinder
