@@ -110,18 +110,6 @@ public:
 		return w * w + v.lengthSquared();	
 	}
 
-	Quaternion<T> inverse() const
-	{
-		T norm = w * w + v.x * v.x + v.y * v.y + v.z * v.z;
-		// if we're the zero quaternion, just return identity
-		/*if( ! ( math<T>::abs( norm ) < EPSILON_VALUE ) ) {
-			return identity();
-		}*/
-
-		T normRecip = static_cast<T>( 1.0f ) / norm;
-		return Quaternion<T>( normRecip * w, -normRecip * v.x, -normRecip * v.y, -normRecip * v.z );
-	}
-
 	void normalize()
 	{
 		if( T len = length() ) {
