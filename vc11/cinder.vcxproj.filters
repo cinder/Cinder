@@ -465,9 +465,6 @@
     <ClCompile Include="..\src\cinder\dx\dx.cpp">
       <Filter>Source Files\dx</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxFbo.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\dx\DxLight.cpp">
       <Filter>Source Files\dx</Filter>
     </ClCompile>
@@ -491,6 +488,9 @@
     </ClCompile>
     <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp">
       <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxRenderTarget.cpp">
+      <Filter>Source Files\dx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -983,9 +983,6 @@
     <ClInclude Include="..\include\cinder\dx\dx.h">
       <Filter>Header Files\dx</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\dx\DxFbo.h">
-      <Filter>Header Files\dx</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\dx\DxLight.h">
       <Filter>Header Files\dx</Filter>
     </ClInclude>
@@ -1018,6 +1015,9 @@
     </ClInclude>
     <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h">
       <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxRenderTarget.h">
+      <Filter>Header Files\dx</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

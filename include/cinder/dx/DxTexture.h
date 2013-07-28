@@ -221,7 +221,7 @@ class Texture {
 		bool	hasMipmapping() const { return mMipmapping; }
 
 		//! Returns the Texture's internal format. A value of -1 implies automatic selection of the internal format based on the context.
-		GLint	getInternalFormat() const { return mInternalFormat; }
+		DXGI_FORMAT	getInternalFormat() const { return mInternalFormat; }
 		//! Returns whether the Texture's internal format will be automatically selected based on the context.
 		bool	isAutoInternalFormat() const { return mInternalFormat == -1; }
 		
@@ -266,8 +266,8 @@ class Texture {
 	Texture( ImageSourceRef imageSource, Format format = Format() );
 
 	void	init( int width, int height );
-	void	init( const unsigned char *data, DXGI_FORMAT dataFormat, const Format &format );	
-	void	init( const float *data, DXGI_FORMAT dataFormat, const Format &format );
+	void	init( const unsigned char *srcData, DXGI_FORMAT srcDataFormat, const Format &format );	
+	void	init( const float *srcData, DXGI_FORMAT srcDataFormat, const Format &format );
 	void	init( ImageSourceRef imageSource, const Format &format );	
 		 	
 /*		Obj() : mWidth( -1 ), mHeight( -1 ), mCleanWidth( -1 ), mCleanHeight( -1 ), mInternalFormat( (DXGI_FORMAT)-1 ), mFlipped( false ), mDeallocatorFunc( 0 ), mDxTexture(NULL), mSamplerState(NULL), mSRV(NULL)
@@ -288,6 +288,7 @@ class Texture {
 	D3D11_SAMPLER_DESC			mSamplerDesc;
 	ID3D11SamplerState			*mSamplerState;
 	ID3D11ShaderResourceView	*mSRV;
+	ID3D11DepthStencilView		*mDSV;
 };
 
 /*

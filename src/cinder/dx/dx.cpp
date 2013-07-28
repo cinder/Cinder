@@ -181,22 +181,22 @@ static void applyDxFixedPipeline(const FixedVertex *verts, UINT elements, ID3D11
 	reinterpret_cast<Matrix44f*>(mappedResource.pData)[0] = dx->mProjection.top();
 	reinterpret_cast<Matrix44f*>(mappedResource.pData)[1] = dx->mModelView.top();
 	dx->mDeviceContext->Unmap(dx->mCBMatrices, 0);
-	if(dx->mLightingEnabled)
+	if(dx->mLightingEnabled) {
 		dx->mDeviceContext->VSSetConstantBuffers(1, 1, &dx->mCBLights);
-	if(!dx->getRenderFlag(app::AppImplMswRendererDx::CUSTOM_SHADER_ACTIVE))
-	{
+	}
+	if( ! dx->getRenderFlag( app::AppImplMswRendererDx::CUSTOM_SHADER_ACTIVE ) ) {
 		dx->mDeviceContext->VSSetShader(vs, NULL, 0);
 		dx->mDeviceContext->PSSetShader(ps, NULL, 0);
 	}
 	dx->mDeviceContext->VSSetConstantBuffers(0, 1, &dx->mCBMatrices);
 	dx->mDeviceContext->IASetPrimitiveTopology(topology);
-	dx->mDeviceContext->Map(dx->mVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	memcpy(mappedResource.pData, verts, sizeof(FixedVertex) * elements);
-	dx->mDeviceContext->Unmap(dx->mVertexBuffer, 0);
+	dx->mDeviceContext->Map( dx->mVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource );
+	memcpy( mappedResource.pData, verts, sizeof(FixedVertex) * elements );
+	dx->mDeviceContext->Unmap( dx->mVertexBuffer, 0 );
 	UINT stride = sizeof(FixedVertex);
 	UINT offset = 0;
-	dx->mDeviceContext->IASetVertexBuffers(0, 1, &dx->mVertexBuffer, &stride, &offset);
-	dx->mDeviceContext->IASetInputLayout(dx->mFixedLayout);
+	dx->mDeviceContext->IASetVertexBuffers( 0, 1, &dx->mVertexBuffer, &stride, &offset );
+	dx->mDeviceContext->IASetInputLayout( dx->mFixedLayout );
 }
 
 void clear( const ColorA &color, bool clearDepthBuffer )
@@ -1563,8 +1563,8 @@ void drawSolidRect( const Rectf &rect, bool textureRectangle )
 			FixedVertex(Vec3f(rect.getX2(), rect.getY2(), 0), dx->mCurrentNormal, Vec2f((textureRectangle) ? rect.getX2() : 1, (textureRectangle) ? rect.getY2() : 0), dx->mCurrentColor),
 			FixedVertex(Vec3f(rect.getX1(), rect.getY2(), 0), dx->mCurrentNormal, Vec2f((textureRectangle) ? rect.getX1() : 1, (textureRectangle) ? rect.getY2() : 0), dx->mCurrentColor)
 		};
-		applyDxFixedPipeline(verts, 4, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-		dx->mDeviceContext->Draw(4, 0);
+		applyDxFixedPipeline( verts, 4, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP );
+		dx->mDeviceContext->Draw( 4, 0 );
 	}
 //#endif
 }

@@ -47,9 +47,10 @@ using namespace std;
 namespace cinder {
 namespace dx {
 
+const char* kErrorInsufficientNonFloatChannels = "Non-float textures need to have all four color channels (RGBA) defined";
+
 class ImageSourceTexture;
 class ImageTargetTexture;
-
 
 TextureDataExc::TextureDataExc( const std::string &log ) throw()
 { strncpy_s( mMessage, log.c_str(), 16000 ); }
@@ -86,7 +87,7 @@ Texture::Format::Format()
 	mWrapT = D3D11_TEXTURE_ADDRESS_CLAMP;
 	mFilter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 	mMipmapping = false;
-	mInternalFormat = (DXGI_FORMAT)-1;
+	mInternalFormat = DXGI_FORMAT_UNKNOWN;
 	mRenderTarget = false;
 }
 
@@ -97,8 +98,18 @@ Texture::~Texture()
 	if( mDxTexture && ( ! mDoNotDispose ) ) {
 		mDxTexture->Release();
 	}
-	if( mSamplerState ) mSamplerState->Release();
-	if( mSRV ) mSRV->Release();
+
+	if( mSamplerState ) {
+		mSamplerState->Release();
+	}
+	
+	if( mSRV ) { 
+		mSRV->Release();
+	}
+
+	if( mDSV ) {
+		mDSV->Release();
+	}
 }
 
 
@@ -111,19 +122,20 @@ Texture::Texture()
 Texture::Texture( int width, int height, Format format )
 {
 	init( width, height );
-	if( format.mInternalFormat == -1 ) {
+	if( DXGI_FORMAT_UNKNOWN == format.mInternalFormat ) {
 		format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
+
 	mInternalFormat = format.mInternalFormat;
 	//mTarget = format.mTarget;
 	//init( (unsigned char*)0, DXGI_FORMAT_R8G8B8A8_UNORM, format );
-	init( (unsigned char*)nullptr, DXGI_FORMAT_R8G8B8A8_UNORM, format );
+	init( (unsigned char*)nullptr, DXGI_FORMAT_UNKNOWN, format );
 }
 
 Texture::Texture( const unsigned char *data, DXGI_FORMAT dataFormat, int width, int height, Format format )
 {
 	init( width, height );
-	if( format.mInternalFormat == -1 ) {
+	if( DXGI_FORMAT_UNKNOWN == format.mInternalFormat ) {
 		format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
 	mInternalFormat = format.mInternalFormat;
@@ -134,17 +146,15 @@ Texture::Texture( const unsigned char *data, DXGI_FORMAT dataFormat, int width, 
 Texture::Texture( const Surface8u &surface, Format format )
 {
 	init( surface.getWidth(), surface.getHeight() );
-	if( format.mInternalFormat < 0 ) {
+	if( DXGI_FORMAT_UNKNOWN == format.mInternalFormat ) {
 		format.mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
 	mInternalFormat = format.mInternalFormat;
 	//mTarget = format.mTarget;
 
-	//GLint dataFormat;
-	//GLenum type;
-	DXGI_FORMAT dataFormat;
-	CinderDxgiChannel type;
-	SurfaceChannelOrderToDataFormatAndType( surface.getChannelOrder(), &dataFormat, &type );
+	//DXGI_FORMAT dataFormat;
+	//CinderDxgiChannel type;
+	//SurfaceChannelOrderToDataFormatAndType( surface.getChannelOrder(), &dataFormat, &type );
 
 	init( surface.getData(), DXGI_FORMAT_R8G8B8A8_UNORM, format );	
 }
@@ -152,6 +162,8 @@ Texture::Texture( const Surface8u &surface, Format format )
 Texture::Texture( const Surface32f &surface, Format format )
 {
 	init( surface.getWidth(), surface.getHeight() );
+
+/*
 #if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 	bool supportsTextureFloat = true;//GLEE_ARB_texture_float != 0;
 #endif
@@ -166,6 +178,14 @@ Texture::Texture( const Surface32f &surface, Format format )
 	}
 	mInternalFormat = format.mInternalFormat;
 	//mTarget = format.mTarget;
+*/
+
+	format.mInternalFormat = surface.hasAlpha() ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R32G32B32_FLOAT;
+	mInternalFormat = format.mInternalFormat;
+
+	//DXGI_FORMAT dataFormat;
+	//CinderDxgiChannel type;
+	//SurfaceChannelOrderToDataFormatAndType( surface.getChannelOrder(), &dataFormat, &type );
 
 	init( surface.getData(), surface.hasAlpha() ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R32G32B32_FLOAT, format );	
 }
@@ -174,7 +194,7 @@ Texture::Texture( const Channel8u &channel, Format format )
 {
 	init( channel.getWidth(), channel.getHeight() );
 
-	if( format.mInternalFormat < 0 ) {
+	if( DXGI_FORMAT_UNKNOWN == format.mInternalFormat ) {
 		format.mInternalFormat = DXGI_FORMAT_R8_UNORM;
 	}
 
@@ -204,6 +224,8 @@ Texture::Texture( const Channel8u &channel, Format format )
 Texture::Texture( const Channel32f &channel, Format format )
 {
 	init( channel.getWidth(), channel.getHeight() );
+
+/*
 #if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 	bool supportsTextureFloat = true;//GLEE_ARB_texture_float != 0;
 #endif
@@ -215,6 +237,10 @@ Texture::Texture( const Channel32f &channel, Format format )
 			format.mInternalFormat = DXGI_FORMAT_R8_UNORM;
 	}
 
+	mInternalFormat = format.mInternalFormat;
+*/
+
+	format.mInternalFormat = DXGI_FORMAT_R32_FLOAT;
 	mInternalFormat = format.mInternalFormat;
 
 	// if the data is not already contiguous, we'll need to create a block of memory that is
@@ -283,15 +309,17 @@ void Texture::init( int width, int height )
 	mInternalFormat = (DXGI_FORMAT)-1;
 	mFlipped = false;
 
-	mDxTexture = NULL;
+	mDxTexture = nullptr;
 	::ZeroMemory( &mSamplerDesc, sizeof(D3D11_SAMPLER_DESC) );
-	mSamplerState = NULL;
-	mSRV = NULL;
+	mSamplerState = nullptr;
+	mSRV = nullptr;
+	mDSV = nullptr;
 }
 
-void Texture::init( const unsigned char *data, DXGI_FORMAT dataFormat, const Format &format )
+void Texture::init( const unsigned char *srcData, DXGI_FORMAT srcDataFormat, const Format &format )
 {
 	mDoNotDispose = false;
+	bool bIsDepthStencil = (DXGI_FORMAT_D24_UNORM_S8_UINT == mInternalFormat);
 
 	::ZeroMemory( &mSamplerDesc, sizeof(D3D11_SAMPLER_DESC) );
 	mSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -312,53 +340,59 @@ void Texture::init( const unsigned char *data, DXGI_FORMAT dataFormat, const For
 		__debugbreak();
 	}
 
+	
 	D3D11_TEXTURE2D_DESC texDesc;
 	::ZeroMemory( &texDesc, sizeof(D3D11_TEXTURE2D_DESC) );
 	texDesc.Width = mWidth;
 	texDesc.Height = mHeight;
 	texDesc.MipLevels = 1;
 	texDesc.ArraySize = 1;
-	texDesc.Format = dataFormat;
+	texDesc.Format = mInternalFormat;
 	texDesc.SampleDesc.Count = 1;
 	texDesc.SampleDesc.Quality = 0;
 	texDesc.Usage = D3D11_USAGE_DEFAULT;
-	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE; 
-	if( format.isRenderTarget() ) {
+	texDesc.BindFlags = ( bIsDepthStencil ? D3D11_BIND_DEPTH_STENCIL : D3D11_BIND_SHADER_RESOURCE ); 
+	// If we're creating a render target - add bind support for render targets
+	if( format.isRenderTarget() && ! bIsDepthStencil ) {
 		texDesc.BindFlags |= D3D11_BIND_RENDER_TARGET;
 	}
 	texDesc.CPUAccessFlags = 0;
 	texDesc.MiscFlags = 0;
-
-	uint32_t numChannels = dataFormatNumChannels( dataFormat );
 	
-	if( nullptr != data ) {
+	if( ! bIsDepthStencil && nullptr != srcData ) {
+		uint32_t numChannels = dataFormatNumChannels( srcDataFormat );
 		D3D11_SUBRESOURCE_DATA subData;
 		::ZeroMemory( &subData, sizeof(D3D11_SUBRESOURCE_DATA) );
-		subData.pSysMem = data;
+		subData.pSysMem = srcData;
 		subData.SysMemPitch = mWidth*sizeof(unsigned char)*numChannels;
 		subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
 		hr = getDxRenderer()->md3dDevice->CreateTexture2D( &texDesc, &subData, &mDxTexture );
-		if(hr != S_OK) {
+		if( FAILED( hr ) ) {
 			__debugbreak();
 		}
 	}
 	else {
 		hr = getDxRenderer()->md3dDevice->CreateTexture2D( &texDesc, nullptr, &mDxTexture );
-		if(hr != S_OK) {
+		if( FAILED( hr ) ) {
 			__debugbreak();
 		}
 	}
 
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	::ZeroMemory( &srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC) );
-	srvDesc.Format = texDesc.Format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = -1;
-	getDxRenderer()->md3dDevice->CreateShaderResourceView( mDxTexture, &srvDesc, &mSRV );
+	if( ! bIsDepthStencil ) {
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		::ZeroMemory( &srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC) );
+		srvDesc.Format = texDesc.Format;
+		srvDesc.ViewDimension = ( texDesc.SampleDesc.Count > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D );
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = -1;
+		hr = getDxRenderer()->md3dDevice->CreateShaderResourceView( mDxTexture, &srvDesc, &mSRV );
+		if( FAILED( hr ) ) {
+			__debugbreak();
+		}
+	}
 }
 
-void Texture::init( const float *data, DXGI_FORMAT dataFormat, const Format &format )
+void Texture::init( const float *srcData, DXGI_FORMAT srcDataFormat, const Format &format )
 {
 	mDoNotDispose = false;
 
@@ -377,7 +411,7 @@ void Texture::init( const float *data, DXGI_FORMAT dataFormat, const Format &for
 	mSamplerDesc.MinLOD = 0;
 	mSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	HRESULT hr = getDxRenderer()->md3dDevice->CreateSamplerState(&mSamplerDesc, &mSamplerState);
-	if(hr != S_OK) {
+	if( FAILED( hr ) ) {
 		__debugbreak();
 	}
 
@@ -387,7 +421,7 @@ void Texture::init( const float *data, DXGI_FORMAT dataFormat, const Format &for
 	desc.Height = mHeight;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	desc.Format = dataFormat;
+	desc.Format = mInternalFormat;
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
 	desc.Usage = D3D11_USAGE_DEFAULT;
@@ -395,16 +429,23 @@ void Texture::init( const float *data, DXGI_FORMAT dataFormat, const Format &for
 	desc.CPUAccessFlags = 0;
 	desc.MiscFlags = 0;
 
-	uint32_t numChannels = dataFormatNumChannels( dataFormat );
-
-	D3D11_SUBRESOURCE_DATA subData;
-	::ZeroMemory( &subData, sizeof(D3D11_SUBRESOURCE_DATA) );
-	subData.pSysMem = data;
-	subData.SysMemPitch = mWidth*sizeof(float)*numChannels;
-	subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
-	hr = getDxRenderer()->md3dDevice->CreateTexture2D(&desc, &subData, &mDxTexture);
-	if(hr != S_OK) {
-		__debugbreak();
+	if( nullptr != srcData ) {
+		uint32_t numChannels = dataFormatNumChannels( srcDataFormat );
+		D3D11_SUBRESOURCE_DATA subData;
+		::ZeroMemory( &subData, sizeof(D3D11_SUBRESOURCE_DATA) );
+		subData.pSysMem = srcData;
+		subData.SysMemPitch = mWidth*sizeof(float)*numChannels;
+		subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
+		hr = getDxRenderer()->md3dDevice->CreateTexture2D( &desc, &subData, &mDxTexture );
+		if( FAILED( hr ) ) {
+			__debugbreak();
+		}
+	}
+	else {
+		hr = getDxRenderer()->md3dDevice->CreateTexture2D( &desc, nullptr, &mDxTexture );
+		if( FAILED( hr ) ) {
+			__debugbreak();
+		}
 	}
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
@@ -414,7 +455,7 @@ void Texture::init( const float *data, DXGI_FORMAT dataFormat, const Format &for
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = -1;
 	hr = getDxRenderer()->md3dDevice->CreateShaderResourceView(mDxTexture, &srvDesc, &mSRV);
-	if(hr != S_OK) {
+	if( FAILED( hr ) ) {
 		__debugbreak();
 	}
 }
@@ -435,14 +476,14 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 				if( imageSource->getDataType() == ImageIo::UINT8 ) {
 					//mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 					if( ! imageSource->hasAlpha() ) {
-						throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+						throw TextureDataExc( kErrorInsufficientNonFloatChannels );
 					}
 					mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 				}
 				else if( imageSource->getDataType() == ImageIo::UINT16 ) {
 					//mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R16G16B16A16_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 					if( ! imageSource->hasAlpha() ) {
-						throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+						throw TextureDataExc( kErrorInsufficientNonFloatChannels );
 					}
 					mInternalFormat = DXGI_FORMAT_R16G16B16A16_UNORM;
 				}
@@ -452,7 +493,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 				else {
 					//mInternalFormat = ( imageSource->hasAlpha() ) ? DXGI_FORMAT_R8G8B8A8_UNORM : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 					if( ! imageSource->hasAlpha() ) {
-						throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+						throw TextureDataExc( kErrorInsufficientNonFloatChannels );
 					}
 					mInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 				}
@@ -460,7 +501,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 
 			case ImageIo::CM_GRAY:
 				//@TODO: Add code to expand gray images to all 4 channels
-				throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+				throw TextureDataExc( kErrorInsufficientNonFloatChannels );
 
 				//if( imageSource->getDataType() == ImageIo::UINT8 )
 				//	mInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE8_ALPHA8 : GL_LUMINANCE8;
@@ -493,7 +534,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 
 			bool isFloat = ( ImageSource::FLOAT32 == imageSource->getDataType() );
 			if( ! isFloat &&  ! imageSource->hasAlpha() ) {
-				throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+				throw TextureDataExc( kErrorInsufficientNonFloatChannels );
 			}
 
 			switch( imageSource->getDataType() ) {
@@ -518,7 +559,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 		break;
 
 		case ImageSource::CM_GRAY:
-			throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+			throw TextureDataExc( kErrorInsufficientNonFloatChannels );
 			//dataFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
 			//channelOrder = ( imageSource->hasAlpha() ) ? ImageIo::YA : ImageIo::Y;
 			//isGray = true;
@@ -530,7 +571,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 			//dataFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
 			//channelOrder = ( imageSource->hasAlpha() ) ? ImageIo::RGBA : ImageIo::RGB;
 			if( ! imageSource->hasAlpha() ) {
-				throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+				throw TextureDataExc( kErrorInsufficientNonFloatChannels );
 			}
 
 			dataFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -582,7 +623,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 	D3D11_SUBRESOURCE_DATA subData;
 	::ZeroMemory( &subData, sizeof(D3D11_SUBRESOURCE_DATA) );
 
-	if( imageSource->getDataType() == ImageIo::UINT8 ) {
+	if( ImageIo::UINT8 == imageSource->getDataType() ) {
 		const int numChannels = 4;
 		shared_ptr<ImageTargetGLTexture<uint8_t>> target = ImageTargetGLTexture<uint8_t>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
@@ -595,7 +636,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 		subData.SysMemSlicePitch = subData.SysMemPitch*mHeight;
 		getDxRenderer()->md3dDevice->CreateTexture2D(&texDesc, &subData, &mDxTexture);
 	}
-	else if( imageSource->getDataType() == ImageIo::UINT16 ) {
+	else if( ImageIo::UINT16 == imageSource->getDataType() ) {
 		const int numChannels = 4;
 		shared_ptr<ImageTargetGLTexture<uint16_t>> target = ImageTargetGLTexture<uint16_t>::createRef( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
@@ -932,8 +973,9 @@ TextureRef Texture::loadDds( IStreamRef ddsStream, Format format )
 	TextureRef texture( new Texture() );
 	app::AppImplMswRendererDx *dxRenderer = reinterpret_cast<app::AppImplMswRendererDx*>(reinterpret_cast<app::RendererDx*>(&*app::App::get()->getRenderer())->mImpl);
 	uint8_t *data = (uint8_t*)malloc(ddsStream->size());
-	if(!data)
+	if( ! data ) {
 		throw TextureDataExc("Not enough memory to load DDS");
+	}
 	ddsStream->read(data);
 	DirectX::CreateDDSTextureFromMemory(dxRenderer->md3dDevice, data, ddsStream->size(), (ID3D11Resource**)&texture->mDxTexture, &texture->mSRV);
 	free(data);
@@ -1176,9 +1218,9 @@ ImageTargetGLTexture<T>::ImageTargetGLTexture( const Texture *aTexture, ImageIo:
 	: ImageTarget(), mTexture( aTexture ), mIsGray( aIsGray ), mHasAlpha( aHasAlpha )
 {
 	if( mIsGray )
-		throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");//mPixelInc = ( mHasAlpha ) ? 2 : 1;
+		throw TextureDataExc( kErrorInsufficientNonFloatChannels );//mPixelInc = ( mHasAlpha ) ? 2 : 1;
 	else
-		mPixelInc = ( mHasAlpha ) ? 4 : /*3*/throw TextureDataExc("Non-float textures need to have all four color channels (RGBA) defined");
+		mPixelInc = ( mHasAlpha ) ? 4 : /*3*/throw TextureDataExc( kErrorInsufficientNonFloatChannels );
 	mRowInc = mTexture->getWidth() * mPixelInc;
 	// allocate enough room to hold all these pixels
 	mData = new T[mTexture->getHeight() * mRowInc];

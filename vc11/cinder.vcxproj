@@ -127,7 +127,7 @@
     <ClCompile Include="..\src\cinder\Display.cpp" />
     <ClCompile Include="..\src\cinder\dx\DDSTextureLoader.cpp" />
     <ClCompile Include="..\src\cinder\dx\dx.cpp" />
-    <ClCompile Include="..\src\cinder\dx\DxFbo.cpp" />
+    <ClCompile Include="..\src\cinder\dx\DxRenderTarget.cpp" />
     <ClCompile Include="..\src\cinder\dx\DxLight.cpp" />
     <ClCompile Include="..\src\cinder\dx\DxTexture.cpp" />
     <ClCompile Include="..\src\cinder\dx\DxTextureFont.cpp" />
@@ -249,7 +249,7 @@
     <ClInclude Include="..\include\cinder\dx\DDS.h" />
     <ClInclude Include="..\include\cinder\dx\DDSTextureLoader.h" />
     <ClInclude Include="..\include\cinder\dx\dx.h" />
-    <ClInclude Include="..\include\cinder\dx\DxFbo.h" />
+    <ClInclude Include="..\include\cinder\dx\DxRenderTarget.h" />
     <ClInclude Include="..\include\cinder\dx\DxLight.h" />
     <ClInclude Include="..\include\cinder\dx\DxTexture.h" />
     <ClInclude Include="..\include\cinder\dx\DxTextureFont.h" />

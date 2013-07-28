@@ -28,7 +28,7 @@
 
 
 #include "cinder/dx/dx.h" // must be first
-#include "cinder/dx/DxFbo.h"
+#include "cinder/dx/DxRenderTarget.h"
 #include "cinder/app/AppImplMswRendererDx.h"
 
 using namespace std;
@@ -36,15 +36,15 @@ using namespace std;
 namespace cinder {
 namespace dx {
 
-GLint Fbo::sMaxSamples = -1;
-GLint Fbo::sMaxAttachments = -1;
+GLint RenderTarget::sMaxSamples = -1;
+GLint RenderTarget::sMaxAttachments = -1;
 
-// Convenience macro to append either OES or EXT appropriately to a symbol based on OGLES vs. OGL
-#if defined( CINDER_GLES )
-	#define GL_SUFFIX(sym) sym##OES
-#else
-	#define GL_SUFFIX(sym) sym##EXT
-#endif
+//// Convenience macro to append either OES or EXT appropriately to a symbol based on OGLES vs. OGL
+//#if defined( CINDER_GLES )
+//	#define GL_SUFFIX(sym) sym##OES
+//#else
+//	#define GL_SUFFIX(sym) sym##EXT
+//#endif
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RenderBuffer::Obj
@@ -108,26 +108,30 @@ GLint Fbo::sMaxAttachments = -1;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Fbo::Obj
-Fbo::Obj::Obj()
+RenderTarget::Obj::Obj()
 {
 	mDepthTexture = nullptr;
 	mDepthView = nullptr;
 }
 
-Fbo::Obj::Obj( int width, int height )
+RenderTarget::Obj::Obj( int width, int height )
 	: mWidth( width ), mHeight( height )
 {
 	mDepthTexture = nullptr;
 	mDepthView = nullptr;
 }
 
-Fbo::Obj::~Obj()
+RenderTarget::Obj::~Obj()
 {
-	if(mDepthTexture) mDepthTexture->Release();
-	if(mDepthView) mDepthView->Release();
+	//if(mDepthTexture) mDepthTexture->Release();
+	if( mDepthView ) {
+		mDepthView->Release();
+	}
+	
 	for(unsigned i = 0; i < mRenderTargets.size(); ++i) {
 		mRenderTargets[i]->Release();
 	}
+
 	//for(unsigned i = 0; i < mColorTextures.size(); ++i) {
 	//	mColorTextures[i]->Release();
 	//}
@@ -138,24 +142,24 @@ Fbo::Obj::~Obj()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Fbo::Format
-Fbo::Format::Format()
+RenderTarget::Format::Format()
 {
 	//mTarget = GL_TEXTURE_2D;
 	mColorInternalFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
 	mDepthInternalFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	mDepthBufferAsTexture = true;
+	//mDepthBufferAsTexture = true;
 	mSamples = 0;
 	mCoverageSamples = 0;
 	mNumColorBuffers = 1;
 	mDepthBuffer = true;
-	mStencilBuffer = false;
+	//mStencilBuffer = false;
 	mMipmapping = false;
 	mWrapS = D3D11_TEXTURE_ADDRESS_CLAMP;
 	mWrapT = D3D11_TEXTURE_ADDRESS_CLAMP;
 	mFilter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 }
 
-void Fbo::Format::enableColorBuffer( bool colorBuffer, int numColorBuffers )
+void RenderTarget::Format::enableColorBuffer( bool colorBuffer, int numColorBuffers )
 {
 #if defined( CINDER_GLES )
 	mNumColorBuffers = ( colorBuffer && numColorBuffers ) ? 1 : 0;
@@ -164,27 +168,27 @@ void Fbo::Format::enableColorBuffer( bool colorBuffer, int numColorBuffers )
 #endif
 }
 
-void Fbo::Format::enableDepthBuffer( bool depthBuffer, bool asTexture )
+void RenderTarget::Format::enableDepthBuffer( bool depthBuffer, bool asTexture )
 {
 	mDepthBuffer = depthBuffer;
-#if defined( CINDER_GLES )
-	mDepthBufferAsTexture = false;
-#else
-	mDepthBufferAsTexture = asTexture;
-#endif
+//#if defined( CINDER_GLES )
+//	mDepthBufferAsTexture = false;
+//#else
+//	mDepthBufferAsTexture = asTexture;
+//#endif
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Fbo
-Fbo::Fbo( int width, int height, Format format )
+RenderTarget::RenderTarget( int width, int height, Format format )
 	: mObj( shared_ptr<Obj>( new Obj( width, height ) ) )
 {
 	mObj->mFormat = format;
 	init();
 }
 
-Fbo::Fbo( int width, int height, bool alpha, bool color, bool depth )
+RenderTarget::RenderTarget( int width, int height, bool alpha, bool color, bool depth )
 	: mObj( shared_ptr<Obj>( new Obj( width, height ) ) )
 {
 	Format format;
@@ -194,23 +198,30 @@ Fbo::Fbo( int width, int height, bool alpha, bool color, bool depth )
 	init();
 }
 
-FboRef Fbo::create( int width, int height, Format format )
+RenderTargetRef RenderTarget::create( int width, int height, Format format )
 {
-	FboRef result = FboRef( new Fbo( width, height, format ) );
+	RenderTargetRef result = RenderTargetRef( new RenderTarget( width, height, format ) );
 	return result;
 }
 
-FboRef Fbo::create( int width, int height, bool alpha, bool color, bool depth )
+RenderTargetRef RenderTarget::create( int width, int height, bool alpha, bool color, bool depth )
 {
-	FboRef result = FboRef( new Fbo( width, height, alpha, color, depth ) );
+	RenderTargetRef result = RenderTargetRef( new RenderTarget( width, height, alpha, color, depth ) );
 	return result;
 }
 
-void Fbo::init()
+void RenderTarget::init()
 {
 	//gl::SaveFramebufferBinding bindingSaver;
+	UINT numQualityLevels = 0;
+	{
+		DXGI_FORMAT colorFormat = getFormat().getColorInternalFormat();
+		UINT sampleCount = getFormat().getCoverageSamples();
+		getDxRenderer()->md3dDevice->CheckMultisampleQualityLevels( colorFormat, sampleCount, &numQualityLevels );
+	}
 	
-	static bool csaaSupported = ( GLEE_NV_framebuffer_multisample_coverage != 0 );
+	//static bool csaaSupported = ( GLEE_NV_framebuffer_multisample_coverage != 0 );
+	static bool csaaSupported = ( (int)numQualityLevels >= getFormat().getCoverageSamples() );
 	bool useCSAA = csaaSupported && ( mObj->mFormat.mCoverageSamples > mObj->mFormat.mSamples );
 	bool useMSAA = ( mObj->mFormat.mCoverageSamples > 0 ) || ( mObj->mFormat.mSamples > 0 );
 	if( useCSAA ) {
@@ -261,15 +272,17 @@ void Fbo::init()
 			ID3D11Texture2D* texture = colorTex->getDxTexture();
 			ID3D11RenderTargetView *rtv = nullptr;
 			hr = getDxRenderer()->md3dDevice->CreateRenderTargetView( texture, NULL, &rtv );
-			if(hr != S_OK) {
-				throw FboExceptionInvalidSpecification("Creating render target failed");
+			if( FAILED( hr ) ) {
+				__debugbreak();
 			}
 
 			mObj->mColorTextures.push_back( colorTex );
 			mObj->mRenderTargets.push_back( rtv );
 		}
 	}
+	
 
+/*
 	D3D11_TEXTURE2D_DESC descDepth;
 	::ZeroMemory( &descDepth, sizeof(D3D11_TEXTURE2D_DESC) );
     descDepth.Width = mObj->mWidth;
@@ -297,6 +310,32 @@ void Fbo::init()
 	if(hr != S_OK) {
 		throw FboExceptionInvalidSpecification("Creating depth view failed");
 	}
+*/
+		
+	if( getFormat().hasDepthBuffer() ) {
+		dx::Texture::Format texFmt;
+		texFmt.setInternalFormat( getFormat().getDepthInternalFormat() );
+		texFmt.enableRenderTarget( true );
+		dx::TextureRef tex = dx::Texture::create( mObj->mWidth, mObj->mHeight, texFmt );
+		if( tex ) {
+			// Create depth stencil view
+			D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+			::ZeroMemory( &dsvDesc, sizeof(D3D11_DEPTH_STENCIL_VIEW_DESC) );
+			dsvDesc.Format = getFormat().getDepthInternalFormat();
+			dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+			//@LATER: dsvDesc.ViewDimension = ( texDesc.SampleDesc.Count > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D );
+			dsvDesc.Texture2D.MipSlice = 0;
+			ID3D11DepthStencilView* depthView = nullptr;
+			hr = getDxRenderer()->md3dDevice->CreateDepthStencilView( tex->getDxTexture(), &dsvDesc, &depthView );
+			if( FAILED( hr ) ) {
+				__debugbreak();
+			}
+
+			mObj->mDepthTexture = tex;
+			mObj->mDepthView = depthView;
+		}
+	}
+
 
 	// allocate the framebuffer itself
 	//GL_SUFFIX(glGenFramebuffers)( 1, &mObj->mId );
@@ -362,7 +401,7 @@ void Fbo::init()
 	mObj->mNeedsMipmapUpdate = false;
 }
 
-bool Fbo::initMultisample( bool csaa )
+bool RenderTarget::initMultisample( bool csaa )
 {
 	//glGenFramebuffersEXT( 1, &mObj->mResolveFramebufferId );
 	//glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mObj->mResolveFramebufferId ); 
@@ -418,19 +457,20 @@ bool Fbo::initMultisample( bool csaa )
 //	updateMipmaps( true, attachment );
 //	return mObj->mColorTextures[attachment];
 //}
-dx::TextureRef Fbo::getTexture( int attachment )
+dx::TextureRef RenderTarget::getTexture( int attachment )
 {
 	resolveTextures();
 	updateMipmaps( true, attachment );
 	return mObj->mColorTextures[attachment];
 }
 
-ID3D11Texture2D*& Fbo::getDepthTexture()
+//ID3D11Texture2D*& RenderTarget::getDepthTexture()
+dx::TextureRef RenderTarget::getDepthTexture()
 {
 	return mObj->mDepthTexture;
 }
 
-void Fbo::bindTexture( int textureUnit, int attachment )
+void RenderTarget::bindTexture( int textureUnit, int attachment )
 {
 	resolveTextures();
 	//getDxRenderer()->mDeviceContext->PSSetShaderResources(textureUnit, 1, &mObj->mColorSRVs[attachment]);
@@ -440,18 +480,18 @@ void Fbo::bindTexture( int textureUnit, int attachment )
 	updateMipmaps( false, attachment );
 }
 
-void Fbo::unbindTexture()
+void RenderTarget::unbindTexture()
 {
 	//glBindTexture( getTarget(), 0 );
 }
 
-void Fbo::bindDepthTexture( int textureUnit )
+void RenderTarget::bindDepthTexture( int textureUnit )
 {
 	throw FboExceptionInvalidSpecification("bindDepthTexture not implemented yet");
 	//getDxRenderer()->mDeviceContext->PSSetShaderResources(textureUnit, 1, &mObj->mDepthView);
 }
 
-void Fbo::resolveTextures() const
+void RenderTarget::resolveTextures() const
 {
 	if( ! mObj->mNeedsResolve )
 		return;
@@ -483,7 +523,7 @@ void Fbo::resolveTextures() const
 	mObj->mNeedsResolve = false;
 }
 
-void Fbo::updateMipmaps( bool bindFirst, int attachment ) const
+void RenderTarget::updateMipmaps( bool bindFirst, int attachment ) const
 {
 	if( ! mObj->mNeedsMipmapUpdate )
 		return;
@@ -500,7 +540,7 @@ void Fbo::updateMipmaps( bool bindFirst, int attachment ) const
 	mObj->mNeedsMipmapUpdate = false;
 }
 
-void Fbo::bindFramebuffer()
+void RenderTarget::bindFramebuffer()
 {
 	//getDxRenderer()->mDeviceContext->OMSetRenderTargets(mObj->mColorSRVs.size(), &mObj->mRenderTargets[0], mObj->mDepthView);
 	UINT numViews = (UINT)mObj->mColorTextures.size();
@@ -515,14 +555,15 @@ void Fbo::bindFramebuffer()
 	//}
 }
 
-void Fbo::unbindFramebuffer()
+void RenderTarget::unbindFramebuffer()
 {
 	getDxRenderer()->mDeviceContext->OMSetRenderTargets( 1, &getDxRenderer()->mMainFramebuffer, getDxRenderer()->mDepthStencilView );
 	//GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), 0 );
 }
 
-bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
+bool RenderTarget::checkStatus( FboExceptionInvalidSpecification *resultExc )
 {
+/*
 	GLenum status;
 	status = (GLenum) GL_SUFFIX(glCheckFramebufferStatus)( GL_SUFFIX(GL_FRAMEBUFFER_) );
 	switch( status ) {
@@ -555,11 +596,12 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer invalid: unknown reason" );
 		return false;
     }
-	
+*/	
+
     return true;
 }
 
-GLint Fbo::getMaxSamples()
+GLint RenderTarget::getMaxSamples()
 {
 	if( sMaxSamples < 0 ) {
 		sMaxSamples = 0;
@@ -568,7 +610,7 @@ GLint Fbo::getMaxSamples()
 	return sMaxSamples;
 }
 
-GLint Fbo::getMaxAttachments()
+GLint RenderTarget::getMaxAttachments()
 {
 	if( sMaxAttachments < 0 ) {
 		sMaxAttachments = D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT;
@@ -577,7 +619,7 @@ GLint Fbo::getMaxAttachments()
 	return sMaxAttachments;
 }
 
-void Fbo::blitTo( Fbo dst, const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
+void RenderTarget::blitTo( RenderTarget dst, const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
 {
 	//SaveFramebufferBinding saveFboBinding;
 
@@ -586,7 +628,7 @@ void Fbo::blitTo( Fbo dst, const Area &srcArea, const Area &dstArea, GLenum filt
 	//glBlitFramebufferEXT( srcArea.getX1(), srcArea.getY1(), srcArea.getX2(), srcArea.getY2(), dstArea.getX1(), dstArea.getY1(), dstArea.getX2(), dstArea.getY2(), mask, filter );
 }
 
-void Fbo::blitToScreen( const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
+void RenderTarget::blitToScreen( const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
 {
 	//SaveFramebufferBinding saveFboBinding;
 
@@ -595,7 +637,7 @@ void Fbo::blitToScreen( const Area &srcArea, const Area &dstArea, GLenum filter,
 	//glBlitFramebufferEXT( srcArea.getX1(), srcArea.getY1(), srcArea.getX2(), srcArea.getY2(), dstArea.getX1(), dstArea.getY1(), dstArea.getX2(), dstArea.getY2(), mask, filter );
 }
 
-void Fbo::blitFromScreen( const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask )
+void RenderTarget::blitFromScreen( const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask )
 {
 	//SaveFramebufferBinding saveFboBinding;
 
@@ -605,11 +647,11 @@ void Fbo::blitFromScreen( const Area &srcArea, const Area &dstArea, GLenum filte
 }
 
 FboExceptionInvalidSpecification::FboExceptionInvalidSpecification( const string &message ) throw()
-	: FboException()
+	: RenderTargetException()
 {
 	strncpy_s( mMessage, message.c_str(), 255 );
 }
 
-#undef GL_SUFFIX
+//#undef GL_SUFFIX
 
 } } // namespace cinder::dx
