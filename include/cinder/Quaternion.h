@@ -191,14 +191,16 @@ public:
 
 	Quaternion<T> inverted() const
 	{
-	    T qdot = this->dot( *this );
-		return Quaternion( -v / qdot, w / qdot );
+		T qdot = this->dot( *this );
+		T normRecip = static_cast<T>( 1.0f ) / qdot;
+		return Quaternion<T>( normRecip * w, -normRecip * v.x, -normRecip * v.y, -normRecip * v.z );
 	}
 
 	void invert()
 	{
-	    T qdot = this->dot( *this );
-		set( -v / qdot, w / qdot );		
+		T qdot = this->dot( *this );
+		T normRecip = static_cast<T>( 1.0f ) / qdot;
+		set( normRecip * w, -normRecip * v.x, -normRecip * v.y, -normRecip * v.z );
 	}
 
 	void set( T aW, T x, T y, T z )
