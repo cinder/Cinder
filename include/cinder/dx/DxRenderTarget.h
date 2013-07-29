@@ -147,8 +147,8 @@ class RenderTarget {
 	//! Copies from the screen from Area \a srcArea to \a dstArea using filter \a filter. \a mask allows specification of color (\c GL_COLOR_BUFFER_BIT) and/or depth(\c GL_DEPTH_BUFFER_BIT). Calls glBlitFramebufferEXT() and is subject to its constraints and coordinate system.
 	void		blitFromScreen( const Area &srcArea, const Area &dstArea, GLenum filter = GL_NEAREST, GLbitfield mask = GL_COLOR_BUFFER_BIT );
 
-	//! Returns the maximum number of samples the graphics card is capable of using per pixel in MSAA for an Fbo
-	static int	getMaxSamples();
+	////! Returns the maximum number of samples the graphics card is capable of using per pixel in MSAA for an Fbo
+	//static int	getMaxSamples();
 	//! Returns the maximum number of color attachments the graphics card is capable of using for an Fbo
 	static int	getMaxAttachments();
 	
@@ -229,7 +229,7 @@ class RenderTarget {
 	bool		initMultisample( bool csaa );
 	void		resolveTextures() const;
 	void		updateMipmaps( bool bindFirst, int attachment ) const;
-	bool		checkStatus( class FboExceptionInvalidSpecification *resultExc );
+	bool		checkStatus( class RenderTargetExceptionInvalidSpecification *resultExc );
 
 	struct Obj {
 		Obj();
@@ -256,7 +256,8 @@ class RenderTarget {
  
 	std::shared_ptr<Obj>	mObj;
 	
-	static GLint			sMaxSamples, sMaxAttachments;
+	static GLint			sMaxSamples;
+	static GLint			sMaxAttachments;
 	
   public:
 	//@{
@@ -270,10 +271,10 @@ class RenderTarget {
 class RenderTargetException : public Exception {
 };
 
-class FboExceptionInvalidSpecification : public RenderTargetException {
+class RenderTargetExceptionInvalidSpecification : public RenderTargetException {
   public:
-	FboExceptionInvalidSpecification() : RenderTargetException() { mMessage[0] = 0; }
-	FboExceptionInvalidSpecification( const std::string &message ) throw();
+	RenderTargetExceptionInvalidSpecification() : RenderTargetException() { mMessage[0] = 0; }
+	RenderTargetExceptionInvalidSpecification( const std::string &message ) throw();
 	
 	virtual const char * what() const throw() { return mMessage; }
 	

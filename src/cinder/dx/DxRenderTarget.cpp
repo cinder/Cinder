@@ -36,7 +36,7 @@ using namespace std;
 namespace cinder {
 namespace dx {
 
-GLint RenderTarget::sMaxSamples = -1;
+//GLint RenderTarget::sMaxSamples = -1;
 GLint RenderTarget::sMaxAttachments = -1;
 
 //// Convenience macro to append either OES or EXT appropriately to a symbol based on OGLES vs. OGL
@@ -161,11 +161,12 @@ RenderTarget::Format::Format()
 
 void RenderTarget::Format::enableColorBuffer( bool colorBuffer, int numColorBuffers )
 {
-#if defined( CINDER_GLES )
-	mNumColorBuffers = ( colorBuffer && numColorBuffers ) ? 1 : 0;
-#else
 	mNumColorBuffers = ( colorBuffer ) ? numColorBuffers : 0;
-#endif
+//#if defined( CINDER_GLES )
+//	mNumColorBuffers = ( colorBuffer && numColorBuffers ) ? 1 : 0;
+//#else
+//	mNumColorBuffers = ( colorBuffer ) ? numColorBuffers : 0;
+//#endif
 }
 
 void RenderTarget::Format::enableDepthBuffer( bool depthBuffer, bool asTexture )
@@ -487,7 +488,7 @@ void RenderTarget::unbindTexture()
 
 void RenderTarget::bindDepthTexture( int textureUnit )
 {
-	throw FboExceptionInvalidSpecification("bindDepthTexture not implemented yet");
+	throw RenderTargetExceptionInvalidSpecification("bindDepthTexture not implemented yet");
 	//getDxRenderer()->mDeviceContext->PSSetShaderResources(textureUnit, 1, &mObj->mDepthView);
 }
 
@@ -561,7 +562,7 @@ void RenderTarget::unbindFramebuffer()
 	//GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), 0 );
 }
 
-bool RenderTarget::checkStatus( FboExceptionInvalidSpecification *resultExc )
+bool RenderTarget::checkStatus( RenderTargetExceptionInvalidSpecification *resultExc )
 {
 /*
 	GLenum status;
@@ -601,14 +602,14 @@ bool RenderTarget::checkStatus( FboExceptionInvalidSpecification *resultExc )
     return true;
 }
 
-GLint RenderTarget::getMaxSamples()
-{
-	if( sMaxSamples < 0 ) {
-		sMaxSamples = 0;
-	}
-	
-	return sMaxSamples;
-}
+//GLint RenderTarget::getMaxSamples()
+//{
+//	if( sMaxSamples < 0 ) {
+//		sMaxSamples = 0;
+//	}
+//	
+//	return sMaxSamples;
+//}
 
 GLint RenderTarget::getMaxAttachments()
 {
@@ -646,7 +647,7 @@ void RenderTarget::blitFromScreen( const Area &srcArea, const Area &dstArea, GLe
 	//glBlitFramebufferEXT( srcArea.getX1(), srcArea.getY1(), srcArea.getX2(), srcArea.getY2(), dstArea.getX1(), dstArea.getY1(), dstArea.getX2(), dstArea.getY2(), mask, filter );
 }
 
-FboExceptionInvalidSpecification::FboExceptionInvalidSpecification( const string &message ) throw()
+RenderTargetExceptionInvalidSpecification::RenderTargetExceptionInvalidSpecification( const string &message ) throw()
 	: RenderTargetException()
 {
 	strncpy_s( mMessage, message.c_str(), 255 );
