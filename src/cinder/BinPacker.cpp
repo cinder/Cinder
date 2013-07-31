@@ -38,9 +38,7 @@ void BinPackerBase::clear()
 
 bool BinPackerBase::fits(Rect& rect1, const Rect& rect2) const
 {
-    // Check to see if rect1 fits in rect2, and rotate rect1 if that will
-    // enable it to fit.
-
+    // Check to see if rect1 fits in rect2
     if (rect1.w <= rect2.w && rect1.h <= rect2.h) {
         return true;
     } else {

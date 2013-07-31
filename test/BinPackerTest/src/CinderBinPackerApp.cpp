@@ -75,8 +75,6 @@ void CinderBinPackerApp::keyDown( KeyEvent event )
 		{ 
 			// mPackedSingle will contain all Area's of mUnpacked in the exact same order,
 			// but moved to a different spot in the bin. Unpacked will not be altered.
-			// If rotated, (x1,y1) will be the lower left corner and (x2,y2) will be
-			// the upper right corner of the Area.
 			mPackedSingle = mBinPackerSingle.pack( mUnpacked ); 
 		}
 		catch(...) 
@@ -122,11 +120,10 @@ void CinderBinPackerApp::keyDown( KeyEvent event )
 
 		try
 		{ 
-			// mPackedMulti will contain a std::map for each generated bin. The map
-			// contains key-value pairs. The key is the index of the original Area,
-			// the value is the Area moved to a spot in the bin. Unpacked will not be altered.
-			// If rotated, (x1,y1) will be the lower left corner and (x2,y2) will be
-			// the upper right corner of the Area.
+			//  mPackedSingle will contain all Area's of mUnpacked in the exact same order,
+			// but moved to a different spot in the bin and represented as a BinnedArea.
+			// Use the BinnedArea::getBin() method to find out to which bin the Area belongs.
+			// BinnedAreas can be used directly as Areas, conversion will happen automatically.
 			mPackedMulti = mBinPackerMulti.pack( mUnpacked ); 
 		}
 		catch(...) 
@@ -179,6 +176,7 @@ void CinderBinPackerApp::draw()
 		{
 			unsigned n = floor( getWindowWidth() / (float) mBinPackerMulti.getWidth() );
 
+			// packing has been done by multi-copy, so use the mPackedMulti array
 			for(unsigned i=0;i<mPackedMulti.size();++i) {
 				int bin = mPackedMulti[i].getBin();
 
