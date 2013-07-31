@@ -109,6 +109,7 @@
     <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
     <ClCompile Include="..\src\cinder\Base64.cpp" />
+    <ClCompile Include="..\src\cinder\BinPacker.cpp" />
     <ClCompile Include="..\src\cinder\BSpline.cpp" />
     <ClCompile Include="..\src\cinder\BSplineFit.cpp" />
     <ClCompile Include="..\src\cinder\Buffer.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="..\include\cinder\audio\PcmBuffer.h" />
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
     <ClInclude Include="..\include\cinder\Base64.h" />
+    <ClInclude Include="..\include\cinder\BinPacker.h" />
     <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\include\cinder\Clipboard.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />

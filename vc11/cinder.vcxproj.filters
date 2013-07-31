@@ -450,6 +450,9 @@
     <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp">
       <Filter>Source Files\qtime</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\BinPacker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -931,6 +934,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h">
       <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\BinPacker.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
