@@ -32,6 +32,33 @@
 
 namespace cinder {
 
+class BinnedArea : public Area
+{
+public:
+	BinnedArea() : Area(), mBin(-1) {}
+	BinnedArea( int32_t bin ) : Area(), mBin(bin) {}
+
+	BinnedArea( const Vec2i &UL, const Vec2i &LR ) : Area(UL, LR), mBin(-1) {}
+	BinnedArea( const Vec2i &UL, const Vec2i &LR, int32_t bin ) : Area(UL, LR), mBin(bin) {}
+
+	BinnedArea( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2 ) : mBin(-1)
+		{ set( aX1, aY1, aX2, aY2 ); }
+	BinnedArea( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2, int32_t bin ) : mBin(bin)
+		{ set( aX1, aY1, aX2, aY2 ); }
+
+	explicit BinnedArea( const RectT<float> &r ) : Area(r), mBin(-1) {}
+	explicit BinnedArea( const RectT<float> &r, int32_t bin ) : Area(r), mBin(bin) {}
+	
+	explicit BinnedArea( const Area &area ) : Area(area), mBin(-1) {}
+	explicit BinnedArea( const Area &area, int32_t bin ) : Area(area), mBin(bin) {}
+
+	//
+	int32_t getBin() const { return mBin; }
+
+private:
+	int32_t		mBin;
+};
+
 class BinPackerBase
 {
 public:
@@ -136,7 +163,7 @@ public:
 	MultiBinPacker&	setSize( const Vec2i &size ) { mBinWidth = size.x; mBinHeight = size.y; return *this; }
 
 	//!
-    std::vector< std::map<unsigned, Area> >	pack( const std::vector<Area> &rects );
+    std::vector<BinnedArea>	pack( const std::vector<Area> &rects );
 protected:
     void clear();
 

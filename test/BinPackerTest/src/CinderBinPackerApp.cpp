@@ -18,15 +18,15 @@ public:
 	void update();
 	void draw();
 
-	BinPacker								mBinPackerSingle;
-	MultiBinPacker							mBinPackerMulti;
+	BinPacker					mBinPackerSingle;
+	MultiBinPacker				mBinPackerMulti;
 
-	std::vector<Area>						mUnpacked;
+	std::vector<Area>			mUnpacked;
 
-	std::vector<Area>						mPackedSingle;
-	std::vector< std::map<unsigned, Area> >	mPackedMulti;
+	std::vector<Area>			mPackedSingle;
+	std::vector<BinnedArea>		mPackedMulti;
 
-	Mode									mMode;
+	Mode						mMode;
 };
 
 void CinderBinPackerApp::prepareSettings(Settings *settings)
@@ -176,26 +176,26 @@ void CinderBinPackerApp::draw()
 		}
 		break;
 	case MULTI_COPY:
-		for(unsigned j=0;j<mPackedMulti.size();++j) {
+		{
 			unsigned n = floor( getWindowWidth() / (float) mBinPackerMulti.getWidth() );
 
-			gl::pushModelView();
-			gl::translate( (j % n) * mBinPackerMulti.getWidth(), (j / n) * mBinPackerMulti.getHeight(), 0.0f );
+			for(unsigned i=0;i<mPackedMulti.size();++i) {
+				int bin = mPackedMulti[i].getBin();
 
-			// draw the borders of the bin
-			gl::color( Color( 1, 1, 0 ) );
-			gl::drawStrokedRect( Rectf( Vec2f::zero(), mBinPackerMulti.getSize() ) );
+				gl::pushModelView();
+				gl::translate( (bin % n) * mBinPackerMulti.getWidth(), (bin / n) * mBinPackerMulti.getHeight(), 0.0f );
 
-			std::map<unsigned, Area>::const_iterator it = mPackedMulti[j].begin();
-			while(it != mPackedMulti[j].end()) {
-				rnd.seed(it->first+12345);
+				// draw bin
+				rnd.seed(i+12345);
 				gl::color( Color( (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f ) );
-				gl::drawSolidRect( Rectf( it->second ) );
+				gl::drawSolidRect( Rectf( mPackedMulti[i] ) );
 
-				++it;
+				// draw the borders of the bin
+				gl::color( Color( 1, 1, 0 ) );
+				gl::drawStrokedRect( Rectf( Vec2f::zero(), mBinPackerMulti.getSize() ) );
+
+				gl::popModelView();
 			}
-
-			gl::popModelView();
 		}
 		break;
 	}

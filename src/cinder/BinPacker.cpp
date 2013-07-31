@@ -224,7 +224,7 @@ void BinPacker::pack( std::vector<Area*> &rects)
 	}
 }
 
-std::vector< std::map<unsigned, Area> > MultiBinPacker::pack( const std::vector<Area> &rects)
+std::vector<BinnedArea> MultiBinPacker::pack( const std::vector<Area> &rects)
 {
     clear();
 
@@ -252,13 +252,11 @@ std::vector< std::map<unsigned, Area> > MultiBinPacker::pack( const std::vector<
 		throw BinPackerTooSmallExc();	
 
 	// return result
-	std::vector< std::map<unsigned, Area> >	result;
-	result.reserve( mBins.size() );
+	std::vector<BinnedArea>	result;
+	result.resize( rects.size() );
 
 	for(unsigned j=0;j<mBins.size();++j)
 	{
-		std::map<unsigned, Area>	bin;
-
 		// calculate size 
 		unsigned lower = mBins[j];
 		unsigned upper = mBins.size() > j+1 ? mBins[j+1] : mPacks.size();
@@ -268,10 +266,8 @@ std::vector< std::map<unsigned, Area> > MultiBinPacker::pack( const std::vector<
 			// skip empty bins
 			if( mPacks[i].order < 0 ) continue;
 
-			bin.insert( std::pair<unsigned, Area>( mPacks[i].order, Area( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h ) ) );
+			result[ mPacks[i].order ] = BinnedArea( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h, j );
 		}
-
-		result.push_back( bin );
 	}
 
 	return result;
