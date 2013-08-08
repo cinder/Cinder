@@ -40,6 +40,7 @@
 #include <mmsystem.h>   // for timeGetTime()
 
 #ifndef WINCE
+#pragma comment( lib, "Winmm.lib" ) // timeGetTime()
 #include <signal.h>
 #endif
 
