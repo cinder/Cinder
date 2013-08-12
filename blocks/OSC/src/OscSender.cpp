@@ -41,7 +41,7 @@ namespace cinder { namespace osc {
 		
 		void setup( std::string hostname, int port, bool broadcast = false );
 		
-		void sendMessage( const Message &message, bool wrapInBundle = false );
+		void sendMessage( const Message &message );
 		void sendBundle( const Bundle &bundle );
 		
 		void shutdown();
@@ -90,18 +90,14 @@ void OscSender::sendBundle( const Bundle &bundle ){
 	socket->Send(p.Data(), p.Size());
 }
 
-void OscSender::sendMessage( const Message &message, bool wrapInBundle )
+void OscSender::sendMessage( const Message &message )
 {
 	static const int OUTPUT_BUFFER_SIZE = 16384;
 	char buffer[OUTPUT_BUFFER_SIZE];
 	::osc::OutboundPacketStream p(buffer, OUTPUT_BUFFER_SIZE);
 	
-	if( wrapInBundle )
-		p << ::osc::BeginBundleImmediate;
 	appendMessage(message, p);
-	if( wrapInBundle )
-		p << ::osc::EndBundle;
-	
+
 	socket->Send(p.Data(), p.Size());
 }
 
@@ -145,9 +141,9 @@ void Sender::setup( std::string hostname, int port, bool broadcast )
 	oscSender->setup( hostname, port, broadcast );
 }
 
-void Sender::sendMessage( const Message& message, bool wrapInBundle )
+void Sender::sendMessage( const Message& message )
 {
-	oscSender->sendMessage( message, wrapInBundle );
+	oscSender->sendMessage( message );
 }
 
 void Sender::sendBundle( const Bundle& bundle )

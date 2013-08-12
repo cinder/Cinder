@@ -39,7 +39,7 @@ class Sender  {
 	
 	void setup( std::string hostname, int port, bool broadcast = false );
 	
-	void sendMessage( const Message& message, bool wrapInBundle = false );
+	void sendMessage( const Message& message );
 	void sendBundle( const Bundle& bundle );
 	
   private:
