@@ -96,10 +96,10 @@ void OscSender::sendMessage( const Message &message, bool wrapInBundle )
 	char buffer[OUTPUT_BUFFER_SIZE];
 	::osc::OutboundPacketStream p(buffer, OUTPUT_BUFFER_SIZE);
 	
-	if (wrapInBundle)
+	if( wrapInBundle )
 		p << ::osc::BeginBundleImmediate;
 	appendMessage(message, p);
-	if (wrapInBundle)
+	if( wrapInBundle )
 		p << ::osc::EndBundle;
 	
 	socket->Send(p.Data(), p.Size());
