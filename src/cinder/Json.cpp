@@ -667,6 +667,7 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 		// This routine serializes JsonCpp data and formats it
 		if( writeOptions.getIndented() ) {
 			jsonString = value.toStyledString();
+			boost::replace_all( jsonString, "\n", "\r\n" );
 		} else {
 			Json::FastWriter writer;
 			jsonString = writer.write( value );
