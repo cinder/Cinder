@@ -515,6 +515,11 @@
 	return mHidden;
 }
 
+- (BOOL)isActive
+{
+	return mActive;
+}
+
 - (cinder::DisplayRef)getDisplay
 {
 	return mDisplay;
@@ -566,6 +571,18 @@
 	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[mAppImpl releaseWindow:self];
+}
+
+- (void)windowDidBecomeMain:(NSNotification*)inNotification
+{
+	mActive = YES;
+	mWindowRef->emitActivate();
+}
+
+- (void)windowDidResignMain:(NSNotification*)inNotification
+{
+	mActive = NO;
+	mWindowRef->emitDeactivate();
 }
 
 // CinderViewDelegate Methods
@@ -680,6 +697,7 @@
 	winImpl->mWindowRef = cinder::app::Window::privateCreate__( winImpl, winImpl->mAppImpl->mApp );
 	winImpl->mDisplay = winFormat.getDisplay();
 	winImpl->mHidden = NO;
+	winImpl->mActive = NO;
 	winImpl->mResizable = winFormat.isResizable();
 	winImpl->mBorderless = winFormat.isBorderless();
 	winImpl->mAlwaysOnTop = winFormat.isAlwaysOnTop();
@@ -738,6 +756,8 @@
 	[winImpl->mWin setOpaque:YES];
 	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowMovedNotification:) name:NSWindowDidMoveNotification object:winImpl->mWin];
 	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowWillCloseNotification:) name:NSWindowWillCloseNotification object:winImpl->mWin];
+	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowDidBecomeMain:) name:NSWindowDidBecomeMainNotification object:winImpl->mWin];
+	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowDidResignMain:) name:NSWindowDidResignMainNotification object:winImpl->mWin];
 	[winImpl->mCinderView setNeedsDisplay:YES];
 	[winImpl->mCinderView setDelegate:winImpl];
 

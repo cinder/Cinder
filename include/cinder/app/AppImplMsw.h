@@ -117,6 +117,7 @@ class WindowImplMsw {
 	virtual void		hide();
 	virtual void		show();
 	virtual bool		isHidden() const;
+	virtual bool		isActive() const;
 	virtual DisplayRef	getDisplay() const { return mDisplay; }
 	virtual RendererRef	getRenderer() const { return mRenderer; }
 	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
@@ -150,7 +151,7 @@ class WindowImplMsw {
 	HDC						mDC;
 	DWORD					mWindowStyle, mWindowExStyle;
 	Vec2i					mWindowOffset;
-	bool					mHidden;
+	bool					mHidden, mActive;
 	int						mWindowWidth, mWindowHeight;
 	bool					mFullScreen, mBorderless, mAlwaysOnTop, mResizable;
 	Vec2i					mWindowedPos, mWindowedSize;

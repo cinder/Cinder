@@ -87,7 +87,7 @@
 	cinder::app::WindowRef				mWindowRef;
 	cinder::DisplayRef					mDisplay;
 	cinder::Vec2i						mSize, mPos;
-	BOOL								mResizable, mBorderless, mAlwaysOnTop, mHidden;
+	BOOL								mResizable, mBorderless, mAlwaysOnTop, mHidden, mActive;
 }
 
 
@@ -111,6 +111,7 @@
 - (void)hide;
 - (void)show;
 - (BOOL)isHidden;
+- (BOOL)isActive;
 - (cinder::DisplayRef)getDisplay;
 - (cinder::app::RendererRef)getRenderer;
 - (void*)getNative;
