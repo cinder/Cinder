@@ -106,10 +106,6 @@ Texture::~Texture()
 	if( mSRV ) { 
 		mSRV->Release();
 	}
-
-	if( mDSV ) {
-		mDSV->Release();
-	}
 }
 
 
@@ -313,7 +309,6 @@ void Texture::init( int width, int height )
 	::ZeroMemory( &mSamplerDesc, sizeof(D3D11_SAMPLER_DESC) );
 	mSamplerState = nullptr;
 	mSRV = nullptr;
-	mDSV = nullptr;
 }
 
 void Texture::init( const unsigned char *srcData, DXGI_FORMAT srcDataFormat, const Format &format )

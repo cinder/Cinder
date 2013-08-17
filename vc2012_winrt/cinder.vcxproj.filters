@@ -331,6 +331,9 @@
     <ClInclude Include="..\include\cinder\CinderResources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxRenderTarget.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\App.cpp">
@@ -508,9 +511,6 @@
       <Filter>Source Files\app</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\dx\DxVbo.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxFbo.cpp">
       <Filter>Source Files\dx</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\dx\HlslProg.cpp">
@@ -791,6 +791,9 @@
     </ClCompile>
     <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp">
       <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxRenderTarget.cpp">
+      <Filter>Source Files\dx</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

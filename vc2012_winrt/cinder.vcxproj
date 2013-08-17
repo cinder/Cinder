@@ -92,32 +92,37 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <TargetName>$(ProjectName)</TargetName>
-    <OutDir>..\lib\winrt\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_d</TargetName>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <TargetExt>.lib</TargetExt>
-    <TargetName>$(ProjectName)</TargetName>
+    <TargetName>$(ProjectName)_d</TargetName>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\lib\winrt\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
+    <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -280,6 +285,7 @@
     <ClInclude Include="..\include\cinder\dx\DDSTextureLoader.h" />
     <ClInclude Include="..\include\cinder\dx\dx.h" />
     <ClInclude Include="..\include\cinder\dx\DxLight.h" />
+    <ClInclude Include="..\include\cinder\dx\DxRenderTarget.h" />
     <ClInclude Include="..\include\cinder\dx\DxTexture.h" />
     <ClInclude Include="..\include\cinder\dx\FontEnumerator.h" />
     <ClInclude Include="..\include\cinder\dx\gldx.h" />
@@ -375,7 +381,7 @@
     <ClCompile Include="..\src\cinder\DataSource.cpp" />
     <ClCompile Include="..\src\cinder\DataTarget.cpp" />
     <ClCompile Include="..\src\cinder\Display.cpp" />
-    <ClCompile Include="..\src\cinder\dx\DxFbo.cpp" />
+    <ClCompile Include="..\src\cinder\dx\DxRenderTarget.cpp" />
     <ClCompile Include="..\src\cinder\dx\DxTextureFont.cpp" />
     <ClCompile Include="..\src\cinder\dx\DxVbo.cpp" />
     <ClCompile Include="..\src\cinder\dx\FontEnumerator.cpp" />

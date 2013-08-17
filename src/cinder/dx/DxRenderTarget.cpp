@@ -337,7 +337,6 @@ void RenderTarget::init()
 		}
 	}
 
-
 	// allocate the framebuffer itself
 	//GL_SUFFIX(glGenFramebuffers)( 1, &mObj->mId );
 	//GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), mObj->mId );	
