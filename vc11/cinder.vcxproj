@@ -88,7 +88,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Lib>
       <AdditionalDependencies>Ws2_32.lib;wldap32.lib;libpng.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
