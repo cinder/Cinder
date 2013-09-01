@@ -35,28 +35,31 @@ namespace cinder {
 class BinnedArea : public Area
 {
 public:
-	BinnedArea() : Area(), mBin(-1) {}
-	BinnedArea( int32_t bin ) : Area(), mBin(bin) {}
+	BinnedArea() : Area(), mBin(-1), mIsRotated(false) {}
+	BinnedArea( int32_t bin, bool isRotated=false ) : Area(), mBin(bin), mIsRotated(isRotated) {}
 
-	BinnedArea( const Vec2i &UL, const Vec2i &LR ) : Area(UL, LR), mBin(-1) {}
-	BinnedArea( const Vec2i &UL, const Vec2i &LR, int32_t bin ) : Area(UL, LR), mBin(bin) {}
+	BinnedArea( const Vec2i &UL, const Vec2i &LR ) : Area(UL, LR), mBin(-1), mIsRotated(false) {}
+	BinnedArea( const Vec2i &UL, const Vec2i &LR, int32_t bin, bool isRotated=false ) : Area(UL, LR), mBin(bin), mIsRotated(isRotated) {}
 
-	BinnedArea( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2 ) : mBin(-1)
+	BinnedArea( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2 ) : mBin(-1), mIsRotated(false)
 		{ set( aX1, aY1, aX2, aY2 ); }
-	BinnedArea( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2, int32_t bin ) : mBin(bin)
+	BinnedArea( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2, int32_t bin, bool isRotated=false ) : mBin(bin), mIsRotated(isRotated)
 		{ set( aX1, aY1, aX2, aY2 ); }
 
-	explicit BinnedArea( const RectT<float> &r ) : Area(r), mBin(-1) {}
-	explicit BinnedArea( const RectT<float> &r, int32_t bin ) : Area(r), mBin(bin) {}
+	explicit BinnedArea( const RectT<float> &r ) : Area(r), mBin(-1), mIsRotated(false) {}
+	explicit BinnedArea( const RectT<float> &r, int32_t bin, bool isRotated=false ) : Area(r), mBin(bin), mIsRotated(isRotated) {}
 	
-	explicit BinnedArea( const Area &area ) : Area(area), mBin(-1) {}
-	explicit BinnedArea( const Area &area, int32_t bin ) : Area(area), mBin(bin) {}
+	explicit BinnedArea( const Area &area ) : Area(area), mBin(-1), mIsRotated(false) {}
+	explicit BinnedArea( const Area &area, int32_t bin, bool isRotated=false ) : Area(area), mBin(bin), mIsRotated(isRotated) {}
 
 	//
 	int32_t getBin() const { return mBin; }
+	//
+	bool isRotated() const { return mIsRotated; }
 
 private:
 	int32_t		mBin;
+	bool		mIsRotated;
 };
 
 class BinPackerBase
@@ -136,6 +139,7 @@ class BinPacker : public BinPackerBase
 public:
 	BinPacker() : BinPackerBase(512, 512) {}
 	BinPacker( int width, int height ) : BinPackerBase(width, height) {}
+	BinPacker( const Vec2i &size ) : BinPackerBase(size.x, size.y) {}
 
 	~BinPacker() {}
 
@@ -144,17 +148,15 @@ public:
 	virtual BinPacker&	setSize( const Vec2i &size ) { mBinWidth = size.x; mBinHeight = size.y; return *this; }
 
 	//!
-    std::vector<Area>	pack( const std::vector<Area> &rects );
-	//! in-place
-	void				pack( std::vector<Area*> &rects );
+    std::vector<BinnedArea>	pack( const std::vector<Area> &rects );
 };
 
 class MultiBinPacker : public BinPackerBase
 {
 public:
 	MultiBinPacker() : BinPackerBase(512, 512) {}
-	MultiBinPacker( int width, int height ) 
-		: BinPackerBase(width, height) {}
+	MultiBinPacker( int width, int height ) : BinPackerBase(width, height) {}
+	MultiBinPacker( const Vec2i &size ) : BinPackerBase(size.x, size.y) {}
 
 	~MultiBinPacker() {}
 

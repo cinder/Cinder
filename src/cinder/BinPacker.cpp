@@ -137,7 +137,7 @@ bool BinPackerBase::packIsValid(int i) const
     return i >= 0 && i < (int)mPacks.size();
 }
 
-std::vector<Area> BinPacker::pack( const std::vector<Area> &rects)
+std::vector<BinnedArea> BinPacker::pack( const std::vector<Area> &rects)
 {
     clear();
 
@@ -161,7 +161,7 @@ std::vector<Area> BinPacker::pack( const std::vector<Area> &rects)
 		throw BinPackerTooSmallExc();
 
 	// return result
-	std::vector<Area>	result;
+	std::vector<BinnedArea>	result;
 	result.resize( rects.size() );
 
 	for(unsigned i=0;i<mPacks.size();++i)
@@ -169,46 +169,10 @@ std::vector<Area> BinPacker::pack( const std::vector<Area> &rects)
 		// skip empty bins
 		if( mPacks[i].order < 0 ) continue;
 
-		result[ mPacks[i].order ] = Area( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h );
+		result[ mPacks[i].order ] = BinnedArea( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h, 0 );
 	}
 
 	return result;
-}
-
-void BinPacker::pack( std::vector<Area*> &rects)
-{
-    clear();
-
-    // add rects to member array, and check to make sure none is too big
-    for (size_t i = 0; i < rects.size(); ++i) {
-		if (rects[i]->getWidth() > mBinWidth || rects[i]->getHeight() > mBinHeight) {
-            throw BinPackerTooSmallExc();
-        }
-		mRects.push_back(Rect(rects[i]->getWidth(), rects[i]->getHeight(), i));
-    }
-
-    // sort from greatest to least area
-    std::sort(mRects.rbegin(), mRects.rend());
-
-    // pack   
-    mPacks.push_back(Rect(mBinWidth, mBinHeight));
-    fill(0);
-
-	// check if all rects were packed
-	if(mNumPacked < (int)mRects.size()) 
-		throw BinPackerTooSmallExc();
-
-	// 
-	for(unsigned i=0;i<mPacks.size();++i)
-	{
-		// skip empty bins
-		if( mPacks[i].order < 0 ) continue;
-
-		rects[ mPacks[i].order ]->x1 = mPacks[i].x;
-		rects[ mPacks[i].order ]->y1 = mPacks[i].y;
-		rects[ mPacks[i].order ]->x2 = mPacks[i].x + mPacks[i].w;
-		rects[ mPacks[i].order ]->y2 = mPacks[i].y + mPacks[i].h;
-	}
 }
 
 std::vector<BinnedArea> MultiBinPacker::pack( const std::vector<Area> &rects)
