@@ -97,7 +97,7 @@ void BinPackerBase::split(int pack, int rect)
     int maxLeftRightArea = math<int>::max( left.getArea(), right.getArea() );
     int maxBottomTopArea = math<int>::max( bottom.getArea(), top.getArea() );
 
-    if (maxLeftRightArea < maxBottomTopArea) {
+    if (maxLeftRightArea > maxBottomTopArea) {
         if (left.getArea() < right.getArea()) {
             mPacks.push_back(left);
             mPacks.push_back(right);
