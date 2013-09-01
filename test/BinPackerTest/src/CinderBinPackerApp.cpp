@@ -60,16 +60,11 @@ void CinderBinPackerApp::keyDown( KeyEvent event )
 		break;
 	}
 
-	double t = getElapsedSeconds();
-
-	//for(uint32_t i=0;i<10000;++i)
-	{
-
 	switch( mMode )
 	{
 	case SINGLE_COPY:
 		// show the total number of Area's in the window title bar
-		getWindow()->setTitle( "CinderBinPackerApp | Single Bin, Copy Mode " + ci::toString( mUnpacked.size() ) );
+		getWindow()->setTitle( "CinderBinPackerApp | Single Bin | " + ci::toString( mUnpacked.size() ) );
 
 		try
 		{ 
@@ -90,7 +85,7 @@ void CinderBinPackerApp::keyDown( KeyEvent event )
 		break;
 	case MULTI_COPY:
 		// show the total number of Area's in the window title bar
-		getWindow()->setTitle( "CinderBinPackerApp | Multi Bin, Copy Mode " + ci::toString( mUnpacked.size() ) );
+		getWindow()->setTitle( "CinderBinPackerApp | Multi Bin | " + ci::toString( mUnpacked.size() ) );
 
 		try
 		{ 
@@ -107,9 +102,6 @@ void CinderBinPackerApp::keyDown( KeyEvent event )
 		}
 		break;
 	}
-
-	}
-	console() << (getElapsedSeconds() - t) << " seconds" << std::endl;
 }
 
 void CinderBinPackerApp::update()
