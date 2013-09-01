@@ -39,11 +39,7 @@ void BinPackerBase::clear()
 bool BinPackerBase::fits(Rect& rect1, const Rect& rect2) const
 {
     // Check to see if rect1 fits in rect2
-    if (rect1.w <= rect2.w && rect1.h <= rect2.h) {
-        return true;
-    } else {
-        return false;
-    }
+    return (rect1.w <= rect2.w && rect1.h <= rect2.h);
 }
 
 void BinPackerBase::fill(int pack)
@@ -98,18 +94,11 @@ void BinPackerBase::split(int pack, int rect)
     top.y += mRects[j].h;
     top.h -= mRects[j].h;
 
-    int maxLeftRightArea = left.getArea();
-    if (right.getArea() > maxLeftRightArea) {
-        maxLeftRightArea = right.getArea();
-    }
+    int maxLeftRightArea = math<int>::max( left.getArea(), right.getArea() );
+    int maxBottomTopArea = math<int>::max( bottom.getArea(), top.getArea() );
 
-    int maxBottomTopArea = bottom.getArea();
-    if (top.getArea() > maxBottomTopArea) {
-        maxBottomTopArea = top.getArea();
-    }
-
-    if (maxLeftRightArea > maxBottomTopArea) {
-        if (left.getArea() > right.getArea()) {
+    if (maxLeftRightArea < maxBottomTopArea) {
+        if (left.getArea() < right.getArea()) {
             mPacks.push_back(left);
             mPacks.push_back(right);
         } else {
@@ -117,7 +106,7 @@ void BinPackerBase::split(int pack, int rect)
             mPacks.push_back(left);
         }
     } else {
-        if (bottom.getArea() > top.getArea()) {
+        if (bottom.getArea() < top.getArea()) {
             mPacks.push_back(bottom);
             mPacks.push_back(top);
         } else {
