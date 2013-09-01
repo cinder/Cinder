@@ -91,17 +91,18 @@ protected:
         int  h;
         int  order;
         int  children[2];
+        bool rotated;
         bool packed;
 
         Rect(int w, int h, int order = -1)
-            : x(0), y(0), w(w), h(h), order(order), packed(false)
+            : x(0), y(0), w(w), h(h), order(order), rotated(false), packed(false)
         {
             children[0] = -1;
             children[1] = -1;
         }
 
         Rect(int x, int y, int w, int h, int order = -1)
-            : x(x), y(y), w(w), h(h), order(order), packed(false)
+            : x(x), y(y), w(w), h(h), order(order), rotated(false), packed(false)
         {
             children[0] = -1;
             children[1] = -1;
@@ -109,6 +110,11 @@ protected:
         
         int getArea() const {
             return w * h;
+        }
+        
+        void rotate() {
+            std::swap(w, h);
+            rotated = !rotated;
         }
         
         bool operator<(const Rect& rhs) const {
@@ -126,9 +132,9 @@ protected:
 
     virtual void clear();
 
-    void fill(int pack);
+    void fill(int pack, bool allowRotation);
     void split(int pack, int rect);
-    bool fits(Rect& rect1, const Rect& rect2) const;
+    bool fits(Rect& rect1, const Rect& rect2, bool allowRotation) const;
     
     bool rectIsValid(int i) const;
     bool packIsValid(int i) const;
@@ -148,7 +154,7 @@ public:
 	virtual BinPacker&	setSize( const Vec2i &size ) { mBinWidth = size.x; mBinHeight = size.y; return *this; }
 
 	//!
-    std::vector<BinnedArea>	pack( const std::vector<Area> &rects );
+    std::vector<BinnedArea>	pack( const std::vector<Area> &rects, bool allowRotation = false );
 };
 
 class MultiBinPacker : public BinPackerBase
@@ -165,7 +171,7 @@ public:
 	MultiBinPacker&	setSize( const Vec2i &size ) { mBinWidth = size.x; mBinHeight = size.y; return *this; }
 
 	//!
-    std::vector<BinnedArea>	pack( const std::vector<Area> &rects );
+    std::vector<BinnedArea>	pack( const std::vector<Area> &rects, bool allowRotation = false );
 protected:
     void clear();
 

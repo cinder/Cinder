@@ -36,13 +36,21 @@ void BinPackerBase::clear()
     mPacks.clear();
 }
 
-bool BinPackerBase::fits(Rect& rect1, const Rect& rect2) const
+bool BinPackerBase::fits(Rect& rect1, const Rect& rect2, bool allowRotation) const
 {
     // Check to see if rect1 fits in rect2
-    return (rect1.w <= rect2.w && rect1.h <= rect2.h);
+    if(rect1.w <= rect2.w && rect1.h <= rect2.h)
+		return true;
+	else if(allowRotation && rect1.w <= rect2.h && rect1.h <= rect2.w)
+	{
+		rect1.rotate();
+		return true;
+	}
+	else 
+		return false;
 }
 
-void BinPackerBase::fill(int pack)
+void BinPackerBase::fill(int pack, bool allowRotation)
 {
     assert(packIsValid(pack));
 
@@ -53,12 +61,12 @@ void BinPackerBase::fill(int pack)
         // If it's not already packed
         if (!mRects[j].packed) {
             // If it fits in the current working area
-            if (fits(mRects[j], mPacks[i])) {
+            if (fits(mRects[j], mPacks[i], allowRotation)) {
                 // Store in lower-left of working area, split, and recurse
                 ++mNumPacked;
                 split(i, j);
-                fill(mPacks[i].children[0]);
-                fill(mPacks[i].children[1]);
+                fill(mPacks[i].children[0], allowRotation);
+                fill(mPacks[i].children[1], allowRotation);
                 return;
             }
         }
@@ -120,6 +128,7 @@ void BinPackerBase::split(int pack, int rect)
     mPacks[i].w = mRects[j].w;
     mPacks[i].h = mRects[j].h;
     mPacks[i].order = mRects[j].order;
+	mPacks[i].rotated = mRects[j].rotated;
     mPacks[i].children[0] = mPacks.size() - 2;
     mPacks[i].children[1] = mPacks.size() - 1;
 
@@ -137,7 +146,7 @@ bool BinPackerBase::packIsValid(int i) const
     return i >= 0 && i < (int)mPacks.size();
 }
 
-std::vector<BinnedArea> BinPacker::pack( const std::vector<Area> &rects)
+std::vector<BinnedArea> BinPacker::pack( const std::vector<Area> &rects, bool allowRotation )
 {
     clear();
 
@@ -154,7 +163,7 @@ std::vector<BinnedArea> BinPacker::pack( const std::vector<Area> &rects)
 
     // pack   
     mPacks.push_back(Rect(mBinWidth, mBinHeight));
-    fill(0);
+    fill(0, allowRotation);
 
 	// check if all rects were packed
 	if(mNumPacked < (int)mRects.size()) 
@@ -169,13 +178,13 @@ std::vector<BinnedArea> BinPacker::pack( const std::vector<Area> &rects)
 		// skip empty bins
 		if( mPacks[i].order < 0 ) continue;
 
-		result[ mPacks[i].order ] = BinnedArea( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h, 0 );
+		result[ mPacks[i].order ] = BinnedArea( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h, 0, mPacks[i].rotated );
 	}
 
 	return result;
 }
 
-std::vector<BinnedArea> MultiBinPacker::pack( const std::vector<Area> &rects)
+std::vector<BinnedArea> MultiBinPacker::pack( const std::vector<Area> &rects, bool allowRotation )
 {
     clear();
 
@@ -196,7 +205,7 @@ std::vector<BinnedArea> MultiBinPacker::pack( const std::vector<Area> &rects)
         int i = mPacks.size();
         mPacks.push_back(Rect(mBinWidth, mBinHeight));
         mBins.push_back(i);
-        fill(i);
+        fill(i, allowRotation);
     }
 
 	if(mNumPacked < (int) mRects.size()) 
@@ -217,7 +226,7 @@ std::vector<BinnedArea> MultiBinPacker::pack( const std::vector<Area> &rects)
 			// skip empty bins
 			if( mPacks[i].order < 0 ) continue;
 
-			result[ mPacks[i].order ] = BinnedArea( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h, j );
+			result[ mPacks[i].order ] = BinnedArea( mPacks[i].x, mPacks[i].y, mPacks[i].x + mPacks[i].w, mPacks[i].y + mPacks[i].h, j, mPacks[i].rotated );
 		}
 	}
 
