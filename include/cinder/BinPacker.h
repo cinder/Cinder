@@ -74,6 +74,9 @@ public:
 	//!
 	virtual BinPackerBase&	setSize( unsigned width, unsigned height ) = 0;
 	virtual BinPackerBase&	setSize( const Vec2i &size ) = 0;
+
+	//
+	virtual std::vector<BinnedArea>	pack( const std::vector<Area> &rects, bool allowRotation = false ) = 0;
 	
 	//!
 	Vec2i		getSize() const { return Vec2i( mBinWidth, mBinHeight ); }
@@ -140,7 +143,7 @@ protected:
     bool packIsValid(int i) const;
 };
 
-class BinPacker : public BinPackerBase
+class BinPacker /*final*/ : public BinPackerBase 
 {
 public:
 	BinPacker() : BinPackerBase(512, 512) {}
@@ -150,14 +153,14 @@ public:
 	~BinPacker() {}
 
 	//!
-	virtual BinPacker&	setSize( unsigned width, unsigned height ) { mBinWidth = width; mBinHeight = height; return *this; }
-	virtual BinPacker&	setSize( const Vec2i &size ) { mBinWidth = size.x; mBinHeight = size.y; return *this; }
+	BinPacker&	setSize( unsigned width, unsigned height ) { mBinWidth = width; mBinHeight = height; return *this; }
+	BinPacker&	setSize( const Vec2i &size ) { mBinWidth = size.x; mBinHeight = size.y; return *this; }
 
 	//!
     std::vector<BinnedArea>	pack( const std::vector<Area> &rects, bool allowRotation = false );
 };
 
-class MultiBinPacker : public BinPackerBase
+class MultiBinPacker /*final*/ : public BinPackerBase
 {
 public:
 	MultiBinPacker() : BinPackerBase(512, 512) {}
@@ -172,7 +175,7 @@ public:
 
 	//!
     std::vector<BinnedArea>	pack( const std::vector<Area> &rects, bool allowRotation = false );
-protected:
+private:
     void clear();
 
 	std::vector<unsigned>	mBins;

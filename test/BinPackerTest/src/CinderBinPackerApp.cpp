@@ -10,7 +10,7 @@ using namespace std;
 
 class CinderBinPackerApp : public AppNative {
 public:
-	enum Mode { SINGLE_COPY, MULTI_COPY };
+	enum Mode { SINGLE, MULTI };
 
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -34,10 +34,16 @@ void CinderBinPackerApp::prepareSettings(Settings *settings)
 
 void CinderBinPackerApp::setup()
 {
-	mMode = SINGLE_COPY;
+	mMode = SINGLE;
 
 	mBinPackerSingle.setSize( 128, 128 );
 	mBinPackerMulti.setSize( 128, 128 );
+
+	mUnpacked.clear();
+	mPacked.clear();
+	
+	// show the total number of Area's in the window title bar
+	getWindow()->setTitle( "CinderBinPackerApp | Single Bin | " + ci::toString( mUnpacked.size() ) );
 }
 
 void CinderBinPackerApp::keyDown( KeyEvent event )
@@ -45,16 +51,15 @@ void CinderBinPackerApp::keyDown( KeyEvent event )
 	switch( event.getCode() )
 	{
 	case KeyEvent::KEY_1:
-		// enable single bin, copy mode
-		mMode = SINGLE_COPY;
+		// enable single bin
+		mMode = SINGLE;
 		break;
 	case KeyEvent::KEY_2:
-		// enable multi bin, copy mode
-		mMode = MULTI_COPY;
+		// enable multi bin
+		mMode = MULTI;
 		break;
 	default:
 		// add an Area of random size to mUnpacked
-		//int size = math<int>::pow(2, Rand::randInt(4, 7));
 		int size = Rand::randInt(16, 64);
 		mUnpacked.push_back( Area(0, 0, size, size) );
 		break;
@@ -62,14 +67,16 @@ void CinderBinPackerApp::keyDown( KeyEvent event )
 
 	switch( mMode )
 	{
-	case SINGLE_COPY:
+	case SINGLE:
 		// show the total number of Area's in the window title bar
 		getWindow()->setTitle( "CinderBinPackerApp | Single Bin | " + ci::toString( mUnpacked.size() ) );
 
 		try
 		{ 
 			// mPacked will contain all Area's of mUnpacked in the exact same order,
-			// but moved to a different spot in the bin. Unpacked will not be altered.
+			// but moved to a different spot in the bin and represented as a BinnedArea.
+			// BinnedAreas can be used directly as Areas, conversion will happen automatically.
+			// Unpacked will not be altered.
 			mPacked = mBinPackerSingle.pack( mUnpacked ); 
 		}
 		catch(...) 
@@ -83,7 +90,7 @@ void CinderBinPackerApp::keyDown( KeyEvent event )
 			mPacked = mBinPackerSingle.pack( mUnpacked ); 
 		}
 		break;
-	case MULTI_COPY:
+	case MULTI:
 		// show the total number of Area's in the window title bar
 		getWindow()->setTitle( "CinderBinPackerApp | Multi Bin | " + ci::toString( mUnpacked.size() ) );
 
@@ -91,8 +98,9 @@ void CinderBinPackerApp::keyDown( KeyEvent event )
 		{ 
 			//  mPacked will contain all Area's of mUnpacked in the exact same order,
 			// but moved to a different spot in the bin and represented as a BinnedArea.
-			// Use the BinnedArea::getBin() method to find out to which bin the Area belongs.
 			// BinnedAreas can be used directly as Areas, conversion will happen automatically.
+			// Use the BinnedArea::getBin() method to find out to which bin the Area belongs.
+			// Unpacked will not be altered.
 			mPacked = mBinPackerMulti.pack( mUnpacked ); 
 		}
 		catch(...) 
@@ -117,30 +125,30 @@ void CinderBinPackerApp::draw()
 
 	switch( mMode )
 	{
-	case SINGLE_COPY:
+	case SINGLE:
 		// draw the borders of the bin
 		gl::color( Color( 1, 1, 0 ) );
 		gl::drawStrokedRect( Rectf( Vec2f::zero(), mBinPackerSingle.getSize() ) );
 
-		// packing has been done by copy, so use the mPackedSingle array
+		// draw the binned rectangles
 		for(unsigned i=0;i<mPacked.size();++i) {
 			rnd.seed(i+12345);
 			gl::color( Color( (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f ) );
 			gl::drawSolidRect( Rectf( mPacked[i] ) );
 		}
 		break;
-	case MULTI_COPY:
+	case MULTI:
 		{
 			unsigned n = (unsigned) floor( getWindowWidth() / (float) mBinPackerMulti.getWidth() );
 
-			// packing has been done by multi-copy, so use the mPackedMulti array
+			// 
 			for(unsigned i=0;i<mPacked.size();++i) {
 				int bin = mPacked[i].getBin();
 
 				gl::pushModelView();
 				gl::translate( (float) ((bin % n) * mBinPackerMulti.getWidth()), (float) ((bin / n) * mBinPackerMulti.getHeight()), 0.0f );
 
-				// draw bin
+				// draw the binned rectangle
 				rnd.seed(i+12345);
 				gl::color( Color( (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f, (rnd.nextUint() & 0xFF) / 255.0f ) );
 				gl::drawSolidRect( Rectf( mPacked[i] ) );
