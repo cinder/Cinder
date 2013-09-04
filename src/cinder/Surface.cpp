@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -21,12 +23,26 @@
 */
 
 #include "cinder/Surface.h"
+
+#if defined( CINDER_WINRT )
+#include <ppltasks.h>
+#include "cinder/WinRTUtils.h"
+#include "cinder/Utilities.h"
+using namespace Windows::Storage;
+using namespace Concurrency;
+#undef max
+using namespace Windows::Storage;
+using namespace Concurrency;
+#endif
+
 #include "cinder/ImageIo.h"
 #include "cinder/ip/Fill.h"
 
 #include <boost/preprocessor/seq.hpp>
 #include <boost/type_traits/is_same.hpp>
 using boost::tribool;
+
+
 
 namespace cinder {
 
@@ -250,6 +266,41 @@ SurfaceT<T>::SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &con
 {
 	init( imageSource, constraints, alpha );
 }
+
+#if defined( CINDER_WINRT )
+
+template<typename T>
+void SurfaceT<T>::loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate )
+{
+	auto loadImageTask = create_task([path]() -> ImageSourceRef
+	{
+		return loadImage(path);
+	});
+
+	  // Task-based continuation.
+    auto c2 = loadImageTask.then([path, &surface,constraints,alpha](task<ImageSourceRef> previousTask)
+    {
+        // We do expect to get here because task-based continuations 
+        // are scheduled even when the antecedent task throws. 
+        try
+        {
+			surface = SurfaceT(previousTask.get(),constraints, alpha);
+        }
+        catch (const ImageIoExceptionFailedLoad&)
+        {
+			auto copyTask = winrt::copyFileToTempDirAsync(path);
+			copyTask.then([path, &surface,constraints,alpha](StorageFile^ file) 
+			{
+				fs::path temp = fs::path(toUtf8(file->Path->Data()));
+				surface = SurfaceT(loadImage(fs::path(temp)),constraints, alpha);
+				winrt::deleteFileAsync(temp);
+			});
+        }
+    });
+}
+#endif
+
+
 
 template<typename T>
 SurfaceT<T>::operator ImageSourceRef() const

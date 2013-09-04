@@ -1,5 +1,6 @@
 /*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -28,10 +29,13 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/Vector.h"
 #include "cinder/Function.h"
+#include "cinder/Rect.h"
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/app/FileDropEvent.h"
+#include "cinder/Exception.h"
+
 
 namespace cinder { namespace app {
 
@@ -79,6 +83,10 @@ typedef std::shared_ptr<Window>		WindowRef;
 	#if defined( CINDER_COCOA_TOUCH )
 		class UIViewController;
 	#endif
+#elif defined( CINDER_WINRT )
+	namespace cinder { namespace app {
+		class WindowImplWinRT;
+	} } // namespace cinder::app
 #elif defined( CINDER_MSW )
 	namespace cinder { namespace app {
 		class WindowImplMsw;
@@ -335,6 +343,8 @@ class Window : public std::enable_shared_from_this<Window> {
 #if defined( CINDER_COCOA_TOUCH )
 	//! Returns the UIViewController instance that manages the assoicated UIView on iOS
 	UIViewController* getNativeViewController();
+#elif defined( CINDER_WINRT )
+	DX_WINDOW_TYPE getNativeCoreWindow();
 #endif
 #if defined( CINDER_MSW )
 	//! Returns the Window's HDC on MSW. Suitable for GDI+ calls with Renderer2d.
@@ -449,6 +459,8 @@ class Window : public std::enable_shared_from_this<Window> {
 	static WindowRef		privateCreate__( id<WindowImplCocoa> impl, App *app )
 #elif defined( CINDER_MSW )
 	static WindowRef		privateCreate__( WindowImplMsw *impl, App *app )
+#elif defined( CINDER_WINRT )
+	static WindowRef		privateCreate__( WindowImplWinRT *impl, App *app )
 #else
 	static WindowRef		privateCreate__( WindowImplCocoa *impl, App *app )
 #endif
@@ -481,6 +493,8 @@ class Window : public std::enable_shared_from_this<Window> {
   #endif
 #elif defined( CINDER_MSW )
 	void		setImpl( WindowImplMsw *impl ) { mImpl = impl; }
+#elif defined( CINDER_WINRT )
+	void		setImpl( WindowImplWinRT *impl ) { mImpl = impl; }
 #endif
 
 	App							*mApp;
@@ -501,6 +515,8 @@ class Window : public std::enable_shared_from_this<Window> {
   #endif
 #elif defined( CINDER_MSW )
 	WindowImplMsw		*mImpl;
+#elif defined( CINDER_WINRT )
+	WindowImplWinRT *mImpl;
 #endif
 };
 

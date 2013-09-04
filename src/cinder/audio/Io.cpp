@@ -2,6 +2,8 @@
  Copyright (c) 2009, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -26,6 +28,8 @@
 #if defined(CINDER_MSW)
 	// this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
 	#include "cinder/audio/SourceFileWindowsMedia.h"
+	#include "cinder/audio/SourceFileWav.h"	
+#elif defined( CINDER_WINRT )
 	#include "cinder/audio/SourceFileWav.h"	
 #endif
 

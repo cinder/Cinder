@@ -22,7 +22,7 @@
 
 #include "cinder/Triangulate.h"
 #include "cinder/Shape2d.h"
-#include "tesselator.h"
+#include "../libtess2/tesselator.h"
 
 using namespace std;
 

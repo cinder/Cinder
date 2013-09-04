@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -47,7 +49,7 @@ class ObjLoader {
 	/**Constructs and does the parsing of the file
 	 * \param includeUVs  if false UV coordinates will be skipped, which can provide a faster load time
 	**/
-	ObjLoader( std::shared_ptr<IStream> aStream, bool includeUVs = true );
+	ObjLoader( std::shared_ptr<IStreamCinder> aStream, bool includeUVs = true );
 	/**Constructs and does the parsing of the file
 	 * \param includeUVs if false UV coordinates will be skipped, which can provide a faster load time
 	**/
@@ -123,14 +125,14 @@ class ObjLoader {
 	void	parse( bool includeUVs );
 
  	void	parseFace( Group *group, const Material *material, const std::string &s, bool includeUVs );
-    void    parseMaterial( std::shared_ptr<IStream> material );
+    void    parseMaterial( std::shared_ptr<IStreamCinder> material );
 	void	loadInternalNoOptimize( const Group &group, TriMesh *destTriMesh, bool texCoords, bool normals );
 	void	loadInternalNormalsTextures( const Group &group, std::map<boost::tuple<int,int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
 	void	loadInternalNormals( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
 	void	loadInternalTextures( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
 	void	loadInternal( const Group &group, std::map<int,int> &uniqueVerts, TriMesh *destTriMesh );	
  
-	std::shared_ptr<IStream>        mStream;
+	std::shared_ptr<IStreamCinder>        mStream;
 	std::vector<Vec3f>			    mVertices, mNormals;
 	std::vector<Vec2f>			    mTexCoords;
 	std::vector<Group>			    mGroups;

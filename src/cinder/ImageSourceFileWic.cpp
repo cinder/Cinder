@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -61,9 +63,17 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	
     // Create a decoder
 	IWICBitmapDecoder *decoderP = NULL;
+#if defined( CINDER_WINRT)
+		std::string s = dataSourceRef->getFilePath().string();
+		std::wstring filePath =	std::wstring(s.begin(), s.end());                 
+#else
+		std::wstring filePath =	dataSourceRef->getFilePath().wstring().c_str();
+#endif
+
 	if( dataSourceRef->isFilePath() ) {
 		hr = IWICFactory->CreateDecoderFromFilename(
-				dataSourceRef->getFilePath().wstring().c_str(),                      // Image to be decoded
+				filePath.c_str(),                      // Image to be decoded
+//				dataSourceRef->getFilePath().wstring().c_str(),                      // Image to be decoded
 				NULL,                            // Do not prefer a particular vendor
 				GENERIC_READ,                    // Desired read access to the file
 				WICDecodeMetadataCacheOnDemand,  // Cache metadata when needed
@@ -134,14 +144,16 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 		( guid == GUID_WICPixelFormat8bppIndexed ) ||
 		( guid == GUID_WICPixelFormat16bppBGR555 ) ||
 		( guid == GUID_WICPixelFormat16bppBGR565 ) ) {
-		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat24bppRGB;
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
 		return true;
 	}
 	else if( guid == GUID_WICPixelFormat24bppBGR ) {		
-		setChannelOrder( ImageIo::BGR ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
 	}
 	else if( guid == GUID_WICPixelFormat24bppRGB ) {
-		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
 	}
 	else if( guid == GUID_WICPixelFormat32bppBGR ) {
 		setChannelOrder( ImageIo::BGRX ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );

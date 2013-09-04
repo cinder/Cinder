@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -24,11 +26,14 @@
 #include "cinder/ip/Fill.h"
 
 #include <vector>
+
+#if !defined( CINDER_WINRT )
 #include <boost/thread/tss.hpp>
+#endif
 
 namespace cinder { namespace msw {
 
-
+#if !defined( CINDER_WINRT )
 static void surfaceDeallocatorGlobalAlloc( void *refcon )
 {
 	::GlobalFree( (HGLOBAL)refcon );
@@ -75,6 +80,7 @@ Surface8u convertHBitmap( HBITMAP hbitmap )
 
 	return result;
 }
+#endif
 
 void ComDelete( void *p )
 {
@@ -153,6 +159,13 @@ struct ComInitializer {
 	}
 };
 
+#if defined( CINDER_WINRT )
+
+void initializeCom( DWORD params )
+{
+	::CoInitializeEx( NULL, params );
+}
+#else
 boost::thread_specific_ptr<ComInitializer> threadComInitializer;
 
 void initializeCom( DWORD params )
@@ -160,6 +173,6 @@ void initializeCom( DWORD params )
 	if( threadComInitializer.get() == NULL )
 		threadComInitializer.reset( new ComInitializer( params ) );
 }
-
+#endif
 
 } } // namespace cinder::msw

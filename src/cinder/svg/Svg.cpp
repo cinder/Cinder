@@ -2,6 +2,8 @@
  Copyright (c) 2012, The Cinder Project
  All rights reserved.
  
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -2319,7 +2321,12 @@ shared_ptr<Surface8u> Doc::loadImage( fs::path relativePath )
 {
 	if( mImageCache.find( relativePath ) == mImageCache.end() ) {
 		try {
+#if defined( CINDER_WINRT )
+			fs::path fullPath = ( mFilePath / relativePath );
+#else
 			fs::path fullPath = ( mFilePath / relativePath ).make_preferred();
+#endif
+
 			if( fs::exists( fullPath ) )
 				mImageCache[relativePath] = shared_ptr<Surface8u>( new Surface8u( ci::loadImage( fullPath ) ) );
 		}

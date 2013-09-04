@@ -28,6 +28,11 @@
 
 #include <boost/assign/list_of.hpp>
 
+#if defined( USE_DIRECTX )
+#include "cinder/dx/dx.h"
+#include "cinder/app/AppImplMswRendererDx.h"
+#endif
+
 using namespace std;
 
 namespace cinder { namespace params {
@@ -153,9 +158,14 @@ class AntMgr {
 		// we have to do a fontscale set *before* TwInit:
 		if( fontScale > 1 )
 			TwDefine( (string(" GLOBAL fontscaling= ") + toString( fontScale )).c_str() );
+#if defined( USE_DIRECTX )
+		if( ! TwInit( TW_DIRECT3D11, dx::getDxRenderer()->md3dDevice ) )
+			throw Exception();
+#else
 		if( ! TwInit( TW_OPENGL, NULL ) ) {
 			throw Exception();
 		}		
+#endif
 	}
 	
 	~AntMgr() {

@@ -1,5 +1,6 @@
 /*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -79,6 +80,11 @@ class AppBasic : public App {
 		bool	isConsoleWindowEnabled() const { return mEnableMswConsole; }
 #endif
 
+		//! Registers the app to receive multiTouch events from the operating system. Disabled by default. Only supported on WinRT, Windows 7/8 and Mac OS X trackpad.
+		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
+		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7 and Mac OS X trackpad.
+		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
+
 		//! Sets whether the app quits automatically when its last window is closed. Enabled by default.
 		void		enableQuitOnLastWindowClose( bool enable = true ) { mQuitOnLastWindowClose = enable; }
 		//! Returns whether the app quits automatically when its last window is closed. Enabled by default.
@@ -141,6 +147,10 @@ class AppBasic : public App {
 	//! Gets the foreground Window, which has keyboard and mouse focus
 	virtual WindowRef		getForegroundWindow() const;
 
+#if defined( CINDER_WINRT)
+	class AppImplWinRTBasic*	getImpl() {return mImpl;};
+#endif
+
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
@@ -162,6 +172,8 @@ class AppBasic : public App {
 	static void		prepareLaunch() { App::prepareLaunch(); }
 #if defined( CINDER_MSW )
 	static void		executeLaunch( AppBasic *app, RendererRef renderer, const char *title );
+#elif defined( CINDER_WINRT )
+	static void		executeLaunch( AppBasic *app, RendererRef renderer, const char *title );
 #elif defined( CINDER_MAC )
 	static void		executeLaunch( AppBasic *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
 #endif
@@ -180,6 +192,9 @@ class AppBasic : public App {
 #elif defined( CINDER_MSW )
 	class AppImplMswBasic	*mImpl;
 	friend class AppImplMswBasic;
+#elif defined ( CINDER_WINRT )
+	class AppImplWinRTBasic	*mImpl;
+	friend class AppImplWinRTBasic;
 #endif
 	
 	std::vector<std::string>	mCommandLineArgs;
@@ -204,6 +219,17 @@ class AppBasic : public App {
 #elif defined( CINDER_MSW )
 	#define CINDER_APP_BASIC( APP, RENDERER )														\
 	int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow) {	\
+		cinder::app::AppBasic::prepareLaunch();														\
+		cinder::app::AppBasic *app = new APP;														\
+		cinder::app::RendererRef ren( new RENDERER );												\
+		cinder::app::AppBasic::executeLaunch( app, ren, #APP );										\
+		cinder::app::AppBasic::cleanupLaunch();														\
+		return 0;																					\
+	}
+#elif defined( CINDER_WINRT )
+	#define CINDER_APP_BASIC( APP, RENDERER )														\
+	[Platform::MTAThread]																			\
+	int main(Platform::Array<Platform::String^>^) {													\
 		cinder::app::AppBasic::prepareLaunch();														\
 		cinder::app::AppBasic *app = new APP;														\
 		cinder::app::RendererRef ren( new RENDERER );												\

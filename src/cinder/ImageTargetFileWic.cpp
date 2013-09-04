@@ -142,7 +142,13 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 	
 	// initialize the stream based on properties of the cinder::DataSouce
 	if( mDataTarget->providesFilePath() ) {
-		hr = stream->InitializeFromFilename( mDataTarget->getFilePath().wstring().c_str(), GENERIC_WRITE );
+#if defined( CINDER_WINRT)
+		std::string s = mDataTarget->getFilePath().string();
+		std::wstring filePath =	std::wstring(s.begin(), s.end());                 
+#else
+		std::wstring filePath =	mDataTarget->getFilePath().wstring().c_str();
+#endif
+		hr = stream->InitializeFromFilename( filePath.c_str(), GENERIC_WRITE );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad();
 	}

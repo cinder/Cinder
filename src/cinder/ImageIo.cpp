@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -31,6 +33,14 @@
 	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
 #elif defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
+#elif defined( CINDER_WINRT )
+	#include "cinder/ImageSourceFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
+	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
+	#include <ppltasks.h>
+	#include "cinder/WinRTUtils.h"
+	#include "cinder/Utilities.h"
+	using namespace Windows::Storage;
+	using namespace Concurrency;
 #endif
 
 using namespace std;
@@ -356,6 +366,37 @@ ImageSource::RowFunc ImageSource::setupRowFunc( ImageTargetRef target )
 	}
 }
 
+
+#if defined( CINDER_WINRT )
+void loadImageAsync(const fs::path path, std::function<void (ImageSourceRef)> callback, ImageSource::Options options, std::string extension)
+{
+	auto loadImageTask = create_task([path, options, extension]() -> ImageSourceRef
+	{
+		return loadImage(path, options, extension);
+	});
+
+    auto c2 = loadImageTask.then([path, options, extension, callback](task<ImageSourceRef> previousTask)
+    {
+        // If we get an ImageIoExceptionFailedLoad, we try to copy the image to the Application temp folder and try again
+        try
+        {
+			// Image was loaded. This callback is on the main UI thread
+			callback(previousTask.get());
+        }
+        catch (const ImageIoExceptionFailedLoad&)
+        {
+			auto copyTask = winrt::copyFileToTempDirAsync(path);
+			copyTask.then([options, extension, callback](StorageFile^ file) 
+			{
+				fs::path temp = fs::path(toUtf8(file->Path->Data()));
+				// Image was loaded. This callback is on the main UI thread
+				callback(loadImage(temp, options, extension));
+				winrt::deleteFileAsync(temp);
+			});
+        }
+    });
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 ImageSourceRef loadImage( const fs::path &path, ImageSource::Options options, string extension )
