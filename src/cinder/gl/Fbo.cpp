@@ -52,7 +52,7 @@ Renderbuffer::Obj::Obj( int aWidth, int aHeight, GLenum internalFormat, int msaa
 	: mWidth( aWidth ), mHeight( aHeight ), mInternalFormat( internalFormat ), mSamples( msaaSamples ), mCoverageSamples( coverageSamples )
 {
 #if defined( CINDER_MSW )
-	static bool csaaSupported = ( GLEE_NV_framebuffer_multisample_coverage != 0 );
+	static bool csaaSupported = ( GLEW_NV_framebuffer_multisample_coverage != 0 );
 #else
 	static bool csaaSupported = false;
 #endif
@@ -176,7 +176,7 @@ void Fbo::init()
 	gl::SaveFramebufferBinding bindingSaver;
 	
 #if defined( CINDER_MSW )
-	static bool csaaSupported = ( GLEE_NV_framebuffer_multisample_coverage != 0 );
+	static bool csaaSupported = ( GLEW_NV_framebuffer_multisample_coverage != 0 );
 #else
 	static bool csaaSupported = false;
 #endif

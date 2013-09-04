@@ -52,7 +52,7 @@
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -79,7 +79,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -176,7 +176,6 @@
     <ClCompile Include="..\src\cinder\gl\DisplayList.cpp" />
     <ClCompile Include="..\src\cinder\gl\Fbo.cpp" />
     <ClCompile Include="..\src\cinder\gl\gl.cpp" />
-    <ClCompile Include="..\src\cinder\gl\GLee.c" />
     <ClCompile Include="..\src\cinder\gl\GlslProg.cpp" />
     <ClCompile Include="..\src\cinder\gl\Light.cpp" />
     <ClCompile Include="..\src\cinder\gl\Material.cpp" />
@@ -203,6 +202,7 @@
     <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwOpenGL.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp" />
+    <ClCompile Include="..\src\glew\glew.c" />
     <ClCompile Include="..\src\jsoncpp\json_reader.cpp" />
     <ClCompile Include="..\src\jsoncpp\json_value.cpp" />
     <ClCompile Include="..\src\jsoncpp\json_writer.cpp" />
@@ -252,6 +252,8 @@
     <ClInclude Include="..\include\cinder\Tween.h" />
     <ClInclude Include="..\include\cinder\Unicode.h" />
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
+    <ClInclude Include="..\include\glew\glew.h" />
+    <ClInclude Include="..\include\glew\wglew.h" />
     <ClInclude Include="..\include\json\autolink.h" />
     <ClInclude Include="..\include\json\config.h" />
     <ClInclude Include="..\include\json\features.h" />
@@ -348,7 +350,6 @@
     <ClInclude Include="..\include\cinder\gl\DisplayList.h" />
     <ClInclude Include="..\include\cinder\gl\Fbo.h" />
     <ClInclude Include="..\include\cinder\gl\gl.h" />
-    <ClInclude Include="..\include\cinder\gl\GLee.h" />
     <ClInclude Include="..\include\cinder\gl\GlslProg.h" />
     <ClInclude Include="..\include\cinder\gl\Light.h" />
     <ClInclude Include="..\include\cinder\gl\Material.h" />

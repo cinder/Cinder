@@ -47,7 +47,7 @@
 namespace cinder { namespace gl {
 
 #if defined( CINDER_MSW )
-void initializeGlee() {
+void initializeGlew() {
 /*#if defined( CINDER_MAC )
 	CGDirectDisplayID display = CGMainDisplayID(); // 1
 	CGOpenGLDisplayMask myDisplayMask = CGDisplayIDToOpenGLDisplayMask( display ); // 2
@@ -67,7 +67,7 @@ void initializeGlee() {
 			CGLDestroyPixelFormat( pixelFormat ); // 7
 			CGLSetCurrentContext( myCGLContext ); // 8
 			if ( myCGLContext ) {
-				GLeeInit();
+				glewInit();
 			}
 			CGLDestroyContext(myCGLContext);
 		}
@@ -177,7 +177,7 @@ void initializeGlee() {
 	}
 	
 	if( wglMakeCurrent( hdc, hglrc ) ) {
-		GLeeInit();
+		glewInit();
 	}
 	wglMakeCurrent( NULL, NULL ); 
 
