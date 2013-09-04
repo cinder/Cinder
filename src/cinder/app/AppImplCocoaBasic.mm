@@ -697,7 +697,7 @@
 	winImpl->mWindowRef = cinder::app::Window::privateCreate__( winImpl, winImpl->mAppImpl->mApp );
 	winImpl->mDisplay = winFormat.getDisplay();
 	winImpl->mHidden = NO;
-	winImpl->mActive = NO;
+	winImpl->mActive = YES;
 	winImpl->mResizable = winFormat.isResizable();
 	winImpl->mBorderless = winFormat.isBorderless();
 	winImpl->mAlwaysOnTop = winFormat.isAlwaysOnTop();
