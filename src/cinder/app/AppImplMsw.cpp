@@ -315,7 +315,7 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 ///////////////////////////////////////////////////////////////////////////////
 // WindowImplMsw
 WindowImplMsw::WindowImplMsw( const Window::Format &format, RendererRef sharedRenderer, AppImplMsw *appImpl )
-	: mWindowOffset( 0, 0 ), mAppImpl( appImpl ), mIsDragging( false ), mHidden( false ), mActive( false )
+	: mWindowOffset( 0, 0 ), mAppImpl( appImpl ), mIsDragging( false ), mHidden( false ), mActive( true )
 {	
 	mFullScreen = format.isFullScreen();
 	mDisplay = format.getDisplay();
