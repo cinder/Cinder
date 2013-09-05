@@ -69,9 +69,28 @@ class MouseEvent : public Event {
 	//! Returns the number of detents the user has wheeled through. Positive values correspond to wheel-up and negative to wheel-down.
 	float		getWheelIncrement() const { return mWheelIncrement; }
 	
+	//! Returns the modifier mask
+	unsigned int	getModifiers() const { return mModifiers; }
 	//! Returns the platform-native modifier mask
 	uint32_t	getNativeModifiers() const { return mNativeModifiers; }	
-
+	//! Returns the initiator mask
+	int		getInitiator() const { return mInitiator; }  
+	
+	//! Sets the X coordinate of the mouse event
+	void		setX( int x ) { mX = x; }
+	//! Sets the Y coordinate of the mouse event
+	void		setY( int y ) { mY = y; }
+	//! Sets the coordinates of the mouse event
+	void		setPos( const Vec2i& pos ) { mX = pos.x; mY = pos.y; }
+	//! Sets the number of detents the user has wheeled through. Positive values correspond to wheel-up and negative to wheel-down.
+	void		setWheelIncrement( float increment ) { mWheelIncrement = increment; }
+	//! Sets the modifier mask
+	void		setModifiers( unsigned int modifiers ) { mModifiers = modifiers; }
+	//! Sets the native modifier mask
+	void		setNativeModifiers( unsigned int modifiers ) { mNativeModifiers = modifiers; }
+	//! Sets the initiator mask
+	void		setModifiers( int initiator ) { mInitiator = initiator; }
+  
 	enum {	LEFT_DOWN	= 0x0001,
 			RIGHT_DOWN	= 0x0002,
 			MIDDLE_DOWN = 0x0004,
