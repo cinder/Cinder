@@ -449,20 +449,22 @@ void WindowImplMsw::registerWindowClass()
 	if( sRegistered )
 		return;
 
-	WNDCLASS	wc;
+	WNDCLASSEX	wc;
 	HMODULE instance	= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
+	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;	// Redraw On Size, And Own DC For Window.
 	wc.lpfnWndProc		= WndProc;						// WndProc Handles Messages
 	wc.cbClsExtra		= 0;									// No Extra Window Data
 	wc.cbWndExtra		= 0;									// No Extra Window Data
 	wc.hInstance		= instance;							// Set The Instance
-	wc.hIcon			= ::LoadIcon( NULL, IDI_WINLOGO );		// Load The Default Icon
+	wc.hIcon = (HICON)::LoadImage( instance, MAKEINTRESOURCE(1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE ); // Load The Default Cinder Icon
+	wc.hIconSm = NULL;
 	wc.hCursor			= ::LoadCursor( NULL, IDC_ARROW );		// Load The Arrow Pointer
 	wc.hbrBackground	= NULL;									// No Background Required For GL
 	wc.lpszMenuName		= NULL;									// We Don't Want A Menu
 	wc.lpszClassName	= WINDOWED_WIN_CLASS_NAME;
 
-	if( ! ::RegisterClass( &wc ) ) {								// Attempt To Register The Window Class
+	if( ! ::RegisterClassEx( &wc ) ) {								// Attempt To Register The Window Class
 		DWORD err = ::GetLastError();
 		return;							
 	}
