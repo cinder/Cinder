@@ -215,13 +215,13 @@ std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs )
 /////////////////////////////////////////////////////////////////////////////
 // ColorAT
 template<typename T>
-ColorAT<T>::ColorAT( const char *svgColorName )
+ColorAT<T>::ColorAT( const char *svgColorName, T aA )
+	: a( aA )
 {
 	Color8u col = svgNameToRgb( svgColorName );
 	r = CHANTRAIT<T>::convert( col.r );
 	g = CHANTRAIT<T>::convert( col.g );
 	b = CHANTRAIT<T>::convert( col.b );
-	a = CHANTRAIT<T>::convert( 1.0f );
 }
 
 template<typename T>

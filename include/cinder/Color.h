@@ -50,7 +50,7 @@ class ColorT
 	ColorT( const ColorT<T> &src ) 
 		: r( src.r ), g( src.g ), b( src.b )
 	{}
-	ColorT( const char *svgColorName );	
+	ColorT( const char *svgColorName );
 
 	ColorT( ColorModel cm, const Vec3f &v );
 	ColorT( ColorModel cm, float x, float y, float z );
@@ -227,7 +227,7 @@ class ColorAT {
 	ColorAT( const ColorT<T> &col, T aA = CHANTRAIT<T>::convert( 1.0f ) )
 		: r( col.r ), g( col.g ), b( col.b ), a( aA )
 	{}
-	ColorAT( const char *svgColorName );
+	ColorAT( const char *svgColorName, T aA = CHANTRAIT<T>::convert( 1.0f ) );
 
 	ColorAT( ColorModel cm, float c1, float c2, float c3, float aA = CHANTRAIT<T>::convert( 1.0f ) );
 
