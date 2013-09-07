@@ -29,6 +29,7 @@
 #include "cinder/ChanTraits.h"
 #include "cinder/Vector.h"
 #include "cinder/CinderMath.h"
+#include <sstream>
 
 namespace cinder {
 
@@ -200,6 +201,15 @@ class ColorT
 		uint8_t green = ( hexValue >> 8 ) & 255;
 		uint8_t blue = hexValue & 255;		
 		return ColorT<T>( CHANTRAIT<T>::convert( red ), CHANTRAIT<T>::convert( green ), CHANTRAIT<T>::convert( blue ) );
+	}
+
+	//! Returns a color from a string representation of a hexadecimal-encoded RGB triple. For example, red is "0xFF0000"
+	static ColorT<T> hex( const std::string &hexValueString )
+	{
+		std::stringstream converter( hexValueString );
+		uint32_t hexValue;
+		converter >> std::hex >> hexValue;
+		return ColorT<T>::hex( hexValue );
 	}
 
 	operator T*(){ return (T*) this; }
@@ -380,6 +390,24 @@ class ColorAT {
 		uint8_t green = ( hexValue >> 8 ) & 255;
 		uint8_t blue = hexValue & 255;
 		return ColorAT<T>( CHANTRAIT<T>::convert( red ), CHANTRAIT<T>::convert( green ), CHANTRAIT<T>::convert( blue ), CHANTRAIT<T>::convert( alpha ) );
+	}
+
+	//! Returns a ColorA from a string representation of a hexadecimal-encoded RGB triple. For example, red is "0xFF0000"
+	static ColorAT<T> hex( const std::string &hexValueString )
+	{
+		std::stringstream converter( hexValueString );
+		uint32_t hexValue;
+		converter >> std::hex >> hexValue;
+		return ColorAT<T>::hex( hexValue );
+	}
+	
+	//! Returns a ColorA from a string representation of a hexadecimal-encoded ARGB ordering. For example, 50% transparent red is "0x80FF0000"
+	static ColorAT<T> hexA( const std::string &hexValueString )
+	{
+		std::stringstream converter( hexValueString );
+		uint32_t hexValue;
+		converter >> std::hex >> hexValue;
+		return ColorAT<T>::hexA( hexValue );
 	}
 
 	operator T*(){ return (T*) this; }
