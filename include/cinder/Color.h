@@ -375,7 +375,7 @@ class ColorAT {
 	//! Returns a ColorA from a hexadecimal-encoded ARGB ordering. For example, 50% transparent red is 0x80FF0000
 	static ColorAT<T> hexA( uint32_t hexValue )
 	{
-		uint8_t alpha = ( hexValue >> 24 ) & 255;;
+		uint8_t alpha = ( hexValue >> 24 ) & 255;
 		uint8_t red = ( hexValue >> 16 ) & 255;
 		uint8_t green = ( hexValue >> 8 ) & 255;
 		uint8_t blue = hexValue & 255;
