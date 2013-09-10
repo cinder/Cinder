@@ -295,11 +295,13 @@ void Window::emitMove()
 
 void Window::emitActivate()
 {
+	mSignalActivate();
 	getApp()->activate();
 }
 
 void Window::emitDeactivate()
 {
+	mSignalDeactivate();
 	getApp()->deactivate();
 }
 
