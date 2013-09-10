@@ -183,7 +183,7 @@ void			writeImage( ImageTargetRef imageTarget, const ImageSourceRef &imageSource
 
 class ImageIoException : public Exception {
   public:
-	ImageIoException( const std::string &description ) : mDescription( description ) {}
+	ImageIoException( const std::string &description = "" ) : mDescription( description ) {}
 	virtual const char* what() const throw()	{ return mDescription.c_str(); }
   protected:
 	std::string mDescription;
@@ -191,32 +191,32 @@ class ImageIoException : public Exception {
 
 class ImageIoExceptionFailedLoad : public ImageIoException {
   public:
-	ImageIoExceptionFailedLoad( const std::string &description ) : ImageIoException( description ) {}
+	ImageIoExceptionFailedLoad( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
 class ImageIoExceptionFailedWrite : public ImageIoException {
   public:
-	ImageIoExceptionFailedWrite( const std::string &description ) : ImageIoException( description ) {}
+	ImageIoExceptionFailedWrite( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
 class ImageIoExceptionUnknownExtension : public ImageIoException {
   public:
-	ImageIoExceptionUnknownExtension( const std::string &description ) : ImageIoException( description ) {}
+	ImageIoExceptionUnknownExtension( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
 class ImageIoExceptionIllegalColorModel : public ImageIoException {
   public:
-	ImageIoExceptionIllegalColorModel( const std::string &description ) : ImageIoException( description ) {}
+	ImageIoExceptionIllegalColorModel( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
 class ImageIoExceptionIllegalDataType : public ImageIoException {
   public:
-	ImageIoExceptionIllegalDataType( const std::string &description ) : ImageIoException( description ) {}
+	ImageIoExceptionIllegalDataType( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
 class ImageIoExceptionIllegalChannelOrder : public ImageIoException {
   public:
-	ImageIoExceptionIllegalChannelOrder( const std::string &description ) : ImageIoException( description ) {}
+	ImageIoExceptionIllegalChannelOrder( const std::string &description = "" ) : ImageIoException( description ) {}
 };
 
 
