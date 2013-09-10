@@ -57,6 +57,8 @@ class ImageSourcePng : public ImageSource {
 REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourcePng )
 
 class ImageSourcePngException : public ImageIoException {
+  public:
+	ImageSourcePngException( const std::string &description ) : ImageIoException( description ) {}
 };
 
 } // namespace cinder

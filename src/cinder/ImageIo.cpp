@@ -57,8 +57,8 @@ void ImageIo::translateRgbColorModelToOffsets( ChannelOrder channelOrder, int8_t
 		case XBGR:	*red = 3; *green = 2; *blue = 1; *alpha = -1;	*inc = 4;	break;
 		case RGB:	*red = 0; *green = 1; *blue = 2; *alpha = -1;	*inc = 3;	break;
 		case BGR:	*red = 2; *green = 1; *blue = 0; *alpha = -1;	*inc = 3;	break;
-		default: // we've ended up somewhere very bad
-			throw ImageIoExceptionIllegalChannelOrder();
+		default:
+			throw ImageIoExceptionIllegalChannelOrder( "Unexpected channel order." );
 	}
 }
 
@@ -67,8 +67,8 @@ void ImageIo::translateGrayColorModelToOffsets( ChannelOrder channelOrder, int8_
 	switch( channelOrder ) {
 		case Y:		*gray = 0;	*alpha = -1;	*inc = 1;	break;
 		case YA:	*gray = 0;	*alpha = 1;		*inc = 2;	break;
-		default: // we've ended up somewhere very bad
-			throw ImageIoExceptionIllegalChannelOrder();
+		default:
+			throw ImageIoExceptionIllegalChannelOrder( "Unexpected channel order." );
 	}
 }
 
@@ -87,8 +87,8 @@ int8_t ImageIo::channelOrderNumChannels( ChannelOrder channelOrder )
 		case BGR:	return 3;	break;
 		case Y:		return 1;	break;
 		case YA:	return 2;	break;
-		default: // we've ended up somewhere very bad
-			throw ImageIoExceptionIllegalChannelOrder();
+		default:
+			throw ImageIoExceptionIllegalChannelOrder( "Unexpected channel order." );
 	}
 }
 
@@ -113,7 +113,7 @@ uint8_t	ImageIo::dataTypeBytes( DataType dataType )
 		case UINT16: return 2;
 		case FLOAT32: return 4;
 		default:
-			throw; // this should never happen
+			throw ImageIoExceptionIllegalDataType( "Unexpected data type." );
 	}
 }
 
@@ -298,8 +298,9 @@ ImageSource::RowFunc ImageSource::setupRowFuncForTypesAndTargetColorModel( Image
 				return &ImageSource::rowFuncSourceGray<SD,TD,TCM,false>;
 		}
 		break;
+		case CM_UNKNOWN:
 		default:
-			throw ImageIoExceptionIllegalColorModel();
+			throw ImageIoExceptionIllegalColorModel( "Unknown color model." );
 	}
 }
 
@@ -315,7 +316,7 @@ ImageSource::RowFunc ImageSource::setupRowFuncForTypes( ImageTargetRef target )
 		break;
 		case CM_UNKNOWN:
 		default:
-			throw ImageIoExceptionIllegalColorModel();
+			throw ImageIoExceptionIllegalColorModel( "Unknown color model." );
 	}
 }
 
@@ -334,7 +335,7 @@ ImageSource::RowFunc ImageSource::setupRowFuncForSourceType( ImageTargetRef targ
 		break;
 		case DATA_UNKNOWN:
 		default:
-			throw ImageIoExceptionIllegalDataType();
+			throw ImageIoExceptionIllegalDataType( "Unknown data type." );
 	}
 }
 
@@ -352,7 +353,7 @@ ImageSource::RowFunc ImageSource::setupRowFunc( ImageTargetRef target )
 		break;
 		case DATA_UNKNOWN:
 		default:
-			throw ImageIoExceptionIllegalDataType();
+			throw ImageIoExceptionIllegalDataType( "Unknown data type." );
 	}
 }
 
@@ -394,7 +395,7 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 		writeImage( imageTarget, imageSource );
 	}
 	else
-		throw ImageIoExceptionUnknownExtension();
+		throw ImageIoExceptionUnknownExtension( "Could not create target for image with extension: " + extension );
 }
 
 void writeImage( ImageTargetRef imageTarget, const ImageSourceRef &imageSource )
@@ -455,7 +456,7 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, I
 		}
 	}
 
-	// if there is no extension, or none of the registered types got it, we'll have try the generic loaders	
+	// if there is no extension, or none of the registered types got it, we'll have to try the generic loaders
 	for( map<int32_t, ImageIoRegistrar::SourceCreationFunc>::const_iterator genericIt = mGenericSources.begin(); genericIt != mGenericSources.end(); ++genericIt ) {
 		try {
 			return (*(genericIt->second))( dataSource, options );
@@ -465,7 +466,7 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, I
 	}
 	
 	// failure
-	throw ImageIoExceptionFailedLoad();
+	throw ImageIoException( "Could not find suitable image source handler." );
 }
 
 void ImageIoRegistrar::registerSourceType( string extension, SourceCreationFunc func, int32_t priority )

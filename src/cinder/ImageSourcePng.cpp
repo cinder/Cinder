@@ -79,7 +79,7 @@ ImageSourcePng::ImageSourcePng( DataSourceRef dataSourceRef, ImageSource::Option
 {
 	mPngPtr = png_create_read_struct( PNG_LIBPNG_VER_STRING, (png_voidp)NULL, NULL, NULL );
 	if( ! mPngPtr ) {
-		throw ImageSourcePngException(); 
+		throw ImageSourcePngException( "Could not create png struct." );
 	}
 
 	mCiInfoPtr = shared_ptr<ci_png_info>( new ci_png_info );
@@ -91,11 +91,11 @@ ImageSourcePng::ImageSourcePng( DataSourceRef dataSourceRef, ImageSource::Option
 	if( ! mInfoPtr ) {
 		png_destroy_read_struct( &mPngPtr, (png_infopp)NULL, (png_infopp)NULL );
 		mPngPtr = 0;
-		throw ImageSourcePngException();
+		throw ImageSourcePngException( "Could not destroy png read struct." );
 	}
 	
 	if( ! loadHeader() )
-		throw ImageSourcePngException();		
+		throw ImageSourcePngException( "Could not load png header." );
 }
 
 // part of this being separated allows for us to play nicely with the setjmp of libpng
@@ -144,7 +144,7 @@ bool ImageSourcePng::loadHeader()
 				setChannelOrder( ImageIo::RGBA );
 			break;
 			default:
-				throw ImageSourcePngException();
+				throw ImageSourcePngException( "Unexpected png color type." );
 		}	
 
 		png_set_expand_gray_1_2_4_to_8( mPngPtr );
@@ -183,7 +183,7 @@ void ImageSourcePng::load( ImageTargetRef target )
 	}
 	
 	if( ! success )
-		throw ImageSourcePngException(); // this is not a hot idea but I don't have time to fix it atm
+		throw ImageSourcePngException( "Failure during load." );
 }
 
 } // namespace cinder

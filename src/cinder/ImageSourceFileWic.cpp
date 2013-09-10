@@ -56,7 +56,8 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&IWICFactoryP) );
 #endif
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoException( "Could not create WIC Image Factory." );
+
 	std::shared_ptr<IWICImagingFactory> IWICFactory = msw::makeComShared( IWICFactoryP );
 	
     // Create a decoder
@@ -70,23 +71,24 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 				&decoderP                        // Pointer to the decoder
 			);
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not create WIC Decoder from filename." );
+
 	}
 	else { // have to use a buffer
 		IWICStream *pIWICStream = NULL;
 		hr = IWICFactory->CreateStream( &pIWICStream );
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not create WIC Stream." );
 		std::shared_ptr<IWICStream> stream = msw::makeComShared( pIWICStream );
 		
 		Buffer buffer = dataSourceRef->getBuffer();
 		hr = stream->InitializeFromMemory( reinterpret_cast<BYTE*>( buffer.getData() ), buffer.getDataSize() );
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not initialize WIC Stream." );
 		
 		hr = IWICFactory->CreateDecoderFromStream( stream.get(), NULL, WICDecodeMetadataCacheOnDemand, &decoderP );
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not create WIC Decoder from stream." );
 	}
 	std::shared_ptr<IWICBitmapDecoder> decoder = msw::makeComShared( decoderP );
 
@@ -94,7 +96,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	IWICBitmapFrameDecode *frameP = NULL;
 	hr = decoder->GetFrame( options.getIndex(), &frameP );
 	if( ! SUCCEEDED(hr) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedLoad( "Could not retrieve index frame from WIC Decoder." );
 	std::shared_ptr<IWICBitmapFrameDecode> frame = msw::makeComShared( frameP );
 
 	UINT width = 0, height = 0;
@@ -113,12 +115,11 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 		IWICFormatConverter *pIFormatConverter = NULL;	
 		hr = IWICFactory->CreateFormatConverter( &pIFormatConverter );
 		if( ! SUCCEEDED( hr ) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not create WIC Format Converter." );
 		std::shared_ptr<IWICFormatConverter> formatConverter = msw::makeComShared( pIFormatConverter );
-		hr = formatConverter->Initialize( frame.get(), convertPixelFormat, WICBitmapDitherTypeNone,
-					NULL, 0.f, WICBitmapPaletteTypeCustom );
+		hr = formatConverter->Initialize( frame.get(), convertPixelFormat, WICBitmapDitherTypeNone, NULL, 0.f, WICBitmapPaletteTypeCustom );
 		if( ! SUCCEEDED( hr ) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not initialize WIC Format Converter." );
 		hr = formatConverter->CopyPixels( NULL, (UINT)mRowBytes, mRowBytes * mHeight, mData.get() );
 	}
 	else
@@ -174,7 +175,7 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 );
 	}
 	else
-		throw ImageIoExceptionFailedLoad(); // a format we can't process
+		throw ImageIoException( "Unsupported format." );
 
 	return false;
 }
