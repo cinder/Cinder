@@ -108,6 +108,9 @@
       <AdditionalIncludeDirectories>..\..\..\..\include\winrt\boost;..\..\..\..\include;..\..\..\..\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4453</DisableSpecificWarnings>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\..\..\..\lib\winrt\$(PlatformTarget)\</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
@@ -117,8 +120,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-		<AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
-		<AdditionalLibraryDirectories>..\..\..\..\lib\winrt\$(PlatformTarget)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -129,8 +131,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-		<AdditionalDependencies>cinder_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-		<AdditionalLibraryDirectories>..\..\..\..\lib\winrt\$(PlatformTarget)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cinder_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
