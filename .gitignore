@@ -10,6 +10,8 @@ xcuserdata/
 build/
 lib/libcinder*.a
 lib/cinder*.lib
+lib/cinder*.idb
+lib/cinder*.pdb
 
 # Windows cruft
 *.suo
