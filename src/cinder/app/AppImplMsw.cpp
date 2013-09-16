@@ -820,10 +820,8 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
 							c, c, prepKeyEventModifiers(), (int)wParam );
 			impl->getWindow()->emitKeyDown( &event );
-			if ( uMsg == WM_KEYDOWN )
+			if ( event.isHandled() )
 				return 0;
-			else
-				return DefWindowProc( mWnd, uMsg, wParam, lParam );
 		}
 		break;
 		case WM_SYSKEYUP:
@@ -832,10 +830,8 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
 							c, c, prepKeyEventModifiers(), (int)wParam );
 			impl->getWindow()->emitKeyUp( &event );
-			if ( uMsg == WM_KEYUP )
+			if ( event.isHandled() )
 				return 0;
-			else
-				return DefWindowProc( mWnd, uMsg, wParam, lParam );
 		}
 		break;
 		// mouse events
