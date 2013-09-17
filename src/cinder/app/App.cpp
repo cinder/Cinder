@@ -123,13 +123,13 @@ void App::privateSetup__()
 
 void App::privateUpdate__()
 {
+	mFrameCount++;
 	// service boost::asio::io_service
 	mIo->poll();
 
 	mSignalUpdate();
 
 	update();
-	mFrameCount++;
 
 	mTimeline->stepTo( static_cast<float>( getElapsedSeconds() ) );
 
