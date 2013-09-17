@@ -158,10 +158,10 @@ void iosAppTestApp::setup()
 	mMouseTouchId = 0;
 	tester.setState( TestCallbackOrder::SETUP );
 
-	getSignalProximitySensor().connect( std::bind( &iosAppTestApp::proximitySensor, this, std::_1 ) );
+	getSignalProximitySensor().connect( std::bind( &iosAppTestApp::proximitySensor, this, std::placeholders::_1 ) );
 	enableProximitySensor();
 
-	getSignalBatteryState().connect( std::bind( &iosAppTestApp::batteryStateChange, this, std::_1 ) );
+	getSignalBatteryState().connect( std::bind( &iosAppTestApp::batteryStateChange, this, std::placeholders::_1 ) );
 	enableBatteryMonitoring();
 	
 	mCubeRotation.setToIdentity();
