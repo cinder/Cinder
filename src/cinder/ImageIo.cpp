@@ -23,6 +23,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 
+#include <boost/utility.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <cctype>
 
@@ -450,7 +451,10 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, I
 				try {
 					return (*(sourcesIt->second))( dataSource, options );
 				}
-				catch( ... ) { // we'll ignore exceptions and move to the next handler
+				catch( ImageIoException &exc ) {
+					// if we're out of handlers, rethrow the exception, otherwise continue on
+					if( boost::next( sourcesIt ) == sIt->second.end() && mGenericSources.empty() )
+						throw exc;
 				}
 			}
 		}
@@ -461,12 +465,14 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, I
 		try {
 			return (*(genericIt->second))( dataSource, options );
 		}
-		catch( ... ) { // we'll ignore exceptions and move to the next handler
+		catch( ImageIoException &exc ) {
+			// if we're out of handlers, rethrow the exception, otherwise continue on
+			if( boost::next( genericIt ) == mGenericSources.end() )
+				throw exc;
 		}
 	}
-	
-	// failure
-	throw ImageIoException( "Could not find suitable image source handler." );
+
+	assert( 0 && "unreachable" );
 }
 
 void ImageIoRegistrar::registerSourceType( string extension, SourceCreationFunc func, int32_t priority )
