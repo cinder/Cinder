@@ -105,7 +105,19 @@ Texture::Texture( const unsigned char *data, int dataFormat, int aWidth, int aHe
 	mObj->mInternalFormat = format.mInternalFormat;
 	mObj->mTarget = format.mTarget;
 	init( data, 0, dataFormat, GL_UNSIGNED_BYTE, format );
-}	
+}
+
+Texture Texture::withCompressedData( const unsigned char *data, int aWidth, int aHeight, size_t compressedDataSize, Format format )
+{
+	Texture result;
+	result.mObj = shared_ptr<Obj>( new Obj( aWidth, aHeight ) );
+	if( format.mInternalFormat == -1 )
+		format.mInternalFormat = GL_RGBA;
+	result.mObj->mInternalFormat = format.mInternalFormat;
+	result.mObj->mTarget = format.mTarget;
+	result.init( data, compressedDataSize, format );
+	return result;
+}
 
 Texture::Texture( const Surface8u &surface, Format format )
 	: mObj( shared_ptr<Obj>( new Obj( surface.getWidth(), surface.getHeight() ) ) )
@@ -268,10 +280,25 @@ void Texture::init( const unsigned char *data, int unpackRowLength, GLenum dataF
 #if ! defined( CINDER_GLES )
 	glPixelStorei( GL_UNPACK_ROW_LENGTH, unpackRowLength );
 #endif
-	glTexImage2D( mObj->mTarget, 0, mObj->mInternalFormat, mObj->mWidth, mObj->mHeight, 0, dataFormat, type, data );
+    glTexImage2D( mObj->mTarget, 0, mObj->mInternalFormat, mObj->mWidth, mObj->mHeight, 0, dataFormat, type, data );
 #if ! defined( CINDER_GLES )
 	glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
 #endif	
+}
+
+void Texture::init( const unsigned char *data, int compressedDataSize, const Format &format )
+{
+	mObj->mDoNotDispose = false;
+	
+	glGenTextures( 1, &mObj->mTextureID );
+	
+	glBindTexture( mObj->mTarget, mObj->mTextureID );
+	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_S, format.mWrapS );
+	glTexParameteri( mObj->mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
+	glTexParameteri( mObj->mTarget, GL_TEXTURE_MIN_FILTER, format.mMinFilter );	
+	glTexParameteri( mObj->mTarget, GL_TEXTURE_MAG_FILTER, format.mMagFilter );
+
+	glCompressedTexImage2D( mObj->mTarget, 0, mObj->mInternalFormat, mObj->mWidth, mObj->mHeight, 0, compressedDataSize, data );
 }
 
 void Texture::init( const float *data, GLint dataFormat, const Format &format )
@@ -297,7 +324,7 @@ void Texture::init( const float *data, GLint dataFormat, const Format &format )
 	
 	if( data ) {
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-		glTexImage2D( mObj->mTarget, 0, mObj->mInternalFormat, mObj->mWidth, mObj->mHeight, 0, dataFormat, GL_FLOAT, data );
+        glTexImage2D( mObj->mTarget, 0, mObj->mInternalFormat, mObj->mWidth, mObj->mHeight, 0, dataFormat, GL_FLOAT, data );
 	}
 	else
 		glTexImage2D( mObj->mTarget, 0, mObj->mInternalFormat, mObj->mWidth, mObj->mHeight, 0, GL_LUMINANCE, GL_FLOAT, 0 );  // init to black...
