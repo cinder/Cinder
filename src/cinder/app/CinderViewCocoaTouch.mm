@@ -303,7 +303,10 @@ static Boolean sIsEaglLayer;
 	int n = [text length];
 	for( int i = 0; i < n; i++ ) {
 		unichar c = [text characterAtIndex:i];
-		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, c, c, 0, 0 );
+
+		// For now, use ASCII key codes on iOS, which is already mapped out in KeyEvent's enum.
+		int keyCode = ( c < 127 ? c : cinder::app::KeyEvent::KEY_UNKNOWN );
+		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], keyCode, c, c, 0, 0 );
 		[mDelegate keyDown:&keyEvent];
 	}
 }
@@ -346,7 +349,10 @@ static Boolean sIsEaglLayer;
     else {		
 		for( int i = 0; i < [string length]; i++) {
 			unichar c = [string characterAtIndex:i];
-			cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, c, c, 0, 0 );	
+
+			// For now, use ASCII key codes on iOS, which is already mapped out in KeyEvent's enum.
+			int keyCode = ( c < 127 ? c : cinder::app::KeyEvent::KEY_UNKNOWN );
+			cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], keyCode, c, c, 0, 0 );
 			[mDelegate keyDown:&keyEvent];
 		}
 	}
