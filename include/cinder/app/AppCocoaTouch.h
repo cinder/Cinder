@@ -98,6 +98,14 @@ class AppCocoaTouch : public App {
 	signals::signal<void()>&			getSignalDidRotate() { return mSignalDidRotate; }
 	//! Emits the signal to notify the user that the orientation did change.
 	void								emitDidRotate();
+	//! Returns the signal emitted when the virtual keyboard is about to animate on screen.
+	signals::signal<void()>&			getSignalKeyboardWillShow() { return mSignalKeyboardWillShow; }
+	//! Emits the signal used to notify when the virtual keyboard is about to animate on screen.
+	void								emitKeyboardWillShow();
+	//! Returns the signal emitted when the virtual keyboard is about to animate off screen.
+	signals::signal<void()>&			getSignalKeyboardWillHide() { return mSignalKeyboardWillHide; }
+	//! Emits the signal used to notify when the virtual keyboard is about to animate off screen.
+	void								emitKeyboardWillHide();
 
 	WindowRef 		createWindow( const Window::Format &format );
 
@@ -144,6 +152,8 @@ class AppCocoaTouch : public App {
 	void		hideKeyboard();
 	//! Returns the current text recorded since the most recent call to \a showKeyboard().
 	std::string	getKeyboardString() const;
+	//! Sets the current text string that the keyboard is manipulating, overwriting any previous content.
+	void setKeyboardString( const std::string &keyboardString );
 
 	typedef enum StatusBarAnimation { NONE, FADE, SLIDE } StatusBarAnimation;
 	//! Shows the system status bar
@@ -207,6 +217,7 @@ class AppCocoaTouch : public App {
 
 	EventSignalSupportedOrientations		mSignalSupportedOrientations;
 	signals::signal<void()>					mSignalWillRotate, mSignalDidRotate;
+	signals::signal<void(void)>				mSignalKeyboardWillShow, mSignalKeyboardWillHide;
 
 	bool					mIsKeyboardVisible;
 };

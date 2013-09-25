@@ -30,10 +30,11 @@
 
 @class AppImplCocoaTouch;
 
-@interface WindowImplCocoaTouch : UIViewController<WindowImplCocoa, CinderViewCocoaTouchDelegate> {
+@interface WindowImplCocoaTouch : UIViewController<WindowImplCocoa, CinderViewCocoaTouchDelegate, UIKeyInput, UITextFieldDelegate> {
   @public
 	AppImplCocoaTouch							*mAppImpl;
 	UIWindow									*mUiWindow;
+	UITextField									*mKeyboardTestField;
 	CinderViewCocoaTouch						*mCinderView;
 	cinder::app::WindowRef						mWindowRef;
 	cinder::DisplayRef							mDisplay;
@@ -41,13 +42,25 @@
 	float										mContentScale;
 	BOOL										mResizeHasFired;
 	BOOL										mHidden;
+	BOOL										mKeyboardVisible;
 }
 
 - (void)loadView;
-- (void)viewDidLoad;
 - (WindowImplCocoaTouch*)initWithFormat:(cinder::app::Window::Format)format withAppImpl:(AppImplCocoaTouch*)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 
-// WindowImplCocoa Methods
+// virtual keyboard management
+- (void)showKeyboard;
+- (void)hideKeyboard;
+- (void)setKeyboardString:(const std::string *)keyboardString;
+- (void)keyboardWillShow:(NSNotification *)notification;
+- (void)keyboardWillHide:(NSNotification *)notification;
+
+// UIKeyInput Protocol Methods
+- (BOOL)canBecomeFirstResponder;
+- (void)insertText:(NSString *)text;
+- (void)deleteBackward;
+
+// WindowImplCocoa Protocol Methods
 - (BOOL)isFullScreen;
 - (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions*)options;
 - (cinder::Vec2i)getSize;
@@ -66,13 +79,14 @@
 - (void*)getNative;
 - (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
 
-// CinderViewCocoaTouchDelegate methods
+// CinderViewCocoaTouchDelegate Protocol methods
 - (void)draw;
 - (void)mouseDown:(cinder::app::MouseEvent*)event;
 - (void)mouseDrag:(cinder::app::MouseEvent*)event;
 - (void)mouseUp:(cinder::app::MouseEvent*)event;
 - (void)keyDown:(cinder::app::KeyEvent*)event;
-- (void)setKeyboardString:(const std::string *)keyboardString;
+
+@property (nonatomic, readonly) UITextField *keyboardTextField; // lazy-loaded in getter
 
 @end
 
@@ -123,6 +137,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)showKeyboard;
 - (void)hideKeyboard;
 - (std::string&)getKeyboardString;
+- (void)setKeyboardString:(const std::string &)keyboardString;
 - (void)showStatusBar:(UIStatusBarAnimation)anim;
 - (void)hideStatusBar:(UIStatusBarAnimation)anim;
 - (void)displayLinkDraw:(id)sender;
@@ -350,7 +365,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)showKeyboard
 {
 	if( ! mWindows.empty() ) {
-		[mWindows.front()->mCinderView showKeyboard];
+		[mWindows.front() showKeyboard];
 		mKeyboardString.clear();
 	}
 }
@@ -358,12 +373,18 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)hideKeyboard
 {
 	if( ! mWindows.empty() )
-		[mWindows.front()->mCinderView hideKeyboard];
+		[mWindows.front() hideKeyboard];
 }
 
 - (std::string&)getKeyboardString
 {
 	return mKeyboardString;
+}
+
+- (void)setKeyboardString:(const std::string &)keyboardString
+{
+	mKeyboardString = keyboardString;
+	mWindows.front().keyboardTextField.text = [NSString stringWithCString:keyboardString.c_str() encoding:NSUTF8StringEncoding];
 }
 
 - (void)showStatusBar:(UIStatusBarAnimation)anim
@@ -514,6 +535,11 @@ std::string	AppCocoaTouch::getKeyboardString() const
 	return [mImpl getKeyboardString];
 }
 
+void AppCocoaTouch::setKeyboardString( const std::string &keyboardString )
+{
+	[mImpl setKeyboardString:keyboardString];
+}
+
 void AppCocoaTouch::showStatusBar( AppCocoaTouch::StatusBarAnimation animation )
 {
 	if( animation == StatusBarAnimation::FADE ) [mImpl showStatusBar:UIStatusBarAnimationFade];
@@ -622,6 +648,16 @@ void AppCocoaTouch::emitDidRotate()
 	mSignalDidRotate();
 }
 
+void AppCocoaTouch::emitKeyboardWillShow()
+{
+	mSignalKeyboardWillShow();
+}
+
+void AppCocoaTouch::emitKeyboardWillHide()
+{
+	mSignalKeyboardWillHide();
+}
+
 std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs )
 {
 	switch( rhs ) {
@@ -649,6 +685,8 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 @implementation WindowImplCocoaTouch;
 
+@synthesize keyboardTextField = mKeyboardTextField;
+
 - (WindowImplCocoaTouch*)initWithFormat:(cinder::app::Window::Format)format withAppImpl:(AppImplCocoaTouch*)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer
 {
 	self = [super initWithNibName:nil bundle:nil];
@@ -657,6 +695,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 	mAppImpl = appImpl;
 	mResizeHasFired = NO;
+	mKeyboardVisible = NO;
 
 	mDisplay = format.getDisplay();
 	if( ! mDisplay ) // a NULL display implies the main display
@@ -694,15 +733,21 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	return self;
 }
 
+- (void)dealloc
+{
+	if( mKeyboardTextField ) {
+		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+		[mKeyboardTextField release];
+	}
+
+	[super dealloc];
+}
+
 - (void)loadView
 {
 	[super loadView];
 	self.view = mCinderView;
-}
-
-- (void)viewDidLoad
-{
-	[super viewDidLoad];
 }
 
 // pre iOS 6
@@ -752,6 +797,153 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 {
 	mAppImpl->mApp->emitDidRotate();
 }
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Keyboard Management
+
+- (void)showKeyboard
+{
+	if( mKeyboardVisible )
+		return;
+
+	mKeyboardVisible = YES;
+
+	self.keyboardTextField.text = @"";
+	[self.keyboardTextField becomeFirstResponder];
+}
+
+- (void)hideKeyboard
+{
+	if( ! mKeyboardVisible )
+		return;
+
+	mKeyboardVisible = NO;
+	[self.keyboardTextField resignFirstResponder];
+}
+
+- (void)setKeyboardString:(const std::string *)keyboardString
+{
+	NSString *updatedText = [NSString stringWithCString:keyboardString->c_str() encoding:NSUTF8StringEncoding];
+	self.keyboardTextField.text = updatedText;
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+	mAppImpl->mApp->emitKeyboardWillShow();
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+	// this can be triggered from keyboard itself, which skips hideKeyboard, so update bool state
+	mKeyboardVisible = NO;
+	mAppImpl->mApp->emitKeyboardWillHide();
+}
+
+// lazy loader for text field
+- (UITextField *)keyboardTextField
+{
+	if( ! mKeyboardTextField ) {
+		mKeyboardTextField = [[UITextField alloc] initWithFrame:CGRectZero];
+		mKeyboardTextField.hidden = YES;
+		mKeyboardTextField.delegate = self;
+
+		mKeyboardTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+		mKeyboardTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+		mKeyboardTextField.enablesReturnKeyAutomatically = NO;
+		mKeyboardTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
+		mKeyboardTextField.keyboardType = UIKeyboardTypeDefault;
+		mKeyboardTextField.returnKeyType = UIReturnKeyDefault;
+		mKeyboardTextField.secureTextEntry = NO;
+
+		[mCinderView addSubview:mKeyboardTextField];
+
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+	}
+
+	return mKeyboardTextField;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// UIKeyInput Protocol Methods
+
+- (BOOL)canBecomeFirstResponder
+{
+	return NO;
+}
+
+- (void)insertText:(NSString *)text
+{
+	int n = [text length];
+	for( int i = 0; i < n; i++ ) {
+		unichar c = [text characterAtIndex:i];
+
+		// For now, use ASCII key codes on iOS, which is already mapped out in KeyEvent's enum.
+		int keyCode = ( c < 127 ? c : cinder::app::KeyEvent::KEY_UNKNOWN );
+		cinder::app::KeyEvent keyEvent( mWindowRef, keyCode, c, c, 0, 0 );
+		[self keyDown:&keyEvent];
+	}
+}
+
+- (void)deleteBackward
+{
+	cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
+	[self keyDown:&keyEvent];
+}
+
+- (BOOL)hasText
+{
+	return YES;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// UITextField Protocol Methods
+
+- (BOOL)textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+	NSMutableString *currentString = [[textField.text mutableCopy] autorelease];
+	// if we are getting a backspace, the length of the range can't be trusted to map to the length of a composed character (such as emoji)
+	if( [string length] == 0 ) {
+		NSRange delRange = [currentString rangeOfComposedCharacterSequenceAtIndex:range.location];
+		[currentString deleteCharactersInRange:delRange];
+	}
+	else
+		[currentString replaceCharactersInRange:range withString:string];
+
+	//update our keyboardString
+	const char *utf8KeyboardChar = [currentString UTF8String];
+	if( utf8KeyboardChar ) {
+		std::string keyboardString( utf8KeyboardChar );
+		[self setKeyboardString:&keyboardString];
+	}
+
+    if( [string length] == 0 ) {
+		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
+		[self keyDown:&keyEvent];
+    }
+    else {
+		for( int i = 0; i < [string length]; i++) {
+			unichar c = [string characterAtIndex:i];
+
+			// For now, use ASCII key codes on iOS, which is already mapped out in KeyEvent's enum.
+			int keyCode = ( c < 127 ? c : cinder::app::KeyEvent::KEY_UNKNOWN );
+			cinder::app::KeyEvent keyEvent( mWindowRef, keyCode, c, c, 0, 0 );
+			[self keyDown:&keyEvent];
+		}
+	}
+
+    return YES; /* don't allow the edit! (keep placeholder text there) */
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField*)textField
+{
+	cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\n', '\n', 0, 0 );
+	[self keyDown:&keyEvent];
+	return YES;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WindowImplCocoa Protocol Methods
 
 - (BOOL)isFullScreen
 {
@@ -926,11 +1118,6 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	mWindowRef->emitKeyDown( event );
 	event->setHandled( false );
 	mWindowRef->emitKeyUp( event );
-}
-
-- (void)setKeyboardString:(const std::string *)keyboardString
-{
-	mAppImpl->mKeyboardString = *keyboardString;
 }
 
 @end
