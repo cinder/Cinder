@@ -144,8 +144,25 @@ class AppCocoaTouch : public App {
 	//! When disabled, the device will not sleep even after the idling threshold.
 	void enablePowerManagement( bool powerManagement = true ) override;
 
+	enum KeyboardType { DEFAULT, NUMERICAL, URL };
+
+	//! Optional params passed to keyboard. \see showKeyboard();
+	struct KeyboardOptions {
+		KeyboardOptions() : mType( KeyboardType::DEFAULT ) {}
+
+		KeyboardOptions& initialString( const std::string &str )	{ mInitialString = str; return *this; }
+		KeyboardOptions& type( KeyboardType type )					{ mType = type; return *this; }
+
+		const std::string& getInitialString() const		{ return mInitialString; }
+		KeyboardType getType() const					{ return mType; }
+
+	  private:
+		std::string mInitialString;
+		KeyboardType mType;
+	};
+
 	//! Shows the default iOS keyboard
-	void 		showKeyboard();
+	void 		showKeyboard( const KeyboardOptions &options = KeyboardOptions() );
 	//! Returns whether the iOS keyboard is visible
 	bool		isKeyboardVisible() const;
 	//! Hides the default iOS keyboard

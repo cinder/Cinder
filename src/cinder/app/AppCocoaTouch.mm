@@ -49,7 +49,7 @@
 - (WindowImplCocoaTouch*)initWithFormat:(cinder::app::Window::Format)format withAppImpl:(AppImplCocoaTouch*)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 
 // virtual keyboard management
-- (void)showKeyboard;
+- (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
 - (void)hideKeyboard;
 - (void)setKeyboardString:(const std::string *)keyboardString;
 - (void)keyboardWillShow:(NSNotification *)notification;
@@ -134,7 +134,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)setActiveWindow:(WindowImplCocoaTouch*)win;
 - (void)updatePowerManagement;
 - (void)setFrameRate:(float)frameRate;
-- (void)showKeyboard;
+- (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
 - (void)hideKeyboard;
 - (std::string&)getKeyboardString;
 - (void)setKeyboardString:(const std::string &)keyboardString;
@@ -362,11 +362,11 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 		[mDisplayLink setFrameInterval:mAnimationFrameInterval];
 }
 
-- (void)showKeyboard
+- (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options
 {
 	if( ! mWindows.empty() ) {
-		[mWindows.front() showKeyboard];
-		mKeyboardString.clear();
+		[mWindows.front() showKeyboard:options];
+		mKeyboardString.clear(); // TODO: get rid of this string if possible
 	}
 }
 
@@ -507,10 +507,10 @@ bool AppCocoaTouch::isUnplugged() const
 }
 
 //! Shows the default iOS keyboard
-void AppCocoaTouch::showKeyboard()
+void AppCocoaTouch::showKeyboard( const KeyboardOptions &options )
 {
 	if( ! mIsKeyboardVisible )
-		[mImpl showKeyboard];
+		[mImpl showKeyboard:options];
 	
 	mIsKeyboardVisible = true;
 }
@@ -801,14 +801,24 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 ///////////////////////////////////////////////////////////////////////////////////////
 // Keyboard Management
 
-- (void)showKeyboard
+- (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options
 {
 	if( mKeyboardVisible )
 		return;
 
-	mKeyboardVisible = YES;
+	using namespace cinder::app;
 
-	self.keyboardTextField.text = @"";
+	UIKeyboardType nativeType = UIKeyboardTypeDefault;
+	switch ( options.getType() ) {
+		case AppCocoaTouch::KeyboardType::NUMERICAL: nativeType = UIKeyboardTypeDecimalPad; break;
+		case AppCocoaTouch::KeyboardType::URL: nativeType = UIKeyboardTypeURL; break;
+		default: break;
+	}
+	self.keyboardTextField.keyboardType = nativeType;
+
+	[self setKeyboardString:&options.getInitialString()];
+
+	mKeyboardVisible = YES;
 	[self.keyboardTextField becomeFirstResponder];
 }
 
@@ -823,8 +833,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 - (void)setKeyboardString:(const std::string *)keyboardString
 {
-	NSString *updatedText = [NSString stringWithCString:keyboardString->c_str() encoding:NSUTF8StringEncoding];
-	self.keyboardTextField.text = updatedText;
+	self.keyboardTextField.text = [NSString stringWithCString:keyboardString->c_str() encoding:NSUTF8StringEncoding];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
@@ -851,7 +860,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 		mKeyboardTextField.autocorrectionType = UITextAutocorrectionTypeNo;
 		mKeyboardTextField.enablesReturnKeyAutomatically = NO;
 		mKeyboardTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-		mKeyboardTextField.keyboardType = UIKeyboardTypeDefault;
+//		mKeyboardTextField.keyboardType = UIKeyboardTypeDefault;
 		mKeyboardTextField.returnKeyType = UIReturnKeyDefault;
 		mKeyboardTextField.secureTextEntry = NO;
 
