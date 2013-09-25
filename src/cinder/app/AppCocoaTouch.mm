@@ -123,8 +123,6 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 	bool								mProximityStateIsClose;
 	bool								mIsUnplugged;
 	float								mBatteryLevel;
-	
-	std::string							mKeyboardString;
 }
 
 - (AppImplCocoaTouch*)init;
@@ -136,7 +134,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)setFrameRate:(float)frameRate;
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
 - (void)hideKeyboard;
-- (std::string&)getKeyboardString;
+- (std::string)getKeyboardString;
 - (void)setKeyboardString:(const std::string &)keyboardString;
 - (void)showStatusBar:(UIStatusBarAnimation)anim;
 - (void)hideStatusBar:(UIStatusBarAnimation)anim;
@@ -364,10 +362,8 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options
 {
-	if( ! mWindows.empty() ) {
+	if( ! mWindows.empty() )
 		[mWindows.front() showKeyboard:options];
-		mKeyboardString.clear(); // TODO: get rid of this string if possible
-	}
 }
 
 - (void)hideKeyboard
@@ -376,15 +372,22 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 		[mWindows.front() hideKeyboard];
 }
 
-- (std::string&)getKeyboardString
+- (std::string)getKeyboardString
 {
-	return mKeyboardString;
+	if( ! mWindows.empty() ) {
+		const char *utf8KeyboardChar = [mWindows.front().keyboardTextField.text UTF8String];
+		if( utf8KeyboardChar )
+			return std::string( utf8KeyboardChar );
+
+	}
+
+	return std::string();
 }
 
 - (void)setKeyboardString:(const std::string &)keyboardString
 {
-	mKeyboardString = keyboardString;
-	mWindows.front().keyboardTextField.text = [NSString stringWithCString:keyboardString.c_str() encoding:NSUTF8StringEncoding];
+	if( ! mWindows.empty() )
+		mWindows.front().keyboardTextField.text = [NSString stringWithCString:keyboardString.c_str() encoding:NSUTF8StringEncoding];
 }
 
 - (void)showStatusBar:(UIStatusBarAnimation)anim
@@ -918,13 +921,6 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	}
 	else
 		[currentString replaceCharactersInRange:range withString:string];
-
-	//update our keyboardString
-	const char *utf8KeyboardChar = [currentString UTF8String];
-	if( utf8KeyboardChar ) {
-		std::string keyboardString( utf8KeyboardChar );
-		[self setKeyboardString:&keyboardString];
-	}
 
     if( [string length] == 0 ) {
 		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
