@@ -46,7 +46,7 @@
 }
 
 - (void)loadView;
-- (WindowImplCocoaTouch*)initWithFormat:(cinder::app::Window::Format)format withAppImpl:(AppImplCocoaTouch*)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
+- (WindowImplCocoaTouch *)initWithFormat:(const cinder::app::Window::Format &)format withAppImpl:(AppImplCocoaTouch *)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 
 // virtual keyboard management
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
@@ -690,7 +690,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 @synthesize keyboardTextField = mKeyboardTextField;
 
-- (WindowImplCocoaTouch*)initWithFormat:(cinder::app::Window::Format)format withAppImpl:(AppImplCocoaTouch*)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer
+- (WindowImplCocoaTouch *)initWithFormat:(const cinder::app::Window::Format &)format withAppImpl:(AppImplCocoaTouch *)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer
 {
 	self = [super initWithNibName:nil bundle:nil];
 

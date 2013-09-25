@@ -190,7 +190,7 @@ class Window : public std::enable_shared_from_this<Window> {
 
 #if defined( CINDER_COCOA_TOUCH )
 		//! Returns the root UIViewController for the associated UIWindow on iOS
-		UIViewController*	getRootViewController() { return mRootViewController;}
+		UIViewController*	getRootViewController() const { return mRootViewController;}
 		//! Sets the root UIViewController for the associated UIWindow on iOS. Use this to enable a view heirarchy that contains native components at the root and later add Cinder's UIView / UIViewController
 		void				setRootViewController( UIViewController *v ) { mRootViewController = v; }
 		//! Sets the root UIViewController for the associated UIWindow on iOS. Use this to enable a view heirarchy that contains native components at the root and later add Cinder's UIView / UIViewController
