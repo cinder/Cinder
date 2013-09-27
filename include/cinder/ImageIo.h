@@ -87,19 +87,19 @@ class ImageSource : public ImageIo {
 
 	class Options {
 	  public:
-		Options() : mIndex( 0 ), mThrowOnAllErrors( false ) {}
+		Options() : mIndex( 0 ), mThrowOnFirstException( false ) {}
 
 		//! Specifies an image index for multi-part images, like animated GIFs
-		Options& index( int32_t aIndex )				{ mIndex = aIndex; return *this; }
-		//! If an exception (\see ImageIoException) occurs, enabling this will prevent any attempts at using other handlers to load the image. Default = false, all handlers are tried before the exception is rethrown.
-		Options& throwOnAllErrors( bool b = true )		{ mThrowOnAllErrors = b; return *this; }
-		
-		int32_t				getIndex() const			{ return mIndex; }
-		bool				getThrowOnAllErrors()		{ return mThrowOnAllErrors; }
+		Options& index( int32_t aIndex )					{ mIndex = aIndex; return *this; }
+		//! If an exception (\see ImageIoException) occurs, enabling this will prevent any attempts at using other handlers to load the image. Default = false, all handlers are tried and if none succeed, the last exception is rethrown.
+		Options& throwOnFirstException( bool b = true )		{ mThrowOnFirstException = b; return *this; }
+
+		int32_t				getIndex() const				{ return mIndex; }
+		bool				getThrowOnFirstException()		{ return mThrowOnFirstException; }
 		
 	  protected:
 		int32_t			mIndex;
-		bool			mThrowOnAllErrors;
+		bool			mThrowOnFirstException;
 	};
 
 	//! Returns the aspect ratio of individual pixels to accommodate non-square pixels
