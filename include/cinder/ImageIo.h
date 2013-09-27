@@ -85,16 +85,19 @@ class ImageSource : public ImageIo {
 	ImageSource() : ImageIo(), mIsPremultiplied( false ), mPixelAspectRatio( 1 ), mCustomPixelInc( 0 ) {}
 	virtual ~ImageSource() {}  
 
+	//! Optional parameters passed when creating an Image. \see loadImage()
 	class Options {
 	  public:
 		Options() : mIndex( 0 ), mThrowOnFirstException( false ) {}
 
 		//! Specifies an image index for multi-part images, like animated GIFs
-		Options& index( int32_t aIndex )					{ mIndex = aIndex; return *this; }
-		//! If an exception (\see ImageIoException) occurs, enabling this will prevent any attempts at using other handlers to load the image. Default = false, all handlers are tried and if none succeed, the last exception is rethrown.
+		Options& index( int32_t index )						{ mIndex = index; return *this; }
+		//! If an exception occurs, enabling this will prevent any attempts at using other handlers to load the image. Default = false, all handlers are tried and if none succeed, the last exception is rethrown. \see ImageIoException
 		Options& throwOnFirstException( bool b = true )		{ mThrowOnFirstException = b; return *this; }
 
+		//! Returns image index. \see index()
 		int32_t				getIndex() const				{ return mIndex; }
+		//! Returns whether throwOnFirstException() is enabled or not.
 		bool				getThrowOnFirstException()		{ return mThrowOnFirstException; }
 		
 	  protected:
