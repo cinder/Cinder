@@ -33,7 +33,7 @@ using std::pair;
 #include <limits>
 #include <fstream>
 #include <boost/preprocessor/seq.hpp>
-
+#include <algorithm>
 
 namespace cinder { namespace ip {
 

@@ -25,6 +25,7 @@
 #include "cinder/ChanTraits.h"
 #include "cinder/ip/Fill.h"
 
+#include <algorithm>
 
 namespace cinder { namespace ip {
 
