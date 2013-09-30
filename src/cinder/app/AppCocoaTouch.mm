@@ -51,6 +51,7 @@
 // virtual keyboard management
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
 - (void)hideKeyboard;
+- (bool)isKeyboardVisible;
 - (void)setKeyboardString:(const std::string *)keyboardString;
 - (void)keyboardWillShow:(NSNotification *)notification;
 - (void)keyboardWillHide:(NSNotification *)notification;
@@ -133,6 +134,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)updatePowerManagement;
 - (void)setFrameRate:(float)frameRate;
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
+- (bool)isKeyboardVisible;
 - (void)hideKeyboard;
 - (std::string)getKeyboardString;
 - (void)setKeyboardString:(const std::string &)keyboardString;
@@ -372,6 +374,14 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 		[mWindows.front() hideKeyboard];
 }
 
+- (bool)isKeyboardVisible
+{
+	if( ! mWindows.empty() )
+		[mWindows.front() hideKeyboard];
+
+	return false;
+}
+
 - (std::string)getKeyboardString
 {
 	if( ! mWindows.empty() ) {
@@ -417,8 +427,6 @@ AppCocoaTouch::AppCocoaTouch()
 	: App()
 {
 	AppCocoaTouch::sInstance = this;
-
-	mIsKeyboardVisible = false;
 }
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
@@ -509,28 +517,19 @@ bool AppCocoaTouch::isUnplugged() const
 	return mImpl->mIsUnplugged;
 }
 
-//! Shows the default iOS keyboard
 void AppCocoaTouch::showKeyboard( const KeyboardOptions &options )
 {
-	if( ! mIsKeyboardVisible )
-		[mImpl showKeyboard:options];
-	
-	mIsKeyboardVisible = true;
+	[mImpl showKeyboard:options];
 }
 
-//! Returns whether the iOS keyboard is visible
 bool AppCocoaTouch::isKeyboardVisible() const
 {
-	return mIsKeyboardVisible;
+	return [mImpl isKeyboardVisible];
 }
 
-//! Hides the default iOS keyboard
 void AppCocoaTouch::hideKeyboard()
 {
-	if( mIsKeyboardVisible )
-		[mImpl hideKeyboard];
-	
-	mIsKeyboardVisible = false;
+	[mImpl hideKeyboard];
 }
 
 std::string	AppCocoaTouch::getKeyboardString() const
@@ -807,7 +806,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options
 {
 	if( mKeyboardVisible )
-		return;
+		[self.keyboardTextField resignFirstResponder];
 
 	using namespace cinder::app;
 
@@ -832,6 +831,11 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 	mKeyboardVisible = NO;
 	[self.keyboardTextField resignFirstResponder];
+}
+
+- (bool)isKeyboardVisible
+{
+	return mKeyboardVisible;
 }
 
 - (void)setKeyboardString:(const std::string *)keyboardString

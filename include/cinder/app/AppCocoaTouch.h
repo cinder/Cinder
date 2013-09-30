@@ -235,8 +235,6 @@ class AppCocoaTouch : public App {
 	EventSignalSupportedOrientations		mSignalSupportedOrientations;
 	signals::signal<void()>					mSignalWillRotate, mSignalDidRotate;
 	signals::signal<void(void)>				mSignalKeyboardWillShow, mSignalKeyboardWillHide;
-
-	bool					mIsKeyboardVisible;
 };
 
 //! Stream \t InterfacefaceOrientation enum to std::ostream
