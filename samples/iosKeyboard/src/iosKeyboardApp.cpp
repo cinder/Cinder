@@ -1,6 +1,6 @@
 #include "cinder/app/AppCocoaTouch.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/TextureFont.h"
+#include "cinder/Text.h"
 #include "cinder/Timeline.h"
 
 using namespace ci;
@@ -8,7 +8,7 @@ using namespace ci::app;
 using namespace std;
 
 struct TextView {
-	TextView() : mIsSelected( false ), mPadding( 6.0f ) {}
+	TextView() : mIsSelected( false ), mPadding( 4.0f ) {}
 
 	Rectf mBounds;
 	string mText;
@@ -36,7 +36,7 @@ class iosKeyboardApp : public AppCocoaTouch {
 	TextView mMultiLineTextView;
 
 	Anim<float> mViewYOffset;
-	gl::TextureFontRef mTexFont;
+	Font mFont;
 };
 
 void iosKeyboardApp::setup()
@@ -48,13 +48,17 @@ void iosKeyboardApp::setup()
 	getSignalKeyboardWillShow().connect( [this] {
 		console() << "signal keyboardWillShow" << endl;
 	} );
-
 	getSignalKeyboardWillHide().connect( [this] {
 		console() << "signal keyboardWillHide" << endl;
 
+		// Sometimes the keyboard can be dismissed by the user without going through hideKeyboard. Using this signal,
+		// you have a consistent place to animate the view contents back to the normal position.
 		timeline().apply( &mViewYOffset, 0.0f, 0.3f, EaseInOutCubic() );
 	} );
 
+	// You can further customize the way the iOS virtual keyboard looks by directly manipulating the managed UITextField:
+	// (note: requires that you build this source file as Obj-C++).
+	getKeyboardTextField().keyboardAppearance = UIKeyboardAppearanceAlert;
 }
 
 void iosKeyboardApp::touchesBegan( TouchEvent event )
@@ -68,12 +72,17 @@ void iosKeyboardApp::touchesBegan( TouchEvent event )
 
 	if( mNumericalTextView.mBounds.contains( pos ) ) {
 		mNumericalTextView.mIsSelected = true;
-		showKeyboard( KeyboardOptions().type( KeyboardType::NUMERICAL ) );
+
+		// show the numerical keyboard. Make sure the keyboard's string and our text view's string match.
+		showKeyboard( KeyboardOptions().type( KeyboardType::NUMERICAL ).initialString( mNumericalTextView.mText ) );
 	}
 	else if( mMultiLineTextView.mBounds.contains( pos ) ) {
 		mMultiLineTextView.mIsSelected = true;
-		showKeyboard();
 
+		// this is the default keyboard type.
+		showKeyboard( KeyboardOptions().initialString( mMultiLineTextView.mText ) );
+
+		// the keyboard is going to block the multi-line text view, so animate the view contents up.
 		timeline().apply( &mViewYOffset, -100.0f, 0.3f, EaseInOutCubic() );
 	}
 	else
@@ -82,8 +91,6 @@ void iosKeyboardApp::touchesBegan( TouchEvent event )
 
 void iosKeyboardApp::keyDown( KeyEvent event )
 {
-	console() << "key char: " << event.getChar() << endl;
-
 	if( mNumericalTextView.mIsSelected )
 		processNumerical( event );
 	else
@@ -100,7 +107,8 @@ void iosKeyboardApp::processNumerical( const KeyEvent &event )
 	else if( isdigit( event.getChar() ) ) {
 		mNumericalTextView.mText.push_back( event.getChar() );
 		Rectf fitRect = mNumericalTextView.getTextBounds();
-		Vec2f size = mTexFont->measureString( mNumericalTextView.mText );
+		TextBox tbox = TextBox().font( mFont ).text( mNumericalTextView.mText ).size( TextBox::GROW, TextBox::GROW );
+		Vec2f size = tbox.measure();
 
 		if( size.x > fitRect.getWidth() ) {
 			console() << "OVERFLOW" << endl;
@@ -112,6 +120,8 @@ void iosKeyboardApp::processNumerical( const KeyEvent &event )
 
 void iosKeyboardApp::processMultiline( const KeyEvent &event )
 {
+	// Don't return on enter here, which allows the KEY_RETURN to be interpreted as a newline.
+
 	if( event.getCode() == KeyEvent::KEY_BACKSPACE && ! mMultiLineTextView.mText.empty() )
 		mMultiLineTextView.mText.pop_back();
 	else
@@ -133,13 +143,6 @@ void iosKeyboardApp::draw()
 	drawTextView( mMultiLineTextView );
 
 	gl::popMatrices();
-
-//	gl::pushMatrices();
-//	gl::translate( 70.0f, 70.0f );
-//	gl::rotate( getElapsedSeconds() * 30.0f );
-//	gl::color( 0.6f, 0.0f, 0.0f );
-//	gl::drawSolidRect( Rectf( -30.0f, -30.0f, 30.0f, 30.0f ) );
-//	gl::popMatrices();
 }
 
 void iosKeyboardApp::drawTextView( const TextView &textView )
@@ -152,28 +155,26 @@ void iosKeyboardApp::drawTextView( const TextView &textView )
 	gl::drawStrokedRect( textView.mBounds );
 
 	Rectf fitRect = textView.getTextBounds();
-	Vec2f offset( 0.0f, mTexFont->getAscent() );
+	Vec2f offset( 0.0f, mFont.getAscent() );
+
+	TextBox tbox = TextBox().font( mFont ).size( fitRect.getWidth(), fitRect.getHeight() ).premultiplied();
 
 	if( textView.mText.empty() && ! textView.mIsSelected ) {
-		gl::color( Color::gray( 0.6f ) );
-
-		mTexFont->drawStringWrapped( textView.mPlacerholderText, fitRect, offset );
-
+		tbox.color( Color::gray( 0.6f ) ).text( textView.mPlacerholderText );
 	}
 	else {
-		gl::color( Color::gray( 0.6f ) );
-
-		mTexFont->drawStringWrapped( textView.mText, fitRect, offset );
+		tbox.color( Color( "FireBrick" ) ).text( textView.mText );
 	}
-
+	gl::color( Color::white() );
+	gl::draw( tbox.render(), fitRect.getUpperLeft() );
 }
 
 void iosKeyboardApp::layoutTextViews()
 {
-	mTexFont = gl::TextureFont::create( Font( "Helvetica", 18.0f ), gl::TextureFont::Format().enableMipmapping().premultiply() );
+	mFont = Font( "Helvetica", 18.0f );
 	gl::enableAlphaBlending( true );
 
-	const float kLineHeight = 24.0f;
+	const float kLineHeight = 26.0f;
 	Rectf rect( getWindowWidth() * 0.2f, getWindowCenter().y - kLineHeight * 2.0f, getWindowWidth() * 0.8f, getWindowCenter().y - kLineHeight );
 	mNumericalTextView.mBounds = rect;
 	mNumericalTextView.mPlacerholderText = "enter digits";

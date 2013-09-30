@@ -29,8 +29,10 @@
 
 #ifdef __OBJC__
 	@class AppImplCocoaTouch;
+	@class UITextField;
 #else
 	class AppImplCocoaTouch;
+	class UITextField;
 #endif
 
 namespace cinder { namespace app {
@@ -171,6 +173,8 @@ class AppCocoaTouch : public App {
 	std::string	getKeyboardString() const;
 	//! Sets the current text string that the keyboard is manipulating, overwriting any previous content.
 	void setKeyboardString( const std::string &keyboardString );
+	//! Retuens a pointer to the native UITextField, which can be used for further customization.
+	::UITextField	*getKeyboardTextField() const;
 
 	typedef enum StatusBarAnimation { NONE, FADE, SLIDE } StatusBarAnimation;
 	//! Shows the system status bar

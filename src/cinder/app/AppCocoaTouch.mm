@@ -138,6 +138,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)hideKeyboard;
 - (std::string)getKeyboardString;
 - (void)setKeyboardString:(const std::string &)keyboardString;
+- (UITextField *)getKeyboardTextField;
 - (void)showStatusBar:(UIStatusBarAnimation)anim;
 - (void)hideStatusBar:(UIStatusBarAnimation)anim;
 - (void)displayLinkDraw:(id)sender;
@@ -400,6 +401,14 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 		mWindows.front().keyboardTextField.text = [NSString stringWithCString:keyboardString.c_str() encoding:NSUTF8StringEncoding];
 }
 
+- (UITextField *)getKeyboardTextField
+{
+	if( ! mWindows.empty() )
+		return mWindows.front().keyboardTextField;
+
+	return NULL;
+}
+
 - (void)showStatusBar:(UIStatusBarAnimation)anim
 {
 	if( [UIApplication sharedApplication].statusBarHidden != NO ) {
@@ -541,6 +550,12 @@ void AppCocoaTouch::setKeyboardString( const std::string &keyboardString )
 {
 	[mImpl setKeyboardString:keyboardString];
 }
+
+::UITextField *AppCocoaTouch::getKeyboardTextField() const
+{
+	return [mImpl getKeyboardTextField];
+}
+
 
 void AppCocoaTouch::showStatusBar( AppCocoaTouch::StatusBarAnimation animation )
 {
