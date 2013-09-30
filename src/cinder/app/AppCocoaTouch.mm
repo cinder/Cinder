@@ -865,11 +865,6 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 		mKeyboardTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
 		mKeyboardTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-		mKeyboardTextField.enablesReturnKeyAutomatically = NO;
-		mKeyboardTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-//		mKeyboardTextField.keyboardType = UIKeyboardTypeDefault;
-		mKeyboardTextField.returnKeyType = UIReturnKeyDefault;
-		mKeyboardTextField.secureTextEntry = NO;
 
 		[mCinderView addSubview:mKeyboardTextField];
 
@@ -946,7 +941,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField
 {
-	cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\n', '\n', 0, 0 );
+	cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
 	[self keyDown:&keyEvent];
 	return YES;
 }
