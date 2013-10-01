@@ -80,8 +80,8 @@ void iosKeyboardApp::touchesBegan( TouchEvent event )
 	else if( mMultiLineTextView.mBounds.contains( pos ) ) {
 		mMultiLineTextView.mIsSelected = true;
 
-		// this is the default keyboard type.
-		showKeyboard( KeyboardOptions().initialString( mMultiLineTextView.mText ) );
+		// this is the default keyboard type, but disable close on return.
+		showKeyboard( KeyboardOptions().closeOnReturn( false ).initialString( mMultiLineTextView.mText ) );
 
 		// the keyboard is going to block the multi-line text view, so animate the view contents up.
 		timeline().apply( &mViewYOffset, -100.0f, 0.3f, EaseInOutCubic() );
@@ -98,11 +98,9 @@ void iosKeyboardApp::keyDown( KeyEvent event )
 		processMultiline( event );
 }
 
+// manually build a string of numerical digits, filtering out everything else
 void iosKeyboardApp::processNumerical( const KeyEvent &event )
 {
-	if( event.getCode() == KeyEvent::KEY_RETURN )
-			hideKeyboard();
-
 	if( event.getCode() == KeyEvent::KEY_BACKSPACE && ! mNumericalTextView.mText.empty() )
 		mNumericalTextView.mText.pop_back();
 	else if( isdigit( event.getChar() ) ) {
@@ -116,14 +114,14 @@ void iosKeyboardApp::processNumerical( const KeyEvent &event )
 			mNumericalTextView.mText.pop_back();
 		}
 	}
-
 }
 
+// Don't return on enter here, which allows the KEY_RETURN to be interpreted as a newline.
+// Instead, grab the internal keyboard string, which can also handle complex character sequences, such as kanji or emoji
 void iosKeyboardApp::processMultiline( const KeyEvent &event )
 {
-	// Don't return on enter here, which allows the KEY_RETURN to be interpreted as a newline.
-	// Instead, grab the internal keyboard string, which can also handle complex character sequences, such as kanji or emoji
-	mMultiLineTextView.mText = getKeyboardString();
+	string str = getKeyboardString();
+	mMultiLineTextView.mText = str;
 }
 
 void iosKeyboardApp::update()

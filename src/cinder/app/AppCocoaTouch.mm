@@ -43,6 +43,7 @@
 	BOOL										mHidden;
 
 	BOOL										mKeyboardVisible;
+	BOOL										mKeyboardClosesOnReturn;
 	UITextField									*mKeyboardTextField;
 }
 
@@ -822,17 +823,17 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 	using namespace cinder::app;
 
-	UIKeyboardType nativeType = UIKeyboardTypeDefault;
 	switch ( options.getType() ) {
-		case AppCocoaTouch::KeyboardType::NUMERICAL: nativeType = UIKeyboardTypeDecimalPad; break;
-		case AppCocoaTouch::KeyboardType::URL: nativeType = UIKeyboardTypeURL; break;
-		default: break;
+		case AppCocoaTouch::KeyboardType::NUMERICAL:	self.keyboardTextField.keyboardType = UIKeyboardTypeDecimalPad; break;
+		case AppCocoaTouch::KeyboardType::URL:			self.keyboardTextField.keyboardType = UIKeyboardTypeURL; break;
+		default:										self.keyboardTextField.keyboardType = UIKeyboardTypeDefault;
 	}
-	self.keyboardTextField.keyboardType = nativeType;
 
 	[self setKeyboardString:&options.getInitialString()];
 
 	mKeyboardVisible = YES;
+	mKeyboardClosesOnReturn = options.getCloseOnReturn();
+
 	[self.keyboardTextField becomeFirstResponder];
 }
 
@@ -953,11 +954,18 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 		}
 	}
 
-    return YES; /* don't allow the edit! (keep placeholder text there) */
+    return YES;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField*)textField
 {
+	if( mKeyboardClosesOnReturn )
+		[self hideKeyboard];
+	else {
+		// append carraige return.
+		self.keyboardTextField.text = [NSString stringWithFormat:@"%@\n", self.keyboardTextField.text];
+		mAppImpl->mKeyboardString.push_back( '\n' );
+	}
 	cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
 	[self keyDown:&keyEvent];
 	return YES;

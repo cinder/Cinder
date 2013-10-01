@@ -148,22 +148,31 @@ class AppCocoaTouch : public App {
 
 	enum KeyboardType { DEFAULT, NUMERICAL, URL };
 
-	//! Optional params passed to keyboard. \see showKeyboard();
+	//! Optional params passed to showKeyboard();
 	struct KeyboardOptions {
-		KeyboardOptions() : mType( KeyboardType::DEFAULT ) {}
+		KeyboardOptions() : mType( KeyboardType::DEFAULT ), mCloseOnReturn( true ) {}
 
+		//! Sets the initial value of the keyboard string. Default is an empty string.
 		KeyboardOptions& initialString( const std::string &str )	{ mInitialString = str; return *this; }
+		//! Sets the keyboard layout type to \type. Default is \a KeyboardType::DEFAULT.
 		KeyboardOptions& type( KeyboardType type )					{ mType = type; return *this; }
+		//! Sets whether the keyboard closes (hides) when the return key is entered. Default is \c true. \note if false, a carriage return (\r) will be appended to the keyboard string. In either case, a KeyEvent will still fire.
+		KeyboardOptions& closeOnReturn( bool enable )				{ mCloseOnReturn = enable; return *this; }
 
-		const std::string& getInitialString() const		{ return mInitialString; }
-		KeyboardType getType() const					{ return mType; }
+		//! Returns the keyboard's initial string.
+		const std::string&	getInitialString() const				{ return mInitialString; }
+		//! Returns the keyboard layout type.
+		KeyboardType		getType() const							{ return mType; }
+		//! Returns whether the keyboard closes (hides) when the return key is entered.
+		bool				getCloseOnReturn() const				{ return mCloseOnReturn; }
 
 	  private:
-		std::string mInitialString;
-		KeyboardType mType;
+		std::string		mInitialString;
+		KeyboardType	mType;
+		bool			mCloseOnReturn;
 	};
 
-	//! Shows the default iOS keyboard
+	//! Shows the iOS virtual keyboard with KeyboardOptions \a options. This method can be called with new options while the keyboard is visible.
 	void 		showKeyboard( const KeyboardOptions &options = KeyboardOptions() );
 	//! Returns whether the iOS keyboard is visible
 	bool		isKeyboardVisible() const;
