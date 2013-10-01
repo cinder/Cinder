@@ -100,9 +100,6 @@
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
-    <Link>
-      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
     <ClCompile>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
@@ -120,13 +117,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">..\..\..\..\lib\winrt\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
-    </Link>
-    <Link>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\..\lib\winrt\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
-    </Link>
-    <Link>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\..\lib\winrt\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cinder.lib;%(AdditionalDependencies)</AdditionalDependencies>
+	  <AdditionalLibraryDirectories>..\..\..\..\lib\winrt\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -137,15 +129,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\..\lib\winrt\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cinder_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+	  <AdditionalLibraryDirectories>..\..\..\..\lib\winrt\$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Link>
-    <Link>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">..\..\..\..\lib\winrt\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
-    </Link>
-    <Link>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\..\lib\winrt\$(Platform)\$(Configuration)\;</AdditionalLibraryDirectories>
-    </Link>
-  </ItemDefinitionGroup>
+	</ItemDefinitionGroup>
   <ItemGroup>
     <Image Include="Assets\Logo.png" />
     <Image Include="Assets\SmallLogo.png" />
