@@ -1,5 +1,6 @@
 #include "cinder/app/AppCocoaTouch.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
 #include "cinder/Timeline.h"
 
@@ -121,11 +122,8 @@ void iosKeyboardApp::processNumerical( const KeyEvent &event )
 void iosKeyboardApp::processMultiline( const KeyEvent &event )
 {
 	// Don't return on enter here, which allows the KEY_RETURN to be interpreted as a newline.
-
-	if( event.getCode() == KeyEvent::KEY_BACKSPACE && ! mMultiLineTextView.mText.empty() )
-		mMultiLineTextView.mText.pop_back();
-	else
-		mMultiLineTextView.mText.push_back( event.getChar() );
+	// Instead, grab the internal keyboard string, which can also handle complex character sequences, such as kanji or emoji
+	mMultiLineTextView.mText = getKeyboardString();
 }
 
 void iosKeyboardApp::update()
@@ -180,7 +178,7 @@ void iosKeyboardApp::layoutTextViews()
 	mNumericalTextView.mPlacerholderText = "enter digits";
 
 	rect.y1 = getWindowCenter().y;
-	rect.y2 = getWindowCenter().y + kLineHeight * 3.0f;
+	rect.y2 = getWindowCenter().y + ( kLineHeight + mMultiLineTextView.mPadding ) * 4.0f;
 
 	mMultiLineTextView.mBounds = rect;
 	mMultiLineTextView.mPlacerholderText = "enter text";

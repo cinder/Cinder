@@ -34,7 +34,6 @@
   @public
 	AppImplCocoaTouch							*mAppImpl;
 	UIWindow									*mUiWindow;
-	UITextField									*mKeyboardTestField;
 	CinderViewCocoaTouch						*mCinderView;
 	cinder::app::WindowRef						mWindowRef;
 	cinder::DisplayRef							mDisplay;
@@ -42,7 +41,9 @@
 	float										mContentScale;
 	BOOL										mResizeHasFired;
 	BOOL										mHidden;
+
 	BOOL										mKeyboardVisible;
+	UITextField									*mKeyboardTextField;
 }
 
 - (void)loadView;
@@ -124,6 +125,8 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 	bool								mProximityStateIsClose;
 	bool								mIsUnplugged;
 	float								mBatteryLevel;
+
+	std::string							mKeyboardString;		// copy is kept so changes are visible from textShouldChange callback
 }
 
 - (AppImplCocoaTouch*)init;
@@ -136,7 +139,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
 - (bool)isKeyboardVisible;
 - (void)hideKeyboard;
-- (std::string)getKeyboardString;
+- (const std::string &)getKeyboardString;
 - (void)setKeyboardString:(const std::string &)keyboardString;
 - (UITextField *)getKeyboardTextField;
 - (void)showStatusBar:(UIStatusBarAnimation)anim;
@@ -383,22 +386,16 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 	return false;
 }
 
-- (std::string)getKeyboardString
+- (const std::string &)getKeyboardString
 {
-	if( ! mWindows.empty() ) {
-		const char *utf8KeyboardChar = [mWindows.front().keyboardTextField.text UTF8String];
-		if( utf8KeyboardChar )
-			return std::string( utf8KeyboardChar );
-
-	}
-
-	return std::string();
+	return mKeyboardString;
 }
 
 - (void)setKeyboardString:(const std::string &)keyboardString
 {
+	mKeyboardString = keyboardString;
 	if( ! mWindows.empty() )
-		mWindows.front().keyboardTextField.text = [NSString stringWithCString:keyboardString.c_str() encoding:NSUTF8StringEncoding];
+		[mWindows.front() setKeyboardString:&keyboardString];
 }
 
 - (UITextField *)getKeyboardTextField
@@ -935,6 +932,11 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	}
 	else
 		[currentString replaceCharactersInRange:range withString:string];
+
+	//make a copy so getKeyboardString() is up to date in the KeyEvent callbacks
+	const char *utf8KeyboardChar = [currentString UTF8String];
+	if( utf8KeyboardChar )
+		mAppImpl->mKeyboardString = std::string( utf8KeyboardChar );
 
     if( [string length] == 0 ) {
 		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
