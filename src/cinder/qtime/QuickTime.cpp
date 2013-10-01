@@ -21,7 +21,7 @@
 */
 
 // None of this works in 64 bit on the mac or Windows. We'll need to move to QTKit on the mac.
-#if ! defined( __LP64__ )
+#if ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )
 
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
@@ -982,4 +982,4 @@ void quickTimeTask()
 
 } /* namespace qtime */ } /* namespace cinder */
 
-#endif // ! defined( __LP64__ )
+#endif // ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )

@@ -40,7 +40,7 @@ static void ci_PNG_stream_reader( png_structp mPngPtr, png_bytep data, png_size_
 		((ci_png_info*)png_get_io_ptr(mPngPtr))->srcStreamRef->readData( data, (size_t)length );
 	}
 	catch ( ... ) {
-		longjmp( mPngPtr->jmpbuf, 1 );
+		longjmp( png_jmpbuf(mPngPtr), 1 );
 	}
 }
 
@@ -54,7 +54,7 @@ static void ci_png_warning( png_structp mPngPtr, png_const_charp message )
 static void ci_png_error( png_structp mPngPtr, png_const_charp message )
 {
     ci_png_warning(NULL, message);
-    longjmp( mPngPtr->jmpbuf, 1 );
+    longjmp( png_jmpbuf(mPngPtr), 1 );
 }
 
 } // extern "C"
@@ -103,7 +103,7 @@ bool ImageSourcePng::loadHeader()
 {
 	bool success = true;
 
-	if( setjmp( mPngPtr->jmpbuf ) ) {
+	if( setjmp( png_jmpbuf(mPngPtr) ) ) {
 		success = false;
 	}
 	else {
@@ -166,7 +166,7 @@ ImageSourcePng::~ImageSourcePng()
 void ImageSourcePng::load( ImageTargetRef target )
 {
 	bool success = true;
-	if( setjmp( mPngPtr->jmpbuf ) ) {
+	if( setjmp( png_jmpbuf(mPngPtr) ) ) {
 		png_destroy_read_struct( &mPngPtr, &mInfoPtr, (png_infopp)NULL );
 		mPngPtr = 0;
 		success = false;
