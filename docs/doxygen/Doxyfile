@@ -951,7 +951,7 @@ HTML_STYLESHEET        = custom/cinder_doxygen.css
 # files. In the HTML_STYLESHEET file, use the file name only. Also note that
 # the files will be copied as-is; there are no commands or markers available.
 
-HTML_EXTRA_FILES       = 
+HTML_EXTRA_FILES       = ../welcome/stylesheets/jquery-1.4.2.min.js ../welcome/stylesheets/jquery.lightbox-0.5.pack.js
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output.
 # Doxygen will adjust the colors in the style sheet and background images
