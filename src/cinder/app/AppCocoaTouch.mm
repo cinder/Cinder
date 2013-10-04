@@ -30,7 +30,7 @@
 
 @class AppImplCocoaTouch;
 
-@interface WindowImplCocoaTouch : UIViewController<WindowImplCocoa, CinderViewCocoaTouchDelegate, UIKeyInput, UITextFieldDelegate> {
+@interface WindowImplCocoaTouch : UIViewController<WindowImplCocoa, CinderViewCocoaTouchDelegate, UIKeyInput, UITextViewDelegate> {
   @public
 	AppImplCocoaTouch							*mAppImpl;
 	UIWindow									*mUiWindow;
@@ -44,7 +44,7 @@
 
 	BOOL										mKeyboardVisible;
 	BOOL										mKeyboardClosesOnReturn;
-	UITextField									*mKeyboardTextField;
+	UITextView									*mKeyboardTextView;
 }
 
 - (void)loadView;
@@ -89,7 +89,7 @@
 - (void)mouseUp:(cinder::app::MouseEvent*)event;
 - (void)keyDown:(cinder::app::KeyEvent*)event;
 
-@property (nonatomic, readonly) UITextField *keyboardTextField; // lazy-loaded in getter
+@property (nonatomic, readonly) UITextView *keyboardTextView; // lazy-loaded in getter
 
 @end
 
@@ -142,7 +142,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)hideKeyboard;
 - (const std::string &)getKeyboardString;
 - (void)setKeyboardString:(const std::string &)keyboardString;
-- (UITextField *)getKeyboardTextField;
+- (UITextView *)getkeyboardTextView;
 - (void)showStatusBar:(UIStatusBarAnimation)anim;
 - (void)hideStatusBar:(UIStatusBarAnimation)anim;
 - (void)displayLinkDraw:(id)sender;
@@ -399,10 +399,10 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 		[mWindows.front() setKeyboardString:&keyboardString];
 }
 
-- (UITextField *)getKeyboardTextField
+- (UITextView *)getkeyboardTextView
 {
 	if( ! mWindows.empty() )
-		return mWindows.front().keyboardTextField;
+		return mWindows.front().keyboardTextView;
 
 	return NULL;
 }
@@ -549,9 +549,9 @@ void AppCocoaTouch::setKeyboardString( const std::string &keyboardString )
 	[mImpl setKeyboardString:keyboardString];
 }
 
-::UITextField *AppCocoaTouch::getKeyboardTextField() const
+::UITextView *AppCocoaTouch::getkeyboardTextView() const
 {
-	return [mImpl getKeyboardTextField];
+	return [mImpl getkeyboardTextView];
 }
 
 
@@ -700,7 +700,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 @implementation WindowImplCocoaTouch;
 
-@synthesize keyboardTextField = mKeyboardTextField;
+@synthesize keyboardTextView = mKeyboardTextView;
 
 - (WindowImplCocoaTouch *)initWithFormat:(const cinder::app::Window::Format &)format withAppImpl:(AppImplCocoaTouch *)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer
 {
@@ -750,10 +750,10 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 - (void)dealloc
 {
-	if( mKeyboardTextField ) {
+	if( mKeyboardTextView ) {
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 		[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-		[mKeyboardTextField release];
+		[mKeyboardTextView release];
 	}
 
 	[super dealloc];
@@ -819,14 +819,14 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options
 {
 	if( mKeyboardVisible )
-		[self.keyboardTextField resignFirstResponder];
+		[self.keyboardTextView resignFirstResponder];
 
 	using namespace cinder::app;
 
 	switch ( options.getType() ) {
-		case AppCocoaTouch::KeyboardType::NUMERICAL:	self.keyboardTextField.keyboardType = UIKeyboardTypeDecimalPad; break;
-		case AppCocoaTouch::KeyboardType::URL:			self.keyboardTextField.keyboardType = UIKeyboardTypeURL; break;
-		default:										self.keyboardTextField.keyboardType = UIKeyboardTypeDefault;
+		case AppCocoaTouch::KeyboardType::NUMERICAL:	self.keyboardTextView.keyboardType = UIKeyboardTypeDecimalPad; break;
+		case AppCocoaTouch::KeyboardType::URL:			self.keyboardTextView.keyboardType = UIKeyboardTypeURL; break;
+		default:										self.keyboardTextView.keyboardType = UIKeyboardTypeDefault;
 	}
 
 	[self setKeyboardString:&options.getInitialString()];
@@ -834,7 +834,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	mKeyboardVisible = YES;
 	mKeyboardClosesOnReturn = options.getCloseOnReturn();
 
-	[self.keyboardTextField becomeFirstResponder];
+	[self.keyboardTextView becomeFirstResponder];
 }
 
 - (void)hideKeyboard
@@ -843,7 +843,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 		return;
 
 	mKeyboardVisible = NO;
-	[self.keyboardTextField resignFirstResponder];
+	[self.keyboardTextView resignFirstResponder];
 }
 
 - (bool)isKeyboardVisible
@@ -853,7 +853,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 - (void)setKeyboardString:(const std::string *)keyboardString
 {
-	self.keyboardTextField.text = [NSString stringWithCString:keyboardString->c_str() encoding:NSUTF8StringEncoding];
+	self.keyboardTextView.text = [NSString stringWithCString:keyboardString->c_str() encoding:NSUTF8StringEncoding];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
@@ -869,23 +869,23 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 }
 
 // lazy loader for text field
-- (UITextField *)keyboardTextField
+- (UITextView *)keyboardTextView
 {
-	if( ! mKeyboardTextField ) {
-		mKeyboardTextField = [[UITextField alloc] initWithFrame:CGRectZero];
-		mKeyboardTextField.hidden = YES;
-		mKeyboardTextField.delegate = self;
+	if( ! mKeyboardTextView ) {
+		mKeyboardTextView = [[UITextView alloc] initWithFrame:CGRectZero];
+		mKeyboardTextView.hidden = YES;
+		mKeyboardTextView.delegate = self;
 
-		mKeyboardTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-		mKeyboardTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+		mKeyboardTextView.autocapitalizationType = UITextAutocapitalizationTypeNone;
+		mKeyboardTextView.autocorrectionType = UITextAutocorrectionTypeNo;
 
-		[mCinderView addSubview:mKeyboardTextField];
+		[mCinderView addSubview:mKeyboardTextView];
 
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 	}
 
-	return mKeyboardTextField;
+	return mKeyboardTextView;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -898,6 +898,12 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 - (void)insertText:(NSString *)text
 {
+	if( mKeyboardClosesOnReturn && [text isEqualToString:@"\n"] ) {
+		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
+		[self hideKeyboard];
+		return;
+	}
+
 	int n = [text length];
 	for( int i = 0; i < n; i++ ) {
 		unichar c = [text characterAtIndex:i];
@@ -921,31 +927,36 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// UITextField Protocol Methods
+// UITextViewDelegate Protocol Methods
 
-- (BOOL)textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
-	NSMutableString *currentString = [[textField.text mutableCopy] autorelease];
+	NSMutableString *currentString = [[textView.text mutableCopy] autorelease];
 	// if we are getting a backspace, the length of the range can't be trusted to map to the length of a composed character (such as emoji)
-	if( [string length] == 0 ) {
+	if( [text length] == 0 ) {
 		NSRange delRange = [currentString rangeOfComposedCharacterSequenceAtIndex:range.location];
 		[currentString deleteCharactersInRange:delRange];
 	}
+	else if( mKeyboardClosesOnReturn && [text isEqualToString:@"\n"] ) {
+		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
+		[self hideKeyboard];
+		return NO;
+	}
 	else
-		[currentString replaceCharactersInRange:range withString:string];
+		[currentString replaceCharactersInRange:range withString:text];
 
 	//make a copy so getKeyboardString() is up to date in the KeyEvent callbacks
 	const char *utf8KeyboardChar = [currentString UTF8String];
 	if( utf8KeyboardChar )
 		mAppImpl->mKeyboardString = std::string( utf8KeyboardChar );
 
-    if( [string length] == 0 ) {
+    if( [text length] == 0 ) {
 		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
 		[self keyDown:&keyEvent];
     }
     else {
-		for( int i = 0; i < [string length]; i++) {
-			unichar c = [string characterAtIndex:i];
+		for( int i = 0; i < [text length]; i++) {
+			unichar c = [text characterAtIndex:i];
 
 			// For now, use ASCII key codes on iOS, which is already mapped out in KeyEvent's enum.
 			int keyCode = ( c < 127 ? c : cinder::app::KeyEvent::KEY_UNKNOWN );
@@ -955,20 +966,6 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	}
 
     return YES;
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField*)textField
-{
-	if( mKeyboardClosesOnReturn )
-		[self hideKeyboard];
-	else {
-		// append carraige return.
-		self.keyboardTextField.text = [NSString stringWithFormat:@"%@\n", self.keyboardTextField.text];
-		mAppImpl->mKeyboardString.push_back( '\n' );
-	}
-	cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
-	[self keyDown:&keyEvent];
-	return YES;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

@@ -59,7 +59,7 @@ void iosKeyboardApp::setup()
 
 	// You can further customize the way the iOS virtual keyboard looks by directly manipulating the managed UITextField:
 	// (note: requires that you build this source file as Obj-C++).
-	getKeyboardTextField().keyboardAppearance = UIKeyboardAppearanceAlert;
+	getkeyboardTextView().keyboardAppearance = UIKeyboardAppearanceAlert;
 }
 
 void iosKeyboardApp::touchesBegan( TouchEvent event )
