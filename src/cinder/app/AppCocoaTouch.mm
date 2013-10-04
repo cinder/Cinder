@@ -900,6 +900,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 {
 	if( mKeyboardClosesOnReturn && [text isEqualToString:@"\n"] ) {
 		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
+		[self keyDown:&keyEvent];
 		[self hideKeyboard];
 		return;
 	}
@@ -939,6 +940,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	}
 	else if( mKeyboardClosesOnReturn && [text isEqualToString:@"\n"] ) {
 		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
+		[self keyDown:&keyEvent];
 		[self hideKeyboard];
 		return NO;
 	}
