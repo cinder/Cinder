@@ -26,7 +26,7 @@ DOXYFILE_ENCODING      = UTF-8
 # identify the project. Note that if you do not use Doxywizard you need
 # to put quotes around the project name if it contains spaces.
 
-PROJECT_NAME           = "Cinder"
+PROJECT_NAME           = Cinder
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number.
 # This could be handy for archiving the generated documentation or
@@ -45,7 +45,7 @@ PROJECT_BRIEF          =
 # exceed 55 pixels and the maximum width should not exceed 200 pixels.
 # Doxygen will copy the logo to the output directory.
 
-PROJECT_LOGO           =
+PROJECT_LOGO           = ../images/logo.png
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
@@ -927,13 +927,13 @@ HTML_FILE_EXTENSION    = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER            = custom/cinder_doxygen_header.html
+#HTML_HEADER            = custom/cinder_doxygen_header.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER            = custom/cinder_doxygen_footer.html
+#HTML_FOOTER            = custom/cinder_doxygen_footer.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -942,7 +942,7 @@ HTML_FOOTER            = custom/cinder_doxygen_footer.html
 # the style sheet file to the HTML output directory, so don't put your own
 # style sheet in the HTML output directory as well, or it will be erased!
 
-HTML_STYLESHEET        = custom/cinder_doxygen.css
+#HTML_STYLESHEET        = custom/cinder_doxygen.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -951,7 +951,18 @@ HTML_STYLESHEET        = custom/cinder_doxygen.css
 # files. In the HTML_STYLESHEET file, use the file name only. Also note that
 # the files will be copied as-is; there are no commands or markers available.
 
-HTML_EXTRA_FILES       = ../welcome/stylesheets/jquery-1.4.2.min.js ../welcome/stylesheets/jquery.lightbox-0.5.pack.js
+#HTML_EXTRA_FILES       = ../welcome/stylesheets/jquery-1.4.2.min.js ../welcome/stylesheets/jquery.lightbox-0.5.pack.js
+
+
+# The HTML_EXTRA_STYLESHEET tag can be used to specify an additional
+# user-defined cascading style sheet that is included after the standard
+# style sheets created by doxygen. Using this option one can overrule
+# certain style aspects. This is preferred over using HTML_STYLESHEET
+# since it does not replace the standard style sheet and is therefor more
+# robust against future updates. Doxygen will copy the style sheet file to
+# the output directory.
+
+HTML_EXTRA_STYLESHEET  = custom/cinder_extra_doxygen.css
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output.
 # Doxygen will adjust the colors in the style sheet and background images
@@ -961,13 +972,13 @@ HTML_EXTRA_FILES       = ../welcome/stylesheets/jquery-1.4.2.min.js ../welcome/s
 # 180 is cyan, 240 is blue, 300 purple, and 360 is red again.
 # The allowed range is 0 to 359.
 
-HTML_COLORSTYLE_HUE    = 220
+HTML_COLORSTYLE_HUE    = 350
 
 # The HTML_COLORSTYLE_SAT tag controls the purity (or saturation) of
 # the colors in the HTML output. For a value of 0 the output will use
 # grayscales only. A value of 255 will produce the most vivid colors.
 
-HTML_COLORSTYLE_SAT    = 100
+HTML_COLORSTYLE_SAT    = 60
 
 # The HTML_COLORSTYLE_GAMMA tag controls the gamma correction applied to
 # the luminance component of the colors in the HTML output. Values below
@@ -976,7 +987,7 @@ HTML_COLORSTYLE_SAT    = 100
 # so 80 represents a gamma of 0.8, The value 220 represents a gamma of 2.2,
 # and 100 does not change the gamma.
 
-HTML_COLORSTYLE_GAMMA  = 80
+HTML_COLORSTYLE_GAMMA  = 130
 
 # If the HTML_TIMESTAMP tag is set to YES then the footer of each generated HTML
 # page will contain the date and time when the page was generated. Setting
