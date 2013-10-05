@@ -1,0 +1,35 @@
+body {
+        background-color: #0c0000;
+        color: #333;
+        margin: 0;
+}
+
+div.contents {
+        margin-bottom: 10px;
+        padding: 12px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 960px;
+        background-color: white;
+        border-radius: 8px;
+}
+
+#projectname {
+        color: #0c0000;
+}
+
+#projectnumber {
+        color: gray;
+}
+
+#titlearea {
+        background-color: #0c0000;
+}
+
+hr.footer {
+        display: none;
+}
+
+.footer {
+        background-color: #0c0000;
+}
