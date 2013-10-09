@@ -186,6 +186,7 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
  protected:
 	bool	initializeInternal( DX_WINDOW_TYPE wnd );
 	int		initMultisample( int requestedLevelIdx );
+	bool	createDevice(UINT createDeviceFlags);
 	bool	createDeviceResources();
 	bool	createFramebufferResources();
 
