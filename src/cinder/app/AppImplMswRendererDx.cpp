@@ -516,7 +516,7 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel ) {
 		bShadersSucceeded = createShadersFeatureLevel_11_0();
 	}
-	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel ) {
+	else if( D3D_FEATURE_LEVEL_11_1 == mFeatureLevel ) {
 		bShadersSucceeded = createShadersFeatureLevel_11_1();
 	}
 
@@ -621,12 +621,8 @@ int AppImplMswRendererDx::initMultisample( int requestedLevelIdx )
 	return 0;
 }
 
-bool AppImplMswRendererDx::createDeviceResources()
+bool AppImplMswRendererDx::createDevice(UINT createDeviceFlags)
 {
-	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-#ifdef _DEBUG
-    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
 	D3D_FEATURE_LEVEL featureLevels[] =
     {
 #if (_WIN32_WINNT >= 0x0602 /*_WIN32_WINNT_WIN8*/)
@@ -635,7 +631,7 @@ bool AppImplMswRendererDx::createDeviceResources()
 #endif
         D3D_FEATURE_LEVEL_11_0,
         D3D_FEATURE_LEVEL_10_1,
-        //D3D_FEATURE_LEVEL_10_0,
+        D3D_FEATURE_LEVEL_10_0,
 		D3D_FEATURE_LEVEL_9_3,
 		//D3D_FEATURE_LEVEL_9_2,
 		D3D_FEATURE_LEVEL_9_1
@@ -655,27 +651,53 @@ bool AppImplMswRendererDx::createDeviceResources()
 		&mFeatureLevel,
 		&context
 	);
-	if( hr != S_OK )
-		return false;
 
-  #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
-	hr = device->QueryInterface(__uuidof(ID3D11Device1), (void**)&md3dDevice);
-  #else
-	hr = device->QueryInterface(__uuidof(ID3D11Device), (void**)&md3dDevice);
-  #endif
-	if( hr != S_OK )
-		return false;
+	if( hr == S_OK )
+	{
+#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+		hr = device->QueryInterface(__uuidof(ID3D11Device1), (void**)&md3dDevice);
+#else
+		hr = device->QueryInterface(__uuidof(ID3D11Device), (void**)&md3dDevice);
+#endif
+	}
 
-  #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
-	hr = context->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&mDeviceContext);
-  #else
-	hr = context->QueryInterface(__uuidof(ID3D11DeviceContext), (void**)&mDeviceContext);
-  #endif
-	if( hr != S_OK )
-		return false;
-	context->Release();
-	device->Release();
-	return true;
+	if( hr == S_OK )
+	{
+#if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
+		hr = context->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&mDeviceContext);
+#else
+		hr = context->QueryInterface(__uuidof(ID3D11DeviceContext), (void**)&mDeviceContext);
+#endif
+	}
+
+	if(context)
+		context->Release();
+
+	if(device)
+		device->Release();
+
+	return hr == S_OK;
+}
+
+
+
+bool AppImplMswRendererDx::createDeviceResources()
+{
+	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+	
+#ifdef _DEBUG
+    createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+	bool ok = createDevice(createDeviceFlags);
+	if(!ok)
+	{
+		// sometimes we can't use D3D11_CREATE_DEVICE_DEBUG if there is a DirectX SDK/Visual Studio version mismatch 
+		createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+		ok = createDevice(createDeviceFlags);
+	}
+
+	return ok;
 }
 
 bool AppImplMswRendererDx::createFramebufferResources()
