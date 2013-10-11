@@ -516,7 +516,7 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel ) {
 		bShadersSucceeded = createShadersFeatureLevel_11_0();
 	}
-	else if( D3D_FEATURE_LEVEL_11_0 == mFeatureLevel ) {
+	else if( D3D_FEATURE_LEVEL_11_1 == mFeatureLevel ) {
 		bShadersSucceeded = createShadersFeatureLevel_11_1();
 	}
 
