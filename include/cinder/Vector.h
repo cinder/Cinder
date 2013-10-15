@@ -63,6 +63,7 @@ struct VEC3CONV {
 //! \endcond
 
 template<typename T> class Vec3;
+template<typename T> class Vec4;
 
 template<typename T>
 class Vec2
@@ -286,6 +287,23 @@ class Vec2
 	Vec3<T> yxy() const { return Vec3<T>(y, x, y); }
 	Vec3<T> yyx() const { return Vec3<T>(y, y, x); }
 	Vec3<T> yyy() const { return Vec3<T>(y, y, y); }
+
+	Vec4<T> xxxx() const { return Vec4<T>(x, x, x, x); }
+	Vec4<T> xxxy() const { return Vec4<T>(x, x, x, y); }
+	Vec4<T> xxyx() const { return Vec4<T>(x, x, y, x); }
+	Vec4<T> xxyy() const { return Vec4<T>(x, x, y, y); }
+	Vec4<T> xyxx() const { return Vec4<T>(x, y, x, x); }
+	Vec4<T> xyxy() const { return Vec4<T>(x, y, x, y); }
+	Vec4<T> xyyx() const { return Vec4<T>(x, y, y, x); }
+	Vec4<T> xyyy() const { return Vec4<T>(x, y, y, y); }
+	Vec4<T> yxxx() const { return Vec4<T>(y, x, x, x); }
+	Vec4<T> yxxy() const { return Vec4<T>(y, x, x, y); }
+	Vec4<T> yxyx() const { return Vec4<T>(y, x, y, x); }
+	Vec4<T> yxyy() const { return Vec4<T>(y, x, y, y); }
+	Vec4<T> yyxx() const { return Vec4<T>(y, y, x, x); }
+	Vec4<T> yyxy() const { return Vec4<T>(y, y, x, y); }
+	Vec4<T> yyyx() const { return Vec4<T>(y, y, y, x); }
+	Vec4<T> yyyy() const { return Vec4<T>(y, y, y, y); }
 
 	static Vec2<T> max()
 	{
@@ -674,6 +692,88 @@ public:
 	Vec3<T> zzy() const { return Vec3<T>(z, z, y); }
 	Vec3<T> zzz() const { return Vec3<T>(z, z, z); }
 
+	Vec4<T> xxxx() const { return Vec4<T>(x, x, x, x); }
+	Vec4<T> xxxy() const { return Vec4<T>(x, x, x, y); }
+	Vec4<T> xxxz() const { return Vec4<T>(x, x, x, z); }
+	Vec4<T> xxyx() const { return Vec4<T>(x, x, y, x); }
+	Vec4<T> xxyy() const { return Vec4<T>(x, x, y, y); }
+	Vec4<T> xxyz() const { return Vec4<T>(x, x, y, z); }
+	Vec4<T> xxzx() const { return Vec4<T>(x, x, z, x); }
+	Vec4<T> xxzy() const { return Vec4<T>(x, x, z, y); }
+	Vec4<T> xxzz() const { return Vec4<T>(x, x, z, z); }
+	Vec4<T> xyxx() const { return Vec4<T>(x, y, x, x); }
+	Vec4<T> xyxy() const { return Vec4<T>(x, y, x, y); }
+	Vec4<T> xyxz() const { return Vec4<T>(x, y, x, z); }
+	Vec4<T> xyyx() const { return Vec4<T>(x, y, y, x); }
+	Vec4<T> xyyy() const { return Vec4<T>(x, y, y, y); }
+	Vec4<T> xyyz() const { return Vec4<T>(x, y, y, z); }
+	Vec4<T> xyzx() const { return Vec4<T>(x, y, z, x); }
+	Vec4<T> xyzy() const { return Vec4<T>(x, y, z, y); }
+	Vec4<T> xyzz() const { return Vec4<T>(x, y, z, z); }
+	Vec4<T> xzxx() const { return Vec4<T>(x, z, x, x); }
+	Vec4<T> xzxy() const { return Vec4<T>(x, z, x, y); }
+	Vec4<T> xzxz() const { return Vec4<T>(x, z, x, z); }
+	Vec4<T> xzyx() const { return Vec4<T>(x, z, y, x); }
+	Vec4<T> xzyy() const { return Vec4<T>(x, z, y, y); }
+	Vec4<T> xzyz() const { return Vec4<T>(x, z, y, z); }
+	Vec4<T> xzzx() const { return Vec4<T>(x, z, z, x); }
+	Vec4<T> xzzy() const { return Vec4<T>(x, z, z, y); }
+	Vec4<T> xzzz() const { return Vec4<T>(x, z, z, z); }
+	Vec4<T> yxxx() const { return Vec4<T>(y, x, x, x); }
+	Vec4<T> yxxy() const { return Vec4<T>(y, x, x, y); }
+	Vec4<T> yxxz() const { return Vec4<T>(y, x, x, z); }
+	Vec4<T> yxyx() const { return Vec4<T>(y, x, y, x); }
+	Vec4<T> yxyy() const { return Vec4<T>(y, x, y, y); }
+	Vec4<T> yxyz() const { return Vec4<T>(y, x, y, z); }
+	Vec4<T> yxzx() const { return Vec4<T>(y, x, z, x); }
+	Vec4<T> yxzy() const { return Vec4<T>(y, x, z, y); }
+	Vec4<T> yxzz() const { return Vec4<T>(y, x, z, z); }
+	Vec4<T> yyxx() const { return Vec4<T>(y, y, x, x); }
+	Vec4<T> yyxy() const { return Vec4<T>(y, y, x, y); }
+	Vec4<T> yyxz() const { return Vec4<T>(y, y, x, z); }
+	Vec4<T> yyyx() const { return Vec4<T>(y, y, y, x); }
+	Vec4<T> yyyy() const { return Vec4<T>(y, y, y, y); }
+	Vec4<T> yyyz() const { return Vec4<T>(y, y, y, z); }
+	Vec4<T> yyzx() const { return Vec4<T>(y, y, z, x); }
+	Vec4<T> yyzy() const { return Vec4<T>(y, y, z, y); }
+	Vec4<T> yyzz() const { return Vec4<T>(y, y, z, z); }
+	Vec4<T> yzxx() const { return Vec4<T>(y, z, x, x); }
+	Vec4<T> yzxy() const { return Vec4<T>(y, z, x, y); }
+	Vec4<T> yzxz() const { return Vec4<T>(y, z, x, z); }
+	Vec4<T> yzyx() const { return Vec4<T>(y, z, y, x); }
+	Vec4<T> yzyy() const { return Vec4<T>(y, z, y, y); }
+	Vec4<T> yzyz() const { return Vec4<T>(y, z, y, z); }
+	Vec4<T> yzzx() const { return Vec4<T>(y, z, z, x); }
+	Vec4<T> yzzy() const { return Vec4<T>(y, z, z, y); }
+	Vec4<T> yzzz() const { return Vec4<T>(y, z, z, z); }
+	Vec4<T> zxxx() const { return Vec4<T>(z, x, x, x); }
+	Vec4<T> zxxy() const { return Vec4<T>(z, x, x, y); }
+	Vec4<T> zxxz() const { return Vec4<T>(z, x, x, z); }
+	Vec4<T> zxyx() const { return Vec4<T>(z, x, y, x); }
+	Vec4<T> zxyy() const { return Vec4<T>(z, x, y, y); }
+	Vec4<T> zxyz() const { return Vec4<T>(z, x, y, z); }
+	Vec4<T> zxzx() const { return Vec4<T>(z, x, z, x); }
+	Vec4<T> zxzy() const { return Vec4<T>(z, x, z, y); }
+	Vec4<T> zxzz() const { return Vec4<T>(z, x, z, z); }
+	Vec4<T> zyxx() const { return Vec4<T>(z, y, x, x); }
+	Vec4<T> zyxy() const { return Vec4<T>(z, y, x, y); }
+	Vec4<T> zyxz() const { return Vec4<T>(z, y, x, z); }
+	Vec4<T> zyyx() const { return Vec4<T>(z, y, y, x); }
+	Vec4<T> zyyy() const { return Vec4<T>(z, y, y, y); }
+	Vec4<T> zyyz() const { return Vec4<T>(z, y, y, z); }
+	Vec4<T> zyzx() const { return Vec4<T>(z, y, z, x); }
+	Vec4<T> zyzy() const { return Vec4<T>(z, y, z, y); }
+	Vec4<T> zyzz() const { return Vec4<T>(z, y, z, z); }
+	Vec4<T> zzxx() const { return Vec4<T>(z, z, x, x); }
+	Vec4<T> zzxy() const { return Vec4<T>(z, z, x, y); }
+	Vec4<T> zzxz() const { return Vec4<T>(z, z, x, z); }
+	Vec4<T> zzyx() const { return Vec4<T>(z, z, y, x); }
+	Vec4<T> zzyy() const { return Vec4<T>(z, z, y, y); }
+	Vec4<T> zzyz() const { return Vec4<T>(z, z, y, z); }
+	Vec4<T> zzzx() const { return Vec4<T>(z, z, z, x); }
+	Vec4<T> zzzy() const { return Vec4<T>(z, z, z, y); }
+	Vec4<T> zzzz() const { return Vec4<T>(z, z, z, z); }
+
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec3<T> rhs )
 	{
 		lhs << "[" << rhs.x << "," << rhs.y << "," << rhs.z  << "]";
@@ -958,40 +1058,84 @@ class Vec4
 	Vec2<T> xx() const { return Vec2<T>(x, x); }
 	Vec2<T> xy() const { return Vec2<T>(x, y); }
 	Vec2<T> xz() const { return Vec2<T>(x, z); }
+	Vec2<T> xw() const { return Vec2<T>(x, w); }
 	Vec2<T> yx() const { return Vec2<T>(y, x); }
 	Vec2<T> yy() const { return Vec2<T>(y, y); }
 	Vec2<T> yz() const { return Vec2<T>(y, z); }
+	Vec2<T> yw() const { return Vec2<T>(y, w); }
 	Vec2<T> zx() const { return Vec2<T>(z, x); }
 	Vec2<T> zy() const { return Vec2<T>(z, y); }
 	Vec2<T> zz() const { return Vec2<T>(z, z); }
+	Vec2<T> zw() const { return Vec2<T>(z, w); }
+	Vec2<T> wx() const { return Vec2<T>(w, x); }
+	Vec2<T> wy() const { return Vec2<T>(w, y); }
+	Vec2<T> wz() const { return Vec2<T>(w, z); }
+	Vec2<T> ww() const { return Vec2<T>(w, w); }
 
 	Vec3<T> xxx() const { return Vec3<T>(x, x, x); }
 	Vec3<T> xxy() const { return Vec3<T>(x, x, y); }
 	Vec3<T> xxz() const { return Vec3<T>(x, x, z); }
+	Vec3<T> xxw() const { return Vec3<T>(x, x, w); }
 	Vec3<T> xyx() const { return Vec3<T>(x, y, x); }
 	Vec3<T> xyy() const { return Vec3<T>(x, y, y); }
 	Vec3<T> xyz() const { return Vec3<T>(x, y, z); }
+	Vec3<T> xyw() const { return Vec3<T>(x, y, w); }
 	Vec3<T> xzx() const { return Vec3<T>(x, z, x); }
 	Vec3<T> xzy() const { return Vec3<T>(x, z, y); }
 	Vec3<T> xzz() const { return Vec3<T>(x, z, z); }
+	Vec3<T> xzw() const { return Vec3<T>(x, z, w); }
+	Vec3<T> xwx() const { return Vec3<T>(x, w, x); }
+	Vec3<T> xwy() const { return Vec3<T>(x, w, y); }
+	Vec3<T> xwz() const { return Vec3<T>(x, w, z); }
+	Vec3<T> xww() const { return Vec3<T>(x, w, w); }
 	Vec3<T> yxx() const { return Vec3<T>(y, x, x); }
 	Vec3<T> yxy() const { return Vec3<T>(y, x, y); }
 	Vec3<T> yxz() const { return Vec3<T>(y, x, z); }
+	Vec3<T> yxw() const { return Vec3<T>(y, x, w); }
 	Vec3<T> yyx() const { return Vec3<T>(y, y, x); }
 	Vec3<T> yyy() const { return Vec3<T>(y, y, y); }
 	Vec3<T> yyz() const { return Vec3<T>(y, y, z); }
+	Vec3<T> yyw() const { return Vec3<T>(y, y, w); }
 	Vec3<T> yzx() const { return Vec3<T>(y, z, x); }
 	Vec3<T> yzy() const { return Vec3<T>(y, z, y); }
 	Vec3<T> yzz() const { return Vec3<T>(y, z, z); }
+	Vec3<T> yzw() const { return Vec3<T>(y, z, w); }
+	Vec3<T> ywx() const { return Vec3<T>(y, w, x); }
+	Vec3<T> ywy() const { return Vec3<T>(y, w, y); }
+	Vec3<T> ywz() const { return Vec3<T>(y, w, z); }
+	Vec3<T> yww() const { return Vec3<T>(y, w, w); }
 	Vec3<T> zxx() const { return Vec3<T>(z, x, x); }
 	Vec3<T> zxy() const { return Vec3<T>(z, x, y); }
 	Vec3<T> zxz() const { return Vec3<T>(z, x, z); }
+	Vec3<T> zxw() const { return Vec3<T>(z, x, w); }
 	Vec3<T> zyx() const { return Vec3<T>(z, y, x); }
 	Vec3<T> zyy() const { return Vec3<T>(z, y, y); }
 	Vec3<T> zyz() const { return Vec3<T>(z, y, z); }
+	Vec3<T> zyw() const { return Vec3<T>(z, y, w); }
 	Vec3<T> zzx() const { return Vec3<T>(z, z, x); }
 	Vec3<T> zzy() const { return Vec3<T>(z, z, y); }
 	Vec3<T> zzz() const { return Vec3<T>(z, z, z); }
+	Vec3<T> zzw() const { return Vec3<T>(z, z, w); }
+	Vec3<T> zwx() const { return Vec3<T>(z, w, x); }
+	Vec3<T> zwy() const { return Vec3<T>(z, w, y); }
+	Vec3<T> zwz() const { return Vec3<T>(z, w, z); }
+	Vec3<T> zww() const { return Vec3<T>(z, w, w); }
+	Vec3<T> wxx() const { return Vec3<T>(w, x, x); }
+	Vec3<T> wxy() const { return Vec3<T>(w, x, y); }
+	Vec3<T> wxz() const { return Vec3<T>(w, x, z); }
+	Vec3<T> wxw() const { return Vec3<T>(w, x, w); }
+	Vec3<T> wyx() const { return Vec3<T>(w, y, x); }
+	Vec3<T> wyy() const { return Vec3<T>(w, y, y); }
+	Vec3<T> wyz() const { return Vec3<T>(w, y, z); }
+	Vec3<T> wyw() const { return Vec3<T>(w, y, w); }
+	Vec3<T> wzx() const { return Vec3<T>(w, z, x); }
+	Vec3<T> wzy() const { return Vec3<T>(w, z, y); }
+	Vec3<T> wzz() const { return Vec3<T>(w, z, z); }
+	Vec3<T> wzw() const { return Vec3<T>(w, z, w); }
+	Vec3<T> wwx() const { return Vec3<T>(w, w, x); }
+	Vec3<T> wwy() const { return Vec3<T>(w, w, y); }
+	Vec3<T> wwz() const { return Vec3<T>(w, w, z); }
+	Vec3<T> www() const { return Vec3<T>(w, w, w); }
 
 	Vec4<T> xxxx() const { return Vec4<T>(x, x, x, x); }
 	Vec4<T> xxxy() const { return Vec4<T>(x, x, x, y); }
