@@ -90,6 +90,14 @@
 #   define  ANT_OGL_HEADER_INCLUDED
 #endif*/
 #define  ANT_OGL_HEADER_INCLUDED
+#if defined( USE_DIRECTX )
+#include "cinder/dx/dx.h"
+#else
 #include "cinder/gl/gl.h"
+#endif
+
+#if defined( CINDER_WINRT )
+#include "cinder/WinRTUtils.h"
+#endif
 
 #endif  // !defined ANT_TW_PRECOMP_INCLUDED

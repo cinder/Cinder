@@ -1,5 +1,6 @@
 /*
  Copyright (c) 2010, The Cinder Project, All rights reserved.
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -27,6 +28,8 @@
 
 #if defined( CINDER_MSW )
 	#include "cinder/app/AppImplMsw.h"
+#elif defined( CINDER_WINRT )
+	#include "cinder/app/AppImplWinRT.h"
 #endif
 
 namespace cinder { namespace app {
@@ -37,7 +40,7 @@ bool Window::isFullScreen() const
 	
 #if defined( CINDER_COCOA )
 	return [mImpl isFullScreen];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->isFullScreen();
 #endif
 }
@@ -48,7 +51,7 @@ void Window::setFullScreen( bool fullScreen, const FullScreenOptions &options )
 	
 #if defined( CINDER_COCOA )
 	[mImpl setFullScreen:fullScreen options:&options];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->setFullScreen( fullScreen, options );
 #endif
 }
@@ -59,7 +62,7 @@ Vec2i Window::getSize() const
 	
 #if defined( CINDER_COCOA )
 	return [mImpl getSize];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->getSize();
 #endif
 }
@@ -70,7 +73,7 @@ void Window::setSize( const Vec2i &size )
 	
 #if defined( CINDER_COCOA )
 	[mImpl setSize:size];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->setSize( size );
 #endif
 }
@@ -81,7 +84,7 @@ Vec2i Window::getPos() const
 	
 #if defined( CINDER_COCOA )
 	return [mImpl getPos];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->getPos();
 #endif
 }
@@ -92,7 +95,7 @@ void Window::setPos( const Vec2i &pos ) const
 	
 #if defined( CINDER_COCOA )
 	[mImpl setPos:pos];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->setPos( pos );
 #endif
 }
@@ -111,7 +114,7 @@ float Window::getContentScale() const
 	
 #if defined( CINDER_COCOA )
 	return [mImpl getContentScale];
-#elif defined( CINDER_MSW )
+#else
 	return 1.0f;
 #endif
 }
@@ -122,7 +125,7 @@ void Window::close()
 	
 #if defined( CINDER_COCOA )
 	[mImpl close];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->close();
 #endif
 }
@@ -134,7 +137,7 @@ std::string	Window::getTitle() const
 #if defined( CINDER_COCOA )
 	NSString *title = [mImpl getTitle];
 	return title ? std::string( [title cStringUsingEncoding:NSUTF8StringEncoding] ) : std::string();
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->getTitle();
 #endif
 }
@@ -145,7 +148,7 @@ void Window::setTitle( const std::string &title )
 	
 #if defined( CINDER_COCOA )
 	[mImpl setTitle:[NSString stringWithUTF8String:title.c_str()]];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->setTitle( title );
 #endif
 }
@@ -156,7 +159,7 @@ bool Window::isBorderless() const
 	
 #if defined( CINDER_COCOA )
 	return [mImpl isBorderless];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->isBorderless();
 #endif
 }
@@ -167,7 +170,7 @@ void Window::setBorderless( bool borderless )
 	
 #if defined( CINDER_COCOA )
 	[mImpl setBorderless:borderless];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->setBorderless( borderless );
 #endif
 }
@@ -178,7 +181,7 @@ bool Window::isAlwaysOnTop() const
 	
 #if defined( CINDER_COCOA )
 	return [mImpl isAlwaysOnTop];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->isAlwaysOnTop();
 #endif
 }
@@ -189,7 +192,7 @@ void Window::setAlwaysOnTop( bool alwaysOnTop )
 	
 #if defined( CINDER_COCOA )
 	[mImpl setAlwaysOnTop:alwaysOnTop];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->setAlwaysOnTop( alwaysOnTop );
 #endif
 }
@@ -200,7 +203,7 @@ void Window::hide()
 	
 #if defined( CINDER_COCOA )
 	[mImpl hide];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->hide();
 #endif
 }
@@ -211,7 +214,7 @@ void Window::show()
 	
 #if defined( CINDER_COCOA )
 	[mImpl show];
-#elif defined( CINDER_MSW )
+#else
 	mImpl->show();
 #endif
 }
@@ -222,7 +225,7 @@ bool Window::isHidden() const
 	
 #if defined( CINDER_COCOA )
 	return [mImpl isHidden];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->isHidden();
 #endif	
 }
@@ -233,7 +236,7 @@ DisplayRef Window::getDisplay() const
 
 #if defined( CINDER_COCOA )
 	return [mImpl getDisplay];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->getDisplay();
 #endif	
 }
@@ -244,7 +247,7 @@ RendererRef Window::getRenderer() const
 	
 #if defined( CINDER_COCOA )
 	return [mImpl getRenderer];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->getRenderer();
 #endif
 }
@@ -255,7 +258,7 @@ void* Window::getNative() const
 
 #if defined( CINDER_COCOA )
 	return [mImpl getNative];
-#elif defined( CINDER_MSW )
+#else
 	return mImpl->getNative();
 #endif
 }
@@ -376,6 +379,8 @@ const std::vector<TouchEvent::Touch>& Window::getActiveTouches() const
 #if defined( CINDER_COCOA )
 	return [mImpl getActiveTouches];
 #elif defined( CINDER_MSW )
+	return mImpl->getActiveTouches();
+#elif defined( CINDER_WINRT )
 	return mImpl->getActiveTouches();
 #endif
 }

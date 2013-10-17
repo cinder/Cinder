@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="d6e41012-0921-4d96-8d61-131a49e9b982" Publisher="CN=cinderuser" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>winrtSurface</DisplayName>
+    <PublisherDisplayName>cinderuser</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2.1</OSMinVersion>
+    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="winrtSurface">
+      <VisualElements DisplayName="winrtSurface" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Created with Cinder." ForegroundText="light" BackgroundColor="#0c0000">
+        <DefaultTile ShowName="allLogos" />
+        <SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#0c0000" />
+      </VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

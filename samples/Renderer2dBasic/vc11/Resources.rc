@@ -1,5 +1,0 @@
-#include "..\include\Resources.h"
-
-RES_CINDER_LOGO
-
-// this line needs to end in a carriage return
