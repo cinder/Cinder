@@ -68,6 +68,13 @@ class Path2d {
 	Vec2f	getPosition( float t ) const;
 	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>
 	Vec2f	getSegmentPosition( size_t segment, float t ) const;
+	//! Returns the tangent on the curve at parameter \a t, which lies in the range <tt>[0,1]</tt>
+	Vec2f	getTangent( float t ) const;
+	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>
+	Vec2f	getSegmentTangent( size_t segment, float t ) const;
+
+	//! Stores into \a segment the segment # associated with \a t, and if \a relativeT is not NULL, the t relative to its segment, in the range <tt>[0,1]</tt>
+	void	getSegmentRelativeT( float t, size_t *segment, float *relativeT ) const;
 	
 	std::vector<Vec2f>	subdivide( float approximationScale = 1.0f ) const;
 	
@@ -103,12 +110,30 @@ class Path2d {
 	//! Returns whether the point \a pt is contained within the boundaries of the path
 	bool	contains( const Vec2f &pt ) const;
 
+	//! Calculates the length of the Path2d
+	float	calcLength() const;
+	//! Calculates the length of a specific segment in the range [\a minT,\a maxT], where \a minT and \a maxT range from 0 to 1 and are relative to the segment
+	float	calcSegmentLength( size_t segment, float minT = 0, float maxT = 1 ) const;
+	
+	//! Calculates the t value corresponding to \a relativeTime in the range [0,1) within epsilon of \a tolerance. For example, \a relativeTime of 0.5f returns the t-value corresponding to half the length. \a maxIterations dictates the number of refinement loop iterations allowed, setting an upper bound for worst-case performance. Consider a Path2dCalcCache if using frequently.
+	float	calcNormalizedTime( float relativeTime, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
+	//! Calculates a t-value corresponding to arc length \a distance. If \a wrap then the t-value loops inside the 0-1 range as \a distance exceeds the arc length. Consider a Path2dCalcCache if using frequently.
+	float	calcTimeForDistance( float distance, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
+
+
 	static int		calcQuadraticBezierMonotoneRegions( const Vec2f p[3], float resultT[2] );
 	static Vec2f	calcQuadraticBezierPos( const Vec2f p[3], float t );
+	static Vec2f	calcQuadraticBezierDerivative( const Vec2f p[3], float t );
 	static int		calcCubicBezierMonotoneRegions( const Vec2f p[4], float resultT[4] );
 	static Vec2f	calcCubicBezierPos( const Vec2f p[4], float t );
+	static Vec2f	calcCubicBezierDerivative( const Vec2f p[4], float t );
+
+	//! Solves the time corresponding to \a segmentRelativeDistance (a measure of arc length). Generally you should use calcNormalizedTime() or calcTimeForDistance() instead.
+	float	segmentSolveTimeForDistance( size_t segment, float segmentLength, float segmentRelativeDistance, float tolerance, int maxIterations ) const;
 
 	friend class Shape2d;
+	friend class Path2dCalcCache;
+	
 	friend std::ostream& operator<<( std::ostream &out, const Path2d &p );
   private:
 	void	arcHelper( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward );
@@ -148,6 +173,27 @@ inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 	
 	return out;
 }
+
+//! Accelerates the calculation of various operations on Path2d. Useful if doing repeated calculations, otherwise just use Path2d member functions.
+class Path2dCalcCache {
+  public:
+	Path2dCalcCache( const Path2d &path );
+	
+	const Path2d&	getPath2d() const { return mPath; }
+	float			getLength() const { return mLength; }
+
+	//! Calculates the t-value corresponding to \a relativeTime in the range [0,1) within epsilon of \a tolerance. For example, \a relativeTime of 0.5f returns the t-value corresponding to half the length. \a maxIterations dictates the number of refinement loop iterations allowed, setting an upper bound for worst-case performance.
+	float			calcNormalizedTime( float relativeTime, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
+	//! Calculates a t-value corresponding to arc length \a distance. If \a wrap then the t-value loops inside the 0-1 range as \a distance exceeds the arc length.
+	float			calcTimeForDistance( float distance, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
+	//! Returns the point on the curve at parameter \a t, which lies in the range <tt>[0,1]</tt>
+	Vec2f			getPosition( float t ) const { return mPath.getPosition( t ); }
+
+  private:
+	Path2d				mPath;
+	float				mLength;
+	std::vector<float>	mSegmentLengths;
+};
 
 class Path2dExc : public Exception {
 };
