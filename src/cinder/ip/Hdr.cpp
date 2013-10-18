@@ -24,6 +24,7 @@
 #include "cinder/ip/Grayscale.h"
 #include "cinder/ChanTraits.h"
 #include "cinder/ip/Fill.h"
+#include <algorithm>
 
 #include <algorithm>
 

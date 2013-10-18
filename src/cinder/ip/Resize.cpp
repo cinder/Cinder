@@ -32,6 +32,7 @@ using std::vector;
 using std::pair;
 #include <limits>
 #include <fstream>
+#include <algorithm>
 #include <boost/preprocessor/seq.hpp>
 #include <algorithm>
 
