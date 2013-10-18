@@ -29,8 +29,10 @@
 
 #ifdef __OBJC__
 	@class AppImplCocoaTouch;
+	@class UITextView;
 #else
 	class AppImplCocoaTouch;
+	class UITextView;
 #endif
 
 namespace cinder { namespace app {
@@ -98,6 +100,14 @@ class AppCocoaTouch : public App {
 	signals::signal<void()>&			getSignalDidRotate() { return mSignalDidRotate; }
 	//! Emits the signal to notify the user that the orientation did change.
 	void								emitDidRotate();
+	//! Returns the signal emitted when the virtual keyboard is about to animate on screen.
+	signals::signal<void()>&			getSignalKeyboardWillShow() { return mSignalKeyboardWillShow; }
+	//! Emits the signal used to notify when the virtual keyboard is about to animate on screen.
+	void								emitKeyboardWillShow();
+	//! Returns the signal emitted when the virtual keyboard is about to animate off screen.
+	signals::signal<void()>&			getSignalKeyboardWillHide() { return mSignalKeyboardWillHide; }
+	//! Emits the signal used to notify when the virtual keyboard is about to animate off screen.
+	void								emitKeyboardWillHide();
 
 	WindowRef 		createWindow( const Window::Format &format );
 
@@ -136,14 +146,44 @@ class AppCocoaTouch : public App {
 	//! When disabled, the device will not sleep even after the idling threshold.
 	void enablePowerManagement( bool powerManagement = true ) override;
 
-	//! Shows the default iOS keyboard
-	void 		showKeyboard();
+	enum KeyboardType { DEFAULT, NUMERICAL, URL };
+
+	//! Optional params passed to showKeyboard();
+	struct KeyboardOptions {
+		KeyboardOptions() : mType( KeyboardType::DEFAULT ), mCloseOnReturn( true ) {}
+
+		//! Sets the initial value of the keyboard string. Default is an empty string.
+		KeyboardOptions& initialString( const std::string &str )	{ mInitialString = str; return *this; }
+		//! Sets the keyboard layout type to \type. Default is \a KeyboardType::DEFAULT.
+		KeyboardOptions& type( KeyboardType type )					{ mType = type; return *this; }
+		//! Sets whether the keyboard closes (hides) when the return key is entered. Default is \c true. \note if false, a carriage return (\r) will be appended to the keyboard string. In either case, a KeyEvent will still fire.
+		KeyboardOptions& closeOnReturn( bool enable )				{ mCloseOnReturn = enable; return *this; }
+
+		//! Returns the keyboard's initial string.
+		const std::string&	getInitialString() const				{ return mInitialString; }
+		//! Returns the keyboard layout type.
+		KeyboardType		getType() const							{ return mType; }
+		//! Returns whether the keyboard closes (hides) when the return key is entered.
+		bool				getCloseOnReturn() const				{ return mCloseOnReturn; }
+
+	  private:
+		std::string		mInitialString;
+		KeyboardType	mType;
+		bool			mCloseOnReturn;
+	};
+
+	//! Shows the iOS virtual keyboard with KeyboardOptions \a options. This method can be called with new options while the keyboard is visible.
+	void 		showKeyboard( const KeyboardOptions &options = KeyboardOptions() );
 	//! Returns whether the iOS keyboard is visible
 	bool		isKeyboardVisible() const;
 	//! Hides the default iOS keyboard
 	void		hideKeyboard();
 	//! Returns the current text recorded since the most recent call to \a showKeyboard().
 	std::string	getKeyboardString() const;
+	//! Sets the current text string that the keyboard is manipulating, overwriting any previous content.
+	void setKeyboardString( const std::string &keyboardString );
+	//! Retuens a pointer to the native UITextView, which can be used for further customization.
+	::UITextView	*getkeyboardTextView() const;
 
 	typedef enum StatusBarAnimation { NONE, FADE, SLIDE } StatusBarAnimation;
 	//! Shows the system status bar
@@ -207,8 +247,7 @@ class AppCocoaTouch : public App {
 
 	EventSignalSupportedOrientations		mSignalSupportedOrientations;
 	signals::signal<void()>					mSignalWillRotate, mSignalDidRotate;
-
-	bool					mIsKeyboardVisible;
+	signals::signal<void(void)>				mSignalKeyboardWillShow, mSignalKeyboardWillHide;
 };
 
 //! Stream \t InterfacefaceOrientation enum to std::ostream

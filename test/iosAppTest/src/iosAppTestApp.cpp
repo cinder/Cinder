@@ -330,13 +330,11 @@ void iosAppTestApp::touchesEnded( TouchEvent event )
 void iosAppTestApp::keyDown( KeyEvent event )
 {
 	std::cout << "Key: " << event.getCharUtf32() << std::endl;
-	if( event.getChar() == '\b' ) {
+	if( event.getCode() == KeyEvent::KEY_BACKSPACE )
 		console() << "backspace!" << std::endl;
-	}
-	else if( event.getChar() == '\n' ) {
-		hideKeyboard();
-	}
-	
+	else if( event.getCode() == KeyEvent::KEY_RETURN )
+		console() << "return!" << std::endl;
+
 	mSecondWindowMessage = getKeyboardString();
 }
 
