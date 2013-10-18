@@ -346,9 +346,11 @@ bool System::hasArm()
 		SYSTEM_INFO info;
 		::GetNativeSystemInfo(&info);
 		instance()->mHasArm = info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM;
+#elif defined( CINDER_COCOA_TOUCH )
+		instance()->mHasArm = true;
 #else
-		throw std::exception( "Not implemented" );
-#endif		
+		instance()->mHasArm = false;
+#endif
 		instance()->mCachedValues[HAS_ARM] = true;
 	}
 	return instance()->mHasArm;

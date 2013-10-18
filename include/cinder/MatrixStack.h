@@ -2,6 +2,8 @@
 
 #include "cinder/Matrix.h"
 
+#include <vector>
+
 namespace cinder {
 
 class MatrixStack
