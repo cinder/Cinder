@@ -454,10 +454,10 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 {
 	mWnd = wnd;
 	
-	if(!createDeviceResources())
+	if( ! createDeviceResources() )
 		return false;
 
-	if(!createFramebufferResources())
+	if( ! createFramebufferResources() )
 		return false;
 
 	// create fixed function vertex shader
@@ -621,7 +621,7 @@ int AppImplMswRendererDx::initMultisample( int requestedLevelIdx )
 	return 0;
 }
 
-bool AppImplMswRendererDx::createDevice(UINT createDeviceFlags)
+bool AppImplMswRendererDx::createDevice( UINT createDeviceFlags )
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
     {
@@ -652,8 +652,7 @@ bool AppImplMswRendererDx::createDevice(UINT createDeviceFlags)
 		&context
 	);
 
-	if( hr == S_OK )
-	{
+	if( hr == S_OK ) {
 #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
 		hr = device->QueryInterface(__uuidof(ID3D11Device1), (void**)&md3dDevice);
 #else
@@ -661,8 +660,7 @@ bool AppImplMswRendererDx::createDevice(UINT createDeviceFlags)
 #endif
 	}
 
-	if( hr == S_OK )
-	{
+	if( hr == S_OK ) {
 #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
 		hr = context->QueryInterface(__uuidof(ID3D11DeviceContext1), (void**)&mDeviceContext);
 #else
@@ -670,10 +668,10 @@ bool AppImplMswRendererDx::createDevice(UINT createDeviceFlags)
 #endif
 	}
 
-	if(context)
+	if( context )
 		context->Release();
 
-	if(device)
+	if( device )
 		device->Release();
 
 	return hr == S_OK;
@@ -689,12 +687,11 @@ bool AppImplMswRendererDx::createDeviceResources()
     createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	bool ok = createDevice(createDeviceFlags);
-	if(!ok)
-	{
+	bool ok = createDevice( createDeviceFlags );
+	if( ! ok ) {
 		// sometimes we can't use D3D11_CREATE_DEVICE_DEBUG if there is a DirectX SDK/Visual Studio version mismatch 
 		createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
-		ok = createDevice(createDeviceFlags);
+		ok = createDevice( createDeviceFlags );
 	}
 
 	return ok;
@@ -706,13 +703,11 @@ bool AppImplMswRendererDx::createFramebufferResources()
 	getPlatformWindowDimensions(mWnd, &width, &height);
 
 	HRESULT hr;
-	if(mSwapChain)
-	{
+	if( mSwapChain ) {
 		if(mSwapChain->ResizeBuffers(2, static_cast<UINT>(width), static_cast<UINT>(height), DXGI_FORMAT_R8G8B8A8_UNORM, 0) != S_OK)
 			return false;
 	}
-	else
-	{
+	else {
 		IDXGIDevice1 *dxgiDevice;
 		hr = md3dDevice->QueryInterface(__uuidof(IDXGIDevice1), (void**)&dxgiDevice);
 		if( hr != S_OK )

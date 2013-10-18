@@ -26,8 +26,6 @@
 #include "cinder/ip/Fill.h"
 #include <algorithm>
 
-#include <algorithm>
-
 namespace cinder { namespace ip {
 
 void hdrNormalize( Surface32f *surface )

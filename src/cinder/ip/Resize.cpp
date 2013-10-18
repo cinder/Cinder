@@ -34,7 +34,6 @@ using std::pair;
 #include <fstream>
 #include <algorithm>
 #include <boost/preprocessor/seq.hpp>
-#include <algorithm>
 
 namespace cinder { namespace ip {
 
