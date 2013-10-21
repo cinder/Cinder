@@ -14,7 +14,7 @@
 	<platform os="macosx">
 		<staticLibrary>lib/macosx/libcairo.a</staticLibrary>
 		<staticLibrary>lib/macosx/libpixman-1.a</staticLibrary>
-		<staticLibrary>lib/macosx/libpng14.a</staticLibrary>		
+		<staticLibrary>lib/macosx/libpng16.a</staticLibrary>		
 		<includePath system="true">include/macosx</includePath>
 	</platform>
 	<platform os="msw">
