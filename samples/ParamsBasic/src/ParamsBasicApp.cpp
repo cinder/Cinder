@@ -19,21 +19,19 @@ class TweakBarApp : public AppBasic {
 	params::InterfaceGlRef	mParams;
 	float					mObjSize;
 	Quatf					mObjOrientation;
-	Vec3f					mLightDirection;
 	ColorA					mColor;
 	std::string				mString;
 	
-
-	void					setCallbackVector( Vec3f v );
-	Vec3f					getCallbackVector() { return mCallbackVector; }
+	void					setLightDirection( Vec3f direction );
+	Vec3f					getLightDirection() { return mLightDirection; }
 private:
-	Vec3f					mCallbackVector;
+	Vec3f					mLightDirection;
 };
 
-void TweakBarApp::setCallbackVector( Vec3f v )
+void TweakBarApp::setLightDirection( Vec3f direction )
 {
-	console() << v << std::endl;
-	mCallbackVector = v;
+	console() << "Light direction: " << direction << std::endl;
+	mLightDirection = direction;
 }
 
 void TweakBarApp::setup()
@@ -41,7 +39,6 @@ void TweakBarApp::setup()
 	mObjSize = 4;
 	mLightDirection = Vec3f( 0, 0, -1 );
 	mColor = ColorA( 0.25f, 0.5f, 1.0f, 1.0f );
-	mCallbackVector = Vec3f::one();
 
 	// setup our default camera, looking down the z-axis
 	mCam.lookAt( Vec3f( -20, 0, 0 ), Vec3f::zero() );
@@ -51,15 +48,13 @@ void TweakBarApp::setup()
 	mParams->addParam( "Cube Size", &mObjSize, "min=0.1 max=20.5 step=0.5 keyIncr=z keyDecr=Z" );
 	mParams->addParam( "Cube Rotation", &mObjOrientation );
 	mParams->addParam( "Cube Color", &mColor, "" );	
-	mParams->addSeparator();	
-	mParams->addParam( "Light Direction", &mLightDirection, "" );
+	mParams->addSeparator();
+	std::function<void (Vec3f)> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
+	std::function<Vec3f ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
+	mParams->addParam( "Light Direction", setter, getter );
 	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
 	mParams->addText( "text", "label=`This is a label without a parameter.`" );
 	mParams->addParam( "String ", &mString, "" );
-	mParams->addSeparator();
-	std::function<void (Vec3f)> setter = std::bind( &TweakBarApp::setCallbackVector, this, std::placeholders::_1 );
-	std::function<Vec3f ()> getter = std::bind( &TweakBarApp::getCallbackVector, this );
-	mParams->addParam( "Callback Vector", setter, getter );
 }
 
 void TweakBarApp::button()
