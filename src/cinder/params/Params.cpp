@@ -366,6 +366,85 @@ void InterfaceGl::addParam( const std::string &name, const std::vector<std::stri
 	delete [] ev;
 }
 
+template <class T>
+struct Accessors {
+	Accessors( std::function<void(T)> setter, std::function<T()> getter )
+	: mSetter( setter )
+	, mGetter( getter ) { }
+	std::function<void(T)> mSetter;
+	std::function<T()> mGetter;
+};
+
+template <class T>
+void TW_CALL setCallbackImpl(const void *value, void *clientData)
+{
+	Accessors<T> *twc = reinterpret_cast<Accessors<T>*>( clientData );
+	twc->mSetter( *(const T *)value );
+}
+
+template <class T>
+void TW_CALL getCallbackImpl(void *value, void *clientData)
+{
+	Accessors<T> *twc = reinterpret_cast<Accessors<T>*>( clientData );
+	*(T *)value = twc->mGetter();
+}
+
+template <class T>
+void InterfaceGl::implAddParamCb( const std::string &name, void *param, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter )
+{
+	TwSetCurrentWindow( mTwWindowId );
+	
+	auto callbackPtr = std::make_shared<Accessors<T>>( setter, getter );
+	mStoredCallbacks.push_back( callbackPtr );
+	
+	TwAddVarCB( mBar.get(), name.c_str(), (TwType) type, setCallbackImpl<T>, getCallbackImpl<T>, (void *)callbackPtr.get(), optionsStr.c_str() );
+}
+	
+void InterfaceGl::addParam( const std::string &name, bool *param, const std::function<void (bool)> &setter, const std::function<bool ()> &getter, const std::string &optionsStr )
+{
+	implAddParamCb<bool>(name, param, TW_TYPE_BOOLCPP, optionsStr, setter, getter );
+}
+
+void InterfaceGl::addParam( const std::string &name, float *param, const std::function<void (float)> &setter, const std::function<float ()> &getter, const std::string &optionsStr )
+{
+	implAddParamCb<float>(name, param, TW_TYPE_FLOAT, optionsStr, setter, getter );
+}
+
+void InterfaceGl::addParam( const std::string &name, double *param, const std::function<void (double)> &setter, const std::function<double ()> &getter, const std::string &optionsStr )
+{
+	implAddParamCb<double>(name, param, TW_TYPE_DOUBLE, optionsStr, setter, getter );
+}
+
+void InterfaceGl::addParam( const std::string &name, int32_t *param, const std::function<void (int32_t)> &setter, const std::function<int32_t ()> &getter, const std::string &optionsStr )
+{
+	implAddParamCb<int32_t>(name, param, TW_TYPE_INT32, optionsStr, setter, getter );
+}
+
+void InterfaceGl::addParam( const std::string &name, Vec3f *param, const std::function<void (Vec3f)> &setter, const std::function<Vec3f ()> &getter, const std::string &optionsStr )
+{
+	implAddParamCb<Vec3f>(name, param, TW_TYPE_DIR3F, optionsStr, setter, getter );
+}
+
+void InterfaceGl::addParam( const std::string &name, Quatf *param, const std::function<void (Quatf)> &setter, const std::function<Quatf ()> &getter, const std::string &optionsStr )
+{
+	implAddParamCb<Quatf>(name, param, TW_TYPE_QUAT4F, optionsStr, setter, getter );
+}
+
+void InterfaceGl::addParam( const std::string &name, Color *param, const std::function<void (Color)> &setter, const std::function<Color ()> &getter, const std::string &optionsStr )
+{
+	implAddParamCb<Color>(name, param, TW_TYPE_COLOR3F, optionsStr, setter, getter );
+}
+
+void InterfaceGl::addParam( const std::string &name, ColorA *param, const std::function<void (ColorA)> &setter, const std::function<ColorA ()> &getter, const std::string &optionsStr )
+{
+	implAddParamCb<ColorA>(name, param, TW_TYPE_COLOR4F, optionsStr, setter, getter );
+}
+
+void InterfaceGl::addParam( const std::string &name, std::string *param, const std::function<void (std::string)> &setter, const std::function<std::string ()> &getter, const std::string &optionsStr  )
+{
+	implAddParamCb<std::string>(name, param, TW_TYPE_STDSTRING, optionsStr, setter, getter );
+}
+
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
 {
 	TwSetCurrentWindow( mTwWindowId );
@@ -392,8 +471,8 @@ void InterfaceGl::addButton( const std::string &name, const std::function<void (
 {
 	TwSetCurrentWindow( mTwWindowId );
 	
-	std::shared_ptr<std::function<void ()> > callbackPtr( new std::function<void ()>( callback ) );
-	mButtonCallbacks.push_back( callbackPtr );
+	auto callbackPtr = std::make_shared<std::function<void ()>>( callback );
+	mStoredCallbacks.push_back( callbackPtr );
 	TwAddButton( mBar.get(), name.c_str(), implButtonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
 }
 
