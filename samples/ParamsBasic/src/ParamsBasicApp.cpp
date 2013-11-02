@@ -24,13 +24,13 @@ class TweakBarApp : public AppBasic {
 	std::string				mString;
 	
 
-	void					setCallbackVector( const Vec3f& v );
-	Vec3f					getCallbackVector() const { return mCallbackVector; }
+	void					setCallbackVector( Vec3f v );
+	Vec3f					getCallbackVector() { return mCallbackVector; }
 private:
 	Vec3f					mCallbackVector;
 };
 
-void TweakBarApp::setCallbackVector( const Vec3f& v )
+void TweakBarApp::setCallbackVector( Vec3f v )
 {
 	console() << v << std::endl;
 	mCallbackVector = v;
@@ -57,8 +57,8 @@ void TweakBarApp::setup()
 	mParams->addText( "text", "label=`This is a label without a parameter.`" );
 	mParams->addParam( "String ", &mString, "" );
 	mParams->addSeparator();
-	auto setter = std::bind( &TweakBarApp::setCallbackVector, this, std::placeholders::_1 );
-	auto getter = std::bind( &TweakBarApp::getCallbackVector, this );
+	std::function<void (Vec3f)> setter = std::bind( &TweakBarApp::setCallbackVector, this, std::placeholders::_1 );
+	std::function<Vec3f ()> getter = std::bind( &TweakBarApp::getCallbackVector, this );
 	mParams->addParam( "Callback Vector", setter, getter );
 }
 
