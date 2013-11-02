@@ -390,7 +390,7 @@ void TW_CALL getCallbackImpl(void *value, void *clientData)
 }
 
 template <class T>
-void InterfaceGl::implAddParamCb( const std::string &name, void *param, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter )
+void InterfaceGl::implAddParamCb( const std::string &name, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter )
 {
 	TwSetCurrentWindow( mTwWindowId );
 	
@@ -400,49 +400,49 @@ void InterfaceGl::implAddParamCb( const std::string &name, void *param, int type
 	TwAddVarCB( mBar.get(), name.c_str(), (TwType) type, setCallbackImpl<T>, getCallbackImpl<T>, (void *)callbackPtr.get(), optionsStr.c_str() );
 }
 	
-void InterfaceGl::addParam( const std::string &name, bool *param, const std::function<void (bool)> &setter, const std::function<bool ()> &getter, const std::string &optionsStr )
+void InterfaceGl::addParam( const std::string &name, const std::function<void (bool)> &setter, const std::function<bool ()> &getter, const std::string &optionsStr )
 {
-	implAddParamCb<bool>(name, param, TW_TYPE_BOOLCPP, optionsStr, setter, getter );
+	implAddParamCb<bool>(name, TW_TYPE_BOOLCPP, optionsStr, setter, getter );
 }
 
-void InterfaceGl::addParam( const std::string &name, float *param, const std::function<void (float)> &setter, const std::function<float ()> &getter, const std::string &optionsStr )
+void InterfaceGl::addParam( const std::string &name, const std::function<void (float)> &setter, const std::function<float ()> &getter, const std::string &optionsStr )
 {
-	implAddParamCb<float>(name, param, TW_TYPE_FLOAT, optionsStr, setter, getter );
+	implAddParamCb<float>(name, TW_TYPE_FLOAT, optionsStr, setter, getter );
 }
 
-void InterfaceGl::addParam( const std::string &name, double *param, const std::function<void (double)> &setter, const std::function<double ()> &getter, const std::string &optionsStr )
+void InterfaceGl::addParam( const std::string &name, const std::function<void (double)> &setter, const std::function<double ()> &getter, const std::string &optionsStr )
 {
-	implAddParamCb<double>(name, param, TW_TYPE_DOUBLE, optionsStr, setter, getter );
+	implAddParamCb<double>(name, TW_TYPE_DOUBLE, optionsStr, setter, getter );
 }
 
-void InterfaceGl::addParam( const std::string &name, int32_t *param, const std::function<void (int32_t)> &setter, const std::function<int32_t ()> &getter, const std::string &optionsStr )
+void InterfaceGl::addParam( const std::string &name, const std::function<void (int32_t)> &setter, const std::function<int32_t ()> &getter, const std::string &optionsStr )
 {
-	implAddParamCb<int32_t>(name, param, TW_TYPE_INT32, optionsStr, setter, getter );
+	implAddParamCb<int32_t>(name, TW_TYPE_INT32, optionsStr, setter, getter );
 }
 
-void InterfaceGl::addParam( const std::string &name, Vec3f *param, const std::function<void (Vec3f)> &setter, const std::function<Vec3f ()> &getter, const std::string &optionsStr )
+void InterfaceGl::addParam( const std::string &name, const std::function<void (Vec3f)> &setter, const std::function<Vec3f ()> &getter, const std::string &optionsStr )
 {
-	implAddParamCb<Vec3f>(name, param, TW_TYPE_DIR3F, optionsStr, setter, getter );
+	implAddParamCb<Vec3f>(name, TW_TYPE_DIR3F, optionsStr, setter, getter );
 }
 
-void InterfaceGl::addParam( const std::string &name, Quatf *param, const std::function<void (Quatf)> &setter, const std::function<Quatf ()> &getter, const std::string &optionsStr )
+void InterfaceGl::addParam( const std::string &name, const std::function<void (Quatf)> &setter, const std::function<Quatf ()> &getter, const std::string &optionsStr )
 {
-	implAddParamCb<Quatf>(name, param, TW_TYPE_QUAT4F, optionsStr, setter, getter );
+	implAddParamCb<Quatf>(name, TW_TYPE_QUAT4F, optionsStr, setter, getter );
 }
 
-void InterfaceGl::addParam( const std::string &name, Color *param, const std::function<void (Color)> &setter, const std::function<Color ()> &getter, const std::string &optionsStr )
+void InterfaceGl::addParam( const std::string &name, const std::function<void (Color)> &setter, const std::function<Color ()> &getter, const std::string &optionsStr )
 {
-	implAddParamCb<Color>(name, param, TW_TYPE_COLOR3F, optionsStr, setter, getter );
+	implAddParamCb<Color>(name, TW_TYPE_COLOR3F, optionsStr, setter, getter );
 }
 
-void InterfaceGl::addParam( const std::string &name, ColorA *param, const std::function<void (ColorA)> &setter, const std::function<ColorA ()> &getter, const std::string &optionsStr )
+void InterfaceGl::addParam( const std::string &name, const std::function<void (ColorA)> &setter, const std::function<ColorA ()> &getter, const std::string &optionsStr )
 {
-	implAddParamCb<ColorA>(name, param, TW_TYPE_COLOR4F, optionsStr, setter, getter );
+	implAddParamCb<ColorA>(name, TW_TYPE_COLOR4F, optionsStr, setter, getter );
 }
 
-void InterfaceGl::addParam( const std::string &name, std::string *param, const std::function<void (std::string)> &setter, const std::function<std::string ()> &getter, const std::string &optionsStr  )
+void InterfaceGl::addParam( const std::string &name, const std::function<void (std::string)> &setter, const std::function<std::string ()> &getter, const std::string &optionsStr  )
 {
-	implAddParamCb<std::string>(name, param, TW_TYPE_STDSTRING, optionsStr, setter, getter );
+	implAddParamCb<std::string>(name, TW_TYPE_STDSTRING, optionsStr, setter, getter );
 }
 
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
