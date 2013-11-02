@@ -2,6 +2,8 @@
 #include "cinder/Camera.h"
 #include "cinder/params/Params.h"
 
+#include <functional>
+
 using namespace ci;
 using namespace ci::app;
 
@@ -20,13 +22,25 @@ class TweakBarApp : public AppBasic {
 	Vec3f					mLightDirection;
 	ColorA					mColor;
 	std::string				mString;
+	
+	Vec3f					mCallbackVector;
+	void					setCallbackVector( const Vec3f& v );
+	Vec3f					getCallbackVector() const { return mCallbackVector; }
+	
 };
+
+void TweakBarApp::setCallbackVector( const Vec3f& v )
+{
+	console() << v << std::endl;
+	mCallbackVector = v;
+}
 
 void TweakBarApp::setup()
 {
 	mObjSize = 4;
 	mLightDirection = Vec3f( 0, 0, -1 );
 	mColor = ColorA( 0.25f, 0.5f, 1.0f, 1.0f );
+	mCallbackVector = Vec3f::one();
 
 	// setup our default camera, looking down the z-axis
 	mCam.lookAt( Vec3f( -20, 0, 0 ), Vec3f::zero() );
@@ -41,6 +55,10 @@ void TweakBarApp::setup()
 	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
 	mParams->addText( "text", "label=`This is a label without a parameter.`" );
 	mParams->addParam( "String ", &mString, "" );
+	mParams->addSeparator();
+	auto setter = std::bind( &TweakBarApp::setCallbackVector, this, std::placeholders::_1 );
+	auto getter = std::bind( &TweakBarApp::getCallbackVector, this );
+	mParams->addParam( "Callback Vector", &mCallbackVector, setter, getter );
 }
 
 void TweakBarApp::button()
