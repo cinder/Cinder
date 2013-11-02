@@ -23,10 +23,11 @@ class TweakBarApp : public AppBasic {
 	ColorA					mColor;
 	std::string				mString;
 	
-	Vec3f					mCallbackVector;
+
 	void					setCallbackVector( const Vec3f& v );
 	Vec3f					getCallbackVector() const { return mCallbackVector; }
-	
+private:
+	Vec3f					mCallbackVector;
 };
 
 void TweakBarApp::setCallbackVector( const Vec3f& v )
@@ -58,7 +59,7 @@ void TweakBarApp::setup()
 	mParams->addSeparator();
 	auto setter = std::bind( &TweakBarApp::setCallbackVector, this, std::placeholders::_1 );
 	auto getter = std::bind( &TweakBarApp::getCallbackVector, this );
-	mParams->addParam( "Callback Vector", &mCallbackVector, setter, getter );
+	mParams->addParam( "Callback Vector", setter, getter );
 }
 
 void TweakBarApp::button()

@@ -72,15 +72,15 @@ class InterfaceGl {
 	void	addParam( const std::string &name, ColorA *quatParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, std::string *strParam, const std::string &optionsStr = "", bool readOnly = false );
 	
-	void	addParam( const std::string &name, bool *boolParam, const std::function<void (bool)> &setter, const std::function<bool ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, float *floatParam, const std::function<void (float)> &setter, const std::function<float ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, double *doubleParam, const std::function<void (double)> &setter, const std::function<double ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, int32_t *intParam, const std::function<void (int32_t)> &setter, const std::function<int32_t ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, Vec3f *vectorParam, const std::function<void (Vec3f)> &setter, const std::function<Vec3f ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, Quatf *quatParam, const std::function<void (Quatf)> &setter, const std::function<Quatf ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, Color *quatParam, const std::function<void (Color)> &setter, const std::function<Color ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, ColorA *quatParam, const std::function<void (ColorA)> &setter, const std::function<ColorA ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, std::string *strParam, const std::function<void (std::string)> &setter, const std::function<std::string ()> &getter, const std::string &optionsStr = "" );
+	void	addParam( const std::string &name, const std::function<void (bool)> &setter, const std::function<bool ()> &getter, const std::string &optionsStr = "" );
+	void	addParam( const std::string &name, const std::function<void (float)> &setter, const std::function<float ()> &getter, const std::string &optionsStr = "" );
+	void	addParam( const std::string &name, const std::function<void (double)> &setter, const std::function<double ()> &getter, const std::string &optionsStr = "" );
+	void	addParam( const std::string &name, const std::function<void (int32_t)> &setter, const std::function<int32_t ()> &getter, const std::string &optionsStr = "" );
+	void	addParam( const std::string &name, const std::function<void (Vec3f)> &setter, const std::function<Vec3f ()> &getter, const std::string &optionsStr = "" );
+	void	addParam( const std::string &name, const std::function<void (Quatf)> &setter, const std::function<Quatf ()> &getter, const std::string &optionsStr = "" );
+	void	addParam( const std::string &name, const std::function<void (Color)> &setter, const std::function<Color ()> &getter, const std::string &optionsStr = "" );
+	void	addParam( const std::string &name, const std::function<void (ColorA)> &setter, const std::function<ColorA ()> &getter, const std::string &optionsStr = "" );
+	void	addParam( const std::string &name, const std::function<void (std::string)> &setter, const std::function<std::string ()> &getter, const std::string &optionsStr = "" );
 	
 	//! Adds enumerated parameter. The value corresponds to the indices of \a enumNames.
 	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr = "", bool readOnly = false );
@@ -97,7 +97,7 @@ class InterfaceGl {
 	void	init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color );
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly );
 	template <class T>
-	void implAddParamCb( const std::string &name, void *param, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter );
+	void implAddParamCb( const std::string &name, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter );
 
 	std::weak_ptr<app::Window>		mWindow;
 	std::shared_ptr<TwBar>			mBar;
