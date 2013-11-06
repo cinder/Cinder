@@ -110,6 +110,8 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 	if( layout.isDefaults() ) { // we need to start by preparing our layout
 		if( triMesh.hasNormals() )
 			mObj->mLayout.setStaticNormals();
+		if( triMesh.hasTangents() )
+			mObj->mLayout.setStaticTangents();
 		if( triMesh.hasColorsRGB() )
 			mObj->mLayout.setStaticColorsRGB();
 		if( triMesh.hasColorsRGBA() )
@@ -140,6 +142,7 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 		
 		bool copyPosition = ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticPositions() : mObj->mLayout.hasDynamicPositions();
 		bool copyNormal = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) && triMesh.hasNormals();
+		bool copyTangent = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTangents() : mObj->mLayout.hasDynamicTangents() ) && triMesh.hasTangents();
 		bool copyColorRGB = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) && triMesh.hasColorsRGB();
 		bool copyColorRGBA = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGBA() : mObj->mLayout.hasDynamicColorsRGBA() ) && triMesh.hasColorsRGBA();
 		bool copyTexCoord2D = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d() : mObj->mLayout.hasDynamicTexCoords2d() ) && triMesh.hasTexCoords();
@@ -151,6 +154,10 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 			}
 			if( copyNormal ) {
 				*(reinterpret_cast<Vec3f*>(ptr)) = triMesh.getNormals()[v];
+				ptr += sizeof( Vec3f );
+			}
+			if( copyTangent ) {
+				*(reinterpret_cast<Vec3f*>(ptr)) = triMesh.getTangents()[v];
 				ptr += sizeof( Vec3f );
 			}
 			if( copyColorRGB ) {
@@ -284,8 +291,8 @@ VboMesh::VboMesh( size_t numVertices, size_t numIndices, Layout layout, GLenum p
 // If any buffers are not NULL they will be ignored
 void VboMesh::initializeBuffers( bool staticDataPlanar )
 {
-	bool hasStaticBuffer = mObj->mLayout.hasStaticPositions() || mObj->mLayout.hasStaticNormals() || mObj->mLayout.hasStaticColorsRGB() || mObj->mLayout.hasStaticColorsRGBA() || mObj->mLayout.hasStaticTexCoords() || ( ! mObj->mLayout.mCustomStatic.empty() );
-	bool hasDynamicBuffer = mObj->mLayout.hasDynamicPositions() || mObj->mLayout.hasDynamicNormals() || mObj->mLayout.hasDynamicColorsRGB() || mObj->mLayout.hasDynamicColorsRGBA() || mObj->mLayout.hasDynamicTexCoords() || ( ! mObj->mLayout.mCustomDynamic.empty() );
+	bool hasStaticBuffer = mObj->mLayout.hasStaticPositions() || mObj->mLayout.hasStaticNormals() || mObj->mLayout.hasStaticTangents() || mObj->mLayout.hasStaticColorsRGB() || mObj->mLayout.hasStaticColorsRGBA() || mObj->mLayout.hasStaticTexCoords() || ( ! mObj->mLayout.mCustomStatic.empty() );
+	bool hasDynamicBuffer = mObj->mLayout.hasDynamicPositions() || mObj->mLayout.hasDynamicNormals() || mObj->mLayout.hasDynamicTangents() || mObj->mLayout.hasDynamicColorsRGB() || mObj->mLayout.hasDynamicColorsRGBA() || mObj->mLayout.hasDynamicTexCoords() || ( ! mObj->mLayout.mCustomDynamic.empty() );
 
 	if( ( mObj->mLayout.hasStaticIndices() || mObj->mLayout.hasDynamicIndices() ) && ( ! mObj->mBuffers[INDEX_BUFFER] ) )
 		mObj->mBuffers[INDEX_BUFFER] = Vbo( GL_ELEMENT_ARRAY_BUFFER );
@@ -306,6 +313,11 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		
 		if( mObj->mLayout.hasStaticNormals() ) {
 			mObj->mNormalOffset = offset;
+			offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
+		}
+		
+		if( mObj->mLayout.hasStaticTangents() ) {
+			mObj->mTangentOffset = offset;
 			offset += sizeof(GLfloat) * 3 * mObj->mNumVertices;
 		}
 
@@ -356,6 +368,11 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 			mObj->mNormalOffset = offset;
 			offset += sizeof(GLfloat) * 3;
 		}
+		
+		if( mObj->mLayout.hasStaticTangents() ) {
+			mObj->mTangentOffset = offset;
+			offset += sizeof(GLfloat) * 3;
+		}
 
 		if( mObj->mLayout.hasStaticColorsRGB() ) {
 			mObj->mColorRGBOffset = offset;
@@ -404,6 +421,11 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 		
 		if( mObj->mLayout.hasDynamicNormals() ) {
 			mObj->mNormalOffset = offset;
+			offset += sizeof(GLfloat) * 3;
+		}
+		
+		if( mObj->mLayout.hasDynamicTangents() ) {
+			mObj->mTangentOffset = offset;
 			offset += sizeof(GLfloat) * 3;
 		}
 
@@ -462,6 +484,14 @@ void VboMesh::enableClientStates() const
 		glEnableClientState( GL_COLOR_ARRAY );
 	else
 		glDisableClientState( GL_COLOR_ARRAY );
+
+	if( mObj->mLayout.hasTangents() ) {
+		// use texture coordinate slot 7 for tangents
+		glClientActiveTexture( GL_TEXTURE7 );
+		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	}
+	else
+		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 		
 	for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 		if( mObj->mLayout.hasTexCoords( t ) ) {
@@ -491,9 +521,9 @@ void VboMesh::disableClientStates() const
 	for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 		if( mObj->mLayout.hasTexCoords( t ) ) {
 			glClientActiveTexture( GL_TEXTURE0 + (GLenum)t );
-			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 		}
 	}	
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 	
 	for( size_t a = 0; a < mObj->mCustomStaticLocations.size(); ++a ) {
 		if( mObj->mCustomStaticLocations[a] < 0 )
@@ -522,6 +552,11 @@ void VboMesh::bindAllData() const
 		
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) )
 			glNormalPointer( GL_FLOAT, stride, ( const GLvoid *)mObj->mNormalOffset );
+		
+		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTangents() : mObj->mLayout.hasDynamicTangents() ) ) {
+			glClientActiveTexture( GL_TEXTURE7 );
+			glTexCoordPointer( 3, GL_FLOAT, stride, ( const GLvoid *)mObj->mTangentOffset );
+		}
 
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) )
 			glColorPointer( 3, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBOffset );
@@ -622,6 +657,25 @@ void VboMesh::bufferNormals( const std::vector<Vec3f> &normals )
 		throw;
 }
 
+void VboMesh::bufferTangents( const std::vector<Vec3f> &tangents )
+{
+	if( mObj->mLayout.hasDynamicTangents() ) {
+		if( mObj->mDynamicStride == 0 )
+			getDynamicVbo().bufferSubData( mObj->mTangentOffset, sizeof(Vec3f) * tangents.size(), &(tangents[0]) );
+		else
+			throw;
+	}
+	else if( mObj->mLayout.hasStaticTangents() ) {
+		if( mObj->mStaticStride == 0 ) { // planar data
+			getStaticVbo().bufferSubData( mObj->mTangentOffset, sizeof(Vec3f) * tangents.size(), &(tangents[0]) );
+		}
+		else
+			throw;
+	}
+	else
+		throw;
+}
+
 void VboMesh::bufferTexCoords2d( size_t unit, const std::vector<Vec2f> &texCoords )
 {
 	if( mObj->mLayout.hasDynamicTexCoords2d(unit) ) {
@@ -711,6 +765,7 @@ void VboMesh::VertexIter::set( const VertexIter &other )
 	mDataEnd = other.mDataEnd;
 	mPositionOffset = other.mPositionOffset;
 	mNormalOffset = other.mNormalOffset;
+	mTangentOffset = other.mTangentOffset;
 	mColorRGBOffset = other.mColorRGBOffset;
 	mColorRGBAOffset = other.mColorRGBAOffset;
 	mStride = other.mStride;	
@@ -728,6 +783,7 @@ VboMesh::VertexIter::VertexIter( const VboMesh &mesh )
 	
 	mPositionOffset = mesh.mObj->mPositionOffset;
 	mNormalOffset = mesh.mObj->mNormalOffset;
+	mTangentOffset = mesh.mObj->mTangentOffset;
 	mColorRGBOffset = mesh.mObj->mColorRGBOffset;
 	mColorRGBAOffset = mesh.mObj->mColorRGBAOffset;	
 	for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t )

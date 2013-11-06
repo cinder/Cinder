@@ -73,7 +73,7 @@ typedef std::shared_ptr<VboMesh>	VboMeshRef;
 class VboMesh {
  public:
 	enum { NONE, STATIC, DYNAMIC };
-	enum { ATTR_INDICES, ATTR_POSITIONS, ATTR_NORMALS, ATTR_COLORS_RGB, ATTR_COLORS_RGBA, ATTR_TEXCOORDS2D_0, ATTR_TEXCOORDS2D_1, ATTR_TEXCOORDS2D_2, ATTR_TEXCOORDS2D_3, ATTR_TEXCOORDS3D_0, ATTR_TEXCOORDS3D_1, ATTR_TEXCOORDS3D_2, ATTR_TEXCOORDS3D_3, ATTR_TOTAL };
+	enum { ATTR_INDICES, ATTR_POSITIONS, ATTR_NORMALS, ATTR_TANGENTS, ATTR_COLORS_RGB, ATTR_COLORS_RGBA, ATTR_TEXCOORDS2D_0, ATTR_TEXCOORDS2D_1, ATTR_TEXCOORDS2D_2, ATTR_TEXCOORDS2D_3, ATTR_TEXCOORDS3D_0, ATTR_TEXCOORDS3D_1, ATTR_TEXCOORDS3D_2, ATTR_TEXCOORDS3D_3, ATTR_TOTAL };
 	enum { ATTR_MAX_TEXTURE_UNIT = 3 };
 
 	struct Layout {
@@ -87,6 +87,12 @@ class VboMesh {
 		bool	hasDynamicNormals() const { return mAttributes[ATTR_NORMALS] == DYNAMIC; }
 		void	setStaticNormals() { mAttributes[ATTR_NORMALS] = STATIC; }
 		void	setDynamicNormals() { mAttributes[ATTR_NORMALS] = DYNAMIC; }		
+
+		bool	hasTangents() const { return hasDynamicTangents() || hasStaticTangents(); }
+		bool	hasStaticTangents() const { return mAttributes[ATTR_TANGENTS] == STATIC; }
+		bool	hasDynamicTangents() const { return mAttributes[ATTR_TANGENTS] == DYNAMIC; }
+		void	setStaticTangents() { mAttributes[ATTR_TANGENTS] = STATIC; }
+		void	setDynamicTangents() { mAttributes[ATTR_TANGENTS] = DYNAMIC; }
 
 		bool	hasColorsRGB() const { return hasDynamicColorsRGB() || hasStaticColorsRGB(); }
 		bool	hasStaticColorsRGB() const { return mAttributes[ATTR_COLORS_RGB] == STATIC; }
@@ -155,6 +161,7 @@ class VboMesh {
 		Vbo				mBuffers[TOTAL_BUFFERS];
 		size_t			mPositionOffset;
 		size_t			mNormalOffset;
+		size_t			mTangentOffset;
 		size_t			mColorRGBOffset, mColorRGBAOffset;		
 		size_t			mTexCoordOffset[ATTR_MAX_TEXTURE_UNIT+1];
 		size_t			mStaticStride, mDynamicStride;	
@@ -198,6 +205,7 @@ class VboMesh {
 	void						bufferPositions( const std::vector<Vec3f> &positions );
 	void						bufferPositions( const Vec3f *positions, size_t count );
 	void						bufferNormals( const std::vector<Vec3f> &normals );
+	void						bufferTangents( const std::vector<Vec3f> &tangents );
 	void						bufferTexCoords2d( size_t unit, const std::vector<Vec2f> &texCoords );
 	void						bufferTexCoords3d( size_t unit, const std::vector<Vec3f> &texCoords );
 	void						bufferColorsRGB( const std::vector<Color> &colors );
@@ -228,6 +236,7 @@ class VboMesh {
 		void	setPosition( const Vec3f &v ) { *(reinterpret_cast<Vec3f*>( &mPtr[mPositionOffset] )) = v; }
 		void	setPosition( float x, float y, float z ) { *(reinterpret_cast<Vec3f*>( &mPtr[mPositionOffset] )) = Vec3f( x, y, z ); }
 		void	setNormal( const Vec3f &n ) { *(reinterpret_cast<Vec3f*>( &mPtr[mNormalOffset] )) = n; }
+		void	setTangent( const Vec3f &n ) { *(reinterpret_cast<Vec3f*>( &mPtr[mTangentOffset] )) = n; }
 		void	setColorRGB( const Color &n ) { *(reinterpret_cast<Color*>( &mPtr[mColorRGBOffset] )) = n; }
 		void	setColorRGBA( const ColorA &n ) { *(reinterpret_cast<ColorA*>( &mPtr[mColorRGBAOffset] )) = n; }
 		void	setTexCoord2d0( const Vec2f &t ) { *(reinterpret_cast<Vec2f*>( &mPtr[mTexCoordOffset[0]] )) = t; }
@@ -272,7 +281,7 @@ class VboMesh {
 		std::shared_ptr<Obj>	mObj;
 		uint8_t					*mPtr;
 		uint8_t					*mData, *mDataEnd; // we cache these from the Obj to reduce dereferencing
-		size_t					mPositionOffset, mNormalOffset;
+		size_t					mPositionOffset, mNormalOffset, mTangentOffset;
 		size_t					mColorRGBOffset, mColorRGBAOffset;
 		size_t					mTexCoordOffset[ATTR_MAX_TEXTURE_UNIT+1];
 		uint8_t					mStride;

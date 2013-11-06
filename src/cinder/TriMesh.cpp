@@ -32,6 +32,7 @@ void TriMesh::clear()
 {
 	mVertices.clear();
 	mNormals.clear();
+	mTangents.clear();
 	mColorsRGB.clear();
 	mColorsRGBA.clear();
 	mTexCoords.clear();
@@ -63,6 +64,17 @@ void TriMesh::appendNormals( const Vec4d *normals, size_t num )
 {
 	for( size_t v = 0; v < num; ++v )
 		mNormals.push_back( Vec3f( (float)normals[v].x, (float)normals[v].y, (float)normals[v].z ) );
+}
+
+void TriMesh::appendTangents( const Vec3f *tangents, size_t num )
+{
+	mTangents.insert( mTangents.end(), tangents, tangents + num );
+}
+
+void TriMesh::appendTangents( const Vec4d *tangents, size_t num )
+{
+	for( size_t v = 0; v < num; ++v )
+		mTangents.push_back( Vec3f( (float)tangents[v].x, (float)tangents[v].y, (float)tangents[v].z ) );
 }
 
 void TriMesh::appendColorsRgb( const Color *rgbs, size_t num )
@@ -147,11 +159,16 @@ void TriMesh::read( DataSourceRef dataSource )
 	uint8_t versionNumber;
 	in->read( &versionNumber );
 	
-	uint32_t numVertices, numNormals, numTexCoords, numIndices;
+	uint32_t numVertices, numNormals, numTexCoords, numIndices, numTangents;
 	in->readLittle( &numVertices );
 	in->readLittle( &numNormals );
 	in->readLittle( &numTexCoords );
 	in->readLittle( &numIndices );
+
+	mVertices.reserve( numVertices );
+	mNormals.reserve( numNormals );
+	mTexCoords.reserve( numTexCoords );
+	mIndices.reserve( numIndices );
 	
 	for( size_t idx = 0; idx < numVertices; ++idx ) {
 		Vec3f v;
@@ -176,13 +193,28 @@ void TriMesh::read( DataSourceRef dataSource )
 		in->readLittle( &v );
 		mIndices.push_back( v );
 	}
+
+	// tangents were introduced in version 2,
+	// appended to the end to keep format compatible with older versions
+	if(versionNumber > 1)
+	{
+		in->readLittle( &numTangents );
+		
+		mTangents.reserve( numTangents );
+
+		for( size_t idx = 0; idx < numTangents; ++idx ) {
+			Vec3f v;
+			in->readLittle( &v.x ); in->readLittle( &v.y ); in->readLittle( &v.z );
+			mTangents.push_back( v );
+		}
+	}
 }
 
 void TriMesh::write( DataTargetRef dataTarget ) const
 {
 	OStreamRef out = dataTarget->getStream();
 	
-	const uint8_t versionNumber = 1;
+	const uint8_t versionNumber = 2;
 	out->write( versionNumber );
 	
 	out->writeLittle( static_cast<uint32_t>( mVertices.size() ) );
@@ -204,6 +236,14 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 
 	for( vector<uint32_t>::const_iterator it = mIndices.begin(); it != mIndices.end(); ++it ) {
 		out->writeLittle( *it );
+	}
+	
+	// tangents were introduced in version 2,
+	// appended to the end to keep format compatible with older versions
+	out->writeLittle( static_cast<uint32_t>( mTangents.size() ) );
+
+	for( vector<Vec3f>::const_iterator it = mTangents.begin(); it != mTangents.end(); ++it ) {
+		out->writeLittle( it->x ); out->writeLittle( it->y ); out->writeLittle( it->z );
 	}
 }
 
@@ -231,6 +271,60 @@ void TriMesh::recalculateNormals()
 	}
 
 	std::for_each( mNormals.begin(), mNormals.end(), std::mem_fun_ref(&Vec3f::normalize) );
+}
+
+// Code taken from:
+// Lengyel, Eric. "Computing Tangent Space Basis Vectors for an Arbitrary Mesh". 
+// Terathon Software 3D Graphics Library, 2001.
+// http://www.terathon.com/code/tangent.html
+void TriMesh::recalculateTangents()
+{
+	// requires valid normals and texture coordinates
+	if(!(hasNormals() && hasTexCoords()))
+		return;
+
+	mTangents.assign( mVertices.size(), Vec3f::zero() );
+
+	size_t n = getNumTriangles();
+	for( size_t i = 0; i < n; ++i ) {
+		uint32_t index0 = mIndices[i * 3];
+		uint32_t index1 = mIndices[i * 3 + 1];
+		uint32_t index2 = mIndices[i * 3 + 2];
+
+		Vec3f v0 = mVertices[ index0 ];
+		Vec3f v1 = mVertices[ index1 ];
+		Vec3f v2 = mVertices[ index2 ];
+
+		Vec2f w0 = mTexCoords[ index0 ];
+		Vec2f w1 = mTexCoords[ index1 ];
+		Vec2f w2 = mTexCoords[ index2 ];		
+        
+        float x1 = v1.x - v0.x;
+        float x2 = v2.x - v0.x;
+        float y1 = v1.y - v0.y;
+        float y2 = v2.y - v0.y;
+        float z1 = v1.z - v0.z;
+        float z2 = v2.z - v0.z;
+        
+        float s1 = w1.x - w0.x;
+        float s2 = w2.x - w0.x;
+        float t1 = w1.y - w0.y;
+        float t2 = w2.y - w0.y;
+
+		float r = 1.0f / (s1 * t2 - s2 * t1);
+        Vec3f tangent((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+
+		mTangents[ index0 ] += tangent;
+		mTangents[ index1 ] += tangent;
+		mTangents[ index2 ] += tangent;
+	}
+
+	n = getNumVertices();
+	for( size_t i = 0; i < n; ++i ) {
+		Vec3f normal = mNormals[i];
+		Vec3f tangent = mTangents[i];
+		mTangents[i] = (tangent - normal * normal.dot(tangent)).normalized();
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
