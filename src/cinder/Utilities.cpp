@@ -293,53 +293,6 @@ string loadString( DataSourceRef dataSource )
 	return string( static_cast<const char*>( padded.getData() ) );
 }
 
-wstring toUtf16( const string &utf8 )
-{
-#if (defined( CINDER_MSW ) ||  defined( CINDER_WINRT ))
-	int wideSize = ::MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), -1, NULL, 0 );
-	if( wideSize == ERROR_NO_UNICODE_TRANSLATION ) {
-		throw std::exception( "Invalid UTF-8 sequence." );
-	}
-	else if( wideSize == 0 ) {
-		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
-	}
-
-	vector<wchar_t> resultString( wideSize );
-	int convResult = ::MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), -1, &resultString[0], wideSize );
-	if( convResult != wideSize ) {
-		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
-	}
-
-	return wstring( &resultString[0] );
-#else
-	NSString *utf8NS = [NSString stringWithCString:utf8.c_str() encoding:NSUTF8StringEncoding];
-	return wstring( reinterpret_cast<const wchar_t*>( [utf8NS cStringUsingEncoding:NSUTF16LittleEndianStringEncoding] ) );
-#endif	
-}
-
-string toUtf8( const wstring &utf16 )
-{
-#if (defined( CINDER_MSW ) ||  defined( CINDER_WINRT ))
-	int utf8Size = ::WideCharToMultiByte( CP_UTF8, 0, utf16.c_str(), -1, NULL, 0, NULL, NULL );
-	if( utf8Size == 0 ) {
-		throw std::exception( "Error in UTF-16 to UTF-8 conversion." );
-	}
-
-	vector<char> resultString( utf8Size );
-
-	int convResult = ::WideCharToMultiByte( CP_UTF8, 0, utf16.c_str(), -1, &resultString[0], utf8Size, NULL, NULL );
-
-	if( convResult != utf8Size ) {
-		throw std::exception( "Error in UTF-16 to UTF-8 conversion." );
-	}
-
-	return string( &resultString[0] );
-#else
-	NSString *utf16NS = [NSString stringWithCString:reinterpret_cast<const char*>( utf16.c_str() ) encoding:NSUTF16LittleEndianStringEncoding];
-	return string( [utf16NS cStringUsingEncoding:NSUTF8StringEncoding] );	
-#endif
-}
-
 void sleep( float milliseconds )
 {
 #if defined( CINDER_MSW )

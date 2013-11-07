@@ -1,6 +1,32 @@
+/*
+ Copyright (c) 2013, The Cinder Project
+ All rights reserved.
+ 
+ This code is designed for use with the Cinder C++ library, http://libcinder.org
+
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #include "cinder/Unicode.h"
 #include <cstring>
+#include <string>
 
+#include "utf8cpp/checked.h"
 extern "C" {
 #include "linebreak.h"
 #include "linebreakdef.h"
@@ -9,6 +35,76 @@ extern "C" {
 using namespace std;
 
 namespace cinder {
+
+std::u16string toUtf16( const char *utf8Str, size_t lengthInBytes )
+{
+	if( lengthInBytes == 0 )
+		lengthInBytes = strlen( utf8Str );
+	
+	std::u16string result;
+	utf8::utf8to16( utf8Str, utf8Str + lengthInBytes, back_inserter( result ));
+	return result;
+}
+
+std::u16string toUtf16( const std::string &utf8Str )
+{
+	std::u16string result;
+	utf8::utf8to16( utf8Str.begin(), utf8Str.end(), back_inserter( result ));
+	return result;
+}
+
+std::u32string toUtf32( const char *utf8Str, size_t lengthInBytes )
+{
+	if( lengthInBytes == 0 )
+		lengthInBytes = strlen( utf8Str );
+	
+	std::u32string result;
+	utf8::utf8to32( utf8Str, utf8Str + lengthInBytes, back_inserter( result ));
+	return result;
+}
+
+std::u32string toUtf32( const std::string &utf8Str )
+{
+	std::u32string result;
+	utf8::utf8to32( utf8Str.begin(), utf8Str.end(), back_inserter( result ));
+	return result;
+}
+
+std::string toUtf8( const char16_t *utf16Str, size_t lengthInBytes )
+{
+	if( lengthInBytes == 0 )
+		while( utf16Str[lengthInBytes] )
+			++lengthInBytes;
+
+	std::string result;
+	utf8::utf16to8( utf16Str, utf16Str + lengthInBytes / 2, back_inserter( result ));
+	return result;	
+}
+
+std::string	toUtf8( const std::u16string &utf16Str )
+{
+	std::string result;
+	utf8::utf16to8( utf16Str.begin(), utf16Str.end(), back_inserter( result ));
+	return result;
+}
+
+std::string toUtf8( const char32_t *utf32Str, size_t lengthInBytes )
+{
+	if( lengthInBytes == 0 )
+		while( utf32Str[lengthInBytes] )
+			++lengthInBytes;
+
+	std::string result;
+	utf8::utf32to8( utf32Str, utf32Str + lengthInBytes / 4, back_inserter( result ));
+	return result;
+}
+
+std::string	toUtf8( const std::u32string &utf32Str )
+{
+	std::string result;
+	utf8::utf32to8( utf32Str.begin(), utf32Str.end(), back_inserter( result ));
+	return result;
+}
 
 size_t stringLengthUtf8( const char *str, size_t lengthInBytes )
 {
