@@ -163,7 +163,17 @@ void App::emitShutdown()
 	mSignalShutdown();
 	shutdown();
 }
-	
+
+void App::emitWillResignActive()
+{
+	mSignalWillResignActive();
+}
+
+void App::emitDidBecomeActive()
+{
+	mSignalDidBecomeActive();
+}
+
 DataSourceRef App::loadResource( const string &macPath, int mswID, const string &mswType )
 {
 #if defined( CINDER_COCOA )

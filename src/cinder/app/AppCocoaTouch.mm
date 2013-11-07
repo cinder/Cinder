@@ -633,16 +633,6 @@ void AppCocoaTouch::emitWillEnterForeground()
 	mSignalWillEnterForeground();
 }
 
-void AppCocoaTouch::emitWillResignActive()
-{
-	mSignalWillResignActive();
-}
-
-void AppCocoaTouch::emitDidBecomeActive()
-{
-	mSignalDidBecomeActive();
-}
-
 void AppCocoaTouch::emitMemoryWarning()
 {
 	mSignalMemoryWarning();
