@@ -52,7 +52,7 @@ static const wchar_t *WINDOWED_WIN_CLASS_NAME = TEXT("CinderWinClass");
 static const wchar_t *BLANKING_WINDOW_CLASS_NAME = TEXT("CinderBlankingWindow");
 
 AppImplMsw::AppImplMsw( App *aApp )
-	: mApp( aApp ), mSetupHasBeenCalled( false )
+	: mApp( aApp ), mSetupHasBeenCalled( false ), mActive( true )
 {
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	Gdiplus::GdiplusStartup( &mGdiplusToken, &gdiplusStartupInput, NULL );
@@ -805,6 +805,19 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 						return false;
 					else
 						return DefWindowProc( mWnd, uMsg, wParam, lParam );
+			}
+		break;
+		case WM_ACTIVATEAPP:
+			if ( wParam ) {
+				if ( ! impl->getAppImpl()->mActive ) {
+					impl->getAppImpl()->mActive = true;
+					impl->getAppImpl()->getApp()->emitDidBecomeActive();
+				}
+			} else {
+				if ( impl->getAppImpl()->mActive ) {
+					impl->getAppImpl()->mActive = false;
+					impl->getAppImpl()->getApp()->emitWillResignActive();
+				}
 			}
 		break;
 		case WM_ACTIVATE:
