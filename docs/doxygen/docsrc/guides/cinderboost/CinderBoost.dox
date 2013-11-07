@@ -72,5 +72,13 @@ b2 runtime-link=static --with-filesystem --with-date_time --with-system --with-t
 copy stage\\lib\\*.lib ..\\lib\\msw\n
 </tt>
 \n
+<b>Visual C++ 2012 x64</b>:\n
+From the Visual Studio 2012 Command Prompt:\n
+<tt>
+cd cinder\\boost\n
+bootstrap\n
+b2 runtime-link=static address-model=64 debug-symbols=off optimization=space
+</tt>
+\n
 \n
 **/

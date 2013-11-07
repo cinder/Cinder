@@ -44,10 +44,10 @@ void LocationApp::setup()
 	
 	LocationManager::enable();
 	LocationManager::getSignalLocationChanged().connect(
-		std::bind( &LocationApp::locationChanged, this, std::_1 ) );
+		std::bind( &LocationApp::locationChanged, this, std::placeholders::_1 ) );
 #if defined( CINDER_COCOA_TOUCH )
 	LocationManager::getSignalHeadingChanged().connect(
-		std::bind( &LocationApp::headingChanged, this, std::_1 ) );
+		std::bind( &LocationApp::headingChanged, this, std::placeholders::_1 ) );
 #endif
 
 	// Load globe texture,

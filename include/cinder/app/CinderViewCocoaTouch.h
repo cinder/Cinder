@@ -37,8 +37,6 @@
 - (void)mouseDown:(cinder::app::MouseEvent*)event;
 - (void)mouseDrag:(cinder::app::MouseEvent*)event;
 - (void)mouseUp:(cinder::app::MouseEvent*)event;
-- (void)keyDown:(cinder::app::KeyEvent*)event;
-- (void)setKeyboardString:(const std::string *)keyboardString;
 - (void)touchesBegan:(cinder::app::TouchEvent*)event;
 - (void)touchesMoved:(cinder::app::TouchEvent*)event;
 - (void)touchesEnded:(cinder::app::TouchEvent*)event;
@@ -46,7 +44,7 @@
 @end
 
 
-@interface CinderViewCocoaTouch : UIView <UIKeyInput, UITextFieldDelegate>
+@interface CinderViewCocoaTouch : UIView
 {
 	ci::app::AppCocoaTouch						*mApp;
 	id<CinderViewCocoaTouchDelegate>			mDelegate;
@@ -54,10 +52,6 @@
 	ci::app::RendererRef						mRenderer;
 	std::map<UITouch*,uint32_t>					mTouchIdMap;
 	std::vector<cinder::app::TouchEvent::Touch> mActiveTouches;
-	
-	UITextField									*mKeyboardTextField; // only used for advanced keyboard
-	BOOL										mKeyboardVisible;
-	NSMutableString								*mKeyboardString;
 }
 
 - (id)initWithFrame:(CGRect)frame app:(cinder::app::AppCocoaTouch*)app renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer contentScale:(float)contentScale;
@@ -72,9 +66,5 @@
 - (void)updateActiveTouches;
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event;
 - (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
-
-// Advanced Keyboard
-- (void)showKeyboard;
-- (void)hideKeyboard;
 
 @end

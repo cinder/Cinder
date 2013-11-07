@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -140,6 +142,8 @@ class Line {
 	void render( CGContextRef &cgContext, float currentY, float xBorder, float maxWidth );
 #elif defined( CINDER_MSW )
 	void render( Gdiplus::Graphics *graphics, float currentY, float xBorder, float maxWidth );
+#elif defined( CINDER_WINRT )
+	void render(Channel &channel, float currentY, float xBorder, float maxWidth);
 #endif
 
 	enum { LEFT, RIGHT, CENTERED };
@@ -216,6 +220,23 @@ void Line::calcExtents()
 		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
 		mHeight = std::max( mHeight, sizeRect.Height );
 	}
+#elif defined( CINDER_WINRT )
+	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
+	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
+		FT_Face face = runIt->mFont.getFace();
+		
+		int width = 0;
+		for(string::iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
+		{
+			FT_Load_Char(face, *strIt, FT_LOAD_DEFAULT);
+			width += face->glyph->advance.x;
+		}
+		mWidth += width / 64.0f;
+		mAscent = std::max( runIt->mFont.getAscent(), mAscent );
+		mDescent = std::max( runIt->mFont.getDescent(), mDescent );
+		mLeading = std::max( runIt->mFont.getLeading(), mLeading );
+		mHeight = std::max( mHeight, face->bbox.yMax / 64.0f );
+	}
 #endif
 
 	mHeight = std::max( mHeight, mAscent + mDescent + mLeading );
@@ -248,6 +269,29 @@ void Line::render( Gdiplus::Graphics *graphics, float currentY, float xBorder, f
 		Gdiplus::SolidBrush brush( Gdiplus::Color( nativeColor.a, nativeColor.r, nativeColor.g, nativeColor.b ) );
 		graphics->DrawString( &runIt->mWideText[0], -1, font, Gdiplus::PointF( currentX, currentY + (mAscent - runIt->mAscent) ), &brush );
 		currentX += runIt->mWidth;
+	}
+}
+
+#elif defined( CINDER_WINRT )
+
+void Line::render(Channel &channel, float currentY, float xBorder, float maxWidth)
+{
+	float currentX = xBorder;
+	if( mJustification == CENTERED )
+		currentX = ( maxWidth - mWidth ) / 2.0f;
+	else if( mJustification == RIGHT )
+		currentX = maxWidth - mWidth - xBorder;
+	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
+		FT_Face face = runIt->mFont.getFace();
+		for(string::const_iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
+		{
+			FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
+			uint8_t *pBuff = face->glyph->bitmap.buffer;
+			FT_Glyph_Metrics &metrics = face->glyph->metrics;
+			int32_t alignedRowBytes = face->glyph->bitmap.pitch;
+			Channel glyphChannel( metrics.width >> 6, metrics.height >> 6, alignedRowBytes, 1, pBuff );
+			channel.copyFrom( glyphChannel, glyphChannel.getBounds(), Vec2i((int)currentX + (metrics.horiBearingX >> 6), (int)currentY + ((face->height - metrics.horiBearingY) >> 6)) );
+		}
 	}
 }
 
@@ -414,7 +458,18 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 	GdiFlush();
 
 	delete offscreenBitmap;
-	delete offscreenGraphics;		
+	delete offscreenGraphics;
+#elif defined( CINDER_WINRT )
+	Channel channel( pixelWidth, pixelHeight );
+	ip::fill<uint8_t>( &channel, 0 );
+	float currentY = (float)mVerticalBorder;
+	for( deque<shared_ptr<Line> >::iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+		currentY += (*lineIt)->mLeadingOffset + (*lineIt)->mLeading;
+		(*lineIt)->render( channel, currentY, (float)mHorizontalBorder, (float)pixelWidth );
+		currentY += (*lineIt)->mLeading;
+	}
+	result = Surface(channel, SurfaceConstraintsDefault(), true);
+	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
 #endif
 
 	return result;
@@ -457,7 +512,7 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 	::CGContextRelease( cgContext );
 	return result;
 }
-#elif defined( CINDER_MAC) || defined( CINDER_MSW )
+#elif defined( CINDER_MAC) || defined( CINDER_MSW ) || defined( CINDER_WINRT )
 Surface renderString( const string &str, const Font &font, const ColorA &color, float *baselineOffset )
 {
 	Line line;
@@ -512,7 +567,24 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 	::GdiFlush();
 
 	delete offscreenBitmap;
-	delete offscreenGraphics;		
+	delete offscreenGraphics;
+#elif defined( CINDER_WINRT )
+	Channel channel( pixelWidth, pixelHeight );
+	ip::fill<uint8_t>( &channel, 0 );
+	FT_Face face = font.getFace();
+	int offset = 0;
+	for(string::const_iterator strIt = str.begin(); strIt != str.end(); ++strIt)
+	{
+		FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
+		uint8_t *pBuff = face->glyph->bitmap.buffer;
+		FT_Glyph_Metrics &metrics = face->glyph->metrics;
+		int32_t alignedRowBytes = face->glyph->bitmap.pitch;
+		Channel glyphChannel( face->glyph->bitmap.width, face->glyph->bitmap.rows, alignedRowBytes, 1, pBuff );
+		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), Vec2i(offset + (metrics.horiBearingX >> 6), (face->ascender + face->descender - metrics.horiBearingY) >> 6) );
+		offset += metrics.horiAdvance >> 6;
+	}
+	Surface result(channel, SurfaceConstraintsDefault(), true);
+	result.getChannelAlpha().copyFrom( channel, channel.getBounds() );
 #endif	
 
 	if( baselineOffset )
@@ -690,8 +762,8 @@ vector<string> TextBox::calculateLineBreaks() const
 			return outSize.Width <= mMaxWidth;
 		}
 
-		int					mMaxWidth;
-		const Gdiplus::Font	*mFont;
+		int						mMaxWidth;
+		const Gdiplus::Font		*mFont;
 	};
 	std::function<void(const char *,size_t)> lineFn = LineProcessor( &result );		
 	lineBreakUtf8( mText.c_str(), LineMeasure( ( mSize.x > 0 ) ? mSize.x : MAX_SIZE, mFont ), lineFn );
@@ -755,7 +827,7 @@ vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
 				return vector<pair<uint16_t,Vec2f> >(); // failure
 			}
 		}
-
+		
 		int xPos = 0;
 		for( int i = 0; i < gcpResults.nGlyphs; i++ ) {
 			result.push_back( std::make_pair( glyphIndices[i], Vec2f( xPos, curY ) ) );
@@ -811,7 +883,6 @@ Surface	TextBox::render( Vec2f offset )
 
 	return result;
 }
-
-#endif // defined( CINDER_MSW )
+#endif
 
 } // namespace cinder

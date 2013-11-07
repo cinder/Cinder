@@ -240,7 +240,7 @@ void VisualDictionaryApp::update()
 	}
 	
 	// erase any nodes which have been marked as ready to be deleted
-	mDyingNodes.remove_if( bind( &WordNode::shouldBeDeleted, std::_1 ) );
+	mDyingNodes.remove_if( bind( &WordNode::shouldBeDeleted, std::placeholders::_1 ) );
 }
 
 void VisualDictionaryApp::draw()
