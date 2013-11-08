@@ -75,9 +75,11 @@ std::string toUtf8( const char16_t *utf16Str, size_t lengthInBytes )
 	if( lengthInBytes == 0 )
 		while( utf16Str[lengthInBytes] )
 			++lengthInBytes;
+	else
+		lengthInBytes /= 2;
 
 	std::string result;
-	utf8::utf16to8( utf16Str, utf16Str + lengthInBytes / 2, back_inserter( result ));
+	utf8::utf16to8( utf16Str, utf16Str + lengthInBytes, back_inserter( result ));
 	return result;	
 }
 
@@ -93,9 +95,11 @@ std::string toUtf8( const char32_t *utf32Str, size_t lengthInBytes )
 	if( lengthInBytes == 0 )
 		while( utf32Str[lengthInBytes] )
 			++lengthInBytes;
+	else
+		lengthInBytes /= 4;
 
 	std::string result;
-	utf8::utf32to8( utf32Str, utf32Str + lengthInBytes / 4, back_inserter( result ));
+	utf8::utf32to8( utf32Str, utf32Str + lengthInBytes, back_inserter( result ));
 	return result;
 }
 
