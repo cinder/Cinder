@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -28,6 +30,11 @@ using namespace std;
 	#include <Cocoa/Cocoa.h>
 #elif defined( CINDER_COCOA_TOUCH )
 	#include <UIKit/UIKit.h>
+#elif defined( CINDER_WINRT)
+	#include "cinder/WinRTUtils.h"
+	using namespace cinder::winrt;
+	using namespace Windows::UI::Core;
+	using namespace Windows::Graphics::Display;
 #endif
 
 namespace cinder {
@@ -191,8 +198,24 @@ void Display::setResolution( const Vec2i &resolution )
 	
 	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
 }
+#elif defined( CINDER_WINRT )
+void Display::enumerateDisplays()
+{
+	CoreWindow^ window = CoreWindow::GetForCurrentThread();
+	DisplayRef newDisplay = DisplayRef( new Display );
+	if(window != nullptr)
+	{
+		float width, height;
 
+		GetPlatformWindowDimensions(window, &width,&height);
 
+		newDisplay->mArea = Area( 0, 0, (int)width, (int)height );
+		newDisplay->mBitsPerPixel = 24;
+		newDisplay->mContentScale = getScaleFactor();
+	}
+
+	sDisplays.push_back( newDisplay );
+}
 #elif defined( CINDER_MSW )
 
 DisplayRef Display::findFromHmonitor( HMONITOR hMonitor )

@@ -41,7 +41,14 @@
 namespace osc{
 
 // basic types
+// Cinder:
+#include <cstdint>
+typedef int64_t		int64;
+typedef uint64_t	uint64;
+typedef int32_t		int32;
+typedef uint32_t	uint32;
 
+/*
 #if defined(__BORLANDC__) || defined(_MSC_VER)
 
 typedef __int64 int64;
@@ -72,7 +79,7 @@ typedef signed long int32;
 typedef unsigned long uint32;
 
 #endif
-
+*/
 
 enum ValueTypeSizes{
     OSC_SIZEOF_INT32 = 4,

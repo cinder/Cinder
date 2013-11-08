@@ -90,11 +90,11 @@ class JsonTree {
 	public:
 		//! Default options. Indents. Does not create root document.
 		WriteOptions();
-		//! Sets if JSON string is indented. Default \c true.
+		//! Sets whether JSON is wrapped in a 'document root' object. Default \c false.
 		WriteOptions& createDocument( bool createDocument = true );
-		//! Sets if JSON string is indented. Default \c true.
+		//! Sets whether JSON string is indented. Default \c true.
 		WriteOptions& indented( bool indent = true );
-		//! Returns whether JSON string is indented.
+		//! whether JSON is wrapped in a 'document root' object.
 		bool	getCreateDocument() const;
 		//! Returns whether JSON string is indented.
 		bool	getIndented() const;

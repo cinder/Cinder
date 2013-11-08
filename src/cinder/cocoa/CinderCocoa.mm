@@ -426,7 +426,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 	else
 		setDataType( ( bpc == 16 ) ? ImageIo::UINT16 : ImageIo::UINT8 );
 	if( isFloat && ( bpc != 32 ) )
-		throw ImageIoExceptionIllegalDataType(); // we don't know how to handle half-sized floats yet, but Quartz seems to make them 32bit anyway
+		throw ImageIoExceptionIllegalDataType( "Illegal data type (cannot handle half-precision floats)" ); // we don't know how to handle half-sized floats yet, but Quartz seems to make them 32bit anyway
 	bool hasAlpha = ( alphaInfo != kCGImageAlphaNone ) && ( alphaInfo != kCGImageAlphaNoneSkipLast ) && ( alphaInfo != kCGImageAlphaNoneSkipFirst );
 
 	bool swapEndian = false;
@@ -494,7 +494,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 			}
 			break;
 			default: // we only support Gray and RGB data for now
-				throw ImageIoExceptionIllegalColorModel();
+				throw ImageIoExceptionIllegalColorModel( "Core Graphics unexpected data type" );
 			break;
 		}
 	}
@@ -506,7 +506,7 @@ void ImageSourceCgImage::load( ImageTargetRef target )
 	const std::shared_ptr<__CFData> pixels( (__CFData*)::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) ), safeCfRelease );
 	
 	if( ! pixels )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedLoad( "Core Graphics failure copying data." );
 	
 	// get a pointer to the ImageSource function appropriate for handling our data configuration
 	ImageSource::RowFunc func = setupRowFunc( target );

@@ -37,7 +37,7 @@
 		typedef AppCocoaTouch	AppNative;
 	} }
 	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_COCOA_TOUCH( APP, RENDERER )	
-#elif defined( CINDER_MSW )
+#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 	#include "cinder/app/AppBasic.h"
 	namespace cinder { namespace app {
 		typedef AppBasic		AppNative;

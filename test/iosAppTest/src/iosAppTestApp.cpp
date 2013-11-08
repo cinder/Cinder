@@ -158,10 +158,10 @@ void iosAppTestApp::setup()
 	mMouseTouchId = 0;
 	tester.setState( TestCallbackOrder::SETUP );
 
-	getSignalProximitySensor().connect( std::bind( &iosAppTestApp::proximitySensor, this, std::_1 ) );
+	getSignalProximitySensor().connect( std::bind( &iosAppTestApp::proximitySensor, this, std::placeholders::_1 ) );
 	enableProximitySensor();
 
-	getSignalBatteryState().connect( std::bind( &iosAppTestApp::batteryStateChange, this, std::_1 ) );
+	getSignalBatteryState().connect( std::bind( &iosAppTestApp::batteryStateChange, this, std::placeholders::_1 ) );
 	enableBatteryMonitoring();
 	
 	mCubeRotation.setToIdentity();
@@ -330,13 +330,11 @@ void iosAppTestApp::touchesEnded( TouchEvent event )
 void iosAppTestApp::keyDown( KeyEvent event )
 {
 	std::cout << "Key: " << event.getCharUtf32() << std::endl;
-	if( event.getChar() == '\b' ) {
+	if( event.getCode() == KeyEvent::KEY_BACKSPACE )
 		console() << "backspace!" << std::endl;
-	}
-	else if( event.getChar() == '\n' ) {
-		hideKeyboard();
-	}
-	
+	else if( event.getCode() == KeyEvent::KEY_RETURN )
+		console() << "return!" << std::endl;
+
 	mSecondWindowMessage = getKeyboardString();
 }
 

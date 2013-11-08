@@ -32,6 +32,8 @@ void Path2dApp::mouseDown( MouseEvent event )
 		else
 			mPath.lineTo( event.getPos() );
 	}
+	
+	console() << "Length: " << mPath.calcLength() << std::endl;
 }
 
 void Path2dApp::mouseDrag( MouseEvent event )
@@ -72,6 +74,8 @@ void Path2dApp::mouseDrag( MouseEvent event )
 		// our second-to-last point is the tangent next to the end, and we'll track that
 		mTrackedPoint = mPath.getNumPoints() - 2;
 	}
+	
+	console() << "Length: " << mPath.calcLength() << std::endl;	
 }
 
 void Path2dApp::mouseUp( MouseEvent event )
@@ -96,12 +100,26 @@ void Path2dApp::draw()
 		gl::drawSolidCircle( mPath.getPoint( p ), 2.5f );
 
 	// draw the precise bounding box
-	gl::color( ColorA( 0, 1, 1, 0.2f ) );
-	gl::drawSolidRect( mPath.calcPreciseBoundingBox() );
+	if( mPath.getNumSegments() > 1 ) {
+		gl::color( ColorA( 0, 1, 1, 0.2f ) );
+		gl::drawSolidRect( mPath.calcPreciseBoundingBox() );
+	}
 
 	// draw the curve itself
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
 	gl::draw( mPath );
+	
+	if( mPath.getNumSegments() > 1 ) {	
+		// draw some tangents
+		gl::color( Color( 0.2f, 0.9f, 0.2f ) );	
+		for( float t = 0; t < 1; t += 0.2f )
+			gl::drawLine( mPath.getPosition( t ), mPath.getPosition( t ) + mPath.getTangent( t ).normalized() * 80 );
+		
+		// draw circles at 1/4, 2/4 and 3/4 the length
+		gl::color( ColorA( 0.2f, 0.9f, 0.9f, 0.5f ) );
+		for( float t = 0.25f; t < 1.0f; t += 0.25f )
+			gl::drawSolidCircle( mPath.getPosition( mPath.calcNormalizedTime( t ) ), 5.0f );
+	}
 }
 
 

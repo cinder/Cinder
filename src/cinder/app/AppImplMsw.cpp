@@ -449,20 +449,22 @@ void WindowImplMsw::registerWindowClass()
 	if( sRegistered )
 		return;
 
-	WNDCLASS	wc;
+	WNDCLASSEX	wc;
 	HMODULE instance	= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
+	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;	// Redraw On Size, And Own DC For Window.
 	wc.lpfnWndProc		= WndProc;						// WndProc Handles Messages
 	wc.cbClsExtra		= 0;									// No Extra Window Data
 	wc.cbWndExtra		= 0;									// No Extra Window Data
 	wc.hInstance		= instance;							// Set The Instance
-	wc.hIcon			= ::LoadIcon( NULL, IDI_WINLOGO );		// Load The Default Icon
+	wc.hIcon = (HICON)::LoadImage( instance, MAKEINTRESOURCE(1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE ); // Load The Default Cinder Icon
+	wc.hIconSm = NULL;
 	wc.hCursor			= ::LoadCursor( NULL, IDC_ARROW );		// Load The Arrow Pointer
 	wc.hbrBackground	= NULL;									// No Background Required For GL
 	wc.lpszMenuName		= NULL;									// We Don't Want A Menu
 	wc.lpszClassName	= WINDOWED_WIN_CLASS_NAME;
 
-	if( ! ::RegisterClass( &wc ) ) {								// Attempt To Register The Window Class
+	if( ! ::RegisterClassEx( &wc ) ) {								// Attempt To Register The Window Class
 		DWORD err = ::GetLastError();
 		return;							
 	}
@@ -785,10 +787,10 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 	// if the message is WM_NCCREATE we need to hide 'this' in the window long
 	if( uMsg == WM_NCCREATE ) {
 		impl = reinterpret_cast<WindowImplMsw*>(((LPCREATESTRUCT)lParam)->lpCreateParams);
-		::SetWindowLongPtr( mWnd, GWL_USERDATA, (__int3264)(LONG_PTR)impl ); 
+		::SetWindowLongPtr( mWnd, GWLP_USERDATA, (__int3264)(LONG_PTR)impl ); 
 	}
 	else // the warning on this line is harmless
-		impl = reinterpret_cast<WindowImplMsw*>( ::GetWindowLongPtr( mWnd, GWL_USERDATA ) );
+		impl = reinterpret_cast<WindowImplMsw*>( ::GetWindowLongPtr( mWnd, GWLP_USERDATA ) );
 
 	if( ! impl )
 		return DefWindowProc( mWnd, uMsg, wParam, lParam );		
@@ -820,7 +822,8 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
 							c, c, prepKeyEventModifiers(), (int)wParam );
 			impl->getWindow()->emitKeyDown( &event );
-			return 0;
+			if ( event.isHandled() )
+				return 0;
 		}
 		break;
 		case WM_SYSKEYUP:
@@ -829,7 +832,8 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
 							c, c, prepKeyEventModifiers(), (int)wParam );
 			impl->getWindow()->emitKeyUp( &event );
-			return 0;
+			if ( event.isHandled() )
+				return 0;
 		}
 		break;
 		// mouse events

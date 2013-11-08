@@ -20,7 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if ! defined( __LP64__ )
+#if ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
 	#error "This file must be compiled as Objective-C++ on the Mac"
@@ -40,6 +40,7 @@
 		#undef __STDC_CONSTANT_MACROS
 		#if _MSC_VER >= 1600 // VC10 or greater
 			#define _STDINT_H
+			#define __FP__
 		#endif
 		#include <QTML.h>
 		#include <CVPixelBuffer.h>
@@ -609,4 +610,4 @@ bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef ima
 
 } } // namespace cinder::qtime
 
-#endif // ! defined( __LP64__ )
+#endif // ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )

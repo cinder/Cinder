@@ -124,45 +124,51 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
     IWICImagingFactory *IWICFactoryP = NULL;
     hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&IWICFactoryP) );
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedWrite( "Could not create WIC Factory." );
 	shared_ptr<IWICImagingFactory> IWICFactory = msw::makeComShared( IWICFactoryP );
 
 	IWICBitmapEncoder *encoderP = NULL;
 	hr = IWICFactory->CreateEncoder( *mCodecGUID, 0, &encoderP );
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedWrite( "Could not create WIC Encoder." );
 	mEncoder = msw::makeComShared( encoderP );
 	
 	// create the stream		
 	IWICStream *pIWICStream = NULL;
 	hr = IWICFactory->CreateStream( &pIWICStream );
 	if( ! SUCCEEDED(hr) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedWrite( "Could not create WIC stream." );
 	shared_ptr<IWICStream> stream = msw::makeComShared( pIWICStream );
 	
 	// initialize the stream based on properties of the cinder::DataSouce
 	if( mDataTarget->providesFilePath() ) {
-		hr = stream->InitializeFromFilename( mDataTarget->getFilePath().wstring().c_str(), GENERIC_WRITE );
+#if defined( CINDER_WINRT)
+		std::string s = mDataTarget->getFilePath().string();
+		std::wstring filePath =	std::wstring(s.begin(), s.end());                 
+#else
+		std::wstring filePath =	mDataTarget->getFilePath().wstring().c_str();
+#endif
+		hr = stream->InitializeFromFilename( filePath.c_str(), GENERIC_WRITE );
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedWrite( "Could not initialize WIC Stream from filename." );
 	}
 	else {
 		shared_ptr<msw::ComOStream> comOStream = msw::makeComShared( new msw::ComOStream( mDataTarget->getStream() ) );
 		hr = stream->InitializeFromIStream( comOStream.get() );
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();		
+			throw ImageIoExceptionFailedWrite( "Could not initialize WIC Stream from IStream." );
 	}
 	
 	hr = mEncoder->Initialize( stream.get(), WICBitmapEncoderNoCache );
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedWrite( "Could not initialize WIC Encoder." );
 
 	// create the frame encoder
 	IPropertyBag2 *pPropertybag = NULL;
 	IWICBitmapFrameEncode *pBitmapFrame = NULL;
 	hr = mEncoder->CreateNewFrame( &pBitmapFrame, &pPropertybag );
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedWrite( "Could not ceate WIC Frame." );
 	mBitmapFrame = msw::makeComShared( pBitmapFrame );
 
 	// setup the propertyBag to express quality
@@ -176,16 +182,16 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 
 	hr = mBitmapFrame->Initialize( pPropertybag );
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();	
+		throw ImageIoExceptionFailedWrite( "Could not initialize WIC PROPBAG2." );
 	
 	hr = mBitmapFrame->SetSize( mWidth, mHeight );
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedWrite( "Could not set WIC Frame size." );
 	
 	// ask for our ideal pixel format and then process the one we actually get
 	hr = mBitmapFrame->SetPixelFormat( &formatGUID );
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedWrite( "Could not set WIC Frame pixel format." );
 	
 	setupPixelFormat( formatGUID );
 	
@@ -231,7 +237,7 @@ void ImageTargetFileWic::setupPixelFormat( const GUID &guid )
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 );
 	}
 	else
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoException( "Unsupported format." );
 	
 	int32_t bitsPerComponent;
 	bool writingAlpha = hasAlpha();
@@ -265,15 +271,15 @@ void ImageTargetFileWic::finalize()
 	
 	hr = mBitmapFrame->WritePixels( mHeight, mRowBytes, mHeight * mRowBytes, mData.get() );
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedWrite( "Could not write WIC Frame pixels." );
 
 	hr = mBitmapFrame->Commit();
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedWrite( "Could not commit WIC Frame." );
 
 	hr = mEncoder->Commit();
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();		
+		throw ImageIoExceptionFailedWrite( "Could not commit WIC Encoder." );
 }
 
 } // namespace cinder

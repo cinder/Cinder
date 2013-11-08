@@ -28,6 +28,7 @@
 #include <cmath>
 #include <climits>
 #include <cfloat>
+#include <functional>
 #if defined( CINDER_MSW )
 	#undef min
 	#undef max
@@ -240,6 +241,31 @@ inline int solveQuadratic( T a, T b, T c, T result[2] )
 	result[1] = ( -b + srad ) / (2 * a);
 	if( a < 0 ) std::swap( result[0], result[1] );
 	return 2;
+}
+
+template<typename T,int ORDER>
+T rombergIntegral( T a, T b, const std::function<T(T)> &SPEEDFN )
+{
+	static_assert(ORDER > 2, "ORDER must be greater than 2" );
+	T rom[2][ORDER];
+	T half = b - a;
+
+	rom[0][0] = ((T)0.5) * half * ( SPEEDFN(a)+SPEEDFN(b) );
+	for( int i0=2, iP0=1; i0 <= ORDER; i0++, iP0 *= 2, half *= (T)0.5) {
+		// approximations via the trapezoid rule
+		T sum = 0;
+		for( int i1 = 1; i1 <= iP0; i1++ )
+			sum += SPEEDFN(a + half*(i1-((T)0.5)));
+
+		// Richardson extrapolation
+		rom[1][0] = ((T)0.5)*(rom[0][0] + half*sum);
+		for( int i2 = 1, iP2 = 4; i2 < i0; i2++, iP2 *= 4 )
+			rom[1][i2] = (iP2*rom[1][i2-1] - rom[0][i2-1])/(iP2-1);
+		for( int i1 = 0; i1 < i0; i1++ )
+			rom[0][i1] = rom[1][i1];
+	}
+
+	return rom[0][ORDER-1];
 }
 
 template<typename T>

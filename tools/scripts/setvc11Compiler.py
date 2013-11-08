@@ -15,9 +15,9 @@ for root, dirs, files in os.walk(sys.argv[1]):
     for name in dirs:
         if name == 'vc11':
             print join( root, name )
-            files = os.listdir( join( root, "vc11" ) )
+            files = os.listdir( join( root, "vc2012" ) )
             for file in files:
-                filePath = join( join( root, "vc11" ), file )
+                filePath = join( join( root, "vc2012" ), file )
                 if os.path.splitext( filePath )[1] == '.vcxproj':
                     print "processing: " + filePath
                     dom = xml.dom.minidom.parse( filePath )

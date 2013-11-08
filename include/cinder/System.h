@@ -38,15 +38,17 @@ class System {
 	static bool			hasSse2();
 	//! Returns whether the system supports the SSE3 instruction set.	
 	static bool			hasSse3();
-	//! Returns whether the system supports the SSE4.1 instruction set.	
+	//! Returns whether the system supports the SSE4.1 instruction set.	Inaccurate on MSW x64.
 	static bool			hasSse4_1();
-	//! Returns whether the system supports the SSE4.2 instruction set.		
+	//! Returns whether the system supports the SSE4.2 instruction set.	Inaccurate on MSW x64.		
 	static bool			hasSse4_2();
-	//! Returns whether the system supports the x86-64 instruction set.		
+	//! Returns whether the system supports the x86-64 instruction set.	Inaccurate on MSW x64.
 	static bool			hasX86_64();
+	//! Returns whether the system supports the ARM instruction set.		
+	static bool			hasArm();
 	//! Returns the number of physical processors in the system. A single processor dual core machine returns 1.
 	static int			getNumCpus();
-	//! Returns the number of cores (or logical processors) in the system. A single processor dual core machine returns 2.	
+	//! Returns the number of cores (or logical processors) in the system. A single processor dual core machine returns 2. Inaccurate on MSW x64 and WinRT, where it returns the number of processors instead.
 	static int			getNumCores();
 	//! Returns the major version of the operating system.
 	//! For version \c 10.5.8, this is \c 10. For Windows Vista this is 6. Refer to the MSDN documentation for the \c OSVERSIONINFOEX struct for Windows meanings
@@ -86,7 +88,7 @@ class System {
 	static std::string						getIpAddress();
 	
   private:
-	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, 
+	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, HAS_ARM, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, 
 #if defined( CINDER_COCOA_TOUCH)	 
 			IS_IPHONE, IS_IPAD,
 #endif	 
@@ -97,12 +99,12 @@ class System {
 	static std::shared_ptr<System>		sInstance;
 
 	bool				mCachedValues[TOTAL_CACHE_TYPES];
-	bool				mHasSSE2, mHasSSE3, mHasSSE4_1, mHasSSE4_2, mHasX86_64;
+	bool				mHasSSE2, mHasSSE3, mHasSSE4_1, mHasSSE4_2, mHasX86_64, mHasArm;
 	int					mPhysicalCPUs, mLogicalCPUs;
 	int32_t				mOSMajorVersion, mOSMinorVersion, mOSBugFixVersion;
 	bool				mHasMultiTouch;
 	uint32_t			mMaxMultiTouchPoints;
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW ) && ! defined( _WIN64 )
 	uint32_t			mCPUID_EBX, mCPUID_ECX, mCPUID_EDX;
 #endif 
 };

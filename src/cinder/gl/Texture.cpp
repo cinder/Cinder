@@ -350,7 +350,7 @@ void Texture::init( ImageSourceRef imageSource, const Format &format )
 			
 #endif
 			default:
-				throw ImageIoExceptionIllegalColorModel();
+				throw ImageIoExceptionIllegalColorModel( "Illegal color model." );
 			break;
 		}
 	}
