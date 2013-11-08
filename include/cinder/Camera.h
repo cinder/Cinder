@@ -136,7 +136,7 @@ class CameraPersp : public Camera {
 	CameraPersp( int pixelWidth, int pixelHeight, float fov ); // constructs screen-aligned camera
 	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane ); // constructs screen-aligned camera
 	
-	void	setPerspective( float horizFovDegrees, float aspectRatio, float nearPlane, float farPlane );
+	void	setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane );
 	
 	/** Returns both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.

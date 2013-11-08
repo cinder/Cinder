@@ -236,9 +236,9 @@ CameraPersp::CameraPersp()
 	setPerspective( 35.0f, 1.0f, 0.1f, 1000.0f );
 }
 
-void CameraPersp::setPerspective( float horizFovDegrees, float aspectRatio, float nearPlane, float farPlane )
+void CameraPersp::setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane )
 {
-	mFov			= horizFovDegrees;
+	mFov			= verticalFovDegrees;
 	mAspectRatio	= aspectRatio;
 	mNearClip		= nearPlane;
 	mFarClip		= farPlane;
