@@ -17,7 +17,7 @@ uniform bool		bUseNormalMap;
 
 void main()
 {
-	// calculate view space surface normal and modify it using information from the normal map
+	// fetch the normal from the normal map and modify it using the normal (and tangents) from the 3D mesh
 	vec3	vMappedNormal = texture2D(uNormalMap, gl_TexCoord[0].st).rgb * 2.0 - 1.0;
 	vec3	vSurfaceNormal = bUseNormalMap ? normalize((vTangent * vMappedNormal.x) + (vBiTangent * vMappedNormal.y) + (vNormal * vMappedNormal.z)) : vNormal;	
 

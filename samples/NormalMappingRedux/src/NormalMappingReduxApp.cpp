@@ -54,8 +54,9 @@ public:
 	bool	isInitialized() const { return (mDiffuseMap && mSpecularMap && mNormalMap && mShader && mLight && mMesh); }
 
 private:
-	void	delayedSetup();
-	TriMesh	createMesh(const fs::path& mshFile, const fs::path& objFile);
+	void			delayedSetup();
+	TriMesh			createMesh(const fs::path& mshFile, const fs::path& objFile);
+	gl::VboMeshRef	createDebugMesh(const TriMesh& mesh);
 
 private:
 	Matrix44f			mMeshTransform;
@@ -72,8 +73,8 @@ private:
 	gl::TextureRef		mNormalMap;
 
 	gl::GlslProg		mShader;
-	gl::VboMesh			mMesh;
-	gl::VboMesh			mMeshDebug;
+	gl::VboMeshRef		mMesh;
+	gl::VboMeshRef		mMeshDebug;
 
 	bool				bAutoRotate;
 	float				fAutoRotateAngle;
@@ -85,7 +86,7 @@ private:
 	bool				bShowNormalsAndTangents;
 	bool				bShowNormals;
 
-	float				fElapsedSeconds;
+	float				fTime;
 
 	params::InterfaceGlRef	mParams;
 };
@@ -116,6 +117,8 @@ void NormalMappingReduxApp::setup()
 	mParams->addParam( "Enable Normal Map", &bEnableNormalMap );
 
 	// default settings
+	mMeshBounds = AxisAlignedBox3f( Vec3f::zero(), Vec3f::one() );
+
 	bAutoRotate = true;
 	fAutoRotateAngle = 0.0f;
 
@@ -127,20 +130,18 @@ void NormalMappingReduxApp::setup()
 	bShowNormals = false;
 
 	// keep track of time
-	fElapsedSeconds = (float) getElapsedSeconds();
+	fTime = (float) getElapsedSeconds();
 }
 
 void NormalMappingReduxApp::delayedSetup()
 {
-	// because loading the model and shaders might take a while,
-	// we make sure our window is visible and cleared before calling this function
 	if( isInitialized() ) return;
 
 	// load textures and shaders
 	try {
-		mDiffuseMap = gl::Texture::create( loadImage( loadAsset("leprechaun_diffuse.png") ) );
-		mSpecularMap = gl::Texture::create( loadImage( loadAsset("leprechaun_specular.png") ) );
-		mNormalMap = gl::Texture::create( loadImage( loadAsset("leprechaun_normal.png") ) );
+		mDiffuseMap = gl::Texture::create( loadImage( loadAsset("leprechaun_diffuse.jpg") ) );
+		mSpecularMap = gl::Texture::create( loadImage( loadAsset("leprechaun_specular.jpg") ) );
+		mNormalMap = gl::Texture::create( loadImage( loadAsset("leprechaun_normal.jpg") ) );
 
 		mShader = gl::GlslProg( loadAsset("normal_mapping_vert.glsl"), loadAsset("normal_mapping_frag.glsl") );
 	}
@@ -149,55 +150,19 @@ void NormalMappingReduxApp::delayedSetup()
 	}
 
 	// load mesh file and create missing data (normals, tangents) if necessary
-	fs::path objFile = getAssetPath("") / "leprechaun.obj";
-	fs::path mshFile = getAssetPath("") / "leprechaun.msh";
-	TriMesh mesh = createMesh( mshFile, objFile );
+	try {
+		fs::path objFile = getAssetPath("") / "leprechaun.obj";
+		fs::path mshFile = getAssetPath("") / "leprechaun.msh";
+		TriMesh mesh = createMesh( mshFile, objFile );
 
-	mMesh = gl::VboMesh( mesh );
-	
-	// calculate mesh bounds to scale the model 
-	mMeshBounds = mesh.calcBoundingBox();
-	
-	mMeshTransform.setToIdentity();
-	mMeshTransform.scale( Vec3f::one() / mMeshBounds.getSize().y );
+		mMesh = gl::VboMesh::create( mesh );
+		mMeshBounds = mesh.calcBoundingBox();
 
-	// create a debug mesh, showing normals, tangents and bitangents
-	size_t numVertices = mesh.getNumVertices();
-
-	std::vector<Vec3f>		vertices;	vertices.reserve( numVertices * 4 );
-	std::vector<Color>		colors;		colors.reserve( numVertices * 4 );
-	std::vector<uint32_t>	indices;	indices.reserve( numVertices * 6 );
-
-	for(size_t i=0;i<numVertices;++i) {
-		uint32_t idx = vertices.size();
-
-		vertices.push_back( mesh.getVertices()[i] );
-		vertices.push_back( mesh.getVertices()[i] + mesh.getTangents()[i] );
-		vertices.push_back( mesh.getVertices()[i] + mesh.getNormals()[i].cross(mesh.getTangents()[i]) );
-		vertices.push_back( mesh.getVertices()[i] + mesh.getNormals()[i] );
-
-		colors.push_back( Color(0, 0, 0) );	// base vertices black
-		colors.push_back( Color(1, 0, 0) );	// tangents (along u-coordinate) red
-		colors.push_back( Color(0, 1, 0) ); // bitangents (along v-coordinate) green
-		colors.push_back( Color(0, 0, 1) ); // normals blue
-
-		indices.push_back( idx );
-		indices.push_back( idx + 1 );
-		indices.push_back( idx );
-		indices.push_back( idx + 2 );
-		indices.push_back( idx );
-		indices.push_back( idx + 3 );
+		mMeshDebug = createDebugMesh(mesh);
 	}
-
-	gl::VboMesh::Layout layout;
-	layout.setStaticPositions();
-	layout.setStaticColorsRGB();
-	layout.setStaticIndices();
-	
-	mMeshDebug = gl::VboMesh( numVertices * 4, numVertices * 6, layout, GL_LINES );
-	mMeshDebug.bufferPositions( vertices );
-	mMeshDebug.bufferColorsRGB( colors );
-	mMeshDebug.bufferIndices( indices );
+	catch( const std::exception& e ) {
+		console() << "Error loading asset: " << e.what() << std::endl;
+	}
 
 	// setup camera and lights
 	mCamera.setEyePoint( Vec3f( 0.2f, 0.4f, 1.8f ) );
@@ -206,11 +171,11 @@ void NormalMappingReduxApp::delayedSetup()
 	mCamera.setFarClip( 100.0f );
 
 	mLight = new gl::Light(gl::Light::DIRECTIONAL, 0);
-	mLight->setAmbient( Color(0.1f, 0.1f, 0.1f) );
-	mLight->setDiffuse( Color(1.1f, 1.1f, 0.9f) );
+	mLight->setAmbient( Color(0.0f, 0.0f, 0.1f) );
+	mLight->setDiffuse( Color(1.1f, 1.0f, 0.9f) );
 	mLight->setSpecular( Color(1.0f, 1.0f, 1.0f) );
-	mLight->setPosition( Vec3f(10.0f, 2.5f, .0f) );
-	mLight->setDirection( Vec3f(10.0f, -2.0f, 0.f) );
+	mLight->setPosition( Vec3f(0.0f, 0.0f, 0.0f) );
+	mLight->setDirection( Vec3f(0.0f, -20.0f, 100.0f) );
 }
 
 void NormalMappingReduxApp::shutdown()
@@ -220,14 +185,20 @@ void NormalMappingReduxApp::shutdown()
 
 void NormalMappingReduxApp::update()
 {
-	float fElapsed = (float) getElapsedSeconds() - fElapsedSeconds;
-	fElapsedSeconds += fElapsed;
-
+	// keep track of time
+	float fElapsed = (float) getElapsedSeconds() - fTime;
+	fTime += fElapsed;
+	
+	// because loading the model and shaders might take a while,
+	// we make sure our window is visible and cleared before calling 'delayedSetup()'
 	if( !isInitialized() && getElapsedFrames() > 5 ) {
 		delayedSetup();
-		fElapsedSeconds = (float) getElapsedSeconds();
+
+		// reset time after everything is setup
+		fTime = (float) getElapsedSeconds();
 	}
 	
+	// rotate the mesh
 	if(bAutoRotate) {
 		fAutoRotateAngle += (fElapsed * 0.2f);
 
@@ -236,7 +207,8 @@ void NormalMappingReduxApp::update()
 		mMeshTransform.scale( Vec3f::one() / mMeshBounds.getSize().y );
 	}
 
-	if(mLight)
+	// tell our light where the camera is, so it can update its view space position
+	if(mLight) 
 		mLight->update( mCamera );
 }
 
@@ -247,7 +219,7 @@ void NormalMappingReduxApp::draw()
 
 	if(!isInitialized())
 	{
-		// render our "Loading..." message
+		// render our loading message while loading is in progress
 		Area centered = Area::proportionalFit( mLoadingMap->getBounds(), getWindowBounds(), true, false );
 		gl::draw( mLoadingMap, mLoadingMap->getBounds(), centered );
 	}
@@ -301,6 +273,7 @@ void NormalMappingReduxApp::draw()
 			gl::popModelView();
 		}
 
+		// get ready to render in 2D again
 		gl::disableDepthWrite();
 		gl::disableDepthRead();
 
@@ -342,11 +315,14 @@ TriMesh NormalMappingReduxApp::createMesh(const fs::path& mshFile, const fs::pat
 	// create normals and tangents if necessary
 	bool hasChanged = !fs::exists(mshFile);
 
+	// if the mesh does not have normals, calculate them on-the-fly
 	if(!mesh.hasNormals()) {
 		mesh.recalculateNormals(); 
 		hasChanged = true;
 	}
 
+	// if the mesh does not have tangents, calculate them on-the-fly
+	//  (note: your model needs to have normals and texture coordinates for this to work)
 	if(!mesh.hasTangents()) {
 		mesh.recalculateTangents(); 
 		hasChanged = true;
@@ -357,6 +333,49 @@ TriMesh NormalMappingReduxApp::createMesh(const fs::path& mshFile, const fs::pat
 		mesh.write( writeFile(mshFile) );
 
 	return mesh;
+}
+
+gl::VboMeshRef NormalMappingReduxApp::createDebugMesh(const TriMesh& mesh)
+{
+	// create a debug mesh, showing normals, tangents and bitangents
+	size_t numVertices = mesh.getNumVertices();
+
+	std::vector<Vec3f>		vertices;	vertices.reserve( numVertices * 4 );
+	std::vector<Color>		colors;		colors.reserve( numVertices * 4 );
+	std::vector<uint32_t>	indices;	indices.reserve( numVertices * 6 );
+
+	for(size_t i=0;i<numVertices;++i) {
+		uint32_t idx = vertices.size();
+
+		vertices.push_back( mesh.getVertices()[i] );
+		vertices.push_back( mesh.getVertices()[i] + mesh.getTangents()[i] );
+		vertices.push_back( mesh.getVertices()[i] + mesh.getNormals()[i].cross(mesh.getTangents()[i]) );
+		vertices.push_back( mesh.getVertices()[i] + mesh.getNormals()[i] );
+
+		colors.push_back( Color(0, 0, 0) );	// base vertices black
+		colors.push_back( Color(1, 0, 0) );	// tangents (along u-coordinate) red
+		colors.push_back( Color(0, 1, 0) ); // bitangents (along v-coordinate) green
+		colors.push_back( Color(0, 0, 1) ); // normals blue
+
+		indices.push_back( idx );
+		indices.push_back( idx + 1 );
+		indices.push_back( idx );
+		indices.push_back( idx + 2 );
+		indices.push_back( idx );
+		indices.push_back( idx + 3 );
+	}
+
+	gl::VboMesh::Layout layout;
+	layout.setStaticPositions();
+	layout.setStaticColorsRGB();
+	layout.setStaticIndices();
+	
+	gl::VboMeshRef result = gl::VboMesh::create( numVertices * 4, numVertices * 6, layout, GL_LINES );
+	result->bufferPositions( vertices );
+	result->bufferColorsRGB( colors );
+	result->bufferIndices( indices );
+
+	return result;
 }
 
 CINDER_APP_NATIVE( NormalMappingReduxApp, RendererGl )
