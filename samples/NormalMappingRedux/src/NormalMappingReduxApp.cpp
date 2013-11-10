@@ -31,6 +31,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/ObjLoader.h"
+#include "cinder/Timer.h"
 #include "cinder/TriMesh.h"
 
 using namespace ci;
@@ -51,7 +52,8 @@ public:
 	void	mouseDown( MouseEvent event );	
 	void	mouseDrag( MouseEvent event );
 
-	bool	isInitialized() const { return (mDiffuseMap && mSpecularMap && mNormalMap && mShader && mLight && mMesh); }
+	bool	isInitialized() const { return (mDiffuseMap && mSpecularMap && mNormalMap 
+												&& mShader && mLightLantern && mLightAmbient && mMesh); }
 
 private:
 	void			delayedSetup();
@@ -65,7 +67,8 @@ private:
 	CameraPersp			mCamera;
 	MayaCamUI			mMayaCamera;
 
-	gl::Light*			mLight;
+	gl::Light*			mLightLantern;
+	gl::Light*			mLightAmbient;
 
 	gl::TextureRef		mLoadingMap;
 	gl::TextureRef		mDiffuseMap;
@@ -97,7 +100,8 @@ void NormalMappingReduxApp::prepareSettings(Settings* settings)
 	settings->setTitle( "Normal Mapping Demo" );
 
 	// make sure our pointers are invalid
-	mLight = NULL;
+	mLightLantern = NULL;
+	mLightAmbient = NULL;
 }
 
 void NormalMappingReduxApp::setup()
@@ -115,6 +119,22 @@ void NormalMappingReduxApp::setup()
 	mParams->addParam( "Enable Diffuse Map", &bEnableDiffuseMap );
 	mParams->addParam( "Enable Specular Map", &bEnableSpecularMap );
 	mParams->addParam( "Enable Normal Map", &bEnableNormalMap );
+
+	// setup camera and lights
+	mCamera.setEyePoint( Vec3f( 0.2f, 0.4f, 1.8f ) );
+	mCamera.setCenterOfInterestPoint( Vec3f(0.0f, 0.5f, 0.0f) );
+	mCamera.setNearClip( 0.01f );
+	mCamera.setFarClip( 100.0f );
+
+	mLightLantern = new gl::Light(gl::Light::DIRECTIONAL, 0);
+	mLightLantern->setAmbient( Color(0.0f, 0.0f, 0.1f) );
+	mLightLantern->setDiffuse( Color(0.9f, 0.6f, 0.3f) );
+	mLightLantern->setSpecular( Color(0.9f, 0.6f, 0.3f) );
+
+	mLightAmbient = new gl::Light(gl::Light::DIRECTIONAL, 1);
+	mLightAmbient->setAmbient( Color(0.0f, 0.0f, 0.0f) );
+	mLightAmbient->setDiffuse( Color(0.2f, 0.6f, 1.0f) );
+	mLightAmbient->setSpecular( Color(0.2f, 0.2f, 0.2f) );
 
 	// default settings
 	mMeshBounds = AxisAlignedBox3f( Vec3f::zero(), Vec3f::one() );
@@ -163,24 +183,14 @@ void NormalMappingReduxApp::delayedSetup()
 	catch( const std::exception& e ) {
 		console() << "Error loading asset: " << e.what() << std::endl;
 	}
-
-	// setup camera and lights
-	mCamera.setEyePoint( Vec3f( 0.2f, 0.4f, 1.8f ) );
-	mCamera.setCenterOfInterestPoint( Vec3f(0.0f, 0.5f, 0.0f) );
-	mCamera.setNearClip( 0.01f );
-	mCamera.setFarClip( 100.0f );
-
-	mLight = new gl::Light(gl::Light::DIRECTIONAL, 0);
-	mLight->setAmbient( Color(0.0f, 0.0f, 0.1f) );
-	mLight->setDiffuse( Color(1.1f, 1.0f, 0.9f) );
-	mLight->setSpecular( Color(1.0f, 1.0f, 1.0f) );
-	mLight->setPosition( Vec3f(0.0f, 0.0f, 0.0f) );
-	mLight->setDirection( Vec3f(0.0f, -20.0f, 100.0f) );
 }
 
 void NormalMappingReduxApp::shutdown()
 {
-	if(mLight) delete mLight;
+	if(mLightAmbient) delete mLightAmbient;
+	if(mLightLantern) delete mLightLantern;
+
+	mLightAmbient = mLightLantern = NULL;
 }
 
 void NormalMappingReduxApp::update()
@@ -206,10 +216,6 @@ void NormalMappingReduxApp::update()
 		mMeshTransform.rotate( Vec3f::yAxis(), fAutoRotateAngle );
 		mMeshTransform.scale( Vec3f::one() / mMeshBounds.getSize().y );
 	}
-
-	// tell our light where the camera is, so it can update its view space position
-	if(mLight) 
-		mLight->update( mCamera );
 }
 
 void NormalMappingReduxApp::draw()
@@ -247,8 +253,15 @@ void NormalMappingReduxApp::draw()
 		mShader.uniform( "bUseSpecularMap", bEnableSpecularMap );
 		mShader.uniform( "bUseNormalMap", bEnableNormalMap );
 
-		// enable our light
-		mLight->enable();
+		// enable our lights
+		mLightLantern->enable();		
+		mLightAmbient->enable();
+
+		Vec3f lanternPositionOS = Vec3f(12.5f, 30.0f, 12.5f);
+		Vec3f lanternPositionWS = mMeshTransform.transformPointAffine( lanternPositionOS );
+		mLightLantern->lookAt( lanternPositionWS, Vec3f(0.0f, 0.5f, 0.0f) );
+		
+		mLightAmbient->lookAt( mCamera.getEyePoint(), mCamera.getCenterOfInterestPoint() );
 	
 		// render our model
 		gl::pushModelView();
@@ -256,8 +269,9 @@ void NormalMappingReduxApp::draw()
 		gl::draw( mMesh );
 		gl::popModelView();
 
-		// disable our light
-		mLight->disable();
+		// disable our lights
+		mLightAmbient->disable();
+		mLightLantern->disable();
 
 		// disable our shader
 		mShader.unbind();
@@ -305,32 +319,42 @@ void NormalMappingReduxApp::mouseDrag( MouseEvent event )
 TriMesh NormalMappingReduxApp::createMesh(const fs::path& mshFile, const fs::path& objFile)
 {	
 	TriMesh mesh;	
+	Timer	timer;
 
 	// try to load the msh file (fast), or create it from the obj file (slow)
+	timer.start();
 	if(fs::exists(mshFile))
 		mesh.read( loadFile(mshFile) );
 	else 
 		ObjLoader( loadFile(objFile) ).load(&mesh); 
+	console() << "Loading the mesh took " << timer.getSeconds() << " seconds." << std::endl;
 
 	// create normals and tangents if necessary
 	bool hasChanged = !fs::exists(mshFile);
 
 	// if the mesh does not have normals, calculate them on-the-fly
 	if(!mesh.hasNormals()) {
+		timer.start();
 		mesh.recalculateNormals(); 
 		hasChanged = true;
+		console() << "Calculating " << mesh.getNumVertices() << " normals took " << timer.getSeconds() << " seconds." << std::endl;
 	}
 
 	// if the mesh does not have tangents, calculate them on-the-fly
 	//  (note: your model needs to have normals and texture coordinates for this to work)
 	if(!mesh.hasTangents()) {
+		timer.start();
 		mesh.recalculateTangents(); 
 		hasChanged = true;
+		console() << "Calculating " << mesh.getNumVertices() << " tangents took " << timer.getSeconds() << " seconds." << std::endl;
 	}
 
 	// export msh file if necessary
-	if(hasChanged) 
+	if(hasChanged) {
+		timer.start();
 		mesh.write( writeFile(mshFile) );
+		console() << "Saving the mesh took " << timer.getSeconds() << " seconds." << std::endl;
+	}
 
 	return mesh;
 }
