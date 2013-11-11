@@ -32,7 +32,7 @@
 #include "cinder/Channel.h"
 #include "cinder/ChanTraits.h"
 #include "cinder/Color.h"
-#include "cinder/FileSystem.h"
+#include "cinder/Filesystem.h"
 
 #include <boost/logic/tribool.hpp>
 
