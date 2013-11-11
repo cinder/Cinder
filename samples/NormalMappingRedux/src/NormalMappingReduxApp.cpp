@@ -30,7 +30,7 @@
 #include "cinder/Camera.h"
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
-#include "cinder/ObjLoader.h"
+#include "cinder/Perlin.h"
 #include "cinder/Timer.h"
 #include "cinder/TriMesh.h"
 
@@ -57,7 +57,7 @@ public:
 
 private:
 	void			delayedSetup();
-	TriMesh			createMesh(const fs::path& mshFile, const fs::path& objFile);
+	TriMesh			createMesh(const fs::path& mshFile);
 	gl::VboMeshRef	createDebugMesh(const TriMesh& mesh);
 
 private:
@@ -81,6 +81,9 @@ private:
 
 	bool				bAutoRotate;
 	float				fAutoRotateAngle;
+
+	bool				bAnimateLantern;
+	Perlin				mPerlin;
 
 	bool				bEnableDiffuseMap;
 	bool				bEnableSpecularMap;
@@ -111,7 +114,8 @@ void NormalMappingReduxApp::setup()
 
 	// create a parameter window, so we can toggle stuff
 	mParams = params::InterfaceGl::create( getWindow(), "Normal Mapping Demo", Vec2i(300, 200) );
-	mParams->addParam( "Auto Rotate Model", &bAutoRotate );
+	mParams->addParam( "Rotate Model", &bAutoRotate );
+	mParams->addParam( "Animate Light", &bAnimateLantern );
 	mParams->addSeparator();
 	mParams->addParam( "Show Normals & Tangents", &bShowNormalsAndTangents );
 	mParams->addParam( "Show Normals", &bShowNormals );
@@ -136,11 +140,15 @@ void NormalMappingReduxApp::setup()
 	mLightAmbient->setDiffuse( Color(0.2f, 0.6f, 1.0f) );
 	mLightAmbient->setSpecular( Color(0.2f, 0.2f, 0.2f) );
 
+	mPerlin = Perlin(4, 65535);
+
 	// default settings
 	mMeshBounds = AxisAlignedBox3f( Vec3f::zero(), Vec3f::one() );
 
 	bAutoRotate = true;
 	fAutoRotateAngle = 0.0f;
+
+	bAnimateLantern = true;
 
 	bEnableDiffuseMap = true;
 	bEnableSpecularMap = true;
@@ -167,13 +175,13 @@ void NormalMappingReduxApp::delayedSetup()
 	}
 	catch( const std::exception& e ) {
 		console() << "Error loading asset: " << e.what() << std::endl;
+		quit();
 	}
 
 	// load mesh file and create missing data (normals, tangents) if necessary
 	try {
-		fs::path objFile = getAssetPath("") / "leprechaun.obj";
 		fs::path mshFile = getAssetPath("") / "leprechaun.msh";
-		TriMesh mesh = createMesh( mshFile, objFile );
+		TriMesh mesh = createMesh( mshFile );
 
 		mMesh = gl::VboMesh::create( mesh );
 		mMeshBounds = mesh.calcBoundingBox();
@@ -182,7 +190,11 @@ void NormalMappingReduxApp::delayedSetup()
 	}
 	catch( const std::exception& e ) {
 		console() << "Error loading asset: " << e.what() << std::endl;
+		quit();
 	}
+
+	// reset time after everything is setup
+	fTime = (float) getElapsedSeconds();
 }
 
 void NormalMappingReduxApp::shutdown()
@@ -201,12 +213,8 @@ void NormalMappingReduxApp::update()
 	
 	// because loading the model and shaders might take a while,
 	// we make sure our window is visible and cleared before calling 'delayedSetup()'
-	if( !isInitialized() && getElapsedFrames() > 5 ) {
+	if( !isInitialized() && getElapsedFrames() > 5 )
 		delayedSetup();
-
-		// reset time after everything is setup
-		fTime = (float) getElapsedSeconds();
-	}
 	
 	// rotate the mesh
 	if(bAutoRotate) {
@@ -254,10 +262,11 @@ void NormalMappingReduxApp::draw()
 		mShader.uniform( "bUseNormalMap", bEnableNormalMap );
 
 		// enable our lights
-		mLightLantern->enable();		
+		mLightLantern->enable();
 		mLightAmbient->enable();
 
-		Vec3f lanternPositionOS = Vec3f(12.5f, 30.0f, 12.5f);
+		Vec3f offset = bAnimateLantern ? mPerlin.dfBm( Vec3f( 0.0f, 0.0f, fTime ) ) * 5.0f : Vec3f::zero();
+		Vec3f lanternPositionOS = Vec3f(12.5f, 30.0f, 12.5f) + offset;
 		Vec3f lanternPositionWS = mMeshTransform.transformPointAffine( lanternPositionOS );
 		mLightLantern->lookAt( lanternPositionWS, Vec3f(0.0f, 0.5f, 0.0f) );
 		
@@ -316,27 +325,26 @@ void NormalMappingReduxApp::mouseDrag( MouseEvent event )
 	mCamera = mMayaCamera.getCamera();
 }
 
-TriMesh NormalMappingReduxApp::createMesh(const fs::path& mshFile, const fs::path& objFile)
+TriMesh NormalMappingReduxApp::createMesh(const fs::path& mshFile)
 {	
-	TriMesh mesh;	
+	TriMesh mesh;
 	Timer	timer;
 
-	// try to load the msh file (fast), or create it from the obj file (slow)
-	timer.start();
-	if(fs::exists(mshFile))
-		mesh.read( loadFile(mshFile) );
-	else 
-		ObjLoader( loadFile(objFile) ).load(&mesh); 
-	console() << "Loading the mesh took " << timer.getSeconds() << " seconds." << std::endl;
-
-	// create normals and tangents if necessary
-	bool hasChanged = !fs::exists(mshFile);
+	// try to load the msh file
+	if(fs::exists(mshFile)) {
+		timer.start();
+		mesh.read( loadFile(mshFile) ); 
+		console() << "Loading the mesh took " << timer.getSeconds() << " seconds." << std::endl;
+	}
+	else {
+		std::string msg = "Could not locate the file ("+mshFile.string()+").";
+		throw std::exception(msg.c_str());
+	}
 
 	// if the mesh does not have normals, calculate them on-the-fly
 	if(!mesh.hasNormals()) {
 		timer.start();
-		mesh.recalculateNormals(); 
-		hasChanged = true;
+		mesh.recalculateNormals();
 		console() << "Calculating " << mesh.getNumVertices() << " normals took " << timer.getSeconds() << " seconds." << std::endl;
 	}
 
@@ -344,16 +352,8 @@ TriMesh NormalMappingReduxApp::createMesh(const fs::path& mshFile, const fs::pat
 	//  (note: your model needs to have normals and texture coordinates for this to work)
 	if(!mesh.hasTangents()) {
 		timer.start();
-		mesh.recalculateTangents(); 
-		hasChanged = true;
+		mesh.recalculateTangents();
 		console() << "Calculating " << mesh.getNumVertices() << " tangents took " << timer.getSeconds() << " seconds." << std::endl;
-	}
-
-	// export msh file if necessary
-	if(hasChanged) {
-		timer.start();
-		mesh.write( writeFile(mshFile) );
-		console() << "Saving the mesh took " << timer.getSeconds() << " seconds." << std::endl;
 	}
 
 	return mesh;
