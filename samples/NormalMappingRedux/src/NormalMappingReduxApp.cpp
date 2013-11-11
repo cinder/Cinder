@@ -2,6 +2,10 @@
  Copyright (c) 2013, Paul Houx - All rights reserved.
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
+ Leprechaun 3D model courtesy of Fabiano Di Liso aka Nazedo
+(c) Fabiano Di Liso - All rights reserved - Used with permission.
+http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-goblin
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -31,6 +35,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/Perlin.h"
+#include "cinder/Timeline.h"
 #include "cinder/Timer.h"
 #include "cinder/TriMesh.h"
 
@@ -52,11 +57,10 @@ public:
 	void	mouseDown( MouseEvent event );	
 	void	mouseDrag( MouseEvent event );
 
-	bool	isInitialized() const { return (mDiffuseMap && mSpecularMap && mNormalMap 
+	bool	isInitialized() const { return (mDiffuseMap && mSpecularMap && mNormalMap && mCopyrightMap
 												&& mShader && mLightLantern && mLightAmbient && mMesh); }
 
 private:
-	void			delayedSetup();
 	TriMesh			createMesh(const fs::path& mshFile);
 	gl::VboMeshRef	createDebugMesh(const TriMesh& mesh);
 
@@ -70,10 +74,11 @@ private:
 	gl::Light*			mLightLantern;
 	gl::Light*			mLightAmbient;
 
-	gl::TextureRef		mLoadingMap;
+	gl::TextureRef		mCopyrightMap;
 	gl::TextureRef		mDiffuseMap;
 	gl::TextureRef		mSpecularMap;
 	gl::TextureRef		mNormalMap;
+	gl::TextureRef		mEmmisiveMap;
 
 	gl::GlslProg		mShader;
 	gl::VboMeshRef		mMesh;
@@ -88,11 +93,13 @@ private:
 	bool				bEnableDiffuseMap;
 	bool				bEnableSpecularMap;
 	bool				bEnableNormalMap;
+	bool				bEnableEmmisiveMap;
 
 	bool				bShowNormalsAndTangents;
 	bool				bShowNormals;
 
 	float				fTime;
+	Anim<float>			fOpacity;
 
 	params::InterfaceGlRef	mParams;
 };
@@ -109,9 +116,6 @@ void NormalMappingReduxApp::prepareSettings(Settings* settings)
 
 void NormalMappingReduxApp::setup()
 {	
-	// load our "loading" message
-	mLoadingMap  = gl::Texture::create( loadImage( loadAsset("loading.png") ) );
-
 	// create a parameter window, so we can toggle stuff
 	mParams = params::InterfaceGl::create( getWindow(), "Normal Mapping Demo", Vec2i(300, 200) );
 	mParams->addParam( "Rotate Model", &bAutoRotate );
@@ -123,9 +127,10 @@ void NormalMappingReduxApp::setup()
 	mParams->addParam( "Enable Diffuse Map", &bEnableDiffuseMap );
 	mParams->addParam( "Enable Specular Map", &bEnableSpecularMap );
 	mParams->addParam( "Enable Normal Map", &bEnableNormalMap );
+	mParams->addParam( "Enable Emmisive Map", &bEnableEmmisiveMap );
 
 	// setup camera and lights
-	mCamera.setEyePoint( Vec3f( 0.2f, 0.4f, 1.8f ) );
+	mCamera.setEyePoint( Vec3f( 0.2f, 0.4f, 1.0f ) );
 	mCamera.setCenterOfInterestPoint( Vec3f(0.0f, 0.5f, 0.0f) );
 	mCamera.setNearClip( 0.01f );
 	mCamera.setFarClip( 100.0f );
@@ -140,6 +145,7 @@ void NormalMappingReduxApp::setup()
 	mLightAmbient->setDiffuse( Color(0.2f, 0.6f, 1.0f) );
 	mLightAmbient->setSpecular( Color(0.2f, 0.2f, 0.2f) );
 
+	// setup perlin noise to easily animate our lantern light source
 	mPerlin = Perlin(4, 65535);
 
 	// default settings
@@ -153,24 +159,23 @@ void NormalMappingReduxApp::setup()
 	bEnableDiffuseMap = true;
 	bEnableSpecularMap = true;
 	bEnableNormalMap = true;
+	bEnableEmmisiveMap = true;
 
 	bShowNormalsAndTangents = false;
 	bShowNormals = false;
 
-	// keep track of time
-	fTime = (float) getElapsedSeconds();
-}
-
-void NormalMappingReduxApp::delayedSetup()
-{
-	if( isInitialized() ) return;
-
-	// load textures and shaders
+	// load assets
 	try {
+		// load our copyright message
+		mCopyrightMap  = gl::Texture::create( loadImage( loadAsset("copyright.png") ) );
+
+		// load textures
 		mDiffuseMap = gl::Texture::create( loadImage( loadAsset("leprechaun_diffuse.jpg") ) );
 		mSpecularMap = gl::Texture::create( loadImage( loadAsset("leprechaun_specular.jpg") ) );
 		mNormalMap = gl::Texture::create( loadImage( loadAsset("leprechaun_normal.jpg") ) );
+		mEmmisiveMap = gl::Texture::create( loadImage( loadAsset("leprechaun_emmisive.png") ) );
 
+		// load our shader
 		mShader = gl::GlslProg( loadAsset("normal_mapping_vert.glsl"), loadAsset("normal_mapping_frag.glsl") );
 	}
 	catch( const std::exception& e ) {
@@ -191,14 +196,22 @@ void NormalMappingReduxApp::delayedSetup()
 	catch( const std::exception& e ) {
 		console() << "Error loading asset: " << e.what() << std::endl;
 		quit();
-	}
+	}	
 
-	// reset time after everything is setup
+	// animate copyright message
+	fOpacity = 0.0f;
+	timeline().apply( &fOpacity, 0.0f, 0.0f, 2.0f );
+	timeline().appendTo( &fOpacity, 1.0f, 2.5f, EaseInOutCubic() );
+	timeline().appendTo( &fOpacity, 1.0f, 30.0f );
+	timeline().appendTo( &fOpacity, 0.0f, 2.5f, EaseInOutCubic() );
+
+	// keep track of time
 	fTime = (float) getElapsedSeconds();
 }
 
 void NormalMappingReduxApp::shutdown()
 {
+	// safely delete our lights
 	if(mLightAmbient) delete mLightAmbient;
 	if(mLightLantern) delete mLightLantern;
 
@@ -210,11 +223,6 @@ void NormalMappingReduxApp::update()
 	// keep track of time
 	float fElapsed = (float) getElapsedSeconds() - fTime;
 	fTime += fElapsed;
-	
-	// because loading the model and shaders might take a while,
-	// we make sure our window is visible and cleared before calling 'delayedSetup()'
-	if( !isInitialized() && getElapsedFrames() > 5 )
-		delayedSetup();
 	
 	// rotate the mesh
 	if(bAutoRotate) {
@@ -228,16 +236,11 @@ void NormalMappingReduxApp::update()
 
 void NormalMappingReduxApp::draw()
 {
+	// clear the window
 	gl::clear(); 
 	gl::color( Color::white() );
 
-	if(!isInitialized())
-	{
-		// render our loading message while loading is in progress
-		Area centered = Area::proportionalFit( mLoadingMap->getBounds(), getWindowBounds(), true, false );
-		gl::draw( mLoadingMap, mLoadingMap->getBounds(), centered );
-	}
-	else
+	if(isInitialized())
 	{
 		// get ready to draw in 3D
 		gl::pushMatrices();
@@ -250,23 +253,27 @@ void NormalMappingReduxApp::draw()
 		mDiffuseMap->enableAndBind();
 		mSpecularMap->bind(1);
 		mNormalMap->bind(2);
+		mEmmisiveMap->bind(3);
 
 		// bind our normal mapping shader
 		mShader.bind();
 		mShader.uniform( "uDiffuseMap", 0 );
 		mShader.uniform( "uSpecularMap", 1 );
 		mShader.uniform( "uNormalMap", 2 );
+		mShader.uniform( "uEmmisiveMap", 3 );
 		mShader.uniform( "bShowNormals", bShowNormals );
 		mShader.uniform( "bUseDiffuseMap", bEnableDiffuseMap );
 		mShader.uniform( "bUseSpecularMap", bEnableSpecularMap );
 		mShader.uniform( "bUseNormalMap", bEnableNormalMap );
+		mShader.uniform( "bUseEmmisiveMap", bEnableEmmisiveMap );
 
-		// enable our lights
+		// enable and position our lights
 		mLightLantern->enable();
 		mLightAmbient->enable();
 
-		Vec3f offset = bAnimateLantern ? mPerlin.dfBm( Vec3f( 0.0f, 0.0f, fTime ) ) * 5.0f : Vec3f::zero();
-		Vec3f lanternPositionOS = Vec3f(12.5f, 30.0f, 12.5f) + offset;
+		Vec3f lanternPositionOS = Vec3f(12.5f, 30.0f, 12.5f);
+		if(bAnimateLantern) 
+			lanternPositionOS += mPerlin.dfBm( Vec3f( 0.0f, 0.0f, fTime ) ) * 5.0f;
 		Vec3f lanternPositionWS = mMeshTransform.transformPointAffine( lanternPositionOS );
 		mLightLantern->lookAt( lanternPositionWS, Vec3f(0.0f, 0.5f, 0.0f) );
 		
@@ -305,6 +312,15 @@ void NormalMappingReduxApp::draw()
 		// render our parameter window
 		if(mParams)
 			mParams->draw();
+
+		// render the copyright message
+		Area centered = Area::proportionalFit( mCopyrightMap->getBounds(), getWindowBounds(), true, false );
+		centered.offset( Vec2i(0, (getWindowHeight() - centered.y2) - 20) );
+
+		gl::enableAlphaBlending();
+		gl::color( ColorA(1, 1, 1, fOpacity.value()) );
+		gl::draw( mCopyrightMap, mCopyrightMap->getBounds(), centered );
+		gl::disableAlphaBlending();
 	}
 }
 

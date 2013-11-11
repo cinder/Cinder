@@ -8,12 +8,14 @@ varying vec3		vBiTangent;
 uniform	sampler2D	uDiffuseMap;
 uniform	sampler2D	uSpecularMap;
 uniform	sampler2D	uNormalMap;
+uniform	sampler2D	uEmmisiveMap;
 
 uniform bool		bShowNormals;
 
 uniform bool		bUseDiffuseMap;
 uniform bool		bUseSpecularMap;
 uniform bool		bUseNormalMap;
+uniform bool		bUseEmmisiveMap;
 
 void main()
 {
@@ -24,7 +26,7 @@ void main()
 	vec3	vToCamera = normalize(-vVertex.xyz); 
 
 	// apply each of our light sources
-	vec4	vDiffuseColor	= vec4(0, 0, 0, 1);
+	vec4	vDiffuseColor	= bUseEmmisiveMap ? texture2D(uEmmisiveMap, gl_TexCoord[0].st) : vec4(0, 0, 0, 1);
 	vec4	vSpecularColor	= vec4(0, 0, 0, 1);
 
 	for(int i=0; i<2; ++i)
