@@ -128,6 +128,7 @@ void NormalMappingReduxApp::setup()
 	mParams->addParam( "Enable Specular Map", &bEnableSpecularMap );
 	mParams->addParam( "Enable Normal Map", &bEnableNormalMap );
 	mParams->addParam( "Enable Emmisive Map", &bEnableEmmisiveMap );
+	mParams->setOptions( "", "valueswidth=fit" );
 
 	// setup camera and lights
 	mCamera.setEyePoint( Vec3f( 0.2f, 0.4f, 1.0f ) );
