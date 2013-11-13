@@ -591,7 +591,7 @@ void WindowImplMsw::enableMultiTouch()
 {
 	// we need to make sure this version of User32 even has MultiTouch symbols, so we'll do that with GetProcAddress
 	BOOL (WINAPI *RegisterTouchWindow)( HWND, ULONG);
-	*(DWORD *)&RegisterTouchWindow = (DWORD)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
+	*(size_t *)&RegisterTouchWindow = (size_t)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
 	if( RegisterTouchWindow ) {
 		(*RegisterTouchWindow)( mWnd, 0 );
 	}
