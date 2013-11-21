@@ -81,10 +81,6 @@ class AppCocoaTouch : public App {
 	void						emitDidEnterBackground();
 	signals::signal<void()>&	getSignalWillEnterForeground() { return mSignalWillEnterForeground; }
 	void						emitWillEnterForeground();
-	signals::signal<void()>&	getSignalWillResignActive() { return mSignalWillResignActive; }
-    void 						emitWillResignActive();
-	signals::signal<void()>&	getSignalDidBecomeActive() { return mSignalDidBecomeActive; }
-	void 						emitDidBecomeActive();
 	signals::signal<void()>&	getSignalMemoryWarning() { return mSignalMemoryWarning; }
 	void 						emitMemoryWarning();
 
@@ -241,7 +237,7 @@ class AppCocoaTouch : public App {
 	AppImplCocoaTouch		*mImpl;
 	Settings				mSettings;
 
-	signals::signal<void()>		mSignalDidEnterBackground, mSignalWillEnterForeground, mSignalWillResignActive, mSignalDidBecomeActive, mSignalMemoryWarning;
+	signals::signal<void()>		mSignalDidEnterBackground, mSignalWillEnterForeground, mSignalMemoryWarning;
 
 	signals::signal<void(bool)>		mSignalProximitySensor, mSignalBatteryState;
 
