@@ -274,6 +274,11 @@ class App {
 	//! Override to receive file-drop events.	
 	virtual void	fileDrop( FileDropEvent event ) {}
 	
+	//! Override to receive window activate events
+	virtual void	activate() {}
+	//! Override to receive window deactivate events
+	virtual void	deactivate() {}
+	
 	//! Quits the application gracefully
 	virtual void	quit() = 0;
 

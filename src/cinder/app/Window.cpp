@@ -230,6 +230,17 @@ bool Window::isHidden() const
 #endif	
 }
 
+bool Window::isActive() const
+{
+    testValid();
+    
+#if defined( CINDER_COCOA )
+    return [mImpl isActive];
+#elif defined( CINDER_MSW )
+    return mImpl->isActive();
+#endif	
+}
+
 DisplayRef Window::getDisplay() const
 {
 	testValid();
@@ -283,6 +294,18 @@ void Window::emitMove()
 {
 	getRenderer()->makeCurrentContext();
 	mSignalMove();
+}
+
+void Window::emitActivate()
+{
+	mSignalActivate();
+	getApp()->activate();
+}
+
+void Window::emitDeactivate()
+{
+	mSignalDeactivate();
+	getApp()->deactivate();
 }
 
 void Window::emitResize()

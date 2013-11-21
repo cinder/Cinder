@@ -70,6 +70,7 @@ typedef std::shared_ptr<Window>		WindowRef;
 		- (void)hide;
 		- (void)show;
 		- (BOOL)isHidden;
+		- (BOOL)isActive;
 		- (cinder::DisplayRef)getDisplay;
 		- (cinder::app::RendererRef)getRenderer;
 		- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
@@ -330,6 +331,8 @@ class Window : public std::enable_shared_from_this<Window> {
 	void	show();
 	//! Returns whether the window has been hidden with \a hide()
 	bool	isHidden() const;
+	//! Returns whether the window is active
+	bool	isActive() const;
 
 	//! Closes and destroys the Window
 	void	close();
@@ -441,7 +444,17 @@ class Window : public std::enable_shared_from_this<Window> {
 	void					emitFileDrop( FileDropEvent *event );
 	template<typename T, typename Y>
 	signals::connection		connectFileDrop( T fn, Y *inst ) { return getSignalFileDrop().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
-	
+
+	EventSignalWindow&	getSignalActivate() { return mSignalActivate; }
+	void				emitActivate();
+	template<typename T, typename Y>
+	signals::connection	connectActivate( T fn, Y *inst ) { return getSignalActivate().connect( std::bind( fn, inst ) ); }
+
+	EventSignalWindow&	getSignalDeactivate() { return mSignalDeactivate; }
+	void				emitDeactivate();
+	template<typename T, typename Y>
+	signals::connection	connectDeactivate( T fn, Y *inst ) { return getSignalDeactivate().connect( std::bind( fn, inst ) ); }
+
 	//! Returns the window-specific data associated with this Window.
 	template<typename T>
 	T*			getUserData() { return static_cast<T*>( mUserData.get() ); }
@@ -504,7 +517,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	EventSignalMouse		mSignalMouseDown, mSignalMouseDrag, mSignalMouseUp, mSignalMouseWheel, mSignalMouseMove;
 	EventSignalTouch		mSignalTouchesBegan, mSignalTouchesMoved, mSignalTouchesEnded;
 	EventSignalKey			mSignalKeyDown, mSignalKeyUp;
-	EventSignalWindow		mSignalDraw, mSignalPostDraw, mSignalMove, mSignalResize, mSignalDisplayChange, mSignalClose;
+	EventSignalWindow		mSignalDraw, mSignalPostDraw, mSignalMove, mSignalResize, mSignalDisplayChange, mSignalClose, mSignalActivate, mSignalDeactivate;
 	EventSignalFileDrop		mSignalFileDrop;
 	
 #if defined( CINDER_COCOA )

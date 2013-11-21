@@ -315,7 +315,7 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 ///////////////////////////////////////////////////////////////////////////////
 // WindowImplMsw
 WindowImplMsw::WindowImplMsw( const Window::Format &format, RendererRef sharedRenderer, AppImplMsw *appImpl )
-	: mWindowOffset( 0, 0 ), mAppImpl( appImpl ), mIsDragging( false ), mHidden( false )
+	: mWindowOffset( 0, 0 ), mAppImpl( appImpl ), mIsDragging( false ), mHidden( false ), mActive( true )
 {	
 	mFullScreen = format.isFullScreen();
 	mDisplay = format.getDisplay();
@@ -552,6 +552,11 @@ void WindowImplMsw::show()
 bool WindowImplMsw::isHidden() const
 {
 	return mHidden;
+}
+
+bool WindowImplMsw::isActive() const
+{
+	return mActive;
 }
 
 std::string	WindowImplMsw::getTitle() const
@@ -807,9 +812,31 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 						return DefWindowProc( mWnd, uMsg, wParam, lParam );
 			}
 		break;
-		case WM_ACTIVATE:
-			if( ( wParam == WA_ACTIVE ) || ( wParam == WA_CLICKACTIVE ) )
+		case WM_ACTIVATE: {
+			if( ( wParam == WA_ACTIVE ) || ( wParam == WA_CLICKACTIVE ) ) {
 				impl->getAppImpl()->setForegroundWindow( impl->getWindow() );
+				
+				if ( ! impl->mActive ) {
+					impl->mActive = true;
+					impl->getWindow()->emitActivate();
+				}
+			} else if ( impl->mActive ) {
+				impl->mActive = false;
+				impl->getWindow()->emitDeactivate();
+			}
+			return 0;
+		}
+		break;
+		case WM_ACTIVATEAPP: {
+			if ( wParam && ! impl->mActive ) {
+				impl->mActive = true;
+				impl->getWindow()->emitActivate();
+			} else if ( impl->mActive ) {
+				impl->mActive = false;
+				impl->getWindow()->emitDeactivate();
+			}
+			return 0;
+		}
 		break;
 		case WM_CLOSE:								// Did We Receive A Close Message?
 			impl->getAppImpl()->closeWindow( impl );
