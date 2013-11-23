@@ -808,13 +808,14 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			}
 		break;
 		case WM_ACTIVATEAPP:
-			if ( wParam ) {
-				if ( ! impl->getAppImpl()->mActive ) {
+			if( wParam ) {
+				if( ! impl->getAppImpl()->mActive ) {
 					impl->getAppImpl()->mActive = true;
 					impl->getAppImpl()->getApp()->emitDidBecomeActive();
 				}
-			} else {
-				if ( impl->getAppImpl()->mActive ) {
+			}
+			else {
+				if( impl->getAppImpl()->mActive ) {
 					impl->getAppImpl()->mActive = false;
 					impl->getAppImpl()->getApp()->emitWillResignActive();
 				}
