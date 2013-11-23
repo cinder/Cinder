@@ -284,10 +284,12 @@ class App {
 	signals::signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
 	void 						emitShutdown();
 
+#if ! defined( CINDER_WINRT )
 	signals::signal<void()>&	getSignalWillResignActive() { return mSignalWillResignActive; }
     void 						emitWillResignActive();
 	signals::signal<void()>&	getSignalDidBecomeActive() { return mSignalDidBecomeActive; }
 	void 						emitDidBecomeActive();
+#endif
 
 	const std::vector<TouchEvent::Touch>& 	getActiveTouches() const { return getWindow()->getActiveTouches(); }
 
