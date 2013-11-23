@@ -296,6 +296,16 @@
 	delete mApp;
 }
 
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+	mApp->emitDidBecomeActive();
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+	mApp->emitWillResignActive();
+}
+
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)theApplication
 {
 	return mApp->getSettings().isQuitOnLastWindowCloseEnabled();

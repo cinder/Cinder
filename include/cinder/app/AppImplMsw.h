@@ -93,6 +93,7 @@ class AppImplMsw {
 	float					mFrameRate;
 	WindowRef				mActiveWindow;
 	bool					mSetupHasBeenCalled;
+	bool					mActive;
 	ULONG_PTR				mGdiplusToken;
 
 	friend class WindowImplMsw;

@@ -56,6 +56,8 @@
 - (void)setApplicationMenu: (NSString*) applicationName;
 - (void)startAnimationTimer;
 - (void)applicationWillTerminate:(NSNotification *)notification;
+- (void)applicationDidBecomeActive:(NSNotification *)notification;
+- (void)applicationWillResignActive:(NSNotification *)notification;
 - (void)quit;
 
 - (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format;
