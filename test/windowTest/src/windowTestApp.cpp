@@ -79,6 +79,9 @@ getWindow()->connectMouseDown( &BasicApp::anotherTest, this );
 	getWindow()->getSignalDraw().connect( std::bind( &BasicApp::windowDraw, this ) );
 	getWindow()->getSignalDisplayChange().connect( std::bind( &BasicApp::displayChange, this ) );
 	getWindow()->getSignalClose().connect( std::bind( &BasicApp::windowClose, this ) );
+	
+	getSignalDidBecomeActive().connect( [] { app::console() << "App became active." << endl; } );
+	getSignalWillResignActive().connect( [] { app::console() << "App will resign active." << endl; } );
 }
 
 bool BasicApp::shouldQuit()
