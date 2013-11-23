@@ -715,6 +715,15 @@ Font::Obj::Obj( const string &aName, float aSize )
 #endif
 }
 
+#if defined( CINDER_COCOA )
+namespace {
+static void releaseFontDataProviderBuffer( void *buffer, const void *data, size_t size )
+{
+	delete (ci::Buffer*)buffer;
+}
+}
+#endif
+
 Font::Obj::Obj( DataSourceRef dataSource, float size )
 	: mSize( size )
 #if defined( CINDER_MSW )
@@ -722,11 +731,17 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 #endif
 {
 #if defined( CINDER_COCOA )
-	Buffer buffer( dataSource->getBuffer() );
-	std::shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( NULL, buffer.getData(), buffer.getDataSize(), NULL ), ::CGDataProviderRelease );
-	if( ! dataProvider )
-		throw FontInvalidNameExc();
-	mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
+	if( dataSource->isFilePath() ) {
+		std::shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithFilename( dataSource->getFilePath().c_str() ), ::CGDataProviderRelease );
+		mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
+	}
+	else {
+		Buffer *buffer = new Buffer( dataSource->getBuffer() );
+		std::shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( buffer, buffer->getData(), buffer->getDataSize(), releaseFontDataProviderBuffer ), ::CGDataProviderRelease );
+		if( ! dataProvider )
+			throw FontInvalidNameExc();
+		mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
+	}
 	if( ! mCGFont )
 		throw FontInvalidNameExc();
 	mCTFont = ::CTFontCreateWithGraphicsFont( mCGFont, (CGFloat)mSize, 0, 0 );
