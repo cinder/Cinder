@@ -32,7 +32,8 @@ void Path2dApp::mouseDown( MouseEvent event )
 		else
 			mPath.lineTo( event.getPos() );
 	}
-	
+
+	console() << mPath << std::endl;	
 	console() << "Length: " << mPath.calcLength() << std::endl;
 }
 
@@ -75,6 +76,7 @@ void Path2dApp::mouseDrag( MouseEvent event )
 		mTrackedPoint = mPath.getNumPoints() - 2;
 	}
 	
+	console() << mPath << std::endl;
 	console() << "Length: " << mPath.calcLength() << std::endl;	
 }
 

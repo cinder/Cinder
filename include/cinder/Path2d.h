@@ -147,12 +147,13 @@ class Path2d {
 
 inline std::ostream& operator<<( std::ostream &out, const Path2d &p )
 {
-	size_t pt = 0;
+	if( p.mPoints.empty() )
+		return out;
+
+	out << "M " << p.mPoints[0].x << " " << p.mPoints[0].y << " ";
+
+	size_t pt = 1;
 	for( size_t s = 0; s < p.mSegments.size(); ++s ) {
-		if( p.mSegments[s] == Path2d::MOVETO ) {
-			out << "M " << p.mPoints[pt].x << " " << p.mPoints[pt].y << " ";
-			pt++;
-		}
 		if( p.mSegments[s] == Path2d::LINETO ) {
 			out << "L " << p.mPoints[pt].x << " " << p.mPoints[pt].y << " ";
 			pt++;
