@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -51,10 +52,10 @@
 
 @implementation AppImplCocoaRendererGl
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled
 {
+	self = [super init];
 //	self = [super initWithFrame:frame cinderView:aCinderView app:aApp];
-	app = aApp;
 	cinderView = aCinderView;
 	
 	renderer = aRenderer;
@@ -64,8 +65,24 @@
 	[fmt getValues:&aaSamples forAttribute:NSOpenGLPFASamples forVirtualScreen:0];
 	renderer->setAntiAliasing( aaSamples );
 
-	view = [[AppImplCocoaTransparentGlView alloc] initWithFrame:frame pixelFormat:fmt];
+	NSRect bounds = NSMakeRect( 0, 0, frame.size.width, frame.size.height );
+	view = [[AppImplCocoaTransparentGlView alloc] initWithFrame:bounds pixelFormat:fmt];
+if( ! view )
+	NSLog( @"Unable to allocate GL view" );
+
+	// if we've been passed a context to share with, replace our NSOpenGLContext with a new one that shares
+	if( sharedRenderer ) {
+		assert( typeid( *sharedRenderer ) == typeid( cinder::app::RendererGl ) );
+		NSOpenGLContext *newContext = [[NSOpenGLContext alloc] initWithFormat:fmt shareContext:sharedRenderer->getNsOpenGlContext()];
+		[view setOpenGLContext:newContext];
+		[newContext release];
+	}
+
 	[cinderView addSubview:view];
+	
+	if( retinaEnabled )
+		[view setWantsBestResolutionOpenGLSurface:YES];
+	
 	[[view openGLContext] makeCurrentContext];
 
 	GLint swapInterval = 1;
@@ -89,7 +106,7 @@
 	return (CGLPixelFormatObj)[[view pixelFormat] CGLPixelFormatObj];
 }
 
-- (NSOpenGLContext *)getNSOpenGLContext
+- (NSOpenGLContext *)getNsOpenGlContext
 {
 	return [view openGLContext];
 }
@@ -122,8 +139,10 @@
 
 - (void)defaultResize
 {
-	glViewport( 0, 0, app->getWindowWidth(), app->getWindowHeight() );
-	cinder::CameraPersp cam( app->getWindowWidth(), app->getWindowHeight(), 60.0f );
+	NSSize nsSize = [view frame].size;
+	NSSize backingSize = [view convertSizeToBacking:nsSize];
+	glViewport( 0, 0, backingSize.width, backingSize.height );
+	cinder::CameraPersp cam( nsSize.width, nsSize.height, 60.0f );
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadMatrixf( cam.getProjectionMatrix().m );
@@ -131,7 +150,7 @@
 	glMatrixMode( GL_MODELVIEW );
 	glLoadMatrixf( cam.getModelViewMatrix().m );
 	glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
-	glTranslatef( 0.0f, (float)-app->getWindowHeight(), 0.0f );       // shift origin up to upper-left corner.
+	glTranslatef( 0.0f, (float)-nsSize.height, 0.0f );       // shift origin up to upper-left corner.
 }
 
 - (BOOL)acceptsFirstResponder
@@ -152,34 +171,36 @@
 
 + (NSOpenGLPixelFormat*)defaultPixelFormat:(int)antialiasLevel
 {
+	NSOpenGLPixelFormat *result = nil;
 	if( antialiasLevel == cinder::app::RendererGl::AA_NONE ) {
 		NSOpenGLPixelFormatAttribute attributes [] = {
 			NSOpenGLPFAWindow,
 			NSOpenGLPFADoubleBuffer,
 			NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24,
-	        NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
-			NSOpenGLPFANoRecovery,
+/*kCGLPFAStencilSize, (CGLPixelFormatAttribute) 8,*/
 			(NSOpenGLPixelFormatAttribute)0
 		};
-		
-		return [[[NSOpenGLPixelFormat alloc] 
-				 initWithAttributes:attributes] autorelease];
+
+		result = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
 	}
 	else {
 		NSOpenGLPixelFormatAttribute attributes [] = {
 			NSOpenGLPFAWindow,
 			NSOpenGLPFADoubleBuffer,
 			NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)24,
+/*	kCGLPFAStencilSize, (CGLPixelFormatAttribute) 8,*/
 	        NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1, 
 			NSOpenGLPFASamples, (NSOpenGLPixelFormatAttribute)cinder::app::RendererGl::sAntiAliasingSamples[antialiasLevel],
-			NSOpenGLPFANoRecovery,
+			NSOpenGLPFAMultisample,
+//			(NSOpenGLPixelFormatAttribute)1,
 			(NSOpenGLPixelFormatAttribute)0
 		};
 		
-		
-		return [[[NSOpenGLPixelFormat alloc] 
-				 initWithAttributes:attributes] autorelease];
+		result = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
 	}
+
+	assert( result );
+	return [result autorelease];
 }
 
 @end

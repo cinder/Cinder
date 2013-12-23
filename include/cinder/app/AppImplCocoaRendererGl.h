@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -30,17 +31,17 @@
 @interface AppImplCocoaRendererGl : NSObject
 {
 	NSOpenGLView					*view;
-	cinder::app::App				*app;
-	cinder::app::RendererGl			*renderer;
+	cinder::app::RendererGl*		renderer; // equivalent of a weak_ptr; 'renderer' actually owns us
 	NSView							*cinderView;
 }
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer;
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
 - (NSOpenGLView*)view;
 
 - (void)makeCurrentContext;
 - (CGLContextObj)getCglContext;
 - (CGLPixelFormatObj)getCglPixelFormat;
+- (NSOpenGLContext*)getNsOpenGlContext;
 - (void)flushBuffer;
 - (void)setFrameSize:(CGSize)newSize;
 - (void)defaultResize;

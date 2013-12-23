@@ -44,13 +44,13 @@ void TextTestApp::setup()
 #endif
 
 	// Japanese
-	char japanese[] = { 0xE6, 0x97, 0xA5, 0xE6, 0x9C, 0xAC, 0xE8, 0xAA, 0x9E, 0 };
+	unsigned char japanese[] = { 0xE6, 0x97, 0xA5, 0xE6, 0x9C, 0xAC, 0xE8, 0xAA, 0x9E, 0 };
 	// this does a complicated layout
 	TextLayout layout;
 	layout.clear( ColorA( 0.2f, 0.2f, 0.2f, 0.2f ) );
 	layout.setFont( Font( normalFont, 24 ) );
 	layout.setColor( Color( 1, 1, 1 ) );
-	layout.addLine( std::string( "Unicode: " ) + japanese );
+	layout.addLine( std::string( "Unicode: " ) + (const char*)japanese );
 	layout.setColor( Color( 0.5f, 0.25f, 0.8f ) );
 	layout.setFont( Font( boldFont, 12 ) );
 	layout.addRightLine( "Now is the time" );

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="OSC"
+	id="org.libcinder.osc"
+	author="Cinder Project, Hector Sanchez-Pajares"
+	license="BSD"
+	summary="Implements the Open Sound Control (OSC) protocol over UDP."
+	core="true"
+	>
+	<sourcePattern>src/*.cpp</sourcePattern>
+	<sourcePattern>src/ip/*.cpp</sourcePattern>
+	<sourcePattern>src/osc/*.cpp</sourcePattern>
+	<headerPattern>src/*.h</headerPattern>
+	<headerPattern>src/ip/*.h</headerPattern>
+	<headerPattern>src/osc/*.h</headerPattern>
+	<includePath>src</includePath>
+	<platform os="macosx">
+		<sourcePattern>src/ip/posix/*.cpp</sourcePattern>
+	</platform>
+	<platform os="ios">
+		<sourcePattern>src/ip/posix/*.cpp</sourcePattern>
+	</platform>	
+	<platform os="msw">
+		<sourcePattern>src/ip/win32/*.cpp</sourcePattern>
+	</platform>	
+</block>
+</cinder>

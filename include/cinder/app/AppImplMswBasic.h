@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -29,13 +30,14 @@
 #include "cinder/app/AppImplMsw.h"
 #include "cinder/app/AppImplMswRenderer.h"
 #include "cinder/Display.h"
+#include "cinder/app/Window.h"
 
 namespace cinder { namespace app {
 
-extern "C" LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+class WindowImplMswBasic;
 
 class AppImplMswBasic : public AppImplMsw {
- public:
+  public:
 	AppImplMswBasic( class AppBasic *aApp  );
 	void	run();
 
@@ -43,44 +45,51 @@ class AppImplMswBasic : public AppImplMsw {
 	
 	void	quit() { mShouldQuit = true; }
 
-	void	setWindowPos( const Vec2i &aWindowPos );	
-	void	setWindowWidth( int aWindowWidth );
-	void	setWindowHeight( int aWindowHeight );
-	void	setWindowSize( int aWindowWidth, int aWindowHeight );
 	float	setFrameRate( float aFrameRate );
-	void	toggleFullScreen();
-	void	setBorderless( bool borderless );
-	void	setAlwaysOnTop( bool alwaysOnTop );
+	void	disableFrameRate();
+	bool	isFrameRateEnabled() const;
+
+	size_t		getNumWindows() const;
+	WindowRef	getWindowIndex( size_t index );
+	WindowRef	getForegroundWindow() const;
+	fs::path	getAppPath() const;
 	
-	std::string getAppPath() const;
-	
-	Display*	getDisplay() { return mDisplay; }
-	
- protected:
+	void		setupBlankingWindows( DisplayRef fullScreenDisplay );
+	void		destroyBlankingWindows();
+
+  private:
 	void		sleep( double seconds );
 
-	bool		createWindow( int *width, int *height );
-	void		killWindow( bool wasFullScreen );
-	void		enableMultiTouch();
-	void		getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight );
-	void		onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam );
+	WindowRef		createWindow( Window::Format format );
+	virtual void	closeWindow( class WindowImplMsw *windowImpl ) override;
+	virtual void	setForegroundWindow( WindowRef window ) override;
 	
 	bool		mShouldQuit;
-	bool		mIsDragging;
-	bool		mHasBeenInitialized;
 	class AppBasic	*mApp;
 	
-	// Windows window variables
-	HWND					mWnd;
-	HDC						mDC;
+
 	HINSTANCE				mInstance;
-	DWORD					mWindowStyle, mWindowExStyle;
-	Vec2i					mWindowedPos;
 	double					mNextFrameTime;
-	Display					*mDisplay;
-	std::map<DWORD,Vec2f>	mMultiTouchPrev;
+	bool					mFrameRateEnabled;
+
+	std::list<class WindowImplMswBasic*>	mWindows;
+	std::list<BlankingWindowRef>			mBlankingWindows;
+	WindowRef								mForegroundWindow;
 
 	friend LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
+	friend class AppBasic;
+};
+
+class WindowImplMswBasic : public WindowImplMsw {
+  public:
+	WindowImplMswBasic( const Window::Format &format, RendererRef sharedRenderer, AppImplMswBasic *appImpl )
+		: WindowImplMsw( format, sharedRenderer, appImpl ), mAppImplBasic( appImpl ) {}
+
+	virtual void WindowImplMswBasic::toggleFullScreen( const app::FullScreenOptions &options );
+
+  protected:
+	AppImplMswBasic		*mAppImplBasic;
+	friend AppImplMswBasic;
 };
 
 } } // namespace cinder::app

@@ -24,104 +24,139 @@
 
 #include "cinder/app/App.h"
 #include "cinder/cocoa/CinderCocoaTouch.h"
+#include "cinder/app/Window.h"
 #include "cinder/app/TouchEvent.h"
-#include "cinder/app/AccelEvent.h"
 
+#ifdef __OBJC__
+	@class AppImplCocoaTouch;
+#else
+	class AppImplCocoaTouch;
+#endif
 
 namespace cinder { namespace app {
 
 struct AppCocoaTouchState;
+
+enum InterfaceOrientation {
+	Unknown					= 0,
+	Portrait				= 1 << 0,
+	PortraitUpsideDown		= 1 << 1,
+	LandscapeLeft			= 1 << 2,
+	LandscapeRight			= 1 << 3,
+	PortraitAll				= (Portrait | PortraitUpsideDown),
+	LandscapeAll			= (LandscapeLeft | LandscapeRight),
+	All						= (PortraitAll | LandscapeAll)
+};
+
+//! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
+typedef	signals::signal<uint32_t (), BitwiseAndEventCombiner<uint32_t> >		EventSignalSupportedOrientations;
 
 class AppCocoaTouch : public App {
   public:
 	class Settings : public App::Settings {
 	  public:
 		Settings()
-			: App::Settings(), mEnableMultiTouch( true ) {}
+			: App::Settings(), mEnableStatusBar( false )
+		{
+			mPowerManagement = false;
+		}
 
-		//! Registers the app to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
-		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
-		//! Returns whether the app is registered to receive multiTouch events from the operating system. Enabled by default. If disabled, touch events are mapped to mouse events.
-		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
+		//! Determines whether the system status bar is visible initially. Default is \c false.
+		void		enableStatusBar( bool enable = true ) { mEnableStatusBar = enable; }
+		//! Returns whether the system status bar is visible initially. Default is \c false.
+		bool		isStatusBarEnabled() const { return mEnableStatusBar; }
 		
 	  private:
-		bool		mEnableMultiTouch;
+		bool		mEnableStatusBar;
 	};
 
 	AppCocoaTouch();
 	virtual ~AppCocoaTouch() {}
 
 	virtual void		prepareSettings( Settings *settings ) {}
-    //! System event notification
-    virtual void        didBecomeActive() {}
-    virtual void        willResignActive() {}
 
-	//! Override to respond to the beginning of a multitouch sequence
-	virtual void		touchesBegan( TouchEvent event ) {}
-	//! Override to respond to movement (drags) during a multitouch sequence
-	virtual void		touchesMoved( TouchEvent event ) {}
-	//! Override to respond to the end of a multitouch sequence
-	virtual void		touchesEnded( TouchEvent event ) {}
-	//! Returns a std::vector of all active touches
-	const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }	
-	//! Returns a Vec3d of the acceleration direction
-	virtual void		accelerated( AccelEvent event ) {}
+	signals::signal<void()>&	getSignalDidEnterBackground() { return mSignalDidEnterBackground; }
+	void						emitDidEnterBackground();
+	signals::signal<void()>&	getSignalWillEnterForeground() { return mSignalWillEnterForeground; }
+	void						emitWillEnterForeground();
+	signals::signal<void()>&	getSignalWillResignActive() { return mSignalWillResignActive; }
+    void 						emitWillResignActive();
+	signals::signal<void()>&	getSignalDidBecomeActive() { return mSignalDidBecomeActive; }
+	void 						emitDidBecomeActive();
+	signals::signal<void()>&	getSignalMemoryWarning() { return mSignalMemoryWarning; }
+	void 						emitMemoryWarning();
 
-	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
-	CallbackId		registerTouchesBegan( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesBegan.registerCb( callback ); }
-	//! Registers a callback for touchesBegan events. Returns a unique identifier which can be used as a parameter to unregisterTouchesBegan().
-	template<typename T>
-	CallbackId		registerTouchesBegan( T *obj, bool (T::*callback)(TouchEvent) ) { return mCallbacksTouchesBegan.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for touchesBegan events.
-	void			unregisterTouchesBegan( CallbackId id ) { mCallbacksTouchesBegan.unregisterCb( id ); }
+	//! Returns the signal emitted when an orientation change may occur, allowing the user to specify which orientations are permitted (any connection can forbid a given orientation).  The connected std::function must return an \t InterfaceOrientation bitmask. 
+	EventSignalSupportedOrientations&	getSignalSupportedOrientations() { return mSignalSupportedOrientations; }
+	//! Emits a signal to ask the user what orientations are supported.
+	uint32_t							emitSupportedOrientations();
+	//! Returns the signal emitted when the interface is about to rotate to a new orientation. At this time, the Window's bounds and orientation have already been updated.
+	signals::signal<void()>&			getSignalWillRotate() { return mSignalWillRotate; }
+	//! Emits the signal to notify the user that the orientation will change.
+	void								emitWillRotate();
+	//! Returns the signal emitted when the interface is finished rotating to a new orientation.
+	signals::signal<void()>&			getSignalDidRotate() { return mSignalDidRotate; }
+	//! Emits the signal to notify the user that the orientation did change.
+	void								emitDidRotate();
 
-	//! Registers a callback for touchesMoved events. Returns a unique identifier which can be used as a parameter to unregisterTouchesMoved().
-	CallbackId		registerTouchesMoved( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesMoved.registerCb( callback ); }
-	//! Registers a callback for touchesMoved events. Returns a unique identifier which can be used as a parameter to unregisterTouchesMoved().
-	template<typename T>
-	CallbackId		registerTouchesMoved( T *obj, bool (T::*callback)(TouchEvent) ) { return mCallbacksTouchesMoved.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for touchesMoved events.
-	void			unregisterTouchesMoved( CallbackId id ) { mCallbacksTouchesMoved.unregisterCb( id ); }
+	WindowRef 		createWindow( const Window::Format &format );
 
-	//! Registers a callback for touchesEnded events. Returns a unique identifier which can be used as a parameter to unregisterTouchesEnded().
-	CallbackId		registerTouchesEnded( std::function<bool (TouchEvent)> callback ) { return mCallbacksTouchesEnded.registerCb( callback ); }
-	//! Registers a callback for touchesEnded events. Returns a unique identifier which can be used as a parameter to unregisterTouchesEnded().
-	template<typename T>
-	CallbackId		registerTouchesEnded( T *obj, bool (T::*callback)(TouchEvent) ) { return mCallbacksTouchesEnded.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for touchesEnded events.
-	void			unregisterTouchesEnded( CallbackId id ) { mCallbacksTouchesEnded.unregisterCb( id ); }
+	virtual WindowRef getWindow() const override;
+	virtual size_t getNumWindows() const override;
+	//! Gets a Window by index, in the range [0, getNumWindows()).
+	virtual app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
 
-	//! Registers a callback for accelerated events. Returns a unique identifier which can be used as a parameter to unregisterAccelerated().
-	CallbackId		registerAccelerated( std::function<bool (AccelEvent)> callback ) { return mCallbacksAccelerated.registerCb( callback ); }
-	//! Registers a callback for touchesEnded events. Returns a unique identifier which can be used as a parameter to unregisterTouchesEnded().
-	template<typename T>
-	CallbackId		registerAccelerated( T *obj, bool (T::*callback)(AccelEvent) ) { return mCallbacksAccelerated.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for touchesEnded events.
-	void			unregisterAccelerated( CallbackId id ) { mCallbacksAccelerated.unregisterCb( id ); }
+	//! Returns the  \t InterfaceOrientation for the device \t Window.
+	InterfaceOrientation	getOrientation() const;
+	//! Returns the current \t InterfaceOrientation for the active \t Window.
+	InterfaceOrientation	getWindowOrientation() const;
 
-	
-	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
-	virtual int		getWindowWidth() const;
-	//! Returns the height of the App's window measured in pixels, or the screen when in full-screen mode.	
-	virtual int		getWindowHeight() const;
-	//! Returns the iOS resolution multiplier (typically 2.0f on retina displays, 1.0f otherwise)
-	virtual float	getContentScaleFactor() const;
-	//! Ignored on the iPhone.
-	void			setWindowWidth( int windowWidth ) {}
-	//! Ignored on the iPhone.
-	void			setWindowHeight( int windowHeight ) {}
-	//! Ignored on the iPhone.
-	void			setWindowSize( int windowWidth, int windowHeight ) {}
+	//! Enables the device's proximity sensor, which can return whether the device is close to the user or not. Use in conjunction with proximityIsClose() or getSignalProximitySensor()
+	void enableProximitySensor();
+	//! Disables the device's proximity sensor.
+	void disableProximitySensor();
+	//! Returns whether the device is close to the user or not. Must call \a enableProximitySensor() before using.
+	bool proximityIsClose() const;
+	//! Signal emitted when the device becomes close (\c true) or far (\c false). Must call \a enableProximitySensor() before using.
+	signals::signal<void(bool)>&	getSignalProximitySensor() { return mSignalProximitySensor; }
+	void							emitSignalProximitySensor( bool isClose ) { mSignalProximitySensor( isClose ); }
 
-	//! Enables the device's accelerometer and modifies its filtering. \a updateFrequency represents the frequency with which accelerated() is called, measured in Hz. \a filterFactor represents the amount to weight the current value relative to the previous.
-	void enableAccelerometer( float updateFrequency = 30.0f, float filterFactor = 0.1f );
-	//! Turns off the accelerometer
-	void disableAccelerometer();
+	//! Enables the device's battery monitor. Use in conjunction with \a getBatteryLevel(), \a isUnplugged() and \a getSignalBatteryState()
+	void 	enableBatteryMonitoring();
+	//! Disables the device's battery monitor.
+	void 	disableBatteryMonitoring();
+	//! Returns the device's battery level, in the range of [0,1];
+	float 	getBatteryLevel() const;
+	//! Returns \c true when the device is not plugged into power
+	bool 	isUnplugged() const;
+	//! Signal emitted when the device is unplugged (\c true) or plugged in (\c false). Use in place of polling \a isUnplugged().
+	signals::signal<void(bool)>&	getSignalBatteryState() { return mSignalBatteryState; }
+	void							emitSignalBatteryState( bool isUnplugged ) { mSignalBatteryState( isUnplugged ); }
+
+	//! When disabled, the device will not sleep even after the idling threshold.
+	void enablePowerManagement( bool powerManagement = true ) override;
+
+	//! Shows the default iOS keyboard
+	void 		showKeyboard();
+	//! Returns whether the iOS keyboard is visible
+	bool		isKeyboardVisible() const;
+	//! Hides the default iOS keyboard
+	void		hideKeyboard();
+	//! Returns the current text recorded since the most recent call to \a showKeyboard().
+	std::string	getKeyboardString() const;
+
+	typedef enum StatusBarAnimation { NONE, FADE, SLIDE } StatusBarAnimation;
+	//! Shows the system status bar
+	void 	showStatusBar( StatusBarAnimation animation = StatusBarAnimation::NONE );
+	//! Returns whether the system status bar is visible
+	bool	isStatusBarVisible() const;
+	//! Hides the system status bar
+	void	hideStatusBar( StatusBarAnimation animation = StatusBarAnimation::NONE );
 	
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const;
-	//! Sets the maximum frame-rate the App will attempt to maintain.
-	virtual void		setFrameRate( float aFrameRate );
+	//! Sets the maximum frame-rate the App will attempt to maintain. This will be rounded to the nearest factor of 60 FPS.
+	virtual void		setFrameRate( float frameRate );
 	//! Returns whether the App is in full-screen mode or not.
 	virtual bool		isFullScreen() const;
 	//! Sets whether the active App is in full-screen mode based on \a fullScreen
@@ -131,9 +166,9 @@ class AppCocoaTouch : public App {
 	virtual double		getElapsedSeconds() const;
 
 	//! Returns the path to the application on disk
-	virtual fs::path	getAppPath();
+	virtual fs::path	getAppPath() const;
 
-	//! Ceases execution of the application. Not implemented yet on iPhone
+	//! Not implemented on iPhone
 	virtual void	quit();
 
 	//! Returns a pointer to the current global AppBasic
@@ -145,41 +180,41 @@ class AppCocoaTouch : public App {
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch() { App::prepareLaunch(); }
-	static void		executeLaunch( AppCocoaTouch *app, class Renderer *renderer, const char *title, int argc, char * const argv[] ) { sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
+	static void		executeLaunch( AppCocoaTouch *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
 	static void		cleanupLaunch() { App::cleanupLaunch(); }
 	
-	virtual void	launch( const char *title, int argc, char * const argv[] );
+	virtual void	launch( const char *title, int argc, char * const argv[] ) override;
 	//! \endcond
 
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
 	void		privatePrepareSettings__();
-	void		privateTouchesBegan__( const TouchEvent &event );
-	void		privateTouchesMoved__( const TouchEvent &event );
-	void		privateTouchesEnded__( const TouchEvent &event );
-	void		privateSetActiveTouches__( const std::vector<TouchEvent::Touch> &touches ) { mActiveTouches = touches; }
-	void		privateAccelerated__( const Vec3f &direction );
+	void		privateSetImpl__( AppImplCocoaTouch	*impl ) { mImpl = impl; }
 	//! \endcond
-
-	// The state is contained in a struct in order to avoid this .h needing to be compiled as Objective-C++
-	std::shared_ptr<AppCocoaTouchState>		mState;
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
 	
 	
 	static AppCocoaTouch	*sInstance;	
+	AppImplCocoaTouch		*mImpl;
 	Settings				mSettings;
-	
-	std::vector<TouchEvent::Touch>	mActiveTouches;
 
-	CallbackMgr<bool (TouchEvent)>		mCallbacksTouchesBegan, mCallbacksTouchesMoved, mCallbacksTouchesEnded;
-	CallbackMgr<bool (AccelEvent)>		mCallbacksAccelerated;
+	signals::signal<void()>		mSignalDidEnterBackground, mSignalWillEnterForeground, mSignalWillResignActive, mSignalDidBecomeActive, mSignalMemoryWarning;
 
-	float					mAccelFilterFactor;
-	Vec3f					mLastAccel, mLastRawAccel;
+	signals::signal<void(bool)>		mSignalProximitySensor, mSignalBatteryState;
+
+	EventSignalSupportedOrientations		mSignalSupportedOrientations;
+	signals::signal<void()>					mSignalWillRotate, mSignalDidRotate;
+
+	bool					mIsKeyboardVisible;
 };
+
+//! Stream \t InterfacefaceOrientation enum to std::ostream
+extern std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs );
+//! returns the degrees rotation from Portrait for the provided \a orientation
+float getOrientationDegrees( InterfaceOrientation orientation );
 
 } } // namespace cinder::app
 
@@ -187,7 +222,7 @@ class AppCocoaTouch : public App {
 int main( int argc, char *argv[] ) {										\
 	cinder::app::AppCocoaTouch::prepareLaunch();							\
 	cinder::app::AppCocoaTouch *app = new APP;								\
-	cinder::app::Renderer *ren = new RENDERER;								\
+	cinder::app::RendererRef ren( new RENDERER );							\
 	cinder::app::AppCocoaTouch::executeLaunch( app, ren, #APP, argc, argv );\
 	cinder::app::AppCocoaTouch::cleanupLaunch();							\
     return 0;																\

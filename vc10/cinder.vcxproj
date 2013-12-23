@@ -20,10 +20,12 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v100</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -49,8 +51,8 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -59,9 +61,10 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ProgramDataBaseFileName>..\lib\cinder_d.pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;libpng.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;pixman-1.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;libpng.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\lib\msw;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -75,8 +78,8 @@
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw\jpeg;..\include\msw;..\include\msw\cairo;..\..\QuickTimeSDK-7.3\CIncludes;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x05010200;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -85,7 +88,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;libpng.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;pixman-1.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;libpng.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <AdditionalLibraryDirectories>..\lib\msw;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -93,6 +96,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp" />
+    <ClCompile Include="..\src\cinder\app\Window.cpp" />
     <ClCompile Include="..\src\cinder\Area.cpp" />
     <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp" />
     <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp" />
@@ -109,12 +115,14 @@
     <ClCompile Include="..\src\cinder\Channel.cpp" />
     <ClCompile Include="..\src\cinder\Clipboard.cpp" />
     <ClCompile Include="..\src\cinder\Color.cpp" />
+    <ClCompile Include="..\src\cinder\ConvexHull.cpp" />
     <ClCompile Include="..\src\cinder\DataSource.cpp" />
     <ClCompile Include="..\src\cinder\DataTarget.cpp" />
     <ClCompile Include="..\src\cinder\Display.cpp" />
     <ClCompile Include="..\src\cinder\Exception.cpp" />
     <ClCompile Include="..\src\cinder\Font.cpp" />
     <ClCompile Include="..\src\cinder\Frustum.cpp" />
+    <ClCompile Include="..\src\cinder\gl\StereoAutoFocuser.cpp" />
     <ClCompile Include="..\src\cinder\gl\TextureFont.cpp" />
     <ClCompile Include="..\src\cinder\ImageIo.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
@@ -130,6 +138,8 @@
     <ClCompile Include="..\src\cinder\Plane.cpp" />
     <ClCompile Include="..\src\cinder\PolyLine.cpp" />
     <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp" />
+    <ClCompile Include="..\src\cinder\qtime\QuickTime.cpp" />
+    <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp" />
     <ClCompile Include="..\src\cinder\Rand.cpp" />
     <ClCompile Include="..\src\cinder\Ray.cpp" />
     <ClCompile Include="..\src\cinder\Rect.cpp" />
@@ -158,14 +168,11 @@
     <ClCompile Include="..\src\cinder\app\AppImplMswBasic.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswRendererGdi.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswRendererGl.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp" />
     <ClCompile Include="..\src\cinder\app\KeyEvent.cpp" />
     <ClCompile Include="..\src\cinder\app\Renderer.cpp" />
     <ClCompile Include="..\src\cinder\audio\Io.cpp" />
     <ClCompile Include="..\src\cinder\audio\Output.cpp" />
     <ClCompile Include="..\src\cinder\audio\SourceFileWindowsMedia.cpp" />
-    <ClCompile Include="..\src\cinder\cairo\Cairo.cpp" />
     <ClCompile Include="..\src\cinder\gl\DisplayList.cpp" />
     <ClCompile Include="..\src\cinder\gl\Fbo.cpp" />
     <ClCompile Include="..\src\cinder\gl\gl.cpp" />
@@ -189,8 +196,6 @@
     <ClCompile Include="..\src\cinder\msw\CinderMswGdiPlus.cpp" />
     <ClCompile Include="..\src\cinder\msw\StackWalker.cpp" />
     <ClCompile Include="..\src\cinder\params\Params.cpp" />
-    <ClCompile Include="..\src\cinder\qtime\QuickTime.cpp" />
-    <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp" />
     <ClCompile Include="..\src\AntTweakBar\LoadOGL.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwBar.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwColors.cpp" />
@@ -217,6 +222,7 @@
     <ClInclude Include="..\include\cinder\app\AppNative.h" />
     <ClInclude Include="..\include\cinder\app\Event.h" />
     <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
+    <ClInclude Include="..\include\cinder\app\Window.h" />
     <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h" />
     <ClInclude Include="..\include\cinder\audio\PcmBuffer.h" />
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
@@ -225,6 +231,7 @@
     <ClInclude Include="..\include\cinder\Clipboard.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />
     <ClInclude Include="..\include\cinder\Frustum.h" />
+    <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h" />
     <ClInclude Include="..\include\cinder\gl\TextureFont.h" />
     <ClInclude Include="..\include\cinder\ip\Blend.h" />
     <ClInclude Include="..\include\cinder\Json.h" />
@@ -233,8 +240,10 @@
     <ClInclude Include="..\include\cinder\Matrix44.h" />
     <ClInclude Include="..\include\cinder\MatrixAlgo.h" />
     <ClInclude Include="..\include\cinder\Plane.h" />
-    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
+    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
+    <ClInclude Include="..\include\cinder\qtime\QuickTime.h" />
+    <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h" />
     <ClInclude Include="..\include\cinder\svg\Svg.h" />
     <ClInclude Include="..\include\cinder\svg\SvgGl.h" />
     <ClInclude Include="..\include\cinder\Timeline.h" />
@@ -280,6 +289,7 @@
     <ClInclude Include="..\include\cinder\Easing.h" />
     <ClInclude Include="..\include\cinder\CinderResources.h" />
     <ClInclude Include="..\include\cinder\Color.h" />
+    <ClInclude Include="..\include\cinder\ConvexHull.h" />
     <ClInclude Include="..\include\cinder\DataSource.h" />
     <ClInclude Include="..\include\cinder\DataTarget.h" />
     <ClInclude Include="..\include\cinder\Display.h" />
@@ -335,7 +345,6 @@
     <ClInclude Include="..\include\cinder\audio\Io.h" />
     <ClInclude Include="..\include\cinder\audio\Output.h" />
     <ClInclude Include="..\include\cinder\audio\SourceFileWindowsMedia.h" />
-    <ClInclude Include="..\include\cinder\cairo\Cairo.h" />
     <ClInclude Include="..\include\cinder\gl\DisplayList.h" />
     <ClInclude Include="..\include\cinder\gl\Fbo.h" />
     <ClInclude Include="..\include\cinder\gl\gl.h" />
@@ -359,8 +368,6 @@
     <ClInclude Include="..\include\cinder\msw\CinderMswGdiPlus.h" />
     <ClInclude Include="..\include\cinder\msw\OutputDebugStringStream.h" />
     <ClInclude Include="..\include\cinder\params\Params.h" />
-    <ClInclude Include="..\include\cinder\qtime\QuickTime.h" />
-    <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h" />
     <ClInclude Include="..\include\msw\videoInput\videoInput.h" />
     <ClInclude Include="..\src\jsoncpp\json_batchallocator.h" />
     <ClInclude Include="..\src\libtess2\bucketalloc.h" />

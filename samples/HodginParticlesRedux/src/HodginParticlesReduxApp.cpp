@@ -20,7 +20,7 @@ using std::list;
 class HodginParticlesReduxApp : public AppBasic {
  public:
 	void prepareSettings( Settings *settings );
-	void resize( ResizeEvent event );
+	void resize();
 	void setup();
 	void update();
 	void keyDown( KeyEvent event );
@@ -102,9 +102,8 @@ void HodginParticlesReduxApp::setup()
 }
 
 
-void HodginParticlesReduxApp::resize( ResizeEvent event )
+void HodginParticlesReduxApp::resize()
 {
-	AppBasic::resize( event );
 	mParticleController.createConstraints( Vec2f( getWindowWidth(), getWindowHeight() ) );
 }
 

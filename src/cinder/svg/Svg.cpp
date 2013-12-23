@@ -218,6 +218,13 @@ vector<string> readStringList( const std::string &s, bool stripQuotes = false )
 } // anonymous namespace
 
 ////////////////////////////////////////////////////////////////////////////////////
+// Renderer
+void Renderer::setVisitor( const function<bool(const Node&, svg::Style *)> &visitor )
+{
+	mVisitor = shared_ptr<function<bool(const Node&, svg::Style *)> >( new function<bool(const Node&, svg::Style *)>( visitor ) );
+}
+
+////////////////////////////////////////////////////////////////////////////////////
 // Statics
 Paint Style::sPaintNone = svg::Paint();
 Paint Style::sPaintBlack = svg::Paint( Color::black() );
@@ -1754,6 +1761,33 @@ void Group::parse( const XmlTree &xml )
 	}
 }
 
+const Node* Group::findNodeByIdContains( const std::string &idPartial, bool recurse ) const
+{
+	for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
+		if( (*childIt)->getId().find( idPartial ) != string::npos ) {
+			return *childIt;
+		}
+	}
+
+	if( mDefs ) {
+		const Node *result = mDefs->findNodeByIdContains( idPartial, recurse );
+		if( result )
+			return result;
+	}
+
+	if( recurse ) {
+		for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
+			if( typeid(**childIt) == typeid(Group) ) {
+				Group* group = static_cast<Group*>(*childIt);
+				const Node* result = group->findNodeByIdContains( idPartial );
+				if( result )
+					return result;
+			}
+		}
+	}
+	return NULL;
+}
+
 const Node* Group::findNode( const std::string &id, bool recurse ) const
 {
 	// see if any immediate children are named 'id'
@@ -1874,14 +1908,18 @@ Rectf Group::calcBoundingBox() const
 	bool empty = true;
 	Rectf result( 0, 0, 0, 0 );
 	for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
-		if( empty ) {
-			result = (*childIt)->getBoundingBox();
-			empty = false;
+		Rectf childBounds = (*childIt)->getBoundingBox();
+		// only use child area if it exists (text nodes return [0,0,0,0])
+		if( childBounds.calcArea() > 0 ) {
+			if( empty ) {
+				result = childBounds;
+				empty = false;
+			}
+			else {
+				result.include( childBounds );
+			}
 		}
-		else
-			result.include( (*childIt)->getBoundingBox() );
 	}
-	
 	return result;
 }
 

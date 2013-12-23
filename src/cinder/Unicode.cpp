@@ -114,4 +114,34 @@ void lineBreakUtf8( const char *line, const std::function<bool(const char *, siz
 	}
 }
 
+void calcLinebreaksUtf8( const char *str, std::vector<uint8_t> *resultBreaks )
+{
+	calcLinebreaksUtf8( str, strlen( str ), resultBreaks );
+}
+
+void calcLinebreaksUtf8( const char *str, size_t strLength, std::vector<uint8_t> *resultBreaks )
+{
+	resultBreaks->resize( strLength, 0 );
+	
+	// our UnicodeBreaks enum lines up with the liblinebreak definitions
+	set_linebreaks_utf8( (const uint8_t*)str, strLength, NULL, (char*)&(*resultBreaks)[0] );
+}
+
+void calcLinebreaksUtf16( const uint16_t *str, std::vector<uint8_t> *resultBreaks )
+{
+	size_t strLength = 0;
+	while( str[strLength] )
+		++strLength;
+
+	calcLinebreaksUtf16( str, strLength, resultBreaks );
+}
+
+void calcLinebreaksUtf16( const uint16_t *str, size_t strLength, std::vector<uint8_t> *resultBreaks )
+{
+	resultBreaks->resize( strLength, 0 );
+	
+	// our UnicodeBreaks enum lines up with the liblinebreak definitions
+	set_linebreaks_utf16( (const unsigned short*)str, strLength, NULL, (char*)&(*resultBreaks)[0] );	
+}
+
 }

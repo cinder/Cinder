@@ -2,12 +2,11 @@
 //
 //  @file       TwFonts.h
 //  @brief      Bitmaps fonts
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
+//              For conditions of distribution and use, see License.txt
 //
-//  notes:      Private header
-//              TAB=4
+//  note:       Private header
 //
 //  ---------------------------------------------------------------------------
 
@@ -18,7 +17,8 @@
 //#include <AntTweakBar.h>
 
 /*
-A source bitmap includes 224 characters starting from ascii char 32 (i.e. space) to ascii char 255:
+A source bitmap includes 224 characters starting from ascii char 32 (i.e. space) 
+to ascii char 255 (extended ASCII Latin1/CP1252):
   
  !"#$%&'()*+,-./0123456789:;<=>?
 @ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_
@@ -28,8 +28,8 @@ A source bitmap includes 224 characters starting from ascii char 32 (i.e. space)
 ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß
 àáâãäåæçèéêëìíîïğñòóôõö÷øùúûüışÿ
 
-First column of a source bitmap is a delimiter with color=zero at the end of each line of characters.
-Last row of a line of characters is a delimiter with color=zero at the last pixel of each character.
+First pixel column of a source bitmap is a delimiter with color=zero at the end of each line of characters.
+Last pixel row of a line of characters is a delimiter with color=zero at the last pixel of each character.
 
 */
 
@@ -52,14 +52,15 @@ struct CTexFont
 };
 
 
-CTexFont *TwGenerateFont(const unsigned char *_Bitmap, int _BmWidth, int _BmHeight);
+CTexFont *TwGenerateFont(const unsigned char *_Bitmap, int _BmWidth, int _BmHeight, float _Scaling=1.0f);
 
 
 extern CTexFont *g_DefaultSmallFont;
 extern CTexFont *g_DefaultNormalFont;
 extern CTexFont *g_DefaultLargeFont;
+extern CTexFont *g_DefaultFixed1Font;
 
-void TwGenerateDefaultFonts();
+void TwGenerateDefaultFonts(float _Scaling=1.0f);
 void TwDeleteDefaultFonts();
 
 

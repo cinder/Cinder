@@ -1,0 +1,390 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}</ProjectGuid>
+    <RootNamespace>libflint</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\lib\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\lib\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IncludePath);$(DXSDK_DIR)\include</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IncludePath);$(DXSDK_DIR)\include</IncludePath>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)_d</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ProgramDataBaseFileName>..\lib\cinder_d.pdb</ProgramDataBaseFileName>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;libpng.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>..\lib\msw;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <RemoveObjects>LIBCMT</RemoveObjects>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0502;CURL_STATICLIB;CAIRO_WIN32_STATIC_BUILD;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>Ws2_32.lib;wldap32.lib;libpng.lib;shlwapi.lib;OpenGL32.lib;zlib.lib;wmvcore.lib;Strmiids.lib;Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>..\lib\msw;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp" />
+    <ClCompile Include="..\src\cinder\app\Window.cpp" />
+    <ClCompile Include="..\src\cinder\Area.cpp" />
+    <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp" />
+    <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp" />
+    <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp" />
+    <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
+    <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
+    <ClCompile Include="..\src\cinder\Base64.cpp" />
+    <ClCompile Include="..\src\cinder\BSpline.cpp" />
+    <ClCompile Include="..\src\cinder\BSplineFit.cpp" />
+    <ClCompile Include="..\src\cinder\Buffer.cpp" />
+    <ClCompile Include="..\src\cinder\Camera.cpp" />
+    <ClCompile Include="..\src\cinder\Capture.cpp" />
+    <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp" />
+    <ClCompile Include="..\src\cinder\Channel.cpp" />
+    <ClCompile Include="..\src\cinder\Clipboard.cpp" />
+    <ClCompile Include="..\src\cinder\Color.cpp" />
+    <ClCompile Include="..\src\cinder\ConvexHull.cpp" />
+    <ClCompile Include="..\src\cinder\DataSource.cpp" />
+    <ClCompile Include="..\src\cinder\DataTarget.cpp" />
+    <ClCompile Include="..\src\cinder\Display.cpp" />
+    <ClCompile Include="..\src\cinder\Exception.cpp" />
+    <ClCompile Include="..\src\cinder\Font.cpp" />
+    <ClCompile Include="..\src\cinder\Frustum.cpp" />
+    <ClCompile Include="..\src\cinder\gl\StereoAutoFocuser.cpp" />
+    <ClCompile Include="..\src\cinder\gl\TextureFont.cpp" />
+    <ClCompile Include="..\src\cinder\ImageIo.cpp" />
+    <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
+    <ClCompile Include="..\src\cinder\ImageSourcePng.cpp" />
+    <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Blend.cpp" />
+    <ClCompile Include="..\src\cinder\CinderMath.cpp" />
+    <ClCompile Include="..\src\cinder\Json.cpp" />
+    <ClCompile Include="..\src\cinder\Matrix.cpp" />
+    <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
+    <ClCompile Include="..\src\cinder\Path2D.cpp" />
+    <ClCompile Include="..\src\cinder\Perlin.cpp" />
+    <ClCompile Include="..\src\cinder\Plane.cpp" />
+    <ClCompile Include="..\src\cinder\PolyLine.cpp" />
+    <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp" />
+    <ClCompile Include="..\src\cinder\qtime\QuickTime.cpp" />
+    <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp" />
+    <ClCompile Include="..\src\cinder\Rand.cpp" />
+    <ClCompile Include="..\src\cinder\Ray.cpp" />
+    <ClCompile Include="..\src\cinder\Rect.cpp" />
+    <ClCompile Include="..\src\cinder\Serial.cpp" />
+    <ClCompile Include="..\src\cinder\Shape2d.cpp" />
+    <ClCompile Include="..\src\cinder\Sphere.cpp" />
+    <ClCompile Include="..\src\cinder\Stream.cpp" />
+    <ClCompile Include="..\src\cinder\Surface.cpp" />
+    <ClCompile Include="..\src\cinder\svg\Svg.cpp" />
+    <ClCompile Include="..\src\cinder\System.cpp" />
+    <ClCompile Include="..\src\cinder\Text.cpp" />
+    <ClCompile Include="..\src\cinder\Timeline.cpp" />
+    <ClCompile Include="..\src\cinder\TimelineItem.cpp" />
+    <ClCompile Include="..\src\cinder\Timer.cpp" />
+    <ClCompile Include="..\src\cinder\Triangulate.cpp" />
+    <ClCompile Include="..\src\cinder\TriMesh.cpp" />
+    <ClCompile Include="..\src\cinder\Tween.cpp" />
+    <ClCompile Include="..\src\cinder\Unicode.cpp" />
+    <ClCompile Include="..\src\cinder\Url.cpp" />
+    <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp" />
+    <ClCompile Include="..\src\cinder\Utilities.cpp" />
+    <ClCompile Include="..\src\cinder\Xml.cpp" />
+    <ClCompile Include="..\src\cinder\app\App.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppBasic.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppImplMsw.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppImplMswBasic.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGdi.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGl.cpp" />
+    <ClCompile Include="..\src\cinder\app\KeyEvent.cpp" />
+    <ClCompile Include="..\src\cinder\app\Renderer.cpp" />
+    <ClCompile Include="..\src\cinder\audio\Io.cpp" />
+    <ClCompile Include="..\src\cinder\audio\Output.cpp" />
+    <ClCompile Include="..\src\cinder\audio\SourceFileWindowsMedia.cpp" />
+    <ClCompile Include="..\src\cinder\gl\DisplayList.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Fbo.cpp" />
+    <ClCompile Include="..\src\cinder\gl\gl.cpp" />
+    <ClCompile Include="..\src\cinder\gl\GLee.c" />
+    <ClCompile Include="..\src\cinder\gl\GlslProg.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Light.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Material.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Texture.cpp" />
+    <ClCompile Include="..\src\cinder\gl\TileRender.cpp" />
+    <ClCompile Include="..\src\cinder\gl\VBO.cpp" />
+    <ClCompile Include="..\src\cinder\ip\EdgeDetect.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Fill.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Flip.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Grayscale.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Hdr.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Premultiply.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Resize.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Threshold.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Trim.cpp" />
+    <ClCompile Include="..\src\cinder\msw\CinderMsw.cpp" />
+    <ClCompile Include="..\src\cinder\msw\CinderMswGdiPlus.cpp" />
+    <ClCompile Include="..\src\cinder\msw\StackWalker.cpp" />
+    <ClCompile Include="..\src\cinder\params\Params.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\LoadOGL.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwBar.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwColors.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwFonts.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwOpenGL.cpp" />
+    <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp" />
+    <ClCompile Include="..\src\jsoncpp\json_reader.cpp" />
+    <ClCompile Include="..\src\jsoncpp\json_value.cpp" />
+    <ClCompile Include="..\src\jsoncpp\json_writer.cpp" />
+    <ClCompile Include="..\src\libtess2\bucketalloc.c" />
+    <ClCompile Include="..\src\libtess2\dict.c" />
+    <ClCompile Include="..\src\libtess2\geom.c" />
+    <ClCompile Include="..\src\libtess2\mesh.c" />
+    <ClCompile Include="..\src\libtess2\priorityq.c" />
+    <ClCompile Include="..\src\libtess2\sweep.c" />
+    <ClCompile Include="..\src\libtess2\tess.c" />
+    <ClCompile Include="..\src\linebreak\linebreak.c" />
+    <ClCompile Include="..\src\linebreak\linebreakdata.c" />
+    <ClCompile Include="..\src\linebreak\linebreakdef.c" />
+    <ClCompile Include="..\src\videoInput\videoInput.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\cinder\app\AppNative.h" />
+    <ClInclude Include="..\include\cinder\app\Event.h" />
+    <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
+    <ClInclude Include="..\include\cinder\app\Window.h" />
+    <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h" />
+    <ClInclude Include="..\include\cinder\audio\PcmBuffer.h" />
+    <ClInclude Include="..\include\cinder\audio\SourceFileWav.h" />
+    <ClInclude Include="..\include\cinder\Base64.h" />
+    <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
+    <ClInclude Include="..\include\cinder\Clipboard.h" />
+    <ClInclude Include="..\include\cinder\Filesystem.h" />
+    <ClInclude Include="..\include\cinder\Frustum.h" />
+    <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h" />
+    <ClInclude Include="..\include\cinder\gl\TextureFont.h" />
+    <ClInclude Include="..\include\cinder\ip\Blend.h" />
+    <ClInclude Include="..\include\cinder\Json.h" />
+    <ClInclude Include="..\include\cinder\Matrix22.h" />
+    <ClInclude Include="..\include\cinder\Matrix33.h" />
+    <ClInclude Include="..\include\cinder\Matrix44.h" />
+    <ClInclude Include="..\include\cinder\MatrixAlgo.h" />
+    <ClInclude Include="..\include\cinder\Plane.h" />
+    <ClInclude Include="..\include\cinder\Function.h" />
+    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />
+    <ClInclude Include="..\include\cinder\qtime\QuickTime.h" />
+    <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h" />
+    <ClInclude Include="..\include\cinder\svg\Svg.h" />
+    <ClInclude Include="..\include\cinder\svg\SvgGl.h" />
+    <ClInclude Include="..\include\cinder\Timeline.h" />
+    <ClInclude Include="..\include\cinder\TimelineItem.h" />
+    <ClInclude Include="..\include\cinder\Triangulate.h" />
+    <ClInclude Include="..\include\cinder\Tween.h" />
+    <ClInclude Include="..\include\cinder\Unicode.h" />
+    <ClInclude Include="..\include\cinder\UrlImplWinInet.h" />
+    <ClInclude Include="..\include\json\autolink.h" />
+    <ClInclude Include="..\include\json\config.h" />
+    <ClInclude Include="..\include\json\features.h" />
+    <ClInclude Include="..\include\json\forwards.h" />
+    <ClInclude Include="..\include\json\json.h" />
+    <ClInclude Include="..\include\json\reader.h" />
+    <ClInclude Include="..\include\json\value.h" />
+    <ClInclude Include="..\include\json\writer.h" />
+    <ClInclude Include="..\include\rapidxml\rapidxml.hpp" />
+    <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp" />
+    <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
+    <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h" />
+    <ClInclude Include="..\src\AntTweakBar\LoadOGL.h" />
+    <ClInclude Include="..\src\AntTweakBar\resource.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwBar.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwColors.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwFonts.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwGraph.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwMgr.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwOpenGL.h" />
+    <ClInclude Include="..\src\AntTweakBar\TwPrecomp.h" />
+    <ClInclude Include="..\include\cinder\Arcball.h" />
+    <ClInclude Include="..\include\cinder\Area.h" />
+    <ClInclude Include="..\include\cinder\AxisAlignedBox.h" />
+    <ClInclude Include="..\include\cinder\BandedMatrix.h" />
+    <ClInclude Include="..\include\cinder\BSpline.h" />
+    <ClInclude Include="..\include\cinder\BSplineFit.h" />
+    <ClInclude Include="..\include\cinder\Buffer.h" />
+    <ClInclude Include="..\include\cinder\Camera.h" />
+    <ClInclude Include="..\include\cinder\Capture.h" />
+    <ClInclude Include="..\include\cinder\Channel.h" />
+    <ClInclude Include="..\include\cinder\ChanTraits.h" />
+    <ClInclude Include="..\include\cinder\Cinder.h" />
+    <ClInclude Include="..\include\cinder\CinderMath.h" />
+    <ClInclude Include="..\include\cinder\Easing.h" />
+    <ClInclude Include="..\include\cinder\CinderResources.h" />
+    <ClInclude Include="..\include\cinder\Color.h" />
+    <ClInclude Include="..\include\cinder\ConvexHull.h" />
+    <ClInclude Include="..\include\cinder\DataSource.h" />
+    <ClInclude Include="..\include\cinder\DataTarget.h" />
+    <ClInclude Include="..\include\cinder\Display.h" />
+    <ClInclude Include="..\include\cinder\Exception.h" />
+    <ClInclude Include="..\include\cinder\Filter.h" />
+    <ClInclude Include="..\include\cinder\Font.h" />
+    <ClInclude Include="..\include\cinder\ImageIo.h" />
+    <ClInclude Include="..\include\cinder\ImageSourceFileWic.h" />
+    <ClInclude Include="..\include\cinder\ImageSourcePng.h" />
+    <ClInclude Include="..\include\cinder\ImageTargetFileWic.h" />
+    <ClInclude Include="..\include\cinder\KdTree.h" />
+    <ClInclude Include="..\include\cinder\Matrix.h" />
+    <ClInclude Include="..\include\cinder\MayaCamUI.h" />
+    <ClInclude Include="..\include\cinder\ObjLoader.h" />
+    <ClInclude Include="..\include\cinder\Path2D.h" />
+    <ClInclude Include="..\include\cinder\Perlin.h" />
+    <ClInclude Include="..\include\cinder\PolyLine.h" />
+    <ClInclude Include="..\include\cinder\Quaternion.h" />
+    <ClInclude Include="..\include\cinder\Rand.h" />
+    <ClInclude Include="..\include\cinder\Ray.h" />
+    <ClInclude Include="..\include\cinder\Rect.h" />
+    <ClInclude Include="..\include\cinder\Serial.h" />
+    <ClInclude Include="..\include\cinder\Shape2d.h" />
+    <ClInclude Include="..\include\cinder\Sphere.h" />
+    <ClInclude Include="..\include\cinder\Stream.h" />
+    <ClInclude Include="..\include\cinder\Surface.h" />
+    <ClInclude Include="..\include\cinder\System.h" />
+    <ClInclude Include="..\include\cinder\Text.h" />
+    <ClInclude Include="..\include\cinder\Thread.h" />
+    <ClInclude Include="..\include\cinder\ConcurrentCircularBuffer.h" />
+    <ClInclude Include="..\include\cinder\Timer.h" />
+    <ClInclude Include="..\include\cinder\TriMesh.h" />
+    <ClInclude Include="..\include\cinder\Url.h" />
+    <ClInclude Include="..\include\cinder\Utilities.h" />
+    <ClInclude Include="..\include\cinder\Vector.h" />
+    <ClInclude Include="..\include\cinder\Xml.h" />
+    <ClInclude Include="..\include\cinder\app\App.h" />
+    <ClInclude Include="..\include\cinder\app\AppBasic.h" />
+    <ClInclude Include="..\include\cinder\app\AppDialog.h" />
+    <ClInclude Include="..\include\cinder\app\AppImplMsw.h" />
+    <ClInclude Include="..\include\cinder\app\AppImplMswBasic.h" />
+    <ClInclude Include="..\include\cinder\app\AppImplMswRenderer.h" />
+    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGdi.h" />
+    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGl.h" />
+    <ClInclude Include="..\include\cinder\app\AppImplMswScreenSaver.h" />
+    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
+    <ClInclude Include="..\include\cinder\app\FileDropEvent.h" />
+    <ClInclude Include="..\include\cinder\app\KeyEvent.h" />
+    <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
+    <ClInclude Include="..\include\cinder\app\Renderer.h" />
+    <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
+    <ClInclude Include="..\include\cinder\audio\Callback.h" />
+    <ClInclude Include="..\include\cinder\audio\Io.h" />
+    <ClInclude Include="..\include\cinder\audio\Output.h" />
+    <ClInclude Include="..\include\cinder\audio\SourceFileWindowsMedia.h" />
+    <ClInclude Include="..\include\cinder\gl\DisplayList.h" />
+    <ClInclude Include="..\include\cinder\gl\Fbo.h" />
+    <ClInclude Include="..\include\cinder\gl\gl.h" />
+    <ClInclude Include="..\include\cinder\gl\GLee.h" />
+    <ClInclude Include="..\include\cinder\gl\GlslProg.h" />
+    <ClInclude Include="..\include\cinder\gl\Light.h" />
+    <ClInclude Include="..\include\cinder\gl\Material.h" />
+    <ClInclude Include="..\include\cinder\gl\Texture.h" />
+    <ClInclude Include="..\include\cinder\gl\TileRender.h" />
+    <ClInclude Include="..\include\cinder\gl\VBO.h" />
+    <ClInclude Include="..\include\cinder\ip\EdgeDetect.h" />
+    <ClInclude Include="..\include\cinder\ip\Fill.h" />
+    <ClInclude Include="..\include\cinder\ip\Flip.h" />
+    <ClInclude Include="..\include\cinder\ip\Grayscale.h" />
+    <ClInclude Include="..\include\cinder\ip\Hdr.h" />
+    <ClInclude Include="..\include\cinder\ip\Premultiply.h" />
+    <ClInclude Include="..\include\cinder\ip\Resize.h" />
+    <ClInclude Include="..\include\cinder\ip\Threshold.h" />
+    <ClInclude Include="..\include\cinder\ip\Trim.h" />
+    <ClInclude Include="..\include\cinder\msw\CinderMsw.h" />
+    <ClInclude Include="..\include\cinder\msw\CinderMswGdiPlus.h" />
+    <ClInclude Include="..\include\cinder\msw\OutputDebugStringStream.h" />
+    <ClInclude Include="..\include\cinder\params\Params.h" />
+    <ClInclude Include="..\include\msw\videoInput\videoInput.h" />
+    <ClInclude Include="..\src\jsoncpp\json_batchallocator.h" />
+    <ClInclude Include="..\src\libtess2\bucketalloc.h" />
+    <ClInclude Include="..\src\libtess2\dict.h" />
+    <ClInclude Include="..\src\libtess2\geom.h" />
+    <ClInclude Include="..\src\libtess2\mesh.h" />
+    <ClInclude Include="..\src\libtess2\priorityq.h" />
+    <ClInclude Include="..\src\libtess2\sweep.h" />
+    <ClInclude Include="..\src\libtess2\tess.h" />
+    <ClInclude Include="..\src\libtess2\tesselator.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\jsoncpp\json_internalarray.inl" />
+    <None Include="..\src\jsoncpp\json_internalmap.inl" />
+    <None Include="..\src\jsoncpp\json_valueiterator.inl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

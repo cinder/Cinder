@@ -228,10 +228,11 @@ void clear( const ColorA &color, bool clearDepthBuffer )
 
 void enableVerticalSync( bool enable )
 {
-	GLint sync = ( enable ) ? 1 : 0;
 #if defined( CINDER_MAC )
+	GLint sync = ( enable ) ? 1 : 0;
 	::CGLSetParameter( ::CGLGetCurrentContext(), kCGLCPSwapInterval, &sync );
 #elif defined( CINDER_MSW )
+	GLint sync = ( enable ) ? 1 : 0;
 	if( WGL_EXT_swap_control )
 		::wglSwapIntervalEXT( sync );
 #endif
@@ -351,7 +352,6 @@ void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees
 	if( originUpperLeft ) {
 		glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
 		glTranslatef( 0.0f, (float)-screenHeight, 0.0f );       // shift origin up to upper-left corner.
-		glViewport( 0, 0, screenWidth, screenHeight );
 	}
 }
 
@@ -372,7 +372,6 @@ void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft 
 #endif
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-	glViewport( 0, 0, screenWidth, screenHeight );
 }
 
 Area getViewport()
@@ -856,6 +855,52 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 	glDisableClientState( GL_VERTEX_ARRAY );
 	delete [] verts;
 }
+	
+void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 )
+{
+	Vec2f pts[3] = { pt1, pt2, pt3 };
+	drawSolidTriangle( pts );
+}
+
+void drawSolidTriangle( const Vec2f pts[3] )
+{
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
+	glDrawArrays( GL_TRIANGLES, 0, 3 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+}
+	
+void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3, const Vec2f &texPt1, const Vec2f &texPt2, const Vec2f &texPt3 )
+{
+	Vec2f pts[3] = { pt1, pt2, pt3 };
+	Vec2f texCoords[3] = { texPt1, texPt2, texPt3 };
+	drawSolidTriangle( pts, texCoords );
+}
+	
+void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] )
+{
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
+	glTexCoordPointer( 2, GL_FLOAT, 0, &texCoord[0].x );	
+	glDrawArrays( GL_TRIANGLES, 0, 3 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+}
+
+void drawStrokedTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 )
+{
+	Vec2f pts[3] = { pt1, pt2, pt3 };
+	drawStrokedTriangle( pts );
+}
+
+void drawStrokedTriangle( const Vec2f pts[3] )
+{
+	glEnableClientState( GL_VERTEX_ARRAY );
+	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
+	glDrawArrays( GL_LINE_LOOP, 0, 3 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+}
 
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 {
@@ -914,7 +959,15 @@ void drawFrustum( const Camera &cam )
 
 	Vec3f farTopLeft, farTopRight, farBottomLeft, farBottomRight;
 	cam.getFarClipCoordinates( &farTopLeft, &farTopRight, &farBottomLeft, &farBottomRight );
-	
+
+	// extract camera position from modelview matrix, so that it will work with CameraStereo as well	
+	//  see: http://www.gamedev.net/topic/397751-how-to-get-camera-position/page__p__3638207#entry3638207
+	Matrix44f modelview = cam.getModelViewMatrix();	
+	Vec3f eye;
+	eye.x = -(modelview.at(0,0) * modelview.at(0,3) + modelview.at(1,0) * modelview.at(1,3) + modelview.at(2,0) * modelview.at(2,3));
+	eye.y = -(modelview.at(0,1) * modelview.at(0,3) + modelview.at(1,1) * modelview.at(1,3) + modelview.at(2,1) * modelview.at(2,3));
+	eye.z = -(modelview.at(0,2) * modelview.at(0,3) + modelview.at(1,2) * modelview.at(1,3) + modelview.at(2,2) * modelview.at(2,3));
+		
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 3, GL_FLOAT, 0, &vertex[0].x );
 	
@@ -923,13 +976,13 @@ void drawFrustum( const Camera &cam )
 	glLineStipple( 3, 0xAAAA );
 #endif
 
-	vertex[0] = cam.getEyePoint();
+	vertex[0] = eye;
 	vertex[1] = nearTopLeft;
-	vertex[2] = cam.getEyePoint();
+	vertex[2] = eye;
 	vertex[3] = nearTopRight;
-	vertex[4] = cam.getEyePoint();
+	vertex[4] = eye;
 	vertex[5] = nearBottomRight;
-	vertex[6] = cam.getEyePoint();
+	vertex[6] = eye;
 	vertex[7] = nearBottomLeft;
 	glDrawArrays( GL_LINES, 0, 8 );
 

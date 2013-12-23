@@ -226,7 +226,7 @@ void deleteFile( const fs::path &path )
 #if defined( CINDER_COCOA )
 	unlink( path.c_str() );
 #else
-	if( ! ::DeleteFileW( toUtf16( path.string() ).c_str() ) ) {
+	if( ! ::DeleteFileW( path.wstring().c_str() ) ) {
 		DWORD err = GetLastError();
 	}
 #endif

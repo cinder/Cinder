@@ -25,10 +25,10 @@
 using namespace std;
 
 #if defined( CINDER_MAC )
-#	include <Cocoa/Cocoa.h>
+	#include <Cocoa/Cocoa.h>
+#elif defined( CINDER_COCOA_TOUCH )
+	#include <UIKit/UIKit.h>
 #endif
-
-
 
 namespace cinder {
 
@@ -39,6 +39,8 @@ Display::~Display()
 {
 #if defined( CINDER_MAC )
 	[mScreen release];
+#elif defined( CINDER_COCOA_TOUCH )
+	[mUiScreen release];
 #endif
 }
 
@@ -58,6 +60,16 @@ DisplayRef Display::getDisplayForPoint( const Vec2i &pt )
 	}
 
 	return DisplayRef(); // failure
+}
+
+Area Display::getSpanningArea()
+{
+	Area result = (*Display::getDisplays().begin())->getBounds();
+	for( vector<DisplayRef>::const_iterator displayIt = (Display::getDisplays().begin())++; displayIt != Display::getDisplays().end(); ++displayIt ) {
+		result.include( (*displayIt)->getBounds() );
+	}
+	
+	return result;
 }
 
 #if defined( CINDER_MAC )
@@ -81,16 +93,21 @@ DisplayRef Display::findFromCgDirectDisplayId( CGDirectDisplayID displayID )
 	return DisplayRef();
 }
 
+DisplayRef Display::findFromNsScreen( NSScreen *nsScreen )
+{
+	return findFromCgDirectDisplayId( (CGDirectDisplayID)[[[nsScreen deviceDescription] objectForKey:@"NSScreenNumber"] intValue] );
+}
+
 void Display::enumerateDisplays()
 {
 	if( sDisplaysInitialized )
 		return;
 	
 	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
-	
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	NSArray *screens = [NSScreen screens];
+	Area primaryScreenArea;
 	int screenCount = [screens count];
 	for( int i = 0; i < screenCount; ++i ) {
 		::NSScreen *screen = [screens objectAtIndex:i];
@@ -102,13 +119,79 @@ void Display::enumerateDisplays()
 		newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 		newDisplay->mScreen = screen;
 		newDisplay->mBitsPerPixel = NSBitsPerPixelFromDepth( [screen depth] );
+		newDisplay->mContentScale = [screen backingScaleFactor];
+
+		// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
+		if( i == 0 ) {
+			primaryScreenArea = newDisplay->mArea;
+		}
+		else {
+			int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
+			newDisplay->mArea.offset( Vec2i( 0, heightDelta ) );
+		}
+
 		
 		sDisplays.push_back( newDisplay );
 	}
 	
 	sDisplaysInitialized = true;
-	[pool release];
+	[pool drain];
 }
+
+#elif defined( CINDER_COCOA_TOUCH )
+
+void Display::enumerateDisplays()
+{
+	if( sDisplaysInitialized )
+		return;
+
+	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
+	NSArray *screens = [UIScreen screens];
+	int screenCount = [screens count];
+	for( int i = 0; i < screenCount; ++i ) {
+		::UIScreen *screen = [screens objectAtIndex:i];
+		[screen retain]; // this is released in the destructor for Display
+		CGRect frame = [screen bounds];
+
+		DisplayRef newDisplay = DisplayRef( new Display );
+		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+		newDisplay->mUiScreen = screen;
+		newDisplay->mBitsPerPixel = 24;
+		newDisplay->mContentScale = screen.scale;
+		
+		NSArray *resolutions = [screen availableModes];
+		for( int i = 0; i < [resolutions count]; ++i ) {
+			::UIScreenMode *mode = [resolutions objectAtIndex:i];
+			newDisplay->mSupportedResolutions.push_back( Vec2i( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
+		}
+		
+		sDisplays.push_back( newDisplay );
+	}
+
+	sDisplaysInitialized = true;
+	[pool release];	
+}
+
+//! Sets the resolution of the Display. Rounds to the nearest supported resolution.
+void Display::setResolution( const Vec2i &resolution )
+{
+	NSArray *modes = [mUiScreen availableModes];
+	int closestIndex = 0;
+	float closestDistance = 1000000.0f; // big distance
+	for( int i = 0; i < [modes count]; ++i ) {
+		::UIScreenMode *mode = [modes objectAtIndex:i];
+		Vec2i thisModeRes = Vec2f( mode.size.width, mode.size.height );
+		if( thisModeRes.distance( resolution ) < closestDistance ) {
+			closestDistance = thisModeRes.distance( resolution );
+			closestIndex = i;
+		}
+	}
+	
+	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
+}
+
 
 #elif defined( CINDER_MSW )
 
@@ -128,6 +211,7 @@ BOOL CALLBACK Display::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect,
 	DisplayRef newDisplay( new Display );
 	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
 	newDisplay->mMonitor = hMonitor;
+	newDisplay->mContentScale = 1.0f;
 
 	// retrieve the depth of the display
 	MONITORINFOEX mix;
@@ -164,6 +248,11 @@ void Display::enumerateDisplays()
 	sDisplaysInitialized = true;
 }
 #endif // defined( CINDER_MSW )
+
+Vec2i Display::getSystemCoordinate( const Vec2i &displayRelativeCoordinate ) const
+{
+	return mArea.getUL() + displayRelativeCoordinate;
+}
 
 DisplayRef Display::getMainDisplay()
 {

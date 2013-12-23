@@ -32,7 +32,7 @@ class GLSLLightingApp : public AppBasic {
 	void prepareSettings( Settings *settings );
 	void setup();
 	void update();
-	void resize( ResizeEvent event );
+	void resize();
 	void mouseMove( MouseEvent event );
 	void mouseDrag( MouseEvent event );
 	void mouseDown( MouseEvent event );
@@ -131,7 +131,7 @@ void GLSLLightingApp::setup()
 }
 
 
-void GLSLLightingApp::resize( ResizeEvent event )
+void GLSLLightingApp::resize()
 {
 	mCam.lookAt( Vec3f( 0.0f, 0.0f, 500.0f ), Vec3f::zero() );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 5000 );

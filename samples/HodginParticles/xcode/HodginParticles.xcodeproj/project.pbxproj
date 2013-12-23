@@ -3,12 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
-		0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0097E3E40F3E9819005A4392 /* QuickTime.framework */; };
 		00BAE65A0E7ED9C10018A608 /* HodginParticlesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* HodginParticlesApp.cpp */; };
 		00C075430FF33A11004801EA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C0753F0FF33A11004801EA /* Accelerate.framework */; };
 		00C075440FF33A11004801EA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C075400FF33A11004801EA /* AudioToolbox.framework */; };
@@ -60,7 +59,6 @@
 				53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
 				5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */,
-				0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */,
 				00C075430FF33A11004801EA /* Accelerate.framework in Frameworks */,
 				00C075440FF33A11004801EA /* AudioToolbox.framework in Frameworks */,
 				00C075450FF33A11004801EA /* AudioUnit.framework in Frameworks */,
@@ -191,9 +189,16 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "HodginParticles" */;
-			compatibilityVersion = "Xcode 3.0";
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* HodginParticles */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -232,10 +237,11 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -247,10 +253,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 					"$(inherited)",
 					../../../lib,
 				);
-				OTHER_LDFLAGS = (
-					../../../lib/libcinder_d.a,
-					"",
-				);
+				OTHER_LDFLAGS = ../../../lib/libcinder_d.a;
 				PRODUCT_NAME = HodginParticles;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
@@ -260,10 +263,11 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
-GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -275,10 +279,7 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 					"$(inherited)",
 					../../../lib,
 				);
-				OTHER_LDFLAGS = (
-					../../../lib/libcinder.a,
-					"",
-				);
+				OTHER_LDFLAGS = ../../../lib/libcinder.a;
 				PRODUCT_NAME = HodginParticles;
 				WRAPPER_EXTENSION = app;
 			};
@@ -289,13 +290,14 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 			buildSettings = {
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
-GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../include $(CINDER_PATH)/include";
 			};
 			name = Debug;
@@ -305,13 +307,14 @@ GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 			buildSettings = {
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
-GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "../include $(CINDER_PATH)/include";
 			};
 			name = Release;

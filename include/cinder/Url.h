@@ -60,18 +60,40 @@ inline std::istream& operator>>( std::istream &is, Url &url )
 	return is;
 }
 
+//! Options for loadUrl() to dictate caching and timeout behavior
+class UrlOptions {
+  public:
+  	UrlOptions( bool ignoreCache = false, float timeoutSeconds = 30.0f )
+		: mIgnoreCache( ignoreCache ), mTimeout( timeoutSeconds )
+	{}
+	
+	UrlOptions&		ignoreCache( bool ignore = true ) { mIgnoreCache = ignore; return *this; }
+	bool			getIgnoreCache() const { return mIgnoreCache; }
+	void			setIgnoreCache( bool ignore = true ) { mIgnoreCache = ignore; }
+	
+	UrlOptions&		timeout( float seconds ) { mTimeout = seconds; return *this; }
+	float			getTimeout() const { return mTimeout; }
+	void			setTimeout( float seconds ) { mTimeout = seconds; }
+	
+  private:
+	bool			mIgnoreCache;
+	float			mTimeout;
+	
+};
+
 //! \cond
 // This is an abstract base class for implementing IStreamUrl
 class IStreamUrlImpl {
   protected:
-	IStreamUrlImpl( const std::string &user, const std::string &password )
-		: mUser( user ), mPassword( password ) {}
+	IStreamUrlImpl( const std::string &user, const std::string &password, const UrlOptions &options )
+		: mUser( user ), mPassword( password ), mOptions( options ) {}
 
   public:
 	virtual ~IStreamUrlImpl() {}
   
 	std::string			getUser() const { return mUser; }
 	std::string			getPassword() const { return mPassword; }
+	const UrlOptions&	getOptions() const { return mOptions; }
 
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) = 0;
 	virtual void		seekAbsolute( off_t absoluteOffset ) = 0;
@@ -84,6 +106,7 @@ class IStreamUrlImpl {
 	
   protected:
 	const std::string		mUser, mPassword;
+	const UrlOptions		mOptions;
 };
 //! \endcond
 
@@ -94,7 +117,7 @@ typedef std::shared_ptr<class IStreamUrl>	IStreamUrlRef;
 class IStreamUrl : public IStream {
   public:
 	//! Creates a new IStreamUrlRef from the Url \a url with an optional login and password
-	static IStreamUrlRef		create( const Url &url, const std::string &user = "", const std::string &password = "" );
+	static IStreamUrlRef		create( const Url &url, const std::string &user = "", const std::string &password = "", const UrlOptions &options = UrlOptions() );
 	
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize ) { return mImpl->readDataAvailable( dest, maxSize ); }
 	virtual void		seekAbsolute( off_t absoluteOffset ) { return mImpl->seekAbsolute( absoluteOffset ); }
@@ -108,7 +131,7 @@ class IStreamUrl : public IStream {
 	std::string			getPassword() const { return mImpl->getPassword(); }
 
   protected:
-	IStreamUrl( const std::string &url, const std::string &user, const std::string &password );
+	IStreamUrl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options );
 
 	virtual void		IORead( void *t, size_t size ) { mImpl->IORead( t, size ); }
 	//! IStreamURL does not yet support writing
@@ -117,7 +140,20 @@ class IStreamUrl : public IStream {
 	std::shared_ptr<IStreamUrlImpl>	mImpl;
 };
 
-IStreamUrlRef		loadUrlStream( const Url &url );
-IStreamUrlRef		loadUrlStream( const std::string &url, const std::string &user = "", const std::string &password = "" );
+IStreamUrlRef		loadUrlStream( const Url &url, const UrlOptions &options = UrlOptions() );
+IStreamUrlRef		loadUrlStream( const std::string &url, const std::string &user = "", const std::string &password = "", const UrlOptions &options = UrlOptions() );
+
+//! Exception for failed Url loading
+class UrlLoadExc : public Exception {
+  public:
+	UrlLoadExc( int statusCode, const std::string &message );
+
+	virtual const char * what() const throw() { return mMessage.c_str(); }
+	int statusCode() const { return mStatusCode; }
+
+  private:
+	std::string		mMessage;
+	int				mStatusCode;
+};
 
 } // namespace cinder

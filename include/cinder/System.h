@@ -33,7 +33,7 @@ namespace cinder {
 /** \brief Queries system software and hardware capabilities of the computer.
 	Values are cached so there is low overhead in calling these functions more than once. **/
 class System {
- public:
+  public:
 	//! Returns whether the system supports the SSE2 instruction set.
 	static bool			hasSse2();
 	//! Returns whether the system supports the SSE3 instruction set.	
@@ -62,6 +62,11 @@ class System {
 	static bool			hasMultiTouch();
 	//! Returns the maximum number of simultaneous touches supported by the system's MultiTouch implementation. Only truly accurate on Windows 7.
 	static int32_t		getMaxMultiTouchPoints();
+
+#if defined( CINDER_COCOA_TOUCH )
+	static bool			isDeviceIphone();
+	static bool			isDeviceIpad();
+#endif
 	
 	//! Represents a single Network Adapter of the system
 	class NetworkAdapter {
@@ -80,8 +85,12 @@ class System {
 	//! Returns a best guess at the machine's "IP address". Not cached. Computers often have multiple IP addresses, but this will attempt to select the "best". \sa getNetworkAdapaters().
 	static std::string						getIpAddress();
 	
- private:
-	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, TOTAL_CACHE_TYPES };
+  private:
+	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, 
+#if defined( CINDER_COCOA_TOUCH)	 
+			IS_IPHONE, IS_IPAD,
+#endif	 
+	 TOTAL_CACHE_TYPES };
 
 	System();
 	static std::shared_ptr<System>		instance();

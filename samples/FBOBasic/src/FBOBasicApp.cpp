@@ -1,13 +1,5 @@
 #include "cinder/Cinder.h"
-// select an appropriate base class for our App based on whether we're on iOS or not
-#if defined( CINDER_COCOA_TOUCH )
-	#include "cinder/app/AppCocoaTouch.h"
-	typedef ci::app::AppCocoaTouch AppBase;
-#else
-	#include "cinder/app/AppBasic.h"
-	typedef ci::app::AppBasic AppBase;
-#endif
-
+#include "cinder/app/AppNative.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/Fbo.h"
 
@@ -17,7 +9,7 @@ using namespace std;
 
 // This sample shows a very basic use case for FBOs - it renders a spinning torus
 // into an FBO, and uses that as a Texture onto the sides of a cube.
-class FBOBasicApp : public AppBase {
+class FBOBasicApp : public AppNative {
   public:
 	virtual void	setup();
 	virtual void	update();
@@ -115,8 +107,4 @@ void FBOBasicApp::draw()
 #endif
 }
 
-#if defined( CINDER_COCOA_TOUCH )
-CINDER_APP_COCOA_TOUCH( FBOBasicApp, RendererGl )
-#else
-CINDER_APP_BASIC( FBOBasicApp, RendererGl )
-#endif
+CINDER_APP_NATIVE( FBOBasicApp, RendererGl )

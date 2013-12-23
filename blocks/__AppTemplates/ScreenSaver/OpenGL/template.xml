@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<template name="ScreenSaver"
+	id="org.libcinder.apptemplates.screensaveropengl"
+	>
+	<supports os="msw" />
+	<supports os="macosx" />
+	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
+	<header replaceContents="true">include/Resources.h</header>
+	<platform os="macosx">
+		<outputExtension>saver</outputExtension>
+		<source cinder="true">src/cinder/app/AppImplCocoaRendererGl.mm</source>
+		<source cinder="true">src/cinder/app/CinderView.mm</source>
+		<source cinder="true">src/cinder/app/AppImplCocoaScreenSaver.mm</source>
+		<source cinder="true" compileAs="mm">src/cinder/app/AppScreenSaver.cpp</source>
+		<source cinder="true">src/cinder/UrlImplCocoa.mm</source>
+		<source cinder="true">src/cinder/CaptureImplQtKit.mm</source>
+		<resource replaceContents="true" buildExclude="true">xcode/Info.plist</resource>
+		<resource>resources/thumbnail.png</resource>
+		<resource>resources/thumbnail@2x.png</resource>
+		<header replaceContents="true" replaceName="true" isPCH="true">xcode/_TBOX_PREFIX__Prefix.pch</header>
+		<framework sdk="true">ScreenSaver.framework</framework>
+		<setting name="MACH_O_TYPE">mh_bundle</setting>
+		<setting name="ARCHS">x86_64</setting>
+		<setting name="VALID_ARCHS">x86_64</setting>
+		<setting name="GCC_ENABLE_OBJC_GC">supported</setting>
+	</platform>
+	<platform os="msw">
+		<outputExtension>sCr</outputExtension>
+		<staticLibrary absolute="true">scrnsavw.lib</staticLibrary>
+		<staticLibrary absolute="true">comctl32.lib</staticLibrary>
+	</platform>
+</template>
+</cinder>

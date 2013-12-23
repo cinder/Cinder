@@ -18,7 +18,7 @@ class FlockingApp : public AppBasic {
 	void draw();
 	
 	// PARAMS
-	params::InterfaceGl	mParams;
+	params::InterfaceGlRef	mParams;
 	
 	// CAMERA
 	CameraPersp			mCam;
@@ -51,11 +51,11 @@ void FlockingApp::setup()
 	mCam.setPerspective( 75.0f, getWindowAspectRatio(), 5.0f, 2000.0f );
 	
 	// SETUP PARAMS
-	mParams = params::InterfaceGl( "Flocking", Vec2i( 200, 160 ) );
-	mParams.addParam( "Scene Rotation", &mSceneRotation, "opened=1" );
-	mParams.addSeparator();
-	mParams.addParam( "Eye Distance", &mCameraDistance, "min=50.0 max=1500.0 step=50.0 keyIncr=s keyDecr=w" );
-	mParams.addParam( "Center Gravity", &mCentralGravity, "keyIncr=g" );
+	mParams = params::InterfaceGl::create( "Flocking", Vec2i( 200, 160 ) );
+	mParams->addParam( "Scene Rotation", &mSceneRotation, "opened=1" );
+	mParams->addSeparator();
+	mParams->addParam( "Eye Distance", &mCameraDistance, "min=50.0 max=1500.0 step=50.0 keyIncr=s keyDecr=w" );
+	mParams->addParam( "Center Gravity", &mCentralGravity, "keyIncr=g" );
 	
 	// CREATE PARTICLE CONTROLLER
 	mParticleController.addParticles( NUM_INITIAL_PARTICLES );
@@ -85,7 +85,7 @@ void FlockingApp::draw()
 	mParticleController.draw();
 	
 	// DRAW PARAMS WINDOW
-	params::InterfaceGl::draw();
+	mParams->draw();
 }
 
 

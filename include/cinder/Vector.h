@@ -518,13 +518,13 @@ public:
 			return *this;
 	}
 
-	Vec3<T> randomOrthogonal() const
+	//! Returns a vector which is orthogonal to \a this
+	Vec3<T> getOrthogonal() const
 	{
-		if( dot( Vec3<T>::xAxis() ) < (T)0.99 ) {
-			return cross( Vec3<T>::xAxis() );
-		}
+		if( math<T>::abs( y ) < (T)0.99 ) // abs(dot(u, Y)), somewhat arbitrary epsilon
+			return Vec3<T>( -z, 0, x ); // cross( this, Y )
 		else
-			return cross( Vec3<T>::yAxis() );
+			return Vec3<T>( 0, z, -y ); // cross( this, X )
 	}
 
 	void rotateX( T angle )
@@ -714,7 +714,17 @@ class Vec4
 		: x( static_cast<T>( src.x ) ), y( static_cast<T>( src.y ) ), z( static_cast<T>( src.z ) ),w( static_cast<T>( src.w ) )
 	{}
 	explicit Vec4( const T *d ) : x( d[0] ), y( d[1] ), z( d[2] ), w( d[3] ) {}
-
+	
+	void set( T ax, T ay, T az, T aw )
+	{
+		x = ax; y = ay; z = az; w = aw;
+	}
+	
+	void set( const Vec4<T> &rhs )
+	{
+		x = rhs.x; y = rhs.y; z = rhs.z; w = rhs.w;
+	}
+	
 	Vec4<T>& operator=( const Vec4<T>& rhs )
 	{
 		x = rhs.x; y = rhs.y; z = rhs.z; w = rhs.w;
@@ -1296,9 +1306,9 @@ template <typename T> T dot( const Vec4<T>& a, const Vec4<T>& b ) { return a.dot
 template <typename T> Vec3<T> cross( const Vec3<T>& a, const Vec3<T>& b ) { return a.cross( b ); }
 template <typename T> Vec4<T> cross( const Vec4<T>& a, const Vec4<T>& b ) { return a.cross( b ); }
 
-template <typename T> bool isNaN( const Vec2<T>& a ) { return isNaN( a.x ) || isNaN( a.y ); }
-template <typename T> bool isNaN( const Vec3<T>& a ) { return isNaN( a.x ) || isNaN( a.y ) || isNaN( a.z ); }
-template <typename T> bool isNaN( const Vec4<T>& a ) { return isNaN( a.x ) || isNaN( a.y ) || isNaN( a.z ) || isNaN( a.w ); }
+template <typename T> bool isNaN( const Vec2<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ); }
+template <typename T> bool isNaN( const Vec3<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ); }
+template <typename T> bool isNaN( const Vec4<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ) || std::isnan( a.w ); }
 
 typedef Vec2<int>		Vec2i;
 typedef Vec2<float>		Vec2f;

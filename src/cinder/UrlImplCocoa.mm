@@ -40,6 +40,9 @@
 	off_t				mSize;
 	BOOL				mStillConnected;
 	BOOL				mResponseReceived;
+	BOOL				mDidFail;
+	std::string			mErrorString;
+	int					mStatusCode;
 }
 
 - (id)initWithImpl:(ci::IStreamUrlImplCocoa*)impl url:(ci::Url)url user:(std::string)user password:(std::string)password;
@@ -84,6 +87,8 @@
 	mBufferFileOffset = 0;
 	mStillConnected = YES;
 	mResponseReceived = NO;
+	mDidFail = NO;
+	mStatusCode = 0;
 	mSize = 0;
 
 	return self;
@@ -107,20 +112,32 @@
 		
 		mSize = 0;
 		mResponseReceived = YES;
+
+		if( [response isKindOfClass:[NSHTTPURLResponse class]] ) {
+			NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+			mStatusCode = [httpResponse statusCode];
+			if( mStatusCode >= 400) {
+				mErrorString = "HTTP error: ";
+				mErrorString += [[NSHTTPURLResponse localizedStringForStatusCode:mStatusCode] cStringUsingEncoding:NSUTF8StringEncoding];
+				mDidFail = YES;
+			}
+		}
 	}
 }
 
 - (void)threadEntry:(id)arg
 {
+	ci::IStreamUrlImplCocoa *impl = ((IStreamUrlImplCocoaDelegate*)self)->mImpl;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:mUrl.c_str()]]
-								cachePolicy:NSURLRequestUseProtocolCachePolicy
-								timeoutInterval:30.0];								
+	NSURLRequestCachePolicy cachePolicy = (impl->getOptions().getIgnoreCache())? NSURLRequestReloadIgnoringLocalCacheData : NSURLRequestUseProtocolCachePolicy;
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:mUrl.c_str()]]
+								cachePolicy:cachePolicy
+								timeoutInterval:impl->getOptions().getTimeout()];
 
-	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:urlRequest delegate:self];
+	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
 	if( ! connection ) {
-		[pool release];
+		[pool drain];
 		return;
 	}
 		
@@ -134,7 +151,7 @@
 		
 	// we fill the buffer just to get things rolling*/
 	[connection release];
-	[pool release];
+	[pool drain];
 }
 
 -(void)connection:(NSURLConnection *)connection
@@ -180,6 +197,9 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
+	mErrorString = std::string( [[error localizedDescription] cStringUsingEncoding:NSUTF8StringEncoding] );
+	mStatusCode = [error code];
+	mDidFail = YES;
 	mStillConnected = NO;
 	mResponseReceived = YES;
 }
@@ -201,11 +221,14 @@
 
 - (bool)isEof
 {
-	bool result;
 	@synchronized( self ) {
-		result = ( mBufferedBytes - mBufferOffset == 0 ) && ( ! mStillConnected );
+		if( ! mDidFail )
+			return ( mBufferedBytes - mBufferOffset == 0 ) && ( ! mStillConnected );
+
+		mStillConnected = NO;
 	}
-	return result;
+	
+	throw cinder::UrlLoadExc( mStatusCode, mErrorString );
 }
 
 - (off_t)getSize
@@ -237,9 +260,8 @@
 		else { // moving forward off the end of the buffer - keep buffering til we're in range
 			return -1; // need to implement this		
 		}
+		return 0;
 	}
-	
-	return 0;
 }
 
 - (void)seekAbsolute:(off_t)absoluteOffset
@@ -313,8 +335,8 @@
 
 namespace cinder {
 
-IStreamUrlImplCocoa::IStreamUrlImplCocoa( const std::string &url, const std::string &user, const std::string &password )
-	: IStreamUrlImpl( user, password )
+IStreamUrlImplCocoa::IStreamUrlImplCocoa( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
+	: IStreamUrlImpl( user, password, options )
 {
 	mDelegate = [[IStreamUrlImplCocoaDelegate alloc] initWithImpl:this url:Url(url, true) user:user password:password];
 	

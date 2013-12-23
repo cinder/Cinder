@@ -24,6 +24,8 @@
 #include "cinder/Surface.h"
 #include "cinder/CinderMath.h"
 
+#include <boost/preprocessor/seq.hpp>
+
 namespace cinder { namespace ip {
 
 //     X           Y

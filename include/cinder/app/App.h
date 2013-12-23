@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -24,16 +25,16 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/app/Renderer.h"
+#include "cinder/app/Window.h"
 #include "cinder/Vector.h"
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/app/FileDropEvent.h"
-#include "cinder/app/ResizeEvent.h"
-#include "cinder/Stream.h"
 #include "cinder/Display.h"
 #include "cinder/DataSource.h"
 #include "cinder/Timer.h"
 #include "cinder/Function.h"
+#include "cinder/Thread.h"
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
 		#if defined( __OBJC__ )
@@ -45,11 +46,9 @@
 	#endif
 	#if defined __OBJC__
 		@class CinderView;
-		@class AppImplCocoaRendererQuartz;
-		@class AppImplCocoaRendererGl;
+		@class NSBundle;
 	#else
-		class AppImplCocoaRendererQuartz;
-		class AppImplCocoaRendererGl;
+		class NSBundle;
 	#endif
 //	class CinderView;
 #elif defined( CINDER_MSW )
@@ -63,90 +62,166 @@ namespace cinder {
 class Timeline;
 } // namespace cinder
 
+namespace boost { namespace asio {
+class io_service;
+} } // namespace boost::asio
+
 namespace cinder { namespace app { 
+
+
+//! Returns true if any slots return true, else false. Does not short-circuit. Returns true if there are no slots.
+struct BooleanOrEventCombiner {
+	typedef bool	result_type;
+
+	template<typename InputIterator>
+	bool	operator()( InputIterator first, InputIterator last ) const
+	{
+		bool handled = ( first == last ) ? true : false;
+		while( first != last )
+			handled = *first++ || handled;
+		
+		return handled;
+	}
+};
+
+//! Returns true if all slots return true, else false. Does not short-circuit. Returns true if there are no slots.
+struct BooleanAndEventCombiner {
+	typedef bool	result_type;
+
+	template<typename InputIterator>
+	bool	operator()( InputIterator first, InputIterator last ) const
+	{
+		bool result = true;
+		while( first != last )
+			result = *first++ && result;
+		
+		return result;
+	}
+};
+
+//! Returns a bitmask where in order for the bit in type T to be be 1, it has to be 1 from all slot.  Returns 0 if there are no slots.
+template<typename T>
+struct BitwiseAndEventCombiner {
+	typedef T	result_type;
+
+	template<typename InputIterator>
+	T	operator()( InputIterator first, InputIterator last ) const
+	{
+		if( first == last )
+			return 0;
+		T mask = *first++;
+		while( first != last )
+			mask &= *first++;
+
+		return mask;
+	}
+};
 
 class App {
  public:
 	class Settings {
 	  public:
 	    // whether or not the app should terminate prior to launching
-		bool	isPrepared() const { return !mShouldQuit; };
+		bool	isPrepared() const { return ! mShouldQuit; };
 
-		//! width and height of the window when applicable
-		void	setWindowSize( int aWindowSizeX, int aWindowSizeY );
-
-		//! Sets the position of the window on the screen
-		void    setWindowPos( int windowPositionX, int windowPositionY ) { setWindowPos( Vec2i( windowPositionX, windowPositionY ) ); }
-		//! Sets the position of the window on the screen
-		void    setWindowPos( const Vec2i &windowPos );
+		//! Sets the size of the default window measured in pixels
+		void	setWindowSize( int windowSizeX, int windowSizeY ) { mDefaultWindowFormat.setSize( Vec2i( windowSizeX, windowSizeY ) ); }
+		//! Sets the size of the default window measured in pixels
+		void	setWindowSize( const Vec2i &size ) { mDefaultWindowFormat.setSize( size ); }
+		//! Gets the size of the default window measured in pixels
+		Vec2i	getWindowSize() const { return mDefaultWindowFormat.getSize(); }
+		
+		//! Returns the position of the default window in screen coordinates measured in pixels
+		Vec2i	getWindowPos() const { return mDefaultWindowFormat.getPos(); }
+		//! Sets the position of the default window in screen coordinates measured in pixels
+		void    setWindowPos( int windowPosX, int windowPosY ) { mDefaultWindowFormat.setPos( Vec2i( windowPosX, windowPosY ) ); }
+		//! Sets the position of the default window in screen coordinates measured in pixels
+		void    setWindowPos( const Vec2i &windowPos ) { mDefaultWindowFormat.setPos( windowPos ); }
 		//! Returns whether a non-default window position has been requested
-		bool	isWindowPosSpecified() const { return mWindowPosSpecified; }
+		bool	isWindowPosSpecified() const { return mDefaultWindowFormat.isPosSpecified(); }
 		//! Marks the window position setting as unspecified, effectively requesting the default
-		void	unspecifyWindowPos() { mWindowPosSpecified = false; }
+		void	unspecifyWindowPos() { mDefaultWindowFormat.unspecifyPos(); }
 
-		//! Returns whether the window will be created without a border (chrome/frame)
-		bool	isBorderless() const { return mBorderless; }
-		//! Sets the window to be created without a border (chrome/frame)
-		void	setBorderless( bool borderless = true ) { mBorderless = borderless; }
-		//! Returns whether the window always remains above all other windows
-		bool	isAlwaysOnTop() const { return mAlwaysOnTop; }
-		//! Sets whether the window always remains above all other windows
-		void	setAlwaysOnTop( bool alwaysOnTop = true ) { mAlwaysOnTop = alwaysOnTop; }
-		
-        
-		//! The maximum frameRate the update/draw loop will execute at, specified in frames per second. Default value is 30 FPS
-		void	setFrameRate( float aFrameRate );
+		//! Returns whether the default window is fullscreen
+		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
+		//! Sets whether the default window is fullscreen at startup with FullScreenOptions \a options. Kiosk Mode is enabled by default.
+		void	setFullScreen( bool fullScreen = true, const FullScreenOptions &options = FullScreenOptions() ) { mDefaultWindowFormat.setFullScreen( fullScreen, options ); }
 
-		//! a value of true allows screensavers or the system's power management to hide the app. Default value is \c false.
+		//! Returns whether the default window is resizable
+		bool	isResizable() const { return mDefaultWindowFormat.isResizable(); }
+		//! Sets the default window to be resizable or not
+		void	setResizable( bool resizable = true ) { mDefaultWindowFormat.setResizable( resizable ); }
+		//! Returns whether the default window will be created without a border (chrome/frame)
+		bool	isBorderless() const { return mDefaultWindowFormat.isBorderless(); }
+		//! Sets the default window to be created without a border (chrome/frame)
+		void	setBorderless( bool borderless = true ) { mDefaultWindowFormat.setBorderless( borderless ); }
+		//! Returns whether the default  window always remains above all other windows
+		bool	isAlwaysOnTop() const { return mDefaultWindowFormat.isAlwaysOnTop(); }
+		//! Sets whether the default window always remains above all other windows
+		void	setAlwaysOnTop( bool alwaysOnTop = true ) { mDefaultWindowFormat.setAlwaysOnTop( alwaysOnTop ); }
+
+		//! Returns the display for the default window
+		DisplayRef	getDisplay() const { return mDefaultWindowFormat.getDisplay(); }
+		//! Sets the display for the default window
+		void		setDisplay( DisplayRef display ) { mDefaultWindowFormat.setDisplay( display ); }
+
+		void		prepareWindow( const Window::Format &format );
+		std::vector<Window::Format>&		getWindowFormats() { return mWindowFormats; }
+		const std::vector<Window::Format>&	getWindowFormats() const { return mWindowFormats; }\
+
+		//! Sets whether Windows created on a high-density (Retina) display will have their resolution doubled. Default is \c true on iOS and \c false on other platforms
+		void		enableHighDensityDisplay( bool enable = true ) { mEnableHighDensityDisplay = enable; }
+		//! Returns whether Windows created on a high-density (Retina) display will have their resolution doubled. Default is \c true on iOS and \c false on other platforms
+		bool		isHighDensityDisplayEnabled() const { return mEnableHighDensityDisplay; }
+
+		//! Returns the Window::Format which will be used if no calls are made to Settings::prepareWindow()
+		Window::Format		getDefaultWindowFormat() const { return mDefaultWindowFormat; }
+		//! Sets the Window::Format which will be used if no calls are made to Settings::prepareWindow()
+		void				setDefaultWindowFormat( const Window::Format &format ) { mDefaultWindowFormat = format; }
+
+		//! Registers the app to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
+		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
+		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
+		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
+
+		//! a value of \c true allows screensavers or the system's power management to hide the app. Default value is \c false on desktop, and \c true on mobile
 		void	enablePowerManagement( bool aPowerManagement = true );
+		//! is power management enabled, allowing screensavers and the system's power management to hide the application
+		bool	isPowerManagementEnabled() const { return mPowerManagement; }
 
-		//! is the application set to run at fullscreen
-		bool	isFullScreen() const { return mFullScreen; }
-		//! width of the application's window specified in pixels
-		int		getWindowWidth() const { return mWindowSizeX; }
-		//! height of the application's window specified in pixels
-		int		getWindowHeight() const { return mWindowSizeY; }
-		//! width and height of the application's window specified in pixels
-		Vec2i	getWindowSize() const { return Vec2i( mWindowSizeX, mWindowSizeY ); }
-		//! the size of the application's window specified in pixels. \return cinder::Area( 0, 0, width in pixels, height in pixels )
-		Area	getWindowBounds() const { return Area( 0, 0, mWindowSizeX, mWindowSizeY ); }
-		
-		//! Returns the position of the window in pixels on screen from left in pixels
-		int getWindowPosX() const { return mWindowPositionX; }
-		//! Returns the position of the window on screen from top in pixels
-		int getWindowPosY() const { return mWindowPositionY; }
-		//! Returns the position of the window on screen in pixels
-		Vec2i getWindowPos() const { return Vec2i( mWindowPositionX, mWindowPositionY ); }
-        
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
-		const std::string& getTitle() const { return mTitle; }
+		const std::string&	getTitle() const { return mTitle; }
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
-		void	setTitle( const std::string &title ) { mTitle = title; }
+		void				setTitle( const std::string &title ) { mTitle = title; }
 
+		//! Sets maximum frameRate the update/draw loop will execute at, specified in frames per second. FrameRate limiting is on by default, at 60 FPS.
+		void	setFrameRate( float frameRate );
+		//! Disables the frameRate limiting, which is on by default. Restore using setFrameRate(). See also enableVerticalSync().
+		void	disableFrameRate();
+		//! Returns whether frameRate limiting is enabled. On by default, at 60 FPS.
+		bool	isFrameRateEnabled() const { return mFrameRateEnabled; }
 		//! maximum frameRate of the application specified in frames per second
 		float	getFrameRate() const { return mFrameRate; }
-		//! are users allowed to resize the window
-		bool	isResizable() const { return mResizable; }
-		//! is power management enabled, allowing screensavers and the system's power management to hide the application
-		bool	getPowerManagement() const { return mPowerManagement; }
-
-	  protected:
+		
 		Settings();
 		virtual ~Settings() {}	  
-	  
-		bool			mShouldQuit; // defaults to false, facilitates early termination
-		int				mWindowSizeX, mWindowSizeY; // default: 640x480
 
-		bool			mWindowPosSpecified;
-        int             mWindowPositionX, mWindowPositionY;
+	  protected:
+		bool			mShouldQuit; // defaults to false, facilitates early termination
+
+		// A vector of Windows which have been requested using prepareWindow. An empty vector implies defaults.
+		std::vector<Window::Format>		mWindowFormats;
+		// The Window format which will be used if prepareWindow is not called
+		Window::Format					mDefaultWindowFormat;
             
-		bool			mFullScreen; // window covers screen. default: false
+		bool			mFrameRateEnabled;
 		float			mFrameRate;
-		bool			mResizable; // window is Resizable. default: true
-		bool			mBorderless; // window is borderless (frameless / chromeless). default: false
-		bool			mAlwaysOnTop; // window is always on top. default: false
 		bool			mPowerManagement; // allow screensavers or power management to hide app. default: false
+		bool			mEnableHighDensityDisplay;
+		bool			mEnableMultiTouch;
 		std::string		mTitle;
+		
+		friend class App;
 	};
 
 
@@ -175,132 +250,90 @@ class App {
 	virtual void	mouseMove( MouseEvent event ) {}
 	//! Override to receive mouse-drag events.
 	virtual void	mouseDrag( MouseEvent event ) {}	
+
+	//! Override to respond to the beginning of a multitouch sequence
+	virtual void	touchesBegan( TouchEvent event ) {}
+	//! Override to respond to movement (drags) during a multitouch sequence
+	virtual void	touchesMoved( TouchEvent event ) {}
+	//! Override to respond to the end of a multitouch sequence
+	virtual void	touchesEnded( TouchEvent event ) {}
+	
 	//! Override to receive key-down events.
 	virtual void	keyDown( KeyEvent event ) {}
 	//! Override to receive key-up events.
 	virtual void	keyUp( KeyEvent event ) {}
 	//! Override to receive window resize events.
-	virtual void	resize( ResizeEvent event ) {}
+	virtual void	resize() {}
 	//! Override to receive file-drop events.	
 	virtual void	fileDrop( FileDropEvent event ) {}
 	
 	//! Quits the application gracefully
 	virtual void	quit() = 0;
 
-	//! Registers a callback for mouseDown events. Returns a unique identifier which can be used as a parameter to unregisterMouseDown().
-	CallbackId		registerMouseDown( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseDown.registerCb( callback ); }
-	//! Registers a callback for mouseDown events. Returns a unique identifier which can be used as a parameter to unregisterMouseDown().
-	template<typename T>
-	CallbackId		registerMouseDown( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseDown.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for mouseDown events.
-	void			unregisterMouseDown( CallbackId id ) { mCallbacksMouseDown.unregisterCb( id ); }
+	//! Emitted at the start of each application update cycle
+	signals::signal<void()>&	getSignalUpdate() { return mSignalUpdate; }
 
-	//! Registers a callback for mouseUp events. Returns a unique identifier which can be used as a parameter to unregisterMouseUp().
-	CallbackId		registerMouseUp( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseUp.registerCb( callback ); }
-	//! Registers a callback for mouseUp events. Returns a unique identifier which can be used as a parameter to unregisterMouseUp().
-	template<typename T>
-	CallbackId		registerMouseUp( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseUp.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for mouseUp events.
-	void			unregisterMouseUp( CallbackId id ) { mCallbacksMouseUp.unregisterCb( id ); }
+	//! Emitted prior to the application shutting down
+	signals::signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
+	void 						emitShutdown();
 
-	//! Registers a callback for mouseWheel events. Returns a unique identifier which can be used as a parameter to unregisterMouseWheel().
-	CallbackId		registerMouseWheel( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseWheel.registerCb( callback ); }
-	//! Registers a callback for mouseWheel events. Returns a unique identifier which can be used as a parameter to unregisterMouseWheel().
-	template<typename T>
-	CallbackId		registerMouseWheel( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseWheel.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for mouseWheel events.
-	void			unregisterMouseWheel( CallbackId id ) { mCallbacksMouseWheel.unregisterCb( id ); }
-
-	//! Registers a callback for mouseMove events. Returns a unique identifier which can be used as a parameter to unregisterMouseMove().
-	CallbackId		registerMouseMove( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseMove.registerCb( callback ); }
-	//! Registers a callback for mouseMove events. Returns a unique identifier which can be used as a parameter to unregisterMouseMove().
-	template<typename T>
-	CallbackId		registerMouseMove( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseMove.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for mouseMove events.
-	void			unregisterMouseMove( CallbackId id ) { mCallbacksMouseMove.unregisterCb( id ); }
-
-	//! Registers a callback for mouseDrag events. Returns a unique identifier which can be used as a parameter to unregisterMouseDrag().
-	CallbackId		registerMouseDrag( std::function<bool (MouseEvent)> callback ) { return mCallbacksMouseDrag.registerCb( callback ); }
-	//! Registers a callback for mouseDrag events. Returns a unique identifier which can be used as a parameter to unregisterMouseDrag().
-	template<typename T>
-	CallbackId		registerMouseDrag( T *obj, bool (T::*callback)(MouseEvent) ) { return mCallbacksMouseDrag.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for mouseDrag events.
-	void			unregisterMouseDrag( CallbackId id ) { mCallbacksMouseDrag.unregisterCb( id ); }
-
-	//! Registers a callback for keyDown events. Returns a unique identifier which can be used as a parameter to unregisterKeyDown().
-	CallbackId		registerKeyDown( std::function<bool (KeyEvent)> callback ) { return mCallbacksKeyDown.registerCb( callback ); }
-	//! Registers a callback for keyDown events. Returns a unique identifier which can be used as a parameter to unregisterKeyDown().
-	template<typename T>
-	CallbackId		registerKeyDown( T *obj, bool (T::*callback)(KeyEvent) ) { return mCallbacksKeyDown.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for keyDown events.
-	void			unregisterKeyDown( CallbackId id ) { mCallbacksKeyDown.unregisterCb( id ); }
-
-	//! Registers a callback for keyUp events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
-	CallbackId		registerKeyUp( std::function<bool (KeyEvent)> callback ) { return mCallbacksKeyUp.registerCb( callback ); }
-	//! Registers a callback for keyUp events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
-	template<typename T>
-	CallbackId		registerKeyUp( T *obj, bool (T::*callback)(KeyEvent) ) { return mCallbacksKeyUp.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for keyUp events.
-	void			unregisterKeyUp( CallbackId id ) { mCallbacksKeyUp.unregisterCb( id ); }
-
-	//! Registers a callback for resize events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
-	CallbackId		registerResize( std::function<bool (ResizeEvent)> callback ) { return mCallbacksResize.registerCb( callback ); }
-	//! Registers a callback for resize events. Returns a unique identifier which can be used as a parameter to unregisterResize().
-	template<typename T>
-	CallbackId		registerResize( T *obj, bool (T::*callback)(ResizeEvent) ) { return mCallbacksResize.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for resize events.
-	void			unregisterResize( CallbackId id ) { mCallbacksResize.unregisterCb( id ); }
-
-	//! Registers a callback for fileDrop events. Returns a unique identifier which can be used as a parameter to unregisterKeyUp().
-	CallbackId		registerFileDrop( std::function<bool (FileDropEvent)> callback ) { return mCallbacksFileDrop.registerCb( callback ); }
-	//! Registers a callback for fileDrop events. Returns a unique identifier which can be used as a parameter to unregisterFileDrop().
-	template<typename T>
-	CallbackId		registerFileDrop( T *obj, bool (T::*callback)(FileDropEvent) ) { return mCallbacksFileDrop.registerCb( std::bind1st( std::mem_fun( callback ), obj ) ); }
-	//! Unregisters a callback for fileDrop events.
-	void			unregisterFileDrop( CallbackId id ) { mCallbacksFileDrop.unregisterCb( id ); }
+	const std::vector<TouchEvent::Touch>& 	getActiveTouches() const { return getWindow()->getActiveTouches(); }
 
 	// Accessors
 	virtual const Settings&	getSettings() const = 0;
-	Renderer*				getRenderer() const { return mRenderer.get(); }
-	
-	//! Returns the width of the App's window measured in pixels, or the screen when in full-screen mode.	
-	virtual int			getWindowWidth() const = 0;
-	//! Sets the width of the App's window measured in pixels. Ignored in full-screen mode.	
-	virtual void		setWindowWidth( int windowWidth ) = 0;
-	//! Returns the height of the App's window measured in pixels, or the screen when in full-screen mode.	
-	virtual int			getWindowHeight() const = 0;
-	//! Sets the height of the App's window measured in pixels. Ignored in full-screen mode.	
-	virtual void		setWindowHeight( int windowHeight ) = 0;
-	//! Sets the size of the App's window. Ignored in full-screen mode.
-	virtual void		setWindowSize( int windowWidth, int windowHeight ) = 0;
-	//! Sets the size of the App's window. Ignored in full-screen mode.
-	void				setWindowSize( const Vec2i &size ) { setWindowSize( size.x, size.y ); }
-	//! Returns the center of the App's window or the screen in full-screen mode.
-	/** Equivalent to \code Vec2f( getWindowWidth() * 0.5, getWindowHeight() * 0.5 ) \endcode **/	
-	Vec2f				getWindowCenter() const { return Vec2f( (float)getWindowWidth(), (float)getWindowHeight() ) * 0.5f; }
-	//! Returns the size of the App's window or the screen in full-screen mode
-	Vec2i				getWindowSize() const { return Vec2i( getWindowWidth(), getWindowHeight() ); }
-	//! Returns the aspect ratio of the App's window or the screen in full-screen mode
-	float				getWindowAspectRatio() const { return getWindowWidth() / (float)getWindowHeight(); }
-	//! Returns the bounding area of the App's window or the screen in full-screen mode.
-	/** Equivalent to \code Area( 0, 0, getWindowWidth(), getWindowHeight() ); \endcode **/	
-	Area				getWindowBounds() const { return Area( 0, 0, getWindowWidth(), getWindowHeight() ); }
+	//! Returns the Renderer of the active Window
+	RendererRef			getRenderer() const { return getWindow()->getRenderer(); }
+	//! Returns the Display of the active Window
+	DisplayRef			getDisplay() const { return getWindow()->getDisplay(); }
 
-	//! Returns the X & Y coordinate of the top-left-corner of the window contents.
-	virtual Vec2i		getWindowPos() const { return Vec2i::zero(); }
-	//! Returns the X coordinate of the top-left-corner of the window contents.
-	int         		getWindowPosX() const { return getWindowPos().x; }
-	//! Returns the Y coordinate of the top-left corner of the window contents.
-	int         		getWindowPosY() const { return getWindowPos().y; }
-	//! Sets the X & Y coordinates of the top-left corner of the window contents.
+	//! Returns the the currently active Window. Throws ExcInvalidWindow if called with no active window.
+	virtual WindowRef	getWindow() const = 0;
+	//! Returns the number of Windows the app has open
+	virtual size_t		getNumWindows() const = 0;
+	//! Gets a Window by index, in the range [0, getNumWindows()). Throw ExcInvalidWindow if \a index is out of bounds.
+	virtual WindowRef	getWindowIndex( size_t index ) const = 0;
+
+	//! a value of true allows screensavers or the system's power management to hide the app. Default value is \c false on desktop, and \c true on mobile
+	virtual void	enablePowerManagement( bool powerManagement = true ) { mPowerManagement = powerManagement; }
+	//! is power management enabled, allowing screensavers and the system's power management to hide the application
+	virtual bool	isPowerManagementEnabled() const { return mPowerManagement; }
+	
+	//! Returns the width of the App's current window measured in points
+	int					getWindowWidth() const { return getWindow()->getWidth(); }
+	//! Returns the height of the App's current window measured in points
+	int					getWindowHeight() const { return getWindow()->getHeight(); }
+	//! Sets the size of the App's current window measured in points. Ignored in full-screen mode.
+	void				setWindowSize( int windowWidth, int windowHeight ) { setWindowSize( Vec2i( windowWidth, windowHeight ) ); }
+	//! Sets the size of the App's window measured in points. Ignored in full-screen mode.
+	void				setWindowSize( const Vec2i &size ) { getWindow()->setSize( size ); }
+	//! Returns the center of the App's window measured in points
+	/** Equivalent to <tt>Vec2f( getWindowWidth() * 0.5, getWindowHeight() * 0.5 )</tt> **/	
+	Vec2f				getWindowCenter() const { return Vec2f( (float)getWindowWidth(), (float)getWindowHeight() ) * 0.5f; }
+	//! Returns the size of the App's current window measured in points
+	Vec2i				getWindowSize() const { return Vec2i( getWindowWidth(), getWindowHeight() ); }
+	//! Returns the aspect ratio of the App's current window
+	float				getWindowAspectRatio() const { return getWindowWidth() / (float)getWindowHeight(); }
+	//! Returns the bounding area of the App's current window measured in points.
+	/** Equivalent to <tt>Area( 0, 0, getWindowWidth(), getWindowHeight() );</tt> **/	
+	Area				getWindowBounds() const { return Area( 0, 0, getWindowWidth(), getWindowHeight() ); }
+	//! Returns the contentScale of the App's window, which is the multiplier that maps points to pixels
+	float				getWindowContentScale() const { return getWindow()->getContentScale(); }
+	
+	//! Returns tcoordinates of the top-left corner of the current window measured in points
+	Vec2i				getWindowPos() const { return getWindow()->getPos(); }
+	//! Returns the X coordinate of the top-left corner of the current window measured in points
+	int         		getWindowPosX() const { return getWindow()->getPos().x; }
+	//! Returns the Y coordinate of the top-left corner of the current window contents measured in points
+	int         		getWindowPosY() const { return getWindow()->getPos().y; }
+	//! Sets the coordinates of the top-left corner of the current window measured in points
 	void        		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
-	//! Sets the X & Y coordinates of the top-left corner of the window's contents.
-	virtual void        setWindowPos( const Vec2i &windowPos ) {}
+	//! Sets the coordinates of the top-left corner of the current window measured points
+	virtual void        setWindowPos( const Vec2i &windowPos ) { getWindow()->setPos( windowPos ); }
     
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const = 0;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
-	virtual void		setFrameRate( float aFrameRate ) = 0;
+	virtual void		setFrameRate( float frameRate ) = 0;
 	//! Returns the average frame-rate attained by the App as measured in frames-per-second
 	float				getAverageFps() const { return mAverageFps; }
 	//! Returns the sampling rate in seconds for measuring the average frame-per-second as returned by getAverageFps()
@@ -309,23 +342,17 @@ class App {
 	void				setFpsSampleInterval( double sampleInterval ) { mFpsSampleInterval = sampleInterval; }	
 
 	//! Returns whether the App is in full-screen mode or not.
-	virtual bool		isFullScreen() const = 0;
+	bool				isFullScreen() const { return getWindow()->isFullScreen(); }
 	//! Sets whether the active App is in full-screen mode based on \a fullScreen
-	virtual void		setFullScreen( bool aFullScreen ) = 0;
-
-	//! Returns whether the has no border (chrome/frame)
-	virtual bool		isBorderless() const { return false; }
-	//! Sets whether the window has a border (chrome/frame)
-	virtual void		setBorderless( bool borderless = true ) { }
-	//! Returns whether the window always remains above all other windows
-	virtual bool		isAlwaysOnTop() const { return false; }
-	//! Sets whether the window always remains above all other windows
-	virtual void		setAlwaysOnTop( bool alwaysOnTop = true ) { }
+	void				setFullScreen( bool aFullScreen, const FullScreenOptions &options = FullScreenOptions() ) { getWindow()->setFullScreen( aFullScreen, options ); }
 
 	//! Returns the number of seconds which have elapsed since application launch
 	double				getElapsedSeconds() const { return mTimer.getSeconds(); }
 	//! Returns the number of animation frames which have elapsed since application launch
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
+
+	//! Returns the current location of the mouse in screen coordinates measured in points. Can be called outside the normal event loop.
+	static Vec2i		getMousePos();
 	
 	// utilities
 	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). Throws ResourceLoadExc on failure. \sa \ref CinderResources
@@ -350,7 +377,11 @@ class App {
 	void					addAssetDirectory( const fs::path &dirPath );
 	
 	//! Returns the path to the application on disk
-	virtual fs::path			getAppPath() = 0;
+	virtual fs::path			getAppPath() const = 0;
+#if defined( CINDER_COCOA )
+	//! Returns the application's bundle (.app) or a screenSaver's bundle (.saver) for AppScreenSaver
+	virtual NSBundle*			getBundle() const;
+#endif
 	//! Presents the user with a file-open dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
@@ -370,31 +401,52 @@ class App {
 	//! Returns a reference to the App's Timeline
 	Timeline&		timeline() { return *mTimeline; }
 
-	/** \return a copy of the window's contents as a Surface8u **/
+	//! Return \c true if the calling thread is the Application's primary thread
+	static bool		isPrimaryThread();
+
+	//! Returns a reference to the App's boost::asio::io_service()
+	boost::asio::io_service&	io_service() { return *mIo; }
+	
+	
+	
+	//! Executes a std::function on the App's primary thread ahead of the next update()
+	void	dispatchAsync( const std::function<void()> &fn );
+	
+	template<typename T>
+	typename std::result_of<T()>::type dispatchSync( T fn )
+	{
+		if( isPrimaryThread() )
+			return fn();
+		else {
+			typedef typename std::result_of<T()>::type result_type;
+#if defined( _MSC_VER ) && ( _MSC_VER <= 1600 ) // slightly different signature with Boost.Thread
+			std::packaged_task<result_type> task( std::move(fn) );
+#else
+			std::packaged_task<result_type()> task( std::move(fn) );
+#endif
+			auto fute = task.get_future();
+			dispatchAsync( [&task]() { task(); } );
+			return fute.get();
+		}
+	}
+
+	//! Returns the default Renderer which will be used when creating a new Window. Set by the app instantiation macro automatically.
+	RendererRef	getDefaultRenderer() const { return mDefaultRenderer; }
+	/** \return a copy of the current window's contents as a Surface8u **/
 	Surface	copyWindowSurface();
-	/** \return a copy of the Area \a area from the window's contents as a Surface8u **/
+	/** \return a copy of the Area \a area (measured in pixels) from the current window's contents as a Surface8u **/
 	Surface	copyWindowSurface( const Area &area );
 	//! Restores the current rendering context to be the App's window or the screen in full-screen mode. Generally this is only necessary if the app has displayed a dialog box or some other external window.
 	void	restoreWindowContext();
 
+	//! Finds any Renderer of the same type as \a searchRenderer among existing windows. This is generally not necessary and used to enable context sharing between Windows. Returns NULL on failure.
+	RendererRef		findSharedRenderer( RendererRef searchRenderer ) const;
 	
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
-	void	privateMouseDown__( const MouseEvent &event );
-	void	privateMouseUp__( const MouseEvent &event );
-	void	privateMouseWheel__( const MouseEvent &event );
-	void	privateMouseMove__( const MouseEvent &event );
-	void	privateMouseDrag__( const MouseEvent &event );
-	void	privateKeyDown__( const KeyEvent &event );
-	void	privateKeyUp__( const KeyEvent &event );
-	void	privateFileDrop__( const FileDropEvent &event );
-
 	virtual void	privateSetup__();
-	virtual void	privateResize__( const ResizeEvent &event );	
 	virtual void	privateUpdate__();
-	virtual void	privateDraw__();
-	virtual void	privateShutdown__();
 	//! \endcond
 
 #if defined( CINDER_MSW )
@@ -411,20 +463,23 @@ class App {
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch();
-	static void		executeLaunch( App *app, class Renderer *renderer, const char *title, int argc, char * const argv[] );
+	static void		executeLaunch( App *app, RendererRef defaultRenderer, const char *title, int argc, char * const argv[] );
 	static void		cleanupLaunch();
 	
 	virtual void	launch( const char *title, int argc, char * const argv[] ) = 0;
+	
 	//! \endcond
+
+#if defined( CINDER_MSW )
+	friend class AppImplMsw;
+	std::shared_ptr<std::ostream>	mOutputStream;
+#endif
 
   private:
 	  void 		prepareAssetLoading();
 	  fs::path	findAssetPath( const fs::path &relativePath );
   
-#if defined( CINDER_MSW )
-	friend class AppImplMsw;
-	std::shared_ptr<cinder::msw::dostream>	mOutputStream;
-#else
+#if defined( CINDER_COCOA )
 	static void				*sAutoReleasePool;
 #endif
 
@@ -437,50 +492,56 @@ class App {
 
 	std::shared_ptr<Timeline>	mTimeline;
 
-	std::shared_ptr<Renderer>	mRenderer;
+	signals::signal<void()>		mSignalUpdate, mSignalShutdown;
 	
-	CallbackMgr<bool (MouseEvent)>		mCallbacksMouseDown, mCallbacksMouseUp, mCallbacksMouseWheel, mCallbacksMouseMove, mCallbacksMouseDrag;
-	CallbackMgr<bool (KeyEvent)>		mCallbacksKeyDown, mCallbacksKeyUp;
-	CallbackMgr<bool (ResizeEvent)>		mCallbacksResize;
-	CallbackMgr<bool (FileDropEvent)>	mCallbacksFileDrop;
-
+	std::shared_ptr<boost::asio::io_service>	mIo;
+	std::shared_ptr<void>						mIoWork; // boost::asio::io_service::work, but can't fwd declare member class
+	
 	// have we already setup the default path to assets?
 	bool						mAssetDirectoriesInitialized;
 	// Path to directories which contain assets
 	std::vector<fs::path>		mAssetDirectories;
 	
-	static App*		sInstance;
+  protected:
+	static App*					sInstance;
+	RendererRef					mDefaultRenderer;
+	bool						mPowerManagement;
 };
 
 /** @name App Free Functions
 	Convenience methods which mirror App member-functions and apply to the active application
 **/
 //@{
-//! Returns the width of the active App's window measured in pixels, or the screen when in full-screen mode.
+inline WindowRef	getWindow() { return App::get()->getWindow(); }
+//! Returns the number of Windows the app has open
+inline size_t		getNumWindows() { return App::get()->getNumWindows(); }
+//! Gets a Window by index, in the range [0, getNumWindows()).
+inline WindowRef	getWindowIndex( size_t index ) { return App::get()->getWindowIndex( index ); }
+
+//! Returns the width of the active App's window measured in points, or of the screen when in full-screen mode
 inline int	getWindowWidth() { return App::get()->getWindowWidth(); }
-//! Sets the position of the active App's window measured in pixels. Ignored in full-screen mode.
+//! Sets the position of the active App's window measured in points. Ignored in full-screen mode
 inline void		setWindowPos( const Vec2i &windowPos ) { App::get()->setWindowPos( windowPos);  }
+//! Sets the position of the active App's window measured in points. Ignored in full-screen mode
 inline void		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) );  }
-//! Sets the width of the active App's window measured in pixels. Ignored in full-screen mode.
-inline void	setWindowWidth( int windowWidth ) { App::get()->setWindowWidth( windowWidth ); }
-//! Returns the height of the active App's window measured in pixels, or the screen when in full-screen mode.
+//! Returns the height of the active App's window measured in points, or the screen when in full-screen mode.
 inline int	getWindowHeight() { return App::get()->getWindowHeight(); }
-//! Sets the height of the active App's window measured in pixels. Ignored in full-screen mode.
-inline void	setWindowHeight( int windowHeight ) { App::get()->setWindowHeight( windowHeight ); }
-//! Sets the size of the active App's window. Ignored in full-screen mode.
+//! Sets the size of the active App's window in points. Ignored in full-screen mode.
 inline void		setWindowSize( int windowWidth, int windowHeight ) { App::get()->setWindowSize( windowWidth, windowHeight ); }
-//! Returns the center of the active App's window or the screen in full-screen mode.
-/** Equivalent to \code Vec2f( getWindowWidth() * 0.5, getWindowHeight() * 0.5 ) \endcode **/
+//! Returns the center of the active App's window in pixels or of the screen in full-screen mode.
+/** Equivalent to <tt>Vec2f( getWindowWidth() * 0.5, getWindowHeight() * 0.5 ) </tt> **/
 inline Vec2f	getWindowCenter() { return App::get()->getWindowCenter(); }
-//! Returns the size of the active App's window or the screen in full-screen mode
+//! Returns the size of the active App's window or the screen in full-screen mode measured in points
 inline Vec2i	getWindowSize() { return App::get()->getWindowSize(); }
-//! Returns the position of the active App's window measured in pixels.
+//! Returns the position of the active App's window measured in points
 inline Vec2i	getWindowPos() { return App::get()->getWindowPos(); }
 //! Returns the aspect ratio of the active App's window or the screen in full-screen mode
 inline float	getWindowAspectRatio() { return App::get()->getWindowAspectRatio(); }
-//! Returns the bounding area of the active App's window or the screen in full-screen mode.
+//! Returns the bounding area of the active App's window or the screen in full-screen mode measured in points
 /** Equivalent to \code Area( 0, 0, getWindowWidth(), getWindowHeight() ); \endcode **/
 inline Area		getWindowBounds() { return App::get()->getWindowBounds(); }
+//! Returns the contentScale of the active App's window, which is the multiplier that maps points to pixels
+inline float	getWindowContentScale() { return App::get()->getWindowContentScale(); }
 //! Returns the maximum frame-rate the active App will attempt to maintain.
 inline float	getFrameRate() { return App::get()->getFrameRate(); }
 //! Sets the maximum frame-rate the active App will attempt to maintain.
@@ -489,6 +550,27 @@ inline void		setFrameRate( float frameRate ) { App::get()->setFrameRate( frameRa
 inline bool		isFullScreen() { return App::get()->isFullScreen(); }
 //! Sets whether the active App is in full-screen mode based on \a fullScreen
 inline void		setFullScreen( bool fullScreen = true ) { App::get()->setFullScreen( fullScreen ); }
+
+//! Returns a scalar mapped from points to pixels for the current Window
+inline float	toPixels( float s ) { return getWindow()->toPixels( s ); }
+//! Returns a Vec2f mapped from points to pixels for the current Window
+inline Vec2f	toPixels( Vec2f s ) { return getWindow()->toPixels( s ); }
+//! Returns a Vec2i mapped from points to pixels for the current Window
+inline	Vec2i	toPixels( Vec2i s ) { return app::getWindow()->toPixels( s ); }
+//! Returns an Area mapped from points to pixels for the current Window
+inline	Area	toPixels( const Area &a ) { return getWindow()->toPixels( a ); }
+//! Returns a Rectf mapped from points to pixels for the current Window
+inline	Rectf	toPixels( const Rectf &a ) { return getWindow()->toPixels( a ); }
+//! Returns a scalar mapped from pixels to points for the current Window
+inline	float	toPoints( float s ) { return getWindow()->toPoints( s ); }
+//! Returns a Vec2f mapped from pixels to points for the current Window
+inline	Vec2f	toPoints( Vec2f s ) { return getWindow()->toPoints( s ); }
+//! Returns a Vec2i mapped from pixels to points for the current Window
+inline	Vec2i	toPoints( Vec2i s ) { return getWindow()->toPoints( s ); }
+//! Returns an Area mapped from pixels to points for the current Window
+inline	Area	toPoints( const Area &a ) { return getWindow()->toPoints( a ); }
+//! Returns a Rectf mapped from pixels to points for the current Window
+inline	Rectf	toPoints( const Rectf &a ) { return getWindow()->toPoints( a ); }
 
 //! Returns the number seconds which have elapsed since the active App launched.
 inline double	getElapsedSeconds() { return App::get()->getElapsedSeconds(); }
@@ -534,16 +616,16 @@ inline std::ostream&	console() { return App::get()->console(); }
 //! Returns a reference to the active App's Timeline
 inline Timeline&	timeline() { return App::get()->timeline(); }
 
-//! Returns a copy of the window's contents as a Surface8u
+//! Returns a copy of the current window's contents as a Surface8u
 inline Surface	copyWindowSurface() { return App::get()->copyWindowSurface(); }
-//! Returns a copy of the Area \a area from the window's contents as a Surface8u
+//! Returns a copy of the Area \a area from the current window's contents as a Surface8u
 inline Surface	copyWindowSurface( const Area &area ) { return App::get()->copyWindowSurface( area ); }
 //! Restores the current rendering context to be the App's window or the screen in full-screen mode. Generally this is only necessary if the app has display a dialog box or some other external window.
 inline void		restoreWindowContext() { return App::get()->restoreWindowContext(); }
 
 #if defined( CINDER_COCOA )
 //! Returns a CGContextRef for drawing to the Window using CoreGraphics under Cocoa & Cocoa Touch. Assumes your App uses a Renderer2d
-inline ::CGContextRef	createWindowCgContext() { return ((Renderer2d*)(App::get()->getRenderer()))->getCgContext(); }
+inline ::CGContextRef	createWindowCgContext() { return (std::dynamic_pointer_cast<Renderer2d>(App::get()->getRenderer()))->getCgContext(); }
 #endif
 
 //@}

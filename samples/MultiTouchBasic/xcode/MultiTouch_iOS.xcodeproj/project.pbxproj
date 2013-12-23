@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		007480AF165D57B50024B57A /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007480AD165D57B50024B57A /* ImageIO.framework */; };
+		007480B0165D57B50024B57A /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007480AE165D57B50024B57A /* MobileCoreServices.framework */; };
 		0087D06D12CD7CE9002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D06C12CD7CE9002CD69F /* CoreText.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
 		00CFDFE011384CC60091E310 /* MultiTouchApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CFDFDF11384CC60091E310 /* MultiTouchApp.cpp */; };
@@ -21,6 +23,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		007480AD165D57B50024B57A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		007480AE165D57B50024B57A /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		0087D06C12CD7CE9002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDFDF11384CC60091E310 /* MultiTouchApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MultiTouchApp.cpp; path = ../src/MultiTouchApp.cpp; sourceTree = "<group>"; };
@@ -42,6 +46,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				007480AF165D57B50024B57A /* ImageIO.framework in Frameworks */,
+				007480B0165D57B50024B57A /* MobileCoreServices.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */,
@@ -113,6 +119,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				007480AD165D57B50024B57A /* ImageIO.framework */,
+				007480AE165D57B50024B57A /* MobileCoreServices.framework */,
 				28FD15070DC6FC5B0079059D /* QuartzCore.framework */,
 				28FD14FF0DC6FC520079059D /* OpenGLES.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
@@ -197,6 +205,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -206,7 +216,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "MultiTouch_iOS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone_d.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim_d.a\"",
@@ -221,6 +231,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -228,7 +240,7 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
 				INFOPLIST_FILE = "MultiTouch_iOS-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = "\"$(CINDER_PATH)/lib/libcinder-iphone.a\"";
 				"OTHER_LDFLAGS[sdk=iphonesimulator*][arch=*]" = (
 					"\"$(CINDER_PATH)/lib/libcinder-iphone-sim.a\"",
@@ -250,7 +262,6 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				PREBINDING = NO;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SDKROOT = iphoneos;

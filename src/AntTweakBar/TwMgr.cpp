@@ -1,11 +1,9 @@
 //  ---------------------------------------------------------------------------
 //
 //  @file       TwMgr.cpp
-//  @author     Philippe Decaudin - http://www.antisphere.com
+//  @author     Philippe Decaudin
 //  @license    This file is part of the AntTweakBar library.
-//              For conditions of distribution and use, see docs/AntTweakBar/License.txt
-//
-//  note:       TAB=4
+//              For conditions of distribution and use, see License.txt
 //
 //  ---------------------------------------------------------------------------
 
@@ -16,7 +14,12 @@
 #include "TwBar.h"
 #include "TwFonts.h"
 #include "TwOpenGL.h"
+// Cinder doesn't support OpenGLCore yet
+// #include "TwOpenGLCore.h"
 #ifdef ANT_WINDOWS
+#   include "TwDirect3D9.h"
+#   include "TwDirect3D10.h"
+#   include "TwDirect3D11.h"
 #   include "resource.h"
 #   ifdef _DEBUG
 #       include <crtdbg.h>
@@ -30,7 +33,7 @@
 
 using namespace std;
 
-CTwMgr *g_TwMgr = NULL;
+CTwMgr *g_TwMgr = NULL; // current TwMgr
 bool g_BreakOnError = false;
 TwErrorHandler g_ErrorHandler = NULL;
 int g_TabLength = 4;
@@ -39,7 +42,15 @@ int g_InitWndWidth = -1;
 int g_InitWndHeight = -1;
 TwCopyCDStringToClient  g_InitCopyCDStringToClient = NULL;
 TwCopyStdStringToClient g_InitCopyStdStringToClient = NULL;
+float g_FontScaling = 1.0f;
 
+// multi-windows
+const int TW_MASTER_WINDOW_ID = 0;
+typedef map<int, CTwMgr *> CTwWndMap;
+CTwWndMap g_Wnds;
+CTwMgr *g_TwMasterMgr = NULL;
+
+// error messages
 extern const char *g_ErrUnknownAttrib;
 extern const char *g_ErrNoValue;
 extern const char *g_ErrBadValue;
@@ -63,6 +74,7 @@ const char *g_ErrCStrParam  = "Value count for TW_PARAM_CSTRING must be 1";
 const char *g_ErrOutOfRange = "Index out of range";
 const char *g_ErrHasNoValue = "Has no value";
 const char *g_ErrBadType    = "Incompatible type";
+const char *g_ErrDelHelp    = "Cannot delete help bar";
 char g_ErrParse[512];
 
 void ANT_CALL TwGlobalError(const char *_ErrorMessage);
@@ -85,15 +97,8 @@ const double DOUBLE_EPS    = 1.0e-14;
 const double DOUBLE_EPS_SQ = 1.0e-28;
 const double DOUBLE_PI     = 3.14159265358979323846;
 
-inline double DegToRad(double degree)
-{
-    return degree * (DOUBLE_PI/180.0);
-}
-
-inline double RadToDeg(double radian)
-{
-    return radian * (180.0/DOUBLE_PI);
-}
+inline double DegToRad(double degree) { return degree * (DOUBLE_PI/180.0); }
+inline double RadToDeg(double radian) { return radian * (180.0/DOUBLE_PI); }
 
 //  ---------------------------------------------------------------------------
 
@@ -731,7 +736,7 @@ void ANT_CALL CQuaternionExt::SummaryCB(char *_SummaryString, size_t _SummaryMax
     if( ext )
     {
         if( ext->m_AAMode )
-            _snprintf(_SummaryString, _SummaryMaxLength, "V={%.2f,%.2f,%.2f} A=%.0f°", ext->Vx, ext->Vy, ext->Vz, ext->Angle);
+            _snprintf(_SummaryString, _SummaryMaxLength, "V={%.2f,%.2f,%.2f} A=%.0f%c", ext->Vx, ext->Vy, ext->Vz, ext->Angle, 176);
         else if( ext->m_IsDir )
         {
             //float d[] = {1, 0, 0};
@@ -1210,6 +1215,22 @@ void CQuaternionExt::PermuteInv(float *outX, float *outY, float *outZ, float x, 
     *outZ = m_Permute[2][0]*px + m_Permute[2][1]*py + m_Permute[2][2]*pz;
 }
 
+void CQuaternionExt::Permute(double *outX, double *outY, double *outZ, double x, double y, double z)
+{
+    double px = x, py = y, pz = z;
+    *outX = m_Permute[0][0]*px + m_Permute[1][0]*py + m_Permute[2][0]*pz;
+    *outY = m_Permute[0][1]*px + m_Permute[1][1]*py + m_Permute[2][1]*pz;
+    *outZ = m_Permute[0][2]*px + m_Permute[1][2]*py + m_Permute[2][2]*pz;
+}
+
+void CQuaternionExt::PermuteInv(double *outX, double *outY, double *outZ, double x, double y, double z)
+{
+    double px = x, py = y, pz = z;
+    *outX = m_Permute[0][0]*px + m_Permute[0][1]*py + m_Permute[0][2]*pz;
+    *outY = m_Permute[1][0]*px + m_Permute[1][1]*py + m_Permute[1][2]*pz;
+    *outZ = m_Permute[2][0]*px + m_Permute[2][1]*py + m_Permute[2][2]*pz;
+}
+
 static inline float QuatD(int w, int h)
 {
     return (float)min(abs(w), abs(h)) - 4;
@@ -1305,6 +1326,8 @@ void CQuaternionExt::DrawCB(int w, int h, void *_ExtValue, void *_ClientData, Tw
     double normDir = sqrt(ext->m_Dir[0]*ext->m_Dir[0] + ext->m_Dir[1]*ext->m_Dir[1] + ext->m_Dir[2]*ext->m_Dir[2]);
     bool drawDir = ext->m_IsDir || (normDir>DOUBLE_EPS);
     color32 alpha = ext->m_Highlighted ? 0xffffffff : 0xb0ffffff;
+    
+    // check if frame is right-handed
     ext->Permute(&kx, &ky, &kz, 1, 0, 0);
     double px[3] = { (double)kx, (double)ky, (double)kz };
     ext->Permute(&kx, &ky, &kz, 0, 1, 0);
@@ -1313,7 +1336,7 @@ void CQuaternionExt::DrawCB(int w, int h, void *_ExtValue, void *_ClientData, Tw
     double pz[3] = { (double)kx, (double)ky, (double)kz };
     double ez[3];
     Vec3Cross(ez, px, py);
-    bool frameRightHanded = (ez[0]*pz[0]+ez[1]*pz[1]+ez[2]*pz[2]>=0);
+    bool frameRightHanded = (ez[0]*pz[0]+ez[1]*pz[1]+ez[2]*pz[2] >= 0);
     ITwGraph::Cull cull = frameRightHanded ? ITwGraph::CULL_CW : ITwGraph::CULL_CCW;
 
     if( drawDir )
@@ -1324,7 +1347,7 @@ void CQuaternionExt::DrawCB(int w, int h, void *_ExtValue, void *_ClientData, Tw
             normDir = 1;
             dir[0] = 1;
         }
-        ext->PermuteInv(&kx, &ky, &kz, dir[0], dir[1], dir[2]);
+        kx = dir[0]; ky = dir[1]; kz = dir[2];
         double rotDirAxis[3] = { 0, -kz, ky };
         if( rotDirAxis[0]*rotDirAxis[0] + rotDirAxis[1]*rotDirAxis[1] + rotDirAxis[2]*rotDirAxis[2]<DOUBLE_EPS_SQ )
         {
@@ -1336,12 +1359,14 @@ void CQuaternionExt::DrawCB(int w, int h, void *_ExtValue, void *_ClientData, Tw
         QuatFromAxisAngle(rotDirQuat, rotDirAxis, rotDirAngle);
 
         kx = 1; ky = 0; kz = 0;
-        ext->Permute(&kx, &ky, &kz, kx, ky, kz);
         ApplyQuat(&kx, &ky, &kz, kx, ky, kz, (float)rotDirQuat[0], (float)rotDirQuat[1], (float)rotDirQuat[2], (float)rotDirQuat[3]);
         ApplyQuat(&kx, &ky, &kz, kx, ky, kz, qx, qy, qz, qs);
         for(k=0; k<4; ++k) // 4 parts of the arrow
         {
-            j = (kz>0) ? 3-k : k;
+            // draw order
+            ext->Permute(&x, &y, &z, kx, ky, kz);
+            j = (z>0) ? 3-k : k;
+
             assert( s_ArrowTriProj[j].size()==2*(s_ArrowTri[j].size()/3) && s_ArrowColLight[j].size()==s_ArrowTri[j].size()/3 && s_ArrowNorm[j].size()==s_ArrowTri[j].size() ); 
             const int ntri = (int)s_ArrowTri[j].size()/3;
             const float *tri = &(s_ArrowTri[j][0]);
@@ -1358,12 +1383,12 @@ void CQuaternionExt::DrawCB(int w, int h, void *_ExtValue, void *_ClientData, Tw
                     x += 0.2f;
                 y *= 1.5f;
                 z *= 1.5f;
-                ext->Permute(&x, &y, &z, x, y, z);
                 ApplyQuat(&x, &y, &z, x, y, z, (float)rotDirQuat[0], (float)rotDirQuat[1], (float)rotDirQuat[2], (float)rotDirQuat[3]);
                 ApplyQuat(&x, &y, &z, x, y, z, qx, qy, qz, qs);
-                ext->Permute(&nx, &ny, &nz, nx, ny, nz);
+                ext->Permute(&x, &y, &z, x, y, z);
                 ApplyQuat(&nx, &ny, &nz, nx, ny, nz, (float)rotDirQuat[0], (float)rotDirQuat[1], (float)rotDirQuat[2], (float)rotDirQuat[3]);
                 ApplyQuat(&nx, &ny, &nz, nx, ny, nz, qx, qy, qz, qs);
+                ext->Permute(&nx, &ny, &nz, nx, ny, nz);
                 triProj[2*i+0] = QuatPX(x, w, h);
                 triProj[2*i+1] = QuatPY(y, w, h);
                 color32 col = (ext->m_DirColor|0xff000000) & alpha;
@@ -1394,13 +1419,15 @@ void CQuaternionExt::DrawCB(int w, int h, void *_ExtValue, void *_ClientData, Tw
                     Vec3RotZ(&kx, &ky, &kz); 
                 else if( l==2 )
                     Vec3RotY(&kx, &ky, &kz);
-                ext->Permute(&kx, &ky, &kz, kx, ky, kz);
                 ApplyQuat(&kx, &ky, &kz, kx, ky, kz, qx, qy, qz, qs);
                 for(k=0; k<4; ++k) // 4 parts of the arrow
                 {
-                    j = (kz>0) ? 3-k : k;
+                    // draw order
+                    ext->Permute(&x, &y, &z, kx, ky, kz);
+                    j = (z>0) ? 3-k : k;
+
                     bool cone = true;
-                    if( (m==0 && kz>0) || (m==1 && kz<=0) )
+                    if( (m==0 && z>0) || (m==1 && z<=0) )
                     {
                         if( j==ARROW_CONE || j==ARROW_CONE_CAP ) // do not draw cone
                             continue;
@@ -1431,10 +1458,10 @@ void CQuaternionExt::DrawCB(int w, int h, void *_ExtValue, void *_ClientData, Tw
                             Vec3RotY(&x, &y, &z);
                             Vec3RotY(&nx, &ny, &nz);
                         }
-                        ext->Permute(&x, &y, &z, x, y, z);
                         ApplyQuat(&x, &y, &z, x, y, z, qx, qy, qz, qs);
-                        ext->Permute(&nx, &ny, &nz, nx, ny, nz);
+                        ext->Permute(&x, &y, &z, x, y, z);
                         ApplyQuat(&nx, &ny, &nz, nx, ny, nz, qx, qy, qz, qs);
+                        ext->Permute(&nx, &ny, &nz, nx, ny, nz);
                         triProj[2*i+0] = QuatPX(x, w, h);
                         triProj[2*i+1] = QuatPY(y, w, h);
                         float fade = ( m==0 && z<0 ) ? TClamp(2.0f*z*z, 0.0f, 1.0f) : 0;
@@ -1460,8 +1487,8 @@ void CQuaternionExt::DrawCB(int w, int h, void *_ExtValue, void *_ClientData, Tw
                 for(i=0; i<ntri; ++i)   // draw sphere
                 {
                     x = SPH_RADIUS*tri[3*i+0]; y = SPH_RADIUS*tri[3*i+1]; z = SPH_RADIUS*tri[3*i+2];
-                    ext->Permute(&x, &y, &z, x, y, z);
                     ApplyQuat(&x, &y, &z, x, y, z, qx, qy, qz, qs);
+                    ext->Permute(&x, &y, &z, x, y, z);
                     triProj[2*i+0] = QuatPX(x, w, h);
                     triProj[2*i+1] = QuatPY(y, w, h);
                     colLight[i] = ColorBlend(0xff000000, col[i], fabsf(TClamp(z/SPH_RADIUS, -1.0f, 1.0f))) & alpha;
@@ -1483,10 +1510,10 @@ void CQuaternionExt::DrawCB(int w, int h, void *_ExtValue, void *_ClientData, Tw
     }
 
     // draw borders
-    g_TwMgr->m_Graph->DrawLine(0, 0, w-1, 0, 0x40000000);
+    g_TwMgr->m_Graph->DrawLine(1, 0, w-1, 0, 0x40000000);
     g_TwMgr->m_Graph->DrawLine(w-1, 0, w-1, h-1, 0x40000000);
-    g_TwMgr->m_Graph->DrawLine(w-1, h-1, 0, h-1, 0x40000000);
-    g_TwMgr->m_Graph->DrawLine(0, h-1, 0, 0, 0x40000000);
+    g_TwMgr->m_Graph->DrawLine(w-1, h-1, 1, h-1, 0x40000000);
+    g_TwMgr->m_Graph->DrawLine(1, h-1, 1, 0, 0x40000000);
 }
 
 bool CQuaternionExt::MouseMotionCB(int mouseX, int mouseY, int w, int h, void *structExtValue, void *clientData, TwBar *bar, CTwVarGroup *varGrp)
@@ -1504,12 +1531,15 @@ bool CQuaternionExt::MouseMotionCB(int mouseX, int mouseY, int w, int h, void *s
         double x = QuatIX(mouseX, w, h);
         double y = QuatIY(mouseY, w, h);
         double z = 1;
-        double n0 = sqrt(ext->m_OrigX*ext->m_OrigX + ext->m_OrigY*ext->m_OrigY + z*z);
-        double n1 = sqrt(x*x + y*y + z*z);
+        double px, py, pz, ox, oy, oz;
+        ext->PermuteInv(&px, &py, &pz, x, y, z);
+        ext->PermuteInv(&ox, &oy, &oz, ext->m_OrigX, ext->m_OrigY, 1);
+        double n0 = sqrt(ox*ox + oy*oy + oz*oz);
+        double n1 = sqrt(px*px + py*py + pz*pz);
         if( n0>DOUBLE_EPS && n1>DOUBLE_EPS )
         {
-            double v0[] = { ext->m_OrigX/n0, ext->m_OrigY/n0, z/n0 };
-            double v1[] = { x/n1, y/n1, z/n1 };
+            double v0[] = { ox/n0, oy/n0, oz/n0 };
+            double v1[] = { px/n1, py/n1, pz/n1 };
             double axis[3];
             Vec3Cross(axis, v0, v1);
             double sa = sqrt(Vec3Dot(axis, axis));
@@ -1596,8 +1626,56 @@ void CQuaternionExt::MouseLeaveCB(void *structExtValue, void *clientData, TwBar 
 //  ---------------------------------------------------------------------------
 //  Convertion between VC++ Debug/Release std::string
 //  (Needed because VC++ adds some extra info to std::string in Debug mode!)
+//  And resolve binary std::string incompatibility between VS2010 and other VS versions
 //  ---------------------------------------------------------------------------
 
+#ifdef _MSC_VER
+// VS2010 store the string allocator pointer at the end
+// VS2008 VS2012 and others store the string allocator pointer at the beginning
+static void FixVS2010StdStringLibToClient(void *strPtr)
+{
+    char *ptr = (char *)strPtr;
+    const size_t SizeOfUndecoratedString = 16 + 2*sizeof(size_t) + sizeof(void *); // size of a VS std::string without extra debug iterator and info.
+    assert(SizeOfUndecoratedString <= sizeof(std::string));
+    TwType LibStdStringBaseType = (TwType)(TW_TYPE_STDSTRING&0xffff0000);
+    void **allocAddress2008 = (void **)(ptr + sizeof(std::string) - SizeOfUndecoratedString);
+    void **allocAddress2010 = (void **)(ptr + sizeof(std::string) - sizeof(void *));
+    if (LibStdStringBaseType == TW_TYPE_STDSTRING_VS2008 && g_TwMgr->m_ClientStdStringBaseType == TW_TYPE_STDSTRING_VS2010)
+    {
+        void *allocator = *allocAddress2008;
+        memmove(allocAddress2008, allocAddress2008 + 1, SizeOfUndecoratedString - sizeof(void *));
+        *allocAddress2010 = allocator;
+    }
+    else if (LibStdStringBaseType == TW_TYPE_STDSTRING_VS2010 && g_TwMgr->m_ClientStdStringBaseType == TW_TYPE_STDSTRING_VS2008)
+    {
+        void *allocator = *allocAddress2010;
+        memmove(allocAddress2008 + 1, allocAddress2008, SizeOfUndecoratedString - sizeof(void *));
+        *allocAddress2008 = allocator;
+    }
+}
+
+static void FixVS2010StdStringClientToLib(void *strPtr)
+{
+    char *ptr = (char *)strPtr;
+    const size_t SizeOfUndecoratedString = 16 + 2*sizeof(size_t) + sizeof(void *); // size of a VS std::string without extra debug iterator and info.
+    assert(SizeOfUndecoratedString <= sizeof(std::string));
+    TwType LibStdStringBaseType = (TwType)(TW_TYPE_STDSTRING&0xffff0000);
+    void **allocAddress2008 = (void **)(ptr + sizeof(std::string) - SizeOfUndecoratedString);
+    void **allocAddress2010 = (void **)(ptr + sizeof(std::string) - sizeof(void *));
+    if (LibStdStringBaseType == TW_TYPE_STDSTRING_VS2008 && g_TwMgr->m_ClientStdStringBaseType == TW_TYPE_STDSTRING_VS2010)
+    {
+        void *allocator = *allocAddress2010;
+        memmove(allocAddress2008 + 1, allocAddress2008, SizeOfUndecoratedString - sizeof(void *));
+        *allocAddress2008 = allocator;
+    }
+    else if (LibStdStringBaseType == TW_TYPE_STDSTRING_VS2010 && g_TwMgr->m_ClientStdStringBaseType == TW_TYPE_STDSTRING_VS2008)
+    {
+        void *allocator = *allocAddress2008;
+        memmove(allocAddress2008, allocAddress2008 + 1, SizeOfUndecoratedString - sizeof(void *));
+        *allocAddress2010 = allocator;
+    }
+}
+#endif // _MSC_VER
 
 CTwMgr::CClientStdString::CClientStdString()
 {
@@ -1608,6 +1686,9 @@ void CTwMgr::CClientStdString::FromLib(const char *libStr)
 {
     m_LibStr = libStr; // it is ok to have a local copy here
     memcpy(m_Data + sizeof(void *), &m_LibStr, sizeof(std::string));
+#ifdef _MSC_VER
+    FixVS2010StdStringLibToClient(m_Data + sizeof(void *));
+#endif
 }
 
 std::string& CTwMgr::CClientStdString::ToClient() 
@@ -1634,6 +1715,9 @@ void CTwMgr::CLibStdString::FromClient(const std::string& clientStr)
 {
     assert( g_TwMgr!=NULL );
     memcpy(m_Data + sizeof(void *), &clientStr, g_TwMgr->m_ClientStdStringStructSize);
+#ifdef _MSC_VER
+    FixVS2010StdStringClientToLib(m_Data + sizeof(void *));
+#endif
 }
 
 std::string& CTwMgr::CLibStdString::ToLib()
@@ -1665,7 +1749,12 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
     case TW_OPENGL:
         g_TwMgr->m_Graph = new CTwGraphOpenGL;
         break;
-/*    case TW_DIRECT3D9:
+// Cinder: we don't support D3D or OpenGL Core yet
+#if 0
+    case TW_OPENGL_CORE:
+        g_TwMgr->m_Graph = new CTwGraphOpenGLCore;
+        break;
+    case TW_DIRECT3D9:
         #ifdef ANT_WINDOWS
             if( g_TwMgr->m_Device!=NULL )
                 g_TwMgr->m_Graph = new CTwGraphDirect3D9;
@@ -1686,9 +1775,20 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
                 return 0;
             }
         #endif // ANT_WINDOWS
-        break;*/
+        break;
+    case TW_DIRECT3D11:
+        #ifdef ANT_WINDOWS
+            if( g_TwMgr->m_Device!=NULL )
+                g_TwMgr->m_Graph = new CTwGraphDirect3D11;
+            else
+            {
+                g_TwMgr->SetLastError(g_ErrBadDevice);
+                return 0;
+            }
+        #endif // ANT_WINDOWS
+        break;
+#endif
     }
-
     if( g_TwMgr->m_Graph==NULL )
     {
         g_TwMgr->SetLastError(g_ErrUnknownAPI);
@@ -1766,60 +1866,83 @@ static inline int TwEndProcessing()
 
 //  ---------------------------------------------------------------------------
 
+static int TwInitMgr()
+{
+    assert( g_TwMasterMgr!=NULL );
+    assert( g_TwMgr!=NULL );
+
+    g_TwMgr->m_CurrentFont = g_DefaultNormalFont;
+    g_TwMgr->m_Graph = g_TwMasterMgr->m_Graph;
+
+    g_TwMgr->m_KeyPressedTextObj = g_TwMgr->m_Graph->NewTextObj();
+    g_TwMgr->m_InfoTextObj = g_TwMgr->m_Graph->NewTextObj();
+
+    g_TwMgr->m_HelpBar = TwNewBar("TW_HELP");
+    if( g_TwMgr->m_HelpBar )
+    {
+        g_TwMgr->m_HelpBar->m_Label = "~ Help & Shortcuts ~";
+        g_TwMgr->m_HelpBar->m_PosX = 32;
+        g_TwMgr->m_HelpBar->m_PosY = 32;
+        g_TwMgr->m_HelpBar->m_Width = 400;
+        g_TwMgr->m_HelpBar->m_Height = 200;
+        g_TwMgr->m_HelpBar->m_ValuesWidth = 12*(g_TwMgr->m_HelpBar->m_Font->m_CharHeight/2);
+        g_TwMgr->m_HelpBar->m_Color = 0xa05f5f5f; //0xd75f5f5f;
+        g_TwMgr->m_HelpBar->m_DarkText = false;
+        g_TwMgr->m_HelpBar->m_IsHelpBar = true;
+        g_TwMgr->Minimize(g_TwMgr->m_HelpBar);
+    }
+    else
+        return 0;
+
+    CColorExt::CreateTypes();
+    CQuaternionExt::CreateTypes();
+
+    return 1;
+}
+
+
 int ANT_CALL TwInit(ETwGraphAPI _GraphAPI, void *_Device)
 {
 #if defined(_DEBUG) && defined(ANT_WINDOWS)
     _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF));
 #endif
 
-    if( g_TwMgr!=NULL )
+    if( g_TwMasterMgr!=NULL )
     {
-        g_TwMgr->SetLastError(g_ErrInit);
+        g_TwMasterMgr->SetLastError(g_ErrInit);
         return 0;
     }
+    assert( g_TwMgr==0 );
+    assert( g_Wnds.empty() );
 
-    g_TwMgr = new CTwMgr(_GraphAPI, _Device);
+    g_TwMasterMgr = new CTwMgr(_GraphAPI, _Device, TW_MASTER_WINDOW_ID);
+    g_Wnds[TW_MASTER_WINDOW_ID] = g_TwMasterMgr;
+    g_TwMgr = g_TwMasterMgr;
 
-    TwGenerateDefaultFonts();
+    TwGenerateDefaultFonts(g_FontScaling);
     g_TwMgr->m_CurrentFont = g_DefaultNormalFont;
 
     int Res = TwCreateGraph(_GraphAPI);
-
     if( Res )
-    {
-        g_TwMgr->m_KeyPressedTextObj = g_TwMgr->m_Graph->NewTextObj();
-        g_TwMgr->m_InfoTextObj = g_TwMgr->m_Graph->NewTextObj();
-
-        g_TwMgr->m_HelpBar = TwNewBar("TW_HELP");
-        if( g_TwMgr->m_HelpBar )
-        {
-            g_TwMgr->m_HelpBar->m_Label = "~ Help & Shortcuts ~";
-            g_TwMgr->m_HelpBar->m_PosX = 32;
-            g_TwMgr->m_HelpBar->m_PosY = 32;
-            g_TwMgr->m_HelpBar->m_Width = 400;
-            g_TwMgr->m_HelpBar->m_Height = 200;
-            g_TwMgr->m_HelpBar->m_ValuesWidth = 12*(g_TwMgr->m_HelpBar->m_Font->m_CharHeight/2);
-            g_TwMgr->m_HelpBar->m_Color = 0xd75f5f5f;
-            g_TwMgr->m_HelpBar->m_DarkText = false;
-            g_TwMgr->m_HelpBar->m_IsHelpBar = true;
-            g_TwMgr->Minimize(g_TwMgr->m_HelpBar);
-        }
-        else
-        {
-            TwTerminate();
-            Res = 0;
-        }
-    }
-
-    if( Res )
-    {
-        CColorExt::CreateTypes();
-        CQuaternionExt::CreateTypes();
-    }
-    else
+        Res = TwInitMgr();
+    
+    if( !Res )
         TwTerminate();
 
     return Res;
+}
+
+//  ---------------------------------------------------------------------------
+
+int ANT_CALL TwSetLastError(const char *_StaticErrorMessage)
+{
+    if( g_TwMasterMgr!=0 ) 
+    {
+        g_TwMasterMgr->SetLastError(_StaticErrorMessage);
+        return 1;
+    }
+    else 
+        return 0;
 }
 
 //  ---------------------------------------------------------------------------
@@ -1836,34 +1959,105 @@ int ANT_CALL TwTerminate()
     if( !TwFreeAsyncDrawing() )
         return 0;
 
-    TwDeleteAllBars();
-    if( g_TwMgr->m_CursorsCreated )
-        g_TwMgr->FreeCursors();
-
-    int Res = 1;
-    if( g_TwMgr->m_Graph )
+    CTwWndMap::iterator it;
+    for( it=g_Wnds.begin(); it!=g_Wnds.end(); it++ )
     {
-        if( g_TwMgr->m_KeyPressedTextObj )
+        g_TwMgr = it->second;
+
+        g_TwMgr->m_Terminating = true;
+        TwDeleteAllBars();
+        if( g_TwMgr->m_CursorsCreated )
+            g_TwMgr->FreeCursors();
+
+        if( g_TwMgr->m_Graph )
         {
-            g_TwMgr->m_Graph->DeleteTextObj(g_TwMgr->m_KeyPressedTextObj);
-            g_TwMgr->m_KeyPressedTextObj = NULL;
+            if( g_TwMgr->m_KeyPressedTextObj )
+            {
+                g_TwMgr->m_Graph->DeleteTextObj(g_TwMgr->m_KeyPressedTextObj);
+                g_TwMgr->m_KeyPressedTextObj = NULL;
+            }
+            if( g_TwMgr->m_InfoTextObj )
+            {
+                g_TwMgr->m_Graph->DeleteTextObj(g_TwMgr->m_InfoTextObj);
+                g_TwMgr->m_InfoTextObj = NULL;
+            }
+            if (g_TwMgr != g_TwMasterMgr)
+                g_TwMgr->m_Graph = NULL;
         }
-        if( g_TwMgr->m_InfoTextObj )
+
+        if (g_TwMgr != g_TwMasterMgr) 
         {
-            g_TwMgr->m_Graph->DeleteTextObj(g_TwMgr->m_InfoTextObj);
-            g_TwMgr->m_InfoTextObj = NULL;
+            delete g_TwMgr;
+            g_TwMgr = NULL;
         }
-        Res = g_TwMgr->m_Graph->Shut();
-        delete g_TwMgr->m_Graph;
-        g_TwMgr->m_Graph = NULL;
     }
 
+    // delete g_TwMasterMgr
+    int Res = 1;
+    g_TwMgr = g_TwMasterMgr;
+    if( g_TwMasterMgr->m_Graph )
+    {
+        Res = g_TwMasterMgr->m_Graph->Shut();
+        delete g_TwMasterMgr->m_Graph;
+        g_TwMasterMgr->m_Graph = NULL;
+    }
     TwDeleteDefaultFonts();
-
-    delete g_TwMgr;
+    delete g_TwMasterMgr;
+    g_TwMasterMgr = NULL;
     g_TwMgr = NULL;
+    g_Wnds.clear();
 
     return Res;
+}
+
+//  ---------------------------------------------------------------------------
+
+int ANT_CALL TwGetCurrentWindow()
+{
+    if( g_TwMgr==NULL )
+    {
+        TwGlobalError(g_ErrNotInit);
+        return 0; // not initialized
+    }
+
+    return g_TwMgr->m_WndID;
+}
+
+int ANT_CALL TwSetCurrentWindow(int wndID)
+{
+    if( g_TwMgr==NULL )
+    {
+        TwGlobalError(g_ErrNotInit);
+        return 0; // not initialized
+    }
+
+    if (wndID != g_TwMgr->m_WndID)
+    { 
+        CTwWndMap::iterator foundWnd = g_Wnds.find(wndID);
+        if (foundWnd == g_Wnds.end())
+        {
+            // create a new CTwMgr
+            g_TwMgr = new CTwMgr(g_TwMasterMgr->m_GraphAPI, g_TwMasterMgr->m_Device, wndID);
+            g_Wnds[wndID] = g_TwMgr;
+            return TwInitMgr();
+        }
+        else 
+        {
+            g_TwMgr = foundWnd->second;
+            return 1;
+        }
+    }
+    else 
+        return 1;
+}
+
+int ANT_CALL TwWindowExists(int wndID)
+{
+    CTwWndMap::iterator foundWnd = g_Wnds.find(wndID);
+    if (foundWnd == g_Wnds.end())
+        return 0;
+    else
+        return 1;
 }
 
 //  ---------------------------------------------------------------------------
@@ -1899,8 +2093,11 @@ int ANT_CALL TwDraw()
     #endif
 
     // Autorepeat TW_MOUSE_PRESSED
-    double RepeatDT = g_TwMgr->m_Timer.GetTime() - g_TwMgr->m_LastMousePressedTime;
-    if(    fabs(RepeatDT)>2.0*g_TwMgr->m_RepeatMousePressedDelay 
+    double CurrTime = g_TwMgr->m_Timer.GetTime();
+    double RepeatDT = CurrTime - g_TwMgr->m_LastMousePressedTime;
+    double DrawDT = CurrTime - g_TwMgr->m_LastDrawTime;
+    if(    RepeatDT>2.0*g_TwMgr->m_RepeatMousePressedDelay 
+        || DrawDT>2.0*g_TwMgr->m_RepeatMousePressedDelay 
         || abs(g_TwMgr->m_LastMousePressedPosition[0]-g_TwMgr->m_LastMouseX)>4
         || abs(g_TwMgr->m_LastMousePressedPosition[1]-g_TwMgr->m_LastMouseY)>4 )
     {
@@ -1914,10 +2111,11 @@ int ANT_CALL TwDraw()
         {
             g_TwMgr->m_IsRepeatingMousePressed = true;
             g_TwMgr->m_LastMousePressedTime = g_TwMgr->m_Timer.GetTime();
+            TwMouseMotion(g_TwMgr->m_LastMouseX,g_TwMgr->m_LastMouseY);
             TwMouseButton(TW_MOUSE_PRESSED, g_TwMgr->m_LastMousePressedButtonID);
         }
     }
-
+    g_TwMgr->m_LastDrawTime = CurrTime;
 
     if( g_TwMgr->m_WndWidth<0 || g_TwMgr->m_WndHeight<0 )
     {
@@ -1928,7 +2126,7 @@ int ANT_CALL TwDraw()
         return 1;   // nothing to do
 
     // count number of bars to draw
-    size_t i, idx;
+    size_t i, j;
     int Nb = 0;
     for( i=0; i<g_TwMgr->m_Bars.size(); ++i )
         if( g_TwMgr->m_Bars[i]!=NULL && g_TwMgr->m_Bars[i]->m_Visible )
@@ -1941,12 +2139,47 @@ int ANT_CALL TwDraw()
         PERF( DT = Timer.GetTime(); printf("\nBegin=%.4fms ", 1000.0*DT); )
 
         PERF( Timer.Reset(); )
+        vector<CRect> TopBarsRects, ClippedBarRects;
         for( i=0; i<g_TwMgr->m_Bars.size(); ++i )
         {
-            idx = g_TwMgr->m_Order[i];
-            if( g_TwMgr->m_Bars[idx]->m_Visible )
+            CTwBar *Bar = g_TwMgr->m_Bars[ g_TwMgr->m_Order[i] ];
+            if( Bar->m_Visible )
             {
-                g_TwMgr->m_Bars[idx]->Draw();
+                if( g_TwMgr->m_OverlapContent || Bar->IsMinimized() )
+                    Bar->Draw();
+                else
+                {
+                    // Clip overlapped transparent bars to make them more readable
+                    const int Margin = 4;
+                    CRect BarRect(Bar->m_PosX - Margin, Bar->m_PosY - Margin, Bar->m_Width + 2*Margin, Bar->m_Height + 2*Margin);
+                    TopBarsRects.clear();
+                    for( j=i+1; j<g_TwMgr->m_Bars.size(); ++j )
+                    {
+                        CTwBar *TopBar = g_TwMgr->m_Bars[g_TwMgr->m_Order[j]];
+                        if( TopBar->m_Visible && !TopBar->IsMinimized() )
+                            TopBarsRects.push_back(CRect(TopBar->m_PosX, TopBar->m_PosY, TopBar->m_Width, TopBar->m_Height));
+                    }
+                    ClippedBarRects.clear();
+                    BarRect.Subtract(TopBarsRects, ClippedBarRects);
+
+                    if( ClippedBarRects.size()==1 && ClippedBarRects[0]==BarRect )
+                        //g_TwMgr->m_Graph->DrawRect(Bar->m_PosX, Bar->m_PosY, Bar->m_PosX+Bar->m_Width-1, Bar->m_PosY+Bar->m_Height-1, 0x70ffffff); // Clipping test
+                        Bar->Draw(); // unclipped
+                    else
+                    {
+                        Bar->Draw(CTwBar::DRAW_BG); // draw background only
+
+                        // draw content for each clipped rectangle
+                        for( j=0; j<ClippedBarRects.size(); j++ )
+                            if (ClippedBarRects[j].W>1 && ClippedBarRects[j].H>1)
+                            {
+                                g_TwMgr->m_Graph->SetScissor(ClippedBarRects[j].X+1, ClippedBarRects[j].Y, ClippedBarRects[j].W, ClippedBarRects[j].H-1);
+                                //g_TwMgr->m_Graph->DrawRect(0, 0, 1000, 1000, 0x70ffffff); // Clipping test
+                                Bar->Draw(CTwBar::DRAW_CONTENT);
+                            }
+                        g_TwMgr->m_Graph->SetScissor(0, 0, 0, 0);
+                    }
+                }
             }
         }
         PERF( DT = Timer.GetTime(); printf("Draw=%.4fms ", 1000.0*DT); )
@@ -2021,10 +2254,11 @@ int ANT_CALL TwWindowSize(int _Width, int _Height)
 
 //  ---------------------------------------------------------------------------
 
-CTwMgr::CTwMgr(ETwGraphAPI _GraphAPI, void *_Device)
+CTwMgr::CTwMgr(ETwGraphAPI _GraphAPI, void *_Device, int _WndID)
 {
     m_GraphAPI = _GraphAPI;
     m_Device = _Device;
+    m_WndID = _WndID;
     m_LastError = NULL;
     m_CurrentDbgFile = "";
     m_CurrentDbgLine = 0;
@@ -2063,8 +2297,12 @@ CTwMgr::CTwMgr(ETwGraphAPI _GraphAPI, void *_Device)
     m_RepeatMousePressedPeriod = 0.1;
     m_CanRepeatMousePressed = false;
     m_IsRepeatingMousePressed = false;
+    m_LastDrawTime = 0;
     m_UseOldColorScheme = false;
     m_Contained = false;
+    m_ButtonAlign = BUTTON_ALIGN_RIGHT;
+    m_OverlapContent = false;
+    m_Terminating = false;
     
     m_CursorsCreated = false;   
     #if defined(ANT_UNIX)
@@ -2075,6 +2313,7 @@ CTwMgr::CTwMgr(ETwGraphAPI _GraphAPI, void *_Device)
     m_CopyCDStringToClient = g_InitCopyCDStringToClient;
     m_CopyStdStringToClient = g_InitCopyStdStringToClient;
     m_ClientStdStringStructSize = 0;
+    m_ClientStdStringBaseType = (TwType)0;
 }
 
 //  ---------------------------------------------------------------------------
@@ -2106,6 +2345,8 @@ int CTwMgr::HasAttrib(const char *_Attrib, bool *_HasValue) const
         return MGR_HELP;
     else if( _stricmp(_Attrib, "fontsize")==0 )
         return MGR_FONT_SIZE;
+    else if( _stricmp(_Attrib, "fontstyle")==0 )
+        return MGR_FONT_STYLE;
     else if( _stricmp(_Attrib, "iconpos")==0 )
         return MGR_ICON_POS;
     else if( _stricmp(_Attrib, "iconalign")==0 )
@@ -2118,6 +2359,10 @@ int CTwMgr::HasAttrib(const char *_Attrib, bool *_HasValue) const
         return MGR_COLOR_SCHEME;
     else if( _stricmp(_Attrib, "contained")==0 )
         return MGR_CONTAINED;
+    else if( _stricmp(_Attrib, "buttonalign")==0 )
+        return MGR_BUTTON_ALIGN;
+    else if( _stricmp(_Attrib, "overlap")==0 )
+        return MGR_OVERLAP;
 
     *_HasValue = false;
     return 0; // not found
@@ -2152,6 +2397,39 @@ int CTwMgr::SetAttrib(int _AttribID, const char *_Value)
                     SetFont(g_DefaultNormalFont, true);
                 else if( s==3 )
                     SetFont(g_DefaultLargeFont, true);
+                return 1;
+            }
+            else
+            {
+                SetLastError(g_ErrBadValue);
+                return 0;
+            }
+        }
+        else
+        {
+            SetLastError(g_ErrNoValue);
+            return 0;
+        }
+    case MGR_FONT_STYLE:
+        if( _Value && strlen(_Value)>0 )
+        {
+            if( _stricmp(_Value, "fixed")==0 )
+            {
+                if( m_CurrentFont!=g_DefaultFixed1Font )
+                {
+                    SetFont(g_DefaultFixed1Font, true);
+                    m_FontResizable = false; // for now fixed font is not resizable
+                }
+                return 1;
+            } 
+            else if( _stricmp(_Value, "default")==0 )
+            {
+                if( m_CurrentFont!=g_DefaultSmallFont && m_CurrentFont!=g_DefaultNormalFont && m_CurrentFont!=g_DefaultLargeFont )
+                {
+                    if( m_CurrentFont == g_DefaultFixed1Font )
+                        m_FontResizable = true;
+                    SetFont(g_DefaultNormalFont, true);
+                }
                 return 1;
             }
             else
@@ -2316,6 +2594,55 @@ int CTwMgr::SetAttrib(int _AttribID, const char *_Value)
             g_TwMgr->SetLastError(g_ErrNoValue);
             return 0;
         }
+    case MGR_BUTTON_ALIGN:
+        if( _Value && strlen(_Value)>0 )
+        {
+            if( _stricmp(_Value, "left")==0 )
+                m_ButtonAlign = BUTTON_ALIGN_LEFT;
+            else if( _stricmp(_Value, "center")==0 )
+                m_ButtonAlign = BUTTON_ALIGN_CENTER;
+            else if( _stricmp(_Value, "right")==0 )
+                m_ButtonAlign = BUTTON_ALIGN_RIGHT;
+            else
+            {
+                g_TwMgr->SetLastError(g_ErrBadValue);
+                return 0;
+            }
+            vector<TwBar*>::iterator barIt;
+            for( barIt=g_TwMgr->m_Bars.begin(); barIt!=g_TwMgr->m_Bars.end(); ++barIt )
+                if( (*barIt)!=NULL )
+                    (*barIt)->m_ButtonAlign = m_ButtonAlign;
+            return 1;
+        }
+        else
+        {
+            g_TwMgr->SetLastError(g_ErrNoValue);
+            return 0;
+        }
+    case MGR_OVERLAP:
+        if( _Value && strlen(_Value)>0 )
+        {
+            if( _stricmp(_Value, "1")==0 || _stricmp(_Value, "true")==0 )
+            {
+                m_OverlapContent = true;
+                return 1;
+            }
+            else if( _stricmp(_Value, "0")==0 || _stricmp(_Value, "false")==0 )
+            {
+                m_OverlapContent = false;
+                return 1;
+            }
+            else
+            {
+                g_TwMgr->SetLastError(g_ErrBadValue);
+                return 0;
+            }
+        }
+        else
+        {
+            g_TwMgr->SetLastError(g_ErrNoValue);
+            return 0;
+        }
     default:
         g_TwMgr->SetLastError(g_ErrUnknownAttrib);
         return 0;
@@ -2342,6 +2669,12 @@ ERetType CTwMgr::GetAttrib(int _AttribID, std::vector<double>& outDoubles, std::
         else
             outDoubles.push_back(0); // should not happened
         return RET_DOUBLE;
+    case MGR_FONT_STYLE:
+        if( m_CurrentFont==g_DefaultFixed1Font )
+            outString << "fixed";
+        else 
+            outString << "default";
+        return RET_STRING;
     case MGR_ICON_POS:
         if( m_IconPos==0 )
             outString << "bottomleft";
@@ -2390,6 +2723,17 @@ ERetType CTwMgr::GetAttrib(int _AttribID, std::vector<double>& outDoubles, std::
             outDoubles.push_back(contained);
             return RET_DOUBLE;
         }
+    case MGR_BUTTON_ALIGN:
+        if( m_ButtonAlign==BUTTON_ALIGN_LEFT )
+            outString << "left";
+        else if( m_ButtonAlign==BUTTON_ALIGN_CENTER )
+            outString << "center";
+        else
+            outString << "right";
+        return RET_STRING;
+    case MGR_OVERLAP:
+        outDoubles.push_back(m_OverlapContent);
+        return RET_DOUBLE;
     default:
         g_TwMgr->SetLastError(g_ErrUnknownAttrib);
         return RET_ERROR;
@@ -2522,15 +2866,15 @@ void CTwMgr::SetFont(const CTexFont *_Font, bool _ResizeBars)
 
 //  ---------------------------------------------------------------------------
 
-void ANT_CALL TwGlobalError(const char *_ErrorMessage)  // to be called when g_TwMgr is not created
+void ANT_CALL TwGlobalError(const char *_ErrorMessage)  // to be called when g_TwMasterMgr is not created
 {
     if( g_ErrorHandler==NULL )
     {
         fprintf(stderr, "ERROR(AntTweakBar) >> %s\n", _ErrorMessage);
     #ifdef ANT_WINDOWS
-        OutputDebugStringW(L"ERROR(AntTweakBar) >> ");
+        OutputDebugStringA("ERROR(AntTweakBar) >> ");
         OutputDebugStringA(_ErrorMessage);
-        OutputDebugStringW(L"\n");
+        OutputDebugStringA("\n");
     #endif // ANT_WINDOWS
     }
     else
@@ -2544,6 +2888,13 @@ void ANT_CALL TwGlobalError(const char *_ErrorMessage)  // to be called when g_T
 
 void CTwMgr::SetLastError(const char *_ErrorMessage)    // _ErrorMessage must be a static string
 {
+    if (this != g_TwMasterMgr)
+    {
+        // route to master
+        g_TwMasterMgr->SetLastError(_ErrorMessage);
+        return;
+    }
+
     m_LastError = _ErrorMessage;
 
     if( g_ErrorHandler==NULL )
@@ -2575,6 +2926,12 @@ void CTwMgr::SetLastError(const char *_ErrorMessage)    // _ErrorMessage must be
 
 const char *CTwMgr::GetLastError()
 {
+    if (this != g_TwMasterMgr) 
+    {
+        // route to master
+        return g_TwMasterMgr->GetLastError();
+    }
+
     const char *Err = m_LastError;
     m_LastError = NULL;
     return Err;
@@ -2621,13 +2978,13 @@ void ANT_CALL TwHandleErrors(TwErrorHandler _ErrorHandler)
 
 const char *ANT_CALL TwGetLastError()
 {
-    if( g_TwMgr==NULL )
+    if( g_TwMasterMgr==NULL )
     {
         TwGlobalError(g_ErrNotInit);
         return g_ErrNotInit;
     }
     else
-        return g_TwMgr->GetLastError();
+        return g_TwMasterMgr->GetLastError();
 }
 
 //  ---------------------------------------------------------------------------
@@ -2686,6 +3043,11 @@ int ANT_CALL TwDeleteBar(TwBar *_Bar)
     if( _Bar==NULL )
     {
         g_TwMgr->SetLastError(g_ErrBadParam);
+        return 0;
+    }
+    if( _Bar==g_TwMgr->m_HelpBar )
+    {
+        g_TwMgr->SetLastError(g_ErrDelHelp);
         return 0;
     }
 
@@ -2753,21 +3115,35 @@ int ANT_CALL TwDeleteAllBars()
     TwFreeAsyncDrawing(); // For multi-thread savety
 
     int n = 0;
-    for( size_t i=0; i<g_TwMgr->m_Bars.size(); ++i )
-        if( g_TwMgr->m_Bars[i]!=NULL )
-        {
-            ++n;
-            delete g_TwMgr->m_Bars[i];
-            g_TwMgr->m_Bars[i] = NULL;
-        }
-    g_TwMgr->m_Bars.clear();
-    g_TwMgr->m_Order.clear();
-    g_TwMgr->m_MinOccupied.clear();
-    g_TwMgr->m_HelpBarNotUpToDate = true;
+    if( g_TwMgr->m_Terminating || g_TwMgr->m_HelpBar==NULL ) 
+    {
+        for( size_t i=0; i<g_TwMgr->m_Bars.size(); ++i )
+            if( g_TwMgr->m_Bars[i]!=NULL )
+            {
+                ++n;
+                delete g_TwMgr->m_Bars[i];
+                g_TwMgr->m_Bars[i] = NULL;
+            }
+        g_TwMgr->m_Bars.clear();
+        g_TwMgr->m_Order.clear();
+        g_TwMgr->m_MinOccupied.clear();
+        g_TwMgr->m_HelpBarNotUpToDate = true;
+    }
+    else
+    {
+        vector<CTwBar *> bars = g_TwMgr->m_Bars;
+        for( size_t i = 0; i < bars.size(); ++i )
+            if( bars[i]!=0 && bars[i]!=g_TwMgr->m_HelpBar)
+            {
+                ++n;
+                TwDeleteBar(bars[i]);
+            }
+        g_TwMgr->m_HelpBarNotUpToDate = true;
+    }
 
     if( n==0 )
     {
-        g_TwMgr->SetLastError(g_ErrNthToDo);
+        //g_TwMgr->SetLastError(g_ErrNthToDo);
         return 0;
     }
     else
@@ -2983,7 +3359,7 @@ TwState ANT_CALL TwGetBarState(const TwBar *_Bar)
 
 //  ---------------------------------------------------------------------------
 
-const char * ANT_CALL TwGetBarName(TwBar *_Bar)
+const char * ANT_CALL TwGetBarName(const TwBar *_Bar)
 {
     if( g_TwMgr==NULL )
     {
@@ -3701,8 +4077,13 @@ static int AddVar(TwBar *_Bar, const char *_Name, ETwType _Type, void *_VarPtr, 
 
     // VC++ uses a different definition of std::string in Debug and Release modes.
     // sizeof(std::string) is encoded in TW_TYPE_STDSTRING to overcome this issue.
-    if( (_Type&0xffff0000)==(TW_TYPE_STDSTRING&0xffff0000) )
+    // With VS2010 the binary representation of std::string has changed too. This is
+    // also detected here.
+    if( (_Type&0xffff0000)==(TW_TYPE_STDSTRING&0xffff0000) || (_Type&0xffff0000)==TW_TYPE_STDSTRING_VS2010 || (_Type&0xffff0000)==TW_TYPE_STDSTRING_VS2008 )
     {
+        if( g_TwMgr->m_ClientStdStringBaseType==0 )
+            g_TwMgr->m_ClientStdStringBaseType = (TwType)(_Type&0xffff0000);
+
         size_t clientStdStringStructSize = (_Type&0xffff);
         if( g_TwMgr->m_ClientStdStringStructSize==0 )
             g_TwMgr->m_ClientStdStringStructSize = clientStdStringStructSize;
@@ -3713,6 +4094,7 @@ static int AddVar(TwBar *_Bar, const char *_Name, ETwType _Type, void *_VarPtr, 
             g_TwMgr->SetLastError(g_ErrStdString);
             return 0;
         }
+
         _Type = TW_TYPE_STDSTRING; // force type to be our TW_TYPE_STDSTRING
     }
 
@@ -3738,7 +4120,7 @@ static int AddVar(TwBar *_Bar, const char *_Name, ETwType _Type, void *_VarPtr, 
              || (_Type>=TW_TYPE_ENUM_BASE && _Type<TW_TYPE_ENUM_BASE+(int)g_TwMgr->m_Enums.size()) 
              || (_Type>TW_TYPE_CSSTRING_BASE && _Type<=TW_TYPE_CSSTRING_MAX)
              || _Type==TW_TYPE_CDSTDSTRING 
-             || (_Type>=TW_TYPE_CUSTOM_BASE && _Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) )
+             || IsCustomType(_Type) ) // (_Type>=TW_TYPE_CUSTOM_BASE && _Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size()) )
     {
         CTwVarAtom *Var = new CTwVarAtom;
         Var->m_Name = _Name;
@@ -3779,7 +4161,7 @@ static int AddVar(TwBar *_Bar, const char *_Name, ETwType _Type, void *_VarPtr, 
         }
         Var->SetDefaults();
 
-        if( _Type>=TW_TYPE_CUSTOM_BASE && _Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size() )
+        if( IsCustomType(_Type) ) // _Type>=TW_TYPE_CUSTOM_BASE && _Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size() )
         {
             if( Var->m_GetCallback==CTwMgr::CMemberProxy::GetCB && Var->m_SetCallback==CTwMgr::CMemberProxy::SetCB )
                 Var->m_Val.m_Custom.m_MemberProxy = static_cast<CTwMgr::CMemberProxy *>(Var->m_ClientData);
@@ -3903,7 +4285,7 @@ static int AddVar(TwBar *_Bar, const char *_Name, ETwType _Type, void *_VarPtr, 
                 mProxy.m_Bar = _Bar;
             }
 
-            if( sProxy!=NULL && m.m_Type>=TW_TYPE_CUSTOM_BASE && m.m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size() )
+            if( sProxy!=NULL && IsCustomType(m.m_Type) ) // m.m_Type>=TW_TYPE_CUSTOM_BASE && m.m_Type<TW_TYPE_CUSTOM_BASE+(int)g_TwMgr->m_Customs.size() )
             {
                 if( sProxy->m_CustomIndexFirst<0 )
                     sProxy->m_CustomIndexFirst = sProxy->m_CustomIndexLast = i;
@@ -3937,8 +4319,6 @@ static int AddVar(TwBar *_Bar, const char *_Name, ETwType _Type, void *_VarPtr, 
             g_TwMgr->SetLastError(g_ErrNotFound);
         return 0;
     }
-	
-	return 0;
 }
 
 //  ---------------------------------------------------------------------------
@@ -4083,7 +4463,6 @@ int ParseToken(string& _Token, const char *_Def, int& Line, int& Column, bool _K
     }
     // read token
     int QuoteLine=0, QuoteColumn=0;
-    const char *QuoteCur;
     char Quote = 0;
     bool AddChar;
     bool LineJustIncremented = false;
@@ -4097,7 +4476,6 @@ int ParseToken(string& _Token, const char *_Def, int& Line, int& Column, bool _K
             Quote = *Cur;
             QuoteLine = Line;
             QuoteColumn = Column;
-            QuoteCur = Cur;
             AddChar = _KeepQuotes;
         }
         else if ( Quote!=0 && *Cur==Quote )
@@ -4264,6 +4642,33 @@ static inline std::string ErrorPosition(bool _MultiLine, int _Line, int _Column)
 int ANT_CALL TwDefine(const char *_Def)
 {
     CTwFPU fpu; // force fpu precision
+
+    // hack to scale fonts artificially (for retina display for instance)
+    if( g_TwMgr==NULL && _Def!=NULL )
+    {
+        size_t l = strlen(_Def);
+        const char *eq = strchr(_Def, '=');
+        if( eq!=NULL && eq!=_Def && l>0 && l<512 )
+        {
+            char *a = new char[l+1];
+            char *b = new char[l+1];
+            if( sscanf(_Def, "%s%s", a, b)==2 && strcmp(a, "GLOBAL")==0 )
+            {
+                if( strchr(b, '=') != NULL )
+                    *strchr(b, '=') = '\0';
+                double scal = 1.0;
+                if( _stricmp(b, "fontscaling")==0 && sscanf(eq+1, "%lf", &scal)==1 && scal>0 )
+                {
+                    g_FontScaling = (float)scal;
+                    delete[] a;
+                    delete[] b;
+                    return 1;
+                }
+            }
+            delete[] a;
+            delete[] b;
+        }
+    }
 
     if( g_TwMgr==NULL )
     {
@@ -4479,6 +4884,39 @@ TwType ANT_CALL TwDefineEnum(const char *_Name, const TwEnumVal *_EnumValues, un
 
 //  ---------------------------------------------------------------------------
 
+TwType TW_CALL TwDefineEnumFromString(const char *_Name, const char *_EnumString)
+{
+    if (_EnumString == NULL) 
+        return TwDefineEnum(_Name, NULL, 0);
+
+    // split enumString
+    stringstream EnumStream(_EnumString);
+    string Label;
+    vector<string> Labels;
+    while( getline(EnumStream, Label, ',') ) {
+        // trim Label
+        size_t Start = Label.find_first_not_of(" \n\r\t");
+        size_t End = Label.find_last_not_of(" \n\r\t");
+        if( Start==string::npos || End==string::npos )
+            Label = "";
+        else
+            Label = Label.substr(Start, (End-Start)+1);
+        // store Label
+        Labels.push_back(Label);
+    }
+    // create TwEnumVal array
+    vector<TwEnumVal> Vals(Labels.size());
+    for( int i=0; i<(int)Labels.size(); i++ )
+    {
+        Vals[i].Value = i;
+        Vals[i].Label = Labels[i].c_str();
+    }
+
+    return TwDefineEnum(_Name, Vals.empty() ? NULL : &(Vals[0]), (unsigned int)Vals.size());
+}
+
+//  ---------------------------------------------------------------------------
+
 void ANT_CALL CTwMgr::CStruct::DefaultSummary(char *_SummaryString, size_t _SummaryMaxLength, const void *_Value, void *_ClientData)
 {
     const CTwVarGroup *varGroup = static_cast<const CTwVarGroup *>(_Value); // special case
@@ -4529,6 +4967,13 @@ void ANT_CALL CTwMgr::CStruct::DefaultSummary(char *_SummaryString, size_t _Summ
                     string valString;
                     const CTwVarAtom *atom = static_cast<const CTwVarAtom *>(var);
                     atom->ValueToString(&valString);
+                    if( atom->m_Type==TW_TYPE_BOOLCPP || atom->m_Type==TW_TYPE_BOOL8 || atom->m_Type==TW_TYPE_BOOL16 || atom->m_Type==TW_TYPE_BOOL32 )
+                    {
+                        if (valString == "0")
+                            valString = "-";
+                        else if (valString == "1")
+                            valString = "\x7f"; // check sign
+                    }
                     strncat(_SummaryString, valString.c_str(), _SummaryMaxLength-l);
                     separator = true;
                 }
@@ -5157,7 +5602,7 @@ static int TranslateKey(int _Key, int _Modifiers)
 
 //  ---------------------------------------------------------------------------
 
-int ANT_CALL TwKeyPressed(int _Key, int _Modifiers)
+static int KeyPressed(int _Key, int _Modifiers, bool _TestOnly)
 {
     CTwFPU fpu; // force fpu precision
 
@@ -5198,7 +5643,7 @@ int ANT_CALL TwKeyPressed(int _Key, int _Modifiers)
 
     _Key = TranslateKey(_Key, _Modifiers);
     if( _Key>' ' && _Key<256 ) // don't test SHIFT if _Key is a common key
-		_Modifiers &= ~TW_KMOD_SHIFT;
+        _Modifiers &= ~TW_KMOD_SHIFT;
     // complete partial modifiers comming from SDL
     if( _Modifiers & TW_KMOD_SHIFT )
         _Modifiers |= TW_KMOD_SHIFT;
@@ -5225,7 +5670,12 @@ int ANT_CALL TwKeyPressed(int _Key, int _Modifiers)
             if( Bar!=NULL && Bar->m_Visible && !Bar->IsMinimized() 
                 && ( (MouseX>=Bar->m_PosX && MouseX<Bar->m_PosX+Bar->m_Width && MouseY>=Bar->m_PosY && MouseY<Bar->m_PosY+Bar->m_Height)
                      || Bar==PopupBar) )
-                Handled = Bar->KeyPressed(_Key, _Modifiers);
+            {
+                if (_TestOnly)
+                    Handled = Bar->KeyTest(_Key, _Modifiers);
+                else
+                    Handled = Bar->KeyPressed(_Key, _Modifiers);
+            }
         }
 
         // If not handled, send it to non-iconified bars in the right order
@@ -5244,7 +5694,10 @@ int ANT_CALL TwKeyPressed(int _Key, int _Modifiers)
 
             if( Bar!=NULL && Bar->m_Visible && !Bar->IsMinimized() )
             {
-                Handled = Bar->KeyPressed(_Key, _Modifiers);
+                if( _TestOnly )
+                    Handled = Bar->KeyTest(_Key, _Modifiers);
+                else
+                    Handled = Bar->KeyPressed(_Key, _Modifiers);
                 if( g_TwMgr==NULL ) // Mgr might have been destroyed by the client inside a callback call
                     return 1;
             }
@@ -5255,10 +5708,15 @@ int ANT_CALL TwKeyPressed(int _Key, int _Modifiers)
         {
             Bar = g_TwMgr->m_Bars[g_TwMgr->m_Order[i]];
             if( Bar!=NULL && Bar->m_Visible && Bar->IsMinimized() )
-                Handled = Bar->KeyPressed(_Key, _Modifiers);
+            {
+                if( _TestOnly )
+                    Handled = Bar->KeyTest(_Key, _Modifiers);
+                else
+                    Handled = Bar->KeyPressed(_Key, _Modifiers);
+            }
         }
         
-        if( g_TwMgr->m_HelpBar!=NULL && g_TwMgr->m_Graph )
+        if( g_TwMgr->m_HelpBar!=NULL && g_TwMgr->m_Graph && !_TestOnly )
         {
             string Str;
             TwGetKeyString(&Str, _Key, _Modifiers);
@@ -5280,6 +5738,16 @@ int ANT_CALL TwKeyPressed(int _Key, int _Modifiers)
         TwSetTopBar(Bar);
 
     return Handled ? 1 : 0;
+}
+
+int ANT_CALL TwKeyPressed(int _Key, int _Modifiers)
+{
+    return KeyPressed(_Key, _Modifiers, false);
+}
+
+int ANT_CALL TwKeyTest(int _Key, int _Modifiers)
+{
+    return KeyPressed(_Key, _Modifiers, true);
 }
 
 //  ---------------------------------------------------------------------------
@@ -5868,9 +6336,8 @@ void CTwMgr::SetCursor(CTwMgr::CCursor _Cursor)
         memset(&ci, 0, sizeof(ci));
         ci.cbSize = sizeof(ci);
         BOOL ok = ::GetCursorInfo(&ci);
-        ::SetCursor(_Cursor);
-        if( ok && !(ci.flags & CURSOR_SHOWING) )
-            ::ShowCursor(FALSE);
+        if( ok && (ci.flags & CURSOR_SHOWING) )
+            ::SetCursor(_Cursor);
     }
 }
 
@@ -5921,51 +6388,52 @@ CTwMgr::CCursor CTwMgr::PixmapCursor(int _CurIdx)
 
 void CTwMgr::CreateCursors()
 {
-	if (m_CursorsCreated)
-		return;
-
-	::CFRetain( m_CursorArrow = [NSCursor arrowCursor] );
-	::CFRetain( m_CursorMove         = [NSCursor crosshairCursor] );
-	::CFRetain( m_CursorWE           = [NSCursor resizeLeftRightCursor] );
-	::CFRetain( m_CursorNS           = [NSCursor resizeUpDownCursor] );
-	::CFRetain( m_CursorTopRight     = [NSCursor arrowCursor] );
-	::CFRetain( m_CursorTopLeft      = [NSCursor arrowCursor] );
-	::CFRetain( m_CursorBottomRight  = [NSCursor arrowCursor] );
-	::CFRetain( m_CursorBottomLeft   = [NSCursor arrowCursor] );
-	::CFRetain( m_CursorHelp         = [NSCursor arrowCursor] );
-	::CFRetain( m_CursorHand         = [NSCursor pointingHandCursor] );
-	::CFRetain( m_CursorCross        = [NSCursor arrowCursor] );
-	::CFRetain( m_CursorUpArrow      = [NSCursor arrowCursor] );
-	::CFRetain( m_CursorNo           = [NSCursor arrowCursor] );
-	::CFRetain( m_CursorIBeam        = [NSCursor IBeamCursor] );
-	for (int i=0;i<NB_ROTO_CURSORS; i++) {
-		::CFRetain( m_RotoCursors[i] = PixmapCursor(i+2) );
-	}
-	::CFRetain( m_CursorCenter  = PixmapCursor(0));
-	::CFRetain( m_CursorPoint   = PixmapCursor(1));
+    if (m_CursorsCreated)
+        return;
+    
+    m_CursorArrow        = [[NSCursor arrowCursor] retain];
+    m_CursorMove         = [[NSCursor crosshairCursor] retain];
+    m_CursorWE           = [[NSCursor resizeLeftRightCursor] retain];
+    m_CursorNS           = [[NSCursor resizeUpDownCursor] retain];
+    m_CursorTopRight     = [[NSCursor arrowCursor] retain]; //osx not have one
+    m_CursorTopLeft      = [[NSCursor arrowCursor] retain]; //osx not have one
+    m_CursorBottomRight  = [[NSCursor arrowCursor] retain]; //osx not have one
+    m_CursorBottomLeft   = [[NSCursor arrowCursor] retain]; //osx not have one
+    m_CursorHelp         = [[NSCursor arrowCursor] retain]; //osx not have one
+    m_CursorHand         = [[NSCursor pointingHandCursor] retain];
+    m_CursorCross        = [[NSCursor arrowCursor] retain];
+    m_CursorUpArrow      = [[NSCursor arrowCursor] retain];
+    m_CursorNo           = [[NSCursor arrowCursor] retain];
+    m_CursorIBeam        = [[NSCursor IBeamCursor] retain];
+    for (int i=0;i<NB_ROTO_CURSORS; i++)
+    {
+        m_RotoCursors[i] = [PixmapCursor(i+2) retain];
+    }
+    m_CursorCenter  = [PixmapCursor(0) retain];
+    m_CursorPoint   = [PixmapCursor(1) retain];
     m_CursorsCreated = true;
 }
 
 void CTwMgr::FreeCursors()
 {
-	::CFRelease( m_CursorArrow );
-    ::CFRelease( m_CursorMove );
-    ::CFRelease( m_CursorWE );
-    ::CFRelease( m_CursorNS );
-    ::CFRelease( m_CursorTopRight );
-    ::CFRelease( m_CursorTopLeft );
-    ::CFRelease( m_CursorBottomRight );
-    ::CFRelease( m_CursorBottomLeft );
-    ::CFRelease( m_CursorHelp );
-    ::CFRelease( m_CursorHand );
-    ::CFRelease( m_CursorCross );
-    ::CFRelease( m_CursorUpArrow );
-    ::CFRelease( m_CursorNo );
-    ::CFRelease( m_CursorIBeam );
+    [m_CursorArrow release];
+    [m_CursorMove release];
+    [m_CursorWE release];
+    [m_CursorNS release];
+    [m_CursorTopRight release];
+    [m_CursorTopLeft release];
+    [m_CursorBottomRight release];
+    [m_CursorBottomLeft release];
+    [m_CursorHelp release];
+    [m_CursorHand release];
+    [m_CursorCross release];
+    [m_CursorUpArrow release];
+    [m_CursorNo release];
+    [m_CursorIBeam release];
     for( int i=0; i<NB_ROTO_CURSORS; ++i )
-        ::CFRelease( m_RotoCursors[i] ); 
-    ::CFRelease( m_CursorCenter );
-    ::CFRelease( m_CursorPoint );
+        [m_RotoCursors[i] release]; 
+    [m_CursorCenter release];
+    [m_CursorPoint release];
     m_CursorsCreated = false;
 }
 
@@ -6152,10 +6620,13 @@ void ANT_CALL TwCopyCDStringToLibrary(char **destinationLibraryStringPtr, const 
         return;
     }
 
+    // static buffer to store sourceClientString copy associated to sourceClientString pointer
+    std::vector<char>& Buf = g_TwMgr->m_CDStdStringCopyBuffers[(void *)sourceClientString];
+
     size_t len = (sourceClientString!=NULL) ? strlen(sourceClientString) : 0;
-    if( g_TwMgr->m_CDStdStringCopyBuffer.size()<len+1 )
-        g_TwMgr->m_CDStdStringCopyBuffer.resize(len+128); // len + some margin
-    char *SrcStrCopy = &(g_TwMgr->m_CDStdStringCopyBuffer[0]);
+    if( Buf.size()<len+1 )
+        Buf.resize(len+128); // len + some margin
+    char *SrcStrCopy = &(Buf[0]);
     SrcStrCopy[0] = '\0';
     if( sourceClientString!=NULL )
         memcpy(SrcStrCopy, sourceClientString, len+1);
@@ -6194,16 +6665,91 @@ void ANT_CALL TwCopyStdStringToLibrary(std::string& destLibraryString, const std
     srcLibString.FromClient(srcClientString);
     const char *SrcStr = srcLibString.ToLib().c_str();
     const char **DstStrPtr = (const char **)&destLibraryString;
+
     // SrcStr can be defined locally by the caller, so we need to copy it
     // ( *DstStrPtr = copy of SrcStr )
+
+    // static buffer to store srcClientString copy associated to srcClientString pointer
+    std::vector<char>& Buf = g_TwMgr->m_CDStdStringCopyBuffers[(void *)&srcClientString];
+
     size_t len = strlen(SrcStr);
-    if( g_TwMgr->m_CDStdStringCopyBuffer.size()<len+1 )
-        g_TwMgr->m_CDStdStringCopyBuffer.resize(len+128); // len + some margin
-    char *SrcStrCopy = &(g_TwMgr->m_CDStdStringCopyBuffer[0]);
+    if( Buf.size()<len+1 )
+        Buf.resize(len+128); // len + some margin
+    char *SrcStrCopy = &(Buf[0]);
+
     memcpy(SrcStrCopy, SrcStr, len+1);
     SrcStrCopy[len] = '\0';
     *DstStrPtr = SrcStrCopy;
     //*(const char **)&destLibraryString = srcClientString.c_str();
+}
+
+//  ---------------------------------------------------------------------------
+
+bool CRect::Subtract(const CRect& _Rect, vector<CRect>& _OutRects) const
+{
+    if( Empty() )
+        return false;
+    if( _Rect.Empty() || _Rect.Y>=Y+H || _Rect.Y+_Rect.H<=Y || _Rect.X>=X+W || _Rect.X+_Rect.W<=X )
+    {
+        _OutRects.push_back(*this);
+        return true;
+    }
+
+    bool Ret = false;
+    int Y0 = Y;
+    int Y1 = Y+H-1;
+    if( _Rect.Y>Y )
+    {
+        Y0 = _Rect.Y;
+        _OutRects.push_back(CRect(X, Y, W, Y0-Y+1));
+        Ret = true;
+    }
+    if( _Rect.Y+_Rect.H<Y+H )
+    {
+        Y1 = _Rect.Y+_Rect.H;
+        _OutRects.push_back(CRect(X, Y1, W, Y+H-Y1));
+        Ret = true;
+    }
+    int X0 = X;
+    int X1 = X+W-1;
+    if( _Rect.X>X )
+    {
+        X0 = _Rect.X; //-2;
+        _OutRects.push_back(CRect(X, Y0, X0-X+1, Y1-Y0+1));
+        Ret = true;
+    }
+    if( _Rect.X+_Rect.W<X+W )
+    {
+        X1 = _Rect.X+_Rect.W; //-1;
+        _OutRects.push_back(CRect(X1, Y0, X+W-X1, Y1-Y0+1));
+        Ret = true;
+    }
+    return Ret;
+}
+
+bool CRect::Subtract(const vector<CRect>& _Rects, vector<CRect>& _OutRects) const
+{
+    _OutRects.clear();
+    size_t i, j, NbRects = _Rects.size();
+    if( NbRects==0 )
+    {
+        _OutRects.push_back(*this);
+        return true;
+    }
+    else
+    {
+        vector<CRect> TmpRects;
+        Subtract(_Rects[0], _OutRects);
+        
+        for( i=1; i<NbRects; i++)
+        {
+            for( j=0; j<_OutRects.size(); j++ )
+                _OutRects[j].Subtract(_Rects[i], TmpRects);
+            _OutRects.swap(TmpRects);
+            TmpRects.clear();
+        }
+        return _OutRects.empty();
+    }
 }
 
 //  ---------------------------------------------------------------------------

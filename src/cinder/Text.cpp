@@ -555,7 +555,7 @@ void TextBox::createLines() const
 		
 		lineOffset.x = ::CTLineGetPenOffsetForFlush( line, flush, maxWidth );
 		lineOffset.y += ascent;
-		mLines.push_back( make_pair( shared_ptr<const __CTLine>( line, ::CFRelease ), lineOffset ) );
+		mLines.push_back( make_pair( shared_ptr<__CTLine>( (__CTLine*)line, ::CFRelease ), lineOffset ) );
 		lineOffset.y += descent + leading;
 		mCalculatedSize.x = std::max( mCalculatedSize.x, (float)lineWidth );
 		mCalculatedSize.y += ascent + descent + leading;

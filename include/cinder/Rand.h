@@ -22,17 +22,7 @@
 
 #pragma once
 
-#pragma push_macro("nil")
-#pragma push_macro("Nil")
-#undef nil
-#undef Nil
-#include <boost/random.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/uniform_real.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#pragma pop_macro("Nil")
-#pragma pop_macro("nil")
-
+#include <random>
 #include "cinder/Vector.h"
 
 namespace cinder {	
@@ -40,32 +30,46 @@ namespace cinder {
 class Rand {
  public:
 	Rand()
-		: mBase( 214u ), mFloatGen( mBase, boost::uniform_real<float>( 0.0f, 1.0f ) ), mIntGen( mBase, boost::uniform_int<>( 0, 2147483647 ) )
+		: mBase( 214u ), mHaveNextNextGaussian( false )
 	{}
 	
-	Rand( uint32_t seed )
-		: mBase( seed ), mFloatGen( mBase, boost::uniform_real<float>( 0.0f, 1.0f ) ), mIntGen( mBase, boost::uniform_int<>( 0, 2147483647 ) )
+	Rand( unsigned long seed )
+		: mBase( seed ), mHaveNextNextGaussian( false )
 	{}
 
 	//! Re-seeds the random generator
-	void seed( uint32_t seedValue );
+	void seed( unsigned long seedValue );
 	
 	//! returns a random boolean value
 	bool nextBool()
 	{
-		return mIntGen() & 1;
+		return mBase() & 1;
 	}
 	
-	//! returns a random integer in the range [0,2147483647]
+	//! returns a random integer in the range [-2147483648,2147483647]
 	int32_t nextInt()
 	{
-		return mIntGen();
+		return mBase();
+	}
+
+	//! returns a random integer in the range [0,4294967296)
+	uint32_t nextUint()
+	{
+		return mBase();
 	}
 	
 	//! returns a random integer in the range [0,v)
 	int32_t nextInt( int32_t v )
 	{
-		return mIntGen() % v;
+		if( v <= 0 ) return 0;
+		return mBase() % v;
+	}
+
+	//! returns a random integer in the range [0,v)
+	uint32_t nextUint( uint32_t v )
+	{
+		if( v == 0 ) return 0;
+		return mBase() % v;
 	}
 	
 	//! returns a random integer in the range [a,b)
@@ -74,25 +78,25 @@ class Rand {
 		return nextInt( b - a ) + a;
 	}
 	
-	//! returns a random float in the range [0.0f,1.0f]
+	//! returns a random float in the range [0.0f,1.0f)
 	float nextFloat()
 	{
-		return mFloatGen();
+		return mFloatGen(mBase);
 	}
 	
-	//! returns a random float in the range [0.0f,v]
+	//! returns a random float in the range [0.0f,v)
 	float nextFloat( float v )
 	{
-		return mFloatGen() * v;
+		return mFloatGen(mBase) * v;
 	}
 	
-	//! returns a random float in the range [a,b]
+	//! returns a random float in the range [a,b)
 	float nextFloat( float a, float b )
 	{
-		return mFloatGen() * ( b - a ) + a;
+		return mFloatGen(mBase) * ( b - a ) + a;
 	}
 	
-	//! returns a random float in the range [a,b] or the range [-b,-a]
+	//! returns a random float in the range [a,b] or the range [-b,-a)
 	float posNegFloat( float a, float b )
 	{
 		if( nextBool() )
@@ -125,25 +129,25 @@ class Rand {
     //! returns a random float via Gaussian distribution
     float nextGaussian()
     {
-        if (mHaveNextNextGaussian) {
-            mHaveNextNextGaussian = false;
-            return mNextNextGaussian;
-        }
-        else {
-            float v1, v2, s;
-            do {
-                v1 = 2.0f * nextFloat() - 1.0f;
-                v2 = 2.0f * nextFloat() - 1.0f;
-                
-                s = v1 * v1 + v2 * v2;
-            }
-            while (s >= 1.0f || s == 0.0f);
+        if( mHaveNextNextGaussian ) {
+			mHaveNextNextGaussian = false;
+			return mNextNextGaussian;
+		}
+		else {
+			float v1, v2, s;
+			do {
+				v1 = 2.0f * nextFloat() - 1.0f;
+				v2 = 2.0f * nextFloat() - 1.0f;
+
+				s = v1 * v1 + v2 * v2;
+			}
+			while( s >= 1.0f || s == 0.0f );
+
+			float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
             
-            float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
-            
-            mNextNextGaussian       = v2 * m;
-            mHaveNextNextGaussian   = true;
-            
+			mNextNextGaussian       = v2 * m;
+			mHaveNextNextGaussian   = true;
+
             return v1 * m;
         }
     }    
@@ -153,25 +157,38 @@ class Rand {
 	static void randomize();
 	
 	//! Resets the static random generator to the specific seed \a seedValue
-	static void	randSeed( uint32_t seedValue );
+	static void	randSeed( unsigned long seedValue );
 	
 	//! returns a random boolean value
 	static bool randBool()
 	{
-		return sIntGen() & 1;
+		return sBase() & 1;
 	}
 	
-	//! returns a random integer in the range [0,2147483647]
+	//! returns a random integer in the range [-2147483648,2147483647]
 	static int32_t randInt()
 	{
-		return sIntGen();
+		return sBase();
+	}
+
+	//! returns a random integer in the range [0,4294967296)
+	static uint32_t randUint()
+	{
+		return sBase();
 	}
 	
 	//! returns a random integer in the range [0,v)
 	static int32_t randInt( int32_t v )
 	{
+		if( v <= 0 ) return 0;
+		else return sBase() % v;
+	}
+
+	//! returns a random integer in the range [0,v)
+	static uint32_t randUint( uint32_t v )
+	{
 		if( v == 0 ) return 0;
-		else return sIntGen() % v;
+		else return sBase() % v;
 	}
 	
 	//! returns a random integer in the range [a,b)
@@ -180,25 +197,25 @@ class Rand {
 		return randInt( b - a ) + a;
 	}
 	
-	//! returns a random float in the range [0.0f,1.0f]
+	//! returns a random float in the range [0.0f,1.0f)
 	static float randFloat()
 	{
-		return sFloatGen();
+		return sFloatGen(sBase);
 	}
 	
-	//! returns a random float in the range [0.0f,v]
+	//! returns a random float in the range [0.0f,v)
 	static float randFloat( float v )
 	{
-		return sFloatGen() * v;
+		return sFloatGen(sBase) * v;
 	}
 	
-	//! returns a random float in the range [a,b]
+	//! returns a random float in the range [a,b)
 	static float randFloat( float a, float b )
 	{
-		return sFloatGen() * ( b - a ) + a;
+		return sFloatGen(sBase) * ( b - a ) + a;
 	}
 	
-	//! returns a random float in the range [a,b] or the range [-b,-a]
+	//! returns a random float in the range [a,b) or the range [-b,-a)
 	static float randPosNegFloat( float a, float b )
 	{
 		if( randBool() )
@@ -231,46 +248,44 @@ class Rand {
     //! returns a random float via Gaussian distribution; refactor later
     static float randGaussian() 
     {
-        static bool  sHaveNextNextGaussian;
-        static float sNextNextGaussian;
-        
-        if (sHaveNextNextGaussian) {
-            sHaveNextNextGaussian = false;
-            return sNextNextGaussian;
-        }
-        else {
-            float v1, v2, s;
-            do {
-                v1 = 2.0f * sFloatGen() - 1.0f;
-                v2 = 2.0f * sFloatGen() - 1.0f;
-                
-                s = v1 * v1 + v2 * v2;
-            }
-            while (s >= 1.0f || s == 0.0f);
+		static bool  sHaveNextNextGaussian = false;
+		static float sNextNextGaussian;
+
+		if( sHaveNextNextGaussian ) {
+			sHaveNextNextGaussian = false;
+			return sNextNextGaussian;
+		}
+		else {
+			float v1, v2, s;
+			do {
+				v1 = 2.0f * sFloatGen(sBase) - 1.0f;
+				v2 = 2.0f * sFloatGen(sBase) - 1.0f;
+
+				s = v1 * v1 + v2 * v2;
+			}
+			while( s >= 1.0f || s == 0.0f );
+
+			float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
+
+			sNextNextGaussian       = v2 * m;
+			sHaveNextNextGaussian   = true;
             
-            float m = math<float>::sqrt(-2.0f * math<float>::log(s)/s);
-            
-            sNextNextGaussian       = v2 * m;
-            sHaveNextNextGaussian   = true;
-            
-            return v1 * m;
-        }  
-    }     
+			return v1 * m;
+		}
+	}
 	
-private:
-	boost::mt19937 mBase;
-	boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > mFloatGen;	
-	boost::variate_generator<boost::mt19937&, boost::uniform_int<> > mIntGen;
-    float mNextNextGaussian;    
-    bool mHaveNextNextGaussian;
+  private:
+	std::mt19937 mBase;
+	std::uniform_real_distribution<float>	mFloatGen;	
+    float	mNextNextGaussian;    
+    bool	mHaveNextNextGaussian;
     
-	static boost::mt19937 sBase;
-	static boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > sFloatGen;
-	static boost::variate_generator<boost::mt19937&, boost::uniform_int<> > sIntGen;
+	static std::mt19937 sBase;
+	static std::uniform_real_distribution<float> sFloatGen;
 };
 
 //! Resets the static random generator to the specific seed \a seedValue
-inline void randSeed( uint32_t seedValue ) { Rand::randSeed( seedValue ); }
+inline void randSeed( unsigned long seedValue ) { Rand::randSeed( seedValue ); }
 
 //! returns a random boolean value
 inline bool randBool() { return Rand::randBool(); }

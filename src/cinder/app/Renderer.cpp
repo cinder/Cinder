@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -49,16 +50,28 @@ namespace cinder { namespace app {
 const int RendererGl::sAntiAliasingSamples[] = { 0, 2, 4, 6, 8, 16, 32 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// RendererGl
-RendererGl::RendererGl()
-	: Renderer(), mImpl( 0 )
+// Renderer
+Renderer::Renderer( const Renderer &renderer )
+	: mApp( renderer.mApp )
 {
-	mAntiAliasing = AA_MSAA_16;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RendererGl
 RendererGl::RendererGl( int aAntiAliasing )
 	: Renderer(), mImpl( 0 ), mAntiAliasing( aAntiAliasing )
 {}
+
+RendererGl::RendererGl( const RendererGl &renderer )
+	: Renderer( renderer ), mAntiAliasing( renderer.mAntiAliasing )
+{
+#if defined( CINDER_COCOA )
+	mImpl = 0;
+#elif defined( CINDER_MSW )
+	mImpl = 0;
+	mWnd = renderer.mWnd;
+#endif
+}
 
 void RendererGl::setAntiAliasing( int aAntiAliasing )
 {
@@ -68,14 +81,15 @@ void RendererGl::setAntiAliasing( int aAntiAliasing )
 #if defined( CINDER_MAC )
 RendererGl::~RendererGl()
 {
-	::CFRelease( mImpl );
+	if( mImpl )
+		::CFRelease( mImpl );
 }
 
-void RendererGl::setup( App *aApp, CGRect frame, NSView *cinderView )
+void RendererGl::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
 {
 	mApp = aApp;
-
-	mImpl = [[AppImplCocoaRendererGl alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp renderer:this];
+	RendererGlRef sharedGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
+	mImpl = [[AppImplCocoaRendererGl alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
 	// This is necessary for Objective-C garbage collection to do the right thing
 	::CFRetain( mImpl );
 }
@@ -107,7 +121,7 @@ Surface RendererGl::copyWindowSurface( const Area &area )
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindowHeight() - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );		
 	ip::flipVertical( &s );
 	return s;
@@ -123,6 +137,11 @@ CGLPixelFormatObj RendererGl::getCglPixelFormat()
 	return [mImpl getCglPixelFormat];
 }
 
+NSOpenGLContext* RendererGl::getNsOpenGlContext()
+{
+	return [mImpl getNsOpenGlContext];
+}
+
 void RendererGl::makeCurrentContext()
 {
 	[mImpl makeCurrentContext];
@@ -133,11 +152,17 @@ RendererGl::~RendererGl()
 {
 }
 
-void RendererGl::setup( App *aApp, const Area &frame, UIView *cinderView )
+void RendererGl::setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer )
 {
 	mApp = aApp;
 
-	mImpl = [[AppImplCocoaTouchRendererGl alloc] initWithFrame:cocoa::createCgRect( frame ) cinderView:(UIView*)cinderView app:mApp renderer:this];
+	RendererGlRef sharedRendererGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
+	mImpl = [[AppImplCocoaTouchRendererGl alloc] initWithFrame:cocoa::createCgRect( frame ) cinderView:(UIView*)cinderView app:mApp renderer:this sharedRenderer:sharedRendererGl];
+}
+
+EAGLContext* RendererGl::getEaglContext() const
+{
+	return [mImpl getEaglContext];
 }
 
 void RendererGl::startDraw()
@@ -172,7 +197,7 @@ Surface	RendererGl::copyWindowSurface( const Area &area )
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindowHeight() - area.y2, area.getWidth(), area.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
 	ip::flipVertical( &s );
 
@@ -185,13 +210,14 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( App *aApp, HWND wnd, HDC dc )
+void RendererGl::setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
 	mApp = aApp;
 	if( ! mImpl )
 		mImpl = new AppImplMswRendererGl( mApp, this );
-	mImpl->initialize( wnd, dc );
+
+	mImpl->initialize( wnd, dc, sharedRenderer );
 }
 
 void RendererGl::kill()
@@ -214,6 +240,11 @@ void RendererGl::startDraw()
 	mImpl->makeCurrentContext();
 }
 
+void RendererGl::makeCurrentContext()
+{
+	mImpl->makeCurrentContext();
+}
+
 void RendererGl::finishDraw()
 {
 	mImpl->swapBuffers();
@@ -231,7 +262,7 @@ Surface	RendererGl::copyWindowSurface( const Area &area )
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindowHeight() - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
 	ip::flipVertical( &s );
 	return s;
@@ -241,7 +272,21 @@ Surface	RendererGl::copyWindowSurface( const Area &area )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderer2d
+Renderer2d::Renderer2d( const Renderer2d &renderer )
+	: Renderer( renderer )
+{
+	mImpl = 0;
+#if defined( CINDER_MSW )
+	mDoubleBuffer = renderer.mDoubleBuffer;
+#endif
+}
+
 #if defined( CINDER_COCOA )
+
+Renderer2d::Renderer2d()
+	: Renderer(), mImpl( 0 )
+{
+}
 
 #if defined( CINDER_MAC )
 Renderer2d::~Renderer2d()
@@ -249,7 +294,7 @@ Renderer2d::~Renderer2d()
 	::CFRelease( mImpl );
 }
 
-void Renderer2d::setup( App *aApp, CGRect frame, NSView *cinderView )
+void Renderer2d::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
 {
 	mApp = aApp;
 	mImpl = [[AppImplCocoaRendererQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp];
@@ -259,7 +304,7 @@ void Renderer2d::setup( App *aApp, CGRect frame, NSView *cinderView )
 
 #else
 
-void Renderer2d::setup( App *aApp, const Area &frame, UIView *cinderView )
+void Renderer2d::setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef /*sharedRenderer*/ )
 {
 	mApp = aApp;
 	mImpl = [[AppImplCocoaTouchRendererQuartz alloc] initWithFrame:cinder::cocoa::createCgRect(frame) cinderView:cinderView app:mApp];
@@ -320,16 +365,16 @@ Surface Renderer2d::copyWindowSurface( const Area &area )
 #if defined( CINDER_MSW )
 
 Renderer2d::Renderer2d( bool doubleBuffer )
-	: mDoubleBuffer( doubleBuffer )
+	: Renderer(), mDoubleBuffer( doubleBuffer )
 {
 }
 
-void Renderer2d::setup( App *app, HWND wnd, HDC dc )
+void Renderer2d::setup( App *app, HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
 	mApp = app;
 	mWnd = wnd;
 	mImpl = new AppImplMswRendererGdi( app, mDoubleBuffer );
-	mImpl->initialize( wnd, dc );
+	mImpl->initialize( wnd, dc, RendererRef() /* we don't use shared renderers on GDI */ );
 }
 
 void Renderer2d::kill()
@@ -372,6 +417,6 @@ Surface	Renderer2d::copyWindowSurface( const Area &area )
 	return mImpl->copyWindowContents( area );
 }
 
-#endif
+#endif // defined( CINDER_MSW )
 
 } } // namespace cinder::app

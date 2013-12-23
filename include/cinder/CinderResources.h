@@ -25,12 +25,14 @@
 #pragma once
 
 #ifdef RC_INVOKED
+	#define WORKING_DIR "./"
 	#define QUOTE_PATH(x) #x
 	#define CINDER_RESOURCE( LOCALPREFIX, PATH, ID, TYPE ) \
-		ID		TYPE 	QUOTE_PATH( LOCALPREFIX##PATH )
+	ID		TYPE 	QUOTE_PATH( ./##LOCALPREFIX##PATH )
 #elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+	#define QUOTE_PATH(x) #x	
 	#define CINDER_RESOURCE( LOCALPREFIX, PATH, ID, TYPE ) \
-		ID,#TYPE
+	QUOTE_PATH(LOCALPREFIX##PATH),ID,#TYPE
 #else // MAC RESOURCE
 	#define CINDER_RESOURCE( LOCALPREFIX, PATH, ID, TYPE ) #PATH
 #endif

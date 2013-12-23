@@ -75,7 +75,7 @@ class TubularApp : public AppBasic {
 	void keyDown( KeyEvent event );
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
-	void resize( ResizeEvent event );
+	void resize();
 	void update();
 	void draw();
 	
@@ -101,7 +101,7 @@ class TubularApp : public AppBasic {
 	int32_t					mNumSegs;
 	int						mShape;
 	Arcball					mArcball;
-	params::InterfaceGl		mParams;
+	params::InterfaceGlRef	mParams;
 };
 
 void TubularApp::prepareSettings()
@@ -147,18 +147,18 @@ void TubularApp::setup()
 	mArcball.setWindowSize( getWindowSize() );
 	mArcball.setCenter( getWindowCenter() );
 	mArcball.setRadius( 150 );		
-	
-	mParams = params::InterfaceGl( "Parameters", Vec2i( 200, 200 ) );
-	mParams.addParam( "Parallel Transport", &mParallelTransport, "keyIncr=f" );
-	mParams.addParam( "Draw Curve", &mDrawCurve, "keyIncr=c" );
-	mParams.addParam( "Wireframe", &mWireframe, "keyIncr=w" );
-	mParams.addParam( "Draw Mesh", &mDrawMesh, "keyIncr=m" );
-	mParams.addParam( "Draw Slices", &mDrawSlices, "keyIncr=l" );
-	mParams.addParam( "Draw Frames", &mDrawFrames, "keyIncr=t" );
+
+	mParams = params::InterfaceGl::create( getWindow(), "Parameters", Vec2i( 200, 200 ) );
+	mParams->addParam( "Parallel Transport", &mParallelTransport, "keyIncr=f" );
+	mParams->addParam( "Draw Curve", &mDrawCurve, "keyIncr=c" );
+	mParams->addParam( "Wireframe", &mWireframe, "keyIncr=w" );
+	mParams->addParam( "Draw Mesh", &mDrawMesh, "keyIncr=m" );
+	mParams->addParam( "Draw Slices", &mDrawSlices, "keyIncr=l" );
+	mParams->addParam( "Draw Frames", &mDrawFrames, "keyIncr=t" );
 	vector<string> shapes;
 	shapes.push_back( "circle" ); shapes.push_back( "star" ); shapes.push_back( "hypotrochoid" ); shapes.push_back( "epicycloid" );
-	mParams.addParam( "Shape", shapes, &mShape, "keyIncr=s" );
-	mParams.addParam( "Segments", &mNumSegs, "min=4 max=1024 keyIncr== keyDecr=-" );
+	mParams->addParam( "Shape", shapes, &mShape, "keyIncr=s" );
+	mParams->addParam( "Segments", &mNumSegs, "min=4 max=1024 keyIncr== keyDecr=-" );
 }
 
 void TubularApp::keyDown( KeyEvent event )
@@ -184,7 +184,7 @@ void TubularApp::mouseDrag( MouseEvent event )
 	mArcball.mouseDrag( P );
 }
 
-void TubularApp::resize( ResizeEvent event )
+void TubularApp::resize()
 {
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 	gl::setMatrices( mCam );	
@@ -247,10 +247,10 @@ void TubularApp::update()
 
 void TubularApp::draw()
 {
+	gl::clear( Color( 0, 0, 0 ) ); 
+
 	gl::setMatrices( mCam );
 	gl::rotate( mArcball.getQuat() );
-
-	gl::clear( Color( 0, 0, 0 ) ); 
 
 	gl::disableAlphaBlending();
 	if( mWireframe && mTubeMesh.getNumTriangles() ) {
@@ -279,7 +279,7 @@ void TubularApp::draw()
 		mTube.drawFrames( 0.5f );
 	}
 	
-	params::InterfaceGl::draw();
+	mParams->draw();	
 }
 
 

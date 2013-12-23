@@ -20,7 +20,7 @@ class FlockingApp : public AppBasic {
 	void draw();
 	
 	// PARAMS
-	params::InterfaceGl	mParams;
+	params::InterfaceGlRef	mParams;
 	
 	// CAMERA
 	CameraPersp			mCam;
@@ -57,15 +57,15 @@ void FlockingApp::setup()
 	mCam.setPerspective( 75.0f, getWindowAspectRatio(), 50.0f, 2000.0f );
 	
 	// SETUPS PARAMS
-	mParams = params::InterfaceGl( "Flocking", Vec2i( 200, 240 ) );
-	mParams.addParam( "Scene Rotation", &mSceneRotation, "opened=1" );
-	mParams.addSeparator();
-	mParams.addParam( "Eye Distance", &mCameraDistance, "min=50.0 max=1500.0 step=50.0 keyIncr=s keyDecr=w" );
-	mParams.addParam( "Center Gravity", &mCentralGravity, "keyIncr=g" );
-	mParams.addParam( "Flatten", &mFlatten, "keyIncr=f" );
-	mParams.addSeparator();
-	mParams.addParam( "Zone Radius", &mZoneRadius, "min=10.0 max=100.0 step=1.0 keyIncr=z keyDecr=Z" );
-	mParams.addParam( "Thresh", &mThresh, "min=0.025 max=1.0 step=0.025 keyIncr=t keyDecr=T" );
+	mParams = params::InterfaceGl::create( "Flocking", Vec2i( 200, 240 ) );
+	mParams->addParam( "Scene Rotation", &mSceneRotation, "opened=1" );
+	mParams->addSeparator();
+	mParams->addParam( "Eye Distance", &mCameraDistance, "min=50.0 max=1500.0 step=50.0 keyIncr=s keyDecr=w" );
+	mParams->addParam( "Center Gravity", &mCentralGravity, "keyIncr=g" );
+	mParams->addParam( "Flatten", &mFlatten, "keyIncr=f" );
+	mParams->addSeparator();
+	mParams->addParam( "Zone Radius", &mZoneRadius, "min=10.0 max=100.0 step=1.0 keyIncr=z keyDecr=Z" );
+	mParams->addParam( "Thresh", &mThresh, "min=0.025 max=1.0 step=0.025 keyIncr=t keyDecr=T" );
 	
 	// CREATE PARTICLE CONTROLLER
 	mParticleController.addParticles( NUM_INITIAL_PARTICLES );
@@ -104,7 +104,7 @@ void FlockingApp::draw()
 	mParticleController.draw();
 	
 	// DRAW PARAMS WINDOW
-	params::InterfaceGl::draw();
+	mParams->draw();
 	
 	// DRAW ZONE DIAGRAM
 	gl::disableDepthRead();

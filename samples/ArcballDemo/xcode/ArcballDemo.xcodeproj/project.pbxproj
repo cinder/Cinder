@@ -8,21 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
-		0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0097E3E40F3E9819005A4392 /* QuickTime.framework */; };
+		0095447F167CFACD008ECA02 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0095447E167CFACD008ECA02 /* QTKit.framework */; };
 		00AA99820FB0A5100094126A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00AA997F0FB0A5100094126A /* AudioToolbox.framework */; };
 		00AA99830FB0A5100094126A /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00AA99800FB0A5100094126A /* AudioUnit.framework */; };
 		00AA99840FB0A5100094126A /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00AA99810FB0A5100094126A /* CoreAudio.framework */; };
 		00BAE65A0E7ED9C10018A608 /* ArcballDemoApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* ArcballDemoApp.cpp */; };
 		00C073010FF32E5C004801EA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C073000FF32E5C004801EA /* Accelerate.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
-		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		0097E3E40F3E9819005A4392 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
+		0095447E167CFACD008ECA02 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		00AA997F0FB0A5100094126A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00AA99800FB0A5100094126A /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00AA99810FB0A5100094126A /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -34,7 +33,6 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* ArcballDemo_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArcballDemo_Prefix.pch; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
-		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ArcballDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArcballDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -45,12 +43,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0095447F167CFACD008ECA02 /* QTKit.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
-				5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */,
-				0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */,
 				00AA99820FB0A5100094126A /* AudioToolbox.framework in Frameworks */,
 				00AA99830FB0A5100094126A /* AudioUnit.framework in Frameworks */,
 				00AA99840FB0A5100094126A /* CoreAudio.framework in Frameworks */,
@@ -72,12 +69,11 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0095447E167CFACD008ECA02 /* QTKit.framework */,
 				00C073000FF32E5C004801EA /* Accelerate.framework */,
 				00AA997F0FB0A5100094126A /* AudioToolbox.framework */,
 				00AA99800FB0A5100094126A /* AudioUnit.framework */,
 				00AA99810FB0A5100094126A /* CoreAudio.framework */,
-				0097E3E40F3E9819005A4392 /* QuickTime.framework */,
-				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
 				53E3CDFB0E86099300238D2B /* Carbon.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
@@ -208,6 +204,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -234,6 +231,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -258,12 +256,13 @@
 			buildSettings = {
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
 			};
 			name = Debug;
@@ -273,12 +272,13 @@
 			buildSettings = {
 				ARCHS = i386;
 				CINDER_PATH = ../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
+				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
 			};
 			name = Release;

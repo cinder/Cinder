@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="TUIO"
+	id="org.libcinder.tuio"
+	author="Cinder Project"
+	core="true"
+	>
+	<requires>org.libcinder.osc</requires>
+	<source>src/TuioClient.cpp</source>
+	<header>include/TuioClient.h</header>
+	<header>include/TuioCursor.h</header>
+	<header>include/TuioObject.h</header>
+	<header>include/TuioProfileBase.h</header>
+	<includePath>include</includePath>
+</block>
+</cinder>

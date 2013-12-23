@@ -4,12 +4,11 @@
 //
 //  @brief      AntTweakBar is a light and intuitive graphical user interface 
 //              that can be readily integrated into OpenGL and DirectX 
-//              applications in order to interactively tweak them.
+//              applications in order to interactively tweak parameters.
 //
-//  @author     Philippe Decaudin - http://www.antisphere.com
-//  @date       2005/09/20
+//  @author     Philippe Decaudin
 //
-//  @doc        http://www.antisphere.com/Wiki/tools:anttweakbar
+//  @doc        http://anttweakbar.sourceforge.net/doc
 //
 //  @license    This file is part of the AntTweakBar library.
 //              AntTweakBar is a free software released under the zlib license.
@@ -20,11 +19,13 @@
 
 #if !defined TW_INCLUDED
 #define TW_INCLUDED
-#define TW_STATIC
 
 #include <stddef.h>
 
-#define TW_VERSION  113 // Version Mmm : M=Major mm=minor (e.g., 102 is version 1.02)
+#define TW_VERSION  116 // Version Mmm : M=Major mm=minor (e.g., 102 is version 1.02)
+
+// Cinder: forcing static
+#define TW_STATIC
 
 
 #ifdef  __cplusplus
@@ -44,27 +45,38 @@
 //  OS specific definitions
 // ----------------------------------------------------------------------------
 
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && !defined(TW_STATIC)
 #   define TW_CALL          __stdcall
+#   define TW_CDECL_CALL    __cdecl
 #   define TW_EXPORT_API    __declspec(dllexport)
 #   define TW_IMPORT_API    __declspec(dllimport)
 #else
 #   define TW_CALL
+#   define TW_CDECL_CALL
 #   define TW_EXPORT_API
 #   define TW_IMPORT_API
 #endif
 
 #if defined TW_EXPORTS
-#   define TW_API   TW_EXPORT_API
+#   define TW_API TW_EXPORT_API
 #elif defined TW_STATIC
-#   define TW_API
+#   define TW_API TW_CALL
 #   if defined(_MSC_VER) && !defined(TW_NO_LIB_PRAGMA)
-//#       pragma comment(lib, "AntTweakBarStatic")
+// Cinder: these imports are disabled as Ant is baked into libcinder
+#       ifdef _WIN64
+//#           pragma comment(lib, "AntTweakBarStatic64")
+#       else
+//#           pragma comment(lib, "AntTweakBarStatic")
+#       endif
 #   endif
 #else
-#   define TW_API   TW_IMPORT_API
+#   define TW_API TW_IMPORT_API
 #   if defined(_MSC_VER) && !defined(TW_NO_LIB_PRAGMA)
-#       pragma comment(lib, "AntTweakBar")
+#       ifdef _WIN64
+#           pragma comment(lib, "AntTweakBar64")
+#       else
+#           pragma comment(lib, "AntTweakBar")
+#       endif
 #   endif
 #endif
 
@@ -82,12 +94,11 @@ TW_API int          TW_CALL TwSetTopBar(const TwBar *bar);
 TW_API TwBar *      TW_CALL TwGetTopBar();
 TW_API int          TW_CALL TwSetBottomBar(const TwBar *bar);
 TW_API TwBar *      TW_CALL TwGetBottomBar();
-TW_API const char * TW_CALL TwGetBarName(TwBar *bar);
+TW_API const char * TW_CALL TwGetBarName(const TwBar *bar);
 TW_API int          TW_CALL TwGetBarCount();
 TW_API TwBar *      TW_CALL TwGetBarByIndex(int barIndex);
 TW_API TwBar *      TW_CALL TwGetBarByName(const char *barName);
 TW_API int          TW_CALL TwRefreshBar(TwBar *bar);
-
 
 // ----------------------------------------------------------------------------
 //  Var functions and definitions
@@ -116,7 +127,11 @@ typedef enum ETwType
     TW_TYPE_COLOR4F,    // 4 floats color. Order is RGBA.
     TW_TYPE_CDSTRING,   // Null-terminated C Dynamic String (pointer to an array of char dynamically allocated with malloc/realloc/strdup)
 #ifdef __cplusplus
+# if defined(_MSC_VER) && (_MSC_VER == 1600)
+    TW_TYPE_STDSTRING = (0x2ffe0000+sizeof(std::string)),  // VS2010 C++ STL string (std::string)
+# else
     TW_TYPE_STDSTRING = (0x2fff0000+sizeof(std::string)),  // C++ STL string (std::string)
+# endif
 #endif // __cplusplus
     TW_TYPE_QUAT4F = TW_TYPE_CDSTRING+2, // 4 floats encoding a quaternion {qx,qy,qz,qs}
     TW_TYPE_QUAT4D,     // 4 doubles encoding a quaternion {qx,qy,qz,qs}
@@ -153,6 +168,7 @@ typedef void (TW_CALL * TwSummaryCallback)(char *summaryString, size_t summaryMa
 
 TW_API int      TW_CALL TwDefine(const char *def);
 TW_API TwType   TW_CALL TwDefineEnum(const char *name, const TwEnumVal *enumValues, unsigned int nbValues);
+TW_API TwType   TW_CALL TwDefineEnumFromString(const char *name, const char *enumString);
 TW_API TwType   TW_CALL TwDefineStruct(const char *name, const TwStructMember *structMembers, unsigned int nbMembers, size_t structSize, TwSummaryCallback summaryCallback, void *summaryClientData);
 
 typedef void (TW_CALL * TwCopyCDStringToClient)(char **destinationClientStringPtr, const char *sourceString);
@@ -176,14 +192,16 @@ TW_API int      TW_CALL TwSetParam(TwBar *bar, const char *varName, const char *
 
 
 // ----------------------------------------------------------------------------
-//  Managment functions and definitions
+//  Management functions and definitions
 // ----------------------------------------------------------------------------
 
 typedef enum ETwGraphAPI
 {
     TW_OPENGL           = 1,
     TW_DIRECT3D9        = 2,
-    TW_DIRECT3D10       = 3
+    TW_DIRECT3D10       = 3,
+    TW_DIRECT3D11       = 4,
+    TW_OPENGL_CORE      = 5
 } TwGraphAPI;
 
 TW_API int      TW_CALL TwInit(TwGraphAPI graphAPI, void *device);
@@ -191,6 +209,10 @@ TW_API int      TW_CALL TwTerminate();
 
 TW_API int      TW_CALL TwDraw();
 TW_API int      TW_CALL TwWindowSize(int width, int height);
+
+TW_API int      TW_CALL TwSetCurrentWindow(int windowID); // multi-windows support
+TW_API int      TW_CALL TwGetCurrentWindow();
+TW_API int      TW_CALL TwWindowExists(int windowID);
 
 typedef enum ETwKeyModifier
 {
@@ -210,7 +232,7 @@ typedef enum EKeySpecial
     TW_KEY_ESCAPE       = 0x1b,
     TW_KEY_SPACE        = ' ',
     TW_KEY_DELETE       = 0x7f,
-    TW_KEY_UP           = 273,      // same codes and order as SDL keysym.sym
+    TW_KEY_UP           = 273,      // same codes and order as SDL 1.2 keysym.sym
     TW_KEY_DOWN,
     TW_KEY_RIGHT,
     TW_KEY_LEFT,
@@ -238,6 +260,7 @@ typedef enum EKeySpecial
 } TwKeySpecial;
 
 TW_API int      TW_CALL TwKeyPressed(int key, int modifiers);
+TW_API int      TW_CALL TwKeyTest(int key, int modifiers);
 
 typedef enum ETwMouseAction
 {
@@ -264,29 +287,47 @@ TW_API void     TW_CALL TwHandleErrors(TwErrorHandler errorHandler);
 //  Helper functions to translate events from some common window management
 //  frameworks to AntTweakBar.
 //  They call TwKeyPressed, TwMouse* and TwWindowSize for you (implemented in
-//  files TwEventWin.c TwEventSDL.c TwEventGLFW.c TwEventGLUT.c)
+//  files TwEventWin.c TwEventSDL*.c TwEventGLFW.c TwEventGLUT.c)
 // ----------------------------------------------------------------------------
 
-//  For Windows message proc
-#ifndef _W64    // Microsoft specific (detection of 64 bits portability problems)
+// For Windows message proc
+#ifndef _W64    // Microsoft specific (detection of 64 bits portability issues)
 #   define _W64
 #endif  // _W64
-TW_API int      TW_CALL TwEventWin(void *wnd, unsigned int msg, unsigned int _W64 wParam, int _W64 lParam);
+#ifdef _WIN64
+    TW_API int  TW_CALL TwEventWin(void *wnd, unsigned int msg, unsigned __int64 _W64 wParam, __int64 _W64 lParam);
+#else
+    TW_API int  TW_CALL TwEventWin(void *wnd, unsigned int msg, unsigned int _W64 wParam, int _W64 lParam);
+#endif
 #define TwEventWin32    TwEventWin // For compatibility with AntTweakBar versions prior to 1.11
-/*
-//  For libSDL event loop
-TW_API int      TW_CALL TwEventSDL(const void *sdlEvent);
- 
-//  For GLFW event callbacks
-TW_API int      TW_CALL TwEventMouseButtonGLFW(int glfwButton, int glfwAction);
-TW_API int      TW_CALL TwEventKeyGLFW(int glfwKey, int glfwAction);
-TW_API int      TW_CALL TwEventCharGLFW(int glfwChar, int glfwAction);
-#define TwEventMousePosGLFW     TwMouseMotion
-#define TwEventMouseWheelGLFW   TwMouseWheel
-*/
-//  For GLUT event callbacks (Windows calling convention for GLUT callbacks is cdecl)
+
+// For libSDL event loop
+TW_API int      TW_CALL TwEventSDL(const void *sdlEvent, unsigned char sdlMajorVersion, unsigned char sdlMinorVersion);
+
+// For GLFW event callbacks
+// You should define GLFW_CDECL before including AntTweakBar.h if your version of GLFW uses cdecl calling convensions
+#ifdef GLFW_CDECL
+    TW_API int TW_CDECL_CALL TwEventMouseButtonGLFWcdecl(int glfwButton, int glfwAction);
+    TW_API int TW_CDECL_CALL TwEventKeyGLFWcdecl(int glfwKey, int glfwAction);
+    TW_API int TW_CDECL_CALL TwEventCharGLFWcdecl(int glfwChar, int glfwAction);
+    TW_API int TW_CDECL_CALL TwEventMousePosGLFWcdecl(int mouseX, int mouseY);
+    TW_API int TW_CDECL_CALL TwEventMouseWheelGLFWcdecl(int wheelPos);
+#   define TwEventMouseButtonGLFW TwEventMouseButtonGLFWcdecl
+#   define TwEventKeyGLFW         TwEventKeyGLFWcdecl
+#   define TwEventCharGLFW        TwEventCharGLFWcdecl
+#   define TwEventMousePosGLFW    TwEventMousePosGLFWcdecl
+#   define TwEventMouseWheelGLFW  TwEventMouseWheelGLFWcdecl
+#else
+    TW_API int  TW_CALL TwEventMouseButtonGLFW(int glfwButton, int glfwAction);
+    TW_API int  TW_CALL TwEventKeyGLFW(int glfwKey, int glfwAction);
+    TW_API int  TW_CALL TwEventCharGLFW(int glfwChar, int glfwAction);
+#   define TwEventMousePosGLFW     TwMouseMotion
+#   define TwEventMouseWheelGLFW   TwMouseWheel
+#endif
+
+// For GLUT event callbacks (Windows calling convention for GLUT callbacks is cdecl)
 #if defined(_WIN32) || defined(_WIN64)
-#   define TW_GLUT_CALL __cdecl
+#   define TW_GLUT_CALL TW_CDECL_CALL
 #else
 #   define TW_GLUT_CALL
 #endif
@@ -294,25 +335,41 @@ TW_API int TW_GLUT_CALL TwEventMouseButtonGLUT(int glutButton, int glutState, in
 TW_API int TW_GLUT_CALL TwEventMouseMotionGLUT(int mouseX, int mouseY);
 TW_API int TW_GLUT_CALL TwEventKeyboardGLUT(unsigned char glutKey, int mouseX, int mouseY);
 TW_API int TW_GLUT_CALL TwEventSpecialGLUT(int glutKey, int mouseX, int mouseY);
-TW_API int      TW_CALL TwGLUTModifiersFunc(int (TW_CALL *glutGetModifiersFunc)(void));
+TW_API int TW_CALL      TwGLUTModifiersFunc(int (TW_CALL *glutGetModifiersFunc)(void));
 typedef void (TW_GLUT_CALL *GLUTmousebuttonfun)(int glutButton, int glutState, int mouseX, int mouseY);
 typedef void (TW_GLUT_CALL *GLUTmousemotionfun)(int mouseX, int mouseY);
 typedef void (TW_GLUT_CALL *GLUTkeyboardfun)(unsigned char glutKey, int mouseX, int mouseY);
 typedef void (TW_GLUT_CALL *GLUTspecialfun)(int glutKey, int mouseX, int mouseY);
 
- 
+// For SFML event loop
+TW_API int      TW_CALL TwEventSFML(const void *sfmlEvent, unsigned char sfmlMajorVersion, unsigned char sfmlMinorVersion);
+
+// For X11 event loop
+#if defined(_UNIX)
+    TW_API int TW_CDECL_CALL TwEventX11(void *xevent);
+#endif
+
 // ----------------------------------------------------------------------------
 //  Make sure the types have the right sizes
 // ----------------------------------------------------------------------------
 
 #define TW_COMPILE_TIME_ASSERT(name, x) typedef int TW_DUMMY_ ## name[(x) * 2 - 1]
 
-TW_COMPILE_TIME_ASSERT(CHAR,    sizeof(char)    == 1);
-TW_COMPILE_TIME_ASSERT(SHORT,   sizeof(short)   == 2);
-TW_COMPILE_TIME_ASSERT(INT,     sizeof(int)     == 4);
-TW_COMPILE_TIME_ASSERT(FLOAT,   sizeof(float)   == 4);
-TW_COMPILE_TIME_ASSERT(DOUBLE,  sizeof(double)  == 8);
+TW_COMPILE_TIME_ASSERT(TW_CHAR,    sizeof(char)    == 1);
+TW_COMPILE_TIME_ASSERT(TW_SHORT,   sizeof(short)   == 2);
+TW_COMPILE_TIME_ASSERT(TW_INT,     sizeof(int)     == 4);
+TW_COMPILE_TIME_ASSERT(TW_FLOAT,   sizeof(float)   == 4);
+TW_COMPILE_TIME_ASSERT(TW_DOUBLE,  sizeof(double)  == 8);
 
+// Check pointer size on Windows
+#if !defined(_WIN64) && defined(_WIN32)
+    // If the following assert failed, the platform is not 32-bit and _WIN64 is not defined.
+    // When targetting 64-bit Windows platform, _WIN64 must be defined.
+    TW_COMPILE_TIME_ASSERT(TW_PTR32, sizeof(void*) == 4);
+#elif defined(_WIN64)
+    // If the following assert failed, _WIN64 is defined but the targeted platform is not 64-bit.
+    TW_COMPILE_TIME_ASSERT(TW_PTR64, sizeof(void*) == 8);
+#endif
 
 //  ---------------------------------------------------------------------------
 

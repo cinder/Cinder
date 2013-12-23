@@ -3,43 +3,42 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
-		0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0097E3E40F3E9819005A4392 /* QuickTime.framework */; };
 		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
-		00BAE65A0E7ED9C10018A608 /* SimpleViewerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* SimpleViewerApp.cpp */; };
-		00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 00CCAF14116A9FEE008396D5 /* CinderApp.icns */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
-		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
+		67CA30EBFB7341A69F9B09CC /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0977FF4F3D884BF38BBA2D4D /* Cairo.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		E048DA9E9D9047C6A150F158 /* SimpleViewerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C414D3FA67D4160914EBAFB /* SimpleViewerApp.cpp */; };
+		E2D32468BB41444DA81105FD /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 050D4BDC295245F1ABE0C267 /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		0097E3E40F3E9819005A4392 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		00BAE6590E7ED9C10018A608 /* SimpleViewerApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SimpleViewerApp.cpp; path = ../src/SimpleViewerApp.cpp; sourceTree = SOURCE_ROOT; };
-		00CCAF14116A9FEE008396D5 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = SOURCE_ROOT; };
+		050D4BDC295245F1ABE0C267 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		0977FF4F3D884BF38BBA2D4D /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Cairo.cpp; path = ../../../../blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		32CA4F630368D1EE00C91783 /* SimpleViewer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleViewer_Prefix.pch; sourceTree = "<group>"; };
+		31D157C5796C479996C36DA6 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		37A8694E4FF440309C335377 /* SimpleViewer_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = SimpleViewer_Prefix.pch; sourceTree = "<group>"; };
+		4026601ADE13447BA4F5AF3B /* Cairo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cairo.h; path = ../../../../blocks/Cairo/src/Cairo.h; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
-		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8C414D3FA67D4160914EBAFB /* SimpleViewerApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SimpleViewerApp.cpp; path = ../src/SimpleViewerApp.cpp; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* SimpleViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E7D51C40B5EE464CB6AB2EE4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,10 +48,8 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
-				53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
 				5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */,
-				0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */,
 				00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */,
 				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
 				00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */,
@@ -63,10 +60,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				71F8AB6F59E24460ACF46801 /* Cairo */,
+			);
+			name = Blocks;
+			sourceTree = "<group>";
+		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				00BAE6590E7ED9C10018A608 /* SimpleViewerApp.cpp */,
+				8C414D3FA67D4160914EBAFB /* SimpleViewerApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -78,10 +83,8 @@
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
 				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
-				0097E3E40F3E9819005A4392 /* QuickTime.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
-				53E3CDFB0E86099300238D2B /* Carbon.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
@@ -92,7 +95,6 @@
 			isa = PBXGroup;
 			children = (
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
-				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
 			);
 			name = "Other Frameworks";
@@ -109,6 +111,7 @@
 		29B97314FDCFA39411CA2CEA /* SimpleViewer */ = {
 			isa = PBXGroup;
 			children = (
+				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -121,7 +124,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				32CA4F630368D1EE00C91783 /* SimpleViewer_Prefix.pch */,
+				31D157C5796C479996C36DA6 /* Resources.h */,
+				37A8694E4FF440309C335377 /* SimpleViewer_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -129,8 +133,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107310486CEB800E47090 /* Info.plist */,
-				00CCAF14116A9FEE008396D5 /* CinderApp.icns */,
+				050D4BDC295245F1ABE0C267 /* CinderApp.icns */,
+				E7D51C40B5EE464CB6AB2EE4 /* Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -142,6 +146,23 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		71F8AB6F59E24460ACF46801 /* Cairo */ = {
+			isa = PBXGroup;
+			children = (
+				AE5756B212094DE5B256CDD9 /* src */,
+			);
+			name = Cairo;
+			sourceTree = "<group>";
+		};
+		AE5756B212094DE5B256CDD9 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				0977FF4F3D884BF38BBA2D4D /* Cairo.cpp */,
+				4026601ADE13447BA4F5AF3B /* Cairo.h */,
+			);
+			name = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -171,11 +192,14 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "SimpleViewer" */;
-			compatibilityVersion = "Xcode 3.0";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				en,
+				English,
+				Japanese,
+				French,
+				German,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* SimpleViewer */;
 			projectDirPath = "";
@@ -191,7 +215,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */,
+				E2D32468BB41444DA81105FD /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,7 +226,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00BAE65A0E7ED9C10018A608 /* SimpleViewerApp.cpp in Sources */,
+				E048DA9E9D9047C6A150F158 /* SimpleViewerApp.cpp in Sources */,
+				67CA30EBFB7341A69F9B09CC /* Cairo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -212,19 +237,24 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = SimpleViewer_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
+				OTHER_LDFLAGS = (
+					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
+					../../../../blocks/Cairo/lib/macosx/libcairo.a,
+					"../../../../blocks/Cairo/lib/macosx/libpixman-1.a",
+				);
 				PRODUCT_NAME = SimpleViewer;
+				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -232,21 +262,26 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = SimpleViewer_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
+				OTHER_LDFLAGS = (
+					"\"$(CINDER_PATH)/lib/libcinder.a\"",
+					../../../../blocks/Cairo/lib/macosx/libcairo.a,
+					"../../../../blocks/Cairo/lib/macosx/libpixman-1.a",
+				);
 				PRODUCT_NAME = SimpleViewer;
 				STRIP_INSTALLED_PRODUCT = YES;
+				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -257,14 +292,17 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
 				CINDER_PATH = ../../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				New_Setting = "";
-				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/boost\"",
+					../../../../blocks/Cairo/include/macosx,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../../blocks/Cairo/include";
 			};
 			name = Debug;
 		};
@@ -274,14 +312,17 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
 				CINDER_PATH = ../../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				New_Setting = "";
-				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+				HEADER_SEARCH_PATHS = (
+					"\"$(CINDER_PATH)/boost\"",
+					../../../../blocks/Cairo/include/macosx,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../../blocks/Cairo/include";
 			};
 			name = Release;
 		};

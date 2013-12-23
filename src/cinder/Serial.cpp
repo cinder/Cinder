@@ -262,7 +262,7 @@ void Serial::readBytes( void *data, size_t numBytes )
 			totalBytesRead += bytesRead;
 		
 		// yield thread time to the system
-		thread::yield();
+		this_thread::yield();
 	}
 }
 

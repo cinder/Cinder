@@ -26,6 +26,9 @@
 
 #include <map>
 
+#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
+	#include <D2D1.h>
+#endif
 #include <wincodec.h>
 #include <wincodecsdk.h>
 #pragma comment( lib, "WindowsCodecs.lib" )
@@ -139,7 +142,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 	
 	// initialize the stream based on properties of the cinder::DataSouce
 	if( mDataTarget->providesFilePath() ) {
-		hr = stream->InitializeFromFilename( toUtf16( mDataTarget->getFilePath().string() ).c_str(), GENERIC_WRITE );
+		hr = stream->InitializeFromFilename( mDataTarget->getFilePath().wstring().c_str(), GENERIC_WRITE );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad();
 	}

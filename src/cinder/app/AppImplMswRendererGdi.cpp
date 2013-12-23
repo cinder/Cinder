@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -77,7 +78,7 @@ void AppImplMswRendererGdi::makeCurrentContext()
 	}
 }
 
-bool AppImplMswRendererGdi::initialize( HWND wnd, HDC dc )
+bool AppImplMswRendererGdi::initialize( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
 	mWnd = wnd;
 	return true;

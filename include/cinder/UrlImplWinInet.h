@@ -28,7 +28,7 @@ namespace cinder {
 
 class IStreamUrlImplWinInet : public IStreamUrlImpl {
   public:
-	IStreamUrlImplWinInet( const std::string &url, const std::string &user, const std::string &password );
+	IStreamUrlImplWinInet( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options );
 	~IStreamUrlImplWinInet();
 
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize );

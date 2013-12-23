@@ -11,9 +11,6 @@
     <Filter Include="Source Files\audio">
       <UniqueIdentifier>{4f01399a-99e9-43e7-8108-2d2d4528a7ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\cairo">
-      <UniqueIdentifier>{cc25da90-4ac6-4bdd-8ac7-7be1ed6117ed}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\gl">
       <UniqueIdentifier>{0116574c-013b-431f-ba54-30771ade01dc}</UniqueIdentifier>
     </Filter>
@@ -25,9 +22,6 @@
     </Filter>
     <Filter Include="Source Files\params">
       <UniqueIdentifier>{79c99aa4-da3d-4c7e-868a-ed5a7fc7051d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\qtime">
-      <UniqueIdentifier>{7e83785b-442d-4112-a7b8-a024ee8b0966}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\AntTweakBar">
       <UniqueIdentifier>{99377963-90c2-47e7-8eb2-fc5062aa2df9}</UniqueIdentifier>
@@ -45,9 +39,6 @@
     <Filter Include="Header Files\audio">
       <UniqueIdentifier>{0b0d3d16-2551-4216-bd1d-753e3b16ba68}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\cairo">
-      <UniqueIdentifier>{4062139f-d2f5-40eb-a3e1-fef44097ac4b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\gl">
       <UniqueIdentifier>{d34a7f38-f80a-46e6-95a5-b22bc1e11c6b}</UniqueIdentifier>
     </Filter>
@@ -59,9 +50,6 @@
     </Filter>
     <Filter Include="Header Files\params">
       <UniqueIdentifier>{2f24114f-d6c6-41e7-9577-fcca4c7c8838}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\qtime">
-      <UniqueIdentifier>{f066b000-2604-45ad-8ac3-2546ed748f31}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\videoinput">
       <UniqueIdentifier>{da586344-c7c0-477a-8f62-0a718391cfb3}</UniqueIdentifier>
@@ -90,6 +78,12 @@
     </Filter>
     <Filter Include="Source Files\linebreak">
       <UniqueIdentifier>{32843c15-443f-4fa7-ab9c-be6125f164f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\qtime">
+      <UniqueIdentifier>{90ff4519-84c5-42d5-bece-b27ed8b4beb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qtime">
+      <UniqueIdentifier>{c8db6b91-0c81-4c5b-ae73-994db8d58d64}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -124,6 +118,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\Color.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ConvexHull.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\DataSource.cpp">
@@ -228,12 +225,6 @@
     <ClCompile Include="..\src\cinder\app\AppImplMswRendererGl.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\app\KeyEvent.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
@@ -248,9 +239,6 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\SourceFileWindowsMedia.cpp">
       <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\cairo\Cairo.cpp">
-      <Filter>Source Files\cairo</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\DisplayList.cpp">
       <Filter>Source Files\gl</Filter>
@@ -321,12 +309,6 @@
     <ClCompile Include="..\src\cinder\params\Params.cpp">
       <Filter>Source Files\params</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\qtime\QuickTime.cpp">
-      <Filter>Source Files\qtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp">
-      <Filter>Source Files\qtime</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\AntTweakBar\LoadOGL.cpp">
       <Filter>Source Files\AntTweakBar</Filter>
     </ClCompile>
@@ -356,9 +338,6 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp">
       <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp">
-      <Filter>Source Files\qtime</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp">
       <Filter>Source Files</Filter>
@@ -450,6 +429,27 @@
     <ClCompile Include="..\src\cinder\Unicode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\app\Window.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\StereoAutoFocuser.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\QuickTime.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -528,6 +528,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ConvexHull.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\DataSource.h">
@@ -695,9 +698,6 @@
     <ClInclude Include="..\include\cinder\audio\SourceFileWindowsMedia.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\cairo\Cairo.h">
-      <Filter>Header Files\cairo</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\gl\DisplayList.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
@@ -767,12 +767,6 @@
     <ClInclude Include="..\include\cinder\params\Params.h">
       <Filter>Header Files\params</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\qtime\QuickTime.h">
-      <Filter>Header Files\qtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h">
-      <Filter>Header Files\qtime</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\msw\videoInput\videoInput.h">
       <Filter>Header Files\videoinput</Filter>
     </ClInclude>
@@ -781,9 +775,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\audio\SourceFileWav.h">
       <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h">
-      <Filter>Header Files\qtime</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\Event.h">
       <Filter>Header Files\app</Filter>
@@ -925,6 +916,21 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\Unicode.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Window.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\QuickTime.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h">
+      <Filter>Header Files\qtime</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

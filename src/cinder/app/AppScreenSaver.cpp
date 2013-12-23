@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -36,11 +37,21 @@ namespace cinder { namespace app {
 #if defined( CINDER_MAC )
 //static cinder::app::AppScreenSaverFactory *CINDER_SCREENSAVER_FACTORY = 0;
 
-#elif defined( CINDER_MSW )
-void AppScreenSaver::executeLaunch( AppScreenSaver *app, class Renderer *renderer, const char *title, ::HWND hwnd )
+void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title )
 {
+	App::sInstance = sInstance = app;
 	App::executeLaunch( app, renderer, title, 0, 0 );
-	sInstance = app;
+	
+	app->prepareSettings( &app->mSettings );
+}
+
+
+#elif defined( CINDER_MSW )
+void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title, ::HWND hwnd )
+{
+	App::sInstance = sInstance = app;
+	app->mImpl = 0; // initially we have no implementation; necessary for determining whether we can call impl->eventHandler() yet
+	App::executeLaunch( app, renderer, title, 0, 0 );
 
 	app->launch( hwnd );
 }
@@ -49,38 +60,12 @@ void AppScreenSaver::launch( HWND hWnd )
 {
 	prepareSettings( &mSettings );
 
-	mImpl = new AppImplMswScreenSaver( this, hWnd );
+	mImpl = new AppImplMswScreenSaver( this );
+	mImpl->init( hWnd );
 	mImpl->run();
 // NOTHING AFTER THIS LINE RUNS
 }
 #endif
-
-int AppScreenSaver::getWindowWidth() const
-{
-#if defined( CINDER_MAC )
-	return [mImpl getWindowWidth];
-#elif defined( CINDER_MSW )
-	return mImpl->getWindowWidth();
-#endif
-}
-
-int AppScreenSaver::getWindowHeight() const
-{
-#if defined( CINDER_MAC )
-	return [mImpl getWindowHeight];
-#elif defined( CINDER_MSW )
-	return mImpl->getWindowHeight();
-#endif
-}
-
-bool AppScreenSaver::isFullScreen() const
-{
-#if defined( CINDER_MAC )
-	return ! [mImpl isPreview];
-#elif defined( CINDER_MSW )
-	return mImpl->isFullScreen();
-#endif
-}
 
 float AppScreenSaver::getFrameRate() const
 {
@@ -100,12 +85,55 @@ void AppScreenSaver::setFrameRate( float frameRate )
 #endif
 }
 
-fs::path AppScreenSaver::getAppPath()
+bool AppScreenSaver::isPreview() const
+{
+#if defined( CINDER_MAC )
+	return [mImpl isPreview];
+#elif defined( CINDER_MSW )
+	return mImpl->isPreview();
+#endif
+}
+
+fs::path AppScreenSaver::getAppPath() const
 {
 #if defined( CINDER_MAC )
 	return [mImpl getAppPath];
 #elif defined( CINDER_MSW )
 	return mImpl->getAppPath();
+#endif
+}
+
+#if defined( CINDER_COCOA )
+NSBundle* AppScreenSaver::getBundle() const
+{
+	return [NSBundle bundleForClass:[mImpl class]];
+}
+#endif
+
+size_t AppScreenSaver::getNumWindows() const
+{
+#if defined( CINDER_MAC )
+	return [mImpl getNumWindows];
+#elif defined( CINDER_MSW )
+	return mImpl->getNumWindows();
+#endif
+}
+
+WindowRef AppScreenSaver::getWindow() const
+{
+#if defined( CINDER_MAC )
+	return [mImpl getWindow];
+#elif defined( CINDER_MSW )
+	return mImpl->getWindow();
+#endif
+}
+
+WindowRef AppScreenSaver::getWindowIndex( size_t index ) const
+{
+#if defined( CINDER_MAC )
+	return [mImpl getWindowIndex:index];
+#elif defined( CINDER_MSW )
+	return mImpl->getWindowIndex( index );
 #endif
 }
 

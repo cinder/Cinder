@@ -75,7 +75,7 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
 
 typedef std::shared_ptr<class ImageTargetCvPixelBuffer> ImageTargetCvPixelBufferRef;
 
-class ImageTargetCvPixelBuffer : public ci::ImageTarget {
+class ImageTargetCvPixelBuffer : public cinder::ImageTarget {
   public:
 	static ImageTargetCvPixelBufferRef createRef( ImageSourceRef imageSource, bool convertToYpCbCr = false );
 	~ImageTargetCvPixelBuffer();
@@ -103,7 +103,7 @@ CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertTo
 #if defined( CINDER_MSW )
 typedef std::shared_ptr<class ImageTargetGWorld> ImageTargetGWorldRef;
 
-class ImageTargetGWorld : public ci::ImageTarget {
+class ImageTargetGWorld : public cinder::ImageTarget {
   public:
 	static ImageTargetGWorldRef createRef( ImageSourceRef imageSource );
 

@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -34,15 +35,15 @@ namespace cinder { namespace app {
 //! Represents a file-drop event, typically received from Windows Explorer or Mac OS X Finder
 class FileDropEvent : public Event {
   public:
-	FileDropEvent( int aX, int aY, const std::vector<fs::path> &aFiles )
-		: Event(), mX( aX ), mY( aY ), mFiles( aFiles )
+	FileDropEvent( WindowRef win, int aX, int aY, const std::vector<fs::path> &aFiles )
+		: Event( win ), mX( aX ), mY( aY ), mFiles( aFiles )
 	{}
 	
-	//! Returns the X coordinate of the mouse during the event
+	//! Returns the X coordinate measured in points of the mouse during the event
 	int			getX() const { return mX; }
-	//! Returns the Y coordinate of the mouse during the event	
+	//! Returns the Y coordinate measured in points of the mouse during the event	
 	int			getY() const { return mY; }
-	//! Returns the coordinates of the mouse during the event
+	//! Returns the coordinates measured in points of the mouse during the event
 	Vec2i		getPos() const { return Vec2i( mX, mY ); }
 
 	//! Returns the vector of file paths which were dropped
@@ -56,5 +57,15 @@ class FileDropEvent : public Event {
 	int							mX, mY;
 	std::vector<fs::path>		mFiles;
 };
+
+inline std::ostream& operator<<( std::ostream &out, const FileDropEvent &event )
+{
+	out << event.getPos() << ": ";
+	out << "{" << std::endl;
+	for( std::vector<fs::path>::const_iterator fIt = event.getFiles().begin(); fIt != event.getFiles().end(); ++fIt )
+		out << "  " << *fIt << std::endl;
+	out << "}";
+	return out;
+}
 
 } } // namespace cinder::app

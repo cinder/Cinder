@@ -27,6 +27,10 @@
 #include "cinder/CinderMath.h"
 #include "cinder/Vector.h"
 
+#include "cinder/Matrix22.h"
+#include "cinder/Matrix33.h"
+#include "cinder/MatrixAffine2.h"
+
 #include <iomanip>
 
 namespace cinder { 
