@@ -25,7 +25,6 @@
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
 #include <vector>
-#include <boost/preprocessor/seq.hpp>
 
 namespace cinder { namespace audio {
 

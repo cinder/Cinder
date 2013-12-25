@@ -22,6 +22,8 @@
 
 #include "cinder/audio/PcmBuffer.h"
 
+#include <boost/preprocessor/seq.hpp>
+
 namespace cinder { namespace audio {
 
 template<typename T> 
