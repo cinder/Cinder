@@ -42,7 +42,11 @@ class JsonTree {
   public:
 	
 	//! \cond
+#if defined( _MSC_VER ) && ( _MSC_VER == 1800 ) && (BOOST_VERSION == 105500) // to avoid boost issue #9332
+	typedef std::list<JsonTree> Container;
+#else
 	typedef boost::container::list<JsonTree> Container;
+#endif
 
 	typedef Container::const_iterator ConstIter;
 	typedef Container::iterator Iter;
