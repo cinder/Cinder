@@ -267,6 +267,22 @@ void AppBasic::showCursor()
 #endif
 }
 
+#if defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9 )
+void AppBasic::beginActivity(std::string reason) {
+	[mImpl beginActivityWithReason:@(reason.c_str())];
+}
+
+void AppBasic::endActivity() const {
+	[mImpl endActivity];
+}
+
+void AppBasic::performActivity(std::string reason, std::function<void (void)> func) {
+	beginActivity(reason);
+	func();
+	endActivity();
+}
+#endif
+
 void AppBasic::quit()
 {
 #if defined( CINDER_COCOA )

@@ -147,8 +147,14 @@ class AppBasic : public App {
 	//! Gets the foreground Window, which has keyboard and mouse focus
 	virtual WindowRef		getForegroundWindow() const;
 
-#if defined( CINDER_WINRT)
+#if defined( CINDER_WINRT )
 	class AppImplWinRTBasic*	getImpl() {return mImpl;};
+#endif
+
+#if defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9 )
+	virtual void beginActivity(std::string reason);
+	virtual void endActivity() const;
+	virtual void performActivity(std::string reason, std::function<void (void)> func);
 #endif
 
 	// DO NOT CALL - should be private but aren't for esoteric reasons

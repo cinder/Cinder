@@ -44,9 +44,18 @@
 - (BOOL)canBecomeKeyWindow { return YES; }
 @end
 
+@interface AppImplCocoaBasic ()
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+@property (nonatomic, strong) id activity;
+#endif
+@end
+
 @implementation AppImplCocoaBasic
 
 @synthesize windows = mWindows;
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+@synthesize activity = mActivity;
+#endif
 
 - (id)init:(cinder::app::AppBasic*)aApp
 {	
@@ -331,6 +340,11 @@
 
 - (void)quit
 {
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+	if( self.activity )
+		[self endActivity];
+#endif
+
 	// in certain scenarios self seems to have be deallocated inside terminate:
 	// so we call this here and then pass nil to terminate: instead
 	if( ! mApp->privateShouldQuit() )
@@ -376,6 +390,30 @@
 - (void)touchesCancelledWithEvent:(NSEvent *)event
 {
 }
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+- (void)beginActivityWithReason:(NSString *)reason
+{
+	if( self.activity )
+		return;
+
+	if( ![[NSProcessInfo processInfo] respondsToSelector:@selector(beginActivityWithOptions:reason:)] )
+		return;
+
+	self.activity = [[NSProcessInfo processInfo] beginActivityWithOptions:NSActivityIdleSystemSleepDisabled | NSActivitySuddenTerminationDisabled reason:reason];
+}
+
+- (void)endActivity {
+	if( !self.activity )
+		return;
+
+	if( ![[NSProcessInfo processInfo] respondsToSelector:@selector(endActivity:)] )
+		return;
+
+	[[NSProcessInfo processInfo] endActivity:self.activity];
+	self.activity = nil;
+}
+#endif
 
 @end
 
