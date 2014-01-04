@@ -37,16 +37,16 @@
 #ifndef INCLUDED_OSCPACK_OSCTYPES_H
 #define INCLUDED_OSCPACK_OSCTYPES_H
 
+#include <cstdint>
 
 namespace osc{
 
 // basic types
 // Cinder:
-#include <cstdint>
-typedef int64_t		int64;
-typedef uint64_t	uint64;
-typedef int32_t		int32;
-typedef uint32_t	uint32;
+typedef std::int64_t	int64;
+typedef std::uint64_t	uint64;
+typedef std::int32_t	int32;
+typedef std::uint32_t	uint32;
 
 /*
 #if defined(__BORLANDC__) || defined(_MSC_VER)
