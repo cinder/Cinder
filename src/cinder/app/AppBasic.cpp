@@ -267,7 +267,7 @@ void AppBasic::showCursor()
 #endif
 }
 
-#if defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9 )
+#if defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MAX_ALLOWED >= 1090 )
 void AppBasic::beginActivity(std::string reason) {
 	[mImpl beginActivityWithReason:@(reason.c_str())];
 }

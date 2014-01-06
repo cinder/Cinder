@@ -48,7 +48,7 @@
 	
 	NSMutableArray					*mWindows;
 	WindowImplBasicCocoa			*mActiveWindow;
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
 	id								mActivity;
 #endif
 }
@@ -80,7 +80,7 @@
 - (void)setActiveWindow:(WindowImplBasicCocoa*)win;
 - (WindowImplBasicCocoa*)findWindowImpl:(NSWindow*)window;
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
 - (void)beginActivityWithReason:(NSString *)reason;
 - (void)endActivity;
 #endif

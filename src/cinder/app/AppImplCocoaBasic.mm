@@ -45,7 +45,7 @@
 @end
 
 @interface AppImplCocoaBasic ()
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
 @property (nonatomic, strong) id activity;
 #endif
 @end
@@ -53,7 +53,7 @@
 @implementation AppImplCocoaBasic
 
 @synthesize windows = mWindows;
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
 @synthesize activity = mActivity;
 #endif
 
@@ -340,7 +340,7 @@
 
 - (void)quit
 {
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
 	if( self.activity )
 		[self endActivity];
 #endif
@@ -391,7 +391,7 @@
 {
 }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1090
 - (void)beginActivityWithReason:(NSString *)reason
 {
 	if( self.activity )

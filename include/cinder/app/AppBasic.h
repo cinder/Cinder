@@ -151,7 +151,7 @@ class AppBasic : public App {
 	class AppImplWinRTBasic*	getImpl() {return mImpl;};
 #endif
 
-#if defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9 )
+#if defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MAX_ALLOWED >= 1090 )
 	virtual void beginActivity(std::string reason);
 	virtual void endActivity() const;
 	virtual void performActivity(std::string reason, std::function<void (void)> func);
