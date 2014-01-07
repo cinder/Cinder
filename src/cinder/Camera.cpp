@@ -26,6 +26,12 @@
 #include "cinder/Camera.h"
 #include "cinder/Sphere.h"
 
+#include "cinder/CinderMath.h"
+#include "cinder/Matrix33.h"
+
+#include "glm/gtc/Quaternion.hpp"
+#include "glm/gtx/Quaternion.hpp"
+
 namespace cinder {
 
 void Camera::setEyePoint( const Vec3f &aEyePoint )
@@ -43,28 +49,28 @@ void Camera::setCenterOfInterestPoint( const Vec3f &centerOfInterestPoint )
 void Camera::setViewDirection( const Vec3f &aViewDirection )
 {
 	mViewDirection = aViewDirection.normalized();
-	mOrientation = Quatf( Vec3f( 0.0f, 0.0f, -1.0f ), mViewDirection );
+	mOrientation = glm::rotation( toGlm( mViewDirection ), glm::vec3( 0, 0, -1 ) );
 	mModelViewCached = false;
 }
 
 void Camera::setOrientation( const Quatf &aOrientation )
 {
-	mOrientation = aOrientation.normalized();
-	mViewDirection = mOrientation * Vec3f( 0.0f, 0.0f, -1.0f );
+	mOrientation = glm::normalize( aOrientation );
+	mViewDirection = fromGlm( glm::rotate( mOrientation, glm::vec3( 0, 0, -1 ) ) );
 	mModelViewCached = false;
 }
 
 void Camera::setWorldUp( const Vec3f &aWorldUp )
 {
 	mWorldUp = aWorldUp.normalized();
-	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
+	mOrientation = Quatf( glm::toQuat( toGlm( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ) ) );
 	mModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &target )
 {
 	mViewDirection = ( target - mEyePoint ).normalized();
-	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
+	mOrientation = Quatf( glm::toQuat( toGlm( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ) ) );
 	mModelViewCached = false;
 }
 
@@ -72,7 +78,7 @@ void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target )
 {
 	mEyePoint = aEyePoint;
 	mViewDirection = ( target - mEyePoint ).normalized();
-	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
+	mOrientation = Quatf( glm::toQuat( toGlm( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ) ) );
 	mModelViewCached = false;
 }
 
@@ -81,7 +87,7 @@ void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target, const Vec3f &a
 	mEyePoint = aEyePoint;
 	mWorldUp = aWorldUp.normalized();
 	mViewDirection = ( target - mEyePoint ).normalized();
-	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
+	mOrientation = Quatf( glm::toQuat( toGlm( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ) ) );
 	mModelViewCached = false;
 }
 
@@ -170,8 +176,8 @@ void Camera::calcMatrices() const
 void Camera::calcViewMatrix() const
 {
 	mW = -mViewDirection.normalized();
-	mU = mOrientation * Vec3f::xAxis();
-	mV = mOrientation * Vec3f::yAxis();
+	mU = fromGlm( glm::rotate( mOrientation, glm::vec3( 1, 0, 0 ) ) );
+	mV = fromGlm( glm::rotate( mOrientation, glm::vec3( 0, 1, 0 ) ) );
 	
 	Vec3f d( -mEyePoint.dot( mU ), -mEyePoint.dot( mV ), -mEyePoint.dot( mW ) );
 	float *m = mViewMatrix.m;
@@ -436,9 +442,9 @@ Vec3f CameraStereo::getEyePointShifted() const
 		return mEyePoint;
 	
 	if(mIsLeft) 
-		return mEyePoint - mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
+		return mEyePoint - fromGlm( glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) ) * (0.5f * mEyeSeparation);
 	else 
-		return mEyePoint + mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
+		return mEyePoint + fromGlm( glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) ) * (0.5f * mEyeSeparation);
 }
 
 void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
@@ -533,14 +539,14 @@ void CameraStereo::calcViewMatrix() const
 	mViewMatrixRight = mViewMatrix;
 	
 	// calculate left matrix
-	Vec3f eye = mEyePoint - mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
+	Vec3f eye = mEyePoint - fromGlm( glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) ) * (0.5f * mEyeSeparation);
 	Vec3f d = Vec3f( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
 
 	float *m = mViewMatrixLeft.m;
 	m[12] =  d.x; m[13] =  d.y; m[14] =  d.z;
 	
 	// calculate right matrix
-	eye = mEyePoint + mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
+	eye = mEyePoint + fromGlm( glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) ) * (0.5f * mEyeSeparation);
 	d = Vec3f( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
 
 	m = mViewMatrixRight.m;

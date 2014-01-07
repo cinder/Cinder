@@ -26,8 +26,14 @@
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
 
+#include "glm/gtc/quaternion.hpp"
+
 namespace cinder {
 
+typedef glm::quat	Quatf;
+typedef glm::dquat	Quatd;
+
+#if 0
 template<typename T, typename Y>
 struct QUATCONV {
 	typedef typename T::TYPE F;
@@ -773,5 +779,7 @@ inline Vec3<T> operator*( const Vec3<T> &vec, const Quaternion<T> &q )
 
 typedef Quaternion<float>	Quatf;
 typedef Quaternion<double>	Quatd;
+
+#endif
 
 } // namespace cinder

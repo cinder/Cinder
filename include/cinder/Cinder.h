@@ -30,6 +30,7 @@
 
 #include <cstdint>
 #include <boost/version.hpp>
+#include "glm/fwd.hpp"
 
 #if BOOST_VERSION < 105500
 	#error "Cinder requires Boost version 1.55 or later"

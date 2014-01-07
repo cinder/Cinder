@@ -35,7 +35,13 @@
 
 #include "cinder/CinderMath.h"
 
+#include "glm/gtc/type_ptr.hpp"
+
 namespace cinder {
+
+using glm::vec2;
+using glm::vec3;
+using glm::vec4;
 
 //!  \cond
 template<typename T>
@@ -1330,5 +1336,8 @@ template<> struct VECDIM<4,double> { typedef Vec4d	TYPE; };
 template<> struct VECDIM<2,int> { typedef Vec2i	TYPE; };
 template<> struct VECDIM<3,int> { typedef Vec3i	TYPE; };
 template<> struct VECDIM<4,int> { typedef Vec4i	TYPE; };
+
+inline glm::vec3 toGlm( const Vec3f &v ) { return glm::vec3( v.x, v.y, v.z ); }
+inline Vec3f fromGlm( const glm::vec3 &v ) { return Vec3f( v.x, v.y, v.z ); }
 
 } // namespace cinder

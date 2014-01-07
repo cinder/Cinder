@@ -952,4 +952,6 @@ Matrix33<T> Matrix33<T>::alignZAxisWithTarget( Vec3<T> targetDir, Vec3<T> upDir 
 typedef Matrix33<float>	 Matrix33f;
 typedef Matrix33<double> Matrix33d;
 
+inline glm::mat3 toGlm( const Matrix33f &m ) { return glm::make_mat3( &m[0] ); }
+
 } // namespace cinder
