@@ -31,7 +31,7 @@ namespace cinder { namespace ip {
 void hdrNormalize( Surface32f *surface )
 {
 	// first take histogram to find the minimum and maximum values present
-	float minVal = *(surface->getDataRed( Vec2i::zero() )), maxVal = *(surface->getDataRed( Vec2i::zero() ));
+	float minVal = *(surface->getDataRed( ivec2() )), maxVal = *(surface->getDataRed( ivec2() ));
 
 	const int8_t pixelInc = surface->getPixelInc();
 	const uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset();
@@ -91,7 +91,7 @@ void hdrNormalize( Channel32f *channel )
 
 void getMinMax( const Channel32f &channel, float *resultMin, float *resultMax )
 {
-	float minVal = *(channel.getData( Vec2i::zero() )), maxVal = *(channel.getData( Vec2i::zero() ));
+	float minVal = *(channel.getData( ivec2() )), maxVal = *(channel.getData( ivec2() ));
 	Channel32f::ConstIter iter = channel.getIter();
 	while( iter.line() ) {
 		while( iter.pixel() ) {

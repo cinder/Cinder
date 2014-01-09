@@ -24,11 +24,13 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/Vector.h"
 #include "cinder/app/Event.h"
 #include "cinder/Filesystem.h"
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 namespace cinder { namespace app {
 
@@ -44,7 +46,7 @@ class FileDropEvent : public Event {
 	//! Returns the Y coordinate measured in points of the mouse during the event	
 	int			getY() const { return mY; }
 	//! Returns the coordinates measured in points of the mouse during the event
-	Vec2i		getPos() const { return Vec2i( mX, mY ); }
+	ivec2		getPos() const { return ivec2( mX, mY ); }
 
 	//! Returns the vector of file paths which were dropped
 	const std::vector<fs::path>&	getFiles() const { return mFiles; }

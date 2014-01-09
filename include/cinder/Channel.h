@@ -105,7 +105,7 @@ class ChannelT {
 	void	setValue( Vec2i pos, T v ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); *getData( pos ) = v; }
 
 	//! Copies the Area \a srcArea of the Channel \a srcChannel to \a this Channel. The destination Area is \a srcArea offset by \a relativeOffset.
-	void		copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const Vec2i &relativeOffset = Vec2i::zero() );
+	void		copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const Vec2i &relativeOffset = ivec2() );
 
 	//! Returns an averaged value for the Area defined by \a area
 	T			areaAverage( const Area &area ) const;

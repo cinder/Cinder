@@ -234,7 +234,7 @@ class SurfaceT {
 	void	setPixel( Vec2i pos, const ColorAT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; if( hasAlpha() ) p[getAlphaOffset()] = c.a; }
 
 	//! Copies the Area \a srcArea of the Surface \a srcSurface to \a this Surface. The destination Area is \a srcArea offset by \a relativeOffset.
-	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset = Vec2i::zero() );
+	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset = ivec2() );
 
 	//! Returns an averaged color for the Area defined by \a area
 	ColorT<T>	areaAverage( const Area &area ) const;

@@ -94,9 +94,14 @@ class Area {
 	template<typename Y>
 	float		distanceSquared( const Vec2<Y> &pt ) const;
 
+	float		distance( const ivec2 &pt ) const;
+	float		distanceSquared( const ivec2 &pt ) const;	
+
 	//! Returns the nearest point on the Rect \a rect. Points inside the rectangle return \a pt.
 	template<typename Y>
 	Vec2<Y>		closestPoint( const Vec2<Y> &pt ) const;
+
+	ivec2		closestPoint( const ivec2 &pt ) const;
 
 	int32_t			x1, y1, x2, y2;
 

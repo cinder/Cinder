@@ -169,6 +169,31 @@ float Area::distanceSquared( const Vec2<Y> &pt ) const
 	return squaredDistance;
 }
 
+float Area::distance( const ivec2 &pt ) const
+{
+	float squaredDistance = 0;
+	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
+	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
+	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
+	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
+	
+	if( squaredDistance > 0 )
+		return math<float>::sqrt( squaredDistance );
+	else
+		return 0;	
+}
+
+float Area::distanceSquared( const ivec2 &pt ) const
+{
+	float squaredDistance = 0;
+	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
+	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
+	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
+	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
+	
+	return squaredDistance;
+}
+
 template<typename Y>
 Vec2<Y>	Area::closestPoint( const Vec2<Y> &pt ) const
 {
@@ -177,6 +202,16 @@ Vec2<Y>	Area::closestPoint( const Vec2<Y> &pt ) const
 	else if( pt.x > (Y)x2 ) result.x = (Y)x2;
 	if( pt.y < (Y)y1 ) result.y = (Y)y1;
 	else if( pt.y > (Y)y2 ) result.y = (Y)y2;
+	return result;
+}
+
+ivec2 Area::closestPoint( const ivec2 &pt ) const
+{
+	ivec2 result = pt;
+	if( pt.x < (int32_t)x1 ) result.x = (int32_t)x1;
+	else if( pt.x > (int32_t)x2 ) result.x = (int32_t)x2;
+	if( pt.y < (int32_t)y1 ) result.y = (int32_t)y1;
+	else if( pt.y > (int32_t)y2 ) result.y = (int32_t)y2;
 	return result;
 }
 
@@ -233,11 +268,8 @@ pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcAre
 	return std::make_pair( clippedSrc, newDstLT );
 }
 
-template float Area::distance( const Vec2i &pt ) const;
 template float Area::distance( const Vec2f &pt ) const;
-template float Area::distanceSquared( const Vec2i &pt ) const;
 template float Area::distanceSquared( const Vec2f &pt ) const;
-template Vec2i Area::closestPoint( const Vec2i &pt ) const;
 template Vec2f Area::closestPoint( const Vec2f &pt ) const;
 
 } // namespace cinder

@@ -30,10 +30,10 @@
 
 namespace cinder { namespace ip {
 
-void blend( Surface *background, const Surface &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset = Vec2i::zero() );
-inline void blend( Surface *background, const Surface &foreground ) { blend( background, foreground, background->getBounds(), Vec2i::zero() ); }
-void blend( Surface32f *background, const Surface32f &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset = Vec2i::zero() );
-inline void blend( Surface32f *background, const Surface32f &foreground ) { blend( background, foreground, background->getBounds(), Vec2i::zero() ); }
+void blend( Surface *background, const Surface &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset = ivec2() );
+inline void blend( Surface *background, const Surface &foreground ) { blend( background, foreground, background->getBounds(), ivec2() ); }
+void blend( Surface32f *background, const Surface32f &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset = ivec2() );
+inline void blend( Surface32f *background, const Surface32f &foreground ) { blend( background, foreground, background->getBounds(), ivec2() ); }
 
 
 } } // namespace cinder::ip

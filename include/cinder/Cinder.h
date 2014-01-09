@@ -54,6 +54,8 @@ using std::uint32_t;
 using std::int64_t;
 using std::uint64_t;
 
+using namespace glm;
+
 #define CINDER_CINDER
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)

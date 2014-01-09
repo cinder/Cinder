@@ -36,6 +36,13 @@
 #include "cinder/CinderMath.h"
 
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/vec2.hpp"
+
+inline std::ostream& operator<<( std::ostream& lhs, const glm::ivec2 &rhs )
+{
+	lhs << "[" << rhs.x << "," << rhs.y << "]";
+	return lhs;
+}
 
 namespace cinder {
 
@@ -1316,7 +1323,8 @@ template <typename T> bool isNaN( const Vec2<T>& a ) { return std::isnan( a.x ) 
 template <typename T> bool isNaN( const Vec3<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ); }
 template <typename T> bool isNaN( const Vec4<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ) || std::isnan( a.w ); }
 
-typedef Vec2<int>		Vec2i;
+typedef glm::ivec2		Vec2i;
+//typedef Vec2<int>		Vec2i;
 typedef Vec2<float>		Vec2f;
 typedef Vec2<double>	Vec2d;
 typedef Vec3<int>		Vec3i;
