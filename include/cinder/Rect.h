@@ -75,9 +75,10 @@ class RectT {
 	//! Returns a copy of the Rect transformed by \a matrix. Represents the bounding box of the transformed Rect when \a matrix expresses non-scale/translate operations.
 	RectT		transformCopy( const class MatrixAffine2<T> &matrix ) const;
 
-	/** \brief Is a point \a pt inside the rectangle **/
+	//! Is a point \a pt inside the rectangle
 	template<typename Y>
 	bool		contains( const Vec2<Y> &pt ) const { return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
+	bool		contains( const ivec2 &pt ) const { return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
 	//! Returns whether \a rect intersects with this
 	bool		intersects( const RectT &rect ) const;
 

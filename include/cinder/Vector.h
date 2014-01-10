@@ -35,13 +35,14 @@
 
 #include "cinder/CinderMath.h"
 
+#include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/vec2.hpp"
 
-inline std::ostream& operator<<( std::ostream& lhs, const glm::ivec2 &rhs )
+inline std::ostream& operator<<( std::ostream &os, const glm::ivec2 &vec )
 {
-	lhs << "[" << rhs.x << "," << rhs.y << "]";
-	return lhs;
+	os << "[" << vec.x << "," << vec.y << "]";
+	return os;
 }
 
 namespace cinder {
@@ -1345,6 +1346,8 @@ template<> struct VECDIM<2,int> { typedef Vec2i	TYPE; };
 template<> struct VECDIM<3,int> { typedef Vec3i	TYPE; };
 template<> struct VECDIM<4,int> { typedef Vec4i	TYPE; };
 
+inline glm::vec2 toGlm( const Vec2f &v ) { return glm::vec2( v.x, v.y ); }
+inline Vec2f fromGlm( const glm::vec2 &v ) { return Vec2f( v.x, v.y ); }
 inline glm::vec3 toGlm( const Vec3f &v ) { return glm::vec3( v.x, v.y, v.z ); }
 inline Vec3f fromGlm( const glm::vec3 &v ) { return Vec3f( v.x, v.y, v.z ); }
 inline glm::vec4 toGlm( const Vec4f &v ) { return glm::vec4( v.x, v.y, v.z, v.w ); }

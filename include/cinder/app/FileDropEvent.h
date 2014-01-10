@@ -46,7 +46,7 @@ class FileDropEvent : public Event {
 	//! Returns the Y coordinate measured in points of the mouse during the event	
 	int			getY() const { return mY; }
 	//! Returns the coordinates measured in points of the mouse during the event
-	ivec2		getPos() const { return ivec2( mX, mY ); }
+	glm::ivec2	getPos() const { return ivec2( mX, mY ); }
 
 	//! Returns the vector of file paths which were dropped
 	const std::vector<fs::path>&	getFiles() const { return mFiles; }
@@ -60,14 +60,14 @@ class FileDropEvent : public Event {
 	std::vector<fs::path>		mFiles;
 };
 
-inline std::ostream& operator<<( std::ostream &out, const FileDropEvent &event )
+inline std::ostream& operator<<( std::ostream &os, const FileDropEvent &event )
 {
-	out << event.getPos() << ": ";
-	out << "{" << std::endl;
+//	os << event.getPos() << ": ";
+	os << "{" << std::endl;
 	for( std::vector<fs::path>::const_iterator fIt = event.getFiles().begin(); fIt != event.getFiles().end(); ++fIt )
-		out << "  " << *fIt << std::endl;
-	out << "}";
-	return out;
+		os << "  " << *fIt << std::endl;
+	os << "}";
+	return os;
 }
 
 } } // namespace cinder::app
