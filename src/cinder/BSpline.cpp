@@ -407,8 +407,8 @@ void BSplineBasis::compute( float fTime, unsigned int uiOrder, int &riMinIndex, 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 // BSpline
-template<typename T>
-BSpline<T>::BSpline( const std::vector<T> &points, int degree, bool loop, bool open )
+template<int D,typename T>
+BSpline<D,T>::BSpline( const std::vector<VECDIM<D,T>> &points, int degree, bool loop, bool open )
     : mLoop( loop )
 {
 	assert(points.size() >= 2);
@@ -420,8 +420,8 @@ BSpline<T>::BSpline( const std::vector<T> &points, int degree, bool loop, bool o
 	mBasis.create( mNumCtrlPoints + mReplicate, degree, open );
 }
 
-template<typename T>
-BSpline<T>::BSpline( int numControlPoints, const T *controlPoints, int degree, bool loop, const float *knots )
+template<int D,typename T>
+BSpline<D,T>::BSpline( int numControlPoints, const typename BSpline<D,T>::V *controlPoints, int degree, bool loop, const float *knots )
     : mNumCtrlPoints( numControlPoints ), mLoop( loop )
 {
 	assert( mNumCtrlPoints >= 2);
@@ -432,15 +432,15 @@ BSpline<T>::BSpline( int numControlPoints, const T *controlPoints, int degree, b
 	mBasis.create( mNumCtrlPoints + mReplicate, degree, knots );
 }
 
-template<typename T>
-BSpline<T>::BSpline( const BSpline &bspline )
+template<int D,typename T>
+BSpline<D,T>::BSpline( const BSpline &bspline )
 	: mCtrlPoints( 0 )
 {
 	*this = bspline;
 }
 
-template<typename T>
-BSpline<T>& BSpline<T>::operator=( const BSpline &bspline )
+template<int D,typename T>
+BSpline<D,T>& BSpline<D,T>::operator=( const BSpline &bspline )
 {
 	delete [] mCtrlPoints;
 
@@ -458,14 +458,14 @@ BSpline<T>& BSpline<T>::operator=( const BSpline &bspline )
 }
 
 
-template<typename T>
-BSpline<T>::~BSpline()
+template<int D,typename T>
+BSpline<D,T>::~BSpline()
 {
 	delete [] mCtrlPoints;
 }
 
-template<typename T>
-void BSpline<T>::createControl( const T* akCtrlPoint )
+template<int D,typename T>
+void BSpline<D,T>::createControl( const BSpline<D,T>::V* akCtrlPoint )
 {
 	int iNewNumCtrlPoints = mNumCtrlPoints + mReplicate;
 	mCtrlPoints = new T[iNewNumCtrlPoints];
@@ -476,8 +476,8 @@ void BSpline<T>::createControl( const T* akCtrlPoint )
 	}
 }
 
-template<typename T>
-void BSpline<T>::setControlPoint( int i, const T& rkCtrl )
+template<int D,typename T>
+void BSpline<D,T>::setControlPoint( int i, const typename BSpline<D,T>::V &rkCtrl )
 {
 	if( ( 0 <= i ) && ( i < mNumCtrlPoints ) ) {
 		// set the control point
@@ -490,30 +490,31 @@ void BSpline<T>::setControlPoint( int i, const T& rkCtrl )
 	}
 }
 
-template<typename T>
-T BSpline<T>::getControlPoint( int i ) const
+template<int D,typename T>
+typename BSpline<D,T>::V BSpline<D,T>::getControlPoint( int i ) const
 {
     if( ( 0 <= i ) && ( i < mNumCtrlPoints) ) {
 		return mCtrlPoints[i];
     }
 
-    return T::max();
+    return max();
 }
 
-template<typename T>
-void BSpline<T>::setKnot( int i, float fKnot )
+template<int D,typename T>
+void BSpline<D,T>::setKnot( int i, float fKnot )
 {
     mBasis.setKnot( i, fKnot );
 }
 
-template<typename T>
-float BSpline<T>::getKnot( int i ) const
+template<int D,typename T>
+float BSpline<D,T>::getKnot( int i ) const
 {
     return mBasis.getKnot( i );
 }
 
-template<typename T>
-void BSpline<T>::get( float t, T *position, T *firstDerivative, T *secondDerivative, T *thirdDerivative ) const
+template<int D,typename T>
+void BSpline<D,T>::get( float t, BSpline<D,T>::V *position, BSpline<D,T>::V *firstDerivative,
+	BSpline<D,T>::V *secondDerivative, BSpline<D,T>::V *thirdDerivative ) const
 {
 	int i, iMin, iMax;
 	if( thirdDerivative ) {
@@ -559,8 +560,8 @@ void BSpline<T>::get( float t, T *position, T *firstDerivative, T *secondDerivat
 	}
 }
 
-template<typename T>
-float BSpline<T>::getTime( float length ) const
+template<int D,typename T>
+float BSpline<D,T>::getTime( float length ) const
 {
 	const size_t MAX_ITERATIONS = 32;
 	const float TOLERANCE = 1.0e-03f;
@@ -609,47 +610,47 @@ float BSpline<T>::getTime( float length ) const
 	return p;
 }
 
-template<typename T>
-float BSpline<T>::getLength( float fT0, float fT1 ) const
+template<int D,typename T>
+float BSpline<D,T>::getLength( float fT0, float fT1 ) const
 {
 	if( fT0 >= fT1 )
 		return (float)0.0;
 
-    return rombergIntegral<typename T::TYPE,10>( fT0, fT1, std::bind( &BSpline<T>::getSpeed, this, std::placeholders::_1 ) );
+    return rombergIntegral<typename T::TYPE,10>( fT0, fT1, std::bind( &BSpline<D,T>::getSpeed, this, std::placeholders::_1 ) );
 }
 
-template<typename T>
-BSplineBasis& BSpline<T>::getBasis()
+template<int D,typename T>
+BSplineBasis& BSpline<D,T>::getBasis()
 {
 	return mBasis;
 }
 
-template<typename T>
-T BSpline<T>::getPosition( float t ) const
+template<int D,typename T>
+typename BSpline<D,T>::V BSpline<D,T>::getPosition( float t ) const
 {
 	T kPos;
 	get( t, &kPos, 0, 0, 0 );
 	return kPos;
 }
 
-template<typename T>
-T BSpline<T>::getDerivative( float t ) const
+template<int D,typename T>
+typename BSpline<D,T>::V BSpline<D,T>::getDerivative( float t ) const
 {
 	T kDer1;
 	get( t, 0, &kDer1, 0, 0 );
 	return kDer1;
 }
 
-template<typename T>
-T BSpline<T>::getSecondDerivative( float t ) const
+template<int D,typename T>
+typename BSpline<D,T>::V BSpline<D,T>::getSecondDerivative( float t ) const
 {
 	T kDer2;
 	get( t, 0, 0, &kDer2, 0 );
 	return kDer2;
 }
 
-template<typename T>
-T BSpline<T>::getThirdDerivative( float t ) const
+template<int D,typename T>
+typename BSpline<D,T>::V BSpline<D,T>::getThirdDerivative( float t ) const
 {
 	T kDer3;
 	get( t, 0, 0, 0, &kDer3 );
@@ -657,8 +658,8 @@ T BSpline<T>::getThirdDerivative( float t ) const
 }
 
 // explicit template instantiations
-template class BSpline<Vec2f>;
-template class BSpline<Vec3f>;
-template class BSpline<Vec4f>;
+template class BSpline<2,float>;
+template class BSpline<3,float>;
+template class BSpline<4,float>;
 
 } // namespace cinder

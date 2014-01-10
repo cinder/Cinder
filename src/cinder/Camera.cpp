@@ -226,7 +226,7 @@ void Camera::calcInverseView() const
 // CameraPersp
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
-	: Camera(), mLensShift( Vec2f::zero() )
+	: Camera()
 {
 	float eyeX 		= pixelWidth / 2.0f;
 	float eyeY 		= pixelHeight / 2.0f;
@@ -242,7 +242,7 @@ CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
 }
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees, float nearPlane, float farPlane )
-	: Camera(), mLensShift( Vec2f::zero() )
+	: Camera()
 {
 	float halfFov, theTan, aspect;
 
@@ -259,7 +259,7 @@ CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees, flo
 
 // Creates a default camera resembling Maya Persp
 CameraPersp::CameraPersp()
-	: Camera(), mLensShift( Vec2f::zero() )
+	: Camera()
 {
 	lookAt( Vec3f( 28.0f, 21.0f, 28.0f ), Vec3f::zero(), Vec3f::yAxis() );
 	setCenterOfInterest( 44.822f );

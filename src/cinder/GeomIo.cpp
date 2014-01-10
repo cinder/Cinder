@@ -304,7 +304,7 @@ float Rect::sTexCoords[4*2] = { 1, 1,	0, 1,		1, 0,		0, 0 };
 float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
 
 Rect::Rect()
-	: mPos( Vec2f::zero() ), mScale( Vec2f::one() )
+	: mScale( Vec2f::one() )
 {
 	enable( Attrib::POSITION );	
 	enable( Attrib::TEX_COORD_0 );

@@ -94,7 +94,7 @@ Shape2d	Shape2d::transformCopy( const MatrixAffine2f &matrix ) const
 
 Rectf Shape2d::calcBoundingBox() const
 {
-	Rectf result( Vec2f::zero(), Vec2f::zero() );
+	Rectf result( Vec2f(), Vec2f() );
 
 	// find the first point and initialize the result with that
 	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {

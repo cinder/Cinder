@@ -64,7 +64,7 @@ class Shape2d {
 	void			removeContour( size_t i ) { mContours.erase( mContours.begin() + i ); }
 
 	//! Scales the Shape2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
-	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f::zero() );
+	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f() );
 
 	//! Transforms the Shape2d by \a matrix.
 	void		transform( const MatrixAffine2f &matrix );

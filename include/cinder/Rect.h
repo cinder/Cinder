@@ -78,6 +78,8 @@ class RectT {
 	//! Is a point \a pt inside the rectangle
 	template<typename Y>
 	bool		contains( const Vec2<Y> &pt ) const { return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
+	bool		contains( const dvec2 &pt ) const { return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
+	bool		contains( const vec2 &pt ) const { return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
 	bool		contains( const ivec2 &pt ) const { return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
 	//! Returns whether \a rect intersects with this
 	bool		intersects( const RectT &rect ) const;

@@ -50,6 +50,17 @@ using glm::vec2;
 using glm::vec3;
 using glm::vec4;
 
+template<uint8_t DIM,typename T> struct VECDIM { };
+template<> struct VECDIM<2,float> { typedef glm::vec2	TYPE; };
+template<> struct VECDIM<3,float> { typedef Vec3f	TYPE; };
+template<> struct VECDIM<4,float> { typedef Vec4f	TYPE; };
+template<> struct VECDIM<2,double> { typedef glm::dvec2	TYPE; };
+template<> struct VECDIM<3,double> { typedef Vec3d	TYPE; };
+template<> struct VECDIM<4,double> { typedef Vec4d	TYPE; };
+template<> struct VECDIM<2,int> { typedef glm::ivec2	TYPE; };
+template<> struct VECDIM<3,int> { typedef Vec3i	TYPE; };
+template<> struct VECDIM<4,int> { typedef Vec4i	TYPE; };
+
 //!  \cond
 template<typename T>
 struct VECTRAIT {
@@ -77,6 +88,7 @@ struct VEC3CONV {
 
 template<typename T> class Vec3;
 
+/*
 template<typename T>
 class Vec2
 {
@@ -327,6 +339,8 @@ class Vec2
 	static Vec2<T> NaN()   { return Vec2<T>( math<T>::NaN(), math<T>::NaN() ); }
 };
 
+*/
+
 template<typename T>
 class Vec3
 {
@@ -344,10 +358,10 @@ public:
 	Vec3( const Vec3<T> &src )
 		: x( src.x ), y( src.y ), z( src.z )
 	{}
-	Vec3( const Vec2<T> &v2, T aZ )
+	Vec3( const VECDIM<2,T> &v2, T aZ )
 		: x( v2.x ), y( v2.y ), z( aZ )
 	{}
-	explicit Vec3( const Vec2<T> &v2 )
+	explicit Vec3( const VECDIM<2,T> &v2 )
 		: x( v2.x ), y( v2.y ), z( 0 )
 	{}
 	explicit Vec3( const T *d ) : x( d[0] ), y( d[1] ), z( d[2] ) {}
@@ -1323,10 +1337,12 @@ template <typename T> bool isNaN( const Vec2<T>& a ) { return std::isnan( a.x ) 
 template <typename T> bool isNaN( const Vec3<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ); }
 template <typename T> bool isNaN( const Vec4<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ) || std::isnan( a.w ); }
 
-typedef glm::ivec2		Vec2i;
 //typedef Vec2<int>		Vec2i;
-typedef Vec2<float>		Vec2f;
-typedef Vec2<double>	Vec2d;
+typedef glm::ivec2		Vec2i;
+//typedef Vec2<float>	Vec2f;
+typedef glm::vec2		Vec2f;
+//typedef Vec2<double>	Vec2d;
+typedef glm::dvec2		Vec2d;
 typedef Vec3<int>		Vec3i;
 typedef Vec3<float>		Vec3f;
 typedef Vec3<double>	Vec3d;
@@ -1334,19 +1350,6 @@ typedef Vec4<int>		Vec4i;
 typedef Vec4<float>		Vec4f;
 typedef Vec4<double>	Vec4d;
 
-template<uint8_t DIM,typename T> struct VECDIM { };
-template<> struct VECDIM<2,float> { typedef Vec2f	TYPE; };
-template<> struct VECDIM<3,float> { typedef Vec3f	TYPE; };
-template<> struct VECDIM<4,float> { typedef Vec4f	TYPE; };
-template<> struct VECDIM<2,double> { typedef Vec2d	TYPE; };
-template<> struct VECDIM<3,double> { typedef Vec3d	TYPE; };
-template<> struct VECDIM<4,double> { typedef Vec4d	TYPE; };
-template<> struct VECDIM<2,int> { typedef Vec2i	TYPE; };
-template<> struct VECDIM<3,int> { typedef Vec3i	TYPE; };
-template<> struct VECDIM<4,int> { typedef Vec4i	TYPE; };
-
-inline glm::vec2 toGlm( const Vec2f &v ) { return glm::vec2( v.x, v.y ); }
-inline Vec2f fromGlm( const glm::vec2 &v ) { return Vec2f( v.x, v.y ); }
 inline glm::vec3 toGlm( const Vec3f &v ) { return glm::vec3( v.x, v.y, v.z ); }
 inline Vec3f fromGlm( const glm::vec3 &v ) { return Vec3f( v.x, v.y, v.z ); }
 inline glm::vec4 toGlm( const Vec4f &v ) { return glm::vec4( v.x, v.y, v.z, v.w ); }

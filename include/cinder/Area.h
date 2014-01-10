@@ -87,12 +87,11 @@ class Area {
 	//! Expands the Area to include \a rect in its interior
 	void		include( const Area &area );
 
-	//! Returns the distance between the point \a pt and the rectangle. Points inside the Area return \c 0.
-	template<typename Y>
-	float		distance( const Vec2<Y> &pt ) const;
-	//! Returns the squared distance between the point \a pt and the rectangle. Points inside the rectangle return \c 0.
-	template<typename Y>
-	float		distanceSquared( const Vec2<Y> &pt ) const;
+	float		distance( const vec2 &pt ) const;
+	float		distanceSquared( const vec2 &pt ) const;	
+
+	float		distance( const dvec2 &pt ) const;
+	float		distanceSquared( const dvec2 &pt ) const;
 
 	float		distance( const ivec2 &pt ) const;
 	float		distanceSquared( const ivec2 &pt ) const;	
