@@ -428,7 +428,8 @@
 	r.origin.y -= sizeDelta.y;
 	[mWin setFrame:r display:YES];
 
-	mSize = size;
+	mSize.x = (int)mCinderView.frame.size.width;
+	mSize.y = (int)mCinderView.frame.size.height;
 }
 
 - (cinder::Vec2i)getPos
