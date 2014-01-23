@@ -72,6 +72,8 @@ namespace {
 #undef SYNONYM
 #undef HOMONYM
 
+TwType cinder_vec4_TwType;
+
 void mouseDown( int twWindowId, app::MouseEvent &event )
 {
 	TwSetCurrentWindow( twWindowId );
@@ -238,6 +240,16 @@ void InterfaceGl::init( app::WindowRef window, const std::string &title, const V
 	window->getSignalMouseDrag().connect( std::bind( mouseMove, mWindow, mTwWindowId, std::placeholders::_1 ) );
 	window->getSignalKeyDown().connect( std::bind( keyDown, mTwWindowId, std::placeholders::_1 ) );
 	window->getSignalResize().connect( std::bind( resize, mWindow, mTwWindowId ) );
+		
+	TwStructMember cinder_vec4_members[] = {
+		{ "x", TW_TYPE_FLOAT, offsetof(Vec4f, x), "" },
+		{ "y", TW_TYPE_FLOAT, offsetof(Vec4f, y), "" },
+		{ "z", TW_TYPE_FLOAT, offsetof(Vec4f, z), "" },
+		{ "w", TW_TYPE_FLOAT, offsetof(Vec4f, w), "" }
+	};
+		
+	cinder_vec4_TwType = TwDefineStruct("Cinder_Vec4", cinder_vec4_members, 4, sizeof(Vec4f), NULL, NULL);
+
 }
 
 void InterfaceGl::draw()
@@ -324,6 +336,11 @@ void InterfaceGl::addParam( const std::string &name, int32_t *param, const std::
 void InterfaceGl::addParam( const std::string &name, Vec3f *param, const std::string &optionsStr, bool readOnly )
 {
 	implAddParam( name, param, TW_TYPE_DIR3F, optionsStr, readOnly );
+} 
+
+void InterfaceGl::addParam( const std::string &name, Vec4f *param, const std::string &optionsStr, bool readOnly )
+{
+	implAddParam( name, param, cinder_vec4_TwType, optionsStr, readOnly );
 } 
 
 void InterfaceGl::addParam( const std::string &name, Quatf *param, const std::string &optionsStr, bool readOnly )

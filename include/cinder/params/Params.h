@@ -65,6 +65,7 @@ class InterfaceGl {
 	void	addParam( const std::string &name, double *doubleParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, int32_t *intParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, Vec3f *vectorParam, const std::string &optionsStr = "", bool readOnly = false );
+	void	addParam( const std::string &name, Vec4f *vectorParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, Quatf *quatParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, Color *quatParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, ColorA *quatParam, const std::string &optionsStr = "", bool readOnly = false );
