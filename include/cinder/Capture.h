@@ -26,25 +26,17 @@
 #include "cinder/Surface.h"
 #include "cinder/Exception.h"
 
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
 	#if defined( __OBJC__ )
-		@class CaptureImplQtKit;
-		@class QTCaptureDevice;
+		@class CaptureImplAvFoundation;
 	#else
-		class CaptureImplQtKit;
-		class QTCaptureDevice;
+		class CaptureImplAvFoundation;
 	#endif
 #elif defined( CINDER_COCOA_TOUCH_SIMULATOR )
 	#if defined( __OBJC__ )
 		@class CaptureImplCocoaDummy;
 	#else
 		class CaptureImplCocoaDummy;
-	#endif
-#elif defined( CINDER_COCOA_TOUCH_DEVICE )
-	#if defined( __OBJC__ )
-		@class CaptureImplAvFoundation;
-	#else
-		class CaptureImplAvFoundation;
 	#endif
 #elif defined( CINDER_MSW )
 	namespace cinder {
@@ -121,7 +113,7 @@ class Capture {
 		virtual bool						isConnected() const = 0;
 		//! Returns the OS-specific unique identifier
 		virtual Capture::DeviceIdentifier	getUniqueId() const = 0;
-		//! Returns an OS-specific pointer. QTCaptureDevice* on Mac OS X, AVCaptureDevice* on iOS. Not implemented on MSW.
+		//! Returns an OS-specific pointer. AVCaptureDevice* on OS X and iOS. Not implemented on MSW.
 #if defined( CINDER_COCOA )
 		virtual void*		getNative() const = 0;
 #endif
@@ -139,12 +131,10 @@ class Capture {
 		Obj( int32_t width, int32_t height, const Capture::DeviceRef device );
 		virtual ~Obj();
 
-#if defined( CINDER_MAC ) 
-		CaptureImplQtKit				*mImpl;
+#if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
+		CaptureImplAvFoundation			*mImpl;
 #elif defined( CINDER_COCOA_TOUCH_SIMULATOR )
 		CaptureImplCocoaDummy			*mImpl;
-#elif defined( CINDER_COCOA_TOUCH_DEVICE )
-		CaptureImplAvFoundation			*mImpl;
 #elif defined( CINDER_MSW )
 		CaptureImplDirectShow			*mImpl;
 #endif
