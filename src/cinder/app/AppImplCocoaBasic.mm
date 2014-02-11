@@ -428,7 +428,8 @@
 	r.origin.y -= sizeDelta.y;
 	[mWin setFrame:r display:YES];
 
-	mSize = size;
+	mSize.x = (int)mCinderView.frame.size.width;
+	mSize.y = (int)mCinderView.frame.size.height;
 }
 
 - (cinder::Vec2i)getPos
@@ -743,6 +744,9 @@
 	[winImpl->mWin setContentView:winImpl->mCinderView];
 
 	[winImpl->mWin makeKeyAndOrderFront:nil];
+	// after showing the window, the size may have changed (see NSWindow::constrainFrameRect) so we need to update our internal variable
+	winImpl->mSize.x = (int)winImpl->mCinderView.frame.size.width;
+	winImpl->mSize.y = (int)winImpl->mCinderView.frame.size.height;
 	[winImpl->mWin setInitialFirstResponder:winImpl->mCinderView];
 	[winImpl->mWin setAcceptsMouseMovedEvents:YES];
 	[winImpl->mWin setOpaque:YES];

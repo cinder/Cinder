@@ -165,9 +165,9 @@ class MatrixAffine2
 	//! concatenate rotation by \a radians around the point \a pt (conceptually, rotate is before 'this')
 	void				rotate( T radians, const Vec2<T> &pt ) { *this *= MatrixAffine2<T>::makeRotate( radians, pt ); }
 	//! Returns a copy of the matrix rotate by \a radians 
-	MatrixAffine2 		rotateCopy( const Vec2<T> &v ) const { MatrixAffine2 result = *this; result.rotate( v ); return result; }
+	MatrixAffine2 		rotateCopy( T radians ) const { MatrixAffine2 result = *this; result.rotate( radians ); return result; }
 	//! Returns a copy of the matrix rotate by \a radians around the point \a pt
-	MatrixAffine2 		rotateCopy( const Vec2<T> &v, const Vec2<T> &pt ) const { MatrixAffine2 result = *this; result.rotate( v, pt ); return result; }
+	MatrixAffine2 		rotateCopy( T radians, const Vec2<T> &pt ) const { MatrixAffine2 result = *this; result.rotate( radians, pt ); return result; }
 
 	//! concatenate scale (conceptually, scale is before 'this')
 	void				scale( T s );
