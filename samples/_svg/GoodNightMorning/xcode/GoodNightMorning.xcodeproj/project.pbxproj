@@ -18,6 +18,9 @@
 		871BF1355226485C9336D1B7 /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6F588D1A51C749A08E72F1EB /* Cairo.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		A79879696DB04A8E9EFEC456 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4999D75FF0944671A269F9F0 /* CinderApp.icns */; };
+		D81ACFE418AC556E00DFA9A2 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D81ACFE318AC556E00DFA9A2 /* QuickTime.framework */; };
+		D8C1079F18A9C62D008E06AD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8C1079E18A9C62D008E06AD /* AVFoundation.framework */; };
+		D8C107A118A9C633008E06AD /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8C107A018A9C633008E06AD /* CoreMedia.framework */; };
 		DD623A20CFC84B3CBEBCD261 /* GoodNightMorningApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BBF82940D7CF4A55AB1999F8 /* GoodNightMorningApp.cpp */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +44,9 @@
 		8D1107320486CEB800E47090 /* GoodNightMorning.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoodNightMorning.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A03E1A95537C4A8CBAF6DFF4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BBF82940D7CF4A55AB1999F8 /* GoodNightMorningApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = GoodNightMorningApp.cpp; path = ../src/GoodNightMorningApp.cpp; sourceTree = "<group>"; };
+		D81ACFE318AC556E00DFA9A2 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		D8C1079E18A9C62D008E06AD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D8C107A018A9C633008E06AD /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		E9C4AD720FDB40B3AAE5A4F1 /* GoodNightMorning_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = GoodNightMorning_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -49,6 +55,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D81ACFE418AC556E00DFA9A2 /* QuickTime.framework in Frameworks */,
+				D8C107A118A9C633008E06AD /* CoreMedia.framework in Frameworks */,
+				D8C1079F18A9C62D008E06AD /* AVFoundation.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -83,10 +92,13 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D8C107A018A9C633008E06AD /* CoreMedia.framework */,
+				D8C1079E18A9C62D008E06AD /* AVFoundation.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
 				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
+				D81ACFE318AC556E00DFA9A2 /* QuickTime.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
@@ -196,6 +208,9 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "GoodNightMorning" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -296,7 +311,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CINDER_PATH = ../../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -307,6 +321,7 @@
 					../../../../blocks/Cairo/include/macosx,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../../blocks/Cairo/include";
 			};
@@ -316,7 +331,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				CINDER_PATH = ../../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";

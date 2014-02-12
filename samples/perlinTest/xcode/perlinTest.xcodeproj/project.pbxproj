@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -18,6 +18,9 @@
 		971313AC4FD14339A566FF02 /* PerlinTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACC9561D7279446A9B5D6E9D /* PerlinTestApp.cpp */; };
 		9ABAF2665A1A461DB612659A /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A1012F7F7CA041B796694825 /* Cairo.cpp */; };
 		CBB624289949460082066DD6 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4B9EA6670FB94B019CB80224 /* CinderApp.icns */; };
+		D81AD04218AC632100DFA9A2 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D81AD04118AC632100DFA9A2 /* QuickTime.framework */; };
+		D8F4B45018AACD2200BCA60C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F4B44F18AACD2200BCA60C /* AVFoundation.framework */; };
+		D8F4B45218AACD2500BCA60C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F4B45118AACD2500BCA60C /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +41,9 @@
 		A1012F7F7CA041B796694825 /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Cairo.cpp; path = ../../../blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; };
 		A79F92F014ED4C5484508062 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACC9561D7279446A9B5D6E9D /* PerlinTestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = PerlinTestApp.cpp; path = ../src/PerlinTestApp.cpp; sourceTree = "<group>"; };
+		D81AD04118AC632100DFA9A2 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		D8F4B44F18AACD2200BCA60C /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D8F4B45118AACD2500BCA60C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		E3FE71DEC3104A3AB8011460 /* PerlinTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = PerlinTest_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -46,6 +52,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D81AD04218AC632100DFA9A2 /* QuickTime.framework in Frameworks */,
+				D8F4B45218AACD2500BCA60C /* CoreMedia.framework in Frameworks */,
+				D8F4B45018AACD2200BCA60C /* AVFoundation.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -79,10 +88,13 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D8F4B45118AACD2500BCA60C /* CoreMedia.framework */,
+				D8F4B44F18AACD2200BCA60C /* AVFoundation.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
 				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
+				D81AD04118AC632100DFA9A2 /* QuickTime.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
@@ -215,8 +227,11 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "perlinTest" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -316,7 +331,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -327,6 +341,7 @@
 					../../../blocks/Cairo/include/macosx,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../blocks/Cairo/include";
 			};
@@ -336,7 +351,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";

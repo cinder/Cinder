@@ -18,6 +18,9 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		C4FE7FFE929743AEAE6028AC /* Cairo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 320CA734A6304F698A609EA8 /* Cairo.cpp */; };
 		CFF455E82B8349B5BA34F580 /* BSplineApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 510AFBF07996483994BBD796 /* BSplineApp.cpp */; };
+		D81AD05C18AC646000DFA9A2 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D81AD05B18AC646000DFA9A2 /* QuickTime.framework */; };
+		D8F4B49618AAD35E00BCA60C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F4B49518AAD35E00BCA60C /* AVFoundation.framework */; };
+		D8F4B49818AAD36300BCA60C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F4B49718AAD36300BCA60C /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +41,9 @@
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		832F78F18DCD4261A166858E /* BSpline_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = BSpline_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* BSpline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BSpline.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D81AD05B18AC646000DFA9A2 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		D8F4B49518AAD35E00BCA60C /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D8F4B49718AAD36300BCA60C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		E75F514D83584E7BBE0C51BD /* Cairo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cairo.h; path = ../../../blocks/Cairo/include/cinder/cairo/Cairo.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -46,6 +52,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D81AD05C18AC646000DFA9A2 /* QuickTime.framework in Frameworks */,
+				D8F4B49818AAD36300BCA60C /* CoreMedia.framework in Frameworks */,
+				D8F4B49618AAD35E00BCA60C /* AVFoundation.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -79,10 +88,13 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D8F4B49718AAD36300BCA60C /* CoreMedia.framework */,
+				D8F4B49518AAD35E00BCA60C /* AVFoundation.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
 				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
+				D81AD05B18AC646000DFA9A2 /* QuickTime.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
@@ -215,6 +227,9 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "bspline" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -316,7 +331,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -327,6 +341,7 @@
 					../../../blocks/Cairo/include/macosx,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../blocks/Cairo/include";
 			};
@@ -336,7 +351,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";

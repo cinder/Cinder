@@ -16,8 +16,10 @@
 		C72763A90EA7EC2900F1E154 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C72763A80EA7EC2900F1E154 /* OpenGL.framework */; };
 		C72763F50EA7ED8B00F1E154 /* RotatingBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C72763F40EA7ED8B00F1E154 /* RotatingBox.cpp */; };
 		C727640D0EA7EDE800F1E154 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727640C0EA7EDE800F1E154 /* CoreVideo.framework */; };
+		D81AD03C18AC62E800DFA9A2 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D81AD03B18AC62E800DFA9A2 /* QuickTime.framework */; };
 		D8B073EC18A164180027FC3F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8B073EB18A164180027FC3F /* AVFoundation.framework */; };
 		D8B073EE18A1641E0027FC3F /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8B073ED18A1641E0027FC3F /* CoreMedia.framework */; };
+		D8F4B44418AACB8400BCA60C /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F4B44318AACB8400BCA60C /* QTKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +29,6 @@
 		00C0760A0FF33C6A004801EA /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* rotatingBox_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rotatingBox_Prefix.pch; sourceTree = "<group>"; };
@@ -36,8 +37,10 @@
 		C72763A80EA7EC2900F1E154 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		C72763F40EA7ED8B00F1E154 /* RotatingBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RotatingBox.cpp; path = ../RotatingBox.cpp; sourceTree = SOURCE_ROOT; };
 		C727640C0EA7EDE800F1E154 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		D81AD03B18AC62E800DFA9A2 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
 		D8B073EB18A164180027FC3F /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		D8B073ED18A1641E0027FC3F /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		D8F4B44318AACB8400BCA60C /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +48,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D81AD03C18AC62E800DFA9A2 /* QuickTime.framework in Frameworks */,
+				D8F4B44418AACB8400BCA60C /* QTKit.framework in Frameworks */,
 				D8B073EE18A1641E0027FC3F /* CoreMedia.framework in Frameworks */,
 				D8B073EC18A164180027FC3F /* AVFoundation.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -77,6 +82,8 @@
 				00C076080FF33C6A004801EA /* AudioToolbox.framework */,
 				00C076090FF33C6A004801EA /* AudioUnit.framework */,
 				00C0760A0FF33C6A004801EA /* CoreAudio.framework */,
+				D81AD03B18AC62E800DFA9A2 /* QuickTime.framework */,
+				D8F4B44318AACB8400BCA60C /* QTKit.framework */,
 				C727640C0EA7EDE800F1E154 /* CoreVideo.framework */,
 				C72763A80EA7EC2900F1E154 /* OpenGL.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
@@ -88,7 +95,6 @@
 			isa = PBXGroup;
 			children = (
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
-				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
 			);
 			name = "Other Frameworks";

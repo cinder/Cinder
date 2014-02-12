@@ -8,24 +8,23 @@
 
 /* Begin PBXBuildFile section */
 		00BC6B330F93F1D80086A1DC /* flickrTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC6B320F93F1D80086A1DC /* flickrTest.cpp */; };
-		00BC6B480F93F2B10086A1DC /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BC6B420F93F2B10086A1DC /* QuickTime.framework */; };
 		00BC6B490F93F2B10086A1DC /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BC6B430F93F2B10086A1DC /* QTKit.framework */; };
 		00BC6B4A0F93F2B10086A1DC /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BC6B440F93F2B10086A1DC /* CoreVideo.framework */; };
-		00BC6B4B0F93F2B10086A1DC /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BC6B450F93F2B10086A1DC /* Carbon.framework */; };
 		00BC6B4C0F93F2B10086A1DC /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BC6B460F93F2B10086A1DC /* OpenGL.framework */; };
 		00BC6B4D0F93F2B10086A1DC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BC6B470F93F2B10086A1DC /* Cocoa.framework */; };
 		00C075200FF33997004801EA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C0751C0FF33997004801EA /* Accelerate.framework */; };
 		00C075210FF33997004801EA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C0751D0FF33997004801EA /* AudioToolbox.framework */; };
 		00C075220FF33997004801EA /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C0751E0FF33997004801EA /* AudioUnit.framework */; };
 		00C075230FF33997004801EA /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C0751F0FF33997004801EA /* CoreAudio.framework */; };
+		D81AD04C18AC63C000DFA9A2 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D81AD04B18AC63C000DFA9A2 /* QuickTime.framework */; };
+		D8F4B47018AAD0ED00BCA60C /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F4B46F18AAD0ED00BCA60C /* AVFoundation.framework */; };
+		D8F4B47218AAD0F200BCA60C /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F4B47118AAD0F200BCA60C /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		00BC6B320F93F1D80086A1DC /* flickrTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = flickrTest.cpp; path = ../src/flickrTest.cpp; sourceTree = SOURCE_ROOT; };
-		00BC6B420F93F2B10086A1DC /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		00BC6B430F93F2B10086A1DC /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		00BC6B440F93F2B10086A1DC /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
-		00BC6B450F93F2B10086A1DC /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		00BC6B460F93F2B10086A1DC /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		00BC6B470F93F2B10086A1DC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		00C0751C0FF33997004801EA /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -36,6 +35,9 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* flickrTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = flickrTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D81AD04B18AC63C000DFA9A2 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		D8F4B46F18AAD0ED00BCA60C /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D8F4B47118AAD0F200BCA60C /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,10 +45,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00BC6B480F93F2B10086A1DC /* QuickTime.framework in Frameworks */,
+				D81AD04C18AC63C000DFA9A2 /* QuickTime.framework in Frameworks */,
+				D8F4B47218AAD0F200BCA60C /* CoreMedia.framework in Frameworks */,
+				D8F4B47018AAD0ED00BCA60C /* AVFoundation.framework in Frameworks */,
 				00BC6B490F93F2B10086A1DC /* QTKit.framework in Frameworks */,
 				00BC6B4A0F93F2B10086A1DC /* CoreVideo.framework in Frameworks */,
-				00BC6B4B0F93F2B10086A1DC /* Carbon.framework in Frameworks */,
 				00BC6B4C0F93F2B10086A1DC /* OpenGL.framework in Frameworks */,
 				00BC6B4D0F93F2B10086A1DC /* Cocoa.framework in Frameworks */,
 				00C075200FF33997004801EA /* Accelerate.framework in Frameworks */,
@@ -70,14 +73,15 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D8F4B47118AAD0F200BCA60C /* CoreMedia.framework */,
+				D8F4B46F18AAD0ED00BCA60C /* AVFoundation.framework */,
 				00C0751C0FF33997004801EA /* Accelerate.framework */,
 				00C0751D0FF33997004801EA /* AudioToolbox.framework */,
 				00C0751E0FF33997004801EA /* AudioUnit.framework */,
 				00C0751F0FF33997004801EA /* CoreAudio.framework */,
-				00BC6B420F93F2B10086A1DC /* QuickTime.framework */,
+				D81AD04B18AC63C000DFA9A2 /* QuickTime.framework */,
 				00BC6B430F93F2B10086A1DC /* QTKit.framework */,
 				00BC6B440F93F2B10086A1DC /* CoreVideo.framework */,
-				00BC6B450F93F2B10086A1DC /* Carbon.framework */,
 				00BC6B460F93F2B10086A1DC /* OpenGL.framework */,
 				00BC6B470F93F2B10086A1DC /* Cocoa.framework */,
 			);
@@ -164,7 +168,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "flickrTest" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -212,6 +216,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -232,6 +237,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
@@ -247,7 +253,6 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = i386;
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -266,7 +271,6 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = i386;
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_C_LANGUAGE_STANDARD = c99;

@@ -19,7 +19,9 @@
 		6150B45EE73D4BF5AB84724E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16F62C00872346DCAA1CE56B /* CoreLocation.framework */; };
 		647DA82AE16D4D65B6E6C411 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 78149D2AA9A941B7B645F0B3 /* CinderApp.icns */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		D8A720CE16CC2DFF004E5298 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8A720CD16CC2DFE004E5298 /* QuickTime.framework */; };
+		D81ACFD818AC544D00DFA9A2 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D81ACFD718AC544D00DFA9A2 /* QuickTime.framework */; };
+		D8C1078718A9C558008E06AD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8C1078618A9C558008E06AD /* AVFoundation.framework */; };
+		D8C1078918A9C55D008E06AD /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8C1078818A9C55D008E06AD /* CoreMedia.framework */; };
 		DA86C34190F941469651CEA7 /* LocationManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D89C8430EF7B42E4BD5440A6 /* LocationManager.cpp */; };
 /* End PBXBuildFile section */
 
@@ -42,8 +44,10 @@
 		78149D2AA9A941B7B645F0B3 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* LocationManager.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LocationManager.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5582EF569E54B1E9D775CE8 /* LocationManager_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = LocationManager_Prefix.pch; sourceTree = "<group>"; };
+		D81ACFD718AC544D00DFA9A2 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
 		D89C8430EF7B42E4BD5440A6 /* LocationManager.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; name = LocationManager.cpp; path = ../../../blocks/LocationManager/src/cinder/LocationManager.cpp; sourceTree = "<group>"; };
-		D8A720CD16CC2DFE004E5298 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		D8C1078618A9C558008E06AD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D8C1078818A9C55D008E06AD /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		F179A28758CB49958A26146E /* LocationManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = LocationManager.h; path = ../../../blocks/LocationManager/src/cinder/LocationManager.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -52,7 +56,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D8A720CE16CC2DFF004E5298 /* QuickTime.framework in Frameworks */,
+				D81ACFD818AC544D00DFA9A2 /* QuickTime.framework in Frameworks */,
+				D8C1078918A9C55D008E06AD /* CoreMedia.framework in Frameworks */,
+				D8C1078718A9C558008E06AD /* AVFoundation.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -87,16 +93,18 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D8C1078818A9C55D008E06AD /* CoreMedia.framework */,
+				D8C1078618A9C558008E06AD /* AVFoundation.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
 				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
+				D81ACFD718AC544D00DFA9A2 /* QuickTime.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				16F62C00872346DCAA1CE56B /* CoreLocation.framework */,
-				D8A720CD16CC2DFE004E5298 /* QuickTime.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -210,6 +218,9 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "LocationManager" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -257,6 +268,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -276,6 +288,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
@@ -299,7 +312,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -307,6 +319,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../blocks/LocationManager/src";
 			};
@@ -316,7 +329,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
