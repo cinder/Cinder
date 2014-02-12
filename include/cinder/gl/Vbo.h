@@ -73,6 +73,7 @@ typedef std::shared_ptr<VboMesh>	VboMeshRef;
 class VboMesh {
  public:
 	enum { NONE, STATIC, DYNAMIC };
+	static enum { VERTICES, NORMALS, COLORS, TEXCOORDS, TOTAL_PREDEFINED_POSITIONS};
 	enum { ATTR_INDICES, ATTR_POSITIONS, ATTR_NORMALS, ATTR_COLORS_RGB, ATTR_COLORS_RGBA, ATTR_TEXCOORDS2D_0, ATTR_TEXCOORDS2D_1, ATTR_TEXCOORDS2D_2, ATTR_TEXCOORDS2D_3, ATTR_TEXCOORDS3D_0, ATTR_TEXCOORDS3D_1, ATTR_TEXCOORDS3D_2, ATTR_TEXCOORDS3D_3, ATTR_TOTAL };
 	enum { ATTR_MAX_TEXTURE_UNIT = 3 };
 
@@ -130,6 +131,10 @@ class VboMesh {
 		void	setStaticPositions() { mAttributes[ATTR_POSITIONS] = STATIC; }
 		void	setDynamicPositions() { mAttributes[ATTR_POSITIONS] = DYNAMIC; }
 		
+		
+		static GLint sPredefinedAttrNumComponents[TOTAL_PREDEFINED_POSITIONS];
+		static GLenum sPredefinedAttrTypes[TOTAL_PREDEFINED_POSITIONS];
+
 		enum CustomAttr { CUSTOM_ATTR_FLOAT, CUSTOM_ATTR_FLOAT2, CUSTOM_ATTR_FLOAT3, CUSTOM_ATTR_FLOAT4, TOTAL_CUSTOM_ATTR_TYPES };
 		static int sCustomAttrSizes[TOTAL_CUSTOM_ATTR_TYPES];
 		static GLint sCustomAttrNumComponents[TOTAL_CUSTOM_ATTR_TYPES];
@@ -138,6 +143,10 @@ class VboMesh {
 		void	addDynamicCustomVec2f() { mCustomDynamic.push_back( std::make_pair( CUSTOM_ATTR_FLOAT2, 0 ) ); }
 		void	addDynamicCustomVec3f() { mCustomDynamic.push_back( std::make_pair( CUSTOM_ATTR_FLOAT3, 0 ) ); }
 		void	addDynamicCustomVec4f() { mCustomDynamic.push_back( std::make_pair( CUSTOM_ATTR_FLOAT4, 0 ) ); }
+		void	addStaticCustomFloat() { mCustomStatic.push_back( std::make_pair( CUSTOM_ATTR_FLOAT, 0 ) ); }
+		void	addStaticCustomVec2f() { mCustomStatic.push_back( std::make_pair( CUSTOM_ATTR_FLOAT2, 0 ) ); }
+		void	addStaticCustomVec3f() { mCustomStatic.push_back( std::make_pair( CUSTOM_ATTR_FLOAT3, 0 ) ); }
+		void	addStaticCustomVec4f() { mCustomStatic.push_back( std::make_pair( CUSTOM_ATTR_FLOAT4, 0 ) ); }
 
 		int												mAttributes[ATTR_TOTAL];
 		std::vector<std::pair<CustomAttr,size_t> >		mCustomDynamic, mCustomStatic; // pair of <types,offset>

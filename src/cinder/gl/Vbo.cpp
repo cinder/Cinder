@@ -61,13 +61,13 @@ void Vbo::unbind()
 void Vbo::bufferData( size_t size, const void *data, GLenum usage )
 {
 	bind();
-	glBufferDataARB( mObj->mTarget, size, data, usage );
+	glBufferData( mObj->mTarget, size, data, usage );
 }
 
 void Vbo::bufferSubData( ptrdiff_t offset, size_t size, const void *data )
 {
 	bind();
-	glBufferSubDataARB( mObj->mTarget, offset, size, data );
+	glBufferSubData( mObj->mTarget, offset, size, data );
 }
 
 uint8_t* Vbo::map( GLenum access )
@@ -451,22 +451,25 @@ void VboMesh::initializeBuffers( bool staticDataPlanar )
 void VboMesh::enableClientStates() const
 {
 	if( mObj->mLayout.hasPositions() )
-		glEnableClientState( GL_VERTEX_ARRAY );
+		glEnableVertexAttribArray( VERTICES );
 	else
-		glDisableClientState( GL_VERTEX_ARRAY );
+		glDisableVertexAttribArray( VERTICES );
 	if( mObj->mLayout.hasNormals() )
-		glEnableClientState( GL_NORMAL_ARRAY );
+		glEnableVertexAttribArray( NORMALS );
 	else
-		glDisableClientState( GL_NORMAL_ARRAY );
+		glDisableVertexAttribArray( NORMALS );
+	
 	if( mObj->mLayout.hasColorsRGB() || mObj->mLayout.hasColorsRGBA() )
-		glEnableClientState( GL_COLOR_ARRAY );
-	else
-		glDisableClientState( GL_COLOR_ARRAY );
-		
+		glEnableVertexAttribArray( COLORS );
+	else 
+		glDisableVertexAttribArray( COLORS );
+	
+
+
+	// TODO check if this is really working with multiple texcoord sets
 	for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 		if( mObj->mLayout.hasTexCoords( t ) ) {
-			glClientActiveTexture( GL_TEXTURE0 + t );
-			glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+			glEnableVertexAttribArray( TEXCOORDS + t );
 		}
 	}	
 	
@@ -485,15 +488,18 @@ void VboMesh::enableClientStates() const
 
 void VboMesh::disableClientStates() const
 {
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_NORMAL_ARRAY );
-	glDisableClientState( GL_COLOR_ARRAY );
+	if( mObj->mLayout.hasPositions() )
+		glDisableVertexAttribArray( VERTICES );
+	if( mObj->mLayout.hasNormals() )
+		glDisableVertexAttribArray( NORMALS );
+	if( mObj->mLayout.hasColorsRGB() || mObj->mLayout.hasColorsRGBA() )
+		glDisableVertexAttribArray( COLORS );
+
 	for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 		if( mObj->mLayout.hasTexCoords( t ) ) {
-			glClientActiveTexture( GL_TEXTURE0 + t );
-			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+			glDisableVertexAttribArray( TEXCOORDS + t );
 		}
-	}	
+	}
 	
 	for( size_t a = 0; a < mObj->mCustomStaticLocations.size(); ++a ) {
 		if( mObj->mCustomStaticLocations[a] < 0 )
@@ -521,27 +527,26 @@ void VboMesh::bindAllData() const
 		uint8_t stride = ( buffer == STATIC_BUFFER ) ? mObj->mStaticStride : mObj->mDynamicStride;
 		
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) )
-			glNormalPointer( GL_FLOAT, stride, ( const GLvoid *)mObj->mNormalOffset );
+			glVertexAttribPointer( NORMALS, 3, GL_FLOAT, GL_FALSE, stride,  ( const GLvoid *)mObj->mNormalOffset );
+
 
 		if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) )
-			glColorPointer( 3, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBOffset );
+			glVertexAttribPointer( COLORS, 3, GL_FLOAT, GL_FALSE, stride,  ( const GLvoid *)mObj->mColorRGBOffset );
 		else if( ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGBA() : mObj->mLayout.hasDynamicColorsRGBA() ) )
-			glColorPointer( 4, GL_FLOAT, stride, ( const GLvoid *)mObj->mColorRGBAOffset );
+			glVertexAttribPointer( COLORS, 4, GL_FLOAT, GL_FALSE, stride,  ( const GLvoid *)mObj->mColorRGBOffset );
 
 
 		for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 			if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d( t ) : mObj->mLayout.hasDynamicTexCoords2d( t ) ) {
-				glClientActiveTexture( GL_TEXTURE0 + t );
-				glTexCoordPointer( 2, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );
+				glVertexAttribPointer( TEXCOORDS + t , 2, GL_FLOAT, GL_FALSE, stride,  ( const GLvoid *)mObj->mTexCoordOffset[t] );
 			}
 			else if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords3d( t ) : mObj->mLayout.hasDynamicTexCoords3d( t ) ) {
-				glClientActiveTexture( GL_TEXTURE0 + t );
-				glTexCoordPointer( 3, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );
+				glVertexAttribPointer( TEXCOORDS + t , 3, GL_FLOAT, GL_FALSE, stride,  ( const GLvoid *)mObj->mTexCoordOffset[t] );
 			}
 		}	
 
 		if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticPositions() : mObj->mLayout.hasDynamicPositions() )
-			glVertexPointer( 3, GL_FLOAT, stride, (const GLvoid*)mObj->mPositionOffset );
+			glVertexAttribPointer( VERTICES , 3, GL_FLOAT, GL_FALSE, stride,  ( const GLvoid *)mObj->mPositionOffset );
 	}
 
 	for( int buffer = STATIC_BUFFER; buffer <= DYNAMIC_BUFFER; ++buffer ) {
@@ -742,7 +747,7 @@ VboMesh::VertexIter::Obj::Obj( const VboMesh &mesh )
 	// Buffer NULL data to tell the driver we don't care about what's in there (See NVIDIA's "Using Vertex Buffer Objects" whitepaper)
 	mVbo.bind();
 	//mVbo.bufferData( mesh.mObj->mDynamicStride * mesh.mObj->mNumVertices, NULL, GL_STREAM_DRAW );
-	glBufferDataARB( GL_ARRAY_BUFFER, mesh.mObj->mDynamicStride * mesh.mObj->mNumVertices, NULL, GL_STREAM_DRAW );
+	glBufferData( GL_ARRAY_BUFFER, mesh.mObj->mDynamicStride * mesh.mObj->mNumVertices, NULL, GL_STREAM_DRAW );
 	//mData = mVbo.map( GL_WRITE_ONLY );
 	mData = reinterpret_cast<uint8_t*>( glMapBuffer( GL_ARRAY_BUFFER, GL_WRITE_ONLY ) );
 	mDataEnd = mData + mesh.mObj->mDynamicStride * mesh.getNumVertices();

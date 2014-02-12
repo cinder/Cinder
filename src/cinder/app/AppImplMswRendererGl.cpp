@@ -27,6 +27,9 @@
 #include "cinder/Camera.h"
 #include <windowsx.h>
 
+#define CINDER_DISABLE_OLD_OPENGL
+
+
 namespace cinder { namespace app {
 
 bool sMultisampleSupported = false;
@@ -62,8 +65,14 @@ void AppImplMswRendererGl::defaultResize() const
 	int height = clientRect.bottom - clientRect.top;
 
 	glViewport( 0, 0, width, height );
-	cinder::CameraPersp cam( width, height, 60.0f );
 
+	// GL matrix mode is deprecated and prevents Nsight debugging
+	// The code below is needed if easy cinder drawing functions are used
+	// (which use old OpenGL calls)
+
+#ifndef CINDER_DISABLE_OLD_OPENGL 
+	cinder::CameraPersp cam( width, height, 60.0f );
+	
 	glMatrixMode( GL_PROJECTION );
 	glLoadMatrixf( cam.getProjectionMatrix().m );
 
@@ -71,6 +80,7 @@ void AppImplMswRendererGl::defaultResize() const
 	glLoadMatrixf( cam.getModelViewMatrix().m );
 	glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
 	glTranslatef( 0.0f, (float)-height, 0.0f );       // shift origin up to upper-left corner.
+#endif
 }
 
 void AppImplMswRendererGl::swapBuffers() const
