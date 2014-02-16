@@ -71,5 +71,21 @@ bootstrap\n
 b2 runtime-link=static address-model=64 debug-symbols=off optimization=space --with-filesystem --with-date_time --with-system --with-thread\n
 </tt>
 \n
+<b>Visual C++ 2013</b>:\n
+From the Command Prompt, start by running <tt>C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat</tt>:\n
+<tt>
+cd cinder\\boost\n
+bootstrap\n
+b2 runtime-link=static debug-symbols=off optimization=space --with-filesystem --with-date_time --with-system --with-thread\n
+</tt>
+\n
+<b>Visual C++ 2013 x64</b>:\n
+From the Command Prompt, start by running <tt>C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat x86_amd64</tt>:\n
+<tt>
+cd cinder\\boost\n
+bootstrap\n
+b2 runtime-link=static address-model=64 debug-symbols=off optimization=space --with-filesystem --with-date_time --with-system --with-thread\n
+</tt>
+\n
 \n
 **/
