@@ -28,6 +28,8 @@
 		BB3D26BFE76047C19031E4C2 /* OscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 03FB7E0EB80C4CA294FCEA26 /* OscMessage.cpp */; };
 		BD15A4D3C60A473BBA189460 /* IpEndpointName.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F15E910BA6A4950887576F1 /* IpEndpointName.cpp */; };
 		D1B52F5BF0CD48E59B771E26 /* OscOutboundPacketStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 581792F6B78D4171A2266B5B /* OscOutboundPacketStream.cpp */; };
+		D8F373B518B33EEF00CD1165 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F373B418B33EEF00CD1165 /* AVFoundation.framework */; };
+		D8F373B718B33EF500CD1165 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F373B618B33EF500CD1165 /* CoreMedia.framework */; };
 		E6873155B8654A52AA4AB57F /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 5A01D1CCBCF14670812338E9 /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
@@ -74,6 +76,8 @@
 		C68EA9DBF9B24B2485E58130 /* OscSenderApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = OscSenderApp.cpp; path = ../src/OscSenderApp.cpp; sourceTree = "<group>"; };
 		CC4BAE5EF63E4DFCB8408CB6 /* UdpSocket.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = UdpSocket.cpp; path = ../../../src/ip/posix/UdpSocket.cpp; sourceTree = "<group>"; };
 		D6878D1D5F07484193F8ACF4 /* UdpSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UdpSocket.h; path = ../../../src/ip/UdpSocket.h; sourceTree = "<group>"; };
+		D8F373B418B33EEF00CD1165 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D8F373B618B33EF500CD1165 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		DD992BD5ACA94A998631FB2F /* OscBundle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OscBundle.h; path = ../../../src/OscBundle.h; sourceTree = "<group>"; };
 		F1ACAD93F8F44D91B31DFC02 /* OscReceivedElements.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OscReceivedElements.h; path = ../../../src/osc/OscReceivedElements.h; sourceTree = "<group>"; };
 		F589CF345A9044B3AED715FD /* OscListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OscListener.h; path = ../../../src/OscListener.h; sourceTree = "<group>"; };
@@ -85,6 +89,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8F373B718B33EF500CD1165 /* CoreMedia.framework in Frameworks */,
+				D8F373B518B33EEF00CD1165 /* AVFoundation.framework in Frameworks */,
 				00624F8316C2B735008538C9 /* QuickTime.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
@@ -137,11 +143,13 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				00624F8216C2B735008538C9 /* QuickTime.framework */,
+				D8F373B618B33EF500CD1165 /* CoreMedia.framework */,
+				D8F373B418B33EEF00CD1165 /* AVFoundation.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
 				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
+				00624F8216C2B735008538C9 /* QuickTime.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
@@ -284,7 +292,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0510;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OSCSender" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -386,7 +394,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -394,6 +401,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../src";
 			};
@@ -403,7 +411,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";

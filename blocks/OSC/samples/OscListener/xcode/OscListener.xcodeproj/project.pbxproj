@@ -26,6 +26,8 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		C0BF3712AF58411F88794C92 /* UdpSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8286D6921D346E39454494E /* UdpSocket.cpp */; };
 		D4ED2CE14425490F99DC1310 /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E546D9D0F31B4EF489C901A5 /* OscReceivedElements.cpp */; };
+		D8F373B118B33E8000CD1165 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F373B018B33E8000CD1165 /* AVFoundation.framework */; };
+		D8F373B318B33E8600CD1165 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F373B218B33E8600CD1165 /* CoreMedia.framework */; };
 		E62F9F66C4FB460098627EDF /* OscTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96959B8DAC32451996C8B988 /* OscTypes.cpp */; };
 		E85D0C530111490BBC7ABDC5 /* OscBundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 74F02D2871684608A2922E6E /* OscBundle.cpp */; };
 		E92584B9DCF5467EA82F5873 /* NetworkingUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B59A2149360D43398C193E35 /* NetworkingUtils.cpp */; };
@@ -67,6 +69,8 @@
 		C8286D6921D346E39454494E /* UdpSocket.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = UdpSocket.cpp; path = ../../../src/ip/posix/UdpSocket.cpp; sourceTree = "<group>"; };
 		CFBCAA0641834A3B8C3207E5 /* OscPacketListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OscPacketListener.h; path = ../../../src/osc/OscPacketListener.h; sourceTree = "<group>"; };
 		D459E18B9460475AACF30848 /* IpEndpointName.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = IpEndpointName.cpp; path = ../../../src/ip/IpEndpointName.cpp; sourceTree = "<group>"; };
+		D8F373B018B33E8000CD1165 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D8F373B218B33E8600CD1165 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		D9D6147375144B2C8A3D2E92 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		E546D9D0F31B4EF489C901A5 /* OscReceivedElements.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = OscReceivedElements.cpp; path = ../../../src/osc/OscReceivedElements.cpp; sourceTree = "<group>"; };
 		E99D97BB7E9A427DA02B1911 /* OscSender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = OscSender.h; path = ../../../src/OscSender.h; sourceTree = "<group>"; };
@@ -85,6 +89,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8F373B318B33E8600CD1165 /* CoreMedia.framework in Frameworks */,
+				D8F373B118B33E8000CD1165 /* AVFoundation.framework in Frameworks */,
 				00624F7C16C2B57D008538C9 /* QuickTime.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
@@ -119,10 +125,13 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D8F373B218B33E8600CD1165 /* CoreMedia.framework */,
+				D8F373B018B33E8000CD1165 /* AVFoundation.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
 				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
+				00624F7B16C2B57D008538C9 /* QuickTime.framework */,
 				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
 				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
 				0091D8F80E81B9330029341E /* OpenGL.framework */,
@@ -151,7 +160,6 @@
 		29B97314FDCFA39411CA2CEA /* OscListener */ = {
 			isa = PBXGroup;
 			children = (
-				00624F7B16C2B57D008538C9 /* QuickTime.framework */,
 				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
@@ -283,7 +291,10 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OSCListener" */;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OscListener" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -339,6 +350,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -358,6 +370,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_FAST_MATH = YES;
@@ -381,7 +394,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -389,6 +401,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../src";
 			};
@@ -398,7 +411,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
 				CINDER_PATH = ../../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -423,7 +435,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OSCListener" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "OscListener" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
