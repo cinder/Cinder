@@ -43,7 +43,7 @@ void Camera::setCenterOfInterestPoint( const Vec3f &centerOfInterestPoint )
 void Camera::setViewDirection( const Vec3f &aViewDirection )
 {
 	mViewDirection = aViewDirection.normalized();
-	mOrientation = Quatf( Vec3f( 0.0f, 0.0f, -1.0f ), mViewDirection );
+	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
 	mModelViewCached = false;
 }
 
