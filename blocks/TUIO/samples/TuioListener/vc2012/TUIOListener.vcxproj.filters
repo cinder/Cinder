@@ -13,38 +13,38 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="Blocks">
-      <UniqueIdentifier>{30C2DEA6-3699-45E2-887D-51A0D089E8BD}</UniqueIdentifier>
+      <UniqueIdentifier>{F8173BCE-D34F-40B7-BA93-57C58DE719D5}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC">
-      <UniqueIdentifier>{885E0344-C07C-42F3-8000-8BC5FC8641B3}</UniqueIdentifier>
+      <UniqueIdentifier>{1B749430-D8D9-4760-A8A7-43CF63D350BC}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC\src">
-      <UniqueIdentifier>{14802097-DC62-48C5-930A-D9210016ECA6}</UniqueIdentifier>
+      <UniqueIdentifier>{8B81E7AD-CC32-4AB5-A146-528592820673}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC\src\ip">
-      <UniqueIdentifier>{27DDEE7C-000B-4CA7-BC95-437D6E84E6FF}</UniqueIdentifier>
+      <UniqueIdentifier>{03DF2842-F7F5-44AD-8CE1-C8B06E4A1B59}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC\src\osc">
-      <UniqueIdentifier>{FEC5B749-2A47-4B2E-83DF-4B48389D144C}</UniqueIdentifier>
+      <UniqueIdentifier>{4C7A5E7B-B5B6-48B6-9C25-0604CAE138E1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\OSC\src\ip\win32">
-      <UniqueIdentifier>{840744B5-0066-4D9B-A69E-378A062CDFF4}</UniqueIdentifier>
+      <UniqueIdentifier>{201CDCCE-2109-4223-8312-84482E7CD3AB}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\TUIO">
-      <UniqueIdentifier>{402049F2-F01E-43D2-8662-EE6EAD1F9272}</UniqueIdentifier>
+      <UniqueIdentifier>{E34B86A7-CF2E-4143-933E-CA49360360CF}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\TUIO\src">
-      <UniqueIdentifier>{71FEFE9D-6890-49D1-A509-AE2EA48597F4}</UniqueIdentifier>
+      <UniqueIdentifier>{91F9058D-C54A-4F4A-9E52-B6DAB5CBFBFD}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\TUIO\include">
-      <UniqueIdentifier>{E2B2F9C3-6EC4-4F27-B368-3DA353027E10}</UniqueIdentifier>
+      <UniqueIdentifier>{D45FEABF-E9B6-4372-B21D-0D2758827D9B}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\TuioMultitouchBasicApp.cpp">
+    <ClCompile Include="..\src\TUIOListenerApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\TuioMultitouchBasicApp.cpp">
+    <ClCompile Include="..\src\TUIOListenerApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClInclude Include="..\include\Resources.h">

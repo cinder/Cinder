@@ -291,6 +291,12 @@ void JsonTree::clear()
 	mChildren.clear();
 }
 
+JsonTree& JsonTree::addChild( const JsonTree &newChild )
+{
+	pushBack( newChild );
+	return *this;
+}
+
 void JsonTree::pushBack( const JsonTree &newChild )
 {
 	if( newChild.getKey() == "" ) {
