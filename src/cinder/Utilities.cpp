@@ -28,7 +28,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Utilities.h"
-
+#include "cinder/Unicode.h"
 
 #if defined( CINDER_COCOA_TOUCH )
 	#import <UIKit/UIKit.h>
@@ -149,7 +149,7 @@ fs::path getTemporaryDirectory()
 		throw std::runtime_error("Could not get system temp path");
 
 	std::wstring wideResult( tempPath.begin(), tempPath.begin() + static_cast<std::size_t>(result) );
-	return toUtf8( wideResult );
+	return toUtf8( (char16_t*)wideResult.c_str() );
 #endif
 }
 
@@ -172,11 +172,11 @@ fs::path getTemporaryFilePath( const std::string &prefix )
 	if( ( ! result ) || ( result >= tempPath.size() ) )
 		throw std::runtime_error( "Could not get system temp path" );
 
-	result = ::GetTempFileName( &tempPath[0], toUtf16( prefix.c_str() ).c_str(), 0, tempFileName );
+	result = ::GetTempFileName( &tempPath[0], (wchar_t*)toUtf16( prefix.c_str() ).c_str(), 0, tempFileName );
     if( result == 0)
 		throw std::runtime_error( "Could not create temporary file path" );
 
-	return toUtf8( tempFileName );
+	return toUtf8( (char16_t*)&tempFileName[0] );
 #endif
 }
 
@@ -235,7 +235,7 @@ void launchWebBrowser( const Url &url )
 	NSString *nsString = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
 	NSURL *nsUrl = [NSURL URLWithString:nsString];
 #elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
-	wstring urlStr = toUtf16( url.str() );
+	std::u16string urlStr = toUtf16( url.str() );
 #endif
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -243,7 +243,7 @@ void launchWebBrowser( const Url &url )
 #elif defined( CINDER_COCOA )
 	[[NSWorkspace sharedWorkspace] openURL:nsUrl ];
 #elif defined( CINDER_MSW )
-	ShellExecute( NULL, L"open", urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
+	ShellExecute( NULL, L"open", (wchar_t*)urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
 #elif defined( CINDER_WINRT )
 	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));
 	Windows::System::Launcher::LaunchUriAsync(uri);

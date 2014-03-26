@@ -24,6 +24,7 @@
 #include "cinder/Timer.h"
 #include "cinder/Thread.h"
 #include "cinder/Utilities.h"
+#include "cinder/Unicode.h"
 
 #include <string>
 #include <iostream>
@@ -197,7 +198,7 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 				continue;
 			}
 
-			sDevices.push_back( Serial::Device( string( friendlyName ), toUtf8( interfaceDetail->DevicePath ) ) );
+			sDevices.push_back( Serial::Device( string( friendlyName ), toUtf8( (char16_t*)interfaceDetail->DevicePath ) ) );
 		}
 	}
 	

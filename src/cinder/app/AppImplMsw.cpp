@@ -24,6 +24,7 @@
 #include "cinder/app/AppImplMsw.h"
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
+#include "cinder/Unicode.h"
 #include "cinder/Display.h"
 
 #include <Windows.h>
@@ -229,7 +230,7 @@ fs::path AppImplMsw::getFolderPath( const fs::path &initialPath )
 		// get the name of the folder
 		TCHAR path[MAX_PATH];
 		if( ::SHGetPathFromIDList ( pidl, path ) ) {
-			result = toUtf8( path );
+			result = toUtf8( (char16_t*)path );
 		}
 
 		// free memory used
@@ -395,12 +396,12 @@ void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &ti
 
 	::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
 
-	std::wstring unicodeTitle = toUtf16( title ); 
+	std::u16string unicodeTitle = toUtf16( title ); 
 
 	// Create The Window
 	if( ! ( mWnd = ::CreateWindowEx( mWindowExStyle,						// Extended Style For The Window
 		WINDOWED_WIN_CLASS_NAME,
-		unicodeTitle.c_str(),						// Window Title
+		(wchar_t*)unicodeTitle.c_str(),						// Window Title
 		mWindowStyle,					// Required Window Style
 		windowRect.left, windowRect.top,								// Window Position
 		windowRect.right - windowRect.left,	// Calculate Window Width
@@ -560,18 +561,18 @@ std::string	WindowImplMsw::getTitle() const
 	wchar_t *wideChars = (wchar_t*)malloc( sizeof(wchar_t) * (numChars + 1) );
 	::GetWindowTextW( mWnd, &wideChars[0], numChars + 1 );
 	wideChars[numChars] = 0;
-	std::string result = toUtf8( wideChars );
+	std::string result = toUtf8( (char16_t*)wideChars );
 	free( (void*)wideChars );
 	return result;
 }
 
 void WindowImplMsw::setTitle( const std::string &title )
 {
-	std::wstring titleWide = toUtf16( title );
+	std::u16string titleWide = toUtf16( title );
 	if( titleWide.empty() )
 		::SetWindowText( mWnd, L"" );
 	else
-		::SetWindowText( mWnd, &titleWide[0] );
+		::SetWindowText( mWnd, (wchar_t*)&titleWide[0] );
 }
 
 void WindowImplMsw::setSize( const Vec2i &windowSize )
