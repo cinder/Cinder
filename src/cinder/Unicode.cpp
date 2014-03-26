@@ -22,6 +22,28 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*
+ * Copyright 2001-2004 Unicode, Inc.
+ * 
+ * Disclaimer
+ * 
+ * This source code is provided as is by Unicode, Inc. No claims are
+ * made as to fitness for any particular purpose. No warranties of any
+ * kind are expressed or implied. The recipient agrees to determine
+ * applicability of information provided. If this file has been
+ * purchased on magnetic or optical media from Unicode, Inc., the
+ * sole remedy for any claim will be exchange of defective media
+ * within 90 days of receipt.
+ * 
+ * Limitations on Rights to Redistribute This Code
+ * 
+ * Unicode, Inc. hereby grants the right to freely use the information
+ * supplied in this file in the creation of products supporting the
+ * Unicode Standard, and to make copies of this file in any form
+ * for internal or external distribution as long as this notice
+ * remains attached.
+ */
+
 #include "cinder/Unicode.h"
 #include <cstring>
 #include <string>
@@ -35,6 +57,20 @@ extern "C" {
 using namespace std;
 
 namespace cinder {
+
+static const char32_t halfBase = 0x0010000UL;
+static const char32_t halfMask = 0x3FFUL;
+static const int halfShift = 10; // shift by 10 bits
+
+#define UNI_SUR_HIGH_START		(char32_t)0xD800
+#define UNI_SUR_HIGH_END		(char32_t)0xDBFF
+#define UNI_SUR_LOW_START		(char32_t)0xDC00
+#define UNI_SUR_LOW_END			(char32_t)0xDFFF
+#define UNI_REPLACEMENT_CHAR	(char32_t)0x0000FFFD
+#define UNI_MAX_BMP				(char32_t)0x0000FFFF
+#define UNI_MAX_UTF16			(char32_t)0x0010FFFF
+#define UNI_MAX_UTF32			(char32_t)0x7FFFFFFF
+#define UNI_MAX_LEGAL_UTF32		(char32_t)0x0010FFFF
 
 std::u16string toUtf16( const char *utf8Str, size_t lengthInBytes )
 {
@@ -140,6 +176,91 @@ size_t advanceCharUtf8( const char *str, size_t numChars, size_t lengthInBytes )
 	
 	return nextByte;
 }
+
+std::u16string	toUtf16( const std::u32string &utf32str )
+{
+	std::u16string result;
+	auto sourceIt = utf32str.cbegin();
+	while( sourceIt != utf32str.cend() ) {
+		char32_t ch = *sourceIt++;
+		if( ch <= UNI_MAX_BMP ) { // Target is a character <= 0xFFFF
+			// UTF-16 surrogate values are illegal in UTF-32; 0xffff or 0xfffe are both reserved values
+			if( ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END )
+				result.push_back( UNI_REPLACEMENT_CHAR );
+			else
+				result.push_back( static_cast<char16_t>( ch ) );
+		}
+		else if( ch > UNI_MAX_LEGAL_UTF32 ) {
+			result.push_back( UNI_REPLACEMENT_CHAR );
+		}
+		else { // target is a character in range 0xFFFF - 0x10FFFF.
+			ch -= halfBase;
+			result.push_back( (char16_t)((ch >> halfShift) + UNI_SUR_HIGH_START) );
+			result.push_back( (char16_t)((ch & halfMask) + UNI_SUR_LOW_START) );
+		}
+	}
+
+    return result;
+}
+
+/* --------------------------------------------------------------------- */
+#if 0
+ConversionResult ConvertUTF16toUTF32 (
+        const UTF16** sourceStart, const UTF16* sourceEnd, 
+        UTF32** targetStart, UTF32* targetEnd, ConversionFlags flags) {
+    ConversionResult result = conversionOK;
+    const UTF16* source = *sourceStart;
+    UTF32* target = *targetStart;
+    UTF32 ch, ch2;
+    while (source < sourceEnd) {
+        const UTF16* oldSource = source; /*  In case we have to back up because of target overflow. */
+        ch = *source++;
+        /* If we have a surrogate pair, convert to UTF32 first. */
+        if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END) {
+            /* If the 16 bits following the high surrogate are in the source buffer... */
+            if (source < sourceEnd) {
+                ch2 = *source;
+                /* If it's a low surrogate, convert to UTF32. */
+                if (ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END) {
+                    ch = ((ch - UNI_SUR_HIGH_START) << halfShift)
+                        + (ch2 - UNI_SUR_LOW_START) + halfBase;
+                    ++source;
+                } else if (flags == strictConversion) { /* it's an unpaired high surrogate */
+                    --source; /* return to the illegal value itself */
+                    result = sourceIllegal;
+                    break;
+                }
+            } else { /* We don't have the 16 bits following the high surrogate. */
+                --source; /* return to the high surrogate */
+                result = sourceExhausted;
+                break;
+            }
+        } else if (flags == strictConversion) {
+            /* UTF-16 surrogate values are illegal in UTF-32 */
+            if (ch >= UNI_SUR_LOW_START && ch <= UNI_SUR_LOW_END) {
+                --source; /* return to the illegal value itself */
+                result = sourceIllegal;
+                break;
+            }
+        }
+        if (target >= targetEnd) {
+            source = oldSource; /* Back up source pointer! */
+            result = targetExhausted; break;
+        }
+        *target++ = ch;
+    }
+    *sourceStart = source;
+    *targetStart = target;
+#ifdef CVTUTF_DEBUG
+if (result == sourceIllegal) {
+    fprintf(stderr, "ConvertUTF16toUTF32 illegal seq 0x%04x,%04x\n", ch, ch2);
+    fflush(stderr);
+}
+#endif
+    return result;
+}
+}
+#endif
 
 namespace {
 bool shouldBreak( char code )

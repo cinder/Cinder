@@ -25,14 +25,20 @@ TYPE loadStringFromFile( const DataSourceRef &dataSource )
 
 void UnicodeTestApp::setup()
 {
+	// these files should be identical except for their encoding
+	// includes codes > U+0xFFFF
 	auto u8 = loadStringFromFile<string>( loadAsset( "test_text_utf8.txt" ) );
 	auto u16 = loadStringFromFile<u16string>( loadAsset( "test_text_utf16.txt" ) );
 	auto u32 = loadStringFromFile<u32string>( loadAsset( "test_text_utf32.txt" ) );
 
+	// to utf8
 	assert( u8 == toUtf8( u16 ) );
 	assert( u8 == toUtf8( u32 ) );
+	// from utf8
 	assert( u16 == toUtf16( u8 ) );
 	assert( u32 == toUtf32( u8 ) );
+	// utf16 <-> utf32
+	assert( u16 == toUtf16( u32 ) );
 
 	console() << u8 << std::endl;
 }
