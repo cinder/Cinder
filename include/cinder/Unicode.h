@@ -42,8 +42,8 @@ std::string		toUtf8( const std::u16string &utf16Str );
 std::string		toUtf8( const char32_t *utf32str, size_t lengthInBytes = 0 );
 std::string		toUtf8( const std::u32string &utf32Str );
 
-std::u16string	toUtf16( const char32_t *utf32str, size_t lengthInBytes = 0 );
 std::u16string	toUtf16( const std::u32string &utf32str );
+std::u32string	toUtf32( const std::u16string &utf16str );
 
 //! Returns the number of characters (not bytes) in the the UTF-8 string \a str. Optimize operation by supplying a non-default \a lengthInBytes of \a str.
 size_t		stringLengthUtf8( const char *str, size_t lengthInBytes = 0 );
