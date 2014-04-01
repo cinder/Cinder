@@ -71,6 +71,7 @@ class Param : public ParamBase {
   public:
 	typedef std::function<void ( T )>	SetterFn;
 	typedef std::function<T ()>			GetterFn;
+	typedef std::function<void ()>		UpdateFn;
 
 	Param( const std::string &name )
 	: ParamBase( name, nullptr ), mTarget( nullptr )
@@ -85,19 +86,21 @@ class Param : public ParamBase {
 	Param&	keyIncr( const std::string &keyIncr )	{ mKeyIncr = keyIncr; return *this; }
 	Param&	keyDecr( const std::string &keyDecr )	{ mKeyDecr = keyDecr; return *this; }
 
-	Param&	setterFn( const SetterFn &setter )		{ mSetterFn = setter ; return *this; }
-	Param&	getterFn( const GetterFn &getter )		{ mGetterFn = getter ; return *this; }
+	Param&	setterFn( const SetterFn &setterFunction )		{ mSetterFn = setterFunction; return *this; }
+	Param&	getterFn( const GetterFn &getterFunction )		{ mGetterFn = getterFunction; return *this; }
+	Param&	updateFn( const UpdateFn &updateFunction )		{ mUpdateFn = updateFunction; return *this; }
 
 	T*		getTarget() const			{ return mTarget; }
 	
-	const SetterFn&	getSetter() const	{ return mSetterFn; }
-	const GetterFn&	getGetter() const	{ return mGetterFn; }
+	const SetterFn&	getSetterFn() const	{ return mSetterFn; }
+	const GetterFn&	getGetterFn() const	{ return mGetterFn; }
+	const UpdateFn& getUpdateFn() const	{ return mUpdateFn; }
 
   private:
 	T*			mTarget;
 	SetterFn	mSetterFn;
 	GetterFn	mGetterFn;
-
+	UpdateFn	mUpdateFn;
 };
 
 

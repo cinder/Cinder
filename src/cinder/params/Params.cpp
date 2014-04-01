@@ -306,8 +306,6 @@ std::string getParamOptions( const ParamBase &param )
 	if( ! param.getKeyDecr().empty() )
 		result += " keyDecr=" + param.getKeyDecr();
 
-	app::console() << __PRETTY_FUNCTION__ << "| optionsStr: " << result << endl;
-
 	return result;
 }
 
@@ -323,10 +321,23 @@ void InterfaceGl::implAddParam( const Param<T> &param, int type )
 {
 	string optionsStr = getParamOptions( param );
 
-	if( param.getSetter() && param.getGetter() )
-		implAddParamCb<T>( param.getName(), type, optionsStr, param.getSetter(), param.getGetter() );
+	if( param.getUpdateFn() ) {
+		assert( param.getTarget() && ! param.getSetterFn() && ! param.getGetterFn() );
+
+		T* target = param.getTarget();
+		auto updateFn = param.getUpdateFn();
+		std::function<void( T )> setter =	[target, updateFn]( T var )	{ *target = var; updateFn(); };
+		std::function<T ()> getter =		[target]()					{ return *target; };
+
+		implAddParamCb<T>( param.getName(), type, optionsStr, setter, getter );
+	}
+	else if( param.getSetterFn() && param.getGetterFn() ) {
+		assert( "cannot have a target and accessors" );
+		implAddParamCb<T>( param.getName(), type, optionsStr, param.getSetterFn(), param.getGetterFn() );
+	}
 	else {
 		assert( param.getTarget() && "must provide a target or accessors" );
+
 		implAddParam( param.getName(), param.getVoidPtr(), type, optionsStr, param.isReadOnly() );
 	}
 }
