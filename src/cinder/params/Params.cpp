@@ -312,14 +312,23 @@ std::string getParamOptions( const ParamBase &param )
 } // anonymous namespace
 
 template <> void InterfaceGl::add( const Param<bool> &param )		{ implAddParam( param, TW_TYPE_BOOLCPP ); }
+template <> void InterfaceGl::add( const Param<char> &param )		{ implAddParam( param, TW_TYPE_CHAR ); }
+template <> void InterfaceGl::add( const Param<int8_t> &param )		{ implAddParam( param, TW_TYPE_INT8 ); }
+template <> void InterfaceGl::add( const Param<uint8_t> &param )	{ implAddParam( param, TW_TYPE_UINT8 ); }
+template <> void InterfaceGl::add( const Param<int16_t> &param )	{ implAddParam( param, TW_TYPE_INT16 ); }
+template <> void InterfaceGl::add( const Param<uint16_t> &param )	{ implAddParam( param, TW_TYPE_UINT16 ); }
+template <> void InterfaceGl::add( const Param<int32_t> &param )	{ implAddParam( param, TW_TYPE_INT32 ); }
+template <> void InterfaceGl::add( const Param<uint32_t> &param )	{ implAddParam( param, TW_TYPE_UINT32 ); }
 template <> void InterfaceGl::add( const Param<float> &param )		{ implAddParam( param, TW_TYPE_FLOAT ); }
 template <> void InterfaceGl::add( const Param<double> &param )		{ implAddParam( param, TW_TYPE_DOUBLE ); }
-template <> void InterfaceGl::add( const Param<int32_t> &param )	{ implAddParam( param, TW_TYPE_INT32 ); }
-template <> void InterfaceGl::add( const Param<Vec3f> &param )		{ implAddParam( param, TW_TYPE_DIR3F ); }
+template <> void InterfaceGl::add( const Param<char *> &param )		{ implAddParam( param, TW_TYPE_CDSTRING ); }
+template <> void InterfaceGl::add( const Param<string> &param )		{ implAddParam( param, TW_TYPE_STDSTRING ); }
 template <> void InterfaceGl::add( const Param<Color> &param )		{ implAddParam( param, TW_TYPE_COLOR3F ); }
 template <> void InterfaceGl::add( const Param<ColorA> &param )		{ implAddParam( param, TW_TYPE_COLOR4F ); }
 template <> void InterfaceGl::add( const Param<Quatf> &param )		{ implAddParam( param, TW_TYPE_QUAT4F ); }
-template <> void InterfaceGl::add( const Param<string> &param )		{ implAddParam( param, TW_TYPE_STDSTRING ); }
+template <> void InterfaceGl::add( const Param<Quatd> &param )		{ implAddParam( param, TW_TYPE_QUAT4D ); }
+template <> void InterfaceGl::add( const Param<Vec3f> &param )		{ implAddParam( param, TW_TYPE_DIR3F ); }
+template <> void InterfaceGl::add( const Param<Vec3d> &param )		{ implAddParam( param, TW_TYPE_DIR3D ); }
 
 template <typename T>
 void InterfaceGl::implAddParam( const Param<T> &param, int type )

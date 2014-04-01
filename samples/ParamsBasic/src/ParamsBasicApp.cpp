@@ -26,6 +26,7 @@ class TweakBarApp : public AppBasic {
 	Vec3f					getLightDirection() { return mLightDirection; }
 private:
 	Vec3f					mLightDirection;
+	uint32_t				mSomeValue;
 };
 
 void TweakBarApp::setLightDirection( Vec3f direction )
@@ -39,6 +40,7 @@ void TweakBarApp::setup()
 	mObjSize = 4;
 	mLightDirection = Vec3f( 0, 0, -1 );
 	mColor = ColorA( 0.25f, 0.5f, 1.0f, 1.0f );
+	mSomeValue = 2;
 
 	// setup our default camera, looking down the z-axis
 	mCam.lookAt( Vec3f( -20, 0, 0 ), Vec3f::zero() );
@@ -62,19 +64,19 @@ void TweakBarApp::setup()
 //	mParams->addParam( "Light Direction", setter, getter );
 
 	// getter + setter, no target var
-//	mParams->add( params::Param<Vec3f>( "Light Direction" ).setterFn( setter ).getterFn( getter ) );
+	mParams->add( params::Param<Vec3f>( "Light Direction" ).setterFn( setter ).getterFn( getter ) );
 
 	// this will trigger a failed assertion because there are no accessors and no target
 //	mParams->add( params::Param<Vec3f>( "Light Direction" ) );
-
-	// target updated automatically, updateFn() called afterwards
-	mParams->add( params::Param<Vec3f>( "Light Direction", &mLightDirection ).updateFn( [this]{ console() << "just updated mLightDirection to: " << mLightDirection << std::endl; } ) );
 
 	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
 	mParams->addText( "text", "label=`This is a label without a parameter.`" );
 
 //	mParams->addParam( "String ", &mString, "" );
 	mParams->add( params::Param<std::string>( "String ", &mString ) );
+
+	// target updated automatically, updateFn() called afterwards.
+	mParams->add( params::Param<uint32_t>( "size_t value", &mSomeValue ).updateFn( [this]{ console() << "new value: " << mSomeValue << std::endl; } ) );
 }
 
 void TweakBarApp::button()
