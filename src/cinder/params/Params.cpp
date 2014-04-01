@@ -311,10 +311,15 @@ std::string getParamOptions( const ParamBase &param )
 
 } // anonymous namespace
 
+template <> void InterfaceGl::add( const Param<bool> &param )		{ implAddParam( param, TW_TYPE_BOOLCPP ); }
 template <> void InterfaceGl::add( const Param<float> &param )		{ implAddParam( param, TW_TYPE_FLOAT ); }
+template <> void InterfaceGl::add( const Param<double> &param )		{ implAddParam( param, TW_TYPE_DOUBLE ); }
+template <> void InterfaceGl::add( const Param<int32_t> &param )	{ implAddParam( param, TW_TYPE_INT32 ); }
 template <> void InterfaceGl::add( const Param<Vec3f> &param )		{ implAddParam( param, TW_TYPE_DIR3F ); }
+template <> void InterfaceGl::add( const Param<Color> &param )		{ implAddParam( param, TW_TYPE_COLOR3F ); }
 template <> void InterfaceGl::add( const Param<ColorA> &param )		{ implAddParam( param, TW_TYPE_COLOR4F ); }
 template <> void InterfaceGl::add( const Param<Quatf> &param )		{ implAddParam( param, TW_TYPE_QUAT4F ); }
+template <> void InterfaceGl::add( const Param<string> &param )		{ implAddParam( param, TW_TYPE_STDSTRING ); }
 
 template <typename T>
 void InterfaceGl::implAddParam( const Param<T> &param, int type )

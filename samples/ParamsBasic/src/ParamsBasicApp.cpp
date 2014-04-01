@@ -72,7 +72,9 @@ void TweakBarApp::setup()
 
 	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
 	mParams->addText( "text", "label=`This is a label without a parameter.`" );
-	mParams->addParam( "String ", &mString, "" );
+
+//	mParams->addParam( "String ", &mString, "" );
+	mParams->add( params::Param<std::string>( "String ", &mString ) );
 }
 
 void TweakBarApp::button()
