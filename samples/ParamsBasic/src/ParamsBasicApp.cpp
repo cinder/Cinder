@@ -55,9 +55,16 @@ void TweakBarApp::setup()
 	mParams->add( params::Param<ColorA>( "Cube Color", &mColor ) );
 
 	mParams->addSeparator();
+
 	std::function<void (Vec3f)> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
 	std::function<Vec3f ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
-	mParams->addParam( "Light Direction", setter, getter );
+
+//	mParams->addParam( "Light Direction", setter, getter );
+
+	mParams->add( params::Param<Vec3f>( "Light Direction" ).setterFn( setter ).getterFn( getter ) );
+//	mParams->add( params::Param<Vec3f>( "Light Direction" ) ); // this will trigger a failed assertion because there are no accessors and no target
+
+
 	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
 	mParams->addText( "text", "label=`This is a label without a parameter.`" );
 	mParams->addParam( "String ", &mString, "" );

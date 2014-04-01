@@ -314,12 +314,21 @@ std::string getParamOptions( const ParamBase &param )
 } // anonymous namespace
 
 template <> void InterfaceGl::add( const Param<float> &param )		{ implAddParam( param, TW_TYPE_FLOAT ); }
+template <> void InterfaceGl::add( const Param<Vec3f> &param )		{ implAddParam( param, TW_TYPE_DIR3F ); }
 template <> void InterfaceGl::add( const Param<ColorA> &param )		{ implAddParam( param, TW_TYPE_COLOR4F ); }
 template <> void InterfaceGl::add( const Param<Quatf> &param )		{ implAddParam( param, TW_TYPE_QUAT4F ); }
 
-void InterfaceGl::implAddParam( const ParamBase &param, int type )
+template <typename T>
+void InterfaceGl::implAddParam( const Param<T> &param, int type )
 {
-	implAddParam( param.getName(), param.getVoidPtr(), type, getParamOptions( param ), param.isReadOnly() );
+	string optionsStr = getParamOptions( param );
+
+	if( param.getSetter() && param.getGetter() )
+		implAddParamCb<T>( param.getName(), type, optionsStr, param.getSetter(), param.getGetter() );
+	else {
+		assert( param.getTarget() && "must provide a target or accessors" );
+		implAddParam( param.getName(), param.getVoidPtr(), type, optionsStr, param.isReadOnly() );
+	}
 }
 
 void InterfaceGl::implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
@@ -531,8 +540,5 @@ void InterfaceGl::setOptions( const std::string &name, const std::string &option
 
 	TwDefine( ( target + " " + optionsStr ).c_str() );
 }
-
-
-template Param<float>::Param( const string &name, float *target );
 
 } } // namespace cinder::params

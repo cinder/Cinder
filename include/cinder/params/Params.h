@@ -69,6 +69,13 @@ protected:
 template <typename T>
 class Param : public ParamBase {
   public:
+	typedef std::function<void ( T )>	SetterFn;
+	typedef std::function<T ()>			GetterFn;
+
+	Param( const std::string &name )
+	: ParamBase( name, nullptr ), mTarget( nullptr )
+	{}
+
 	Param( const std::string &name, T *target )
 		: ParamBase( name, target ), mTarget( target )
 	{}
@@ -78,10 +85,19 @@ class Param : public ParamBase {
 	Param&	keyIncr( const std::string &keyIncr )	{ mKeyIncr = keyIncr; return *this; }
 	Param&	keyDecr( const std::string &keyDecr )	{ mKeyDecr = keyDecr; return *this; }
 
+	Param&	setterFn( const SetterFn &setter )		{ mSetterFn = setter ; return *this; }
+	Param&	getterFn( const GetterFn &getter )		{ mGetterFn = getter ; return *this; }
+
 	T*		getTarget() const			{ return mTarget; }
+	
+	const SetterFn&	getSetter() const	{ return mSetterFn; }
+	const GetterFn&	getGetter() const	{ return mGetterFn; }
 
   private:
 	T*			mTarget;
+	SetterFn	mSetterFn;
+	GetterFn	mGetterFn;
+
 };
 
 
@@ -142,7 +158,8 @@ class InterfaceGl {
 	void	init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color );
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly );
 
-	void	implAddParam( const ParamBase &param, int type );
+	template <typename T>
+	void	implAddParam( const Param<T> &param, int type );
 
 
 	template <class T>
