@@ -291,6 +291,37 @@ bool InterfaceGl::isMaximized() const
 	return maximizedInt == 0;
 }
 
+namespace {
+
+std::string getParamOptions( const ParamBase &param )
+{
+	string result;
+
+	if( param.hasMin() )
+		result += " min=" + to_string( param.getMin() );
+	if( param.hasMax() )
+		result += " max=" + to_string( param.getMax() );
+	if( ! param.getKeyIncr().empty() )
+		result += " keyIncr=" + param.getKeyIncr();
+	if( ! param.getKeyDecr().empty() )
+		result += " keyDecr=" + param.getKeyDecr();
+
+	app::console() << __PRETTY_FUNCTION__ << "| optionsStr: " << result << endl;
+
+	return result;
+}
+
+} // anonymous namespace
+
+template <> void InterfaceGl::add( const Param<float> &param )		{ implAddParam( param, TW_TYPE_FLOAT ); }
+template <> void InterfaceGl::add( const Param<ColorA> &param )		{ implAddParam( param, TW_TYPE_COLOR4F ); }
+template <> void InterfaceGl::add( const Param<Quatf> &param )		{ implAddParam( param, TW_TYPE_QUAT4F ); }
+
+void InterfaceGl::implAddParam( const ParamBase &param, int type )
+{
+	implAddParam( param.getName(), param.getVoidPtr(), type, getParamOptions( param ), param.isReadOnly() );
+}
+
 void InterfaceGl::implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
 {
 	TwSetCurrentWindow( mTwWindowId );
@@ -500,5 +531,8 @@ void InterfaceGl::setOptions( const std::string &name, const std::string &option
 
 	TwDefine( ( target + " " + optionsStr ).c_str() );
 }
+
+
+template Param<float>::Param( const string &name, float *target );
 
 } } // namespace cinder::params

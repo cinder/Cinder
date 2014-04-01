@@ -43,6 +43,48 @@ namespace params {
   
 typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 
+class ParamBase {
+  public:
+	ParamBase( const std::string &name, void *voidPtr )
+		: mName( name ), mVoidPtr( voidPtr ), mReadOnly( false ), mHasMin( false ), mHasMax( false ), mMin( 0 ), mMax( 0 )
+	{}
+
+	const std::string&	getName() const				{ return mName; }
+	void*				getVoidPtr() const			{ return mVoidPtr; }
+	bool				isReadOnly() const			{ return mReadOnly; }
+	bool				hasMin() const				{ return mHasMin; }
+	bool				hasMax() const				{ return mHasMax; }
+	float				getMin() const				{ return mMin; }
+	float				getMax() const				{ return mMax; }
+	const std::string&	getKeyIncr() const			{ return mKeyIncr; }
+	const std::string&	getKeyDecr() const			{ return mKeyDecr; }
+
+protected:
+	std::string mName, mKeyIncr, mKeyDecr;
+	void*		mVoidPtr;
+	bool		mReadOnly, mHasMin, mHasMax;
+	float		mMin, mMax;
+};
+
+template <typename T>
+class Param : public ParamBase {
+  public:
+	Param( const std::string &name, T *target )
+		: ParamBase( name, target ), mTarget( target )
+	{}
+
+	Param&	min( float minVal )						{ mMin = minVal; mHasMin = true; return *this; }
+	Param&	max( float maxVal )						{ mMax = maxVal; mHasMax = true; return *this; }
+	Param&	keyIncr( const std::string &keyIncr )	{ mKeyIncr = keyIncr; return *this; }
+	Param&	keyDecr( const std::string &keyDecr )	{ mKeyDecr = keyDecr; return *this; }
+
+	T*		getTarget() const			{ return mTarget; }
+
+  private:
+	T*			mTarget;
+};
+
+
 class InterfaceGl {
   public:
 	InterfaceGl() {}
@@ -61,6 +103,9 @@ class InterfaceGl {
 	void	maximize( bool maximized = true );
 	void	minimize();
 	bool	isMaximized() const;
+
+	template <typename T>
+	void	add( const Param<T> &param );
 	
 	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr = "", bool readOnly = false );
 	void	addParam( const std::string &name, float *floatParam, const std::string &optionsStr = "", bool readOnly = false );
@@ -96,6 +141,10 @@ class InterfaceGl {
   protected:
 	void	init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color );
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly );
+
+	void	implAddParam( const ParamBase &param, int type );
+
+
 	template <class T>
 	void implAddParamCb( const std::string &name, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter );
 

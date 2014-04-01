@@ -45,9 +45,15 @@ void TweakBarApp::setup()
 
 	// Setup the parameters
 	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( Vec2i( 200, 400 ) ) );
-	mParams->addParam( "Cube Size", &mObjSize, "min=0.1 max=20.5 step=0.5 keyIncr=z keyDecr=Z" );
-	mParams->addParam( "Cube Rotation", &mObjOrientation );
-	mParams->addParam( "Cube Color", &mColor, "" );	
+
+//	mParams->addParam( "Cube Size", &mObjSize, "min=0.1 max=20.5 step=0.5 keyIncr=z keyDecr=Z" );
+//	mParams->addParam( "Cube Color", &mColor, "" );
+//	mParams->addParam( "Cube Rotation", &mObjOrientation );
+
+	mParams->add( params::Param<float>( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" ) );
+	mParams->add( params::Param<Quatf>( "Cube Rotation", &mObjOrientation ) );
+	mParams->add( params::Param<ColorA>( "Cube Color", &mColor ) );
+
 	mParams->addSeparator();
 	std::function<void (Vec3f)> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
 	std::function<Vec3f ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
