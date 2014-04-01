@@ -301,6 +301,8 @@ std::string getParamOptions( const ParamBase &param )
 		result += " min=" + to_string( param.getMin() );
 	if( param.hasMax() )
 		result += " max=" + to_string( param.getMax() );
+	if( param.hasStep() )
+		result += " step=" + to_string( param.getStep() );
 	if( ! param.getKeyIncr().empty() )
 		result += " keyIncr=" + param.getKeyIncr();
 	if( ! param.getKeyDecr().empty() )

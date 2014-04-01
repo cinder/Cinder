@@ -46,7 +46,7 @@ typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 class ParamBase {
   public:
 	ParamBase( const std::string &name, void *voidPtr )
-		: mName( name ), mVoidPtr( voidPtr ), mReadOnly( false ), mHasMin( false ), mHasMax( false ), mMin( 0 ), mMax( 0 )
+		: mName( name ), mVoidPtr( voidPtr ), mReadOnly( false ), mHasMin( false ), mHasMax( false ), mHasStep( false ), mMin( 0 ), mMax( 0 ), mStep( 0 )
 	{}
 
 	const std::string&	getName() const				{ return mName; }
@@ -54,16 +54,19 @@ class ParamBase {
 	bool				isReadOnly() const			{ return mReadOnly; }
 	bool				hasMin() const				{ return mHasMin; }
 	bool				hasMax() const				{ return mHasMax; }
+	bool				hasStep() const				{ return mHasStep; }
 	float				getMin() const				{ return mMin; }
 	float				getMax() const				{ return mMax; }
+	float				getStep() const				{ return mStep; }
 	const std::string&	getKeyIncr() const			{ return mKeyIncr; }
 	const std::string&	getKeyDecr() const			{ return mKeyDecr; }
 
 protected:
 	std::string mName, mKeyIncr, mKeyDecr;
 	void*		mVoidPtr;
-	bool		mReadOnly, mHasMin, mHasMax;
-	float		mMin, mMax;
+	bool		mReadOnly;
+	bool		mHasMin, mHasMax, mHasStep;
+	float		mMin, mMax, mStep;
 };
 
 template <typename T>
@@ -83,6 +86,7 @@ class Param : public ParamBase {
 
 	Param&	min( float minVal )						{ mMin = minVal; mHasMin = true; return *this; }
 	Param&	max( float maxVal )						{ mMax = maxVal; mHasMax = true; return *this; }
+	Param&	step( float stepVal )					{ mStep = stepVal; mHasStep = true; return *this; }
 	Param&	keyIncr( const std::string &keyIncr )	{ mKeyIncr = keyIncr; return *this; }
 	Param&	keyDecr( const std::string &keyDecr )	{ mKeyDecr = keyDecr; return *this; }
 
