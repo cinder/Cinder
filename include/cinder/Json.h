@@ -48,25 +48,8 @@ class JsonTree {
 	typedef Container::iterator Iter;
 	//! \endcond
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  private:
-	
-	//! \cond
-	typedef enum 
-	{ 
-		NODE_UNKNOWN, NODE_NULL, NODE_ARRAY, NODE_OBJECT, NODE_VALUE
-	} NodeType;
-
-	typedef enum 
-	{ 
-		VALUE_BOOL, VALUE_DOUBLE, VALUE_INT, VALUE_STRING, VALUE_UINT
-	} ValueType;
-	//! \endcond
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  public:
+	//! Enum listing all types of JSON nodes understood by the parser.
+	enum NodeType	{ NODE_UNKNOWN, NODE_NULL, NODE_ARRAY, NODE_OBJECT, NODE_VALUE };
 
 	//! Options for JSON parsing. Passed to the JsonTree constructor.
 	class ParseOptions {
@@ -183,7 +166,9 @@ class JsonTree {
 	//! Returns the child at \a index. Throws ExcChildNotFound if none matches.
 	const JsonTree&					getChild( size_t index ) const;
 	//! Returns a reference to the node's list of children nodes.
-	const Container&		getChildren() const;
+	const Container&				getChildren() const;
+	//! Returns the number of child nodes.
+	size_t							getNumChildren() const	{ return getChildren().size(); }
 
 	/**! Returns whether the child at \a relativePath exists. 
 		<br><tt>bool nodeExists = myNode.hasChild( "path.to.child" );</tt> **/
@@ -203,15 +188,20 @@ class JsonTree {
 	/**! Appends a copy of the node \a newChild to the children of this node.  
 		If \a this is a value node, it will change to an object or an array. 
 		If \a newChild has a key, \a this becomes an object node. 
+		If not, \a this becomes an array node. Returns reference to itself. **/
+	JsonTree&						addChild( const JsonTree &newChild );
+	/**! Appends a copy of the node \a newChild to the children of this node.
+		If \a this is a value node, it will change to an object or an array.
+		If \a newChild has a key, \a this becomes an object node.
 		If not, \a this becomes an array node. **/
 	void							pushBack( const JsonTree &newChild );
 	//! Removes the child at \a index. Throws ExcChildNotFound if none matches.
 	void							removeChild( size_t index );
 	//! Removes the child at \a pos. Throws ExcChildNotFound if none matches.
 	Iter							removeChild( Iter pos );
-	//! Repalces the child at \a index with JsonTree \a newChild. Throws ExcChildNotFound if none matches.
+	//! Replaces the child at \a index with JsonTree \a newChild. Throws ExcChildNotFound if none matches.
 	void							replaceChild( size_t index, const JsonTree &newChild );
-	//! Repalces the child at \a pos with JsonTree \a newChild. Throws ExcChildNotFound if none matches.
+	//! Replaces the child at \a pos with JsonTree \a newChild. Throws ExcChildNotFound if none matches.
 	void							replaceChild( Iter pos, const JsonTree &newChild );
 
 	/**! Writes this JsonTree to \a path with standard formatting. 
@@ -241,13 +231,28 @@ class JsonTree {
 		}
 		return (T)0; // Unreachable. Prevents warning.
 	}
+	//! Returns the value of the child at \a relativePath. Default type \a T is std::string. Convenience shortcut for: \code getChild( relativePath ).getValue<T>() \endcode
+	template <typename T>
+	inline T						getValueForKey( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const 	{ return getChild( relativePath, caseSensitive, separator ).getValue<T>(); }
+	//! Returns the value of the child at \a relativePath. Default type \a T is std::string. Convenience shortcut for: \code getChild( index ).getValue<T>() \endcode
+	template <typename T>
+	inline T						getValueAtIndex( size_t index ) const	{ return getChild( index ).getValue<T>(); }
 
-	//! Returns the value of the node.
+	//! Returns the value of the node as a string.
 	const std::string&				getValue() const { return mValue; }
+	//! Returns the value of the child at \a relativePath. Default type \a T is std::string. Convenience shortcut for: \code getChild( relativePath ).getValue<T>() \endcode
+	const inline std::string&		getValueForKey( const std::string &relativePath, bool caseSensitive = false, char separator = '.' ) const 	{ return getChild( relativePath, caseSensitive, separator ).getValue(); }
+	//! Returns the value of the child at \a relativePath. Default type \a T is std::string. Convenience shortcut for: \code getChild( index ).getValue<T>() \endcode
+	const inline std::string&		getValueAtIndex( size_t index ) const	{ return getChild( index ).getValue(); }
+
+	//! Returns the type of the node.
+	NodeType						getNodeType() const	{ return mNodeType; }
 
 private:
 
 	//! \cond
+	enum ValueType	{ VALUE_BOOL, VALUE_DOUBLE, VALUE_INT, VALUE_STRING, VALUE_UINT	};
+
 	explicit JsonTree( const std::string &key, const Json::Value &value );
 
 	Json::Value						createNativeDoc( WriteOptions writeOptions = WriteOptions() ) const;
@@ -320,4 +325,4 @@ private:
 
 std::ostream&						operator<<( std::ostream &out, const JsonTree &json );
 
-}
+} // namespace cinder

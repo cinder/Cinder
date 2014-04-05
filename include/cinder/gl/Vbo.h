@@ -242,7 +242,7 @@ class VboMesh {
 		void	setCustomVec4f( size_t index, const Vec4f &v ) { *(reinterpret_cast<Vec4f*>( &mPtr[mObj->mCustomOffsets[index]] )) = v; }
 
 		void operator++() { mPtr += mStride; }
-		bool	isDone() const { return mPtr < mDataEnd; }
+		bool	isDone() const { return mPtr >= mDataEnd; }
 		
 		//! \return Which vertex the iterator is pointing to
 		size_t		getIndex() const { return ( mPtr - mData ) / mStride; }

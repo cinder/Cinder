@@ -73,7 +73,7 @@ class Display {
 	//! Returns the bits per pixel for the display. Typically 24 bits.
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
 	//! Returns the factor which multiplies points to pixels. 2.0f for high-density (Retina) displays; 1.0f for others
-	float	getContentScale() const;
+	float	getContentScale() const { return mContentScale; }
 
 	//! Returns whether the Display's coordinates contain \a pt.
 	bool	contains( const Vec2i &pt ) const { return mArea.contains( pt ); }
