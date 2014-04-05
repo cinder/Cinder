@@ -516,6 +516,8 @@ void MovieWriter::Obj::finish()
 		if( err )
 			throw MovieWriterExc();
 	}
+
+	::ICMCompressionSessionRelease( mCompressionSession );
         
 	// Close movie file
 	if( mDataHandler )
