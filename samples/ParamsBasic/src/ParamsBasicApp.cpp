@@ -52,31 +52,33 @@ void TweakBarApp::setup()
 //	mParams->addParam( "Cube Color", &mColor, "" );
 //	mParams->addParam( "Cube Rotation", &mObjOrientation );
 
-	mParams->add( params::Param<float>( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" ) );
-	mParams->add( params::Param<Quatf>( "Cube Rotation", &mObjOrientation ) );
-	mParams->add( params::Param<ColorA>( "Cube Color", &mColor ) );
+//	auto p = params::Param( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" );
+
+	mParams->addParam( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" );
+	mParams->addParam( "Cube Rotation", &mObjOrientation );
+	mParams->addParam( "Cube Color", &mColor );
 
 	mParams->addSeparator();
-
-	std::function<void (Vec3f)> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
-	std::function<Vec3f ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
-
-//	mParams->addParam( "Light Direction", setter, getter );
-
-	// getter + setter, no target var
-	mParams->add( params::Param<Vec3f>( "Light Direction" ).setterFn( setter ).getterFn( getter ) );
-
-	// this will trigger a failed assertion because there are no accessors and no target
-//	mParams->add( params::Param<Vec3f>( "Light Direction" ) );
-
-	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
-	mParams->addText( "text", "label=`This is a label without a parameter.`" );
-
-//	mParams->addParam( "String ", &mString, "" );
-	mParams->add( params::Param<std::string>( "String ", &mString ) );
-
-	// target updated automatically, updateFn() called afterwards.
-	mParams->add( params::Param<uint32_t>( "size_t value", &mSomeValue ).updateFn( [this]{ console() << "new value: " << mSomeValue << std::endl; } ) );
+//
+//	std::function<void (Vec3f)> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
+//	std::function<Vec3f ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
+//
+////	mParams->addParam( "Light Direction", setter, getter );
+//
+//	// getter + setter, no target var
+//	mParams->add( params::Param<Vec3f>( "Light Direction" ).setterFn( setter ).getterFn( getter ) );
+//
+//	// this will trigger a failed assertion because there are no accessors and no target
+////	mParams->add( params::Param<Vec3f>( "Light Direction" ) );
+//
+//	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
+//	mParams->addText( "text", "label=`This is a label without a parameter.`" );
+//
+////	mParams->addParam( "String ", &mString, "" );
+//	mParams->add( params::Param<std::string>( "String ", &mString ) );
+//
+//	// target updated automatically, updateFn() called afterwards.
+//	mParams->add( params::Param<uint32_t>( "size_t value", &mSomeValue ).updateFn( [this]{ console() << "new value: " << mSomeValue << std::endl; } ) );
 }
 
 void TweakBarApp::button()

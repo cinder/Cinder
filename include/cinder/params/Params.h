@@ -43,71 +43,6 @@ namespace params {
   
 typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 
-class ParamBase {
-  public:
-	ParamBase( const std::string &name, void *voidPtr )
-		: mName( name ), mVoidPtr( voidPtr ), mReadOnly( false ), mHasMin( false ), mHasMax( false ), mHasStep( false ), mMin( 0 ), mMax( 0 ), mStep( 0 )
-	{}
-
-	const std::string&	getName() const				{ return mName; }
-	void*				getVoidPtr() const			{ return mVoidPtr; }
-	bool				isReadOnly() const			{ return mReadOnly; }
-	bool				hasMin() const				{ return mHasMin; }
-	bool				hasMax() const				{ return mHasMax; }
-	bool				hasStep() const				{ return mHasStep; }
-	float				getMin() const				{ return mMin; }
-	float				getMax() const				{ return mMax; }
-	float				getStep() const				{ return mStep; }
-	const std::string&	getKeyIncr() const			{ return mKeyIncr; }
-	const std::string&	getKeyDecr() const			{ return mKeyDecr; }
-
-protected:
-	std::string mName, mKeyIncr, mKeyDecr;
-	void*		mVoidPtr;
-	bool		mReadOnly;
-	bool		mHasMin, mHasMax, mHasStep;
-	float		mMin, mMax, mStep;
-};
-
-template <typename T>
-class Param : public ParamBase {
-  public:
-	typedef std::function<void ( T )>	SetterFn;
-	typedef std::function<T ()>			GetterFn;
-	typedef std::function<void ()>		UpdateFn;
-
-	Param( const std::string &name )
-	: ParamBase( name, nullptr ), mTarget( nullptr )
-	{}
-
-	Param( const std::string &name, T *target )
-		: ParamBase( name, target ), mTarget( target )
-	{}
-
-	Param&	min( float minVal )						{ mMin = minVal; mHasMin = true; return *this; }
-	Param&	max( float maxVal )						{ mMax = maxVal; mHasMax = true; return *this; }
-	Param&	step( float stepVal )					{ mStep = stepVal; mHasStep = true; return *this; }
-	Param&	keyIncr( const std::string &keyIncr )	{ mKeyIncr = keyIncr; return *this; }
-	Param&	keyDecr( const std::string &keyDecr )	{ mKeyDecr = keyDecr; return *this; }
-
-	Param&	setterFn( const SetterFn &setterFunction )		{ mSetterFn = setterFunction; return *this; }
-	Param&	getterFn( const GetterFn &getterFunction )		{ mGetterFn = getterFunction; return *this; }
-	Param&	updateFn( const UpdateFn &updateFunction )		{ mUpdateFn = updateFunction; return *this; }
-
-	T*		getTarget() const			{ return mTarget; }
-	
-	const SetterFn&	getSetterFn() const	{ return mSetterFn; }
-	const GetterFn&	getGetterFn() const	{ return mGetterFn; }
-	const UpdateFn& getUpdateFn() const	{ return mUpdateFn; }
-
-  private:
-	T*			mTarget;
-	SetterFn	mSetterFn;
-	GetterFn	mGetterFn;
-	UpdateFn	mUpdateFn;
-};
-
-
 class InterfaceGl {
   public:
 	InterfaceGl() {}
@@ -116,6 +51,75 @@ class InterfaceGl {
 	
 	static InterfaceGlRef create( const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 	static InterfaceGlRef create( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+
+	// TODO: hide if possible
+	class OptionsBase {
+	public:
+		const std::string&	getName() const				{ return mName; }
+		void*				getVoidPtr() const			{ return mVoidPtr; }
+		bool				isReadOnly() const			{ return mReadOnly; }
+		const std::string&	getKeyIncr() const			{ return mKeyIncr; }
+		const std::string&	getKeyDecr() const			{ return mKeyDecr; }
+
+	protected:
+		OptionsBase( const std::string &name, void *voidPtr )
+			: mName( name ), mVoidPtr( voidPtr ), mParent( nullptr )
+		{}
+
+		void setMin( float minVal );
+		void setMax( float maxVal );
+		void setStep( float maxVal );
+		void setKeyIncr( const std::string &keyIncr );
+		void setKeyDecr( const std::string &keyDecr );
+
+		std::string mName, mKeyIncr, mKeyDecr;
+		void*		mVoidPtr;
+		bool		mReadOnly;
+
+		InterfaceGl*	mParent;
+
+		friend class InterfaceGl;
+	};
+	
+	// TODO: add optionsStr() for anything we don't cover
+	template <typename T>
+	class Options : public OptionsBase {
+	public:
+		Options( const std::string &name )
+		: OptionsBase( name, nullptr ), mTarget( nullptr )
+		{}
+
+		Options( const std::string &name, T *target )
+		: OptionsBase( name, target ), mTarget( target )
+		{}
+
+		typedef std::function<void ( T )>	SetterFn;
+		typedef std::function<T ()>			GetterFn;
+		typedef std::function<void ()>		UpdateFn;
+
+		Options&	min( float minVal )						{ setMin( minVal ); return *this; }
+		Options&	max( float maxVal )						{ setMax( maxVal ); return *this; }
+		Options&	step( float stepVal )					{ setStep( stepVal ); return *this; }
+		Options&	keyIncr( const std::string &keyIncr )	{ setKeyIncr( keyIncr ); return *this; }
+		Options&	keyDecr( const std::string &keyDecr )	{ setKeyDecr( keyDecr ); return *this; }
+
+		Options&	setterFn( const SetterFn &setterFunction )		{ mSetterFn = setterFunction; return *this; }
+		Options&	getterFn( const GetterFn &getterFunction )		{ mGetterFn = getterFunction; return *this; }
+		Options&	updateFn( const UpdateFn &updateFunction )		{ mUpdateFn = updateFunction; return *this; }
+
+		T*		getTarget() const			{ return mTarget; }
+
+		const SetterFn&	getSetterFn() const	{ return mSetterFn; }
+		const GetterFn&	getGetterFn() const	{ return mGetterFn; }
+		const UpdateFn& getUpdateFn() const	{ return mUpdateFn; }
+
+	private:
+
+		T*				mTarget;
+		SetterFn		mSetterFn;
+		GetterFn		mGetterFn;
+		UpdateFn		mUpdateFn;
+	};
 
 	void	draw();
 
@@ -128,28 +132,19 @@ class InterfaceGl {
 	bool	isMaximized() const;
 
 	template <typename T>
-	void	add( const Param<T> &param );
-	
-	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr = "", bool readOnly = false );
-	void	addParam( const std::string &name, float *floatParam, const std::string &optionsStr = "", bool readOnly = false );
-	void	addParam( const std::string &name, double *doubleParam, const std::string &optionsStr = "", bool readOnly = false );
-	void	addParam( const std::string &name, int32_t *intParam, const std::string &optionsStr = "", bool readOnly = false );
-	void	addParam( const std::string &name, Vec3f *vectorParam, const std::string &optionsStr = "", bool readOnly = false );
-	void	addParam( const std::string &name, Quatf *quatParam, const std::string &optionsStr = "", bool readOnly = false );
-	void	addParam( const std::string &name, Color *quatParam, const std::string &optionsStr = "", bool readOnly = false );
-	void	addParam( const std::string &name, ColorA *quatParam, const std::string &optionsStr = "", bool readOnly = false );
-	void	addParam( const std::string &name, std::string *strParam, const std::string &optionsStr = "", bool readOnly = false );
-	
-	void	addParam( const std::string &name, const std::function<void (bool)> &setter, const std::function<bool ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, const std::function<void (float)> &setter, const std::function<float ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, const std::function<void (double)> &setter, const std::function<double ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, const std::function<void (int32_t)> &setter, const std::function<int32_t ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, const std::function<void (Vec3f)> &setter, const std::function<Vec3f ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, const std::function<void (Quatf)> &setter, const std::function<Quatf ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, const std::function<void (Color)> &setter, const std::function<Color ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, const std::function<void (ColorA)> &setter, const std::function<ColorA ()> &getter, const std::string &optionsStr = "" );
-	void	addParam( const std::string &name, const std::function<void (std::string)> &setter, const std::function<std::string ()> &getter, const std::string &optionsStr = "" );
-	
+	Options<T>	addParam( const std::string &name, T *target, bool readOnly = false );
+
+	// Deprecated, will be removed in the future (use addParam<T>())
+	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, float *floatParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, double *doubleParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, int32_t *intParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, Vec3f *vectorParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, Quatf *quatParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, Color *quatParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, ColorA *quatParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, std::string *strParam, const std::string &optionsStr, bool readOnly = false );
+
 	//! Adds enumerated parameter. The value corresponds to the indices of \a enumNames.
 	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr = "", bool readOnly = false );
 	
@@ -166,7 +161,7 @@ class InterfaceGl {
 	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly );
 
 	template <typename T>
-	void	implAddParam( const Param<T> &param, int type );
+	Options<T>	implAddParam( const std::string &name, T *param, int type, bool readOnly );
 
 
 	template <class T>
@@ -176,7 +171,7 @@ class InterfaceGl {
 	std::shared_ptr<TwBar>			mBar;
 	int								mTwWindowId;
 	
-	std::list<boost::any>			mStoredCallbacks;
+	std::list<boost::any>			mStoredCallbacks; // TODO: use shared_ptr<void*>
 };
 
 } } // namespace cinder::params
