@@ -315,6 +315,14 @@ void InterfaceGl::OptionsBase::setStep( float stepVal )
 	mParent->setOptions( getName(), optionsStr );
 }
 
+void InterfaceGl::OptionsBase::setPrecision( int precVal )
+{
+	assert( mParent );
+	
+	string optionsStr = "precision=" + to_string( precVal );
+	mParent->setOptions( getName(), optionsStr );
+}
+
 void InterfaceGl::OptionsBase::setKeyIncr( const string &keyIncr )
 {
 	assert( mParent );

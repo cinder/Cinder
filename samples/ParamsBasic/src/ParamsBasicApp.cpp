@@ -54,7 +54,7 @@ void TweakBarApp::setup()
 
 //	auto p = params::Param( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" );
 
-	mParams->addParam( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" );
+	mParams->addParam( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" ).precision( 2 ).step( 0.02f );
 	mParams->addParam( "Cube Rotation", &mObjOrientation );
 	mParams->addParam( "Cube Color", &mColor );
 
