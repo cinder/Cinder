@@ -69,6 +69,7 @@ class InterfaceGl {
 		void setMin( float minVal );
 		void setMax( float maxVal );
 		void setStep( float maxVal );
+		void setPrecision( int precVal );
 		void setKeyIncr( const std::string &keyIncr );
 		void setKeyDecr( const std::string &keyDecr );
 
@@ -100,6 +101,7 @@ class InterfaceGl {
 		Options&	min( float minVal )						{ setMin( minVal ); return *this; }
 		Options&	max( float maxVal )						{ setMax( maxVal ); return *this; }
 		Options&	step( float stepVal )					{ setStep( stepVal ); return *this; }
+		Options&	precision( int precVal )				{ setPrecision( precVal ); return *this; }
 		Options&	keyIncr( const std::string &keyIncr )	{ setKeyIncr( keyIncr ); return *this; }
 		Options&	keyDecr( const std::string &keyDecr )	{ setKeyDecr( keyDecr ); return *this; }
 
