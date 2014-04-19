@@ -45,6 +45,7 @@ typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 
 class InterfaceGl {
   public:
+
 	InterfaceGl() {}
 	InterfaceGl( const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 	InterfaceGl( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
@@ -57,14 +58,11 @@ class InterfaceGl {
 	public:
 		const std::string&	getName() const				{ return mName; }
 		void*				getVoidPtr() const			{ return mVoidPtr; }
-		bool				isReadOnly() const			{ return mReadOnly; }
 		const std::string&	getKeyIncr() const			{ return mKeyIncr; }
 		const std::string&	getKeyDecr() const			{ return mKeyDecr; }
 
 	protected:
-		OptionsBase( const std::string &name, void *voidPtr )
-			: mName( name ), mVoidPtr( voidPtr ), mParent( nullptr )
-		{}
+		OptionsBase( const std::string &name, void *targetVoidPtr, InterfaceGl *parent );
 
 		void setMin( float minVal );
 		void setMax( float maxVal );
@@ -73,9 +71,14 @@ class InterfaceGl {
 		void setKeyIncr( const std::string &keyIncr );
 		void setKeyDecr( const std::string &keyDecr );
 
+		void reAddOptions();
+
 		std::string mName, mKeyIncr, mKeyDecr;
 		void*		mVoidPtr;
-		bool		mReadOnly;
+
+		float		mMin, mMax, mStep;
+		int			mPrecision;
+		bool		mMinSet, mMaxSet, mStepSet, mPrecisionSet;
 
 		InterfaceGl*	mParent;
 
@@ -85,14 +88,8 @@ class InterfaceGl {
 	// TODO: add optionsStr() for anything we don't cover
 	template <typename T>
 	class Options : public OptionsBase {
-	public:
-		Options( const std::string &name )
-		: OptionsBase( name, nullptr ), mTarget( nullptr )
-		{}
-
-		Options( const std::string &name, T *target )
-		: OptionsBase( name, target ), mTarget( target )
-		{}
+  	public:
+		Options( const std::string &name, T *target, int type, InterfaceGl *parent );
 
 		typedef std::function<void ( T )>	SetterFn;
 		typedef std::function<T ()>			GetterFn;
@@ -105,22 +102,19 @@ class InterfaceGl {
 		Options&	keyIncr( const std::string &keyIncr )	{ setKeyIncr( keyIncr ); return *this; }
 		Options&	keyDecr( const std::string &keyDecr )	{ setKeyDecr( keyDecr ); return *this; }
 
-		Options&	setterFn( const SetterFn &setterFunction )		{ mSetterFn = setterFunction; return *this; }
-		Options&	getterFn( const GetterFn &getterFunction )		{ mGetterFn = getterFunction; return *this; }
-		Options&	updateFn( const UpdateFn &updateFunction )		{ mUpdateFn = updateFunction; return *this; }
+		Options&	accessors( const SetterFn &setterFn, const GetterFn &getterFn );
+		Options&	updateFn( const UpdateFn &updateFn );
 
-		T*		getTarget() const			{ return mTarget; }
-
-		const SetterFn&	getSetterFn() const	{ return mSetterFn; }
-		const GetterFn&	getGetterFn() const	{ return mGetterFn; }
-		const UpdateFn& getUpdateFn() const	{ return mUpdateFn; }
+		const std::string&	getName() const				{ return mName; }
+		const std::string&	getKeyIncr() const			{ return mKeyIncr; }
+		const std::string&	getKeyDecr() const			{ return mKeyDecr; }
 
 	private:
 
+		friend class InterfaceGl;
+
 		T*				mTarget;
-		SetterFn		mSetterFn;
-		GetterFn		mGetterFn;
-		UpdateFn		mUpdateFn;
+		int				mTwType;
 	};
 
 	void	draw();
@@ -134,7 +128,7 @@ class InterfaceGl {
 	bool	isMaximized() const;
 
 	template <typename T>
-	Options<T>	addParam( const std::string &name, T *target, bool readOnly = false );
+	Options<T>	addParam( const std::string &name, T *target = nullptr, bool readOnly = false );
 
 	// Deprecated, will be removed in the future (use addParam<T>())
 	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr, bool readOnly = false );
@@ -166,7 +160,9 @@ class InterfaceGl {
 	Options<T>	addParamImpl( const std::string &name, T *param, int type, bool readOnly );
 
 	template <class T>
-	void addParamCallbackImpl( const std::string &name, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter );
+	void addParamCallback( const std::function<void (T)> &setter, const std::function<T ()> &getter, const Options<T> &options );
+	template <class T>
+	void addParamCallbackImpl( const std::function<void (T)> &setter, const std::function<T ()> &getter, const Options<T> &options );
 
 	std::weak_ptr<app::Window>		mWindow;
 	std::shared_ptr<TwBar>			mBar;
@@ -174,5 +170,32 @@ class InterfaceGl {
 	
 	std::list<boost::any>			mStoredCallbacks; // TODO: use shared_ptr<void*>
 };
+
+// TODO: make sure removeParam() removes the stored callback
+
+template <typename T>
+InterfaceGl::Options<T>& InterfaceGl::Options<T>::accessors( const SetterFn &setterFn, const GetterFn &getterFn )
+{
+	if( mTarget )
+		mParent->removeParam( getName() );
+
+	mParent->addParamCallbackImpl( setterFn, getterFn, *this );
+
+	reAddOptions();
+	return *this;
+}
+
+template <typename T>
+InterfaceGl::Options<T>& InterfaceGl::Options<T>::updateFn( const UpdateFn &updateFn )
+{
+
+	T* target = mTarget;
+//	auto updateFn = param.getUpdateFn();
+
+	std::function<void( T )> setter =	[target, updateFn]( T var )	{ *target = var; updateFn(); };
+	std::function<T ()> getter =		[target]()					{ return *target; };
+
+	return accessors( setter, getter );
+}
 
 } } // namespace cinder::params

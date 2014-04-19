@@ -39,7 +39,7 @@ void TweakBarApp::setup()
 {
 	mObjSize = 4;
 	mLightDirection = Vec3f( 0, 0, -1 );
-	mColor = ColorA( 0.25f, 0.5f, 1.0f, 1.0f );
+	mColor = ColorA( 0.25f, 0.5f, 1, 1 );
 	mSomeValue = 2;
 
 	// setup our default camera, looking down the z-axis
@@ -48,37 +48,25 @@ void TweakBarApp::setup()
 	// Setup the parameters
 	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( Vec2i( 200, 400 ) ) );
 
-//	mParams->addParam( "Cube Size", &mObjSize, "min=0.1 max=20.5 step=0.5 keyIncr=z keyDecr=Z" );
-//	mParams->addParam( "Cube Color", &mColor, "" );
-//	mParams->addParam( "Cube Rotation", &mObjOrientation );
-
-//	auto p = params::Param( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" );
-
 	mParams->addParam( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" ).precision( 2 ).step( 0.02f );
 	mParams->addParam( "Cube Rotation", &mObjOrientation );
 	mParams->addParam( "Cube Color", &mColor );
 
 	mParams->addSeparator();
-//
-//	std::function<void (Vec3f)> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
-//	std::function<Vec3f ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
-//
-////	mParams->addParam( "Light Direction", setter, getter );
-//
-//	// getter + setter, no target var
-//	mParams->add( params::Param<Vec3f>( "Light Direction" ).setterFn( setter ).getterFn( getter ) );
-//
-//	// this will trigger a failed assertion because there are no accessors and no target
-////	mParams->add( params::Param<Vec3f>( "Light Direction" ) );
-//
-//	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
-//	mParams->addText( "text", "label=`This is a label without a parameter.`" );
-//
-////	mParams->addParam( "String ", &mString, "" );
-//	mParams->add( params::Param<std::string>( "String ", &mString ) );
-//
-//	// target updated automatically, updateFn() called afterwards.
-//	mParams->add( params::Param<uint32_t>( "size_t value", &mSomeValue ).updateFn( [this]{ console() << "new value: " << mSomeValue << std::endl; } ) );
+
+	std::function<void( Vec3f )> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
+	std::function<Vec3f ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
+
+	mParams->addParam<Vec3f>( "Light Direction" ).accessors( setter, getter );
+
+	// TODO: use addParam() and cover this with updateFn() ?  No T in that case, though.
+	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
+	mParams->addText( "text", "label=`This is a label without a parameter.`" );
+
+	mParams->addParam( "String ", &mString );
+
+	// target updated automatically, updateFn() called afterwards.
+	mParams->addParam( "some value", &mSomeValue ).updateFn( [this] { console() << "new value: " << mSomeValue << std::endl; } );
 }
 
 void TweakBarApp::button()
@@ -97,12 +85,12 @@ void TweakBarApp::draw()
 	// this pair of lines is the standard way to clear the screen in OpenGL
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
-	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
+	gl::clear( Color::gray( 0.1f ) );
 
 	glLoadIdentity();
 	glEnable( GL_LIGHTING );
 	glEnable( GL_LIGHT0 );	
-	GLfloat lightPosition[] = { -mLightDirection.x, -mLightDirection.y, -mLightDirection.z, 0.0f };
+	GLfloat lightPosition[] = { -mLightDirection.x, -mLightDirection.y, -mLightDirection.z, 0 };
 	glLightfv( GL_LIGHT0, GL_POSITION, lightPosition );
 	glMaterialfv( GL_FRONT, GL_DIFFUSE,	mColor );
 

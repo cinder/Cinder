@@ -325,12 +325,25 @@ bool InterfaceGl::isMaximized() const
 	return maximizedInt == 0;
 }
 
+InterfaceGl::OptionsBase::OptionsBase( const std::string &name, void *targetVoidPtr, InterfaceGl *parent )
+	: mName( name ), mVoidPtr( targetVoidPtr ), mParent( parent ), mMinSet( false ), mMaxSet( false ), mStepSet( false ), mPrecisionSet( false )
+{}
+
+template <typename T>
+InterfaceGl::Options<T>::Options( const std::string &name, T *target, int type, InterfaceGl *parent )
+	: OptionsBase( name, target, parent ), mTarget( target ), mTwType( type )
+{
+}
+
 void InterfaceGl::OptionsBase::setMin( float minVal )
 {
 	assert( mParent );
 
 	string optionsStr = "min=" + to_string( minVal );
 	mParent->setOptions( getName(), optionsStr );
+
+	mMin = minVal;
+	mMinSet = true;
 }
 
 void InterfaceGl::OptionsBase::setMax( float maxVal )
@@ -339,6 +352,9 @@ void InterfaceGl::OptionsBase::setMax( float maxVal )
 
 	string optionsStr = "max=" + to_string( maxVal );
 	mParent->setOptions( getName(), optionsStr );
+
+	mMax = maxVal;
+	mMaxSet = true;
 }
 
 void InterfaceGl::OptionsBase::setStep( float stepVal )
@@ -347,6 +363,9 @@ void InterfaceGl::OptionsBase::setStep( float stepVal )
 
 	string optionsStr = "step=" + to_string( stepVal );
 	mParent->setOptions( getName(), optionsStr );
+
+	mStep = stepVal;
+	mStepSet = true;
 }
 
 void InterfaceGl::OptionsBase::setPrecision( int precVal )
@@ -355,6 +374,9 @@ void InterfaceGl::OptionsBase::setPrecision( int precVal )
 	
 	string optionsStr = "precision=" + to_string( precVal );
 	mParent->setOptions( getName(), optionsStr );
+
+	mPrecision = precVal;
+	mPrecisionSet = true;
 }
 
 void InterfaceGl::OptionsBase::setKeyIncr( const string &keyIncr )
@@ -363,6 +385,8 @@ void InterfaceGl::OptionsBase::setKeyIncr( const string &keyIncr )
 
 	string optionsStr = "keyIncr=" + keyIncr;
 	mParent->setOptions( getName(), optionsStr );
+
+	mKeyIncr = keyIncr;
 }
 
 void InterfaceGl::OptionsBase::setKeyDecr( const string &keyDecr )
@@ -371,33 +395,30 @@ void InterfaceGl::OptionsBase::setKeyDecr( const string &keyDecr )
 
 	string optionsStr = "keyDecr=" + keyDecr;
 	mParent->setOptions( getName(), optionsStr );
+
+	mKeyDecr = keyDecr;
 }
 
-//template <typename T>
-//Param<T> InterfaceGl::implAddParam( const Param<T> &param, int type )
-//{
-//	string optionsStr = getParamOptions( param );
-//
-//	if( param.getUpdateFn() ) {
-//		assert( param.getTarget() && ! param.getSetterFn() && ! param.getGetterFn() );
-//
-//		T* target = param.getTarget();
-//		auto updateFn = param.getUpdateFn();
-//		std::function<void( T )> setter =	[target, updateFn]( T var )	{ *target = var; updateFn(); };
-//		std::function<T ()> getter =		[target]()					{ return *target; };
-//
-//		implAddParamCb<T>( param.getName(), type, optionsStr, setter, getter );
-//	}
-//	else if( param.getSetterFn() && param.getGetterFn() ) {
-//		assert( 0 && "cannot have a target and accessors" );
-//		implAddParamCb<T>( param.getName(), type, optionsStr, param.getSetterFn(), param.getGetterFn() );
-//	}
-//	else {
-//		assert( param.getTarget() && "must provide a target or accessors" );
-//
-//		implAddParam( param.getName(), param.getVoidPtr(), type, optionsStr, param.isReadOnly() );
-//	}
-//}
+void InterfaceGl::OptionsBase::reAddOptions()
+{
+	if( mMinSet )
+		setMin( mMin );
+
+	if( mMaxSet )
+		setMax( mMax );
+
+	if( mStepSet )
+		setStep( mStep );
+
+	if( mPrecisionSet )
+		setPrecision( mPrecision );
+
+	if( ! mKeyIncr.empty() )
+		setKeyIncr( mKeyIncr );
+
+	if( ! mKeyDecr.empty() )
+		setKeyDecr( mKeyDecr );
+}
 
 void InterfaceGl::implAddParamDeprecated( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
 {
@@ -474,34 +495,6 @@ void InterfaceGl::addParam( const std::string &name, const std::vector<std::stri
 	delete [] ev;
 }
 
-template <typename T>
-InterfaceGl::Options<T> InterfaceGl::addParamImpl( const std::string &name, T *param, int type, bool readOnly )
-{
-	auto options = Options<T>( name, param );
-	options.mParent = this;
-	options.mReadOnly = readOnly;
-
-	TwSetCurrentWindow( mTwWindowId );
-
-	if( readOnly )
-		TwAddVarRO( mBar.get(), name.c_str(), (TwType)type, param, NULL );
-	else
-		TwAddVarRW( mBar.get(), name.c_str(), (TwType)type, param, NULL );
-
-	return options;
-}
-
-template <class T>
-void InterfaceGl::addParamCallbackImpl( const string &name, int type, const string &optionsStr, const function<void (T)> &setter, const function<T ()> &getter )
-{
-	TwSetCurrentWindow( mTwWindowId );
-	
-	auto callbackPtr = std::make_shared<Accessors<T>>( setter, getter );
-	mStoredCallbacks.push_back( callbackPtr );
-	
-	TwAddVarCB( mBar.get(), name.c_str(), (TwType) type, setterCallback<T>, getterCallback<T>, (void *)callbackPtr.get(), optionsStr.c_str() );
-}
-
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
 {
 	TwSetCurrentWindow( mTwWindowId );
@@ -550,6 +543,37 @@ void InterfaceGl::setOptions( const std::string &name, const std::string &option
 	TwDefine( ( target + " " + optionsStr ).c_str() );
 }
 
+template <typename T>
+InterfaceGl::Options<T> InterfaceGl::addParamImpl( const std::string &name, T *param, int type, bool readOnly )
+{
+	auto options = Options<T>( name, param, type, this );
+
+	if( param ) {
+		TwSetCurrentWindow( mTwWindowId );
+
+		if( readOnly )
+			TwAddVarRO( mBar.get(), name.c_str(), (TwType)type, param, NULL );
+		else
+			TwAddVarRW( mBar.get(), name.c_str(), (TwType)type, param, NULL );
+	}
+
+	return options;
+}
+
+template <typename T>
+void InterfaceGl::addParamCallbackImpl( const function<void (T)> &setter, const function<T ()> &getter, const Options<T> &options )
+{
+	TwSetCurrentWindow( mTwWindowId );
+
+	auto callbackPtr = std::make_shared<Accessors<T>>( setter, getter );
+	mStoredCallbacks.push_back( callbackPtr );
+
+	const string &name = options.getName();
+	int type = options.mTwType;
+
+	TwAddVarCB( mBar.get(), name.c_str(), (TwType) type, setterCallback<T>, getterCallback<T>, (void *)callbackPtr.get(), NULL );
+}
+
 template <> InterfaceGl::Options<bool>		InterfaceGl::addParam( const std::string &name, bool *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_BOOLCPP, readOnly ); }
 template <> InterfaceGl::Options<char>		InterfaceGl::addParam( const std::string &name, char *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_CHAR, readOnly ); }
 template <> InterfaceGl::Options<int8_t>	InterfaceGl::addParam( const std::string &name, int8_t *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_INT8, readOnly ); }
@@ -567,5 +591,21 @@ template <> InterfaceGl::Options<Quatf>		InterfaceGl::addParam( const std::strin
 template <> InterfaceGl::Options<Quatd>		InterfaceGl::addParam( const std::string &name, Quatd *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_QUAT4D, readOnly ); }
 template <> InterfaceGl::Options<Vec3f>		InterfaceGl::addParam( const std::string &name, Vec3f *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_DIR3F, readOnly ); }
 template <> InterfaceGl::Options<Vec3d>		InterfaceGl::addParam( const std::string &name, Vec3d *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_DIR3D, readOnly ); }
+
+template void InterfaceGl::addParamCallbackImpl( const function<void( bool )>		&setter, const function<bool ()>		&getter, const Options<bool>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( char )>		&setter, const function<char ()>		&getter, const Options<char>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( int8_t )>		&setter, const function<int8_t ()>		&getter, const Options<int8_t>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( uint8_t )>	&setter, const function<uint8_t ()>		&getter, const Options<uint8_t>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( int16_t )>	&setter, const function<int16_t ()>		&getter, const Options<int16_t>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( uint16_t )>	&setter, const function<uint16_t ()>	&getter, const Options<uint16_t>	&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( int32_t )>	&setter, const function<int32_t ()>		&getter, const Options<int32_t>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( uint32_t )>	&setter, const function<uint32_t ()>	&getter, const Options<uint32_t>	&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( float )>		&setter, const function<float ()>		&getter, const Options<float>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( double )>		&setter, const function<double ()>		&getter, const Options<double>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( ColorA )>		&setter, const function<ColorA ()>		&getter, const Options<ColorA>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( Quatf )>		&setter, const function<Quatf ()>		&getter, const Options<Quatf>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( Quatd )>		&setter, const function<Quatd ()>		&getter, const Options<Quatd>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( Vec3f )>		&setter, const function<Vec3f ()>		&getter, const Options<Vec3f>		&options );
+template void InterfaceGl::addParamCallbackImpl( const function<void( Vec3d )>		&setter, const function<Vec3d ()>		&getter, const Options<Vec3d>		&options );
 
 } } // namespace cinder::params
