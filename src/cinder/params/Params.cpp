@@ -179,6 +179,40 @@ void tweakBarDeleter( int windowId, TwBar *bar )
 	TwDeleteBar( bar );
 }
 
+// callback used for addButton
+void TW_CALL buttonCallback( void *clientData )
+{
+	std::function<void ()> *fn = reinterpret_cast<std::function<void ()>*>( clientData );
+	(*fn)();
+}
+
+// struct used to start getter/setter pair
+template <class T>
+struct Accessors {
+	Accessors( std::function<void( T )> setter, std::function<T ()> getter )
+		: mSetter( setter )	, mGetter( getter )
+	{}
+
+	std::function<void( T )> mSetter;
+	std::function<T ()> mGetter;
+};
+
+// callback for the getter in accessor-based params
+template <class T>
+void TW_CALL setterCallback( const void *value, void *clientData )
+{
+	Accessors<T> *twc = reinterpret_cast<Accessors<T>*>( clientData );
+	twc->mSetter( *(const T *)value );
+}
+
+// callback for the setter in accessor-based params
+template <class T>
+void TW_CALL getterCallback( void *value, void *clientData )
+{
+	Accessors<T> *twc = reinterpret_cast<Accessors<T>*>( clientData );
+	*(T *)value = twc->mGetter();
+}
+
 } // anonymous namespace
 
 int initAntGl( weak_ptr<app::Window> winWeak )
@@ -365,19 +399,7 @@ void InterfaceGl::OptionsBase::setKeyDecr( const string &keyDecr )
 //	}
 //}
 
-template <typename T>
-InterfaceGl::Options<T> InterfaceGl::implAddParam( const std::string &name, T *param, int type, bool readOnly )
-{
-	auto options = Options<T>( name, param );
-	options.mParent = this;
-	options.mReadOnly = readOnly;
-
-	implAddParam( name, param, type, "", readOnly );
-
-	return options;
-}
-
-void InterfaceGl::implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
+void InterfaceGl::implAddParamDeprecated( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
 {
 	TwSetCurrentWindow( mTwWindowId );
 		
@@ -389,47 +411,47 @@ void InterfaceGl::implAddParam( const std::string &name, void *param, int type, 
 
 void InterfaceGl::addParam( const std::string &name, bool *param, const std::string &optionsStr, bool readOnly )
 {
-	implAddParam( name, param, TW_TYPE_BOOLCPP, optionsStr, readOnly );
+	implAddParamDeprecated( name, param, TW_TYPE_BOOLCPP, optionsStr, readOnly );
 } 
 
 void InterfaceGl::addParam( const std::string &name, float *param, const std::string &optionsStr, bool readOnly )
 {
-	implAddParam( name, param, TW_TYPE_FLOAT, optionsStr, readOnly );
+	implAddParamDeprecated( name, param, TW_TYPE_FLOAT, optionsStr, readOnly );
 } 
 
 void InterfaceGl::addParam( const std::string &name, double *param, const std::string &optionsStr, bool readOnly )
 {
-	implAddParam( name, param, TW_TYPE_DOUBLE, optionsStr, readOnly );
+	implAddParamDeprecated( name, param, TW_TYPE_DOUBLE, optionsStr, readOnly );
 } 
 
 void InterfaceGl::addParam( const std::string &name, int32_t *param, const std::string &optionsStr, bool readOnly )
 {
-	implAddParam( name, param, TW_TYPE_INT32, optionsStr, readOnly );
+	implAddParamDeprecated( name, param, TW_TYPE_INT32, optionsStr, readOnly );
 } 
 
 void InterfaceGl::addParam( const std::string &name, Vec3f *param, const std::string &optionsStr, bool readOnly )
 {
-	implAddParam( name, param, TW_TYPE_DIR3F, optionsStr, readOnly );
+	implAddParamDeprecated( name, param, TW_TYPE_DIR3F, optionsStr, readOnly );
 } 
 
 void InterfaceGl::addParam( const std::string &name, Quatf *param, const std::string &optionsStr, bool readOnly )
 {
-	implAddParam( name, param, TW_TYPE_QUAT4F, optionsStr, readOnly );
+	implAddParamDeprecated( name, param, TW_TYPE_QUAT4F, optionsStr, readOnly );
 } 
 
 void InterfaceGl::addParam( const std::string &name, Color *param, const std::string &optionsStr, bool readOnly )
 {
-	implAddParam( name, param, TW_TYPE_COLOR3F, optionsStr, readOnly );
+	implAddParamDeprecated( name, param, TW_TYPE_COLOR3F, optionsStr, readOnly );
 } 
 
 void InterfaceGl::addParam( const std::string &name, ColorA *param, const std::string &optionsStr, bool readOnly )
 {
-	implAddParam( name, param, TW_TYPE_COLOR4F, optionsStr, readOnly );
+	implAddParamDeprecated( name, param, TW_TYPE_COLOR4F, optionsStr, readOnly );
 } 
 
 void InterfaceGl::addParam( const std::string &name, std::string *param, const std::string &optionsStr, bool readOnly )
 {
-	implAddParam( name, param, TW_TYPE_STDSTRING, optionsStr, readOnly );
+	implAddParamDeprecated( name, param, TW_TYPE_STDSTRING, optionsStr, readOnly );
 }
 
 void InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly )
@@ -452,38 +474,32 @@ void InterfaceGl::addParam( const std::string &name, const std::vector<std::stri
 	delete [] ev;
 }
 
-template <class T>
-struct Accessors {
-	Accessors( std::function<void(T)> setter, std::function<T()> getter )
-	: mSetter( setter )
-	, mGetter( getter ) { }
-	std::function<void(T)> mSetter;
-	std::function<T()> mGetter;
-};
-
-template <class T>
-void TW_CALL setCallbackImpl(const void *value, void *clientData)
+template <typename T>
+InterfaceGl::Options<T> InterfaceGl::addParamImpl( const std::string &name, T *param, int type, bool readOnly )
 {
-	Accessors<T> *twc = reinterpret_cast<Accessors<T>*>( clientData );
-	twc->mSetter( *(const T *)value );
+	auto options = Options<T>( name, param );
+	options.mParent = this;
+	options.mReadOnly = readOnly;
+
+	TwSetCurrentWindow( mTwWindowId );
+
+	if( readOnly )
+		TwAddVarRO( mBar.get(), name.c_str(), (TwType)type, param, NULL );
+	else
+		TwAddVarRW( mBar.get(), name.c_str(), (TwType)type, param, NULL );
+
+	return options;
 }
 
 template <class T>
-void TW_CALL getCallbackImpl(void *value, void *clientData)
-{
-	Accessors<T> *twc = reinterpret_cast<Accessors<T>*>( clientData );
-	*(T *)value = twc->mGetter();
-}
-
-template <class T>
-void InterfaceGl::implAddParamCb( const std::string &name, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter )
+void InterfaceGl::addParamCallbackImpl( const string &name, int type, const string &optionsStr, const function<void (T)> &setter, const function<T ()> &getter )
 {
 	TwSetCurrentWindow( mTwWindowId );
 	
 	auto callbackPtr = std::make_shared<Accessors<T>>( setter, getter );
 	mStoredCallbacks.push_back( callbackPtr );
 	
-	TwAddVarCB( mBar.get(), name.c_str(), (TwType) type, setCallbackImpl<T>, getCallbackImpl<T>, (void *)callbackPtr.get(), optionsStr.c_str() );
+	TwAddVarCB( mBar.get(), name.c_str(), (TwType) type, setterCallback<T>, getterCallback<T>, (void *)callbackPtr.get(), optionsStr.c_str() );
 }
 
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
@@ -500,21 +516,13 @@ void InterfaceGl::addText( const std::string &name, const std::string &optionsSt
 	TwAddButton( mBar.get(), name.c_str(), NULL, NULL, optionsStr.c_str() );
 }
 
-namespace { // anonymous namespace
-void TW_CALL implButtonCallback( void *clientData )
-{
-	std::function<void ()> *fn = reinterpret_cast<std::function<void ()>*>( clientData );
-	(*fn)(); 
-} 
-} // anonymous namespace
-
 void InterfaceGl::addButton( const std::string &name, const std::function<void ()> &callback, const std::string &optionsStr )
 {
 	TwSetCurrentWindow( mTwWindowId );
 	
 	auto callbackPtr = std::make_shared<std::function<void ()>>( callback );
 	mStoredCallbacks.push_back( callbackPtr );
-	TwAddButton( mBar.get(), name.c_str(), implButtonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
+	TwAddButton( mBar.get(), name.c_str(), buttonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
 }
 
 void InterfaceGl::removeParam( const std::string &name )
@@ -542,22 +550,22 @@ void InterfaceGl::setOptions( const std::string &name, const std::string &option
 	TwDefine( ( target + " " + optionsStr ).c_str() );
 }
 
-template <> InterfaceGl::Options<bool>		InterfaceGl::addParam( const std::string &name, bool *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_BOOLCPP, readOnly ); }
-template <> InterfaceGl::Options<char>		InterfaceGl::addParam( const std::string &name, char *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_CHAR, readOnly ); }
-template <> InterfaceGl::Options<int8_t>	InterfaceGl::addParam( const std::string &name, int8_t *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_INT8, readOnly ); }
-template <> InterfaceGl::Options<uint8_t>	InterfaceGl::addParam( const std::string &name, uint8_t *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_UINT8, readOnly ); }
-template <> InterfaceGl::Options<int16_t>	InterfaceGl::addParam( const std::string &name, int16_t *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_INT16, readOnly ); }
-template <> InterfaceGl::Options<uint16_t>	InterfaceGl::addParam( const std::string &name, uint16_t *param, bool readOnly )	{ return implAddParam( name, param, TW_TYPE_UINT16, readOnly ); }
-template <> InterfaceGl::Options<int32_t>	InterfaceGl::addParam( const std::string &name, int32_t *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_INT32, readOnly ); }
-template <> InterfaceGl::Options<uint32_t>	InterfaceGl::addParam( const std::string &name, uint32_t *param, bool readOnly )	{ return implAddParam( name, param, TW_TYPE_UINT32, readOnly ); }
-template <> InterfaceGl::Options<float>		InterfaceGl::addParam( const std::string &name, float *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_FLOAT, readOnly ); }
-template <> InterfaceGl::Options<double>	InterfaceGl::addParam( const std::string &name, double *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_DOUBLE, readOnly ); }
-template <> InterfaceGl::Options<string>	InterfaceGl::addParam( const std::string &name, string *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_STDSTRING, readOnly ); }
-template <> InterfaceGl::Options<Color>		InterfaceGl::addParam( const std::string &name, Color *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_COLOR3F, readOnly ); }
-template <> InterfaceGl::Options<ColorA>	InterfaceGl::addParam( const std::string &name, ColorA *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_COLOR4F, readOnly ); }
-template <> InterfaceGl::Options<Quatf>		InterfaceGl::addParam( const std::string &name, Quatf *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_QUAT4F, readOnly ); }
-template <> InterfaceGl::Options<Quatd>		InterfaceGl::addParam( const std::string &name, Quatd *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_QUAT4D, readOnly ); }
-template <> InterfaceGl::Options<Vec3f>		InterfaceGl::addParam( const std::string &name, Vec3f *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_DIR3F, readOnly ); }
-template <> InterfaceGl::Options<Vec3d>		InterfaceGl::addParam( const std::string &name, Vec3d *param, bool readOnly )		{ return implAddParam( name, param, TW_TYPE_DIR3D, readOnly ); }
+template <> InterfaceGl::Options<bool>		InterfaceGl::addParam( const std::string &name, bool *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_BOOLCPP, readOnly ); }
+template <> InterfaceGl::Options<char>		InterfaceGl::addParam( const std::string &name, char *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_CHAR, readOnly ); }
+template <> InterfaceGl::Options<int8_t>	InterfaceGl::addParam( const std::string &name, int8_t *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_INT8, readOnly ); }
+template <> InterfaceGl::Options<uint8_t>	InterfaceGl::addParam( const std::string &name, uint8_t *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_UINT8, readOnly ); }
+template <> InterfaceGl::Options<int16_t>	InterfaceGl::addParam( const std::string &name, int16_t *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_INT16, readOnly ); }
+template <> InterfaceGl::Options<uint16_t>	InterfaceGl::addParam( const std::string &name, uint16_t *param, bool readOnly )	{ return addParamImpl( name, param, TW_TYPE_UINT16, readOnly ); }
+template <> InterfaceGl::Options<int32_t>	InterfaceGl::addParam( const std::string &name, int32_t *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_INT32, readOnly ); }
+template <> InterfaceGl::Options<uint32_t>	InterfaceGl::addParam( const std::string &name, uint32_t *param, bool readOnly )	{ return addParamImpl( name, param, TW_TYPE_UINT32, readOnly ); }
+template <> InterfaceGl::Options<float>		InterfaceGl::addParam( const std::string &name, float *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_FLOAT, readOnly ); }
+template <> InterfaceGl::Options<double>	InterfaceGl::addParam( const std::string &name, double *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_DOUBLE, readOnly ); }
+template <> InterfaceGl::Options<string>	InterfaceGl::addParam( const std::string &name, string *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_STDSTRING, readOnly ); }
+template <> InterfaceGl::Options<Color>		InterfaceGl::addParam( const std::string &name, Color *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_COLOR3F, readOnly ); }
+template <> InterfaceGl::Options<ColorA>	InterfaceGl::addParam( const std::string &name, ColorA *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_COLOR4F, readOnly ); }
+template <> InterfaceGl::Options<Quatf>		InterfaceGl::addParam( const std::string &name, Quatf *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_QUAT4F, readOnly ); }
+template <> InterfaceGl::Options<Quatd>		InterfaceGl::addParam( const std::string &name, Quatd *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_QUAT4D, readOnly ); }
+template <> InterfaceGl::Options<Vec3f>		InterfaceGl::addParam( const std::string &name, Vec3f *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_DIR3F, readOnly ); }
+template <> InterfaceGl::Options<Vec3d>		InterfaceGl::addParam( const std::string &name, Vec3d *param, bool readOnly )		{ return addParamImpl( name, param, TW_TYPE_DIR3D, readOnly ); }
 
 } } // namespace cinder::params

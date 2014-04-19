@@ -160,14 +160,13 @@ class InterfaceGl {
 
   protected:
 	void	init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color );
-	void	implAddParam( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly );
+	void	implAddParamDeprecated( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly );
 
 	template <typename T>
-	Options<T>	implAddParam( const std::string &name, T *param, int type, bool readOnly );
-
+	Options<T>	addParamImpl( const std::string &name, T *param, int type, bool readOnly );
 
 	template <class T>
-	void implAddParamCb( const std::string &name, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter );
+	void addParamCallbackImpl( const std::string &name, int type, const std::string &optionsStr, const std::function<void (T)> &setter, const std::function<T ()> &getter );
 
 	std::weak_ptr<app::Window>		mWindow;
 	std::shared_ptr<TwBar>			mBar;
