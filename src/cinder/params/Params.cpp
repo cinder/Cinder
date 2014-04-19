@@ -385,7 +385,6 @@ void InterfaceGl::OptionsBase::setKeyIncr( const string &keyIncr )
 
 	string optionsStr = "keyIncr=" + keyIncr;
 	mParent->setOptions( getName(), optionsStr );
-
 	mKeyIncr = keyIncr;
 }
 
@@ -395,8 +394,14 @@ void InterfaceGl::OptionsBase::setKeyDecr( const string &keyDecr )
 
 	string optionsStr = "keyDecr=" + keyDecr;
 	mParent->setOptions( getName(), optionsStr );
-
 	mKeyDecr = keyDecr;
+}
+
+void InterfaceGl::OptionsBase::setOptionsStr( const string &optionsStr )
+{
+	assert( mParent );
+	mParent->setOptions( getName(), optionsStr );
+	mOptionsStr = optionsStr;
 }
 
 void InterfaceGl::OptionsBase::reAddOptions()

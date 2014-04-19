@@ -70,10 +70,11 @@ class InterfaceGl {
 		void setPrecision( int precVal );
 		void setKeyIncr( const std::string &keyIncr );
 		void setKeyDecr( const std::string &keyDecr );
+		void setOptionsStr( const std::string &optionsStr );
 
 		void reAddOptions();
 
-		std::string mName, mKeyIncr, mKeyDecr;
+		std::string mName, mKeyIncr, mKeyDecr, mOptionsStr;
 		void*		mVoidPtr;
 
 		float		mMin, mMax, mStep;
@@ -85,7 +86,6 @@ class InterfaceGl {
 		friend class InterfaceGl;
 	};
 	
-	// TODO: add optionsStr() for anything we don't cover
 	template <typename T>
 	class Options : public OptionsBase {
   	public:
@@ -95,12 +95,13 @@ class InterfaceGl {
 		typedef std::function<T ()>			GetterFn;
 		typedef std::function<void ()>		UpdateFn;
 
-		Options&	min( float minVal )						{ setMin( minVal ); return *this; }
-		Options&	max( float maxVal )						{ setMax( maxVal ); return *this; }
-		Options&	step( float stepVal )					{ setStep( stepVal ); return *this; }
-		Options&	precision( int precVal )				{ setPrecision( precVal ); return *this; }
-		Options&	keyIncr( const std::string &keyIncr )	{ setKeyIncr( keyIncr ); return *this; }
-		Options&	keyDecr( const std::string &keyDecr )	{ setKeyDecr( keyDecr ); return *this; }
+		Options&	min( float minVal )							{ setMin( minVal ); return *this; }
+		Options&	max( float maxVal )							{ setMax( maxVal ); return *this; }
+		Options&	step( float stepVal )						{ setStep( stepVal ); return *this; }
+		Options&	precision( int precVal )					{ setPrecision( precVal ); return *this; }
+		Options&	keyIncr( const std::string &keyIncr )		{ setKeyIncr( keyIncr ); return *this; }
+		Options&	keyDecr( const std::string &keyDecr )		{ setKeyDecr( keyDecr ); return *this; }
+		Options&	optionsStr( const std::string &optionsStr )	{ setOptionsStr( optionsStr ); return *this; }
 
 		Options&	accessors( const SetterFn &setterFn, const GetterFn &getterFn );
 		Options&	updateFn( const UpdateFn &updateFn );
