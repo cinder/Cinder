@@ -27,8 +27,8 @@
 #include "cinder/Function.h"
 
 #include <string>
-#include <list>
-#include <boost/any.hpp>
+#include <map>
+#include <memory>
 
 typedef struct CTwBar TwBar;
 
@@ -118,7 +118,6 @@ class InterfaceGl {
 	};
 
 	void	draw();
-
 	void	show( bool visible = true );
 	void	hide();
 	bool	isVisible() const;
@@ -168,10 +167,8 @@ class InterfaceGl {
 	std::shared_ptr<TwBar>			mBar;
 	int								mTwWindowId;
 	
-	std::list<boost::any>			mStoredCallbacks; // TODO: use shared_ptr<void*>
+	std::map<std::string, std::shared_ptr<void> >	mStoredCallbacks; // key = name, value = memory managed pointer
 };
-
-// TODO: make sure removeParam() removes the stored callback
 
 template <typename T>
 InterfaceGl::Options<T>& InterfaceGl::Options<T>::accessors( const SetterFn &setterFn, const GetterFn &getterFn )
@@ -188,9 +185,7 @@ InterfaceGl::Options<T>& InterfaceGl::Options<T>::accessors( const SetterFn &set
 template <typename T>
 InterfaceGl::Options<T>& InterfaceGl::Options<T>::updateFn( const UpdateFn &updateFn )
 {
-
 	T* target = mTarget;
-//	auto updateFn = param.getUpdateFn();
 
 	std::function<void( T )> setter =	[target, updateFn]( T var )	{ *target = var; updateFn(); };
 	std::function<T ()> getter =		[target]()					{ return *target; };

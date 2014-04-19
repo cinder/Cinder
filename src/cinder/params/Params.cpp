@@ -514,15 +514,17 @@ void InterfaceGl::addButton( const std::string &name, const std::function<void (
 	TwSetCurrentWindow( mTwWindowId );
 	
 	auto callbackPtr = std::make_shared<std::function<void ()>>( callback );
-	mStoredCallbacks.push_back( callbackPtr );
+	mStoredCallbacks.insert( make_pair( name, callbackPtr ) );
+
 	TwAddButton( mBar.get(), name.c_str(), buttonCallback, (void*)callbackPtr.get(), optionsStr.c_str() );
 }
 
 void InterfaceGl::removeParam( const std::string &name )
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
 	TwRemoveVar( mBar.get(), name.c_str() );
+
+	mStoredCallbacks.erase( name );
 }
 
 void InterfaceGl::clear()
@@ -565,11 +567,11 @@ void InterfaceGl::addParamCallbackImpl( const function<void (T)> &setter, const 
 {
 	TwSetCurrentWindow( mTwWindowId );
 
-	auto callbackPtr = std::make_shared<Accessors<T>>( setter, getter );
-	mStoredCallbacks.push_back( callbackPtr );
-
 	const string &name = options.getName();
 	int type = options.mTwType;
+
+	auto callbackPtr = std::make_shared<Accessors<T>>( setter, getter );
+	mStoredCallbacks.insert( make_pair( name, callbackPtr ) );
 
 	TwAddVarCB( mBar.get(), name.c_str(), (TwType) type, setterCallback<T>, getterCallback<T>, (void *)callbackPtr.get(), NULL );
 }
