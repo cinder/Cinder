@@ -43,6 +43,7 @@ namespace params {
   
 typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 
+//! Interface for adding params to your window.  Wraps AntTweakBar.
 class InterfaceGl {
   public:
 
@@ -53,15 +54,15 @@ class InterfaceGl {
 	static InterfaceGlRef create( const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 	static InterfaceGlRef create( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 
-	// TODO: hide if possible
+	//! Base class for chainable options. \see Options<T>.
 	class OptionsBase {
-	public:
+	  public:
 		const std::string&	getName() const				{ return mName; }
 		void*				getVoidPtr() const			{ return mVoidPtr; }
 		const std::string&	getKeyIncr() const			{ return mKeyIncr; }
 		const std::string&	getKeyDecr() const			{ return mKeyDecr; }
 
-	protected:
+	  protected:
 		OptionsBase( const std::string &name, void *targetVoidPtr, InterfaceGl *parent );
 
 		void setMin( float minVal );
@@ -76,7 +77,6 @@ class InterfaceGl {
 
 		std::string mName, mKeyIncr, mKeyDecr, mOptionsStr;
 		void*		mVoidPtr;
-
 		float		mMin, mMax, mStep;
 		int			mPrecision;
 		bool		mMinSet, mMaxSet, mStepSet, mPrecisionSet;
@@ -85,46 +85,58 @@ class InterfaceGl {
 
 		friend class InterfaceGl;
 	};
-	
+
+	//! Provides chainable options, returned from addParam().
 	template <typename T>
 	class Options : public OptionsBase {
-  	public:
+  	  public:
 		Options( const std::string &name, T *target, int type, InterfaceGl *parent );
 
 		typedef std::function<void ( T )>	SetterFn;
 		typedef std::function<T ()>			GetterFn;
 		typedef std::function<void ()>		UpdateFn;
 
+		//! Sets the maximum value for the associated target param.
 		Options&	min( float minVal )							{ setMin( minVal ); return *this; }
+		//! Sets the minimum value for the associated target param.
 		Options&	max( float maxVal )							{ setMax( maxVal ); return *this; }
+		//! Sets step increment for the associated target param.
 		Options&	step( float stepVal )						{ setStep( stepVal ); return *this; }
+		//! Sets the number of significant digits for floating point variables (float or double type only).
 		Options&	precision( int precVal )					{ setPrecision( precVal ); return *this; }
+		//! Sets an increment shortcut key
 		Options&	keyIncr( const std::string &keyIncr )		{ setKeyIncr( keyIncr ); return *this; }
+		//! Sets a decrement shortcut key
 		Options&	keyDecr( const std::string &keyDecr )		{ setKeyDecr( keyDecr ); return *this; }
+		//! Sets other implementation defined options via string.
 		Options&	optionsStr( const std::string &optionsStr )	{ setOptionsStr( optionsStr ); return *this; }
 
+		//!! Sets \a setterFn and \a getterFn as callbacks for this param. the target is ignored in this case.
 		Options&	accessors( const SetterFn &setterFn, const GetterFn &getterFn );
+		//!! Sets an update function that will be called after the target param is updated.
 		Options&	updateFn( const UpdateFn &updateFn );
 
-		const std::string&	getName() const				{ return mName; }
-		const std::string&	getKeyIncr() const			{ return mKeyIncr; }
-		const std::string&	getKeyDecr() const			{ return mKeyDecr; }
-
-	private:
-
-		friend class InterfaceGl;
-
+	  private:
 		T*				mTarget;
 		int				mTwType;
+
+		friend class InterfaceGl;
 	};
 
+	//! Draw the interface.
 	void	draw();
+	//! Shows the interface. If \a visible is `false`, hides the interface.
 	void	show( bool visible = true );
+	//! Hides the interface
 	void	hide();
+	//! Returns whether the interface is visible or not. \see show(), hide().
 	bool	isVisible() const;
-	
+
+	//! Maximizes the interface, making it visible in its default presentation mode. If \a maximized is `false`, minimizes the interface. \see minimize()
 	void	maximize( bool maximized = true );
+	//! Minimizes the interface face to the bottom left corner of the window.
 	void	minimize();
+	//! Returns whether the interface is maximized or not. \see maximize(), minimize()
 	bool	isMaximized() const;
 
 	//! Adds \a target as a param to the interface, referring to it with \a name. \return Options<T> for chaining options to the param.
@@ -176,7 +188,6 @@ class InterfaceGl {
 
 	template <typename T>
 	Options<T>	addParamImpl( const std::string &name, T *param, int type, bool readOnly );
-
 	template <class T>
 	void addParamCallbackImpl( const std::function<void (T)> &setter, const std::function<T ()> &getter, const Options<T> &options );
 
