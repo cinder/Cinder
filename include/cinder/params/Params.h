@@ -127,30 +127,48 @@ class InterfaceGl {
 	void	minimize();
 	bool	isMaximized() const;
 
+	//! Adds \a target as a param to the interface, referring to it with \a name. \return Options<T> for chaining options to the param.
 	template <typename T>
-	Options<T>	addParam( const std::string &name, T *target = nullptr, bool readOnly = false );
+	Options<T>	addParam( const std::string &name, T *target, bool readOnly = false );
 
-	// Deprecated, will be removed in the future (use addParam<T>())
-	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr, bool readOnly = false );
-	void	addParam( const std::string &name, float *floatParam, const std::string &optionsStr, bool readOnly = false );
-	void	addParam( const std::string &name, double *doubleParam, const std::string &optionsStr, bool readOnly = false );
-	void	addParam( const std::string &name, int32_t *intParam, const std::string &optionsStr, bool readOnly = false );
-	void	addParam( const std::string &name, Vec3f *vectorParam, const std::string &optionsStr, bool readOnly = false );
-	void	addParam( const std::string &name, Quatf *quatParam, const std::string &optionsStr, bool readOnly = false );
-	void	addParam( const std::string &name, Color *quatParam, const std::string &optionsStr, bool readOnly = false );
-	void	addParam( const std::string &name, ColorA *quatParam, const std::string &optionsStr, bool readOnly = false );
-	void	addParam( const std::string &name, std::string *strParam, const std::string &optionsStr, bool readOnly = false );
+	//! Adds a param to the interface with no target, but is instead accessed with \a setterFn and \a getterFn. \return Options<T> for chaining options to the param.
+	template <typename T>
+	Options<T>	addParam( const std::string &name, const std::function<void ( T )> &setterFn, const std::function<T ()> &getterFn );
 
 	//! Adds enumerated parameter. The value corresponds to the indices of \a enumNames.
 	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr = "", bool readOnly = false );
 	
+	//! Adds a separator to the interface.
 	void	addSeparator( const std::string &name = "", const std::string &optionsStr = "" );
+	//! Adds text to the interface.
 	void	addText( const std::string &name = "", const std::string &optionsStr = "" );
+	//! Adds a button that fires \a callback when clicked.
 	void	addButton( const std::string &name, const std::function<void()> &callback, const std::string &optionsStr = "" );
+	//! Removes the param referred to by \a name.
 	void	removeParam( const std::string &name );
+	//! Sets runtime options on the param referred to by \a name.
+	void	setOptions( const std::string &name = "", const std::string &optionsStr = "" );
 	//! Removes all the variables, buttons and separators previously added.
 	void	clear();
-	void	setOptions( const std::string &name = "", const std::string &optionsStr = "" );
+
+	//! \deprecated { use addParam<T>() }
+	void	addParam( const std::string &name, bool *boolParam, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated { use addParam<T>() }
+	void	addParam( const std::string &name, float *floatParam, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated { use addParam<T>() }
+	void	addParam( const std::string &name, double *doubleParam, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated { use addParam<T>() }
+	void	addParam( const std::string &name, int32_t *intParam, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated { use addParam<T>() }
+	void	addParam( const std::string &name, Vec3f *vectorParam, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated { use addParam<T>() }
+	void	addParam( const std::string &name, Quatf *quatParam, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated { use addParam<T>() }
+	void	addParam( const std::string &name, Color *quatParam, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated { use addParam<T>() }
+	void	addParam( const std::string &name, ColorA *quatParam, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated { use addParam<T>() }
+	void	addParam( const std::string &name, std::string *strParam, const std::string &optionsStr, bool readOnly = false );
 
   protected:
 	void	init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color );
@@ -160,8 +178,6 @@ class InterfaceGl {
 	Options<T>	addParamImpl( const std::string &name, T *param, int type, bool readOnly );
 
 	template <class T>
-	void addParamCallback( const std::function<void (T)> &setter, const std::function<T ()> &getter, const Options<T> &options );
-	template <class T>
 	void addParamCallbackImpl( const std::function<void (T)> &setter, const std::function<T ()> &getter, const Options<T> &options );
 
 	std::weak_ptr<app::Window>		mWindow;
@@ -170,6 +186,12 @@ class InterfaceGl {
 	
 	std::map<std::string, std::shared_ptr<void> >	mStoredCallbacks; // key = name, value = memory managed pointer
 };
+
+template <typename T>
+InterfaceGl::Options<T>	InterfaceGl::addParam( const std::string &name, const std::function<void ( T )> &setterFn, const std::function<T ()> &getterFn )
+{
+	return addParam<T>( name, nullptr ).accessors( setterFn, getterFn );
+}
 
 template <typename T>
 InterfaceGl::Options<T>& InterfaceGl::Options<T>::accessors( const SetterFn &setterFn, const GetterFn &getterFn )
@@ -187,6 +209,7 @@ template <typename T>
 InterfaceGl::Options<T>& InterfaceGl::Options<T>::updateFn( const UpdateFn &updateFn )
 {
 	T* target = mTarget;
+	assert( target );
 
 	std::function<void( T )> setter =	[target, updateFn]( T var )	{ *target = var; updateFn(); };
 	std::function<T ()> getter =		[target]()					{ return *target; };

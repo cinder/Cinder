@@ -14,7 +14,8 @@ class TweakBarApp : public AppBasic {
 	void resize();
 	void draw();
 	void button();
-	
+
+  private:
 	CameraPersp				mCam;
 	params::InterfaceGlRef	mParams;
 	float					mObjSize;
@@ -24,7 +25,6 @@ class TweakBarApp : public AppBasic {
 	
 	void					setLightDirection( Vec3f direction );
 	Vec3f					getLightDirection() { return mLightDirection; }
-private:
 	Vec3f					mLightDirection;
 	uint32_t				mSomeValue;
 };
@@ -42,31 +42,31 @@ void TweakBarApp::setup()
 	mColor = ColorA( 0.25f, 0.5f, 1, 1 );
 	mSomeValue = 2;
 
-	// setup our default camera, looking down the z-axis
+	// Setup our default camera, looking down the z-axis
 	mCam.lookAt( Vec3f( -20, 0, 0 ), Vec3f::zero() );
 
-	// Setup the parameters
+	// Create the interface and give it a name.
 	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( Vec2i( 200, 400 ) ) );
 
+	// Setup the parameters
 	mParams->addParam( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" ).precision( 2 ).step( 0.02f );
 	mParams->addParam( "Cube Rotation", &mObjOrientation );
 	mParams->addParam( "Cube Color", &mColor );
+	mParams->addParam( "String ", &mString );
 
 	mParams->addSeparator();
 
+	// Attach a callback that is fired after a target is updated.
+	mParams->addParam( "some value", &mSomeValue ).updateFn( [this] { console() << "new value: " << mSomeValue << std::endl; } );
+
+	// Add a param with no target, but instead provide setter and getter functions.
 	std::function<void( Vec3f )> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
 	std::function<Vec3f ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
+	mParams->addParam( "Light Direction", setter, getter );
 
-	mParams->addParam<Vec3f>( "Light Direction" ).accessors( setter, getter );
-
-	// TODO: use addParam() and cover this with updateFn() ?  No T in that case, though.
+	// Other types of controls that can be added to the interface
 	mParams->addButton( "Button!", std::bind( &TweakBarApp::button, this ) );
 	mParams->addText( "text", "label=`This is a label without a parameter.`" );
-
-	mParams->addParam( "String ", &mString );
-
-	// target updated automatically, updateFn() called afterwards.
-	mParams->addParam( "some value", &mSomeValue ).updateFn( [this] { console() << "new value: " << mSomeValue << std::endl; } );
 }
 
 void TweakBarApp::button()

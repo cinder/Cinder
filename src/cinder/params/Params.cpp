@@ -551,17 +551,17 @@ void InterfaceGl::setOptions( const std::string &name, const std::string &option
 }
 
 template <typename T>
-InterfaceGl::Options<T> InterfaceGl::addParamImpl( const std::string &name, T *param, int type, bool readOnly )
+InterfaceGl::Options<T> InterfaceGl::addParamImpl( const std::string &name, T *target, int type, bool readOnly )
 {
-	auto options = Options<T>( name, param, type, this );
+	auto options = Options<T>( name, target, type, this );
 
-	if( param ) {
+	if( target ) {
 		TwSetCurrentWindow( mTwWindowId );
 
 		if( readOnly )
-			TwAddVarRO( mBar.get(), name.c_str(), (TwType)type, param, NULL );
+			TwAddVarRO( mBar.get(), name.c_str(), (TwType)type, target, NULL );
 		else
-			TwAddVarRW( mBar.get(), name.c_str(), (TwType)type, param, NULL );
+			TwAddVarRW( mBar.get(), name.c_str(), (TwType)type, target, NULL );
 	}
 
 	return options;
