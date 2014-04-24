@@ -325,6 +325,12 @@ bool InterfaceGl::isMaximized() const
 	return maximizedInt == 0;
 }
 
+void InterfaceGl::setPosition( const ci::Vec2i &pos )
+{
+	string posStr = string( "position='" ) + to_string( pos.x ) + " " + to_string( pos.y ) + "'";
+	setOptions( "", posStr );
+}
+
 InterfaceGl::OptionsBase::OptionsBase( const std::string &name, void *targetVoidPtr, InterfaceGl *parent )
 	: mName( name ), mVoidPtr( targetVoidPtr ), mParent( parent ), mMinSet( false ), mMaxSet( false ), mStepSet( false ), mPrecisionSet( false )
 {}

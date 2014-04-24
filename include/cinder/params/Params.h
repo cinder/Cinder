@@ -141,7 +141,8 @@ class InterfaceGl {
 	void	minimize();
 	//! Returns whether the interface is maximized or not. \see maximize(), minimize()
 	bool	isMaximized() const;
-
+	//! Sets the position of this interface instance
+	void	setPosition( const ci::Vec2i &pos );
 	//! Adds \a target as a param to the interface, referring to it with \a name. \return Options<T> for chaining options to the param.
 	template <typename T>
 	Options<T>	addParam( const std::string &name, T *target, bool readOnly = false );
