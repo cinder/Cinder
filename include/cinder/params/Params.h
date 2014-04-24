@@ -71,11 +71,12 @@ class InterfaceGl {
 		void setPrecision( int precVal );
 		void setKeyIncr( const std::string &keyIncr );
 		void setKeyDecr( const std::string &keyDecr );
+		void setGroup( const std::string &group );
 		void setOptionsStr( const std::string &optionsStr );
 
 		void reAddOptions();
 
-		std::string mName, mKeyIncr, mKeyDecr, mOptionsStr;
+		std::string mName, mKeyIncr, mKeyDecr, mGroup, mOptionsStr;
 		void*		mVoidPtr;
 		float		mMin, mMax, mStep;
 		int			mPrecision;
@@ -108,6 +109,8 @@ class InterfaceGl {
 		Options&	keyIncr( const std::string &keyIncr )		{ setKeyIncr( keyIncr ); return *this; }
 		//! Sets a decrement shortcut key
 		Options&	keyDecr( const std::string &keyDecr )		{ setKeyDecr( keyDecr ); return *this; }
+		//! Sets the param group
+		Options&	group( const std::string &group )			{ setGroup( group ); return *this; }
 		//! Sets other implementation defined options via string.
 		Options&	optionsStr( const std::string &optionsStr )	{ setOptionsStr( optionsStr ); return *this; }
 

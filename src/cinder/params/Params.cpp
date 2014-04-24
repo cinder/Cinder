@@ -388,6 +388,16 @@ void InterfaceGl::OptionsBase::setKeyIncr( const string &keyIncr )
 	mKeyIncr = keyIncr;
 }
 
+
+void InterfaceGl::OptionsBase::setGroup( const std::string &group )
+{
+	assert( mParent );
+
+	string optionsStr = "group=`" + group + "`";
+	mParent->setOptions( getName(), optionsStr );
+	mGroup = group;
+}
+
 void InterfaceGl::OptionsBase::setKeyDecr( const string &keyDecr )
 {
 	assert( mParent );
@@ -408,21 +418,20 @@ void InterfaceGl::OptionsBase::reAddOptions()
 {
 	if( mMinSet )
 		setMin( mMin );
-
 	if( mMaxSet )
 		setMax( mMax );
-
 	if( mStepSet )
 		setStep( mStep );
-
 	if( mPrecisionSet )
 		setPrecision( mPrecision );
-
 	if( ! mKeyIncr.empty() )
 		setKeyIncr( mKeyIncr );
-
 	if( ! mKeyDecr.empty() )
 		setKeyDecr( mKeyDecr );
+	if( ! mGroup.empty() )
+		setGroup( mGroup );
+	if( ! mOptionsStr.empty() )
+		setOptionsStr( mOptionsStr );
 }
 
 void InterfaceGl::implAddParamDeprecated( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly )
