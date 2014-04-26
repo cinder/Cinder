@@ -46,13 +46,17 @@ typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 //! Interface for adding params to your window.  Wraps AntTweakBar.
 class InterfaceGl {
   public:
-
-	InterfaceGl() {}
-	InterfaceGl( const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
-	InterfaceGl( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
-	
+	//! Creates and returns an InterfaceGl referenced by \a title and with \a size dimensions. Optionally takes \a color.
 	static InterfaceGlRef create( const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
-	static InterfaceGlRef create( cinder::app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	//! Creates and returns an InterfaceGl referenced by \a title that belongs to \a window, and with \a size dimensions. Optionally takes \a color.
+	static InterfaceGlRef create( const cinder::app::WindowRef &window, const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+
+	//! \deprecated { use create() }
+	InterfaceGl() {}
+	//! \deprecated { use create() }
+	InterfaceGl( const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	//! \deprecated { use create() }
+	InterfaceGl( const cinder::app::WindowRef &window, const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 
 	//! Base class for chainable options. \see Options<T>.
 	class OptionsBase {
