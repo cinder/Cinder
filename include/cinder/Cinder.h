@@ -31,15 +31,15 @@
 #include <cstdint>
 #include <boost/version.hpp>
 
-#if BOOST_VERSION < 105300
-	#error "Cinder requires Boost version 1.53 or later"
+#if BOOST_VERSION < 105500
+	#error "Cinder requires Boost version 1.55 or later"
 #endif
 
 //  CINDER_VERSION % 100 is the patch level
 //  CINDER_VERSION / 100 % 1000 is the minor version
 //  CINDER_VERSION / 100000 is the major version
-#define CINDER_VERSION		805
-#define CINDER_VERSION_STR	"0.8.5"
+#define CINDER_VERSION		806
+#define CINDER_VERSION_STR	"0.8.6dev"
 
 namespace cinder {
 using std::int8_t;

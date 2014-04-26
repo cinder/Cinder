@@ -7,7 +7,7 @@ The <a href="http://boost.org">Boost libraries</a> are a collection of peer-revi
 \section setup Setting up Boost
 If you have downloaded one of the pre-built packages from the Cinder website, Boost is already included - you're all set. However if you are building Cinder yourself from <a href="http://github.com/cinder">github</a>, or you would like to upgrade your copy of Boost from the included version, these instructions will guide you through the process.\n\n
 
-If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.53. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a>\n
+If you want to download the same version as the one we're using in Cinder (which we'd generally recommend), grab version 1.55. You can do so from this site: <a href="http://www.boost.org/users/download/">www.boost.org/users/download/</a>\n
 \n
 Now you'll need to put Boost inside your Cinder folder, and <b>rename it \e boost</b>. Your cinder directory should be laid out similarly to the screenshot below. At this point you should be all done if you are using Boost version 1.53, which is the version Cinder is currently built against. If you are moving to a different version of Boost, follow the build instructions below.\n
 \image html cinder_finder.png
@@ -54,22 +54,13 @@ rm -rf stage
 cp stage/lib/*.a ../lib/ios-sim\n
 </tt>
 \n
-<b>Visual C++ 2010</b>:\n
-From the Visual Studio 2010 Command Prompt:\n
-<tt>
-cd cinder\\boost\n
-bootstrap\n
-b2 runtime-link=static toolset=msvc10.0 --with-regex --with-thread --with-filesystem --with-date_time --with-system --with-chrono\n
-copy stage\\lib\\*.lib ..\\lib\\msw\n
-</tt>
-\n
 <b>Visual C++ 2012</b>:\n
 From the Visual Studio 2012 Command Prompt:\n
 <tt>
 cd cinder\\boost\n
 bootstrap\n
-b2 runtime-link=static --with-filesystem --with-date_time --with-system --with-thread --with-regex\n
-copy stage\\lib\\*.lib ..\\lib\\msw\n
+b2 runtime-link=static debug-symbols=off optimization=space --with-filesystem --with-date_time --with-system --with-thread\n
+copy stage\\lib\\*.lib ..\\lib\\msw\\x86\n
 </tt>
 \n
 <b>Visual C++ 2012 x64</b>:\n
@@ -77,7 +68,23 @@ From the Visual Studio 2012 Command Prompt:\n
 <tt>
 cd cinder\\boost\n
 bootstrap\n
-b2 runtime-link=static address-model=64 debug-symbols=off optimization=space
+b2 runtime-link=static address-model=64 debug-symbols=off optimization=space --with-filesystem --with-date_time --with-system --with-thread\n
+</tt>
+\n
+<b>Visual C++ 2013</b>:\n
+From the Command Prompt, start by running <tt>C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat</tt>:\n
+<tt>
+cd cinder\\boost\n
+bootstrap\n
+b2 runtime-link=static debug-symbols=off optimization=space --with-filesystem --with-date_time --with-system --with-thread\n
+</tt>
+\n
+<b>Visual C++ 2013 x64</b>:\n
+From the Command Prompt, start by running <tt>C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat x86_amd64</tt>:\n
+<tt>
+cd cinder\\boost\n
+bootstrap\n
+b2 runtime-link=static address-model=64 debug-symbols=off optimization=space --with-filesystem --with-date_time --with-system --with-thread\n
 </tt>
 \n
 \n

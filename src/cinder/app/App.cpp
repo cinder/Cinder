@@ -45,6 +45,7 @@
 #endif
 
 #if !defined ( CINDER_WINRT )
+#define BOOST_REGEX_NO_LIB
 #include <boost/asio.hpp>
 #endif
 
