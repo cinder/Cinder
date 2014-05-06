@@ -39,7 +39,7 @@ class DataTarget {
 	
 	const fs::path&			getFilePath() const;
 	const Url&				getUrl() const;
-	const std::string&		getFilePathHint() const;
+	const fs::path&			getFilePathHint() const;
 
 	virtual OStreamRef		getStream() = 0;
 
@@ -49,11 +49,11 @@ class DataTarget {
 	{}
 	virtual ~DataTarget() {}
 	
-	void	setFilePathHint( const std::string &aFilePathHint );
+	void	setFilePathHint( const fs::path &aFilePathHint );
 	
 	Buffer				mBuffer;
 	fs::path			mFilePath;
-	std::string			mFilePathHint;
+	fs::path			mFilePathHint;
 	Url					mUrl;
 };
 

@@ -115,7 +115,7 @@ typedef std::shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 
 class DataSourceBuffer : public DataSource {
   public:
-	static DataSourceBufferRef		create( Buffer buffer, const std::string &filePathHint = "" );
+	static DataSourceBufferRef		create( Buffer buffer, const fs::path &filePathHint = "" );
 
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return false; }

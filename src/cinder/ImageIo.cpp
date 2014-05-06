@@ -430,7 +430,7 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 #endif
 
 	if( extension.empty() )
-		extension = getPathExtension( dataTarget->getFilePathHint() );
+		extension = getPathExtension( dataTarget->getFilePathHint().extension().string() );
 	
 	ImageTargetRef imageTarget = ImageIoRegistrar::createTarget( dataTarget, imageSource, options, extension );
 	if( imageTarget ) {
