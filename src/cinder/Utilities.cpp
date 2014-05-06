@@ -225,7 +225,7 @@ bool createDirectories( const fs::path &path, bool createParents )
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
-	return ::SHCreateDirectoryExA( NULL, dirPath.string().c_str(), NULL ) == ERROR_SUCCESS;
+	return ::SHCreateDirectoryEx( NULL, dirPath.wstring().c_str(), NULL ) == ERROR_SUCCESS;
 #endif
 }
 

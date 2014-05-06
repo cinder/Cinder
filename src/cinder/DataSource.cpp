@@ -28,7 +28,7 @@ namespace cinder {
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSource
-void DataSource::setFilePathHint( const std::string &aFilePathHint )
+void DataSource::setFilePathHint( const fs::path &aFilePathHint )
 {
 	mFilePathHint = aFilePathHint;
 }
@@ -43,7 +43,7 @@ const Url& DataSource::getUrl()
 	return mUrl;
 }
 
-const std::string& DataSource::getFilePathHint()
+const fs::path& DataSource::getFilePathHint()
 {
 	return mFilePathHint;
 }

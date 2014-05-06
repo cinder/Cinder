@@ -413,7 +413,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 #endif
 
 	if( extension.empty() )
-		extension = getPathExtension( dataSource->getFilePathHint() );
+		extension = dataSource->getFilePathHint().extension().string();
 	
 	return ImageIoRegistrar::createSource( dataSource, options, extension );
 }

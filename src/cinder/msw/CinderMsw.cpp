@@ -146,6 +146,43 @@ HRESULT STDMETHODCALLTYPE ComOStream::Seek( LARGE_INTEGER liDistanceToMove, DWOR
 	return S_OK;
 }
 
+std::wstring toWideString( const std::string &utf8String )
+{
+	int wideSize = ::MultiByteToWideChar( CP_UTF8, 0, utf8String.c_str(), -1, NULL, 0 );
+	if( wideSize == ERROR_NO_UNICODE_TRANSLATION ) {
+		throw std::exception( "Invalid UTF-8 sequence." );
+	}
+	else if( wideSize == 0 ) {
+		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
+	}
+
+	std::vector<wchar_t> resultString( wideSize );
+	int convResult = ::MultiByteToWideChar( CP_UTF8, 0, utf8String.c_str(), -1, &resultString[0], wideSize );
+	if( convResult != wideSize ) {
+		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
+	}
+
+	return std::wstring( &resultString[0] );
+}
+
+std::string toUtf8String( const std::wstring &wideString )
+{
+	int utf8Size = ::WideCharToMultiByte( CP_UTF8, 0, wideString.c_str(), -1, NULL, 0, NULL, NULL );
+	if( utf8Size == 0 ) {
+		throw std::exception( "Error in UTF-16 to UTF-8 conversion." );
+	}
+
+	std::vector<char> resultString( utf8Size );
+
+	int convResult = ::WideCharToMultiByte( CP_UTF8, 0, wideString.c_str(), -1, &resultString[0], utf8Size, NULL, NULL );
+
+	if( convResult != utf8Size ) {
+		throw std::exception( "Error in UTF-16 to UTF-8 conversion." );
+	}
+
+	return std::string( &resultString[0] );
+}
+
 /////////////////////////////////////////////////////////////////////
 // ComInitializer
 struct ComInitializer {

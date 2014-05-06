@@ -45,7 +45,7 @@ SourceRef load( const std::string &path, std::string extension )
 SourceRef load( DataSourceRef dataSource, std::string extension )
 {
 	if( extension.empty() )
-		extension = getPathExtension( dataSource->getFilePathHint() );
+		extension = dataSource->getFilePathHint().extension().string();
 	
 	return IoRegistrar::createSource( dataSource, extension );
 }
