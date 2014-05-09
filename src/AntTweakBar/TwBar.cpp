@@ -13,7 +13,9 @@
 #include "TwMgr.h"
 #include "TwBar.h"
 #include "TwColors.h"
-  
+
+#include <algorithm> // ci: needed for min / max with vs2013
+
 using namespace std;
 
 extern const char *g_ErrNotFound;
