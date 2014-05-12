@@ -224,7 +224,10 @@
     <ClCompile Include="..\src\cinder\audio\ScopeNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\Source.cpp" />
     <ClCompile Include="..\src\cinder\audio\Target.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Utilities.cpp" />
+    <ClCompile Include="..\src\cinder\audio\Utilities.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\AudioUtilities.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)\AudioUtilities.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\src\cinder\audio\Voice.cpp" />
     <ClCompile Include="..\src\cinder\audio\WaveTable.cpp" />
     <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
@@ -369,7 +372,10 @@
     <ClCompile Include="..\src\oggvorbis\vorbis\synthesis.c" />
     <ClCompile Include="..\src\oggvorbis\vorbis\vorbisenc.c" />
     <ClCompile Include="..\src\oggvorbis\vorbis\vorbisfile.c" />
-    <ClCompile Include="..\src\oggvorbis\vorbis\window.c" />
+    <ClCompile Include="..\src\oggvorbis\vorbis\window.c">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\vorbis_window.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)\vorbis_window.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\src\r8brain\r8bbase.cpp" />
     <ClCompile Include="..\src\videoInput\videoInput.cpp" />
   </ItemGroup>
