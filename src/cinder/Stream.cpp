@@ -527,7 +527,11 @@ void OStreamMem::IOWrite( const void *t, size_t size )
 
 IStreamFileRef loadFileStream( const fs::path &path )
 {
+#if defined( CINDER_MSW )
+	FILE *f = _wfopen( path.wstring().c_str(), L"rb" );
+#else
 	FILE *f = fopen( path.string().c_str(), "rb" );
+#endif
 	if( f ) {
 		IStreamFileRef s = IStreamFile::create( f, true );
 		s->setFileName( path );
@@ -542,7 +546,11 @@ std::shared_ptr<OStreamFile> writeFileStream( const fs::path &path, bool createP
 	if( createParents ) {
 		createDirectories( path.parent_path() );
 	}
+#if defined( CINDER_MSW )
+	FILE *f = _wfopen( expandPath( path ).wstring().c_str(), L"wb" );
+#else
 	FILE *f = fopen( expandPath( path ).string().c_str(), "wb" );
+#endif
 	if( f ) {
 		OStreamFileRef s = OStreamFile::create( f, true );
 		s->setFileName( path );
@@ -554,7 +562,11 @@ std::shared_ptr<OStreamFile> writeFileStream( const fs::path &path, bool createP
 
 IoStreamFileRef readWriteFileStream( const fs::path &path )
 {
+#if defined( CINDER_MSW )
+	FILE *f = _wfopen( expandPath( path ).wstring().c_str(), L"w+b" );
+#else
 	FILE *f = fopen( expandPath( path ).string().c_str(), "w+b" );
+#endif
 	if( f ) {
 		IoStreamFileRef s = IoStreamFile::create( f, true );
 		s->setFileName( path );
