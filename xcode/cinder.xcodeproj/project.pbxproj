@@ -827,8 +827,6 @@
 		111A5FB1191F72AE005C3166 /* DeviceManagerAudioSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F82191F72AE005C3166 /* DeviceManagerAudioSession.mm */; };
 		111A5FB2191F72AE005C3166 /* DeviceManagerAudioSession.mm in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F82191F72AE005C3166 /* DeviceManagerAudioSession.mm */; };
 		111A5FB3191F72AE005C3166 /* DeviceManagerCoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F83191F72AE005C3166 /* DeviceManagerCoreAudio.cpp */; };
-		111A5FB4191F72AE005C3166 /* DeviceManagerCoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F83191F72AE005C3166 /* DeviceManagerCoreAudio.cpp */; };
-		111A5FB5191F72AE005C3166 /* DeviceManagerCoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F83191F72AE005C3166 /* DeviceManagerCoreAudio.cpp */; };
 		111A5FB6191F72AE005C3166 /* FileCoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F84191F72AE005C3166 /* FileCoreAudio.cpp */; };
 		111A5FB7191F72AE005C3166 /* FileCoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F84191F72AE005C3166 /* FileCoreAudio.cpp */; };
 		111A5FB8191F72AE005C3166 /* FileCoreAudio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5F84191F72AE005C3166 /* FileCoreAudio.cpp */; };
@@ -2896,7 +2894,6 @@
 				111A5FBA191F72AE005C3166 /* Context.cpp in Sources */,
 				007050491114F93F003FCAE4 /* Camera.cpp in Sources */,
 				0070504A1114F93F003FCAE4 /* Matrix.cpp in Sources */,
-				111A5FB4191F72AE005C3166 /* DeviceManagerCoreAudio.cpp in Sources */,
 				0070504D1114F93F003FCAE4 /* Surface.cpp in Sources */,
 				111A5FF6191F72AE005C3166 /* OutputNode.cpp in Sources */,
 				111A5F5C191F7286005C3166 /* floor0.c in Sources */,
@@ -3052,7 +3049,6 @@
 				111A5FBB191F72AE005C3166 /* Context.cpp in Sources */,
 				00CFD99D1135C3520091E310 /* Camera.cpp in Sources */,
 				00CFD99E1135C3520091E310 /* Matrix.cpp in Sources */,
-				111A5FB5191F72AE005C3166 /* DeviceManagerCoreAudio.cpp in Sources */,
 				00CFD99F1135C3520091E310 /* Surface.cpp in Sources */,
 				111A5FF7191F72AE005C3166 /* OutputNode.cpp in Sources */,
 				111A5F33191F7285005C3166 /* floor0.c in Sources */,
