@@ -6,7 +6,7 @@
 #include "cinder/audio/SamplePlayerNode.h"
 
 #include "Resources.h"
-#include "../../../samples/common/AudioDrawUtils.h"
+#include "../../common/AudioDrawUtils.h"
 
 using namespace ci;
 using namespace ci::app;
