@@ -8,6 +8,9 @@
     <Filter Include="Source Files\common">
       <UniqueIdentifier>{6e975332-9780-482f-a785-093da8c4eb4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{a3ebb929-4d9c-4ba2-9f4e-4799315572ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\InputAnalyzerApp.cpp">
@@ -24,5 +27,10 @@
     <ClInclude Include="..\..\common\AudioDrawUtils.h">
       <Filter>Source Files\common</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
