@@ -10,13 +10,14 @@ using namespace ci::app;
 using namespace std;
 
 class NodeBasic : public AppNative {
-public:
+  public:
+	void prepareSettings( Settings *settings )	{ settings->enableMultiTouch( false ); }
 	void setup();
 	void mouseDrag( MouseEvent event ) override;
 	void draw();
 
 	audio::GenNodeRef	mGen;	// Gen's generate audio signals
-	audio::GainNodeRef mGain;	// Gain modifies the volume of the signal
+	audio::GainNodeRef	mGain;	// Gain modifies the volume of the signal
 };
 
 void NodeBasic::setup()

@@ -3,6 +3,8 @@
 #include "cinder/audio/Voice.h"
 #include "cinder/audio/Source.h"
 
+#include "cinder/audio/Context.h"
+
 #include "Resources.h"
 
 using namespace ci;
@@ -10,7 +12,7 @@ using namespace ci::app;
 
 class VoiceBasicApp : public AppNative {
 public:
-	void prepareSettings( Settings *settings );
+	void prepareSettings( Settings *settings )	{ settings->enableMultiTouch( false ); }
 	void setup();
 	void mouseDown( MouseEvent event );
 	void keyDown( KeyEvent event );
@@ -18,11 +20,6 @@ public:
 
 	audio::VoiceRef mVoice;
 };
-
-void VoiceBasicApp::prepareSettings( Settings *settings )
-{
-	settings->enableMultiTouch( false );
-}
 
 void VoiceBasicApp::setup()
 {
@@ -61,7 +58,7 @@ void VoiceBasicApp::keyDown( KeyEvent event )
 
 void VoiceBasicApp::draw()
 {
-	gl::clear();
+	gl::clear( Color( 0, 0, 0.2f ) );
 }
 
 CINDER_APP_NATIVE( VoiceBasicApp, RendererGl )
