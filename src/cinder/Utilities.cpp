@@ -69,49 +69,42 @@ namespace cinder {
 
 fs::path expandPath( const fs::path &path )
 {
-	string result;
-	
 #if defined( CINDER_COCOA )
 	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
 	NSString *resultPath = [pathNS stringByStandardizingPath];
-	result = string( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
+	string result = string( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
+	return fs::path( result );
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
-	char buffer[MAX_PATH];
-	::PathCanonicalizeA( buffer, path.string().c_str() );
-	result = buffer; 
+	wchar_t buffer[MAX_PATH];
+	::PathCanonicalize( buffer, path.wstring().c_str() );
+	return fs::path( buffer ); 
 #endif
-
-	return fs::path( result );
 }
 
 fs::path getHomeDirectory()
 {
-	std::string result;
-
 #if defined( CINDER_COCOA )
 	NSString *home = ::NSHomeDirectory();
-	result = [home cStringUsingEncoding:NSUTF8StringEncoding];
+	string result = string( [home cStringUsingEncoding:NSUTF8StringEncoding] );
 	result += "/";
+	return fs::path( result );
 #elif defined( CINDER_WINRT )
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
-	result = PlatformStringToString(folder->Path);
+	string result = PlatformStringToString(folder->Path);
+	return fs::path( result )
 #else
-	char buffer[MAX_PATH];
-	::SHGetFolderPathA( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
-	result = buffer;
-	result += "\\";
+	wchar_t buffer[MAX_PATH];
+	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
+	wstring result = wstring(buffer) + L"\\";
+	return fs::path( result );
 #endif
-
-	return result;
 }
 
 fs::path getDocumentsDirectory()
 {
-	std::string result;
-
 #if defined( CINDER_COCOA )
 	NSArray *arrayPaths = ::NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
 	NSString *docDir = [arrayPaths objectAtIndex:0];
@@ -119,15 +112,12 @@ fs::path getDocumentsDirectory()
 #elif defined( CINDER_WINRT )
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
-	result = PlatformStringToString(folder->Path);
+	return PlatformStringToString(folder->Path);
 #else
-	char buffer[MAX_PATH];
-	::SHGetFolderPathA( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
-	result = buffer;
-	result += "\\";
+	wchar_t buffer[MAX_PATH];
+	::SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
+	return fs::path( wstring(buffer) + L"\\" );
 #endif
-
-	return result;
 }
 
 fs::path getTemporaryDirectory()
