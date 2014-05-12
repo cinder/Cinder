@@ -116,30 +116,32 @@ Buffer AppImplMsw::loadResource( int id, const std::string &type )
 
 fs::path AppImplMsw::getAppPath()
 {
-	char appPath[MAX_PATH] = "";
+	wchar_t appPath[MAX_PATH] = L"";
 
 	// fetch the path of the executable
-	::GetModuleFileNameA( 0, appPath, sizeof(appPath) - 1);
+	::GetModuleFileName( 0, appPath, sizeof(appPath) - 1);
 
 	// get a pointer to the last occurrence of the windows path separator
-	char *appDir = strrchr( appPath, '\\' );
+	wchar_t *appDir = wcsrchr( appPath, L'\\' );
 	if( appDir ) {
 		++appDir;
 
-		// always expect the unexpected - this shouldn't be null but one never knows
+		// this shouldn't be null but one never knows
 		if( appDir ) {
 			// null terminate the string
 			*appDir = 0;
 		}
 	}
 
-	return fs::path( std::string( appPath ) );
+	return fs::path( appPath );
 }
 
 fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 	OPENFILENAMEW ofn;       // common dialog box structure
 	wchar_t szFile[MAX_PATH];       // buffer for file name
+	wchar_t extensionStr[10000];
+	wchar_t initialPathStr[MAX_PATH];
 
 	// Initialize OPENFILENAME
 	::ZeroMemory( &ofn, sizeof(ofn) );
@@ -156,7 +158,6 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 		ofn.lpstrFilter = L"All\0*.*\0";
 	}
 	else {
-		wchar_t extensionStr[10000];
 		size_t offset = 0;
 		
 		wcscpy( extensionStr, L"Supported Types" );
@@ -186,7 +187,6 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 	if( initialPath.empty() )
 		ofn.lpstrInitialDir = NULL;
 	else {
-		wchar_t initialPathStr[MAX_PATH];
 		wcscpy( initialPathStr, initialPath.wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
 	}
@@ -249,6 +249,8 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 {
 	OPENFILENAMEW ofn;       // common dialog box structure
 	wchar_t szFile[MAX_PATH];       // buffer for file name
+	wchar_t initialPathStr[MAX_PATH];
+	wchar_t extensionStr[10000];
 
 	// Initialize OPENFILENAME
 	ZeroMemory( &ofn, sizeof(ofn) );
@@ -268,7 +270,6 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 		ofn.lpstrFilter = L"All\0*.*\0";
 	}
 	else {
-		wchar_t extensionStr[10000];
 		size_t offset = 0;
 
 		wcscpy( extensionStr, L"Supported Types" );
@@ -298,7 +299,6 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 	if( initialPath.empty() )
 		ofn.lpstrInitialDir = NULL;
 	else {
-		wchar_t initialPathStr[MAX_PATH];
 		wcscpy( initialPathStr, initialPath.wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
 	}
