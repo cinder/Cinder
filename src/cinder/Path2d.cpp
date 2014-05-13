@@ -763,7 +763,7 @@ Vec2f Path2d::calcCubicBezierPos( const Vec2f p[4], float t )
 	return Vec2f( w0 * p[0].x + w1 * p[1].x + w2 * p[2].x + w3 * p[3].x, w0 * p[0].y + w1 * p[1].y + w2 * p[2].y + w3 * p[3].y );
 }
 
-Vec2f Path2d::calcCubicBezierDerivative( const Vec2f p[3], float t )
+Vec2f Path2d::calcCubicBezierDerivative( const Vec2f p[4], float t )
 {
 	float nt = 1 - t;
 	float w0 = -3 * nt * nt;
