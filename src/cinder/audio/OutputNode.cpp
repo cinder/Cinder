@@ -38,6 +38,8 @@ namespace cinder { namespace audio {
 OutputNode::OutputNode( const Format &format )
 	: Node( format ), mClipDetectionEnabled( true ), mClipThreshold( 2 ), mLastClip( 0 )
 {
+	if( boost::indeterminate( format.getAutoEnable() ) )
+		setAutoEnabled( false );
 }
 
 void OutputNode::connect( const NodeRef &output )
