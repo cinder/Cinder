@@ -3,8 +3,9 @@
 *.mode1v3
 *.mode2v3
 *.user
-*.xcworkspace/
+project.xcworkspace
 xcuserdata/
+*.xccheckout
 .DS_Store
 
 build/
