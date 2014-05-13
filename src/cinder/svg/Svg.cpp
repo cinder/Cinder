@@ -371,10 +371,6 @@ bool Style::parseProperty( const std::string &key, const std::string &value, con
 		mSpecifiesStrokeOpacity = true;
 		return true;
 	}
-	else if( key == "stroke" ) {
-		mStroke = Paint::parse( value.c_str(), &mSpecifiesStroke, parent );
-		return true;
-	}	
 	else if( key == "stroke-width" ) {
 		if( value != "inherit" ) {
 			mSpecifiesStrokeWidth = true;
