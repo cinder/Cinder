@@ -1,0 +1,6 @@
+#include "../include/Resources.h"
+
+1	ICON	"..\\..\\..\\resources\\cinder_app_icon.ico"
+
+RES_DRAIN_OGG
+RES_TONE_440L220R
