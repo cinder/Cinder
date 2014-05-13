@@ -283,7 +283,7 @@ void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float durati
 	::CVPixelBufferRelease( pixelBuffer );
 
 	if( err )
-		MovieWriterExcFrameEncode();
+		throw MovieWriterExcFrameEncode();
 }
 
 extern "C" {
