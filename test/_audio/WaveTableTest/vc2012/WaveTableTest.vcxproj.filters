@@ -24,7 +24,7 @@
     <ClCompile Include="..\src\WaveTableTestApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\samples\common\AudioDrawUtils.cpp">
+    <ClCompile Include="..\..\..\..\samples\_audio\common\AudioDrawUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

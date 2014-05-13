@@ -1,14 +1,14 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
 
-#include "cinder/audio2/Gen.h"
-#include "cinder/audio2/NodeEffect.h"
-#include "cinder/audio2/CinderAssert.h"
-#include "cinder/audio2/Debug.h"
+#include "cinder/audio/GenNode.h"
+#include "cinder/audio/NodeEffects.h"
+#include "cinder/audio/Debug.h"
 
-#include "cinder/audio2/msw/ContextXAudio.h"
-#include "cinder/audio2/msw/MswUtil.h"
+#include "cinder/audio/msw/ContextXAudio.h"
+#include "cinder/audio/msw/MswUtil.h"
 #include "cinder/msw/CinderMsw.h"
+#include "cinder/CinderAssert.h"
 
 #include "../../common/AudioTestGui.h"
 
@@ -62,12 +62,12 @@ public:
 	void processTap( Vec2i pos );
 
 
-	audio2::GenRef mGen;
-	audio2::GainNodeRef	mGain;
+	audio::GenNodeRef mGen;
+	audio::GainNodeRef	mGain;
 
-	audio2::msw::ContextXAudio*	mContextXAudio;
+	audio::msw::ContextXAudio*	mContextXAudio;
 
-	std::unique_ptr<::IUnknown, audio2::msw::ComReleaser>	mXapo;
+	std::unique_ptr<::IUnknown, audio::msw::ComReleaser>	mXapo;
 	XAUDIO2_EFFECT_DESCRIPTOR								mEffectDesc;
 	XAUDIO2FX_REVERB_PARAMETERS								mReverbParams;
 	XAUDIO2_FILTER_PARAMETERS								mFilterParams;
@@ -79,22 +79,22 @@ public:
 
 void EffectXAudioTestApp::setup()
 {
-	mContextXAudio = new audio2::msw::ContextXAudio;
-	audio2::Context::setMaster( mContextXAudio, new audio2::msw::DeviceManagerXAudio );
+	mContextXAudio = new audio::msw::ContextXAudio;
+	audio::Context::setMaster( mContextXAudio, new audio::msw::DeviceManagerXAudio );
 
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
-	//mGen = ctx->makeNode( new audio2::GenPulse );
-	mGen = ctx->makeNode( new audio2::GenTriangle );
+	//mGen = ctx->makeNode( new audio::GenPulse );
+	mGen = ctx->makeNode( new audio::GenTriangle );
 
 	mGen->setFreq( 100 );
 	mGen->setAutoEnabled();
 
-	mGain = ctx->makeNode( new audio2::GainNode( 0.6f ) );
+	mGain = ctx->makeNode( new audio::GainNode( 0.6f ) );
 	
 	mGen >> mGain >> ctx->getOutput();
 
-	audio2::master()->printGraph();
+	audio::master()->printGraph();
 
 	setupReverb();
 	setupFilter();
@@ -108,7 +108,7 @@ void EffectXAudioTestApp::setupReverb()
 	HRESULT hr = XAudio2CreateReverb( &reverb );
 	CI_ASSERT( hr == S_OK );
 
-	mXapo = audio2::msw::makeComUnique( reverb );
+	mXapo = audio::msw::makeComUnique( reverb );
 	mEffectDesc.InitialState = true;
 	mEffectDesc.OutputChannels = 2;
 	mEffectDesc.pEffect = mXapo.get();
@@ -225,7 +225,7 @@ void EffectXAudioTestApp::setupUI()
 
 void EffectXAudioTestApp::updateLowpass()
 {
-	mFilterParams.Frequency = XAudio2CutoffFrequencyToRadians( mLowpassCutoffSlider.mValueScaled, audio2::master()->getSampleRate() );
+	mFilterParams.Frequency = XAudio2CutoffFrequencyToRadians( mLowpassCutoffSlider.mValueScaled, audio::master()->getSampleRate() );
 
 	IXAudio2SourceVoice *sourceVoice = mContextXAudio->getLineOutXAudio()->getSourceVoice();
 	HRESULT hr = sourceVoice->SetFilterParameters( &mFilterParams );
@@ -256,7 +256,7 @@ void EffectXAudioTestApp::processDrag( Vec2i pos )
 void EffectXAudioTestApp::processTap( Vec2i pos )
 {
 	if( mPlayButton.hitTest( pos ) )
-		audio2::master()->setEnabled( ! audio2::master()->isEnabled() );
+		audio::master()->setEnabled( ! audio::master()->isEnabled() );
 	else
 		processDrag( pos );
 }
