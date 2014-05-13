@@ -186,9 +186,13 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 	ofn.nMaxFileTitle = 0;
 	if( initialPath.empty() )
 		ofn.lpstrInitialDir = NULL;
-	else {
+	else if( fs::is_directory( initialPath ) ) {
 		wcscpy( initialPathStr, initialPath.wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
+	} else {
+		wcscpy( initialPathStr, initialPath.parent_path().wstring().c_str() );
+		ofn.lpstrInitialDir = initialPathStr;
+		wcscpy( szFile, initialPath.filename().wstring().c_str() );
 	}
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
@@ -258,10 +262,7 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 	ofn.hwndOwner = App::get()->getRenderer()->getHwnd();
 	ofn.lpstrFile = szFile;
 
-	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not
-	// use the contents of szFile to initialize itself.
-	//
-	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not
+	// Set lpstrFile[0] to '\0' so that GetSaveFileName does not
 	// use the contents of szFile to initialize itself.
 	//
 	ofn.lpstrFile[0] = '\0';
@@ -298,9 +299,13 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 	ofn.nMaxFileTitle = 0;
 	if( initialPath.empty() )
 		ofn.lpstrInitialDir = NULL;
-	else {
+	else if( fs::is_directory( initialPath ) ) {
 		wcscpy( initialPathStr, initialPath.wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
+	} else {
+		wcscpy( initialPathStr, initialPath.parent_path().wstring().c_str() );
+		ofn.lpstrInitialDir = initialPathStr;
+		wcscpy( szFile, initialPath.filename().wstring().c_str() );
 	}
 	ofn.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
 
