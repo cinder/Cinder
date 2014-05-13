@@ -1,13 +1,13 @@
 #pragma once
 
 #include "utils.h"
-#include "cinder/audio2/dsp/Fft.h"
+#include "cinder/audio/dsp/Fft.h"
 
 #include <iostream>
 
 BOOST_AUTO_TEST_SUITE( test_fft )
 
-using namespace ci::audio2;
+using namespace ci::audio;
 
 namespace {
 

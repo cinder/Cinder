@@ -2,25 +2,20 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Utilities.h"
 
-#include "cinder/audio2/GenNode.h"
-#include "cinder/audio2/ScopeNode.h"
-#include "cinder/audio2/SamplePlayerNode.h"
-#include "cinder/audio2/Debug.h"
-#include "cinder/audio2/dsp/Dsp.h"
+#include "cinder/audio/GenNode.h"
+#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/SamplePlayerNode.h"
+#include "cinder/audio/Debug.h"
+#include "cinder/audio/dsp/Dsp.h"
 
 #include "../../common/AudioTestGui.h"
-#include "../../../samples/common/AudioDrawUtils.h"
+#include "../../../../samples/_audio/common/AudioDrawUtils.h"
 #include "Resources.h"
-
-//#define SOUND_FILE "tone440.wav"
-//#define SOUND_FILE "tone440L220R.wav"
-//#define SOUND_FILE "Blank__Kytt_-_08_-_RSPN.mp3"
-#define SOUND_FILE "cash_satisfied_mind.mp3"
 
 // TODO: make these runtime configurable
 #define FFT_SIZE 2048
 #define WINDOW_SIZE 1024
-#define WINDOW_TYPE audio2::dsp::WindowType::BLACKMAN
+#define WINDOW_TYPE audio::dsp::WindowType::BLACKMAN
 
 using namespace ci;
 using namespace ci::app;
@@ -45,10 +40,10 @@ class SpectralTestApp : public AppNative {
 	void printBinFreq( size_t xPos );
 
 
-	audio2::BufferPlayerNodeRef		mPlayerNode;
-	audio2::GenNodeRef				mGen;
-	audio2::ScopeSpectralNodeRef	mScopeSpectralNode;
-	audio2::SourceFileRef			mSourceFile;
+	audio::BufferPlayerNodeRef		mPlayerNode;
+	audio::GenNodeRef				mGen;
+	audio::ScopeSpectralNodeRef	mScopeSpectralNode;
+	audio::SourceFileRef			mSourceFile;
 
 	vector<TestWidget *>			mWidgets;
 	Button							mEnableGraphButton, mPlaybackButton, mLoopButton, mScaleDecibelsButton;
@@ -68,21 +63,21 @@ void SpectralTestApp::setup()
 {
 	mSpectroMargin = 40.0f;
 
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
-	mScopeSpectralNode = ctx->makeNode( new audio2::ScopeSpectralNode( audio2::ScopeSpectralNode::Format().fftSize( FFT_SIZE ).windowSize( WINDOW_SIZE ).windowType( WINDOW_TYPE ) ) );
+	mScopeSpectralNode = ctx->makeNode( new audio::ScopeSpectralNode( audio::ScopeSpectralNode::Format().fftSize( FFT_SIZE ).windowSize( WINDOW_SIZE ).windowType( WINDOW_TYPE ) ) );
 	mScopeSpectralNode->setAutoEnabled();
 
-	//mGen = ctx->makeNode( new audio2::GenSineNode() );
-	mGen = ctx->makeNode( new audio2::GenTriangleNode() );
+	//mGen = ctx->makeNode( new audio::GenSineNode() );
+	mGen = ctx->makeNode( new audio::GenTriangleNode() );
 	mGen->setFreq( 440.0f );
 
-	mSourceFile = audio2::load( loadResource( RES_TONE440L220R_MP3 ), ctx->getSampleRate() );
+	mSourceFile = audio::load( loadResource( RES_TONE440L220R_MP3 ), ctx->getSampleRate() );
 
 	auto audioBuffer = mSourceFile->loadBuffer(); // TODO: load async
 	CI_LOG_V( "loaded source buffer, frames: " << audioBuffer->getNumFrames() );
 
-	mPlayerNode = ctx->makeNode( new audio2::BufferPlayerNode( audioBuffer ) );
+	mPlayerNode = ctx->makeNode( new audio::BufferPlayerNode( audioBuffer ) );
 
 	setupSine();
 
@@ -100,7 +95,7 @@ void SpectralTestApp::setup()
 
 void SpectralTestApp::setupSine()
 {
-	mGen >> mScopeSpectralNode >> audio2::master()->getOutput();
+	mGen >> mScopeSpectralNode >> audio::master()->getOutput();
 	if( mPlaybackButton.mEnabled )
 		mGen->enable();
 }
@@ -114,7 +109,7 @@ void SpectralTestApp::setupSineNoOutput()
 
 void SpectralTestApp::setupSample()
 {
-	mPlayerNode >> mScopeSpectralNode >> audio2::master()->getOutput();
+	mPlayerNode >> mScopeSpectralNode >> audio::master()->getOutput();
 	if( mPlaybackButton.mEnabled )
 		mPlayerNode->enable();
 }
@@ -197,7 +192,7 @@ void SpectralTestApp::printBinFreq( size_t xPos )
 	size_t numBins = mScopeSpectralNode->getFftSize() / 2;
 	size_t spectroWidth = getWindowWidth() - mSpectroMargin * 2;
 	size_t bin = ( numBins * ( xPos - mSpectroMargin ) ) / spectroWidth;
-	float freq = bin * audio2::master()->getSampleRate() / float( mScopeSpectralNode->getFftSize() );
+	float freq = bin * audio::master()->getSampleRate() / float( mScopeSpectralNode->getFftSize() );
 
 	CI_LOG_V( "bin: " << bin << ", freq: " << freq );
 }
@@ -206,7 +201,7 @@ void SpectralTestApp::printBinFreq( size_t xPos )
 // - possible solution: add a silent flag that is settable by client
 void SpectralTestApp::processTap( Vec2i pos )
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	if( mEnableGraphButton.hitTest( pos ) )
 		ctx->setEnabled( ! ctx->isEnabled() );
 	else if( mPlaybackButton.hitTest( pos ) ) {
@@ -255,7 +250,7 @@ void SpectralTestApp::fileDrop( FileDropEvent event )
 	const fs::path &filePath = event.getFile( 0 );
 	CI_LOG_V( "File dropped: " << filePath );
 
-	mSourceFile = audio2::load( loadFile( filePath ), audio2::master()->getSampleRate() );
+	mSourceFile = audio::load( loadFile( filePath ), audio::master()->getSampleRate() );
 
 	mPlayerNode->setBuffer( mSourceFile->loadBuffer() );
 

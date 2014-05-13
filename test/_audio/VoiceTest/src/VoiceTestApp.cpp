@@ -1,16 +1,16 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
 
-#include "cinder/audio2/Voice.h"
-#include "cinder/audio2/ScopeNode.h"
-#include "cinder/audio2/CinderAssert.h"
-#include "cinder/audio2/Debug.h"
+#include "cinder/audio/Voice.h"
+#include "cinder/audio/ScopeNode.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/audio/Debug.h"
 
 #include "Resources.h"
 #include "../../common/AudioTestGui.h"
-#include "../../../samples/common/AudioDrawUtils.h"
+#include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
-#include "cinder/audio2/Utilities.h"
+#include "cinder/audio/Utilities.h"
 
 const float DEFAULT_VOLUME = 0.4f;
 
@@ -33,8 +33,8 @@ public:
 	void processDrag( Vec2i pos );
 	void processTap( Vec2i pos );
 
-	audio2::VoiceRef		mVoice;
-	audio2::ScopeNodeRef	mScope;
+	audio::VoiceRef		mVoice;
+	audio::ScopeNodeRef	mScope;
 
 	vector<TestWidget *>	mWidgets;
 	Button					mPlayButton, mEnableNoiseButton, mEnableSineButton;
@@ -50,37 +50,37 @@ void VoiceTestApp::setup()
 
 	setupBasic();
 
-	audio2::master()->printGraph();
+	audio::master()->printGraph();
 
 	setupUI();
 }
 
 void VoiceTestApp::setupBasic()
 {
-	mVoice = audio2::Voice::create( audio2::load( loadResource( RES_DRAIN_OGG ) ) );
+	mVoice = audio::Voice::create( audio::load( loadResource( RES_DRAIN_OGG ) ) );
 	mVoice->setVolume( mVolumeSlider.mValueScaled );
 }
 
 void VoiceTestApp::setupBasicStereo()
 {
-	mVoice = audio2::Voice::create( audio2::load( loadResource( RES_DRAIN_OGG ) ), audio2::Voice::Options().channels( 2 ) );
+	mVoice = audio::Voice::create( audio::load( loadResource( RES_DRAIN_OGG ) ), audio::Voice::Options().channels( 2 ) );
 	mVoice->setVolume( mVolumeSlider.mValueScaled );
 }
 
 void VoiceTestApp::setupDifferentFile()
 {
-	mVoice = audio2::Voice::create( audio2::load( loadResource( RES_TONE_440L220R ) ) );
+	mVoice = audio::Voice::create( audio::load( loadResource( RES_TONE_440L220R ) ) );
 	mVoice->setVolume( mVolumeSlider.mValueScaled );
 
 }
 void VoiceTestApp::setupScope()
 {
-	auto sourceFile = audio2::load( loadResource( RES_DRAIN_OGG ) );
-	mVoice = audio2::Voice::create( sourceFile, audio2::Voice::Options().connectToMaster( false ) );
+	auto sourceFile = audio::load( loadResource( RES_DRAIN_OGG ) );
+	mVoice = audio::Voice::create( sourceFile, audio::Voice::Options().connectToMaster( false ) );
 	mVoice->setVolume( mVolumeSlider.mValueScaled );
 
-	auto ctx = audio2::master();
-	mScope = ctx->makeNode( new audio2::ScopeNode );
+	auto ctx = audio::master();
+	mScope = ctx->makeNode( new audio::ScopeNode );
 
 	mVoice->getOutputNode() >> mScope >> ctx->getOutput();
 }
@@ -145,7 +145,7 @@ void VoiceTestApp::processTap( Vec2i pos )
 		else if( currentTest == "file 2" )
 			setupDifferentFile();
 
-		audio2::master()->printGraph();
+		audio::master()->printGraph();
 	}
 }
 

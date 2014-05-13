@@ -28,12 +28,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParamTest", "..\ParamTest\v
 		{F24F4074-AFCA-4AAD-9F6C-4CB69CB829B6} = {F24F4074-AFCA-4AAD-9F6C-4CB69CB829B6}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SamplePlayerTest", "..\SamplePlayerTest\vc2012\SamplePlayerTest.vcxproj", "{20E84023-6E68-4387-B158-0A13FDA53646}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleTest", "..\SampleTest\vc2012\SampleTest.vcxproj", "{20E84023-6E68-4387-B158-0A13FDA53646}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F24F4074-AFCA-4AAD-9F6C-4CB69CB829B6} = {F24F4074-AFCA-4AAD-9F6C-4CB69CB829B6}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NodeEffectTest", "..\NodeEffectTest\vc2012\NodeEffectTest.vcxproj", "{A4E4C761-C966-49BC-B393-7DB37AD2D367}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NodeEffectsTest", "..\NodeEffectsTest\vc2012\NodeEffectsTest.vcxproj", "{A4E4C761-C966-49BC-B393-7DB37AD2D367}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F24F4074-AFCA-4AAD-9F6C-4CB69CB829B6} = {F24F4074-AFCA-4AAD-9F6C-4CB69CB829B6}
 	EndProjectSection

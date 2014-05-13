@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cinder/audio2/dsp/RingBuffer.h"
+#include "cinder/audio/dsp/RingBuffer.h"
 
 #include "cinder/Thread.h"
 
@@ -8,7 +8,7 @@ BOOST_AUTO_TEST_SUITE( test_ringbuffer )
 
 using namespace std;
 using namespace ci;
-using namespace ci::audio2;
+using namespace ci::audio;
 
 
 BOOST_AUTO_TEST_CASE( test_full_write_read )

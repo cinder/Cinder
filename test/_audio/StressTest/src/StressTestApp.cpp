@@ -2,16 +2,16 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 
-#include "cinder/audio2/GenNode.h"
-#include "cinder/audio2/GainNode.h"
-#include "cinder/audio2/ScopeNode.h"
-#include "cinder/audio2/CinderAssert.h"
-#include "cinder/audio2/Debug.h"
+#include "cinder/audio/GenNode.h"
+#include "cinder/audio/GainNode.h"
+#include "cinder/audio/ScopeNode.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/audio/Debug.h"
 
-#include "cinder/audio2/Utilities.h"
+#include "cinder/audio/Utilities.h"
 
 #include "../../common/AudioTestGui.h"
-#include "../../../samples/common/AudioDrawUtils.h"
+#include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
 // FIXME: type switching should clear the cached wavetable
 
@@ -36,13 +36,13 @@ public:
 	void removeGens();
 	void clearGens();
 
-	audio2::GenNodeRef	makeSelectedGenType();
-	audio2::GenNodeRef	makeOsc( audio2::WaveformType type );
+	audio::GenNodeRef	makeSelectedGenType();
+	audio::GenNodeRef	makeOsc( audio::WaveformType type );
 
-	audio2::GainNodeRef				mGain;
-	audio2::ScopeSpectralNodeRef	mScope;
-	audio2::WaveTable2dRef	mWaveTable;
-	vector<audio2::GenNodeRef>		mGenBank;
+	audio::GainNodeRef				mGain;
+	audio::ScopeSpectralNodeRef	mScope;
+	audio::WaveTable2dRef	mWaveTable;
+	vector<audio::GenNodeRef>		mGenBank;
 
 	vector<TestWidget *>	mWidgets;
 	Button					mPlayButton, mAddGens, mRemoveGens, mClearGens;
@@ -67,11 +67,11 @@ void StressTestApp::setup()
 	mEnableDrawing = true;
 	mSelectedGenType = OSC_SQUARE;
 
-	auto ctx = audio2::master();
-	mGain = ctx->makeNode( new audio2::GainNode );
+	auto ctx = audio::master();
+	mGain = ctx->makeNode( new audio::GainNode );
 	mGain->setValue( 0.1f );
 
-	mScope = audio2::master()->makeNode( new audio2::ScopeSpectralNode( audio2::ScopeSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
+	mScope = audio::master()->makeNode( new audio::ScopeSpectralNode( audio::ScopeSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
 	mScope->setSmoothingFactor( 0.4 );
 
 	mGain >> mScope >> ctx->getOutput();
@@ -84,11 +84,11 @@ void StressTestApp::setup()
 
 void StressTestApp::addGens()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
 	for( size_t i = 0; i < mAddIncr; i++ ) {
 		auto gen = makeSelectedGenType();
-		gen->setFreq( audio2::toFreq( randInt( 40, 60 ) ) );
+		gen->setFreq( audio::toFreq( randInt( 40, 60 ) ) );
 
 		gen->connect( mGain );
 		gen->enable();
@@ -107,7 +107,7 @@ void StressTestApp::removeGens()
 		mGenBank.pop_back();
 	}
 
-	audio2::master()->printGraph();
+	audio::master()->printGraph();
 	CI_LOG_V( "gen count: " << mGenBank.size() );
 }
 
@@ -118,30 +118,30 @@ void StressTestApp::clearGens()
 		mGenBank.pop_back();
 	}
 
-	audio2::master()->printGraph();
+	audio::master()->printGraph();
 	CI_LOG_V( "gen count: " << mGenBank.size() );
 }
 
-audio2::GenNodeRef StressTestApp::makeSelectedGenType()
+audio::GenNodeRef StressTestApp::makeSelectedGenType()
 {
 	switch( mSelectedGenType ) {
-		case SINE: return audio2::master()->makeNode( new audio2::GenSineNode );
-		case TRIANGLE: return audio2::master()->makeNode( new audio2::GenTriangleNode );
-		case OSC_SINE: return makeOsc( audio2::WaveformType::SINE );
-		case OSC_SAW: return makeOsc( audio2::WaveformType::SAWTOOTH );
-		case OSC_SQUARE: return makeOsc( audio2::WaveformType::SQUARE );
-		case OSC_TRIANGLE: return makeOsc( audio2::WaveformType::TRIANGLE );
+		case SINE: return audio::master()->makeNode( new audio::GenSineNode );
+		case TRIANGLE: return audio::master()->makeNode( new audio::GenTriangleNode );
+		case OSC_SINE: return makeOsc( audio::WaveformType::SINE );
+		case OSC_SAW: return makeOsc( audio::WaveformType::SAWTOOTH );
+		case OSC_SQUARE: return makeOsc( audio::WaveformType::SQUARE );
+		case OSC_TRIANGLE: return makeOsc( audio::WaveformType::TRIANGLE );
 
 		default: CI_ASSERT_NOT_REACHABLE();
 	}
 
-	return audio2::GenNodeRef();
+	return audio::GenNodeRef();
 }
 
-audio2::GenNodeRef StressTestApp::makeOsc( audio2::WaveformType type )
+audio::GenNodeRef StressTestApp::makeOsc( audio::WaveformType type )
 {
-	auto ctx = audio2::master();
-	auto result = ctx->makeNode( new audio2::GenOscNode( audio2::GenOscNode::Format().waveform( type ) ) );
+	auto ctx = audio::master();
+	auto result = ctx->makeNode( new audio::GenOscNode( audio::GenOscNode::Format().waveform( type ) ) );
 
 	if( mWaveTable )
 		result->setWaveTable( mWaveTable );
@@ -224,7 +224,7 @@ void StressTestApp::processDrag( Vec2i pos )
 
 void StressTestApp::processTap( Vec2i pos )
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	size_t currentIndex = mTestSelector.mCurrentSectionIndex;
 
 	if( mPlayButton.hitTest( pos ) )

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cinder/audio2/Node.h"
+#include "cinder/audio/Node.h"
 
-struct InterleavedPassThruNode : public ci::audio2::Node {
+struct InterleavedPassThruNode : public ci::audio::Node {
 	InterleavedPassThruNode() : Node( Format() )
 	{
 		setAutoEnabled();
@@ -12,17 +12,17 @@ struct InterleavedPassThruNode : public ci::audio2::Node {
 
 	virtual void initialize() override
 	{
-		mBufferInterleaved = ci::audio2::BufferInterleaved( getContext()->getFramesPerBlock(), 2 );
+		mBufferInterleaved = ci::audio::BufferInterleaved( getContext()->getFramesPerBlock(), 2 );
 	}
 
-	void process( ci::audio2::Buffer *buffer ) override
+	void process( ci::audio::Buffer *buffer ) override
 	{
 		CI_ASSERT( buffer->getNumChannels() == 2 );
 
-		ci::audio2::dsp::interleaveBuffer( buffer, &mBufferInterleaved );
-		ci::audio2::dsp::deinterleaveBuffer( &mBufferInterleaved, buffer );
+		ci::audio::dsp::interleaveBuffer( buffer, &mBufferInterleaved );
+		ci::audio::dsp::deinterleaveBuffer( &mBufferInterleaved, buffer );
 	}
 
 private:
-	ci::audio2::BufferInterleaved mBufferInterleaved;
+	ci::audio::BufferInterleaved mBufferInterleaved;
 };

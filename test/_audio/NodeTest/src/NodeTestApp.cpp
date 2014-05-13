@@ -1,21 +1,19 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
 
-#include "cinder/audio2/GenNode.h"
-#include "cinder/audio2/GainNode.h"
-#include "cinder/audio2/ChannelRouterNode.h"
-#include "cinder/audio2/ScopeNode.h"
-#include "cinder/audio2/CinderAssert.h"
-#include "cinder/audio2/dsp/Converter.h"
-#include "cinder/audio2/Debug.h"
+#include "cinder/audio/GenNode.h"
+#include "cinder/audio/GainNode.h"
+#include "cinder/audio/ChannelRouterNode.h"
+#include "cinder/audio/ScopeNode.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/audio/dsp/Converter.h"
+#include "cinder/audio/Debug.h"
 
 #include "InterleavedPassThruNode.h"
 #include "../../common/AudioTestGui.h"
-#include "../../../samples/common/AudioDrawUtils.h"
+#include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
-#include "cinder/audio2/Utilities.h"
-
-// FIXME: not all switching between tests is producing the expected graph
+#include "cinder/audio/Utilities.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -43,9 +41,9 @@ public:
 	void processDrag( Vec2i pos );
 	void processTap( Vec2i pos );
 
-	audio2::GainNodeRef			mGain;
-	audio2::ScopeNodeRef	mScope;
-	audio2::GenNodeRef		mGen, mNoise;
+	audio::GainNodeRef			mGain;
+	audio::ScopeNodeRef	mScope;
+	audio::GenNodeRef		mGen, mNoise;
 
 	vector<TestWidget *>	mWidgets;
 	Button					mPlayButton, mEnableNoiseButton, mEnableSineButton;
@@ -59,12 +57,12 @@ void NodeTestApp::setup()
 {
 	printDefaultOutput();
 	
-	auto ctx = audio2::master();
-	mGain = ctx->makeNode( new audio2::GainNode( 0.04f ) );
-	mGen = ctx->makeNode( new audio2::GenSineNode( 440 ) );
-	mNoise = ctx->makeNode( new audio2::GenNoiseNode() );
+	auto ctx = audio::master();
+	mGain = ctx->makeNode( new audio::GainNode( 0.04f ) );
+	mGen = ctx->makeNode( new audio::GenSineNode( 440 ) );
+	mNoise = ctx->makeNode( new audio::GenNoiseNode() );
 
-	mScope = audio2::master()->makeNode( new audio2::ScopeNode( audio2::ScopeNode::Format().windowSize( 2048 ) ) );
+	mScope = audio::master()->makeNode( new audio::ScopeNode( audio::ScopeNode::Format().windowSize( 2048 ) ) );
 
 	setupGen();
 //	setupMerge();
@@ -84,7 +82,7 @@ void NodeTestApp::setupGen()
 
 	mGain->disconnectAllInputs();
 
-	mGen >> audio2::master()->getOutput();
+	mGen >> audio::master()->getOutput();
 	mGen->enable();
 
 	mEnableNoiseButton.setEnabled( false );
@@ -99,7 +97,7 @@ void NodeTestApp::setup2to1()
 	mGen >> mGain;
 	mNoise >> mGain;
 
-	mGain >> audio2::master()->getOutput();
+	mGain >> audio::master()->getOutput();
 
 	mGen->enable();
 	mNoise->enable();
@@ -111,10 +109,10 @@ void NodeTestApp::setup2to1()
 // note: this enables the scope as a secondary output of mGen, and as no one ever disconnects that, it harmlessly remains when the test is switched.
 void NodeTestApp::setup1to2()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
-	mGen >> mGain >> audio2::master()->getOutput();
+	mGen >> mGain >> audio::master()->getOutput();
 	mGen->enable();
 
 	mGen->connect( mScope );
@@ -128,7 +126,7 @@ void NodeTestApp::setupInterleavedPassThru()
 	if( mScope )
 		mScope->disconnectAll();
 
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
 	mGain->disconnectAllInputs();
 
@@ -142,7 +140,7 @@ void NodeTestApp::setupInterleavedPassThru()
 
 void NodeTestApp::setupAutoPulled()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
 	mGen >> mScope;
@@ -153,12 +151,12 @@ void NodeTestApp::setupAutoPulled()
 
 void NodeTestApp::setupFunnelCase()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
-	auto gain1 = ctx->makeNode( new audio2::GainNode );
-	auto gain2 = ctx->makeNode( new audio2::GainNode );
-//	auto gain2 = ctx->makeNode( new audio2::GainNode( audio2::Node::Format().autoEnable( false ) ) );
+	auto gain1 = ctx->makeNode( new audio::GainNode );
+	auto gain2 = ctx->makeNode( new audio::GainNode );
+//	auto gain2 = ctx->makeNode( new audio::GainNode( audio::Node::Format().autoEnable( false ) ) );
 
 	mGen >> gain1 >> mScope;
 	mNoise >> gain2 >> mScope;
@@ -174,10 +172,10 @@ void NodeTestApp::setupFunnelCase()
 
 void NodeTestApp::setupMerge()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
-	auto router = ctx->makeNode( new audio2::ChannelRouterNode( audio2::Node::Format().channels( 2 ) ) );
+	auto router = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( 2 ) ) );
 
 	mGen >> router->route( 0, 0 );
 	mNoise >> router->route( 0, 1 );
@@ -192,13 +190,13 @@ void NodeTestApp::setupMerge()
 
 void NodeTestApp::setupMerge4()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
-	auto router = ctx->makeNode( new audio2::ChannelRouterNode( audio2::Node::Format().channels( 4 ) ) );
+	auto router = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( 4 ) ) );
 
-	auto upmixStereo1 = ctx->makeNode( new audio2::Node( audio2::Node::Format().channels( 2 ) ) );
-	auto upmixStereo2 = ctx->makeNode( new audio2::Node( audio2::Node::Format().channels( 2 ) ) );
+	auto upmixStereo1 = ctx->makeNode( new audio::Node( audio::Node::Format().channels( 2 ) ) );
+	auto upmixStereo2 = ctx->makeNode( new audio::Node( audio::Node::Format().channels( 2 ) ) );
 
 	mGen >> upmixStereo1 >> router->route( 0, 0 );
 	mNoise >> upmixStereo2 >> router->route( 0, 2 );
@@ -213,11 +211,11 @@ void NodeTestApp::setupMerge4()
 
 void NodeTestApp::setupSplitStereo()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
-	auto gainStereo = ctx->makeNode( new audio2::GainNode( audio2::Node::Format().channels( 2 ) ) );
-	auto router = ctx->makeNode( new audio2::ChannelRouterNode( audio2::Node::Format().channels( 2 ) ) );
+	auto gainStereo = ctx->makeNode( new audio::GainNode( audio::Node::Format().channels( 2 ) ) );
+	auto router = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( 2 ) ) );
 
 	mGen >> gainStereo >> router->route( 0, 0, 1 ) >> mGain >> mScope >> ctx->getOutput();
 
@@ -228,14 +226,14 @@ void NodeTestApp::setupSplitStereo()
 
 void NodeTestApp::setupSplitMerge()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
-	auto upmixStereo = ctx->makeNode( new audio2::Node( audio2::Node::Format().channels( 2 ) ) );
+	auto upmixStereo = ctx->makeNode( new audio::Node( audio::Node::Format().channels( 2 ) ) );
 
-	auto splitRouter0 = ctx->makeNode( new audio2::ChannelRouterNode( audio2::Node::Format().channels( 1 ) ) );
-	auto splitRouter1 = ctx->makeNode( new audio2::ChannelRouterNode( audio2::Node::Format().channels( 1 ) ) );
-	auto stereoRouter = ctx->makeNode( new audio2::ChannelRouterNode( audio2::Node::Format().channels( 2 ) ) );
+	auto splitRouter0 = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( 1 ) ) );
+	auto splitRouter1 = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( 1 ) ) );
+	auto stereoRouter = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( 2 ) ) );
 
 	// up-mix to stereo, then split the channels into two separate Node's
 	mGen >> upmixStereo;
@@ -255,7 +253,7 @@ void NodeTestApp::setupSplitMerge()
 
 void NodeTestApp::printDefaultOutput()
 {
-	audio2::DeviceRef device = audio2::Device::getDefaultOutput();
+	audio::DeviceRef device = audio::Device::getDefaultOutput();
 
 	CI_LOG_V( "device name: " << device->getName() );
 	console() << "\t input channels: " << device->getNumInputChannels() << endl;
@@ -319,7 +317,7 @@ void NodeTestApp::processDrag( Vec2i pos )
 
 void NodeTestApp::processTap( Vec2i pos )
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
 	if( mPlayButton.hitTest( pos ) )
 		ctx->setEnabled( ! ctx->isEnabled() );

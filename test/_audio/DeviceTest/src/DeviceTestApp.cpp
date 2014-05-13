@@ -3,14 +3,14 @@
 #include "cinder/Timeline.h"
 
 
-#include "cinder/audio2/Context.h"
-#include "cinder/audio2/GenNode.h"
-#include "cinder/audio2/GainNode.h"
-#include "cinder/audio2/ChannelRouterNode.h"
-#include "cinder/audio2/ScopeNode.h"
-#include "cinder/audio2/dsp/Dsp.h"
-#include "cinder/audio2/Exception.h"
-#include "cinder/audio2/Debug.h"
+#include "cinder/audio/Context.h"
+#include "cinder/audio/GenNode.h"
+#include "cinder/audio/GainNode.h"
+#include "cinder/audio/ChannelRouterNode.h"
+#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/dsp/Dsp.h"
+#include "cinder/audio/Exception.h"
+#include "cinder/audio/Debug.h"
 
 #include "../../common/AudioTestGui.h"
 
@@ -27,11 +27,11 @@ class DeviceTestApp : public AppNative {
 	void update();
 	void draw();
 
-	void setOutputDevice( const audio2::DeviceRef &device, size_t numChannels = 0 );
-	void setInputDevice( const audio2::DeviceRef &device, size_t numChannels = 0 );
+	void setOutputDevice( const audio::DeviceRef &device, size_t numChannels = 0 );
+	void setInputDevice( const audio::DeviceRef &device, size_t numChannels = 0 );
 	void setupMultiChannelDevice( const string &deviceName );
 	void setupMultiChannelDeviceWindows( const string &deviceName );
-	void printDeviceDetails( const audio2::DeviceRef &device );
+	void printDeviceDetails( const audio::DeviceRef &device );
 
 	void setupSine();
 	void setupIOClean();
@@ -46,11 +46,11 @@ class DeviceTestApp : public AppNative {
 	void processDrag( Vec2i pos );
 	void keyDown( KeyEvent event );
 
-	audio2::InputDeviceNodeRef		mInputDeviceNode;
-	audio2::OutputDeviceNodeRef		mOutputDeviceNode;
-	audio2::ScopeNodeRef			mScope;
-	audio2::GainNodeRef					mGain;
-	audio2::GenNodeRef				mGen;
+	audio::InputDeviceNodeRef		mInputDeviceNode;
+	audio::OutputDeviceNodeRef		mOutputDeviceNode;
+	audio::ScopeNodeRef			mScope;
+	audio::GainNodeRef					mGain;
+	audio::GenNodeRef				mGen;
 
 	vector<TestWidget *> mWidgets;
 	VSelector mTestSelector, mInputSelector, mOutputSelector;
@@ -70,19 +70,19 @@ void DeviceTestApp::prepareSettings( Settings *settings )
 
 void DeviceTestApp::setup()
 {
-	audio2::Device::printDevices();
+	audio::Device::printDevices();
 
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
-	mScope = ctx->makeNode( new audio2::ScopeNode( audio2::ScopeNode::Format().windowSize( 1024 ) ) );
-	mGain = ctx->makeNode( new audio2::GainNode() );
+	mScope = ctx->makeNode( new audio::ScopeNode( audio::ScopeNode::Format().windowSize( 1024 ) ) );
+	mGain = ctx->makeNode( new audio::GainNode() );
 	mGain->setValue( 0.4f );
 
 	mGain->connect( mScope );
 
-	setOutputDevice( audio2::Device::getDefaultOutput() );
-	setInputDevice( audio2::Device::getDefaultInput() );
-	//setInputDevice( audio2::Device::getDefaultInput(), 1 ); // force mono input
+	setOutputDevice( audio::Device::getDefaultOutput() );
+	setInputDevice( audio::Device::getDefaultInput() );
+	//setInputDevice( audio::Device::getDefaultInput(), 1 ); // force mono input
 
 	//setupMultiChannelDevice( "PreSonus FIREPOD (1431)" );
 //	setupMultiChannelDeviceWindows( "MOTU Analog (MOTU Audio Wave for 64 bit)" );
@@ -94,13 +94,13 @@ void DeviceTestApp::setup()
 	CI_LOG_V( "Context samplerate: " << ctx->getSampleRate() );
 }
 
-void DeviceTestApp::setOutputDevice( const audio2::DeviceRef &device, size_t numChannels )
+void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numChannels )
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
 	ctx->uninitializeAllNodes();
 
-	audio2::Node::Format format;
+	audio::Node::Format format;
 	if( numChannels )
 		format.channels( numChannels );
 
@@ -127,18 +127,18 @@ void DeviceTestApp::setOutputDevice( const audio2::DeviceRef &device, size_t num
 		mOutputDeviceNode->enable();
 }
 
-void DeviceTestApp::setInputDevice( const audio2::DeviceRef &device, size_t numChannels  )
+void DeviceTestApp::setInputDevice( const audio::DeviceRef &device, size_t numChannels  )
 {
-	audio2::ScopedEnableNode enableNodeScope( mInputDeviceNode, false );
+	audio::ScopedEnableNode enableNodeScope( mInputDeviceNode, false );
 
 	if( mInputDeviceNode )
 		mInputDeviceNode->disconnectAllOutputs();
 
-	auto format = audio2::Node::Format().autoEnable();
+	auto format = audio::Node::Format().autoEnable();
 	if( numChannels )
 		format.channels( numChannels );
 
-	mInputDeviceNode = audio2::master()->createInputDeviceNode( device, format );
+	mInputDeviceNode = audio::master()->createInputDeviceNode( device, format );
 
 	setupTest( mTestSelector.currentSection() );
 
@@ -148,7 +148,7 @@ void DeviceTestApp::setInputDevice( const audio2::DeviceRef &device, size_t numC
 
 void DeviceTestApp::setupMultiChannelDevice( const string &deviceName )
 {
-	auto dev = audio2::Device::findDeviceByName( deviceName );
+	auto dev = audio::Device::findDeviceByName( deviceName );
 	CI_ASSERT( dev );
 
 //	setOutputDevice( dev );
@@ -161,9 +161,9 @@ void DeviceTestApp::setupMultiChannelDevice( const string &deviceName )
 
 void DeviceTestApp::setupMultiChannelDeviceWindows(  const string &deviceName )
 {
-	audio2::DeviceRef inputDev, outputDev;
+	audio::DeviceRef inputDev, outputDev;
 
-	for( auto &dev : audio2::Device::getDevices() ) {
+	for( auto &dev : audio::Device::getDevices() ) {
 		if( dev->getName() == deviceName ) {
 			if( dev->getNumOutputChannels() > 2 )
 				outputDev = dev;
@@ -183,7 +183,7 @@ void DeviceTestApp::setupMultiChannelDeviceWindows(  const string &deviceName )
 		CI_LOG_E( "could not find input device with channels > 2 named: " << deviceName );
 }
 
-void DeviceTestApp::printDeviceDetails( const audio2::DeviceRef &device )
+void DeviceTestApp::printDeviceDetails( const audio::DeviceRef &device )
 {
 	console() << "\t name: " << device->getName() << endl;
 	console() << "\t output channels: " << device->getNumOutputChannels() << endl;
@@ -198,7 +198,7 @@ void DeviceTestApp::printDeviceDetails( const audio2::DeviceRef &device )
 
 void DeviceTestApp::setupSine()
 {
-	mGen = audio2::master()->makeNode( new audio2::GenSineNode() );
+	mGen = audio::master()->makeNode( new audio::GenSineNode() );
 	mGen->setFreq( 440 );
 
 	mGen->connect( mGain );
@@ -207,7 +207,7 @@ void DeviceTestApp::setupSine()
 
 void DeviceTestApp::setupNoise()
 {
-	mGen = audio2::master()->makeNode( new audio2::GenNoiseNode() );
+	mGen = audio::master()->makeNode( new audio::GenNoiseNode() );
 
 	mGen->connect( mGain );
 	mGen->enable();
@@ -221,11 +221,11 @@ void DeviceTestApp::setupIOClean()
 
 void DeviceTestApp::setupIOProcessed()
 {
-	auto ctx = audio2::master();
-	auto mod = ctx->makeNode( new audio2::GenSineNode( audio2::Node::Format().autoEnable() ) );
+	auto ctx = audio::master();
+	auto mod = ctx->makeNode( new audio::GenSineNode( audio::Node::Format().autoEnable() ) );
 	mod->setFreq( 200 );
 
-	auto ringMod = audio2::master()->makeNode( new audio2::GainNode );
+	auto ringMod = audio::master()->makeNode( new audio::GainNode );
 	ringMod->setName( "RingModGain" );
 	ringMod->getParam()->setProcessor( mod );
 
@@ -237,12 +237,12 @@ void DeviceTestApp::setupIOProcessed()
 
 void DeviceTestApp::setupSend()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
-	auto router = ctx->makeNode( new audio2::ChannelRouterNode( audio2::Node::Format().channels( mOutputDeviceNode->getNumChannels()	) ) );
+	auto router = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( mOutputDeviceNode->getNumChannels()	) ) );
 
-	mGen = audio2::master()->makeNode( new audio2::GenSineNode( 440 ) );
+	mGen = audio::master()->makeNode( new audio::GenSineNode( 440 ) );
 
 	auto input = mGen;
 
@@ -257,11 +257,11 @@ void DeviceTestApp::setupSend()
 
 void DeviceTestApp::setupSendStereo()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
-	auto router = ctx->makeNode( new audio2::ChannelRouterNode( audio2::Node::Format().channels( mOutputDeviceNode->getNumChannels()	) ) );
-	auto upmix = ctx->makeNode( new audio2::Node( audio2::Node::Format().channels( 2 ) ) );
+	auto router = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( mOutputDeviceNode->getNumChannels()	) ) );
+	auto upmix = ctx->makeNode( new audio::Node( audio::Node::Format().channels( 2 ) ) );
 
 	int channelIndex = mSendChannelInput.getValue();
 	CI_LOG_V( "routing input to channel: " << channelIndex );
@@ -304,7 +304,7 @@ void DeviceTestApp::setupUI()
 	mOutputSelector.mTitle = "Output Devices";
 	mOutputSelector.mBounds = Rectf( mTestSelector.mBounds.x1, getWindowCenter().y + 40, (float)getWindowWidth(), (float)getWindowHeight() );
 	if( mOutputDeviceNode ) {
-		for( const auto &dev : audio2::Device::getOutputDevices() ) {
+		for( const auto &dev : audio::Device::getOutputDevices() ) {
 			if( dev == mOutputDeviceNode->getDevice() )
 				mOutputSelector.mCurrentSectionIndex = mOutputSelector.mSegments.size();
 			mOutputSelector.mSegments.push_back( dev->getName() );
@@ -315,7 +315,7 @@ void DeviceTestApp::setupUI()
 	mInputSelector.mTitle = "Input Devices";
 	mInputSelector.mBounds = mOutputSelector.mBounds - Vec2f( mOutputSelector.mBounds.getWidth() + 10, 0 );
 	if( mOutputDeviceNode ) {
-		for( const auto &dev : audio2::Device::getInputDevices() ) {
+		for( const auto &dev : audio::Device::getInputDevices() ) {
 			if( dev == mInputDeviceNode->getDevice() )
 				mInputSelector.mCurrentSectionIndex = mInputSelector.mSegments.size();
 			mInputSelector.mSegments.push_back( dev->getName() );
@@ -326,13 +326,13 @@ void DeviceTestApp::setupUI()
 	Rectf textInputBounds( 0, getWindowCenter().y + 40, 200, getWindowCenter().y + 70  );
 	mSamplerateInput.mBounds = textInputBounds;
 	mSamplerateInput.mTitle = "samplerate";
-	mSamplerateInput.setValue( audio2::master()->getSampleRate() );
+	mSamplerateInput.setValue( audio::master()->getSampleRate() );
 	mWidgets.push_back( &mSamplerateInput );
 
 	textInputBounds += Vec2f( 0, textInputBounds.getHeight() + 24 );
 	mFramesPerBlockInput.mBounds = textInputBounds;
 	mFramesPerBlockInput.mTitle = "frames per block";
-	mFramesPerBlockInput.setValue( audio2::master()->getFramesPerBlock() );
+	mFramesPerBlockInput.setValue( audio::master()->getFramesPerBlock() );
 	mWidgets.push_back( &mFramesPerBlockInput );
 
 	textInputBounds += Vec2f( 0, textInputBounds.getHeight() + 24 );
@@ -369,8 +369,8 @@ void DeviceTestApp::setupUI()
 	} );
 
 #if defined( CINDER_COCOA_TOUCH )
-	getSignalKeyboardWillShow().connect( [this] { timeline().apply( &mViewYOffset, -100, 0.3f, EaseInOutCubic() );	} );
-	getSignalKeyboardWillHide().connect( [this] { timeline().apply( &mViewYOffset, 0, 0.3f, EaseInOutCubic() ); } );
+	getSignalKeyboardWillShow().connect( [this] { timeline().apply( &mViewYOffset, -100.0f, 0.3f, EaseInOutCubic() );	} );
+	getSignalKeyboardWillHide().connect( [this] { timeline().apply( &mViewYOffset, 0.0f, 0.3f, EaseInOutCubic() ); } );
 #endif
 
 	gl::enableAlphaBlending();
@@ -386,7 +386,7 @@ void DeviceTestApp::processTap( Vec2i pos )
 {
 //	TextInput *selectedInput = false;
 	if( mPlayButton.hitTest( pos ) )
-		audio2::master()->setEnabled( ! audio2::master()->isEnabled() );
+		audio::master()->setEnabled( ! audio::master()->isEnabled() );
 	else if( mSamplerateInput.hitTest( pos ) ) {
 	}
 	else if( mFramesPerBlockInput.hitTest( pos ) ) {
@@ -415,7 +415,7 @@ void DeviceTestApp::processTap( Vec2i pos )
 
 	size_t currentOutputIndex = mOutputSelector.mCurrentSectionIndex;
 	if( mOutputSelector.hitTest( pos ) && currentOutputIndex != mOutputSelector.mCurrentSectionIndex ) {
-		auto dev = audio2::Device::findDeviceByName( mOutputSelector.mSegments[mOutputSelector.mCurrentSectionIndex] );
+		auto dev = audio::Device::findDeviceByName( mOutputSelector.mSegments[mOutputSelector.mCurrentSectionIndex] );
 		CI_LOG_V( "selected output device named: " << dev->getName() << ", key: " << dev->getKey() );
 
 		setOutputDevice( dev );
@@ -424,7 +424,7 @@ void DeviceTestApp::processTap( Vec2i pos )
 
 	size_t currentInputIndex = mInputSelector.mCurrentSectionIndex;
 	if( mInputSelector.hitTest( pos ) && currentInputIndex != mInputSelector.mCurrentSectionIndex ) {
-		auto dev = audio2::Device::findDeviceByName( mInputSelector.mSegments[mInputSelector.mCurrentSectionIndex] );
+		auto dev = audio::Device::findDeviceByName( mInputSelector.mSegments[mInputSelector.mCurrentSectionIndex] );
 		CI_LOG_V( "selected input named: " << dev->getName() << ", key: " << dev->getKey() );
 
 		setInputDevice( dev );
@@ -442,7 +442,7 @@ void DeviceTestApp::setupTest( string test )
 	// FIXME: Switching from 'noise' to 'i/o' on mac is causing a deadlock when initializing InputDeviceNodeAudioUnit.
 	//	- it shouldn't have to be stopped, need to check why.
 	//  - temp fix: stop / start context around reconfig
-	audio2::master()->disable();
+	audio::master()->disable();
 
 	if( test == "sinewave" )
 		setupSine();
@@ -460,9 +460,9 @@ void DeviceTestApp::setupTest( string test )
 		CI_ASSERT_NOT_REACHABLE();
 
 	if( mPlayButton.mEnabled )
-		audio2::master()->enable();
+		audio::master()->enable();
 
-	audio2::master()->printGraph();
+	audio::master()->printGraph();
 }
 
 void DeviceTestApp::keyDown( KeyEvent event )
@@ -480,12 +480,12 @@ void DeviceTestApp::keyDown( KeyEvent event )
 			if( currentSelected == &mSamplerateInput ) {
 				int sr = currentSelected->getValue();
 				CI_LOG_V( "updating samplerate from: " << mOutputDeviceNode->getSampleRate() << " to: " << sr );
-				mOutputDeviceNode->getDevice()->updateFormat( audio2::Device::Format().sampleRate( sr ) );
+				mOutputDeviceNode->getDevice()->updateFormat( audio::Device::Format().sampleRate( sr ) );
 			}
 			else if( currentSelected == &mFramesPerBlockInput ) {
 				int frames = currentSelected->getValue();
 				CI_LOG_V( "updating frames per block from: " << mOutputDeviceNode->getFramesPerBlock() << " to: " << frames );
-				mOutputDeviceNode->getDevice()->updateFormat( audio2::Device::Format().framesPerBlock( frames ) );
+				mOutputDeviceNode->getDevice()->updateFormat( audio::Device::Format().framesPerBlock( frames ) );
 			}
 			else if( currentSelected == &mNumInChannelsInput ) {
 				int numChannels = currentSelected->getValue();
@@ -504,9 +504,9 @@ void DeviceTestApp::keyDown( KeyEvent event )
 			else
 				CI_LOG_E( "unhandled return for string: " << currentSelected->mInputString );
 		}
-		catch( audio2::AudioDeviceExc &exc ) {
+		catch( audio::AudioDeviceExc &exc ) {
 			CI_LOG_E( "AudioDeviceExc caught, what: " << exc.what() );
-			auto ctx = audio2::master();
+			auto ctx = audio::master();
 			mSamplerateInput.setValue( ctx->getSampleRate() );
 			mFramesPerBlockInput.setValue( ctx->getFramesPerBlock() );
 			return;
@@ -547,7 +547,7 @@ void DeviceTestApp::draw()
 	gl::translate( 0, mViewYOffset );
 
 	if( mScope && mScope->isEnabled() ) {
-		const audio2::Buffer &buffer = mScope->getBuffer();
+		const audio::Buffer &buffer = mScope->getBuffer();
 
 		float padding = 20;
 		float waveHeight = ((float)getWindowHeight() - padding * 3.0f ) / (float)buffer.getNumChannels();

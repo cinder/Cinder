@@ -1,13 +1,13 @@
 #pragma once
 
-#include "cinder/audio2/Buffer.h"
-#include "cinder/audio2/dsp/Converter.h"
+#include "cinder/audio/Buffer.h"
+#include "cinder/audio/dsp/Converter.h"
 #include "utils.h"
 
 BOOST_AUTO_TEST_SUITE( test_buffer )
 
 using namespace ci;
-using namespace ci::audio2;
+using namespace ci::audio;
 
 BOOST_AUTO_TEST_CASE( test_size )
 {

@@ -2,11 +2,11 @@
 #include "cinder/gl/gl.h"
 
 
-#include "cinder/audio2/GenNode.h"
-#include "cinder/audio2/CinderAssert.h"
-#include "cinder/audio2/Debug.h"
+#include "cinder/audio/GenNode.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/audio/Debug.h"
 
-#include "cinder/audio2/cocoa/ContextAudioUnit.h"
+#include "cinder/audio/cocoa/ContextAudioUnit.h"
 
 #include "../../common/AudioTestGui.h"
 
@@ -14,7 +14,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-using namespace audio2::cocoa;
+using namespace audio::cocoa;
 
 class EffectsAudioUnitTestApp : public AppNative {
   public:
@@ -31,7 +31,7 @@ class EffectsAudioUnitTestApp : public AppNative {
 	void processTap( Vec2i pos );
 	void initParams();
 
-	audio2::GenNodeRef mGen;
+	audio::GenNodeRef mGen;
 
 	shared_ptr<EffectAudioUnitNode> mEffect, mEffect2;
 
@@ -42,9 +42,9 @@ class EffectsAudioUnitTestApp : public AppNative {
 
 void EffectsAudioUnitTestApp::setup()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
-	auto gen = ctx->makeNode( new audio2::GenPulse( 100 ) );
+	auto gen = ctx->makeNode( new audio::GenPulse( 100 ) );
 	gen->setAutoEnabled();
 
 	//gen->getFormat().setNumChannels( 1 ); // force gen to be mono
@@ -60,9 +60,9 @@ void EffectsAudioUnitTestApp::setup()
 
 void EffectsAudioUnitTestApp::setupOne()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
-	mEffect = ctx->makeNode( new audio2::cocoa::EffectAudioUnitNode( kAudioUnitSubType_LowPassFilter ) );
+	mEffect = ctx->makeNode( new audio::cocoa::EffectAudioUnitNode( kAudioUnitSubType_LowPassFilter ) );
 	mGen >> mEffect >> ctx->getOutput();
 
 	mBandpassSlider.mHidden = true;
@@ -70,10 +70,10 @@ void EffectsAudioUnitTestApp::setupOne()
 
 void EffectsAudioUnitTestApp::setupTwo()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
-	mEffect = ctx->makeNode( new audio2::cocoa::EffectAudioUnitNode( kAudioUnitSubType_LowPassFilter ) );
-	mEffect2 = ctx->makeNode( new audio2::cocoa::EffectAudioUnitNode( kAudioUnitSubType_BandPassFilter ) );
+	mEffect = ctx->makeNode( new audio::cocoa::EffectAudioUnitNode( kAudioUnitSubType_LowPassFilter ) );
+	mEffect2 = ctx->makeNode( new audio::cocoa::EffectAudioUnitNode( kAudioUnitSubType_BandPassFilter ) );
 
 //	mEffect->getFormat().setNumChannels( 2 ); // force stereo
 
@@ -165,7 +165,7 @@ void EffectsAudioUnitTestApp::processDrag( Vec2i pos )
 
 void EffectsAudioUnitTestApp::processTap( Vec2i pos )
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
 	if( mPlayButton.hitTest( pos ) )
 		ctx->setEnabled( ! ctx->isEnabled() );

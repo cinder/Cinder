@@ -3,13 +3,13 @@
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
 
-#include "cinder/audio2/Context.h"
-#include "cinder/audio2/GenNode.h"
-#include "cinder/audio2/NodeEffects.h"
-#include "cinder/audio2/FilterNode.h"
-#include "cinder/audio2/Target.h"
-#include "cinder/audio2/CinderAssert.h"
-#include "cinder/audio2/Debug.h"
+#include "cinder/audio/Context.h"
+#include "cinder/audio/GenNode.h"
+#include "cinder/audio/NodeEffects.h"
+#include "cinder/audio/FilterNode.h"
+#include "cinder/audio/Target.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/audio/Debug.h"
 
 #include "../../common/AudioTestGui.h"
 
@@ -38,12 +38,12 @@ class ParamTestApp : public AppNative {
 	void testAppendCancel();
 	void testProcessor();
 
-	void writeParamEval( audio2::Param *param );
+	void writeParamEval( audio::Param *param );
 
-	audio2::GenNodeRef				mGen;
-	audio2::GainNodeRef				mGain;
-	audio2::Pan2dNodeRef			mPan;
-	audio2::FilterLowPassNodeRef	mLowPass;
+	audio::GenNodeRef				mGen;
+	audio::GainNodeRef				mGain;
+	audio::Pan2dNodeRef			mPan;
+	audio::FilterLowPassNodeRef	mLowPass;
 
 	vector<TestWidget *>	mWidgets;
 	Button					mPlayButton, mApplyButton, mApplyAppendButton, mAppendButton, mDelayButton, mProcessorButton, mAppendCancelButton;
@@ -53,19 +53,19 @@ class ParamTestApp : public AppNative {
 
 void ParamTestApp::setup()
 {
-	auto ctx = audio2::master();
-	mGain = ctx->makeNode( new audio2::GainNode() );
+	auto ctx = audio::master();
+	mGain = ctx->makeNode( new audio::GainNode() );
 	mGain->setValue( 0.8f );
 
-	mPan = ctx->makeNode( new audio2::Pan2dNode() );
+	mPan = ctx->makeNode( new audio::Pan2dNode() );
 
-	mGen = ctx->makeNode( new audio2::GenSineNode() );
-//	mGen = ctx->makeNode( new audio2::GenTriangleNode() );
-//	mGen = ctx->makeNode( new audio2::GenPhasorNode() );
+	mGen = ctx->makeNode( new audio::GenSineNode() );
+//	mGen = ctx->makeNode( new audio::GenTriangleNode() );
+//	mGen = ctx->makeNode( new audio::GenPhasorNode() );
 
 	mGen->setFreq( 220 );
 
-	mLowPass = ctx->makeNode( new audio2::FilterLowPassNode() );
+	mLowPass = ctx->makeNode( new audio::FilterLowPassNode() );
 
 	setupBasic();
 
@@ -80,13 +80,13 @@ void ParamTestApp::setup()
 
 void ParamTestApp::setupBasic()
 {
-	mGen >> mGain >> audio2::master()->getOutput();
+	mGen >> mGain >> audio::master()->getOutput();
 	mGen->enable();
 }
 
 void ParamTestApp::setupFilter()
 {
-	mGen >> mLowPass >> mGain >> mPan >> audio2::master()->getOutput();
+	mGen >> mLowPass >> mGain >> mPan >> audio::master()->getOutput();
 	mGen->enable();
 }
 
@@ -101,7 +101,7 @@ void ParamTestApp::testApply()
 	// - problem I have with this right now is that its alot more syntax for the common case (see: (a)) of ramping up volume
 //	Context::master()->timeline()->apply( mGen->getParamFreq(), 220, 440, 1 );
 	// - a bit shorter:
-//	audio2::timeline()->apply( mGen->getParamFreq(), 220, 440, 1 );
+//	audio::timeline()->apply( mGen->getParamFreq(), 220, 440, 1 );
 
 	CI_LOG_V( "num ramps: " << mGen->getParamFreq()->getNumRamps() );
 }
@@ -128,14 +128,14 @@ void ParamTestApp::testAppend()
 // make a ramp after a 1 second delay
 void ParamTestApp::testDelay()
 {
-	mGen->getParamFreq()->applyRamp( 50, 440, 1, audio2::Param::Options().delay( 1 ) );
+	mGen->getParamFreq()->applyRamp( 50, 440, 1, audio::Param::Options().delay( 1 ) );
 	CI_LOG_V( "num ramps: " << mGen->getParamFreq()->getNumRamps() );
 }
 
 // apply a ramp from 220 to 880 over 2 seconds and then after a 1 second delay, cancel it. result should be ~ 550: 220 + (880 - 220) / 2.
 void ParamTestApp::testAppendCancel()
 {
-	audio2::RampRef ramp = mGen->getParamFreq()->applyRamp( 220, 880, 2 );
+	audio::RampRef ramp = mGen->getParamFreq()->applyRamp( 220, 880, 2 );
 
 	CI_LOG_V( "num ramps: " << mGen->getParamFreq()->getNumRamps() );
 
@@ -147,8 +147,8 @@ void ParamTestApp::testAppendCancel()
 
 void ParamTestApp::testProcessor()
 {
-	auto ctx = audio2::master();
-	auto mod = ctx->makeNode( new audio2::GenSineNode( audio2::Node::Format().autoEnable() ) );
+	auto ctx = audio::master();
+	auto mod = ctx->makeNode( new audio::GenSineNode( audio::Node::Format().autoEnable() ) );
 	mod->setFreq( 2 );
 
 	mGain->getParam()->setProcessor( mod );
@@ -249,7 +249,7 @@ void ParamTestApp::processDrag( Vec2i pos )
 	if( mGenFreqSlider.hitTest( pos ) ) {
 //		mGen->setFreq( mGenFreqSlider.mValueScaled );
 //		mGen->getParamFreq()->applyRamp( mGenFreqSlider.mValueScaled, 0.3f );
-		mGen->getParamFreq()->applyRamp( mGenFreqSlider.mValueScaled, 0.3f, audio2::Param::Options().rampFn( &audio2::rampOutQuad ) );
+		mGen->getParamFreq()->applyRamp( mGenFreqSlider.mValueScaled, 0.3f, audio::Param::Options().rampFn( &audio::rampOutQuad ) );
 	}
 	if( mLowPassFreqSlider.hitTest( pos ) )
 		mLowPass->setCutoffFreq( mLowPassFreqSlider.mValueScaled );
@@ -257,7 +257,7 @@ void ParamTestApp::processDrag( Vec2i pos )
 
 void ParamTestApp::processTap( Vec2i pos )
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	size_t selectorIndex = mTestSelector.mCurrentSectionIndex;
 
 	if( mPlayButton.hitTest( pos ) )
@@ -303,7 +303,7 @@ void ParamTestApp::keyDown( KeyEvent event )
 
 void ParamTestApp::update()
 {
-	if( audio2::master()->isEnabled() ) {
+	if( audio::master()->isEnabled() ) {
 		mGainSlider.set( mGain->getValue() );
 		mGenFreqSlider.set( mGen->getFreq() );
 	}
@@ -316,17 +316,17 @@ void ParamTestApp::draw()
 }
 
 // TODO: this will be formalized once there is an offline audio context and OutputFileNode.
-void ParamTestApp::writeParamEval( audio2::Param *param )
+void ParamTestApp::writeParamEval( audio::Param *param )
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	float duration = param->findDuration();
 	float currTime = (float)ctx->getNumProcessedSeconds();
 	size_t sampleRate = ctx->getSampleRate();
-	audio2::Buffer audioBuffer( (size_t)duration * sampleRate );
+	audio::Buffer audioBuffer( (size_t)duration * sampleRate );
 
 	param->eval( currTime, audioBuffer.getData(), audioBuffer.getSize(), sampleRate );
 
-	auto target = audio2::TargetFile::create( "param.wav", sampleRate, 1 );
+	auto target = audio::TargetFile::create( "param.wav", sampleRate, 1 );
 	target->write( &audioBuffer );
 
 	CI_LOG_V( "write complete" );

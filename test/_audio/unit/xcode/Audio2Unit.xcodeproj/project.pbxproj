@@ -12,7 +12,6 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
-		1129A6BA17D28A77006AC8F5 /* libAudio2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1129A6B517D289B4006AC8F5 /* libAudio2.a */; };
 		1187CCB217D2E64300414EC4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1187CCB017D2E64300414EC4 /* main.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -20,26 +19,33 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		1129A6B417D289B4006AC8F5 /* PBXContainerItemProxy */ = {
+		111A61DF1921D290005C3166 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1129A6AF17D289B4006AC8F5 /* Audio2.xcodeproj */;
+			containerPortal = 111A61D91921D290005C3166 /* cinder.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 1104F3C917753F10003EAA2B;
-			remoteInfo = "Audio2-mac";
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = cinder;
 		};
-		1129A6B617D289B4006AC8F5 /* PBXContainerItemProxy */ = {
+		111A61E11921D290005C3166 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1129A6AF17D289B4006AC8F5 /* Audio2.xcodeproj */;
+			containerPortal = 111A61D91921D290005C3166 /* cinder.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 11B0421C179B90450034BEE2;
-			remoteInfo = "Audio2-ios";
+			remoteGlobalIDString = 007050BE1114F93F003FCAE4;
+			remoteInfo = cinder_iphone;
 		};
-		1129A6B817D28A6F006AC8F5 /* PBXContainerItemProxy */ = {
+		111A61E31921D290005C3166 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1129A6AF17D289B4006AC8F5 /* Audio2.xcodeproj */;
+			containerPortal = 111A61D91921D290005C3166 /* cinder.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00CFD9E11135C3520091E310;
+			remoteInfo = cinder_iphone_sim;
+		};
+		111A61E51921D296005C3166 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 111A61D91921D290005C3166 /* cinder.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 1104F3C817753F10003EAA2B;
-			remoteInfo = "Audio2-mac";
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = cinder;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -51,7 +57,7 @@
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		11172B9917FA88F0000EB0BF /* RingBufferUnit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RingBufferUnit.h; path = ../src/RingBufferUnit.h; sourceTree = "<group>"; };
-		1129A6AF17D289B4006AC8F5 /* Audio2.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Audio2.xcodeproj; path = ../../../xcode/Audio2.xcodeproj; sourceTree = "<group>"; };
+		111A61D91921D290005C3166 /* cinder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cinder.xcodeproj; path = ../../../../xcode/cinder.xcodeproj; sourceTree = "<group>"; };
 		1187CCAE17D2E64300414EC4 /* BufferUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferUnit.h; path = ../src/BufferUnit.h; sourceTree = "<group>"; };
 		1187CCAF17D2E64300414EC4 /* FftUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FftUnit.h; path = ../src/FftUnit.h; sourceTree = "<group>"; };
 		1187CCB017D2E64300414EC4 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
@@ -69,7 +75,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1129A6BA17D28A77006AC8F5 /* libAudio2.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -120,11 +125,12 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		1129A6B017D289B4006AC8F5 /* Products */ = {
+		111A61DA1921D290005C3166 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1129A6B517D289B4006AC8F5 /* libAudio2.a */,
-				1129A6B717D289B4006AC8F5 /* libAudio2-ios.a */,
+				111A61E01921D290005C3166 /* libcinder_d.a */,
+				111A61E21921D290005C3166 /* libcinder-iphone_d.a */,
+				111A61E41921D290005C3166 /* libcinder-iphone-sim_d.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -140,7 +146,7 @@
 		29B97314FDCFA39411CA2CEA /* Buffer */ = {
 			isa = PBXGroup;
 			children = (
-				1129A6AF17D289B4006AC8F5 /* Audio2.xcodeproj */,
+				111A61D91921D290005C3166 /* cinder.xcodeproj */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -180,7 +186,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				1129A6B917D28A6F006AC8F5 /* PBXTargetDependency */,
+				111A61E61921D296005C3166 /* PBXTargetDependency */,
 			);
 			name = Audio2Unit;
 			productInstallPath = "$(HOME)/Applications";
@@ -209,8 +215,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 1129A6B017D289B4006AC8F5 /* Products */;
-					ProjectRef = 1129A6AF17D289B4006AC8F5 /* Audio2.xcodeproj */;
+					ProductGroup = 111A61DA1921D290005C3166 /* Products */;
+					ProjectRef = 111A61D91921D290005C3166 /* cinder.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -221,18 +227,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		1129A6B517D289B4006AC8F5 /* libAudio2.a */ = {
+		111A61E01921D290005C3166 /* libcinder_d.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libAudio2.a;
-			remoteRef = 1129A6B417D289B4006AC8F5 /* PBXContainerItemProxy */;
+			path = libcinder_d.a;
+			remoteRef = 111A61DF1921D290005C3166 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1129A6B717D289B4006AC8F5 /* libAudio2-ios.a */ = {
+		111A61E21921D290005C3166 /* libcinder-iphone_d.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = "libAudio2-ios.a";
-			remoteRef = 1129A6B617D289B4006AC8F5 /* PBXContainerItemProxy */;
+			path = "libcinder-iphone_d.a";
+			remoteRef = 111A61E11921D290005C3166 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		111A61E41921D290005C3166 /* libcinder-iphone-sim_d.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libcinder-iphone-sim_d.a";
+			remoteRef = 111A61E31921D290005C3166 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -259,10 +272,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		1129A6B917D28A6F006AC8F5 /* PBXTargetDependency */ = {
+		111A61E61921D296005C3166 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "Audio2-mac";
-			targetProxy = 1129A6B817D28A6F006AC8F5 /* PBXContainerItemProxy */;
+			name = cinder;
+			targetProxy = 111A61E51921D296005C3166 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -318,7 +331,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				CINDER_PATH = ../../../../../;
+				CINDER_PATH = ../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -335,7 +348,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				CINDER_PATH = ../../../../../;
+				CINDER_PATH = ../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;

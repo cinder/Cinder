@@ -1,16 +1,16 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
 
-#include "cinder/audio2/GenNode.h"
-#include "cinder/audio2/GainNode.h"
-#include "cinder/audio2/ScopeNode.h"
-#include "cinder/audio2/CinderAssert.h"
-#include "cinder/audio2/Debug.h"
+#include "cinder/audio/GenNode.h"
+#include "cinder/audio/GainNode.h"
+#include "cinder/audio/ScopeNode.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/audio/Debug.h"
 
-#include "cinder/audio2/Utilities.h"
+#include "cinder/audio/Utilities.h"
 
 #include "../../common/AudioTestGui.h"
-#include "../../../samples/common/AudioDrawUtils.h"
+#include "../../../../samples/_audio/common/AudioDrawUtils.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -30,17 +30,17 @@ public:
 	void keyDown( KeyEvent event );
 
 	void setupTable();
-	void setupOsc( audio2::WaveformType type );
+	void setupOsc( audio::WaveformType type );
 	void setupPulse();
 	void setupTriangleCalc();
 
-	audio2::GainNodeRef				mGain;
-	audio2::ScopeSpectralNodeRef	mScope;
-	audio2::GenOscNodeRef			mGenOsc;
-	audio2::GenPulseRef				mGenPulse;
-	audio2::GenNodeRef				mGen;
+	audio::GainNodeRef				mGain;
+	audio::ScopeSpectralNodeRef	mScope;
+	audio::GenOscNodeRef			mGenOsc;
+	audio::GenPulseRef				mGenPulse;
+	audio::GenNodeRef				mGen;
 
-	audio2::BufferDynamic		mTableCopy;
+	audio::BufferDynamic		mTableCopy;
 
 	vector<TestWidget *>	mWidgets;
 	Button					mPlayButton;
@@ -58,16 +58,16 @@ void WaveTableTestApp::prepareSettings( Settings *settings )
 
 void WaveTableTestApp::setup()
 {
-	auto ctx = audio2::master();
-	mGain = ctx->makeNode( new audio2::GainNode );
+	auto ctx = audio::master();
+	mGain = ctx->makeNode( new audio::GainNode );
 	mGain->setValue( 0.075f );
 
-	mScope = audio2::master()->makeNode( new audio2::ScopeSpectralNode( audio2::ScopeSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
+	mScope = audio::master()->makeNode( new audio::ScopeSpectralNode( audio::ScopeSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
 	mScope->setSmoothingFactor( 0 );
 
 	mFreqSlider.set( 100 );
 
-	setupOsc( audio2::WaveformType::SINE );
+	setupOsc( audio::WaveformType::SINE );
 //	setupTable();
 //	setupPulse();
 
@@ -80,20 +80,20 @@ void WaveTableTestApp::setup()
 
 void WaveTableTestApp::setupTable()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
-	auto gen = ctx->makeNode( new audio2::GenTableNode );
+	auto gen = ctx->makeNode( new audio::GenTableNode );
 	gen->setFreq( mFreqSlider.mValueScaled );
 	gen->enable();
 
 	mGen = gen;
 }
 
-void WaveTableTestApp::setupOsc( audio2::WaveformType type )
+void WaveTableTestApp::setupOsc( audio::WaveformType type )
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
-	mGenOsc = ctx->makeNode( new audio2::GenOscNode( audio2::GenOscNode::Format().waveform( type ) ) );
+	mGenOsc = ctx->makeNode( new audio::GenOscNode( audio::GenOscNode::Format().waveform( type ) ) );
 	mGenOsc->setFreq( mFreqSlider.mValueScaled );
 	mGenOsc->enable();
 
@@ -103,7 +103,7 @@ void WaveTableTestApp::setupOsc( audio2::WaveformType type )
 void WaveTableTestApp::setupPulse()
 {
 	if( ! mGenPulse ) {
-		mGenPulse = audio2::master()->makeNode( new audio2::GenPulse );
+		mGenPulse = audio::master()->makeNode( new audio::GenPulse );
 		mGenPulse->setFreq( mFreqSlider.mValueScaled );
 		mGenPulse->enable();
 	}
@@ -116,17 +116,17 @@ void WaveTableTestApp::setupPulse()
 
 #if 1
 	// pwm
-	auto mod = audio2::master()->makeNode( new audio2::GenTableNode );
+	auto mod = audio::master()->makeNode( new audio::GenTableNode );
 
-	audio2::master()->initializeNode( mod );
+	audio::master()->initializeNode( mod );
 
 	vector<float> table( mod->getWaveTable()->getTableSize() );
 
 	mod->getWaveTable()->copyTo( table.data() );
 
 	// scale to [0.05 : 0.95]
-	audio2::dsp::mul( table.data(), 0.45f, table.data(), table.size() );
-	audio2::dsp::add( table.data(), 0.5f, table.data(), table.size() );
+	audio::dsp::mul( table.data(), 0.45f, table.data(), table.size() );
+	audio::dsp::add( table.data(), 0.5f, table.data(), table.size() );
 
 //	mTableCopy.setNumFrames( table.size() );
 //	memmove( mTableCopy.getData(), table.data(), table.size() * sizeof( float ) );
@@ -138,15 +138,15 @@ void WaveTableTestApp::setupPulse()
 	mGenPulse->getParamWidth()->setProcessor( mod );
 #endif
 
-	audio2::master()->printGraph();
+	audio::master()->printGraph();
 }
 
 // for comparison with GenOscNode's triangle spectra
 void WaveTableTestApp::setupTriangleCalc()
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 
-	auto gen = ctx->makeNode( new audio2::GenTriangleNode );
+	auto gen = ctx->makeNode( new audio::GenTriangleNode );
 	gen->setFreq( mFreqSlider.mValueScaled );
 	gen->enable();
 
@@ -236,7 +236,7 @@ void WaveTableTestApp::processDrag( Vec2i pos )
 		mGen->getParamFreq()->applyRamp( mFreqSlider.mValueScaled, mFreqRampSlider.mValueScaled );
 	else if( mFreqRampSlider.hitTest( pos ) ) {
 		float val = mFreqRampSlider.mValueScaled;
-		float wrapped = audio2::wrap( val );
+		float wrapped = audio::wrap( val );
 		CI_LOG_V( "val: " << val << ", wrapped: " << wrapped );
 	}
 	else if( mGenPulse && mPulseWidthSlider.hitTest( pos ) ) {
@@ -248,7 +248,7 @@ void WaveTableTestApp::processDrag( Vec2i pos )
 
 void WaveTableTestApp::processTap( Vec2i pos )
 {
-	auto ctx = audio2::master();
+	auto ctx = audio::master();
 	size_t currentIndex = mTestSelector.mCurrentSectionIndex;
 
 	if( mPlayButton.hitTest( pos ) )
@@ -264,13 +264,13 @@ void WaveTableTestApp::processTap( Vec2i pos )
 		mScope->disconnectAllInputs();
 
 		if( currentTest == "sine" )
-			setupOsc( audio2::WaveformType::SINE );
+			setupOsc( audio::WaveformType::SINE );
 		else if( currentTest == "square" )
-			setupOsc( audio2::WaveformType::SQUARE );
+			setupOsc( audio::WaveformType::SQUARE );
 		else if( currentTest == "sawtooth" )
-			setupOsc( audio2::WaveformType::SAWTOOTH );
+			setupOsc( audio::WaveformType::SAWTOOTH );
 		else if( currentTest == "triangle" )
-			setupOsc( audio2::WaveformType::TRIANGLE );
+			setupOsc( audio::WaveformType::TRIANGLE );
 		else if( currentTest == "pulse" )
 			setupPulse();
 		else if( currentTest == "sine (table)" )
