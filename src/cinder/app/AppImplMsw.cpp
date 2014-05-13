@@ -184,12 +184,14 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
-	if( initialPath.empty() )
+	if( initialPath.empty() ) {
 		ofn.lpstrInitialDir = NULL;
+	}
 	else if( fs::is_directory( initialPath ) ) {
 		wcscpy( initialPathStr, initialPath.wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
-	} else {
+	}
+	else {
 		wcscpy( initialPathStr, initialPath.parent_path().wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
 		wcscpy( szFile, initialPath.filename().wstring().c_str() );
@@ -297,12 +299,14 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
-	if( initialPath.empty() )
+	if( initialPath.empty() ) {
 		ofn.lpstrInitialDir = NULL;
+	}
 	else if( fs::is_directory( initialPath ) ) {
 		wcscpy( initialPathStr, initialPath.wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
-	} else {
+	}
+	else {
 		wcscpy( initialPathStr, initialPath.parent_path().wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
 		wcscpy( szFile, initialPath.filename().wstring().c_str() );
