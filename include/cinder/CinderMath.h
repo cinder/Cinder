@@ -215,6 +215,19 @@ inline uint32_t nextPowerOf2( uint32_t x )
     return(x+1);
 }
 
+//! Returns true if \a x is a power of two, false otherwise.
+inline bool isPowerOf2( size_t x )
+{
+	return ( x & ( x - 1 ) ) == 0;
+}
+
+//! Returns \a x wrapped within the range [0:1] (e.g. -0.2 results in 0.8)
+template<typename T>
+T wrap( T x )
+{
+	return x - math<T>::floor( x );
+}
+
 template<typename T>
 inline int solveLinear( T a, T b, T result[1] )
 {

@@ -85,19 +85,6 @@ inline float toFreq( float midi )
 	return 8.17579891564f * math<float>::exp( .0577622650f * m );
 }
 
-//! Returns whether \a val is a power of two or not.
-inline bool isPowerOf2( size_t val )
-{
-	return ( val & ( val - 1 ) ) == 0;
-}
-
-//! Returns \a val wrapped within the range [0:1] (e.g. -0.2 results in 0.8)
-template<typename T>
-T wrap( T val )
-{
-	return val - math<T>::floor( val );
-}
-
 //! Checks if the absolute value of any sample in \a buffer is over \a threshold. Optionally provide \a recordFrame to record the frame index. \return true if one is found, false otherwise. 
 bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame = nullptr );
 

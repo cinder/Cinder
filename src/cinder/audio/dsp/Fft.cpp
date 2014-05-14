@@ -24,7 +24,7 @@
 #include "cinder/audio/dsp/Fft.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/audio/Exception.h"
-#include "cinder/audio/Utilities.h"
+#include "cinder/CinderMath.h"
 
 #if defined( CINDER_AUDIO_FFT_OOURA )
 	#include "cinder/audio/dsp/ooura/fftsg.h"

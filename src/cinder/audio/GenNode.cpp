@@ -24,8 +24,8 @@
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/Context.h"
 #include "cinder/audio/dsp/Dsp.h"
-#include "cinder/audio/Utilities.h"
 #include "cinder/audio/Debug.h"
+#include "cinder/CinderMath.h"
 #include "cinder/Rand.h"
 
 #define DEFAULT_TABLE_SIZE 4096

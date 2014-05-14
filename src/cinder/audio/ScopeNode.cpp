@@ -24,9 +24,7 @@
 #include "cinder/audio/ScopeNode.h"
 #include "cinder/audio/dsp/RingBuffer.h"
 #include "cinder/audio/dsp/Fft.h"
-#include "cinder/audio/Utilities.h"
 #include "cinder/audio/Debug.h"
-
 #include "cinder/CinderMath.h"
 
 using namespace std;
