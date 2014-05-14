@@ -45,7 +45,15 @@ SourceFileOggVorbis::SourceFileOggVorbis( const DataSourceRef &dataSource, size_
 
 SourceFileRef SourceFileOggVorbis::cloneWithSampleRate( size_t sampleRate ) const
 {
-	return shared_ptr<SourceFileOggVorbis>( new SourceFileOggVorbis( mDataSource, sampleRate ) );
+	auto result = make_shared<SourceFileOggVorbis>( mDataSource, sampleRate );
+	result->setupConversionImpl();
+
+	return result;
+}
+
+void SourceFileOggVorbis::setupConversionImpl()
+{
+	setupSampleRateConversion();
 }
 
 SourceFileOggVorbis::~SourceFileOggVorbis()
