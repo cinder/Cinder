@@ -235,9 +235,6 @@ void WaveTableTestApp::processDrag( Vec2i pos )
 	else if( mFreqSlider.hitTest( pos ) )
 		mGen->getParamFreq()->applyRamp( mFreqSlider.mValueScaled, mFreqRampSlider.mValueScaled );
 	else if( mFreqRampSlider.hitTest( pos ) ) {
-		float val = mFreqRampSlider.mValueScaled;
-		float wrapped = audio::wrap( val );
-		CI_LOG_V( "val: " << val << ", wrapped: " << wrapped );
 	}
 	else if( mGenPulse && mPulseWidthSlider.hitTest( pos ) ) {
 //		mGenPulse->setWidth( mPulseWidthSlider.mValueScaled );
