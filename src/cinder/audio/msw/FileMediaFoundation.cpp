@@ -170,7 +170,7 @@ void SourceFileMediaFoundation::initReader()
 	::IMFAttributes *attributes;
 	HRESULT hr = ::MFCreateAttributes( &attributes, 1 );
 	CI_ASSERT( hr == S_OK );
-	auto attributesPtr = makeComUnique( attributes );
+	auto attributesPtr = ci::msw::makeComUnique( attributes );
 
 	::IMFSourceReader *sourceReader;
 
@@ -179,17 +179,17 @@ void SourceFileMediaFoundation::initReader()
 		CI_ASSERT( hr == S_OK );
 	}
 	else {
-		mComIStream = makeComUnique( new ComIStream( mDataSource->createStream() ) );
+		mComIStream = ci::msw::makeComUnique( new ci::msw::ComIStream( mDataSource->createStream() ) );
 		::IMFByteStream *byteStream;
 		hr = ::MFCreateMFByteStreamOnStream( mComIStream.get(), &byteStream );
 		CI_ASSERT( hr == S_OK );
-		mByteStream = makeComUnique( byteStream );
+		mByteStream = ci::msw::makeComUnique( byteStream );
 
 		hr = ::MFCreateSourceReaderFromByteStream( byteStream, attributesPtr.get(), &sourceReader );
 		CI_ASSERT( hr == S_OK );
 	}
 
-	mSourceReader = makeComUnique( sourceReader );
+	mSourceReader = ci::msw::makeComUnique( sourceReader );
 
 	// get files native format
 	::IMFMediaType *nativeType; // FIXME: i think this is leaked after creation
@@ -219,7 +219,7 @@ void SourceFileMediaFoundation::initReader()
 	// set output type, which loads the proper decoder:
 	::IMFMediaType *outputType;
 	hr = ::MFCreateMediaType( &outputType );
-	auto outputTypeRef = makeComUnique( outputType );
+	auto outputTypeRef = ci::msw::makeComUnique( outputType );
 	hr = outputTypeRef->SetGUID( MF_MT_MAJOR_TYPE, MFMediaType_Audio );
 	CI_ASSERT( hr == S_OK );
 	hr = outputTypeRef->SetGUID( MF_MT_SUBTYPE, outputSubType );
@@ -276,7 +276,7 @@ size_t SourceFileMediaFoundation::processNextReadSample()
 		return 0;
 	}
 
-	auto samplePtr = makeComUnique( mediaSample );
+	auto samplePtr = ci::msw::makeComUnique( mediaSample );
 
 	DWORD bufferCount;
 	hr = samplePtr->GetBufferCount( &bufferCount );
@@ -359,7 +359,7 @@ TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataT
 	HRESULT hr = ::MFCreateSinkWriterFromURL( dataTarget->getFilePath().wstring().c_str(), NULL, NULL, &sinkWriter );
 	CI_ASSERT( hr == S_OK );
 
-	mSinkWriter = makeComUnique( sinkWriter );
+	mSinkWriter = ci::msw::makeComUnique( sinkWriter );
 
 	mSampleSize = getSampleSize( mSampleType );
 	const UINT32 bitsPerSample = 8 * mSampleSize;
@@ -371,7 +371,7 @@ TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataT
 	IMFMediaType *mediaType;
 	hr = ::MFCreateMediaType( &mediaType );
 	CI_ASSERT( hr == S_OK );
-	auto mediaTypeManaged = makeComUnique( mediaType );
+	auto mediaTypeManaged = ci::msw::makeComUnique( mediaType );
 
 	hr = mediaType->SetGUID( MF_MT_MAJOR_TYPE, MFMediaType_Audio );
 	CI_ASSERT( hr == S_OK );
@@ -426,7 +426,7 @@ void TargetFileMediaFoundation::performWrite( const Buffer *buffer, size_t numFr
 	HRESULT hr = ::MFCreateSample( &mediaSample );
 	CI_ASSERT( hr == S_OK );
 
-	auto samplePtr = makeComUnique( mediaSample );
+	auto samplePtr = ci::msw::makeComUnique( mediaSample );
 
 	double lengthSeconds = (double)numFrames / (double)mSampleRate;
 	const LONGLONG sampleDuration = secondsToNanoSeconds( lengthSeconds );

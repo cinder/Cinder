@@ -58,13 +58,13 @@ DeviceRef DeviceManagerWasapi::getDefaultOutput()
 	::IMMDeviceEnumerator *enumerator;
 	HRESULT hr = ::CoCreateInstance( __uuidof(::MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(::IMMDeviceEnumerator), (void**)&enumerator );
 	CI_ASSERT( hr == S_OK );
-	auto enumeratorPtr = msw::makeComUnique( enumerator );
+	auto enumeratorPtr = ci::msw::makeComUnique( enumerator );
 
 	::IMMDevice *device;
 	hr = enumerator->GetDefaultAudioEndpoint( eRender, eConsole, &device );
 	CI_ASSERT( hr == S_OK );
 
-	auto devicePtr = msw::makeComUnique( device );
+	auto devicePtr = ci::msw::makeComUnique( device );
 
 	::LPWSTR idStr;
 	device->GetId( &idStr );
@@ -80,13 +80,13 @@ DeviceRef DeviceManagerWasapi::getDefaultInput()
 	::IMMDeviceEnumerator *enumerator;
 	HRESULT hr = ::CoCreateInstance( __uuidof(::MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(::IMMDeviceEnumerator), (void**)&enumerator );
 	CI_ASSERT( hr == S_OK );
-	auto enumeratorPtr = msw::makeComUnique( enumerator );
+	auto enumeratorPtr = ci::msw::makeComUnique( enumerator );
 
 	::IMMDevice *device;
 	hr = enumerator->GetDefaultAudioEndpoint( eCapture, eConsole, &device );
 	CI_ASSERT( hr == S_OK );
 
-	auto devicePtr = msw::makeComUnique( device );
+	auto devicePtr = ci::msw::makeComUnique( device );
 
 	::LPWSTR idStr;
 	device->GetId( &idStr );
@@ -170,7 +170,7 @@ shared_ptr<::IMMDevice> DeviceManagerWasapi::getIMMDevice( const DeviceRef &devi
 	::IMMDeviceEnumerator *enumerator;
 	HRESULT hr = ::CoCreateInstance( __uuidof(::MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(::IMMDeviceEnumerator), (void**)&enumerator );
 	CI_ASSERT( hr == S_OK );
-	auto enumeratorPtr = msw::makeComUnique( enumerator );
+	auto enumeratorPtr = ci::msw::makeComUnique( enumerator );
 
 	::IMMDevice *deviceImm;
 	const wstring &endpointId = getDeviceInfo( device ).mEndpointId;
@@ -205,13 +205,13 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 	const ::IID IID_IMMDeviceEnumerator = __uuidof( ::IMMDeviceEnumerator );
 	HRESULT hr = CoCreateInstance( CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, IID_IMMDeviceEnumerator, (void**)&enumerator );
 	CI_ASSERT( hr == S_OK );
-	auto enumeratorPtr = msw::makeComUnique( enumerator );
+	auto enumeratorPtr =  ci::msw::makeComUnique( enumerator );
 
 	::EDataFlow dataFlow = ( usage == DeviceInfo::Usage::INPUT ? eCapture : eRender );
 	::IMMDeviceCollection *devices;
 	hr = enumerator->EnumAudioEndpoints( dataFlow, DEVICE_STATE_ACTIVE, &devices );
 	CI_ASSERT( hr == S_OK );
-	auto devicesPtr = msw::makeComUnique( devices );
+	auto devicesPtr = ci::msw::makeComUnique( devices );
 
 	UINT numDevices;
 	hr = devices->GetCount( &numDevices );
@@ -224,12 +224,12 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 		::IMMDevice *deviceImm;
 		hr = devices->Item( i, &deviceImm );
 		CI_ASSERT( hr == S_OK );
-		auto devicePtr = msw::makeComUnique( deviceImm );
+		auto devicePtr = ci::msw::makeComUnique( deviceImm );
 
 		::IPropertyStore *properties;
 		hr = deviceImm->OpenPropertyStore( STGM_READ, &properties );
 		CI_ASSERT( hr == S_OK );
-		auto propertiesPtr = msw::makeComUnique( properties );
+		auto propertiesPtr = ci::msw::makeComUnique( properties );
 
 		::PROPVARIANT nameVar;
 		hr = properties->GetValue( PKEY_Device_FriendlyName, &nameVar );

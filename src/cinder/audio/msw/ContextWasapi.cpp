@@ -31,8 +31,9 @@
 #include "cinder/audio/dsp/RingBuffer.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Exception.h"
-#include "cinder/CinderAssert.h"
 #include "cinder/audio/Debug.h"
+#include "cinder/msw/CinderMsw.h"
+#include "cinder/CinderAssert.h"
 
 #include <Audioclient.h>
 #include <mmdeviceapi.h>
@@ -62,7 +63,7 @@ namespace cinder { namespace audio { namespace msw {
 struct WasapiAudioClientImpl {
 	WasapiAudioClientImpl();
 
-	unique_ptr<::IAudioClient, ComReleaser>			mAudioClient;
+	unique_ptr<::IAudioClient, ci::msw::ComDeleter>		mAudioClient;
 
 	size_t	mNumFramesBuffered, mAudioClientNumFrames, mNumChannels;
 
@@ -77,7 +78,7 @@ struct WasapiRenderClientImpl : public WasapiAudioClientImpl {
 	void init();
 	void uninit();
 
-	unique_ptr<::IAudioRenderClient, ComReleaser>	mRenderClient;
+	unique_ptr<::IAudioRenderClient, ci::msw::ComDeleter>	mRenderClient;
 
 	::HANDLE	mRenderSamplesReadyEvent, mRenderShouldQuitEvent;
 	::HANDLE    mRenderThread;
@@ -102,7 +103,7 @@ struct WasapiCaptureClientImpl : public WasapiAudioClientImpl {
 	void uninit();
 	void captureAudio();
 
-	unique_ptr<::IAudioCaptureClient, ComReleaser>	mCaptureClient;
+	unique_ptr<::IAudioCaptureClient, ci::msw::ComDeleter>	mCaptureClient;
 
 	vector<dsp::RingBuffer>				mRingBuffers;
 
@@ -139,7 +140,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	::IAudioClient *audioClient;
 	HRESULT hr = immDevice->Activate( __uuidof(::IAudioClient), CLSCTX_ALL, NULL, (void**)&audioClient );
 	CI_ASSERT( hr == S_OK );
-	mAudioClient = makeComUnique( audioClient );
+	mAudioClient = ci::msw::makeComUnique( audioClient );
 
 	size_t sampleRate = device->getSampleRate();
 	auto wfx = interleavedFloatWaveFormat( sampleRate, numChannels );
@@ -250,7 +251,7 @@ void WasapiRenderClientImpl::initRenderClient()
 	::IAudioRenderClient *renderClient;
 	HRESULT hr = mAudioClient->GetService( __uuidof(::IAudioRenderClient), (void**)&renderClient );
 	CI_ASSERT( hr == S_OK );
-	mRenderClient = makeComUnique( renderClient );
+	mRenderClient = ci::msw::makeComUnique( renderClient );
 
 	// set the ring bufer size to accomodate the IAudioClient's buffer size (in samples) plus one extra processing block size, to account for uneven sizes.
 	const size_t ringBufferSize = ( mAudioClientNumFrames + mOutputDeviceNode->getFramesPerBlock() ) * mNumChannels;
@@ -378,7 +379,7 @@ void WasapiCaptureClientImpl::initCapture()
 	HRESULT hr = mAudioClient->GetService( __uuidof(::IAudioCaptureClient), (void**)&captureClient );
 	CI_ASSERT( hr == S_OK );
 
-	mCaptureClient = makeComUnique( captureClient );
+	mCaptureClient = ci::msw::makeComUnique( captureClient );
 }
 
 void WasapiCaptureClientImpl::captureAudio()

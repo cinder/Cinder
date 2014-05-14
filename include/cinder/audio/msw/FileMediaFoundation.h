@@ -27,6 +27,7 @@
 #include "cinder/audio/Target.h"
 #include "cinder/audio/SampleType.h"
 #include "cinder/audio/msw/MswUtil.h"
+#include "cinder/msw/CinderMsw.h"
 
 #include <vector>
 
@@ -55,10 +56,10 @@ class SourceFileMediaFoundation : public SourceFile {
 	void		initReader();
 	size_t		processNextReadSample();
 
-	std::unique_ptr<::IMFSourceReader, ComReleaser>		mSourceReader;
-	std::unique_ptr<ComIStream, ComReleaser>			mComIStream;
-	std::unique_ptr<::IMFByteStream, ComReleaser>		mByteStream;
-	DataSourceRef										mDataSource; // stored so that clone() can tell if original data source is a file or windows resource
+	std::unique_ptr<::IMFSourceReader, ci::msw::ComDeleter>		mSourceReader;
+	std::unique_ptr<ci::msw::ComIStream, ci::msw::ComDeleter>	mComIStream;
+	std::unique_ptr<::IMFByteStream, ci::msw::ComDeleter>		mByteStream;
+	DataSourceRef												mDataSource; // stored so that clone() can tell if original data source is a file or windows resource
 	
 	size_t			mSampleRate, mNumChannels, mBytesPerSample;
 	SampleType		mSampleType;
@@ -79,7 +80,7 @@ class TargetFileMediaFoundation : public TargetFile {
 	virtual void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) override;
 
   private:
-	  std::unique_ptr<::IMFSinkWriter, ComReleaser>		mSinkWriter;
+	  std::unique_ptr<::IMFSinkWriter, ci::msw::ComDeleter>		mSinkWriter;
 
 	  DWORD						mStreamIndex;
 	  size_t					mSampleSize;
