@@ -25,9 +25,6 @@
 #include "cinder/audio/dsp/Dsp.h"
 #include "cinder/CinderMath.h"
 
-using namespace ci;
-using namespace std;
-
 namespace cinder { namespace audio {
 
 // ----------------------------------------------------------------------------------------------------
