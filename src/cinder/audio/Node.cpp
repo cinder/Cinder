@@ -29,8 +29,7 @@
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Debug.h"
 #include "cinder/CinderAssert.h"
-#include "cinder/audio/Utilities.h"
-#include "cinder/Utilities.h"
+#include "cinder/System.h"
 
 #include <limits>
 
@@ -430,7 +429,7 @@ bool Node::canConnectToInput( const NodeRef &input )
 
 std::string Node::getName()
 {
-	return ! mName.empty() ? mName : demangledTypeName( typeid( *this ).name() );
+	return ! mName.empty() ? mName : System::demangleTypeName( typeid( *this ).name() );
 }
 
 // ----------------------------------------------------------------------------------------------------

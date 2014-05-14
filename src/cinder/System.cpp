@@ -40,6 +40,7 @@
 	#import <net/ethernet.h>
 	#import <net/if_dl.h>
 	#include <sys/sysctl.h>
+	#include <cxxabi.h>
 		#if defined( CINDER_MAC )
 		#include <CoreServices/CoreServices.h>
 	#endif
@@ -581,6 +582,19 @@ int32_t System::getMaxMultiTouchPoints()
 	}
 	
 	return instance()->mMaxMultiTouchPoints;
+}
+
+string System::demangleTypeName( const char *mangledName )
+{
+#if defined( CINDER_COCOA )
+	int status = 0;
+
+	std::unique_ptr<char, void(*)(void *)> result { abi::__cxa_demangle( mangledName, NULL, NULL, &status ), std::free };
+
+	return ( status == 0 ) ? result.get() : mangledName;
+#else
+	return mangledName;
+#endif
 }
 
 vector<System::NetworkAdapter> System::getNetworkAdapters()

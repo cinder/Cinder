@@ -98,9 +98,6 @@ T wrap( T val )
 	return val - math<T>::floor( val );
 }
 
-//! Returns a demangled string from the result of typeid( someType ).name()
-//! TODO: move to cinder/System.h
-std::string demangledTypeName( const char *mangledName );
 //! Checks if the absolute value of any sample in \a buffer is over \a threshold. Optionally provide \a recordFrame to record the frame index. \return true if one is found, false otherwise. 
 bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame = nullptr );
 

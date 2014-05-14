@@ -22,34 +22,9 @@
  */
 
 #include "cinder/audio/Utilities.h"
-#include "cinder/Cinder.h"
-
-#include <cstdlib>
-#include <memory>
-
-#if defined( CINDER_COCOA )
-	#include <cxxabi.h>
-#endif
-
-using namespace std;
+#include "cinder/CinderMath.h"
 
 namespace cinder { namespace audio {
-
-string demangledTypeName( const char *mangledName )
-{
-#if defined( CINDER_COCOA )
-	int status = 0;
-
-	std::unique_ptr<char, void(*)(void*)> result {
-        abi::__cxa_demangle( mangledName, NULL, NULL, &status ),
-        std::free
-    };
-
-	return ( status == 0 ) ? result.get() : mangledName;
-#else
-	return mangledName;
-#endif
-}
 
 bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame )
 {
