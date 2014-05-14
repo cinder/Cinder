@@ -24,9 +24,6 @@ public:
 void VoiceBasicApp::setup()
 {
 	mVoice = audio::Voice::create( audio::load( loadResource( RES_DRAIN_OGG ) ) );
-
-	// possible (proposed) shortcut:
-	//mVoice = audio::makeVoice( loadResource( RES_DRAIN_OGG ) );
 }
 
 void VoiceBasicApp::mouseDown( MouseEvent event )

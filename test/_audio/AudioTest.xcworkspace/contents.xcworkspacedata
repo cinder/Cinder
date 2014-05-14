@@ -105,5 +105,12 @@
             location = "group:../../samples/_audio/VoiceBasicProcessing/xcode/VoiceBasicProcessing.xcodeproj">
          </FileRef>
       </Group>
+      <Group
+         location = "container:"
+         name = "ios">
+         <FileRef
+            location = "group:../../samples/_audio/VoiceBasic/xcode_ios/VoiceBasic.xcodeproj">
+         </FileRef>
+      </Group>
    </Group>
 </Workspace>
