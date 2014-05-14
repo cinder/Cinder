@@ -31,7 +31,7 @@ typedef std::shared_ptr<class GainNode>			GainNodeRef;
 
 class GainNode : public MultiplyNode {
   public:
-	GainNode( const Format &format = Format() ) : MultiplyNode( 0, format )	{}
+	GainNode( const Format &format = Format() ) : MultiplyNode( 1, format )	{}
 	GainNode( float initialValue, const Format &format = Format() )	: MultiplyNode( initialValue, format )	{}
 };
 
