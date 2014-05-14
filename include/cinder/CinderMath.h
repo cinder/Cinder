@@ -178,6 +178,13 @@ T constrain( T val, T minVal, T maxVal )
 	else return val;
 }
 
+//! Returns \a x wrapped within the range [0:1] (e.g. -0.2 results in 0.8)
+template<typename T>
+T wrap( T x )
+{
+	return x - math<T>::floor( x );
+}
+
 // Don Hatch's version of sin(x)/x, which is accurate for very small x.
 // Returns 1 for x == 0.
 template <class T>
@@ -219,13 +226,6 @@ inline uint32_t nextPowerOf2( uint32_t x )
 inline bool isPowerOf2( size_t x )
 {
 	return ( x & ( x - 1 ) ) == 0;
-}
-
-//! Returns \a x wrapped within the range [0:1] (e.g. -0.2 results in 0.8)
-template<typename T>
-T wrap( T x )
-{
-	return x - math<T>::floor( x );
 }
 
 template<typename T>
