@@ -102,22 +102,3 @@ T wrap( T val )
 bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame = nullptr );
 
 } } // namespace cinder::audio
-
-#if defined( CINDER_MSW ) && ( _MSC_VER < 1800 )
-// math.h round functions aren't defined until vc120, if we're on windows and before that, define our own implementations
-
-namespace std {
-
-inline long int lround( double x )
-{
-	return (long int)( x < 0 ? x - 0.5 : x + 0.5 );
-}
-
-inline long int lroundf( float x )
-{
-	return (long int)( x < 0 ? x - 0.5f : x + 0.5f );
-}
-
-}
-
-#endif // defined( CINDER_MSW ) && ( _MSC_VER < 1800 )

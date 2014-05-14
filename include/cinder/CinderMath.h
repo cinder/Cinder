@@ -275,7 +275,14 @@ int solveCubic( T a, T b, T c, T d, T result[3] );
 
 #if defined( _MSC_VER )
 namespace std {
-	inline bool isfinite( float arg ) { return _finite( arg ) != 0; }
-	inline bool isfinite( double arg ) { return _finite( arg ) != 0; }
-}
-#endif
+	inline bool isfinite( float arg )	{ return _finite( arg ) != 0; }
+	inline bool isfinite( double arg )	{ return _finite( arg ) != 0; }
+#if ( _MSC_VER < 1800 )
+	// math.h round functions aren't defined until vc120, if we're on a previous windows version, define our own implementations
+	inline double	round( double x )	{ return floor( x < 0 ? x - 0.5 : x + 0.5 ); }
+	inline float	roundf( float x )	{ return floorf( x < 0 ? x - 0.5f : x + 0.5f );	}
+	inline long int lround( double x )	{ return (long int)( x < 0 ? x - 0.5 : x + 0.5 ); }
+	inline long int lroundf( float x )	{ return (long int)( x < 0 ? x - 0.5f : x + 0.5f );	}
+#endif // _MSC_VER < 1800
+} // namespace std
+#endif // defined( _MSC_VER )
