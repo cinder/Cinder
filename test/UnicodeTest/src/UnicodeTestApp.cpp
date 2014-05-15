@@ -15,12 +15,13 @@ class UnicodeTestApp : public AppNative {
 template<typename TYPE>
 TYPE loadStringFromFile( const DataSourceRef &dataSource )
 {
+	typedef typename TYPE::value_type T;
 	Buffer loadedBuffer( dataSource );
 	size_t dataSize = loadedBuffer.getDataSize();
-	Buffer padded( dataSize + sizeof(TYPE::value_type) );
+	Buffer padded( dataSize + sizeof(T) );
 	memcpy( padded.getData(), loadedBuffer.getData(), dataSize );
-	(static_cast<TYPE::value_type*>( padded.getData() ))[dataSize/sizeof(TYPE::value_type)] = 0;
-	return TYPE( static_cast<const TYPE::value_type*>( padded.getData() ) );
+	(static_cast<T*>( padded.getData() ))[dataSize/sizeof(T)] = 0;
+	return TYPE( static_cast<const T*>( padded.getData() ) );
 }
 
 void UnicodeTestApp::setup()
