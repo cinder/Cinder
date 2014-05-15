@@ -121,10 +121,10 @@ struct Run {
 	Font		mFont;
 	ColorA		mColor;
 #if defined( CINDER_MSW )
-	wstring		mWideText;
+	std::u16string		mWideText;
 	// in GDI+ rendering we need to know each run's typographic metrics
-	float		mWidth;
-	float		mDescent, mLeading, mAscent;
+	float				mWidth;
+	float				mDescent, mLeading, mAscent;
 #endif
 };
 
@@ -207,7 +207,7 @@ void Line::calcExtents()
 		format.SetAlignment( Gdiplus::StringAlignmentNear ); format.SetLineAlignment( Gdiplus::StringAlignmentNear );
 		Gdiplus::RectF sizeRect;
 		const Gdiplus::Font *font = runIt->mFont.getGdiplusFont();
-		TextManager::instance()->getGraphics()->MeasureString( &runIt->mWideText[0], -1, font, Gdiplus::PointF( 0, 0 ), &format, &sizeRect );
+		TextManager::instance()->getGraphics()->MeasureString( (wchar_t*)&runIt->mWideText[0], -1, font, Gdiplus::PointF( 0, 0 ), &format, &sizeRect );
 		
 		runIt->mWidth = sizeRect.Width;
 		runIt->mAscent = runIt->mFont.getAscent();
@@ -267,7 +267,7 @@ void Line::render( Gdiplus::Graphics *graphics, float currentY, float xBorder, f
 		const Gdiplus::Font *font = runIt->mFont.getGdiplusFont();;
 		ColorA8u nativeColor( runIt->mColor );
 		Gdiplus::SolidBrush brush( Gdiplus::Color( nativeColor.a, nativeColor.r, nativeColor.g, nativeColor.b ) );
-		graphics->DrawString( &runIt->mWideText[0], -1, font, Gdiplus::PointF( currentX, currentY + (mAscent - runIt->mAscent) ), &brush );
+		graphics->DrawString( (wchar_t*)&runIt->mWideText[0], -1, font, Gdiplus::PointF( currentX, currentY + (mAscent - runIt->mAscent) ), &brush );
 		currentX += runIt->mWidth;
 	}
 }
@@ -721,7 +721,7 @@ void TextBox::calculate() const
 	sizeRect.Width = ( mSize.x <= 0 ) ? MAX_SIZE : mSize.x;
 	sizeRect.Height = ( mSize.y <= 0 ) ? MAX_SIZE : mSize.y;
 	TextManager::instance()->getGraphics()->SetTextRenderingHint( Gdiplus::TextRenderingHintAntiAlias );
-	TextManager::instance()->getGraphics()->MeasureString( &mWideText[0], -1, font, sizeRect, &format, &outSize, NULL, NULL );
+	TextManager::instance()->getGraphics()->MeasureString( (wchar_t*)&mWideText[0], -1, font, sizeRect, &format, &outSize, NULL, NULL );
 
 	mCalculatedSize.x = outSize.Width;
 	mCalculatedSize.y = outSize.Height;
@@ -757,8 +757,8 @@ vector<string> TextBox::calculateLineBreaks() const
 			sizeRect.Width = MAX_SIZE;
 			sizeRect.Height = MAX_SIZE;
 
-			std::wstring ws = toUtf16( string( line, len ) );
-			TextManager::instance()->getGraphics()->MeasureString( &ws[0], -1, mFont, sizeRect, &format, &outSize, NULL, NULL );
+			std::u16string ws = toUtf16( string( line, len ) );
+			TextManager::instance()->getGraphics()->MeasureString( (wchar_t*)&ws[0], -1, mFont, sizeRect, &format, &outSize, NULL, NULL );
 			return outSize.Width <= mMaxWidth;
 		}
 
@@ -788,7 +788,7 @@ vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
 	
 	float curY = 0;
 	for( vector<string>::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
-		std::wstring wideText = toUtf16( *lineIt );
+		std::u16string wideText = toUtf16( *lineIt );
 
 		gcpResults.lStructSize = sizeof (gcpResults);
 		gcpResults.lpOutString = NULL;
@@ -813,7 +813,7 @@ vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
 			gcpResults.lpDx = dx;
 			gcpResults.lpGlyphs = glyphIndices;
 
-			if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), &wideText[0], wideText.length(), 0,
+			if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), (wchar_t*)&wideText[0], wideText.length(), 0,
 							&gcpResults, GCP_DIACRITIC | GCP_LIGATE | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
 				return vector<pair<uint16_t,Vec2f> >(); // failure
 			}
@@ -874,7 +874,7 @@ Surface	TextBox::render( Vec2f offset )
 	else if( mAlign == TextBox::RIGHT ) align = Gdiplus::StringAlignmentFar;
 	format.SetAlignment( align  ); format.SetLineAlignment( align );
 	Gdiplus::SolidBrush brush( Gdiplus::Color( nativeColor.a, nativeColor.r, nativeColor.g, nativeColor.b ) );
-	offscreenGraphics->DrawString( &mWideText[0], -1, font, Gdiplus::RectF( offset.x, offset.y, sizeX, sizeY ), &format, &brush );
+	offscreenGraphics->DrawString( (wchar_t*)&mWideText[0], -1, font, Gdiplus::RectF( offset.x, offset.y, sizeX, sizeY ), &format, &brush );
 	
 	::GdiFlush();
 

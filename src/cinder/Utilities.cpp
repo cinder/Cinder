@@ -28,7 +28,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Utilities.h"
-
+#include "cinder/Unicode.h"
 
 #if defined( CINDER_COCOA_TOUCH )
 	#import <UIKit/UIKit.h>
@@ -69,49 +69,42 @@ namespace cinder {
 
 fs::path expandPath( const fs::path &path )
 {
-	string result;
-	
 #if defined( CINDER_COCOA )
 	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
 	NSString *resultPath = [pathNS stringByStandardizingPath];
-	result = string( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
+	string result = string( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
+	return fs::path( result );
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
-	char buffer[MAX_PATH];
-	::PathCanonicalizeA( buffer, path.string().c_str() );
-	result = buffer; 
+	wchar_t buffer[MAX_PATH];
+	::PathCanonicalize( buffer, path.wstring().c_str() );
+	return fs::path( buffer ); 
 #endif
-
-	return fs::path( result );
 }
 
 fs::path getHomeDirectory()
 {
-	std::string result;
-
 #if defined( CINDER_COCOA )
 	NSString *home = ::NSHomeDirectory();
-	result = [home cStringUsingEncoding:NSUTF8StringEncoding];
+	string result = string( [home cStringUsingEncoding:NSUTF8StringEncoding] );
 	result += "/";
+	return fs::path( result );
 #elif defined( CINDER_WINRT )
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
-	result = PlatformStringToString(folder->Path);
+	string result = PlatformStringToString(folder->Path);
+	return fs::path( result )
 #else
-	char buffer[MAX_PATH];
-	::SHGetFolderPathA( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
-	result = buffer;
-	result += "\\";
+	wchar_t buffer[MAX_PATH];
+	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
+	wstring result = wstring(buffer) + L"\\";
+	return fs::path( result );
 #endif
-
-	return result;
 }
 
 fs::path getDocumentsDirectory()
 {
-	std::string result;
-
 #if defined( CINDER_COCOA )
 	NSArray *arrayPaths = ::NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
 	NSString *docDir = [arrayPaths objectAtIndex:0];
@@ -119,15 +112,12 @@ fs::path getDocumentsDirectory()
 #elif defined( CINDER_WINRT )
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
-	result = PlatformStringToString(folder->Path);
+	return PlatformStringToString(folder->Path);
 #else
-	char buffer[MAX_PATH];
-	::SHGetFolderPathA( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
-	result = buffer;
-	result += "\\";
+	wchar_t buffer[MAX_PATH];
+	::SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
+	return fs::path( wstring(buffer) + L"\\" );
 #endif
-
-	return result;
 }
 
 fs::path getTemporaryDirectory()
@@ -149,7 +139,7 @@ fs::path getTemporaryDirectory()
 		throw std::runtime_error("Could not get system temp path");
 
 	std::wstring wideResult( tempPath.begin(), tempPath.begin() + static_cast<std::size_t>(result) );
-	return toUtf8( wideResult );
+	return toUtf8( (char16_t*)wideResult.c_str() );
 #endif
 }
 
@@ -172,11 +162,11 @@ fs::path getTemporaryFilePath( const std::string &prefix )
 	if( ( ! result ) || ( result >= tempPath.size() ) )
 		throw std::runtime_error( "Could not get system temp path" );
 
-	result = ::GetTempFileName( &tempPath[0], toUtf16( prefix.c_str() ).c_str(), 0, tempFileName );
+	result = ::GetTempFileName( &tempPath[0], (wchar_t*)toUtf16( prefix.c_str() ).c_str(), 0, tempFileName );
     if( result == 0)
 		throw std::runtime_error( "Could not create temporary file path" );
 
-	return toUtf8( tempFileName );
+	return toUtf8( (char16_t*)&tempFileName[0] );
 #endif
 }
 
@@ -225,7 +215,7 @@ bool createDirectories( const fs::path &path, bool createParents )
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
-	return ::SHCreateDirectoryExA( NULL, dirPath.string().c_str(), NULL ) == ERROR_SUCCESS;
+	return ::SHCreateDirectoryEx( NULL, dirPath.wstring().c_str(), NULL ) == ERROR_SUCCESS;
 #endif
 }
 
@@ -235,7 +225,7 @@ void launchWebBrowser( const Url &url )
 	NSString *nsString = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
 	NSURL *nsUrl = [NSURL URLWithString:nsString];
 #elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
-	wstring urlStr = toUtf16( url.str() );
+	std::u16string urlStr = toUtf16( url.str() );
 #endif
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -243,7 +233,7 @@ void launchWebBrowser( const Url &url )
 #elif defined( CINDER_COCOA )
 	[[NSWorkspace sharedWorkspace] openURL:nsUrl ];
 #elif defined( CINDER_MSW )
-	ShellExecute( NULL, L"open", urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
+	ShellExecute( NULL, L"open", (wchar_t*)urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
 #elif defined( CINDER_WINRT )
 	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));
 	Windows::System::Launcher::LaunchUriAsync(uri);
@@ -291,53 +281,6 @@ string loadString( DataSourceRef dataSource )
 	memcpy( padded.getData(), loadedBuffer.getData(), dataSize );
 	(static_cast<uint8_t*>( padded.getData() ))[dataSize] = 0;
 	return string( static_cast<const char*>( padded.getData() ) );
-}
-
-wstring toUtf16( const string &utf8 )
-{
-#if (defined( CINDER_MSW ) ||  defined( CINDER_WINRT ))
-	int wideSize = ::MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), -1, NULL, 0 );
-	if( wideSize == ERROR_NO_UNICODE_TRANSLATION ) {
-		throw std::exception( "Invalid UTF-8 sequence." );
-	}
-	else if( wideSize == 0 ) {
-		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
-	}
-
-	vector<wchar_t> resultString( wideSize );
-	int convResult = ::MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), -1, &resultString[0], wideSize );
-	if( convResult != wideSize ) {
-		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
-	}
-
-	return wstring( &resultString[0] );
-#else
-	NSString *utf8NS = [NSString stringWithCString:utf8.c_str() encoding:NSUTF8StringEncoding];
-	return wstring( reinterpret_cast<const wchar_t*>( [utf8NS cStringUsingEncoding:NSUTF16LittleEndianStringEncoding] ) );
-#endif	
-}
-
-string toUtf8( const wstring &utf16 )
-{
-#if (defined( CINDER_MSW ) ||  defined( CINDER_WINRT ))
-	int utf8Size = ::WideCharToMultiByte( CP_UTF8, 0, utf16.c_str(), -1, NULL, 0, NULL, NULL );
-	if( utf8Size == 0 ) {
-		throw std::exception( "Error in UTF-16 to UTF-8 conversion." );
-	}
-
-	vector<char> resultString( utf8Size );
-
-	int convResult = ::WideCharToMultiByte( CP_UTF8, 0, utf16.c_str(), -1, &resultString[0], utf8Size, NULL, NULL );
-
-	if( convResult != utf8Size ) {
-		throw std::exception( "Error in UTF-16 to UTF-8 conversion." );
-	}
-
-	return string( &resultString[0] );
-#else
-	NSString *utf16NS = [NSString stringWithCString:reinterpret_cast<const char*>( utf16.c_str() ) encoding:NSUTF16LittleEndianStringEncoding];
-	return string( [utf16NS cStringUsingEncoding:NSUTF8StringEncoding] );	
-#endif
 }
 
 void sleep( float milliseconds )

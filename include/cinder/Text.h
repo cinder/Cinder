@@ -154,7 +154,7 @@ class TextBox {
 	std::vector<std::string>	calculateLineBreaks() const;
 	void						calculate() const;
 
-	mutable std::wstring	mWideText;
+	mutable std::u16string	mWideText;
 #elif defined( CINDER_WINRT )
 	std::vector<std::string>	calculateLineBreaks() const;
 #endif

@@ -27,6 +27,7 @@
 #include "cinder/qtime/QuickTimeUtils.h"
 
 #if defined( CINDER_MSW )
+	#include "cinder/msw/CinderMsw.h"
 	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
 	#pragma push_macro( "_STDINT_H" )
 		#undef __STDC_CONSTANT_MACROS
@@ -214,7 +215,12 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 
 	moviePropCount = openMovieBaseProperties( movieProps );
 
+#if defined( CINDER_MSW )
+	std::string pathUtf8 = msw::toUtf8String( path.wstring() );
+	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, pathUtf8.c_str(), kCFStringEncodingUTF8 );
+#else
 	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, path.string().c_str(), kCFStringEncodingUTF8 );
+#endif
 	shared_ptr<const __CFString> pathCF = shared_ptr<const __CFString>( basePathCF, ::CFRelease );
 	// Store the movie properties in the array
 	movieProps[moviePropCount].propClass = kQTPropertyClass_DataLocation;

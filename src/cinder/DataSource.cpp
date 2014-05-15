@@ -28,7 +28,7 @@ namespace cinder {
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSource
-void DataSource::setFilePathHint( const std::string &aFilePathHint )
+void DataSource::setFilePathHint( const fs::path &aFilePathHint )
 {
 	mFilePathHint = aFilePathHint;
 }
@@ -43,7 +43,7 @@ const Url& DataSource::getUrl()
 	return mUrl;
 }
 
-const std::string& DataSource::getFilePathHint()
+const fs::path& DataSource::getFilePathHint()
 {
 	return mFilePathHint;
 }
@@ -65,7 +65,7 @@ DataSourcePathRef DataSourcePath::create( const fs::path &path )
 DataSourcePath::DataSourcePath( const fs::path &path )
 	: DataSource( path, Url() )
 {
-	setFilePathHint( path.string() );
+	setFilePathHint( path );
 }
 
 void DataSourcePath::createBuffer()
@@ -120,7 +120,7 @@ DataSourceRef loadUrl( const Url &url, const UrlOptions &options )
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceBuffer
-DataSourceBufferRef DataSourceBuffer::create( Buffer buffer, const std::string &filePathHint )
+DataSourceBufferRef DataSourceBuffer::create( Buffer buffer, const fs::path &filePathHint )
 {
 	DataSourceBufferRef result( new DataSourceBuffer( buffer ) );
 	result->setFilePathHint( filePathHint );

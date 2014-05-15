@@ -25,6 +25,7 @@
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
 #include "cinder/Utilities.h"
+#include "cinder/Unicode.h"
 #if defined( CINDER_MSW )
 	#include <Shlwapi.h>
 	#include "cinder/UrlImplWinInet.h"
@@ -63,11 +64,11 @@ std::string Url::encode( const std::string &unescaped )
 	::CFRelease( escaped );
 	return result;
 #elif defined( CINDER_MSW )
-	wchar_t buffer[4096];
+	char16_t buffer[4096];
 	DWORD bufferSize = 4096;
-	std::wstring wideUnescaped = toUtf16( unescaped );
-	UrlEscape( wideUnescaped.c_str(), buffer, &bufferSize, 0 );
-	return toUtf8( std::wstring( buffer ) );
+	std::u16string wideUnescaped = toUtf16( unescaped );
+	UrlEscape( (wchar_t*)wideUnescaped.c_str(), (wchar_t*)buffer, &bufferSize, 0 );
+	return toUtf8( buffer );
 #elif defined( CINDER_WINRT )
 	std::wstring urlStr = toUtf16( unescaped );
 	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));

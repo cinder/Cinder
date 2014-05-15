@@ -1,6 +1,54 @@
+/*
+ Copyright (c) 2013, The Cinder Project
+ All rights reserved.
+ 
+ This code is designed for use with the Cinder C++ library, http://libcinder.org
+
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+*/
+
+/*
+ * Copyright 2001-2004 Unicode, Inc.
+ * 
+ * Disclaimer
+ * 
+ * This source code is provided as is by Unicode, Inc. No claims are
+ * made as to fitness for any particular purpose. No warranties of any
+ * kind are expressed or implied. The recipient agrees to determine
+ * applicability of information provided. If this file has been
+ * purchased on magnetic or optical media from Unicode, Inc., the
+ * sole remedy for any claim will be exchange of defective media
+ * within 90 days of receipt.
+ * 
+ * Limitations on Rights to Redistribute This Code
+ * 
+ * Unicode, Inc. hereby grants the right to freely use the information
+ * supplied in this file in the creation of products supporting the
+ * Unicode Standard, and to make copies of this file in any form
+ * for internal or external distribution as long as this notice
+ * remains attached.
+ */
+
 #include "cinder/Unicode.h"
 #include <cstring>
+#include <string>
 
+#include "utf8cpp/checked.h"
 extern "C" {
 #include "linebreak.h"
 #include "linebreakdef.h"
@@ -9,6 +57,94 @@ extern "C" {
 using namespace std;
 
 namespace cinder {
+
+static const char32_t halfBase = 0x0010000UL;
+static const char32_t halfMask = 0x3FFUL;
+static const int halfShift = 10; // shift by 10 bits
+
+#define UNI_SUR_HIGH_START		(char32_t)0xD800
+#define UNI_SUR_HIGH_END		(char32_t)0xDBFF
+#define UNI_SUR_LOW_START		(char32_t)0xDC00
+#define UNI_SUR_LOW_END			(char32_t)0xDFFF
+#define UNI_REPLACEMENT_CHAR	(char32_t)0x0000FFFD
+#define UNI_MAX_BMP				(char32_t)0x0000FFFF
+#define UNI_MAX_UTF16			(char32_t)0x0010FFFF
+#define UNI_MAX_UTF32			(char32_t)0x7FFFFFFF
+#define UNI_MAX_LEGAL_UTF32		(char32_t)0x0010FFFF
+
+std::u16string toUtf16( const char *utf8Str, size_t lengthInBytes )
+{
+	if( lengthInBytes == 0 )
+		lengthInBytes = strlen( utf8Str );
+	
+	std::u16string result;
+	utf8::utf8to16( utf8Str, utf8Str + lengthInBytes, back_inserter( result ));
+	return result;
+}
+
+std::u16string toUtf16( const std::string &utf8Str )
+{
+	std::u16string result;
+	utf8::utf8to16( utf8Str.begin(), utf8Str.end(), back_inserter( result ));
+	return result;
+}
+
+std::u32string toUtf32( const char *utf8Str, size_t lengthInBytes )
+{
+	if( lengthInBytes == 0 )
+		lengthInBytes = strlen( utf8Str );
+	
+	std::u32string result;
+	utf8::utf8to32( utf8Str, utf8Str + lengthInBytes, back_inserter( result ));
+	return result;
+}
+
+std::u32string toUtf32( const std::string &utf8Str )
+{
+	std::u32string result;
+	utf8::utf8to32( utf8Str.begin(), utf8Str.end(), back_inserter( result ));
+	return result;
+}
+
+std::string toUtf8( const char16_t *utf16Str, size_t lengthInBytes )
+{
+	if( lengthInBytes == 0 )
+		while( utf16Str[lengthInBytes] )
+			++lengthInBytes;
+	else
+		lengthInBytes /= 2;
+
+	std::string result;
+	utf8::utf16to8( utf16Str, utf16Str + lengthInBytes, back_inserter( result ));
+	return result;	
+}
+
+std::string	toUtf8( const std::u16string &utf16Str )
+{
+	std::string result;
+	utf8::utf16to8( utf16Str.begin(), utf16Str.end(), back_inserter( result ));
+	return result;
+}
+
+std::string toUtf8( const char32_t *utf32Str, size_t lengthInBytes )
+{
+	if( lengthInBytes == 0 )
+		while( utf32Str[lengthInBytes] )
+			++lengthInBytes;
+	else
+		lengthInBytes /= 4;
+
+	std::string result;
+	utf8::utf32to8( utf32Str, utf32Str + lengthInBytes, back_inserter( result ));
+	return result;
+}
+
+std::string	toUtf8( const std::u32string &utf32Str )
+{
+	std::string result;
+	utf8::utf32to8( utf32Str.begin(), utf32Str.end(), back_inserter( result ));
+	return result;
+}
 
 size_t stringLengthUtf8( const char *str, size_t lengthInBytes )
 {
@@ -39,6 +175,56 @@ size_t advanceCharUtf8( const char *str, size_t numChars, size_t lengthInBytes )
 	}
 	
 	return nextByte;
+}
+
+std::u16string toUtf16( const std::u32string &utf32str )
+{
+	std::u16string result;
+	auto sourceIt = utf32str.cbegin();
+	while( sourceIt != utf32str.cend() ) {
+		char32_t ch = *sourceIt++;
+		if( ch <= UNI_MAX_BMP ) { // Target is a character <= 0xFFFF
+			// UTF-16 surrogate values are illegal in UTF-32; 0xffff or 0xfffe are both reserved values
+			if( ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END )
+				result.push_back( UNI_REPLACEMENT_CHAR );
+			else
+				result.push_back( static_cast<char16_t>( ch ) );
+		}
+		else if( ch > UNI_MAX_LEGAL_UTF32 ) {
+			result.push_back( UNI_REPLACEMENT_CHAR );
+		}
+		else { // target is a character in range 0xFFFF - 0x10FFFF.
+			ch -= halfBase;
+			result.push_back( (char16_t)((ch >> halfShift) + UNI_SUR_HIGH_START) );
+			result.push_back( (char16_t)((ch & halfMask) + UNI_SUR_LOW_START) );
+		}
+	}
+
+    return result;
+}
+
+std::u32string toUtf32( const std::u16string &utf16str )
+{
+	std::u32string result;
+	auto sourceIt = utf16str.cbegin();
+	while( sourceIt != utf16str.cend() ) {
+		char32_t ch = *sourceIt++;
+		if( ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_HIGH_END ) {
+			// If we have a surrogate pair, convert to utf32 first
+			if( sourceIt != utf16str.cend() ) {
+				char32_t ch2 = *sourceIt;
+				if( ch2 >= UNI_SUR_LOW_START && ch2 <= UNI_SUR_LOW_END ) {
+                    ch = ((ch - UNI_SUR_HIGH_START) << halfShift) + (ch2 - UNI_SUR_LOW_START) + halfBase;
+                    ++sourceIt;
+				}
+				else // We don't have the 16 bits following the high surrogate.
+					break;
+			}
+		}
+		result.push_back( ch );
+	}
+
+	return result;
 }
 
 namespace {

@@ -413,7 +413,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 #endif
 
 	if( extension.empty() )
-		extension = getPathExtension( dataSource->getFilePathHint() );
+		extension = dataSource->getFilePathHint().extension().string();
 	
 	return ImageIoRegistrar::createSource( dataSource, options, extension );
 }
@@ -430,7 +430,7 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 #endif
 
 	if( extension.empty() )
-		extension = getPathExtension( dataTarget->getFilePathHint() );
+		extension = getPathExtension( dataTarget->getFilePathHint().extension().string() );
 	
 	ImageTargetRef imageTarget = ImageIoRegistrar::createTarget( dataTarget, imageSource, options, extension );
 	if( imageTarget ) {

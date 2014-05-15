@@ -39,6 +39,10 @@ namespace cinder { namespace msw {
 	\note Currently always copies the alpha channel **/
 Surface8u convertHBitmap( HBITMAP hbitmap );
 
+//! Converts a UTF-8 string into a wide string (wstring). Note that wstring is not a good cross-platform choice and this is here for interop with Windows APIs.
+std::wstring toWideString( const std::string &utf8String );
+//! Converts a wide string to a UTF-8 string. Note that wstring is not a good cross-platform choice and this is here for interop with Windows APIs.
+std::string toUtf8String( const std::wstring &wideString );
 
 //! Converts a Win32 POINTFX fixed point point to a cinder::Vec2f
 #if !defined ( CINDER_WINRT )

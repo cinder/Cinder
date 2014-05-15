@@ -47,6 +47,7 @@
 	#include "cinder/dx/FontEnumerator.h"
 #endif
 #include "cinder/Utilities.h"
+#include "cinder/Unicode.h"
 
 using std::vector;
 using std::string;
@@ -138,7 +139,7 @@ FontManager* FontManager::instance()
 #if defined( CINDER_MSW )
 int CALLBACK EnumFontFamiliesExProc( ENUMLOGFONTEX *lpelfe, NEWTEXTMETRICEX *lpntme, int FontType, LPARAM lParam )
 {
-	reinterpret_cast<vector<string>*>( lParam )->push_back( toUtf8( lpelfe->elfFullName ) );
+	reinterpret_cast<vector<string>*>( lParam )->push_back( toUtf8( (char16_t*)lpelfe->elfFullName ) );
 	return 1;
 }
 #endif
@@ -379,10 +380,10 @@ Font::Glyph Font::getGlyphIndex( size_t idx ) const
 
 vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
 {
-	wstring wideString = toUtf16( utf8String );
+	std::u16string wideString = toUtf16( utf8String );
 	std::shared_ptr<WORD> buffer( new WORD[wideString.length()], checked_array_deleter<WORD>() );
 	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
-	DWORD numGlyphs = ::GetGlyphIndices( FontManager::instance()->getFontDc(), &wideString[0], (int)wideString.length(), buffer.get(), GGI_MARK_NONEXISTING_GLYPHS );
+	DWORD numGlyphs = ::GetGlyphIndices( FontManager::instance()->getFontDc(), (wchar_t*)&wideString[0], (int)wideString.length(), buffer.get(), GGI_MARK_NONEXISTING_GLYPHS );
 	if( numGlyphs == GDI_ERROR )
 		return vector<Glyph>();
 	
@@ -625,14 +626,14 @@ Font::Obj::Obj( const string &aName, float aSize )
 #elif defined( CINDER_MSW )
 	FontManager::instance(); // force GDI+ init
 	assert( sizeof(wchar_t) == 2 );
-    wstring faceName = toUtf16( mName );
+	std::u16string faceName = toUtf16( mName );
     
 	mHfont = ::CreateFont( -mSize * 72 / 96, 0, 0, 0, FW_DONTCARE, false, false, false,
 						DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
 						ANTIALIASED_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-						faceName.c_str() );
+						(wchar_t*)faceName.c_str() );
 	::SelectObject( FontManager::instance()->getFontDc(), mHfont );
-    mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
+    mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( (wchar_t*)faceName.c_str(), mSize * 72 / 96 /* Mac<->PC size conversion factor */ ) );
 	mGdiplusFont = std::shared_ptr<Gdiplus::Font>( new Gdiplus::Font( FontManager::instance()->getFontDc(), mHfont ) );
 	
 	finishSetup();
@@ -769,7 +770,7 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 	if( found != 0 ) {
 		((Gdiplus::FontFamily*)fontFamily.get())->GetFamilyName( familyName );
 
-		mName = toUtf8( familyName );
+		mName = toUtf8( (char16_t*)familyName );
 		Gdiplus::FontStyle style = Gdiplus::FontStyleRegular;
 		if( ((Gdiplus::FontFamily*)fontFamily.get())->IsStyleAvailable( Gdiplus::FontStyleRegular ) )
 			style = Gdiplus::FontStyleRegular;

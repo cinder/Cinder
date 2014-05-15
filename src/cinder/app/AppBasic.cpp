@@ -24,6 +24,7 @@
 
 #include "cinder/app/AppBasic.h"
 #include "cinder/app/Renderer.h"
+#include "cinder/Unicode.h"
 
 #if defined( CINDER_MAC )
 	#import "cinder/app/AppImplCocoaBasic.h"
@@ -70,7 +71,7 @@ void AppBasic::executeLaunch( AppBasic *app, RendererRef renderer, const char *t
 		std::vector<std::string> utf8Args;
 		char **utf8ArgPointers = (char **)malloc( sizeof(char*) * nArgs );
 		for( int i = 0; i < nArgs; ++i )
-			utf8Args.push_back( toUtf8( szArglist[i] ) );
+			utf8Args.push_back( toUtf8( (char16_t*)szArglist[i] ) );
 		for( int i = 0; i < nArgs; ++i )
 			utf8ArgPointers[i] = const_cast<char *>( utf8Args[i].c_str() );
 		App::executeLaunch( app, renderer, title, nArgs, utf8ArgPointers );
