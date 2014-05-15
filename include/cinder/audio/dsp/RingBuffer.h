@@ -29,6 +29,8 @@
 
 namespace cinder { namespace audio { namespace dsp {
 
+//! \brief Ringbuffer (aka circular buffer) data structure for use in concurrent audio scenarios.
+//!
 //! Other than minor modifications, this ringbuffer is a copy of Tim Blechmann's fine work, found as the base
 //! structure of boost::lockfree::spsc_queue (ringbuffer_base). Whereas the boost::lockfree data structures
 //! are meant for a wide range of applications / archs, this version specifically caters to audio processing.
@@ -38,7 +40,7 @@ namespace cinder { namespace audio { namespace dsp {
 //! \note \a T must be POD.
 template <typename T>
 class RingBufferT {
-public:
+  public:
 	//! Constructs a RingBufferT with size = 0
 	RingBufferT() : mData( nullptr ), mAllocatedSize( 0 ), mWriteIndex( 0 ), mReadIndex( 0 ) {}
 	//! Constructs a RingBufferT with \a count maximum elements.
@@ -59,8 +61,7 @@ public:
 		if( mData )
 			free( mData );
 	}
-
-	//! Resizes the container to contain \a count maximum elements. Invalidates the internal buffer and resets read / write indices to 0.
+	//! Resizes the container to contain \a count maximum elements. Invalidates the internal buffer and resets read / write indices to 0. \note Must be synchronized with both read and write threads.
 	void resize( size_t count )
 	{
 		size_t allocatedSize = count + 1; // one bin is used to distinguish between the read and write indices when full.
@@ -73,6 +74,11 @@ public:
 		CI_ASSERT( mData );
 
 		mAllocatedSize = allocatedSize;
+		clear();
+	}
+	//! Invalidates the internal buffer and resets read / write indices to 0. \note Must be synchronized with both read and write threads.
+	void clear()
+	{
 		mWriteIndex = 0;
 		mReadIndex = 0;
 	}
@@ -91,9 +97,11 @@ public:
 	{
 		return getAvailableRead( mWriteIndex, mReadIndex );
 	}
-	//! Writes \a count elements into the internal buffer from \a array. Returns \c true if all elements were successfully written, or false otherwise.
+
+	//! \brief Writes \a count elements into the internal buffer from \a array. \return `true` if all elements were successfully written, or `false` otherwise.
+	//!
 	//! \note only safe to call from the write thread.
-	// TODO: consider renaming this to writeAll / readAll, and having generic read / write that just does as much as it can
+	//! TODO: consider renaming this to writeAll / readAll, and having generic read / write that just does as much as it can
 	bool write( const T *array, size_t count )
 	{
 		const size_t writeIndex = mWriteIndex.load( std::memory_order_relaxed );
@@ -121,7 +129,8 @@ public:
 		mWriteIndex.store( writeIndexAfter, std::memory_order_release );
 		return true;
 	}
-	//! Reads \a count elements from the internal buffer into \a array.  Returns \c true if all elements were successfully read, or false otherwise.
+	//! \brief Reads \a count elements from the internal buffer into \a array.  \return `true` if all elements were successfully read, or `false` otherwise.
+	//!
 	//! \note only safe to call from the read thread.
 	bool read( T *array, size_t count )
 	{
@@ -152,7 +161,7 @@ public:
 		return true;
 	}
 
-private:
+  private:
 	size_t getAvailableWrite( size_t writeIndex, size_t readIndex ) const
 	{
 		size_t result = readIndex - writeIndex - 1;
@@ -176,8 +185,6 @@ private:
 	std::atomic<size_t>		mWriteIndex, mReadIndex;
 };
 
-
 typedef RingBufferT<float> RingBuffer;
-
 
 } } } // namespace cinder::audio::dsp
