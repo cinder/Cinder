@@ -25,11 +25,8 @@
 
 #include "cinder/audio/msw/DeviceManagerWasapi.h"
 #include "cinder/audio/msw/MswUtil.h"
-
-#include "cinder/CinderAssert.h"
 #include "cinder/audio/Debug.h"
-
-#include "cinder/Utilities.h"
+#include "cinder/CinderAssert.h"
 #include "cinder/msw/CinderMsw.h"
 
 #include <setupapi.h>
@@ -70,7 +67,7 @@ DeviceRef DeviceManagerWasapi::getDefaultOutput()
 	device->GetId( &idStr );
 	CI_ASSERT( idStr );
 
-	string key( ci::toUtf8( idStr ) );
+	string key( ci::msw::toUtf8String( idStr ) );
 	::CoTaskMemFree( idStr );
 	return findDeviceByKey( key );
 }
@@ -92,7 +89,7 @@ DeviceRef DeviceManagerWasapi::getDefaultInput()
 	device->GetId( &idStr );
 	CI_ASSERT( idStr );
 
-	string key( ci::toUtf8( idStr ) );
+	string key( ci::msw::toUtf8String( idStr ) );
 	::CoTaskMemFree( idStr );
 
 	return findDeviceByKey( key );
@@ -234,13 +231,13 @@ void DeviceManagerWasapi::parseDevices( DeviceInfo::Usage usage )
 		::PROPVARIANT nameVar;
 		hr = properties->GetValue( PKEY_Device_FriendlyName, &nameVar );
 		CI_ASSERT( hr == S_OK );
-		devInfo.mName = ci::toUtf8( nameVar.pwszVal );
+		devInfo.mName = ci::msw::toUtf8String( nameVar.pwszVal );
 
 		LPWSTR endpointIdLpwStr;
 		hr = deviceImm->GetId( &endpointIdLpwStr );
 		CI_ASSERT( hr == S_OK );
 		devInfo.mEndpointId = wstring( endpointIdLpwStr );
-		devInfo.mKey = ci::toUtf8( devInfo.mEndpointId );
+		devInfo.mKey = ci::msw::toUtf8String( devInfo.mEndpointId );
 		::CoTaskMemFree( endpointIdLpwStr );
 		
 		// Wasapi's device Id is actually a subset of the one xaudio needs, so we find and use the match.
