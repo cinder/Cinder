@@ -49,8 +49,8 @@ void SamplePlayerNode::start()
 
 void SamplePlayerNode::stop()
 {
-	seek( 0 );
 	disable();
+	seek( 0 );
 }
 
 void SamplePlayerNode::setLoopBegin( size_t positionFrames )
@@ -273,6 +273,21 @@ void FilePlayerNode::enableProcessing()
 
 void FilePlayerNode::disableProcessing()
 {
+}
+
+void FilePlayerNode::stop()
+{
+	disable();
+
+	{
+		mutex &m = mIsReadAsync ? mAsyncReadMutex : getContext()->getMutex();
+		lock_guard<mutex> lock( m );
+
+		for( auto &ringBuffer : mRingBuffers )
+			ringBuffer.clear();
+	}
+
+	seek( 0 );
 }
 
 void FilePlayerNode::seek( size_t readPositionFrames )

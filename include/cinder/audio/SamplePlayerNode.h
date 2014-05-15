@@ -45,9 +45,9 @@ class SamplePlayerNode : public InputNode {
 	virtual ~SamplePlayerNode() {}
 
 	//! Starts playing the sample from the beginning.
-	void start();
+	virtual void start();
 	//! Stops playing the sample, returns the read position to the beginning and disables processing.
-	void stop();
+	virtual void stop();
 	//! Seek the read position to \a readPositionFrames.
 	virtual void seek( size_t positionFrames ) = 0;
 
@@ -128,6 +128,7 @@ class FilePlayerNode : public SamplePlayerNode {
 
 	virtual void enableProcessing() override;
 	virtual void disableProcessing() override;
+	virtual void stop() override;
 	virtual void seek( size_t readPositionFrames ) override;
 
 	bool isReadAsync() const	{ return mIsReadAsync; }
@@ -135,12 +136,6 @@ class FilePlayerNode : public SamplePlayerNode {
 	//! \note \a sourceFile's samplerate is forced to match this Node's Context.
 	void setSourceFile( const SourceFileRef &sourceFile );
 	const SourceFileRef& getSourceFile() const	{ return mSourceFile; }
-
-	// TODO NEXT: decide whether:
-	//	- this should be here or in SamplePlayerNode
-	//	- whether this should be a delay or absolute time
-	//		- i think it has to be processingSeconds, since startDelayed() will only sync to the current blockrate
-	void startAt( double processingSeconds );
 
 	//! Returns the frame of the last buffer underrun or 0 if none since the last time this method was called.
 	uint64_t getLastUnderrun();
