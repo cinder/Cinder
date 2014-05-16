@@ -124,7 +124,7 @@ void generateBlackmanWindow( float *window, size_t length )
 	double a0 = 0.5 * (1 - alpha);
 	double a1 = 0.5;
 	double a2 = 0.5 * alpha;
-	double oneOverN = 1.0 / static_cast<double>( length );
+	double oneOverN = 1.0 / static_cast<double>( length - 1 );
 
 	for( size_t i = 0; i < length; i++ ) {
 		double x = static_cast<double>(i) * oneOverN;
