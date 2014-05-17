@@ -51,7 +51,7 @@ void generateBlackmanWindow( float *window, size_t length )
 	}
 }
 
-void generateHammWindow( float *window, size_t length )
+void generateHammingWindow( float *window, size_t length )
 {
 	double alpha = 0.53836;
 	double beta	= 1.0 - alpha;
@@ -80,8 +80,8 @@ void generateWindow( WindowType windowType, float *window, size_t length )
 		case WindowType::BLACKMAN:
 			generateBlackmanWindow( window, length );
 			break;
-		case WindowType::HAMM:
-			generateHammWindow( window, length );
+		case WindowType::HAMMING:
+			generateHammingWindow( window, length );
 			break;
 		case WindowType::HANN:
 			generateHannWindow( window, length );

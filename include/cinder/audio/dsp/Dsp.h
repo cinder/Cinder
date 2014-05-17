@@ -40,12 +40,12 @@ namespace cinder { namespace audio { namespace dsp {
 // Windowing functions
 
 void generateBlackmanWindow( float *window, size_t length );
-void generateHammWindow( float *window, size_t length );
+void generateHammingWindow( float *window, size_t length );
 void generateHannWindow( float *window, size_t length );
 
 enum class WindowType {
 	BLACKMAN,
-	HAMM,
+	HAMMING,
 	HANN,
 	RECT		//! no window
 };
