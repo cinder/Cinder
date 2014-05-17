@@ -138,7 +138,7 @@ BufferRef SourceFile::loadBuffer()
 				break;
 
 			// make sourceBuffer num frames match outNumFrames so that Converter doesn't think it has more
-			if( framesNeeded < mConverterReadBuffer.getNumFrames() )
+			if( framesNeeded != mConverterReadBuffer.getNumFrames() )
 				mConverterReadBuffer.setNumFrames( framesNeeded );
 
 			size_t outNumFrames = performRead( &mConverterReadBuffer, 0, framesNeeded );
