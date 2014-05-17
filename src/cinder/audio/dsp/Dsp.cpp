@@ -124,7 +124,7 @@ void generateBlackmanWindow( float *window, size_t length )
 	double a0 = 0.5 * (1 - alpha);
 	double a1 = 0.5;
 	double a2 = 0.5 * alpha;
-	double oneOverN = 1.0 / static_cast<double>( length );
+	double oneOverN = 1.0 / static_cast<double>( length - 1 );
 
 	for( size_t i = 0; i < length; i++ ) {
 		double x = static_cast<double>(i) * oneOverN;
@@ -134,12 +134,23 @@ void generateBlackmanWindow( float *window, size_t length )
 
 void generateHammWindow( float *window, size_t length )
 {
-	CI_ASSERT( 0 && "not implemented" );
+	double alpha	= 0.53836;
+	double beta	= 1.0 - alpha;
+	double oneOverN	= 1.0 / static_cast<double>( length - 1 );
+	for( size_t i = 0; i < length; i++ ) {
+		double x = static_cast<double>(i) * oneOverN;
+		window[i] = float( alpha - beta * cos( 2.0 * M_PI * x ) );
+	}
 }
 
 void generateHannWindow( float *window, size_t length )
 {
-	CI_ASSERT( 0 && "not implemented" );
+	double alpha	= 0.5;
+	double oneOverN	= 1.0 / static_cast<double>( length - 1 );
+	for( size_t i = 0; i < length; i++ ) {
+		double x  = static_cast<double>(i) * oneOverN;
+		window[i] = float( alpha * ( 1.0 - cos( 2.0 * M_PI * x ) ) );
+	}
 }
 
 void fill( float value, float *array, size_t length )
