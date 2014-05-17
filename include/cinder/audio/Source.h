@@ -50,7 +50,7 @@ class Source : public boost::noncopyable {
 	virtual size_t	getSampleRateNative() const = 0;
 
 	//! Returns the maximum number of frames that can be read with one call to read().
-	size_t	getMaxFramesPerRead() const			{ return mMaxFramesPerRead; }
+	size_t			getMaxFramesPerRead() const			{ return mMaxFramesPerRead; }
 	//! Sets the maximum number of frames that can be read in one chunk.
 	virtual void	setMaxFramesPerRead( size_t count )		{ mMaxFramesPerRead = count; }
 
@@ -93,14 +93,17 @@ class SourceFile : public Source {
 	//! Loads and returns the entire contents of this SourceFile. \return a BufferRef containing the file contents.
 	BufferRef loadBuffer();
 	//! Seek the read position to \a readPositionFrames
-	void seek( size_t readPositionFrames );
+	void	seek( size_t readPositionFrames );
 	//! Seek to read position \a readPositionSeconds
-	void seekToTime( double readPositionSeconds )	{ return seek( size_t( readPositionSeconds * (double)getSampleRate() ) ); }
-
-	//! Returns the length in seconds.
-	double getNumSeconds() const					{ return (double)getNumFrames() / (double)getSampleRate(); }
+	void	seekToTime( double readPositionSeconds )	{ return seek( size_t( readPositionSeconds * (double)getSampleRate() ) ); }
+	//! Returns the current read position in frames.
+	size_t	getReadPosition() const						{ return mReadPos; }
+	//! Returns the current read position in seconds.
+	double	getReadPositionSeconds() const				{ return mReadPos / (double)getSampleRate(); }
 	//! Returns the length in frames.
-	size_t	getNumFrames() const					{ return mNumFrames; }
+	size_t	getNumFrames() const						{ return mNumFrames; }
+	//! Returns the length in seconds.
+	double	getNumSeconds() const						{ return (double)getNumFrames() / (double)getSampleRate(); }
 
   protected:
 	SourceFile( size_t sampleRate );
