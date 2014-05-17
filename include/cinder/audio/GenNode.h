@@ -30,7 +30,7 @@ namespace cinder { namespace audio {
 
 typedef std::shared_ptr<class GenNode>			GenNodeRef;
 typedef std::shared_ptr<class GenOscNode>		GenOscNodeRef;
-typedef std::shared_ptr<class GenPulse>			GenPulseRef;
+typedef std::shared_ptr<class GenPulseNode>			GenPulseNodeRef;
 
 //! Base class for InputNode's that generate audio samples. Gen's are always mono channel.
 class GenNode : public InputNode {
@@ -154,23 +154,23 @@ class GenOscNode : public GenNode {
 };
 
 //! Pulse waveform generator with variable pulse width. Based on wavetable lookup of two band-limited sawtooth waveforms, subtracted from each other.
-class GenPulse : public GenNode {
+class GenPulseNode : public GenNode {
   public:
-	GenPulse( const Format &format = Format() );
-	GenPulse( float freq, const Format &format = Format() );
+	GenPulseNode( const Format &format = Format() );
+	GenPulseNode( float freq, const Format &format = Format() );
 
 	//! Set the pulse width (aka 'duty cycle'). Expected range is between [0:1] (default = 0.5, creating a square wave).
 	void			setWidth( float width )	{ mWidth.setValue( width ); }
 	//! Get the current pulse width. \see setWidth()
 	float			getWidth() const		{ return mWidth.getValue(); }
 	//! Returns the Param associated with the width (aka 'duty cycle').  Expected range is between [0:1].
-	Param* getParamWidth()			{ return &mWidth; }
+	Param*			getParamWidth()			{ return &mWidth; }
 
   protected:
 	void initialize() override;
 	void process( Buffer *buffer ) override;
 
-	WaveTable2dRef		mWaveTable;
+	WaveTable2dRef			mWaveTable;
 	BufferDynamic			mBuffer2;
 	Param					mWidth;
 };

@@ -35,9 +35,9 @@ public:
 	void setupTriangleCalc();
 
 	audio::GainNodeRef				mGain;
-	audio::ScopeSpectralNodeRef	mScope;
+	audio::ScopeSpectralNodeRef		mScope;
 	audio::GenOscNodeRef			mGenOsc;
-	audio::GenPulseRef				mGenPulse;
+	audio::GenPulseNodeRef			mGenPulse;
 	audio::GenNodeRef				mGen;
 
 	audio::BufferDynamic		mTableCopy;
@@ -103,7 +103,7 @@ void WaveTableTestApp::setupOsc( audio::WaveformType type )
 void WaveTableTestApp::setupPulse()
 {
 	if( ! mGenPulse ) {
-		mGenPulse = audio::master()->makeNode( new audio::GenPulse );
+		mGenPulse = audio::master()->makeNode( new audio::GenPulseNode );
 		mGenPulse->setFreq( mFreqSlider.mValueScaled );
 		mGenPulse->enable();
 	}

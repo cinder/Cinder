@@ -261,20 +261,20 @@ void GenOscNode::process( Buffer *buffer )
 }
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - GenPulse
+// MARK: - GenPulseNode
 // ----------------------------------------------------------------------------------------------------
 
-GenPulse::GenPulse( const Format &format )
+GenPulseNode::GenPulseNode( const Format &format )
 	: GenNode( format ), mWidth( this, 0.5f )
 {
 }
 
-GenPulse::GenPulse( float freq, const Format &format )
+GenPulseNode::GenPulseNode( float freq, const Format &format )
 	: GenNode( freq, format ), mWidth( this, 0.5f )
 {
 }
 
-void GenPulse::initialize()
+void GenPulseNode::initialize()
 {
 	GenNode::initialize();
 
@@ -293,7 +293,7 @@ void GenPulse::initialize()
 		mWaveTable->fillBandlimited( WaveformType::SAWTOOTH );
 }
 
-void GenPulse::process( Buffer *buffer )
+void GenPulseNode::process( Buffer *buffer )
 {
 	size_t numFrames = buffer->getNumFrames();
 	const float samplePeriod = mSamplePeriod;

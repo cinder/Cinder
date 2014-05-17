@@ -44,10 +44,9 @@ void EffectsAudioUnitTestApp::setup()
 {
 	auto ctx = audio::master();
 
-	auto gen = ctx->makeNode( new audio::GenPulse( 100 ) );
+	auto gen = ctx->makeNode( new audio::GenPulseNode( 100 ) );
 	gen->setAutoEnabled();
 
-	//gen->getFormat().setNumChannels( 1 ); // force gen to be mono
 	mGen = gen;
 
 	setupOne();
