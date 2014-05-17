@@ -416,6 +416,10 @@ void FilePlayerNode::readImpl()
 		return;
 	}
 
+	// safety check that the SourceFile is on the correct read position, which could happen if two users are simultaneously reading from the same file.
+	if( readPos != mSourceFile->getReadPosition() )
+		mSourceFile->seek( readPos );
+
 	mIoBuffer.setNumFrames( numFramesToRead );
 
 	size_t numRead = mSourceFile->read( &mIoBuffer );
