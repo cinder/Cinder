@@ -33,22 +33,71 @@ using namespace ci;
 
 namespace cinder { namespace audio { namespace dsp {
 
-#if defined( CINDER_AUDIO_VDSP )
+// ----------------------------------------------------------------------------------------------------
+// MARK: - Windowing functions
+// ----------------------------------------------------------------------------------------------------
 
 void generateBlackmanWindow( float *window, size_t length )
 {
-	vDSP_blkman_window( window, static_cast<vDSP_Length>( length ), 0 );
+	double alpha = 0.16;
+	double a0 = 0.5 * (1 - alpha);
+	double a1 = 0.5;
+	double a2 = 0.5 * alpha;
+	double oneOverN = 1.0 / static_cast<double>( length - 1 );
+
+	for( size_t i = 0; i < length; i++ ) {
+		double x = static_cast<double>(i) * oneOverN;
+		window[i] = float( a0 - a1 * cos( 2.0 * M_PI * x ) + a2 * cos( 4.0 * M_PI * x ) );
+	}
 }
 
 void generateHammWindow( float *window, size_t length )
 {
-	vDSP_hamm_window( window, static_cast<vDSP_Length>( length ), 0 );
+	double alpha = 0.53836;
+	double beta	= 1.0 - alpha;
+	double oneOverN	= 1.0 / static_cast<double>( length - 1 );
+
+	for( size_t i = 0; i < length; i++ ) {
+		double x = static_cast<double>(i) * oneOverN;
+		window[i] = float( alpha - beta * cos( 2.0 * M_PI * x ) );
+	}
 }
 
 void generateHannWindow( float *window, size_t length )
 {
-	vDSP_hann_window( window, static_cast<vDSP_Length>( length ), 0 );
+	double alpha = 0.5;
+	double oneOverN	= 1.0 / static_cast<double>( length - 1 );
+
+	for( size_t i = 0; i < length; i++ ) {
+		double x  = static_cast<double>(i) * oneOverN;
+		window[i] = float( alpha * ( 1.0 - cos( 2.0 * M_PI * x ) ) );
+	}
 }
+
+void generateWindow( WindowType windowType, float *window, size_t length )
+{
+	switch( windowType ) {
+		case WindowType::BLACKMAN:
+			generateBlackmanWindow( window, length );
+			break;
+		case WindowType::HAMM:
+			generateHammWindow( window, length );
+			break;
+		case WindowType::HANN:
+			generateHannWindow( window, length );
+			break;
+		case WindowType::RECT:
+		default:
+			fill( 1.0f, window, length );
+			break;
+	}
+}
+
+// ----------------------------------------------------------------------------------------------------
+// MARK: - Vector based math routines
+// ----------------------------------------------------------------------------------------------------
+
+#if defined( CINDER_AUDIO_VDSP )
 
 void fill( float value, float *array, size_t length )
 {
@@ -116,42 +165,6 @@ void addMul( const float *arrayA, const float *arrayB, float scalar, float *resu
 }
 
 #else // ! defined( CINDER_AUDIO_VDSP )
-
-// from WebKit's applyWindow in RealtimeAnalyser.cpp
-void generateBlackmanWindow( float *window, size_t length )
-{
-	double alpha = 0.16;
-	double a0 = 0.5 * (1 - alpha);
-	double a1 = 0.5;
-	double a2 = 0.5 * alpha;
-	double oneOverN = 1.0 / static_cast<double>( length - 1 );
-
-	for( size_t i = 0; i < length; i++ ) {
-		double x = static_cast<double>(i) * oneOverN;
-		window[i] = float( a0 - a1 * cos( 2.0 * M_PI * x ) + a2 * cos( 4.0 * M_PI * x ) );
-	}
-}
-
-void generateHammWindow( float *window, size_t length )
-{
-	double alpha	= 0.53836;
-	double beta	= 1.0 - alpha;
-	double oneOverN	= 1.0 / static_cast<double>( length - 1 );
-	for( size_t i = 0; i < length; i++ ) {
-		double x = static_cast<double>(i) * oneOverN;
-		window[i] = float( alpha - beta * cos( 2.0 * M_PI * x ) );
-	}
-}
-
-void generateHannWindow( float *window, size_t length )
-{
-	double alpha	= 0.5;
-	double oneOverN	= 1.0 / static_cast<double>( length - 1 );
-	for( size_t i = 0; i < length; i++ ) {
-		double x  = static_cast<double>(i) * oneOverN;
-		window[i] = float( alpha * ( 1.0 - cos( 2.0 * M_PI * x ) ) );
-	}
-}
 
 void fill( float value, float *array, size_t length )
 {
@@ -232,26 +245,6 @@ void addMul( const float *arrayA, const float *arrayB, float scalar, float *resu
 }
 
 #endif // ! defined( CINDER_AUDIO_VDSP )
-
-
-void generateWindow( WindowType windowType, float *window, size_t length )
-{
-	switch ( windowType ) {
-		case WindowType::BLACKMAN:
-			generateBlackmanWindow( window, length );
-			break;
-		case WindowType::HAMM:
-			generateHammWindow( window, length );
-			break;
-		case WindowType::HANN:
-			generateHannWindow( window, length );
-			break;
-		case WindowType::RECT:
-		default:
-			fill( 1.0f, window, length );
-			break;
-	}
-}
 
 void normalize( float *array, size_t length, float maxValue )
 {
