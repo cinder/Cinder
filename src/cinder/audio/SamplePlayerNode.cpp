@@ -215,11 +215,12 @@ FilePlayerNode::FilePlayerNode( const SourceFileRef &sourceFile, bool isReadAsyn
 	: SamplePlayerNode( format ), mSourceFile( sourceFile ), mIsReadAsync( isReadAsync ), mRingBufferPaddingFactor( 2 ),
 		mLastUnderrun( 0 ), mLastOverrun( 0 )
 {
+	if( mSourceFile )
+		mNumFrames = mSourceFile->getNumFrames();
+
 	// force channel mode to match buffer
 	setChannelMode( ChannelMode::SPECIFIED );
 	setNumChannels( mSourceFile->getNumChannels() );
-
-	// framerate will be updated once SourceFile's output samplerate is set, in initialize().
 }
 
 FilePlayerNode::~FilePlayerNode()
