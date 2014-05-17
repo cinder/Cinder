@@ -120,6 +120,7 @@ void SamplePlayerNodeTestApp::setupBufferPlayerNode()
 	};
 
 	auto connectFn = [bufferPlayer, this] {
+		mGain->disconnectAllInputs();
 		mSamplePlayerNode = bufferPlayer;
 		mSamplePlayerNode >> mGain >> mPan >> audio::master()->getOutput();
 		audio::master()->printGraph();
@@ -148,6 +149,8 @@ void SamplePlayerNodeTestApp::setupBufferPlayerNode()
 
 void SamplePlayerNodeTestApp::setupFilePlayerNode()
 {
+	mGain->disconnectAllInputs();
+
 	auto ctx = audio::master();
 
 //	mSourceFile->setMaxFramesPerRead( 8192 );
