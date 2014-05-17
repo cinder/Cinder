@@ -23,6 +23,7 @@
 
 #include "cinder/audio/msw/FileMediaFoundation.h"
 #include "cinder/audio/dsp/Converter.h"
+#include "cinder/audio/Exception.h"
 #include "cinder/audio/Debug.h"
 
 #include <mfidl.h>
@@ -176,7 +177,12 @@ void SourceFileMediaFoundation::initReader()
 
 	if( mDataSource->isFilePath() ) {
 		hr = ::MFCreateSourceReaderFromURL( mDataSource->getFilePath().wstring().c_str(), attributesPtr.get(), &sourceReader );
-		CI_ASSERT( hr == S_OK );
+		if( hr != S_OK ) {
+			string errorString = string( "SourceFileMediaFoundation: Failed to create SourceReader from URL: " ) +  mDataSource->getFilePath().string(); 
+			if( hr == HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) )
+				errorString += ", file not found.";
+			throw AudioFileExc( errorString );
+		}
 	}
 	else {
 		mComIStream = ci::msw::makeComUnique( new ci::msw::ComIStream( mDataSource->createStream() ) );
@@ -186,7 +192,8 @@ void SourceFileMediaFoundation::initReader()
 		mByteStream = ci::msw::makeComUnique( byteStream );
 
 		hr = ::MFCreateSourceReaderFromByteStream( byteStream, attributesPtr.get(), &sourceReader );
-		CI_ASSERT( hr == S_OK );
+		if( hr != S_OK )
+			throw AudioFileExc( "SourceFileMediaFoundation: Failed to create SourceReader from resource." );
 	}
 
 	mSourceReader = ci::msw::makeComUnique( sourceReader );
@@ -357,7 +364,12 @@ TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataT
 
 	::IMFSinkWriter *sinkWriter;
 	HRESULT hr = ::MFCreateSinkWriterFromURL( dataTarget->getFilePath().wstring().c_str(), NULL, NULL, &sinkWriter );
-	CI_ASSERT( hr == S_OK );
+	if( hr != S_OK ) {
+		string errorString = string( "TargetFileMediaFoundation: Failed to create SinkWriter from URL: " ) +  dataTarget->getFilePath().string(); 
+		if( hr == HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) )
+			errorString += ", file not found.";
+		throw AudioFileExc( errorString );
+	}
 
 	mSinkWriter = ci::msw::makeComUnique( sinkWriter );
 
