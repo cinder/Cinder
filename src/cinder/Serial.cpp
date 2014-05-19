@@ -141,9 +141,9 @@ Serial::Device Serial::findDeviceByNameContains( const std::string &searchString
 	return Serial::Device();
 }
 	
-const std::vector<Serial::Device>& Serial::getDevices(bool forceRefresh)
+const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 {
-	if ((!forceRefresh) && (sDevicesInited))
+	if( ( ! forceRefresh ) && ( sDevicesInited ) )
 		return sDevices;
 
 	sDevices.clear();
@@ -173,49 +173,49 @@ const std::vector<Serial::Device>& Serial::getDevices(bool forceRefresh)
 	::DWORD size = 0;
 	::DWORD deviceIndex = 0;
 
-	devInfoSet = ::SetupDiGetClassDevs(&guid, 0, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
-	if (devInfoSet == INVALID_HANDLE_VALUE)
+	devInfoSet = ::SetupDiGetClassDevs( &guid, 0, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
+	if( devInfoSet == INVALID_HANDLE_VALUE )
 		throw SerialExcDeviceEnumerationFailed();
 
-	ZeroMemory(&devInfo, sizeof(devInfo));
-	devInfo.cbSize = sizeof(devInfo);
-	while (::SetupDiEnumDeviceInfo(devInfoSet, deviceIndex++, &devInfo))
+	ZeroMemory( &devInfo, sizeof( devInfo ) );
+	devInfo.cbSize = sizeof( devInfo );
+	while( ::SetupDiEnumDeviceInfo( devInfoSet, deviceIndex++, &devInfo ) )
 	{
-		devInfo.cbSize = sizeof(devInfo);
+		devInfo.cbSize = sizeof( devInfo );
 
 		::DWORD deviceInterfaceIndex = 0;
 
-		devInterface.cbSize = sizeof(devInterface);
-		while (::SetupDiEnumDeviceInterfaces(devInfoSet, &devInfo, &guid, deviceInterfaceIndex++, &devInterface))
+		devInterface.cbSize = sizeof( devInterface );
+		while( ::SetupDiEnumDeviceInterfaces( devInfoSet, &devInfo, &guid, deviceInterfaceIndex++, &devInterface ) )
 		{
-			devInterface.cbSize = sizeof(devInterface);
+			devInterface.cbSize = sizeof( devInterface );
 
 			// See how large a buffer we require for the device interface details
-			::SetupDiGetDeviceInterfaceDetail(devInfoSet, &devInterface, 0, 0, &size, 0);
+			::SetupDiGetDeviceInterfaceDetail( devInfoSet, &devInterface, 0, 0, &size, 0 );
 
-			shared_ptr<::SP_DEVICE_INTERFACE_DETAIL_DATA> interfaceDetail((::SP_DEVICE_INTERFACE_DETAIL_DATA*)calloc(1, size), free);
-			if (interfaceDetail) {
-				interfaceDetail->cbSize = sizeof(::SP_DEVICE_INTERFACE_DETAIL_DATA);
+			shared_ptr<::SP_DEVICE_INTERFACE_DETAIL_DATA> interfaceDetail( (::SP_DEVICE_INTERFACE_DETAIL_DATA*)calloc(1, size), free );
+			if( interfaceDetail ) {
+				interfaceDetail->cbSize = sizeof( ::SP_DEVICE_INTERFACE_DETAIL_DATA );
 
-				devInfo.cbSize = sizeof(devInfo);
-				if (!::SetupDiGetDeviceInterfaceDetail(devInfoSet, &devInterface, interfaceDetail.get(), size, 0, &devInfo)) {
+				devInfo.cbSize = sizeof( devInfo );
+				if( ! ::SetupDiGetDeviceInterfaceDetail( devInfoSet, &devInterface, interfaceDetail.get(), size, 0, &devInfo ) ) {
 					continue;
 				}
 
 				char friendlyName[2048];
-				size = sizeof(friendlyName);
+				size = sizeof( friendlyName );
 				friendlyName[0] = 0;
 				::DWORD propertyDataType;
-				if (!::SetupDiGetDeviceRegistryPropertyA(devInfoSet, &devInfo, SPDRP_FRIENDLYNAME, &propertyDataType, (LPBYTE)friendlyName, size, 0)) {
+				if( ! ::SetupDiGetDeviceRegistryPropertyA( devInfoSet, &devInfo, SPDRP_FRIENDLYNAME, &propertyDataType, (LPBYTE)friendlyName, size, 0 ) ) {
 					continue;
 				}
 
-				sDevices.push_back(Serial::Device(string(friendlyName), toUtf8(interfaceDetail->DevicePath)));
+				sDevices.push_back( Serial::Device( string( friendlyName ), toUtf8( interfaceDetail->DevicePath ) ) );
 			}
 		}
 	}
 
-	::SetupDiDestroyDeviceInfoList(devInfoSet);
+	::SetupDiDestroyDeviceInfoList( devInfoSet );
 #endif
 
 	sDevicesInited = true;
