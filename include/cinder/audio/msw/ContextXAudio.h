@@ -66,6 +66,7 @@ class OutputDeviceNodeXAudio : public OutputDeviceNode {
 	void uninitialize()			override;
 	void enableProcessing()		override;
 	void disableProcessing()	override;
+	bool supportsProcessInPlace() const	override	{ return false; }
 
   private:
 

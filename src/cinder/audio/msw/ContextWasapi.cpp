@@ -458,7 +458,6 @@ void OutputDeviceNodeWasapi::initialize()
 		setNumChannels( mRenderImpl->mNumChannels );
 	}
 
-	setupProcessWithSumming();
 	mInterleavedBuffer = BufferInterleaved( getFramesPerBlock(), getNumChannels() );
 }
 

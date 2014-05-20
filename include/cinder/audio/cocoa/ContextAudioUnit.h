@@ -69,6 +69,7 @@ class OutputDeviceNodeAudioUnit : public OutputDeviceNode, public NodeAudioUnit 
   protected:
 	void initialize()	override;
 	void uninitialize()	override;
+	bool supportsProcessInPlace() const	override	{ return false; }
 
   private:
 	static OSStatus renderCallback( void *data, ::AudioUnitRenderActionFlags *flags, const ::AudioTimeStamp *timeStamp, UInt32 busNumber, UInt32 numFrames, ::AudioBufferList *bufferList );

@@ -114,8 +114,6 @@ void OutputDeviceNodeXAudio::initialize()
 {
 	CI_ASSERT_MSG( getNumChannels() <= 2, "number of channels greater than 2 is not supported." );
 
-	setupProcessWithSumming();
-
 	auto internalBuffer = getInternalBuffer();
 	size_t numSamples = internalBuffer->getSize();
 

@@ -76,9 +76,6 @@ OutputDeviceNodeAudioUnit::OutputDeviceNodeAudioUnit( const DeviceRef &device, c
 
 void OutputDeviceNodeAudioUnit::initialize()
 {
-	// OutputDeviceNode always needs an internal buffer to deliver to the ouput AU, so force one to be made.
-	setupProcessWithSumming();
-
 	mRenderData.node = this;
 	mRenderData.context = dynamic_cast<ContextAudioUnit *>( getContext().get() );
 
