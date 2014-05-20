@@ -179,15 +179,13 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 
 	ZeroMemory( &devInfo, sizeof( devInfo ) );
 	devInfo.cbSize = sizeof( devInfo );
-	while( ::SetupDiEnumDeviceInfo( devInfoSet, deviceIndex++, &devInfo ) )
-	{
+	while( ::SetupDiEnumDeviceInfo( devInfoSet, deviceIndex++, &devInfo ) )	{
 		devInfo.cbSize = sizeof( devInfo );
 
 		::DWORD deviceInterfaceIndex = 0;
 
 		devInterface.cbSize = sizeof( devInterface );
-		while( ::SetupDiEnumDeviceInterfaces( devInfoSet, &devInfo, &guid, deviceInterfaceIndex++, &devInterface ) )
-		{
+		while( ::SetupDiEnumDeviceInterfaces( devInfoSet, &devInfo, &guid, deviceInterfaceIndex++, &devInterface ) ) {
 			devInterface.cbSize = sizeof( devInterface );
 
 			// See how large a buffer we require for the device interface details
