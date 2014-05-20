@@ -48,7 +48,7 @@ class DeviceTestApp : public AppNative {
 
 	audio::InputDeviceNodeRef		mInputDeviceNode;
 	audio::OutputDeviceNodeRef		mOutputDeviceNode;
-	audio::MonitorNodeRef			mScope;
+	audio::MonitorNodeRef			mMonitor;
 	audio::GainNodeRef					mGain;
 	audio::GenNodeRef				mGen;
 
@@ -74,11 +74,11 @@ void DeviceTestApp::setup()
 
 	auto ctx = audio::master();
 
-	mScope = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 1024 ) ) );
+	mMonitor = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 1024 ) ) );
 	mGain = ctx->makeNode( new audio::GainNode() );
 	mGain->setValue( 0.4f );
 
-	mGain->connect( mScope );
+	mGain->connect( mMonitor );
 
 	setOutputDevice( audio::Device::getDefaultOutput() );
 	setInputDevice( audio::Device::getDefaultInput() );
@@ -109,12 +109,12 @@ void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numC
 	mOutputDeviceNode->getDevice()->getSignalParamsDidChange().connect( [this] {	CI_LOG_V( "OutputDeviceNode params changed:" ); printDeviceDetails( mOutputDeviceNode->getDevice() ); } );
 
 
-	// TODO: if this call is moved to after the mScope->connect(), there is a chance that initialization can
+	// TODO: if this call is moved to after the mMonitor->connect(), there is a chance that initialization can
 	// take place with samplerate / frames-per-block derived from the default OutputNode (ses default Device)
 	// Double check this doesn't effect anyone, if it does then setOutput may need to do more work to update Nodes.
 	ctx->setOutput( mOutputDeviceNode );
 
-	mScope->connect( mOutputDeviceNode );
+	mMonitor->connect( mOutputDeviceNode );
 
 	ctx->initializeAllNodes();
 
@@ -250,7 +250,7 @@ void DeviceTestApp::setupSend()
 	CI_LOG_V( "routing input to channel: " << channelIndex );
 
 	input >> mGain >> router->route( 0, channelIndex );
-	router >> mScope >> ctx->getOutput();
+	router >> mMonitor >> ctx->getOutput();
 
 	mGen->enable();
 }
@@ -267,7 +267,7 @@ void DeviceTestApp::setupSendStereo()
 	CI_LOG_V( "routing input to channel: " << channelIndex );
 
 	mGen >> upmix >> mGain >> router->route( 0, channelIndex );
-	router >> mScope >> ctx->getOutput();
+	router >> mMonitor >> ctx->getOutput();
 
 	mGen->enable();
 }
@@ -546,8 +546,8 @@ void DeviceTestApp::draw()
 	gl::pushMatrices();
 	gl::translate( 0, mViewYOffset );
 
-	if( mScope && mScope->isEnabled() ) {
-		const audio::Buffer &buffer = mScope->getBuffer();
+	if( mMonitor && mMonitor->isEnabled() ) {
+		const audio::Buffer &buffer = mMonitor->getBuffer();
 
 		float padding = 20;
 		float waveHeight = ((float)getWindowHeight() - padding * 3.0f ) / (float)buffer.getNumChannels();
@@ -566,7 +566,7 @@ void DeviceTestApp::draw()
 			yOffset += waveHeight + padding;
 		}
 
-		float volume = mScope->getVolume();
+		float volume = mMonitor->getVolume();
 		Rectf volumeRect( mGainSlider.mBounds.x1, mGainSlider.mBounds.y2 + padding, mGainSlider.mBounds.x1 + mGainSlider.mBounds.getWidth() * volume, mGainSlider.mBounds.y2 + padding + 20 );
 		gl::drawSolidRect( volumeRect );
 	}

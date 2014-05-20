@@ -149,7 +149,7 @@ float DelayFeedback::quantizePitch( const Vec2f &pos )
 			pitchMidi--;
 	}
 
-	return audio::toFreq( pitchMidi );
+	return audio::midiToFreq( pitchMidi );
 }
 
 void DelayFeedback::mouseDrag( MouseEvent event )

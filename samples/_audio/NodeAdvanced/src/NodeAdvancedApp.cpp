@@ -21,10 +21,10 @@ class NodeAdvancedApp : public AppNative {
 	void update();
 	void draw();
 
-	audio::GenNodeRef				mGen;	// Gen's generate audio signals
-	audio::FilterLowPassNodeRef	mLowpass; // A Lowpass filter will reduce high frequency content.
-	audio::GainNodeRef					mGain;	// Gain modifies the volume of the signal
-	audio::ScopeNodeRef			mScope;	// Scope lets you retrieve audio samples in a thread-safe manner
+	audio::GenNodeRef				mGen;		// GenNode's generate audio signals
+	audio::FilterLowPassNodeRef		mLowpass;	// lowpass filter to reduce high frequency content.
+	audio::GainNodeRef				mGain;		// modifies the volume of the signal
+	audio::MonitorNodeRef			mMonitor;	// lets you retrieve audio samples in a thread-safe manner
 
 	vector<size_t>	mCPentatonicScale;
 
@@ -40,7 +40,7 @@ void NodeAdvancedApp::setup()
 	mGen = ctx->makeNode( new audio::GenTriangleNode( audio::Node::Format().autoEnable() ) );
 	mLowpass = ctx->makeNode( new audio::FilterLowPassNode );
 	mGain = ctx->makeNode( new audio::GainNode );
-	mScope = ctx->makeNode( new audio::ScopeNode );
+	mMonitor = ctx->makeNode( new audio::MonitorNode );
 
 	mLowpass->setFreq( 400 );
 
@@ -51,7 +51,7 @@ void NodeAdvancedApp::setup()
 	mGen >> mLowpass >> mGain >> ctx->getOutput();
 
 	// Also feed the Gain to our Scope so that we can see what the waveform looks like.
-	mGain >> mScope;
+	mGain >> mMonitor;
 
 	ctx->enable();
 
@@ -90,7 +90,7 @@ void NodeAdvancedApp::update()
 	if( getElapsedFrames() % seqPeriod == 0 ) {
 		size_t index = randInt( mCPentatonicScale.size() );
 		size_t midiPitch = mCPentatonicScale.at( index );
-		mGen->getParamFreq()->applyRamp( audio::toFreq( midiPitch ), mFreqRampTime );
+		mGen->getParamFreq()->applyRamp( audio::midiToFreq( midiPitch ), mFreqRampTime );
 	}
 }
 
@@ -99,16 +99,16 @@ void NodeAdvancedApp::draw()
 	gl::clear();
 
 	// Draw the Scope's recorded Buffer in the upper right.
-	if( mScope && mScope->getNumConnectedInputs() ) {
+	if( mMonitor && mMonitor->getNumConnectedInputs() ) {
 		Rectf scopeRect( getWindowWidth() - 210, 10, getWindowWidth() - 10, 110 );
-		drawAudioBuffer( mScope->getBuffer(), scopeRect, true );
+		drawAudioBuffer( mMonitor->getBuffer(), scopeRect, true );
 	}
 
 	// Visualize the Gen's current pitch with a circle.
 
 	float pitchMin = mCPentatonicScale.front();
 	float pitchMax = mCPentatonicScale.back();
-	float currentPitch = audio::toMidi( mGen->getFreq() ); // MIDI values do not have to be integers for us.
+	float currentPitch = audio::freqToMidi( mGen->getFreq() ); // MIDI values do not have to be integers for us.
 
 	float percent = ( currentPitch - pitchMin ) / ( pitchMax - pitchMin );
 

@@ -31,7 +31,7 @@ class MultichannelOutputApp : public AppNative {
 
 	audio::GenNodeRef				mGen;			// Gen's generate audio signals
 	audio::GainNodeRef				mGain;			// GainNode modifies the volume of the signal
-	audio::ScopeNodeRef			mScope;			// Scope lets you retrieve audio samples in a thread-safe manner
+	audio::MonitorNodeRef			mMonitor;			// Scope lets you retrieve audio samples in a thread-safe manner
 	audio::ChannelRouterNodeRef	mChannelRouterNode;	// Scope lets you retrieve audio samples in a thread-safe manner
 
 	size_t mCurrentChannel;
@@ -53,10 +53,10 @@ void MultichannelOutputApp::setup()
 	mChannelRouterNode = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( ctx->getOutput()->getNumChannels() ) ) );
 
 	// make a Scope to visualize the channels.  You don't need to specify the number of channels here because its default ChannelMode is MATCHES_INPUT.
-	mScope = ctx->makeNode( new audio::ScopeNode );
+	mMonitor = ctx->makeNode( new audio::MonitorNode );
 
 	// connect up our Node's, routing mGain to the output channel specified by mCurrentChannel. Send the result through the Scope, onto the output.
-	mGen >> mGain >> mChannelRouterNode->route( 0, mCurrentChannel ) >> mScope >> ctx->getOutput();
+	mGen >> mGain >> mChannelRouterNode->route( 0, mCurrentChannel ) >> mMonitor >> ctx->getOutput();
 
 	ctx->enable();
 
@@ -102,7 +102,7 @@ void MultichannelOutputApp::shiftRouteChannel()
 
 void MultichannelOutputApp::update()
 {
-	if( mGain->getParam()->getNumRamps() == 0 ) {
+	if( mGain->getParam()->getNumEvents() == 0 ) {
 		shiftRouteChannel();
 		rampGain();
 	}
@@ -113,9 +113,9 @@ void MultichannelOutputApp::draw()
 	gl::clear();
 
 	// Draw the Scope's recorded Buffer, all channels as separate line arrays.
-	if( mScope && mScope->isEnabled() ) {
+	if( mMonitor && mMonitor->isEnabled() ) {
 		Rectf scopeRect( 10, 10, (float)getWindowWidth() - 10, (float)getWindowHeight() - 10 );
-		drawAudioBuffer( mScope->getBuffer(), scopeRect, true );
+		drawAudioBuffer( mMonitor->getBuffer(), scopeRect, true );
 	}
 }
 

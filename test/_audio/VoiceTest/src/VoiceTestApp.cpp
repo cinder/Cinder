@@ -34,7 +34,7 @@ public:
 	void processTap( Vec2i pos );
 
 	audio::VoiceRef		mVoice;
-	audio::MonitorNodeRef	mScope;
+	audio::MonitorNodeRef	mMonitor;
 
 	vector<TestWidget *>	mWidgets;
 	Button					mPlayButton, mEnableNoiseButton, mEnableSineButton;
@@ -80,9 +80,9 @@ void VoiceTestApp::setupScope()
 	mVoice->setVolume( mVolumeSlider.mValueScaled );
 
 	auto ctx = audio::master();
-	mScope = ctx->makeNode( new audio::MonitorNode );
+	mMonitor = ctx->makeNode( new audio::MonitorNode );
 
-	mVoice->getOutputNode() >> mScope >> ctx->getOutput();
+	mVoice->getOutputNode() >> mMonitor >> ctx->getOutput();
 }
 
 void VoiceTestApp::setupUI()
@@ -163,11 +163,11 @@ void VoiceTestApp::draw()
 {
 	gl::clear();
 
-	if( mScope && mScope->getNumConnectedInputs() ) {
+	if( mMonitor && mMonitor->getNumConnectedInputs() ) {
 		Vec2f padding( 20, 4 );
 
 		Rectf scopeRect( padding.x, padding.y, getWindowWidth() - padding.x, getWindowHeight() - padding.y );
-		drawAudioBuffer( mScope->getBuffer(), scopeRect, true );
+		drawAudioBuffer( mMonitor->getBuffer(), scopeRect, true );
 	}
 
 	drawWidgets( mWidgets );

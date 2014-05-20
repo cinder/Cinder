@@ -40,7 +40,7 @@ public:
 	audio::GenNodeRef	makeOsc( audio::WaveformType type );
 
 	audio::GainNodeRef				mGain;
-	audio::MonitorSpectralNodeRef	mScope;
+	audio::MonitorSpectralNodeRef	mMonitor;
 	audio::WaveTable2dRef	mWaveTable;
 	vector<audio::GenNodeRef>		mGenBank;
 
@@ -71,10 +71,10 @@ void StressTestApp::setup()
 	mGain = ctx->makeNode( new audio::GainNode );
 	mGain->setValue( 0.1f );
 
-	mScope = audio::master()->makeNode( new audio::MonitorSpectralNode( audio::MonitorSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
-	mScope->setSmoothingFactor( 0.4 );
+	mMonitor = audio::master()->makeNode( new audio::MonitorSpectralNode( audio::MonitorSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
+	mMonitor->setSmoothingFactor( 0.4 );
 
-	mGain >> mScope >> ctx->getOutput();
+	mGain >> mMonitor >> ctx->getOutput();
 
 	addGens();
 
@@ -305,11 +305,11 @@ void StressTestApp::draw()
 
 	Rectf rect( padding, padding, getWindowWidth() - padding - 200, scopeHeight + padding );
 
-	drawAudioBuffer( mScope->getBuffer(), rect, true );
+	drawAudioBuffer( mMonitor->getBuffer(), rect, true );
 
 	rect += Vec2f( 0, scopeHeight + padding );
 	mSpectrumPlot.setBounds( rect );
-	mSpectrumPlot.draw( mScope->getMagSpectrum() );
+	mSpectrumPlot.draw( mMonitor->getMagSpectrum() );
 
 	drawWidgets( mWidgets );
 

@@ -42,7 +42,7 @@ public:
 	void processTap( Vec2i pos );
 
 	audio::GainNodeRef			mGain;
-	audio::MonitorNodeRef	mScope;
+	audio::MonitorNodeRef	mMonitor;
 	audio::GenNodeRef		mGen, mNoise;
 
 	vector<TestWidget *>	mWidgets;
@@ -62,7 +62,7 @@ void NodeTestApp::setup()
 	mGen = ctx->makeNode( new audio::GenSineNode( 440 ) );
 	mNoise = ctx->makeNode( new audio::GenNoiseNode() );
 
-	mScope = audio::master()->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 2048 ) ) );
+	mMonitor = audio::master()->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 2048 ) ) );
 
 	setupGen();
 //	setupMerge();
@@ -77,8 +77,8 @@ void NodeTestApp::setup()
 
 void NodeTestApp::setupGen()
 {
-	if( mScope )
-		mScope->disconnectAll();
+	if( mMonitor )
+		mMonitor->disconnectAll();
 
 	mGain->disconnectAllInputs();
 
@@ -91,8 +91,8 @@ void NodeTestApp::setupGen()
 
 void NodeTestApp::setup2to1()
 {
-	if( mScope )
-		mScope->disconnectAll();
+	if( mMonitor )
+		mMonitor->disconnectAll();
 
 	mGen >> mGain;
 	mNoise >> mGain;
@@ -115,7 +115,7 @@ void NodeTestApp::setup1to2()
 	mGen >> mGain >> audio::master()->getOutput();
 	mGen->enable();
 
-	mGen->connect( mScope );
+	mGen->connect( mMonitor );
 
 	mEnableNoiseButton.setEnabled( false );
 	mEnableSineButton.setEnabled( true );
@@ -123,8 +123,8 @@ void NodeTestApp::setup1to2()
 
 void NodeTestApp::setupInterleavedPassThru()
 {
-	if( mScope )
-		mScope->disconnectAll();
+	if( mMonitor )
+		mMonitor->disconnectAll();
 
 	auto ctx = audio::master();
 
@@ -143,7 +143,7 @@ void NodeTestApp::setupAutoPulled()
 	auto ctx = audio::master();
 	ctx->disconnectAllNodes();
 
-	mGen >> mScope;
+	mGen >> mMonitor;
 
 	mGen->enable();
 
@@ -158,10 +158,10 @@ void NodeTestApp::setupFunnelCase()
 	auto gain2 = ctx->makeNode( new audio::GainNode );
 //	auto gain2 = ctx->makeNode( new audio::GainNode( audio::Node::Format().autoEnable( false ) ) );
 
-	mGen >> gain1 >> mScope;
-	mNoise >> gain2 >> mScope;
+	mGen >> gain1 >> mMonitor;
+	mNoise >> gain2 >> mMonitor;
 
-	mScope >> mGain >> ctx->getOutput();
+	mMonitor >> mGain >> ctx->getOutput();
 
 	mNoise->disable();
 	mGen->enable();
@@ -180,7 +180,7 @@ void NodeTestApp::setupMerge()
 	mGen >> router->route( 0, 0 );
 	mNoise >> router->route( 0, 1 );
 
-	router >> mGain >> mScope >> ctx->getOutput();
+	router >> mGain >> mMonitor >> ctx->getOutput();
 
 	mGen->enable();
 	mNoise->enable();
@@ -201,7 +201,7 @@ void NodeTestApp::setupMerge4()
 	mGen >> upmixStereo1 >> router->route( 0, 0 );
 	mNoise >> upmixStereo2 >> router->route( 0, 2 );
 
-	router >> mGain >> mScope >> ctx->getOutput();
+	router >> mGain >> mMonitor >> ctx->getOutput();
 
 	mGen->enable();
 	mNoise->enable();
@@ -217,7 +217,7 @@ void NodeTestApp::setupSplitStereo()
 	auto gainStereo = ctx->makeNode( new audio::GainNode( audio::Node::Format().channels( 2 ) ) );
 	auto router = ctx->makeNode( new audio::ChannelRouterNode( audio::Node::Format().channels( 2 ) ) );
 
-	mGen >> gainStereo >> router->route( 0, 0, 1 ) >> mGain >> mScope >> ctx->getOutput();
+	mGen >> gainStereo >> router->route( 0, 0, 1 ) >> mGain >> mMonitor >> ctx->getOutput();
 
 	mGen->enable();
 	mEnableNoiseButton.setEnabled( false );
@@ -244,7 +244,7 @@ void NodeTestApp::setupSplitMerge()
 	splitRouter0 >> stereoRouter->route( 0, 0 );
 	splitRouter1 >> stereoRouter->route( 0, 1 );
 
-	stereoRouter >> mGain >> mScope >> ctx->getOutput();
+	stereoRouter >> mGain >> mMonitor >> ctx->getOutput();
 
 	mGen->enable();
 	mEnableNoiseButton.setEnabled( false );
@@ -371,11 +371,11 @@ void NodeTestApp::draw()
 {
 	gl::clear();
 
-	if( mScope && mScope->getNumConnectedInputs() ) {
+	if( mMonitor && mMonitor->getNumConnectedInputs() ) {
 		Vec2f padding( 20, 20 );
 
 		Rectf scopeRect( padding.x, padding.y, getWindowWidth() - padding.x, getWindowHeight() - padding.y );
-		drawAudioBuffer( mScope->getBuffer(), scopeRect, true );
+		drawAudioBuffer( mMonitor->getBuffer(), scopeRect, true );
 	}
 
 	drawWidgets( mWidgets );

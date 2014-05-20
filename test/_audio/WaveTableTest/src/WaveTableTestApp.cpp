@@ -35,7 +35,7 @@ public:
 	void setupTriangleCalc();
 
 	audio::GainNodeRef				mGain;
-	audio::MonitorSpectralNodeRef		mScope;
+	audio::MonitorSpectralNodeRef		mMonitor;
 	audio::GenOscNodeRef			mGenOsc;
 	audio::GenPulseNodeRef			mGenPulse;
 	audio::GenNodeRef				mGen;
@@ -62,8 +62,8 @@ void WaveTableTestApp::setup()
 	mGain = ctx->makeNode( new audio::GainNode );
 	mGain->setValue( 0.075f );
 
-	mScope = audio::master()->makeNode( new audio::MonitorSpectralNode( audio::MonitorSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
-	mScope->setSmoothingFactor( 0 );
+	mMonitor = audio::master()->makeNode( new audio::MonitorSpectralNode( audio::MonitorSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
+	mMonitor->setSmoothingFactor( 0 );
 
 	mFreqSlider.set( 100 );
 
@@ -71,7 +71,7 @@ void WaveTableTestApp::setup()
 //	setupTable();
 //	setupPulse();
 
-	mGen >> mScope >> mGain >> ctx->getOutput();
+	mGen >> mMonitor >> mGain >> ctx->getOutput();
 
 	ctx->printGraph();
 
@@ -111,7 +111,7 @@ void WaveTableTestApp::setupPulse()
 	if( mGenOsc )
 		mGenOsc->disconnectAll();
 
-	mGenPulse >> mScope;
+	mGenPulse >> mMonitor;
 	mGen = mGenPulse;
 
 #if 1
@@ -258,7 +258,7 @@ void WaveTableTestApp::processTap( Vec2i pos )
 		string currentTest = mTestSelector.currentSection();
 		CI_LOG_V( "selected: " << currentTest );
 
-		mScope->disconnectAllInputs();
+		mMonitor->disconnectAllInputs();
 
 		if( currentTest == "sine" )
 			setupOsc( audio::WaveformType::SINE );
@@ -275,7 +275,7 @@ void WaveTableTestApp::processTap( Vec2i pos )
 		else if( currentTest == "triangle (calc)" )
 			setupTriangleCalc();
 
-		mGen >> mScope;
+		mGen >> mMonitor;
 	}
 	else
 		processDrag( pos );
@@ -328,11 +328,11 @@ void WaveTableTestApp::draw()
 	drawAudioBuffer( mTableCopy, rect, true );
 
 	rect += Vec2f( 0, scopeHeight + padding );
-	drawAudioBuffer( mScope->getBuffer(), rect, true );
+	drawAudioBuffer( mMonitor->getBuffer(), rect, true );
 
 	rect += Vec2f( 0, scopeHeight + padding );
 	mSpectrumPlot.setBounds( rect );
-	mSpectrumPlot.draw( mScope->getMagSpectrum() );
+	mSpectrumPlot.draw( mMonitor->getMagSpectrum() );
 
 	drawWidgets( mWidgets );
 }

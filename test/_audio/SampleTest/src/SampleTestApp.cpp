@@ -58,7 +58,7 @@ class SamplePlayerNodeTestApp : public AppNative {
 
 	audio::SamplePlayerNodeRef		mSamplePlayerNode;
 	audio::SourceFileRef			mSourceFile;
-	audio::MonitorNodeRef			mScope;
+	audio::MonitorNodeRef			mMonitor;
 	audio::GainNodeRef					mGain;
 	audio::Pan2dNodeRef				mPan;
 	audio::BufferRecorderNodeRef		mRecorder;
@@ -158,16 +158,16 @@ void SamplePlayerNodeTestApp::setupFilePlayerNode()
 	CI_LOG_V( "async read: " << asyncRead );
 	mSamplePlayerNode = ctx->makeNode( new audio::FilePlayerNode( mSourceFile, asyncRead ) );
 
-	// TODO: it is pretty surprising when you recreate mScope here without checking if there has already been one added.
-	//	- user will no longer see the old mScope, but the context still owns a reference to it, so another gets added each time we call this method.
-	if( ! mScope )
-		mScope = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 1024 ) ) );
+	// TODO: it is pretty surprising when you recreate mMonitor here without checking if there has already been one added.
+	//	- user will no longer see the old mMonitor, but the context still owns a reference to it, so another gets added each time we call this method.
+	if( ! mMonitor )
+		mMonitor = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 1024 ) ) );
 
 	// when these connections are called, some (GainNode and Pan) will already be connected, but this is okay, they should silently no-op.
 
 	// or connect in series (it is added to the Context's 'auto pulled list')
 	mSamplePlayerNode >> mGain >> mPan >> ctx->getOutput();
-	mPan >> mScope;
+	mPan >> mMonitor;
 
 	mSamplePlayerNode->setLoopEnabled( mLoopButton.mEnabled );
 	mSamplePlayerNode->setLoopBeginTime( mLoopBeginSlider.mValueScaled );
@@ -491,8 +491,8 @@ void SamplePlayerNodeTestApp::draw()
 		auto bufferPlayer = dynamic_pointer_cast<audio::BufferPlayerNode>( mSamplePlayerNode );
 		if( bufferPlayer )
 			mWaveformPlot.draw();
-		else if( mScope && mScope->isInitialized() )
-			drawAudioBuffer( mScope->getBuffer(), getWindowBounds() );
+		else if( mMonitor && mMonitor->isInitialized() )
+			drawAudioBuffer( mMonitor->getBuffer(), getWindowBounds() );
 
 		float readPos = (float)getWindowWidth() * mSamplePlayerNode->getReadPosition() / mSamplePlayerNode->getNumFrames();
 		gl::color( ColorA( 0, 1, 0, 0.7f ) );

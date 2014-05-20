@@ -13,7 +13,7 @@ using namespace ci::app;
 using namespace std;
 
 class InputAnalyzer : public AppNative {
-public:
+  public:
 	void setup();
 	void mouseDown( MouseEvent event );
 	void update();
@@ -22,12 +22,12 @@ public:
 	void drawLabels();
 	void printBinInfo( int mouseX );
 
-	audio::InputDeviceNodeRef	mInputDeviceNode;
-	audio::ScopeSpectralNodeRef	mScopeSpectralNode;
-	vector<float>				mMagSpectrum;
+	audio::InputDeviceNodeRef		mInputDeviceNode;
+	audio::MonitorSpectralNodeRef	mMonitorSpectralNode;
+	vector<float>					mMagSpectrum;
 
-	SpectrumPlot				mSpectrumPlot;
-	gl::TextureFontRef			mTextureFont;
+	SpectrumPlot					mSpectrumPlot;
+	gl::TextureFontRef				mTextureFont;
 };
 
 void InputAnalyzer::setup()
@@ -36,10 +36,10 @@ void InputAnalyzer::setup()
 
 	mInputDeviceNode = ctx->createInputDeviceNode();
 
-	auto scopeFmt = audio::ScopeSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
-	mScopeSpectralNode = ctx->makeNode( new audio::ScopeSpectralNode( scopeFmt ) );
+	auto scopeFmt = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
+	mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( scopeFmt ) );
 
-	mInputDeviceNode >> mScopeSpectralNode;
+	mInputDeviceNode >> mMonitorSpectralNode;
 
 	mInputDeviceNode->enable();
 	ctx->enable();
@@ -57,7 +57,7 @@ void InputAnalyzer::update()
 {
 	mSpectrumPlot.setBounds( Rectf( 40, 40, (float)getWindowWidth() - 40, (float)getWindowHeight() - 40 ) );
 
-	mMagSpectrum = mScopeSpectralNode->getMagSpectrum();
+	mMagSpectrum = mMonitorSpectralNode->getMagSpectrum();
 }
 
 void InputAnalyzer::draw()
@@ -91,12 +91,12 @@ void InputAnalyzer::drawLabels()
 
 void InputAnalyzer::printBinInfo( int mouseX )
 {
-	size_t numBins = mScopeSpectralNode->getFftSize() / 2;
+	size_t numBins = mMonitorSpectralNode->getFftSize() / 2;
 	size_t bin = min( numBins - 1, size_t( ( numBins * ( mouseX - mSpectrumPlot.getBounds().x1 ) ) / mSpectrumPlot.getBounds().getWidth() ) );
 
-	float binFreqWidth = mScopeSpectralNode->getFreqForBin( 1 ) - mScopeSpectralNode->getFreqForBin( 0 );
-	float freq = mScopeSpectralNode->getFreqForBin( bin );
-	float mag = audio::toDecibels( mMagSpectrum[bin] );
+	float binFreqWidth = mMonitorSpectralNode->getFreqForBin( 1 ) - mMonitorSpectralNode->getFreqForBin( 0 );
+	float freq = mMonitorSpectralNode->getFreqForBin( bin );
+	float mag = audio::linearToDecibel( mMagSpectrum[bin] );
 
 	console() << "bin: " << bin << ", freqency (hertz): " << freq << " - " << freq + binFreqWidth << ", magnitude (decibels): " << mag << endl;
 }
