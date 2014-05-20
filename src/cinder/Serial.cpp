@@ -164,45 +164,56 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 			}
 		}
 	}
-	
+
 #elif defined( CINDER_MSW )
+	GUID guid = GUID_DEVINTERFACE_COMPORT;
 	::HDEVINFO devInfoSet;
-	::DWORD devCount = 0;
 	::SP_DEVINFO_DATA devInfo;
 	::SP_DEVICE_INTERFACE_DATA devInterface;
-	DWORD size = 0;
+	::DWORD size = 0;
+	::DWORD deviceIndex = 0;
 
-	devInfoSet = ::SetupDiGetClassDevs( &GUID_SERENUM_BUS_ENUMERATOR, 0, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
+	devInfoSet = ::SetupDiGetClassDevs( &guid, 0, 0, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE );
 	if( devInfoSet == INVALID_HANDLE_VALUE )
 		throw SerialExcDeviceEnumerationFailed();
-	
-	devInterface.cbSize = sizeof( ::SP_DEVICE_INTERFACE_DATA );
-	while( ::SetupDiEnumDeviceInterfaces( devInfoSet, 0, &GUID_SERENUM_BUS_ENUMERATOR, devCount++, &devInterface ) ) {
-		// See how large a buffer we require for the device interface details
-		::SetupDiGetDeviceInterfaceDetail( devInfoSet, &devInterface, 0, 0, &size, 0 );
-		devInfo.cbSize = sizeof( ::SP_DEVINFO_DATA );
-		shared_ptr<::SP_DEVICE_INTERFACE_DETAIL_DATA> interfaceDetail( (::SP_DEVICE_INTERFACE_DETAIL_DATA*)calloc( 1, size ), free );
-		if( interfaceDetail ) {
-			interfaceDetail->cbSize = sizeof( ::SP_DEVICE_INTERFACE_DETAIL_DATA );
-			devInfo.cbSize = sizeof( ::SP_DEVINFO_DATA );
-			if( ! ::SetupDiGetDeviceInterfaceDetail( devInfoSet, &devInterface, interfaceDetail.get(), size, 0, &devInfo ) ) {
-				continue;
-			}
 
-			char friendlyName[2048];
-			size = sizeof( friendlyName );
-			friendlyName[0] = 0;
-			::DWORD propertyDataType;
-			if( ! ::SetupDiGetDeviceRegistryPropertyA( devInfoSet, &devInfo, SPDRP_FRIENDLYNAME, &propertyDataType, (LPBYTE)friendlyName, size, 0 ) ) {
-				continue;
-			}
+	ZeroMemory( &devInfo, sizeof( devInfo ) );
+	devInfo.cbSize = sizeof( devInfo );
+	while( ::SetupDiEnumDeviceInfo( devInfoSet, deviceIndex++, &devInfo ) )	{
+		devInfo.cbSize = sizeof( devInfo );
 
-			sDevices.push_back( Serial::Device( string( friendlyName ), toUtf8( interfaceDetail->DevicePath ) ) );
+		::DWORD deviceInterfaceIndex = 0;
+
+		devInterface.cbSize = sizeof( devInterface );
+		while( ::SetupDiEnumDeviceInterfaces( devInfoSet, &devInfo, &guid, deviceInterfaceIndex++, &devInterface ) ) {
+			devInterface.cbSize = sizeof( devInterface );
+
+			// See how large a buffer we require for the device interface details
+			::SetupDiGetDeviceInterfaceDetail( devInfoSet, &devInterface, 0, 0, &size, 0 );
+
+			shared_ptr<::SP_DEVICE_INTERFACE_DETAIL_DATA> interfaceDetail( (::SP_DEVICE_INTERFACE_DETAIL_DATA*)calloc(1, size), free );
+			if( interfaceDetail ) {
+				interfaceDetail->cbSize = sizeof( ::SP_DEVICE_INTERFACE_DETAIL_DATA );
+
+				devInfo.cbSize = sizeof( devInfo );
+				if( ! ::SetupDiGetDeviceInterfaceDetail( devInfoSet, &devInterface, interfaceDetail.get(), size, 0, &devInfo ) ) {
+					continue;
+				}
+
+				char friendlyName[2048];
+				size = sizeof( friendlyName );
+				friendlyName[0] = 0;
+				::DWORD propertyDataType;
+				if( ! ::SetupDiGetDeviceRegistryPropertyA( devInfoSet, &devInfo, SPDRP_FRIENDLYNAME, &propertyDataType, (LPBYTE)friendlyName, size, 0 ) ) {
+					continue;
+				}
+
+				sDevices.push_back( Serial::Device( string( friendlyName ), toUtf8( interfaceDetail->DevicePath ) ) );
+			}
 		}
 	}
-	
-	::SetupDiDestroyDeviceInfoList(devInfoSet);
 
+	::SetupDiDestroyDeviceInfoList( devInfoSet );
 #endif
 
 	sDevicesInited = true;
