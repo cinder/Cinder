@@ -42,8 +42,8 @@ class ParamTestApp : public AppNative {
 
 	audio::GenNodeRef				mGen;
 	audio::GainNodeRef				mGain;
-	audio::Pan2dNodeRef			mPan;
-	audio::FilterLowPassNodeRef	mLowPass;
+	audio::Pan2dNodeRef				mPan;
+	audio::FilterLowPassNodeRef		mLowPass;
 
 	vector<TestWidget *>	mWidgets;
 	Button					mPlayButton, mApplyButton, mApplyAppendButton, mAppendButton, mDelayButton, mProcessorButton, mAppendCancelButton;
@@ -103,7 +103,7 @@ void ParamTestApp::testApply()
 	// - a bit shorter:
 //	audio::timeline()->apply( mGen->getParamFreq(), 220, 440, 1 );
 
-	CI_LOG_V( "num ramps: " << mGen->getParamFreq()->getNumRamps() );
+	CI_LOG_V( "num events: " << mGen->getParamFreq()->getNumEvents() );
 }
 
 // 2 events - first apply the ramp, blowing away anything else, then append another event to happen after that
@@ -112,7 +112,7 @@ void ParamTestApp::testApply2()
 	mGen->getParamFreq()->applyRamp( 220, 880, 1 );
 	mGen->getParamFreq()->appendRamp( 369.994f, 1 ); // F#4
 
-	CI_LOG_V( "num ramps: " << mGen->getParamFreq()->getNumRamps() );
+	CI_LOG_V( "num events: " << mGen->getParamFreq()->getNumEvents() );
 
 //	writeParamEval( mGen->getParamFreq() );
 }
@@ -122,22 +122,22 @@ void ParamTestApp::testAppend()
 {
 	mGen->getParamFreq()->appendRamp( randFloat( 50, 800 ), 1.0f );
 
-	CI_LOG_V( "num ramps: " << mGen->getParamFreq()->getNumRamps() );
+	CI_LOG_V( "num events: " << mGen->getParamFreq()->getNumEvents() );
 }
 
 // make a ramp after a 1 second delay
 void ParamTestApp::testDelay()
 {
 	mGen->getParamFreq()->applyRamp( 50, 440, 1, audio::Param::Options().delay( 1 ) );
-	CI_LOG_V( "num ramps: " << mGen->getParamFreq()->getNumRamps() );
+	CI_LOG_V( "num events: " << mGen->getParamFreq()->getNumEvents() );
 }
 
 // apply a ramp from 220 to 880 over 2 seconds and then after a 1 second delay, cancel it. result should be ~ 550: 220 + (880 - 220) / 2.
 void ParamTestApp::testAppendCancel()
 {
-	audio::RampRef ramp = mGen->getParamFreq()->applyRamp( 220, 880, 2 );
+	audio::EventRef ramp = mGen->getParamFreq()->applyRamp( 220, 880, 2 );
 
-	CI_LOG_V( "num ramps: " << mGen->getParamFreq()->getNumRamps() );
+	CI_LOG_V( "num events: " << mGen->getParamFreq()->getNumEvents() );
 
 	timeline().add( [ramp] {
 		CI_LOG_V( "canceling." );
@@ -298,7 +298,7 @@ void ParamTestApp::processTap( Vec2i pos )
 void ParamTestApp::keyDown( KeyEvent event )
 {
 	if( event.getCode() == KeyEvent::KEY_e )
-		CI_LOG_V( "mGen freq events: " << mGen->getParamFreq()->getNumRamps() );
+		CI_LOG_V( "mGen freq events: " << mGen->getParamFreq()->getNumEvents() );
 }
 
 void ParamTestApp::update()

@@ -340,7 +340,7 @@ void NodeEffectsTestApp::switchTest( const string &currentTest )
 
 void NodeEffectsTestApp::update()
 {
-	if( mDelay->getParamDelaySeconds()->getNumRamps() )
+	if( mDelay->getParamDelaySeconds()->getNumEvents() )
 		CI_LOG_V( "ramping delay seconds val: " << mDelay->getParamDelaySeconds()->getValue() );
 }
 

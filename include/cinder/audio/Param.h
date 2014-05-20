@@ -34,8 +34,8 @@ namespace cinder { namespace audio {
 typedef std::shared_ptr<class Context>		ContextRef;
 typedef std::shared_ptr<class Node>			NodeRef;
 
-//! A Reference to Ramp's returned by the ramping methods. \see applyRamp() \see appendRamp()
-typedef std::shared_ptr<class Ramp>			RampRef;
+//! A Reference to Event's returned by the ramping methods. \see applyRamp() \see appendRamp()
+typedef std::shared_ptr<class Event>			EventRef;
 //! note: unless we want to add _VARIADIC_MAX=6 in preprocessor definitions to all projects, number of args here has to be 5 or less for vc11 support
 typedef std::function<void ( float *, size_t, float, float, const std::pair<float, float>& )>	RampFn;
 
@@ -46,7 +46,8 @@ void rampInQuad( float *array, size_t count, float t, float tIncr, const std::pa
 //! Array-based quadradic (t^2) ease-out ramping function.
 void rampOutQuad( float *array, size_t count, float t, float tIncr, const std::pair<float, float> &valueRange );
 
-class Ramp {
+//! Class representing a sample-accurate parameter control instruction. \see Param::applyRamp(), Param::appendRamp()
+class Event {
   public:
 	float getTimeBegin()		const	{ return mTimeBegin; }
 	float getTimeEnd()			const	{ return mTimeEnd; }
@@ -59,7 +60,7 @@ class Ramp {
 	bool isComplete() const		{ return mIsComplete; }
 
   private:
-	Ramp( float timeBegin, float timeEnd, float valueBegin, float valueEnd, const RampFn &rampFn );
+	Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, const RampFn &rampFn );
 
 	float				mTimeBegin, mTimeEnd, mDuration;
 	float				mValueBegin, mValueEnd;
@@ -102,34 +103,34 @@ class Param {
 	//! \note If not varying (eval() returns false), the returned pointer will be invalid.
 	const float*	getValueArray() const;
 
-	//! Replaces any existing Ramp's with a Ramp from the current value to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
-	RampRef applyRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
-	//! Replaces any existing Ramp's with a Ramp from \a valueBegin to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
-	RampRef applyRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options = Options() );
-	//! Appends a Ramp from the end of the last scheduled Param (or the current time) to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
-	RampRef appendRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
+	//! Replaces any existing Event's with a Event from the current value to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
+	EventRef applyRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
+	//! Replaces any existing Event's with a Event from \a valueBegin to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
+	EventRef applyRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options = Options() );
+	//! Appends a Event from the end of the last scheduled Param (or the current time) to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
+	EventRef appendRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
 
-	//! Sets this Param's input to be the processing performed by \a node. Any existing Ramp's are discarded.
+	//! Sets this Param's input to be the processing performed by \a node. Any existing Event's are discarded.
 	//! \note Forces \a node to be mono.
 	void setProcessor( const NodeRef &node );
 
-	//! Resets Param, blowing away any Ramp's or processing Node. \note Must be called from a non-audio thread.
+	//! Resets Param, blowing away any Event's or processing Node. \note Must be called from a non-audio thread.
 	void reset();
-	//! Returns the number of Ramp's that are currently scheduled.
-	size_t getNumRamps() const;
+	//! Returns the number of Event's that are currently scheduled.
+	size_t getNumEvents() const;
 
 	//! Evaluates the Param for the current processing block, with current time determined from the parent Node's Context.
-	//! \return true if the Param is varying this block (there are Ramp's or a processing Node) and getValueArray() should be used, or false if the Param's value is constant for this block (use getValue()).
+	//! \return true if the Param is varying this block (there are Event's or a processing Node) and getValueArray() should be used, or false if the Param's value is constant for this block (use getValue()).
 	//! \note Safe to call on the audio thread.
 	bool	eval();
 	//! Evaluates the Param from \a timeBegin for \a arrayLength samples at \a sampleRate.
-	//! \return true if the Param is varying this block (there are Ramp's or a processing Node) and getValueArray() should be used, or false if the Param's value is constant for this block (use getValue()).
+	//! \return true if the Param is varying this block (there are Event's or a processing Node) and getValueArray() should be used, or false if the Param's value is constant for this block (use getValue()).
 	//! \note Safe to call on the audio thread.
 	bool	eval( float timeBegin, float *array, size_t arrayLength, size_t sampleRate );
 
-	//! Returns the total duration of any scheduled Param's, including delay, or 0 if none are scheduled.
+	//! Returns the total duration of any scheduled Event's, including delay, or 0 if none are scheduled.
 	float					findDuration() const;
-	//! Returns the end time and value of the latest scheduled Param, or [0, getValue()] if none are scheduled.
+	//! Returns the end time and value of the latest scheduled Event, or [0, getValue()] if none are scheduled.
 	std::pair<float, float> findEndTimeAndValue() const;
 
   protected:
@@ -139,7 +140,7 @@ class Param {
 	void		resetImpl();
 	ContextRef	getContext() const;
 
-	std::list<RampRef>	mRamps;
+	std::list<EventRef>	mRamps;
 	std::atomic<float>	mValue;
 	Node*				mParentNode;
 	NodeRef				mProcessor;

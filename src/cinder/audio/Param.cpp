@@ -59,7 +59,7 @@ void rampOutQuad( float *array, size_t count, float t, float tIncr, const std::p
 	}
 }
 
-Ramp::Ramp( float timeBegin, float timeEnd, float valueBegin, float valueEnd, const RampFn &rampFn )
+Event::Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, const RampFn &rampFn )
 	: mTimeBegin( timeBegin ), mTimeEnd( timeEnd ), mDuration( timeEnd - timeBegin ),
 	mValueBegin( valueBegin ), mValueEnd( valueEnd ), mRampFn( rampFn ), mIsComplete( false ), mIsCanceled( false )
 {
@@ -78,12 +78,12 @@ void Param::setValue( float value )
 	mValue = value;
 }
 
-RampRef Param::applyRamp( float valueEnd, float rampSeconds, const Options &options )
+EventRef Param::applyRamp( float valueEnd, float rampSeconds, const Options &options )
 {
 	return applyRamp( mValue, valueEnd, rampSeconds, options );
 }
 
-RampRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options )
+EventRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options )
 {
 	initInternalBuffer();
 
@@ -91,7 +91,7 @@ RampRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, c
 	float timeBegin = (float)ctx->getNumProcessedSeconds() + options.getDelay();
 	float timeEnd = timeBegin + rampSeconds;
 
-	RampRef ramp( new Ramp( timeBegin, timeEnd, valueBegin, valueEnd, options.getRampFn() ) );
+	EventRef ramp( new Event( timeBegin, timeEnd, valueBegin, valueEnd, options.getRampFn() ) );
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 	resetImpl();
@@ -100,7 +100,7 @@ RampRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, c
 	return ramp;
 }
 
-RampRef Param::appendRamp( float valueEnd, float rampSeconds, const Options &options )
+EventRef Param::appendRamp( float valueEnd, float rampSeconds, const Options &options )
 {
 	initInternalBuffer();
 
@@ -110,7 +110,7 @@ RampRef Param::appendRamp( float valueEnd, float rampSeconds, const Options &opt
 	float timeBegin = endTimeAndValue.first + options.getDelay();
 	float timeEnd = timeBegin + rampSeconds;
 
-	RampRef ramp( new Ramp( timeBegin, timeEnd, endTimeAndValue.second, valueEnd, options.getRampFn() ) );
+	EventRef ramp( new Event( timeBegin, timeEnd, endTimeAndValue.second, valueEnd, options.getRampFn() ) );
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 	mRamps.push_back( ramp );
@@ -145,7 +145,7 @@ void Param::reset()
 }
 
 
-size_t Param::getNumRamps() const
+size_t Param::getNumEvents() const
 {
 	lock_guard<mutex> lock( getContext()->getMutex() );
 	return mRamps.size();
@@ -159,7 +159,7 @@ float Param::findDuration() const
 	if( mRamps.empty() )
 		return 0;
 	else {
-		const RampRef &ramp = mRamps.back();
+		const EventRef &ramp = mRamps.back();
 		return ramp->mTimeEnd - (float)ctx->getNumProcessedSeconds();
 	}
 }
@@ -172,7 +172,7 @@ pair<float, float> Param::findEndTimeAndValue() const
 	if( mRamps.empty() )
 		return make_pair( (float)ctx->getNumProcessedSeconds(), mValue.load() );
 	else {
-		const RampRef &ramp = mRamps.back();
+		const EventRef &ramp = mRamps.back();
 		return make_pair( ramp->mTimeEnd, ramp->mValueEnd );
 	}
 }
@@ -203,7 +203,7 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 	const float samplePeriod = 1.0f / (float)sampleRate;
 
 	for( auto rampIt = mRamps.begin(); rampIt != mRamps.end(); /* */ ) {
-		RampRef &ramp = *rampIt;
+		EventRef &ramp = *rampIt;
 
 		// first remove dead ramps
 		if( ramp->mTimeEnd < timeBegin || ramp->mIsCanceled ) {
