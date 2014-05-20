@@ -205,7 +205,7 @@ void SpectrumPlot::draw( const vector<float> &magSpectrum )
 	for( size_t i = 0; i < numBins; i++ ) {
 		float m = magSpectrum[i];
 		if( mScaleDecibels )
-			m = audio::toDecibels( m ) / 100;
+			m = audio::linearToDecibel( m ) / 100;
 
 		bin.y1 = bin.y2 - m * height;
 

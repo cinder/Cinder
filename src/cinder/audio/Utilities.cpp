@@ -26,6 +26,51 @@
 
 namespace cinder { namespace audio {
 
+const float kGainNegative100Decibels = 0.00001f; // linear gain equal to -100db
+const float kGainNegative100DecibelsInverse = 1.0f / kGainNegative100Decibels;
+
+float linearToDecibel( float gainLinear )
+{
+	if( gainLinear < kGainNegative100Decibels )
+		return 0.0f;
+	else
+		return 20.0f * log10f( gainLinear * kGainNegative100DecibelsInverse );
+}
+
+void linearToDecibel( float *array, size_t length )
+{
+	for( size_t i = 0; i < length; i++ )
+		array[i] = linearToDecibel( array[i] );
+}
+
+float decibelToLinear( float gainDecibels )
+{
+	if( gainDecibels < kGainNegative100Decibels )
+		return 0.0f;
+	else
+		return( kGainNegative100Decibels * powf( 10.0f, gainDecibels * 0.05f ) );
+}
+
+void decibelToLinear( float *array, size_t length )
+{
+	for( size_t i = 0; i < length; i++ )
+		array[i] = decibelToLinear( array[i] );
+}
+
+float freqToMidi( float freq )
+{
+	if( freq < 0 )
+		return -1500;
+
+	return 17.3123405046f * math<float>::log( .12231220585f * freq );
+}
+
+float midiToFreq( float midi )
+{
+	float m = math<float>::clamp( midi, -1499, 1499 );
+	return 8.17579891564f * math<float>::exp( .0577622650f * m );
+}
+
 bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame )
 {
 	const float *buf = buffer.getData();
@@ -40,6 +85,5 @@ bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame
 
 	return false;
 }
-
 
 } } // namespace cinder::audio

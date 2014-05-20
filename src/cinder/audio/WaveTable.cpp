@@ -274,7 +274,7 @@ size_t WaveTable2d::getMaxHarmonicsForTable( size_t tableIndex ) const
 	const float nyquist = (float)mSampleRate * 0.5f;
 	const float midiRangePerTable = ( mMaxMidiRange - mMinMidiRange ) / ( mNumTables - 1 );
 	const float maxMidi = mMinMidiRange + tableIndex * midiRangePerTable;
-	const float maxF0 = toFreq( maxMidi );
+	const float maxF0 = midiToFreq( maxMidi );
 
 	size_t maxPartialsForFreq = size_t( nyquist / maxF0 );
 
@@ -284,7 +284,7 @@ size_t WaveTable2d::getMaxHarmonicsForTable( size_t tableIndex ) const
 
 float WaveTable2d::calcBandlimitedTableIndex( float f0 ) const
 {
-	const float f0Midi = toMidi( fabsf( f0 ) );
+	const float f0Midi = freqToMidi( fabsf( f0 ) );
 
 	if( f0Midi <= mMinMidiRange )
 		return 0;
@@ -305,7 +305,7 @@ std::tuple<const float*, const float*, float> WaveTable2d::getBandLimitedTablesL
 	float *table1, *table2;
 	float factor;
 
-	const float f0Midi = toMidi( fabsf( f0 ) );
+	const float f0Midi = freqToMidi( fabsf( f0 ) );
 
 	if( f0Midi <= mMinMidiRange ) {
 		table1 = table2 = const_cast<float *>( mBuffer.getChannel( 0 ) );
@@ -427,8 +427,8 @@ void WaveTable2d::copyFrom( const float *array, size_t tableIndex )
 
 void WaveTable2d::calcLimits()
 {
-	mMinMidiRange = toMidi( 20 );
-	mMaxMidiRange = toMidi( (float)mSampleRate / 4.0f ); // everything above can only have one partial
+	mMinMidiRange = freqToMidi( 20 );
+	mMaxMidiRange = freqToMidi( (float)mSampleRate / 4.0f ); // everything above can only have one partial
 }
 
 } } // namespace cinder::audio

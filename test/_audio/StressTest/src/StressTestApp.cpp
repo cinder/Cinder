@@ -88,7 +88,7 @@ void StressTestApp::addGens()
 
 	for( size_t i = 0; i < mAddIncr; i++ ) {
 		auto gen = makeSelectedGenType();
-		gen->setFreq( audio::toFreq( randInt( 40, 60 ) ) );
+		gen->setFreq( audio::midiToFreq( randInt( 40, 60 ) ) );
 
 		gen->connect( mGain );
 		gen->enable();

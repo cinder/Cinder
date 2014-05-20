@@ -30,60 +30,21 @@
 
 namespace cinder { namespace audio {
 
-// TODO: decide on decibel convensions
-//		- these match pd but that may not be very general
-//! linear gain equal to -100db
-const float kGainNegative100Decibels = 0.00001f;
-const float kGainNegative100DecibelsInverse = 1.0f / kGainNegative100Decibels;
-
 //! Scale \a gainLinear from linear (0-1) to decibel (0-100) scale
-inline float toDecibels( float gainLinear )
-{
-	if( gainLinear < kGainNegative100Decibels )
-		return 0.0f;
-	else
-		return 20.0f * log10f( gainLinear * kGainNegative100DecibelsInverse );
-}
-
+float linearToDecibel( float gainLinear );
 //! Scale \a array of length \a length from linear (0-1) to decibel (0-100) scale
-inline void toDecibels( float *array, size_t length )
-{
-	for( size_t i = 0; i < length; i++ )
-		array[i] = toDecibels( array[i] );
-}
-
+void linearToDecibel( float *array, size_t length );
 //! Scale \a gainLinear from decibel (0-100) to linear (0-1) scale
-inline float toLinear( float gainDecibels )
-{
-	if( gainDecibels < kGainNegative100Decibels )
-		return 0.0f;
-	else
-		return( kGainNegative100Decibels * powf( 10.0f, gainDecibels * 0.05f ) );
-}
-
+float decibelToLinear( float gainDecibels );
 //! Scale \a array of length \a length from decibel (0-100) to linear (0-1) scale
-inline void toLinear( float *array, size_t length )
-{
-	for( size_t i = 0; i < length; i++ )
-		array[i] = toLinear( array[i] );
-}
+void decibelToLinear( float *array, size_t length );
 
-//! Scale \a freq from hertz to MIDI note values, so as one can refer to pitches using the equal temperament scale.
+//! \brief Scale \a freq from frequency (hertz) to MIDI note values, so as one can refer to pitches using the equal temperament scale.
+//!
 //! For example, 'middle C' equals 261.6 hertz and has a midi value of 60. Adapted from Pure Data's ftom function.
-inline float toMidi( float freq )
-{
-	if( freq < 0 )
-		return -1500;
-
-	return 17.3123405046f * math<float>::log( .12231220585f * freq );
-}
-
-//! Scale \a midi from MIDI note values to frequency in hertz. Adapted from Pure Data's mtof function. \see toMidi()
-inline float toFreq( float midi )
-{
-	float m = math<float>::clamp( midi, -1499, 1499 );
-	return 8.17579891564f * math<float>::exp( .0577622650f * m );
-}
+float freqToMidi( float freq );
+//! Scale \a midi from MIDI note values to frequency (hertz). Adapted from Pure Data's mtof function. \see freqToMidi()
+float midiToFreq( float midi );
 
 //! Checks if the absolute value of any sample in \a buffer is over \a threshold. Optionally provide \a recordFrame to record the frame index. \return true if one is found, false otherwise. 
 bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame = nullptr );
