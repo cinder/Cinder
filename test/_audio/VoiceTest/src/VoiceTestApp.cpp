@@ -2,7 +2,7 @@
 #include "cinder/gl/gl.h"
 
 #include "cinder/audio/Voice.h"
-#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/MonitorNode.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/audio/Debug.h"
 
@@ -34,7 +34,7 @@ public:
 	void processTap( Vec2i pos );
 
 	audio::VoiceRef		mVoice;
-	audio::ScopeNodeRef	mScope;
+	audio::MonitorNodeRef	mScope;
 
 	vector<TestWidget *>	mWidgets;
 	Button					mPlayButton, mEnableNoiseButton, mEnableSineButton;
@@ -80,7 +80,7 @@ void VoiceTestApp::setupScope()
 	mVoice->setVolume( mVolumeSlider.mValueScaled );
 
 	auto ctx = audio::master();
-	mScope = ctx->makeNode( new audio::ScopeNode );
+	mScope = ctx->makeNode( new audio::MonitorNode );
 
 	mVoice->getOutputNode() >> mScope >> ctx->getOutput();
 }

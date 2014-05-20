@@ -4,7 +4,7 @@
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/GainNode.h"
 #include "cinder/audio/ChannelRouterNode.h"
-#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/MonitorNode.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Debug.h"
@@ -42,7 +42,7 @@ public:
 	void processTap( Vec2i pos );
 
 	audio::GainNodeRef			mGain;
-	audio::ScopeNodeRef	mScope;
+	audio::MonitorNodeRef	mScope;
 	audio::GenNodeRef		mGen, mNoise;
 
 	vector<TestWidget *>	mWidgets;
@@ -62,7 +62,7 @@ void NodeTestApp::setup()
 	mGen = ctx->makeNode( new audio::GenSineNode( 440 ) );
 	mNoise = ctx->makeNode( new audio::GenNoiseNode() );
 
-	mScope = audio::master()->makeNode( new audio::ScopeNode( audio::ScopeNode::Format().windowSize( 2048 ) ) );
+	mScope = audio::master()->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 2048 ) ) );
 
 	setupGen();
 //	setupMerge();

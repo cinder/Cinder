@@ -3,7 +3,7 @@
 
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/GainNode.h"
-#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/MonitorNode.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/audio/Debug.h"
 
@@ -35,7 +35,7 @@ public:
 	void setupTriangleCalc();
 
 	audio::GainNodeRef				mGain;
-	audio::ScopeSpectralNodeRef		mScope;
+	audio::MonitorSpectralNodeRef		mScope;
 	audio::GenOscNodeRef			mGenOsc;
 	audio::GenPulseNodeRef			mGenPulse;
 	audio::GenNodeRef				mGen;
@@ -62,7 +62,7 @@ void WaveTableTestApp::setup()
 	mGain = ctx->makeNode( new audio::GainNode );
 	mGain->setValue( 0.075f );
 
-	mScope = audio::master()->makeNode( new audio::ScopeSpectralNode( audio::ScopeSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
+	mScope = audio::master()->makeNode( new audio::MonitorSpectralNode( audio::MonitorSpectralNode::Format().fftSize( 1024 ).windowSize( 2048 ) ) );
 	mScope->setSmoothingFactor( 0 );
 
 	mFreqSlider.set( 100 );

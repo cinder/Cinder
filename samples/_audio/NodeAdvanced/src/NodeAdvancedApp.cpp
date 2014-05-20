@@ -5,7 +5,7 @@
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/NodeEffects.h"
-#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/Utilities.h"
 
 #include "../../common/AudioDrawUtils.h"

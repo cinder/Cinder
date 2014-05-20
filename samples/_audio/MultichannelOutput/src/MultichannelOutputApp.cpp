@@ -4,7 +4,7 @@
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/GainNode.h"
 #include "cinder/audio/ChannelRouterNode.h"
-#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/MonitorNode.h"
 
 #include "../../common/AudioDrawUtils.h"
 

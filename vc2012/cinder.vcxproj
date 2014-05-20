@@ -221,7 +221,7 @@
     <ClCompile Include="..\src\cinder\audio\Param.cpp" />
     <ClCompile Include="..\src\cinder\audio\SamplePlayerNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\SampleRecorderNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\ScopeNode.cpp" />
+    <ClCompile Include="..\src\cinder\audio\MonitorNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\Source.cpp" />
     <ClCompile Include="..\src\cinder\audio\Target.cpp" />
     <ClCompile Include="..\src\cinder\audio\Utilities.cpp">
@@ -419,7 +419,7 @@
     <ClInclude Include="..\include\cinder\audio\SamplePlayerNode.h" />
     <ClInclude Include="..\include\cinder\audio\SampleRecorderNode.h" />
     <ClInclude Include="..\include\cinder\audio\SampleType.h" />
-    <ClInclude Include="..\include\cinder\audio\ScopeNode.h" />
+    <ClInclude Include="..\include\cinder\audio\MonitorNode.h" />
     <ClInclude Include="..\include\cinder\audio\Source.h" />
     <ClInclude Include="..\include\cinder\audio\Target.h" />
     <ClInclude Include="..\include\cinder\audio\Utilities.h" />

@@ -7,7 +7,7 @@
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/GainNode.h"
 #include "cinder/audio/ChannelRouterNode.h"
-#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/dsp/Dsp.h"
 #include "cinder/audio/Exception.h"
 #include "cinder/audio/Debug.h"
@@ -48,7 +48,7 @@ class DeviceTestApp : public AppNative {
 
 	audio::InputDeviceNodeRef		mInputDeviceNode;
 	audio::OutputDeviceNodeRef		mOutputDeviceNode;
-	audio::ScopeNodeRef			mScope;
+	audio::MonitorNodeRef			mScope;
 	audio::GainNodeRef					mGain;
 	audio::GenNodeRef				mGen;
 
@@ -74,7 +74,7 @@ void DeviceTestApp::setup()
 
 	auto ctx = audio::master();
 
-	mScope = ctx->makeNode( new audio::ScopeNode( audio::ScopeNode::Format().windowSize( 1024 ) ) );
+	mScope = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 1024 ) ) );
 	mGain = ctx->makeNode( new audio::GainNode() );
 	mGain->setValue( 0.4f );
 

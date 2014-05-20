@@ -564,9 +564,6 @@
     <ClCompile Include="..\src\cinder\audio\SampleRecorderNode.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\ScopeNode.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\audio\Source.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
@@ -689,6 +686,9 @@
     </ClCompile>
     <ClCompile Include="..\src\oggvorbis\vorbis\window.c">
       <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\MonitorNode.cpp">
+      <Filter>Source Files\audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1259,9 +1259,6 @@
     <ClInclude Include="..\include\cinder\audio\SampleType.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\ScopeNode.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\audio\Source.h">
       <Filter>Header Files\audio</Filter>
     </ClInclude>
@@ -1468,6 +1465,9 @@
     </ClInclude>
     <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_X.h">
       <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\MonitorNode.h">
+      <Filter>Header Files\audio</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,7 @@
 #include "cinder/Utilities.h"
 
 #include "cinder/audio/GenNode.h"
-#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/SamplePlayerNode.h"
 #include "cinder/audio/Debug.h"
 #include "cinder/audio/dsp/Dsp.h"
@@ -42,7 +42,7 @@ class SpectralTestApp : public AppNative {
 
 	audio::BufferPlayerNodeRef		mPlayerNode;
 	audio::GenNodeRef				mGen;
-	audio::ScopeSpectralNodeRef	mScopeSpectralNode;
+	audio::MonitorSpectralNodeRef	mMonitorSpectralNode;
 	audio::SourceFileRef			mSourceFile;
 
 	vector<TestWidget *>			mWidgets;
@@ -65,8 +65,8 @@ void SpectralTestApp::setup()
 
 	auto ctx = audio::master();
 
-	mScopeSpectralNode = ctx->makeNode( new audio::ScopeSpectralNode( audio::ScopeSpectralNode::Format().fftSize( FFT_SIZE ).windowSize( WINDOW_SIZE ).windowType( WINDOW_TYPE ) ) );
-	mScopeSpectralNode->setAutoEnabled();
+	mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( audio::MonitorSpectralNode::Format().fftSize( FFT_SIZE ).windowSize( WINDOW_SIZE ).windowType( WINDOW_TYPE ) ) );
+	mMonitorSpectralNode->setAutoEnabled();
 
 	//mGen = ctx->makeNode( new audio::GenSineNode() );
 	mGen = ctx->makeNode( new audio::GenTriangleNode() );
@@ -74,7 +74,7 @@ void SpectralTestApp::setup()
 
 	mSourceFile = audio::load( loadResource( RES_TONE440L220R_MP3 ), ctx->getSampleRate() );
 
-	auto audioBuffer = mSourceFile->loadBuffer(); // TODO: load async
+	auto audioBuffer = mSourceFile->loadBuffer();
 	CI_LOG_V( "loaded source buffer, frames: " << audioBuffer->getNumFrames() );
 
 	mPlayerNode = ctx->makeNode( new audio::BufferPlayerNode( audioBuffer ) );
@@ -90,26 +90,26 @@ void SpectralTestApp::setup()
 
 	ctx->printGraph();
 
-	CI_LOG_V( "ScopeSpectralNode fftSize: " << mScopeSpectralNode->getFftSize() << ", windowSize: " << mScopeSpectralNode->getWindowSize() );
+	CI_LOG_V( "MonitorSpectralNode fftSize: " << mMonitorSpectralNode->getFftSize() << ", windowSize: " << mMonitorSpectralNode->getWindowSize() );
 }
 
 void SpectralTestApp::setupSine()
 {
-	mGen >> mScopeSpectralNode >> audio::master()->getOutput();
+	mGen >> mMonitorSpectralNode >> audio::master()->getOutput();
 	if( mPlaybackButton.mEnabled )
 		mGen->enable();
 }
 
 void SpectralTestApp::setupSineNoOutput()
 {
-	mGen->connect( mScopeSpectralNode );
+	mGen->connect( mMonitorSpectralNode );
 	if( mPlaybackButton.mEnabled )
 		mGen->enable();
 }
 
 void SpectralTestApp::setupSample()
 {
-	mPlayerNode >> mScopeSpectralNode >> audio::master()->getOutput();
+	mPlayerNode >> mMonitorSpectralNode >> audio::master()->getOutput();
 	if( mPlaybackButton.mEnabled )
 		mPlayerNode->enable();
 }
@@ -158,7 +158,7 @@ void SpectralTestApp::setupUI()
 	mSmoothingFactorSlider.mTitle = "Smoothing";
 	mSmoothingFactorSlider.mMin = 0.0f;
 	mSmoothingFactorSlider.mMax = 1.0f;
-	mSmoothingFactorSlider.set( mScopeSpectralNode->getSmoothingFactor() );
+	mSmoothingFactorSlider.set( mMonitorSpectralNode->getSmoothingFactor() );
 	mWidgets.push_back( &mSmoothingFactorSlider );
 
 	sliderRect += Vec2f( 0.0f, sliderSize.y + padding );
@@ -189,10 +189,10 @@ void SpectralTestApp::printBinFreq( size_t xPos )
 
 //	freq = bin * samplerate / sizeFft
 
-	size_t numBins = mScopeSpectralNode->getFftSize() / 2;
+	size_t numBins = mMonitorSpectralNode->getFftSize() / 2;
 	size_t spectroWidth = getWindowWidth() - mSpectroMargin * 2;
 	size_t bin = ( numBins * ( xPos - mSpectroMargin ) ) / spectroWidth;
-	float freq = bin * audio::master()->getSampleRate() / float( mScopeSpectralNode->getFftSize() );
+	float freq = bin * audio::master()->getSampleRate() / float( mMonitorSpectralNode->getFftSize() );
 
 	CI_LOG_V( "bin: " << bin << ", freq: " << freq );
 }
@@ -240,7 +240,7 @@ void SpectralTestApp::processTap( Vec2i pos )
 void SpectralTestApp::processDrag( Vec2i pos )
 {
 	if( mSmoothingFactorSlider.hitTest( pos ) )
-		mScopeSpectralNode->setSmoothingFactor( mSmoothingFactorSlider.mValueScaled );
+		mMonitorSpectralNode->setSmoothingFactor( mSmoothingFactorSlider.mValueScaled );
 	if( mFreqSlider.hitTest( pos ) )
 		mGen->setFreq( mFreqSlider.mValueScaled );
 }
@@ -274,7 +274,7 @@ void SpectralTestApp::draw()
 	gl::clear();
 
 	// draw magnitude spectrum
-	auto &mag = mScopeSpectralNode->getMagSpectrum();
+	auto &mag = mMonitorSpectralNode->getMagSpectrum();
 	mSpectrumPlot.draw( mag );
 
 	if( ! mag.empty() ) {

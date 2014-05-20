@@ -3,7 +3,7 @@
 #include "cinder/gl/TextureFont.h"
 
 #include "cinder/audio/Context.h"
-#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/Utilities.h"
 
 #include "../../common/AudioDrawUtils.h"

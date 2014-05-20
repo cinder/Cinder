@@ -9,7 +9,7 @@
 #include "cinder/audio/SamplePlayerNode.h"
 #include "cinder/audio/SampleRecorderNode.h"
 #include "cinder/audio/NodeEffects.h"
-#include "cinder/audio/ScopeNode.h"
+#include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/Debug.h"
 
 #include "Resources.h"
@@ -58,7 +58,7 @@ class SamplePlayerNodeTestApp : public AppNative {
 
 	audio::SamplePlayerNodeRef		mSamplePlayerNode;
 	audio::SourceFileRef			mSourceFile;
-	audio::ScopeNodeRef			mScope;
+	audio::MonitorNodeRef			mScope;
 	audio::GainNodeRef					mGain;
 	audio::Pan2dNodeRef				mPan;
 	audio::BufferRecorderNodeRef		mRecorder;
@@ -161,7 +161,7 @@ void SamplePlayerNodeTestApp::setupFilePlayerNode()
 	// TODO: it is pretty surprising when you recreate mScope here without checking if there has already been one added.
 	//	- user will no longer see the old mScope, but the context still owns a reference to it, so another gets added each time we call this method.
 	if( ! mScope )
-		mScope = ctx->makeNode( new audio::ScopeNode( audio::ScopeNode::Format().windowSize( 1024 ) ) );
+		mScope = ctx->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 1024 ) ) );
 
 	// when these connections are called, some (GainNode and Pan) will already be connected, but this is okay, they should silently no-op.
 
