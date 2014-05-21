@@ -206,7 +206,11 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 		EventRef &ramp = *rampIt;
 
 		// first remove dead ramps
-		if( ramp->mTimeEnd < timeBegin || ramp->mIsCanceled ) {
+		if( ramp->mTimeEnd <= timeBegin || ramp->mIsCanceled ) {
+			// if this is the last ramp, record its end value before erasing.
+			if( mRamps.size() == 1 )
+				mValue = ramp->mValueEnd;
+			
 			rampIt = mRamps.erase( rampIt );
 			continue;
 		}

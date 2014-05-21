@@ -19,6 +19,7 @@ using namespace std;
 
 class ParamTestApp : public AppNative {
   public:
+	void prepareSettings( Settings *settings );
 	void setup();
 	void update();
 	void draw();
@@ -32,6 +33,7 @@ class ParamTestApp : public AppNative {
 	void processTap( Vec2i pos );
 
 	void testApply();
+	void testApply0();
 	void testApply2();
 	void testAppend();
 	void testDelay();
@@ -46,10 +48,15 @@ class ParamTestApp : public AppNative {
 	audio::FilterLowPassNodeRef		mLowPass;
 
 	vector<TestWidget *>	mWidgets;
-	Button					mPlayButton, mApplyButton, mApplyAppendButton, mAppendButton, mDelayButton, mProcessorButton, mAppendCancelButton;
+	Button					mPlayButton, mApplyButton, mApply0Button, mApplyAppendButton, mAppendButton, mDelayButton, mProcessorButton, mAppendCancelButton;
 	VSelector				mTestSelector;
 	HSlider					mGainSlider, mPanSlider, mLowPassFreqSlider, mGenFreqSlider;
 };
+
+void ParamTestApp::prepareSettings( Settings *settings )
+{
+	settings->setWindowSize( 800, 600 );
+}
 
 void ParamTestApp::setup()
 {
@@ -102,6 +109,14 @@ void ParamTestApp::testApply()
 //	Context::master()->timeline()->apply( mGen->getParamFreq(), 220, 440, 1 );
 	// - a bit shorter:
 //	audio::timeline()->apply( mGen->getParamFreq(), 220, 440, 1 );
+
+	CI_LOG_V( "num events: " << mGen->getParamFreq()->getNumEvents() );
+}
+
+// same as testApply(), but ramp time = 0. end value should still be set.
+void ParamTestApp::testApply0()
+{
+	mGen->getParamFreq()->applyRamp( 220, 440, 0 );
 
 	CI_LOG_V( "num events: " << mGen->getParamFreq()->getNumEvents() );
 }
@@ -166,6 +181,11 @@ void ParamTestApp::setupUI()
 	mApplyButton = Button( false, "apply" );
 	mApplyButton.mBounds = paramButtonRect;
 	mWidgets.push_back( &mApplyButton );
+
+	paramButtonRect += Vec2f( paramButtonRect.getWidth() + padding, 0 );
+	mApply0Button = Button( false, "apply0" );
+	mApply0Button.mBounds = paramButtonRect;
+	mWidgets.push_back( &mApply0Button );
 
 	paramButtonRect += Vec2f( paramButtonRect.getWidth() + padding, 0 );
 	mApplyAppendButton = Button( false, "apply 2" );
@@ -264,6 +284,8 @@ void ParamTestApp::processTap( Vec2i pos )
 		ctx->setEnabled( ! ctx->isEnabled() );
 	else if( mApplyButton.hitTest( pos ) )
 		testApply();
+	else if( mApply0Button.hitTest( pos ) )
+		testApply0();
 	else if( mApplyAppendButton.hitTest( pos ) )
 		testApply2();
 	else if( mAppendButton.hitTest( pos ) )

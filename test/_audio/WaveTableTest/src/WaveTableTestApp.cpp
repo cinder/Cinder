@@ -35,7 +35,7 @@ public:
 	void setupTriangleCalc();
 
 	audio::GainNodeRef				mGain;
-	audio::MonitorSpectralNodeRef		mMonitor;
+	audio::MonitorSpectralNodeRef	mMonitor;
 	audio::GenOscNodeRef			mGenOsc;
 	audio::GenPulseNodeRef			mGenPulse;
 	audio::GenNodeRef				mGen;
@@ -193,7 +193,7 @@ void WaveTableTestApp::setupUI()
 	mFreqRampSlider.mTitle = "freq ramp";
 	mFreqRampSlider.mMin = -5;
 	mFreqRampSlider.mMax = 10;
-	mFreqRampSlider.set( 1.00f );
+	mFreqRampSlider.set( 0.2f );
 	mWidgets.push_back( &mFreqRampSlider );
 
 	sliderRect += Vec2f( 0, sliderRect.getHeight() + 10 );
@@ -206,7 +206,6 @@ void WaveTableTestApp::setupUI()
 	sliderRect += Vec2f( 0, sliderRect.getHeight() + 30 );
 	mNumPartialsInput.mBounds = sliderRect;
 	mNumPartialsInput.mTitle = "num partials";
-//	mNumPartialsInput.setValue( mGen->getWaveformNumPartials() );
 	mWidgets.push_back( &mNumPartialsInput );
 
 	sliderRect += Vec2f( 0, sliderRect.getHeight() + 30 );
