@@ -140,7 +140,7 @@ class Param {
 	void		resetImpl();
 	ContextRef	getContext() const;
 
-	std::list<EventRef>	mRamps;
+	std::list<EventRef>	mEvents;
 	std::atomic<float>	mValue;
 	Node*				mParentNode;
 	NodeRef				mProcessor;
