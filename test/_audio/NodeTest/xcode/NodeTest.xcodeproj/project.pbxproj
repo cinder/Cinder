@@ -12,6 +12,7 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		111A6270192DCAA50024BE66 /* libcinder_d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 111A6269192DCA960024BE66 /* libcinder_d.a */; };
 		1189C939185982520051AB13 /* AudioDrawUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1189C937185982520051AB13 /* AudioDrawUtils.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -20,30 +21,30 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		111A60C41921C4ED005C3166 /* PBXContainerItemProxy */ = {
+		111A6268192DCA960024BE66 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 111A60BE1921C4ED005C3166 /* cinder.xcodeproj */;
+			containerPortal = 111A6262192DCA960024BE66 /* cinder.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = D2AAC07E0554694100DB518D;
 			remoteInfo = cinder;
 		};
-		111A60C61921C4ED005C3166 /* PBXContainerItemProxy */ = {
+		111A626A192DCA960024BE66 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 111A60BE1921C4ED005C3166 /* cinder.xcodeproj */;
+			containerPortal = 111A6262192DCA960024BE66 /* cinder.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 007050BE1114F93F003FCAE4;
 			remoteInfo = cinder_iphone;
 		};
-		111A60C81921C4ED005C3166 /* PBXContainerItemProxy */ = {
+		111A626C192DCA960024BE66 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 111A60BE1921C4ED005C3166 /* cinder.xcodeproj */;
+			containerPortal = 111A6262192DCA960024BE66 /* cinder.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 00CFD9E11135C3520091E310;
 			remoteInfo = cinder_iphone_sim;
 		};
-		111A60CA1921C558005C3166 /* PBXContainerItemProxy */ = {
+		111A626E192DCAA00024BE66 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 111A60BE1921C4ED005C3166 /* cinder.xcodeproj */;
+			containerPortal = 111A6262192DCA960024BE66 /* cinder.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = D2AAC07D0554694100DB518D;
 			remoteInfo = cinder;
@@ -57,12 +58,11 @@
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		111A60BE1921C4ED005C3166 /* cinder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cinder.xcodeproj; path = ../../../../xcode/cinder.xcodeproj; sourceTree = "<group>"; };
+		111A6262192DCA960024BE66 /* cinder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cinder.xcodeproj; path = ../../../../xcode/cinder.xcodeproj; sourceTree = "<group>"; };
 		1189C937185982520051AB13 /* AudioDrawUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDrawUtils.cpp; path = ../../../../samples/_audio/common/AudioDrawUtils.cpp; sourceTree = "<group>"; };
 		1189C938185982520051AB13 /* AudioDrawUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDrawUtils.h; path = ../../../../samples/_audio/common/AudioDrawUtils.h; sourceTree = "<group>"; };
 		119CCEEA184A716B00853BEE /* AudioTestGui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioTestGui.h; path = ../../common/AudioTestGui.h; sourceTree = "<group>"; };
 		11AC0A2418E8E730008AF4BC /* InterleavedPassThruNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InterleavedPassThruNode.h; path = ../src/InterleavedPassThruNode.h; sourceTree = "<group>"; };
-		128572BBFD5C4118B6B34756 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		3D080E4252C34004B9ED31F4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -78,6 +78,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				111A6270192DCAA50024BE66 /* libcinder_d.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -128,12 +129,12 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		111A60BF1921C4ED005C3166 /* Products */ = {
+		111A6263192DCA960024BE66 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				111A60C51921C4ED005C3166 /* libcinder_d.a */,
-				111A60C71921C4ED005C3166 /* libcinder-iphone_d.a */,
-				111A60C91921C4ED005C3166 /* libcinder-iphone-sim_d.a */,
+				111A6269192DCA960024BE66 /* libcinder_d.a */,
+				111A626B192DCA960024BE66 /* libcinder-iphone_d.a */,
+				111A626D192DCA960024BE66 /* libcinder-iphone-sim_d.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -149,7 +150,7 @@
 		29B97314FDCFA39411CA2CEA /* NodeTest */ = {
 			isa = PBXGroup;
 			children = (
-				111A60BE1921C4ED005C3166 /* cinder.xcodeproj */,
+				111A6262192DCA960024BE66 /* cinder.xcodeproj */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -162,7 +163,6 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				128572BBFD5C4118B6B34756 /* Resources.h */,
 				AA875CFE0DD64C10A99EF3AB /* Prefix.pch */,
 			);
 			name = Headers;
@@ -199,7 +199,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				111A60CB1921C558005C3166 /* PBXTargetDependency */,
+				111A626F192DCAA00024BE66 /* PBXTargetDependency */,
 			);
 			name = NodeTest;
 			productInstallPath = "$(HOME)/Applications";
@@ -228,8 +228,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 111A60BF1921C4ED005C3166 /* Products */;
-					ProjectRef = 111A60BE1921C4ED005C3166 /* cinder.xcodeproj */;
+					ProductGroup = 111A6263192DCA960024BE66 /* Products */;
+					ProjectRef = 111A6262192DCA960024BE66 /* cinder.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -240,25 +240,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		111A60C51921C4ED005C3166 /* libcinder_d.a */ = {
+		111A6269192DCA960024BE66 /* libcinder_d.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libcinder_d.a;
-			remoteRef = 111A60C41921C4ED005C3166 /* PBXContainerItemProxy */;
+			remoteRef = 111A6268192DCA960024BE66 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		111A60C71921C4ED005C3166 /* libcinder-iphone_d.a */ = {
+		111A626B192DCA960024BE66 /* libcinder-iphone_d.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = "libcinder-iphone_d.a";
-			remoteRef = 111A60C61921C4ED005C3166 /* PBXContainerItemProxy */;
+			remoteRef = 111A626A192DCA960024BE66 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		111A60C91921C4ED005C3166 /* libcinder-iphone-sim_d.a */ = {
+		111A626D192DCA960024BE66 /* libcinder-iphone-sim_d.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = "libcinder-iphone-sim_d.a";
-			remoteRef = 111A60C81921C4ED005C3166 /* PBXContainerItemProxy */;
+			remoteRef = 111A626C192DCA960024BE66 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -286,10 +286,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		111A60CB1921C558005C3166 /* PBXTargetDependency */ = {
+		111A626F192DCAA00024BE66 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = cinder;
-			targetProxy = 111A60CA1921C558005C3166 /* PBXContainerItemProxy */;
+			targetProxy = 111A626E192DCAA00024BE66 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -312,7 +312,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_NAME = NodeTest;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
@@ -334,7 +333,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				PRODUCT_NAME = NodeTest;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
