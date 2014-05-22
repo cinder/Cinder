@@ -77,7 +77,7 @@ class Node : public std::enable_shared_from_this<Node>, public boost::noncopyabl
 		//! Controls how channels will be matched between connected Node's, if necessary. \see ChannelMode.
 		Format& channelMode( ChannelMode mode )					{ mChannelMode = mode; return *this; }
 		//! Whether or not the Node will be auto-enabled when connection changes occur.  Default is true for base \a Node class, although sub-classes may choose a different default.
-		Format& autoEnable( boost::tribool tb = true )			{ mAutoEnable = tb; return *this; }
+		Format& autoEnable( bool autoEnable = true )			{ mAutoEnable = autoEnable; return *this; }
 
 		size_t			getChannels() const						{ return mChannels; }
 		ChannelMode		getChannelMode() const					{ return mChannelMode; }
