@@ -73,7 +73,7 @@ void WaveTableTestApp::setup()
 
 	mGen >> mMonitor >> mGain >> ctx->getOutput();
 
-	ctx->printGraph();
+	PRINT_GRAPH( ctx );
 
 	setupUI();
 }

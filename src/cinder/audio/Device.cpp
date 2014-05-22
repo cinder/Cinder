@@ -35,7 +35,7 @@
 	#include "cinder/audio/msw/DeviceManagerWasapi.h"
 #endif
 
-#include "cinder/app/App.h"		// for app::console()
+#include <sstream>
 
 using namespace std;
 
@@ -157,14 +157,18 @@ void Device::updateFormat( const Format &format )
 		mSignalParamsDidChange();
 }
 
-void Device::printDevices()
+string Device::printDevices()
 {
+	stringstream stream;
+
 	for( auto &device : getDevices() ) {
-		app::console() << "-- " << device->getName() << " --" << endl;
-		app::console() << "\t key: " << device->getKey() << endl;
-		app::console() << "\t inputs: " << device->getNumInputChannels() << ", outputs: " << device->getNumOutputChannels() << endl;
-		app::console() << "\t samplerate: " << device->getSampleRate() << ", frames per block: " << device->getFramesPerBlock() << endl;
+		stream << "-- " << device->getName() << " --" << endl;
+		stream << "\t key: " << device->getKey() << endl;
+		stream << "\t inputs: " << device->getNumInputChannels() << ", outputs: " << device->getNumOutputChannels() << endl;
+		stream << "\t samplerate: " << device->getSampleRate() << ", frames per block: " << device->getFramesPerBlock() << endl;
 	}
+
+	return stream.str();
 }
 
 // ----------------------------------------------------------------------------------------------------

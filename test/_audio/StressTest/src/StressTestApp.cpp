@@ -96,7 +96,7 @@ void StressTestApp::addGens()
 		mGenBank.push_back( gen );
 	}
 
-	ctx->printGraph();
+	PRINT_GRAPH( ctx );
 	CI_LOG_V( "gen count: " << mGenBank.size() );
 }
 

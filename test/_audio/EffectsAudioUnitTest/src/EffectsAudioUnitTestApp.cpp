@@ -54,7 +54,7 @@ void EffectsAudioUnitTestApp::setup()
 	setupUI();
 	initParams();
 
-	ctx->printGraph();
+	PRINT_GRAPH( ctx );
 }
 
 void EffectsAudioUnitTestApp::setupOne()
@@ -191,7 +191,7 @@ void EffectsAudioUnitTestApp::processTap( Vec2i pos )
 		initParams();
 
 		ctx->setEnabled( enabled );
-		ctx->printGraph();
+		PRINT_GRAPH( ctx );
 	}
 }
 

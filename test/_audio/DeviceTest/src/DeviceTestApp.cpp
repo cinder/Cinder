@@ -70,7 +70,7 @@ void DeviceTestApp::prepareSettings( Settings *settings )
 
 void DeviceTestApp::setup()
 {
-	audio::Device::printDevices();
+	console() << audio::Device::printDevices();
 
 	auto ctx = audio::master();
 
@@ -87,7 +87,7 @@ void DeviceTestApp::setup()
 	//setupMultiChannelDevice( "PreSonus FIREPOD (1431)" );
 //	setupMultiChannelDeviceWindows( "MOTU Analog (MOTU Audio Wave for 64 bit)" );
 
-	ctx->printGraph();
+	PRINT_GRAPH( ctx );
 
 	setupUI();
 

@@ -89,7 +89,7 @@ void SpectralTestApp::setup()
 
 	mScaleDecibelsButton.setEnabled( mSpectrumPlot.getScaleDecibels() );
 
-	ctx->printGraph();
+	PRINT_GRAPH( ctx );
 
 	CI_LOG_V( "MonitorSpectralNode fftSize: " << mMonitorSpectralNode->getFftSize() << ", windowSize: " << mMonitorSpectralNode->getWindowSize() );
 }

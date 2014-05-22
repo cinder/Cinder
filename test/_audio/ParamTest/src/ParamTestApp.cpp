@@ -78,7 +78,7 @@ void ParamTestApp::setup()
 
 	setupUI();
 
-	ctx->printGraph();
+	PRINT_GRAPH( ctx );
 
 	testApply();
 //	testApply2();
@@ -311,7 +311,7 @@ void ParamTestApp::processTap( Vec2i pos )
 			setupFilter();
 
 		ctx->setEnabled( enabled );
-		ctx->printGraph();
+		PRINT_GRAPH( ctx );
 	}
 	else
 		processDrag( pos );

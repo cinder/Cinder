@@ -102,8 +102,8 @@ class Context : public std::enable_shared_from_this<Context> {
 	//! OutputNode implmenentations should call this at the end of each rendering block.
 	void postProcess();
 
-	//! Prints the Node graph to console()
-	void printGraph();
+	//! Returns a string representation of the Node graph for debugging purposes.
+	std::string printGraph();
 
   protected:
 	Context();

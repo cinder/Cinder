@@ -28,7 +28,7 @@
 
 #include "cinder/Cinder.h"
 
-#include "cinder/app/App.h"		// for app::console()
+#include <sstream>
 
 #if defined( CINDER_COCOA )
 	#include "cinder/audio/cocoa/ContextAudioUnit.h"
@@ -299,15 +299,15 @@ const std::vector<Node *>& Context::getAutoPulledNodes()
 
 namespace {
 
-void printRecursive( const NodeRef &node, size_t depth, set<NodeRef> &traversedNodes )
+void printRecursive( ostream &stream, const NodeRef &node, size_t depth, set<NodeRef> &traversedNodes )
 {
 	if( ! node )
 		return;
 	for( size_t i = 0; i < depth; i++ )
-		app::console() << "-- ";
+		stream << "-- ";
 
 	if( traversedNodes.count( node ) ) {
-		app::console() << node->getName() << "\t[ ** already printed ** ]" << endl;
+		stream << node->getName() << "\t[ ** already printed ** ]" << endl;
 		return;
 	}
 
@@ -320,31 +320,32 @@ void printRecursive( const NodeRef &node, size_t depth, set<NodeRef> &traversedN
 		case Node::ChannelMode::MATCHES_OUTPUT: channelMode = "matches output"; break;
 	}
 
-	app::console() << node->getName() << "\t[ " << ( node->isEnabled() ? "enabled" : "disabled" );
-	app::console() << ", ch: " << node->getNumChannels();
-	app::console() << ", ch mode: " << channelMode;
-	app::console() << ", " << ( node->getProcessInPlace() ? "in-place" : "sum" );
-	app::console() << " ]" << endl;
+	stream << node->getName() << "\t[ " << ( node->isEnabled() ? "enabled" : "disabled" );
+	stream << ", ch: " << node->getNumChannels();
+	stream << ", ch mode: " << channelMode;
+	stream << ", " << ( node->getProcessInPlace() ? "in-place" : "sum" );
+	stream << " ]" << endl;
 
 	for( const auto &input : node->getInputs() )
-		printRecursive( input, depth + 1, traversedNodes );
+		printRecursive( stream, input, depth + 1, traversedNodes );
 };
 
 } // anonymous namespace
 
-void Context::printGraph()
+string Context::printGraph()
 {
+	stringstream stream;
 	set<NodeRef> traversedNodes;
 
-	app::console() << "-------------- Graph configuration: --------------" << endl;
-	printRecursive( getOutput(), 0, traversedNodes );
+	printRecursive( stream, getOutput(), 0, traversedNodes );
 
 	if( ! mAutoPulledNodes.empty() ) {
-		app::console() << "(auto-pulled:)" << endl;
+		stream << "(auto-pulled:)" << endl;
 		for( const auto& node : mAutoPulledNodes )
-			printRecursive( node, 0, traversedNodes );
+			printRecursive( stream, node, 0, traversedNodes );
 	}
-	app::console() << "--------------------------------------------------" << endl;
+
+	return stream.str();
 }
 
 // ----------------------------------------------------------------------------------------------------

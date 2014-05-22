@@ -72,7 +72,7 @@ void NodeEffectsTestApp::setup()
 
 	setupUI();
 
-	ctx->printGraph();
+	PRINT_GRAPH( ctx );
 	CI_LOG_V( "Context samplerate: " << ctx->getSampleRate() << ", frames per block: " << ctx->getFramesPerBlock() );
 }
 
@@ -335,7 +335,7 @@ void NodeEffectsTestApp::switchTest( const string &currentTest )
 		setupCycle();
 
 	ctx->setEnabled( enabled );
-	ctx->printGraph();
+	PRINT_GRAPH( ctx );
 }
 
 void NodeEffectsTestApp::update()

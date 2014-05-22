@@ -90,7 +90,10 @@ void DelayFeedback::setup()
 	mOsc->enable();
 
 	ctx->enable();
-	ctx->printGraph();
+
+	console() << "--------- context audio graph: --------------------" << endl;
+	console() << ctx->printGraph();
+	console() << "---------------------------------------------------" << endl;
 }
 
 void DelayFeedback::setVariableDelayMod()

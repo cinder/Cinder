@@ -70,8 +70,8 @@ void NodeTestApp::setup()
 //	setupSplitStereo();
 //	setupSplitMerge();
 
-	ctx->printGraph();
-	
+	PRINT_GRAPH( ctx );
+
 	setupUI();
 }
 
@@ -352,7 +352,7 @@ void NodeTestApp::processTap( Vec2i pos )
 		else if( currentTest == "split-merge" )
 			setupSplitMerge();
 
-		ctx->printGraph();
+		PRINT_GRAPH( ctx );
 	}
 }
 

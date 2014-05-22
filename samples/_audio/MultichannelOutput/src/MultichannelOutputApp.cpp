@@ -67,7 +67,7 @@ void MultichannelOutputApp::setup()
 void MultichannelOutputApp::setupMultichannelDevice()
 {
 	// debug print all devices to console
-	audio::Device::printDevices();
+	console() << audio::Device::printDevices();
 
 	audio::DeviceRef deviceWithMaxOutputs;
 

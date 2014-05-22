@@ -76,8 +76,8 @@ class Device : public std::enable_shared_from_this<Device>, boost::noncopyable {
 	signals::signal<void()>& getSignalParamsWillChange()	{ return mSignalParamsWillChange; }
 	signals::signal<void()>& getSignalParamsDidChange()		{ return mSignalParamsDidChange; }
 
-	//! Prints all devices to console()
-	static void printDevices();
+	//! Returns a string representation of all devices for debugging purposes.
+	static std::string printDevices();
 
   private:
 	Device( const std::string &key ) : mKey( key ), mSampleRate( 0 ), mFramesPerBlock( 0 ) {}

@@ -377,4 +377,8 @@ struct TextInput : public TestWidget {
 
 std::vector<struct TextInput *> TextInput::sTextInputs;
 
-
+#define PRINT_GRAPH( context ) {														\
+	ci::app::console() << "-------------- Graph configuration: --------------" << endl;	\
+	ci::app::console() << context->printGraph();										\
+	ci::app::console() << "--------------------------------------------------" << endl; \
+}
