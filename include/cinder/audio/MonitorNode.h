@@ -54,9 +54,14 @@ class MonitorNode : public NodeAutoPullable {
 
 		//! Sets the window size, the number of samples that are recorded for one 'window' into the audio signal. Default is the Context's frames-per-block.
 		//! \note will be rounded up to the nearest power of two.
-		Format& windowSize( size_t size )		{ mWindowSize = size; return *this; }
+		Format&		windowSize( size_t size )		{ mWindowSize = size; return *this; }
 		//! Returns the window size.
-		size_t getWindowSize() const			{ return mWindowSize; }
+		size_t		getWindowSize() const			{ return mWindowSize; }
+
+		// reimpl Node::Format
+		Format&		channels( size_t ch )					{ Node::Format::channels( ch ); return *this; }
+		Format&		channelMode( ChannelMode mode )			{ Node::Format::channelMode( mode ); return *this; }
+		Format&		autoEnable( bool autoEnable = true )	{ Node::Format::autoEnable( autoEnable ); return *this; }
 
 	  protected:
 		size_t mWindowSize;
@@ -104,6 +109,11 @@ class MonitorSpectralNode : public MonitorNode {
 
 		size_t			getFftSize() const				{ return mFftSize; }
 		dsp::WindowType	getWindowType() const			{ return mWindowType; }
+
+		// reimpl Node::Format
+		Format&		channels( size_t ch )					{ Node::Format::channels( ch ); return *this; }
+		Format&		channelMode( ChannelMode mode )			{ Node::Format::channelMode( mode ); return *this; }
+		Format&		autoEnable( bool autoEnable = true )	{ Node::Format::autoEnable( autoEnable ); return *this; }
 
       protected:
 		size_t			mFftSize;

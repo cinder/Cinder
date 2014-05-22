@@ -65,7 +65,8 @@ void SpectralTestApp::setup()
 
 	auto ctx = audio::master();
 
-	mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( audio::MonitorSpectralNode::Format().fftSize( FFT_SIZE ).windowSize( WINDOW_SIZE ).windowType( WINDOW_TYPE ) ) );
+	auto format = audio::MonitorSpectralNode::Format().fftSize( FFT_SIZE ).windowSize( WINDOW_SIZE ).windowType( WINDOW_TYPE );
+	mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( format ) );
 	mMonitorSpectralNode->setAutoEnabled();
 
 	//mGen = ctx->makeNode( new audio::GenSineNode() );

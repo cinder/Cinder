@@ -83,7 +83,11 @@ class Node : public std::enable_shared_from_this<Node>, public boost::noncopyabl
 		ChannelMode		getChannelMode() const					{ return mChannelMode; }
 		boost::tribool	getAutoEnable() const					{ return mAutoEnable; }
 
-	  protected:
+		void setChannels( size_t ch )							{ mChannels = ch; }
+		void setChannelMode( ChannelMode mode )					{ mChannelMode = mode; }
+		void setAutoEnable( bool autoEnable	)					{ mAutoEnable = autoEnable; }
+
+	  private:
 		size_t			mChannels;
 		ChannelMode		mChannelMode;
 		boost::tribool	mAutoEnable;
