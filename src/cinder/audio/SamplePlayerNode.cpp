@@ -185,19 +185,24 @@ void BufferPlayerNode::process( Buffer *buffer )
 	buffer->copyOffset( *mBuffer, readCount, 0, readPos );
 
 	if( readCount < numFrames  ) {
-		// TODO: if looping, copy from mLoopBegin instead of zero'ing
-		buffer->zero( readCount, numFrames - readCount );
+		// End of File. If looping copy from beginning, otherwise zero the remainder, disable and mark the mIsEof.
 
 		if( mLoop ) {
-			mReadPos.store( mLoopBegin );
-			return;
-		} else {
+			size_t readBegin = mLoopBegin;
+			size_t readLeft = min( numFrames - readCount, mNumFrames - readBegin );
+
+			buffer->copyOffset( *mBuffer, readLeft, readCount, readBegin );
+			mReadPos.store( readBegin + readLeft );
+		}
+		else {
+			buffer->zero( readCount, numFrames - readCount );
 			mIsEof = true;
+			mReadPos = mNumFrames;
 			disable();
 		}
 	}
-
-	mReadPos += readCount;
+	else
+		mReadPos += readCount;
 }
 
 // ----------------------------------------------------------------------------------------------------
