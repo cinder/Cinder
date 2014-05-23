@@ -121,7 +121,7 @@ void DelayFeedback::addSplash( const Vec2f &pos )
 	float radiusMin = ( 1 - (float)pos.y / (float)getWindowHeight() ) * MAX_RADIUS / 2;
 	splash.mRadius = randFloat( radiusMin, 30 );
 
-	float endRadius = randFloat( MAX_RADIUS * 0.9, MAX_RADIUS );
+	float endRadius = randFloat( MAX_RADIUS * 0.9f, MAX_RADIUS );
 	timeline().apply( &splash.mRadius, endRadius, 7, EaseOutExpo() );
 	timeline().apply( &splash.mAlpha, 0.0f, 7 );
 

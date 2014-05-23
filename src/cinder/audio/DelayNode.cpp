@@ -78,7 +78,7 @@ void DelayNode::setMaxDelaySeconds( float seconds )
 
 void DelayNode::initialize()
 {
-	mSampleRate = getSampleRate();
+	mSampleRate = (float)getSampleRate();
 	mWriteIndex = 0;
 
 	if( mDelayBuffer.getNumChannels() != getNumChannels() )
@@ -110,7 +110,7 @@ void DelayNode::process( Buffer *buffer )
 			if( readPos >= delayBufferFrames )
 				readPos -= delayBufferFrames;
 			else if( readPos < 0 )
-				readPos = delayBufferFrames - 1; // value was over delayBufferFrames, set to last available frame (will cause distortion)
+				readPos = float( delayBufferFrames - 1 ); // value was over delayBufferFrames, set to last available frame (will cause distortion)
 
 			float sample = *inChannel;
 			*inChannel++ = interpLinear( delayChannel, delayBufferFrames, readPos );
@@ -120,7 +120,7 @@ void DelayNode::process( Buffer *buffer )
 		}
 	}
 	else {
-		const size_t delayFrames( mParamDelaySeconds.getValue() * sampleRate );
+		const size_t delayFrames = size_t( mParamDelaySeconds.getValue() * sampleRate );
 		size_t readIndex = writeIndex + delayBufferFrames - delayFrames;
 
 		for( size_t i = 0; i < numFrames; i++ ) {
