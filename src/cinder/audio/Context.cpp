@@ -27,6 +27,7 @@
 #include "cinder/audio/Debug.h"
 
 #include "cinder/Cinder.h"
+#include "cinder/app/App.h"
 
 #include <sstream>
 
@@ -57,6 +58,10 @@ void Context::registerClearStatics()
 {
 	sIsRegisteredForShutdown = true;
 
+	// A signal is registered for app shutdown in order to ensure that all Node's and their
+	// dependencies are destroyed before static memory goes down - this avoids a crash at shutdown
+	// in r8brain's static processing containers.
+	// TODO: consider leaking the master context by default and providing a public clear function.
 	app::App::get()->getSignalShutdown().connect( [] {
 		sDeviceManager.reset();
 		sMasterContext.reset();
