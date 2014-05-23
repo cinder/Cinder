@@ -103,7 +103,7 @@ class Context : public std::enable_shared_from_this<Context> {
 	void postProcess();
 
 	//! Returns a string representation of the Node graph for debugging purposes.
-	std::string printGraph();
+	std::string printGraphToString();
 
   protected:
 	Context();

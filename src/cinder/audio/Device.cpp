@@ -157,7 +157,7 @@ void Device::updateFormat( const Format &format )
 		mSignalParamsDidChange();
 }
 
-string Device::printDevices()
+string Device::printDevicesToString()
 {
 	stringstream stream;
 

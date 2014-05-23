@@ -332,7 +332,7 @@ void printRecursive( ostream &stream, const NodeRef &node, size_t depth, set<Nod
 
 } // anonymous namespace
 
-string Context::printGraph()
+string Context::printGraphToString()
 {
 	stringstream stream;
 	set<NodeRef> traversedNodes;

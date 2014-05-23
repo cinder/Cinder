@@ -50,7 +50,7 @@ void VoiceTestApp::setup()
 
 	setupBasic();
 
-	audio::master()->printGraph();
+	audio::master()->printGraphToString();
 
 	setupUI();
 }
@@ -145,7 +145,7 @@ void VoiceTestApp::processTap( Vec2i pos )
 		else if( currentTest == "file 2" )
 			setupDifferentFile();
 
-		audio::master()->printGraph();
+		audio::master()->printGraphToString();
 	}
 }
 

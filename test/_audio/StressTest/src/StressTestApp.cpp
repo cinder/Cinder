@@ -107,7 +107,7 @@ void StressTestApp::removeGens()
 		mGenBank.pop_back();
 	}
 
-	audio::master()->printGraph();
+	audio::master()->printGraphToString();
 	CI_LOG_V( "gen count: " << mGenBank.size() );
 }
 
@@ -118,7 +118,7 @@ void StressTestApp::clearGens()
 		mGenBank.pop_back();
 	}
 
-	audio::master()->printGraph();
+	audio::master()->printGraphToString();
 	CI_LOG_V( "gen count: " << mGenBank.size() );
 }
 

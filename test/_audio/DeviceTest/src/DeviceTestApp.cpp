@@ -70,7 +70,7 @@ void DeviceTestApp::prepareSettings( Settings *settings )
 
 void DeviceTestApp::setup()
 {
-	console() << audio::Device::printDevices();
+	console() << audio::Device::printDevicesToString();
 
 	auto ctx = audio::master();
 
@@ -462,7 +462,7 @@ void DeviceTestApp::setupTest( string test )
 	if( mPlayButton.mEnabled )
 		audio::master()->enable();
 
-	audio::master()->printGraph();
+	audio::master()->printGraphToString();
 }
 
 void DeviceTestApp::keyDown( KeyEvent event )

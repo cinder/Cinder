@@ -92,7 +92,7 @@ void DelayFeedback::setup()
 	ctx->enable();
 
 	console() << "--------- context audio graph: --------------------" << endl;
-	console() << ctx->printGraph();
+	console() << ctx->printGraphToString();
 	console() << "---------------------------------------------------" << endl;
 }
 
