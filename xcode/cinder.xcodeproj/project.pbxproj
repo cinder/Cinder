@@ -915,6 +915,8 @@
 		1161C978165C7DFC00268A5E /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
 		1161C979165C847200268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
 		1161C97A165C847400268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
+		11C97CA3192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
+		11C97CA4192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
 		277C2CF01366632B00178A29 /* Matrix22.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEC1366632B00178A29 /* Matrix22.h */; };
 		277C2CF11366632B00178A29 /* Matrix33.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CED1366632B00178A29 /* Matrix33.h */; };
 		277C2CF21366632B00178A29 /* Matrix44.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEE1366632B00178A29 /* Matrix44.h */; };
@@ -2985,6 +2987,7 @@
 				00B729E4115DABD800CD71B9 /* Timer.cpp in Sources */,
 				0049A34A116EE65C007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F51194F584004D686E /* Text.cpp in Sources */,
+				11C97CA3192F275300A510B5 /* CinderAssert.cpp in Sources */,
 				005374F71194F588004D686E /* Font.cpp in Sources */,
 				009CB673120F22FF0066763D /* Fbo.cpp in Sources */,
 				C7FA5FC312124A960065683B /* CaptureImplAvFoundation.mm in Sources */,
@@ -3140,6 +3143,7 @@
 				00B729E5115DABD800CD71B9 /* Timer.cpp in Sources */,
 				0049A34B116EE65D007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F61194F584004D686E /* Text.cpp in Sources */,
+				11C97CA4192F275300A510B5 /* CinderAssert.cpp in Sources */,
 				005374F81194F589004D686E /* Font.cpp in Sources */,
 				009CB674120F23000066763D /* Fbo.cpp in Sources */,
 				43ED153C1221DF69003AEB0B /* Url.cpp in Sources */,
