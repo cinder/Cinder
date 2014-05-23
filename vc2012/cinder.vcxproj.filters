@@ -690,6 +690,9 @@
     <ClCompile Include="..\src\cinder\audio\MonitorNode.cpp">
       <Filter>Source Files\audio</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\CinderAssert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1468,6 +1471,12 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\audio\MonitorNode.h">
       <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CinderAssert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CurrentFunction.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
