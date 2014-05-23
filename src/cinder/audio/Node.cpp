@@ -206,6 +206,9 @@ void Node::initializeImpl()
 	if( mInitialized )
 		return;
 
+	if( mProcessInPlace && ! supportsProcessInPlace() )
+		setupProcessWithSumming();
+
 	initialize();
 	mInitialized = true;
 
