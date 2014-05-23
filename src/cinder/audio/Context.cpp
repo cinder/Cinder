@@ -77,8 +77,8 @@ Context* Context::master()
 #elif defined( CINDER_MSW )
 	#if( _WIN32_WINNT >= _WIN32_WINNT_VISTA )
 		sMasterContext.reset( new msw::ContextWasapi() );
-	//#else
-	//	sMasterContext.reset( new msw::ContextXAudio() );
+	#else
+		sMasterContext.reset( new msw::ContextXAudio() );
 	#endif
 #endif
 		if( ! sIsRegisteredForShutdown )
