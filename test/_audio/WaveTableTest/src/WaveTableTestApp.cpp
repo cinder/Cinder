@@ -93,7 +93,7 @@ void WaveTableTestApp::setupOsc( audio::WaveformType type )
 {
 	auto ctx = audio::master();
 
-	mGenOsc = ctx->makeNode( new audio::GenOscNode( audio::GenOscNode::Format().waveform( type ) ) );
+	mGenOsc = ctx->makeNode( new audio::GenOscNode( type ) );
 	mGenOsc->setFreq( mFreqSlider.mValueScaled );
 	mGenOsc->enable();
 

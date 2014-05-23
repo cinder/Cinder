@@ -141,7 +141,7 @@ audio::GenNodeRef StressTestApp::makeSelectedGenType()
 audio::GenNodeRef StressTestApp::makeOsc( audio::WaveformType type )
 {
 	auto ctx = audio::master();
-	auto result = ctx->makeNode( new audio::GenOscNode( audio::GenOscNode::Format().waveform( type ) ) );
+	auto result = ctx->makeNode( new audio::GenOscNode( type ) );
 
 	if( mWaveTable )
 		result->setWaveTable( mWaveTable );

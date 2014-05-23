@@ -120,23 +120,11 @@ class GenTableNode : public GenNode {
 //! General purpose, band-limited oscillator using wavetable lookup.
 class GenOscNode : public GenNode {
   public:
-
-	struct Format : public Node::Format {
-		Format() : mWaveformType( WaveformType::SINE )	{}
-
-		Format&		waveform( WaveformType type )	{ mWaveformType = type; return *this; }
-
-		const WaveformType& getWaveform() const	{ return mWaveformType; }
-
-      private:
-		WaveformType mWaveformType;
-	};
-
 	GenOscNode( const Format &format = Format() );
 	GenOscNode( float freq, const Format &format = Format() );
+	GenOscNode( WaveformType waveformType, float freq = 0, const Format &format = Format() );
 
-
-	void setWaveform( WaveformType type );
+	void setWaveform( WaveformType waveformType );
 
 	void setWaveTable( const WaveTable2dRef &waveTable )	{ mWaveTable = waveTable; }
 	const WaveTable2dRef getWaveTable() const				{ return mWaveTable; }

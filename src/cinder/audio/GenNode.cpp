@@ -211,12 +211,17 @@ void GenTableNode::process( Buffer *buffer )
 // ----------------------------------------------------------------------------------------------------
 
 GenOscNode::GenOscNode( const Format &format )
-	: GenNode( format ), mWaveformType( format.getWaveform() )
+	: GenNode( format ), mWaveformType( WaveformType::SINE )
 {
 }
 
 GenOscNode::GenOscNode( float freq, const Format &format )
-	: GenNode( freq, format ), mWaveformType( format.getWaveform() )
+	: GenNode( freq, format ), mWaveformType( WaveformType::SINE )
+{
+}
+
+GenOscNode::GenOscNode( WaveformType waveformType, float freq, const Format &format )
+	: GenNode( freq, format ), mWaveformType( waveformType )
 {
 }
 
@@ -237,9 +242,9 @@ void GenOscNode::initialize()
 		mWaveTable->fillBandlimited( mWaveformType );
 }
 
-void GenOscNode::setWaveform( WaveformType type )
+void GenOscNode::setWaveform( WaveformType waveformType )
 {
-	if( mWaveformType == type )
+	if( mWaveformType == waveformType )
 		return;
 
 	if( ! isInitialized() )
@@ -248,8 +253,8 @@ void GenOscNode::setWaveform( WaveformType type )
 	// TODO: to prevent the entire graph from blocking, use our own lock and tryLock / fail when blocked in process()
 	lock_guard<mutex> lock( getContext()->getMutex() );
 
-	mWaveformType = type;
-	mWaveTable->fillBandlimited( type );
+	mWaveformType = waveformType;
+	mWaveTable->fillBandlimited( waveformType );
 }
 
 void GenOscNode::process( Buffer *buffer )
