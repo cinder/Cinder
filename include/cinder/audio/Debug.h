@@ -21,9 +21,13 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-// note: this file will be removed post alpha stages
+// note: this file will be removed in future versions
 
 #pragma once
+
+#include "cinder/Cinder.h"
+
+#if( CINDER_VERSION < 807 )
 
 #include "cinder/CinderAssert.h"
 #include <boost/current_function.hpp>
@@ -42,4 +46,6 @@
 	#define CI_LOG_W( warningStream )	do{} while( 0 )
 	#define CI_LOG_E( errorStream )		do{} while( 0 )
 
-#endif // DEBUG
+#endif // ! defined( NDEBUG )
+
+#endif // CINDER_VERSION < 807

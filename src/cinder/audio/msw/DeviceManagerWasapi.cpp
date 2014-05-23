@@ -277,7 +277,7 @@ vector<wstring> DeviceManagerWasapi::parseDeviceIds( DeviceInfo::Usage usage )
 	::HDEVINFO devInfoSet = ::SetupDiGetClassDevs( devInterfaceGuid, 0, 0, DIGCF_DEVICEINTERFACE | DIGCF_PRESENT );
 	if( devInfoSet == INVALID_HANDLE_VALUE ) {
 		CI_LOG_E( "INVALID_HANDLE_VALUE, detailed error: " << GetLastError() );
-		CI_ASSERT( false );
+		CI_ASSERT( 0 );
 		return result;
 	}
 
@@ -303,11 +303,10 @@ vector<wstring> DeviceManagerWasapi::parseDeviceIds( DeviceInfo::Usage usage )
 
 		::SP_DEVINFO_DATA devInfo = {0};
 		devInfo.cbSize = sizeof( ::SP_DEVINFO_DATA );
-		if( ! ::SetupDiGetDeviceInterfaceDetail( devInfoSet, &devInterface, interfaceDetail.get(), sizeDevInterface, 0, &devInfo ) ) {
+
+		// If SetupDiGetDeviceInterfaceDetail returns false, that means it couldn't load this specific device detail and just move on before adding to result.
+		if( ! ::SetupDiGetDeviceInterfaceDetail( devInfoSet, &devInterface, interfaceDetail.get(), sizeDevInterface, 0, &devInfo ) )
 			continue;
-			DWORD error = ::GetLastError();
-			CI_LOG_E( "get device returned false. error: " << error );
-		}
 
 		result.push_back( wstring( interfaceDetail->DevicePath ) );
 	}

@@ -182,7 +182,6 @@ DeviceRef DeviceManager::findDeviceByName( const string &name )
 			return device;
 	}
 
-	CI_LOG_E( "unknown device name: " << name );
 	return DeviceRef();
 }
 
@@ -193,16 +192,16 @@ DeviceRef DeviceManager::findDeviceByKey( const string &key )
 			return device;
 	}
 
-	CI_LOG_E( "unknown device key: " << key );
 	return DeviceRef();
 }
 
 DeviceRef DeviceManager::addDevice( const string &key )
 {
-	for( const auto& dev : mDevices ) {
+	for( const auto &dev : mDevices ) {
 		if( dev->getKey() == key ) {
-			CI_LOG_E( "device already exists with key: " << key );
-			return DeviceRef();
+			// we should never try to add the same device twice, but if this happens in release mode then return the one previously added.
+			CI_ASSERT_NOT_REACHABLE();
+			return dev;
 		}
 	}
 

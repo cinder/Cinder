@@ -152,8 +152,6 @@ void OutputDeviceNodeXAudio::initSourceVoice()
 	UINT32 flags = ( mFilterEnabled ? XAUDIO2_VOICE_USEFILTER : 0 );
 	HRESULT hr = xaudio->CreateSourceVoice( &mSourceVoice, wfx.get(), flags, XAUDIO2_DEFAULT_FREQ_RATIO, mVoiceCallback.get() );
 	CI_ASSERT( hr == S_OK );
-
-	CI_LOG_V( "complete" );
 }
 
 void OutputDeviceNodeXAudio::enableProcessing()
@@ -230,13 +228,13 @@ OutputDeviceNodeRef ContextXAudio::createOutputDeviceNode( const DeviceRef &devi
 
 InputDeviceNodeRef ContextXAudio::createInputDeviceNode( const DeviceRef &device, const Node::Format &format )
 {
-	CI_LOG_W( "No InputDeviceNode available with XAudio2 path.");
+	// No InputDeviceNode available with XAudio2 path.
 	return InputDeviceNodeRef();
 }
 
 void ContextXAudio::setOutput( const OutputNodeRef &output )
 {
-	CI_LOG_W( "OutputNode is not user-settable with XAUdio2 path." );
+	// OutputNode is not user-settable with XAUdio2 path.
 }
 
 shared_ptr<OutputDeviceNodeXAudio> ContextXAudio::getOutputDeviceNodeXAudio() const
@@ -265,13 +263,11 @@ void ContextXAudio::disable()
 void ContextXAudio::initXAudio2()
 {
 #if defined( CINDER_XAUDIO_2_7 )
-	CI_LOG_V( "CINDER_XAUDIO_2_7" );
 	UINT32 flags = XAUDIO2_DEBUG_ENGINE;
 
 	::CoInitializeEx( NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE );
 
 #else
-	CI_LOG_V( "CINDER_XAUDIO_2_8" );
 	UINT32 flags = 0;
 #endif
 
@@ -319,7 +315,7 @@ DeviceRef DeviceManagerXAudio::getDefaultOutput()
 
 DeviceRef DeviceManagerXAudio::getDefaultInput()
 {
-	CI_LOG_W( "XAudio2 does not support hardware audio input." );
+	// XAudio2 does not support hardware audio input.
 	return DeviceRef();
 }
 
@@ -364,12 +360,12 @@ size_t DeviceManagerXAudio::getFramesPerBlock( const DeviceRef &device )
 
 void DeviceManagerXAudio::setSampleRate( const DeviceRef &device, size_t sampleRate )
 {
-	CI_LOG_W( "setting samplerate not supported, instead use the OS control panel" );
+	// setting samplerate not supported, instead use the OS control panel.
 }
 
 void DeviceManagerXAudio::setFramesPerBlock( const DeviceRef &device, size_t framesPerBlock )
 {
-	CI_LOG_W( "setting frames per block not supported" );
+	// setting frames per block not supported.
 }
 
 const DeviceRef& DeviceManagerXAudio::getDefaultDevice()

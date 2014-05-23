@@ -134,8 +134,6 @@ void Param::setProcessor( const NodeRef &node )
 	node->initializeImpl();
 
 	mProcessor = node;
-
-	CI_LOG_V( "set processing Node to: " << mProcessor->getName() );
 }
 
 void Param::reset()

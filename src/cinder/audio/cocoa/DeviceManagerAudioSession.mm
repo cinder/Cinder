@@ -121,7 +121,6 @@ void DeviceManagerAudioSession::setInputEnabled( bool enable )
 	CI_ASSERT( ! error );
 
 	mInputEnabled = enable;
-	CI_LOG_V( "set session category to: " << getSessionCategory() );
 }
 
 string DeviceManagerAudioSession::getName( const DeviceRef &device )
@@ -263,12 +262,11 @@ AudioSessionInterruptionHandlerImpl *DeviceManagerAudioSession::getSessionInterr
 
 - (void)beginInterruption
 {
-	 CI_LOG_V( "bang" );
+	// TODO: handle audio interruptions.
 }
 
 - (void)endInterruptionWithFlags:(NSUInteger)flags
 {
-	 CI_LOG_V( "bang" );
 }
 
 #else // iOS 6+
@@ -277,10 +275,10 @@ AudioSessionInterruptionHandlerImpl *DeviceManagerAudioSession::getSessionInterr
 {
 	NSUInteger interruptionType = (NSUInteger)[[notification userInfo] objectForKey:AVAudioSessionInterruptionTypeKey];
 
-	if( interruptionType == AVAudioSessionInterruptionTypeBegan )
-		 CI_LOG_V( "interruption began" );
-	else
-		 CI_LOG_V( "interruption ended" );
+//	if( interruptionType == AVAudioSessionInterruptionTypeBegan )
+//		 CI_LOG_V( "interruption began" );
+//	else
+//		 CI_LOG_V( "interruption ended" );
 }
 
 #endif // iOS pre 6

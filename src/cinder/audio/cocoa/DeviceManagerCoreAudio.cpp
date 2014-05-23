@@ -257,7 +257,6 @@ void DeviceManagerCoreAudio::registerPropertyListeners( DeviceRef device, ::Audi
 
 	AudioObjectPropertyListenerBlock listenerBlock = ^( UInt32 inNumberAddresses, const AudioObjectPropertyAddress inAddresses[] ) {
 
-		CI_LOG_V( "# properties changed: " << inNumberAddresses );
 		bool paramsUpdated = false;
 
 		for( UInt32 i = 0; i < inNumberAddresses; i++ ) {
@@ -271,21 +270,18 @@ void DeviceManagerCoreAudio::registerPropertyListeners( DeviceRef device, ::Audi
 				::AudioValueTranslation translation = { &dataSource, sizeof( UInt32 ), &dataSourceNameCF, sizeof( CFStringRef ) };
 				getAudioObjectPropertyData( deviceId, dataSourceNameAddress, sizeof( AudioValueTranslation ), &translation );
 
-				string dataSourceName = ci::cocoa::convertCfString( dataSourceNameCF );
-				CFRelease( dataSourceNameCF );
+				//string dataSourceName = ci::cocoa::convertCfString( dataSourceNameCF );
+				//CFRelease( dataSourceNameCF );
 
-				CI_LOG_V( "device data source changed to: " << dataSourceName );
+				//CI_LOG_V( "device data source changed to: " << dataSourceName );
 			}
 			else if( propertyAddress.mSelector == kAudioDevicePropertyNominalSampleRate ) {
 				paramsUpdated = true;
 				auto result = getAudioObjectProperty<Float64>( deviceId, propertyAddress );
-				CI_LOG_V( "device samplerate changed to: " << (int)result );
 			}
 			else if( propertyAddress.mSelector == kAudioDevicePropertyBufferFrameSize ) {
 				paramsUpdated = true;
-
 				auto result = getAudioObjectProperty<UInt32>( deviceId, propertyAddress );
-				CI_LOG_V( "device samplerate changed to: " << (int)result );
 			}
 		}
 

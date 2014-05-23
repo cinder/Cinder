@@ -139,16 +139,14 @@ size_t SourceFileMediaFoundation::performRead( Buffer *buffer, size_t bufferFram
 
 void SourceFileMediaFoundation::performSeek( size_t readPositionFrames )
 {
-	if( ! mCanSeek ) {
-		CI_LOG_E( "cannot seek." );
+	if( ! mCanSeek )
 		return;
-	}
 
 	mReadBufferPos = mFramesRemainingInReadBuffer = 0;
 
 	double positionSeconds = (double)readPositionFrames / (double)mSampleRate;
 	if( positionSeconds > mSeconds ) {
-		CI_LOG_E( "cannot seek beyond end of file (" << positionSeconds << "s)." );
+		// don't attempt seek beyond bounds
 		return;
 	}
 
@@ -270,7 +268,7 @@ size_t SourceFileMediaFoundation::processNextReadSample()
 	CI_ASSERT( hr == S_OK );
 
 	if( streamFlags & MF_SOURCE_READERF_CURRENTMEDIATYPECHANGED ) {
-		CI_LOG_E( "type change unhandled" );
+		CI_LOG_W( "type change unhandled" );
 		return 0;
 	}
 	if( streamFlags & MF_SOURCE_READERF_ENDOFSTREAM ) {
@@ -415,8 +413,6 @@ TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataT
 
 	hr = mSinkWriter->AddStream( mediaType, &mStreamIndex );
 	CI_ASSERT( hr == S_OK );
-
-	CI_LOG_V( "initializing complete. filePath: " << dataTarget->getFilePath() << ", stream index: " << mStreamIndex );
 
 	// Tell the sink writer to start accepting data.
 	hr = mSinkWriter->BeginWriting();

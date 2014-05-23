@@ -74,8 +74,6 @@ void DelayNode::setMaxDelaySeconds( float seconds )
 	
 	mMaxDelaySeconds = seconds;
 	mWriteIndex = 0;
-
-	CI_LOG_V( "seconds: " << seconds << ", frames: " << delayFrames << ", delay buffer frames: " << delayBufferFrames );
 }
 
 void DelayNode::initialize()

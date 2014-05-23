@@ -157,8 +157,6 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		if( closestMatch->nSamplesPerSec != wfx->nSamplesPerSec )
 			throw AudioFormatExc( "IAudioClient requested WAVEFORMATEX 'closest match' of unexpected samplerate." );
 
-		CI_LOG_V( "requested format type wasn't accepted, requested channels: " << numChannels << ", closestMatch channels: " << closestMatch->nChannels );
-
 		wfx->nChannels = closestMatch->nChannels;
 		wfx->nAvgBytesPerSec = closestMatch->nAvgBytesPerSec;
 		wfx->nBlockAlign = closestMatch->nBlockAlign;
@@ -360,7 +358,6 @@ void WasapiCaptureClientImpl::init()
 	if( needsConverter ) {
 		mConverter = audio::dsp::Converter::create( device->getSampleRate(), mInputDeviceNode->getSampleRate(), mNumChannels, mInputDeviceNode->getNumChannels(), mMaxReadFrames );
 		mConvertedReadBuffer.setSize( mConverter->getDestMaxFramesPerBlock(), mNumChannels );
-		CI_LOG_V( "created Converter for samplerate: " << mConverter->getSourceSampleRate() << " -> " << mConverter->getDestSampleRate() << ", channels: " << mConverter->getSourceNumChannels() << " -> " << mConverter->getDestNumChannels() );
 	}
 }
 
@@ -451,8 +448,7 @@ void OutputDeviceNodeWasapi::initialize()
 	mRenderImpl->init();
 
 	if( getNumChannels() != mRenderImpl->mNumChannels ) {
-		CI_LOG_W( "number of channels is unsuitable for IAudioClient, requested: " << getNumChannels() << ", closest match: " << mRenderImpl->mNumChannels );
-
+		// specified channel count was unsuitable for IAudioClient.
 		// kludge: Update OutputDeviceNode's channels to match the number requested from IAudioClient.
 		// - this will call Node::uninitializeImpl(), but that won't do anything because we haven't completed our initialization yet.
 		setNumChannels( mRenderImpl->mNumChannels );

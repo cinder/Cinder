@@ -298,10 +298,8 @@ void Node::configureConnections()
 			inputProcessInPlace = false;
 
 		// if we're unable to process in-place and we're a DelayNode, its possible that the input may be part of a feedback loop, in which case input must sum.
-		if( ! mProcessInPlace && isDelay ) {
-			CI_LOG_V( "detected possible cycle with delay: " << getName() << ", disabling in-place processing for input: " << input->getName() );
+		if( ! mProcessInPlace && isDelay )
 			inputProcessInPlace = false;
-		}
 
 		if( ! inputProcessInPlace )
 			input->setupProcessWithSumming();

@@ -123,7 +123,6 @@ BufferPlayerNode::BufferPlayerNode( const BufferRef &buffer, const Format &forma
 void BufferPlayerNode::enableProcessing()
 {
 	if( ! mBuffer ) {
-		CI_LOG_W( "no audio buffer, disabling." );
 		disable();
 		return;
 	}
@@ -269,7 +268,6 @@ void FilePlayerNode::uninitialize()
 void FilePlayerNode::enableProcessing()
 {
 	if( ! mSourceFile ) {
-		CI_LOG_W( "no source file, disabling." );
 		disable();
 		return;
 	}
@@ -298,10 +296,8 @@ void FilePlayerNode::stop()
 
 void FilePlayerNode::seek( size_t readPositionFrames )
 {
-	if( ! mSourceFile ) {
-		CI_LOG_E( "no source file, returning." );
+	if( ! mSourceFile )
 		return;
-	}
 
 	// Synchronize with the mutex that protects the read thread, which is different depending on if
 	// read is async or sync (done on audio thread)
