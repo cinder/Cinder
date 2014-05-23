@@ -38,19 +38,17 @@ public:
 	void mouseDrag( MouseEvent event ) override;
 	void mouseUp( MouseEvent event ) override;
 	void keyDown( KeyEvent event )	override;
-
 	void update();
 	void draw();
 
-	void setVariableDelayMod();
-
-	void addSplash( const Vec2f &pos );
-	float quantizePitch( const Vec2f &pos );
-	void loadMesh();
-	void loadGlsl();
+	void	setVariableDelayMod();
+	void	addSplash( const Vec2f &pos );
+	float	quantizePitch( const Vec2f &pos );
+	void	loadMesh();
+	void	loadGlsl();
 
 	audio::GenOscNodeRef	mOsc;
-	audio::DelayNodeRef	mDelay;
+	audio::DelayNodeRef		mDelay;
 	audio::GainNodeRef		mGain;
 
 	std::list<Splash>		mSplashes;
