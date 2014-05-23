@@ -29,14 +29,13 @@
 
 #if( CINDER_VERSION < 807 )
 
-#include "cinder/CinderAssert.h"
-#include <boost/current_function.hpp>
+#include "cinder/CurrentFunction.h"
 
 #if ! defined( NDEBUG )
 
 #include "cinder/app/App.h"
 
-	#define CI_LOG_V( stream )			do{ ci::app::console() << BOOST_CURRENT_FUNCTION << " | " << stream << std::endl; } while( 0 )
+	#define CI_LOG_V( stream )			do{ ci::app::console() << CINDER_CURRENT_FUNCTION << " | " << stream << std::endl; } while( 0 )
 	#define CI_LOG_W( warningStream )	do{ CI_LOG_V( __LINE__ << " | WARNING | " << warningStream ); } while( 0 )
 	#define CI_LOG_E( errorStream )		do{ CI_LOG_V( __LINE__ << " | ERROR | " << errorStream ); } while( 0 )
 
