@@ -21,39 +21,12 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/CinderAssert.h"
+#pragma once
 
-#include <iostream>
-#include <csignal>
-
-namespace cinder { namespace detail {
-
-void assertionFailedBreak( char const *expr, char const *function, char const *file, long line )
-{
-	std::cerr << "*** Assertion Failed (break) *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << std::endl;
-
-#if defined( CINDER_MSW )
-	__debugbreak();
+#if defined( __clang__ )
+	#define CINDER_CURRENT_FUNCTION __PRETTY_FUNCTION__
+#elif defined( _MSC_VER )
+	#define CINDER_CURRENT_FUNCTION __FUNCTION__
 #else
-	std::raise( SIGINT );
+	#define CINDER_CURRENT_FUNCTION "(unknown function)"
 #endif
-}
-
-void assertionFailedMessageBreak( char const *expr, char const *msg, char const *function, char const *file, long line )
-{
-	std::cerr << "*** Assertion Failed (break) *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
-
-#if defined( CINDER_MSW )
-	__debugbreak();
-#else
-	std::raise( SIGINT );
-#endif
-}
-
-void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line )
-{
-	std::cerr << "*** Assertion Failed *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
-	std::abort();
-}
-
-} } // namespace cinder::detail

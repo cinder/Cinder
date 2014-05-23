@@ -21,7 +21,9 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-// This file has no include guards, so users can redefine the behavior of assertions per compilation unit
+// This file has no include guards, so users can redefine the behavior of assertions per compilation unit.
+//
+// The concept for these assertion macros originates from boost's assert utilties.
 //
 // Included macros:
 // - CI_ASSERT( expr ): asserts that \a expr evaluates to true. By default it is equivalent to assert( expr )
@@ -43,32 +45,39 @@
 #if defined( CI_ASSERT_MSG )
 	#undef CI_ASSERT_MSG
 #endif
+#if defined( CI_VERIFY )
+	#undef CI_VERIFY
+#endif
+#if defined( CI_VERIFY_MSG )
+	#undef CI_VERIFY_MSG
+#endif
+#if defined( CI_ASSERT_NOT_REACHABLE )
+	#undef CI_ASSERT_NOT_REACHABLE
+#endif
 
-#if ! defined( CI_DISABLE_ASSERTS )
+#if ! defined( NDEBUG ) && ! defined( CI_DISABLE_ASSERTS )
 
-	#if defined( _MSC_VER ) && ! defined( __func__ )
-		#define __func__ __FUNCTION__
-	#endif
+	#include "cinder/CurrentFunction.h"
 
 	#if defined( CI_ASSERT_DEBUG_BREAK )
 
-		#if ! defined( CI_ASSERT_DEBUG_BREAK_H )
-			#define CI_ASSERT_DEBUG_BREAK_H
+		#if ! defined( CINDER_ASSERT_DEBUG_BREAK_H )
+			#define CINDER_ASSERT_DEBUG_BREAK_H
 
 			// defined in CinderAssert.cpp
-			namespace cinder {
+			namespace cinder { namespace detail {
 				void assertionFailedBreak( char const *expr, char const *function, char const *file, long line );
 				void assertionFailedMessageBreak( char const *expr, char const *msg, char const *function, char const *file, long line );
-			}
+			} }
 
-		#endif // CI_ASSERT_DEBUG_BREAK_H
+		#endif // CINDER_ASSERT_DEBUG_BREAK_H
 
-		#define CI_ASSERT( expr ) ( (expr) ? ( (void)0) : ::cinder::assertionFailedBreak( #expr, __func__, __FILE__, __LINE__ ) )
-		#define CI_ASSERT_MSG( expr, msg ) ( (expr) ? ( (void)0) : ::cinder::assertionFailedMessageBreak( #expr, msg, __func__, __FILE__, __LINE__ ) )
+		#define CI_ASSERT( expr ) ( (expr) ? ( (void)0) : ::cinder::detail::assertionFailedBreak( #expr, CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) )
+		#define CI_ASSERT_MSG( expr, msg ) ( (expr) ? ( (void)0) : ::cinder::detail::assertionFailedMessageBreak( #expr, msg, CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) )
 
 	#elif defined( CI_ENABLE_ASSERT_HANDLER )
 
-		// User must define these functions
+		// User opts to define these assertion handlers
 		namespace cinder {
 			//! Called when CI_ASSERT() fails
 			void assertionFailed( char const *expr, char const *function, char const *file, long line );
@@ -76,17 +85,27 @@
 			void assertionFailedMessage( char const *expr, char const *msg, char const *function, char const *file, long line );
 		}
 
-		#define CI_ASSERT( expr ) ( (expr) ? ( (void)0) : ::cinder::assertionFailed( #expr, __func__, __FILE__, __LINE__ ) )
-		#define CI_ASSERT_MSG( expr, msg ) ( (expr) ? ( (void)0) : ::cinder::assertionFailedMessage( #expr, msg, __func__, __FILE__, __LINE__ ) )
+		#define CI_ASSERT( expr ) ( (expr) ? ( (void)0) : ::cinder::assertionFailed( #expr, CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) )
+		#define CI_ASSERT_MSG( expr, msg ) ( (expr) ? ( (void)0) : ::cinder::assertionFailedMessage( #expr, msg, CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) )
 
 	#else // defined( CI_ENABLE_ASSERT_HANDLER )
 
 		#include <cassert>
 		#define CI_ASSERT( expr ) assert( expr )
-		#define CI_ASSERT_MSG( expr, msg ) assert( expr && msg )
+
+		#if ! defined( CINDER_ASSERT_MSG_DEFAULT_H )
+			#define CINDER_ASSERT_MSG_DEFAULT_H
+
+			// defined in CinderAssert.cpp
+			namespace cinder { namespace detail {
+				void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line );
+			} }
+
+		#endif // CINDER_ASSERT_MSG_DEFAULT_H
+
+		#define CI_ASSERT_MSG( expr, msg ) ( (expr) ? ( (void)0) : ::cinder::detail::assertionFailedMessageAbort( #expr, msg, CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) )
 
 	#endif // defined( CI_ASSERT_DEBUG_BREAK )
-
 
 	#define CI_VERIFY( expr )			CI_ASSERT( expr )
 	#define CI_VERIFY_MSG( expr, msg )	CI_ASSERT_MSG( expr, msg )
