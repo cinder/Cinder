@@ -151,12 +151,12 @@ void mul( const float *arrayA, const float *arrayB, float *result, size_t length
 
 void divide( const float *array, float scalar, float *result, size_t length )
 {
-	vDSP_vsdiv( array, 1, &scalar, result, 1, length );
+	vDSP_vsdiv( const_cast<float *>( array ), 1, &scalar, result, 1, length );
 }
 
 void divide( const float *arrayA, const float *arrayB, float *result, size_t length )
 {
-	vDSP_vdiv( arrayA, 1, arrayB, 1, result, 1, length );
+	vDSP_vdiv( const_cast<float *>( arrayA ), 1, const_cast<float *>( arrayB ), 1, result, 1, length );
 }
 
 void addMul( const float *arrayA, const float *arrayB, float scalar, float *result, size_t length )
