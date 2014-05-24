@@ -33,15 +33,6 @@ typedef struct tWAVEFORMATEX WAVEFORMATEX;
 
 namespace cinder { namespace audio { namespace msw {
 
-//struct ComDeleter {
-//	template <typename T>
-//	void operator()( T* ptr )	{ ptr->Release(); }
-//};
-
-//! Creates a unique_ptr whose deleter will properly decrement the reference count of a COM object
-//template<typename T>
-//inline std::unique_ptr<T, ComDeleter> makeComUnique( T *p )	{ return std::unique_ptr<T, ComDeleter>( p ); }
-
 //! return pointer type is actually a WAVEFORMATEXTENSIBLE, identifiable by the wFormat tag
 std::shared_ptr<::WAVEFORMATEX> interleavedFloatWaveFormat( size_t sampleRate, size_t numChannels );
 
