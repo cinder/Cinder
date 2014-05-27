@@ -379,6 +379,6 @@ std::vector<struct TextInput *> TextInput::sTextInputs;
 
 #define PRINT_GRAPH( context ) {														\
 	ci::app::console() << "-------------- Graph configuration: --------------" << endl;	\
-	ci::app::console() << context->printGraphToString();										\
+	ci::app::console() << context->printGraphToString();								\
 	ci::app::console() << "--------------------------------------------------" << endl; \
 }

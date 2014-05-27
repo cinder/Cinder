@@ -138,7 +138,7 @@ void WaveTableTestApp::setupPulse()
 	mGenPulse->getParamWidth()->setProcessor( mod );
 #endif
 
-	audio::master()->printGraphToString();
+	PRINT_GRAPH( audio::master() );
 }
 
 // for comparison with GenOscNode's triangle spectra

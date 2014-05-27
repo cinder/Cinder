@@ -124,8 +124,7 @@ void SamplePlayerNodeTestApp::setupBufferPlayerNode()
 		mGain->disconnectAllInputs();
 		mSamplePlayerNode = bufferPlayer;
 		mSamplePlayerNode >> mGain >> mPan >> audio::master()->getOutput();
-		audio::master()->printGraphToString();
-
+		PRINT_GRAPH( audio::master() );
 		mSamplePlayerNode->setLoopEnabled( mLoopButton.mEnabled );
 		mSamplePlayerNode->setLoopBeginTime( mLoopBeginSlider.mValueScaled );
 		mSamplePlayerNode->setLoopEndTime( mLoopEndSlider.mValueScaled != 0 ? mLoopEndSlider.mValueScaled : mSamplePlayerNode->getNumSeconds() );
@@ -174,7 +173,7 @@ void SamplePlayerNodeTestApp::setupFilePlayerNode()
 	mSamplePlayerNode->setLoopBeginTime( mLoopBeginSlider.mValueScaled );
 	mSamplePlayerNode->setLoopEndTime( mLoopEndSlider.mValueScaled != 0 ? mLoopEndSlider.mValueScaled : mSamplePlayerNode->getNumSeconds() );
 
-	audio::master()->printGraphToString();
+	PRINT_GRAPH( audio::master() );
 }
 
 void SamplePlayerNodeTestApp::setupBufferRecorderNode()
@@ -188,7 +187,7 @@ void SamplePlayerNodeTestApp::setupBufferRecorderNode()
 
 	mSamplePlayerNode >> mRecorder;
 
-	audio::master()->printGraphToString();
+	PRINT_GRAPH( audio::master() );
 }
 
 void SamplePlayerNodeTestApp::setSourceFile( const DataSourceRef &dataSource )
@@ -435,7 +434,7 @@ void SamplePlayerNodeTestApp::fileDrop( FileDropEvent event )
 	mLoopBeginSlider.mMax = mLoopEndSlider.mMax = (float)mSamplePlayerNode->getNumSeconds();
 
 	CI_LOG_V( "loaded and set new source buffer, channels: " << mSourceFile->getNumChannels() << ", frames: " << mSourceFile->getNumFrames() );
-	audio::master()->printGraphToString();
+	PRINT_GRAPH( audio::master() );
 }
 
 
