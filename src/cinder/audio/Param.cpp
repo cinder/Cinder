@@ -249,11 +249,12 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 			++eventIt;
 	}
 
-	// if after all ramps we still haven't written enough samples, fill with the final mValue, which was updated above to be the last ramp's mValueEnd.
-	if( samplesWritten < arrayLength )
+	if( ! samplesWritten )
+		return false;
+	else if( samplesWritten < arrayLength )
 		dsp::fill( mValue, array + (size_t)samplesWritten, size_t( arrayLength - samplesWritten ) );
 
-	return samplesWritten != 0;
+	return true;
 }
 
 // ----------------------------------------------------------------------------------------------------
