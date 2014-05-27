@@ -203,9 +203,9 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 	for( auto eventIt = mEvents.begin(); eventIt != mEvents.end(); /* */ ) {
 		EventRef &event = *eventIt;
 
-		// first remove dead ramps
+		// first remove dead events
 		if( event->mTimeEnd <= timeBegin || event->mIsCanceled ) {
-			// if this is the last ramp, record its end value before erasing.
+			// if this is the last event, record its end value before erasing.
 			if( mEvents.size() == 1 )
 				mValue = event->mValueEnd;
 			
@@ -232,7 +232,7 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 			event->mRampFn( array + startIndex, count, timeBeginNormalized, timeIncr, make_pair( event->mValueBegin, event->mValueEnd ) );
 			samplesWritten += count;
 
-			// if this ramp ended with the current processing block, update mValue then remove ramp
+			// if this ramp ended with the current processing block, update mValue then remove event
 			if( endIndex < arrayLength ) {
 				event->mIsComplete = true;
 				mValue = event->mValueEnd;
