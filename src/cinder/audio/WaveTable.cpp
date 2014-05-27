@@ -145,7 +145,7 @@ float WaveTable::lookup( float *outputArray, size_t outputLength, float currentP
 
 	for( size_t i = 0; i < outputLength; i++ ) {
 		outputArray[i] = tableLookup( table, tableSize, currentPhase );
-		currentPhase = wrap( currentPhase + phaseIncr );
+		currentPhase = fract( currentPhase + phaseIncr );
 	}
 
 	return currentPhase;
@@ -159,7 +159,7 @@ float WaveTable::lookup( float *outputArray, size_t outputLength, float currentP
 
 	for( size_t i = 0; i < outputLength; i++ ) {
 		outputArray[i] = tableLookup( table, tableSize, currentPhase );
-		currentPhase = wrap( currentPhase + freqArray[i] * samplePeriod );
+		currentPhase = fract( currentPhase + freqArray[i] * samplePeriod );
 	}
 	
 	return currentPhase;
@@ -343,7 +343,7 @@ float WaveTable2d::lookupBandlimited( float *outputArray, size_t outputLength, f
 
 	for( size_t i = 0; i < outputLength; i++ ) {
 		outputArray[i] = tableLookup( table, tableSize, currentPhase );
-		currentPhase = wrap( currentPhase + phaseIncr );
+		currentPhase = fract( currentPhase + phaseIncr );
 	}
 
 	return currentPhase;
@@ -359,7 +359,7 @@ float WaveTable2d::lookupBandlimited( float *outputArray, size_t outputLength, f
 		const float *table = getBandLimitedTable( f0 );
 
 		outputArray[i] = tableLookup( table, tableSize, currentPhase );
-		currentPhase = wrap( currentPhase + f0 * samplePeriod );
+		currentPhase = fract( currentPhase + f0 * samplePeriod );
 	}
 
 	return currentPhase;
@@ -380,7 +380,7 @@ float WaveTable2d::lookupBandlimited( float *outputArray, size_t outputLength, f
 		float a = tableLookup( get<0>( tables ), tableSize, currentPhase );
 		float b = tableLookup( get<1>( tables ), tableSize, currentPhase );
 		outputArray[i] = lerp( a, b, get<2>( tables ) );
-		currentPhase = wrap( currentPhase + phaseIncr );
+		currentPhase = fract( currentPhase + phaseIncr );
 	}
 
 	return currentPhase;
@@ -398,7 +398,7 @@ float WaveTable2d::lookupBandlimited( float *outputArray, size_t outputLength, f
 		float a = tableLookup( get<0>( tables ), tableSize, currentPhase );
 		float b = tableLookup( get<1>( tables ), tableSize, currentPhase );
 		outputArray[i] = lerp( a, b, get<2>( tables ) );
-		currentPhase = wrap( currentPhase + f0 * samplePeriod );
+		currentPhase = fract( currentPhase + f0 * samplePeriod );
 	}
 
 	return currentPhase;

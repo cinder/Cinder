@@ -90,14 +90,14 @@ void GenSineNode::process( Buffer *buffer )
 		const float *freqValues = mFreq.getValueArray();
 		for( size_t i = 0; i < count; i++ ) {
 			data[i] = math<float>::sin( phase * float( 2 * M_PI ) );
-			phase = wrap( phase + freqValues[i] * samplePeriod );
+			phase = fract( phase + freqValues[i] * samplePeriod );
 		}
 	}
 	else {
 		const float phaseIncr = mFreq.getValue() * samplePeriod;
 		for( size_t i = 0; i < count; i++ ) {
 			data[i] = math<float>::sin( phase * float( 2 * M_PI ) );
-			phase = wrap( phase + phaseIncr );
+			phase = fract( phase + phaseIncr );
 		}
 	}
 
@@ -119,14 +119,14 @@ void GenPhasorNode::process( Buffer *buffer )
 		const float *freqValues = mFreq.getValueArray();
 		for( size_t i = 0; i < count; i++ ) {
 			data[i] = phase;
-			phase = wrap( phase + freqValues[i] * samplePeriod );
+			phase = fract( phase + freqValues[i] * samplePeriod );
 		}
 	}
 	else {
 		const float phaseIncr = mFreq.getValue() * samplePeriod;
 		for( size_t i = 0; i < count; i++ ) {
 			data[i] = phase;
-			phase = wrap( phase + phaseIncr );
+			phase = fract( phase + phaseIncr );
 		}
 	}
 
@@ -169,7 +169,7 @@ void GenTriangleNode::process( Buffer *buffer )
 		const float *freqValues = mFreq.getValueArray();
 		for( size_t i = 0; i < count; i++ )	{
 			data[i] = calcTriangleSignal( phase, mUpSlope, mDownSlope );
-			phase = wrap( phase + freqValues[i] * samplePeriod );
+			phase = fract( phase + freqValues[i] * samplePeriod );
 		}
 
 	}
@@ -177,7 +177,7 @@ void GenTriangleNode::process( Buffer *buffer )
 		const float phaseIncr = mFreq.getValue() * samplePeriod;
 		for( size_t i = 0; i < count; i++ )	{
 			data[i] = calcTriangleSignal( phase, mUpSlope, mDownSlope );
-			phase = wrap( phase + phaseIncr );
+			phase = fract( phase + phaseIncr );
 		}
 	}
 
@@ -316,10 +316,10 @@ void GenPulseNode::process( Buffer *buffer )
 				float f0 = f0Array[i];
 				float phaseIncr = f0 * samplePeriod;
 				float phaseOffset = widthArray[i];
-				float phase2 = wrap( phase + phaseOffset );
+				float phase2 = fract( phase + phaseOffset );
 				float phaseCorrect = 1 - 2 * phaseOffset;
 				data2[i] = mWaveTable->lookupBandlimited( phase2, f0 ) - phaseCorrect;
-				phase = wrap( phase + phaseIncr );
+				phase = fract( phase + phaseIncr );
 			}
 		} else {
 			float f0 = mFreq.getValue();
@@ -328,7 +328,7 @@ void GenPulseNode::process( Buffer *buffer )
 
 			for( size_t i = 0; i < numFrames; i++ ) {
 				float phaseOffset = widthArray[i];
-				float phase2 = wrap( phase + phaseOffset );
+				float phase2 = fract( phase + phaseOffset );
 				float phaseCorrect = 1 - 2 * phaseOffset;
 				data2[i] = mWaveTable->lookupBandlimited( phase2, f0 ) - phaseCorrect;
 				phase += phaseIncr;
@@ -337,7 +337,7 @@ void GenPulseNode::process( Buffer *buffer )
 	}
 	else {
 		float phaseOffset = mWidth.getValue();
-		float phase2 = wrap( phase + phaseOffset );
+		float phase2 = fract( phase + phaseOffset );
 
 		if( mFreq.eval() ) {
 			mPhase = mWaveTable->lookupBandlimited( buffer->getData(), numFrames, phase, mFreq.getValueArray() );

@@ -178,9 +178,9 @@ T constrain( T val, T minVal, T maxVal )
 	else return val;
 }
 
-//! Returns \a x wrapped within the range [0:1] (e.g. -0.2 results in 0.8)
+//! Returns the fractional part of \a x, calculated as `x - floor( x )`
 template<typename T>
-T wrap( T x )
+T fract( T x )
 {
 	return x - math<T>::floor( x );
 }
