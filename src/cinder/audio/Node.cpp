@@ -201,6 +201,22 @@ size_t Node::getNumConnectedOutputs() const
 	return mOutputs.size();
 }
 
+bool Node::isConnectedToInput( const NodeRef &input )
+{
+	return ( mInputs.count( input ) != 0 );
+}
+
+bool Node::isConnectedToOutput( const NodeRef &output )
+{
+	for( const weak_ptr<Node> &outputWeak : mOutputs ) {
+		NodeRef out = outputWeak.lock();
+		if( out && out == output )
+			return true;
+	}
+
+	return false;
+}
+
 void Node::initializeImpl()
 {
 	if( mInitialized )
@@ -439,9 +455,8 @@ bool Node::canConnectToInput( const NodeRef &input )
 	if( ! input || input == shared_from_this() )
 		return false;
 
-	for( const auto& in : mInputs )
-		if( input == in )
-			return false;
+	if( isConnectedToInput( input ) )
+		return false;
 
 	return true;
 }

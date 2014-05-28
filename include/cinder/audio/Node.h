@@ -120,6 +120,10 @@ class Node : public std::enable_shared_from_this<Node>, public boost::noncopyabl
 	//! Returns the number of outputs this Node is connected to.
 	size_t getNumConnectedOutputs() const;
 
+	//! Returns true if \a input is connected to this Node as an input, false otherwise.
+	bool		isConnectedToInput( const NodeRef &input ) const;
+	//! Returns true if \a output is connected to this Node as an output, false otherwise.
+	bool		isConnectedToOutput( const NodeRef &output ) const;
 	//! Returns the \a Context associated with this \a Node. \note Cannot be called from within a \a Node's constructor. Use initialize instead.
 	ContextRef	getContext() const				{ return mContext.lock(); }
 	//! Returns the number of channels this Node will process.
