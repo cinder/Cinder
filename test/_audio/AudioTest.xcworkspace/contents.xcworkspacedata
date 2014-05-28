@@ -74,43 +74,4 @@
          location = "group:unit/xcode/Audio2Unit.xcodeproj">
       </FileRef>
    </Group>
-   <Group
-      location = "container:"
-      name = "samples">
-      <Group
-         location = "container:"
-         name = "osx">
-         <FileRef
-            location = "group:../../samples/_audio/BufferPlayer/xcode/BufferPlayer.xcodeproj">
-         </FileRef>
-         <FileRef
-            location = "group:../../samples/_audio/DelayFeedback/xcode/DelayFeedback.xcodeproj">
-         </FileRef>
-         <FileRef
-            location = "group:../../samples/_audio/InputAnalyzer/xcode/InputAnalyzer.xcodeproj">
-         </FileRef>
-         <FileRef
-            location = "group:../../samples/_audio/MultichannelOutput/xcode/MultichannelOutput.xcodeproj">
-         </FileRef>
-         <FileRef
-            location = "group:../../samples/_audio/NodeAdvanced/xcode/NodeAdvanced.xcodeproj">
-         </FileRef>
-         <FileRef
-            location = "group:../../samples/_audio/NodeBasic/xcode/NodeBasic.xcodeproj">
-         </FileRef>
-         <FileRef
-            location = "group:../../samples/_audio/VoiceBasic/xcode/VoiceBasic.xcodeproj">
-         </FileRef>
-         <FileRef
-            location = "group:../../samples/_audio/VoiceBasicProcessing/xcode/VoiceBasicProcessing.xcodeproj">
-         </FileRef>
-      </Group>
-      <Group
-         location = "container:"
-         name = "ios">
-         <FileRef
-            location = "group:../../samples/_audio/VoiceBasic/xcode_ios/VoiceBasic.xcodeproj">
-         </FileRef>
-      </Group>
-   </Group>
 </Workspace>
