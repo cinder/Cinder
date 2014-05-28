@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{4B22FEC5-32B1-4483-A6EF-1BA160076125}</ProjectGuid>
+    <ProjectGuid>{FD90A192-FFBB-4974-8713-86EAFC37CA9F}</ProjectGuid>
     <RootNamespace>VoiceBasicProcessing</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

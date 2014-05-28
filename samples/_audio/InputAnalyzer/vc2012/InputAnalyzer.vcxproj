@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1370A9CF-B861-4AC9-9B05-0820E3661659}</ProjectGuid>
+    <ProjectGuid>{86D9E75B-0FF6-4EA9-8A63-B09C0A5D8BC2}</ProjectGuid>
     <RootNamespace>InputAnalyzer</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>

@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{1370A9CF-B861-4AC9-9B05-0820E3661659}</ProjectGuid>
+    <ProjectGuid>{DACEFC98-B720-433D-B512-C206D267CEA6}</ProjectGuid>
     <RootNamespace>DelayFeedback</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
