@@ -287,7 +287,7 @@ void Context::processAutoPulledNodes()
 	for( Node *node : getAutoPulledNodes() ) {
 		mAutoPullBuffer.setNumChannels( node->getNumChannels() );
 		node->pullInputs( &mAutoPullBuffer );
-		if( ! node->getProcessInPlace() )
+		if( ! node->getProcessesInPlace() )
 			dsp::mixBuffers( node->getInternalBuffer(), &mAutoPullBuffer );
 	}
 }
@@ -328,7 +328,7 @@ void printRecursive( ostream &stream, const NodeRef &node, size_t depth, set<Nod
 	stream << node->getName() << "\t[ " << ( node->isEnabled() ? "enabled" : "disabled" );
 	stream << ", ch: " << node->getNumChannels();
 	stream << ", ch mode: " << channelMode;
-	stream << ", " << ( node->getProcessInPlace() ? "in-place" : "sum" );
+	stream << ", " << ( node->getProcessesInPlace() ? "in-place" : "sum" );
 	stream << " ]" << endl;
 
 	for( const auto &input : node->getInputs() )

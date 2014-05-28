@@ -201,12 +201,12 @@ size_t Node::getNumConnectedOutputs() const
 	return mOutputs.size();
 }
 
-bool Node::isConnectedToInput( const NodeRef &input )
+bool Node::isConnectedToInput( const NodeRef &input ) const
 {
 	return ( mInputs.count( input ) != 0 );
 }
 
-bool Node::isConnectedToOutput( const NodeRef &output )
+bool Node::isConnectedToOutput( const NodeRef &output ) const
 {
 	for( const weak_ptr<Node> &outputWeak : mOutputs ) {
 		NodeRef out = outputWeak.lock();
@@ -327,7 +327,7 @@ void Node::configureConnections()
 		}
 
 		// inputs with more than one output cannot process in-place, so make them sum
-		if( input->getProcessInPlace() && input->getNumConnectedOutputs() > 1 )
+		if( input->getProcessesInPlace() && input->getNumConnectedOutputs() > 1 )
 			inputProcessInPlace = false;
 
 		// when there are multiple inputs and their channel counts don't match, they must be summed
@@ -381,7 +381,7 @@ void Node::pullInputs( Buffer *inPlaceBuffer )
 			const NodeRef &input = *mInputs.begin();
 			input->pullInputs( inPlaceBuffer );
 
-			if( ! input->getProcessInPlace() )
+			if( ! input->getProcessesInPlace() )
 				dsp::mixBuffers( input->getInternalBuffer(), inPlaceBuffer );
 
 			if( mEnabled )
@@ -406,7 +406,7 @@ void Node::sumInputs()
 	// mInternalBuffer is not zero'ed before pulling inputs to allow for feedback.
 	for( auto &input : mInputs ) {
 		input->pullInputs( &mInternalBuffer );
-		const Buffer *processedBuffer = input->getProcessInPlace() ? &mInternalBuffer : input->getInternalBuffer();
+		const Buffer *processedBuffer = input->getProcessesInPlace() ? &mInternalBuffer : input->getInternalBuffer();
 		dsp::sumBuffers( processedBuffer, &mSummingBuffer );
 	}
 

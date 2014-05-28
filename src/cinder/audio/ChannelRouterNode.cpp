@@ -126,7 +126,7 @@ void ChannelRouterNode::sumInputs()
 		summingBuffer->setNumChannels( input->getNumChannels() );
 		input->pullInputs( summingBuffer );
 
-		const Buffer *processedBuffer = input->getProcessInPlace() ? summingBuffer : input->getInternalBuffer();
+		const Buffer *processedBuffer = input->getProcessesInPlace() ? summingBuffer : input->getInternalBuffer();
 
 		for( size_t ch = 0; ch < route.mNumChannels; ch++ ) {
 			float *destChannel = internalBuffer->getChannel( ch + route.mOutputChannelIndex );

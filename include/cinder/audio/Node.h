@@ -115,61 +115,56 @@ class Node : public std::enable_shared_from_this<Node>, public boost::noncopyabl
 	virtual void disconnectAllOutputs();
 	//! Disconnects all of this Node's inputs.
 	virtual void disconnectAllInputs();
-	//! Returns the number of inputs connected to this Node.
-	size_t getNumConnectedInputs() const;
-	//! Returns the number of outputs this Node is connected to.
-	size_t getNumConnectedOutputs() const;
 
+	//! Returns the number of inputs connected to this Node.
+	size_t		getNumConnectedInputs() const;
+	//! Returns the number of outputs this Node is connected to.
+	size_t		getNumConnectedOutputs() const;
 	//! Returns true if \a input is connected to this Node as an input, false otherwise.
 	bool		isConnectedToInput( const NodeRef &input ) const;
 	//! Returns true if \a output is connected to this Node as an output, false otherwise.
 	bool		isConnectedToOutput( const NodeRef &output ) const;
 	//! Returns the \a Context associated with this \a Node. \note Cannot be called from within a \a Node's constructor. Use initialize instead.
-	ContextRef	getContext() const				{ return mContext.lock(); }
+	ContextRef	getContext() const					{ return mContext.lock(); }
 	//! Returns the number of channels this Node will process.
-	size_t		getNumChannels() const			{ return mNumChannels; }
+	size_t		getNumChannels() const				{ return mNumChannels; }
 	//! Returns the channel mode. \see ChannelMode.
-	ChannelMode getChannelMode() const			{ return mChannelMode; }
+	ChannelMode getChannelMode() const				{ return mChannelMode; }
 	//! Returns the maximum number of channels any input has.
 	size_t		getMaxNumInputChannels() const;
-
 	//! Returns the samplerate of this Node, which is governed by the Context's OutputNode.
 	size_t		getSampleRate() const;
 	//! Returns the number of frames processed in one block by this Node, which is governed by the Context's OutputNode.
 	size_t		getFramesPerBlock() const;
-
-	//! Sets whether this Node is automatically enabled / disabled when connected
-	void	setAutoEnabled( bool b = true )		{ mAutoEnabled = b; }
 	//! Returns whether this Node is automatically enabled / disabled when connected
-	bool	isAutoEnabled() const				{ return mAutoEnabled; }
+	bool		isAutoEnabled() const				{ return mAutoEnabled; }
+	//! Sets whether this Node is automatically enabled / disabled when connected
+	void		setAutoEnabled( bool b = true )		{ mAutoEnabled = b; }
+	//! Returns whether this Node is in an initialized state and is capable of processing audio.
+	bool		isInitialized() const				{ return mInitialized; }
+	//! Returns whether this Node will process audio with an in-place Buffer.
+	bool		getProcessesInPlace() const			{ return mProcessInPlace; }
+	//! Returns whether it is possible to connect to \a input, example reasons of failure would be this == Node, or Node is already an input.
+	bool		canConnectToInput( const NodeRef &input );
+	//! Returns true if there is an unmanageable cycle betweeen \a sourceNode and \a destNode. If any Node's in the traversal returns true for supportsCycles(), this method will return false.
+	bool		checkCycle( const NodeRef &sourceNode, const NodeRef &destNode ) const;
 
-	// TODO: consider doing custom iterators and hiding these container types
-	std::set<NodeRef>&			getInputs()				{ return mInputs; }
+	//! Returns an immutable reference to the inputs container.
 	const std::set<NodeRef>&	getInputs() const		{ return mInputs; }
 	//! Returns a copy of the NodeRef's referenced by the this Node as outputs.  The copy is necessary because outputs are stored internally with weak_ptr's.
 	std::vector<NodeRef>		getOutputs() const;
 
-	//! Returns whether this Node is in an initialized state and is capable of processing audio.
-	bool isInitialized() const					{ return mInitialized; }
-	//! Returns whether this Node will process audio with an in-place Buffer.
-	bool getProcessInPlace() const				{ return mProcessInPlace; }
-
 	//! Returns a string representing the name of this Node type. Default returns a demangled, compiler-specific class name.
 	virtual std::string getName();
 	//! Sets this Node's name to a user-specified string.
-	void	setName( const std::string &name )	{ mName = name; }
+	void				setName( const std::string &name )	{ mName = name; }
 
-	//! Returns whether it is possible to connect to \a input, example reasons of failure would be this == Node, or Node is already an input.
-	bool canConnectToInput( const NodeRef &input );
-	//! Returns true if there is an unmanageable cycle betweeen \a sourceNode and \a destNode. If any Node's in the traversal returns true for supportsCycles(), this method will return false.
-	bool checkCycle( const NodeRef &sourceNode, const NodeRef &destNode ) const;
-
-	// TODO: document newly exposed buffers and virtual sumInputs (that could use a better name, it isn't always summing anymore).
+	//! Usually used internally by a Node subclass, returns a pointer to the internal buffer storage.
 	Buffer*			getInternalBuffer()			{ return &mInternalBuffer; }
+	//! Usually used internally by a Node subclass, returns a pointer to the internal buffer storage.
 	const Buffer*	getInternalBuffer() const	{ return &mInternalBuffer; }
-
 	//! Usually called internally by the Node, in special cases sub-classes may need to call this on other Node's.
-	void pullInputs( Buffer *inPlaceBuffer );
+	void			pullInputs( Buffer *inPlaceBuffer );
 
   protected:
 

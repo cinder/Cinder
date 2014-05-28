@@ -79,7 +79,7 @@ void Pan2dNode::pullInputs( Buffer *destBuffer )
 				continue;
 
 			input->pullInputs( &mInternalBuffer );
-			if( input->getProcessInPlace() )
+			if( input->getProcessesInPlace() )
 				add( summingChannel0, mInternalBuffer.getChannel( 0 ), summingChannel0, numFrames );
 			else
 				add( summingChannel0, input->getInternalBuffer()->getChannel( 0 ), summingChannel0, numFrames );
