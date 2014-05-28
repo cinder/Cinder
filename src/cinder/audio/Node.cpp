@@ -491,10 +491,21 @@ void NodeAutoPullable::updatePullMethod()
 // MARK: - ScopedEnableNode
 // ----------------------------------------------------------------------------------------------------
 
-ScopedEnableNode::ScopedEnableNode( const NodeRef &node, bool enable )
+ScopedEnableNode::ScopedEnableNode( const NodeRef &node )
 	: mNode( node )
 {
 	mWasEnabled = ( mNode ? mNode->isEnabled() : false );
+}
+
+ScopedEnableNode::ScopedEnableNode( const NodeRef &node, bool enable )
+	: mNode( node )
+{
+	if( mNode ) {
+		mWasEnabled = mNode->isEnabled();
+		mNode->setEnabled( enable );
+	}
+	else
+		mWasEnabled = false;
 }
 
 ScopedEnableNode::~ScopedEnableNode()

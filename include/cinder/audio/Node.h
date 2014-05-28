@@ -258,6 +258,9 @@ class NodeAutoPullable : public Node {
 
 //! RAII-style utility class to set a \a Node's enabled state and have it restored at the end of the current scope block.
 struct ScopedEnableNode {
+	//! Constructs an object that will store \a node's enabled state and restore it at the end of the current scope.
+	ScopedEnableNode( const NodeRef &node );
+	//! Constructs an object that will set \a node's enabled state to \a enable and restore it to the original state at the end of the current scope.
 	ScopedEnableNode( const NodeRef &node, bool enable );
 	~ScopedEnableNode();
   private:
@@ -266,7 +269,7 @@ struct ScopedEnableNode {
 };
 
 class NodeCycleExc : public AudioExc {
-public:
+  public:
 	NodeCycleExc( const NodeRef &sourceNode, const NodeRef &destNode );
 };
 

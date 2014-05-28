@@ -357,10 +357,21 @@ string Context::printGraphToString()
 // MARK: - ScopedEnableContext
 // ----------------------------------------------------------------------------------------------------
 
-ScopedEnableContext::ScopedEnableContext( Context *context, bool enable )
+ScopedEnableContext::ScopedEnableContext( Context *context )
 	: mContext( context )
 {
 	mWasEnabled = ( mContext ? mContext->isEnabled() : false );
+}
+
+ScopedEnableContext::ScopedEnableContext( Context *context, bool enable )
+	: mContext( context )
+{
+	if( mContext ) {
+		mWasEnabled = mContext->isEnabled();
+		mContext->setEnabled( enable );
+	}
+	else
+		mWasEnabled = false;
 }
 
 ScopedEnableContext::~ScopedEnableContext()

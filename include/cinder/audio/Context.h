@@ -150,8 +150,11 @@ std::shared_ptr<NodeT> Context::makeNode( NodeT *node )
 inline Context* master()	{ return Context::master(); }
 
 
-//! RAII-style utility class to set a \a Contetxt's enabled state and have it restored at the end of the current scope block.
+//! RAII-style utility class to set a \a Context's enabled state and have it restored at the end of the current scope block.
 struct ScopedEnableContext {
+	//! Constructs an object that will store \a context's enabled state and restore it at the end of the current scope.
+	ScopedEnableContext( Context *context );
+	//! Constructs an object that will set \a context's enabled state to \a enable and restore it to the original state at the end of the current scope.
 	ScopedEnableContext( Context *context, bool enable );
 	~ScopedEnableContext();
 private:
