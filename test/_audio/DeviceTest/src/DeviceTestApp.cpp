@@ -34,9 +34,10 @@ class DeviceTestApp : public AppNative {
 	void printDeviceDetails( const audio::DeviceRef &device );
 
 	void setupSine();
-	void setupIOClean();
 	void setupNoise();
+	void setupIOClean();
 	void setupIOProcessed();
+	void setupIOAndSine();
 	void setupSend();
 	void setupSendStereo();
 
@@ -49,7 +50,7 @@ class DeviceTestApp : public AppNative {
 	audio::InputDeviceNodeRef		mInputDeviceNode;
 	audio::OutputDeviceNodeRef		mOutputDeviceNode;
 	audio::MonitorNodeRef			mMonitor;
-	audio::GainNodeRef					mGain;
+	audio::GainNodeRef				mGain;
 	audio::GenNodeRef				mGen;
 
 	vector<TestWidget *> mWidgets;
@@ -106,7 +107,12 @@ void DeviceTestApp::setOutputDevice( const audio::DeviceRef &device, size_t numC
 
 	mOutputDeviceNode = ctx->createOutputDeviceNode( device, format );
 
-	mOutputDeviceNode->getDevice()->getSignalParamsDidChange().connect( [this] {	CI_LOG_V( "OutputDeviceNode params changed:" ); printDeviceDetails( mOutputDeviceNode->getDevice() ); } );
+	mOutputDeviceNode->getDevice()->getSignalParamsDidChange().connect(
+							[this] {
+								CI_LOG_V( "OutputDeviceNode params changed:" );
+								printDeviceDetails( mOutputDeviceNode->getDevice() );
+								PRINT_GRAPH( audio::master() );
+							} );
 
 
 	// TODO: if this call is moved to after the mMonitor->connect(), there is a chance that initialization can
@@ -235,6 +241,18 @@ void DeviceTestApp::setupIOProcessed()
 	mInputDeviceNode->enable();
 }
 
+void DeviceTestApp::setupIOAndSine()
+{
+	mGen = audio::master()->makeNode( new audio::GenSineNode() );
+	mGen->setFreq( 440 );
+
+	mGen->connect( mGain );
+	mGen->enable();
+
+	mInputDeviceNode->connect( mGain );
+	mInputDeviceNode->enable();
+}
+
 void DeviceTestApp::setupSend()
 {
 	auto ctx = audio::master();
@@ -284,6 +302,7 @@ void DeviceTestApp::setupUI()
 	mTestSelector.mSegments.push_back( "noise" );
 	mTestSelector.mSegments.push_back( "I/O (clean)" );
 	mTestSelector.mSegments.push_back( "I/O (processed)" );
+	mTestSelector.mSegments.push_back( "I/O and sine" );
 	mTestSelector.mSegments.push_back( "send" );
 	mTestSelector.mSegments.push_back( "send stereo" );
 	mWidgets.push_back( &mTestSelector );
@@ -444,6 +463,8 @@ void DeviceTestApp::setupTest( string test )
 	//  - temp fix: stop / start context around reconfig
 	audio::master()->disable();
 
+	mGain->disconnectAllInputs();
+
 	if( test == "sinewave" )
 		setupSine();
 	else if( test == "noise" )
@@ -452,6 +473,8 @@ void DeviceTestApp::setupTest( string test )
 		setupIOClean();
 	else if( test == "I/O (processed)" )
 		setupIOProcessed();
+	else if( test == "I/O and sine" )
+		setupIOAndSine();
 	else if( test == "send" )
 		setupSend();
 	else if( test == "send stereo" )
@@ -462,7 +485,7 @@ void DeviceTestApp::setupTest( string test )
 	if( mPlayButton.mEnabled )
 		audio::master()->enable();
 
-	audio::master()->printGraphToString();
+	PRINT_GRAPH( audio::master() );
 }
 
 void DeviceTestApp::keyDown( KeyEvent event )
