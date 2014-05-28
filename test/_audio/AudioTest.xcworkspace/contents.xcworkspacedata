@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:../../xcode/cinder.xcodeproj">
+   </FileRef>
+   <Group
+      location = "container:"
+      name = "tests">
+      <Group
+         location = "container:"
+         name = "osx">
+         <FileRef
+            location = "group:DeviceTest/xcode/DeviceTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:EffectsAudioUnitTest/xcode/EffectsAudioUnitTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:NodeEffectsTest/xcode/NodeEffectsTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:NodeTest/xcode/NodeTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:ParamTest/xcode/ParamTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:SampleTest/xcode/SampleTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:SpectralTest/xcode/SpectralTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:StressTest/xcode/StressTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:VoiceTest/xcode/VoiceTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:WaveTableTest/xcode/WaveTableTest.xcodeproj">
+         </FileRef>
+      </Group>
+      <Group
+         location = "container:"
+         name = "ios">
+         <FileRef
+            location = "group:DeviceTest/xcode_ios/DeviceTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:EffectsAudioUnitTest/xcode_ios/EffectsAudioUnitTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:NodeEffectsTest/xcode_ios/NodeEffectsTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:NodeTest/xcode_ios/NodeTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:ParamTest/xcode_ios/ParamTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:SampleTest/xcode_ios/SampleTest.xcodeproj">
+         </FileRef>
+         <FileRef
+            location = "group:SpectralTest/xcode_ios/SpectralTest.xcodeproj">
+         </FileRef>
+      </Group>
+   </Group>
+   <Group
+      location = "container:"
+      name = "unit test">
+      <FileRef
+         location = "group:unit/xcode/Audio2Unit.xcodeproj">
+      </FileRef>
+   </Group>
+</Workspace>

@@ -91,6 +91,51 @@
     <Filter Include="Source Files\dx">
       <UniqueIdentifier>{aaf12809-97ce-4c25-bb74-4c111e438a25}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\audio\dsp">
+      <UniqueIdentifier>{547d2686-dd07-4302-befa-3d0815504249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\dsp\ooura">
+      <UniqueIdentifier>{2d2a5389-5f11-49bc-9dfb-a1f46b763ee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\msw">
+      <UniqueIdentifier>{006e6941-3453-4a49-b5e1-097b45b3b46f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\dsp">
+      <UniqueIdentifier>{5bcc1350-6288-4024-87af-da6034358005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\dsp\ooura">
+      <UniqueIdentifier>{c7c7ffb3-97a4-4caa-86cb-58c371be8901}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\msw">
+      <UniqueIdentifier>{9bffb733-d3c9-4490-b49a-08acceaf4382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\r8brain">
+      <UniqueIdentifier>{10a5e497-30fb-47ca-8245-cfe680d3c82b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis">
+      <UniqueIdentifier>{f03386d6-6073-489e-ab46-87d5bd3d80b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\ogg">
+      <UniqueIdentifier>{47a5d57e-c82d-486f-ac44-199c95fca43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis">
+      <UniqueIdentifier>{1ca569ac-2711-4cb6-b62d-12aaddfc6eaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\books">
+      <UniqueIdentifier>{f89bd7f9-65b1-4613-907e-2c03dff66bf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\books\coupled">
+      <UniqueIdentifier>{9360203e-665f-4517-9f44-124324600a2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\books\floor">
+      <UniqueIdentifier>{df706862-286a-49fb-a457-20bf986491ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\books\uncoupled">
+      <UniqueIdentifier>{5d403959-0457-4edb-91b2-8520b675aa11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\modes">
+      <UniqueIdentifier>{54a3930c-e7ed-418e-83b6-977db7fadc51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -237,15 +282,6 @@
     <ClCompile Include="..\src\cinder\app\Renderer.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\Io.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\Output.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\SourceFileWindowsMedia.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\DisplayList.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -342,20 +378,11 @@
     <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\Ray.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp">
-      <Filter>Source Files\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\ip\Blend.cpp">
       <Filter>Source Files\ip</Filter>
@@ -491,6 +518,180 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\dx\DxRenderTarget.cpp">
       <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\ChannelRouterNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Context.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\DelayNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Device.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\FileOggVorbis.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\FilterNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\GenNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\InputNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Node.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\NodeMath.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\OutputNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\PanNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Param.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\SamplePlayerNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\SampleRecorderNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Source.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Target.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Utilities.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Voice.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\WaveTable.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\Biquad.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\Converter.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\ConverterR8brain.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\Dsp.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\Fft.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\ooura\fftsg.cpp">
+      <Filter>Source Files\audio\dsp\ooura</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\ContextWasapi.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\ContextXAudio.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\DeviceManagerWasapi.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\FileMediaFoundation.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\MswUtil.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\r8brain\r8bbase.cpp">
+      <Filter>Source Files\r8brain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\ogg\bitwise.c">
+      <Filter>Source Files\oggvorbis\ogg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\ogg\framing.c">
+      <Filter>Source Files\oggvorbis\ogg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\analysis.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\bitrate.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\block.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\codebook.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\envelope.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\floor0.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\floor1.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\info.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\lookup.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\lpc.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\lsp.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\mapping0.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\mdct.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\psy.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\registry.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\res0.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\sharedbook.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\smallft.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\synthesis.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\vorbisenc.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\vorbisfile.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\window.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\MonitorNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\CinderAssert.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -728,18 +929,6 @@
     <ClInclude Include="..\include\cinder\app\TouchEvent.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\Callback.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\Io.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\Output.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\SourceFileWindowsMedia.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\gl\DisplayList.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
@@ -815,9 +1004,6 @@
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\SourceFileWav.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\app\Event.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
@@ -832,12 +1018,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\Filesystem.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\OutputImplXAudio.h">
-      <Filter>Header Files\audio</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\audio\PcmBuffer.h">
-      <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\ip\Blend.h">
       <Filter>Header Files\ip</Filter>
@@ -1018,6 +1198,285 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\dx\DxRenderTarget.h">
       <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Buffer.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\ChannelRouterNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Context.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Debug.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\DelayNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Device.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Exception.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\FileOggVorbis.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\FilterNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\GainNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\GenNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\InputNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Node.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\NodeEffects.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\NodeMath.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\OutputNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\PanNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Param.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\SamplePlayerNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\SampleRecorderNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\SampleType.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Source.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Target.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Utilities.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Voice.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\WaveformType.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\WaveTable.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\Biquad.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\Converter.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\ConverterR8brain.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\Dsp.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\Fft.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\RingBuffer.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\ooura\fftsg.h">
+      <Filter>Header Files\audio\dsp\ooura</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\ContextWasapi.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\ContextXAudio.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\DeviceManagerWasapi.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\FileMediaFoundation.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\MswUtil.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPBlockConvolver.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPFIRFilter.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPFracInterpolator.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPRealFFT.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPResampler.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPSincFilterGen.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\fft4g.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\r8bbase.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\r8bconf.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\backends.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\bitrate.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\codebook.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\codec_internal.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\envelope.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\highlevel.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\lookup.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\lookup_data.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\lpc.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\lsp.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\masking.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\mdct.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\misc.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\os.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\psy.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\registry.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\scales.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\smallft.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\window.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\books\coupled\res_books_51.h">
+      <Filter>Source Files\oggvorbis\vorbis\books\coupled</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\books\coupled\res_books_stereo.h">
+      <Filter>Source Files\oggvorbis\vorbis\books\coupled</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\books\floor\floor_books.h">
+      <Filter>Source Files\oggvorbis\vorbis\books\floor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\books\uncoupled\res_books_uncoupled.h">
+      <Filter>Source Files\oggvorbis\vorbis\books\uncoupled</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\floor_all.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\psych_8.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\psych_11.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\psych_16.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\psych_44.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_8.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_16.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_44.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_44p51.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_44u.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_8.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_11.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_16.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_22.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_32.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_44.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_44p51.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_44u.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_X.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\MonitorNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CinderAssert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CurrentFunction.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

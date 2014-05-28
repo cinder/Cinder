@@ -64,6 +64,8 @@ class System {
 	static bool			hasMultiTouch();
 	//! Returns the maximum number of simultaneous touches supported by the system's MultiTouch implementation. Only truly accurate on Windows 7.
 	static int32_t		getMaxMultiTouchPoints();
+	//! Returns the result of \code typeid( someType ).name() \endcode as a platform-specific, human readable string.
+	static std::string demangleTypeName( const char *mangledName );
 
 #if defined( CINDER_COCOA_TOUCH )
 	static bool			isDeviceIphone();
