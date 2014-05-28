@@ -222,7 +222,9 @@ void Node::uninitializeImpl()
 	if( ! mInitialized )
 		return;
 
-	disable();
+	if( mAutoEnabled )
+		disable();
+
 	uninitialize();
 	mInitialized = false;
 }
