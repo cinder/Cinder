@@ -52,6 +52,8 @@ class SourceFileCoreAudio : public SourceFile {
 	size_t	getNumChannels() const		override	{ return mNumChannels; }
 	size_t	getSampleRateNative() const	override	{ return mSampleRateNative; }
 
+	static std::vector<std::string> getSupportedExtensions();
+
   private:
 	void initImpl();
 

@@ -53,6 +53,7 @@ class SamplePlayerNodeTestApp : public AppNative {
 
 	void seek( size_t xPos );
 	void printBufferSamples( size_t xPos );
+	void printSupportedExtensions();
 
 	void testConverter();
 	void testWrite();
@@ -85,6 +86,8 @@ void SamplePlayerNodeTestApp::setup()
 {
 	mUnderrunFade = mOverrunFade = mRecorderOverrunFade = 0;
 	mSamplePlayerNodeEnabledState = false;
+
+	printSupportedExtensions();
 
 	setSourceFile( loadResource( INITIAL_AUDIO_RES ) );
 
@@ -392,6 +395,15 @@ void SamplePlayerNodeTestApp::printBufferSamples( size_t xPos )
 	}
 	console() << endl;
 
+}
+
+void SamplePlayerNodeTestApp::printSupportedExtensions()
+{
+	CI_LOG_V( "supported SourceFile extensions: " );
+	for( const auto &ext : audio::SourceFile::getSupportedExtensions() )
+		console() << ext << ", ";
+
+	console() << endl;
 }
 
 void SamplePlayerNodeTestApp::mouseDown( MouseEvent event )
