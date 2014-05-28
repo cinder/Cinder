@@ -197,6 +197,7 @@ class Node : public std::enable_shared_from_this<Node>, public boost::noncopyabl
 
 	void setupProcessWithSumming();
 	void notifyConnectionsDidChange();
+	bool inputChannelsAreUnequal() const;
 
 	//! Only Node subclasses can specify num channels directly - users specify via Format at construction time.
 	void setNumChannels( size_t numChannels );

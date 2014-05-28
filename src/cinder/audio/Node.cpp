@@ -267,6 +267,17 @@ size_t Node::getFramesPerBlock() const
 	return getContext()->getFramesPerBlock();
 }
 
+bool Node::inputChannelsAreUnequal() const
+{
+	size_t numChannels = (*mInputs.begin() )->getNumChannels();
+	for( auto &in : mInputs ) {
+		if( numChannels != in->getNumChannels() )
+			return true;
+	}
+
+	return false;
+}
+
 // TODO: Checking for DelayNode below is a kludge and will not work for other types that want to support feedback.
 //		 With more investigation it might be possible to avoid this, or at least define some interface that
 //       specifies whether this input needs to be summed.
@@ -280,6 +291,7 @@ void Node::configureConnections()
 		mProcessInPlace = false;
 
 	bool isDelay = ( dynamic_cast<DelayNode *>( this ) != nullptr ); // see note above
+	bool inputChannelsUnequal = inputChannelsAreUnequal();
 
 	for( auto &input : mInputs ) {
 		bool inputProcessInPlace = true;
@@ -300,6 +312,10 @@ void Node::configureConnections()
 
 		// inputs with more than one output cannot process in-place, so make them sum
 		if( input->getProcessInPlace() && input->getNumConnectedOutputs() > 1 )
+			inputProcessInPlace = false;
+
+		// when there are multiple inputs and their channel counts don't match, they must be summed
+		if( inputChannelsUnequal )
 			inputProcessInPlace = false;
 
 		// if we're unable to process in-place and we're a DelayNode, its possible that the input may be part of a feedback loop, in which case input must sum.
