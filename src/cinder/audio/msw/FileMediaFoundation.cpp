@@ -323,6 +323,37 @@ size_t SourceFileMediaFoundation::processNextReadSample()
 	return numFramesRead;
 }
 
+// From what I can tell, there is no straightforward way to ask Media Foundation for a list of extensions that relate to the decoders it supports
+// So instead we create the list by hand, with microsoft's supported audio formats webpage as reference: http://msdn.microsoft.com/en-us/library/windows/desktop/dd757927(v=vs.85).aspx 
+// To note, I tried MFTEnumEx and was able to get a list of GUID's for codecs, but not extensions. Also, it appears this method is unavailable in Windows Runtime.
+// static
+vector<std::string> SourceFileMediaFoundation::getSupportedExtensions()
+{
+	vector<std::string> result;
+	result.push_back( "3g2" );
+	result.push_back( "3gp2" );
+	result.push_back( "3gp" );
+	result.push_back( "3gpp" );
+	result.push_back( "m4a" );
+	result.push_back( "m4v" );
+	result.push_back( "mp4v" );
+	result.push_back( "mp4" );
+	result.push_back( "m2ts" );
+	result.push_back( "asf" );
+	result.push_back( "wm" );
+	result.push_back( "wmv" );
+	result.push_back( "wma" );
+	result.push_back( "aac" );
+	result.push_back( "adt" );
+	result.push_back( "adts" );
+	result.push_back( "mp3" );
+	result.push_back( "wav" );
+	result.push_back( "avi" );
+	result.push_back( "ac3" );
+	result.push_back( "ec3" );
+	return result;
+}
+
 // ----------------------------------------------------------------------------------------------------
 // MARK: - TargetFileMediaFoundation
 // ----------------------------------------------------------------------------------------------------
