@@ -129,7 +129,7 @@ class App {
 	class Settings {
 	  public:
 	    // whether or not the app should terminate prior to launching
-		bool	isPrepared() const { return ! mShouldQuit; };
+		bool	isPrepared() const { return ! mShouldQuit; }
 
 		//! Sets the size of the default window measured in pixels
 		void	setWindowSize( int windowSizeX, int windowSizeY ) { mDefaultWindowFormat.setSize( Vec2i( windowSizeX, windowSizeY ) ); }
