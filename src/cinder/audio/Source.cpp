@@ -40,6 +40,7 @@ namespace cinder { namespace audio {
 
 // TODO: these should be replaced with a generic registrar derived from the ImageIo stuff.
 
+// static
 unique_ptr<SourceFile> SourceFile::create( const DataSourceRef &dataSource, size_t sampleRate )
 {
 	unique_ptr<SourceFile> result;
@@ -56,6 +57,23 @@ unique_ptr<SourceFile> SourceFile::create( const DataSourceRef &dataSource, size
 
 	if( result )
 		result->setupSampleRateConversion();
+
+	return result;
+}
+
+// static
+vector<std::string> SourceFile::getSupportedExtensions()
+{
+#if defined( CINDER_COCOA )
+	vector<string> result = cocoa::SourceFileCoreAudio::getSupportedExtensions();
+#elif defined( CINDER_MSW )
+	vector<string> result = msw::SourceFileMediaFoundation::getSupportedExtensions();
+#else
+	vector<string> result;
+#endif
+
+	if( find( result.begin(), result.end(), "ogg" ) == result.end() )
+		result.push_back( "ogg" );
 
 	return result;
 }

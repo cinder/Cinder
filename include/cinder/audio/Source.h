@@ -105,6 +105,9 @@ class SourceFile : public Source {
 	//! Returns the length in seconds.
 	double	getNumSeconds() const						{ return (double)getNumFrames() / (double)getSampleRate(); }
 
+	//! Returns a vector of extensions that SourceFile support for loading. Suitable for the \a extensions parameter of getOpenFilePath().
+	static std::vector<std::string>	getSupportedExtensions();
+
   protected:
 	SourceFile( size_t sampleRate );
 

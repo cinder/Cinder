@@ -34,28 +34,6 @@ using namespace ci;
 
 namespace cinder { namespace audio { namespace cocoa {
 
-/*
-static void printExtensions()
-{
-	::CFArrayRef extensionsCF;
-	UInt32 propSize = sizeof( extensionsCF );
-	OSStatus status = ::AudioFileGetGlobalInfo( kAudioFileGlobalInfo_AllExtensions, 0, NULL, &propSize, &extensionsCF );
-	CI_ASSERT( status == noErr );
-
-	CFIndex extCount = ::CFArrayGetCount( extensionsCF );
-	LOG_V << "extension count: " << extCount << endl;
-	vector<string> extensions;
-	for( CFIndex index = 0; index < extCount; ++index ) {
-		string ext = ci::cocoa::convertCfString( (CFStringRef)::CFArrayGetValueAtIndex( extensionsCF, index ) );
-		cout << ext << ", ";
-		extensions.push_back( ext );
-	}
-	std::cout << endl;
-
-	::CFRelease( extensionsCF );
-}
-*/
-
 // ----------------------------------------------------------------------------------------------------
 // MARK: - SourceFileCoreAudio
 // ----------------------------------------------------------------------------------------------------
@@ -137,6 +115,27 @@ void SourceFileCoreAudio::performSeek( size_t readPositionFrames )
 {
 	OSStatus status = ::ExtAudioFileSeek( mExtAudioFile.get(), readPositionFrames );
 	CI_ASSERT( status == noErr );
+}
+
+// static
+vector<string> SourceFileCoreAudio::getSupportedExtensions()
+{
+	vector<string> result;
+
+	::CFArrayRef extensionsCF;
+	UInt32 propSize = sizeof( extensionsCF );
+	OSStatus status = ::AudioFileGetGlobalInfo( kAudioFileGlobalInfo_AllExtensions, 0, NULL, &propSize, &extensionsCF );
+	CI_ASSERT( status == noErr );
+
+	CFIndex extCount = ::CFArrayGetCount( extensionsCF );
+	for( CFIndex index = 0; index < extCount; ++index ) {
+		string ext = ci::cocoa::convertCfString( (CFStringRef)::CFArrayGetValueAtIndex( extensionsCF, index ) );
+		result.push_back( ext );
+	}
+
+	::CFRelease( extensionsCF );
+	
+	return result;
 }
 
 // ----------------------------------------------------------------------------------------------------

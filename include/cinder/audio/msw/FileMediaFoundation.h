@@ -52,6 +52,8 @@ class SourceFileMediaFoundation : public SourceFile {
 	size_t		performRead( Buffer *buffer, size_t bufferFrameOffset, size_t numFramesNeeded ) override;
 	void		performSeek( size_t readPositionFrames ) override;
 
+	static std::vector<std::string>	getSupportedExtensions();
+
   private:
 	void		initReader();
 	size_t		processNextReadSample();
