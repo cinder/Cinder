@@ -394,6 +394,23 @@ void InterfaceGl::OptionsBase::setKeyIncr( const string &keyIncr )
 	mKeyIncr = keyIncr;
 }
 
+void InterfaceGl::OptionsBase::setKeyDecr( const string &keyDecr )
+{
+	assert( mParent );
+
+	string optionsStr = "keyDecr=" + keyDecr;
+	mParent->setOptions( getName(), optionsStr );
+	mKeyDecr = keyDecr;
+}
+
+void InterfaceGl::OptionsBase::setKey( const std::string &key )
+{
+	assert( mParent );
+
+	string optionsStr = "key=" + key;
+	mParent->setOptions( getName(), optionsStr );
+	mKey = key;
+}
 
 void InterfaceGl::OptionsBase::setGroup( const std::string &group )
 {
@@ -402,15 +419,6 @@ void InterfaceGl::OptionsBase::setGroup( const std::string &group )
 	string optionsStr = "group=`" + group + "`";
 	mParent->setOptions( getName(), optionsStr );
 	mGroup = group;
-}
-
-void InterfaceGl::OptionsBase::setKeyDecr( const string &keyDecr )
-{
-	assert( mParent );
-
-	string optionsStr = "keyDecr=" + keyDecr;
-	mParent->setOptions( getName(), optionsStr );
-	mKeyDecr = keyDecr;
 }
 
 void InterfaceGl::OptionsBase::setOptionsStr( const string &optionsStr )
