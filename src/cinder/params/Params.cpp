@@ -558,8 +558,9 @@ void InterfaceGl::removeParam( const std::string &name )
 void InterfaceGl::clear()
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
 	TwRemoveAllVars( mBar.get() );
+
+	mStoredCallbacks.clear();
 }
 
 void InterfaceGl::setOptions( const std::string &name, const std::string &optionsStr )
