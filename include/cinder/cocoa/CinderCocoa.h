@@ -130,8 +130,8 @@ CFURLRef createCfUrl( const cinder::Url &url );
 
 //! Converts a std::string to a CFAttributedStringRef with attributes set for \a font and \a color. Assumes UTF8 encoding. User must call CFRelease() to free the result. Returns NULL on failure.
 CFAttributedStringRef createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color );
-//! Converts a std::string to a CFAttributedStringRef with attributes set for \a font and \a color. If \a ligate then ligatures will be used. Assumes UTF8 encoding. User must call CFRelease() to free the result. Returns NULL on failure.
-CFAttributedStringRef createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color, bool ligate );
+//! Converts a std::string to a CFAttributedStringRef with attributes set for \a font and \a color. If \a ligate then ligatures will be used. Add or subtract character spacing with the \tracking argument. Adds Assumes UTF8 encoding. User must call CFRelease() to free the result. Returns NULL on failure.
+CFAttributedStringRef createCfAttributedString( const std::string &str, const cinder::Font &font, const ColorA &color, bool ligate, float tracking = 0 );
 
 //! Converts a cinder::Color to CGColor. User must call CGColorRelease() to free the result.
 CGColorRef createCgColor( const Color &color );
