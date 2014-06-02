@@ -92,7 +92,7 @@ class TextBox {
 	typedef enum Alignment { LEFT, CENTER, RIGHT } Alignment;
 	enum { GROW = 0 };
 	
-	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ), mLigate( true ), mTracking( 0 ) {}
+	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ), mLigate( true ), mTracking( 0 ), mLineheight( 0 ) {}
 
 	TextBox&			size( Vec2i sz ) { setSize( sz ); return *this; }
 	TextBox&			size( int width, int height ) { setSize( Vec2i( width, height ) ); return *this; }
