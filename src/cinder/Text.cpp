@@ -531,7 +531,8 @@ void TextBox::createLines() const
 		return;
 
 	CFRange range = CFRangeMake( 0, 0 );
-	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor, mLigate );
+	
+	CFAttributedStringRef attrStr = cocoa::createCfAttributedString( mText, mFont, mColor, mLigate, mTracking );
 	if( ! attrStr )
 		return;
 	CTTypesetterRef typeSetter = ::CTTypesetterCreateWithAttributedString( attrStr );
@@ -556,9 +557,9 @@ void TextBox::createLines() const
 		lineOffset.x = ::CTLineGetPenOffsetForFlush( line, flush, maxWidth );
 		lineOffset.y += ascent;
 		mLines.push_back( make_pair( shared_ptr<__CTLine>( (__CTLine*)line, ::CFRelease ), lineOffset ) );
-		lineOffset.y += descent + leading;
+		lineOffset.y += descent + leading + mLineheight;
 		mCalculatedSize.x = std::max( mCalculatedSize.x, (float)lineWidth );
-		mCalculatedSize.y += ascent + descent + leading;
+		mCalculatedSize.y += ascent + descent + leading + mLineheight;
 		range.location += range.length;
 	}
 
