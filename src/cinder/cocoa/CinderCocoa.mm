@@ -243,20 +243,23 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 	return attrString;
 }
 
-CFAttributedStringRef createCfAttributedString( const std::string &str, const Font &font, const ColorA &color, bool ligate )
+CFAttributedStringRef createCfAttributedString( const std::string &str, const Font &font, const ColorA &color, bool ligate, float tracking )
 {
 	CGColorRef cgColor = createCgColor( color );
 	const int ligatures = ( ligate ) ? 1 : 0;
     CFNumberRef ligaturesRef = ::CFNumberCreate( kCFAllocatorDefault, kCFNumberIntType, &ligatures );
+	CFNumberRef trackingRef = ::CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &tracking );
 	const CFStringRef keys[] = {
 		kCTFontAttributeName,
 		kCTForegroundColorAttributeName,
-		kCTLigatureAttributeName
+		kCTLigatureAttributeName,
+		kCTKernAttributeName
 	};
 	const CFTypeRef values[] = {
 		font.getCtFontRef(),
 		cgColor,
-		ligaturesRef
+		ligaturesRef,
+		trackingRef
 	};
 	
 	// Create our attributes
@@ -270,6 +273,7 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 	if( ! strRef ) { // failure
 		::CFRelease( attributes );
 		::CFRelease( ligaturesRef );
+		::CFRelease( trackingRef ); 
 		return NULL;
 	}
 	CFAttributedStringRef attrString = ::CFAttributedStringCreate( kCFAllocatorDefault, strRef, attributes );
@@ -277,6 +281,7 @@ CFAttributedStringRef createCfAttributedString( const std::string &str, const Fo
 	::CFRelease( strRef );
 	::CFRelease( attributes );
 	::CFRelease( ligaturesRef );
+	::CFRelease( trackingRef ); 
 	
 	return attrString;
 }
