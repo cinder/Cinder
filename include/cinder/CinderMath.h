@@ -287,7 +287,7 @@ int solveCubic( T a, T b, T c, T d, T result[3] );
 } // namespace cinder
 
 #if defined( _MSC_VER ) && ( _MSC_VER < 1800 )
-// define math.h functions that aren't defined until vc120
+// define math.h functions that aren't defined until vc120; note that the round* variants are not identical to the C99 implementations
 namespace std {
 
 inline bool isfinite( float arg )	{ return _finite( arg ) != 0; }
