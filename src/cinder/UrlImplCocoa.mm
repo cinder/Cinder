@@ -42,7 +42,7 @@
 	BOOL				mResponseReceived;
 	BOOL				mDidFail;
 	std::string			mErrorString;
-	int					mStatusCode;
+	long				mStatusCode;
 }
 
 - (id)initWithImpl:(ci::IStreamUrlImplCocoa*)impl url:(ci::Url)url user:(std::string)user password:(std::string)password;
@@ -81,7 +81,7 @@
 	mUser = user;
 	mPassword = password;
 	mBufferSize = 4096;
-	mBuffer = (uint8_t*)malloc( mBufferSize );
+	mBuffer = (uint8_t*)malloc( (size_t)mBufferSize );
 	mBufferOffset = 0;
 	mBufferedBytes = 0;
 	mBufferFileOffset = 0;
@@ -173,13 +173,13 @@
 {
 	@synchronized( self ) {
 		off_t roomInBuffer = mBufferSize - mBufferedBytes;
-		size_t size = [data length];	
+		off_t size = [data length];	
 		if( (off_t)size > roomInBuffer ) {
 			// not enough space in buffer
 			off_t oldBufferSize = mBufferSize;
 			while( mBufferSize - mBufferedBytes <= (off_t)size )
 				mBufferSize *= 2;
-			uint8_t *newBuff = reinterpret_cast<uint8_t*>( realloc( mBuffer, mBufferSize ) );
+			uint8_t *newBuff = reinterpret_cast<uint8_t*>( realloc( mBuffer, (size_t)mBufferSize ) );
 			if( ! newBuff ) { // allocation failed - just copy the bytes we can fit
 				size = [self bufferRemaining];
 				mBufferSize = oldBufferSize;
@@ -190,7 +190,7 @@
 			}
 		}
 
-		memcpy( &mBuffer[mBufferedBytes], [data bytes], size );
+		memcpy( &mBuffer[mBufferedBytes], [data bytes], (size_t)size );
 		mBufferedBytes += size;
 	}
 }
@@ -228,7 +228,7 @@
 		mStillConnected = NO;
 	}
 	
-	throw cinder::UrlLoadExc( mStatusCode, mErrorString );
+	throw cinder::UrlLoadExc( (int)mStatusCode, mErrorString );
 }
 
 - (off_t)getSize
@@ -298,7 +298,7 @@
 		// if we want more bytes than will fit in the rest of the buffer, let's make some room
 		if( mBufferSize - mBufferedBytes < wantBytes ) {
 			off_t bytesCulled = mBufferOffset;
-			memmove( mBuffer, &mBuffer[mBufferOffset], mBufferedBytes - bytesCulled );
+			memmove( mBuffer, &mBuffer[mBufferOffset], (size_t)(mBufferedBytes - bytesCulled) );
 			mBufferedBytes -= bytesCulled;
 			mBufferOffset = 0;
 			mBufferFileOffset += bytesCulled;
@@ -319,7 +319,7 @@
 	@synchronized( self ) {	
 		off_t remaining = [self bufferRemaining];
 		if( remaining < (off_t)maxSize )
-			maxSize = remaining;
+			maxSize = (size_t)remaining;
 			
 		memcpy( dest, mBuffer + mBufferOffset, maxSize );
 		
