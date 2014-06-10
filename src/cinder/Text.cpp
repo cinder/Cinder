@@ -44,13 +44,15 @@
 	#include "cinder/msw/CinderMswGdiPlus.h"
 	#pragma comment(lib, "gdiplus")
 	#include "cinder/Unicode.h"
+
+static const float MAX_SIZE = 1000000.0f;
+
 #endif
 
 #include <boost/noncopyable.hpp>
 #include <limits.h>
-using namespace std;
 
-static const float MAX_SIZE = 1000000.0f;
+using namespace std;
 
 namespace cinder {
 
