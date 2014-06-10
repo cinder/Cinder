@@ -443,7 +443,7 @@ ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef 
 ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
 	: ImageTarget(), mPixelBufferRef( 0 ), mConvertToYpCbCr( convertToYpCbCr )
 {
-	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
+	setSize( imageSource->getWidth(), imageSource->getHeight() );
 	
 	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
 	

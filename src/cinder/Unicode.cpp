@@ -247,12 +247,12 @@ void lineBreakUtf8( const char *line, const std::function<bool(const char *, siz
 	size_t lineStartByte = 0, lineEndByte = 0;
 	size_t lineStartChar = 0;
 	while( lineStartChar < charLen ) {
-		int minChar = 0, maxChar = charLen - lineStartChar /*[minChar,maxChar)*/, curChar = 0;
+		size_t minChar = 0, maxChar = charLen - lineStartChar /*[minChar,maxChar)*/, curChar = 0;
 		
 		// test to see if we're already on a mustbreak
 		if( brks.get()[lineStartByte] != 0 ) {
 			// update our maxChar to reflect any MUSTBREAKS
-			int maxCharWithMustBreaks = minChar;
+			size_t maxCharWithMustBreaks = minChar;
 			size_t maxCharByte = lineStartByte;
 
 			while( maxCharWithMustBreaks < maxChar ) {

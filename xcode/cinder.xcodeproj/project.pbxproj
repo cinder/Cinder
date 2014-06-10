@@ -95,10 +95,10 @@
 		003ADB861038973700ACF6F2 /* resource.h in Headers */ = {isa = PBXBuildFile; fileRef = 003ADB721038973700ACF6F2 /* resource.h */; };
 		003ADB871038973700ACF6F2 /* TwPrecomp.h in Headers */ = {isa = PBXBuildFile; fileRef = 003ADB731038973700ACF6F2 /* TwPrecomp.h */; };
 		003ADB881038973700ACF6F2 /* TwMgr.h in Headers */ = {isa = PBXBuildFile; fileRef = 003ADB741038973700ACF6F2 /* TwMgr.h */; };
-		003ADB971038974A00ACF6F2 /* TwMgr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB891038974A00ACF6F2 /* TwMgr.cpp */; };
+		003ADB971038974A00ACF6F2 /* TwMgr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB891038974A00ACF6F2 /* TwMgr.cpp */; settings = {COMPILER_FLAGS = "-Wno-tautological-compare -Wno-switch -Wno-shift-op-parentheses"; }; };
 		003ADB981038974A00ACF6F2 /* TwPrecomp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB8A1038974A00ACF6F2 /* TwPrecomp.cpp */; };
 		003ADB991038974A00ACF6F2 /* LoadOGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB8B1038974A00ACF6F2 /* LoadOGL.cpp */; };
-		003ADB9A1038974A00ACF6F2 /* TwFonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB8C1038974A00ACF6F2 /* TwFonts.cpp */; };
+		003ADB9A1038974A00ACF6F2 /* TwFonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB8C1038974A00ACF6F2 /* TwFonts.cpp */; settings = {COMPILER_FLAGS = "-Wno-unused-const-variable"; }; };
 		003ADB9B1038974A00ACF6F2 /* TwColors.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB8D1038974A00ACF6F2 /* TwColors.cpp */; };
 		003ADB9C1038974A00ACF6F2 /* TwOpenGL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB8E1038974A00ACF6F2 /* TwOpenGL.cpp */; };
 		003ADB9D1038974A00ACF6F2 /* TwBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003ADB8F1038974A00ACF6F2 /* TwBar.cpp */; };

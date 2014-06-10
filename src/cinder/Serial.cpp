@@ -233,7 +233,7 @@ void Serial::writeBytes( const void *data, size_t numBytes )
 	
 	while( totalBytesWritten < numBytes ) {
 #if defined( CINDER_MAC )
-		int bytesWritten = ::write( mObj->mFd, data, numBytes - totalBytesWritten );
+		long bytesWritten = ::write( mObj->mFd, data, numBytes - totalBytesWritten );
 		if( ( bytesWritten == -1 ) && ( errno != EAGAIN ) )
 			throw SerialExcReadFailure();	
 #elif defined( CINDER_MSW )
@@ -251,7 +251,7 @@ void Serial::readBytes( void *data, size_t numBytes )
 	size_t totalBytesRead = 0;
 	while( totalBytesRead < numBytes ) {
 #if defined( CINDER_MAC )
-		int bytesRead = ::read( mObj->mFd, data, numBytes - totalBytesRead );
+		long bytesRead = ::read( mObj->mFd, data, numBytes - totalBytesRead );
 		if( ( bytesRead == -1 ) && ( errno != EAGAIN ) )
 			throw SerialExcReadFailure();
 #elif defined( CINDER_MSW )
@@ -270,7 +270,7 @@ void Serial::readBytes( void *data, size_t numBytes )
 size_t Serial::readAvailableBytes( void *data, size_t maximumBytes )
 {
 #if defined( CINDER_MAC )
-	int bytesRead = ::read( mObj->mFd, data, maximumBytes );
+	long bytesRead = ::read( mObj->mFd, data, maximumBytes );
 #elif defined( CINDER_MSW )
 	::DWORD bytesRead = 0;
 	if( ! ::ReadFile( mObj->mDeviceHandle, data, maximumBytes, &bytesRead, 0 ) )

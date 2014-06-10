@@ -465,7 +465,7 @@ void VboMesh::enableClientStates() const
 		
 	for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 		if( mObj->mLayout.hasTexCoords( t ) ) {
-			glClientActiveTexture( GL_TEXTURE0 + t );
+			glClientActiveTexture( GL_TEXTURE0 + (GLenum)t );
 			glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 		}
 	}	
@@ -490,7 +490,7 @@ void VboMesh::disableClientStates() const
 	glDisableClientState( GL_COLOR_ARRAY );
 	for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 		if( mObj->mLayout.hasTexCoords( t ) ) {
-			glClientActiveTexture( GL_TEXTURE0 + t );
+			glClientActiveTexture( GL_TEXTURE0 + (GLenum)t );
 			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
 		}
 	}	
@@ -531,11 +531,11 @@ void VboMesh::bindAllData() const
 
 		for( size_t t = 0; t <= ATTR_MAX_TEXTURE_UNIT; ++t ) {
 			if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d( t ) : mObj->mLayout.hasDynamicTexCoords2d( t ) ) {
-				glClientActiveTexture( GL_TEXTURE0 + t );
+				glClientActiveTexture( GL_TEXTURE0 + (GLenum)t );
 				glTexCoordPointer( 2, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );
 			}
 			else if( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords3d( t ) : mObj->mLayout.hasDynamicTexCoords3d( t ) ) {
-				glClientActiveTexture( GL_TEXTURE0 + t );
+				glClientActiveTexture( GL_TEXTURE0 + (GLenum)t );
 				glTexCoordPointer( 3, GL_FLOAT, stride, (const GLvoid *)mObj->mTexCoordOffset[t] );
 			}
 		}	
@@ -549,7 +549,7 @@ void VboMesh::bindAllData() const
 
 		const vector<pair<VboMesh::Layout::CustomAttr,size_t> > &attributes( ( buffer == DYNAMIC_BUFFER ) ? mObj->mLayout.mCustomDynamic : mObj->mLayout.mCustomStatic );
 		const vector<GLint> &locations( ( buffer == DYNAMIC_BUFFER ) ? mObj->mCustomDynamicLocations : mObj->mCustomStaticLocations );
-		GLsizei stride = ( ( buffer == DYNAMIC_BUFFER ) ? mObj->mDynamicStride : mObj->mStaticStride );
+		size_t stride = ( ( buffer == DYNAMIC_BUFFER ) ? mObj->mDynamicStride : mObj->mStaticStride );
 	
 		if( attributes.empty() )
 			continue;
@@ -558,7 +558,7 @@ void VboMesh::bindAllData() const
 		
 		for( size_t a = 0; a < attributes.size(); ++a ) {
 			const GLvoid *offset = reinterpret_cast<const GLvoid*>( attributes[a].second );
-			glVertexAttribPointer( locations[a], Layout::sCustomAttrNumComponents[attributes[a].first], Layout::sCustomAttrTypes[attributes[a].first], GL_FALSE, stride, offset );
+			glVertexAttribPointer( locations[a], Layout::sCustomAttrNumComponents[attributes[a].first], Layout::sCustomAttrTypes[attributes[a].first], GL_FALSE, (GLsizei)stride, offset );
 		}	
 	}
 }

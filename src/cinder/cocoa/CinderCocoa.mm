@@ -157,10 +157,10 @@ static void NSBitmapImageRepSurfaceDeallocator( void *refcon )
 #if defined( CINDER_MAC )
 Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership )
 {
-	int bpp = [rep bitsPerPixel];
-	int rowBytes = [rep bytesPerRow];
-	int width = [rep pixelsWide];
-	int height = [rep pixelsHigh];
+	NSInteger bpp = [rep bitsPerPixel];
+	int32_t rowBytes = (int32_t)[rep bytesPerRow];
+	int32_t width = (int32_t)[rep pixelsWide];
+	int32_t height = (int32_t)[rep pixelsHigh];
 	uint8_t *data = [rep bitmapData];
 	SurfaceChannelOrder co = ( bpp == 24 ) ? SurfaceChannelOrder::RGB : SurfaceChannelOrder::RGBA;
 	Surface8u result( data, width, height, rowBytes, co );

@@ -115,8 +115,8 @@ void Display::enumerateDisplays()
 	
 	NSArray *screens = [NSScreen screens];
 	Area primaryScreenArea;
-	int screenCount = [screens count];
-	for( int i = 0; i < screenCount; ++i ) {
+	size_t screenCount = [screens count];
+	for( size_t i = 0; i < screenCount; ++i ) {
 		::NSScreen *screen = [screens objectAtIndex:i];
 		[screen retain]; // this is released in the destructor for Display
 		NSRect frame = [screen frame];
@@ -125,7 +125,7 @@ void Display::enumerateDisplays()
 		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
 		newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 		newDisplay->mScreen = screen;
-		newDisplay->mBitsPerPixel = NSBitsPerPixelFromDepth( [screen depth] );
+		newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
 		newDisplay->mContentScale = [screen backingScaleFactor];
 
 		// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
@@ -136,7 +136,6 @@ void Display::enumerateDisplays()
 			int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
 			newDisplay->mArea.offset( Vec2i( 0, heightDelta ) );
 		}
-
 		
 		sDisplays.push_back( newDisplay );
 	}

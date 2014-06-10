@@ -277,11 +277,11 @@ void DeviceManagerCoreAudio::registerPropertyListeners( DeviceRef device, ::Audi
 			}
 			else if( propertyAddress.mSelector == kAudioDevicePropertyNominalSampleRate ) {
 				paramsUpdated = true;
-				auto result = getAudioObjectProperty<Float64>( deviceId, propertyAddress );
+				//auto result = getAudioObjectProperty<Float64>( deviceId, propertyAddress );
 			}
 			else if( propertyAddress.mSelector == kAudioDevicePropertyBufferFrameSize ) {
 				paramsUpdated = true;
-				auto result = getAudioObjectProperty<UInt32>( deviceId, propertyAddress );
+				//auto result = getAudioObjectProperty<UInt32>( deviceId, propertyAddress );
 			}
 		}
 

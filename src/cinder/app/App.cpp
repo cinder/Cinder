@@ -356,7 +356,7 @@ fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> exten
 	if( ! initialPath.empty() )
 		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
 
-	int resultCode = [cinderOpen runModal];
+	NSInteger resultCode = [cinderOpen runModal];
 
 	setFullScreen( wasFullScreen );
 	restoreWindowContext();
@@ -397,7 +397,7 @@ fs::path App::getFolderPath( const fs::path &initialPath )
 	if( ! initialPath.empty() )
 		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
 	
-	int resultCode = [cinderOpen runModal];	
+	NSInteger resultCode = [cinderOpen runModal];
 	
 	setFullScreen(wasFullScreen);
 	restoreWindowContext();
@@ -459,7 +459,7 @@ fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> exten
 			[cinderSave setNameFieldStringValue:file];
 	}
 	
-	int resultCode = [cinderSave runModal];
+	NSInteger resultCode = [cinderSave runModal];
 
 	setFullScreen( wasFullScreen );
 	restoreWindowContext();
