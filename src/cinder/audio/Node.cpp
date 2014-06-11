@@ -285,10 +285,12 @@ size_t Node::getFramesPerBlock() const
 
 bool Node::inputChannelsAreUnequal() const
 {
-	size_t numChannels = (*mInputs.begin() )->getNumChannels();
-	for( auto &in : mInputs ) {
-		if( numChannels != in->getNumChannels() )
-			return true;
+	if( ! mInputs.empty() ) {
+		size_t numChannels = (*mInputs.begin() )->getNumChannels();
+		for( auto &in : mInputs ) {
+			if( numChannels != in->getNumChannels() )
+				return true;
+		}
 	}
 
 	return false;
