@@ -53,6 +53,32 @@ namespace {
 inline double	nanoSecondsToSeconds( LONGLONG ns )		{ return (double)ns / 10000000.0; } 
 inline LONGLONG secondsToNanoSeconds( double seconds )	{ return (LONGLONG)seconds * 10000000; }
 
+::GUID getMfAudioFormat( SampleType sampleType )
+{
+	switch( sampleType ) {
+		case SampleType::INT_16:	return ::MFAudioFormat_PCM;
+		case SampleType::INT_24:	return ::MFAudioFormat_PCM;
+		case SampleType::FLOAT_32:	return ::MFAudioFormat_Float;
+		default: break;
+	}
+
+	CI_ASSERT_NOT_REACHABLE();
+	return MFAudioFormat_PCM;
+}
+
+size_t getBytesPerSample( SampleType sampleType )
+{
+	switch( sampleType ) {
+		case SampleType::INT_16:	return 2;
+		case SampleType::INT_24:	return 3;
+		case SampleType::FLOAT_32:	return 4;
+		default: break;
+	}
+
+	CI_ASSERT_NOT_REACHABLE();
+	return 0;
+}
+
 } // anonymous namespace
 
 // ----------------------------------------------------------------------------------------------------
@@ -198,27 +224,32 @@ void SourceFileMediaFoundation::initReader()
 
 	// get files native format
 	::IMFMediaType *nativeType; // FIXME: i think this is leaked after creation
-	::WAVEFORMATEX *fileFormat;
+	::WAVEFORMATEX *fileFormat; // TODO: rename nativeFormat
 	UINT32 formatSize;
 	hr = mSourceReader->GetNativeMediaType( MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, &nativeType );
 	CI_ASSERT( hr == S_OK );
 	hr = ::MFCreateWaveFormatExFromMFMediaType( nativeType, &fileFormat, &formatSize );
 	CI_ASSERT( hr == S_OK );
 
-	GUID outputSubType = MFAudioFormat_PCM; // default to PCM, upgrade if we can.
+	mNumChannels = fileFormat->nChannels;
+	mSampleRate = fileFormat->nSamplesPerSec;
+
+	GUID outputSubType = MFAudioFormat_PCM; // default to PCM 16-bit int, upgrade if we can.
 	mSampleType = SampleType::INT_16;
-	mBytesPerSample = 2;
 
 	if( fileFormat->wBitsPerSample == 32 ) {
 		mSampleType = SampleType::FLOAT_32;
-		mBytesPerSample = 4;
 		outputSubType = MFAudioFormat_Float;
 	}
+	else if( fileFormat->wBitsPerSample == 24 ) {
+		mSampleType = SampleType::INT_24;
+		if( mNumChannels > 1 )
+			mBitConverterBuffer.setSize( getMaxFramesPerRead(), mNumChannels );
+	}
 
-	mNumChannels = fileFormat->nChannels;
-	mSampleRate = fileFormat->nSamplesPerSec;
 	::CoTaskMemFree( fileFormat );
 
+	mBytesPerSample = getBytesPerSample( mSampleType );
 	mReadBuffer.setSize( getMaxFramesPerRead(), mNumChannels );
 
 	// set output type, which loads the proper decoder:
@@ -304,7 +335,7 @@ size_t SourceFileMediaFoundation::processNextReadSample()
 
 	if( mSampleType == SampleType::FLOAT_32 ) {
 		float *sourceFloatSamples = (float *)audioData;
-		if( numChannels == 1)
+		if( numChannels == 1 )
 			memcpy( mReadBuffer.getData(), sourceFloatSamples, numFramesRead * sizeof( float ) );
 		else
 			dsp::deinterleave( sourceFloatSamples, mReadBuffer.getData(), mReadBuffer.getNumFrames(), numChannels, numFramesRead );
@@ -312,6 +343,18 @@ size_t SourceFileMediaFoundation::processNextReadSample()
 	else if( mSampleType == SampleType::INT_16 ) {
 		int16_t *sourceInt16Samples = (int16_t *)audioData;
 		dsp::deinterleave( sourceInt16Samples, mReadBuffer.getData(), mReadBuffer.getNumFrames(), numChannels, numFramesRead );
+	}
+	else if( mSampleType == SampleType::INT_24 ) {
+		const char *sourceInt24Samples = (const char *)audioData;
+		if( numChannels == 1 )
+			dsp::convertInt24ToFloat( sourceInt24Samples, mReadBuffer.getData(), numFramesRead );
+		else {
+			if( mBitConverterBuffer.getNumFrames() != numFramesRead )
+				mBitConverterBuffer.setNumFrames( numFramesRead );
+
+			dsp::convertInt24ToFloat( sourceInt24Samples, mBitConverterBuffer.getData(), numFramesRead * numChannels );
+			dsp::deinterleave( mBitConverterBuffer.getData(), mReadBuffer.getData(), mReadBuffer.getNumFrames(), numChannels, numFramesRead );
+		}
 	}
 	else
 		CI_ASSERT_NOT_REACHABLE();
@@ -358,34 +401,6 @@ vector<std::string> SourceFileMediaFoundation::getSupportedExtensions()
 // MARK: - TargetFileMediaFoundation
 // ----------------------------------------------------------------------------------------------------
 
-namespace {
-
-::GUID getMfAudioFormat( SampleType sampleType )
-{
-	switch( sampleType ) {
-		case SampleType::INT_16:	return ::MFAudioFormat_PCM;
-		case SampleType::FLOAT_32:	return ::MFAudioFormat_Float;
-		default: break;
-	}
-
-	CI_ASSERT_NOT_REACHABLE();
-	return MFAudioFormat_PCM;
-}
-
-size_t getSampleSize( SampleType sampleType )
-{
-	switch( sampleType ) {
-		case SampleType::INT_16:	return 2;
-		case SampleType::FLOAT_32:	return 4;
-		default: break;
-	}
-
-	CI_ASSERT_NOT_REACHABLE();
-	return 0;
-}
-
-} // anonymous namespace
-
 TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
 	: TargetFile( dataTarget, sampleRate, numChannels, sampleType ), mStreamIndex( 0 )
 {
@@ -402,7 +417,7 @@ TargetFileMediaFoundation::TargetFileMediaFoundation( const DataTargetRef &dataT
 
 	mSinkWriter = ci::msw::makeComUnique( sinkWriter );
 
-	mSampleSize = getSampleSize( mSampleType );
+	mSampleSize = getBytesPerSample( mSampleType );
 	const UINT32 bitsPerSample = 8 * mSampleSize;
 	const WORD blockAlignment = mNumChannels * mSampleSize;
 	const DWORD averageBytesPerSecond = mSampleRate * blockAlignment;
@@ -505,6 +520,19 @@ void TargetFileMediaFoundation::performWrite( const Buffer *buffer, size_t numFr
 		int16_t *destInt16Samples = (int16_t *)audioData;
 		dsp::interleave( buffer->getData(), destInt16Samples, buffer->getNumFrames(), mNumChannels, numFrames );
 	}
+	else if( mSampleType == SampleType::INT_24 ) {
+		char *destInt24Samples = (char *)audioData;
+		if( mNumChannels == 1 )
+			dsp::convertFloatToInt24( buffer->getData(), destInt24Samples, numFrames );
+		else {
+			if( mBitConverterBuffer.getNumFrames() != numFrames || mBitConverterBuffer.getNumChannels() != mNumChannels  )
+				mBitConverterBuffer.setSize( numFrames, mNumChannels );
+
+			dsp::interleaveBuffer( buffer, &mBitConverterBuffer );
+			dsp::convertFloatToInt24( mBitConverterBuffer.getData(), destInt24Samples, numFrames * mNumChannels );
+		}
+	}
+
 	else
 		CI_ASSERT_NOT_REACHABLE();
 

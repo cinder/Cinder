@@ -28,6 +28,7 @@ namespace cinder { namespace audio {
 //! Identifiers sample types. Primarily used for encoding audio at different bitrates.
 enum class SampleType {
 	INT_16,
+	INT_24,
 	FLOAT_32
 };
 
