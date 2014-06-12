@@ -74,7 +74,7 @@ void convert( const SourceT *sourceArray, DestT *destArray, size_t length )
 }
 
 template <typename SourceT, typename DestT>
-void convertBuffers( const BufferT<SourceT> *sourceBuffer, BufferT<DestT> *destBuffer )
+void convertBuffer( const BufferT<SourceT> *sourceBuffer, BufferT<DestT> *destBuffer )
 {
 	size_t numFrames = std::min( sourceBuffer->getNumFrames(), destBuffer->getNumFrames() );
 	size_t numChannels = std::min( sourceBuffer->getNumChannels(), destBuffer->getNumChannels() );
@@ -164,8 +164,6 @@ void deinterleave( const int16_t *interleavedInt16SourceArray, FloatT *nonInterl
 	}
 }
 
-// TODO: consider removing Buffer suffix on these overloads, it is clear from the args (convertBuffer too).
-// - do this
 template<typename T>
 void interleaveBuffer( const BufferT<T> *nonInterleavedSource, BufferInterleavedT<T> *interleavedDest )
 {

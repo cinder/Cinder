@@ -95,7 +95,7 @@ void ConverterImplR8brain::clear()
 
 pair<size_t, size_t> ConverterImplR8brain::convertImpl( const Buffer *sourceBuffer, Buffer *destBuffer, int readCount )
 {
-	convertBuffers( sourceBuffer, &mBufferd );
+	convertBuffer( sourceBuffer, &mBufferd );
 
 	int outCount = 0;
 	for( size_t ch = 0; ch < mBufferd.getNumChannels(); ch++ ) {
@@ -110,7 +110,7 @@ pair<size_t, size_t> ConverterImplR8brain::convertImpl( const Buffer *sourceBuff
 pair<size_t, size_t> ConverterImplR8brain::convertImplDownMixing( const Buffer *sourceBuffer, Buffer *destBuffer, int readCount )
 {
 	mixBuffers( sourceBuffer, &mMixingBuffer );
-	convertBuffers( &mMixingBuffer, &mBufferd );
+	convertBuffer( &mMixingBuffer, &mBufferd );
 
 	int outCount = 0;
 	for( size_t ch = 0; ch < mBufferd.getNumChannels(); ch++ ) {
@@ -124,7 +124,7 @@ pair<size_t, size_t> ConverterImplR8brain::convertImplDownMixing( const Buffer *
 
 pair<size_t, size_t> ConverterImplR8brain::convertImplUpMixing( const Buffer *sourceBuffer, Buffer *destBuffer, int readCount )
 {
-	convertBuffers( sourceBuffer, &mBufferd );
+	convertBuffer( sourceBuffer, &mBufferd );
 
 	int outCount = 0;
 	for( size_t ch = 0; ch < mBufferd.getNumChannels(); ch++ ) {
