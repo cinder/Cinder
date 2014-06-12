@@ -44,9 +44,8 @@ class BufferBaseT {
 	typedef T SampleType;
 
 	BufferBaseT( size_t numFrames, size_t numChannels )
-	: mNumFrames( numFrames ), mNumChannels( numChannels ), mData( numFrames * numChannels )
-	{
-	}
+		: mNumFrames( numFrames ), mNumChannels( numChannels ), mData( numFrames * numChannels )
+	{}
 
 	size_t getNumFrames() const		{ return mNumFrames; }
 	size_t getNumChannels() const	{ return mNumChannels; }
@@ -187,13 +186,13 @@ class BufferSpectralT : public BufferT<T> {
 
 };
 
-//! BufferDynamicT is a resizable, reshapeable BufferT. The internally alloceted buffer will grow as needed,
+//! BufferDynamicT is a resizable BufferT<T>. The internally allocated buffer will grow as needed,
 //! but it will not shrink unless shrinkToFit() is called.
 //! TODO: enable move operator to convert BufferT to this
-template <typename T>
-class BufferDynamicT : public BufferT<T> {
+template <typename BufferTT>
+class BufferDynamicT : public BufferTT {
   public:
-	BufferDynamicT( size_t numFrames = 0, size_t numChannels = 1 ) : BufferT<T>( numFrames, numChannels ),
+	BufferDynamicT( size_t numFrames = 0, size_t numChannels = 1 ) : BufferTT( numFrames, numChannels ),
 		mAllocatedSize( numFrames * numChannels )
 	{}
 
@@ -258,17 +257,22 @@ std::unique_ptr<T, FreeDeleter<T> > makeAlignedArray( size_t size, size_t alignm
 	return std::unique_ptr<T, FreeDeleter<T> >( static_cast<T *>( ptr ) );
 }
 
-typedef std::unique_ptr<float, FreeDeleter<float> > AlignedArrayPtr;
-typedef std::unique_ptr<double, FreeDeleter<double> > AlignedArrayPtrd;
+typedef std::unique_ptr<float, FreeDeleter<float> >		AlignedArrayPtr;
+typedef std::unique_ptr<double, FreeDeleter<double> >	AlignedArrayPtrd;
 
-typedef BufferT<float>				Buffer;
-typedef BufferInterleavedT<float>	BufferInterleaved;
-typedef BufferSpectralT<float>		BufferSpectral;
-typedef BufferDynamicT<float>		BufferDynamic;
+typedef BufferT<float>						Buffer;
+typedef BufferInterleavedT<float>			BufferInterleaved;
+typedef BufferSpectralT<float>				BufferSpectral;
 
-typedef std::shared_ptr<Buffer>				BufferRef;
-typedef std::shared_ptr<BufferInterleaved>	BufferInterleavedRef;
-typedef std::shared_ptr<BufferSpectral>		BufferSpectralRef;
-typedef std::shared_ptr<BufferDynamic>		BufferDynamicRef;
+typedef BufferDynamicT<Buffer>				BufferDynamic;
+typedef BufferDynamicT<BufferInterleaved>	BufferDynamicInterleaved;
+typedef BufferDynamicT<BufferSpectral>		BufferDynamicSpectral;
+
+typedef std::shared_ptr<Buffer>						BufferRef;
+typedef std::shared_ptr<BufferInterleaved>			BufferInterleavedRef;
+typedef std::shared_ptr<BufferSpectral>				BufferSpectralRef;
+typedef std::shared_ptr<BufferDynamic>				BufferDynamicRef;
+typedef std::shared_ptr<BufferDynamicInterleaved>	BufferDynamicInterleavedRef;
+typedef std::shared_ptr<BufferDynamicSpectral>		BufferDynamicSpectralRef;
 
 } } // namespace cinder::audio
