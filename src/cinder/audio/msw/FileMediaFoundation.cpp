@@ -223,31 +223,33 @@ void SourceFileMediaFoundation::initReader()
 	mSourceReader = ci::msw::makeComUnique( sourceReader );
 
 	// get files native format
-	::IMFMediaType *nativeType; // FIXME: i think this is leaked after creation
-	::WAVEFORMATEX *fileFormat; // TODO: rename nativeFormat
+	::IMFMediaType *nativeType;
+	::WAVEFORMATEX *nativeFormat;
 	UINT32 formatSize;
 	hr = mSourceReader->GetNativeMediaType( MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, &nativeType );
 	CI_ASSERT( hr == S_OK );
-	hr = ::MFCreateWaveFormatExFromMFMediaType( nativeType, &fileFormat, &formatSize );
+	auto nativeTypeUnique = ci::msw::makeComUnique( nativeType );
+
+	hr = ::MFCreateWaveFormatExFromMFMediaType( nativeType, &nativeFormat, &formatSize );
 	CI_ASSERT( hr == S_OK );
 
-	mNumChannels = fileFormat->nChannels;
-	mSampleRate = fileFormat->nSamplesPerSec;
+	mNumChannels = nativeFormat->nChannels;
+	mSampleRate = nativeFormat->nSamplesPerSec;
 
 	GUID outputSubType = MFAudioFormat_PCM; // default to PCM 16-bit int, upgrade if we can.
 	mSampleType = SampleType::INT_16;
 
-	if( fileFormat->wBitsPerSample == 32 ) {
+	if( nativeFormat->wBitsPerSample == 32 ) {
 		mSampleType = SampleType::FLOAT_32;
 		outputSubType = MFAudioFormat_Float;
 	}
-	else if( fileFormat->wBitsPerSample == 24 ) {
+	else if( nativeFormat->wBitsPerSample == 24 ) {
 		mSampleType = SampleType::INT_24;
 		if( mNumChannels > 1 )
 			mBitConverterBuffer.setSize( getMaxFramesPerRead(), mNumChannels );
 	}
 
-	::CoTaskMemFree( fileFormat );
+	::CoTaskMemFree( nativeFormat );
 
 	mBytesPerSample = getBytesPerSample( mSampleType );
 	mReadBuffer.setSize( getMaxFramesPerRead(), mNumChannels );
