@@ -118,7 +118,7 @@ template <typename PropT>
 inline void setAudioUnitProperty( ::AudioUnit audioUnit, ::AudioUnitPropertyID propertyId, const PropT &property, ::AudioUnitScope scope, ::AudioUnitElement bus )
 {
 	OSStatus status = ::AudioUnitSetProperty( audioUnit, propertyId, scope, bus, &property, sizeof( property ) );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 }
 
 template <typename PropT>
@@ -127,7 +127,7 @@ inline PropT getAudioUnitProperty( ::AudioUnit audioUnit, ::AudioUnitPropertyID 
 	PropT result;
 	UInt32 resultSize = sizeof( result );
 	OSStatus status = ::AudioUnitGetProperty( audioUnit, propertyId, scope, bus, &result, &resultSize );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 	return result;
 }
 
@@ -137,7 +137,7 @@ inline void getAudioUnitParam( ::AudioUnit audioUnit, ::AudioUnitParameterID par
 	::AudioUnitParameterValue param;
 	::AudioUnitElement busElement = static_cast<::AudioUnitElement>( bus );
 	OSStatus status = ::AudioUnitGetParameter( audioUnit, paramId, scope, busElement, &param );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 	result = static_cast<ResultT>( param );
 }
 
@@ -147,7 +147,7 @@ inline void setAudioUnitParam( ::AudioUnit audioUnit, ::AudioUnitParameterID par
 	::AudioUnitParameterValue value = static_cast<::AudioUnitParameterValue>( param );
 	::AudioUnitElement busElement = static_cast<::AudioUnitElement>( bus );
 	OSStatus status = ::AudioUnitSetParameter( audioUnit, paramId, scope, busElement, value, 0 );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 }
 
 inline std::vector<::AUChannelInfo> getAudioUnitChannelInfo( ::AudioUnit audioUnit, ::AudioUnitElement bus )
@@ -159,11 +159,11 @@ inline std::vector<::AUChannelInfo> getAudioUnitChannelInfo( ::AudioUnit audioUn
 		// "if this property is NOT implemented an FX unit is expected to deal with same channel valance in and out" - CAPublicUtility / CAAudioUnit.cpp
 		return result;
 	} else
-		CI_ASSERT( status == noErr );
+		CI_VERIFY( status == noErr );
 
 	result.resize( resultSize / sizeof( ::AUChannelInfo ) );
 	status = ::AudioUnitGetProperty( audioUnit, kAudioUnitProperty_SupportedNumChannels, kAudioUnitScope_Global, 0, result.data(), &resultSize );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 
 	return result;
 }

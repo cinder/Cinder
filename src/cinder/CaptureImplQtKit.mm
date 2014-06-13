@@ -245,9 +245,9 @@ static BOOL sDevicesEnumerated = false;
 		CVPixelBufferLockBaseAddress( mWorkingPixelBuffer, 0 );
 		
 		uint8_t *data = (uint8_t *)CVPixelBufferGetBaseAddress( mWorkingPixelBuffer );
-		mExposedFrameBytesPerRow = CVPixelBufferGetBytesPerRow( mWorkingPixelBuffer );
-		mExposedFrameWidth = CVPixelBufferGetWidth( mWorkingPixelBuffer );
-		mExposedFrameHeight = CVPixelBufferGetHeight( mWorkingPixelBuffer );
+		mExposedFrameBytesPerRow = (int32_t)CVPixelBufferGetBytesPerRow( mWorkingPixelBuffer );
+		mExposedFrameWidth = (int32_t)CVPixelBufferGetWidth( mWorkingPixelBuffer );
+		mExposedFrameHeight = (int32_t)CVPixelBufferGetHeight( mWorkingPixelBuffer );
 
 		mCurrentFrame = cinder::Surface8u( data, mExposedFrameWidth, mExposedFrameHeight, mExposedFrameBytesPerRow, cinder::SurfaceChannelOrder::RGB );
 		mCurrentFrame.setDeallocator( frameDeallocator, mWorkingPixelBuffer );

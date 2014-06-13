@@ -74,7 +74,7 @@ void SourceFileCoreAudio::initImpl()
 	::AudioStreamBasicDescription fileFormat;
 	UInt32 propSize = sizeof( fileFormat );
     status = ::ExtAudioFileGetProperty( audioFile, kExtAudioFileProperty_FileDataFormat, &propSize, &fileFormat );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 
     mNumChannels = fileFormat.mChannelsPerFrame;
 	mSampleRateNative = fileFormat.mSampleRate;
@@ -86,12 +86,12 @@ void SourceFileCoreAudio::initImpl()
     SInt64 numFrames;
     propSize = sizeof( numFrames );
     status = ::ExtAudioFileGetProperty( audioFile, kExtAudioFileProperty_FileLengthFrames, &propSize, &numFrames );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 	mNumFrames = mFileNumFrames = static_cast<size_t>( numFrames );
 
 	::AudioStreamBasicDescription outputFormat = audio::cocoa::createFloatAsbd( outputSampleRate, mNumChannels );
 	status = ::ExtAudioFileSetProperty( mExtAudioFile.get(), kExtAudioFileProperty_ClientDataFormat, sizeof( outputFormat ), &outputFormat );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 
 	// numFrames will be updated at read time
 	mBufferList = createNonInterleavedBufferListShallow( mNumChannels );
@@ -106,7 +106,7 @@ size_t SourceFileCoreAudio::performRead( Buffer *buffer, size_t bufferFrameOffse
 
 	UInt32 frameCount = (UInt32)numFramesNeeded;
 	OSStatus status = ::ExtAudioFileRead( mExtAudioFile.get(), &frameCount, mBufferList.get() );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 
 	return (size_t)frameCount;
 }
@@ -114,7 +114,7 @@ size_t SourceFileCoreAudio::performRead( Buffer *buffer, size_t bufferFrameOffse
 void SourceFileCoreAudio::performSeek( size_t readPositionFrames )
 {
 	OSStatus status = ::ExtAudioFileSeek( mExtAudioFile.get(), readPositionFrames );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 }
 
 // static
@@ -125,7 +125,7 @@ vector<string> SourceFileCoreAudio::getSupportedExtensions()
 	::CFArrayRef extensionsCF;
 	UInt32 propSize = sizeof( extensionsCF );
 	OSStatus status = ::AudioFileGetGlobalInfo( kAudioFileGlobalInfo_AllExtensions, 0, NULL, &propSize, &extensionsCF );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 
 	CFIndex extCount = ::CFArrayGetCount( extensionsCF );
 	for( CFIndex index = 0; index < extCount; ++index ) {
@@ -173,7 +173,7 @@ TargetFileCoreAudio::TargetFileCoreAudio( const DataTargetRef &dataTarget, size_
 	::AudioStreamBasicDescription clientAsbd = createFloatAsbd( mSampleRate, mNumChannels, false );
 
 	status = ::ExtAudioFileSetProperty( mExtAudioFile.get(), kExtAudioFileProperty_ClientDataFormat, sizeof( clientAsbd ), &clientAsbd );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 
 	mBufferList = createNonInterleavedBufferListShallow( mNumChannels );
 }
@@ -186,7 +186,7 @@ void TargetFileCoreAudio::performWrite( const Buffer *buffer, size_t numFrames, 
 	}
 
 	OSStatus status = ::ExtAudioFileWrite( mExtAudioFile.get(), (UInt32)numFrames, mBufferList.get() );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 }
 
 ::AudioFileTypeID TargetFileCoreAudio::getFileTypeIdFromExtension( const std::string &ext )

@@ -1916,7 +1916,7 @@ std::shared_ptr<Surface8u> Image::parseDataImage( const string &data )
 	string mime = data.substr( dataOffset, semi - dataOffset ), extension;
 	if( mime == "image/png" ) extension = "png";
 	else if( mime == "image/jpeg" ) extension = "jpeg";	
-	int len = data.size() - comma - 1;
+	size_t len = data.size() - comma - 1;
 	Buffer buf = fromBase64( &data[comma + 1], len );
 	try {
 		shared_ptr<Surface8u> result( new Surface8u( ci::loadImage( DataSourceBuffer::create( buf ), ImageSource::Options(), extension ) ) );

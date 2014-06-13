@@ -376,7 +376,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 		glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
 		if( ! colors.empty() )
 			glColorPointer( 4, GL_UNSIGNED_BYTE, 0, &vertColors[0] );
-		glDrawElements( GL_TRIANGLES, indices.size(), indexType, &indices[0] );
+		glDrawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, &indices[0] );
 	}
 }
 
@@ -482,7 +482,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 		glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
 		if( ! colors.empty() )
 			glColorPointer( 4, GL_UNSIGNED_BYTE, 0, &vertColors[0] );
-		glDrawElements( GL_TRIANGLES, indices.size(), indexType, &indices[0] );
+		glDrawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, &indices[0] );
 	}
 }
 

@@ -79,7 +79,7 @@ void SourceFileOggVorbis::init()
 		callbacks.tell_func = tellFn;
 
 		int status = ov_open_callbacks( this, &mOggVorbisFile, NULL, 0, callbacks );
-		CI_ASSERT( status == 0 );
+		CI_VERIFY( status == 0 );
 	}
 
 	vorbis_info *info = ov_info( &mOggVorbisFile, -1 );
@@ -120,7 +120,7 @@ size_t SourceFileOggVorbis::performRead( Buffer *buffer, size_t bufferFrameOffse
 void SourceFileOggVorbis::performSeek( size_t readPositionFrames )
 {
 	int status = ov_pcm_seek( &mOggVorbisFile, (ogg_int64_t)readPositionFrames );
-	CI_ASSERT( ! status );
+	CI_VERIFY( status == 0 );
 }
 
 string SourceFileOggVorbis::getMetaData() const

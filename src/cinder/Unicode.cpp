@@ -234,7 +234,7 @@ bool shouldBreak( char code )
 }
 } // anonymous namespace
 
-void lineBreakUtf8( const char *line, const std::function<bool(const char *, size_t)> &measureFn, std::function<void(const char *,size_t)> lineProcessFn )
+void lineBreakUtf8( const char *line, const std::function<bool(const char *, size_t)> &measureFn, const std::function<void(const char *,size_t)> &lineProcessFn )
 {
 	const size_t lengthInBytes = strlen( line );
 	shared_ptr<char> brks = shared_ptr<char>( (char*)malloc( lengthInBytes ), free );
@@ -247,7 +247,9 @@ void lineBreakUtf8( const char *line, const std::function<bool(const char *, siz
 	size_t lineStartByte = 0, lineEndByte = 0;
 	size_t lineStartChar = 0;
 	while( lineStartChar < charLen ) {
-		int minChar = 0, maxChar = charLen - lineStartChar /*[minChar,maxChar)*/, curChar = 0;
+		int minChar = 0;
+		int maxChar = (int)charLen - (int)lineStartChar;
+		int curChar = 0;
 		
 		// test to see if we're already on a mustbreak
 		if( brks.get()[lineStartByte] != 0 ) {

@@ -39,7 +39,7 @@ PropT getAudioConverterProperty( ::AudioConverterRef audioConverter, ::AudioConv
 	PropT result;
 	UInt32 resultSize = sizeof( result );
 	OSStatus status = ::AudioConverterGetProperty( audioConverter, propertyId, &resultSize, &result );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 	return result;
 }
 
@@ -60,7 +60,7 @@ ConverterImplCoreAudio::ConverterImplCoreAudio( size_t sourceSampleRate, size_t 
 		vector<UInt32> channelMap( mDestNumChannels, 0 );
 		UInt32 propSize =  (UInt32)mDestNumChannels * sizeof( UInt32 );
 		OSStatus status = ::AudioConverterSetProperty( mAudioConverter, kAudioConverterChannelMap, propSize, channelMap.data() );
-		CI_ASSERT( status == noErr );
+		CI_VERIFY( status == noErr );
 	}
 	else if( mSourceNumChannels > 1 && mDestNumChannels == 1 ) {
 		// setup for diy downmixing: sr conversion but no channel conversion (downmix is first)
@@ -69,7 +69,7 @@ ConverterImplCoreAudio::ConverterImplCoreAudio( size_t sourceSampleRate, size_t 
 	}
 
 	OSStatus status = ::AudioConverterNew( &sourceAsbd, &destAsbd, &mAudioConverter );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 
 	mOutputBufferList = createNonInterleavedBufferListShallow( mDestNumChannels );
 }
@@ -78,7 +78,7 @@ ConverterImplCoreAudio::~ConverterImplCoreAudio()
 {
 	if( mAudioConverter ) {
 		OSStatus status = ::AudioConverterDispose( mAudioConverter );
-		CI_ASSERT( status == noErr );
+		CI_VERIFY( status == noErr );
 	}
 }
 
@@ -115,7 +115,7 @@ pair<size_t, size_t> ConverterImplCoreAudio::convertComplexImpl( const Buffer *s
 	}
 
 	OSStatus status = ::AudioConverterFillComplexBuffer( mAudioConverter, ConverterImplCoreAudio::converterCallback, this, &numOutputFrames, mOutputBufferList.get(), NULL );
-	CI_ASSERT( status == noErr || status == kErrorNotEnoughEnoughSourceFrames );
+	CI_VERIFY( status == noErr || status == kErrorNotEnoughEnoughSourceFrames );
 
 	return make_pair( mNumSourceBufferFramesUsed, (size_t)numOutputFrames );
 }
@@ -151,7 +151,7 @@ OSStatus ConverterImplCoreAudio::converterCallback( ::AudioConverterRef inAudioC
 void ConverterImplCoreAudio::clear()
 {
 	OSStatus status = ::AudioConverterReset( mAudioConverter );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ void findAndCreateAudioComponent( const ::AudioComponentDescription &componentDe
 {
 	::AudioComponent component = findAudioComponent( componentDescription );
 	OSStatus status = ::AudioComponentInstanceNew( component, componentInstance );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 }
 
 ::AudioStreamBasicDescription createFloatAsbd( size_t sampleRate, size_t numChannels, bool isInterleaved )
@@ -286,7 +286,7 @@ void findAndCreateAudioComponent( const ::AudioComponentDescription &componentDe
 	::AudioStreamBasicDescription result;
 	UInt32 resultSize = sizeof( result );
 	OSStatus status = ::AudioUnitGetProperty( audioUnit, kAudioUnitProperty_StreamFormat, scope, bus, &result, &resultSize );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 	return result;
 }
 

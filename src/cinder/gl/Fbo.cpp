@@ -213,12 +213,12 @@ void Fbo::init()
 		// attach all the textures to the framebuffer
 		vector<GLenum> drawBuffers;
 		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c ) {
-			GL_SUFFIX(glFramebufferTexture2D)( GL_SUFFIX(GL_FRAMEBUFFER_), GL_SUFFIX(GL_COLOR_ATTACHMENT0_) + c, getTarget(), mObj->mColorTextures[c].getId(), 0 );
-			drawBuffers.push_back( GL_SUFFIX(GL_COLOR_ATTACHMENT0_) + c );
+			GL_SUFFIX(glFramebufferTexture2D)( GL_SUFFIX(GL_FRAMEBUFFER_), GL_SUFFIX(GL_COLOR_ATTACHMENT0_) + (GLenum)c, getTarget(), mObj->mColorTextures[c].getId(), 0 );
+			drawBuffers.push_back( GL_SUFFIX(GL_COLOR_ATTACHMENT0_) + (GLenum)c );
 		}
 #if ! defined( CINDER_GLES )
 		if( ! drawBuffers.empty() )
-			glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
+			glDrawBuffers( (GLsizei)drawBuffers.size(), &drawBuffers[0] );
 #endif
 
 		// allocate and attach depth texture
@@ -269,12 +269,12 @@ bool Fbo::initMultisample( bool csaa )
 	// bind all of the color buffers to the resolve FB's attachment points
 	vector<GLenum> drawBuffers;
 	for( size_t c = 0; c < mObj->mColorTextures.size(); ++c ) {
-		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + c, getTarget(), mObj->mColorTextures[c].getId(), 0 );
-		drawBuffers.push_back( GL_COLOR_ATTACHMENT0_EXT + c );
+		glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + (GLenum)c, getTarget(), mObj->mColorTextures[c].getId(), 0 );
+		drawBuffers.push_back( GL_COLOR_ATTACHMENT0_EXT + (GLenum)c );
 	}
 
 	if( ! drawBuffers.empty() )
-		glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
+		glDrawBuffers( (GLsizei)drawBuffers.size(), &drawBuffers[0] );
 
 	// see if the resolve buffer is ok
 	FboExceptionInvalidSpecification ignoredException;
@@ -296,7 +296,7 @@ bool Fbo::initMultisample( bool csaa )
 	}
 	
 	if( ! drawBuffers.empty() )
-		glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
+		glDrawBuffers( (GLsizei)drawBuffers.size(), &drawBuffers[0] );
 
 	if( mObj->mFormat.mDepthBuffer ) {
 		// create the multisampled depth Renderbuffer
@@ -375,8 +375,8 @@ void Fbo::resolveTextures() const
 		glBindFramebufferEXT( GL_DRAW_FRAMEBUFFER_EXT, mObj->mResolveFramebufferId );
 		
 		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c ) {
-			glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + c );
-			glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + c );
+			glDrawBuffer( GL_COLOR_ATTACHMENT0_EXT + (GLenum)c );
+			glReadBuffer( GL_COLOR_ATTACHMENT0_EXT + (GLenum)c );
 			GLbitfield bitfield = GL_COLOR_BUFFER_BIT;
 			if( mObj->mDepthTexture )
 				bitfield |= GL_DEPTH_BUFFER_BIT;
@@ -386,9 +386,9 @@ void Fbo::resolveTextures() const
 		// restore the draw buffers to the default for the antialiased (non-resolve) framebuffer
 		vector<GLenum> drawBuffers;
 		for( size_t c = 0; c < mObj->mColorTextures.size(); ++c )
-			drawBuffers.push_back( GL_COLOR_ATTACHMENT0_EXT + c );
+			drawBuffers.push_back( GL_COLOR_ATTACHMENT0_EXT + (GLenum)c );
 		glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mObj->mId );
-		glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
+		glDrawBuffers( (GLsizei)drawBuffers.size(), &drawBuffers[0] );
 	}
 #endif
 

@@ -52,7 +52,7 @@ uint32_t	nextCharUtf8( const char *str, size_t *inOutByte, size_t lengthInBytes 
 //! Returns the index in bytes of the next character in \a str, advanced by \a numChars characters. Optimize operation by supplying a non-default \a lengthInBytes of \a str.
 size_t		advanceCharUtf8( const char *str, size_t numChars, size_t lengthInBytes = 0 );
 
-void		lineBreakUtf8( const char *str, const std::function<bool(const char *, size_t)> &measureFn, std::function<void(const char *,size_t)> lineProcessFn );
+void		lineBreakUtf8( const char *str, const std::function<bool(const char *, size_t)> &measureFn, const std::function<void(const char *,size_t)> &lineProcessFn );
 
 //! Values returned by calcBreaksUtf8 and calcBreaksUtf16
 enum UnicodeBreaks { UNICODE_MUST_BREAK, UNICODE_ALLOW_BREAK, UNICODE_NO_BREAK, UNICODE_INSIDE_CHAR };

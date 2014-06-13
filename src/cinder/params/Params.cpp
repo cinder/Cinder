@@ -509,11 +509,11 @@ void InterfaceGl::addParam( const std::string &name, const std::vector<std::stri
 	
 	TwEnumVal *ev = new TwEnumVal[enumNames.size()];
 	for( size_t v = 0; v < enumNames.size(); ++v ) {
-		ev[v].Value = v;
+		ev[v].Value = (int)v;
 		ev[v].Label = const_cast<char*>( enumNames[v].c_str() );
 	}
 
-	TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev, enumNames.size() );
+	TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev, (unsigned int)enumNames.size() );
 
 	if( readOnly )
 		TwAddVarRO( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
