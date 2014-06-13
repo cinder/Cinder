@@ -262,7 +262,7 @@ void Context::addAutoPulledNode( const NodeRef &node )
 void Context::removeAutoPulledNode( const NodeRef &node )
 {
 	size_t result = mAutoPulledNodes.erase( node );
-	CI_ASSERT( result );
+	CI_VERIFY( result );
 
 	mAutoPullCacheDirty = true;
 	if( mAutoPulledNodes.empty() )

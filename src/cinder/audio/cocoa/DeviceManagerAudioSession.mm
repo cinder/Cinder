@@ -172,7 +172,7 @@ size_t DeviceManagerAudioSession::getFramesPerBlock( const DeviceRef &device )
 	Float32 durationSeconds;
 	UInt32 durationSecondsSize = sizeof( durationSeconds );
 	OSStatus status = ::AudioSessionGetProperty( kAudioSessionProperty_CurrentHardwareIOBufferDuration, &durationSecondsSize, &durationSeconds );
-	CI_ASSERT( status == noErr );
+	CI_VERIFY( status == noErr );
 #endif
 
 	return lround( static_cast<Float32>( getSampleRate( device ) ) * durationSeconds );
