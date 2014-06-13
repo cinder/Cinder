@@ -114,11 +114,11 @@
 
 #else
 
-	#define CI_ASSERT( expr )			((void)0)
-	#define CI_ASSERT_MSG( expr, msg )	((void)0)
-	#define CI_VERIFY( expr )			((void)expr)
-	#define CI_VERIFY_MSG( expr, msg )	((void)expr)
+	#define CI_ASSERT( expr )			( (void)0 )
+	#define CI_ASSERT_MSG( expr, msg )	( (void)0 )
+	#define CI_VERIFY( expr )			( (void)(expr) )
+	#define CI_VERIFY_MSG( expr, msg )	( (void)(expr) )
 
-	#define CI_ASSERT_NOT_REACHABLE()	((void)0)
+	#define CI_ASSERT_NOT_REACHABLE()	( (void)0 )
 
 #endif
