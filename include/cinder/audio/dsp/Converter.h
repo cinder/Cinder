@@ -104,7 +104,7 @@ void convertFloatToInt24( const FloatT *sourceArray, char *destArray, size_t len
 		int32_t sample = int32_t( sourceArray[i] * intNormalizer );
 		*(destArray++) = (char)( sample & 255 );
 		*(destArray++) = (char)( ( sample >> 8 ) & 255 );
-		*(destArray++) = (char)( ( sample >> 16) & 255 );
+		*(destArray++) = (char)( ( sample >> 16 ) & 255 );
 	}
 }
 
