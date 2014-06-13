@@ -234,7 +234,7 @@ bool shouldBreak( char code )
 }
 } // anonymous namespace
 
-void lineBreakUtf8( const char *line, const std::function<bool(const char *, size_t)> &measureFn, std::function<void(const char *,size_t)> lineProcessFn )
+void lineBreakUtf8( const char *line, const std::function<bool(const char *, size_t)> &measureFn, const std::function<void(const char *,size_t)> &lineProcessFn )
 {
 	const size_t lengthInBytes = strlen( line );
 	shared_ptr<char> brks = shared_ptr<char>( (char*)malloc( lengthInBytes ), free );
