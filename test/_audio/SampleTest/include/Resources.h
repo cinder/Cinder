@@ -3,7 +3,6 @@
 
 #define RES_TONE440_WAV					CINDER_RESOURCE( ../../data/, tone440.wav, 128, SOUND )
 #define RES_TONE440L220R_WAV			CINDER_RESOURCE( ../../data/, tone440L220R.wav, 129, SOUND )
-#define RES_TONE440L220R_FLOAT_WAV		CINDER_RESOURCE( ../../data/, tone440L220R_float.wav, 130, SOUND )
 #define RES_TONE440_LOOP_WAV			CINDER_RESOURCE( ../../data/, tone440_loop.wav, 131, SOUND )
 
 #define RES_TONE440_MP3					CINDER_RESOURCE( ../../data/, tone440.mp3, 132, SOUND )

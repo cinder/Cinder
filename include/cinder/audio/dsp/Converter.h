@@ -74,13 +74,38 @@ void convert( const SourceT *sourceArray, DestT *destArray, size_t length )
 }
 
 template <typename SourceT, typename DestT>
-void convertBuffers( const BufferT<SourceT> *sourceBuffer, BufferT<DestT> *destBuffer )
+void convertBuffer( const BufferT<SourceT> *sourceBuffer, BufferT<DestT> *destBuffer )
 {
 	size_t numFrames = std::min( sourceBuffer->getNumFrames(), destBuffer->getNumFrames() );
 	size_t numChannels = std::min( sourceBuffer->getNumChannels(), destBuffer->getNumChannels() );
 
 	for( size_t ch = 0; ch < numChannels; ch++ )
 		convert( sourceBuffer->getChannel( ch ), destBuffer->getChannel( ch ), numFrames );
+}
+
+template<typename FloatT>
+void convertInt24ToFloat( const char *sourceArray, FloatT *destArray, size_t length )
+{
+	const FloatT floatNormalizer = (FloatT)1 / (FloatT)8388607;
+
+	for( size_t i = 0; i < length; i++ ) {
+		int32_t sample = (int32_t)( ( (int32_t)sourceArray[2] ) << 16 ) | ( ( (int32_t)(uint8_t)sourceArray[1] ) << 8 ) | ( (int32_t)(uint8_t)sourceArray[0] );
+		destArray[i] = sample * floatNormalizer;
+		sourceArray += 3;
+	}
+}
+
+template<typename FloatT>
+void convertFloatToInt24( const FloatT *sourceArray, char *destArray, size_t length )
+{
+	const FloatT intNormalizer = 8388607;
+
+	for( size_t i = 0; i < length; i++ ) {
+		int32_t sample = int32_t( sourceArray[i] * intNormalizer );
+		*(destArray++) = (char)( sample & 255 );
+		*(destArray++) = (char)( ( sample >> 8 ) & 255 );
+		*(destArray++) = (char)( ( sample >> 16 ) & 255 );
+	}
 }
 
 template<typename T>
@@ -139,7 +164,6 @@ void deinterleave( const int16_t *interleavedInt16SourceArray, FloatT *nonInterl
 	}
 }
 
-// TODO: consider removing Buffer suffix on these overloads, it is clear from the args (convertBuffer too).
 template<typename T>
 void interleaveBuffer( const BufferT<T> *nonInterleavedSource, BufferInterleavedT<T> *interleavedDest )
 {

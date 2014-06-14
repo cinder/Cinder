@@ -39,7 +39,6 @@ namespace cinder { namespace audio { namespace msw {
 
 class SourceFileMediaFoundation : public SourceFile {
   public:
-
 	SourceFileMediaFoundation();
 	SourceFileMediaFoundation( const DataSourceRef &dataSource, size_t sampleRate );
 	virtual ~SourceFileMediaFoundation();
@@ -63,12 +62,17 @@ class SourceFileMediaFoundation : public SourceFile {
 	std::unique_ptr<::IMFByteStream, ci::msw::ComDeleter>		mByteStream;
 	DataSourceRef												mDataSource; // stored so that clone() can tell if original data source is a file or windows resource
 	
-	size_t			mSampleRate, mNumChannels, mBytesPerSample;
-	SampleType		mSampleType;
-	double			mSeconds;
-	bool			mCanSeek;
-	BufferDynamic	mReadBuffer;
-	size_t			mReadBufferPos, mFramesRemainingInReadBuffer;
+	size_t				mSampleRate;
+	size_t				mNumChannels;
+	size_t				mBytesPerSample;
+	SampleType			mSampleType;
+	double				mSeconds;
+	bool				mCanSeek;
+	size_t				mReadBufferPos;
+	size_t				mFramesRemainingInReadBuffer;
+
+	BufferDynamic				mReadBuffer;			// used to marshal the number of samples read to the number requested, conversions
+	BufferDynamicInterleaved	mBitConverterBuffer;	// only used when bit conversion and de-interleaving are done in separate steps (ex. 24-bit stereo).
 };
 
 //! \brief TargetFile implementation using Microsoft's Media Foundation Framework.
@@ -86,6 +90,7 @@ class TargetFileMediaFoundation : public TargetFile {
 
 	  DWORD						mStreamIndex;
 	  size_t					mSampleSize;
+	  BufferDynamicInterleaved	mBitConverterBuffer;	// only used when bit conversion and interleaving are done in separate steps (ex. 24-bit stereo).
 };
 
 class MediaFoundationInitializer {
