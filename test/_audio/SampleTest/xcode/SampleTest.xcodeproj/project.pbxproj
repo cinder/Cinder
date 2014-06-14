@@ -17,7 +17,6 @@
 		111A611F1921CB9D005C3166 /* tone440.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 111A61171921CB9D005C3166 /* tone440.mp3 */; };
 		111A61201921CB9D005C3166 /* tone440.ogg in Resources */ = {isa = PBXBuildFile; fileRef = 111A61181921CB9D005C3166 /* tone440.ogg */; };
 		111A61211921CB9D005C3166 /* tone440.wav in Resources */ = {isa = PBXBuildFile; fileRef = 111A61191921CB9D005C3166 /* tone440.wav */; };
-		111A61221921CB9D005C3166 /* tone440L220R_float.wav in Resources */ = {isa = PBXBuildFile; fileRef = 111A611A1921CB9D005C3166 /* tone440L220R_float.wav */; };
 		111A61231921CB9D005C3166 /* tone440L220R.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 111A611B1921CB9D005C3166 /* tone440L220R.mp3 */; };
 		111A61241921CB9D005C3166 /* tone440L220R.ogg in Resources */ = {isa = PBXBuildFile; fileRef = 111A611C1921CB9D005C3166 /* tone440L220R.ogg */; };
 		111A61251921CB9D005C3166 /* tone440L220R.wav in Resources */ = {isa = PBXBuildFile; fileRef = 111A611D1921CB9D005C3166 /* tone440L220R.wav */; };
@@ -71,7 +70,6 @@
 		111A61171921CB9D005C3166 /* tone440.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = tone440.mp3; path = ../../data/tone440.mp3; sourceTree = "<group>"; };
 		111A61181921CB9D005C3166 /* tone440.ogg */ = {isa = PBXFileReference; lastKnownFileType = file; name = tone440.ogg; path = ../../data/tone440.ogg; sourceTree = "<group>"; };
 		111A61191921CB9D005C3166 /* tone440.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tone440.wav; path = ../../data/tone440.wav; sourceTree = "<group>"; };
-		111A611A1921CB9D005C3166 /* tone440L220R_float.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tone440L220R_float.wav; path = ../../data/tone440L220R_float.wav; sourceTree = "<group>"; };
 		111A611B1921CB9D005C3166 /* tone440L220R.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = tone440L220R.mp3; path = ../../data/tone440L220R.mp3; sourceTree = "<group>"; };
 		111A611C1921CB9D005C3166 /* tone440L220R.ogg */ = {isa = PBXFileReference; lastKnownFileType = file; name = tone440L220R.ogg; path = ../../data/tone440L220R.ogg; sourceTree = "<group>"; };
 		111A611D1921CB9D005C3166 /* tone440L220R.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tone440L220R.wav; path = ../../data/tone440L220R.wav; sourceTree = "<group>"; };
@@ -192,7 +190,6 @@
 				111A61171921CB9D005C3166 /* tone440.mp3 */,
 				111A61181921CB9D005C3166 /* tone440.ogg */,
 				111A61191921CB9D005C3166 /* tone440.wav */,
-				111A611A1921CB9D005C3166 /* tone440L220R_float.wav */,
 				111A611B1921CB9D005C3166 /* tone440L220R.mp3 */,
 				111A611C1921CB9D005C3166 /* tone440L220R.ogg */,
 				111A611D1921CB9D005C3166 /* tone440L220R.wav */,
@@ -299,7 +296,6 @@
 				111A61241921CB9D005C3166 /* tone440L220R.ogg in Resources */,
 				111A61211921CB9D005C3166 /* tone440.wav in Resources */,
 				111A61251921CB9D005C3166 /* tone440L220R.wav in Resources */,
-				111A61221921CB9D005C3166 /* tone440L220R_float.wav in Resources */,
 				111A6234192DBBE90024BE66 /* tone440_loop.wav in Resources */,
 				111A611E1921CB9D005C3166 /* tone440_float.wav in Resources */,
 				111A611F1921CB9D005C3166 /* tone440.mp3 in Resources */,
