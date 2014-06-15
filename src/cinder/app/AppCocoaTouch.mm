@@ -895,8 +895,8 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 		return;
 	}
 
-	int n = [text length];
-	for( int i = 0; i < n; i++ ) {
+	NSUInteger n = [text length];
+	for( NSUInteger i = 0; i < n; i++ ) {
 		unichar c = [text characterAtIndex:i];
 
 		// For now, use ASCII key codes on iOS, which is already mapped out in KeyEvent's enum.

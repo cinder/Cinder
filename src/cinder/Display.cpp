@@ -155,8 +155,8 @@ void Display::enumerateDisplays()
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
 	NSArray *screens = [UIScreen screens];
-	int screenCount = [screens count];
-	for( int i = 0; i < screenCount; ++i ) {
+	NSUInteger screenCount = [screens count];
+	for( NSUInteger i = 0; i < screenCount; ++i ) {
 		::UIScreen *screen = [screens objectAtIndex:i];
 		[screen retain]; // this is released in the destructor for Display
 		CGRect frame = [screen bounds];
