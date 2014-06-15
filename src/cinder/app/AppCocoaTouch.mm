@@ -925,8 +925,11 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	NSMutableString *currentString = [[textView.text mutableCopy] autorelease];
 	// if we are getting a backspace, the length of the range can't be trusted to map to the length of a composed character (such as emoji)
 	if( [text length] == 0 ) {
-		NSRange delRange = [currentString rangeOfComposedCharacterSequenceAtIndex:range.location];
-		[currentString deleteCharactersInRange:delRange];
+		// guard against backspace when textView's text is empty
+		if( [currentString length] != 0 ) {
+			NSRange delRange = [currentString rangeOfComposedCharacterSequenceAtIndex:range.location];
+			[currentString deleteCharactersInRange:delRange];
+		}
 	}
 	else if( mKeyboardClosesOnReturn && [text isEqualToString:@"\n"] ) {
 		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
