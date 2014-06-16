@@ -232,7 +232,6 @@ SurfaceImage::SurfaceImage( const SurfaceImage &other )
 	: SurfaceBase( other )
 {
 	initCinderSurface( other.mCinderSurface.hasAlpha(), mCairoSurface );
-	mCinderSurface.copyFrom( other.mCinderSurface, other.mCinderSurface.getBounds(), Vec2i::zero() );
 }
 
 uint8_t* SurfaceImage::getData() 
