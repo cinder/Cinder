@@ -192,6 +192,7 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 
 	bool	createShadersFeatureLevel_9_1();
 	bool	createShadersFeatureLevel_9_3();
+	bool	createShadersFeatureLevel_10_0();
 	bool	createShadersFeatureLevel_10_1();
 	bool	createShadersFeatureLevel_11_0();
 	bool	createShadersFeatureLevel_11_1();

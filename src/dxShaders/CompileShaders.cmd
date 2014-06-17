@@ -28,6 +28,8 @@ goto done
 	goto done
 
 :dx10
+	echo Compiling for Feature Level 10.0
+	call :CompileShaderForTarget _4_0
 	echo Compiling for Feature Level 10.1
 	call :CompileShaderForTarget _4_1
 	goto done
@@ -39,9 +41,9 @@ goto done
 	
 :all	
 	echo Compiling for All Supported Feature Levels
-	call :CompileShaderForTarget _4_0_level_9_1
-	call :CompileShaderForTarget _4_1
-	call :CompileShaderForTarget _5_0
+	call :dx9
+	call :dx10
+	call :dx11
 	goto done
 
 :done
