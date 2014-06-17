@@ -22,11 +22,13 @@ class CustomTremoloNode : public ci::audio::Node {
 	// The base Node class calls a few optional lifecycle methods, initialize() and process() are the most important of these.
 	// See Node's header for a complete list of methods available for overriding.
 
-	// Called when it is time to use the Node, typically after a connection. This is a good place to initialize larger buffers.
+	// Called when it is time to use the Node, typically after a connection. This is a good place to initialize large buffers or other resources.
+	// Note that initialize() may be called more than once within the lifetime of a Node, examples include if it is connected later to inputs or outputs
+	// with a different number of channels, or if the Context's samplerate or frames per block changes.
 	virtual void initialize()							override;
 
 	// Override process() to perform signal processing. The Buffer object passed in will contain processed samples from any
-	// connected inputs.
+	// connected inputs on the way in, and then the processed buffer is handed to any connected outputs on the way out.
 	virtual void process( ci::audio::Buffer *buffer )	override;
 
   private:

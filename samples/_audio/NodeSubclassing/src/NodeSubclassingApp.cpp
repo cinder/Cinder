@@ -1,3 +1,6 @@
+// Example app demonstrating the basics of creating custom Node subclasses.
+// See comments in CustomTremoloNode.h.
+
 #include "cinder/app/AppNative.h"
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
@@ -17,11 +20,10 @@ class NodeSubclassingApp : public AppNative {
   public:
 	void setup();
 	void mouseMove( MouseEvent event );
-	void update();
 	void draw();
 
   private:
-	audio::GenOscNodeRef	mGenNode;
+	audio::GenNodeRef		mGenNode;
 	audio::MonitorNodeRef	mMonitorNode;
 	CustomTremoloNodeRef	mCustomTremeloNode;
 };
@@ -30,14 +32,17 @@ void NodeSubclassingApp::setup()
 {
 	auto ctx = audio::master();
 
+	// We create an audio graph that demonstrates the CustomTremeloNode bing used in combination with cinder-defined Node's.
 	mGenNode = ctx->makeNode( new audio::GenOscNode( audio::WaveformType::SQUARE, 220 ) );
 	mMonitorNode = ctx->makeNode( new audio::MonitorNode );
 	auto gain = ctx->makeNode( new audio::GainNode( 0.2f ) );
 
-	mCustomTremeloNode = ctx->makeNode( new CustomTremoloNode );
+	// Here we make our custom Node. For the sake of demonstration, its channel count is forced to stereo.
+	mCustomTremeloNode = ctx->makeNode( new CustomTremoloNode( audio::Node::Format().channels( 2 ) ) );
 
 	mGenNode >> mCustomTremeloNode >> mMonitorNode >> gain >> ctx->getOutput();
 
+	// Turn on the GenNode and fire up the Context.
 	mGenNode->enable();
 	ctx->enable();
 
@@ -53,10 +58,6 @@ void NodeSubclassingApp::mouseMove( MouseEvent event )
 
 	mCustomTremeloNode->setRate( rate );
 	mCustomTremeloNode->setDepth( depth );
-}
-
-void NodeSubclassingApp::update()
-{
 }
 
 void NodeSubclassingApp::draw()
