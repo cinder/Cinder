@@ -2,6 +2,7 @@
 
 #include "Box2dUtils.h"
 
+#include "cinder/gl/Texture.h"
 #include "cinder/Tween.h"
 
 class AudioController;

@@ -3,6 +3,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/audio/Debug.h"
+#include "cinder/ImageIo.h"
 #include "cinder/System.h"
 
 using namespace std;

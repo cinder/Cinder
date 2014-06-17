@@ -3,6 +3,7 @@
 #include "SceneController.h"
 
 #include "cinder/Timeline.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 
 const size_t BASS_MAX = 48;

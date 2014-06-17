@@ -3,6 +3,7 @@
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/Utilities.h"
+#include "cinder/app/App.h"
 
 using namespace ci;
 using namespace std;

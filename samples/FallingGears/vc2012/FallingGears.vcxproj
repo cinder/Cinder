@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -106,6 +107,9 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\AudioController.cpp" />
+    <ClCompile Include="..\src\Box2dUtils.cpp" />
+    <ClCompile Include="..\src\Config.cpp" />
     <ClCompile Include="..\src\FallingGearsApp.cpp" />
     <ClCompile Include="..\..\..\blocks\Box2D\src\Box2D\Collision\b2BroadPhase.cpp" />
     <ClCompile Include="..\..\..\blocks\Box2D\src\Box2D\Collision\b2CollideCircle.cpp" />
@@ -152,9 +156,11 @@
     <ClCompile Include="..\..\..\blocks\Box2D\src\Box2D\Dynamics\Joints\b2WeldJoint.cpp" />
     <ClCompile Include="..\..\..\blocks\Box2D\src\Box2D\Dynamics\Joints\b2WheelJoint.cpp" />
     <ClCompile Include="..\..\..\blocks\Box2D\src\Box2D\Rope\b2Rope.cpp" />
+    <ClCompile Include="..\src\SceneController.cpp" />
+    <ClCompile Include="..\src\SceneObjects.cpp" />
+    <ClCompile Include="..\src\Synths.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\blocks\Box2D\src\Box2D\Collision\b2BroadPhase.h" />
     <ClInclude Include="..\..\..\blocks\Box2D\src\Box2D\Collision\b2Collision.h" />
     <ClInclude Include="..\..\..\blocks\Box2D\src\Box2D\Collision\b2Distance.h" />
@@ -201,6 +207,12 @@
     <ClInclude Include="..\..\..\blocks\Box2D\src\Box2D\Dynamics\Joints\b2WheelJoint.h" />
     <ClInclude Include="..\..\..\blocks\Box2D\src\Box2D\Rope\b2Rope.h" />
     <ClInclude Include="..\..\..\blocks\Box2D\src\Box2D\Box2d.h" />
+    <ClInclude Include="..\src\AudioController.h" />
+    <ClInclude Include="..\src\Box2dUtils.h" />
+    <ClInclude Include="..\src\Config.h" />
+    <ClInclude Include="..\src\SceneController.h" />
+    <ClInclude Include="..\src\SceneObjects.h" />
+    <ClInclude Include="..\src\Synths.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
