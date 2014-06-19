@@ -28,8 +28,15 @@
 
 namespace cinder { namespace audio {
 
-typedef std::shared_ptr<class GenNode>			GenNodeRef;
-typedef std::shared_ptr<class GenOscNode>		GenOscNodeRef;
+//! Typedef for the base GenNode. If all you need to set on the GenNode is the frequency, you can reference the Node with this.
+typedef std::shared_ptr<class GenNode>				GenNodeRef;
+// Typedefs for all available GenNode types.
+typedef std::shared_ptr<class GenNoiseNode>			GenNoiseNodeRef;
+typedef std::shared_ptr<class GenPhasorNode>		GenPhasorNodeRef;
+typedef std::shared_ptr<class GenSineNode>			GenSineNodeRef;
+typedef std::shared_ptr<class GenTriangleNode>		GenTriangleNodeRef;
+typedef std::shared_ptr<class GenTableNode>			GenTableNodeRef;
+typedef std::shared_ptr<class GenOscNode>			GenOscNodeRef;
 typedef std::shared_ptr<class GenPulseNode>			GenPulseNodeRef;
 
 //! Base class for InputNode's that generate audio samples. Gen's are always mono channel.
