@@ -64,11 +64,34 @@ See Also:
 - [VoiceBasic](../../samples/_audio/VoiceBasic/src/VoiceBasicApp.cpp)
 - [VoiceBasicProcessing](../../samples/_audio/VoiceBasicProcessing/src/VoiceBasicProcessingApp.cpp)
 
+\section Audio Buffers
+
+TODO: consider moving after Modular API section
+
+Before jumping into the meat and potatoes, its a good idea to have an brief understanding of how `audio::Buffer`'s work, and a few of the `audio::Buffer` variants. For details, please see the header at `cinder/audio/Buffer.h`. Audio data is usually handled in two different manners:
+
+1. a contigious stream of 'blocks' of equal length, which is how real-time processing is achieved.
+2. as a single unit, such as the uncompressed data of sound file.
+
+In both cases, there is a number of frames and a channel count that make up the layout of the Buffer.  Usually Buffer's used for case 1 are passed by pointer to reduce copying.  In case 2, they are either passed around as shared_ptr's (`BufferRef`'s), though this isn't required. Care is taken in multi-threaded situations by making defensive copies where appropriate.
+
+It is also worth noting that samplerate is not a property of the buffer data - this is to allow for flexibility of how the data is interpreted.  Instead, samplerate is determined from the context in which the audio data is being used.
+
+### Layout
+
+The standard `Buffer` class used when passing audio between different components stores its channels contigiously (non-interleaved). This means that right after channel 0 (ex. left speaker) ends, the next sample in the internal array is the first sample of channel 1 (ex. right speaker). For convenience, the `Buffer::getChannel( size_t )` method with return a float* offset to the provided channel index, and also does some debug assertions that the index is in bounds. In the rare cases that interleaved audio is required (ex. interfacing with third-party or system level API's), there is a `BufferInterleaved` variant. 
+
+Currently all processing is handled in single floating point precision.  However, the Buffer class is actually a typedef'ed `BufferT<float>`, so if a different sample format is required, one can use the BufferT class directly and provide the sample type.  While this will not by directly interchangeable with public interfaces in the `ci::audio` namespace, there are conversion utilities provided in `cinder/audio/dsp/Converter.h`. 
+
+In all `Buffer` variants, you can get at the actual data store with the `Buffer::getData()` method, which returns a pointer to an array and can be used however the user wishes, provided they understand the buffer layout.
+
+### Resizing
+
+The standard `Buffer` class is not resizeable once constructed. However, sometimes it is necessary or more efficient to resize a buffer after construction, which is facilitited by the `BufferDynamic*` variants.  `BufferDynamic` has the methods, `setNumFrames()`, `setNumChannels()`, and `setSize()` (for both frames and channels at the same time), which will realloc the internal data store if required.  If the new size (frames * channels) is smaller or equal to the previous size, no reallocation will occur - by default `BufferDynamic` will only grow in order to prevent runtime reallocations where possible.  If you would like to free up extra space, you can use the provided `shrinkToFit()` method. 
+
 \section modular Modular API
 
-TODO: write intro to modular section, which explains what the hell that is.  Probably need a graph here, unfortunately.
-
-TODO: document Buffer class upfront - it is sort of needed for everything else.
+At the core of the `ci::audio` architecture is a modular, Node-based system that allows you to interconnect audio building blocks, such as sample players, waveform generators or effects, in a flexible manner appropriate to a specific application. A large influence of cinder's design comes from the [Web Audio spec][web_audio_spec] and for those interested, it has a fantastic introduction to [modular routing][web_audio_modular_routing] and the motivations behind it. 
 
 \subsection context Context
 
@@ -78,16 +101,14 @@ The Context class manages platform specific audio processing and thread synchron
     mNode = ctx->makeNode( new NodeType );
 
 
-TODO: finish documenting where samplerate and framesPerBlock comes from.
-
-There are a couple important context-wide parameters that Node's use to configure their internal buffer layout, so the value is the same for all Node's within that Context's audio graph. The values are:
+There are a couple important parameters governed by the current Context, which Node's use to configure their internal buffer layout:
 
 _samplerate:_ the number of processing samples per second, typically 44,100 or 48,000.
 _frames per block:_: processing is sectioned up into blocks (an array of numbers, usually a power of two) to facilitate real-time operations. The default value is 512, though some systems can go much lower (like mac).
 
-These parameters are ultimately governed by the Context's `OutputNode` (accessible with `Context::getOutput()`), which is currently always of type `OutputNodeDevice`.  This means that the samplerate and frames-per-block settings are governed by your system's hardware settings.
+These parameters are ultimately configured by the Context's `OutputNode` (accessible with `Context::getOutput()`), which is currently always of type `OutputNodeDevice`.  This means that the samplerate and frames-per-block settings are governed by your system's hardware settings.
 
-It is important to note that these values can change at runtime either by the user o system, which will cause the contents (Node's) of the Context to need to be reconfigured.  This should in general 'just work', though authors of Node's should be aware of this possibility when deciding how to manage their Buffers.
+It is worth noting that these values can change at runtime either by the user or system, which will cause all Nodes within a Context to be reconfigured.  This should in general 'just work', though authors of Node's should be aware of this possibility when deciding how to manage their Buffers.
 
 \subsection node Node
 
@@ -120,12 +141,12 @@ The reason why the above is true is that, although Node's are (by convention) co
 
 Other Node features include:
 
-* can be enabled / disabled / connected / disconnected while audio is playing
-* supports multiple inputs, which are implicitly summed to their specified number of channels.
-* supports multiple outputs, which don't necessarily have to be connected to the Context's output( they will be added to the 'auto pull list').
-* Feedback is supported by connecting Node's in a cycle, although for this to make sense there must be a Node that overrides `supportsCycles()` and returns true.  The build in `Delay` is the primary user of this feature.
-* If possible (ex. one input, same # channels), a Node will process audio in-place
-* Node::ChannelMode allows the channels to be decided based on either a Node's input, it's output, or specified by user.
+- can be enabled / disabled / connected / disconnected while audio is playing
+- supports multiple inputs, which are implicitly summed to their specified number of channels.
+- supports multiple outputs, which don't necessarily have to be connected to the Context's output( they will be added to the 'auto pull list').
+- Feedback is supported by connecting Node's in a cycle, although for this to make sense there must be a Node that overrides `supportsCycles()` and returns true.  The build in `Delay` is the primary user of this feature.
+- If possible (ex. one input, same # channels), a Node will process audio in-place
+- Node::ChannelMode allows the channels to be decided based on either a Node's input, it's output, or specified by user.
 
 See Also:
 
@@ -134,19 +155,20 @@ See Also:
 
 \subsection device_output Device Output
 
-The default audio Context is the one that sends audio to the default audio hardware device, and by default the number of channels set is two (or one if that is all that is available). This is most commonly accessed with `ci::audio::master()`., which returns the system's default `OutputDeviceNode`. 
+The default audio Context is the one that sends audio to the default audio hardware device, and by default the number of channels is two (or one if that is all that is available). This is conveniently accessed with `ci::audio::master()`, which returns the system's default `OutputDeviceNode`. 
 
-###### Specifying a non-default Device
+### Specifying a non-default Device
 
 If you need the Context to address a device other than the system default, you must create a LineOut with the appropriate `ci::audio::DeviceRef`, then assign that as the master `Context`'s `OutputNode`:
 
-    ci::audio::DeviceRef device = ci::audio::Device::findDeviceByName( "Device Name" );
+    auto ctx = ci::audio::master();
+    auto device = ci::audio::Device::findDeviceByName( "Device Name" );
     ci::audio::LineOutRef lineOut = ctx->createLineOut( device );
     ctx->setOutput( lineOut );
 
 The device name can be found in your system settings or by iterating the `DeviceRef`'s returned by `Device::getDevices()` and looking at its `getName()` property.  As an alternative to specifying the device by name, you can use `findDeviceByKey()`, which is a platform-agnostic, unique identifier that is internally generated.
 
-###### Specifying a Channel Count Other than Stereo (the default)
+### Specifying a Channel Count Other than Stereo (the default)
 
 If you intend to handle a channel count other than the default stereo pair, you need to create a LineOut and pass in the desired channel count in its optional `Node::Format` argument. 
 
@@ -156,7 +178,7 @@ If you intend to handle a channel count other than the default stereo pair, you 
 
 __note__: Replacing the master `Context`'s output will cause a context-wide `Node::uninitialize()` and `Node::initialize()`.  This is because the Context controls variables that the Node's rely on, such as samplerate and frames-per-block.  While in some cases it may be unnoticeable, it's usually a good idea to call `Context::disable()` (or do a more robust halt of your graph) beforehand to prevent unexpected audio clicks.
 
-###### Using ChannelRouterNode to map Node's to specific output channels
+### Using ChannelRouterNode to map Node's to specific output channels
 
 While the above explains how to enable output channels greater than the standard stereo pair, addressing individual channels requires a specific Node's for this task, the `ChannelRouterNode`. This Node is used whenever you need to re-map the channels of one Node to another. For example, the following routes a `SamplePlayer` to channel 5 of the Context's output (it has been configured to as a multi-channel output like above):
 
@@ -220,6 +242,10 @@ See Also:
 - [NodeAdvanced](../../samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
 - [InputAnalyzer](../../samples/_audio/InputAnalyzer/src/InputAnalyzerApp.cpp)
 
+\subsection param Param - sample accurate audi parameters
+
+TODO
+
 \section platform_specific Platform Specific Notes
 
 _iOS Simulator:_ The iOS simulator has many problems related to hardware, limiting its usefulness for testing projects with audio.  Instead, build for mac desktop when testing.
@@ -256,5 +282,9 @@ To all of the people responsible for making these available and of such high qua
 [ooura]: http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html
 [r8brain]: https://code.google.com/p/r8brain-free-src/
 [oggvorbis]: http://xiph.org/vorbis/
+[web_audio_spec]: http://webaudio.github.io/web-audio-api/
+[web_audio_modular_routing]: http://webaudio.github.io/web-audio-api/#modular-routing
+
+
 
 */
