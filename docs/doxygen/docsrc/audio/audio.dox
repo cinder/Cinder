@@ -59,12 +59,10 @@ By default, a `Voice` is automatically connected up to `Context::master()`, whic
 
 See Also:
 
-- [VoiceBasic](../../samples/_audio/VoiceBasic/src/VoiceBasicApp.cpp)
-- [VoiceBasicProcessing](../../samples/_audio/VoiceBasicProcessing/src/VoiceBasicProcessingApp.cpp)
+- [VoiceBasic](https://github.com/cinder/Cinder/blob/master/samples/_audio/VoiceBasic/src/VoiceBasicApp.cpp)
+- [VoiceBasicProcessing](https://github.com/cinder/Cinder/blob/master/samples/_audio/VoiceBasicProcessing/src/VoiceBasicProcessingApp.cpp)
 
-\section Audio Buffers
-
-TODO: consider moving after Modular API section
+\section audio_buffers Audio Buffers
 
 Before jumping into the meat and potatoes, its a good idea to have an brief understanding of how `audio::Buffer`'s work, and a few of the `audio::Buffer` variants. For details, please see the header at `cinder/audio/Buffer.h`. Audio data is usually handled in two different manners:
 
@@ -148,8 +146,8 @@ Other Node features include:
 
 See Also:
 
-- [NodeBasic](../../samples/_audio/NodeBasic/src/NodeBasicApp.cpp)
-- [NodeAdvanced](../../samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
+- [NodeBasic](https://github.com/cinder/Cinder/blob/master/samples/_audio/NodeBasic/src/NodeBasicApp.cpp)
+- [NodeAdvanced](https://github.com/cinder/Cinder/blob/master/samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
 
 \subsection device_output OutputDeviceNode
 
@@ -190,7 +188,7 @@ __note__: Replacing the master `Context`'s output will cause a context-wide `Nod
 
 \subsection device_input InputDeviceNode
 
-`InputDeviceNode` is used to get microphone or other incoming hardware audio into the audio graph.  Its interface very similar to `OutputDeviceNode`, most importantly being the `getDevice()` method, which returns the owned `audio::DeviceRef`.  As with `OutputDeviceNode`, you must create the InputDeviceNode using the platform-specific virtual method `Context::createInputDeviceNode()`:
+`InputDeviceNode` is used to get microphone or other incoming hardware audio into the audio graph.  Its interface is very similar to `OutputDeviceNode`, most importantly being the `getDevice()` method, which returns the owned `audio::DeviceRef`.  As with `OutputDeviceNode`, you must create the InputDeviceNode using the platform-specific virtual method `Context::createInputDeviceNode()`:
 
     ci::audio::InputDeviceNodeRef input = ctx->createInputDeviceNode();
 
@@ -210,48 +208,120 @@ While the above connection simply routes your microphone input the output speake
 
 \subsection monitor MonitorNode and MonitorSpectralNode
 
-TODO NEXT
+There are a couple Node's that are specifically designed for using audio data for visual or other analytical purposes on the main (UI) thread. Because of the multi-threaded nature of real-time audio processing, care must be taken to do this safely and in a manner that doesn't prohibit the audio thread from doing its necessary processing to deliver a continious audio stream.  This is where \ref cinder::audio::MonitorNode "MonitorNode" comes in, which can be inserted anywhere within an audio graph and allows you to grab a buffer of audio samples from the main thread.
+
+To create and connect the `MonitorNode`:
+    
+    mMonitor = ctx->makeNode( new audio::MonitorNode );
+    mSomeGen >> mMonitor;
+
+
+And later to get its \ref cinder::audio::Buffer "audio::Buffer" for drawing:
+
+    const audio::Buffer &buffer = mMonitor->getBuffer();
+    for( size_t ch = 0; ch < buffer.getNumChannels(); ch++ ) {
+        for( size_t i = 0; i < buffer.getNumFrames(); i++ ) {
+            draw sample..
+        }
+    }
+
+Note that in the above example, `mMonitor` was not connected to the `Context::getOutput()` - it doesn't have to because it is a special subclass of `Node`s called \ref cinder::audio::NodeAutoPullable "NodeAutoPullable". Those who subclass this gain the ability to be 'pulled' directly by the owning `Context`, making it possible to enable processing on the `Node` without hearing the results.  This is often all that is needed, such as in audio visualizer applications, but you are still able to connect `NodeAutoPullable`s to other outputs if this makes sense in your application.  A typical use case for this would be audiovisual applications, where the audio samples at some point in the graph trigger fuel the elements, but you still want audio sent to the speakers.
+
+One refers to the slice of samples copied from the audio thread the *window*. The *window size* is the number of frames the buffer will have that is returned from `getBuffer()`, which is always a power of two and defaults the number of frames per block in the current `Context`.  If you would like this to be larger, you can specify the size with the \ref cinder::audio::MonitorNode::Format "MonitorNode::Format" during construction:
+
+    auto format = audio::MonitorSpectralNode::Format().windowSize( 4096 );
+    mMonitor = ctx->makeNode( new audio::MonitorNode( format ) );
+
+### RMS Volume
+
+If all you need is to get the current volume of the audio stream, you can use the `MonitorNode::getVolume()` method, which returns the RMS ('root mean squared') value of the the entire window on a scale of 0 to 1.  This is generally a good indication of how loud the signal is.
+
+### Magnitude Spectrum
+
+Whereas `MonitorNode` will give you time-domain samples on the main thread, `MonitorSpectralNode` is a subclass that will give you frequency-domain samples by way of the *Discrete Fourier transform* (popularly thought of as the *FFT*, which for all practical purposes can be thought of as one in the same). This is managed internally using the \ref cinder::audio::dsp::Fft "audio::dsp::Fft" class, though for the typical case of viewing the magnitude spectrum of an audio signal, `MonitorSpectralNode` is all you need.
+
+    mInputDeviceNode = ctx->createInputDeviceNode();
+    mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode() );
+
+    mInputDeviceNode >> mMonitorSpectralNode;
+
+And later when you want to draw the magnitude spectrum:
+
+    const vector<float> &magSpectrum = mMonitorSpectralNode->getMagSpectrum();
+    drawSomething( magSpectrum );
+
+The `MonitorSpectralNode::getMagSpectrum()` method first makes a copy of the audio samples, then it computes a forward FFT transform and finally converts to polar coordinates.  What you get returned to you is the magnitudes only, the phase part is commonly ignored for visualizing the spectrum.  While a full explanation of the DFT is out of scope here ([Julius Smith's book][jos-dft] is a great reference), you interpret the result as an array of *bins*, where each bin is a frequency range of the decomposed (analyzed) signal, with the maximum frequency being the so-called *nyquist* (half the samplerate).
+
+Note that whereas in the time domain you receive an `audio::Buffer`, `getMagSpectrum()` returns a vector of float's regardless of the number of channels it is processing.  If the `MonitorSpectralNode` has two or more channels, the samples in each channel will first be averaged before the magnitude spectrum is computed.  Computing the exact frequency range is simple and well defined
+
+    float binFrequency = binIndex * (float)ctx->getSampleRate() / (float)mMonitorSpectralNode->getFftSize();
+
+You can also the method \ref cinder::audio::MonitorSpectralNode::getFreqForBin() "MonitorSpectralNode::getFreqForBin( size_t bin )" as a convenience.
+
+### Draw Utilities
+
+Throughout the samples, you'll find that most of the audio drawing is done with utility methods defined in *samples/_audio/common/AudioDrawUtils.h*, including 2D waveform and spectrum plotters. This is firstly so that the samples are short and easier to follow, but also to allow users a nice starting point to begin drawing audio data in their applications.  To use, you'll probably want to copy this to your own project's source directory and modify how you see fit.
+
+See Also:
+
+- [NodeAdvanced](https://github.com/cinder/Cinder/blob/master/samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
+- [InputAnalyzer](https://github.com/cinder/Cinder/blob/master/samples/_audio/InputAnalyzer/src/InputAnalyzerApp.cpp)
 
 \subsection read_audio SourceFile and SamplePlayerNode
 
-This section explains how to read audio files and play them back within an audio graph, either as a buffer in memory or directly from the file.
+This section explains how to read audio files and play them back within an audio graph, either as a buffer in memory or directly from file.
 
-Audio files are represented by the `audio::SourceFile` class, which encapsulates a handle to the file and its properties, such as the native
+Audio files are represented by the \ref cinder::audio::SourceFile "audio::SourceFile" class, which acts as a handle on the audio file that you can use to decode samples from a wide range of formats. Loading a SourceFile from your assets directory is straightforward:
 
-TODO:  quickly document SourceFile properties and samplerate conversion
+    audio::SourceFileRef sourceFile = audio::load( loadAsset( "audiofile.wav" ) );        
 
-. Here is how to load a SourceFile from your assets directory:
+If the file could not be opened for decoding, an `AudioFileExc` is thrown along with an error description describing the reason of failure.
 
-    audio::SourceFileRef sourceFile = audio::load( loadAsset( "audiofile.wav" ) );
-
-
- The main interface for audio file playback is SamplePlayer, which is abstract and comes in two concrete flavors: `BufferPlayerNode`'s hold their audio data in-memory, and `FilePlayerNode`'s stream the audio data from file.
-
-To create and load a `BufferPlayerNode`:
+To play the SourceFile within an audio graph, you use one of two flavors of \ref cinder::audio::SamplePlayerNode "SamplePlayerNode", which is the base interface for Node-based sample playback, including common procedures like starting, stopping, seeking, and looping an audio file. There are two concrete flavors of `SamplePlayerNode`, the first of which being \ref cinder::audio::BufferPlayerNode "BufferPlayerNode". This class plays the entire sound file from an in-memory `audio::Buffer` and can be setup like the following:
 
     auto ctx = audio::Context::master();
     mBufferPlayer = ctx->makeNode( new audio::BufferPlayerNode() );
     mBufferPlayer->loadBuffer( sourceFile );
 
-Here's how to create a `FilePlayerNode`:
+In contrast, the streaming variant \ref cinder::audio::FilePlayerNode "FilePlayerNode"s only keeps a relatively small buffer in memory, constantly loading samples from disk during playback.
 
     mFilePlayer = ctx->makeNode( new audio::FilePlayerNOde( sourceFile ) );
 
 Which one you use depends on your application. Usually you want to keep small audio source's, such as sound effects, in memory so that they can quickly be accessed without file i/o. The latency is also much less when playing back directly from memory.  Longer audio files, such as a soundtrack, are good candidates for reading from disk at playback time, where the latency doesn't matter as much.   
 
-Both support reading of file types async; `BufferPlayer::loadBuffer` can be done on a background thread, and FilePlayer can be instructed to read from a background thread with an optional boolean argument. 
+Both support reading of file types async; `BufferPlayer::loadBuffer` can be done on a background thread, and FilePlayer can be instructed to read from a background thread with an optional boolean argument.
 
-Supported File types:
+For practical reasons `audio::SourceFile` has built-in support for samplerate conversion, so that the samplerate of the audio you get when processing matches that of the current `audio::Context`. You can find out what the native samplerate of the file is with \ref cinder::audio::Source::getSampleRateNative() "audio::Source::getSampleRateNative()".  You will achieve optimal performance and results if there is no conversion at all, but the decision to support samplerate conversion 'under the hood' was made in order to best achieve the notion of file playback that 'just works'.
+
+### Supported codec types
 
 - For mac, see file types [listed here][coreaudio-file-types].
 - For windows, see file types [listed here][mediafoundation-file-types]. 
-- supported ogg vorbis on all platforms.
+- ogg vorbis is supported on all platforms.
 
-See:
+Sample types supported are 16-bit int, 24-bit int, and 32-bit float, all of which will be converted to floating point for processing in an audio graph.
 
-\subsection write_audio SampleRecorderNode
+See also:
 
-TODO
+[BufferPlayer](https://github.com/cinder/Cinder/blob/master/samples/_audio/BufferPlayer/src/BufferPlayerApp.cpp)
+
+\subsection write_audio TargetFile and BufferRecorderNode
+
+There is currently basic support for recording audio with the \ref cinder::audio::BufferRecorderNode "BufferRecorderNode".  This allows you to write the audio stream from any point in the audio graph into an `audio::Buffer`, which can then be retrieved to write to disk to use in other creative ways. The following creates and connects a `BufferRecorderNode` to record from an `InputDeviceNode`, along with an \ref cinder::audio::GainNode "GainNode" to control the volume of the input:
+
+    mInput = ctx->createInputDeviceNode();
+    mGain = ctx->makeNode( new ci::audio::GainNode( 0.7f ) );
+    mRecorder = ctx->makeNode( new ci::audio::BufferRecorderNode );
+
+    mInputDeviceNode >> mGain >> mMonitorSpectralNode >> mRecorder;
+
+First thing to note is that again, mRecorder is not connected to `Context::getOutput()`, which isn't necessary because `BufferRecorderNode` inherits from \ref cinder::audio::NodeAutoPullable "NodeAutoPullable". Also of importance is that for optimal performance, you should set the length of the recording buffer before recording (the default is 1 second at a samplerate of 44.1k hertz). This can be done with the constructor or at runtime with \ref cinder::audio::BufferRecorderNode::setNumFrames() "BufferRecorderNode::setNumFrames()", though be warned that doing this while audio is being recorded has a good chance to cause audio drops because of a likely realloc and array shuffle.
+
+You start recording samples with the \ref cinder::audio::BufferRecorderNode::start() "BufferRecorderNode::start()" method. Once you have recorded enough samples, you can write the results to an audio file with the following:
+
+    mRecorder->writeToFile( "recorded.wav" );
+
+Currently the only codec supported for encoding is the popular .wav format. Sample types supported are 16-bit int, 24-bit int, and 32-bit float, which is specified by providing a \ref cinder::audio::SampleType "audio::SampleType" as the second argument to \ref cinder::audio::BufferRecorderNode::writeToFile() "BufferRecorderNode::writeToFile()".
 
 \subsection ChannelRouterNode ChannelRouterNode
 
@@ -271,12 +341,7 @@ If `mSamplePlayer` happens to be stereo, both channels will be mapped, provided 
 
 See Also:
 
-- [MultichannelOutput](../../samples/_audio/MultichannelOutput/src/MultichannelOutputApp.cpp)
-
-See Also:
-
-- [NodeAdvanced](../../samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
-- [InputAnalyzer](../../samples/_audio/InputAnalyzer/src/InputAnalyzerApp.cpp)
+- [MultichannelOutput](https://github.com/cinder/Cinder/blob/master/samples/_audio/MultichannelOutput/src/MultichannelOutputApp.cpp)
 
 \subsection other_nodes Other Node's - GenNode's and Effects
 
@@ -324,5 +389,6 @@ To all of the people responsible for making these available and of such high qua
 [oggvorbis]: http://xiph.org/vorbis/
 [web_audio_spec]: http://webaudio.github.io/web-audio-api/
 [web_audio_modular_routing]: http://webaudio.github.io/web-audio-api/#modular-routing
+[jos-dft]: https://ccrma.stanford.edu/~jos/st/
 
 */
