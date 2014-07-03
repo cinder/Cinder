@@ -36,8 +36,8 @@ void InputAnalyzer::setup()
 
 	mInputDeviceNode = ctx->createInputDeviceNode();
 
-	auto scopeFmt = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
-	mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( scopeFmt ) );
+	auto monitorFormat = audio::MonitorSpectralNode::Format().fftSize( 2048 ).windowSize( 1024 );
+	mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode( monitorFormat ) );
 
 	mInputDeviceNode >> mMonitorSpectralNode;
 
