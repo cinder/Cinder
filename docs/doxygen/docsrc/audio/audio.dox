@@ -1,10 +1,8 @@
 /**
-\page Audio
+
+\page Audio Audio
 
 \tableofcontents
-
-# ci::audio
-
 
 This document provides an overview of the audio capabilities in cinder. You can use this, along with the samples in the *samples/_audio* folder, as a jumping off point into the `ci::audio` namespace.
 
@@ -153,18 +151,30 @@ See Also:
 - [NodeBasic](../../samples/_audio/NodeBasic/src/NodeBasicApp.cpp)
 - [NodeAdvanced](../../samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
 
-\subsection device_output Device Output
+\subsection device_output OutputDeviceNode
 
-The default audio Context is the one that sends audio to the default audio hardware device, and by default the number of channels is two (or one if that is all that is available). This is conveniently accessed with `ci::audio::master()`, which returns the system's default `OutputDeviceNode`. 
+The endpoint in an audio graph is currently always `OutputDeviceNode`, the Node that represents and sends audio to the hardware device on your computer. The default audio Context initializes this to a sane default when it is first accessed, with stereo channels (or mono if that is all that is available).
+
+In order to support non device Context's in the future, `Context::getOutput()` returns an `OutputNode`, the parent class of `OutputDeviceNode`. However, you can safely typecast it, which will allow you to get at the `audio::DeviceRef` and more information related to your hardware device:
+
+    #include "cinder/audio/OutputNode.h"
+
+    auto ctx = ci::audio::master();
+    audio::DeviceRef dev = dynamic_pointer_cast<audio::OutputDeviceNode>( ctx->getOutput() )->getDevice();
+    
+    ci::app::console() << "device name: " << dev->getName() << endl;
+    ci::app::console() << "num output channels: " << dev->getNumOutputChannels() << endl;
+
+There is also an easier way to get the default device, with the static `audio::Device::getDefaultOutput()` method.
 
 ### Specifying a non-default Device
 
-If you need the Context to address a device other than the system default, you must create a LineOut with the appropriate `ci::audio::DeviceRef`, then assign that as the master `Context`'s `OutputNode`:
+If you need the Context to address a device other than the system default, you must create a LineOut with the appropriate `ci::audio::DeviceRef`, using the platform-specific virtual `Context::createOutputDeviceNode()` method. You then assign that as the master `Context`'s `OutputNode`:
 
     auto ctx = ci::audio::master();
     auto device = ci::audio::Device::findDeviceByName( "Device Name" );
-    ci::audio::LineOutRef lineOut = ctx->createLineOut( device );
-    ctx->setOutput( lineOut );
+    ci::audio::OutputDeviceNodeRef output = ctx->createOutputDeviceNode( device );
+    ctx->setOutput( output );
 
 The device name can be found in your system settings or by iterating the `DeviceRef`'s returned by `Device::getDevices()` and looking at its `getName()` property.  As an alternative to specifying the device by name, you can use `findDeviceByKey()`, which is a platform-agnostic, unique identifier that is internally generated.
 
@@ -173,14 +183,81 @@ The device name can be found in your system settings or by iterating the `Device
 If you intend to handle a channel count other than the default stereo pair, you need to create a LineOut and pass in the desired channel count in its optional `Node::Format` argument. 
 
     auto format = ci::audio::Node::Format().channels( 10 );
-    ci::audio::LineOutRef lineOut = ctx->createLineOut( device, format );
-    ctx->setOutput( lineOut );
+    ci::audio::OutputDeviceNodeRef output = ctx->createOutputDeviceNode( device, format );
+    ctx->setOutput( output );
 
 __note__: Replacing the master `Context`'s output will cause a context-wide `Node::uninitialize()` and `Node::initialize()`.  This is because the Context controls variables that the Node's rely on, such as samplerate and frames-per-block.  While in some cases it may be unnoticeable, it's usually a good idea to call `Context::disable()` (or do a more robust halt of your graph) beforehand to prevent unexpected audio clicks.
 
-### Using ChannelRouterNode to map Node's to specific output channels
+\subsection device_input InputDeviceNode
 
-While the above explains how to enable output channels greater than the standard stereo pair, addressing individual channels requires a specific Node's for this task, the `ChannelRouterNode`. This Node is used whenever you need to re-map the channels of one Node to another. For example, the following routes a `SamplePlayer` to channel 5 of the Context's output (it has been configured to as a multi-channel output like above):
+`InputDeviceNode` is used to get microphone or other incoming hardware audio into the audio graph.  Its interface very similar to `OutputDeviceNode`, most importantly being the `getDevice()` method, which returns the owned `audio::DeviceRef`.  As with `OutputDeviceNode`, you must create the InputDeviceNode using the platform-specific virtual method `Context::createInputDeviceNode()`:
+
+    ci::audio::InputDeviceNodeRef input = ctx->createInputDeviceNode();
+
+    input >> ctx->getOutput();
+    input->enable();
+
+The above creates an `InputDeviceNode` with the default `Device` and default `audio::Node::Format`, giving you either stereo channel input or mono if that isn't available, and then connects it directly to the Context's output. As is the case for all `InputNode`s (`InputDeviceNode`'s parent class'), you must then call its `enable()` method before it will process audio.
+
+If you want to force it to be mono, you can specify that with the optional format argument:
+
+    auto format = ci::audio::Node::Format().channels( 1 );
+    ci::audio::InputDeviceNodeRef input = ctx->createInputDeviceNode( Device::getDefaultInput(), format );
+
+Of course, you can also use a non-default `Device`, as explained in the section on OutputDeviceNode.
+
+While the above connection simply routes your microphone input the output speakers, you are able to connect any combination of effects inbetween. You can also connect the input to a `MonitorNode`, which allows you to get the audio samples back on the main thread for visualization and also doesn't require connection to the speaker output.  This is explained in more detail below.
+
+\subsection monitor MonitorNode and MonitorSpectralNode
+
+TODO NEXT
+
+\subsection read_audio SourceFile and SamplePlayerNode
+
+This section explains how to read audio files and play them back within an audio graph, either as a buffer in memory or directly from the file.
+
+Audio files are represented by the `audio::SourceFile` class, which encapsulates a handle to the file and its properties, such as the native
+
+TODO:  quickly document SourceFile properties and samplerate conversion
+
+. Here is how to load a SourceFile from your assets directory:
+
+    audio::SourceFileRef sourceFile = audio::load( loadAsset( "audiofile.wav" ) );
+
+
+ The main interface for audio file playback is SamplePlayer, which is abstract and comes in two concrete flavors: `BufferPlayerNode`'s hold their audio data in-memory, and `FilePlayerNode`'s stream the audio data from file.
+
+To create and load a `BufferPlayerNode`:
+
+    auto ctx = audio::Context::master();
+    mBufferPlayer = ctx->makeNode( new audio::BufferPlayerNode() );
+    mBufferPlayer->loadBuffer( sourceFile );
+
+Here's how to create a `FilePlayerNode`:
+
+    mFilePlayer = ctx->makeNode( new audio::FilePlayerNOde( sourceFile ) );
+
+Which one you use depends on your application. Usually you want to keep small audio source's, such as sound effects, in memory so that they can quickly be accessed without file i/o. The latency is also much less when playing back directly from memory.  Longer audio files, such as a soundtrack, are good candidates for reading from disk at playback time, where the latency doesn't matter as much.   
+
+Both support reading of file types async; `BufferPlayer::loadBuffer` can be done on a background thread, and FilePlayer can be instructed to read from a background thread with an optional boolean argument. 
+
+Supported File types:
+
+- For mac, see file types [listed here][coreaudio-file-types].
+- For windows, see file types [listed here][mediafoundation-file-types]. 
+- supported ogg vorbis on all platforms.
+
+See:
+
+\subsection write_audio SampleRecorderNode
+
+TODO
+
+\subsection ChannelRouterNode ChannelRouterNode
+
+ChannelRouterNode is used to map the channels between two connected Nodes. This can be useful in multichannel situations, or to split a stereo Node into two mono Nodes. See above for information on how to setup a multichannel OutputDeviceNode.
+
+The following routes a `SamplePlayer` to channel 5 of the Context's output (it has already been configured to as a multi-channel output):
 
     auto format = ci::audio::Node::Format().channels( 10 );
     auto channelRouter = ctx->makeNode( new audio::ChannelRouterNode( format ) );
@@ -196,53 +273,16 @@ See Also:
 
 - [MultichannelOutput](../../samples/_audio/MultichannelOutput/src/MultichannelOutputApp.cpp)
 
-\subsection device_input Device Input
-
-FINISH ME
-
-\subsection read_audio Reading and Playing Audio Files
-
-Audio files are represented by the `audio::SourceFile` class, which represents a handle to the file along with all of its properties. Here is how to load a SourceFile from your assets directory:
-
-    mSourceFile = audio::load( loadAsset( "audiofile.wav" ) );
-
-
- The main interface for audio file playback is SamplePlayer, which is abstract and comes in two concrete flavors: `BufferPlayerNode`'s hold their audio data in-memory, and `FilePlayerNode`'s stream the audio data from file.
-
-To create and load a `BufferPlayerNode`:
-
-    auto ctx = audio::Context::master();
-    mBufferPlayer = ctx->makeNode( new audio::BufferPlayerNode() );
-    mBufferPlayer->loadBuffer( mSourceFile );
-
-And to create a `FilePlayerNode`:
-
-    mFilePlayer = ctx->makeNode( new audio::FilePlayerNOde( mSourceFile ) );
-
-Both support reading of file types async; `BufferPlayer::loadBuffer` can be done on a background thread, and FilePlayer can be specified as reading from a background thread during construction. 
-
-Supported File types:
-
-- For mac, see file types [listed here][coreaudio-file-types].
-- For windows, see file types [listed here][mediafoundation-file-types]. 
-- supported ogg vorbis on all platforms.
-
-See:
-
-\subsection write_audio Writing Audio Files
-
-TODO
-
-\subsection monitor Viewing audio using MonitorNode and MonitorSpectralNode
-
-TODO
-
 See Also:
 
 - [NodeAdvanced](../../samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
 - [InputAnalyzer](../../samples/_audio/InputAnalyzer/src/InputAnalyzerApp.cpp)
 
-\subsection param Param - sample accurate audi parameters
+\subsection other_nodes Other Node's - GenNode's and Effects
+
+TODO: document some of the nodes that ship with cinder. link to Node svg
+
+\section param Param - sample accurate audio parameters
 
 TODO
 
@@ -284,7 +324,5 @@ To all of the people responsible for making these available and of such high qua
 [oggvorbis]: http://xiph.org/vorbis/
 [web_audio_spec]: http://webaudio.github.io/web-audio-api/
 [web_audio_modular_routing]: http://webaudio.github.io/web-audio-api/#modular-routing
-
-
 
 */
