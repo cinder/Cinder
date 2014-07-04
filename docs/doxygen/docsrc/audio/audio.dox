@@ -4,11 +4,11 @@
 
 \tableofcontents
 
-This document provides an overview of the audio capabilities in cinder. You can use this, along with the samples in the *samples/_audio* folder, as a jumping off point into the `ci::audio` namespace.
+This document provides an overview of the audio capabilities in cinder. You can use this, along with the samples in the *samples/_audio* folder, as an entry point into the `ci::audio` namespace.
 
 \section design Design
 
-The `ci::audio` namespace consists of a number of different components and layers of abstraction:
+The `ci::audio` namespace consists of a few different components and layers of abstraction:
 
 - a modular, Node-based set of real-time audio tools. 
 - Voice - a higher level 'simple api' for when all you want is to play back a sound file or get a processing function.
@@ -57,7 +57,7 @@ By default, a `Voice` is automatically connected up to `Context::master()`, whic
   
     mVoice->getOutputNode() >> mScope >> audio::master()->getOutput();
 
-See Also:
+Related Samples:
 
 - [VoiceBasic](https://github.com/cinder/Cinder/blob/master/samples/_audio/VoiceBasic/src/VoiceBasicApp.cpp)
 - [VoiceBasicProcessing](https://github.com/cinder/Cinder/blob/master/samples/_audio/VoiceBasicProcessing/src/VoiceBasicProcessingApp.cpp)
@@ -66,7 +66,7 @@ See Also:
 
 Before jumping into the meat and potatoes, its a good idea to have an brief understanding of how `audio::Buffer`'s work, and a few of the `audio::Buffer` variants. For details, please see the header at `cinder/audio/Buffer.h`. Audio data is usually handled in two different manners:
 
-1. a contigious stream of 'blocks' of equal length, which is how real-time processing is achieved.
+1. a contiguous stream of 'blocks' of equal length, which is how real-time processing is achieved.
 2. as a single unit, such as the uncompressed data of sound file.
 
 In both cases, there is a number of frames and a channel count that make up the layout of the Buffer.  Usually Buffer's used for case 1 are passed by pointer to reduce copying.  In case 2, they are either passed around as shared_ptr's (`BufferRef`'s), though this isn't required. Care is taken in multi-threaded situations by making defensive copies where appropriate.
@@ -75,7 +75,7 @@ It is also worth noting that samplerate is not a property of the buffer data - t
 
 ### Layout
 
-The standard `Buffer` class used when passing audio between different components stores its channels contigiously (non-interleaved). This means that right after channel 0 (ex. left speaker) ends, the next sample in the internal array is the first sample of channel 1 (ex. right speaker). For convenience, the `Buffer::getChannel( size_t )` method with return a float* offset to the provided channel index, and also does some debug assertions that the index is in bounds. In the rare cases that interleaved audio is required (ex. interfacing with third-party or system level API's), there is a `BufferInterleaved` variant. 
+The standard `Buffer` class used when passing audio between different components stores its channels contiguously (non-interleaved). This means that right after channel 0 (ex. left speaker) ends, the next sample in the internal array is the first sample of channel 1 (ex. right speaker). For convenience, the `Buffer::getChannel( size_t )` method with return a float* offset to the provided channel index, and also does some debug assertions that the index is in bounds. In the rare cases that interleaved audio is required (ex. interfacing with third-party or system level API's), there is a `BufferInterleaved` variant. 
 
 Currently all processing is handled in single floating point precision.  However, the Buffer class is actually a typedef'ed `BufferT<float>`, so if a different sample format is required, one can use the BufferT class directly and provide the sample type.  While this will not by directly interchangeable with public interfaces in the `ci::audio` namespace, there are conversion utilities provided in `cinder/audio/dsp/Converter.h`. 
 
@@ -83,7 +83,7 @@ In all `Buffer` variants, you can get at the actual data store with the `Buffer:
 
 ### Resizing
 
-The standard `Buffer` class is not resizeable once constructed. However, sometimes it is necessary or more efficient to resize a buffer after construction, which is facilitited by the `BufferDynamic*` variants.  `BufferDynamic` has the methods, `setNumFrames()`, `setNumChannels()`, and `setSize()` (for both frames and channels at the same time), which will realloc the internal data store if required.  If the new size (frames * channels) is smaller or equal to the previous size, no reallocation will occur - by default `BufferDynamic` will only grow in order to prevent runtime reallocations where possible.  If you would like to free up extra space, you can use the provided `shrinkToFit()` method. 
+The standard `Buffer` class is not resizable once constructed. However, sometimes it is necessary or more efficient to resize a buffer after construction, which is facilitated by the `BufferDynamic*` variants.  `BufferDynamic` has the methods, `setNumFrames()`, `setNumChannels()`, and `setSize()` (for both frames and channels at the same time), which will realloc the internal data store if required.  If the new size (frames * channels) is smaller or equal to the previous size, no reallocation will occur - by default `BufferDynamic` will only grow in order to prevent runtime reallocations where possible.  If you would like to free up extra space, you can use the provided `shrinkToFit()` method. 
 
 \section modular Modular API
 
@@ -144,7 +144,7 @@ Other Node features include:
 - If possible (ex. one input, same # channels), a Node will process audio in-place
 - Node::ChannelMode allows the channels to be decided based on either a Node's input, it's output, or specified by user.
 
-See Also:
+Related Samples:
 
 - [NodeBasic](https://github.com/cinder/Cinder/blob/master/samples/_audio/NodeBasic/src/NodeBasicApp.cpp)
 - [NodeAdvanced](https://github.com/cinder/Cinder/blob/master/samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
@@ -208,7 +208,7 @@ While the above connection simply routes your microphone input the output speake
 
 \subsection monitor MonitorNode and MonitorSpectralNode
 
-There are a couple Node's that are specifically designed for using audio data for visual or other analytical purposes on the main (UI) thread. Because of the multi-threaded nature of real-time audio processing, care must be taken to do this safely and in a manner that doesn't prohibit the audio thread from doing its necessary processing to deliver a continious audio stream.  This is where \ref cinder::audio::MonitorNode "MonitorNode" comes in, which can be inserted anywhere within an audio graph and allows you to grab a buffer of audio samples from the main thread.
+There are a couple Node's that are specifically designed for using audio data for visual or other analytical purposes on the main (UI) thread. Because of the multi-threaded nature of real-time audio processing, care must be taken to do this safely and in a manner that doesn't prohibit the audio thread from doing its necessary processing to deliver a continuous audio stream.  This is where \ref cinder::audio::MonitorNode "MonitorNode" comes in, which can be inserted anywhere within an audio graph and allows you to grab a buffer of audio samples from the main thread.
 
 To create and connect the `MonitorNode`:
     
@@ -250,9 +250,9 @@ And later when you want to draw the magnitude spectrum:
     const vector<float> &magSpectrum = mMonitorSpectralNode->getMagSpectrum();
     drawSomething( magSpectrum );
 
-The `MonitorSpectralNode::getMagSpectrum()` method first makes a copy of the audio samples, then it computes a forward FFT transform and finally converts to polar coordinates.  What you get returned to you is the magnitudes only, the phase part is commonly ignored for visualizing the spectrum.  While a full explanation of the DFT is out of scope here ([Julius Smith's book][jos-dft] is a great reference), you interpret the result as an array of *bins*, where each bin is a frequency range of the decomposed (analyzed) signal, with the maximum frequency being the so-called *nyquist* (half the samplerate).
+The `MonitorSpectralNode::getMagSpectrum()` method first makes a copy of the audio samples, then it computes a forward FFT transform and finally converts to polar coordinates.  What you get returned to you is the magnitudes only, the phase part is commonly ignored for visualizing the spectrum.  While a full explanation of the DFT is out of scope here ([Julius Smith's book][jos-dft] is a great reference), you interpret the result as an array of *bins*, where each bin is a frequency range of the decomposed (analyzed) signal and the maximum frequency is the so-called *nyquist* (half the samplerate).
 
-Note that whereas in the time domain you receive an `audio::Buffer`, `getMagSpectrum()` returns a vector of float's regardless of the number of channels it is processing.  If the `MonitorSpectralNode` has two or more channels, the samples in each channel will first be averaged before the magnitude spectrum is computed.  Computing the exact frequency range is simple and well defined
+Note that whereas in the time domain you receive an `audio::Buffer`, `getMagSpectrum()` returns a vector of float's regardless of the number of channels it is processing.  If the `MonitorSpectralNode` has two or more channels, the samples in each channel will first be averaged before the magnitude spectrum is computed.  Computing the exact frequency range is simple and well defined:
 
     float binFrequency = binIndex * (float)ctx->getSampleRate() / (float)mMonitorSpectralNode->getFftSize();
 
@@ -260,9 +260,9 @@ You can also the method \ref cinder::audio::MonitorSpectralNode::getFreqForBin()
 
 ### Draw Utilities
 
-Throughout the samples, you'll find that most of the audio drawing is done with utility methods defined in *samples/_audio/common/AudioDrawUtils.h*, including 2D waveform and spectrum plotters. This is firstly so that the samples are short and easier to follow, but also to allow users a nice starting point to begin drawing audio data in their applications.  To use, you'll probably want to copy this to your own project's source directory and modify how you see fit.
+Throughout the samples, you'll find that most of the audio drawing is done with utility methods defined in *samples/_audio/common/AudioDrawUtils.h*, including 2D waveform and spectrum plotters. This is partly so that the samples are short and easier to follow, but also to provide users with a decent starting point to begin drawing audio data in their own applications. To make use of them, you are encouraged to copy these functions to your own project's source directory and modify how you see fit.
 
-See Also:
+Related Samples:
 
 - [NodeAdvanced](https://github.com/cinder/Cinder/blob/master/samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
 - [InputAnalyzer](https://github.com/cinder/Cinder/blob/master/samples/_audio/InputAnalyzer/src/InputAnalyzerApp.cpp)
@@ -339,21 +339,49 @@ If `mSamplePlayer` happens to be stereo, both channels will be mapped, provided 
 
     mSamplePlayer >> mChannelRouter->route( 0, 5, 1 );
 
-See Also:
+Related Samples:
 
 - [MultichannelOutput](https://github.com/cinder/Cinder/blob/master/samples/_audio/MultichannelOutput/src/MultichannelOutputApp.cpp)
 
 \subsection other_nodes Other Node's - GenNode's and Effects
 
-TODO: document some of the nodes that ship with cinder. link to Node svg
+There are quite a few other `Node` subclasses that have not yet been mentioned, and it is likely that more will appear with time.  For a glimpse at what's in the core, you can look at the class heirarchy in \ref cinder::audio::Node "audio::Node"'s reference documentation. Many fall into two main categories, generators and effects.
+
+Those in the first group inherit from the base class \ref cinder::audio::GenNode "GenNode"s. These all share a common goal of generating a waveform and do not support inputs (`GenNode` itself inherits from \ref cinder::audio::InputNode "InputNode", which disallows inputs). For example, \ref cinder::audio::GenSineNode "GenSineNode" gives you a perfect sinewave, whereas \ref cinder::audio::GenNoiseNode "GenNoiseNode" creates a completely random signal. Perhaps the most useful one in this group is \ref cinder::audio::GenOscNode "GenOscNode", which uses bandlimited wavetable lookup to generate the class waveforms such as square, sawtooth or triangle.
+
+The remaining `Node`s are mostly types of *effects*, which process incoming audio in some way or another and pass it on to its output(s).  The most common as basic one of these has to be \ref cinder::audio::GainNode "GainNode", which simply multiplies the incoming signal, adjusting its amplitude.  There are also more involved effects, such as \ref cinder::audio::DelayNode "DelayNode", which can be used to create a number of sounds like echo or flanging, or the various filtering node's related to \ref cinder::audio::FilterBiquadNode "FilterBiquadNode".  Most of these are used throughout the samples, so check there first to understand how best to use them in your own projects.
+
+Related Samples:
+
+- [NodeAdvanced](https://github.com/cinder/Cinder/blob/master/samples/_audio/NodeAdvanced/src/NodeAdvancedApp.cpp)
+- [DelayFeedback](https://github.com/cinder/Cinder/blob/master/samples/_audio/DelayFeedback/src/DelayFeedbackApp.cpp)
+
 
 \section param Param - sample accurate audio parameters
 
-TODO
+Many of the `Node`s contain parameters that are controllable over time, or in other words they are animatable. In some situations this is necessary to avoid pops in the audio signal, while it always allows for much creative freedom.  This is achieved with the \ref cinder::audio::Param "audio::Param" class, allowing you to apply or append 'Event's (the audio equivilant to a `ci::Tween`) that are then interpreted at a sample-accurate rate.
+
+For example, the following connects up a simple audio graph containing a `GenSineNode` and `GainNode`, and then ramps the parameters on each:
+
+    auto ctx = audio::master();
+    auto sine = ctx->makeNode( new audio::GenSineNode( 220 ) );
+    auto gain = ctx->makeNode( new audio::GainNode( 0 ) );
+
+    sine >> gain >> ctx->getOutput();
+
+    sine->getParamFreq()->applyRamp( 440, 0.5f );
+    gain->getParam()->applyRamp( 0.9f, 0.5f );
+
+The above applies linear ramps on the `Param`s, though in some cases this will sound unnatural.  Instead, you can use a curve function similar to the `ci::Timeline` API. The following uses `audio::rampOutQuad` to provide a more natural decay for the `GainNode`:
+
+    auto options = audio::Param::Options().rampFn( &audio::rampOutQuad );
+    mGain->getParam()->applyRamp( 0, 1.5f, options );
 
 \section platform_specific Platform Specific Notes
 
-_iOS Simulator:_ The iOS simulator has many problems related to hardware, limiting its usefulness for testing projects with audio.  Instead, build for mac desktop when testing.
+\subsection ios_specific iOS
+
+The iOS simulator has many problems related to hardware, rendering it quite useless for developing or testing projects with audio.  Instead, build for mac desktop when dev'ing and iOS for testing, the two platforms are nearly identical with respect to audio.
 
 \section other Other
 
@@ -377,9 +405,6 @@ There are a few libraries written by third parties, all redistributed in source 
 To all of the people responsible for making these available and of such high quality, thank you!
 
 
-[cinder]: https://github.com/cinder/cinder
-[tinderbox]: http://libcinder.org/docs/welcome/TinderBox.html
-[dev-forum]: https://forum.libcinder.org/#Forum/developing-cinder
 [webaudio]: https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html
 [puredata]: http://puredata.info/
 [coreaudio-file-types]: https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/CoreAudioOverview/SupportedAudioFormatsMacOSX/SupportedAudioFormatsMacOSX.html
