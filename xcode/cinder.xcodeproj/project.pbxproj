@@ -2160,12 +2160,12 @@
 		111A5F00191F726A005C3166 /* dsp */ = {
 			isa = PBXGroup;
 			children = (
+				111A5F06191F726A005C3166 /* ooura */,
 				111A5F01191F726A005C3166 /* Biquad.h */,
 				111A5F02191F726A005C3166 /* Converter.h */,
 				111A5F03191F726A005C3166 /* ConverterR8brain.h */,
 				111A5F04191F726A005C3166 /* Dsp.h */,
 				111A5F05191F726A005C3166 /* Fft.h */,
-				111A5F06191F726A005C3166 /* ooura */,
 				111A5F08191F726A005C3166 /* RingBuffer.h */,
 			);
 			path = dsp;

@@ -559,3 +559,4 @@ NodeCycleExc::NodeCycleExc( const NodeRef &sourceNode, const NodeRef &destNode )
 }
 
 } } // namespace cinder::audio
+
