@@ -34,6 +34,13 @@ namespace cinder { namespace audio {
 
 class DeviceManager;
 
+//! \brief Manages the creation, connections, and lifecycle of audio::Node's.
+
+//!	The Context class manages platform specific audio processing and thread synchronization between the
+//! 'audio' (real-time) and 'user' (typically UI/main, but not limited to) threads. There is one 'master',
+//! which is the only hardware-facing Context.
+//!
+//! All Node's are created using the Context, which is necessary for thread synchronization.
 class Context : public std::enable_shared_from_this<Context> {
   public:
 	virtual ~Context();
@@ -43,21 +50,24 @@ class Context : public std::enable_shared_from_this<Context> {
 	//! Returns the platform-specific \a DeviceManager singleton instance, which is platform specific. If none is available, returns \a null.
 	static DeviceManager*		deviceManager();
 	//! Allows the user to set the master Context and DeviceManager, overriding the defaults.
-	static void				setMaster( Context *masterContext, DeviceManager *deviceManager );
+	static void					setMaster( Context *masterContext, DeviceManager *deviceManager );
 
 	//! Creates and returns a platform-specific OutputDeviceNode, which delivers audio to the hardware output device specified by \a device. 
 	virtual OutputDeviceNodeRef		createOutputDeviceNode( const DeviceRef &device = Device::getDefaultOutput(), const Node::Format &format = Node::Format() ) = 0;
 	//! Creates and returns a platform-specific InputDeviceNode, which captures audio from the hardware input device specified by \a device. 
 	virtual InputDeviceNodeRef		createInputDeviceNode( const DeviceRef &device = Device::getDefaultInput(), const Node::Format &format = Node::Format() ) = 0;
 
-	//! Interface for creating new Node's of type \a NodeT, which are thereafter owned by this Context.
+	//! Interface for creating new Node's of type \a NodeT, which are thereafter owned by this Context. All Node's must be created using this method in order for them to correctly have a parent Context.
 	template<typename NodeT>
 	std::shared_ptr<NodeT>		makeNode( NodeT *node );
 
+	//! Sets the new output of this Context to \a output. You should do this before making any connections because when Node's are initialized they use the format of the OutputNode to configure their buffers.
 	virtual void setOutput( const OutputNodeRef &output );
-
-	//! If the output has not already been set, it is the default OutputDeviceNode
+	//! Returns the OutputNode for the Context (currently always an OutputDeviceNode that sends audio to your speakers). This can be thought of as the 'heartbeat', it is the one who initiates the pulling and processing of all other Node's in the audio graph. \a note If the output has not already been set, it is the default OutputDeviceNode
 	virtual const OutputNodeRef& getOutput();
+	//! Returns the mutex used to synchronize the audio thread. This is also used internally by the Node class when making connections.
+	std::mutex& getMutex() const			{ return mMutex; }
+
 	//! Enables audio processing. Effectively the same as calling getOutput()->enable()
 	virtual void enable();
 	//! Enables audio processing. Effectively the same as calling getOutput()->disable()
@@ -80,11 +90,10 @@ class Context : public std::enable_shared_from_this<Context> {
 	//! Returns the total number of seconds that have been processed in the dsp loop.
 	double		getNumProcessedSeconds()			{ return (double)getNumProcessedFrames() / (double)getSampleRate(); }
 
-	std::mutex& getMutex() const			{ return mMutex; }
-
+	//! Initializes \a node, ensuring that Node::initialze() gets called and that its internal buffers are ready for processing. Useful for initializing a heavy Node at an opportune time so as to not cause audio drop-outs or UI snags.
 	void initializeNode( const NodeRef &node );
+	//! Un-initializes \a node, ensuring that Node::uninitialze() gets called.
 	void uninitializeNode( const NodeRef &node );
-
 	//! Initialize all Node's related by this Context
 	void initializeAllNodes();
 	//! Uninitialize all Node's related by this Context
@@ -98,7 +107,6 @@ class Context : public std::enable_shared_from_this<Context> {
 	//! Remove \a node from the list of auto-pulled nodes.
 	//! \note Callers on the non-audio thread must synchronize with getMutex().
 	void removeAutoPulledNode( const NodeRef &node );
-
 	//! OutputNode implmenentations should call this at the end of each rendering block.
 	void postProcess();
 
@@ -119,7 +127,7 @@ class Context : public std::enable_shared_from_this<Context> {
 	static void registerClearStatics();
 
 	std::atomic<uint64_t>	mNumProcessedFrames;
-	OutputNodeRef			mOutput;				// the 'heartbeat'
+	OutputNodeRef			mOutput;
 
 	// other nodes that don't have any outputs and need to be explictly pulled
 	std::set<NodeRef>		mAutoPulledNodes;

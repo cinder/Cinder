@@ -37,12 +37,15 @@
 
 namespace cinder { namespace audio { namespace dsp {
 
-// Windowing functions
 
+//! Fills \a length samples of \a window with a Blackmann windowing function.
 void generateBlackmanWindow( float *window, size_t length );
+//! Fills \a length samples of \a window with a Hamming windowing function.
 void generateHammingWindow( float *window, size_t length );
+//! Fills \a length samples of \a window with a Hann windowing function.
 void generateHannWindow( float *window, size_t length );
 
+//! Describes the avaiable windowing functions.
 enum class WindowType {
 	BLACKMAN,
 	HAMMING,

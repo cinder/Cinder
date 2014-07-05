@@ -37,6 +37,7 @@ namespace dsp {
 	class Converter;
 }
 
+//! SourceFile implementation for decoding ogg vorbis files.
 class SourceFileOggVorbis : public SourceFile {
   public:
 	SourceFileOggVorbis();

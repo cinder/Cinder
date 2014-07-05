@@ -58,13 +58,17 @@
 
 namespace cinder { namespace audio { namespace dsp {
 
+//! \brief General filtering class (two-pole, two-zero).
+//!
+//! Provides methods for creating typical frequency responses. In these methods,
+//! frequency is 0 - 1 normalized, resonance and dbGain are in decibels. Q is a
+//! unitless quality factor.
+//!
 class Biquad {
-public:
+  public:
 	Biquad();
     virtual ~Biquad();
 
-	// frequency is 0 - 1 normalized, resonance and dbGain are in decibels.
-    // Q is a unitless quality factor.
     void setLowpassParams( double cutoffFreq, double resonance );
     void setHighpassParams( double frequency, double resonance );
     void setBandpassParams( double frequency, double Q );
@@ -74,12 +78,10 @@ public:
     void setAllpassParams( double frequency, double Q );
     void setNotchParams( double frequency, double Q );
 
-	
+	//! Processes the audio array of length \a framesToProcess provided in \a source, leaving the result in \a dest.  \a source and \a dest can be the same.
 	void process( const float *source, float *dest, size_t framesToProcess );
-
 	//! Filter response at a set of n frequencies. The magnitude and phase response are returned in magResponse and phaseResponse. The phase response is in radians.
     void getFrequencyResponse( int nFrequencies, const float *frequency, float *magResponse, float *phaseResponse );
-
 	//! Resets filter state
     void reset();
 
@@ -109,7 +111,6 @@ public:
 //	AlignedArrayPtrd mInputBuffer, mOutputBuffer;
 	std::vector<double> mInputBuffer, mOutputBuffer;
 #endif
-
 };
 
 } } } // namespace cinder::audio::dsp

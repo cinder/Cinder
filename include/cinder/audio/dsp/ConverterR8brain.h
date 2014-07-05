@@ -34,6 +34,7 @@ namespace r8b {
 
 namespace cinder { namespace audio { namespace dsp {
 
+//! \a Converter implementation using the r8brain samplerate conversion library by designed by Aleksey Vaneev.
 class ConverterImplR8brain : public Converter {
   public:
 

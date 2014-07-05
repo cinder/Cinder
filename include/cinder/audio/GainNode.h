@@ -29,10 +29,21 @@ namespace cinder { namespace audio {
 
 typedef std::shared_ptr<class GainNode>			GainNodeRef;
 
+//! \brief Node for changing the gain, or amplitude, of a signal.
+//!
+//! Controlling the gain is a fundamental operation in audio signal processing, useful in controlling loudness,
+//! adding dynamics, and many other effects. The operation itself is simply a vector-based multiply and GainNode obtains
+//! by subclassing MultipleNode.  The only difference between the two is that GainNode's default value is 1, meaning no gain.
 class GainNode : public MultiplyNode {
   public:
-	GainNode( const Format &format = Format() ) : MultiplyNode( 1, format )	{}
-	GainNode( float initialValue, const Format &format = Format() )	: MultiplyNode( initialValue, format )	{}
+	//! Constructs a GainNode with an initial gain of 1 and optional \a format.
+	GainNode( const Format &format = Format() )
+		: MultiplyNode( 1, format )
+	{}
+	//! Constructs a GainNode with an initial gain of \a initialValue and optional \a format.
+	GainNode( float initialValue, const Format &format = Format() )
+		: MultiplyNode( initialValue, format )
+	{}
 };
 
 } } // namespace cinder::audio
