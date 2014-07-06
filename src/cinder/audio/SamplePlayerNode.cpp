@@ -130,10 +130,6 @@ void BufferPlayerNode::enableProcessing()
 	mIsEof = false;
 }
 
-void BufferPlayerNode::disableProcessing()
-{
-}
-
 void BufferPlayerNode::seek( size_t readPositionFrames )
 {
 	mIsEof = false;
