@@ -1,3 +1,7 @@
+// Copyright (c) 2014, Richard Eakin.
+// This audio sample firstly makes use of the audio::DelayNode, but also demonstrates some more complex methods of control,
+// like feedback and controlling an audio::Param with other audio::Node's.
+
 #include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
@@ -69,9 +73,10 @@ void DelayFeedback::setup()
 	loadGlsl();
 	loadMesh();
 	gl::enableAlphaBlending();
-	
-	mPerlin = Perlin();
 
+	// The basic audio::Node's used here are an oscillator with a triangle waveform, a gain, and a delay.
+	// The complexity in the sound comes from how they are connected and controlled.
+	
 	auto ctx = audio::master();
 	mOsc = ctx->makeNode( new audio::GenOscNode );
 	mGain = ctx->makeNode( new audio::GainNode( 0 ) );
@@ -79,7 +84,12 @@ void DelayFeedback::setup()
 
 	mOsc->setWaveform( audio::WaveformType::TRIANGLE );
 
+	// The Delay's length Param is itself controlled with Node's, which is configured next.
 	setVariableDelayMod();
+
+	// Now we connect up the Node's so that the signal immediately reaches the Context's OutputNode, but it also
+	// feedback in a cycle to create an echo. To control the level of feedback and prevent ringing, a one-off GainNode
+	// is used with a value of 0.5, which gives a fairly natural sounding decay.
 
 	auto feedbackGain = audio::master()->makeNode( new audio::GainNode( 0.5f ) );
 	feedbackGain->setName( "FeedbackGain" );
@@ -88,7 +98,6 @@ void DelayFeedback::setup()
 	mGain >> mDelay >> feedbackGain >> mDelay >> ctx->getOutput();
 
 	mOsc->enable();
-
 	ctx->enable();
 
 	console() << "--------- context audio graph: --------------------" << endl;
@@ -96,6 +105,7 @@ void DelayFeedback::setup()
 	console() << "---------------------------------------------------" << endl;
 }
 
+// This method adds a low-frequency oscillator to the delay length, which makes a 'flanging' effect.
 void DelayFeedback::setVariableDelayMod()
 {
 	mDelay->setMaxDelaySeconds( 2 );
