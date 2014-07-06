@@ -394,24 +394,10 @@ While the samples demonstrate many of the techniques and tools available in a st
 
 These are meant to be more for feature and regression testing than anything else, but they may also be a useful way to see the entire breadth of the available functionality.
 
-\subsection third_party Included Third Party Code
-
-There are a few libraries written by third parties, all redistributed in source form and liberally licensed:
-
-- [ooura] general purpose FFT algorithms.
-- [r8brain] sample rate converter library, designed by Aleksey Vaneev of Voxengo.
-- [oggvorbis] audio decoder / encoder for the ogg file format.
-
-To all of the people responsible for making these available and of such high quality, thank you!
-
-
 [webaudio]: https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html
 [puredata]: http://puredata.info/
 [coreaudio-file-types]: https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/CoreAudioOverview/SupportedAudioFormatsMacOSX/SupportedAudioFormatsMacOSX.html
 [mediafoundation-file-types]: http://msdn.microsoft.com/en-us/library/windows/desktop/dd757927(v=vs.85).aspx
-[ooura]: http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html
-[r8brain]: https://code.google.com/p/r8brain-free-src/
-[oggvorbis]: http://xiph.org/vorbis/
 [web_audio_spec]: http://webaudio.github.io/web-audio-api/
 [web_audio_modular_routing]: http://webaudio.github.io/web-audio-api/#modular-routing
 [jos-dft]: https://ccrma.stanford.edu/~jos/st/
