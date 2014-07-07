@@ -1,6 +1,9 @@
-// Copyright (c) 2014, Richard Eakin.
-// This audio sample firstly makes use of the audio::DelayNode, but also demonstrates some more complex methods of control,
-// like feedback and controlling an audio::Param with other audio::Node's.
+/*
+ * This audio sample firstly makes use of the audio::DelayNode, but also demonstrates some more complex methods of control,
+ * like feedback and controlling an audio::Param with other audio::Node's.
+ *
+ * author: Richard Eakin (2014)
+ */
 
 #include "cinder/app/AppNative.h"
 #include "cinder/gl/gl.h"
