@@ -10,14 +10,15 @@ This document provides an overview of the audio capabilities in cinder. You can 
 
 The `ci::audio` namespace consists of a few different components and layers of abstraction:
 
-- a modular, Node-based set of real-time audio tools. 
-- Voice - a higher level 'simple api' for when all you want is to play back a sound file or get a processing function.
-- audio file reading and writing tools, following cinder's Source / Target pattern. 
-- A lower level set of DSP tools, like FFT transform, Biquad filtering and vector based math operations.
+\image html audio_layers.png
 
-The core of the design draws from concepts found in other popular modular audio API's, namely [Web Audio][webaudio] and [Pure Data][puredata], while combining many of cinder's existing design patterns. We also take full advantage of C++11 features such as smart pointers, `std::atomic`'s, and `std::mutex`'s.  
+The design is meant to accomodate a wide range of applications. The `Voice` API is appropriate when you simply need to play an audio track, or want a simple way to write to a constinuous audio stream using a callback.
 
-A modular api is advantagous because it is proven to be very flexible and allows for reusability without a significant loss in performance.  Still, higher level constructs exist and more will be added as time permits.  The cinder philosophy remains, "easy things easy and hard things possible." 
+The core of the design is the modular API, which provides a set of extendable audio tools that can be connected in flexible ways depending on an application's needs. For those who plan to do extensive audio work with cinder, they will be served best by using the Node system. It draws from concepts found in other popular modular audio API's, namely [Web Audio][webaudio] and [Pure Data][puredata], while combining many of cinder's existing design patterns. We also take full advantage of C++11 features such as smart pointers, `std::atomic`'s, and `std::mutex`'s.
+
+A modular API is advantagous because it is proven to be very flexible and allows for reusability without a significant loss in performance.  Still, higher level constructs exist and more will be added as time permits.  The cinder philosophy remains, "easy things easy and hard things possible."
+
+For those looking for raw dsp functionality, the `ci::audio::dsp` namespace contains a range of high performance tools for most audio processing tasks. They are used by the available `Node`s and provide building blocks for custom `Node` classes or any other audio processing purposes.
 
 \section voice Voice - simple audio file or callback player
 
@@ -36,7 +37,7 @@ mVoice->stop();
 
 The \ref cinder::audio::Voice::create() "audio::Voice::create()" method returns a shared_ptr to a Voice sub-class (ex, in the case of playing an audio file, returns `VoiceSamplePlayerRef`, but the user will generally only need to maintain this by storing it in a VoiceRef instance variable. It is necessary to store the returned VoiceRef because once it goes out of scope, it will be disconnected from the audio graph and destroyed.  This is fairly cheap, however (much cheaper than creating the `SourceFile` via `audio::load()`, for example), so if you need to later play a different file, you can safely call `Voice::create()` again and assign it to your `mVoice` instance variable.
 
-You can also use a `Voice` to process an arbitrary chunk of code with a `std::function`. This can be useful for educational purposes or quick experiments:
+You can also use a `Voice` for basic audio processing by providing a `std::function` callback to the `create()` method. This can be useful for educational purposes or quick experiments.
 
 \code{.cpp}
 
@@ -54,6 +55,8 @@ mVoice = audio::Voice::create( [this] ( audio::Buffer *buffer, size_t sampleRate
         } );
 
 \endcode
+
+Users should be away that the callback is processing on the background audio thread, so any data that interacts with the main thread needs to be synchronized.
 
 Each Voice has controls for volume and 2d panning.  Here is an example of how you'd control these with the mouse:
 
@@ -188,7 +191,7 @@ If you need the Context to address a device other than the system default, you m
 
 \code{.cpp}
 auto ctx = ci::audio::master();
-auto device = ci::audio::Device::findDeviceByName( "Device Name" );
+auto device = ci::audio::Device::findDeviceByName( "Internal Speakers" );
 ci::audio::OutputDeviceNodeRef output = ctx->createOutputDeviceNode( device );
 ctx->setOutput( output );
 \endcode
@@ -270,18 +273,31 @@ If all you need is to get the current volume of the audio stream, you can use th
 
 Whereas `MonitorNode` will give you time-domain samples on the main thread, `MonitorSpectralNode` is a subclass that will give you frequency-domain samples by way of the *Discrete Fourier transform* (popularly thought of as the *FFT*, which for all practical purposes can be thought of as one in the same). This is managed internally using the \ref cinder::audio::dsp::Fft "audio::dsp::Fft" class, though for the typical case of viewing the magnitude spectrum of an audio signal, `MonitorSpectralNode` is all you need.
 
-\code{.cpp}
-mInputDeviceNode = ctx->createInputDeviceNode();
-mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode() );
+The `InputAnalyzer` makes use of this class, along with an `InputDeviceNode` as input, to provide a class spectrogram that looks like the following:
 
-mInputDeviceNode >> mMonitorSpectralNode;
+\image html audio_sample_analyzer.png "Screenshot of InputAnalyzer sample"
+
+To create and connect up the Nodes for this:
+
+\code{.cpp}
+void MyApp::setup()
+{
+    mInputDeviceNode = ctx->createInputDeviceNode();
+    mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode() );
+
+    mInputDeviceNode >> mMonitorSpectralNode;    
+}
 \endcode
 
-And later when you want to draw the magnitude spectrum:
+And later when you want to draw the magnitude spectrum, you get the magnitude spectrum data with:
 
 \code{.cpp}
-const vector<float> &magSpectrum = mMonitorSpectralNode->getMagSpectrum();
-drawSomething( magSpectrum );
+void MyApp::draw()
+{
+    const vector<float> &magSpectrum = mMonitorSpectralNode->getMagSpectrum();
+
+    // draw the vector here...    
+}
 \endcode
 
 The `MonitorSpectralNode::getMagSpectrum()` method first makes a copy of the audio samples, then it computes a forward FFT transform and finally converts to polar coordinates.  What you get returned to you is the magnitudes only, the phase part is commonly ignored for visualizing the spectrum.  While a full explanation of the DFT is out of scope here ([Julius Smith's book][jos-dft] is a great reference), you interpret the result as an array of *bins*, where each bin is a frequency range of the decomposed (analyzed) signal and the maximum frequency is the so-called *nyquist* (half the samplerate).
@@ -346,6 +362,8 @@ Sample types supported are 16-bit int, 24-bit int, and 32-bit float, all of whic
 See also:
 
 [BufferPlayer](https://github.com/cinder/Cinder/blob/master/samples/_audio/BufferPlayer/src/BufferPlayerApp.cpp)
+
+\image html audio_sample_bufferplayback.png "Screenshot of BufferPlayer sample"
 
 \subsection write_audio BufferRecorderNode
 
@@ -471,7 +489,7 @@ mVoice->getOutputNode() >> mMonitor >> audio::master()->getOutput();
 
 \subsection ios_specific iOS
 
-The iOS simulator has many problems related to hardware, rendering it quite useless for developing or testing projects with audio.  Instead, build for mac desktop when dev'ing and iOS for testing, the two platforms are nearly identical with respect to audio.
+The iOS simulator has many problems related to hardware, rendering it quite useless for developing or testing projects with audio. Instead, build for mac desktop when dev'ing and iOS for testing, the two platforms are nearly identical with respect to audio.
 
 \section other Other
 
