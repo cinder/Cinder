@@ -38,13 +38,13 @@ void TriangulationApp::setup()
 	mParams = params::InterfaceGl( "Parameters", Vec2i( 220, 170 ) );
 	mFontSize = 256;
 	mDrawWireframe = true;
-	mParams.addParam( "Draw Wireframe", &mDrawWireframe, "min=1 max=2000 keyIncr== keyDecr=-" );
+	mParams.addParam( "Draw Wireframe", &mDrawWireframe, "key=w" );
 	mParams.addButton( "Random Font", bind( &TriangulationApp::setRandomFont, this ), "key=f" );
 	mParams.addButton( "Random Glyph", bind( &TriangulationApp::setRandomGlyph, this ) );
 	mZoom = 1.0f;
-	mParams.addParam( "Zoom", &mZoom, "min=0.01 max=20 keyIncr=z keyDecr=Z" );
+	mParams.addParam( "Zoom", &mZoom, "min=0.25 max=20 keyIncr=z keyDecr=Z" );
 	mOldPrecision = mPrecision = 1.0f;
-	mParams.addParam( "Precision", &mPrecision, "min=0.01 max=20 keyIncr=p keyDecr=P" );
+	mParams.addParam( "Precision", &mPrecision, "min=0.001 max=10 step=0.25 keyIncr=p keyDecr=P" );
 	mNumPoints = 0;
 	mParams.addParam( "Num Points", &mNumPoints, "", true );
 
