@@ -38,9 +38,10 @@
 
 namespace cinder { namespace audio { namespace dsp {
 
-//! Real Discrete Fourier Transform (DFT)
+//! Real Discrete Fourier Transform (DFT).
 class Fft {
-public:
+  public:
+	//! Constructs an Fft object. \a fftSize must be a power of two and greater than two.
 	Fft( size_t fftSize );
 	~Fft();
 
@@ -48,10 +49,10 @@ public:
 	void forward( const Buffer *waveform, BufferSpectral *spectral );
 	//! Computes the Inverse DFT of \a spectral, filling \a waveform with time-domain audio data
 	void inverse( const BufferSpectral *spectral, Buffer *waveform );
-
+	//! Returns the size of the FFT.
 	size_t getSize() const	{ return mSize; }
 
-protected:
+  protected:
 	void init();
 
 	size_t				mSize, mSizeOverTwo;

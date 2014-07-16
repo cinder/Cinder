@@ -36,6 +36,7 @@ typedef std::shared_ptr<class DelayNode>		DelayNodeRef;
 //! \note Restrictions: The current minimum delay length is one processing block. Restricts channel count to 1 (mixes down inputs).
 class DelayNode : public Node {
   public:
+	//! Constructs a DelayNode with an optional \a format.
 	DelayNode( const Format &format = Format() );
 
 	//! Sets the maximimum delay in seconds.
@@ -45,7 +46,8 @@ class DelayNode : public Node {
 
 	//! Sets the delay value in seconds. Must be at least at least the length of one processing block.
 	void	setDelaySeconds( float seconds );
-	float	setDelaySeconds() const				{ return mParamDelaySeconds.getValue(); }
+	//! Returns the delay value in seconds.
+	float	getDelaySeconds() const				{ return mParamDelaySeconds.getValue(); }
 
 	//! Returns the Param used to automate the delay seconds. \note Values over max delay seconds will be clipped, causing pops.
 	Param*	getParamDelaySeconds()			{ return &mParamDelaySeconds; }

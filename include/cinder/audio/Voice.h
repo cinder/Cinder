@@ -120,6 +120,7 @@ class VoiceSamplePlayerNode : public Voice {
   public:
 
 	NodeRef getInputNode() const override			{ return mNode; }
+	//! Returns a shared_ptr of the owned SamplePlayerNode.
 	SamplePlayerNodeRef getSamplePlayerNode() const			{ return mNode; }
 
 	virtual void start() override;

@@ -222,4 +222,5 @@ void DeviceManager::emitParamsDidChange( const DeviceRef &device )
 
 	device->mSignalParamsDidChange();
 }
+
 } } // namespace cinder::audio

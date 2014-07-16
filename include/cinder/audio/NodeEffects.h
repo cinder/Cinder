@@ -21,6 +21,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+//! This is a conglomerate header of all effect-based Node's defined in ci::audio.
+
 #pragma once
 
 #include "cinder/audio/GainNode.h"

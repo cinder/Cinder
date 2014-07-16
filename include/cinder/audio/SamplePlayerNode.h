@@ -38,7 +38,8 @@ typedef std::shared_ptr<class BufferPlayerNode>				BufferPlayerNodeRef;
 typedef std::shared_ptr<class FilePlayerNode>				FilePlayerNodeRef;
 
 //! \brief Base Node class for sampled audio playback. Can do operations like seek and loop.
-//! \note SamplePlayerNode itself doesn't process any audio, but contains the common interface for Node's that do.
+//!
+//! SamplePlayerNode itself doesn't process any audio, but contains the common interface for InputNode's that do.
 //! \see BufferPlayerNode, FilePlayerNode
 class SamplePlayerNode : public InputNode {
   public:
@@ -93,7 +94,7 @@ class SamplePlayerNode : public InputNode {
 	std::atomic<bool>	mLoop, mIsEof;
 };
 
-//! Buffer-based sample player. In other words, all samples are loaded into memory before playback.
+//! Buffer-based SamplePlayerNode, where all samples are loaded into memory before playback.
 class BufferPlayerNode : public SamplePlayerNode {
   public:
 	//! Constructs a BufferPlayerNode without a buffer, with the assumption one will be set later. \note Format::channels() can still be used to allocate the expected channel count ahead of time.
@@ -103,34 +104,35 @@ class BufferPlayerNode : public SamplePlayerNode {
 
 	virtual ~BufferPlayerNode() {}
 
-	virtual void enableProcessing() override;
-	virtual void disableProcessing() override;
 	virtual void seek( size_t readPositionFrames ) override;
 
 	//! Loads and stores a reference to a Buffer created from the entire contents of \a sourceFile.
 	void loadBuffer( const SourceFileRef &sourceFile );
-
+	//! Sets the current Buffer. Safe to do while enabled.
 	void setBuffer( const BufferRef &buffer );
+	//! returns a shared_ptr to the current Buffer.
 	const BufferRef& getBuffer() const	{ return mBuffer; }
 
   protected:
+	virtual void enableProcessing()			override;
 	virtual void process( Buffer *buffer )	override;
 
 	BufferRef mBuffer;
 };
 
+//! File-based SamplePlayerNode, where samples are constantly streamed from file. Suitable for large audio files.
 class FilePlayerNode : public SamplePlayerNode {
   public:
+	//! Constructs a FilePlayerNode with optional \a format.
 	FilePlayerNode( const Format &format = Format() );
-	//! \note \a sourceFile's samplerate is forced to match this Node's Context.
+	//! Constructs a FilePlayerNode that plays \a sourceFile and optionally specifying \a isReadAsync (default = true). Can also provide an optional \a format. \note \a sourceFile's samplerate is forced to match this Node's Context.
 	FilePlayerNode( const SourceFileRef &sourceFile, bool isReadAsync = true, const Format &format = Node::Format() );
 	virtual ~FilePlayerNode();
 
-	virtual void enableProcessing() override;
-	virtual void disableProcessing() override;
 	virtual void stop() override;
 	virtual void seek( size_t readPositionFrames ) override;
 
+	//! Returns whether reading occurs asynchronously (default is false). If true, file reading is done from an internal thread, if false it is done directly on the audio thread.
 	bool isReadAsync() const	{ return mIsReadAsync; }
 
 	//! \note \a sourceFile's samplerate is forced to match this Node's Context.
@@ -145,6 +147,8 @@ class FilePlayerNode : public SamplePlayerNode {
   protected:
 	void initialize()				override;
 	void uninitialize()				override;
+	void enableProcessing()			override;
+	void disableProcessing()		override;
 	void process( Buffer *buffer )	override;
 
 	void readAsyncImpl();

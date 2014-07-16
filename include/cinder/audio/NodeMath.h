@@ -29,20 +29,24 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace cinder { namespace audio {
 
-//! Base class for an arithmetic based Node
+//! Base class for an arithmetic based Node.
 class MathNode : public Node {
   public:
-	Param* getParam()				{ return &mParam; }
-
+	//! Sets the current value to a constant \a value.
 	void setValue( float value )	{ mParam.setValue( value ); }
+	//! Returns the current value.
 	float getValue() const			{ return mParam.getValue(); }
+
+	//! Returns a pointer to the Param that can be used to animate the value.
+	Param* getParam()				{ return &mParam; }
 
   protected:
 	MathNode( float initialValue, const Format &format );
 
-	Param				mParam;
+	Param	mParam;
 };
 
+//! Node for performing an addition operation on its input.
 class AddNode : public MathNode {
   public:
 	AddNode( const Format &format = Format() ) : MathNode( 0, format )	{}
@@ -52,6 +56,7 @@ protected:
 	void process( Buffer *buffer ) override;
 };
 
+//! Node for performing a subtration operation on its input.
 class SubtractNode : public MathNode {
   public:
 	SubtractNode( const Format &format = Format() ) : MathNode( 0, format )	{}
@@ -61,6 +66,7 @@ class SubtractNode : public MathNode {
 	void process( Buffer *buffer ) override;
 };
 
+//! Node for performing a mulitplication operation on its input.
 class MultiplyNode : public MathNode {
   public:
 	MultiplyNode( const Format &format = Format() ) : MathNode( 0, format )	{}
@@ -70,6 +76,7 @@ class MultiplyNode : public MathNode {
 	void process( Buffer *buffer ) override;
 };
 
+//! Node for performing a division operation on its input.
 class DivideNode : public MathNode {
   public:
 	DivideNode( const Format &format = Format() ) : MathNode( 0, format )	{}

@@ -17,6 +17,7 @@ public:
 	void prepareSettings( Settings *settings );
 	void setup();
 	void fileDrop( FileDropEvent event );
+	void keyDown( KeyEvent event );
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
 	void draw();
@@ -66,6 +67,16 @@ void BufferPlayerNodeApp::fileDrop( FileDropEvent event )
 	mBufferPlayerNode->loadBuffer( sourceFile );
 
 	mWaveformPlot.load( mBufferPlayerNode->getBuffer(), getWindowBounds() );
+}
+
+void BufferPlayerNodeApp::keyDown( KeyEvent event )
+{
+	if( event.getCode() == KeyEvent::KEY_SPACE ) {
+		if( mBufferPlayerNode->isEnabled() )
+			mBufferPlayerNode->stop();
+		else
+			mBufferPlayerNode->start();
+	}
 }
 
 void BufferPlayerNodeApp::mouseDown( MouseEvent event )

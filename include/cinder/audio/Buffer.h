@@ -37,23 +37,24 @@
 
 namespace cinder { namespace audio {
 
-//! Audio buffer that stores channels of type \a T in contiguous arrays.
+//! Base class for the various Buffer classes.  The template parameter T defined the sample type (precision).
 template <typename T>
 class BufferBaseT {
   public:
+	//! The compile-time defined type of samples contained in the buffer.
 	typedef T SampleType;
 
-	BufferBaseT( size_t numFrames, size_t numChannels )
-		: mNumFrames( numFrames ), mNumChannels( numChannels ), mData( numFrames * numChannels )
-	{}
-
+	//! Returns the number of frames in the buffer.
 	size_t getNumFrames() const		{ return mNumFrames; }
+	//! Returns the number of channels in the buffer.
 	size_t getNumChannels() const	{ return mNumChannels; }
+	//! Returns the total size of the buffer (frames * channels).
 	size_t getSize() const			{ return mNumFrames * mNumChannels; }
-
+	//! Returns true if number of frames is zero, false otherwise.
 	bool isEmpty() const			{ return mNumFrames == 0; }
-
+	//! Returns a pointer to the first sample in the data buffer.
 	T* getData() { return mData.data(); }
+	//! Returns a const pointer to the first sample in the data buffer.
 	const T* getData() const { return mData.data(); }
 
 	T& operator[]( size_t n )
@@ -68,28 +69,38 @@ class BufferBaseT {
 		return mData[n];
 	}
 
+	//! Sets all samples to the value zero.
 	void zero()
 	{
 		std::memset( mData.data(), 0, mData.size() * sizeof( T ) );
 	}
 
   protected:
+	BufferBaseT( size_t numFrames, size_t numChannels )
+		: mNumFrames( numFrames ), mNumChannels( numChannels ), mData( numFrames * numChannels )
+	{}
+
 	std::vector<T> mData;
 	size_t mNumChannels, mNumFrames;
 };
 
+//! Audio buffer that stores its channels of type \a T contiguously (ie. the first sample of channel 1 is directly after the last sample of channel 0). Bounds checking is accomplished with assertions that are disabled in release mode by default.
 template <typename T>
 class BufferT : public BufferBaseT<T> {
   public:
+	//! Constructs a BufferT object with \a numFrames number of frames (default = 0) and \a numChannels number of channels (default = 1).
+	BufferT( size_t numFrames = 0, size_t numChannels = 1 )
+		: BufferBaseT<T>( numFrames, numChannels )
+	{}
 
-	BufferT( size_t numFrames = 0, size_t numChannels = 1 ) : BufferBaseT<T>( numFrames, numChannels ) {}
-
+	//! Returns a pointer offset to the first sample of channel \a ch.
 	T* getChannel( size_t ch )
 	{
 		CI_ASSERT_MSG( ch < this->mNumChannels, "ch out of range" );
 		return &this->mData[ch * this->mNumFrames];
 	}
 
+	//! Returns a const pointer offset to the first sample of channel \a ch.
 	const T* getChannel( size_t ch ) const
 	{
 		CI_ASSERT_MSG( ch < this->mNumChannels, "ch out of range" );
@@ -155,6 +166,7 @@ class BufferT : public BufferBaseT<T> {
 	}
 };
 
+//! Audio buffer that stores its channels of type \a T in one interleaved array (ie. the first sample of channel 1 is directly after the first sample of channel 0).
 template <typename T>
 class BufferInterleavedT : public BufferBaseT<T> {
   public:
@@ -169,33 +181,37 @@ class BufferInterleavedT : public BufferBaseT<T> {
 	}
 };
 
-//! BufferT variant that contains audio data in the frequency domain. Its channels relate to the results of an
-//! FFT transform, channel = 0 is real and channel = 1 is imaginary. The reasoning for subclassing \a BufferT is
-//! so that a BufferSpectralT can be handled by generic processing \a Node's as well, which can operate on both
-//! time and frequency domain signals.
+//! \brief A buffer that contains frequency domain audio data.
+//!
+//! The channels relate to the results of an FFT transform, channel = 0 is real and channel = 1 is imaginary. The reasoning for subclassing \a BufferT is in part for clarity
+//! and also so that a BufferSpectralT can be handled by generic processing \a Node's as well, which can operate on both time and frequency domain signals.
 template <typename T>
 class BufferSpectralT : public BufferT<T> {
   public:
+	//! Constructs a BufferSpectralT object of frames \a numFrames. There is always two channels, where channel 0 is the real component and 1 is the imaginary component.
 	BufferSpectralT( size_t numFrames = 0 ) : BufferT<T>( numFrames / 2, 2 ) {}
 
+	//! Returns a pointer to the first sample in the real component channel.
 	T* getReal()				{ return &this->mData[0]; }
+	//! Returns a const pointer to the first sample in the real component channel.
 	const T* getReal() const	{ return &this->mData[0]; }
 
+	//! Returns a pointer to the first sample in the imaginary component channel.
 	T* getImag()				{ return &this->mData[this->mNumFrames]; }
+	//! Returns a const pointer to the first sample in the imaginary component channel.
 	const T* getImag() const	{ return &this->mData[this->mNumFrames]; }
-
 };
 
-//! BufferDynamicT is a resizable BufferT<T>. The internally allocated buffer will grow as needed,
-//! but it will not shrink unless shrinkToFit() is called.
-//! TODO: enable move operator to convert BufferT to this
+//! A resizable BufferT. The internally allocated buffer will grow as needed, but it will not shrink unless shrinkToFit() is called. TODO: enable move operator to convert BufferT to this
 template <typename BufferTT>
 class BufferDynamicT : public BufferTT {
   public:
+	//! Constructs a BufferDynamicT object with \a numFrames number of frames (default = 0) and \a numChannels number of channels (default = 1).
 	BufferDynamicT( size_t numFrames = 0, size_t numChannels = 1 ) : BufferTT( numFrames, numChannels ),
 		mAllocatedSize( numFrames * numChannels )
 	{}
 
+	//! Sets the new size of the buffer to \a numFrames number of frames and \a numChannels number of channels. Will only resize of the new size (frames * channels) is larger than before.
 	void setSize( size_t numFrames, size_t numChannels )
 	{
 		this->mNumFrames = numFrames;
@@ -203,12 +219,14 @@ class BufferDynamicT : public BufferTT {
 		resizeIfNecessary();
 	}
 
+	//! Sets the new number of frames in the buffer to \a numFrames. Will only resize of the new size (frames * channels) is larger than before.
 	void setNumFrames( size_t numFrames )
 	{
 		this->mNumFrames = numFrames;
 		resizeIfNecessary();
 	}
 
+	//! Sets the new number of channels in the buffer to \a numChannels. Will only resize of the new size (frames * channels) is larger than before.
 	void setNumChannels( size_t numChannels )
 	{
 		this->mNumChannels = numChannels;
@@ -222,6 +240,7 @@ class BufferDynamicT : public BufferTT {
 		this->mData.resize( mAllocatedSize );
 	}
 
+	//! Returns the number of samples allocated in this buffer (may be larger than getSize()).
 	size_t getAllocatedSize() const		{ return mAllocatedSize; }
 
   private:
@@ -259,6 +278,9 @@ std::unique_ptr<T, FreeDeleter<T> > makeAlignedArray( size_t size, size_t alignm
 
 typedef std::unique_ptr<float, FreeDeleter<float> >		AlignedArrayPtr;
 typedef std::unique_ptr<double, FreeDeleter<double> >	AlignedArrayPtrd;
+
+// ---------------------------------------------------------------------------------
+// typedef's for the various flavors of Buffer's.
 
 typedef BufferT<float>						Buffer;
 typedef BufferInterleavedT<float>			BufferInterleaved;

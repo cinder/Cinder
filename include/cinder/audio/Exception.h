@@ -30,36 +30,37 @@
 
 namespace cinder { namespace audio {
 
+//! General Audio exception.
 class AudioExc : public Exception {
   public:
 	AudioExc( const std::string &description, int32_t errorCode = 0 ) : mDescription( description )	{}
 	virtual const char* what() const throw()	{ return mDescription.c_str(); }
+	//! Returns a platform-specific error code received. May be 0 (meaning none was available).
 	int32_t getCode() const						{ return mErrorCode; }
   protected:
 	std::string mDescription;
 	int32_t mErrorCode;
 };
 
+//! Audio exception related to Device management.
 class AudioDeviceExc : public AudioExc {
   public:
 	AudioDeviceExc( const std::string &description ) : AudioExc( description )	{}
 };
 
+//! Audio exception originating from within the Context.
 class AudioContextExc : public AudioExc {
   public:
 	AudioContextExc( const std::string &description ) : AudioExc( description )	{}
 };
 
+//! Audio exception that occurs when the format of a Node leads to an irrecoverable error.
 class AudioFormatExc : public AudioExc {
   public:
 	AudioFormatExc( const std::string &description ) : AudioExc( description )	{}
 };
 
-class AudioParamExc : public AudioExc {
-  public:
-	AudioParamExc( const std::string &description ) : AudioExc( description )	{}
-};
-
+//! Audio exception related to file i/o.
 class AudioFileExc : public AudioExc {
   public:
 	AudioFileExc( const std::string &description, int32_t errorCode = 0 ) : AudioExc( description )	{}

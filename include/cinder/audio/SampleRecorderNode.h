@@ -47,6 +47,7 @@ class SampleRecorderNode : public NodeAutoPullable {
 class BufferRecorderNode : public SampleRecorderNode {
   public:
 	BufferRecorderNode( const Format &format = Format() );
+	//! Constructs a BufferRecordNode and initializes its buffer to be large enough to hold \a numFrames frames.
 	BufferRecorderNode( size_t numFrames, const Format &format = Format() );
 
 	//! Starts recording. Resets the write position to zero (call disable() to pause recording).

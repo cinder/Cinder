@@ -31,7 +31,7 @@ using namespace std;
 namespace cinder { namespace audio {
 
 Pan2dNode::Pan2dNode( const Format &format )
-	: Node( format ), mPos( 0.5f ), mMonoInputMode( true )
+	: Node( format ), mPos( 0.5f ), mStereoInputMode( false )
 {
 	setChannelMode( ChannelMode::SPECIFIED );
 	setNumChannels( 2 );
@@ -43,7 +43,7 @@ Pan2dNode::Pan2dNode( const Format &format )
 bool Pan2dNode::supportsInputNumChannels( size_t numChannels )
 {
 	if( numChannels == 1 ) {
-		mMonoInputMode = true;
+		mStereoInputMode = true;
 		mProcessInPlace = false;
 		size_t framesPerBlock = getFramesPerBlock();
 
@@ -54,9 +54,7 @@ bool Pan2dNode::supportsInputNumChannels( size_t numChannels )
 			mSummingBuffer = Buffer( framesPerBlock, mNumChannels );
 	}
 	else
-		mMonoInputMode = false;
-
-	LOG_V << "mono input mode: " << boolalpha << mMonoInputMode << dec << endl;
+		mStereoInputMode = false;
 
 	return ( numChannels <= 2 );
 }
@@ -65,7 +63,7 @@ void Pan2dNode::pullInputs( Buffer *destBuffer )
 {
 	CI_ASSERT( getContext() );
 
-	if( ! mMonoInputMode )
+	if( ! mStereoInputMode )
 		Node::pullInputs( destBuffer );
 	else {
 		// inputs are summed to channel 0 only
@@ -111,7 +109,7 @@ void Pan2dNode::process( Buffer *buffer )
 	float leftGain = math<float>::cos( posRadians );
 	float rightGain = math<float>::sin( posRadians );
 
-	if( mMonoInputMode ) {
+	if( ! mStereoInputMode ) {
 		dsp::mul( channel0, leftGain, channel0, buffer->getNumFrames() );
 		dsp::mul( channel1, rightGain, channel1, buffer->getNumFrames() );
 	}
