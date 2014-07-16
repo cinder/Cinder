@@ -75,12 +75,12 @@ Related Samples:
 
 \section audio_buffers Audio Buffers
 
-Before jumping into the meat and potatoes, its a good idea to be introduced to \ref cinder::audio::BufferT< T >  "audio::Buffer", the class used for passing audio samples around in `ci::audio`. Audio data is most commonly handled in two different manners:
+Before jumping into the meat and potatoes, its a good idea to be introduced to \ref cinder::audio::BufferT "audio::Buffer", the class used for passing audio samples around in `ci::audio`. Audio data is most commonly handled in two different manners:
 
 1. a contiguous stream of 'blocks' of equal length, which is how real-time processing is achieved.
 2. as a single unit, such as the uncompressed data of sound file.
 
-In both cases, there is a number of frames (a frame consists of a sample for each channel) and a number of channels that make up the layout of the Buffer.  Usually `Buffer`s are passed by pointer if they are only meant to be filled (like from a process function) or `shared_ptr` (`BufferRef`'s) if it makes sense to hold onto a shared buffer. This isn't required though, and in some cases you indeed want to copy the entire Buffer, such as multi-threaded situations where you are passing a Buffer from the audio thread back to the main thread. For these cases, the copy constructor is enabled.
+In both cases, there is a number of frames (a frame consists of a sample for each channel) and a number of channels that make up the layout of the `Buffer`.  Usually `Buffer`s are passed by pointer if they are only meant to be filled (like from a process function) or `shared_ptr<Buffer>` (`BufferRef`'s) if it makes sense to hold onto a shared buffer. This isn't required though, and in some cases you indeed want to copy the entire Buffer, such as multi-threaded situations where you are passing a Buffer from the audio thread back to the main thread. For these cases, the copy constructor is enabled.
 
 It is also important to note that samplerate is not a property of the buffer data - this is to allow for flexibility of how the data is interpreted.  Instead, samplerate is determined from the context in which the audio data is being used.
 
@@ -88,7 +88,7 @@ It is also important to note that samplerate is not a property of the buffer dat
 
 The standard `Buffer` class used when passing audio between different components stores its channels contiguously (non-interleaved). This means that right after channel 0 (ex. left speaker) ends, the next sample in the internal array is the first sample of channel 1 (ex. right speaker). For convenience, the `Buffer::getChannel( size_t )` method with return a float* offset to the provided channel index, and also does some debug assertions that the index is in bounds. In the rare cases that interleaved audio is required (ex. interfacing with third-party or system level API's), there is a `BufferInterleaved` variant. 
 
-Currently all processing is handled in single floating point precision.  However, the Buffer class is actually a typedef'ed `BufferT<float>`, so if a different sample format is required, one can use the BufferT class directly and provide the sample type.  While this is not directly interchangeable with public interfaces in the `ci::audio` namespace, there are conversion utilities provided in `cinder/audio/dsp/Converter.h`. 
+Currently all processing is handled in single floating point precision.  However, the Buffer class is actually a typedef'ed `BufferT<float>`, so if a different sample format is required, one can use the BufferT class directly and provide the sample type.  While this is not directly interchangeable with public interfaces in the `ci::audio` namespace, there are conversion utilities provided in \ref cinder/audio/dsp/Converter.h "cinder/audio/dsp/Converter.h". 
 
 In all `Buffer` variants, you can get at the actual data store with the `Buffer::getData()` method, which returns a pointer to an array and can be used however the user wishes, provided they understand the buffer layout.
 
@@ -102,7 +102,7 @@ At the core of the `ci::audio` architecture is a modular, Node-based system that
 
 \subsection context Context
 
-The Context class manages platform specific audio processing and thread synchronization between the 'audio' (real-time) and 'user' (typically UI/main, but not limited to) threads. There is one 'master', which is the only hardware-facing Context. All `Node`s are created using the Context, which is necessary for thread synchronization.  A new Node is created like the following: 
+The \ref cinder::audio::Context "audio::Context" class manages platform specific audio processing and thread synchronization between the 'audio' (real-time) and 'user' (typically UI/main, but not limited to) threads. There is one 'master', which is the only hardware-facing Context. All `Node`s are created using the Context, which is necessary for thread synchronization.  A new Node is created like the following: 
 
 \code{.cpp}
 auto ctx = audio::Context::master();
@@ -116,11 +116,11 @@ There are a couple important parameters governed by the current Context, which `
 
 These parameters are ultimately configured by the Context's `OutputNode` (accessible with `Context::getOutput()`), which is currently always of type `OutputNodeDevice`.  This means that the samplerate and frames-per-block settings are governed by your system's hardware settings.
 
-It is worth noting that these values can change at runtime either by the user or system, which will cause all Nodes within a Context to be reconfigured.  This should in general 'just work', though authors of `Node`s should be aware of this possibility when deciding how to manage their Buffers.
+It is worth noting that these values can change at runtime either by the user or system, which will cause all Nodes within a Context to be reconfigured.  This should in general just work, though authors of `Node`s should be aware of this possibility when deciding how to manage their Buffers.
 
 \subsection node Node
 
-A Node is the fundamental building block for audio processing graphs. They allow for flexible combinations of synthesis, analysis, effects, file reading/writing, etc., and are meant to be easily subclassed. There are a two important Node types also worth mentioning upfront:
+A \ref cinder::audio::Node "audio::Node" is the fundamental building block for audio processing graphs. They allow for flexible combinations of synthesis, analysis, effects, file reading/writing, etc., and are meant to be easily subclassed. There are a two important Node types also worth mentioning upfront:
 
 - \ref cinder::audio::OutputNode "OutputNode": an endpoint at the end of an audio graph. Has no outputs.
 - \ref cinder::audio::InputNode "InputNode": an endpoint at the beginning of an audio graph. Has no inputs.
@@ -142,7 +142,7 @@ mGain->connect( ctx->getOutput() );
 mSine >> mGain >> ctx->getOutput();
 \endcode
 
-To process audio, each Node subclass implements a virtual method `process( Buffer *buffer )`. Processing can be enabled or disabled on a per-Node basis. While `NodeEffect`s are enabled by default, `NodeInput`s must be turned on before they produce any audio. `OutputNode`s are managed by their owning `Context`, which has a similar enabled/disabled syntax:
+To process audio, each `Node` subclass implements a virtual method \ref cinder::audio::Node::process() "Node::process( Buffer *buffer )". Processing can be enabled or disabled on a per-Node basis. While `NodeEffect`s are enabled by default, `NodeInput`s must be turned on before they produce any audio. `OutputNode`s are managed by their owning `Context`, so you enable it by enabling the entire `Content`:
 
 \code{.cpp}
 mSine->enable();
@@ -160,7 +160,7 @@ Other Node features include:
 - supports multiple outputs, which don't necessarily have to be connected to the Context's output( they will be added to the 'auto pull list').
 - Feedback is supported by connecting `Node`s in a cycle, although for this to make sense there must be a Node that overrides `supportsCycles()` and returns true.  The build in `Delay` is the primary user of this feature.
 - If possible (ex. one input, same # channels), a Node will process audio in-place
-- Node::ChannelMode allows the channels to be decided based on either a `Node`s input, it's output, or specified by user.
+- \ref cinder::audio::Node::ChannelMode "Node::ChannelMode" allows the channels to be decided based on either a `Node`s input, it's output, or specified by user.
 
 Related Samples:
 
@@ -169,7 +169,7 @@ Related Samples:
 
 \subsection device_output OutputDeviceNode
 
-The endpoint in an audio graph is currently always `OutputDeviceNode`, the Node that represents and sends audio to the hardware device on your computer. The default audio Context initializes this to a sane default when it is first accessed, with stereo channels (or mono if that is all that is available).
+The endpoint in an audio graph is currently always \ref cinder::audio::OutputDeviceNode "OutputDeviceNode", the Node that represents and sends audio to the hardware device on your computer. The default `Context` initializes this to a sane default when it is first accessed, with stereo channels (or mono if that is all that is available).
 
 In order to support non device Context's in the future, `Context::getOutput()` returns an `OutputNode`, the parent class of `OutputDeviceNode`. However, you can safely typecast it, which will allow you to get at the `audio::DeviceRef` and more information related to your hardware device:
 
@@ -212,7 +212,7 @@ __note__: Replacing the master `Context`'s output will cause a context-wide `Nod
 
 \subsection device_input InputDeviceNode
 
-`InputDeviceNode` is used to get microphone or other incoming hardware audio into the audio graph.  Its interface is very similar to `OutputDeviceNode`, most importantly being the `getDevice()` method, which returns the owned `audio::DeviceRef`.  As with `OutputDeviceNode`, you must create the InputDeviceNode using the platform-specific virtual method `Context::createInputDeviceNode()`:
+\ref cinder::audio::InputDeviceNode "InputDeviceNode" is used to get microphone or other incoming hardware audio into the audio graph.  Its interface is very similar to `OutputDeviceNode`, most importantly being the `getDevice()` method, which returns the owned `audio::DeviceRef`.  As with `OutputDeviceNode`, you must create the InputDeviceNode using the platform-specific virtual method `Context::createInputDeviceNode()`:
 
 \code{.cpp}
 ci::audio::InputDeviceNodeRef input = ctx->createInputDeviceNode();
@@ -300,7 +300,7 @@ void MyApp::draw()
 }
 \endcode
 
-The `MonitorSpectralNode::getMagSpectrum()` method first makes a copy of the audio samples, then it computes a forward FFT transform and finally converts to polar coordinates.  What you get returned to you is the magnitudes only, the phase part is commonly ignored for visualizing the spectrum.  While a full explanation of the DFT is out of scope here ([Julius Smith's book][jos-dft] is a great reference), you interpret the result as an array of *bins*, where each bin is a frequency range of the decomposed (analyzed) signal and the maximum frequency is the so-called *nyquist* (half the samplerate).
+The `MonitorSpectralNode::getMagSpectrum()` method first makes a copy of the audio samples, then it computes a forward FFT transform and finally converts to polar coordinates.  What you get returned to you is the magnitudes only, the phase part is commonly ignored for visualizing the spectrum.  While a full explanation of the DFT is out of scope here ([Julius O. Smith's book][jos-dft] is a great reference), you interpret the result as an array of *bins*, where each bin is a frequency range of the decomposed (analyzed) signal and the maximum frequency is the so-called *nyquist* (half the samplerate).
 
 Note that whereas in the time domain you receive an `audio::Buffer`, `getMagSpectrum()` returns a vector of floats regardless of the number of channels it is processing.  If the `MonitorSpectralNode` has two or more channels, the samples in each channel will first be averaged before the magnitude spectrum is computed.  Computing the exact frequency range is simple and well defined:
 
@@ -419,7 +419,7 @@ Related Samples:
 
 - [MultichannelOutput](https://github.com/cinder/Cinder/blob/master/samples/_audio/MultichannelOutput/src/MultichannelOutputApp.cpp)
 
-\subsection other_nodes Other Node's - GenNode's and Effects
+\subsection other_nodes Other Nodes - GenNode's and Effects
 
 There are quite a few other `Node` subclasses that have not yet been mentioned, and it is likely that more will appear with time.  For a glimpse at what's in the core, you can look at the class heirarchy in \ref cinder::audio::Node "audio::Node"'s reference documentation. Many fall into two main categories, generators and effects.
 
