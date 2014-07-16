@@ -98,7 +98,7 @@ void EarthquakeApp::setup()
 	mPov			= POV( this, ci::Vec3f( 0.0f, 0.0f, 1000.0f ), ci::Vec3f( 0.0f, 0.0f, 0.0f ) );
 	mEarth			= Earth( earthDiffuse, earthNormal, earthMask );
 	
-	parseEarthquakes( "http://earthquake.usgs.gov/earthquakes/catalogs/7day-M2.5.xml" );
+	parseEarthquakes( "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.atom" );
 	
 	mEarth.setQuakeLocTip();
 }
@@ -244,16 +244,19 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 {
 	const XmlTree xml( loadUrl( Url( url ) ) );
 	for( XmlTree::ConstIter itemIter = xml.begin( "feed/entry" ); itemIter != xml.end(); ++itemIter ) {
+		// Extract the title and magnitude from strings in both forms:
+		// "M 2.7 - 48km ENE of Road Town, British Virgin Islands"
+		// "M 2.5 Quarry Blast - 30km NNE of Tulelake, California"
 		string titleLine( itemIter->getChild( "title" ).getValue() );
-		size_t firstComma = titleLine.find( ',' );
-		float magnitude = fromString<float>( titleLine.substr( titleLine.find( ' ' ) + 1, firstComma - 2 ) );
-		string title = titleLine.substr( firstComma + 2 );
+		size_t secondSpace = titleLine.find( ' ', 2 );
+		float magnitude = fromString<float>( titleLine.substr( 2, secondSpace - 2 ) );
+		string title = titleLine.substr( titleLine.find( " - " ) + 3 );
 
 		istringstream locationString( itemIter->getChild( "georss:point" ).getValue() );
 		Vec2f locationVector;
 		locationString >> locationVector.x >> locationVector.y;
 		
-		mEarth.addQuake( locationVector.x, locationVector.y, magnitude, title );		
+		mEarth.addQuake( locationVector.x, locationVector.y, magnitude, title );
 	}
 	
 	//mEarth.addQuake( 37.7f, -122.0f, 8.6f, "San Francisco" );
