@@ -1,0 +1,6 @@
+#include "../include/Resources.h"
+
+1	ICON	"..\\..\\..\\data\\cinder_app_icon.ico"
+
+SMOOTH_CIRCLE_GLSL_VERT
+SMOOTH_CIRCLE_GLSL_FRAG
