@@ -34,6 +34,7 @@
 #include "cinder/Display.h"
 #include "cinder/WinRTUtils.h"
 #include "cinder/Utilities.h"
+#include "cinder/msw/CinderMsw.h"
 
 #include <Windows.h>
 #include <CommDlg.h>
@@ -160,7 +161,7 @@ void AppImplWinRT::getFolderPath( const fs::path &initialPath,  std::vector<std:
     {
         if (folder)
         {
-			f(fs::path(toUtf8(folder->Path->Data())));
+			f( fs::path( msw::toUtf8String( folder->Path->Data() ) ) );
         }
         else
         {
@@ -192,7 +193,7 @@ void AppImplWinRT::getOpenFilePath( const fs::path &initialPath,  std::vector<st
     {
         if (file)
         {
-			f(fs::path(toUtf8(file->Path->Data())));
+			f( fs::path( msw::toUtf8String( file->Path->Data() ) ) );
         }
         else
         {

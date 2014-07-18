@@ -28,6 +28,7 @@
 #include <ppltasks.h>
 #include "cinder/WinRTUtils.h"
 #include "cinder/Utilities.h"
+#include "cinder/msw/CinderMsw.h"
 using namespace Windows::Storage;
 using namespace Concurrency;
 #undef max
@@ -291,7 +292,7 @@ void SurfaceT<T>::loadImageAsync(const fs::path path, SurfaceT &surface, const S
 			auto copyTask = winrt::copyFileToTempDirAsync(path);
 			copyTask.then([path, &surface,constraints,alpha](StorageFile^ file) 
 			{
-				fs::path temp = fs::path(toUtf8(file->Path->Data()));
+				fs::path temp = fs::path( msw::toUtf8String( file->Path->Data() ) );
 				surface = SurfaceT(loadImage(fs::path(temp)),constraints, alpha);
 				winrt::deleteFileAsync(temp);
 			});
