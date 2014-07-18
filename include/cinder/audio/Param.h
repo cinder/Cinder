@@ -70,6 +70,14 @@ class Event {
 	friend class Param;
 };
 
+//! \brief Allows an audio parameter to be controlled over time with sample accuracate curves.
+
+//! The Param class enables expressive control over variables that control audio::Node's with a Timeline-esque API.
+//! It supports appending 'ramps' (audio animations) and maintains these in an internal timeline that is evaluated from the audio thread.
+//! You can also set a Node as the 'processor' with Param::setProcessor(), enabling you to control it with an arbitrary signal.
+//!
+//! A Param is owned by a parent Node, from which it gains access to the current Context.  This is a necessary step in making it sample
+//! accurate yet still controllable in a thread-safe manager on the user thread.
 class Param {
   public:
 

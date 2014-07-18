@@ -42,15 +42,17 @@ typedef std::shared_ptr<class GenPulseNode>			GenPulseNodeRef;
 //! Base class for InputNode's that generate audio samples. Gen's are always mono channel.
 class GenNode : public InputNode {
   public:
-	GenNode( const Format &format = Format() );
-	GenNode( float freq, const Format &format = Format() );
-
+	//! Sets the frequency in hertz to a constant value of \a freq.
 	void setFreq( float freq )		{ mFreq.setValue( freq ); }
+	//! Returns the current frequency in hertz.
 	float getFreq() const			{ return mFreq.getValue(); }
-
+	//! Returns a pointer to the Param, which can be used to animate the frequency.
 	Param* getParamFreq()			{ return &mFreq; }
 
   protected:
+	GenNode( const Format &format = Format() );
+	GenNode( float freq, const Format &format = Format() );
+
 	void initialize() override;
 	void initImpl();
 
@@ -60,9 +62,10 @@ class GenNode : public InputNode {
 	float mPhase;
 };
 
-//! Noise generator. \note freq param is ignored
+//! Noise generator. \note The frequency parameter is ignored.
 class GenNoiseNode : public GenNode {
   public:
+	//! Constructs a GenNoiseNode with optional \a format.
 	GenNoiseNode( const Format &format = Format() ) : GenNode( format ) {}
 
   protected:
@@ -72,6 +75,7 @@ class GenNoiseNode : public GenNode {
 //! Phase generator, i.e. ramping waveform that runs from 0 to 1.
 class GenPhasorNode : public GenNode {
   public:
+	//! Constructs a GenPhasorNode with optional \a format.
 	GenPhasorNode( const Format &format = Format() ) : GenNode( format ) {}
 	GenPhasorNode( float freq, const Format &format = Format() ) : GenNode( freq, format ) {}
 
@@ -114,7 +118,9 @@ class GenTableNode : public GenNode {
 	GenTableNode( const Format &format = Format() )	: GenNode( format )		{}
 	GenTableNode( float freq, const Format &format = Format() ) : GenNode( freq, format )	{}
 
+	//! Assigns \a waveTable as the internal wavetable. This allows one to share a WaveTable across multiple Node's.
 	void setWaveTable( const WaveTableRef &waveTable )	{ mWaveTable = waveTable; }
+	//! Returns a reference to the current wavetable.
 	const WaveTableRef&	getWaveTable()	{ return mWaveTable; }
 
   protected:
@@ -131,21 +137,24 @@ class GenOscNode : public GenNode {
 	GenOscNode( float freq, const Format &format = Format() );
 	GenOscNode( WaveformType waveformType, float freq = 0, const Format &format = Format() );
 
+	//! Sets the WaveformType of the internal wavetable. This can be a heavy operation and requires thread synchronization, so be careful not to block the audio thread for too long.
 	void setWaveform( WaveformType waveformType );
-
+	//! Assigns \a waveTable as the internal wavetable. This allows one to share a WaveTable2d across multiple Node's.
 	void setWaveTable( const WaveTable2dRef &waveTable )	{ mWaveTable = waveTable; }
+	//! Returns a reference to the current wavetable.
 	const WaveTable2dRef getWaveTable() const				{ return mWaveTable; }
 
+	//! Returns the current WaveformType
 	WaveformType	getWaveForm() const			{ return mWaveformType; }
+	//! Returns the size of the owned WaveTable2d.
 	size_t			getTableSize() const		{ return mWaveTable->getTableSize(); }
 
   protected:
 	void initialize() override;
 	void process( Buffer *buffer ) override;
 
-
 	WaveTable2dRef		mWaveTable;
-	WaveformType			mWaveformType;
+	WaveformType		mWaveformType;
 };
 
 //! Pulse waveform generator with variable pulse width. Based on wavetable lookup of two band-limited sawtooth waveforms, subtracted from each other.

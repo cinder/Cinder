@@ -130,10 +130,6 @@ void BufferPlayerNode::enableProcessing()
 	mIsEof = false;
 }
 
-void BufferPlayerNode::disableProcessing()
-{
-}
-
 void BufferPlayerNode::seek( size_t readPositionFrames )
 {
 	mIsEof = false;
@@ -209,7 +205,7 @@ void BufferPlayerNode::process( Buffer *buffer )
 // ----------------------------------------------------------------------------------------------------
 
 FilePlayerNode::FilePlayerNode( const Format &format )
-	: SamplePlayerNode( format ), mRingBufferPaddingFactor( 2 ), mLastUnderrun( 0 ), mLastOverrun( 0 )
+	: SamplePlayerNode( format ), mRingBufferPaddingFactor( 2 ), mLastUnderrun( 0 ), mLastOverrun( 0 ), mIsReadAsync( true )
 {
 	// force channel mode to match buffer
 	setChannelMode( ChannelMode::SPECIFIED );

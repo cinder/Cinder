@@ -28,7 +28,7 @@
 
 #include <vector>
 
-// TODO: add api for setting biquad with arbitrary set of coefficients, ala pd's [biquad~]
+// TODO: add api for setting biquad with arbitrary set of coefficients, similar to pd's [biquad~]
 
 namespace cinder { namespace audio {
 
@@ -36,25 +36,32 @@ typedef std::shared_ptr<class FilterLowPassNode>		FilterLowPassNodeRef;
 typedef std::shared_ptr<class FilterHighPassNode>		FilterHighPassNodeRef;
 typedef std::shared_ptr<class FilterBandPassNode>		FilterBandPassNodeRef;
 
-//! Base class for filter nodes that use Biquad
+//! General class for filtering nodes based on a biquad (two pole, two zero) filter.
 class FilterBiquadNode : public Node {
   public:
+	//! The modes that are available as 'preset' coefficients, which set the frequency response to a common type of filter.
 	enum class Mode { LOWPASS, HIGHPASS, BANDPASS, LOWSHELF, HIGHSHELF, PEAKING, ALLPASS, NOTCH, CUSTOM };
 
+	//! Constructs a FilterBiquadNode, initializing the mode to \a mode (default = Mode::LOWPASS). Can optionally provide \a format.
 	FilterBiquadNode( Mode mode = Mode::LOWPASS, const Format &format = Format() );
 	virtual ~FilterBiquadNode() {}
 
-	void setMode( Mode mode )	{ mMode = mode; mCoeffsDirty = true; }
-	Mode getMode() const		{ return mMode; }
-
-	void setFreq( float freq )	{ mFreq = freq; mCoeffsDirty = true; }
-	float getFreq() const		{ return mFreq; }
-
-	void setQ( float q )		{ mQ = q; mCoeffsDirty = true; }
-	float getQ() const			{ return mQ; }
-
-	void setGain( float gain )	{ mGain = gain; mCoeffsDirty = true; }
-	float getGain() const		{ return mGain; }
+	//! Sets the mode, which updates the coefficients so that the frequency response is that of a common type of filter. \see Mode.
+	void	setMode( Mode mode )	{ mMode = mode; mCoeffsDirty = true; }
+	//! Returns the current mode.
+	Mode	getMode() const			{ return mMode; }
+	//! Sets the frequency in hertz. This is interpreted differently depending on what the current Mode is.
+	void	setFreq( float freq )	{ mFreq = freq; mCoeffsDirty = true; }
+	//! Returns the current frequency in hertz.
+	float	getFreq() const			{ return mFreq; }
+	//! Sets the q, or 'quality', parameter of the Biquad, which can be thought of as the sharpness of the filter.
+	void	setQ( float q )			{ mQ = q; mCoeffsDirty = true; }
+	// Returns the q, or 'quality', parameter of the Biquad.
+	float	getQ() const			{ return mQ; }
+	//! Sets the gain of the filter in decibels.  Not used in all Mode's.
+	void	setGain( float gain )	{ mGain = gain; mCoeffsDirty = true; }
+	//! Returns the gain of the filter in decibels.
+	float	getGain() const			{ return mGain; }
 
   protected:
 	void initialize()				override;
@@ -72,41 +79,55 @@ class FilterBiquadNode : public Node {
 	float mFreq, mQ, mGain;
 };
 
+//! A low-pass filtering Node. This is a subclass of FilterBiquadNode and manages its configuration appropriately.
 class FilterLowPassNode : public FilterBiquadNode {
   public:
+	//! Constructs a FilterLowPassNode with optional \a format.
 	FilterLowPassNode( const Format &format = Format() ) : FilterBiquadNode( Mode::LOWPASS, format ) {}
 	virtual ~FilterLowPassNode() {}
 
-	void setCutoffFreq( float freq )			{ setFreq( freq ); }
-	void setResonance( float resonance )		{ setQ( resonance ); }
-
-	float getCutoffFreq() const	{ return mFreq; }
-	float getResonance() const	{ return mQ; }
+	//! Sets the cutoff frequency in hertz, above which frequencies are attenuated.
+	void	setCutoffFreq( float freq )			{ setFreq( freq ); }
+	//! Returns the cutoff frequency in hertz.
+	float	getCutoffFreq() const				{ return mFreq; }
+	//! Sets the resonance of the filter in decibels.
+	void	setResonance( float resonance )		{ setQ( resonance ); }
+	//! Returns the resonance of the filter in decibels.
+	float	getResonance() const				{ return mQ; }
 };
 
+//! A high-pass filtering Node. This is a subclass of FilterBiquadNode and manages its configuration appropriately.
 class FilterHighPassNode : public FilterBiquadNode {
-public:
+  public:
+	//! Constructs a FilterHighPassNode with optional \a format.
 	FilterHighPassNode( const Format &format = Format() ) : FilterBiquadNode( Mode::HIGHPASS, format ) {}
 	virtual ~FilterHighPassNode() {}
 
-	void setCutoffFreq( float freq )			{ setFreq( freq ); }
-	void setResonance( float resonance )		{ setQ( resonance ); }
-
-	float getCutoffFreq() const	{ return mFreq; }
-	float getResonance() const	{ return mQ; }
+	//! Sets the cutoff frequency in hertz, below which frequencies are attenuated.
+	void	setCutoffFreq( float freq )			{ setFreq( freq ); }
+	//! Returns the cutoff frequency in hertz.
+	float	getCutoffFreq() const				{ return mFreq; }
+	//! Sets the resonance of the filter in decibels.
+	void	setResonance( float resonance )		{ setQ( resonance ); }
+	//! Returns the resonance of the filter in decibels.
+	float	getResonance() const				{ return mQ; }
 };
 
+//! A band-pass filtering Node. This is a subclass of FilterBiquadNode and manages its configuration appropriately.
 class FilterBandPassNode : public FilterBiquadNode {
-public:
+  public:
+	//! Constructs a FilterBandPassNode with optional \a format.
 	FilterBandPassNode( const Format &format = Format() ) : FilterBiquadNode( Mode::BANDPASS, format ) {}
 	virtual ~FilterBandPassNode() {}
 
-	void setCutoffFreq( float freq )	{ setFreq( freq ); }
-	void setWidth( float width )		{ setQ( width ); }
-
-	float getCutoffFreq() const		{ return mFreq; }
-	float getWidth() const			{ return mQ; }
+	//! Sets the center frequency of the filter in hertz.
+	void	setCenterFreq( float freq )	{ setFreq( freq ); }
+	//! Returns the center frequency of the filter in hertz.
+	float	getCenterFreq() const		{ return mFreq; }
+	//! Sets the width of the filtering.
+	void	setWidth( float width )		{ setQ( width ); }
+	//! Returns the width of the filtering.
+	float	getWidth() const			{ return mQ; }
 };
-
 
 } } // namespace cinder::audio

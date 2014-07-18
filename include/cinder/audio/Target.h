@@ -32,8 +32,9 @@ namespace cinder { namespace audio {
 
 typedef std::shared_ptr<class TargetFile>		TargetFileRef;
 
+//! Base class that is used to create and write to an audio destination. Currently only supports .wav encoding.
 class TargetFile {
-public:
+  public:
 	static std::unique_ptr<TargetFile> create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, const std::string &extension = "" );
 	static std::unique_ptr<TargetFile> create( const fs::path &path, size_t sampleRate, size_t numChannels, SampleType sampleType = SampleType::INT_16, const std::string &extension = "" );
 	virtual ~TargetFile() {}
@@ -45,7 +46,7 @@ public:
 	size_t getSampleRate() const	{ return mSampleRate; }
 	size_t getNumChannels() const	{ return mNumChannels; }
 
-protected:
+  protected:
 	TargetFile( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType )
 		: mSampleRate( sampleRate ), mNumChannels( numChannels ), mSampleType( sampleType )
 	{}

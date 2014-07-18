@@ -93,7 +93,7 @@ void SamplePlayerNodeTestApp::setup()
 	auto ctx = audio::master();
 
 	mPan = ctx->makeNode( new audio::Pan2dNode() );
-//	mPan->enableMonoInputMode( false );
+//	mPan->setStereoInputModeEnabled( false );
 
 	mGain = ctx->makeNode( new audio::GainNode() );
 	mGain->setValue( 0.6f );

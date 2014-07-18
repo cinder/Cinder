@@ -105,5 +105,4 @@ void FilterBiquadNode::updateBiquadParams()
 	}
 }
 
-
 } } // namespace cinder::audio

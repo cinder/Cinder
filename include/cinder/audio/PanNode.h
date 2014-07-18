@@ -42,15 +42,20 @@ class Pan2dNode : public Node {
 	//! Gets the current
 	float getPos() const	{ return mPos; }
 
-	void enableMonoInputMode( bool enable = true )	{ mMonoInputMode = enable; }
-	bool isMonoInputModeEnabled() const				{ return mMonoInputMode; }
+	//! \brif Sets whether 'stereo input mode' is enabled or not (it is disabled by default)
+	//!
+	//! This allows one to pan its stereo input without just silenecing one channel or the other (the farther away channel 'leaks' into the one you are panning to).
+	//! It is a bit of a farce to stereo pan an already stereo signal, but this allows you to do it anyway and works reasonably well.
+	void setStereoInputModeEnabled( bool enable = true )	{ mStereoInputMode = enable; }
+	//! Returns whether 'stereo input mode' is enabled or not (disabled by default).
+	bool isStereoInputModeEnabled() const					{ return mStereoInputMode; }
 
 protected:
 	void process( Buffer *buffer ) override;
 
   private:
 	std::atomic<float>	mPos;
-	bool				mMonoInputMode;
+	bool				mStereoInputMode;
 };
 
 } } // namespace cinder::audio

@@ -33,3 +33,21 @@ hr.footer {
 .footer {
         background-color: #0c0000;
 }
+
+a {
+    color: #0033A0;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.contents a:visited {
+    color: #2244A0;
+}
+
+.toc a {
+    color: #58363C;
+}
+
+.toc a:visited {
+    color: #58363C;
+}
