@@ -307,6 +307,7 @@ void AppImplMswRendererDx::defaultResize() const
 	ID3D11RenderTargetView *view = NULL;
 	mDeviceContext->OMSetRenderTargets(1, &view, NULL);
 	mMainFramebuffer->Release();
+	mDepthStencilTexture->Release();
 	mDepthStencilView->Release();
 	mDeviceContext->Flush();
 	const_cast<AppImplMswRendererDx*>(this)->createFramebufferResources();
