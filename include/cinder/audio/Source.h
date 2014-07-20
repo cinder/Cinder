@@ -37,6 +37,7 @@ namespace dsp {
 	class Converter;
 }
 
+//! Base class that is used to load and read from an audio source.
 class Source : public boost::noncopyable {
   public:
 	virtual ~Source();
@@ -57,6 +58,7 @@ class Source : public boost::noncopyable {
 	//! Loads either as many frames as \t buffer can hold, or as many as there are left. \return number of frames read into \a buffer.
 	virtual size_t read( Buffer *buffer ) = 0;
 
+	//! Returns the metadata, if any, as a string.
 	virtual std::string getMetaData() const	{ return std::string(); }
 
   protected:
@@ -77,6 +79,7 @@ class Source : public boost::noncopyable {
 	size_t								mSampleRate, mMaxFramesPerRead;
 };
 
+//! Loads and reads from an audio file source.
 class SourceFile : public Source {
   public:
 	//! Creates a new SourceFile from \a dataSource, with optional output samplerate.  If \a sampleRate equals 0 the native file's samplerate is used.
@@ -113,7 +116,7 @@ class SourceFile : public Source {
 
 	//! Implement to perform seek. \a readPositionFrames is in native file units.
 	virtual void performSeek( size_t readPositionFrames ) = 0;
-
+	//! Sets up samplerate conversion if needed. Can be overridden by implementation if they handle samplerate conversion in a specific way, else it is handled generically with a dsp::Converter.
 	virtual void setupSampleRateConversion();
 
 	size_t mNumFrames, mFileNumFrames, mReadPos;

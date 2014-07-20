@@ -35,45 +35,62 @@ namespace cinder { namespace audio {
 
 typedef std::shared_ptr<class Device> DeviceRef;
 
-//! Object representing a hardware audio device. There is only ever one device per system-reported device, for both input and output.
+//! Object representing a hardware audio device. There is only ever one device per hardware device reported by the system, for both input and output.
 class Device : public std::enable_shared_from_this<Device>, boost::noncopyable {
   public:
-
 	virtual ~Device() {}
 
+	//! Returns a reference to the default output Device on your system.
 	static DeviceRef getDefaultOutput();
+	//! Returns a reference to the default input Device on your system.
 	static DeviceRef getDefaultInput();
+	//! Finds and returns a reference to the first Device named \a name.
 	static DeviceRef findDeviceByName( const std::string &name );
+	//! Finds and returns a reference to the unique Device located by \a key, an platform-specific defined identifier.
 	static DeviceRef findDeviceByKey( const std::string &key );
-
+	//! Returns a vector of all Device's.
 	static const std::vector<DeviceRef>& getDevices();
+	//! Returns a vector of all output Device's.
 	static std::vector<DeviceRef> getOutputDevices();
+	//! Returns a vector of all input Device's.
 	static std::vector<DeviceRef> getInputDevices();
 
+	//! Returns the name of this Device, which is a human readable string reported by the system.
 	const std::string& getName();
+	//! Returns the key of this Device, which is a unique platform-specific defined identifier.
 	const std::string& getKey();
+	//! Returns the number of input channels this Device supports.
 	size_t getNumInputChannels();
+	//! Returns the number of output channels this Device supports.
 	size_t getNumOutputChannels();
+	//! Returns the current samplerate.
 	size_t getSampleRate();
+	//! Returns the current frames per block.
 	size_t getFramesPerBlock();
 
+	//! Defines the format parameters that are settable when passed in with updateFormat()
 	struct Format {
 		Format() : mSampleRate( 0 ), mFramesPerBlock( 0 ) {}
 
+		//! Sets the samplerate if the Format.
 		Format& sampleRate( size_t sr )				{ mSampleRate = sr;			return *this; }
+		//! Sets the frames per block if the Format (only functional on Mac).
 		Format& framesPerBlock( size_t frames )		{ mFramesPerBlock = frames; return *this; }
 
+		//! Returns the samplerate of the Format.
 		size_t getSampleRate() const				{ return mSampleRate; }
+		//! Returns the frames per block of the Format.
 		size_t getFramesPerBlock() const			{ return mFramesPerBlock; }
 
 	private:
 		size_t mSampleRate, mFramesPerBlock;
 	};
 
-	//! \note Update may be asynchronous.
+	//! Configures the format properties of this Device. This effects the hardware on your system. \note Update is asynchronous on some platforms (mac desktop).
 	void updateFormat( const Format &format );
-
+	//! Returns a signal that notifies connected slots before the format of this Device will change. This can occur from a call to updateFormat() or by the system.
 	signals::signal<void()>& getSignalParamsWillChange()	{ return mSignalParamsWillChange; }
+	//! Returns a signal that notifies connected slots after the format of this Device has changed. This can occur from a call to updateFormat() or by the system.
 	signals::signal<void()>& getSignalParamsDidChange()		{ return mSignalParamsDidChange; }
 
 	//! Returns a string representation of all devices for debugging purposes.
@@ -89,8 +106,7 @@ class Device : public std::enable_shared_from_this<Device>, boost::noncopyable {
 	friend class DeviceManager;
 };
 
-//! Platform-specific Singleton for managing hardware devices
-//! \note Applications normally should not need to use this, but instead should use the equivalent methods from \a Device.
+//! Platform-specific Singleton for managing hardware devices. Applications normally should not need to use this, but instead should use the equivalent methods from \a Device.
 class DeviceManager : public boost::noncopyable {
   public:
 	virtual ~DeviceManager() {}

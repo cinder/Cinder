@@ -34,6 +34,7 @@ namespace cinder { namespace audio {
 typedef std::shared_ptr<class WaveTable>		WaveTableRef;
 typedef std::shared_ptr<class WaveTable2d>		WaveTable2dRef;
 
+//! Manages a table that is used for wavetable synthesis. Supports table lookup with linear interpolation.
 class WaveTable {
   public:
 	WaveTable( size_t mSampleRate, size_t tableSize );
@@ -63,6 +64,7 @@ class WaveTable {
 	BufferDynamic	mBuffer;
 };
 
+//! Manages an array of tables that is used for bandlimited wavetable synthesis. Supports table lookup with linear interpolation.
 class WaveTable2d : public WaveTable {
   public:
 	WaveTable2d( size_t sampleRate, size_t tableSize, size_t numTables );

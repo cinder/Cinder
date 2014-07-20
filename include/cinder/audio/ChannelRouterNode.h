@@ -51,6 +51,7 @@ typedef std::shared_ptr<class ChannelRouterNode>	ChannelRouterNodeRef;
 //!
 class ChannelRouterNode : public Node {
   public:
+	//! Constructs a ChannelRouterNode object, with an optional \a format.
 	ChannelRouterNode( const Format &format = Format() ) : Node( format )	{}
 
 	//! Used in conjunction with `operator>>` and the route() methods to make connections that conduct channel routing. This class is usually not directly constructed by the user.
@@ -69,7 +70,7 @@ class ChannelRouterNode : public Node {
 		//! Returns the number of channels to route in the connection.
 		size_t	getNumChannels() const						{ return mNumChannels; }
 
-	private:
+	  private:
 		ChannelRouterNodeRef mOutputRouter;
 		size_t	mInputChannelIndex, mOutputChannelIndex, mNumChannels;
 	};

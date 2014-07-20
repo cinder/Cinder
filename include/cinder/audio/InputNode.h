@@ -49,6 +49,7 @@ class InputNode : public Node {
 
 //! \brief Interface representing a Node that communicates with a hardware input device. This is typically a microphone or a 'line-in' on an audio interface.
 //!
+//! You do not directly construct an InputDeviceNode. Instead, you use the platform-defined method Context::createInputDeviceNode().
 //! If number of channels hasn't been specified via Node::Format, defaults to `min( 2, getDevice()->getNumInputChannels() )`.
 class InputDeviceNode : public InputNode {
   public:
