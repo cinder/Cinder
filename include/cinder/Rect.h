@@ -94,10 +94,12 @@ class RectT {
 	T		getX2() const { return x2; }
 	T		getY2() const { return y2; }
 
-	T		getMinX() const { return x1 < x2 ? x1 : x2; }
-	T		getMaxX() const { return x1 > x2 ? x1 : x2; }
-	T		getMinY() const { return y1 < y2 ? y1 : y2; }
-	T		getMaxY() const { return y1 > y2 ? y1 : y2; }
+	T		getMinX() const { return x1; }
+	T		getMinY() const { return y1; }
+	T		getMidX() const { return x1 + (x2 - x1) / 2.0f; }
+	T		getMidY() const { return y1 + (y2 - y1) / 2.0f; }
+	T		getMaxX() const { return x2; }
+	T		getMaxY() const { return y2; }
 
 	Vec2<T>		getUpperLeft() const { return Vec2<T>( x1, y1 ); };
 	Vec2<T>		getUpperRight() const { return Vec2<T>( x2, y1 ); };
