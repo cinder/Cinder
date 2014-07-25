@@ -29,7 +29,7 @@
 #include <climits>
 #include <cfloat>
 #include <functional>
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW ) || defined( CINDER_WINRT )
 	#undef min
 	#undef max
 #endif
