@@ -3527,6 +3527,7 @@
 					../lib/macosx/libboost_system.a,
 					../lib/macosx/libboost_date_time.a,
 				);
+				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a ../lib/macosx/libboost_date_time.a";
 				PRODUCT_NAME = cinder_d;
 				SDKROOT = macosx;
 				VALID_ARCHS = "i386 x86_64";
@@ -3560,6 +3561,7 @@
 					../lib/macosx/libboost_system.a,
 					../lib/macosx/libboost_date_time.a,
 				);
+				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a ../lib/macosx/libboost_date_time.a";
 				PRODUCT_NAME = cinder;
 				SDKROOT = macosx;
 				VALID_ARCHS = "i386 x86_64";
