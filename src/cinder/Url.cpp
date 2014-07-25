@@ -36,6 +36,7 @@
 	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;
 #elif defined( CINDER_WINRT )
 	#include "cinder/WinRTUtils.h"
+	#include "cinder/msw/CinderMsw.h"
 	#include <wrl/client.h>
 	#include <agile.h>
 	using namespace Windows::Storage;
@@ -70,9 +71,9 @@ std::string Url::encode( const std::string &unescaped )
 	UrlEscape( (wchar_t*)wideUnescaped.c_str(), (wchar_t*)buffer, &bufferSize, 0 );
 	return toUtf8( buffer );
 #elif defined( CINDER_WINRT )
-	std::wstring urlStr = toUtf16( unescaped );
+	std::wstring urlStr = msw::toWideString( unescaped );
 	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));
-	return toUtf8( std::wstring( uri->AbsoluteCanonicalUri->Data()));
+	return msw::toUtf8String( std::wstring( uri->AbsoluteCanonicalUri->Data()));
 #endif	
 }
 

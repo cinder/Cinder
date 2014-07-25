@@ -56,9 +56,6 @@
     <Filter Include="Source Files\zlib">
       <UniqueIdentifier>{62e39970-5b66-419f-8223-631ac47b4c24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\audio">
-      <UniqueIdentifier>{53f55ec7-be93-46ef-8e52-9e2f42769ad9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\svg">
       <UniqueIdentifier>{f9498b84-b81b-4f07-a22f-840a680be33d}</UniqueIdentifier>
     </Filter>
@@ -746,21 +743,6 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\Tween.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\Io.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp">
-      <Filter>Source Files\audio</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\audio\Output.cpp">
-      <Filter>Source Files\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\System.cpp">
       <Filter>Source Files</Filter>

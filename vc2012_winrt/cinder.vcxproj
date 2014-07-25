@@ -363,11 +363,6 @@
     <ClCompile Include="..\src\cinder\app\Window.cpp" />
     <ClCompile Include="..\src\cinder\app\WinRTApp.cpp" />
     <ClCompile Include="..\src\cinder\Area.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Io.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Output.cpp" />
-    <ClCompile Include="..\src\cinder\audio\OutputImplXAudio.cpp" />
-    <ClCompile Include="..\src\cinder\audio\PcmBuffer.cpp" />
-    <ClCompile Include="..\src\cinder\audio\SourceFileWav.cpp" />
     <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
     <ClCompile Include="..\src\cinder\Base64.cpp" />

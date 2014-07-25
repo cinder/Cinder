@@ -29,6 +29,7 @@
 
 #include "cinder/dx/dx.h" // has to be first
 #include "cinder/ImageIo.h"
+#include "cinder/msw/CinderMsw.h"
 #include "cinder/dx/DxTexture.h"
 #include <stdio.h>
 #include "cinder/app/AppImplMswRendererDx.h"
@@ -287,7 +288,7 @@ void Texture::loadImageAsync(const fs::path path, dx::Texture &texture, const Fo
 			auto copyTask = winrt::copyFileToTempDirAsync(path);
 			copyTask.then([&texture, format](StorageFile^ file) 
 			{
-				fs::path temp = fs::path(toUtf8(file->Path->Data()));
+				fs::path temp = fs::path( msw::toUtf8String( file->Path->Data() ) );
 				texture = Texture(loadImage(fs::path(temp)), format);
 				winrt::deleteFileAsync(temp);
 			});
