@@ -94,7 +94,7 @@ fs::path getHomeDirectory()
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	string result = PlatformStringToString(folder->Path);
-	return fs::path( result )
+	return fs::path( result );
 #else
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
@@ -235,8 +235,8 @@ void launchWebBrowser( const Url &url )
 #elif defined( CINDER_MSW )
 	ShellExecute( NULL, L"open", (wchar_t*)urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
 #elif defined( CINDER_WINRT )
-	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));
-	Windows::System::Launcher::LaunchUriAsync(uri);
+	auto uri = ref new Windows::Foundation::Uri( ref new Platform::String( (wchar_t *)urlStr.c_str() ) );
+	Windows::System::Launcher::LaunchUriAsync( uri );
 #endif
 }
 
