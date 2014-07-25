@@ -60,7 +60,7 @@
 	const std::string& applicationName = aApp->getSettings().getTitle();
 	[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
 	
-	[NSApp setDelegate:self];
+	[(NSApplication*)NSApp setDelegate:self];
 	
 	mApp = aApp;
 	mApp->privateSetImpl__( self );
