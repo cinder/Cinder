@@ -33,7 +33,6 @@
 #include "cinder/Utilities.h"
 #include "cinder/Display.h"
 #include "cinder/WinRTUtils.h"
-#include "cinder/Utilities.h"
 #include "cinder/msw/CinderMsw.h"
 
 #include <Windows.h>
@@ -226,13 +225,13 @@ void AppImplWinRT::getSaveFilePath( const fs::path &initialPath,std::vector<std:
 			plainTextExtensions->Append( ref new Platform::String(temp.c_str()));
 		}
 	} else if(! initialPath.empty() ) {
-		plainTextExtensions->Append(ref new Platform::String(toUtf16(initialPath.extension()).c_str()));
+		plainTextExtensions->Append( ref new Platform::String( msw::toWideString( initialPath.extension() ).c_str() ) );
 	} 
 
     savePicker->FileTypeChoices->Insert("", plainTextExtensions);
 
 	if(! initialPath.empty() ) {
-		savePicker->SuggestedFileName = ref new Platform::String(toUtf16(initialPath.filename()).c_str());
+		savePicker->SuggestedFileName = ref new Platform::String( msw::toWideString( initialPath.filename() ).c_str() );
 	} else {
 		savePicker->SuggestedFileName = "New Document";
 	}
@@ -241,7 +240,7 @@ void AppImplWinRT::getSaveFilePath( const fs::path &initialPath,std::vector<std:
     {
         if (file != nullptr)
         {
-			f(fs::path(toUtf8(file->Path->Data())));
+			f( fs::path( msw::toUtf8String( file->Path->Data() ) ) );
         }
         else
         {
