@@ -56,7 +56,7 @@ mVoice = audio::Voice::create( [this] ( audio::Buffer *buffer, size_t sampleRate
 
 \endcode
 
-Users should be away that the callback is processing on the background audio thread, so any data that interacts with the main thread needs to be synchronized.
+Users should be aware that the callback is processing on the background audio thread, so any data that interacts with the main thread needs to be synchronized.
 
 Each Voice has controls for volume and 2d panning.  Here is an example of how you'd control these with the mouse:
 
@@ -457,7 +457,7 @@ auto options = audio::Param::Options().rampFn( &audio::rampOutQuad );
 mGain->getParam()->applyRamp( 0, 1.5f, options );
 \endcode
 
-\section nodes_voices Accesasing the Nodes within a Voice
+\section nodes_voices Accessing the Nodes within a Voice
 
 Now that we've covered how `Voice`s work as a high level audio object controller and `Node`s work within a modular system, here is some information on how `Voice`s use a composition of `Node`s to do their work and the interface available for custom routing of a `Voice`'s output. 
 

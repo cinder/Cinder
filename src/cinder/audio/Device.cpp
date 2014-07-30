@@ -197,11 +197,11 @@ DeviceRef DeviceManager::findDeviceByKey( const string &key )
 
 DeviceRef DeviceManager::addDevice( const string &key )
 {
+	// warn about duplicate Device keys since it will be impossible to select one or the other.
 	for( const auto &dev : mDevices ) {
 		if( dev->getKey() == key ) {
-			// we should never try to add the same device twice, but if this happens in release mode then return the one previously added.
-			CI_ASSERT_NOT_REACHABLE();
-			return dev;
+			CI_LOG_W( "multiple Devices with same key: " << key );
+			break;
 		}
 	}
 

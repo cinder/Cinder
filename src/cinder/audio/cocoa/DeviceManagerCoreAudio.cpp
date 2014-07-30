@@ -153,7 +153,7 @@ DeviceRef DeviceManagerCoreAudio::getDefaultInput()
 	return findDeviceByKey( DeviceManagerCoreAudio::keyForDeviceId( defaultInputId ) );
 }
 
-std::string DeviceManagerCoreAudio::getName( const DeviceRef &device )
+string DeviceManagerCoreAudio::getName( const DeviceRef &device )
 {
 	::AudioDeviceID deviceId = mDeviceIds.at( device );
 	return getAudioObjectPropertyString( deviceId, kAudioObjectPropertyName );
@@ -345,7 +345,7 @@ void DeviceManagerCoreAudio::unregisterPropertyListeners( const DeviceRef &devic
 	Block_release( listenerBlock );
 }
 
-const std::vector<DeviceRef>& DeviceManagerCoreAudio::getDevices()
+const vector<DeviceRef>& DeviceManagerCoreAudio::getDevices()
 {
 	if( mDevices.empty() ) {
 		auto deviceIds = getAudioObjectPropertyVector<::AudioObjectID>( kAudioObjectSystemObject, kAudioHardwarePropertyDevices );
@@ -381,7 +381,7 @@ pair<size_t, size_t> DeviceManagerCoreAudio::getAcceptableFramesPerBlockRange( :
 // note: we cannot just rely on 'model UID', when it is there (which it isn't always), becasue it can be the same
 // for two different 'devices', such as system input and output
 // - current solution: key = 'NAME-[UID | MANUFACTURER]'
-std::string DeviceManagerCoreAudio::keyForDeviceId( ::AudioDeviceID deviceId )
+string DeviceManagerCoreAudio::keyForDeviceId( ::AudioDeviceID deviceId )
 {
 	string name = getAudioObjectPropertyString( deviceId, kAudioObjectPropertyName );
 	string key = getAudioObjectPropertyString( deviceId, kAudioDevicePropertyModelUID );
