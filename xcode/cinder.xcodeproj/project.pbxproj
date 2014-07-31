@@ -3397,7 +3397,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
 					../lib/ios/libboost_filesystem.a,
@@ -3426,7 +3426,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -3446,7 +3446,6 @@
 			buildSettings = {
 				ALTERNATE_PERMISSIONS_FILES = i386;
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -3456,7 +3455,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = (
@@ -3468,7 +3467,6 @@
 				PRODUCT_NAME = "cinder-iphone-sim_d";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphonesimulator;
-				VALID_ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 			};
 			name = Debug;
 		};
@@ -3477,7 +3475,6 @@
 			buildSettings = {
 				ALTERNATE_PERMISSIONS_FILES = i386;
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -3489,7 +3486,7 @@
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
 				GENERATE_MASTER_OBJECT_FILE = YES;
 				INSTALL_PATH = /usr/local/lib;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "";
 				OTHER_CPLUSPLUSFLAGS = "$(inherited)";
@@ -3502,7 +3499,6 @@
 				PRODUCT_NAME = "cinder-iphone-sim";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphonesimulator;
-				VALID_ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 			};
 			name = Release;
 		};
