@@ -24,15 +24,17 @@ def copyIgnore( path, names ):
         elif name == 'msw' and gCompiler == 'xcode':
             result.append( name )
         elif gPlatform == 'mac' and name == 'TinderBox-Win':
-        	result.append( name )
+            result.append( name )
         elif gPlatform == 'msw' and name == 'TinderBox-Mac':
-        	result.append( name )
-        elif name == 'boost':
             result.append( name )
         elif name == 'Readme.md':
-        	result.append( name )
+            result.append( name )
         elif name == 'scripts':
-        	result.append( name )
+            result.append( name )
+        elif re.search( "libboost.*-vc110.*", name ) != None and gCompiler != 'vc2012':
+            result.append( name )
+        elif re.search( "libboost.*-vc120.*", name ) != None and gCompiler != 'vc2013':
+            result.append( name )
         elif re.search( ".git.*", name ) != None:
             result.append( name )
     return result
@@ -62,7 +64,11 @@ def processExport( outputName, compilerName, version, doxygenPath ):
     shutil.rmtree( outputDir + "test" )
     return outputDir
     
-
+def cleanupMswLibDir( dir ):
+    for f in os.listdir( dir ):
+        if os.path.splitext( f ) == ".idb":
+            os.remove( os.path.join(dir, f) )
+    
 if len(sys.argv) != 3:
     printUsage()
 elif sys.argv[2] == 'xcode':
@@ -78,10 +84,32 @@ elif sys.argv[2] == 'xcode':
 elif sys.argv[2] == 'vc2012':
     gCompiler = 'vc2012'
     gPlatform = 'msw'
-    processExport( "vc2012", "vc2012", sys.argv[1], "doxygen" )
+    outputDir = processExport( "vc2012", "vc2012", sys.argv[1], "doxygen" )
+    os.chdir( outputDir + "vc2012" )
+    os.system( "msbuild cinder.vcxproj /p:platform=win32 /p:configuration=debug" )
+    shutil.rmtree( outputDir + "vc2012\\Debug" )
+    os.system( "msbuild cinder.vcxproj /p:platform=win32 /p:configuration=release" )
+    shutil.rmtree( outputDir + "vc2012\\Release" )
+    #os.system( "msbuild cinder.vcxproj /p:platform=x64 /p:configuration=debug" )
+    #shutil.rmtree( outputDir + "vc2012\\x64\\Debug" )
+    #os.system( "msbuild cinder.vcxproj /p:platform=x64 /p:configuration=release" )
+    #shutil.rmtree( outputDir + "vc2012\\x64\\Release" )
+    cleanupMswLibDir( outputDir + "lib\\msw\\x86" )
+    #cleanupMswLibDir( outputDir + "lib\\msw\\x64" )
 elif sys.argv[2] == 'vc2013':
     gCompiler = 'vc2013'
     gPlatform = 'msw'
-    processExport( "vc2013", "vc2013", sys.argv[1], "doxygen" )
+    outputDir = processExport( "vc2013", "vc2013", sys.argv[1], "doxygen" )
+    os.chdir( outputDir + "vc2013" )
+    os.system( "msbuild cinder.vcxproj /p:platform=win32 /p:configuration=debug" )
+    shutil.rmtree( outputDir + "vc2013\\Debug" )
+    os.system( "msbuild cinder.vcxproj /p:platform=win32 /p:configuration=release" )
+    shutil.rmtree( outputDir + "vc2013\\Release" )
+    #os.system( "msbuild cinder.vcxproj /p:platform=x64 /p:configuration=debug" )
+    #shutil.rmtree( outputDir + "vc2013\\x64\\Debug" )
+    #os.system( "msbuild cinder.vcxproj /p:platform=x64 /p:configuration=release" )
+    #shutil.rmtree( outputDir + "vc2013\\x64\\Release" )
+    cleanupMswLibDir( outputDir + "lib\\msw\\x86" )
+    #cleanupMswLibDir( outputDir + "lib\\msw\\x64" )
 else:
     printUsage()
