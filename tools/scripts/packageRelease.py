@@ -9,9 +9,9 @@ global gPlatform
 def copyIgnore( path, names ):
     result = []
     for name in names:
-        if name == 'vc10' and gCompiler != 'vc10':
+        if name == 'vc2012' and gCompiler != 'vc2012':
             result.append( name )
-        if name == 'vc11' and gCompiler != 'vc11':
+        if name == 'vc2013' and gCompiler != 'vc2013':
             result.append( name )
         elif name == 'ios' and gCompiler != 'xcode':
             result.append( name )
@@ -22,10 +22,6 @@ def copyIgnore( path, names ):
         elif name == 'xcode' and gCompiler != 'xcode':
             result.append( name )
         elif name == 'msw' and gCompiler == 'xcode':
-            result.append( name )
-        elif re.search( "libboost.*-vc100.*", name ) != None and gCompiler != 'vc10':
-            result.append( name )
-        elif re.search( "libboost.*-vc110.*", name ) != None and gCompiler != 'vc11':
             result.append( name )
         elif gPlatform == 'mac' and name == 'TinderBox-Win':
         	result.append( name )
@@ -43,15 +39,14 @@ def copyIgnore( path, names ):
 
 def printUsage():
     print "Run from the root of the repository (having run vcvars):"
-    print "python tools/packageRelease.py (version number) (xcode|vc10|vc11)"
+    print "python tools/packageRelease.py (version number) (xcode|vc2012|vc2013)"
 
 def processExport( outputName, compilerName, version, doxygenPath ):
     print "creating a clean clone of cinder"
     baseDir = os.getcwd()
-    os.system( "git checkout-index -a -f --prefix=../cinder_temp/" )
+    os.system( "git clone --recursive --depth 1 -b dev . ../cinder_temp/" )
     print "creating a clean clone of Cinder-OpenCV"
-    os.chdir( baseDir + os.sep + "blocks" + os.sep + "OpenCV" )
-    os.system( "git checkout-index -a -f --prefix=../../../cinder_temp/blocks/OpenCV/" )
+    os.system( "git clone --recursive --depth 1 -b dev ./blocks/OpenCV ../cinder_temp/blocks/OpenCV/" )
     os.chdir( baseDir + os.sep + ".." + os.sep + "cinder_temp" )
     outputDir = baseDir + os.sep + ".." + os.sep + "cinder_" + version + "_" + outputName + os.sep
     print "performing selective copy to " + outputDir
@@ -65,13 +60,6 @@ def processExport( outputName, compilerName, version, doxygenPath ):
 #    os.remove( outputDir + "docs" + os.sep + "doxygen" + os.sep + "cinder.tag" )
     print "removing test"
     shutil.rmtree( outputDir + "test" )
-    print "copying boost headers"
-    shutil.copytree( baseDir + os.sep + "boost" + os.sep + "boost", outputDir + "boost" + os.sep + "boost" )
-    print "copying TinderBox"
-    if gPlatform == 'msw':
-        shutil.copytree( baseDir + "\\tools\\TinderBox-Win", outputDir + "\\tools\\TinderBox-Win" )
-    else:
-        shutil.copytree( baseDir + "/tools/TinderBox-Mac", outputDir + "/tools/TinderBox-Mac" )
     return outputDir
     
 
@@ -87,13 +75,13 @@ elif sys.argv[2] == 'xcode':
     os.chdir( outputDir + "lib" )
     # strip debug symbols
     os.system( "strip -S -r *.a" )
-elif sys.argv[2] == 'vc10':
-    gCompiler = 'vc10'
+elif sys.argv[2] == 'vc2012':
+    gCompiler = 'vc2012'
     gPlatform = 'msw'
-    processExport( "vc2010", "vc10", sys.argv[1], "doxygen" )
-elif sys.argv[2] == 'vc11':
-    gCompiler = 'vc11'
+    processExport( "vc2012", "vc2012", sys.argv[1], "doxygen" )
+elif sys.argv[2] == 'vc2013':
+    gCompiler = 'vc2013'
     gPlatform = 'msw'
-    processExport( "vc2012", "vc11", sys.argv[1], "doxygen" )
+    processExport( "vc2013", "vc2013", sys.argv[1], "doxygen" )
 else:
     printUsage()
