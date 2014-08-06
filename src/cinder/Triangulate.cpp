@@ -98,9 +98,9 @@ void Triangulator::addPolyLine( const PolyLine2f &polyLine )
 	tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, (int)polyLine.size() );
 }
 
-TriMesh2d Triangulator::calcMesh( Winding winding )
+TriMesh Triangulator::calcMesh( Winding winding )
 {
-	TriMesh2d result;
+	TriMesh result( TriMesh::Format().positions( 2 ) );
 	
 	tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, 0 );
 	result.appendVertices( (Vec2f*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );

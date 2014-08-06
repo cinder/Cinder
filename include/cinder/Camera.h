@@ -80,8 +80,8 @@ class Camera {
 	virtual bool isPersp() const = 0;
 	
 	virtual const Matrix44f&	getProjectionMatrix() const { if( ! mProjectionCached ) calcProjection(); return mProjectionMatrix; }
-	virtual const Matrix44f&	getModelViewMatrix() const { if( ! mModelViewCached ) calcModelView(); return mModelViewMatrix; }
-	virtual const Matrix44f&	getInverseModelViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseModelView(); return mInverseModelViewMatrix; }
+	virtual const Matrix44f&	getViewMatrix() const { if( ! mModelViewCached ) calcViewMatrix(); return mViewMatrix; }
+	virtual const Matrix44f&	getInverseViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseView(); return mInverseModelViewMatrix; }
 
 	Ray		generateRay( float u, float v, float imagePlaneAspectRatio ) const;
 	void	getBillboardVectors( Vec3f *right, Vec3f *up ) const;
@@ -89,11 +89,11 @@ class Camera {
 	//! Converts a world-space coordinate \a worldCoord to screen coordinates as viewed by the camera, based ona s screen which is \a screenWidth x \a screenHeight pixels.
  	Vec2f worldToScreen( const Vec3f &worldCoord, float screenWidth, float screenHeight ) const;
  	//! Converts a world-space coordinate \a worldCoord to eye-space, also known as camera-space. -Z is along the view direction.
- 	Vec3f worldToEye( const Vec3f &worldCoord ) { return getModelViewMatrix().transformPointAffine( worldCoord ); }
+ 	Vec3f worldToEye( const Vec3f &worldCoord ) { return getViewMatrix().transformPointAffine( worldCoord ); }
  	//! Converts a world-space coordinate \a worldCoord to the z axis of eye-space, also known as camera-space. -Z is along the view direction. Suitable for depth sorting.
- 	float worldToEyeDepth( const Vec3f &worldCoord ) const { return getModelViewMatrix().m[2] * worldCoord.x + getModelViewMatrix().m[6] * worldCoord.y + getModelViewMatrix().m[10] * worldCoord.z + getModelViewMatrix().m[14]; }
+ 	float worldToEyeDepth( const Vec3f &worldCoord ) const { return getViewMatrix().m[2] * worldCoord.x + getViewMatrix().m[6] * worldCoord.y + getViewMatrix().m[10] * worldCoord.z + getViewMatrix().m[14]; }
  	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates
- 	Vec3f worldToNdc( const Vec3f &worldCoord ) { Vec3f eye = getModelViewMatrix().transformPointAffine( worldCoord ); return getProjectionMatrix().transformPoint( eye ); }
+ 	Vec3f worldToNdc( const Vec3f &worldCoord ) { Vec3f eye = getViewMatrix().transformPointAffine( worldCoord ); return getProjectionMatrix().transformPoint( eye ); }
 
 
 	float	getScreenRadius( const class Sphere &sphere, float screenWidth, float screenHeight ) const;
@@ -116,7 +116,7 @@ class Camera {
 
 	mutable Matrix44f	mProjectionMatrix, mInverseProjectionMatrix;
 	mutable bool		mProjectionCached;
-	mutable Matrix44f	mModelViewMatrix;
+	mutable Matrix44f	mViewMatrix;
 	mutable bool		mModelViewCached;
 	mutable Matrix44f	mInverseModelViewMatrix;
 	mutable bool		mInverseModelViewCached;
@@ -125,8 +125,8 @@ class Camera {
 
 	inline void		calcMatrices() const;
 
-	virtual void	calcModelView() const;
-	virtual void	calcInverseModelView() const;
+	virtual void	calcViewMatrix() const;
+	virtual void	calcInverseView() const;
 	virtual void	calcProjection() const = 0;
 };
 
@@ -228,19 +228,19 @@ class CameraStereo : public CameraPersp {
 	virtual void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
 	virtual void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
 	
-	virtual const Matrix44f&	getProjectionMatrix() const;
-	virtual const Matrix44f&	getModelViewMatrix() const;
-	virtual const Matrix44f&	getInverseModelViewMatrix() const;
+	virtual const Matrix44f&	getProjectionMatrix() const override;
+	virtual const Matrix44f&	getViewMatrix() const override;
+	virtual const Matrix44f&	getInverseViewMatrix() const override;
 
   protected:
 	mutable Matrix44f	mProjectionMatrixLeft, mInverseProjectionMatrixLeft;
 	mutable Matrix44f	mProjectionMatrixRight, mInverseProjectionMatrixRight;
-	mutable Matrix44f	mModelViewMatrixLeft, mInverseModelViewMatrixLeft;
-	mutable Matrix44f	mModelViewMatrixRight, mInverseModelViewMatrixRight;
+	mutable Matrix44f	mViewMatrixLeft, mInverseModelViewMatrixLeft;
+	mutable Matrix44f	mViewMatrixRight, mInverseModelViewMatrixRight;
 
-	virtual void	calcModelView() const;
-	virtual void	calcInverseModelView() const;
-	virtual void	calcProjection() const;
+	virtual void	calcViewMatrix() const override;
+	virtual void	calcInverseView() const override;
+	virtual void	calcProjection() const override;
   private:
 	bool			mIsStereo;
 	bool			mIsLeft;

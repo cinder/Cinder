@@ -1,229 +1,34 @@
-/*
- Copyright (c) 2010, The Cinder Project, All rights reserved.
- This code is intended for use with the Cinder C++ library: http://libcinder.org
-
- Portions Copyright (c) 2010, The Barbarian Group
- All rights reserved.
-
- Redistribution and use in source and binary forms, with or without modification, are permitted provided that
- the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
-*/
-
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Context.h"
+#include "cinder/gl/VboMesh.h"
+#include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
-#include "cinder/CinderMath.h"
-#include "cinder/Vector.h"
-#include "cinder/Camera.h"
-#include "cinder/TriMesh.h"
-#include "cinder/Sphere.h"
 #include "cinder/gl/Texture.h"
-#include "cinder/Text.h"
-#include "cinder/PolyLine.h"
+#include "cinder/gl/Batch.h"
+#include "cinder/gl/Shader.h"
+#include "cinder/gl/Environment.h"
+
+#include "cinder/Utilities.h"
+#include "cinder/Triangulate.h"
+#include "cinder/TriMesh.h"
 #include "cinder/Path2d.h"
 #include "cinder/Shape2d.h"
-#include "cinder/Triangulate.h"
-#include <cmath>
-#include <map>
+#include "cinder/Log.h"
+#include <vector>
 
-#if defined( CINDER_MAC ) && ( ! defined( CINDER_COCOA_TOUCH ) )
-	#include <ApplicationServices/ApplicationServices.h>
+#if defined( CINDER_MSW )
+	#include "glload/wgl_all.h"
+#elif defined( CINDER_MAC )
 	#include <OpenGL/OpenGL.h>
 #endif
 
+using namespace std;
+
 namespace cinder { namespace gl {
 
-#if defined( CINDER_MSW )
-void initializeGlee() {
-/*#if defined( CINDER_MAC )
-	CGDirectDisplayID display = CGMainDisplayID(); // 1
-	CGOpenGLDisplayMask myDisplayMask = CGDisplayIDToOpenGLDisplayMask( display ); // 2
- 
-	{ // Check capabilities of display represented by display mask
-		//CGLPixelFormatAttribute attribs[] = {};
-		CGLPixelFormatAttribute attribs[] = {kCGLPFADisplayMask,
-								 (CGLPixelFormatAttribute)myDisplayMask,
-								 (CGLPixelFormatAttribute)0}; // 3
-		CGLPixelFormatObj pixelFormat = NULL;
-		GLint numPixelFormats = 0;
-		CGLContextObj myCGLContext = 0;
-		CGLContextObj curr_ctx = CGLGetCurrentContext(); // 4
-		CGLChoosePixelFormat( attribs, &pixelFormat, &numPixelFormats ); // 5
-		if ( pixelFormat ) {
-			CGLCreateContext( pixelFormat, NULL, &myCGLContext ); // 6
-			CGLDestroyPixelFormat( pixelFormat ); // 7
-			CGLSetCurrentContext( myCGLContext ); // 8
-			if ( myCGLContext ) {
-				GLeeInit();
-			}
-			CGLDestroyContext(myCGLContext);
-		}
-		
-		 // 9
-		CGLSetCurrentContext(curr_ctx); // 10
-	}
-#elif defined( CINDER_MSW )*/
-	DWORD windowExStyle, windowStyle;
-	HWND wnd;
-	const char *title = "cinder";
-	int bits = 32;
-
-
-	int width = ::GetSystemMetrics( SM_CXSCREEN );
-	int height = ::GetSystemMetrics( SM_CYSCREEN );
-
-	WNDCLASS	wc;						// Windows Class Structure
-	RECT		WindowRect;				// Grabs Rectangle Upper Left / Lower Right Values
-	WindowRect.left = 0L;
-	WindowRect.right = (long)width;
-	WindowRect.top = 0L;
-	WindowRect.bottom = (long)height;
-
-	HINSTANCE instance	= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
-	wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;	// Redraw On Size, And Own DC For Window.
-	wc.lpfnWndProc		= DefWindowProc;						// WndProc Handles Messages
-	wc.cbClsExtra		= 0;									// No Extra Window Data
-	wc.cbWndExtra		= 0;									// No Extra Window Data
-	wc.hInstance		= instance;
-	wc.hIcon			= ::LoadIcon( NULL, IDI_WINLOGO );		// Load The Default Icon
-	wc.hCursor			= ::LoadCursor( NULL, IDC_ARROW );		// Load The Arrow Pointer
-	wc.hbrBackground	= NULL;									// No Background Required For GL
-	wc.lpszMenuName		= NULL;									// We Don't Want A Menu
-	wc.lpszClassName	= TEXT("DUMMY");
-
-	if( ! ::RegisterClass( &wc ) ) {								// Attempt To Register The Window Class
-		DWORD err = ::GetLastError();
-		return;											
-	}
-
-	windowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
-	windowStyle = ( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );
-
-	::AdjustWindowRectEx( &WindowRect, windowStyle, FALSE, windowExStyle );		// Adjust Window To True Requested Size
-
-	wchar_t unicodeTitle[1024]; 
-	wsprintfW( unicodeTitle, L"%S", title );
-
-	// Create The Window
-	if( ! ( wnd = ::CreateWindowEx( windowExStyle,						// Extended Style For The Window
-		TEXT("DUMMY"),
-		unicodeTitle,						// Window Title
-		windowStyle,					// Required Window Style
-		0, 0,								// Window Position
-		WindowRect.right-WindowRect.left,	// Calculate Window Width
-		WindowRect.bottom-WindowRect.top,	// Calculate Window Height
-		NULL,								// No Parent Window
-		NULL,								// No Menu
-		instance,							// Instance
-		0 )) )
-
-	{
-		return;								
-	}
-
-
-	HDC    hdc; 
-	HGLRC  hglrc; 
-	
-	hdc = GetDC( wnd );
-	if( ! hdc ) {
-		DWORD err = ::GetLastError();
-		return;
-	}
-	
-	PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),
-        1,
-        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
-        PFD_TYPE_RGBA,            //The kind of framebuffer. RGBA or palette.
-        32,                        //Colordepth of the framebuffer.
-        0, 0, 0, 0, 0, 0,
-        0,
-        0,
-        0,
-        0, 0, 0, 0,
-        24,                        //Number of bits for the depthbuffer
-        8,                        //Number of bits for the stencilbuffer
-        0,                        //Number of Aux buffers in the framebuffer.
-        PFD_MAIN_PLANE,
-        0,
-        0, 0, 0
-	};
-
-	int iPixelFormat = ChoosePixelFormat(hdc, &pfd); 
-
-	if( ! SetPixelFormat( hdc, iPixelFormat, &pfd ) ) {
-		DWORD err = ::GetLastError();
-		return;
-	}
-
-	hglrc = wglCreateContext( hdc );
-	if( ! hglrc ) {
-		DWORD err = ::GetLastError();
-		return;
-	}
-	
-	if( wglMakeCurrent( hdc, hglrc ) ) {
-		GLeeInit();
-	}
-	wglMakeCurrent( NULL, NULL ); 
-
-	wglDeleteContext( hglrc );
-	::ReleaseDC( wnd, hdc );
-	DestroyWindow( wnd );
-	::UnregisterClass( TEXT("DUMMY"), instance );
-//#endif
-}
-#endif
-
-bool isExtensionAvailable( const std::string &extName )
+Context* context()
 {
-	static const char *sExtStr = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
-	static std::map<std::string,bool> sExtMap;
-	
-	std::map<std::string,bool>::const_iterator extIt = sExtMap.find( extName );
-	if( extIt == sExtMap.end() ) {
-		bool found = false;
-		size_t extNameLen = extName.size();
-		const char *p = sExtStr;
-		const char *end = sExtStr + strlen( sExtStr );
-		while( p < end ) {
-			size_t n = strcspn( p, " " );
-			if( (extNameLen == n) && ( strncmp(extName.c_str(), p, n) == 0)) {
-				found = true;
-				break;
-			}
-			p += (n + 1);
-		}
-		sExtMap[extName] = found;
-		return found;
-	}
-	else
-		return extIt->second;
-}
-
-void clear( const ColorA &color, bool clearDepthBuffer )
-{
-	glClearColor( color.r, color.g, color.b, color.a );
-	if( clearDepthBuffer ) {
-		glDepthMask( GL_TRUE );
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	}
-	else
-		glClear( GL_COLOR_BUFFER_BIT );
+	return Context::getCurrent();
 }
 
 void enableVerticalSync( bool enable )
@@ -231,9 +36,9 @@ void enableVerticalSync( bool enable )
 #if defined( CINDER_MAC )
 	GLint sync = ( enable ) ? 1 : 0;
 	::CGLSetParameter( ::CGLGetCurrentContext(), kCGLCPSwapInterval, &sync );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
 	GLint sync = ( enable ) ? 1 : 0;
-	if( WGL_EXT_swap_control )
+	if( wglext_EXT_swap_control )
 		::wglSwapIntervalEXT( sync );
 #endif
 }
@@ -244,8 +49,8 @@ bool isVerticalSyncEnabled()
 	GLint enabled;
 	::CGLGetParameter( ::CGLGetCurrentContext(), kCGLCPSwapInterval, &enabled );
 	return enabled > 0;
-#elif defined( CINDER_MSW )
-	if( WGL_EXT_swap_control )
+#elif defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+	if( wglext_EXT_swap_control )
 		return ::wglGetSwapIntervalEXT() > 0;
 	else
 		return true;
@@ -254,260 +59,824 @@ bool isVerticalSyncEnabled()
 #endif
 }
 
-void setModelView( const Camera &cam )
+bool isExtensionAvailable( const std::string &extName )
 {
-	glMatrixMode( GL_MODELVIEW );
-	glLoadMatrixf( cam.getModelViewMatrix().m );
+	return env()->isExtensionAvailable( extName );
 }
 
-void setProjection( const Camera &cam )
+std::pair<GLint,GLint> getVersion()
 {
-	glMatrixMode( GL_PROJECTION );
-	glLoadMatrixf( cam.getProjectionMatrix().m );
+	//hard-coded for now
+#if defined( CINDER_GL_ES )
+	return std::make_pair( (GLint)2, (GLint)0 );
+#else
+	static bool	sInitialized = false;
+	static pair<GLint,GLint> sVersion;
+	if( ! sInitialized ) {
+		// adapted from LoadOGL
+		const char *strVersion = reinterpret_cast<const char*>( glGetString( GL_VERSION ) );
+		GLint major = 0, minor = 0;
+		const char *strDotPos = NULL;
+		int iLength = 0;
+		char strWorkBuff[10];
+
+		strDotPos = strchr( strVersion, '.' );
+		if( ! strDotPos )
+			return std::make_pair( 0, 0 );
+
+		iLength = (int)((ptrdiff_t)strDotPos - (ptrdiff_t)strVersion);
+		strncpy(strWorkBuff, strVersion, iLength);
+		strWorkBuff[iLength] = '\0';
+
+		major = atoi(strWorkBuff);
+		strDotPos = strchr( strVersion + iLength + 1, ' ' );
+		if( ! strDotPos ) { // No extra data. Take the whole rest of the string.
+			strcpy( strWorkBuff, strVersion + iLength + 1 );
+		}
+		else {
+			// Copy only up until the space.
+			int iLengthMinor = (int)((ptrdiff_t)strDotPos - (ptrdiff_t)strVersion);
+			iLengthMinor = iLengthMinor - (iLength + 1);
+			strncpy( strWorkBuff, strVersion + iLength + 1, iLengthMinor );
+			strWorkBuff[iLengthMinor] = '\0';
+		}
+
+		minor = atoi( strWorkBuff );
+		sVersion = std::make_pair( major, minor );
+		sInitialized = true;
+	}
+
+	return sVersion;
+#endif
 }
 
-void setMatrices( const Camera &cam )
+std::string getVersionString()
 {
-	setProjection( cam );
-	setModelView( cam );
+	const GLubyte* s = glGetString( GL_VERSION );
+
+	return std::string( reinterpret_cast<const char*>( s ) );
 }
 
-void pushModelView()
+GlslProgRef	getStockShader( const class ShaderDef &shader )
 {
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();
+	return context()->getStockShader( shader );
 }
 
-void popModelView()
+void bindStockShader( const class ShaderDef &shaderDef )
 {
-	glMatrixMode( GL_MODELVIEW );
-	glPopMatrix();
+	auto ctx = gl::context();
+	auto shader = ctx->getStockShader( shaderDef );
+	ctx->bindGlslProg( shader );
 }
 
-void pushModelView( const Camera &cam )
+void setDefaultShaderVars()
 {
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();
-	glLoadMatrixf( cam.getModelViewMatrix().m );
+	auto ctx = gl::context();
+	ctx->setDefaultShaderVars();
 }
 
-void pushProjection( const Camera &cam )
+void clear( const ColorA& color, bool clearDepthBuffer )
 {
-	glMatrixMode( GL_PROJECTION );
-	glPushMatrix();
-	glLoadMatrixf( cam.getProjectionMatrix().m );
-}
-
-void pushMatrices()
-{
-	glMatrixMode( GL_PROJECTION );
-	glPushMatrix();
-	glMatrixMode( GL_MODELVIEW );
-	glPushMatrix();	
-}
-
-void popMatrices()
-{
-	glMatrixMode( GL_PROJECTION );
-	glPopMatrix();
-	glMatrixMode( GL_MODELVIEW );
-	glPopMatrix();
-}
-
-void multModelView( const Matrix44f &mtx )
-{
-	glMatrixMode( GL_MODELVIEW );
-	glMultMatrixf( mtx );
-}
-
-void multProjection( const Matrix44f &mtx )
-{
-	glMatrixMode( GL_PROJECTION );
-	glMultMatrixf( mtx );
-}
-
-Matrix44f getModelView()
-{
-	Matrix44f result;
-	glGetFloatv( GL_MODELVIEW_MATRIX, reinterpret_cast<GLfloat*>( &(result.m) ) );
-	return result;
-}
-
-Matrix44f getProjection()
-{
-	Matrix44f result;
-	glGetFloatv( GL_PROJECTION_MATRIX, reinterpret_cast<GLfloat*>( &(result.m) ) );
-	return result;
-}
-
-void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees, float nearPlane, float farPlane, bool originUpperLeft )
-{
-	CameraPersp cam( screenWidth, screenHeight, fovDegrees, nearPlane, farPlane );
-
-	glMatrixMode( GL_PROJECTION );
-	glLoadMatrixf( cam.getProjectionMatrix().m );
-
-	glMatrixMode( GL_MODELVIEW );
-	glLoadMatrixf( cam.getModelViewMatrix().m );
-	if( originUpperLeft ) {
-		glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
-		glTranslatef( 0.0f, (float)-screenHeight, 0.0f );       // shift origin up to upper-left corner.
+	clearColor( color );
+	if ( clearDepthBuffer ) {
+		depthMask( GL_TRUE );
+		clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	} else {
+		clear( GL_COLOR_BUFFER_BIT );
 	}
 }
 
-void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft )
+void clear( GLbitfield mask )
 {
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-#if defined( CINDER_GLES )
-	if( originUpperLeft )
-		glOrthof( 0, screenWidth, screenHeight, 0, -1.0f, 1.0f );
-	else
-		glOrthof( 0, screenWidth, 0, screenHeight, -1.0f, 1.0f );
-#else	
-	if( originUpperLeft )
-		glOrtho( 0, screenWidth, screenHeight, 0, -1.0f, 1.0f );
-	else
-		glOrtho( 0, screenWidth, 0, screenHeight, -1.0f, 1.0f );
+    glClear( mask );
+}
+
+void clearColor( const ColorA &color )
+{
+    glClearColor( color.r, color.g, color.b, color.a );
+}
+
+void clearDepth( const double depth )
+{
+#if ! defined( CINDER_GL_ES )
+    glClearDepth( depth );
+#else
+	glClearDepthf( depth );
 #endif
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity();
 }
 
-Area getViewport()
+void clearDepth( const float depth )
 {
-	GLint params[4];
-	glGetIntegerv( GL_VIEWPORT, params );
-	Area result;
-	return Area( params[0], params[1], params[0] + params[2], params[1] + params[3] );
+    glClearDepthf( depth );
 }
 
-void setViewport( const Area &area )
+void clearStencil( const int s )
 {
-	glViewport( area.x1, area.y1, ( area.x2 - area.x1 ), ( area.y2 - area.y1 ) );
+    glClearStencil( s );
 }
 
-void translate( const Vec2f &pos )
+void colorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha )
 {
-	glTranslatef( pos.x, pos.y, 0 );
+    glColorMask( red, green, blue, alpha );
 }
 
-void translate( const Vec3f &pos )
+void depthMask( GLboolean flag )
 {
-	glTranslatef( pos.x, pos.y, pos.z );
+    auto ctx = gl::context();
+	ctx->depthMask( flag );
 }
 
-void scale( const Vec3f &scale )
+void stencilMask( GLboolean mask )
 {
-	glScalef( scale.x, scale.y, scale.z );
+	glStencilMask( mask );
 }
 
-void rotate( const Vec3f &xyz )
+void stencilFunc( GLenum func, GLint ref, GLuint mask )
 {
-	glRotatef( xyz.x, 1.0f, 0.0f, 0.0f );
-	glRotatef( xyz.y, 0.0f, 1.0f, 0.0f );
-	glRotatef( xyz.z, 0.0f, 0.0f, 1.0f );
+    glStencilFunc( func, ref, mask );
 }
 
-void rotate( const Quatf &quat )
+void stencilOp( GLenum fail, GLenum zfail, GLenum zpass )
 {
-	Vec3f axis;
-	float angle;
-	quat.getAxisAngle( &axis, &angle );
-	if( math<float>::abs( angle ) > EPSILON_VALUE )
-		glRotatef( toDegrees( angle ), axis.x, axis.y, axis.z );
+    glStencilOp( fail, zfail, zpass );
+}
+
+std::pair<Vec2i, Vec2i> getViewport()
+{
+	auto ctx = gl::context();
+	auto view = ctx->getViewport();
+	return view;
+}
+
+void viewport( const std::pair<Vec2i, Vec2i> positionAndSize )
+{
+	auto ctx = gl::context();
+	ctx->viewport( positionAndSize );
+}
+
+void pushViewport( const std::pair<Vec2i, Vec2i> positionAndSize )
+{
+	auto ctx = gl::context();
+	ctx->pushViewport( positionAndSize );
+}
+
+void popViewport()
+{
+	auto ctx = gl::context();
+	ctx->popViewport();
+}
+
+std::pair<Vec2i, Vec2i> getScissor()
+{
+	auto ctx = gl::context();
+	auto scissor = ctx->getScissor();
+	return scissor;
+}
+
+void scissor( const std::pair<Vec2i, Vec2i> positionAndSize )
+{
+	auto ctx = gl::context();
+	ctx->setScissor( positionAndSize );
+}
+
+void enable( GLenum state, bool enable )
+{
+	auto ctx = gl::context();
+	ctx->enable( state, enable );
 }
 
 void enableAlphaBlending( bool premultiplied )
 {
-	glEnable( GL_BLEND );
-	if( ! premultiplied )
-		glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	else
-		glBlendFunc( GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
+	auto ctx = gl::context();
+	ctx->enable( GL_BLEND );
+	if( ! premultiplied ) {
+		ctx->blendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	}
+	else {
+		ctx->blendFunc( GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
+	}
 }
 
 void disableAlphaBlending()
 {
-	glDisable( GL_BLEND );
+	gl::disable( GL_BLEND );
 }
 
 void enableAdditiveBlending()
 {
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE );	
+	auto ctx = gl::context();
+	ctx->enable( GL_BLEND );
+	ctx->blendFunc( GL_SRC_ALPHA, GL_ONE );
 }
-
-void enableAlphaTest( float value, int func )
-{
-	glEnable( GL_ALPHA_TEST );
-	glAlphaFunc( func, value );
-}
-
-void disableAlphaTest()
-{
-	glDisable( GL_ALPHA_TEST );
-}
-
-#if ! defined( CINDER_GLES )
-void enableWireframe()
-{
-	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-}
-
-void disableWireframe()
-{
-	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-}
-#endif
 
 void disableDepthRead()
 {
-	glDisable( GL_DEPTH_TEST );
+	gl::disable( GL_DEPTH_TEST );
 }
 
 void enableDepthRead( bool enable )
 {
-	if( enable )
-		glEnable( GL_DEPTH_TEST );
-	else
-		glDisable( GL_DEPTH_TEST );
+	gl::enable( GL_DEPTH_TEST, enable );
 }
 
 void enableDepthWrite( bool enable )
 {
-	glDepthMask( (enable) ? GL_TRUE : GL_FALSE );
+	auto ctx = gl::context();
+	ctx->depthMask( enable ? GL_TRUE : GL_FALSE );
 }
 
 void disableDepthWrite()
 {
-	glDepthMask( GL_FALSE );
+	auto ctx = gl::context();
+	ctx->depthMask( GL_FALSE );
 }
 
-void drawLine( const Vec2f &start, const Vec2f &end )
+void enableStencilTest( bool enable )
 {
-	float lineVerts[2*2];
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, lineVerts );
-	lineVerts[0] = start.x; lineVerts[1] = start.y;
-	lineVerts[2] = end.x; lineVerts[3] = end.y;
-	glDrawArrays( GL_LINES, 0, 2 );
-	glDisableClientState( GL_VERTEX_ARRAY );
+    gl::enable( GL_STENCIL_TEST, enable );
 }
 
-void drawLine( const Vec3f &start, const Vec3f &end )
+void disableStencilTest()
 {
-	float lineVerts[3*2];
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 3, GL_FLOAT, 0, lineVerts );
-	lineVerts[0] = start.x; lineVerts[1] = start.y; lineVerts[2] = start.z;
-	lineVerts[3] = end.x; lineVerts[4] = end.y; lineVerts[5] = end.z; 
-	glDrawArrays( GL_LINES, 0, 2 );
-	glDisableClientState( GL_VERTEX_ARRAY );
+    gl::disable( GL_STENCIL_TEST );
+}
+
+void setMatrices( const ci::Camera& cam )
+{
+	auto ctx = context();
+	ctx->getViewMatrixStack().back() = cam.getViewMatrix();
+	ctx->getProjectionMatrixStack().back() = cam.getProjectionMatrix();
+	ctx->getModelMatrixStack().back().setToIdentity();
+}
+
+void setModelMatrix( const ci::Matrix44f &m )
+{
+	auto ctx = context();
+	ctx->getModelMatrixStack().back() = m;
+}
+
+void setViewMatrix( const ci::Matrix44f &m )
+{
+	auto ctx = context();
+	ctx->getViewMatrixStack().back() = m;
+}
+
+void setProjectionMatrix( const ci::Matrix44f &m )
+{
+	auto ctx = context();
+	ctx->getProjectionMatrixStack().back() = m;
+}
+
+void pushModelMatrix()
+{
+	auto ctx = context();
+	ctx->getModelMatrixStack().push_back( ctx->getModelMatrixStack().back() );
+}
+
+void popModelMatrix()
+{
+	auto ctx = context();
+	ctx->getModelMatrixStack().pop_back();
+}
+
+void pushViewMatrix()
+{
+	auto ctx = context();
+	ctx->getViewMatrixStack().push_back( ctx->getViewMatrixStack().back() );
+}
+
+void popViewMatrix()
+{
+	auto ctx = context();
+	ctx->getViewMatrixStack().pop_back();
+}
+
+void pushProjectionMatrix()
+{
+	auto ctx = context();
+	ctx->getProjectionMatrixStack().push_back( ctx->getProjectionMatrixStack().back() );
+}
+
+void popProjectionMatrix()
+{
+	auto ctx = context();
+	ctx->getProjectionMatrixStack().pop_back();
+}
+
+void pushModelViewMatrices()
+{
+	auto ctx = context();
+	ctx->getModelMatrixStack().push_back( ctx->getModelMatrixStack().back() );
+	ctx->getViewMatrixStack().push_back( ctx->getViewMatrixStack().back() );
+}
+
+void popModelViewMatrices()
+{
+	auto ctx = context();
+	ctx->getModelMatrixStack().pop_back();
+	ctx->getViewMatrixStack().pop_back();
+}
+
+void pushMatrices()
+{
+	auto ctx = context();
+	ctx->getModelMatrixStack().push_back( ctx->getModelMatrixStack().back() );
+	ctx->getViewMatrixStack().push_back( ctx->getViewMatrixStack().back() );
+	ctx->getProjectionMatrixStack().push_back( ctx->getProjectionMatrixStack().back() );
+}
+
+void popMatrices()
+{
+	auto ctx = context();
+	ctx->getModelMatrixStack().pop_back();
+	ctx->getViewMatrixStack().pop_back();
+	ctx->getProjectionMatrixStack().pop_back();
+}
+
+void multModelMatrix( const ci::Matrix44f& mtx )
+{
+	auto ctx = gl::context();
+	ctx->getModelMatrixStack().back() *= mtx;
+}
+
+void multViewMatrix( const ci::Matrix44f& mtx )
+{
+	auto ctx = gl::context();
+	ctx->getViewMatrixStack().back() *= mtx;
+}
+
+void multProjectionMatrix( const ci::Matrix44f& mtx )
+{
+	auto ctx = gl::context();
+	ctx->getProjectionMatrixStack().back() *= mtx;
+}
+
+Matrix44f getModelMatrix()
+{
+	auto ctx = gl::context();
+	return ctx->getModelMatrixStack().back();
+}
+
+Matrix44f getViewMatrix()
+{
+	auto ctx = gl::context();
+	return ctx->getViewMatrixStack().back();
+}
+
+Matrix44f getProjectionMatrix()
+{
+	auto ctx = gl::context();
+	return ctx->getProjectionMatrixStack().back();
+}
+
+Matrix44f getModelView()
+{
+	auto ctx = context();
+	return ctx->getViewMatrixStack().back() * ctx->getModelMatrixStack().back();
+}
+
+Matrix44f getModelViewProjection()
+{
+	auto ctx = context();
+	return ctx->getProjectionMatrixStack().back() * ctx->getViewMatrixStack().back() * ctx->getModelMatrixStack().back();
+}
+
+Matrix44f calcViewMatrixInverse()
+{
+	Matrix44f v = getViewMatrix();
+	return v.inverted();
+}
+
+Matrix33f calcNormalMatrix()
+{
+	Matrix33f mv = getModelView().subMatrix33( 0, 0 );
+	mv.invert( FLT_MIN );
+	mv.transpose();
+	return mv;
+}
+	
+Matrix33f calcModelMatrixInverseTranspose()
+{
+	Matrix33f m = getModelMatrix().subMatrix33( 0, 0 );
+	m.invert( FLT_MIN );
+	m.transpose();
+	return m;
+}
+	
+Matrix44f calcViewportMatrix()
+{
+	auto curViewport = getViewport();
+	
+	const float a = ( curViewport.second.x - curViewport.first.x ) / 2.0f;
+	const float b = ( curViewport.second.y - curViewport.first.y ) / 2.0f;
+	const float c = 1.0f / 2.0f;
+	
+	const float tx = ( curViewport.second.x + curViewport.first.x ) / 2.0f;
+	const float ty = ( curViewport.second.y + curViewport.second.y ) / 2.0f;
+	const float tz = 1.0f / 2.0f;
+	
+	return Matrix44f(
+		a, 0, 0, 0,
+		0, b, 0, 0,
+		0, 0, c, 0,
+		tx, ty, tz, 1
+	);
+}
+
+void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees, float nearPlane, float farPlane, bool originUpperLeft )
+{
+	auto ctx = gl::context();
+
+	CameraPersp cam( screenWidth, screenHeight, fovDegrees, nearPlane, farPlane );
+	ctx->getModelMatrixStack().back().setToIdentity();
+	ctx->getProjectionMatrixStack().back() = cam.getProjectionMatrix();
+	ctx->getViewMatrixStack().back() = cam.getViewMatrix();
+	if( originUpperLeft ) {
+		ctx->getViewMatrixStack().back().scale( Vec3f( 1.0f, -1.0f, 1.0f ) );					// invert Y axis so increasing Y goes down.
+		ctx->getViewMatrixStack().back().translate( Vec3f( 0.0f, (float)-screenHeight, 0.0f ) ); // shift origin up to upper-left corner.
+	}
+}
+
+void setMatricesWindowPersp( const ci::Vec2i& screenSize, float fovDegrees, float nearPlane, float farPlane, bool originUpperLeft )
+{
+	setMatricesWindowPersp( screenSize.x, screenSize.y, fovDegrees, nearPlane, farPlane, originUpperLeft );
+}
+
+void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft )
+{
+	auto ctx = gl::context();
+	ctx->getModelMatrixStack().back().setToIdentity();	
+	ctx->getViewMatrixStack().back().setToIdentity();
+	if( originUpperLeft )
+		ctx->getProjectionMatrixStack().back().setRows(	Vec4f( 2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f ),
+													Vec4f( 0.0f, 2.0f / -(float)screenHeight, 0.0f, 1.0f ),
+													Vec4f( 0.0f, 0.0f, -1.0f, 0.0f ),
+													Vec4f( 0.0f, 0.0f, 0.0f, 1.0f ) );
+	else
+		ctx->getProjectionMatrixStack().back().setRows(	Vec4f( 2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f ),
+													Vec4f( 0.0f, 2.0f / (float)screenHeight, 0.0f, -1.0f ),
+													Vec4f( 0.0f, 0.0f, -1.0f, 0.0f ),
+													Vec4f( 0.0f, 0.0f, 0.0f, 1.0f ) );
+}
+
+void setMatricesWindow( const ci::Vec2i& screenSize, bool originUpperLeft )
+{
+	setMatricesWindow( screenSize.x, screenSize.y, originUpperLeft );
+}
+
+void rotate( const Quatf &quat )
+{
+	float angle;
+	Vec3f axis;
+	quat.getAxisAngle( &axis, &angle );
+	rotate( toDegrees( angle ), axis );
+}
+
+void rotate( float angleDegrees, const Vec3f &axis )
+{
+	if( math<float>::abs( angleDegrees ) > EPSILON_VALUE ) {
+		auto ctx = gl::context();
+		ctx->getModelMatrixStack().back().rotate( axis, toRadians( angleDegrees ) );
+	}
+}
+
+void scale( const ci::Vec3f& v )
+{
+	auto ctx = gl::context();
+	ctx->getModelMatrixStack().back().scale( v );
+}
+
+void translate( const ci::Vec3f& v )
+{
+	auto ctx = gl::context();
+	ctx->getModelMatrixStack().back().translate( v );
+}
+
+void begin( GLenum mode )
+{
+	auto ctx = gl::context();
+	ctx->immediate().begin( mode );
+}
+
+void end()
+{
+	auto ctx = gl::context();
+
+	if( ctx->immediate().empty() )
+		return;
+	else {
+		ScopedGlslProg ScopedGlslProg( ctx->getStockShader( ShaderDef().color() ) );
+		ctx->immediate().draw();
+		ctx->immediate().clear();
+	}
+}
+
+#if ! defined( CINDER_GL_ES )
+void bindBufferBase( GLenum target, int index, BufferObjRef buffer )
+{
+	auto ctx = gl::context();
+	ctx->bindBufferBase( target, index, buffer );
+}
+
+void beginTransformFeedback( GLenum primitiveMode )
+{
+	auto ctx = gl::context();
+	ctx->beginTransformFeedback( primitiveMode );
+}
+
+void pauseTransformFeedback()
+{
+	auto ctx = gl::context();
+	ctx->pauseTransformFeedback();
+}
+
+void resumeTransformFeedback()
+{
+	auto ctx = gl::context();
+	ctx->resumeTransformFeedback();
+}
+
+void endTransformFeedback()
+{
+	auto ctx = gl::context();
+	ctx->endTransformFeedback();
+}
+#endif
+
+void color( float r, float g, float b )
+{
+	auto ctx = gl::context();
+	ctx->setCurrentColor( ColorAf( r, g, b, 1.0f ) );
+}
+
+void color( float r, float g, float b, float a )
+{
+	auto ctx = gl::context();
+	ctx->setCurrentColor( ColorAf( r, g, b, a ) );
+}
+
+void color( const ci::Color &c )
+{
+	auto ctx = gl::context();
+	ctx->setCurrentColor( c );
+}
+
+void color( const ci::ColorA &c )
+{
+	auto ctx = gl::context();
+	ctx->setCurrentColor( c );
+}
+
+void color( const ci::Color8u &c )
+{
+	auto ctx = gl::context();
+	ctx->setCurrentColor( c );
+}
+
+void color( const ci::ColorA8u &c )
+{
+	auto ctx = gl::context();
+	ctx->setCurrentColor( c );
+}
+
+void texCoord( float s, float t )
+{
+	auto ctx = gl::context();
+	ctx->immediate().texCoord( s, t );
+}
+
+void texCoord( float s, float t, float r )
+{
+	auto ctx = gl::context();
+	ctx->immediate().texCoord( s, t, r );
+}
+
+void texCoord( float s, float t, float r, float q )
+{
+	auto ctx = gl::context();
+	ctx->immediate().texCoord( s, t, r, q );
+}
+
+void texCoord( const ci::Vec2f &v )
+{
+	auto ctx = gl::context();
+	ctx->immediate().texCoord( v.x, v.y );
+}
+
+void texCoord( const ci::Vec3f &v )
+{
+	auto ctx = gl::context();
+	ctx->immediate().texCoord( v );
+}
+
+void texCoord( const ci::Vec4f &v )
+{
+	auto ctx = gl::context();
+	ctx->immediate().texCoord( v );
+}
+
+void vertex( float x, float y )
+{
+	auto ctx = gl::context();
+	ctx->immediate().vertex( Vec4f( x, y, 0, 1 ), ctx->getCurrentColor() );
+}
+
+void vertex( float x, float y, float z )
+{
+	auto ctx = gl::context();
+	ctx->immediate().vertex( Vec4f( x, y, z, 1 ), ctx->getCurrentColor() );
+}
+
+void vertex( float x, float y, float z, float w )
+{
+	auto ctx = gl::context();
+	ctx->immediate().vertex( Vec4f( x, y, z, w ), ctx->getCurrentColor() );
+}
+
+void vertex( const ci::Vec2f &v )
+{
+	auto ctx = gl::context();
+	ctx->immediate().vertex( Vec4f( v.x, v.y, 0, 1 ), ctx->getCurrentColor() );
+}
+
+void vertex( const ci::Vec3f &v )
+{
+	auto ctx = gl::context();
+	ctx->immediate().vertex( Vec4f( v.x, v.y, v.z, 1 ), ctx->getCurrentColor() );
+}
+
+void vertex( const ci::Vec4f &v )
+{
+	auto ctx = gl::context();
+	ctx->immediate().vertex( v, ctx->getCurrentColor() );
+}
+
+#if ! defined( CINDER_GL_ES )
+void polygonMode( GLenum face, GLenum mode )
+{
+	auto ctx = gl::context();
+	ctx->polygonMode( face, mode );
+}
+
+void enableWireframe()
+{
+	gl::polygonMode( GL_FRONT_AND_BACK, GL_LINE );
+}
+
+void disableWireframe()
+{
+	gl::polygonMode( GL_FRONT_AND_BACK, GL_FILL );
+}
+
+bool isWireframeEnabled()
+{
+	auto ctx = gl::context();
+	return ctx->getPolygonMode( GL_FRONT_AND_BACK ) == GL_LINE;
+}
+
+#endif
+
+void draw( const VboMeshRef& mesh )
+{
+	auto ctx = gl::context();
+	auto curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	mesh->buildVao( curGlslProg );
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	mesh->drawImpl();
+	ctx->popVao();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Vertex Attributes
+void vertexAttribPointer( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer )
+{
+	context()->vertexAttribPointer( index, size, type, normalized, stride, pointer );
+}
+
+#if ! defined( CINDER_GL_ES )
+void vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer )
+{
+	context()->vertexAttribIPointer( index, size, type, stride, pointer );
+}
+#endif
+
+void enableVertexAttribArray( GLuint index )
+{
+	context()->enableVertexAttribArray( index );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Buffers
+void vertexAttrib1f( GLuint index, float v0 )
+{
+	context()->vertexAttrib1f( index, v0 );
+}
+
+void vertexAttrib2f( GLuint index, float v0, float v1 )
+{
+	context()->vertexAttrib2f( index, v0, v1 );
+}
+
+void vertexAttrib3f( GLuint index, float v0, float v1, float v2 )
+{
+	context()->vertexAttrib3f( index, v0, v1, v2 );
+}
+
+void vertexAttrib4f( GLuint index, float v0, float v1, float v2, float v3 )
+{
+	context()->vertexAttrib4f( index, v0, v1, v2, v3 );
+}
+
+void bindBuffer( const BufferObjRef &buffer )
+{
+	context()->bindBuffer( buffer->getTarget(), buffer->getId() );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// toGL conversion functions
+GLenum toGl( geom::Primitive prim )
+{
+	switch( prim ) {
+		case geom::Primitive::LINES:
+			return GL_LINES;
+		break;
+		case geom::Primitive::TRIANGLES:
+			return GL_TRIANGLES;
+		break;
+		case geom::Primitive::TRIANGLE_STRIP:
+			return GL_TRIANGLE_STRIP;
+		break;
+		case geom::Primitive::TRIANGLE_FAN:
+			return GL_TRIANGLE_FAN;
+		default:
+			return 0; // no clear right choice here
+	}
+}
+
+geom::Primitive toGeomPrimitive( GLenum prim )
+{
+	switch( prim ) {
+		case GL_LINES:
+			return geom::Primitive::LINES;
+		break;
+		case GL_TRIANGLES:
+			return geom::Primitive::TRIANGLES;
+		break;
+		case GL_TRIANGLE_STRIP:
+			return geom::Primitive::TRIANGLE_STRIP;
+		break;
+		case GL_TRIANGLE_FAN:
+			return geom::Primitive::TRIANGLE_FAN;
+		default:
+			return geom::Primitive( 65535 ); // no clear right choice here
+	}
+}
+
+std::string uniformSemanticToString( UniformSemantic uniformSemantic )
+{
+	switch( uniformSemantic ) {
+		case UNIFORM_MODEL_MATRIX: return "UNIFORM_MODEL_MATRIX";
+		case UNIFORM_MODEL_MATRIX_INVERSE: return "UNIFORM_MODEL_MATRIX_INVERSE";
+		case UNIFORM_MODEL_MATRIX_INVERSE_TRANSPOSE: return "UNIFORM_MODEL_MATRIX_INVERSE_TRANSPOSE";
+		case UNIFORM_VIEW_MATRIX: return "UNIFORM_VIEW_MATRIX";
+		case UNIFORM_VIEW_MATRIX_INVERSE: return "UNIFORM_VIEW_MATRIX_INVERSE";
+		case UNIFORM_MODEL_VIEW: return "UNIFORM_MODEL_VIEW";
+		case UNIFORM_MODEL_VIEW_INVERSE: return "UNIFORM_MODEL_VIEW_INVERSE";
+		case UNIFORM_MODEL_VIEW_INVERSE_TRANSPOSE: return "UNIFORM_MODEL_VIEW_INVERSE_TRANSPOSE";
+		case UNIFORM_MODEL_VIEW_PROJECTION: return "UNIFORM_MODEL_VIEW_PROJECTION";
+		case UNIFORM_MODEL_VIEW_PROJECTION_INVERSE: return "UNIFORM_MODEL_VIEW_PROJECTION_INVERSE";
+		case UNIFORM_PROJECTION_MATRIX: return "UNIFORM_PROJECTION_MATRIX";
+		case UNIFORM_PROJECTION_MATRIX_INVERSE: return "UNIFORM_PROJECTION_MATRIX_INVERSE";
+		case UNIFORM_NORMAL_MATRIX: return "UNIFORM_NORMAL_MATRIX";
+		case UNIFORM_VIEWPORT_MATRIX: return "UNIFORM_VIEWPORT_MATRIX";
+		case UNIFORM_WINDOW_SIZE: return "UNIFORM_WINDOW_SIZE";
+		case UNIFORM_ELAPSED_SECONDS: return "UNIFORM_ELAPSED_SECONDS";
+		default: return "";
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Draw*
+void drawArrays( GLenum mode, GLint first, GLsizei count )
+{
+	context()->drawArrays( mode, first, count );
+}
+
+void drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices )
+{
+	context()->drawElements( mode, count, type, indices );
 }
 
 namespace {
-void drawCubeImpl( const Vec3f &c, const Vec3f &size, bool drawColors )
+void drawCubeImpl( const Vec3f &c, const Vec3f &size, bool faceColors )
 {
 	GLfloat sx = size.x * 0.5f;
 	GLfloat sy = size.y * 0.5f;
@@ -526,7 +895,7 @@ void drawCubeImpl( const Vec3f &c, const Vec3f &size, bool drawColors )
 								  -1,0,0,	-1,0,0,	-1,0,0,	-1,0,0,
 								  0,-1,0,	0,-1,0,  0,-1,0,0,-1,0,
 								  0,0,-1,	0,0,-1,	0,0,-1,	0,0,-1};
-	 
+
 	static GLubyte colors[24*4]={	255,0,0,255,	255,0,0,255,	255,0,0,255,	255,0,0,255,	// +X = red
 									0,255,0,255,	0,255,0,255,	0,255,0,255,	0,255,0,255,	// +Y = green
 									0,0,255,255,	0,0,255,255,	0,0,255,255,	0,0,255,255,	// +Z = blue
@@ -536,11 +905,11 @@ void drawCubeImpl( const Vec3f &c, const Vec3f &size, bool drawColors )
 
 	static GLfloat texs[24*2]={	0,1,	1,1,	1,0,	0,0,
 								1,1,	1,0,	0,0,	0,1,
-								0,1,	1,1,	1,0,	0,0,							
+								0,1,	1,1,	1,0,	0,0,
 								1,1,	1,0,	0,0,	0,1,
 								1,0,	0,0,	0,1,	1,1,
 								1,0,	0,0,	0,1,	1,1 };
-	
+
 	static GLubyte elements[6*6] ={	0, 1, 2, 0, 2, 3,
 									4, 5, 6, 4, 6, 7,
 									8, 9,10, 8, 10,11,
@@ -548,30 +917,73 @@ void drawCubeImpl( const Vec3f &c, const Vec3f &size, bool drawColors )
 									16,17,18,16,18,19,
 									20,21,22,20,22,23 };
 
-	glEnableClientState( GL_NORMAL_ARRAY );
-	glNormalPointer( GL_FLOAT, 0, normals );
-
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	glTexCoordPointer( 2, GL_FLOAT, 0, texs );
-
-	if( drawColors ) {
-		glEnableClientState( GL_COLOR_ARRAY );	
-		glColorPointer( 4, GL_UNSIGNED_BYTE, 0, colors );		
+	Context *ctx = gl::context();
+	auto curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
 	}
 
-	glEnableClientState( GL_VERTEX_ARRAY );	 
-	glVertexPointer( 3, GL_FLOAT, 0, vertices );
+	bool hasPositions = curGlslProg->hasAttribSemantic( geom::Attrib::POSITION );
+	bool hasNormals = curGlslProg->hasAttribSemantic( geom::Attrib::NORMAL );
+	bool hasTextureCoords = curGlslProg->hasAttribSemantic( geom::Attrib::TEX_COORD_0 );
+	bool hasColors = faceColors && curGlslProg->hasAttribSemantic( geom::Attrib::COLOR );
 
-	glDrawElements( GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, elements );
+	size_t totalArrayBufferSize = 0;
+	if( hasPositions )
+		totalArrayBufferSize += sizeof(float)*24*3;
+	if( hasNormals )
+		totalArrayBufferSize += sizeof(float)*24*3;
+	if( hasTextureCoords )
+		totalArrayBufferSize += sizeof(float)*24*2;
+	if( hasColors )
+		totalArrayBufferSize += 24*4;
 
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	 
-	glDisableClientState( GL_NORMAL_ARRAY );
-	if( drawColors )
-		glDisableClientState( GL_COLOR_ARRAY );
-	 
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+
+	VboRef defaultArrayVbo = ctx->getDefaultArrayVbo( totalArrayBufferSize );
+	ScopedBuffer vboScp( defaultArrayVbo );
+	VboRef elementVbo = ctx->getDefaultElementVbo( 6*6 );
+
+	elementVbo->bind();
+	size_t curBufferOffset = 0;
+	if( hasPositions ) {
+		int loc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+		enableVertexAttribArray( loc );
+		vertexAttribPointer( loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)curBufferOffset );
+		defaultArrayVbo->bufferSubData( curBufferOffset, sizeof(float)*24*3, vertices );
+		curBufferOffset += sizeof(float)*24*3;
+	}
+	if( hasNormals ) {
+		int loc = curGlslProg->getAttribSemanticLocation( geom::Attrib::NORMAL );
+		enableVertexAttribArray( loc );
+		vertexAttribPointer( loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)curBufferOffset );
+		defaultArrayVbo->bufferSubData( curBufferOffset, sizeof(float)*24*3, normals );
+		curBufferOffset += sizeof(float)*24*3;
+	}
+	if( hasTextureCoords ) {
+		int loc = curGlslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+		enableVertexAttribArray( loc );
+		vertexAttribPointer( loc, 2, GL_FLOAT, GL_FALSE, 0, (void*)curBufferOffset );
+		defaultArrayVbo->bufferSubData( curBufferOffset, sizeof(float)*24*2, texs );
+		curBufferOffset += sizeof(float)*24*2;
+	}
+	if( hasColors ) {
+		int loc = curGlslProg->getAttribSemanticLocation( geom::Attrib::COLOR );
+		enableVertexAttribArray( loc );
+		vertexAttribPointer( loc, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)curBufferOffset );
+		defaultArrayVbo->bufferSubData( curBufferOffset, 24*4, colors );
+		curBufferOffset += 24*4;
+	}
+
+	elementVbo->bufferSubData( 0, 36, elements );
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawElements( GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, 0 );
+	ctx->popVao();
 }
-} // anonymous namespace
+}
 
 void drawCube( const Vec3f &center, const Vec3f &size )
 {
@@ -583,1046 +995,785 @@ void drawColorCube( const Vec3f &center, const Vec3f &size )
 	drawCubeImpl( center, size, true );
 }
 
-void drawStrokedCube( const Vec3f &center, const Vec3f &size )
+void draw( const TextureRef &texture, const Area &srcArea, const Rectf &dstRect )
 {
-	Vec3f min = center - size * 0.5f;
-	Vec3f max = center + size * 0.5f;
+	auto ctx = context();
 
-	gl::drawLine( Vec3f(min.x, min.y, min.z), Vec3f(max.x, min.y, min.z) );
-	gl::drawLine( Vec3f(max.x, min.y, min.z), Vec3f(max.x, max.y, min.z) );
-	gl::drawLine( Vec3f(max.x, max.y, min.z), Vec3f(min.x, max.y, min.z) );
-	gl::drawLine( Vec3f(min.x, max.y, min.z), Vec3f(min.x, min.y, min.z) );
-	
-	gl::drawLine( Vec3f(min.x, min.y, max.z), Vec3f(max.x, min.y, max.z) );
-	gl::drawLine( Vec3f(max.x, min.y, max.z), Vec3f(max.x, max.y, max.z) );
-	gl::drawLine( Vec3f(max.x, max.y, max.z), Vec3f(min.x, max.y, max.z) );
-	gl::drawLine( Vec3f(min.x, max.y, max.z), Vec3f(min.x, min.y, max.z) );
-	
-	gl::drawLine( Vec3f(min.x, min.y, min.z), Vec3f(min.x, min.y, max.z) );
-	gl::drawLine( Vec3f(min.x, max.y, min.z), Vec3f(min.x, max.y, max.z) );
-	gl::drawLine( Vec3f(max.x, max.y, min.z), Vec3f(max.x, max.y, max.z) );
-	gl::drawLine( Vec3f(max.x, min.y, min.z), Vec3f(max.x, min.y, max.z) );
+	Rectf texRect = texture->getAreaTexCoords( srcArea );
+
+	ScopedVao vaoScp( ctx->getDrawTextureVao() );
+	ScopedBuffer vboScp( ctx->getDrawTextureVbo() );
+	ScopedTextureBind texBindScope( texture );
+
+	auto glsl = getStockShader( ShaderDef().uniformBasedPosAndTexCoord().color().texture( texture ) );
+	ScopedGlslProg glslScp( glsl );
+	glsl->uniform( "uTex0", 0 );
+	glsl->uniform( "uPositionOffset", dstRect.getUpperLeft() );
+	glsl->uniform( "uPositionScale", dstRect.getSize() );
+	glsl->uniform( "uTexCoordOffset", texRect.getUpperLeft() );
+	glsl->uniform( "uTexCoordScale", texRect.getSize() );
+
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 }
 
-// http://local.wasp.uwa.edu.au/~pbourke/texture_colour/spheremap/  Paul Bourke's sphere code
-// We should weigh an alternative that reduces the batch count by using GL_TRIANGLES instead
-void drawSphere( const Vec3f &center, float radius, int segments )
+void draw( const TextureRef &texture, const Rectf &dstRect )
 {
-	if( segments < 0 )
+	draw( texture, texture->getBounds(), dstRect );
+}
+
+
+void draw( const TextureRef &texture, const Vec2f &dstOffset )
+{
+	if( ! texture )
+		return;
+	draw( texture, texture->getBounds(), Rectf( texture->getBounds() ) + dstOffset );
+}
+
+void draw( const Path2d &path, float approximationScale )
+{
+	if( path.getNumSegments() == 0 )
 		return;
 
-	float *verts = new float[(segments+1)*2*3];
-	float *normals = new float[(segments+1)*2*3];
-	float *texCoords = new float[(segments+1)*2*2];
-
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 3, GL_FLOAT, 0, verts );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
-	glEnableClientState( GL_NORMAL_ARRAY );
-	glNormalPointer( GL_FLOAT, 0, normals );
-
-	for( int j = 0; j < segments / 2; j++ ) {
-		float theta1 = j * 2 * 3.14159f / segments - ( 3.14159f / 2.0f );
-		float theta2 = (j + 1) * 2 * 3.14159f / segments - ( 3.14159f / 2.0f );
-
-		for( int i = 0; i <= segments; i++ ) {
-			Vec3f e, p;
-			float theta3 = i * 2 * 3.14159f / segments;
-
-			e.x = math<float>::cos( theta1 ) * math<float>::cos( theta3 );
-			e.y = math<float>::sin( theta1 );
-			e.z = math<float>::cos( theta1 ) * math<float>::sin( theta3 );
-			p = e * radius + center;
-			normals[i*3*2+0] = e.x; normals[i*3*2+1] = e.y; normals[i*3*2+2] = e.z;
-			texCoords[i*2*2+0] = 0.999f - i / (float)segments; texCoords[i*2*2+1] = 0.999f - 2 * j / (float)segments;
-			verts[i*3*2+0] = p.x; verts[i*3*2+1] = p.y; verts[i*3*2+2] = p.z;
-
-			e.x = math<float>::cos( theta2 ) * math<float>::cos( theta3 );
-			e.y = math<float>::sin( theta2 );
-			e.z = math<float>::cos( theta2 ) * math<float>::sin( theta3 );
-			p = e * radius + center;
-			normals[i*3*2+3] = e.x; normals[i*3*2+4] = e.y; normals[i*3*2+5] = e.z;
-			texCoords[i*2*2+2] = 0.999f - i / (float)segments; texCoords[i*2*2+3] = 0.999f - 2 * ( j + 1 ) / (float)segments;
-			verts[i*3*2+3] = p.x; verts[i*3*2+4] = p.y; verts[i*3*2+5] = p.z;
-		}
-		glDrawArrays( GL_TRIANGLE_STRIP, 0, (segments + 1)*2 );
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
 	}
 
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glDisableClientState( GL_NORMAL_ARRAY );
+	vector<Vec2f> points = path.subdivide( approximationScale );
+	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(Vec2f) * points.size() );
+	arrayVbo->bufferSubData( 0, sizeof(Vec2f) * points.size(), points.data() );
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	ScopedBuffer bufferBindScp( arrayVbo );
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)nullptr );
+	}
+
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_LINE_STRIP, 0, points.size() );
+	ctx->popVao();
+}
+
+void draw( const PolyLine<Vec2f> &polyLine )
+{
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	const vector<Vec2f> &points = polyLine.getPoints();
+	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(Vec2f) * points.size() );
+	arrayVbo->bufferSubData( 0, sizeof(Vec2f) * points.size(), points.data() );
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	ScopedBuffer bufferBindScp( arrayVbo );
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)nullptr );
+	}
+
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_LINE_STRIP, 0, points.size() );
+	ctx->popVao();
+}
+
+void draw( const PolyLine<Vec3f> &polyLine )
+{
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
 	
-	delete [] verts;
-	delete [] normals;
-	delete [] texCoords;
+	const vector<Vec3f> &points = polyLine.getPoints();
+	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(Vec3f) * points.size() );
+	arrayVbo->bufferSubData( 0, sizeof(Vec3f) * points.size(), points.data() );
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	ScopedBuffer bufferBindScp( arrayVbo );
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)nullptr );
+	}
+
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_LINE_STRIP, 0, points.size() );
+	ctx->popVao();
 }
 
-void draw( const class Sphere &sphere, int segments )
+void drawLine( const Vec3f &a, const Vec3f &b )
 {
-	drawSphere( sphere.getCenter(), sphere.getRadius(), segments );
+	const int dims = 3;
+	const int size = sizeof( Vec3f ) * 2;
+	array<Vec3f, 2> points = { a, b };
+
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+
+	VboRef arrayVbo = ctx->getDefaultArrayVbo( size );
+	ScopedBuffer bufferBindScp( arrayVbo );
+
+	arrayVbo->bufferSubData( 0, size, points.data() );
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, dims, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)nullptr );
+	}
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_LINES, 0, points.size() );
+	ctx->popVao();
 }
 
-void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
+void drawLine( const Vec2f &a, const Vec2f &b )
 {
-	// automatically determine the number of segments from the circumference
-	if( numSegments <= 0 ) {
-		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
+	const int dims = 2;
+	const int size = sizeof( Vec2f ) * 2;
+	array<Vec2f, 2> points = { a, b };
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
 	}
-	if( numSegments < 2 ) numSegments = 2;
-	
-	GLfloat *verts = new float[(numSegments+2)*2];
-	verts[0] = center.x;
-	verts[1] = center.y;
-	for( int s = 0; s <= numSegments; s++ ) {
-		float t = s / (float)numSegments * 2.0f * 3.14159f;
-		verts[(s+1)*2+0] = center.x + math<float>::cos( t ) * radius;
-		verts[(s+1)*2+1] = center.y + math<float>::sin( t ) * radius;
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+
+	VboRef arrayVbo = ctx->getDefaultArrayVbo( size );
+	ScopedBuffer bufferBindScp( arrayVbo );
+
+	arrayVbo->bufferSubData( 0, size, points.data() );
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, dims, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)nullptr );
 	}
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	delete [] verts;
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_LINES, 0, points.size() );
+	ctx->popVao();
 }
 
-void drawStrokedCircle( const Vec2f &center, float radius, int numSegments )
+void draw( const TriMesh &mesh )
 {
-	// automatically determine the number of segments from the circumference
-	if( numSegments <= 0 ) {
-		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
-	}
-	if( numSegments < 2 ) numSegments = 2;
-	
-	GLfloat *verts = new float[numSegments*2];
-	for( int s = 0; s < numSegments; s++ ) {
-		float t = s / (float)numSegments * 2.0f * 3.14159f;
-		verts[s*2+0] = center.x + math<float>::cos( t ) * radius;
-		verts[s*2+1] = center.y + math<float>::sin( t ) * radius;
-	}
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_LINE_LOOP, 0, numSegments );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	delete [] verts;
+	if( mesh.getNumVertices() <= 0 )
+		return;
+
+	draw( VboMesh::create( mesh ) );
 }
 
-void drawSolidEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments )
+void drawSolid( const Path2d &path, float approximationScale )
 {
-	// automatically determine the number of segments from the circumference
-	if( numSegments <= 0 ) {
-		numSegments = (int)math<double>::floor( std::max(radiusX,radiusY) * M_PI * 2 );
-	}
-	if( numSegments < 2 ) numSegments = 2;
-	
-	GLfloat *verts = new float[(numSegments+2)*2];
-	verts[0] = center.x;
-	verts[1] = center.y;
-	for( int s = 0; s <= numSegments; s++ ) {
-		float t = s / (float)numSegments * 2.0f * 3.14159f;
-		verts[(s+1)*2+0] = center.x + math<float>::cos( t ) * radiusX;
-		verts[(s+1)*2+1] = center.y + math<float>::sin( t ) * radiusY;
-	}
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	delete [] verts;
+	draw( Triangulator( path ).calcMesh() );
 }
 
-void drawStrokedEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments )
+void drawSolid( const PolyLine<Vec2f> &polyLine )
 {
-	// automatically determine the number of segments from the circumference
-	if( numSegments <= 0 ) {
-		numSegments = (int)math<double>::floor( std::max(radiusX,radiusY) * M_PI * 2 );
-	}
-	if( numSegments < 2 ) numSegments = 2;
-	
-	GLfloat *verts = new float[numSegments*2];
-	for( int s = 0; s < numSegments; s++ ) {
-		float t = s / (float)numSegments * 2.0f * 3.14159f;
-		verts[s*2+0] = center.x + math<float>::cos( t ) * radiusX;
-		verts[s*2+1] = center.y + math<float>::sin( t ) * radiusY;
-	}
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_LINE_LOOP, 0, numSegments );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	delete [] verts;
+	draw( Triangulator( polyLine ).calcMesh() );
 }
 
-void drawSolidRect( const Rectf &rect, bool textureRectangle )
+void drawSolidRect( const Rectf& r )
 {
-	glEnableClientState( GL_VERTEX_ARRAY );
-	GLfloat verts[8];
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	GLfloat texCoords[8];
-	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
-	verts[0*2+0] = rect.getX2(); texCoords[0*2+0] = ( textureRectangle ) ? rect.getX2() : 1;
-	verts[0*2+1] = rect.getY1(); texCoords[0*2+1] = ( textureRectangle ) ? rect.getY1() : 0;
-	verts[1*2+0] = rect.getX1(); texCoords[1*2+0] = ( textureRectangle ) ? rect.getX1() : 0;
-	verts[1*2+1] = rect.getY1(); texCoords[1*2+1] = ( textureRectangle ) ? rect.getY1() : 0;
-	verts[2*2+0] = rect.getX2(); texCoords[2*2+0] = ( textureRectangle ) ? rect.getX2() : 1;
-	verts[2*2+1] = rect.getY2(); texCoords[2*2+1] = ( textureRectangle ) ? rect.getY2() : 1;
-	verts[3*2+0] = rect.getX1(); texCoords[3*2+0] = ( textureRectangle ) ? rect.getX1() : 0;
-	verts[3*2+1] = rect.getY2(); texCoords[3*2+1] = ( textureRectangle ) ? rect.getY2() : 1;
+	drawSolidRect( r, Rectf( 0, 0, 1, 1 ) );
+}
 
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+void drawSolidRect( const Rectf &r, const Rectf &texCoords )
+{
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
 
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
+	GLfloat data[8+8]; // both verts and texCoords
+	GLfloat *verts = data, *texs = data + 8;
+
+	verts[0*2+0] = r.getX2(); texs[0*2+0] = texCoords.getX2();
+	verts[0*2+1] = r.getY1(); texs[0*2+1] = texCoords.getY1();
+	verts[1*2+0] = r.getX1(); texs[1*2+0] = texCoords.getX1();
+	verts[1*2+1] = r.getY1(); texs[1*2+1] = texCoords.getY1();
+	verts[2*2+0] = r.getX2(); texs[2*2+0] = texCoords.getX2();
+	verts[2*2+1] = r.getY2(); texs[2*2+1] = texCoords.getY2();
+	verts[3*2+0] = r.getX1(); texs[3*2+0] = texCoords.getX1();
+	verts[3*2+1] = r.getY2(); texs[3*2+1] = texCoords.getY2();
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(float)*16 );
+	ScopedBuffer bufferBindScp( defaultVbo );
+	defaultVbo->bufferSubData( 0, sizeof(float)*16, data );
+
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	}
+	int texLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+	if( texLoc >= 0 ) {
+		enableVertexAttribArray( texLoc );
+		vertexAttribPointer( texLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float)*8) );
+	}
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	ctx->popVao();
 }
 
 void drawStrokedRect( const Rectf &rect )
 {
 	GLfloat verts[8];
-	verts[0] = rect.getX1();	verts[1] = rect.getY1();
-	verts[2] = rect.getX2();	verts[3] = rect.getY1();
-	verts[4] = rect.getX2();	verts[5] = rect.getY2();
-	verts[6] = rect.getX1();	verts[7] = rect.getY2();
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_LINE_LOOP, 0, 4 );
-	glDisableClientState( GL_VERTEX_ARRAY );
-}
+	verts[0] = rect.x1;	verts[1] = rect.y1;
+	verts[2] = rect.x2;	verts[3] = rect.y1;
+	verts[4] = rect.x2;	verts[5] = rect.y2;
+	verts[6] = rect.x1;	verts[7] = rect.y2;
 
-void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner )
-{
-	// automatically determine the number of segments from the circumference
-	if( numSegmentsPerCorner <= 0 ) {
-		numSegmentsPerCorner = (int)math<double>::floor( cornerRadius * M_PI * 2 / 4 );
-	}
-	if( numSegmentsPerCorner < 2 ) numSegmentsPerCorner = 2;
-
-	Vec2f center = r.getCenter();
-
-	GLfloat *verts = new float[(numSegmentsPerCorner+2)*2*4+4];
-	verts[0] = center.x;
-	verts[1] = center.y;
-	size_t tri = 1;
-	const float angleDelta = 1 / (float)numSegmentsPerCorner * M_PI / 2;
-	const float cornerCenterVerts[8] = { r.x2 - cornerRadius, r.y2 - cornerRadius, r.x1 + cornerRadius, r.y2 - cornerRadius,
-			r.x1 + cornerRadius, r.y1 + cornerRadius, r.x2 - cornerRadius, r.y1 + cornerRadius };
-	for( size_t corner = 0; corner < 4; ++corner ) {
-		float angle = corner * M_PI / 2.0f;
-		Vec2f cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
-		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
-			Vec2f pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius, cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
-			verts[tri*2+0] = pt.x;
-			verts[tri*2+1] = pt.y;
-			++tri;
-			angle += angleDelta;
-		}
-	}
-	// close it off
-	verts[tri*2+0] = r.x2;
-	verts[tri*2+1] = r.y2 - cornerRadius;
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_TRIANGLE_FAN, 0, (numSegmentsPerCorner+1) * 4 + 2 );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	delete [] verts;
-}
-
-void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner )
-{
-	// automatically determine the number of segments from the circumference
-	if( numSegmentsPerCorner <= 0 ) {
-		numSegmentsPerCorner = (int)math<double>::floor( cornerRadius * M_PI * 2 / 4 );
-	}
-	if( numSegmentsPerCorner < 2 ) numSegmentsPerCorner = 2;
-
-	GLfloat *verts = new float[(numSegmentsPerCorner+2)*2*4];
-	GLsizei tri = 0;
-	const float angleDelta = 1 / (float)numSegmentsPerCorner * M_PI / 2;
-	const float cornerCenterVerts[8] = { r.x2 - cornerRadius, r.y2 - cornerRadius, r.x1 + cornerRadius, r.y2 - cornerRadius,
-			r.x1 + cornerRadius, r.y1 + cornerRadius, r.x2 - cornerRadius, r.y1 + cornerRadius };
-	for( size_t corner = 0; corner < 4; ++corner ) {
-		float angle = corner * M_PI / 2.0f;
-		Vec2f cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
-		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
-			Vec2f pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius, cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
-			verts[tri*2+0] = pt.x;
-			verts[tri*2+1] = pt.y;
-			++tri;
-			angle += angleDelta;
-		}
-	}
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glDrawArrays( GL_LINE_LOOP, 0, tri );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	delete [] verts;
-}
-	
-void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 )
-{
-	Vec2f pts[3] = { pt1, pt2, pt3 };
-	drawSolidTriangle( pts );
-}
-
-void drawSolidTriangle( const Vec2f pts[3] )
-{
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
-	glDrawArrays( GL_TRIANGLES, 0, 3 );
-	glDisableClientState( GL_VERTEX_ARRAY );
-}
-	
-void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3, const Vec2f &texPt1, const Vec2f &texPt2, const Vec2f &texPt3 )
-{
-	Vec2f pts[3] = { pt1, pt2, pt3 };
-	Vec2f texCoords[3] = { texPt1, texPt2, texPt3 };
-	drawSolidTriangle( pts, texCoords );
-}
-	
-void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] )
-{
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
-	glTexCoordPointer( 2, GL_FLOAT, 0, &texCoord[0].x );	
-	glDrawArrays( GL_TRIANGLES, 0, 3 );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-}
-
-void drawStrokedTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 )
-{
-	Vec2f pts[3] = { pt1, pt2, pt3 };
-	drawStrokedTriangle( pts );
-}
-
-void drawStrokedTriangle( const Vec2f pts[3] )
-{
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, &pts[0].x );
-	glDrawArrays( GL_LINE_LOOP, 0, 3 );
-	glDisableClientState( GL_VERTEX_ARRAY );
-}
-
-void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
-{
-	glColor4ub( 255, 0, 0, 255 );
-	drawVector( Vec3f::zero(), Vec3f::xAxis() * axisLength, headLength, headRadius );
-	glColor4ub( 0, 255, 0, 255 );
-	drawVector( Vec3f::zero(), Vec3f::yAxis() * axisLength, headLength, headRadius );
-	glColor4ub( 0, 0, 255, 255 );
-	drawVector( Vec3f::zero(), Vec3f::zAxis() * axisLength, headLength, headRadius );
-}
-
-void drawVector( const Vec3f &start, const Vec3f &end, float headLength, float headRadius )
-{
-	const int NUM_SEGMENTS = 32;
-	float lineVerts[3*2];
-	Vec3f coneVerts[NUM_SEGMENTS+2];
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 3, GL_FLOAT, 0, lineVerts );
-	lineVerts[0] = start.x; lineVerts[1] = start.y; lineVerts[2] = start.z;
-	lineVerts[3] = end.x; lineVerts[4] = end.y; lineVerts[5] = end.z;	
-	glDrawArrays( GL_LINES, 0, 2 );
-	
-	// Draw the cone
-	Vec3f axis = ( end - start ).normalized();
-	Vec3f temp = ( axis.dot( Vec3f::yAxis() ) > 0.999f ) ? axis.cross( Vec3f::xAxis() ) : axis.cross( Vec3f::yAxis() );
-	Vec3f left = axis.cross( temp ).normalized();
-	Vec3f up = axis.cross( left ).normalized();
-
-	glVertexPointer( 3, GL_FLOAT, 0, &coneVerts[0].x );
-	coneVerts[0] = Vec3f( end + axis * headLength );
-	for( int s = 0; s <= NUM_SEGMENTS; ++s ) {
-		float t = s / (float)NUM_SEGMENTS;
-		coneVerts[s+1] = Vec3f( end + left * headRadius * math<float>::cos( t * 2 * 3.14159f )
-			+ up * headRadius * math<float>::sin( t * 2 * 3.14159f ) );
-	}
-	glDrawArrays( GL_TRIANGLE_FAN, 0, NUM_SEGMENTS+2 );
-
-	// draw the cap
-	glVertexPointer( 3, GL_FLOAT, 0, &coneVerts[0].x );
-	coneVerts[0] = end;
-	for( int s = 0; s <= NUM_SEGMENTS; ++s ) {
-		float t = s / (float)NUM_SEGMENTS;
-		coneVerts[s+1] = Vec3f( end - left * headRadius * math<float>::cos( t * 2 * 3.14159f )
-			+ up * headRadius * math<float>::sin( t * 2 * 3.14159f ) );
-	}
-	glDrawArrays( GL_TRIANGLE_FAN, 0, NUM_SEGMENTS+2 );
-
-	glDisableClientState( GL_VERTEX_ARRAY );
-}
-
-void drawFrustum( const Camera &cam )
-{
-	Vec3f vertex[8];
-	Vec3f nearTopLeft, nearTopRight, nearBottomLeft, nearBottomRight;
-	cam.getNearClipCoordinates( &nearTopLeft, &nearTopRight, &nearBottomLeft, &nearBottomRight );
-
-	Vec3f farTopLeft, farTopRight, farBottomLeft, farBottomRight;
-	cam.getFarClipCoordinates( &farTopLeft, &farTopRight, &farBottomLeft, &farBottomRight );
-
-	// extract camera position from modelview matrix, so that it will work with CameraStereo as well	
-	//  see: http://www.gamedev.net/topic/397751-how-to-get-camera-position/page__p__3638207#entry3638207
-	Matrix44f modelview = cam.getModelViewMatrix();	
-	Vec3f eye;
-	eye.x = -(modelview.at(0,0) * modelview.at(0,3) + modelview.at(1,0) * modelview.at(1,3) + modelview.at(2,0) * modelview.at(2,3));
-	eye.y = -(modelview.at(0,1) * modelview.at(0,3) + modelview.at(1,1) * modelview.at(1,3) + modelview.at(2,1) * modelview.at(2,3));
-	eye.z = -(modelview.at(0,2) * modelview.at(0,3) + modelview.at(1,2) * modelview.at(1,3) + modelview.at(2,2) * modelview.at(2,3));
-		
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 3, GL_FLOAT, 0, &vertex[0].x );
-	
-#if ! defined( CINDER_GLES )
-	glEnable( GL_LINE_STIPPLE );
-	glLineStipple( 3, 0xAAAA );
-#endif
-
-	vertex[0] = eye;
-	vertex[1] = nearTopLeft;
-	vertex[2] = eye;
-	vertex[3] = nearTopRight;
-	vertex[4] = eye;
-	vertex[5] = nearBottomRight;
-	vertex[6] = eye;
-	vertex[7] = nearBottomLeft;
-	glDrawArrays( GL_LINES, 0, 8 );
-
-#if ! defined( CINDER_GLES )
-	glDisable( GL_LINE_STIPPLE );
-#endif
-	vertex[0] = farTopLeft;
-	vertex[1] = nearTopLeft;
-	vertex[2] = farTopRight;
-	vertex[3] = nearTopRight;
-	vertex[4] = farBottomRight;
-	vertex[5] = nearBottomRight;
-	vertex[6] = farBottomLeft;
-	vertex[7] = nearBottomLeft;
-	glDrawArrays( GL_LINES, 0, 8 );
-
-	glLineWidth( 2.0f );
-	vertex[0] = nearTopLeft;
-	vertex[1] = nearTopRight;
-	vertex[2] = nearBottomRight;
-	vertex[3] = nearBottomLeft;
-	glDrawArrays( GL_LINE_LOOP, 0, 4 );
-
-	vertex[0] = farTopLeft;
-	vertex[1] = farTopRight;
-	vertex[2] = farBottomRight;
-	vertex[3] = farBottomLeft;
-	glDrawArrays( GL_LINE_LOOP, 0, 4 );
-	
-	glLineWidth( 1.0f );
-	glDisableClientState( GL_VERTEX_ARRAY );
-}
-
-void drawTorus( float outterRadius, float innerRadius, int longitudeSegments, int latitudeSegments )
-{
-	longitudeSegments = std::min( std::max( 7, longitudeSegments ) + 1, 255 );
-	latitudeSegments = std::min( std::max( 7, latitudeSegments ) + 1, 255 );
-
-	int i, j;
-	float *normal = new float[longitudeSegments * latitudeSegments * 3];
-	float *vertex = new float[longitudeSegments * latitudeSegments * 3];
-	float *tex = new float[longitudeSegments * latitudeSegments * 2];
-	GLushort *indices = new GLushort[latitudeSegments * 2];
-	float ct, st, cp, sp;
-
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 3, GL_FLOAT, 0, vertex );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	glTexCoordPointer( 2, GL_FLOAT, 0, tex );
-	glEnableClientState( GL_NORMAL_ARRAY );
-	glNormalPointer( GL_FLOAT, 0, normal );
-
-	for( i = 0; i < longitudeSegments; i++ ) {
-		ct = cos(2.0f * (float)M_PI * (float)i / (float)(longitudeSegments - 1));
-		st = sin(2.0f * (float)M_PI * (float)i / (float)(longitudeSegments - 1));
-
-		for ( j = 0; j < latitudeSegments; j++ ) {
-			cp = cos(2.0f * (float)M_PI * (float)j / (float)(latitudeSegments - 1));
-			sp = sin(2.0f * (float)M_PI * (float)j / (float)(latitudeSegments - 1));
-
-			normal[3 * (i + longitudeSegments * j)    ] = cp * ct;
-			normal[3 * (i + longitudeSegments * j) + 1] = sp * ct;
-			normal[3 * (i + longitudeSegments * j) + 2] = st;
-
-			tex[2 * (i + longitudeSegments * j)    ] = 1.0f * (float)i / (float)(longitudeSegments - 1);
-			tex[2 * (i + longitudeSegments * j) + 1] = 5.0f * (float)j / (float)(latitudeSegments - 1);
-
-			vertex[3 * (i + longitudeSegments * j)    ] = cp * (outterRadius  + innerRadius * ct);
-			vertex[3 * (i + longitudeSegments * j) + 1] = sp * (outterRadius  + innerRadius * ct);
-			vertex[3 * (i + longitudeSegments * j) + 2] = innerRadius * st;
-		}
-	}
-
-	for ( i = 0; i < longitudeSegments - 1; i++ ) {
-		for ( j = 0; j < latitudeSegments; j++ ) {
-			indices[j*2+0] = i + 1 + longitudeSegments * j;
-			indices[j*2+1] = i + longitudeSegments * j;
-		}
-		glDrawElements( GL_TRIANGLE_STRIP, (latitudeSegments)*2, GL_UNSIGNED_SHORT, indices );
-	}
-
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glDisableClientState( GL_NORMAL_ARRAY );
-	
-	delete [] normal;
-	delete [] tex;
-	delete [] vertex;
-	delete [] indices;
-}
-
-void drawCylinder( float base, float top, float height, int slices, int stacks )
-{
-	stacks = math<int>::max(2, stacks + 1);	// minimum of 1 stack
-	slices = math<int>::max(4, slices + 1);	// minimum of 3 slices
-
-	int i, j;
-	float *normal = new float[stacks * slices * 3];
-	float *vertex = new float[stacks * slices * 3];
-	float *tex = new float[stacks * slices * 2];
-	GLushort *indices = new GLushort[slices * 2];
-
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 3, GL_FLOAT, 0, vertex );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	glTexCoordPointer( 2, GL_FLOAT, 0, tex );
-	glEnableClientState( GL_NORMAL_ARRAY );
-	glNormalPointer( GL_FLOAT, 0, normal );
-
-	for(i=0;i<slices;i++) {
-		float u = (float)i / (float)(slices - 1);
-		float ct = cos(2.0f * (float)M_PI * u);
-		float st = sin(2.0f * (float)M_PI * u);
-
-		for(j=0;j<stacks;j++) {
-			float v = (float)j / (float)(stacks-1);
-			float radius = lerp<float>(base, top, v); 
-
-			int index = 3 * (i * stacks + j);
-
-			normal[index    ] = ct;
-			normal[index + 1] = 0;
-			normal[index + 2] = st;
-
-			tex[2 * (i * stacks + j)    ] = u;
-			tex[2 * (i * stacks + j) + 1] = 1.0f - v; // top of texture is top of cylinder
-
-			vertex[index    ] = ct * radius;
-			vertex[index + 1] = v * height;
-			vertex[index + 2] = st * radius;
-		}
-	}
-
-	for(i=0;i<(stacks - 1);i++) {
-		for(j=0;j<slices;j++) {
-			indices[j*2+0] = i + 0 + j * stacks;
-			indices[j*2+1] = i + 1 + j * stacks;
-		}
-		glDrawElements( GL_TRIANGLE_STRIP, (slices)*2, GL_UNSIGNED_SHORT, indices );
-	}
-
-	glDisableClientState( GL_NORMAL_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glDisableClientState( GL_VERTEX_ARRAY );
-
-	delete [] normal;
-	delete [] tex;
-	delete [] vertex;
-	delete [] indices;
-}
-
-void draw( const PolyLine<Vec2f> &polyLine )
-{
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, &(polyLine.getPoints()[0]) );
-	glDrawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, (GLsizei)polyLine.size() );
-	glDisableClientState( GL_VERTEX_ARRAY );
-}
-
-void draw( const PolyLine<Vec3f> &polyLine )
-{
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 3, GL_FLOAT, 0, &(polyLine.getPoints()[0]) );
-	glDrawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, (GLsizei)polyLine.size() );
-	glDisableClientState( GL_VERTEX_ARRAY );
-}
-
-void draw( const Path2d &path2d, float approximationScale )
-{
-	if( path2d.getNumSegments() == 0 )
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
 		return;
-	std::vector<Vec2f> points = path2d.subdivide( approximationScale );
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
-	glDrawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
-	glDisableClientState( GL_VERTEX_ARRAY );	
-}
-
-void draw( const Shape2d &shape2d, float approximationScale )
-{
-	glEnableClientState( GL_VERTEX_ARRAY );
-	for( std::vector<Path2d>::const_iterator contourIt = shape2d.getContours().begin(); contourIt != shape2d.getContours().end(); ++contourIt ) {
-		if( contourIt->getNumSegments() == 0 )
-			continue;
-		std::vector<Vec2f> points = contourIt->subdivide( approximationScale );
-		glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
-		glDrawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
 	}
-	glDisableClientState( GL_VERTEX_ARRAY );	
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+
+	VboRef defaultVbo = ctx->getDefaultArrayVbo( 8 * sizeof( float ) );
+	ScopedBuffer bufferBindScp( defaultVbo );
+	defaultVbo->bufferSubData( 0, 8 * sizeof( float ), verts );
+
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	}
+
+	ctx->setDefaultShaderVars();
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->drawArrays( GL_LINE_LOOP, 0, 4 );
+	ctx->popVao();
 }
 
-
-void drawSolid( const Path2d &path2d, float approximationScale )
+void drawStrokedRect( const Rectf &rect, float lineWidth )
 {
-	draw( Triangulator( path2d ).calcMesh() );
-}
+	const float halfWidth = lineWidth / 2;
+	GLfloat verts[32];
+	verts[0] = rect.x1 + halfWidth;		verts[1] = rect.y2 - halfWidth;		// left bar
+	verts[2] = rect.x1 + halfWidth;		verts[3] = rect.y1 + halfWidth;
+	verts[4] = rect.x1 - halfWidth;		verts[5] = rect.y2 + halfWidth;
+	verts[6] = rect.x1 - halfWidth;		verts[7] = rect.y1 - halfWidth;
+	verts[8] = rect.x1 + halfWidth;		verts[9] = rect.y1 + halfWidth;
+	verts[10] = rect.x2 - halfWidth;	verts[11] = rect.y1 + halfWidth;	// upper bar
+	verts[12] = rect.x1 - halfWidth;	verts[13] = rect.y1 - halfWidth;
+	verts[14] = rect.x2 + halfWidth;	verts[15] = rect.y1 - halfWidth;
+	verts[16] = rect.x2 - halfWidth;	verts[17] = rect.y1 + halfWidth;	// right bar
+	verts[18] = rect.x2 - halfWidth;	verts[19] = rect.y2 - halfWidth;
+	verts[20] = rect.x2 + halfWidth;	verts[21] = rect.y1 - halfWidth;
+	verts[22] = rect.x2 + halfWidth;	verts[23] = rect.y2 + halfWidth;
+	verts[24] = rect.x2 - halfWidth;	verts[25] = rect.y2 - halfWidth;	// bottom bar
+	verts[26] = rect.x1 + halfWidth;	verts[27] = rect.y2 - halfWidth;
+	verts[28] = rect.x2 + halfWidth;	verts[29] = rect.y2 + halfWidth;
+	verts[30] = rect.x1 - halfWidth;	verts[31] = rect.y2 + halfWidth;
 
-void drawSolid( const Shape2d &shape2d, float approximationScale )
-{
-	draw( Triangulator( shape2d ).calcMesh() );
-}
-
-void drawSolid( const PolyLine2f &polyLine )
-{
-	draw( Triangulator( polyLine ).calcMesh() );
-}
-
-// TriMesh2d
-void draw( const TriMesh2d &mesh )
-{
-	if( mesh.getNumVertices() <= 0 )
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
 		return;
-
-	glVertexPointer( 2, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
-	glEnableClientState( GL_VERTEX_ARRAY );
-
-	glDisableClientState( GL_NORMAL_ARRAY );
-	
-	if( mesh.hasColorsRgb() ) {
-		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
-		glEnableClientState( GL_COLOR_ARRAY );
 	}
-	else if( mesh.hasColorsRgba() ) {
-		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
-		glEnableClientState( GL_COLOR_ARRAY );
-	}
-	else 
-		glDisableClientState( GL_COLOR_ARRAY );	
 
-	if( mesh.hasTexCoords() ) {
-		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
-		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	}
-	else
-		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-#if defined ( CINDER_GLES )
-	GLushort * indices = new GLushort[ mesh.getIndices().size() ];
-	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
-		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
-	}
-	glDrawElements( GL_TRIANGLES, (GLsizei)mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
-	delete [] indices;
-#else
-	glDrawElements( GL_TRIANGLES, (GLsizei)mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
-#endif
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
 
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_NORMAL_ARRAY );
-	glDisableClientState( GL_COLOR_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	VboRef defaultVbo = ctx->getDefaultArrayVbo( 32 * sizeof( float ) );
+	ScopedBuffer bufferBindScp( defaultVbo );
+	defaultVbo->bufferSubData( 0, 32 * sizeof( float ), verts );
+
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	}
+
+	ctx->setDefaultShaderVars();
+	ctx->getDefaultVao()->replacementBindEnd();	
+	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 16 );
+	ctx->popVao();
 }
 
-// TriMesh2d
-void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCount )
+void drawStrokedCircle( const Vec2f &center, float radius, int numSegments )
 {
-	glVertexPointer( 2, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
-	glEnableClientState( GL_VERTEX_ARRAY );
-
-	glDisableClientState( GL_NORMAL_ARRAY );
-
-	if( mesh.hasColorsRgb() ) {
-		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
-		glEnableClientState( GL_COLOR_ARRAY );
-	}
-	else if( mesh.hasColorsRgba() ) {
-		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
-		glEnableClientState( GL_COLOR_ARRAY );
-	}	
-	else 
-		glDisableClientState( GL_COLOR_ARRAY );
-	
-	if( mesh.hasTexCoords() ) {
-		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
-		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	}
-	else
-		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-
-#if defined ( CINDER_GLES )
-	size_t max = math<size_t>::min( mesh.getNumIndices(), 0xFFFF );
-	size_t start = math<size_t>::min( startTriangle * 3, max );
-	size_t count = math<size_t>::min( max - start, triangleCount * 3 );
-	GLushort * indices = new GLushort[ max ];
-	for ( size_t i = 0; i < max; i++ ) {
-		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
-	}
-	glDrawElements( GL_TRIANGLES, (GLsizei)count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
-	delete [] indices;
-#else
-	glDrawRangeElements( GL_TRIANGLES, 0, (GLuint)mesh.getNumVertices(), (GLsizei)triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
-#endif
-	
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_NORMAL_ARRAY );
-	glDisableClientState( GL_COLOR_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-}
-
-// TriMesh
-void draw( const TriMesh &mesh )
-{
-	glVertexPointer( 3, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
-	glEnableClientState( GL_VERTEX_ARRAY );
-
-	if( mesh.hasNormals() ) {
-		glNormalPointer( GL_FLOAT, 0, &(mesh.getNormals()[0]) );
-		glEnableClientState( GL_NORMAL_ARRAY );
-	}
-	else
-		glDisableClientState( GL_NORMAL_ARRAY );
-	
-	if( mesh.hasColorsRGB() ) {
-		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
-		glEnableClientState( GL_COLOR_ARRAY );
-	}
-	else if( mesh.hasColorsRGBA() ) {
-		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
-		glEnableClientState( GL_COLOR_ARRAY );
-	}
-	else 
-		glDisableClientState( GL_COLOR_ARRAY );	
-
-	if( mesh.hasTexCoords() ) {
-		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
-		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	}
-	else
-		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-#if defined ( CINDER_GLES )
-	GLushort * indices = new GLushort[ mesh.getIndices().size() ];
-	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
-		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
-	}
-	glDrawElements( GL_TRIANGLES, (GLsizei)mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
-	delete [] indices;
-#else
-	glDrawElements( GL_TRIANGLES, (GLsizei)mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
-#endif
-
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_NORMAL_ARRAY );
-	glDisableClientState( GL_COLOR_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-}
-
-// TriMesh2d
-void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount )
-{
-	glVertexPointer( 3, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
-	glEnableClientState( GL_VERTEX_ARRAY );
-
-	if( mesh.hasNormals() ) {
-		glNormalPointer( GL_FLOAT, 0, &(mesh.getNormals()[0]) );
-		glEnableClientState( GL_NORMAL_ARRAY );
-	}
-	else
-		glDisableClientState( GL_NORMAL_ARRAY );
-
-	if( mesh.hasColorsRGB() ) {
-		glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
-		glEnableClientState( GL_COLOR_ARRAY );
-	}
-	else if( mesh.hasColorsRGBA() ) {
-		glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
-		glEnableClientState( GL_COLOR_ARRAY );
-	}	
-	else 
-		glDisableClientState( GL_COLOR_ARRAY );
-	
-	if( mesh.hasTexCoords() ) {
-		glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
-		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	}
-	else
-		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-		
-#if defined ( CINDER_GLES )
-	size_t max = math<size_t>::min( mesh.getNumIndices(), 0xFFFF );
-	size_t start = math<size_t>::min( startTriangle * 3, max );
-	size_t count = math<size_t>::min( max - start, triangleCount * 3 );
-	GLushort * indices = new GLushort[ max ];
-	for ( size_t i = 0; i < max; i++ ) {
-		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
-	}
-	glDrawElements( GL_TRIANGLES, (GLsizei)count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
-	delete [] indices;
-#else
-	glDrawRangeElements( GL_TRIANGLES, 0, (GLuint)mesh.getNumVertices(), (GLsizei)triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
-#endif
-
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_NORMAL_ARRAY );
-	glDisableClientState( GL_COLOR_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-}
-
-#if ! defined ( CINDER_GLES )
-void draw( const VboMesh &vbo )
-{
-	if( vbo.getNumIndices() > 0 )
-		drawRange( vbo, (size_t)0, vbo.getNumIndices() );
-	else
-		drawArrays( vbo, 0, (GLsizei)vbo.getNumVertices() );
-}
-
-void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart, int vertexEnd )
-{
-	if( vbo.getNumIndices() <= 0 )
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
 		return;
-
-	if( vertexStart < 0 ) vertexStart = 0;
-	if( vertexEnd < 0 ) vertexEnd = (int)vbo.getNumVertices();
-
-	vbo.enableClientStates();
-	vbo.bindAllData();
+	}
 	
-	glDrawRangeElements( vbo.getPrimitiveType(), vertexStart, vertexEnd, (GLsizei)indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ) );
-	
-	gl::VboMesh::unbindBuffers();
-	vbo.disableClientStates();
+	if( numSegments <= 0 ) {
+		numSegments = static_cast<int>(math<double>::floor( radius * M_PI * 2 ) );
+	}
+	if( numSegments < 3 ) {
+		numSegments = 3;
+	}
+	// construct circle
+	const size_t numVertices = numSegments;
+	vector<Vec2f> positions;
+	positions.assign( numVertices, center );	// all vertices start at center
+	const float tDelta = 2.0f * static_cast<float>(M_PI) * (1.0f / numVertices);
+	float t = 0;
+	for( auto &pos : positions ) {
+		const Vec2f unit( math<float>::cos( t ), math<float>::sin( t ) );
+		pos += unit * radius;	// push out from center
+		t += tDelta;
+	}
+	// copy data to GPU
+	const size_t size = positions.size() * sizeof( Vec2f );
+	auto arrayVbo = ctx->getDefaultArrayVbo( size );
+	arrayVbo->bufferSubData( 0, size, (GLvoid*)positions.data() );
+	// set attributes
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	ScopedBuffer bufferBindScp( arrayVbo );
+
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)nullptr );
+	}
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	// draw
+	drawArrays( GL_LINE_LOOP, 0, positions.size() );
+	ctx->popVao();
 }
 
-void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
+void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 {
-	vbo.enableClientStates();
-	vbo.bindAllData();
-	glDrawArrays( vbo.getPrimitiveType(), first, count );
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
 
-	gl::VboMesh::unbindBuffers();
-	vbo.disableClientStates();
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+
+	if( numSegments <= 0 ) {
+		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
+	}
+	if( numSegments < 3 ) numSegments = 3;
+	size_t numVertices = numSegments + 2;
+
+	size_t worstCaseSize = numVertices * sizeof(float) * ( 2 + 2 + 3 );
+	VboRef defaultVbo = ctx->getDefaultArrayVbo( worstCaseSize );
+	ScopedBuffer vboScp( defaultVbo );
+
+	size_t dataSizeBytes = 0;
+
+	size_t vertsOffset, texCoordsOffset, normalsOffset;
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)dataSizeBytes );
+		vertsOffset = dataSizeBytes;
+		dataSizeBytes += numVertices * 2 * sizeof(float);
+	}
+	int texLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+	if( texLoc >= 0 ) {
+		enableVertexAttribArray( texLoc );
+		vertexAttribPointer( texLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)dataSizeBytes );
+		texCoordsOffset = dataSizeBytes;
+		dataSizeBytes += numVertices * 2 * sizeof(float);
+	}
+	int normalLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::NORMAL );
+	if( normalLoc >= 0 ) {
+		enableVertexAttribArray( normalLoc );
+		vertexAttribPointer( normalLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)(dataSizeBytes) );
+		normalsOffset = dataSizeBytes;
+		dataSizeBytes += numVertices * 3 * sizeof(float);
+	}
+
+	unique_ptr<uint8_t[]> data( new uint8_t[dataSizeBytes] );
+	Vec2f *verts = ( posLoc >= 0 ) ? reinterpret_cast<Vec2f*>( data.get() + vertsOffset ) : nullptr;
+	Vec2f *texCoords = ( texLoc >= 0 ) ? reinterpret_cast<Vec2f*>( data.get() + texCoordsOffset ) : nullptr;
+	Vec3f *normals = ( normalLoc >= 0 ) ? reinterpret_cast<Vec3f*>( data.get() + normalsOffset ) : nullptr;
+
+	if( verts )
+		verts[0] = center;
+	if( texCoords )
+		texCoords[0] = Vec2f( 0.5f, 0.5f );
+	if( normals )
+		normals[0] = Vec3f::zAxis();
+	const float tDelta = 1.0f / numSegments * 2 * (float)M_PI;
+	float t = 0;
+	for( int s = 0; s <= numSegments; s++ ) {
+		const Vec2f unit( math<float>::cos( t ), math<float>::sin( t ) );
+		if( verts )
+			verts[s+1] = center + unit * radius;
+		if( texCoords )
+			texCoords[s+1] = unit * 0.5f + Vec2f( 0.5f, 0.5f );
+		if( normals )
+			normals[s+1] = Vec3f::zAxis();
+		t += tDelta;
+	}
+
+	defaultVbo->bufferSubData( 0, dataSizeBytes, data.get() );
+	ctx->getDefaultVao()->replacementBindEnd();
+
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
+	ctx->popVao();
 }
-#endif
 
-
-void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp )
+void drawSphere( const Vec3f &center, float radius, int segments )
 {
-	glEnableClientState( GL_VERTEX_ARRAY );
-	Vec3f verts[4];
-	glVertexPointer( 3, GL_FLOAT, 0, &verts[0].x );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	GLfloat texCoords[8] = { 0, 0, 0, 1, 1, 0, 1, 1 };
-	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
+	auto ctx = gl::context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+	//auto batch = gl::Batch::create( geom::Sphere().center( center ).radius( radius ).segments( segments ).normals().texCoords(), glslProg );
+	//batch->draw();
 
-	float sinA = math<float>::sin( toRadians( rotationDegrees ) );
-	float cosA = math<float>::cos( toRadians( rotationDegrees ) );
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Sphere().center( center ).radius( radius ).segments( segments ).enable( geom::Attrib::NORMAL ).enable( geom::Attrib::TEX_COORD_0 ), ctx->getDefaultArrayVbo(), ctx->getDefaultElementVbo() );
+	mesh->buildVao( curGlslProg );
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	mesh->drawImpl();
+	ctx->popVao();
+}
+
+void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationRadians, const Vec3f &bbRight, const Vec3f &bbUp, const Rectf &texCoords )
+{
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	GLfloat data[12+8]; // both verts and texCoords
+	Vec3f *verts = (Vec3f*)data;
+	float *texCoordsOut = data + 12;
+
+	float sinA = math<float>::sin( rotationRadians );
+	float cosA = math<float>::cos( rotationRadians );
 
 	verts[0] = pos + bbRight * ( -0.5f * scale.x * cosA - 0.5f * sinA * scale.y ) + bbUp * ( -0.5f * scale.x * sinA + 0.5f * cosA * scale.y );
+	texCoordsOut[0*2+0] = texCoords.getX1(); texCoordsOut[0*2+1] = texCoords.getY1();
 	verts[1] = pos + bbRight * ( -0.5f * scale.x * cosA - -0.5f * sinA * scale.y ) + bbUp * ( -0.5f * scale.x * sinA + -0.5f * cosA * scale.y );
+	texCoordsOut[1*2+0] = texCoords.getX1(); texCoordsOut[1*2+1] = texCoords.getY2();
 	verts[2] = pos + bbRight * ( 0.5f * scale.x * cosA - 0.5f * sinA * scale.y ) + bbUp * ( 0.5f * scale.x * sinA + 0.5f * cosA * scale.y );
+	texCoordsOut[2*2+0] = texCoords.getX2(); texCoordsOut[2*2+1] = texCoords.getY1();
 	verts[3] = pos + bbRight * ( 0.5f * scale.x * cosA - -0.5f * sinA * scale.y ) + bbUp * ( 0.5f * scale.x * sinA + -0.5f * cosA * scale.y );
+	texCoordsOut[3*2+0] = texCoords.getX2(); texCoordsOut[3*2+1] = texCoords.getY2();
 
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(float)*20 );
+	ScopedBuffer bufferBindScp( defaultVbo );
+	defaultVbo->bufferSubData( 0, sizeof(float)*20, data );
 
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );	
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	}
+	int texLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+	if( texLoc >= 0 ) {
+		enableVertexAttribArray( texLoc );
+		vertexAttribPointer( texLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float)*12) );
+	}
+
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	ctx->popVao();
 }
 
-void draw( const Texture &texture )
+GLenum getError()
 {
-	draw( texture, Area( texture.getCleanBounds() ), texture.getCleanBounds() );
+	return glGetError();
 }
 
-void draw( const Texture &texture, const Vec2f &pos )
+std::string getErrorString( GLenum err )
 {
-	draw( texture, texture.getCleanBounds(), Rectf( pos.x, pos.y, pos.x + texture.getCleanWidth(), pos.y + texture.getCleanHeight() ) );
-}
-
-void draw( const Texture &texture, const Rectf &rect )
-{
-	draw( texture, texture.getCleanBounds(), rect );
-}
-
-void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect )
-{
-	SaveTextureBindState saveBindState( texture.getTarget() );
-	BoolState saveEnabledState( texture.getTarget() );
-	ClientBoolState vertexArrayState( GL_VERTEX_ARRAY );
-	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
-	texture.enableAndBind();
-
-	glEnableClientState( GL_VERTEX_ARRAY );
-	GLfloat verts[8];
-	glVertexPointer( 2, GL_FLOAT, 0, verts );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	GLfloat texCoords[8];
-	glTexCoordPointer( 2, GL_FLOAT, 0, texCoords );
-
-	verts[0*2+0] = destRect.getX2(); verts[0*2+1] = destRect.getY1();	
-	verts[1*2+0] = destRect.getX1(); verts[1*2+1] = destRect.getY1();	
-	verts[2*2+0] = destRect.getX2(); verts[2*2+1] = destRect.getY2();	
-	verts[3*2+0] = destRect.getX1(); verts[3*2+1] = destRect.getY2();	
-
-	const Rectf srcCoords = texture.getAreaTexCoords( srcArea );
-	texCoords[0*2+0] = srcCoords.getX2(); texCoords[0*2+1] = srcCoords.getY1();	
-	texCoords[1*2+0] = srcCoords.getX1(); texCoords[1*2+1] = srcCoords.getY1();	
-	texCoords[2*2+0] = srcCoords.getX2(); texCoords[2*2+1] = srcCoords.getY2();	
-	texCoords[3*2+0] = srcCoords.getX1(); texCoords[3*2+1] = srcCoords.getY2();	
-
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-}
-
-namespace {
-void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
-{
-	if( str.empty() )
-		return;
-
-	// justification: { left = -1, center = 0, right = 1 }
-	SaveColorState colorState;
-
-	static Font defaultFont = Font::getDefault();
-	if( ! font )
-		font = defaultFont;
-
-	float baselineOffset;
-#if defined( CINDER_COCOA_TOUCH )
-	Vec2i actualSize;
-	Surface8u pow2Surface( renderStringPow2( str, font, color, &actualSize, &baselineOffset ) );
-	gl::Texture tex( pow2Surface );
-	tex.setCleanTexCoords( actualSize.x / (float)pow2Surface.getWidth(), actualSize.y / (float)pow2Surface.getHeight() );
-	baselineOffset += pow2Surface.getHeight();
-#else
-	gl::Texture tex( renderString( str, font, color, &baselineOffset ) );
-#endif
-	glColor4ub( 255, 255, 255, 255 );
-
-	if( justification == -1 ) // left
-		draw( tex, pos - Vec2f( 0, baselineOffset ) );
-	else if( justification == 0 ) // center
-		draw( tex, pos - Vec2f( tex.getWidth() * 0.5f, baselineOffset ) );	
-	else // right
-		draw( tex, pos - Vec2f( (float)tex.getWidth(), baselineOffset ) );
-}
-} // anonymous namespace
-
-void drawString( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
-{
-	drawStringHelper( str, pos, color, font, -1 );
-}
-
-void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
-{
-	drawStringHelper( str, pos, color, font, 0 );
-}
-
-void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
-{
-	drawStringHelper( str, pos, color, font, 1 );
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// SaveTextureBindState
-SaveTextureBindState::SaveTextureBindState( GLint target )
-	: mTarget( target ), mOldID( -1 )
-{
-	switch( target ) {
-		case GL_TEXTURE_2D: glGetIntegerv( GL_TEXTURE_BINDING_2D, &mOldID ); break;
-#if ! defined( CINDER_GLES )
-		case GL_TEXTURE_RECTANGLE_ARB: glGetIntegerv( GL_TEXTURE_BINDING_RECTANGLE_ARB, &mOldID ); break;
-		case GL_TEXTURE_1D: glGetIntegerv( GL_TEXTURE_BINDING_1D, &mOldID ); break;	
-		case GL_TEXTURE_3D: glGetIntegerv( GL_TEXTURE_BINDING_3D, &mOldID ); break;
-		case GL_TEXTURE_CUBE_MAP: glGetIntegerv( GL_TEXTURE_BINDING_CUBE_MAP, &mOldID ); break;
-#endif
+	switch( err ) {
+		case GL_NO_ERROR:
+			return "GL_NO_ERROR";
+		case GL_INVALID_ENUM:
+			return "GL_INVALID_ENUM";
+		case GL_INVALID_VALUE:
+			return "GL_INVALID_VALUE";
+		case GL_INVALID_OPERATION:
+			return "GL_INVALID_OPERATION";
+		case GL_INVALID_FRAMEBUFFER_OPERATION:
+			return "GL_INVALID_FRAMEBUFFER_OPERATION";
+		case GL_OUT_OF_MEMORY:
+			return "GL_OUT_OF_MEMORY";
 		default:
-			throw gl::ExceptionUnknownTarget();
+			return "";
 	}
 }
 
-SaveTextureBindState::~SaveTextureBindState()
+void checkError()
 {
-	glBindTexture( mTarget, mOldID );
+	GLenum errorFlag = getError();
+	if( errorFlag != GL_NO_ERROR ) {
+		CI_LOG_E( "glGetError flag set: " << getErrorString( errorFlag ) );
+		CI_ASSERT( 0 );
+	}
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// BoolState
-BoolState::BoolState( GLint target )
-	: mTarget( target )
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedVao
+ScopedVao::ScopedVao( const VaoRef &vao )
+	: mCtx( gl::context() )
 {
-	glGetBooleanv( target, &mOldValue );
+	mCtx->pushVao( vao );
 }
 
-BoolState::~BoolState()
+ScopedVao::~ScopedVao()
 {
-	if( mOldValue )
-		glEnable( mTarget );
-	else
-		glDisable( mTarget );
+	mCtx->popVao();
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// ClientBoolState
-ClientBoolState::ClientBoolState( GLint target )
-	: mTarget( target )
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedBuffer
+ScopedBuffer::ScopedBuffer( const BufferObjRef &bufferObj )
+	: mCtx( gl::context() ), mTarget( bufferObj->getTarget() )
 {
-#if defined( CINDER_GLES )
-    mOldValue = glIsEnabled( target );
-#else  
-    glGetBooleanv( target, &mOldValue );
-#endif
+	mCtx->pushBufferBinding( mTarget, bufferObj->getId() );
 }
 
-ClientBoolState::~ClientBoolState()
+ScopedBuffer::ScopedBuffer( GLenum target, GLuint id )
+		: mCtx( gl::context() ), mTarget( target )
 {
-	if( mOldValue )
-		glEnableClientState( mTarget );
-	else
-		glDisableClientState( mTarget );
+	mCtx->pushBufferBinding( target, id );
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// SaveColorState
-SaveColorState::SaveColorState()
+ScopedBuffer::~ScopedBuffer()
 {
-	glGetFloatv( GL_CURRENT_COLOR, mOldValues );
+	mCtx->popBufferBinding( mTarget );
 }
 
-SaveColorState::~SaveColorState()
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedState
+ScopedState::ScopedState( GLenum cap, GLboolean value )
+	: mCtx( gl::context() ), mCap( cap )
 {
-	// GLES doesn't have glColor4fv
-	glColor4f( mOldValues[0], mOldValues[1], mOldValues[2], mOldValues[3] );
+	mCtx->pushBoolState( cap, value );
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// SaveFramebufferBinding
-SaveFramebufferBinding::SaveFramebufferBinding()
-{
-#if defined( CINDER_GLES )
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING_OES, &mOldValue );
-#else	
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING_EXT, &mOldValue );
-#endif
+ScopedState::~ScopedState() {
+	mCtx->popBoolState( mCap );
 }
 
-SaveFramebufferBinding::~SaveFramebufferBinding()
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedColor
+ScopedColor::ScopedColor( const ColorAf &color )
+	: mCtx( gl::context() )
 {
-#if defined( CINDER_GLES )
-	glBindFramebufferOES( GL_FRAMEBUFFER_OES, mOldValue );
+	mColor = mCtx->getCurrentColor();
+	mCtx->setCurrentColor( color );
+}
+
+ScopedColor::~ScopedColor()
+{
+	mCtx->setCurrentColor( mColor );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedBlend
+ScopedBlend::ScopedBlend( GLboolean enable )
+	: mCtx( gl::context() ), mSaveFactors( false )
+{
+	mCtx->pushBoolState( GL_BLEND, enable );
+}
+
+//! Parallels glBlendFunc(), implicitly enables blending
+ScopedBlend::ScopedBlend( GLenum sfactor, GLenum dfactor )
+	: mCtx( gl::context() ), mSaveFactors( true )
+{
+	mCtx->pushBoolState( GL_BLEND, GL_TRUE );
+	mCtx->pushBlendFuncSeparate( sfactor, dfactor, sfactor, dfactor );
+}
+
+//! Parallels glBlendFuncSeparate(), implicitly enables blending
+ScopedBlend::ScopedBlend( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha )
+	: mCtx( gl::context() ), mSaveFactors( true )
+{
+	mCtx->pushBoolState( GL_BLEND, GL_TRUE );
+	mCtx->pushBlendFuncSeparate( srcRGB, dstRGB, srcAlpha, dstAlpha );
+}
+
+ScopedBlend::~ScopedBlend()
+{
+	mCtx->popBoolState( GL_BLEND );
+	if( mSaveFactors )
+		mCtx->popBlendFuncSeparate();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedGlslProg
+ScopedGlslProg::ScopedGlslProg( const GlslProgRef &prog )
+	: mCtx( gl::context() )
+{
+	mCtx->pushGlslProg( prog );
+}
+
+ScopedGlslProg::ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog )
+	: mCtx( gl::context() )
+{
+	mCtx->pushGlslProg( std::const_pointer_cast<GlslProg>( prog ) );
+}
+
+ScopedGlslProg::~ScopedGlslProg()
+{
+	mCtx->popGlslProg();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedFramebuffer
+ScopedFramebuffer::ScopedFramebuffer( const FboRef &fbo, GLenum target )
+	: mCtx( gl::context() ), mTarget( target )
+{
+	mCtx->pushFramebuffer( fbo, target );
+}
+
+ScopedFramebuffer::ScopedFramebuffer( GLenum target, GLuint framebufferId )
+	: mCtx( gl::context() ), mTarget( target )
+{
+	mCtx->pushFramebuffer( target, framebufferId );
+}
+
+ScopedFramebuffer::~ScopedFramebuffer()
+{	
+#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+	mCtx->popFramebuffer( GL_FRAMEBUFFER );
 #else
-	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, mOldValue );
+	if( mTarget == GL_FRAMEBUFFER || mTarget == GL_READ_FRAMEBUFFER )
+		mCtx->popFramebuffer( GL_READ_FRAMEBUFFER );
+	if( mTarget == GL_FRAMEBUFFER || mTarget == GL_DRAW_FRAMEBUFFER )
+		mCtx->popFramebuffer( GL_DRAW_FRAMEBUFFER );
 #endif
 }
 
-} } // namespace gl::cinder
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedActiveTexture
+ScopedActiveTexture::ScopedActiveTexture( uint8_t textureUnit )
+	: mCtx( gl::context() )
+{
+	mCtx->pushActiveTexture( textureUnit );
+}
+	
+ScopedActiveTexture::~ScopedActiveTexture()
+{
+	mCtx->popActiveTexture();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedTextureBind
+ScopedTextureBind::ScopedTextureBind( GLenum target, GLuint textureId )
+	: mCtx( gl::context() ), mTarget( target )
+{
+	mTextureUnit = mCtx->getActiveTexture();
+	mCtx->pushTextureBinding( mTarget, textureId, mTextureUnit );
+}
+
+ScopedTextureBind::ScopedTextureBind( GLenum target, GLuint textureId, uint8_t textureUnit )
+	: mCtx( gl::context() ), mTarget( target ), mTextureUnit( textureUnit )
+{
+	mCtx->pushTextureBinding( mTarget, textureId, mTextureUnit );
+}
+
+ScopedTextureBind::ScopedTextureBind( const TextureBaseRef &texture )
+	: mCtx( gl::context() ), mTarget( texture->getTarget() )
+{
+	mTextureUnit = mCtx->getActiveTexture();
+	mCtx->pushTextureBinding( mTarget, texture->getId(), mTextureUnit );
+}
+
+ScopedTextureBind::ScopedTextureBind( const TextureBaseRef &texture, uint8_t textureUnit )
+	: mCtx( gl::context() ), mTarget( texture->getTarget() ), mTextureUnit( textureUnit )
+{
+	mCtx->pushTextureBinding( mTarget, texture->getId(), mTextureUnit );
+}
+	
+ScopedTextureBind::~ScopedTextureBind()
+{
+	mCtx->popTextureBinding( mTarget, mTextureUnit );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedScissor
+ScopedScissor::ScopedScissor( const Vec2i &lowerLeftPostion, const Vec2i &dimension )
+	: mCtx( gl::context() )
+{
+	mCtx->pushBoolState( GL_SCISSOR_TEST, GL_TRUE );
+	mCtx->pushScissor( std::pair<Vec2i, Vec2i>( lowerLeftPostion, dimension ) ); 
+}
+
+ScopedScissor::ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int height )
+	: mCtx( gl::context() )
+{
+	mCtx->pushBoolState( GL_SCISSOR_TEST, GL_TRUE );
+	mCtx->pushScissor( std::pair<Vec2i, Vec2i>( Vec2i( lowerLeftX, lowerLeftY ), Vec2i( width, height ) ) );		
+}
+	
+ScopedScissor::~ScopedScissor()
+{
+	mCtx->popBoolState( GL_SCISSOR_TEST );
+	mCtx->popScissor();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedViewport
+ScopedViewport::ScopedViewport( const Vec2i &lowerLeftPostion, const Vec2i &dimension )
+	: mCtx( gl::context() )
+{
+	mCtx->pushViewport( std::pair<Vec2i, Vec2i>( lowerLeftPostion, dimension ) ); 
+}
+
+ScopedViewport::ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height )
+	: mCtx( gl::context() )
+{
+	mCtx->pushViewport( std::pair<Vec2i, Vec2i>( Vec2i( lowerLeftX, lowerLeftY ), Vec2i( width, height ) ) );		
+}
+	
+ScopedViewport::~ScopedViewport()
+{
+	mCtx->popViewport();
+}
+
+} } // namespace cinder::gl

@@ -1,6 +1,9 @@
 /*
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
+ 
+ Portions of this code (C) Paul Houx
+ All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -30,74 +33,156 @@
 #include "cinder/Matrix.h"
 #include "cinder/Color.h"
 #include "cinder/Rect.h"
+#include "cinder/GeomIo.h"
 
 namespace cinder {
+
+typedef std::shared_ptr<class TriMesh>		TriMeshRef;
 	
-	/*! \brief The TriMesh allows you to create a series of vertices linked into a mesh.
-	 
-	 \example
-	 
-	 
-	 To create a simple pair of Triangles linked into a quad first add the 4 vertices to the TriMesh using \a appendVertex() and then
-	 add the vertices using the \a appendTriangle() method and passing the indices of the 3 vertices you want to connect
-	 
-	 Trimesh mesh;
-	 mesh.appendVertex(Vec3f(10, 10, 0 )); // appends the vertex
-	 mesh.appendColorRGB( Color(1, 0, 0) ); // sets the color for the vertex to red
-	 mesh.appendVertex( Vec3f(10, 100, 0) ); // appends the next vertex
-	 mesh.appendColorRGB( Color( 0, 1, 0 ) ); // sets the color for the next vertex to green
-	 mesh.appendVertex( Vec3f(100, 100, 0) );
-	 mesh.appendColorRGB( Color(  0, 1, 0 ) );
-	 mesh.appendVertex( Vec3f(100, 10, 0 ));
-	 mesh.appendColorRGB( Color( 1, 0, 0 ) );
-	 
-	 // get the index of the vertex. not necessary with this example, but good practice
-	 int vIdx0 = mesh.getNumVertices() - 4;
-	 int vIdx1 = mesh.getNumVertices() - 3;
-	 int vIdx2 = mesh.getNumVertices() - 2;
-	 int vIdx3 = mesh.getNumVertices() - 1;
-	 
-	 // now create the triangles from the vertices
-	 mesh.appendTriangle( vIdx0, vIdx1, vIdx2 );
-	 mesh.appendTriangle( vIdx0, vIdx2, vIdx3 );
-	 
-	*/
-	 
-class TriMesh {
+class TriMesh : public geom::Source {
  public:
+	class Format {
+	  public:
+		Format();
+		
+		Format&		positions( uint8_t dims = 3 ) { mPositionsDims = dims; return *this; }
+		Format&		normals() { mNormalsDims = 3; return *this; }
+		Format&		tangents() { mTangentsDims = 3; return *this; }
+		Format&		bitangents() { mBitangentsDims = 3; return *this; }
+
+		Format&		colors( uint8_t dims = 3 ) { mColorsDims = dims; return *this; }
+		//! Enables and establishes the dimensions of texture coords for unit 0
+		Format&		texCoords( uint8_t dims = 2 ) { mTexCoords0Dims = dims; return *this; }
+		//! Enables and establishes the dimensions of texture coords for unit 0
+		Format&		texCoords0( uint8_t dims = 2 ) { mTexCoords0Dims = dims; return *this; }
+		//! Enables and establishes the dimensions of texture coords for unit 1
+		Format&		texCoords1( uint8_t dims = 2 ) { mTexCoords1Dims = dims; return *this; }
+		//! Enables and establishes the dimensions of texture coords for unit 2
+		Format&		texCoords2( uint8_t dims = 2 ) { mTexCoords2Dims = dims; return *this; }
+		//! Enables and establishes the dimensions of texture coords for unit 3
+		Format&		texCoords3( uint8_t dims = 2 ) { mTexCoords3Dims = dims; return *this; }
+		
+		uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mColorsDims;
+		uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;
+	};
+
+	static TriMeshRef	create() { return TriMeshRef( new TriMesh( Format().positions().normals().texCoords() ) ); }
+	static TriMeshRef	create( const Format &format ) { return TriMeshRef( new TriMesh( format ) ); }
+	static TriMeshRef	create( const geom::Source &source ) { return TriMeshRef( new TriMesh( source ) ); }
+
+	TriMesh( const Format &format );
+	TriMesh( const geom::Source &source );
+	
+	virtual void	loadInto( geom::Target *target ) const override;
 	
 	void		clear();
 	
-	bool		hasNormals() const { return ! mNormals.empty(); }
-	bool		hasColorsRGB() const { return ! mColorsRGB.empty(); }
-	bool		hasColorsRGBA() const { return ! mColorsRGBA.empty(); }
-	bool		hasTexCoords() const { return ! mTexCoords.empty(); }
+	bool		hasNormals() const { return !mNormals.empty(); }
+	bool		hasTangents() const { return !mTangents.empty(); }
+	bool		hasBitangents() const { return !mBitangents.empty(); }
+	bool		hasColors() const { return !mColors.empty(); }
+	bool		hasColorsRgb() const { return mColorsDims == 3 && !mColors.empty(); }
+	bool		hasColorsRgba() const { return mColorsDims == 4 && !mColors.empty(); }
+	//! Returns whether the TriMesh has texture coordinates for unit 0
+	bool		hasTexCoords() const { return !mTexCoords0.empty(); }
+	//! Returns whether the TriMesh has texture coordinates for unit 0
+	bool		hasTexCoords0() const { return !mTexCoords0.empty(); }
+	//! Returns whether the TriMesh has texture coordinates for unit 1
+	bool		hasTexCoords1() const { return !mTexCoords1.empty(); }
+	//! Returns whether the TriMesh has texture coordinates for unit 2
+	bool		hasTexCoords2() const { return !mTexCoords2.empty(); }
+	//! Returns whether the TriMesh has texture coordinates for unit 3
+	bool		hasTexCoords3() const { return !mTexCoords3.empty(); }
 
-	/*! Creates a vertex which can be referred to with appendTriangle() or appendIndices() */
-	void		appendVertex( const Vec3f &v ) { mVertices.push_back( v ); }
-	/*! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() */
+	//! Creates a vertex which can be referred to with appendTriangle() or appendIndices() 
+	void		appendVertex( const Vec2f &v ) { appendVertices( &v, 1 ); }
+	//! Creates a vertex which can be referred to with appendTriangle() or appendIndices() 
+	void		appendVertex( const Vec3f &v ) { appendVertices( &v, 1 ); }
+	//! Creates a vertex which can be referred to with appendTriangle() or appendIndices() 
+	void		appendVertex( const Vec4f &v ) { appendVertices( &v, 1 ); }
+	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
+	void		appendVertices( const Vec2f *verts, size_t num );
+	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
 	void		appendVertices( const Vec3f *verts, size_t num );
-	/*! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() */
-	void		appendVertices( const Vec4d *verts, size_t num );
-	/*! Appends a normal  */
+	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
+	void		appendVertices( const Vec4f *verts, size_t num );
+	//! Appends a single normal  
 	void		appendNormal( const Vec3f &v ) { mNormals.push_back( v ); }
-	/*! appendNormals functions similarly to the appendVertices method, appending multiple normals to be associated with the triangle faces. Normals and triangles are associated by index, so if you have created 3 vertices and one Triangle, you would append a single normal for the face of the triangles */
+	//! appendNormals functions similarly to the appendVertices method, appending multiple normals to be associated with the vertices. 
 	void		appendNormals( const Vec3f *normals, size_t num );
-	/*! appendNormals functions similarly to the appendVertices method, appending multiple normals to be associated with the triangle faces. Normals and triangles are associated by index, so if you have created 3 vertices and one Triangle, you would append a single normal for the face of the triangles */
-	void		appendNormals( const Vec4d *normals, size_t num );
-	/*! this sets the color used by a triangle generated by the TriMesh */ 
-	void		appendColorRgb( const Color &rgb ) { mColorsRGB.push_back( rgb ); }
-	/*! this sets the color used by a triangle generated by the TriMesh */
-	void		appendColorRgba( const ColorA &rgba ) { mColorsRGBA.push_back( rgba ); }
-	/*! appends a texture coordinate in [-1,1] space to be applied to generated triangles. The coordinates are associated with the vertexes of the TriMesh, not the generated triangles when they are drawn */
-	void		appendTexCoord( const Vec2f &v ) { mTexCoords.push_back( v ); }
+	//! Appends a single tangent  
+	void		appendTangent( const Vec3f &v ) { mTangents.push_back( v ); }
+	//! appendTangents functions similarly to the appendVertices method, appending multiple tangents to be associated with the vertices. 
+	void		appendTangents( const Vec3f *tangents, size_t num );
+	//! Appends a single tangent  
+	void		appendBitangent( const Vec3f &v ) { mBitangents.push_back( v ); }
+	//! appendBitangents functions similarly to the appendVertices method, appending multiple bitangents to be associated with the vertices. 
+	void		appendBitangents( const Vec3f *bitangents, size_t num );
+	//! this sets the color used by a triangle generated by the TriMesh
+	void		appendColorRgb( const Color &rgb ) { appendColors( &rgb, 1 ); }
+	//! this sets the color used by a triangle generated by the TriMesh
+	void		appendColorRgba( const ColorA &rgba ) { appendColors( &rgba, 1 ); }
+
+	//! Synonym for appendTexCoord0; appends a texture coordinate for unit 0
+	void		appendTexCoord( const Vec2f &v ) { appendTexCoords0( &v, 1 ); }
+	//!	appends a 2D texture coordinate for unit 0
+	void		appendTexCoord0( const Vec2f &v ) { appendTexCoords0( &v, 1 ); }
+	//! appends a 2D texture coordinate for unit 1
+	void		appendTexCoord1( const Vec2f &v ) { appendTexCoords1( &v, 1 ); }
+	//! appends a 2D texture coordinate for unit 2
+	void		appendTexCoord2( const Vec2f &v ) { appendTexCoords2( &v, 1 ); }
+	//! appends a 2D texture coordinate for unit 3
+	void		appendTexCoord3( const Vec2f &v ) { appendTexCoords3( &v, 1 ); }
+
+	//!	appends a 3D texture coordinate for unit 0
+	void		appendTexCoord0( const Vec3f &v ) { appendTexCoords0( &v, 1 ); }
+	//! appends a 3D texture coordinate for unit 1
+	void		appendTexCoord1( const Vec3f &v ) { appendTexCoords1( &v, 1 ); }
+	//! appends a 3D texture coordinate for unit 2
+	void		appendTexCoord2( const Vec3f &v ) { appendTexCoords2( &v, 1 ); }
+	//! appends a 3D texture coordinate for unit 3
+	void		appendTexCoord3( const Vec3f &v ) { appendTexCoords3( &v, 1 ); }
+
+	//!	appends a 4D texture coordinate for unit 0
+	void		appendTexCoord0( const Vec4f &v ) { appendTexCoords0( &v, 1 ); }
+	//! appends a 4D texture coordinate for unit 1
+	void		appendTexCoord1( const Vec4f &v ) { appendTexCoords1( &v, 1 ); }
+	//! appends a 4D texture coordinate for unit 2
+	void		appendTexCoord2( const Vec4f &v ) { appendTexCoords2( &v, 1 ); }
+	//! appends a 4D texture coordinate for unit 3
+	void		appendTexCoord3( const Vec4f &v ) { appendTexCoords3( &v, 1 ); }
 	
-	/*! Appends multiple RGB colors to the TriMesh */ 
-	void		appendColorsRgb( const Color *rgbs, size_t num );
-	/*! Appends multiple RGBA colors to the TriMesh */
-	void		appendColorsRgba( const ColorA *rgbas, size_t num );
-	/*! Appends multiple texcoords to the TriMesh */
-	void		appendTexCoords( const Vec2f *texcoords, size_t num );
+	//! Appends multiple RGB colors to the TriMesh
+	void		appendColors( const Color *rgbs, size_t num );
+	//! Appends multiple RGBA colors to the TriMesh
+	void		appendColors( const ColorA *rgbas, size_t num );
+	
+	//! Appends multiple 2D texcoords for unit 0
+	void		appendTexCoords0( const Vec2f *texCoords, size_t num );
+	//! Appends multiple 2D texcoords for unit 1
+	void		appendTexCoords1( const Vec2f *texCoords, size_t num );
+	//! Appends multiple 2D texcoords for unit 2
+	void		appendTexCoords2( const Vec2f *texCoords, size_t num );
+	//! Appends multiple 2D texcoords for unit 3
+	void		appendTexCoords3( const Vec2f *texCoords, size_t num );
+	
+	//! Appends multiple 3D texcoords for unit 0
+	void		appendTexCoords0( const Vec3f *texCoords, size_t num );
+	//! Appends multiple 3D texcoords for unit 1
+	void		appendTexCoords1( const Vec3f *texCoords, size_t num );
+	//! Appends multiple 3D texcoords for unit 2
+	void		appendTexCoords2( const Vec3f *texCoords, size_t num );
+	//! Appends multiple 3D texcoords for unit 3
+	void		appendTexCoords3( const Vec3f *texCoords, size_t num );
+
+	//! Appends multiple 4D texcoords for unit 0
+	void		appendTexCoords0( const Vec4f *texCoords, size_t num );
+	//! Appends multiple 4D texcoords for unit 1
+	void		appendTexCoords1( const Vec4f *texCoords, size_t num );
+	//! Appends multiple 4D texcoords for unit 2
+	void		appendTexCoords2( const Vec4f *texCoords, size_t num );
+	//! Appends multiple 4D texcoords for unit 3
+	void		appendTexCoords3( const Vec4f *texCoords, size_t num );
 	
 	/*! after creating three vertices, pass the indices of the three vertices to create a triangle from them. Until this is done, unlike in an OpenGL triangle strip, the 
 	 triangle will not actually be generated and stored by the TriMesh
@@ -107,137 +192,114 @@ class TriMesh {
 	//! Appends \a num vertices to the TriMesh pointed to by \a indices
 	void		appendIndices( const uint32_t *indices, size_t num );
 
-	//! Returns the total number of indices contained by a TriMesh. This should be number of triangles/3
-	size_t		getNumIndices() const { return mIndices.size(); }
-	//! Returns the total number of triangles contained by a TriMesh. This should be number of indices*3
+	//! Returns the total number of indices contained by a TriMesh.
+	size_t		getNumIndices() const override { return mIndices.size(); }
+	//! Returns the total number of triangles contained by a TriMesh.
 	size_t		getNumTriangles() const { return mIndices.size() / 3; }
-	//! Returns the total number of indices contained by a TriMesh. This should be number of triangles/3
-	size_t		getNumVertices() const { return mVertices.size(); }
+	//! Returns the total number of indices contained by a TriMesh.
+	virtual size_t	getNumVertices() const override { if( mPositionsDims ) return mPositions.size() / mPositionsDims; else return 0; }
 
-	//! Puts the 3 vertices of triangle number \a idx into \a a, \a b and \a c.
+	//! Puts the 3 vertices of triangle number \a idx into \a a, \a b and \a c. Assumes vertices are 3D
 	void		getTriangleVertices( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const;
+	//! Puts the 3 vertices of triangle number \a idx into \a a, \a b and \a c. Assumes vertices are 2D
+	void		getTriangleVertices( size_t idx, Vec2f *a, Vec2f *b, Vec2f *c ) const;
+	//! Puts the 3 normals of triangle number \a idx into \a a, \a b and \a c.
+	void		getTriangleNormals( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const;
+	//! Puts the 3 tangents of triangle number \a idx into \a a, \a b and \a c.
+	void		getTriangleTangents( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const;
+	//! Puts the 3 bitangents of triangle number \a idx into \a a, \a b and \a c.
+	void		getTriangleBitangents( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const;
 
-	//! Returns all the vertices for a mesh in a std::vector as Vec3f objects 
-	std::vector<Vec3f>&				getVertices() { return mVertices; }
-	//! Returns all the vertices for a mesh in a std::vector as Vec3f objects 
-	const std::vector<Vec3f>&		getVertices() const { return mVertices; }
-	//! Returns all the normals for a mesh in a std::vector as Vec3f objects. There will be one of these for each triangle face in the mesh
+
+	//! Returns all the vertices for a mesh in a std::vector as Vec<DIM>f. For example, to get 3D vertices, call getVertices<3>().
+	template<uint8_t DIM>
+	const typename VECDIM<DIM,float>::TYPE*	getVertices() const { assert(mPositionsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mPositions.data(); }
+	//! Returns all the vertices for a mesh in a std::vector as Vec<DIM>f. For example, to get 3D vertices, call getVertices<3>().
+	template<uint8_t DIM>
+	typename VECDIM<DIM,float>::TYPE*		getVertices() { assert(mPositionsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mPositions.data(); }
+	//! Returns all the normals for a mesh in a std::vector as Vec3f objects. There will be one of these for each vertex in the mesh
 	std::vector<Vec3f>&				getNormals() { return mNormals; }
-	//! Returns all the normals for a mesh in a std::vector as Vec3f objects. There will be one of these for each triangle face in the mesh
+	//! Returns all the normals for a mesh in a std::vector as Vec3f objects. There will be one of these for each vertex in the mesh
 	const std::vector<Vec3f>&		getNormals() const { return mNormals; }
-	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each triangle face in the mesh
-	std::vector<Color>&				getColorsRGB() { return mColorsRGB; }
-	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each triangle face in the mesh
-	const std::vector<Color>&		getColorsRGB() const { return mColorsRGB; }
-	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each triangle face in the mesh
-	std::vector<ColorA>&			getColorsRGBA() { return mColorsRGBA; }
-	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each triangle face in the mesh
-	const std::vector<ColorA>&		getColorsRGBA() const { return mColorsRGBA; }
+	//! Returns all the tangents for a mesh in a std::vector as Vec3f objects. There will be one of these for each vertex in the mesh
+	std::vector<Vec3f>&				getTangents() { return mTangents; }
+	//! Returns all the tangents for a mesh in a std::vector as Vec3f objects. There will be one of these for each vertex in the mesh
+	const std::vector<Vec3f>&		getTangents() const { return mTangents; }
+	//! Returns all the bitangents for a mesh in a std::vector as Vec3f objects. There will be one of these for each vertex in the mesh
+	std::vector<Vec3f>&				getBitangents() { return mBitangents; }
+	//! Returns all the bitangents for a mesh in a std::vector as Vec3f objects. There will be one of these for each vertex in the mesh
+	const std::vector<Vec3f>&		getBitangents() const { return mBitangents; }
+	/*//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each vertex in the mesh
+	std::vector<Color>&				getColorsRgb() { return mColorsRGB; }
+	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each vertex in the mesh
+	const std::vector<Color>&		getColorsRgb() const { return mColorsRGB; }
+	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each vertex in the mesh
+	std::vector<ColorA>&			getColorsRgba() { return mColorsRGBA; }
+	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each vertex in the mesh
+	const std::vector<ColorA>&		getColorsRgba() const { return mColorsRGBA; }
 	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
 	std::vector<Vec2f>&				getTexCoords() { return mTexCoords; }	
 	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
-	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	
+	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	*/
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
 	std::vector<uint32_t>&			getIndices() { return mIndices; }		
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
 	const std::vector<uint32_t>&	getIndices() const { return mIndices; }		
 
-	//! Calculates the bounding box of all vertices
+	//! Calculates the bounding box of all vertices. Fails if the positions are not 3D.
 	AxisAlignedBox3f	calcBoundingBox() const;
-	//! Calculates the bounding box of all vertices as transformed by \a transform
+	//! Calculates the bounding box of all vertices as transformed by \a transform. Fails if the positions are not 3D.
 	AxisAlignedBox3f	calcBoundingBox( const Matrix44f &transform ) const;
 
-	//! This reads a TriMesh in from a data file that was serialized using the write() function.
+	//! This allows you read a TriMesh in from a data file, for instance an .obj file. At present .obj and .dat files are supported
 	void		read( DataSourceRef in );
-	//! This writes a TriMesh to a proprietary file format to be read using the read() function.
+	//! This allows to you write a mesh out to a data file. At present .obj and .dat files are supported.
 	void		write( DataTargetRef out ) const;
 
-	//! Adds or replaces normals by calculating them from the vertices and faces.
-	void		recalculateNormals();
+	/*! Adds or replaces normals by calculating them from the vertices and faces. If \a smooth is TRUE,
+		similar vertices are grouped together to calculate their average. This will not change the mesh,
+		nor will it affect texture mapping. If \a weighted is TRUE, larger polygons contribute more to
+		the calculated normal. Renormalization requires 3D vertices. */
+	bool		recalculateNormals( bool smooth = false, bool weighted = false );
+	//! Adds or replaces tangents by calculating them from the normals and texture coordinates. Requires 3D normals and 2D texture coordinates.
+	bool		recalculateTangents();
+	//! Adds or replaces bitangents by calculating them from the normals and tangents. Requires 3D normals and tangents.
+	bool		recalculateBitangents();
+
+	/*! Subdivide each triangle of the TriMesh into \a division times division triangles. Division less than 2 leaves the mesh unaltered.
+		Optionally, vertices are normalized if \a normalize is TRUE. */
+	void		subdivide( int division = 2, bool normalize = false );
+
+
+	//! Create TriMesh from vectors of vertex data.
+/*	static TriMesh		create( std::vector<uint32_t> &indices, const std::vector<ColorAf> &colors,
+							   const std::vector<Vec3f> &normals, const std::vector<Vec3f> &positions,
+							   const std::vector<Vec2f> &texCoords );*/
+
+	// geom::Source virtuals
+	virtual geom::Primitive		getPrimitive() const override { return geom::Primitive::TRIANGLES; }
 	
- private:
-	std::vector<Vec3f>		mVertices;
-	std::vector<Vec3f>		mNormals;
-	std::vector<Color>		mColorsRGB;
-	std::vector<ColorA>		mColorsRGBA;
-	std::vector<Vec2f>		mTexCoords;
+	virtual uint8_t		getAttribDims( geom::Attrib attr ) const override;
+
+  protected:
+	void		getAttribPointer( geom::Attrib attr, const float **resultPtr, size_t *resultStrideBytes, uint8_t *resultDims ) const;
+	void		copyAttrib( geom::Attrib attr, uint8_t dims, size_t stride, const float *srcData, size_t count );
+
+	//! Returns whether or not the vertex, color etc. at both indices is the same.
+	bool		isEqual( uint32_t indexA, uint32_t indexB ) const;
+
+	uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mColorsDims;
+	uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;
+  
+	std::vector<float>		mPositions;
+	std::vector<float>		mColors;
+	std::vector<Vec3f>		mNormals; // always dim=3
+	std::vector<Vec3f>		mTangents; // always dim=3
+	std::vector<Vec3f>		mBitangents; // always dim=3
+	std::vector<float>		mTexCoords0, mTexCoords1, mTexCoords2, mTexCoords3;
 	std::vector<uint32_t>	mIndices;
-};
-
-class TriMesh2d {
- public:
-	void		clear();
 	
-	bool		hasColorsRgb() const { return ! mColorsRgb.empty(); }
-	bool		hasColorsRgba() const { return ! mColorsRgba.empty(); }
-	bool		hasTexCoords() const { return ! mTexCoords.empty(); }
-
-	/*! Creates a vertex which can be referred to with appendTriangle() or appendIndices() */
-	void		appendVertex( const Vec2f &v ) { mVertices.push_back( v ); }
-	/*! Appends multiple vertices which can be referred to with appendTriangle() or appendIndices() */
-	void		appendVertices( const Vec2f *verts, size_t num );
-	/*! this sets the color used by a triangle generated by the TriMesh */ 
-	void		appendColorRgb( const Color &rgb ) { mColorsRgb.push_back( rgb ); }
-	/*! this sets the color used by a triangle generated by the TriMesh */
-	void		appendColorRgba( const ColorA &rgba ) { mColorsRgba.push_back( rgba ); }
-	/*! appends a texture coordinate in [-1,1] space to be applied to generated triangles. The coordinates are associated with the vertexes of the TriMesh, not the generated triangles when they are drawn */
-	void		appendTexCoord( const Vec2f &v ) { mTexCoords.push_back( v ); }
-	
-	/*! Appends multiple RGB colors to the TriMesh */ 
-	void		appendColorsRgb( const Color *rgbs, size_t num );
-	/*! Appends multiple RGBA colors to the TriMesh */
-	void		appendColorsRgba( const ColorA *rgbas, size_t num );
-	/*! Appends multiple texcoords to the TriMesh */
-	void		appendTexCoords( const Vec2f *texcoords, size_t num );
-	
-	/*! after creating three vertices, pass the indices of the three vertices to create a triangle from them. Until this is done, unlike in an OpenGL triangle strip, the 
-	 triangle will not actually be generated and stored by the TriMesh
-	*/
-	void		appendTriangle( uint32_t v0, uint32_t v1, uint32_t v2 )
-	{ mIndices.push_back( v0 ); mIndices.push_back( v1 ); mIndices.push_back( v2 ); }
-	//! Appends \a num vertices to the TriMesh2d pointed to by \a indices
-	void		appendIndices( const uint32_t *indices, size_t num );
-	
-	//! Returns the total number of indices contained by a TriMesh. This should be number of triangles/3
-	size_t		getNumIndices() const { return mIndices.size(); }
-	//! Returns the total number of triangles contained by a TriMesh. This should be number of indices*3
-	size_t		getNumTriangles() const { return mIndices.size() / 3; }
-	//! Returns the total number of indices contained by a TriMesh. This should be number of triangles/3
-	size_t		getNumVertices() const { return mVertices.size(); }
-
-	//! Puts the 3 vertices of triangle number \a idx into \a a, \a b and \a c.
-	void		getTriangleVertices( size_t idx, Vec2f *a, Vec2f *b, Vec2f *c ) const;
-
-	//! Returns all the vertices for a mesh in a std::vector as Vec2f objects 
-	std::vector<Vec2f>&				getVertices() { return mVertices; }
-	//! Returns all the vertices for a mesh in a std::vector as Vec2f objects 
-	const std::vector<Vec2f>&		getVertices() const { return mVertices; }
-	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each triangle face in the mesh
-	std::vector<Color>&				getColorsRGB() { return mColorsRgb; }
-	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each triangle face in the mesh
-	const std::vector<Color>&		getColorsRGB() const { return mColorsRgb; }
-	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each triangle face in the mesh
-	std::vector<ColorA>&			getColorsRGBA() { return mColorsRgba; }
-	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each triangle face in the mesh
-	const std::vector<ColorA>&		getColorsRGBA() const { return mColorsRgba; }
-	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
-	std::vector<Vec2f>&				getTexCoords() { return mTexCoords; }	
-	//! Returns a std::vector of Texture coordinates as Vec2fs. There will be one texture coord for each vertex in the TriMesh
-	const std::vector<Vec2f>&		getTexCoords() const { return mTexCoords; }	
-	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	std::vector<uint32_t>&			getIndices() { return mIndices; }
-	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	const std::vector<uint32_t>&	getIndices() const { return mIndices; }
-
-	//! Calculates the bounding box of all vertices
-	Rectf	calcBoundingBox() const;
-
- private:
-	std::vector<Vec2f>		mVertices;
-	std::vector<Color>		mColorsRgb;
-	std::vector<ColorA>		mColorsRgba;
-	std::vector<Vec2f>		mTexCoords;
-	std::vector<uint32_t>	mIndices;
+	friend class TriMeshGeomTarget;
 };
 
 } // namespace cinder

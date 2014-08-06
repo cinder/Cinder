@@ -1320,4 +1320,15 @@ typedef Vec4<int>		Vec4i;
 typedef Vec4<float>		Vec4f;
 typedef Vec4<double>	Vec4d;
 
+template<uint8_t DIM,typename T> struct VECDIM { };
+template<> struct VECDIM<2,float> { typedef Vec2f	TYPE; };
+template<> struct VECDIM<3,float> { typedef Vec3f	TYPE; };
+template<> struct VECDIM<4,float> { typedef Vec4f	TYPE; };
+template<> struct VECDIM<2,double> { typedef Vec2d	TYPE; };
+template<> struct VECDIM<3,double> { typedef Vec3d	TYPE; };
+template<> struct VECDIM<4,double> { typedef Vec4d	TYPE; };
+template<> struct VECDIM<2,int> { typedef Vec2i	TYPE; };
+template<> struct VECDIM<3,int> { typedef Vec3i	TYPE; };
+template<> struct VECDIM<4,int> { typedef Vec4i	TYPE; };
+
 } // namespace cinder

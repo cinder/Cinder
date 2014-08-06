@@ -1,6 +1,6 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2013, The Cinder Project, All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -24,358 +24,495 @@
 
 #include "cinder/Cinder.h"
 
-#if defined( CINDER_MAC )
-	#include <OpenGL/gl.h>
-	#include <OpenGL/glext.h>
-#elif defined( CINDER_MSW )
-	#include "cinder/gl/GLee.h"
+#if defined( CINDER_GL_ANGLE )
+	#define GL_GLEXT_PROTOTYPES
+	#include "GLES2/gl2.h"
+	#include "GLES2/gl2ext.h"
+	#define CINDER_GL_ES
+	#define CINDER_GL_ES_2
+	#pragma comment( lib, "libEGL.lib" )
+	#pragma comment( lib, "libGLESv2.lib" )
+#elif ! defined( CINDER_COCOA_TOUCH )
+	#if defined( __clang__ )
+		#pragma clang diagnostic push
+		#pragma clang diagnostic ignored "-Wtypedef-redefinition"
+	#endif
+	#include "glload/gl_core.h"
+	#if defined( __clang__ )
+		#pragma clang diagnostic pop
+	#endif
 #else
-	#define CINDER_GLES
-	#define CINDER_GLES1
+	#include <OpenGLES/ES2/gl.h>
+	#include <OpenGLES/ES2/glext.h>
+	#define CINDER_GL_ES
+	#define CINDER_GL_ES_2
 #endif
+#include <boost/noncopyable.hpp>
 
-#include "cinder/Exception.h"
-#include "cinder/Quaternion.h"
-#include "cinder/Matrix.h"
-#include "cinder/Vector.h"
-#include "cinder/Color.h"
+#include "cinder/gl/Texture.h"
+
+#include "cinder/Area.h"
 #include "cinder/Rect.h"
-#include "cinder/Font.h"
+#include "cinder/Exception.h"
+#include "cinder/Color.h"
+#include "cinder/Camera.h"
+#include "cinder/Matrix44.h"
+#include "cinder/geomIo.h"
 #include "cinder/PolyLine.h"
-#include "cinder/AxisAlignedBox.h"
 
-#if defined( CINDER_MSW )
-	#include <windows.h>
-	#undef min
-	#undef max
-	#include <gl/gl.h>
-#elif defined( CINDER_COCOA_TOUCH )
-	#include <OpenGLES/ES1/gl.h>
-	#include <OpenGLES/ES1/glext.h>
-#elif defined( CINDER_MAC )
-	#include <OpenGL/gl.h>
+#if ! defined( NDEBUG )
+	#define CI_CHECK_GL()	cinder::gl::checkError()
+#else
+	#define CI_CHECK_GL()	((void)0)
 #endif
 
 // forward declarations
-namespace cinder {
-	class Camera; class TriMesh2d; class TriMesh; class Sphere;
-	namespace gl {
-		 class VboMesh; class Texture;
-		 typedef std::shared_ptr<Texture>	TextureRef;
- 		 typedef std::shared_ptr<VboMesh>	VboMeshRef;
-	}
-} // namespace cinder
+namespace cinder
+{
+	class TriMesh;
+	class Path2d;
+}
 
 namespace cinder { namespace gl {
 
-//! Returns whether a particular OpenGL extension is available. Caches results
-bool isExtensionAvailable( const std::string &extName );
+// Remember to add a matching case to uniformSemanticToString
+enum UniformSemantic {
+	UNIFORM_MODEL_MATRIX,
+	UNIFORM_MODEL_MATRIX_INVERSE,
+	UNIFORM_MODEL_MATRIX_INVERSE_TRANSPOSE,
+	UNIFORM_VIEW_MATRIX,
+	UNIFORM_VIEW_MATRIX_INVERSE,
+	UNIFORM_MODEL_VIEW,
+	UNIFORM_MODEL_VIEW_INVERSE,
+	UNIFORM_MODEL_VIEW_INVERSE_TRANSPOSE,
+	UNIFORM_MODEL_VIEW_PROJECTION,
+	UNIFORM_MODEL_VIEW_PROJECTION_INVERSE,
+	UNIFORM_PROJECTION_MATRIX,
+	UNIFORM_PROJECTION_MATRIX_INVERSE,
+	UNIFORM_NORMAL_MATRIX,
+	UNIFORM_VIEWPORT_MATRIX,
+	UNIFORM_WINDOW_SIZE,
+	UNIFORM_ELAPSED_SECONDS
+};
 
-//! Clears the OpenGL color buffer using \a color and optionally clears the depth buffer when \a clearDepthBuffer
-void clear( const ColorA &color = ColorA::black(), bool clearDepthBuffer = true );
+class Vbo;
+typedef std::shared_ptr<Vbo>			VboRef;
+class VboMesh;
+typedef std::shared_ptr<VboMesh>		VboMeshRef;
+class Texture;
+typedef std::shared_ptr<Texture>		TextureRef;
+class TextureBase;
+typedef std::shared_ptr<TextureBase>	TextureBaseRef;
+class BufferObj;
+typedef std::shared_ptr<BufferObj>		BufferObjRef;
+class GlslProg;
+typedef std::shared_ptr<GlslProg>		GlslProgRef;
+class Vao;
+typedef std::shared_ptr<Vao>			VaoRef;
+class Fbo;
+typedef std::shared_ptr<Fbo>			FboRef;
 
-//! Enables or disables wait for vertical sync
+class Context* context();
+class Environment* env();
+
 void enableVerticalSync( bool enable = true );
-//! Disables wait for vertical sync
-inline void disableVerticalSync() { enableVerticalSync( false ); }
-//! Returns whether vertical sync is enabled for the current context
 bool isVerticalSyncEnabled();
+//! Returns whether OpenGL Extension \a extName is implemented on the hardware. For example, \c "GL_EXT_texture_swizzle". Case insensitive.
+bool isExtensionAvailable( const std::string &extName );
+//! Returns the OpenGL version number as a pair<major,minor>
+std::pair<GLint,GLint>	getVersion();
+std::string getVersionString();
 
-//! Sets the \c MODELVIEW and \c PROJECTION matrices to reflect the values of \a cam. Leaves the \c MatrixMode as \c MODELVIEW.
-void setMatrices( const Camera &cam );
-//! Sets the \c MODELVIEW matrix to reflect the values of \a cam. Leaves the \c MatrixMode as \c MODELVIEW.
-void setModelView( const Camera &cam );
-//! Sets the \c PROJECTION matrix to reflect the values of \a cam. Leaves the \c MatrixMode as \c PROJECTION.
-void setProjection( const Camera &cam );
-//! Pushes the \c MODELVIEW matrix onto its stack, preserving the current values. Leaves the \c MatrixMode as \c MODELVIEW.
-void pushModelView();
-//! Pops the \c MODELVIEW matrix off of its stack, restoring the values saved with the previous push. Leaves the \c MatrixMode as \c MODELVIEW.
-void popModelView();
-//! Pushes the \c MODELVIEW matrix onto its stack, preserving the current values, and then sets the matrix to reflect \a cam. Leaves the \c MatrixMode as \c MODELVIEW.
-void pushModelView( const Camera &cam );
-//! Pushes the \c PROJECTION matrix onto its stack, preserving the current values, and then sets the matrix to reflect \a cam. Leaves the \c MatrixMode as \c PROJECTION.
-void pushProjection( const Camera &cam );
-//! Pushes the \c MODELVIEW and \c PROJECTION matrices onto their stacks, preserving the current values. Leaves the \c MatrixMode as \c MODELVIEW.
-void pushMatrices();
-//! Pops the \c MODELVIEW and \c PROJECTION matrices off their stacks, restoring the values saved with the previous push. Leaves the \c MatrixMode as \c MODELVIEW.
-void popMatrices();
-//! Multiplies the current \c MODELVIEW matrix with \a mtx. Leaves the \c MatrixMode as \c MODELVIEW.
-void multModelView( const Matrix44f &mtx );
-//! Multiplies the current \c PROJECTION matrix with \a mtx. Leaves the \c MatrixMode as \c MODELVIEW.
-void multProjection( const Matrix44f &mtx );
-//! Returns the value of the current \c MODELVIEW matrix as a Matrix44f.
-Matrix44f getModelView();
-//! Returns the value of the current \c PROJECTION matrix as a Matrix44f.
-Matrix44f getProjection();
+GlslProgRef	getStockShader( const class ShaderDef &shader );
+void bindStockShader( const class ShaderDef &shader );
+void setDefaultShaderVars();
 
-//! Sets the viepwort and \c MODELVIEW and \c PROJECTION matrices to be a perspective projection with the upper-left corner at \c [0,0] and the lower-right at \c [screenWidth,screenHeight], but flipped vertically if not \a originUpperLeft.
-void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f, bool originUpperLeft = true );
-//! Sets the viewport and \c MODELVIEW and \c PROJECTION matrices to be a perspective projection with the upper-left corner at \c [0,0] and the lower-right at \c [screenWidth,screenHeight], but flipped vertically if not \a originUpperLeft.
-inline void setMatricesWindowPersp( const Vec2i &screenSize, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f, bool originUpperLeft = true )
-	{ setMatricesWindowPersp( screenSize.x, screenSize.y, fovDegrees, nearPlane, farPlane ); }
-//! Sets the viewport and \c MODELVIEW and \c PROJECTION matrices to orthographic with the upper-left corner at \c [0,0] and the lower-right at \c [screenWidth,screenHeight] if \a originUpperLeft is \c true. Otherwise the origin is in the lower right.
-void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft = true );
-//! Sets the viewport and the \c MODELVIEW and \c PROJECTION matrices to orthographic with the upper-left corner at \c [0,0] and the lower-right at \c [size.x,size.y] if \a originUpperLeft is \c true. Otherwise the origin is in the lower right.
-inline void setMatricesWindow( const Vec2i &screenSize, bool originUpperLeft = true ) { setMatricesWindow( screenSize.x, screenSize.y, originUpperLeft ); }
+void clear( const ColorA &color = ColorA::black(), bool clearDepthBuffer = true );
+	
+void clear( GLbitfield mask );
+void clearColor( const ColorA &color );
+void clearDepth( const double depth );
+void clearDepth( const float depth );
+void clearStencil( const int s );
+	
+void colorMask( GLboolean red, GLboolean green, GLboolean blue, GLboolean alpha );
+void depthMask( GLboolean flag );
+void stencilMask( GLboolean mask );
+	
+void stencilFunc( GLenum func, GLint ref, GLuint mask );
+void stencilOp( GLenum fail, GLenum zfail, GLenum zpass );
 
-//! Returns the current OpenGL Viewport as an Area
-Area getViewport();
-//! Sets the current OpenGL Viewport to \a area
-void setViewport( const Area &area );
+std::pair<Vec2i, Vec2i> getViewport();
+void viewport( const std::pair<Vec2i, Vec2i> positionAndSize );
+inline void viewport( int x, int y, int width, int height ) { viewport( std::pair<Vec2i, Vec2i>( Vec2i( x, y ), Vec2i( width, height ) ) ); }
+inline void viewport( const Vec2i &position, const Vec2i &size ) { viewport( std::pair<Vec2i, Vec2i>( position, size ) ); }
+inline void viewport( const Vec2i &size ) { viewport( Vec2f::zero(), size ); }
+void pushViewport( const std::pair<Vec2i, Vec2i> positionAndSize );
+inline void pushViewport() { pushViewport( getViewport() ); }
+inline void pushViewport( int x, int y, int width, int height ) { pushViewport( std::pair<Vec2i, Vec2i>( Vec2i( x, y ), Vec2i( width, height ) ) ); }
+inline void pushViewport( const Vec2i &position, const Vec2i &size ) { pushViewport( std::pair<Vec2i, Vec2i>( position, size ) ); }
+inline void pushViewport( const Vec2i &size ) { pushViewport( Vec2f::zero(), size ); }
+void popViewport();
 
-//! Produces a translation by \a pos in the current matrix.
-void translate( const Vec2f &pos );
-//! Produces a translation by \a x and \a y in the current matrix.
-inline void translate( float x, float y ) { translate( Vec2f( x, y ) ); }
-//! Produces a translation by \a pos in the current matrix.
-void translate( const Vec3f &pos );
-//! Produces a translation by \a x, \a y and \a z in the current matrix.
-inline void translate( float x, float y, float z ) { translate( Vec3f( x, y, z ) ); }
+std::pair<Vec2i, Vec2i> getScissor();
+void scissor( const std::pair<Vec2i, Vec2i> positionAndSize );
+inline void scissor( int x, int y, int width, int height ) { scissor( std::pair<Vec2i, Vec2i>( Vec2i( x, y ), Vec2i( width, height ) ) ); }
+inline void scissor( const Vec2i &position, const Vec2i &size ) { scissor( std::pair<Vec2i, Vec2i>( position, size ) ); }
+	
+void enable( GLenum state, bool enable = true );
+inline void disable( GLenum state ) { enable( state, false ); }
 
-//! Produces a scale by \a scale in the current matrix.
-void scale( const Vec3f &scl );
-//! Produces a scale by \a scl in the current matrix.
-inline void scale( const Vec2f &scl ) { scale( Vec3f( scl.x, scl.y, 1 ) ); }
-//! Produces a scale by \a x and \a y in the current matrix.
-inline void scale( float x, float y ) { scale( Vec3f( x, y, 1 ) ); }
-//! Produces a scale by \a x, \a y and \a z in the current matrix.
-inline void scale( float x, float y, float z ) { scale( Vec3f( x, y, z ) ); }
-
-//! Produces a rotation around the X-axis by \a xyz.x degrees, the Y-axis by \a xyz.y degrees and the Z-axis by \a xyz.z degrees in the current matrix. Processed in X-Y-Z order.
-void rotate( const Vec3f &xyz );
-//! Produces a rotation by the quaternion \a quat in the current matrix.
-void rotate( const Quatf &quat );
-//! Produces a 2D rotation, the equivalent of a rotation around the Z axis by \a degrees.
-inline void rotate( float degrees ) { rotate( Vec3f( 0, 0, degrees ) ); }
-
-#if ! defined( CINDER_GLES )
-//! Equivalent to glBegin() in immediate mode
-inline void begin( GLenum mode ) { glBegin( mode ); }
-//! Equivalent to glEnd() in immediate mode
-inline void end() { glEnd(); }
-//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
-inline void vertex( const Vec2f &v ) { glVertex2fv( &v.x ); }
-//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
-inline void vertex( float x, float y ) { glVertex2f( x, y ); }
-//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
-inline void vertex( const Vec3f &v ) { glVertex3fv( &v.x ); }
-//! Used between calls to gl::begin() and \c gl::end(), appends a vertex to the current primitive.
-inline void vertex( float x, float y, float z ) { glVertex3f( x, y, z ); }
-//! Used between calls to gl::begin() and gl::end(), sets the 2D texture coordinate for the next vertex.
-inline void texCoord( float x, float y ) { glTexCoord2f( x, y ); }
-//! Used between calls to gl::begin() and gl::end(), sets the 2D texture coordinate for the next vertex.
-inline void texCoord( const Vec2f &v ) { glTexCoord2f( v.x, v.y ); }
-//! Used between calls to gl::begin() and gl::end(), sets the 3D texture coordinate for the next vertex.
-inline void texCoord( float x, float y, float z ) { glTexCoord3f( x, y, z ); }
-//! Used between calls to gl::begin() and gl::end(), sets the 3D texture coordinate for the next vertex.
-inline void texCoord( const Vec3f &v ) { glTexCoord3f( v.x, v.y, v.z ); }
-#endif // ! defined( CINDER_GLES )
-//! Sets the current color and the alpha value to 1.0
-inline void color( float r, float g, float b ) { glColor4f( r, g, b, 1.0f ); }
-//! Sets the current color and alpha value
-inline void color( float r, float g, float b, float a ) { glColor4f( r, g, b, a ); }
-//! Sets the current color, and the alpha value to 1.0
-inline void color( const Color8u &c ) { glColor4ub( c.r, c.g, c.b, 255 ); }
-//! Sets the current color and alpha value
-inline void color( const ColorA8u &c ) { glColor4ub( c.r, c.g, c.b, c.a ); }
-//! Sets the current color, and the alpha value to 1.0
-inline void color( const Color &c ) { glColor4f( c.r, c.g, c.b, 1.0f ); }
-//! Sets the current color and alpha value
-inline void color( const ColorA &c ) { glColor4f( c.r, c.g, c.b, c.a ); }
-
-//! Enables the OpenGL State \a state. Equivalent to calling to glEnable( state );
-inline void enable( GLenum state ) { glEnable( state ); }
-//! Disables the OpenGL State \a state. Equivalent to calling to glDisable( state );
-inline void disable( GLenum state ) { glDisable( state ); }
-
-//! Enables alpha blending. Selects a \c BlendFunc that is appropriate for premultiplied-alpha when \a premultiplied
 void enableAlphaBlending( bool premultiplied = false );
-//! Disables alpha blending.
 void disableAlphaBlending();
-//! Enables alpha blending and selects a \c BlendFunc for additive blending
 void enableAdditiveBlending();
 
-/** \brief Enables alpha testing and sets the \c AlphaFunc to test for values which are \a func than \a value, which should be in the range [0, 1.0]. 
- *  Possible values for \a func include <tt>GL_NEVER, GL_LESS, GL_EQUAL, GL_LEQUAL, GL_GREATER, GL_NOTEQUAL, GL_GEQUAL and GL_ALWAYS</tt>. **/
 void enableAlphaTest( float value = 0.5f, int func = GL_GREATER );
-//! Disables alpha testing
 void disableAlphaTest();
 
-#if ! defined( CINDER_GLES )
+void disableDepthRead();
+void disableDepthWrite();
+void enableDepthRead( bool enable = true );
+void enableDepthWrite( bool enable = true );
+
+void enableStencilRead( bool enable = true );
+void disableStencilRead();
+void enableStencilWrite( bool enable = true );
+void disableStencilWrite();
+
+//! Sets the View and Projection matrices based on a Camera
+void setMatrices( const ci::Camera &cam );
+void setModelMatrix( const ci::Matrix44f &m );
+void setViewMatrix( const ci::Matrix44f &m );
+void setProjectionMatrix( const ci::Matrix44f &m );
+void pushModelMatrix();
+void popModelMatrix();
+void pushViewMatrix();
+void popViewMatrix();
+void pushProjectionMatrix();
+void popProjectionMatrix();
+//! Pushes Model and View matrices
+void pushModelViewMatrices();
+//! Pops Model and View matrices
+void popModelViewMatrices();
+//! Pushes Model, View and Projection matrices
+void pushMatrices();
+//! Pops Model, View and Projection matrices
+void popMatrices();
+void multModelMatrix( const ci::Matrix44f &mtx );
+void multViewMatrix( const ci::Matrix44f &mtx );
+void multProjectionMatrix( const ci::Matrix44f &mtx );
+
+Matrix44f getModelMatrix();
+Matrix44f getViewMatrix();
+Matrix44f getProjectionMatrix();
+Matrix44f getModelView();
+Matrix44f getModelViewProjection();
+Matrix44f calcViewMatrixInverse();
+Matrix33f calcModelMatrixInverseTranspose();
+Matrix33f calcNormalMatrix();
+Matrix44f calcViewportMatrix();
+
+void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f, bool originUpperLeft = true );
+void setMatricesWindowPersp( const ci::Vec2i &screenSize, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f, bool originUpperLeft = true );
+void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft = true );
+void setMatricesWindow( const ci::Vec2i &screenSize, bool originUpperLeft = true );
+
+void rotate( const cinder::Quatf &quat );
+//! Rotates the Model matrix by \a angleDegrees around the \a axis
+void rotate( float angleDegrees, const ci::Vec3f &axis );
+//! Rotates the Model matrix by \a angleDegrees around the axis (\a x,\a y,\a z)
+inline void rotate( float angleDegrees, float xAxis, float yAxis, float zAxis ) { rotate( angleDegrees, ci::Vec3f(xAxis, yAxis, zAxis) ); }
+//! Rotates the Model matrix by \a zDegrees around the z-axis
+inline void rotate( float zDegrees ) { rotate( zDegrees, ci::Vec3f::zAxis() ); }
+
+//! Scales the Model matrix by \a v
+void scale( const ci::Vec3f &v );
+//! Scales the Model matrix by (\a x,\a y, \a z)
+inline void scale( float x, float y, float z ) { scale( Vec3f( x, y, z ) ); }
+//! Scales the Model matrix by \a v
+inline void scale( const ci::Vec2f &v ) { scale( Vec3f( v.x, v.y, 1 ) ); }
+//! Scales the Model matrix by (\a x,\a y, 1)
+inline void scale( float x, float y ) { scale( Vec3f( x, y, 1 ) ); }
+
+//! Translates the Model matrix by \a v
+void translate( const ci::Vec3f &v );
+//! Translates the Model matrix by (\a x,\a y,\a z )
+inline void translate( float x, float y, float z ) { translate( Vec3f( x, y, z ) ); }
+//! Translates the Model matrix by \a v
+inline void translate( const ci::Vec2f &v ) { translate( Vec3f( v, 0 ) ); }
+//! Translates the Model matrix by (\a x,\a y)
+inline void translate( float x, float y ) { translate( Vec3f( x, y, 0 ) ); }
+	
+void begin( GLenum mode );
+void end();
+
+#if ! defined( CINDER_GL_ES )
+void bindBufferBase( GLenum target, int index, BufferObjRef buffer );
+	
+void beginTransformFeedback( GLenum primitiveMode );
+void endTransformFeedback();
+void resumeTransformFeedback();
+void pauseTransformFeedback();	
+#endif
+	
+void color( float r, float g, float b );
+void color( float r, float g, float b, float a );
+void color( const ci::Color &c );
+void color( const ci::ColorA &c );
+void color( const ci::Color8u &c );
+void color( const ci::ColorA8u &c );
+
+void texCoord( float s, float t );
+void texCoord( float s, float t, float r );
+void texCoord( float s, float t, float r, float q );
+void texCoord( const ci::Vec2f &v );
+void texCoord( const ci::Vec3f &v );
+void texCoord( const ci::Vec4f &v );
+
+void vertex( float x, float y );
+void vertex( float x, float y, float z );
+void vertex( float x, float y, float z, float w );
+void vertex( const ci::Vec2f &v );
+void vertex( const ci::Vec3f &v );
+void vertex( const ci::Vec4f &v );
+
+#if ! defined( CINDER_GL_ES )
+void polygonMode( GLenum face, GLenum mode );
 //! Enables wireframe drawing by setting the \c PolygonMode to \c GL_LINE.
 void enableWireframe();
 //! Disables wireframe drawing.
 void disableWireframe();
-#endif // ! defined( CINDER_GLES )
+//! Returns whether wirefrom drawing is enabled.
+bool isWireframeEnabled();
+//! Toggles wireframe drawing according to \a enable.
+inline void setWireframeEnabled( bool enable = true )	{ if( enable ) enableWireframe(); else disableWireframe(); }
+#endif
 
-//! Disables reading from the depth buffer, disabling z-testing.
-void disableDepthRead();
-//! Disables writing to the depth buffer.
-void disableDepthWrite();
-//! Enables reading from the depth buffer when \a enable, enabling z-testing.
-void enableDepthRead( bool enable = true );
-//! Enables writing to the depth buffer when \a enable.
-void enableDepthWrite( bool enable = true );
+//! Converts a geom::Primitive to an OpenGL primitive mode( GL_TRIANGLES, GL_TRIANGLE_STRIP, etc )
+GLenum toGl( geom::Primitive prim );
+//! Converts an OpenGL primitive mode( GL_TRIANGLES, GL_TRIANGLE_STRIP, etc ) to a geom::Primitive
+geom::Primitive toGeomPrimitive( GLenum prim );
+//! Converts a UniformSemantic to its name
+std::string uniformSemanticToString( UniformSemantic uniformSemantic );
 
-//! Specifies the rasterized width of both aliased and antialiased lines.
-inline void lineWidth( float width ) { glLineWidth( width ); }
-
-//! Draws a line from \a start to \a end
-void drawLine( const Vec2f &start, const Vec2f &end );
-//! Draws a line from \a start to \a end
-void drawLine( const Vec3f &start, const Vec3f &end );
-//! Renders a solid cube centered at \a center of size \a size. Normals and created texture coordinates are generated for \c GL_TEXTURE_2D, with each face in the range [0,0] - [1.0,1.0]
-void drawCube( const Vec3f &center, const Vec3f &size );
-//! Renders a solid cube centered at \a center of size \a size. Each face is assigned a unique color, and no normals or texture coordinates are generated.
-void drawColorCube( const Vec3f &center, const Vec3f &size );
-//! Renders a stroked cube centered at \a center of size \a size.
-void drawStrokedCube( const Vec3f &center, const Vec3f &size );
-//! Renders a stroked cube \a aab
-inline void drawStrokedCube( const AxisAlignedBox3f &aab ) { drawStrokedCube( aab.getCenter(), aab.getSize() ); }
-//! Renders a solid sphere centered at \a center of radius \a radius. \a segments defines how many segments the sphere is subdivided into. Normals and texture coordinates in the range [0,1] are generated.
-void drawSphere( const Vec3f &center, float radius, int segments = 12 );
-//! Renders a solid sphere. \a segments defines how many segments the sphere is subdivided into. Normals and texture coordinates in the range [0,1] are generated.
-void draw( const class Sphere &sphere, int segments = 12 );
-//! Renders a solid circle using triangle fans. The default value of zero for \a numSegments automatically determines a number of segments based on the circle's circumference.
-void drawSolidCircle( const Vec2f &center, float radius, int numSegments = 0 );
-//! Renders a stroked circle using a line loop. The default value of zero for \a numSegments automatically determines a number of segments based on the circle's circumference.
-void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = 0 );
-//! Renders a solid ellipse using triangle fans. The default value of zero for \a numSegments automatically determines a number of segments based on the ellipse's circumference.
-void drawSolidEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments = 0 );
-//! Renders a stroked circle using a line loop. The default value of zero for \a numSegments automatically determines a number of segments based on the circle's circumference.
-void drawStrokedEllipse( const Vec2f &center, float radiusX, float radiusY, int numSegments = 0 );
-//! Renders a solid rectangle. Texture coordinates in the range [0,1] are generated unless \a textureRectangle.
-void drawSolidRect( const Rectf &rect, bool textureRectangle = false );
-//! Renders a stroked rectangle.
-void drawStrokedRect( const Rectf &rect );
-void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner = 0 );
-void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner = 0 );
-//! Renders a coordinate frame representation centered at the origin. Arrowheads are drawn at the end of each axis with radius \a headRadius and length \a headLength.
-//! Renders a solid triangle.
-void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 );
-void drawSolidTriangle( const Vec2f pts[3] );
-//! Renders a textured triangle.
-void drawSolidTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3, const Vec2f &texPt1, const Vec2f &texPt2, const Vec2f &texPt3 );
-void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] );
-//! Renders a stroked triangle.
-void drawStrokedTriangle( const Vec2f &pt1, const Vec2f &pt2, const Vec2f &pt3 );	
-void drawStrokedTriangle( const Vec2f pts[3] );
-void drawCoordinateFrame( float axisLength = 1.0f, float headLength = 0.2f, float headRadius = 0.05f );
-//! Draws a vector starting at \a start and ending at \a end. An arrowhead is drawn at the end of radius \a headRadius and length \a headLength.
-void drawVector( const Vec3f &start, const Vec3f &end, float headLength = 0.2f, float headRadius = 0.05f );
-//! Draws a wireframe representation of the frustum defined by \a cam.
-void drawFrustum( const Camera &cam );
-//! Draws a torus at the origin, with an outter radius \a outterRadius and an inner radius \a innerRadius, subdivided into \a longitudeSegments and \a latitudeSegments. Normals and texture coordinates in the range [0,1] are generated.
-void drawTorus( float outterRadius, float innerRadius, int longitudeSegments = 12, int latitudeSegments = 12 );
-//! Draws a open-ended cylinder, with base radius \a baseRadius and top radius \a topRadius, with height \a height, subdivided into \a slices and \a stacks. Normals and texture coordinates in the range [0,1] are generated.
-void drawCylinder( float baseRadius, float topRadius, float height, int slices = 12, int stacks = 1 );
-//! Draws a 2d PolyLine \a polyLine
+void draw( const VboMeshRef &mesh );
+void draw( const TextureRef &texture, const Rectf &dstRect );
+void draw( const TextureRef &texture, const Area &srcArea, const Rectf &dstRect );
+void draw( const TextureRef &texture, const Vec2f &dstOffset = Vec2f::zero() );
 void draw( const class PolyLine<Vec2f> &polyLine );
-//! Draws a 3d PolyLine \a polyLine
 void draw( const class PolyLine<Vec3f> &polyLine );
 //! Draws a Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
-void draw( const class Path2d &path2d, float approximationScale = 1.0f );
-//! Draws a Shape2d \a shape2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
-void draw( const class Shape2d &shape2d, float approximationScale = 1.0f );
+void draw( const Path2d &path, float approximationScale = 1.0f );
+//! Draws a cinder::TriMesh \a mesh at the origin. Currently only uses position and index information.
+void draw( const TriMesh &mesh );
 
 //! Draws a solid (filled) Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const class Path2d &path2d, float approximationScale = 1.0f );
-//! Draws a solid (filled) Shape2d \a shape2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
-void drawSolid( const class Shape2d &shape2d, float approximationScale = 1.0f );
-//! Draws a solid (filled) PolyLine2f \a polyLine. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
-void drawSolid( const PolyLine2f &polyLine );
+void drawSolid( const class PolyLine<Vec2f> &polyLine );
 
-//! Draws a cinder::TriMesh \a mesh at the origin.
-void draw( const TriMesh2d &mesh );
-//! Draws a range of triangles starting with triangle # \a startTriangle and a count of \a triangleCount from cinder::TriMesh \a mesh at the origin.
-void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCount );
-//! Draws a cinder::TriMesh \a mesh at the origin.
-void draw( const TriMesh &mesh );
-//! Draws a range of triangles starting with triangle # \a startTriangle and a count of \a triangleCount from cinder::TriMesh \a mesh at the origin.
-void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount );
+//! Renders a solid cube centered at \a center of size \a size. Normals and created texture coordinates are generated.
+void drawCube( const Vec3f &center, const Vec3f &size );
+//! Renders a solid cube centered at \a center of size \a size. Each face is assigned a unique color.
+void drawColorCube( const Vec3f &center, const Vec3f &size );
+//! Renders a solid sphere at \a center of radius \a radius, subdivided on both longitude and latitude into \a segments.
+void drawSphere( const Vec3f &center, float radius, int segments );
+//! Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationRadians around the vector orthogonal to \a bbRight and \a bbUp.
+void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationRadians, const Vec3f &bbRight, const Vec3f &bbUp, const Rectf &texCoords = Rectf( 0, 0, 1, 1 ) );
 
-#if ! defined ( CINDER_GLES )
-//! Draws a cinder::gl::VboMesh \a mesh at the origin.
-void draw( const VboMesh &vbo );
-inline void draw( const VboMeshRef &vbo ) { draw( *vbo ); }
-//! Draws a range of vertices and elements of cinder::gl::VboMesh \a mesh at the origin. Default parameters for \a vertexStart and \a vertexEnd imply the VboMesh's full range of vertices.
-void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 );
-inline void drawRange( const VboMeshRef &vbo, size_t startIndex, size_t indexCount, int vertexStart = -1, int vertexEnd = -1 ) { drawRange( *vbo, startIndex, indexCount, vertexStart, vertexEnd ); }
-//! Draws a range of elements from a cinder::gl::VboMesh \a vbo.
-void drawArrays( const VboMesh &vbo, GLint first, GLsizei count );
-inline void drawArrays( const VboMeshRef &vbo, GLint first, GLsizei count ) { drawArrays( *vbo, first, count ); }
-#endif
+//! Draws a line between points a and b
+void drawLine( const Vec3f &a, const Vec3f &b );
+void drawLine( const Vec2f &a, const Vec2f &b );
 
-//!	Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationDegrees around the vector orthogonal to \a bbRight and \a bbUp.	
-void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationDegrees, const Vec3f &bbRight, const Vec3f &bbUp );
 //! Draws \a texture on the XY-plane
-void draw( const Texture &texture );
-inline void draw( const TextureRef &texture ) { draw( *texture ); }
-//! Draws \a texture on the XY-plane at \a pos
-void draw( const Texture &texture, const Vec2f &pos );
-inline void draw( const TextureRef &texture, const Vec2f &pos ) { draw( *texture, pos ); }
-//! Draws \a texture on the XY-plane in the rectangle defined by \a rect
-void draw( const Texture &texture, const Rectf &rect );
-inline void draw( const TextureRef &texture, const Rectf &rect ) { draw( *texture, rect ); }
-//! Draws the pixels inside \a srcArea of \a texture on the XY-plane in the rectangle defined by \a destRect
-void draw( const Texture &texture, const Area &srcArea, const Rectf &destRect );
-inline void draw( const TextureRef &texture, const Area &srcArea, const Rectf &destRect ) { draw( *texture, srcArea, destRect ); }
+void drawSolidRect( const Rectf &r );
+void drawSolidRect( const Rectf &r, const Rectf &texcoords );
+void drawSolidCircle( const Vec2f &center, float radius, int numSegments = -1 );
 
-//! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
-void drawString( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
-//! Draws a string \a str with the horizontal center of its baseline located at \a pos. Optional \a font and \a color affect the style
-void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
-//! Draws a right-justified string \a str with the center of its  located at \a pos. Optional \a font and \a color affect the style
-void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+//! Draws a stroked rectangle with dimensions \a rect.
+void drawStrokedRect( const Rectf &rect );
+//! Draws a stroked rectangle centered around \a rect, with a line width of \a lineWidth
+void drawStrokedRect( const Rectf &rect, float lineWidth );
+//! Draws a stroked circles centered around \a center with a radius of \a radius
+void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = -1 );
+
+// Vertex Attributes
+//! Analogous to glVertexAttribPointer
+void	vertexAttribPointer( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer );
+#if ! defined( CINDER_GL_ES )
+//! Analogous to glVertexAttribIPointer
+void	vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
+#endif // ! defined( CINDER_GL_ES )
+//! Analogous to glEnableVertexAttribArray
+void	enableVertexAttribArray( GLuint index );
+
+void		vertexAttrib1f( GLuint index, float v0 );
+inline void	vertexAttrib( GLuint index, float v0 ) { vertexAttrib1f( index, v0 ); }
+void		vertexAttrib2f( GLuint index, float v0, float v1 );
+inline void	vertexAttrib( GLuint index, float v0, float v1 ) { vertexAttrib2f( index, v0, v1 ); }
+void		vertexAttrib3f( GLuint index, float v0, float v1, float v2 );
+inline void	vertexAttrib( GLuint index, float v0, float v1, float v2 ) { vertexAttrib3f( index, v0, v1, v2 ); }
+inline void	vertexAttrib( GLuint index, float v0, float v1 );
+void		vertexAttrib4f( GLuint index, float v0, float v1, float v2, float v3 );
+inline void	vertexAttrib( GLuint index, float v0, float v1, float v2, float v3 ) { vertexAttrib4f( index, v0, v1, v2, v3 ); }
+
+// Buffers
+void	bindBuffer( const BufferObjRef &buffer );
+
+void	drawArrays( GLenum mode, GLint first, GLsizei count );
+void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
+	
+GLenum getError();
+std::string getErrorString( GLenum err );
+void checkError();
 
 
-//! Convenience class designed to push and pop the currently bound texture for a given texture unit
-struct SaveTextureBindState {
-	SaveTextureBindState( GLint target );
-	~SaveTextureBindState();
+struct ScopedVao : public boost::noncopyable {
+	ScopedVao( const VaoRef &vao );
+	~ScopedVao();
+
   private:
-	GLint	mTarget;
-	GLint	mOldID;
+	Context		*mCtx;
 };
 
-//! Convenience class designed to push and pop a boolean OpenGL state
-struct BoolState {
-	BoolState( GLint target );
-	~BoolState();
+struct ScopedBuffer : public boost::noncopyable {
+	ScopedBuffer( const BufferObjRef &bufferObj );
+	ScopedBuffer( GLenum target, GLuint id );
+	~ScopedBuffer();
+	
   private:
-	GLint		mTarget;
-	GLboolean	mOldValue;
+	Context		*mCtx;
+	GLenum		mTarget;
 };
 
-//! Convenience class designed to push and pop a boolean OpenGL state
-struct ClientBoolState {
-	ClientBoolState( GLint target );
-	~ClientBoolState();
+struct ScopedState : public boost::noncopyable {
+	ScopedState( GLenum cap, GLboolean value );
+	~ScopedState();
+
   private:
-	GLint		mTarget;
-	GLboolean	mOldValue;
+	Context		*mCtx;
+	GLenum		mCap;
 };
 
-//! Convenience class designed to push and pop the current color
-struct SaveColorState {
-	SaveColorState();
-	~SaveColorState();
+struct ScopedColor : public boost::noncopyable {
+	ScopedColor( const ColorAf &color );
+	~ScopedColor();
+
   private:
-	GLfloat		mOldValues[4];
+	Context		*mCtx;
+	ColorAf		mColor;
 };
 
-//! Convenience class which pushes and pops the currently bound framebuffer
-struct SaveFramebufferBinding {
-	SaveFramebufferBinding();
-	~SaveFramebufferBinding();
+struct ScopedBlend : public boost::noncopyable
+{
+	ScopedBlend( GLboolean enable );
+	//! Parallels glBlendFunc(), and implicitly enables blending
+	ScopedBlend( GLenum sfactor, GLenum dfactor );
+	//! Parallels glBlendFuncSeparate(), and implicitly enables blending
+	ScopedBlend( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
+	~ScopedBlend();
+	
   private:
-	GLint		mOldValue;
+	Context		*mCtx;
+	bool		mSaveFactors; // whether we should also set the blend factors rather than just the blend state
 };
 
-#if defined( CINDER_MSW )
-//! Initializes the GLee library. This is generally called automatically by the application and is only necessary if you need to use GLee before your app's setup() method is called.
-void initializeGlee();
-#endif
+struct ScopedAlphaBlend : public ScopedBlend
+{
+	ScopedAlphaBlend( bool premultipliedAlpha )
+		: ScopedBlend( premultipliedAlpha ? GL_ONE : GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA )
+	{}
+};
+
+struct ScopedAdditiveBlend : public ScopedBlend
+{
+	ScopedAdditiveBlend()
+		: ScopedBlend( GL_SRC_ALPHA, GL_ONE )
+	{}
+};
+
+struct ScopedGlslProg : public boost::noncopyable
+{
+	ScopedGlslProg( const GlslProgRef &prog );
+	ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog );
+	~ScopedGlslProg();
+
+  private:
+	Context		*mCtx;
+};
+
+struct ScopedFramebuffer : public boost::noncopyable
+{
+	ScopedFramebuffer( const FboRef &fbo, GLenum target = GL_FRAMEBUFFER );
+	//! Prefer the FboRef variant when possible. This does not allow gl::Fbo to mark itself as needing multisample resolution.
+	ScopedFramebuffer( GLenum target, GLuint framebufferId );
+	~ScopedFramebuffer();
+	
+  private:
+	Context		*mCtx;
+	GLenum		mTarget;
+};
+
+struct ScopedActiveTexture : public boost::noncopyable
+{
+	//! Sets the currently active texture through glActiveTexture. Expects values relative to \c 0, \em not GL_TEXTURE0
+	ScopedActiveTexture( uint8_t textureUnit );
+	~ScopedActiveTexture();
+	
+  private:
+	Context		*mCtx;
+};
+
+struct ScopedTextureBind : public boost::noncopyable
+{
+	ScopedTextureBind( GLenum target, GLuint textureId );
+	ScopedTextureBind( GLenum target, GLuint textureId, uint8_t textureUnit );
+	ScopedTextureBind( const TextureBaseRef &texture );
+	ScopedTextureBind( const TextureBaseRef &texture, uint8_t textureUnit );
+	~ScopedTextureBind();
+	
+  private:
+	Context		*mCtx;
+	GLenum		mTarget;
+	uint8_t		mTextureUnit;
+};
+	
+struct ScopedScissor : public boost::noncopyable
+{
+	//! Implicitly enables scissor test
+	ScopedScissor( const Vec2i &lowerLeftPostion, const Vec2i &dimension );
+	//! Implicitly enables scissor test	
+	ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int height );
+	~ScopedScissor();
+
+  private:
+	Context					*mCtx;
+};
+
+struct ScopedViewport : public boost::noncopyable
+{
+	ScopedViewport( const Vec2i &lowerLeftPostion, const Vec2i &dimension );
+	ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height );
+	~ScopedViewport();
+
+  private:
+	Context					*mCtx;
+};
+
+struct ScopedModelMatrix : public boost::noncopyable {
+	ScopedModelMatrix()	{ gl::pushModelMatrix(); }
+	~ScopedModelMatrix()	{ gl::popModelMatrix(); }
+};
+
+struct ScopedProjectionMatrix : public boost::noncopyable {
+	ScopedProjectionMatrix()			{ gl::pushProjectionMatrix(); }
+	~ScopedProjectionMatrix()	{ gl::popProjectionMatrix(); }
+};
+
+//! Preserves all
+struct ScopedMatrices : public boost::noncopyable {
+	ScopedMatrices()		{ gl::pushMatrices(); }
+	~ScopedMatrices()	{ gl::popMatrices(); }
+};
 
 class Exception : public cinder::Exception {
 };
@@ -383,29 +520,4 @@ class Exception : public cinder::Exception {
 class ExceptionUnknownTarget : public Exception {
 };
 
-} } // namespace cinder::gl 
-
-//@{
-//! Global overloads for OpenGL free functions to allow the use of Cinder types natively
-#if ! defined( CINDER_GLES )
-inline void glVertex2f( const cinder::Vec2f &v ) { glVertex2f( v.x, v.y ); }
-inline void glVertex3f( const cinder::Vec3f &v ) { glVertex3f( v.x, v.y, v.z ); }
-inline void glVertex4f( const cinder::Vec4f &v ) { glVertex4f( v.x, v.y, v.z, v.w ); }
-inline void glNormal3f( const cinder::Vec3f &v ) { glNormal3f( v.x, v.y, v.z ); }
-inline void glColor3f( const cinder::Color &c ) { glColor3f( c.r, c.g, c.b ); }
-inline void glColor4f( const cinder::ColorA &c ) { glColor4f( c.r, c.g, c.b, c.a ); }
-inline void glTexCoord2f( const cinder::Vec2f &v ) { glTexCoord2f( v.x, v.y ); }
-inline void glTexCoord3f( const cinder::Vec3f &v ) { glTexCoord3f( v.x, v.y, v.z ); }
-inline void glTexCoord4f( const cinder::Vec4f &v ) { glTexCoord4f( v.x, v.y, v.z, v.w ); }
-// This style of definition conflicts with GLee
-//inline void glMultiTexCoord2f( GLenum target, const cinder::Vec2f &v ) { glMultiTexCoord2f( target, v.x, v.y ); }
-//inline void glMultiTexCoord3f( GLenum target, const cinder::Vec3f &v ) { glMultiTexCoord3f( target, v.x, v.y, v.z ); }
-//inline void glMultiTexCoord4f( GLenum target, const cinder::Vec4f &v ) { glMultiTexCoord4f( target, v.x, v.y, v.z, v.w ); }
-#endif // ! defined( CINDER_GLES )
-inline void glTranslatef( const cinder::Vec3f &v ) { glTranslatef( v.x, v.y, v.z ); }
-inline void glScalef( const cinder::Vec3f &v ) { glScalef( v.x, v.y, v.z ); }
-inline void glRotatef( float angle, const cinder::Vec3f &v ) { glRotatef( angle, v.x, v.y, v.z ); }
-inline void glRotatef( const cinder::Quatf &quat ) { cinder::Vec3f axis; float angle; quat.getAxisAngle( &axis, &angle ); glRotatef( cinder::toDegrees( angle ), axis.x, axis.y, axis.z ); }
-inline void glMultMatrixf( const cinder::Matrix44f &m ) { glMultMatrixf( m.m ); }
-inline void glLoadMatrixf( const cinder::Matrix44f &m ) { glLoadMatrixf( m.m ); }
-//@}
+} }

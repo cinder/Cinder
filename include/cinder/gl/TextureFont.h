@@ -162,7 +162,7 @@ class TextureFont {
 #else
 	boost::unordered_map<Font::Glyph, GlyphInfo>	mGlyphMap;
 #endif
-	std::vector<gl::Texture>						mTextures;
+	std::vector<gl::TextureRef>						mTextures;
 	Font											mFont;
 	Format											mFormat;
 };

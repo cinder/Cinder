@@ -21,6 +21,9 @@
 */
 
 #include "cinder/gl/TextureFont.h"
+#include "cinder/gl/Context.h"
+#include "cinder/gl/Vao.h"
+#include "cinder/gl/Vbo.h"
 
 #include "cinder/Text.h"
 #include "cinder/ip/Fill.h"
@@ -81,9 +84,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 	::CGContextSetFontSize( cgContext, font.getSize() );
 	::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
 
-#if defined( CINDER_GLES )
-	std::shared_ptr<uint8_t> lumAlphaData( new uint8_t[mFormat.getTextureWidth()*mFormat.getTextureHeight()*2], checked_array_deleter<uint8_t>() );
-#endif
+	std::unique_ptr<uint8_t[]> lumAlphaData( new uint8_t[mFormat.getTextureWidth()*mFormat.getTextureHeight()*2] );
 
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
 		GlyphInfo newInfo;
@@ -109,8 +110,18 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
-			textureFormat.setInternalFormat( GL_LUMINANCE_ALPHA );
-#if defined( CINDER_GLES )
+			GLint dataFormat;
+#if defined( CINDER_GL_ES )
+			dataFormat = GL_LUMINANCE_ALPHA;
+			textureFormat.setInternalFormat( dataFormat );
+#else
+			dataFormat = GL_RG;
+			textureFormat.setInternalFormat( dataFormat );
+			textureFormat.setSwizzleMask( { GL_RED, GL_RED, GL_RED, GL_GREEN } );
+#endif
+			if( mFormat.hasMipmapping() )
+				mTextures.back()->setMinFilter( GL_LINEAR_MIPMAP_LINEAR );
+
 			// under iOS format and interalFormat must match, so let's make a block of LUMINANCE_ALPHA data
 			Surface8u::ConstIter iter( surface, surface.getBounds() );
 			size_t offset = 0;
@@ -121,12 +132,8 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 					offset += 2;
 				}
 			}
-			mTextures.push_back( gl::Texture( lumAlphaData.get(), GL_LUMINANCE_ALPHA, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
-#else
-			mTextures.push_back( gl::Texture( surface, textureFormat ) );
-			if( mFormat.hasMipmapping() )
-				mTextures.back().setMinFilter( GL_LINEAR_MIPMAP_LINEAR );
-#endif
+			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), dataFormat, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
+
 			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
 			curOffset = Vec2i::zero();
 			curGlyphIndex = 0;
@@ -225,6 +232,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 
 	Channel channel( mFormat.getTextureWidth(), mFormat.getTextureHeight() );
 	ip::fill<uint8_t>( &channel, 0 );
+	std::unique_ptr<uint8_t[]> lumAlphaData( new uint8_t[mFormat.getTextureWidth()*mFormat.getTextureHeight()*2] );
 
 	GLYPHMETRICS gm = { 0, };
 	MAT2 identityMatrix = { {0,1},{0,0},{0,0},{0,1} };
@@ -274,8 +282,25 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			
 			gl::Texture::Format textureFormat = gl::Texture::Format();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
+
+			Surface8u::ConstIter iter( tempSurface, tempSurface.getBounds() );
+			size_t offset = 0;
+			while( iter.line() ) {
+				while( iter.pixel() ) {
+					lumAlphaData.get()[offset+0] = iter.r();
+					lumAlphaData.get()[offset+1] = iter.a();
+					offset += 2;
+				}
+			}
+
+#if defined( CINDER_GL_ES )
 			textureFormat.setInternalFormat( GL_LUMINANCE_ALPHA );
-			mTextures.push_back( gl::Texture( tempSurface, textureFormat ) );
+#else
+			textureFormat.setInternalFormat( GL_RG );
+			array<GLint,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_GREEN };
+			textureFormat.setSwizzleMask( swizzleMask );
+#endif
+			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), textureFormat.getInternalFormat(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 			ip::fill<uint8_t>( &channel, 0 );			
 			curOffset = Vec2i::zero();
 			curGlyphIndex = 0;
@@ -299,27 +324,19 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 	if( ! colors.empty() )
 		assert( glyphMeasures.size() == colors.size() );
 
-	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
-	BoolState saveEnabledState( mTextures[0].getTarget() );
-	ClientBoolState vertexArrayState( GL_VERTEX_ARRAY );
-	ClientBoolState colorArrayState( GL_COLOR_ARRAY );
-	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
-	gl::enable( mTextures[0].getTarget() );
+	ScopedTextureBind texBindScp( mTextures[0] );
+	auto shaderDef = ShaderDef().texture( mTextures[0] ).color();
+	GlslProgRef shader = gl::getStockShader( shaderDef );
+	ScopedGlslProg glslScp( shader );
 
 	Vec2f baseline = baselineIn;
 
-	glEnableClientState( GL_VERTEX_ARRAY );
-	if ( colors.empty() )
-		glDisableClientState( GL_COLOR_ARRAY );
-	else
-		glEnableClientState( GL_COLOR_ARRAY );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	const float scale = options.getScale();
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
 		vector<float> verts, texCoords;
 		vector<ColorA8u> vertColors;
-		const gl::Texture &curTex = mTextures[texIdx];
-#if defined( CINDER_GLES )
+		const gl::TextureRef &curTex = mTextures[texIdx];
+#if defined( CINDER_GL_ES )
 		vector<uint16_t> indices;
 		uint16_t curIdx = 0;
 		GLenum indexType = GL_UNSIGNED_SHORT;
@@ -339,7 +356,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 			const GlyphInfo &glyphInfo = glyphInfoIt->second;
 			
 			Rectf destRect( glyphInfo.mTexCoords );
-			Rectf srcCoords = curTex.getAreaTexCoords( glyphInfo.mTexCoords );
+			Rectf srcCoords = curTex->getAreaTexCoords( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect.scale( scale );
 			destRect += glyphIt->second * scale;
@@ -371,12 +388,46 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 		if( curIdx == 0 )
 			continue;
 		
-		curTex.bind();
-		glVertexPointer( 2, GL_FLOAT, 0, &verts[0] );
-		glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
-		if( ! colors.empty() )
-			glColorPointer( 4, GL_UNSIGNED_BYTE, 0, &vertColors[0] );
-		glDrawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, &indices[0] );
+		curTex->bind();
+		auto ctx = gl::context();
+		size_t dataSize = (verts.size() + texCoords.size()) * sizeof(float) + vertColors.size() * sizeof(ColorA8u);
+		ctx->pushVao();
+		ctx->getDefaultVao()->replacementBindBegin();
+		VboRef defaultElementVbo = ctx->getDefaultElementVbo( indices.size() * sizeof(curIdx) );
+		VboRef defaultArrayVbo = ctx->getDefaultArrayVbo( dataSize );
+
+		ScopedBuffer vboArrayScp( defaultArrayVbo );
+		ScopedBuffer vboElScp( defaultElementVbo );
+
+		size_t dataOffset = 0;
+		int posLoc = shader->getAttribSemanticLocation( geom::Attrib::POSITION );
+		if( posLoc >= 0 ) {
+			enableVertexAttribArray( posLoc );
+			vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+			defaultArrayVbo->bufferSubData( dataOffset, verts.size() * sizeof(float), verts.data() );
+			dataOffset += verts.size() * sizeof(float);
+		}
+		int texLoc = shader->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+		if( texLoc >= 0 ) {
+			enableVertexAttribArray( texLoc );
+			vertexAttribPointer( texLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)dataOffset );
+			defaultArrayVbo->bufferSubData( dataOffset, texCoords.size() * sizeof(float), texCoords.data() );
+			dataOffset += texCoords.size() * sizeof(float);
+		}
+		if( ! vertColors.empty() ) {
+			int colorLoc = shader->getAttribSemanticLocation( geom::Attrib::COLOR );
+			if( colorLoc >= 0 ) {
+				enableVertexAttribArray( colorLoc );
+				vertexAttribPointer( colorLoc, 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, (void*)dataOffset );
+				defaultArrayVbo->bufferSubData( dataOffset, vertColors.size() * sizeof(ColorA8u), vertColors.data() );
+				dataOffset += vertColors.size() * sizeof(ColorA8u);				
+			}
+		}
+
+		defaultElementVbo->bufferSubData( 0, indices.size() * sizeof(curIdx), indices.data() );
+		ctx->getDefaultVao()->replacementBindEnd();
+		gl::setDefaultShaderVars();
+		ctx->drawElements( GL_TRIANGLES, indices.size(), indexType, 0 );
 	}
 }
 
@@ -388,24 +439,18 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 	if( ! colors.empty() )
 		assert( glyphMeasures.size() == colors.size() );
 
-	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
-	BoolState saveEnabledState( mTextures[0].getTarget() );
-	ClientBoolState vertexArrayState( GL_VERTEX_ARRAY );
-	ClientBoolState colorArrayState( GL_COLOR_ARRAY );
-	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
-	gl::enable( mTextures[0].getTarget() );
+	ScopedTextureBind texBindScp( mTextures[0] );
+	auto shaderDef = ShaderDef().texture( mTextures[0] ).color();
+	GlslProgRef shader = gl::getStockShader( shaderDef );
+	ScopedGlslProg glslScp( shader );
+
 	const float scale = options.getScale();
-	glEnableClientState( GL_VERTEX_ARRAY );
-	if ( colors.empty() )
-		glDisableClientState( GL_COLOR_ARRAY );
-	else
-		glEnableClientState( GL_COLOR_ARRAY );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
 		vector<float> verts, texCoords;
 		vector<ColorA8u> vertColors;
-		const gl::Texture &curTex = mTextures[texIdx];
-#if defined( CINDER_GLES )
+		const gl::TextureRef &curTex = mTextures[texIdx];
+#if defined( CINDER_GL_ES )
 		vector<uint16_t> indices;
 		uint16_t curIdx = 0;
 		GLenum indexType = GL_UNSIGNED_SHORT;
@@ -423,7 +468,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 				continue;
 				
 			const GlyphInfo &glyphInfo = glyphInfoIt->second;
-			Rectf srcTexCoords = curTex.getAreaTexCoords( glyphInfo.mTexCoords );
+			Rectf srcTexCoords = curTex->getAreaTexCoords( glyphInfo.mTexCoords );
 			Rectf destRect( glyphInfo.mTexCoords );
 			destRect -= destRect.getUpperLeft();
 			destRect.scale( scale );
@@ -447,8 +492,8 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 			if( clipped.x1 >= clipped.x2 || clipped.y1 >= clipped.y2 )
 				continue;
 			
-			Vec2f coordScale( 1 / (float)destRect.getWidth() / curTex.getWidth() * glyphInfo.mTexCoords.getWidth(),
-				1 / (float)destRect.getHeight() / curTex.getHeight() * glyphInfo.mTexCoords.getHeight() );
+			Vec2f coordScale( 1 / (float)destRect.getWidth() / curTex->getWidth() * glyphInfo.mTexCoords.getWidth(),
+				1 / (float)destRect.getHeight() / curTex->getHeight() * glyphInfo.mTexCoords.getHeight() );
 			srcTexCoords.x1 = srcTexCoords.x1 + ( clipped.x1 - destRect.x1 ) * coordScale.x;
 			srcTexCoords.x2 = srcTexCoords.x1 + ( clipped.x2 - clipped.x1 ) * coordScale.x;
 			srcTexCoords.y1 = srcTexCoords.y1 + ( clipped.y1 - destRect.y1 ) * coordScale.y;
@@ -477,12 +522,46 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 		if( curIdx == 0 )
 			continue;
 		
-		curTex.bind();
-		glVertexPointer( 2, GL_FLOAT, 0, &verts[0] );
-		glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
-		if( ! colors.empty() )
-			glColorPointer( 4, GL_UNSIGNED_BYTE, 0, &vertColors[0] );
-		glDrawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, &indices[0] );
+		curTex->bind();
+		auto ctx = gl::context();
+		size_t dataSize = (verts.size() + texCoords.size()) * sizeof(float) + vertColors.size() * sizeof(ColorA8u);
+		ctx->pushVao();
+		ctx->getDefaultVao()->replacementBindBegin();
+		VboRef defaultElementVbo = ctx->getDefaultElementVbo( indices.size() * sizeof(curIdx) );
+		VboRef defaultArrayVbo = ctx->getDefaultArrayVbo( dataSize );
+
+		ScopedBuffer vboArrayScp( defaultArrayVbo );
+		ScopedBuffer vboElScp( defaultElementVbo );
+
+		size_t dataOffset = 0;
+		int posLoc = shader->getAttribSemanticLocation( geom::Attrib::POSITION );
+		if( posLoc >= 0 ) {
+			enableVertexAttribArray( posLoc );
+			vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+			defaultArrayVbo->bufferSubData( dataOffset, verts.size() * sizeof(float), verts.data() );
+			dataOffset += verts.size() * sizeof(float);
+		}
+		int texLoc = shader->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+		if( texLoc >= 0 ) {
+			enableVertexAttribArray( texLoc );
+			vertexAttribPointer( texLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)dataOffset );
+			defaultArrayVbo->bufferSubData( dataOffset, texCoords.size() * sizeof(float), texCoords.data() );
+			dataOffset += texCoords.size() * sizeof(float);
+		}
+		if( ! vertColors.empty() ) {
+			int colorLoc = shader->getAttribSemanticLocation( geom::Attrib::COLOR );
+			if( colorLoc >= 0 ) {
+				enableVertexAttribArray( colorLoc );
+				vertexAttribPointer( colorLoc, 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, (void*)dataOffset );
+				defaultArrayVbo->bufferSubData( dataOffset, vertColors.size() * sizeof(ColorA8u), vertColors.data() );
+				dataOffset += vertColors.size() * sizeof(ColorA8u);				
+			}
+		}
+
+		defaultElementVbo->bufferSubData( 0, indices.size() * sizeof(curIdx), indices.data() );
+		ctx->getDefaultVao()->replacementBindEnd();
+		gl::setDefaultShaderVars();
+		ctx->drawElements( GL_TRIANGLES, indices.size(), indexType, 0 );
 	}
 }
 

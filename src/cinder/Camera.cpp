@@ -137,13 +137,13 @@ Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) co
 
 void Camera::getBillboardVectors( Vec3f *right, Vec3f *up ) const
 {
-	right->set( getModelViewMatrix().m[0], getModelViewMatrix().m[4], getModelViewMatrix().m[8] );
-	up->set( getModelViewMatrix().m[1], getModelViewMatrix().m[5], getModelViewMatrix().m[9] );
+	right->set( getViewMatrix().m[0], getViewMatrix().m[4], getViewMatrix().m[8] );
+	up->set( getViewMatrix().m[1], getViewMatrix().m[5], getViewMatrix().m[9] );
 }
 
 Vec2f Camera::worldToScreen( const Vec3f &worldCoord, float screenWidth, float screenHeight ) const
 {
-	Vec3f eyeCoord = getModelViewMatrix().transformPointAffine( worldCoord );
+	Vec3f eyeCoord = getViewMatrix().transformPointAffine( worldCoord );
 	Vec3f ndc = getProjectionMatrix().transformPoint( eyeCoord );
 	
 	return Vec2f( ( ndc.x + 1.0f ) / 2.0f * screenWidth, ( 1.0f - ( ndc.y + 1.0f ) / 2.0f ) * screenHeight );
@@ -160,21 +160,21 @@ float Camera::getScreenRadius( const Sphere &sphere, float screenWidth, float sc
 
 void Camera::calcMatrices() const
 {
-	if( ! mModelViewCached ) calcModelView();
+	if( ! mModelViewCached ) calcViewMatrix();
 	if( ! mProjectionCached ) calcProjection();
 
 	// note: calculation of the inverse modelview matrices is postponed until actually requested
 	//if( ! mInverseModelViewCached ) calcInverseModelView();
 }
 
-void Camera::calcModelView() const
+void Camera::calcViewMatrix() const
 {
 	mW = -mViewDirection.normalized();
 	mU = mOrientation * Vec3f::xAxis();
 	mV = mOrientation * Vec3f::yAxis();
 	
 	Vec3f d( -mEyePoint.dot( mU ), -mEyePoint.dot( mV ), -mEyePoint.dot( mW ) );
-	float *m = mModelViewMatrix.m;
+	float *m = mViewMatrix.m;
 	m[ 0] = mU.x; m[ 4] = mU.y; m[ 8] = mU.z; m[12] =  d.x;
 	m[ 1] = mV.x; m[ 5] = mV.y; m[ 9] = mV.z; m[13] =  d.y;
 	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z;
@@ -184,11 +184,11 @@ void Camera::calcModelView() const
 	mInverseModelViewCached = false;
 }
 
-void Camera::calcInverseModelView() const
+void Camera::calcInverseView() const
 {
-	if( ! mModelViewCached ) calcModelView();
+	if( ! mModelViewCached ) calcViewMatrix();
 
-	mInverseModelViewMatrix = mModelViewMatrix.affineInverted();
+	mInverseModelViewMatrix = mViewMatrix.affineInverted();
 	mInverseModelViewCached = true;
 }
 
@@ -363,7 +363,7 @@ CameraOrtho::CameraOrtho( float left, float right, float bottom, float top, floa
 	
 	mProjectionCached = false;
 	mModelViewCached = true;
-	mModelViewMatrix.setToIdentity();
+	mViewMatrix.setToIdentity();
 	mInverseModelViewCached = true;
 	mInverseModelViewMatrix.setToIdentity();
 }
@@ -498,23 +498,23 @@ const Matrix44f& CameraStereo::getProjectionMatrix() const
 		return mProjectionMatrixRight; 
 }
 	
-const Matrix44f& CameraStereo::getModelViewMatrix() const 
+const Matrix44f& CameraStereo::getViewMatrix() const 
 {
 	if( ! mModelViewCached )
-		calcModelView(); 
+		calcViewMatrix(); 
 
 	if( ! mIsStereo )
-		return mModelViewMatrix; 
+		return mViewMatrix; 
 	else if( mIsLeft )
-		return mModelViewMatrixLeft; 
+		return mViewMatrixLeft; 
 	else
-		return mModelViewMatrixRight; 
+		return mViewMatrixRight; 
 }
 	
-const Matrix44f& CameraStereo::getInverseModelViewMatrix() const 
+const Matrix44f& CameraStereo::getInverseViewMatrix() const 
 {
 	if( ! mInverseModelViewCached )
-		calcInverseModelView();
+		calcInverseView();
 
 	if( ! mIsStereo )
 		return mInverseModelViewMatrix; 
@@ -524,39 +524,39 @@ const Matrix44f& CameraStereo::getInverseModelViewMatrix() const
 		return mInverseModelViewMatrixRight; 
 }
 
-void CameraStereo::calcModelView() const
+void CameraStereo::calcViewMatrix() const
 {
 	// calculate default matrix first
-	CameraPersp::calcModelView();
+	CameraPersp::calcViewMatrix();
 	
-	mModelViewMatrixLeft = mModelViewMatrix;
-	mModelViewMatrixRight = mModelViewMatrix;
+	mViewMatrixLeft = mViewMatrix;
+	mViewMatrixRight = mViewMatrix;
 	
 	// calculate left matrix
 	Vec3f eye = mEyePoint - mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
 	Vec3f d = Vec3f( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
 
-	float *m = mModelViewMatrixLeft.m;
+	float *m = mViewMatrixLeft.m;
 	m[12] =  d.x; m[13] =  d.y; m[14] =  d.z;
 	
 	// calculate right matrix
 	eye = mEyePoint + mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
 	d = Vec3f( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
 
-	m = mModelViewMatrixRight.m;
+	m = mViewMatrixRight.m;
 	m[12] =  d.x; m[13] =  d.y; m[14] =  d.z;
 
 	mModelViewCached = true;
 	mInverseModelViewCached = false;
 }
 
-void CameraStereo::calcInverseModelView() const
+void CameraStereo::calcInverseView() const
 {
-	if( ! mModelViewCached ) calcModelView();
+	if( ! mModelViewCached ) calcViewMatrix();
 
-	mInverseModelViewMatrix = mModelViewMatrix.affineInverted();
-	mInverseModelViewMatrixLeft = mModelViewMatrixLeft.affineInverted();
-	mInverseModelViewMatrixRight = mModelViewMatrixRight.affineInverted();
+	mInverseModelViewMatrix = mViewMatrix.affineInverted();
+	mInverseModelViewMatrixLeft = mViewMatrixLeft.affineInverted();
+	mInverseModelViewMatrixRight = mViewMatrixRight.affineInverted();
 	mInverseModelViewCached = true;
 }
 

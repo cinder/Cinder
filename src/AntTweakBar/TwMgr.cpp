@@ -16,6 +16,7 @@
 // Cinder
 #if ! defined( USE_DIRECTX )
 	#include "TwOpenGL.h"
+	#include "TwOpenGLCore.h"
 #endif
 
 // Cinder doesn't support OpenGLCore yet

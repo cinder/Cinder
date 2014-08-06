@@ -162,6 +162,11 @@ bool ImageSource::isPremultiplied() const
 	return mIsPremultiplied;
 }
 
+size_t ImageSource::getRowBytes() const
+{
+	return getWidth() * ImageIo::channelOrderNumChannels( getChannelOrder() ) * ImageIo::dataTypeBytes( getDataType() );
+}
+
 /* SD - source data type, TD - target data type, TCM - target color model */
 template<typename SD, typename TD, ImageIo::ColorModel TCM, bool ALPHA>
 void ImageSource::rowFuncSourceRgb( ImageTargetRef target, int32_t row, const void *data )
