@@ -329,6 +329,9 @@
 		00624852122F607500039A7A /* Function.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484E122F607500039A7A /* Function.h */; };
 		00624853122F607500039A7A /* Filesystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484D122F607500039A7A /* Filesystem.h */; };
 		00624854122F607500039A7A /* Function.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484E122F607500039A7A /* Function.h */; };
+		006D704019940F25008149E2 /* RendererGl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006D703F19940F25008149E2 /* RendererGl.cpp */; };
+		006D704119940F25008149E2 /* RendererGl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006D703F19940F25008149E2 /* RendererGl.cpp */; };
+		006D704219940F25008149E2 /* RendererGl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006D703F19940F25008149E2 /* RendererGl.cpp */; };
 		00704FCD1114F93F003FCAE4 /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419CD0E8035D3004D34EB /* App.h */; };
 		00704FCE1114F93F003FCAE4 /* AppImplCocoaBasic.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419CE0E8035D3004D34EB /* AppImplCocoaBasic.h */; };
 		00704FCF1114F93F003FCAE4 /* AppImplCocoaRendererGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419FA0E8036A7004D34EB /* AppImplCocoaRendererGl.h */; };
@@ -1222,6 +1225,7 @@
 		006228E310C8273C00A8191C /* DataSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataSource.cpp; sourceTree = "<group>"; };
 		0062484D122F607500039A7A /* Filesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Filesystem.h; sourceTree = "<group>"; };
 		0062484E122F607500039A7A /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Function.h; sourceTree = "<group>"; };
+		006D703F19940F25008149E2 /* RendererGl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = RendererGl.cpp; path = app/RendererGl.cpp; sourceTree = "<group>"; };
 		007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0071BD040FB9F4AD0092E7D6 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
 		0071BD080FB9FA2C0092E7D6 /* Display.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Display.cpp; sourceTree = "<group>"; };
@@ -1648,6 +1652,7 @@
 				0005630A11513B9400ECFD91 /* AppImplCocoaTouchRendererQuartz.mm */,
 				009D6AF01157FB860037C77C /* AppImplCocoaTouchRendererGl.mm */,
 				0049C1B61010E5B10015B4B9 /* Renderer.cpp */,
+				006D703F19940F25008149E2 /* RendererGl.cpp */,
 				00DCBA940F7932F400D88D86 /* CinderView.mm */,
 				009D6AFD1157FC8B0037C77C /* CinderViewCocoaTouch.mm */,
 				007A7B12158D098D00BEAD18 /* Window.cpp */,
@@ -3236,6 +3241,7 @@
 				111A5FCC191F72AE005C3166 /* Dsp.cpp in Sources */,
 				43F78EF31516DAB700EB63B5 /* Json.cpp in Sources */,
 				008B43A914F5F8F800B55B07 /* Svg.cpp in Sources */,
+				006D704119940F25008149E2 /* RendererGl.cpp in Sources */,
 				0003F4031992D64100647C8B /* Texture.cpp in Sources */,
 				0003F4741992D6A000647C8B /* GeomIo.cpp in Sources */,
 				0034C319151A5B7F003F2E30 /* Unicode.cpp in Sources */,
@@ -3410,6 +3416,7 @@
 				111A5FCD191F72AE005C3166 /* Dsp.cpp in Sources */,
 				0034C31A151A5B7F003F2E30 /* Unicode.cpp in Sources */,
 				0034C323151A5B9F003F2E30 /* linebreak.c in Sources */,
+				006D704219940F25008149E2 /* RendererGl.cpp in Sources */,
 				0003F4041992D64100647C8B /* Texture.cpp in Sources */,
 				0003F4751992D6A000647C8B /* GeomIo.cpp in Sources */,
 				0034C329151A5B9F003F2E30 /* linebreakdata.c in Sources */,
@@ -3578,6 +3585,7 @@
 				111A5FB6191F72AE005C3166 /* FileCoreAudio.cpp in Sources */,
 				00A1140F1355369A00081873 /* sweep.c in Sources */,
 				00A114111355369A00081873 /* tess.c in Sources */,
+				006D704019940F25008149E2 /* RendererGl.cpp in Sources */,
 				43C432401450A8DA0095B260 /* CinderMath.cpp in Sources */,
 				0003F3F31992D64100647C8B /* gl.cpp in Sources */,
 				00A121EF1362778200081873 /* Timeline.cpp in Sources */,

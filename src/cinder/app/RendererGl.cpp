@@ -24,6 +24,10 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/ip/Flip.h"
 
+#if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
+	#error "This file must be compiled as Objective-C++ on the Mac"
+#endif
+
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
 		#import "cinder/app/AppImplCocoaRendererGl.h"
