@@ -97,8 +97,10 @@
 		winIt->mWindowRef->emitResize();
 	}	
 	
-	// make the first window the active window
-	[self setActiveWindow:[mWindows objectAtIndex:0]];
+	// when available, make the first window the active window
+	if( [mWindows count] != 0 ) {
+		[self setActiveWindow:[mWindows objectAtIndex:0]];
+	}
 	[self startAnimationTimer];
 }
 
