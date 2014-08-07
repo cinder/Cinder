@@ -20,9 +20,12 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-// None of this works in 64 bit on the mac or Windows. We'll need to move to QTKit on the mac.
-#if ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )
+#include "cinder/Cinder.h"
 
+// This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for <=Mac OS 10.7
+#if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
+
+#include "cinder/gl/Texture.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 #include "cinder/Cinder.h"
@@ -725,136 +728,6 @@ Surface MovieSurface::getSurface()
 	return result;
 }
 
-/////////////////////////////////////////////////////////////////////////////////
-// MovieGl
-MovieGlRef MovieGl::create( const MovieLoaderRef &loader )
-{
-	return std::shared_ptr<MovieGl>( new MovieGl( *loader ) );
-}
-
-MovieGl::Obj::Obj()
-	: MovieBase::Obj()
-{
-}
-
-MovieGl::Obj::~Obj()
-{
-	// see note on prepareForDestruction()
-	prepareForDestruction();
-}
-
-MovieGl::MovieGl( const MovieLoader &loader )
-	: MovieBase(), mObj( new Obj() )
-{
-	MovieBase::initFromLoader( loader );
-	allocateVisualContext();
-}
-
-MovieGl::MovieGl( const fs::path &path )
-	: MovieBase(), mObj( new Obj() )
-{
-	MovieBase::initFromPath( path );
-	allocateVisualContext();
-}
-
-MovieGl::MovieGl( const void *data, size_t dataSize, const std::string &fileNameHint, const std::string &mimeTypeHint )
-	: MovieBase(), mObj( new Obj() )
-{
-	MovieBase::initFromMemory( data, dataSize, fileNameHint, mimeTypeHint );
-	allocateVisualContext();	
-}
-
-MovieGl::MovieGl( DataSourceRef dataSource, const std::string mimeTypeHint )
-	: MovieBase(), mObj( new Obj() )
-{
-	MovieBase::initFromDataSource( dataSource, mimeTypeHint );
-	allocateVisualContext();
-}
-
-void MovieGl::allocateVisualContext()
-{
-#if defined( CINDER_MAC )
-	CGLContextObj cglContext = app::App::get()->getRenderer()->getCglContext();
-	CGLPixelFormatObj cglPixelFormat = ::CGLGetPixelFormat( cglContext );
-
-	// Creates a new OpenGL texture context for a specified OpenGL context and pixel format
-	::QTOpenGLTextureContextCreate( kCFAllocatorDefault, cglContext, cglPixelFormat, NULL, (QTVisualContextRef*)&getObj()->mVisualContext );
-	::SetMovieVisualContext( getObj()->mMovie, (QTVisualContextRef)getObj()->mVisualContext );
-#else
-	CFMutableDictionaryRef visualContextOptions = initQTVisualContextOptions( getObj()->mWidth, getObj()->mHeight, hasAlpha() );
-	::QTPixelBufferContextCreate( kCFAllocatorDefault, visualContextOptions, &(getObj()->mVisualContext) );
-	::CFRelease( visualContextOptions );
-
-	::SetMovieVisualContext( getObj()->mMovie, getObj()->mVisualContext );
-#endif
-}
-
-#if defined( CINDER_MAC )
-static void CVOpenGLTextureDealloc( void *refcon )
-{
-	CVOpenGLTextureRelease( (CVImageBufferRef)(refcon) );
-}
-
-#endif // defined( CINDER_MAC )
-
-void MovieGl::Obj::releaseFrame()
-{
-	mTexture.reset();
-}
-
-void MovieGl::Obj::newFrame( CVImageBufferRef cvImage )
-{
-#if defined( CINDER_MAC )
-	CVOpenGLTextureRef imgRef = reinterpret_cast<CVOpenGLTextureRef>( cvImage );
-	GLenum target = CVOpenGLTextureGetTarget( imgRef );
-	GLuint name = CVOpenGLTextureGetName( imgRef );
-	bool flipped = ! CVOpenGLTextureIsFlipped( imgRef );
-	mTexture = gl::Texture( target, name, mWidth, mHeight, true );
-	Vec2f t0, lowerRight, t2, upperLeft;
-	::CVOpenGLTextureGetCleanTexCoords( imgRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
-	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
-	mTexture.setFlipped( flipped );
-	mTexture.setDeallocator( CVOpenGLTextureDealloc, imgRef );
-#else
-	// on Windows this is actually a CVPixelBufferRef, which we will convert into a texture
-	CVPixelBufferRef imgRef = reinterpret_cast<CVPixelBufferRef>( cvImage );
-	CVPixelBufferLockBaseAddress( imgRef, 0 );
-	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( imgRef ) );
-	int32_t rowBytes = CVPixelBufferGetBytesPerRow( imgRef );
-	OSType type = CVPixelBufferGetPixelFormatType( imgRef );
-	size_t width = CVPixelBufferGetWidth( imgRef );
-	size_t height = CVPixelBufferGetHeight( imgRef );
-	SurfaceChannelOrder sco = SurfaceChannelOrder::BGRA;
-	if( type == k24RGBPixelFormat )
-		sco = SurfaceChannelOrder::RGB;
-	else if( type == k32ARGBPixelFormat )
-		sco = SurfaceChannelOrder::ARGB;
-	else if( type == k24BGRPixelFormat )
-		sco = SurfaceChannelOrder::BGR;
-	else if( type == k32BGRAPixelFormat )
-		sco = SurfaceChannelOrder::BGRA;
-	
-	if( ! mTextureCache ) {
-		gl::Texture::Format format;
-		format.setTargetRect();
-		mTextureCache = gl::TextureCache( Surface8u( ptr, width, height, rowBytes, sco ), format );
-	}
-	mTexture = mTextureCache.cache( Surface8u( ptr, width, height, rowBytes, sco ) );
-	
-	::CVBufferRelease( imgRef );
-#endif
-}
-
-const gl::Texture MovieGl::getTexture()
-{
-	updateFrame();
-
-	mObj->lock();
-		gl::Texture result = mObj->mTexture;
-	mObj->unlock();
-
-	return result;
-}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MovieLoader

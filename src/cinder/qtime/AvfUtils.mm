@@ -1,58 +1,34 @@
-/*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
-
- Redistribution and use in source and binary forms, with or without modification, are permitted provided that
- the following conditions are met:
-
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
-
- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
- WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
- TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
-*/
-
 #include "cinder/Cinder.h"
 
-// This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for <=Mac OS 10.7
-#if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
+// This path is used on iOS or Mac OS X 10.8+
+#if defined( CINDER_COCOA_TOUCH ) || ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) )
 
 #include "cinder/gl/gl.h"
-#include "cinder/qtime/QuickTime.h"
-#include "cinder/qtime/QuickTimeUtils.h"
 
-#if defined( CINDER_MSW )
-	#include "cinder/msw/CinderMsw.h"
-	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
-	#pragma push_macro( "_STDINT_H" )
-		#undef __STDC_CONSTANT_MACROS
-		#define _STDINT_H
-		#include <CVPixelBuffer.h>
-		#include <ImageCompression.h>
-		#include <Movies.h>
-		#include <QuickTimeComponents.h>
-	#pragma pop_macro( "_STDINT_H" )
-	#pragma pop_macro( "__STDC_CONSTANT_MACROS" )
-#else
-	#include <QuickTime/QuickTime.h>
-	#include <ApplicationServices/ApplicationServices.h>
-	#include <QuickTime/ImageCompression.h>
+#include "cinder/qtime/QuickTimeImplAvf.h"
+#include "cinder/qtime/AvfUtils.h"
+
+#if defined( CINDER_COCOA )
 	#include <CoreVideo/CoreVideo.h>
+	#include <AVFoundation/AVFoundation.h>
 #endif
 
 using namespace std;
 
 namespace cinder { namespace qtime {
 
-#if ( ! defined( __LP64__ ) )
+bool setAudioSessionModes()
+{
+#if defined( CINDER_COCOA_TOUCH )
+	NSError* error = nil;
+	[[AVAudioSession sharedInstance] setMode:AVAudioSessionModeMoviePlayback error:&error];
+	return [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&error];
+	
+#else
+	return false;
+	
+#endif
+}
 
 bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 value )
 {
@@ -71,7 +47,11 @@ bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 va
 bool dictionarySetPixelBufferPixelFormatType( bool alpha, CFMutableDictionaryRef dict )
 {
 	bool setPixelBufferOptions = false;
+#if defined( CINDER_COCOA_TOUCH )
+	setPixelBufferOptions = dictionarySetValue( dict, kCVPixelBufferPixelFormatTypeKey, ( alpha ) ? kCVPixelFormatType_32BGRA : kCVPixelFormatType_24RGB );
+#elif defined( CINDER_COCOA )
 	setPixelBufferOptions = dictionarySetValue( dict, kCVPixelBufferPixelFormatTypeKey, ( alpha ) ? k32BGRAPixelFormat : k24RGBPixelFormat );
+#endif
 	return  setPixelBufferOptions;
 }
 
@@ -116,7 +96,8 @@ bool dictionarySetPixelBufferOptions( unsigned int width, unsigned int height, b
 	
 	return setPixelBufferOptions;
 }
-
+	
+	/*
 CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool alpha )
 {
 	CFMutableDictionaryRef  visualContextOptions = NULL;
@@ -137,110 +118,7 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 	
 	return  visualContextOptions;
 }
-
-::ItemCount openMovieBaseProperties( QTNewMoviePropertyElement movieProps[10] )
-{
-	ItemCount moviePropCount = 0;
-	Boolean boolTrue = true;
-
-	movieProps[moviePropCount].propClass = kQTPropertyClass_MovieInstantiation;
-	movieProps[moviePropCount].propID = kQTMovieInstantiationPropertyID_DontAskUnresolvedDataRefs;
-	movieProps[moviePropCount].propValueSize = sizeof(boolTrue);
-	movieProps[moviePropCount].propValueAddress = &boolTrue;
-	movieProps[moviePropCount].propStatus = 0;
-	moviePropCount++;
-
-	movieProps[moviePropCount].propClass = kQTPropertyClass_NewMovieProperty;
-	movieProps[moviePropCount].propID = kQTNewMoviePropertyID_Active;
-	movieProps[moviePropCount].propValueSize = sizeof(boolTrue);
-	movieProps[moviePropCount].propValueAddress = &boolTrue;
-	movieProps[moviePropCount].propStatus = 0;
-	moviePropCount++;
 	 
-	movieProps[moviePropCount].propClass = kQTPropertyClass_NewMovieProperty;
-	movieProps[moviePropCount].propID = kQTNewMoviePropertyID_DontInteractWithUser;
-	movieProps[moviePropCount].propValueSize = sizeof(boolTrue);
-	movieProps[moviePropCount].propValueAddress = &boolTrue;
-	movieProps[moviePropCount].propStatus = 0;
-	moviePropCount++;
-
-#if 0
-	movieProps[moviePropCount].propClass = kQTPropertyClass_Context;
-	movieProps[moviePropCount].propID = kQTContextPropertyID_VisualContext;
-	movieProps[moviePropCount].propValueSize = sizeof(visualContext);
-	movieProps[moviePropCount].propValueAddress = &visualContext;
-	movieProps[moviePropCount].propStatus = 0;
-	moviePropCount++;
-	 
-	movieProps[moviePropCount].propClass = kQTPropertyClass_Context;
-	movieProps[moviePropCount].propID = kQTContextPropertyID_AudioContext;
-	movieProps[moviePropCount].propValueSize = sizeof(audioContext);
-	movieProps[moviePropCount].propValueAddress = &audioContext;
-	movieProps[moviePropCount].propStatus = 0;
-	moviePropCount++;
-#endif
-
-	return moviePropCount;
-}
-
-::Movie openMovieFromUrl( const Url &url )
-{
-	::Movie result;
-	::QTNewMoviePropertyElement movieProps[10];
-	ItemCount moviePropCount = 0;
-
-	moviePropCount = openMovieBaseProperties( movieProps );
-
-	shared_ptr<const __CFString> urlStringCF = shared_ptr<const __CFString>( ::CFStringCreateWithCString( kCFAllocatorDefault, url.str().c_str(), kCFStringEncodingUTF8 ), ::CFRelease );
-	CFURLRef urlCFBase = ::CFURLCreateWithString( kCFAllocatorDefault, urlStringCF.get(), NULL );
-	shared_ptr<const __CFURL> urlCF = shared_ptr<const __CFURL>( urlCFBase, ::CFRelease );
-	// Store the movie properties in the array
-	movieProps[moviePropCount].propClass = kQTPropertyClass_DataLocation;
-	movieProps[moviePropCount].propID = kQTDataLocationPropertyID_CFURL;
-	movieProps[moviePropCount].propValueSize = sizeof(CFURLRef);
-	movieProps[moviePropCount].propValueAddress = (void*)&urlCFBase;
-	movieProps[moviePropCount].propStatus = 0;
-	moviePropCount++;
-	 
-	OSStatus err;
-	if( (err = ::NewMovieFromProperties( moviePropCount, movieProps, 0, NULL, &result ) ) != noErr ) {
-		throw QuickTimeFileInvalidExc();
-	}
-
-	return result;
-}
-
-::Movie openMovieFromPath( const fs::path &path )
-{
-	::Movie result;
-	QTNewMoviePropertyElement movieProps[10];
-	ItemCount moviePropCount = 0;
-
-	moviePropCount = openMovieBaseProperties( movieProps );
-
-#if defined( CINDER_MSW )
-	std::string pathUtf8 = msw::toUtf8String( path.wstring() );
-	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, pathUtf8.c_str(), kCFStringEncodingUTF8 );
-#else
-	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, path.string().c_str(), kCFStringEncodingUTF8 );
-#endif
-	shared_ptr<const __CFString> pathCF = shared_ptr<const __CFString>( basePathCF, ::CFRelease );
-	// Store the movie properties in the array
-	movieProps[moviePropCount].propClass = kQTPropertyClass_DataLocation;
-	movieProps[moviePropCount].propID = kQTDataLocationPropertyID_CFStringNativePath;
-	movieProps[moviePropCount].propValueSize = sizeof(CFStringRef);
-	movieProps[moviePropCount].propValueAddress = (void*)&basePathCF;
-	movieProps[moviePropCount].propStatus = 0;
-	moviePropCount++;
-
-	OSStatus err;
-	if( (err = ::NewMovieFromProperties( moviePropCount, movieProps, 0, NULL, &result ) ) != noErr ) {
-		throw QuickTimePathInvalidExc();
-	}
-		
-	return result;
-}
-
 Handle createPointerReferenceHandle( void *data, Size dataSize )
 {
 	Handle dataRef = NULL;
@@ -288,7 +166,6 @@ OSStatus ptrDataRefAddFileNameExtension( ComponentInstance dataRefHandler, const
 
 }
 
-
 OSStatus ptrDataRefAddMIMETypeExtension( ComponentInstance dataRefHandler, const std::string &mimeType )
 {
     OSStatus osErr = noErr;
@@ -326,13 +203,13 @@ Handle createPointerDataRefWithExtensions( void *data, size_t dataSize, const st
 
 	//  Get a data handler for our data reference
 	err = OpenADataHandler(
-			dataRef,                    /* data reference */
-			PointerDataHandlerSubType,  /* data ref. type */
-			NULL,                       /* anchor data ref. */
-			(OSType)0,                  /* anchor data ref. type */
-			NULL,                       /* time base for data handler */
-			kDataHCanRead,              /* flag for data handler usage */
-			&dataRefHandler);           /* returns the data handler */
+			dataRef,                    // data reference
+			PointerDataHandlerSubType,  // data ref. type
+			NULL,                       // anchor data ref.
+			(OSType)0,                  // anchor data ref. type
+			NULL,                       // time base for data handler
+			kDataHCanRead,              // flag for data handler usage
+			&dataRefHandler);           // returns the data handler
 	if( err ) goto bail;
 
 	// We can add the filename to the data ref to help
@@ -373,54 +250,41 @@ Handle createPointerDataRefWithExtensions( void *data, size_t dataSize, const st
 
     return NULL;
 }
-
-// Refer to http://developer.apple.com/technotes/tn/tn1195.html Technical Note TN1195 "Tagging Handle and Pointer Data References in QuickTime"
-::Movie openMovieFromMemory( const void *data, size_t dataSize, const string &fileNameHint, const string &mimeTypeHint )
-{
-	Handle dataRefHandle = createPointerDataRefWithExtensions( const_cast<void*>( data ), dataSize, fileNameHint, mimeTypeHint );
-
-	::Movie result;
-/*	QTNewMoviePropertyElement movieProps[10];
-	ItemCount moviePropCount = 0;
-	DataReferenceRecord dataRef = {0};
+*/
 	
-	moviePropCount = openMovieBaseProperties( movieProps );
-
-	// Store the movie properties in the array
-	movieProps[moviePropCount].propClass = kQTPropertyClass_DataLocation;
-	movieProps[moviePropCount].propID = kQTDataLocationPropertyID_QTDataHandler;
-	movieProps[moviePropCount].propValueSize = sizeof(aQTDataRef);
-	movieProps[moviePropCount].propValueAddress = (void*)&dataRefHandle;
-	movieProps[moviePropCount].propStatus = 0;
-	moviePropCount++;
-
-	OSErr err;
-	if( (err = NewMovieFromProperties(moviePropCount, movieProps, 0, NULL, &result) ) != noErr ) {
-		throw QuickTimeErrorLoadingExc();
-	}*/
-
-	short myResID = 0;
-	OSErr err = NewMovieFromDataRef( &result, newMovieActive | newMovieAsyncOK, &myResID, dataRefHandle, 'ptr ' );
-	if( err )
-		throw QuickTimeErrorLoadingExc();
-	
-	return result;
-}
-
-static void CVPixelBufferDealloc( void *refcon )
+static void CVPixelBufferDealloc( void* refcon )
 {
 	::CVBufferRelease( (CVPixelBufferRef)(refcon) );
 }
 
-Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
+Surface8u convertCvPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 {
-	CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
-	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( pixelBufferRef ) );
-	int32_t rowBytes = CVPixelBufferGetBytesPerRow( pixelBufferRef );
-	OSType type = CVPixelBufferGetPixelFormatType( pixelBufferRef );
-	size_t width = CVPixelBufferGetWidth( pixelBufferRef );
-	size_t height = CVPixelBufferGetHeight( pixelBufferRef );
+	::CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
+	uint8_t *ptr = reinterpret_cast<uint8_t*>( ::CVPixelBufferGetBaseAddress( pixelBufferRef ) );
+	int32_t rowBytes = ::CVPixelBufferGetBytesPerRow( pixelBufferRef );
+	OSType type = ::CVPixelBufferGetPixelFormatType( pixelBufferRef );
+	size_t width = ::CVPixelBufferGetWidth( pixelBufferRef );
+	size_t height = ::CVPixelBufferGetHeight( pixelBufferRef );
+	::CVPixelBufferUnlockBaseAddress(pixelBufferRef, 0);
+	
 	SurfaceChannelOrder sco;
+#if defined( CINDER_COCOA_TOUCH )
+	if (type == kCVPixelFormatType_24RGB )
+		sco = SurfaceChannelOrder::RGB;
+	else if (type == kCVPixelFormatType_24BGR )
+		sco = SurfaceChannelOrder::BGR;
+	else if (type == kCVPixelFormatType_30RGB )
+		sco = SurfaceChannelOrder::RGB;
+	else if ( type == kCVPixelFormatType_32ARGB )
+		sco = SurfaceChannelOrder::ARGB;
+	else if (type == kCVPixelFormatType_32BGRA )
+		sco = SurfaceChannelOrder::BGRA;
+	else if (type == kCVPixelFormatType_32ABGR )
+		sco = SurfaceChannelOrder::ABGR;
+	else if (type == kCVPixelFormatType_32RGBA )
+		sco = SurfaceChannelOrder::BGRA;
+	
+#elif defined( CINDER_COCOA )
 	if( type == k24RGBPixelFormat )
 		sco = SurfaceChannelOrder::RGB;
 	else if( type == k32ARGBPixelFormat )
@@ -429,12 +293,12 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 		sco = SurfaceChannelOrder::BGR;
 	else if( type == k32BGRAPixelFormat )
 		sco = SurfaceChannelOrder::BGRA;
+#endif
 	Surface result( ptr, width, height, rowBytes, sco );
 	result.setDeallocator( CVPixelBufferDealloc, pixelBufferRef );
+	
 	return result;
 }
-
-#endif // ( ! defined( __LP64__ ) )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageTargetCgImage
@@ -461,11 +325,19 @@ ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, 
 			case ImageIo::UINT8:
 				setDataType( ImageIo::UINT8 );
 				if( imageSource->hasAlpha () ) {
+#if defined( CINDER_COCOA_TOUCH )
+					formatType = kCVPixelFormatType_32ARGB;
+#elif defined( CINDER_COCOA )
 					formatType = k32ARGBPixelFormat;
+#endif
 					setChannelOrder( ImageIo::ARGB );
 				}
 				else {
+#if defined( CINDER_COCOA_TOUCH )
+					formatType = kCVPixelFormatType_24RGB;
+#elif defined( CINDER_COCOA )
 					formatType = k24RGBPixelFormat;
+#endif
 					setChannelOrder( ImageIo::RGB );
 				}
 				setColorModel( ImageIo::CM_RGB );
@@ -566,69 +438,7 @@ CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertTo
 	return result;
 }
 
-#if defined( CINDER_MSW )
-///////////////////////////////////////////////////////////////////////////////////////////////
-// ImageTargetGWorld
-ImageTargetGWorldRef ImageTargetGWorld::createRef( ImageSourceRef imageSource )
-{
-	return ImageTargetGWorldRef( new ImageTargetGWorld( imageSource ) );
-}
-
-ImageTargetGWorld::ImageTargetGWorld( ImageSourceRef imageSource )
-	: ImageTarget(), mGWorld( 0 ), mPixMap( 0 )
-{
-	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
-	
-	OSType formatType;
-	// for now all we support is 8 bit RGBA
-	setDataType( ImageIo::UINT8 );
-	formatType = k32ARGBPixelFormat;
-	setChannelOrder( ImageIo::ARGB );
-	setColorModel( ImageIo::CM_RGB );
-
-	::Rect boundsRect;
-	boundsRect.left = boundsRect.top = 0;
-	boundsRect.right = (short)imageSource->getWidth();
-	boundsRect.bottom = (short)imageSource->getHeight();
-	if( ::QTNewGWorld( &mGWorld, formatType, &boundsRect, NULL, NULL, 0 ) != noErr )
-		throw ImageIoException();
-	
-	mPixMap = ::GetGWorldPixMap( mGWorld );
-    if( ! ::LockPixels( mPixMap ) ) {
-		::DisposeGWorld( mGWorld );
-        throw ImageIoException();
-	}
-
-#if defined( CINDER_MSW )
-	mData = reinterpret_cast<uint8_t*>( (**mPixMap).baseAddr );
-	mRowBytes = ( (**mPixMap).rowBytes ) & 0x3FFF;
-#else
-	mData = reinterpret_cast<uint8_t*>( ::GetPixBaseAddr( mPixMap ) );
-	mRowBytes = ::GetPixRowBytes( mPixMap );
-#endif
-}
-
-void ImageTargetGWorld::finalize()
-{
-	if( ::GetPixelsState( mPixMap ) & pixelsLocked )
-		::UnlockPixels( mPixMap );
-}
-
-void* ImageTargetGWorld::getRowPointer( int32_t row )
-{
-	return &mData[row * mRowBytes];
-}
-
-GWorldPtr createGWorld( ImageSourceRef imageSource )
-{
-	ImageTargetGWorldRef target = ImageTargetGWorld::createRef( imageSource );
-	imageSource->load( target );
-	target->finalize();
-	return target->getGWorld();
-}
-
-#endif // defined( CINDER_MSW )
-
 } } // namespace cinder::qtime
 
-#endif // ! defined( _WIN64 )
+// // This path is used on iOS or Mac OS X 10.8+
+#endif // defined( CINDER_COCOA_TOUCH ) || ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) )

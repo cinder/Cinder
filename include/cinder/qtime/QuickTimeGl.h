@@ -24,12 +24,13 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/qtime/QuickTime.h"
 
 // The "Legacy" path is used for Mac Deployment Target 10.7+ 32-bit and Windows (32-bit only).
 #if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
-	#include "cinder/qtime/QuickTimeImplLegacy.h"
+	#include "cinder/qtime/QuickTimeGlImplLegacy.h"
 #elif defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 )
-	#include "cinder/qtime/QuickTimeImplAvf.h"
+	#include "cinder/qtime/QuickTimeGlImplAvf.h"
 #else
 	// QuickTime is not supported on 10.7 64-bit or Windows 64-bit
 #endif
