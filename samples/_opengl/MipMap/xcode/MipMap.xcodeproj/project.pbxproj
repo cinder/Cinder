@@ -1,0 +1,363 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
+		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
+		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
+		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
+		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
+		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
+		7CE80DBD7B7D40B0BB08DF43 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7169A71AE1604BB29020E0DF /* CinderApp.icns */; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		8F4C0DBE39714CA887CA9946 /* MipMapApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D322729045D142E7BE0BF29A /* MipMapApp.cpp */; };
+		B3246BDB17BED8C8006C3463 /* non_pot_checkerboard.png in Resources */ = {isa = PBXBuildFile; fileRef = B3246BDA17BED8C8006C3463 /* non_pot_checkerboard.png */; };
+		B3246BED17BFE347006C3463 /* glgenmipmap.png in Resources */ = {isa = PBXBuildFile; fileRef = B3246BEA17BFE347006C3463 /* glgenmipmap.png */; };
+		B3246BEE17BFE347006C3463 /* usergenmipmap.png in Resources */ = {isa = PBXBuildFile; fileRef = B3246BEB17BFE347006C3463 /* usergenmipmap.png */; };
+		B3246BEF17BFE347006C3463 /* userresizedmipmap.png in Resources */ = {isa = PBXBuildFile; fileRef = B3246BEC17BFE347006C3463 /* userresizedmipmap.png */; };
+		B3781A6717BEC8E20069128C /* anisotropicbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = B3781A6117BEC8E20069128C /* anisotropicbutton.png */; };
+		B3781A6817BEC8E20069128C /* checkerboard.png in Resources */ = {isa = PBXBuildFile; fileRef = B3781A6217BEC8E20069128C /* checkerboard.png */; };
+		B3781A6917BEC8E20069128C /* GL_LIN_MIP_LIN.png in Resources */ = {isa = PBXBuildFile; fileRef = B3781A6317BEC8E20069128C /* GL_LIN_MIP_LIN.png */; };
+		B3781A6A17BEC8E20069128C /* GL_LIN_MIP_NEA.png in Resources */ = {isa = PBXBuildFile; fileRef = B3781A6417BEC8E20069128C /* GL_LIN_MIP_NEA.png */; };
+		B3781A6B17BEC8E20069128C /* GL_NEA_MIP_LIN.png in Resources */ = {isa = PBXBuildFile; fileRef = B3781A6517BEC8E20069128C /* GL_NEA_MIP_LIN.png */; };
+		B3781A6C17BEC8E20069128C /* GL_NEA_MIP_NEA.png in Resources */ = {isa = PBXBuildFile; fileRef = B3781A6617BEC8E20069128C /* GL_NEA_MIP_NEA.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
+		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
+		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
+		71369AF52DD5400583F44AB3 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		7169A71AE1604BB29020E0DF /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* MipMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MipMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		923DAB3837074406816D5A56 /* MipMap_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = MipMap_Prefix.pch; sourceTree = "<group>"; };
+		9C8E149101C242D7B61041E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B3246BDA17BED8C8006C3463 /* non_pot_checkerboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = non_pot_checkerboard.png; path = ../resources/non_pot_checkerboard.png; sourceTree = "<group>"; };
+		B3246BEA17BFE347006C3463 /* glgenmipmap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = glgenmipmap.png; path = ../resources/glgenmipmap.png; sourceTree = "<group>"; };
+		B3246BEB17BFE347006C3463 /* usergenmipmap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = usergenmipmap.png; path = ../resources/usergenmipmap.png; sourceTree = "<group>"; };
+		B3246BEC17BFE347006C3463 /* userresizedmipmap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = userresizedmipmap.png; path = ../resources/userresizedmipmap.png; sourceTree = "<group>"; };
+		B3781A6117BEC8E20069128C /* anisotropicbutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = anisotropicbutton.png; path = ../resources/anisotropicbutton.png; sourceTree = "<group>"; };
+		B3781A6217BEC8E20069128C /* checkerboard.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = checkerboard.png; path = ../resources/checkerboard.png; sourceTree = "<group>"; };
+		B3781A6317BEC8E20069128C /* GL_LIN_MIP_LIN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = GL_LIN_MIP_LIN.png; path = ../resources/GL_LIN_MIP_LIN.png; sourceTree = "<group>"; };
+		B3781A6417BEC8E20069128C /* GL_LIN_MIP_NEA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = GL_LIN_MIP_NEA.png; path = ../resources/GL_LIN_MIP_NEA.png; sourceTree = "<group>"; };
+		B3781A6517BEC8E20069128C /* GL_NEA_MIP_LIN.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = GL_NEA_MIP_LIN.png; path = ../resources/GL_NEA_MIP_LIN.png; sourceTree = "<group>"; };
+		B3781A6617BEC8E20069128C /* GL_NEA_MIP_NEA.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = GL_NEA_MIP_NEA.png; path = ../resources/GL_NEA_MIP_NEA.png; sourceTree = "<group>"; };
+		D322729045D142E7BE0BF29A /* MipMapApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = MipMapApp.cpp; path = ../src/MipMapApp.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
+				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
+				5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */,
+				00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */,
+				00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */,
+				00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */,
+				00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Blocks;
+			sourceTree = "<group>";
+		};
+		080E96DDFE201D6D7F000001 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				D322729045D142E7BE0BF29A /* MipMapApp.cpp */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
+				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
+				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
+				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,
+				5323E6B50EAFCA7E003A9687 /* QTKit.framework */,
+				5323E6B10EAFCA74003A9687 /* CoreVideo.framework */,
+				0091D8F80E81B9330029341E /* OpenGL.framework */,
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107320486CEB800E47090 /* MipMap.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* MipMap */ = {
+			isa = PBXGroup;
+			children = (
+				01B97315FEAEA392516A2CEA /* Blocks */,
+				29B97315FDCFA39411CA2CEA /* Headers */,
+				080E96DDFE201D6D7F000001 /* Source */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = MipMap;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				71369AF52DD5400583F44AB3 /* Resources.h */,
+				923DAB3837074406816D5A56 /* MipMap_Prefix.pch */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B3246BEA17BFE347006C3463 /* glgenmipmap.png */,
+				B3246BEB17BFE347006C3463 /* usergenmipmap.png */,
+				B3246BEC17BFE347006C3463 /* userresizedmipmap.png */,
+				B3246BDA17BED8C8006C3463 /* non_pot_checkerboard.png */,
+				B3781A6117BEC8E20069128C /* anisotropicbutton.png */,
+				B3781A6217BEC8E20069128C /* checkerboard.png */,
+				B3781A6317BEC8E20069128C /* GL_LIN_MIP_LIN.png */,
+				B3781A6417BEC8E20069128C /* GL_LIN_MIP_NEA.png */,
+				B3781A6517BEC8E20069128C /* GL_NEA_MIP_LIN.png */,
+				B3781A6617BEC8E20069128C /* GL_NEA_MIP_NEA.png */,
+				7169A71AE1604BB29020E0DF /* CinderApp.icns */,
+				9C8E149101C242D7B61041E2 /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D1107260486CEB800E47090 /* MipMap */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "MipMap" */;
+			buildPhases = (
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072C0486CEB800E47090 /* Sources */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MipMap;
+			productInstallPath = "$(HOME)/Applications";
+			productName = MipMap;
+			productReference = 8D1107320486CEB800E47090 /* MipMap.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MipMap" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* MipMap */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D1107260486CEB800E47090 /* MipMap */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7CE80DBD7B7D40B0BB08DF43 /* CinderApp.icns in Resources */,
+				B3781A6717BEC8E20069128C /* anisotropicbutton.png in Resources */,
+				B3781A6817BEC8E20069128C /* checkerboard.png in Resources */,
+				B3781A6917BEC8E20069128C /* GL_LIN_MIP_LIN.png in Resources */,
+				B3781A6A17BEC8E20069128C /* GL_LIN_MIP_NEA.png in Resources */,
+				B3781A6B17BEC8E20069128C /* GL_NEA_MIP_LIN.png in Resources */,
+				B3781A6C17BEC8E20069128C /* GL_NEA_MIP_NEA.png in Resources */,
+				B3246BDB17BED8C8006C3463 /* non_pot_checkerboard.png in Resources */,
+				B3246BED17BFE347006C3463 /* glgenmipmap.png in Resources */,
+				B3246BEE17BFE347006C3463 /* usergenmipmap.png in Resources */,
+				B3246BEF17BFE347006C3463 /* userresizedmipmap.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8F4C0DBE39714CA887CA9946 /* MipMapApp.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C01FCF4B08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MipMap_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
+				PRODUCT_NAME = MipMap;
+				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		C01FCF4C08A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_FAST_MATH = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = MipMap_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
+				PRODUCT_NAME = MipMap;
+				STRIP_INSTALLED_PRODUCT = YES;
+				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = x86_64;
+				CINDER_PATH = ../../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = x86_64;
+				CINDER_PATH = ../../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "MipMap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4B08A954540054247B /* Debug */,
+				C01FCF4C08A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MipMap" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}
