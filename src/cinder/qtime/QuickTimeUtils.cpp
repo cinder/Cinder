@@ -20,11 +20,14 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if ! defined( _WIN64 )
+
 #include "cinder/gl/gl.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 
 #if defined( CINDER_MSW )
+	#include "cinder/msw/CinderMsw.h"
 	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
 	#pragma push_macro( "_STDINT_H" )
 		#undef __STDC_CONSTANT_MACROS
@@ -46,7 +49,7 @@ using namespace std;
 
 namespace cinder { namespace qtime {
 
-#if ! defined( __LP64__ )
+#if ( ! defined( __LP64__ ) )
 
 bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 value )
 {
@@ -212,7 +215,12 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 
 	moviePropCount = openMovieBaseProperties( movieProps );
 
+#if defined( CINDER_MSW )
+	std::string pathUtf8 = msw::toUtf8String( path.wstring() );
+	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, pathUtf8.c_str(), kCFStringEncodingUTF8 );
+#else
 	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, path.string().c_str(), kCFStringEncodingUTF8 );
+#endif
 	shared_ptr<const __CFString> pathCF = shared_ptr<const __CFString>( basePathCF, ::CFRelease );
 	// Store the movie properties in the array
 	movieProps[moviePropCount].propClass = kQTPropertyClass_DataLocation;
@@ -423,7 +431,7 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 	return result;
 }
 
-#endif // ! defined( __LP64__ )
+#endif // ( ! defined( __LP64__ ) )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageTargetCgImage
@@ -435,7 +443,7 @@ ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef 
 ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
 	: ImageTarget(), mPixelBufferRef( 0 ), mConvertToYpCbCr( convertToYpCbCr )
 {
-	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
+	setSize( imageSource->getWidth(), imageSource->getHeight() );
 	
 	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
 	
@@ -619,3 +627,5 @@ GWorldPtr createGWorld( ImageSourceRef imageSource )
 #endif // defined( CINDER_MSW )
 
 } } // namespace cinder::qtime
+
+#endif // ! defined( _WIN64 )

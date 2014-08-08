@@ -55,9 +55,6 @@ static Boolean sIsEaglLayer;
 
 	mDelegate = nil;
 	
-	mKeyboardVisible = false;
-	mKeyboardTextField = nil;
-	
     return self;
 }
 
@@ -99,11 +96,6 @@ static Boolean sIsEaglLayer;
 	}
 	else
 		[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:self waitUntilDone:NO];
-}
-
-- (void)dealloc
-{
-    [super dealloc];
 }
 
 - (uint32_t)addTouchToMap:(UITouch*)touch
@@ -251,113 +243,6 @@ static Boolean sIsEaglLayer;
 - (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches
 {
 	return mActiveTouches;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////
-// Advanced Keyboard
-- (void)showKeyboard
-{
-	if( mKeyboardVisible )
-		return;
-	
-	if( ! mKeyboardTextField ) {
-		mKeyboardTextField = [[UITextField alloc] initWithFrame: CGRectZero];
-		mKeyboardTextField.delegate = self;
-
-		mKeyboardTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-		mKeyboardTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-		mKeyboardTextField.enablesReturnKeyAutomatically = NO;
-		mKeyboardTextField.keyboardAppearance = UIKeyboardAppearanceDefault;
-		mKeyboardTextField.keyboardType = UIKeyboardTypeDefault;
-		mKeyboardTextField.returnKeyType = UIReturnKeyDefault;
-		mKeyboardTextField.secureTextEntry = NO;
-
-		mKeyboardTextField.hidden = YES;
-		[self addSubview: mKeyboardTextField];
-		[mKeyboardTextField release];
-	}
-	
-	mKeyboardVisible = YES;
-	mKeyboardTextField.text = @"";
-	[mKeyboardTextField becomeFirstResponder];
-}
-
-- (void)hideKeyboard
-{
-	if( ! mKeyboardVisible )
-		return;
-
-	mKeyboardVisible = NO;
-	[mKeyboardTextField resignFirstResponder];
-}
-
-///////////////////////////////////////////////////////////////////////////////////////
-// UIKeyInput Protocol Methods
-- (BOOL)canBecomeFirstResponder
-{
-	return NO;
-}
-
-- (void)insertText:(NSString *)text
-{
-	int n = [text length];
-	for( int i = 0; i < n; i++ ) {
-		unichar c = [text characterAtIndex:i];
-		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, c, c, 0, 0 );
-		[mDelegate keyDown:&keyEvent];
-	}
-}
-
-- (void)deleteBackward
-{
-	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
-	[mDelegate keyDown:&keyEvent];
-}
-
-- (BOOL)hasText
-{
-	return YES;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////
-// UITextField Protocol Methods
-- (BOOL)textField:(UITextField*)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
-{
-	NSMutableString *currentString = [[textField.text mutableCopy] autorelease];
-	// if we are getting a backspace, the length of the range can't be trusted to map to the length of a composed character (such as emoji)
-	if( [string length] == 0 ) {
-		NSRange delRange = [currentString rangeOfComposedCharacterSequenceAtIndex:range.location];
-		[currentString deleteCharactersInRange:delRange];
-	}
-	else
-		[currentString replaceCharactersInRange:range withString:string];
-
-	//update our keyboardString
-	const char *utf8KeyboardChar = [currentString UTF8String];
-	if( utf8KeyboardChar ) {
-		std::string keyboardString( utf8KeyboardChar );
-		[mDelegate setKeyboardString:&keyboardString];
-	}
-
-    if( [string length] == 0 ) {
-		cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );	
-		[mDelegate keyDown:&keyEvent];
-    }
-    else {		
-		for( int i = 0; i < [string length]; i++) {
-			unichar c = [string characterAtIndex:i];
-			cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], 0, c, c, 0, 0 );	
-			[mDelegate keyDown:&keyEvent];
-		}
-	}
-	
-    return YES; /* don't allow the edit! (keep placeholder text there) */
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField*)textField
-{
-	cinder::app::KeyEvent keyEvent( [mDelegate getWindowRef], cinder::app::KeyEvent::KEY_RETURN, '\n', '\n', 0, 0 );	
-	return YES;
 }
 
 @end

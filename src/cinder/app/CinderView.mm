@@ -304,7 +304,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::LEFT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDown:&mouseEvent];
 }
 
@@ -316,7 +316,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::RIGHT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDown:&mouseEvent];
 }
 
@@ -328,7 +328,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::MIDDLE_DOWN;
- 	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+ 	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDown:&mouseEvent];
 }
 
@@ -340,7 +340,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::LEFT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseUp:&mouseEvent];
 }
 
@@ -352,7 +352,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::RIGHT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseUp:&mouseEvent];
 }
 
@@ -364,7 +364,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::MIDDLE_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseUp:&mouseEvent];
 }
 
@@ -375,7 +375,7 @@
 	int y					= ([self frame].size.height - ( curPoint.y - [self frame].origin.y ));
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], 0, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], 0, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseMove:&mouseEvent];
 }
 
@@ -387,7 +387,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::RIGHT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDrag:&mouseEvent];
 }
 
@@ -399,7 +399,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::MIDDLE_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDrag:&mouseEvent];
 }
 
@@ -411,7 +411,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::LEFT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDrag:&mouseEvent];
 }
 
@@ -423,7 +423,7 @@
 	int y					= ([self frame].size.height - ( curPoint.y - [self frame].origin.y ));
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], 0, x, y, mods, wheelDelta / 4.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], 0, x, y, mods, wheelDelta / 4.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseWheel:&mouseEvent];
 }
 
@@ -450,9 +450,9 @@
 	
     if( [[pboard types] containsObject:NSFilenamesPboardType] ) {
         NSArray *files = [pboard propertyListForType:NSFilenamesPboardType];
-        int numberOfFiles = [files count];
+        size_t numberOfFiles = [files count];
 		std::vector<cinder::fs::path> paths;
-		for( int i = 0; i < numberOfFiles; ++i )
+		for( size_t i = 0; i < numberOfFiles; ++i )
 			paths.push_back( cinder::fs::path( [[files objectAtIndex:i] UTF8String] ) );
 		NSPoint curPoint = [sender draggingLocation];
 		int x = curPoint.x - [self frame].origin.x;

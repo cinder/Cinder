@@ -22,6 +22,7 @@
 */
 
 #include "cinder/Clipboard.h"
+#include "cinder/Unicode.h"
 #if defined( CINDER_MAC )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#import <Cocoa/Cocoa.h>
@@ -132,7 +133,7 @@ std::string	Clipboard::getString()
 		wchar_t *pstr = reinterpret_cast<wchar_t*>( ::GlobalLock( dataH ) );
 		if( pstr ) {
 			std::wstring wstr( pstr );
-			result = toUtf8( wstr );
+			result = toUtf8( (char16_t*)wstr.c_str() );
 			::GlobalUnlock( dataH );
 		}
 	}
@@ -187,7 +188,7 @@ void Clipboard::setString( const std::string &str )
 #elif defined( CINDER_MSW )
 	::OpenClipboard( NULL );
 	::EmptyClipboard();
-	std::wstring wstr = toUtf16( str );
+	std::u16string wstr = toUtf16( str );
 	HANDLE hglbCopy = ::GlobalAlloc( GMEM_MOVEABLE, sizeof(uint16_t) * (wstr.length()+1) );
 	// Lock the handle and copy the text to the buffer. 
 	void *lptstrCopy = ::GlobalLock( hglbCopy ); 

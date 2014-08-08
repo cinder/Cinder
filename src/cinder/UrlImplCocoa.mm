@@ -34,15 +34,15 @@
 	std::string					mUser, mPassword;
 	
 	uint8_t				*mBuffer;
-	int					mBufferSize;
-	int					mBufferOffset, mBufferedBytes;
+	off_t				mBufferSize;
+	off_t				mBufferOffset, mBufferedBytes;
 	off_t				mBufferFileOffset;	// where in the file the buffer starts
 	off_t				mSize;
 	BOOL				mStillConnected;
 	BOOL				mResponseReceived;
 	BOOL				mDidFail;
 	std::string			mErrorString;
-	int					mStatusCode;
+	long				mStatusCode;
 }
 
 - (id)initWithImpl:(ci::IStreamUrlImplCocoa*)impl url:(ci::Url)url user:(std::string)user password:(std::string)password;
@@ -57,15 +57,15 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection;
 
-- (int)seekRelative:(off_t)relativeOffset;
+- (off_t)seekRelative:(off_t)relativeOffset;
 - (void)seekAbsolute:(off_t)absoluteOffset;
 - (off_t)tell;
-- (int)bufferRemaining;
+- (off_t)bufferRemaining;
 - (bool)isEof;
 - (off_t)getSize;
 
-- (int)IoRead:(void*)dest withSize:(size_t)size;
-- (void)fillBuffer:(int)wantBytes;
+- (off_t)IoRead:(void*)dest withSize:(size_t)size;
+- (void)fillBuffer:(off_t)wantBytes;
 - (size_t)readDataAvailable:(void*)dest withSize:(size_t)maxSize;
 
 @end
@@ -81,7 +81,7 @@
 	mUser = user;
 	mPassword = password;
 	mBufferSize = 4096;
-	mBuffer = (uint8_t*)malloc( mBufferSize );
+	mBuffer = (uint8_t*)malloc( (size_t)mBufferSize );
 	mBufferOffset = 0;
 	mBufferedBytes = 0;
 	mBufferFileOffset = 0;
@@ -172,14 +172,14 @@
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
 	@synchronized( self ) {
-		int roomInBuffer = mBufferSize - mBufferedBytes;
-		size_t size = [data length];	
+		off_t roomInBuffer = mBufferSize - mBufferedBytes;
+		off_t size = [data length];	
 		if( (off_t)size > roomInBuffer ) {
 			// not enough space in buffer
-			int oldBufferSize = mBufferSize;
+			off_t oldBufferSize = mBufferSize;
 			while( mBufferSize - mBufferedBytes <= (off_t)size )
 				mBufferSize *= 2;
-			uint8_t *newBuff = reinterpret_cast<uint8_t*>( realloc( mBuffer, mBufferSize ) );
+			uint8_t *newBuff = reinterpret_cast<uint8_t*>( realloc( mBuffer, (size_t)mBufferSize ) );
 			if( ! newBuff ) { // allocation failed - just copy the bytes we can fit
 				size = [self bufferRemaining];
 				mBufferSize = oldBufferSize;
@@ -190,7 +190,7 @@
 			}
 		}
 
-		memcpy( &mBuffer[mBufferedBytes], [data bytes], size );
+		memcpy( &mBuffer[mBufferedBytes], [data bytes], (size_t)size );
 		mBufferedBytes += size;
 	}
 }
@@ -214,7 +214,7 @@
 	return mBufferFileOffset + mBufferOffset;
 }
 
-- (int)bufferRemaining
+- (off_t)bufferRemaining
 {
 	return mBufferedBytes - mBufferOffset;
 }
@@ -228,7 +228,7 @@
 		mStillConnected = NO;
 	}
 	
-	throw cinder::UrlLoadExc( mStatusCode, mErrorString );
+	throw cinder::UrlLoadExc( (int)mStatusCode, mErrorString );
 }
 
 - (off_t)getSize
@@ -247,7 +247,7 @@
 }
 
 // returns 0 on success
-- (int)seekRelative:(off_t)relativeOffset
+- (off_t)seekRelative:(off_t)relativeOffset
 {
 	@synchronized( self ) {
 		// if this move stays inside the current buffer, we're good
@@ -272,7 +272,7 @@
 }
 
 // returns 0 on success
-- (int)IoRead:(void*)dest withSize:(size_t)size
+- (off_t)IoRead:(void*)dest withSize:(size_t)size
 {
 	[self fillBuffer:size];
 	
@@ -288,7 +288,7 @@
 	return 0;
 }
 
-- (void)fillBuffer:(int)wantBytes
+- (void)fillBuffer:(off_t)wantBytes
 {
 	@synchronized( self ) {
 		// do we already have the number of bytes we need, or are we disconnected?
@@ -297,8 +297,8 @@
 
 		// if we want more bytes than will fit in the rest of the buffer, let's make some room
 		if( mBufferSize - mBufferedBytes < wantBytes ) {
-			int bytesCulled = mBufferOffset;
-			memmove( mBuffer, &mBuffer[mBufferOffset], mBufferedBytes - bytesCulled );
+			off_t bytesCulled = mBufferOffset;
+			memmove( mBuffer, &mBuffer[mBufferOffset], (size_t)(mBufferedBytes - bytesCulled) );
 			mBufferedBytes -= bytesCulled;
 			mBufferOffset = 0;
 			mBufferFileOffset += bytesCulled;
@@ -317,9 +317,9 @@
 	[self fillBuffer:maxSize];
 
 	@synchronized( self ) {	
-		int remaining = [self bufferRemaining];
+		off_t remaining = [self bufferRemaining];
 		if( remaining < (off_t)maxSize )
-			maxSize = remaining;
+			maxSize = (size_t)remaining;
 			
 		memcpy( dest, mBuffer + mBufferOffset, maxSize );
 		

@@ -24,7 +24,9 @@
 #include "cinder/app/AppImplMsw.h"
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
+#include "cinder/Unicode.h"
 #include "cinder/Display.h"
+#include "cinder/msw/CinderMsw.h"
 
 #include <Windows.h>
 #include <CommDlg.h>
@@ -52,7 +54,7 @@ static const wchar_t *WINDOWED_WIN_CLASS_NAME = TEXT("CinderWinClass");
 static const wchar_t *BLANKING_WINDOW_CLASS_NAME = TEXT("CinderBlankingWindow");
 
 AppImplMsw::AppImplMsw( App *aApp )
-	: mApp( aApp ), mSetupHasBeenCalled( false )
+	: mApp( aApp ), mSetupHasBeenCalled( false ), mActive( true )
 {
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	Gdiplus::GdiplusStartup( &mGdiplusToken, &gdiplusStartupInput, NULL );
@@ -114,30 +116,32 @@ Buffer AppImplMsw::loadResource( int id, const std::string &type )
 
 fs::path AppImplMsw::getAppPath()
 {
-	char appPath[MAX_PATH] = "";
+	wchar_t appPath[MAX_PATH] = L"";
 
 	// fetch the path of the executable
-	::GetModuleFileNameA( 0, appPath, sizeof(appPath) - 1);
+	::GetModuleFileName( 0, appPath, sizeof(appPath) - 1);
 
 	// get a pointer to the last occurrence of the windows path separator
-	char *appDir = strrchr( appPath, '\\' );
+	wchar_t *appDir = wcsrchr( appPath, L'\\' );
 	if( appDir ) {
 		++appDir;
 
-		// always expect the unexpected - this shouldn't be null but one never knows
+		// this shouldn't be null but one never knows
 		if( appDir ) {
 			// null terminate the string
 			*appDir = 0;
 		}
 	}
 
-	return fs::path( std::string( appPath ) );
+	return fs::path( appPath );
 }
 
 fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
 {
-	OPENFILENAMEA ofn;       // common dialog box structure
-	char szFile[260];       // buffer for file name
+	OPENFILENAMEW ofn;       // common dialog box structure
+	wchar_t szFile[MAX_PATH];       // buffer for file name
+	wchar_t extensionStr[10000];
+	wchar_t initialPathStr[MAX_PATH];
 
 	// Initialize OPENFILENAME
 	::ZeroMemory( &ofn, sizeof(ofn) );
@@ -151,26 +155,25 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 	ofn.lpstrFile[0] = '\0';
 	ofn.nMaxFile = sizeof( szFile );
 	if( extensions.empty() ) {
-		ofn.lpstrFilter = "All\0*.*\0";
+		ofn.lpstrFilter = L"All\0*.*\0";
 	}
 	else {
-		char extensionStr[10000];
 		size_t offset = 0;
 		
-		strcpy( extensionStr, "Supported Types" );
-		offset += strlen( extensionStr ) + 1;
+		wcscpy( extensionStr, L"Supported Types" );
+		offset += wcslen( extensionStr ) + 1;
 		for( vector<string>::const_iterator strIt = extensions.begin(); strIt != extensions.end(); ++strIt ) {
-			strcpy( extensionStr + offset, "*." );
+			wcscpy( extensionStr + offset, L"*." );
 			offset += 2;
-			strcpy( extensionStr + offset, strIt->c_str() );
+			wcscpy( extensionStr + offset, msw::toWideString( *strIt ).c_str() );
 			offset += strIt->length();
 			// append a semicolon to all but the last extensions
 			if( strIt + 1 != extensions.end() ) {
-				extensionStr[offset] = ';';
+				extensionStr[offset] = L';';
 				offset += 1;
 			}
 			else {
-				extensionStr[offset] = 0;
+				extensionStr[offset] = L'\0';
 				offset += 1;
 			}
 		}
@@ -181,21 +184,26 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
-	if( initialPath.empty() )
+	if( initialPath.empty() ) {
 		ofn.lpstrInitialDir = NULL;
-	else {
-		char initialPathStr[MAX_PATH];
-		strcpy( initialPathStr, initialPath.string().c_str() );
+	}
+	else if( fs::is_directory( initialPath ) ) {
+		wcscpy( initialPathStr, initialPath.wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
+	}
+	else {
+		wcscpy( initialPathStr, initialPath.parent_path().wstring().c_str() );
+		ofn.lpstrInitialDir = initialPathStr;
+		wcscpy( szFile, initialPath.filename().wstring().c_str() );
 	}
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
 	// Display the Open dialog box.
-	if( ::GetOpenFileNameA( &ofn ) == TRUE ) {
-		return string( ofn.lpstrFile );
+	if( ::GetOpenFileNameW( &ofn ) == TRUE ) {
+		return fs::path( ofn.lpstrFile );
 	}
 	else
-		return string();
+		return fs::path();
 }
 
 namespace {
@@ -228,8 +236,8 @@ fs::path AppImplMsw::getFolderPath( const fs::path &initialPath )
 	if( pidl ) {
 		// get the name of the folder
 		TCHAR path[MAX_PATH];
-		if( ::SHGetPathFromIDList ( pidl, path ) ) {
-			result = toUtf8( path );
+		if( ::SHGetPathFromIDList( pidl, path ) ) {
+			result = msw::toUtf8String( path );
 		}
 
 		// free memory used
@@ -245,8 +253,10 @@ fs::path AppImplMsw::getFolderPath( const fs::path &initialPath )
 
 fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string> extensions )
 {
-	OPENFILENAMEA ofn;       // common dialog box structure
-	char szFile[260];       // buffer for file name
+	OPENFILENAMEW ofn;       // common dialog box structure
+	wchar_t szFile[MAX_PATH];       // buffer for file name
+	wchar_t initialPathStr[MAX_PATH];
+	wchar_t extensionStr[10000];
 
 	// Initialize OPENFILENAME
 	ZeroMemory( &ofn, sizeof(ofn) );
@@ -254,31 +264,27 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 	ofn.hwndOwner = App::get()->getRenderer()->getHwnd();
 	ofn.lpstrFile = szFile;
 
-	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not
-	// use the contents of szFile to initialize itself.
-	//
-	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not
+	// Set lpstrFile[0] to '\0' so that GetSaveFileName does not
 	// use the contents of szFile to initialize itself.
 	//
 	ofn.lpstrFile[0] = '\0';
 	ofn.nMaxFile = sizeof( szFile );
 	if( extensions.empty() ) {
-		ofn.lpstrFilter = "All\0*.*\0";
+		ofn.lpstrFilter = L"All\0*.*\0";
 	}
 	else {
-		char extensionStr[10000];
 		size_t offset = 0;
 
-		strcpy( extensionStr, "Supported Types" );
-		offset += strlen( extensionStr ) + 1;
+		wcscpy( extensionStr, L"Supported Types" );
+		offset += wcslen( extensionStr ) + 1;
 		for( vector<string>::const_iterator strIt = extensions.begin(); strIt != extensions.end(); ++strIt ) {
-			strcpy( extensionStr + offset, "*." );
+			wcscpy( extensionStr + offset, L"*." );
 			offset += 2;
-			strcpy( extensionStr + offset, strIt->c_str() );
+			wcscpy( extensionStr + offset, msw::toWideString( strIt->c_str() ).c_str() );
 			offset += strIt->length();
 			// append a semicolon to all but the last extensions
 			if( strIt + 1 != extensions.end() ) {
-				extensionStr[offset] = ';';
+				extensionStr[offset] = L';';
 				offset += 1;
 			}
 			else {
@@ -293,22 +299,25 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFileTitle = NULL;
 	ofn.nMaxFileTitle = 0;
-	if( initialPath.empty() )
+	if( initialPath.empty() ) {
 		ofn.lpstrInitialDir = NULL;
-	else {
-		char initialPathStr[MAX_PATH];
-		strcpy( initialPathStr, initialPath.string().c_str() );
+	}
+	else if( fs::is_directory( initialPath ) ) {
+		wcscpy( initialPathStr, initialPath.wstring().c_str() );
 		ofn.lpstrInitialDir = initialPathStr;
+	}
+	else {
+		wcscpy( initialPathStr, initialPath.parent_path().wstring().c_str() );
+		ofn.lpstrInitialDir = initialPathStr;
+		wcscpy( szFile, initialPath.filename().wstring().c_str() );
 	}
 	ofn.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
 
 	// Display the Open dialog box.
-	string result;
-	if( ::GetSaveFileNameA( &ofn ) == TRUE ) {
-		result = string( ofn.lpstrFile );
-	}
-
-	return result;
+	if( ::GetSaveFileName( &ofn ) == TRUE )
+		return fs::path( ofn.lpstrFile );
+	else
+		return fs::path();
 }
 
 
@@ -395,12 +404,12 @@ void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &ti
 
 	::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
 
-	std::wstring unicodeTitle = toUtf16( title ); 
+	std::wstring wideTitle = msw::toWideString( title ); 
 
 	// Create The Window
 	if( ! ( mWnd = ::CreateWindowEx( mWindowExStyle,						// Extended Style For The Window
 		WINDOWED_WIN_CLASS_NAME,
-		unicodeTitle.c_str(),						// Window Title
+		wideTitle.c_str(),						// Window Title
 		mWindowStyle,					// Required Window Style
 		windowRect.left, windowRect.top,								// Window Position
 		windowRect.right - windowRect.left,	// Calculate Window Width
@@ -449,20 +458,22 @@ void WindowImplMsw::registerWindowClass()
 	if( sRegistered )
 		return;
 
-	WNDCLASS	wc;
+	WNDCLASSEX	wc;
 	HMODULE instance	= ::GetModuleHandle( NULL );				// Grab An Instance For Our Window
+	wc.cbSize = sizeof(WNDCLASSEX);
 	wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC;	// Redraw On Size, And Own DC For Window.
 	wc.lpfnWndProc		= WndProc;						// WndProc Handles Messages
 	wc.cbClsExtra		= 0;									// No Extra Window Data
 	wc.cbWndExtra		= 0;									// No Extra Window Data
 	wc.hInstance		= instance;							// Set The Instance
-	wc.hIcon			= ::LoadIcon( NULL, IDI_WINLOGO );		// Load The Default Icon
+	wc.hIcon = (HICON)::LoadImage( instance, MAKEINTRESOURCE(1), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE ); // Load The Default Cinder Icon
+	wc.hIconSm = NULL;
 	wc.hCursor			= ::LoadCursor( NULL, IDC_ARROW );		// Load The Arrow Pointer
 	wc.hbrBackground	= NULL;									// No Background Required For GL
 	wc.lpszMenuName		= NULL;									// We Don't Want A Menu
 	wc.lpszClassName	= WINDOWED_WIN_CLASS_NAME;
 
-	if( ! ::RegisterClass( &wc ) ) {								// Attempt To Register The Window Class
+	if( ! ::RegisterClassEx( &wc ) ) {								// Attempt To Register The Window Class
 		DWORD err = ::GetLastError();
 		return;							
 	}
@@ -558,18 +569,18 @@ std::string	WindowImplMsw::getTitle() const
 	wchar_t *wideChars = (wchar_t*)malloc( sizeof(wchar_t) * (numChars + 1) );
 	::GetWindowTextW( mWnd, &wideChars[0], numChars + 1 );
 	wideChars[numChars] = 0;
-	std::string result = toUtf8( wideChars );
+	std::string result = msw::toUtf8String( wideChars );
 	free( (void*)wideChars );
 	return result;
 }
 
 void WindowImplMsw::setTitle( const std::string &title )
 {
-	std::wstring titleWide = toUtf16( title );
+	std::wstring titleWide = msw::toWideString( title );
 	if( titleWide.empty() )
 		::SetWindowText( mWnd, L"" );
 	else
-		::SetWindowText( mWnd, &titleWide[0] );
+		::SetWindowText( mWnd, titleWide.c_str() );
 }
 
 void WindowImplMsw::setSize( const Vec2i &windowSize )
@@ -589,7 +600,7 @@ void WindowImplMsw::enableMultiTouch()
 {
 	// we need to make sure this version of User32 even has MultiTouch symbols, so we'll do that with GetProcAddress
 	BOOL (WINAPI *RegisterTouchWindow)( HWND, ULONG);
-	*(DWORD *)&RegisterTouchWindow = (DWORD)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
+	*(size_t *)&RegisterTouchWindow = (size_t)::GetProcAddress( ::GetModuleHandle(TEXT("user32.dll")), "RegisterTouchWindow" );
 	if( RegisterTouchWindow ) {
 		(*RegisterTouchWindow)( mWnd, 0 );
 	}
@@ -785,10 +796,10 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 	// if the message is WM_NCCREATE we need to hide 'this' in the window long
 	if( uMsg == WM_NCCREATE ) {
 		impl = reinterpret_cast<WindowImplMsw*>(((LPCREATESTRUCT)lParam)->lpCreateParams);
-		::SetWindowLongPtr( mWnd, GWL_USERDATA, (__int3264)(LONG_PTR)impl ); 
+		::SetWindowLongPtr( mWnd, GWLP_USERDATA, (__int3264)(LONG_PTR)impl ); 
 	}
 	else // the warning on this line is harmless
-		impl = reinterpret_cast<WindowImplMsw*>( ::GetWindowLongPtr( mWnd, GWL_USERDATA ) );
+		impl = reinterpret_cast<WindowImplMsw*>( ::GetWindowLongPtr( mWnd, GWLP_USERDATA ) );
 
 	if( ! impl )
 		return DefWindowProc( mWnd, uMsg, wParam, lParam );		
@@ -803,6 +814,20 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 						return false;
 					else
 						return DefWindowProc( mWnd, uMsg, wParam, lParam );
+			}
+		break;
+		case WM_ACTIVATEAPP:
+			if( wParam ) {
+				if( ! impl->getAppImpl()->mActive ) {
+					impl->getAppImpl()->mActive = true;
+					impl->getAppImpl()->getApp()->emitDidBecomeActive();
+				}
+			}
+			else {
+				if( impl->getAppImpl()->mActive ) {
+					impl->getAppImpl()->mActive = false;
+					impl->getAppImpl()->getApp()->emitWillResignActive();
+				}
 			}
 		break;
 		case WM_ACTIVATE:
@@ -820,7 +845,8 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
 							c, c, prepKeyEventModifiers(), (int)wParam );
 			impl->getWindow()->emitKeyDown( &event );
-			return 0;
+			if ( event.isHandled() )
+				return 0;
 		}
 		break;
 		case WM_SYSKEYUP:
@@ -829,7 +855,8 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			KeyEvent event( impl->getWindow(), KeyEvent::translateNativeKeyCode( prepNativeKeyCode( (int)wParam ) ), 
 							c, c, prepKeyEventModifiers(), (int)wParam );
 			impl->getWindow()->emitKeyUp( &event );
-			return 0;
+			if ( event.isHandled() )
+				return 0;
 		}
 		break;
 		// mouse events

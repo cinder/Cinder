@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -28,6 +30,11 @@ using namespace std;
 	#include <Cocoa/Cocoa.h>
 #elif defined( CINDER_COCOA_TOUCH )
 	#include <UIKit/UIKit.h>
+#elif defined( CINDER_WINRT)
+	#include "cinder/WinRTUtils.h"
+	using namespace cinder::winrt;
+	using namespace Windows::UI::Core;
+	using namespace Windows::Graphics::Display;
 #endif
 
 namespace cinder {
@@ -108,8 +115,8 @@ void Display::enumerateDisplays()
 	
 	NSArray *screens = [NSScreen screens];
 	Area primaryScreenArea;
-	int screenCount = [screens count];
-	for( int i = 0; i < screenCount; ++i ) {
+	size_t screenCount = [screens count];
+	for( size_t i = 0; i < screenCount; ++i ) {
 		::NSScreen *screen = [screens objectAtIndex:i];
 		[screen retain]; // this is released in the destructor for Display
 		NSRect frame = [screen frame];
@@ -118,7 +125,7 @@ void Display::enumerateDisplays()
 		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
 		newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 		newDisplay->mScreen = screen;
-		newDisplay->mBitsPerPixel = NSBitsPerPixelFromDepth( [screen depth] );
+		newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
 		newDisplay->mContentScale = [screen backingScaleFactor];
 
 		// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
@@ -129,7 +136,6 @@ void Display::enumerateDisplays()
 			int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
 			newDisplay->mArea.offset( Vec2i( 0, heightDelta ) );
 		}
-
 		
 		sDisplays.push_back( newDisplay );
 	}
@@ -149,8 +155,8 @@ void Display::enumerateDisplays()
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
 	NSArray *screens = [UIScreen screens];
-	int screenCount = [screens count];
-	for( int i = 0; i < screenCount; ++i ) {
+	NSUInteger screenCount = [screens count];
+	for( NSUInteger i = 0; i < screenCount; ++i ) {
 		::UIScreen *screen = [screens objectAtIndex:i];
 		[screen retain]; // this is released in the destructor for Display
 		CGRect frame = [screen bounds];
@@ -169,6 +175,29 @@ void Display::enumerateDisplays()
 		
 		sDisplays.push_back( newDisplay );
 	}
+
+	// <TEMPORARY>
+	// This is a workaround for a beta of iOS 8 SDK, which appears to return an empty array for screens
+	if( screenCount == 0 ) {
+		UIScreen *screen = [UIScreen mainScreen];
+		[screen retain];
+		CGRect frame = [screen bounds];
+
+		DisplayRef newDisplay = DisplayRef( new Display );
+		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+		newDisplay->mUiScreen = screen;
+		newDisplay->mBitsPerPixel = 24;
+		newDisplay->mContentScale = screen.scale;
+		
+		NSArray *resolutions = [screen availableModes];
+		for( int i = 0; i < [resolutions count]; ++i ) {
+			::UIScreenMode *mode = [resolutions objectAtIndex:i];
+			newDisplay->mSupportedResolutions.push_back( Vec2i( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
+		}
+		
+		sDisplays.push_back( newDisplay );
+	}
+	// </TEMPORARY>
 
 	sDisplaysInitialized = true;
 	[pool release];	
@@ -191,8 +220,24 @@ void Display::setResolution( const Vec2i &resolution )
 	
 	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
 }
+#elif defined( CINDER_WINRT )
+void Display::enumerateDisplays()
+{
+	CoreWindow^ window = CoreWindow::GetForCurrentThread();
+	DisplayRef newDisplay = DisplayRef( new Display );
+	if(window != nullptr)
+	{
+		float width, height;
 
+		GetPlatformWindowDimensions(window, &width,&height);
 
+		newDisplay->mArea = Area( 0, 0, (int)width, (int)height );
+		newDisplay->mBitsPerPixel = 24;
+		newDisplay->mContentScale = getScaleFactor();
+	}
+
+	sDisplays.push_back( newDisplay );
+}
 #elif defined( CINDER_MSW )
 
 DisplayRef Display::findFromHmonitor( HMONITOR hMonitor )

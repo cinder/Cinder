@@ -114,7 +114,7 @@ class IStreamUrlImpl {
 typedef std::shared_ptr<class IStreamUrl>	IStreamUrlRef;
 
 /** \warning IStreamUrl does not currently support proper random access **/
-class IStreamUrl : public IStream {
+class IStreamUrl : public IStreamCinder {
   public:
 	//! Creates a new IStreamUrlRef from the Url \a url with an optional login and password
 	static IStreamUrlRef		create( const Url &url, const std::string &user = "", const std::string &password = "", const UrlOptions &options = UrlOptions() );

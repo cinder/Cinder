@@ -543,23 +543,35 @@ template <typename T> void TestMatrix22( std::ostream& os )
 	}
 
 
-	// void invert (T epsilon = EPSILON );
+	// void invert (T epsilon = FLT_MIN );
 	{
 		bool result = false;
-		MatT c0( -2, 1, (T)1.5, (T)-0.5 );
-		MatT m0( 1, 2, 3, 4 );
+		MatT c0( 
+			(T)-67114.093959732, (T)0.3355704698, 
+			(T)0.5033557047,     (T)-1.68e-8 
+		);
+		MatT m0( 
+			(T)0.0000001, (T)2,
+			(T)3,         (T)400000
+		);
 		m0.invert();
 		result = ( c0 == m0 );
-		os << (result ? "passed" : "FAILED") << " : " << "void invert (T epsilon = EPSILON );" << "\n";
+		os << (result ? "passed" : "FAILED") << " : " << "void invert (T epsilon = FLT_MIN );" << "\n";
 	}
 
 
-	// Matrix22<T> inverted( T epsilon = EPSILON ) const;
+	// Matrix22<T> inverted( T epsilon = FLT_MIN ) const;
 	{
 		bool result = false;
 
-		MatT c0( -2, 1, (T)1.5, (T)-0.5 );
-		MatT m0( 1, 2, 3, 4 );
+		MatT c0( 
+			(T)-67114.093959732, (T)0.3355704698, 
+			(T)0.5033557047,     (T)-1.68e-8 
+		);
+		MatT m0( 
+			(T)0.0000001, (T)2,
+			(T)3,         (T)400000
+		);
 
 		bool single = ( c0 == m0.inverted() );
 
@@ -582,7 +594,7 @@ template <typename T> void TestMatrix22( std::ostream& os )
 
 		result = single && multi;
 
-		os << (result ? "passed" : "FAILED") << " : " << "Matrix22<T> inverted( T epsilon = EPSILON ) const;" << "\n";
+		os << (result ? "passed" : "FAILED") << " : " << "Matrix22<T> inverted( T epsilon = FLT_MIN ) const;" << "\n";
 	}
 
 

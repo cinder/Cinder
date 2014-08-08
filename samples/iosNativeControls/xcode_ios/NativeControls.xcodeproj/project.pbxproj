@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0003F48E1994649F00647C8B /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0003F48D1994649F00647C8B /* Accelerate.framework */; };
 		0087D25512CD809F002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D25412CD809F002CD69F /* CoreText.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
 		11C60608163E4F1700B0B269 /* NativeViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 11C60607163E4F1700B0B269 /* NativeViewController.mm */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0003F48D1994649F00647C8B /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		00692BCF14FF149000D0A05E /* NativeControls.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NativeControls.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0087D25412CD809F002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -53,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0003F48E1994649F00647C8B /* Accelerate.framework in Frameworks */,
 				11CCD132166B1F8F002A3ED8 /* MobileCoreServices.framework in Frameworks */,
 				11CCD130166B1F86002A3ED8 /* ImageIO.framework in Frameworks */,
 				C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */,
@@ -93,6 +96,7 @@
 		00692BD214FF149000D0A05E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0003F48D1994649F00647C8B /* Accelerate.framework */,
 				11CCD131166B1F8E002A3ED8 /* MobileCoreServices.framework */,
 				11CCD12F166B1F86002A3ED8 /* ImageIO.framework */,
 				C7FB19D5124BC0D70045AFD2 /* AudioToolbox.framework */,
@@ -162,6 +166,8 @@
 /* Begin PBXProject section */
 		00692BC614FF149000D0A05E /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 00692BC914FF149000D0A05E /* Build configuration list for PBXProject "NativeControls" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;

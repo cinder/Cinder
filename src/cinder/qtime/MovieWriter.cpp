@@ -20,7 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if ! defined( __LP64__ )
+#if ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
 	#error "This file must be compiled as Objective-C++ on the Mac"
@@ -28,6 +28,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
+#include "cinder/CinderAssert.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 
@@ -40,6 +41,7 @@
 		#undef __STDC_CONSTANT_MACROS
 		#if _MSC_VER >= 1600 // VC10 or greater
 			#define _STDINT_H
+			#define __FP__
 		#endif
 		#include <QTML.h>
 		#include <CVPixelBuffer.h>
@@ -101,6 +103,7 @@ MovieWriter::Format::~Format()
 void MovieWriter::Format::initDefaults()
 {
 	OSStatus err = ::ICMCompressionSessionOptionsCreate( NULL, &mOptions );
+	CI_VERIFY( err == noErr );
 
 	mTimeBase = 600;
 	mDefaultTime = 1 / 30.0f;
@@ -117,11 +120,9 @@ MovieWriter::Format& MovieWriter::Format::setQuality( float quality )
 {
 	mQualityFloat = constrain<float>( quality, 0, 1 );
 	CodecQ compressionQuality = CodecQ(0x00000400 * mQualityFloat);
-	OSStatus err = ICMCompressionSessionOptionsSetProperty( mOptions,
-                                kQTPropertyClass_ICMCompressionSessionOptions,
-                                kICMCompressionSessionOptionsPropertyID_Quality,
-                                sizeof(compressionQuality),
-                                &compressionQuality );	
+	OSStatus err = ICMCompressionSessionOptionsSetProperty( mOptions, kQTPropertyClass_ICMCompressionSessionOptions, kICMCompressionSessionOptionsPropertyID_Quality, sizeof( compressionQuality ), &compressionQuality );
+	CI_VERIFY( err == noErr );
+
 	return *this;
 }
 
@@ -133,6 +134,8 @@ bool MovieWriter::Format::isTemporal() const
 MovieWriter::Format& MovieWriter::Format::enableTemporal( bool enable )
 {
 	OSStatus err = ::ICMCompressionSessionOptionsSetAllowTemporalCompression( mOptions, enable );
+	CI_VERIFY( err == noErr );
+
 	return *this;
 }
 
@@ -144,6 +147,8 @@ bool MovieWriter::Format::isReordering() const
 MovieWriter::Format& MovieWriter::Format::enableReordering( bool enable )
 {
 	OSStatus err = ::ICMCompressionSessionOptionsSetAllowFrameReordering( mOptions, enable );
+	CI_VERIFY( err == noErr );
+
 	return *this;
 }
 
@@ -155,6 +160,8 @@ bool MovieWriter::Format::isFrameTimeChanges() const
 MovieWriter::Format& MovieWriter::Format::enableFrameTimeChanges( bool enable )
 {
 	OSStatus err = ::ICMCompressionSessionOptionsSetAllowFrameTimeChanges( mOptions, enable );
+	CI_VERIFY( err == noErr );
+
 	return *this;
 }
 
@@ -166,6 +173,8 @@ int32_t MovieWriter::Format::getMaxKeyFrameRate() const
 MovieWriter::Format& MovieWriter::Format::setMaxKeyFrameRate( int32_t rate )
 {
 	OSStatus err = ::ICMCompressionSessionOptionsSetMaxKeyFrameInterval( mOptions, rate );
+	CI_VERIFY( err == noErr );
+
 	return *this;
 }
 
@@ -282,7 +291,7 @@ void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float durati
 	::CVPixelBufferRelease( pixelBuffer );
 
 	if( err )
-		MovieWriterExcFrameEncode();
+		throw MovieWriterExcFrameEncode();
 }
 
 extern "C" {
@@ -483,8 +492,8 @@ void MovieWriter::Obj::finish()
 					else {
 						::ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
 						::ICMCompressionFrameOptionsRef frameOptions = NULL;
-						OSStatus err = ::ICMCompressionSessionEncodeFrame( mCompressionSession, NULL, mFrameTimes[frame].first,
-																		mFrameTimes[frame].second, validTimeFlags, frameOptions, NULL, NULL );
+						OSStatus err = ::ICMCompressionSessionEncodeFrame( mCompressionSession, NULL, mFrameTimes[frame].first,	mFrameTimes[frame].second, validTimeFlags, frameOptions, NULL, NULL );
+						CI_VERIFY( err == noErr );
 					}
 				}
 				::ICMCompressionSessionCompleteFrames( mCompressionSession, true, 0, 0 );
@@ -515,6 +524,8 @@ void MovieWriter::Obj::finish()
 		if( err )
 			throw MovieWriterExc();
 	}
+
+	::ICMCompressionSessionRelease( mCompressionSession );
         
 	// Close movie file
 	if( mDataHandler )
@@ -609,4 +620,4 @@ bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef ima
 
 } } // namespace cinder::qtime
 
-#endif // ! defined( __LP64__ )
+#endif // ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )

@@ -22,7 +22,7 @@
 
 #include "cinder/Triangulate.h"
 #include "cinder/Shape2d.h"
-#include "tesselator.h"
+#include "../libtess2/tesselator.h"
 
 using namespace std;
 
@@ -90,12 +90,12 @@ void Triangulator::addShape( const Shape2d &shape, float approximationScale )
 void Triangulator::addPath( const Path2d &path, float approximationScale )
 {
 	vector<Vec2f> subdivided = path.subdivide( approximationScale );
-	tessAddContour( mTess.get(), 2, &subdivided[0], sizeof(float) * 2, subdivided.size() );
+	tessAddContour( mTess.get(), 2, &subdivided[0], sizeof(float) * 2, (int)subdivided.size() );
 }
 
 void Triangulator::addPolyLine( const PolyLine2f &polyLine )
 {
-	tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, polyLine.size() );
+	tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, (int)polyLine.size() );
 }
 
 TriMesh2d Triangulator::calcMesh( Winding winding )

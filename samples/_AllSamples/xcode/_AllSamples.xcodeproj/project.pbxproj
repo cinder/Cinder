@@ -13,6 +13,25 @@
 			buildPhases = (
 			);
 			dependencies = (
+				00D494BC1988A24F00A44E4C /* PBXTargetDependency */,
+				00D494BE1988A24F00A44E4C /* PBXTargetDependency */,
+				00D494C01988A24F00A44E4C /* PBXTargetDependency */,
+				00D494C21988A24F00A44E4C /* PBXTargetDependency */,
+				00D494C41988A24F00A44E4C /* PBXTargetDependency */,
+				00D494C61988A24F00A44E4C /* PBXTargetDependency */,
+				00D4949619889F3300A44E4C /* PBXTargetDependency */,
+				00D4948E19889EFA00A44E4C /* PBXTargetDependency */,
+				00D4948619889ED100A44E4C /* PBXTargetDependency */,
+				11754447193596DE0075AF60 /* PBXTargetDependency */,
+				11754449193596DE0075AF60 /* PBXTargetDependency */,
+				1175444B193596DE0075AF60 /* PBXTargetDependency */,
+				1175444D193596DE0075AF60 /* PBXTargetDependency */,
+				1175444F193596DE0075AF60 /* PBXTargetDependency */,
+				11754451193596DE0075AF60 /* PBXTargetDependency */,
+				11754453193596DE0075AF60 /* PBXTargetDependency */,
+				11754455193596DE0075AF60 /* PBXTargetDependency */,
+				11754412193594810075AF60 /* PBXTargetDependency */,
+				11754414193594810075AF60 /* PBXTargetDependency */,
 				009709D516CC676F005DC014 /* PBXTargetDependency */,
 				009709D716CC676F005DC014 /* PBXTargetDependency */,
 				00886BB4164DD247005B1855 /* PBXTargetDependency */,
@@ -31,17 +50,13 @@
 				002932C91530F5AD0022B1BF /* PBXTargetDependency */,
 				002932CB1530F5AD0022B1BF /* PBXTargetDependency */,
 				009F6E6A14C0FE790036C292 /* PBXTargetDependency */,
-				009F6E6C14C0FE790036C292 /* PBXTargetDependency */,
 				009F6E6E14C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7014C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7214C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7414C0FE790036C292 /* PBXTargetDependency */,
-				009F6E7614C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7814C0FE790036C292 /* PBXTargetDependency */,
-				009F6E7A14C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7C14C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7E14C0FE790036C292 /* PBXTargetDependency */,
-				009F6E8014C0FE790036C292 /* PBXTargetDependency */,
 				009F6E8214C0FE790036C292 /* PBXTargetDependency */,
 				0005C96F1006813C004D82BC /* PBXTargetDependency */,
 				0005C9711006813C004D82BC /* PBXTargetDependency */,
@@ -84,7 +99,6 @@
 				0039FB34115AD32700BA0BAD /* PBXTargetDependency */,
 				0039FB43115AD34700BA0BAD /* PBXTargetDependency */,
 				0039FB53115AD3A200BA0BAD /* PBXTargetDependency */,
-				005930E11185637100C890F2 /* PBXTargetDependency */,
 				006A1FCA11D7F87600941A5E /* PBXTargetDependency */,
 				009CB64F120F228F0066763D /* PBXTargetDependency */,
 				00125BAF1249B10500080A0D /* PBXTargetDependency */,
@@ -96,13 +110,6 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
-		0000FA17113332E300657593 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C95510068030004D82BC /* basicApp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 005D2F0F1132E7D800BBAC73;
-			remoteInfo = basicApp_x86_64;
-		};
 		0005C95910068030004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0005C95510068030004D82BC /* basicApp.xcodeproj */;
@@ -593,20 +600,6 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = HodginParticlesRedux;
 		};
-		005930DA1185636300C890F2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 005930D31185636300C890F2 /* AudioGenerative.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = AudioGenerative;
-		};
-		005930E01185637100C890F2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 005930D31185636300C890F2 /* AudioGenerative.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = AudioGenerative;
-		};
 		006A1FC611D7F86000941A5E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */;
@@ -908,13 +901,6 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = BasicAppendTween;
 		};
-		009F6E6B14C0FE790036C292 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = AudioAnalysisSample;
-		};
 		009F6E6D14C0FE790036C292 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 009F6E3714C0FE1D0036C292 /* DragTween.xcodeproj */;
@@ -943,26 +929,12 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = TextInputTween;
 		};
-		009F6E7514C0FE790036C292 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = AudioGenerativeAdvanced;
-		};
 		009F6E7714C0FE790036C292 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = BasicTween;
-		};
-		009F6E7914C0FE790036C292 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = AudioPlayback;
 		};
 		009F6E7B14C0FE790036C292 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -977,13 +949,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = VisualDictionary;
-		};
-		009F6E7F14C0FE790036C292 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = AudioInputSample;
 		};
 		009F6E8114C0FE790036C292 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1054,6 +1019,132 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = CaptureAdvanced;
+		};
+		00D4948319889EBE00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = BasicAppMultiWindow;
+		};
+		00D4948519889ED100A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = BasicAppMultiWindow;
+		};
+		00D4948B19889EED00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = BezierPathIteration;
+		};
+		00D4948D19889EFA00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = BezierPathIteration;
+		};
+		00D4949319889F1B00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ClipboardBasic;
+		};
+		00D4949519889F3300A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ClipboardBasic;
+		};
+		00D4949B1988A0C200A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ConvexHull;
+		};
+		00D494A11988A0E300A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = FallingGears;
+		};
+		00D494A71988A14E00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494A31988A14E00A44E4C /* MultiTouch_OSX.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C756CC2112085F5700922E67;
+			remoteInfo = MultiTouch;
+		};
+		00D494AD1988A1D300A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = Renderer2d;
+		};
+		00D494B31988A1FE00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = RetinaSample;
+		};
+		00D494B91988A22800A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = slerpBasic;
+		};
+		00D494BB1988A24F00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ConvexHull;
+		};
+		00D494BD1988A24F00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = FallingGears;
+		};
+		00D494BF1988A24F00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494A31988A14E00A44E4C /* MultiTouch_OSX.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = MultiTouch;
+		};
+		00D494C11988A24F00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = Renderer2d;
+		};
+		00D494C31988A24F00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = RetinaSample;
+		};
+		00D494C51988A24F00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = slerpBasic;
 		};
 		00D716FA1021335A00894269 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1139,33 +1230,145 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = QTimeAdvApp;
 		};
-		C7FB1E95124BF2E00045AFD2 /* PBXContainerItemProxy */ = {
+		11754409193594480075AF60 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */;
+			containerPortal = 11754405193594480075AF60 /* TextureFont.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = AudioAnalysisSample;
+			remoteInfo = TextureFont;
 		};
-		C7FB1E9E124BF2EB0045AFD2 /* PBXContainerItemProxy */ = {
+		1175440F1935946D0075AF60 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */;
+			containerPortal = 1175440B1935946C0075AF60 /* TextBox.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = AudioGenerativeAdvanced;
+			remoteInfo = TextBox;
 		};
-		C7FB1EA7124BF2F80045AFD2 /* PBXContainerItemProxy */ = {
+		11754411193594810075AF60 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = AudioInputSample;
+			containerPortal = 1175440B1935946C0075AF60 /* TextBox.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = TextBox;
 		};
-		C7FB1EB3124BF3010045AFD2 /* PBXContainerItemProxy */ = {
+		11754413193594810075AF60 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */;
+			containerPortal = 11754405193594480075AF60 /* TextureFont.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = TextureFont;
+		};
+		1175441A193596620075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 11754416193596610075AF60 /* BufferPlayer.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = AudioPlayback;
+			remoteInfo = BufferPlayer;
+		};
+		117544201935966F0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1175441C1935966E0075AF60 /* DelayFeedback.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = DelayFeedback;
+		};
+		117544261935967B0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 117544221935967B0075AF60 /* InputAnalyzer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = InputAnalyzer;
+		};
+		1175442C193596890075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 11754428193596890075AF60 /* MultichannelOutput.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = MultichannelOutput;
+		};
+		11754432193596980075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1175442E193596980075AF60 /* NodeAdvanced.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = NodeAdvanced;
+		};
+		11754438193596B20075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 11754434193596B20075AF60 /* NodeBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = NodeBasic;
+		};
+		1175443E193596BE0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1175443A193596BE0075AF60 /* VoiceBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = VoiceBasic;
+		};
+		11754444193596CF0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 11754440193596CF0075AF60 /* VoiceBasicProcessing.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = VoiceBasicProcessing;
+		};
+		11754446193596DE0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 11754440193596CF0075AF60 /* VoiceBasicProcessing.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = VoiceBasicProcessing;
+		};
+		11754448193596DE0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1175443A193596BE0075AF60 /* VoiceBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = VoiceBasic;
+		};
+		1175444A193596DE0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 11754434193596B20075AF60 /* NodeBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = NodeBasic;
+		};
+		1175444C193596DE0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1175442E193596980075AF60 /* NodeAdvanced.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = NodeAdvanced;
+		};
+		1175444E193596DE0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 11754428193596890075AF60 /* MultichannelOutput.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = MultichannelOutput;
+		};
+		11754450193596DE0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 117544221935967B0075AF60 /* InputAnalyzer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = InputAnalyzer;
+		};
+		11754452193596DE0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1175441C1935966E0075AF60 /* DelayFeedback.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = DelayFeedback;
+		};
+		11754454193596DE0075AF60 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 11754416193596610075AF60 /* BufferPlayer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = BufferPlayer;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -1205,7 +1408,6 @@
 		0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MandelbrotGLSL.xcodeproj; path = ../../MandelbrotGLSL/xcode/MandelbrotGLSL.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Buddhabrot.xcodeproj; path = ../../Buddhabrot/xcode/Buddhabrot.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HodginParticlesRedux.xcodeproj; path = ../../HodginParticlesRedux/xcode/HodginParticlesRedux.xcodeproj; sourceTree = SOURCE_ROOT; };
-		005930D31185636300C890F2 /* AudioGenerative.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioGenerative.xcodeproj; path = ../../AudioGenerative/xcode/AudioGenerative.xcodeproj; sourceTree = SOURCE_ROOT; };
 		006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeWriter.xcodeproj; path = ../../QuickTimeWriter/xcode/QuickTimeWriter.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageHeightField.xcodeproj; path = ../../ImageHeightField/xcode/ImageHeightField.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FlickrTestMultithreaded.xcodeproj; path = ../../FlickrTestMultithreaded/xcode/FlickrTestMultithreaded.xcodeproj; sourceTree = "<group>"; };
@@ -1236,87 +1438,109 @@
 		00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoronoiGpu.xcodeproj; path = ../../VoronoiGpu/xcode/VoronoiGpu.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeBasic.xcodeproj; path = ../../QuickTimeBasic/xcode/QuickTimeBasic.xcodeproj; sourceTree = "<group>"; };
 		00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureAdvanced.xcodeproj; path = ../../CaptureAdvanced/xcode/CaptureAdvanced.xcodeproj; sourceTree = SOURCE_ROOT; };
+		00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicAppMultiWindow.xcodeproj; path = ../../BasicAppMultiWindow/xcode/BasicAppMultiWindow.xcodeproj; sourceTree = "<group>"; };
+		00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BezierPathIteration.xcodeproj; path = ../../BezierPathIteration/xcode/BezierPathIteration.xcodeproj; sourceTree = "<group>"; };
+		00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ClipboardBasic.xcodeproj; path = ../../ClipboardBasic/xcode/ClipboardBasic.xcodeproj; sourceTree = "<group>"; };
+		00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ConvexHull.xcodeproj; path = ../../ConvexHull/xcode/ConvexHull.xcodeproj; sourceTree = "<group>"; };
+		00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FallingGears.xcodeproj; path = ../../FallingGears/xcode/FallingGears.xcodeproj; sourceTree = "<group>"; };
+		00D494A31988A14E00A44E4C /* MultiTouch_OSX.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MultiTouch_OSX.xcodeproj; path = ../../MultiTouchBasic/xcode/MultiTouch_OSX.xcodeproj; sourceTree = "<group>"; };
+		00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Renderer2d.xcodeproj; path = ../../Renderer2dBasic/xcode/Renderer2d.xcodeproj; sourceTree = "<group>"; };
+		00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RetinaSample.xcodeproj; path = ../../RetinaSample/xcode/RetinaSample.xcodeproj; sourceTree = "<group>"; };
+		00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = slerpBasic.xcodeproj; path = ../../slerpBasic/xcode/slerpBasic.xcodeproj; sourceTree = "<group>"; };
 		00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLLighting.xcodeproj; path = ../../OpenGLLighting/xcode/OpenGLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParamsBasic.xcodeproj; path = ../../ParamsBasic/xcode/ParamsBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ListenerBasic.xcodeproj; path = ../../ListenerBasic/xcode/ListenerBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QTimeAdvApp.xcodeproj; path = ../../QuickTimeAdvanced/xcode/QTimeAdvApp.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeIteration.xcodeproj; path = ../../QuickTimeIteration/xcode/QuickTimeIteration.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLSLLighting.xcodeproj; path = ../../GLSLLighting/xcode/GLSLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
-		C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioAnalysisSample.xcodeproj; path = ../../AudioAnalysisSample/xcode/AudioAnalysisSample.xcodeproj; sourceTree = SOURCE_ROOT; };
-		C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioGenerativeAdvanced.xcodeproj; path = ../../AudioGenerativeAdvanced/xcode/AudioGenerativeAdvanced.xcodeproj; sourceTree = SOURCE_ROOT; };
-		C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioInputSample.xcodeproj; path = ../../AudioInputSample/xcode/AudioInputSample.xcodeproj; sourceTree = SOURCE_ROOT; };
-		C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioPlayback.xcodeproj; path = ../../AudioPlayback/xcode/AudioPlayback.xcodeproj; sourceTree = SOURCE_ROOT; };
+		11754405193594480075AF60 /* TextureFont.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextureFont.xcodeproj; path = ../../TextureFont/xcode/TextureFont.xcodeproj; sourceTree = "<group>"; };
+		1175440B1935946C0075AF60 /* TextBox.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextBox.xcodeproj; path = ../../TextBox/xcode/TextBox.xcodeproj; sourceTree = "<group>"; };
+		11754416193596610075AF60 /* BufferPlayer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BufferPlayer.xcodeproj; path = ../../_audio/BufferPlayer/xcode/BufferPlayer.xcodeproj; sourceTree = "<group>"; };
+		1175441C1935966E0075AF60 /* DelayFeedback.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DelayFeedback.xcodeproj; path = ../../_audio/DelayFeedback/xcode/DelayFeedback.xcodeproj; sourceTree = "<group>"; };
+		117544221935967B0075AF60 /* InputAnalyzer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = InputAnalyzer.xcodeproj; path = ../../_audio/InputAnalyzer/xcode/InputAnalyzer.xcodeproj; sourceTree = "<group>"; };
+		11754428193596890075AF60 /* MultichannelOutput.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MultichannelOutput.xcodeproj; path = ../../_audio/MultichannelOutput/xcode/MultichannelOutput.xcodeproj; sourceTree = "<group>"; };
+		1175442E193596980075AF60 /* NodeAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NodeAdvanced.xcodeproj; path = ../../_audio/NodeAdvanced/xcode/NodeAdvanced.xcodeproj; sourceTree = "<group>"; };
+		11754434193596B20075AF60 /* NodeBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NodeBasic.xcodeproj; path = ../../_audio/NodeBasic/xcode/NodeBasic.xcodeproj; sourceTree = "<group>"; };
+		1175443A193596BE0075AF60 /* VoiceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoiceBasic.xcodeproj; path = ../../_audio/VoiceBasic/xcode/VoiceBasic.xcodeproj; sourceTree = "<group>"; };
+		11754440193596CF0075AF60 /* VoiceBasicProcessing.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoiceBasicProcessing.xcodeproj; path = ../../_audio/VoiceBasicProcessing/xcode/VoiceBasicProcessing.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
-				009709CE16CC6741005DC014 /* LocationManager.xcodeproj */,
-				009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */,
-				00886BA9164DD242005B1855 /* Wisteria.xcodeproj */,
-				00886B87164DD1B9005B1855 /* Triangulation.xcodeproj */,
-				00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */,
-				00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */,
+				11754415193596440075AF60 /* _audio */,
 				0029329B1530F5480022B1BF /* _svg */,
 				009F6E0E14C0FDD20036C292 /* _timeline */,
-				002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */,
-				00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */,
-				00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */,
-				00712F441627A45A005FC5A0 /* Instascope.xcodeproj */,
-				00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */,
-				00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */,
-				00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */,
-				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
-				C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */,
-				C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */,
-				C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */,
-				C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */,
-				00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */,
-				009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */,
-				006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */,
-				005930D31185636300C890F2 /* AudioGenerative.xcodeproj */,
-				0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */,
-				0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */,
-				0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */,
-				00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */,
-				009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */,
-				00236D981130E4C7006C991F /* CairoBasic.xcodeproj */,
-				009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */,
-				007BDE071118921D00BC750C /* RDiffusion.xcodeproj */,
-				000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */,
-				00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */,
-				00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */,
-				00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */,
-				00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */,
-				00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */,
-				00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */,
-				00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */,
-				00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */,
-				0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */,
-				0005CA6610068252004D82BC /* waterSim.xcodeproj */,
-				0005CA5D10068241004D82BC /* VBOSample.xcodeproj */,
-				0005CA531006823B004D82BC /* TextTest.xcodeproj */,
-				0005CA4110068230004D82BC /* shadowMap.xcodeproj */,
-				0005CA3810068229004D82BC /* shaderTest.xcodeproj */,
-				0005CA2F10068222004D82BC /* SaveImage.xcodeproj */,
-				0005CA261006821C004D82BC /* rotatingBox.xcodeproj */,
-				0005CA1D10068217004D82BC /* resizeTest.xcodeproj */,
-				0005CA1210068210004D82BC /* rayMarcher.xcodeproj */,
-				0005C9FF10068206004D82BC /* perlinTest.xcodeproj */,
-				0005C9F510068200004D82BC /* OBJLoader.xcodeproj */,
-				0005C9EC100681FC004D82BC /* imageWriterSample.xcodeproj */,
-				0005C9D9100681F2004D82BC /* HodginParticles.xcodeproj */,
-				0005C9D0100681E9004D82BC /* fontSample.xcodeproj */,
-				0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */,
-				0005C9B5100681D9004D82BC /* eventTest.xcodeproj */,
-				0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */,
-				0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */,
 				0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */,
-				0005C95E1006804E004D82BC /* BasicParticle.xcodeproj */,
+				00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */,
 				0005C95510068030004D82BC /* basicApp.xcodeproj */,
+				0005C95E1006804E004D82BC /* BasicParticle.xcodeproj */,
 				0005C985100681AF004D82BC /* bezierPath.xcodeproj */,
+				00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */,
 				0005C98E100681B5004D82BC /* bspline.xcodeproj */,
+				0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */,
+				00236D981130E4C7006C991F /* CairoBasic.xcodeproj */,
+				00B10215101A5CC90078D775 /* CaptureAdvanced.xcodeproj */,
+				009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */,
+				00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */,
+				00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */,
+				0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */,
+				0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */,
+				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
+				0005C9B5100681D9004D82BC /* eventTest.xcodeproj */,
+				00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */,
+				0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */,
+				009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */,
+				0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */,
+				00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */,
+				0005C9D0100681E9004D82BC /* fontSample.xcodeproj */,
+				00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */,
+				00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */,
+				00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */,
+				0005C9D9100681F2004D82BC /* HodginParticles.xcodeproj */,
+				0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */,
+				009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */,
+				00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */,
+				0005C9EC100681FC004D82BC /* imageWriterSample.xcodeproj */,
+				00712F441627A45A005FC5A0 /* Instascope.xcodeproj */,
+				00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */,
+				009709CE16CC6741005DC014 /* LocationManager.xcodeproj */,
+				0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */,
+				00D494A31988A14E00A44E4C /* MultiTouch_OSX.xcodeproj */,
+				000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */,
+				0005C9F510068200004D82BC /* OBJLoader.xcodeproj */,
+				00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */,
+				00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */,
+				0005C9FF10068206004D82BC /* perlinTest.xcodeproj */,
+				00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */,
+				00712F4E1627A46A005FC5A0 /* PolygonBoolean.xcodeproj */,
+				00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */,
+				00712F581627A47B005FC5A0 /* QuaternionAccum.xcodeproj */,
+				00AE22C2164C5094007D532C /* QuickTimeBasic.xcodeproj */,
+				00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */,
+				006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */,
+				0005CA1210068210004D82BC /* rayMarcher.xcodeproj */,
+				007BDE071118921D00BC750C /* RDiffusion.xcodeproj */,
+				00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */,
+				0005CA1D10068217004D82BC /* resizeTest.xcodeproj */,
+				00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */,
+				0005CA261006821C004D82BC /* rotatingBox.xcodeproj */,
+				0005CA2F10068222004D82BC /* SaveImage.xcodeproj */,
+				0005CA3810068229004D82BC /* shaderTest.xcodeproj */,
+				0005CA4110068230004D82BC /* shadowMap.xcodeproj */,
+				00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */,
+				002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */,
+				009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */,
+				1175440B1935946C0075AF60 /* TextBox.xcodeproj */,
+				0005CA531006823B004D82BC /* TextTest.xcodeproj */,
+				11754405193594480075AF60 /* TextureFont.xcodeproj */,
+				00886B87164DD1B9005B1855 /* Triangulation.xcodeproj */,
+				00886B7B164DD1A9005B1855 /* Tubular.xcodeproj */,
+				0005CA5D10068241004D82BC /* VBOSample.xcodeproj */,
+				00AE0FE7113DF18C005AFB58 /* VoronoiGpu.xcodeproj */,
+				0005CA6610068252004D82BC /* waterSim.xcodeproj */,
+				00886BA9164DD242005B1855 /* Wisteria.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1324,7 +1548,6 @@
 			isa = PBXGroup;
 			children = (
 				0005C95A10068030004D82BC /* basicApp.app */,
-				0000FA18113332E300657593 /* basicApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1612,14 +1835,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		005930D41185636300C890F2 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				005930DB1185636300C890F2 /* AudioGenerative.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		006A1FBE11D7F85F00941A5E /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1876,6 +2091,78 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00D4948019889EBE00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D4948419889EBE00A44E4C /* BasicAppMultiWindow.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D4948819889EED00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D4948C19889EED00A44E4C /* BezierPathIteration.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D4949019889F1B00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D4949419889F1B00A44E4C /* ClipboardBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494981988A0C200A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D4949C1988A0C200A44E4C /* ConvexHull.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D4949E1988A0E300A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494A21988A0E300A44E4C /* FallingGears.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494A41988A14E00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494A81988A14E00A44E4C /* MultiTouch.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494AA1988A1D300A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494AE1988A1D300A44E4C /* Renderer2d.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494B01988A1FE00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494B41988A1FE00A44E4C /* RetinaSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494B61988A22800A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494BA1988A22800A44E4C /* slerpBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		00D716F71021335A00894269 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1924,34 +2211,97 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C7FB1E8F124BF2E00045AFD2 /* Products */ = {
+		11754406193594480075AF60 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C7FB1E96124BF2E00045AFD2 /* AudioAnalysisSample.app */,
+				1175440A193594480075AF60 /* TextureFont.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C7FB1E98124BF2EB0045AFD2 /* Products */ = {
+		1175440C1935946C0075AF60 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C7FB1E9F124BF2EB0045AFD2 /* AudioGenerativeAdvanced.app */,
+				117544101935946D0075AF60 /* TextBox.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C7FB1EA1124BF2F80045AFD2 /* Products */ = {
+		11754415193596440075AF60 /* _audio */ = {
 			isa = PBXGroup;
 			children = (
-				C7FB1EA8124BF2F80045AFD2 /* AudioInputSample.app */,
+				11754440193596CF0075AF60 /* VoiceBasicProcessing.xcodeproj */,
+				1175443A193596BE0075AF60 /* VoiceBasic.xcodeproj */,
+				11754434193596B20075AF60 /* NodeBasic.xcodeproj */,
+				1175442E193596980075AF60 /* NodeAdvanced.xcodeproj */,
+				11754428193596890075AF60 /* MultichannelOutput.xcodeproj */,
+				117544221935967B0075AF60 /* InputAnalyzer.xcodeproj */,
+				1175441C1935966E0075AF60 /* DelayFeedback.xcodeproj */,
+				11754416193596610075AF60 /* BufferPlayer.xcodeproj */,
+			);
+			name = _audio;
+			sourceTree = "<group>";
+		};
+		11754417193596610075AF60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1175441B193596620075AF60 /* BufferPlayer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C7FB1EAA124BF3010045AFD2 /* Products */ = {
+		1175441D1935966E0075AF60 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C7FB1EB4124BF3010045AFD2 /* AudioPlayback.app */,
+				117544211935966F0075AF60 /* DelayFeedback.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		117544231935967B0075AF60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				117544271935967B0075AF60 /* InputAnalyzer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		11754429193596890075AF60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1175442D193596890075AF60 /* MultichannelOutput.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1175442F193596980075AF60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				11754433193596980075AF60 /* NodeAdvanced.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		11754435193596B20075AF60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				11754439193596B20075AF60 /* NodeBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		1175443B193596BE0075AF60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1175443F193596BE0075AF60 /* VoiceBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		11754441193596CF0075AF60 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				11754445193596CF0075AF60 /* VoiceBasicProcessing.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1986,32 +2336,16 @@
 					ProjectRef = 0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */;
 				},
 				{
-					ProductGroup = C7FB1E8F124BF2E00045AFD2 /* Products */;
-					ProjectRef = C7FB1E8E124BF2E00045AFD2 /* AudioAnalysisSample.xcodeproj */;
-				},
-				{
-					ProductGroup = 005930D41185636300C890F2 /* Products */;
-					ProjectRef = 005930D31185636300C890F2 /* AudioGenerative.xcodeproj */;
-				},
-				{
-					ProductGroup = C7FB1E98124BF2EB0045AFD2 /* Products */;
-					ProjectRef = C7FB1E97124BF2EB0045AFD2 /* AudioGenerativeAdvanced.xcodeproj */;
-				},
-				{
-					ProductGroup = C7FB1EA1124BF2F80045AFD2 /* Products */;
-					ProjectRef = C7FB1EA0124BF2F80045AFD2 /* AudioInputSample.xcodeproj */;
-				},
-				{
-					ProductGroup = C7FB1EAA124BF3010045AFD2 /* Products */;
-					ProjectRef = C7FB1EA9124BF3010045AFD2 /* AudioPlayback.xcodeproj */;
-				},
-				{
 					ProductGroup = 0005C95610068030004D82BC /* Products */;
 					ProjectRef = 0005C95510068030004D82BC /* basicApp.xcodeproj */;
 				},
 				{
 					ProductGroup = 009F6E1014C0FDE90036C292 /* Products */;
 					ProjectRef = 009F6E0F14C0FDE90036C292 /* BasicAppendTween.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D4948019889EBE00A44E4C /* Products */;
+					ProjectRef = 00D4947F19889EBE00A44E4C /* BasicAppMultiWindow.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C95F1006804E004D82BC /* Products */;
@@ -2026,12 +2360,20 @@
 					ProjectRef = 0005C985100681AF004D82BC /* bezierPath.xcodeproj */;
 				},
 				{
+					ProductGroup = 00D4948819889EED00A44E4C /* Products */;
+					ProjectRef = 00D4948719889EED00A44E4C /* BezierPathIteration.xcodeproj */;
+				},
+				{
 					ProductGroup = 0005C98F100681B5004D82BC /* Products */;
 					ProjectRef = 0005C98E100681B5004D82BC /* bspline.xcodeproj */;
 				},
 				{
 					ProductGroup = 0039FB49115AD39A00BA0BAD /* Products */;
 					ProjectRef = 0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */;
+				},
+				{
+					ProductGroup = 11754417193596610075AF60 /* Products */;
+					ProjectRef = 11754416193596610075AF60 /* BufferPlayer.xcodeproj */;
 				},
 				{
 					ProductGroup = 00236D991130E4C7006C991F /* Products */;
@@ -2046,6 +2388,14 @@
 					ProjectRef = 009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */;
 				},
 				{
+					ProductGroup = 00D4949019889F1B00A44E4C /* Products */;
+					ProjectRef = 00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D494981988A0C200A44E4C /* Products */;
+					ProjectRef = 00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */;
+				},
+				{
 					ProductGroup = 0005C9A2100681CB004D82BC /* Products */;
 					ProjectRef = 0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */;
 				},
@@ -2056,6 +2406,10 @@
 				{
 					ProductGroup = 009F6E2E14C0FE120036C292 /* Products */;
 					ProjectRef = 009F6E2D14C0FE120036C292 /* CustomLerp.xcodeproj */;
+				},
+				{
+					ProductGroup = 1175441D1935966E0075AF60 /* Products */;
+					ProjectRef = 1175441C1935966E0075AF60 /* DelayFeedback.xcodeproj */;
 				},
 				{
 					ProductGroup = 009F6E3814C0FE1D0036C292 /* Products */;
@@ -2076,6 +2430,10 @@
 				{
 					ProductGroup = 0005C9B6100681D9004D82BC /* Products */;
 					ProjectRef = 0005C9B5100681D9004D82BC /* eventTest.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D4949E1988A0E300A44E4C /* Products */;
+					ProjectRef = 00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */;
 				},
 				{
 					ProductGroup = 0039FB29115AD31B00BA0BAD /* Products */;
@@ -2138,6 +2496,10 @@
 					ProjectRef = 0005C9EC100681FC004D82BC /* imageWriterSample.xcodeproj */;
 				},
 				{
+					ProductGroup = 117544231935967B0075AF60 /* Products */;
+					ProjectRef = 117544221935967B0075AF60 /* InputAnalyzer.xcodeproj */;
+				},
+				{
 					ProductGroup = 00712F451627A45A005FC5A0 /* Products */;
 					ProjectRef = 00712F441627A45A005FC5A0 /* Instascope.xcodeproj */;
 				},
@@ -2152,6 +2514,22 @@
 				{
 					ProductGroup = 0039FB39115AD33F00BA0BAD /* Products */;
 					ProjectRef = 0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */;
+				},
+				{
+					ProductGroup = 11754429193596890075AF60 /* Products */;
+					ProjectRef = 11754428193596890075AF60 /* MultichannelOutput.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D494A41988A14E00A44E4C /* Products */;
+					ProjectRef = 00D494A31988A14E00A44E4C /* MultiTouch_OSX.xcodeproj */;
+				},
+				{
+					ProductGroup = 1175442F193596980075AF60 /* Products */;
+					ProjectRef = 1175442E193596980075AF60 /* NodeAdvanced.xcodeproj */;
+				},
+				{
+					ProductGroup = 11754435193596B20075AF60 /* Products */;
+					ProjectRef = 11754434193596B20075AF60 /* NodeBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 000B677E103CB3C5003D463F /* Products */;
@@ -2214,8 +2592,16 @@
 					ProjectRef = 007BDE071118921D00BC750C /* RDiffusion.xcodeproj */;
 				},
 				{
+					ProductGroup = 00D494AA1988A1D300A44E4C /* Products */;
+					ProjectRef = 00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */;
+				},
+				{
 					ProductGroup = 0005CA1E10068217004D82BC /* Products */;
 					ProjectRef = 0005CA1D10068217004D82BC /* resizeTest.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D494B01988A1FE00A44E4C /* Products */;
+					ProjectRef = 00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005CA271006821C004D82BC /* Products */;
@@ -2238,6 +2624,10 @@
 					ProjectRef = 002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */;
 				},
 				{
+					ProductGroup = 00D494B61988A22800A44E4C /* Products */;
+					ProjectRef = 00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */;
+				},
+				{
 					ProductGroup = 002CFBD21644BE2B00C1A31D /* Products */;
 					ProjectRef = 002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */;
 				},
@@ -2246,12 +2636,20 @@
 					ProjectRef = 009C40E61120680A0053283A /* SurfaceBasic.xcodeproj */;
 				},
 				{
+					ProductGroup = 1175440C1935946C0075AF60 /* Products */;
+					ProjectRef = 1175440B1935946C0075AF60 /* TextBox.xcodeproj */;
+				},
+				{
 					ProductGroup = 009F6E5614C0FE4D0036C292 /* Products */;
 					ProjectRef = 009F6E5514C0FE4D0036C292 /* TextInputTween.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005CA541006823B004D82BC /* Products */;
 					ProjectRef = 0005CA531006823B004D82BC /* TextTest.xcodeproj */;
+				},
+				{
+					ProductGroup = 11754406193594480075AF60 /* Products */;
+					ProjectRef = 11754405193594480075AF60 /* TextureFont.xcodeproj */;
 				},
 				{
 					ProductGroup = 00886B88164DD1B9005B1855 /* Products */;
@@ -2268,6 +2666,14 @@
 				{
 					ProductGroup = 009F6E6014C0FE570036C292 /* Products */;
 					ProjectRef = 009F6E5F14C0FE570036C292 /* VisualDictionary.xcodeproj */;
+				},
+				{
+					ProductGroup = 1175443B193596BE0075AF60 /* Products */;
+					ProjectRef = 1175443A193596BE0075AF60 /* VoiceBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 11754441193596CF0075AF60 /* Products */;
+					ProjectRef = 11754440193596CF0075AF60 /* VoiceBasicProcessing.xcodeproj */;
 				},
 				{
 					ProductGroup = 00AE0FE8113DF18C005AFB58 /* Products */;
@@ -2290,13 +2696,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		0000FA18113332E300657593 /* basicApp.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = basicApp.app;
-			remoteRef = 0000FA17113332E300657593 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		0005C95A10068030004D82BC /* basicApp.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2542,13 +2941,6 @@
 			remoteRef = 0049C669101136610015B4B9 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		005930DB1185636300C890F2 /* AudioGenerative.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = AudioGenerative.app;
-			remoteRef = 005930DA1185636300C890F2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		006A1FC711D7F86000941A5E /* QuickTimeWriter.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2759,6 +3151,69 @@
 			remoteRef = 00B10219101A5CC90078D775 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		00D4948419889EBE00A44E4C /* BasicAppMultiWindow.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BasicAppMultiWindow.app;
+			remoteRef = 00D4948319889EBE00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D4948C19889EED00A44E4C /* BezierPathIteration.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BezierPathIteration.app;
+			remoteRef = 00D4948B19889EED00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D4949419889F1B00A44E4C /* ClipboardBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ClipboardBasic.app;
+			remoteRef = 00D4949319889F1B00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D4949C1988A0C200A44E4C /* ConvexHull.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ConvexHull.app;
+			remoteRef = 00D4949B1988A0C200A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494A21988A0E300A44E4C /* FallingGears.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FallingGears.app;
+			remoteRef = 00D494A11988A0E300A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494A81988A14E00A44E4C /* MultiTouch.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MultiTouch.app;
+			remoteRef = 00D494A71988A14E00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494AE1988A1D300A44E4C /* Renderer2d.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Renderer2d.app;
+			remoteRef = 00D494AD1988A1D300A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494B41988A1FE00A44E4C /* RetinaSample.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = RetinaSample.app;
+			remoteRef = 00D494B31988A1FE00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494BA1988A22800A44E4C /* slerpBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = slerpBasic.app;
+			remoteRef = 00D494B91988A22800A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		00D716FB1021335A00894269 /* OpenGLLighting.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2801,32 +3256,74 @@
 			remoteRef = 00F0B35E1039F84C003AB416 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C7FB1E96124BF2E00045AFD2 /* AudioAnalysisSample.app */ = {
+		1175440A193594480075AF60 /* TextureFont.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = AudioAnalysisSample.app;
-			remoteRef = C7FB1E95124BF2E00045AFD2 /* PBXContainerItemProxy */;
+			path = TextureFont.app;
+			remoteRef = 11754409193594480075AF60 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C7FB1E9F124BF2EB0045AFD2 /* AudioGenerativeAdvanced.app */ = {
+		117544101935946D0075AF60 /* TextBox.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = AudioGenerativeAdvanced.app;
-			remoteRef = C7FB1E9E124BF2EB0045AFD2 /* PBXContainerItemProxy */;
+			path = TextBox.app;
+			remoteRef = 1175440F1935946D0075AF60 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C7FB1EA8124BF2F80045AFD2 /* AudioInputSample.app */ = {
+		1175441B193596620075AF60 /* BufferPlayer.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = AudioInputSample.app;
-			remoteRef = C7FB1EA7124BF2F80045AFD2 /* PBXContainerItemProxy */;
+			path = BufferPlayer.app;
+			remoteRef = 1175441A193596620075AF60 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		C7FB1EB4124BF3010045AFD2 /* AudioPlayback.app */ = {
+		117544211935966F0075AF60 /* DelayFeedback.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = AudioPlayback.app;
-			remoteRef = C7FB1EB3124BF3010045AFD2 /* PBXContainerItemProxy */;
+			path = DelayFeedback.app;
+			remoteRef = 117544201935966F0075AF60 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		117544271935967B0075AF60 /* InputAnalyzer.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = InputAnalyzer.app;
+			remoteRef = 117544261935967B0075AF60 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1175442D193596890075AF60 /* MultichannelOutput.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MultichannelOutput.app;
+			remoteRef = 1175442C193596890075AF60 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		11754433193596980075AF60 /* NodeAdvanced.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = NodeAdvanced.app;
+			remoteRef = 11754432193596980075AF60 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		11754439193596B20075AF60 /* NodeBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = NodeBasic.app;
+			remoteRef = 11754438193596B20075AF60 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1175443F193596BE0075AF60 /* VoiceBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = VoiceBasic.app;
+			remoteRef = 1175443E193596BE0075AF60 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		11754445193596CF0075AF60 /* VoiceBasicProcessing.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = VoiceBasicProcessing.app;
+			remoteRef = 11754444193596CF0075AF60 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -3007,11 +3504,6 @@
 			name = HodginParticlesRedux;
 			targetProxy = 0049C66B1011366C0015B4B9 /* PBXContainerItemProxy */;
 		};
-		005930E11185637100C890F2 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AudioGenerative;
-			targetProxy = 005930E01185637100C890F2 /* PBXContainerItemProxy */;
-		};
 		006A1FCA11D7F87600941A5E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = QuickTimeWriter;
@@ -3097,11 +3589,6 @@
 			name = BasicAppendTween;
 			targetProxy = 009F6E6914C0FE790036C292 /* PBXContainerItemProxy */;
 		};
-		009F6E6C14C0FE790036C292 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AudioAnalysisSample;
-			targetProxy = 009F6E6B14C0FE790036C292 /* PBXContainerItemProxy */;
-		};
 		009F6E6E14C0FE790036C292 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = DragTween;
@@ -3122,20 +3609,10 @@
 			name = TextInputTween;
 			targetProxy = 009F6E7314C0FE790036C292 /* PBXContainerItemProxy */;
 		};
-		009F6E7614C0FE790036C292 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AudioGenerativeAdvanced;
-			targetProxy = 009F6E7514C0FE790036C292 /* PBXContainerItemProxy */;
-		};
 		009F6E7814C0FE790036C292 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = BasicTween;
 			targetProxy = 009F6E7714C0FE790036C292 /* PBXContainerItemProxy */;
-		};
-		009F6E7A14C0FE790036C292 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AudioPlayback;
-			targetProxy = 009F6E7914C0FE790036C292 /* PBXContainerItemProxy */;
 		};
 		009F6E7C14C0FE790036C292 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3146,11 +3623,6 @@
 			isa = PBXTargetDependency;
 			name = VisualDictionary;
 			targetProxy = 009F6E7D14C0FE790036C292 /* PBXContainerItemProxy */;
-		};
-		009F6E8014C0FE790036C292 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AudioInputSample;
-			targetProxy = 009F6E7F14C0FE790036C292 /* PBXContainerItemProxy */;
 		};
 		009F6E8214C0FE790036C292 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3182,6 +3654,51 @@
 			name = CaptureAdvanced;
 			targetProxy = 00B1021E101A5CE40078D775 /* PBXContainerItemProxy */;
 		};
+		00D4948619889ED100A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BasicAppMultiWindow;
+			targetProxy = 00D4948519889ED100A44E4C /* PBXContainerItemProxy */;
+		};
+		00D4948E19889EFA00A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BezierPathIteration;
+			targetProxy = 00D4948D19889EFA00A44E4C /* PBXContainerItemProxy */;
+		};
+		00D4949619889F3300A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ClipboardBasic;
+			targetProxy = 00D4949519889F3300A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494BC1988A24F00A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ConvexHull;
+			targetProxy = 00D494BB1988A24F00A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494BE1988A24F00A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FallingGears;
+			targetProxy = 00D494BD1988A24F00A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494C01988A24F00A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MultiTouch;
+			targetProxy = 00D494BF1988A24F00A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494C21988A24F00A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Renderer2d;
+			targetProxy = 00D494C11988A24F00A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494C41988A24F00A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RetinaSample;
+			targetProxy = 00D494C31988A24F00A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494C61988A24F00A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = slerpBasic;
+			targetProxy = 00D494C51988A24F00A44E4C /* PBXContainerItemProxy */;
+		};
 		00D716FE1021336B00894269 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = OpenGLLighting;
@@ -3211,6 +3728,56 @@
 			isa = PBXTargetDependency;
 			name = QTimeAdvApp;
 			targetProxy = 00F0B36A1039F869003AB416 /* PBXContainerItemProxy */;
+		};
+		11754412193594810075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TextBox;
+			targetProxy = 11754411193594810075AF60 /* PBXContainerItemProxy */;
+		};
+		11754414193594810075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TextureFont;
+			targetProxy = 11754413193594810075AF60 /* PBXContainerItemProxy */;
+		};
+		11754447193596DE0075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = VoiceBasicProcessing;
+			targetProxy = 11754446193596DE0075AF60 /* PBXContainerItemProxy */;
+		};
+		11754449193596DE0075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = VoiceBasic;
+			targetProxy = 11754448193596DE0075AF60 /* PBXContainerItemProxy */;
+		};
+		1175444B193596DE0075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NodeBasic;
+			targetProxy = 1175444A193596DE0075AF60 /* PBXContainerItemProxy */;
+		};
+		1175444D193596DE0075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NodeAdvanced;
+			targetProxy = 1175444C193596DE0075AF60 /* PBXContainerItemProxy */;
+		};
+		1175444F193596DE0075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MultichannelOutput;
+			targetProxy = 1175444E193596DE0075AF60 /* PBXContainerItemProxy */;
+		};
+		11754451193596DE0075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = InputAnalyzer;
+			targetProxy = 11754450193596DE0075AF60 /* PBXContainerItemProxy */;
+		};
+		11754453193596DE0075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DelayFeedback;
+			targetProxy = 11754452193596DE0075AF60 /* PBXContainerItemProxy */;
+		};
+		11754455193596DE0075AF60 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BufferPlayer;
+			targetProxy = 11754454193596DE0075AF60 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

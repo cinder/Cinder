@@ -1,0 +1,1493 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\app">
+      <UniqueIdentifier>{f5ddca15-2dca-457c-a371-d980d510eaf1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{4f01399a-99e9-43e7-8108-2d2d4528a7ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gl">
+      <UniqueIdentifier>{0116574c-013b-431f-ba54-30771ade01dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ip">
+      <UniqueIdentifier>{9af5dc40-dc35-4855-89c8-9cb84311d5f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\msw">
+      <UniqueIdentifier>{feee0bff-b837-4177-b068-c83f77475ed6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\params">
+      <UniqueIdentifier>{79c99aa4-da3d-4c7e-868a-ed5a7fc7051d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AntTweakBar">
+      <UniqueIdentifier>{99377963-90c2-47e7-8eb2-fc5062aa2df9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\videoInput">
+      <UniqueIdentifier>{5d424334-6efe-4a4e-8fea-a1aaf9b819d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\app">
+      <UniqueIdentifier>{d6eac4b5-8dab-414a-b74e-f19e30e717f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio">
+      <UniqueIdentifier>{0b0d3d16-2551-4216-bd1d-753e3b16ba68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gl">
+      <UniqueIdentifier>{d34a7f38-f80a-46e6-95a5-b22bc1e11c6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ip">
+      <UniqueIdentifier>{a4e8fe51-2bad-4ec9-b09e-557113e0b609}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\msw">
+      <UniqueIdentifier>{bf2ac98b-94aa-46f0-88d6-64c942f97dda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\params">
+      <UniqueIdentifier>{2f24114f-d6c6-41e7-9577-fcca4c7c8838}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\videoinput">
+      <UniqueIdentifier>{da586344-c7c0-477a-8f62-0a718391cfb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Header Files\rapidxml">
+      <UniqueIdentifier>{5af4abed-f424-479b-8c89-969fc75d54be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\libtess2">
+      <UniqueIdentifier>{2d33008c-c675-44bd-a5bb-b5998abbf655}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\jsoncpp">
+      <UniqueIdentifier>{13c0913f-8fdb-4945-a68a-6b210c4e8d91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\json">
+      <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\svg">
+      <UniqueIdentifier>{74f66efa-5b4e-49f4-8ea2-21b75f65a52e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\svg">
+      <UniqueIdentifier>{93ad9a5c-9ccb-4f98-8d4c-bf21a522208f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\linebreak">
+      <UniqueIdentifier>{32843c15-443f-4fa7-ab9c-be6125f164f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\qtime">
+      <UniqueIdentifier>{90ff4519-84c5-42d5-bece-b27ed8b4beb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\qtime">
+      <UniqueIdentifier>{c8db6b91-0c81-4c5b-ae73-994db8d58d64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\dx">
+      <UniqueIdentifier>{1a305511-2204-4100-81d9-aecef552ae09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\dx">
+      <UniqueIdentifier>{aaf12809-97ce-4c25-bb74-4c111e438a25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\dsp">
+      <UniqueIdentifier>{547d2686-dd07-4302-befa-3d0815504249}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\dsp\ooura">
+      <UniqueIdentifier>{2d2a5389-5f11-49bc-9dfb-a1f46b763ee7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\audio\msw">
+      <UniqueIdentifier>{006e6941-3453-4a49-b5e1-097b45b3b46f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\dsp">
+      <UniqueIdentifier>{5bcc1350-6288-4024-87af-da6034358005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\dsp\ooura">
+      <UniqueIdentifier>{c7c7ffb3-97a4-4caa-86cb-58c371be8901}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\msw">
+      <UniqueIdentifier>{9bffb733-d3c9-4490-b49a-08acceaf4382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\r8brain">
+      <UniqueIdentifier>{10a5e497-30fb-47ca-8245-cfe680d3c82b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis">
+      <UniqueIdentifier>{f03386d6-6073-489e-ab46-87d5bd3d80b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\ogg">
+      <UniqueIdentifier>{47a5d57e-c82d-486f-ac44-199c95fca43e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis">
+      <UniqueIdentifier>{1ca569ac-2711-4cb6-b62d-12aaddfc6eaf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\books">
+      <UniqueIdentifier>{f89bd7f9-65b1-4613-907e-2c03dff66bf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\books\coupled">
+      <UniqueIdentifier>{9360203e-665f-4517-9f44-124324600a2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\books\floor">
+      <UniqueIdentifier>{df706862-286a-49fb-a457-20bf986491ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\books\uncoupled">
+      <UniqueIdentifier>{5d403959-0457-4edb-91b2-8520b675aa11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\oggvorbis\vorbis\modes">
+      <UniqueIdentifier>{54a3930c-e7ed-418e-83b6-977db7fadc51}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\cinder\Area.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\BandedMatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\BSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\BSplineFit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Capture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Channel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\CinderMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Color.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ConvexHull.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\DataSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\DataTarget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageIo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageSourcePng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ObjLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Path2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Perlin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\PolyLine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Rand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Rect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Serial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Shape2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Stream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Surface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\System.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\TriMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Url.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Xml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\App.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppBasic.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMsw.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMswBasic.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGdi.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGl.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\KeyEvent.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\Renderer.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\DisplayList.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Fbo.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\gl.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\GLee.c">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\GlslProg.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Light.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Material.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Texture.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TileRender.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\VBO.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\EdgeDetect.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Fill.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Flip.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Grayscale.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Hdr.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Premultiply.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Resize.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Threshold.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Trim.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\msw\CinderMsw.cpp">
+      <Filter>Source Files\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\msw\CinderMswGdiPlus.cpp">
+      <Filter>Source Files\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\msw\StackWalker.cpp">
+      <Filter>Source Files\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\params\Params.cpp">
+      <Filter>Source Files\params</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\LoadOGL.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwBar.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwColors.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwFonts.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwOpenGL.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\videoInput\videoInput.cpp">
+      <Filter>Source Files\videoInput</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Ray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Blend.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Clipboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\bucketalloc.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\dict.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\geom.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\mesh.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\priorityq.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\sweep.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\libtess2\tess.c">
+      <Filter>Source Files\libtess2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Triangulate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TextureFont.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Frustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Plane.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Timeline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\TimelineItem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Tween.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Base64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\json_reader.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\json_value.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\json_writer.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Json.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\svg\Svg.cpp">
+      <Filter>Source Files\svg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linebreak\linebreak.c">
+      <Filter>Source Files\linebreak</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linebreak\linebreakdata.c">
+      <Filter>Source Files\linebreak</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linebreak\linebreakdef.c">
+      <Filter>Source Files\linebreak</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Unicode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\Window.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\StereoAutoFocuser.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\QuickTime.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMswRendererDx.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DDSTextureLoader.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\dx.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxLight.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxTexture.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxTextureFont.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxVbo.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\HlslProg.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\MatrixStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\dx\DxRenderTarget.cpp">
+      <Filter>Source Files\dx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\ChannelRouterNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Context.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\DelayNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Device.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\FileOggVorbis.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\FilterNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\GenNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\InputNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Node.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\NodeMath.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\OutputNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\PanNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Param.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\SamplePlayerNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\SampleRecorderNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Source.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Target.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Utilities.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\Voice.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\WaveTable.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\Biquad.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\Converter.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\ConverterR8brain.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\Dsp.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\Fft.cpp">
+      <Filter>Source Files\audio\dsp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\dsp\ooura\fftsg.cpp">
+      <Filter>Source Files\audio\dsp\ooura</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\ContextWasapi.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\ContextXAudio.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\DeviceManagerWasapi.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\FileMediaFoundation.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\msw\MswUtil.cpp">
+      <Filter>Source Files\audio\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\r8brain\r8bbase.cpp">
+      <Filter>Source Files\r8brain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\ogg\bitwise.c">
+      <Filter>Source Files\oggvorbis\ogg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\ogg\framing.c">
+      <Filter>Source Files\oggvorbis\ogg</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\analysis.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\bitrate.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\block.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\codebook.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\envelope.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\floor0.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\floor1.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\info.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\lookup.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\lpc.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\lsp.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\mapping0.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\mdct.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\psy.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\registry.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\res0.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\sharedbook.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\smallft.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\synthesis.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\vorbisenc.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\vorbisfile.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\oggvorbis\vorbis\window.c">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\audio\MonitorNode.cpp">
+      <Filter>Source Files\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\CinderAssert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\LoadOGL.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\resource.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwBar.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwColors.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwFonts.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwGraph.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwMgr.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwOpenGL.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwPrecomp.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Arcball.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Area.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\AxisAlignedBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\BandedMatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\BSpline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\BSplineFit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Capture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Channel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ChanTraits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Cinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CinderMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CinderResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ConvexHull.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\DataSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\DataTarget.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Filter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ImageIo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ImageSourceFileWic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ImageSourcePng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ImageTargetFileWic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\KdTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\MayaCamUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ObjLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Path2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Perlin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\PolyLine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Quaternion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Rand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Ray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Rect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Serial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Shape2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Stream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Surface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\System.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Thread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ConcurrentCircularBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\TriMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Url.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Xml.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\App.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppBasic.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppDialog.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMsw.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMswBasic.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMswRenderer.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGdi.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGl.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMswScreenSaver.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\FileDropEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\KeyEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\MouseEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Renderer.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\TouchEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\DisplayList.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Fbo.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\gl.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\GLee.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\GlslProg.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Light.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Material.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Texture.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\TileRender.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\VBO.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\EdgeDetect.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Fill.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Flip.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Grayscale.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Hdr.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Premultiply.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Resize.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Threshold.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Trim.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\msw\CinderMsw.h">
+      <Filter>Header Files\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\msw\CinderMswGdiPlus.h">
+      <Filter>Header Files\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\msw\OutputDebugStringStream.h">
+      <Filter>Header Files\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\params\Params.h">
+      <Filter>Header Files\params</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\msw\videoInput\videoInput.h">
+      <Filter>Header Files\videoinput</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\UrlImplWinInet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Event.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\ResizeEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Function.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Filesystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Blend.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rapidxml\rapidxml.hpp">
+      <Filter>Header Files\rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\rapidxml\rapidxml_print.hpp">
+      <Filter>Header Files\rapidxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Clipboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppNative.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\bucketalloc.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\dict.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\geom.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\mesh.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\priorityq.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\sweep.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\tess.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\libtess2\tesselator.h">
+      <Filter>Source Files\libtess2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Triangulate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Easing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Timeline.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\TimelineItem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Tween.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Easing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Matrix22.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Matrix33.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Matrix44.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\MatrixAlgo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\TextureFont.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Base64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Frustum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Plane.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\autolink.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\config.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\features.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\forwards.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\json.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\reader.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\value.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\json\writer.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\jsoncpp\json_batchallocator.h">
+      <Filter>Source Files\jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\svg\Svg.h">
+      <Filter>Header Files\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\svg\SvgGl.h">
+      <Filter>Header Files\svg</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Unicode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Window.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\QuickTime.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DDS.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DDSTextureLoader.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\dx.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxLight.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxTexture.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxTextureFont.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxVbo.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\gldx.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\HlslProg.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMswRendererDx.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\RendererDx.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\MatrixStack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\dx\DxRenderTarget.h">
+      <Filter>Header Files\dx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Buffer.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\ChannelRouterNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Context.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Debug.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\DelayNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Device.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Exception.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\FileOggVorbis.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\FilterNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\GainNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\GenNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\InputNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Node.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\NodeEffects.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\NodeMath.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\OutputNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\PanNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Param.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\SamplePlayerNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\SampleRecorderNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\SampleType.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Source.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Target.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Utilities.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\Voice.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\WaveformType.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\WaveTable.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\Biquad.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\Converter.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\ConverterR8brain.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\Dsp.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\Fft.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\RingBuffer.h">
+      <Filter>Header Files\audio\dsp</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\dsp\ooura\fftsg.h">
+      <Filter>Header Files\audio\dsp\ooura</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\ContextWasapi.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\ContextXAudio.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\DeviceManagerWasapi.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\FileMediaFoundation.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\msw\MswUtil.h">
+      <Filter>Header Files\audio\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPBlockConvolver.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPFIRFilter.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPFracInterpolator.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPRealFFT.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPResampler.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\CDSPSincFilterGen.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\fft4g.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\r8bbase.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\r8brain\r8bconf.h">
+      <Filter>Source Files\r8brain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\backends.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\bitrate.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\codebook.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\codec_internal.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\envelope.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\highlevel.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\lookup.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\lookup_data.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\lpc.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\lsp.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\masking.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\mdct.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\misc.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\os.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\psy.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\registry.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\scales.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\smallft.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\window.h">
+      <Filter>Source Files\oggvorbis\vorbis</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\books\coupled\res_books_51.h">
+      <Filter>Source Files\oggvorbis\vorbis\books\coupled</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\books\coupled\res_books_stereo.h">
+      <Filter>Source Files\oggvorbis\vorbis\books\coupled</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\books\floor\floor_books.h">
+      <Filter>Source Files\oggvorbis\vorbis\books\floor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\books\uncoupled\res_books_uncoupled.h">
+      <Filter>Source Files\oggvorbis\vorbis\books\uncoupled</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\floor_all.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\psych_8.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\psych_11.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\psych_16.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\psych_44.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_8.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_16.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_44.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_44p51.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\residue_44u.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_8.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_11.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_16.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_22.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_32.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_44.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_44p51.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_44u.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\oggvorbis\vorbis\modes\setup_X.h">
+      <Filter>Source Files\oggvorbis\vorbis\modes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\MonitorNode.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CinderAssert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CurrentFunction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\jsoncpp\json_internalarray.inl">
+      <Filter>Source Files\jsoncpp</Filter>
+    </None>
+    <None Include="..\src\jsoncpp\json_internalmap.inl">
+      <Filter>Source Files\jsoncpp</Filter>
+    </None>
+    <None Include="..\src\jsoncpp\json_valueiterator.inl">
+      <Filter>Source Files\jsoncpp</Filter>
+    </None>
+  </ItemGroup>
+</Project>

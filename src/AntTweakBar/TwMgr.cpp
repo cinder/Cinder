@@ -13,7 +13,11 @@
 #include "TwMgr.h"
 #include "TwBar.h"
 #include "TwFonts.h"
-#include "TwOpenGL.h"
+// Cinder
+#if ! defined( USE_DIRECTX )
+	#include "TwOpenGL.h"
+#endif
+
 // Cinder doesn't support OpenGLCore yet
 // #include "TwOpenGLCore.h"
 #ifdef ANT_WINDOWS
@@ -1747,7 +1751,9 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
     switch( _GraphAPI )
     {
     case TW_OPENGL:
+#if ! defined( USE_DIRECTX )
         g_TwMgr->m_Graph = new CTwGraphOpenGL;
+#endif
         break;
 // Cinder: we don't support D3D or OpenGL Core yet
 #if 0
@@ -1776,6 +1782,7 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
             }
         #endif // ANT_WINDOWS
         break;
+#endif
     case TW_DIRECT3D11:
         #ifdef ANT_WINDOWS
             if( g_TwMgr->m_Device!=NULL )
@@ -1787,7 +1794,6 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
             }
         #endif // ANT_WINDOWS
         break;
-#endif
     }
     if( g_TwMgr->m_Graph==NULL )
     {
@@ -1808,7 +1814,7 @@ static inline int TwFreeAsyncDrawing()
         PerfTimer timer;
         while( g_TwMgr->m_Graph->IsDrawing() && timer.GetTime()<SLEEP_MAX )
         {
-            #if defined(ANT_WINDOWS)
+            #if defined(ANT_WINDOWS) && defined(CINDER_MSW)
                 Sleep(1); // milliseconds
             #elif defined(ANT_UNIX) || defined(ANT_OSX)
                 usleep(1000); // microseconds
@@ -6223,6 +6229,7 @@ void CTwMgr::CreateCursors()
 {
     if( m_CursorsCreated )
         return;
+#if defined( CINDER_MSW )
     m_CursorArrow = ::LoadCursor(NULL ,MAKEINTRESOURCE(IDC_ARROW));
     m_CursorMove = ::LoadCursor(NULL ,MAKEINTRESOURCE(IDC_SIZEALL));
     m_CursorWE = ::LoadCursor(NULL ,MAKEINTRESOURCE(IDC_SIZEWE));
@@ -6269,6 +6276,7 @@ void CTwMgr::CreateCursors()
     }
     
     m_CursorsCreated = true;
+#endif
 }
 
 
@@ -6298,14 +6306,19 @@ CTwMgr::CCursor CTwMgr::PixmapCursor(int _CurIdx)
         xors[y] = pict[y];
     }
 
+#if defined( CINDER_MSW )
     HMODULE hdll = GetModuleHandle(ANT_TWEAK_BAR_DLL);
     CCursor cursor = ::CreateCursor(hdll, g_CurHot[_CurIdx][0], g_CurHot[_CurIdx][1], 32, 32, ands, xors);
  
     return cursor;
+#else
+	return NULL;
+#endif
 }
 
 void CTwMgr::FreeCursors()
 {
+#if defined( CINDER_MSW )
     if( !g_UseCurRsc )
     {
         if( m_CursorCenter!=NULL )
@@ -6326,10 +6339,12 @@ void CTwMgr::FreeCursors()
             }
     }
     m_CursorsCreated = false;
+#endif
 }
 
 void CTwMgr::SetCursor(CTwMgr::CCursor _Cursor)
 {
+#if defined( CINDER_MSW )
     if( m_CursorsCreated )
     {
         CURSORINFO ci;
@@ -6339,6 +6354,7 @@ void CTwMgr::SetCursor(CTwMgr::CCursor _Cursor)
         if( ok && (ci.flags & CURSOR_SHOWING) )
             ::SetCursor(_Cursor);
     }
+#endif
 }
 
 

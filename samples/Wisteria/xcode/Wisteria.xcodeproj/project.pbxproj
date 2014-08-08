@@ -282,7 +282,7 @@
 					"\"$(CINDER_PATH)/lib/libcinder_d.a\"",
 					../../../blocks/Cairo/lib/macosx/libcairo.a,
 					"../../../blocks/Cairo/lib/macosx/libpixman-1.a",
-					../../../blocks/Cairo/lib/macosx/libpng14.a,
+					../../../blocks/Cairo/lib/macosx/libpng16.a,
 				);
 				PRODUCT_NAME = Wisteria;
 				SYMROOT = ./build;
@@ -309,7 +309,7 @@
 					"\"$(CINDER_PATH)/lib/libcinder.a\"",
 					../../../blocks/Cairo/lib/macosx/libcairo.a,
 					"../../../blocks/Cairo/lib/macosx/libpixman-1.a",
-					../../../blocks/Cairo/lib/macosx/libpng14.a,
+					../../../blocks/Cairo/lib/macosx/libpng16.a,
 				);
 				PRODUCT_NAME = Wisteria;
 				STRIP_INSTALLED_PRODUCT = YES;

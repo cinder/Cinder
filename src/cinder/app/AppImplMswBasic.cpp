@@ -57,6 +57,10 @@ void AppImplMswBasic::run()
 
 	mApp->privateSetup__();
 	mSetupHasBeenCalled = true;
+
+	// issue initial app activation event
+	mApp->emitDidBecomeActive();
+
 	for( auto windowIt = mWindows.begin(); windowIt != mWindows.end(); ++windowIt )
 		(*windowIt)->resize();
 

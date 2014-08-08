@@ -124,6 +124,9 @@ class RectT {
 	RectT<T>&		operator*=( T s ) { scale( s ); return *this; }
 	RectT<T>&		operator/=( T s ) { scale( ((T)1) / s ); return *this; }	
 
+	//! Constructs a rectangle with all values initialized to zero.
+	static	RectT zero()			{ return RectT( 0, 0, 0, 0 ); }
+
 	T			x1, y1, x2, y2;
 	
 	friend std::ostream& operator<<( std::ostream &o, const RectT &rect )

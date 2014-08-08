@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <CINDER_PATH>..\..\..\..</CINDER_PATH>
+    <AUDIO2_DEPLOYMENT_TARGET>0x0601</AUDIO2_DEPLOYMENT_TARGET>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="CINDER_PATH">
+      <Value>$(CINDER_PATH)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="AUDIO2_DEPLOYMENT_TARGET">
+      <Value>$(AUDIO2_DEPLOYMENT_TARGET)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

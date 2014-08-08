@@ -31,15 +31,15 @@
 #include <cstdint>
 #include <boost/version.hpp>
 
-#if BOOST_VERSION < 105300
-	#error "Cinder requires Boost version 1.53 or later"
+#if BOOST_VERSION < 105500
+	#error "Cinder requires Boost version 1.55 or later"
 #endif
 
 //  CINDER_VERSION % 100 is the patch level
 //  CINDER_VERSION / 100 % 1000 is the minor version
 //  CINDER_VERSION / 100000 is the major version
-#define CINDER_VERSION		805
-#define CINDER_VERSION_STR	"0.8.5"
+#define CINDER_VERSION		806
+#define CINDER_VERSION_STR	"0.8.6"
 
 namespace cinder {
 using std::int8_t;
@@ -54,7 +54,18 @@ using std::uint64_t;
 #define CINDER_CINDER
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-	#define CINDER_MSW
+	#if defined(WINAPI_PARTITION_DESKTOP)
+		#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+			#define CINDER_MSW
+		#else
+			#define CINDER_WINRT
+			#if BOOST_VERSION != 105500
+				#error "Incorrect Boost version See include/winrt/boost/README.txt for more info."
+			#endif
+		#endif
+	#else
+		#define CINDER_MSW
+	#endif
 #elif defined(linux) || defined(__linux) || defined(__linux__)
 	#define CINDER_LINUX
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
@@ -80,9 +91,18 @@ using std::uint64_t;
 
 } // namespace cinder
 
-
-#if defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
+#if defined( CINDER_WINRT )
+	#include <functional>
+	#include <chrono>
 	#include <memory>
+	#include <vector>
+	#ifndef FALSE
+		#define FALSE 0
+	#endif
+#elif defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
+	#include <memory>
+	#include <vector>
+	#include <functional>
 	#if _MSC_VER >= 1700
 		#include <chrono>
 	#else

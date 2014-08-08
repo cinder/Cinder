@@ -41,7 +41,6 @@ class KeyEvent : public Event {
 	char		getChar() const { return mChar; }
 	//! Returns the UTF-32 character associated with the event.
 	uint32_t	getCharUtf32() const { return mChar32; } 
-#if ! defined( CINDER_COCOA_TOUCH )
 	//! Returns the key code associated with the event, which maps into the enum listed below
 	int			getCode() const { return mCode; }
 	//! Returns whether the Shift key was pressed during the event.
@@ -56,22 +55,23 @@ class KeyEvent : public Event {
 	bool		isAccelDown() const { return (mModifiers & ACCEL_DOWN) ? true : false; }	
 	//! Returns the platform-native key-code. Advanced users only.
 	int			getNativeKeyCode() const { return mNativeKeyCode; }
-	
+
+#if ! defined( CINDER_COCOA_TOUCH )
 	//! Maps a platform-native key-code to the key code enum
 	static int		translateNativeKeyCode( int nativeKeyCode );
+#endif
 
 	enum {	SHIFT_DOWN	= 0x0008,
 			ALT_DOWN	= 0x0010,
 			CTRL_DOWN	= 0x0020,
 			META_DOWN	= 0x0040,
-#if defined( CINDER_MSW )
+#if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 			ACCEL_DOWN	= CTRL_DOWN
 #else
 			ACCEL_DOWN	= META_DOWN
 #endif
 			};
-#endif
-	
+
 	// Key codes
 	enum {
 		KEY_UNKNOWN		= 0,

@@ -70,15 +70,18 @@ void BasicApp::setup()
 	getWindow()->setUserData( new WindowData );
 
 getWindow()->connectMouseDown( &BasicApp::anotherTest, this );
-	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown1, this, std::_1 ) );
-	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown2, this, std::_1 ) );
-	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown3, this, std::_1 ) );
+	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown1, this, std::placeholders::_1 ) );
+	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown2, this, std::placeholders::_1 ) );
+	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown3, this, std::placeholders::_1 ) );
 	getSignalShouldQuit().connect( std::bind( &BasicApp::shouldQuit, this ) );
 	
 	getWindow()->getSignalMove().connect( std::bind( &BasicApp::windowMove, this ) );
 	getWindow()->getSignalDraw().connect( std::bind( &BasicApp::windowDraw, this ) );
 	getWindow()->getSignalDisplayChange().connect( std::bind( &BasicApp::displayChange, this ) );
 	getWindow()->getSignalClose().connect( std::bind( &BasicApp::windowClose, this ) );
+	
+	getSignalDidBecomeActive().connect( [] { app::console() << "App became active." << endl; } );
+	getSignalWillResignActive().connect( [] { app::console() << "App will resign active." << endl; } );
 }
 
 bool BasicApp::shouldQuit()
@@ -184,7 +187,7 @@ void BasicApp::keyDown( KeyEvent event )
 		format.setFullScreen( true );
 		mSecondWindow = createWindow( format );
 		mSecondWindow->getSignalClose().connect( std::bind( &BasicApp::windowClose, this ) );
-		mSecondWindow->getSignalMouseDown().connect( std::bind( &BasicApp::windowMouseDown, this, std::_1 ) );
+		mSecondWindow->getSignalMouseDown().connect( std::bind( &BasicApp::windowMouseDown, this, std::placeholders::_1 ) );
 		mSecondWindow->getSignalDraw().connect( std::bind( &BasicApp::windowDraw, this ) );
 		mSecondWindow->setUserData( new WindowData );
 	}

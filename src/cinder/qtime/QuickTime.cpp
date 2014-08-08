@@ -21,7 +21,7 @@
 */
 
 // None of this works in 64 bit on the mac or Windows. We'll need to move to QTKit on the mac.
-#if ! defined( __LP64__ )
+#if ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )
 
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
@@ -47,6 +47,7 @@ namespace cinder {
 		#undef __STDC_CONSTANT_MACROS
 		#if _MSC_VER >= 1600 // VC10 or greater
 			#define _STDINT_H
+			#define __FP__
 		#endif
 		#include <QTML.h>
 		#include <CVPixelBuffer.h>
@@ -162,7 +163,7 @@ void MovieBase::initFromDataSource( DataSourceRef dataSourceRef, const std::stri
 	}
 	else { // we'll need to load from memory; and we'll rer to the data source to make sure it doesn't go away before the movie does
 		Buffer buffer( dataSourceRef->getBuffer() );
-		getObj()->mMovie = openMovieFromMemory( buffer.getData(), buffer.getDataSize(), dataSourceRef->getFilePathHint(), mimeTypeHint );	
+		getObj()->mMovie = openMovieFromMemory( buffer.getData(), buffer.getDataSize(), dataSourceRef->getFilePathHint().string(), mimeTypeHint );	
 		getObj()->mDataSource = dataSourceRef; // retain a reference to the dataSource so that it doesn't go away before we do
 	}
 	init();
@@ -982,4 +983,4 @@ void quickTimeTask()
 
 } /* namespace qtime */ } /* namespace cinder */
 
-#endif // ! defined( __LP64__ )
+#endif // ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )
