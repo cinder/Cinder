@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		001726B716B1C5BC00895B66 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 001726B616B1C5BC00895B66 /* QuickTime.framework */; };
+		006D732A199533A7008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D7328199533A7008149E2 /* AVFoundation.framework */; };
+		006D732B199533A7008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D7329199533A7008149E2 /* CoreMedia.framework */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
 		00AE21171639B82D007D532C /* cinder_logo_alpha.png in Resources */ = {isa = PBXBuildFile; fileRef = 00AE21161639B82D007D532C /* cinder_logo_alpha.png */; };
 		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
@@ -23,6 +25,8 @@
 
 /* Begin PBXFileReference section */
 		001726B616B1C5BC00895B66 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
+		006D7328199533A7008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		006D7329199533A7008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		00AE21161639B82D007D532C /* cinder_logo_alpha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cinder_logo_alpha.png; path = ../../data/cinder_logo_alpha.png; sourceTree = "<group>"; };
 		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -47,6 +51,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				006D732A199533A7008149E2 /* AVFoundation.framework in Frameworks */,
+				006D732B199533A7008149E2 /* CoreMedia.framework in Frameworks */,
 				001726B716B1C5BC00895B66 /* QuickTime.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
@@ -145,6 +151,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				006D7328199533A7008149E2 /* AVFoundation.framework */,
+				006D7329199533A7008149E2 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);

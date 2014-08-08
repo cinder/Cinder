@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		002ADAE51624D5B200C1936A /* Asap-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 002ADAE31624D5B200C1936A /* Asap-Regular.ttf */; };
 		002ADAE61624D5B200C1936A /* Kreon-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 002ADAE41624D5B200C1936A /* Kreon-Bold.ttf */; };
+		006D72E2199532E6008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72E0199532E6008149E2 /* AVFoundation.framework */; };
+		006D72E3199532E6008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72E1199532E6008149E2 /* CoreMedia.framework */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
 		0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0097E3E40F3E9819005A4392 /* QuickTime.framework */; };
 		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
@@ -29,6 +31,8 @@
 /* Begin PBXFileReference section */
 		002ADAE31624D5B200C1936A /* Asap-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Asap-Regular.ttf"; path = "../resources/Asap-Regular.ttf"; sourceTree = "<group>"; };
 		002ADAE41624D5B200C1936A /* Kreon-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Kreon-Bold.ttf"; path = "../resources/Kreon-Bold.ttf"; sourceTree = "<group>"; };
+		006D72E0199532E6008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		006D72E1199532E6008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		0097E3E40F3E9819005A4392 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -60,6 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				006D72E2199532E6008149E2 /* AVFoundation.framework in Frameworks */,
+				006D72E3199532E6008149E2 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */,
@@ -159,6 +165,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				006D72E0199532E6008149E2 /* AVFoundation.framework */,
+				006D72E1199532E6008149E2 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);

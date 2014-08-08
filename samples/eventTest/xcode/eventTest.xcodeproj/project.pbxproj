@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		00241AEF0E83114D004D34EB /* eventTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00241AEE0E83114D004D34EB /* eventTest.cpp */; };
+		006D729C1995319F008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D729A1995319F008149E2 /* AVFoundation.framework */; };
+		006D729D1995319F008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D729B1995319F008149E2 /* CoreMedia.framework */; };
 		00BC6ADA0F93DEDD0086A1DC /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BC6AD40F93DEDD0086A1DC /* QuickTime.framework */; };
 		00BC6ADB0F93DEDD0086A1DC /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BC6AD50F93DEDD0086A1DC /* QTKit.framework */; };
 		00BC6ADC0F93DEDD0086A1DC /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BC6AD60F93DEDD0086A1DC /* CoreVideo.framework */; };
@@ -22,6 +24,8 @@
 
 /* Begin PBXFileReference section */
 		00241AEE0E83114D004D34EB /* eventTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = eventTest.cpp; path = ../src/eventTest.cpp; sourceTree = SOURCE_ROOT; };
+		006D729A1995319F008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		006D729B1995319F008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		00BC6AD40F93DEDD0086A1DC /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		00BC6AD50F93DEDD0086A1DC /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		00BC6AD60F93DEDD0086A1DC /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
@@ -45,6 +49,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				006D729C1995319F008149E2 /* AVFoundation.framework in Frameworks */,
+				006D729D1995319F008149E2 /* CoreMedia.framework in Frameworks */,
 				00BC6ADA0F93DEDD0086A1DC /* QuickTime.framework in Frameworks */,
 				00BC6ADB0F93DEDD0086A1DC /* QTKit.framework in Frameworks */,
 				00BC6ADC0F93DEDD0086A1DC /* CoreVideo.framework in Frameworks */,
@@ -135,6 +141,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				006D729A1995319F008149E2 /* AVFoundation.framework */,
+				006D729B1995319F008149E2 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -214,10 +222,10 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = x86_64;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
-				CLANG_CXX_LIBRARY = "libc++";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -240,9 +248,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = x86_64;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = "";
-				CLANG_CXX_LIBRARY = "libc++";
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
