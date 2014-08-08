@@ -32,19 +32,22 @@
 namespace cinder { namespace qtime {
 /////////////////////////////////////////////////////////////////////////////////
 // MovieGl
-MovieGl::MovieGl( const Url& url ) : MovieBase(), mVideoTextureRef(NULL), mVideoTextureCacheRef(NULL)
+MovieGl::MovieGl( const Url& url )
+	: MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
 {
 	MovieBase::initFromUrl( url );
 }
 
-MovieGl::MovieGl( const fs::path& path ) : MovieBase(), mVideoTextureRef(NULL), mVideoTextureCacheRef(NULL)
+MovieGl::MovieGl( const fs::path& path )
+	: MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
 {
 	MovieBase::initFromPath( path );
 }
 	
-MovieGl::MovieGl( const MovieLoader& loader ) : MovieBase(), mVideoTextureRef(NULL), mVideoTextureCacheRef(NULL)
+MovieGl::MovieGl( const MovieLoader &loader )
+	: MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
 {
-	MovieBase::initFromLoader(loader);
+	MovieBase::initFromLoader( loader );
 }
 		
 MovieGl::~MovieGl()
@@ -54,11 +57,12 @@ MovieGl::~MovieGl()
 	
 bool MovieGl::hasAlpha() const
 {
-	if (!mVideoTextureRef) return false;
+	if( ! mVideoTextureRef )
+		return false;
 	
-	CVPixelBufferLockBaseAddress( mVideoTextureRef, 0 );
-	OSType type = CVPixelBufferGetPixelFormatType(mVideoTextureRef);
-	CVPixelBufferUnlockBaseAddress( mVideoTextureRef, 0 );
+	::CVPixelBufferLockBaseAddress( mVideoTextureRef, 0 );
+	OSType type = ::CVPixelBufferGetPixelFormatType(mVideoTextureRef);
+	::CVPixelBufferUnlockBaseAddress( mVideoTextureRef, 0 );
 #if defined ( CINDER_COCOA_TOUCH)
 	return (type == kCVPixelFormatType_32ARGB ||
 			type == kCVPixelFormatType_32BGRA ||
@@ -89,13 +93,13 @@ gl::TextureRef MovieGl::getTexture()
 	
 void MovieGl::allocateVisualContext()
 {
-	if(mVideoTextureCacheRef == NULL) {
-		CVReturn err = nil;
+	if( ! mVideoTextureCacheRef ) {
+		CVReturn err = 0;
 #if defined( CINDER_COCOA_TOUCH )
 		app::RendererGl *renderer = dynamic_cast<app::RendererGl*>( app::App::get()->getRenderer().get() );
 		if( renderer ) {
 			EAGLContext* context = renderer->getEaglContext();
-			err = CVOpenGLESTextureCacheCreate( kCFAllocatorDefault, NULL, context, NULL, &mVideoTextureCacheRef );
+			err = ::CVOpenGLESTextureCacheCreate( kCFAllocatorDefault, NULL, context, NULL, &mVideoTextureCacheRef );
 		}
 		else {
 			throw AvfTextureErrorExc();
@@ -104,8 +108,8 @@ void MovieGl::allocateVisualContext()
 #elif defined( CINDER_COCOA )
 		CGLContextObj context = app::App::get()->getRenderer()->getCglContext();
 		CGLPixelFormatObj pixelFormat = app::App::get()->getRenderer()->getCglPixelFormat();
-		err = CVOpenGLTextureCacheCreate(kCFAllocatorDefault, NULL, context, pixelFormat, NULL, &mVideoTextureCacheRef);
-		CVOpenGLTextureCacheRetain(mVideoTextureCacheRef);
+		err = ::CVOpenGLTextureCacheCreate(kCFAllocatorDefault, NULL, context, pixelFormat, NULL, &mVideoTextureCacheRef);
+		::CVOpenGLTextureCacheRetain(mVideoTextureCacheRef);
 		
 #endif
 		if( err )
@@ -115,40 +119,40 @@ void MovieGl::allocateVisualContext()
 
 void MovieGl::deallocateVisualContext()
 {
-	if(mVideoTextureRef) {
-		CFRelease(mVideoTextureRef);
-		mVideoTextureRef = NULL;
+	if( mVideoTextureRef ) {
+		::CFRelease( mVideoTextureRef );
+		mVideoTextureRef = nullptr;
 	}
 	
-	if(mVideoTextureCacheRef) {
+	if( mVideoTextureCacheRef ) {
 #if defined( CINDER_COCOA_TOUCH )
-		CVOpenGLESTextureCacheFlush(mVideoTextureCacheRef, 0);
+		::CVOpenGLESTextureCacheFlush( mVideoTextureCacheRef, 0 );
 #elif defined( CINDER_COCOA )
-		CVOpenGLTextureCacheFlush(mVideoTextureCacheRef, 0);
+		::CVOpenGLTextureCacheFlush( mVideoTextureCacheRef, 0 );
 #endif
-		CFRelease(mVideoTextureCacheRef);
-		mVideoTextureCacheRef = NULL;
+		::CFRelease( mVideoTextureCacheRef );
+		mVideoTextureCacheRef = nullptr;
 	}
 }
 
 void MovieGl::newFrame( CVImageBufferRef cvImage )
 {
-	CVPixelBufferLockBaseAddress(cvImage, kCVPixelBufferLock_ReadOnly);
+	::CVPixelBufferLockBaseAddress(cvImage, kCVPixelBufferLock_ReadOnly);
 	
-	if (mVideoTextureRef) {
-		CFRelease(mVideoTextureRef);
-		mVideoTextureRef = NULL;
+	if( mVideoTextureRef ) {
+		::CFRelease( mVideoTextureRef );
+		mVideoTextureRef = nullptr;
 	}
 #if defined( CINDER_COCOA_TOUCH )
-	CVOpenGLESTextureCacheFlush(mVideoTextureCacheRef, 0); // Periodic texture cache flush every frame
+	::CVOpenGLESTextureCacheFlush(mVideoTextureCacheRef, 0); // Periodic texture cache flush every frame
 #elif defined( CINDER_COCOA )
-	CVOpenGLTextureCacheFlush(mVideoTextureCacheRef, 0); // Periodic texture cache flush every frame
+	::CVOpenGLTextureCacheFlush(mVideoTextureCacheRef, 0); // Periodic texture cache flush every frame
 #endif
 	
-	CVReturn err = nil;
+	CVReturn err = 0;
 	
 #if defined( CINDER_COCOA_TOUCH )
-	err = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,     // CFAllocatorRef allocator
+	err = ::CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,     // CFAllocatorRef allocator
 													   mVideoTextureCacheRef,   // CVOpenGLESTextureCacheRef textureCache
 													   cvImage,                 // CVImageBufferRef sourceImage
 													   NULL,                    // CFDictionaryRef textureAttributes
@@ -162,31 +166,30 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 													   &mVideoTextureRef);      // CVOpenGLESTextureRef *textureOut
 	
 #elif defined( CINDER_MAC )
-	err = CVOpenGLTextureCacheCreateTextureFromImage(kCFAllocatorDefault,       // CFAllocatorRef allocator
+	err = ::CVOpenGLTextureCacheCreateTextureFromImage(kCFAllocatorDefault,       // CFAllocatorRef allocator
 													 mVideoTextureCacheRef,     // CVOpenGLESTextureCacheRef textureCache
 													 cvImage,                   // CVImageBufferRef sourceImage
 													 NULL,                      // CFDictionaryRef textureAttributes
 													 &mVideoTextureRef);        // CVOpenGLTextureRef *textureOut
 #endif
 	
-	if (err) {
+	if( err ) {
 		throw AvfTextureErrorExc();
-		return;
 	}
 	
 #if defined( CINDER_COCOA_TOUCH )
-	GLenum target = CVOpenGLESTextureGetTarget( mVideoTextureRef );
-	GLuint name = CVOpenGLESTextureGetName( mVideoTextureRef );
-	bool flipped = !CVOpenGLESTextureIsFlipped( mVideoTextureRef );
+	GLenum target = ::CVOpenGLESTextureGetTarget( mVideoTextureRef );
+	GLuint name = ::CVOpenGLESTextureGetName( mVideoTextureRef );
+	bool flipped = ! ::CVOpenGLESTextureIsFlipped( mVideoTextureRef );
 	mTexture = gl::Texture::create( target, name, mWidth, mHeight, true );
 	Vec2f t0, lowerRight, t2, upperLeft;
 	::CVOpenGLESTextureGetCleanTexCoords( mVideoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
 //	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
 //	mTexture.setFlipped( flipped );
 #elif defined( CINDER_MAC )	
-	GLenum target = CVOpenGLTextureGetTarget( mVideoTextureRef );
-	GLuint name = CVOpenGLTextureGetName( mVideoTextureRef );
-	bool flipped = ! CVOpenGLTextureIsFlipped( mVideoTextureRef );
+	GLenum target = ::CVOpenGLTextureGetTarget( mVideoTextureRef );
+	GLuint name = ::CVOpenGLTextureGetName( mVideoTextureRef );
+	bool flipped = ! ::CVOpenGLTextureIsFlipped( mVideoTextureRef );
 	mTexture = gl::Texture::create( target, name, mWidth, mHeight, true );
 	Vec2f t0, lowerRight, t2, upperLeft;
 	::CVOpenGLTextureGetCleanTexCoords( mVideoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );

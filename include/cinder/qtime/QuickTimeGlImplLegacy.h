@@ -37,14 +37,6 @@ typedef std::shared_ptr<MovieGl>	MovieGlRef;
 **/
 class MovieGl : public MovieBase {
   public:
-	MovieGl() : MovieBase() {}
-	MovieGl( const fs::path &path );
-	MovieGl( const class MovieLoader &loader );
-	//! Constructs a MovieGl from a block of memory of size \a dataSize pointed to by \a data, which must not be disposed of during the lifetime of the movie.
-	/** \a fileNameHint and \a mimeTypeHint provide important hints to QuickTime about the contents of the file. Omit both of them at your peril. "video/quicktime" is often a good choice for \a mimeTypeHint. **/
-	MovieGl( const void *data, size_t dataSize, const std::string &fileNameHint, const std::string &mimeTypeHint = "" );
-	MovieGl( DataSourceRef dataSource, const std::string mimeTypeHint = "" );
-
 	static MovieGlRef create( const fs::path &path ) { return std::shared_ptr<MovieGl>( new MovieGl( path ) ); }
 	static MovieGlRef create( const MovieLoaderRef &loader );
 	static MovieGlRef create( const void *data, size_t dataSize, const std::string &fileNameHint, const std::string &mimeTypeHint = "" )
@@ -56,6 +48,14 @@ class MovieGl : public MovieBase {
 	const gl::TextureRef	getTexture();
 
   protected:
+	MovieGl() : MovieBase() {}
+	MovieGl( const fs::path &path );
+	MovieGl( const class MovieLoader &loader );
+	//! Constructs a MovieGl from a block of memory of size \a dataSize pointed to by \a data, which must not be disposed of during the lifetime of the movie.
+	/** \a fileNameHint and \a mimeTypeHint provide important hints to QuickTime about the contents of the file. Omit both of them at your peril. "video/quicktime" is often a good choice for \a mimeTypeHint. **/
+	MovieGl( const void *data, size_t dataSize, const std::string &fileNameHint, const std::string &mimeTypeHint = "" );
+	MovieGl( DataSourceRef dataSource, const std::string mimeTypeHint = "" );
+
 	void				allocateVisualContext();
 
 	struct Obj : public MovieBase::Obj {

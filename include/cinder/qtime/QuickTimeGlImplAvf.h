@@ -46,16 +46,11 @@ typedef std::shared_ptr<class MovieGl>	MovieGlRef;
  **/
 class MovieGl : public MovieBase {
   public:
-	MovieGl() : MovieBase(), mVideoTextureRef(NULL), mVideoTextureCacheRef(NULL) {}
-	MovieGl( const Url& url );
-	MovieGl( const fs::path& path );
-	MovieGl( const MovieLoader& loader );
-	
 	virtual ~MovieGl();
 	
 	static MovieGlRef create( const Url& url ) { return MovieGlRef( new MovieGl( url ) ); }
 	static MovieGlRef create( const fs::path& path ) { return MovieGlRef( new MovieGl( path ) ); }
-	static MovieGlRef create( const MovieLoaderRef loader ) { return MovieGlRef( new MovieGl( *loader ) ); }
+	static MovieGlRef create( const MovieLoaderRef &loader ) { return MovieGlRef( new MovieGl( *loader ) ); }
 	
 	//! \inherit
 	virtual bool hasAlpha() const;
@@ -64,6 +59,11 @@ class MovieGl : public MovieBase {
 	gl::TextureRef	getTexture();
 	
   protected:
+	MovieGl() : MovieBase(), mVideoTextureRef(NULL), mVideoTextureCacheRef(NULL) {}
+	MovieGl( const Url& url );
+	MovieGl( const fs::path& path );
+	MovieGl( const MovieLoader& loader );
+	
 	virtual void		allocateVisualContext() override;
 	virtual void		deallocateVisualContext() override;
 	virtual void		newFrame( CVImageBufferRef cvImage ) override;

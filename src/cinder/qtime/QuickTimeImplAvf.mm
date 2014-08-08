@@ -245,7 +245,7 @@ float MovieBase::getPixelAspectRatio() const
 	return pixelAspectRatio;
 }
 
-bool MovieBase::checkPlayThroughOk()
+bool MovieBase::checkPlaythroughOk()
 {
 	mPlayThroughOk = [mPlayerItem isPlaybackLikelyToKeepUp];
 	
@@ -907,7 +907,7 @@ bool MovieLoader::checkPlayable() const
 	return mPlayable;
 }
 
-bool MovieLoader::checkPlayThroughOk() const
+bool MovieLoader::checkPlaythroughOk() const
 {
 	if( ! mPlayThroughOK )
 		updateLoadState();

@@ -84,7 +84,7 @@ class MovieBase {
 	float		getPixelAspectRatio() const;
 	
 	//! Returns whether the movie has loaded and buffered enough to playback without interruption
-	bool		checkPlayThroughOk();
+	bool		checkPlaythroughOk();
 	//! Returns whether the movie is in a loaded state, implying its structures are ready for reading but it may not be ready for playback
 	bool		isLoaded() const { return mLoaded; }
 	//! Returns whether the movie is playable, implying the movie is fully formed and can be played but media data is still downloading
@@ -217,16 +217,11 @@ class MovieBase {
 typedef std::shared_ptr<class MovieSurface> MovieSurfaceRef;
 class MovieSurface : public MovieBase {
   public:
-	MovieSurface() : MovieBase() {}
-	MovieSurface( const Url& url );
-	MovieSurface( const fs::path& path );
-	MovieSurface( const MovieLoader& loader );
-	
 	virtual ~MovieSurface();
 
 	static MovieSurfaceRef create( const ci::Url& url ) { return MovieSurfaceRef( new MovieSurface( url ) ); }
 	static MovieSurfaceRef create( const fs::path& path ) { return MovieSurfaceRef( new MovieSurface( path ) ); }
-	static MovieSurfaceRef create( const MovieLoaderRef loader ) { return MovieSurfaceRef( new MovieSurface( *loader ) ); }
+	static MovieSurfaceRef create( const MovieLoaderRef &loader ) { return MovieSurfaceRef( new MovieSurface( *loader ) ); }
 
 	//! \inherit
 	virtual bool hasAlpha() const;
@@ -235,6 +230,11 @@ class MovieSurface : public MovieBase {
 	Surface		getSurface();
 
   protected:
+	MovieSurface() : MovieBase() {}
+	MovieSurface( const Url& url );
+	MovieSurface( const fs::path& path );
+	MovieSurface( const MovieLoader& loader );
+	
 	virtual void		allocateVisualContext() override { /* no-op */ }
 	virtual void		deallocateVisualContext() override { /* no-op */ }
 	virtual void		newFrame( CVImageBufferRef cvImage ) override;
@@ -272,7 +272,7 @@ public:
 	//! Returns whether the movie is playable, implying the movie is fully formed and can be played but media data is still downloading
 	bool	checkPlayable() const;
 	//! Returns whether the movie is ready for playthrough, implying media data is still downloading, but all data is expected to arrive before it is needed
-	bool	checkPlayThroughOk() const;
+	bool	checkPlaythroughOk() const;
 	//! Returns whether the movie has content protection applied to it
 	bool	checkProtection() const;
 	

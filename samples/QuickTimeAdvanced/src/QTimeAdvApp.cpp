@@ -1,13 +1,10 @@
-#include <iostream>
-#include <sstream>
-#include <vector>
-#include <cmath>
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Rand.h"
-#include "cinder/qtime/QuickTime.h"
+#include "cinder/qtime/QuickTimeGl.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -23,18 +20,17 @@ class QTimeAdvApp : public AppBasic {
 
 	void update();
 	void draw();
-	void drawFFT( const qtime::MovieBase &movie, float x, float y, float width, float height );
 
-	void addActiveMovie( qtime::MovieGl movie );
+	void addActiveMovie( qtime::MovieGlRef movie );
 	void loadMovieUrl( const std::string &urlString );
 	void loadMovieFile( const fs::path &path );
 
 
 	fs::path mLastPath;
 	// all of the actively playing movies
-	vector<qtime::MovieGl> mMovies;
+	vector<qtime::MovieGlRef> mMovies;
 	// movies we're still waiting on to be loaded
-	vector<qtime::MovieLoader> mLoadingMovies;
+	vector<qtime::MovieLoaderRef> mLoadingMovies;
 };
 
 
@@ -84,22 +80,22 @@ void QTimeAdvApp::keyDown( KeyEvent event )
 	}
 }
 
-void QTimeAdvApp::addActiveMovie( qtime::MovieGl movie )
+void QTimeAdvApp::addActiveMovie( qtime::MovieGlRef movie )
 {
-	console() << "Dimensions:" << movie.getWidth() << " x " << movie.getHeight() << std::endl;
-	console() << "Duration:  " << movie.getDuration() << " seconds" << std::endl;
-	console() << "Frames:    " << movie.getNumFrames() << std::endl;
-	console() << "Framerate: " << movie.getFramerate() << std::endl;
-	movie.setLoop( true, false );
+	console() << "Dimensions:" << movie->getWidth() << " x " << movie->getHeight() << std::endl;
+	console() << "Duration:  " << movie->getDuration() << " seconds" << std::endl;
+	console() << "Frames:    " << movie->getNumFrames() << std::endl;
+	console() << "Framerate: " << movie->getFramerate() << std::endl;
+	movie->setLoop( true, false );
 	
 	mMovies.push_back( movie );
-	movie.play();
+	movie->play();
 }
 
 void QTimeAdvApp::loadMovieUrl( const string &urlString )
 {
 	try {
-		mLoadingMovies.push_back( qtime::MovieLoader( Url( urlString ) ) );
+		mLoadingMovies.push_back( qtime::MovieLoader::create( Url( urlString ) ) );
 	}
 	catch( ... ) {
 		console() << "Unable to load the movie from URL: " << urlString << std::endl;
@@ -108,10 +104,10 @@ void QTimeAdvApp::loadMovieUrl( const string &urlString )
 
 void QTimeAdvApp::loadMovieFile( const fs::path &moviePath )
 {
-	qtime::MovieGl movie;
+	qtime::MovieGlRef movie;
 	
 	try {
-		movie = qtime::MovieGl( moviePath );
+		movie = qtime::MovieGl::create( moviePath );
 
 		addActiveMovie( movie );
 		mLastPath = moviePath;
@@ -119,13 +115,6 @@ void QTimeAdvApp::loadMovieFile( const fs::path &moviePath )
 	catch( ... ) {
 		console() << "Unable to load the movie." << std::endl;
 		return;
-	}
-	
-	try {
-		movie.setupMonoFft( 8 );
-	}
-	catch( qtime::QuickTimeExcFft & ) {
-		console() << "Unable to setup FFT" << std::endl;
 	}
 }
 
@@ -138,10 +127,10 @@ void QTimeAdvApp::fileDrop( FileDropEvent event )
 void QTimeAdvApp::update()
 {
 	// let's see if any of our loading movies have finished loading and can be made active
-	for( vector<qtime::MovieLoader>::iterator loaderIt = mLoadingMovies.begin(); loaderIt != mLoadingMovies.end(); ) {
+	for( auto loaderIt = mLoadingMovies.begin(); loaderIt != mLoadingMovies.end(); ) {
 		try {
-			if( loaderIt->checkPlaythroughOk() ) {
-				addActiveMovie( *loaderIt );
+			if( (*loaderIt)->checkPlaythroughOk() ) {
+				addActiveMovie( qtime::MovieGl::create( *loaderIt ) );
 				loaderIt = mLoadingMovies.erase( loaderIt );
 			}
 			else
@@ -160,39 +149,22 @@ void QTimeAdvApp::draw()
 
 	int totalWidth = 0;
 	for( size_t m = 0; m < mMovies.size(); ++m )
-		totalWidth += mMovies[m].getWidth();
+		totalWidth += mMovies[m]->getWidth();
 
 	int drawOffsetX = 0;
 	for( size_t m = 0; m < mMovies.size(); ++m ) {
-		float relativeWidth = mMovies[m].getWidth() / (float)totalWidth;
-		gl::Texture texture = mMovies[m].getTexture();
+		float relativeWidth = mMovies[m]->getWidth() / (float)totalWidth;
+		gl::TextureRef texture = mMovies[m]->getTexture();
 		if( texture ) {
 			float drawWidth = getWindowWidth() * relativeWidth;
-			float drawHeight = ( getWindowWidth() * relativeWidth ) / mMovies[m].getAspectRatio();
+			float drawHeight = ( getWindowWidth() * relativeWidth ) / mMovies[m]->getAspectRatio();
 			float x = drawOffsetX;
 			float y = ( getWindowHeight() - drawHeight ) / 2.0f;			
 
 			gl::color( Color::white() );
 			gl::draw( texture, Rectf( x, y, x + drawWidth, y + drawHeight ) );
-			texture.disable();
-
-			drawFFT( mMovies[m], x, y, drawWidth, drawHeight );
 		}
 		drawOffsetX += getWindowWidth() * relativeWidth;
-	}
-}
-
-void QTimeAdvApp::drawFFT( const qtime::MovieBase &movie, float x, float y, float width, float height )
-{
-	if( ! movie.getNumFftChannels() )
-		return;
-	
-	float bandWidth = width / movie.getNumFftBands();
-	float *fftData = movie.getFftData();
-	for( uint32_t band = 0; band < movie.getNumFftBands(); ++band ) {
-		float bandHeight = height / 3.0f * fftData[band];
-		gl::color( Color( 0.1f, 0.8f, 0.1f ) );
-		gl::drawSolidRect( ci::Rectf( x + band * bandWidth, y + height - bandHeight, x + band * bandWidth + bandWidth, y + height ) );
 	}
 }
 

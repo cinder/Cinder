@@ -70,7 +70,8 @@ using std::uint64_t;
 	#define CINDER_LINUX
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 	#define CINDER_COCOA
-	#include "TargetConditionals.h"
+	#include <TargetConditionals.h>
+	#include <AvailabilityMacros.h>
 	#if TARGET_OS_IPHONE
 		#define CINDER_COCOA_TOUCH
 		#if TARGET_IPHONE_SIMULATOR

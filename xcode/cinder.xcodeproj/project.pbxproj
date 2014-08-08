@@ -1268,7 +1268,7 @@
 		006D704519942BF5008149E2 /* QuickTimeGlImplAvf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QuickTimeGlImplAvf.cpp; path = qtime/QuickTimeGlImplAvf.cpp; sourceTree = "<group>"; };
 		006D704619942BF5008149E2 /* QuickTimeGlImplLegacy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QuickTimeGlImplLegacy.cpp; path = qtime/QuickTimeGlImplLegacy.cpp; sourceTree = "<group>"; };
 		006D704719942BF5008149E2 /* QuickTimeImplAvf.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = QuickTimeImplAvf.mm; path = qtime/QuickTimeImplAvf.mm; sourceTree = "<group>"; };
-		006D704819942BF5008149E2 /* QuickTimeImplLegacy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QuickTimeImplLegacy.cpp; path = qtime/QuickTimeImplLegacy.cpp; sourceTree = "<group>"; };
+		006D704819942BF5008149E2 /* QuickTimeImplLegacy.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = QuickTimeImplLegacy.cpp; path = qtime/QuickTimeImplLegacy.cpp; sourceTree = "<group>"; };
 		006D704919942BF5008149E2 /* QuickTimeUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QuickTimeUtils.cpp; path = qtime/QuickTimeUtils.cpp; sourceTree = "<group>"; };
 		006D706019942C31008149E2 /* AvfUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AvfUtils.h; path = qtime/AvfUtils.h; sourceTree = "<group>"; };
 		006D706119942C31008149E2 /* MovieWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MovieWriter.h; path = qtime/MovieWriter.h; sourceTree = "<group>"; };
@@ -3866,7 +3866,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -3889,7 +3889,6 @@
 				);
 				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a ../lib/macosx/libboost_date_time.a";
 				PRODUCT_NAME = cinder_d;
-				SDKROOT = macosx;
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
@@ -3898,7 +3897,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
@@ -3923,7 +3922,6 @@
 				);
 				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a ../lib/macosx/libboost_date_time.a";
 				PRODUCT_NAME = cinder;
-				SDKROOT = macosx;
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;
