@@ -21,16 +21,25 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if ! defined( CINDER_GL_ANGLE )
 #include "cinder/app/AppImplMswRendererGl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Context.h"
+#include "cinder/gl/Environment.h"
+#include "glload/wgl_all.h"
+#include "glload/wgl_load.h"
 #include "cinder/app/App.h"
 #include "cinder/Camera.h"
+#include "cinder/Log.h"
 #include <windowsx.h>
 
 namespace cinder { namespace app {
 
 bool sMultisampleSupported = false;
 int sArbMultisampleFormat;
+typedef HGLRC (__stdcall * PFNWGLCREATECONTEXTATTRIBSARB) (HDC hDC, HGLRC hShareContext, const int *attribList);
+
 
 AppImplMswRendererGl::AppImplMswRendererGl( App *aApp, RendererGl *aRenderer )
 	: AppImplMswRenderer( aApp ), mRenderer( aRenderer )
@@ -61,16 +70,8 @@ void AppImplMswRendererGl::defaultResize() const
 	int width = clientRect.right - clientRect.left;
 	int height = clientRect.bottom - clientRect.top;
 
-	glViewport( 0, 0, width, height );
-	cinder::CameraPersp cam( width, height, 60.0f );
-
-	glMatrixMode( GL_PROJECTION );
-	glLoadMatrixf( cam.getProjectionMatrix().m );
-
-	glMatrixMode( GL_MODELVIEW );
-	glLoadMatrixf( cam.getModelViewMatrix().m );
-	glScalef( 1.0f, -1.0f, 1.0f );           // invert Y axis so increasing Y goes down.
-	glTranslatef( 0.0f, (float)-height, 0.0f );       // shift origin up to upper-left corner.
+	gl::viewport( 0, 0, width, height );
+	gl::setMatricesWindow( width, height );
 }
 
 void AppImplMswRendererGl::swapBuffers() const
@@ -80,7 +81,7 @@ void AppImplMswRendererGl::swapBuffers() const
 
 void AppImplMswRendererGl::makeCurrentContext()
 {
-	::wglMakeCurrent( mDC, mRC );
+	mCinderContext->makeCurrent();
 }
 
 HWND createDummyWindow( int *width, int *height, bool fullscreen )
@@ -156,7 +157,7 @@ HWND createDummyWindow( int *width, int *height, bool fullscreen )
 
 bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
-	if( ( ! sMultisampleSupported ) && mRenderer->getAntiAliasing() ) {
+	if( ( ! sMultisampleSupported ) && mRenderer->getOptions().getAntiAliasing() ) {
 		// first create a dummy window and use it to determine if we can do antialiasing
 		int width = 640;
 		int height = 480;
@@ -177,14 +178,83 @@ bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc, RendererRef sharedRende
 	RendererGl *sharedRendererGl = dynamic_cast<RendererGl*>( sharedRenderer.get() );
 	HGLRC sharedRC = ( sharedRenderer ) ? sharedRendererGl->mImpl->mRC : NULL;
 
-	return initializeInternal( wnd, dc, sharedRC );
+	if( ! initializeInternal( wnd, dc, sharedRC ) ) {
+		return false;
+	}
+
+	gl::Environment::setCore();
+	auto platformData = std::shared_ptr<gl::Context::PlatformData>( new gl::PlatformDataMsw( mRC, mDC ) );
+	platformData->mDebug = mRenderer->getOptions().getDebug();
+	platformData->mDebugLogSeverity = mRenderer->getOptions().getDebugLogSeverity();
+	platformData->mDebugBreakSeverity = mRenderer->getOptions().getDebugBreakSeverity();
+	platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
+	mCinderContext = gl::Context::createFromExisting( platformData );
+	mCinderContext->makeCurrent();
+
+	return true;
 }
+
+// We can't use the normal mechanism for this test because we don't have a context yet
+namespace {
+bool getCreateContextAttribsPtr( HDC dc, PFNWGLCREATECONTEXTATTRIBSARB *resultFnPtr )
+{
+	static PFNWGLCREATECONTEXTATTRIBSARB cachedFnPtr = NULL;
+	if( ! cachedFnPtr ) {
+		auto temp = ::wglCreateContext( dc ); 
+		::wglMakeCurrent( dc, temp ); 
+
+		cachedFnPtr = (PFNWGLCREATECONTEXTATTRIBSARB)::wglGetProcAddress( "wglCreateContextAttribsARB" );
+		*resultFnPtr = cachedFnPtr;
+		::wglMakeCurrent( NULL, NULL );
+		::wglDeleteContext( temp );
+		if( cachedFnPtr == NULL ) { 
+			return false;
+		}
+		else
+			return true;
+	}
+	else {
+		*resultFnPtr = cachedFnPtr;
+		return cachedFnPtr != NULL;
+	}
+}
+
+HGLRC createContext( HDC dc, bool coreProfile, bool debug, int majorVersion, int minorVersion )
+{
+	HGLRC result = 0;
+	static bool initializedLoadOGL = false;
+
+	bool needsCreateContextAttribsARB = false;
+	if( coreProfile || majorVersion > 2 )
+		needsCreateContextAttribsARB = true;
+
+	PFNWGLCREATECONTEXTATTRIBSARB wglCreateContextAttribsARBPtr = NULL;
+	if( needsCreateContextAttribsARB && getCreateContextAttribsPtr( dc, &wglCreateContextAttribsARBPtr ) ) {
+		int attribList[] = {
+			WGL_CONTEXT_MAJOR_VERSION_ARB, majorVersion,
+			WGL_CONTEXT_MINOR_VERSION_ARB, minorVersion,
+			WGL_CONTEXT_FLAGS_ARB, (debug) ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+			WGL_CONTEXT_PROFILE_MASK_ARB, (coreProfile) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB,
+			0, 0
+		};
+ 
+		result = (*wglCreateContextAttribsARBPtr)( dc, 0, attribList );
+		return result;
+	}
+	else {
+		return ::wglCreateContext( dc );
+	}
+}
+} // anonymous namespace
 
 bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC )
 {
 	int pixelFormat;
 	mWnd = wnd;
 	mDC = dc;
+
+	BYTE stencilBits = mRenderer->getOptions().getStencil() ? 8 : 0;
+	BYTE depthBits = mRenderer->getOptions().getDepthBufferDepth();
 
 	static PIXELFORMATDESCRIPTOR pfd =				// pfd Tells Windows How We Want Things To Be
 	{
@@ -200,8 +270,8 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC 
 		0,											// Shift Bit Ignored
 		0,											// No Accumulation Buffer
 		0, 0, 0, 0,									// Accumulation Bits Ignored
-		16,											// 32Bit Z-Buffer (Depth Buffer)  
-		0,											// No Stencil Buffer
+		depthBits,									// 32Bit Z-Buffer (Depth Buffer)  
+		stencilBits,								// Stencil Buffer
 		0,											// No Auxiliary Buffer
 		PFD_MAIN_PLANE,								// Main Drawing Layer
 		0,											// Reserved
@@ -228,7 +298,8 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC 
 		return false;								
 	}
 
-	if( ! ( mRC = ::wglCreateContext( dc ) ) )	{			// Are We Able To Get A Rendering Context?
+	if( ! ( mRC = createContext( dc, mRenderer->getOptions().getDebug(), mRenderer->getOptions().getCoreProfile(),
+			mRenderer->getOptions().getVersion().first, mRenderer->getOptions().getVersion().second ) ) )	{			// Are We Able To Get A Rendering Context?
 		return false;								
 	}
 
@@ -236,9 +307,13 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC 
 		return false;								
 	}
 
-	if( ( ! sMultisampleSupported ) && ( mRenderer->getAntiAliasing() > RendererGl::AA_NONE ) )  {
-		int level = initMultisample( pfd, mRenderer->getAntiAliasing(), dc );
-		mRenderer->setAntiAliasing( RendererGl::AA_NONE + level );
+	gl::Environment::setCore();
+	gl::env()->initializeFunctionPointers();
+
+	wgl_LoadFunctions( dc );								// Initialize WGL function pointers
+
+	if( ( ! sMultisampleSupported ) && ( mRenderer->getOptions().getAntiAliasing() > RendererGl::AA_NONE ) )  {
+		int level = initMultisample( pfd, mRenderer->getOptions().getAntiAliasing(), dc );
 		if( level > 0 ) {
 			// kill the current context and relaunch
 			::wglMakeCurrent( NULL, NULL );
@@ -247,8 +322,11 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC 
 		}
 	}
 
-	if( mPrevRC )
-		BOOL success = ::wglCopyContext( mPrevRC, mRC, GL_ALL_ATTRIB_BITS );
+	::wglMakeCurrent( NULL, NULL );
+	if( mPrevRC ) {
+		if( ! ::wglCopyContext( mPrevRC, mRC, 0xFFFFFFFF /*GL_ALL_ATTRIB_BITS*/ ) )
+			CI_LOG_E( "Unable to copy GL context attributes." );
+	}
 
 	if( mPrevRC )
 		::wglShareLists( mPrevRC, mRC );
@@ -256,13 +334,15 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC 
 	if( sharedRC )
 		::wglShareLists( sharedRC, mRC );
 
+	::wglMakeCurrent( mDC, mRC );
+
 	return true;									// Success
 }
 
 int AppImplMswRendererGl::initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc )
 {
 	// this is an array that corresponds to AppSettings::AA_NONE through AA_MSAA_16
-	if( ( ! WGL_ARB_multisample ) || ( ! wglChoosePixelFormatARB ) ) {
+	if( ( ! wglext_ARB_multisample ) || ( ! wglChoosePixelFormatARB ) ) {
 		sMultisampleSupported = false;
 		return 0;
 	}
@@ -323,3 +403,4 @@ void AppImplMswRendererGl::kill()
 }
 
 } } // namespace cinder::app
+#endif // ! defined( CINDER_GL_ANGLE )

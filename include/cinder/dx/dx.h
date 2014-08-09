@@ -31,7 +31,7 @@
 
 #include "cinder/Cinder.h"
 
-#include "cinder/gl/GLee.h"
+#include "cinder/gl/gl.h"
 
 #include "cinder/Exception.h"
 #include "cinder/Quaternion.h"
@@ -299,11 +299,6 @@ void drawSolid( const class Shape2d &shape2d, float approximationScale = 1.0f );
 //! Draws a solid (filled) PolyLine2f \a polyLine. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const PolyLine2f &polyLine );
 
-//! Draws a cinder::TriMesh \a mesh at the origin.
-void draw( const TriMesh2d &mesh );
-//! Draws a range of triangles starting with triangle # \a startTriangle and a count of \a triangleCount from cinder::TriMesh \a mesh at the origin.
-void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCount );
-//! Draws a cinder::TriMesh \a mesh at the origin.
 void draw( const TriMesh &mesh );
 //! Draws a range of triangles starting with triangle # \a startTriangle and a count of \a triangleCount from cinder::TriMesh \a mesh at the origin.
 void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount );

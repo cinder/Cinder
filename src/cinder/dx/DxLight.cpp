@@ -113,14 +113,14 @@ void Light::disable()
 void Light::update( const Camera &relativeCamera )
 {
 	if( mType == POINT ) {
-		mRelativePos = relativeCamera.getModelViewMatrix().transformPointAffine( mPosition );
+		mRelativePos = relativeCamera.getViewMatrix().transformPointAffine( mPosition );
 	}
 	else if( mType == DIRECTIONAL ) {
-		mRelativeDir = relativeCamera.getModelViewMatrix().transformVec( mDirection );
+		mRelativeDir = relativeCamera.getViewMatrix().transformVec( mDirection );
 	}
 	else if( mType == SPOTLIGHT ) {
-		mRelativePos = relativeCamera.getModelViewMatrix().transformPointAffine( mPosition );
-		mRelativeDir = relativeCamera.getModelViewMatrix().transformVec( mDirection );
+		mRelativePos = relativeCamera.getViewMatrix().transformPointAffine( mPosition );
+		mRelativeDir = relativeCamera.getViewMatrix().transformVec( mDirection );
 	}
 	setLight(*this);
 }
@@ -146,8 +146,8 @@ Matrix44f Light::getShadowTransformationMatrix( const Camera &camera ) const
 	//		glMultMatrixf( shadowBias );
 
 	Matrix44f shadowTransMatrix = mShadowCam.getProjectionMatrix();
-	shadowTransMatrix *= mShadowCam.getModelViewMatrix();
-	shadowTransMatrix *= camera.getInverseModelViewMatrix();
+	shadowTransMatrix *= mShadowCam.getViewMatrix();
+	shadowTransMatrix *= camera.getInverseViewMatrix();
 	return shadowTransMatrix;
 }
 

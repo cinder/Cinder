@@ -271,7 +271,7 @@ void setModelView( const Camera &cam )
 	//	glMatrixMode( GL_MODELVIEW );
 	//	glLoadMatrixf( cam.getModelViewMatrix().m );
 	//}
-	getDxRenderer()->mModelView.top() = cam.getModelViewMatrix();
+	getDxRenderer()->mModelView.top() = cam.getViewMatrix();
 }
 
 void setModelView( const Matrix44f &m )
@@ -347,7 +347,7 @@ void pushModelView( const Camera &cam )
 	//	glLoadMatrixf( cam.getModelViewMatrix().m );
 	//}
 	getDxRenderer()->mModelView.push();
-	getDxRenderer()->mModelView.top() = cam.getModelViewMatrix();
+	getDxRenderer()->mModelView.top() = cam.getViewMatrix();
 }
 
 void pushProjection( const Camera &cam )
@@ -437,7 +437,7 @@ void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees
 	float invFarMinusNear = 1.0f / (cam.getFarClip() - cam.getNearClip());
 	dx->mProjection.top().m22 -= cam.getNearClip() * invFarMinusNear;
 	dx->mProjection.top().m23 *= 0.5f;
-	dx->mModelView.top() = cam.getModelViewMatrix();
+	dx->mModelView.top() = cam.getViewMatrix();
 	if(originUpperLeft)
 	{
 		Matrix44f scale = Matrix44f::createScale(Vec3f(1, -1, 1));
@@ -595,155 +595,89 @@ void begin( GLenum mode )
 
 void end()
 {
-//	if(usingGL())
-//		glEnd();
-//#if defined( CINDER_MSW )
-//	else
-	{
-		auto dx = getDxRenderer();
-		size_t vertexCount = dx->mImmediateModeVerts.size();
-		if(vertexCount == 0)
-			return;
+	auto dx = getDxRenderer();
+	size_t vertexCount = dx->mImmediateModeVerts.size();
+	if(vertexCount == 0)
+		return;
 
-		std::vector<FixedVertex> *vertexBuffer = &dx->mImmediateModeVerts;
-		std::vector<FixedVertex> newVerts;
+	std::vector<FixedVertex> *vertexBuffer = &dx->mImmediateModeVerts;
+	std::vector<FixedVertex> newVerts;
 
-		dx->mProjection.push();
-		dx->mProjection.top() = Matrix44f::identity();
-		dx->mModelView.push();
-		dx->mModelView.top() = Matrix44f::identity();
-		if(dx->mImmediateModePrimitive == GL_QUADS) {
-			// optimized draw routine for GL_QUADS
-			drawQuads();
-		}
-		else
+	dx->mProjection.push();
+	dx->mProjection.top() = Matrix44f::identity();
+	dx->mModelView.push();
+	dx->mModelView.top() = Matrix44f::identity();
+
+	ID3D11ShaderResourceView *view;
+		dx->mDeviceContext->PSGetShaderResources(0, 1, &view);
+		ID3D11VertexShader *vs = (view) ? TEXTURE_VERTEX : COLOR_VERTEX;
+		ID3D11PixelShader *ps = (view) ? TEXTURE_PIXEL : COLOR_PIXEL;
+		D3D_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+
+		switch(dx->mImmediateModePrimitive)
 		{
-			ID3D11ShaderResourceView *view;
-			dx->mDeviceContext->PSGetShaderResources(0, 1, &view);
-			ID3D11VertexShader *vs = (view) ? TEXTURE_VERTEX : COLOR_VERTEX;
-			ID3D11PixelShader *ps = (view) ? TEXTURE_PIXEL : COLOR_PIXEL;
-			D3D_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+			case GL_POINTS:
+				topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+				break;
 
-			switch(dx->mImmediateModePrimitive)
+			case GL_LINES:
+				topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+				break;
+					
+			case GL_LINE_STRIP:
+				topology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
+				break;
+
+			case GL_LINE_LOOP:
+				dx->mImmediateModeVerts.push_back(dx->mImmediateModeVerts[0]);
+				topology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
+				break;
+
+			case GL_TRIANGLES:
+				topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+				break;
+
+			case GL_TRIANGLE_STRIP:
+				topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+				break;
+					
+			//TODO: need to optimize this
+			case GL_TRIANGLE_FAN:
 			{
-				case GL_POINTS:
-					topology = D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+				if(dx->mImmediateModeVerts.size() < 3)
 					break;
-
-				case GL_LINES:
-					topology = D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
-					break;
-					
-				case GL_LINE_STRIP:
-					topology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
-					break;
-
-				case GL_LINE_LOOP:
-					dx->mImmediateModeVerts.push_back(dx->mImmediateModeVerts[0]);
-					topology = D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP;
-					break;
-
-				case GL_TRIANGLES:
-					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-					break;
-
-				case GL_TRIANGLE_STRIP:
-					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-					break;
-					
-				//TODO: need to optimize this
-				case GL_POLYGON: //have no flipping clue how to do this but it seems to act like triangle fan
-				case GL_TRIANGLE_FAN:
+				for(unsigned i = 2; i < dx->mImmediateModeVerts.size(); ++i)
 				{
-					if(dx->mImmediateModeVerts.size() < 3)
-						break;
-					for(unsigned i = 2; i < dx->mImmediateModeVerts.size(); ++i)
-					{
-						newVerts.push_back(dx->mImmediateModeVerts[0]);
-						newVerts.push_back(dx->mImmediateModeVerts[i-1]);
-						newVerts.push_back(dx->mImmediateModeVerts[i]);
-					}
-					vertexBuffer = &newVerts;
-					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-					break;
-				}
-
-#if 0
-				case GL_QUADS:
-					{
-						if(dx->mImmediateModeVerts.size() < 4)
-							break;
-
-
-						newVerts.reserve(dx->mImmediateModeVerts.size() * 2);
-						for(unsigned i = 0; i < dx->mImmediateModeVerts.size(); i += 4)
-						{
-							newVerts.push_back(dx->mImmediateModeVerts[i+0]);
-							newVerts.push_back(dx->mImmediateModeVerts[i+1]);
-							newVerts.push_back(dx->mImmediateModeVerts[i+2]);
-							newVerts.push_back(dx->mImmediateModeVerts[i+0]);
-							newVerts.push_back(dx->mImmediateModeVerts[i+2]);
-							newVerts.push_back(dx->mImmediateModeVerts[i+3]);
-						}
-						vertexBuffer = &newVerts;
-						topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-						break;
-					}  
-#endif // 0
-
-				//TODO: need to optimize this
-				case GL_QUAD_STRIP:
-				{
-					if(dx->mImmediateModeVerts.size() < 4)
-						break;
-					newVerts.reserve(dx->mImmediateModeVerts.size() * 2);
-
 					newVerts.push_back(dx->mImmediateModeVerts[0]);
-					newVerts.push_back(dx->mImmediateModeVerts[1]);
-					newVerts.push_back(dx->mImmediateModeVerts[3]);
-					newVerts.push_back(dx->mImmediateModeVerts[0]);
-					newVerts.push_back(dx->mImmediateModeVerts[3]);
-					newVerts.push_back(dx->mImmediateModeVerts[2]);
-					
-					//ignore the odd vertex
-					if(dx->mImmediateModeVerts.size() % 2)
-						dx->mImmediateModeVerts.pop_back();
-					for(unsigned i = 4; i < dx->mImmediateModeVerts.size(); i += 2)
-					{
-						newVerts.push_back(dx->mImmediateModeVerts[i-2]);
-						newVerts.push_back(dx->mImmediateModeVerts[i-1]);
-						newVerts.push_back(dx->mImmediateModeVerts[i+1]);
-						newVerts.push_back(dx->mImmediateModeVerts[i-2]);
-						newVerts.push_back(dx->mImmediateModeVerts[i+1]);
-						newVerts.push_back(dx->mImmediateModeVerts[i-0]);
-					}
-					vertexBuffer = &newVerts;
-					topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-					break;
+					newVerts.push_back(dx->mImmediateModeVerts[i-1]);
+					newVerts.push_back(dx->mImmediateModeVerts[i]);
 				}
-			}
-			vertexCount = vertexBuffer->size();
-			size_t verticesProcessed = 0;
-			FixedVertex* fv = vertexBuffer->data();
-
-			while(vertexCount >= D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT) 
-			{
-				applyDxFixedPipeline(&fv[verticesProcessed], D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT , vs, ps, topology);
-				dx->mDeviceContext->Draw(D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, 0);
-				verticesProcessed += D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT;
-				vertexCount -= D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT;
-			}
-
-			if(vertexCount > 0) 
-			{
-				applyDxFixedPipeline(&fv[verticesProcessed], vertexCount, vs, ps, topology);
-				dx->mDeviceContext->Draw(vertexCount, 0);
+				vertexBuffer = &newVerts;
+				topology = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+				break;
 			}
 		}
-		dx->mProjection.pop();
-		dx->mModelView.pop();
-	}
-//#endif
+
+		vertexCount = vertexBuffer->size();
+		size_t verticesProcessed = 0;
+		FixedVertex* fv = vertexBuffer->data();
+
+		while(vertexCount >= D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT) 
+		{
+			applyDxFixedPipeline(&fv[verticesProcessed], D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT , vs, ps, topology);
+			dx->mDeviceContext->Draw(D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT, 0);
+			verticesProcessed += D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT;
+			vertexCount -= D3D_FL9_1_IA_PRIMITIVE_MAX_COUNT;
+		}
+
+		if(vertexCount > 0) 
+		{
+			applyDxFixedPipeline(&fv[verticesProcessed], vertexCount, vs, ps, topology);
+			dx->mDeviceContext->Draw(vertexCount, 0);
+		}
+
+	dx->mProjection.pop();
+	dx->mModelView.pop();
 }
 
 void vertex( const Vec2f &v )
@@ -1970,7 +1904,7 @@ void drawFrustum( const Camera &cam )
 
 	// extract camera position from modelview matrix, so that it will work with CameraStereo as well	
 	//  see: http://www.gamedev.net/topic/397751-how-to-get-camera-position/page__p__3638207#entry3638207
-	Matrix44f modelview = cam.getModelViewMatrix();	
+	Matrix44f modelview = cam.getViewMatrix();	
 	Vec3f eye;
 	eye.x = -(modelview.at(0,0) * modelview.at(0,3) + modelview.at(1,0) * modelview.at(1,3) + modelview.at(2,0) * modelview.at(2,3));
 	eye.y = -(modelview.at(0,1) * modelview.at(0,3) + modelview.at(1,1) * modelview.at(1,3) + modelview.at(2,1) * modelview.at(2,3));
@@ -2367,242 +2301,34 @@ void drawSolid( const PolyLine2f &polyLine )
 	draw( Triangulator( polyLine ).calcMesh() );
 }
 
-// TriMesh2d
-void draw( const TriMesh2d &mesh )
-{
-	if( mesh.getNumVertices() <= 0 )
-		return;
-
-//	if(usingGL())
-//	{
-//		glVertexPointer( 2, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
-//		glEnableClientState( GL_VERTEX_ARRAY );
-//
-//		glDisableClientState( GL_NORMAL_ARRAY );
-//	
-//		if( mesh.hasColorsRgb() ) {
-//			glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
-//			glEnableClientState( GL_COLOR_ARRAY );
-//		}
-//		else if( mesh.hasColorsRgba() ) {
-//			glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
-//			glEnableClientState( GL_COLOR_ARRAY );
-//		}
-//		else 
-//			glDisableClientState( GL_COLOR_ARRAY );	
-//
-//		if( mesh.hasTexCoords() ) {
-//			glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
-//			glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-//		}
-//		else
-//			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-//#if defined ( CINDER_GLES )
-//		GLushort * indices = new GLushort[ mesh.getIndices().size() ];
-//		for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
-//			indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
-//		}
-//		glDrawElements( GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
-//		delete [] indices;
-//#else
-//		glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
-//#endif
-//
-//		glDisableClientState( GL_VERTEX_ARRAY );
-//		glDisableClientState( GL_NORMAL_ARRAY );
-//		glDisableClientState( GL_COLOR_ARRAY );
-//		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-//	}
-//#if defined( CINDER_MSW )
-//	else
-	{
-		unsigned vertCount = mesh.getVertices().size();
-		auto dx = getDxRenderer();
-
-		FixedVertex *verts = new FixedVertex[vertCount];
-		for(unsigned i = 0; i < vertCount; ++i)
-		{
-			verts[i].pos = Vec3f(mesh.getVertices()[i], 0);
-			verts[i].norm = dx->mCurrentNormal;
-			verts[i].uv = (mesh.hasTexCoords()) ? mesh.getTexCoords()[i] : dx->mCurrentUV;
-			if(mesh.hasColorsRgb())
-				verts[i].color = Vec4f(*(const Vec3f*)&mesh.getColorsRGB()[i], 1);
-			else if(mesh.hasColorsRgba())
-				verts[i].color = *(const Vec4f*)&mesh.getColorsRGBA()[i];
-			else
-				verts[i].color = dx->mCurrentColor;
-		}
-		applyDxFixedPipeline(verts, vertCount, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		D3D11_MAPPED_SUBRESOURCE subresource;
-		dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-		memcpy(subresource.pData, &mesh.getIndices()[0], sizeof(GLuint) * mesh.getIndices().size());
-		dx->mDeviceContext->Unmap(dx->mIndexBuffer, 0);
-		//D3D11_BOX box = { 0, 0, 0, sizeof(GLuint) * mesh.getIndices().size(), 1, 1 };
-		//dx->mDeviceContext->UpdateSubresource(dx->mIndexBuffer, 0, &box, &mesh.getIndices()[0], 0, 0);
-		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		dx->mDeviceContext->DrawIndexed(mesh.getIndices().size(), 0, 0);
-		delete [] verts;
-	}
-//#endif
-}
-
-// TriMesh2d
-void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCount )
-{
-//	if(usingGL())
-//	{
-//		glVertexPointer( 2, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
-//		glEnableClientState( GL_VERTEX_ARRAY );
-//
-//		glDisableClientState( GL_NORMAL_ARRAY );
-//
-//		if( mesh.hasColorsRgb() ) {
-//			glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
-//			glEnableClientState( GL_COLOR_ARRAY );
-//		}
-//		else if( mesh.hasColorsRgba() ) {
-//			glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
-//			glEnableClientState( GL_COLOR_ARRAY );
-//		}	
-//		else 
-//			glDisableClientState( GL_COLOR_ARRAY );
-//	
-//		if( mesh.hasTexCoords() ) {
-//			glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
-//			glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-//		}
-//		else
-//			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-//
-//#if defined ( CINDER_GLES )
-//		size_t max = math<size_t>::min( mesh.getNumIndices(), 0xFFFF );
-//		size_t start = math<size_t>::min( startTriangle * 3, max );
-//		size_t count = math<size_t>::min( max - start, triangleCount * 3 );
-//		GLushort * indices = new GLushort[ max ];
-//		for ( size_t i = 0; i < max; i++ ) {
-//			indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
-//		}
-//		glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
-//		delete [] indices;
-//#else
-//		glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
-//#endif
-//	
-//		glDisableClientState( GL_VERTEX_ARRAY );
-//		glDisableClientState( GL_NORMAL_ARRAY );
-//		glDisableClientState( GL_COLOR_ARRAY );
-//		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-//	}
-//#if defined( CINDER_MSW )
-//	else
-	{
-		unsigned vertCount = mesh.getVertices().size();
-		auto dx = getDxRenderer();
-		FixedVertex *verts = new FixedVertex[vertCount];
-		for(unsigned i = 0; i < vertCount; ++i)
-		{
-			verts[i].pos = Vec3f(mesh.getVertices()[i], 0);
-			verts[i].norm = dx->mCurrentNormal;
-			verts[i].uv = (mesh.hasTexCoords()) ? mesh.getTexCoords()[i] : dx->mCurrentUV;
-			if(mesh.hasColorsRgb())
-				verts[i].color = Vec4f(*(const Vec3f*)&mesh.getColorsRGB()[i], 1);
-			else if(mesh.hasColorsRgba())
-				verts[i].color = *(const Vec4f*)&mesh.getColorsRGBA()[i];
-			else
-				verts[i].color = dx->mCurrentColor;
-		}
-		applyDxFixedPipeline(verts, vertCount, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		D3D11_MAPPED_SUBRESOURCE subresource;
-		dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-		memcpy(subresource.pData, &mesh.getIndices()[0], sizeof(GLuint) * mesh.getIndices().size());
-		dx->mDeviceContext->Unmap(dx->mIndexBuffer, 0);
-		//D3D11_BOX box = { 0, 0, 0, sizeof(GLuint) * mesh.getIndices().size(), 1, 1 };
-		//dx->mDeviceContext->UpdateSubresource(dx->mIndexBuffer, 0, &box, &mesh.getIndices()[0], 0, 0);
-		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		dx->mDeviceContext->DrawIndexed(triangleCount * 3, startTriangle, 0);
-		delete [] verts;
-	}
-//#endif
-}
-
 // TriMesh
 void draw( const TriMesh &mesh )
 {
-//	if(usingGL())
-//	{
-//		glVertexPointer( 3, GL_FLOAT, 0, &(mesh.getVertices()[0]) );
-//		glEnableClientState( GL_VERTEX_ARRAY );
-//
-//		if( mesh.hasNormals() ) {
-//			glNormalPointer( GL_FLOAT, 0, &(mesh.getNormals()[0]) );
-//			glEnableClientState( GL_NORMAL_ARRAY );
-//		}
-//		else
-//			glDisableClientState( GL_NORMAL_ARRAY );
-//	
-//		if( mesh.hasColorsRGB() ) {
-//			glColorPointer( 3, GL_FLOAT, 0, &(mesh.getColorsRGB()[0]) );
-//			glEnableClientState( GL_COLOR_ARRAY );
-//		}
-//		else if( mesh.hasColorsRGBA() ) {
-//			glColorPointer( 4, GL_FLOAT, 0, &(mesh.getColorsRGBA()[0]) );
-//			glEnableClientState( GL_COLOR_ARRAY );
-//		}
-//		else 
-//			glDisableClientState( GL_COLOR_ARRAY );	
-//
-//		if( mesh.hasTexCoords() ) {
-//			glTexCoordPointer( 2, GL_FLOAT, 0, &(mesh.getTexCoords()[0]) );
-//			glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-//		}
-//		else
-//			glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-//#if defined ( CINDER_GLES )
-//		GLushort * indices = new GLushort[ mesh.getIndices().size() ];
-//		for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
-//			indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
-//		}
-//		glDrawElements( GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
-//		delete [] indices;
-//#else
-//		glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
-//#endif
-//
-//		glDisableClientState( GL_VERTEX_ARRAY );
-//		glDisableClientState( GL_NORMAL_ARRAY );
-//		glDisableClientState( GL_COLOR_ARRAY );
-//		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-//	}
-//#if defined( CINDER_MSW )
-//	else
+	auto dx = getDxRenderer();
+	unsigned vertCount = mesh.getVertices().size();
+	FixedVertex *verts = new FixedVertex[vertCount];
+	for(unsigned i = 0; i < vertCount; ++i)
 	{
-		auto dx = getDxRenderer();
-		unsigned vertCount = mesh.getVertices().size();
-		FixedVertex *verts = new FixedVertex[vertCount];
-		for(unsigned i = 0; i < vertCount; ++i)
-		{
-			verts[i].pos = mesh.getVertices()[i];
-			verts[i].norm = dx->mCurrentNormal;
-			verts[i].uv = (mesh.hasTexCoords()) ? mesh.getTexCoords()[i] : dx->mCurrentUV;
-			if(mesh.hasColorsRGB())
-				verts[i].color = Vec4f(*(const Vec3f*)&mesh.getColorsRGB()[i], 1);
-			else if(mesh.hasColorsRGBA())
-				verts[i].color = *(const Vec4f*)&mesh.getColorsRGBA()[i];
-			else
-				verts[i].color = dx->mCurrentColor;
-		}
-		applyDxFixedPipeline(verts, vertCount, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		D3D11_MAPPED_SUBRESOURCE subresource;
-		dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
-		memcpy(subresource.pData, &mesh.getIndices()[0], sizeof(GLuint) * mesh.getIndices().size());
-		dx->mDeviceContext->Unmap(dx->mIndexBuffer, 0);
-		//D3D11_BOX box = { 0, 0, 0, sizeof(GLuint) * mesh.getIndices().size(), 1, 1 };
-		//dx->mDeviceContext->UpdateSubresource(dx->mIndexBuffer, 0, &box, &mesh.getIndices()[0], 0, 0);
-		dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-		dx->mDeviceContext->DrawIndexed(mesh.getIndices().size(), 0, 0);
-		delete [] verts;
+		verts[i].pos = mesh.getVertices()[i];
+		verts[i].norm = dx->mCurrentNormal;
+		verts[i].uv = (mesh.hasTexCoords()) ? mesh.getTexCoords()[i] : dx->mCurrentUV;
+		if(mesh.hasColorsRgb())
+			verts[i].color = Vec4f(*(const Vec3f*)&mesh.getColorsRGB()[i], 1);
+		else if(mesh.hasColorsRgba())
+			verts[i].color = *(const Vec4f*)&mesh.getColorsRGBA()[i];
+		else
+			verts[i].color = dx->mCurrentColor;
 	}
-//#endif
+	applyDxFixedPipeline(verts, vertCount, COLOR_VERTEX, COLOR_PIXEL, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D11_MAPPED_SUBRESOURCE subresource;
+	dx->mDeviceContext->Map(dx->mIndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource);
+	memcpy(subresource.pData, &mesh.getIndices()[0], sizeof(GLuint) * mesh.getIndices().size());
+	dx->mDeviceContext->Unmap(dx->mIndexBuffer, 0);
+	//D3D11_BOX box = { 0, 0, 0, sizeof(GLuint) * mesh.getIndices().size(), 1, 1 };
+	//dx->mDeviceContext->UpdateSubresource(dx->mIndexBuffer, 0, &box, &mesh.getIndices()[0], 0, 0);
+	dx->mDeviceContext->IASetIndexBuffer(dx->mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	dx->mDeviceContext->DrawIndexed(mesh.getIndices().size(), 0, 0);
+	delete [] verts;
 }
 
 // TriMesh2d
@@ -2668,9 +2394,9 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 			verts[i].pos = mesh.getVertices()[i];
 			verts[i].norm = dx->mCurrentNormal;
 			verts[i].uv = (mesh.hasTexCoords()) ? mesh.getTexCoords()[i] : dx->mCurrentUV;
-			if(mesh.hasColorsRGB())
+			if(mesh.hasColorsRgb())
 				verts[i].color = Vec4f(*(const Vec3f*)&mesh.getColorsRGB()[i], 1);
-			else if(mesh.hasColorsRGBA())
+			else if(mesh.hasColorsRgba())
 				verts[i].color = *(const Vec4f*)&mesh.getColorsRGBA()[i];
 			else
 				verts[i].color = dx->mCurrentColor;

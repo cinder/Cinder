@@ -31,6 +31,8 @@
 #   endif // _DEBUG
 #endif // ANT_WINDOWS
 
+#include <algorithm>
+
 #if !defined(ANT_WINDOWS)
 #   define _snprintf snprintf
 #endif  // defined(ANT_WINDOWS)
@@ -1238,7 +1240,7 @@ void CQuaternionExt::PermuteInv(double *outX, double *outY, double *outZ, double
 
 static inline float QuatD(int w, int h)
 {
-    return (float)min(abs(w), abs(h)) - 4;
+    return (float)std::min(abs(w), abs(h)) - 4;
 }
 
 static inline int QuatPX(float x, int w, int h)

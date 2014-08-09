@@ -22,6 +22,11 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if ! defined ( CINDER_WINRT )
+	#define BOOST_REGEX_NO_LIB
+	#include <boost/asio.hpp>
+#endif
+
 #include "cinder/app/App.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Camera.h"
@@ -42,11 +47,6 @@
 #elif defined( CINDER_MSW )
 	#include "cinder/msw/OutputDebugStringStream.h"
 	#include "cinder/app/AppImplMsw.h"
-#endif
-
-#if !defined ( CINDER_WINRT )
-#define BOOST_REGEX_NO_LIB
-#include <boost/asio.hpp>
 #endif
 
 using namespace std;
