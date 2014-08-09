@@ -762,6 +762,12 @@
     <ClCompile Include="..\src\cinder\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\LoadOGLCore.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwOpenGLCore.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1588,6 +1594,12 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\Log.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\LoadOGLCore.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwOpenGLCore.h">
+      <Filter>Source Files\AntTweakBar</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
