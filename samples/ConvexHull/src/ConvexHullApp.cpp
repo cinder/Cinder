@@ -1,8 +1,9 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ConvexHull.h"
 #include "cinder/Rand.h"
-#include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
+#include "cinder/Font.h"
 
 using namespace ci;
 using namespace ci::app;

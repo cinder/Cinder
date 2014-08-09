@@ -67,10 +67,10 @@
 #endif
 
 // forward declarations
-namespace cinder
-{
+namespace cinder {
 	class TriMesh;
 	class Path2d;
+	class Shape2d;
 }
 
 namespace cinder { namespace gl {
@@ -301,13 +301,17 @@ void draw( const TextureRef &texture, const Area &srcArea, const Rectf &dstRect 
 void draw( const TextureRef &texture, const Vec2f &dstOffset = Vec2f::zero() );
 void draw( const class PolyLine<Vec2f> &polyLine );
 void draw( const class PolyLine<Vec3f> &polyLine );
-//! Draws a Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
+//! Draws a Path2d \a pathd using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
 void draw( const Path2d &path, float approximationScale = 1.0f );
+//! Draws a Shaped2d \a shaped using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
+void draw( const Shape2d &shape, float approximationScale = 1.0f );
 //! Draws a cinder::TriMesh \a mesh at the origin. Currently only uses position and index information.
 void draw( const TriMesh &mesh );
 
-//! Draws a solid (filled) Path2d \a path2d using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
-void drawSolid( const class Path2d &path2d, float approximationScale = 1.0f );
+//! Draws a solid (filled) Path2d \a path using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
+void drawSolid( const Path2d &path2d, float approximationScale = 1.0f );
+//! Draws a solid (filled) Shape2d \a shape using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
+void drawSolid( const Shape2d &shape, float approximationScale = 1.0f );
 void drawSolid( const class PolyLine<Vec2f> &polyLine );
 
 //! Renders a solid cube centered at \a center of size \a size. Normals and created texture coordinates are generated.

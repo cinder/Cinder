@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/BSpline.h"
 #include "cinder/cairo/Cairo.h"
 #include "cinder/ImageIo.h"

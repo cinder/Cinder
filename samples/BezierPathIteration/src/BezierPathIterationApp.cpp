@@ -3,6 +3,7 @@
 // It then generates 2000 random particles which move along the paths at a constant speed
 
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/svg/Svg.h"
 #include "cinder/Rand.h"

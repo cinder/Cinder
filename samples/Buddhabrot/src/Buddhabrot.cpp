@@ -6,6 +6,7 @@
 
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Rand.h"
 #include "cinder/ImageIo.h"
@@ -61,7 +62,7 @@ class BuddhabrotApp : public AppBasic {
 	int mBlueBuffer[ TEXTURE_WIDTH * TEXTURE_HEIGHT ];
 	
 	Surface mSurface;
-	gl::Texture	mTexture;
+	gl::TextureRef	mTexture;
 	
 	int mVMaxR;
 	int mVMaxG;
@@ -83,7 +84,7 @@ void BuddhabrotApp::setup()
 	Rand::randomize();
 	mTotalPixels	= TEXTURE_WIDTH * TEXTURE_HEIGHT;
 	mSurface	= Surface( TEXTURE_WIDTH, TEXTURE_HEIGHT, false );
-	mTexture	= gl::Texture( mSurface );
+	mTexture	= gl::Texture::create( mSurface );
 	
 	mWidth		= TEXTURE_WIDTH;//getWindowWidth();
 	mHeight		= TEXTURE_HEIGHT;//getWindowHeight();
@@ -354,16 +355,12 @@ void BuddhabrotApp::update()
 			iter.b() = (int)( b * 255 );
 		}
 	}
-	mTexture = gl::Texture( mSurface );
+	mTexture = gl::Texture::create( mSurface );
 }
 
 void BuddhabrotApp::draw()
 {
-	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-	glEnable( GL_TEXTURE_2D );
-
+	gl::clear();
 	gl::draw( mTexture );
 }
 

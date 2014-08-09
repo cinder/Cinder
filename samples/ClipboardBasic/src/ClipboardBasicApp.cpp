@@ -1,8 +1,6 @@
-﻿#include "cinder/Cinder.h"
-#include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+﻿#include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Clipboard.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/Utilities.h"
 
 #include "Resources.h"
@@ -35,7 +33,7 @@ void ClipboardBasicApp::draw()
 	gl::enableAlphaBlending();
 	
 	if( Clipboard::hasImage() )
-		gl::draw( gl::Texture( Clipboard::getImage() ) );
+		gl::draw( gl::Texture::create( Clipboard::getImage() ) );
 	else if( Clipboard::hasString() )
 		gl::drawString( Clipboard::getString(), Vec2f( 0, getWindowCenter().y ) );
 	else

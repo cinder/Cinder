@@ -14,11 +14,13 @@
 #define ANT_OGL_HEADER_INCLUDED ////
 */
 
+#include "TwPrecomp.h"
 #if defined ANT_OSX
 #   include <OpenGL/gl3.h>
 #   define ANT_OGL_HEADER_INCLUDED
+#else
+#	include <gl/GL.h>
 #endif
-#include "TwPrecomp.h"
 #include "LoadOGLCore.h"
 #include "TwOpenGLCore.h"
 #include "TwMgr.h"
@@ -35,11 +37,17 @@ extern const char *g_ErrCantUnloadOGL;
     {
         int err=0;
         char msg[256];
+
+    #ifdef ANT_WINDOWS
+        if(!wglGetCurrentContext())
+            return;
+    #endif
+
         while( (err=_glGetError())!=0 )
         {
             sprintf(msg, "%s(%d) : [%s] GL_CORE_ERROR=0x%x\n", file, line, func, err);
             #ifdef ANT_WINDOWS
-                OutputDebugString(msg);
+                OutputDebugStringA(msg);
             #endif
             fprintf(stderr, msg);
         }

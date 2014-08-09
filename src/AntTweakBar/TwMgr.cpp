@@ -1753,16 +1753,16 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
 
     switch( _GraphAPI )
     {
+#if 0	
     case TW_OPENGL:
-#if ! defined( USE_DIRECTX )
         g_TwMgr->m_Graph = new CTwGraphOpenGL;
 #endif
         break;
 // Cinder: we don't support D3D or OpenGL Core yet
-#if 0
     case TW_OPENGL_CORE:
         g_TwMgr->m_Graph = new CTwGraphOpenGLCore;
         break;
+#if 0
     case TW_DIRECT3D9:
         #ifdef ANT_WINDOWS
             if( g_TwMgr->m_Device!=NULL )

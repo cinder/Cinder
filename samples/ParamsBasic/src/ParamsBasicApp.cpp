@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/params/Params.h"
 
@@ -87,12 +88,12 @@ void TweakBarApp::draw()
 	gl::enableDepthWrite();
 	gl::clear( Color::gray( 0.1f ) );
 
-	glLoadIdentity();
+/*	glLoadIdentity();
 	glEnable( GL_LIGHTING );
 	glEnable( GL_LIGHT0 );	
 	GLfloat lightPosition[] = { -mLightDirection.x, -mLightDirection.y, -mLightDirection.z, 0 };
 	glLightfv( GL_LIGHT0, GL_POSITION, lightPosition );
-	glMaterialfv( GL_FRONT, GL_DIFFUSE,	mColor );
+	glMaterialfv( GL_FRONT, GL_DIFFUSE,	mColor );*/
 
 	gl::setMatrices( mCam );
 	gl::rotate( mObjOrientation );

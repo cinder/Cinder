@@ -347,7 +347,7 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
             return 1; // "OpenGL library already loaded"
         }
     
-        g_OGLCoreModule = LoadLibrary("OPENGL32.DLL");
+        g_OGLCoreModule = LoadLibrary(L"OPENGL32.DLL");
         if( g_OGLCoreModule )
         {
             // Info(VERB_LOW, "Load %d OpenGL Core functions", g_NbOGLCoreFunc);
@@ -484,7 +484,7 @@ namespace GLCore { PFNGLGetProcAddress _glGetProcAddress = NULL; }
         void *proc=NULL;
         if (gl_dyld == NULL) 
         {
-            gl_dyld = dlopen("OpenGL",RTLD_LAZY);
+            gl_dyld = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL",RTLD_LAZY);
         }
         if (gl_dyld) 
         {

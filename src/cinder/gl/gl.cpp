@@ -1057,7 +1057,41 @@ void draw( const Path2d &path, float approximationScale )
 
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_LINE_STRIP, 0, points.size() );
+	ctx->drawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
+	ctx->popVao();
+}
+
+void draw( const Shape2d &shape, float approximationScale )
+{
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	vector<Vec2f> points;
+	for( auto &path : shape.getContours() ) {
+		if( path.getNumSegments() == 0 )
+			continue;
+		auto pathPoints = path.subdivide( approximationScale );
+		points.insert( points.end(), pathPoints.begin(), pathPoints.end() );
+	}
+	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(Vec2f) * points.size() );
+	arrayVbo->bufferSubData( 0, sizeof(Vec2f) * points.size(), points.data() );
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	ScopedBuffer bufferBindScp( arrayVbo );
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)nullptr );
+	}
+
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
 	ctx->popVao();
 }
 
@@ -1085,7 +1119,7 @@ void draw( const PolyLine<Vec2f> &polyLine )
 
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_LINE_STRIP, 0, points.size() );
+	ctx->drawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
 	ctx->popVao();
 }
 
@@ -1113,7 +1147,7 @@ void draw( const PolyLine<Vec3f> &polyLine )
 
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_LINE_STRIP, 0, points.size() );
+	ctx->drawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
 	ctx->popVao();
 }
 
@@ -1189,6 +1223,11 @@ void draw( const TriMesh &mesh )
 void drawSolid( const Path2d &path, float approximationScale )
 {
 	draw( Triangulator( path ).calcMesh() );
+}
+
+void drawSolid( const Shape2d &shape, float approximationScale )
+{
+	draw( Triangulator( shape ).calcMesh() );
 }
 
 void drawSolid( const PolyLine<Vec2f> &polyLine )
@@ -1368,7 +1407,7 @@ void drawStrokedCircle( const Vec2f &center, float radius, int numSegments )
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
 	// draw
-	drawArrays( GL_LINE_LOOP, 0, positions.size() );
+	drawArrays( GL_LINE_LOOP, 0, (GLsizei)positions.size() );
 	ctx->popVao();
 }
 
