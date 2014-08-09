@@ -110,7 +110,6 @@ using std::uint64_t;
 		#include <boost/chrono.hpp>
 	#endif
 #elif defined( CINDER_COCOA ) && defined( _LIBCPP_VERSION ) // libc++
-	#include <chrono>
 	#include <memory>
 #elif defined( CINDER_COCOA ) // libstdc++
 	#error "Cinder requires libc++ on Mac OS X and iOS"
