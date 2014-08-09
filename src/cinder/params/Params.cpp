@@ -162,7 +162,7 @@ class AntMgr {
 		if( ! TwInit( TW_DIRECT3D11, dx::getDxRenderer()->md3dDevice ) )
 			throw Exception();
 #else
-		if( ! TwInit( TW_OPENGL, NULL ) ) {
+		if( ! TwInit( TW_OPENGL_CORE, NULL ) ) {
 			throw Exception();
 		}		
 #endif
