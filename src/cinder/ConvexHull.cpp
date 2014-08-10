@@ -93,7 +93,10 @@ void includePathExtremeties( const Path2d &p, polygon *output )
 
 PolyLine2f calcConvexHull( const std::vector<Vec2f> &points )
 {
-	return calcConvexHull( &points[0], points.size() );
+	if( points.empty() )
+		return PolyLine2f();
+	else
+		return calcConvexHull( points.data(), points.size() );
 }
 
 PolyLine2f calcConvexHull( const Vec2f *points, size_t numPoints )

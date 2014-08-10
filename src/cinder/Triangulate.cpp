@@ -95,7 +95,8 @@ void Triangulator::addPath( const Path2d &path, float approximationScale )
 
 void Triangulator::addPolyLine( const PolyLine2f &polyLine )
 {
-	tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, (int)polyLine.size() );
+	if( polyLine.size() > 0 )
+		tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, (int)polyLine.size() );
 }
 
 TriMesh Triangulator::calcMesh( Winding winding )
