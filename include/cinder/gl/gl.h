@@ -288,6 +288,9 @@ bool isWireframeEnabled();
 inline void setWireframeEnabled( bool enable = true )	{ if( enable ) enableWireframe(); else disableWireframe(); }
 #endif
 
+//! Sets the width of rasterized lines to \a width. The initial value is 1. Analogous to glLineWidth(). 
+void	lineWidth( float width );
+
 //! Converts a geom::Primitive to an OpenGL primitive mode( GL_TRIANGLES, GL_TRIANGLE_STRIP, etc )
 GLenum toGl( geom::Primitive prim );
 //! Converts an OpenGL primitive mode( GL_TRIANGLES, GL_TRIANGLE_STRIP, etc ) to a geom::Primitive

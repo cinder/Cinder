@@ -736,6 +736,11 @@ bool isWireframeEnabled()
 
 #endif
 
+void lineWidth( float width )
+{
+	glLineWidth( width );
+}
+
 void draw( const VboMeshRef& mesh )
 {
 	auto ctx = gl::context();
