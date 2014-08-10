@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Easing.h"
@@ -19,7 +20,7 @@ struct EaseBox {
 		TextLayout text; text.clear( Color::white() ); text.setColor( Color(0.5f, 0.5f, 0.5f) );
 		try { text.setFont( Font( "Futura-CondensedMedium", 18 ) ); } catch( ... ) { text.setFont( Font( "Arial", 18 ) ); }
 		text.addLine( name );
-		mLabelTex = gl::Texture( text.render( true ) );
+		mLabelTex = gl::Texture::create( text.render( true ) );
 	}
 	
 	void draw( float t ) const
@@ -30,16 +31,17 @@ struct EaseBox {
 		gl::color( Color( 0.4f, 0.4f, 0.4f ) );
 		gl::drawStrokedRect( mDrawRect );
 		gl::color( Color::white() );
-		gl::draw( mLabelTex, mDrawRect.getCenter() - mLabelTex.getSize() / 2 );
+		gl::draw( mLabelTex, mDrawRect.getCenter() - mLabelTex->getSize() / 2 );
 				
 		// draw graph
 		gl::color( ColorA( 0.25f, 0.5f, 1.0f, 0.5f ) );
-		glBegin( GL_LINE_STRIP );
+		
+		gl::begin( GL_LINE_STRIP );
 		for( float x = 0; x < mDrawRect.getWidth(); x += 0.25f ) {
 			float y = 1.0f - mFn( x / mDrawRect.getWidth() );
 			gl::vertex( Vec2f( x, y * mDrawRect.getHeight() ) + mDrawRect.getUpperLeft() );
 		}
-		glEnd();
+		gl::end();
 		
 		// draw animating circle
 		gl::color( Color( 1, 0.5f, 0.25f ) );
@@ -48,7 +50,7 @@ struct EaseBox {
 	
 	std::function<float (float)>	mFn;
 	Rectf							mDrawRect;
-	gl::Texture						mLabelTex;
+	gl::TextureRef					mLabelTex;
 };
 
 class EaseGalleryApp : public AppBasic {
@@ -146,7 +148,7 @@ void EaseGalleryApp::draw()
 {
 	gl::clear( Color( 0.9f, 0.9f, 0.9f ) ); 
 	gl::enableAlphaBlending();
-	glLineWidth( 2.0f );
+	gl::lineWidth( 4.0f );
 
 	// time cycles every 1 / TWEEN_SPEED seconds, with a 50% pause at the end
 	float time = math<float>::clamp( fmod( getElapsedSeconds() * TWEEN_SPEED, 1 ) * 1.5f, 0, 1 );
@@ -154,5 +156,4 @@ void EaseGalleryApp::draw()
 		easeIt->draw( time );
 }
 
-
-CINDER_APP_BASIC( EaseGalleryApp, RendererGl(3) )
+CINDER_APP_BASIC( EaseGalleryApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_MSAA_16 ) ) )
