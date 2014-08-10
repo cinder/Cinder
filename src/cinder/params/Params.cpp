@@ -29,10 +29,11 @@
 #include <boost/assign/list_of.hpp>
 
 #if defined( USE_DIRECTX )
-#include "cinder/dx/dx.h"
-#include "cinder/app/AppImplMswRendererDx.h"
+	#include "cinder/dx/dx.h"
+	#include "cinder/app/AppImplMswRendererDx.h"
+#else
+	#include "cinder/gl/Environment.h"
 #endif
-
 using namespace std;
 
 namespace cinder { namespace params {
@@ -253,6 +254,11 @@ InterfaceGlRef InterfaceGl::create( const cinder::app::WindowRef &window, const 
 void InterfaceGl::init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color )
 {
 	mTwWindowId = initAntGl( window );
+	// due to a bug in Ant we need to restore the currently bound VAO as well as the buffer bindings
+	gl::context()->restoreInvalidatedVao();
+	gl::context()->restoreInvalidatedBufferBinding( GL_ARRAY_BUFFER );
+	gl::context()->restoreInvalidatedBufferBinding( GL_ELEMENT_ARRAY_BUFFER );
+	
 	TwSetCurrentWindow( mTwWindowId );
 		
 	mWindow = window;
@@ -279,6 +285,10 @@ void InterfaceGl::draw()
 	TwSetCurrentWindow( mTwWindowId );
 	
 	TwDraw();
+	// due to a bug in Ant we need to restore the currently bound VAO as well as the buffer bindings
+	gl::context()->restoreInvalidatedVao();
+	gl::context()->restoreInvalidatedBufferBinding( GL_ARRAY_BUFFER );
+	gl::context()->restoreInvalidatedBufferBinding( GL_ELEMENT_ARRAY_BUFFER );	
 }
 
 void InterfaceGl::show( bool visible )
