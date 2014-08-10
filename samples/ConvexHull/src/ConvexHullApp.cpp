@@ -31,7 +31,7 @@ void ConvexHullApp::setup()
 {
 	mUsingShape = true;
 	mParams = params::InterfaceGl::create( "App parameters", Vec2i( 180, 100 ) );
-	mParams->addParam( "Use Shape", &mUsingShape );
+	mParams->addParam( "Use Glyph", &mUsingShape );
 	mParams->addButton( "Clear Points", [&] { mPoints.clear(); } );
 	
 	if( mUsingShape )
@@ -78,13 +78,13 @@ void ConvexHullApp::draw()
 	gl::enableAlphaBlending();
 
 	// draw solid convex hull
-	gl::color( ColorA( 0.8f, 0, 1.0f, 0.2f ) );	
+	gl::color( ColorA( 0.8f, 0, 1.0f, 0.2f ) );
 	gl::drawSolid( mConvexHull );
-	gl::color( ColorA( 0.8f, 0, 1.0f, 0.8f ) );	
+	gl::color( ColorA( 0.8f, 0, 1.0f, 0.8f ) );
 	gl::draw( mConvexHull );
 	
 	// draw convex hull points
-	gl::color( Color( 0.0f, 0, 1.0f ) );	
+	gl::color( Color( 0.0f, 0, 1.0f ) );
 	for( auto ptIt = mConvexHull.begin(); ptIt != mConvexHull.end(); ++ptIt ) {
 		gl::drawSolidCircle( *ptIt, 4 );
 	}
@@ -96,7 +96,7 @@ void ConvexHullApp::draw()
 	else {
 		for( auto ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt ) {
 			gl::drawSolidCircle( *ptIt, 3 );
-		}	
+		}
 	}
 		
 	mParams->draw();
