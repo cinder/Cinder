@@ -59,6 +59,7 @@
 #include "cinder/Matrix44.h"
 #include "cinder/geomIo.h"
 #include "cinder/PolyLine.h"
+#include "cinder/Font.h"
 
 #if ! defined( NDEBUG )
 	#define CI_CHECK_GL()	cinder::gl::checkError()
@@ -71,6 +72,7 @@ namespace cinder {
 	class TriMesh;
 	class Path2d;
 	class Shape2d;
+	class Font;
 }
 
 namespace cinder { namespace gl {
@@ -341,6 +343,13 @@ void drawStrokedRect( const Rectf &rect );
 void drawStrokedRect( const Rectf &rect, float lineWidth );
 //! Draws a stroked circles centered around \a center with a radius of \a radius
 void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = -1 );
+
+//! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
+void drawString( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+//! Draws a string \a str with the horizontal center of its baseline located at \a pos. Optional \a font and \a color affect the style
+void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+//! Draws a right-justified string \a str with the center of its  located at \a pos. Optional \a font and \a color affect the style
+void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
 
 // Vertex Attributes
 //! Analogous to glVertexAttribPointer

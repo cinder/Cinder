@@ -9,6 +9,7 @@
 #include "cinder/gl/Environment.h"
 
 #include "cinder/Utilities.h"
+#include "cinder/Text.h"
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Path2d.h"
@@ -1535,6 +1536,54 @@ void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationRadians,
 	ctx->setDefaultShaderVars();
 	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	ctx->popVao();
+}
+
+namespace {
+void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
+{
+	if( str.empty() )
+		return;
+
+	// justification: { left = -1, center = 0, right = 1 }
+	ScopedColor colorScp( Color::white() );
+
+	static Font defaultFont = Font::getDefault();
+	if( ! font )
+		font = defaultFont;
+
+	float baselineOffset;
+#if defined( CINDER_COCOA_TOUCH )
+	Vec2i actualSize;
+	Surface8u pow2Surface( renderStringPow2( str, font, color, &actualSize, &baselineOffset ) );
+	gl::TextureRef tex = gl::Texture::create( pow2Surface );
+	tex->setCleanTexCoords( actualSize.x / (float)pow2Surface.getWidth(), actualSize.y / (float)pow2Surface.getHeight() );
+	baselineOffset += pow2Surface.getHeight();
+#else
+	gl::TextureRef tex = gl::Texture::create( renderString( str, font, color, &baselineOffset ) );
+#endif
+
+	if( justification == -1 ) // left
+		draw( tex, pos - Vec2f( 0, baselineOffset ) );
+	else if( justification == 0 ) // center
+		draw( tex, pos - Vec2f( tex->getWidth() * 0.5f, baselineOffset ) );
+	else // right
+		draw( tex, pos - Vec2f( (float)tex->getWidth(), baselineOffset ) );
+}
+} // anonymous namespace
+
+void drawString( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+{
+	drawStringHelper( str, pos, color, font, -1 );
+}
+
+void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+{
+	drawStringHelper( str, pos, color, font, 0 );
+}
+
+void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+{
+	drawStringHelper( str, pos, color, font, 1 );
 }
 
 GLenum getError()
