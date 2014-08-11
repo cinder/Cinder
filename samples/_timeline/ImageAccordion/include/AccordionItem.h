@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "cinder/Timeline.h"
@@ -15,7 +14,9 @@
 
 class AccordionItem {
   public:	
-	AccordionItem( ci::Timeline &timeline, float x, float y, float height, float contractedWidth, float expandedHeight, ci::gl::Texture image, std::string title, std::string subtitle );
+	AccordionItem( ci::Timeline &timeline, float x, float y, float height,
+					float contractedWidth, float expandedWidth, ci::gl::TextureRef image,
+					std::string title, std::string subtitle );
 	void update();
 	void draw();
 	
@@ -30,7 +31,7 @@ class AccordionItem {
 	
 	std::string		mTitle, mSubtitle;
 	
-	ci::gl::Texture		mImage, mText;
+	ci::gl::TextureRef	mImage, mText;
 	ci::Rectf			mTextRect;
 	ci::Area			mImageArea,  mTextArea;
 	

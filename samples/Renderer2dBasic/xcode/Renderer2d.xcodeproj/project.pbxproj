@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		001726B716B1C5BC00895B66 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 001726B616B1C5BC00895B66 /* QuickTime.framework */; };
 		006D732A199533A7008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D7328199533A7008149E2 /* AVFoundation.framework */; };
 		006D732B199533A7008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D7329199533A7008149E2 /* CoreMedia.framework */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
@@ -53,7 +52,6 @@
 			files = (
 				006D732A199533A7008149E2 /* AVFoundation.framework in Frameworks */,
 				006D732B199533A7008149E2 /* CoreMedia.framework in Frameworks */,
-				001726B716B1C5BC00895B66 /* QuickTime.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,

@@ -13,6 +13,7 @@
 // triggers the interaction between visuals and audio.
 
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Timeline.h"
@@ -195,21 +196,21 @@ void FallingGearsApp::drawBackground()
 
 	gl::color( Color::white() );
 
-	gl::pushModelView();
+	gl::pushModelMatrix();
 	gl::translate( 0, decentMod * 0.5f );
 
 	gl::draw( mBackgroundTex, destRect, destRect );
 
-	gl::popModelView();
+	gl::popModelMatrix();
 }
 
 void FallingGearsApp::drawDebug()
 {
 	float pointsPerMeter = mScene.getPointsPerMeter();
-	gl::pushModelView();
+	gl::pushModelMatrix();
 		gl::scale( pointsPerMeter, pointsPerMeter );
 		mScene.getWorld()->DrawDebugData();
-	gl::popModelView();
+	gl::popModelMatrix();
 }
 
 void FallingGearsApp::drawInfo()

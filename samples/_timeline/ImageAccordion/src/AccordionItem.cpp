@@ -20,7 +20,7 @@ float quickRound( float n )
 	return floor(n+0.5f);
 }
 
-AccordionItem::AccordionItem( Timeline &timeline, float x, float y, float height, float contractedWidth, float expandedWidth, gl::Texture image, string title, string subtitle ) 
+AccordionItem::AccordionItem( Timeline &timeline, float x, float y, float height, float contractedWidth, float expandedWidth, gl::TextureRef image, string title, string subtitle )
 	: mTimeline(timeline), mX(x), mY(y), mWidth(contractedWidth), mHeight(height), mExpandedWidth(expandedWidth), mImage(image), mTitle(title), mSubtitle(subtitle)
 {
 #if defined( CINDER_COCOA )
@@ -44,7 +44,7 @@ AccordionItem::AccordionItem( Timeline &timeline, float x, float y, float height
 	layout.setFont( Font( normalFont, 16 ) );
 	layout.addLine( mSubtitle );
 	layout.setBorder(11, 6);
-	mText = gl::Texture( layout.render( true ) );
+	mText = gl::Texture::create( layout.render( true ) );
 	
 	update();
 }
@@ -71,7 +71,7 @@ void AccordionItem::update()
 	mImageArea = Area(quickRound(mX), quickRound(mY), quickRound(mX + mWidth), quickRound(mY + mHeight));
 	
 	// rectangle to render text texture
-	mTextRect = Rectf(quickRound(mX), quickRound(mY), quickRound( mX + math<float>::min( mWidth, mText.getWidth() ) ), quickRound( mY + math<float>::min( mHeight, mText.getHeight() ) ) );
+	mTextRect = Rectf(quickRound(mX), quickRound(mY), quickRound( mX + math<float>::min( mWidth, mText->getWidth() ) ), quickRound( mY + math<float>::min( mHeight, mText->getHeight() ) ) );
 	// sample area of text texture to render
 	mTextArea = Area(0, 0, mTextRect.getWidth(), mTextRect.getHeight() );
 }

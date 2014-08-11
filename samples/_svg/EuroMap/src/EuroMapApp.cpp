@@ -2,6 +2,7 @@
 // http://en.wikipedia.org/wiki/File:Blank_map_of_Europe_-_Atelier_graphique_colors.svg
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/TextureFont.h"
@@ -20,20 +21,20 @@ class EuroMapApp : public AppBasic {
 	void mouseMove( MouseEvent event );	
 	void draw();
 	
-	gl::Texture			mMapTex;
+	gl::TextureRef		mMapTex;
 	gl::TextureFontRef	mFont;
 	svg::DocRef			mMapDoc;
 	svg::Node 			*mCurrentCountry;
 	Anim<float>			mCurrentCountryAlpha;
 };
 
-gl::Texture renderSvgToTexture( svg::DocRef doc, Vec2i size )
+gl::TextureRef renderSvgToTexture( svg::DocRef doc, Vec2i size )
 {
 	cairo::SurfaceImage srf( size.x, size.y, false );
 	cairo::Context ctx( srf );
 	ctx.render( *doc );
 	srf.flush();
-	return gl::Texture( srf.getSurface() );
+	return gl::Texture::create( srf.getSurface() );
 }
 
 void EuroMapApp::prepareSettings( Settings *settings )
@@ -91,4 +92,4 @@ void EuroMapApp::draw()
 }
 
 
-CINDER_APP_BASIC( EuroMapApp, RendererGl(0) )
+CINDER_APP_BASIC( EuroMapApp, RendererGl )

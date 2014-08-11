@@ -41,11 +41,11 @@ void Gear::draw()
 	Vec2f pos = Vec2f( mBody->GetPosition().x, mBody->GetPosition().y ) * pointsPerMeter;
 	float t = toDegrees( mBody->GetAngle() );
 
-	gl::pushModelView();
+	gl::pushModelMatrix();
 		gl::translate( pos );
 		gl::rotate( t );
 		gl::draw( mImageTex, imageDest );
-	gl::popModelView();
+	gl::popModelMatrix();
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -232,7 +232,7 @@ void Island::draw()
 	float pointsPerMeter = SceneController::getPointsPerMeter();
 
 	auto centerPos = box2d::toCinder( mBody->GetPosition() ) * pointsPerMeter;
-	gl::pushModelView();
+	gl::pushModelMatrix();
 	gl::translate( centerPos );
 
 	Path2d path;
@@ -256,5 +256,5 @@ void Island::draw()
 		gl::drawSolid( mBumpers[i] );
 	}
 
-	gl::popModelView();
+	gl::popModelMatrix();
 }
