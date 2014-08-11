@@ -1468,6 +1468,75 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	ctx->popVao();
 }
 
+void drawSolidTriangle( const Vec2f pts[3] )
+{
+	drawSolidTriangle( pts, nullptr );
+}
+
+void drawSolidTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2 )
+{
+	Vec2f pts[3] = { pt0, pt1, pt2 };
+	drawSolidTriangle( pts, nullptr );
+}
+
+//! Renders a textured triangle.
+void drawSolidTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2, const Vec2f &texCoord0, const Vec2f &texCoord1, const Vec2f &texCoord2 )
+{
+	Vec2f pts[3] = { pt0, pt1, pt2 };
+	Vec2f texs[3] = { texCoord0, texCoord1, texCoord2 };
+	
+	drawSolidTriangle( pts, texs );
+}
+
+void drawStrokedTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2 )
+{
+	Vec2f pts[3] = { pt0, pt1, pt2 };
+	drawSolidTriangle( pts, nullptr );
+}
+
+void drawStrokedTriangle( const Vec2f pts[3] )
+{
+//	drawSolidTriangle( pts, nullptr );
+}
+
+void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] )
+{
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	GLfloat data[3*2+3*2]; // both verts and texCoords
+	memcpy( data, pts, sizeof(float) * 3 * 2 );
+	if( texCoord )
+		memcpy( data + sizeof(float) * 3 * 2, pts, sizeof(float) * 3 * 2 );
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(float)*12 );
+	ScopedBuffer bufferBindScp( defaultVbo );
+	defaultVbo->bufferSubData( 0, sizeof(float) * ( texCoord ? 6 : 12 ), data );
+
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	}
+	if( texCoord ) {
+		int texLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+		if( texLoc >= 0 ) {
+			enableVertexAttribArray( texLoc );
+			vertexAttribPointer( texLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float)*6) );
+		}
+	}
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	ctx->popVao();
+}
+
 void drawSphere( const Vec3f &center, float radius, int segments )
 {
 	auto ctx = gl::context();
