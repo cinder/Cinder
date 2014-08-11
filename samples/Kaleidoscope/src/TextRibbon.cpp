@@ -66,13 +66,13 @@ void TextRibbon::makeText()
 		mTagBox = TextBox().alignment(TextBox::LEFT).font(mTagFont).size(Vec2i(200, TextBox::GROW)).text(mTag);
 		mTagBox.setColor(ColorA(mTextCol.r, mTextCol.g, mTextCol.b, 1));
 		mTagBox.setBackgroundColor(ColorA(0, 0, 0, 0));
-		mTagTex = mTagBox.render();
+		mTagTex = gl::Texture::create( mTagBox.render() );
 	}
 	
 	mUserBox = TextBox().alignment( TextBox::LEFT ).font( mUserFont ).size( Vec2i( 250, TextBox::GROW ) ).text( "@" + mUser );
 	mUserBox.setColor(ColorA(mTextCol.r, mTextCol.g, mTextCol.b, 1));
 	mUserBox.setBackgroundColor( ColorA( 0, 0, 0, 0) );
-	mUserTex = mUserBox.render();
+	mUserTex = gl::Texture::create( mUserBox.render() );
 	
 	float ribbonWidth = mTagBox.measure().x + mUserBox.measure().x + 30;
 	mRibbonSize = Vec2f(ribbonWidth, 50);
@@ -95,17 +95,17 @@ void TextRibbon::drawTextShape()
 	points[2] = Vec2f(offsetX + boxW,			offsetY + 0);
 	points[3] = Vec2f(offsetX + boxW + farPt,	offsetY + boxH);
 	
-	glColor4f( mCol.r, mCol.g, mCol.b, mCurAlpha );
-	glEnableClientState( GL_VERTEX_ARRAY );
+	gl::color( mCol.r, mCol.g, mCol.b, mCurAlpha );
+/*	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &points[0].x );
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glColor4f( 1, 1, 1, 1 );
+	glDisableClientState( GL_VERTEX_ARRAY );*/
+	gl::color( 1, 1, 1, 1 );
 }
 
 void TextRibbon::draw()
 {
-	glPushMatrix();
+	gl::pushModelMatrix();
 	gl::translate(mTextPos);
   
 	drawTextShape();
@@ -123,5 +123,5 @@ void TextRibbon::draw()
 	if( mUserTex )
 		gl::draw( mUserTex, Vec2f(mCurPos.value().x + TEXT_PADDING_X + mTagBox.measure().x + spacing, (mRibbonSize.y - mUserBox.measure().y)/2) );
 	gl::color( 1, 1, 1 );
-	glPopMatrix();
+	gl::popModelMatrix();
 }

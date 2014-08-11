@@ -1,5 +1,5 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Rand.h"
@@ -331,7 +331,7 @@ void InstascopeApp::mirrorIn()
 
 void InstascopeApp::draw()
 {	 
-	glPushMatrix();
+	gl::pushModelMatrix();
 	
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::enableAlphaBlending( PREMULT );
@@ -341,18 +341,18 @@ void InstascopeApp::draw()
 	
 	drawMirrors( &mTriPieces );
 	mTextRibbon->draw();
-	glPopMatrix();
+	gl::popModelMatrix();
 }
 
 void InstascopeApp::drawMirrors( vector<TrianglePiece> *vec ) 
 {
-	glPushMatrix();
+	gl::pushModelMatrix();
 	gl::translate( getWindowCenter() );
 	gl::rotate( mMirrorRot );
 	for( int i = 0; i < vec->size(); i++ ) {
 		(*vec)[i].draw();
 	}
-	glPopMatrix();
+	gl::popModelMatrix();
 }
 
 CINDER_APP_NATIVE( InstascopeApp, RendererGl )

@@ -80,19 +80,18 @@ void TrianglePiece::draw()
 	if( ! mReadyToDraw ) return;
 	if( mAlpha == 0.0f ) return;
 	
-	glPushMatrix();
+	gl::pushModelMatrix();
 	gl::translate( mStartPt );				// move to the start point
 	gl::scale( mScale );					// scale the triangle
-	gl::rotate( Vec3f( 0, 0, mRotation ) );	// rotate on the Z axis
+	gl::rotate( mRotation );	// rotate on the Z axis
 	
-	glColor4f(1.0, 1.0, 1.0, mAlpha);
+	gl::color( 1.0f, 1.0f, 1.0f, mAlpha );
 	
 	// draw the texture to the triangle
-	mDrawTex->enableAndBind();
-	gl::drawSolidTriangle(mVertices, mTexVertices);
+	gl::drawSolidTriangle( mVertices, mTexVertices );
 	mDrawTex->unbind();
-	glColor4f(1.0, 1.0, 1.0, 1.0);			// reset the color/alpha
-	glPopMatrix();
+	gl::color( 1.0f, 1.0f, 1.0f, 1.0f );			// reset the color/alpha
+	gl::popModelMatrix();
 }
 
 bool TrianglePiece::isOut() const

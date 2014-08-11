@@ -30,7 +30,7 @@ class TextRibbon {
 	ci::Font			mUserFont, mTagFont;
 	ci::ColorA			mCol, mTextCol;
 	
-	ci::gl::Texture		mUserTex, mTagTex;
+	ci::gl::TextureRef	mUserTex, mTagTex;
 	ci::TextBox			mTagBox, mUserBox;
 	
 	ci::Anim<ci::Vec2f> mCurPos;
