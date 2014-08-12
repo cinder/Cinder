@@ -89,7 +89,7 @@ class Camera {
 	//! Converts a world-space coordinate \a worldCoord to screen coordinates as viewed by the camera, based ona s screen which is \a screenWidth x \a screenHeight pixels.
  	Vec2f worldToScreen( const Vec3f &worldCoord, float screenWidth, float screenHeight ) const;
 	//! Converts a world-space coordinate \a worldCoord to eye-space, also known as camera-space. -Z is along the view direction.
- 	Vec3f worldToEye( const Vec3f &worldCoord )	{ return fromGlm( vec3( getModelViewMatrix() * vec4( toGlm( worldCoord ), 1 ) ) ); }
+ 	Vec3f worldToEye( const Vec3f &worldCoord )	{ return fromGlm( vec3( getViewMatrix() * vec4( toGlm( worldCoord ), 1 ) ) ); }
  	//! Converts a world-space coordinate \a worldCoord to the z axis of eye-space, also known as camera-space. -Z is along the view direction. Suitable for depth sorting.
  	float worldToEyeDepth( const Vec3f &worldCoord ) const;
  	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates

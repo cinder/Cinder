@@ -146,8 +146,8 @@ Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) co
 
 void Camera::getBillboardVectors( Vec3f *right, Vec3f *up ) const
 {
-	*right = fromGlm( glm::column( getViewMatrix(), 0 ) );
-	*up = fromGlm( glm::column( getViewMatrix(), 1 ) );
+	*right = fromGlm( glm::vec3( glm::column( getViewMatrix(), 0 ) ) );
+	*up = fromGlm( glm::vec3( glm::column( getViewMatrix(), 1 ) ) );
 }
 
 Vec2f Camera::worldToScreen( const Vec3f &worldCoord, float screenWidth, float screenHeight ) const
@@ -163,15 +163,17 @@ Vec2f Camera::worldToScreen( const Vec3f &worldCoord, float screenWidth, float s
 
 float Camera::worldToEyeDepth( const Vec3f &worldCoord ) const
 {
-	return getModelViewMatrix()[0][2] * worldCoord.x + 
-			getModelViewMatrix()[1][2] * worldCoord.y +
-			getModelViewMatrix()[2][2] * worldCoord.z + getModelViewMatrix()[3][2];
+	const mat4 &m = getViewMatrix();
+	return	m[0][2] * worldCoord.x +
+			m[1][2] * worldCoord.y +
+			m[2][2] * worldCoord.z +
+			m[3][2];
 }
 
 
 Vec3f Camera::worldToNdc( const Vec3f &worldCoord )
 {
-	vec4 eye = getModelViewMatrix() * vec4( worldCoord, 1 );
+	vec4 eye = getViewMatrix() * vec4( toGlm( worldCoord ), 1 );
 	vec4 unproj = getProjectionMatrix() * eye;
 	return Vec3f( unproj.x / unproj.w, unproj.y / unproj.w, unproj.z / unproj.w );
 }
@@ -202,7 +204,7 @@ void Camera::calcViewMatrix() const
 	
 	Vec3f d( -mEyePoint.dot( mU ), -mEyePoint.dot( mV ), -mEyePoint.dot( mW ) );
 
-	mat5 &m = mViewMatrix;
+	mat4 &m = mViewMatrix;
 	m[0][0] = mU.x; m[1][0] = mU.y; m[2][0] = mU.z; m[3][0] =  d.x;
 	m[0][1] = mV.x; m[1][1] = mV.y; m[2][1] = mV.z; m[3][1] =  d.y;
 	m[0][2] = mW.x; m[1][2] = mW.y; m[2][2] = mW.z; m[3][2] =  d.z;
@@ -292,7 +294,7 @@ void CameraPersp::calcProjection() const
 		mFrustumLeft = ci::lerp<float, float>(0.0f, 2.0f * mFrustumLeft, 0.5f - 0.5f * mLensShift.x);
 	}
 
-	mat4 p = mProjectionMatrix;
+	mat4 &p = mProjectionMatrix;
 	p[0][0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
 	p[1][0] =  0.0f;
 	p[2][0] =  ( mFrustumRight + mFrustumLeft ) / ( mFrustumRight - mFrustumLeft );
@@ -391,9 +393,7 @@ CameraOrtho::CameraOrtho( float left, float right, float bottom, float top, floa
 	
 	mProjectionCached = false;
 	mModelViewCached = true;
-	mViewMatrix.setToIdentity();
 	mInverseModelViewCached = true;
-	mInverseModelViewMatrix.setToIdentity();
 }
 
 void CameraOrtho::setOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane )

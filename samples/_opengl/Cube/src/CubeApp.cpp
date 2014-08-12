@@ -62,7 +62,7 @@ void RotatingCubeApp::resize()
 void RotatingCubeApp::update()
 {
 	// Rotate the cube by 2 degrees around an arbitrary axis
-	mCubeRotation *= glm::rotate( 2.0f, glm::normalize( glm::vec3( 1, 1.3, 0.5 ) ) );
+	mCubeRotation *= glm::rotate( toRadians( 2.0f ), glm::normalize( glm::vec3( 1, 1.3, 0.5 ) ) );
 }
 
 void RotatingCubeApp::draw()

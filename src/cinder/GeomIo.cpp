@@ -664,27 +664,30 @@ void Teapot::buildPatchReflect( int patchNum, float *B, float *dB, float *v, flo
 	getPatch( patchNum, patchRevV, true);
 
 	// Patch without modification
-	buildPatch( patchRevV, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, Matrix33f::identity(), false );
+	buildPatch( patchRevV, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, Matrix33f(), false );
 
 	// Patch reflected in x
 	if( reflectX ) {
-		buildPatch( patch, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, Matrix33f( Vec3f(-1.0f, 0.0f, 0.0f),
-			Vec3f(0.0f, 1.0f, 0.0f),
-			Vec3f(0.0f, 0.0f, 1.0f) ), true );
+		buildPatch( patch, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid,
+				   mat3( vec3( -1, 0, 0 ),
+						 vec3(  0, 1, 0 ),
+						 vec3(  0, 0, 1 ) ), true );
 	}
 
 	// Patch reflected in y
 	if( reflectY ) {
-		buildPatch( patch, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, Matrix33f( Vec3f(1.0f, 0.0f, 0.0f),
-			Vec3f(0.0f, -1.0f, 0.0f),
-			Vec3f(0.0f, 0.0f, 1.0f) ), true );
+		buildPatch( patch, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid,
+				   mat3( vec3( 1,  0, 0 ),
+						 vec3( 0, -1, 0 ),
+						 vec3( 0,  0, 1 ) ), true );
 	}
 
 	// Patch reflected in x and y
 	if( reflectX && reflectY ) {
-		buildPatch( patchRevV, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, Matrix33f( Vec3f(-1.0f, 0.0f, 0.0f),
-			Vec3f(0.0f, -1.0f, 0.0f),
-			Vec3f(0.0f, 0.0f, 1.0f) ), false );
+		buildPatch( patchRevV, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid,
+				   mat3( vec3( -1,  0, 0 ),
+						 vec3(  0, -1, 0 ),
+						 vec3(  0,  0, 1 ) ), false );
 	}
 }
 
@@ -698,13 +701,13 @@ void Teapot::buildPatch( Vec3f patch[][4], float *B, float *dB, float *v, float 
 
 	for( int i = 0; i <= grid; i++ ) {
 		for( int j = 0 ; j <= grid; j++) {
-			Vec3f pt = reflect * evaluate( i, j, B, patch );
-			Vec3f norm = reflect * evaluateNormal( i, j, B, dB, patch );
+			vec3 pt = reflect * toGlm( evaluate( i, j, B, patch ) );
+			vec3 norm = reflect * toGlm( evaluateNormal( i, j, B, dB, patch ) );
 			if( invertNormal )
 				norm = -norm;
 			// awful hack due to normals discontinuity
-			if( abs(pt.x) < 0.01f && abs(pt.y) < 0.01f )
-				norm = ( pt.z < 1 ) ? -Vec3f::zAxis() : Vec3f::zAxis();
+			if( abs( pt.x ) < 0.01f && abs( pt.y ) < 0.01f )
+				norm = ( pt.z < 1 ) ? vec3( 0, 0, -1 ) : vec3( 0, 0, 1 );
 
 			v[index] = pt.x * scale; v[index+1] = pt.z * scale; v[index+2] = pt.y * scale;
 			n[index] = norm.x; n[index+1] = norm.z; n[index+2] = norm.y;

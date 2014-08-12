@@ -23,8 +23,6 @@
 	#include <OpenGL/OpenGL.h>
 #endif
 
-#include "glm/gtx/transform.hpp"
-
 using namespace std;
 
 namespace cinder { namespace gl {
@@ -309,7 +307,7 @@ void setMatrices( const ci::Camera& cam )
 	auto ctx = context();
 	ctx->getViewMatrixStack().back() = cam.getViewMatrix();
 	ctx->getProjectionMatrixStack().back() = cam.getProjectionMatrix();
-	ctx->getModelMatrixStack().back().setToIdentity();
+	ctx->getModelMatrixStack().back() = mat4();
 }
 
 void setModelMatrix( const ci::Matrix44f &m )
@@ -446,8 +444,7 @@ Matrix44f getModelViewProjection()
 
 Matrix44f calcViewMatrixInverse()
 {
-	Matrix44f v = getViewMatrix();
-	return v.inverted();
+	return glm::inverse( getViewMatrix() );
 }
 
 Matrix33f calcNormalMatrix()
@@ -457,10 +454,8 @@ Matrix33f calcNormalMatrix()
 	
 Matrix33f calcModelMatrixInverseTranspose()
 {
-	Matrix33f m = getModelMatrix().subMatrix33( 0, 0 );
-	m.invert( FLT_MIN );
-	m.transpose();
-	return m;
+	auto m = glm::inverseTranspose( getModelMatrix() );
+	return mat3( m );
 }
 	
 Matrix44f calcViewportMatrix()
@@ -488,7 +483,7 @@ void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees
 	auto ctx = gl::context();
 
 	CameraPersp cam( screenWidth, screenHeight, fovDegrees, nearPlane, farPlane );
-	ctx->getModelMatrixStack().back().setToIdentity();
+	ctx->getModelMatrixStack().back() = mat4();
 	ctx->getProjectionMatrixStack().back() = cam.getProjectionMatrix();
 	ctx->getViewMatrixStack().back() = cam.getViewMatrix();
 	if( originUpperLeft ) {
@@ -512,7 +507,7 @@ void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft 
 								0.0f, 2.0f / -(float)screenHeight, 0.0f, 1.0f,
 								0.0f, 0.0f, -1.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 1.0f };
-		ctx->getProjectionStack().back() = glm::make_mat4( v );
+		ctx->getProjectionMatrixStack().back() = glm::make_mat4( v );
 	}
 	else {
 
@@ -520,7 +515,7 @@ void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft 
 								0.0f, 2.0f / (float)screenHeight, 0.0f, -1.0f,
 								0.0f, 0.0f, -1.0f, 0.0f,
 								0.0f, 0.0f, 0.0f, 1.0f };
-		ctx->getProjectionStack().back() = glm::make_mat4( v );
+		ctx->getProjectionMatrixStack().back() = glm::make_mat4( v );
 	}
 }
 
@@ -541,7 +536,7 @@ void rotate( float angleDegrees, const Vec3f &axis )
 {
 	if( math<float>::abs( angleDegrees ) > EPSILON_VALUE ) {
 		auto ctx = gl::context();
-		ctx->getModelMatrixStack().back() *= glm::rotate( toRadians( angleDegrees ), vec3( xAxis, yAxis, zAxis ) );
+		ctx->getModelMatrixStack().back() *= glm::rotate( toRadians( angleDegrees ), toGlm( axis ) );
 	}
 }
 
