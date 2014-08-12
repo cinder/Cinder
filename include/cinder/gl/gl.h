@@ -101,8 +101,8 @@ class Vbo;
 typedef std::shared_ptr<Vbo>			VboRef;
 class VboMesh;
 typedef std::shared_ptr<VboMesh>		VboMeshRef;
-class Texture;
-typedef std::shared_ptr<Texture>		TextureRef;
+class Texture2d;
+typedef std::shared_ptr<Texture2d>		Texture2dRef;
 class TextureBase;
 typedef std::shared_ptr<TextureBase>	TextureBaseRef;
 class BufferObj;
@@ -301,9 +301,9 @@ geom::Primitive toGeomPrimitive( GLenum prim );
 std::string uniformSemanticToString( UniformSemantic uniformSemantic );
 
 void draw( const VboMeshRef &mesh );
-void draw( const TextureRef &texture, const Rectf &dstRect );
-void draw( const TextureRef &texture, const Area &srcArea, const Rectf &dstRect );
-void draw( const TextureRef &texture, const Vec2f &dstOffset = Vec2f::zero() );
+void draw( const Texture2dRef &texture, const Rectf &dstRect );
+void draw( const Texture2dRef &texture, const Area &srcArea, const Rectf &dstRect );
+void draw( const Texture2dRef &texture, const Vec2f &dstOffset = Vec2f::zero() );
 void draw( const class PolyLine<Vec2f> &polyLine );
 void draw( const class PolyLine<Vec3f> &polyLine );
 //! Draws a Path2d \a pathd using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc

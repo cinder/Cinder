@@ -403,7 +403,7 @@ void TextureBase::setLabel( const std::string &label )
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// Texture::Format
+// TextureBase::Format
 TextureBase::Format::Format()
 {
 	mTarget = GL_TEXTURE_2D;
@@ -446,52 +446,52 @@ void TextureBase::Format::setBorderColor( const ColorA &color )
 
 /////////////////////////////////////////////////////////////////////////////////
 // Texture
-TextureRef Texture::create( int width, int height, Format format )
+Texture2dRef Texture2d::create( int width, int height, Format format )
 {
 	return TextureRef( new Texture( width, height, format ) );
 }
 
-TextureRef Texture::create( const unsigned char *data, int dataFormat, int width, int height, Format format )
+Texture2dRef Texture2d::create( const unsigned char *data, int dataFormat, int width, int height, Format format )
 {
 	return TextureRef( new Texture( data, dataFormat, width, height, format ) );
 }
 
-TextureRef Texture::create( const Surface8u &surface, Format format )
+Texture2dRef Texture2d::create( const Surface8u &surface, Format format )
 {
 	return TextureRef( new Texture( surface, format ) );
 }
 
-TextureRef Texture::create( const Surface32f &surface, Format format )
+Texture2dRef Texture2d::create( const Surface32f &surface, Format format )
 {
 	return TextureRef( new Texture( surface, format ) );
 }
 
-TextureRef Texture::create( const Channel8u &channel, Format format )
+Texture2dRef Texture2d::create( const Channel8u &channel, Format format )
 {
 	return TextureRef( new Texture( channel, format ) );
 }
 	
-TextureRef Texture::create( const Channel32f &channel, Format format )
+Texture2dRef Texture2d::create( const Channel32f &channel, Format format )
 {
 	return TextureRef( new Texture( channel, format ) );
 }
 	
-TextureRef Texture::create( ImageSourceRef imageSource, Format format )
+Texture2dRef Texture2d::create( ImageSourceRef imageSource, Format format )
 {
 	return TextureRef( new Texture( imageSource, format ) );
 }
 	
-TextureRef Texture::create( GLenum target, GLuint textureID, int width, int height, bool doNotDispose )
+Texture2dRef Texture2d::create( GLenum target, GLuint textureID, int width, int height, bool doNotDispose )
 {
 	return TextureRef( new Texture( target, textureID, width, height, doNotDispose ) );
 }
 
-TextureRef Texture::create( const TextureData &data, const Format &format )
+Texture2dRef Texture2d::create( const TextureData &data, const Format &format )
 {
 	return TextureRef( new Texture( data, format ) );
 }
 
-Texture::Texture( int width, int height, Format format )
+Texture2d::Texture2d( int width, int height, Format format )
 	: mWidth( width ), mHeight( height ),
 	mCleanWidth( width ), mCleanHeight( height ),
 	mFlipped( false )
@@ -503,7 +503,7 @@ Texture::Texture( int width, int height, Format format )
 	initData( (unsigned char*)0, 0, format.mPixelDataFormat, format.mPixelDataType, format );
 }
 
-Texture::Texture( const unsigned char *data, int dataFormat, int width, int height, Format format )
+Texture2d::Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format )
 	: mWidth( width ), mHeight( height ),
 	mCleanWidth( width ), mCleanHeight( height ),
 	mFlipped( false )
@@ -515,7 +515,7 @@ Texture::Texture( const unsigned char *data, int dataFormat, int width, int heig
 	initData( data, 0, dataFormat, GL_UNSIGNED_BYTE, format );
 }
 
-Texture::Texture( const Surface8u &surface, Format format )
+Texture2d::Texture2d( const Surface8u &surface, Format format )
 	: mWidth( surface.getWidth() ), mHeight( surface.getHeight() ),
 	mCleanWidth( surface.getWidth() ), mCleanHeight( surface.getHeight() ),
 	mFlipped( false )
@@ -541,7 +541,7 @@ Texture::Texture( const Surface8u &surface, Format format )
 		initData( surface.getData(), surface.getRowBytes() / surface.getChannelOrder().getPixelInc(), dataFormat, type, format );
 }
 
-Texture::Texture( const Surface32f &surface, Format format )
+Texture2d::Texture2d( const Surface32f &surface, Format format )
 	: mWidth( surface.getWidth() ), mHeight( surface.getHeight() ),
 	mCleanWidth( surface.getWidth() ), mCleanHeight( surface.getHeight() ),
 	mFlipped( false )
@@ -557,7 +557,7 @@ Texture::Texture( const Surface32f &surface, Format format )
 	initData( surface.getData(), surface.hasAlpha()?GL_RGBA:GL_RGB, format );
 }
 
-Texture::Texture( const Channel8u &channel, Format format )
+Texture2d::Texture2d( const Channel8u &channel, Format format )
 	: mWidth( channel.getWidth() ), mHeight( channel.getHeight() ),
 	mCleanWidth( channel.getWidth() ), mCleanHeight( channel.getHeight() ),
 	mFlipped( false )
@@ -586,7 +586,7 @@ Texture::Texture( const Channel8u &channel, Format format )
 	}
 }
 
-Texture::Texture( const Channel32f &channel, Format format )
+Texture2d::Texture2d( const Channel32f &channel, Format format )
 	: mWidth( channel.getWidth() ), mHeight( channel.getHeight() ),
 	mCleanWidth( channel.getWidth() ), mCleanHeight( channel.getHeight() ),
 	mFlipped( false )
@@ -617,7 +617,7 @@ Texture::Texture( const Channel32f &channel, Format format )
 	}
 }
 
-Texture::Texture( const ImageSourceRef &imageSource, Format format )
+Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 	: mWidth( -1 ), mHeight( -1 ), mCleanWidth( -1 ), mCleanHeight( -1 ),
 	mFlipped( false )
 {
@@ -650,7 +650,7 @@ Texture::Texture( const ImageSourceRef &imageSource, Format format )
 	initData( imageSource, format );
 }
 
-Texture::Texture( GLenum target, GLuint textureId, int width, int height, bool doNotDispose )
+Texture2d::Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose )
 	: TextureBase( target, textureId, -1 ), mWidth( width ), mHeight( height ),
 	mCleanWidth( width ), mCleanHeight( height ),
 	mFlipped( false )
@@ -665,7 +665,7 @@ Texture::Texture( GLenum target, GLuint textureId, int width, int height, bool d
 	}
 }
 
-Texture::Texture( const TextureData &data, Format format )
+Texture2d::Texture2d( const TextureData &data, Format format )
 	: mFlipped( false )
 {
 	glGenTextures( 1, &mTextureId );
@@ -684,7 +684,7 @@ Texture::Texture( const TextureData &data, Format format )
 	}
 }
 	
-void Texture::initData( const unsigned char *data, int unpackRowLength, GLenum dataFormat, GLenum type, const Format &format )
+void Texture2d::initData( const unsigned char *data, int unpackRowLength, GLenum dataFormat, GLenum type, const Format &format )
 {
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	
@@ -708,7 +708,7 @@ void Texture::initData( const unsigned char *data, int unpackRowLength, GLenum d
 	}
 }
 
-void Texture::initData( const float *data, GLint dataFormat, const Format &format )
+void Texture2d::initData( const float *data, GLint dataFormat, const Format &format )
 {
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	
@@ -740,7 +740,7 @@ void Texture::initData( const float *data, GLint dataFormat, const Format &forma
 #if ! defined( CINDER_GL_ES )
 // Called by initData( ImageSourceRef ) when the user has supplied an intermediate PBO via Format
 // We map the PBO after resizing it if necessary, and then use that as a data store for the ImageTargetGlTexture
-void Texture::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo )
+void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo )
 {
 	auto ctx = gl::context();
 
@@ -775,7 +775,7 @@ void Texture::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource,
 #endif
 
 // Called by initData( ImageSourceRef ) when the user has NOT supplied an intermediate PBO
-void Texture::initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray )
+void Texture2d::initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray )
 {
 	if( imageSource->getDataType() == ImageIo::UINT8 ) {
 		auto target = ImageTargetGlTexture<uint8_t>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
@@ -795,7 +795,7 @@ void Texture::initDataImageSourceImpl( const ImageSourceRef &imageSource, const 
 	}
 }
 
-void Texture::initData( const ImageSourceRef &imageSource, const Format &format )
+void Texture2d::initData( const ImageSourceRef &imageSource, const Format &format )
 {
 	mWidth = mCleanWidth = imageSource->getWidth();
 	mHeight = mCleanHeight = imageSource->getHeight();
@@ -849,7 +849,7 @@ void Texture::initData( const ImageSourceRef &imageSource, const Format &format 
 	}
 }
 
-void Texture::update( const Surface &surface, int mipLevel )
+void Texture2d::update( const Surface &surface, int mipLevel )
 {
 	GLint dataFormat;
 	GLenum type;
@@ -883,14 +883,14 @@ void Texture::update( const Surface &surface, int mipLevel )
 	}
 }
 
-void Texture::update( const Surface32f &surface, int mipLevel )
+void Texture2d::update( const Surface32f &surface, int mipLevel )
 {
 	GLint dataFormat;
 	GLenum type;
 	if( mipLevel == 0 ) {
 		SurfaceChannelOrderToDataFormatAndType( surface.getChannelOrder(), &dataFormat, &type );
 		if( ( surface.getWidth() != getWidth() ) || ( surface.getHeight() != getHeight() ) )
-			throw TextureResizeExc( "Invalid Texture::update() surface dimensions", surface.getSize(), getSize() );
+			throw TextureResizeExc( "Invalid Texture2d::update() surface dimensions", surface.getSize(), getSize() );
 
 		ScopedTextureBind tbs( mTarget, mTextureId );
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -909,7 +909,7 @@ void Texture::update( const Surface32f &surface, int mipLevel )
 	}
 }
 
-void Texture::update( const Surface &surface, const Area &area, int mipLevel )
+void Texture2d::update( const Surface &surface, const Area &area, int mipLevel )
 {
 	GLint dataFormat;
 	GLenum type;
@@ -930,12 +930,12 @@ void Texture::update( const Surface &surface, const Area &area, int mipLevel )
 	}
 }
 
-void Texture::update( const Channel32f &channel, int mipLevel )
+void Texture2d::update( const Channel32f &channel, int mipLevel )
 {
 
 	if( mipLevel == 0 ) {
 		if( ( channel.getWidth() != getWidth() ) || ( channel.getHeight() != getHeight() ) )
-			throw TextureResizeExc( "Invalid Texture::update() channel dimensions", channel.getSize(), getSize() );
+			throw TextureResizeExc( "Invalid Texture2d::update() channel dimensions", channel.getSize(), getSize() );
 
 		ScopedTextureBind tbs( mTarget, mTextureId );
 		glTexSubImage2D( mTarget, mipLevel, 0, 0, getWidth(), getHeight(), GL_LUMINANCE, GL_FLOAT, channel.getData() );
@@ -949,7 +949,7 @@ void Texture::update( const Channel32f &channel, int mipLevel )
 	}
 }
 
-void Texture::update( const Channel8u &channel, const Area &area, int mipLevel )
+void Texture2d::update( const Channel8u &channel, const Area &area, int mipLevel )
 {
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	if( mipLevel == 0 ) {
@@ -999,12 +999,12 @@ void Texture::update( const Channel8u &channel, const Area &area, int mipLevel )
 }
 
 #if ! defined( CINDER_GL_ES )
-void Texture::update( const PboRef &pbo, GLenum format, GLenum type, int mipLevel, size_t pboByteOffset )
+void Texture2d::update( const PboRef &pbo, GLenum format, GLenum type, int mipLevel, size_t pboByteOffset )
 {
 	update( pbo, format, type, getBounds(), mipLevel, pboByteOffset );
 }
 
-void Texture::update( const PboRef &pbo, GLenum format, GLenum type, const Area &destArea, int mipLevel, size_t pboByteOffset )
+void Texture2d::update( const PboRef &pbo, GLenum format, GLenum type, const Area &destArea, int mipLevel, size_t pboByteOffset )
 {
 	// TODO: warn if PBO's target is wrong
 	/*
@@ -1017,12 +1017,12 @@ void Texture::update( const PboRef &pbo, GLenum format, GLenum type, const Area 
 }
 #endif
 
-int Texture::getNumMipLevels() const
+int Texture2d::getNumMipLevels() const
 {
 	return floor( std::log( std::max( mWidth, mHeight ) ) / std::log(2) ) + 1;
 }
 	
-void Texture::setCleanTexCoords( float maxU, float maxV )
+void Texture2d::setCleanTexCoords( float maxU, float maxV )
 {
 	mMaxU = maxU;
 	mMaxV = maxV;
@@ -1036,7 +1036,7 @@ void Texture::setCleanTexCoords( float maxU, float maxV )
 	}
 }
 
-bool Texture::hasAlpha() const
+bool Texture2d::hasAlpha() const
 {
 	switch( mInternalFormat ) {
 		case GL_RGBA:
@@ -1049,42 +1049,42 @@ bool Texture::hasAlpha() const
 	}
 }
 
-float Texture::getLeft() const
+float Texture2d::getLeft() const
 {
 	return 0.0f;
 }
 
-float Texture::getRight() const
+float Texture2d::getRight() const
 {
 	return mMaxU;
 }
 
-float Texture::getTop() const
+float Texture2d::getTop() const
 {
 	return ( mFlipped ) ? getMaxV() : 0.0f;
 }
 
-GLint Texture::getWidth() const
+GLint Texture2d::getWidth() const
 {
 	return mWidth;
 }
 
-GLint Texture::getHeight() const
+GLint Texture2d::getHeight() const
 {
 	return mHeight;
 }
 
-GLint Texture::getCleanWidth() const
+GLint Texture2d::getCleanWidth() const
 {
 	return mCleanWidth;
 }
 
-GLint Texture::getCleanHeight() const
+GLint Texture2d::getCleanHeight() const
 {
 	return mCleanHeight;
 }
 
-Rectf Texture::getAreaTexCoords( const Area &area ) const
+Rectf Texture2d::getAreaTexCoords( const Area &area ) const
 {
 	Rectf result;
 	
@@ -1104,17 +1104,17 @@ Rectf Texture::getAreaTexCoords( const Area &area ) const
 	return result;
 }
 
-float Texture::getBottom() const
+float Texture2d::getBottom() const
 {
 	return ( mFlipped ) ? 0.0f : getMaxV();
 }
 
-float Texture::getMaxU() const
+float Texture2d::getMaxU() const
 {
 	return mMaxU;
 }
 
-float Texture::getMaxV() const
+float Texture2d::getMaxV() const
 {
 	return mMaxV;
 }
@@ -1143,29 +1143,29 @@ std::ostream& operator<<( std::ostream &os, const TextureBase &rhs )
 	return os;
 }
 
-void Texture::printDims( std::ostream &os ) const
+void Texture2d::printDims( std::ostream &os ) const
 {
 	os << mWidth << " x " << mHeight;
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// TextureCache
+// Texture2dCache
 
-TextureCacheRef TextureCache::create()
+Texture2dCacheRef Texture2dCache::create()
 {
-	return TextureCacheRef( new TextureCache() );
+	return Texture2dCacheRef( new Texture2dCache() );
 }
 	
-TextureCacheRef TextureCache::create( const Surface8u &prototypeSurface, const Texture::Format &format )
+Texture2dCacheRef Texture2dCache::create( const Surface8u &prototypeSurface, const Texture2d::Format &format )
 {
-	return TextureCacheRef( new TextureCache( prototypeSurface, format ) );
+	return Texture2dCacheRef( new Texture2dCache( prototypeSurface, format ) );
 }
 	
-TextureCache::TextureCache()
+Texture2dCache::Texture2dCache()
 {
 }
 	
-TextureCache::TextureCache( const Surface8u &prototypeSurface, const Texture::Format &format )
+Texture2dCache::Texture2dCache( const Surface8u &prototypeSurface, const Texture2d::Format &format )
 	: mWidth( prototypeSurface.getWidth() ), mHeight( prototypeSurface.getHeight() ),
 	mFormat( format ), mNextId( 0 )
 {
@@ -1176,7 +1176,7 @@ TextureCache::TextureCache( const Surface8u &prototypeSurface, const Texture::Fo
 	}
 }
 
-gl::TextureRef TextureCache::cache( const Surface8u &originalData )
+gl::TextureRef Texture2dCache::cache( const Surface8u &originalData )
 {
 	Surface8u surfaceData = originalData;
 	// If mIntermediateSurface isn't null then we need to use that instead.
@@ -1192,7 +1192,7 @@ gl::TextureRef TextureCache::cache( const Surface8u &originalData )
 			texIt->second->update( surfaceData );
 			texIt->first = mNextId++;
 			// normally this would be very wrong, but when the result TextureRef is destroyed, it calls markTextureAsFree rather than deleting the master texture
-			return TextureRef( texIt->second.get(), std::bind( &TextureCache::markTextureAsFree, shared_from_this(), texIt->first ) );
+			return TextureRef( texIt->second.get(), std::bind( &Texture2dCache::markTextureAsFree, shared_from_this(), texIt->first ) );
 		}
 	}
 	
@@ -1200,10 +1200,10 @@ gl::TextureRef TextureCache::cache( const Surface8u &originalData )
 	TextureRef masterTex( new Texture( surfaceData, mFormat ) );
 	mTextures.push_back( make_pair( mNextId++, masterTex ) );
 	// normally this would be very wrong, but when the result TextureRef is destroyed, it calls markTextureAsFree rather than deleting the master texture
-	return TextureRef( mTextures.back().second.get(), std::bind( &TextureCache::markTextureAsFree, shared_from_this(), mTextures.back().first ) );
+	return TextureRef( mTextures.back().second.get(), std::bind( &Texture2dCache::markTextureAsFree, shared_from_this(), mTextures.back().first ) );
 }
 
-void TextureCache::markTextureAsFree( int id )
+void Texture2dCache::markTextureAsFree( int id )
 {
 	for( vector<pair<int,TextureRef> >::iterator texIt = mTextures.begin(); texIt != mTextures.end(); ++texIt ) {
 		if( texIt->first == id ) { // this texture is available now, let's mark it as usable
@@ -1299,7 +1299,7 @@ class ImageSourceTexture : public ImageSource {
 	int32_t						mRowBytes;
 };
 
-ImageSourceRef Texture::createSource()
+ImageSourceRef Texture2d::createSource()
 {
 	return ImageSourceRef( new ImageSourceTexture( *this ) );
 }
@@ -1348,7 +1348,7 @@ void Texture3d::update( const Surface &surface, int depth, int mipLevel )
 		
 	Vec2i mipMapSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
 	if( surface.getSize() != mipMapSize )
-		throw TextureResizeExc( "Invalid Texture::update() surface dimensions", surface.getSize(), mipMapSize );
+		throw TextureResizeExc( "Invalid Texture3d::update() surface dimensions", surface.getSize(), mipMapSize );
 
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	glTexSubImage3D( mTarget, mipLevel,
@@ -1597,7 +1597,7 @@ void* TextureData::getDataStorePtr( size_t offset ) const
 		return mDataStoreMem.get() + offset;
 }
 
-TextureRef Texture::createFromKtx( const DataSourceRef &dataSource, const Format &format )
+Texture2dRef Texture2d::createFromKtx( const DataSourceRef &dataSource, const Format &format )
 {
 #if ! defined( CINDER_GL_ES )
 	TextureData textureData( format.getIntermediatePbo() );
@@ -1606,13 +1606,13 @@ TextureRef Texture::createFromKtx( const DataSourceRef &dataSource, const Format
 #endif
 
 	parseKtx( dataSource, &textureData );
-	return Texture::create( textureData, format );
+	return Texture2d::create( textureData, format );
 }
 
 #if defined( CINDER_GL_ES )
-void Texture::updateFromKtx( const DataSourceRef &dataSource )
+void Texture2d::updateFromKtx( const DataSourceRef &dataSource )
 #else
-void Texture::updateFromKtx( const DataSourceRef &dataSource, const PboRef &intermediatePbo )
+void Texture2d::updateFromKtx( const DataSourceRef &dataSource, const PboRef &intermediatePbo )
 #endif
 {
 #if defined( CINDER_GL_ES )
@@ -1624,7 +1624,7 @@ void Texture::updateFromKtx( const DataSourceRef &dataSource, const PboRef &inte
 	update( textureData );
 }
 
-void Texture::update( const TextureData &textureData )
+void Texture2d::update( const TextureData &textureData )
 {
 	if( textureData.getWidth() != mWidth || textureData.getHeight() != mHeight )
 		replace( textureData );
@@ -1646,7 +1646,7 @@ void Texture::update( const TextureData &textureData )
 	}
 }
 
-void Texture::replace( const TextureData &textureData )
+void Texture2d::replace( const TextureData &textureData )
 {
 	mCleanWidth = mWidth = textureData.getWidth();
 	mCleanHeight = mHeight = textureData.getHeight();
@@ -1677,7 +1677,7 @@ void Texture::replace( const TextureData &textureData )
 }
 
 #if ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ANGLE )
-TextureRef Texture::createFromDds( const DataSourceRef &dataSource, const Format &format )
+TextureRef Texture2d::createFromDds( const DataSourceRef &dataSource, const Format &format )
 {
 #if ! defined( CINDER_GL_ES )
 	TextureData textureData( format.getIntermediatePbo() );
@@ -1686,13 +1686,13 @@ TextureRef Texture::createFromDds( const DataSourceRef &dataSource, const Format
 #endif
 
 	parseDds( dataSource, &textureData );
-	return Texture::create( textureData, format );
+	return Texture2d::create( textureData, format );
 }
 
 #if defined( CINDER_GL_ANGLE )
-void Texture::updateFromDds( const DataSourceRef &dataSource )
+void Texture2d::updateFromDds( const DataSourceRef &dataSource )
 #else
-void Texture::updateFromDds( const DataSourceRef &dataSource, const PboRef &intermediatePbo )
+void Texture2d::updateFromDds( const DataSourceRef &dataSource, const PboRef &intermediatePbo )
 #endif
 {
 #if defined( CINDER_GL_ES )

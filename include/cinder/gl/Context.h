@@ -46,8 +46,8 @@ typedef std::shared_ptr<BufferObj>		BufferObjRef;
 class TransformFeedbackObj;
 typedef std::shared_ptr<TransformFeedbackObj>	TransformFeedbackObjRef;
 #endif
-class Texture;
-typedef std::shared_ptr<Texture>		TextureRef;
+class Texture2d;
+typedef std::shared_ptr<Texture2d>		Texture2dRef;
 class GlslProg;
 typedef std::shared_ptr<GlslProg>		GlslProgRef;
 class Fbo;
@@ -434,7 +434,7 @@ class Context {
 	friend class				EnvironmentCoreProfile;
 	friend class				EnvironmentCompatibilityProfile;
 	
-	friend class				Texture;
+	friend class				Texture2d;
 };
 
 class ExcContextAllocation : public Exception {
