@@ -527,9 +527,9 @@ void setMatricesWindow( const ci::Vec2i& screenSize, bool originUpperLeft )
 
 void rotate( const Quatf &quat )
 {
-	float angle;
-	Vec3f axis;
-	quat.getAxisAngle( &axis, &angle );
+	Vec3f axis = fromGlm( glm::axis( quat ) );
+	float angle = glm::angle( quat );
+
 	rotate( toDegrees( angle ), axis );
 }
 

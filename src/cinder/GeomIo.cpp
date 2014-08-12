@@ -1268,7 +1268,7 @@ void Capsule::calculateImplUV( size_t segments, size_t rings ) const
 
 void Capsule::calculateRing( size_t segments, float radius, float y, float dy ) const
 {
-	const ci::Quatf quaternion( Vec3f::yAxis(), mDirection );
+	const Quatf quaternion( toGlm( Vec3f::yAxis() ), toGlm( mDirection ) );
 
 	bool hasNormals = isEnabled( Attrib::NORMAL );
 	bool hasTexCoords = isEnabled( Attrib::TEX_COORD_0 );
@@ -1279,10 +1279,10 @@ void Capsule::calculateRing( size_t segments, float radius, float y, float dy ) 
 		float x = math<float>::cos( float(M_PI * 2) * s * segIncr ) * radius;
 		float z = math<float>::sin( float(M_PI * 2) * s * segIncr ) * radius;
 
-		mPositions.push_back( mCenter + ( quaternion * Vec3f( mRadius * x, mRadius * y + mLength * dy, mRadius * z ) ) );
+		mPositions.push_back( fromGlm( toGlm( mCenter ) + ( quaternion * glm::vec3( mRadius * x, mRadius * y + mLength * dy, mRadius * z ) ) ) );
 
 		if( hasNormals ) {
-			mNormals.push_back( quaternion * Vec3f( x, y, z ) );
+			mNormals.push_back( fromGlm( quaternion * glm::vec3( x, y, z ) ) );
 		}
 		if( hasTexCoords ) {
 			// perform cylindrical projection
@@ -1465,7 +1465,7 @@ void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
 
 	const float segmentIncr = 1.0f / (segments - 1);
 	const float ringIncr = 1.0f / (rings - 1);
-	const Quatf axis( Vec3f::yAxis(), mDirection );
+	const Quatf axis( toGlm( Vec3f::yAxis() ), toGlm( mDirection ) );
 
 	// vertex, normal, tex coord and color buffers
 	for( size_t j = 0; j < rings; ++j ) {
@@ -1480,9 +1480,9 @@ void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
 			const Vec3f n = Vec3f( mHeight * cosPhi, mRadiusBase - mRadiusApex, mHeight * sinPhi ).normalized();
 
 			const size_t k = i * rings + j;
-			mPositions[k] = mOrigin + axis * Vec3f( x, y, z );
+			mPositions[k] = mOrigin + fromGlm( axis * glm::vec3( x, y, z ) );
 			mTexCoords[k] = Vec2f( i * segmentIncr, 1.0f - j * ringIncr );
-			mNormals[k] = axis * n;
+			mNormals[k] = fromGlm( axis * toGlm( n ) );
 
 			if( isEnabled( Attrib::COLOR ) ) {
 				mColors[k] = Vec3f( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
@@ -1528,7 +1528,7 @@ void Cylinder::calculateCap( bool flip, float height, float radius, size_t segme
 			Vec3f( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
 	}
 
-	const Quatf axis( Vec3f::yAxis(), mDirection );
+	const Quatf axis( toGlm( Vec3f::yAxis() ), toGlm( mDirection ) );
 
 	// vertices
 	const float segmentIncr = 1.0f / (segments - 1);
@@ -1545,7 +1545,7 @@ void Cylinder::calculateCap( bool flip, float height, float radius, size_t segme
 		float y = height;
 		float z = radius * sinPhi;
 
-		mPositions[index + i * 2 + 1] = mOrigin + axis * Vec3f( x, y, z );
+		mPositions[index + i * 2 + 1] = mOrigin + fromGlm( axis * glm::vec3( x, y, z ) );
 		mTexCoords[index + i * 2 + 1] = Vec2f( i * segmentIncr, 1.0f - height / mHeight );
 	}
 

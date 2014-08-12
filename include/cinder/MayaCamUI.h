@@ -79,19 +79,20 @@ class MayaCamUI {
 			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
 			float deltaX = ( mousePos.x - mInitialMousePos.x ) / -100.0f;
 			Vec3f mW = mInitialCam.getViewDirection().normalized();
-			bool invertMotion = ( mInitialCam.getOrientation() * Vec3f::yAxis() ).y < 0.0f;
+			bool invertMotion = ( mInitialCam.getOrientation() * glm::vec3( 0, 1, 0 ) ).y < 0.0f;
 			Vec3f mU = Vec3f::yAxis().cross( mW ).normalized();
 
 			if( invertMotion ) {
 				deltaX = -deltaX;
 				deltaY = -deltaY;
 			}
-			
-			Vec3f rotatedVec = Quatf( mU, deltaY ) * ( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
-			rotatedVec = Quatf( Vec3f::yAxis(), deltaX ) * rotatedVec;
-	
-			mCurrentCam.setEyePoint( mInitialCam.getCenterOfInterestPoint() + rotatedVec );
-			mCurrentCam.setOrientation( mInitialCam.getOrientation() * Quatf( mU, deltaY ) * Quatf( Vec3f::yAxis(), deltaX ) );
+
+			// FIXME: this seems to be broken
+			glm::vec3 rotatedVec = Quatf( deltaY, toGlm( mU ) ) * toGlm( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
+			rotatedVec = Quatf( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
+
+			mCurrentCam.setEyePoint( mInitialCam.getCenterOfInterestPoint() + fromGlm( rotatedVec ) );
+			mCurrentCam.setOrientation( mInitialCam.getOrientation() * Quatf( deltaY, toGlm( mU ) ) * Quatf( deltaX, glm::vec3( 0, 1, 0 ) ) );
 		}
 	}	
 	
