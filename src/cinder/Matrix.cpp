@@ -22,6 +22,9 @@
 
 #include "cinder/Matrix.h"
 
+#include "glm/gtx/matrix_operation.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
+
 namespace cinder {
 
 //
@@ -33,6 +36,7 @@ namespace cinder {
 //  be chosen.
 //
 //  Throw 'NullVecExc' if 'firstPoint' and 'secondPoint' are equals.
+#if 0
 template<typename T>
 Matrix44<T> firstFrame( 
 	const Vec3<T> &firstPoint, 
@@ -144,5 +148,48 @@ template Matrix44f lastFrame( const Matrix44f &prevMatrix, const Vec3f &prevPoin
 template Matrix44d firstFrame( const Vec3d &firstPoint, const Vec3d &secondPoint, const Vec3d &thirdPoint );
 template Matrix44d nextFrame( const Matrix44d &prevMatrix, const Vec3d &prevPoint, const Vec3d &curPoint, Vec3d &prevTangent, Vec3d &curTangent );
 template Matrix44d lastFrame( const Matrix44d &prevMatrix, const Vec3d &prevPoint, 	const Vec3d &lastPoint );
+
+#endif
+
+glm::mat4 alignZAxisWithTarget( Vec3f targetDir, Vec3f upDir )
+{
+    // Ensure that the target direction is non-zero.
+    if( targetDir.lengthSquared() == 0 )
+		targetDir = Vec3f::zAxis();
+
+    // Ensure that the up direction is non-zero.
+    if( upDir.lengthSquared() == 0 )
+		upDir = Vec3f::yAxis();
+
+    // Check for degeneracies.  If the upDir and targetDir are parallel 
+    // or opposite, then compute a new, arbitrary up direction that is
+    // not parallel or opposite to the targetDir.
+    if( upDir.cross( targetDir ).lengthSquared() == 0 ) {
+		upDir = targetDir.cross( Vec3f::xAxis() );
+	if( upDir.lengthSquared() == 0 )
+	    upDir = targetDir.cross( Vec3f::zAxis() );
+    }
+
+    // Compute the x-, y-, and z-axis vectors of the new coordinate system.
+    Vec3f targetPerpDir = upDir.cross( targetDir );    
+    Vec3f targetUpDir = targetDir.cross( targetPerpDir );
+    
+
+    // Rotate the x-axis into targetPerpDir (row 0),
+    // rotate the y-axis into targetUpDir   (row 1),
+    // rotate the z-axis into targetDir     (row 2).
+    Vec3f row[3];
+    row[0] = targetPerpDir.normalized();
+    row[1] = targetUpDir.normalized();
+    row[2] = targetDir.normalized();
+    
+    const float v[16] = {	row[0].x,	row[0].y,  row[0].z,  0,
+							row[1].x,  row[1].y,  row[1].z,  0,
+							row[2].x,  row[2].y,  row[2].z,  0,
+					        0,          0,        0,		1 };
+	
+    
+    return glm::make_mat4( v );
+}
 
 } // namespace cinder

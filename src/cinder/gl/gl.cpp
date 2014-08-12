@@ -23,6 +23,8 @@
 	#include <OpenGL/OpenGL.h>
 #endif
 
+#include "glm/gtx/transform.hpp"
+
 using namespace std;
 
 namespace cinder { namespace gl {
@@ -450,10 +452,7 @@ Matrix44f calcViewMatrixInverse()
 
 Matrix33f calcNormalMatrix()
 {
-	Matrix33f mv = getModelView().subMatrix33( 0, 0 );
-	mv.invert( FLT_MIN );
-	mv.transpose();
-	return mv;
+	return glm::inverseTranspose( glm::mat3( getModelView() ) );
 }
 	
 Matrix33f calcModelMatrixInverseTranspose()
@@ -493,8 +492,8 @@ void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees
 	ctx->getProjectionMatrixStack().back() = cam.getProjectionMatrix();
 	ctx->getViewMatrixStack().back() = cam.getViewMatrix();
 	if( originUpperLeft ) {
-		ctx->getViewMatrixStack().back().scale( Vec3f( 1.0f, -1.0f, 1.0f ) );					// invert Y axis so increasing Y goes down.
-		ctx->getViewMatrixStack().back().translate( Vec3f( 0.0f, (float)-screenHeight, 0.0f ) ); // shift origin up to upper-left corner.
+		ctx->getViewMatrixStack().back() *= glm::scale( vec3( 1, -1, 1 ) );								// invert Y axis so increasing Y goes down.
+		ctx->getViewMatrixStack().back() *= glm::translate( vec3( 0, (float) - screenHeight, 0 ) );		// shift origin up to upper-left corner.
 	}
 }
 
@@ -506,18 +505,23 @@ void setMatricesWindowPersp( const ci::Vec2i& screenSize, float fovDegrees, floa
 void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft )
 {
 	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back().setToIdentity();	
-	ctx->getViewMatrixStack().back().setToIdentity();
-	if( originUpperLeft )
-		ctx->getProjectionMatrixStack().back().setRows(	Vec4f( 2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f ),
-													Vec4f( 0.0f, 2.0f / -(float)screenHeight, 0.0f, 1.0f ),
-													Vec4f( 0.0f, 0.0f, -1.0f, 0.0f ),
-													Vec4f( 0.0f, 0.0f, 0.0f, 1.0f ) );
-	else
-		ctx->getProjectionMatrixStack().back().setRows(	Vec4f( 2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f ),
-													Vec4f( 0.0f, 2.0f / (float)screenHeight, 0.0f, -1.0f ),
-													Vec4f( 0.0f, 0.0f, -1.0f, 0.0f ),
-													Vec4f( 0.0f, 0.0f, 0.0f, 1.0f ) );
+	ctx->getModelMatrixStack().back() = mat4();
+	ctx->getViewMatrixStack().back() = mat4();
+	if( originUpperLeft ) {
+		const float v[16] = {	2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f,
+								0.0f, 2.0f / -(float)screenHeight, 0.0f, 1.0f,
+								0.0f, 0.0f, -1.0f, 0.0f,
+								0.0f, 0.0f, 0.0f, 1.0f };
+		ctx->getProjectionStack().back() = glm::make_mat4( v );
+	}
+	else {
+
+		const float v[16] = {	2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f,
+								0.0f, 2.0f / (float)screenHeight, 0.0f, -1.0f,
+								0.0f, 0.0f, -1.0f, 0.0f,
+								0.0f, 0.0f, 0.0f, 1.0f };
+		ctx->getProjectionStack().back() = glm::make_mat4( v );
+	}
 }
 
 void setMatricesWindow( const ci::Vec2i& screenSize, bool originUpperLeft )
@@ -537,20 +541,20 @@ void rotate( float angleDegrees, const Vec3f &axis )
 {
 	if( math<float>::abs( angleDegrees ) > EPSILON_VALUE ) {
 		auto ctx = gl::context();
-		ctx->getModelMatrixStack().back().rotate( axis, toRadians( angleDegrees ) );
+		ctx->getModelMatrixStack().back() *= glm::rotate( toRadians( angleDegrees ), vec3( xAxis, yAxis, zAxis ) );
 	}
 }
 
 void scale( const ci::Vec3f& v )
 {
 	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back().scale( v );
+	ctx->getModelMatrixStack().back() *= glm::scale( toGlm( v ) );
 }
 
 void translate( const ci::Vec3f& v )
 {
 	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back().translate( v );
+	ctx->getModelMatrixStack().back() *= glm::translate( toGlm( v ) );
 }
 
 void begin( GLenum mode )

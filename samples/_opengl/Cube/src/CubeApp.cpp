@@ -10,6 +10,10 @@
 using namespace ci;
 using namespace ci::app;
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
+#include "glm/gtx/transform2.hpp"
+
 class RotatingCubeApp : public AppNative {
   public:	
 	void setup();
@@ -26,8 +30,8 @@ class RotatingCubeApp : public AppNative {
 
 void RotatingCubeApp::setup()
 {
-	mCam.lookAt( Vec3f( 3, 2, 4 ), Vec3f::zero() );
-	mCubeRotation.setToIdentity();
+//	mCam.lookAt( Vec3f( 3, 2, 4 ), Vec3f::zero() );
+	mCam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
 	
 	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
 
@@ -57,8 +61,8 @@ void RotatingCubeApp::resize()
 
 void RotatingCubeApp::update()
 {
-	// Rotate the cube by .03 radians around an arbitrary axis
-	mCubeRotation.rotate( Vec3f( 1, 1.3, 0.5 ).normalized(), 0.03f );
+	// Rotate the cube by 2 degrees around an arbitrary axis
+	mCubeRotation *= glm::rotate( 2.0f, glm::normalize( glm::vec3( 1, 1.3, 0.5 ) ) );
 }
 
 void RotatingCubeApp::draw()
