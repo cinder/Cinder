@@ -310,9 +310,9 @@ fs::path App::getResourcePath( const fs::path &rsrcRelativePath )
 	
 	NSString *pathNS = 0;
 	if( ( ! path.empty() ) && ( path != rsrcRelativePath ) )
-		pathNS = [NSString stringWithUTF8String:path.c_str()];
+		pathNS = @(path.c_str());
 	
-	NSString *resultPath = [App::get()->getBundle() pathForResource:[NSString stringWithUTF8String:fileName.c_str()] ofType:nil inDirectory:pathNS];
+	NSString *resultPath = [App::get()->getBundle() pathForResource:@(fileName.c_str()) ofType:nil inDirectory:pathNS];
 	if( ! resultPath )
 		return string();
 	
@@ -349,12 +349,12 @@ fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> exten
 	if( ! extensions.empty() ) {
 		NSMutableArray *typesArray = [NSMutableArray arrayWithCapacity:extensions.size()];
 		for( vector<string>::const_iterator extIt = extensions.begin(); extIt != extensions.end(); ++extIt )
-			[typesArray addObject:[NSString stringWithUTF8String:extIt->c_str()]];
+			[typesArray addObject:@(extIt->c_str())];
 		[cinderOpen setAllowedFileTypes:typesArray];
 	}
 
 	if( ! initialPath.empty() )
-		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
+		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[@(initialPath.c_str()) stringByExpandingTildeInPath]]];
 
 	NSInteger resultCode = [cinderOpen runModal];
 
@@ -395,7 +395,7 @@ fs::path App::getFolderPath( const fs::path &initialPath )
 	[cinderOpen setAllowsMultipleSelection:NO];
 
 	if( ! initialPath.empty() )
-		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
+		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[@(initialPath.c_str()) stringByExpandingTildeInPath]]];
 	
 	NSInteger resultCode = [cinderOpen runModal];
 	
@@ -435,13 +435,13 @@ fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> exten
 	if( ! extensions.empty() ) {
 		typesArray = [NSMutableArray arrayWithCapacity:extensions.size()];
 		for( vector<string>::const_iterator extIt = extensions.begin(); extIt != extensions.end(); ++extIt )
-			[typesArray addObject:[NSString stringWithUTF8String:extIt->c_str()]];
+			[typesArray addObject:@(extIt->c_str())];
 		[cinderSave setAllowedFileTypes:typesArray];
 	}
 
 	if( ! initialPath.empty() ) {
 		NSString *directory, *file = nil;
-		directory = [[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath];
+		directory = [@(initialPath.c_str()) stringByExpandingTildeInPath];
 		BOOL isDir;
 		if( [[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:&isDir] ) {
 			if( ! isDir ) { // a file exists at this path, so directory is its parent

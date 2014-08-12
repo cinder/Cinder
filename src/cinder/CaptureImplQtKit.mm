@@ -45,13 +45,13 @@ CaptureImplQtKitDevice::CaptureImplQtKitDevice( QTCaptureDevice* device )
 
 bool CaptureImplQtKitDevice::checkAvailable() const
 {
-	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:[NSString stringWithUTF8String:mUniqueId.c_str()]];
+	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:@(mUniqueId.c_str())];
 	return [device isConnected] && (! [device isInUseByAnotherApplication]);
 }
 
 bool CaptureImplQtKitDevice::isConnected() const
 {
-	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:[NSString stringWithUTF8String:mUniqueId.c_str()]];
+	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:@(mUniqueId.c_str())];
 	return [device isConnected];
 }
 
@@ -95,7 +95,7 @@ static BOOL sDevicesEnumerated = false;
 
 		mDevice = device;
 		if( mDevice ) {
-			mDeviceUniqueId = [NSString stringWithUTF8String:device->getUniqueId().c_str()];
+			mDeviceUniqueId = @(device->getUniqueId().c_str());
 			[mDeviceUniqueId retain];
 		}
 		

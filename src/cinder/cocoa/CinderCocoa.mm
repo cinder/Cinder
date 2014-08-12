@@ -48,7 +48,7 @@ SafeNsString::SafeNsString( NSString *str )
 
 SafeNsString::SafeNsString( const std::string &str )
 {
-	mPtr = shared_ptr<NSString>( [NSString stringWithUTF8String:str.c_str()], safeRelease );
+	mPtr = shared_ptr<NSString>( @(str.c_str()), safeRelease );
 	[mPtr.get() retain];
 }
 

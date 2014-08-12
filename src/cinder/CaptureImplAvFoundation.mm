@@ -94,7 +94,7 @@ static BOOL sDevicesEnumerated = false;
 			mDevice = [CaptureImplAvFoundation getDevices:NO][0];
 		}
 		
-		mDeviceUniqueId = [NSString stringWithUTF8String:mDevice->getUniqueId().c_str()];
+		mDeviceUniqueId = @(mDevice->getUniqueId().c_str());
 		[mDeviceUniqueId retain];
 		
 		mIsCapturing = false;

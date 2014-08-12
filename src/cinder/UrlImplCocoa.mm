@@ -131,7 +131,7 @@
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	NSURLRequestCachePolicy cachePolicy = (impl->getOptions().getIgnoreCache())? NSURLRequestReloadIgnoringLocalCacheData : NSURLRequestUseProtocolCachePolicy;
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:mUrl.c_str()]]
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@(mUrl.c_str())]
 								cachePolicy:cachePolicy
 								timeoutInterval:impl->getOptions().getTimeout()];
 
@@ -159,9 +159,9 @@
 {
 	if( [challenge previousFailureCount] == 0 ) {
 		NSURLCredential *newCredential;
-		newCredential = [NSURLCredential credentialWithUser:[NSString stringWithUTF8String:mUser.c_str()]
-									password:[NSString stringWithUTF8String:mPassword.c_str()]
-									persistence:NSURLCredentialPersistenceNone];
+		newCredential = [NSURLCredential credentialWithUser:@(mUser.c_str())
+												   password:@(mPassword.c_str())
+												persistence:NSURLCredentialPersistenceNone];
 		[[challenge sender] useCredential:newCredential forAuthenticationChallenge:challenge];
 	}
 	else {

@@ -58,7 +58,7 @@
 	self.windows = [NSMutableArray array];
 	
 	const std::string& applicationName = aApp->getSettings().getTitle();
-	[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
+	[self setApplicationMenu:@(applicationName.c_str())];
 	
 	[(NSApplication*)NSApp setDelegate:self];
 	
@@ -727,7 +727,7 @@
 
 	// title
 	if( ! winFormat.getTitle().empty() )
-		[winImpl->mWin setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
+		[winImpl->mWin setTitle:@(winFormat.getTitle().c_str())];
 
 	if( winFormat.isFullScreenButtonEnabled() )
 		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];

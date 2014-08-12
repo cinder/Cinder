@@ -181,10 +181,10 @@ void Clipboard::setString( const std::string &str )
 {
 #if defined( CINDER_MAC )
 	[[NSPasteboard generalPasteboard] declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner:nil];
-	[[NSPasteboard generalPasteboard] setString:[NSString stringWithUTF8String:str.c_str()] forType: NSStringPboardType];
+	[[NSPasteboard generalPasteboard] setString:@(str.c_str()) forType: NSStringPboardType];
 #elif defined( CINDER_COCOA_TOUCH )
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithUTF8String:str.c_str()];
+	pasteboard.string = @(str.c_str());
 #elif defined( CINDER_MSW )
 	::OpenClipboard( NULL );
 	::EmptyClipboard();
