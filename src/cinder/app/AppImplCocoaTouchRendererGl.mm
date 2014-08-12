@@ -42,8 +42,10 @@
 
 	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)cinderView.layer;
 	eaglLayer.opaque = TRUE;
-	eaglLayer.drawableProperties = [NSDictionary dictionaryWithObjectsAndKeys:
-										[NSNumber numberWithBool:FALSE], kEAGLDrawablePropertyRetainedBacking, kEAGLColorFormatRGBA8, kEAGLDrawablePropertyColorFormat, nil];
+	eaglLayer.drawableProperties = @{
+		kEAGLDrawablePropertyRetainedBacking: @NO,
+		kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8
+	};
 
 	mBackingWidth	= 0;
 	mBackingHeight	= 0;
