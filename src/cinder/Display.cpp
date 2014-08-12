@@ -114,10 +114,8 @@ void Display::enumerateDisplays()
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	NSArray *screens = [NSScreen screens];
-	Area primaryScreenArea;
-	size_t screenCount = [screens count];
-	for( size_t i = 0; i < screenCount; ++i ) {
-		::NSScreen *screen = [screens objectAtIndex:i];
+	__block Area primaryScreenArea;
+	[screens enumerateObjectsUsingBlock:^(NSScreen *screen, NSUInteger idx, BOOL *stop) {
 		[screen retain]; // this is released in the destructor for Display
 		NSRect frame = [screen frame];
 
@@ -129,17 +127,17 @@ void Display::enumerateDisplays()
 		newDisplay->mContentScale = [screen backingScaleFactor];
 
 		// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
-		if( i == 0 ) {
+		if( idx == 0 ) {
 			primaryScreenArea = newDisplay->mArea;
 		}
 		else {
 			int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
 			newDisplay->mArea.offset( Vec2i( 0, heightDelta ) );
 		}
-		
+
 		sDisplays.push_back( newDisplay );
-	}
-	
+	}];
+
 	sDisplaysInitialized = true;
 	[pool drain];
 }
@@ -204,16 +202,16 @@ void Display::enumerateDisplays()
 void Display::setResolution( const Vec2i &resolution )
 {
 	NSArray *modes = [mUiScreen availableModes];
-	int closestIndex = 0;
-	float closestDistance = 1000000.0f; // big distance
-	for( UIScreenMode *mode in modes ) {
+	__block NSUInteger closestIndex = 0;
+	__block float closestDistance = 1000000.0f; // big distance
+	[modes enumerateObjectsUsingBlock:^(UIScreenMode *mode, NSUInteger idx, BOOL *stop) {
 		Vec2i thisModeRes = Vec2f( mode.size.width, mode.size.height );
 		if( thisModeRes.distance( resolution ) < closestDistance ) {
 			closestDistance = thisModeRes.distance( resolution );
-			closestIndex = i;
+			closestIndex = idx;
 		}
-	}
-	
+	}];
+
 	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
 }
 #elif defined( CINDER_WINRT )
