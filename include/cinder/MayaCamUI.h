@@ -87,12 +87,11 @@ class MayaCamUI {
 				deltaY = -deltaY;
 			}
 
-			// FIXME: this seems to be broken
-			glm::vec3 rotatedVec = Quatf( deltaY, toGlm( mU ) ) * toGlm( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
-			rotatedVec = Quatf( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
+			glm::vec3 rotatedVec = glm::angleAxis( deltaY, toGlm( mU ) ) * toGlm( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
+			rotatedVec = glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
 
 			mCurrentCam.setEyePoint( mInitialCam.getCenterOfInterestPoint() + fromGlm( rotatedVec ) );
-			mCurrentCam.setOrientation( mInitialCam.getOrientation() * Quatf( deltaY, toGlm( mU ) ) * Quatf( deltaX, glm::vec3( 0, 1, 0 ) ) );
+			mCurrentCam.setOrientation( mInitialCam.getOrientation() * glm::angleAxis( deltaY, toGlm( mU ) ) * glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) );
 		}
 	}	
 	
