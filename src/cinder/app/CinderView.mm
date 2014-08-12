@@ -143,7 +143,7 @@
         // Kiosk Mode
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         if( ! options->isSecondaryDisplayBlankingEnabled() )
-            [dict setObject:[NSNumber numberWithBool:NO] forKey:NSFullScreenModeAllScreens];
+            [dict setObject:@NO forKey:NSFullScreenModeAllScreens];
 		if( ! options->isExclusive() )
 			[dict setObject:@( NSApplicationPresentationHideMenuBar | NSApplicationPresentationHideDock ) forKey:NSFullScreenModeApplicationPresentationOptions];
 
