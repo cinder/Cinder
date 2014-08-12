@@ -30,6 +30,8 @@
 
 #include <cstdint>
 #include <boost/version.hpp>
+
+#define GLM_FORCE_RADIANS
 #include "glm/fwd.hpp"
 
 #if BOOST_VERSION < 105500
