@@ -85,7 +85,7 @@
 
 	// register for drop events
 	if( mReceivesEvents )
-		[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+		[self registerForDraggedTypes:@[NSFilenamesPboardType]];
 
 	// register for touch events
 	if( mDelegate && mApp->getSettings().isMultiTouchEnabled() ) {
