@@ -193,9 +193,9 @@ void popViewMatrix();
 void pushProjectionMatrix();
 void popProjectionMatrix();
 //! Pushes Model and View matrices
-void pushModelViewMatrices();
+void pushModelView();
 //! Pops Model and View matrices
-void popModelViewMatrices();
+void popModelView();
 //! Pushes Model, View and Projection matrices
 void pushMatrices();
 //! Pops Model, View and Projection matrices

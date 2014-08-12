@@ -364,14 +364,14 @@ void popProjectionMatrix()
 	ctx->getProjectionMatrixStack().pop_back();
 }
 
-void pushModelViewMatrices()
+void pushModelView()
 {
 	auto ctx = context();
 	ctx->getModelMatrixStack().push_back( ctx->getModelMatrixStack().back() );
 	ctx->getViewMatrixStack().push_back( ctx->getViewMatrixStack().back() );
 }
 
-void popModelViewMatrices()
+void popModelView()
 {
 	auto ctx = context();
 	ctx->getModelMatrixStack().pop_back();
