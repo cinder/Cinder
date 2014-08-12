@@ -1494,11 +1494,6 @@ void drawStrokedTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2 )
 	drawSolidTriangle( pts, nullptr );
 }
 
-void drawStrokedTriangle( const Vec2f pts[3] )
-{
-//	drawSolidTriangle( pts, nullptr );
-}
-
 void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] )
 {
 	auto ctx = context();
@@ -1511,13 +1506,13 @@ void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] )
 	GLfloat data[3*2+3*2]; // both verts and texCoords
 	memcpy( data, pts, sizeof(float) * 3 * 2 );
 	if( texCoord )
-		memcpy( data + sizeof(float) * 3 * 2, pts, sizeof(float) * 3 * 2 );
+		memcpy( data + 3 * 2, texCoord, sizeof(float) * 3 * 2 );
 
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
 	VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(float)*12 );
 	ScopedBuffer bufferBindScp( defaultVbo );
-	defaultVbo->bufferSubData( 0, sizeof(float) * ( texCoord ? 6 : 12 ), data );
+	defaultVbo->bufferSubData( 0, sizeof(float) * ( texCoord ? 12 : 6 ), data );
 
 	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
 	if( posLoc >= 0 ) {
@@ -1533,7 +1528,7 @@ void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] )
 	}
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	ctx->drawArrays( GL_TRIANGLES, 0, 3 );
 	ctx->popVao();
 }
 

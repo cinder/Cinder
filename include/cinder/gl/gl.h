@@ -353,13 +353,10 @@ void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &co
 
 //! Renders a solid triangle.
 void drawSolidTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2 );
-void drawSolidTriangle( const Vec2f pts[3] );
 //! Renders a textured triangle.
 void drawSolidTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2, const Vec2f &texPt0, const Vec2f &texPt1, const Vec2f &texPt2 );
+//! Renders a textured triangle.
 void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] = nullptr );
-//! Renders a stroked triangle.
-void drawStrokedTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2 );
-void drawStrokedTriangle( const Vec2f pts[3] );
 
 // Vertex Attributes
 //! Analogous to glVertexAttribPointer
