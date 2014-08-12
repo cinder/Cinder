@@ -8,8 +8,8 @@
 
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Batch.h"
 #include "cinder/Text.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/Timeline.h"
 
 #include "TextRibbon.h"
@@ -89,18 +89,19 @@ void TextRibbon::drawTextShape()
 	float offsetX = mCurPos.value().x;
 	float offsetY = mCurPos.value().y;
 	
-	Vec2f points[4];
-	points[0] = Vec2f(offsetX + 0,				offsetY + 0);
-	points[1] = Vec2f(offsetX + 0,				offsetY + boxH);
-	points[2] = Vec2f(offsetX + boxW,			offsetY + 0);
-	points[3] = Vec2f(offsetX + boxW + farPt,	offsetY + boxH);
-	
 	gl::color( mCol.r, mCol.g, mCol.b, mCurAlpha );
+	gl::VertBatch vb( GL_TRIANGLE_STRIP );
+		vb.color( mCol.r, mCol.g, mCol.b, mCurAlpha );
+		vb.vertex( offsetX + 0,				offsetY + 0 );
+		vb.vertex( offsetX + 0,				offsetY + boxH );
+		vb.vertex( offsetX + boxW,			offsetY + 0 );
+		vb.vertex( offsetX + boxW + farPt,	offsetY + boxH );
+	vb.draw();
 /*	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &points[0].x );
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-	glDisableClientState( GL_VERTEX_ARRAY );*/
-	gl::color( 1, 1, 1, 1 );
+	glDisableClientState( GL_VERTEX_ARRAY );
+	gl::color( 1, 1, 1, 1 );*/
 }
 
 void TextRibbon::draw()

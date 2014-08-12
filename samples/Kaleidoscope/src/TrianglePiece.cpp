@@ -9,6 +9,7 @@
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/Shader.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
 #include "TrianglePiece.h"
@@ -88,8 +89,9 @@ void TrianglePiece::draw()
 	gl::color( 1.0f, 1.0f, 1.0f, mAlpha );
 	
 	// draw the texture to the triangle
+	gl::ScopedGlslProg glslScp( gl::getStockShader( gl::ShaderDef().color().texture() ) );
+	gl::ScopedTextureBind texScp( mDrawTex );
 	gl::drawSolidTriangle( mVertices, mTexVertices );
-	mDrawTex->unbind();
 	gl::color( 1.0f, 1.0f, 1.0f, 1.0f );			// reset the color/alpha
 	gl::popModelMatrix();
 }
