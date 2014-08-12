@@ -150,20 +150,14 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 		mFontNames.clear();
 #if defined( CINDER_MAC )
 		NSArray *fontArray = [nsFontManager availableFonts];
-		NSUInteger totalFonts = [fontArray count];
-		for( unsigned int i = 0; i < totalFonts; ++i ) {
-			NSString *str = [fontArray objectAtIndex:i];
+		for( NSString *str in fontArray ) {
 			mFontNames.push_back( string( [str UTF8String] ) );
 		}
 #elif defined( CINDER_COCOA_TOUCH )
 		NSArray *familyNames = [UIFont familyNames];
-		NSUInteger totalFamilies = [familyNames count];
-		for( unsigned int i = 0; i < totalFamilies; ++i ) {
-			NSString *familyName = [familyNames objectAtIndex:i];
+		for( NSString *familyName in familyNames ) {
 			NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
-			NSUInteger totalFonts = [fontNames count];
-			for( unsigned int f = 0; f < totalFonts; ++f ) {
-				NSString *fontName = [fontNames objectAtIndex:f];
+			for( NSString *fontName in fontNames ) {
 				mFontNames.push_back( string( [fontName UTF8String] ) );
 			}
 		}

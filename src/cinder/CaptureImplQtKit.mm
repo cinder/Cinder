@@ -33,8 +33,7 @@ CaptureImplQtKitDevice::CaptureImplQtKitDevice( QTCaptureDevice* device )
 	
 		// Apparently this stuff is basically useless
 /*	NSArray *formats = [device formatDescriptions];
-	for( int f = 0; f < [formats count]; ++f ) {
-		QTFormatDescription *format = [formats objectAtIndex:f];
+	for( QTFormatDescription *format in formats ) {
 		if( [[format mediaType] isEqualToString:QTMediaTypeVideo] ) {
 			NSLog( @"%d %@", [formats count], [format formatDescriptionAttributes] );
 		}
@@ -74,14 +73,12 @@ static BOOL sDevicesEnumerated = false;
 	sDevices.clear();	
 
 	NSArray *devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeVideo];
-	for( int i = 0; i < [devices count]; i++ ) {
-		QTCaptureDevice *device = [devices objectAtIndex:i];
+	for( QTCaptureDevice *device in devices ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplQtKitDevice( device ) ) );
 	}
 	
 	devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeMuxed];
-	for( int i = 0; i < [devices count]; i++) {
-		QTCaptureDevice *device = [devices objectAtIndex:i];
+	for( QTCaptureDevice *device in devices ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplQtKitDevice( device ) ) );
 	}
 
@@ -154,8 +151,7 @@ static BOOL sDevicesEnumerated = false;
 	
 	// Disable the sound connection
 	NSArray *connections = [mCaptureDeviceInput connections];
-	for( int i = 0; i < [connections count]; i++ ) {
-		QTCaptureConnection *connection = [connections objectAtIndex:i];
+	for( QTCaptureConnection *connection in connections ) {
 		if( [[connection mediaType] isEqualToString:QTMediaTypeSound] ) {
 			[connection setEnabled:NO];
 		}

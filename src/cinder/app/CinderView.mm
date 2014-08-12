@@ -450,10 +450,9 @@
 	
     if( [[pboard types] containsObject:NSFilenamesPboardType] ) {
         NSArray *files = [pboard propertyListForType:NSFilenamesPboardType];
-        size_t numberOfFiles = [files count];
 		std::vector<cinder::fs::path> paths;
-		for( size_t i = 0; i < numberOfFiles; ++i )
-			paths.push_back( cinder::fs::path( [[files objectAtIndex:i] UTF8String] ) );
+		for( NSString *file in files )
+			paths.push_back( cinder::fs::path( [file UTF8String] ) );
 		NSPoint curPoint = [sender draggingLocation];
 		int x = curPoint.x - [self frame].origin.x;
 		int y = [self frame].size.height - ( curPoint.y - [self frame].origin.y );

@@ -155,9 +155,7 @@ void Display::enumerateDisplays()
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
 	NSArray *screens = [UIScreen screens];
-	NSUInteger screenCount = [screens count];
-	for( NSUInteger i = 0; i < screenCount; ++i ) {
-		::UIScreen *screen = [screens objectAtIndex:i];
+	for( UIScreen *screen in screens ) {
 		[screen retain]; // this is released in the destructor for Display
 		CGRect frame = [screen bounds];
 
@@ -168,8 +166,7 @@ void Display::enumerateDisplays()
 		newDisplay->mContentScale = screen.scale;
 		
 		NSArray *resolutions = [screen availableModes];
-		for( int i = 0; i < [resolutions count]; ++i ) {
-			::UIScreenMode *mode = [resolutions objectAtIndex:i];
+		for( UIScreenMode *mode in resolutions ) {
 			newDisplay->mSupportedResolutions.push_back( Vec2i( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
 		}
 		
@@ -178,6 +175,7 @@ void Display::enumerateDisplays()
 
 	// <TEMPORARY>
 	// This is a workaround for a beta of iOS 8 SDK, which appears to return an empty array for screens
+	NSUInteger screenCount = [screens count];
 	if( screenCount == 0 ) {
 		UIScreen *screen = [UIScreen mainScreen];
 		[screen retain];
@@ -190,8 +188,7 @@ void Display::enumerateDisplays()
 		newDisplay->mContentScale = screen.scale;
 		
 		NSArray *resolutions = [screen availableModes];
-		for( int i = 0; i < [resolutions count]; ++i ) {
-			::UIScreenMode *mode = [resolutions objectAtIndex:i];
+		for( UIScreenMode *mode in resolutions ) {
 			newDisplay->mSupportedResolutions.push_back( Vec2i( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
 		}
 		
@@ -209,8 +206,7 @@ void Display::setResolution( const Vec2i &resolution )
 	NSArray *modes = [mUiScreen availableModes];
 	int closestIndex = 0;
 	float closestDistance = 1000000.0f; // big distance
-	for( int i = 0; i < [modes count]; ++i ) {
-		::UIScreenMode *mode = [modes objectAtIndex:i];
+	for( UIScreenMode *mode in modes ) {
 		Vec2i thisModeRes = Vec2f( mode.size.width, mode.size.height );
 		if( thisModeRes.distance( resolution ) < closestDistance ) {
 			closestDistance = thisModeRes.distance( resolution );
