@@ -32,10 +32,16 @@
 #include "cinder/MatrixAffine2.h"
 
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/mat4x4.hpp"
 
 #include <iomanip>
 
 namespace cinder { 
+
+typedef glm::mat4	Matrix44f;
+typedef glm::dmat4	Matrix44d;
+
+#if 0
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Matrix44
@@ -1316,6 +1322,6 @@ Matrix44<T> Matrix44<T>::alignZAxisWithTarget( Vec3<T> targetDir, Vec3<T> upDir 
 typedef Matrix44<float>	 Matrix44f;
 typedef Matrix44<double> Matrix44d;
 
-inline glm::mat4 toGlm( const Matrix44f &m ) { return glm::make_mat4( &m[0] ); }
+#endif
 
 } // namespace cinder

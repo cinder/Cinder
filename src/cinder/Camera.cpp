@@ -31,6 +31,7 @@
 
 #include "glm/gtc/Quaternion.hpp"
 #include "glm/gtx/Quaternion.hpp"
+#include "glm/gtc/matrix_access.hpp"
 
 namespace cinder {
 
@@ -143,16 +144,34 @@ Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) co
 
 void Camera::getBillboardVectors( Vec3f *right, Vec3f *up ) const
 {
-	right->set( getViewMatrix().m[0], getViewMatrix().m[4], getViewMatrix().m[8] );
-	up->set( getViewMatrix().m[1], getViewMatrix().m[5], getViewMatrix().m[9] );
+	*right = fromGlm( glm::column( getViewMatrix(), 0 ) );
+	*up = fromGlm( glm::column( getViewMatrix(), 1 ) );
 }
 
 Vec2f Camera::worldToScreen( const Vec3f &worldCoord, float screenWidth, float screenHeight ) const
 {
-	Vec3f eyeCoord = getViewMatrix().transformPointAffine( worldCoord );
-	Vec3f ndc = getProjectionMatrix().transformPoint( eyeCoord );
-	
+	vec3 eyeCoord = vec3( getViewMatrix() * vec4( toGlm( worldCoord ), 1 ) );
+	vec4 ndc = getProjectionMatrix() * vec4( eyeCoord, 1 );
+	ndc.x /= ndc.w;
+	ndc.y /= ndc.w;
+	ndc.z /= ndc.w;
+
 	return Vec2f( ( ndc.x + 1.0f ) / 2.0f * screenWidth, ( 1.0f - ( ndc.y + 1.0f ) / 2.0f ) * screenHeight );
+}
+
+float Camera::worldToEyeDepth( const Vec3f &worldCoord ) const
+{
+	return getModelViewMatrix()[0][2] * worldCoord.x + 
+			getModelViewMatrix()[1][2] * worldCoord.y +
+			getModelViewMatrix()[2][2] * worldCoord.z + getModelViewMatrix()[3][2];
+}
+
+
+Vec3f Camera::worldToNdc( const Vec3f &worldCoord )
+{
+	vec4 eye = getModelViewMatrix() * vec4( worldCoord, 1 );
+	vec4 unproj = getProjectionMatrix() * eye;
+	return Vec3f( unproj.x / unproj.w, unproj.y / unproj.w, unproj.z / unproj.w );
 }
 
 //* This only mostly works
@@ -180,11 +199,12 @@ void Camera::calcViewMatrix() const
 	mV = fromGlm( glm::rotate( mOrientation, glm::vec3( 0, 1, 0 ) ) );
 	
 	Vec3f d( -mEyePoint.dot( mU ), -mEyePoint.dot( mV ), -mEyePoint.dot( mW ) );
-	float *m = mViewMatrix.m;
-	m[ 0] = mU.x; m[ 4] = mU.y; m[ 8] = mU.z; m[12] =  d.x;
-	m[ 1] = mV.x; m[ 5] = mV.y; m[ 9] = mV.z; m[13] =  d.y;
-	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z;
-	m[ 3] = 0.0f; m[ 7] = 0.0f; m[11] = 0.0f; m[15] = 1.0f;
+
+	mat5 &m = mViewMatrix;
+	m[0][0] = mU.x; m[1][0] = mU.y; m[2][0] = mU.z; m[3][0] =  d.x;
+	m[0][1] = mV.x; m[1][1] = mV.y; m[2][1] = mV.z; m[3][1] =  d.y;
+	m[0][2] = mW.x; m[1][2] = mW.y; m[2][2] = mW.z; m[3][2] =  d.z;
+	m[0][3] = 0.0f; m[1][3] = 0.0f; m[2][3] = 0.0f; m[3][3] = 1.0f;
 
 	mModelViewCached = true;
 	mInverseModelViewCached = false;
@@ -194,7 +214,7 @@ void Camera::calcInverseView() const
 {
 	if( ! mModelViewCached ) calcViewMatrix();
 
-	mInverseModelViewMatrix = mViewMatrix.affineInverted();
+	mInverseModelViewMatrix = inverse( mViewMatrix );
 	mInverseModelViewCached = true;
 }
 

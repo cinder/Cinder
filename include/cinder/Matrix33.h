@@ -29,7 +29,16 @@
 
 #include <iomanip>
 
+#include "glm/mat3x3.hpp"
+
 namespace cinder { 
+
+typedef glm::mat3	Matrix33f;
+typedef glm::dmat3	Matrix33d;
+using glm::mat3;
+using glm::mat4;
+
+#if 0
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Matrix33
@@ -952,6 +961,6 @@ Matrix33<T> Matrix33<T>::alignZAxisWithTarget( Vec3<T> targetDir, Vec3<T> upDir 
 typedef Matrix33<float>	 Matrix33f;
 typedef Matrix33<double> Matrix33d;
 
-inline glm::mat3 toGlm( const Matrix33f &m ) { return glm::make_mat3( &m[0] ); }
+#endif
 
 } // namespace cinder

@@ -32,6 +32,8 @@ namespace cinder {
 
 typedef glm::quat	Quatf;
 typedef glm::dquat	Quatd;
+using glm::quat;
+using glm::dquat;
 
 #if 0
 template<typename T, typename Y>

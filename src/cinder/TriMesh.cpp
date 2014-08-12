@@ -377,10 +377,12 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const Matrix44f &transform ) const
 	if( mPositions.empty() )
 		return AxisAlignedBox3f( Vec3f::zero(), Vec3f::zero() );
 
-	Vec3f min( transform.transformPointAffine( *(const Vec3f*)(&mPositions[0]) ) );
+	const vec3 &temp = *(const vec3*)(&mPositions[0]);
+	Vec3f min( fromGlm( vec3( transform * vec4( temp, 1 ) ) ) );
 	Vec3f max( min );
 	for( size_t i = 0; i < mPositions.size() / 3; ++i ) {
-		Vec3f v = transform.transformPointAffine( *(const Vec3f*)(&mPositions[i*3]) );
+		const vec3 &temp = *(const vec3*)(&mPositions[i*3]);
+		Vec3f v = fromGlm( vec3( transform * vec4( temp, 1 ) ) );
 
 		if( v.x < min.x )
 			min.x = v.x;

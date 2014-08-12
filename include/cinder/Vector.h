@@ -1339,5 +1339,7 @@ template<> struct VECDIM<4,int> { typedef Vec4i	TYPE; };
 
 inline glm::vec3 toGlm( const Vec3f &v ) { return glm::vec3( v.x, v.y, v.z ); }
 inline Vec3f fromGlm( const glm::vec3 &v ) { return Vec3f( v.x, v.y, v.z ); }
+inline glm::vec4 toGlm( const Vec4f &v ) { return glm::vec4( v.x, v.y, v.z, v.w ); }
+inline Vec4f fromGlm( const glm::vec4 &v ) { return Vec4f( v.x, v.y, v.z ); }
 
 } // namespace cinder

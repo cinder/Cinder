@@ -44,6 +44,7 @@ namespace cinder {
 		Matrix44f VAR __attribute__ ( ( aligned ( 16 ) ) )
 #endif
 
+#if 0
 inline Matrix44f SseMultiply( const Matrix44f& mat0, const Matrix44f& mat1 ) 
 {
 	CINDER_ALIGN16_MATRIX44F( ret );
@@ -248,6 +249,8 @@ inline Matrix44f SseInvert( const Matrix44f& mat )
 
 	return ret;
 }
+
+#endif
 
 #if defined( CINDER_MSW )
 #   pragma warning( pop )
