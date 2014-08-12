@@ -175,12 +175,10 @@ static BOOL sDevicesEnumerated = false;
 		throw cinder::CaptureExcInvalidChannelOrder(); 	*/
 	
 	NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-								[NSNumber numberWithDouble:mWidth], (id)kCVPixelBufferWidthKey,
-								[NSNumber numberWithDouble:mHeight], (id)kCVPixelBufferHeightKey,
-								//10.4: k32ARGBPixelFormat
-								//10.5: kCVPixelFormatType_32ARGB
+								@(mWidth), (id)kCVPixelBufferWidthKey,
+								@(mHeight), (id)kCVPixelBufferHeightKey,
 								//[NSNumber numberWithUnsignedInt:pixelBufferFormat], (id)kCVPixelBufferPixelFormatTypeKey,
-								[NSNumber numberWithUnsignedInt:kCVPixelFormatType_24RGB], (id)kCVPixelBufferPixelFormatTypeKey,
+								@(kCVPixelFormatType_24RGB), (id)kCVPixelBufferPixelFormatTypeKey,
 								nil
 								];
 	

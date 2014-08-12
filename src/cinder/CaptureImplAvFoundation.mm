@@ -175,7 +175,7 @@ static BOOL sDevicesEnumerated = false;
     dispatch_release(queue);
 
     // Specify the pixel format
-    output.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
+    output.videoSettings = [NSDictionary dictionaryWithObject:@(kCVPixelFormatType_32BGRA) forKey:(id)kCVPixelBufferPixelFormatTypeKey];
 
     // If you wish to cap the frame rate to a known value, such as 15 fps, set 
     // minFrameDuration.

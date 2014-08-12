@@ -145,7 +145,7 @@
         if( ! options->isSecondaryDisplayBlankingEnabled() )
             [dict setObject:[NSNumber numberWithBool:NO] forKey:NSFullScreenModeAllScreens];
 		if( ! options->isExclusive() )
-			[dict setObject:[NSNumber numberWithUnsignedInteger:( NSApplicationPresentationHideMenuBar | NSApplicationPresentationHideDock )] forKey:NSFullScreenModeApplicationPresentationOptions];
+			[dict setObject:@( NSApplicationPresentationHideMenuBar | NSApplicationPresentationHideDock ) forKey:NSFullScreenModeApplicationPresentationOptions];
 
         NSScreen *screen = ( options->getDisplay() ? options->getDisplay()->getNsScreen() : [[self window] screen] );
         [self enterFullScreenMode:screen withOptions:dict];
@@ -508,11 +508,11 @@
 	bool found = true;
 	while( found ) {
 		candidateId++;
-		if( [currentValues indexOfObjectIdenticalTo:[NSNumber numberWithInt:candidateId]] == NSNotFound )
+		if( [currentValues indexOfObjectIdenticalTo:@(candidateId)] == NSNotFound )
 			found = false;
 	}
 	
-	[mTouchIdMap setObject:[NSNumber numberWithInt:candidateId] forKey:[touch identity]];
+	[mTouchIdMap setObject:@(candidateId) forKey:[touch identity]];
 	mTouchPrevPointMap[candidateId] = point;
 	return candidateId;
 }
