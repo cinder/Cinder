@@ -59,7 +59,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 	vector<Font::Glyph>	tempGlyphs = font.getGlyphs( supportedChars );
 	set<Font::Glyph> glyphs( tempGlyphs.begin(), tempGlyphs.end() );
 	// determine the max glyph extents
-	Vec2f glyphExtents = Vec2f::zero();
+	vec2 glyphExtents;
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
 		Rectf bb = font.getGlyphBoundingBox( *glyphIt );
 		glyphExtents.x = std::max( glyphExtents.x, bb.getWidth() );
@@ -72,7 +72,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 	int glyphsWide = floor( mFormat.getTextureWidth() / (glyphExtents.x+3) );
 	int glyphsTall = floor( mFormat.getTextureHeight() / (glyphExtents.y+5) );	
 	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
-	Vec2i curOffset = Vec2i::zero();
+	vec2 curOffset;
 	CGGlyph renderGlyphs[glyphsWide*glyphsTall];
 	CGPoint renderPositions[glyphsWide*glyphsTall];
 	Surface surface( mFormat.getTextureWidth(), mFormat.getTextureHeight(), true );
@@ -90,8 +90,8 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 		GlyphInfo newInfo;
 		newInfo.mTextureIndex = curTextureIndex;
 		Rectf bb = font.getGlyphBoundingBox( *glyphIt );
-		Vec2f ul = curOffset + Vec2f( 0, glyphExtents.y - bb.getHeight() );
-		Vec2f lr = curOffset + Vec2f( glyphExtents.x, glyphExtents.y );
+		vec2 ul = curOffset + vec2( 0, glyphExtents.y - bb.getHeight() );
+		vec2 lr = curOffset + vec2( glyphExtents.x, glyphExtents.y );
 		newInfo.mTexCoords = Area( floor( ul.x ), floor( ul.y ), ceil( lr.x ) + 3, ceil( lr.y ) + 2 );
 		newInfo.mOriginOffset.x = floor(bb.x1) - 1;
 		newInfo.mOriginOffset.y = -(bb.getHeight()-1)-ceil( bb.y1+0.5f );
@@ -135,7 +135,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), dataFormat, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 
 			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
-			curOffset = Vec2i::zero();
+			curOffset = vec2();
 			curGlyphIndex = 0;
 			++curTextureIndex;
 		}
