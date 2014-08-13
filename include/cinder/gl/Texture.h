@@ -43,9 +43,10 @@
 
 namespace cinder { namespace gl {
 
+typedef class Texture2d							Texture;
 typedef std::shared_ptr<class TextureBase>		TextureBaseRef;
-typedef std::shared_ptr<class Texture>			TextureRef;
-typedef class Texture							Texture2d;
+typedef std::shared_ptr<class Texture2d>		Texture2dRef;
+typedef Texture2dRef							TextureRef;
 typedef std::shared_ptr<Texture2d>				Texture2dRef;
 typedef std::shared_ptr<class Texture3d>		Texture3dRef;
 typedef std::shared_ptr<class TextureCubeMap>	TextureCubeMapRef;
@@ -332,7 +333,7 @@ class TextureData {
 	size_t						mDataStoreSize;
 };
 
-class Texture : public TextureBase {
+class Texture2d : public TextureBase {
   public:
 	struct Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_2D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
@@ -371,28 +372,28 @@ class Texture : public TextureBase {
 	};
 	
 	//! Constructs a texture of size(\a width, \a height) and allocates storage.
-	static TextureRef	create( int width, int height, Format format = Format() );
+	static Texture2dRef	create( int width, int height, Format format = Format() );
 	/** \brief Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
-	static TextureRef	create( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() );
+	static Texture2dRef	create( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	static TextureRef	create( const Surface8u &surface, Format format = Format() );
+	static Texture2dRef	create( const Surface8u &surface, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	static TextureRef	create( const Surface32f &surface, Format format = Format() );
+	static Texture2dRef	create( const Surface32f &surface, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	static TextureRef	create( const Channel8u &channel, Format format = Format() );
+	static Texture2dRef	create( const Channel8u &channel, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	static TextureRef	create( const Channel32f &channel, Format format = Format() );
+	static Texture2dRef	create( const Channel32f &channel, Format format = Format() );
 	//! Constructs a Texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. Uses a Format's intermediate PBO when available, which is resized as necessary.
-	static TextureRef	create( ImageSourceRef imageSource, Format format = Format() );
+	static Texture2dRef	create( ImageSourceRef imageSource, Format format = Format() );
 	//! Constructs a Texture based on an externally initialized OpenGL texture. \a doNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
-	static TextureRef	create( GLenum target, GLuint aTextureID, int width, int height, bool doNotDispose );
+	static Texture2dRef	create( GLenum target, GLuint aTextureID, int width, int height, bool doNotDispose );
 	//! Constructs a Texture based on an instance of TextureData
-	static TextureRef	create( const TextureData &data, const Format &format );
+	static Texture2dRef	create( const TextureData &data, const Format &format );
 	//! Constructs a Texture from an optionally compressed KTX file. Enables mipmapping if KTX file contains mipmaps and Format has not specified \c false for mipmapping. Uses Format's intermediate PBO if supplied; requires it to be large enough to hold all MIP levels and throws if it is not. (http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/)
-	static TextureRef	createFromKtx( const DataSourceRef &dataSource, const Format &format = Format() );
+	static Texture2dRef	createFromKtx( const DataSourceRef &dataSource, const Format &format = Format() );
 #if ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ANGLE )
 	//! Constructs a Texture from a DDS file. Supports DXT1, DTX3, and DTX5. Supports BC7 in the presence of \c GL_ARB_texture_compression_bptc. Enables mipmapping if DDS contains mipmaps and Format has not specified \c false for mipmapping. ANGLE version requires textures to be a multiple of 4 due to DX limitation.
-	static TextureRef	createFromDds( const DataSourceRef &dataSource, const Format &format = Format() );
+	static Texture2dRef	createFromDds( const DataSourceRef &dataSource, const Format &format = Format() );
 #endif
 
 	/** Designed to accommodate texture where not all pixels are "clean", meaning the maximum texture coordinate value may not be 1.0 (or the texture's width in \c GL_TEXTURE_RECTANGLE_ARB) **/
@@ -469,24 +470,24 @@ class Texture : public TextureBase {
 	ImageSourceRef	createSource();
 	
 	// These constructors are not protected to allow for shared_ptr's with custom deleters
-	/** Consider Texture::create() instead. Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. **/
-	Texture( int width, int height, Format format = Format() );
-	/** Consider Texture::create() instead. Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
-	Texture( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() );
-	/** Consider Texture::create() instead. Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	Texture( const Surface8u &surface, Format format = Format() );
-	/** Consider Texture::create() instead. Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	Texture( const Surface32f &surface, Format format = Format() );
-	/** Consider Texture::create() instead. Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	Texture( const Channel8u &channel, Format format = Format() );
-	/** Consider Texture::create() instead. Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	Texture( const Channel32f &channel, Format format = Format() );
-	/** Consider Texture::create() instead. Constructs a texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. **/
-	Texture( const ImageSourceRef &imageSource, Format format = Format() );
-	//! Consider Texture::create() instead. Constructs a Texture based on an externally initialized OpenGL texture. \a aDoNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
-	Texture( GLenum target, GLuint textureId, int width, int height, bool doNotDispose );
-	//! Consider Texture::create() instead. Constructs a Texture based on an externally initialized OpenGL texture. \a aDoNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.	
-	Texture( const TextureData &data, Format format );
+	/** Consider Texture2d::create() instead. Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. **/
+	Texture2d( int width, int height, Format format = Format() );
+	/** Consider Texture2d::create() instead. Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
+	Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() );
+	/** Consider Texture2d::create() instead. Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	Texture2d( const Surface8u &surface, Format format = Format() );
+	/** Consider Texture2d::create() instead. Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	Texture2d( const Surface32f &surface, Format format = Format() );
+	/** Consider Texture2d::create() instead. Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	Texture2d( const Channel8u &channel, Format format = Format() );
+	/** Consider Texture2d::create() instead. Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	Texture2d( const Channel32f &channel, Format format = Format() );
+	/** Consider Texture2d::create() instead. Constructs a texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. **/
+	Texture2d( const ImageSourceRef &imageSource, Format format = Format() );
+	//! Consider Texture2d::create() instead. Constructs a Texture based on an externally initialized OpenGL texture. \a aDoNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
+	Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose );
+	//! Consider Texture2d::create() instead. Constructs a Texture based on an externally initialized OpenGL texture. \a aDoNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
+	Texture2d( const TextureData &data, Format format );
 
   protected:
 	virtual void	printDims( std::ostream &os ) const override;
@@ -603,25 +604,25 @@ class TextureCubeMap : public TextureBase
 	GLint		mWidth, mHeight;
 };
 
-typedef std::shared_ptr<class TextureCache> TextureCacheRef;
+typedef std::shared_ptr<class Texture2dCache> Texture2dCacheRef;
 
-class TextureCache : public std::enable_shared_from_this<TextureCache>
+class Texture2dCache : public std::enable_shared_from_this<Texture2dCache>
 {
   public:
-	static TextureCacheRef create();
-	static TextureCacheRef create( const Surface8u &prototypeSurface, const Texture::Format &format );
+	static Texture2dCacheRef create();
+	static Texture2dCacheRef create( const Surface8u &prototypeSurface, const Texture2d::Format &format );
 	
-	TextureRef		cache( const Surface8u &data );
+	Texture2dRef		cache( const Surface8u &data );
   protected:
-	TextureCache();
-	TextureCache( const Surface8u &prototypeSurface, const Texture::Format &format );
+	Texture2dCache();
+	Texture2dCache( const Surface8u &prototypeSurface, const Texture2d::Format &format );
 		
 	void			markTextureAsFree( int id );
 	
-	int				mWidth;
-	int				mHeight;
-	Texture::Format	mFormat;
-	Surface8u		mIntermediateSurface;
+	int					mWidth;
+	int					mHeight;
+	Texture2d::Format	mFormat;
+	Surface8u			mIntermediateSurface;
 
 	int										mNextId;
 	std::vector<std::pair<int,TextureRef>>	mTextures;
