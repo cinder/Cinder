@@ -161,7 +161,7 @@ void GeometryApp::draw()
 		gl::ScopedTextureBind scopedTextureBind( mTexture );
 
 		// Rotate it slowly around the y-axis.
-		gl::pushModelViewMatrices();
+		gl::pushModelView();
 		gl::rotate( 20.0f* float( getElapsedSeconds() ), 0.0f, 1.0f, 0.0f );
 
 		// Draw the normals.
@@ -197,7 +197,7 @@ void GeometryApp::draw()
 			mPrimitive->draw();
 		
 		// Done.
-		gl::popModelViewMatrices();
+		gl::popModelView();
 	}
 
 	// Render the parameter window.
