@@ -91,7 +91,7 @@ class MayaCamUI {
 			rotatedVec = glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
 
 			mCurrentCam.setEyePoint( mInitialCam.getCenterOfInterestPoint() + fromGlm( rotatedVec ) );
-			mCurrentCam.setOrientation( mInitialCam.getOrientation() * glm::angleAxis( deltaY, toGlm( mU ) ) * glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) );
+			mCurrentCam.setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, toGlm( mU ) ) * mInitialCam.getOrientation() );
 		}
 	}	
 	
