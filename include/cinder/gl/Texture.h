@@ -337,7 +337,7 @@ class Texture2d : public TextureBase {
   public:
 	struct Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_2D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
-		Format() : TextureBase::Format(), mTopDown( false ) {}
+		Format() : TextureBase::Format(), mLoadTopDown( false ) {}
 
 		//! Chaining functions for Format class.
 		Format& target( GLenum target ) { mTarget = target; return *this; }
@@ -362,8 +362,8 @@ class Texture2d : public TextureBase {
 		//! Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE.
 		Format& compareFunc( GLenum compareFunc ) { mCompareFunc = compareFunc; return *this; }		Format& swizzleMask( const std::array<GLint,4> &swizzleMask ) { setSwizzleMask( swizzleMask ); return *this; }
 		Format& swizzleMask( GLint r, GLint g, GLint b, GLint a ) { setSwizzleMask( r, g, b, a ); return *this; }
-		//! Specifies whether the Texture should store scanlines top-down in memory. Default is \c false.
-		Format& topDown( bool topDown = true ) { mTopDown = topDown; return *this; }
+		//! Specifies whether the Texture should store scanlines top-down in memory. Default is \c false. Also marks Texture as top-down when \c true.
+		Format& loadTopDown( bool loadTopDown = true ) { mLoadTopDown = loadTopDown; return *this; }
 #if ! defined( CINDER_GL_ES )
 		Format& intermediatePbo( const PboRef &intermediatePbo ) { setIntermediatePbo( intermediatePbo ); return *this; }
 #endif		
@@ -371,7 +371,7 @@ class Texture2d : public TextureBase {
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 
 	  protected:
-		bool	mTopDown;
+		bool	mLoadTopDown;
 		friend	Texture;
 	};
 	
@@ -391,6 +391,9 @@ class Texture2d : public TextureBase {
 	static Texture2dRef	create( ImageSourceRef imageSource, Format format = Format() );
 	//! Constructs a Texture based on an externally initialized OpenGL texture. \a doNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
 	static Texture2dRef	create( GLenum target, GLuint aTextureID, int width, int height, bool doNotDispose );
+	//! Constructs a Texture based on an externally initialized OpenGL texture. \a doNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource. Supports a custom deleter.
+	template<typename D>
+	static Texture2dRef	create( GLenum target, GLuint aTextureID, int width, int height, bool doNotDispose, D deleter );
 	//! Constructs a Texture based on an instance of TextureData
 	static Texture2dRef	create( const TextureData &data, const Format &format );
 	//! Constructs a Texture from an optionally compressed KTX file. Enables mipmapping if KTX file contains mipmaps and Format has not specified \c false for mipmapping. Uses Format's intermediate PBO if supplied; requires it to be large enough to hold all MIP levels and throws if it is not. (http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/)
@@ -465,7 +468,9 @@ class Texture2d : public TextureBase {
 	//! Returns an ImageSource pointing to this Texture
 	ImageSourceRef	createSource();
 	
-	// These constructors are not protected to allow for shared_ptr's with custom deleters
+  protected:
+	virtual void	printDims( std::ostream &os ) const override;
+
 	/** Consider Texture2d::create() instead. Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. **/
 	Texture2d( int width, int height, Format format = Format() );
 	/** Consider Texture2d::create() instead. Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
@@ -484,9 +489,6 @@ class Texture2d : public TextureBase {
 	Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose );
 	//! Consider Texture2d::create() instead. Constructs a Texture based on an externally initialized OpenGL texture. \a aDoNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
 	Texture2d( const TextureData &data, Format format );
-
-  protected:
-	virtual void	printDims( std::ostream &os ) const override;
 	
 	void	initParams( Format &format, GLint defaultInternalFormat );
 	void	initData( const unsigned char *data, int unpackRowLength, GLenum dataFormat, GLenum type, const Format &format );
@@ -500,7 +502,7 @@ class Texture2d : public TextureBase {
 	mutable GLint	mWidth, mHeight, mCleanWidth, mCleanHeight;
 	bool			mTopDown;
 	
-	friend class TextureCache;
+	friend class Texture2dCache;
 };
 
 #ifndef CINDER_GL_ES
@@ -623,6 +625,13 @@ class Texture2dCache : public std::enable_shared_from_this<Texture2dCache>
 	int										mNextId;
 	std::vector<std::pair<int,TextureRef>>	mTextures;
 };
+
+template<typename D>
+Texture2dRef Texture2d::create( GLenum target, GLuint textureID, int width, int height, bool doNotDispose, D deleter )
+{
+	return TextureRef( new Texture( target, textureID, width, height, doNotDispose ), deleter );
+}
+
 
 class KtxParseExc : public Exception {
   public:	

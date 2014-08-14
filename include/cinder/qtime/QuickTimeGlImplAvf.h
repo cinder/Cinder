@@ -59,7 +59,7 @@ class MovieGl : public MovieBase {
 	gl::TextureRef	getTexture();
 	
   protected:
-	MovieGl() : MovieBase(), mVideoTextureRef(NULL), mVideoTextureCacheRef(NULL) {}
+	MovieGl() : MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr ) {}
 	MovieGl( const Url& url );
 	MovieGl( const fs::path& path );
 	MovieGl( const MovieLoader& loader );

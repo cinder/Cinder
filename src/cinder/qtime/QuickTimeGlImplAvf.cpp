@@ -108,9 +108,7 @@ void MovieGl::allocateVisualContext()
 #elif defined( CINDER_COCOA )
 		CGLContextObj context = app::App::get()->getRenderer()->getCglContext();
 		CGLPixelFormatObj pixelFormat = app::App::get()->getRenderer()->getCglPixelFormat();
-		err = ::CVOpenGLTextureCacheCreate(kCFAllocatorDefault, NULL, context, pixelFormat, NULL, &mVideoTextureCacheRef);
-		::CVOpenGLTextureCacheRetain(mVideoTextureCacheRef);
-		
+		err = ::CVOpenGLTextureCacheCreate( kCFAllocatorDefault, NULL, context, pixelFormat, NULL, &mVideoTextureCacheRef );		
 #endif
 		if( err )
 			throw AvfTextureErrorExc();
@@ -137,40 +135,37 @@ void MovieGl::deallocateVisualContext()
 
 void MovieGl::newFrame( CVImageBufferRef cvImage )
 {
-	::CVPixelBufferLockBaseAddress(cvImage, kCVPixelBufferLock_ReadOnly);
+	::CVPixelBufferLockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );
 	
-	if( mVideoTextureRef ) {
-		::CFRelease( mVideoTextureRef );
-		mVideoTextureRef = nullptr;
-	}
 #if defined( CINDER_COCOA_TOUCH )
-	::CVOpenGLESTextureCacheFlush(mVideoTextureCacheRef, 0); // Periodic texture cache flush every frame
+	::CVOpenGLESTextureCacheFlush( mVideoTextureCacheRef, 0 ); // Periodic texture cache flush every frame
 #elif defined( CINDER_COCOA )
-	::CVOpenGLTextureCacheFlush(mVideoTextureCacheRef, 0); // Periodic texture cache flush every frame
+	::CVOpenGLTextureCacheFlush( mVideoTextureCacheRef, 0 ); // Periodic texture cache flush every frame
 #endif
 	
 	CVReturn err = 0;
-	
 #if defined( CINDER_COCOA_TOUCH )
-	err = ::CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,     // CFAllocatorRef allocator
-													   mVideoTextureCacheRef,   // CVOpenGLESTextureCacheRef textureCache
-													   cvImage,                 // CVImageBufferRef sourceImage
-													   NULL,                    // CFDictionaryRef textureAttributes
-													   GL_TEXTURE_2D,           // GLenum target
-													   GL_RGBA,                 // GLint internalFormat
-													   mWidth,                  // GLsizei width
-													   mHeight,                 // GLsizei height
-													   GL_BGRA,                 // GLenum format
-													   GL_UNSIGNED_BYTE,        // GLenum type
-													   0,                       // size_t planeIndex
-													   &mVideoTextureRef);      // CVOpenGLESTextureRef *textureOut
+	CVOpenGLESTextureRef videoTextureRef;
+	err = ::CVOpenGLESTextureCacheCreateTextureFromImage( kCFAllocatorDefault,		 // CFAllocatorRef allocator
+															mVideoTextureCacheRef,   // CVOpenGLESTextureCacheRef textureCache
+															cvImage,                 // CVImageBufferRef sourceImage
+															NULL,                    // CFDictionaryRef textureAttributes
+															GL_TEXTURE_2D,           // GLenum target
+															GL_RGBA,                 // GLint internalFormat
+															mWidth,                  // GLsizei width
+															mHeight,                 // GLsizei height
+															GL_BGRA,                 // GLenum format
+															GL_UNSIGNED_BYTE,        // GLenum type
+															0,                       // size_t planeIndex
+															&videoTextureRef );      // CVOpenGLESTextureRef *textureOut
 	
 #elif defined( CINDER_MAC )
-	err = ::CVOpenGLTextureCacheCreateTextureFromImage(kCFAllocatorDefault,       // CFAllocatorRef allocator
-													 mVideoTextureCacheRef,     // CVOpenGLESTextureCacheRef textureCache
-													 cvImage,                   // CVImageBufferRef sourceImage
-													 NULL,                      // CFDictionaryRef textureAttributes
-													 &mVideoTextureRef);        // CVOpenGLTextureRef *textureOut
+	CVOpenGLTextureRef videoTextureRef;
+	err = ::CVOpenGLTextureCacheCreateTextureFromImage( kCFAllocatorDefault,       // CFAllocatorRef allocator
+														mVideoTextureCacheRef,     // CVOpenGLESTextureCacheRef textureCache
+														cvImage,                   // CVImageBufferRef sourceImage
+														NULL,                      // CFDictionaryRef textureAttributes
+														&videoTextureRef );        // CVOpenGLTextureRef *textureOut
 #endif
 	
 	if( err ) {
@@ -178,25 +173,31 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 	}
 	
 #if defined( CINDER_COCOA_TOUCH )
-	GLenum target = ::CVOpenGLESTextureGetTarget( mVideoTextureRef );
-	GLuint name = ::CVOpenGLESTextureGetName( mVideoTextureRef );
-	bool flipped = ! ::CVOpenGLESTextureIsFlipped( mVideoTextureRef );
+	GLenum target = ::CVOpenGLESTextureGetTarget( videoTextureRef );
+	GLuint name = ::CVOpenGLESTextureGetName( videoTextureRef );
+	bool flipped = ! ::CVOpenGLESTextureIsFlipped( videoTextureRef );
 	mTexture = gl::Texture::create( target, name, mWidth, mHeight, true );
 	Vec2f t0, lowerRight, t2, upperLeft;
-	::CVOpenGLESTextureGetCleanTexCoords( mVideoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
-//	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
-//	mTexture.setFlipped( flipped );
-#elif defined( CINDER_MAC )	
-	GLenum target = ::CVOpenGLTextureGetTarget( mVideoTextureRef );
-	GLuint name = ::CVOpenGLTextureGetName( mVideoTextureRef );
-	bool flipped = ! ::CVOpenGLTextureIsFlipped( mVideoTextureRef );
-	mTexture = gl::Texture::create( target, name, mWidth, mHeight, true );
+	::CVOpenGLESTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
+	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
+	mTexture->setTopDown( flipped );
+
+#elif defined( CINDER_MAC )
+	GLenum target = ::CVOpenGLTextureGetTarget( videoTextureRef );
+	GLuint name = ::CVOpenGLTextureGetName( videoTextureRef );
+	bool topDown = ::CVOpenGLTextureIsFlipped( videoTextureRef );
+
+	// custom deleter fires when last reference to Texture goes out of scope
+	auto deleter = [videoTextureRef] ( gl::Texture *texture ) {
+		::CVOpenGLTextureRelease( videoTextureRef );
+		delete texture;
+	};
+	mTexture = gl::Texture::create( target, name, mWidth, mHeight, true, deleter );
+
 	Vec2f t0, lowerRight, t2, upperLeft;
-	::CVOpenGLTextureGetCleanTexCoords( mVideoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
+	::CVOpenGLTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
 //	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
-//	mTexture.setFlipped( flipped );
-	//mTexture.setDeallocator( CVPixelBufferDealloc, mVideoTextureRef );	// do we want to do this?
-	
+	mTexture->setTopDown( topDown );
 #endif
 
 	::CVPixelBufferUnlockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );

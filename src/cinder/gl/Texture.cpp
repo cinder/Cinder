@@ -529,10 +529,9 @@ Texture2d::Texture2d( const Surface8u &surface, Format format )
 	GLenum type;
 	SurfaceChannelOrderToDataFormatAndType( surface.getChannelOrder(), &dataFormat, &type );
 	
-	// we need an intermediate format for certain channel orders, and rowBytes != numChannels * width
-	if( surfaceRequiresIntermediate( surface.getWidth(), surface.getRowBytes(), surface.getChannelOrder() ) ) {
-		CI_LOG_V( "Surface rowBytes or ChannelOrder will prevent full efficiency in gl::Texture upload." );
-		Surface8u intermediateSurface( surface.getWidth(), surface.getHeight(), surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGBA );
+	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
+	if( ( ! mTopDown ) || surfaceRequiresIntermediate( surface.getWidth(), surface.getRowBytes(), surface.getChannelOrder() ) ) {
+		Surface8u intermediateSurface( surface.getWidth(), surface.getHeight(), surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
 		intermediateSurface.copyFrom( surface, surface.getBounds() );
 		initData( intermediateSurface.getData(), intermediateSurface.getRowBytes() / intermediateSurface.getChannelOrder().getPixelInc(),
 			dataFormat, type, format );
@@ -567,14 +566,14 @@ Texture2d::Texture2d( const Channel8u &channel, Format format )
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	initParams( format, GL_LUMINANCE );
 	
-	// if the data is not already contiguous, we'll need to create a block of memory that is
-	if( ( channel.getIncrement() != 1 ) || ( channel.getRowBytes() != channel.getWidth() * sizeof( uint8_t ) ) ) {
-		shared_ptr<uint8_t> data( new uint8_t[ channel.getWidth() * channel.getHeight() ], checked_array_deleter<uint8_t>() );
+	// if the texture isn't top-down, or if the data is not already contiguous, we'll need to create a block of memory that is
+	if( (! mTopDown) || ( channel.getIncrement() != 1 ) || ( channel.getRowBytes() != channel.getWidth() * sizeof( uint8_t ) ) ) {
+		unique_ptr<uint8_t[]> data( new uint8_t[ channel.getWidth() * channel.getHeight() ] );
 		uint8_t* dest		= data.get();
 		const int8_t inc	= channel.getIncrement();
 		const int32_t width = channel.getWidth();
 		for ( int y = 0; y < channel.getHeight(); ++y ) {
-			const uint8_t* src = channel.getData( 0, y );
+			const uint8_t* src = channel.getData( 0, ( mTopDown ) ? (channel.getHeight() - 1 - y) : y );
 			for ( int x = 0; x < width; ++x ) {
 				*dest++	= *src;
 				src		+= inc;
@@ -594,26 +593,26 @@ Texture2d::Texture2d( const Channel32f &channel, Format format )
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-	initParams( format, GL_LUMINANCE );
+	initParams( format, GL_RED );
 	
-	// if the data is not already contiguous, we'll need to create a block of memory that is
-	if( ( channel.getIncrement() != 1 ) || ( channel.getRowBytes() != channel.getWidth() * sizeof(float) ) ) {
-		shared_ptr<float> data( new float[channel.getWidth() * channel.getHeight()], checked_array_deleter<float>() );
-		float* dest			= data.get();
-		const int8_t inc	= channel.getIncrement();
+	// if the texture isn't top-down, or if the data is not already contiguous, we'll need to create a block of memory that is
+	if( (! mTopDown) || ( channel.getIncrement() != 1 ) || ( channel.getRowBytes() != channel.getWidth() * sizeof(float) ) ) {
+		unique_ptr<float[]> data( new float[channel.getWidth() * channel.getHeight()] );
+		float* dest	= data.get();
+		const int8_t inc = channel.getIncrement();
 		const int32_t width = channel.getWidth();
 		for( int y = 0; y < channel.getHeight(); ++y ) {
-			const float* src = channel.getData( 0, y );
+			const float* src = channel.getData( 0, ( mTopDown ) ? (channel.getHeight() - 1 - y) : y );
 			for( int x = 0; x < width; ++x ) {
 				*dest++ = *src;
-				src		+= inc;
+				src += inc;
 			}
 		}
 		
-		initData( data.get(), GL_LUMINANCE, format );
+		initData( data.get(), GL_RED, format );
 	}
 	else {
-		initData( channel.getData(), GL_LUMINANCE, format );
+		initData( channel.getData(), GL_RED, format );
 	}
 }
 
@@ -1077,7 +1076,7 @@ void Texture2d::printDims( std::ostream &os ) const
 
 void Texture2d::initParams( Format &format, GLint defaultInternalFormat )
 {
-	mTopDown = format.mTopDown;
+	mTopDown = format.mLoadTopDown;
 	TextureBase::initParams( format, defaultInternalFormat );
 }
 
