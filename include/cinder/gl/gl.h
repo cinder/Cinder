@@ -241,7 +241,7 @@ void translate( const ci::Vec3f &v );
 //! Translates the Model matrix by (\a x,\a y,\a z )
 inline void translate( float x, float y, float z ) { translate( Vec3f( x, y, z ) ); }
 //! Translates the Model matrix by \a v
-inline void translate( const ci::Vec2f &v ) { translate( Vec3f( fromGlm( v ), 0 ) ); }
+inline void translate( const ci::Vec2f &v ) { translate( fromGlm( vec3( v, 0 ) ) ); }
 //! Translates the Model matrix by (\a x,\a y)
 inline void translate( float x, float y ) { translate( Vec3f( x, y, 0 ) ); }
 	

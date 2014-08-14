@@ -35,7 +35,7 @@ namespace cinder {
 class Path2d {
  public:
 	Path2d() {}
-	explicit Path2d( const BSpline<Vec2f> &spline, float subdivisionStep = 0.01f );
+	explicit Path2d( const BSpline2f &spline, float subdivisionStep = 0.01f );
 
 	//! Sets the start point of the path to \a p. This is the only legal first command, and only legal as the first command.
 	void	moveTo( const Vec2f &p );

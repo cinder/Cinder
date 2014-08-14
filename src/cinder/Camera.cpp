@@ -184,7 +184,7 @@ float Camera::getScreenRadius( const Sphere &sphere, float screenWidth, float sc
 	Vec2f screenCenter( worldToScreen( sphere.getCenter(), screenWidth, screenHeight ) );	
 	Vec3f orthog = mViewDirection.getOrthogonal().normalized();
 	Vec2f screenPerimeter = worldToScreen( sphere.getCenter() + sphere.getRadius() * orthog, screenWidth, screenHeight );
-	return screenPerimeter.distance( screenCenter );
+	return distance( screenPerimeter, screenCenter );
 }
 
 void Camera::calcMatrices() const
