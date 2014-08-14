@@ -148,12 +148,12 @@ std::pair<Vec2i, Vec2i> getViewport();
 void viewport( const std::pair<Vec2i, Vec2i> positionAndSize );
 inline void viewport( int x, int y, int width, int height ) { viewport( std::pair<Vec2i, Vec2i>( Vec2i( x, y ), Vec2i( width, height ) ) ); }
 inline void viewport( const Vec2i &position, const Vec2i &size ) { viewport( std::pair<Vec2i, Vec2i>( position, size ) ); }
-inline void viewport( const Vec2i &size ) { viewport( Vec2f::zero(), size ); }
+inline void viewport( const Vec2i &size ) { viewport( ivec2(), size ); }
 void pushViewport( const std::pair<Vec2i, Vec2i> positionAndSize );
 inline void pushViewport() { pushViewport( getViewport() ); }
 inline void pushViewport( int x, int y, int width, int height ) { pushViewport( std::pair<Vec2i, Vec2i>( Vec2i( x, y ), Vec2i( width, height ) ) ); }
 inline void pushViewport( const Vec2i &position, const Vec2i &size ) { pushViewport( std::pair<Vec2i, Vec2i>( position, size ) ); }
-inline void pushViewport( const Vec2i &size ) { pushViewport( Vec2f::zero(), size ); }
+inline void pushViewport( const Vec2i &size ) { pushViewport( ivec2(), size ); }
 void popViewport();
 
 std::pair<Vec2i, Vec2i> getScissor();
