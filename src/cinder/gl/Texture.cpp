@@ -1215,6 +1215,10 @@ class ImageSourceTexture : public ImageSource {
 		glPixelStorei( GL_PACK_ALIGNMENT, 1 );
 		glGetTexImage( texture.getTarget(), 0, format, dataType, mData.get() );
 #endif
+
+		// invert rowbytes to accommodate a top-down texture as necessary
+		if( ! texture.isTopDown() )
+			mRowBytes = -mRowBytes;
 	}
 
 	void load( ImageTargetRef target ) {
@@ -1222,6 +1226,8 @@ class ImageSourceTexture : public ImageSource {
 		ImageSource::RowFunc func = setupRowFunc( target );
 		
 		const uint8_t *data = mData.get();
+		if( mRowBytes < 0 )
+			data = data + ( mHeight - 1 ) * (-mRowBytes);
 		for( int32_t row = 0; row < mHeight; ++row ) {
 			((*this).*func)( target, row, data );
 			data += mRowBytes;
