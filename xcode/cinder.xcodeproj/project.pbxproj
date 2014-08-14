@@ -1495,7 +1495,6 @@
 		111A5EFA191F726A005C3166 /* DeviceManagerCoreAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceManagerCoreAudio.h; sourceTree = "<group>"; };
 		111A5EFB191F726A005C3166 /* FileCoreAudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileCoreAudio.h; sourceTree = "<group>"; };
 		111A5EFC191F726A005C3166 /* Context.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Context.h; sourceTree = "<group>"; };
-		111A5EFD191F726A005C3166 /* Debug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Debug.h; sourceTree = "<group>"; };
 		111A5EFE191F726A005C3166 /* DelayNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DelayNode.h; sourceTree = "<group>"; };
 		111A5EFF191F726A005C3166 /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
 		111A5F01191F726A005C3166 /* Biquad.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Biquad.h; sourceTree = "<group>"; };
@@ -2502,7 +2501,6 @@
 				111A5EF4191F726A005C3166 /* Buffer.h */,
 				111A5EF5191F726A005C3166 /* ChannelRouterNode.h */,
 				111A5EFC191F726A005C3166 /* Context.h */,
-				111A5EFD191F726A005C3166 /* Debug.h */,
 				111A5EFE191F726A005C3166 /* DelayNode.h */,
 				111A5EFF191F726A005C3166 /* Device.h */,
 				111A5F09191F726A005C3166 /* Exception.h */,
