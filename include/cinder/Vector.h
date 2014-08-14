@@ -51,15 +51,6 @@ using glm::vec3;
 using glm::vec4;
 
 template<uint8_t DIM,typename T> struct VECDIM { };
-template<> struct VECDIM<2,float> { typedef glm::vec2	TYPE; };
-template<> struct VECDIM<3,float> { typedef Vec3f	TYPE; };
-template<> struct VECDIM<4,float> { typedef Vec4f	TYPE; };
-template<> struct VECDIM<2,double> { typedef glm::dvec2	TYPE; };
-template<> struct VECDIM<3,double> { typedef Vec3d	TYPE; };
-template<> struct VECDIM<4,double> { typedef Vec4d	TYPE; };
-template<> struct VECDIM<2,int> { typedef glm::ivec2	TYPE; };
-template<> struct VECDIM<3,int> { typedef Vec3i	TYPE; };
-template<> struct VECDIM<4,int> { typedef Vec4i	TYPE; };
 
 //!  \cond
 template<typename T>
@@ -88,7 +79,7 @@ struct VEC3CONV {
 
 template<typename T> class Vec3;
 
-/*
+#if 0
 template<typename T>
 class Vec2
 {
@@ -339,7 +330,7 @@ class Vec2
 	static Vec2<T> NaN()   { return Vec2<T>( math<T>::NaN(), math<T>::NaN() ); }
 };
 
-*/
+#endif
 
 template<typename T>
 class Vec3
@@ -661,7 +652,7 @@ public:
 		Vec3<T> r2 = tangentA.slerp( t, tangentB );
 		return r1.slerp( 2 * t * (1-t), r2 );
 	}
-
+#if 0
 	// GLSL inspired swizzling functions.
 	Vec2<T> xx() const { return Vec2<T>(x, x); }
 	Vec2<T> xy() const { return Vec2<T>(x, y); }
@@ -700,6 +691,7 @@ public:
 	Vec3<T> zzx() const { return Vec3<T>(z, z, x); }
 	Vec3<T> zzy() const { return Vec3<T>(z, z, y); }
 	Vec3<T> zzz() const { return Vec3<T>(z, z, z); }
+#endif
 
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec3<T> rhs )
 	{
@@ -981,6 +973,7 @@ class Vec4
 		return r1.slerp( 2 * t * (1-t), r2 );
 	}
 
+#if 0
 	// GLSL inspired swizzling functions.
 	Vec2<T> xx() const { return Vec2<T>(x, x); }
 	Vec2<T> xy() const { return Vec2<T>(x, y); }
@@ -1276,6 +1269,7 @@ class Vec4
 	Vec4<T> wwwy() const { return Vec4<T>(w, w, w, y); }
 	Vec4<T> wwwz() const { return Vec4<T>(w, w, w, z); }
 	Vec4<T> wwww() const { return Vec4<T>(w, w, w, w); }
+#endif
 
 	friend std::ostream& operator<<( std::ostream& lhs, const Vec4<T>& rhs )
 	{
@@ -1292,48 +1286,48 @@ class Vec4
 };
 
 //! Converts a coordinate from rectangular (Cartesian) coordinates to polar coordinates of the form (radius, theta)
-template<typename T>
-Vec2<T> toPolar( Vec2<T> car )
-{
-	const T epsilon = (T)0.0000001;
-	T theta;
-	if( math<T>::abs( car.x ) < epsilon ) { // x == 0
-		if( math<T>::abs( car.y ) < epsilon ) theta = 0;
-		else if( car.y > 0 ) theta = (T)M_PI / 2;
-		else theta = ( (T)M_PI * 3 ) / 2;
-	}
-	else if ( car.x > 0 ) {
-		if( car.y < 0 ) theta = math<T>::atan( car.y / car.x ) + 2 * (T)M_PI;
-		else theta = math<T>::atan( car.y / car.x );
-	}
-	else // car.x < 0
-		theta = (math<T>::atan( car.y / car.x ) + M_PI );
+//template<typename T>
+//Vec2<T> toPolar( Vec2<T> car )
+//{
+//	const T epsilon = (T)0.0000001;
+//	T theta;
+//	if( math<T>::abs( car.x ) < epsilon ) { // x == 0
+//		if( math<T>::abs( car.y ) < epsilon ) theta = 0;
+//		else if( car.y > 0 ) theta = (T)M_PI / 2;
+//		else theta = ( (T)M_PI * 3 ) / 2;
+//	}
+//	else if ( car.x > 0 ) {
+//		if( car.y < 0 ) theta = math<T>::atan( car.y / car.x ) + 2 * (T)M_PI;
+//		else theta = math<T>::atan( car.y / car.x );
+//	}
+//	else // car.x < 0
+//		theta = (math<T>::atan( car.y / car.x ) + M_PI );
+//
+//	return Vec2<T>( car.length(), theta );
+//}
+//
+////! Converts a coordinate from polar coordinates of the form (radius, theta) to rectangular coordinates
+//template<typename T>
+//Vec2<T> fromPolar( Vec2<T> pol )
+//{
+//	return Vec2<T>( math<T>::cos( pol.y ) *  pol.x , math<T>::sin( pol.y ) *  pol.x );
+//}
 
-	return Vec2<T>( car.length(), theta );
-}
-
-//! Converts a coordinate from polar coordinates of the form (radius, theta) to rectangular coordinates
-template<typename T>
-Vec2<T> fromPolar( Vec2<T> pol )
-{
-	return Vec2<T>( math<T>::cos( pol.y ) *  pol.x , math<T>::sin( pol.y ) *  pol.x );
-}
-
-template<typename T,typename Y> inline Vec2<T> operator *( Y s, const Vec2<T> &v ) { return Vec2<T>( v.x * s, v.y * s ); }
-template<typename T,typename Y> inline Vec2<T> operator *( const Vec2<T> &v, Y s ) { return Vec2<T>( v.x * s, v.y * s ); }
+//template<typename T,typename Y> inline Vec2<T> operator *( Y s, const Vec2<T> &v ) { return Vec2<T>( v.x * s, v.y * s ); }
+//template<typename T,typename Y> inline Vec2<T> operator *( const Vec2<T> &v, Y s ) { return Vec2<T>( v.x * s, v.y * s ); }
 template<typename T,typename Y> inline Vec3<T> operator *( Y s, const Vec3<T> &v ) { return Vec3<T>( v.x * s, v.y * s, v.z * s ); }
 template<typename T,typename Y> inline Vec3<T> operator *( const Vec3<T> &v, Y s ) { return Vec3<T>( v.x * s, v.y * s, v.z * s ); }
 template<typename T,typename Y> inline Vec4<T> operator *( Y s, const Vec4<T> &v ) { return Vec4<T>( v.x * s, v.y * s, v.z * s, v.w * s ); }
 template<typename T,typename Y> inline Vec4<T> operator *( const Vec4<T> &v, Y s ) { return Vec4<T>( v.x * s, v.y * s, v.z * s, v.w * s ); }
 
-template <typename T> T dot( const Vec2<T>& a, const Vec2<T>& b ) { return a.dot( b ); }
+//template <typename T> T dot( const Vec2<T>& a, const Vec2<T>& b ) { return a.dot( b ); }
 template <typename T> T dot( const Vec3<T>& a, const Vec3<T>& b ) { return a.dot( b ); }
 template <typename T> T dot( const Vec4<T>& a, const Vec4<T>& b ) { return a.dot( b ); }
 
 template <typename T> Vec3<T> cross( const Vec3<T>& a, const Vec3<T>& b ) { return a.cross( b ); }
 template <typename T> Vec4<T> cross( const Vec4<T>& a, const Vec4<T>& b ) { return a.cross( b ); }
 
-template <typename T> bool isNaN( const Vec2<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ); }
+//template <typename T> bool isNaN( const Vec2<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ); }
 template <typename T> bool isNaN( const Vec3<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ); }
 template <typename T> bool isNaN( const Vec4<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ) || std::isnan( a.w ); }
 
@@ -1349,6 +1343,16 @@ typedef Vec3<double>	Vec3d;
 typedef Vec4<int>		Vec4i;
 typedef Vec4<float>		Vec4f;
 typedef Vec4<double>	Vec4d;
+
+template<> struct VECDIM<2,float> { typedef glm::vec2	TYPE; };
+template<> struct VECDIM<3,float> { typedef Vec3f	TYPE; };
+template<> struct VECDIM<4,float> { typedef Vec4f	TYPE; };
+template<> struct VECDIM<2,double> { typedef glm::dvec2	TYPE; };
+template<> struct VECDIM<3,double> { typedef Vec3d	TYPE; };
+template<> struct VECDIM<4,double> { typedef Vec4d	TYPE; };
+template<> struct VECDIM<2,int> { typedef glm::ivec2	TYPE; };
+template<> struct VECDIM<3,int> { typedef Vec3i	TYPE; };
+template<> struct VECDIM<4,int> { typedef Vec4i	TYPE; };
 
 inline glm::vec3 toGlm( const Vec3f &v ) { return glm::vec3( v.x, v.y, v.z ); }
 inline Vec3f fromGlm( const glm::vec3 &v ) { return Vec3f( v.x, v.y, v.z ); }

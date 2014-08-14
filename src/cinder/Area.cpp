@@ -27,6 +27,7 @@
 using std::pair;
 
 namespace cinder {
+
 Area::Area( const Vec2i &UL, const Vec2i &LR )
 {
 	set( UL.x, UL.y, LR.x, LR.y );
@@ -130,7 +131,7 @@ void Area::include( const Vec2i &point )
 	if( y2 < point.y ) y2 = point.y;
 }
 
-void Area::include( const std::vector<Vec2i > &points )
+void Area::include( const std::vector<Vec2i> &points )
 {
 	for( size_t s = 0; s < points.size(); ++s )
 		include( points[s] );
@@ -140,79 +141,6 @@ void Area::include( const Area &area )
 {
 	include( Vec2i( area.x1, area.y1 ) );
 	include( Vec2i( area.x2, area.y2 ) );
-}
-
-template<typename Y>
-float Area::distance( const Vec2<Y> &pt ) const
-{
-	float squaredDistance = 0;
-	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
-	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
-	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
-	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
-	
-	if( squaredDistance > 0 )
-		return math<float>::sqrt( squaredDistance );
-	else
-		return 0;
-}
-
-template<typename Y>
-float Area::distanceSquared( const Vec2<Y> &pt ) const
-{
-	float squaredDistance = 0;
-	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
-	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
-	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
-	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
-	
-	return squaredDistance;
-}
-
-float Area::distance( const ivec2 &pt ) const
-{
-	float squaredDistance = 0;
-	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
-	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
-	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
-	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
-	
-	if( squaredDistance > 0 )
-		return math<float>::sqrt( squaredDistance );
-	else
-		return 0;	
-}
-
-float Area::distanceSquared( const ivec2 &pt ) const
-{
-	float squaredDistance = 0;
-	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
-	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
-	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
-	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
-	
-	return squaredDistance;
-}
-
-template<typename Y>
-Vec2<Y>	Area::closestPoint( const Vec2<Y> &pt ) const
-{
-	Vec2<Y> result = pt;
-	if( pt.x < (Y)x1 ) result.x = (Y)x1;
-	else if( pt.x > (Y)x2 ) result.x = (Y)x2;
-	if( pt.y < (Y)y1 ) result.y = (Y)y1;
-	else if( pt.y > (Y)y2 ) result.y = (Y)y2;
-	return result;
-}
-
-ivec2 Area::closestPoint( const ivec2 &pt ) const
-{
-	ivec2 result = pt;
-	if( pt.x < (int32_t)x1 ) result.x = (int32_t)x1;
-	else if( pt.x > (int32_t)x2 ) result.x = (int32_t)x2;
-	if( pt.y < (int32_t)y1 ) result.y = (int32_t)y1;
-	else if( pt.y > (int32_t)y2 ) result.y = (int32_t)y2;
-	return result;
 }
 
 bool Area::operator<( const Area &aArea ) const
@@ -268,8 +196,63 @@ pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcAre
 	return std::make_pair( clippedSrc, newDstLT );
 }
 
-template float Area::distance( const Vec2f &pt ) const;
-template float Area::distanceSquared( const Vec2f &pt ) const;
-template Vec2f Area::closestPoint( const Vec2f &pt ) const;
+namespace {
+
+template<typename Vec2T>
+float calcDistanceSquared( const Area &area, const Vec2T &pt )
+{
+	float result = 0;
+	if( pt.x < area.x1 )
+		result += ( area.x1 - pt.x ) * ( area.x1 - pt.x );
+	else if( pt.x > area.x2 )
+		result += ( pt.x - area.x2 ) * ( pt.x - area.x2 );
+	if( pt.y < area.y1 )
+		result += ( area.y1 - pt.y ) * ( area.y1 - pt.y );
+	else if( pt.y > area.y2 )
+		result += ( pt.y - area.y2 ) * ( pt.y - area.y2 );
+
+	return result;
+}
+
+template<typename Vec2T>
+float calcDistance( const Area &area, const Vec2T &pt )
+{
+	float result = calcDistanceSquared( area, pt );
+	if( result > 0 )
+		return math<float>::sqrt( result );
+	else
+		return 0;
+}
+
+template<typename Vec2T>
+Vec2T calcClosestPoint( const Area &area, const Vec2T &pt )
+{
+	typedef typename Vec2T::value_type ValueT;
+
+	auto result = pt;
+	if( pt.x < (ValueT)area.x1 )
+		result.x = (ValueT)area.x1;
+	else if( pt.x > (ValueT)area.x2 )
+		result.x = (ValueT)area.x2;
+	if( pt.y < (ValueT)area.y1 )
+		result.y = (ValueT)area.y1;
+	else if( pt.y > (ValueT)area.y2 )
+		result.y = (ValueT)area.y2;
+	return result;
+}
+
+} // anonymous namespace
+
+float Area::distance( const vec2 &pt ) const			{ return calcDistance( *this, pt ); }
+float Area::distance( const ivec2 &pt ) const			{ return calcDistance( *this, pt ); }
+float Area::distance( const dvec2 &pt ) const			{ return calcDistance( *this, pt ); }
+
+float Area::distanceSquared( const vec2 &pt ) const		{ return calcDistanceSquared( *this, pt ); }
+float Area::distanceSquared( const ivec2 &pt ) const	{ return calcDistanceSquared( *this, pt ); }
+float Area::distanceSquared( const dvec2 &pt ) const	{ return calcDistanceSquared( *this, pt ); }
+
+vec2 Area::closestPoint( const vec2 &pt ) const			{ return calcClosestPoint( *this, pt ); }
+ivec2 Area::closestPoint( const ivec2 &pt ) const		{ return calcClosestPoint( *this, pt ); }
+dvec2 Area::closestPoint( const dvec2 &pt ) const		{ return calcClosestPoint( *this, pt ); }
 
 } // namespace cinder

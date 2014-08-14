@@ -36,7 +36,7 @@ RectT<T>::RectT( const Area &area )
 }
 
 template<typename T>
-RectT<T>::RectT( const std::vector<Vec2<T> > &points )
+RectT<T>::RectT( const std::vector<Vec2T> &points )
 {
 	x1 = numeric_limits<T>::max();
 	x2 = -numeric_limits<T>::max();
@@ -110,7 +110,7 @@ RectT<T> RectT<T>::getClipBy( const RectT &clip ) const
 }
 
 template<typename T>
-void RectT<T>::offset( const Vec2<T> &offset )
+void RectT<T>::offset( const Vec2T &offset )
 {
 	x1 += offset.x;
 	x2 += offset.x;
@@ -119,7 +119,7 @@ void RectT<T>::offset( const Vec2<T> &offset )
 }
 
 template<typename T>
-void RectT<T>::inflate( const Vec2<T> &amount )
+void RectT<T>::inflate( const Vec2T &amount )
 {
 	x1 -= amount.x;
 	x2 += amount.x;
@@ -128,7 +128,7 @@ void RectT<T>::inflate( const Vec2<T> &amount )
 }
 
 template<typename T>
-RectT<T> RectT<T>::inflated( const Vec2<T> &amount ) const
+RectT<T> RectT<T>::inflated( const Vec2T &amount ) const
 {
 	RectT<T> result( *this );
 	result.inflate( amount );
@@ -136,11 +136,11 @@ RectT<T> RectT<T>::inflated( const Vec2<T> &amount ) const
 }
 
 template<typename T>
-void RectT<T>::scaleCentered( const Vec2<T> &scale )
+void RectT<T>::scaleCentered( const Vec2T &scale )
 {
-	T halfWidth = getWidth() * scale.x / 2.0f;
-	T halfHeight = getHeight() * scale.y / 2.0f;
-	const Vec2<T> center( getCenter() );
+	const T halfWidth = getWidth() * scale.x / 2.0f;
+	const T halfHeight = getHeight() * scale.y / 2.0f;
+	const auto center = getCenter();
 	x1 = center.x - halfWidth;
 	x2 = center.x + halfWidth;
 	y1 = center.y - halfHeight;
@@ -150,9 +150,9 @@ void RectT<T>::scaleCentered( const Vec2<T> &scale )
 template<typename T>
 void RectT<T>::scaleCentered( T scale )
 {
-	T halfWidth = getWidth() * scale / 2;
-	T halfHeight = getHeight() * scale / 2;
-	const Vec2<T> center( getCenter() );
+	const T halfWidth = getWidth() * scale / 2;
+	const T halfHeight = getHeight() * scale / 2;
+	const auto center = getCenter();
 	x1 = center.x - halfWidth;
 	x2 = center.x + halfWidth;
 	y1 = center.y - halfHeight;
@@ -162,9 +162,9 @@ void RectT<T>::scaleCentered( T scale )
 template<typename T>
 RectT<T> RectT<T>::scaledCentered( T scale ) const
 {
-	T halfWidth = getWidth() * scale / 2;
-	T halfHeight = getHeight() * scale / 2;
-	const Vec2<T> center( getCenter() );
+	const T halfWidth = getWidth() * scale / 2;
+	const T halfHeight = getHeight() * scale / 2;
+	const auto center = getCenter();
 	return RectT<T>( center.x - halfWidth, center.y - halfHeight, center.x + halfWidth, center.y + halfHeight );
 }
 
@@ -178,7 +178,7 @@ void RectT<T>::scale( T s )
 }
 
 template<typename T>
-void RectT<T>::scale( const Vec2<T> &scale )
+void RectT<T>::scale( const Vec2T &scale )
 {
 	x1 *= scale.x;
 	y1 *= scale.y;
@@ -193,7 +193,7 @@ RectT<T> RectT<T>::scaled( T s ) const
 }
 
 template<typename T>
-RectT<T> RectT<T>::scaled( const Vec2<T> &scale ) const
+RectT<T> RectT<T>::scaled( const Vec2T &scale ) const
 {
 	return RectT<T>( x1 * scale.x, y1 * scale.y, x2 * scale.x, y2 * scale.y );
 }
@@ -206,10 +206,10 @@ RectT<T> RectT<T>::transformCopy( const MatrixAffine2<T> &matrix ) const
 	result.x2 = -numeric_limits<T>::max();
 	result.y1 = numeric_limits<T>::max();
 	result.y2 = -numeric_limits<T>::max();
-	result.include( matrix.transformPoint( Vec2<T>( x1, y1 ) ) );
-	result.include( matrix.transformPoint( Vec2<T>( x2, y1 ) ) );
-	result.include( matrix.transformPoint( Vec2<T>( x2, y2 ) ) );
-	result.include( matrix.transformPoint( Vec2<T>( x1, y2 ) ) );
+	result.include( matrix.transformPoint( Vec2T( x1, y1 ) ) );
+	result.include( matrix.transformPoint( Vec2T( x2, y1 ) ) );
+	result.include( matrix.transformPoint( Vec2T( x2, y2 ) ) );
+	result.include( matrix.transformPoint( Vec2T( x1, y2 ) ) );
 	
 	return result;
 }
@@ -224,7 +224,7 @@ bool RectT<T>::intersects( const RectT<T> &rect ) const
 }
 
 template<typename T>
-T RectT<T>::distance( const Vec2<T> &pt ) const
+T RectT<T>::distance( const Vec2T &pt ) const
 {
 	T squaredDistance = 0;
 	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
@@ -239,7 +239,7 @@ T RectT<T>::distance( const Vec2<T> &pt ) const
 }
 
 template<typename T>
-T RectT<T>::distanceSquared( const Vec2<T> &pt ) const
+T RectT<T>::distanceSquared( const Vec2T &pt ) const
 {
 	T squaredDistance = 0;
 	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
@@ -251,9 +251,9 @@ T RectT<T>::distanceSquared( const Vec2<T> &pt ) const
 }
 
 template<typename T>
-Vec2<T>	RectT<T>::closestPoint( const Vec2<T> &pt ) const
+typename RectT<T>::Vec2T RectT<T>::closestPoint( const Vec2T &pt ) const
 {
-	Vec2<T> result = pt;
+	auto result = pt;
 	if( pt.x < x1 ) result.x = x1;
 	else if( pt.x > x2 ) result.x = x2;
 	if( pt.y < y1 ) result.y = y1;
@@ -262,7 +262,7 @@ Vec2<T>	RectT<T>::closestPoint( const Vec2<T> &pt ) const
 }
 
 template<typename T>
-void RectT<T>::include( const Vec2<T> &point )
+void RectT<T>::include( const Vec2T &point )
 {
 	if( x1 > point.x ) x1 = point.x;
 	if( x2 < point.x ) x2 = point.x;
@@ -271,7 +271,7 @@ void RectT<T>::include( const Vec2<T> &point )
 }
 
 template<typename T>
-void RectT<T>::include( const std::vector<Vec2<T> > &points )
+void RectT<T>::include( const std::vector<Vec2T> &points )
 {
 	for( size_t s = 0; s < points.size(); ++s )
 		include( points[s] );
@@ -280,8 +280,8 @@ void RectT<T>::include( const std::vector<Vec2<T> > &points )
 template<typename T>
 void RectT<T>::include( const RectT<T> &rect )
 {
-	include( Vec2<T>( rect.x1, rect.y1 ) );
-	include( Vec2<T>( rect.x2, rect.y2 ) );
+	include( Vec2T( rect.x1, rect.y1 ) );
+	include( Vec2T( rect.x2, rect.y2 ) );
 }
 
 template<typename T>
