@@ -337,7 +337,7 @@ class Texture2d : public TextureBase {
   public:
 	struct Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_2D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
-		Format() : TextureBase::Format() {}
+		Format() : TextureBase::Format(), mTopDown( false ) {}
 
 		//! Chaining functions for Format class.
 		Format& target( GLenum target ) { mTarget = target; return *this; }
@@ -357,18 +357,22 @@ class Texture2d : public TextureBase {
 		Format& pixelDataFormat( GLenum pixelDataFormat ) { mPixelDataFormat = pixelDataFormat; return *this; }
 		//! Corresponds to the 'type' parameter of glTexImage*(). Defaults to \c GL_UNSIGNED_BYTE
 		Format& pixelDataType( GLenum pixelDataType ) { mPixelDataType = pixelDataType; return *this; }
-		// Specifies the texture comparison mode for currently bound depth textures.
+		//! Specifies the texture comparison mode for currently bound depth textures.
 		Format& compareMode( GLenum compareMode ) { mCompareMode = compareMode; return *this; }
-		// Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE.
+		//! Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE.
 		Format& compareFunc( GLenum compareFunc ) { mCompareFunc = compareFunc; return *this; }		Format& swizzleMask( const std::array<GLint,4> &swizzleMask ) { setSwizzleMask( swizzleMask ); return *this; }
 		Format& swizzleMask( GLint r, GLint g, GLint b, GLint a ) { setSwizzleMask( r, g, b, a ); return *this; }
+		//! Specifies whether the Texture should store scanlines top-down in memory. Default is \c false.
+		Format& topDown( bool topDown = true ) { mTopDown = topDown; return *this; }
 #if ! defined( CINDER_GL_ES )
 		Format& intermediatePbo( const PboRef &intermediatePbo ) { setIntermediatePbo( intermediatePbo ); return *this; }
 #endif		
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 
-		friend Texture;
+	  protected:
+		bool	mTopDown;
+		friend	Texture;
 	};
 	
 	//! Constructs a texture of size(\a width, \a height) and allocates storage.
@@ -396,8 +400,8 @@ class Texture2d : public TextureBase {
 	static Texture2dRef	createFromDds( const DataSourceRef &dataSource, const Format &format = Format() );
 #endif
 
-	/** Designed to accommodate texture where not all pixels are "clean", meaning the maximum texture coordinate value may not be 1.0 (or the texture's width in \c GL_TEXTURE_RECTANGLE_ARB) **/
-	void			setCleanTexCoords( float maxU, float maxV );
+	//! Allows specification of some size other than the Texture's true size for cases where not all pixels in the Texture are usable / "clean"; common in video decoding pipelines in particular. Specified in pixels, and relative to whichever origin is appropriate to the Texture's "top-downness".
+	void			setCleanSize( GLint cleanWidth, GLint cleanHeight );
 	
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's.
 	void			update( const Surface &surface, int mipLevel = 0 );
@@ -431,40 +435,32 @@ class Texture2d : public TextureBase {
 	//! Replaces the pixels (and data store) of a Texture with contents of \a textureData. Use update() instead if the bounds of \a this match those of \a textureData
 	void			replace( const TextureData &textureData );
 
-	//! calculates and sets the total levels of mipmap
+	//! Returns the number of mip levels the texture bounds require
 	GLint			getNumMipLevels() const;
-	//! the width of the texture in pixels
-	GLint			getWidth() const;
-	//! the height of the texture in pixels
-	GLint			getHeight() const;
-	//! the width of the texture in pixels accounting for its "clean" area - \sa getCleanBounds()
+	//! Returns the width of the texture in pixels, ignoring clean bounds.
+	GLint			getWidth() const { return mWidth; }
+	//! Returns the height of the texture in pixels, ignoring clean bounds.
+	GLint			getHeight() const { return mHeight; }
+	//! Returns the width of the texture in pixels accounting for its clean bounds - \sa getCleanBounds()
 	GLint			getCleanWidth() const;
-	//! the height of the texture in pixels accounting for its "clean" area - \sa getCleanBounds()
+	//! Returns the height of the texture in pixels accounting for its clean bounds - \sa getCleanBounds()
 	GLint			getCleanHeight() const;
-	//! the size of the texture in pixels
+	//! Returns size of the texture in pixels, igonring clean bounds
 	Vec2i			getSize() const { return Vec2i( getWidth(), getHeight() ); }
-	//! the aspect ratio of the texture (width / height)
+	//! Returns the aspect ratio of the texture (width / height), ignoring clean bounds.
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
-	//! the Area defining the Texture's bounds in pixels: [0,0]-[width,height]
+	//! Returns the Area defining the Texture's bounds in pixels, ignoring clean bounds.
 	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
-	//! the Area defining the Texture's clean pixel bounds in pixels: [0,0]-[width*maxU,height*maxV]
+	//! Returns the Area defining the Texture's bounds in pixels, accounting for clean bounds.
 	Area			getCleanBounds() const { return Area( 0, 0, getCleanWidth(), getCleanHeight() ); }
-	//! whether the texture has an alpha channel
+	//! Returns whether the texture has an alpha channel
 	bool			hasAlpha() const;
-	//!	These return the right thing even when the texture coordinate space is flipped
-	float			getLeft() const;
-	float			getRight() const;
-	float			getTop() const;
-	float			getBottom() const;
-	//!	These do not correspond to "top" and "right" when the texture is flipped
-	float			getMaxU() const;
-	float			getMaxV() const;
-	//! Returns the UV coordinates which correspond to the pixels contained in \a area. Does not compensate for clean coordinates. Does compensate for flipping.
+	//! Returns the UV coordinates which correspond to the pixels contained in \a area (as expressed with an upper-left origin). Accounts for clean bounds, top-down storage and target (0-1 for \c GL_TEXTURE_2D and pixel for GL_TEXTURE_RECTANGLE)
 	Rectf			getAreaTexCoords( const Area &area ) const;
-	//!	whether the texture is flipped vertically
-	bool			isFlipped() const { return mFlipped; }
-	//!	Marks the texture as being flipped vertically or not
-	void			setFlipped( bool aFlipped = true ) { mFlipped = aFlipped; }
+	//! Returns whether the scanlines of the image are stored top-down in memory relative to the base address. Default is \c false.
+	bool			isTopDown() const { return mTopDown; }
+	//!	Marks whether the scanlines of the image are stored top-down in memory relative to the base address. Default is \c false.
+	void			setTopDown( bool topDown = true ) { mTopDown = topDown; }
 	
 	//! Returns an ImageSource pointing to this Texture
 	ImageSourceRef	createSource();
@@ -491,7 +487,8 @@ class Texture2d : public TextureBase {
 
   protected:
 	virtual void	printDims( std::ostream &os ) const override;
-
+	
+	void	initParams( Format &format, GLint defaultInternalFormat );
 	void	initData( const unsigned char *data, int unpackRowLength, GLenum dataFormat, GLenum type, const Format &format );
 	void	initData( const float *data, GLint dataFormat, const Format &format );
 	void	initData( const ImageSourceRef &imageSource, const Format &format );
@@ -501,8 +498,7 @@ class Texture2d : public TextureBase {
 	void	initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray );
 
 	mutable GLint	mWidth, mHeight, mCleanWidth, mCleanHeight;
-	float			mMaxU, mMaxV;
-	bool			mFlipped;
+	bool			mTopDown;
 	
 	friend class TextureCache;
 };

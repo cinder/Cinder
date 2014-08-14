@@ -59,9 +59,9 @@ class ImageTargetGlTexture : public ImageTarget {
 #endif
 	
 	virtual bool	hasAlpha() const { return mHasAlpha; }
-	virtual void*	getRowPointer( int32_t row ) { return mData + row * mRowInc; }
+	virtual void*	getRowPointer( int32_t row );
 	
-	const void*		getData() const { return mData; }
+	void*			getData() const { return mDataBaseAddress; }
 	
   private:
 	ImageTargetGlTexture( const Texture *texture, ImageIo::ChannelOrder &channelOrder, bool isGray, bool hasAlpha, void *intermediateData );
@@ -69,9 +69,9 @@ class ImageTargetGlTexture : public ImageTarget {
 	const Texture		*mTexture;
 	bool				mHasAlpha;
 	uint8_t				mPixelInc;
-	T					*mData;
+	T					*mDataBaseAddress;
 	unique_ptr<T[]>		mDataStore; // may be NULL
-	int					mRowInc;
+	int32_t				mRowInc;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -494,7 +494,7 @@ Texture2dRef Texture2d::create( const TextureData &data, const Format &format )
 Texture2d::Texture2d( int width, int height, Format format )
 	: mWidth( width ), mHeight( height ),
 	mCleanWidth( width ), mCleanHeight( height ),
-	mFlipped( false )
+	mTopDown( false )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -506,7 +506,7 @@ Texture2d::Texture2d( int width, int height, Format format )
 Texture2d::Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format )
 	: mWidth( width ), mHeight( height ),
 	mCleanWidth( width ), mCleanHeight( height ),
-	mFlipped( false )
+	mTopDown( false )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -518,7 +518,7 @@ Texture2d::Texture2d( const unsigned char *data, int dataFormat, int width, int 
 Texture2d::Texture2d( const Surface8u &surface, Format format )
 	: mWidth( surface.getWidth() ), mHeight( surface.getHeight() ),
 	mCleanWidth( surface.getWidth() ), mCleanHeight( surface.getHeight() ),
-	mFlipped( false )
+	mTopDown( false )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -544,7 +544,7 @@ Texture2d::Texture2d( const Surface8u &surface, Format format )
 Texture2d::Texture2d( const Surface32f &surface, Format format )
 	: mWidth( surface.getWidth() ), mHeight( surface.getHeight() ),
 	mCleanWidth( surface.getWidth() ), mCleanHeight( surface.getHeight() ),
-	mFlipped( false )
+	mTopDown( false )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -560,7 +560,7 @@ Texture2d::Texture2d( const Surface32f &surface, Format format )
 Texture2d::Texture2d( const Channel8u &channel, Format format )
 	: mWidth( channel.getWidth() ), mHeight( channel.getHeight() ),
 	mCleanWidth( channel.getWidth() ), mCleanHeight( channel.getHeight() ),
-	mFlipped( false )
+	mTopDown( false )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -589,7 +589,7 @@ Texture2d::Texture2d( const Channel8u &channel, Format format )
 Texture2d::Texture2d( const Channel32f &channel, Format format )
 	: mWidth( channel.getWidth() ), mHeight( channel.getHeight() ),
 	mCleanWidth( channel.getWidth() ), mCleanHeight( channel.getHeight() ),
-	mFlipped( false )
+	mTopDown( false )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -619,7 +619,7 @@ Texture2d::Texture2d( const Channel32f &channel, Format format )
 
 Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 	: mWidth( -1 ), mHeight( -1 ), mCleanWidth( -1 ), mCleanHeight( -1 ),
-	mFlipped( false )
+	mTopDown( false )
 {
 	GLint defaultInternalFormat;	
 	// Set the internal format based on the image's color space
@@ -653,20 +653,13 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 Texture2d::Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose )
 	: TextureBase( target, textureId, -1 ), mWidth( width ), mHeight( height ),
 	mCleanWidth( width ), mCleanHeight( height ),
-	mFlipped( false )
+	mTopDown( false )
 {
 	mDoNotDispose = doNotDispose;
-	if( mTarget == GL_TEXTURE_2D ) {
-		mMaxU = mMaxV = 1.0f;
-	}
-	else {
-		mMaxU = (float)mWidth;
-		mMaxV = (float)mHeight;
-	}
 }
 
 Texture2d::Texture2d( const TextureData &data, Format format )
-	: mFlipped( false )
+	: mTopDown( false )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -688,14 +681,6 @@ void Texture2d::initData( const unsigned char *data, int unpackRowLength, GLenum
 {
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	
-	if( mTarget == GL_TEXTURE_2D ) {
-		mMaxU = mMaxV = 1.0f;
-	}
-	else {
-		mMaxU = (float)mWidth;
-		mMaxV = (float)mHeight;
-	}
-	
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 	glTexImage2D( mTarget, 0, mInternalFormat, mWidth, mHeight, 0, dataFormat, type, data );
     
@@ -711,14 +696,6 @@ void Texture2d::initData( const unsigned char *data, int unpackRowLength, GLenum
 void Texture2d::initData( const float *data, GLint dataFormat, const Format &format )
 {
 	ScopedTextureBind tbs( mTarget, mTextureId );
-	
-	if( mTarget == GL_TEXTURE_2D ) {
-		mMaxU = mMaxV = 1.0f;
-	}
-	else {
-		mMaxU = (float)mWidth;
-		mMaxV = (float)mHeight;
-	}
 	
 	if( data ) {
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -821,13 +798,6 @@ void Texture2d::initData( const ImageSourceRef &imageSource, const Format &forma
 	}
 	
 	ScopedTextureBind tbs( mTarget, mTextureId );	
-	if( mTarget == GL_TEXTURE_2D ) {
-		mMaxU = mMaxV = 1.0f;
-	}
-	else {
-		mMaxU = (float)mWidth;
-		mMaxV = (float)mHeight;
-	}
 	
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 #if ! defined( CINDER_GL_ES )
@@ -1022,18 +992,10 @@ int Texture2d::getNumMipLevels() const
 	return floor( std::log( std::max( mWidth, mHeight ) ) / std::log(2) ) + 1;
 }
 	
-void Texture2d::setCleanTexCoords( float maxU, float maxV )
+void Texture2d::setCleanSize( GLint cleanWidth, GLint cleanHeight )
 {
-	mMaxU = maxU;
-	mMaxV = maxV;
-	
-	if ( mTarget == GL_TEXTURE_2D ) {
-		mCleanWidth	= getWidth() * maxU;
-		mCleanHeight	= getHeight() * maxV;
-	} else {
-		mCleanWidth	= (int32_t)maxU;
-		mCleanHeight	= (int32_t)maxV;
-	}
+	mCleanWidth	= cleanWidth;
+	mCleanHeight = cleanHeight;
 }
 
 bool Texture2d::hasAlpha() const
@@ -1047,31 +1009,6 @@ bool Texture2d::hasAlpha() const
 			return false;
 		break;
 	}
-}
-
-float Texture2d::getLeft() const
-{
-	return 0.0f;
-}
-
-float Texture2d::getRight() const
-{
-	return mMaxU;
-}
-
-float Texture2d::getTop() const
-{
-	return ( mFlipped ) ? getMaxV() : 0.0f;
-}
-
-GLint Texture2d::getWidth() const
-{
-	return mWidth;
-}
-
-GLint Texture2d::getHeight() const
-{
-	return mHeight;
 }
 
 GLint Texture2d::getCleanWidth() const
@@ -1088,35 +1025,25 @@ Rectf Texture2d::getAreaTexCoords( const Area &area ) const
 {
 	Rectf result;
 	
-	if ( mTarget == GL_TEXTURE_2D ) {
-		result.x1 = area.x1 / (float)getWidth();
-		result.x2 = area.x2 / (float)getWidth();
-		result.y1 = area.y1 / (float)getHeight();
-		result.y2 = area.y2 / (float)getHeight();
-	} else {
+	if( mTarget == GL_TEXTURE_2D
+#if ! defined( CINDER_GL_ES )
+		|| mTarget == GL_TEXTURE_2D_MULTISAMPLE 
+#endif
+	   ) {
+		result.x1 = area.x1 / (float)getCleanWidth();
+		result.x2 = area.x2 / (float)getCleanWidth();
+		result.y1 = area.y1 / (float)getCleanHeight();
+		result.y2 = area.y2 / (float)getCleanHeight();
+	}
+	else {
 		result = Rectf( area );
 	}
 	
-	if ( mFlipped ) {
+	if( ! mTopDown ) {
 		std::swap( result.y1, result.y2 );
 	}
 	
 	return result;
-}
-
-float Texture2d::getBottom() const
-{
-	return ( mFlipped ) ? 0.0f : getMaxV();
-}
-
-float Texture2d::getMaxU() const
-{
-	return mMaxU;
-}
-
-float Texture2d::getMaxV() const
-{
-	return mMaxV;
 }
 
 std::ostream& operator<<( std::ostream &os, const TextureBase &rhs )
@@ -1146,6 +1073,12 @@ std::ostream& operator<<( std::ostream &os, const TextureBase &rhs )
 void Texture2d::printDims( std::ostream &os ) const
 {
 	os << mWidth << " x " << mHeight;
+}
+
+void Texture2d::initParams( Format &format, GLint defaultInternalFormat )
+{
+	mTopDown = format.mTopDown;
+	TextureBase::initParams( format, defaultInternalFormat );
 }
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -1488,10 +1421,10 @@ ImageTargetGlTexture<T>::ImageTargetGlTexture( const Texture *texture, ImageIo::
 	// allocate enough room to hold all these pixels if we haven't been passed a data*
 	if( ! intermediateDataStore ) {
 		mDataStore = std::unique_ptr<T[]>( new T[mTexture->getHeight() * mRowInc] );
-		mData = mDataStore.get();
+		mDataBaseAddress = mDataStore.get();
 	}
 	else
-		mData = reinterpret_cast<T*>( intermediateDataStore );
+		mDataBaseAddress = reinterpret_cast<T*>( intermediateDataStore );
 	
 	if( std::is_same<T,uint8_t>::value ) {
 		setDataType( ImageIo::UINT8 );
@@ -1505,6 +1438,15 @@ ImageTargetGlTexture<T>::ImageTargetGlTexture( const Texture *texture, ImageIo::
 	
 	setChannelOrder( channelOrder );
 	setColorModel( isGray ? ImageIo::CM_GRAY : ImageIo::CM_RGB );
+}
+
+template<typename T>
+void* ImageTargetGlTexture<T>::getRowPointer( int32_t row )
+{
+	if( mTexture->isTopDown() )
+		return mDataBaseAddress + row * mRowInc;
+	else
+		return mDataBaseAddress + ( mTexture->getHeight() - 1 - row ) * mRowInc;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1652,14 +1594,6 @@ void Texture2d::replace( const TextureData &textureData )
 	mCleanHeight = mHeight = textureData.getHeight();
 	mInternalFormat = textureData.getInternalFormat();
 
-	if( mTarget == GL_TEXTURE_2D ) {
-		mMaxU = mMaxV = 1.0f;
-	}
-	else {
-		mMaxU = (float)mWidth;
-		mMaxV = (float)mHeight;
-	}
-	
 	ScopedTextureBind bindScope( mTarget, mTextureId );
 	if( textureData.getUnpackAlignment() != 0 )
 		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
