@@ -97,11 +97,10 @@ void QuickTimeSampleApp::draw()
 
 	if( mFrameTexture ) {
 		Rectf centeredRect = Rectf( mFrameTexture->getBounds() ).getCenteredFit( getWindowBounds(), true );
-		gl::draw( mFrameTexture, centeredRect  );
+		gl::draw( mFrameTexture, centeredRect );
 	}
 
 	if( mInfoTexture ) {
-		glDisable( GL_TEXTURE_RECTANGLE_ARB );
 		gl::draw( mInfoTexture, Vec2f( 20, getWindowHeight() - 20 - mInfoTexture->getHeight() ) );
 	}
 }
