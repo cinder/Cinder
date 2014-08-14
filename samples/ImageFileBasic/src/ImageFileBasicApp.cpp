@@ -1,4 +1,5 @@
 ﻿#include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
 
@@ -16,7 +17,7 @@ class ImageFileBasicApp : public AppBasic {
 	void fileDrop( FileDropEvent event );	
 	void draw();
 	
-	gl::Texture		mTexture;	
+	gl::TextureRef		mTexture;
 };
 
 void ImageFileBasicApp::setup()
@@ -24,7 +25,7 @@ void ImageFileBasicApp::setup()
 	try {
 		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() ) {
-			mTexture = gl::Texture( loadImage( path ) );
+			mTexture = gl::Texture::create( loadImage( path ) );
 		}
 	}
 	catch( ... ) {
@@ -43,12 +44,12 @@ void ImageFileBasicApp::keyDown( KeyEvent event )
 	else if( event.getChar() == 'o' ) {
 		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() )
-			mTexture = gl::Texture( loadImage( path ) );
+			mTexture = gl::Texture::create( loadImage( path ) );
 	}
 	else if( event.getChar() == 's' ) {
 		fs::path path = getSaveFilePath();
 		if( ! path.empty() ) {
-			Surface s8( mTexture );
+			Surface s8( mTexture->createSource() );
 			writeImage( writeFile( path ), s8 );
 		}
 	}
@@ -57,7 +58,7 @@ void ImageFileBasicApp::keyDown( KeyEvent event )
 void ImageFileBasicApp::fileDrop( FileDropEvent event )
 {
 	try {
-		mTexture = gl::Texture( loadImage( event.getFile( 0 ) ) );
+		mTexture = gl::Texture::create( loadImage( event.getFile( 0 ) ) );
 	}
 	catch( ... ) {
 		console() << "unable to load the texture file!" << std::endl;
