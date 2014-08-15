@@ -27,7 +27,6 @@
 #include "cinder/Exception.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
-#include "cinder/BSpline.h"
 
 #include <set>
 
