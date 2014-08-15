@@ -209,7 +209,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	// get the glyph indices we'll need
 	set<Font::Glyph> glyphs = getNecessaryGlyphs( font, utf8Chars );
 	// determine the max glyph extents
-	Vec2i glyphExtents = Vec2f::zero();
+	Vec2i glyphExtents;
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
 		try {
 			Rectf bb = font.getGlyphBoundingBox( *glyphIt );
@@ -601,7 +601,7 @@ Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &opt
 		return result;
 	}
 	else {
-		return Vec2f::zero();
+		return vec2();
 	}
 #endif
 }

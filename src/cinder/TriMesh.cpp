@@ -674,9 +674,9 @@ void TriMesh::subdivide( int division, bool normalize )
 
 					// lambda closures for bilinear interpolation
 					auto lerpBilinear2 = [&] (const Vec2f &a, const Vec2f &b, const Vec2f &c) {
-						const Vec2f d = a.lerp( j * rcp, c );
-						const Vec2f e = b.lerp( j * rcp, c );
-						return d.lerp( i * div, e );
+						const vec2 d = mix( a, c, j * rcp );
+						const vec2 e = mix( b, c, j * rcp );
+						return mix( d, e, i * div );
 					};
 					
 					auto lerpBilinear3 = [&] (const Vec3f &a, const Vec3f &b, const Vec3f &c) {
@@ -862,7 +862,7 @@ void TriMesh::subdivide( int division, bool normalize )
 		if( mPositionsDims == 2 ) {
 			for( size_t i = 0; i < numVertices; ++i ) {
 				Vec2f &v = *(Vec2f*)(&mPositions[i*2]);
-				v.normalize();
+				v = glm::normalize( v );
 			}
 		}
 		else if( mPositionsDims == 3 ) {
@@ -1021,7 +1021,7 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		if( mTexCoords0Dims == 2 ) {
 			const Vec2f &a = *reinterpret_cast<const Vec2f*>(&mTexCoords0[indexA*mTexCoords0Dims]);
 			const Vec2f &b = *reinterpret_cast<const Vec2f*>(&mTexCoords0[indexB*mTexCoords0Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords0Dims == 3 ) {
@@ -1042,7 +1042,7 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		if( mTexCoords1Dims == 2 ) {
 			const Vec2f &a = *reinterpret_cast<const Vec2f*>(&mTexCoords1[indexA*mTexCoords1Dims]);
 			const Vec2f &b = *reinterpret_cast<const Vec2f*>(&mTexCoords1[indexB*mTexCoords1Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords1Dims == 3 ) {
@@ -1063,7 +1063,7 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		if( mTexCoords2Dims == 2 ) {
 			const Vec2f &a = *reinterpret_cast<const Vec2f*>(&mTexCoords2[indexA*mTexCoords2Dims]);
 			const Vec2f &b = *reinterpret_cast<const Vec2f*>(&mTexCoords2[indexB*mTexCoords2Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords2Dims == 3 ) {
@@ -1084,7 +1084,7 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		if( mTexCoords3Dims == 2 ) {
 			const Vec2f &a = *reinterpret_cast<const Vec2f*>(&mTexCoords3[indexA*mTexCoords3Dims]);
 			const Vec2f &b = *reinterpret_cast<const Vec2f*>(&mTexCoords3[indexB*mTexCoords3Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords3Dims == 3 ) {
@@ -1759,7 +1759,7 @@ TriMesh TriMesh::createTorus( const Vec2i &resolution, float ratio )
 Rectf TriMesh2d::calcBoundingBox() const
 {
 	if( mPositions.empty() )
-		return Rectf( Vec2f::zero(), Vec2f::zero() );
+		return Rectf( vec2(), vec2() );
 
 	Vec2f min(mPositions[0]), max(mPositions[0]);
 	for( size_t i = 1; i < mPositions.size(); ++i ) {

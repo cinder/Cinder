@@ -392,7 +392,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 				else
 					mOutputNormals.push_back( mInternalNormals[group.mFaces[f].mNormalIndices[v]] );
 				if( ! group.mHasTexCoords )
-					mOutputTexCoords.push_back( Vec2f::zero() );
+					mOutputTexCoords.push_back( vec2() );
 				else
 					mOutputTexCoords.push_back( mInternalTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
                 if( hasColors )
@@ -511,7 +511,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 
 				mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 				if( ! group.mHasTexCoords )
-					mOutputTexCoords.push_back( Vec2f::zero() );
+					mOutputTexCoords.push_back( vec2() );
 				else
 					mOutputTexCoords.push_back( mInternalTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
                 if( hasColors )

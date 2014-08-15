@@ -304,7 +304,6 @@ float Rect::sTexCoords[4*2] = { 1, 1,	0, 1,		1, 0,		0, 0 };
 float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
 
 Rect::Rect()
-	: mScale( Vec2f::one() )
 {
 	enable( Attrib::POSITION );	
 	enable( Attrib::TEX_COORD_0 );
@@ -317,7 +316,7 @@ void Rect::loadInto( Target *target ) const
 	for( size_t p = 0; p < 4; ++p )
 		positions.get()[p] = Vec2f( sPositions[p*2+0], sPositions[p*2+1] ) * mScale + mPos;
 
-	target->copyAttrib( Attrib::POSITION, 2, 0, positions.get()->ptr(), 4 );
+	target->copyAttrib( Attrib::POSITION, 2, 0, value_ptr( *positions.get() ), 4 );
 	if( isEnabled( Attrib::COLOR ) )
 		target->copyAttrib( Attrib::COLOR, 3, 0, sColors, 4 );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
@@ -345,7 +344,7 @@ float Cube::sPositions[24*3] = {  1.0f, 1.0f, 1.0f,   1.0f,-1.0f, 1.0f,	 1.0f,-1
 	1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,   1.0f,-1.0f, 1.0f,	// +Z
 	-1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f,-1.0f, 1.0f,	// -X
 	-1.0f,-1.0f,-1.0f,   1.0f,-1.0f,-1.0f,   1.0f,-1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,	// -Y
-	1.0f,-1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,   1.0f, 1.0f,-1.0f };// -Z
+	1.0f,-1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,   1.0f, 1.0f,-1.0f }; // -Z
 
 uint32_t Cube::sIndices[6*6] ={	0, 1, 2, 0, 2, 3,
 	4, 5, 6, 4, 6, 7,
@@ -960,8 +959,7 @@ void Sphere::calculateImplUV( size_t segments, size_t rings ) const
 				++normIt;
 			}
 			if( hasTexCoords ) {
-				texIt->set( u, 1.0f - v );
-				++texIt;
+				*texIt++ = vec2( u, 1.0f - v );
 			}
 			if( hasColors ) {
 				colorIt->set( x * 0.5f + 0.5f, y * 0.5f + 0.5f, z * 0.5f + 0.5f );
@@ -1014,7 +1012,7 @@ void Sphere::loadInto( Target *target ) const
 	if( isEnabled( Attrib::POSITION ) )
 		target->copyAttrib( Attrib::POSITION, 3, 0, mPositions.data()->ptr(), mPositions.size() );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, mTexCoords.data()->ptr(), mTexCoords.size() );
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( mTexCoords[0] ), mTexCoords.size() );
 	if( isEnabled( Attrib::NORMAL ) )
 		target->copyAttrib( Attrib::NORMAL, 3, 0, mNormals.data()->ptr(), mNormals.size() );
 	if( isEnabled( Attrib::COLOR ) )
@@ -1071,7 +1069,7 @@ void Icosphere::calculate() const
 void Icosphere::calculateImplUV() const
 {
 	// calculate texture coords
-	mTexCoords.resize( mNormals.size(), Vec2f::zero() );
+	mTexCoords.resize( mNormals.size(), vec2() );
 	for( size_t i = 0; i < mNormals.size(); ++i ) {
 		const Vec3f &normal = mNormals[i];
 		mTexCoords[i].x = (math<float>::atan2( normal.z, -normal.x ) / float(M_PI)) * 0.5f + 0.5f;
@@ -1176,7 +1174,7 @@ void Icosphere::loadInto( Target *target ) const
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, mPositions.data()->ptr(), mPositions.size() );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, mTexCoords.data()->ptr(), mTexCoords.size() );
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( mTexCoords[0] ), mTexCoords.size() );
 	if( isEnabled( Attrib::NORMAL ) )
 		target->copyAttrib( Attrib::NORMAL, 3, 0, mNormals.data()->ptr(), mNormals.size() );
 	if( isEnabled( Attrib::COLOR ) )
@@ -1333,7 +1331,7 @@ void Torus::calculateImplUV( size_t segments, size_t rings ) const
 {
 	mPositions.resize( segments * rings, Vec3f::zero() );
 	mNormals.resize( segments * rings, Vec3f::zero() );
-	mTexCoords.resize( segments * rings, Vec2f::zero() );
+	mTexCoords.resize( segments * rings, vec2() );
 	mIndices.resize( (segments - 1) * (rings - 1) * 6, 0 );
 
 	if( isEnabled( Attrib::COLOR ) )
@@ -1408,7 +1406,7 @@ void Torus::loadInto( Target *target ) const
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, mPositions.data()->ptr(), mPositions.size() );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, mTexCoords.data()->ptr(), mTexCoords.size() );
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( mTexCoords[0] ), mTexCoords.size() );
 	if( isEnabled( Attrib::NORMAL ) )
 		target->copyAttrib( Attrib::NORMAL, 3, 0, mNormals.data()->ptr(), mNormals.size() );
 	if( isEnabled( Attrib::COLOR ) )
@@ -1458,7 +1456,7 @@ void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
 {
 	mPositions.resize( segments * rings, Vec3f::zero() );
 	mNormals.resize( segments * rings, Vec3f::zero() );
-	mTexCoords.resize( segments * rings, Vec2f::zero() );
+	mTexCoords.resize( segments * rings, vec2() );
 	mIndices.resize( (segments - 1) * (rings - 1) * 6, 0 );
 
 	if( isEnabled( Attrib::COLOR ) )
@@ -1522,7 +1520,7 @@ void Cylinder::calculateCap( bool flip, float height, float radius, size_t segme
 	const size_t index = mPositions.size();
 
 	mPositions.resize( index + segments * 2, Vec3f::zero() );
-	mTexCoords.resize( index + segments * 2, Vec2f::zero() );
+	mTexCoords.resize( index + segments * 2, vec2() );
 	mNormals.resize( index + segments * 2, flip ? -mDirection : mDirection );
 
 	if( isEnabled( Attrib::COLOR ) ) {
@@ -1588,7 +1586,7 @@ void Cylinder::loadInto( Target *target ) const
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, mPositions.data()->ptr(), mPositions.size() );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, mTexCoords.data()->ptr(), mTexCoords.size() );
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( mTexCoords[0] ), mTexCoords.size() );
 	if( isEnabled( Attrib::NORMAL ) )
 		target->copyAttrib( Attrib::NORMAL, 3, 0, mNormals.data()->ptr(), mNormals.size() );
 	if( isEnabled( Attrib::COLOR ) )

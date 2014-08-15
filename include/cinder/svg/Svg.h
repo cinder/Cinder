@@ -496,7 +496,7 @@ class Circle : public Node {
 	Vec2f		getCenter() const { return mCenter; }
 	float		getRadius() const { return mRadius; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return pt.distanceSquared( mCenter ) < mRadius * mRadius; }
+	virtual bool	containsPoint( const Vec2f &pt ) const { return distance2( pt, mCenter ) < mRadius * mRadius; }
 
 	virtual Shape2d	getShape() const;
 

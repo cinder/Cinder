@@ -708,7 +708,7 @@ void TextBox::calculate() const
 		return;
 
 	if( mText.empty() ) {
-		mCalculatedSize = Vec2f::zero();
+		mCalculatedSize = vec2();
 		return;
 	}
 	mWideText = toUtf16( mText );
