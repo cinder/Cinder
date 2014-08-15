@@ -29,8 +29,16 @@
 
 #include <iomanip>
 
+#include "glm/mat2x2.hpp"
+
 namespace cinder {
 
+typedef glm::mat2	Matrix22f;
+typedef glm::dmat2	Matrix22d;
+
+using glm::mat2;
+
+#if 0
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Matrix22
 template< typename T >
@@ -702,5 +710,8 @@ Matrix22<T> Matrix22<T>::createScale( const Vec2<T> &v )
 // Typedefs
 typedef Matrix22<float>	 Matrix22f;
 typedef Matrix22<double> Matrix22d;
+
+#endif
+
 
 } // namespace cinder
