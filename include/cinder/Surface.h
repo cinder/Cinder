@@ -161,6 +161,8 @@ class SurfaceT {
 	int32_t			getRowBytes() const { return mObj->mRowBytes; }
 	//! Returns the amount to increment a T* to increment by a pixel. Analogous to the number of channels, which is either 3 or 4
 	uint8_t			getPixelInc() const { return mObj->mChannelOrder.getPixelInc(); }
+	//! Returns the number of bytes to increment by a pixel. Analogous to the number of channels, (which is either 3 or 4) * sizeof(T)
+	uint8_t			getPixelBytes() const { return mObj->mChannelOrder.getPixelInc() * sizeof(T); }
 
 	//! Returns a new Surface which is a duplicate. If \a copyPixels the pixel values are copied, otherwise the clone's pixels remain uninitialized
 	SurfaceT			clone( bool copyPixels = true ) const;

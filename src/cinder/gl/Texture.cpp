@@ -318,9 +318,9 @@ void TextureBase::setCompareFunc( GLenum compareFunc )
 #endif
 }
 
-bool TextureBase::surfaceRequiresIntermediate( int32_t width, int32_t rowBytes, SurfaceChannelOrder surfaceChannelOrder )
+bool TextureBase::surfaceRequiresIntermediate( int32_t width, uint8_t pixelBytes, int32_t rowBytes, SurfaceChannelOrder surfaceChannelOrder )
 {
-	if( width * surfaceChannelOrder.getPixelInc() != rowBytes )
+	if( width * surfaceChannelOrder.getPixelInc() * pixelBytes != rowBytes )
 		return true;
 	
 	switch( surfaceChannelOrder.getCode() ) {
@@ -500,7 +500,7 @@ Texture2d::Texture2d( int width, int height, Format format )
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	initParams( format, GL_RGBA );
-	initData( (unsigned char*)0, 0, format.mPixelDataFormat, format.mPixelDataType, format );
+	initData( (unsigned char*)0, format.mPixelDataFormat, format.mPixelDataType, format );
 }
 
 Texture2d::Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format )
@@ -512,7 +512,7 @@ Texture2d::Texture2d( const unsigned char *data, int dataFormat, int width, int 
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	initParams( format, GL_RGBA );
-	initData( data, 0, dataFormat, GL_UNSIGNED_BYTE, format );
+	initData( data, dataFormat, GL_UNSIGNED_BYTE, format );
 }
 
 Texture2d::Texture2d( const Surface8u &surface, Format format )
@@ -530,14 +530,16 @@ Texture2d::Texture2d( const Surface8u &surface, Format format )
 	SurfaceChannelOrderToDataFormatAndType( surface.getChannelOrder(), &dataFormat, &type );
 	
 	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
-	if( ( ! mTopDown ) || surfaceRequiresIntermediate( surface.getWidth(), surface.getRowBytes(), surface.getChannelOrder() ) ) {
+	if( ( ! mTopDown ) || surfaceRequiresIntermediate( surface.getWidth(), surface.getPixelBytes(), surface.getRowBytes(), surface.getChannelOrder() ) ) {
 		Surface8u intermediateSurface( surface.getWidth(), surface.getHeight(), surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
-		intermediateSurface.copyFrom( surface, surface.getBounds() );
-		initData( intermediateSurface.getData(), intermediateSurface.getRowBytes() / intermediateSurface.getChannelOrder().getPixelInc(),
-			dataFormat, type, format );
+		if( mTopDown )
+			intermediateSurface.copyFrom( surface, surface.getBounds() );
+		else
+			ip::flipVertical( surface, &intermediateSurface );
+		initData( intermediateSurface.getData(), dataFormat, type, format );
 	}
 	else
-		initData( surface.getData(), surface.getRowBytes() / surface.getChannelOrder().getPixelInc(), dataFormat, type, format );
+		initData( surface.getData(), dataFormat, type, format );
 }
 
 Texture2d::Texture2d( const Surface32f &surface, Format format )
@@ -553,7 +555,18 @@ Texture2d::Texture2d( const Surface32f &surface, Format format )
 #else
 	initParams( format, surface.hasAlpha() ? GL_RGBA32F : GL_RGB32F );
 #endif
-	initData( surface.getData(), surface.hasAlpha()?GL_RGBA:GL_RGB, format );
+	
+	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
+	if( ( ! mTopDown ) || surfaceRequiresIntermediate( surface.getWidth(), surface.getPixelBytes(), surface.getRowBytes(), surface.getChannelOrder() ) ) {
+		Surface32f intermediateSurface( surface.getWidth(), surface.getHeight(), surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
+		if( mTopDown )
+			intermediateSurface.copyFrom( surface, surface.getBounds() );
+		else
+			ip::flipVertical( surface, &intermediateSurface );
+		initData( intermediateSurface.getData(), surface.hasAlpha() ? GL_RGBA : GL_RGB, format );
+	}
+	else
+		initData( surface.getData(), surface.hasAlpha() ? GL_RGBA : GL_RGB, format );
 }
 
 Texture2d::Texture2d( const Channel8u &channel, Format format )
@@ -579,9 +592,9 @@ Texture2d::Texture2d( const Channel8u &channel, Format format )
 				src		+= inc;
 			}
 		}
-		initData( data.get(), channel.getRowBytes() / channel.getIncrement(), GL_LUMINANCE, GL_UNSIGNED_BYTE, format );
+		initData( data.get(), GL_LUMINANCE, GL_UNSIGNED_BYTE, format );
 	} else {
-		initData( channel.getData(), channel.getRowBytes() / channel.getIncrement(), GL_LUMINANCE, GL_UNSIGNED_BYTE, format );
+		initData( channel.getData(), GL_LUMINANCE, GL_UNSIGNED_BYTE, format );
 	}
 }
 
@@ -676,7 +689,7 @@ Texture2d::Texture2d( const TextureData &data, Format format )
 	}
 }
 	
-void Texture2d::initData( const unsigned char *data, int unpackRowLength, GLenum dataFormat, GLenum type, const Format &format )
+void Texture2d::initData( const unsigned char *data, GLenum dataFormat, GLenum type, const Format &format )
 {
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	
@@ -701,7 +714,7 @@ void Texture2d::initData( const float *data, GLint dataFormat, const Format &for
 		glTexImage2D( mTarget, 0, mInternalFormat, mWidth, mHeight, 0, dataFormat, GL_FLOAT, data );
 	}
 	else {
-		glTexImage2D( mTarget, 0, mInternalFormat, mWidth, mHeight, 0, GL_LUMINANCE, GL_FLOAT, 0 );  // init to black...
+		glTexImage2D( mTarget, 0, mInternalFormat, mWidth, mHeight, 0, GL_RED, GL_FLOAT, 0 );  // init to black...
 	}
     
 	if( format.mMipmapping ) {
@@ -818,14 +831,14 @@ void Texture2d::initData( const ImageSourceRef &imageSource, const Format &forma
 	}
 }
 
-void Texture2d::update( const Surface &surface, int mipLevel )
+void Texture2d::update( const Surface8u &surface, int mipLevel )
 {
 	GLint dataFormat;
 	GLenum type;
 	if( mipLevel == 0 ) {
 		// we need an intermediate format for certain channel orders, and rowBytes != numChannels * width
 		Surface8u sourceSurface;
-		if( surfaceRequiresIntermediate( surface.getWidth(), surface.getRowBytes(), surface.getChannelOrder() ) 
+		if( surfaceRequiresIntermediate( surface.getWidth(), surface.getPixelBytes(), surface.getRowBytes(), surface.getChannelOrder() )
 			|| ( surface.getWidth() != getWidth() ) || ( surface.getHeight() != getHeight() ) )
 		{
 			CI_LOG_V( "Surface size, rowBytes or ChannelOrder will prevent full efficiency in gl::Texture upload." );

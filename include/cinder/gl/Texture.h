@@ -97,7 +97,7 @@ class TextureBase {
 	//! Returns the appropriate parameter to glGetIntegerv() for a specific target; ie GL_TEXTURE_2D -> GL_TEXTURE_BINDING_2D. Returns 0 on failure.
 	static GLenum	getBindingConstantForTarget( GLenum target );
 	//! Returns whether a Surface of \a width, \a rowBytes and \a surfaceChannelOrder would require an intermediate Surface in order to be copied into a GL Texture.
-	static bool		surfaceRequiresIntermediate( int32_t width, int32_t rowBytes, SurfaceChannelOrder surfaceChannelOrder );
+	static bool		surfaceRequiresIntermediate( int32_t width, uint8_t pixelBytes, int32_t rowBytes, SurfaceChannelOrder surfaceChannelOrder );
 	//! Converts a SurfaceChannelOrder into an appropriate OpenGL dataFormat and type
 	static void		SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, GLint *dataFormat, GLenum *type );
 	//! calculate the size of mipMap for the corresponding level
@@ -407,11 +407,11 @@ class Texture2d : public TextureBase {
 	void			setCleanSize( GLint cleanWidth, GLint cleanHeight );
 	
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's.
-	void			update( const Surface &surface, int mipLevel = 0 );
+	void			update( const Surface8u &surface, int mipLevel = 0 );
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's.
 	void			update( const Surface32f &surface, int mipLevel = 0 );
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a area's size to match the Texture's.
-	void			update( const Surface &surface, const Area &area, int mipLevel = 0 );
+	void			update( const Surface8u &surface, const Area &area, int mipLevel = 0 );
 	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's.
 	void			update( const Channel32f &channel, int mipLevel = 0 );
 	//! Updates the pixels of a Texture with contents of \a channel. Expects \a area's size to match the Texture's.
@@ -491,7 +491,7 @@ class Texture2d : public TextureBase {
 	Texture2d( const TextureData &data, Format format );
 	
 	void	initParams( Format &format, GLint defaultInternalFormat );
-	void	initData( const unsigned char *data, int unpackRowLength, GLenum dataFormat, GLenum type, const Format &format );
+	void	initData( const unsigned char *data, GLenum dataFormat, GLenum type, const Format &format );
 	void	initData( const float *data, GLint dataFormat, const Format &format );
 	void	initData( const ImageSourceRef &imageSource, const Format &format );
 #if ! defined( CINDER_GL_ES )
