@@ -33,37 +33,12 @@
 
 #include "glm/mat3x3.hpp"
 #include "glm/mat4x4.hpp"
-#include "glm/gtx/transform.hpp"
 #include "glm/gtc/matrix_inverse.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtx/io.hpp"
 
-namespace cinder { 
-
-inline std::ostream& operator<<( std::ostream& out, const glm::mat4 &m )
-{
-	for( int i = 0; i < 4; i++) {
-		out << " |";
-		for( int j = 0; j < 4; j++) {
-			out << std::setw( 12 ) << std::setprecision( 6 ) << m[j][i];
-		}
-		out << "|" << std::endl;
-	}
-	
-	return out;
-}
-
-inline std::ostream& operator<<( std::ostream& out, const glm::mat3 &m )
-{
-	for( int i = 0; i < 3; i++) {
-		out << " |";
-		for( int j = 0; j < 3; j++) {
-			out << std::setw( 12 ) << std::setprecision( 6 ) << m[j][i];
-		}
-		out << "|" << std::endl;
-	}
-	
-	return out;
-}
+namespace cinder {
 
 glm::mat4 alignZAxisWithTarget( Vec3f targetDir, Vec3f upDir );
 

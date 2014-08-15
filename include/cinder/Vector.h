@@ -38,12 +38,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/vec2.hpp"
 #include "glm/gtx/norm.hpp"
-
-inline std::ostream& operator<<( std::ostream &os, const glm::ivec2 &vec )
-{
-	os << "[" << vec.x << "," << vec.y << "]";
-	return os;
-}
+#include "glm/gtx/io.hpp"
 
 namespace cinder {
 
