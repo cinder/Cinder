@@ -1339,6 +1339,16 @@ typedef Vec4<double>	Vec4d;
 
 #endif
 
+//! Returns a vector which is orthogonal to \a vec
+template<typename T, precision P>
+glm::detail::tvec3<T, P> orthogonal( const glm::detail::tvec3<T, P> &vec )
+{
+	if( math<T>::abs( vec.y ) < (T)0.99 ) // abs(dot(u, Y)), somewhat arbitrary epsilon
+		return glm::detail::tvec3<T, P>( -vec.z, 0, vec.x ); // cross( this, Y )
+	else
+		return glm::detail::tvec3<T, P>( 0, vec.z, -vec.y ); // cross( this, X )
+}
+
 typedef ivec2		Vec2i;
 typedef vec2		Vec2f;
 typedef dvec2		Vec2d;

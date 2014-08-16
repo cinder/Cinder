@@ -179,7 +179,7 @@ Vec3f Camera::worldToNdc( const Vec3f &worldCoord )
 float Camera::getScreenRadius( const Sphere &sphere, float screenWidth, float screenHeight ) const
 {
 	Vec2f screenCenter( worldToScreen( sphere.getCenter(), screenWidth, screenHeight ) );	
-	Vec3f orthog = normalize( mViewDirection.getOrthogonal() );
+	Vec3f orthog = normalize( orthogonal( mViewDirection ) );
 	Vec2f screenPerimeter = worldToScreen( sphere.getCenter() + sphere.getRadius() * orthog, screenWidth, screenHeight );
 	return distance( screenPerimeter, screenCenter );
 }
