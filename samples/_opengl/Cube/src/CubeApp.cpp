@@ -30,8 +30,7 @@ class RotatingCubeApp : public AppNative {
 
 void RotatingCubeApp::setup()
 {
-//	mCam.lookAt( Vec3f( 3, 2, 4 ), Vec3f::zero() );
-	mCam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 	
 	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
 
