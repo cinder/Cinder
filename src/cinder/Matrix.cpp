@@ -154,39 +154,38 @@ template Matrix44d lastFrame( const Matrix44d &prevMatrix, const Vec3d &prevPoin
 glm::mat4 alignZAxisWithTarget( Vec3f targetDir, Vec3f upDir )
 {
     // Ensure that the target direction is non-zero.
-    if( targetDir.lengthSquared() == 0 )
-		targetDir = Vec3f::zAxis();
+    if( length2( targetDir ) == 0 )
+		targetDir = vec3( 0, 0, 1 );
 
     // Ensure that the up direction is non-zero.
-    if( upDir.lengthSquared() == 0 )
-		upDir = Vec3f::yAxis();
+    if( length2( upDir ) == 0 )
+		upDir = vec3( 0, 1, 0 );
 
     // Check for degeneracies.  If the upDir and targetDir are parallel 
     // or opposite, then compute a new, arbitrary up direction that is
     // not parallel or opposite to the targetDir.
-    if( upDir.cross( targetDir ).lengthSquared() == 0 ) {
-		upDir = targetDir.cross( Vec3f::xAxis() );
-	if( upDir.lengthSquared() == 0 )
-	    upDir = targetDir.cross( Vec3f::zAxis() );
+    if( length2( cross( upDir, targetDir ) ) == 0 ) {
+		upDir = cross( targetDir, vec3( 1, 0, 0 ) );
+	if( length2( upDir ) == 0 )
+	    upDir = cross( targetDir, vec3( 0, 0, 1 ) );
     }
 
     // Compute the x-, y-, and z-axis vectors of the new coordinate system.
-    Vec3f targetPerpDir = upDir.cross( targetDir );    
-    Vec3f targetUpDir = targetDir.cross( targetPerpDir );
-    
+	Vec3f targetPerpDir = cross( upDir, targetDir );
+	Vec3f targetUpDir = cross( targetDir, targetPerpDir );
 
     // Rotate the x-axis into targetPerpDir (row 0),
     // rotate the y-axis into targetUpDir   (row 1),
     // rotate the z-axis into targetDir     (row 2).
     Vec3f row[3];
-    row[0] = targetPerpDir.normalized();
-    row[1] = targetUpDir.normalized();
-    row[2] = targetDir.normalized();
-    
-    const float v[16] = {	row[0].x,	row[0].y,  row[0].z,  0,
+    row[0] = normalize( targetPerpDir );
+	row[1] = normalize( targetUpDir );
+	row[2] = normalize( targetDir );
+
+    const float v[16] = {	row[0].x,  row[0].y,  row[0].z,  0,
 							row[1].x,  row[1].y,  row[1].z,  0,
 							row[2].x,  row[2].y,  row[2].z,  0,
-					        0,          0,        0,		1 };
+					        0,         0,         0,		 1 };
 	
     
     return glm::make_mat4( v );

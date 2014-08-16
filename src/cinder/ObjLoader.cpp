@@ -158,7 +158,7 @@ void ObjLoader::parse( bool includeUVs )
 		else if( tag == "vn" ) { // vertex normals
 			Vec3f v;
 			ss >> v.x >> v.y >> v.z;
-			mInternalNormals.push_back( v.normalized() );
+			mInternalNormals.push_back( normalize( v ) );
 		}
 		else if( tag == "f" ) { // face
 			parseFace( currentGroup, currentMaterial, line, includeUVs );
@@ -360,7 +360,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 		if( group.mFaces[f].mNormalIndices.empty() ) { // we'll have to derive it from two edges
 			Vec3f edge1 = mInternalVertices[group.mFaces[f].mVertexIndices[1]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
 			Vec3f edge2 = mInternalVertices[group.mFaces[f].mVertexIndices[2]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
-			inferredNormal = edge1.cross( edge2 ).normalized();
+			inferredNormal = normalize( cross( edge1, edge2 ) );
 			forceUnique = true;
 		}
 		
@@ -430,7 +430,7 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 		if( group.mFaces[f].mNormalIndices.empty() ) { // we'll have to derive it from two edges
 			Vec3f edge1 = mInternalVertices[group.mFaces[f].mVertexIndices[1]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
 			Vec3f edge2 = mInternalVertices[group.mFaces[f].mVertexIndices[2]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
-			inferredNormal = edge1.cross( edge2 ).normalized();
+			inferredNormal = normalize( cross( edge1, edge2 ) );
 			forceUnique = true;
 		}
 		

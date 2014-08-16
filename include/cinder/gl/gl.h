@@ -225,7 +225,7 @@ void rotate( float angleDegrees, const ci::Vec3f &axis );
 //! Rotates the Model matrix by \a angleDegrees around the axis (\a x,\a y,\a z)
 inline void rotate( float angleDegrees, float xAxis, float yAxis, float zAxis ) { rotate( angleDegrees, ci::Vec3f(xAxis, yAxis, zAxis) ); }
 //! Rotates the Model matrix by \a zDegrees around the z-axis
-inline void rotate( float zDegrees ) { rotate( zDegrees, ci::Vec3f::zAxis() ); }
+inline void rotate( float zDegrees ) { rotate( zDegrees, vec3( 0, 0, 1 ) ); }
 
 //! Scales the Model matrix by \a v
 void scale( const ci::Vec3f &v );
@@ -241,7 +241,7 @@ void translate( const ci::Vec3f &v );
 //! Translates the Model matrix by (\a x,\a y,\a z )
 inline void translate( float x, float y, float z ) { translate( Vec3f( x, y, z ) ); }
 //! Translates the Model matrix by \a v
-inline void translate( const ci::Vec2f &v ) { translate( fromGlm( vec3( v, 0 ) ) ); }
+inline void translate( const ci::Vec2f &v ) { translate( vec3( v, 0 ) ); }
 //! Translates the Model matrix by (\a x,\a y)
 inline void translate( float x, float y ) { translate( Vec3f( x, y, 0 ) ); }
 	

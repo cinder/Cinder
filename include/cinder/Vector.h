@@ -35,8 +35,10 @@
 
 #include "cinder/CinderMath.h"
 
-#include "glm/gtc/type_ptr.hpp"
 #include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
+#include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/norm.hpp"
 #include "glm/gtx/io.hpp"
 
@@ -325,8 +327,6 @@ class Vec2
 
 	static Vec2<T> NaN()   { return Vec2<T>( math<T>::NaN(), math<T>::NaN() ); }
 };
-
-#endif
 
 template<typename T>
 class Vec3
@@ -1327,12 +1327,9 @@ template <typename T> Vec4<T> cross( const Vec4<T>& a, const Vec4<T>& b ) { retu
 template <typename T> bool isNaN( const Vec3<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ); }
 template <typename T> bool isNaN( const Vec4<T>& a ) { return std::isnan( a.x ) || std::isnan( a.y ) || std::isnan( a.z ) || std::isnan( a.w ); }
 
-//typedef Vec2<int>		Vec2i;
-typedef glm::ivec2		Vec2i;
-//typedef Vec2<float>	Vec2f;
-typedef glm::vec2		Vec2f;
-//typedef Vec2<double>	Vec2d;
-typedef glm::dvec2		Vec2d;
+typedef Vec2<int>		Vec2i;
+typedef Vec2<float>	Vec2f;
+typedef Vec2<double>	Vec2d;
 typedef Vec3<int>		Vec3i;
 typedef Vec3<float>		Vec3f;
 typedef Vec3<double>	Vec3d;
@@ -1340,19 +1337,26 @@ typedef Vec4<int>		Vec4i;
 typedef Vec4<float>		Vec4f;
 typedef Vec4<double>	Vec4d;
 
-template<> struct VECDIM<2,float> { typedef glm::vec2	TYPE; };
-template<> struct VECDIM<3,float> { typedef Vec3f	TYPE; };
-template<> struct VECDIM<4,float> { typedef Vec4f	TYPE; };
-template<> struct VECDIM<2,double> { typedef glm::dvec2	TYPE; };
-template<> struct VECDIM<3,double> { typedef Vec3d	TYPE; };
-template<> struct VECDIM<4,double> { typedef Vec4d	TYPE; };
-template<> struct VECDIM<2,int> { typedef glm::ivec2	TYPE; };
-template<> struct VECDIM<3,int> { typedef Vec3i	TYPE; };
-template<> struct VECDIM<4,int> { typedef Vec4i	TYPE; };
+#endif
 
-inline glm::vec3 toGlm( const Vec3f &v ) { return glm::vec3( v.x, v.y, v.z ); }
-inline Vec3f fromGlm( const glm::vec3 &v ) { return Vec3f( v.x, v.y, v.z ); }
-inline glm::vec4 toGlm( const Vec4f &v ) { return glm::vec4( v.x, v.y, v.z, v.w ); }
-inline Vec4f fromGlm( const glm::vec4 &v ) { return Vec4f( v.x, v.y, v.z ); }
+typedef ivec2		Vec2i;
+typedef vec2		Vec2f;
+typedef dvec2		Vec2d;
+typedef ivec3		Vec3i;
+typedef vec3		Vec3f;
+typedef dvec3		Vec3d;
+typedef ivec4		Vec4i;
+typedef vec4		Vec4f;
+typedef dvec4		Vec4d;
+
+template<> struct VECDIM<2,float>	{ typedef vec2	TYPE; };
+template<> struct VECDIM<3,float>	{ typedef vec3	TYPE; };
+template<> struct VECDIM<4,float>	{ typedef vec4	TYPE; };
+template<> struct VECDIM<2,double>	{ typedef dvec2	TYPE; };
+template<> struct VECDIM<3,double>	{ typedef dvec3	TYPE; };
+template<> struct VECDIM<4,double>	{ typedef dvec4	TYPE; };
+template<> struct VECDIM<2,int>		{ typedef ivec2	TYPE; };
+template<> struct VECDIM<3,int>		{ typedef ivec3	TYPE; };
+template<> struct VECDIM<4,int>		{ typedef ivec4	TYPE; };
 
 } // namespace cinder

@@ -35,24 +35,24 @@ bool Ray::calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, cons
 	edge1 = vert1 - vert0;
 	edge2 = vert2 - vert0;
 	
-	pvec = getDirection().cross( edge2 );
-	det = edge1.dot( pvec );
+	pvec = cross( getDirection(), edge2 );
+	det = dot( edge1, pvec );
 	
 #if 0 // we don't want to backface cull
 	if ( det < EPSILON )
 		  return false;
 	tvec = getOrigin() - vert0;
 	
-	u = tvec.dot( pvec );
+	u = dot( tvec, pvec );
 	if ( ( u < 0.0f ) || ( u > det ) )
 		return false;
 	
-	qvec = tvec.cross( edge1 );
-	v = getDirection().dot( qvec );
+	qvec = cross( tvec, edge1 );
+	v = dot( getDirection(), qvec );
 	if ( v < 0.0f || u + v > det )
 		return false;
 	
-	*result = edge2.dot( qvec ) / det;
+	*result = dot( edge2, qvec ) / det;
 	return true;
 #else
 	if( det > -EPSILON && det < EPSILON )
@@ -60,27 +60,27 @@ bool Ray::calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, cons
 
 	float inv_det = 1.0f / det;
 	tvec = getOrigin() - vert0;
-	u = tvec.dot( pvec ) * inv_det;
+	u = dot( tvec, pvec ) * inv_det;
 	if( u < 0.0f || u > 1.0f )
 		return false;
 
-	qvec = tvec.cross( edge1 );
+	qvec = cross( tvec, edge1 );
 
-	v = getDirection().dot( qvec ) * inv_det;
+	v = dot( getDirection(), qvec ) * inv_det;
 	if( v < 0.0f || u + v > 1.0f )
 		return 0;
 
-	*result = edge2.dot( qvec ) * inv_det;
+	*result = dot( edge2, qvec ) * inv_det;
 	return true;
 #endif
 }
 
 bool Ray::calcPlaneIntersection( const Vec3f &planeOrigin, const Vec3f &planeNormal, float *result ) const
 {
-	float denom = planeNormal.dot(getDirection());
+	float denom = dot( planeNormal, getDirection() );
 
-	if(denom != 0.0f){
-		*result = planeNormal.dot(planeOrigin - getOrigin()) / denom;
+	if( denom != 0.0f ) {
+		*result = dot( planeNormal, planeOrigin - getOrigin() ) / denom;
 		return true;
 	}
 	return false;

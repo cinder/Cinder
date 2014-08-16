@@ -30,9 +30,9 @@ bool Sphere::intersects( const Ray &ray )
 {
 	float 		t;
 	Vec3f		temp 	= ray.getOrigin() - mCenter;
-	float 		a 		= ray.getDirection().dot( ray.getDirection() );
-	float 		b 		= 2.0f * temp.dot( ray.getDirection() );
-	float 		c 		= temp.dot( temp ) - mRadius * mRadius;
+	float 		a 		= dot( ray.getDirection(), ray.getDirection() );
+	float 		b 		= 2.0f * dot( temp, ray.getDirection() );
+	float 		c 		= dot( temp, temp ) - mRadius * mRadius;
 	float 		disc	= b * b - 4.0f * a * c;
 
 	if( disc < 0.0f ) {
@@ -60,9 +60,9 @@ int Sphere::intersect( const Ray &ray, float *intersection )
 {
 	float 		t;
 	Vec3f		temp 	= ray.getOrigin() - mCenter;
-	float 		a 		= ray.getDirection().dot( ray.getDirection() );
-	float 		b 		= 2.0f * temp.dot( ray.getDirection() );
-	float 		c 		= temp.dot( temp ) - mRadius * mRadius;
+	float 		a 		= dot( ray.getDirection(), ray.getDirection() );
+	float 		b 		= 2.0f * dot( temp, ray.getDirection() );
+	float 		c 		= dot( temp, temp ) - mRadius * mRadius;
 	float 		disc	= b * b - 4.0f * a * c;
 
 	if( disc < 0.0f ) {
@@ -114,9 +114,9 @@ Sphere Sphere::calculateBoundingSphere( const Vec3f *points, size_t numPoints )
 	}
 	// compute center and radius
 	Vec3f center = 0.5f * ( min + max );
-	float maxDistance = center.distanceSquared( points[0] );
-	for( size_t i = 1; i < numPoints; ++i ) {
-		float dist = center.distanceSquared( points[i] );
+	float maxDistance = distance2( center, points[0] );
+	for( size_t i = 1; i < points.size(); ++i ) {
+		float dist = distance2( center, points[i] );
 		if( dist > maxDistance )
 			maxDistance = dist;
 	}

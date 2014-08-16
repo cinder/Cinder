@@ -140,7 +140,7 @@ Vec2f Perlin::dfBm( const Vec2f &v ) const
 
 Vec3f Perlin::dfBm( const Vec3f &v ) const
 {
-	Vec3f result = Vec3f::zero();
+	Vec3f result;
 	float amp = 0.5f;
 	float x = v.x, y = v.y, z = v.z;
 

@@ -349,7 +349,7 @@ AxisAlignedBox3f TriMesh::calcBoundingBox() const
 {
 	assert( mPositionsDims == 3 );
 	if( mPositions.empty() )
-		return AxisAlignedBox3f( Vec3f::zero(), Vec3f::zero() );
+		return AxisAlignedBox3f( vec3(), vec3() );
 
 	Vec3f min(*(const Vec3f*)(&mPositions[0])), max(*(const Vec3f*)(&mPositions[0]));
 	for( size_t i = 1; i < mPositions.size() / 3; ++i ) {
@@ -375,14 +375,14 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const Matrix44f &transform ) const
 {
 	assert( mPositionsDims == 3 );
 	if( mPositions.empty() )
-		return AxisAlignedBox3f( Vec3f::zero(), Vec3f::zero() );
+		return AxisAlignedBox3f( vec3(), vec3() );
 
 	const vec3 &temp = *(const vec3*)(&mPositions[0]);
-	Vec3f min( fromGlm( vec3( transform * vec4( temp, 1 ) ) ) );
-	Vec3f max( min );
+	Vec3f min = vec3( transform * vec4( temp, 1 ) );
+	Vec3f max = min;
 	for( size_t i = 0; i < mPositions.size() / 3; ++i ) {
 		const vec3 &temp = *(const vec3*)(&mPositions[i*3]);
-		Vec3f v = fromGlm( vec3( transform * vec4( temp, 1 ) ) );
+		Vec3f v = vec3( transform * vec4( temp, 1 ) );
 
 		if( v.x < min.x )
 			min.x = v.x;
@@ -489,7 +489,7 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 		return false;
 
 	size_t numPositions = mPositions.size() / 3;
-	mNormals.assign( numPositions, Vec3f::zero() );
+	mNormals.assign( numPositions, vec3() );
 
 	// for smooth renormalization, we first find all unique vertices and keep track of them
 	std::vector<size_t> uniquePositions;
@@ -502,7 +502,7 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 				const Vec3f &v0 = *(const Vec3f*)(&mPositions[i * 3]);
 				for( size_t j = i + 1; j < numPositions; ++j ) {
 					const Vec3f &v1 = *(const Vec3f*)(&mPositions[j * 3]);
-					if( (v1 - v0).lengthSquared() < FLT_EPSILON )
+					if( length2( v1 - v0 ) < FLT_EPSILON )
 						uniquePositions[j] = uniquePositions[i];
 				}
 			}
@@ -532,20 +532,26 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 		Vec3f e1 = v2 - v0;
 		Vec3f e2 = v2 - v1;
 
-		if( e0.lengthSquared() < FLT_EPSILON )
+		if( length2( e0 ) < FLT_EPSILON )
 			continue;
-		if( e1.lengthSquared() < FLT_EPSILON )
+		if( length2( e1 ) < FLT_EPSILON )
 			continue;
-		if( e2.lengthSquared() < FLT_EPSILON )
+		if( length2( e2 ) < FLT_EPSILON )
 			continue;
 
-		Vec3f normal = weighted ? e0.cross(e1) : e0.cross(e1).normalized();
+		Vec3f normal = cross( e0, e1 );
+		if( ! weighted )
+			normal = normalize( normal );
+
 		mNormals[ index0 ] += normal;
 		mNormals[ index1 ] += normal;
 		mNormals[ index2 ] += normal;
 	}
 
-	std::for_each( mNormals.begin(), mNormals.end(), std::mem_fun_ref( &Vec3f::normalize ) );
+	// ???: Is this extra normalizing necessary? It is done in the above loop if weighted = true
+	for( auto &normal : mNormals ) {
+		normal = normalize( normal );
+	}
 
 	// copy normals to corresponding non-unique vertices
 	if( smooth ) {
@@ -570,7 +576,7 @@ bool TriMesh::recalculateTangents()
 	if( ! hasNormals() )
 		return false;
 
-	mTangents.assign( mNormals.size(), Vec3f::zero() );
+	mTangents.assign( mNormals.size(), vec3() );
 
 	size_t n = getNumTriangles();
 	for( size_t i = 0; i < n; ++i ) {
@@ -610,7 +616,7 @@ bool TriMesh::recalculateTangents()
 	for( size_t i = 0; i < n; ++i ) {
 		Vec3f normal = mNormals[i];
 		Vec3f tangent = mTangents[i];
-		mTangents[i] = (tangent - normal * normal.dot(tangent)).normalized();
+		mTangents[i] = tangent - normal * normalize( dot( normal, tangent ) );
 	}
 
 	mTangentsDims = 3;
@@ -624,11 +630,11 @@ bool TriMesh::recalculateBitangents()
 	if( !(hasTangents() || recalculateTangents()) )
 		return false;
 
-	mBitangents.assign( mNormals.size(), Vec3f::zero() );
+	mBitangents.assign( mNormals.size(), vec3() );
 
 	size_t n = getNumVertices();
 	for( size_t i = 0; i < n; ++i )
-		mBitangents[i] = mNormals[i].cross( mTangents[i] ).normalized();
+		mBitangents[i] = normalize( cross( mNormals[i], mTangents[i] ) );
 
 	mBitangentsDims = 3;
 
@@ -672,7 +678,7 @@ void TriMesh::subdivide( int division, bool normalize )
 				else {
 					indices[n++] = getNumVertices();
 
-					// lambda closures for bilinear interpolation
+					// lambda closures for bilinear interpolation. TODO: make private templated function to reduce code reduncancy
 					auto lerpBilinear2 = [&] (const Vec2f &a, const Vec2f &b, const Vec2f &c) {
 						const vec2 d = mix( a, c, j * rcp );
 						const vec2 e = mix( b, c, j * rcp );
@@ -680,15 +686,15 @@ void TriMesh::subdivide( int division, bool normalize )
 					};
 					
 					auto lerpBilinear3 = [&] (const Vec3f &a, const Vec3f &b, const Vec3f &c) {
-						const Vec3f d = a.lerp( j * rcp, c );
-						const Vec3f e = b.lerp( j * rcp, c );
-						return d.lerp( i * div, e );
+						const Vec3f d = mix( a, c, j * rcp );
+						const Vec3f e = mix( b, c, j * rcp );
+						return mix( d, e, i * div );
 					};
 					
 					auto lerpBilinear4 = [&] (const Vec4f &a, const Vec4f &b, const Vec4f &c) {
-						const Vec4f d = a.lerp( j * rcp, c );
-						const Vec4f e = b.lerp( j * rcp, c );
-						return d.lerp( i * div, e );
+						const Vec4f d = mix( a, c, j * rcp );
+						const Vec4f e = mix( b, c, j * rcp );
+						return mix( d, e, i * div );
 					};
 
 					// generate interpolated vertex and its attributes (warning: massive boilerplate code incoming!)
@@ -868,13 +874,13 @@ void TriMesh::subdivide( int division, bool normalize )
 		else if( mPositionsDims == 3 ) {
 			for( size_t i = 0; i < numVertices; ++i ) {
 				Vec3f &v = *(Vec3f*)(&mPositions[i*3]);
-				v.normalize();
+				v = glm::normalize( v );
 			}
 		}
 		else if( mPositionsDims == 4 ) {
 			for( size_t i = 0; i < numVertices; ++i ) {
 				Vec4f &v = *(Vec4f*)(&mPositions[i*4]);
-				v.normalize();
+				v = glm::normalize( v );
 			}
 		}
 	}
@@ -991,7 +997,7 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 	if( true ) {
 		const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mPositions[indexA*mPositionsDims]);
 		const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mPositions[indexB*mPositionsDims]);
-		if( a.distanceSquared( b ) > FLT_EPSILON )
+		if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 	}
 
@@ -999,13 +1005,13 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		if( mColorsDims == 3 ) {
 			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mColors[indexA*mColorsDims]);
 			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mColors[indexB*mColorsDims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mColorsDims == 4 ) {
 			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mColors[indexA*mColorsDims]);
 			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mColors[indexB*mColorsDims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 	}
@@ -1013,7 +1019,7 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 	if( isEnabled( geom::Attrib::NORMAL ) ) {
 		const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mNormals[indexA*mNormalsDims]);
 		const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mNormals[indexB*mNormalsDims]);
-		if( a.distanceSquared( b ) > FLT_EPSILON )
+		if( distance2( a, b ) > FLT_EPSILON )
 		return false;
 	}
 
@@ -1027,13 +1033,13 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		else if( mTexCoords0Dims == 3 ) {
 			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTexCoords0[indexA*mTexCoords0Dims]);
 			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTexCoords0[indexB*mTexCoords0Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords0Dims == 4 ) {
 			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mTexCoords0[indexA*mTexCoords0Dims]);
 			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mTexCoords0[indexB*mTexCoords0Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 	}
@@ -1048,13 +1054,13 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		else if( mTexCoords1Dims == 3 ) {
 			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTexCoords1[indexA*mTexCoords1Dims]);
 			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTexCoords1[indexB*mTexCoords1Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords1Dims == 4 ) {
 			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mTexCoords1[indexA*mTexCoords1Dims]);
 			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mTexCoords1[indexB*mTexCoords1Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 	}
@@ -1069,13 +1075,13 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		else if( mTexCoords2Dims == 3 ) {
 			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTexCoords2[indexA*mTexCoords2Dims]);
 			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTexCoords2[indexB*mTexCoords2Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords2Dims == 4 ) {
 			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mTexCoords2[indexA*mTexCoords2Dims]);
 			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mTexCoords2[indexB*mTexCoords2Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 	}
@@ -1090,13 +1096,13 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		else if( mTexCoords3Dims == 3 ) {
 			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTexCoords3[indexA*mTexCoords3Dims]);
 			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTexCoords3[indexB*mTexCoords3Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords3Dims == 4 ) {
 			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mTexCoords3[indexA*mTexCoords3Dims]);
 			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mTexCoords3[indexB*mTexCoords3Dims]);
-			if( a.distanceSquared( b ) > FLT_EPSILON )
+			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 	}
@@ -1104,14 +1110,14 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 	if( isEnabled( geom::Attrib::TANGENT ) ) {
 		const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTangents[indexA*mTangentsDims]);
 		const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTangents[indexB*mTangentsDims]);
-		if( a.distanceSquared( b ) > FLT_EPSILON )
+		if( distance2( a, b ) > FLT_EPSILON )
 		return false;
 	}
 
 	if( isEnabled( geom::Attrib::BITANGENT ) ) {
 		const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mBitangents[indexA*mBitangentsDims]);
 		const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mBitangents[indexB*mBitangentsDims]);
-		if( a.distanceSquared( b ) > FLT_EPSILON )
+		if( distance2( a, b ) > FLT_EPSILON )
 		return false;
 	}
 

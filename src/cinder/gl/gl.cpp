@@ -526,7 +526,7 @@ void setMatricesWindow( const ci::Vec2i& screenSize, bool originUpperLeft )
 
 void rotate( const Quatf &quat )
 {
-	Vec3f axis = fromGlm( glm::axis( quat ) );
+	vec3 axis = glm::axis( quat );
 	float angle = glm::angle( quat );
 
 	rotate( toDegrees( angle ), axis );
@@ -536,20 +536,20 @@ void rotate( float angleDegrees, const Vec3f &axis )
 {
 	if( math<float>::abs( angleDegrees ) > EPSILON_VALUE ) {
 		auto ctx = gl::context();
-		ctx->getModelMatrixStack().back() *= glm::rotate( toRadians( angleDegrees ), toGlm( axis ) );
+		ctx->getModelMatrixStack().back() *= glm::rotate( toRadians( angleDegrees ), axis );
 	}
 }
 
 void scale( const ci::Vec3f& v )
 {
 	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back() *= glm::scale( toGlm( v ) );
+	ctx->getModelMatrixStack().back() *= glm::scale( v );
 }
 
 void translate( const ci::Vec3f& v )
 {
 	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back() *= glm::translate( toGlm( v ) );
+	ctx->getModelMatrixStack().back() *= glm::translate( v );
 }
 
 void begin( GLenum mode )
@@ -1440,7 +1440,7 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	if( texCoords )
 		texCoords[0] = Vec2f( 0.5f, 0.5f );
 	if( normals )
-		normals[0] = Vec3f::zAxis();
+		normals[0] = vec3( 0, 0, 1 );
 	const float tDelta = 1.0f / numSegments * 2 * (float)M_PI;
 	float t = 0;
 	for( int s = 0; s <= numSegments; s++ ) {
@@ -1450,7 +1450,7 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 		if( texCoords )
 			texCoords[s+1] = unit * 0.5f + Vec2f( 0.5f, 0.5f );
 		if( normals )
-			normals[s+1] = Vec3f::zAxis();
+			normals[s+1] = vec3( 0, 0, 1 );
 		t += tDelta;
 	}
 
