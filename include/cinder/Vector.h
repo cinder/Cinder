@@ -39,8 +39,11 @@
 #include "glm/vec3.hpp"
 #include "glm/vec4.hpp"
 #include "glm/gtc/type_ptr.hpp"
-#include "glm/gtx/norm.hpp"
 #include "glm/gtx/io.hpp"
+
+// FIXME: this seems like necessary functionality for vec operations, but it produces a strange compiler error around inclusion order:
+// "call to function "length2" that is neither visible in the template definition nor found by argument-dependent lookup" - from within gtx/quaternion.inl's rotation() function (used in Camera.cpp)
+//#include "glm/gtx/norm.hpp"
 
 namespace cinder {
 
