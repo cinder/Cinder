@@ -97,7 +97,7 @@ void DebugMesh::setMesh(const TriMesh& mesh)
 		if(hasTangents)
 		{
 			mVertices.push_back( mesh.getVertices<3>()[i] + scale * mesh.getTangents()[i] );
-			mVertices.push_back( mesh.getVertices<3>()[i] + scale * mesh.getNormals()[i].cross(mesh.getTangents()[i]) );
+			mVertices.push_back( mesh.getVertices<3>()[i] + scale * cross( mesh.getNormals()[i], mesh.getTangents()[i] ) );
 
 			mColors.push_back( Color(1, 0, 0) );
 			mColors.push_back( Color(0, 1, 0) );

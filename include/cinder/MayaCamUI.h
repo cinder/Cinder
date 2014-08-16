@@ -70,28 +70,28 @@ class MayaCamUI {
 		else if( action == ACTION_PAN ) { // panning
 			float deltaX = ( mousePos.x - mInitialMousePos.x ) / 1000.0f * mInitialCam.getCenterOfInterest();
 			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 1000.0f * mInitialCam.getCenterOfInterest();
-			Vec3f mW = mInitialCam.getViewDirection().normalized();
-			Vec3f mU = Vec3f::yAxis().cross( mW ).normalized();
-			Vec3f mV = mW.cross( mU ).normalized();
+			Vec3f mW = normalize( mInitialCam.getViewDirection() );
+			Vec3f mU = normalize( cross( vec3( 0, 1, 0 ), mW ) );
+			Vec3f mV = normalize( cross( mW, mU ) );
 			mCurrentCam.setEyePoint( mInitialCam.getEyePoint() + mU * deltaX + mV * deltaY );
 		}
 		else { // tumbling
 			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
 			float deltaX = ( mousePos.x - mInitialMousePos.x ) / -100.0f;
-			Vec3f mW = mInitialCam.getViewDirection().normalized();
+			Vec3f mW = normalize( mInitialCam.getViewDirection() );
 			bool invertMotion = ( mInitialCam.getOrientation() * glm::vec3( 0, 1, 0 ) ).y < 0.0f;
-			Vec3f mU = Vec3f::yAxis().cross( mW ).normalized();
+			Vec3f mU = normalize( cross( vec3( 0, 1, 0 ), mW ) );
 
 			if( invertMotion ) {
 				deltaX = -deltaX;
 				deltaY = -deltaY;
 			}
 
-			glm::vec3 rotatedVec = glm::angleAxis( deltaY, toGlm( mU ) ) * toGlm( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
+			glm::vec3 rotatedVec = glm::angleAxis( deltaY, mU ) * ( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
 			rotatedVec = glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
 
-			mCurrentCam.setEyePoint( mInitialCam.getCenterOfInterestPoint() + fromGlm( rotatedVec ) );
-			mCurrentCam.setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, toGlm( mU ) ) * mInitialCam.getOrientation() );
+			mCurrentCam.setEyePoint( mInitialCam.getCenterOfInterestPoint() + rotatedVec );
+			mCurrentCam.setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
 		}
 	}	
 	
