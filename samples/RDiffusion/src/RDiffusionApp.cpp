@@ -1,7 +1,9 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Shader.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
@@ -15,24 +17,24 @@ using namespace std;
 
 class RDiffusionApp : public AppBasic {
   public:
-	void	prepareSettings( Settings *settings );
-	void	setup();
-	void	update();
-	void	draw();
-	void	keyDown( KeyEvent event );
-	void	mouseMove( MouseEvent event );
-	void	mouseDown( MouseEvent event );
-	void	mouseDrag( MouseEvent event );
-	void	mouseUp( MouseEvent event );
+	void	prepareSettings( Settings *settings ) override;
+	void	setup() override;
+	void	update() override;
+	void	draw() override;
+	void	keyDown( KeyEvent event ) override;
+	void	mouseMove( MouseEvent event ) override;
+	void	mouseDown( MouseEvent event ) override;
+	void	mouseDrag( MouseEvent event ) override;
+	void	mouseUp( MouseEvent event ) override;
+  private:
 	void	resetFBOs();
 	
 	params::InterfaceGlRef	mParams;
 		
-	int				mCurrentFBO;
-	int				mOtherFBO;
-	gl::Fbo			mFBOs[2];
-	gl::GlslProg	mShader;
-	gl::Texture		mTexture;
+	int					mCurrentFBO, mOtherFBO;
+	gl::FboRef			mFBOs[2];
+	gl::GlslProgRef		mRDShader;
+	gl::TextureRef		mTexture;
 	
 	Vec2f			mMouse;
 	bool			mMousePressed;
@@ -87,20 +89,15 @@ void RDiffusionApp::setup()
 	mParams->addParam( "Reaction k", &mReactionK, "min=0.0 max=1.0 step=0.001 keyIncr=k keyDecr=K" );	
 	mParams->addParam( "Reaction f", &mReactionF, "min=0.0 max=1.0 step=0.001 keyIncr=f keyDecr=F" );
 	
-	gl::Fbo::Format format;
-	format.enableDepthBuffer( false );
-	
 	mCurrentFBO = 0;
 	mOtherFBO = 1;
-	mFBOs[0] = gl::Fbo( FBO_WIDTH, FBO_HEIGHT, format );
-	mFBOs[1] = gl::Fbo( FBO_WIDTH, FBO_HEIGHT, format );
+	mFBOs[0] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, gl::Fbo::Format().colorTexture().disableDepth() );
+	mFBOs[1] = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, gl::Fbo::Format().colorTexture().disableDepth()  );
 	
-	mShader = gl::GlslProg( loadResource( RES_PASS_THRU_VERT ), loadResource( RES_GSRD_FRAG ) );
-	mTexture = gl::Texture( loadImage( loadResource( RES_STARTER_IMAGE ) ) );
-	mTexture.setWrap( GL_REPEAT, GL_REPEAT );
-	mTexture.setMinFilter( GL_LINEAR );
-	mTexture.setMagFilter( GL_LINEAR );
-	mTexture.bind( 1 );
+	mRDShader = gl::GlslProg::create( loadResource( RES_PASS_THRU_VERT ), loadResource( RES_GSRD_FRAG ) );
+	mTexture = gl::Texture::create( loadImage( loadResource( RES_STARTER_IMAGE ) ),
+								    gl::Texture::Format().wrap(GL_REPEAT).magFilter(GL_LINEAR).minFilter(GL_LINEAR) );
+	gl::getStockShader( gl::ShaderDef().texture() )->bind();
 	
 	resetFBOs();
 }
@@ -110,59 +107,60 @@ void RDiffusionApp::update()
 	const int ITERATIONS = 25;
 	// normally setMatricesWindow flips the projection vertically so that the upper left corner is 0,0
 	// but we don't want to do that when we are rendering the FBOs onto each other, so the last param is false
-	gl::setMatricesWindow( mFBOs[0].getSize(), false );
-	gl::setViewport( mFBOs[0].getBounds() );
+	gl::setMatricesWindow( mFBOs[0]->getSize(), false );
+	gl::viewport( mFBOs[0]->getSize() );
 	for( int i = 0; i < ITERATIONS; i++ ) {
 		mCurrentFBO = ( mCurrentFBO + 1 ) % 2;
 		mOtherFBO   = ( mCurrentFBO + 1 ) % 2;
 		
-		mFBOs[ mCurrentFBO ].bindFramebuffer();
-		mFBOs[ mOtherFBO ].bindTexture();
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-	  
-		mShader.bind();
-		mShader.uniform( "texture", 0 );
-		mShader.uniform( "srcTexture", 1 );
-		mShader.uniform( "width", (float)FBO_WIDTH );
-		mShader.uniform( "ru", mReactionU );
-		mShader.uniform( "rv", mReactionV );
-		mShader.uniform( "k", mReactionK );
-		mShader.uniform( "f", mReactionF );
+		gl::ScopedFramebuffer fboBind( mFBOs[ mCurrentFBO ] );
 		
-		gl::drawSolidRect( mFBOs[ mCurrentFBO ].getBounds() );
-		
-		mShader.unbind();
-		if( mMousePressed ){
-			glColor3f( 1.0f, 1.0f, 1.0f );
-			RectMapping windowToFBO( getWindowBounds(), mFBOs[mCurrentFBO].getBounds() );
-			gl::drawSolidCircle( windowToFBO.map( mMouse ), 50.0f, 32 );
+		{
+			gl::ScopedTextureBind tex( mFBOs[ mOtherFBO ]->getColorTexture(), 0 );
+			gl::ScopedTextureBind texSrcBind( mTexture, 1 );
+			gl::ScopedGlslProg shaderBind( mRDShader );
+			
+			mRDShader->uniform( "tex", 0 );
+			mRDShader->uniform( "texSrc", 1 );
+			mRDShader->uniform( "width", (float) FBO_WIDTH );
+			mRDShader->uniform( "ru", mReactionU );
+			mRDShader->uniform( "rv", mReactionV );
+			mRDShader->uniform( "k", mReactionK );
+			mRDShader->uniform( "f", mReactionF );
+			gl::drawSolidRect( mFBOs[ mCurrentFBO ]->getBounds() );
 		}
-
-		mFBOs[ mCurrentFBO ].unbindFramebuffer();
+		
+		if( mMousePressed ){
+			gl::ScopedGlslProg shaderBind( gl::getStockShader( gl::ShaderDef().color() ) );
+			gl::ScopedColor col( Color::white() );
+			RectMapping windowToFBO( getWindowBounds(), mFBOs[mCurrentFBO]->getBounds() );
+			gl::drawSolidCircle( windowToFBO.map( mMouse ), 25.0f, 32 );
+		}
 	}
 }
 
 void RDiffusionApp::draw()
 {
-	gl::clear( ColorA( 0, 0, 0, 0 ) );
+	gl::clear();
 	gl::setMatricesWindow( getWindowSize() );
-	gl::setViewport( getWindowBounds() );
-	gl::draw( mFBOs[mCurrentFBO].getTexture(), getWindowBounds() );
+	gl::viewport( getWindowSize() );
+	{
+		gl::ScopedTextureBind bind( mFBOs[mCurrentFBO]->getColorTexture() );
+		gl::drawSolidRect( getWindowBounds() );
+	}
 	
 	mParams->draw();
 }
 
 void RDiffusionApp::resetFBOs()
 {
-	mTexture.bind( 0 );
-	gl::setMatricesWindow( mFBOs[0].getSize(), false );
-	gl::setViewport( mFBOs[0].getBounds() );
+	gl::setMatricesWindow( mFBOs[0]->getSize() );
+	gl::viewport( mFBOs[0]->getSize() );
+	gl::ScopedTextureBind texBind( mTexture );
 	for( int i = 0; i < 2; i++ ){
-		mFBOs[i].bindFramebuffer();
-		gl::draw( mTexture, mFBOs[i].getBounds() );
+		gl::ScopedFramebuffer fboBind( mFBOs[i] );
+		gl::drawSolidRect( mFBOs[i]->getBounds() );
 	}
-	gl::Fbo::unbindFramebuffer();
 }
 
 void RDiffusionApp::keyDown( KeyEvent event )
