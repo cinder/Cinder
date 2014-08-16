@@ -30,8 +30,8 @@
 #include "cinder/Matrix33.h"
 
 #include "glm/glm.hpp"
-#include "glm/gtc/Quaternion.hpp"
-#include "glm/gtx/Quaternion.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/quaternion.hpp"
 #include "glm/gtc/matrix_access.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
