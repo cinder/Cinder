@@ -41,6 +41,7 @@ class MatrixAffine2
 	typedef T	TYPE;
 	typedef T	value_type;
 	typedef glm::detail::tvec2<T, defaultp> Vec2T;
+	typedef glm::detail::tvec3<T, defaultp> Vec3T;
 
 	static const size_t MEM_LEN	= sizeof(T)*6;
 
@@ -134,14 +135,14 @@ class MatrixAffine2
 	Vec2T				getColumn( int col ) const;
 	void				setColumn( int col, const Vec2T &v );
 
-	Vec3<T>				getRow( int row ) const;
-	void				setRow( int row, const Vec3<T> &v );
+	Vec3T				getRow( int row ) const;
+	void				setRow( int row, const Vec3T &v );
 
 	void				getColumns( Vec2T *c0, Vec2T *c1, Vec2T *c2 ) const;
 	void				setColumns( const Vec2T &c0, const Vec2T &c1, const Vec2T &c2 );
 
-	void				getRows( Vec3<T> *r0, Vec3<T> *r1, Vec3<T> *r2 ) const;
-	void				setRows( const Vec3<T> &r0, const Vec3<T> &r1, const Vec3<T> &r2 );
+	void				getRows( Vec3T *r0, Vec3T *r1, Vec3T *r2 ) const;
+	void				setRows( const Vec3T &r0, const Vec3T &r1, const Vec3T &r2 );
 
 	//! Sets the matrix to all zeros
 	void				setToNull();
@@ -506,9 +507,9 @@ void MatrixAffine2<T>::setColumn( int col, const Vec2T &v )
 }
 
 template<typename T>
-Vec3<T> MatrixAffine2<T>::getRow( int row ) const 
+typename MatrixAffine2<T>::Vec3T MatrixAffine2<T>::getRow( int row ) const
 { 
-	return Vec3<T>( 
+	return Vec3T(
 		m[row +  0],
 		m[row +  3],
 		m[row +  6]
@@ -516,7 +517,7 @@ Vec3<T> MatrixAffine2<T>::getRow( int row ) const
 }
 
 template<typename T>
-void MatrixAffine2<T>::setRow( int row, const Vec3<T> &v ) 
+void MatrixAffine2<T>::setRow( int row, const Vec3T &v )
 { 
 	m[row +  0] = v.x; 
 	m[row +  3] = v.y; 
@@ -540,7 +541,7 @@ void MatrixAffine2<T>::setColumns( const Vec2T &c0, const Vec2T &c1, const Vec2T
 }
 
 template<typename T>
-void MatrixAffine2<T>::getRows( Vec3<T> *r0, Vec3<T> *r1, Vec3<T> *r2 ) const
+void MatrixAffine2<T>::getRows( Vec3T *r0, Vec3T *r1, Vec3T *r2 ) const
 {
 	*r0 = getRow( 0 );
 	*r1 = getRow( 1 );
@@ -548,7 +549,7 @@ void MatrixAffine2<T>::getRows( Vec3<T> *r0, Vec3<T> *r1, Vec3<T> *r2 ) const
 }
 
 template<typename T>
-void MatrixAffine2<T>::setRows( const Vec3<T> &r0, const Vec3<T> &r1, const Vec3<T> &r2 )
+void MatrixAffine2<T>::setRows( const Vec3T &r0, const Vec3T &r1, const Vec3T &r2 )
 {
 	setRow( 0, r0 );
 	setRow( 1, r1 );
