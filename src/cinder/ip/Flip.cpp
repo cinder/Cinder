@@ -153,10 +153,41 @@ void flipVertical( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface )
 		flipVerticalRawRgb( srcSurface, destSurface, srcDst.first.getSize() );
 }
 
+template<typename T>
+void flipVertical( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel )
+{
+	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcChannel.getBounds(), destChannel->getBounds(), destChannel->getBounds(), Vec2i(0,0) );
+	
+	if( srcChannel.isPlanar() && destChannel->isPlanar() ) { // both channels are planar, so do a series of memcpy()'s
+		const int32_t srcPixelInc = srcChannel.getIncrement();
+		const size_t copyBytes = srcDst.first.getWidth() * srcPixelInc * sizeof(T);
+		for( int32_t y = 0; y < srcDst.first.getHeight(); ++y ) {
+			const T *srcPtr = srcChannel.getData( Vec2i( 0, y ) );
+			T *dstPtr = destChannel->getData( Vec2i( 0, srcDst.first.getHeight() - y - 1 ) );
+			memcpy( dstPtr, srcPtr, copyBytes );
+		}
+	}
+	else {
+		const int8_t srcInc	= srcChannel.getIncrement();
+		const int8_t destInc = destChannel->getIncrement();
+		const int32_t width = srcDst.first.getWidth();
+		for( int y = 0; y < srcDst.first.getHeight(); ++y ) {
+			const T* src = srcChannel.getData( 0, y );
+			T* dest = destChannel->getData( 0, srcDst.first.getHeight() - 1 - y );
+			for ( int x = 0; x < width; ++x ) {
+				*dest	= *src;
+				src	+= srcInc;
+				dest += destInc;
+			}
+		}
+	}
+}
+
 #define flip_PROTOTYPES(r,data,T)\
 	template void flipVertical<T>( SurfaceT<T> *surface );\
-	template void flipVertical<T>( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );
-
+	template void flipVertical<T>( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );\
+	template void flipVertical<T>( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );
+	
 BOOST_PP_SEQ_FOR_EACH( flip_PROTOTYPES, ~, CHANNEL_TYPES )
 
 } } // namespace cinder::ip
