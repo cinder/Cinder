@@ -97,8 +97,10 @@ class TextureBase {
 	//! Returns the appropriate parameter to glGetIntegerv() for a specific target; ie GL_TEXTURE_2D -> GL_TEXTURE_BINDING_2D. Returns 0 on failure.
 	static GLenum	getBindingConstantForTarget( GLenum target );
 	//! Returns whether a Surface of \a width, \a rowBytes and \a surfaceChannelOrder would require an intermediate Surface in order to be copied into a GL Texture.
+	template<typename T>
 	static bool		surfaceRequiresIntermediate( int32_t width, uint8_t pixelBytes, int32_t rowBytes, SurfaceChannelOrder surfaceChannelOrder );
 	//! Converts a SurfaceChannelOrder into an appropriate OpenGL dataFormat and type
+	template<typename T>
 	static void		SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, GLint *dataFormat, GLenum *type );
 	//! calculate the size of mipMap for the corresponding level
 	static Vec2i	calcMipLevelSize( int level, GLint width, GLint height );
@@ -204,7 +206,7 @@ class TextureBase {
 		void			setBorderColor( const ColorA &color );
 
 		//! Sets the swizzle mask corresponding to \c GL_TEXTURE_SWIZZLE_RGBA. Expects \c GL_RED through \c GL_ALPHA, or \c GL_ONE or \c GL_ZERO
-		void	setSwizzleMask( const std::array<GLint,4> &swizzleMask ) { mSwizzleMask = swizzleMask; }
+		void	setSwizzleMask( const std::array<GLint,4> &swizzleMask ) { mSwizzleMask = swizzleMask; mSwizzleSpecified = true; }
 		//! Sets the swizzle mask corresponding to \c GL_TEXTURE_SWIZZLE_RGBA. Expects \c GL_RED through \c GL_ALPHA, or \c GL_ONE or \c GL_ZERO
 		void	setSwizzleMask( GLint r, GLint g, GLint b, GLint a );
 		//! Returns the swizzle mask corresponding to \c GL_TEXTURE_SWIZZLE_RGBA.
@@ -232,6 +234,7 @@ class TextureBase {
 		GLint				mInternalFormat;
 		GLint				mPixelDataFormat;
 		GLenum				mPixelDataType;
+		bool				mSwizzleSpecified;
 		std::array<GLint,4>	mSwizzleMask;
 		bool				mBorderSpecified;
 		std::array<GLfloat,4>	mBorderColor;
@@ -379,12 +382,12 @@ class Texture2d : public TextureBase {
 	static Texture2dRef	create( int width, int height, Format format = Format() );
 	/** \brief Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
 	static Texture2dRef	create( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() );
-	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	//! Constructs a Texture based on the contents of \a surface.
 	static Texture2dRef	create( const Surface8u &surface, Format format = Format() );
-	/** \brief Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	static Texture2dRef	create( const Surface32f &surface, Format format = Format() );
-	/** \brief Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
+	//! Constructs a Texture based on the contents of \a channel. Sets swizzle mask to {R,R,R,1} where supported unless otherwise specified in \a format.
 	static Texture2dRef	create( const Channel8u &channel, Format format = Format() );
+	//! Constructs a Texture based on the contents of \a surface.
+	static Texture2dRef	create( const Surface32f &surface, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
 	static Texture2dRef	create( const Channel32f &channel, Format format = Format() );
 	//! Constructs a Texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. Uses a Format's intermediate PBO when available, which is resized as necessary.
@@ -406,16 +409,14 @@ class Texture2d : public TextureBase {
 	//! Allows specification of some size other than the Texture's true size for cases where not all pixels in the Texture are usable / "clean"; common in video decoding pipelines in particular. Specified in pixels, and relative to whichever origin is appropriate to the Texture's "top-downness".
 	void			setCleanSize( GLint cleanWidth, GLint cleanHeight );
 	
-	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's.
-	void			update( const Surface8u &surface, int mipLevel = 0 );
-	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's.
-	void			update( const Surface32f &surface, int mipLevel = 0 );
-	//! Updates the pixels of a Texture with contents of \a surface. Expects \a area's size to match the Texture's.
-	void			update( const Surface8u &surface, const Area &area, int mipLevel = 0 );
-	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's.
-	void			update( const Channel32f &channel, int mipLevel = 0 );
-	//! Updates the pixels of a Texture with contents of \a channel. Expects \a area's size to match the Texture's.
-	void			update( const Channel8u &channel, const Area &area, int mipLevel = 0 );
+	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Surface8u &surface, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Channel8u &channel, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Surface32f &surface, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Channel32f &channel, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a textureData. Inefficient if the bounds of \a textureData don't match those of \a this
 	void			update( const TextureData &textureData );
 #if ! defined( CINDER_GL_ES )
@@ -471,27 +472,21 @@ class Texture2d : public TextureBase {
   protected:
 	virtual void	printDims( std::ostream &os ) const override;
 
-	/** Consider Texture2d::create() instead. Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. **/
 	Texture2d( int width, int height, Format format = Format() );
-	/** Consider Texture2d::create() instead. Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
 	Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() );
-	/** Consider Texture2d::create() instead. Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
 	Texture2d( const Surface8u &surface, Format format = Format() );
-	/** Consider Texture2d::create() instead. Constructs a texture based on the contents of \a surface. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
 	Texture2d( const Surface32f &surface, Format format = Format() );
-	/** Consider Texture2d::create() instead. Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
 	Texture2d( const Channel8u &channel, Format format = Format() );
-	/** Consider Texture2d::create() instead. Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
 	Texture2d( const Channel32f &channel, Format format = Format() );
-	/** Consider Texture2d::create() instead. Constructs a texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. **/
 	Texture2d( const ImageSourceRef &imageSource, Format format = Format() );
-	//! Consider Texture2d::create() instead. Constructs a Texture based on an externally initialized OpenGL texture. \a aDoNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
 	Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose );
-	//! Consider Texture2d::create() instead. Constructs a Texture based on an externally initialized OpenGL texture. \a aDoNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
 	Texture2d( const TextureData &data, Format format );
 	
 	void	initParams( Format &format, GLint defaultInternalFormat );
-	void	setData( bool newData, int mipLevel, const Surface8u &surface );
+	template<typename T>
+	void	setData( const SurfaceT<T> &surface, bool createStorage, int mipLevel, const Vec2i &offset );
+	template<typename T>
+	void	setData( const ChannelT<T> &channel, bool createStorage, int mipLevel, const Vec2i &offset );
 	void	initData( const unsigned char *data, GLenum dataFormat, GLenum type, const Format &format );
 	void	initData( const float *data, GLint dataFormat, const Format &format );
 	void	initData( const ImageSourceRef &imageSource, const Format &format );
