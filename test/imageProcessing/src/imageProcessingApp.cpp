@@ -28,6 +28,7 @@ void imageProcessingApp::setup()
 	Surface8u rgb8( img );
 	Surface8u rgba8( rgb8.getWidth(), rgb8.getHeight(), true );
 	rgba8.copyFrom( rgb8, rgb8.getBounds() );
+	Channel8u y8( img );
 
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
 			app::console() << "Flip Vertical: RGB -> RGB" << std::endl;
@@ -57,6 +58,22 @@ void imageProcessingApp::setup()
 			app::console() << "Flip Vertical 8bit: RGB -> RGBA" << std::endl;
 			Surface s8( rgb8.getWidth(), rgb8.getHeight(), true );
 			ip::flipVertical( rgb8, &s8 );
+			return gl::Texture::create( s8 );
+		}
+	);
+
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Flip Vertical 8bit: Y -> Y" << std::endl;
+			Channel8u s8( rgb8.getWidth(), rgb8.getHeight() );
+			ip::flipVertical( y8, &s8 );
+			return gl::Texture::create( s8 );
+		}
+	);
+
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Flip Vertical 8bit: nonplanar Y -> Y" << std::endl;
+			Channel8u s8( rgb8.getWidth(), rgb8.getHeight() );
+			ip::flipVertical( rgb8.getChannelRed(), &s8 );
 			return gl::Texture::create( s8 );
 		}
 	);
