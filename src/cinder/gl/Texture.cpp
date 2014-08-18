@@ -524,22 +524,7 @@ Texture2d::Texture2d( const Surface8u &surface, Format format )
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
-	
-	GLint dataFormat;
-	GLenum type;
-	SurfaceChannelOrderToDataFormatAndType( surface.getChannelOrder(), &dataFormat, &type );
-	
-	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
-	if( ( ! mTopDown ) || surfaceRequiresIntermediate( surface.getWidth(), surface.getPixelBytes(), surface.getRowBytes(), surface.getChannelOrder() ) ) {
-		Surface8u intermediateSurface( surface.getWidth(), surface.getHeight(), surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
-		if( mTopDown )
-			intermediateSurface.copyFrom( surface, surface.getBounds() );
-		else
-			ip::flipVertical( surface, &intermediateSurface );
-		initData( intermediateSurface.getData(), dataFormat, type, format );
-	}
-	else
-		initData( surface.getData(), dataFormat, type, format );
+	setData( true, 0, surface );
 }
 
 Texture2d::Texture2d( const Surface32f &surface, Format format )
@@ -580,7 +565,7 @@ Texture2d::Texture2d( const Channel8u &channel, Format format )
 	initParams( format, GL_LUMINANCE );
 	
 	// if the texture isn't top-down, or if the data is not already contiguous, we'll need to create a block of memory that is
-	if( (! mTopDown) || ( channel.getIncrement() != 1 ) || ( channel.getRowBytes() != channel.getWidth() * sizeof( uint8_t ) ) ) {
+	if( ( ! mTopDown ) || ( channel.getIncrement() != 1 ) || ( channel.getRowBytes() != channel.getWidth() * sizeof( uint8_t ) ) ) {
 		unique_ptr<uint8_t[]> data( new uint8_t[ channel.getWidth() * channel.getHeight() ] );
 		uint8_t* dest		= data.get();
 		const int8_t inc	= channel.getIncrement();
@@ -609,7 +594,7 @@ Texture2d::Texture2d( const Channel32f &channel, Format format )
 	initParams( format, GL_RED );
 	
 	// if the texture isn't top-down, or if the data is not already contiguous, we'll need to create a block of memory that is
-	if( (! mTopDown) || ( channel.getIncrement() != 1 ) || ( channel.getRowBytes() != channel.getWidth() * sizeof(float) ) ) {
+	if( ( ! mTopDown ) || ( channel.getIncrement() != 1 ) || ( channel.getRowBytes() != channel.getWidth() * sizeof(float) ) ) {
 		unique_ptr<float[]> data( new float[channel.getWidth() * channel.getHeight()] );
 		float* dest	= data.get();
 		const int8_t inc = channel.getIncrement();
@@ -688,7 +673,45 @@ Texture2d::Texture2d( const TextureData &data, Format format )
 		glGenerateMipmap( mTarget );
 	}
 }
+
+void Texture2d::setData( bool newData, int mipLevel, const Surface8u &surface )
+{
+	Surface8u sourceSurface;
+	Vec2i mipSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
 	
+	if( surface.getSize() != mipSize )
+		CI_LOG_W( "Setting gl::Texture data with incorrect size for mip level " << mipLevel );
+	
+	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
+	if( ( ! mTopDown ) || surfaceRequiresIntermediate( mipSize.x, surface.getPixelBytes(), surface.getRowBytes(), surface.getChannelOrder() )
+		|| ( surface.getSize() != mipSize ) )
+	 {
+		Surface8u intermediateSurface( mipSize.x, mipSize.y, surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
+		if( mTopDown )
+			intermediateSurface.copyFrom( surface, surface.getBounds() );
+		else
+			ip::flipVertical( surface, &intermediateSurface );
+		sourceSurface = intermediateSurface;
+	}
+	else
+		sourceSurface = surface;
+		
+	GLint dataFormat;
+	GLenum type;
+	SurfaceChannelOrderToDataFormatAndType( sourceSurface.getChannelOrder(), &dataFormat, &type );
+
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	
+	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
+	if( newData )
+		glTexImage2D( mTarget, 0, mInternalFormat, mWidth, mHeight, 0, dataFormat, type, sourceSurface.getData() );
+    else
+		glTexSubImage2D( mTarget, mipLevel, 0, 0, mipSize.x, mipSize.y, dataFormat, type, sourceSurface.getData() );
+	
+	if( mMipmapping && mipLevel == 0 )
+		glGenerateMipmap( mTarget );
+}
+
 void Texture2d::initData( const unsigned char *data, GLenum dataFormat, GLenum type, const Format &format )
 {
 	ScopedTextureBind tbs( mTarget, mTextureId );
@@ -838,12 +861,14 @@ void Texture2d::update( const Surface8u &surface, int mipLevel )
 	if( mipLevel == 0 ) {
 		// we need an intermediate format for certain channel orders, and rowBytes != numChannels * width
 		Surface8u sourceSurface;
-		if( surfaceRequiresIntermediate( surface.getWidth(), surface.getPixelBytes(), surface.getRowBytes(), surface.getChannelOrder() )
+		if( ( ! mTopDown ) || surfaceRequiresIntermediate( surface.getWidth(), surface.getPixelBytes(), surface.getRowBytes(), surface.getChannelOrder() )
 			|| ( surface.getWidth() != getWidth() ) || ( surface.getHeight() != getHeight() ) )
 		{
-			CI_LOG_V( "Surface size, rowBytes or ChannelOrder will prevent full efficiency in gl::Texture upload." );
-			sourceSurface = Surface8u( getWidth(), getHeight(), surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGBA );
-			sourceSurface.copyFrom( surface, sourceSurface.getBounds() );
+			sourceSurface = Surface8u( getWidth(), getHeight(), surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
+			if( mTopDown )
+				sourceSurface.copyFrom( surface, sourceSurface.getBounds() );
+			else
+				ip::flipVertical( surface, &sourceSurface );	
 		}
 		else
 			sourceSurface = surface;
@@ -1091,6 +1116,13 @@ void Texture2d::initParams( Format &format, GLint defaultInternalFormat )
 {
 	mTopDown = format.mLoadTopDown;
 	TextureBase::initParams( format, defaultInternalFormat );
+	#if ! defined( CINDER_GL_ES )
+	if( mMipmapping ) {
+		glTexParameteri( mTarget, GL_TEXTURE_BASE_LEVEL, format.mBaseMipmapLevel );
+		glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, format.mMaxMipmapLevel );
+	}
+#endif
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////

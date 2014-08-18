@@ -491,6 +491,7 @@ class Texture2d : public TextureBase {
 	Texture2d( const TextureData &data, Format format );
 	
 	void	initParams( Format &format, GLint defaultInternalFormat );
+	void	setData( bool newData, int mipLevel, const Surface8u &surface );
 	void	initData( const unsigned char *data, GLenum dataFormat, GLenum type, const Format &format );
 	void	initData( const float *data, GLint dataFormat, const Format &format );
 	void	initData( const ImageSourceRef &imageSource, const Format &format );
