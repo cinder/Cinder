@@ -502,21 +502,21 @@ void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft 
 	auto ctx = gl::context();
 	ctx->getModelMatrixStack().back() = mat4();
 	ctx->getViewMatrixStack().back() = mat4();
-	if( originUpperLeft ) {
-		const float v[16] = {	2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f,
-								0.0f, 2.0f / -(float)screenHeight, 0.0f, 1.0f,
-								0.0f, 0.0f, -1.0f, 0.0f,
-								0.0f, 0.0f, 0.0f, 1.0f };
-		ctx->getProjectionMatrixStack().back() = glm::make_mat4( v );
-	}
-	else {
 
-		const float v[16] = {	2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f,
-								0.0f, 2.0f / (float)screenHeight, 0.0f, -1.0f,
-								0.0f, 0.0f, -1.0f, 0.0f,
-								0.0f, 0.0f, 0.0f, 1.0f };
-		ctx->getProjectionMatrixStack().back() = glm::make_mat4( v );
+	float sx = 2.0f / (float)screenWidth;
+	float sy = 2.0f / (float)screenHeight;
+	float ty = -1;
+
+	if( originUpperLeft ) {
+		sy *= -1;
+		ty *= -1;
 	}
+
+	mat4 &m = ctx->getProjectionMatrixStack().back();
+	m = mat4( sx, 0,  0, 0,
+			  0, sy,  0, 0,
+			  0,  0, -1, 0,
+			 -1, ty,  0, 1 );
 }
 
 void setMatricesWindow( const ci::Vec2i& screenSize, bool originUpperLeft )
