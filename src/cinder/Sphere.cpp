@@ -115,7 +115,7 @@ Sphere Sphere::calculateBoundingSphere( const Vec3f *points, size_t numPoints )
 	// compute center and radius
 	Vec3f center = 0.5f * ( min + max );
 	float maxDistance = distance2( center, points[0] );
-	for( size_t i = 1; i < points.size(); ++i ) {
+	for( size_t i = 1; i < numPoints; ++i ) {
 		float dist = distance2( center, points[i] );
 		if( dist > maxDistance )
 			maxDistance = dist;
