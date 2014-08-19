@@ -32,7 +32,6 @@ class Arcball {
 	Arcball()
 	{
 		setNoConstraintAxis();
-		mCurrentQuat = mInitialQuat = Quatf::identity();
 	}
 	Arcball( const Vec2i &aScreenSize )
 		: mWindowSize( aScreenSize )
@@ -40,7 +39,6 @@ class Arcball {
 		setCenter( Vec2f( mWindowSize.x / 2.0f, mWindowSize.y / 2.0f ) );
 		mRadius = std::min( (float)mWindowSize.x / 2, (float)mWindowSize.y / 2 );
 		setNoConstraintAxis();
-		mCurrentQuat = mInitialQuat = Quatf::identity();
 	}
 	
 	void mouseDown( const Vec2i &mousePos )
@@ -58,39 +56,41 @@ class Arcball {
 			to = constrainToAxis( to, mConstraintAxis );
 		}
 		
-		Vec3f axis = from.cross( to );
-		mCurrentQuat = mInitialQuat * Quatf( from.dot( to ), axis.x, axis.y, axis.z );
-		mCurrentQuat.normalize();
+		Vec3f axis = cross( from, to );
+		mCurrentQuat = normalize( mInitialQuat * Quatf( dot( from, to ), axis.x, axis.y, axis.z ) );
 	}
 	
-	void	resetQuat() { mCurrentQuat = mInitialQuat = Quatf::identity(); }
-	Quatf	getQuat() { return mCurrentQuat; }
-	void	setQuat( const Quatf &quat ) { mCurrentQuat = quat; }
+	void			resetQuat()					{ mCurrentQuat = mInitialQuat = quat(); }
+	const quat& 	getQuat() const				{ return mCurrentQuat; }
+	void			setQuat( const quat &q )	{ mCurrentQuat = q; }
 	
-	void	setWindowSize( const Vec2i &aWindowSize ) { mWindowSize = aWindowSize; }
-	void	setCenter( const Vec2f &aCenter ) { mCenter = aCenter; }
-	Vec2f	getCenter() const { return mCenter; }
-	void	setRadius( float aRadius ) { mRadius = aRadius; }
-	float	getRadius() const { return mRadius; }
-	void	setConstraintAxis( const Vec3f &aConstraintAxis ) { mConstraintAxis = aConstraintAxis; mUseConstraint = true; }
-	void	setNoConstraintAxis() { mUseConstraint = false; }
-	bool	isUsingConstraint() const { return mUseConstraint; }
-	Vec3f	getConstraintAxis() const { return mConstraintAxis; }
+	void			setWindowSize( const Vec2i &aWindowSize )	{ mWindowSize = aWindowSize; }
+	void			setCenter( const Vec2f &aCenter )			{ mCenter = aCenter; }
+	const vec2&		getCenter() const							{ return mCenter; }
+
+	void	setRadius( float aRadius )	{ mRadius = aRadius; }
+	float	getRadius() const			{ return mRadius; }
+
+	void	setConstraintAxis( const Vec3f &aConstraintAxis )	{ mConstraintAxis = aConstraintAxis; mUseConstraint = true; }
+	void	setNoConstraintAxis()								{ mUseConstraint = false; }
+	bool	isUsingConstraint() const							{ return mUseConstraint; }
+	const vec3&	getConstraintAxis() const						{ return mConstraintAxis; }
 	
-	Vec3f mouseOnSphere( const Vec2i &point ) {
+	Vec3f mouseOnSphere( const Vec2i &point )
+	{
 		Vec3f result;
 		
 		result.x = ( point.x - mCenter.x ) / ( mRadius * 2 );
 		result.y = ( point.y - mCenter.y ) / ( mRadius * 2 );
 		result.z = 0.0f;
 
-		float mag = result.lengthSquared();
+		float mag = length2( result );
 		if( mag > 1.0f ) {
-			result.normalize();
+			result = normalize( result );
 		}
 		else {
 			result.z = math<float>::sqrt( 1.0f - mag );
-			result.normalize();
+			result = normalize( result );
 		}
 
 		return result;
@@ -101,21 +101,19 @@ class Arcball {
 	Vec3f constrainToAxis( const Vec3f &loose, const Vec3f &axis )
 	{
 		float norm;
-		Vec3f onPlane = loose - axis * axis.dot( loose );
-		norm = onPlane.lengthSquared();
+		Vec3f onPlane = loose - axis * dot( axis, loose );
+		norm = length2( onPlane );
 		if( norm > 0.0f ) {
 			if( onPlane.z < 0.0f )
 				onPlane = -onPlane;
 			return ( onPlane * ( 1.0f / math<float>::sqrt( norm ) ) );
 		}
 		
-		if( axis.dot( Vec3f::zAxis() ) < 0.0001f ) {
-			onPlane = Vec3f::xAxis();
-		}
-		else {
-			onPlane = Vec3f( -axis.y, axis.x, 0.0f ).normalized();
-		}
-		
+		if( dot( axis, vec3( 0, 0, 1 ) ) < 0.0001f )
+			onPlane = vec3( 1, 0, 0 );
+		else
+			onPlane = normalize( vec3( -axis.y, axis.x, 0 ) );
+
 		return onPlane;
 	}
 	
