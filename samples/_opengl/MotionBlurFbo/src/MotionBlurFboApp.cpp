@@ -37,12 +37,10 @@ const int SUBFRAMES = 16; // increasing this number increases quality
 
 void MotionBlurFboApp::setup()
 {
-	mCam.lookAt( Vec3f( 0, 0, 7 ), Vec3f::zero() );
+	mCam.lookAt( Vec3f( 0, 0, 7 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	mCubeRotation.setToIdentity();
-	
+
 	mBatch = gl::Batch::create( geom::Cube().enable( geom::Attrib::COLOR ), gl::getStockShader( gl::ShaderDef().color() ) );
-	
 	mFbo = gl::Fbo::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ) );
 
 #if defined( CINDER_GL_ES )
@@ -66,13 +64,13 @@ void MotionBlurFboApp::keyDown( KeyEvent event )
 void MotionBlurFboApp::updateCubeRotation( double time )
 {
 	// Rotate the cube by .03 radians around an arbitrary axis (which changes over time)
-	Vec3f axis( sin(time), cos( time * 3 ), 0.5f );
-	mCubeRotation.rotate( axis.normalized(), sin( time ) * 0.02f );
+	auto axis = normalize( vec3( sin( time ), cos( time * 3 ), 0.5f ) );
+	mCubeRotation *= rotate( sinf( time ) * 0.02f, axis );
 }
 
 void MotionBlurFboApp::draw()
 {
-	gl::viewport( Vec2f::zero(), mAccumFbo->getSize() );
+	gl::viewport( vec2(), mAccumFbo->getSize() );
 
 	if( ! mPaused ) {
 		// make 'mAccumFbo' the active framebuffer

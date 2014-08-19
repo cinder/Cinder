@@ -34,9 +34,7 @@ void FBOBasicApp::setup()
 	mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format.depthTexture() );
 
 	gl::enableDepthRead();
-	gl::enableDepthWrite();	
-
-	mTorusRotation.setToIdentity();
+	gl::enableDepthWrite();
 }
 
 // Render the torus into the FBO
@@ -55,7 +53,7 @@ void FBOBasicApp::renderSceneToFbo()
 	// setup our camera to render the torus scene
 	CameraPersp cam( mFbo->getWidth(), mFbo->getHeight(), 60.0f );
 	cam.setPerspective( 60, mFbo->getAspectRatio(), 1, 1000 );
-	cam.lookAt( Vec3f( 2.8f, 1.8f, -2.8f ), Vec3f::zero() );
+	cam.lookAt( Vec3f( 2.8f, 1.8f, -2.8f ), vec3( 0 ));
 	gl::setMatrices( cam );
 
 	// set the modelview matrix to reflect our current rotation
@@ -65,14 +63,14 @@ void FBOBasicApp::renderSceneToFbo()
 	gl::ScopedGlslProg shaderScp( gl::getStockShader( gl::ShaderDef().color() ) );
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
 //	gl::drawTorus( 1.4f, 0.3f, 32, 64 );
-	gl::drawCube( Vec3f::zero(), Vec3f( 2.2f, 2.2f, 2.2f ) );
+	gl::drawCube( vec3( 0 ), vec3( 2.2f ) );
 	gl::color( Color::white() );
 }
 
 void FBOBasicApp::update()
 {
 	// Rotate the torus by .06 radians around an arbitrary axis
-	mTorusRotation.rotate( Vec3f( 0.16666f, 0.333333f, 0.666666f ).normalized(), 0.06f );
+	mTorusRotation *= rotate( 0.06f, normalize( vec3( 0.16666f, 0.333333f, 0.666666f ) ) );
 	
 	// render into our FBO
 	renderSceneToFbo();
@@ -84,12 +82,12 @@ void FBOBasicApp::draw()
 	gl::clear( Color( 0.35f, 0.35f, 0.35f ) );
 
 	// set the viewport to match our window
-	gl::viewport( Vec2f::zero(), toPixels( getWindowSize() ) );
+	gl::viewport( vec2( 0 ), toPixels( getWindowSize() ) );
 
 	// setup our camera to render the cube
 	CameraPersp cam( getWindowWidth(), getWindowHeight(), 60.0f );
 	cam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	cam.lookAt( Vec3f( 2.6f, 1.6f, -2.6f ), Vec3f::zero() );
+	cam.lookAt( Vec3f( 2.6f, 1.6f, -2.6f ), vec3( 0 ) );
 	gl::setMatrices( cam );
 
 	// use the scene we rendered into the FBO as a texture
@@ -98,7 +96,7 @@ void FBOBasicApp::draw()
 	// draw a cube textured with the FBO
 	{
 		gl::ScopedGlslProg shaderScp( gl::getStockShader( gl::ShaderDef().texture() ) );
-		gl::drawCube( Vec3f::zero(), Vec3f( 2.2f, 2.2f, 2.2f ) );
+		gl::drawCube( vec3( 0 ), vec3( 2.2f ) );
 	}
 
 	// show the FBO texture in the upper left corner
