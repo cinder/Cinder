@@ -549,6 +549,45 @@ public:
 	virtual Cone&	set( const vec3 &from, const vec3 &to ) override { Cylinder::set( from, to ); return *this; }
 };
 
+//! Defaults to a plane on the z axis, point = {0, 0, 0}, normal = {0, 1, 0}
+class Plane : public Source {
+  public:
+	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
+	Plane();
+	virtual ~Plane() {}
+
+	virtual Plane&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
+	virtual Plane&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+
+	virtual Plane&	segments( const Vec2i &segments )	{ mNumSegments = segments; mCalculationsCached = false; return *this; }
+	//! default is {2, 2}, or 1 in each direction
+	virtual Plane&	size( const Vec2f &size )	{ mSize = size; mCalculationsCached = false; return *this; }
+	virtual Plane&	axis( const Vec3f &point, const Vec3f &normal );
+
+	Plane& origin( const Vec3f &origin )	{ return axis( origin, mNormal ); }
+	Plane& normal( const Vec3f &normal )	{ return axis( mOrigin, normal ); }
+
+	virtual size_t		getNumVertices() const override		{ calculate(); return mPositions.size(); }
+	virtual size_t		getNumIndices() const override		{ calculate(); return mIndices.size(); }
+	virtual Primitive	getPrimitive() const override		{ return Primitive::TRIANGLES; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+
+  protected:
+	virtual void	calculate() const;
+
+	Vec2i		mNumSegments;
+	Vec2f		mSize;
+	Vec3f		mOrigin, mNormal;
+
+	mutable bool						mCalculationsCached;
+	mutable std::vector<Vec3f>			mPositions;
+	mutable std::vector<Vec2f>			mTexCoords;
+	mutable std::vector<Vec3f>			mNormals;
+	mutable std::vector<Vec3f>			mColors;
+	mutable std::vector<uint32_t>		mIndices;
+};
+
 #if 0
 class SplineExtrusion : public Source {
 public:

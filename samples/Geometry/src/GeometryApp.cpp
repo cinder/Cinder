@@ -21,7 +21,7 @@ using namespace std;
 class GeometryApp : public AppNative
 {
 public:
-	typedef enum { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS } Primitive;
+	typedef enum { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, PLANE } Primitive;
 	typedef enum { LOW, DEFAULT, HIGH } Quality;
 	typedef enum { SHADED, WIREFRAME } ViewMode;
 
@@ -266,7 +266,7 @@ void GeometryApp::keyDown( KeyEvent event )
 void GeometryApp::createParams()
 {
 #if ! defined( CINDER_GL_ES )
-	std::string primitives[] = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus" };
+	std::string primitives[] = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Plane" };
 	std::string qualities[] = { "Low", "Default", "High" };
 	std::string viewmodes[] = { "Shaded", "Wireframe" };
 
@@ -398,6 +398,22 @@ void GeometryApp::createPrimitive(void)
 			case HIGH: primitive = geom::SourceRef( new geom::Torus( geom::Torus().segmentsAxis(60).segmentsRing(60) ) ); break;
 		}
 		break;
+	case PLANE:
+			Vec2i numSegments;
+			switch( mQualityCurrent ) {
+				case DEFAULT: numSegments = Vec2i( 10, 10 ); break;
+				case LOW: numSegments = Vec2i( 2, 2 ); break;
+				case HIGH: numSegments = Vec2i( 100, 100 ); break;
+			}
+
+			auto plane = geom::Plane().segments( numSegments );
+
+//			plane.normal( Vec3f( 0, 0, 1 ) ); // change the normal angle of the plane
+//			plane.axis( Vec3f( 1, 1, 0 ), Vec3f( 0, 0, 1 ) ); // change the axis with point + normal (point = origin)
+
+			primitive = geom::SourceRef( new geom::Plane( plane ) );
+
+			break;
 	}
 
 	if( mShowColors )
