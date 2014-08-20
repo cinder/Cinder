@@ -263,8 +263,8 @@ void TextureMipmappingApp::renderPlaneTexture( FilterControlRef f )
 		default:
 		break;
 	}
-	// Drawing this enormous so that we can see each mip level.
-	gl::drawSolidRect( Rectf( 0, 0, 10000, 10000 ), Rectf( 0, 0, 50, 50 ) );
+	// Drawing this enormous so that we can see each mip level. 50x50 for texcoords leads to a repeating/tiled texture
+	gl::drawSolidRect( Rectf( 0, 0, 10000, 10000 ), Vec2f( 0, 0 ), Vec2f( 50, 50 ) );
 }
 
 void TextureMipmappingApp::renderFilterButtons( FilterControlRef f )
@@ -417,17 +417,18 @@ void TextureMipmappingApp::createGlGenMip( const gl::Texture::Format &format, Fi
 void TextureMipmappingApp::createUserGenMip( const gl::Texture::Format &format, FilterControlRef f )
 {
 	// USER GENERATED MIPMAPS WITH DIFFERENT COLORS TO SHOW THE MIPMAP GENERATION
-	Surface* mSurface = new Surface( 512, 512, false );
-	ip::fill( mSurface, Color( CM_HSV, 1, 1, 1 ) );
-	f->mUserCreatedMipmap = gl::Texture::create( *mSurface, format );
+	Surface surface( 512, 512, false );
+	ip::fill( &surface, Color( CM_HSV, 1, 1, 1 ) );
+	f->mUserCreatedMipmap = gl::Texture::create( surface, format );
 	int mipLevels = f->mUserCreatedMipmap->getNumMipLevels();
 	
 	for( int level = 1; level < mipLevels; ++level ) {
 		float hue = static_cast<float>( level ) / static_cast<float>( mipLevels );
-		ip::fill( mSurface, Color( CM_HSV, hue, 1, 1 ) );
-		f->mUserCreatedMipmap->update( *mSurface, level );
+		Vec2i mipSize = gl::Texture2d::calcMipLevelSize( level, surface.getWidth(), surface.getHeight() );
+		Surface mipSurface( mipSize.x, mipSize.y, false );
+		ip::fill( &mipSurface, Color( CM_HSV, hue, 1, 1 ) );
+		f->mUserCreatedMipmap->update( mipSurface, level );
 	}
-	delete mSurface;
 }
 
 void TextureMipmappingApp::createUserResizedGenMip( const gl::Texture::Format &format, FilterControlRef f )
