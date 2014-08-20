@@ -24,7 +24,7 @@
 #include "cinder/audio/msw/FileMediaFoundation.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Exception.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 #include <mfidl.h>
 #include <mfapi.h>

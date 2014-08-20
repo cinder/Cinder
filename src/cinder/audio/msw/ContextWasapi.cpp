@@ -33,6 +33,7 @@
 #include "cinder/audio/Exception.h"
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/Log.h"
 
 #include <Audioclient.h>
 #include <mmdeviceapi.h>
