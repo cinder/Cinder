@@ -1,6 +1,7 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/ip/Fill.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -9,9 +10,13 @@ using namespace std;
 class TextureUploadApp : public AppNative {
   public:
 	void setup();
-	void mouseDown( MouseEvent event );	
-	void update();
-	void draw();
+	template<typename T>
+	void setupTexConstructor();
+	template<typename T>
+	void setupTexUpdate();
+
+	void mouseDown( MouseEvent event ) override;
+	void draw() override;
 
 	gl::TextureRef		mCurTex;
 	ImageSourceRef		mImg, mImg2, mImgAlpha, mImg2Alpha;
@@ -65,6 +70,64 @@ gl::TextureRef TextureUploadApp::genTexUpdate( bool color, bool alpha )
 	}
 }
 
+template<typename T>
+void TextureUploadApp::setupTexConstructor()
+{
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Constructor Surface RGB " << sizeof(T) * 8 << "-bit" << std::endl;
+			return genTexConstructor<T>( true, false );
+		}
+	);
+
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Constructor Surface RGBA " << sizeof(T) * 8 << "-bit" << std::endl;
+			return genTexConstructor<T>( true, true );
+		}
+	);
+
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Constructor Channel " << sizeof(T) * 8 << "-bit" << std::endl;
+			return genTexConstructor<T>( false, false );
+		}
+	);
+}
+
+template<typename T>
+void TextureUploadApp::setupTexUpdate()
+{
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Update Surface RGB " << sizeof(T) * 8 << "-bit" << std::endl;
+			return genTexUpdate<T>( true, false );
+		}
+	);
+
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Update Surface RGBA " << sizeof(T) * 8 << "-bit" << std::endl;
+			return genTexUpdate<T>( true, true );
+		}
+	);
+
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Update Channel " << sizeof(T) * 8 << "-bit" << std::endl;
+			return genTexUpdate<T>( false, false );
+		}
+	);
+	
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Update Subregion RGB " << sizeof(T) * 8 << "-bit" << std::endl;
+			SurfaceT<T> square( 64, 64, false );
+			gl::TextureRef result = gl::Texture::create( mImg2 );
+			ip::fill( &square, Color( 1, 0.5f, 0.25f ) );
+			for( int y = 0; y < result->getHeight() / square.getHeight(); y += 2 ) {
+				for( int x = y%2; x < result->getWidth() / square.getWidth(); x += 2 ) {
+					result->update( square, 0, Vec2i( x * square.getWidth(), y * square.getHeight() ) );
+				}
+			}
+			return result;
+		}
+	);
+}
+
 void TextureUploadApp::setup()
 {
 	mImg = loadImage( loadAsset( "fish.jpg" ) );
@@ -74,80 +137,20 @@ void TextureUploadApp::setup()
 	
 	// 8 bit
 	{
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Constructor Surface8u RGB" << std::endl;
-				return genTexConstructor<uint8_t>( true, false );
-			}
-		);
+		setupTexConstructor<uint8_t>();
+		setupTexUpdate<uint8_t>();
+	}
 
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Constructor Surface8u RGBA" << std::endl;
-				return genTexConstructor<uint8_t>( true, true );
-			}
-		);
-
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Constructor Channel8u" << std::endl;
-				return genTexConstructor<uint8_t>( false, false );
-			}
-		);
-
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Update Surface8u RGB" << std::endl;
-				return genTexUpdate<uint8_t>( true, false );
-			}
-		);
-
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Update Surface8u RGBA" << std::endl;
-				return genTexUpdate<uint8_t>( true, true );
-			}
-		);
-
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Update Channel8u" << std::endl;
-				return genTexUpdate<uint8_t>( false, false );
-			}
-		);
+	// 16 bit
+	{
+		setupTexConstructor<uint16_t>();
+		setupTexUpdate<uint16_t>();
 	}
 	
 	// 32 bit
 	{
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Constructor Surface32f RGB" << std::endl;
-				return genTexConstructor<float>( true, false );
-			}
-		);
-
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Constructor Surface32f RGBA" << std::endl;
-				return genTexConstructor<float>( true, true );
-			}
-		);
-
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Constructor Channel32f" << std::endl;
-				return genTexConstructor<float>( false, false );
-			}
-		);
-
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Update Surface32f RGB" << std::endl;
-				return genTexUpdate<float>( true, false );
-			}
-		);
-
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Update Surface32f RGBA" << std::endl;
-				return genTexUpdate<float>( true, true );
-			}
-		);
-
-		mTexGenFns.push_back( [=](void)->gl::TextureRef {
-				app::console() << "Update Channel32f" << std::endl;
-				return genTexUpdate<float>( false, false );
-			}
-		);
+		setupTexConstructor<uint8_t>();
+		setupTexUpdate<uint8_t>();
 	}
 
 	mCurFnIdx = 0;
@@ -158,10 +161,7 @@ void TextureUploadApp::mouseDown( MouseEvent event )
 {
 	mCurFnIdx = ( mCurFnIdx + 1 ) % mTexGenFns.size();
 	mCurTex = mTexGenFns[mCurFnIdx]();
-}
-
-void TextureUploadApp::update()
-{
+	console() << *mCurTex << std::endl;
 }
 
 void TextureUploadApp::draw()

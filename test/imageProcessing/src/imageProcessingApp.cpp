@@ -10,6 +10,9 @@ using namespace std;
 class imageProcessingApp : public AppNative {
   public:
 	void setup();
+	template<typename T>
+	void setupFlipVertical();
+	
 	void mouseDown( MouseEvent event );	
 	void draw();
 	
@@ -19,104 +22,75 @@ class imageProcessingApp : public AppNative {
 	vector<function<gl::TextureRef(void)>>		mTexGenFns;
 };
 
-void imageProcessingApp::setup()
+template<typename T>
+void imageProcessingApp::setupFlipVertical()
 {
 	auto img = loadImage( loadAsset( "upside_down.png" ) );
 
-	// 8 BIT FLIP VERTICAL
-	{
-	Surface8u rgb8( img );
-	Surface8u rgba8( rgb8.getWidth(), rgb8.getHeight(), true );
+	SurfaceT<T> rgb8( img );
+	SurfaceT<T> rgba8( rgb8.getWidth(), rgb8.getHeight(), true );
 	rgba8.copyFrom( rgb8, rgb8.getBounds() );
-	Channel8u y8( img );
+	ChannelT<T> y8( img );
 
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical: RGB -> RGB" << std::endl;
-			Surface s8( rgb8.getWidth(), rgb8.getHeight(), false );
+			app::console() << "Flip Vertical " << sizeof(T) * 8 << "-bit : RGB -> RGB" << std::endl;
+			SurfaceT<T> s8( rgb8.getWidth(), rgb8.getHeight(), false );
 			ip::flipVertical( rgb8, &s8 );
 			return gl::Texture::create( s8 );
 		}
 	);
 
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical 8bit: RGBA -> RGB" << std::endl;
-			Surface s8( rgba8.getWidth(), rgba8.getHeight(), false );
+			app::console() << "Flip Vertical " << sizeof(T) * 8 << "-bit : RGBA -> RGB" << std::endl;
+			SurfaceT<T> s8( rgba8.getWidth(), rgba8.getHeight(), false );
 			ip::flipVertical( rgba8, &s8 );
 			return gl::Texture::create( s8 );
 		}
 	);
 
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical 8bit: RGBA -> RGBA" << std::endl;
-			Surface s8( rgba8.getWidth(), rgba8.getHeight(), true );
+			app::console() << "Flip Vertical " << sizeof(T) * 8 << "-bit : RGBA -> RGBA" << std::endl;
+			SurfaceT<T> s8( rgba8.getWidth(), rgba8.getHeight(), true );
 			ip::flipVertical( rgba8, &s8 );
 			return gl::Texture::create( s8 );
 		}
 	);
 
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical 8bit: RGB -> RGBA" << std::endl;
-			Surface s8( rgb8.getWidth(), rgb8.getHeight(), true );
+			app::console() << "Flip Vertical " << sizeof(T) * 8 <<  "-bit : RGB -> RGBA" << std::endl;
+			SurfaceT<T> s8( rgb8.getWidth(), rgb8.getHeight(), true );
 			ip::flipVertical( rgb8, &s8 );
 			return gl::Texture::create( s8 );
 		}
 	);
 
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical 8bit: Y -> Y" << std::endl;
-			Channel8u s8( rgb8.getWidth(), rgb8.getHeight() );
+			app::console() << "Flip Vertical " << sizeof(T) * 8 << "-bit : Y -> Y" << std::endl;
+			ChannelT<T> s8( rgb8.getWidth(), rgb8.getHeight() );
 			ip::flipVertical( y8, &s8 );
 			return gl::Texture::create( s8 );
 		}
 	);
 
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical 8bit: nonplanar Y -> Y" << std::endl;
-			Channel8u s8( rgb8.getWidth(), rgb8.getHeight() );
+			app::console() << "Flip Vertical " << sizeof(T) * 8 << "-bit : nonplanar Y -> Y" << std::endl;
+			ChannelT<T> s8( rgb8.getWidth(), rgb8.getHeight() );
 			ip::flipVertical( rgb8.getChannelRed(), &s8 );
 			return gl::Texture::create( s8 );
 		}
 	);
-	}
+}
+
+void imageProcessingApp::setup()
+{
+	// 8 BIT FLIP VERTICAL
+	setupFlipVertical<uint8_t>();
+
+	// 16 BIT FLIP VERTICAL
+	setupFlipVertical<uint16_t>();
 
 	// 32 BIT FLIP VERTICAL
-	{
-	Surface32f rgb32f( img );
-	Surface32f rgba32f( rgb32f.getWidth(), rgb32f.getHeight(), true );
-	rgba32f.copyFrom( rgb32f, rgb32f.getBounds() );
-
-	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical 32bit: RGB -> RGB" << std::endl;
-			Surface32f s32f( rgb32f.getWidth(), rgb32f.getHeight(), false );
-			ip::flipVertical( rgb32f, &s32f );
-			return gl::Texture::create( s32f );
-		}
-	);
-
-	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical 32bit: RGBA -> RGB" << std::endl;
-			Surface32f s32f( rgba32f.getWidth(), rgba32f.getHeight(), false );
-			ip::flipVertical( rgba32f, &s32f );
-			return gl::Texture::create( s32f );
-		}
-	);
-
-	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical 32bit: RGBA -> RGBA" << std::endl;
-			Surface32f s32f( rgba32f.getWidth(), rgba32f.getHeight(), true );
-			ip::flipVertical( rgba32f, &s32f );
-			return gl::Texture::create( s32f );
-		}
-	);
-
-	mTexGenFns.push_back( [=](void)->gl::TextureRef {
-			app::console() << "Flip Vertical 32bit: RGB -> RGBA" << std::endl;
-			Surface32f s32f( rgb32f.getWidth(), rgb32f.getHeight(), true );
-			ip::flipVertical( rgb32f, &s32f );
-			return gl::Texture::create( s32f );
-		}
-	);
-	}
+	setupFlipVertical<float>();
 	
 	mCurFnIdx = 0;
 	mCurTex = mTexGenFns[mCurFnIdx]();

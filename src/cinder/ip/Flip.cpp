@@ -188,6 +188,6 @@ void flipVertical( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel )
 	template void flipVertical<T>( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );\
 	template void flipVertical<T>( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );
 	
-BOOST_PP_SEQ_FOR_EACH( flip_PROTOTYPES, ~, CHANNEL_TYPES )
+BOOST_PP_SEQ_FOR_EACH( flip_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
 
 } } // namespace cinder::ip

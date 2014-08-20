@@ -387,6 +387,10 @@ class Texture2d : public TextureBase {
 	//! Constructs a Texture based on the contents of \a channel. Sets swizzle mask to {R,R,R,1} where supported unless otherwise specified in \a format.
 	static Texture2dRef	create( const Channel8u &channel, Format format = Format() );
 	//! Constructs a Texture based on the contents of \a surface.
+	static Texture2dRef	create( const Surface16u &surface, Format format = Format() );
+	//! Constructs a Texture based on the contents of \a channel. Sets swizzle mask to {R,R,R,1} where supported unless otherwise specified in \a format.
+	static Texture2dRef	create( const Channel16u &channel, Format format = Format() );
+	//! Constructs a Texture based on the contents of \a surface.
 	static Texture2dRef	create( const Surface32f &surface, Format format = Format() );
 	/** \brief Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
 	static Texture2dRef	create( const Channel32f &channel, Format format = Format() );
@@ -413,6 +417,10 @@ class Texture2d : public TextureBase {
 	void			update( const Surface8u &surface, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
 	void			update( const Channel8u &channel, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Surface16u &surface, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Channel16u &channel, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
 	void			update( const Surface32f &surface, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
@@ -457,8 +465,6 @@ class Texture2d : public TextureBase {
 	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 	//! Returns the Area defining the Texture's bounds in pixels, accounting for clean bounds.
 	Area			getCleanBounds() const { return Area( 0, 0, getCleanWidth(), getCleanHeight() ); }
-	//! Returns whether the texture has an alpha channel
-	bool			hasAlpha() const;
 	//! Returns the UV coordinates which correspond to the pixels contained in \a area (as expressed with an upper-left origin). Accounts for clean bounds, top-down storage and target (0-1 for \c GL_TEXTURE_2D and pixel for GL_TEXTURE_RECTANGLE)
 	Rectf			getAreaTexCoords( const Area &area ) const;
 	//! Returns whether the scanlines of the image are stored top-down in memory relative to the base address. Default is \c false.
@@ -475,8 +481,10 @@ class Texture2d : public TextureBase {
 	Texture2d( int width, int height, Format format = Format() );
 	Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() );
 	Texture2d( const Surface8u &surface, Format format = Format() );
+	Texture2d( const Surface16u &surface, Format format = Format() );
 	Texture2d( const Surface32f &surface, Format format = Format() );
 	Texture2d( const Channel8u &channel, Format format = Format() );
+	Texture2d( const Channel16u &channel, Format format = Format() );
 	Texture2d( const Channel32f &channel, Format format = Format() );
 	Texture2d( const ImageSourceRef &imageSource, Format format = Format() );
 	Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose );

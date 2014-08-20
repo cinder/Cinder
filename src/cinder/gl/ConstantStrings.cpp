@@ -113,6 +113,8 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_LUMINANCE] = "GL_LUMINANCE";
 		sSymbols[GL_LUMINANCE_ALPHA] = "GL_LUMINANCE_ALPHA";
 #else
+		sSymbols[GL_RED] = "GL_RED";
+		sSymbols[GL_RG] = "GL_RG";
 		sSymbols[GL_R8] = "GL_R8";
 		sSymbols[GL_R8_SNORM] = "GL_R8_SNORM";
 		sSymbols[GL_R16] = "GL_R16";

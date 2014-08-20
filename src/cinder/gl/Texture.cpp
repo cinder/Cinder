@@ -509,12 +509,22 @@ Texture2dRef Texture2d::create( const Surface8u &surface, Format format )
 	return TextureRef( new Texture( surface, format ) );
 }
 
+Texture2dRef Texture2d::create( const Surface16u &surface, Format format )
+{
+	return TextureRef( new Texture( surface, format ) );
+}
+
 Texture2dRef Texture2d::create( const Surface32f &surface, Format format )
 {
 	return TextureRef( new Texture( surface, format ) );
 }
 
 Texture2dRef Texture2d::create( const Channel8u &channel, Format format )
+{
+	return TextureRef( new Texture( channel, format ) );
+}
+
+Texture2dRef Texture2d::create( const Channel16u &channel, Format format )
 {
 	return TextureRef( new Texture( channel, format ) );
 }
@@ -593,6 +603,44 @@ Texture2d::Texture2d( const Channel8u &channel, Format format )
 	initParams( format, GL_RED );
 #endif
 	setData<uint8_t>( channel, true, 0, Vec2i( 0, 0 ) );
+}
+
+Texture2d::Texture2d( const Surface16u &surface, Format format )
+	: mWidth( surface.getWidth() ), mHeight( surface.getHeight() ),
+	mCleanWidth( surface.getWidth() ), mCleanHeight( surface.getHeight() ),
+	mTopDown( false )
+{
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+#if defined( CINDER_GL_ES )
+	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
+#else
+	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
+#endif
+
+	setData<uint16_t>( surface, true, 0, Vec2i( 0, 0 ) );
+}
+
+Texture2d::Texture2d( const Channel16u &channel, Format format )
+	: mWidth( channel.getWidth() ), mHeight( channel.getHeight() ),
+	mCleanWidth( channel.getWidth() ), mCleanHeight( channel.getHeight() ),
+	mTopDown( false )
+{
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+#if defined( CINDER_GL_ES )
+	initParams( format, GL_LUMINANCE );
+#else
+	if( ! format.mSwizzleSpecified ) {
+		std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
+		format.setSwizzleMask( swizzleMask );
+	}
+	initParams( format, GL_RED );
+#endif
+
+	setData<uint16_t>( channel, true, 0, Vec2i( 0, 0 ) );
 }
 
 Texture2d::Texture2d( const Surface32f &surface, Format format )
@@ -701,12 +749,12 @@ void Texture2d::setData( const SurfaceT<T> &surface, bool createStorage, int mip
 	SurfaceT<T> sourceSurface;
 	Vec2i mipSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
 	
-	if( surface.getSize() != mipSize )
+	if( createStorage && ( surface.getSize() != mipSize ) )
 		CI_LOG_W( "Setting gl::Texture data with incorrect size for mip level " << mipLevel );
 	
 	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
 	if( ( ! mTopDown ) || surfaceRequiresIntermediate<T>( mipSize.x, surface.getPixelBytes(), surface.getRowBytes(), surface.getChannelOrder() )
-		|| ( surface.getSize() != mipSize ) )
+		|| ( createStorage && ( surface.getSize() != mipSize ) ) )
 	 {
 		SurfaceT<T> intermediate( mipSize.x, mipSize.y, surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
 		if( mTopDown )
@@ -740,11 +788,11 @@ void Texture2d::setData( const ChannelT<T> &channel, bool createStorage, int mip
 	ChannelT<T> source;
 	Vec2i mipSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
 	
-	if( channel.getSize() != mipSize )
+	if( createStorage && ( channel.getSize() != mipSize ) )
 		CI_LOG_W( "Setting gl::Texture data with incorrect size for mip level " << mipLevel );
 	
 	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
-	if( ( ! mTopDown ) || ( ! channel.isPlanar() ) || ( channel.getSize() != mipSize ) ) {
+	if( ( ! mTopDown ) || ( ! channel.isPlanar() ) || ( (createStorage && ( channel.getSize() != mipSize ) ) ) ) {
 		ChannelT<T> intermediate( mipSize.x, mipSize.y );
 		if( mTopDown )
 			intermediate.copyFrom( channel, channel.getBounds() );
@@ -930,6 +978,16 @@ void Texture2d::update( const Channel8u &channel, int mipLevel, const Vec2i &des
 	setData( channel, mipLevel, false, destOffset );
 }
 
+void Texture2d::update( const Surface16u &surface, int mipLevel, const Vec2i &destOffset )
+{
+	setData<uint16_t>( surface, mipLevel, false, destOffset );
+}
+
+void Texture2d::update( const Channel16u &channel, int mipLevel, const Vec2i &destOffset )
+{
+	setData<uint16_t>( channel, mipLevel, false, destOffset );
+}
+
 void Texture2d::update( const Surface32f &surface, int mipLevel, const Vec2i &destOffset )
 {
 	setData<float>( surface, mipLevel, false, destOffset );
@@ -968,19 +1026,6 @@ void Texture2d::setCleanSize( GLint cleanWidth, GLint cleanHeight )
 {
 	mCleanWidth	= cleanWidth;
 	mCleanHeight = cleanHeight;
-}
-
-bool Texture2d::hasAlpha() const
-{
-	switch( mInternalFormat ) {
-		case GL_RGBA:
-		case GL_LUMINANCE_ALPHA:
-			return true;
-		break;
-		default:
-			return false;
-		break;
-	}
 }
 
 GLint Texture2d::getCleanWidth() const
