@@ -9,6 +9,7 @@ using namespace std;
 
 class TextureUploadApp : public AppNative {
   public:
+	void prepareSettings( Settings *settings ) override { settings->enableMultiTouch( false ); }
 	void setup();
 	template<typename T>
 	void setupTexConstructor();
