@@ -24,7 +24,6 @@
 #include "cinder/audio/Source.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/FileOggVorbis.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/Utilities.h"
 

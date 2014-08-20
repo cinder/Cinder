@@ -24,7 +24,6 @@
 #include "cinder/audio/Param.h"
 #include "cinder/audio/Context.h"
 #include "cinder/audio/dsp/Dsp.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/CinderMath.h"
 
