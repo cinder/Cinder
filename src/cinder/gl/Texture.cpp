@@ -960,32 +960,32 @@ void Texture2d::initData( const ImageSourceRef &imageSource, const Format &forma
 
 void Texture2d::update( const Surface8u &surface, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData( surface, mipLevel, false, destLowerLeftOffset );
+	setData( surface, false, mipLevel, destLowerLeftOffset );
 }
 
 void Texture2d::update( const Channel8u &channel, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData( channel, mipLevel, false, destLowerLeftOffset );
+	setData( channel, false, mipLevel, destLowerLeftOffset );
 }
 
 void Texture2d::update( const Surface16u &surface, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData<uint16_t>( surface, mipLevel, false, destLowerLeftOffset );
+	setData<uint16_t>( surface, false, mipLevel, destLowerLeftOffset );
 }
 
 void Texture2d::update( const Channel16u &channel, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData<uint16_t>( channel, mipLevel, false, destLowerLeftOffset );
+	setData<uint16_t>( channel, false, mipLevel, destLowerLeftOffset );
 }
 
 void Texture2d::update( const Surface32f &surface, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData<float>( surface, mipLevel, false, destLowerLeftOffset );
+	setData<float>( surface, false, mipLevel, destLowerLeftOffset );
 }
 
 void Texture2d::update( const Channel32f &channel, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData<float>( channel, mipLevel, false, destLowerLeftOffset );
+	setData<float>( channel, false, mipLevel, destLowerLeftOffset );
 }
 
 #if ! defined( CINDER_GL_ES )
