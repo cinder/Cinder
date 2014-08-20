@@ -120,7 +120,7 @@ size_t SourceFileMediaFoundation::performRead( Buffer *buffer, size_t bufferFram
 
 		// first drain any frames that were previously read from an IMFSample
 		if( mFramesRemainingInReadBuffer ) {
-			size_t remainingToDrain = min( mFramesRemainingInReadBuffer, numFramesNeeded );
+			size_t remainingToDrain = std::min( mFramesRemainingInReadBuffer, numFramesNeeded );
 
 			// TODO: use Buffer::copyChannel
 			for( size_t ch = 0; ch < mNumChannels; ch++ ) {
