@@ -115,9 +115,25 @@ void TextureUploadApp::setupTexUpdate()
 	
 	mTexGenFns.push_back( [=](void)->gl::TextureRef {
 			app::console() << "Update Subregion RGB " << sizeof(T) * 8 << "-bit" << std::endl;
-			SurfaceT<T> square( 64, 64, false );
+			SurfaceT<T> srcImg( mImg );			
+			SurfaceT<T> square( 100, 100, false );
 			gl::TextureRef result = gl::Texture::create( mImg2 );
-			ip::fill( &square, Color( 1, 0.5f, 0.25f ) );
+			square.copyFrom( srcImg, Area( 28, 128, 28 + 100, 128 + 100 ), Vec2i( -28, -128 ) );
+			for( int y = 0; y < result->getHeight() / square.getHeight(); y += 2 ) {
+				for( int x = y%2; x < result->getWidth() / square.getWidth(); x += 2 ) {
+					result->update( square, 0, Vec2i( x * square.getWidth(), y * square.getHeight() ) );
+				}
+			}
+			return result;
+		}
+	);
+
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "Update Subregion Channel " << sizeof(T) * 8 << "-bit" << std::endl;
+			ChannelT<T> srcImg( mImg );			
+			ChannelT<T> square( 100, 100 );
+			gl::TextureRef result = gl::Texture::create( ChannelT<T>( mImg2 ) );
+			square.copyFrom( srcImg, Area( 28, 128, 28 + 100, 128 + 100 ), Vec2i( -28, -128 ) );
 			for( int y = 0; y < result->getHeight() / square.getHeight(); y += 2 ) {
 				for( int x = y%2; x < result->getWidth() / square.getWidth(); x += 2 ) {
 					result->update( square, 0, Vec2i( x * square.getWidth(), y * square.getHeight() ) );

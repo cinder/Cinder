@@ -744,64 +744,54 @@ Texture2d::Texture2d( const TextureData &data, Format format )
 }
 
 template<typename T>
-void Texture2d::setData( const SurfaceT<T> &surface, bool createStorage, int mipLevel, const Vec2i &destOffset )
+void Texture2d::setData( const SurfaceT<T> &original, bool createStorage, int mipLevel, const Vec2i &destOffset )
 {
-	SurfaceT<T> sourceSurface;
-	Vec2i mipSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
-	
-	if( createStorage && ( surface.getSize() != mipSize ) )
-		CI_LOG_W( "Setting gl::Texture data with incorrect size for mip level " << mipLevel );
+	SurfaceT<T> source;
 	
 	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
-	if( ( ! mTopDown ) || surfaceRequiresIntermediate<T>( mipSize.x, surface.getPixelBytes(), surface.getRowBytes(), surface.getChannelOrder() )
-		|| ( createStorage && ( surface.getSize() != mipSize ) ) )
-	 {
-		SurfaceT<T> intermediate( mipSize.x, mipSize.y, surface.hasAlpha(), surface.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
+	if( ( ! mTopDown ) || surfaceRequiresIntermediate<T>( original.getWidth(), original.getPixelBytes(), original.getRowBytes(), original.getChannelOrder() ) ) {
+		SurfaceT<T> intermediate( original.getWidth(), original.getHeight(), original.hasAlpha(), original.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
 		if( mTopDown )
-			intermediate.copyFrom( surface, surface.getBounds() );
+			intermediate.copyFrom( original, original.getBounds() );
 		else
-			ip::flipVertical( surface, &intermediate );
-		sourceSurface = intermediate;
+			ip::flipVertical( original, &intermediate );
+		source = intermediate;
 	}
 	else
-		sourceSurface = surface;
+		source = original;
 		
 	GLint dataFormat;
 	GLenum type;
-	SurfaceChannelOrderToDataFormatAndType<T>( sourceSurface.getChannelOrder(), &dataFormat, &type );
+	SurfaceChannelOrderToDataFormatAndType<T>( source.getChannelOrder(), &dataFormat, &type );
 
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 	if( createStorage )
-		glTexImage2D( mTarget, 0, mInternalFormat, mWidth, mHeight, 0, dataFormat, type, sourceSurface.getData() );
+		glTexImage2D( mTarget, 0, mInternalFormat, source.getWidth(), source.getHeight(), 0, dataFormat, type, source.getData() );
     else
-		glTexSubImage2D( mTarget, mipLevel, destOffset.x, destOffset.y, mipSize.x, mipSize.y, dataFormat, type, sourceSurface.getData() );
+		glTexSubImage2D( mTarget, mipLevel, destOffset.x, destOffset.y, source.getWidth(), source.getHeight(), dataFormat, type, source.getData() );
 	
 	if( mMipmapping && mipLevel == 0 )
 		glGenerateMipmap( mTarget );
 }
 
 template<typename T>
-void Texture2d::setData( const ChannelT<T> &channel, bool createStorage, int mipLevel, const Vec2i &destOffset )
+void Texture2d::setData( const ChannelT<T> &original, bool createStorage, int mipLevel, const Vec2i &destOffset )
 {
 	ChannelT<T> source;
-	Vec2i mipSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
 	
-	if( createStorage && ( channel.getSize() != mipSize ) )
-		CI_LOG_W( "Setting gl::Texture data with incorrect size for mip level " << mipLevel );
-	
-	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
-	if( ( ! mTopDown ) || ( ! channel.isPlanar() ) || ( (createStorage && ( channel.getSize() != mipSize ) ) ) ) {
-		ChannelT<T> intermediate( mipSize.x, mipSize.y );
+	// we need an intermediate format for not top-down or non-planar
+	if( ( ! mTopDown ) || ( ! original.isPlanar() ) ) {
+		ChannelT<T> intermediate( original.getWidth(), original.getHeight() );
 		if( mTopDown )
-			intermediate.copyFrom( channel, channel.getBounds() );
+			intermediate.copyFrom( original, original.getBounds() );
 		else
-			ip::flipVertical( channel, &intermediate );
+			ip::flipVertical( original, &intermediate );
 		source = intermediate;
 	}
 	else
-		source = channel;
+		source = original;
 #if defined( CINDER_GL_ES )
 	GLint dataFormat = GL_LUMINANCE;
 #else
@@ -818,9 +808,9 @@ void Texture2d::setData( const ChannelT<T> &channel, bool createStorage, int mip
 	
 	glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 	if( createStorage )
-		glTexImage2D( mTarget, 0, mInternalFormat, mWidth, mHeight, 0, dataFormat, type, source.getData() );
+		glTexImage2D( mTarget, 0, mInternalFormat, source.getWidth(), source.getHeight(), 0, dataFormat, type, source.getData() );
     else
-		glTexSubImage2D( mTarget, mipLevel, destOffset.x, destOffset.y, mipSize.x, mipSize.y, dataFormat, type, source.getData() );
+		glTexSubImage2D( mTarget, mipLevel, destOffset.x, destOffset.y, source.getWidth(), source.getHeight(), dataFormat, type, source.getData() );
 	
 	if( mMipmapping && mipLevel == 0 )
 		glGenerateMipmap( mTarget );
@@ -968,34 +958,34 @@ void Texture2d::initData( const ImageSourceRef &imageSource, const Format &forma
 	}
 }
 
-void Texture2d::update( const Surface8u &surface, int mipLevel, const Vec2i &destOffset )
+void Texture2d::update( const Surface8u &surface, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData( surface, mipLevel, false, destOffset );
+	setData( surface, mipLevel, false, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Channel8u &channel, int mipLevel, const Vec2i &destOffset )
+void Texture2d::update( const Channel8u &channel, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData( channel, mipLevel, false, destOffset );
+	setData( channel, mipLevel, false, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Surface16u &surface, int mipLevel, const Vec2i &destOffset )
+void Texture2d::update( const Surface16u &surface, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData<uint16_t>( surface, mipLevel, false, destOffset );
+	setData<uint16_t>( surface, mipLevel, false, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Channel16u &channel, int mipLevel, const Vec2i &destOffset )
+void Texture2d::update( const Channel16u &channel, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData<uint16_t>( channel, mipLevel, false, destOffset );
+	setData<uint16_t>( channel, mipLevel, false, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Surface32f &surface, int mipLevel, const Vec2i &destOffset )
+void Texture2d::update( const Surface32f &surface, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData<float>( surface, mipLevel, false, destOffset );
+	setData<float>( surface, mipLevel, false, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Channel32f &channel, int mipLevel, const Vec2i &destOffset )
+void Texture2d::update( const Channel32f &channel, int mipLevel, const Vec2i &destLowerLeftOffset )
 {
-	setData<float>( channel, mipLevel, false, destOffset );
+	setData<float>( channel, mipLevel, false, destLowerLeftOffset );
 }
 
 #if ! defined( CINDER_GL_ES )

@@ -413,18 +413,18 @@ class Texture2d : public TextureBase {
 	//! Allows specification of some size other than the Texture's true size for cases where not all pixels in the Texture are usable / "clean"; common in video decoding pipelines in particular. Specified in pixels, and relative to whichever origin is appropriate to the Texture's "top-downness".
 	void			setCleanSize( GLint cleanWidth, GLint cleanHeight );
 	
-	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Surface8u &surface, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
-	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Channel8u &channel, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
-	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Surface16u &surface, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
-	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Channel16u &channel, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
-	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Surface32f &surface, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
-	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \destOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Channel32f &channel, int mipLevel = 0, const Vec2i &destOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Surface8u &surface, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Channel8u &channel, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Surface16u &surface, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Channel16u &channel, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Surface32f &surface, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
+	void			update( const Channel32f &channel, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a textureData. Inefficient if the bounds of \a textureData don't match those of \a this
 	void			update( const TextureData &textureData );
 #if ! defined( CINDER_GL_ES )
