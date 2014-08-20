@@ -1213,12 +1213,7 @@ void drawSolid( const PolyLine<Vec2f> &polyLine )
 	draw( Triangulator( polyLine ).calcMesh() );
 }
 
-void drawSolidRect( const Rectf& r )
-{
-	drawSolidRect( r, Rectf( 0, 0, 1, 1 ) );
-}
-
-void drawSolidRect( const Rectf &r, const Rectf &texCoords )
+void drawSolidRect( const Rectf &r, const Vec2f &upperLeftTexCoord, const Vec2f &lowerRightTexCoord )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1230,14 +1225,14 @@ void drawSolidRect( const Rectf &r, const Rectf &texCoords )
 	GLfloat data[8+8]; // both verts and texCoords
 	GLfloat *verts = data, *texs = data + 8;
 
-	verts[0*2+0] = r.getX2(); texs[0*2+0] = texCoords.getX2();
-	verts[0*2+1] = r.getY1(); texs[0*2+1] = texCoords.getY1();
-	verts[1*2+0] = r.getX1(); texs[1*2+0] = texCoords.getX1();
-	verts[1*2+1] = r.getY1(); texs[1*2+1] = texCoords.getY1();
-	verts[2*2+0] = r.getX2(); texs[2*2+0] = texCoords.getX2();
-	verts[2*2+1] = r.getY2(); texs[2*2+1] = texCoords.getY2();
-	verts[3*2+0] = r.getX1(); texs[3*2+0] = texCoords.getX1();
-	verts[3*2+1] = r.getY2(); texs[3*2+1] = texCoords.getY2();
+	verts[0*2+0] = r.getX2(); texs[0*2+0] = lowerRightTexCoord.x;
+	verts[0*2+1] = r.getY1(); texs[0*2+1] = upperLeftTexCoord.y;
+	verts[1*2+0] = r.getX1(); texs[1*2+0] = upperLeftTexCoord.x;
+	verts[1*2+1] = r.getY1(); texs[1*2+1] = upperLeftTexCoord.y;
+	verts[2*2+0] = r.getX2(); texs[2*2+0] = lowerRightTexCoord.x;
+	verts[2*2+1] = r.getY2(); texs[2*2+1] = lowerRightTexCoord.y;
+	verts[3*2+0] = r.getX1(); texs[3*2+0] = upperLeftTexCoord.x;
+	verts[3*2+1] = r.getY2(); texs[3*2+1] = lowerRightTexCoord.y;
 
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();

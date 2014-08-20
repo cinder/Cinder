@@ -333,8 +333,7 @@ void drawLine( const Vec3f &a, const Vec3f &b );
 void drawLine( const Vec2f &a, const Vec2f &b );
 
 //! Draws \a texture on the XY-plane
-void drawSolidRect( const Rectf &r );
-void drawSolidRect( const Rectf &r, const Rectf &texcoords );
+void drawSolidRect( const Rectf &r, const Vec2f &upperLeftTexCoord = Vec2f( 0, 1 ), const Vec2f &lowerRightTexCoord = Vec2f( 1, 0 ) );
 void drawSolidCircle( const Vec2f &center, float radius, int numSegments = -1 );
 
 //! Draws a stroked rectangle with dimensions \a rect.
