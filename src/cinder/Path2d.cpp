@@ -281,7 +281,7 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 	// tan(a/2) = sin(a) / ( 1 - cos(a) )
 	
 	const float numerator = p0t.y * p1t.x - p1t.y * p0t.x;
-	const float denominator = sqrt( p0tSquare * p1tSquare ) - ( p0t.x * p1t.x + p0t.y * p1t.y );
+	const float denominator = math<float>::sqrt( p0tSquare * p1tSquare ) - ( p0t.x * p1t.x + p0t.y * p1t.y );
 	
 	// The denominator is zero <=> p0 and p1 are colinear.
 	if( math<float>::abs( denominator ) < epsilon ) {

@@ -465,7 +465,7 @@ BSpline<D,T>::~BSpline()
 }
 
 template<int D,typename T>
-void BSpline<D,T>::createControl( const BSpline<D,T>::VecT *akCtrlPoint )
+void BSpline<D,T>::createControl( const VecT *akCtrlPoint )
 {
 	int iNewNumCtrlPoints = mNumCtrlPoints + mReplicate;
 	mCtrlPoints = new VecT[iNewNumCtrlPoints];
