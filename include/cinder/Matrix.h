@@ -29,7 +29,6 @@
 #include "cinder/MatrixAffine2.h"
 #include "cinder/Matrix33.h"
 #include "cinder/Matrix44.h"
-#include "cinder/MatrixAlgo.h"
 
 #include "glm/mat3x3.hpp"
 #include "glm/mat4x4.hpp"

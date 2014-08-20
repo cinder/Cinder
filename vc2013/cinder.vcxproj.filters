@@ -1130,9 +1130,6 @@
     <ClInclude Include="..\include\cinder\Matrix44.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\MatrixAlgo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\Base64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
