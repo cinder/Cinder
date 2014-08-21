@@ -44,6 +44,7 @@ class Sphere {
 	int intersect( const Ray &ray, float *intersection );
 
 	static Sphere	calculateBoundingSphere( const std::vector<Vec3f> &points );
+	static Sphere	calculateBoundingSphere( const Vec3f *points, size_t numPoints );
 
  protected:
  	Vec3f	mCenter;

@@ -88,11 +88,17 @@ int Sphere::intersect( const Ray &ray, float *intersection )
 	return 0;
 }
 
+
 Sphere Sphere::calculateBoundingSphere( const vector<Vec3f> &points )
+{
+	return calculateBoundingSphere( points.data(), points.size() );
+}
+
+Sphere Sphere::calculateBoundingSphere( const Vec3f *points, size_t numPoints )
 {
 	// compute minimal and maximal bounds
 	Vec3f min(points[0]), max(points[0]);
-	for( size_t i = 1; i < points.size(); ++i ) {
+	for( size_t i = 1; i < numPoints; ++i ) {
 		if( points[i].x < min.x )
 			min.x = points[i].x;
 		else if( points[i].x > max.x )
@@ -109,7 +115,7 @@ Sphere Sphere::calculateBoundingSphere( const vector<Vec3f> &points )
 	// compute center and radius
 	Vec3f center = 0.5f * ( min + max );
 	float maxDistance = center.distanceSquared( points[0] );
-	for( size_t i = 1; i < points.size(); ++i ) {
+	for( size_t i = 1; i < numPoints; ++i ) {
 		float dist = center.distanceSquared( points[i] );
 		if( dist > maxDistance )
 			maxDistance = dist;
