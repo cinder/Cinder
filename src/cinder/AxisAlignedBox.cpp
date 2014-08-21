@@ -68,6 +68,16 @@ bool AxisAlignedBox3f::intersects( const Ray &ray )
 
 	return tmin > 0;
 }
+	
+void AxisAlignedBox3f::include( const Vec3f &point )
+{
+	if(point.x < mExtents[0].x) mExtents[0].x = point.x;
+	if(point.y < mExtents[0].y) mExtents[0].y = point.y;
+	if(point.z < mExtents[0].z) mExtents[0].z = point.z;
+	if(point.x > mExtents[1].x) mExtents[1].x = point.x;
+	if(point.y > mExtents[1].y) mExtents[1].y = point.y;
+	if(point.z > mExtents[1].z) mExtents[1].z = point.z;
+}
 
 void AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
 {
