@@ -46,6 +46,8 @@ class TouchEvent : public Event {
 		float		getY() const { return mPos.y; }		
 		//! Returns the position of the touch measured in points
 		Vec2f		getPos() const { return mPos; }
+		//! Sets the position of the touch measured in points
+		void		setPos( const Vec2i &pos )	{ mPos = pos; }
 		//! Returns the previous x position of the touch measured in points
 		float		getPrevX() const { return mPrevPos.x; }
 		//! Returns the previous y position of the touch measured in points
@@ -69,7 +71,7 @@ class TouchEvent : public Event {
 	TouchEvent()
 		: Event()
 	{}
-	TouchEvent( WindowRef win, const std::vector<Touch> &touches )
+	TouchEvent( const WindowRef &win, const std::vector<Touch> &touches )
 		: Event( win ), mTouches( touches )
 	{}
 	
