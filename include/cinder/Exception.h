@@ -22,13 +22,11 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
-
-#include <vector>
-#include <string>
+#include <exception>
 
 namespace cinder {
 
+//! All exceptions thrown in cinder derive from cinder::Exception
 class Exception : public std::exception {
   public:
 	Exception();
