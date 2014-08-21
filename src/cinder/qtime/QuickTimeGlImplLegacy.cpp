@@ -162,7 +162,8 @@ void MovieGl::Obj::newFrame( CVImageBufferRef cvImage )
 	if( ! mTextureCache ) {
 		gl::Texture::Format format;
 		format.setTargetRect();
-		mTextureCache = gl::TextureCache::create( Surface8u( ptr, width, height, rowBytes, sco ), format );
+		format.loadTopDown();
+		mTextureCache = gl::Texture2dCache::create( Surface8u( ptr, width, height, rowBytes, sco ), format );
 	}
 	mTexture = mTextureCache->cache( Surface8u( ptr, width, height, rowBytes, sco ) );
 	

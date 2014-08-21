@@ -65,9 +65,9 @@ class MovieGl : public MovieBase {
 		virtual void		releaseFrame();
 		virtual void		newFrame( CVImageBufferRef cvImage );
 		
-		gl::TextureRef		mTexture;
+		gl::TextureRef			mTexture;
 #if defined( CINDER_MSW )
-		gl::TextureCacheRef	mTextureCache;
+		gl::Texture2dCacheRef	mTextureCache;
 #endif
 	};
  	
