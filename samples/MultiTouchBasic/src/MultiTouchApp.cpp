@@ -1,5 +1,5 @@
-#include "cinder/Cinder.h"
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/System.h"
 #include "cinder/Rand.h"
 using namespace ci;
@@ -53,7 +53,7 @@ class MultiTouchApp : public AppNative {
 
 	void	setup();
 	void	draw();
-	void	keyDown( KeyEvent event ) { setFullScreen( ! isFullScreen() ); }
+	void	keyDown( KeyEvent event ) { if( event.getChar() == 'f' ) setFullScreen( ! isFullScreen() ); }
 	
 	map<uint32_t,TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;
