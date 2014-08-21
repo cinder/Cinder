@@ -22,7 +22,6 @@
 #include "cinder/params/Params.h"
 
 #include "cinder/audio/Utilities.h"
-#include "cinder/audio/Debug.h"
 #include "AudioController.h"
 
 #include "Config.h"

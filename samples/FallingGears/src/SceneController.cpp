@@ -2,10 +2,9 @@
 #include "SceneController.h"
 #include "Config.h"
 
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 #include "cinder/Rand.h"
 #include "cinder/CinderAssert.h"
-
 #include "cinder/app/App.h"
 
 #include <array>

@@ -11,12 +11,12 @@
 #include "cinder/Perlin.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/Timeline.h"
+#include "cinder/Log.h"
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/NodeEffects.h"
 #include "cinder/audio/Utilities.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/gl/Vbo.h"
 
