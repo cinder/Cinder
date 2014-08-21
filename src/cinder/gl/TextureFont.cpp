@@ -228,7 +228,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	int glyphsWide = mFormat.getTextureWidth() / glyphExtents.x;
 	int glyphsTall = mFormat.getTextureHeight() / glyphExtents.y;	
 	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
-	Vec2i curOffset = Vec2i::zero();
+	Vec2i curOffset = Vec2i( 0, 0 );
 
 	Channel channel( mFormat.getTextureWidth(), mFormat.getTextureHeight() );
 	ip::fill<uint8_t>( &channel, 0 );
@@ -302,7 +302,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 #endif
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), textureFormat.getInternalFormat(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 			ip::fill<uint8_t>( &channel, 0 );			
-			curOffset = Vec2i::zero();
+			curOffset = Vec2i( 0, 0 );
 			curGlyphIndex = 0;
 			++curTextureIndex;
 		}
@@ -597,7 +597,7 @@ Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &opt
 		Vec2f result = glyphMeasures.back().second;
 		unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphMeasures.back().first );
 		if( glyphInfoIt != mGlyphMap.end() )
-			result += glyphInfoIt->second.mOriginOffset + glyphInfoIt->second.mTexCoords.getSize();
+			result += glyphInfoIt->second.mOriginOffset + vec2( glyphInfoIt->second.mTexCoords.getSize() );
 		return result;
 	}
 	else {
