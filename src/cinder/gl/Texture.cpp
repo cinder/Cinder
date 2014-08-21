@@ -321,7 +321,7 @@ void TextureBase::setCompareFunc( GLenum compareFunc )
 template<typename T>
 bool TextureBase::surfaceRequiresIntermediate( int32_t width, uint8_t pixelBytes, int32_t rowBytes, SurfaceChannelOrder surfaceChannelOrder )
 {
-	if( width * surfaceChannelOrder.getPixelInc() * pixelBytes != rowBytes )
+	if( width * pixelBytes != rowBytes )
 		return true;
 	
 	if( std::is_same<T,uint8_t>::value ) { // 8-bit
