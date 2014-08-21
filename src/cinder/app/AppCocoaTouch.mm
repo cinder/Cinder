@@ -438,7 +438,13 @@ AppCocoaTouch::AppCocoaTouch()
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
 {
-	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, NSStringFromClass([AppImplCocoaTouch class]) );
+	try {
+		::UIApplicationMain( argc, const_cast<char**>( argv ), nil, NSStringFromClass([AppImplCocoaTouch class]) );
+	}
+	catch( std::exception &e ) {
+		std::cout << "Uncaught Exception: " << e.what() << std::endl;
+		throw e;
+	}
 }
 
 WindowRef AppCocoaTouch::createWindow( const Window::Format &format )
