@@ -170,10 +170,11 @@ void NormalMappingApp::setup()
 		mCopyrightMap  = gl::Texture::create( loadImage( loadAsset("copyright.png") ) );
 
 		// load textures
-		mDiffuseMap = gl::Texture::create( loadImage( loadAsset("leprechaun_diffuse.jpg") ) );
-		mSpecularMap = gl::Texture::create( loadImage( loadAsset("leprechaun_specular.jpg") ) );
-		mNormalMap = gl::Texture::create( loadImage( loadAsset("leprechaun_normal.jpg") ) );
-		mEmmisiveMap = gl::Texture::create( loadImage( loadAsset("leprechaun_emmisive.png") ) );
+		auto texFormat = gl::Texture2d::Format().loadTopDown();
+		mDiffuseMap = gl::Texture::create( loadImage( loadAsset("leprechaun_diffuse.jpg") ), texFormat );
+		mSpecularMap = gl::Texture::create( loadImage( loadAsset("leprechaun_specular.jpg") ), texFormat );
+		mNormalMap = gl::Texture::create( loadImage( loadAsset("leprechaun_normal.jpg") ), texFormat );
+		mEmmisiveMap = gl::Texture::create( loadImage( loadAsset("leprechaun_emmisive.png") ), texFormat );
 
 		// load our shaders and set the non-varying uniforms
 #if ! defined( CINDER_GL_ES )
