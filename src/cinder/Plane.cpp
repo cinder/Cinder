@@ -74,7 +74,7 @@ void Plane<T>::set( T a, T b, T c, T d )
 {
 	Vec3T normal( a, b, c );
 
-	T length = normal.length();
+	T length = glm::length( normal );
 	if( length == 0 )
 		 // error! invalid parameters
 		throw PlaneExc();

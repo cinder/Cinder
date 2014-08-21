@@ -892,12 +892,12 @@ size_t quadraticBezierCrossings( const Vec2f p[3], const Vec2f &pt )
 
 float calcCubicBezierSpeed( const Vec2f p[3], float t )
 {
-	return Path2d::calcCubicBezierDerivative( p, t ).length();
+	return length( Path2d::calcCubicBezierDerivative( p, t ) );
 }
 
 float calcQuadraticBezierSpeed( const Vec2f p[3], float t )
 {
-	return Path2d::calcQuadraticBezierDerivative( p, t ).length();
+	return length( Path2d::calcQuadraticBezierDerivative( p, t ) );
 }
 } // anonymous namespace
 
@@ -1074,7 +1074,7 @@ float Path2d::segmentSolveTimeForDistance( size_t segment, float segmentLength, 
 			b = p;
 
 		// get speed along curve
-		const float speed = getSegmentTangent( segment, currentT + p ).length();
+		const float speed = length( getSegmentTangent( segment, currentT + p ) );
 
 		// if result will lie outside [a,b] 
 		if( ((p-a)*speed - delta)*((p-b)*speed - delta) > -tolerance )
