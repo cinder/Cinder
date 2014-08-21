@@ -1,10 +1,12 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ArcBall.h"
-#include "cinder/Rand.h"
 #include "cinder/Camera.h"
 #include "cinder/Surface.h"
-#include "cinder/gl/Vbo.h"
 #include "cinder/ImageIo.h"
+#include "cinder/gl/VboMesh.h"
+#include "cinder/gl/Batch.h"
+#include "cinder/gl/Shader.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -31,7 +33,8 @@ class ImageHFApp : public AppBasic {
 	uint32_t    mWidth, mHeight;
 
 	Surface32f		mImage;
-	gl::VboMesh		mVboMesh;
+	gl::VboMeshRef	mVboMesh;
+	gl::BatchRef	mPointsBatch;
 };
 
 void ImageHFApp::setup()
@@ -55,10 +58,8 @@ void ImageHFApp::openFile()
 		mWidth = mImage.getWidth();
 		mHeight = mImage.getHeight();
 
-		gl::VboMesh::Layout layout;
-		layout.setDynamicColorsRGB();
-		layout.setDynamicPositions();
-		mVboMesh = gl::VboMesh( mWidth * mHeight, 0, layout, GL_POINTS );
+		mVboMesh = gl::VboMesh::create( mWidth * mHeight, GL_POINTS, { gl::VboMesh::Layout().usage(GL_STATIC_DRAW).attrib(geom::POSITION, 3).attrib(geom::COLOR, 3) } );
+		mPointsBatch = gl::Batch::create( mVboMesh, gl::getStockShader( gl::ShaderDef().color() ) );
 
 		updateData( kColor );		
 	}
@@ -108,8 +109,7 @@ void ImageHFApp::keyDown( KeyEvent event )
 
 void ImageHFApp::draw()
 {
-    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    gl::clear();
 
     gl::pushModelView();
 		gl::translate( Vec3f( 0.0f, 0.0f, mHeight / 2.0f ) );
@@ -122,7 +122,8 @@ void ImageHFApp::draw()
 void ImageHFApp::updateData( ImageHFApp::ColorSwitch whichColor )
 {
 	Surface32f::Iter pixelIter = mImage.getIter();
-	gl::VboMesh::VertexIter vertexIter( mVboMesh );
+	auto vertPosIter = mVboMesh->mapAttrib3f( geom::POSITION );
+	auto vertColorIter = mVboMesh->mapAttrib3f( geom::COLOR );
 
 	while( pixelIter.line() ) {
 		while( pixelIter.pixel() ) {
@@ -153,11 +154,13 @@ void ImageHFApp::updateData( ImageHFApp::ColorSwitch whichColor )
 			float x = pixelIter.x() - mWidth / 2.0f;
 			float z = pixelIter.y() - mHeight / 2.0f;
 
-            vertexIter.setPosition( x, height * 30.0f, z );
-			vertexIter.setColorRGB( color );
-			++vertexIter;
+			*vertPosIter++ = Vec3f( x, height * 30.0f, z );
+			*vertColorIter++ = Vec3f( color.r, color.g, color.b );
 		}
 	}
+
+	vertPosIter.unmap();
+	vertColorIter.unmap();
 }
 
-CINDER_APP_BASIC( ImageHFApp, RendererGl );
+CINDER_APP_BASIC( ImageHFApp, RendererGl )
