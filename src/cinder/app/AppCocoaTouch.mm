@@ -731,7 +731,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	mCinderView = [[CinderViewCocoaTouch alloc] initWithFrame:screenBoundsCgRect app:mAppImpl->mApp renderer:format.getRenderer() sharedRenderer:sharedRenderer contentScale:mContentScale];
 	[mCinderView setDelegate:self];
 	mSize = cinder::Vec2i( screenBoundsCgRect.size.width, screenBoundsCgRect.size.height );
-	mPos = cinder::Vec2i::zero();
+	mPos = cinder::Vec2i( 0, 0 );
 	mUiWindow.rootViewController = format.getRootViewController() ? format.getRootViewController() : self;
 	mWindowRef = cinder::app::Window::privateCreate__( self, mAppImpl->mApp );
 

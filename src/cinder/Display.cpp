@@ -212,8 +212,8 @@ void Display::setResolution( const Vec2i &resolution )
 	for( int i = 0; i < [modes count]; ++i ) {
 		::UIScreenMode *mode = [modes objectAtIndex:i];
 		Vec2i thisModeRes = Vec2f( mode.size.width, mode.size.height );
-		if( thisModeRes.distance( resolution ) < closestDistance ) {
-			closestDistance = thisModeRes.distance( resolution );
+		if( distance( vec2(resolution), vec2(thisModeRes) ) < closestDistance ) {
+			closestDistance = distance( vec2(resolution), vec2(thisModeRes) );
 			closestIndex = i;
 		}
 	}

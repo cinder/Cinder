@@ -44,6 +44,8 @@
 
 #else
 
+#import <Foundation/NSNotification.h>
+
 @interface AudioSessionInterruptionHandlerImpl : NSObject
 
 - (void)notifyInterrupted:(NSNotification *)notification;
