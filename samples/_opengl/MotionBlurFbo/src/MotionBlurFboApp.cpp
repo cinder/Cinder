@@ -75,9 +75,9 @@ void MotionBlurFboApp::draw()
 	gl::viewport( Vec2f::zero(), mAccumFbo->getSize() );
 
 	if( ! mPaused ) {
+		// make 'mAccumFbo' the active framebuffer
+		gl::ScopedFramebuffer fbScp( mAccumFbo );
 		// clear out both of our FBOs
-		gl::context()->pushFramebuffer();
-		mAccumFbo->bindFramebuffer();
 		gl::clear( Color::black() );
 		gl::color( 1, 1, 1, 1 );
 
@@ -102,11 +102,7 @@ void MotionBlurFboApp::draw()
 			gl::disableDepthWrite();
 			gl::disableDepthRead();		
 			gl::draw( mFbo->getColorTexture() );
-			gl::enableAlphaBlending();
 		}
-
-		// prepare to draw the AccumFbo to the screen (after dividing it by # SUBFRAMES)
-		gl::context()->popFramebuffer();
 	}
 	
 	gl::disableDepthRead();
