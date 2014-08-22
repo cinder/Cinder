@@ -31,7 +31,7 @@ struct EaseBox {
 		gl::color( Color( 0.4f, 0.4f, 0.4f ) );
 		gl::drawStrokedRect( mDrawRect );
 		gl::color( Color::white() );
-		gl::draw( mLabelTex, mDrawRect.getCenter() - mLabelTex->getSize() / 2 );
+		gl::draw( mLabelTex, mDrawRect.getCenter() - vec2(mLabelTex->getSize()) / 2.0f );
 				
 		// draw graph
 		gl::color( ColorA( 0.25f, 0.5f, 1.0f, 0.5f ) );
@@ -39,7 +39,7 @@ struct EaseBox {
 		gl::begin( GL_LINE_STRIP );
 		for( float x = 0; x < mDrawRect.getWidth(); x += 0.25f ) {
 			float y = 1.0f - mFn( x / mDrawRect.getWidth() );
-			gl::vertex( Vec2f( x, y * mDrawRect.getHeight() ) + mDrawRect.getUpperLeft() );
+			gl::vertex( vec2( x, y * mDrawRect.getHeight() ) + mDrawRect.getUpperLeft() );
 		}
 		gl::end();
 		
@@ -134,13 +134,13 @@ void EaseGalleryApp::sizeRectangles()
 {
 	const int cellColumns = 4;
 	const int cellRows = 11;	
-	const Vec2f padding( 10, 10 );
-	const Vec2f cellSize( ( getWindowWidth() - padding.x ) / cellColumns - padding.x, ( getWindowHeight() - padding.y ) / cellRows - padding.y );
+	const vec2 padding( 10, 10 );
+	const vec2 cellSize( ( getWindowWidth() - padding.x ) / cellColumns - padding.x, ( getWindowHeight() - padding.y ) / cellRows - padding.y );
 
 	for( size_t c = 0; c < mEaseBoxes.size(); ++c ) {
 		int col = c % cellColumns;
 		int row = c / cellColumns;
-		mEaseBoxes[c].mDrawRect = Rectf( Vec2f( col, row ) * (cellSize + padding), Vec2f( col, row ) * (cellSize + padding) + cellSize ) + padding;
+		mEaseBoxes[c].mDrawRect = Rectf( vec2( col, row ) * (cellSize + padding), vec2( col, row ) * (cellSize + padding) + cellSize ) + padding;
 	}
 }
 
