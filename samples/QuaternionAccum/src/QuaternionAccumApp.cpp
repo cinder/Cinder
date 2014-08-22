@@ -1,8 +1,10 @@
 #include "Resources.h"
 
 #include "cinder/app/AppBasic.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Shader.h"
+#include "cinder/gl/Batch.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Bspline.h"
 #include "cinder/Rand.h"
@@ -32,11 +34,12 @@ class QuaternionAccumApp : public AppBasic {
 	CameraPersp		mCam;
 	BSpline3f		mSpline;
 	float			mSplineValue;
-	gl::Texture		mPlaneTexture;
-	gl::Texture		mBallTexture;
-	Quatf			mQuat;
-	Vec3f			mLastPos;
+	gl::TextureRef	mPlaneTexture;
+	gl::TextureRef	mBallTexture;
+	quat			mQuat;
+	vec3			mLastPos;
 	double			mLastTime;
+	gl::BatchRef	mPlaneBatch;
 };
 
 void QuaternionAccumApp::setup()
@@ -45,8 +48,10 @@ void QuaternionAccumApp::setup()
 	gl::enableDepthWrite();
 	gl::enableAlphaBlending();
 	
-	mPlaneTexture = loadImage( loadResource( RES_PLANE_TEXTURE ) );
-	mBallTexture = loadImage( loadResource( RES_BALL_TEXTURE ) );
+	mPlaneTexture = gl::Texture::create( loadImage( loadResource( RES_PLANE_TEXTURE ) ) );
+	mBallTexture = gl::Texture::create( loadImage( loadResource( RES_BALL_TEXTURE ) ) );
+
+	mPlaneBatch = gl::Batch::create( geom::Plane().axis( vec3( 0, 1, 0 ), vec3( 0 ) ).scale( 10 ), gl::ShaderDef().texture() );
 	
 	createRandomBspline();
 	mLastTime = getElapsedSeconds();
@@ -81,7 +86,7 @@ void QuaternionAccumApp::createRandomBspline()
 	mSpline = BSpline3f( points, 3, true, true );
 
 	mSplineValue = 0.0f;
-	mQuat = Quatf::identity();
+	mQuat = quat();
 	mLastPos = mSpline.getPosition( 0 );
 }
 
@@ -89,18 +94,9 @@ void QuaternionAccumApp::drawPlane()
 {
 	// draw the plane
 	gl::color( Color( 1, 1, 1 ) );
-	mPlaneTexture.enableAndBind();
-	gl::begin( GL_QUADS );
-		gl::texCoord( 0, 0 );
-		gl::vertex( -10.0f, 0.0f, -10.0f );
-		gl::texCoord( 1, 0 );
-		gl::vertex( 10.0f, 0.0f, -10.0f );
-		gl::texCoord( 1, 1 );
-		gl::vertex( 10.0f, 0.0f, 10.0f );
-		gl::texCoord( 0, 1 );
-		gl::vertex( -10.0f, 0.0f, 10.0f );
-	gl::end();
-	mPlaneTexture.disable();
+	gl::bindStockShader( gl::ShaderDef().texture() );
+	gl::ScopedTextureBind scpTex( mPlaneTexture );
+	gl::drawSolidRect( Rectf( -10, -10, 10, 10 ) );
 }
 
 void QuaternionAccumApp::drawSpline()
@@ -124,12 +120,12 @@ void QuaternionAccumApp::drawBall()
 	Vec3f normal = Vec3f( delta.z, 0, -delta.x );
 	
 	// rotation amount (in radians) is the distance we've traveled divided by the radius of the ball
-	float rotation = delta.length() / BALL_RADIUS;
+	float rotation = length( delta ) / BALL_RADIUS;
 	if( rotation ) {
 		// increment our quaternion by a new quaternion representing how much rotating we did since the last frame
-		Quatf incQuat( normal, rotation );
+		quat incQuat( rotation, normal );
 		mQuat *= incQuat;
-		mQuat.normalize();
+//		mQuat.normalize();
 	}
 	
 	gl::translate( Vec3f( 0.0f, BALL_RADIUS, 0.0f ) + pos );
@@ -137,9 +133,9 @@ void QuaternionAccumApp::drawBall()
 	gl::rotate( mQuat );
 	
 	gl::color( Color( 1, 1, 1 ) );
-	mBallTexture.enableAndBind();
-	gl::drawSphere( Vec3f::zero(), 1.0f, 60 );
-	mBallTexture.disable();
+	gl::bindStockShader( gl::ShaderDef().texture() );
+	gl::ScopedTextureBind scpTex( mBallTexture );
+	gl::drawSphere( vec3( 0 ), 1.0f, 60 );
 	
 	mLastPos = pos;
 }
