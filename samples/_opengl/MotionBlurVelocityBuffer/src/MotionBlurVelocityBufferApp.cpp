@@ -206,9 +206,10 @@ void MotionBlurVelocityBufferApp::draw()
 		gl::ScopedFramebuffer fbo( mVelocityBuffer );
 		gl::ScopedGlslProg prog( mVelocityProg );
 		gl::clear( Color::black() );
+		mVelocityProg->uniform( "uViewProjection", gl::getProjectionMatrix() * gl::getViewMatrix() );
+
 		for( auto &mesh : mMeshes )
 		{
-			mVelocityProg->uniform( "uViewProjection", gl::getProjectionMatrix() * gl::getViewMatrix() );
 			mVelocityProg->uniform( "uModelMatrix", mesh->getTransform() );
 			mVelocityProg->uniform( "uPrevModelMatrix", mesh->getPreviousTransform() );
 			gl::draw( mesh->getMesh() );

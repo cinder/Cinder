@@ -27,6 +27,9 @@
 
 #pragma once
 
+//
+// Previous and current transform stored together.
+//
 class BlurrableTransform
 {
 public:
@@ -48,19 +51,24 @@ private:
 	ci::mat4	mPreviousTransform;
 };
 
+//
+// A test object that moves around and keeps track of previous and current transformations.
+//
 class BlurrableMesh
 {
 public:
-	BlurrableMesh( ci::gl::VboMeshRef mesh, const ci::vec3 &pos ):
-	mMesh( mesh ),
-	mPosition( pos )
-	{
-		mTransform.set( mPosition, ci::angleAxis( mSpin, mAxis ), mScale );
-	}
+	BlurrableMesh( ci::gl::VboMeshRef mesh, const ci::vec3 &pos );
+
+	//! Move the mesh and update its transforms.
 	void update( float dt );
+
+	//! Get the current transform.
 	const ci::mat4&	getTransform() const { return mTransform.getTransform(); }
+	//! Get last frame's transform.
 	const ci::mat4&	getPreviousTransform() const { return mTransform.getPreviousTransform(); }
+	//! Get the target render color.
 	const ci::ColorA& getColor() const { return mColor; }
+	//! Get the mesh to render.
 	ci::gl::VboMeshRef	getMesh() const { return mMesh; }
 
 	void setAxis( const ci::vec3 &axis ) { mAxis = axis; }
@@ -69,8 +77,13 @@ public:
 	void setColor( const ci::ColorA &color ) { mColor = color; }
 	void setTheta( float t ) { mTheta = t; }
 private:
+	// Transform data.
 	BlurrableTransform	mTransform;
+
+	// Renderable mesh.
 	ci::gl::VboMeshRef	mMesh;
+
+	// Animation parameters for some motion.
 	float				mSpin = 0.0f;
 	ci::vec3			mAxis = ci::vec3( 0.7f, 0.5f, 0.3f );
 	ci::vec3			mPosition;

@@ -29,6 +29,10 @@
 
 using namespace cinder;
 
+//
+// BlurrableTransform
+//
+
 void BlurrableTransform::set( const vec3 &pos, const quat &orientation, const vec3 &scale )
 {
 	mat4 m;
@@ -52,6 +56,13 @@ void BlurrableTransform::update( const vec3 &pos, const quat &orientation, const
 //
 // BlurrableMesh
 //
+
+BlurrableMesh::BlurrableMesh( gl::VboMeshRef mesh, const vec3 &pos ):
+	mMesh( mesh ),
+	mPosition( pos )
+{
+	mTransform.set( mPosition, ci::angleAxis( mSpin, mAxis ), mScale );
+}
 
 void BlurrableMesh::update( float dt )
 {
