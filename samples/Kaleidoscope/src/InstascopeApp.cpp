@@ -120,8 +120,8 @@ void InstascopeApp::defineMirrorGrid()
 	Vec2f pt2(r, 0.0);
 	Vec2f pt3((cos(M_PI/3) * r), (sin(M_PI/3) * r));
     
-	const float tri_width = pt1.distance(pt2) * tri_scale;
-	const float tri_height = sqrt((tri_width*tri_width) - ((tri_width/2) * (tri_width/2)));
+	const float tri_width = distance( pt1, pt2 ) * tri_scale;
+	const float tri_height = std::sqrt((tri_width*tri_width) - ((tri_width/2) * (tri_width/2)));
     
 	const int amtX = ceil((((getWindowWidth()*2) - .5) / (1.5*(tri_width))) + 0.5f );
 	const float w = ((amtX*1.5) + .5) * tri_width;
@@ -204,11 +204,6 @@ void InstascopeApp::checkImageLoaded()
 
 void InstascopeApp::transitionMirrorIn( vector<TrianglePiece> *vec )
 {
-	// define a random starting point
-	Vec2f sortPt = Vec2f(randInt(-(getWindowWidth()/2), (getWindowWidth()/2)), 
-						 randInt(-(getWindowHeight()/2), (getWindowHeight()/2)));
-	
-	// from sortPt, define the delay for each pieces so that they stagger it from that point
 	for( int i = 0; i < vec->size(); i++ ) {
 		float delay = randFloat( 0.1f, 0.5f );
 		(*vec)[i].reset( delay, mMirrorTexture );
@@ -325,7 +320,6 @@ void InstascopeApp::mirrorIn()
 {
 	// redefine the bg texture
 	mBgTexture = mNewTex;
-	mBgTexture->setFlipped( false );
 	mTextRibbon->update( TAG, mCurInstagram.getUser() );
 }
 

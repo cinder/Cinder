@@ -33,7 +33,7 @@ void TextRibbon::update( string tag, string user )
 	mTag = (tag!="") ? "#" + tag : "";
 	mUser = user;
 	
-	mCurPos.value() = Vec2f(-60, 0);
+	mCurPos.value() = vec2(-60, 0);
 	mCurAlpha = 0.0f;
 	
 	makeText();
@@ -45,14 +45,14 @@ void TextRibbon::ribbonIn( float delay )
 {
 	// animate ribbon in
 	app::timeline().apply( &mCurAlpha, 1.0f, 0.4f, EaseOutQuint()).delay(delay);
-	app::timeline().apply( &mCurPos, Vec2f::zero(), 0.4f, EaseOutQuint()).delay(delay);	
+	app::timeline().apply( &mCurPos, vec2( 0, 0 ), 0.4f, EaseOutQuint()).delay(delay);	
 }
 
 void TextRibbon::ribbonOut( float delay )
 {
 	// animate ribbon out
 	app::timeline().apply( &mCurAlpha, 0.0f, 0.4f, EaseInQuint()).delay(delay);
-	app::timeline().apply( &mCurPos, Vec2f(-60, 0), 0.4f, EaseInQuint()).delay(delay);
+	app::timeline().apply( &mCurPos, vec2(-60, 0), 0.4f, EaseInQuint()).delay(delay);
 }
 
 void TextRibbon::makeText()
@@ -75,8 +75,8 @@ void TextRibbon::makeText()
 	mUserTex = gl::Texture::create( mUserBox.render() );
 	
 	float ribbonWidth = mTagBox.measure().x + mUserBox.measure().x + 30;
-	mRibbonSize = Vec2f(ribbonWidth, 50);
-	mTextPos = Vec2f(0, getWindowHeight() - mRibbonSize.y - 20);
+	mRibbonSize = vec2(ribbonWidth, 50);
+	mTextPos = vec2(0, getWindowHeight() - mRibbonSize.y - 20);
 }
 
 // Draws the solid shape behind the text
@@ -118,11 +118,11 @@ void TextRibbon::draw()
 	// check it the texture exists and if mTagBox has a height (meaning that there's something in that texture)
 	if( mTagTex && mTagBox.measure().y > 0 ) {
 		spacing = 5;
-		gl::draw( mTagTex, Vec2f(mCurPos.value().x + TEXT_PADDING_X, (mRibbonSize.y - mTagBox.measure().y)/2) );
+		gl::draw( mTagTex, vec2(mCurPos.value().x + TEXT_PADDING_X, (mRibbonSize.y - mTagBox.measure().y)/2) );
 	}
 	
 	if( mUserTex )
-		gl::draw( mUserTex, Vec2f(mCurPos.value().x + TEXT_PADDING_X + mTagBox.measure().x + spacing, (mRibbonSize.y - mUserBox.measure().y)/2) );
+		gl::draw( mUserTex, vec2(mCurPos.value().x + TEXT_PADDING_X + mTagBox.measure().x + spacing, (mRibbonSize.y - mUserBox.measure().y)/2) );
 	gl::color( 1, 1, 1 );
 	gl::popModelMatrix();
 }
