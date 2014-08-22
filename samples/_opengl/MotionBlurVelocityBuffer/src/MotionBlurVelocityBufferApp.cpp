@@ -30,17 +30,17 @@ class MotionBlurVelocityBufferApp : public AppNative {
 	void createGeometry();
 	void createBuffers();
 	void loadShaders();
+	void drawVelocityBuffers();
+
   private:
 	gl::TextureRef					mBackground;
 	std::vector<BlurrableMeshRef>	mMeshes;
-	bool							mBlurEnabled = true;
-	bool							mPaused = false;
 
 	gl::GlslProgRef		mVelocityProg;		// Renders screen-space velocity to RG channels.
-	gl::GlslProgRef		mVelocityRenderProg;	// Renders velocity to screen for debugging.
 	gl::GlslProgRef		mTileProg;			// Downsamples velocity, preserving local maxima
 	gl::GlslProgRef		mNeighborProg;		// Finds dominant velocities in downsampled map
 	gl::GlslProgRef		mMotionBlurProg;	// Generates final image from color and velocity buffers
+	gl::GlslProgRef		mVelocityRenderProg;// Debug rendering of velocity to screen.
 
 	gl::FboRef			mColorBuffer;		// full-resolution RGBA color
 	gl::FboRef			mVelocityBuffer;	// full-resolution velocity
@@ -51,7 +51,10 @@ class MotionBlurVelocityBufferApp : public AppNative {
 	int						mTileSize = 20;
 	int						mSampleCount = 31;
 	float					mAnimationSpeed = 1.0f;
-	float					mBlurNoise = 0.1f;
+	float					mBlurNoise = 0.0f;
+	bool					mBlurEnabled = true;
+	bool					mPaused = false;
+	bool					mDisplayVelocityBuffers = true;
 };
 
 void MotionBlurVelocityBufferApp::prepareSettings( Settings *settings )
@@ -71,8 +74,9 @@ void MotionBlurVelocityBufferApp::setup()
 	createBuffers();
 	loadShaders();
 
-	mParams = params::InterfaceGl::create( "Motion Blur Options", ivec2( 200, 300 ) );
+	mParams = params::InterfaceGl::create( "Motion Blur Options", ivec2( 250, 300 ) );
 	mParams->addParam( "Enable Blur", &mBlurEnabled );
+	mParams->addParam( "Show Velocity Buffers", &mDisplayVelocityBuffers );
 	mParams->addParam( "Pause Animation", &mPaused );
 	mParams->addParam( "Animation Speed", &mAnimationSpeed ).min( 0.05f ).step( 0.2f );
 	mParams->addParam( "Max Samples", &mSampleCount ).min( 1 ).step( 2 );
@@ -109,7 +113,7 @@ void MotionBlurVelocityBufferApp::createBuffers()
 	}
 	{ // velocity
 		gl::Fbo::Format format;
-		format.colorTexture( gl::Texture::Format().internalFormat( GL_RG16F ) ).disableDepth();
+		format.colorTexture( gl::Texture::Format().internalFormat( GL_RG16F ) );
 		mVelocityBuffer = gl::Fbo::create( bufferWidth, bufferHeight, format );
 	}
 
@@ -261,12 +265,34 @@ void MotionBlurVelocityBufferApp::draw()
 		gl::drawSolidRect( getWindowBounds() );
 	}
 
-	{
-		gl::ScopedGlslProg prog( mVelocityRenderProg );
-		gl::ScopedTextureBind tex( mVelocityBuffer->getColorTexture(), 0 );
+	if( mDisplayVelocityBuffers ) {
+		drawVelocityBuffers();
 	}
 
 	mParams->draw();
+}
+
+void MotionBlurVelocityBufferApp::drawVelocityBuffers()
+{
+	gl::ScopedGlslProg prog( mVelocityRenderProg );
+	gl::ScopedModelMatrix matrix;
+	gl::setDefaultShaderVars();
+
+	float width = 200.0f;
+	float height = width / Rectf( mNeighborMaxBuffer->getBounds() ).getAspectRatio();
+	Rectf rect( 0.0f, 0.0f, width, height );
+
+	gl::ScopedTextureBind velTex( mVelocityBuffer->getColorTexture(), 0 );
+	gl::translate( getWindowWidth() - width - 10.0f, 10.0f );
+	gl::drawSolidRect( rect );
+
+	gl::ScopedTextureBind tileTex( mTileMaxBuffer->getColorTexture(), 0 );
+	gl::translate( 0.0f, height + 10.0f );
+	gl::drawSolidRect( rect );
+
+	gl::ScopedTextureBind neigborTex( mNeighborMaxBuffer->getColorTexture(), 0 );
+	gl::translate( 0.0f, height + 10.0f );
+	gl::drawSolidRect( rect );
 }
 
 CINDER_APP_NATIVE( MotionBlurVelocityBufferApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )
