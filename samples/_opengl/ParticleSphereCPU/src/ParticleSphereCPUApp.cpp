@@ -36,7 +36,7 @@ const int NUM_PARTICLES = 200e3;
 
 class ParticleSphereCPUApp : public AppNative {
   public:
-	void prepareSettings( Settings *settings );
+	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void update() override;
 	void draw() override;
