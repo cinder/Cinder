@@ -1,4 +1,4 @@
-#version 150 core
+#version 330 core
 
 uniform sampler2D uColorMap; // texture we're blurring
 uniform sampler2D uVelocityMap;

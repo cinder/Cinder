@@ -1,4 +1,4 @@
-#version 150 core
+#version 330 core
 
 // to support per-vertex animation, we need to pass
 // both the current and previous position of each vertex.

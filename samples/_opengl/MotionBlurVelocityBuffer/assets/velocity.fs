@@ -1,4 +1,4 @@
-#version 150 core
+#version 330 core
 
 smooth in vec4 vPosition;
 smooth in vec4 vPrevPosition;
