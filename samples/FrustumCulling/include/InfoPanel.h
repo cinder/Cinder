@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include "cinder/Vector.h"
 #include "cinder/gl/Texture.h"
 
 class InfoPanel {
@@ -12,11 +11,11 @@ class InfoPanel {
 	void render();
 	void toggleState();
 	
-	ci::Vec2f	mLoc;
+	ci::vec2				mLoc;
 	
-	float		mOpacity;
-	float		mCounter;
-	bool		mState;
-	int			mFadeTime;
-	ci::gl::Texture	mTexture;
+	float					mOpacity;
+	float					mCounter;
+	bool					mState;
+	int						mFadeTime;
+	ci::gl::Texture2dRef	mTexture;
 };
