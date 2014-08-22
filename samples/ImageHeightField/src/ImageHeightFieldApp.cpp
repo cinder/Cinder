@@ -44,7 +44,7 @@ void ImageHFApp::setup()
 	gl::enableDepthWrite();    
 
 	// initialize the arcball with a semi-arbitrary rotation just to give an interesting angle
-	mArcball.setQuat( Quatf( Vec3f( 0.0577576f, -0.956794f, 0.284971f ), 3.68f ) );
+	mArcball.setQuat( quat( 0.28f, vec3( 0.0577576f, -0.956794f, 0.284971f ) ) );
 
 	openFile();
 }
@@ -71,7 +71,7 @@ void ImageHFApp::resize()
 	mArcball.setCenter( Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
 	mArcball.setRadius( getWindowHeight() / 2.0f );
 
-	mCam.lookAt( Vec3f( 0.0f, 0.0f, -150 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0.0f, 0.0f, -150 ), vec3( 0, 0, 0 ) );
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
 	gl::setMatrices( mCam );
 }
