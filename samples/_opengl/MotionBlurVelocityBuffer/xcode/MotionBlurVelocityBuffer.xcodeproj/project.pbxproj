@@ -14,6 +14,7 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		153B089419A7B8BC002E78AD /* BlurrableThings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 153B089219A7B8BC002E78AD /* BlurrableThings.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		5436EA22C17B4BA7965BD6C7 /* MotionBlurVelocityBufferApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2AAF40F8ADF44FBB8FC3D3E9 /* MotionBlurVelocityBufferApp.cpp */; };
@@ -30,6 +31,8 @@
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		153B089219A7B8BC002E78AD /* BlurrableThings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BlurrableThings.cpp; path = ../src/BlurrableThings.cpp; sourceTree = "<group>"; };
+		153B089319A7B8BC002E78AD /* BlurrableThings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BlurrableThings.h; path = ../src/BlurrableThings.h; sourceTree = "<group>"; };
 		1BDEF0D6398B4945BBEB6DE9 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		261D7236DC8044D3AA888D66 /* MotionBlurVelocityBuffer_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = MotionBlurVelocityBuffer_Prefix.pch; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -74,6 +77,8 @@
 			isa = PBXGroup;
 			children = (
 				2AAF40F8ADF44FBB8FC3D3E9 /* MotionBlurVelocityBufferApp.cpp */,
+				153B089219A7B8BC002E78AD /* BlurrableThings.cpp */,
+				153B089319A7B8BC002E78AD /* BlurrableThings.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -218,6 +223,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				153B089419A7B8BC002E78AD /* BlurrableThings.cpp in Sources */,
 				5436EA22C17B4BA7965BD6C7 /* MotionBlurVelocityBufferApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
