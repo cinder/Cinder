@@ -25,7 +25,7 @@ using namespace std;
 struct FilterControl {
   public:
 	FilterControl( const Rectf &minRect, const Rectf &textureRect, const Rectf &anisoRect, const Rectf &anisoLevelRect,
-				  const Vec2i &scissorPos, const Vec2i &scissorDimension, const gl::TextureRef minTexture, const gl::TextureRef textureTexture, float maxAniso )
+				  const ivec2 &scissorPos, const ivec2 &scissorDimension, const gl::TextureRef minTexture, const gl::TextureRef textureTexture, float maxAniso )
 	:	mMinFilterPushed( false ), mMinFilterChoice( 0 ), mMinRect( minRect ),
 		mAnisoFilterPushed( false ), mAnisoFilterMax( maxAniso ), mAnisoRect( anisoRect ),
 		mTexturePushed( false ), mTextureChoice( 0 ), mTextureRect( textureRect ),
@@ -60,8 +60,8 @@ struct FilterControl {
 	Rectf			mTextureRect;
 	gl::TextureRef	mTextureTexture;
 	
-	Vec2i			mScissorPos;
-	Vec2i			mScissorDimension;
+	ivec2			mScissorPos;
+	ivec2			mScissorDimension;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,8 +83,8 @@ class TextureMipmappingApp : public AppNative {
 	
 	void	mouseDrag( MouseEvent event );
 	void	mouseUp( MouseEvent event );
-	void	upContains( FilterControlRef f, const Vec2i &pos );
-	bool	buttonContains( const Rectf &rect, const Vec2i &touch );
+	void	upContains( FilterControlRef f, const ivec2 &pos );
+	bool	buttonContains( const Rectf &rect, const ivec2 &touch );
 	
 	void	createAnisoLevelTex();
 	void	createGlGenMip( const gl::Texture::Format &format, FilterControlRef f );
@@ -94,8 +94,8 @@ class TextureMipmappingApp : public AppNative {
 	Surface					mCheckerBoard;
 	
 	CameraPersp				mCam;
-	Matrix44f				mPlaneRotation;
-	Matrix44f				mPlaneTranslation;
+	mat4					mPlaneRotation;
+	mat4					mPlaneTranslation;
 	
 	gl::TextureRef			mAnisoTexture;
 	gl::TextureRef			mAnisoLevelTexture;
@@ -128,10 +128,10 @@ void TextureMipmappingApp::setup()
 	right = false;
 	
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 10000 );
-	mCam.lookAt( Vec3f( 0, 0, -1 ), Vec3f( 0, 0, 1 ) );
+	mCam.lookAt( vec3( 0, 0, -1 ), vec3( 0, 0, 1 ) );
 	
-	mPlaneTranslation.translate( Vec3f( - 10000 / 2, - getWindowHeight() / 2, 0 ) );
-	mPlaneRotation.rotate( Vec3f( 1, 0, 0 ), toRadians( 85.0f ) );
+	mPlaneTranslation = translate( vec3( - 10000 / 2, - getWindowHeight() / 2, 0 ) );
+	mPlaneRotation = rotate( toRadians( 85.0f ), vec3( 1, 0, 0 ) );
 	
 	int widthFraction = getWindowWidth() / 6;
 	int heightFraction = getWindowHeight() / 10;
@@ -143,7 +143,7 @@ void TextureMipmappingApp::setup()
 													Rectf( widthFraction - 50, heightFraction * 2, widthFraction + 50, heightFraction * 2 + 30 ),
 													Rectf( widthFraction - 50, heightFraction * 3, widthFraction + 50, heightFraction * 3 + 30 ),
 													Rectf( widthFraction - 50, heightFraction * 3, widthFraction + 50, heightFraction * 3 + 30 ),
-								  /* scissor */		Vec2i( 0, 0 ) /* position */, Vec2i( getWindowWidth() / 2, getWindowHeight() ) /* dimension */,
+								  /* scissor */		ivec2( 0, 0 ) /* position */, ivec2( getWindowWidth() / 2, getWindowHeight() ) /* dimension */,
 													gl::Texture::create( loadImage( loadResource( MIN_FILTER_LIN_LIN ) ) ),
 													gl::Texture::create( loadImage( loadResource( GL_GEN ) ) ),
 													mMaxAnisoFilterAmount ) );
@@ -152,7 +152,7 @@ void TextureMipmappingApp::setup()
 													 Rectf( widthFraction * 5 - 50, heightFraction * 2, widthFraction * 5 + 50, heightFraction * 2 + 30 ),
 													 Rectf( widthFraction * 5 - 50, heightFraction * 3, widthFraction * 5 + 50, heightFraction * 3 + 30 ),
 													 Rectf( widthFraction * 5 - 50, heightFraction * 3, widthFraction * 5 + 50, heightFraction * 3 + 30 ),
-								  /* scissor */		 Vec2i( getWindowWidth() / 2, 0 ) /* position */, Vec2i( getWindowWidth() / 2, getWindowHeight() ) /* dimension */,
+								  /* scissor */		 ivec2( getWindowWidth() / 2, 0 ) /* position */, ivec2( getWindowWidth() / 2, getWindowHeight() ) /* dimension */,
 													 gl::Texture::create( loadImage( loadResource( MIN_FILTER_NEA_NEA ) ) ),
 													 gl::Texture::create( loadImage( loadResource( GL_GEN ) ) ),
 													 mMaxAnisoFilterAmount ) );
@@ -213,7 +213,7 @@ void TextureMipmappingApp::update()
 		pan -= 0.01f;
 	}
 	
-	mCam.lookAt( Vec3f( 0, 0, -1 ), Vec3f( pan, 0, 1 ) );	
+	mCam.lookAt( vec3( 0, 0, -1 ), vec3( pan, 0, 1 ) );	
 }
 
 void TextureMipmappingApp::draw()
@@ -264,7 +264,7 @@ void TextureMipmappingApp::renderPlaneTexture( FilterControlRef f )
 		break;
 	}
 	// Drawing this enormous so that we can see each mip level. 50x50 for texcoords leads to a repeating/tiled texture
-	gl::drawSolidRect( Rectf( 0, 0, 10000, 10000 ), Vec2f( 0, 0 ), Vec2f( 50, 50 ) );
+	gl::drawSolidRect( Rectf( 0, 0, 10000, 10000 ), vec2( 0, 0 ), vec2( 50, 50 ) );
 }
 
 void TextureMipmappingApp::renderFilterButtons( FilterControlRef f )
@@ -371,7 +371,7 @@ void TextureMipmappingApp::mouseUp( MouseEvent event )
 	upContains( mRightControl, event.getPos() );
 }
 
-void TextureMipmappingApp::upContains( FilterControlRef f, const Vec2i &pos )
+void TextureMipmappingApp::upContains( FilterControlRef f, const ivec2 &pos )
 {
 	if( buttonContains( f->mMinRect, pos ) ) {
 		f->mMinFilterPushed = true;
@@ -393,7 +393,7 @@ void TextureMipmappingApp::upContains( FilterControlRef f, const Vec2i &pos )
 	}
 }
 
-bool TextureMipmappingApp::buttonContains( const Rectf &rect, const Vec2i &touch )
+bool TextureMipmappingApp::buttonContains( const Rectf &rect, const ivec2 &touch )
 {
 	return touch.x > rect.getUpperLeft().x && touch.x < rect.getLowerRight().x	&& touch.y > rect.getUpperLeft().y && touch.y < rect.getLowerRight().y;
 }
@@ -424,7 +424,7 @@ void TextureMipmappingApp::createUserGenMip( const gl::Texture::Format &format, 
 	
 	for( int level = 1; level < mipLevels; ++level ) {
 		float hue = static_cast<float>( level ) / static_cast<float>( mipLevels );
-		Vec2i mipSize = gl::Texture2d::calcMipLevelSize( level, surface.getWidth(), surface.getHeight() );
+		ivec2 mipSize = gl::Texture2d::calcMipLevelSize( level, surface.getWidth(), surface.getHeight() );
 		Surface mipSurface( mipSize.x, mipSize.y, false );
 		ip::fill( &mipSurface, Color( CM_HSV, hue, 1, 1 ) );
 		f->mUserCreatedMipmap->update( mipSurface, level );
@@ -438,8 +438,8 @@ void TextureMipmappingApp::createUserResizedGenMip( const gl::Texture::Format &f
 	int mipLevels = f->mUserResizedMipmap->getNumMipLevels();
 	
 	for( int level = 1; level < mipLevels; level++ ) {
-		Vec2i mipSize = gl::Texture::calcMipLevelSize( level, mCheckerBoard.getWidth(), mCheckerBoard.getHeight() );
-		f->mUserResizedMipmap->update( ip::resizeCopy( mCheckerBoard, Area( Vec2i::zero(), mCheckerBoard.getSize() ), mipSize, FilterSincBlackman() ), level );
+		ivec2 mipSize = gl::Texture::calcMipLevelSize( level, mCheckerBoard.getWidth(), mCheckerBoard.getHeight() );
+		f->mUserResizedMipmap->update( ip::resizeCopy( mCheckerBoard, Area( ivec2( 0, 0 ), mCheckerBoard.getSize() ), mipSize, FilterSincBlackman() ), level );
 	}
 }
 
