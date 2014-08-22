@@ -3,6 +3,7 @@
 uniform sampler2D uColorMap; // texture we're blurring
 uniform sampler2D uVelocityMap;
 uniform sampler2D uNeighborMaxMap;
+uniform float     uNoiseFactor = 0.1; // relative to total velocity (so 1.0 is a lot)
 
 uniform int uSamples;
 
@@ -30,7 +31,7 @@ vec4 calcColor()
   // accumulating color
   vec4 color = vec4( 0.0 );
   // pseudorandom offset to jitter our samples
-  vec2 jitter = vec2(rand(screenTexCoords) * 0.5 - 1.0) * texelSize;
+  vec2 jitter = vec2(rand(screenTexCoords) * 0.5 - 1.0) * velocity * uNoiseFactor;
   for( int i = 0; i < uSamples; ++i ) {
     // sample along dominant region motion and actual pixel motion
     float t = mix( -1.0, 1.0, float(i) / float(uSamples - 1.0) );

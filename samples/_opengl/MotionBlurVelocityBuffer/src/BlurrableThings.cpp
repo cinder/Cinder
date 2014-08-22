@@ -60,6 +60,6 @@ void BlurrableMesh::update( float dt )
 	if( mTheta > 2 * M_PI )
 		mTheta -= 2 * M_PI;
 
-	mPosition += mOscillation * vec3( cos( mTheta ), sin( mTheta ), cos( mTheta ) * sin( mTheta ) );
-	mTransform.update( mPosition, angleAxis( mSpin, mAxis ), mScale );
+	vec3 pos = mPosition + mOscillation * vec3( cos( mTheta ), sin( mTheta ), cos( mTheta ) * sin( mTheta ) );
+	mTransform.update( pos, angleAxis( mSpin, mAxis ), mScale );
 }

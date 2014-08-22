@@ -11,6 +11,7 @@
 #include "cinder/Rand.h"
 
 #include "cinder/Log.h"
+#include "cinder/params/Params.h"
 
 #include "BlurrableThings.h"
 
@@ -46,8 +47,11 @@ class MotionBlurVelocityBufferApp : public AppNative {
 	gl::FboRef			mTileMaxBuffer;		// downsampled velocity
 	gl::FboRef			mNeighborMaxBuffer;	// dominant velocities in regions
 
-	int					mTileSize = 20;
-	int					mSampleCount = 31;
+	params::InterfaceGlRef	mParams;
+	int						mTileSize = 20;
+	int						mSampleCount = 31;
+	float					mAnimationSpeed = 1.0f;
+	float					mBlurNoise = 0.1f;
 };
 
 void MotionBlurVelocityBufferApp::prepareSettings( Settings *settings )
@@ -66,6 +70,13 @@ void MotionBlurVelocityBufferApp::setup()
 	createGeometry();
 	createBuffers();
 	loadShaders();
+
+	mParams = params::InterfaceGl::create( "Motion Blur Options", ivec2( 200, 300 ) );
+	mParams->addParam( "Enable Blur", &mBlurEnabled );
+	mParams->addParam( "Pause Animation", &mPaused );
+	mParams->addParam( "Animation Speed", &mAnimationSpeed ).min( 0.05f ).step( 0.2f );
+	mParams->addParam( "Max Samples", &mSampleCount ).min( 1 ).step( 2 );
+	mParams->addParam( "Blur Noise", &mBlurNoise ).min( 0.0f ).step( 0.01f );
 }
 
 void MotionBlurVelocityBufferApp::createGeometry()
@@ -79,7 +90,7 @@ void MotionBlurVelocityBufferApp::createGeometry()
 		auto mesh = make_shared<BlurrableMesh>( gl::VboMesh::create( geom::Cone().height( height ).base( base ) ), pos );
 		mesh->setAxis( randVec3f() );
 		mesh->setColor( ColorA( CM_HSV, randFloat( 0.05f, 0.33f ), 1.0f, 1.0f ) );
-		mesh->setOscillation( vec3( randFloat( -10.0f, 10.0f ), randFloat( -10.0f, 10.0f ), randFloat( -40.0f, 10.0f ) ) );
+		mesh->setOscillation( vec3( randFloat( -150.0f, 150.0f ), randFloat( -300.0f, 300.0f ), randFloat( -500.0f, 200.0f ) ) );
 		mesh->setTheta( randFloat( M_PI * 2 ) );
 
 		mMeshes.push_back( mesh );
@@ -158,7 +169,7 @@ void MotionBlurVelocityBufferApp::update()
 	if( ! mPaused )
 	{
 		for( auto &mesh : mMeshes ) {
-			mesh->update( 1.0f / 60.0f );
+			mesh->update( mAnimationSpeed / 60.0f );
 		}
 	}
 }
@@ -245,6 +256,7 @@ void MotionBlurVelocityBufferApp::draw()
 		mMotionBlurProg->uniform( "uColorMap", 0 );
 		mMotionBlurProg->uniform( "uVelocityMap", 1 );
 		mMotionBlurProg->uniform( "uNeighborMaxMap", 2 );
+		mMotionBlurProg->uniform( "uNoiseFactor", mBlurNoise );
 		mMotionBlurProg->uniform( "uSamples", mSampleCount );
 		gl::drawSolidRect( getWindowBounds() );
 	}
@@ -253,6 +265,8 @@ void MotionBlurVelocityBufferApp::draw()
 		gl::ScopedGlslProg prog( mVelocityRenderProg );
 		gl::ScopedTextureBind tex( mVelocityBuffer->getColorTexture(), 0 );
 	}
+
+	mParams->draw();
 }
 
 CINDER_APP_NATIVE( MotionBlurVelocityBufferApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )
