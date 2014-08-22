@@ -50,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\\include";"..\..\..\..\\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\smaa;..\fxaa;..\include;..\..\..\..\\include;..\..\..\..\\boost</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -76,7 +76,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\\include";"..\..\..\..\\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\smaa;..\fxaa;..\include;..\..\..\..\\include;..\..\..\..\\boost</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -107,11 +107,13 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\fxaa\FXAA.cpp" />
     <ClCompile Include="..\src\Pistons.cpp" />
     <ClCompile Include="..\src\PostProcessingAAApp.cpp" />
     <ClCompile Include="..\src\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\fxaa\FXAA.h" />
     <ClInclude Include="..\include\Pistons.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\include\Shader.h" />

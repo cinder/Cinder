@@ -23,9 +23,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Context.h"
+#include "cinder/gl/Fbo.h"
 #include "cinder/Camera.h"
 #include "cinder/Timer.h"
 
+#include "FXAA.h"
 #include "Pistons.h"
 
 using namespace ci;
@@ -34,24 +37,42 @@ using namespace std;
 
 class PostProcessingAAApp : public AppNative {
 public:
-	void setup();
-	void update();
-	void draw();
+	void prepareSettings( Settings* settings ) override;
 
-	void mouseDown( MouseEvent event );
-	void keyDown( KeyEvent event );
+	void setup() override;
+	void update() override;
+	void draw() override;
+
+	void render();
+
+	void resize() override;
+	void mouseDown( MouseEvent event ) override;
+	void keyDown( KeyEvent event ) override;
+
+
 private:
 	CameraPersp         mCamera;
 	Pistons             mPistons;
+
+	gl::FboRef          mFbo;
+
+	FXAA                mFXAA;
 
 	Timer               mTimer;
 	double              mTime;
 	double              mTimeOffset;
 };
 
+void PostProcessingAAApp::prepareSettings( Settings* settings )
+{
+	settings->disableFrameRate();
+	settings->setWindowSize( 1280, 720 );
+}
+
 void PostProcessingAAApp::setup()
 {
 	mPistons.setup();
+	mFXAA.setup();
 
 	mTimeOffset = 0.0;
 	mTimer.start();
@@ -59,10 +80,10 @@ void PostProcessingAAApp::setup()
 
 void PostProcessingAAApp::update()
 {
-	// Keep track of time
+	// Keep track of time.
 	mTime = mTimer.getSeconds() + mTimeOffset;
 
-	// Animate our camera
+	// Animate our camera.
 	double t = mTime / 10.0;
 
 	float phi = (float) t;
@@ -76,14 +97,57 @@ void PostProcessingAAApp::update()
 	mCamera.setAspectRatio( getWindowAspectRatio() );
 	mCamera.setFov( 40.0f );
 
-	// Update the pistons
+	// Update the pistons.
 	mPistons.update( mCamera );
 }
 
 void PostProcessingAAApp::draw()
 {
+	// Render our scene to an Fbo.
+	render();
+
+	// Clear the main buffer.
 	gl::clear();
+	gl::color( Color::white() );
+
+	// Bind our scene as a texture and render.
+	gl::TextureRef texture = mFbo->getColorTexture();
+	gl::ScopedGlslProg glslProg( gl::context()->getStockShader( gl::ShaderDef().texture( texture ) ) );
+	gl::ScopedTextureBind bind( texture );
+
+	mFXAA.apply( mFbo );
+	/*
+	Area flipped = texture->getBounds();
+	flipped.y1 = flipped.y2;
+	flipped.y2 = 0;
+	gl::drawSolidRect( flipped );
+	*/
+}
+
+void PostProcessingAAApp::render()
+{
+	// Bind the Fbo. Automatically unbinds it at the end of this function.
+	gl::ScopedFramebuffer fbo( mFbo );
+
+	// Clear the buffer.
+	gl::clear();
+	gl::color( Color::white() );
+	
+	// Render our scene.
 	mPistons.draw( mCamera, float( mTime ) );
+}
+
+void PostProcessingAAApp::resize()
+{
+	// For this sample, we want a non-multisampled buffer and bilinear interpolation.
+	gl::Texture2d::Format tfmt;
+	tfmt.setMinFilter( GL_LINEAR );
+	tfmt.setMagFilter( GL_LINEAR );
+
+	gl::Fbo::Format fmt;
+	fmt.setColorTextureFormat( tfmt );
+
+	mFbo = gl::Fbo::create( getWindowWidth(), getWindowHeight(), fmt );
 }
 
 void PostProcessingAAApp::mouseDown( MouseEvent event )
@@ -105,18 +169,18 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 		else
 			mTimer.stop();
 		break;
-	/*case KeyEvent::KEY_1:
-		mMode = Mode::EDGE_DETECTION;
-		break;
-	case KeyEvent::KEY_2:
-		mMode = Mode::BLEND_WEIGHTS;
-		break;
-	case KeyEvent::KEY_3:
-		mMode = Mode::BLEND_NEIGHBORS;
-		break;*/
+		/*case KeyEvent::KEY_1:
+			mMode = Mode::EDGE_DETECTION;
+			break;
+			case KeyEvent::KEY_2:
+			mMode = Mode::BLEND_WEIGHTS;
+			break;
+			case KeyEvent::KEY_3:
+			mMode = Mode::BLEND_NEIGHBORS;
+			break;*/
 	case KeyEvent::KEY_v:
 		if( gl::isVerticalSyncEnabled() )
-			gl::enableVerticalSync(false);
+			gl::enableVerticalSync( false );
 		else
 			gl::enableVerticalSync();
 		break;

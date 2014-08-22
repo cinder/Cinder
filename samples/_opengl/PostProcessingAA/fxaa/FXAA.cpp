@@ -5,10 +5,10 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+ the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -18,7 +18,7 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 
 #include "cinder/app/AppBasic.h"
 
@@ -39,27 +39,31 @@ void FXAA::setup()
 	}
 }
 
-void FXAA::apply(ci::gl::Fbo& destination, ci::gl::Fbo& source)
+void FXAA::apply( ci::gl::FboRef source )
+{
+	if( !mFXAA )
+		return;
+
+	gl::ScopedGlslProg prog( mFXAA );
+	mFXAA->uniform( "uTexture", 0 );
+	mFXAA->uniform( "uRcpBufferSize", Vec2f::one() / Vec2f( source->getSize() ) );
+
+	gl::ScopedTextureBind bind( source->getColorTexture() );
+
+	gl::clear();
+	gl::color( Color::white() );
+	gl::drawSolidRect( source->getBounds() );
+}
+
+void FXAA::apply( ci::gl::FboRef destination, ci::gl::FboRef source )
 {
 	if( !mFXAA )
 		return;
 
 	// Source and destination should have the same size
-	assert(destination.getWidth() == source.getWidth());
-	assert(destination.getHeight() == source.getHeight());
+	assert( destination.getWidth() == source.getWidth() );
+	assert( destination.getHeight() == source.getHeight() );
 
 	// Apply FXAA
-	destination.bindFramebuffer();
-
-	mFXAA->bind();
-	mFXAA->uniform("uTexture", 0);
-	mFXAA->uniform("uRcpBufferSize", Vec2f::one() / Vec2f( destination.getSize() ));
-	{
-		gl::clear();
-		gl::color( Color::white() );
-
-		gl::draw( source.getTexture(0), destination.getBounds() );
-	}
-	
-	destination.unbindFramebuffer();
+	gl::ScopedFramebuffer fbo( destination );
 }
