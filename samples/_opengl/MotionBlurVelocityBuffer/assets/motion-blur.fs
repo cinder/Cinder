@@ -7,7 +7,7 @@ uniform float     uNoiseFactor = 0.1; // relative to total velocity (so 1.0 is a
 
 uniform int uSamples;
 
-out vec4 oColor;
+out vec4 fColor;
 
 float rand( in vec2 seed )
 {
@@ -54,5 +54,5 @@ vec4 calcColor()
 
 void main(void)
 {
-  oColor = calcColor();
+  fColor = calcColor();
 }

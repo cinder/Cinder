@@ -1,7 +1,7 @@
 #version 330 core
 
 uniform sampler2D uTileMap;	// downsampled velocity
-out vec4 oVelocity;
+out vec4 fVelocity;
 
 void main() {
 	vec2 texelSize = 1.0 / vec2(textureSize(uTileMap, 0));
@@ -58,8 +58,8 @@ void main() {
 		}
 	}
 	// store screen-space velocity
-	oVelocity.xy = velocity;
-	// observed strange behavior on OSX if we used vec2 for output
-	// simply writing 1s to unused channels fixes the issue
-	oVelocity.ba = vec2( 1.0 );
+	fVelocity.xy = velocity;
+	// observed strange behavior on OSX+AMD when only writing to rg/xy
+	// writing 1s to unused channels fixes the issue
+	fVelocity.ba = vec2( 1.0 );
 }
