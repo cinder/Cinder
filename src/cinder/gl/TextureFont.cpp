@@ -109,6 +109,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 				ip::unpremultiply( &surface );
 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
+			textureFormat.loadTopDown();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 			GLint dataFormat;
 #if defined( CINDER_GL_ES )
@@ -281,6 +282,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				ip::unpremultiply( &tempSurface );
 			
 			gl::Texture::Format textureFormat = gl::Texture::Format();
+			textureFormat.loadTopDown();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 
 			Surface8u::ConstIter iter( tempSurface, tempSurface.getBounds() );
