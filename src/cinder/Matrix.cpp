@@ -86,7 +86,7 @@ Matrix44<T> nextFrame(
 	Vec3<T> &curTangent 
 )
 {
-    Vec3<T> a = Vec3<T>::zero();	// Rotation axis.
+    Vec3<T> a = vec3( 0 );	// Rotation axis.
     T r = 0;						// Rotation angle.
 
     if( ( prevTangent.length() != 0.0 ) && ( curTangent.length() != 0.0 ) ) {

@@ -169,7 +169,7 @@ AppImplCocoaScreenSaver* getAppImpl();
 
 - (cinder::Vec2i)getPos
 {
-	return cinder::Vec2i::zero();
+	return cinder::ivec2( 0 );
 }
 
 - (float)getContentScale

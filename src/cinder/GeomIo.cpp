@@ -1598,7 +1598,7 @@ void Cylinder::loadInto( Target *target ) const
 // SplineExtrusion
 #if 0
 SplineExtrusion::SplineExtrusion( const std::function<Vec3f(float)> &pathCurve, int pathSegments, float radius, int radiusSegments )
-	: mCalculationsCached( false ), mScale( 1 , 1, 1 ), mPos( Vec3f::zero() )
+	: mCalculationsCached( false ), mScale( 1 , 1, 1 ), mPos( vec3( 0 ) )
 {
 	calculateCurve( pathCurve, pathSegments, radius, radiusSegments );
 }
