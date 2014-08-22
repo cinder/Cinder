@@ -411,8 +411,8 @@ void TextureBase::SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOr
 
 Vec2i TextureBase::calcMipLevelSize( int mipLevel, GLint width, GLint height )
 {
-	width = max( 1, (int)floor( width >> mipLevel ) );
-	height = max( 1, (int)floor( height >> mipLevel ) );
+	width = std::max<int>( 1, (int)floor<float>( width >> mipLevel ) );
+	height = std::max<int>( 1, (int)floor<float>( height >> mipLevel ) );
 	
 	return Vec2i( width, height );
 }

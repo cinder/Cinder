@@ -192,8 +192,8 @@ AxisAlignedBox3f AxisAlignedBox3f::transformed( const Matrix44f &transform ) con
 {
 	Vec3f verts[8];
 
-	for(size_t i=0;i<8;i++) 
-		verts[i] = transform.transformPointAffine(mVerts[i]);
+	for(size_t i=0;i<8;i++)
+		verts[i] = vec3( transform * vec4( mVerts[i], 1 ) );
 
 	Vec3f min = verts[0];
 	Vec3f max = verts[0];

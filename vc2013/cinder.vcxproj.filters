@@ -441,41 +441,11 @@
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererDx.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DDSTextureLoader.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\dx.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxLight.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxTexture.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxTextureFont.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxVbo.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\HlslProg.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\MatrixStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp">
       <Filter>Source Files\AntTweakBar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxRenderTarget.cpp">
-      <Filter>Source Files\dx</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\ChannelRouterNode.cpp">
       <Filter>Source Files\audio</Filter>
@@ -1128,9 +1098,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Matrix44.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\MatrixAlgo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Base64.h">

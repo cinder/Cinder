@@ -152,7 +152,7 @@ void NormalMappingApp::setup()
 	mPerlin = Perlin(4, 65535);
 
 	// default settings
-	mMeshBounds = AxisAlignedBox3f( Vec3f::zero(), Vec3f::one() );
+	mMeshBounds = AxisAlignedBox3f( vec3( 0 ), vec3( 1 ) );
 
 	bAutoRotate = true;
 	fAutoRotateAngle = 0.0f;
@@ -256,20 +256,25 @@ void NormalMappingApp::update()
 	fTime += fElapsed;
 	
 	// rotate the mesh
-	if(bAutoRotate) 
+	if( bAutoRotate )
 		fAutoRotateAngle += (fElapsed * 0.2f);
 
-	mMeshTransform.setToIdentity();
-	mMeshTransform.rotate( Vec3f::yAxis(), fAutoRotateAngle );
-	mMeshTransform.scale( Vec3f::one() / mMeshBounds.getSize().y );
+	mMeshTransform = mat4();
+	mMeshTransform *= rotate( fAutoRotateAngle, vec3( 0, 1, 0 ) );
+	mMeshTransform *= scale( vec3( 1 ) / mMeshBounds.getSize().y );
 
 	// position our lights (in eye space)
 	Vec3f lanternPositionOS = Vec3f(12.5f, 30.0f, 12.5f);
-	if(bAnimateLantern) 
+	if( bAnimateLantern )
 		lanternPositionOS += mPerlin.dfBm( Vec3f( 0.0f, 0.0f, fTime ) ) * 5.0f;
-	Vec3f lanternPositionWS = mMeshTransform.transformPointAffine( lanternPositionOS );
-	mLightLantern.position = mCamera.getViewMatrix().transformPointAffine( lanternPositionWS );
-	mLightAmbient.position = Vec4f::zero();
+
+//	Vec3f lanternPositionWS = mMeshTransform.transformPointAffine( lanternPositionOS );
+//	mLightLantern.position = mCamera.getViewMatrix().transformPointAffine( lanternPositionWS );
+
+	vec4 lanternPositionWS = mMeshTransform * vec4( lanternPositionOS, 1 );
+	mLightLantern.position = mCamera.getViewMatrix() * lanternPositionWS;
+
+	mLightAmbient.position = vec4( 0 );
 
 	// set the varying shader uniforms
 	mShaderNormalMapping->uniform( "bShowNormals", mViewMode == ViewMode::Normals );

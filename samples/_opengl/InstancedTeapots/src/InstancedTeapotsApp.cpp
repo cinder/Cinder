@@ -33,7 +33,7 @@ const pair<float,float> CAMERA_Y_RANGE( 32, 80 );
 
 void InstancedTeapotsApp::setup()
 {
-	mCam.lookAt( Vec3f( 0, CAMERA_Y_RANGE.first, 0 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0, CAMERA_Y_RANGE.first, 0 ), vec3( 0 ) );
 	
 	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
@@ -88,7 +88,7 @@ void InstancedTeapotsApp::resize()
 void InstancedTeapotsApp::update()
 {
 	// move the camera up and down on Y
-	mCam.lookAt( Vec3f( 0, CAMERA_Y_RANGE.first + abs(sin( getElapsedSeconds() / 4)) * (CAMERA_Y_RANGE.second - CAMERA_Y_RANGE.first), 0 ), Vec3f::zero() );	
+	mCam.lookAt( Vec3f( 0, CAMERA_Y_RANGE.first + abs(sin( getElapsedSeconds() / 4)) * (CAMERA_Y_RANGE.second - CAMERA_Y_RANGE.first), 0 ), vec3( 0 ) );
 	
 	// update our instance positions; map our instance data VBO, write new positions, unmap
 	Vec3f *positions = (Vec3f*)mInstanceDataVbo->map( GL_WRITE_ONLY );
@@ -99,7 +99,7 @@ void InstancedTeapotsApp::update()
 			// just some nonsense math to move the teapots in a wave
 			Vec3f newPos(	instanceX * Vec3f( DRAW_SCALE, 0, 0 ) +
 							instanceY * Vec3f( 0, 0, DRAW_SCALE ) +
-							Vec3f( 0, 30, 0 ) * sin( getElapsedSeconds() * 3 + instanceX * 3 + instanceY * 3 ) );
+							Vec3f( 0, 30, 0 ) * sinf( getElapsedSeconds() * 3 + instanceX * 3 + instanceY * 3 ) );
 			*positions++ = newPos;
 		}
 	}

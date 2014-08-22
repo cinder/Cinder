@@ -35,7 +35,7 @@ namespace cinder {
 class Path2d {
  public:
 	Path2d() {}
-	explicit Path2d( const BSpline<Vec2f> &spline, float subdivisionStep = 0.01f );
+	explicit Path2d( const BSpline2f &spline, float subdivisionStep = 0.01f );
 
 	//! Sets the start point of the path to \a p. This is the only legal first command, and only legal as the first command.
 	void	moveTo( const Vec2f &p );
@@ -79,7 +79,7 @@ class Path2d {
 	std::vector<Vec2f>	subdivide( float approximationScale = 1.0f ) const;
 	
 	//! Scales the Path2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
-	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f::zero() );
+	void		scale( const Vec2f &amount, Vec2f scaleCenter = vec2() );
 	//! Transforms the Path2d by \a matrix.
 	void		transform( const MatrixAffine2f &matrix );
 	//! Returns a copy transformed by \a matrix.

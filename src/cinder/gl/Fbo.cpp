@@ -795,12 +795,13 @@ Matrix44f FboCubeMap::calcViewMatrix( GLenum face, const Vec3f &eyePos )
 	
 	CameraPersp cam;
 	cam.lookAt( eyePos, eyePos + viewDirs[face - GL_TEXTURE_CUBE_MAP_POSITIVE_X] );
+
 	Matrix44f result;
 	// We need to rotate 180deg around Z for non-Y faces
 	if( face != GL_TEXTURE_CUBE_MAP_POSITIVE_Y && face != GL_TEXTURE_CUBE_MAP_NEGATIVE_Y )
-		result.rotate( Vec3f( 0, 0, 1 ), M_PI );
+		result *= glm::rotate( (float)M_PI, vec3( 0, 0, 1 ) );
+	
 	result *= cam.getViewMatrix();
-
 	
 	return result;
 }

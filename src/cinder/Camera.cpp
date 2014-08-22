@@ -26,6 +26,15 @@
 #include "cinder/Camera.h"
 #include "cinder/Sphere.h"
 
+#include "cinder/CinderMath.h"
+#include "cinder/Matrix33.h"
+
+#include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
+#include "glm/gtx/quaternion.hpp"
+#include "glm/gtc/matrix_access.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 namespace cinder {
 
 void Camera::setEyePoint( const Vec3f &aEyePoint )
@@ -36,52 +45,52 @@ void Camera::setEyePoint( const Vec3f &aEyePoint )
 
 void Camera::setCenterOfInterestPoint( const Vec3f &centerOfInterestPoint )
 {
-	mCenterOfInterest = mEyePoint.distance( centerOfInterestPoint );
+	mCenterOfInterest = distance( mEyePoint, centerOfInterestPoint );
 	lookAt( centerOfInterestPoint );
 }
 
 void Camera::setViewDirection( const Vec3f &aViewDirection )
 {
-	mViewDirection = aViewDirection.normalized();
-	mOrientation = Quatf( Vec3f( 0.0f, 0.0f, -1.0f ), mViewDirection );
+	mViewDirection = normalize( aViewDirection );
+	mOrientation = glm::rotation( mViewDirection, glm::vec3( 0, 0, -1 ) );
 	mModelViewCached = false;
 }
 
 void Camera::setOrientation( const Quatf &aOrientation )
 {
-	mOrientation = aOrientation.normalized();
-	mViewDirection = mOrientation * Vec3f( 0.0f, 0.0f, -1.0f );
+	mOrientation = glm::normalize( aOrientation );
+	mViewDirection = glm::rotate( mOrientation, glm::vec3( 0, 0, -1 ) );
 	mModelViewCached = false;
 }
 
 void Camera::setWorldUp( const Vec3f &aWorldUp )
 {
-	mWorldUp = aWorldUp.normalized();
-	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
+	mWorldUp = normalize( aWorldUp );
+	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
 	mModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &target )
 {
-	mViewDirection = ( target - mEyePoint ).normalized();
-	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
+	mViewDirection = normalize( target - mEyePoint );
+	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
 	mModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target )
 {
 	mEyePoint = aEyePoint;
-	mViewDirection = ( target - mEyePoint ).normalized();
-	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
+	mViewDirection = normalize( target - mEyePoint );
+	mOrientation = Quatf( glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) ) );
 	mModelViewCached = false;
 }
 
 void Camera::lookAt( const Vec3f &aEyePoint, const Vec3f &target, const Vec3f &aWorldUp )
 {
 	mEyePoint = aEyePoint;
-	mWorldUp = aWorldUp.normalized();
-	mViewDirection = ( target - mEyePoint ).normalized();
-	mOrientation = Quatf( Matrix44f::alignZAxisWithTarget( -mViewDirection, mWorldUp ) ).normalized();
+	mWorldUp = normalize( aWorldUp );
+	mViewDirection = normalize( target - mEyePoint );
+	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
 	mModelViewCached = false;
 }
 
@@ -89,8 +98,7 @@ void Camera::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bot
 {
 	calcMatrices();
 
-	Vec3f viewDirection( mViewDirection );
-	viewDirection.normalize();
+	Vec3f viewDirection = normalize( mViewDirection );
 
 	*topLeft		= mEyePoint + (mNearClip * viewDirection) + (mFrustumTop * mV) + (mFrustumLeft * mU);
 	*topRight		= mEyePoint + (mNearClip * viewDirection) + (mFrustumTop * mV) + (mFrustumRight * mU);
@@ -102,9 +110,7 @@ void Camera::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bott
 {
 	calcMatrices();
 
-	Vec3f viewDirection( mViewDirection );
-	viewDirection.normalize();
-
+	Vec3f viewDirection = normalize( mViewDirection );
 	float ratio = mFarClip / mNearClip;
 
 	*topLeft		= mEyePoint + (mFarClip * viewDirection) + (ratio * mFrustumTop * mV) + (ratio * mFrustumLeft * mU);
@@ -132,30 +138,50 @@ Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) co
 	float s = ( uPos - 0.5f ) * imagePlaneApectRatio;
 	float t = ( vPos - 0.5f );
 	float viewDistance = imagePlaneApectRatio / math<float>::abs( mFrustumRight - mFrustumLeft ) * mNearClip;
-	return Ray( mEyePoint, ( mU * s + mV * t - ( mW * viewDistance ) ).normalized() );
+	return Ray( mEyePoint, normalize( mU * s + mV * t - ( mW * viewDistance ) ) );
 }
 
 void Camera::getBillboardVectors( Vec3f *right, Vec3f *up ) const
 {
-	right->set( getViewMatrix().m[0], getViewMatrix().m[4], getViewMatrix().m[8] );
-	up->set( getViewMatrix().m[1], getViewMatrix().m[5], getViewMatrix().m[9] );
+	*right = glm::vec3( glm::column( getViewMatrix(), 0 ) );
+	*up = glm::vec3( glm::column( getViewMatrix(), 1 ) );
 }
 
 Vec2f Camera::worldToScreen( const Vec3f &worldCoord, float screenWidth, float screenHeight ) const
 {
-	Vec3f eyeCoord = getViewMatrix().transformPointAffine( worldCoord );
-	Vec3f ndc = getProjectionMatrix().transformPoint( eyeCoord );
-	
+	vec3 eyeCoord = vec3( getViewMatrix() * vec4( worldCoord, 1 ) );
+	vec4 ndc = getProjectionMatrix() * vec4( eyeCoord, 1 );
+	ndc.x /= ndc.w;
+	ndc.y /= ndc.w;
+	ndc.z /= ndc.w;
+
 	return Vec2f( ( ndc.x + 1.0f ) / 2.0f * screenWidth, ( 1.0f - ( ndc.y + 1.0f ) / 2.0f ) * screenHeight );
+}
+
+float Camera::worldToEyeDepth( const Vec3f &worldCoord ) const
+{
+	const mat4 &m = getViewMatrix();
+	return	m[0][2] * worldCoord.x +
+			m[1][2] * worldCoord.y +
+			m[2][2] * worldCoord.z +
+			m[3][2];
+}
+
+
+Vec3f Camera::worldToNdc( const Vec3f &worldCoord )
+{
+	vec4 eye = getViewMatrix() * vec4( worldCoord, 1 );
+	vec4 unproj = getProjectionMatrix() * eye;
+	return Vec3f( unproj.x / unproj.w, unproj.y / unproj.w, unproj.z / unproj.w );
 }
 
 //* This only mostly works
 float Camera::getScreenRadius( const Sphere &sphere, float screenWidth, float screenHeight ) const
 {
 	Vec2f screenCenter( worldToScreen( sphere.getCenter(), screenWidth, screenHeight ) );	
-	Vec3f orthog = mViewDirection.getOrthogonal().normalized();
+	Vec3f orthog = normalize( orthogonal( mViewDirection ) );
 	Vec2f screenPerimeter = worldToScreen( sphere.getCenter() + sphere.getRadius() * orthog, screenWidth, screenHeight );
-	return screenPerimeter.distance( screenCenter );
+	return distance( screenPerimeter, screenCenter );
 }
 
 void Camera::calcMatrices() const
@@ -169,16 +195,17 @@ void Camera::calcMatrices() const
 
 void Camera::calcViewMatrix() const
 {
-	mW = -mViewDirection.normalized();
-	mU = mOrientation * Vec3f::xAxis();
-	mV = mOrientation * Vec3f::yAxis();
+	mW = - normalize( mViewDirection );
+	mU = glm::rotate( mOrientation, glm::vec3( 1, 0, 0 ) );
+	mV = glm::rotate( mOrientation, glm::vec3( 0, 1, 0 ) );
 	
-	Vec3f d( -mEyePoint.dot( mU ), -mEyePoint.dot( mV ), -mEyePoint.dot( mW ) );
-	float *m = mViewMatrix.m;
-	m[ 0] = mU.x; m[ 4] = mU.y; m[ 8] = mU.z; m[12] =  d.x;
-	m[ 1] = mV.x; m[ 5] = mV.y; m[ 9] = mV.z; m[13] =  d.y;
-	m[ 2] = mW.x; m[ 6] = mW.y; m[10] = mW.z; m[14] =  d.z;
-	m[ 3] = 0.0f; m[ 7] = 0.0f; m[11] = 0.0f; m[15] = 1.0f;
+	Vec3f d( - dot( mEyePoint, mU ), - dot( mEyePoint, mV ), - dot( mEyePoint, mW ) );
+
+	mat4 &m = mViewMatrix;
+	m[0][0] = mU.x; m[1][0] = mU.y; m[2][0] = mU.z; m[3][0] =  d.x;
+	m[0][1] = mV.x; m[1][1] = mV.y; m[2][1] = mV.z; m[3][1] =  d.y;
+	m[0][2] = mW.x; m[1][2] = mW.y; m[2][2] = mW.z; m[3][2] =  d.z;
+	m[0][3] = 0.0f; m[1][3] = 0.0f; m[2][3] = 0.0f; m[3][3] = 1.0f;
 
 	mModelViewCached = true;
 	mInverseModelViewCached = false;
@@ -188,7 +215,7 @@ void Camera::calcInverseView() const
 {
 	if( ! mModelViewCached ) calcViewMatrix();
 
-	mInverseModelViewMatrix = mViewMatrix.affineInverted();
+	mInverseModelViewMatrix = glm::inverse( mViewMatrix );
 	mInverseModelViewCached = true;
 }
 
@@ -196,7 +223,7 @@ void Camera::calcInverseView() const
 // CameraPersp
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
-	: Camera(), mLensShift( Vec2f::zero() )
+	: Camera()
 {
 	float eyeX 		= pixelWidth / 2.0f;
 	float eyeY 		= pixelHeight / 2.0f;
@@ -212,7 +239,7 @@ CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
 }
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees, float nearPlane, float farPlane )
-	: Camera(), mLensShift( Vec2f::zero() )
+	: Camera()
 {
 	float halfFov, theTan, aspect;
 
@@ -229,11 +256,11 @@ CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees, flo
 
 // Creates a default camera resembling Maya Persp
 CameraPersp::CameraPersp()
-	: Camera(), mLensShift( Vec2f::zero() )
+	: Camera()
 {
-	lookAt( Vec3f( 28.0f, 21.0f, 28.0f ), Vec3f::zero(), Vec3f::yAxis() );
+	lookAt( vec3( 28, 21, 28 ), vec3(), vec3( 0, 1, 0 ) );
 	setCenterOfInterest( 44.822f );
-	setPerspective( 35.0f, 1.0f, 0.1f, 1000.0f );
+	setPerspective( 35, 1, 0.1f, 1000 );
 }
 
 void CameraPersp::setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane )
@@ -264,47 +291,47 @@ void CameraPersp::calcProjection() const
 		mFrustumLeft = ci::lerp<float, float>(0.0f, 2.0f * mFrustumLeft, 0.5f - 0.5f * mLensShift.x);
 	}
 
-	float *m = mProjectionMatrix.m;
-	m[ 0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
-	m[ 4] =  0.0f;
-	m[ 8] =  ( mFrustumRight + mFrustumLeft ) / ( mFrustumRight - mFrustumLeft );
-	m[12] =  0.0f;
+	mat4 &p = mProjectionMatrix;
+	p[0][0] =  2.0f * mNearClip / ( mFrustumRight - mFrustumLeft );
+	p[1][0] =  0.0f;
+	p[2][0] =  ( mFrustumRight + mFrustumLeft ) / ( mFrustumRight - mFrustumLeft );
+	p[3][0] =  0.0f;
 
-	m[ 1] =  0.0f;
-	m[ 5] =  2.0f * mNearClip / ( mFrustumTop - mFrustumBottom );
-	m[ 9] =  ( mFrustumTop + mFrustumBottom ) / ( mFrustumTop - mFrustumBottom );
-	m[13] =  0.0f;
+	p[0][1] =  0.0f;
+	p[1][1] =  2.0f * mNearClip / ( mFrustumTop - mFrustumBottom );
+	p[2][1] =  ( mFrustumTop + mFrustumBottom ) / ( mFrustumTop - mFrustumBottom );
+	p[3][1] =  0.0f;
 
-	m[ 2] =  0.0f;
-	m[ 6] =  0.0f;
-	m[10] = -( mFarClip + mNearClip ) / ( mFarClip - mNearClip );
-	m[14] = -2.0f * mFarClip * mNearClip / ( mFarClip - mNearClip );
+	p[0][2] =  0.0f;
+	p[1][2] =  0.0f;
+	p[2][2] = -( mFarClip + mNearClip ) / ( mFarClip - mNearClip );
+	p[3][2] = -2.0f * mFarClip * mNearClip / ( mFarClip - mNearClip );
 
-	m[ 3] =  0.0f;
-	m[ 7] =  0.0f;
-	m[11] = -1.0f;
-	m[15] =  0.0f;
+	p[0][3] =  0.0f;
+	p[1][3] =  0.0f;
+	p[2][3] = -1.0f;
+	p[3][3] =  0.0f;
 
-	m = mInverseProjectionMatrix.m;
-	m[ 0] =  ( mFrustumRight - mFrustumLeft ) / ( 2.0f * mNearClip );
-	m[ 4] =  0.0f;
-	m[ 8] =  0.0f;
-	m[12] =  ( mFrustumRight + mFrustumLeft ) / ( 2.0f * mNearClip );
+	mat4 &m = mInverseProjectionMatrix;
+	m[0][0] =  ( mFrustumRight - mFrustumLeft ) / ( 2.0f * mNearClip );
+	m[1][0] =  0.0f;
+	m[2][0] =  0.0f;
+	m[3][0] =  ( mFrustumRight + mFrustumLeft ) / ( 2.0f * mNearClip );
 
-	m[ 1] =  0.0f;
-	m[ 5] =  ( mFrustumTop - mFrustumBottom ) / ( 2.0f * mNearClip );
-	m[ 9] =  0.0f;
-	m[13] =  ( mFrustumTop + mFrustumBottom ) / ( 2.0f * mNearClip );
+	m[0][1] =  0.0f;
+	m[1][1] =  ( mFrustumTop - mFrustumBottom ) / ( 2.0f * mNearClip );
+	m[2][1] =  0.0f;
+	m[3][1] =  ( mFrustumTop + mFrustumBottom ) / ( 2.0f * mNearClip );
 
-	m[ 2] =  0.0f;
-	m[ 6] =  0.0f;
-	m[10] =  0.0f;
-	m[14] = -1.0f;
+	m[0][2] =  0.0f;
+	m[1][2] =  0.0f;
+	m[2][2] =  0.0f;
+	m[3][2] = -1.0f;
 
-	m[ 3] =  0.0f;
-	m[ 7] =  0.0f;
-	m[11] = -( mFarClip - mNearClip ) / ( 2.0f * mFarClip*mNearClip );
-	m[15] =  ( mFarClip + mNearClip ) / ( 2.0f * mFarClip*mNearClip );
+	m[0][3] =  0.0f;
+	m[1][3] =  0.0f;
+	m[2][3] = -( mFarClip - mNearClip ) / ( 2.0f * mFarClip*mNearClip );
+	m[3][3] =  ( mFarClip + mNearClip ) / ( 2.0f * mFarClip*mNearClip );
 
 	mProjectionCached = true;
 }
@@ -337,7 +364,7 @@ CameraPersp	CameraPersp::getFrameSphere( const Sphere &worldSpaceSphere, int max
 		result.setEyePoint( worldSpaceSphere.getCenter() - result.mViewDirection * curDistance );
 	}
 	
-	result.setCenterOfInterest( result.getEyePoint().distance( worldSpaceSphere.getCenter() ) );
+	result.setCenterOfInterest( distance( result.getEyePoint(), worldSpaceSphere.getCenter() ) );
 	return result;
 }
 
@@ -346,9 +373,9 @@ CameraPersp	CameraPersp::getFrameSphere( const Sphere &worldSpaceSphere, int max
 CameraOrtho::CameraOrtho()
 	: Camera()
 {
-	lookAt( Vec3f( 0.0f, 0.0f, 0.1f ), Vec3f::zero(), Vec3f::yAxis() );
+	lookAt( vec3( 0, 0, 0.1f ), vec3(), vec3( 0, 1, 0 ) );
 	setCenterOfInterest( 0.1f );
-	setFov( 35.0f );
+	setFov( 35 );
 }
 
 CameraOrtho::CameraOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane )
@@ -363,9 +390,7 @@ CameraOrtho::CameraOrtho( float left, float right, float bottom, float top, floa
 	
 	mProjectionCached = false;
 	mModelViewCached = true;
-	mViewMatrix.setToIdentity();
 	mInverseModelViewCached = true;
-	mInverseModelViewMatrix.setToIdentity();
 }
 
 void CameraOrtho::setOrtho( float left, float right, float bottom, float top, float nearPlane, float farPlane )
@@ -382,47 +407,47 @@ void CameraOrtho::setOrtho( float left, float right, float bottom, float top, fl
 
 void CameraOrtho::calcProjection() const
 {
-	float *m = mProjectionMatrix.m;
-	m[ 0] =  2.0f/(mFrustumRight - mFrustumLeft);
-	m[ 4] =  0.0f;
-	m[ 8] =  0.0f;
-	m[12] =  -(mFrustumRight + mFrustumLeft)/(mFrustumRight - mFrustumLeft);
+	mat4 &p = mProjectionMatrix;
+	p[0][0] =  2.0f/(mFrustumRight - mFrustumLeft);
+	p[1][0] =  0.0f;
+	p[2][0] =  0.0f;
+	p[3][0] =  -(mFrustumRight + mFrustumLeft)/(mFrustumRight - mFrustumLeft);
 
-	m[ 1] =  0.0f;
-	m[ 5] =  2.0f/(mFrustumTop - mFrustumBottom);
-	m[ 9] =  0.0f;
-	m[13] =  -(mFrustumTop + mFrustumBottom)/(mFrustumTop - mFrustumBottom);
+	p[0][1] =  0.0f;
+	p[1][1] =  2.0f/(mFrustumTop - mFrustumBottom);
+	p[2][1] =  0.0f;
+	p[3][1] =  -(mFrustumTop + mFrustumBottom)/(mFrustumTop - mFrustumBottom);
 
-	m[ 2] =  0.0f;
-	m[ 6] =  0.0f;
-	m[10] = -2.0f/(mFarClip - mNearClip);
-	m[14] = -(mFarClip + mNearClip)/(mFarClip - mNearClip);
+	p[0][2] =  0.0f;
+	p[1][2] =  0.0f;
+	p[2][2] = -2.0f/(mFarClip - mNearClip);
+	p[3][2] = -(mFarClip + mNearClip)/(mFarClip - mNearClip);
 
-	m[ 3] =  0.0f;
-	m[ 7] =  0.0f;
-	m[11] =  0.0f;
-	m[15] =  1.0f;
+	p[0][3] =  0.0f;
+	p[1][3] =  0.0f;
+	p[2][3] =  0.0f;
+	p[3][3] =  1.0f;
 
-	m = mInverseProjectionMatrix.m;
-	m[ 0] =  (mFrustumRight - mFrustumLeft) * 0.5f;
-	m[ 4] =  0.0f;
-	m[ 8] =  0.0f;
-	m[12] =  (mFrustumRight + mFrustumLeft) * 0.5f;
+	mat4 &m = mInverseProjectionMatrix;
+	m[0][0] =  (mFrustumRight - mFrustumLeft) * 0.5f;
+	m[1][0] =  0.0f;
+	m[2][0] =  0.0f;
+	m[3][0] =  (mFrustumRight + mFrustumLeft) * 0.5f;
 
-	m[ 1] =  0.0f;
-	m[ 5] =  (mFrustumTop - mFrustumBottom) * 0.5f;
-	m[ 9] =  0.0f;
-	m[13] =  (mFrustumTop + mFrustumBottom) * 0.5f;
+	m[0][1] =  0.0f;
+	m[1][1] =  (mFrustumTop - mFrustumBottom) * 0.5f;
+	m[2][1] =  0.0f;
+	m[3][1] =  (mFrustumTop + mFrustumBottom) * 0.5f;
 
-	m[ 2] =  0.0f;
-	m[ 6] =  0.0f;
-	m[10] =  (mFarClip - mNearClip) * 0.5f;
-	m[14] =  (mNearClip + mFarClip) * 0.5f;
+	m[0][2] =  0.0f;
+	m[1][2] =  0.0f;
+	m[2][2] =  (mFarClip - mNearClip) * 0.5f;
+	m[3][2] =  (mNearClip + mFarClip) * 0.5f;
 
-	m[ 3] =  0.0f;
-	m[ 7] =  0.0f;
-	m[11] =  0.0f;
-	m[15] =  1.0f;
+	m[0][3] =  0.0f;
+	m[1][3] =  0.0f;
+	m[2][3] =  0.0f;
+	m[3][3] =  1.0f;
 
 	mProjectionCached = true;
 }
@@ -432,21 +457,20 @@ void CameraOrtho::calcProjection() const
 
 Vec3f CameraStereo::getEyePointShifted() const
 {	
-	if(!mIsStereo)
+	if( ! mIsStereo )
 		return mEyePoint;
 	
-	if(mIsLeft) 
-		return mEyePoint - mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
+	if( mIsLeft )
+		return mEyePoint - glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
 	else 
-		return mEyePoint + mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
+		return mEyePoint + glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
 }
 
 void CameraStereo::getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const
 {
 	calcMatrices();
 
-	Vec3f viewDirection( mViewDirection );
-	viewDirection.normalize();
+	vec3 viewDirection = normalize( mViewDirection );
 
 	Vec3f eye( getEyePointShifted() );
 
@@ -466,9 +490,7 @@ void CameraStereo::getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f
 {
 	calcMatrices();
 
-	Vec3f viewDirection( mViewDirection );
-	viewDirection.normalize();
-
+	vec3 viewDirection = normalize( mViewDirection );
 	float ratio = mFarClip / mNearClip;
 
 	Vec3f eye( getEyePointShifted() );
@@ -533,18 +555,16 @@ void CameraStereo::calcViewMatrix() const
 	mViewMatrixRight = mViewMatrix;
 	
 	// calculate left matrix
-	Vec3f eye = mEyePoint - mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
-	Vec3f d = Vec3f( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
+	Vec3f eye = mEyePoint - glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
+	Vec3f d = Vec3f( - dot( eye, mU ), - dot( eye, mV ), - dot( eye, mW ) );
 
-	float *m = mViewMatrixLeft.m;
-	m[12] =  d.x; m[13] =  d.y; m[14] =  d.z;
-	
+	mViewMatrixLeft[3][0] = d.x; mViewMatrixLeft[3][1] = d.y; mViewMatrixLeft[3][2] = d.z;
+
 	// calculate right matrix
-	eye = mEyePoint + mOrientation * Vec3f::xAxis() * (0.5f * mEyeSeparation);
-	d = Vec3f( -eye.dot( mU ), -eye.dot( mV ), -eye.dot( mW ) );
+	eye = mEyePoint + glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
+	d = Vec3f( - dot( eye, mU ), - dot( eye, mV ), - dot( eye, mW ) );
 
-	m = mViewMatrixRight.m;
-	m[12] =  d.x; m[13] =  d.y; m[14] =  d.z;
+	mViewMatrixRight[3][0] =  d.x; mViewMatrixRight[3][1] = d.y; mViewMatrixRight[3][2] = d.z;
 
 	mModelViewCached = true;
 	mInverseModelViewCached = false;
@@ -554,9 +574,9 @@ void CameraStereo::calcInverseView() const
 {
 	if( ! mModelViewCached ) calcViewMatrix();
 
-	mInverseModelViewMatrix = mViewMatrix.affineInverted();
-	mInverseModelViewMatrixLeft = mViewMatrixLeft.affineInverted();
-	mInverseModelViewMatrixRight = mViewMatrixRight.affineInverted();
+	mInverseModelViewMatrix = glm::affineInverse( mViewMatrix );
+	mInverseModelViewMatrixLeft = glm::affineInverse( mViewMatrixLeft );
+	mInverseModelViewMatrixRight = glm::affineInverse( mViewMatrixRight );
 	mInverseModelViewCached = true;
 }
 
@@ -572,18 +592,14 @@ void CameraStereo::calcProjection() const
 	mInverseProjectionMatrixRight = mInverseProjectionMatrix;
 
 	// calculate left matrices
-	float *m = mProjectionMatrixLeft.m;
-	m[ 8] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mConvergence) ) / ( mFrustumRight - mFrustumLeft );
+	mInverseProjectionMatrixLeft[2][0] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mConvergence) ) / ( mFrustumRight - mFrustumLeft );
 
-	m = mInverseProjectionMatrixLeft.m;
-	m[12] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mConvergence) ) / ( 2.0f * mNearClip );	
+	mInverseProjectionMatrixLeft[3][0] =  ( mFrustumRight + mFrustumLeft + mEyeSeparation * (mNearClip / mConvergence) ) / ( 2.0f * mNearClip );	
 
 	// calculate right matrices
-	m = mProjectionMatrixRight.m;
-	m[ 8] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mConvergence) ) / ( mFrustumRight - mFrustumLeft );
+	mProjectionMatrixRight[2][0] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mConvergence) ) / ( mFrustumRight - mFrustumLeft );
 
-	m = mInverseProjectionMatrixRight.m;
-	m[12] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mConvergence) ) / ( 2.0f * mNearClip );
+	mProjectionMatrixRight[3][0] =  ( mFrustumRight + mFrustumLeft - mEyeSeparation * (mNearClip / mConvergence) ) / ( 2.0f * mNearClip );
 	
 	mProjectionCached = true;
 }

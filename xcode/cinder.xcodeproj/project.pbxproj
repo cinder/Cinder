@@ -1409,6 +1409,7 @@
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		11166BE019A387FE00EAA5C7 /* glm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = glm; path = ../include/glm; sourceTree = "<group>"; };
 		111A5E4F191F703D005C3166 /* bitwise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitwise.c; sourceTree = "<group>"; };
 		111A5E50191F703D005C3166 /* framing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = framing.c; sourceTree = "<group>"; };
 		111A5E53191F703D005C3166 /* analysis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = analysis.c; sourceTree = "<group>"; };
@@ -1904,6 +1905,7 @@
 			isa = PBXGroup;
 			children = (
 				00BAE6C50E7EDD7F0018A608 /* cinder */,
+				11166BE019A387FE00EAA5C7 /* glm */,
 			);
 			name = Include;
 			sourceTree = "<group>";

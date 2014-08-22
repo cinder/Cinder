@@ -27,7 +27,6 @@
 #include "cinder/Exception.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
-#include "cinder/BSpline.h"
 
 #include <set>
 
@@ -376,7 +375,7 @@ public:
 	Capsule&		slices( int slices ) { mNumSlices = slices > 1 ? slices : 1; mCalculationsCached = false; return *this; }
 	Capsule&		radius( float radius ) { mRadius = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
 	Capsule&		length( float length ) { mLength = math<float>::max(0.f, length); mCalculationsCached = false; return *this; }
-	Capsule&		direction( const Vec3f &direction ) { mDirection = direction.normalized(); mCalculationsCached = false; return *this; }
+	Capsule&		direction( const Vec3f &direction ) { mDirection = normalize( direction ); mCalculationsCached = false; return *this; }
 	//! Conveniently sets center, length and direction
 	Capsule&		set( const Vec3f &from, const Vec3f &to );
 
@@ -486,7 +485,7 @@ public:
 	//! Specifies the base and apex radius.
 	virtual Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
 	//! Specifies the axis of the cylinder.
-	virtual Cylinder&	direction( const Vec3f &direction ) { mDirection = direction.normalized();  mCalculationsCached = false; return *this; }
+	virtual Cylinder&	direction( const Vec3f &direction ) { mDirection = normalize( direction );  mCalculationsCached = false; return *this; }
 	//! Conveniently sets origin, height and direction.
 	virtual Cylinder&	set( const Vec3f &from, const Vec3f &to );
 

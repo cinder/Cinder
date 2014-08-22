@@ -111,13 +111,13 @@ void threshold( SurfaceT<T> *surface, T value )
 template<typename T>
 void threshold( const SurfaceT<T> &surface, T value, SurfaceT<T> *dstSurface )
 {
-	thresholdImpl( surface, value, surface.getBounds(), Vec2i::zero(), dstSurface );
+	thresholdImpl( surface, value, surface.getBounds(), ivec2(), dstSurface );
 }
 
 template<typename T>
 void threshold( const ChannelT<T> &srcChannel, T value, ChannelT<T> *dstChannel )
 {
-	thresholdImpl( srcChannel, value, srcChannel.getBounds(), Vec2i::zero(), dstChannel );
+	thresholdImpl( srcChannel, value, srcChannel.getBounds(), ivec2(), dstChannel );
 }
 
 template<typename T>

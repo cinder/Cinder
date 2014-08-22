@@ -76,13 +76,13 @@ void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const 
 template<typename T>
 void edgeDetectSobel( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel )
 {
-	edgeDetectSobel( srcChannel, srcChannel.getBounds(), Vec2i::zero(), dstChannel );
+	edgeDetectSobel( srcChannel, srcChannel.getBounds(), ivec2(), dstChannel );
 }
 
 template<typename T>
 void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSuface )
 {
-	edgeDetectSobel( srcSurface, srcSurface.getBounds(), Vec2i::zero(), dstSuface );
+	edgeDetectSobel( srcSurface, srcSurface.getBounds(), ivec2(), dstSuface );
 }
 
 

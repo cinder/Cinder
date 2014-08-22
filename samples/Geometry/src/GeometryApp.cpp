@@ -107,7 +107,7 @@ void GeometryApp::setup()
 	mTexture = gl::Texture::create( loadImage( loadAsset("stripes.jpg") ), fmt );
 
 	// Setup the camera.
-	mCamera.setEyePoint( Vec3f(3, 3, 6).normalized() * 5.0f );
+	mCamera.setEyePoint( normalize( vec3( 3, 3, 6 ) ) * 5.0f );
 	mCamera.setCenterOfInterestPoint( mCameraCOI );
 
 	// Load and compile the shaders.
@@ -138,7 +138,7 @@ void GeometryApp::update()
 
 	// After creating a new primitive, gradually move the camera to get a good view.
 	if(mRecenterCamera) {
-		float distance = mCamera.getEyePoint().distance(mCameraCOI);
+		float distance = glm::distance( mCamera.getEyePoint(), mCameraCOI );
 		mCamera.setEyePoint( mCameraCOI - lerp(distance, 5.0f, 0.1f) * mCamera.getViewDirection() );
 		mCamera.setCenterOfInterestPoint( lerp(mCamera.getCenterOfInterestPoint(), mCameraCOI, 0.25f) );
 	}

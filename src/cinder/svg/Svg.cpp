@@ -1317,7 +1317,7 @@ Shape2d parsePath( const std::string &p )
 {
 	const char* s = p.c_str();
 	Vec2f v0, v1, v2;
-	Vec2f lastPoint = Vec2f::zero(), lastPoint2 = Vec2f::zero();
+	Vec2f lastPoint, lastPoint2;
 
 	Shape2d result;
 	bool done = false;
@@ -1458,7 +1458,7 @@ Shape2d parsePath( const std::string &p )
 			case 'Z':
 				result.close();
 				lastPoint2 = lastPoint;
-				lastPoint = (result.empty() || result.getContours().back().empty() ) ? Vec2f::zero() : result.getContours().back().getPoint(0);
+				lastPoint = (result.empty() || result.getContours().back().empty() ) ? vec2() : result.getContours().back().getPoint(0);
 			break;
 			case '\0':
 			default: // technically noise at the end of the string is acceptable according to the spec; see W3C_SVG_11/paths-data-18.svg
@@ -1961,7 +1961,7 @@ Shape2d Text::getShape() const
 Vec2f Text::getTextPen() const
 {
 	if( ( mAttributes.mX.size() != 1 ) || ( mAttributes.mY.size() != 1 ) ) {
-		return Vec2f::zero();
+		return vec2();
 	}
 	else
 		return Vec2f( mAttributes.mX[0].asUser(), mAttributes.mY[0].asUser() );
@@ -1979,7 +1979,7 @@ float Text::getRotation() const
 
 void Text::renderSelf( Renderer &renderer ) const
 {
-	renderer.pushTextPen( Vec2f::zero() ); // this may be overridden by the attributes, but that's ok
+	renderer.pushTextPen( vec2() ); // this may be overridden by the attributes, but that's ok
 	mAttributes.startRender( renderer );
 	for( vector<TextSpanRef>::const_iterator spanIt = mSpans.begin(); spanIt != mSpans.end(); ++spanIt ) {
 		(*spanIt)->renderSelf( renderer );
@@ -2111,10 +2111,10 @@ const std::shared_ptr<Font>	TextSpan::getFont() const
 Vec2f TextSpan::getTextPen() const
 {
 	if( mIgnoreAttributes || ( mAttributes.mX.size() != 1 ) || ( mAttributes.mY.size() != 1 ) ) {
-		if( ! mParent ) return Vec2f::zero();
+		if( ! mParent ) return vec2();
 		else if( typeid(*mParent) == typeid(TextSpan) ) return reinterpret_cast<const TextSpan*>( mParent )->getTextPen();
 		else if( typeid(*mParent) == typeid(Text) ) return reinterpret_cast<const Text*>( mParent )->getTextPen();
-		else return Vec2f::zero();
+		else return vec2();
 	}
 	else
 		return Vec2f( mAttributes.mX[0].asUser(), mAttributes.mY[0].asUser() );

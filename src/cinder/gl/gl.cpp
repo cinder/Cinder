@@ -307,7 +307,7 @@ void setMatrices( const ci::Camera& cam )
 	auto ctx = context();
 	ctx->getViewMatrixStack().back() = cam.getViewMatrix();
 	ctx->getProjectionMatrixStack().back() = cam.getProjectionMatrix();
-	ctx->getModelMatrixStack().back().setToIdentity();
+	ctx->getModelMatrixStack().back() = mat4();
 }
 
 void setModelMatrix( const ci::Matrix44f &m )
@@ -444,24 +444,18 @@ Matrix44f getModelViewProjection()
 
 Matrix44f calcViewMatrixInverse()
 {
-	Matrix44f v = getViewMatrix();
-	return v.inverted();
+	return glm::inverse( getViewMatrix() );
 }
 
 Matrix33f calcNormalMatrix()
 {
-	Matrix33f mv = getModelView().subMatrix33( 0, 0 );
-	mv.invert( FLT_MIN );
-	mv.transpose();
-	return mv;
+	return glm::inverseTranspose( glm::mat3( getModelView() ) );
 }
 	
 Matrix33f calcModelMatrixInverseTranspose()
 {
-	Matrix33f m = getModelMatrix().subMatrix33( 0, 0 );
-	m.invert( FLT_MIN );
-	m.transpose();
-	return m;
+	auto m = glm::inverseTranspose( getModelMatrix() );
+	return mat3( m );
 }
 	
 Matrix44f calcViewportMatrix()
@@ -489,12 +483,12 @@ void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees
 	auto ctx = gl::context();
 
 	CameraPersp cam( screenWidth, screenHeight, fovDegrees, nearPlane, farPlane );
-	ctx->getModelMatrixStack().back().setToIdentity();
+	ctx->getModelMatrixStack().back() = mat4();
 	ctx->getProjectionMatrixStack().back() = cam.getProjectionMatrix();
 	ctx->getViewMatrixStack().back() = cam.getViewMatrix();
 	if( originUpperLeft ) {
-		ctx->getViewMatrixStack().back().scale( Vec3f( 1.0f, -1.0f, 1.0f ) );					// invert Y axis so increasing Y goes down.
-		ctx->getViewMatrixStack().back().translate( Vec3f( 0.0f, (float)-screenHeight, 0.0f ) ); // shift origin up to upper-left corner.
+		ctx->getViewMatrixStack().back() *= glm::scale( vec3( 1, -1, 1 ) );								// invert Y axis so increasing Y goes down.
+		ctx->getViewMatrixStack().back() *= glm::translate( vec3( 0, (float) - screenHeight, 0 ) );		// shift origin up to upper-left corner.
 	}
 }
 
@@ -506,18 +500,23 @@ void setMatricesWindowPersp( const ci::Vec2i& screenSize, float fovDegrees, floa
 void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft )
 {
 	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back().setToIdentity();	
-	ctx->getViewMatrixStack().back().setToIdentity();
-	if( originUpperLeft )
-		ctx->getProjectionMatrixStack().back().setRows(	Vec4f( 2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f ),
-													Vec4f( 0.0f, 2.0f / -(float)screenHeight, 0.0f, 1.0f ),
-													Vec4f( 0.0f, 0.0f, -1.0f, 0.0f ),
-													Vec4f( 0.0f, 0.0f, 0.0f, 1.0f ) );
-	else
-		ctx->getProjectionMatrixStack().back().setRows(	Vec4f( 2.0f / (float)screenWidth, 0.0f, 0.0f, -1.0f ),
-													Vec4f( 0.0f, 2.0f / (float)screenHeight, 0.0f, -1.0f ),
-													Vec4f( 0.0f, 0.0f, -1.0f, 0.0f ),
-													Vec4f( 0.0f, 0.0f, 0.0f, 1.0f ) );
+	ctx->getModelMatrixStack().back() = mat4();
+	ctx->getViewMatrixStack().back() = mat4();
+
+	float sx = 2.0f / (float)screenWidth;
+	float sy = 2.0f / (float)screenHeight;
+	float ty = -1;
+
+	if( originUpperLeft ) {
+		sy *= -1;
+		ty *= -1;
+	}
+
+	mat4 &m = ctx->getProjectionMatrixStack().back();
+	m = mat4( sx, 0,  0, 0,
+			  0, sy,  0, 0,
+			  0,  0, -1, 0,
+			 -1, ty,  0, 1 );
 }
 
 void setMatricesWindow( const ci::Vec2i& screenSize, bool originUpperLeft )
@@ -527,9 +526,9 @@ void setMatricesWindow( const ci::Vec2i& screenSize, bool originUpperLeft )
 
 void rotate( const Quatf &quat )
 {
-	float angle;
-	Vec3f axis;
-	quat.getAxisAngle( &axis, &angle );
+	vec3 axis = glm::axis( quat );
+	float angle = glm::angle( quat );
+
 	rotate( toDegrees( angle ), axis );
 }
 
@@ -537,20 +536,20 @@ void rotate( float angleDegrees, const Vec3f &axis )
 {
 	if( math<float>::abs( angleDegrees ) > EPSILON_VALUE ) {
 		auto ctx = gl::context();
-		ctx->getModelMatrixStack().back().rotate( axis, toRadians( angleDegrees ) );
+		ctx->getModelMatrixStack().back() *= glm::rotate( toRadians( angleDegrees ), axis );
 	}
 }
 
 void scale( const ci::Vec3f& v )
 {
 	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back().scale( v );
+	ctx->getModelMatrixStack().back() *= glm::scale( v );
 }
 
 void translate( const ci::Vec3f& v )
 {
 	auto ctx = gl::context();
-	ctx->getModelMatrixStack().back().translate( v );
+	ctx->getModelMatrixStack().back() *= glm::translate( v );
 }
 
 void begin( GLenum mode )
@@ -1441,7 +1440,7 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	if( texCoords )
 		texCoords[0] = Vec2f( 0.5f, 0.5f );
 	if( normals )
-		normals[0] = Vec3f::zAxis();
+		normals[0] = vec3( 0, 0, 1 );
 	const float tDelta = 1.0f / numSegments * 2 * (float)M_PI;
 	float t = 0;
 	for( int s = 0; s <= numSegments; s++ ) {
@@ -1451,7 +1450,7 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 		if( texCoords )
 			texCoords[s+1] = unit * 0.5f + Vec2f( 0.5f, 0.5f );
 		if( normals )
-			normals[s+1] = Vec3f::zAxis();
+			normals[s+1] = vec3( 0, 0, 1 );
 		t += tDelta;
 	}
 

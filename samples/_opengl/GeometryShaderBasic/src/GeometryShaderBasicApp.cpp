@@ -38,8 +38,8 @@ void GeometryShaderIntroApp::setup()
 
 	// setup VertBatch with a single point at the origin
 	mBatch = gl::VertBatch::create();
-	mBatch->vertex( Vec2f::zero() );
-	mBatch->color( 1.0f, 0.0f, 0.0f );
+	mBatch->vertex( vec2( 0 ) );
+	mBatch->color( 1, 0, 0 );
 }
 
 void GeometryShaderIntroApp::mouseDrag( MouseEvent event )

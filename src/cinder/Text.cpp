@@ -618,9 +618,9 @@ void TextBox::createLines() const
 	if( mAlign == TextBox::CENTER ) flush = 0.5f;
 	else if( mAlign == TextBox::RIGHT ) flush = 1;
 
-	mCalculatedSize = Vec2f::zero();
+	mCalculatedSize = vec2();
 	mLines.clear();
-	Vec2f lineOffset = Vec2f::zero();
+	Vec2f lineOffset = vec2();
 	while( range.location < strLength ) {
 		CGFloat ascent, descent, leading;
 		range.length = ::CTTypesetterSuggestLineBreak( typeSetter, range.location, maxWidth );
@@ -708,7 +708,7 @@ void TextBox::calculate() const
 		return;
 
 	if( mText.empty() ) {
-		mCalculatedSize = Vec2f::zero();
+		mCalculatedSize = vec2();
 		return;
 	}
 	mWideText = toUtf16( mText );
