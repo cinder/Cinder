@@ -33,6 +33,7 @@
 		00BA735918AD6CA800AC2BF5 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		00E7ECA71890D81C0029139A /* DebugMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DebugMesh.cpp; path = ../src/DebugMesh.cpp; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		1131BADB19A63DB200193697 /* DebugMesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = DebugMesh.h; path = ../include/DebugMesh.h; sourceTree = "<group>"; };
 		1CFE1F9E62DA4243B51FE284 /* NormalMappingApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = NormalMappingApp.cpp; path = ../src/NormalMappingApp.cpp; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -131,6 +132,7 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				1131BADB19A63DB200193697 /* DebugMesh.h */,
 				D0447147A4DF4334878946CE /* Resources.h */,
 				5BB8C24BF01B4FCCB4F3A49C /* NormalMapping_Prefix.pch */,
 			);

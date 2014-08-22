@@ -58,8 +58,6 @@ void DynamicCubeMappingApp::setup()
 	mSkyBoxBatch = gl::Batch::create( geom::Cube(), skyBoxGlsl );
 	mSkyBoxBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
 	
-	mObjectRotation.setToIdentity();
-
 	// build our dynamic CubeMap
 	mDynamicCubeMapFbo = gl::FboCubeMap::create( 1024, 1024 );
 
@@ -84,10 +82,10 @@ void DynamicCubeMappingApp::resize()
 void DynamicCubeMappingApp::update()
 {
 	// move the camera semi-randomly around based on time
-	mCam.lookAt( Vec3f( 8 * sin( getElapsedSeconds() / 1 + 10 ), 7 * sin( getElapsedSeconds() / 2 ), 8 * cos( getElapsedSeconds() / 4 + 11 ) ), Vec3f::zero() );
+	mCam.lookAt( Vec3f( 8 * sin( getElapsedSeconds() / 1 + 10 ), 7 * sin( getElapsedSeconds() / 2 ), 8 * cos( getElapsedSeconds() / 4 + 11 ) ), vec3( 0 ) );
 	
 	// rotate the object (teapot) a bit each frame
-	mObjectRotation.rotate( Vec3f( 0.1, 1.0, 0.1 ).normalized(), 0.04f );
+	mObjectRotation *= rotate( 0.04f, normalize( vec3( 0.1f, 1, 0.1f ) ) );
 	
 	// move the satellites
 	for( int i = 0; i < 33; ++i ) {
@@ -123,7 +121,7 @@ void DynamicCubeMappingApp::draw()
 	gl::pushViewport( Vec2i( 0, 0 ), mDynamicCubeMapFbo->getSize() );
 	for( uint8_t dir = 0; dir < 6; ++dir ) {
 		gl::setProjectionMatrix( ci::CameraPersp( mDynamicCubeMapFbo->getWidth(), mDynamicCubeMapFbo->getHeight(), 90.0f, 1, 1000 ).getProjectionMatrix() );
-		gl::setViewMatrix( mDynamicCubeMapFbo->calcViewMatrix( GL_TEXTURE_CUBE_MAP_POSITIVE_X + dir, Vec3f::zero() ) );
+		gl::setViewMatrix( mDynamicCubeMapFbo->calcViewMatrix( GL_TEXTURE_CUBE_MAP_POSITIVE_X + dir, vec3( 0 ) ) );
 		mDynamicCubeMapFbo->bindFramebufferFace( GL_TEXTURE_CUBE_MAP_POSITIVE_X + dir );
 		
 		gl::clear();

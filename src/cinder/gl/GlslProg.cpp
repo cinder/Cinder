@@ -26,6 +26,8 @@
 #include "cinder/gl/Environment.h"
 #include "cinder/Log.h"
 
+#include "glm/gtc/type_ptr.hpp"
+
 using namespace std;
 
 namespace cinder { namespace gl {
@@ -519,7 +521,7 @@ void GlslProg::uniform( const std::string &name, const Vec4f &data ) const
 void GlslProg::uniform( int location, const Matrix33f &data, bool transpose ) const
 {
     ScopedGlslProg shaderBind( shared_from_this() );
-    glUniformMatrix3fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, data.m );
+    glUniformMatrix3fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
 
 void GlslProg::uniform( const std::string &name, const Matrix33f &data, bool transpose ) const
@@ -533,14 +535,14 @@ void GlslProg::uniform( const std::string &name, const Matrix33f &data, bool tra
 		}
 	}
 	else
-		glUniformMatrix3fv( loc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, data.m );
+		glUniformMatrix3fv( loc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
 
 // Matrix44f
 void GlslProg::uniform( int location, const Matrix44f &data, bool transpose ) const
 {
     ScopedGlslProg shaderBind( shared_from_this() );
-    glUniformMatrix4fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, data.m );
+    glUniformMatrix4fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
 
 void GlslProg::uniform( const std::string &name, const Matrix44f &data, bool transpose ) const
@@ -554,7 +556,7 @@ void GlslProg::uniform( const std::string &name, const Matrix44f &data, bool tra
 		}
 	}
 	else
-		glUniformMatrix4fv( loc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, data.m );
+		glUniformMatrix4fv( loc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
 
 // Color
@@ -687,7 +689,7 @@ void GlslProg::uniform( const std::string &name, const Vec4f *data, int count ) 
 void GlslProg::uniform( int location, const Matrix33f *data, int count, bool transpose ) const
 {
     ScopedGlslProg shaderBind( shared_from_this() );
-    glUniformMatrix3fv( location, count, ( transpose ) ? GL_TRUE : GL_FALSE, &data->m[0] );
+    glUniformMatrix3fv( location, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
 }
 
 void GlslProg::uniform( const std::string &name, const Matrix33f *data, int count, bool transpose ) const
@@ -701,14 +703,14 @@ void GlslProg::uniform( const std::string &name, const Matrix33f *data, int coun
 		}
 	}
 	else
-		glUniformMatrix3fv( loc, count, ( transpose ) ? GL_TRUE : GL_FALSE, &data->m[0] );
+		glUniformMatrix3fv( loc, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
 }
 
 // Matrix44f*, count
 void GlslProg::uniform( int location, const Matrix44f *data, int count, bool transpose ) const
 {
     ScopedGlslProg shaderBind( shared_from_this() );
-    glUniformMatrix4fv( location, count, ( transpose ) ? GL_TRUE : GL_FALSE, &data->m[0] );
+    glUniformMatrix4fv( location, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
 }
 
 void GlslProg::uniform( const std::string &name, const Matrix44f *data, int count, bool transpose ) const
@@ -722,7 +724,7 @@ void GlslProg::uniform( const std::string &name, const Matrix44f *data, int coun
 		}
 	}
 	else
-		glUniformMatrix4fv( loc, count, ( transpose ) ? GL_TRUE : GL_FALSE, &data->m[0] );
+		glUniformMatrix4fv( loc, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
 }
 
 GLint GlslProg::getUniformLocation( const std::string &name ) const

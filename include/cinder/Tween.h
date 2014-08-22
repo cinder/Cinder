@@ -55,21 +55,23 @@ T tweenLerp( const T &start, const T &end, float time )
 template<>
 inline Quatf tweenLerp( const Quatf &start, const Quatf &end, float time )
 {
-	Quatf val = start.slerp( time, end ).normalized();
-	if( std::isfinite( val.getAxis().x ) && std::isfinite( val.getAxis().y ) && std::isfinite( val.getAxis().z ) )
+	Quatf val = glm::slerp( start, end, time );
+	vec3 axis = glm::axis( val );
+	if( std::isfinite( axis.x ) && std::isfinite( axis.y ) && std::isfinite( axis.z ) )
 		return val;
 	else
-		return Quatf::identity();
+		return Quatf();
 }
 
 template<>
 inline Quatd tweenLerp( const Quatd &start, const Quatd &end, float time )
 {
-	Quatd val = start.slerp( time, end ).normalized();
-	if( std::isfinite( val.getAxis().x ) && std::isfinite( val.getAxis().y ) && std::isfinite( val.getAxis().z ) )
+	Quatd val = glm::slerp( start, end, (double)time );
+	glm::dvec3 axis = glm::axis( val );
+	if( std::isfinite( axis.x ) && std::isfinite( axis.y ) && std::isfinite( axis.z ) )
 		return val;
 	else
-		return Quatd::identity();
+		return Quatd();
 }
 
 

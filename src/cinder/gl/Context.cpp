@@ -116,11 +116,8 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	mBlendDstAlphaStack.push_back( queriedInt );
     
     mModelMatrixStack.push_back( Matrix44f() );
-	mModelMatrixStack.back().setToIdentity();
     mViewMatrixStack.push_back( Matrix44f() );
-	mViewMatrixStack.back().setToIdentity();
 	mProjectionMatrixStack.push_back( Matrix44f() );
-	mProjectionMatrixStack.back().setToIdentity();
 	mGlslProgStack.push_back( GlslProgRef() );
 
 	// set default shader
@@ -1439,7 +1436,7 @@ void Context::setDefaultShaderVars()
 				case UNIFORM_MODEL_MATRIX:
 					glslProg->uniform( unifIt.first, gl::getModelMatrix() ); break;
 				case UNIFORM_MODEL_MATRIX_INVERSE:
-					glslProg->uniform( unifIt.first, gl::getModelMatrix().inverted() ); break;
+					glslProg->uniform( unifIt.first, glm::inverse( gl::getModelMatrix() ) ); break;
 				case UNIFORM_MODEL_MATRIX_INVERSE_TRANSPOSE:
 					glslProg->uniform( unifIt.first, gl::calcModelMatrixInverseTranspose() ); break;
 				case UNIFORM_VIEW_MATRIX:
@@ -1449,17 +1446,17 @@ void Context::setDefaultShaderVars()
 				case UNIFORM_MODEL_VIEW:
 					glslProg->uniform( unifIt.first, gl::getModelView() ); break;
 				case UNIFORM_MODEL_VIEW_INVERSE:
-					glslProg->uniform( unifIt.first, gl::getModelView().inverted() ); break;
+					glslProg->uniform( unifIt.first, glm::inverse( gl::getModelView() ) ); break;
 				case UNIFORM_MODEL_VIEW_INVERSE_TRANSPOSE:
 					glslProg->uniform( unifIt.first, gl::calcNormalMatrix() ); break;
 				case UNIFORM_MODEL_VIEW_PROJECTION:
 					glslProg->uniform( unifIt.first, gl::getModelViewProjection() ); break;
 				case UNIFORM_MODEL_VIEW_PROJECTION_INVERSE:
-					glslProg->uniform( unifIt.first, gl::getModelViewProjection().inverted() ); break;
+					glslProg->uniform( unifIt.first, glm::inverse( gl::getModelViewProjection() ) ); break;
 				case UNIFORM_PROJECTION_MATRIX:
 					glslProg->uniform( unifIt.first, gl::getProjectionMatrix() ); break;
 				case UNIFORM_PROJECTION_MATRIX_INVERSE:
-					glslProg->uniform( unifIt.first, gl::getProjectionMatrix().inverted() ); break;
+					glslProg->uniform( unifIt.first, glm::inverse( gl::getProjectionMatrix() ) ); break;
 				case UNIFORM_NORMAL_MATRIX:
 					glslProg->uniform( unifIt.first, gl::calcNormalMatrix() ); break;
 				case UNIFORM_VIEWPORT_MATRIX:

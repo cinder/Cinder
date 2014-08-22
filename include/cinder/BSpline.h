@@ -34,8 +34,7 @@
 
 namespace cinder {
 
-class BSplineBasis
-{
+class BSplineBasis {
  public:
 	BSplineBasis();
 
@@ -99,10 +98,10 @@ class BSplineBasis
 	mutable float **m_aafBD3;     // bd3[d+1][n+d+1]
 };
 
-template<typename T>
-class BSpline
-{
+template<int D, typename T>
+class BSpline {
   public:
+	typedef typename VECDIM<D, T>::TYPE	VecT;
 	// Construction and destruction.  The caller is responsible for deleting
 	// the input arrays if they were dynamically allocated.  Internal copies
 	// of the arrays are made, so to dynamically change control points or
@@ -124,12 +123,12 @@ class BSpline
 	// C[n+1] = C[0].  For a periodic spline, the control point array is
 	// reallocated and the first d points are replicated.  In either case the
 	// knot array is calculated accordingly.
-	BSpline( const std::vector<T> &points, int degree, bool loop, bool open );
+	BSpline( const std::vector<VecT> &points, int degree, bool loop, bool open );
 	
 	// Open, nonuniform spline.  The knot array must have n-d elements.  The
 	// elements must be nondecreasing.  Each element must be in [0,1].
 	BSpline() : mCtrlPoints( 0 ), mNumCtrlPoints( -1 ) {}
-	BSpline( int numControlPoints, const T *controlPoints, int degree, bool loop, const float *knots );
+	BSpline( int numControlPoints, const VecT *controlPoints, int degree, bool loop, const float *knots );
 	BSpline( const BSpline &bspline );
 	BSpline& operator=( const BSpline &bspline );
 
@@ -145,8 +144,8 @@ class BSpline
 	// Control points may be changed at any time.  The input index should be
 	// valid (0 <= i <= n).  If it is invalid, getControlPoint returns a
 	// vector whose components are all MAX_REAL.
-	void setControlPoint( int i, const T &rkCtrl );
-	T getControlPoint( int i ) const;
+	void setControlPoint( int i, const VecT &rkCtrl );
+	VecT getControlPoint( int i ) const;
 
 	// The knot values can be changed only if the basis function is nonuniform
 	// and the input index is valid (0 <= i <= n-d-1).  If these conditions
@@ -158,11 +157,12 @@ class BSpline
 	// an open spline clamps t to [0,1].  That is, if t > 1, t is set to 1;
 	// if t < 0, t is set to 0.  A periodic spline wraps to to [0,1].  That
 	// is, if t is outside [0,1], then t is set to t-floor(t).
-	T getPosition( float t ) const;
-	T getDerivative( float t ) const;
-	T getSecondDerivative( float t ) const;
-	T getThirdDerivative( float t ) const;
-	typename T::TYPE getSpeed( float t ) const { return getDerivative( t ).length(); }
+	VecT getPosition( float t ) const;
+	VecT getDerivative( float t ) const;
+	VecT getSecondDerivative( float t ) const;
+	VecT getThirdDerivative( float t ) const;
+
+	T getSpeed( float t ) const		{ return length( getDerivative( t ) ); }
 
 	float getLength( float fT0, float fT1 ) const;
 
@@ -170,7 +170,7 @@ class BSpline
 	// efficient to call these functions.  Pass the addresses of those
 	// quantities whose values you want.  You may pass 0 in any argument
 	// whose value you do not want.
-	void get( float t, T *position, T *firstDerivative = NULL, T *secondDerivative = NULL, T *thirdDerivative = NULL ) const;
+	void get( float t, VecT *position, VecT *firstDerivative = NULL, VecT *secondDerivative = NULL, VecT *thirdDerivative = NULL ) const;
 	//! Returns the time associated with an arc length in the range [0,getLength(0,1)]
 	float getTime( float length ) const;
 
@@ -182,16 +182,16 @@ class BSpline
     // Replicate the necessary number of control points when the create
     // function has bLoop equal to true, in which case the spline curve must
     // be a closed curve.
-    void createControl( const T *akCtrlPoint );
+    void createControl( const VecT *akCtrlPoint );
 
     int mNumCtrlPoints;
-    T *mCtrlPoints;  // ctrl[n+1]
+    VecT *mCtrlPoints;  // ctrl[n+1]
     bool mLoop;
     BSplineBasis mBasis;
     int mReplicate;  // the number of replicated control points
 };
 
-typedef BSpline<Vec2f> BSpline2f;
-typedef BSpline<Vec3f> BSpline3f;
+typedef BSpline<2,float> BSpline2f;
+typedef BSpline<3,float> BSpline3f;
 
 } // namespace cinder

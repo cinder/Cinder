@@ -29,9 +29,17 @@
 #include "cinder/MatrixAffine2.h"
 #include "cinder/Matrix33.h"
 #include "cinder/Matrix44.h"
-#include "cinder/MatrixAlgo.h"
 
-namespace cinder { 
+#include "glm/mat3x3.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtx/transform.hpp"
+#include "glm/gtx/io.hpp"
+
+namespace cinder {
+
+glm::mat4 alignZAxisWithTarget( Vec3f targetDir, Vec3f upDir );
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Parallel Transport Frames
@@ -53,6 +61,8 @@ namespace cinder {
 //  See Graphics Gems I for the underlying algorithm.
 //  These are also called Parallel Transport Frames
 //    see Game Programming Gems 2, Section 2.5
+
+#if 0
 
 // Vec3
 template< typename T >
@@ -112,5 +122,7 @@ Matrix44<T> lastFrame(
 {
 	return lastFrame( prevMatrix, prevPoint.xyz(), lastPoint.xyz() );
 }
+
+#endif
 
 } // namespace cinder

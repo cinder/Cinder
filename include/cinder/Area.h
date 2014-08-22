@@ -76,8 +76,8 @@ class Area {
 	Vec2i			getLR() const { return Vec2i( x2, y2 ); } // right-bottom offset
 
 	bool			contains( const Vec2i &offset ) const;
-	template<typename Y>
-	bool			contains( const Vec2<Y> &offset ) const { return contains( Vec2i( (int32_t)math<Y>::ceil( offset. x ), (int32_t)math<Y>::ceil( offset.y ) ) ); }
+	template<typename T>
+	bool			contains( const glm::detail::tvec2<T, defaultp> &offset ) const { return contains( glm::detail::tvec2<T, defaultp>( (int32_t)math<T>::ceil( offset. x ), (int32_t)math<T>::ceil( offset.y ) ) ); }
 	bool			intersects( const Area &area ) const;
 
 	//! Expands the Area to include \a point in its interior
@@ -87,16 +87,17 @@ class Area {
 	//! Expands the Area to include \a rect in its interior
 	void		include( const Area &area );
 
-	//! Returns the distance between the point \a pt and the rectangle. Points inside the Area return \c 0.
-	template<typename Y>
-	float		distance( const Vec2<Y> &pt ) const;
-	//! Returns the squared distance between the point \a pt and the rectangle. Points inside the rectangle return \c 0.
-	template<typename Y>
-	float		distanceSquared( const Vec2<Y> &pt ) const;
+	float		distance( const vec2 &pt ) const;
+	float		distance( const dvec2 &pt ) const;
+	float		distance( const ivec2 &pt ) const;
 
-	//! Returns the nearest point on the Rect \a rect. Points inside the rectangle return \a pt.
-	template<typename Y>
-	Vec2<Y>		closestPoint( const Vec2<Y> &pt ) const;
+	float		distanceSquared( const vec2 &pt ) const;
+	float		distanceSquared( const dvec2 &pt ) const;
+	float		distanceSquared( const ivec2 &pt ) const;
+
+	vec2		closestPoint( const vec2 &pt ) const;
+	ivec2		closestPoint( const ivec2 &pt ) const;
+	dvec2		closestPoint( const dvec2 &pt ) const;
 
 	int32_t			x1, y1, x2, y2;
 
