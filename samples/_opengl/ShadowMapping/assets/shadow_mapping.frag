@@ -1,0 +1,167 @@
+#version 410
+
+uniform float ciElapsedSeconds;
+
+in vec4 vColor;
+in vec4 vPosition;
+in vec3 vNormal;
+in vec4 vModelPosition;
+in vec3 vModelNormal;
+in vec4	vShadowCoord;
+
+
+uniform vec3			uLightPos;
+uniform bool			uIsTeapot;
+
+uniform sampler2DShadow	uShadowMap;
+uniform mat4			uShadowMatrix;
+uniform int				uShadowTechnique;
+uniform float			uDepthBias;
+uniform bool			uOnlyShadowmap;
+uniform float			uRandomOffset;
+uniform bool			uEnableNormSlopeOffset;
+
+out vec4 fragColor;
+
+float rand( vec2 seed ) {
+    return fract( sin(dot(seed.xy ,vec2( 12.9898, 78.233 ))) * 43758.5453 );
+}
+
+float rand( vec4 seed )
+{
+	float dot_product = dot(seed, vec4(12.9898,78.233, 45.164, 94.673));
+	return fract(sin(dot_product) * 43758.5453);
+}
+
+vec4 getRandomOffset( int i ) {
+	float indexA = rand(vec4(gl_FragCoord.xyx, ciElapsedSeconds*i)) - 0.5;
+	float indexB = rand(vec4(gl_FragCoord.yxy * i, ciElapsedSeconds*i)) - 0.5;
+	return vec4( vec2(indexA, indexB), 0, 0);
+}
+
+vec2 getNormSlopeBias( vec3 N, vec3 L ) {
+	
+    float cos_alpha = clamp(dot(N, L), 0.0, 1.0 );
+    float offset_scale_N = sqrt(1 - cos_alpha * cos_alpha); // sin(acos(L·N))
+    float offset_scale_L = offset_scale_N / cos_alpha;    // tan(acos(L·N))
+    return vec2(offset_scale_N, min(2.0, offset_scale_L));
+}
+
+float sampleBasic( vec4 sc ) {
+	float shadow = 1.0;
+	if( sc.w > 1.0 ) {
+		shadow = textureProj( uShadowMap, sc );
+	}
+	return shadow;
+}
+
+float samplePCF3x3( vec4 sc )
+{
+	float shadow = 1.0;
+	if( sc.w > 1.0 ) {
+		float sum = 0;
+		const int s = 2;
+		sum += textureProjOffset( uShadowMap, sc, ivec2(-s,-s) );
+		sum += textureProjOffset( uShadowMap, sc, ivec2(-s, 0) );
+		sum += textureProjOffset( uShadowMap, sc, ivec2(-s, s) );
+		sum += textureProjOffset( uShadowMap, sc, ivec2( 0,-s) );
+		sum += textureProjOffset( uShadowMap, sc, ivec2( 0, 0) );
+		sum += textureProjOffset( uShadowMap, sc, ivec2( 0, s) );
+		sum += textureProjOffset( uShadowMap, sc, ivec2( s,-s) );
+		sum += textureProjOffset( uShadowMap, sc, ivec2( s, 0) );
+		sum += textureProjOffset( uShadowMap, sc, ivec2( s, s) );
+		shadow = sum/9.0;
+	}
+	return shadow;
+}
+
+float samplePCF4x4( vec4 sc )
+{
+	float shadow = 1.0;
+	if( sc.w > 1.0 ) {
+		float sum = 0.0;
+		const int r = 2;
+		const int s = 2 * r;
+		sum += textureProjOffset( uShadowMap,  sc, ivec2(-s,-s) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2(-r,-s) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2( r,-s) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2( s,-s) );
+		
+		sum += textureProjOffset( uShadowMap,  sc, ivec2(-s,-r) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2(-r,-r) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2( r,-r) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2( s,-r) );
+		
+		sum += textureProjOffset( uShadowMap,  sc, ivec2(-s, r) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2(-r, r) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2( r, r) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2( s, r) );
+		
+		sum += textureProjOffset( uShadowMap,  sc, ivec2(-s, s) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2(-r, s) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2( r, s) );
+		sum += textureProjOffset( uShadowMap,  sc, ivec2( s, s) );
+		
+		shadow = sum/16.0;
+	}
+	return shadow;
+}
+
+float sampleRandom( vec4 sc, vec2 normSlopeBias )
+{
+	float shadow = 1.0;
+	if( sc.w > 1.0 ) {
+		float sum = 0;
+		int samples = 32;
+		for(int i=0;i<samples;i++) {
+			vec4 off = getRandomOffset( i );
+			off.xy *= normSlopeBias;
+			sum += textureProj( uShadowMap, sc + off );
+		}
+		shadow = sum/float(samples);
+	}
+	return shadow;
+}
+
+void main()
+{
+	// Normal in view space
+	vec3	N = normalize( vNormal );
+	// Light direction
+	vec3	L = normalize( uLightPos - vPosition.xyz );
+	// To camera vector
+	vec3	C = normalize( -vPosition.xyz );
+	// Surface reflection vector
+	vec3	R = normalize( -reflect( L, N ) );
+	
+	// Modulated ambient (with fake red indirect lighting coming from the sphere)
+	vec3	sphereGlow = vec3( 0.6, 0.2, 0.2 );
+	vec3	indirectGlow = vec3( clamp( dot( 0.5 * normalize(vModelNormal), -normalize(vModelPosition.xyz) ), 0.0, 0.6 ), 0.02, 0.02 );
+	vec3	A = mix( sphereGlow, indirectGlow, float(uIsTeapot) ) + vec3( 0.03 );
+	// Diffuse factor
+	float NdotL = max( dot( N, L ), 0.0 );
+	vec3	D = vec3( NdotL );
+	// Specular factor
+	vec3	S = pow( max( dot( R, C ), 0.0 ), 50.0 ) * vec3(1.0);
+		
+	// Sample the shadowmap to compute the shadow value
+	float shadow = 1.0f;
+	vec4 sc = vShadowCoord;
+	sc.z += uDepthBias;
+	
+	if( uShadowTechnique == 0 ) {
+		shadow = sampleBasic( sc );
+	}
+	else if( uShadowTechnique == 1 ) {
+		shadow = samplePCF3x3( sc );
+	}
+	else if ( uShadowTechnique == 2 ) {
+		shadow = samplePCF4x4( sc );
+	}
+	else if ( uShadowTechnique == 3 ) {
+		vec2 offset	= mix( vec2(uRandomOffset), getNormSlopeBias( N, L ), float(uEnableNormSlopeOffset) );
+		shadow = sampleRandom( sc, offset );
+	}
+	
+	fragColor = mix( vec4( ( ( D + S ) * shadow + A ) * vColor.rgb, 1.0 ), vec4(shadow), float(uOnlyShadowmap) );
+}
