@@ -38,7 +38,7 @@ void bsplineApp::mouseDown( MouseEvent event )
 	if( event.isLeft() ) { // line
 		Vec2f clickPt = Vec2f( event.getPos() );
 		int nearestIdx = findNearestPt( clickPt );
-		if( ( nearestIdx < 0 ) || ( mPoints[nearestIdx].distance( clickPt ) > MIN_CLICK_DISTANCE ) ) {
+		if( ( nearestIdx < 0 ) || ( distance( mPoints[nearestIdx], clickPt ) > MIN_CLICK_DISTANCE ) ) {
 			mPoints.push_back( Vec2f( event.getPos() ) );
 			mTrackedPoint = -1;
 		}
@@ -110,11 +110,11 @@ int bsplineApp::findNearestPt( const Vec2f &aPt )
 	if( mPoints.empty() ) return -1;
 	
 	int result = 0;
-	float nearestDist = mPoints[0].distance( aPt );
+	float nearestDist = distance( mPoints[0], aPt );
 	for( size_t i = 1; i < mPoints.size(); ++i ) {
-		if( mPoints[i].distance( aPt ) < nearestDist ) {
+		if( distance( mPoints[i], aPt ) < nearestDist ) {
 			result = i;
-			nearestDist = mPoints[i].distance( aPt );
+			nearestDist = distance( mPoints[i], aPt );
 		}
 	}
 	
