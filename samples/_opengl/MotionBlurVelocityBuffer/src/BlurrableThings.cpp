@@ -33,22 +33,22 @@ using namespace cinder;
 // BlurrableTransform
 //
 
-void BlurrableTransform::set( const vec3 &pos, const quat &orientation, const vec3 &scale )
+void BlurrableTransform::set( const vec3 &pos, const quat &orientation, const vec3 &scaler )
 {
 	mat4 m;
 	m = translate( m, pos );
 	m = rotate( m, angle(orientation), axis(orientation) );
-	m = glm::scale( m, scale );	// TODO: expose glm::scale(mat, vec) in the Cinder namespace
+	m = scale( m, scaler );
 	mPreviousTransform = m;
 	mTransform = m;
 }
 
-void BlurrableTransform::update( const vec3 &pos, const quat &orientation, const vec3 &scale )
+void BlurrableTransform::update( const vec3 &pos, const quat &orientation, const vec3 &scaler )
 {
 	mat4 m;
 	m = translate( m, pos );
 	m = rotate( m, angle(orientation), axis(orientation) );
-	m = glm::scale( m, scale );	// TODO: expose glm::scale(mat, vec) in the Cinder namespace
+	m = scale( m, scaler );
 	mPreviousTransform = mTransform;
 	mTransform = m;
 }
