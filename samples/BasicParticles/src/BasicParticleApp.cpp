@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
 #include "cinder/Perlin.h"
@@ -14,7 +15,7 @@ using namespace ci::app;
 class Particle {
  public:
 	Particle( Vec2f aPosition )
-		: mPosition( aPosition ), mLastPosition( aPosition ), mVelocity( Vec2f::zero() ), mZ( 0 )
+		: mPosition( aPosition ), mLastPosition( aPosition ), mVelocity( vec2( 0 ) ), mZ( 0 )
 	{}
  
 	Vec2f mPosition, mVelocity, mLastPosition;
@@ -91,8 +92,7 @@ void BasicParticleApp::update()
 	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt ) {
 		Vec3f deriv = mPerlin.dfBm( Vec3f( partIt->mPosition.x, partIt->mPosition.y, mAnimationCounter ) * 0.001f );
 		partIt->mZ = deriv.z;
-		Vec2f deriv2( deriv.x, deriv.y );
-		deriv2.normalize();
+		Vec2f deriv2 = normalize( vec2( deriv.x, deriv.y ) );
 		partIt->mVelocity += deriv2 * SPEED;
 	}
 		
@@ -117,14 +117,14 @@ void BasicParticleApp::draw()
 	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
 	
 	// draw all the particles as lines from mPosition to mLastPosition
-	glBegin( GL_LINES );
+  gl::begin( GL_LINES );
 	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt ) {
 		// color according to velocity
-		glColor3f( 0.5f + partIt->mVelocity.x / ( SPEED * 2 ), 0.5f + partIt->mVelocity.y / ( SPEED * 2 ), 0.5f + partIt->mZ * 0.5f );
-		glVertex2f( partIt->mLastPosition );
-		glVertex2f( partIt->mPosition );
+		gl::color( 0.5f + partIt->mVelocity.x / ( SPEED * 2 ), 0.5f + partIt->mVelocity.y / ( SPEED * 2 ), 0.5f + partIt->mZ * 0.5f );
+    gl::vertex( partIt->mLastPosition );
+    gl::vertex( partIt->mPosition );
 	}
-	glEnd();
+  gl::end();
 }
 
 
