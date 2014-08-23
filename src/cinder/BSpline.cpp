@@ -654,6 +654,12 @@ typename BSpline<D,T>::VecT BSpline<D,T>::getThirdDerivative( float t ) const
 	return d3;
 }
 
+template<int D,typename T>
+T BSpline<D,T>::getSpeed( float t ) const
+{
+	return length( getDerivative( t ) );
+}
+
 // explicit template instantiations
 template class BSpline<2,float>;
 template class BSpline<3,float>;
