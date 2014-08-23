@@ -56,7 +56,7 @@ void Window::setFullScreen( bool fullScreen, const FullScreenOptions &options )
 #endif
 }
 
-Vec2i Window::getSize() const
+ivec2 Window::getSize() const
 {
 	testValid();
 	
@@ -67,7 +67,7 @@ Vec2i Window::getSize() const
 #endif
 }
 
-void Window::setSize( const Vec2i &size )
+void Window::setSize( const ivec2 &size )
 {
 	testValid();
 	
@@ -78,7 +78,7 @@ void Window::setSize( const Vec2i &size )
 #endif
 }
 
-Vec2i Window::getPos() const
+ivec2 Window::getPos() const
 {
 	testValid();
 	
@@ -89,7 +89,7 @@ Vec2i Window::getPos() const
 #endif
 }
 
-void Window::setPos( const Vec2i &pos ) const
+void Window::setPos( const ivec2 &pos ) const
 {
 	testValid();
 	
@@ -104,7 +104,7 @@ void Window::spanAllDisplays()
 {
 	Area spanning = Display::getSpanningArea();
 	
-	setSize( Vec2i( spanning.getWidth(), spanning.getHeight() ) );	
+	setSize( ivec2( spanning.getWidth(), spanning.getHeight() ) );	
 	setPos( spanning.getUL() );
 }
 

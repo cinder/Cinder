@@ -146,7 +146,7 @@ class SurfaceT {
 	//! Returns the height of the Surface in pixels
 	int32_t			getHeight() const { return mObj->mHeight; }
 	//! Returns the size of the Surface in pixels
-	Vec2i			getSize() const { return Vec2i( mObj->mWidth, mObj->mHeight ); }
+	ivec2			getSize() const { return ivec2( mObj->mWidth, mObj->mHeight ); }
 	//! Returns the Surface aspect ratio, which is its width / height
 	float			getAspectRatio() const { return mObj->mWidth / (float)mObj->mHeight; }
 	//! Returns the bounding Area of the Surface in pixels: [0,0]-(width,height)
@@ -172,20 +172,20 @@ class SurfaceT {
 	//! Retuns the raw data of an image as a pointer to either uin8t_t values in the case of a Surface8u or floats in the case of a Surface32f
 	T*					getData() { return mObj->mData; }
 	const T*			getData() const { return mObj->mData; }
-	T*					getData( const Vec2i &offset ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * getPixelInc() ) + offset.y * mObj->mRowBytes ); }
-	const T*			getData( const Vec2i &offset ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * getPixelInc() ) + offset.y * mObj->mRowBytes ); }
+	T*					getData( const ivec2 &offset ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * getPixelInc() ) + offset.y * mObj->mRowBytes ); }
+	const T*			getData( const ivec2 &offset ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * getPixelInc() ) + offset.y * mObj->mRowBytes ); }
 	//! Returns a pointer to the red channel data of the pixel located at \a offset. Result is a uint8_t* for Surface8u and a float* for Surface32f.
-	T*					getDataRed( const Vec2i &offset ) { return getData( offset ) + getRedOffset(); }
-	const T*			getDataRed( const Vec2i &offset ) const { return getData( offset ) + getRedOffset(); }
+	T*					getDataRed( const ivec2 &offset ) { return getData( offset ) + getRedOffset(); }
+	const T*			getDataRed( const ivec2 &offset ) const { return getData( offset ) + getRedOffset(); }
 	//! Returns a pointer to the green channel data of the pixel located at \a offset. Result is a uint8_t* for Surface8u and a float* for Surface32f.
-	T*					getDataGreen( const Vec2i &offset ) { return getData( offset ) + getGreenOffset(); }
-	const T*			getDataGreen( const Vec2i &offset ) const { return getData( offset ) + getGreenOffset(); }
+	T*					getDataGreen( const ivec2 &offset ) { return getData( offset ) + getGreenOffset(); }
+	const T*			getDataGreen( const ivec2 &offset ) const { return getData( offset ) + getGreenOffset(); }
 	//! Returns a pointer to the blue channel data of the pixel located at \a offset. Result is a uint8_t* for Surface8u and a float* for Surface32f.
-	T*					getDataBlue( const Vec2i &offset ) { return getData( offset ) + getBlueOffset(); }
-	const T*			getDataBlue( const Vec2i &offset ) const { return getData( offset ) + getBlueOffset(); }
+	T*					getDataBlue( const ivec2 &offset ) { return getData( offset ) + getBlueOffset(); }
+	const T*			getDataBlue( const ivec2 &offset ) const { return getData( offset ) + getBlueOffset(); }
 	//! Returns a pointer to the alpha channel data of the pixel located at \a offset. Result is a uint8_t* for Surface8u and a float* for Surface32f. Undefined for Surfaces without an alpha channel.
-	T*					getDataAlpha( const Vec2i &offset ) { return getData( offset ) + getAlphaOffset(); }
-	const T*			getDataAlpha( const Vec2i &offset ) const { return getData( offset ) + getAlphaOffset(); }
+	T*					getDataAlpha( const ivec2 &offset ) { return getData( offset ) + getAlphaOffset(); }
+	const T*			getDataAlpha( const ivec2 &offset ) const { return getData( offset ) + getAlphaOffset(); }
 	
 	/** Sets the deallocator, an optional callback which will fire upon the Surface::Obj's destruction. This is useful when a Surface is wrapping another API's image data structure whose lifetime is tied to the Surface's. **/
 	void				setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon );
@@ -227,14 +227,14 @@ class SurfaceT {
 	const ChannelT<T>&	getChannelAlpha() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
 
 	//! Convenience method for getting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
-	ColorAT<T>	getPixel( Vec2i pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); const T *p = getData( pos ); return ColorAT<T>( p[getRedOffset()], p[getGreenOffset()], p[getBlueOffset()], ( hasAlpha() ) ? p[getAlphaOffset()] : CHANTRAIT<T>::max() ); }
+	ColorAT<T>	getPixel( ivec2 pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); const T *p = getData( pos ); return ColorAT<T>( p[getRedOffset()], p[getGreenOffset()], p[getBlueOffset()], ( hasAlpha() ) ? p[getAlphaOffset()] : CHANTRAIT<T>::max() ); }
 	//! Convenience method for setting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
-	void	setPixel( Vec2i pos, const ColorT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; }
+	void	setPixel( ivec2 pos, const ColorT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; }
 	//! Convenience method for setting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
-	void	setPixel( Vec2i pos, const ColorAT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; if( hasAlpha() ) p[getAlphaOffset()] = c.a; }
+	void	setPixel( ivec2 pos, const ColorAT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; if( hasAlpha() ) p[getAlphaOffset()] = c.a; }
 
 	//! Copies the Area \a srcArea of the Surface \a srcSurface to \a this Surface. The destination Area is \a srcArea offset by \a relativeOffset.
-	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset = ivec2() );
+	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &relativeOffset = ivec2() );
 
 	//! Returns an averaged color for the Area defined by \a area
 	ColorT<T>	areaAverage( const Area &area ) const;
@@ -250,10 +250,10 @@ class SurfaceT {
 
 	void init( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
 
-	void	copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
-	void	copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
-	void 	copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
-	void	copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
+	void	copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
+	void	copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
+	void 	copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
+	void	copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
  
  public:
 	
@@ -318,7 +318,7 @@ class SurfaceT {
 		//! Returns the y coordinate of the pixel the Iter currently points to
 		const int32_t	y() const { return mY; }
 		//! Returns the coordinate of the pixel the Iter currently points to
-		Vec2i			getPos() const { return Vec2i( mX, mY ); }
+		ivec2			getPos() const { return ivec2( mX, mY ); }
 
 		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {
@@ -433,7 +433,7 @@ class SurfaceT {
 			//! Returns the t coordinate of the pixel the Iter currently points to		
 		const int32_t	y() const { return mY; }
 		//! Returns the coordinate of the pixel the Iter currently points to		
-		Vec2i			getPos() const { return Vec2i( mX, mY ); }
+		ivec2			getPos() const { return ivec2( mX, mY ); }
 
 		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {

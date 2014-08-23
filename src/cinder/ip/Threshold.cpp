@@ -49,11 +49,11 @@ void thresholdImpl( SurfaceT<T> *surface, T value, const Area &area )
 }
 
 template<typename T>
-void thresholdImpl( const SurfaceT<T> &srcSurface, T value, const Area &srcArea, const Vec2i &dstLT, SurfaceT<T> *dstSurface )
+void thresholdImpl( const SurfaceT<T> &srcSurface, T value, const Area &srcArea, const ivec2 &dstLT, SurfaceT<T> *dstSurface )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcSurface.getBounds(), srcArea, dstSurface->getBounds(), dstLT );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcSurface.getBounds(), srcArea, dstSurface->getBounds(), dstLT );
 	const Area &area( srcDst.first );
-	const Vec2i &dstOffset( srcDst.second );
+	const ivec2 &dstOffset( srcDst.second );
 
 	int32_t srcRowBytes = srcSurface.getRowBytes();
 	int8_t srcPixelInc = srcSurface.getPixelInc();
@@ -76,18 +76,18 @@ void thresholdImpl( const SurfaceT<T> &srcSurface, T value, const Area &srcArea,
 }
 
 template<typename T>
-void thresholdImpl( const ChannelT<T> &srcChannel, T value, const Area &srcArea, const Vec2i &dstLT, ChannelT<T> *dstChannel )
+void thresholdImpl( const ChannelT<T> &srcChannel, T value, const Area &srcArea, const ivec2 &dstLT, ChannelT<T> *dstChannel )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, dstChannel->getBounds(), dstLT );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, dstChannel->getBounds(), dstLT );
 	const Area &area( srcDst.first );
-	const Vec2i &dstOffset( srcDst.second );
+	const ivec2 &dstOffset( srcDst.second );
 
 	int8_t srcInc = srcChannel.getIncrement();
 	int8_t dstInc = dstChannel->getIncrement();
 	const T maxValue = CHANTRAIT<T>::max();
 	for( int32_t y = 0; y < area.getHeight(); ++y ) {
-		T *dstPtr = dstChannel->getData( Vec2i( area.getX1(), y ) + dstOffset );
-		const T *srcPtr = srcChannel.getData( Vec2i( area.getX1(), y ) );
+		T *dstPtr = dstChannel->getData( ivec2( area.getX1(), y ) + dstOffset );
+		const T *srcPtr = srcChannel.getData( ivec2( area.getX1(), y ) );
 		for( int32_t x = area.getX1(); x < area.getX2(); ++x ) {
 			*dstPtr = ( *srcPtr > value ) ? maxValue : 0;
 			dstPtr += dstInc;

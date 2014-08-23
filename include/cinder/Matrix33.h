@@ -28,8 +28,6 @@
 
 namespace cinder { 
 
-typedef glm::mat3	Matrix33f;
-typedef glm::dmat3	Matrix33d;
 using glm::mat3;
 using glm::mat4;
 

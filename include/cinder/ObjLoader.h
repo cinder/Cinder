@@ -136,11 +136,11 @@ class ObjLoader : public geom::Source {
  
 	std::shared_ptr<IStreamCinder>	mStream;
 
-	std::vector<Vec3f>			    mInternalVertices, mInternalNormals;
-	std::vector<Vec2f>			    mInternalTexCoords;
+	std::vector<vec3>			    mInternalVertices, mInternalNormals;
+	std::vector<vec2>			    mInternalTexCoords;
 	std::vector<Colorf>				mInternalColors;
-	std::vector<Vec3f>			    mOutputVertices, mOutputNormals;
-	std::vector<Vec2f>			    mOutputTexCoords;
+	std::vector<vec3>			    mOutputVertices, mOutputNormals;
+	std::vector<vec2>			    mOutputTexCoords;
 	std::vector<Colorf>				mOutputColors;
 
 	std::vector<Group>			    mGroups;

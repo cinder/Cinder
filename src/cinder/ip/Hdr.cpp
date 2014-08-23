@@ -36,7 +36,7 @@ void hdrNormalize( Surface32f *surface )
 	const int8_t pixelInc = surface->getPixelInc();
 	const uint8_t redOffset = surface->getRedOffset(), greenOffset = surface->getGreenOffset(), blueOffset = surface->getBlueOffset();
 	for( int32_t y = 0; y < surface->getHeight(); ++y ) {
-		const float *srcPtr = surface->getData( Vec2i( 0, y ) );
+		const float *srcPtr = surface->getData( ivec2( 0, y ) );
 		for( int32_t x = 0; x < surface->getWidth(); ++x ) {
 			minVal = std::min( minVal, srcPtr[redOffset] );
 			maxVal = std::max( maxVal, srcPtr[redOffset] );
@@ -57,7 +57,7 @@ void hdrNormalize( Surface32f *surface )
 	
 	float scale = 1.0f / ( maxVal - minVal );
 	for( int32_t y = 0; y < surface->getHeight(); ++y ) {
-		float *dstPtr = surface->getData( Vec2i( 0, y ) );
+		float *dstPtr = surface->getData( ivec2( 0, y ) );
 		for( int32_t x = 0; x < surface->getWidth(); ++x ) {
 			dstPtr[redOffset] = ( dstPtr[redOffset] - minVal ) * scale;
 			dstPtr[greenOffset] = ( dstPtr[greenOffset] - minVal ) * scale;

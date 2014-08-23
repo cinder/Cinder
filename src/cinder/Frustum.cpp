@@ -42,10 +42,10 @@ Frustum<T>::Frustum( const Camera &cam )
 template<typename T>
 void Frustum<T>::set( const Camera &cam )
 {
-	Vec3f ntl, ntr, nbl, nbr;
+	vec3 ntl, ntr, nbl, nbr;
 	cam.getNearClipCoordinates( &ntl, &ntr, &nbl, &nbr );
 
-	Vec3f ftl, ftr, fbl, fbr;
+	vec3 ftl, ftr, fbl, fbr;
 	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
 
 	mFrustumPlanes[TOP].set( ntr, ntl, ftl );

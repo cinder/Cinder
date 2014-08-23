@@ -25,9 +25,9 @@
 namespace cinder {
 
 // algorithm from "Fast, Minimum Storage Ray-Triangle Intersection"
-bool Ray::calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result ) const
+bool Ray::calcTriangleIntersection( const vec3 &vert0, const vec3 &vert1, const vec3 &vert2, float *result ) const
 {
-	Vec3f edge1, edge2, tvec, pvec, qvec;
+	vec3 edge1, edge2, tvec, pvec, qvec;
 	float det;
 	float u, v;
 	const float EPSILON = 0.000001f;
@@ -75,7 +75,7 @@ bool Ray::calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, cons
 #endif
 }
 
-bool Ray::calcPlaneIntersection( const Vec3f &planeOrigin, const Vec3f &planeNormal, float *result ) const
+bool Ray::calcPlaneIntersection( const vec3 &planeOrigin, const vec3 &planeNormal, float *result ) const
 {
 	float denom = dot( planeNormal, getDirection() );
 

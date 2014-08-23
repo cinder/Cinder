@@ -44,10 +44,10 @@ std::wstring toWideString( const std::string &utf8String );
 //! Converts a wide string to a UTF-8 string. Note that wstring is not a good cross-platform choice and this is here for interop with Windows APIs.
 std::string toUtf8String( const std::wstring &wideString );
 
-//! Converts a Win32 POINTFX fixed point point to a cinder::Vec2f
+//! Converts a Win32 POINTFX fixed point point to a cinder::vec2
 #if !defined ( CINDER_WINRT )
-inline Vec2f toVec2f( const ::POINTFX &p )
-{ return Vec2f( ( (p.x.value << 16) | p.x.fract ) / 65535.0f, ( (p.y.value << 16) | p.y.fract ) / 65535.0f ); }
+inline vec2 tovec2( const ::POINTFX &p )
+{ return vec2( ( (p.x.value << 16) | p.x.fract ) / 65535.0f, ( (p.y.value << 16) | p.y.fract ) / 65535.0f ); }
 #endif
 
 //! A free function designed to interact with makeComShared, calls Release() on a com-managed object

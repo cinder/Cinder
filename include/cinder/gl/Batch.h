@@ -107,20 +107,20 @@ class VertBatch {
 	void	color( const Colorf &color );
 	void	color( const ColorAf &color );
 
-	void	normal( float x, float y, float z ) { normal( Vec3f( x, y, z ) ); }
-	void	normal( const Vec3f &n );
+	void	normal( float x, float y, float z ) { normal( vec3( x, y, z ) ); }
+	void	normal( const vec3 &n );
 
-	void	vertex( float x, float y, float z = 0, float w = 1 ) { addVertex( Vec4f( x, y, z, w ) ); }
-	void	vertex( const Vec2f &v ) { addVertex( Vec4f( v.x, v.y, 0, 1 ) ); }
-	void	vertex( const Vec3f &v ) { addVertex( Vec4f( v.x, v.y, v.z, 1 ) ); }
-	void	vertex( const Vec4f &v );
+	void	vertex( float x, float y, float z = 0, float w = 1 ) { addVertex( vec4( x, y, z, w ) ); }
+	void	vertex( const vec2 &v ) { addVertex( vec4( v.x, v.y, 0, 1 ) ); }
+	void	vertex( const vec3 &v ) { addVertex( vec4( v.x, v.y, v.z, 1 ) ); }
+	void	vertex( const vec4 &v );
 	//! Sets the vertex and the color simultaneously. Should not be called if you have called color() prior.
-	void	vertex( const Vec4f &v, const ColorAf &c );
+	void	vertex( const vec4 &v, const ColorAf &c );
 
-	void	texCoord( float s, float t, float r = 0, float q = 1 ) { texCoord( Vec4f( s, t, r, q ) ); }	
-	void	texCoord( const Vec2f &t ) { texCoord( Vec4f( t.x, t.y, 0, 1 ) ); }
-	void	texCoord( const Vec3f &t ) { texCoord( Vec4f( t.x, t.y, t.z, 1 ) ); }
-	void	texCoord( const Vec4f &t );
+	void	texCoord( float s, float t, float r = 0, float q = 1 ) { texCoord( vec4( s, t, r, q ) ); }	
+	void	texCoord( const vec2 &t ) { texCoord( vec4( t.x, t.y, 0, 1 ) ); }
+	void	texCoord( const vec3 &t ) { texCoord( vec4( t.x, t.y, t.z, 1 ) ); }
+	void	texCoord( const vec4 &t );
 	
 	void	begin( GLenum type );
 	void	end();
@@ -131,16 +131,16 @@ class VertBatch {
 	void	draw();
 	
   protected:
-	void	addVertex( const Vec4f &v );
+	void	addVertex( const vec4 &v );
 	void	setupBuffers();
 
 	GLenum					mPrimType;
 
-	std::vector<Vec4f>		mVertices;
+	std::vector<vec4>		mVertices;
 	
-	std::vector<Vec3f>		mNormals;
+	std::vector<vec3>		mNormals;
 	std::vector<ColorAf>	mColors;
-	std::vector<Vec4f>		mTexCoords;
+	std::vector<vec4>		mTexCoords;
 	
 	bool					mOwnsBuffers;
 	VaoRef					mVao;

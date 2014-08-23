@@ -53,7 +53,7 @@ Path2d::Path2d( const BSpline2f &spline, float subdivisionStep )
 			quadTo( spline.getControlPoint( i % numPoints ), ( spline.getControlPoint( i % numPoints ) + spline.getControlPoint( ( i + 1 ) % numPoints ) ) * 0.5f );
 	}
 	else if( ( spline.getDegree() == 2 ) && spline.isOpen() ) { // quadratic, open
-		Vec2f spl1, spl2;
+		vec2 spl1, spl2;
 		moveTo( spline.getControlPoint( 0 ) );
 		int lastPt = ( spline.isLoop() ) ? numPoints : numPoints - 1;
 		for( int i = 1; i < lastPt; i++ ) {
@@ -68,12 +68,12 @@ Path2d::Path2d( const BSpline2f &spline, float subdivisionStep )
 		}
 	}
 	else if( ( spline.getDegree() == 3 ) && ( ! spline.isOpen() )  ) { // cubic, closed
-		Vec2f q0, q1, q2, q3;
+		vec2 q0, q1, q2, q3;
 		q0 = ( spline.getControlPoint( 0 ) + spline.getControlPoint( 1 ) * 4.0f + spline.getControlPoint( 2 ) ) / 6.0f;
 		moveTo( q0 );
 		int lastPt = ( spline.isLoop() ) ? numPoints : numPoints - 3;
 		for( int i = 0; i < lastPt; ++i ) {
-			Vec2f p1 = spline.getControlPoint( ( i + 1 ) % numPoints ), p2 = spline.getControlPoint( ( i + 2 ) % numPoints ), p3 = spline.getControlPoint( ( i + 3 ) % numPoints );
+			vec2 p1 = spline.getControlPoint( ( i + 1 ) % numPoints ), p2 = spline.getControlPoint( ( i + 2 ) % numPoints ), p3 = spline.getControlPoint( ( i + 3 ) % numPoints );
 			
 			q1 = p1 * ( 4.0f / 6.0f ) + p2 * ( 2.0f / 6.0f );
 			q2 = p1 * ( 2.0f / 6.0f ) + p2 * ( 4.0f / 6.0f );
@@ -82,8 +82,8 @@ Path2d::Path2d( const BSpline2f &spline, float subdivisionStep )
 		}
 	}
 	else if( ( spline.getDegree() == 3 ) && ( spline.isOpen() )  ) { // cubic, open
-		Vec2f p1, p2, p3, p4;
-		Vec2f q1, q2, q3, q4;
+		vec2 p1, p2, p3, p4;
+		vec2 q1, q2, q3, q4;
 		int lastPt = ( spline.isLoop() ) ? numPoints + 1 : numPoints;
 		if( lastPt == 4 ) {
 			moveTo( spline.getControlPoint( 0 ) );
@@ -137,7 +137,7 @@ Path2d::Path2d( const BSpline2f &spline, float subdivisionStep )
 	}	
 }
 
-void Path2d::moveTo( const Vec2f &p )
+void Path2d::moveTo( const vec2 &p )
 {
 	if( ! mPoints.empty() )
 		throw Path2dExc(); // can only moveTo as the first point
@@ -145,7 +145,7 @@ void Path2d::moveTo( const Vec2f &p )
 	mPoints.push_back( p );
 }
 
-void Path2d::lineTo( const Vec2f &p )
+void Path2d::lineTo( const vec2 &p )
 {
 	if( mPoints.empty() )
 		throw Path2dExc(); // can only lineTo as non-first point
@@ -154,7 +154,7 @@ void Path2d::lineTo( const Vec2f &p )
 	mSegments.push_back( LINETO );
 }
 
-void Path2d::quadTo( const Vec2f &p1, const Vec2f &p2 )
+void Path2d::quadTo( const vec2 &p1, const vec2 &p2 )
 {
 	if( mPoints.empty() )
 		throw Path2dExc(); // can only quadTo as non-first point
@@ -164,7 +164,7 @@ void Path2d::quadTo( const Vec2f &p1, const Vec2f &p2 )
 	mSegments.push_back( QUADTO );
 }
 
-void Path2d::curveTo( const Vec2f &p1, const Vec2f &p2, const Vec2f &p3 )
+void Path2d::curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 )
 {
 	if( mPoints.empty() )
 		throw Path2dExc(); // can only curveTo as non-first point
@@ -175,7 +175,7 @@ void Path2d::curveTo( const Vec2f &p1, const Vec2f &p2, const Vec2f &p3 )
 	mSegments.push_back( CUBICTO );
 }
 
-void Path2d::arc( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward )
+void Path2d::arc( const vec2 &center, float radius, float startRadians, float endRadians, bool forward )
 {
 	if( forward ) {
 		while( endRadians < startRadians )
@@ -187,9 +187,9 @@ void Path2d::arc( const Vec2f &center, float radius, float startRadians, float e
 	}
 
 	if( mPoints.empty() )
-		moveTo( center + radius * Vec2f( math<float>::cos( startRadians ), math<float>::sin( startRadians ) ) );
+		moveTo( center + radius * vec2( math<float>::cos( startRadians ), math<float>::sin( startRadians ) ) );
 	else {
-		lineTo( center + radius * Vec2f( math<float>::cos( startRadians ), math<float>::sin( startRadians ) ) );
+		lineTo( center + radius * vec2( math<float>::cos( startRadians ), math<float>::sin( startRadians ) ) );
 	}
 
 	if( forward )
@@ -198,7 +198,7 @@ void Path2d::arc( const Vec2f &center, float radius, float startRadians, float e
 		arcHelper( center, radius, endRadians, startRadians, forward );
 }
 
-void Path2d::arcHelper( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward )
+void Path2d::arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward )
 {
 	// wrap the angle difference around to be in the range [0, 4*pi]
     while( endRadians - startRadians > 4 * M_PI )
@@ -233,7 +233,7 @@ void Path2d::arcHelper( const Vec2f &center, float radius, float startRadians, f
     }	
 }
 
-void Path2d::arcSegmentAsCubicBezier( const Vec2f &center, float radius, float startRadians, float endRadians )
+void Path2d::arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians )
 {
 	float r_sin_A, r_cos_A;
 	float r_sin_B, r_cos_B;
@@ -251,7 +251,7 @@ void Path2d::arcSegmentAsCubicBezier( const Vec2f &center, float radius, float s
 }
 
 // Implementation courtesy of Lennart Kudling
-void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
+void Path2d::arcTo( const vec2 &p1, const vec2 &t, float radius )
 {
 	if( isClosed() || empty() )
 		throw Path2dExc(); // can only arcTo as non-first point
@@ -259,11 +259,11 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 	const float epsilon = 1e-8;
 	
 	// Get current point.
-	const Vec2f& p0 = getCurrentPoint();
+	const vec2& p0 = getCurrentPoint();
 	
 	// Calculate the tangent vectors tangent1 and tangent2.
-	const Vec2f p0t = p0 - t;
-	const Vec2f p1t = p1 - t;
+	const vec2 p0t = p0 - t;
+	const vec2 p1t = p1 - t;
 	
 	// Calculate tangent distance squares.
 	const float p0tSquare = length2( p0t );
@@ -292,7 +292,7 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 		const float distanceFromT = math<float>::abs( radius * numerator / denominator );
 		
 		// b0 = t + |b0 - t| * (p0 - t)/|p0 - t|.
-		const Vec2f b0 = t + distanceFromT * normalize( p0t );
+		const vec2 b0 = t + distanceFromT * normalize( p0t );
 		
 		// If b0 deviates from p0, add a line to it.
 		if( math<float>::abs(b0.x - p0.x) > epsilon || math<float>::abs(b0.y - p0.y) > epsilon ) {
@@ -300,7 +300,7 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 		}
 		
 		// b3 = t + |b3 - t| * (p1 - t)/|p1 - t|.
-		const Vec2f b3 = t + distanceFromT * normalize( p1t );
+		const vec2 b3 = t + distanceFromT * normalize( p1t );
 		
 		// The two bezier-control points are located on the tangents at a fraction
 		// of the distance[ tangent points <-> tangent intersection ].
@@ -317,8 +317,8 @@ void Path2d::arcTo( const Vec2f &p1, const Vec2f &t, float radius )
 		else
 			fraction = ( 4.0 / 3.0 ) / ( 1.0 + math<float>::sqrt( 1.0 + b0tSquare / radiusSquare ) );
 		
-		const Vec2f b1 = b0 + fraction * (t - b0);
-		const Vec2f b2 = b3 + fraction * (t - b3);
+		const vec2 b1 = b0 + fraction * (t - b0);
+		const vec2 b2 = b3 + fraction * (t - b3);
 		
 		curveTo( b1, b2, b3 );
 	}
@@ -387,7 +387,7 @@ void Path2d::getSegmentRelativeT( float t, size_t *segment, float *relativeT ) c
 		*relativeT = ( t - *segment * segParamLength ) / segParamLength;
 }
 
-Vec2f Path2d::getPosition( float t ) const
+vec2 Path2d::getPosition( float t ) const
 {
 	size_t seg;
 	float subSeg;
@@ -395,7 +395,7 @@ Vec2f Path2d::getPosition( float t ) const
 	return getSegmentPosition( seg, subSeg );
 }
 
-Vec2f Path2d::getTangent( float t ) const
+vec2 Path2d::getTangent( float t ) const
 {
 	size_t seg;
 	float subSeg;
@@ -403,7 +403,7 @@ Vec2f Path2d::getTangent( float t ) const
 	return getSegmentTangent( seg, subSeg );
 }
 
-Vec2f Path2d::getSegmentPosition( size_t segment, float t ) const
+vec2 Path2d::getSegmentPosition( size_t segment, float t ) const
 {
 	if( mSegments.empty() )
 		return vec2();
@@ -437,7 +437,7 @@ Vec2f Path2d::getSegmentPosition( size_t segment, float t ) const
 	}
 }
 
-Vec2f Path2d::getSegmentTangent( size_t segment, float t ) const
+vec2 Path2d::getSegmentTangent( size_t segment, float t ) const
 {
 	if( mSegments.empty() )
 		return vec2();
@@ -465,16 +465,16 @@ Vec2f Path2d::getSegmentTangent( size_t segment, float t ) const
 	}
 }
 
-vector<Vec2f> Path2d::subdivide( float approximationScale ) const
+vector<vec2> Path2d::subdivide( float approximationScale ) const
 {
 	if( mSegments.empty() )
-		return vector<Vec2f>();
+		return vector<vec2>();
 
 	float distanceToleranceSqr = 0.5f / approximationScale;
 	distanceToleranceSqr *= distanceToleranceSqr;
 	
 	size_t firstPoint = 0;
-	vector<Vec2f> result;
+	vector<vec2> result;
 	result.push_back( mPoints[0] );
 	for( size_t s = 0; s < mSegments.size(); ++s ) {
 		switch( mSegments[s] ) {
@@ -507,7 +507,7 @@ vector<Vec2f> Path2d::subdivide( float approximationScale ) const
 }
 
 // This technique is due to Maxim Shemanarev but removes his tangent error estimates
-void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, int level, vector<Vec2f> *result ) const
+void Path2d::subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, int level, vector<vec2> *result ) const
 {
 	const int recursionLimit = 17;
 	const float collinearEpsilon = 0.0000001f;
@@ -515,9 +515,9 @@ void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, co
 	if( level > recursionLimit ) 
 		return;
 
-	Vec2f p12 = ( p1 + p2 ) * 0.5f;
-	Vec2f p23 = ( p2 + p3 ) * 0.5f;
-	Vec2f p123 = ( p12 + p23 ) * 0.5f;
+	vec2 p12 = ( p1 + p2 ) * 0.5f;
+	vec2 p23 = ( p2 + p3 ) * 0.5f;
+	vec2 p123 = ( p12 + p23 ) * 0.5f;
 
 	float dx = p3.x - p1.x;
 	float dy = p3.y - p1.y;
@@ -546,7 +546,7 @@ void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, co
 			else if(d >= 1)
 				d = distance2( p2, p3 );
 			else
-				d = distance2( p2, Vec2f( p1.x + d * dx, p1.y + d * dy ) );
+				d = distance2( p2, vec2( p1.x + d * dx, p1.y + d * dy ) );
 		}
 		if( d < distanceToleranceSqr ) {
 			result->push_back( p2 );
@@ -560,7 +560,7 @@ void Path2d::subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, co
 }
 
 // This technique is due to Maxim Shemanarev but removes his tangent error estimates
-void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, const Vec2f &p4, int level, vector<Vec2f> *result ) const
+void Path2d::subdivideCubic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, const vec2 &p4, int level, vector<vec2> *result ) const
 {
 	const int recursionLimit = 17;
 	const float collinearEpsilon = 0.0000001f;
@@ -571,12 +571,12 @@ void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const 
 	// Calculate all the mid-points of the line segments
 	//----------------------
 
-	Vec2f p12 = ( p1 + p2 ) * 0.5f;
-	Vec2f p23 = ( p2 + p3 ) * 0.5f;
-	Vec2f p34 = ( p3 + p4 ) * 0.5f;
-	Vec2f p123 = ( p12 + p23 ) * 0.5f;
-	Vec2f p234 = ( p23 + p34 ) * 0.5f;
-	Vec2f p1234 = ( p123 + p234 ) * 0.5f;
+	vec2 p12 = ( p1 + p2 ) * 0.5f;
+	vec2 p23 = ( p2 + p3 ) * 0.5f;
+	vec2 p34 = ( p3 + p4 ) * 0.5f;
+	vec2 p123 = ( p12 + p23 ) * 0.5f;
+	vec2 p234 = ( p23 + p34 ) * 0.5f;
+	vec2 p1234 = ( p123 + p234 ) * 0.5f;
 
 
 	// Try to approximate the full cubic curve by a single straight line
@@ -611,11 +611,11 @@ void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const 
 				}
 					 if(d2 <= 0) d2 = distance2( p2, p1 );
 				else if(d2 >= 1) d2 = distance2( p2, p4 );
-				else             d2 = distance2( p2, Vec2f( p1.x + d2*dx, p1.y + d2*dy ) );
+				else             d2 = distance2( p2, vec2( p1.x + d2*dx, p1.y + d2*dy ) );
 
 					 if(d3 <= 0) d3 = distance2( p3, p1 );
 				else if(d3 >= 1) d3 = distance2( p3, p4 );
-				else             d3 = distance2( p3, Vec2f( p1.x + d3*dx, p1.y + d3*dy ) );
+				else             d3 = distance2( p3, vec2( p1.x + d3*dx, p1.y + d3*dy ) );
 			}
 			if(d2 > d3) {
 				if( d2 < distanceToleranceSqr ) {
@@ -658,22 +658,22 @@ void Path2d::subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const 
 	subdivideCubic( distanceToleranceSqr, p1234, p234, p34, p4, level + 1, result ); 
 }
 
-void Path2d::scale( const Vec2f &amount, Vec2f scaleCenter )
+void Path2d::scale( const vec2 &amount, vec2 scaleCenter )
 {
-	for( vector<Vec2f>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
-		*ptIt = scaleCenter + Vec2f( ( ptIt->x - scaleCenter.x ) * amount.x, ( ptIt->y - scaleCenter.y ) * amount.y );
+	for( vector<vec2>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
+		*ptIt = scaleCenter + vec2( ( ptIt->x - scaleCenter.x ) * amount.x, ( ptIt->y - scaleCenter.y ) * amount.y );
 }
 
 void Path2d::transform( const MatrixAffine2f &matrix )
 {
-	for( vector<Vec2f>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
+	for( vector<vec2>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
 		*ptIt = matrix.transformPoint( *ptIt );
 }
 
 Path2d Path2d::transformCopy( const MatrixAffine2f &matrix ) const
 {
 	Path2d result = *this;
-	for( vector<Vec2f>::iterator ptIt = result.mPoints.begin(); ptIt != result.mPoints.end(); ++ptIt )
+	for( vector<vec2>::iterator ptIt = result.mPoints.begin(); ptIt != result.mPoints.end(); ++ptIt )
 		*ptIt = matrix.transformPoint( *ptIt );
 	return result;
 }
@@ -690,7 +690,7 @@ Rectf Path2d::calcBoundingBox() const
 }
 
 // calcPreciseBoundingBox helper routines
-int	Path2d::calcQuadraticBezierMonotoneRegions( const Vec2f p[3], float resultT[2] )
+int	Path2d::calcQuadraticBezierMonotoneRegions( const vec2 p[3], float resultT[2] )
 {
 	int resultIdx = 0;
 	float dx = p[0].x - 2 * p[1].x + p[2].x;
@@ -709,20 +709,20 @@ int	Path2d::calcQuadraticBezierMonotoneRegions( const Vec2f p[3], float resultT[
 	return resultIdx;
 }
 
-Vec2f Path2d::calcQuadraticBezierPos( const Vec2f p[3], float t )
+vec2 Path2d::calcQuadraticBezierPos( const vec2 p[3], float t )
 {
 	float nt = 1 - t;
-	return Vec2f( nt * nt * p[0].x + 2 * nt * t * p[1].x +  t * t * p[2].x, nt * nt * p[0].y + 2 * nt * t * p[1].y +  t * t * p[2].y );
+	return vec2( nt * nt * p[0].x + 2 * nt * t * p[1].x +  t * t * p[2].x, nt * nt * p[0].y + 2 * nt * t * p[1].y +  t * t * p[2].y );
 }
 
-Vec2f Path2d::calcQuadraticBezierDerivative( const Vec2f p[3], float t )
+vec2 Path2d::calcQuadraticBezierDerivative( const vec2 p[3], float t )
 {
 	float nt = 1 - t;
-	//return Vec2f( (nt * p[1].x + t * p[2].x) - (nt * p[0].x + t * p[1].x), (nt * p[1].y + t * p[2].y) - (nt * p[0].y + t * p[1].y) );
-	return Vec2f( -2 * ( nt * p[0].x - (1 - 2 * t) * p[1].x - t * p[2].x ), -2 * ( nt * p[0].y - (1 - 2 * t) * p[1].y - t * p[2].y ) );
+	//return vec2( (nt * p[1].x + t * p[2].x) - (nt * p[0].x + t * p[1].x), (nt * p[1].y + t * p[2].y) - (nt * p[0].y + t * p[1].y) );
+	return vec2( -2 * ( nt * p[0].x - (1 - 2 * t) * p[1].x - t * p[2].x ), -2 * ( nt * p[0].y - (1 - 2 * t) * p[1].y - t * p[2].y ) );
 }
 
-int	Path2d::calcCubicBezierMonotoneRegions( const Vec2f p[4], float resultT[4] )
+int	Path2d::calcCubicBezierMonotoneRegions( const vec2 p[4], float resultT[4] )
 {
 	float Ax = -p[0].x + 3 * p[1].x - 3 * p[2].x + p[3].x;
 	float Bx =  3 * p[0].x - 6 * p[1].x + 3 * p[2].x;
@@ -752,17 +752,17 @@ int	Path2d::calcCubicBezierMonotoneRegions( const Vec2f p[4], float resultT[4] )
 	return resultIdx;
 }
 
-Vec2f Path2d::calcCubicBezierPos( const Vec2f p[4], float t )
+vec2 Path2d::calcCubicBezierPos( const vec2 p[4], float t )
 {
 	float nt = 1 - t;
 	float w0 = nt * nt * nt;
 	float w1 = 3 * nt * nt * t;
 	float w2 = 3 * nt * t * t;
 	float w3 = t * t * t;
-	return Vec2f( w0 * p[0].x + w1 * p[1].x + w2 * p[2].x + w3 * p[3].x, w0 * p[0].y + w1 * p[1].y + w2 * p[2].y + w3 * p[3].y );
+	return vec2( w0 * p[0].x + w1 * p[1].x + w2 * p[2].x + w3 * p[3].x, w0 * p[0].y + w1 * p[1].y + w2 * p[2].y + w3 * p[3].y );
 }
 
-Vec2f Path2d::calcCubicBezierDerivative( const Vec2f p[4], float t )
+vec2 Path2d::calcCubicBezierDerivative( const vec2 p[4], float t )
 {
 	float nt = 1 - t;
 	float w0 = -3 * nt * nt;
@@ -770,7 +770,7 @@ Vec2f Path2d::calcCubicBezierDerivative( const Vec2f p[4], float t )
 	float w2 = -3 * t * t + 6 * t * nt;
 	float w3 = 3 * t * t;
 	
-	return Vec2f( w0 * p[0].x + w1 * p[1].x + w2 * p[2].x + w3 * p[3].x, w0 * p[0].y + w1 * p[1].y + w2 * p[2].y + w3 * p[3].y );
+	return vec2( w0 * p[0].x + w1 * p[1].x + w2 * p[2].x + w3 * p[3].x, w0 * p[0].y + w1 * p[1].y + w2 * p[2].y + w3 * p[3].y );
 }
 
 Rectf Path2d::calcPreciseBoundingBox() const
@@ -822,13 +822,13 @@ Rectf Path2d::calcPreciseBoundingBox() const
 
 // contains() helper routines
 namespace {
-float linearYatX( const Vec2f p[2], float x )
+float linearYatX( const vec2 p[2], float x )
 {
 	if( p[0].x == p[1].x ) 	return p[0].y;
 	return p[0].y + (p[1].y - p[0].y) * (x - p[0].x) / (p[1].x - p[0].x);
 }
 
-size_t linearCrossings( const Vec2f p[2], const Vec2f &pt )
+size_t linearCrossings( const vec2 p[2], const vec2 &pt )
 {
 	if( (p[0].x < pt.x && pt.x <= p[1].x ) ||
 		(p[1].x < pt.x && pt.x <= p[0].x )) {
@@ -838,7 +838,7 @@ size_t linearCrossings( const Vec2f p[2], const Vec2f &pt )
 	return 0;
 }
 
-size_t cubicBezierCrossings( const Vec2f p[4], const Vec2f &pt )
+size_t cubicBezierCrossings( const vec2 p[4], const vec2 &pt )
 {
 	double Ax =     -p[0].x + 3 * p[1].x - 3 * p[2].x + p[3].x;
 	double Bx =  3 * p[0].x - 6 * p[1].x + 3 * p[2].x;
@@ -865,7 +865,7 @@ size_t cubicBezierCrossings( const Vec2f p[4], const Vec2f &pt )
 	return result;
 }
 
-size_t quadraticBezierCrossings( const Vec2f p[3], const Vec2f &pt )
+size_t quadraticBezierCrossings( const vec2 p[3], const vec2 &pt )
 {
 	float Ax = 1.0f * p[0].x - 2.0f * p[1].x + 1.0f * p[2].x;
 	float Bx = -2.0f * p[0].x + 2.0f * p[1].x;
@@ -890,19 +890,19 @@ size_t quadraticBezierCrossings( const Vec2f p[3], const Vec2f &pt )
 	return result;
 }
 
-float calcCubicBezierSpeed( const Vec2f p[3], float t )
+float calcCubicBezierSpeed( const vec2 p[3], float t )
 {
 	return length( Path2d::calcCubicBezierDerivative( p, t ) );
 }
 
-float calcQuadraticBezierSpeed( const Vec2f p[3], float t )
+float calcQuadraticBezierSpeed( const vec2 p[3], float t )
 {
 	return length( Path2d::calcQuadraticBezierDerivative( p, t ) );
 }
 } // anonymous namespace
 
 
-bool Path2d::contains( const Vec2f &pt ) const
+bool Path2d::contains( const vec2 &pt ) const
 {
 	if( mPoints.size() <= 2 )
 		return false;
@@ -929,7 +929,7 @@ bool Path2d::contains( const Vec2f &pt ) const
 		firstPoint += sSegmentTypePointCounts[mSegments[s]];
 	}
 
-	Vec2f temp[2];
+	vec2 temp[2];
 	temp[0] = mPoints[mPoints.size()-1];
 	temp[1] = mPoints[0];
 	crossings += linearCrossings( &(temp[0]), pt );

@@ -271,7 +271,7 @@ void VertBatch::setType( GLenum primType )
 	mPrimType = primType;
 }
 
-void VertBatch::normal( const Vec3f &n )
+void VertBatch::normal( const vec3 &n )
 {
 	mNormals.push_back( n );
 }
@@ -286,23 +286,23 @@ void VertBatch::color( const ColorAf &color )
 	mColors.push_back( color );
 }
 
-void VertBatch::texCoord( const Vec4f &t )
+void VertBatch::texCoord( const vec4 &t )
 {
 	mTexCoords.push_back( t );
 }
 
-void VertBatch::vertex( const Vec4f &v )
+void VertBatch::vertex( const vec4 &v )
 {
 	addVertex( v );
 }
 
-void VertBatch::vertex( const Vec4f &v, const ColorAf &c )
+void VertBatch::vertex( const vec4 &v, const ColorAf &c )
 {
 	mColors.push_back( c );
 	addVertex( v );
 }
 
-void VertBatch::addVertex( const Vec4f &v )
+void VertBatch::addVertex( const vec4 &v )
 {
 	mVertices.push_back( v );
 
@@ -365,10 +365,10 @@ void VertBatch::setupBuffers()
 	if( ! glslProg )
 		return;
 
-	const size_t verticesSizeBytes = mVertices.size() * sizeof(Vec4f);
-	const size_t normalsSizeBytes = mNormals.size() * sizeof(Vec3f);
+	const size_t verticesSizeBytes = mVertices.size() * sizeof(vec4);
+	const size_t normalsSizeBytes = mNormals.size() * sizeof(vec3);
 	const size_t colorsSizeBytes = mColors.size() * sizeof(ColorAf);
-	const size_t texCoordsSizeBytes = mTexCoords.size() * sizeof(Vec4f);
+	const size_t texCoordsSizeBytes = mTexCoords.size() * sizeof(vec4);
 	size_t totalSizeBytes = verticesSizeBytes + normalsSizeBytes + colorsSizeBytes + texCoordsSizeBytes;
 
 	// allocate the VBO if we don't have one yet (which implies we're not using the context defaults)

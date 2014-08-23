@@ -28,7 +28,7 @@ using std::pair;
 
 namespace cinder {
 
-Area::Area( const Vec2i &UL, const Vec2i &LR )
+Area::Area( const ivec2 &UL, const ivec2 &LR )
 {
 	set( UL.x, UL.y, LR.x, LR.y );
 }
@@ -87,7 +87,7 @@ Area Area::getClipBy( const Area &clip ) const
 	return result;
 }
 
-void Area::offset( const Vec2i &o )
+void Area::offset( const ivec2 &o )
 {
 	x1 += o.x;
 	x2 += o.x;
@@ -95,22 +95,22 @@ void Area::offset( const Vec2i &o )
 	y2 += o.y;
 }
 
-Area Area::getOffset( const Vec2i &offset ) const
+Area Area::getOffset( const ivec2 &offset ) const
 {
 	return Area( x1 + offset.x, y1 + offset.y, x2 + offset.x, y2 + offset.y );
 }
 
-void Area::moveULTo( const Vec2i &newUL )
+void Area::moveULTo( const ivec2 &newUL )
 {
 	set( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
 }
 
-Area Area::getMoveULTo( const Vec2i &newUL ) const
+Area Area::getMoveULTo( const ivec2 &newUL ) const
 {
 	return Area( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
 }
 
-bool Area::contains( const Vec2i &offset ) const
+bool Area::contains( const ivec2 &offset ) const
 {
 	return ( ( offset.x >= x1 ) && ( offset.x < x2 ) && ( offset.y >= y1 ) && ( offset.y < y2 ) );
 }
@@ -123,7 +123,7 @@ bool Area::intersects( const Area &area ) const
 		return true;
 }
 
-void Area::include( const Vec2i &point )
+void Area::include( const ivec2 &point )
 {
 	if( x1 > point.x ) x1 = point.x;
 	if( x2 < point.x ) x2 = point.x;
@@ -131,7 +131,7 @@ void Area::include( const Vec2i &point )
 	if( y2 < point.y ) y2 = point.y;
 }
 
-void Area::include( const std::vector<Vec2i> &points )
+void Area::include( const std::vector<ivec2> &points )
 {
 	for( size_t s = 0; s < points.size(); ++s )
 		include( points[s] );
@@ -139,8 +139,8 @@ void Area::include( const std::vector<Vec2i> &points )
 
 void Area::include( const Area &area )
 {
-	include( Vec2i( area.x1, area.y1 ) );
-	include( Vec2i( area.x2, area.y2 ) );
+	include( ivec2( area.x1, area.y1 ) );
+	include( ivec2( area.x2, area.y2 ) );
 }
 
 bool Area::operator<( const Area &aArea ) const
@@ -175,18 +175,18 @@ Area Area::proportionalFit( const Area &srcArea, const Area &dstArea, bool cente
 	
 	Area resultArea( 0, 0, resultWidth, resultHeight );
 	if ( center )
-		resultArea.offset( Vec2i( ( dstArea.getWidth() - resultWidth ) / 2, ( dstArea.getHeight() - resultHeight ) / 2 ) );
+		resultArea.offset( ivec2( ( dstArea.getWidth() - resultWidth ) / 2, ( dstArea.getHeight() - resultHeight ) / 2 ) );
 	resultArea.offset( dstArea.getUL() );
 	return resultArea;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*** Returns a pair composed of the source area and the destination absolute offset ***/
-pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const Vec2i &dstLT )
+pair<Area,ivec2> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const ivec2 &dstLT )
 {
 	Area clippedSrc = srcArea.getClipBy( srcSurfaceBounds );
-	Vec2i newDstLT = dstLT + ( clippedSrc.getUL() - srcArea.getUL() );
-	Vec2i oldSrcLT = clippedSrc.getUL();
+	ivec2 newDstLT = dstLT + ( clippedSrc.getUL() - srcArea.getUL() );
+	ivec2 oldSrcLT = clippedSrc.getUL();
 	clippedSrc.moveULTo( newDstLT );
 	Area oldClippedDst = clippedSrc;
 	clippedSrc.clipBy( dstSurfaceBounds );

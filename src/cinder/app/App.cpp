@@ -561,17 +561,17 @@ void App::cleanupLaunch()
 #endif
 }
 
-Vec2i App::getMousePos()
+ivec2 App::getMousePos()
 {
 #if defined( CINDER_MAC )
 	NSPoint loc = [NSEvent mouseLocation];
-	return Vec2i( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
+	return ivec2( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
 #elif defined( CINDER_MSW )
 	POINT point;
 	::GetCursorPos( &point );
-	return Vec2i( point.x, point.y );
+	return ivec2( point.x, point.y );
 #else
-	return Vec2i( -1, -1 );
+	return ivec2( -1, -1 );
 #endif
 }
 

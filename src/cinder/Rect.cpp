@@ -337,18 +337,18 @@ RectMapping::RectMapping( const Rectf &aSrcRect, const Rectf &aDstRect, bool pre
 	}
 }
 
-Vec2f RectMapping::map( const Vec2f &srcPoint ) const
+vec2 RectMapping::map( const vec2 &srcPoint ) const
 {
 	float x = ( srcPoint.x - mSrcRect.getX1() ) / mSrcRect.getWidth() * mDstRect.getWidth() + mDstRect.getX1();
 	float y = ( srcPoint.y - mSrcRect.getY1() ) / mSrcRect.getHeight() * mDstRect.getHeight() + mDstRect.getY1();
 	
-	return Vec2f( x, y );
+	return vec2( x, y );
 }
 
 Rectf RectMapping::map( const Rectf &srcRect ) const
 {
-	Vec2f ul = map( Vec2f( srcRect.x1, srcRect.y1 ) );
-	Vec2f lr = map( Vec2f( srcRect.x2, srcRect.y2 ) );
+	vec2 ul = map( vec2( srcRect.x1, srcRect.y1 ) );
+	vec2 lr = map( vec2( srcRect.x2, srcRect.y2 ) );
 	
 	return Rectf( ul.x, ul.y, lr.x, lr.y );
 }

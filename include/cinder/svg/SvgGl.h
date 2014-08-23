@@ -143,7 +143,7 @@ class SvgRendererGl : public svg::Renderer {
 
 	void	pushMatrix( const MatrixAffine2f &m ) {
 		glPushMatrix();
-		glMultMatrixf( Matrix44f( m ) );
+		glMultMatrixf( mat4( m ) );
 	}
 	void	popMatrix() {
 		glPopMatrix();

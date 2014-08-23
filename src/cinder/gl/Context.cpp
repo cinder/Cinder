@@ -100,10 +100,10 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	
 	GLint params[4];
 	glGetIntegerv( GL_VIEWPORT, params );
-	mViewportStack.push_back( std::pair<Vec2i, Vec2i>( Vec2i( params[ 0 ], params[ 1 ] ), Vec2i( params[ 2 ], params[ 3 ] ) ) );
+	mViewportStack.push_back( std::pair<ivec2, ivec2>( ivec2( params[ 0 ], params[ 1 ] ), ivec2( params[ 2 ], params[ 3 ] ) ) );
     
 	glGetIntegerv( GL_SCISSOR_BOX, params );
-	mScissorStack.push_back( std::pair<Vec2i, Vec2i>( Vec2i( params[ 0 ], params[ 1 ] ), Vec2i( params[ 2 ], params[ 3 ] ) ) );
+	mScissorStack.push_back( std::pair<ivec2, ivec2>( ivec2( params[ 0 ], params[ 1 ] ), ivec2( params[ 2 ], params[ 3 ] ) ) );
 
 	GLint queriedInt;
 	glGetIntegerv( GL_BLEND_SRC_RGB, &queriedInt );
@@ -115,9 +115,9 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	glGetIntegerv( GL_BLEND_DST_ALPHA, &queriedInt );
 	mBlendDstAlphaStack.push_back( queriedInt );
     
-    mModelMatrixStack.push_back( Matrix44f() );
-    mViewMatrixStack.push_back( Matrix44f() );
-	mProjectionMatrixStack.push_back( Matrix44f() );
+    mModelMatrixStack.push_back( mat4() );
+    mViewMatrixStack.push_back( mat4() );
+	mProjectionMatrixStack.push_back( mat4() );
 	mGlslProgStack.push_back( GlslProgRef() );
 
 	// set default shader
@@ -291,13 +291,13 @@ void Context::vaoDeleted( const Vao *vao )
 
 //////////////////////////////////////////////////////////////////
 // Viewport
-void Context::viewport( const std::pair<Vec2i, Vec2i> &viewport )
+void Context::viewport( const std::pair<ivec2, ivec2> &viewport )
 {
 	if( setStackState( mViewportStack, viewport ) )
 		glViewport( viewport.first.x, viewport.first.y, viewport.second.x, viewport.second.y );
 }
 
-void Context::pushViewport( const std::pair<Vec2i, Vec2i> &viewport )
+void Context::pushViewport( const std::pair<ivec2, ivec2> &viewport )
 {
 	if( pushStackState( mViewportStack, viewport ) )
 		glViewport( viewport.first.x, viewport.first.y, viewport.second.x, viewport.second.y );
@@ -316,14 +316,14 @@ void Context::popViewport()
 	}
 }
 
-std::pair<Vec2i, Vec2i> Context::getViewport()
+std::pair<ivec2, ivec2> Context::getViewport()
 {
 	if( mViewportStack.empty() ) {
 		GLint params[4];
 		glGetIntegerv( GL_VIEWPORT, params );
 		// push twice in anticipation of later pop
-		mViewportStack.push_back( std::pair<Vec2i, Vec2i>( Vec2i( params[0], params[1] ), Vec2i( params[2], params[3] ) ) );
-		mViewportStack.push_back( std::pair<Vec2i, Vec2i>( Vec2i( params[0], params[1] ), Vec2i( params[2], params[3] ) ) );
+		mViewportStack.push_back( std::pair<ivec2, ivec2>( ivec2( params[0], params[1] ), ivec2( params[2], params[3] ) ) );
+		mViewportStack.push_back( std::pair<ivec2, ivec2>( ivec2( params[0], params[1] ), ivec2( params[2], params[3] ) ) );
 	}
 
 	return mViewportStack.back();
@@ -331,13 +331,13 @@ std::pair<Vec2i, Vec2i> Context::getViewport()
     
 //////////////////////////////////////////////////////////////////
 // Scissor Test
-void Context::setScissor( const std::pair<Vec2i, Vec2i> &scissor )
+void Context::setScissor( const std::pair<ivec2, ivec2> &scissor )
 {
 	if( setStackState( mScissorStack, scissor ) )
 		glScissor( scissor.first.x, scissor.first.y, scissor.second.x, scissor.second.y );
 }
 
-void Context::pushScissor( const std::pair<Vec2i, Vec2i> &scissor )
+void Context::pushScissor( const std::pair<ivec2, ivec2> &scissor )
 {
 	if( pushStackState( mScissorStack, scissor ) )
 		glScissor( scissor.first.x, scissor.first.y, scissor.second.x, scissor.second.y );
@@ -357,14 +357,14 @@ void Context::popScissor()
 	}
 }
 
-std::pair<Vec2i, Vec2i> Context::getScissor()
+std::pair<ivec2, ivec2> Context::getScissor()
 {
 	if( mScissorStack.empty() ) {
 		GLint params[4];
 		glGetIntegerv( GL_SCISSOR_BOX, params ); 
 		// push twice in anticipation of later pop
-		mScissorStack.push_back( std::pair<Vec2i, Vec2i>( Vec2i( params[ 0 ], params[ 1 ] ), Vec2i( params[ 2 ], params[ 3 ] ) ) );
-		mScissorStack.push_back( std::pair<Vec2i, Vec2i>( Vec2i( params[ 0 ], params[ 1 ] ), Vec2i( params[ 2 ], params[ 3 ] ) ) );
+		mScissorStack.push_back( std::pair<ivec2, ivec2>( ivec2( params[ 0 ], params[ 1 ] ), ivec2( params[ 2 ], params[ 3 ] ) ) );
+		mScissorStack.push_back( std::pair<ivec2, ivec2>( ivec2( params[ 0 ], params[ 1 ] ), ivec2( params[ 2 ], params[ 3 ] ) ) );
 	}
 
 	return mScissorStack.back();

@@ -30,9 +30,9 @@
 
 namespace cinder { namespace ip {
 
-void blend( Surface *background, const Surface &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset = ivec2() );
+void blend( Surface *background, const Surface &foreground, const Area &srcArea, const ivec2 &dstRelativeOffset = ivec2() );
 inline void blend( Surface *background, const Surface &foreground ) { blend( background, foreground, background->getBounds(), ivec2() ); }
-void blend( Surface32f *background, const Surface32f &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset = ivec2() );
+void blend( Surface32f *background, const Surface32f &foreground, const Area &srcArea, const ivec2 &dstRelativeOffset = ivec2() );
 inline void blend( Surface32f *background, const Surface32f &foreground ) { blend( background, foreground, background->getBounds(), ivec2() ); }
 
 

@@ -44,7 +44,7 @@ PolyLine2f toPolyLine( const polygon &p )
 	return result;
 }
 
-boost::geometry::model::d2::point_xy<double> makePoint( const Vec2f &p )
+boost::geometry::model::d2::point_xy<double> makePoint( const vec2 &p )
 {
 	return boost::geometry::make<boost::geometry::model::d2::point_xy<double> >( p.x, p.y );
 }
@@ -90,7 +90,7 @@ void includePathExtremeties( const Path2d &p, polygon *output )
 
 } // anonymous namespace
 
-PolyLine2f calcConvexHull( const std::vector<Vec2f> &points )
+PolyLine2f calcConvexHull( const std::vector<vec2> &points )
 {
 	if( points.empty() )
 		return PolyLine2f();
@@ -98,7 +98,7 @@ PolyLine2f calcConvexHull( const std::vector<Vec2f> &points )
 		return calcConvexHull( points.data(), points.size() );
 }
 
-PolyLine2f calcConvexHull( const Vec2f *points, size_t numPoints )
+PolyLine2f calcConvexHull( const vec2 *points, size_t numPoints )
 {
 	polygon poly;
 	for( size_t p = 0; p < numPoints; ++p )

@@ -74,7 +74,7 @@ class ChannelT {
 	//! Returns the height of the Channel in pixels
 	int32_t		getHeight() const { return mObj->mHeight; }
 	//! Returns the size of the Channel in pixels
-	Vec2i		getSize() const { return Vec2i( mObj->mWidth, mObj->mHeight ); }
+	ivec2		getSize() const { return ivec2( mObj->mWidth, mObj->mHeight ); }
 	//! Returns the Channel aspect ratio, which is its width / height
 	float		getAspectRatio() const { return mObj->mWidth / (float)mObj->mHeight; }
 	//! Returns the bounding Area of the Channel in pixels: [0,0]-(width,height)
@@ -91,21 +91,21 @@ class ChannelT {
 	//! Returns a const pointer to the data of the Channel's first pixel. Result is a uint8_t* for Channel8u and a float* for Channel32f.
 	const T*	getData() const { return mObj->mData; }
 	//! Returns a pointer to the data of the Channel's pixel at \a offset. Result is a uint8_t* for Channel8u and a float* for Channel32f.	
-	T*			getData( const Vec2i &offset ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * mObj->mIncrement ) + offset.y * mObj->mRowBytes ); }
+	T*			getData( const ivec2 &offset ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * mObj->mIncrement ) + offset.y * mObj->mRowBytes ); }
 	//! Returns a const pointer to the data of the Channel's pixel at \a offset. Result is a uint8_t* for Channel8u and a float* for Channel32f.	
-	const T*	getData( const Vec2i &offset ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * mObj->mIncrement ) + offset.y * mObj->mRowBytes ); }
+	const T*	getData( const ivec2 &offset ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * mObj->mIncrement ) + offset.y * mObj->mRowBytes ); }
 	//! Returns a pointer to the data of the Channel's pixel at (\a x, \a y). Result is a uint8_t* for Channel8u and a float* for Channel32f.		
 	T*			getData( int32_t x, int32_t y ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + x * mObj->mIncrement ) + y * mObj->mRowBytes ); }
 	//! Returns a const pointer to the data of the Channel's pixel at (\a x, \a y). Result is a uint8_t* for Channel8u and a float* for Channel32f.		
 	const T*	getData( int32_t x, int32_t y ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + x * mObj->mIncrement ) + y * mObj->mRowBytes ); }
 
 	//! Convenience method for getting a single value at pixel \a pos. For performance-sensitive code consider \ref ChannelT::Iter "Channel::Iter" instead. Exhibits clamping behavior when outside Channel boundaries.
-	T		getValue ( Vec2i pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); return *getData( pos ); }
+	T		getValue ( ivec2 pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); return *getData( pos ); }
 	//! Convenience method for setting a single value \a v at pixel \a pos. For performance-sensitive code consider \ref ChannelT::Iter "Channel::Iter" instead. Exhibits clamping behavior when outside Channel boundaries.
-	void	setValue( Vec2i pos, T v ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); *getData( pos ) = v; }
+	void	setValue( ivec2 pos, T v ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); *getData( pos ) = v; }
 
 	//! Copies the Area \a srcArea of the Channel \a srcChannel to \a this Channel. The destination Area is \a srcArea offset by \a relativeOffset.
-	void		copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const Vec2i &relativeOffset = ivec2() );
+	void		copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &relativeOffset = ivec2() );
 
 	//! Returns an averaged value for the Area defined by \a area
 	T			areaAverage( const Area &area ) const;
@@ -153,7 +153,7 @@ class ChannelT {
 		//! Returns the y coordinate of the pixel the Iter currently points to		
 		const int32_t	y() const { return mY; }
 		//! Returns the coordinate of the pixel the Iter currently points to		
-		Vec2i			getPos() const { return Vec2i( mX, mY ); }
+		ivec2			getPos() const { return ivec2( mX, mY ); }
 
 		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {
@@ -221,7 +221,7 @@ class ChannelT {
 		//! Returns the y coordinate of the pixel the Iter currently points to
 		const int32_t	y() const { return mY; }
 		//! Returns the coordinate of the pixel the Iter currently points to		
-		Vec2i			getPos() const { return Vec2i( mX, mY ); }
+		ivec2			getPos() const { return ivec2( mX, mY ); }
 
 		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {

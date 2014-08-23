@@ -171,19 +171,19 @@ void TriMesh::clear()
 	mIndices.clear();
 }
 
-void TriMesh::appendVertices( const Vec2f *verts, size_t num )
+void TriMesh::appendVertices( const vec2 *verts, size_t num )
 {
 	assert( mPositionsDims == 2 );
 	mPositions.insert( mPositions.end(), (const float*)verts, (const float*)verts + num * 2 );
 }
 
-void TriMesh::appendVertices( const Vec3f *verts, size_t num )
+void TriMesh::appendVertices( const vec3 *verts, size_t num )
 {
 	assert( mPositionsDims == 3 );
 	mPositions.insert( mPositions.end(), (const float*)verts, (const float*)verts + num * 3 );
 }
 
-void TriMesh::appendVertices( const Vec4f *verts, size_t num )
+void TriMesh::appendVertices( const vec4 *verts, size_t num )
 {
 	assert( mPositionsDims == 4 );
 	mPositions.insert( mPositions.end(), (const float*)verts, (const float*)verts + num * 4 );
@@ -194,19 +194,19 @@ void TriMesh::appendIndices( const uint32_t *indices, size_t num )
 	mIndices.insert( mIndices.end(), indices, indices + num );
 }
 
-void TriMesh::appendNormals( const Vec3f *normals, size_t num )
+void TriMesh::appendNormals( const vec3 *normals, size_t num )
 {
 	assert( mNormalsDims == 3 );
 	mNormals.insert( mNormals.end(), normals, normals + num * 3 );
 }
 
-void TriMesh::appendTangents( const Vec3f *tangents, size_t num )
+void TriMesh::appendTangents( const vec3 *tangents, size_t num )
 {
 	assert( mTangentsDims == 3 );
 	mTangents.insert( mTangents.end(), tangents, tangents + num );
 }
 
-void TriMesh::appendBitangents( const Vec3f *bitangents, size_t num )
+void TriMesh::appendBitangents( const vec3 *bitangents, size_t num )
 {
 	assert( mBitangentsDims == 3 );
 	mBitangents.insert( mBitangents.end(), bitangents, bitangents + num );
@@ -225,79 +225,79 @@ void TriMesh::appendColors( const ColorA *rgbas, size_t num )
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// appendTexCoords*( Vec2f )
+// appendTexCoords*( vec2 )
 
-void TriMesh::appendTexCoords0( const Vec2f *texCoords, size_t num )
+void TriMesh::appendTexCoords0( const vec2 *texCoords, size_t num )
 {
 	assert( mTexCoords0Dims == 2 );
 	mTexCoords0.insert( mTexCoords0.end(), (const float*)texCoords, (const float*)texCoords + num * 2 );
 }
 
-void TriMesh::appendTexCoords1( const Vec2f *texCoords, size_t num )
+void TriMesh::appendTexCoords1( const vec2 *texCoords, size_t num )
 {
 	assert( mTexCoords1Dims == 2 );
 	mTexCoords1.insert( mTexCoords1.end(), (const float*)texCoords, (const float*)texCoords + num * 2 );
 }
 
-void TriMesh::appendTexCoords2( const Vec2f *texCoords, size_t num )
+void TriMesh::appendTexCoords2( const vec2 *texCoords, size_t num )
 {
 	assert( mTexCoords2Dims == 2 );
 	mTexCoords2.insert( mTexCoords2.end(), (const float*)texCoords, (const float*)texCoords + num * 2 );
 }
 
-void TriMesh::appendTexCoords3( const Vec2f *texCoords, size_t num )
+void TriMesh::appendTexCoords3( const vec2 *texCoords, size_t num )
 {
 	assert( mTexCoords3Dims == 2 );
 	mTexCoords3.insert( mTexCoords3.end(), (const float*)texCoords, (const float*)texCoords + num * 2 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// appendTexCoords*( Vec3f )
-void TriMesh::appendTexCoords0( const Vec3f *texCoords, size_t num )
+// appendTexCoords*( vec3 )
+void TriMesh::appendTexCoords0( const vec3 *texCoords, size_t num )
 {
 	assert( mTexCoords0Dims == 3 );
 	mTexCoords0.insert( mTexCoords0.end(), (const float*)texCoords, (const float*)texCoords + num * 3 );
 }
 
-void TriMesh::appendTexCoords1( const Vec3f *texCoords, size_t num )
+void TriMesh::appendTexCoords1( const vec3 *texCoords, size_t num )
 {
 	assert( mTexCoords1Dims == 3 );
 	mTexCoords1.insert( mTexCoords1.end(), (const float*)texCoords, (const float*)texCoords + num * 3 );
 }
 
-void TriMesh::appendTexCoords2( const Vec3f *texCoords, size_t num )
+void TriMesh::appendTexCoords2( const vec3 *texCoords, size_t num )
 {
 	assert( mTexCoords2Dims == 3 );
 	mTexCoords2.insert( mTexCoords2.end(), (const float*)texCoords, (const float*)texCoords + num * 3 );
 }
 
-void TriMesh::appendTexCoords3( const Vec3f *texCoords, size_t num )
+void TriMesh::appendTexCoords3( const vec3 *texCoords, size_t num )
 {
 	assert( mTexCoords3Dims == 3 );
 	mTexCoords3.insert( mTexCoords3.end(), (const float*)texCoords, (const float*)texCoords + num * 3 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// appendTexCoords*( Vec4f )
-void TriMesh::appendTexCoords0( const Vec4f *texCoords, size_t num )
+// appendTexCoords*( vec4 )
+void TriMesh::appendTexCoords0( const vec4 *texCoords, size_t num )
 {
 	assert( mTexCoords0Dims == 4 );
 	mTexCoords0.insert( mTexCoords0.end(), (const float*)texCoords, (const float*)texCoords + num * 4 );
 }
 
-void TriMesh::appendTexCoords1( const Vec4f *texCoords, size_t num )
+void TriMesh::appendTexCoords1( const vec4 *texCoords, size_t num )
 {
 	assert( mTexCoords1Dims == 4 );
 	mTexCoords1.insert( mTexCoords1.end(), (const float*)texCoords, (const float*)texCoords + num * 4 );
 }
 
-void TriMesh::appendTexCoords2( const Vec4f *texCoords, size_t num )
+void TriMesh::appendTexCoords2( const vec4 *texCoords, size_t num )
 {
 	assert( mTexCoords2Dims == 4 );
 	mTexCoords2.insert( mTexCoords2.end(), (const float*)texCoords, (const float*)texCoords + num * 4 );
 }
 
-void TriMesh::appendTexCoords3( const Vec4f *texCoords, size_t num )
+void TriMesh::appendTexCoords3( const vec4 *texCoords, size_t num )
 {
 	assert( mTexCoords3Dims == 4 );
 	mTexCoords3.insert( mTexCoords3.end(), (const float*)texCoords, (const float*)texCoords + num * 4 );
@@ -305,23 +305,23 @@ void TriMesh::appendTexCoords3( const Vec4f *texCoords, size_t num )
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-void TriMesh::getTriangleVertices( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const
+void TriMesh::getTriangleVertices( size_t idx, vec3 *a, vec3 *b, vec3 *c ) const
 {
 	assert( mPositionsDims == 3 );
-	*a = Vec3f( mPositions[mIndices[idx * 3] * 3 + 0], mPositions[mIndices[idx * 3] * 3 + 1], mPositions[ mIndices[idx * 3] * 3 + 2 ] );
-	*b = Vec3f( mPositions[mIndices[idx * 3 + 1] * 3 + 0], mPositions[mIndices[idx * 3 + 1] * 3 + 1], mPositions[ mIndices[idx * 3 + 1] * 3 + 2 ] );
-	*c = Vec3f( mPositions[mIndices[idx * 3 + 2] * 3 + 0], mPositions[mIndices[idx * 3 + 2] * 3 + 1], mPositions[ mIndices[idx * 3 + 2] * 3 + 2 ] );
+	*a = vec3( mPositions[mIndices[idx * 3] * 3 + 0], mPositions[mIndices[idx * 3] * 3 + 1], mPositions[ mIndices[idx * 3] * 3 + 2 ] );
+	*b = vec3( mPositions[mIndices[idx * 3 + 1] * 3 + 0], mPositions[mIndices[idx * 3 + 1] * 3 + 1], mPositions[ mIndices[idx * 3 + 1] * 3 + 2 ] );
+	*c = vec3( mPositions[mIndices[idx * 3 + 2] * 3 + 0], mPositions[mIndices[idx * 3 + 2] * 3 + 1], mPositions[ mIndices[idx * 3 + 2] * 3 + 2 ] );
 }
 
-void TriMesh::getTriangleVertices( size_t idx, Vec2f *a, Vec2f *b, Vec2f *c ) const
+void TriMesh::getTriangleVertices( size_t idx, vec2 *a, vec2 *b, vec2 *c ) const
 {
 	assert( mPositionsDims == 2 );
-	*a = Vec2f( mPositions[mIndices[idx * 3] * 2 + 0], mPositions[mIndices[idx * 3] * 2 + 1] );
-	*b = Vec2f( mPositions[mIndices[idx * 3 + 1] * 2 + 0], mPositions[mIndices[idx * 3 + 1] * 2 + 1] );
-	*c = Vec2f( mPositions[mIndices[idx * 3 + 2] * 2 + 0], mPositions[mIndices[idx * 3 + 2] * 2 + 1] );
+	*a = vec2( mPositions[mIndices[idx * 3] * 2 + 0], mPositions[mIndices[idx * 3] * 2 + 1] );
+	*b = vec2( mPositions[mIndices[idx * 3 + 1] * 2 + 0], mPositions[mIndices[idx * 3 + 1] * 2 + 1] );
+	*c = vec2( mPositions[mIndices[idx * 3 + 2] * 2 + 0], mPositions[mIndices[idx * 3 + 2] * 2 + 1] );
 }
 
-void TriMesh::getTriangleNormals( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const
+void TriMesh::getTriangleNormals( size_t idx, vec3 *a, vec3 *b, vec3 *c ) const
 {
 	assert( mNormalsDims == 3 );
 	*a = mNormals[mIndices[idx * 3 + 0]];
@@ -329,7 +329,7 @@ void TriMesh::getTriangleNormals( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) con
 	*c = mNormals[mIndices[idx * 3 + 2]];
 }
 
-void TriMesh::getTriangleTangents( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const
+void TriMesh::getTriangleTangents( size_t idx, vec3 *a, vec3 *b, vec3 *c ) const
 {
 	assert( mTangentsDims == 3 );
 	*a = mTangents[mIndices[idx * 3 + 0]];
@@ -337,7 +337,7 @@ void TriMesh::getTriangleTangents( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) co
 	*c = mTangents[mIndices[idx * 3 + 2]];
 }
 
-void TriMesh::getTriangleBitangents( size_t idx, Vec3f *a, Vec3f *b, Vec3f *c ) const
+void TriMesh::getTriangleBitangents( size_t idx, vec3 *a, vec3 *b, vec3 *c ) const
 {
 	assert( mBitangentsDims == 3 );
 	*a = mBitangents[mIndices[idx * 3 + 0]];
@@ -351,9 +351,9 @@ AxisAlignedBox3f TriMesh::calcBoundingBox() const
 	if( mPositions.empty() )
 		return AxisAlignedBox3f( vec3(), vec3() );
 
-	Vec3f min(*(const Vec3f*)(&mPositions[0])), max(*(const Vec3f*)(&mPositions[0]));
+	vec3 min(*(const vec3*)(&mPositions[0])), max(*(const vec3*)(&mPositions[0]));
 	for( size_t i = 1; i < mPositions.size() / 3; ++i ) {
-		const Vec3f &v = *(const Vec3f*)(&mPositions[i*3]);
+		const vec3 &v = *(const vec3*)(&mPositions[i*3]);
 		if( v.x < min.x )
 			min.x = v.x;
 		else if( v.x > max.x )
@@ -371,18 +371,18 @@ AxisAlignedBox3f TriMesh::calcBoundingBox() const
 	return AxisAlignedBox3f( min, max );
 }
 
-AxisAlignedBox3f TriMesh::calcBoundingBox( const Matrix44f &transform ) const
+AxisAlignedBox3f TriMesh::calcBoundingBox( const mat4 &transform ) const
 {
 	assert( mPositionsDims == 3 );
 	if( mPositions.empty() )
 		return AxisAlignedBox3f( vec3(), vec3() );
 
 	const vec3 &temp = *(const vec3*)(&mPositions[0]);
-	Vec3f min = vec3( transform * vec4( temp, 1 ) );
-	Vec3f max = min;
+	vec3 min = vec3( transform * vec4( temp, 1 ) );
+	vec3 max = min;
 	for( size_t i = 0; i < mPositions.size() / 3; ++i ) {
 		const vec3 &temp = *(const vec3*)(&mPositions[i*3]);
-		Vec3f v = vec3( transform * vec4( temp, 1 ) );
+		vec3 v = vec3( transform * vec4( temp, 1 ) );
 
 		if( v.x < min.x )
 			min.x = v.x;
@@ -425,7 +425,7 @@ void TriMesh::read( DataSourceRef dataSource )
 	}
 
 	for( size_t idx = 0; idx < numNormals; ++idx ) {
-		Vec3f v;
+		vec3 v;
 		in->readLittle( &v.x ); in->readLittle( &v.y ); in->readLittle( &v.z );
 		mNormals.push_back( v );
 	}
@@ -469,7 +469,7 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 		out->writeLittle( *it );
 	}
 
-	for( vector<Vec3f>::const_iterator it = mNormals.begin(); it != mNormals.end(); ++it ) {
+	for( vector<vec3>::const_iterator it = mNormals.begin(); it != mNormals.end(); ++it ) {
 		out->writeLittle( it->x ); out->writeLittle( it->y ); out->writeLittle( it->z );
 	}
 
@@ -499,9 +499,9 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 		for( size_t i = 0; i < numPositions; ++i ) {
 			if( uniquePositions[i] == 0 ) {
 				uniquePositions[i] = i + 1;
-				const Vec3f &v0 = *(const Vec3f*)(&mPositions[i * 3]);
+				const vec3 &v0 = *(const vec3*)(&mPositions[i * 3]);
 				for( size_t j = i + 1; j < numPositions; ++j ) {
-					const Vec3f &v1 = *(const Vec3f*)(&mPositions[j * 3]);
+					const vec3 &v1 = *(const vec3*)(&mPositions[j * 3]);
 					if( length2( v1 - v0 ) < FLT_EPSILON )
 						uniquePositions[j] = uniquePositions[i];
 				}
@@ -524,13 +524,13 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 			index2 = mIndices[i*3+2];
 		}
 
-		const Vec3f &v0 = *(const Vec3f*)(&mPositions[index0 * 3]);
-		const Vec3f &v1 = *(const Vec3f*)(&mPositions[index1 * 3]);
-		const Vec3f &v2 = *(const Vec3f*)(&mPositions[index2 * 3]);
+		const vec3 &v0 = *(const vec3*)(&mPositions[index0 * 3]);
+		const vec3 &v1 = *(const vec3*)(&mPositions[index1 * 3]);
+		const vec3 &v2 = *(const vec3*)(&mPositions[index2 * 3]);
 
-		Vec3f e0 = v1 - v0;
-		Vec3f e1 = v2 - v0;
-		Vec3f e2 = v2 - v1;
+		vec3 e0 = v1 - v0;
+		vec3 e1 = v2 - v0;
+		vec3 e2 = v2 - v1;
 
 		if( length2( e0 ) < FLT_EPSILON )
 			continue;
@@ -539,7 +539,7 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 		if( length2( e2 ) < FLT_EPSILON )
 			continue;
 
-		Vec3f normal = cross( e0, e1 );
+		vec3 normal = cross( e0, e1 );
 		if( ! weighted )
 			normal = normalize( normal );
 
@@ -584,13 +584,13 @@ bool TriMesh::recalculateTangents()
 		uint32_t index1 = mIndices[i * 3 + 1];
 		uint32_t index2 = mIndices[i * 3 + 2];
 
-		const Vec3f &v0 = *(const Vec3f*)(&mPositions[index0*3]);
-		const Vec3f &v1 = *(const Vec3f*)(&mPositions[index1*3]);
-		const Vec3f &v2 = *(const Vec3f*)(&mPositions[index2*3]);
+		const vec3 &v0 = *(const vec3*)(&mPositions[index0*3]);
+		const vec3 &v1 = *(const vec3*)(&mPositions[index1*3]);
+		const vec3 &v2 = *(const vec3*)(&mPositions[index2*3]);
 
-		const Vec2f &w0 = *(const Vec2f*)(&mTexCoords0[index0*2]);
-		const Vec2f &w1 = *(const Vec2f*)(&mTexCoords0[index1*2]);
-		const Vec2f &w2 = *(const Vec2f*)(&mTexCoords0[index2*2]);
+		const vec2 &w0 = *(const vec2*)(&mTexCoords0[index0*2]);
+		const vec2 &w1 = *(const vec2*)(&mTexCoords0[index1*2]);
+		const vec2 &w2 = *(const vec2*)(&mTexCoords0[index2*2]);
 
 		float x1 = v1.x - v0.x;
 		float x2 = v2.x - v0.x;
@@ -605,7 +605,7 @@ bool TriMesh::recalculateTangents()
 		float t2 = w2.y - w0.y;
 
 		float r = 1.0f / (s1 * t2 - s2 * t1);
-		Vec3f tangent((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+		vec3 tangent((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
 
 		mTangents[ index0 ] += tangent;
 		mTangents[ index1 ] += tangent;
@@ -614,8 +614,8 @@ bool TriMesh::recalculateTangents()
 
 	n = getNumVertices();
 	for( size_t i = 0; i < n; ++i ) {
-		Vec3f normal = mNormals[i];
-		Vec3f tangent = mTangents[i];
+		vec3 normal = mNormals[i];
+		vec3 tangent = mTangents[i];
 		mTangents[i] = tangent - normal * normalize( dot( normal, tangent ) );
 	}
 
@@ -679,160 +679,160 @@ void TriMesh::subdivide( int division, bool normalize )
 					indices[n++] = getNumVertices();
 
 					// lambda closures for bilinear interpolation. TODO: make private templated function to reduce code reduncancy
-					auto lerpBilinear2 = [&] (const Vec2f &a, const Vec2f &b, const Vec2f &c) {
+					auto lerpBilinear2 = [&] (const vec2 &a, const vec2 &b, const vec2 &c) {
 						const vec2 d = mix( a, c, j * rcp );
 						const vec2 e = mix( b, c, j * rcp );
 						return mix( d, e, i * div );
 					};
 					
-					auto lerpBilinear3 = [&] (const Vec3f &a, const Vec3f &b, const Vec3f &c) {
-						const Vec3f d = mix( a, c, j * rcp );
-						const Vec3f e = mix( b, c, j * rcp );
+					auto lerpBilinear3 = [&] (const vec3 &a, const vec3 &b, const vec3 &c) {
+						const vec3 d = mix( a, c, j * rcp );
+						const vec3 e = mix( b, c, j * rcp );
 						return mix( d, e, i * div );
 					};
 					
-					auto lerpBilinear4 = [&] (const Vec4f &a, const Vec4f &b, const Vec4f &c) {
-						const Vec4f d = mix( a, c, j * rcp );
-						const Vec4f e = mix( b, c, j * rcp );
+					auto lerpBilinear4 = [&] (const vec4 &a, const vec4 &b, const vec4 &c) {
+						const vec4 d = mix( a, c, j * rcp );
+						const vec4 e = mix( b, c, j * rcp );
 						return mix( d, e, i * div );
 					};
 
 					// generate interpolated vertex and its attributes (warning: massive boilerplate code incoming!)
 					if( mPositionsDims == 2 ) {
-						const Vec2f &v0 = *(const Vec2f*)(&mPositions[index0*2]);
-						const Vec2f &v1 = *(const Vec2f*)(&mPositions[index1*2]);
-						const Vec2f &v2 = *(const Vec2f*)(&mPositions[index2*2]);
+						const vec2 &v0 = *(const vec2*)(&mPositions[index0*2]);
+						const vec2 &v1 = *(const vec2*)(&mPositions[index1*2]);
+						const vec2 &v2 = *(const vec2*)(&mPositions[index2*2]);
 						appendVertex( lerpBilinear2( v0, v1, v2 ) );
 					}
 					else if( mPositionsDims == 3 ) {
-						const Vec3f &v0 = *(const Vec3f*)(&mPositions[index0*3]);
-						const Vec3f &v1 = *(const Vec3f*)(&mPositions[index1*3]);
-						const Vec3f &v2 = *(const Vec3f*)(&mPositions[index2*3]);
+						const vec3 &v0 = *(const vec3*)(&mPositions[index0*3]);
+						const vec3 &v1 = *(const vec3*)(&mPositions[index1*3]);
+						const vec3 &v2 = *(const vec3*)(&mPositions[index2*3]);
 						appendVertex( lerpBilinear3( v0, v1, v2 ) );
 					}
 					else if( mPositionsDims == 4 ) {
-						const Vec4f &v0 = *(const Vec4f*)(&mPositions[index0*4]);
-						const Vec4f &v1 = *(const Vec4f*)(&mPositions[index1*4]);
-						const Vec4f &v2 = *(const Vec4f*)(&mPositions[index2*4]);
+						const vec4 &v0 = *(const vec4*)(&mPositions[index0*4]);
+						const vec4 &v1 = *(const vec4*)(&mPositions[index1*4]);
+						const vec4 &v2 = *(const vec4*)(&mPositions[index2*4]);
 						appendVertex( lerpBilinear4( v0, v1, v2 ) );
 					}
 
 					if( hasNormals() ) {
-						const Vec3f &v0 = mNormals[index0];
-						const Vec3f &v1 = mNormals[index1];
-						const Vec3f &v2 = mNormals[index2];
+						const vec3 &v0 = mNormals[index0];
+						const vec3 &v1 = mNormals[index1];
+						const vec3 &v2 = mNormals[index2];
 						appendNormal( lerpBilinear3( v0, v1, v2 ) );
 					}
 
 					if( hasTangents() ) {
-						const Vec3f &v0 = mTangents[index0];
-						const Vec3f &v1 = mTangents[index1];
-						const Vec3f &v2 = mTangents[index2];
+						const vec3 &v0 = mTangents[index0];
+						const vec3 &v1 = mTangents[index1];
+						const vec3 &v2 = mTangents[index2];
 						appendTangent( lerpBilinear3( v0, v1, v2 ) );
 					}
 
 					if( hasBitangents() ) {
-						const Vec3f &v0 = mBitangents[index0];
-						const Vec3f &v1 = mBitangents[index1];
-						const Vec3f &v2 = mBitangents[index2];
+						const vec3 &v0 = mBitangents[index0];
+						const vec3 &v1 = mBitangents[index1];
+						const vec3 &v2 = mBitangents[index2];
 						appendTangent( lerpBilinear3( v0, v1, v2 ) );
 					}
 
 					if( hasColorsRgb() ) {
-						const Vec3f &v0 = *(const Vec3f*)(&mColors[index0*3]);
-						const Vec3f &v1 = *(const Vec3f*)(&mColors[index1*3]);
-						const Vec3f &v2 = *(const Vec3f*)(&mColors[index2*3]);
-						const Vec3f c = lerpBilinear3( v0, v1, v2 );
+						const vec3 &v0 = *(const vec3*)(&mColors[index0*3]);
+						const vec3 &v1 = *(const vec3*)(&mColors[index1*3]);
+						const vec3 &v2 = *(const vec3*)(&mColors[index2*3]);
+						const vec3 c = lerpBilinear3( v0, v1, v2 );
 						appendColorRgb( Color( c.x, c.y, c.z ) );
 					}
 					else if( hasColorsRgba() ) {
-						const Vec4f &v0 = *(const Vec4f*)(&mColors[index0*4]);
-						const Vec4f &v1 = *(const Vec4f*)(&mColors[index1*4]);
-						const Vec4f &v2 = *(const Vec4f*)(&mColors[index2*4]);
-						const Vec4f c = lerpBilinear4( v0, v1, v2 );
+						const vec4 &v0 = *(const vec4*)(&mColors[index0*4]);
+						const vec4 &v1 = *(const vec4*)(&mColors[index1*4]);
+						const vec4 &v2 = *(const vec4*)(&mColors[index2*4]);
+						const vec4 c = lerpBilinear4( v0, v1, v2 );
 						appendColorRgba( ColorA( c.x, c.y, c.z, c.w ) );
 					}
 
 					if( hasTexCoords0() ) {
 						if( mTexCoords0Dims == 2 ) {
-							const Vec2f &v0 = *(const Vec2f*)(&mTexCoords0[index0*2]);
-							const Vec2f &v1 = *(const Vec2f*)(&mTexCoords0[index1*2]);
-							const Vec2f &v2 = *(const Vec2f*)(&mTexCoords0[index2*2]);
+							const vec2 &v0 = *(const vec2*)(&mTexCoords0[index0*2]);
+							const vec2 &v1 = *(const vec2*)(&mTexCoords0[index1*2]);
+							const vec2 &v2 = *(const vec2*)(&mTexCoords0[index2*2]);
 							appendTexCoord0( lerpBilinear2( v0, v1, v2 ) );
 						}
 						else if( mTexCoords0Dims == 3 ) {
-							const Vec3f &v0 = *(const Vec3f*)(&mTexCoords0[index0*3]);
-							const Vec3f &v1 = *(const Vec3f*)(&mTexCoords0[index1*3]);
-							const Vec3f &v2 = *(const Vec3f*)(&mTexCoords0[index2*3]);
+							const vec3 &v0 = *(const vec3*)(&mTexCoords0[index0*3]);
+							const vec3 &v1 = *(const vec3*)(&mTexCoords0[index1*3]);
+							const vec3 &v2 = *(const vec3*)(&mTexCoords0[index2*3]);
 							appendTexCoord0( lerpBilinear3( v0, v1, v2 ) );
 						}
 						else if( mTexCoords0Dims == 4 ) {
-							const Vec4f &v0 = *(const Vec4f*)(&mTexCoords0[index0*4]);
-							const Vec4f &v1 = *(const Vec4f*)(&mTexCoords0[index1*4]);
-							const Vec4f &v2 = *(const Vec4f*)(&mTexCoords0[index2*4]);
+							const vec4 &v0 = *(const vec4*)(&mTexCoords0[index0*4]);
+							const vec4 &v1 = *(const vec4*)(&mTexCoords0[index1*4]);
+							const vec4 &v2 = *(const vec4*)(&mTexCoords0[index2*4]);
 							appendTexCoord0( lerpBilinear4( v0, v1, v2 ) );
 						}
 					}
 
 					if( hasTexCoords1() ) {
 						if( mTexCoords1Dims == 2 ) {
-							const Vec2f &v0 = *(const Vec2f*)(&mTexCoords1[index0*2]);
-							const Vec2f &v1 = *(const Vec2f*)(&mTexCoords1[index1*2]);
-							const Vec2f &v2 = *(const Vec2f*)(&mTexCoords1[index2*2]);
+							const vec2 &v0 = *(const vec2*)(&mTexCoords1[index0*2]);
+							const vec2 &v1 = *(const vec2*)(&mTexCoords1[index1*2]);
+							const vec2 &v2 = *(const vec2*)(&mTexCoords1[index2*2]);
 							appendTexCoord1( lerpBilinear2( v0, v1, v2 ) );
 						}
 						else if( mTexCoords1Dims == 3 ) {
-							const Vec3f &v0 = *(const Vec3f*)(&mTexCoords1[index0*3]);
-							const Vec3f &v1 = *(const Vec3f*)(&mTexCoords1[index1*3]);
-							const Vec3f &v2 = *(const Vec3f*)(&mTexCoords1[index2*3]);
+							const vec3 &v0 = *(const vec3*)(&mTexCoords1[index0*3]);
+							const vec3 &v1 = *(const vec3*)(&mTexCoords1[index1*3]);
+							const vec3 &v2 = *(const vec3*)(&mTexCoords1[index2*3]);
 							appendTexCoord1( lerpBilinear3( v0, v1, v2 ) );
 						}
 						else if( mTexCoords1Dims == 4 ) {
-							const Vec4f &v0 = *(const Vec4f*)(&mTexCoords1[index0*4]);
-							const Vec4f &v1 = *(const Vec4f*)(&mTexCoords1[index1*4]);
-							const Vec4f &v2 = *(const Vec4f*)(&mTexCoords1[index2*4]);
+							const vec4 &v0 = *(const vec4*)(&mTexCoords1[index0*4]);
+							const vec4 &v1 = *(const vec4*)(&mTexCoords1[index1*4]);
+							const vec4 &v2 = *(const vec4*)(&mTexCoords1[index2*4]);
 							appendTexCoord1( lerpBilinear4( v0, v1, v2 ) );
 						}
 					}
 
 					if( hasTexCoords2() ) {
 						if( mTexCoords2Dims == 2 ) {
-							const Vec2f &v0 = *(const Vec2f*)(&mTexCoords2[index0*2]);
-							const Vec2f &v1 = *(const Vec2f*)(&mTexCoords2[index1*2]);
-							const Vec2f &v2 = *(const Vec2f*)(&mTexCoords2[index2*2]);
+							const vec2 &v0 = *(const vec2*)(&mTexCoords2[index0*2]);
+							const vec2 &v1 = *(const vec2*)(&mTexCoords2[index1*2]);
+							const vec2 &v2 = *(const vec2*)(&mTexCoords2[index2*2]);
 							appendTexCoord2( lerpBilinear2( v0, v1, v2 ) );
 						}
 						else if( mTexCoords2Dims == 3 ) {
-							const Vec3f &v0 = *(const Vec3f*)(&mTexCoords2[index0*3]);
-							const Vec3f &v1 = *(const Vec3f*)(&mTexCoords2[index1*3]);
-							const Vec3f &v2 = *(const Vec3f*)(&mTexCoords2[index2*3]);
+							const vec3 &v0 = *(const vec3*)(&mTexCoords2[index0*3]);
+							const vec3 &v1 = *(const vec3*)(&mTexCoords2[index1*3]);
+							const vec3 &v2 = *(const vec3*)(&mTexCoords2[index2*3]);
 							appendTexCoord2( lerpBilinear3( v0, v1, v2 ) );
 						}
 						else if( mTexCoords2Dims == 4 ) {
-							const Vec4f &v0 = *(const Vec4f*)(&mTexCoords2[index0*4]);
-							const Vec4f &v1 = *(const Vec4f*)(&mTexCoords2[index1*4]);
-							const Vec4f &v2 = *(const Vec4f*)(&mTexCoords2[index2*4]);
+							const vec4 &v0 = *(const vec4*)(&mTexCoords2[index0*4]);
+							const vec4 &v1 = *(const vec4*)(&mTexCoords2[index1*4]);
+							const vec4 &v2 = *(const vec4*)(&mTexCoords2[index2*4]);
 							appendTexCoord2( lerpBilinear4( v0, v1, v2 ) );
 						}
 					}
 
 					if( hasTexCoords3() ) {
 						if( mTexCoords3Dims == 2 ) {
-							const Vec2f &v0 = *(const Vec2f*)(&mTexCoords3[index0*2]);
-							const Vec2f &v1 = *(const Vec2f*)(&mTexCoords3[index1*2]);
-							const Vec2f &v2 = *(const Vec2f*)(&mTexCoords3[index2*2]);
+							const vec2 &v0 = *(const vec2*)(&mTexCoords3[index0*2]);
+							const vec2 &v1 = *(const vec2*)(&mTexCoords3[index1*2]);
+							const vec2 &v2 = *(const vec2*)(&mTexCoords3[index2*2]);
 							appendTexCoord3( lerpBilinear2( v0, v1, v2 ) );
 						}
 						else if( mTexCoords3Dims == 3 ) {
-							const Vec3f &v0 = *(const Vec3f*)(&mTexCoords3[index0*3]);
-							const Vec3f &v1 = *(const Vec3f*)(&mTexCoords3[index1*3]);
-							const Vec3f &v2 = *(const Vec3f*)(&mTexCoords3[index2*3]);
+							const vec3 &v0 = *(const vec3*)(&mTexCoords3[index0*3]);
+							const vec3 &v1 = *(const vec3*)(&mTexCoords3[index1*3]);
+							const vec3 &v2 = *(const vec3*)(&mTexCoords3[index2*3]);
 							appendTexCoord3( lerpBilinear3( v0, v1, v2 ) );
 						}
 						else if( mTexCoords3Dims == 4 ) {
-							const Vec4f &v0 = *(const Vec4f*)(&mTexCoords3[index0*4]);
-							const Vec4f &v1 = *(const Vec4f*)(&mTexCoords3[index1*4]);
-							const Vec4f &v2 = *(const Vec4f*)(&mTexCoords3[index2*4]);
+							const vec4 &v0 = *(const vec4*)(&mTexCoords3[index0*4]);
+							const vec4 &v1 = *(const vec4*)(&mTexCoords3[index1*4]);
+							const vec4 &v2 = *(const vec4*)(&mTexCoords3[index2*4]);
 							appendTexCoord3( lerpBilinear4( v0, v1, v2 ) );
 						}
 					}
@@ -867,19 +867,19 @@ void TriMesh::subdivide( int division, bool normalize )
 		size_t numVertices = getNumVertices();
 		if( mPositionsDims == 2 ) {
 			for( size_t i = 0; i < numVertices; ++i ) {
-				Vec2f &v = *(Vec2f*)(&mPositions[i*2]);
+				vec2 &v = *(vec2*)(&mPositions[i*2]);
 				v = glm::normalize( v );
 			}
 		}
 		else if( mPositionsDims == 3 ) {
 			for( size_t i = 0; i < numVertices; ++i ) {
-				Vec3f &v = *(Vec3f*)(&mPositions[i*3]);
+				vec3 &v = *(vec3*)(&mPositions[i*3]);
 				v = glm::normalize( v );
 			}
 		}
 		else if( mPositionsDims == 4 ) {
 			for( size_t i = 0; i < numVertices; ++i ) {
-				Vec4f &v = *(Vec4f*)(&mPositions[i*4]);
+				vec4 &v = *(vec4*)(&mPositions[i*4]);
 				v = glm::normalize( v );
 			}
 		}
@@ -887,8 +887,8 @@ void TriMesh::subdivide( int division, bool normalize )
 }
 
 /*TriMesh TriMesh::create( vector<uint32_t> &indices, const vector<ColorAf> &colors,
-						const vector<Vec3f> &normals, const vector<Vec3f> &positions,
-						const vector<Vec2f> &texCoords )
+						const vector<vec3> &normals, const vector<vec3> &positions,
+						const vector<vec2> &texCoords )
 {
 	TriMesh mesh;
 	if ( indices.size() > 0 ) {
@@ -898,7 +898,7 @@ void TriMesh::subdivide( int division, bool normalize )
 		mesh.appendColorsRgba( &colors[ 0 ], colors.size() );
 	}
 	if ( normals.size() > 0 ) {
-		for ( vector<Vec3f>::const_iterator iter = normals.begin(); iter != normals.end(); ++iter ) {
+		for ( vector<vec3>::const_iterator iter = normals.begin(); iter != normals.end(); ++iter ) {
 			mesh.appendNormal( *iter );
 		}
 	}
@@ -906,7 +906,7 @@ void TriMesh::subdivide( int division, bool normalize )
 		mesh.appendVertices( &positions[ 0 ], positions.size() );
 	}
 	if ( texCoords.size() > 0 ) {
-		for ( vector<Vec2f>::const_iterator iter = texCoords.begin(); iter != texCoords.end(); ++iter ) {
+		for ( vector<vec2>::const_iterator iter = texCoords.begin(); iter != texCoords.end(); ++iter ) {
 			mesh.appendTexCoord( *iter );
 		}
 	}
@@ -995,50 +995,50 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 		return false;
 
 	if( true ) {
-		const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mPositions[indexA*mPositionsDims]);
-		const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mPositions[indexB*mPositionsDims]);
+		const vec3 &a = *reinterpret_cast<const vec3*>(&mPositions[indexA*mPositionsDims]);
+		const vec3 &b = *reinterpret_cast<const vec3*>(&mPositions[indexB*mPositionsDims]);
 		if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 	}
 
 	if( isEnabled( geom::Attrib::COLOR ) ) {
 		if( mColorsDims == 3 ) {
-			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mColors[indexA*mColorsDims]);
-			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mColors[indexB*mColorsDims]);
+			const vec3 &a = *reinterpret_cast<const vec3*>(&mColors[indexA*mColorsDims]);
+			const vec3 &b = *reinterpret_cast<const vec3*>(&mColors[indexB*mColorsDims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mColorsDims == 4 ) {
-			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mColors[indexA*mColorsDims]);
-			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mColors[indexB*mColorsDims]);
+			const vec4 &a = *reinterpret_cast<const vec4*>(&mColors[indexA*mColorsDims]);
+			const vec4 &b = *reinterpret_cast<const vec4*>(&mColors[indexB*mColorsDims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 	}
 
 	if( isEnabled( geom::Attrib::NORMAL ) ) {
-		const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mNormals[indexA*mNormalsDims]);
-		const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mNormals[indexB*mNormalsDims]);
+		const vec3 &a = *reinterpret_cast<const vec3*>(&mNormals[indexA*mNormalsDims]);
+		const vec3 &b = *reinterpret_cast<const vec3*>(&mNormals[indexB*mNormalsDims]);
 		if( distance2( a, b ) > FLT_EPSILON )
 		return false;
 	}
 
 	if( isEnabled( geom::Attrib::TEX_COORD_0 ) ) {
 		if( mTexCoords0Dims == 2 ) {
-			const Vec2f &a = *reinterpret_cast<const Vec2f*>(&mTexCoords0[indexA*mTexCoords0Dims]);
-			const Vec2f &b = *reinterpret_cast<const Vec2f*>(&mTexCoords0[indexB*mTexCoords0Dims]);
+			const vec2 &a = *reinterpret_cast<const vec2*>(&mTexCoords0[indexA*mTexCoords0Dims]);
+			const vec2 &b = *reinterpret_cast<const vec2*>(&mTexCoords0[indexB*mTexCoords0Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords0Dims == 3 ) {
-			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTexCoords0[indexA*mTexCoords0Dims]);
-			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTexCoords0[indexB*mTexCoords0Dims]);
+			const vec3 &a = *reinterpret_cast<const vec3*>(&mTexCoords0[indexA*mTexCoords0Dims]);
+			const vec3 &b = *reinterpret_cast<const vec3*>(&mTexCoords0[indexB*mTexCoords0Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords0Dims == 4 ) {
-			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mTexCoords0[indexA*mTexCoords0Dims]);
-			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mTexCoords0[indexB*mTexCoords0Dims]);
+			const vec4 &a = *reinterpret_cast<const vec4*>(&mTexCoords0[indexA*mTexCoords0Dims]);
+			const vec4 &b = *reinterpret_cast<const vec4*>(&mTexCoords0[indexB*mTexCoords0Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
@@ -1046,20 +1046,20 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 
 	if( isEnabled( geom::Attrib::TEX_COORD_1 ) ) {
 		if( mTexCoords1Dims == 2 ) {
-			const Vec2f &a = *reinterpret_cast<const Vec2f*>(&mTexCoords1[indexA*mTexCoords1Dims]);
-			const Vec2f &b = *reinterpret_cast<const Vec2f*>(&mTexCoords1[indexB*mTexCoords1Dims]);
+			const vec2 &a = *reinterpret_cast<const vec2*>(&mTexCoords1[indexA*mTexCoords1Dims]);
+			const vec2 &b = *reinterpret_cast<const vec2*>(&mTexCoords1[indexB*mTexCoords1Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords1Dims == 3 ) {
-			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTexCoords1[indexA*mTexCoords1Dims]);
-			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTexCoords1[indexB*mTexCoords1Dims]);
+			const vec3 &a = *reinterpret_cast<const vec3*>(&mTexCoords1[indexA*mTexCoords1Dims]);
+			const vec3 &b = *reinterpret_cast<const vec3*>(&mTexCoords1[indexB*mTexCoords1Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords1Dims == 4 ) {
-			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mTexCoords1[indexA*mTexCoords1Dims]);
-			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mTexCoords1[indexB*mTexCoords1Dims]);
+			const vec4 &a = *reinterpret_cast<const vec4*>(&mTexCoords1[indexA*mTexCoords1Dims]);
+			const vec4 &b = *reinterpret_cast<const vec4*>(&mTexCoords1[indexB*mTexCoords1Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
@@ -1067,20 +1067,20 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 
 	if( isEnabled( geom::Attrib::TEX_COORD_2) ) {
 		if( mTexCoords2Dims == 2 ) {
-			const Vec2f &a = *reinterpret_cast<const Vec2f*>(&mTexCoords2[indexA*mTexCoords2Dims]);
-			const Vec2f &b = *reinterpret_cast<const Vec2f*>(&mTexCoords2[indexB*mTexCoords2Dims]);
+			const vec2 &a = *reinterpret_cast<const vec2*>(&mTexCoords2[indexA*mTexCoords2Dims]);
+			const vec2 &b = *reinterpret_cast<const vec2*>(&mTexCoords2[indexB*mTexCoords2Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords2Dims == 3 ) {
-			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTexCoords2[indexA*mTexCoords2Dims]);
-			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTexCoords2[indexB*mTexCoords2Dims]);
+			const vec3 &a = *reinterpret_cast<const vec3*>(&mTexCoords2[indexA*mTexCoords2Dims]);
+			const vec3 &b = *reinterpret_cast<const vec3*>(&mTexCoords2[indexB*mTexCoords2Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords2Dims == 4 ) {
-			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mTexCoords2[indexA*mTexCoords2Dims]);
-			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mTexCoords2[indexB*mTexCoords2Dims]);
+			const vec4 &a = *reinterpret_cast<const vec4*>(&mTexCoords2[indexA*mTexCoords2Dims]);
+			const vec4 &b = *reinterpret_cast<const vec4*>(&mTexCoords2[indexB*mTexCoords2Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
@@ -1088,35 +1088,35 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 
 	if( isEnabled( geom::Attrib::TEX_COORD_3 ) ) {
 		if( mTexCoords3Dims == 2 ) {
-			const Vec2f &a = *reinterpret_cast<const Vec2f*>(&mTexCoords3[indexA*mTexCoords3Dims]);
-			const Vec2f &b = *reinterpret_cast<const Vec2f*>(&mTexCoords3[indexB*mTexCoords3Dims]);
+			const vec2 &a = *reinterpret_cast<const vec2*>(&mTexCoords3[indexA*mTexCoords3Dims]);
+			const vec2 &b = *reinterpret_cast<const vec2*>(&mTexCoords3[indexB*mTexCoords3Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords3Dims == 3 ) {
-			const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTexCoords3[indexA*mTexCoords3Dims]);
-			const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTexCoords3[indexB*mTexCoords3Dims]);
+			const vec3 &a = *reinterpret_cast<const vec3*>(&mTexCoords3[indexA*mTexCoords3Dims]);
+			const vec3 &b = *reinterpret_cast<const vec3*>(&mTexCoords3[indexB*mTexCoords3Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 		else if( mTexCoords3Dims == 4 ) {
-			const Vec4f &a = *reinterpret_cast<const Vec4f*>(&mTexCoords3[indexA*mTexCoords3Dims]);
-			const Vec4f &b = *reinterpret_cast<const Vec4f*>(&mTexCoords3[indexB*mTexCoords3Dims]);
+			const vec4 &a = *reinterpret_cast<const vec4*>(&mTexCoords3[indexA*mTexCoords3Dims]);
+			const vec4 &b = *reinterpret_cast<const vec4*>(&mTexCoords3[indexB*mTexCoords3Dims]);
 			if( distance2( a, b ) > FLT_EPSILON )
 			return false;
 		}
 	}
 
 	if( isEnabled( geom::Attrib::TANGENT ) ) {
-		const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mTangents[indexA*mTangentsDims]);
-		const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mTangents[indexB*mTangentsDims]);
+		const vec3 &a = *reinterpret_cast<const vec3*>(&mTangents[indexA*mTangentsDims]);
+		const vec3 &b = *reinterpret_cast<const vec3*>(&mTangents[indexB*mTangentsDims]);
 		if( distance2( a, b ) > FLT_EPSILON )
 		return false;
 	}
 
 	if( isEnabled( geom::Attrib::BITANGENT ) ) {
-		const Vec3f &a = *reinterpret_cast<const Vec3f*>(&mBitangents[indexA*mBitangentsDims]);
-		const Vec3f &b = *reinterpret_cast<const Vec3f*>(&mBitangents[indexB*mBitangentsDims]);
+		const vec3 &a = *reinterpret_cast<const vec3*>(&mBitangents[indexA*mBitangentsDims]);
+		const vec3 &b = *reinterpret_cast<const vec3*>(&mBitangents[indexB*mBitangentsDims]);
 		if( distance2( a, b ) > FLT_EPSILON )
 		return false;
 	}
@@ -1128,111 +1128,111 @@ bool TriMesh::isEqual( uint32_t indexA, uint32_t indexB ) const
 
 #if 0
 
-TriMesh TriMesh::createCircle( const Vec2i &resolution )
+TriMesh TriMesh::createCircle( const ivec2 &resolution )
 {
 	return createRing( resolution, 0.0f );
 }
 
-TriMesh TriMesh::createCube( const Vec3i &resolution )
+TriMesh TriMesh::createCube( const ivec3 &resolution )
 {
 	vector<ColorAf> colors;
 	vector<uint32_t> indices;
-	vector<Vec3f> normals;
-	vector<Vec3f> positions;
-	vector<Vec2f> texCoords;
+	vector<vec3> normals;
+	vector<vec3> positions;
+	vector<vec2> texCoords;
 	
-	ci::TriMesh front	= createSquare( Vec2i( resolution.x, resolution.y ) );
-	ci::TriMesh left	= createSquare( Vec2i( resolution.z, resolution.y ) );
-	ci::TriMesh top		= createSquare( Vec2i( resolution.x, resolution.z ) );
+	ci::TriMesh front	= createSquare( ivec2( resolution.x, resolution.y ) );
+	ci::TriMesh left	= createSquare( ivec2( resolution.z, resolution.y ) );
+	ci::TriMesh top		= createSquare( ivec2( resolution.x, resolution.z ) );
 	
-	Vec3f normal;
-	Vec3f offset;
-	Matrix44f transform;
+	vec3 normal;
+	vec3 offset;
+	mat4 transform;
 	
 	// Back
-	normal = Vec3f( 0.0f, 0.0f, -1.0f );
+	normal = vec3( 0.0f, 0.0f, -1.0f );
 	offset = normal * 0.5f;
 	transform.setToIdentity();
 	transform.translate( offset );
-	for ( vector<Vec3f>::iterator iter = front.getVertices().begin(); iter != front.getVertices().end(); ++iter ) {
+	for ( vector<vec3>::iterator iter = front.getVertices().begin(); iter != front.getVertices().end(); ++iter ) {
 		positions.push_back( transform.transformPoint( *iter ) );
 		normals.push_back( normal );
 	}
-	for ( vector<Vec2f>::iterator iter = front.getTexCoords().begin(); iter != front.getTexCoords().end(); ++iter ) {
+	for ( vector<vec2>::iterator iter = front.getTexCoords().begin(); iter != front.getTexCoords().end(); ++iter ) {
 		texCoords.push_back( *iter );
 	}
 	
 	// Bottom
-	normal = Vec3f( 0.0f, -1.0f, 0.0f );
+	normal = vec3( 0.0f, -1.0f, 0.0f );
 	offset = normal * 0.5f;
 	transform.setToIdentity();
 	transform.translate( offset );
-	transform.rotate( Vec3f( -(float)M_PI * 0.5f, 0.0f, 0.0f ) );
+	transform.rotate( vec3( -(float)M_PI * 0.5f, 0.0f, 0.0f ) );
 	transform.translate( offset * -1.0f );
 	transform.translate( offset );
-	for ( vector<Vec3f>::iterator iter = top.getVertices().begin(); iter != top.getVertices().end(); ++iter ) {
+	for ( vector<vec3>::iterator iter = top.getVertices().begin(); iter != top.getVertices().end(); ++iter ) {
 		positions.push_back( transform.transformPoint( *iter ) );
 		normals.push_back( normal );
 	}
-	for ( vector<Vec2f>::iterator iter = top.getTexCoords().begin(); iter != top.getTexCoords().end(); ++iter ) {
+	for ( vector<vec2>::iterator iter = top.getTexCoords().begin(); iter != top.getTexCoords().end(); ++iter ) {
 		texCoords.push_back( *iter );
 	}
 	
-	normal = Vec3f( 0.0f, 0.0f, 1.0f );
+	normal = vec3( 0.0f, 0.0f, 1.0f );
 	offset = normal * 0.5f;
 	transform.setToIdentity();
 	transform.translate( offset );
-	for ( vector<Vec3f>::iterator iter = front.getVertices().begin(); iter != front.getVertices().end(); ++iter ) {
+	for ( vector<vec3>::iterator iter = front.getVertices().begin(); iter != front.getVertices().end(); ++iter ) {
 		positions.push_back( transform.transformPoint( *iter ) );
 		normals.push_back( normal );
 	}
-	for ( vector<Vec2f>::iterator iter = front.getTexCoords().begin(); iter != front.getTexCoords().end(); ++iter ) {
+	for ( vector<vec2>::iterator iter = front.getTexCoords().begin(); iter != front.getTexCoords().end(); ++iter ) {
 		texCoords.push_back( *iter );
 	}
 	
-	normal = Vec3f( -1.0f, 0.0f, 0.0f );
+	normal = vec3( -1.0f, 0.0f, 0.0f );
 	offset = normal * 0.5f;
 	transform.setToIdentity();
 	transform.translate( offset );
-	transform.rotate( Vec3f( 0.0f, -(float)M_PI * 0.5f, 0.0f ) );
+	transform.rotate( vec3( 0.0f, -(float)M_PI * 0.5f, 0.0f ) );
 	transform.translate( offset * -1.0f );
 	transform.translate( offset );
-	for ( vector<Vec3f>::iterator iter = left.getVertices().begin(); iter != left.getVertices().end(); ++iter ) {
+	for ( vector<vec3>::iterator iter = left.getVertices().begin(); iter != left.getVertices().end(); ++iter ) {
 		positions.push_back( transform.transformPoint( *iter ) );
 		normals.push_back( normal );
 	}
-	for ( vector<Vec2f>::iterator iter = left.getTexCoords().begin(); iter != left.getTexCoords().end(); ++iter ) {
+	for ( vector<vec2>::iterator iter = left.getTexCoords().begin(); iter != left.getTexCoords().end(); ++iter ) {
 		texCoords.push_back( *iter );
 	}
 	
 	// Right
-	normal = Vec3f( 1.0f, 0.0f, 0.0f );
+	normal = vec3( 1.0f, 0.0f, 0.0f );
 	offset = normal * 0.5f;
 	transform.setToIdentity();
 	transform.translate( offset );
-	transform.rotate( Vec3f( 0.0f, (float)M_PI * 0.5f, 0.0f ) );
+	transform.rotate( vec3( 0.0f, (float)M_PI * 0.5f, 0.0f ) );
 	transform.translate( offset * -1.0f );
 	transform.translate( offset );
-	for ( vector<Vec3f>::iterator iter = left.getVertices().begin(); iter != left.getVertices().end(); ++iter ) {
+	for ( vector<vec3>::iterator iter = left.getVertices().begin(); iter != left.getVertices().end(); ++iter ) {
 		positions.push_back( transform.transformPoint( *iter ) );
 		normals.push_back( normal );
 	}
-	for ( vector<Vec2f>::iterator iter = left.getTexCoords().begin(); iter != left.getTexCoords().end(); ++iter ) {
+	for ( vector<vec2>::iterator iter = left.getTexCoords().begin(); iter != left.getTexCoords().end(); ++iter ) {
 		texCoords.push_back( *iter );
 	}
 	
-	normal = Vec3f( 0.0f, 1.0f, 0.0f );
+	normal = vec3( 0.0f, 1.0f, 0.0f );
 	offset = normal * 0.5f;
 	transform.setToIdentity();
 	transform.translate( offset );
-	transform.rotate( Vec3f( (float)M_PI * 0.5f, 0.0f, 0.0f ) );
+	transform.rotate( vec3( (float)M_PI * 0.5f, 0.0f, 0.0f ) );
 	transform.translate( offset * -1.0f );
 	transform.translate( offset );
-	for ( vector<Vec3f>::iterator iter = top.getVertices().begin(); iter != top.getVertices().end(); ++iter ) {
+	for ( vector<vec3>::iterator iter = top.getVertices().begin(); iter != top.getVertices().end(); ++iter ) {
 		positions.push_back( transform.transformPoint( *iter ) );
 		normals.push_back( normal );
 	}
-	for ( vector<Vec2f>::iterator iter = top.getTexCoords().begin(); iter != top.getTexCoords().end(); ++iter ) {
+	for ( vector<vec2>::iterator iter = top.getTexCoords().begin(); iter != top.getTexCoords().end(); ++iter ) {
 		texCoords.push_back( *iter );
 	}
 	
@@ -1253,16 +1253,16 @@ TriMesh TriMesh::createCube( const Vec3i &resolution )
 	return mesh;
 }
 
-TriMesh TriMesh::createCylinder( const Vec2i &resolution, float topRadius, float baseRadius, bool closeTop, bool closeBase )
+TriMesh TriMesh::createCylinder( const ivec2 &resolution, float topRadius, float baseRadius, bool closeTop, bool closeBase )
 {
 	vector<ColorAf> colors;
 	vector<uint32_t> indices;
-	vector<Vec3f> normals;
-	vector<Vec3f> positions;
-	vector<Vec3f> srcNormals;
-	vector<Vec3f> srcPositions;
-	vector<Vec2f> srcTexCoords;
-	vector<Vec2f> texCoords;
+	vector<vec3> normals;
+	vector<vec3> positions;
+	vector<vec3> srcNormals;
+	vector<vec3> srcPositions;
+	vector<vec2> srcTexCoords;
+	vector<vec2> texCoords;
 	
 	float delta = ( 2.0f * (float)M_PI ) / (float)resolution.x;
 	float step	= 1.0f / (float)resolution.y;
@@ -1276,28 +1276,28 @@ TriMesh TriMesh::createCylinder( const Vec2i &resolution, float topRadius, float
 			
 			float radius = lerp( baseRadius, topRadius, phi );
 			
-			Vec3f position(
+			vec3 position(
 						   math<float>::cos( theta ) * radius,
 						   phi - 0.5f,
 						   math<float>::sin( theta ) * radius
 						   );
 			srcPositions.push_back( position );
 			
-			Vec3f normal = Vec3f( position.x, 0.0f, position.z ).normalized();
+			vec3 normal = vec3( position.x, 0.0f, position.z ).normalized();
 			normal.y = 0.0f;
 			srcNormals.push_back( normal );
 			
-			Vec2f texCoord( u, phi );
+			vec2 texCoord( u, phi );
 			srcTexCoords.push_back( texCoord );
 		}
 	}
 	
-	srcNormals.push_back( Vec3f( 0.0f, 1.0f, 0.0f ) );
-	srcNormals.push_back( Vec3f( 0.0f, -1.0f, 0.0f ) );
-	srcPositions.push_back( Vec3f( 0.0f, -0.5f, 0.0f ) );
-	srcPositions.push_back( Vec3f( 0.0f, 0.5f, 0.0f ) );
-	srcTexCoords.push_back( Vec2f( 0.0f, 0.0f ) );
-	srcTexCoords.push_back( Vec2f( 0.0f, 1.0f ) );
+	srcNormals.push_back( vec3( 0.0f, 1.0f, 0.0f ) );
+	srcNormals.push_back( vec3( 0.0f, -1.0f, 0.0f ) );
+	srcPositions.push_back( vec3( 0.0f, -0.5f, 0.0f ) );
+	srcPositions.push_back( vec3( 0.0f, 0.5f, 0.0f ) );
+	srcTexCoords.push_back( vec2( 0.0f, 0.0f ) );
+	srcTexCoords.push_back( vec2( 0.0f, 1.0f ) );
 	int32_t topCenter		= (int32_t)srcPositions.size() - 1;
 	int32_t bottomCenter	= topCenter - 1;
 	
@@ -1392,9 +1392,9 @@ TriMesh TriMesh::createCylinder( const Vec2i &resolution, float topRadius, float
 TriMesh TriMesh::createIcosahedron( uint32_t division )
 {
 	vector<ColorAf> colors;
-	vector<Vec3f> positions;
-	vector<Vec3f> normals;
-	vector<Vec2f> texCoords;
+	vector<vec3> positions;
+	vector<vec3> normals;
+	vector<vec2> texCoords;
 	vector<uint32_t> indices;
 	
 	const float t	= 0.5f + 0.5f * math<float>::sqrt( 5.0f );
@@ -1402,20 +1402,20 @@ TriMesh TriMesh::createIcosahedron( uint32_t division )
 	const float tau	= t * one;
 	const float pi	= (float)M_PI;
 	
-	normals.push_back( Vec3f(  one, 0.0f,  tau ) );
-	normals.push_back( Vec3f(  one, 0.0f, -tau ) );
-	normals.push_back( Vec3f( -one, 0.0f, -tau ) );
-	normals.push_back( Vec3f( -one, 0.0f,  tau ) );
+	normals.push_back( vec3(  one, 0.0f,  tau ) );
+	normals.push_back( vec3(  one, 0.0f, -tau ) );
+	normals.push_back( vec3( -one, 0.0f, -tau ) );
+	normals.push_back( vec3( -one, 0.0f,  tau ) );
 	
-	normals.push_back( Vec3f(  tau,  one, 0.0f ) );
-	normals.push_back( Vec3f( -tau,  one, 0.0f ) );
-	normals.push_back( Vec3f( -tau, -one, 0.0f ) );
-	normals.push_back( Vec3f(  tau, -one, 0.0f ) );
+	normals.push_back( vec3(  tau,  one, 0.0f ) );
+	normals.push_back( vec3( -tau,  one, 0.0f ) );
+	normals.push_back( vec3( -tau, -one, 0.0f ) );
+	normals.push_back( vec3(  tau, -one, 0.0f ) );
 	
-	normals.push_back( Vec3f( 0.0f,  tau,  one ) );
-	normals.push_back( Vec3f( 0.0f, -tau,  one ) );
-	normals.push_back( Vec3f( 0.0f, -tau, -one ) );
-	normals.push_back( Vec3f( 0.0f,  tau, -one ) );
+	normals.push_back( vec3( 0.0f,  tau,  one ) );
+	normals.push_back( vec3( 0.0f, -tau,  one ) );
+	normals.push_back( vec3( 0.0f, -tau, -one ) );
+	normals.push_back( vec3( 0.0f,  tau, -one ) );
 	
 	for ( size_t i = 0; i < 12; ++i ) {
 		positions.push_back( normals[ i ] * 0.5f );
@@ -1441,10 +1441,10 @@ TriMesh TriMesh::createIcosahedron( uint32_t division )
 		colors.push_back( color );
 	}
 	
-	for ( vector<Vec3f>::const_iterator iter = normals.begin(); iter != normals.end(); ++iter ) {
+	for ( vector<vec3>::const_iterator iter = normals.begin(); iter != normals.end(); ++iter ) {
 		float u = 0.5f + 0.5f * math<float>::atan2( iter->x, iter->z ) / pi;
 		float v = 0.5f - math<float>::asin( iter->y ) / pi;
-		Vec2f texCoord( u, v );
+		vec2 texCoord( u, v );
 		texCoords.push_back( texCoord );
 	}
 	
@@ -1463,15 +1463,15 @@ TriMesh TriMesh::createIcosahedron( uint32_t division )
 	return mesh;
 }
 
-TriMesh TriMesh::createRing( const Vec2i &resolution, float ratio )
+TriMesh TriMesh::createRing( const ivec2 &resolution, float ratio )
 {
 	vector<ColorAf> colors;
 	vector<uint32_t> indices;
-	vector<Vec3f> normals;
-	vector<Vec3f> positions;
-	vector<Vec2f> texCoords;
+	vector<vec3> normals;
+	vector<vec3> positions;
+	vector<vec2> texCoords;
 	
-	Vec3f norm0( 0.0f, 0.0f, 1.0f );
+	vec3 norm0( 0.0f, 0.0f, 1.0f );
 	
 	float delta = ( (float)M_PI * 2.0f ) / (float)resolution.x;
 	float width	= 1.0f - ratio;
@@ -1490,21 +1490,21 @@ TriMesh TriMesh::createRing( const Vec2i &resolution, float ratio )
 			float ctn	= math<float>::cos( theta + delta );
 			float stn	= math<float>::sin( theta + delta );
 			
-			Vec3f pos0 = Vec3f( ct, st, 0.0f ) * innerRadius;
-			Vec3f pos1 = Vec3f( ctn, stn, 0.0f ) * innerRadius;
-			Vec3f pos2 = Vec3f( ct, st, 0.0f ) * outerRadius;
-			Vec3f pos3 = Vec3f( ctn, stn, 0.0f ) * outerRadius;
+			vec3 pos0 = vec3( ct, st, 0.0f ) * innerRadius;
+			vec3 pos1 = vec3( ctn, stn, 0.0f ) * innerRadius;
+			vec3 pos2 = vec3( ct, st, 0.0f ) * outerRadius;
+			vec3 pos3 = vec3( ctn, stn, 0.0f ) * outerRadius;
 			if ( t >= resolution.x - 1 ) {
 				ctn		= math<float>::cos( 0.0f );
 				stn		= math<float>::sin( 0.0f );
-				pos1	= Vec3f( ctn, stn, 0.0f ) * innerRadius;
-				pos3	= Vec3f( ctn, stn, 0.0f ) * outerRadius;
+				pos1	= vec3( ctn, stn, 0.0f ) * innerRadius;
+				pos3	= vec3( ctn, stn, 0.0f ) * outerRadius;
 			}
 			
-			Vec2f texCoord0 = ( pos0.xy() + Vec2f::one() ) * 0.5f;
-			Vec2f texCoord1 = ( pos1.xy() + Vec2f::one() ) * 0.5f;
-			Vec2f texCoord2 = ( pos2.xy() + Vec2f::one() ) * 0.5f;
-			Vec2f texCoord3 = ( pos3.xy() + Vec2f::one() ) * 0.5f;
+			vec2 texCoord0 = ( pos0.xy() + vec2::one() ) * 0.5f;
+			vec2 texCoord1 = ( pos1.xy() + vec2::one() ) * 0.5f;
+			vec2 texCoord2 = ( pos2.xy() + vec2::one() ) * 0.5f;
+			vec2 texCoord3 = ( pos3.xy() + vec2::one() ) * 0.5f;
 			
 			positions.push_back( pos0 );
 			positions.push_back( pos2 );
@@ -1540,13 +1540,13 @@ TriMesh TriMesh::createRing( const Vec2i &resolution, float ratio )
 	return mesh;
 }
 
-TriMesh TriMesh::createSphere( const Vec2i &resolution )
+TriMesh TriMesh::createSphere( const ivec2 &resolution )
 {
 	vector<ColorAf> colors;
 	vector<uint32_t> indices;
-	vector<Vec3f> normals;
-	vector<Vec3f> positions;
-	vector<Vec2f> texCoords;
+	vector<vec3> normals;
+	vector<vec3> positions;
+	vector<vec2> texCoords;
 	
 	float step = (float)M_PI / (float)resolution.y;
 	float delta = ((float)M_PI * 2.0f) / (float)resolution.x;
@@ -1563,9 +1563,9 @@ TriMesh TriMesh::createSphere( const Vec2i &resolution )
 			float x = sinPhi * math<float>::cos( theta );
 			float y = sinPhi * math<float>::sin( theta );
 			float z = -math<float>::cos( phi );
-			Vec3f position( x, y, z );
-			Vec3f normal = position.normalized();
-			Vec2f texCoord = ( normal.xy() + Vec2f::one() ) * 0.5f;
+			vec3 position( x, y, z );
+			vec3 normal = position.normalized();
+			vec2 texCoord = ( normal.xy() + vec2::one() ) * 0.5f;
 			
 			normals.push_back( normal );
 			positions.push_back( position );
@@ -1605,17 +1605,17 @@ TriMesh TriMesh::createSphere( const Vec2i &resolution )
 	return mesh;
 }
 
-TriMesh TriMesh::createSquare( const Vec2i &resolution )
+TriMesh TriMesh::createSquare( const ivec2 &resolution )
 {
 	vector<ColorAf> colors;
 	vector<uint32_t> indices;
-	vector<Vec3f> normals;
-	vector<Vec3f> positions;
-	vector<Vec2f> texCoords;
+	vector<vec3> normals;
+	vector<vec3> positions;
+	vector<vec2> texCoords;
 	
-	Vec3f norm0( 0.0f, 0.0f, 1.0f );
+	vec3 norm0( 0.0f, 0.0f, 1.0f );
 	
-	Vec2f scale( 1.0f / math<float>::max( (float)resolution.x, 1.0f ), 1.0f / math<float>::max( (float)resolution.y, 1.0f ) );
+	vec2 scale( 1.0f / math<float>::max( (float)resolution.x, 1.0f ), 1.0f / math<float>::max( (float)resolution.y, 1.0f ) );
 	uint32_t index = 0;
 	for ( int32_t y = 0; y < resolution.y; ++y ) {
 		for ( int32_t x = 0; x < resolution.x; ++x, ++index ) {
@@ -1625,15 +1625,15 @@ TriMesh TriMesh::createSquare( const Vec2i &resolution )
 			float x2 = (float)( x + 1 ) * scale.x;
 			float y2 = (float)( y + 1 ) * scale.y;
 			
-			Vec3f pos0( x1 - 0.5f, y1 - 0.5f, 0.0f );
-			Vec3f pos1( x2 - 0.5f, y1 - 0.5f, 0.0f );
-			Vec3f pos2( x1 - 0.5f, y2 - 0.5f, 0.0f );
-			Vec3f pos3( x2 - 0.5f, y2 - 0.5f, 0.0f );
+			vec3 pos0( x1 - 0.5f, y1 - 0.5f, 0.0f );
+			vec3 pos1( x2 - 0.5f, y1 - 0.5f, 0.0f );
+			vec3 pos2( x1 - 0.5f, y2 - 0.5f, 0.0f );
+			vec3 pos3( x2 - 0.5f, y2 - 0.5f, 0.0f );
 			
-			Vec2f texCoord0( x1, y1 );
-			Vec2f texCoord1( x2, y1 );
-			Vec2f texCoord2( x1, y2 );
-			Vec2f texCoord3( x2, y2 );
+			vec2 texCoord0( x1, y1 );
+			vec2 texCoord1( x2, y1 );
+			vec2 texCoord2( x1, y2 );
+			vec2 texCoord3( x2, y2 );
 			
 			positions.push_back( pos2 );
 			positions.push_back( pos1 );
@@ -1673,16 +1673,16 @@ TriMesh TriMesh::createSquare( const Vec2i &resolution )
 	
 }
 
-TriMesh TriMesh::createTorus( const Vec2i &resolution, float ratio )
+TriMesh TriMesh::createTorus( const ivec2 &resolution, float ratio )
 {
 	vector<ColorAf> colors;
 	vector<uint32_t> indices;
-	vector<Vec3f> normals;
-	vector<Vec3f> positions;
-	vector<Vec3f> srcNormals;
-	vector<Vec3f> srcPositions;
-	vector<Vec2f> srcTexCoords;
-	vector<Vec2f> texCoords;
+	vector<vec3> normals;
+	vector<vec3> positions;
+	vector<vec3> srcNormals;
+	vector<vec3> srcPositions;
+	vector<vec2> srcTexCoords;
+	vector<vec2> texCoords;
 	
 	float pi			= (float)M_PI;
 	float delta			= ( 2.0f * pi ) / (float)resolution.y;
@@ -1710,9 +1710,9 @@ TriMesh TriMesh::createTorus( const Vec2i &resolution, float ratio )
 			float y		= sinPhi * rct;
 			float z		= sinTheta * innerRadius;
 			
-			Vec3f normal( -cosTheta * cosTheta, sinPhi * cosTheta, sinTheta );
-			Vec3f position( x, y, z );
-			Vec2f texCoord( u, v );
+			vec3 normal( -cosTheta * cosTheta, sinPhi * cosTheta, sinTheta );
+			vec3 position( x, y, z );
+			vec2 texCoord( u, v );
 			
 			positions.push_back( position );
 			normals.push_back( normal );
@@ -1767,7 +1767,7 @@ Rectf TriMesh2d::calcBoundingBox() const
 	if( mPositions.empty() )
 		return Rectf( vec2(), vec2() );
 
-	Vec2f min(mPositions[0]), max(mPositions[0]);
+	vec2 min(mPositions[0]), max(mPositions[0]);
 	for( size_t i = 1; i < mPositions.size(); ++i ) {
 		if( mPositions[i].x < min.x )
 			min.x = mPositions[i].x;

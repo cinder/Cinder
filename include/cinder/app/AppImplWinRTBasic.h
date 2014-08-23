@@ -86,7 +86,7 @@ private:
 	class WindowImplWinRTBasic* mWindow;
 
 	// MultiTouch
-	std::map<DWORD,Vec2f>			mMultiTouchPrev;
+	std::map<DWORD,vec2>			mMultiTouchPrev;
 	std::vector<TouchEvent::Touch>	mActiveTouches;
 
 	friend class AppBasic;
