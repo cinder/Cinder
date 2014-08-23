@@ -102,10 +102,10 @@ void ParticleSphereGPUApp::setup()
 	for( int i = 0; i < 2; ++i )
 	{	// Describe the particle layout for OpenGL.
 		mAttributes[i] = gl::Vao::create();
-		mAttributes[i]->bind();
+		gl::ScopedVao vao( mAttributes[i] );
 
 		// Define attributes as offsets into the bound particle buffer
-		mParticleBuffer[i]->bind();
+		gl::ScopedBuffer buffer( mParticleBuffer[i] );
 		gl::enableVertexAttribArray( 0 );
 		gl::enableVertexAttribArray( 1 );
 		gl::enableVertexAttribArray( 2 );
@@ -116,7 +116,6 @@ void ParticleSphereGPUApp::setup()
 		gl::vertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, ppos) );
 		gl::vertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, home) );
 		gl::vertexAttribPointer( 4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, damping) );
-		mAttributes[i]->unbind();
 	}
 
 	// Load our update program.

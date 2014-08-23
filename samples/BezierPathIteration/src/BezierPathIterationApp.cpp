@@ -61,7 +61,7 @@ void BezierPathIterationApp::loadSvg( const fs::path &fsPath )
 	gl::setMatricesWindow( getWindowSize() );
 	Rectf svgBounds = shape.calcPreciseBoundingBox();
 	Rectf fitRect = svgBounds.getCenteredFit( Rectf( getWindowBounds() ), false );
-	mWindowOffset = ( getWindowSize() - fitRect.getSize() ) / 2;
+	mWindowOffset = ( getWindowSize() - ivec2(fitRect.getSize()) ) / 2;
 	mWindowScale = fitRect.getSize() / svgBounds.getSize();
 	
 	// Generate 2000 PathIters, all assigned to random paths and random points along their respective paths
