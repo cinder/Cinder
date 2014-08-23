@@ -82,6 +82,7 @@ void MotionBlurVelocityBufferApp::setup()
 	mParams->addParam( "Animation Speed", &mAnimationSpeed ).min( 0.05f ).step( 0.2f );
 	mParams->addParam( "Max Samples", &mSampleCount ).min( 1 ).step( 2 );
 	mParams->addParam( "Blur Noise", &mBlurNoise ).min( 0.0f ).step( 0.01f );
+
 }
 
 void MotionBlurVelocityBufferApp::createGeometry()
@@ -222,7 +223,7 @@ void MotionBlurVelocityBufferApp::draw()
 		gl::setMatricesWindowPersp( mTileMaxBuffer->getSize() );
 
 		{ // downsample velocity into tilemax
-			gl::ScopedTextureBind tex( mVelocityBuffer->getColorTexture(), (GLuint)0 );
+			gl::ScopedTextureBind tex( mVelocityBuffer->getColorTexture(), (std::uint8_t)0 );
 			gl::ScopedGlslProg prog( mTileProg );
 			gl::ScopedFramebuffer fbo( mTileMaxBuffer );
 
@@ -233,7 +234,7 @@ void MotionBlurVelocityBufferApp::draw()
 			gl::drawSolidRect( mTileMaxBuffer->getBounds() );
 		}
 		{ // find max neighbors within tilemax
-			gl::ScopedTextureBind tex( mTileMaxBuffer->getColorTexture(), (GLuint)0 );
+			gl::ScopedTextureBind tex( mTileMaxBuffer->getColorTexture(), (std::uint8_t)0 );
 			gl::ScopedGlslProg prog( mNeighborProg );
 			gl::ScopedFramebuffer fbo( mNeighborMaxBuffer );
 
@@ -254,11 +255,10 @@ void MotionBlurVelocityBufferApp::draw()
 	else
 	{ // draw to screen with motion blur
 		gl::ScopedAlphaBlend blend( true );
-		gl::ScopedTextureBind colorTex( mColorBuffer->getColorTexture(), (GLuint)0 );
-		gl::ScopedTextureBind velTex( mVelocityBuffer->getColorTexture(), (GLuint)1 );
-		gl::ScopedTextureBind neigborTex( mNeighborMaxBuffer->getColorTexture(), (GLuint)2 );
+		gl::ScopedTextureBind colorTex( mColorBuffer->getColorTexture(), (std::uint8_t)0 );
+		gl::ScopedTextureBind velTex( mVelocityBuffer->getColorTexture(), (std::uint8_t)1 );
+		gl::ScopedTextureBind neigborTex( mNeighborMaxBuffer->getColorTexture(), (std::uint8_t)2 );
 		gl::ScopedGlslProg prog( mMotionBlurProg );
-
 		mMotionBlurProg->uniform( "uColorMap", 0 );
 		mMotionBlurProg->uniform( "uVelocityMap", 1 );
 		mMotionBlurProg->uniform( "uNeighborMaxMap", 2 );
@@ -284,15 +284,15 @@ void MotionBlurVelocityBufferApp::drawVelocityBuffers()
 	float height = width / Rectf( mNeighborMaxBuffer->getBounds() ).getAspectRatio();
 	Rectf rect( 0.0f, 0.0f, width, height );
 
-	gl::ScopedTextureBind velTex( mVelocityBuffer->getColorTexture(), (GLuint)0 );
+	gl::ScopedTextureBind velTex( mVelocityBuffer->getColorTexture(), (std::uint8_t)0 );
 	gl::translate( getWindowWidth() - width - 10.0f, 10.0f );
 	gl::drawSolidRect( rect );
 
-	gl::ScopedTextureBind tileTex( mTileMaxBuffer->getColorTexture(), (GLuint)0 );
+	gl::ScopedTextureBind tileTex( mTileMaxBuffer->getColorTexture(), (std::uint8_t)0 );
 	gl::translate( 0.0f, height + 10.0f );
 	gl::drawSolidRect( rect );
 
-	gl::ScopedTextureBind neigborTex( mNeighborMaxBuffer->getColorTexture(), (GLuint)0 );
+	gl::ScopedTextureBind neigborTex( mNeighborMaxBuffer->getColorTexture(), (std::uint8_t)0 );
 	gl::translate( 0.0f, height + 10.0f );
 	gl::drawSolidRect( rect );
 }
