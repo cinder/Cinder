@@ -46,7 +46,7 @@ std::string toUtf8String( const std::wstring &wideString );
 
 //! Converts a Win32 POINTFX fixed point point to a cinder::vec2
 #if !defined ( CINDER_WINRT )
-inline vec2 tovec2( const ::POINTFX &p )
+inline vec2 toVec2( const ::POINTFX &p )
 { return vec2( ( (p.x.value << 16) | p.x.fract ) / 65535.0f, ( (p.y.value << 16) | p.y.fract ) / 65535.0f ); }
 #endif
 
