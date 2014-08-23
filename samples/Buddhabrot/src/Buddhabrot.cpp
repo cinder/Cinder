@@ -105,7 +105,7 @@ void BuddhabrotApp::setup()
 	mGLimit		= 15000;
 	mBLimit		= 1000;
 	
-	mMaxIterations = max( mRLimit, max( mGLimit, mBLimit ) );
+	mMaxIterations = ci::max( mRLimit, ci::max( mGLimit, mBLimit ) );
 	
 	int tmpW = (int)( (double)mWidth  * mXDim/mYDim );
 	int tmpH = (int)( (double)mHeight * mYDim/mXDim );
@@ -196,8 +196,8 @@ void BuddhabrotApp::mouseUp( MouseEvent event )
 		
 	int dx = abs( mBoundingX1 - mBoundingX0 );
 	int dy = abs( mBoundingY1 - mBoundingY0 );
-	double x0 = min( mBoundingX0, mBoundingX1 );
-	double y0 = min( mBoundingY0, mBoundingY1 );
+	double x0 = ci::min( mBoundingX0, mBoundingX1 );
+	double y0 = ci::min( mBoundingY0, mBoundingY1 );
 	
 	if( dx == 0 && dy == 0 ){
 		mXCorner += mXDim * ( (double)( x0 - TEXTURE_WIDTH/2 ) / (double)TEXTURE_WIDTH );
@@ -276,7 +276,7 @@ void BuddhabrotApp::runBrot()
 		double t2		= transitionProbability( oldt, newt );
 		
 		if( oldhits > 0 ){
-			double alpha = min( 1.0, exp( log( (double)newhits * t1 ) - log( (double)oldhits * t2 ) ) );
+			double alpha = ci::min( 1.0, exp( log( (double)newhits * t1 ) - log( (double)oldhits * t2 ) ) );
 			if( alpha > Rand::randFloat() ){
 				cx			= xTemp;
 				cy			= yTemp;
