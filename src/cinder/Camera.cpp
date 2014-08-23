@@ -143,8 +143,8 @@ Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) co
 
 void Camera::getBillboardVectors( Vec3f *right, Vec3f *up ) const
 {
-	*right = glm::vec3( glm::column( getViewMatrix(), 0 ) );
-	*up = glm::vec3( glm::column( getViewMatrix(), 1 ) );
+	*right = glm::vec3( glm::row( getViewMatrix(), 0 ) );
+	*up = glm::vec3( glm::row( getViewMatrix(), 1 ) );
 }
 
 Vec2f Camera::worldToScreen( const Vec3f &worldCoord, float screenWidth, float screenHeight ) const
