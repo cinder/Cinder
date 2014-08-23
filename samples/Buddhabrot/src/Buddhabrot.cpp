@@ -253,7 +253,7 @@ void BuddhabrotApp::keyDown( KeyEvent event )
 void BuddhabrotApp::runBrot()
 {
     int oldhits      = -1;
-    uint32_t n       = 2000000000;
+    std::uint32_t n  = 2000000000;
     int oldt         = 0;
 	
     double cx		 = 0;
