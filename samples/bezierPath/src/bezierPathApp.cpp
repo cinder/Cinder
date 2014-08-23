@@ -64,7 +64,7 @@ void Path2dApp::mouseDrag( MouseEvent event )
 				// we can figure out what the equivalent cubic tangent would be using a little math
 				Vec2f quadTangent = mPath.getPoint( mPath.getNumPoints() - 2 );
 				Vec2f quadEnd = mPath.getPoint( mPath.getNumPoints() - 1 );
-				Vec2f prevDelta = ( quadTangent + ( quadEnd - quadTangent ) / 3 ) - quadEnd;
+				Vec2f prevDelta = ( quadTangent + ( quadEnd - quadTangent ) / 3.0f ) - quadEnd;
 				tan1 = quadEnd - prevDelta;
 			}
 			else
@@ -116,7 +116,7 @@ void Path2dApp::draw()
 		// draw some tangents
 		gl::color( Color( 0.2f, 0.9f, 0.2f ) );	
 		for( float t = 0; t < 1; t += 0.2f )
-			gl::drawLine( mPath.getPosition( t ), mPath.getPosition( t ) + mPath.getTangent( t ).normalized() * 80 );
+			gl::drawLine( mPath.getPosition( t ), mPath.getPosition( t ) + normalize( mPath.getTangent( t ) ) * 80.0f );
 		
 		// draw circles at 1/4, 2/4 and 3/4 the length
 		gl::color( ColorA( 0.2f, 0.9f, 0.9f, 0.5f ) );
