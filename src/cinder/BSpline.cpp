@@ -469,7 +469,7 @@ void BSpline<D,T>::createControl( const VecT *akCtrlPoint )
 {
 	int iNewNumCtrlPoints = mNumCtrlPoints + mReplicate;
 	mCtrlPoints = new VecT[iNewNumCtrlPoints];
-	size_t uiSrcSize = mNumCtrlPoints * D;
+	size_t uiSrcSize = mNumCtrlPoints * sizeof( VecT );
 	memcpy( mCtrlPoints, akCtrlPoint, uiSrcSize );
 	for( int i = 0; i < mReplicate; i++ ) {
 		mCtrlPoints[mNumCtrlPoints+i] = akCtrlPoint[i];
@@ -652,6 +652,12 @@ typename BSpline<D,T>::VecT BSpline<D,T>::getThirdDerivative( float t ) const
 	VecT d3;
 	get( t, 0, 0, 0, &d3 );
 	return d3;
+}
+
+template<int D,typename T>
+T BSpline<D,T>::getSpeed( float t ) const
+{
+	return length( getDerivative( t ) );
 }
 
 // explicit template instantiations
