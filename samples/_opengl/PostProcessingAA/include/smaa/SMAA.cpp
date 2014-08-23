@@ -132,8 +132,12 @@ void SMAA::doEdgePass( ci::gl::Texture2dRef source )
 	mSMAAFirstPass->uniform( "uColorTex", 0 );
 
 	// Execute shader by drawing a 'full screen' rectangle.
+	auto viewport = gl::getViewport();
+	Vec2f offset = Vec2f( viewport.first ) / mFboEdgePass->getSize();
+	Vec2f size = Vec2f( viewport.second ) / mFboEdgePass->getSize();
+
 	gl::color( Color::white() );
-	gl::drawSolidRect( mFboEdgePass->getBounds() );
+	gl::drawSolidRect( mFboEdgePass->getBounds() /* Rectf( offset, offset + size )  */ );
 }
 
 void SMAA::doBlendPass()
@@ -152,6 +156,10 @@ void SMAA::doBlendPass()
 	mSMAASecondPass->uniform( "uSearchTex", 2 );
 
 	// Execute shader by drawing a 'full screen' rectangle.
+	auto viewport = gl::getViewport();
+	Vec2f offset = Vec2f( viewport.first ) / mFboBlendPass->getSize();
+	Vec2f size = Vec2f( viewport.second ) / mFboBlendPass->getSize();
+
 	gl::color( Color::white() );
-	gl::drawSolidRect( mFboBlendPass->getBounds() );
+	gl::drawSolidRect( mFboBlendPass->getBounds() /* Rectf( offset, offset + size ) */ );
 }

@@ -17,6 +17,7 @@ in vec4    vOffset;
 
 void main()
 {
-    vec2 uv = vTexCoord0.st;
+    //vec2 uv = vTexCoord0.st;
+	vec2 uv = gl_FragCoord.xy * SMAA_RT_METRICS.xy;
     gl_FragColor = SMAANeighborhoodBlendingPS(uv, vOffset, uColorTex, uBlendTex);
 }
