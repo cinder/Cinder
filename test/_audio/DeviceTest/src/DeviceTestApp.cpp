@@ -43,8 +43,8 @@ class DeviceTestApp : public AppNative {
 
 	void setupTest( string test );
 	void setupUI();
-	void processTap( Vec2i pos );
-	void processDrag( Vec2i pos );
+	void processTap( ivec2 pos );
+	void processDrag( ivec2 pos );
 	void keyDown( KeyEvent event );
 
 	audio::InputDeviceNodeRef		mInputDeviceNode;
@@ -332,7 +332,7 @@ void DeviceTestApp::setupUI()
 	mWidgets.push_back( &mOutputSelector );
 
 	mInputSelector.mTitle = "Input Devices";
-	mInputSelector.mBounds = mOutputSelector.mBounds - Vec2f( mOutputSelector.mBounds.getWidth() + 10, 0 );
+	mInputSelector.mBounds = mOutputSelector.mBounds - vec2( mOutputSelector.mBounds.getWidth() + 10, 0 );
 	if( mOutputDeviceNode ) {
 		for( const auto &dev : audio::Device::getInputDevices() ) {
 			if( dev == mInputDeviceNode->getDevice() )
@@ -348,36 +348,36 @@ void DeviceTestApp::setupUI()
 	mSamplerateInput.setValue( audio::master()->getSampleRate() );
 	mWidgets.push_back( &mSamplerateInput );
 
-	textInputBounds += Vec2f( 0, textInputBounds.getHeight() + 24 );
+	textInputBounds += vec2( 0, textInputBounds.getHeight() + 24 );
 	mFramesPerBlockInput.mBounds = textInputBounds;
 	mFramesPerBlockInput.mTitle = "frames per block";
 	mFramesPerBlockInput.setValue( audio::master()->getFramesPerBlock() );
 	mWidgets.push_back( &mFramesPerBlockInput );
 
-	textInputBounds += Vec2f( 0, textInputBounds.getHeight() + 24 );
+	textInputBounds += vec2( 0, textInputBounds.getHeight() + 24 );
 	mNumInChannelsInput.mBounds = textInputBounds;
 	mNumInChannelsInput.mTitle = "num inputs";
 	if( mInputDeviceNode )
 		mNumInChannelsInput.setValue( mInputDeviceNode->getNumChannels() );
 	mWidgets.push_back( &mNumInChannelsInput );
 
-	textInputBounds += Vec2f( 0, textInputBounds.getHeight() + 24 );
+	textInputBounds += vec2( 0, textInputBounds.getHeight() + 24 );
 	mNumOutChannelsInput.mBounds = textInputBounds;
 	mNumOutChannelsInput.mTitle = "num outputs";
 	if( mOutputDeviceNode )
 		mNumOutChannelsInput.setValue( mOutputDeviceNode->getNumChannels() );
 	mWidgets.push_back( &mNumOutChannelsInput );
 
-	textInputBounds += Vec2f( 0, textInputBounds.getHeight() + 24 );
+	textInputBounds += vec2( 0, textInputBounds.getHeight() + 24 );
 	mSendChannelInput.mBounds = textInputBounds;
 	mSendChannelInput.mTitle = "send channel";
 	mSendChannelInput.setValue( 2 );
 	mWidgets.push_back( &mSendChannelInput );
 
-	Vec2f xrunSize( 80, 26 );
+	vec2 xrunSize( 80, 26 );
 	mUnderrunRect = Rectf( 0, mPlayButton.mBounds.y2 + 10, xrunSize.x, mPlayButton.mBounds.y2 + xrunSize.y + 10 );
-	mOverrunRect = mUnderrunRect + Vec2f( xrunSize.x + 10, 0 );
-	mClipRect = mOverrunRect + Vec2f( xrunSize.x + 10, 0 );
+	mOverrunRect = mUnderrunRect + vec2( xrunSize.x + 10, 0 );
+	mClipRect = mOverrunRect + vec2( xrunSize.x + 10, 0 );
 
 	getWindow()->getSignalMouseDown().connect( [this] ( MouseEvent &event ) { processTap( event.getPos() ); } );
 	getWindow()->getSignalMouseDrag().connect( [this] ( MouseEvent &event ) { processDrag( event.getPos() ); } );
@@ -395,13 +395,13 @@ void DeviceTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void DeviceTestApp::processDrag( Vec2i pos )
+void DeviceTestApp::processDrag( ivec2 pos )
 {
 	if( mGainSlider.hitTest( pos ) )
 		mGain->getParam()->applyRamp( mGainSlider.mValueScaled, 0.025f );
 }
 
-void DeviceTestApp::processTap( Vec2i pos )
+void DeviceTestApp::processTap( ivec2 pos )
 {
 //	TextInput *selectedInput = false;
 	if( mPlayButton.hitTest( pos ) )
@@ -583,7 +583,7 @@ void DeviceTestApp::draw()
 			for( size_t i = 0; i < buffer.getNumFrames(); i++ ) {
 				float x = i * xScale;
 				float y = ( channel[i] * 0.5f + 0.5f ) * waveHeight + yOffset;
-				waveform.push_back( Vec2f( x, y ) );
+				waveform.push_back( vec2( x, y ) );
 			}
 			gl::draw( waveform );
 			yOffset += waveHeight + padding;

@@ -55,8 +55,8 @@ void Texture3dApp::setup()
 	mShader2dArray->uniform( "uTex0", 0 );
 
 	// setup batches
-	mTex3dBatch = gl::Batch::create( geom::Rect().scale( Vec2f( 200, 200 ) ).position( Vec2f( 100, 100 ) ), mShader3d );
-	mTex2dArrayBatch = gl::Batch::create( geom::Rect().scale( Vec2f( 200, 200 ) ).position( Vec2f( 100, 300 ) ), mShader2dArray );
+	mTex3dBatch = gl::Batch::create( geom::Rect().scale( vec2( 200, 200 ) ).position( vec2( 100, 100 ) ), mShader3d );
+	mTex2dArrayBatch = gl::Batch::create( geom::Rect().scale( vec2( 200, 200 ) ).position( vec2( 100, 300 ) ), mShader2dArray );
 }
 
 void Texture3dApp::draw()
@@ -64,11 +64,11 @@ void Texture3dApp::draw()
 	gl::clear( Color( 0, 0, 0 ) ); 
 
 	mTex3d->bind();
-	mTex3dBatch->getGlslProg()->uniform( "uTexCoord", Vec3f( 0.5, 0.5, getElapsedSeconds() / 2 ) );
+	mTex3dBatch->getGlslProg()->uniform( "uTexCoord", vec3( 0.5, 0.5, getElapsedSeconds() / 2 ) );
 	mTex3dBatch->draw();
 
 	mTex2dArray->bind();
-	mTex2dArrayBatch->getGlslProg()->uniform( "uTexCoord", Vec3f( 0.5, 0.5, getElapsedSeconds() / 2 ) );
+	mTex2dArrayBatch->getGlslProg()->uniform( "uTexCoord", vec3( 0.5, 0.5, getElapsedSeconds() / 2 ) );
 	mTex2dArrayBatch->draw();
 }
 

@@ -42,7 +42,7 @@ static GLubyte smiley[] = // 16x16 smiley face, courtesy of OpenGL Super Bible
 void GLTileRenderTestApp::setup()
 {
 	CameraPersp cam;
-	mCam.lookAt( Vec3f( 0, 0, 10 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0, 0, 10 ), vec3::zero() );
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), 1, 50 );
 }
 

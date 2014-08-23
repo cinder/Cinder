@@ -35,8 +35,8 @@ class SpectralTestApp : public AppNative {
 	void setupSineNoOutput();
 	void setupSample();
 	void setupUI();
-	void processTap( Vec2i pos );
-	void processDrag( Vec2i pos );
+	void processTap( ivec2 pos );
+	void processDrag( ivec2 pos );
 	void printBinFreq( size_t xPos );
 
 
@@ -125,28 +125,28 @@ void SpectralTestApp::setupUI()
 	mEnableGraphButton.mBounds = buttonRect;
 	mWidgets.push_back( &mEnableGraphButton );
 
-	buttonRect += Vec2f( buttonRect.getWidth() + padding, 0.0f );
+	buttonRect += vec2( buttonRect.getWidth() + padding, 0.0f );
 	mPlaybackButton.mIsToggle = true;
 	mPlaybackButton.mTitleNormal = "play";
 	mPlaybackButton.mTitleEnabled = "stop";
 	mPlaybackButton.mBounds = buttonRect;
 	mWidgets.push_back( &mPlaybackButton );
 
-	buttonRect += Vec2f( buttonRect.getWidth() + padding, 0.0f );
+	buttonRect += vec2( buttonRect.getWidth() + padding, 0.0f );
 	mLoopButton.mIsToggle = true;
 	mLoopButton.mTitleNormal = "loop off";
 	mLoopButton.mTitleEnabled = "loop on";
 	mLoopButton.mBounds = buttonRect;
 	mWidgets.push_back( &mLoopButton );
 
-	buttonRect += Vec2f( buttonRect.getWidth() + padding, 0.0f );
+	buttonRect += vec2( buttonRect.getWidth() + padding, 0.0f );
 	mScaleDecibelsButton.mIsToggle = true;
 	mScaleDecibelsButton.mTitleNormal = "linear";
 	mScaleDecibelsButton.mTitleEnabled = "decibels";
 	mScaleDecibelsButton.mBounds = buttonRect;
 	mWidgets.push_back( &mScaleDecibelsButton );
 
-	Vec2f sliderSize( 200.0f, 30.0f );
+	vec2 sliderSize( 200.0f, 30.0f );
 	Rectf selectorRect( getWindowWidth() - sliderSize.x - mSpectroMargin, buttonRect.y2 + padding, getWindowWidth() - mSpectroMargin, buttonRect.y2 + padding + sliderSize.y * 3 );
 	mTestSelector.mSegments.push_back( "sine" );
 	mTestSelector.mSegments.push_back( "sine (no output)" );
@@ -162,7 +162,7 @@ void SpectralTestApp::setupUI()
 	mSmoothingFactorSlider.set( mMonitorSpectralNode->getSmoothingFactor() );
 	mWidgets.push_back( &mSmoothingFactorSlider );
 
-	sliderRect += Vec2f( 0.0f, sliderSize.y + padding );
+	sliderRect += vec2( 0.0f, sliderSize.y + padding );
 	mFreqSlider.mBounds = sliderRect;
 	mFreqSlider.mTitle = "Sine Freq";
 	mFreqSlider.mMin = 0.0f;
@@ -200,7 +200,7 @@ void SpectralTestApp::printBinFreq( size_t xPos )
 
 // TODO: currently makes sense to enable processor + tap together - consider making these enabled together.
 // - possible solution: add a silent flag that is settable by client
-void SpectralTestApp::processTap( Vec2i pos )
+void SpectralTestApp::processTap( ivec2 pos )
 {
 	auto ctx = audio::master();
 	if( mEnableGraphButton.hitTest( pos ) )
@@ -238,7 +238,7 @@ void SpectralTestApp::processTap( Vec2i pos )
 
 }
 
-void SpectralTestApp::processDrag( Vec2i pos )
+void SpectralTestApp::processDrag( ivec2 pos )
 {
 	if( mSmoothingFactorSlider.hitTest( pos ) )
 		mMonitorSpectralNode->setSmoothingFactor( mSmoothingFactorSlider.mValueScaled );
@@ -283,7 +283,7 @@ void SpectralTestApp::draw()
 		auto max = max_element( mag.begin(), mag.end() );
 
 		string info = string( "min: " ) + toString( *min ) + string( ", max: " ) + toString( *max );
-		gl::drawString( info, Vec2f( mSpectroMargin, getWindowHeight() - 30.0f ) );
+		gl::drawString( info, vec2( mSpectroMargin, getWindowHeight() - 30.0f ) );
 	}
 
 	drawWidgets( mWidgets );
