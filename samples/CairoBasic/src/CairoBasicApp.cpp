@@ -22,8 +22,8 @@ class Flower {
 		for( int petal = 0; petal < mNumPetals; ++petal ) {
 			ctx.newSubPath();
 			float petalAngle = ( petal / (float)mNumPetals ) * 2 * M_PI;
-			Vec2f outsideCircleCenter = mLoc + Vec2f::xAxis() * cos( petalAngle ) * mRadius + Vec2f::yAxis() * sin( petalAngle ) * mRadius;
-			Vec2f insideCircleCenter = mLoc + Vec2f::xAxis() * cos( petalAngle ) * mPetalInsideRadius + Vec2f::yAxis() * sin( petalAngle ) * mPetalInsideRadius;
+			Vec2f outsideCircleCenter = mLoc + vec2( 1, 0 ) * cos( petalAngle ) * mRadius + vec2( 0, 1 ) * sin( petalAngle ) * mRadius;
+			Vec2f insideCircleCenter = mLoc + vec2( 1, 0 ) * cos( petalAngle ) * mPetalInsideRadius + vec2( 0, 1 ) * sin( petalAngle ) * mPetalInsideRadius;
 			ctx.arc( outsideCircleCenter, mPetalOutsideRadius, petalAngle + M_PI / 2 + M_PI, petalAngle + M_PI / 2 );
 			ctx.arc( insideCircleCenter, mPetalInsideRadius, petalAngle + M_PI / 2, petalAngle + M_PI / 2 + M_PI );
 			ctx.closePath();
