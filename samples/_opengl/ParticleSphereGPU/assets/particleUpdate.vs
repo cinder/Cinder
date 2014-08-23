@@ -1,7 +1,7 @@
-#version 330 core
+#version 150 core
 
-uniform float uMouseStrength;
-uniform vec3  uMousePos;
+uniform bool mouseDown;
+uniform vec3 mousePos;
 
 in vec3   iPosition;
 in vec3   iPPostion;
@@ -18,7 +18,7 @@ out vec4  color;
 const float dt2 = 1.0 / (60.0 * 60.0);
 
 void main()
-{ // copy base values
+{
   position =  iPosition;
   pposition = iPPostion;
   damping =   iDamping;
@@ -26,17 +26,16 @@ void main()
   color =     iColor;
 
   // mouse interaction
-  if( uMouseStrength > 0.0 )
+  if( mouseDown )
   {
-    vec3 dir = position - uMousePos;
+    vec3 dir = position - mousePos;
     float d2 = length( dir );
     d2 *= d2;
-    position += vec3(uMouseStrength) * dir / d2;
+    position += 100.0f * dir / d2;
   }
 
-  // verlet integration
-  vec3 vel = (position - pposition) * vec3(damping);
+  vec3 vel = (position - pposition) * damping;
   pposition = position;
-  vec3 acc = (home - position) * vec3(32.0f);
-  position += vel + acc * vec3(dt2);
+  vec3 acc = (home - position) * 32.0f;
+  position += vel + acc * dt2;
 }
