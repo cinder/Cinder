@@ -1060,7 +1060,6 @@
 		277C2CF01366632B00178A29 /* Matrix22.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEC1366632B00178A29 /* Matrix22.h */; };
 		277C2CF11366632B00178A29 /* Matrix33.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CED1366632B00178A29 /* Matrix33.h */; };
 		277C2CF21366632B00178A29 /* Matrix44.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEE1366632B00178A29 /* Matrix44.h */; };
-		277C2CF31366632B00178A29 /* MatrixAlgo.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEF1366632B00178A29 /* MatrixAlgo.h */; };
 		434708D91267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DA1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
 		434708DB1267EE4300AA7349 /* Blend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 434708D81267EE4300AA7349 /* Blend.cpp */; };
@@ -1573,7 +1572,6 @@
 		277C2CEC1366632B00178A29 /* Matrix22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix22.h; sourceTree = "<group>"; };
 		277C2CED1366632B00178A29 /* Matrix33.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix33.h; sourceTree = "<group>"; };
 		277C2CEE1366632B00178A29 /* Matrix44.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Matrix44.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
-		277C2CEF1366632B00178A29 /* MatrixAlgo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MatrixAlgo.h; sourceTree = "<group>"; };
 		32DBCF5E0370ADEE00C91783 /* cinder_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cinder_Prefix.pch; sourceTree = "<group>"; };
 		434708D81267EE4300AA7349 /* Blend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blend.cpp; path = ip/Blend.cpp; sourceTree = "<group>"; };
 		43C4323F1450A8DA0095B260 /* CinderMath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CinderMath.cpp; sourceTree = "<group>"; };
@@ -1966,7 +1964,6 @@
 				277C2CED1366632B00178A29 /* Matrix33.h */,
 				277C2CEE1366632B00178A29 /* Matrix44.h */,
 				008B435C14EF426100B55B07 /* MatrixAffine2.h */,
-				277C2CEF1366632B00178A29 /* MatrixAlgo.h */,
 				00887AC00F9C279700FD55C5 /* MayaCamUI.h */,
 				002DFD530FA5602900E45AE0 /* ObjLoader.h */,
 				00CFE37B113B85F60091E310 /* Path2d.h */,
@@ -3084,7 +3081,6 @@
 				277C2CF11366632B00178A29 /* Matrix33.h in Headers */,
 				277C2CF21366632B00178A29 /* Matrix44.h in Headers */,
 				111A5EF3191F7251005C3166 /* CinderAssert.h in Headers */,
-				277C2CF31366632B00178A29 /* MatrixAlgo.h in Headers */,
 				005C0CE914CBB3DB00A12CD2 /* Base64.h in Headers */,
 				004172FA14C9BE520070C0D1 /* Frustum.h in Headers */,
 				111A5EBC191F703D005C3166 /* lpc.h in Headers */,
