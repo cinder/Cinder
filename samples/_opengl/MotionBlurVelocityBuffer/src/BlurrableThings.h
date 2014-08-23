@@ -25,6 +25,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "cinder/Vector.h"
+#include "cinder/gl/VboMesh.h"
+
 #pragma once
 
 //
