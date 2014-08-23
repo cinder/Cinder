@@ -61,7 +61,7 @@ void QuaternionAccumApp::resize()
 {
 	mCam = CameraPersp( getWindowWidth(), getWindowHeight(), 40.0f );
 	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.1f, 100.0f );
-	mCam.lookAt( Vec3f( 15, 15, 15 ), Vec3f( 0, 0, 0 ) );
+	mCam.lookAt( vec3( 15, 15, 15 ), vec3( 0, 0, 0 ) );
 }
 
 void QuaternionAccumApp::update()
@@ -79,10 +79,10 @@ void QuaternionAccumApp::mouseDown( MouseEvent event )
 
 void QuaternionAccumApp::createRandomBspline()
 {
-	vector<Vec3f> points;
+	vector<vec3> points;
 	int numPoints = 4 + ( Rand::randInt(8) );
 	for( int p = 0; p < numPoints; ++p )
-		points.push_back( Vec3f( Rand::randFloat(-10, 10), 0.0f, Rand::randFloat(-10, 10) ) );
+		points.push_back( vec3( Rand::randFloat(-10, 10), 0.0f, Rand::randFloat(-10, 10) ) );
 	mSpline = BSpline3f( points, 3, true, true );
 
 	mSplineValue = 0.0f;
@@ -107,17 +107,17 @@ void QuaternionAccumApp::drawSpline()
 	gl::begin( GL_LINE_STRIP );
 	for( int s = 0; s <= numSegments; ++s ) {
 		float t = s / (float)numSegments;
-		gl::vertex( mSpline.getPosition( t ) + Vec3f( 0.0f, 0.5f, 0.0f ) );
+		gl::vertex( mSpline.getPosition( t ) + vec3( 0.0f, 0.5f, 0.0f ) );
 	}
 	gl::end();
 }
 
 void QuaternionAccumApp::drawBall()
 {
-	Vec3f pos = mSpline.getPosition( mSplineValue );
-	Vec3f delta = pos - mLastPos;
+	vec3 pos = mSpline.getPosition( mSplineValue );
+	vec3 delta = pos - mLastPos;
 	// our axis of rotation is the normal to the spline at this point
-	Vec3f normal = Vec3f( delta.z, 0, -delta.x );
+	vec3 normal = vec3( delta.z, 0, -delta.x );
 	
 	// rotation amount (in radians) is the distance we've traveled divided by the radius of the ball
 	float rotation = length( delta ) / BALL_RADIUS;
@@ -128,8 +128,8 @@ void QuaternionAccumApp::drawBall()
 //		mQuat.normalize();
 	}
 	
-	gl::translate( Vec3f( 0.0f, BALL_RADIUS, 0.0f ) + pos );
-	gl::scale( Vec3f( BALL_RADIUS, BALL_RADIUS, BALL_RADIUS ) );
+	gl::translate( vec3( 0.0f, BALL_RADIUS, 0.0f ) + pos );
+	gl::scale( vec3( BALL_RADIUS, BALL_RADIUS, BALL_RADIUS ) );
 	gl::rotate( mQuat );
 	
 	gl::color( Color( 1, 1, 1 ) );

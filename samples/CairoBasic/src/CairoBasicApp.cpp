@@ -13,7 +13,7 @@ using namespace ci::app;
 
 class Flower {
   public:
-	Flower( Vec2f loc, float radius, float petalOutsideRadius, float petalInsideRadius, int numPetals, ColorA color )
+	Flower( vec2 loc, float radius, float petalOutsideRadius, float petalInsideRadius, int numPetals, ColorA color )
 		: mLoc( loc ), mRadius( radius ), mPetalOutsideRadius( petalOutsideRadius ), mPetalInsideRadius( petalInsideRadius ), mNumPetals( numPetals ), mColor( color )
 	{}
 
@@ -22,8 +22,8 @@ class Flower {
 		for( int petal = 0; petal < mNumPetals; ++petal ) {
 			ctx.newSubPath();
 			float petalAngle = ( petal / (float)mNumPetals ) * 2 * M_PI;
-			Vec2f outsideCircleCenter = mLoc + vec2( 1, 0 ) * cos( petalAngle ) * mRadius + vec2( 0, 1 ) * sin( petalAngle ) * mRadius;
-			Vec2f insideCircleCenter = mLoc + vec2( 1, 0 ) * cos( petalAngle ) * mPetalInsideRadius + vec2( 0, 1 ) * sin( petalAngle ) * mPetalInsideRadius;
+			vec2 outsideCircleCenter = mLoc + vec2( 1, 0 ) * cos( petalAngle ) * mRadius + vec2( 0, 1 ) * sin( petalAngle ) * mRadius;
+			vec2 insideCircleCenter = mLoc + vec2( 1, 0 ) * cos( petalAngle ) * mPetalInsideRadius + vec2( 0, 1 ) * sin( petalAngle ) * mPetalInsideRadius;
 			ctx.arc( outsideCircleCenter, mPetalOutsideRadius, petalAngle + M_PI / 2 + M_PI, petalAngle + M_PI / 2 );
 			ctx.arc( insideCircleCenter, mPetalInsideRadius, petalAngle + M_PI / 2, petalAngle + M_PI / 2 + M_PI );
 			ctx.closePath();
@@ -44,7 +44,7 @@ class Flower {
 	};
 	
   private:
-	Vec2f		mLoc;
+	vec2		mLoc;
 	float		mRadius, mPetalOutsideRadius, mPetalInsideRadius;
 	int			mNumPetals;
 	ColorA		mColor;

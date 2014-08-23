@@ -11,7 +11,7 @@ using std::vector;
 RayMarcher::RayMarcher( const ci::CameraPersp *aCamera )
 	: mCamera( aCamera ), mPerlin( 8 )
 {
-	mBoundingBox = AxisAlignedBox3f( Vec3f( -1, -1, -1 ) * 10, Vec3f( 1, 1, 1 ) * 10 );
+	mBoundingBox = AxisAlignedBox3f( vec3( -1, -1, -1 ) * 10, vec3( 1, 1, 1 ) * 10 );
 	
 	randomScene();
 }
@@ -20,13 +20,13 @@ void RayMarcher::randomScene()
 {
 	mSpheres.clear();
 	for( int s = 0; s < 50; ++s )
-		mSpheres.push_back( Sphere( Rand::randVec3f() * Rand::randFloat( 8 ), Rand::randFloat( 1, 4 ) ) );
+		mSpheres.push_back( Sphere( Rand::randvec3() * Rand::randFloat( 8 ), Rand::randFloat( 1, 4 ) ) );
 }
 
 void RayMarcher::renderSceneGL()
 {
 	gl::Light light( gl::Light::DIRECTIONAL, 0 );
-	light.setDirection( Vec3f( 1, 1, 1 ).normalized() );
+	light.setDirection( vec3( 1, 1, 1 ).normalized() );
 	light.update( *mCamera );
 	light.enable();
 
@@ -73,7 +73,7 @@ void RayMarcher::renderScanline( int scanline, ci::Surface8u *surface )
 	}
 }
 
-float RayMarcher::sampleDensity( const Vec3f &v )
+float RayMarcher::sampleDensity( const vec3 &v )
 {
 	float d = 0.0f;
 	for( vector<Sphere>::const_iterator sphIt = mSpheres.begin(); sphIt != mSpheres.end(); ++sphIt ) {
@@ -98,7 +98,7 @@ float RayMarcher::marchSecondary( const Ray &ray )
 	if( mBoundingBox.intersect( ray, boxTimes ) != 2 )
 		return 0;
 		
-	Vec3f pointOfDeparture;
+	vec3 pointOfDeparture;
 	if( boxTimes[0] >= 0 )
 		pointOfDeparture = ray.calcPosition( boxTimes[0] );
 	else
@@ -108,10 +108,10 @@ float RayMarcher::marchSecondary( const Ray &ray )
 	if( numSteps <= 0 ) 
 		return 0;
 
-	Vec3f step( ray.getDirection() );
+	vec3 step( ray.getDirection() );
 	step *= RAY_EPSILON;
 
-	Vec3f rayPos = ray.getOrigin(); 
+	vec3 rayPos = ray.getOrigin(); 
 
 	float result = 0;
 	for( int i = 0; i < numSteps; ++i ) {
@@ -131,7 +131,7 @@ ColorA RayMarcher::march( const Ray &ray )
 	if( mBoundingBox.intersect( ray, boxTimes ) < 2 )
 		return ColorA::zero();
 
-	Vec3f pos0, pos1;
+	vec3 pos0, pos1;
 	if( boxTimes[0] < boxTimes[1] ) {
 		pos0 = ray.calcPosition( boxTimes[0] );
 		pos1 = ray.calcPosition( boxTimes[1] );	
@@ -146,11 +146,11 @@ ColorA RayMarcher::march( const Ray &ray )
 	if( numSteps <= 0 ) 
 		return ColorA::zero();
 
-	Vec3f step( ray.getDirection() );
+	vec3 step( ray.getDirection() );
 	step *= RAY_EPSILON;
 
-	Vec3f rayPos = pos0; 
-	Vec3f lightVec = mCamera->getModelViewMatrix().transformVec( Vec3f( 1, 1, 1 ).normalized() );
+	vec3 rayPos = pos0; 
+	vec3 lightVec = mCamera->getModelViewMatrix().transformVec( vec3( 1, 1, 1 ).normalized() );
 	float transparency = 1.0f;
 	ColorA result = ColorA::zero();
 	for( int i = 0; i < numSteps; ++i ) {

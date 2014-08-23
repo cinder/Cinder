@@ -13,7 +13,7 @@ using namespace ci::app;
 using namespace std;
 
 struct Satellite {
-	Vec3f		mPos;
+	vec3		mPos;
 	Colorf		mColor;
 };
 
@@ -29,7 +29,7 @@ class DynamicCubeMappingApp : public AppNative {
 
 	gl::TextureCubeMapRef	mSkyBoxCubeMap;
 	gl::BatchRef			mTeapotBatch, mSkyBoxBatch;
-	Matrix44f				mObjectRotation;
+	mat4				mObjectRotation;
 	CameraPersp				mCam;
 	
 	gl::FboCubeMapRef		mDynamicCubeMapFbo;
@@ -66,7 +66,7 @@ void DynamicCubeMappingApp::setup()
 		mSatellites.push_back( Satellite() );
 		float angle = i / 33.0f;
 		mSatellites.back().mColor = Colorf( CM_HSV, angle, 1.0f, 1.0f );
-		mSatellites.back().mPos = Vec3f( cos( angle * 2 * M_PI ) * 7, 0, sin( angle * 2 * M_PI ) * 7 );
+		mSatellites.back().mPos = vec3( cos( angle * 2 * M_PI ) * 7, 0, sin( angle * 2 * M_PI ) * 7 );
 	}
 	mSatelliteBatch = gl::Batch::create( geom::Sphere(), getStockShader( gl::ShaderDef().color() ) );
 
@@ -82,7 +82,7 @@ void DynamicCubeMappingApp::resize()
 void DynamicCubeMappingApp::update()
 {
 	// move the camera semi-randomly around based on time
-	mCam.lookAt( Vec3f( 8 * sin( getElapsedSeconds() / 1 + 10 ), 7 * sin( getElapsedSeconds() / 2 ), 8 * cos( getElapsedSeconds() / 4 + 11 ) ), vec3( 0 ) );
+	mCam.lookAt( vec3( 8 * sin( getElapsedSeconds() / 1 + 10 ), 7 * sin( getElapsedSeconds() / 2 ), 8 * cos( getElapsedSeconds() / 4 + 11 ) ), vec3( 0 ) );
 	
 	// rotate the object (teapot) a bit each frame
 	mObjectRotation *= rotate( 0.04f, normalize( vec3( 0.1f, 1, 0.1f ) ) );
@@ -90,7 +90,7 @@ void DynamicCubeMappingApp::update()
 	// move the satellites
 	for( int i = 0; i < 33; ++i ) {
 		float angle = i / 33.0f;
-		mSatellites[i].mPos = Vec3f( cos( angle * 2 * M_PI ) * 7, 6 * sin( getElapsedSeconds() * 2 + angle * 4 * M_PI ), sin( angle * 2 * M_PI ) * 7 );
+		mSatellites[i].mPos = vec3( cos( angle * 2 * M_PI ) * 7, 6 * sin( getElapsedSeconds() * 2 + angle * 4 * M_PI ), sin( angle * 2 * M_PI ) * 7 );
 	}	
 }
 
@@ -118,7 +118,7 @@ void DynamicCubeMappingApp::draw()
 {
 	gl::clear( Color( 1, 0, 0 ) );
 
-	gl::pushViewport( Vec2i( 0, 0 ), mDynamicCubeMapFbo->getSize() );
+	gl::pushViewport( ivec2( 0, 0 ), mDynamicCubeMapFbo->getSize() );
 	for( uint8_t dir = 0; dir < 6; ++dir ) {
 		gl::setProjectionMatrix( ci::CameraPersp( mDynamicCubeMapFbo->getWidth(), mDynamicCubeMapFbo->getHeight(), 90.0f, 1, 1000 ).getProjectionMatrix() );
 		gl::setViewMatrix( mDynamicCubeMapFbo->calcViewMatrix( GL_TEXTURE_CUBE_MAP_POSITIVE_X + dir, vec3( 0 ) ) );

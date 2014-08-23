@@ -86,7 +86,7 @@ void RetinaSampleApp::draw()
 	// another strategy would be to use two different TextureFonts
 	std::string s = ( getWindowContentScale() > 1 ) ? "Retina" : "Non-Retina";
 	float stringWidth = mFont->measureString( s ).x * 0.5f;
-	mFont->drawString( s, Vec2f( getWindowWidth() - stringWidth - 12, getWindowHeight() - 12 ),
+	mFont->drawString( s, vec2( getWindowWidth() - stringWidth - 12, getWindowHeight() - 12 ),
 		gl::TextureFont::DrawOptions().scale( 0.5f ).pixelSnap( false ) );
 }
 

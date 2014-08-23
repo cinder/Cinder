@@ -6,30 +6,30 @@
 
 using namespace ci;
 
-extern void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha );
+extern void renderImage( vec3 _loc, float _diam, Color _col, float _alpha );
 extern float floorLevel;
 extern bool ALLOWFLOOR, ALLOWGRAVITY, ALLOWPERLIN;
-extern Vec3f gravity;
+extern vec3 gravity;
 extern int counter;
 
 Perlin sPerlin(2);
 
-Particle::Particle( Vec3f _loc, Vec3f _vel )
+Particle::Particle( vec3 _loc, vec3 _vel )
 {
 	reset( _loc, _vel);
 	ISDEAD = true;
 
 }
 
-void Particle::reset( Vec3f _loc, Vec3f _vel )
+void Particle::reset( vec3 _loc, vec3 _vel )
 {
 	radius      = Rand::randFloat( 10, 40 );
 	len         = (int)radius;
 
-	startLoc = _loc + Rand::randVec3f() * Rand::randFloat( 5.0f );
-	vel = _vel * 0.5f + Rand::randVec3f() * Rand::randFloat( 10.0f );
+	startLoc = _loc + Rand::randvec3() * Rand::randFloat( 5.0f );
+	vel = _vel * 0.5f + Rand::randvec3() * Rand::randFloat( 10.0f );
 
-	perlin = Vec3f::zero();
+	perlin = vec3::zero();
 
 	loc.clear();
 	for( int i = 0; i < len; i++ ) {
@@ -58,7 +58,7 @@ void Particle::update()
 
 void Particle::findPerlin()
 {
-	Vec3f noise = sPerlin.dfBm( loc[0] * 0.01f + Vec3f( 0, 0, counter / 100.0f ) );
+	vec3 noise = sPerlin.dfBm( loc[0] * 0.01f + vec3( 0, 0, counter / 100.0f ) );
 	perlin = noise.normalized() * 0.5f;
 }
 
@@ -103,38 +103,38 @@ void Particle::renderTrails()
 {
 
 	dx::color( agePer, agePer * 0.25f, 1.0f - agePer, agePer * .5f );
-			dx::vertex( loc[0]  + Vec3f(-2.0, 0.0, 0.0 ));
-			dx::vertex( loc[0]  + Vec3f(2.0, 0.0, 0.0 ));
-			dx::vertex( loc[1] + Vec3f(2.0, 0.0, 0.0 ));
-			dx::vertex( loc[1] + Vec3f(-2.0, 0.0, 0.0));
+			dx::vertex( loc[0]  + vec3(-2.0, 0.0, 0.0 ));
+			dx::vertex( loc[0]  + vec3(2.0, 0.0, 0.0 ));
+			dx::vertex( loc[1] + vec3(2.0, 0.0, 0.0 ));
+			dx::vertex( loc[1] + vec3(-2.0, 0.0, 0.0));
 
 
-			dx::vertex( loc[1] + Vec3f(2.0, 0.0, 0.0 ));
-			dx::vertex( loc[1] + Vec3f(-2.0, 0.0, 0.0));
-			dx::vertex( loc[2] + Vec3f(2.0, 0.0, 0.0 ));
-			dx::vertex( loc[2] + Vec3f(-2.0, 0.0, 0.0));
+			dx::vertex( loc[1] + vec3(2.0, 0.0, 0.0 ));
+			dx::vertex( loc[1] + vec3(-2.0, 0.0, 0.0));
+			dx::vertex( loc[2] + vec3(2.0, 0.0, 0.0 ));
+			dx::vertex( loc[2] + vec3(-2.0, 0.0, 0.0));
 
-			dx::vertex( loc[2] + Vec3f(2.0, 0.0, 0.0 ));
-			dx::vertex( loc[2] + Vec3f(-2.0, 0.0, 0.0));
-			dx::vertex( loc[3] + Vec3f(2.0, 0.0, 0.0 ));
-			dx::vertex( loc[3] + Vec3f(-2.0, 0.0, 0.0));
+			dx::vertex( loc[2] + vec3(2.0, 0.0, 0.0 ));
+			dx::vertex( loc[2] + vec3(-2.0, 0.0, 0.0));
+			dx::vertex( loc[3] + vec3(2.0, 0.0, 0.0 ));
+			dx::vertex( loc[3] + vec3(-2.0, 0.0, 0.0));
 
 
-			dx::vertex( loc[3] + Vec3f(2.0, 0.0, 0.0 ));
-			dx::vertex( loc[3] + Vec3f(-2.0, 0.0, 0.0));
-			dx::vertex( loc[4] + Vec3f(2.0, 0.0, 0.0 ));
-			dx::vertex( loc[4] + Vec3f(-2.0, 0.0, 0.0));
+			dx::vertex( loc[3] + vec3(2.0, 0.0, 0.0 ));
+			dx::vertex( loc[3] + vec3(-2.0, 0.0, 0.0));
+			dx::vertex( loc[4] + vec3(2.0, 0.0, 0.0 ));
+			dx::vertex( loc[4] + vec3(-2.0, 0.0, 0.0));
 
 
 	//for( int i = 0; i < len - 2; i++ ) {
 
 	//	float per = 1.0f - i / (float)(len-1);
-	//	Vec3f perp0 = loc[i] - loc[i+1];
-	//	Vec3f perp1 = perp0.cross( Vec3f::yAxis() );
-	//	Vec3f perp2 = perp0.cross( perp1 );
+	//	vec3 perp0 = loc[i] - loc[i+1];
+	//	vec3 perp1 = perp0.cross( vec3::yAxis() );
+	//	vec3 perp2 = perp0.cross( perp1 );
 	//		  perp1 = perp0.cross( perp2 ).normalized();
 	//		  
-	//	Vec3f off = perp1 * ( radius * agePer * per * 0.1f );
+	//	vec3 off = perp1 * ( radius * agePer * per * 0.1f );
 	//	dx::color( per, per * 0.25f, 1.0f - per, per * 0.9f );
 
 	//	dx::vertex( loc[i] - off );

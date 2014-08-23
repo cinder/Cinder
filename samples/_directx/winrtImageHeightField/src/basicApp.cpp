@@ -51,12 +51,12 @@ void BasicApp::setup()
 
 	dx::enableAlphaBlending();
 
-	mArcball.setQuat( Quatf( Vec3f( 0.0577576f, -0.956794f, 0.284971f ), 3.68f ) );
+	mArcball.setQuat( quat( vec3( 0.0577576f, -0.956794f, 0.284971f ), 3.68f ) );
 	mArcball.setWindowSize( getWindowSize() );
-	mArcball.setCenter( Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
+	mArcball.setCenter( vec2( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
 	mArcball.setRadius( getWindowHeight() / 2.0f );
 
-	mCam.lookAt( Vec3f( 0.0f, 0.0f, -150 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0.0f, 0.0f, -150 ), vec3::zero() );
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
 	dx::setMatrices( mCam );
 
@@ -152,7 +152,7 @@ void BasicApp::draw()
 	dx::clear( Color( 0, 0, 0 ), true );
 
 	dx::pushModelView();
-	dx::translate( Vec3f( 800.0f, 500.0f, mHeight / 2.0f ) );
+	dx::translate( vec3( 800.0f, 500.0f, mHeight / 2.0f ) );
 	dx::rotate( mArcball.getQuat() );
 	if ( mVboMesh )
 		dx::draw( mVboMesh );
@@ -160,7 +160,7 @@ void BasicApp::draw()
 
 	std::stringstream s;
 	s << "Framerate:" << getAverageFps();
-	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color::white(),mFont);
+	dx::drawString(s.str(),vec2(10.0f,10.0f),Color::white(),mFont);
 }
 
 // This line tells Cinder to actually create the application

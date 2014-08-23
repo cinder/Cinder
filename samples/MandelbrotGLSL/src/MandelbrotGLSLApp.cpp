@@ -20,7 +20,7 @@ class MandelbrotGLSLApp : public AppBasic {
 	gl::GlslProg	mBrotShader;
 	gl::Texture		mColorsTexture;
 	
-	Vec2f			mCenter;
+	vec2			mCenter;
 	float			mScale;
 	int				mIter;
 };
@@ -38,7 +38,7 @@ void MandelbrotGLSLApp::setup()
 	mColorsTexture	= gl::Texture( loadImage( loadResource( RES_COLORS_PNG ) ) );
 	mColorsTexture.enableAndBind();
 	
-	mCenter			= Vec2f( 0.7f, 0.0f );
+	mCenter			= vec2( 0.7f, 0.0f );
 	mScale			= 2.2f;
 	
 	// WARNING

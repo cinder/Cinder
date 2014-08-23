@@ -94,7 +94,7 @@ void MotionBlurVelocityBufferApp::createGeometry()
 		float height = randFloat( 100.0f, 300.0f );
 
 		auto mesh = make_shared<BlurrableMesh>( gl::VboMesh::create( geom::Cone().height( height ).base( base ) ), pos );
-		mesh->setAxis( randVec3f() );
+		mesh->setAxis( randvec3() );
 		mesh->setColor( ColorA( CM_HSV, randFloat( 0.05f, 0.33f ), 1.0f, 1.0f ) );
 		mesh->setOscillation( vec3( randFloat( -150.0f, 150.0f ), randFloat( -300.0f, 300.0f ), randFloat( -500.0f, 200.0f ) ) );
 		mesh->setTheta( randFloat( M_PI * 2 ) );

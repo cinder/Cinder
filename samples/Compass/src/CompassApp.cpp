@@ -31,10 +31,10 @@ class CompassApp : public AppNative {
 	void generateCardinalDirections();
 
 	// render direction to the attached Fbo
-	void renderDirection( char d, const Vec2f &offset, const Font &font, const Color &color );
+	void renderDirection( char d, const vec2 &offset, const Font &font, const Color &color );
 
 	// draw the tex area corresponding to \a d at the specified \a location
-	void drawCardinalTex( char d, const Vec3f &location, const Vec3f &rotation );
+	void drawCardinalTex( char d, const vec3 &location, const vec3 &rotation );
 
 	void drawFps();
 
@@ -43,8 +43,8 @@ class CompassApp : public AppNative {
 	// programatically generated spritesheet for cardinal directions:
 	gl::Fbo mFbo;
 	gl::Texture mCardinalTex;
-	map<char, Vec2i> mCardinalPositions;
-	Vec2i mCardinalSize;
+	map<char, ivec2> mCardinalPositions;
+	ivec2 mCardinalSize;
 };
 
 void CompassApp::setup()
@@ -56,7 +56,7 @@ void CompassApp::setup()
 
     MotionManager::enable( 60.0f );
 
-	mCam.setEyePoint( Vec3f::zero() );
+	mCam.setEyePoint( vec3::zero() );
 	generateCardinalDirections();
 }
 
@@ -83,23 +83,23 @@ void CompassApp::draw()
     gl::setMatrices( mCam );
 
 	static const float kD = kTargetDistance;
-	drawCardinalTex( 'N', Vec3f(  0,  0, -kD ),	Vec3f(  0,  180, 0 ) );
-	drawCardinalTex( 'S', Vec3f(  0,  0,  kD ),	Vec3f(  0,  0,   0 ) );
-	drawCardinalTex( 'E', Vec3f(  kD, 0,  0 ),	Vec3f(  0,  90,  0 ) );
-	drawCardinalTex( 'W', Vec3f( -kD, 0,  0 ),	Vec3f(  0, -90,  0 ) );
-	drawCardinalTex( 'U', Vec3f(  0,  kD, 0 ),	Vec3f( -90, 0,   0 ) );
-	drawCardinalTex( 'D', Vec3f(  0, -kD, 0 ),	Vec3f(  90, 0,   0 ) );
+	drawCardinalTex( 'N', vec3(  0,  0, -kD ),	vec3(  0,  180, 0 ) );
+	drawCardinalTex( 'S', vec3(  0,  0,  kD ),	vec3(  0,  0,   0 ) );
+	drawCardinalTex( 'E', vec3(  kD, 0,  0 ),	vec3(  0,  90,  0 ) );
+	drawCardinalTex( 'W', vec3( -kD, 0,  0 ),	vec3(  0, -90,  0 ) );
+	drawCardinalTex( 'U', vec3(  0,  kD, 0 ),	vec3( -90, 0,   0 ) );
+	drawCardinalTex( 'D', vec3(  0, -kD, 0 ),	vec3(  90, 0,   0 ) );
 
 	gl::popMatrices();
 
 	drawFps();
 }
 
-void CompassApp::drawCardinalTex( char d, const Vec3f &location, const Vec3f &rotation )
+void CompassApp::drawCardinalTex( char d, const vec3 &location, const vec3 &rotation )
 {
 	const float kRectHalfWidth = kTargetSize / 2.0f;
 	Rectf destRect( kRectHalfWidth, kRectHalfWidth, -kRectHalfWidth, -kRectHalfWidth );
-	Vec2i texPos = mCardinalPositions[d];
+	ivec2 texPos = mCardinalPositions[d];
 	Area srcArea( texPos.x, texPos.y, texPos.x + mCardinalSize.x, texPos.y + mCardinalSize.y);
 
 	gl::pushModelView();
@@ -111,7 +111,7 @@ void CompassApp::drawCardinalTex( char d, const Vec3f &location, const Vec3f &ro
 #else
 	// draw billboarded, flip to face eye point
 	gl::rotate( mCam.getOrientation() );
-	gl::rotate( Vec3f( 0, 180, 0 ) );
+	gl::rotate( vec3( 0, 180, 0 ) );
 #endif
 	gl::draw( mCardinalTex, srcArea, destRect );
 
@@ -121,13 +121,13 @@ void CompassApp::drawCardinalTex( char d, const Vec3f &location, const Vec3f &ro
 void CompassApp::drawFps()
 {
 	gl::enableAlphaBlending();
-	gl::drawStringRight( toString( floor(getAverageFps()) ) + " fps", Vec2f( getWindowWidth(), 40.0f), Color( 0, 0, 1 ), Font( "Helvetica", 30 ) );
+	gl::drawStringRight( toString( floor(getAverageFps()) ) + " fps", vec2( getWindowWidth(), 40.0f), Color( 0, 0, 1 ), Font( "Helvetica", 30 ) );
 	gl::disableAlphaBlending();
 }
 
 void CompassApp::generateCardinalDirections()
 {
-	mCardinalSize = Vec2i( 300, 300 );
+	mCardinalSize = ivec2( 300, 300 );
 	Font directionFont( "Baskerville-SemiBold", 260 );
 
 	gl::SaveFramebufferBinding bindingSaver;
@@ -139,7 +139,7 @@ void CompassApp::generateCardinalDirections()
 	gl::clear( ColorA::zero() );
 	gl::setMatricesWindow( mFbo.getWidth(), mFbo.getHeight(), false );
 
-	Vec2f offset = Vec2f::zero();
+	vec2 offset = vec2::zero();
 	renderDirection( 'N', offset, directionFont, Color( 1, 0, 0 ) );
 	mCardinalPositions['N'] = offset;
 
@@ -147,7 +147,7 @@ void CompassApp::generateCardinalDirections()
 	renderDirection( 'E', offset, directionFont, Color( 0, 0, 1 ) );
 	mCardinalPositions['E'] = offset;
 
-	offset = Vec2f( 0, 300 );
+	offset = vec2( 0, 300 );
 	renderDirection( 'S', offset, directionFont, Color( 0, 1, 0 ) );
 	mCardinalPositions['S'] = offset;
 
@@ -155,7 +155,7 @@ void CompassApp::generateCardinalDirections()
 	renderDirection( 'W', offset, directionFont, Color( 1, 0.5, 0 ) );
 	mCardinalPositions['W'] = offset;
 
-	offset = Vec2f( 0, 600 );
+	offset = vec2( 0, 600 );
 	renderDirection( 'U', offset, directionFont, Color( 1, 1, 0 ) );
 	mCardinalPositions['U'] = offset;
 
@@ -166,7 +166,7 @@ void CompassApp::generateCardinalDirections()
 	mCardinalTex = mFbo.getTexture();
 }
 
-void CompassApp::renderDirection( char d, const Vec2f &offset, const Font &font, const Color &color )
+void CompassApp::renderDirection( char d, const vec2 &offset, const Font &font, const Color &color )
 {
 	Rectf rect( offset.x, offset.y, offset.x + mCardinalSize.x, offset.y + mCardinalSize.y );
 	Shape2d glyphShape = font.getGlyphShape( font.getGlyphChar( d ) );

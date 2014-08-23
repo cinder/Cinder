@@ -32,9 +32,9 @@ class HodginParticlesReduxApp : public AppBasic {
 
 	gl::GlslProg	mEmitterShader;
 	
-	Vec3f			mMouseLoc;
-	Vec3f			mMousePastLoc;
-	Vec3f			mMouseVel;
+	vec3			mMouseLoc;
+	vec3			mMousePastLoc;
+	vec3			mMouseVel;
 	
 	int				mCounter;
 	float			mMouseDownCounter;
@@ -47,7 +47,7 @@ class HodginParticlesReduxApp : public AppBasic {
 	gl::Texture		mHeightTexture;
 	gl::Texture		mSpecTexture;
 	
-	ci::Vec3f		mLightDir;
+	ci::vec3		mLightDir;
 	
 	Emitter				mEmitter;
 	ParticleController	mParticleController;
@@ -96,15 +96,15 @@ void HodginParticlesReduxApp::setup()
 		std::cout << "Unable to load shader" << std::endl;
 	}
 	
-	mLightDir		= Vec3f( 0.0f, 0.25f, 1.0f );
+	mLightDir		= vec3( 0.0f, 0.25f, 1.0f );
 	mLightDir.normalize();
-	mMousePastLoc = mMouseLoc = mMouseVel = Vec3f::zero();
+	mMousePastLoc = mMouseLoc = mMouseVel = vec3::zero();
 }
 
 
 void HodginParticlesReduxApp::resize()
 {
-	mParticleController.createConstraints( Vec2f( getWindowWidth(), getWindowHeight() ) );
+	mParticleController.createConstraints( vec2( getWindowWidth(), getWindowHeight() ) );
 }
 
 void HodginParticlesReduxApp::keyDown( KeyEvent event )
@@ -144,7 +144,7 @@ void HodginParticlesReduxApp::keyDown( KeyEvent event )
 
 void HodginParticlesReduxApp::mouseMove( MouseEvent event )
 {
-	mMouseLoc = Vec3f( event.getX(), event.getY(), 0.0f );
+	mMouseLoc = vec3( event.getX(), event.getY(), 0.0f );
 }
 
 void HodginParticlesReduxApp::mouseDrag( MouseEvent event )
@@ -173,7 +173,7 @@ void HodginParticlesReduxApp::update()
 	if( mIsMouseDown && mEmitter.mHeat > 0.5f ){
 		int depth = mMouseLoc.y - 380;
 		float per = depth/340.0f;
-		Vec3f vel = mEmitter.mVel * per;
+		vec3 vel = mEmitter.mVel * per;
 		vel.y *= 0.02f;
 		int numParticlesToSpawn = ( mEmitter.mHeat - 0.5f ) * 250;
 		if( Rand::randFloat() < 0.02f )
@@ -185,9 +185,9 @@ void HodginParticlesReduxApp::update()
 	if( mMouseLoc.y > 380 && mParticleController.mEnableConstraints && mEmitter.mHeat > 0.5f ){
 		int depth = ( mMouseLoc.y - 380 ) / 8;
 		float per = depth/340.0f;
-		Vec3f vel = mEmitter.mVel * per;
+		vec3 vel = mEmitter.mVel * per;
 		vel.y *= 0.02f;
-		mParticleController.addParticles( depth * mEmitter.mHeat * 1, mEmitter.mLoc + Vec3f( 0.0f, per * mEmitter.mLoc.y, 0.0f ), vel, mEmitter.mHeat, mEmitter.mRadius );
+		mParticleController.addParticles( depth * mEmitter.mHeat * 1, mEmitter.mLoc + vec3( 0.0f, per * mEmitter.mLoc.y, 0.0f ), vel, mEmitter.mHeat, mEmitter.mRadius );
 	}
 	
 	mParticleController.update( mEmitter, mCounter );
@@ -245,7 +245,7 @@ void HodginParticlesReduxApp::draw()
 		mEmitter.renderFloorLighting( getWindowHeight() * 0.625f );
 	mParticleController.render( mEmitter.mHeat );
 	
-	mInfoPanel.update( Vec2f( getWindowWidth(), getWindowHeight() ), mCounter );
+	mInfoPanel.update( vec2( getWindowWidth(), getWindowHeight() ), mCounter );
 
 	if( mSaveFrames ){
 		writeImage( getHomeDirectory() / ( "HodginParticleRedux_" + toString( mCounter ) + ".png" ), copyWindowSurface() );

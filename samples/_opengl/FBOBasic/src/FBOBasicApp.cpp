@@ -23,7 +23,7 @@ class FBOBasicApp : public AppNative {
 	void			renderSceneToFbo();
 	
 	gl::FboRef			mFbo;
-	Matrix44f			mTorusRotation;
+	mat4			mTorusRotation;
 	static const int	FBO_WIDTH = 256, FBO_HEIGHT = 256;
 };
 
@@ -53,7 +53,7 @@ void FBOBasicApp::renderSceneToFbo()
 	// setup our camera to render the torus scene
 	CameraPersp cam( mFbo->getWidth(), mFbo->getHeight(), 60.0f );
 	cam.setPerspective( 60, mFbo->getAspectRatio(), 1, 1000 );
-	cam.lookAt( Vec3f( 2.8f, 1.8f, -2.8f ), vec3( 0 ));
+	cam.lookAt( vec3( 2.8f, 1.8f, -2.8f ), vec3( 0 ));
 	gl::setMatrices( cam );
 
 	// set the modelview matrix to reflect our current rotation
@@ -87,7 +87,7 @@ void FBOBasicApp::draw()
 	// setup our camera to render the cube
 	CameraPersp cam( getWindowWidth(), getWindowHeight(), 60.0f );
 	cam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	cam.lookAt( Vec3f( 2.6f, 1.6f, -2.6f ), vec3( 0 ) );
+	cam.lookAt( vec3( 2.6f, 1.6f, -2.6f ), vec3( 0 ) );
 	gl::setMatrices( cam );
 
 	// use the scene we rendered into the FBO as a texture

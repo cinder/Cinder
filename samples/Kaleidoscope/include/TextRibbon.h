@@ -26,13 +26,13 @@ class TextRibbon {
 	void			ribbonIn(float delay);
 	
 	std::string			mTag, mUser;
-	ci::Vec2f			mTextPos, mRibbonSize;
+	ci::vec2			mTextPos, mRibbonSize;
 	ci::Font			mUserFont, mTagFont;
 	ci::ColorA			mCol, mTextCol;
 	
 	ci::gl::TextureRef	mUserTex, mTagTex;
 	ci::TextBox			mTagBox, mUserBox;
 	
-	ci::Anim<ci::Vec2f> mCurPos;
+	ci::Anim<ci::vec2> mCurPos;
 	ci::Anim<float>		mCurAlpha;
 };

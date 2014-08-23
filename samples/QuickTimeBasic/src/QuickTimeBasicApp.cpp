@@ -101,7 +101,7 @@ void QuickTimeSampleApp::draw()
 	}
 
 	if( mInfoTexture ) {
-		gl::draw( mInfoTexture, Vec2f( 20, getWindowHeight() - 20 - mInfoTexture->getHeight() ) );
+		gl::draw( mInfoTexture, vec2( 20, getWindowHeight() - 20 - mInfoTexture->getHeight() ) );
 	}
 }
 

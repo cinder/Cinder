@@ -29,11 +29,11 @@ ParticleController::ParticleController()
 	adjustForcesOfType( FORCEGRAVITY, mEnableGravity );
 }
 
-void ParticleController::createConstraints( Vec2f windowDim )
+void ParticleController::createConstraints( vec2 windowDim )
 {
 	mConstraints.clear();
-	//mConstraints.push_back( new Constraint( Vec3f( 1, 0, 0 ), 0.0f, windowDim.x ) );
-	mConstraints.push_back( new Constraint( Vec3f( 0, 1, 0 ), -1000.0f, windowDim.y * 0.625f ) );
+	//mConstraints.push_back( new Constraint( vec3( 1, 0, 0 ), 0.0f, windowDim.x ) );
+	mConstraints.push_back( new Constraint( vec3( 0, 1, 0 ), -1000.0f, windowDim.y * 0.625f ) );
 }
 
 
@@ -53,10 +53,10 @@ void ParticleController::update( Emitter &emitter, int counter )
 			
 			if( particleIt->mIsBouncing ){
 				if( Rand::randFloat() < 0.025f && !particleIt->mIsDying ){
-					mParticles.push_back( Particle( particleIt->mLoc[0], Vec3f::zero() ) );
+					mParticles.push_back( Particle( particleIt->mLoc[0], vec3::zero() ) );
 					mParticles.back().mIsDying = true;
 					particleIt->mIsDying = true;
-					//particleIt->mVel += Rand::randVec3f() * Rand::randFloat( 2.0f, 3.0f );
+					//particleIt->mVel += Rand::randvec3() * Rand::randFloat( 2.0f, 3.0f );
 				}
 			}
 			
@@ -115,12 +115,12 @@ void ParticleController::renderTrails()
 }
 
 
-void ParticleController::addParticles( int amt, Vec3f loc, Vec3f vel, float heat, float radius )
+void ParticleController::addParticles( int amt, vec3 loc, vec3 vel, float heat, float radius )
 {
 	for( int i = 0; i < amt; i++ ) {
-		Vec3f lOffset = Rand::randVec3f();
-		Vec3f l = loc + lOffset * radius * 0.25f;
-		Vec3f v = -vel + lOffset * Rand::randFloat( 6.0f, 10.5f ) * ( heat + 0.75f ) + Rand::randVec3f() * Rand::randFloat( 1.0f, 2.0f );
+		vec3 lOffset = Rand::randvec3();
+		vec3 l = loc + lOffset * radius * 0.25f;
+		vec3 v = -vel + lOffset * Rand::randFloat( 6.0f, 10.5f ) * ( heat + 0.75f ) + Rand::randvec3() * Rand::randFloat( 1.0f, 2.0f );
 		v.y *= 0.65f;
 		mParticles.push_back( Particle( l, v ) );
 	}
@@ -135,7 +135,7 @@ void ParticleController::adjustForcesOfType( int type, bool enable )
 			mForces.push_back( new ForcePerlin( FORCEPERLIN, 0.5f ) );
 		}
 		else if( type == FORCEGRAVITY ){
-			mForces.push_back( new ForceGravity( FORCEGRAVITY, Vec3f( 0.0f, 0.1f, 0.0f ), 1.0f ) );
+			mForces.push_back( new ForceGravity( FORCEGRAVITY, vec3( 0.0f, 0.1f, 0.0f ), 1.0f ) );
 		}
 		else if( type == FORCEREPULSION ){
 			//mForces.push_back( new ForceRepulsion( FORCEREPULSION, 10.0f ) ); // slow and boring

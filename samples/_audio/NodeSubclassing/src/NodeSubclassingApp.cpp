@@ -51,7 +51,7 @@ void NodeSubclassingApp::setup()
 
 void NodeSubclassingApp::mouseMove( MouseEvent event )
 {
-	Vec2f pos = event.getPos();
+	vec2 pos = event.getPos();
 
 	float rate = 20.0f * pos.x / (float)getWindowWidth();
 	float depth = 1.0f - pos.y / (float)getWindowHeight();

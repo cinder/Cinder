@@ -11,7 +11,7 @@ class BasicTweenApp : public AppBasic {
 	void mouseDown( MouseEvent event );
 	void draw();
   
-	Anim<Vec2f>		mBlackPos, mWhitePos;
+	Anim<vec2>		mBlackPos, mWhitePos;
 };
 
 void BasicTweenApp::setup()
@@ -22,9 +22,9 @@ void BasicTweenApp::setup()
 void BasicTweenApp::mouseDown( MouseEvent event )
 {
 	// the call to apply() replaces any existing tweens on mBlackPos with this new one
-	timeline().apply( &mBlackPos, (Vec2f)event.getPos(), 2.0f, EaseInCubic() );
+	timeline().apply( &mBlackPos, (vec2)event.getPos(), 2.0f, EaseInCubic() );
 	// the call to appendTo causes the white circle to start when the black one finishes
-	timeline().apply( &mWhitePos, (Vec2f)event.getPos(), 0.35f, EaseOutQuint() ).appendTo( &mBlackPos );
+	timeline().apply( &mWhitePos, (vec2)event.getPos(), 0.35f, EaseOutQuint() ).appendTo( &mBlackPos );
 }
 
 void BasicTweenApp::draw()

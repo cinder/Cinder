@@ -68,7 +68,7 @@ void iosKeyboardApp::touchesBegan( TouchEvent event )
 	mNumericalTextView.mIsSelected = false;
 	mMultiLineTextView.mIsSelected = false;
 
-	Vec2f pos = event.getTouches().front().getPos();
+	vec2 pos = event.getTouches().front().getPos();
 	pos.y -= mViewYOffset;
 
 	if( mNumericalTextView.mBounds.contains( pos ) ) {
@@ -107,7 +107,7 @@ void iosKeyboardApp::processNumerical( const KeyEvent &event )
 		mNumericalTextView.mText.push_back( event.getChar() );
 		Rectf fitRect = mNumericalTextView.getTextBounds();
 		TextBox tbox = TextBox().font( mFont ).text( mNumericalTextView.mText ).size( TextBox::GROW, TextBox::GROW );
-		Vec2f size = tbox.measure();
+		vec2 size = tbox.measure();
 
 		if( size.x > fitRect.getWidth() ) {
 			console() << "OVERFLOW" << endl;
@@ -151,7 +151,7 @@ void iosKeyboardApp::drawTextView( const TextView &textView )
 	gl::drawStrokedRect( textView.mBounds );
 
 	Rectf fitRect = textView.getTextBounds();
-	Vec2f offset( 0.0f, mFont.getAscent() );
+	vec2 offset( 0.0f, mFont.getAscent() );
 
 	TextBox tbox = TextBox().font( mFont ).size( fitRect.getWidth(), fitRect.getHeight() ).premultiplied();
 

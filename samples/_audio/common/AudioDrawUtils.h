@@ -37,10 +37,10 @@ class Waveform {
   public:
 	enum CalcMode { MIN_MAX, AVERAGE };
     Waveform() {}
-    Waveform( const std::vector<float> &samples, const ci::Vec2i &waveSize, size_t pixelsPerVertex = 2, CalcMode mode = MIN_MAX )	{ load( samples.data(), samples.size(), waveSize, pixelsPerVertex, mode ); }
-    Waveform( const float *samples, size_t numSamples, const ci::Vec2i &waveSize, size_t pixelsPerVertex = 2, CalcMode mode = MIN_MAX )	{ load( samples, numSamples, waveSize, pixelsPerVertex, mode ); }
+    Waveform( const std::vector<float> &samples, const ci::ivec2 &waveSize, size_t pixelsPerVertex = 2, CalcMode mode = MIN_MAX )	{ load( samples.data(), samples.size(), waveSize, pixelsPerVertex, mode ); }
+    Waveform( const float *samples, size_t numSamples, const ci::ivec2 &waveSize, size_t pixelsPerVertex = 2, CalcMode mode = MIN_MAX )	{ load( samples, numSamples, waveSize, pixelsPerVertex, mode ); }
 
-	void load( const float *samples, size_t numSamples, const ci::Vec2i &waveSize, size_t pixelsPerVertex = 2, CalcMode mode = MIN_MAX );
+	void load( const float *samples, size_t numSamples, const ci::ivec2 &waveSize, size_t pixelsPerVertex = 2, CalcMode mode = MIN_MAX );
 
     const ci::PolyLine2f& getOutline() const	{ return mOutline; }
 	const ci::TriMesh2d& getMesh() const		{ return mMesh; };
@@ -95,6 +95,6 @@ class SpectrumPlot {
 	ci::Rectf				mBounds;
 	bool					mScaleDecibels, mBorderEnabled;
 	ci::ColorA				mBorderColor;
-	std::vector<ci::Vec2f>	mVerts;
+	std::vector<ci::vec2>	mVerts;
 	std::vector<ci::ColorA>	mColors;
 };

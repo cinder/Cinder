@@ -21,7 +21,7 @@ class RayMarcher {
  private:
 	ci::ColorA		march( const ci::Ray &ray );
 	float			marchSecondary( const ci::Ray &ray );
-	float			sampleDensity( const ci::Vec3f &v );
+	float			sampleDensity( const ci::vec3 &v );
 	
 	const ci::Camera			*mCamera;
 	ci::Perlin					mPerlin;

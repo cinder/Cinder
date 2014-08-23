@@ -18,7 +18,7 @@ class CubeMappingApp : public AppNative {
 
 	gl::TextureCubeMapRef	mCubeMap;
 	gl::BatchRef			mTeapotBatch, mSkyBoxBatch;
-	Matrix44f				mObjectRotation;
+	mat4				mObjectRotation;
 	CameraPersp				mCam;
 };
 
@@ -54,10 +54,10 @@ void CubeMappingApp::resize()
 void CubeMappingApp::update()
 {
 	// move the camera semi-randomly around based on time
-	mCam.lookAt( Vec3f( 8 * sin( getElapsedSeconds() / 1 + 10 ), 7 * sin( getElapsedSeconds() / 2 ), 8 * cos( getElapsedSeconds() / 4 + 11 ) ), vec3( 0 ) );
+	mCam.lookAt( vec3( 8 * sin( getElapsedSeconds() / 1 + 10 ), 7 * sin( getElapsedSeconds() / 2 ), 8 * cos( getElapsedSeconds() / 4 + 11 ) ), vec3( 0 ) );
 	
 	// rotate the object (teapot) a bit each frame
-	mObjectRotation *= rotate( 0.04f, normalize( Vec3f( 0.1f, 1, 0.1f ) ) );
+	mObjectRotation *= rotate( 0.04f, normalize( vec3( 0.1f, 1, 0.1f ) ) );
 }
 
 void CubeMappingApp::draw()

@@ -47,7 +47,7 @@ void drawAudioBuffer( const audio::Buffer &buffer, const Rectf &bounds, bool dra
 		for( size_t i = 0; i < buffer.getNumFrames(); i++ ) {
 			x += xScale;
 			float y = ( 1 - ( channel[i] * 0.5f + 0.5f ) ) * waveHeight + yOffset;
-			waveform.push_back( Vec2f( x, y ) );
+			waveform.push_back( vec2( x, y ) );
 		}
 
 		if( ! waveform.getPoints().empty() )
@@ -95,13 +95,13 @@ inline void calcAverageForSection( const float *buffer, size_t samplesPerSection
 
 } // anonymouse namespace
 
-void Waveform::load( const float *samples, size_t numSamples, const ci::Vec2i &waveSize, size_t pixelsPerVertex, CalcMode mode )
+void Waveform::load( const float *samples, size_t numSamples, const ci::ivec2 &waveSize, size_t pixelsPerVertex, CalcMode mode )
 {
     float height = waveSize.y / 2.0f;
     size_t numSections = waveSize.x / pixelsPerVertex + 1;
     size_t samplesPerSection = numSamples / numSections;
 
-	vector<Vec2f> &points = mOutline.getPoints();
+	vector<vec2> &points = mOutline.getPoints();
 	points.resize( numSections * 2 );
 
     for( size_t i = 0; i < numSections; i++ ) {
@@ -112,8 +112,8 @@ void Waveform::load( const float *samples, size_t numSamples, const ci::Vec2i &w
 		} else {
 			calcAverageForSection( &samples[i * samplesPerSection], samplesPerSection, yUpper, yLower );
 		}
-		points[i] = Vec2f( x, height - height * yUpper );
-		points[numSections * 2 - i - 1] = Vec2f( x, height - height * yLower );
+		points[i] = vec2( x, height - height * yUpper );
+		points[numSections * 2 - i - 1] = vec2( x, height - height * yLower );
     }
 	mOutline.setClosed();
 
@@ -126,7 +126,7 @@ void WaveformPlot::load( const std::vector<float> &samples, const ci::Rectf &bou
 	mBounds = bounds;
 	mWaveforms.clear();
 
-	Vec2i waveSize = bounds.getSize();
+	ivec2 waveSize = bounds.getSize();
 	mWaveforms.push_back( Waveform( samples, waveSize, pixelsPerVertex, Waveform::CalcMode::MIN_MAX ) );
 	mWaveforms.push_back( Waveform( samples, waveSize, pixelsPerVertex, Waveform::CalcMode::AVERAGE ) );
 }
@@ -137,7 +137,7 @@ void WaveformPlot::load( const audio::BufferRef &buffer, const ci::Rectf &bounds
 	mWaveforms.clear();
 
 	size_t numChannels = buffer->getNumChannels();
-	Vec2i waveSize = bounds.getSize();
+	ivec2 waveSize = bounds.getSize();
 	waveSize.y /= numChannels;
 	for( size_t ch = 0; ch < numChannels; ch++ ) {
 		mWaveforms.push_back( Waveform( buffer->getChannel( ch ), buffer->getNumFrames(), waveSize, pixelsPerVertex, Waveform::CalcMode::MIN_MAX ) );
@@ -214,7 +214,7 @@ void SpectrumPlot::draw( const vector<float> &magSpectrum )
 		mVerts[currVertex + 1] = bin.getUpperLeft();
 		mColors[currVertex + 1] = ColorA( 0, m, 0.7f, 1 );
 
-		bin += Vec2f( binWidth + padding, 0 );
+		bin += vec2( binWidth + padding, 0 );
 		currVertex += 2;
 	}
 

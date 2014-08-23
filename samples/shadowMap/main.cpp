@@ -56,11 +56,11 @@ void ShadowMapSample::setup()
 	mDrawDepthMap = false;
 	
 	mCamera = new CameraPersp( getWindowWidth(), getWindowHeight(), 45.0f );
-	mCamera->lookAt( Vec3f( 5, 5, 5 ), Vec3f( 0, 0, 0 ) );
+	mCamera->lookAt( vec3( 5, 5, 5 ), vec3( 0, 0, 0 ) );
 	mCamera->setPerspective( 45.0f, getWindowAspectRatio(), 0.1f, 100.0f );
 	
 	mLight = new gl::Light( gl::Light::POINT, 0 );
-	mLight->lookAt( Vec3f( 1, 5, 1 ), Vec3f( 0, 0, 0 ) );
+	mLight->lookAt( vec3( 1, 5, 1 ), vec3( 0, 0, 0 ) );
 	mLight->setAmbient( Color( 0.3f, 0.3f, 0.3f ) );
 	mLight->setDiffuse( Color( 0.5f, 0.5f, 0.5f ) );
 	mLight->setSpecular( Color( 0.5f, 0.5f, 0.5f ) );
@@ -89,7 +89,7 @@ void ShadowMapSample::setup()
 	
 	mBackboard = gl::DisplayList( GL_COMPILE );
 	mBackboard.newList();
-		gl::drawCube( Vec3f( 0.0f, -2.5f, 0.0f ), Vec3f( 5.0f, 0.1f, 5.0f ) );
+		gl::drawCube( vec3( 0.0f, -2.5f, 0.0f ), vec3( 5.0f, 0.1f, 5.0f ) );
 	mBackboard.endList();
 	mBackboard.setMaterial( backboardMaterial );
 
@@ -105,9 +105,9 @@ void ShadowMapSample::keyDown( ci::app::KeyEvent event )
 			mPaused = ! mPaused;
 		break;
 		case 'r': { // create a random camera position
-			Vec3f eyeVec = Rand::randVec3f().normalized() * 6.0f;
+			vec3 eyeVec = Rand::randvec3().normalized() * 6.0f;
 			if( eyeVec.y < 0 ) eyeVec.y = -eyeVec.y;
-			mCamera->lookAt( eyeVec, Vec3f(0,-2.5,0) );
+			mCamera->lookAt( eyeVec, vec3(0,-2.5,0) );
 			mLight->update( *mCamera );
 		}
 		break;
@@ -115,9 +115,9 @@ void ShadowMapSample::keyDown( ci::app::KeyEvent event )
 			setFullScreen( ! isFullScreen() );
 		break;
 		case 'l': { // create a random light position
-			Vec3f lightPos = Rand::randVec3f().normalized() * 4.0f;
+			vec3 lightPos = Rand::randvec3().normalized() * 4.0f;
 			if( lightPos.y < 0 ) lightPos.y = -lightPos.y;			
-			mLight->lookAt( lightPos, Vec3f::zero() );
+			mLight->lookAt( lightPos, vec3::zero() );
 			mLight->update( *mCamera );
 		}
 		break;
@@ -169,7 +169,7 @@ void ShadowMapSample::updateShadowMap()
 
 		mBackboard.draw();
 		mTorus.draw();
-		gl::drawCube( Vec3f::zero(), Vec3f( 1, 1, 1 ) );
+		gl::drawCube( vec3::zero(), vec3( 1, 1, 1 ) );
 	gl::popMatrices();
 
 	glPopAttrib();
@@ -182,7 +182,7 @@ void ShadowMapSample::updateShadowMap()
 void ShadowMapSample::update()
 {
 	if( ! mPaused )
-		mTorus.getModelMatrix().rotate( Vec3f( 1.0f, 1.0f, 1.0f ).normalized(), 0.05f );
+		mTorus.getModelMatrix().rotate( vec3( 1.0f, 1.0f, 1.0f ).normalized(), 0.05f );
 }
 
 void ShadowMapSample::draw()
@@ -208,7 +208,7 @@ void ShadowMapSample::draw()
 	glPushMatrix();
 		mBackboard.draw();
 		mTorus.draw();
-		gl::drawCube( Vec3f::zero(), Vec3f( 1, 1, 1 ) );
+		gl::drawCube( vec3::zero(), vec3( 1, 1, 1 ) );
 	glPopMatrix();
 	
 	mShader.unbind();

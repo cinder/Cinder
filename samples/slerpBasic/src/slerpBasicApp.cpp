@@ -13,13 +13,13 @@ class slerpBasicApp : public AppBasic {
 	void mouseDown( MouseEvent event );	
 	void update();
 	void draw();
-	void drawPathBetweenVectors( Vec3f a, Vec3f b );
+	void drawPathBetweenVectors( vec3 a, vec3 b );
 
 	void setupSlerp();
 	
 	CameraPersp		mCam;
-	Quatf			mSpinTheWholeWorld;
-	Vec3f			mVecA, mVecB;
+	quat			mSpinTheWholeWorld;
+	vec3			mVecA, mVecB;
 	float			mSlerpAmt;
 };
 
@@ -28,9 +28,9 @@ void slerpBasicApp::setup()
 	// setup a camera that looks back at the origin from (3,3,3);
 	mCam = CameraPersp( getWindowWidth(), getWindowHeight(), 45 );
 	mCam.setPerspective( 45.0f, getWindowAspectRatio(), 0.1f, 100.0f );
-	mCam.lookAt( Vec3f( 3, 3, 3 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 3, 3, 3 ), vec3::zero() );
 	
-	mSpinTheWholeWorld = Quatf( Vec3f::yAxis(), 0 );
+	mSpinTheWholeWorld = quat( vec3::yAxis(), 0 );
 	
 	setupSlerp();
 }
@@ -47,17 +47,17 @@ void slerpBasicApp::update()
 		mSlerpAmt = 0;
 	
 	// spin the scene by a few degrees around the y Axis
-	mSpinTheWholeWorld *= Quatf( Vec3f::yAxis(), 0.01f );
+	mSpinTheWholeWorld *= quat( vec3::yAxis(), 0.01f );
 }
 
 void slerpBasicApp::setupSlerp()
 {
-	mVecA = randVec3f();
-	mVecB = randVec3f();
+	mVecA = randvec3();
+	mVecB = randvec3();
 	mSlerpAmt = 0;
 }
 
-void slerpBasicApp::drawPathBetweenVectors( Vec3f a, Vec3f b )
+void slerpBasicApp::drawPathBetweenVectors( vec3 a, vec3 b )
 {
 	// draws a path composed of 100 line segments
 	glBegin( GL_LINE_STRIP );
@@ -78,7 +78,7 @@ void slerpBasicApp::draw()
 	// draw the globe
 	gl::enableWireframe();
 	gl::color( ColorA( 1, 1, 0, 0.25f ) );
-	gl::drawSphere( Vec3f::zero(), 1, 20 );
+	gl::drawSphere( vec3::zero(), 1, 20 );
 	gl::disableWireframe();
 	
 	// draw the path

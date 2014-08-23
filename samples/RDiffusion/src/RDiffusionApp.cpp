@@ -36,7 +36,7 @@ class RDiffusionApp : public AppBasic {
 	gl::GlslProgRef		mRDShader;
 	gl::TextureRef		mTexture;
 	
-	Vec2f			mMouse;
+	vec2			mMouse;
 	bool			mMousePressed;
 	
 	float			mReactionU;
@@ -83,7 +83,7 @@ void RDiffusionApp::setup()
 	mMousePressed = false;
 	
 	// Setup the parameters
-	mParams = params::InterfaceGl::create( "Parameters", Vec2i( 175, 100 ) );
+	mParams = params::InterfaceGl::create( "Parameters", ivec2( 175, 100 ) );
 	mParams->addParam( "Reaction u", &mReactionU, "min=0.0 max=0.4 step=0.01 keyIncr=u keyDecr=U" );
 	mParams->addParam( "Reaction v", &mReactionV, "min=0.0 max=0.4 step=0.01 keyIncr=v keyDecr=V" );
 	mParams->addParam( "Reaction k", &mReactionK, "min=0.0 max=1.0 step=0.001 keyIncr=k keyDecr=K" );	

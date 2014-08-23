@@ -27,7 +27,7 @@ class LocationApp : public AppNative {
 	Anim<float>		mRotationAngle;
 	Shape2d			mArrow;
 	float			mHeading;
-	Vec3f			mLocation;
+	vec3			mLocation;
 	
 	Anim<float>		mDotRadius;
 	
@@ -61,17 +61,17 @@ void LocationApp::setup()
 
 	// Set up light
 	mLight = new gl::Light( gl::Light::DIRECTIONAL, 0 );
-	mLight->setDirection( Vec3f( 0.0f, 0.1f, 0.3f ).normalized() );
+	mLight->setDirection( vec3( 0.0f, 0.1f, 0.3f ).normalized() );
 	mLight->setAmbient( ColorAf::gray( 0.843f ) );
 	mLight->setDiffuse( ColorAf( 1.0f, 1.0f, 1.0f, 1.0f ) );
 	mLight->enable();
 
 	// Build the heading arrow
 	float size = 80.0f;
-	mArrow.moveTo( Vec2f(         0.0f, -size * 0.5f  ) );
-	mArrow.lineTo( Vec2f(  size * 0.5f,  size * 0.5f  ) );
-	mArrow.lineTo( Vec2f(         0.0f,  size * 0.25f ) );
-	mArrow.lineTo( Vec2f( -size * 0.5f,  size * 0.5f  ) );
+	mArrow.moveTo( vec2(         0.0f, -size * 0.5f  ) );
+	mArrow.lineTo( vec2(  size * 0.5f,  size * 0.5f  ) );
+	mArrow.lineTo( vec2(         0.0f,  size * 0.25f ) );
+	mArrow.lineTo( vec2( -size * 0.5f,  size * 0.5f  ) );
 	mArrow.close();
 }
 
@@ -84,12 +84,12 @@ void LocationApp::draw()
 	
 	CameraPersp camera;
 	camera.setPerspective( 60.0f, getWindowAspectRatio(), 0.01f, 10.0f );
-	camera.lookAt( Vec3f( 0.0f, 0.0f, 3.0f ), Vec3f::zero() );
+	camera.lookAt( vec3( 0.0f, 0.0f, 3.0f ), vec3::zero() );
 	gl::setMatrices( camera );
 	mLight->update( camera );
 
 	// Rotate the globe
-	gl::multModelView( Quatf(Vec3f::yAxis(), mRotationAngle ).normalized() );
+	gl::multModelView( quat(vec3::yAxis(), mRotationAngle ).normalized() );
 	
 	// Draw the globe with shading. Rotate it 90 degrees on 
 	// its Y axis to line up the texture with the location
@@ -97,8 +97,8 @@ void LocationApp::draw()
 	gl::enable( GL_LIGHTING );
 	mTexture.bind( 0 );
 	gl::pushMatrices();
-		gl::rotate( Vec3f( 0.0f, 90.0f, 0.0f ) );
-		gl::drawSphere( Vec3f::zero(), 1.0f, 32 );
+		gl::rotate( vec3( 0.0f, 90.0f, 0.0f ) );
+		gl::drawSphere( vec3::zero(), 1.0f, 32 );
 	gl::popMatrices();
 	mTexture.unbind();
 	gl::disable( GL_LIGHTING );
@@ -118,10 +118,10 @@ void LocationApp::draw()
 	float rotation = toRadians( mHeading ) - (float)M_PI * 0.5f;
 	float x = math<float>::cos( rotation );
 	float y = math<float>::sin( rotation );
-	Vec2f position = getWindowCenter() + Vec2f( x, y ) * radius;
+	vec2 position = getWindowCenter() + vec2( x, y ) * radius;
 	
 	gl::translate( position );
-	gl::rotate( Vec3f( 0.0f, 0.0f, -mHeading ) );
+	gl::rotate( vec3( 0.0f, 0.0f, -mHeading ) );
 	gl::translate( position * -1.0f );
 	gl::translate( position );
 	
@@ -141,7 +141,7 @@ void LocationApp::headingChanged( HeadingEvent event )
 void LocationApp::locationChanged( LocationEvent event )
 {
 	// Get the location coordinate
-	Vec2f coord = event.getCoordinate();
+	vec2 coord = event.getCoordinate();
 	console() << "Location: " << coord << std::endl;
 	
 	// Convert the location to radians
@@ -152,7 +152,7 @@ void LocationApp::locationChanged( LocationEvent event )
 	float x = math<float>::sin( coord.x ) * math<float>::sin( coord.y );
 	float y = math<float>::cos( coord.x );
 	float z = math<float>::sin( coord.x ) * math<float>::cos( coord.y );
-	mLocation = Vec3f( x, y, z );
+	mLocation = vec3( x, y, z );
 }
 
 CINDER_APP_NATIVE( LocationApp, RendererGl )

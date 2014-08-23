@@ -29,11 +29,11 @@ class BezierPathIterationApp : public AppNative {
 		}
 		
 		const Path2dCalcCache&	mPathCache;
-		Vec2f					mLastPos;
+		vec2					mLastPos;
 		float					mCurrentDistance;
 	};
 	
-	Vec2f						mWindowOffset, mWindowScale;
+	vec2						mWindowOffset, mWindowScale;
 	vector<Path2dCalcCache>		mPathCaches;
 	// each path iterator has a reference to its path(cache) and its current position
 	vector<PathIter>			mPathIters;
@@ -90,7 +90,7 @@ void BezierPathIterationApp::draw()
 	for( auto &pathIt : mPathIters ) {
 		pathIt.mCurrentDistance += 3.0f; // move 3 units along the path
 		float newTime = pathIt.mPathCache.calcTimeForDistance( pathIt.mCurrentDistance );
-		Vec2f pos = pathIt.mPathCache.getPosition( newTime );
+		vec2 pos = pathIt.mPathCache.getPosition( newTime );
 		
 		gl::drawLine( pathIt.mLastPos, pos );
 		pathIt.mLastPos = pos;

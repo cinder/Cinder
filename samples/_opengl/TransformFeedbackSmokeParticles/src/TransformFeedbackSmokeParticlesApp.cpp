@@ -56,7 +56,7 @@ void TransformFeedbackSmokeParticlesApp::setup()
 	mDrawBuff = 1;
 	
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), .01f, 1000.0f );
-	mCam.lookAt( Vec3f( 0, 0, 10 ), Vec3f( 0, 0, 0 ) );
+	mCam.lookAt( vec3( 0, 0, 10 ), vec3( 0, 0, 0 ) );
 	
 	loadTexture();
 	loadShaders();
@@ -94,7 +94,7 @@ void TransformFeedbackSmokeParticlesApp::loadShaders()
 	}
 	
 	mPUpdateGlsl->uniform( "H", 1.0f / 60.0f );
-	mPUpdateGlsl->uniform( "Accel", Vec3f( 0, 0, 0 ) );
+	mPUpdateGlsl->uniform( "Accel", vec3( 0, 0, 0 ) );
 	mPUpdateGlsl->uniform( "ParticleLifetime", 3.0f );
 	
 	try {
@@ -125,13 +125,13 @@ void TransformFeedbackSmokeParticlesApp::loadBuffers()
 	
 	// BUFFER FIRST POSITION DATA
 	for( int i = 0; i < nParticles; i++ )
-		mTrimesh->appendVertex( ci::Vec3f( 0.0f, 0.0f, 0.0f ) );
+		mTrimesh->appendVertex( ci::vec3( 0.0f, 0.0f, 0.0f ) );
 	
-	mPPositions[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNumVertices() * sizeof(ci::Vec3f), mTrimesh->getVertices<3>(), GL_DYNAMIC_COPY );
-	mPPositions[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNumVertices() * sizeof(ci::Vec3f), nullptr, GL_DYNAMIC_COPY );
+	mPPositions[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNumVertices() * sizeof(ci::vec3), mTrimesh->getVertices<3>(), GL_DYNAMIC_COPY );
+	mPPositions[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNumVertices() * sizeof(ci::vec3), nullptr, GL_DYNAMIC_COPY );
 	
 	// BUFFER FIRST VELOCITY DATA
-	ci::Vec3f v(0.0f, 0.0f, 0.0f);
+	ci::vec3 v(0.0f, 0.0f, 0.0f);
 	float velocity, theta, phi;
 	
 	for( int i = 0; i < nParticles; i++ ) {
@@ -148,9 +148,9 @@ void TransformFeedbackSmokeParticlesApp::loadBuffers()
 		mTrimesh->appendNormal( v );
 	}
 	
-	mPVelocities[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNormals().size() * sizeof(ci::Vec3f), mTrimesh->getNormals().data(), GL_DYNAMIC_COPY );
-	mPVelocities[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNormals().size() * sizeof(ci::Vec3f), nullptr, GL_DYNAMIC_COPY );
-	mPInitVelocity = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNormals().size() * sizeof(ci::Vec3f), mTrimesh->getNormals().data(), GL_STATIC_DRAW );
+	mPVelocities[0] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNormals().size() * sizeof(ci::vec3), mTrimesh->getNormals().data(), GL_DYNAMIC_COPY );
+	mPVelocities[1] = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNormals().size() * sizeof(ci::vec3), nullptr, GL_DYNAMIC_COPY );
+	mPInitVelocity = ci::gl::Vbo::create( GL_ARRAY_BUFFER, mTrimesh->getNormals().size() * sizeof(ci::vec3), mTrimesh->getNormals().data(), GL_STATIC_DRAW );
 	
 	// BUFFER START TIMES
 	GLfloat * timeData = new GLfloat[nParticles];
@@ -257,7 +257,7 @@ void TransformFeedbackSmokeParticlesApp::draw()
 	
 	gl::pushMatrices();
 	gl::setMatrices( mCam );
-	gl::multModelMatrix( Matrix44f::createRotation( Vec3f( 0, 1, 0 ), rotateRadians ) );
+	gl::multModelMatrix( mat4::createRotation( vec3( 0, 1, 0 ), rotateRadians ) );
 	
 	mPRenderGlsl->uniform( "Time", getElapsedFrames() / 60.0f );
 	gl::setDefaultShaderVars();

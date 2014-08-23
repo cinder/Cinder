@@ -43,13 +43,13 @@ class EarthquakeApp : public AppBasic {
 	POV				mPov;
 	Earth			mEarth;
 	
-	Vec2f			mLastMouse;
-	Vec2f			mCurrentMouse;
+	vec2			mLastMouse;
+	vec2			mCurrentMouse;
 	
-	Vec3f			sBillboardUp, sBillboardRight;
-	Vec3f			billboardVecs[2];
+	vec3			sBillboardUp, sBillboardRight;
+	vec3			billboardVecs[2];
 	
-	Vec3f			mLightDir;
+	vec3			mLightDir;
 	
 	float			mCounter;
 	int				mCurrentFrame;
@@ -94,9 +94,9 @@ void EarthquakeApp::setup()
 	mShowEarth		= true;
 	mShowText		= true;
 	mShowQuakes		= true;
-	mLightDir		= Vec3f( 0.025f, 0.25f, 1.0f );
+	mLightDir		= vec3( 0.025f, 0.25f, 1.0f );
 	mLightDir.normalize();
-	mPov			= POV( this, ci::Vec3f( 0.0f, 0.0f, 1000.0f ), ci::Vec3f( 0.0f, 0.0f, 0.0f ) );
+	mPov			= POV( this, ci::vec3( 0.0f, 0.0f, 1000.0f ), ci::vec3( 0.0f, 0.0f, 0.0f ) );
 	mEarth			= Earth( earthDiffuse, earthNormal, earthMask );
 	
 	parseEarthquakes( "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson" );
@@ -177,7 +177,7 @@ void EarthquakeApp::update()
 	mPov.update();
 	mPov.mCam.getBillboardVectors( &sBillboardRight, &sBillboardUp );
 	
-	//mLightDir = Vec3f( sin( mCounter ), 0.25f, cos( mCounter ) );
+	//mLightDir = vec3( sin( mCounter ), 0.25f, cos( mCounter ) );
 	mEarth.update();
 	
 	mCounter += 0.1f;
@@ -198,10 +198,10 @@ void EarthquakeApp::draw()
 	
 	glColor4f( 1, 1, 1, 1 );
 	mStars.enableAndBind();
-	gl::drawSphere( Vec3f( 0, 0, 0 ), 15000.0f, 64 );
+	gl::drawSphere( vec3( 0, 0, 0 ), 15000.0f, 64 );
 	
-	//gl::rotate( Quatf( Vec3f::zAxis(), -0.2f ) );
-	//gl::rotate( Quatf( Vec3f::yAxis(), mCounter*0.1f ) );
+	//gl::rotate( quat( vec3::zAxis(), -0.2f ) );
+	//gl::rotate( quat( vec3::yAxis(), mCounter*0.1f ) );
 	
 	if( mShowEarth ){
 		mEarthShader.bind();

@@ -59,7 +59,7 @@ void ObjLoaderApp::setup()
 void ObjLoaderApp::resize()
 {
 	mArcball.setWindowSize( getWindowSize() );
-	mArcball.setCenter( Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
+	mArcball.setCenter( vec2( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
 	mArcball.setRadius( 150 );
 }
 

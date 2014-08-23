@@ -10,7 +10,7 @@ using namespace std;
 
 class Circle {
   public:
-	Circle( Color color, float radius, Vec2f initialPos, Vec2f homePos )
+	Circle( Color color, float radius, vec2 initialPos, vec2 homePos )
 		: mColor( color ), mRadius( radius ), mPos( initialPos ), mHomePos( homePos )
 	{}
 	
@@ -29,8 +29,8 @@ class Circle {
 	}
 	
 	Color				mColor;
-	Vec2f				mHomePos;
-	Anim<Vec2f>			mPos;
+	vec2				mHomePos;
+	Anim<vec2>			mPos;
 	Anim<float>			mRadius;
 };
 
@@ -53,7 +53,7 @@ void DragTweenApp::setup()
 	const size_t numCircles = 35;
 	for( size_t c = 0; c < numCircles; ++c ) {
 		float angle = c / (float)numCircles * 4 * M_PI;
-		Vec2f pos = getWindowCenter() + ( 50 + c / (float)numCircles * 200 ) * Vec2f( cos( angle ), sin( angle ) );
+		vec2 pos = getWindowCenter() + ( 50 + c / (float)numCircles * 200 ) * vec2( cos( angle ), sin( angle ) );
 		mCircles.push_back( Circle( Color( CM_HSV, c / (float)numCircles, 1, 1 ), 0, getWindowCenter(), pos ) );
 		timeline().apply( &mCircles.back().mPos, pos, 0.5f, EaseOutAtan( 10 ) ).timelineEnd( -0.45f );
 		timeline().apply( &mCircles.back().mRadius, 30.0f, 0.5f, EaseOutAtan( 10 ) ).timelineEnd( -0.5f );

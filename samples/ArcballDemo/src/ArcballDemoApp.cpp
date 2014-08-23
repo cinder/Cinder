@@ -17,10 +17,10 @@ class ArcballDemoApp : public AppBasic {
 	void drawVerbose();	
 	
 	Arcball		mArcball;
-	Vec2i		mInitialMouseDown, mCurrentMouseDown;
+	ivec2		mInitialMouseDown, mCurrentMouseDown;
 	bool		mDrawVerbose;
 	bool		mUseConstraintAxis;
-	Vec3f		mConstraintAxis;
+	vec3		mConstraintAxis;
 };
 
 void ArcballDemoApp::setup()
@@ -33,7 +33,7 @@ void ArcballDemoApp::setup()
 
 	mDrawVerbose = true;
 	mUseConstraintAxis = false;
-	mCurrentMouseDown = mInitialMouseDown = Vec2i( 200, 200 );
+	mCurrentMouseDown = mInitialMouseDown = ivec2( 200, 200 );
 }
 
 void ArcballDemoApp::resize()
@@ -63,7 +63,7 @@ void ArcballDemoApp::keyDown( KeyEvent event )
 		mUseConstraintAxis = ! mUseConstraintAxis;
 		if( mUseConstraintAxis ) {
 			// make a random constraint axis
-			mConstraintAxis = Rand::randVec3f();
+			mConstraintAxis = Rand::randvec3();
 			mArcball.setConstraintAxis( mConstraintAxis );
 		}
 		else
@@ -77,7 +77,7 @@ void ArcballDemoApp::drawVerbose()
 	// draw the cube
 	gl::pushModelMatrix();
 		gl::translate( getWindowCenter() );
-		gl::scale( Vec3f( 200.0f, 200.0f, 200.0f ) );	
+		gl::scale( vec3( 200.0f, 200.0f, 200.0f ) );	
 		gl::rotate( mArcball.getQuat() );
 		gl::drawColorCube( vec3( 0.0f ), vec3( 1, 1, 1 ) );
 	gl::popModelMatrix();
@@ -137,7 +137,7 @@ void ArcballDemoApp::draw()
 		gl::pushModelMatrix();
 			glCullFace( GL_BACK );
 			gl::translate( getWindowSize() / 2 );
-			gl::scale( Vec3f( 200.0f, 200.0f, 200.0f ) );	
+			gl::scale( vec3( 200.0f, 200.0f, 200.0f ) );	
 			gl::rotate( mArcball.getQuat() );
 			gl::drawColorCube( vec3( 0 ), vec3( 1 ) );
 		gl::popModelMatrix();

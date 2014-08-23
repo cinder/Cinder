@@ -13,7 +13,7 @@
 using namespace ci;
 using namespace std;
 
-Character::Character( gl::TextureFontRef textureFont, string character, Matrix44f matrix )
+Character::Character( gl::TextureFontRef textureFont, string character, mat4 matrix )
 {
 	mTextureFont = textureFont;
 	mChar = character;
@@ -31,14 +31,14 @@ Character::Character( gl::TextureFontRef textureFont, string character, Matrix44
 	mIsDead = false;
 }
 
-void Character::animIn( Timeline &timeline, Matrix44f matrix )
+void Character::animIn( Timeline &timeline, mat4 matrix )
 {
 	mDestMatrix = matrix;
 	timeline.apply( &mColorCur, mColorDest, 1.0f, EaseOutAtan( 20 ) );
 	timeline.apply( &mMatrix, matrix, 0.5f, EaseOutAtan( 10 ) );
 }
 
-void Character::animOut( Timeline &timeline, Matrix44f matrix )
+void Character::animOut( Timeline &timeline, mat4 matrix )
 {
 	mDestMatrix = matrix;
 	timeline.apply( &mColorCur, mColorStart, 1.0f, EaseOutQuad() ).finishFn( bind( &Character::onAnimOut, this ) );
@@ -60,7 +60,7 @@ bool Character::isDead() const
 	return mIsDead;
 }
 
-Matrix44f Character::getDestMatrix() const
+mat4 Character::getDestMatrix() const
 {
 	return mDestMatrix;
 }
@@ -69,9 +69,9 @@ void Character::draw() const
 {
 	gl::color( mColorCur );
 	gl::pushMatrices();
-		Matrix44f m = mMatrix;
-		m.scale( Vec3f( 1.0f, -1.0f, 1.0 ) );
+		mat4 m = mMatrix;
+		m.scale( vec3( 1.0f, -1.0f, 1.0 ) );
 		gl::multModelView( m );
-		mTextureFont->drawString( mChar, mKernBounds.getCenter() - Vec2f( mKernBounds.getWidth(), 0.0f ) );
+		mTextureFont->drawString( mChar, mKernBounds.getCenter() - vec2( mKernBounds.getWidth(), 0.0f ) );
 	gl::popMatrices();
 }
