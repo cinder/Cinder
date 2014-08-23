@@ -56,8 +56,8 @@ private:
 	gl::VboRef		mParticleBuffer[2];
 	// current source and destination buffers for transform feedback
 	// source and destination are swapped each frame after update
-	uint32_t		mSourceIndex		= 0;
-	uint32_t		mDestinationIndex	= 1;
+	std::uint32_t	mSourceIndex		= 0;
+	std::uint32_t	mDestinationIndex	= 1;
 
 	// mouse state suitable for passing as uniforms to update program
 	bool			mMouseDown = false;
