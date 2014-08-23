@@ -23,7 +23,7 @@ struct Particle
 	vec3	pos;
 	vec3	ppos;
 	vec3	home;
-	ColorA  color;	// Q: how to specify type of default attributes to Cinder? e.g. switch to Color8u
+	ColorA  color;
 	float	damping;
 };
 
