@@ -9,10 +9,10 @@ Particle::Particle()
 {
 }
 
-Particle::Particle( Vec2f loc )
+Particle::Particle( vec2 loc )
 {
 	mLoc	= loc;
-	mDir	= Rand::randVec2f();
+	mDir	= Rand::randvec2();
 	mVel	= Rand::randFloat( 5.0f );
 	mRadius	= 3.0f;
 }

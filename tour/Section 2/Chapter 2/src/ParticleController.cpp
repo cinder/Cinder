@@ -16,7 +16,7 @@ void ParticleController::applyForceToParticles( float zoneRadiusSqrd )
 	
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
-			Vec3f dir = p1->mPos - p2->mPos;
+			vec3 dir = p1->mPos - p2->mPos;
 			float distSqrd = dir.lengthSquared();
 					
 			if( distSqrd <= zoneRadiusSqrd ){	// SEPARATION
@@ -31,7 +31,7 @@ void ParticleController::applyForceToParticles( float zoneRadiusSqrd )
 	}
 }
 
-void ParticleController::pullToCenter( const ci::Vec3f &center )
+void ParticleController::pullToCenter( const ci::vec3 &center )
 {
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
 		p->pullToCenter( center );
@@ -63,8 +63,8 @@ void ParticleController::addParticles( int amt )
 {
 	for( int i=0; i<amt; i++ )
 	{
-		Vec3f pos = Rand::randVec3f() * Rand::randFloat( 50.0f, 250.0f );
-		Vec3f vel = Rand::randVec3f() * 2.0f;
+		vec3 pos = Rand::randvec3() * Rand::randFloat( 50.0f, 250.0f );
+		vec3 vel = Rand::randvec3() * 2.0f;
 		mParticles.push_back( Particle( pos, vel ) );
 	}
 }

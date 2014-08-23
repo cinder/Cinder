@@ -16,7 +16,7 @@ void ParticleController::repulseParticles()
 	
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
-			Vec2f dir = p1->mLoc - p2->mLoc;
+			vec2 dir = p1->mLoc - p2->mLoc;
 			
 			float thresh = ( p1->mRadius + p2->mRadius ) * 5.0f;
 			if( dir.x > -thresh && dir.x < thresh && dir.y > -thresh && dir.y < thresh ){
@@ -49,7 +49,7 @@ void ParticleController::applyPerlin( const Perlin &perlin )
 	}
 }
 
-void ParticleController::update( const Channel32f &channel, const Vec2i &mouseLoc )
+void ParticleController::update( const Channel32f &channel, const ivec2 &mouseLoc )
 {
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ){
 		if( p->mIsDead ){
@@ -68,13 +68,13 @@ void ParticleController::draw()
 	}
 }
 
-void ParticleController::addParticles( int amt, const Vec2i &mouseLoc, const Vec2f &mouseVel )
+void ParticleController::addParticles( int amt, const ivec2 &mouseLoc, const vec2 &mouseVel )
 {
 	for( int i=0; i<amt; i++ )
 	{
-		Vec2f loc = mouseLoc + Rand::randVec2f() * Rand::randFloat( 5.0f );
-		Vec2f velOffset = Rand::randVec2f() * Rand::randFloat( 1.0f, 3.0f );
-		Vec2f vel = mouseVel * 5.0f + velOffset;
+		vec2 loc = mouseLoc + Rand::randvec2() * Rand::randFloat( 5.0f );
+		vec2 velOffset = Rand::randvec2() * Rand::randFloat( 1.0f, 3.0f );
+		vec2 vel = mouseVel * 5.0f + velOffset;
 		mParticles.push_back( Particle( loc, vel ) );
 	}
 	

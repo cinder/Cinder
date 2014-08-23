@@ -9,19 +9,19 @@ Particle::Particle()
 {
 }
 
-Particle::Particle( Vec3f pos, Vec3f vel )
+Particle::Particle( vec3 pos, vec3 vel )
 {
 	mPos			= pos;
 	mVel			= vel;
-	mAcc			= Vec3f::zero();
+	mAcc			= vec3::zero();
 
 	mRadius			= 2.0f;
 	mDecay			= 0.99f;
 }
 
-void Particle::pullToCenter( const Vec3f &center )
+void Particle::pullToCenter( const vec3 &center )
 {
-	Vec3f dirToCenter	= mPos - center;
+	vec3 dirToCenter	= mPos - center;
 	float distToCenter	= dirToCenter.length();
 	float maxDistance	= 300.0f;
 	
@@ -37,7 +37,7 @@ void Particle::update()
 	mVel += mAcc;
 	mPos += mVel;
 	mVel *= mDecay;
-	mAcc = Vec3f::zero();
+	mAcc = vec3::zero();
 }
 
 void Particle::draw()

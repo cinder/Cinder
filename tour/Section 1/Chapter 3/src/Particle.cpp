@@ -9,17 +9,17 @@ Particle::Particle()
 {
 }
 
-Particle::Particle( Vec2f loc )
+Particle::Particle( vec2 loc )
 {
 	mLoc			= loc;
-	mDir			= Rand::randVec2f();
-	mDirToCursor	= Vec2f::zero();
+	mDir			= Rand::randvec2();
+	mDirToCursor	= vec2::zero();
 	mVel			= 0.0f;
 	mRadius			= 0.0f;
 	mScale			= 3.0f;
 }	
 
-void Particle::update( const Channel32f &channel, const Vec2i &mouseLoc )
+void Particle::update( const Channel32f &channel, const ivec2 &mouseLoc )
 {
 	mDirToCursor		= mouseLoc - mLoc;
 
@@ -31,7 +31,7 @@ void Particle::update( const Channel32f &channel, const Vec2i &mouseLoc )
 	mDirToCursor.normalize();
 	mDirToCursor		*= sinOffset * 100.0f;
 	
-	Vec2f newLoc		= mLoc + mDirToCursor;
+	vec2 newLoc		= mLoc + mDirToCursor;
 	newLoc.x			= constrain( newLoc.x, 0.0f, channel.getWidth() - 1.0f );
 	newLoc.y			= constrain( newLoc.y, 0.0f, channel.getHeight() - 1.0f );
 	
@@ -41,7 +41,7 @@ void Particle::update( const Channel32f &channel, const Vec2i &mouseLoc )
 void Particle::draw()
 {
 	//gl::color( Color( 1.0f, 1.0f, 1.0f ) );
-	//gl::drawVector( Vec3f( mLoc, 0.0f ), Vec3f( mLoc + mDirToCursor * 15.0f, 0.0f ), 6.0f, 3.0f );
+	//gl::drawVector( vec3( mLoc, 0.0f ), vec3( mLoc + mDirToCursor * 15.0f, 0.0f ), 6.0f, 3.0f );
 	gl::drawSolidCircle( mLoc + mDirToCursor * 0.2f, mRadius );
 }
 

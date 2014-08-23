@@ -14,14 +14,14 @@ ParticleController::ParticleController()
 void ParticleController::applyForceToParticles( float zoneRadius, float lowerThresh, float higherThresh, float attractStrength, float repelStrength, float alignStrength  )
 {
 	float twoPI = M_PI * 2.0f;
-	mParticleCentroid = Vec3f::zero();
+	mParticleCentroid = vec3::zero();
 	mNumParticles = mParticles.size();
 	
 	for( list<Particle>::iterator p1 = mParticles.begin(); p1 != mParticles.end(); ++p1 ){
 		
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
-			Vec3f dir = p1->mPos - p2->mPos;
+			vec3 dir = p1->mPos - p2->mPos;
 			float distSqrd = dir.lengthSquared();
 			float zoneRadiusSqrd = zoneRadius * p1->mCrowdFactor * zoneRadius * p2->mCrowdFactor;
 			
@@ -62,7 +62,7 @@ void ParticleController::applyForceToParticles( float zoneRadius, float lowerThr
 		mParticleCentroid += p1->mPos;
 		/*
 		if( p1->mNumNeighbors > 0 ){ // Cohesion 
-			Vec3f neighborAveragePos = ( p1->mNeighborPos/(float)p1->mNumNeighbors );
+			vec3 neighborAveragePos = ( p1->mNeighborPos/(float)p1->mNumNeighbors );
 			p1->mAcc += ( neighborAveragePos - p1->mPos ) * attractStrength;	
 		}
 		*/
@@ -70,7 +70,7 @@ void ParticleController::applyForceToParticles( float zoneRadius, float lowerThr
 		// ADD PERLIN NOISE INFLUENCE
 		float scale = 0.002f;
 		float multi = 0.01f;
-		Vec3f perlin = mPerlin.dfBm( p1->mPos * scale ) * multi;
+		vec3 perlin = mPerlin.dfBm( p1->mPos * scale ) * multi;
 		p1->mAcc += perlin;
 		
 		
@@ -79,7 +79,7 @@ void ParticleController::applyForceToParticles( float zoneRadius, float lowerThr
 		float predatorZoneRadiusSqrd = zoneRadius * zoneRadius * 5.0f;
 		for( list<Predator>::iterator predator = mPredators.begin(); predator != mPredators.end(); ++predator ) {
 
-			Vec3f dir = p1->mPos - predator->mPos[0];
+			vec3 dir = p1->mPos - predator->mPos[0];
 			float distSqrd = dir.lengthSquared();
 			
 			if( distSqrd < predatorZoneRadiusSqrd ){
@@ -110,7 +110,7 @@ void ParticleController::applyForceToPredators( float zoneRadius, float lowerThr
 	
 		list<Predator>::iterator P2 = P1;
 		for( ++P2; P2 != mPredators.end(); ++P2 ) {
-			Vec3f dir = P1->mPos[0] - P2->mPos[0];
+			vec3 dir = P1->mPos[0] - P2->mPos[0];
 			float distSqrd = dir.lengthSquared();
 			float zoneRadiusSqrd = zoneRadius * zoneRadius * 4.0f;
 			
@@ -148,7 +148,7 @@ void ParticleController::applyForceToPredators( float zoneRadius, float lowerThr
 }
 
 
-void ParticleController::pullToCenter( const ci::Vec3f &center )
+void ParticleController::pullToCenter( const ci::vec3 &center )
 {
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
 		p->pullToCenter( center );
@@ -197,8 +197,8 @@ void ParticleController::addPredators( int amt )
 {
 	for( int i=0; i<amt; i++ )
 	{
-		Vec3f pos = Rand::randVec3f() * Rand::randFloat( 500.0f, 750.0f );
-		Vec3f vel = Rand::randVec3f();
+		vec3 pos = Rand::randvec3() * Rand::randFloat( 500.0f, 750.0f );
+		vec3 vel = Rand::randvec3();
 		mPredators.push_back( Predator( pos, vel ) );
 	}
 }
@@ -207,8 +207,8 @@ void ParticleController::addParticles( int amt )
 {
 	for( int i=0; i<amt; i++ )
 	{
-		Vec3f pos = Rand::randVec3f() * Rand::randFloat( 100.0f, 200.0f );
-		Vec3f vel = Rand::randVec3f();
+		vec3 pos = Rand::randvec3() * Rand::randFloat( 100.0f, 200.0f );
+		vec3 vel = Rand::randvec3();
 		
 		bool followed = false;
 		if( mParticles.size() == 0 ) followed = true;
@@ -225,7 +225,7 @@ void ParticleController::removeParticles( int amt )
 	}
 }
 
-Vec3f ParticleController::getPos()
+vec3 ParticleController::getPos()
 {
 	return mParticles.begin()->mPos;
 }
