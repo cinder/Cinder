@@ -469,7 +469,7 @@ void BSpline<D,T>::createControl( const VecT *akCtrlPoint )
 {
 	int iNewNumCtrlPoints = mNumCtrlPoints + mReplicate;
 	mCtrlPoints = new VecT[iNewNumCtrlPoints];
-	size_t uiSrcSize = mNumCtrlPoints * D;
+	size_t uiSrcSize = mNumCtrlPoints * sizeof( VecT );
 	memcpy( mCtrlPoints, akCtrlPoint, uiSrcSize );
 	for( int i = 0; i < mReplicate; i++ ) {
 		mCtrlPoints[mNumCtrlPoints+i] = akCtrlPoint[i];
