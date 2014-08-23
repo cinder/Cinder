@@ -74,9 +74,9 @@ void ParticleSphereGPUApp::setup()
 	// Create initial particle layout.
 	vector<Particle> particles;
 	particles.assign( NUM_PARTICLES, Particle() );
-	const float azimuth = 128.0f * M_PI / particles.size();
+	const float azimuth = 256.0f * M_PI / particles.size();
 	const float inclination = M_PI / particles.size();
-	const float radius = 160.0f;
+	const float radius = 180.0f;
 	vec3 center = vec3( getWindowCenter(), 0.0f );
 	for( int i = 0; i < particles.size(); ++i )
 	{	// assign starting values to particles.
