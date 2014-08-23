@@ -28,14 +28,16 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/Camera.h"
 #include "cinder/Timer.h"
 
-#include "FXAA.h"
+#include "fxaa/FXAA.h"
+#include "smaa/SMAA.h"
 #include "Pistons.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class PostProcessingAAApp : public AppNative {
+class PostProcessingAAApp : public AppNative
+{
 public:
 	void prepareSettings( Settings* settings ) override;
 
@@ -46,21 +48,24 @@ public:
 	void render();
 
 	void resize() override;
-	void mouseDown( MouseEvent event ) override;
+	void mouseMove( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
 	void keyDown( KeyEvent event ) override;
 
-
 private:
-	CameraPersp         mCamera;
-	Pistons             mPistons;
+	CameraPersp         mCamera;         // 3D camera to render our scene.
+	Pistons             mPistons;        // Moving, colored pistons.
 
-	gl::FboRef          mFbo;
-
-	FXAA                mFXAA;
-
-	Timer               mTimer;
+	Timer               mTimer;          // We can pause and resume our timer.
 	double              mTime;
 	double              mTimeOffset;
+
+	gl::FboRef          mFbo;            // Non-anti-aliased frame buffer to render our scene to.
+	FXAA                mFXAA;           // Takes care of applying FXAA anti-aliasing to our scene.
+	SMAA                mSMAA;           // Takes care of applying SMAA anti-aliasing to our scene.
+
+	Vec2i               mDivider;        // Determines which part of our scene is anti-aliased.
+	uint8_t             mScale;          // Allows us to zoom in on the scene.
 };
 
 void PostProcessingAAApp::prepareSettings( Settings* settings )
@@ -73,9 +78,12 @@ void PostProcessingAAApp::setup()
 {
 	mPistons.setup();
 	mFXAA.setup();
+	mSMAA.setup();
 
-	mTimeOffset = 0.0;
+	mTimeOffset = 1.0;
 	mTimer.start();
+
+	mScale = 1;
 }
 
 void PostProcessingAAApp::update()
@@ -94,7 +102,6 @@ void PostProcessingAAApp::update()
 
 	mCamera.setEyePoint( Vec3f( x, y, z ) );
 	mCamera.setCenterOfInterestPoint( Vec3f( 1, 50, 0 ) );
-	mCamera.setAspectRatio( getWindowAspectRatio() );
 	mCamera.setFov( 40.0f );
 
 	// Update the pistons.
@@ -110,48 +117,88 @@ void PostProcessingAAApp::draw()
 	gl::clear();
 	gl::color( Color::white() );
 
-	// Bind our scene as a texture and render.
-	gl::TextureRef texture = mFbo->getColorTexture();
-	gl::ScopedGlslProg glslProg( gl::context()->getStockShader( gl::ShaderDef().texture( texture ) ) );
-	gl::ScopedTextureBind bind( texture );
+	//mSMAA.draw( mFbo->getColorTexture(), getWindowBounds() );
 
-	mFXAA.apply( mFbo );
-	/*
-	Area flipped = texture->getBounds();
-	flipped.y1 = flipped.y2;
-	flipped.y2 = 0;
-	gl::drawSolidRect( flipped );
-	*/
+	//gl::draw( mFbo->getColorTexture() );
+	//gl::draw( mSMAA.mSearchTex );
+	//gl::draw( mSMAA.mAreaTex, Vec2f( mSMAA.mSearchTex->getWidth(), 0 ) );
+
+	
+
+	// Draw non-anti-aliased scene.
+	gl::pushMatrices();
+	gl::setMatricesWindow( mDivider.x, getWindowHeight(), false );
+	gl::pushViewport( 0, 0, mDivider.x, getWindowHeight() );
+	gl::draw( mFbo->getColorTexture(), getWindowBounds().flipVertical() );
+	gl::popViewport();
+	gl::popMatrices();
+
+	// Draw FXAA-anti-aliased scene.
+	gl::pushMatrices();
+	gl::setMatricesWindow( getWindowWidth() - mDivider.x, mDivider.y, false );
+	gl::pushViewport( mDivider.x, getWindowHeight() - mDivider.y, getWindowWidth() - mDivider.x, mDivider.y );
+	mFXAA.draw( mFbo->getColorTexture(), getWindowBounds() );
+	gl::popViewport();
+	gl::popMatrices();
+
+	// Draw SMAA-anti-aliased scene.
+	gl::pushMatrices();
+	gl::setMatricesWindow( getWindowWidth() - mDivider.x, getWindowHeight() - mDivider.y, false );
+	gl::pushViewport( mDivider.x, 0, getWindowWidth() - mDivider.x, getWindowHeight() - mDivider.y );
+	mSMAA.draw( mFbo->getColorTexture(), getWindowBounds() );
+	gl::popViewport();
+	gl::popMatrices();
+
+	// Draw divider.
+	gl::drawLine( Vec2f( (float) mDivider.x, 0 ), Vec2f( (float) mDivider.x, (float) getWindowHeight() ) );
+	gl::drawLine( Vec2f( (float) mDivider.x, (float) mDivider.y ), Vec2f( (float) getWindowWidth(), (float) mDivider.y ) );
 }
 
 void PostProcessingAAApp::render()
 {
 	// Bind the Fbo. Automatically unbinds it at the end of this function.
 	gl::ScopedFramebuffer fbo( mFbo );
+	gl::ScopedViewport( 0, 0, mFbo->getWidth(), mFbo->getHeight() );
 
 	// Clear the buffer.
-	gl::clear();
+	gl::clear( ColorA( 0, 0, 0, 0 ) );
 	gl::color( Color::white() );
-	
+
 	// Render our scene.
 	mPistons.draw( mCamera, float( mTime ) );
 }
 
 void PostProcessingAAApp::resize()
 {
-	// For this sample, we want a non-multisampled buffer and bilinear interpolation.
 	gl::Texture2d::Format tfmt;
-	tfmt.setMinFilter( GL_LINEAR );
-	tfmt.setMagFilter( GL_LINEAR );
+	tfmt.setMinFilter( GL_NEAREST );
+	tfmt.setMagFilter( GL_NEAREST );
 
 	gl::Fbo::Format fmt;
 	fmt.setColorTextureFormat( tfmt );
 
-	mFbo = gl::Fbo::create( getWindowWidth(), getWindowHeight(), fmt );
+	// We want to store luminance in the alpha channel, 
+	// as this yields the best FXAA results.
+	// So make sure we have one.
+	fmt.setColorBufferInternalFormat( GL_RGBA8 );
+
+	mFbo = gl::Fbo::create( getWindowWidth() / mScale, getWindowHeight() / mScale, fmt );
+
+	// Reset the divider location.
+	mDivider = getWindowSize() / 2;
+
+	// Update the camera's aspect ratio.
+	mCamera.setAspectRatio( getWindowAspectRatio() );
 }
 
-void PostProcessingAAApp::mouseDown( MouseEvent event )
+void PostProcessingAAApp::mouseMove( MouseEvent event )
 {
+	mDivider = event.getPos();
+}
+
+void PostProcessingAAApp::mouseDrag( MouseEvent event )
+{
+	mDivider = event.getPos();
 }
 
 void PostProcessingAAApp::keyDown( KeyEvent event )
@@ -184,7 +231,18 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 		else
 			gl::enableVerticalSync();
 		break;
+	case KeyEvent::KEY_UP:
+		if( mScale < 8 ) {
+			mScale <<= 1; resize();
+		}
+		break;
+	case KeyEvent::KEY_DOWN:
+		if( mScale > 1 ) {
+			mScale >>= 1; resize();
+		}
+		break;
+
 	}
 }
 
-CINDER_APP_NATIVE( PostProcessingAAApp, RendererGl )
+CINDER_APP_NATIVE( PostProcessingAAApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )

@@ -107,16 +107,20 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\fxaa\FXAA.cpp" />
+    <ClCompile Include="..\include\fxaa\FXAA.cpp" />
+    <ClCompile Include="..\include\smaa\SMAA.cpp" />
     <ClCompile Include="..\src\Pistons.cpp" />
     <ClCompile Include="..\src\PostProcessingAAApp.cpp" />
     <ClCompile Include="..\src\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\fxaa\FXAA.h" />
+    <ClInclude Include="..\include\fxaa\FXAA.h" />
     <ClInclude Include="..\include\Pistons.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\include\Shader.h" />
+    <ClInclude Include="..\include\smaa\AreaTex.h" />
+    <ClInclude Include="..\include\smaa\SearchTex.h" />
+    <ClInclude Include="..\include\smaa\SMAA.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

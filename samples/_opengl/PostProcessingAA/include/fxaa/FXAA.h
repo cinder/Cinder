@@ -27,6 +27,8 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
 
+#include "Shader.h"
+
 class FXAA
 {
 public:
@@ -34,8 +36,13 @@ public:
 	~FXAA() {}
 
 	void setup();
-	void apply( ci::gl::FboRef source );
-	void apply( ci::gl::FboRef destination, ci::gl::FboRef source );
+	void draw( ci::gl::TextureRef source, const ci::Area& bounds );
+	void apply( ci::gl::FboRef destination, ci::gl::FboRef source )
+	{
+		ci::gl::ScopedFramebuffer fbo( destination );
+		draw( source->getColorTexture(), destination->getBounds() );
+	}
 private:
-	ci::gl::GlslProgRef    mFXAA;
+	// The Shader class allows us to write and use shaders with support for #include.
+	ShaderRef mFXAA;
 };

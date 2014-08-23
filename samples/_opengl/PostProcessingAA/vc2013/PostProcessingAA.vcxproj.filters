@@ -36,8 +36,11 @@
     <ClCompile Include="..\src\Pistons.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\fxaa\FXAA.cpp">
+    <ClCompile Include="..\include\fxaa\FXAA.cpp">
       <Filter>FXAA</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\smaa\SMAA.cpp">
+      <Filter>SMAA</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,8 +53,17 @@
     <ClInclude Include="..\include\Pistons.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\fxaa\FXAA.h">
+    <ClInclude Include="..\include\fxaa\FXAA.h">
       <Filter>FXAA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\smaa\SMAA.h">
+      <Filter>SMAA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\smaa\AreaTex.h">
+      <Filter>SMAA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\smaa\SearchTex.h">
+      <Filter>SMAA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

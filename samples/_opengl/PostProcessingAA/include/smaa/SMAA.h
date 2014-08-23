@@ -20,50 +20,45 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/app/AppBasic.h"
+#pragma once
 
-#include "FXAA.h"
+#include "cinder/gl/gl.h"
+#include "cinder/gl/Fbo.h"
+#include "cinder/gl/Texture.h"
 
-using namespace ci;
-using namespace ci::app;
-using namespace std;
+#include "Shader.h"
 
-void FXAA::setup()
+class SMAA
 {
-	// Load and compile our shader
-	try {
-		mFXAA = gl::GlslProg::create( loadAsset( "fxaa.vert" ), loadAsset( "fxaa.frag" ) );
+public:
+	SMAA() {}
+	~SMAA() {}
+
+	void setup();
+	void draw( ci::gl::Texture2dRef source, const ci::Area& bounds );
+	void apply( ci::gl::FboRef destination, ci::gl::FboRef source )
+	{
+		ci::gl::ScopedFramebuffer fbo( destination );
+		draw( source->getColorTexture(), destination->getBounds() );
 	}
-	catch( const std::exception& e ) {
-		console() << e.what() << std::endl;
-	}
-}
 
-void FXAA::apply( ci::gl::FboRef source )
-{
-	if( !mFXAA )
-		return;
+	ci::gl::Texture2dRef  getEdgePass();
+	ci::gl::Texture2dRef  getBlendPass();
+private:
+	ci::gl::Fbo::Format   mFboFormat;
+	ci::gl::FboRef        mFboEdgePass;
+	ci::gl::FboRef        mFboBlendPass;
 
-	gl::ScopedGlslProg prog( mFXAA );
-	mFXAA->uniform( "uTexture", 0 );
-	mFXAA->uniform( "uRcpBufferSize", Vec2f::one() / Vec2f( source->getSize() ) );
+	// The Shader class allows us to write and use shaders with support for #include.
+	ShaderRef             mSMAAFirstPass;		// edge detection
+	ShaderRef             mSMAASecondPass;	// blending weight calculation
+	ShaderRef             mSMAAThirdPass;		// neighborhood blending
 
-	gl::ScopedTextureBind bind( source->getColorTexture() );
-
-	gl::clear();
-	gl::color( Color::white() );
-	gl::drawSolidRect( source->getBounds() );
-}
-
-void FXAA::apply( ci::gl::FboRef destination, ci::gl::FboRef source )
-{
-	if( !mFXAA )
-		return;
-
-	// Source and destination should have the same size
-	assert( destination.getWidth() == source.getWidth() );
-	assert( destination.getHeight() == source.getHeight() );
-
-	// Apply FXAA
-	gl::ScopedFramebuffer fbo( destination );
-}
+	// These textures contain look-up tables that speed up the SMAA process.
+	ci::gl::Texture2dRef  mAreaTex;
+	ci::gl::Texture2dRef  mSearchTex;
+private:
+	void createBuffers( int width, int height );
+	void doEdgePass( ci::gl::Texture2dRef source );
+	void doBlendPass();
+};

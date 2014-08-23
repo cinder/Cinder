@@ -166,7 +166,7 @@ void Pistons::setup()
 
 					// write luminance in alpha channel (required for FXAA)
 					const vec3 luminance = vec3(0.299, 0.587, 0.114);
-					oColor.a = dot( oColor.rgb, luminance );
+					oColor.a = sqrt( dot( oColor.rgb, luminance ) );
 				}
 			));
 

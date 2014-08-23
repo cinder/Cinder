@@ -20,38 +20,34 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "cinder/Log.h"
 
-#include "cinder/gl/gl.h"
-#include "cinder/gl/Fbo.h"
-#include "cinder/gl/Texture.h"
+#include "FXAA.h"
 
-#include "Shader.h"
+using namespace ci;
+using namespace std;
 
-class SMAA
+void FXAA::setup()
 {
-public:
-	SMAA() {}
-	~SMAA() {}
+	try {
+		mFXAA = make_shared<Shader>( "fxaa" );
+	}
+	catch( const std::exception& e ) {
+		CI_LOG_E( e.what() );
+	}
+}
 
-	void setup();
-	void apply( ci::gl::Fbo& destination, ci::gl::Fbo& source );
+void FXAA::draw( ci::gl::TextureRef source, const Area& bounds )
+{
+	if( !mFXAA )
+		return;
 
-	ci::gl::Texture& getEdgePass();
-	ci::gl::Texture& getBlendPass();
-private:
-	void doEdgePass( ci::gl::Fbo& source );
-	void doBlendPass();
-private:
-	ci::gl::FboRef      mFboEdgePass;
-	ci::gl::FboRef      mFboBlendPass;
+	gl::ScopedGlslProg shader( mFXAA->program() );
+	mFXAA->uniform( "uTexture", 0 );
+	mFXAA->uniform( "uRcpBufferSize", Vec2f::one() / Vec2f( bounds.getSize() ) );
 
-	// The Shader class allows us to write and use shaders with support for #include.
-	ShaderRef           mSMAAFirstPass;		// edge detection
-	ShaderRef           mSMAASecondPass;	// blending weight calculation
-	ShaderRef           mSMAAThirdPass;		// neighborhood blending
+	gl::ScopedTextureBind tex0( source );
 
-	// These textures contain look-up tables that speed up the SMAA process.
-	ci::gl::TextureRef  mAreaTex;
-	ci::gl::TextureRef  mSearchTex;
-};
+	gl::color( Color::white() );
+	gl::drawSolidRect( bounds );
+}
