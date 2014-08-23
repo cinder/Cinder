@@ -479,21 +479,21 @@ void BSpline<D,T>::createControl( const VecT *akCtrlPoint )
 template<int D,typename T>
 void BSpline<D,T>::setControlPoint( int i, const VecT &rkCtrl )
 {
-	if( ( 0 <= i ) && ( i < mNumCtrlPoints ) ) {
-		// set the control point
-		mCtrlPoints[i] = rkCtrl;
+	assert( i >= 0 && i < mNumCtrlPoints );
 
-		// set the replicated control point
-		if( i < mReplicate ) {
-			mCtrlPoints[mNumCtrlPoints+i] = rkCtrl;
-		}
+	// set the control point
+	mCtrlPoints[i] = rkCtrl;
+
+	// set the replicated control point
+	if( i < mReplicate ) {
+		mCtrlPoints[mNumCtrlPoints+i] = rkCtrl;
 	}
 }
 
 template<int D,typename T>
 typename BSpline<D,T>::VecT BSpline<D,T>::getControlPoint( int i ) const
 {
-	assert( i > 0 && i < mNumCtrlPoints );
+	assert( i >= 0 && i < mNumCtrlPoints );
 
 	return mCtrlPoints[i];
 }
