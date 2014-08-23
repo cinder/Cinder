@@ -881,6 +881,20 @@ void drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indice
 }
 
 namespace {
+std::array<vec3, 8> getCubePoints( const vec3 &c, const vec3 &size )
+{
+	vec3 s = size * 0.5f;																			// origin points
+	std::array<vec3, 8> points = { vec3(  c.x + 1.0f * s.x, c.y + 1.0f * s.y, c.z + 1.0f * s.z ),	// upper front right
+								   vec3(  c.x + 1.0f * s.x, c.y - 1.0f * s.y, c.z + 1.0f * s.z ),	// lower front right
+								   vec3(  c.x + 1.0f * s.x, c.y - 1.0f * s.y, c.z - 1.0f * s.z ),	// lower back right
+								   vec3(  c.x + 1.0f * s.x, c.y + 1.0f * s.y, c.z - 1.0f * s.z ),	// upper back right
+								   vec3(  c.x - 1.0f * s.x, c.y + 1.0f * s.y, c.z + 1.0f * s.z ),	// upper front left
+								   vec3(  c.x - 1.0f * s.x, c.y - 1.0f * s.y, c.z + 1.0f * s.z ),	// lower front left
+								   vec3(  c.x - 1.0f * s.x, c.y - 1.0f * s.y, c.z - 1.0f * s.z ),	// lower back left
+								   vec3(  c.x - 1.0f * s.x, c.y + 1.0f * s.y, c.z - 1.0f * s.z ) };	// upper back left
+	return points;
+}
+	
 void drawCubeImpl( const Vec3f &c, const Vec3f &size, bool faceColors )
 {
 	GLfloat sx = size.x * 0.5f;
@@ -998,6 +1012,45 @@ void drawCube( const Vec3f &center, const Vec3f &size )
 void drawColorCube( const Vec3f &center, const Vec3f &size )
 {
 	drawCubeImpl( center, size, true );
+}
+	
+void drawStrokedCube( const Vec3f &center, const Vec3f &size )
+{
+	auto vertices = getCubePoints( center, size );
+	
+	const int NumIndices = 24;
+	
+	static
+	std::array<GLubyte, NumIndices> indices = { 0, 1, 1, 2, 2, 3, 3, 0,		// right side connection
+												4, 5, 5, 6, 6, 7, 7, 4,		// left side connection
+												0, 4, 1, 5, 2, 6, 3, 7 };	// right to left connections
+	
+	auto ctx = ci::gl::context();
+	gl::GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+	
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	gl::VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(vec3) * 8 );
+	gl::VboRef elementVbo = ctx->getDefaultElementVbo( NumIndices );
+	gl::ScopedBuffer bufferBindScp( defaultVbo );
+	defaultVbo->bufferSubData( 0, sizeof(vec3) * 8, vertices.data() );
+	
+	elementVbo->bind();
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		gl::enableVertexAttribArray( posLoc );
+		gl::vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	}
+	
+	elementVbo->bufferSubData( 0, NumIndices, indices.data() );
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawElements( GL_LINES, NumIndices, GL_UNSIGNED_BYTE, 0 );
+	ctx->popVao();
 }
 
 void draw( const TextureRef &texture, const Area &srcArea, const Rectf &dstRect )
@@ -1593,6 +1646,58 @@ void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationRadians,
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
 	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+	ctx->popVao();
+}
+	
+void drawFrustum( const Camera &cam )
+{
+	vec3 nearTopLeft, nearTopRight, nearBottomLeft, nearBottomRight;
+	cam.getNearClipCoordinates( &nearTopLeft, &nearTopRight, &nearBottomLeft, &nearBottomRight );
+	
+	vec3 farTopLeft, farTopRight, farBottomLeft, farBottomRight;
+	cam.getFarClipCoordinates( &farTopLeft, &farTopRight, &farBottomLeft, &farBottomRight );
+	
+	vec3 eye = cam.getEyePoint();
+														// indices
+	std::array<vec3, 9> vertices = { eye,				// 0
+									nearTopLeft,		// 1
+									nearTopRight,		// 2
+									nearBottomLeft,		// 3
+									nearBottomRight,	// 4
+									farTopLeft,			// 5
+									farTopRight,		// 6
+									farBottomLeft,		// 7
+									farBottomRight };	// 8		// indice usage
+	std::array<GLubyte, 32> indices = { 0, 1, 0, 2, 0, 4, 0, 3,		// draws from eye to near plane
+										5, 1, 6, 2, 7, 3, 8, 4,		// draws from far to near corners
+										1, 2, 2, 4, 4, 3, 3, 1,		// draws near rect
+										5, 6, 6, 8, 8, 7, 7, 5};	// draws far rect
+	
+	auto ctx = ci::gl::context();
+	gl::GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+	
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	gl::VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(vec3)*9 );
+	gl::VboRef elementVbo = ctx->getDefaultElementVbo( 32 );
+	gl::ScopedBuffer bufferBindScp( defaultVbo );
+	defaultVbo->bufferSubData( 0, sizeof(vec3)*9, vertices.data() );
+	
+	elementVbo->bind();
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		gl::enableVertexAttribArray( posLoc );
+		gl::vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+	}
+	
+	elementVbo->bufferSubData( 0, 32, indices.data() );
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	ctx->drawElements( GL_LINES, 32, GL_UNSIGNED_BYTE, 0 );
 	ctx->popVao();
 }
 

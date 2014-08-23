@@ -53,6 +53,7 @@
 
 #include "cinder/Area.h"
 #include "cinder/Rect.h"
+#include "cinder/AxisAlignedBox.h"
 #include "cinder/Exception.h"
 #include "cinder/Color.h"
 #include "cinder/Camera.h"
@@ -323,10 +324,16 @@ void drawSolid( const class PolyLine<Vec2f> &polyLine );
 void drawCube( const Vec3f &center, const Vec3f &size );
 //! Renders a solid cube centered at \a center of size \a size. Each face is assigned a unique color.
 void drawColorCube( const Vec3f &center, const Vec3f &size );
+//! Renders a stroked cube centered at \a center of size \a size.
+void drawStrokedCube( const Vec3f &center, const Vec3f &size );
+//! Renders a stroked cube using \a box as the guide for center and size.
+inline void drawStrokedCube( const ci::AxisAlignedBox3f &box ) { drawStrokedCube( box.getCenter(), box.getSize() ); }
 //! Renders a solid sphere at \a center of radius \a radius, subdivided on both longitude and latitude into \a segments.
 void drawSphere( const Vec3f &center, float radius, int segments );
 //! Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationRadians around the vector orthogonal to \a bbRight and \a bbUp.
 void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationRadians, const Vec3f &bbRight, const Vec3f &bbUp, const Rectf &texCoords = Rectf( 0, 0, 1, 1 ) );
+//! Renders a stroked representation of \a cam
+void drawFrustum( const Camera &cam );
 
 //! Draws a line between points a and b
 void drawLine( const Vec3f &a, const Vec3f &b );
