@@ -9,7 +9,6 @@ uniform vec4 SMAA_RT_METRICS; // (1/w, 1/h, w, h)
 #define SMAA_GLSL_3 1
 #include "SMAA.h"
 
-// Additional shader inputs
 uniform sampler2D uColorTex;
 uniform sampler2D uBlendTex;
 

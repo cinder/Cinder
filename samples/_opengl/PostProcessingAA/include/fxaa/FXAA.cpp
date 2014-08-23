@@ -31,6 +31,7 @@ void FXAA::setup()
 {
 	try {
 		mFXAA = make_shared<Shader>( "fxaa" );
+		mFXAA->uniform( "uTexture", 0 );
 	}
 	catch( const std::exception& e ) {
 		CI_LOG_E( e.what() );
@@ -42,9 +43,11 @@ void FXAA::draw( ci::gl::TextureRef source, const Area& bounds )
 	if( !mFXAA )
 		return;
 
+	const int w = bounds.getWidth();
+	const int h = bounds.getHeight();
+
 	gl::ScopedGlslProg shader( mFXAA->program() );
-	mFXAA->uniform( "uTexture", 0 );
-	mFXAA->uniform( "uRcpBufferSize", Vec2f::one() / Vec2f( bounds.getSize() ) );
+	mFXAA->uniform( "uExtends", Vec4f( 1.0f / w, 1.0f / h, (float) w, (float) h ) );
 
 	gl::ScopedTextureBind tex0( source );
 

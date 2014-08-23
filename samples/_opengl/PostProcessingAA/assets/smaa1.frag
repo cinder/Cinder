@@ -17,6 +17,4 @@ uniform sampler2D uColorTex;
 void main()
 {
     gl_FragColor.rg = SMAALumaEdgeDetectionPS(vTexCoord0.st, vOffset, uColorTex);
-	//gl_FragColor.rgb = vTexCoord0.xyz;
-	//gl_FragColor.a = 1.0;
 }

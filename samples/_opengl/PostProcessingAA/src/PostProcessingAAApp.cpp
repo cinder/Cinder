@@ -64,8 +64,10 @@ private:
 	FXAA                mFXAA;           // Takes care of applying FXAA anti-aliasing to our scene.
 	SMAA                mSMAA;           // Takes care of applying SMAA anti-aliasing to our scene.
 
+	gl::TextureRef      mInfo;           // Info texture.
+
 	Vec2i               mDivider;        // Determines which part of our scene is anti-aliased.
-	uint8_t             mScale;          // Allows us to zoom in on the scene.
+	uint8_t             mPixelSize;          // Allows us to zoom in on the scene.
 };
 
 void PostProcessingAAApp::prepareSettings( Settings* settings )
@@ -76,6 +78,11 @@ void PostProcessingAAApp::prepareSettings( Settings* settings )
 
 void PostProcessingAAApp::setup()
 {
+	try {
+		mInfo = gl::Texture::create( loadImage( loadAsset( "info.png" ) ) );
+	}
+	catch( const std::exception& ) {}
+
 	mPistons.setup();
 	mFXAA.setup();
 	mSMAA.setup();
@@ -83,7 +90,7 @@ void PostProcessingAAApp::setup()
 	mTimeOffset = 1.0;
 	mTimer.start();
 
-	mScale = 1;
+	mPixelSize = 1;
 }
 
 void PostProcessingAAApp::update()
@@ -117,14 +124,6 @@ void PostProcessingAAApp::draw()
 	gl::clear();
 	gl::color( Color::white() );
 
-	//mSMAA.draw( mFbo->getColorTexture(), getWindowBounds() );
-
-	//gl::draw( mFbo->getColorTexture() );
-	//gl::draw( mSMAA.mSearchTex );
-	//gl::draw( mSMAA.mAreaTex, Vec2f( mSMAA.mSearchTex->getWidth(), 0 ) );
-
-	
-
 	// Draw non-anti-aliased scene.
 	gl::pushMatrices();
 	gl::setMatricesWindow( mDivider.x, getWindowHeight(), false );
@@ -152,26 +151,30 @@ void PostProcessingAAApp::draw()
 	// Draw divider.
 	gl::drawLine( Vec2f( (float) mDivider.x, 0 ), Vec2f( (float) mDivider.x, (float) getWindowHeight() ) );
 	gl::drawLine( Vec2f( (float) mDivider.x, (float) mDivider.y ), Vec2f( (float) getWindowWidth(), (float) mDivider.y ) );
+	gl::enableAlphaBlending();
+	gl::draw( mInfo, Vec2f( mDivider - mInfo->getSize() / 2 ) );
+	gl::disableAlphaBlending();
 }
 
 void PostProcessingAAApp::render()
 {
 	// Bind the Fbo. Automatically unbinds it at the end of this function.
 	gl::ScopedFramebuffer fbo( mFbo );
-	gl::ScopedViewport( 0, 0, mFbo->getWidth(), mFbo->getHeight() );
 
 	// Clear the buffer.
 	gl::clear( ColorA( 0, 0, 0, 0 ) );
 	gl::color( Color::white() );
 
 	// Render our scene.
+	gl::pushViewport( 0, 0, mFbo->getWidth(), mFbo->getHeight() );
 	mPistons.draw( mCamera, float( mTime ) );
+	gl::popViewport();
 }
 
 void PostProcessingAAApp::resize()
 {
 	gl::Texture2d::Format tfmt;
-	tfmt.setMinFilter( GL_NEAREST );
+	tfmt.setMinFilter( GL_LINEAR );
 	tfmt.setMagFilter( GL_NEAREST );
 
 	gl::Fbo::Format fmt;
@@ -182,10 +185,7 @@ void PostProcessingAAApp::resize()
 	// So make sure we have one.
 	fmt.setColorBufferInternalFormat( GL_RGBA8 );
 
-	mFbo = gl::Fbo::create( getWindowWidth() / mScale, getWindowHeight() / mScale, fmt );
-
-	// Reset the divider location.
-	mDivider = getWindowSize() / 2;
+	mFbo = gl::Fbo::create( getWindowWidth() / mPixelSize, getWindowHeight() / mPixelSize, fmt );
 
 	// Update the camera's aspect ratio.
 	mCamera.setAspectRatio( getWindowAspectRatio() );
@@ -232,13 +232,13 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 			gl::enableVerticalSync();
 		break;
 	case KeyEvent::KEY_UP:
-		if( mScale < 8 ) {
-			mScale <<= 1; resize();
+		if( mPixelSize < 8 ) {
+			mPixelSize <<= 1; resize();
 		}
 		break;
 	case KeyEvent::KEY_DOWN:
-		if( mScale > 1 ) {
-			mScale >>= 1; resize();
+		if( mPixelSize > 1 ) {
+			mPixelSize >>= 1; resize();
 		}
 		break;
 

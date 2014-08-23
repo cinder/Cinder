@@ -57,6 +57,9 @@ private:
 	// These textures contain look-up tables that speed up the SMAA process.
 	ci::gl::Texture2dRef  mAreaTex;
 	ci::gl::Texture2dRef  mSearchTex;
+
+	//
+	ci::Vec4f             mMetrics;
 private:
 	void createBuffers( int width, int height );
 	void doEdgePass( ci::gl::Texture2dRef source );

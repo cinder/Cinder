@@ -113,67 +113,68 @@ void Pistons::setup()
 
 	// Load and compile our shaders and textures
 	try {
-		auto glsl = gl::GlslProg::Format()
-			.vertex( CI_GLSL( 150, 
-				uniform mat4	ciModelView;
-				uniform mat4	ciModelViewProjection;
-				uniform mat3	ciNormalMatrix;
+		auto glsl = gl::GlslProg::Format().vertex( CI_GLSL( 150,
 
-				in vec4			ciPosition;
-				in vec3			ciNormal;
-				in vec4			ciColor;
-				in vec2			ciTexCoord0;
+			uniform mat4	ciModelView;
+		uniform mat4	ciModelViewProjection;
+		uniform mat3	ciNormalMatrix;
 
-				out vec4		vVertex;
-				out vec3		vNormal;
-				out vec4		vColor;
-				out vec2		vTexCoord0;
+		in vec4			ciPosition;
+		in vec3			ciNormal;
+		in vec4			ciColor;
+		in vec2			ciTexCoord0;
 
-				void main()
-				{
-					vVertex     = ciModelView * ciPosition;
-					vNormal     = ciNormalMatrix * ciNormal;
-					vColor      = ciColor;
-					vTexCoord0  = ciTexCoord0;
+		out vec4		vVertex;
+		out vec3		vNormal;
+		out vec4		vColor;
+		out vec2		vTexCoord0;
 
-					gl_Position = ciModelViewProjection * ciPosition;
-				}
-			))
-			.fragment( CI_GLSL( 150,
-				in vec4			vVertex;
-				in vec3			vNormal;
-				in vec4			vColor;
-				in vec2			vTexCoord0;
+		void main()
+		{
+			vVertex = ciModelView * ciPosition;
+			vNormal = ciNormalMatrix * ciNormal;
+			vColor = ciColor;
+			vTexCoord0 = ciTexCoord0;
 
-				out vec4		oColor;
+			gl_Position = ciModelViewProjection * ciPosition;
+		}
 
-				void main()
-				{
-					vec2 uv = vTexCoord0;
-					vec3 L = normalize( -vVertex.xyz );
-					vec3 E = normalize( -vVertex.xyz );
-					vec3 R = normalize(-reflect(L,vNormal));
+		) ).fragment( CI_GLSL( 150,
 
-					// diffuse term with fake ambient occlusion
-					float occlusion = 0.5 + 0.5*16.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y);
-					vec4 diffuse = vColor * occlusion * max(dot(vNormal,L), 0.0);
+			in vec4			vVertex;
+		in vec3			vNormal;
+		in vec4			vColor;
+		in vec2			vTexCoord0;
 
-					// specular term
-					vec4 specular = vColor * pow(max(dot(R,E),0.0), 50.0);
+		out vec4		oColor;
 
-					// write gamma corrected final color
-					oColor.rgb = sqrt(diffuse + specular).rgb;
+		void main()
+		{
+			vec2 uv = vTexCoord0;
+			vec3 L = normalize( -vVertex.xyz );
+			vec3 E = normalize( -vVertex.xyz );
+			vec3 R = normalize( -reflect( L, vNormal ) );
 
-					// write luminance in alpha channel (required for FXAA)
-					const vec3 luminance = vec3(0.299, 0.587, 0.114);
-					oColor.a = sqrt( dot( oColor.rgb, luminance ) );
-				}
-			));
+			// diffuse term with fake ambient occlusion
+			float occlusion = 0.5 + 0.5*16.0*uv.x*uv.y*( 1.0 - uv.x )*( 1.0 - uv.y );
+			vec4 diffuse = vColor * occlusion * max( dot( vNormal, L ), 0.0 );
+
+			// specular term
+			vec4 specular = vColor * pow( max( dot( R, E ), 0.0 ), 50.0 );
+
+			// write gamma corrected final color
+			oColor.rgb = sqrt( diffuse + specular ).rgb;
+
+			// write luminance in alpha channel (required for FXAA)
+			const vec3 luminance = vec3( 0.299, 0.587, 0.114 );
+			oColor.a = sqrt( dot( oColor.rgb, luminance ) );
+		}
+		) );
 
 		mShader = gl::GlslProg::create( glsl );
 	}
-	catch( const std::exception& e ) { 
-		console() << e.what() << std::endl; 
+	catch( const std::exception& e ) {
+		console() << e.what() << std::endl;
 		app::App::get()->quit();
 	}
 }
@@ -190,17 +191,17 @@ void Pistons::draw( const ci::Camera& camera, float time )
 {
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
-	{
-		gl::pushMatrices();
-		gl::setMatrices( camera );
-		{
-			gl::ScopedGlslProg glslProg( mShader );
 
-			for( auto &piston : mPistons )
-				piston.draw( time );
-		}
-		gl::popMatrices();
-	}
+	gl::pushMatrices();
+	gl::setMatrices( camera );
+
+	gl::ScopedGlslProg glslProg( mShader );
+
+	for( auto &piston : mPistons )
+		piston.draw( time );
+
+	gl::popMatrices();
+
 	gl::disableDepthWrite();
 	gl::disableDepthRead();
 }

@@ -34,7 +34,9 @@ void SMAA::setup()
 	// Load and compile our shaders
 	try {
 		mSMAAFirstPass = Shader::create( "smaa1" );
+
 		mSMAASecondPass = Shader::create( "smaa2" );
+
 		mSMAAThirdPass = Shader::create( "smaa3" );
 	}
 	catch( const std::exception& e ) {
@@ -71,23 +73,22 @@ void SMAA::draw( ci::gl::Texture2dRef source, const Area& bounds )
 	if( !mSMAAFirstPass || !mSMAASecondPass || !mSMAAThirdPass )
 		return;
 
-	const int w = source->getWidth();
-	const int h = source->getHeight();
-	createBuffers( w, h );
+	// Create or resize buffers.
+	const int width = source->getWidth();
+	const int height = source->getHeight();
+	createBuffers( width, height );
 
-	// Apply first two passes
+	// Apply first two passes.
 	doEdgePass( source );
 	doBlendPass();
 
-	// Apply SMAA
+	// Apply SMAA.
+	gl::ScopedTextureBind tex0( source );
 	gl::ScopedTextureBind tex1( ( gl::TextureBaseRef ) mFboBlendPass->getColorTexture(), 1 );
-
 	gl::ScopedGlslProg shader( mSMAAThirdPass->program() );
+	mSMAAThirdPass->uniform( "SMAA_RT_METRICS", mMetrics );
 	mSMAAThirdPass->uniform( "uColorTex", 0 );
 	mSMAAThirdPass->uniform( "uBlendTex", 1 );
-	mSMAAThirdPass->uniform( "SMAA_RT_METRICS", Vec4f( 1.0f / w, 1.0f / h, (float) w, (float) h ) );
-
-	gl::ScopedTextureBind tex0( source );
 
 	gl::color( Color::white() );
 	gl::drawSolidRect( bounds );
@@ -107,7 +108,7 @@ void SMAA::createBuffers( int width, int height )
 {
 	// Create or resize frame buffers
 	if( !mFboEdgePass || mFboEdgePass->getWidth() != width || mFboEdgePass->getHeight() != height ) {
-		mFboFormat.setColorBufferInternalFormat( GL_RG );
+		mFboFormat.setColorBufferInternalFormat( GL_RGBA );
 		mFboEdgePass = gl::Fbo::create( width, height, mFboFormat );
 	}
 
@@ -115,57 +116,42 @@ void SMAA::createBuffers( int width, int height )
 		mFboFormat.setColorBufferInternalFormat( GL_RGBA );
 		mFboBlendPass = gl::Fbo::create( width, height, mFboFormat );
 	}
+
+	mMetrics = Vec4f( 1.0f / width, 1.0f / height, (float) width, (float) height );
 }
 
 void SMAA::doEdgePass( ci::gl::Texture2dRef source )
 {
-	const int w = mFboEdgePass->getWidth();
-	const int h = mFboEdgePass->getHeight();
-
-	// Enable frame buffer
+	// Enable frame buffer, bind textures and shader.
 	gl::ScopedFramebuffer fbo( mFboEdgePass );
-	//gl::pushMatrices();
-	//gl::setMatricesWindow( mFboEdgePass->getSize(), false );
-	//gl::ScopedViewport viewport( 0, 0, mFboEdgePass->getWidth(), mFboEdgePass->getHeight() );
-
-	gl::ScopedGlslProg shader( mSMAAFirstPass->program() );
-	mSMAAFirstPass->uniform( "uColorTex", 0 );
-	mSMAAFirstPass->uniform( "SMAA_RT_METRICS", Vec4f( 1.0f / w, 1.0f / h, (float) w, (float) h ) );
-
 	gl::clear();
-	gl::color( Color::white() );
 
 	gl::ScopedTextureBind tex0( source );
-	gl::drawSolidRect( mFboEdgePass->getBounds() );
+	gl::ScopedGlslProg shader( mSMAAFirstPass->program() );
+	mSMAAFirstPass->uniform( "SMAA_RT_METRICS", mMetrics );
+	mSMAAFirstPass->uniform( "uColorTex", 0 );
 
-	//gl::popMatrices();
+	// Execute shader by drawing a 'full screen' rectangle.
+	gl::color( Color::white() );
+	gl::drawSolidRect( mFboEdgePass->getBounds() );
 }
 
 void SMAA::doBlendPass()
 {
-	const int w = mFboBlendPass->getWidth();
-	const int h = mFboBlendPass->getHeight();
-
-	// Enable frame buffer
+	// Enable frame buffer, bind textures and shader.
 	gl::ScopedFramebuffer fbo( mFboBlendPass );
-	//gl::pushMatrices();
-	//gl::setMatricesWindow( mFboBlendPass->getSize(), false );
-	//gl::ScopedViewport viewport( 0, 0, mFboBlendPass->getWidth(), mFboBlendPass->getHeight() );
+	gl::clear();
 
+	gl::ScopedTextureBind tex0( mFboEdgePass->getColorTexture() );
 	gl::ScopedTextureBind tex1( ( gl::TextureBaseRef ) mAreaTex, 1 );
 	gl::ScopedTextureBind tex2( ( gl::TextureBaseRef ) mSearchTex, 2 );
-
 	gl::ScopedGlslProg shader( mSMAASecondPass->program() );
+	mSMAASecondPass->uniform( "SMAA_RT_METRICS", mMetrics );
 	mSMAASecondPass->uniform( "uEdgesTex", 0 );
 	mSMAASecondPass->uniform( "uAreaTex", 1 );
 	mSMAASecondPass->uniform( "uSearchTex", 2 );
-	mSMAASecondPass->uniform( "SMAA_RT_METRICS", Vec4f( 1.0f / w, 1.0f / h, (float) w, (float) h ) );
 
-	gl::clear();
+	// Execute shader by drawing a 'full screen' rectangle.
 	gl::color( Color::white() );
-
-	gl::ScopedTextureBind tex0( mFboEdgePass->getColorTexture() );
 	gl::drawSolidRect( mFboBlendPass->getBounds() );
-
-	//gl::popMatrices();
 }

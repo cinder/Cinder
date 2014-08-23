@@ -15,15 +15,15 @@
 #include "FXAA3_11.h"
 
 uniform sampler2D	uTexture;
-uniform vec2		uRcpBufferSize;
+uniform vec4		uExtends;
 
 void main( void )
 {
 	FxaaFloat2 fxaaQualityRcpFrame;
-	fxaaQualityRcpFrame.x = uRcpBufferSize.x;
-	fxaaQualityRcpFrame.y = uRcpBufferSize.y;
+	fxaaQualityRcpFrame.x = uExtends.x;
+	fxaaQualityRcpFrame.y = uExtends.y;
 
-	FxaaFloat2 pos = gl_FragCoord.xy * uRcpBufferSize.xy;
+	FxaaFloat2 uv = gl_FragCoord.xy * uExtends.xy;
 
 	FxaaFloat4 ConsolePosPos = FxaaFloat4(0.0,0.0,0.0,0.0);
 	FxaaFloat4 ConsoleRcpFrameOpt = FxaaFloat4(0.0,0.0,0.0,0.0);
@@ -54,11 +54,9 @@ void main( void )
 	FxaaFloat ConsoleEdgeThreshold = 0.125;
 	FxaaFloat ConsoleEdgeThresholdMin = 0.05;
 	FxaaFloat4 Console360ConstDir = FxaaFloat4(1.0, -1.0, 0.25, -0.25);
-/*	
-	gl_FragColor = FxaaPixelShader(pos, ConsolePosPos, uTexture, uTexture, uTexture, fxaaQualityRcpFrame, 
+
+	gl_FragColor = FxaaPixelShader(uv, ConsolePosPos, uTexture, uTexture, uTexture, fxaaQualityRcpFrame, 
 		ConsoleRcpFrameOpt, ConsoleRcpFrameOpt2, Console360RcpFrameOpt2, 
 		QualitySubpix, QualityEdgeThreshold, QualityEdgeThresholdMin, 
 		ConsoleEdgeSharpness, ConsoleEdgeThreshold, ConsoleEdgeThresholdMin, Console360ConstDir);
-*/
-	gl_FragColor = texture(uTexture,pos).aaaa;
 }
