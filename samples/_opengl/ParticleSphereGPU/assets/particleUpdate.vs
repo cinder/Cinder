@@ -1,7 +1,7 @@
-#version 150 core
+#version 330 core
 
-uniform bool mouseDown;
-uniform vec3 mousePos;
+uniform float uMouseForce;
+uniform vec3  uMousePos;
 
 in vec3   iPosition;
 in vec3   iPPostion;
@@ -26,12 +26,12 @@ void main()
   color =     iColor;
 
   // mouse interaction
-  if( mouseDown )
+  if( uMouseForce > 0.0 )
   {
-    vec3 dir = position - mousePos;
+    vec3 dir = position - uMousePos;
     float d2 = length( dir );
     d2 *= d2;
-    position += 100.0f * dir / d2;
+    position += uMouseForce * dir / d2;
   }
 
   vec3 vel = (position - pposition) * damping;

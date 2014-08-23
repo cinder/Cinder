@@ -15,9 +15,7 @@ using namespace ci::app;
 using namespace std;
 
 /**
- Particle:
-
- A simple type holding information for rendering and simulation.
+ Particle type holds information for rendering and simulation.
  Used to buffer initial simulation values.
  */
 struct Particle
@@ -29,7 +27,7 @@ struct Particle
 	float	damping;
 };
 
-// Home many particles to create. (600k)
+// Home many particles to create. (600k default)
 const int NUM_PARTICLES = 600e3;
 
 /**
@@ -40,27 +38,28 @@ const int NUM_PARTICLES = 600e3;
 	Designed to have the same behavior as ParticleSphereCPU.
  */
 class ParticleSphereGPUApp : public AppNative {
-public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void update();
-	void draw();
-private:
-	// program for drawing the particles
-	gl::GlslProgRef	mRenderProg;
-	// program for updating the particle simulation
+  public:
+	void prepareSettings( Settings *settings ) override;
+	void setup() override;
+	void update() override;
+	void draw() override;
+  private:
+	gl::GlslProgRef mRenderProg;
 	gl::GlslProgRef mUpdateProg;
-	// descriptions of particle data layout
+
+	// Descriptions of particle data layout.
 	gl::VaoRef		mAttributes[2];
-	// buffers holding raw particle data on GPU
+	// Buffers holding raw particle data on GPU.
 	gl::VboRef		mParticleBuffer[2];
-	// current source and destination buffers for transform feedback
-	// source and destination are swapped each frame after update
+
+	// Current source and destination buffers for transform feedback.
+	// Source and destination are swapped each frame after update.
 	std::uint32_t	mSourceIndex		= 0;
 	std::uint32_t	mDestinationIndex	= 1;
 
-	// mouse state suitable for passing as uniforms to update program
+	// Mouse state suitable for passing as uniforms to update program
 	bool			mMouseDown = false;
+	float			mMouseForce = 0.0f;
 	vec3			mMousePos = vec3( 0, 0, 0 );
 };
 
@@ -136,15 +135,16 @@ void ParticleSphereGPUApp::setup()
 	getWindow()->getSignalMouseDown().connect( [this]( MouseEvent event )
 											  {
 												  mMouseDown = true;
+												  mMouseForce = 500.0f;
 												  mMousePos = vec3( event.getX(), event.getY(), 0.0f );
 											  } );
 	getWindow()->getSignalMouseDrag().connect( [this]( MouseEvent event )
 											  {
-												  mMouseDown = true;
 												  mMousePos = vec3( event.getX(), event.getY(), 0.0f );
 											  } );
 	getWindow()->getSignalMouseUp().connect( [this]( MouseEvent event )
 											{
+												mMouseForce = 0.0f;
 												mMouseDown = false;
 											} );
 }
@@ -154,8 +154,8 @@ void ParticleSphereGPUApp::update()
 	// Update particles on the GPU
 	gl::ScopedGlslProg prog( mUpdateProg );
 	gl::ScopedState rasterizer( GL_RASTERIZER_DISCARD, true );	// turn off fragment stage
-	mUpdateProg->uniform( "mouseDown", mMouseDown );
-	mUpdateProg->uniform( "mousePos", mMousePos );
+	mUpdateProg->uniform( "uMouseForce", mMouseForce );
+	mUpdateProg->uniform( "uMousePos", mMousePos );
 
 	// Bind the source data (Attributes refer to specific buffers).
 	gl::ScopedVao source( mAttributes[mSourceIndex] );
@@ -170,6 +170,11 @@ void ParticleSphereGPUApp::update()
 
 	// Swap source and destination for next loop
 	std::swap( mSourceIndex, mDestinationIndex );
+
+	// Update mouse force.
+	if( mMouseDown ) {
+		mMouseForce = 150.0f;
+	}
 }
 
 void ParticleSphereGPUApp::draw()
