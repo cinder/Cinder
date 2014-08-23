@@ -24,7 +24,7 @@ void Emitter::update( vec3 mouseLoc, bool enableConstraints, bool mouseIsDown )
 	mVel *= 0.9f;
 	
 	if( mIsTouchingConstraint && mouseIsDown )
-		mVel += Rand::randvec3() * 3.0f * mHeat;
+		mVel += Rand::randVec3f() * 3.0f * mHeat;
 			
 	if( mouseIsDown  ) {
 		mSpinSpeed -= ( mSpinSpeed - 1.0f ) * 0.04f;

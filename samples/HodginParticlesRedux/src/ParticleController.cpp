@@ -56,7 +56,7 @@ void ParticleController::update( Emitter &emitter, int counter )
 					mParticles.push_back( Particle( particleIt->mLoc[0], vec3::zero() ) );
 					mParticles.back().mIsDying = true;
 					particleIt->mIsDying = true;
-					//particleIt->mVel += Rand::randvec3() * Rand::randFloat( 2.0f, 3.0f );
+					//particleIt->mVel += Rand::randVec3f() * Rand::randFloat( 2.0f, 3.0f );
 				}
 			}
 			
@@ -118,9 +118,9 @@ void ParticleController::renderTrails()
 void ParticleController::addParticles( int amt, vec3 loc, vec3 vel, float heat, float radius )
 {
 	for( int i = 0; i < amt; i++ ) {
-		vec3 lOffset = Rand::randvec3();
+		vec3 lOffset = Rand::randVec3f();
 		vec3 l = loc + lOffset * radius * 0.25f;
-		vec3 v = -vel + lOffset * Rand::randFloat( 6.0f, 10.5f ) * ( heat + 0.75f ) + Rand::randvec3() * Rand::randFloat( 1.0f, 2.0f );
+		vec3 v = -vel + lOffset * Rand::randFloat( 6.0f, 10.5f ) * ( heat + 0.75f ) + Rand::randVec3f() * Rand::randFloat( 1.0f, 2.0f );
 		v.y *= 0.65f;
 		mParticles.push_back( Particle( l, v ) );
 	}

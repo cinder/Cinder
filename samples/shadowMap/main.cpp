@@ -105,7 +105,7 @@ void ShadowMapSample::keyDown( ci::app::KeyEvent event )
 			mPaused = ! mPaused;
 		break;
 		case 'r': { // create a random camera position
-			vec3 eyeVec = Rand::randvec3().normalized() * 6.0f;
+			vec3 eyeVec = Rand::randVec3f().normalized() * 6.0f;
 			if( eyeVec.y < 0 ) eyeVec.y = -eyeVec.y;
 			mCamera->lookAt( eyeVec, vec3(0,-2.5,0) );
 			mLight->update( *mCamera );
@@ -115,7 +115,7 @@ void ShadowMapSample::keyDown( ci::app::KeyEvent event )
 			setFullScreen( ! isFullScreen() );
 		break;
 		case 'l': { // create a random light position
-			vec3 lightPos = Rand::randvec3().normalized() * 4.0f;
+			vec3 lightPos = Rand::randVec3f().normalized() * 4.0f;
 			if( lightPos.y < 0 ) lightPos.y = -lightPos.y;			
 			mLight->lookAt( lightPos, vec3::zero() );
 			mLight->update( *mCamera );

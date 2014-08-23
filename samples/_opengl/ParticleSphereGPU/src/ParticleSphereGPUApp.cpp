@@ -86,7 +86,7 @@ void ParticleSphereGPUApp::setup()
 		auto &p = particles.at( i );
 		p.pos = center + vec3( x, y, z );
 		p.home = p.pos;
-		p.ppos = p.home + Rand::randvec3() * 10.0f; // random initial velocity
+		p.ppos = p.home + Rand::randVec3f() * 10.0f; // random initial velocity
 		p.damping = Rand::randFloat( 0.965f, 0.985f );
 		p.color = Color( CM_HSV, lmap<float>( i, 0.0f, particles.size(), 0.0f, 0.66f ), 1.0f, 1.0f );
 	}

@@ -63,7 +63,7 @@ void ArcballDemoApp::keyDown( KeyEvent event )
 		mUseConstraintAxis = ! mUseConstraintAxis;
 		if( mUseConstraintAxis ) {
 			// make a random constraint axis
-			mConstraintAxis = Rand::randvec3();
+			mConstraintAxis = Rand::randVec3f();
 			mArcball.setConstraintAxis( mConstraintAxis );
 		}
 		else

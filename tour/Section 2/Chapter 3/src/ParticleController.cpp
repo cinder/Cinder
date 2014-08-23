@@ -84,7 +84,7 @@ void ParticleController::addParticles( int amt )
 {
 	for( int i=0; i<amt; i++ )
 	{
-		vec3 randVec = Rand::randvec3();
+		vec3 randVec = Rand::randVec3f();
 		vec3 pos = randVec * Rand::randFloat( 50.0f, 250.0f );
 		vec3 vel = randVec * 2.0f;
 		mParticles.push_back( Particle( pos, vel ) );

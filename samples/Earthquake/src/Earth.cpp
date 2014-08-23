@@ -32,7 +32,7 @@ Earth::Earth( ci::gl::Texture aTexDiffuse, ci::gl::Texture aTexNormal, ci::gl::T
 void Earth::setQuakeLocTip()
 {
 	for( list<Quake>::iterator quake = mQuakes.begin(); quake != mQuakes.end(); ++quake ) {
-		quake->mLoc += Rand::randvec3() * 0.001f;
+		quake->mLoc += Rand::randVec3f() * 0.001f;
 		quake->mLocTip = mLoc + quake->mLoc * ( mRadius + quake->mMag * quake->mMag );
 		quake->mLocTipAnchor = mLoc + quake->mLoc * mRadius;
 	}

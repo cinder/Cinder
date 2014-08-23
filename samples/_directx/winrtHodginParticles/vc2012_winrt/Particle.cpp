@@ -26,8 +26,8 @@ void Particle::reset( vec3 _loc, vec3 _vel )
 	radius      = Rand::randFloat( 10, 40 );
 	len         = (int)radius;
 
-	startLoc = _loc + Rand::randvec3() * Rand::randFloat( 5.0f );
-	vel = _vel * 0.5f + Rand::randvec3() * Rand::randFloat( 10.0f );
+	startLoc = _loc + Rand::randVec3f() * Rand::randFloat( 5.0f );
+	vel = _vel * 0.5f + Rand::randVec3f() * Rand::randFloat( 10.0f );
 
 	perlin = vec3::zero();
 

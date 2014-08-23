@@ -61,7 +61,7 @@ void BasicParticleApp::mouseDown( MouseEvent event )
 {
 	// Add a bunch of random particles at the mouse point
 	for( int s = 0; s < NUM_CLICKED_PARTICLES; ++s )
-		mParticles.push_back( Particle( vec2( event.getPos() ) + Rand::randvec2() * Rand::randFloat( 60 ) ) );
+		mParticles.push_back( Particle( vec2( event.getPos() ) + Rand::randVec2f() * Rand::randFloat( 60 ) ) );
 }
 
 void BasicParticleApp::keyDown( KeyEvent event )

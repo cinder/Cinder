@@ -12,7 +12,7 @@ Particle::Particle()
 Particle::Particle( vec2 loc )
 {
 	mLoc	= loc;
-	mDir	= Rand::randvec2();
+	mDir	= Rand::randVec2f();
 	mVel	= Rand::randFloat( 5.0f );
 	mRadius	= 3.0f;
 }

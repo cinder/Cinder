@@ -72,8 +72,8 @@ void ParticleController::addParticles( int amt, const ivec2 &mouseLoc, const vec
 {
 	for( int i=0; i<amt; i++ )
 	{
-		vec2 loc = mouseLoc + Rand::randvec2() * Rand::randFloat( 5.0f );
-		vec2 velOffset = Rand::randvec2() * Rand::randFloat( 1.0f, 3.0f );
+		vec2 loc = mouseLoc + Rand::randVec2f() * Rand::randFloat( 5.0f );
+		vec2 velOffset = Rand::randVec2f() * Rand::randFloat( 1.0f, 3.0f );
 		vec2 vel = mouseVel * 5.0f + velOffset;
 		mParticles.push_back( Particle( loc, vel ) );
 	}

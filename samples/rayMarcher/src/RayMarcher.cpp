@@ -20,7 +20,7 @@ void RayMarcher::randomScene()
 {
 	mSpheres.clear();
 	for( int s = 0; s < 50; ++s )
-		mSpheres.push_back( Sphere( Rand::randvec3() * Rand::randFloat( 8 ), Rand::randFloat( 1, 4 ) ) );
+		mSpheres.push_back( Sphere( Rand::randVec3f() * Rand::randFloat( 8 ), Rand::randFloat( 1, 4 ) ) );
 }
 
 void RayMarcher::renderSceneGL()

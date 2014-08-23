@@ -33,7 +33,7 @@ class TextInputTweenApp : public AppBasic {
 	void addChar( char c );
 	void removeChar();
 	
-	vec3 getRandomvec3( float min, float max );
+	vec3 getRandomVec3f( float min, float max );
 	
 	gl::TextureFontRef	mTextureFont;
 	
@@ -102,8 +102,8 @@ void TextInputTweenApp::addChar( char c )
 		mSceneDestMatrix.translate( vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 	
 	mat4 randStartMatrix = mSceneDestMatrix;
-	randStartMatrix.translate( getRandomvec3( 100.0f, 600.0f ) );
-	randStartMatrix.rotate( getRandomvec3( 2.0f, 6.0f ) );
+	randStartMatrix.translate( getRandomVec3f( 100.0f, 600.0f ) );
+	randStartMatrix.rotate( getRandomVec3f( 2.0f, 6.0f ) );
 	
 	mCharacters.push_back( Character( mTextureFont, string( &c, 1 ), randStartMatrix ) );
 	
@@ -129,8 +129,8 @@ void TextInputTweenApp::removeChar()
 			mSceneDestMatrix = mat4::identity();
 		
 		mat4 randStartMatrix = mSceneDestMatrix;
-		randStartMatrix.translate( getRandomvec3( 100.0f, 600.0f ) );
-		randStartMatrix.rotate( getRandomvec3( 2.0f, 6.0f ) );
+		randStartMatrix.translate( getRandomVec3f( 100.0f, 600.0f ) );
+		randStartMatrix.rotate( getRandomVec3f( 2.0f, 6.0f ) );
 		
 		mDyingCharacters.back().animOut( timeline(), randStartMatrix );
 		
@@ -163,9 +163,9 @@ void TextInputTweenApp::draw()
 }
 
 
-vec3 TextInputTweenApp::getRandomvec3( float min, float max )
+vec3 TextInputTweenApp::getRandomVec3f( float min, float max )
 {
-	return Rand::randvec3() * Rand::randFloat( min, max );
+	return Rand::randVec3f() * Rand::randFloat( min, max );
 }
 
 

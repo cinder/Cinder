@@ -27,7 +27,7 @@ Particle::Particle( vec3 _loc, vec3 _vel )
 	// This is just a way to make sure all the particles made this frame
 	// don't all start on the exact same pixel. This staggering will be useful
 	// when we incorporate magnetic repulsion in a later tutorial.
-	startLoc = _loc + Rand::randvec3() * Rand::randFloat( 5.0f );
+	startLoc = _loc + Rand::randVec3f() * Rand::randFloat( 5.0f );
 
 	for( int i = 0; i < len; i++ ) {
 		loc.push_back( startLoc );
@@ -40,7 +40,7 @@ Particle::Particle( vec3 _loc, vec3 _vel )
 	// 4) Add this new vector to the scaled down original sent vector.
 	// This randomizes the original sent velocity so the particles
 	// dont all move at the same speed in the same direction.
-	vel = _vel * 0.5f + Rand::randvec3() * Rand::randFloat( 10.0f );
+	vel = _vel * 0.5f + Rand::randVec3f() * Rand::randFloat( 10.0f );
 
 	perlin = vec3::zero();
 

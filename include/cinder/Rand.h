@@ -106,7 +106,7 @@ class Rand {
 	}
 	
 	//! returns a random vec3 that represents a point on the unit sphere	
-	vec3 nextvec3()
+	vec3 nextVec3f()
 	{
 		float phi = nextFloat( (float)M_PI * 2.0f );
 		float costheta = nextFloat( -1.0f, 1.0f );
@@ -120,7 +120,7 @@ class Rand {
 	}
 
 	//! returns a random vec2 that represents a point on the unit circle	
-	vec2 nextvec2( )
+	vec2 nextVec2f()
 	{
 		float theta = nextFloat( (float)M_PI * 2.0f );
 		return vec2( math<float>::cos( theta ), math<float>::sin( theta ) );
@@ -225,7 +225,7 @@ class Rand {
 	}
 	
 	//! returns a random vec3 that represents a point on the unit sphere
-	static vec3 randvec3()
+	static vec3 randVec3f()
 	{
 		float phi = randFloat( (float)M_PI * 2.0f );
 		float costheta = randFloat( -1.0f, 1.0f );
@@ -239,7 +239,7 @@ class Rand {
 	}
 
 	//! returns a random vec2 that represents a point on the unit circle
-	static vec2 randvec2()
+	static vec2 randVec2f()
 	{
 		float theta = randFloat( (float)M_PI * 2.0f );
 		return vec2( math<float>::cos( theta ), math<float>::sin( theta ) );
@@ -312,10 +312,10 @@ inline float randFloat( float a, float b ) { return Rand::randFloat( a, b ); }
 inline float randPosNegFloat( float a, float b ) { return Rand::randPosNegFloat( a, b ); }
 
 //! returns a random vec3 that represents a point on the unit sphere
-inline vec3 randvec3() { return Rand::randvec3(); }
+inline vec3 randVec3f() { return Rand::randVec3f(); }
 
 //! returns a random vec2 that represents a point on the unit circle
-inline vec2 randvec2() { return Rand::randvec2(); }
+inline vec2 randVec2f() { return Rand::randVec2f(); }
 
 //! returns a random float via Gaussian distribution
 inline float randGaussian() { return Rand::randGaussian(); }    
