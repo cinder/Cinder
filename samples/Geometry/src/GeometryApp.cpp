@@ -399,17 +399,17 @@ void GeometryApp::createPrimitive(void)
 		}
 		break;
 	case PLANE:
-			Vec2i numSegments;
+			ivec2 numSegments;
 			switch( mQualityCurrent ) {
-				case DEFAULT: numSegments = Vec2i( 10, 10 ); break;
-				case LOW: numSegments = Vec2i( 2, 2 ); break;
-				case HIGH: numSegments = Vec2i( 100, 100 ); break;
+				case DEFAULT: numSegments = ivec2( 10, 10 ); break;
+				case LOW: numSegments = ivec2( 2, 2 ); break;
+				case HIGH: numSegments = ivec2( 100, 100 ); break;
 			}
 
 			auto plane = geom::Plane().segments( numSegments );
 
-//			plane.normal( Vec3f( 0, 0, 1 ) ); // change the normal angle of the plane
-//			plane.axis( Vec3f( 1, 1, 0 ), Vec3f( 0, 0, 1 ) ); // change the axis with point + normal (point = origin)
+//			plane.normal( vec3( 0, 0, 1 ) ); // change the normal angle of the plane
+//			plane.axis( vec3( 1, 1, 0 ), vec3( 0, 0, 1 ) ); // change the axis with point + normal (point = origin)
 
 			primitive = geom::SourceRef( new geom::Plane( plane ) );
 

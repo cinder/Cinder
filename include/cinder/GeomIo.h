@@ -559,13 +559,13 @@ class Plane : public Source {
 	virtual Plane&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Plane&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
 
-	virtual Plane&	segments( const Vec2i &segments )	{ mNumSegments = segments; mCalculationsCached = false; return *this; }
+	virtual Plane&	segments( const ivec2 &segments )	{ mNumSegments = segments; mCalculationsCached = false; return *this; }
 	//! default is {2, 2}, or 1 in each direction
-	virtual Plane&	size( const Vec2f &size )	{ mSize = size; mCalculationsCached = false; return *this; }
-	virtual Plane&	axis( const Vec3f &point, const Vec3f &normal );
+	virtual Plane&	size( const vec2 &size )	{ mSize = size; mCalculationsCached = false; return *this; }
+	virtual Plane&	axis( const vec3 &point, const vec3 &normal );
 
-	Plane& origin( const Vec3f &origin )	{ return axis( origin, mNormal ); }
-	Plane& normal( const Vec3f &normal )	{ return axis( mOrigin, normal ); }
+	Plane& origin( const vec3 &origin )	{ return axis( origin, mNormal ); }
+	Plane& normal( const vec3 &normal )	{ return axis( mOrigin, normal ); }
 
 	virtual size_t		getNumVertices() const override		{ calculate(); return mPositions.size(); }
 	virtual size_t		getNumIndices() const override		{ calculate(); return mIndices.size(); }
@@ -576,15 +576,15 @@ class Plane : public Source {
   protected:
 	virtual void	calculate() const;
 
-	Vec2i		mNumSegments;
-	Vec2f		mSize;
-	Vec3f		mOrigin, mNormal;
+	ivec2		mNumSegments;
+	vec2		mSize;
+	vec3		mOrigin, mNormal;
 
 	mutable bool						mCalculationsCached;
-	mutable std::vector<Vec3f>			mPositions;
-	mutable std::vector<Vec2f>			mTexCoords;
-	mutable std::vector<Vec3f>			mNormals;
-	mutable std::vector<Vec3f>			mColors;
+	mutable std::vector<vec3>			mPositions;
+	mutable std::vector<vec2>			mTexCoords;
+	mutable std::vector<vec3>			mNormals;
+	mutable std::vector<vec3>			mColors;
 	mutable std::vector<uint32_t>		mIndices;
 };
 

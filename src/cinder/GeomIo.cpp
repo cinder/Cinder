@@ -1604,7 +1604,7 @@ Plane::Plane()
 	enable( Attrib::TEX_COORD_0 );
 }
 
-Plane& Plane::axis( const Vec3f &point, const Vec3f &normal )
+Plane& Plane::axis( const vec3 &point, const vec3 &normal )
 {
 	mOrigin = point;
 	mNormal = normal;
@@ -1625,8 +1625,8 @@ void Plane::calculate() const
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
 		mTexCoords.resize( totalNumSegments );
 
-	const Quatf axis = Quatf( Vec3f( 0, 1, 0 ), mNormal );
-	const Vec2f stepIncr = Vec2f( 1, 1 ) / Vec2f( mNumSegments );
+	const quat axis = quat( vec3( 0, 1, 0 ), mNormal );
+	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mNumSegments );
 
 	// fill vertex data
 	for( size_t x = 0; x < mNumSegments.x; x++ ) {
@@ -1634,7 +1634,7 @@ void Plane::calculate() const
 			float u = (float)x * stepIncr.x;
 			float v = (float)y * stepIncr.y;
 
-			Vec3f pos = mOrigin + axis * Vec3f( mSize.x * ( u - 0.5f ), 0, mSize.y * ( v - 0.5f ) );
+			vec3 pos = mOrigin + axis * vec3( mSize.x * ( u - 0.5f ), 0, mSize.y * ( v - 0.5f ) );
 
 			size_t i = x * mNumSegments.y + y;
 			mPositions.at( i ) = pos;
@@ -1642,7 +1642,7 @@ void Plane::calculate() const
 			if( isEnabled( Attrib::NORMAL ) )
 				mNormals.at( i ) = mNormal;
 			if( isEnabled( Attrib::TEX_COORD_0 ) )
-				mTexCoords.at( i ) = Vec2f( u, v );
+				mTexCoords.at( i ) = vec2( u, v );
 		}
 	}
 
@@ -1681,13 +1681,13 @@ void Plane::loadInto( Target *target ) const
 {
 	calculate();
 
-	target->copyAttrib( Attrib::POSITION, 3, 0, mPositions.data()->ptr(), mPositions.size() );
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, mTexCoords.data()->ptr(), mTexCoords.size() );
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	if( isEnabled( Attrib::NORMAL ) )
-		target->copyAttrib( Attrib::NORMAL, 3, 0, mNormals.data()->ptr(), mNormals.size() );
+		target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
 	if( isEnabled( Attrib::COLOR ) )
-		target->copyAttrib( Attrib::COLOR, 3, 0, mColors.data()->ptr(), mColors.size() );
+		target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 	
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
 }
