@@ -37,11 +37,7 @@ public:
 
 	void setup();
 	void draw( ci::gl::TextureRef source, const ci::Area& bounds );
-	void apply( ci::gl::FboRef destination, ci::gl::FboRef source )
-	{
-		ci::gl::ScopedFramebuffer fbo( destination );
-		draw( source->getColorTexture(), destination->getBounds() );
-	}
+	void apply( ci::gl::FboRef destination, ci::gl::FboRef source );
 private:
 	// The Shader class allows us to write and use shaders with support for #include.
 	ShaderRef mFXAA;

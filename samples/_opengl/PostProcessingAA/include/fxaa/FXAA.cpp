@@ -38,7 +38,29 @@ void FXAA::setup()
 	}
 }
 
-void FXAA::draw( ci::gl::TextureRef source, const Area& bounds )
+void FXAA::apply( gl::FboRef destination, gl::FboRef source )
+{
+	gl::ScopedFramebuffer fbo( destination );
+	gl::ScopedViewport viewport( 0, 0, destination->getWidth(), destination->getHeight() );
+	gl::ScopedMatrices matrices;
+	gl::setMatricesWindow( destination->getSize(), false );
+
+	// Make sure our source is linearly interpolated.
+	GLenum minFilter = source->getFormat().getColorTextureFormat().getMinFilter();
+	GLenum magFilter = source->getFormat().getColorTextureFormat().getMagFilter();
+	source->getColorTexture()->setMinFilter( GL_LINEAR );
+	source->getColorTexture()->setMagFilter( GL_LINEAR );
+
+	// Perform FXAA anti-aliasing.
+	gl::clear( ColorA( 0, 0, 0, 0 ) );
+	draw( source->getColorTexture(), destination->getBounds() );
+
+	// Restore texture parameters.
+	source->getColorTexture()->setMinFilter( minFilter );
+	source->getColorTexture()->setMagFilter( magFilter );
+}
+
+void FXAA::draw( gl::TextureRef source, const Area& bounds )
 {
 	if( !mFXAA )
 		return;

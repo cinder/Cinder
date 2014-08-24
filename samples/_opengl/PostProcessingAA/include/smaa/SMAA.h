@@ -36,11 +36,7 @@ public:
 
 	void setup();
 	void draw( ci::gl::Texture2dRef source, const ci::Area& bounds );
-	void apply( ci::gl::FboRef destination, ci::gl::FboRef source )
-	{
-		ci::gl::ScopedFramebuffer fbo( destination );
-		draw( source->getColorTexture(), destination->getBounds() );
-	}
+	void apply( ci::gl::FboRef destination, ci::gl::FboRef source );
 
 	ci::gl::Texture2dRef  getEdgePass();
 	ci::gl::Texture2dRef  getBlendPass();
@@ -50,9 +46,9 @@ private:
 	ci::gl::FboRef        mFboBlendPass;
 
 	// The Shader class allows us to write and use shaders with support for #include.
-	ShaderRef             mSMAAFirstPass;		// edge detection
+	ShaderRef             mSMAAFirstPass;	// edge detection
 	ShaderRef             mSMAASecondPass;	// blending weight calculation
-	ShaderRef             mSMAAThirdPass;		// neighborhood blending
+	ShaderRef             mSMAAThirdPass;	// neighborhood blending
 
 	// These textures contain look-up tables that speed up the SMAA process.
 	ci::gl::Texture2dRef  mAreaTex;
@@ -61,7 +57,10 @@ private:
 	//
 	ci::Vec4f             mMetrics;
 private:
-	void createBuffers( int width, int height );
-	void doEdgePass( ci::gl::Texture2dRef source );
-	void doBlendPass();
+	void                  createBuffers( int width, int height );
+
+	void                  doEdgePass( ci::gl::Texture2dRef source );
+	void                  doBlendPass();
+
+	ci::Rectf             getTexCoords() const;
 };

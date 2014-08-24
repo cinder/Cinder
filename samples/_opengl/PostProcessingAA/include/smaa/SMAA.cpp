@@ -34,9 +34,7 @@ void SMAA::setup()
 	// Load and compile our shaders
 	try {
 		mSMAAFirstPass = Shader::create( "smaa1" );
-
 		mSMAASecondPass = Shader::create( "smaa2" );
-
 		mSMAAThirdPass = Shader::create( "smaa3" );
 	}
 	catch( const std::exception& e ) {
@@ -68,7 +66,29 @@ void SMAA::setup()
 	mFboFormat.enableDepthBuffer( false );
 }
 
-void SMAA::draw( ci::gl::Texture2dRef source, const Area& bounds )
+void SMAA::apply( gl::FboRef destination, gl::FboRef source )
+{
+	gl::ScopedFramebuffer fbo( destination );
+	gl::ScopedViewport viewport( 0, 0, destination->getWidth(), destination->getHeight() );
+	gl::ScopedMatrices matrices;
+	gl::setMatricesWindow( destination->getSize(), false );
+
+	// Make sure our source is linearly interpolated.
+	GLenum minFilter = source->getFormat().getColorTextureFormat().getMinFilter();
+	GLenum magFilter = source->getFormat().getColorTextureFormat().getMagFilter();
+	source->getColorTexture()->setMinFilter( GL_LINEAR );
+	source->getColorTexture()->setMagFilter( GL_LINEAR );
+
+	// Perform SMAA anti-aliasing.
+	gl::clear( ColorA( 0, 0, 0, 0 ) );
+	draw( source->getColorTexture(), destination->getBounds() );
+
+	// Restore texture parameters.
+	source->getColorTexture()->setMinFilter( minFilter );
+	source->getColorTexture()->setMagFilter( magFilter );
+}
+
+void SMAA::draw( gl::Texture2dRef source, const Area& bounds )
 {
 	if( !mSMAAFirstPass || !mSMAASecondPass || !mSMAAThirdPass )
 		return;
@@ -91,7 +111,7 @@ void SMAA::draw( ci::gl::Texture2dRef source, const Area& bounds )
 	mSMAAThirdPass->uniform( "uBlendTex", 1 );
 
 	gl::color( Color::white() );
-	gl::drawSolidRect( bounds );
+	gl::drawSolidRect( bounds, getTexCoords() );
 }
 
 gl::TextureRef SMAA::getEdgePass()
@@ -108,23 +128,23 @@ void SMAA::createBuffers( int width, int height )
 {
 	// Create or resize frame buffers
 	if( !mFboEdgePass || mFboEdgePass->getWidth() != width || mFboEdgePass->getHeight() != height ) {
-		mFboFormat.setColorBufferInternalFormat( GL_RGBA );
+		mFboFormat.setColorBufferInternalFormat( GL_RGBA8 );
 		mFboEdgePass = gl::Fbo::create( width, height, mFboFormat );
 	}
 
 	if( !mFboBlendPass || mFboBlendPass->getWidth() != width || mFboBlendPass->getHeight() != height ) {
-		mFboFormat.setColorBufferInternalFormat( GL_RGBA );
+		mFboFormat.setColorBufferInternalFormat( GL_RGBA8 );
 		mFboBlendPass = gl::Fbo::create( width, height, mFboFormat );
 	}
 
 	mMetrics = Vec4f( 1.0f / width, 1.0f / height, (float) width, (float) height );
 }
 
-void SMAA::doEdgePass( ci::gl::Texture2dRef source )
+void SMAA::doEdgePass( gl::Texture2dRef source )
 {
 	// Enable frame buffer, bind textures and shader.
 	gl::ScopedFramebuffer fbo( mFboEdgePass );
-	gl::clear();
+	gl::clear( ColorA( 0, 0, 0, 0 ) );
 
 	gl::ScopedTextureBind tex0( source );
 	gl::ScopedGlslProg shader( mSMAAFirstPass->program() );
@@ -132,19 +152,15 @@ void SMAA::doEdgePass( ci::gl::Texture2dRef source )
 	mSMAAFirstPass->uniform( "uColorTex", 0 );
 
 	// Execute shader by drawing a 'full screen' rectangle.
-	auto viewport = gl::getViewport();
-	Vec2f offset = Vec2f( viewport.first ) / mFboEdgePass->getSize();
-	Vec2f size = Vec2f( viewport.second ) / mFboEdgePass->getSize();
-
 	gl::color( Color::white() );
-	gl::drawSolidRect( mFboEdgePass->getBounds() /* Rectf( offset, offset + size )  */ );
+	gl::drawSolidRect( mFboEdgePass->getBounds(), getTexCoords() );
 }
 
 void SMAA::doBlendPass()
 {
 	// Enable frame buffer, bind textures and shader.
 	gl::ScopedFramebuffer fbo( mFboBlendPass );
-	gl::clear();
+	gl::clear( ColorA( 0, 0, 0, 0 ) );
 
 	gl::ScopedTextureBind tex0( mFboEdgePass->getColorTexture() );
 	gl::ScopedTextureBind tex1( ( gl::TextureBaseRef ) mAreaTex, 1 );
@@ -156,10 +172,18 @@ void SMAA::doBlendPass()
 	mSMAASecondPass->uniform( "uSearchTex", 2 );
 
 	// Execute shader by drawing a 'full screen' rectangle.
+	gl::color( Color::white() );
+	gl::drawSolidRect( mFboBlendPass->getBounds(), getTexCoords() );
+}
+
+Rectf SMAA::getTexCoords() const
+{
+	return Rectf( 0, 0, 1, 1 );
+	/*
 	auto viewport = gl::getViewport();
 	Vec2f offset = Vec2f( viewport.first ) / mFboBlendPass->getSize();
 	Vec2f size = Vec2f( viewport.second ) / mFboBlendPass->getSize();
 
-	gl::color( Color::white() );
-	gl::drawSolidRect( mFboBlendPass->getBounds() /* Rectf( offset, offset + size ) */ );
+	return Rectf( offset, offset + size );
+	*/
 }

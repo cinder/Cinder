@@ -2,6 +2,16 @@
 Copyright (c) 2014, Paul Houx - All rights reserved.
 This code is intended for use with the Cinder C++ library: http://libcinder.org
 
+FXAA:
+Copyright (c) 2010, 2011 NVIDIA CORPORATION. ALL RIGHTS RESERVED.
+
+SMAA:
+Copyright (c) 2013 Jorge Jimenez (jorge@iryoku.com)
+Copyright (c) 2013 Jose I. Echevarria (joseignacioechevarria@gmail.com)
+Copyright (c) 2013 Belen Masia (bmasia@unizar.es)
+Copyright (c) 2013 Fernando Navarro (fernandn@microsoft.com)
+Copyright (c) 2013 Diego Gutierrez (diegog@unizar.es)
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that
 the following conditions are met:
 
@@ -60,14 +70,19 @@ private:
 	double              mTime;
 	double              mTimeOffset;
 
-	gl::FboRef          mFbo;            // Non-anti-aliased frame buffer to render our scene to.
+	gl::FboRef          mFboScene;       // Non-anti-aliased frame buffer to render our scene to.
+	gl::FboRef          mFboFinal;       // Frame buffer that will contain the anti-aliased result.
+
 	FXAA                mFXAA;           // Takes care of applying FXAA anti-aliasing to our scene.
 	SMAA                mSMAA;           // Takes care of applying SMAA anti-aliasing to our scene.
 
-	gl::TextureRef      mInfo;           // Info texture.
+	gl::TextureRef      mInfoFXAA;       // Info texture.
+	gl::TextureRef      mInfoSMAA;       // Info texture.
+	gl::TextureRef      mInfoOriginal;   // Info texture.
 
 	Vec2i               mDivider;        // Determines which part of our scene is anti-aliased.
-	uint8_t             mPixelSize;          // Allows us to zoom in on the scene.
+	int                 mDividerWidth;
+	uint8_t             mPixelSize;      // Allows us to zoom in on the scene.
 };
 
 void PostProcessingAAApp::prepareSettings( Settings* settings )
@@ -79,7 +94,9 @@ void PostProcessingAAApp::prepareSettings( Settings* settings )
 void PostProcessingAAApp::setup()
 {
 	try {
-		mInfo = gl::Texture::create( loadImage( loadAsset( "info.png" ) ) );
+		mInfoFXAA = gl::Texture::create( loadImage( loadAsset( "fxaa.png" ) ) );
+		mInfoSMAA = gl::Texture::create( loadImage( loadAsset( "smaa.png" ) ) );
+		mInfoOriginal = gl::Texture::create( loadImage( loadAsset( "original.png" ) ) );
 	}
 	catch( const std::exception& ) {}
 
@@ -90,6 +107,8 @@ void PostProcessingAAApp::setup()
 	mTimeOffset = 1.0;
 	mTimer.start();
 
+	mDivider = getWindowSize() / 2;
+	mDividerWidth = getWindowWidth() / 4;
 	mPixelSize = 1;
 }
 
@@ -125,48 +144,53 @@ void PostProcessingAAApp::draw()
 	gl::color( Color::white() );
 
 	// Draw non-anti-aliased scene.
-	gl::pushMatrices();
-	gl::setMatricesWindow( mDivider.x, getWindowHeight(), false );
-	gl::pushViewport( 0, 0, mDivider.x, getWindowHeight() );
-	gl::draw( mFbo->getColorTexture(), getWindowBounds().flipVertical() );
-	gl::popViewport();
-	gl::popMatrices();
+	gl::draw( mFboScene->getColorTexture(), getWindowBounds() );
 
 	// Draw FXAA-anti-aliased scene.
+	mFXAA.apply( mFboFinal, mFboScene );
+
 	gl::pushMatrices();
-	gl::setMatricesWindow( getWindowWidth() - mDivider.x, mDivider.y, false );
-	gl::pushViewport( mDivider.x, getWindowHeight() - mDivider.y, getWindowWidth() - mDivider.x, mDivider.y );
-	mFXAA.draw( mFbo->getColorTexture(), getWindowBounds() );
+	gl::setMatricesWindow( mDividerWidth, getWindowHeight() );
+	gl::pushViewport( mDivider.x - mDividerWidth, 0, mDividerWidth, getWindowHeight() );
+	gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( Vec2f( -( mDivider.x - mDividerWidth ), 0 ) ) );
 	gl::popViewport();
 	gl::popMatrices();
 
 	// Draw SMAA-anti-aliased scene.
+	mSMAA.apply( mFboFinal, mFboScene );
+
 	gl::pushMatrices();
-	gl::setMatricesWindow( getWindowWidth() - mDivider.x, getWindowHeight() - mDivider.y, false );
-	gl::pushViewport( mDivider.x, 0, getWindowWidth() - mDivider.x, getWindowHeight() - mDivider.y );
-	mSMAA.draw( mFbo->getColorTexture(), getWindowBounds() );
+	gl::setMatricesWindow( mDividerWidth, getWindowHeight() );
+	gl::pushViewport( mDivider.x, 0, mDividerWidth, getWindowHeight() );
+	gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( Vec2f( -mDivider.x, 0 ) ) );
 	gl::popViewport();
 	gl::popMatrices();
 
 	// Draw divider.
 	gl::drawLine( Vec2f( (float) mDivider.x, 0 ), Vec2f( (float) mDivider.x, (float) getWindowHeight() ) );
-	gl::drawLine( Vec2f( (float) mDivider.x, (float) mDivider.y ), Vec2f( (float) getWindowWidth(), (float) mDivider.y ) );
+	gl::drawLine( Vec2f( (float) ( mDivider.x - mDividerWidth ), 0 ), Vec2f( (float) ( mDivider.x - mDividerWidth ), (float) getWindowHeight() ) );
+	gl::drawLine( Vec2f( (float) ( mDivider.x + mDividerWidth ), 0 ), Vec2f( (float) ( mDivider.x + mDividerWidth ), (float) getWindowHeight() ) );
+	
+	// Draw info.
 	gl::enableAlphaBlending();
-	gl::draw( mInfo, Vec2f( mDivider - mInfo->getSize() / 2 ) );
+	gl::draw( mInfoOriginal, Vec2f( mDivider.x - mDividerWidth * 3 / 2 - 128, 32 ) );
+	gl::draw( mInfoFXAA, Vec2f( mDivider.x - mDividerWidth * 1 / 2 - 128, 32 ) );
+	gl::draw( mInfoSMAA, Vec2f( mDivider.x + mDividerWidth * 1 / 2 - 128, 32 ) );
+	gl::draw( mInfoOriginal, Vec2f( mDivider.x + mDividerWidth * 3 / 2 - 128, 32 ) );
 	gl::disableAlphaBlending();
 }
 
 void PostProcessingAAApp::render()
 {
 	// Bind the Fbo. Automatically unbinds it at the end of this function.
-	gl::ScopedFramebuffer fbo( mFbo );
+	gl::ScopedFramebuffer fbo( mFboScene );
 
 	// Clear the buffer.
 	gl::clear( ColorA( 0, 0, 0, 0 ) );
 	gl::color( Color::white() );
 
 	// Render our scene.
-	gl::pushViewport( 0, 0, mFbo->getWidth(), mFbo->getHeight() );
+	gl::pushViewport( 0, 0, mFboScene->getWidth(), mFboScene->getHeight() );
 	mPistons.draw( mCamera, float( mTime ) );
 	gl::popViewport();
 }
@@ -174,7 +198,7 @@ void PostProcessingAAApp::render()
 void PostProcessingAAApp::resize()
 {
 	gl::Texture2d::Format tfmt;
-	tfmt.setMinFilter( GL_LINEAR );
+	tfmt.setMinFilter( GL_NEAREST );
 	tfmt.setMagFilter( GL_NEAREST );
 
 	gl::Fbo::Format fmt;
@@ -185,10 +209,14 @@ void PostProcessingAAApp::resize()
 	// So make sure we have one.
 	fmt.setColorBufferInternalFormat( GL_RGBA8 );
 
-	mFbo = gl::Fbo::create( getWindowWidth() / mPixelSize, getWindowHeight() / mPixelSize, fmt );
+	mFboScene = gl::Fbo::create( getWindowWidth() / mPixelSize, getWindowHeight() / mPixelSize, fmt );
+	mFboFinal = gl::Fbo::create( getWindowWidth() / mPixelSize, getWindowHeight() / mPixelSize, fmt );
 
 	// Update the camera's aspect ratio.
 	mCamera.setAspectRatio( getWindowAspectRatio() );
+
+	//
+	mDividerWidth = getWindowWidth() / 4;
 }
 
 void PostProcessingAAApp::mouseMove( MouseEvent event )
@@ -245,4 +273,4 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP_NATIVE( PostProcessingAAApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )
+CINDER_APP_NATIVE( PostProcessingAAApp, RendererGl )
