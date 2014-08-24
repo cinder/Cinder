@@ -40,13 +40,14 @@ Piston::Piston()
 Piston::Piston( float x, float z )
 	: mOffset( ci::Rand::randFloat( 0.0f, 10.0f ) )
 	, mColor( ci::CM_HSV, ci::Rand::randFloat( 0.0f, 0.1f ), ci::Rand::randFloat( 0.0f, 1.0f ), ci::Rand::randFloat( 0.25f, 1.0f ) )
-	, mPosition( ci::Vec3f( x, 0.0f, z ) )
+	, mPosition( glm::vec3( x, 0.0f, z ) )
 {
 }
 
 void Piston::update( const ci::Camera& camera )
 {
-	mDistance = mPosition.distanceSquared( camera.getEyePoint() );
+	glm::vec3 diff = camera.getEyePoint() - mPosition;
+	mDistance = glm::dot(diff, diff); // = squared distance
 }
 
 void Piston::draw( float time )
@@ -56,7 +57,7 @@ void Piston::draw( float time )
 	mPosition.y = 0.5f * height;
 
 	gl::color( mColor );
-	gl::drawCube( mPosition, ci::Vec3f( 10.0f, height, 10.0f ) );
+	gl::drawCube( mPosition, glm::vec3( 10.0f, height, 10.0f ) );
 }
 
 /////////////////////////////////////

@@ -80,9 +80,9 @@ private:
 	gl::TextureRef      mInfoSMAA;       // Info texture.
 	gl::TextureRef      mInfoOriginal;   // Info texture.
 
-	Vec2i               mDivider;        // Determines which part of our scene is anti-aliased.
+	glm::vec2           mDivider;        // Determines which part of our scene is anti-aliased.
 	int                 mDividerWidth;
-	uint8_t             mPixelSize;      // Allows us to zoom in on the scene.
+	int                 mPixelSize;      // Allows us to zoom in on the scene.
 };
 
 void PostProcessingAAApp::prepareSettings( Settings* settings )
@@ -126,8 +126,8 @@ void PostProcessingAAApp::update()
 	float y = 150.0f * math<float>::sin( theta );
 	float z = 150.0f * math<float>::sin( phi ) * math<float>::cos( theta );
 
-	mCamera.setEyePoint( Vec3f( x, y, z ) );
-	mCamera.setCenterOfInterestPoint( Vec3f( 1, 50, 0 ) );
+	mCamera.setEyePoint( glm::vec3( x, y, z ) );
+	mCamera.setCenterOfInterestPoint( glm::vec3( 1, 50, 0 ) );
 	mCamera.setFov( 40.0f );
 
 	// Update the pistons.
@@ -152,7 +152,7 @@ void PostProcessingAAApp::draw()
 	gl::pushMatrices();
 	gl::setMatricesWindow( mDividerWidth, getWindowHeight() );
 	gl::pushViewport( mDivider.x - mDividerWidth, 0, mDividerWidth, getWindowHeight() );
-	gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( Vec2f( -( mDivider.x - mDividerWidth ), 0 ) ) );
+	gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( glm::vec2( -( mDivider.x - mDividerWidth ), 0 ) ) );
 	gl::popViewport();
 	gl::popMatrices();
 
@@ -162,21 +162,21 @@ void PostProcessingAAApp::draw()
 	gl::pushMatrices();
 	gl::setMatricesWindow( mDividerWidth, getWindowHeight() );
 	gl::pushViewport( mDivider.x, 0, mDividerWidth, getWindowHeight() );
-	gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( Vec2f( -mDivider.x, 0 ) ) );
+	gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) );
 	gl::popViewport();
 	gl::popMatrices();
 
 	// Draw divider.
-	gl::drawLine( Vec2f( (float) mDivider.x, 0 ), Vec2f( (float) mDivider.x, (float) getWindowHeight() ) );
-	gl::drawLine( Vec2f( (float) ( mDivider.x - mDividerWidth ), 0 ), Vec2f( (float) ( mDivider.x - mDividerWidth ), (float) getWindowHeight() ) );
-	gl::drawLine( Vec2f( (float) ( mDivider.x + mDividerWidth ), 0 ), Vec2f( (float) ( mDivider.x + mDividerWidth ), (float) getWindowHeight() ) );
+	gl::drawLine( glm::vec2( (float) mDivider.x, 0 ), glm::vec2( (float) mDivider.x, (float) getWindowHeight() ) );
+	gl::drawLine( glm::vec2( (float) ( mDivider.x - mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x - mDividerWidth ), (float) getWindowHeight() ) );
+	gl::drawLine( glm::vec2( (float) ( mDivider.x + mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x + mDividerWidth ), (float) getWindowHeight() ) );
 	
 	// Draw info.
 	gl::enableAlphaBlending();
-	gl::draw( mInfoOriginal, Vec2f( mDivider.x - mDividerWidth * 3 / 2 - 128, 32 ) );
-	gl::draw( mInfoFXAA, Vec2f( mDivider.x - mDividerWidth * 1 / 2 - 128, 32 ) );
-	gl::draw( mInfoSMAA, Vec2f( mDivider.x + mDividerWidth * 1 / 2 - 128, 32 ) );
-	gl::draw( mInfoOriginal, Vec2f( mDivider.x + mDividerWidth * 3 / 2 - 128, 32 ) );
+	gl::draw( mInfoOriginal, glm::vec2( mDivider.x - mDividerWidth * 3 / 2 - 128, 32 ) );
+	gl::draw( mInfoFXAA, glm::vec2( mDivider.x - mDividerWidth * 1 / 2 - 128, 32 ) );
+	gl::draw( mInfoSMAA, glm::vec2( mDivider.x + mDividerWidth * 1 / 2 - 128, 32 ) );
+	gl::draw( mInfoOriginal, glm::vec2( mDivider.x + mDividerWidth * 3 / 2 - 128, 32 ) );
 	gl::disableAlphaBlending();
 }
 

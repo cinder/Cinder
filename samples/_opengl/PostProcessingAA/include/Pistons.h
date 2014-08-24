@@ -60,7 +60,7 @@ private:
 	float      mDistance;
 	float      mOffset;
 	ci::Colorf mColor;
-	ci::Vec3f  mPosition;
+	glm::vec3  mPosition;
 };
 
 class Pistons

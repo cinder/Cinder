@@ -55,12 +55,10 @@ private:
 	ci::gl::Texture2dRef  mSearchTex;
 
 	//
-	ci::Vec4f             mMetrics;
+	ci::vec4              mMetrics;
 private:
 	void                  createBuffers( int width, int height );
 
 	void                  doEdgePass( ci::gl::Texture2dRef source );
 	void                  doBlendPass();
-
-	ci::Rectf             getTexCoords() const;
 };

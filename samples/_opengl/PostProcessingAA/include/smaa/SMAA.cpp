@@ -111,7 +111,7 @@ void SMAA::draw( gl::Texture2dRef source, const Area& bounds )
 	mSMAAThirdPass->uniform( "uBlendTex", 1 );
 
 	gl::color( Color::white() );
-	gl::drawSolidRect( bounds, getTexCoords() );
+	gl::drawSolidRect( bounds );
 }
 
 gl::TextureRef SMAA::getEdgePass()
@@ -137,7 +137,7 @@ void SMAA::createBuffers( int width, int height )
 		mFboBlendPass = gl::Fbo::create( width, height, mFboFormat );
 	}
 
-	mMetrics = Vec4f( 1.0f / width, 1.0f / height, (float) width, (float) height );
+	mMetrics = glm::vec4( 1.0f / width, 1.0f / height, (float) width, (float) height );
 }
 
 void SMAA::doEdgePass( gl::Texture2dRef source )
@@ -153,7 +153,7 @@ void SMAA::doEdgePass( gl::Texture2dRef source )
 
 	// Execute shader by drawing a 'full screen' rectangle.
 	gl::color( Color::white() );
-	gl::drawSolidRect( mFboEdgePass->getBounds(), getTexCoords() );
+	gl::drawSolidRect( mFboEdgePass->getBounds() );
 }
 
 void SMAA::doBlendPass()
@@ -173,17 +173,5 @@ void SMAA::doBlendPass()
 
 	// Execute shader by drawing a 'full screen' rectangle.
 	gl::color( Color::white() );
-	gl::drawSolidRect( mFboBlendPass->getBounds(), getTexCoords() );
-}
-
-Rectf SMAA::getTexCoords() const
-{
-	return Rectf( 0, 0, 1, 1 );
-	/*
-	auto viewport = gl::getViewport();
-	Vec2f offset = Vec2f( viewport.first ) / mFboBlendPass->getSize();
-	Vec2f size = Vec2f( viewport.second ) / mFboBlendPass->getSize();
-
-	return Rectf( offset, offset + size );
-	*/
+	gl::drawSolidRect( mFboBlendPass->getBounds() );
 }
