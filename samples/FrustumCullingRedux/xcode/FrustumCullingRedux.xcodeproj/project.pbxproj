@@ -22,6 +22,8 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B3B6639B19AA8DFD0097005F /* phong.vert in Resources */ = {isa = PBXBuildFile; fileRef = B3B6639A19AA8DFD0097005F /* phong.vert */; };
+		B3B6639D19AA8E180097005F /* phong.frag in Resources */ = {isa = PBXBuildFile; fileRef = B3B6639C19AA8E180097005F /* phong.frag */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +49,8 @@
 		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* FrustumCullingRedux.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FrustumCullingRedux.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3B6639A19AA8DFD0097005F /* phong.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = phong.vert; path = ../assets/shaders/phong.vert; sourceTree = "<group>"; };
+		B3B6639C19AA8E180097005F /* phong.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = phong.frag; path = ../assets/shaders/phong.frag; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,6 +146,8 @@
 			children = (
 				8D1107310486CEB800E47090 /* Info.plist */,
 				00CCAF14116A9FEE008396D5 /* CinderApp.icns */,
+				B3B6639A19AA8DFD0097005F /* phong.vert */,
+				B3B6639C19AA8E180097005F /* phong.frag */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -206,7 +212,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3B6639D19AA8E180097005F /* phong.frag in Resources */,
 				00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */,
+				B3B6639B19AA8DFD0097005F /* phong.vert in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

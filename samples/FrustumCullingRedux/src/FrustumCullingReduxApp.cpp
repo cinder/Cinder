@@ -29,9 +29,10 @@
 #include "cinder/Rand.h"
 #include "cinder/Text.h"
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Light.h"
-#include "cinder/gl/Material.h"
+#include "cinder/gl/Batch.h"
+#include "cinder/gl/Context.h"
 
 #include "CullableObject.h"
 
@@ -46,6 +47,8 @@ class FrustumCullingReduxApp : public AppBasic
 	void setup();
 	void update();
 	void draw();
+	
+	void renderObjects();
 
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
@@ -76,19 +79,18 @@ class FrustumCullingReduxApp : public AppBasic
 	bool			bShowHelp;
 	
 	//! assets
-	gl::Texture		mDiffuse;
-	gl::Texture		mNormal;
-	gl::Texture		mSpecular;
+	gl::Texture2dRef	mDiffuse;
+	gl::Texture2dRef	mNormal;
+	gl::Texture2dRef	mSpecular;
 
-	ci::TriMesh		mTriMesh;
-	gl::VboMesh		mVboMesh;
+	ci::TriMeshRef		mTriMesh;
+	gl::BatchRef		mBatch;
 
 	//! caches the heart's bounding box in object space coordinates
 	AxisAlignedBox3f	mObjectBoundingBox;
 
 	//! render assets
-	gl::GlslProg	mShader;
-	gl::Material	mMaterial;
+	gl::GlslProgRef		mShader;
 
 	//! objects
 	CullableObjectRef	mObjects[NUM_OBJECTS];
@@ -99,7 +101,7 @@ class FrustumCullingReduxApp : public AppBasic
 	CameraPersp		mCullingCam;
 
 	//! help text
-	gl::Texture		mHelp;
+	gl::Texture2dRef	mHelp;
 };
 
 void FrustumCullingReduxApp::prepareSettings(Settings *settings)
@@ -124,6 +126,22 @@ void FrustumCullingReduxApp::setup()
 
 	//! render help texture
 	renderHelpToTexture();
+	
+	//! load and compile shader
+	try {
+		mShader = gl::GlslProg::create( loadAsset("shaders/phong.vert"), loadAsset("shaders/phong.frag") );
+	}
+	catch( const std::exception &e ) {
+		app::console() << "Could not load and compile shader:" << e.what() << std::endl;
+	}
+	
+	//! setup material
+	//  we set it up once because all of our objects will
+	//  share the same values
+	mShader->uniform( "cAmbient", Color(0.1f, 0.1f, 0.1f) );
+	mShader->uniform( "cDiffuse", Color(1.0f, 0.0f, 0.0f) );
+	mShader->uniform( "cSpecular", Color(1.0f, 1.0f, 1.0f) );
+	mShader->uniform( "shininess", 50.0f );
 
 	//! load assets
 	loadObject();
@@ -135,22 +153,8 @@ void FrustumCullingReduxApp::setup()
 		vec3 r( 0.0f, Rand::randFloat(-360.0f, 360.0f), 0.0f );
 		vec3 s( 50.10f, 50.10f, 50.10f );
 
-		mObjects[i] = CullableObjectRef( new CullableObject(mVboMesh, mDiffuse, mNormal, mSpecular) );
+		mObjects[i] = CullableObjectRef( new CullableObject( mBatch ) );
 		mObjects[i]->setTransform( p, r, s );
-	}
-
-	//! setup material
-	mMaterial.setAmbient( Color(0.1f, 0.1f, 0.1f) );
-	mMaterial.setDiffuse( Color(1.0f, 0.0f, 0.0f) );
-	mMaterial.setSpecular( Color(1.0f, 1.0f, 1.0f) );
-	mMaterial.setShininess( 50.0f );
-
-	//! load and compile shader
-	try {
-		mShader = gl::GlslProg( loadAsset("shaders/phong_vert.glsl"), loadAsset("shaders/phong_frag.glsl") );
-	}
-	catch( const std::exception &e ) {
-		app::console() << "Could not load and compile shader:" << e.what() << std::endl;
 	}
 
 	//! setup cameras
@@ -201,82 +205,57 @@ void FrustumCullingReduxApp::draw()
 {
 	// clear the window
 	gl::clear( Color(0.25f, 0.25f, 0.25f) );
-
-	// setup camera
-	gl::pushMatrices();
-	gl::setMatrices( mRenderCam );	
-
-	// enable 3D rendering
-	gl::enable(GL_CULL_FACE);
-	gl::enableDepthRead();
-	gl::enableDepthWrite();
-
-	// apply material and setup light
-	mMaterial.apply();
-
-	gl::Light light( gl::Light::POINT, 0 );
-	light.setAmbient( Color::white() );
-	light.setDiffuse( Color::white() );
-	light.setSpecular( Color::white() );
-	light.enable();
-	light.update( mRenderCam );
-
-	// bind shader 
-	if(mShader) {
-		mShader.bind();
-		mShader.uniform("numLights", 1);
-	}
-
-	// draw hearts
-	for(int i=0;i<NUM_OBJECTS;++i) 
-		mObjects[i]->draw();
-
-	// unbind shader
-	if(mShader)
-		mShader.unbind();
-
-	// draw helper objects
-	gl::drawCoordinateFrame(100.0f, 5.0f, 2.0f);
 	
-	AxisAlignedBox3f worldBoundingBox;
-	for(int i=0;i<NUM_OBJECTS;++i) {
-		if(bDrawEstimatedBoundingBoxes) {
-			// create a fast approximation of the world space bounding box by transforming the
-			// eight corners and using them to create a new axis aligned bounding box 
-			worldBoundingBox = mObjectBoundingBox.transformed( mObjects[i]->getTransform() );
+	{
+		// setup camera
+		gl::ScopedMatrices scopeMatrix;
+		gl::setMatrices( mRenderCam );
 		
-			if( !mObjects[i]->isCulled() ) 
-				gl::color( Color(0, 1, 1) );
-			else 
-				gl::color( Color(1, 0.5f, 0) );
-
-			gl::drawStrokedCube( worldBoundingBox );
+		gl::ScopedState scopeState( GL_CULL_FACE, true );
+		gl::enableDepthRead();
+		gl::enableDepthWrite();
+		
+		renderObjects();
+		
+		// draw helper objects
+		gl::drawCoordinateFrame(100.0f, 5.0f, 2.0f);
+		
+		AxisAlignedBox3f worldBoundingBox;
+		for(int i=0;i<NUM_OBJECTS;++i) {
+			if(bDrawEstimatedBoundingBoxes) {
+				// create a fast approximation of the world space bounding box by transforming the
+				// eight corners and using them to create a new axis aligned bounding box
+				worldBoundingBox = mObjectBoundingBox.transformed( mObjects[i]->getTransform() );
+				
+				if( !mObjects[i]->isCulled() )
+					gl::color( Color(0, 1, 1) );
+				else
+					gl::color( Color(1, 0.5f, 0) );
+				
+				gl::drawStrokedCube( worldBoundingBox );
+			}
+			
+			if(bDrawPreciseBoundingBoxes && !mObjects[i]->isCulled()) {
+				// you can see how much the approximated bounding boxes differ
+				// from the precise ones by enabling this code
+				worldBoundingBox = mTriMesh->calcBoundingBox( mObjects[i]->getTransform() );
+				gl::color( Color(1, 1, 0) );
+				gl::drawStrokedCube( worldBoundingBox );
+			}
 		}
-
-		if(bDrawPreciseBoundingBoxes && !mObjects[i]->isCulled()) {
-			// you can see how much the approximated bounding boxes differ
-			// from the precise ones by enabling this code
-			worldBoundingBox = mTriMesh.calcBoundingBox( mObjects[i]->getTransform() );
-			gl::color( Color(1, 1, 0) );
-			gl::drawStrokedCube( worldBoundingBox );	
+		
+		if(!bMoveCamera) {
+			gl::color( Color(1, 1, 1) );
+			gl::drawFrustum( mCullingCam );
 		}
+		
+		drawGrid(2000.0f, 25.0f);
+		
+		// disable 3D rendering
+		gl::disableDepthWrite();
+		gl::disableDepthRead();
 	}
-
-	if(!bMoveCamera) {
-		gl::color( Color(1, 1, 1) );
-		gl::drawFrustum( mCullingCam );
-	}
-
-	drawGrid(2000.0f, 25.0f);	
-
-	// disable 3D rendering
-	gl::disableDepthWrite();
-	gl::disableDepthRead();
-	gl::disable(GL_CULL_FACE);
-
-	// restore matrices
-	gl::popMatrices();
-
+	
 	// render help
 	if(bShowHelp && mHelp) {
 		gl::enableAlphaBlending();
@@ -334,19 +313,32 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 	renderHelpToTexture();
 }
 
+void FrustumCullingReduxApp::renderObjects()
+{
+	
+	gl::ScopedGlslProg scopeGlsl( mShader );
+	
+	if( mDiffuse && mNormal && mSpecular ) {
+		mDiffuse->bind( 0 );
+		mNormal->bind( 1 );
+		mSpecular->bind( 2 );
+	}
+	
+	// draw hearts
+	for(int i=0;i<NUM_OBJECTS;++i)
+		mObjects[i]->draw();
+	
+	if( mDiffuse && mNormal && mSpecular ) {
+		mDiffuse->unbind( 0 );
+		mNormal->unbind( 1 );
+		mSpecular->unbind( 2 );
+	}
+}
+
 void FrustumCullingReduxApp::loadObject()
 {
-	ObjLoader loader( loadAsset("models/heart.obj") );
-	loader.load( &mTriMesh, true, true, true );
-
-	// create a Vbo, which greatly improves drawing speed
-	ci::gl::VboMesh::Layout layout;
-	layout.setStaticPositions();
-	layout.setStaticNormals();
-	layout.setStaticTexCoords2d();
-	layout.setStaticIndices();
-
-	mVboMesh = ci::gl::VboMesh(mTriMesh, layout);
+	mTriMesh = TriMesh::create( ObjLoader( loadAsset("models/heart.obj") ) );
+	mBatch = gl::Batch::create( *mTriMesh, mShader );
 
 	/*// load textures for diffuse colors, normals and specular highlights (optional, no textures supplied)
 	try {
@@ -359,7 +351,7 @@ void FrustumCullingReduxApp::loadObject()
 	}//*/
 
 	// find the object space bounding box
-	mObjectBoundingBox = mTriMesh.calcBoundingBox();
+	mObjectBoundingBox = mTriMesh->calcBoundingBox();
 }
 
 void FrustumCullingReduxApp::drawGrid(float size, float step)
@@ -402,7 +394,7 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 
 	layout.addLine("(H) Toggle this help panel");
 
-	mHelp = gl::Texture( layout.render(true, false) );
+	mHelp = gl::Texture::create( layout.render(true, false) );
 }
 
 CINDER_APP_BASIC( FrustumCullingReduxApp, RendererGl )

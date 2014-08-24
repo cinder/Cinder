@@ -23,18 +23,15 @@
 #include "CullableObject.h"
 
 using namespace ci;
+using namespace ci::gl;
 
-CullableObject::CullableObject(ci::gl::VboMesh mesh, ci::gl::Texture diffuse, ci::gl::Texture normal, ci::gl::Texture specular)
-	: mVboMesh(mesh), mDiffuse(diffuse), mNormal(normal), mSpecular(specular), bIsCulled(false)
+CullableObject::CullableObject( const BatchRef &batch )
+	: mBatch( batch ), bIsCulled(false)
 {
-	setTransform( vec3::zero(), vec3::zero(), vec3::one() * 0.10f );
+	setTransform( vec3( 0.0f ), vec3( 0.0f ), vec3( 0.1f ) );
 }
 
 CullableObject::~CullableObject(void)
-{
-}
-
-void CullableObject::setup()
 {
 }
 
@@ -51,26 +48,13 @@ void CullableObject::draw()
 	if(bIsCulled) return;
 
 	//! only draw if mesh is valid
-	if(mVboMesh) {
+	if(mBatch) {
 		gl::color( Color::white() );
 
-		//! enable and bind the textures (optional, not used)
-		gl::enable(GL_TEXTURE_2D);
-		if(mDiffuse) mDiffuse.bind(0);
-		if(mNormal) mNormal.bind(1);
-		if(mSpecular) mSpecular.bind(2);
-
 		//! draw the mesh 
-		gl::pushModelView();
-		gl::multModelView(mTransform);
-		gl::draw( mVboMesh );
-		gl::popModelView();
-
-		//! unbind the textures (optional, not used)
-		if(mSpecular) mSpecular.unbind();
-		if(mNormal) mNormal.unbind();
-		if(mDiffuse) mDiffuse.unbind();
-		gl::disable(GL_TEXTURE_2D);
+		gl::ScopedModelMatrix scopeModel;
+			gl::multModelMatrix(mTransform);
+			mBatch->draw();
 	}
 }
 
@@ -82,8 +66,8 @@ void CullableObject::setTransform(const ci::vec3 &position, const ci::vec3 &rota
 
 	//! by creating a single transformation matrix, it will be very easy
 	//! to construct a world space bounding box for this object
-	mTransform = mTransform.identity();
-	mTransform.translate(position);
-	mTransform.rotate(rotation);
-	mTransform.scale(scale);
+	mTransform = ci::mat4();
+	mTransform *= ci::translate( position );
+	mTransform *= ci::toMat4( ci::quat( rotation ) );
+	mTransform *= glm::scale( scale );
 }
