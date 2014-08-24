@@ -36,7 +36,7 @@ void InfoPanel::createTexture()
 }
 
 
-void InfoPanel::update( Vec2f aWindowDim, float aCounter )
+void InfoPanel::update( vec2 aWindowDim, float aCounter )
 {
 	if( mState ){
 		if( aCounter == 250.0f ){
@@ -53,12 +53,12 @@ void InfoPanel::update( Vec2f aWindowDim, float aCounter )
 }
 
 
-void InfoPanel::render( Vec2f aWindowDim )
+void InfoPanel::render( vec2 aWindowDim )
 {
 	float x = aWindowDim.x - mTexture.getWidth() - 20.0f;
 	float y = aWindowDim.y - mTexture.getHeight() - 40.0f;
 	glColor4f( 1, 1, 1, mOpacity );
-	gl::draw( mTexture, Vec2f( x, y ) );
+	gl::draw( mTexture, vec2( x, y ) );
 }
 
 

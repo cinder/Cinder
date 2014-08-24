@@ -110,7 +110,7 @@ void ScreenSaverTestApp::draw()
 		gl::clear( mBackgroundColor );
 	gl::color( mColor );
 	//gl::drawSolidCircle( getWindowCenter(), mRadius );
-	gl::drawSolidRect( Rectf( getWindowCenter() - Vec2f( mRadius, mRadius ), getWindowCenter() + Vec2f( mRadius, mRadius ) ) );
+	gl::drawSolidRect( Rectf( getWindowCenter() - vec2( mRadius, mRadius ), getWindowCenter() + vec2( mRadius, mRadius ) ) );
 	
 	if( mConfig.mDrawCinderLogo ) {
 		gl::color( Color::white() );

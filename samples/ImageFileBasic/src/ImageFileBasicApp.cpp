@@ -71,7 +71,7 @@ void ImageFileBasicApp::draw()
 	gl::enableAlphaBlending();
 	
 	if( mTexture )
-		gl::draw( mTexture, Vec2f( 0, 0 ) );
+		gl::draw( mTexture, vec2( 0, 0 ) );
 }
 
 CINDER_APP_BASIC( ImageFileBasicApp, RendererGl )

@@ -64,7 +64,7 @@ private:
 	CameraPersp			mCamera;
 	MayaCamUI			mMayaCam;
 	bool				mRecenterCamera;
-	Vec3f				mCameraCOI;
+	vec3				mCameraCOI;
 
 	gl::VertBatchRef	mGrid;
 
@@ -226,7 +226,7 @@ void GeometryApp::resize(void)
 	mCamera.setAspectRatio( getWindowAspectRatio() );
 	
 	if(mWireframeShader)
-		mWireframeShader->uniform( "uViewportSize", Vec2f( getWindowSize() ) );
+		mWireframeShader->uniform( "uViewportSize", vec2( getWindowSize() ) );
 }
 
 void GeometryApp::keyDown( KeyEvent event )
@@ -270,7 +270,7 @@ void GeometryApp::createParams()
 	std::string qualities[] = { "Low", "Default", "High" };
 	std::string viewmodes[] = { "Shaded", "Wireframe" };
 
-	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", Vec2i(340, 200) );
+	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", ivec2(340, 200) );
 	mParams->setOptions( "", "valueswidth=100 refresh=0.1" );
 
 	mParams->addParam( "Primitive", vector<string>(primitives,primitives+10), (int*) &mPrimitiveSelected );

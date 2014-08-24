@@ -47,7 +47,7 @@ console() << "size: " << getWindowSize() << " @ " << getWindow()->getContentScal
 
 void TestApp::resize( int width, int height )
 {
-	mCam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 3, 2, -3 ), vec3::zero() );
 	mCam.setPerspective( 60, width / (float)height, 1, 1000 );
 console() << "height: " << getWindowHeight() << std::endl;
 console() << "path: " << getAppPath() << std::endl;
@@ -56,7 +56,7 @@ console() << "Frames: " << getElapsedFrames() << std::endl;
 
 void TestApp::touchesBegan( TouchEvent event )
 {
-	Vec2f pt = event.getTouches()[0].getPos();
+	vec2 pt = event.getTouches()[0].getPos();
 	std::cout << "Mouse down @ " << pt << " points: " << getWindow()->toPoints( pt ) << std::endl;
 //	writeImage( getDocumentsDirectory() + "whatever.png", copyWindowSurface() );
 	Surface8u surface( 256, 256, false );
@@ -74,7 +74,7 @@ void TestApp::touchesBegan( TouchEvent event )
 
 void TestApp::update()
 {
-	mCubeRotation.rotate( Vec3f( 1, 1, 1 ), 0.03f );
+	mCubeRotation.rotate( vec3( 1, 1, 1 ), 0.03f );
 }
 
 void TestApp::draw()
@@ -86,12 +86,12 @@ void TestApp::draw()
 	gl::setMatrices( mCam );
 	glPushMatrix();
 		gl::multModelView( mCubeRotation );
-		gl::drawCube( Vec3f::zero(), Vec3f( 2.0f, 2.0f, 2.0f ) );
+		gl::drawCube( vec3::zero(), vec3( 2.0f, 2.0f, 2.0f ) );
 	glPopMatrix();*/
 	
 	gl::setMatricesWindow( getWindowSize() );
 	gl::setViewport( getWindowBounds() );
-//	gl::drawString( (Rand::randBool() ? ( "Fjrameyq: " ) : ( "Frame: " )) + toString( getElapsedFrames() ), Vec2f( 10, 40 ), Color( 1, 0.5, 0.25 ), mFont );
+//	gl::drawString( (Rand::randBool() ? ( "Fjrameyq: " ) : ( "Frame: " )) + toString( getElapsedFrames() ), vec2( 10, 40 ), Color( 1, 0.5, 0.25 ), mFont );
 	gl::draw( mTex );
 }
 

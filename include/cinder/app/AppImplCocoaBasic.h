@@ -88,7 +88,7 @@
 	CinderView							*mCinderView;
 	cinder::app::WindowRef				mWindowRef;
 	cinder::DisplayRef					mDisplay;
-	cinder::Vec2i						mSize, mPos;
+	cinder::ivec2						mSize, mPos;
 	BOOL								mResizable, mBorderless, mAlwaysOnTop, mHidden;
 }
 
@@ -97,11 +97,11 @@
 - (void)dealloc;
 - (BOOL)isFullScreen;
 - (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
-- (cinder::Vec2i)getSize;
-- (void)setSize:(cinder::Vec2i)size;
-- (cinder::Vec2i)getPos;
+- (cinder::ivec2)getSize;
+- (void)setSize:(cinder::ivec2)size;
+- (cinder::ivec2)getPos;
 - (float)getContentScale;
-- (void)setPos:(cinder::Vec2i)pos;
+- (void)setPos:(cinder::ivec2)pos;
 - (float)getContentScale;
 - (void)close;
 - (NSString *)getTitle;

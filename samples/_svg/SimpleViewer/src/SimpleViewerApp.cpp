@@ -85,7 +85,7 @@ void SimpleViewerApp::draw()
 	}
 	else {
 		gl::drawStringCentered( "Drag & Drop an SVG file", getWindowCenter() );
-		gl::drawStringCentered( "Click to toggle between Cairo & OpenGL", getWindowCenter() + Vec2f( 0, 20 ) );
+		gl::drawStringCentered( "Click to toggle between Cairo & OpenGL", getWindowCenter() + vec2( 0, 20 ) );
 	}
 }
 

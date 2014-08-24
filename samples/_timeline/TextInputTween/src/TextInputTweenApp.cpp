@@ -33,7 +33,7 @@ class TextInputTweenApp : public AppBasic {
 	void addChar( char c );
 	void removeChar();
 	
-	Vec3f getRandomVec3f( float min, float max );
+	vec3 getRandomVec3f( float min, float max );
 	
 	gl::TextureFontRef	mTextureFont;
 	
@@ -44,8 +44,8 @@ class TextInputTweenApp : public AppBasic {
 	CameraPersp			mCam;
 	float				mCamDist;
 	
-	Anim<Matrix44f>		mSceneMatrix;
-	Matrix44f			mSceneDestMatrix;
+	Anim<mat4>		mSceneMatrix;
+	mat4			mSceneDestMatrix;
 };
 
 void TextInputTweenApp::prepareSettings( Settings *settings )
@@ -67,10 +67,10 @@ void TextInputTweenApp::setup()
 	// camera
 	mCamDist = 600.0f;
 	mCam.setPerspective( 75.0f, getWindowAspectRatio(), 0.1f, 5000.0f );
-	mCam.lookAt( Vec3f( 0.0f, 0.0f, mCamDist ), Vec3f::zero(), Vec3f::yAxis() );
+	mCam.lookAt( vec3( 0.0f, 0.0f, mCamDist ), vec3::zero(), vec3::yAxis() );
 	
 	// scene
-	mSceneMatrix = mSceneDestMatrix = Matrix44f::identity();
+	mSceneMatrix = mSceneDestMatrix = mat4::identity();
 	
 	// init text
 	addChar( 'T' );
@@ -99,18 +99,18 @@ void TextInputTweenApp::addChar( char c )
 	int count = mCharacters.size();
 	
 	if( count > 0 )
-		mSceneDestMatrix.translate( Vec3f( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
+		mSceneDestMatrix.translate( vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 	
-	Matrix44f randStartMatrix = mSceneDestMatrix;
+	mat4 randStartMatrix = mSceneDestMatrix;
 	randStartMatrix.translate( getRandomVec3f( 100.0f, 600.0f ) );
 	randStartMatrix.rotate( getRandomVec3f( 2.0f, 6.0f ) );
 	
 	mCharacters.push_back( Character( mTextureFont, string( &c, 1 ), randStartMatrix ) );
 	
-	mSceneDestMatrix.translate( Vec3f( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
+	mSceneDestMatrix.translate( vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 
 	float t = (count + 281)/50.0f;
-	mSceneDestMatrix.rotate( Vec3f( sin(t)*0.1f, cos(t)*0.2f, cos(t)*0.05f ) ); // makes the scene meander
+	mSceneDestMatrix.rotate( vec3( sin(t)*0.1f, cos(t)*0.2f, cos(t)*0.05f ) ); // makes the scene meander
 	
 	mCharacters.back().animIn( timeline(), mSceneDestMatrix );
 	
@@ -126,9 +126,9 @@ void TextInputTweenApp::removeChar()
 		if( ! mCharacters.empty() )
 			mSceneDestMatrix = mCharacters.back().getDestMatrix();
 		else
-			mSceneDestMatrix = Matrix44f::identity();
+			mSceneDestMatrix = mat4::identity();
 		
-		Matrix44f randStartMatrix = mSceneDestMatrix;
+		mat4 randStartMatrix = mSceneDestMatrix;
 		randStartMatrix.translate( getRandomVec3f( 100.0f, 600.0f ) );
 		randStartMatrix.rotate( getRandomVec3f( 2.0f, 6.0f ) );
 		
@@ -143,7 +143,7 @@ void TextInputTweenApp::update()
 	float camDistDest = 600.0f + sin( mCharacters.size() * 0.1f ) * 300.0f;
 	mCamDist -= ( mCamDist - camDistDest ) * 0.1f;
 	
-	mCam.lookAt( Vec3f( 0.0f, 0.0f, mCamDist ), Vec3f::zero(), Vec3f::yAxis() );
+	mCam.lookAt( vec3( 0.0f, 0.0f, mCamDist ), vec3::zero(), vec3::yAxis() );
 }
 
 void TextInputTweenApp::draw()
@@ -163,7 +163,7 @@ void TextInputTweenApp::draw()
 }
 
 
-Vec3f TextInputTweenApp::getRandomVec3f( float min, float max )
+vec3 TextInputTweenApp::getRandomVec3f( float min, float max )
 {
 	return Rand::randVec3f() * Rand::randFloat( min, max );
 }

@@ -14,11 +14,11 @@ using namespace ci::app;
 
 class Particle {
  public:
-	Particle( Vec2f aPosition )
+	Particle( vec2 aPosition )
 		: mPosition( aPosition ), mLastPosition( aPosition ), mVelocity( vec2( 0 ) ), mZ( 0 )
 	{}
  
-	Vec2f mPosition, mVelocity, mLastPosition;
+	vec2 mPosition, mVelocity, mLastPosition;
 	float mZ;
 };
 
@@ -28,7 +28,7 @@ class BasicParticleApp : public AppBasic {
 	void	mouseDown( MouseEvent event );
 	void	keyDown( KeyEvent event );
 	
-	bool	isOffscreen( const Vec2f &v );
+	bool	isOffscreen( const vec2 &v );
 	
 	void	update();
 	void	draw();	
@@ -48,7 +48,7 @@ void BasicParticleApp::setup()
 
 	mAnimationCounter = 0;
 	for( int s = 0; s < NUM_INITIAL_PARTICLES; ++s )
-		mParticles.push_back( Particle( Vec2f( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) ) ) );
+		mParticles.push_back( Particle( vec2( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) ) ) );
 
 	CONSERVATION_OF_VELOCITY = 0.9f;
 	SPEED = 5.0f;
@@ -61,7 +61,7 @@ void BasicParticleApp::mouseDown( MouseEvent event )
 {
 	// Add a bunch of random particles at the mouse point
 	for( int s = 0; s < NUM_CLICKED_PARTICLES; ++s )
-		mParticles.push_back( Particle( Vec2f( event.getPos() ) + Rand::randVec2f() * Rand::randFloat( 60 ) ) );
+		mParticles.push_back( Particle( vec2( event.getPos() ) + Rand::randVec2f() * Rand::randFloat( 60 ) ) );
 }
 
 void BasicParticleApp::keyDown( KeyEvent event )
@@ -75,7 +75,7 @@ void BasicParticleApp::keyDown( KeyEvent event )
 }
 
 // Returns whether a given point is visible onscreen or not
-bool BasicParticleApp::isOffscreen( const Vec2f &v )
+bool BasicParticleApp::isOffscreen( const vec2 &v )
 {
 	return ( ( v.x < 0 ) || ( v.x > getWindowWidth() ) || ( v.y < 0 ) || ( v.y > getWindowHeight() ) );
 }
@@ -90,9 +90,9 @@ void BasicParticleApp::update()
 
 	// Add some perlin noise to the velocity
 	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt ) {
-		Vec3f deriv = mPerlin.dfBm( Vec3f( partIt->mPosition.x, partIt->mPosition.y, mAnimationCounter ) * 0.001f );
+		vec3 deriv = mPerlin.dfBm( vec3( partIt->mPosition.x, partIt->mPosition.y, mAnimationCounter ) * 0.001f );
 		partIt->mZ = deriv.z;
-		Vec2f deriv2 = normalize( vec2( deriv.x, deriv.y ) );
+		vec2 deriv2 = normalize( vec2( deriv.x, deriv.y ) );
 		partIt->mVelocity += deriv2 * SPEED;
 	}
 		
@@ -107,7 +107,7 @@ void BasicParticleApp::update()
 	// Replace any particles that have gone offscreen with a random onscreen position
 	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt ) {
 		if( isOffscreen( partIt->mPosition ) )
-			*partIt = Particle( Vec2f( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) ) );
+			*partIt = Particle( vec2( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) ) );
 	}
 }
 

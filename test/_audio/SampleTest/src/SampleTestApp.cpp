@@ -47,8 +47,8 @@ class SamplePlayerNodeTestApp : public AppNative {
 	void writeRecordedToFile();
 
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 
 	void seek( size_t xPos );
 	void printBufferSamples( size_t xPos );
@@ -227,13 +227,13 @@ void SamplePlayerNodeTestApp::setupUI()
 	mEnableSamplePlayerNodeButton.mBounds = buttonRect;
 	mWidgets.push_back( &mEnableSamplePlayerNodeButton );
 
-	buttonRect += Vec2f( buttonRect.getWidth() + padding, 0 );
+	buttonRect += vec2( buttonRect.getWidth() + padding, 0 );
 	mStartPlaybackButton.mIsToggle = false;
 	mStartPlaybackButton.mTitleNormal = "start";
 	mStartPlaybackButton.mBounds = buttonRect;
 	mWidgets.push_back( &mStartPlaybackButton );
 
-	buttonRect += Vec2f( buttonRect.getWidth() + padding, 0 );
+	buttonRect += vec2( buttonRect.getWidth() + padding, 0 );
 	buttonRect.x2 -= 30;
 	mLoopButton.mIsToggle = true;
 	mLoopButton.mTitleNormal = "loop off";
@@ -242,7 +242,7 @@ void SamplePlayerNodeTestApp::setupUI()
 	mLoopButton.mBounds = buttonRect;
 	mWidgets.push_back( &mLoopButton );
 
-	buttonRect += Vec2f( buttonRect.getWidth() + padding, 0 );
+	buttonRect += vec2( buttonRect.getWidth() + padding, 0 );
 	mAsyncButton.mIsToggle = true;
 	mAsyncButton.mTitleNormal = "async off";
 	mAsyncButton.mTitleEnabled = "async on";
@@ -256,20 +256,20 @@ void SamplePlayerNodeTestApp::setupUI()
 	mRecordButton.mBounds = buttonRect;
 	mWidgets.push_back( &mRecordButton );
 
-	buttonRect += Vec2f( buttonRect.getWidth() + padding, 0 );
+	buttonRect += vec2( buttonRect.getWidth() + padding, 0 );
 	mWriteButton.mIsToggle = false;
 	mWriteButton.mTitleNormal = "write to file";
 	mWriteButton.mBounds = buttonRect;
 	mWidgets.push_back( &mWriteButton );
 
-	buttonRect += Vec2f( buttonRect.getWidth() + padding, 0 );
+	buttonRect += vec2( buttonRect.getWidth() + padding, 0 );
 	mAutoResizeButton.mIsToggle = true;
 	mAutoResizeButton.mTitleNormal = "auto resize off";
 	mAutoResizeButton.mTitleEnabled = "auto resize on";
 	mAutoResizeButton.mBounds = buttonRect;
 	mWidgets.push_back( &mAutoResizeButton );
 
-	Vec2f sliderSize( 200, 30 );
+	vec2 sliderSize( 200, 30 );
 	Rectf selectorRect( getWindowWidth() - sliderSize.x - padding, padding, getWindowWidth() - padding, sliderSize.y * 3 + padding );
 	mTestSelector.mSegments.push_back( "BufferPlayerNode" );
 	mTestSelector.mSegments.push_back( "FilePlayerNode" );
@@ -284,30 +284,30 @@ void SamplePlayerNodeTestApp::setupUI()
 	mGainSlider.set( mGain->getValue() );
 	mWidgets.push_back( &mGainSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + padding );
+	sliderRect += vec2( 0, sliderRect.getHeight() + padding );
 	mPanSlider.mBounds = sliderRect;
 	mPanSlider.mTitle = "Pan";
 	mPanSlider.set( mPan->getPos() );
 	mWidgets.push_back( &mPanSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + padding );
+	sliderRect += vec2( 0, sliderRect.getHeight() + padding );
 	mLoopBeginSlider.mBounds = sliderRect;
 	mLoopBeginSlider.mTitle = "Loop Begin";
 	mLoopBeginSlider.mMax = (float)mSamplePlayerNode->getNumSeconds();
 	mLoopBeginSlider.set( (float)mSamplePlayerNode->getLoopBeginTime() );
 	mWidgets.push_back( &mLoopBeginSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + padding );
+	sliderRect += vec2( 0, sliderRect.getHeight() + padding );
 	mLoopEndSlider.mBounds = sliderRect;
 	mLoopEndSlider.mTitle = "Loop End";
 	mLoopEndSlider.mMax = (float)mSamplePlayerNode->getNumSeconds();
 	mLoopEndSlider.set( (float)mSamplePlayerNode->getLoopEndTime() );
 	mWidgets.push_back( &mLoopEndSlider );
 
-	Vec2f xrunSize( 80, 26 );
+	vec2 xrunSize( 80, 26 );
 	mUnderrunRect = Rectf( padding, getWindowHeight() - xrunSize.y - padding, xrunSize.x + padding, getWindowHeight() - padding );
-	mOverrunRect = mUnderrunRect + Vec2f( xrunSize.x + padding, 0 );
-	mRecorderOverrunRect = mOverrunRect + Vec2f( xrunSize.x + padding, 0 );
+	mOverrunRect = mUnderrunRect + vec2( xrunSize.x + padding, 0 );
+	mRecorderOverrunRect = mOverrunRect + vec2( xrunSize.x + padding, 0 );
 
 	getWindow()->getSignalMouseDown().connect( [this] ( MouseEvent &event ) { processTap( event.getPos() ); } );
 	getWindow()->getSignalMouseDrag().connect( [this] ( MouseEvent &event ) { processDrag( event.getPos() ); } );
@@ -320,7 +320,7 @@ void SamplePlayerNodeTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void SamplePlayerNodeTestApp::processDrag( Vec2i pos )
+void SamplePlayerNodeTestApp::processDrag( ivec2 pos )
 {
 	if( mGainSlider.hitTest( pos ) )
 		mGain->setValue( mGainSlider.mValueScaled );
@@ -334,7 +334,7 @@ void SamplePlayerNodeTestApp::processDrag( Vec2i pos )
 		seek( pos.x );
 }
 
-void SamplePlayerNodeTestApp::processTap( Vec2i pos )
+void SamplePlayerNodeTestApp::processTap( ivec2 pos )
 {
 	if( mEnableSamplePlayerNodeButton.hitTest( pos ) )
 		mSamplePlayerNode->setEnabled( ! mSamplePlayerNode->isEnabled() );

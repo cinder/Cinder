@@ -42,20 +42,20 @@ public:
 	void setCulled(bool culled = true){ bIsCulled = culled; };
 	bool isCulled(){ return bIsCulled; };
 
-	const ci::Matrix44f& getTransform() const { return mTransform; };
-	void setTransform(const ci::Vec3f &position, const ci::Vec3f &rotation, const ci::Vec3f &scale);
+	const ci::mat4& getTransform() const { return mTransform; };
+	void setTransform(const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale);
 protected:
 	//! keep track of culling state
 	bool			bIsCulled;
 
 	//! keep track of position, rotation and scale
-	ci::Vec3f		mPosition;
-	ci::Vec3f		mRotation;
-	ci::Vec3f		mScale;
+	ci::vec3		mPosition;
+	ci::vec3		mRotation;
+	ci::vec3		mScale;
 
 	//! this matrix combines all translations, rotations and scaling
 	//! and can be used to easily calculate the world space bounding box
-	ci::Matrix44f	mTransform;
+	ci::mat4	mTransform;
 
 	//! gl::Texture and gl::VboMesh both are implicitly shared pointers,
 	//		so when passing them from FrustumCullingReduxApp to this CullableObject class,

@@ -409,12 +409,12 @@ void TextureBase::SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOr
 	}
 }
 
-Vec2i TextureBase::calcMipLevelSize( int mipLevel, GLint width, GLint height )
+ivec2 TextureBase::calcMipLevelSize( int mipLevel, GLint width, GLint height )
 {
 	width = std::max<int>( 1, (int)floor<float>( width >> mipLevel ) );
 	height = std::max<int>( 1, (int)floor<float>( height >> mipLevel ) );
 	
-	return Vec2i( width, height );
+	return ivec2( width, height );
 }
 	
 GLfloat TextureBase::getMaxMaxAnisotropy()
@@ -582,7 +582,7 @@ Texture2d::Texture2d( const Surface8u &surface, Format format )
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
-	setData<uint8_t>( surface, true, 0, Vec2i( 0, 0 ) );
+	setData<uint8_t>( surface, true, 0, ivec2( 0, 0 ) );
 }
 
 Texture2d::Texture2d( const Channel8u &channel, Format format )
@@ -602,7 +602,7 @@ Texture2d::Texture2d( const Channel8u &channel, Format format )
 	}
 	initParams( format, GL_RED );
 #endif
-	setData<uint8_t>( channel, true, 0, Vec2i( 0, 0 ) );
+	setData<uint8_t>( channel, true, 0, ivec2( 0, 0 ) );
 }
 
 Texture2d::Texture2d( const Surface16u &surface, Format format )
@@ -619,7 +619,7 @@ Texture2d::Texture2d( const Surface16u &surface, Format format )
 	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
 #endif
 
-	setData<uint16_t>( surface, true, 0, Vec2i( 0, 0 ) );
+	setData<uint16_t>( surface, true, 0, ivec2( 0, 0 ) );
 }
 
 Texture2d::Texture2d( const Channel16u &channel, Format format )
@@ -640,7 +640,7 @@ Texture2d::Texture2d( const Channel16u &channel, Format format )
 	initParams( format, GL_RED );
 #endif
 
-	setData<uint16_t>( channel, true, 0, Vec2i( 0, 0 ) );
+	setData<uint16_t>( channel, true, 0, ivec2( 0, 0 ) );
 }
 
 Texture2d::Texture2d( const Surface32f &surface, Format format )
@@ -657,7 +657,7 @@ Texture2d::Texture2d( const Surface32f &surface, Format format )
 	initParams( format, surface.hasAlpha() ? GL_RGBA32F : GL_RGB32F );
 #endif
 
-	setData<float>( surface, true, 0, Vec2i( 0, 0 ) );
+	setData<float>( surface, true, 0, ivec2( 0, 0 ) );
 }
 
 Texture2d::Texture2d( const Channel32f &channel, Format format )
@@ -678,7 +678,7 @@ Texture2d::Texture2d( const Channel32f &channel, Format format )
 	initParams( format, GL_RED );
 #endif
 
-	setData<float>( channel, true, 0, Vec2i( 0, 0 ) );
+	setData<float>( channel, true, 0, ivec2( 0, 0 ) );
 }
 
 Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
@@ -744,7 +744,7 @@ Texture2d::Texture2d( const TextureData &data, Format format )
 }
 
 template<typename T>
-void Texture2d::setData( const SurfaceT<T> &original, bool createStorage, int mipLevel, const Vec2i &destOffset )
+void Texture2d::setData( const SurfaceT<T> &original, bool createStorage, int mipLevel, const ivec2 &destOffset )
 {
 	SurfaceT<T> source;
 	
@@ -777,7 +777,7 @@ void Texture2d::setData( const SurfaceT<T> &original, bool createStorage, int mi
 }
 
 template<typename T>
-void Texture2d::setData( const ChannelT<T> &original, bool createStorage, int mipLevel, const Vec2i &destOffset )
+void Texture2d::setData( const ChannelT<T> &original, bool createStorage, int mipLevel, const ivec2 &destOffset )
 {
 	ChannelT<T> source;
 	
@@ -958,32 +958,32 @@ void Texture2d::initData( const ImageSourceRef &imageSource, const Format &forma
 	}
 }
 
-void Texture2d::update( const Surface8u &surface, int mipLevel, const Vec2i &destLowerLeftOffset )
+void Texture2d::update( const Surface8u &surface, int mipLevel, const ivec2 &destLowerLeftOffset )
 {
 	setData( surface, false, mipLevel, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Channel8u &channel, int mipLevel, const Vec2i &destLowerLeftOffset )
+void Texture2d::update( const Channel8u &channel, int mipLevel, const ivec2 &destLowerLeftOffset )
 {
 	setData( channel, false, mipLevel, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Surface16u &surface, int mipLevel, const Vec2i &destLowerLeftOffset )
+void Texture2d::update( const Surface16u &surface, int mipLevel, const ivec2 &destLowerLeftOffset )
 {
 	setData<uint16_t>( surface, false, mipLevel, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Channel16u &channel, int mipLevel, const Vec2i &destLowerLeftOffset )
+void Texture2d::update( const Channel16u &channel, int mipLevel, const ivec2 &destLowerLeftOffset )
 {
 	setData<uint16_t>( channel, false, mipLevel, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Surface32f &surface, int mipLevel, const Vec2i &destLowerLeftOffset )
+void Texture2d::update( const Surface32f &surface, int mipLevel, const ivec2 &destLowerLeftOffset )
 {
 	setData<float>( surface, false, mipLevel, destLowerLeftOffset );
 }
 
-void Texture2d::update( const Channel32f &channel, int mipLevel, const Vec2i &destLowerLeftOffset )
+void Texture2d::update( const Channel32f &channel, int mipLevel, const ivec2 &destLowerLeftOffset )
 {
 	setData<float>( channel, false, mipLevel, destLowerLeftOffset );
 }
@@ -1299,7 +1299,7 @@ void Texture3d::update( const Surface8u &surface, int depth, int mipLevel )
 	GLenum type;
 	SurfaceChannelOrderToDataFormatAndType<uint8_t>( surface.getChannelOrder(), &dataFormat, &type );
 		
-	Vec2i mipMapSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
+	ivec2 mipMapSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
 	if( surface.getSize() != mipMapSize )
 		throw TextureResizeExc( "Invalid Texture3d::update() surface dimensions", surface.getSize(), mipMapSize );
 
@@ -1333,7 +1333,7 @@ TextureCubeMapRef TextureCubeMap::create( int32_t width, int32_t height, const F
 
 TextureCubeMapRef TextureCubeMap::createHorizontalCross( const ImageSourceRef &imageSource, const Format &format )
 {
-	Vec2i faceSize( imageSource->getWidth() / 4, imageSource->getHeight() / 3 );
+	ivec2 faceSize( imageSource->getWidth() / 4, imageSource->getHeight() / 3 );
 	Area faceArea( 0, 0, faceSize.x, faceSize.y );
 	
 	Surface8u masterSurface( imageSource, SurfaceConstraintsDefault() );
@@ -1345,17 +1345,17 @@ TextureCubeMapRef TextureCubeMap::createHorizontalCross( const ImageSourceRef &i
 
 	// copy out each individual face
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_X
-	images[0].copyFrom( masterSurface, faceArea + Vec2i( faceSize.x * 2, faceSize.y * 1 ), -Vec2i( faceSize.x * 2, faceSize.y * 1 ) );
+	images[0].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 ), -ivec2( faceSize.x * 2, faceSize.y * 1 ) );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_X
-	images[1].copyFrom( masterSurface, faceArea + Vec2i( faceSize.x * 0, faceSize.y * 1 ), -Vec2i( faceSize.x * 0, faceSize.y * 1 ) );
+	images[1].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 ), -ivec2( faceSize.x * 0, faceSize.y * 1 ) );
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_Y
-	images[2].copyFrom( masterSurface, faceArea + Vec2i( faceSize.x * 1, faceSize.y * 0 ), -Vec2i( faceSize.x * 1, faceSize.y * 0 ) );
+	images[2].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 ), -ivec2( faceSize.x * 1, faceSize.y * 0 ) );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
-	images[3].copyFrom( masterSurface, faceArea + Vec2i( faceSize.x * 1, faceSize.y * 2 ), -Vec2i( faceSize.x * 1, faceSize.y * 2 ) );
+	images[3].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 ), -ivec2( faceSize.x * 1, faceSize.y * 2 ) );
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_Z
-	images[4].copyFrom( masterSurface, faceArea + Vec2i( faceSize.x * 1, faceSize.y * 1 ), -Vec2i( faceSize.x * 1, faceSize.y * 1 ) );
+	images[4].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 ), -ivec2( faceSize.x * 1, faceSize.y * 1 ) );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-	images[5].copyFrom( masterSurface, faceArea + Vec2i( faceSize.x * 3, faceSize.y * 1 ), -Vec2i( faceSize.x * 3, faceSize.y * 1 ) );
+	images[5].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 3, faceSize.y * 1 ), -ivec2( faceSize.x * 3, faceSize.y * 1 ) );
 		
 	return TextureCubeMapRef( new TextureCubeMap( images, format ) );
 }
@@ -1660,7 +1660,7 @@ void Texture2d::updateFromDds( const DataSourceRef &dataSource, const PboRef &in
 }
 #endif // ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ANGLE )
 
-TextureResizeExc::TextureResizeExc( const string &message, const Vec2i &updateSize, const Vec2i &textureSize )
+TextureResizeExc::TextureResizeExc( const string &message, const ivec2 &updateSize, const ivec2 &textureSize )
 	 : TextureDataExc( "" )
 {
 	stringstream ss;

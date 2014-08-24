@@ -18,7 +18,7 @@ class RotatingCubeApp : public AppBasic {
 	CameraPersp			mCam;
 	Capture				mCapture;
 	gl::Texture			mTexture;
-	Matrix44f			mCubeRotation;
+	mat4			mCubeRotation;
 };
 
 void RotatingCubeApp::setup()
@@ -40,7 +40,7 @@ void RotatingCubeApp::setup()
 		mTexture = gl::Texture( layout.render() );
 	}
 	
-	mCam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 3, 2, -3 ), vec3::zero() );
 	mCubeRotation.setToIdentity();
 	
 	glEnable( GL_TEXTURE_2D );
@@ -64,7 +64,7 @@ void RotatingCubeApp::update()
 	}
 	
 	// Rotate the cube by .03 radians around an arbitrary axis
-	mCubeRotation.rotate( Vec3f( 1, 1, 1 ), 0.03f );
+	mCubeRotation.rotate( vec3( 1, 1, 1 ), 0.03f );
 }
 
 void RotatingCubeApp::draw()
@@ -77,7 +77,7 @@ void RotatingCubeApp::draw()
 	mTexture.bind();
 	glPushMatrix();
 		gl::multModelView( mCubeRotation );
-		gl::drawCube( Vec3f::zero(), Vec3f( 2.0f, 2.0f, 2.0f ) );
+		gl::drawCube( vec3::zero(), vec3( 2.0f, 2.0f, 2.0f ) );
 	glPopMatrix();
 }
 

@@ -19,8 +19,8 @@ void Tube::buildPTF()
 		mFrames[0] = firstFrame( mPs[0], mPs[1],  mPs[2] );
 		// Make the remaining frames - saving the last
 		for( int i = 1; i < n - 1; ++i ) {
-			Vec3f prevT = mTs[i - 1];
-			Vec3f curT  = mTs[i];
+			vec3 prevT = mTs[i - 1];
+			vec3 curT  = mTs[i];
 			mFrames[i] = nextFrame( mFrames[i - 1], mPs[i - 1], mPs[i], prevT, curT );
 		}
 		// Make the last frame
@@ -28,8 +28,8 @@ void Tube::buildPTF()
 	}
 }
 
-mPs are the points of the b-spline along t, which is 0 to 1. mPs is an array of Vec3f. 
-mTs are the tangents of the b-spline along t. mTs is an array of Vec3f. Must be normalized.
+mPs are the points of the b-spline along t, which is 0 to 1. mPs is an array of vec3. 
+mTs are the tangents of the b-spline along t. mTs is an array of vec3. Must be normalized.
 mFrames is an array of matrices that gets built using mPs and mTs. 	
 
 mPs, mTs and mFrames are all the same size. You will need at least 3 
@@ -82,8 +82,8 @@ class TubularApp : public AppBasic {
   private:
 	Tube					mTube;
 	
-	std::vector<Vec3f>		mBasePoints;
-	std::vector<Vec3f>		mCurPoints;	
+	std::vector<vec3>		mBasePoints;
+	std::vector<vec3>		mCurPoints;	
 	BSpline3f				mBSpline;
 	TriMesh					mTubeMesh;
 	
@@ -113,13 +113,13 @@ void TubularApp::setup()
 	setWindowSize( 800, 850 );
 
 	// Camera
-	mCam.lookAt( Vec3f( 0, 0, 8 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0, 0, 8 ), vec3::zero() );
 
 	// BSpline
-	mBasePoints.push_back( Vec3f( -3,  4, 0 ) );
-	mBasePoints.push_back( Vec3f(  5,  1, 0 ) );
-	mBasePoints.push_back( Vec3f( -5, -1, 0 ) );
-	mBasePoints.push_back( Vec3f(  3, -4, 0 ) );	
+	mBasePoints.push_back( vec3( -3,  4, 0 ) );
+	mBasePoints.push_back( vec3(  5,  1, 0 ) );
+	mBasePoints.push_back( vec3( -5, -1, 0 ) );
+	mBasePoints.push_back( vec3(  3, -4, 0 ) );	
 	mCurPoints = mBasePoints;
 	
 	int  degree = 3;
@@ -148,7 +148,7 @@ void TubularApp::setup()
 	mArcball.setCenter( getWindowCenter() );
 	mArcball.setRadius( 150 );		
 
-	mParams = params::InterfaceGl::create( getWindow(), "Parameters", Vec2i( 200, 200 ) );
+	mParams = params::InterfaceGl::create( getWindow(), "Parameters", ivec2( 200, 200 ) );
 	mParams->addParam( "Parallel Transport", &mParallelTransport, "keyIncr=f" );
 	mParams->addParam( "Draw Curve", &mDrawCurve, "keyIncr=c" );
 	mParams->addParam( "Wireframe", &mWireframe, "keyIncr=w" );
@@ -172,14 +172,14 @@ void TubularApp::keyDown( KeyEvent event )
 
 void TubularApp::mouseDown( MouseEvent event )
 {
-	Vec2i P = event.getPos();
+	ivec2 P = event.getPos();
 	P.y = getWindowHeight() - P.y;
 	mArcball.mouseDown( P );
 }
 
 void TubularApp::mouseDrag( MouseEvent event )
 {	
-	Vec2i P = event.getPos();
+	ivec2 P = event.getPos();
 	P.y = getWindowHeight() - P.y;
 	mArcball.mouseDrag( P );
 }
@@ -193,7 +193,7 @@ void TubularApp::resize()
 void TubularApp::update()
 {
 	// Profile
-	std::vector<Vec3f> prof;
+	std::vector<vec3> prof;
 	switch( mShape ) {
 		case 0:
 			makeCircleProfile( prof, 0.25f, 16 );
@@ -222,7 +222,7 @@ void TubularApp::update()
 				dy = sin( t*i/3.0f );
 				dz = cos( t*i )*4.0f;
 			}
-			mCurPoints[i] = mBasePoints[i] + Vec3f( dx, dy, dz );
+			mCurPoints[i] = mBasePoints[i] + vec3( dx, dy, dz );
 		}
 	}
 	

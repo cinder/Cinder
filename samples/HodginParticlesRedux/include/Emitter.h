@@ -11,12 +11,12 @@
 class Emitter {
  public:
 	Emitter(); 
-	void update( ci::Vec3f mouseLoc, bool enableConstraints, bool mouseIsDown );
+	void update( ci::vec3 mouseLoc, bool enableConstraints, bool mouseIsDown );
 	void render( bool mouseIsDown, float radius, float alpha );
 	void renderFloorLighting( float floorLevel );
 	
-	ci::Vec3f mLoc;
-	ci::Vec3f mVel;
+	ci::vec3 mLoc;
+	ci::vec3 mVel;
 	float mRadius;
 	float mRadiusDest;
 	ci::gl::Texture mTexture;

@@ -144,22 +144,22 @@ void stencilMask( GLboolean mask );
 void stencilFunc( GLenum func, GLint ref, GLuint mask );
 void stencilOp( GLenum fail, GLenum zfail, GLenum zpass );
 
-std::pair<Vec2i, Vec2i> getViewport();
-void viewport( const std::pair<Vec2i, Vec2i> positionAndSize );
-inline void viewport( int x, int y, int width, int height ) { viewport( std::pair<Vec2i, Vec2i>( Vec2i( x, y ), Vec2i( width, height ) ) ); }
-inline void viewport( const Vec2i &position, const Vec2i &size ) { viewport( std::pair<Vec2i, Vec2i>( position, size ) ); }
-inline void viewport( const Vec2i &size ) { viewport( ivec2(), size ); }
-void pushViewport( const std::pair<Vec2i, Vec2i> positionAndSize );
+std::pair<ivec2, ivec2> getViewport();
+void viewport( const std::pair<ivec2, ivec2> positionAndSize );
+inline void viewport( int x, int y, int width, int height ) { viewport( std::pair<ivec2, ivec2>( ivec2( x, y ), ivec2( width, height ) ) ); }
+inline void viewport( const ivec2 &position, const ivec2 &size ) { viewport( std::pair<ivec2, ivec2>( position, size ) ); }
+inline void viewport( const ivec2 &size ) { viewport( ivec2(), size ); }
+void pushViewport( const std::pair<ivec2, ivec2> positionAndSize );
 inline void pushViewport() { pushViewport( getViewport() ); }
-inline void pushViewport( int x, int y, int width, int height ) { pushViewport( std::pair<Vec2i, Vec2i>( Vec2i( x, y ), Vec2i( width, height ) ) ); }
-inline void pushViewport( const Vec2i &position, const Vec2i &size ) { pushViewport( std::pair<Vec2i, Vec2i>( position, size ) ); }
-inline void pushViewport( const Vec2i &size ) { pushViewport( ivec2(), size ); }
+inline void pushViewport( int x, int y, int width, int height ) { pushViewport( std::pair<ivec2, ivec2>( ivec2( x, y ), ivec2( width, height ) ) ); }
+inline void pushViewport( const ivec2 &position, const ivec2 &size ) { pushViewport( std::pair<ivec2, ivec2>( position, size ) ); }
+inline void pushViewport( const ivec2 &size ) { pushViewport( ivec2(), size ); }
 void popViewport();
 
-std::pair<Vec2i, Vec2i> getScissor();
-void scissor( const std::pair<Vec2i, Vec2i> positionAndSize );
-inline void scissor( int x, int y, int width, int height ) { scissor( std::pair<Vec2i, Vec2i>( Vec2i( x, y ), Vec2i( width, height ) ) ); }
-inline void scissor( const Vec2i &position, const Vec2i &size ) { scissor( std::pair<Vec2i, Vec2i>( position, size ) ); }
+std::pair<ivec2, ivec2> getScissor();
+void scissor( const std::pair<ivec2, ivec2> positionAndSize );
+inline void scissor( int x, int y, int width, int height ) { scissor( std::pair<ivec2, ivec2>( ivec2( x, y ), ivec2( width, height ) ) ); }
+inline void scissor( const ivec2 &position, const ivec2 &size ) { scissor( std::pair<ivec2, ivec2>( position, size ) ); }
 	
 void enable( GLenum state, bool enable = true );
 inline void disable( GLenum state ) { enable( state, false ); }
@@ -183,9 +183,9 @@ void disableStencilWrite();
 
 //! Sets the View and Projection matrices based on a Camera
 void setMatrices( const ci::Camera &cam );
-void setModelMatrix( const ci::Matrix44f &m );
-void setViewMatrix( const ci::Matrix44f &m );
-void setProjectionMatrix( const ci::Matrix44f &m );
+void setModelMatrix( const ci::mat4 &m );
+void setViewMatrix( const ci::mat4 &m );
+void setProjectionMatrix( const ci::mat4 &m );
 void pushModelMatrix();
 void popModelMatrix();
 void pushViewMatrix();
@@ -200,50 +200,50 @@ void popModelView();
 void pushMatrices();
 //! Pops Model, View and Projection matrices
 void popMatrices();
-void multModelMatrix( const ci::Matrix44f &mtx );
-void multViewMatrix( const ci::Matrix44f &mtx );
-void multProjectionMatrix( const ci::Matrix44f &mtx );
+void multModelMatrix( const ci::mat4 &mtx );
+void multViewMatrix( const ci::mat4 &mtx );
+void multProjectionMatrix( const ci::mat4 &mtx );
 
-Matrix44f getModelMatrix();
-Matrix44f getViewMatrix();
-Matrix44f getProjectionMatrix();
-Matrix44f getModelView();
-Matrix44f getModelViewProjection();
-Matrix44f calcViewMatrixInverse();
-Matrix33f calcModelMatrixInverseTranspose();
-Matrix33f calcNormalMatrix();
-Matrix44f calcViewportMatrix();
+mat4 getModelMatrix();
+mat4 getViewMatrix();
+mat4 getProjectionMatrix();
+mat4 getModelView();
+mat4 getModelViewProjection();
+mat4 calcViewMatrixInverse();
+mat3 calcModelMatrixInverseTranspose();
+mat3 calcNormalMatrix();
+mat4 calcViewportMatrix();
 
 void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f, bool originUpperLeft = true );
-void setMatricesWindowPersp( const ci::Vec2i &screenSize, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f, bool originUpperLeft = true );
+void setMatricesWindowPersp( const ci::ivec2 &screenSize, float fovDegrees = 60.0f, float nearPlane = 1.0f, float farPlane = 1000.0f, bool originUpperLeft = true );
 void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft = true );
-void setMatricesWindow( const ci::Vec2i &screenSize, bool originUpperLeft = true );
+void setMatricesWindow( const ci::ivec2 &screenSize, bool originUpperLeft = true );
 
-void rotate( const cinder::Quatf &quat );
+void rotate( const quat &quat );
 //! Rotates the Model matrix by \a angleDegrees around the \a axis
-void rotate( float angleDegrees, const ci::Vec3f &axis );
+void rotate( float angleDegrees, const ci::vec3 &axis );
 //! Rotates the Model matrix by \a angleDegrees around the axis (\a x,\a y,\a z)
-inline void rotate( float angleDegrees, float xAxis, float yAxis, float zAxis ) { rotate( angleDegrees, ci::Vec3f(xAxis, yAxis, zAxis) ); }
+inline void rotate( float angleDegrees, float xAxis, float yAxis, float zAxis ) { rotate( angleDegrees, ci::vec3(xAxis, yAxis, zAxis) ); }
 //! Rotates the Model matrix by \a zDegrees around the z-axis
 inline void rotate( float zDegrees ) { rotate( zDegrees, vec3( 0, 0, 1 ) ); }
 
 //! Scales the Model matrix by \a v
-void scale( const ci::Vec3f &v );
+void scale( const ci::vec3 &v );
 //! Scales the Model matrix by (\a x,\a y, \a z)
-inline void scale( float x, float y, float z ) { scale( Vec3f( x, y, z ) ); }
+inline void scale( float x, float y, float z ) { scale( vec3( x, y, z ) ); }
 //! Scales the Model matrix by \a v
-inline void scale( const ci::Vec2f &v ) { scale( Vec3f( v.x, v.y, 1 ) ); }
+inline void scale( const ci::vec2 &v ) { scale( vec3( v.x, v.y, 1 ) ); }
 //! Scales the Model matrix by (\a x,\a y, 1)
-inline void scale( float x, float y ) { scale( Vec3f( x, y, 1 ) ); }
+inline void scale( float x, float y ) { scale( vec3( x, y, 1 ) ); }
 
 //! Translates the Model matrix by \a v
-void translate( const ci::Vec3f &v );
+void translate( const ci::vec3 &v );
 //! Translates the Model matrix by (\a x,\a y,\a z )
-inline void translate( float x, float y, float z ) { translate( Vec3f( x, y, z ) ); }
+inline void translate( float x, float y, float z ) { translate( vec3( x, y, z ) ); }
 //! Translates the Model matrix by \a v
-inline void translate( const ci::Vec2f &v ) { translate( vec3( v, 0 ) ); }
+inline void translate( const ci::vec2 &v ) { translate( vec3( v, 0 ) ); }
 //! Translates the Model matrix by (\a x,\a y)
-inline void translate( float x, float y ) { translate( Vec3f( x, y, 0 ) ); }
+inline void translate( float x, float y ) { translate( vec3( x, y, 0 ) ); }
 	
 void begin( GLenum mode );
 void end();
@@ -267,16 +267,16 @@ void color( const ci::ColorA8u &c );
 void texCoord( float s, float t );
 void texCoord( float s, float t, float r );
 void texCoord( float s, float t, float r, float q );
-void texCoord( const ci::Vec2f &v );
-void texCoord( const ci::Vec3f &v );
-void texCoord( const ci::Vec4f &v );
+void texCoord( const ci::vec2 &v );
+void texCoord( const ci::vec3 &v );
+void texCoord( const ci::vec4 &v );
 
 void vertex( float x, float y );
 void vertex( float x, float y, float z );
 void vertex( float x, float y, float z, float w );
-void vertex( const ci::Vec2f &v );
-void vertex( const ci::Vec3f &v );
-void vertex( const ci::Vec4f &v );
+void vertex( const ci::vec2 &v );
+void vertex( const ci::vec3 &v );
+void vertex( const ci::vec4 &v );
 
 #if ! defined( CINDER_GL_ES )
 void polygonMode( GLenum face, GLenum mode );
@@ -303,59 +303,59 @@ std::string uniformSemanticToString( UniformSemantic uniformSemantic );
 void draw( const VboMeshRef &mesh );
 void draw( const Texture2dRef &texture, const Rectf &dstRect );
 void draw( const Texture2dRef &texture, const Area &srcArea, const Rectf &dstRect );
-void draw( const Texture2dRef &texture, const Vec2f &dstOffset = vec2() );
-void draw( const class PolyLine<Vec2f> &polyLine );
-void draw( const class PolyLine<Vec3f> &polyLine );
+void draw( const Texture2dRef &texture, const vec2 &dstOffset = vec2() );
+void draw( const class PolyLine<vec2> &polyLine );
+void draw( const class PolyLine<vec3> &polyLine );
 //! Draws a Path2d \a pathd using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
 void draw( const Path2d &path, float approximationScale = 1.0f );
 //! Draws a Shaped2d \a shaped using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
 void draw( const Shape2d &shape, float approximationScale = 1.0f );
-//! Draws a cinder::TriMesh \a mesh at the origin. Currently only uses position and index information.
+//! Draws a TriMesh \a mesh at the origin. Currently only uses position and index information.
 void draw( const TriMesh &mesh );
 
 //! Draws a solid (filled) Path2d \a path using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const Path2d &path2d, float approximationScale = 1.0f );
 //! Draws a solid (filled) Shape2d \a shape using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const Shape2d &shape, float approximationScale = 1.0f );
-void drawSolid( const class PolyLine<Vec2f> &polyLine );
+void drawSolid( const class PolyLine<vec2> &polyLine );
 
 //! Renders a solid cube centered at \a center of size \a size. Normals and created texture coordinates are generated.
-void drawCube( const Vec3f &center, const Vec3f &size );
+void drawCube( const vec3 &center, const vec3 &size );
 //! Renders a solid cube centered at \a center of size \a size. Each face is assigned a unique color.
-void drawColorCube( const Vec3f &center, const Vec3f &size );
+void drawColorCube( const vec3 &center, const vec3 &size );
 //! Renders a solid sphere at \a center of radius \a radius, subdivided on both longitude and latitude into \a segments.
-void drawSphere( const Vec3f &center, float radius, int segments );
+void drawSphere( const vec3 &center, float radius, int segments );
 //! Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationRadians around the vector orthogonal to \a bbRight and \a bbUp.
-void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationRadians, const Vec3f &bbRight, const Vec3f &bbUp, const Rectf &texCoords = Rectf( 0, 0, 1, 1 ) );
+void drawBillboard( const vec3 &pos, const vec2 &scale, float rotationRadians, const vec3 &bbRight, const vec3 &bbUp, const Rectf &texCoords = Rectf( 0, 0, 1, 1 ) );
 
 //! Draws a line between points a and b
-void drawLine( const Vec3f &a, const Vec3f &b );
-void drawLine( const Vec2f &a, const Vec2f &b );
+void drawLine( const vec3 &a, const vec3 &b );
+void drawLine( const vec2 &a, const vec2 &b );
 
 //! Draws \a texture on the XY-plane
-void drawSolidRect( const Rectf &r, const Vec2f &upperLeftTexCoord = Vec2f( 0, 1 ), const Vec2f &lowerRightTexCoord = Vec2f( 1, 0 ) );
-void drawSolidCircle( const Vec2f &center, float radius, int numSegments = -1 );
+void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord = vec2( 0, 1 ), const vec2 &lowerRightTexCoord = vec2( 1, 0 ) );
+void drawSolidCircle( const vec2 &center, float radius, int numSegments = -1 );
 
 //! Draws a stroked rectangle with dimensions \a rect.
 void drawStrokedRect( const Rectf &rect );
 //! Draws a stroked rectangle centered around \a rect, with a line width of \a lineWidth
 void drawStrokedRect( const Rectf &rect, float lineWidth );
 //! Draws a stroked circles centered around \a center with a radius of \a radius
-void drawStrokedCircle( const Vec2f &center, float radius, int numSegments = -1 );
+void drawStrokedCircle( const vec2 &center, float radius, int numSegments = -1 );
 
 //! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
-void drawString( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+void drawString( const std::string &str, const vec2 &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
 //! Draws a string \a str with the horizontal center of its baseline located at \a pos. Optional \a font and \a color affect the style
-void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+void drawStringCentered( const std::string &str, const vec2 &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
 //! Draws a right-justified string \a str with the center of its  located at \a pos. Optional \a font and \a color affect the style
-void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
+void drawStringRight( const std::string &str, const vec2 &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
 
 //! Renders a solid triangle.
-void drawSolidTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2 );
+void drawSolidTriangle( const vec2 &pt0, const vec2 &pt1, const vec2 &pt2 );
 //! Renders a textured triangle.
-void drawSolidTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2, const Vec2f &texPt0, const Vec2f &texPt1, const Vec2f &texPt2 );
+void drawSolidTriangle( const vec2 &pt0, const vec2 &pt1, const vec2 &pt2, const vec2 &texPt0, const vec2 &texPt1, const vec2 &texPt2 );
 //! Renders a textured triangle.
-void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] = nullptr );
+void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] = nullptr );
 
 // Vertex Attributes
 //! Analogous to glVertexAttribPointer
@@ -501,7 +501,7 @@ struct ScopedTextureBind : public boost::noncopyable
 struct ScopedScissor : public boost::noncopyable
 {
 	//! Implicitly enables scissor test
-	ScopedScissor( const Vec2i &lowerLeftPostion, const Vec2i &dimension );
+	ScopedScissor( const ivec2 &lowerLeftPostion, const ivec2 &dimension );
 	//! Implicitly enables scissor test	
 	ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int height );
 	~ScopedScissor();
@@ -512,7 +512,7 @@ struct ScopedScissor : public boost::noncopyable
 
 struct ScopedViewport : public boost::noncopyable
 {
-	ScopedViewport( const Vec2i &lowerLeftPostion, const Vec2i &dimension );
+	ScopedViewport( const ivec2 &lowerLeftPostion, const ivec2 &dimension );
 	ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height );
 	~ScopedViewport();
 

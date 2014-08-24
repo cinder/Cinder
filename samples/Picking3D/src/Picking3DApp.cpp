@@ -36,11 +36,11 @@ typedef boost::shared_ptr<class Bubble> BubbleRef;
 class Bubble
 {
   public:
-	Bubble(const Vec3f &origin) 
+	Bubble(const vec3 &origin) 
 		:	age(0.0), 
 			lifespan(3.0),
 			position(origin),
-			speed( Vec3f::zero() )
+			speed( vec3::zero() )
 		{};
 
 	void update(double elapsed);
@@ -51,14 +51,14 @@ class Bubble
 	double age;
 	double lifespan;
 
-	Vec3f  speed;
-	Vec3f  position;
+	vec3  speed;
+	vec3  position;
 };
 
 void Bubble::update(double elapsed)
 {
 	age += elapsed;
-	speed += 0.1f * Vec3f(Rand::randFloat() -0.5f, 1.0f, Rand::randFloat() -0.5f);
+	speed += 0.1f * vec3(Rand::randFloat() -0.5f, 1.0f, Rand::randFloat() -0.5f);
 	position += speed * (float) elapsed;
 }
 
@@ -83,7 +83,7 @@ class Picking3DApp : public AppBasic
 
 	void drawGrid(float size=100.0f, float step=10.0f);
 		
-	bool performPicking( Vec3f *pickedPoint, Vec3f *pickedNormal );
+	bool performPicking( vec3 *pickedPoint, vec3 *pickedNormal );
 		
 	void mouseMove( MouseEvent event );
 	void mouseDown( MouseEvent event );
@@ -102,13 +102,13 @@ class Picking3DApp : public AppBasic
 	AxisAlignedBox3f	mObjectBounds;
 
 	// transformations (translate, rotate, scale) of the model
-	Matrix44f	mTransform;
+	mat4	mTransform;
 
 	// our camera
 	MayaCamUI	mMayaCam;
 
 	// keep track of the mouse
-	Vec2i		mMousePos;
+	ivec2		mMousePos;
 
 	// keep track of time
 	double		mTime;
@@ -147,8 +147,8 @@ void Picking3DApp::setup()
 
 	// set up the camera
 	CameraPersp cam;
-	cam.setEyePoint( Vec3f(5.0f, 10.0f, 10.0f) );
-	cam.setCenterOfInterestPoint( Vec3f(0.0f, 2.5f, 0.0f) );
+	cam.setEyePoint( vec3(5.0f, 10.0f, 10.0f) );
+	cam.setCenterOfInterestPoint( vec3(0.0f, 2.5f, 0.0f) );
 	cam.setPerspective( 60.0f, getWindowAspectRatio(), 1.0f, 1000.0f );
 	mMayaCam.setCurrentCam( cam );
 }
@@ -161,9 +161,9 @@ void Picking3DApp::update(void)
 
 	// animate our little ducky
 	mTransform.setToIdentity();
-	mTransform.rotate( Vec3f::xAxis(), sinf( (float) getElapsedSeconds() * 3.0f ) * 0.08f );
-	mTransform.rotate( Vec3f::yAxis(), (float) getElapsedSeconds() * 0.1f );
-	mTransform.rotate( Vec3f::zAxis(), sinf( (float) getElapsedSeconds() * 4.3f ) * 0.09f );
+	mTransform.rotate( vec3::xAxis(), sinf( (float) getElapsedSeconds() * 3.0f ) * 0.08f );
+	mTransform.rotate( vec3::yAxis(), (float) getElapsedSeconds() * 0.1f );
+	mTransform.rotate( vec3::zAxis(), sinf( (float) getElapsedSeconds() * 4.3f ) * 0.09f );
 
 	// animate our bubbles
 	vector<BubbleRef>::iterator itr;
@@ -216,7 +216,7 @@ void Picking3DApp::draw()
 	mTexture.unbind();
 
 	// perform 3D picking now, so we can draw the intersection as a sphere
-	Vec3f pickedPoint, pickedNormal;
+	vec3 pickedPoint, pickedNormal;
 	if( performPicking( &pickedPoint, &pickedNormal ) ) {
 		gl::color( Color(0, 1, 0) );
 		// draw an arrow to the picked point along its normal
@@ -243,12 +243,12 @@ void Picking3DApp::drawGrid(float size, float step)
 {
 	gl::color( Colorf(0.2f, 0.2f, 0.2f) );
 	for(float i=-size;i<=size;i+=step) {
-		gl::drawLine( Vec3f(i, 0.0f, -size), Vec3f(i, 0.0f, size) );
-		gl::drawLine( Vec3f(-size, 0.0f, i), Vec3f(size, 0.0f, i) );
+		gl::drawLine( vec3(i, 0.0f, -size), vec3(i, 0.0f, size) );
+		gl::drawLine( vec3(-size, 0.0f, i), vec3(size, 0.0f, i) );
 	}
 }
 
-bool Picking3DApp::performPicking( Vec3f *pickedPoint, Vec3f *pickedNormal )
+bool Picking3DApp::performPicking( vec3 *pickedPoint, vec3 *pickedNormal )
 {
 	// get our camera 
 	CameraPersp cam = mMayaCam.getCamera();
@@ -295,7 +295,7 @@ bool Picking3DApp::performPicking( Vec3f *pickedPoint, Vec3f *pickedNormal )
 	float distance = 0.0f;
 	for(size_t i=0;i<polycount;++i)
 	{
-		Vec3f v0, v1, v2;
+		vec3 v0, v1, v2;
 		// get a single triangle from the mesh
 		mMesh.getTriangleVertices(i, &v0, &v1, &v2);
 

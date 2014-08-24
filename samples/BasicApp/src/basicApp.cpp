@@ -14,7 +14,7 @@ class BasicApp : public AppBasic {
 	void draw();
 
 	// This will maintain a list of points which we will draw line segments between
-	list<Vec2f>		mPoints;
+	list<vec2>		mPoints;
 };
 
 void BasicApp::mouseDrag( MouseEvent event )

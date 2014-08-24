@@ -48,7 +48,7 @@ void StencilReflectionApp::setup()
     mFbo = gl::Fbo::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ), mFormat );
     colorTexture = false;
     mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 ); 
-    mCam.lookAt( Vec3f( 0, -5, -1 ), Vec3f( 0, 0, 1 ) ); 
+    mCam.lookAt( vec3( 0, -5, -1 ), vec3( 0, 0, 1 ) ); 
       
     rotate = rotation = 0;
     rotation = .2;
@@ -83,8 +83,8 @@ void StencilReflectionApp::update()
     gl::clear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT ) ;
     gl::pushMatrices();
         gl::setMatrices( mCam );
-        gl::multModelMatrix( Matrix44f::createTranslation( Vec3f( 0, -2, -1.5 ) ) );
-        gl::multModelMatrix( Matrix44f::createRotation( Vec3f( 0, 0, 1 ), -rotation ) );
+        gl::multModelMatrix( mat4::createTranslation( vec3( 0, -2, -1.5 ) ) );
+        gl::multModelMatrix( mat4::createRotation( vec3( 0, 0, 1 ), -rotation ) );
     
     // enable stencil test to be able to give the stencil buffers values.
         gl::enable( GL_STENCIL_TEST );
@@ -95,7 +95,7 @@ void StencilReflectionApp::update()
             gl::clear( GL_STENCIL_BUFFER_BIT );
     // draw the seperation plane into the stencil buffer.
             gl::pushModelMatrix();
-                gl::multModelMatrix( Matrix44f::createTranslation(Vec3f( 0, 0, 1.5 ) ) );
+                gl::multModelMatrix( mat4::createTranslation(vec3( 0, 0, 1.5 ) ) );
                 gl::color( ColorA( 0, 0, 0, 1 ) );
                     gl::drawSolidRect( Rectf( -1.25, -1.25, 1.25, 1.25 ) );
             gl::popModelMatrix();
@@ -104,16 +104,16 @@ void StencilReflectionApp::update()
             gl::stencilMask( 0x00 );
             gl::depthMask( GL_TRUE );
             gl::pushModelMatrix();
-                gl::multModelMatrix( Matrix44f::createTranslation( Vec3f( 0, 0, 1 ) ) );
+                gl::multModelMatrix( mat4::createTranslation( vec3( 0, 0, 1 ) ) );
                 gl::color( ColorA( .5f, .5f, .5f, .5f ) );
-                gl::drawCube( Vec3f( 0, 0, 1), Vec3f( 1, 1, 1 ) );
+                gl::drawCube( vec3( 0, 0, 1), vec3( 1, 1, 1 ) );
     //                mBatch->draw();
             gl::popModelMatrix();
     
         gl::disable( GL_STENCIL_TEST );
     
     gl::color( ColorA( 1, 1, 1, 1 ) );
-    gl::drawCube( Vec3f( 0, 0, 1), Vec3f( 1, 1, 1 ) );
+    gl::drawCube( vec3( 0, 0, 1), vec3( 1, 1, 1 ) );
     gl::popMatrices();
     mFbo->unbindFramebuffer();
 	
@@ -129,7 +129,7 @@ void StencilReflectionApp::draw()
 	
     {
 		
-        gl::ScopedScissor scissor( Vec2i( 0, 0 ), Vec2i( toPixels( getWindowWidth() ) / 2, toPixels( getWindowHeight() ) ) );
+        gl::ScopedScissor scissor( ivec2( 0, 0 ), ivec2( toPixels( getWindowWidth() ) / 2, toPixels( getWindowHeight() ) ) );
 //        gl::TextureBindScope tex( mFbo->getDepthTexture() );
         
         gl::pushMatrices(); 
@@ -137,24 +137,24 @@ void StencilReflectionApp::draw()
     
 //        mFbo->bindTexture();
                 gl::color(1, 1, 1, 1);
-                gl::multModelMatrix( Matrix44f::createRotation( Vec3f( 0, 0, 1 ), toRadians( 180.0f ) ) );
+                gl::multModelMatrix( mat4::createRotation( vec3( 0, 0, 1 ), toRadians( 180.0f ) ) );
 //				mTexture = mFbo->getTexture();
-                gl::draw( mTexture, Vec2i( -toPixels( getWindowWidth() ), -toPixels( getWindowHeight() ) ) );
-//				gl::draw( mFbo->getTexture(), Vec2i( -toPixels( getWindowWidth() ), -toPixels( getWindowHeight() ) ) );
+                gl::draw( mTexture, ivec2( -toPixels( getWindowWidth() ), -toPixels( getWindowHeight() ) ) );
+//				gl::draw( mFbo->getTexture(), ivec2( -toPixels( getWindowWidth() ), -toPixels( getWindowHeight() ) ) );
 //            gl::drawSolidRect( Rectf( 0, 0, getWindowWidth(), getWindowHeight() ) );
 //        mFbo->unbindTexture();
     
         gl::popMatrices();
     }
     {
-        gl::ScopedScissor scissor( Vec2i( toPixels( getWindowWidth() ) / 2, 0 ), Vec2i( toPixels( getWindowWidth() ) / 2, toPixels( getWindowHeight() ) ) );
+        gl::ScopedScissor scissor( ivec2( toPixels( getWindowWidth() ) / 2, 0 ), ivec2( toPixels( getWindowWidth() ) / 2, toPixels( getWindowHeight() ) ) );
         
         gl::clearColor( ColorA( 1, 1, 1, 1 ) );
         gl::clear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
         gl::pushMatrices();
         gl::setMatrices( mCam );
-        gl::multModelMatrix( Matrix44f::createTranslation( Vec3f( 0, -2, -1.5 ) ) );
-        gl::multModelMatrix( Matrix44f::createRotation( Vec3f( 0, 0, 1 ), rotation ) );
+        gl::multModelMatrix( mat4::createTranslation( vec3( 0, -2, -1.5 ) ) );
+        gl::multModelMatrix( mat4::createRotation( vec3( 0, 0, 1 ), rotation ) );
         
         // enable stencil test to be able to give the stencil buffers values.
         gl::enable( GL_STENCIL_TEST );
@@ -165,7 +165,7 @@ void StencilReflectionApp::draw()
         gl::clear( GL_STENCIL_BUFFER_BIT );
         // draw the seperation plane into the stencil buffer.
         gl::pushModelMatrix();
-        gl::multModelMatrix( Matrix44f::createTranslation(Vec3f( 0, 0, 1.5 ) ) );
+        gl::multModelMatrix( mat4::createTranslation(vec3( 0, 0, 1.5 ) ) );
         gl::color( ColorA( 0, 0, 0, 1 ) );
         gl::drawSolidRect( Rectf( -1.25, -1.25, 1.25, 1.25 ) );
         gl::popModelMatrix();
@@ -174,15 +174,15 @@ void StencilReflectionApp::draw()
         gl::stencilMask( 0x00 );
         gl::depthMask( GL_TRUE );
         gl::pushModelMatrix();
-        gl::multModelMatrix( Matrix44f::createTranslation( Vec3f( 0, 0, 1 ) ) );
+        gl::multModelMatrix( mat4::createTranslation( vec3( 0, 0, 1 ) ) );
         gl::color( ColorA( .5f, .5f, .5f, .5f ) );
-        gl::drawCube( Vec3f( 0, 0, 1), Vec3f( 1, 1, 1 ) );
+        gl::drawCube( vec3( 0, 0, 1), vec3( 1, 1, 1 ) );
         gl::popModelMatrix();
         
         gl::disable( GL_STENCIL_TEST );
         
         gl::color( ColorA( 1, 1, 1, 1 ) );
-        gl::drawCube( Vec3f( 0, 0, 1), Vec3f( 1, 1, 1 ) );
+        gl::drawCube( vec3( 0, 0, 1), vec3( 1, 1, 1 ) );
         gl::popMatrices();
     }
 }

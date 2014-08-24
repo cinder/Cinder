@@ -16,7 +16,7 @@ class BasicApp : public AppBasic {
 	void draw();	
 
 	dx::TextureRef	mProcessedImageTex;
-	Vec2i			mImageCenter;
+	ivec2			mImageCenter;
 };
 
 // We can invert the image by subtracting each R,G,B value from 255
@@ -104,7 +104,7 @@ void BasicApp::setup()
 {
 	Surface processedImage( processImage( loadImage( loadResource( RES_IMAGE ) ) ) );
 	mProcessedImageTex = dx::Texture::create( processedImage );
-	mImageCenter = Vec2i( getWindowCenter().x - mProcessedImageTex->getWidth() / 2, getWindowCenter().y - mProcessedImageTex->getHeight() / 2 );
+	mImageCenter = ivec2( getWindowCenter().x - mProcessedImageTex->getWidth() / 2, getWindowCenter().y - mProcessedImageTex->getHeight() / 2 );
 }
 
 void BasicApp::draw()

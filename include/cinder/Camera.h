@@ -38,26 +38,26 @@ class Camera {
 	Camera() : mModelViewCached( false ), mProjectionCached( false ), mInverseModelViewCached( false ), mWorldUp( vec3( 0, 1, 0 ) ) {}
 	virtual ~Camera() {}
 
-	Vec3f		getEyePoint() const { return mEyePoint; }
-	void		setEyePoint( const Vec3f &aEyePoint );
+	vec3		getEyePoint() const { return mEyePoint; }
+	void		setEyePoint( const vec3 &aEyePoint );
 	
 	float		getCenterOfInterest() const { return mCenterOfInterest; }
 	void		setCenterOfInterest( float aCenterOfInterest ) { mCenterOfInterest = aCenterOfInterest; }
 	
-	Vec3f		getCenterOfInterestPoint() const { return mEyePoint + mViewDirection * mCenterOfInterest; }
-	void		setCenterOfInterestPoint( const Vec3f &centerOfInterestPoint );
+	vec3		getCenterOfInterestPoint() const { return mEyePoint + mViewDirection * mCenterOfInterest; }
+	void		setCenterOfInterestPoint( const vec3 &centerOfInterestPoint );
 		
-	Vec3f		getWorldUp() const { return mWorldUp; }
-	void		setWorldUp( const Vec3f &aWorldUp );
+	vec3		getWorldUp() const { return mWorldUp; }
+	void		setWorldUp( const vec3 &aWorldUp );
 
-	void		lookAt( const Vec3f &target );
-	void		lookAt( const Vec3f &aEyePoint, const Vec3f &target );
-	void		lookAt( const Vec3f &aEyePoint, const Vec3f &target, const Vec3f &aUp );
-	Vec3f		getViewDirection() const { return mViewDirection; }
-	void		setViewDirection( const Vec3f &aViewDirection );
+	void		lookAt( const vec3 &target );
+	void		lookAt( const vec3 &aEyePoint, const vec3 &target );
+	void		lookAt( const vec3 &aEyePoint, const vec3 &target, const vec3 &aUp );
+	vec3		getViewDirection() const { return mViewDirection; }
+	void		setViewDirection( const vec3 &aViewDirection );
 
-	Quatf		getOrientation() const { return mOrientation; }
-	void		setOrientation( const Quatf &aOrientation );
+	quat		getOrientation() const { return mOrientation; }
+	void		setOrientation( const quat &aOrientation );
 
 	float	getFov() const { return mFov; }
 	void	setFov( float aFov ) { mFov = aFov;  mProjectionCached = false; }
@@ -71,53 +71,53 @@ class Camera {
 	float	getFarClip() const { return mFarClip; }
 	void	setFarClip( float aFarClip ) { mFarClip = aFarClip; mProjectionCached = false; }
 
-	virtual void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
-	virtual void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+	virtual void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
+	virtual void	getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
 
 	//! Returns the coordinates of the camera's frustum, suitable for passing to \c glFrustum
 	void	getFrustum( float *left, float *top, float *right, float *bottom, float *near, float *far ) const;
 	//! Returns whether the camera represents a perspective projection instead of an orthographic
 	virtual bool isPersp() const = 0;
 	
-	virtual const Matrix44f&	getProjectionMatrix() const { if( ! mProjectionCached ) calcProjection(); return mProjectionMatrix; }
-	virtual const Matrix44f&	getViewMatrix() const { if( ! mModelViewCached ) calcViewMatrix(); return mViewMatrix; }
-	virtual const Matrix44f&	getInverseViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseView(); return mInverseModelViewMatrix; }
+	virtual const mat4&	getProjectionMatrix() const { if( ! mProjectionCached ) calcProjection(); return mProjectionMatrix; }
+	virtual const mat4&	getViewMatrix() const { if( ! mModelViewCached ) calcViewMatrix(); return mViewMatrix; }
+	virtual const mat4&	getInverseViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseView(); return mInverseModelViewMatrix; }
 
 	Ray		generateRay( float u, float v, float imagePlaneAspectRatio ) const;
-	void	getBillboardVectors( Vec3f *right, Vec3f *up ) const;
+	void	getBillboardVectors( vec3 *right, vec3 *up ) const;
 
 	//! Converts a world-space coordinate \a worldCoord to screen coordinates as viewed by the camera, based ona s screen which is \a screenWidth x \a screenHeight pixels.
- 	Vec2f worldToScreen( const Vec3f &worldCoord, float screenWidth, float screenHeight ) const;
+ 	vec2 worldToScreen( const vec3 &worldCoord, float screenWidth, float screenHeight ) const;
 	//! Converts a world-space coordinate \a worldCoord to eye-space, also known as camera-space. -Z is along the view direction.
- 	Vec3f worldToEye( const Vec3f &worldCoord )	{ return vec3( getViewMatrix() * vec4( worldCoord, 1 ) ); }
+ 	vec3 worldToEye( const vec3 &worldCoord )	{ return vec3( getViewMatrix() * vec4( worldCoord, 1 ) ); }
  	//! Converts a world-space coordinate \a worldCoord to the z axis of eye-space, also known as camera-space. -Z is along the view direction. Suitable for depth sorting.
- 	float worldToEyeDepth( const Vec3f &worldCoord ) const;
+ 	float worldToEyeDepth( const vec3 &worldCoord ) const;
  	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates
- 	Vec3f worldToNdc( const Vec3f &worldCoord );
+ 	vec3 worldToNdc( const vec3 &worldCoord );
 
 	float	getScreenRadius( const class Sphere &sphere, float screenWidth, float screenHeight ) const;
 
   protected:
-	Vec3f	mEyePoint;
-	Vec3f	mViewDirection;
-	Quatf	mOrientation;
+	vec3	mEyePoint;
+	vec3	mViewDirection;
+	quat	mOrientation;
 	float	mCenterOfInterest;
-	Vec3f	mWorldUp;
+	vec3	mWorldUp;
 
 	float	mFov;
 	float	mAspectRatio;
 	float	mNearClip;		
 	float	mFarClip;
 
-	mutable Vec3f		mU;	// Right vector
-	mutable Vec3f		mV;	// Readjust up-vector
-	mutable Vec3f		mW;	// Negative view direction
+	mutable vec3		mU;	// Right vector
+	mutable vec3		mV;	// Readjust up-vector
+	mutable vec3		mW;	// Negative view direction
 
-	mutable Matrix44f	mProjectionMatrix, mInverseProjectionMatrix;
+	mutable mat4	mProjectionMatrix, mInverseProjectionMatrix;
 	mutable bool		mProjectionCached;
-	mutable Matrix44f	mViewMatrix;
+	mutable mat4	mViewMatrix;
 	mutable bool		mModelViewCached;
-	mutable Matrix44f	mInverseModelViewMatrix;
+	mutable mat4	mInverseModelViewMatrix;
 	mutable bool		mInverseModelViewCached;
 	
 	mutable float		mFrustumLeft, mFrustumRight, mFrustumTop, mFrustumBottom;
@@ -144,7 +144,7 @@ class CameraPersp : public Camera {
 	/** Returns both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
-	Vec2f	getLensShift() const { return Vec2f( mLensShift.x, mLensShift.y ); }
+	vec2	getLensShift() const { return vec2( mLensShift.x, mLensShift.y ); }
 	/** Sets both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
@@ -152,7 +152,7 @@ class CameraPersp : public Camera {
 	/** Sets both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 		A vertical lens shift of 1 (-1) will shift the view up (down) by half the height of the viewport. */
-	void	setLensShift( const Vec2f &shift ) { setLensShift( shift.x, shift.y ); }
+	void	setLensShift( const vec2 &shift ) { setLensShift( shift.x, shift.y ); }
 	//! Returns the horizontal lens shift. A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.
 	float	getLensShiftHorizontal() const { return mLensShift.x; }
 	/** Sets the horizontal lens shift. 
@@ -169,7 +169,7 @@ class CameraPersp : public Camera {
 	CameraPersp	getFrameSphere( const class Sphere &worldSpaceSphere, int maxIterations = 20 ) const;
 
   protected:
-	Vec2f	mLensShift;
+	vec2	mLensShift;
 
 	virtual void	calcProjection() const;
 };
@@ -212,7 +212,7 @@ class CameraStereo : public CameraPersp {
 	//! Sets the distance between the camera's for the left and right eyes. This affects the parallax effect. 
 	void			setEyeSeparation( float distance ) { mEyeSeparation = distance; mModelViewCached = false; mProjectionCached = false; }
 	//! Returns the location of the currently enabled eye camera.
-	Vec3f			getEyePointShifted() const;
+	vec3			getEyePointShifted() const;
 	
 	//! Enables the left eye camera.
 	void			enableStereoLeft() { mIsStereo = true; mIsLeft = true; }
@@ -224,18 +224,18 @@ class CameraStereo : public CameraPersp {
 	void			disableStereo() { mIsStereo = false; }
 	bool			isStereoEnabled() const { return mIsStereo; }
 
-	virtual void	getNearClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
-	virtual void	getFarClipCoordinates( Vec3f *topLeft, Vec3f *topRight, Vec3f *bottomLeft, Vec3f *bottomRight ) const;
+	virtual void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
+	virtual void	getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
 	
-	virtual const Matrix44f&	getProjectionMatrix() const override;
-	virtual const Matrix44f&	getViewMatrix() const override;
-	virtual const Matrix44f&	getInverseViewMatrix() const override;
+	virtual const mat4&	getProjectionMatrix() const override;
+	virtual const mat4&	getViewMatrix() const override;
+	virtual const mat4&	getInverseViewMatrix() const override;
 
   protected:
-	mutable Matrix44f	mProjectionMatrixLeft, mInverseProjectionMatrixLeft;
-	mutable Matrix44f	mProjectionMatrixRight, mInverseProjectionMatrixRight;
-	mutable Matrix44f	mViewMatrixLeft, mInverseModelViewMatrixLeft;
-	mutable Matrix44f	mViewMatrixRight, mInverseModelViewMatrixRight;
+	mutable mat4	mProjectionMatrixLeft, mInverseProjectionMatrixLeft;
+	mutable mat4	mProjectionMatrixRight, mInverseProjectionMatrixRight;
+	mutable mat4	mViewMatrixLeft, mInverseModelViewMatrixLeft;
+	mutable mat4	mViewMatrixRight, mInverseModelViewMatrixRight;
 
 	virtual void	calcViewMatrix() const override;
 	virtual void	calcInverseView() const override;

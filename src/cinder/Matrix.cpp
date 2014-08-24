@@ -142,16 +142,16 @@ Matrix44<T> lastFrame(
 }
 
 // Explicitly declare the functions
-template Matrix44f firstFrame( const Vec3f &firstPoint, const Vec3f &secondPoint, const Vec3f &thirdPoint );
-template Matrix44f nextFrame( const Matrix44f &prevMatrix, const Vec3f &prevPoint, const Vec3f &curPoint, Vec3f &prevTangent, Vec3f &curTangent );
-template Matrix44f lastFrame( const Matrix44f &prevMatrix, const Vec3f &prevPoint, 	const Vec3f &lastPoint );
-template Matrix44d firstFrame( const Vec3d &firstPoint, const Vec3d &secondPoint, const Vec3d &thirdPoint );
-template Matrix44d nextFrame( const Matrix44d &prevMatrix, const Vec3d &prevPoint, const Vec3d &curPoint, Vec3d &prevTangent, Vec3d &curTangent );
-template Matrix44d lastFrame( const Matrix44d &prevMatrix, const Vec3d &prevPoint, 	const Vec3d &lastPoint );
+template mat4 firstFrame( const vec3 &firstPoint, const vec3 &secondPoint, const vec3 &thirdPoint );
+template mat4 nextFrame( const mat4 &prevMatrix, const vec3 &prevPoint, const vec3 &curPoint, vec3 &prevTangent, vec3 &curTangent );
+template mat4 lastFrame( const mat4 &prevMatrix, const vec3 &prevPoint, 	const vec3 &lastPoint );
+template dmat4 firstFrame( const dvec3 &firstPoint, const dvec3 &secondPoint, const dvec3 &thirdPoint );
+template dmat4 nextFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, const dvec3 &curPoint, dvec3 &prevTangent, dvec3 &curTangent );
+template dmat4 lastFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, 	const dvec3 &lastPoint );
 
 #endif
 
-glm::mat4 alignZAxisWithTarget( Vec3f targetDir, Vec3f upDir )
+glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir )
 {
     // Ensure that the target direction is non-zero.
     if( length2( targetDir ) == 0 )
@@ -171,13 +171,13 @@ glm::mat4 alignZAxisWithTarget( Vec3f targetDir, Vec3f upDir )
     }
 
     // Compute the x-, y-, and z-axis vectors of the new coordinate system.
-	Vec3f targetPerpDir = cross( upDir, targetDir );
-	Vec3f targetUpDir = cross( targetDir, targetPerpDir );
+	vec3 targetPerpDir = cross( upDir, targetDir );
+	vec3 targetUpDir = cross( targetDir, targetPerpDir );
 
     // Rotate the x-axis into targetPerpDir (row 0),
     // rotate the y-axis into targetUpDir   (row 1),
     // rotate the z-axis into targetDir     (row 2).
-    Vec3f row[3];
+    vec3 row[3];
     row[0] = normalize( targetPerpDir );
 	row[1] = normalize( targetUpDir );
 	row[2] = normalize( targetDir );

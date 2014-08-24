@@ -106,9 +106,9 @@ void CaptureApp::draw()
 			
 		// draw the name
 		gl::color( Color::black() );	
-		gl::draw( mNameTextures[cIt-mCaptures.begin()], Vec2f( x + 10 + 1, y + 10 + 1 ) );
+		gl::draw( mNameTextures[cIt-mCaptures.begin()], vec2( x + 10 + 1, y + 10 + 1 ) );
 		gl::color( Color( 0.5, 0.75, 1 ) );
-		gl::draw( mNameTextures[cIt-mCaptures.begin()], Vec2f( x + 10, y + 10 ) );
+		gl::draw( mNameTextures[cIt-mCaptures.begin()], vec2( x + 10, y + 10 ) );
 
 		x += width;
 	}

@@ -4,7 +4,7 @@
 using namespace ci;
 using std::list;
 
-extern void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha );
+extern void renderImage( vec3 _loc, float _diam, Color _col, float _alpha );
 extern float floorLevel;
 extern bool ALLOWTRAILS, ALLOWFLOOR;
 extern dx::TextureRef particleImg, emitterImg;
@@ -14,8 +14,8 @@ extern dx::TextureRef particleImg, emitterImg;
 Emitter::Emitter() :
 	mParticleIndex(0),
 	myColor(Color(1,1,1)),
-	loc(Vec3f::zero()),
-	vel(Vec3f::zero())
+	loc(vec3::zero()),
+	vel(vec3::zero())
 {
 	for( int i = 0; i < TOTAL_PARTICLES; i++ ) {
 		particles.push_back( Particle( loc, vel ) );
@@ -67,7 +67,7 @@ void Emitter::renderParticleTrails()
 	dx::end();
 }
 
-void Emitter::update( Vec2i mouseLoc )
+void Emitter::update( ivec2 mouseLoc )
 {
 	setVelToMouse( mouseLoc );
 	findVelocity();
@@ -94,7 +94,7 @@ void Emitter::render()
 
 }
 
-void Emitter::setVelToMouse( Vec2i mouseLoc )
+void Emitter::setVelToMouse( ivec2 mouseLoc )
 {
 	velToMouse.set( mouseLoc.x - loc.x, mouseLoc.y - loc.y, 0 );
 }

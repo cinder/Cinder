@@ -127,7 +127,7 @@ class Texture {
 	//! the height of the texture in pixels accounting for its "clean" area - \sa getCleanBounds()
 	UINT			getCleanHeight() const;
 	//! the size of the texture in pixels
-	Vec2i			getSize() const { return Vec2i( getWidth(), getHeight() ); }	
+	ivec2			getSize() const { return ivec2( getWidth(), getHeight() ); }	
 	//! the aspect ratio of the texture (width / height)
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! the Area defining the Texture's bounds in pixels: [0,0]-[width,height]

@@ -38,8 +38,8 @@ public:
 
 	void printDefaultOutput();
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 
 	audio::GainNodeRef			mGain;
 	audio::MonitorNodeRef	mMonitor;
@@ -294,7 +294,7 @@ void NodeTestApp::setupUI()
 	mEnableNoiseButton.mIsToggle = true;
 	mEnableNoiseButton.mTitleNormal = "noise disabled";
 	mEnableNoiseButton.mTitleEnabled = "noise enabled";
-	mEnableNoiseButton.mBounds = mEnableSineButton.mBounds + Vec2f( 0, mEnableSineButton.mBounds.getHeight() + 10 );
+	mEnableNoiseButton.mBounds = mEnableSineButton.mBounds + vec2( 0, mEnableSineButton.mBounds.getHeight() + 10 );
 	mWidgets.push_back( &mEnableNoiseButton );
 
 
@@ -309,13 +309,13 @@ void NodeTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void NodeTestApp::processDrag( Vec2i pos )
+void NodeTestApp::processDrag( ivec2 pos )
 {
 	if( mGainSlider.hitTest( pos ) )
 		mGain->setValue( mGainSlider.mValueScaled );
 }
 
-void NodeTestApp::processTap( Vec2i pos )
+void NodeTestApp::processTap( ivec2 pos )
 {
 	auto ctx = audio::master();
 
@@ -372,7 +372,7 @@ void NodeTestApp::draw()
 	gl::clear();
 
 	if( mMonitor && mMonitor->getNumConnectedInputs() ) {
-		Vec2f padding( 20, 20 );
+		vec2 padding( 20, 20 );
 
 		Rectf scopeRect( padding.x, padding.y, getWindowWidth() - padding.x, getWindowHeight() - padding.y );
 		drawAudioBuffer( mMonitor->getBuffer(), scopeRect, true );

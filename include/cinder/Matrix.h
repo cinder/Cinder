@@ -39,7 +39,7 @@
 
 namespace cinder {
 
-glm::mat4 alignZAxisWithTarget( Vec3f targetDir, Vec3f upDir );
+glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir );
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // Parallel Transport Frames

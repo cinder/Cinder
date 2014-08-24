@@ -202,20 +202,20 @@ void stencilOp( GLenum fail, GLenum zfail, GLenum zpass )
     glStencilOp( fail, zfail, zpass );
 }
 
-std::pair<Vec2i, Vec2i> getViewport()
+std::pair<ivec2, ivec2> getViewport()
 {
 	auto ctx = gl::context();
 	auto view = ctx->getViewport();
 	return view;
 }
 
-void viewport( const std::pair<Vec2i, Vec2i> positionAndSize )
+void viewport( const std::pair<ivec2, ivec2> positionAndSize )
 {
 	auto ctx = gl::context();
 	ctx->viewport( positionAndSize );
 }
 
-void pushViewport( const std::pair<Vec2i, Vec2i> positionAndSize )
+void pushViewport( const std::pair<ivec2, ivec2> positionAndSize )
 {
 	auto ctx = gl::context();
 	ctx->pushViewport( positionAndSize );
@@ -227,14 +227,14 @@ void popViewport()
 	ctx->popViewport();
 }
 
-std::pair<Vec2i, Vec2i> getScissor()
+std::pair<ivec2, ivec2> getScissor()
 {
 	auto ctx = gl::context();
 	auto scissor = ctx->getScissor();
 	return scissor;
 }
 
-void scissor( const std::pair<Vec2i, Vec2i> positionAndSize )
+void scissor( const std::pair<ivec2, ivec2> positionAndSize )
 {
 	auto ctx = gl::context();
 	ctx->setScissor( positionAndSize );
@@ -310,19 +310,19 @@ void setMatrices( const ci::Camera& cam )
 	ctx->getModelMatrixStack().back() = mat4();
 }
 
-void setModelMatrix( const ci::Matrix44f &m )
+void setModelMatrix( const ci::mat4 &m )
 {
 	auto ctx = context();
 	ctx->getModelMatrixStack().back() = m;
 }
 
-void setViewMatrix( const ci::Matrix44f &m )
+void setViewMatrix( const ci::mat4 &m )
 {
 	auto ctx = context();
 	ctx->getViewMatrixStack().back() = m;
 }
 
-void setProjectionMatrix( const ci::Matrix44f &m )
+void setProjectionMatrix( const ci::mat4 &m )
 {
 	auto ctx = context();
 	ctx->getProjectionMatrixStack().back() = m;
@@ -394,71 +394,71 @@ void popMatrices()
 	ctx->getProjectionMatrixStack().pop_back();
 }
 
-void multModelMatrix( const ci::Matrix44f& mtx )
+void multModelMatrix( const ci::mat4& mtx )
 {
 	auto ctx = gl::context();
 	ctx->getModelMatrixStack().back() *= mtx;
 }
 
-void multViewMatrix( const ci::Matrix44f& mtx )
+void multViewMatrix( const ci::mat4& mtx )
 {
 	auto ctx = gl::context();
 	ctx->getViewMatrixStack().back() *= mtx;
 }
 
-void multProjectionMatrix( const ci::Matrix44f& mtx )
+void multProjectionMatrix( const ci::mat4& mtx )
 {
 	auto ctx = gl::context();
 	ctx->getProjectionMatrixStack().back() *= mtx;
 }
 
-Matrix44f getModelMatrix()
+mat4 getModelMatrix()
 {
 	auto ctx = gl::context();
 	return ctx->getModelMatrixStack().back();
 }
 
-Matrix44f getViewMatrix()
+mat4 getViewMatrix()
 {
 	auto ctx = gl::context();
 	return ctx->getViewMatrixStack().back();
 }
 
-Matrix44f getProjectionMatrix()
+mat4 getProjectionMatrix()
 {
 	auto ctx = gl::context();
 	return ctx->getProjectionMatrixStack().back();
 }
 
-Matrix44f getModelView()
+mat4 getModelView()
 {
 	auto ctx = context();
 	return ctx->getViewMatrixStack().back() * ctx->getModelMatrixStack().back();
 }
 
-Matrix44f getModelViewProjection()
+mat4 getModelViewProjection()
 {
 	auto ctx = context();
 	return ctx->getProjectionMatrixStack().back() * ctx->getViewMatrixStack().back() * ctx->getModelMatrixStack().back();
 }
 
-Matrix44f calcViewMatrixInverse()
+mat4 calcViewMatrixInverse()
 {
 	return glm::inverse( getViewMatrix() );
 }
 
-Matrix33f calcNormalMatrix()
+mat3 calcNormalMatrix()
 {
 	return glm::inverseTranspose( glm::mat3( getModelView() ) );
 }
 	
-Matrix33f calcModelMatrixInverseTranspose()
+mat3 calcModelMatrixInverseTranspose()
 {
 	auto m = glm::inverseTranspose( getModelMatrix() );
 	return mat3( m );
 }
 	
-Matrix44f calcViewportMatrix()
+mat4 calcViewportMatrix()
 {
 	auto curViewport = getViewport();
 	
@@ -470,7 +470,7 @@ Matrix44f calcViewportMatrix()
 	const float ty = ( curViewport.second.y + curViewport.second.y ) / 2.0f;
 	const float tz = 1.0f / 2.0f;
 	
-	return Matrix44f(
+	return mat4(
 		a, 0, 0, 0,
 		0, b, 0, 0,
 		0, 0, c, 0,
@@ -492,7 +492,7 @@ void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees
 	}
 }
 
-void setMatricesWindowPersp( const ci::Vec2i& screenSize, float fovDegrees, float nearPlane, float farPlane, bool originUpperLeft )
+void setMatricesWindowPersp( const ci::ivec2& screenSize, float fovDegrees, float nearPlane, float farPlane, bool originUpperLeft )
 {
 	setMatricesWindowPersp( screenSize.x, screenSize.y, fovDegrees, nearPlane, farPlane, originUpperLeft );
 }
@@ -519,12 +519,12 @@ void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft 
 			 -1, ty,  0, 1 );
 }
 
-void setMatricesWindow( const ci::Vec2i& screenSize, bool originUpperLeft )
+void setMatricesWindow( const ci::ivec2& screenSize, bool originUpperLeft )
 {
 	setMatricesWindow( screenSize.x, screenSize.y, originUpperLeft );
 }
 
-void rotate( const Quatf &quat )
+void rotate( const quat &quat )
 {
 	vec3 axis = glm::axis( quat );
 	float angle = glm::angle( quat );
@@ -532,7 +532,7 @@ void rotate( const Quatf &quat )
 	rotate( toDegrees( angle ), axis );
 }
 
-void rotate( float angleDegrees, const Vec3f &axis )
+void rotate( float angleDegrees, const vec3 &axis )
 {
 	if( math<float>::abs( angleDegrees ) > EPSILON_VALUE ) {
 		auto ctx = gl::context();
@@ -540,13 +540,13 @@ void rotate( float angleDegrees, const Vec3f &axis )
 	}
 }
 
-void scale( const ci::Vec3f& v )
+void scale( const ci::vec3& v )
 {
 	auto ctx = gl::context();
 	ctx->getModelMatrixStack().back() *= glm::scale( v );
 }
 
-void translate( const ci::Vec3f& v )
+void translate( const ci::vec3& v )
 {
 	auto ctx = gl::context();
 	ctx->getModelMatrixStack().back() *= glm::translate( v );
@@ -657,19 +657,19 @@ void texCoord( float s, float t, float r, float q )
 	ctx->immediate().texCoord( s, t, r, q );
 }
 
-void texCoord( const ci::Vec2f &v )
+void texCoord( const ci::vec2 &v )
 {
 	auto ctx = gl::context();
 	ctx->immediate().texCoord( v.x, v.y );
 }
 
-void texCoord( const ci::Vec3f &v )
+void texCoord( const ci::vec3 &v )
 {
 	auto ctx = gl::context();
 	ctx->immediate().texCoord( v );
 }
 
-void texCoord( const ci::Vec4f &v )
+void texCoord( const ci::vec4 &v )
 {
 	auto ctx = gl::context();
 	ctx->immediate().texCoord( v );
@@ -678,34 +678,34 @@ void texCoord( const ci::Vec4f &v )
 void vertex( float x, float y )
 {
 	auto ctx = gl::context();
-	ctx->immediate().vertex( Vec4f( x, y, 0, 1 ), ctx->getCurrentColor() );
+	ctx->immediate().vertex( vec4( x, y, 0, 1 ), ctx->getCurrentColor() );
 }
 
 void vertex( float x, float y, float z )
 {
 	auto ctx = gl::context();
-	ctx->immediate().vertex( Vec4f( x, y, z, 1 ), ctx->getCurrentColor() );
+	ctx->immediate().vertex( vec4( x, y, z, 1 ), ctx->getCurrentColor() );
 }
 
 void vertex( float x, float y, float z, float w )
 {
 	auto ctx = gl::context();
-	ctx->immediate().vertex( Vec4f( x, y, z, w ), ctx->getCurrentColor() );
+	ctx->immediate().vertex( vec4( x, y, z, w ), ctx->getCurrentColor() );
 }
 
-void vertex( const ci::Vec2f &v )
+void vertex( const ci::vec2 &v )
 {
 	auto ctx = gl::context();
-	ctx->immediate().vertex( Vec4f( v.x, v.y, 0, 1 ), ctx->getCurrentColor() );
+	ctx->immediate().vertex( vec4( v.x, v.y, 0, 1 ), ctx->getCurrentColor() );
 }
 
-void vertex( const ci::Vec3f &v )
+void vertex( const ci::vec3 &v )
 {
 	auto ctx = gl::context();
-	ctx->immediate().vertex( Vec4f( v.x, v.y, v.z, 1 ), ctx->getCurrentColor() );
+	ctx->immediate().vertex( vec4( v.x, v.y, v.z, 1 ), ctx->getCurrentColor() );
 }
 
-void vertex( const ci::Vec4f &v )
+void vertex( const ci::vec4 &v )
 {
 	auto ctx = gl::context();
 	ctx->immediate().vertex( v, ctx->getCurrentColor() );
@@ -881,7 +881,7 @@ void drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indice
 }
 
 namespace {
-void drawCubeImpl( const Vec3f &c, const Vec3f &size, bool faceColors )
+void drawCubeImpl( const vec3 &c, const vec3 &size, bool faceColors )
 {
 	GLfloat sx = size.x * 0.5f;
 	GLfloat sy = size.y * 0.5f;
@@ -990,12 +990,12 @@ void drawCubeImpl( const Vec3f &c, const Vec3f &size, bool faceColors )
 }
 }
 
-void drawCube( const Vec3f &center, const Vec3f &size )
+void drawCube( const vec3 &center, const vec3 &size )
 {
 	drawCubeImpl( center, size, false );
 }
 
-void drawColorCube( const Vec3f &center, const Vec3f &size )
+void drawColorCube( const vec3 &center, const vec3 &size )
 {
 	drawCubeImpl( center, size, true );
 }
@@ -1028,7 +1028,7 @@ void draw( const TextureRef &texture, const Rectf &dstRect )
 }
 
 
-void draw( const TextureRef &texture, const Vec2f &dstOffset )
+void draw( const TextureRef &texture, const vec2 &dstOffset )
 {
 	if( ! texture )
 		return;
@@ -1047,9 +1047,9 @@ void draw( const Path2d &path, float approximationScale )
 		return;
 	}
 
-	vector<Vec2f> points = path.subdivide( approximationScale );
-	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(Vec2f) * points.size() );
-	arrayVbo->bufferSubData( 0, sizeof(Vec2f) * points.size(), points.data() );
+	vector<vec2> points = path.subdivide( approximationScale );
+	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(vec2) * points.size() );
+	arrayVbo->bufferSubData( 0, sizeof(vec2) * points.size(), points.data() );
 
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
@@ -1072,7 +1072,7 @@ void draw( const Shape2d &shape, float approximationScale )
 		gl::draw( path );
 }
 
-void draw( const PolyLine<Vec2f> &polyLine )
+void draw( const PolyLine<vec2> &polyLine )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1081,9 +1081,9 @@ void draw( const PolyLine<Vec2f> &polyLine )
 		return;
 	}
 
-	const vector<Vec2f> &points = polyLine.getPoints();
-	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(Vec2f) * points.size() );
-	arrayVbo->bufferSubData( 0, sizeof(Vec2f) * points.size(), points.data() );
+	const vector<vec2> &points = polyLine.getPoints();
+	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(vec2) * points.size() );
+	arrayVbo->bufferSubData( 0, sizeof(vec2) * points.size(), points.data() );
 
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
@@ -1100,7 +1100,7 @@ void draw( const PolyLine<Vec2f> &polyLine )
 	ctx->popVao();
 }
 
-void draw( const PolyLine<Vec3f> &polyLine )
+void draw( const PolyLine<vec3> &polyLine )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1109,9 +1109,9 @@ void draw( const PolyLine<Vec3f> &polyLine )
 		return;
 	}
 	
-	const vector<Vec3f> &points = polyLine.getPoints();
-	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(Vec3f) * points.size() );
-	arrayVbo->bufferSubData( 0, sizeof(Vec3f) * points.size(), points.data() );
+	const vector<vec3> &points = polyLine.getPoints();
+	VboRef arrayVbo = ctx->getDefaultArrayVbo( sizeof(vec3) * points.size() );
+	arrayVbo->bufferSubData( 0, sizeof(vec3) * points.size(), points.data() );
 
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
@@ -1128,11 +1128,11 @@ void draw( const PolyLine<Vec3f> &polyLine )
 	ctx->popVao();
 }
 
-void drawLine( const Vec3f &a, const Vec3f &b )
+void drawLine( const vec3 &a, const vec3 &b )
 {
 	const int dims = 3;
-	const int size = sizeof( Vec3f ) * 2;
-	array<Vec3f, 2> points = { a, b };
+	const int size = sizeof( vec3 ) * 2;
+	array<vec3, 2> points = { a, b };
 
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1159,11 +1159,11 @@ void drawLine( const Vec3f &a, const Vec3f &b )
 	ctx->popVao();
 }
 
-void drawLine( const Vec2f &a, const Vec2f &b )
+void drawLine( const vec2 &a, const vec2 &b )
 {
 	const int dims = 2;
-	const int size = sizeof( Vec2f ) * 2;
-	array<Vec2f, 2> points = { a, b };
+	const int size = sizeof( vec2 ) * 2;
+	array<vec2, 2> points = { a, b };
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
@@ -1207,12 +1207,12 @@ void drawSolid( const Shape2d &shape, float approximationScale )
 	draw( Triangulator( shape ).calcMesh() );
 }
 
-void drawSolid( const PolyLine<Vec2f> &polyLine )
+void drawSolid( const PolyLine<vec2> &polyLine )
 {
 	draw( Triangulator( polyLine ).calcMesh() );
 }
 
-void drawSolidRect( const Rectf &r, const Vec2f &upperLeftTexCoord, const Vec2f &lowerRightTexCoord )
+void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &lowerRightTexCoord )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1336,7 +1336,7 @@ void drawStrokedRect( const Rectf &rect, float lineWidth )
 	ctx->popVao();
 }
 
-void drawStrokedCircle( const Vec2f &center, float radius, int numSegments )
+void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1353,17 +1353,17 @@ void drawStrokedCircle( const Vec2f &center, float radius, int numSegments )
 	}
 	// construct circle
 	const size_t numVertices = numSegments;
-	vector<Vec2f> positions;
+	vector<vec2> positions;
 	positions.assign( numVertices, center );	// all vertices start at center
 	const float tDelta = 2.0f * static_cast<float>(M_PI) * (1.0f / numVertices);
 	float t = 0;
 	for( auto &pos : positions ) {
-		const Vec2f unit( math<float>::cos( t ), math<float>::sin( t ) );
+		const vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
 		pos += unit * radius;	// push out from center
 		t += tDelta;
 	}
 	// copy data to GPU
-	const size_t size = positions.size() * sizeof( Vec2f );
+	const size_t size = positions.size() * sizeof( vec2 );
 	auto arrayVbo = ctx->getDefaultArrayVbo( size );
 	arrayVbo->bufferSubData( 0, size, (GLvoid*)positions.data() );
 	// set attributes
@@ -1383,7 +1383,7 @@ void drawStrokedCircle( const Vec2f &center, float radius, int numSegments )
 	ctx->popVao();
 }
 
-void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
+void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1431,24 +1431,24 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	}
 
 	unique_ptr<uint8_t[]> data( new uint8_t[dataSizeBytes] );
-	Vec2f *verts = ( posLoc >= 0 ) ? reinterpret_cast<Vec2f*>( data.get() + vertsOffset ) : nullptr;
-	Vec2f *texCoords = ( texLoc >= 0 ) ? reinterpret_cast<Vec2f*>( data.get() + texCoordsOffset ) : nullptr;
-	Vec3f *normals = ( normalLoc >= 0 ) ? reinterpret_cast<Vec3f*>( data.get() + normalsOffset ) : nullptr;
+	vec2 *verts = ( posLoc >= 0 ) ? reinterpret_cast<vec2*>( data.get() + vertsOffset ) : nullptr;
+	vec2 *texCoords = ( texLoc >= 0 ) ? reinterpret_cast<vec2*>( data.get() + texCoordsOffset ) : nullptr;
+	vec3 *normals = ( normalLoc >= 0 ) ? reinterpret_cast<vec3*>( data.get() + normalsOffset ) : nullptr;
 
 	if( verts )
 		verts[0] = center;
 	if( texCoords )
-		texCoords[0] = Vec2f( 0.5f, 0.5f );
+		texCoords[0] = vec2( 0.5f, 0.5f );
 	if( normals )
 		normals[0] = vec3( 0, 0, 1 );
 	const float tDelta = 1.0f / numSegments * 2 * (float)M_PI;
 	float t = 0;
 	for( int s = 0; s <= numSegments; s++ ) {
-		const Vec2f unit( math<float>::cos( t ), math<float>::sin( t ) );
+		const vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
 		if( verts )
 			verts[s+1] = center + unit * radius;
 		if( texCoords )
-			texCoords[s+1] = unit * 0.5f + Vec2f( 0.5f, 0.5f );
+			texCoords[s+1] = unit * 0.5f + vec2( 0.5f, 0.5f );
 		if( normals )
 			normals[s+1] = vec3( 0, 0, 1 );
 		t += tDelta;
@@ -1462,33 +1462,33 @@ void drawSolidCircle( const Vec2f &center, float radius, int numSegments )
 	ctx->popVao();
 }
 
-void drawSolidTriangle( const Vec2f pts[3] )
+void drawSolidTriangle( const vec2 pts[3] )
 {
 	drawSolidTriangle( pts, nullptr );
 }
 
-void drawSolidTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2 )
+void drawSolidTriangle( const vec2 &pt0, const vec2 &pt1, const vec2 &pt2 )
 {
-	Vec2f pts[3] = { pt0, pt1, pt2 };
+	vec2 pts[3] = { pt0, pt1, pt2 };
 	drawSolidTriangle( pts, nullptr );
 }
 
 //! Renders a textured triangle.
-void drawSolidTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2, const Vec2f &texCoord0, const Vec2f &texCoord1, const Vec2f &texCoord2 )
+void drawSolidTriangle( const vec2 &pt0, const vec2 &pt1, const vec2 &pt2, const vec2 &texCoord0, const vec2 &texCoord1, const vec2 &texCoord2 )
 {
-	Vec2f pts[3] = { pt0, pt1, pt2 };
-	Vec2f texs[3] = { texCoord0, texCoord1, texCoord2 };
+	vec2 pts[3] = { pt0, pt1, pt2 };
+	vec2 texs[3] = { texCoord0, texCoord1, texCoord2 };
 	
 	drawSolidTriangle( pts, texs );
 }
 
-void drawStrokedTriangle( const Vec2f &pt0, const Vec2f &pt1, const Vec2f &pt2 )
+void drawStrokedTriangle( const vec2 &pt0, const vec2 &pt1, const vec2 &pt2 )
 {
-	Vec2f pts[3] = { pt0, pt1, pt2 };
+	vec2 pts[3] = { pt0, pt1, pt2 };
 	drawSolidTriangle( pts, nullptr );
 }
 
-void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] )
+void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1526,7 +1526,7 @@ void drawSolidTriangle( const Vec2f pts[3], const Vec2f texCoord[3] )
 	ctx->popVao();
 }
 
-void drawSphere( const Vec3f &center, float radius, int segments )
+void drawSphere( const vec3 &center, float radius, int segments )
 {
 	auto ctx = gl::context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1548,7 +1548,7 @@ void drawSphere( const Vec3f &center, float radius, int segments )
 	ctx->popVao();
 }
 
-void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationRadians, const Vec3f &bbRight, const Vec3f &bbUp, const Rectf &texCoords )
+void drawBillboard( const vec3 &pos, const vec2 &scale, float rotationRadians, const vec3 &bbRight, const vec3 &bbUp, const Rectf &texCoords )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1558,7 +1558,7 @@ void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationRadians,
 	}
 
 	GLfloat data[12+8]; // both verts and texCoords
-	Vec3f *verts = (Vec3f*)data;
+	vec3 *verts = (vec3*)data;
 	float *texCoordsOut = data + 12;
 
 	float sinA = math<float>::sin( rotationRadians );
@@ -1597,7 +1597,7 @@ void drawBillboard( const Vec3f &pos, const Vec2f &scale, float rotationRadians,
 }
 
 namespace {
-void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &color, Font font, int justification )
+void drawStringHelper( const std::string &str, const vec2 &pos, const ColorA &color, Font font, int justification )
 {
 	if( str.empty() )
 		return;
@@ -1611,7 +1611,7 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 
 	float baselineOffset;
 #if defined( CINDER_COCOA_TOUCH )
-	Vec2i actualSize;
+	ivec2 actualSize;
 	Surface8u pow2Surface( renderStringPow2( str, font, color, &actualSize, &baselineOffset ) );
 	gl::TextureRef tex = gl::Texture::create( pow2Surface );
 	tex->setCleanSize( actualSize.x, actualSize.y );
@@ -1621,25 +1621,25 @@ void drawStringHelper( const std::string &str, const Vec2f &pos, const ColorA &c
 #endif
 
 	if( justification == -1 ) // left
-		draw( tex, pos - Vec2f( 0, baselineOffset ) );
+		draw( tex, pos - vec2( 0, baselineOffset ) );
 	else if( justification == 0 ) // center
-		draw( tex, pos - Vec2f( tex->getWidth() * 0.5f, baselineOffset ) );
+		draw( tex, pos - vec2( tex->getWidth() * 0.5f, baselineOffset ) );
 	else // right
-		draw( tex, pos - Vec2f( (float)tex->getWidth(), baselineOffset ) );
+		draw( tex, pos - vec2( (float)tex->getWidth(), baselineOffset ) );
 }
 } // anonymous namespace
 
-void drawString( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+void drawString( const std::string &str, const vec2 &pos, const ColorA &color, Font font )
 {
 	drawStringHelper( str, pos, color, font, -1 );
 }
 
-void drawStringCentered( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+void drawStringCentered( const std::string &str, const vec2 &pos, const ColorA &color, Font font )
 {
 	drawStringHelper( str, pos, color, font, 0 );
 }
 
-void drawStringRight( const std::string &str, const Vec2f &pos, const ColorA &color, Font font )
+void drawStringRight( const std::string &str, const vec2 &pos, const ColorA &color, Font font )
 {
 	drawStringHelper( str, pos, color, font, 1 );
 }
@@ -1860,18 +1860,18 @@ ScopedTextureBind::~ScopedTextureBind()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedScissor
-ScopedScissor::ScopedScissor( const Vec2i &lowerLeftPostion, const Vec2i &dimension )
+ScopedScissor::ScopedScissor( const ivec2 &lowerLeftPostion, const ivec2 &dimension )
 	: mCtx( gl::context() )
 {
 	mCtx->pushBoolState( GL_SCISSOR_TEST, GL_TRUE );
-	mCtx->pushScissor( std::pair<Vec2i, Vec2i>( lowerLeftPostion, dimension ) ); 
+	mCtx->pushScissor( std::pair<ivec2, ivec2>( lowerLeftPostion, dimension ) ); 
 }
 
 ScopedScissor::ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int height )
 	: mCtx( gl::context() )
 {
 	mCtx->pushBoolState( GL_SCISSOR_TEST, GL_TRUE );
-	mCtx->pushScissor( std::pair<Vec2i, Vec2i>( Vec2i( lowerLeftX, lowerLeftY ), Vec2i( width, height ) ) );		
+	mCtx->pushScissor( std::pair<ivec2, ivec2>( ivec2( lowerLeftX, lowerLeftY ), ivec2( width, height ) ) );		
 }
 	
 ScopedScissor::~ScopedScissor()
@@ -1882,16 +1882,16 @@ ScopedScissor::~ScopedScissor()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedViewport
-ScopedViewport::ScopedViewport( const Vec2i &lowerLeftPostion, const Vec2i &dimension )
+ScopedViewport::ScopedViewport( const ivec2 &lowerLeftPostion, const ivec2 &dimension )
 	: mCtx( gl::context() )
 {
-	mCtx->pushViewport( std::pair<Vec2i, Vec2i>( lowerLeftPostion, dimension ) ); 
+	mCtx->pushViewport( std::pair<ivec2, ivec2>( lowerLeftPostion, dimension ) ); 
 }
 
 ScopedViewport::ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height )
 	: mCtx( gl::context() )
 {
-	mCtx->pushViewport( std::pair<Vec2i, Vec2i>( Vec2i( lowerLeftX, lowerLeftY ), Vec2i( width, height ) ) );		
+	mCtx->pushViewport( std::pair<ivec2, ivec2>( ivec2( lowerLeftX, lowerLeftY ), ivec2( width, height ) ) );		
 }
 	
 ScopedViewport::~ScopedViewport()

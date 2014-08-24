@@ -10,15 +10,15 @@ Particle::Particle()
 {
 }
 
-Particle::Particle( Vec3f pos, Vec3f vel, bool followed )
+Particle::Particle( vec3 pos, vec3 vel, bool followed )
 {
 	mPos			= pos;
 	mTailPos		= pos;
 	mVel			= vel;
-	mVelNormal		= Vec3f::yAxis();
-	mAcc			= Vec3f::zero();
+	mVelNormal		= vec3::yAxis();
+	mAcc			= vec3::zero();
 	
-	mNeighborPos	= Vec3f::zero();
+	mNeighborPos	= vec3::zero();
 	mNumNeighbors	= 0;
 	mMaxSpeed		= Rand::randFloat( 2.5f, 4.0f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;
@@ -37,9 +37,9 @@ Particle::Particle( Vec3f pos, Vec3f vel, bool followed )
 	mFollowed		= followed;
 }
 
-void Particle::pullToCenter( const Vec3f &center )
+void Particle::pullToCenter( const vec3 &center )
 {
-	Vec3f dirToCenter = mPos - center;
+	vec3 dirToCenter = mPos - center;
 	float distToCenter = dirToCenter.length();
 	float distThresh = 200.0f;
 	
@@ -77,8 +77,8 @@ void Particle::update( bool flatten )
 	float c = math<float>::min( mNumNeighbors/50.0f, 1.0f );
 	mColor = ColorA( CM_HSV, 1.0f - c, c, c * 0.5f + 0.5f, 1.0f );
 	
-	mAcc = Vec3f::zero();
-	mNeighborPos = Vec3f::zero();
+	mAcc = vec3::zero();
+	mNeighborPos = vec3::zero();
 	mNumNeighbors = 0;
 }
 
@@ -113,7 +113,7 @@ void Particle::drawTail()
 	gl::vertex( mTailPos );
 }
 
-void Particle::addNeighborPos( Vec3f pos )
+void Particle::addNeighborPos( vec3 pos )
 {
 	mNeighborPos += pos;
 	mNumNeighbors ++;

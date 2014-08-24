@@ -28,7 +28,7 @@ class TutorialApp : public AppBasic {
 	Channel32f mChannel;
 	gl::Texture	mTexture;
 	
-	Vec2i mMouseLoc;
+	ivec2 mMouseLoc;
 	
 	ParticleController mParticleController;
 	
@@ -69,7 +69,7 @@ void TutorialApp::setup()
 
 	mParticleController = ParticleController( RESOLUTION );
 	
-	mMouseLoc = Vec2i( 0, 0 );
+	mMouseLoc = ivec2( 0, 0 );
 	
 	mDrawParticles = true;
 	mDrawImage = false;

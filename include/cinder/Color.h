@@ -52,7 +52,7 @@ class ColorT
 	{}
 	ColorT( const char *svgColorName );
 
-	ColorT( ColorModel cm, const Vec3f &v );
+	ColorT( ColorModel cm, const vec3 &v );
 	ColorT( ColorModel cm, float x, float y, float z );
 
 	template<typename FromT>
@@ -70,7 +70,7 @@ class ColorT
 		r = rhs.r; g = rhs.g; b = rhs.b;
 	}
 
-	void	set( ColorModel cm, const Vec3f &v );
+	void	set( ColorModel cm, const vec3 &v );
 
 	ColorT<T> operator=( const ColorT<T> &rhs ) 
 	{
@@ -89,7 +89,7 @@ class ColorT
 		return * this;
 	}
 
-	Vec3f get( ColorModel cm ) const;
+	vec3 get( ColorModel cm ) const;
 
 	T& operator[]( int n )
 	{
@@ -392,8 +392,8 @@ template <typename T, typename Y> inline ColorT<T>  operator*( Y s, const ColorT
 template <typename T, typename Y> inline ColorAT<T> operator*( Y s, const ColorAT<T>& c ) { return ColorAT<T>( s*c.r, s*c.g, s*c.b, s*c.a ); }
 
 // Free Functions
-extern ColorT<float> hsvToRGB( const Vec3f &hsv );
-extern Vec3f rgbToHSV( const ColorT<float> &c );
+extern ColorT<float> hsvToRGB( const vec3 &hsv );
+extern vec3 rgbToHSV( const ColorT<float> &c );
 //! Converts the named colors of the SVG spec http://en.wikipedia.org/wiki/Web_colors#X11_color_names to sRGB Color8u. If \a found is non-NULL, it's set to whether the name was located. Returns black on failure.
 extern ColorT<uint8_t> svgNameToRgb( const char *svgName, bool *found = NULL );
 

@@ -7,14 +7,14 @@
 using namespace ci;
 
 // These live in HodginParticleApp.cpp
-extern void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha );
+extern void renderImage( vec3 _loc, float _diam, Color _col, float _alpha );
 extern float floorLevel;
 extern bool ALLOWFLOOR, ALLOWGRAVITY, ALLOWPERLIN;
-extern Vec3f gravity;
+extern vec3 gravity;
 extern int counter;
 Perlin sPerlin( 2 );
 
-Particle::Particle( Vec3f _loc, Vec3f _vel )
+Particle::Particle( vec3 _loc, vec3 _vel )
 {
 	radius      = Rand::randFloat( 10, 40 );
 	len         = (int)radius;
@@ -42,7 +42,7 @@ Particle::Particle( Vec3f _loc, Vec3f _vel )
 	// dont all move at the same speed in the same direction.
 	vel = _vel * 0.5f + Rand::randVec3f() * Rand::randFloat( 10.0f );
 
-	perlin = Vec3f::zero();
+	perlin = vec3::zero();
 
 	age         = 0;
 	agePer		= 1.0f;
@@ -65,7 +65,7 @@ void Particle::exist()
 
 void Particle::findPerlin()
 {
-	Vec3f noise = sPerlin.dfBm( loc[0] * 0.01f + Vec3f( 0, 0, counter / 100.0f ) );
+	vec3 noise = sPerlin.dfBm( loc[0] * 0.01f + vec3( 0, 0, counter / 100.0f ) );
 	perlin = noise.normalized() * 0.5f;
 }
 
@@ -134,14 +134,14 @@ void Particle::renderTrails()
 		// make sure I am always looking at them top-down. So no matter where the camera is, I will
 		// always see the ribbons with their width oriented to the camera. The one change I made for
 		// this particular piece of source which has no camera object is I have replaced the eyeNormal
-		// (which would be the vector pointing from ribbon towards camera) with a generic ci::Vec3f(0, 1, 0).
+		// (which would be the vector pointing from ribbon towards camera) with a generic ci::vec3(0, 1, 0).
 		// Why? Well cause it works and thats enough for me. WHEE!
-		Vec3f perp0 = loc[i] - loc[i+1];
-		Vec3f perp1 = perp0.cross( Vec3f::yAxis() );
-		Vec3f perp2 = perp0.cross( perp1 );
+		vec3 perp0 = loc[i] - loc[i+1];
+		vec3 perp1 = perp0.cross( vec3::yAxis() );
+		vec3 perp2 = perp0.cross( perp1 );
 			  perp1 = perp0.cross( perp2 ).normalized();
 			  
-		Vec3f off = perp1 * ( radius * agePer * per * 0.1f );
+		vec3 off = perp1 * ( radius * agePer * per * 0.1f );
 
 		gl::color( per, per * 0.25f, 1.0f - per, per * 0.5f );
 		gl::vertex( loc[i] - off );

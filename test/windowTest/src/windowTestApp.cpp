@@ -11,7 +11,7 @@ using namespace std;
 class WindowData {
   public:
   	~WindowData() { std::cout << "Destroying Window Data" << std::endl; };
-	vector<Vec2f> 	mPoints;
+	vector<vec2> 	mPoints;
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
@@ -46,9 +46,9 @@ void displayChange();
 
 void BasicApp::mouseDrag( MouseEvent event )
 {
-	Vec2f v = event.getPos();
+	vec2 v = event.getPos();
 	WindowRef w = event.getWindow();
-	vector<Vec2f> &points = w->getUserData<WindowData>()->mPoints;
+	vector<vec2> &points = w->getUserData<WindowData>()->mPoints;
 	points.push_back( v );
 }
 
@@ -212,7 +212,7 @@ void BasicApp::keyDown( KeyEvent event )
 		getWindow()->spanAllDisplays();
 		console() << "Spanning Area: " << Display::getSpanningArea() << std::endl;
 		console() << "Bounds: " << getWindow()->getBounds() << std::endl;
-		//getWindow()->setPos( Vec2i( -1680 + 1, 0 + 1 ) );
+		//getWindow()->setPos( ivec2( -1680 + 1, 0 + 1 ) );
 //		getWindow()->setSize( 1440, 900 );
 //		getWindow()->setPos( 0, 0 );
 	}
@@ -244,14 +244,14 @@ void BasicApp::windowDraw()
 	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 	
 	glBegin( GL_LINE_STRIP );
-	const vector<Vec2f> &points = getWindow()->getUserData<WindowData>()->mPoints;
+	const vector<vec2> &points = getWindow()->getUserData<WindowData>()->mPoints;
 	for( auto pointIter = points.begin(); pointIter != points.end(); ++pointIter ) {
-		gl::vertex( *pointIter /*+ Vec2f( 0, getElapsedSeconds() )*/ );
+		gl::vertex( *pointIter /*+ vec2( 0, getElapsedSeconds() )*/ );
 	}
 	glEnd();
 	
 	//if( window == mSecondWindow )
-		gl::drawLine( Vec2f( 50, 50 ), Vec2f( 250, 250 ) );
+		gl::drawLine( vec2( 50, 50 ), vec2( 250, 250 ) );
 	gl::pushMatrices();
 		glColor3f( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );

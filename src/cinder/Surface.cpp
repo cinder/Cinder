@@ -378,9 +378,9 @@ void SurfaceT<T>::setChannelOrder( const SurfaceChannelOrder &aChannelOrder )
 }
 
 template<typename T>
-void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset )
+void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &relativeOffset )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcSurface.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcSurface.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
 	
 	if( getChannelOrder() == srcSurface.getChannelOrder() )
 		copyRawSameChannelOrder( srcSurface, srcDst.first, srcDst.second );
@@ -393,7 +393,7 @@ void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, 
 }
 
 template<typename T>
-void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset )
+void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
 	int32_t srcRowBytes = srcSurface.getRowBytes();
 	int32_t srcPixelInc = srcSurface.getPixelInc();
@@ -407,7 +407,7 @@ void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const 
 }
 
 template<typename T>
-void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset )
+void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
 	const int32_t srcRowBytes = srcSurface.getRowBytes();
 	uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
@@ -437,7 +437,7 @@ void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcAre
 }
 
 template<typename T>
-void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset )
+void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
 	const int32_t srcRowBytes = srcSurface.getRowBytes();
 	const int8_t srcPixelInc = srcSurface.getPixelInc();
@@ -468,7 +468,7 @@ void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area
 }
 
 template<typename T>
-void SurfaceT<T>::copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset )
+void SurfaceT<T>::copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
 	const int32_t srcRowBytes = srcSurface.getRowBytes();
 	const int8_t srcPixelInc = srcSurface.getPixelInc();
@@ -587,7 +587,7 @@ bool ImageTargetSurface<T>::hasAlpha() const
 template<typename T>
 void* ImageTargetSurface<T>::getRowPointer( int32_t row )
 {
-	return reinterpret_cast<void*>( mSurface->getData( Vec2i( 0, row ) ) );
+	return reinterpret_cast<void*>( mSurface->getData( ivec2( 0, row ) ) );
 }
 
 #define Surface_PROTOTYPES(r,data,T)\

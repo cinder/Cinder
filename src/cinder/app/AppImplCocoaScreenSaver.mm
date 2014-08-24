@@ -157,17 +157,17 @@ AppImplCocoaScreenSaver* getAppImpl();
 { // NO-OP
 }
 
-- (cinder::Vec2i)getSize
+- (cinder::ivec2)getSize
 {
 	NSRect frame = [self frame];
-	return cinder::Vec2i( frame.size.width, frame.size.height );
+	return cinder::ivec2( frame.size.width, frame.size.height );
 }
 
-- (void)setSize:(cinder::Vec2i)size
+- (void)setSize:(cinder::ivec2)size
 { // NO-OP
 }
 
-- (cinder::Vec2i)getPos
+- (cinder::ivec2)getPos
 {
 	return cinder::ivec2( 0 );
 }
@@ -177,7 +177,7 @@ AppImplCocoaScreenSaver* getAppImpl();
 	return [[mCinderView window] backingScaleFactor];
 }
 
-- (void)setPos:(cinder::Vec2i)pos
+- (void)setPos:(cinder::ivec2)pos
 { // NO-OP
 }
 

@@ -37,27 +37,27 @@ void flipVertical( SurfaceT<T> *surface )
 	const int32_t lastRow = surface->getHeight() - 1;
 	const int32_t halfHeight = surface->getHeight() / 2;
 	for( int32_t y = 0; y < halfHeight; ++y ) {
-		memcpy( buffer.get(), surface->getData( Vec2i( 0, y ) ), rowBytes );
-		memcpy( surface->getData( Vec2i( 0, y ) ), surface->getData( Vec2i( 0, lastRow - y ) ), rowBytes );
-		memcpy( surface->getData( Vec2i( 0, lastRow - y ) ), buffer.get(), rowBytes );
+		memcpy( buffer.get(), surface->getData( ivec2( 0, y ) ), rowBytes );
+		memcpy( surface->getData( ivec2( 0, y ) ), surface->getData( ivec2( 0, lastRow - y ) ), rowBytes );
+		memcpy( surface->getData( ivec2( 0, lastRow - y ) ), buffer.get(), rowBytes );
 	}	
 }
 
 namespace { // anonymous
 template<typename T>
-void flipVerticalRawSameChannelOrder( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface, const Vec2i &size )
+void flipVerticalRawSameChannelOrder( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface, const ivec2 &size )
 {
 	const int32_t srcPixelInc = srcSurface.getPixelInc();
 	const size_t copyBytes = size.x * srcPixelInc * sizeof(T);
 	for( int32_t y = 0; y < size.y; ++y ) {
-		const T *srcPtr = srcSurface.getData( Vec2i( 0, y ) );
-		T *dstPtr = destSurface->getData( Vec2i( 0, size.y - y - 1 ) );
+		const T *srcPtr = srcSurface.getData( ivec2( 0, y ) );
+		T *dstPtr = destSurface->getData( ivec2( 0, size.y - y - 1 ) );
 		memcpy( dstPtr, srcPtr, copyBytes );
 	}
 }
 
 template<typename T>
-void flipVerticalRawRgba( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface, const Vec2i &size )
+void flipVerticalRawRgba( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface, const ivec2 &size )
 {
 	const uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
 	const uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
@@ -70,8 +70,8 @@ void flipVerticalRawRgba( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurfac
 	const uint8_t dstAlpha = destSurface->getChannelOrder().getAlphaOffset();
 	
 	for( int32_t y = 0; y < size.y; ++y ) {
-		const T *src = srcSurface.getData( Vec2i( 0, y ) );
-		T *dst = destSurface->getData( Vec2i( 0, size.y - y - 1 ) );
+		const T *src = srcSurface.getData( ivec2( 0, y ) );
+		T *dst = destSurface->getData( ivec2( 0, size.y - y - 1 ) );
 		for( int x = 0; x < size.x; ++x ) {
 			dst[dstRed] = src[srcRed];
 			dst[dstGreen] = src[srcGreen];
@@ -84,7 +84,7 @@ void flipVerticalRawRgba( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurfac
 }
 
 template<typename T>
-void flipVerticalRawRgbFullAlpha( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface, const Vec2i &size )
+void flipVerticalRawRgbFullAlpha( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface, const ivec2 &size )
 {
 	const uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
 	const uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
@@ -98,8 +98,8 @@ void flipVerticalRawRgbFullAlpha( const SurfaceT<T> &srcSurface, SurfaceT<T> *de
 	const uint8_t dstAlpha = destSurface->getChannelOrder().getAlphaOffset();
 	
 	for( int32_t y = 0; y < size.y; ++y ) {
-		const T *src = srcSurface.getData( Vec2i( 0, y ) );
-		T *dst = destSurface->getData( Vec2i( 0, size.y - y - 1 ) );
+		const T *src = srcSurface.getData( ivec2( 0, y ) );
+		T *dst = destSurface->getData( ivec2( 0, size.y - y - 1 ) );
 		for( int x = 0; x < size.x; ++x ) {
 			dst[dstRed] = src[srcRed];
 			dst[dstGreen] = src[srcGreen];
@@ -112,7 +112,7 @@ void flipVerticalRawRgbFullAlpha( const SurfaceT<T> &srcSurface, SurfaceT<T> *de
 }
 
 template<typename T>
-void flipVerticalRawRgb( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface, const Vec2i &size )
+void flipVerticalRawRgb( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface, const ivec2 &size )
 {
 	const uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
 	const uint8_t srcGreen = srcSurface.getChannelOrder().getGreenOffset();
@@ -125,8 +125,8 @@ void flipVerticalRawRgb( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface
 	const int8_t dstPixelInc = destSurface->getPixelInc();
 	
 	for( int32_t y = 0; y < size.y; ++y ) {
-		const T *src = srcSurface.getData( Vec2i( 0, y ) );
-		T *dst = destSurface->getData( Vec2i( 0, size.y - y - 1 ) );
+		const T *src = srcSurface.getData( ivec2( 0, y ) );
+		T *dst = destSurface->getData( ivec2( 0, size.y - y - 1 ) );
 		for( int x = 0; x < size.x; ++x ) {
 			dst[dstRed] = src[srcRed];
 			dst[dstGreen] = src[srcGreen];
@@ -141,7 +141,7 @@ void flipVerticalRawRgb( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface
 template<typename T>
 void flipVertical( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcSurface.getBounds(), destSurface->getBounds(), destSurface->getBounds(), Vec2i(0,0) );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcSurface.getBounds(), destSurface->getBounds(), destSurface->getBounds(), ivec2(0,0) );
 	
 	if( destSurface->getChannelOrder() == srcSurface.getChannelOrder() )
 		flipVerticalRawSameChannelOrder( srcSurface, destSurface, srcDst.first.getSize() );
@@ -156,14 +156,14 @@ void flipVertical( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface )
 template<typename T>
 void flipVertical( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcChannel.getBounds(), destChannel->getBounds(), destChannel->getBounds(), Vec2i(0,0) );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), destChannel->getBounds(), destChannel->getBounds(), ivec2(0,0) );
 	
 	if( srcChannel.isPlanar() && destChannel->isPlanar() ) { // both channels are planar, so do a series of memcpy()'s
 		const int32_t srcPixelInc = srcChannel.getIncrement();
 		const size_t copyBytes = srcDst.first.getWidth() * srcPixelInc * sizeof(T);
 		for( int32_t y = 0; y < srcDst.first.getHeight(); ++y ) {
-			const T *srcPtr = srcChannel.getData( Vec2i( 0, y ) );
-			T *dstPtr = destChannel->getData( Vec2i( 0, srcDst.first.getHeight() - y - 1 ) );
+			const T *srcPtr = srcChannel.getData( ivec2( 0, y ) );
+			T *dstPtr = destChannel->getData( ivec2( 0, srcDst.first.getHeight() - y - 1 ) );
 			memcpy( dstPtr, srcPtr, copyBytes );
 		}
 	}

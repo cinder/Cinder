@@ -103,7 +103,7 @@ class TextureBase {
 	template<typename T>
 	static void		SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOrder &sco, GLint *dataFormat, GLenum *type );
 	//! calculate the size of mipMap for the corresponding level
-	static Vec2i	calcMipLevelSize( int level, GLint width, GLint height );
+	static ivec2	calcMipLevelSize( int level, GLint width, GLint height );
 	//! Returns the maximum anisotropic filtering maximum allowed by the hardware
 	static GLfloat	getMaxMaxAnisotropy();
 
@@ -414,17 +414,17 @@ class Texture2d : public TextureBase {
 	void			setCleanSize( GLint cleanWidth, GLint cleanHeight );
 	
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Surface8u &surface, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	void			update( const Surface8u &surface, int mipLevel = 0, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Channel8u &channel, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	void			update( const Channel8u &channel, int mipLevel = 0, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Surface16u &surface, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	void			update( const Surface16u &surface, int mipLevel = 0, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Channel16u &channel, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	void			update( const Channel16u &channel, int mipLevel = 0, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Surface32f &surface, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	void			update( const Surface32f &surface, int mipLevel = 0, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
-	void			update( const Channel32f &channel, int mipLevel = 0, const Vec2i &destLowerLeftOffset = Vec2i( 0, 0 ) );
+	void			update( const Channel32f &channel, int mipLevel = 0, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a textureData. Inefficient if the bounds of \a textureData don't match those of \a this
 	void			update( const TextureData &textureData );
 #if ! defined( CINDER_GL_ES )
@@ -458,7 +458,7 @@ class Texture2d : public TextureBase {
 	//! Returns the height of the texture in pixels accounting for its clean bounds - \sa getCleanBounds()
 	GLint			getCleanHeight() const;
 	//! Returns size of the texture in pixels, igonring clean bounds
-	Vec2i			getSize() const { return Vec2i( getWidth(), getHeight() ); }
+	ivec2			getSize() const { return ivec2( getWidth(), getHeight() ); }
 	//! Returns the aspect ratio of the texture (width / height), ignoring clean bounds.
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the Area defining the Texture's bounds in pixels, ignoring clean bounds.
@@ -492,9 +492,9 @@ class Texture2d : public TextureBase {
 	
 	void	initParams( Format &format, GLint defaultInternalFormat );
 	template<typename T>
-	void	setData( const SurfaceT<T> &surface, bool createStorage, int mipLevel, const Vec2i &offset );
+	void	setData( const SurfaceT<T> &surface, bool createStorage, int mipLevel, const ivec2 &offset );
 	template<typename T>
-	void	setData( const ChannelT<T> &channel, bool createStorage, int mipLevel, const Vec2i &offset );
+	void	setData( const ChannelT<T> &channel, bool createStorage, int mipLevel, const ivec2 &offset );
 	void	initData( const unsigned char *data, GLenum dataFormat, GLenum type, const Format &format );
 	void	initData( const float *data, GLint dataFormat, const Format &format );
 	void	initData( const ImageSourceRef &imageSource, const Format &format );
@@ -676,7 +676,7 @@ class TextureDataExc : public Exception {
 
 class TextureResizeExc : public TextureDataExc {
   public:
-	TextureResizeExc( const std::string &message, const Vec2i &updateSize, const Vec2i &textureSize );
+	TextureResizeExc( const std::string &message, const ivec2 &updateSize, const ivec2 &textureSize );
 };
 
 class TextureDataStoreTooSmallExc : public Exception {

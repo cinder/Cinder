@@ -63,13 +63,13 @@ void TextRibbon::makeText()
 	
 	// Create the texture for the text
 	if( ! mTag.empty() ) {
-		mTagBox = TextBox().alignment(TextBox::LEFT).font(mTagFont).size(Vec2i(200, TextBox::GROW)).text(mTag);
+		mTagBox = TextBox().alignment(TextBox::LEFT).font(mTagFont).size(ivec2(200, TextBox::GROW)).text(mTag);
 		mTagBox.setColor(ColorA(mTextCol.r, mTextCol.g, mTextCol.b, 1));
 		mTagBox.setBackgroundColor(ColorA(0, 0, 0, 0));
 		mTagTex = gl::Texture::create( mTagBox.render() );
 	}
 	
-	mUserBox = TextBox().alignment( TextBox::LEFT ).font( mUserFont ).size( Vec2i( 250, TextBox::GROW ) ).text( "@" + mUser );
+	mUserBox = TextBox().alignment( TextBox::LEFT ).font( mUserFont ).size( ivec2( 250, TextBox::GROW ) ).text( "@" + mUser );
 	mUserBox.setColor(ColorA(mTextCol.r, mTextCol.g, mTextCol.b, 1));
 	mUserBox.setBackgroundColor( ColorA( 0, 0, 0, 0) );
 	mUserTex = gl::Texture::create( mUserBox.render() );

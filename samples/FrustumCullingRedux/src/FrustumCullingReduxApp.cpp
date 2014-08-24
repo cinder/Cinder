@@ -131,9 +131,9 @@ void FrustumCullingReduxApp::setup()
 	//! create a few hearts
 	Rand::randomize();
 	for(int i=0;i<NUM_OBJECTS;++i) {
-		Vec3f p( Rand::randFloat(-2000.0f, 2000.0f), 0.0f, Rand::randFloat(-2000.0f, 2000.0f) );
-		Vec3f r( 0.0f, Rand::randFloat(-360.0f, 360.0f), 0.0f );
-		Vec3f s( 50.10f, 50.10f, 50.10f );
+		vec3 p( Rand::randFloat(-2000.0f, 2000.0f), 0.0f, Rand::randFloat(-2000.0f, 2000.0f) );
+		vec3 r( 0.0f, Rand::randFloat(-360.0f, 360.0f), 0.0f );
+		vec3 s( 50.10f, 50.10f, 50.10f );
 
 		mObjects[i] = CullableObjectRef( new CullableObject(mVboMesh, mDiffuse, mNormal, mSpecular) );
 		mObjects[i]->setTransform( p, r, s );
@@ -155,8 +155,8 @@ void FrustumCullingReduxApp::setup()
 
 	//! setup cameras
 	mRenderCam = CameraPersp(getWindowWidth(), getWindowHeight(), 60.0f, 50.0f, 10000.0f);
-	mRenderCam.setEyePoint( Vec3f(200.0f, 200.0f, 200.0f) );
-	mRenderCam.setCenterOfInterestPoint( Vec3f(0.0f, 0.0f, 0.0f) );
+	mRenderCam.setEyePoint( vec3(200.0f, 200.0f, 200.0f) );
+	mRenderCam.setCenterOfInterestPoint( vec3(0.0f, 0.0f, 0.0f) );
 	mMayaCam.setCurrentCam( mRenderCam );
 
 	mCullingCam = mRenderCam;
@@ -366,8 +366,8 @@ void FrustumCullingReduxApp::drawGrid(float size, float step)
 {
 	gl::color( Colorf(0.2f, 0.2f, 0.2f) );
 	for(float i=-size;i<=size;i+=step) {
-		gl::drawLine( Vec3f(i, 0.0f, -size), Vec3f(i, 0.0f, size) );
-		gl::drawLine( Vec3f(-size, 0.0f, i), Vec3f(size, 0.0f, i) );
+		gl::drawLine( vec3(i, 0.0f, -size), vec3(i, 0.0f, size) );
+		gl::drawLine( vec3(-size, 0.0f, i), vec3(size, 0.0f, i) );
 	}
 }
 

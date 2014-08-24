@@ -31,7 +31,7 @@ class rayMarcherApp : public AppBasic {
 
 	RayMarcher		mMarcher;
 	MayaCamUI		mMayaCam;
-	Vec3f			mStartEyePoint;
+	vec3			mStartEyePoint;
 	int				mCurrentLine;
 };
 
@@ -46,9 +46,9 @@ void rayMarcherApp::prepareSettings( Settings *settings )
 void rayMarcherApp::setup()
 {
 	CameraPersp cam;
-	mStartEyePoint = Vec3f( 15, 21, 27.5 ) * 0.65f;
-	cam.lookAt( mStartEyePoint, Vec3f::zero(), Vec3f::yAxis() );
-	cam.setCenterOfInterest( mStartEyePoint.distance( Vec3f::zero() ) );
+	mStartEyePoint = vec3( 15, 21, 27.5 ) * 0.65f;
+	cam.lookAt( mStartEyePoint, vec3::zero(), vec3::yAxis() );
+	cam.setCenterOfInterest( mStartEyePoint.distance( vec3::zero() ) );
 	mMayaCam.setCurrentCam( cam );
 }
 

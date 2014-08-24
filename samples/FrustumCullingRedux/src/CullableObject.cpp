@@ -27,7 +27,7 @@ using namespace ci;
 CullableObject::CullableObject(ci::gl::VboMesh mesh, ci::gl::Texture diffuse, ci::gl::Texture normal, ci::gl::Texture specular)
 	: mVboMesh(mesh), mDiffuse(diffuse), mNormal(normal), mSpecular(specular), bIsCulled(false)
 {
-	setTransform( Vec3f::zero(), Vec3f::zero(), Vec3f::one() * 0.10f );
+	setTransform( vec3::zero(), vec3::zero(), vec3::one() * 0.10f );
 }
 
 CullableObject::~CullableObject(void)
@@ -74,7 +74,7 @@ void CullableObject::draw()
 	}
 }
 
-void CullableObject::setTransform(const ci::Vec3f &position, const ci::Vec3f &rotation, const ci::Vec3f &scale)
+void CullableObject::setTransform(const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale)
 {
 	mPosition = position;
 	mRotation = rotation;

@@ -94,10 +94,10 @@ class TextBox {
 	
 	TextBox() : mAlign( LEFT ), mSize( GROW, GROW ), mFont( Font::getDefault() ), mInvalid( true ), mColor( 1, 1, 1, 1 ), mBackgroundColor( 0, 0, 0, 0 ), mPremultiplied( false ), mLigate( true ) {}
 
-	TextBox&			size( Vec2i sz ) { setSize( sz ); return *this; }
-	TextBox&			size( int width, int height ) { setSize( Vec2i( width, height ) ); return *this; }
-	Vec2i				getSize() const { return mSize; }
-	void				setSize( Vec2i sz ) { mSize = sz; mInvalid = true; }
+	TextBox&			size( ivec2 sz ) { setSize( sz ); return *this; }
+	TextBox&			size( int width, int height ) { setSize( ivec2( width, height ) ); return *this; }
+	ivec2				getSize() const { return mSize; }
+	void				setSize( ivec2 sz ) { mSize = sz; mInvalid = true; }
 
 	TextBox&			text( const std::string &t ) { setText( t ); return *this; }
 	const std::string&	getText() const { return mText; }
@@ -128,16 +128,16 @@ class TextBox {
 	bool				getLigate() const { return mLigate; }
 	void				setLigate( bool ligateText ) { mLigate = ligateText; }
 
-	Vec2f									measure() const;
+	vec2									measure() const;
 	/** Returns a vector of pairs of glyph indices and the position of their left baselines
 		\warning Does not support word wrapping on Windows. **/
-	std::vector<std::pair<uint16_t,Vec2f> >	measureGlyphs() const;
+	std::vector<std::pair<uint16_t,vec2> >	measureGlyphs() const;
 
-	Surface				render( Vec2f offset = vec2() );
+	Surface				render( vec2 offset = vec2() );
 
   protected:
 	Alignment		mAlign;
-	Vec2i			mSize;
+	ivec2			mSize;
 	std::string		mText;
 	Font			mFont;
 	ColorA			mColor, mBackgroundColor;
@@ -145,11 +145,11 @@ class TextBox {
 	bool			mLigate;
 	mutable bool	mInvalid;
 
-	mutable Vec2f	mCalculatedSize;
+	mutable vec2	mCalculatedSize;
 #if defined( CINDER_COCOA )
 	void			createLines() const;
 
-	mutable std::vector<std::pair<std::shared_ptr<const __CTLine>,Vec2f> >	mLines;
+	mutable std::vector<std::pair<std::shared_ptr<const __CTLine>,vec2> >	mLines;
 #elif defined( CINDER_MSW )
 	std::vector<std::string>	calculateLineBreaks() const;
 	void						calculate() const;
@@ -165,7 +165,7 @@ class TextBox {
 	Consider gl::drawString() as a more convenient alternative.
 **/
 #if defined( CINDER_COCOA_TOUCH )
-Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset = 0 );
+Surface renderStringPow2( const std::string &str, const Font &font, const ColorA &color, ivec2 *actualSize, float *baselineOffset = 0 );
 #else
 Surface renderString( const std::string &str, const Font &font, const ColorA &color, float *baselineOffset = 0 );
 #endif

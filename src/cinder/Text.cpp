@@ -292,7 +292,7 @@ void Line::render(Channel &channel, float currentY, float xBorder, float maxWidt
 			FT_Glyph_Metrics &metrics = face->glyph->metrics;
 			int32_t alignedRowBytes = face->glyph->bitmap.pitch;
 			Channel glyphChannel( metrics.width >> 6, metrics.height >> 6, alignedRowBytes, 1, pBuff );
-			channel.copyFrom( glyphChannel, glyphChannel.getBounds(), Vec2i((int)currentX + (metrics.horiBearingX >> 6), (int)currentY + ((face->height - metrics.horiBearingY) >> 6)) );
+			channel.copyFrom( glyphChannel, glyphChannel.getBounds(), ivec2((int)currentX + (metrics.horiBearingX >> 6), (int)currentY + ((face->height - metrics.horiBearingY) >> 6)) );
 		}
 	}
 }
@@ -479,9 +479,9 @@ Surface	TextLayout::render( bool useAlpha, bool premultiplied )
 
 
 #if defined( CINDER_COCOA_TOUCH )
-Surface renderStringPow2( const string &str, const Font &font, const ColorA &color, Vec2i *actualSize, float *baselineOffset )
+Surface renderStringPow2( const string &str, const Font &font, const ColorA &color, ivec2 *actualSize, float *baselineOffset )
 {
-	Vec2i pixelSize, pow2PixelSize;
+	ivec2 pixelSize, pow2PixelSize;
 	{ // render "invisible" to a dummy context to determine string width
 		Surface temp( 1, 1, true, SurfaceChannelOrder::RGBA );
 		::CGContextRef cgContext = cocoa::createCgBitmapContext( temp );
@@ -492,11 +492,11 @@ Surface renderStringPow2( const string &str, const Font &font, const ColorA &col
 		::CGPoint startPoint = ::CGContextGetTextPosition( cgContext );
 		::CGContextShowText( cgContext, str.c_str(), str.length() );
 		::CGPoint endPoint = ::CGContextGetTextPosition( cgContext );
-		pixelSize = Vec2i( math<float>::ceil( endPoint.x - startPoint.x ), math<float>::ceil( font.getAscent() + font.getDescent() ) );
+		pixelSize = ivec2( math<float>::ceil( endPoint.x - startPoint.x ), math<float>::ceil( font.getAscent() + font.getDescent() ) );
 		::CGContextRelease( cgContext );
 	}
 
-	pow2PixelSize = Vec2i( nextPowerOf2( pixelSize.x ), nextPowerOf2( pixelSize.y ) );
+	pow2PixelSize = ivec2( nextPowerOf2( pixelSize.x ), nextPowerOf2( pixelSize.y ) );
 	Surface result( pow2PixelSize.x, pow2PixelSize.y, true );
 	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
 	ip::fill( &result, ColorA( 0, 0, 0, 0 ) );
@@ -582,7 +582,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 		FT_Glyph_Metrics &metrics = face->glyph->metrics;
 		int32_t alignedRowBytes = face->glyph->bitmap.pitch;
 		Channel glyphChannel( face->glyph->bitmap.width, face->glyph->bitmap.rows, alignedRowBytes, 1, pBuff );
-		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), Vec2i(offset + (metrics.horiBearingX >> 6), (face->ascender + face->descender - metrics.horiBearingY) >> 6) );
+		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), ivec2(offset + (metrics.horiBearingX >> 6), (face->ascender + face->descender - metrics.horiBearingY) >> 6) );
 		offset += metrics.horiAdvance >> 6;
 	}
 	Surface result(channel, SurfaceConstraintsDefault(), true);
@@ -620,7 +620,7 @@ void TextBox::createLines() const
 
 	mCalculatedSize = vec2();
 	mLines.clear();
-	Vec2f lineOffset = vec2();
+	vec2 lineOffset = vec2();
 	while( range.location < strLength ) {
 		CGFloat ascent, descent, leading;
 		range.length = ::CTTypesetterSuggestLineBreak( typeSetter, range.location, maxWidth );
@@ -642,13 +642,13 @@ void TextBox::createLines() const
 	mInvalid = false;
 }
 
-vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
+vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 {
-	vector<pair<uint16_t,Vec2f> > result;
+	vector<pair<uint16_t,vec2> > result;
 
 	createLines();
 	CFRange range = CFRangeMake( 0, 0 );
-	for( vector<pair<shared_ptr<const __CTLine>,Vec2f> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+	for( vector<pair<shared_ptr<const __CTLine>,vec2> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		CFArrayRef runsArray = ::CTLineGetGlyphRuns( lineIt->first.get() );
 		CFIndex runs = ::CFArrayGetCount( runsArray );
 		for( CFIndex run = 0; run < runs; ++run ) {
@@ -659,20 +659,20 @@ vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
 			::CTRunGetPositions( runRef, range, points );
 			::CTRunGetGlyphs( runRef, range, glyphBuffer );
 			for( size_t t = 0; t < glyphCount; ++t )			
-				result.push_back( make_pair( glyphBuffer[t], Vec2f( points[t].x, points[t].y ) + lineIt->second ) );
+				result.push_back( make_pair( glyphBuffer[t], vec2( points[t].x, points[t].y ) + lineIt->second ) );
 		}
 	}
 	
 	return result;
 }
 
-Vec2f TextBox::measure() const
+vec2 TextBox::measure() const
 {
 	createLines();
 	return mCalculatedSize;
 }
 
-Surface	TextBox::render( Vec2f offset )
+Surface	TextBox::render( vec2 offset )
 {
 	createLines();
 	
@@ -686,7 +686,7 @@ Surface	TextBox::render( Vec2f offset )
 	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
 	::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
 	
-	for( vector<pair<shared_ptr<const __CTLine>,Vec2f> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
+	for( vector<pair<shared_ptr<const __CTLine>,vec2> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
 		::CGContextSetTextPosition( cgContext, lineIt->second.x + offset.x, sizeY - lineIt->second.y + offset.y );
 		::CTLineDraw( lineIt->first.get(), cgContext );
 	}
@@ -731,7 +731,7 @@ void TextBox::calculate() const
 	mInvalid = false;
 }
 
-Vec2f TextBox::measure() const
+vec2 TextBox::measure() const
 {
 	calculate();
 	return mCalculatedSize;
@@ -773,9 +773,9 @@ vector<string> TextBox::calculateLineBreaks() const
 	return result;
 }
 
-vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
+vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 {
-	vector<pair<uint16_t,Vec2f> > result;
+	vector<pair<uint16_t,vec2> > result;
 
 	if( mText.empty() )
 		return result;
@@ -817,7 +817,7 @@ vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
 
 			if( ! ::GetCharacterPlacementW( Font::getGlobalDc(), (wchar_t*)&wideText[0], wideText.length(), 0,
 							&gcpResults, GCP_DIACRITIC | GCP_LIGATE | GCP_GLYPHSHAPE | GCP_REORDER ) ) {
-				return vector<pair<uint16_t,Vec2f> >(); // failure
+				return vector<pair<uint16_t,vec2> >(); // failure
 			}
 
 			if( gcpResults.lpDx && gcpResults.lpGlyphs )
@@ -826,13 +826,13 @@ vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
 			// Too small a buffer, try again
 			bufferSize += bufferSize / 2;
 			if( bufferSize > INT_MAX) {
-				return vector<pair<uint16_t,Vec2f> >(); // failure
+				return vector<pair<uint16_t,vec2> >(); // failure
 			}
 		}
 		
 		int xPos = 0;
 		for( int i = 0; i < gcpResults.nGlyphs; i++ ) {
-			result.push_back( std::make_pair( glyphIndices[i], Vec2f( xPos, curY ) ) );
+			result.push_back( std::make_pair( glyphIndices[i], vec2( xPos, curY ) ) );
 			xPos += dx[i];
 		}
 
@@ -847,7 +847,7 @@ vector<pair<uint16_t,Vec2f> > TextBox::measureGlyphs() const
 	return result;
 }
 
-Surface	TextBox::render( Vec2f offset )
+Surface	TextBox::render( vec2 offset )
 {
 	calculate();
 	

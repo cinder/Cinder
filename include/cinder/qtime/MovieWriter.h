@@ -143,7 +143,7 @@ class MovieWriter {
 	//! Returns the height of the Movie in pixels
 	int32_t	getHeight() const { return mObj->mHeight; }
 	//! Returns the size of the Movie in pixels
-	Vec2i	getSize() const { return Vec2i( getWidth(), getHeight() ); }
+	ivec2	getSize() const { return ivec2( getWidth(), getHeight() ); }
 	//! Returns the Movie's aspect ratio, which is its width / height
 	float	getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounding Area of the Movie in pixels: [0,0]-(width,height)

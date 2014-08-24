@@ -45,16 +45,16 @@ void BasicApp::setup()
 	for ( int i = 0; i < TOTAL_PARTICLES; i++) 
 	{
 		Particle p = Particle(i);
-		Vec2f newPosition( Rand::randFloat(0.0f, (float)getWindowWidth()),  Rand::randFloat(0.0f, (float)getWindowHeight()) );
-		Vec2f newVelocity( Rand::randPosNegFloat(-3.0f, 3.0f), Rand::randPosNegFloat(-3.0f, 3.0f ));
+		vec2 newPosition( Rand::randFloat(0.0f, (float)getWindowWidth()),  Rand::randFloat(0.0f, (float)getWindowHeight()) );
+		vec2 newVelocity( Rand::randPosNegFloat(-3.0f, 3.0f), Rand::randPosNegFloat(-3.0f, 3.0f ));
 		p.Reset(newPosition, newVelocity);
 		mParticles.push_back(p);
 	}
 
-	mTextureAreas.push_back(Area(Vec2i(0,0), Vec2i(256, 256)));
-	mTextureAreas.push_back(Area(Vec2i(256,0), Vec2i(512, 256)));
-	mTextureAreas.push_back(Area(Vec2i(0,256), Vec2i(256, 512)));
-	mTextureAreas.push_back(Area(Vec2i(256,256), Vec2i(512, 512)));
+	mTextureAreas.push_back(Area(ivec2(0,0), ivec2(256, 256)));
+	mTextureAreas.push_back(Area(ivec2(256,0), ivec2(512, 256)));
+	mTextureAreas.push_back(Area(ivec2(0,256), ivec2(256, 512)));
+	mTextureAreas.push_back(Area(ivec2(256,256), ivec2(512, 512)));
 	mBounds = getWindowBounds();
 }
 
@@ -80,7 +80,7 @@ void BasicApp::draw()
 
 	if( imgParticle ) {
 		dx::batchTextureBegin();
-		Vec2f particleRadius(64.0f, 64.0f);
+		vec2 particleRadius(64.0f, 64.0f);
 		for ( Particle particle : mParticles )
 		{
 			dx::draw( imgParticle, mTextureAreas[particle.textureID], Rectf( particle.position - particleRadius, particle.position + particleRadius ) );
@@ -90,7 +90,7 @@ void BasicApp::draw()
 
 	std::stringstream s;
 	s << "Framerate:" << getAverageFps();
-	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color::white(),mFont);
+	dx::drawString(s.str(),vec2(10.0f,10.0f),Color::white(),mFont);
 }
 
 // This line tells Cinder to actually create the application

@@ -26,7 +26,7 @@ void CompressedTextureApp::setup()
 	mIndex = 0;
 	mZoom = 2.0f;
 	mTextures.push_back( make_pair( "Original", gl::Texture::create( loadImage( loadAsset( "compression_test.png" ) ) ) ) );
-	Vec2i textureSize = mTextures.back().second->getSize();
+	ivec2 textureSize = mTextures.back().second->getSize();
 
 	gl::Texture::Format		format;
 #if ! defined( CINDER_GLES ) // use an intermediate PBO for non-ES

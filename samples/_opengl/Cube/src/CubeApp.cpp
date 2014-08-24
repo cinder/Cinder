@@ -22,7 +22,7 @@ class RotatingCubeApp : public AppNative {
 	void draw();
 	
 	CameraPersp			mCam;
-	Matrix44f			mCubeRotation;
+	mat4			mCubeRotation;
 	gl::BatchRef		mBatch;
 	gl::TextureRef		mTexture;
 	gl::GlslProgRef		mGlsl;

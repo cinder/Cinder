@@ -125,9 +125,9 @@ static BOOL sDevicesEnumerated = false;
 
     mSession = [[AVCaptureSession alloc] init];
 
-	if( cinder::Vec2i( mWidth, mHeight ) == cinder::Vec2i( 640, 480 ) )
+	if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 640, 480 ) )
 		mSession.sessionPreset = AVCaptureSessionPreset640x480;
-	else if( cinder::Vec2i( mWidth, mHeight ) == cinder::Vec2i( 1280, 720 ) )
+	else if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 1280, 720 ) )
 		mSession.sessionPreset = AVCaptureSessionPreset1280x720;
 	else
 		mSession.sessionPreset = AVCaptureSessionPresetMedium;

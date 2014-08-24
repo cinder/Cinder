@@ -11,7 +11,7 @@ public:
 	void setup();
 	void mouseDown( MouseEvent );
 	void mouseDrag( MouseEvent );
-	void handleMove( Vec2f pos );
+	void handleMove( vec2 pos );
 	void draw();
 
 	audio::VoiceRef mVoice;
@@ -63,7 +63,7 @@ void VoiceBasicProcessingApp::mouseDrag( MouseEvent event )
 	handleMove( event.getPos() );
 }
 
-void VoiceBasicProcessingApp::handleMove( Vec2f pos )
+void VoiceBasicProcessingApp::handleMove( vec2 pos )
 {
 	mFreq = pos.x;
 

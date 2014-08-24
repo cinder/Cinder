@@ -33,8 +33,8 @@ using namespace ci::app;
 using namespace std;
 
 struct Splash {
-	Vec2f		mCenter;
-	Vec3f		mColorHsv;
+	vec2		mCenter;
+	vec3		mColorHsv;
 	Anim<float>	mRadius, mAlpha;
 };
 
@@ -49,8 +49,8 @@ public:
 	void draw();
 
 	void	setVariableDelayMod();
-	void	addSplash( const Vec2f &pos );
-	float	quantizePitch( const Vec2f &pos );
+	void	addSplash( const vec2 &pos );
+	float	quantizePitch( const vec2 &pos );
 	void	loadMesh();
 	void	loadGlsl();
 
@@ -123,7 +123,7 @@ void DelayFeedback::setVariableDelayMod()
 	mDelay->getParamDelaySeconds()->setProcessor( add );
 }
 
-void DelayFeedback::addSplash( const Vec2f &pos )
+void DelayFeedback::addSplash( const vec2 &pos )
 {
 	mSplashes.push_back( Splash() );
 
@@ -139,11 +139,11 @@ void DelayFeedback::addSplash( const Vec2f &pos )
 	timeline().apply( &splash.mAlpha, 0.0f, 7 );
 
 	float h = math<float>::min( 1,  mPerlin.fBm( pos.normalized() ) * 7.0f );
-	splash.mColorHsv = Vec3f( fabsf( h ), 1, 1 );
+	splash.mColorHsv = vec3( fabsf( h ), 1, 1 );
 }
 
 // returns a quantized pitch (in hertz) within the lydian dominant scale
-float DelayFeedback::quantizePitch( const Vec2f &pos )
+float DelayFeedback::quantizePitch( const vec2 &pos )
 {
 	const size_t scaleLength = 7;
 	float scale[scaleLength] = { 0, 2, 4, 6, 7, 9, 10 };
@@ -234,16 +234,16 @@ void DelayFeedback::loadMesh()
 	TriMesh2d mesh;
 
 	mesh.appendVertex( boundingBox.getUpperLeft() );
-	mesh.appendTexCoord( Vec2f( -1, -1 ) );
+	mesh.appendTexCoord( vec2( -1, -1 ) );
 
 	mesh.appendVertex( boundingBox.getLowerLeft() );
-	mesh.appendTexCoord( Vec2f( -1, 1 ) );
+	mesh.appendTexCoord( vec2( -1, 1 ) );
 
 	mesh.appendVertex( boundingBox.getUpperRight() );
-	mesh.appendTexCoord( Vec2f( 1, -1 ) );
+	mesh.appendTexCoord( vec2( 1, -1 ) );
 
 	mesh.appendVertex( boundingBox.getLowerRight() );
-	mesh.appendTexCoord( Vec2f( 1, 1 ) );
+	mesh.appendTexCoord( vec2( 1, 1 ) );
 
 	mesh.appendTriangle( 0, 1, 2 );
 	mesh.appendTriangle( 2, 1, 3 );

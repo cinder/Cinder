@@ -47,7 +47,7 @@ void TweakBarApp::setup()
 	mCam.lookAt( vec3( -20, 0, 0 ), vec3( 0 ) );
 
 	// Create the interface and give it a name.
-	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( Vec2i( 200, 400 ) ) );
+	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
 
 	// Setup the parameters
 	mParams->addParam( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" ).precision( 2 ).step( 0.02f );

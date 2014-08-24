@@ -28,8 +28,8 @@ public:
 	void draw();
 
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 	void keyDown( KeyEvent event );
 
 	void addGens();
@@ -162,17 +162,17 @@ void StressTestApp::setupUI()
 	mPlayButton.mBounds = buttonRect;
 	mWidgets.push_back( &mPlayButton );
 
-	buttonRect += Vec2f( 0, buttonRect.getHeight() + 10 );
+	buttonRect += vec2( 0, buttonRect.getHeight() + 10 );
 	mAddGens = Button( false, "add gens" );
 	mAddGens.mBounds = buttonRect;
 	mWidgets.push_back( &mAddGens );
 
-	buttonRect += Vec2f( 0, buttonRect.getHeight() + 10 );
+	buttonRect += vec2( 0, buttonRect.getHeight() + 10 );
 	mRemoveGens = Button( false, "remove gens" );
 	mRemoveGens.mBounds = buttonRect;
 	mWidgets.push_back( &mRemoveGens );
 
-	buttonRect += Vec2f( 0, buttonRect.getHeight() + 10 );
+	buttonRect += vec2( 0, buttonRect.getHeight() + 10 );
 	mClearGens = Button( false, "clear gens" );
 	mClearGens.mBounds = buttonRect;
 	mWidgets.push_back( &mClearGens );
@@ -195,7 +195,7 @@ void StressTestApp::setupUI()
 	mGainSlider.set( mGain->getValue() );
 	mWidgets.push_back( &mGainSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + 30 );
+	sliderRect += vec2( 0, sliderRect.getHeight() + 30 );
 	mAddIncrInput.mBounds = sliderRect;
 	mAddIncrInput.mFormat = TextInput::Format::NUMERICAL;
 	mAddIncrInput.mTitle = "add incr";
@@ -215,14 +215,14 @@ void StressTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void StressTestApp::processDrag( Vec2i pos )
+void StressTestApp::processDrag( ivec2 pos )
 {
 	if( mGainSlider.hitTest( pos ) )
 		mGain->getParam()->applyRamp( mGainSlider.mValueScaled, 0.03f );
 
 }
 
-void StressTestApp::processTap( Vec2i pos )
+void StressTestApp::processTap( ivec2 pos )
 {
 	auto ctx = audio::master();
 	size_t currentIndex = mTestSelector.mCurrentSectionIndex;
@@ -307,14 +307,14 @@ void StressTestApp::draw()
 
 	drawAudioBuffer( mMonitor->getBuffer(), rect, true );
 
-	rect += Vec2f( 0, scopeHeight + padding );
+	rect += vec2( 0, scopeHeight + padding );
 	mSpectrumPlot.setBounds( rect );
 	mSpectrumPlot.draw( mMonitor->getMagSpectrum() );
 
 	drawWidgets( mWidgets );
 
 	string countStr = string( "Gen count: " ) + to_string( mGenBank.size() );
-	getTestWidgetTexFont()->drawString( countStr, Vec2f( mAddIncrInput.mBounds.x1, mAddIncrInput.mBounds.y2 + padding + getTestWidgetTexFont()->getFont().getAscent() + getTestWidgetTexFont()->getFont().getDescent() ) );
+	getTestWidgetTexFont()->drawString( countStr, vec2( mAddIncrInput.mBounds.x1, mAddIncrInput.mBounds.y2 + padding + getTestWidgetTexFont()->getFont().getAscent() + getTestWidgetTexFont()->getFont().getDescent() ) );
 }
 
 CINDER_APP_NATIVE( StressTestApp, RendererGl )

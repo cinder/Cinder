@@ -32,7 +32,7 @@
 	CinderView							*mCinderView;
 	cinder::app::WindowRef				mWindowRef;
 	cinder::DisplayRef					mDisplay;
-	cinder::Vec2i						mSize, mPos;
+	cinder::ivec2						mSize, mPos;
 	BOOL								mBorderless, mAlwaysOnTop, mIsHidden;
 }
 
@@ -40,10 +40,10 @@
 - (void)dealloc;
 - (BOOL)isFullScreen;
 - (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
-- (cinder::Vec2i)getSize;
-- (void)setSize:(cinder::Vec2i)size;
-- (cinder::Vec2i)getPos;
-- (void)setPos:(cinder::Vec2i)pos;
+- (cinder::ivec2)getSize;
+- (void)setSize:(cinder::ivec2)size;
+- (cinder::ivec2)getPos;
+- (void)setPos:(cinder::ivec2)pos;
 - (float)getContentScale;
 - (void)close;
 - (NSString *)getTitle;
@@ -211,12 +211,12 @@
 	[mCinderView setFullScreen:fullScreen options:options];
 }
 
-- (cinder::Vec2i)getSize
+- (cinder::ivec2)getSize
 {
 	return mSize;
 }
 
-- (void)setSize:(cinder::Vec2i)size
+- (void)setSize:(cinder::ivec2)size
 {
 	mSize = size;
 	NSSize newSize;
@@ -266,12 +266,12 @@
 	return cinder::DisplayRef();
 }
 
-- (cinder::Vec2i)getPos
+- (cinder::ivec2)getPos
 {
 	return mPos;
 }
 
-- (void)setPos:(cinder::Vec2i)pos
+- (void)setPos:(cinder::ivec2)pos
 {
 	mPos = pos;
 	NSRect frame = [mCinderView frame];
@@ -295,8 +295,8 @@
 	[mAppImpl setActiveWindow:self];
 
 	NSRect frame = [mCinderView frame];
-	mSize = cinder::Vec2i( frame.size.width, frame.size.height );
-	mPos = cinder::Vec2i( frame.origin.x, frame.origin.y );
+	mSize = cinder::ivec2( frame.size.width, frame.size.height );
+	mPos = cinder::ivec2( frame.origin.x, frame.origin.y );
 	
 	mWindowRef->emitResize();
 }
@@ -340,7 +340,7 @@
 	NSRect contentRect = [mCinderView frame];
 	mSize.x = (int)contentRect.size.width;
 	mSize.y = (int)contentRect.size.height;
-	mPos = cinder::Vec2i( contentRect.origin.x, contentRect.origin.y );
+	mPos = cinder::ivec2( contentRect.origin.x, contentRect.origin.y );
 	
 	// for some renderers, ok really just GL, we want an existing renderer so we can steal its context to share with. If this comes back with NULL that's fine - we're first
 	cinder::app::RendererRef sharedRenderer = [appImpl findSharedRenderer:winFormat.getRenderer()];

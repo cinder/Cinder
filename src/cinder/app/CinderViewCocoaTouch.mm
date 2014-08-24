@@ -146,7 +146,7 @@ static Boolean sIsEaglLayer;
 	for( const auto &touch : mTouchIdMap ) {
 		CGPoint pt = [touch.first locationInView:self];
 		CGPoint prevPt = [touch.first previousLocationInView:self];
-		mActiveTouches.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), touch.second, [touch.first timestamp], touch.first ) );
+		mActiveTouches.push_back( ci::app::TouchEvent::Touch( ci::vec2( pt.x, pt.y ), ci::vec2( prevPt.x, prevPt.y ), touch.second, [touch.first timestamp], touch.first ) );
 	}
 }
 
@@ -159,7 +159,7 @@ static Boolean sIsEaglLayer;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			CGPoint prevPt = [touch previousLocationInView:self];
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), [self addTouchToMap:touch], [touch timestamp], touch ) );
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::vec2( pt.x, pt.y ), ci::vec2( prevPt.x, prevPt.y ), [self addTouchToMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() ) {
@@ -187,7 +187,7 @@ static Boolean sIsEaglLayer;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			CGPoint prevPt = [touch previousLocationInView:self];			
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::vec2( pt.x, pt.y ), ci::vec2( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() ) {
@@ -215,7 +215,7 @@ static Boolean sIsEaglLayer;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			CGPoint prevPt = [touch previousLocationInView:self];
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::Vec2f( pt.x, pt.y ), ci::Vec2f( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+			touchList.push_back( ci::app::TouchEvent::Touch( ci::vec2( pt.x, pt.y ), ci::vec2( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
 			[self removeTouchFromMap:touch];
 		}
 		[self updateActiveTouches];

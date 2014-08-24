@@ -48,7 +48,7 @@ class TransformFeedbackClothSimulationApp : public AppNative {
 	gl::BufferTextureRef		mPosBufferTextures[2];
 	int							mIterationsPerFrame, mIterationIndex;
 	bool						drawLines, drawPoints, mouseMoving;
-	Vec2f						currentMousePosition;
+	vec2						currentMousePosition;
 };
 
 void TransformFeedbackClothSimulationApp::setup()
@@ -178,7 +178,7 @@ void TransformFeedbackClothSimulationApp::loadBuffers()
 	int i, j, n = 0;
 	
 	Vec4f * initialPositions = new Vec4f[POINTS_TOTAL];
-	Vec3f * initialVelocities = new Vec3f[POINTS_TOTAL];
+	vec3 * initialVelocities = new vec3[POINTS_TOTAL];
 	Vec4i * connectionVectors = new	Vec4i[POINTS_TOTAL];
 	
 	for( j = 0; j < POINTS_Y; j++ ) {
@@ -190,7 +190,7 @@ void TransformFeedbackClothSimulationApp::loadBuffers()
 										(fj - 0.5f) * (float)POINTS_Y, // y coordinate
 										0.6f * sinf(fi) * cosf(fj),	   // z coordinate
 										1.0f);						   // homogenous coordinate or w
-			initialVelocities[n] = Vec3f(0.0f, 0.0f, 0.0f);
+			initialVelocities[n] = vec3(0.0f, 0.0f, 0.0f);
 			connectionVectors[n] = Vec4i(-1, -1, -1, -1);
 			
 			if( j != (POINTS_Y - 1) ) {	// if it's not one of the top row which don't move
@@ -219,7 +219,7 @@ void TransformFeedbackClothSimulationApp::loadBuffers()
 		gl::vertexAttribPointer( 0, 4, GL_FLOAT, GL_FALSE, 0, NULL );
 		gl::enableVertexAttribArray(0);
 		
-		mBuffers[i].second[VELOCITY] = gl::Vbo::create( GL_ARRAY_BUFFER, POINTS_TOTAL * sizeof(Vec3f), initialVelocities, GL_DYNAMIC_COPY );
+		mBuffers[i].second[VELOCITY] = gl::Vbo::create( GL_ARRAY_BUFFER, POINTS_TOTAL * sizeof(vec3), initialVelocities, GL_DYNAMIC_COPY );
 		mBuffers[i].second[VELOCITY]->bind();
 		gl::vertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 0, NULL );
 		gl::enableVertexAttribArray(1);

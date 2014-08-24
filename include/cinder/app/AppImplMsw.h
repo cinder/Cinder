@@ -108,10 +108,10 @@ class WindowImplMsw {
 
 	virtual bool		isFullScreen() { return mFullScreen; }
 	virtual void		setFullScreen( bool fullScreen, const app::FullScreenOptions &options );
-	virtual Vec2i		getSize() const { return Vec2i( mWindowWidth, mWindowHeight ); }
-	virtual void		setSize( const Vec2i &size );
-	virtual Vec2i		getPos() const { return mWindowOffset; }
-	virtual void		setPos( const Vec2i &pos );
+	virtual ivec2		getSize() const { return ivec2( mWindowWidth, mWindowHeight ); }
+	virtual void		setSize( const ivec2 &size );
+	virtual ivec2		getPos() const { return mWindowOffset; }
+	virtual void		setPos( const ivec2 &pos );
 	virtual void		close();
 	virtual std::string	getTitle() const;
 	virtual void		setTitle( const std::string &title );
@@ -138,7 +138,7 @@ class WindowImplMsw {
 
 	void			privateClose();
   protected:
-	void			createWindow( const Vec2i &windowSize, const std::string &title, DisplayRef display, RendererRef sharedRenderer );
+	void			createWindow( const ivec2 &windowSize, const std::string &title, DisplayRef display, RendererRef sharedRenderer );
 	void			completeCreation();
 	static void		registerWindowClass();
 	void			getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight );
@@ -150,14 +150,14 @@ class WindowImplMsw {
   	HWND					mWnd;
 	HDC						mDC;
 	DWORD					mWindowStyle, mWindowExStyle;
-	Vec2i					mWindowOffset;
+	ivec2					mWindowOffset;
 	bool					mHidden;
 	int						mWindowWidth, mWindowHeight;
 	bool					mFullScreen, mBorderless, mAlwaysOnTop, mResizable;
-	Vec2i					mWindowedPos, mWindowedSize;
+	ivec2					mWindowedPos, mWindowedSize;
 	DisplayRef				mDisplay;
 	RendererRef				mRenderer;
-	std::map<DWORD,Vec2f>			mMultiTouchPrev;
+	std::map<DWORD,vec2>			mMultiTouchPrev;
 	std::vector<TouchEvent::Touch>	mActiveTouches;
 	bool					mIsDragging;
 

@@ -607,8 +607,8 @@ template class BSplineFit<double>;
 template class BSplineFitBasis<float>;
 template class BSplineFitBasis<double>;
 
-template BSpline<2, float> fitBSpline( const std::vector<Vec2f> &samples, int degree, int outputSamples );
-template BSpline<3, float> fitBSpline( const std::vector<Vec3f> &samples, int degree, int outputSamples );
-template BSpline<4, float> fitBSpline( const std::vector<Vec4f> &samples, int degree, int outputSamples );
+template BSpline<2, float> fitBSpline( const std::vector<vec2> &samples, int degree, int outputSamples );
+template BSpline<3, float> fitBSpline( const std::vector<vec3> &samples, int degree, int outputSamples );
+template BSpline<4, float> fitBSpline( const std::vector<vec4> &samples, int degree, int outputSamples );
 
 } // namespace cinder

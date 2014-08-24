@@ -98,7 +98,7 @@ void ImageFileBasicApp::draw()
 		your texture is not empty before trying to use it!
 	*/
 	if( mTexture )
-		dx::draw( mTexture, Vec2f( 0, 0 ) );
+		dx::draw( mTexture, vec2( 0, 0 ) );
 }
 
 

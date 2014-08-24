@@ -177,7 +177,7 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 	GLuint name = ::CVOpenGLESTextureGetName( videoTextureRef );
 	bool flipped = ! ::CVOpenGLESTextureIsFlipped( videoTextureRef );
 	mTexture = gl::Texture::create( target, name, mWidth, mHeight, true );
-	Vec2f t0, lowerRight, t2, upperLeft;
+	vec2 t0, lowerRight, t2, upperLeft;
 	::CVOpenGLESTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
 	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
 	mTexture->setTopDown( flipped );
@@ -194,7 +194,7 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 	};
 	mTexture = gl::Texture::create( target, name, mWidth, mHeight, true, deleter );
 
-	Vec2f t0, lowerRight, t2, upperLeft;
+	vec2 t0, lowerRight, t2, upperLeft;
 	::CVOpenGLTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
 //	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
 	mTexture->setTopDown( topDown );

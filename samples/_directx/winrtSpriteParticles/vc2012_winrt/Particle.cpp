@@ -2,12 +2,12 @@
 
 Particle::Particle(int _textureID)
 {
-		position = cinder::Vec2f::zero();
-		velocity = cinder::Vec2f::zero();
+		position = cinder::vec2::zero();
+		velocity = cinder::vec2::zero();
 		textureID = _textureID%4;
 }
 
-void Particle::Reset(cinder::Vec2f _position, cinder::Vec2f _velocity)
+void Particle::Reset(cinder::vec2 _position, cinder::vec2 _velocity)
 {
 	position = _position;
 	velocity = _velocity;

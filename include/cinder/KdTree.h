@@ -117,15 +117,15 @@ struct NodeDataTraits
 };
 
 template<>
-struct NodeDataTraits<Vec2f>
+struct NodeDataTraits<vec2>
 {
-	static float getAxis( const Vec2f &data, int axis ) {
+	static float getAxis( const vec2 &data, int axis ) {
 		if( axis == 0 ) return data.x;
 		else return data.y; 
 	}
-	static float getAxis0( const Vec2f &data ) { return static_cast<float>( data.x ); }
-	static float getAxis1( const Vec2f &data ) { return static_cast<float>( data.y ); }
-	static float distanceSquared( const Vec2f &data, float k[2] ) {
+	static float getAxis0( const vec2 &data ) { return static_cast<float>( data.x ); }
+	static float getAxis1( const vec2 &data ) { return static_cast<float>( data.y ); }
+	static float distanceSquared( const vec2 &data, float k[2] ) {
 		float result = ( data.x - k[0] ) * ( data.x - k[0] );
 		result += ( data.y - k[1] ) * ( data.y - k[1] );
 		return result;

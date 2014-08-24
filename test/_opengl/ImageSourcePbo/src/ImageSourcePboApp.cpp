@@ -34,7 +34,7 @@ void ImageSourcePboApp::setup()
 	mSurface = Surface( IMAGE_WIDTH, IMAGE_HEIGHT, false );
 	for( int x = 0; x < ceil( IMAGE_WIDTH / (float)s.getWidth()); ++x ) {
 		for( int y = 0; y < ceil( IMAGE_HEIGHT / (float)s.getHeight()); ++y ) {
-			mSurface.copyFrom( s, s.getBounds(), Vec2i( x * s.getWidth(), y * s.getHeight() ) );
+			mSurface.copyFrom( s, s.getBounds(), ivec2( x * s.getWidth(), y * s.getHeight() ) );
 		}
 	}
 	

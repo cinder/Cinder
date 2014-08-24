@@ -27,9 +27,9 @@
 namespace cinder { namespace ip {
 
 template<typename T>
-void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const Vec2i &dstOffset, ChannelT<T> *dstChannel );
+void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstOffset, ChannelT<T> *dstChannel );
 template<typename T>
-void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &dstOffset, SurfaceT<T> *dstSuface );
+void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstOffset, SurfaceT<T> *dstSuface );
 template<typename T>
 void edgeDetectSobel( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel );
 template<typename T>

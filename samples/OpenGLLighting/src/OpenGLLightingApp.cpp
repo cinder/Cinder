@@ -32,7 +32,7 @@ class OpenGLLightingApp : public AppBasic {
 	float			mCounter;
 	InfoPanel		mInfoPanel;
 	CameraPersp		mCam;
-	Vec2f			mMousePos;
+	vec2			mMousePos;
 	bool mIsMouseDown;
 	
 	bool DIFFUSE;
@@ -73,7 +73,7 @@ void OpenGLLightingApp::setup()
 
 void OpenGLLightingApp::resize()
 {
-	mCam.lookAt( Vec3f( 0.0f, 0.0f, 750.0f ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0.0f, 0.0f, 750.0f ), vec3::zero() );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 	gl::setMatrices( mCam );
 }
@@ -193,7 +193,7 @@ void OpenGLLightingApp::draw()
 				else
 					glMaterialfv( GL_FRONT, GL_EMISSION, no_mat );			
 
-				gl::drawSphere( Vec3f::zero(), sphereRadius, sphereDetail );
+				gl::drawSphere( vec3::zero(), sphereRadius, sphereDetail );
 			glPopMatrix();
 		}
 	}
@@ -211,7 +211,7 @@ void OpenGLLightingApp::drawInfoPanel()
 	
 	gl::pushMatrices();
 	gl::setMatricesWindow( getWindowSize() );
-	mInfoPanel.update( Vec2f( getWindowWidth(), getWindowHeight() ), mCounter );
+	mInfoPanel.update( vec2( getWindowWidth(), getWindowHeight() ), mCounter );
 	gl::popMatrices();
 
 	glDisable( GL_TEXTURE_2D );

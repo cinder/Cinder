@@ -29,7 +29,7 @@ namespace cinder {
 bool Sphere::intersects( const Ray &ray )
 {
 	float 		t;
-	Vec3f		temp 	= ray.getOrigin() - mCenter;
+	vec3		temp 	= ray.getOrigin() - mCenter;
 	float 		a 		= dot( ray.getDirection(), ray.getDirection() );
 	float 		b 		= 2.0f * dot( temp, ray.getDirection() );
 	float 		c 		= dot( temp, temp ) - mRadius * mRadius;
@@ -59,7 +59,7 @@ bool Sphere::intersects( const Ray &ray )
 int Sphere::intersect( const Ray &ray, float *intersection )
 {
 	float 		t;
-	Vec3f		temp 	= ray.getOrigin() - mCenter;
+	vec3		temp 	= ray.getOrigin() - mCenter;
 	float 		a 		= dot( ray.getDirection(), ray.getDirection() );
 	float 		b 		= 2.0f * dot( temp, ray.getDirection() );
 	float 		c 		= dot( temp, temp ) - mRadius * mRadius;
@@ -89,15 +89,15 @@ int Sphere::intersect( const Ray &ray, float *intersection )
 }
 
 
-Sphere Sphere::calculateBoundingSphere( const vector<Vec3f> &points )
+Sphere Sphere::calculateBoundingSphere( const vector<vec3> &points )
 {
 	return calculateBoundingSphere( points.data(), points.size() );
 }
 
-Sphere Sphere::calculateBoundingSphere( const Vec3f *points, size_t numPoints )
+Sphere Sphere::calculateBoundingSphere( const vec3 *points, size_t numPoints )
 {
 	// compute minimal and maximal bounds
-	Vec3f min(points[0]), max(points[0]);
+	vec3 min(points[0]), max(points[0]);
 	for( size_t i = 1; i < numPoints; ++i ) {
 		if( points[i].x < min.x )
 			min.x = points[i].x;
@@ -113,7 +113,7 @@ Sphere Sphere::calculateBoundingSphere( const Vec3f *points, size_t numPoints )
 			max.z = points[i].z;
 	}
 	// compute center and radius
-	Vec3f center = 0.5f * ( min + max );
+	vec3 center = 0.5f * ( min + max );
 	float maxDistance = distance2( center, points[0] );
 	for( size_t i = 1; i < numPoints; ++i ) {
 		float dist = distance2( center, points[i] );

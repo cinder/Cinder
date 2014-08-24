@@ -19,7 +19,7 @@ using namespace ci::app;
 using namespace std;
 
 
-TrianglePiece::TrianglePiece( Vec2f _startPt, Vec2f _pt1, Vec2f _pt2, Vec2f _pt3, float _rotation, Vec2f _scale )
+TrianglePiece::TrianglePiece( vec2 _startPt, vec2 _pt1, vec2 _pt2, vec2 _pt3, float _rotation, vec2 _scale )
 	: mAlpha(0.0f), mTransOut(false)
 {
 	mStartPt = _startPt;
@@ -65,7 +65,7 @@ void TrianglePiece::setVisible( bool vis )
 	mVisible = vis;
 }
 
-void TrianglePiece::update( gl::TextureRef tex, Vec2f pt1, Vec2f pt2, Vec2f pt3 )
+void TrianglePiece::update( gl::TextureRef tex, vec2 pt1, vec2 pt2, vec2 pt3 )
 {	 
 	if( ! mTransOut ) {
 		mTexVertices[0] = pt1;

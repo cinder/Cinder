@@ -22,9 +22,9 @@ class FlockingApp : public AppBasic {
 	
 	// CAMERA
 	CameraPersp			mCam;
-	Quatf				mSceneRotation;
+	quat				mSceneRotation;
 	float				mCameraDistance;
-	Vec3f				mEye, mCenter, mUp;
+	vec3				mEye, mCenter, mUp;
 	
 	ParticleController	mParticleController;
 	
@@ -45,13 +45,13 @@ void FlockingApp::setup()
 	
 	// SETUP CAMERA
 	mCameraDistance = 500.0f;
-	mEye			= Vec3f( 0.0f, 0.0f, mCameraDistance );
-	mCenter			= Vec3f::zero();
-	mUp				= Vec3f::yAxis();
+	mEye			= vec3( 0.0f, 0.0f, mCameraDistance );
+	mCenter			= vec3::zero();
+	mUp				= vec3::yAxis();
 	mCam.setPerspective( 75.0f, getWindowAspectRatio(), 5.0f, 2000.0f );
 	
 	// SETUP PARAMS
-	mParams = params::InterfaceGl::create( "Flocking", Vec2i( 200, 160 ) );
+	mParams = params::InterfaceGl::create( "Flocking", ivec2( 200, 160 ) );
 	mParams->addParam( "Scene Rotation", &mSceneRotation, "opened=1" );
 	mParams->addSeparator();
 	mParams->addParam( "Eye Distance", &mCameraDistance, "min=50.0 max=1500.0 step=50.0 keyIncr=s keyDecr=w" );
@@ -64,7 +64,7 @@ void FlockingApp::setup()
 void FlockingApp::update()
 {
 	// UPDATE CAMERA
-	mEye = Vec3f( 0.0f, 0.0f, mCameraDistance );
+	mEye = vec3( 0.0f, 0.0f, mCameraDistance );
 	mCam.lookAt( mEye, mCenter, mUp );
 	gl::setMatrices( mCam );
 	gl::rotate( mSceneRotation );

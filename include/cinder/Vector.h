@@ -64,16 +64,6 @@ glm::detail::tvec3<T, P> orthogonal( const glm::detail::tvec3<T, P> &vec )
 		return glm::detail::tvec3<T, P>( 0, vec.z, -vec.y ); // cross( this, X )
 }
 
-typedef ivec2		Vec2i;
-typedef vec2		Vec2f;
-typedef dvec2		Vec2d;
-typedef ivec3		Vec3i;
-typedef vec3		Vec3f;
-typedef dvec3		Vec3d;
-typedef ivec4		Vec4i;
-typedef vec4		Vec4f;
-typedef dvec4		Vec4d;
-
 template<uint8_t DIM,typename T> struct VECDIM { };
 
 template<> struct VECDIM<2,float>	{ typedef vec2	TYPE; };

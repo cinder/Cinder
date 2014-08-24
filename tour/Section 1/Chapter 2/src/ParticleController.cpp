@@ -40,7 +40,7 @@ void ParticleController::addParticle( int xi, int yi, int res )
 {
 	float x = ( xi + 0.5f ) * (float)res;
 	float y = ( yi + 0.5f ) * (float)res;
-	mParticles.push_back( Particle( Vec2f( x, y ) ) );
+	mParticles.push_back( Particle( vec2( x, y ) ) );
 }
 
 void ParticleController::addParticles( int amt )
@@ -49,7 +49,7 @@ void ParticleController::addParticles( int amt )
 	{
 		float x = Rand::randFloat( app::getWindowWidth() );
 		float y = Rand::randFloat( app::getWindowHeight() );
-		mParticles.push_back( Particle( Vec2f( x, y ) ) );
+		mParticles.push_back( Particle( vec2( x, y ) ) );
 	}
 }
 

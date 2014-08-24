@@ -26,7 +26,7 @@ class WindowData {
 	{}
   
 	Color			mColor;
-	list<Vec2f>		mPoints; // the points drawn into this window
+	list<vec2>		mPoints; // the points drawn into this window
 };
 
 void BasicAppMultiWindow::setup()

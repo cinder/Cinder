@@ -39,7 +39,7 @@ class VisualDictionaryApp : public AppBasic {
 	void update();
 	void draw();
 
-	list<WordNode>::iterator	getNodeAtPoint( const Vec2f &point );
+	list<WordNode>::iterator	getNodeAtPoint( const vec2 &point );
 	
 	shared_ptr<Dictionary>		mDictionary;
 	list<WordNode>				mNodes, mDyingNodes;
@@ -72,10 +72,10 @@ void VisualDictionaryApp::layoutWords( vector<string> words, float radius )
 		float charPer	= charIndex/26.0f;
 		float angle		= charPer * 2.0f * M_PI;
 		//float angle = w / (float)words.size() * 2 * M_PI;
-		Vec2f pos = getWindowCenter() + radius * Vec2f( cos( angle ), sin( angle ) );
+		vec2 pos = getWindowCenter() + radius * vec2( cos( angle ), sin( angle ) );
 		Color col(  CM_HSV, charPer, 0.875f, 1 );
 		mNodes.push_back( WordNode( words[w] ) );
-		mNodes.back().mPos = getWindowCenter() + radius * 0.5f * Vec2f( cos( angle ), sin( angle ) );
+		mNodes.back().mPos = getWindowCenter() + radius * 0.5f * vec2( cos( angle ), sin( angle ) );
 		mNodes.back().mColor = ColorA( col, 0.0f );
 		mNodes.back().mRadiusDest = mCurrentCircleRadius;
 		mNodes.back().mRadius = 0;
@@ -128,7 +128,7 @@ void VisualDictionaryApp::initialize()
 	mEnableSelections = true;
 }
 
-list<WordNode>::iterator VisualDictionaryApp::getNodeAtPoint( const Vec2f &point )
+list<WordNode>::iterator VisualDictionaryApp::getNodeAtPoint( const vec2 &point )
 {
 	for( list<WordNode>::iterator nodeIt = mNodes.begin(); nodeIt != mNodes.end(); ++nodeIt ) {
 		if( nodeIt->isPointInside( point ) )
@@ -211,7 +211,7 @@ void VisualDictionaryApp::selectNode( list<WordNode>::iterator selectedNode )
 	mNodes.clear();
 	
 	Color c = Color( mCurrentNode.mColor().r, mCurrentNode.mColor().g, mCurrentNode.mColor().b );
-	Vec2f dirToCenter = ( mCurrentNode.mPos() - getWindowCenter() ) * 0.5f;
+	vec2 dirToCenter = ( mCurrentNode.mPos() - getWindowCenter() ) * 0.5f;
 	
 	timeline().add( bind( &CenterState::addCircle, &mCenterState, mCurrentNode.getWord(), c, dirToCenter * 0.2f ), timeline().getCurrentTime() + 0.25f );
 

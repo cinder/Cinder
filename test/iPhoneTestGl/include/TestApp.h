@@ -13,7 +13,7 @@ class TestApp : public ci::app::AppCocoaTouch {
 	virtual void	draw();
 	
 	
-	ci::Matrix44f	mCubeRotation;
+	ci::mat4	mCubeRotation;
 	ci::gl::Texture mTex;
 	ci::CameraPersp	mCam;
 	ci::Font		mFont;

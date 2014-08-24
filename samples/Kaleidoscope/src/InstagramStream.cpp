@@ -54,7 +54,7 @@ mClientId( clientId )
 }
 
 
-InstagramStream::InstagramStream(ci::Vec2f loc, float dist, int minTs, int maxTs, std::string clientId )
+InstagramStream::InstagramStream(ci::vec2 loc, float dist, int minTs, int maxTs, std::string clientId )
 : mBuffer( BUFFER_SIZE ), // our buffer of instagrams can hold up to 10
 mCanceled( false ),
 mClientId( clientId )
@@ -62,7 +62,7 @@ mClientId( clientId )
 	startThread(INSTAGRAM_API_URL + "/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&distance=" + toString(dist) + "&min_timestamp=" + toString(minTs) + "&max_timestamp=" + toString(maxTs) + "&client_id="+ mClientId);
 }
 
-InstagramStream::InstagramStream(ci::Vec2f loc, float dist, std::string clientId )
+InstagramStream::InstagramStream(ci::vec2 loc, float dist, std::string clientId )
 : mBuffer( BUFFER_SIZE ), // our buffer of instagrams can hold up to 10
 mCanceled( false ),
 mClientId( clientId )
@@ -70,7 +70,7 @@ mClientId( clientId )
 	startThread(INSTAGRAM_API_URL + "/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&distance=" + toString(dist) + "&client_id="+ mClientId);
 }
 
-InstagramStream::InstagramStream(ci::Vec2f loc, std::string clientId )
+InstagramStream::InstagramStream(ci::vec2 loc, std::string clientId )
 : mBuffer( BUFFER_SIZE ), // our buffer of instagrams can hold up to 10
 mCanceled( false ),
 mClientId( clientId )

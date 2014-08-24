@@ -49,8 +49,8 @@ void Renderer2dApp::draw()
 	::CGGradientRelease(gradient), gradient = NULL;
 
 	// CoreGraphics is "upside down" by default; setup CTM to flip and center it
-	Vec2i imgSize( ::CGImageGetWidth( mImage ), ::CGImageGetHeight( mImage ) );
-	Vec2i centerMargin( ( getWindowWidth() - imgSize.x ) / 2, ( getWindowHeight() - imgSize.y ) / 2 );	
+	ivec2 imgSize( ::CGImageGetWidth( mImage ), ::CGImageGetHeight( mImage ) );
+	ivec2 centerMargin( ( getWindowWidth() - imgSize.x ) / 2, ( getWindowHeight() - imgSize.y ) / 2 );	
 	::CGContextTranslateCTM( context, centerMargin.x, imgSize.y + centerMargin.y );
 	::CGContextScaleCTM( context, 1.0, -1.0 );
 	::CGContextDrawImage( context, CGRectMake( 0, 0, imgSize.x, imgSize.y ), mImage );

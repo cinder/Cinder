@@ -120,8 +120,8 @@ public:
 	virtual bool		isEnabled( Attrib attrib ) const;
 
 protected:  
-	static void	copyDataMultAdd( const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const Vec2f &mult, const Vec2f &add );
-	static void	copyDataMultAdd( const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const Vec3f &mult, const Vec3f &add );
+	static void	copyDataMultAdd( const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec2 &mult, const vec2 &add );
+	static void	copyDataMultAdd( const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec3 &mult, const vec3 &add );
 
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
 	void	copyIndicesNonIndexed( uint16_t *dest ) const;
@@ -158,9 +158,9 @@ public:
 
 	virtual Rect&		enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
 	virtual Rect&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }	
-	Rect&		position( const Vec2f &pos ) { mPos = pos; return *this; }
-	Rect&		scale( const Vec2f &scale ) { mScale = scale; return *this; }
-	Rect&		scale( float s ) { mScale = Vec2f( s, s ); return *this; }
+	Rect&		position( const vec2 &pos ) { mPos = pos; return *this; }
+	Rect&		scale( const vec2 &scale ) { mScale = scale; return *this; }
+	Rect&		scale( float s ) { mScale = vec2( s, s ); return *this; }
 
 	virtual size_t		getNumVertices() const override { return 4; }
 	virtual size_t		getNumIndices() const override { return 0; }
@@ -168,7 +168,7 @@ public:
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-	Vec2f		mPos, mScale;
+	vec2		mPos, mScale;
 
 	static float	sPositions[4*2];
 	static float	sColors[4*3];
@@ -218,9 +218,9 @@ protected:
 	virtual void		calculate() const;
 
 	mutable bool						mCalculationsCached;
-	mutable std::vector<Vec3f>			mPositions;
-	mutable std::vector<Vec3f>			mNormals;
-	mutable std::vector<Vec3f>			mColors;
+	mutable std::vector<vec3>			mPositions;
+	mutable std::vector<vec3>			mNormals;
+	mutable std::vector<vec3>			mColors;
 	mutable std::vector<uint32_t>		mIndices;
 
 	static float	sPositions[12*3];
@@ -250,12 +250,12 @@ protected:
 	static void		generatePatches( float *v, float *n, float *tc, uint32_t *el, int grid );
 	static void		buildPatchReflect( int patchNum, float *B, float *dB, float *v, float *n, float *tc, unsigned int *el,
 		int &index, int &elIndex, int &tcIndex, int grid, bool reflectX, bool reflectY );
-	static void		buildPatch( Vec3f patch[][4], float *B, float *dB, float *v, float *n, float *tc, 
-		unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, const Matrix33f reflect, bool invertNormal );
-	static void		getPatch( int patchNum, Vec3f patch[][4], bool reverseV );
+	static void		buildPatch( vec3 patch[][4], float *B, float *dB, float *v, float *n, float *tc, 
+		unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, const mat3 reflect, bool invertNormal );
+	static void		getPatch( int patchNum, vec3 patch[][4], bool reverseV );
 	static void		computeBasisFunctions( float *B, float *dB, int grid );
-	static Vec3f	evaluate( int gridU, int gridV, const float *B, const Vec3f patch[][4] );
-	static Vec3f	evaluateNormal( int gridU, int gridV, const float *B, const float *dB, const Vec3f patch[][4] );
+	static vec3	evaluate( int gridU, int gridV, const float *B, const vec3 patch[][4] );
+	static vec3	evaluateNormal( int gridU, int gridV, const float *B, const float *dB, const vec3 patch[][4] );
 
 	int			mSubdivision;
 
@@ -278,7 +278,7 @@ public:
 
 	virtual Circle&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
 	virtual Circle&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
-	Circle&		center( const Vec2f &center ) { mCenter = center; return *this; }
+	Circle&		center( const vec2 &center ) { mCenter = center; return *this; }
 	Circle&		radius( float radius );
 	Circle&		segments( int segments );
 
@@ -292,14 +292,14 @@ private:
 	void	updateVertexCounts();
 	void	calculate() const;
 
-	Vec2f		mCenter;
+	vec2		mCenter;
 	float		mRadius;
 	int			mRequestedSegments, mNumSegments;
 
 	size_t						mNumVertices;
-	mutable std::vector<Vec2f>	mPositions;
-	mutable std::vector<Vec2f>	mTexCoords;
-	mutable std::vector<Vec3f>	mNormals;
+	mutable std::vector<vec2>	mPositions;
+	mutable std::vector<vec2>	mTexCoords;
+	mutable std::vector<vec3>	mNormals;
 };
 
 class Sphere : public Source {
@@ -310,7 +310,7 @@ public:
 
 	virtual Sphere&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Sphere&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	Sphere&		center( const Vec3f &center ) { mCenter = center; mCalculationsCached = false; return *this; }
+	Sphere&		center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	Sphere&		radius( float radius ) { mRadius = radius; mCalculationsCached = false; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the sphere.
 	Sphere&		segments( int segments ) { mNumSegments = segments; mCalculationsCached = false; return *this; }
@@ -325,16 +325,16 @@ protected:
 	virtual void		calculate() const;
 	virtual void		calculateImplUV( size_t segments, size_t rings ) const;
 
-	Vec3f		mCenter;
+	vec3		mCenter;
 	float		mRadius;
 	int			mNumSegments;
 	int			mNumSlices;
 
 	mutable bool						mCalculationsCached;
-	mutable std::vector<Vec3f>			mPositions;
-	mutable std::vector<Vec2f>			mTexCoords;
-	mutable std::vector<Vec3f>			mNormals;
-	mutable std::vector<Vec3f>			mColors;
+	mutable std::vector<vec3>			mPositions;
+	mutable std::vector<vec2>			mTexCoords;
+	mutable std::vector<vec3>			mNormals;
+	mutable std::vector<vec3>			mColors;
 	mutable std::vector<uint32_t>		mIndices;
 };
 
@@ -358,7 +358,7 @@ protected:
 	int									mSubdivision;
 
 	mutable bool						mCalculationsCached;
-	mutable std::vector<Vec2f>			mTexCoords;
+	mutable std::vector<vec2>			mTexCoords;
 };
 
 class Capsule : public Sphere {
@@ -368,23 +368,23 @@ public:
 
 	virtual Capsule&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Capsule&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	Capsule&		center( const Vec3f &center ) { mCenter = center; mCalculationsCached = false; return *this; }
+	Capsule&		center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the capsule.
 	Capsule&		segments( int segments ) { mNumSegments = segments; mCalculationsCached = false; return *this; }
 	//! Specifies the number of slices between the caps. Defaults to 6. Add more slices to improve texture mapping and lighting, or if you intend to bend the capsule.
 	Capsule&		slices( int slices ) { mNumSlices = slices > 1 ? slices : 1; mCalculationsCached = false; return *this; }
 	Capsule&		radius( float radius ) { mRadius = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
 	Capsule&		length( float length ) { mLength = math<float>::max(0.f, length); mCalculationsCached = false; return *this; }
-	Capsule&		direction( const Vec3f &direction ) { mDirection = normalize( direction ); mCalculationsCached = false; return *this; }
+	Capsule&		direction( const vec3 &direction ) { mDirection = normalize( direction ); mCalculationsCached = false; return *this; }
 	//! Conveniently sets center, length and direction
-	Capsule&		set( const Vec3f &from, const Vec3f &to );
+	Capsule&		set( const vec3 &from, const vec3 &to );
 
 private:
 	virtual void	calculate() const override;
 	virtual void	calculateImplUV( size_t segments, size_t rings ) const override;
 	void			calculateRing( size_t segments, float radius, float y, float dy ) const;
 
-	Vec3f		mDirection;
+	vec3		mDirection;
 	float		mLength;
 };
 
@@ -396,7 +396,7 @@ public:
 
 	virtual Torus&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Torus&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	virtual Torus&	center( const Vec3f &center ) { mCenter = center; mCalculationsCached = false; return *this; }
+	virtual Torus&	center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	virtual Torus&	segmentsAxis( int value ) { mNumSegmentsAxis = value; mCalculationsCached = false; return *this; }
 	virtual Torus&	segmentsRing( int value ) { mNumSegmentsRing = value; mCalculationsCached = false; return *this; }
 	//! Allows you to twist the torus along the ring.
@@ -425,7 +425,7 @@ protected:
 	void			calculate() const;
 	void			calculateImplUV( size_t segments, size_t rings ) const;
 
-	Vec3f		mCenter;
+	vec3		mCenter;
 	float		mRadiusMajor;
 	float		mRadiusMinor;
 	int			mNumSegmentsAxis;
@@ -436,10 +436,10 @@ protected:
 	float		mTwistOffset;
 
 	mutable bool						mCalculationsCached;
-	mutable std::vector<Vec3f>			mPositions;
-	mutable std::vector<Vec2f>			mTexCoords;
-	mutable std::vector<Vec3f>			mNormals;
-	mutable std::vector<Vec3f>			mColors;
+	mutable std::vector<vec3>			mPositions;
+	mutable std::vector<vec2>			mTexCoords;
+	mutable std::vector<vec3>			mNormals;
+	mutable std::vector<vec3>			mColors;
 	mutable std::vector<uint32_t>		mIndices;
 };
 
@@ -454,7 +454,7 @@ public:
 
 	virtual Helix&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Helix&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	virtual Helix&	center( const Vec3f &center ) override { Torus::center( center ); return *this; }
+	virtual Helix&	center( const vec3 &center ) override { Torus::center( center ); return *this; }
 	virtual Helix&	segmentsAxis( int value ) override { Torus::segmentsAxis( value ); return *this; }
 	virtual Helix&	segmentsRing( int value ) override { Torus::segmentsRing( value ); return *this; }
 	//! Specifies the height, measured from center to center.
@@ -475,7 +475,7 @@ public:
 
 	virtual Cylinder&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Cylinder&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	virtual Cylinder&	origin( const Vec3f &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
+	virtual Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the cylinder.
 	virtual Cylinder&	segments( int segments ) { mNumSegments = segments; mCalculationsCached = false; return *this; }
 	//! Specifies the number of slices. Defaults to 6. Add more slices to improve texture mapping and lighting, or if you intend to bend the cylinder.
@@ -485,9 +485,9 @@ public:
 	//! Specifies the base and apex radius.
 	virtual Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
 	//! Specifies the axis of the cylinder.
-	virtual Cylinder&	direction( const Vec3f &direction ) { mDirection = normalize( direction );  mCalculationsCached = false; return *this; }
+	virtual Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction );  mCalculationsCached = false; return *this; }
 	//! Conveniently sets origin, height and direction.
-	virtual Cylinder&	set( const Vec3f &from, const Vec3f &to );
+	virtual Cylinder&	set( const vec3 &from, const vec3 &to );
 
 	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
 	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
@@ -500,19 +500,19 @@ protected:
 	virtual void	calculateImplUV( size_t segments, size_t rings ) const;
 	virtual void	calculateCap( bool flip, float height, float radius, size_t segments ) const;
 
-	Vec3f		mOrigin;
+	vec3		mOrigin;
 	float		mHeight;
-	Vec3f		mDirection;
+	vec3		mDirection;
 	float		mRadiusBase;
 	float		mRadiusApex;
 	int			mNumSegments;
 	int			mNumSlices;
 
 	mutable bool						mCalculationsCached;
-	mutable std::vector<Vec3f>			mPositions;
-	mutable std::vector<Vec2f>			mTexCoords;
-	mutable std::vector<Vec3f>			mNormals;
-	mutable std::vector<Vec3f>			mColors;
+	mutable std::vector<vec3>			mPositions;
+	mutable std::vector<vec2>			mTexCoords;
+	mutable std::vector<vec3>			mNormals;
+	mutable std::vector<vec3>			mColors;
 	mutable std::vector<uint32_t>		mIndices;
 };
 
@@ -524,7 +524,7 @@ public:
 
 	virtual Cone&	enable( Attrib attrib ) override { Cylinder::enable( attrib ); return *this; }
 	virtual Cone&	disable( Attrib attrib ) override { Cylinder::disable( attrib ); return *this; }
-	virtual Cone&	origin( const Vec3f &origin ) override { Cylinder::origin( origin ); return *this; }
+	virtual Cone&	origin( const vec3 &origin ) override { Cylinder::origin( origin ); return *this; }
 	//! Specifies the number of segments, which determines the roundness of the cone.
 	virtual Cone&	segments( int segments ) override { Cylinder::segments( segments ); return *this; }
 	//! Specifies the number of slices. Defaults to 6. Add more slices to improve texture mapping and lighting, or if you intend to bend the cone.
@@ -544,15 +544,15 @@ public:
 		mRadiusApex = math<float>::max(0.f, apex); 
 		mCalculationsCached = false; return *this; }
 	//!
-	virtual Cone&	direction( const Vec3f &direction ) override { Cylinder::direction( direction ); return *this; }
+	virtual Cone&	direction( const vec3 &direction ) override { Cylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
-	virtual Cone&	set( const Vec3f &from, const Vec3f &to ) override { Cylinder::set( from, to ); return *this; }
+	virtual Cone&	set( const vec3 &from, const vec3 &to ) override { Cylinder::set( from, to ); return *this; }
 };
 
 #if 0
 class SplineExtrusion : public Source {
 public:
-	SplineExtrusion( const std::function<Vec3f(float)> &pathCurve, int pathSegments, float radius, int radiusSegments );
+	SplineExtrusion( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments );
 
 	SplineExtrusion&		texCoords() { mHasTexCoord0 = true; return *this; }
 	SplineExtrusion&		normals() { mHasNormals = true; return *this; }
@@ -570,11 +570,11 @@ public:
 	virtual void		copyIndices( uint32_t *dest ) const override;	
 
 protected:
-	Vec2f		mPos, mScale;
+	vec2		mPos, mScale;
 	bool		mHasTexCoord0;
 	bool		mHasNormals;
 
-	void		calculateCurve( const std::function<Vec3f(float)> &pathCurve, int pathSegments, float radius, int radiusSegments );
+	void		calculateCurve( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments );
 	void		calculate();
 
 	mutable bool						mCalculationsCached;

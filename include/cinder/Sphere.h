@@ -32,22 +32,22 @@ namespace cinder {
 class Sphere {
  public:
 	Sphere() {}
-	Sphere( const Vec3f &aCenter, float aRadius ) : mCenter( aCenter ), mRadius( aRadius ) {}
+	Sphere( const vec3 &aCenter, float aRadius ) : mCenter( aCenter ), mRadius( aRadius ) {}
 
 	float	getRadius() const { return mRadius; }
 	void	setRadius( float radius ) { mRadius = radius; }
 	
-	const Vec3f&	getCenter() const { return mCenter; }
-	const void		setCenter( const Vec3f &center ) { mCenter = center; }
+	const vec3&	getCenter() const { return mCenter; }
+	const void		setCenter( const vec3 &center ) { mCenter = center; }
 
 	bool intersects( const Ray &ray );
 	int intersect( const Ray &ray, float *intersection );
 
-	static Sphere	calculateBoundingSphere( const std::vector<Vec3f> &points );
-	static Sphere	calculateBoundingSphere( const Vec3f *points, size_t numPoints );
+	static Sphere	calculateBoundingSphere( const std::vector<vec3> &points );
+	static Sphere	calculateBoundingSphere( const vec3 *points, size_t numPoints );
 
  protected:
- 	Vec3f	mCenter;
+ 	vec3	mCenter;
 	float	mRadius;
 };
 

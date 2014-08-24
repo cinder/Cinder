@@ -30,7 +30,4 @@ namespace cinder {
 using glm::mat4;
 using glm::dmat4;
 
-typedef glm::mat4	Matrix44f;
-typedef glm::dmat4	Matrix44d;
-
 } // namespace cinder

@@ -49,7 +49,7 @@ AccordionItem::AccordionItem( Timeline &timeline, float x, float y, float height
 	update();
 }
 
-bool AccordionItem::isPointIn( const Vec2f &pt )
+bool AccordionItem::isPointIn( const vec2 &pt )
 {
 	return mImageArea.contains( pt );
 }

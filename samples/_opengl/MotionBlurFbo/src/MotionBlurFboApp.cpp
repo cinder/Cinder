@@ -27,7 +27,7 @@ class MotionBlurFboApp : public AppNative {
 	void draw();
 	
 	CameraPersp			mCam;
-	Matrix44f			mCubeRotation;
+	mat4			mCubeRotation;
 	gl::BatchRef		mBatch;
 	gl::FboRef			mFbo, mAccumFbo;
 	bool				mPaused;
@@ -37,7 +37,7 @@ const int SUBFRAMES = 16; // increasing this number increases quality
 
 void MotionBlurFboApp::setup()
 {
-	mCam.lookAt( Vec3f( 0, 0, 7 ), vec3( 0 ) );
+	mCam.lookAt( vec3( 0, 0, 7 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
 	mBatch = gl::Batch::create( geom::Cube().enable( geom::Attrib::COLOR ), gl::getStockShader( gl::ShaderDef().color() ) );

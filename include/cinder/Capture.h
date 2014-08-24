@@ -85,7 +85,7 @@ class Capture {
 	//! Returns the height of the captured image in pixels.
 	int32_t		getHeight() const;
 	//! Returns the size of the captured image in pixels.
-	Vec2i		getSize() const { return Vec2i( getWidth(), getHeight() ); }
+	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }
 	//! Returns the aspect ratio of the capture imagee, which is its width / height
 	float		getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounding rectangle of the capture imagee, which is Area( 0, 0, width, height )

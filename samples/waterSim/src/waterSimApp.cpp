@@ -34,7 +34,7 @@ class WaterSimApp : public AppBasic {
  public:
 	Grid			*grid;
 	Particles		*particles;
-	Vec2f			mGravityVector;
+	vec2			mGravityVector;
 	int				mCounter;
 	bool			mMousePressed;
 	bool			mTrackingMouse;
@@ -43,7 +43,7 @@ class WaterSimApp : public AppBasic {
 };
 
 
-static float fluidphi( Grid &grid, float x, float y, int dropType, const Vec2f &center )
+static float fluidphi( Grid &grid, float x, float y, int dropType, const vec2 &center )
 {
 	// These are all different shaping functions
 	//return y-0.5*grid.ly;
@@ -64,7 +64,7 @@ static float fluidphi( Grid &grid, float x, float y, int dropType, const Vec2f &
 	return amt;
 }
 
-void project( Grid &grid, float &x, float &y, float current, float target, Vec2f center )
+void project( Grid &grid, float &x, float &y, float current, float target, vec2 center )
 {
    float dpdx=(fluidphi(grid, x+1e-4, y, 1, center )-fluidphi(grid, x-1e-4, y, 1, center ))/2e-4;
    float dpdy=(fluidphi(grid, x, y+1e-4, 1, center )-fluidphi(grid, x, y-1e-4, 1, center ))/2e-4;
@@ -73,7 +73,7 @@ void project( Grid &grid, float &x, float &y, float current, float target, Vec2f
    y += scale * dpdy;
 }
 
-void init_water_drop( Grid &grid, Particles &particles, int na, int nb, int dropType, Vec2f center = Vec2f(0.5f,0.05f) )
+void init_water_drop( Grid &grid, Particles &particles, int na, int nb, int dropType, vec2 center = vec2(0.5f,0.05f) )
 {
    int i, j, a, b;
    float x, y, phi;
@@ -97,7 +97,7 @@ void init_water_drop( Grid &grid, Particles &particles, int na, int nb, int drop
 						/*phi=fluidphi(grid, x, y, dropType, center );*/
 
 					}
-					particles.add_particle( Vec2f(x,y), Vec2f(0,0) );
+					particles.add_particle( vec2(x,y), vec2(0,0) );
 				}
 			}
 		}
@@ -148,7 +148,7 @@ void WaterSimApp::prepareSettings( Settings *settings )
 
 void WaterSimApp::setup()
 {
-	mGravityVector = Vec2f( 0, 9.8f );
+	mGravityVector = vec2( 0, 9.8f );
 	grid = new Grid( mGravityVector, 30, 30, 1.0 );
 	particles = new Particles( *grid );
 
@@ -178,7 +178,7 @@ void WaterSimApp::mouseDown( MouseEvent event )
 
 void WaterSimApp::mouseDrag( MouseEvent event )
 {
-	Vec2f delta = Vec2f( getWindowWidth(), getWindowHeight() ) / 2.0f - event.getPos();
+	vec2 delta = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f - event.getPos();
 	if( delta.lengthSquared() > 5 ) {
 		mGravityVector = delta.normalized() * 9.8f;
 		mGravityVector.y = -mGravityVector.y;
@@ -187,7 +187,7 @@ void WaterSimApp::mouseDrag( MouseEvent event )
 
 void WaterSimApp::mouseMove( MouseEvent event )
 {
-	Vec2f delta = Vec2f( getWindowWidth(), getWindowHeight() ) / 2.0f - event.getPos();
+	vec2 delta = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f - event.getPos();
 	if( delta.lengthSquared() > 5 ) {
 		mGravityVector = delta.normalized() * 9.8f;
 		mGravityVector.y = -mGravityVector.y;
@@ -236,13 +236,13 @@ void WaterSimApp::drawLogo()
 	else
 		gl::color( 1.0f, 1.0f, 1.0f, 0.1f );
 
-	gl::draw( mLogo, Vec2f( getWindowWidth() - mLogo->getWidth() - LOGO_OFFSET_X, getWindowHeight() - mLogo->getHeight() - LOGO_OFFSET_Y ) );
+	gl::draw( mLogo, vec2( getWindowWidth() - mLogo->getWidth() - LOGO_OFFSET_X, getWindowHeight() - mLogo->getHeight() - LOGO_OFFSET_Y ) );
 }
 
 void WaterSimApp::drawArrow()
 {
 	gl::ScopedModelMatrix mtx();
-	Vec2f center( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f );
+	vec2 center( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f );
 	gl::color( 1, 0, 0, 1 );
 	gl::translate( center );
 	gl::rotate( toDegrees( math<float>::atan2( -mGravityVector.y, mGravityVector.x ) ) + 90.0f );
@@ -252,7 +252,7 @@ void WaterSimApp::drawArrow()
 void WaterSimApp::drawInfo()
 {
 	const int LOGO_OFFSET_X = 15, LOGO_OFFSET_Y = 20;	
-	Vec2f center( getWindowWidth() - mInfo->getWidth() / 2.0f - LOGO_OFFSET_X, mInfo->getHeight() / 2.0f + LOGO_OFFSET_Y );
+	vec2 center( getWindowWidth() - mInfo->getWidth() / 2.0f - LOGO_OFFSET_X, mInfo->getHeight() / 2.0f + LOGO_OFFSET_Y );
 	gl::color( Color::white() );
 	gl::draw( mInfo, center );
 }

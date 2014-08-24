@@ -25,9 +25,9 @@ using namespace ci;
 namespace {
 
 float metersToPoints( float var )			{ return var * METERS_TO_POINTS; }
-Vec2f metersToPoints( const Vec2f &var )	{ return var * METERS_TO_POINTS; }
+vec2 metersToPoints( const vec2 &var )	{ return var * METERS_TO_POINTS; }
 float pointsToMeters( float var )			{ return var * POINTS_TO_METERS; }
-Vec2f pointsToMeters( const Vec2f &var )	{ return var * POINTS_TO_METERS; }
+vec2 pointsToMeters( const vec2 &var )	{ return var * POINTS_TO_METERS; }
 b2Vec2 pointsToMeters( const b2Vec2 &var )	{ return POINTS_TO_METERS * var; }
 
 } // anonymous namespace
@@ -87,10 +87,10 @@ void SceneController::update()
 
 void SceneController::setupWalls()
 {
-	Vec2f center = pointsToMeters( Vec2f( app::getWindowCenter() ) );
+	vec2 center = pointsToMeters( vec2( app::getWindowCenter() ) );
 	float inset = pointsToMeters( mParams.mWallInset );
 
-	Vec2f size( center.x - inset, center.y - inset );
+	vec2 size( center.x - inset, center.y - inset );
 
 	b2BodyDef bodyDef;
 	bodyDef.position.Set( inset, center.y );
@@ -149,9 +149,9 @@ void SceneController::setupFallingGears()
 	}
 }
 
-vector<ci::Vec2f> SceneController::calcNextOuterBumperVerts( float baseHeight, float topHeight, float baseWidth, float topWidth ) const
+vector<ci::vec2> SceneController::calcNextOuterBumperVerts( float baseHeight, float topHeight, float baseWidth, float topWidth ) const
 {
-	vector<Vec2f> result;
+	vector<vec2> result;
 
 	result.emplace_back( - baseWidth / 2, 0 );
 	result.emplace_back( - baseWidth / 2, - baseHeight );
@@ -163,7 +163,7 @@ vector<ci::Vec2f> SceneController::calcNextOuterBumperVerts( float baseHeight, f
 	return result;
 }
 
-vector<Vec2f> SceneController::calcInnerBumperVerts( float baseHeight, float topHeight, float baseWidth ) const
+vector<vec2> SceneController::calcInnerBumperVerts( float baseHeight, float topHeight, float baseWidth ) const
 {
 	const float innerPercent = 0.7f;
 
@@ -173,7 +173,7 @@ vector<Vec2f> SceneController::calcInnerBumperVerts( float baseHeight, float top
 
 	const float bottomOffset = - ( baseHeight - innerBaseHeight ) / 2 ;
 
-	vector<Vec2f> result;
+	vector<vec2> result;
 
 	result.emplace_back( - innerBaseWidth / 2, bottomOffset );
 	result.emplace_back( - innerBaseWidth / 2, bottomOffset - innerBaseHeight );
@@ -214,13 +214,13 @@ shared_ptr<Island> SceneController::makeIsland()
 	return island;
 }
 
-void SceneController::addGear( const Vec2f &pos )
+void SceneController::addGear( const vec2 &pos )
 {
 	float wallDeadZoneWidth = mParams.mWallInset + mParams.mWallWidth / 2;
 	if( pos.x < wallDeadZoneWidth || pos.x > ( app::getWindowWidth() - wallDeadZoneWidth ) )
 	   return;
 
-	Vec2f posScaled = pointsToMeters( pos );
+	vec2 posScaled = pointsToMeters( pos );
 
 	auto imageTex = getRandomGearTex();
 	const float radius = mParams.mGearScale * imageTex->getWidth() / 2.0f;
@@ -325,7 +325,7 @@ void SceneController::reConfigIslandGroup( IslandContainerT &islandGroup, float 
 	for( auto &island : islandGroup ) {
 		float x = lmap<float>( island->mFreqMidi, FUNDAMENTAL_MIN, pitchMax, 0, app::getWindowWidth() );
 		float perYOffset = pointsToMeters( randFloat( - mParams.mYOffsetVariance, mParams.mYOffsetVariance ) );
-		island->setPosition( Vec2f( pointsToMeters( x ), islandY + perYOffset ) );
+		island->setPosition( vec2( pointsToMeters( x ), islandY + perYOffset ) );
 	}
 }
 
@@ -358,7 +358,7 @@ void SceneController::BeginContact( b2Contact* contact )
 	b2WorldManifold worldManifold;
 	contact->GetWorldManifold( &worldManifold );
 
-	Vec2f contactPoint = metersToPoints( box2d::toCinder( worldManifold.points[0] ) );
+	vec2 contactPoint = metersToPoints( box2d::toCinder( worldManifold.points[0] ) );
 
 	SceneObject *objectA = static_cast<SceneObject *>( userDataA );
 	SceneObject *objectB = static_cast<SceneObject *>( userDataB );
@@ -373,7 +373,7 @@ void SceneController::BeginContact( b2Contact* contact )
 		handleWallCollision( dynamic_cast<Wall *>( objectB ), objectA, contactPoint );
 }
 
-void SceneController::handleIslandCollision( Island *island, SceneObject *object, const Vec2f &contactPoint )
+void SceneController::handleIslandCollision( Island *island, SceneObject *object, const vec2 &contactPoint )
 {
 	Gear *gear = dynamic_cast<Gear *>( object );
 
@@ -383,7 +383,7 @@ void SceneController::handleIslandCollision( Island *island, SceneObject *object
 	island->handleCollision( gear, contactPoint );
 }
 
-void SceneController::handleWallCollision( Wall *wall, SceneObject *object, const Vec2f &contactPoint  )
+void SceneController::handleWallCollision( Wall *wall, SceneObject *object, const vec2 &contactPoint  )
 {
 	Gear *gear = dynamic_cast<Gear *>( object );
 

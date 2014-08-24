@@ -76,7 +76,7 @@ void DebugMesh::setMesh(const TriMesh& mesh)
 
 	// determine the right scale, based on the bounding box
 	AxisAlignedBox3f bbox = mesh.calcBoundingBox();
-	Vec3f size = bbox.getMax() - bbox.getMin();
+	vec3 size = bbox.getMax() - bbox.getMin();
 	float scale = math<float>::max( math<float>::max( float(size.x), float(size.y) ), float(size.z) ) / 100.0f;
 
 	// construct mesh

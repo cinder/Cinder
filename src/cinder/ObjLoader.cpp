@@ -144,19 +144,19 @@ void ObjLoader::parse( bool includeUVs )
 		stringstream ss( line );
 		ss >> tag;
 		if( tag == "v" ) { // vertex
-			Vec3f v;
+			vec3 v;
 			ss >> v.x >> v.y >> v.z;
 			mInternalVertices.push_back( v );
 		}
 		else if( tag == "vt" ) { // vertex texture coordinates
 			if( includeUVs ) {
-				Vec2f tex;
+				vec2 tex;
 				ss >> tex.x >> tex.y;
 				mInternalTexCoords.push_back( tex );
 			}
 		}
 		else if( tag == "vn" ) { // vertex normals
-			Vec3f v;
+			vec3 v;
 			ss >> v.x >> v.y >> v.z;
 			mInternalNormals.push_back( normalize( v ) );
 		}
@@ -341,7 +341,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 {
     bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
-		Vec3f inferredNormal;
+		vec3 inferredNormal;
 		bool forceUnique = false;
 		Color rgb;
 		if( hasColors ) {
@@ -358,8 +358,8 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 			}
 		}
 		if( group.mFaces[f].mNormalIndices.empty() ) { // we'll have to derive it from two edges
-			Vec3f edge1 = mInternalVertices[group.mFaces[f].mVertexIndices[1]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
-			Vec3f edge2 = mInternalVertices[group.mFaces[f].mVertexIndices[2]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
+			vec3 edge1 = mInternalVertices[group.mFaces[f].mVertexIndices[1]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
+			vec3 edge2 = mInternalVertices[group.mFaces[f].mVertexIndices[2]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
 			inferredNormal = normalize( cross( edge1, edge2 ) );
 			forceUnique = true;
 		}
@@ -425,11 +425,11 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 				rgb.b = 1;
 			}
         }
-		Vec3f inferredNormal;
+		vec3 inferredNormal;
 		bool forceUnique = false;
 		if( group.mFaces[f].mNormalIndices.empty() ) { // we'll have to derive it from two edges
-			Vec3f edge1 = mInternalVertices[group.mFaces[f].mVertexIndices[1]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
-			Vec3f edge2 = mInternalVertices[group.mFaces[f].mVertexIndices[2]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
+			vec3 edge1 = mInternalVertices[group.mFaces[f].mVertexIndices[1]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
+			vec3 edge2 = mInternalVertices[group.mFaces[f].mVertexIndices[2]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
 			inferredNormal = normalize( cross( edge1, edge2 ) );
 			forceUnique = true;
 		}
