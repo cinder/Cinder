@@ -339,11 +339,11 @@ WindowImplMsw::WindowImplMsw( const Window::Format &format, RendererRef sharedRe
 	if( format.isPosSpecified() )
 		mWindowOffset = mWindowedPos = format.getPos();
 	else {
-		Vec2i displaySize = mDisplay->getSize();
+		ivec2 displaySize = mDisplay->getSize();
 		mWindowOffset = mWindowedPos = ( displaySize - mWindowedSize ) / 2;
 	}
 
-	createWindow( Vec2i( mWindowWidth, mWindowHeight ), format.getTitle(), mDisplay, sharedRenderer );
+	createWindow( ivec2( mWindowWidth, mWindowHeight ), format.getTitle(), mDisplay, sharedRenderer );
 	// set WindowRef and its impl pointer to this
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 	
@@ -357,7 +357,7 @@ WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef share
 	::GetWindowRect( mWnd, &rect );
 	
 	mDC = ::GetDC( hwnd );
-	mWindowOffset = Vec2i( rect.left, rect.top );
+	mWindowOffset = ivec2( rect.left, rect.top );
 	mWindowWidth = rect.right - rect.left;
 	mWindowHeight = rect.bottom - rect.top;
 
@@ -368,7 +368,7 @@ WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef share
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 }
 
-void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &title, const DisplayRef display, RendererRef sharedRenderer )
+void WindowImplMsw::createWindow( const ivec2 &windowSize, const std::string &title, const DisplayRef display, RendererRef sharedRenderer )
 {
 	RECT windowRect;
 	Area displayArea = display->getBounds();
@@ -489,7 +489,7 @@ void WindowImplMsw::setFullScreen( bool fullScreen, const app::FullScreenOptions
 
 void WindowImplMsw::toggleFullScreen( const app::FullScreenOptions &options )
 {
-	Vec2i newWindowSize;
+	ivec2 newWindowSize;
 	bool prevFullScreen = mFullScreen;
 	HDC oldDC = mDC;
 	HWND oldWnd = mWnd;
@@ -501,7 +501,7 @@ void WindowImplMsw::toggleFullScreen( const app::FullScreenOptions &options )
 	}
 	else {
 		mWindowedPos = mWindowOffset;
-		mWindowedSize = Vec2i( mWindowWidth, mWindowHeight );
+		mWindowedSize = ivec2( mWindowWidth, mWindowHeight );
 		newWindowSize = mDisplay->getSize();
 	}
 
@@ -531,7 +531,7 @@ void WindowImplMsw::getScreenSize( int clientWidth, int clientHeight, int *resul
 	*resultHeight = windowRect.bottom - windowRect.top;
 }
 
-void WindowImplMsw::setPos( const Vec2i &windowPos )
+void WindowImplMsw::setPos( const ivec2 &windowPos )
 {
 	RECT clientArea;
 	clientArea.left = windowPos.x; clientArea.top = windowPos.y;
@@ -583,7 +583,7 @@ void WindowImplMsw::setTitle( const std::string &title )
 		::SetWindowText( mWnd, titleWide.c_str() );
 }
 
-void WindowImplMsw::setSize( const Vec2i &windowSize )
+void WindowImplMsw::setSize( const ivec2 &windowSize )
 {
 	int screenWidth, screenHeight;
 	getScreenSize( windowSize.x, windowSize.y, &screenWidth, &screenHeight );
@@ -634,19 +634,19 @@ void WindowImplMsw::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 					pt.y = TOUCH_COORD_TO_PIXEL( ti.y );
 					::ScreenToClient( hWnd, &pt );
 					if( ti.dwFlags & 0x0004/*TOUCHEVENTF_UP*/ ) {
-						Vec2f prevPos = mMultiTouchPrev[ti.dwID];
-						endTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), prevPos, ti.dwID, currentTime, &pInputs.get()[i] ) );
+						vec2 prevPos = mMultiTouchPrev[ti.dwID];
+						endTouches.push_back( TouchEvent::Touch( vec2( (float)pt.x, (float)pt.y ), prevPos, ti.dwID, currentTime, &pInputs.get()[i] ) );
 						mMultiTouchPrev.erase( ti.dwID );
 					}
 					else if( ti.dwFlags & 0x0002/*TOUCHEVENTF_DOWN*/ ) {
-						beganTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
-						mMultiTouchPrev[ti.dwID] = Vec2f( (float)pt.x, (float)pt.y );
+						beganTouches.push_back( TouchEvent::Touch( vec2( (float)pt.x, (float)pt.y ), vec2( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						mMultiTouchPrev[ti.dwID] = vec2( (float)pt.x, (float)pt.y );
 						activeTouches.push_back( beganTouches.back() );
 					}
 					else if( ti.dwFlags & 0x0001/*TOUCHEVENTF_MOVE*/ ) {
-						movedTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), mMultiTouchPrev[ti.dwID], ti.dwID, currentTime, &pInputs.get()[i] ) );
+						movedTouches.push_back( TouchEvent::Touch( vec2( (float)pt.x, (float)pt.y ), mMultiTouchPrev[ti.dwID], ti.dwID, currentTime, &pInputs.get()[i] ) );
 						activeTouches.push_back( movedTouches.back() );
-						mMultiTouchPrev[ti.dwID] = Vec2f( (float)pt.x, (float)pt.y );
+						mMultiTouchPrev[ti.dwID] = vec2( (float)pt.x, (float)pt.y );
 					}
 				}
             }
@@ -942,7 +942,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			return 0;
 		break;
 		case WM_MOVE: {
-			impl->mWindowOffset = Vec2i( LOSHORT(lParam), HISHORT(lParam) );
+			impl->mWindowOffset = ivec2( LOSHORT(lParam), HISHORT(lParam) );
 			if( impl->getWindow() ) {
 				DisplayRef oldDisplay = impl->mDisplay;
 				impl->mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
