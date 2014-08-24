@@ -49,6 +49,8 @@ using namespace std;
 class PostProcessingAAApp : public AppNative
 {
 public:
+	enum SMAAMode { SMAA_EDGE_DETECTION, SMAA_BLEND_WEIGHTS, SMAA_BLEND_NEIGHBORS };
+public:
 	void prepareSettings( Settings* settings ) override;
 
 	void setup() override;
@@ -75,6 +77,7 @@ private:
 
 	FXAA                mFXAA;           // Takes care of applying FXAA anti-aliasing to our scene.
 	SMAA                mSMAA;           // Takes care of applying SMAA anti-aliasing to our scene.
+	SMAAMode            mSMAAMode;       // Allows us to see the 3 separate passes of the SMAA algorithm.
 
 	gl::TextureRef      mInfoFXAA;       // Info texture.
 	gl::TextureRef      mInfoSMAA;       // Info texture.
@@ -103,6 +106,8 @@ void PostProcessingAAApp::setup()
 	mPistons.setup();
 	mFXAA.setup();
 	mSMAA.setup();
+
+	mSMAAMode = SMAA_BLEND_NEIGHBORS;
 
 	mTimeOffset = 1.0;
 	mTimer.start();
@@ -160,9 +165,17 @@ void PostProcessingAAApp::draw()
 	mSMAA.apply( mFboFinal, mFboScene );
 
 	gl::pushMatrices();
-	gl::setMatricesWindow( mDividerWidth, getWindowHeight() );
+	gl::setMatricesWindow( mDividerWidth, getWindowHeight(), mSMAAMode == SMAA_BLEND_NEIGHBORS );
 	gl::pushViewport( mDivider.x, 0, mDividerWidth, getWindowHeight() );
-	gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) );
+	switch( mSMAAMode ) {
+	case SMAA_EDGE_DETECTION:
+		gl::draw( mSMAA.getEdgePass(), getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) ); break;
+	case SMAA_BLEND_WEIGHTS:
+		gl::draw( mSMAA.getBlendPass(), getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) ); break;
+	case SMAA_BLEND_NEIGHBORS:
+		gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) );
+		break;
+	}
 	gl::popViewport();
 	gl::popMatrices();
 
@@ -170,7 +183,7 @@ void PostProcessingAAApp::draw()
 	gl::drawLine( glm::vec2( (float) mDivider.x, 0 ), glm::vec2( (float) mDivider.x, (float) getWindowHeight() ) );
 	gl::drawLine( glm::vec2( (float) ( mDivider.x - mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x - mDividerWidth ), (float) getWindowHeight() ) );
 	gl::drawLine( glm::vec2( (float) ( mDivider.x + mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x + mDividerWidth ), (float) getWindowHeight() ) );
-	
+
 	// Draw info.
 	gl::enableAlphaBlending();
 	gl::draw( mInfoOriginal, glm::vec2( mDivider.x - mDividerWidth * 3 / 2 - 128, 32 ) );
@@ -244,15 +257,15 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 		else
 			mTimer.stop();
 		break;
-		/*case KeyEvent::KEY_1:
-			mMode = Mode::EDGE_DETECTION;
-			break;
-			case KeyEvent::KEY_2:
-			mMode = Mode::BLEND_WEIGHTS;
-			break;
-			case KeyEvent::KEY_3:
-			mMode = Mode::BLEND_NEIGHBORS;
-			break;*/
+	case KeyEvent::KEY_1:
+		mSMAAMode = SMAAMode::SMAA_EDGE_DETECTION;
+		break;
+	case KeyEvent::KEY_2:
+		mSMAAMode = SMAAMode::SMAA_BLEND_WEIGHTS;
+		break;
+	case KeyEvent::KEY_3:
+		mSMAAMode = SMAAMode::SMAA_BLEND_NEIGHBORS;
+		break;
 	case KeyEvent::KEY_v:
 		if( gl::isVerticalSyncEnabled() )
 			gl::enableVerticalSync( false );
