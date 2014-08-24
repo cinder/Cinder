@@ -3,29 +3,24 @@
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/VboMesh.h"
-#include "cinder/ObjLoader.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 
 using namespace ci;
 using namespace ci::app;
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_inverse.hpp"
-#include "glm/gtx/transform2.hpp"
-
 class RotatingCubeApp : public AppNative {
   public:	
-	void setup();
-	void resize();
-	void update();
-	void draw();
+	void	setup() override;
+	void	resize() override;
+	void	update() override;
+	void	draw() override;
 	
 	CameraPersp			mCam;
-	mat4			mCubeRotation;
 	gl::BatchRef		mBatch;
 	gl::TextureRef		mTexture;
 	gl::GlslProgRef		mGlsl;
+	mat4				mCubeRotation;
 };
 
 void RotatingCubeApp::setup()
@@ -40,8 +35,8 @@ void RotatingCubeApp::setup()
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 #endif
 	mBatch = gl::Batch::create( geom::Cube(), mGlsl );
-//	mBatch = gl::Batch::create( geom::Cube().colors(), mGlsl ); // per-vertex (face) coloring
-//	mBatch = gl::Batch::create( geom::Teapot().texCoords().normals().subdivision( 5 ), mGlsl );
+//	mBatch = gl::Batch::create( geom::Cube().enable( geom::COLOR ), mGlsl ); // per-vertex (face) coloring
+//	mBatch = gl::Batch::create( geom::Teapot().enable( geom::TEX_COORD_0 ).enable( geom::NORMAL ).subdivision( 5 ), mGlsl ); // teapot
 
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
@@ -51,17 +46,14 @@ void RotatingCubeApp::setup()
 
 void RotatingCubeApp::resize()
 {
-	// now tell our Camera that the window aspect ratio has changed
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	
-	// and in turn, let OpenGL know we have a new camera
 	gl::setMatrices( mCam );
 }
 
 void RotatingCubeApp::update()
 {
 	// Rotate the cube by 2 degrees around an arbitrary axis
-	mCubeRotation *= glm::rotate( toRadians( 2.0f ), glm::normalize( glm::vec3( 1, 1.3, 0.5 ) ) );
+	mCubeRotation *= rotate( toRadians( 2.0f ), normalize( vec3( 1, 1.3, 0.5 ) ) );
 }
 
 void RotatingCubeApp::draw()
