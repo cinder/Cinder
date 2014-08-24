@@ -897,16 +897,7 @@ std::array<vec3, 8> getCubePoints( const vec3 &c, const vec3 &size )
 	
 void drawCubeImpl( const vec3 &c, const vec3 &size, bool faceColors )
 {
-	GLfloat sx = size.x * 0.5f;
-	GLfloat sy = size.y * 0.5f;
-	GLfloat sz = size.z * 0.5f;
-	GLfloat vertices[24*3]={c.x+1.0f*sx,c.y+1.0f*sy,c.z+1.0f*sz,	c.x+1.0f*sx,c.y+-1.0f*sy,c.z+1.0f*sz,	c.x+1.0f*sx,c.y+-1.0f*sy,c.z+-1.0f*sz,	c.x+1.0f*sx,c.y+1.0f*sy,c.z+-1.0f*sz,		// +X
-							c.x+1.0f*sx,c.y+1.0f*sy,c.z+1.0f*sz,	c.x+1.0f*sx,c.y+1.0f*sy,c.z+-1.0f*sz,	c.x+-1.0f*sx,c.y+1.0f*sy,c.z+-1.0f*sz,	c.x+-1.0f*sx,c.y+1.0f*sy,c.z+1.0f*sz,		// +Y
-							c.x+1.0f*sx,c.y+1.0f*sy,c.z+1.0f*sz,	c.x+-1.0f*sx,c.y+1.0f*sy,c.z+1.0f*sz,	c.x+-1.0f*sx,c.y+-1.0f*sy,c.z+1.0f*sz,	c.x+1.0f*sx,c.y+-1.0f*sy,c.z+1.0f*sz,		// +Z
-							c.x+-1.0f*sx,c.y+1.0f*sy,c.z+1.0f*sz,	c.x+-1.0f*sx,c.y+1.0f*sy,c.z+-1.0f*sz,	c.x+-1.0f*sx,c.y+-1.0f*sy,c.z+-1.0f*sz,	c.x+-1.0f*sx,c.y+-1.0f*sy,c.z+1.0f*sz,	// -X
-							c.x+-1.0f*sx,c.y+-1.0f*sy,c.z+-1.0f*sz,	c.x+1.0f*sx,c.y+-1.0f*sy,c.z+-1.0f*sz,	c.x+1.0f*sx,c.y+-1.0f*sy,c.z+1.0f*sz,	c.x+-1.0f*sx,c.y+-1.0f*sy,c.z+1.0f*sz,	// -Y
-							c.x+1.0f*sx,c.y+-1.0f*sy,c.z+-1.0f*sz,	c.x+-1.0f*sx,c.y+-1.0f*sy,c.z+-1.0f*sz,	c.x+-1.0f*sx,c.y+1.0f*sy,c.z+-1.0f*sz,	c.x+1.0f*sx,c.y+1.0f*sy,c.z+-1.0f*sz};	// -Z
-
+	auto vertices = getCubePoints( c, size );
 
 	static GLfloat normals[24*3]={ 1,0,0,	1,0,0,	1,0,0,	1,0,0,
 								  0,1,0,	0,1,0,	0,1,0,	0,1,0,
@@ -971,7 +962,7 @@ void drawCubeImpl( const vec3 &c, const vec3 &size, bool faceColors )
 		int loc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
 		enableVertexAttribArray( loc );
 		vertexAttribPointer( loc, 3, GL_FLOAT, GL_FALSE, 0, (void*)curBufferOffset );
-		defaultArrayVbo->bufferSubData( curBufferOffset, sizeof(float)*24*3, vertices );
+		defaultArrayVbo->bufferSubData( curBufferOffset, sizeof(float)*24*3, vertices.data() );
 		curBufferOffset += sizeof(float)*24*3;
 	}
 	if( hasNormals ) {
@@ -1018,10 +1009,7 @@ void drawStrokedCube( const vec3 &center, const vec3 &size )
 {
 	auto vertices = getCubePoints( center, size );
 	
-	const int NumIndices = 24;
-	
-	static
-	std::array<GLubyte, NumIndices> indices = { 0, 1, 1, 2, 2, 3, 3, 0,		// right side connection
+	static std::array<GLubyte, 24> indices = { 0, 1, 1, 2, 2, 3, 3, 0,		// right side connection
 												4, 5, 5, 6, 6, 7, 7, 4,		// left side connection
 												0, 4, 1, 5, 2, 6, 3, 7 };	// right to left connections
 	
@@ -1035,7 +1023,7 @@ void drawStrokedCube( const vec3 &center, const vec3 &size )
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
 	gl::VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(vec3) * 8 );
-	gl::VboRef elementVbo = ctx->getDefaultElementVbo( NumIndices );
+	gl::VboRef elementVbo = ctx->getDefaultElementVbo( 24 );
 	gl::ScopedBuffer bufferBindScp( defaultVbo );
 	defaultVbo->bufferSubData( 0, sizeof(vec3) * 8, vertices.data() );
 	
@@ -1046,10 +1034,10 @@ void drawStrokedCube( const vec3 &center, const vec3 &size )
 		gl::vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 	}
 	
-	elementVbo->bufferSubData( 0, NumIndices, indices.data() );
+	elementVbo->bufferSubData( 0, 24, indices.data() );
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawElements( GL_LINES, NumIndices, GL_UNSIGNED_BYTE, 0 );
+	ctx->drawElements( GL_LINES, 24, GL_UNSIGNED_BYTE, 0 );
 	ctx->popVao();
 }
 
