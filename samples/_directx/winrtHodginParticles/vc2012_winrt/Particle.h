@@ -4,11 +4,11 @@
 
 class Particle {
  public:
-	Particle( ci::Vec3f _loc, ci::Vec3f _vel );
+	Particle( ci::vec3 _loc, ci::vec3 _vel );
 
 	void update();
 	void render();
-	void reset( ci::Vec3f _loc, ci::Vec3f _vel );
+	void reset( ci::vec3 _loc, ci::vec3 _vel );
 
 	void renderTrails();
 	bool ISDEAD;
@@ -19,10 +19,10 @@ class Particle {
 	void setAge();
 	
 	int len;            // number of elements in position array
-	std::vector<ci::Vec3f> loc;        // array of position vectors
-	ci::Vec3f startLoc;     // just used to make sure every loc[] is initialized to the same position
-	ci::Vec3f vel;          // velocity vector
-	ci::Vec3f perlin;       // perlin noise vector
+	std::vector<ci::vec3> loc;        // array of position vectors
+	ci::vec3 startLoc;     // just used to make sure every loc[] is initialized to the same position
+	ci::vec3 vel;          // velocity vector
+	ci::vec3 perlin;       // perlin noise vector
 	float radius;       // particle's size
 	float age;          // current age of particle
 	int lifeSpan;       // max allowed age of particle

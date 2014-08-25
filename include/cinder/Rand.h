@@ -105,8 +105,8 @@ class Rand {
 			return -nextFloat( a, b );
 	}
 	
-	//! returns a random Vec3f that represents a point on the unit sphere	
-	Vec3f nextVec3f()
+	//! returns a random vec3 that represents a point on the unit sphere	
+	vec3 nextVec3f()
 	{
 		float phi = nextFloat( (float)M_PI * 2.0f );
 		float costheta = nextFloat( -1.0f, 1.0f );
@@ -116,14 +116,14 @@ class Rand {
 		float y = rho * math<float>::sin( phi );
 		float z = costheta;
 		
-		return Vec3f( x, y, z );
+		return vec3( x, y, z );
 	}
 
-	//! returns a random Vec2f that represents a point on the unit circle	
-	Vec2f nextVec2f( )
+	//! returns a random vec2 that represents a point on the unit circle	
+	vec2 nextVec2f()
 	{
 		float theta = nextFloat( (float)M_PI * 2.0f );
-		return Vec2f( math<float>::cos( theta ), math<float>::sin( theta ) );
+		return vec2( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
     
     //! returns a random float via Gaussian distribution
@@ -224,8 +224,8 @@ class Rand {
 			return -randFloat( a, b );
 	}
 	
-	//! returns a random Vec3f that represents a point on the unit sphere
-	static Vec3f randVec3f()
+	//! returns a random vec3 that represents a point on the unit sphere
+	static vec3 randVec3f()
 	{
 		float phi = randFloat( (float)M_PI * 2.0f );
 		float costheta = randFloat( -1.0f, 1.0f );
@@ -235,14 +235,14 @@ class Rand {
 		float y = rho * math<float>::sin( phi );
 		float z = costheta;
 		
-		return Vec3f( x, y, z );
+		return vec3( x, y, z );
 	}
 
-	//! returns a random Vec2f that represents a point on the unit circle
-	static Vec2f randVec2f()
+	//! returns a random vec2 that represents a point on the unit circle
+	static vec2 randVec2f()
 	{
 		float theta = randFloat( (float)M_PI * 2.0f );
-		return Vec2f( math<float>::cos( theta ), math<float>::sin( theta ) );
+		return vec2( math<float>::cos( theta ), math<float>::sin( theta ) );
 	}
     
     //! returns a random float via Gaussian distribution; refactor later
@@ -311,11 +311,11 @@ inline float randFloat( float a, float b ) { return Rand::randFloat( a, b ); }
 //! returns a random float in the range [a,b] or the range [-b,-a]
 inline float randPosNegFloat( float a, float b ) { return Rand::randPosNegFloat( a, b ); }
 
-//! returns a random Vec3f that represents a point on the unit sphere
-inline Vec3f randVec3f() { return Rand::randVec3f(); }
+//! returns a random vec3 that represents a point on the unit sphere
+inline vec3 randVec3f() { return Rand::randVec3f(); }
 
-//! returns a random Vec2f that represents a point on the unit circle
-inline Vec2f randVec2f() { return Rand::randVec2f(); }
+//! returns a random vec2 that represents a point on the unit circle
+inline vec2 randVec2f() { return Rand::randVec2f(); }
 
 //! returns a random float via Gaussian distribution
 inline float randGaussian() { return Rand::randGaussian(); }    

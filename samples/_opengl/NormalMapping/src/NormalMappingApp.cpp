@@ -89,7 +89,7 @@ private:
 private:
 	ViewMode			mViewMode;
 
-	Matrix44f			mMeshTransform;
+	mat4			mMeshTransform;
 	AxisAlignedBox3f	mMeshBounds;
 
 	CameraPersp			mCamera;
@@ -137,8 +137,8 @@ void NormalMappingApp::prepareSettings(Settings* settings)
 void NormalMappingApp::setup()
 {
 	// setup camera and lights
-	mCamera.setEyePoint( Vec3f( 0.2f, 0.4f, 1.0f ) );
-	mCamera.setCenterOfInterestPoint( Vec3f(0.0f, 0.425f, 0.0f) );
+	mCamera.setEyePoint( vec3( 0.2f, 0.4f, 1.0f ) );
+	mCamera.setCenterOfInterestPoint( vec3(0.0f, 0.425f, 0.0f) );
 	mCamera.setNearClip( 0.01f );
 	mCamera.setFarClip( 100.0f );
 
@@ -228,7 +228,7 @@ void NormalMappingApp::setup()
 	viewmodes.push_back("Mesh");
 
 #if ! defined( CINDER_GL_ES )
-	mParams = params::InterfaceGl::create( getWindow(), "Normal Mapping Demo", Vec2i(340, 150) );
+	mParams = params::InterfaceGl::create( getWindow(), "Normal Mapping Demo", ivec2(340, 150) );
 	mParams->setOptions( "", "valueswidth=100" );
 
 	mParams->addParam( "Enable Normal Mapping", &bEnableNormalMap );
@@ -264,11 +264,11 @@ void NormalMappingApp::update()
 	mMeshTransform *= scale( vec3( 1 ) / mMeshBounds.getSize().y );
 
 	// position our lights (in eye space)
-	Vec3f lanternPositionOS = Vec3f(12.5f, 30.0f, 12.5f);
+	vec3 lanternPositionOS = vec3(12.5f, 30.0f, 12.5f);
 	if( bAnimateLantern )
-		lanternPositionOS += mPerlin.dfBm( Vec3f( 0.0f, 0.0f, fTime ) ) * 5.0f;
+		lanternPositionOS += mPerlin.dfBm( vec3( 0.0f, 0.0f, fTime ) ) * 5.0f;
 
-//	Vec3f lanternPositionWS = mMeshTransform.transformPointAffine( lanternPositionOS );
+//	vec3 lanternPositionWS = mMeshTransform.transformPointAffine( lanternPositionOS );
 //	mLightLantern.position = mCamera.getViewMatrix().transformPointAffine( lanternPositionWS );
 
 	vec4 lanternPositionWS = mMeshTransform * vec4( lanternPositionOS, 1 );
@@ -288,7 +288,7 @@ void NormalMappingApp::update()
 
 #if ! defined( CINDER_GL_ES )
 	if(mShaderWireframe)
-		mShaderWireframe->uniform( "uViewportSize", Vec2f( getWindowSize() ) );
+		mShaderWireframe->uniform( "uViewportSize", vec2( getWindowSize() ) );
 #endif
 }
 
@@ -362,7 +362,7 @@ void NormalMappingApp::draw()
 
 		// render the copyright message
 		Area centered = Area::proportionalFit( mCopyrightMap->getBounds(), getWindowBounds(), true, false );
-		centered.offset( Vec2i(0, (getWindowHeight() - centered.y2) - 20) );
+		centered.offset( ivec2(0, (getWindowHeight() - centered.y2) - 20) );
 
 		gl::enableAlphaBlending();
 		gl::draw( mCopyrightMap, centered );

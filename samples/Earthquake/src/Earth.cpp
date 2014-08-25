@@ -20,7 +20,7 @@ Earth::Earth()
 
 Earth::Earth( ci::gl::Texture aTexDiffuse, ci::gl::Texture aTexNormal, ci::gl::Texture aTexMask )
 {
-	mLoc			= Vec3f::zero();
+	mLoc			= vec3::zero();
 	mRadius			= 250.0f;
 	mTexDiffuse		= aTexDiffuse;
 	mTexNormal		= aTexNormal;
@@ -47,7 +47,7 @@ void Earth::update()
 void Earth::repelLocTips()
 {
 	float E, F;
-	Vec3f dir;
+	vec3 dir;
 	float distSqrd;
 	float charge = -2.0f;
 	
@@ -110,10 +110,10 @@ void Earth::drawQuakes()
 }
 
 
-void Earth::drawQuakeLabelsOnBillboard( const Vec3f &sRight, const Vec3f &sUp )
+void Earth::drawQuakeLabelsOnBillboard( const vec3 &sRight, const vec3 &sUp )
 {
-	Vec3f right;
-	Vec3f up;
+	vec3 right;
+	vec3 up;
 	float perLeft, perRight;
 	
 	glBegin( GL_QUADS );
@@ -157,7 +157,7 @@ void Earth::drawQuakeLabelsOnBillboard( const Vec3f &sRight, const Vec3f &sUp )
 
 
 
-void Earth::drawQuakeLabelsOnSphere( const Vec3f eyeNormal, const float eyeDist )
+void Earth::drawQuakeLabelsOnSphere( const vec3 eyeNormal, const float eyeDist )
 {
 	float distMulti = eyeDist * 0.001f;
 	for( list<Quake>::iterator it = mQuakes.begin(); it != mQuakes.end(); ++it ) {
@@ -177,10 +177,10 @@ void Earth::drawQuakeLabelsOnSphere( const Vec3f eyeNormal, const float eyeDist 
 			float w = it->mLabel.getWidth() * dp * distMulti;
 			float h = it->mLabel.getHeight() * dp * distMulti;
 			
-			Vec3f dir = mLoc - it->mLoc;
+			vec3 dir = mLoc - it->mLoc;
 			dir.normalize();
-			Vec3f perp1 = dir.cross( Vec3f::yAxis() );
-			Vec3f perp2 = perp1.cross( dir );
+			vec3 perp1 = dir.cross( vec3::yAxis() );
+			vec3 perp2 = perp1.cross( dir );
 			perp1		= perp2.cross( dir );
 
 			
@@ -203,18 +203,18 @@ void Earth::drawQuakeLabelsOnSphere( const Vec3f eyeNormal, const float eyeDist 
 void Earth::drawQuakeVectors()
 {
 	float radialSubdivisions = 64.0f;
-	Vec3f loc;
-	Vec3f norm;
-	Vec3f normFinal;
+	vec3 loc;
+	vec3 norm;
+	vec3 normFinal;
 
 	for( list<Quake>::iterator it = mQuakes.begin(); it != mQuakes.end(); ++it ) {
 		float mag = (it->mMag );
 		
 		if( mag >= mMinMagToRender ){
-			Vec3f dir = mLoc - it->mLoc;
+			vec3 dir = mLoc - it->mLoc;
 			dir.safeNormalize();
-			Vec3f perp1 = dir.cross( Vec3f::yAxis() );
-			Vec3f perp2 = perp1.cross( dir );
+			vec3 perp1 = dir.cross( vec3::yAxis() );
+			vec3 perp2 = perp1.cross( dir );
 			perp1		= perp2.cross( dir );
 			
 			float largeRadius = mag;
@@ -225,10 +225,10 @@ void Earth::drawQuakeVectors()
 				float angle = ( (float)i/(radialSubdivisions-1.0f) - 0.5f ) * 6.283185f;
 				float cosa  = cos( angle );
 				float sina  = sin( angle );
-				Vec3f locOffset = ( perp1 * cosa + perp2 * sina );
+				vec3 locOffset = ( perp1 * cosa + perp2 * sina );
 				
 				norm	= perp1 * -sina + perp2 * cosa;
-				normFinal = Vec3f( norm.y * dir.z - dir.y * norm.z, norm.z * dir.x - dir.z * norm.x, norm.x * dir.y - dir.x * norm.y );
+				normFinal = vec3( norm.y * dir.z - dir.y * norm.z, norm.z * dir.x - dir.z * norm.x, norm.x * dir.y - dir.x * norm.y );
 				
 				loc		= ( it->mLocTip ) + locOffset * smallRadius;
 			
@@ -254,17 +254,17 @@ void Earth::drawQuakeVectors()
 void Earth::drawQuakeVectors()
 {
 	float radialSubdivisions = 64.0f;
-	Vec3f loc;
-	Vec3f norm;
+	vec3 loc;
+	vec3 norm;
 	
 	for( list<Quake>::iterator it = mQuakes.begin(); it != mQuakes.end(); ++it ) {
 		float mag = (it->mMag );
 		
 		if( mag >= mMinMagToRender ){
-			Vec3f dir = mLoc - it->mLoc;
+			vec3 dir = mLoc - it->mLoc;
 			dir.normalize();
-			Vec3f perp1 = dir.cross( Vec3f::yAxis() );
-			Vec3f perp2 = perp1.cross( dir );
+			vec3 perp1 = dir.cross( vec3::yAxis() );
+			vec3 perp2 = perp1.cross( dir );
 			perp1		= perp2.cross( dir );
 			
 			float largeRadius = mag * mag * 0.35f + 5.0f;
@@ -279,7 +279,7 @@ void Earth::drawQuakeVectors()
 				float angle = ( (float)i/(radialSubdivisions-1.0f) ) * 6.28f;
 				float cosa  = cos( angle );
 				float sina  = sin( angle );
-				Vec3f locOffset = ( perp1 * cosa + perp2 * sina );
+				vec3 locOffset = ( perp1 * cosa + perp2 * sina );
 				
 				norm	= perp1 * -sina + perp2 * cosa;
 				loc		= ( it->mLoc * mRadius ) + locOffset * largeRadius;

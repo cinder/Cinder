@@ -22,12 +22,12 @@ using namespace std;
 
 struct TouchPoint {
 	TouchPoint() {}
-	TouchPoint( const Vec2f &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
+	TouchPoint( const vec2 &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
 	{
 		mLine.push_back( initialPt ); 
 	}
 	
-	void addPoint( const Vec2f &pt ) { mLine.push_back( pt ); }
+	void addPoint( const vec2 &pt ) { mLine.push_back( pt ); }
 	
 	void draw() const
 	{
@@ -43,7 +43,7 @@ struct TouchPoint {
 	
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
 	
-	PolyLine<Vec2f>	mLine;
+	PolyLine<vec2>	mLine;
 	Color			mColor;
 	float			mTimeOfDeath;
 };
@@ -113,7 +113,7 @@ class iosAppTestApp : public AppCocoaTouch {
 
 	TestCallbackOrder	tester;
 					
-	Matrix44f		mCubeRotation;
+	mat4		mCubeRotation;
 	gl::Texture 	mTex;
 	gl::Texture		mTextTex;
 	gl::TextureFontRef	mFont;
@@ -352,7 +352,7 @@ void iosAppTestApp::update()
 {
 	tester.setState( TestCallbackOrder::UPDATE );
 
-	mCubeRotation.rotate( Vec3f( 1, 1, 1 ), 0.03f );
+	mCubeRotation.rotate( vec3( 1, 1, 1 ), 0.03f );
 }
 
 void iosAppTestApp::draw()
@@ -361,7 +361,7 @@ void iosAppTestApp::draw()
 	gl::enableDepthRead();
 	tester.setState( TestCallbackOrder::DRAW );
 	CameraPersp mCam;
-	mCam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 3, 2, -3 ), vec3::zero() );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
 	if( isUnplugged() )
@@ -376,7 +376,7 @@ void iosAppTestApp::draw()
 	gl::setMatrices( mCam );
 	glPushMatrix();
 		gl::multModelView( mCubeRotation );
-		gl::drawCube( Vec3f::zero(), Vec3f( 2.0f, 2.0f, 2.0f ) );
+		gl::drawCube( vec3::zero(), vec3( 2.0f, 2.0f, 2.0f ) );
 	glPopMatrix();
 	gl::disable( GL_TEXTURE_2D );
 	
@@ -409,16 +409,16 @@ void iosAppTestApp::draw()
 		}
 		if( messageTex ) {
 			gl::color( Color::white() );
-			gl::draw( messageTex, Vec2i( ( getWindowWidth() - messageTex.getCleanWidth() ) / 2, getWindowCenter().y ) );
+			gl::draw( messageTex, ivec2( ( getWindowWidth() - messageTex.getCleanWidth() ) / 2, getWindowCenter().y ) );
 		}
 	}
 //
 	gl::disableDepthRead();
 	gl::color( Color( 0.0f, 1.0f, 0.0f ) );
-	mFont->drawString( orientationString( getWindowOrientation() ) + "@ " + toString( getWindowContentScale() ), Vec2f( 10.0f, 60.0f ) );
-//	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), Vec2f( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?
+	mFont->drawString( orientationString( getWindowOrientation() ) + "@ " + toString( getWindowContentScale() ), vec2( 10.0f, 60.0f ) );
+//	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), vec2( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?
 
-	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", Vec2f( 10.0f, 90.0f ) );
+	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", vec2( 10.0f, 90.0f ) );
 }
 
 CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl(RendererGl::AA_NONE) )

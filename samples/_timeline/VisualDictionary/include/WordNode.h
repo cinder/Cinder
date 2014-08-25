@@ -26,12 +26,12 @@ class WordNode {
 	bool	isSelected() const;
 	void	setSelected();
 
-	bool	isPointInside( const ci::Vec2f &pt ) const;
+	bool	isPointInside( const ci::vec2 &pt ) const;
 	
 	void	draw() const;
 
 	// Timelined properties		
-	ci::Anim<ci::Vec2f>		mPos;
+	ci::Anim<ci::vec2>		mPos;
 	ci::Anim<float>			mRadius;
 	float					mRadiusDest;
 	ci::Anim<ci::ColorA>	mColor;

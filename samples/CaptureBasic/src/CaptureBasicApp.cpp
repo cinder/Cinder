@@ -1,5 +1,6 @@
 #include "cinder/Cinder.h"
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Capture.h"
 
@@ -61,7 +62,7 @@ void CaptureBasicApp::draw()
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 	
 	if( mTexture ) {
-		glPushMatrix();
+    gl::pushModelMatrix();
 #if defined( CINDER_COCOA_TOUCH )
 		//change iphone to landscape orientation
 		gl::rotate( 90.0f );
@@ -72,7 +73,7 @@ void CaptureBasicApp::draw()
 #else
 		gl::draw( mTexture );
 #endif
-		glPopMatrix();
+    gl::popModelMatrix();
 	}
 }
 

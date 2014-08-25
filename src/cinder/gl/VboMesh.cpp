@@ -388,19 +388,19 @@ VboMesh::MappedAttrib<float> VboMesh::mapAttrib1f( geom::Attrib attr, bool orpha
 	return mapAttribImpl<float>( attr, 1, orphanExisting );
 }
 
-VboMesh::MappedAttrib<Vec2f> VboMesh::mapAttrib2f( geom::Attrib attr, bool orphanExisting )
+VboMesh::MappedAttrib<vec2> VboMesh::mapAttrib2f( geom::Attrib attr, bool orphanExisting )
 {
-	return mapAttribImpl<Vec2f>( attr, 2, orphanExisting );
+	return mapAttribImpl<vec2>( attr, 2, orphanExisting );
 }
 
-VboMesh::MappedAttrib<Vec3f> VboMesh::mapAttrib3f( geom::Attrib attr, bool orphanExisting )
+VboMesh::MappedAttrib<vec3> VboMesh::mapAttrib3f( geom::Attrib attr, bool orphanExisting )
 {
-	return mapAttribImpl<Vec3f>( attr, 3, orphanExisting );
+	return mapAttribImpl<vec3>( attr, 3, orphanExisting );
 }
 
-VboMesh::MappedAttrib<Vec4f> VboMesh::mapAttrib4f( geom::Attrib attr, bool orphanExisting )
+VboMesh::MappedAttrib<vec4> VboMesh::mapAttrib4f( geom::Attrib attr, bool orphanExisting )
 {
-	return mapAttribImpl<Vec4f>( attr, 4, orphanExisting );
+	return mapAttribImpl<vec4>( attr, 4, orphanExisting );
 }
 
 void VboMesh::MappedAttribBase::unmap()

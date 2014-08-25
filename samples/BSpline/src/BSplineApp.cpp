@@ -15,7 +15,7 @@ class bsplineApp : public AppBasic {
  public:
 	bsplineApp() : mTrackedPoint( -1 ), mDegree( 3 ), mOpen( true ), mLoop( false ) {}
 	
-	int		findNearestPt( const Vec2f &aPt );
+	int		findNearestPt( const vec2 &aPt );
 	void	calcLength();
 	
 	void	mouseDown( MouseEvent event );
@@ -26,7 +26,7 @@ class bsplineApp : public AppBasic {
 	void	drawBSpline( cairo::Context &ctx );
 	void	draw();
 
-	vector<Vec2f>		mPoints;
+	vector<vec2>		mPoints;
 	int					mTrackedPoint;
 	int					mDegree;
 	bool				mOpen, mLoop;
@@ -36,10 +36,10 @@ void bsplineApp::mouseDown( MouseEvent event )
 {
 	const float MIN_CLICK_DISTANCE = 6.0f;
 	if( event.isLeft() ) { // line
-		Vec2f clickPt = Vec2f( event.getPos() );
+		vec2 clickPt = vec2( event.getPos() );
 		int nearestIdx = findNearestPt( clickPt );
-		if( ( nearestIdx < 0 ) || ( mPoints[nearestIdx].distance( clickPt ) > MIN_CLICK_DISTANCE ) ) {
-			mPoints.push_back( Vec2f( event.getPos() ) );
+		if( ( nearestIdx < 0 ) || ( distance( mPoints[nearestIdx], clickPt ) > MIN_CLICK_DISTANCE ) ) {
+			mPoints.push_back( vec2( event.getPos() ) );
 			mTrackedPoint = -1;
 		}
 		else
@@ -51,7 +51,7 @@ void bsplineApp::mouseDown( MouseEvent event )
 void bsplineApp::mouseDrag( MouseEvent event )
 {
 	if( mTrackedPoint >= 0 ) {
-		mPoints[mTrackedPoint] = Vec2f( event.getPos() );
+		mPoints[mTrackedPoint] = vec2( event.getPos() );
 		calcLength();
 	}
 }
@@ -105,16 +105,16 @@ void bsplineApp::keyDown( KeyEvent event ) {
 	}
 }
 
-int bsplineApp::findNearestPt( const Vec2f &aPt )
+int bsplineApp::findNearestPt( const vec2 &aPt )
 {
 	if( mPoints.empty() ) return -1;
 	
 	int result = 0;
-	float nearestDist = mPoints[0].distance( aPt );
+	float nearestDist = distance( mPoints[0], aPt );
 	for( size_t i = 1; i < mPoints.size(); ++i ) {
-		if( mPoints[i].distance( aPt ) < nearestDist ) {
+		if( distance( mPoints[i], aPt ) < nearestDist ) {
 			result = i;
-			nearestDist = mPoints[i].distance( aPt );
+			nearestDist = distance( mPoints[i], aPt );
 		}
 	}
 	

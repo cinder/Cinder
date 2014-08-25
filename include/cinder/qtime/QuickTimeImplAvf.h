@@ -74,7 +74,7 @@ class MovieBase {
 	//! Returns the height of the movie in pixels
 	int32_t		getHeight() const { return mHeight; }
 	//! Returns the size of the movie in pixels
-	Vec2i		getSize() const { return Vec2i( getWidth(), getHeight() ); }	
+	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }	
 	//! Returns the movie's aspect ratio, the ratio of its width to its height
 	float		getAspectRatio() const { return static_cast<float>(mWidth) / static_cast<float>(mHeight); }
 	//! the Area defining the Movie's bounds in pixels: [0,0]-[width,height]

@@ -119,7 +119,7 @@ void PaletteBrowserApp::createItem( const std::string &line, int lineNumber )
 	gl::Texture image		= gl::Texture( loadImage( loadAsset( fs::path("images") / imageFilename ) ) );
 	Surface palette			= Surface( loadImage( loadAsset( fs::path("palettes") / paletteFilename ) ) );
 	
-	Vec2f pos( mLeftBorder, mTopBorder + lineNumber * mItemSpacing );
+	vec2 pos( mLeftBorder, mTopBorder + lineNumber * mItemSpacing );
 	Item item = Item( lineNumber, pos, title, desc, palette );
 	
 	mItems.push_back( item );

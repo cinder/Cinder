@@ -82,11 +82,11 @@ void BasicApp::draw()
 
 	// Draw FPS
 	dx::color( Color::white() );
-	mTextureFont->drawString( toString( floor(getAverageFps()) ) + " FPS", Vec2f( 10, getWindowHeight() + mTextureFont->getDescent() ) );
+	mTextureFont->drawString( toString( floor(getAverageFps()) ) + " FPS", vec2( 10, getWindowHeight() + mTextureFont->getDescent() ) );
     
     // Draw Font Name
 	float fontNameWidth = mTextureFont->measureString( mTextureFont->getName() ).x;
-	mTextureFont->drawString( mTextureFont->getName(), Vec2f( getWindowWidth() - fontNameWidth - 10, getWindowHeight() + mTextureFont->getDescent() ) );
+	mTextureFont->drawString( mTextureFont->getName(), vec2( getWindowWidth() - fontNameWidth - 10, getWindowHeight() + mTextureFont->getDescent() ) );
 	dx::popModelView();
 }
 

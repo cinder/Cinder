@@ -59,17 +59,17 @@ const char *distanceShaderGlsl =
 	"	gl_FragColor.rgb = vec3( distance( texture2DRect( tex0, gl_TexCoord[0].st ).rg, gl_TexCoord[0].st ) );\n"
 	"}\n";
 
-gl::Texture encodePoints( const vector<Vec2i> &points, int width, int height )
+gl::Texture encodePoints( const vector<ivec2> &points, int width, int height )
 {
 	Surface32f result( width, height, false );
 	ip::fill( &result, Colorf( -65535.0f, -65535.0f, 0 ) ); // seed the result with a huge distance that will easily be "beaten" by any given site
-	for( vector<Vec2i>::const_iterator ptIt = points.begin(); ptIt != points.end(); ++ptIt )
+	for( vector<ivec2>::const_iterator ptIt = points.begin(); ptIt != points.end(); ++ptIt )
 		result.setPixel( *ptIt, Color( (float)app::toPixels( ptIt->x ), (float)app::toPixels( ptIt->y ), 0 ) );
 	
 	return gl::Texture( result );
 }
 
-ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::Vec2i> &points, int width, int height )
+ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::ivec2> &points, int width, int height )
 {
 	static gl::GlslProg voronoiShader( vertexShaderGlsl, voronoiShaderGlsl );
 	
@@ -96,7 +96,7 @@ ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::Vec2i> &points, int
 	int curFbo = 0;
 	int numPasses = log2ceil( std::max( width, height ) );
 	for( int pass = 1; pass <= numPasses; ++pass ) {
-		voronoiShader.uniform( "sampleScale", Vec2f( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
+		voronoiShader.uniform( "sampleScale", vec2( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
 		curFbo = pass % 2;
 		fbo[curFbo].bindFramebuffer();
 		fbo[(curFbo+1)%2].bindTexture();
@@ -110,7 +110,7 @@ ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::Vec2i> &points, int
 	return Surface32f( fbo[curFbo].getTexture() );
 }
 
-ci::Channel32f calcDistanceMapGpu( const vector<Vec2i> &points, int width, int height )
+ci::Channel32f calcDistanceMapGpu( const vector<ivec2> &points, int width, int height )
 {
 	static gl::GlslProg voronoiShader( vertexShaderGlsl, voronoiShaderGlsl );
 	static gl::GlslProg distanceShader( vertexShaderGlsl, distanceShaderGlsl );
@@ -138,7 +138,7 @@ ci::Channel32f calcDistanceMapGpu( const vector<Vec2i> &points, int width, int h
 	int curFbo = 0;
 	int numPasses = log2ceil( std::max( width, height ) );
 	for( int pass = 1; pass <= numPasses; ++pass ) {
-		voronoiShader.uniform( "sampleScale", Vec2f( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
+		voronoiShader.uniform( "sampleScale", vec2( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
 		curFbo = pass % 2;
 		fbo[curFbo].bindFramebuffer();
 		fbo[(curFbo+1)%2].bindTexture();

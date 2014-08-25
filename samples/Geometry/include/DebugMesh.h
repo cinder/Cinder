@@ -44,7 +44,7 @@ public:
 	virtual void				loadInto( ci::geom::Target *target ) const override;
 
 private:
-	std::vector<ci::Vec3f>		mVertices;
+	std::vector<ci::vec3>		mVertices;
 	std::vector<ci::Color>		mColors;
 	std::vector<ci::uint32_t>	mIndices;
 

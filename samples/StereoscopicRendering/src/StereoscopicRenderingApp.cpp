@@ -79,10 +79,10 @@ public:
 private:
 	void createFbo();
 
-	void renderAnaglyph( const Vec2i &size, const ColorA &left, const ColorA &right );
-	void renderSideBySide( const Vec2i &size );
-	void renderOverUnder( const Vec2i &size );
-	void renderInterlacedHorizontal( const Vec2i &size );
+	void renderAnaglyph( const ivec2 &size, const ColorA &left, const ColorA &right );
+	void renderSideBySide( const ivec2 &size );
+	void renderOverUnder( const ivec2 &size );
+	void renderInterlacedHorizontal( const ivec2 &size );
 
 	void render();
 	void renderUI();
@@ -132,8 +132,8 @@ void StereoscopicRenderingApp::setup()
 	mDrawAutoFocus = false;
 
 	// setup the camera
-	mCamera.setEyePoint( Vec3f(0.2f, 1.3f, -11.5f) );
-	mCamera.setCenterOfInterestPoint( Vec3f(0.5f, 1.5f, -0.1f) );
+	mCamera.setEyePoint( vec3(0.2f, 1.3f, -11.5f) );
+	mCamera.setCenterOfInterestPoint( vec3(0.5f, 1.5f, -0.1f) );
 	mCamera.setFov( 60.0f );
 
 	mMayaCam.setCurrentCam( mCamera );
@@ -360,7 +360,7 @@ void StereoscopicRenderingApp::resize()
 
 void StereoscopicRenderingApp::createFbo()
 {
-	Vec2i size = getWindowSize();
+	ivec2 size = getWindowSize();
 
 	// 
 	gl::Fbo::Format fmt;
@@ -381,7 +381,7 @@ void StereoscopicRenderingApp::createFbo()
 	}
 }
 
-void StereoscopicRenderingApp::renderAnaglyph(  const Vec2i &size, const ColorA &left, const ColorA &right )
+void StereoscopicRenderingApp::renderAnaglyph(  const ivec2 &size, const ColorA &left, const ColorA &right )
 {	
 	// bind the FBO and clear its buffer
 	mFbo.bindFramebuffer();
@@ -407,7 +407,7 @@ void StereoscopicRenderingApp::renderAnaglyph(  const Vec2i &size, const ColorA 
 	mShaderAnaglyph.unbind();
 }
 
-void StereoscopicRenderingApp::renderSideBySide( const Vec2i &size )
+void StereoscopicRenderingApp::renderSideBySide( const ivec2 &size )
 {	
 	// store current viewport
 	glPushAttrib( GL_VIEWPORT_BIT );
@@ -430,7 +430,7 @@ void StereoscopicRenderingApp::renderSideBySide( const Vec2i &size )
 	glPopAttrib();
 }
 
-void StereoscopicRenderingApp::renderOverUnder( const Vec2i &size )
+void StereoscopicRenderingApp::renderOverUnder( const ivec2 &size )
 {
 	// store current viewport
 	glPushAttrib( GL_VIEWPORT_BIT );
@@ -453,7 +453,7 @@ void StereoscopicRenderingApp::renderOverUnder( const Vec2i &size )
 	glPopAttrib();
 }
 
-void StereoscopicRenderingApp::renderInterlacedHorizontal( const Vec2i &size )
+void StereoscopicRenderingApp::renderInterlacedHorizontal( const ivec2 &size )
 {
 	// bind the FBO and clear its buffer
 	mFbo.bindFramebuffer();
@@ -468,8 +468,8 @@ void StereoscopicRenderingApp::renderInterlacedHorizontal( const Vec2i &size )
 	// enable the interlace shader
 	mShaderInterlaced.bind();
 	mShaderInterlaced.uniform( "tex0", 0 );
-	mShaderInterlaced.uniform( "window_origin", Vec2f( getWindowPos() ) );
-	mShaderInterlaced.uniform( "window_size", Vec2f( getWindowSize() ) );
+	mShaderInterlaced.uniform( "window_origin", vec2( getWindowPos() ) );
+	mShaderInterlaced.uniform( "window_size", vec2( getWindowSize() ) );
 
 	// bind the FBO texture and draw a full screen rectangle,
 	// which conveniently is exactly what the following line does
@@ -499,7 +499,7 @@ void StereoscopicRenderingApp::render()
 		gl::pushModelView();
 		{
 			gl::color( Color(0.7f, 0.6f, 0.0f) );
-			gl::rotate( Vec3f::yAxis() * 10.0f * seconds );
+			gl::rotate( vec3::yAxis() * 10.0f * seconds );
 			gl::draw( mMeshTrombone );
 
 			// reflection
@@ -523,7 +523,7 @@ void StereoscopicRenderingApp::render()
 
 				gl::pushModelView();
 				gl::translate( i * 0.5f, 0.15f + 1.0f * math<float>::abs( sinf(3.0f * t) ), -z );
-				gl::rotate( Vec3f::yAxis() * r );
+				gl::rotate( vec3::yAxis() * r );
 				gl::draw( mMeshNote );
 				gl::popModelView();
 				
@@ -531,7 +531,7 @@ void StereoscopicRenderingApp::render()
 				gl::pushModelView();
 				gl::scale( 1.0f, -1.0f, 1.0f );
 				gl::translate( i * 0.5f, 0.15f + 1.0f * math<float>::abs( sinf(3.0f * t) ), -z );
-				gl::rotate( Vec3f::yAxis() * r );
+				gl::rotate( vec3::yAxis() * r );
 				gl::draw( mMeshNote );
 				gl::popModelView();
 			}
@@ -544,14 +544,14 @@ void StereoscopicRenderingApp::render()
 	// draw grid
 	gl::color( Color(0.8f, 0.8f, 0.8f) );
 	for(int i=-100; i<=100; ++i) {
-		gl::drawLine( Vec3f((float) i, 0, -100), Vec3f((float) i, 0, 100) );
-		gl::drawLine( Vec3f(-100, 0, (float) i), Vec3f(100, 0, (float) i) );
+		gl::drawLine( vec3((float) i, 0, -100), vec3((float) i, 0, 100) );
+		gl::drawLine( vec3(-100, 0, (float) i), vec3(100, 0, (float) i) );
 	}
 
 	// draw floor
 	gl::enableAlphaBlending();
 	gl::color( ColorA(1,1,1,0.75f) );
-	gl::drawCube( Vec3f(0.0f, -0.5f, 0.0f), Vec3f(200.0f, 1.0f, 200.0f) );
+	gl::drawCube( vec3(0.0f, -0.5f, 0.0f), vec3(200.0f, 1.0f, 200.0f) );
 	gl::disableAlphaBlending();
 
 	// restore 2D rendering
@@ -587,8 +587,8 @@ void StereoscopicRenderingApp::renderUI()
 
 #if(defined CINDER_MSW)
     gl::enableAlphaBlending();
-    gl::drawString( labels, Vec2f( w - 350.0f, h - 150.0f ), Color::black(), mFont );
-    gl::drawStringRight( values.str(), Vec2f( w + 350.0f, h - 150.0f ), Color::black(), mFont );
+    gl::drawString( labels, vec2( w - 350.0f, h - 150.0f ), Color::black(), mFont );
+    gl::drawStringRight( values.str(), vec2( w + 350.0f, h - 150.0f ), Color::black(), mFont );
     gl::disableAlphaBlending();
 #else
     // \n is not supported on the mac, so we draw separate strings
@@ -598,8 +598,8 @@ void StereoscopicRenderingApp::renderUI()
 
     gl::enableAlphaBlending();
     for(size_t i=0;i<4;++i) {       
-        gl::drawString( left[i], Vec2f( w - 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
-        gl::drawStringRight( right[i], Vec2f( w + 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
+        gl::drawString( left[i], vec2( w - 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
+        gl::drawStringRight( right[i], vec2( w + 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
     }
     gl::disableAlphaBlending();
 #endif

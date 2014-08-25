@@ -76,7 +76,7 @@ void BasicApp::draw()
 	// SHADER WHAT PARAMETER mTexture->bind() HAS ACTUALLY BOUND TO?
 
 	// mShader.uniform( "tex0", 0 );
-	// mShader.uniform( "sampleOffset", Vec2f( cos(mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
+	// mShader.uniform( "sampleOffset", vec2( cos(mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
 
 	//get a pointer to the cbuffer to set uniforms
 	void *vertexCBuffer = mShader.MapCBufferFragment(1);
@@ -86,14 +86,14 @@ void BasicApp::draw()
 	//unmap the cbuffer so it can be used
 	mShader.UnmapCBufferFragment(1);
 
-	dx::draw( mTexture, Vec2f());
+	dx::draw( mTexture, vec2());
 
 	mTexture->unbind();
 	dx::HlslProg::unbind();
 
 	std::stringstream s;
 	s << "Framerate:" << getAverageFps();
-	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color::white(),mFont);
+	dx::drawString(s.str(),vec2(10.0f,10.0f),Color::white(),mFont);
 }
 
 // This line tells Cinder to actually create the application

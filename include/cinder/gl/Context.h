@@ -85,17 +85,17 @@ class Context {
 	static void		reflectCurrent( Context *context );
 
 	//! Returns a reference to the stack of Model matrices
-	std::vector<Matrix44f>&			getModelMatrixStack() { return mModelMatrixStack; }
+	std::vector<mat4>&			getModelMatrixStack() { return mModelMatrixStack; }
 	//! Returns a const reference to the stack of Model matrices
-	const std::vector<Matrix44f>&	getModelMatrixStack() const { return mModelMatrixStack; }
+	const std::vector<mat4>&	getModelMatrixStack() const { return mModelMatrixStack; }
 	//! Returns a reference to the stack of View matrices
-	std::vector<Matrix44f>&			getViewMatrixStack() { return mViewMatrixStack; }
+	std::vector<mat4>&			getViewMatrixStack() { return mViewMatrixStack; }
 	//! Returns a const reference to the stack of Model matrices
-	const std::vector<Matrix44f>&	getViewMatrixStack() const { return mViewMatrixStack; }
+	const std::vector<mat4>&	getViewMatrixStack() const { return mViewMatrixStack; }
 	//! Returns a reference to the stack of Projection matrices
-	std::vector<Matrix44f>&			getProjectionMatrixStack() { return mProjectionMatrixStack; }
+	std::vector<mat4>&			getProjectionMatrixStack() { return mProjectionMatrixStack; }
 	//! Returns a const reference to the stack of Projection matrices
-	const std::vector<Matrix44f>&	getProjectionMatrixStack() const { return mProjectionMatrixStack; }
+	const std::vector<mat4>&	getProjectionMatrixStack() const { return mProjectionMatrixStack; }
 	
 	//! Binds a VAO. Consider using a ScopedVao instead.
 	void		bindVao( const VaoRef &vao );
@@ -114,27 +114,27 @@ class Context {
 	//! Used by object tracking.
 	void		vaoDeleted( const Vao *vao );
 
-	//! Analogous to glViewport(). Sets the viewport based on a pair<Vec2i,Vec2i> representing the position of the lower-left corner and the size, respectively
-	void					viewport( const std::pair<Vec2i, Vec2i> &viewport );
-	//! Pushes the viewport based on a pair<Vec2i,Vec2i> representing the position of the lower-left corner and the size, respectively
-	void					pushViewport( const std::pair<Vec2i, Vec2i> &viewport );
+	//! Analogous to glViewport(). Sets the viewport based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively
+	void					viewport( const std::pair<ivec2, ivec2> &viewport );
+	//! Pushes the viewport based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively
+	void					pushViewport( const std::pair<ivec2, ivec2> &viewport );
 	//! Duplicates and pushes the top of the Viewport stack
 	void					pushViewport();
 	//! Pops the viewport
 	void					popViewport();
-	//! Returns a pair<Vec2i,Vec2i> representing the position of the lower-left corner and the size, respectively of the viewport
-	std::pair<Vec2i, Vec2i>	getViewport();
+	//! Returns a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively of the viewport
+	std::pair<ivec2, ivec2>	getViewport();
 
-	//! Sets the scissor box based on a pair<Vec2i,Vec2i> representing the position of the lower-left corner and the size, respectively	
-	void					setScissor( const std::pair<Vec2i, Vec2i> &scissor );
-	//! Pushes the scissor box based on a pair<Vec2i,Vec2i> representing the position of the lower-left corner and the size, respectively	
-	void					pushScissor( const std::pair<Vec2i, Vec2i> &scissor );
+	//! Sets the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively	
+	void					setScissor( const std::pair<ivec2, ivec2> &scissor );
+	//! Pushes the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively	
+	void					pushScissor( const std::pair<ivec2, ivec2> &scissor );
 	//! Duplicates and pushes the top of the Scissor box stack
 	void					pushScissor();
-	//! Pushes the scissor box based on a pair<Vec2i,Vec2i> representing the position of the lower-left corner and the size, respectively	
+	//! Pushes the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively	
 	void					popScissor();
-	//! Returns a pair<Vec2i,Vec2i> representing the position of the lower-left corner and the size, respectively of the scissor box
-	std::pair<Vec2i, Vec2i>	getScissor();
+	//! Returns a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively of the scissor box
+	std::pair<ivec2, ivec2>	getScissor();
 
 	//! Analogous to glBindBuffer( \a target, \a id )
 	void		bindBuffer( GLenum target, GLuint id );
@@ -406,16 +406,16 @@ class Context {
 
 	std::shared_ptr<PlatformData>	mPlatformData;
 	
-	std::vector<std::pair<Vec2i,Vec2i>>		mViewportStack;
-	std::vector<std::pair<Vec2i,Vec2i>>		mScissorStack;
+	std::vector<std::pair<ivec2,ivec2>>		mViewportStack;
+	std::vector<std::pair<ivec2,ivec2>>		mScissorStack;
 
 	VaoRef						mImmVao; // Immediate-mode VAO
 	VboRef						mImmVbo; // Immediate-mode VBO
 
 	ci::ColorAf					mColor;	
-	std::vector<Matrix44f>		mModelMatrixStack;
-	std::vector<Matrix44f>		mViewMatrixStack;	
-	std::vector<Matrix44f>		mProjectionMatrixStack;
+	std::vector<mat4>		mModelMatrixStack;
+	std::vector<mat4>		mViewMatrixStack;	
+	std::vector<mat4>		mProjectionMatrixStack;
 
 	// Debug
 	GLenum						mDebugLogSeverity;

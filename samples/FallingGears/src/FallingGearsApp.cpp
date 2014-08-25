@@ -92,7 +92,7 @@ void FallingGearsApp::setupGraphics()
 
 void FallingGearsApp::setupParams()
 {
-	mParams = params::InterfaceGl::create( "params", Vec2i( 250, 350 ) );
+	mParams = params::InterfaceGl::create( "params", ivec2( 250, 350 ) );
 	mParams->minimize();
 	
 	mParams->addParam( "fps", &mFps, "", true );
@@ -225,7 +225,7 @@ void FallingGearsApp::drawInfo()
 
 	auto tex = gl::Texture::create( layout.render( true ) );
 
-	Vec2f offset( getWindowWidth() - tex->getWidth() - 16, 10 );
+	vec2 offset( getWindowWidth() - tex->getWidth() - 16, 10 );
 	gl::color( Color::white() );
 	gl::draw( tex, offset );
 

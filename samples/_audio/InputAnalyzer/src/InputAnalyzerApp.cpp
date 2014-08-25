@@ -95,14 +95,14 @@ void InputAnalyzer::drawLabels()
 
 	// draw x-axis label
 	string freqLabel = "Frequency (hertz)";
-	mTextureFont->drawString( freqLabel, Vec2f( getWindowCenter().x - mTextureFont->measureString( freqLabel ).x / 2, (float)getWindowHeight() - 20 ) );
+	mTextureFont->drawString( freqLabel, vec2( getWindowCenter().x - mTextureFont->measureString( freqLabel ).x / 2, (float)getWindowHeight() - 20 ) );
 
 	// draw y-axis label
 	string dbLabel = "Magnitude (decibels, linear)";
 	gl::pushModelView();
 		gl::translate( 30, getWindowCenter().y + mTextureFont->measureString( dbLabel ).x / 2 );
 		gl::rotate( -90 );
-		mTextureFont->drawString( dbLabel, Vec2f::zero() );
+		mTextureFont->drawString( dbLabel, vec2::zero() );
 	gl::popModelView();
 }
 

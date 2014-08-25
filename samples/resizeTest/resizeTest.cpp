@@ -51,7 +51,7 @@ void ResizeTestApp::setup()
 void ResizeTestApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
-	gl::draw( mTexture, Vec2f( 0, 0 ) );
+	gl::draw( mTexture, vec2( 0, 0 ) );
 }
 
 

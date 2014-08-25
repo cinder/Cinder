@@ -66,14 +66,14 @@ gl::TextureRef GoodNightMorningApp::renderTweet( const Tweet &tweet, float width
 {
 	TextBox header = TextBox().font( mHeaderFont ).color( textColor ).text( "@" + tweet.getUser() );
 	Surface headerSurface = header.render();
-	TextBox phrase = TextBox().size( Vec2f( width - 48 - 4, TextBox::GROW ) ).font( mFont ).color( textColor ).text( tweet.getPhrase() );
+	TextBox phrase = TextBox().size( vec2( width - 48 - 4, TextBox::GROW ) ).font( mFont ).color( textColor ).text( tweet.getPhrase() );
 	Surface textSurface = phrase.render();
 	Surface result( textSurface.getWidth() + 56, std::max( headerSurface.getHeight() + textSurface.getHeight() + 10, 56 ), true );
 	ip::fill( &result, ColorA( 1, 1, 1, backgroundAlpha ) );
 	if( tweet.getIcon() )
-		result.copyFrom( tweet.getIcon(), tweet.getIcon().getBounds(), Vec2i( 4, 4 ) );
-	ip::blend( &result, headerSurface, headerSurface.getBounds(), Vec2i( result.getWidth() - 4 - headerSurface.getWidth(), textSurface.getHeight() + 6 ) );
-	ip::blend( &result, textSurface, textSurface.getBounds(), Vec2i( 56, 4 ) );
+		result.copyFrom( tweet.getIcon(), tweet.getIcon().getBounds(), ivec2( 4, 4 ) );
+	ip::blend( &result, headerSurface, headerSurface.getBounds(), ivec2( result.getWidth() - 4 - headerSurface.getWidth(), textSurface.getHeight() + 6 ) );
+	ip::blend( &result, textSurface, textSurface.getBounds(), ivec2( 56, 4 ) );
 	return gl::Texture::create( result );
 }
 
@@ -143,10 +143,10 @@ void GoodNightMorningApp::drawTweets()
 {
 	gl::color( ColorA( 1, 1, 1, mMorningTweetAlpha ) );
 	if( mMorningTweetTex )
-		gl::draw( mMorningTweetTex, Vec2f( 0.1f, mMorningTweetPos ) * mDrawBounds.getSize() + mDrawBounds.getUpperLeft() );
+		gl::draw( mMorningTweetTex, vec2( 0.1f, mMorningTweetPos ) * mDrawBounds.getSize() + mDrawBounds.getUpperLeft() );
 	gl::color( ColorA( 1, 1, 1, mNightTweetAlpha ) );
 	if( mNightTweetTex )
-		gl::draw( mNightTweetTex, Vec2f( 0.6f, mNightTweetPos ) * mDrawBounds.getSize() + mDrawBounds.getUpperLeft() );
+		gl::draw( mNightTweetTex, vec2( 0.6f, mNightTweetPos ) * mDrawBounds.getSize() + mDrawBounds.getUpperLeft() );
 	gl::color( Color::white() ); // restore for future drawing
 }
 

@@ -19,7 +19,7 @@ class ConvexHullApp : public AppNative {
 	void draw();
 
 	bool				mUsingShape;
-	vector<Vec2f>		mPoints;
+	vector<vec2>		mPoints;
 	Shape2d				mShape;
 
 	PolyLine2f			mConvexHull;
@@ -30,7 +30,7 @@ class ConvexHullApp : public AppNative {
 void ConvexHullApp::setup()
 {
 	mUsingShape = true;
-	mParams = params::InterfaceGl::create( "App parameters", Vec2i( 180, 100 ) );
+	mParams = params::InterfaceGl::create( "App parameters", ivec2( 180, 100 ) );
 	mParams->addParam( "Use Glyph", &mUsingShape );
 	mParams->addButton( "Clear Points", [&] { mPoints.clear(); } );
 	
@@ -42,7 +42,7 @@ void ConvexHullApp::makeNewLetter()
 {
 	Font arial( "Times", 512 );
 	mShape = arial.getGlyphShape( arial.getGlyphChar( '!' + randInt( 92 ) ) );
-	MatrixAffine2f transform = MatrixAffine2f::makeTranslate( Vec2f( 100, getWindowHeight() - 100 ) );
+	MatrixAffine2f transform = MatrixAffine2f::makeTranslate( vec2( 100, getWindowHeight() - 100 ) );
 	mShape.transform( transform );
 }
 

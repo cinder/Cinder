@@ -28,7 +28,7 @@ class EuroMapApp : public AppBasic {
 	Anim<float>			mCurrentCountryAlpha;
 };
 
-gl::TextureRef renderSvgToTexture( svg::DocRef doc, Vec2i size )
+gl::TextureRef renderSvgToTexture( svg::DocRef doc, ivec2 size )
 {
 	cairo::SurfaceImage srf( size.x, size.y, false );
 	cairo::Context ctx( srf );
@@ -81,11 +81,11 @@ void EuroMapApp::draw()
 	
 		// draw the name
 		string countryName = mCurrentCountry->getId();
-		Vec2f pos = mCurrentCountry->getBoundingBoxAbsolute().getCenter();
+		vec2 pos = mCurrentCountry->getBoundingBoxAbsolute().getCenter();
 		pos.x -= mFont->measureString( countryName ).x / 2;
 		
 		gl::color( ColorA( 1, 1, 1, mCurrentCountryAlpha ) );
-		mFont->drawString( countryName, pos + Vec2f( 2, 2 ) );
+		mFont->drawString( countryName, pos + vec2( 2, 2 ) );
 		gl::color( ColorA( 0, 0, 0, mCurrentCountryAlpha ) );
 		mFont->drawString( countryName, pos );		
 	}

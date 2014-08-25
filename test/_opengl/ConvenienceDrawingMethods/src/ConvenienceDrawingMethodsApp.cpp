@@ -27,14 +27,14 @@ class ConvenienceDrawingMethodsApp : public AppNative {
 	void draw();
 private:
 	Path2d			mPath;
-	PolyLine<Vec2f>	mPolyline2D;
-	PolyLine<Vec3f>	mPolyline3D;
+	PolyLine<vec2>	mPolyline2D;
+	PolyLine<vec3>	mPolyline3D;
 };
 
 void ConvenienceDrawingMethodsApp::setup()
 {
-	mPath.arc( Vec2f::zero(), cCircleRadius, 0.0f, M_PI * 1.66f );
-	mPath.lineTo( Vec2f::zero() );
+	mPath.arc( vec2::zero(), cCircleRadius, 0.0f, M_PI * 1.66f );
+	mPath.lineTo( vec2::zero() );
 
 	Rand r;
 	for( int i = 0; i < 50; ++i )
@@ -53,7 +53,7 @@ void ConvenienceDrawingMethodsApp::setup()
 		float x = cCircleRadius * sin( inclination * i ) * cos( azimuth * i );
 		float y = cCircleRadius * cos( inclination * i );
 		float z = cCircleRadius * sin( inclination * i ) * sin( azimuth * i );
-		mPolyline3D.push_back( Vec3f( x, y, z ) );
+		mPolyline3D.push_back( vec3( x, y, z ) );
 	}
 }
 
@@ -75,16 +75,16 @@ void ConvenienceDrawingMethodsApp::draw()
 	const int numCircles = 4;
 	gl::color( Color( 1.0f, 1.0f, 0.0f ) );
 	for( int i = 0; i < numCircles; ++i ) {
-		gl::drawSolidCircle( Vec2f( (i + 1.0f) * cGridStep, cGridStep ), cCircleRadius, i * 3 );
+		gl::drawSolidCircle( vec2( (i + 1.0f) * cGridStep, cGridStep ), cCircleRadius, i * 3 );
 	}
 
 	gl::color( Color( 1.0f, 0.0f, 0.0f ) );
 	for( int i = 0; i < numCircles; ++i ) {
-		gl::drawStrokedCircle( Vec2f( (i + 1.0f) * cGridStep, cGridStep ), cCircleRadius, i * 3 );
+		gl::drawStrokedCircle( vec2( (i + 1.0f) * cGridStep, cGridStep ), cCircleRadius, i * 3 );
 	}
 
 	// Draw a line in 2D
-	gl::drawLine( Vec2f( 10.0f, cGridStep * 1.5f ), Vec2f( getWindowWidth() - 10.0f, cGridStep * 1.5f ) );
+	gl::drawLine( vec2( 10.0f, cGridStep * 1.5f ), vec2( getWindowWidth() - 10.0f, cGridStep * 1.5f ) );
 
 	// Draw a Path2d both stroked and filled
 	gl::pushModelMatrix();
@@ -117,9 +117,9 @@ void ConvenienceDrawingMethodsApp::draw()
 	gl::translate( cGridStep, 0.0f );
 	gl::pushModelMatrix();
 	gl::rotate( -getElapsedSeconds() * 90.0f, 0.0f, 0.5f, 1.0f );
-	gl::drawLine( Vec3f( 0.0f, 0.0f, cCircleRadius ), Vec3f( 0.0f, 0.0f, -cCircleRadius ) );
-	gl::drawLine( Vec3f( -cCircleRadius, 0.0f, 0.0f ), Vec3f( cCircleRadius, 0.0f, 0.0f ) );
-	gl::drawLine( Vec3f( 0.0f, -cCircleRadius, 0.0f ), Vec3f( 0.0f, cCircleRadius, 0.0f ) );
+	gl::drawLine( vec3( 0.0f, 0.0f, cCircleRadius ), vec3( 0.0f, 0.0f, -cCircleRadius ) );
+	gl::drawLine( vec3( -cCircleRadius, 0.0f, 0.0f ), vec3( cCircleRadius, 0.0f, 0.0f ) );
+	gl::drawLine( vec3( 0.0f, -cCircleRadius, 0.0f ), vec3( 0.0f, cCircleRadius, 0.0f ) );
 	gl::popModelMatrix();
 	gl::popModelMatrix();
 }

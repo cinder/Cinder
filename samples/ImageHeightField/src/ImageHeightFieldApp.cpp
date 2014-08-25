@@ -44,7 +44,7 @@ void ImageHFApp::setup()
 	gl::enableDepthWrite();    
 
 	// initialize the arcball with a semi-arbitrary rotation just to give an interesting angle
-	mArcball.setQuat( Quatf( Vec3f( 0.0577576f, -0.956794f, 0.284971f ), 3.68f ) );
+	mArcball.setQuat( quat( 0.28f, vec3( 0.0577576f, -0.956794f, 0.284971f ) ) );
 
 	openFile();
 }
@@ -68,10 +68,10 @@ void ImageHFApp::openFile()
 void ImageHFApp::resize()
 {
 	mArcball.setWindowSize( getWindowSize() );
-	mArcball.setCenter( Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
+	mArcball.setCenter( vec2( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
 	mArcball.setRadius( getWindowHeight() / 2.0f );
 
-	mCam.lookAt( Vec3f( 0.0f, 0.0f, -150 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0.0f, 0.0f, -150 ), vec3( 0, 0, 0 ) );
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
 	gl::setMatrices( mCam );
 }
@@ -112,7 +112,7 @@ void ImageHFApp::draw()
     gl::clear();
 
     gl::pushModelView();
-		gl::translate( Vec3f( 0.0f, 0.0f, mHeight / 2.0f ) );
+		gl::translate( vec3( 0.0f, 0.0f, mHeight / 2.0f ) );
 		gl::rotate( mArcball.getQuat() );
 		if( mVboMesh )
 			gl::draw( mVboMesh );
@@ -154,8 +154,8 @@ void ImageHFApp::updateData( ImageHFApp::ColorSwitch whichColor )
 			float x = pixelIter.x() - mWidth / 2.0f;
 			float z = pixelIter.y() - mHeight / 2.0f;
 
-			*vertPosIter++ = Vec3f( x, height * 30.0f, z );
-			*vertColorIter++ = Vec3f( color.r, color.g, color.b );
+			*vertPosIter++ = vec3( x, height * 30.0f, z );
+			*vertColorIter++ = vec3( color.r, color.g, color.b );
 		}
 	}
 

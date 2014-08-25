@@ -9,11 +9,11 @@ Particle::Particle()
 {
 }
 
-Particle::Particle( Vec2f loc, Vec2f vel )
+Particle::Particle( vec2 loc, vec2 vel )
 {
 	mLoc			= loc;
 	mVel			= vel;
-	mAcc			= Vec2f::zero();
+	mAcc			= vec2::zero();
 	
 	mDecay			= Rand::randFloat( 0.95f, 0.951f );
 	mRadius			= 3.0f + Rand::randFloat( 0.1 );
@@ -27,7 +27,7 @@ Particle::Particle( Vec2f loc, Vec2f vel )
 
 void Particle::pullToCenter()
 {
-	Vec2f dirToCenter = mLoc - app::getWindowCenter();
+	vec2 dirToCenter = mLoc - app::getWindowCenter();
 	mVel -= dirToCenter * mMass * 0.025f;
 }	
 
@@ -38,11 +38,11 @@ void Particle::applyPerlin( const Perlin &perlin )
 	float nZ = app::getElapsedFrames() * 0.0025f;
 	float noise = perlin.fBm( nX, nY, nZ );
 	float angle = noise * 15.0f;
-	Vec2f noiseVector( cos( angle ), sin( angle ) );
+	vec2 noiseVector( cos( angle ), sin( angle ) );
 	mVel += noiseVector * mMass * 5.0f;
 }
 
-void Particle::update( const Channel32f &channel, const Vec2i &mouseLoc )
+void Particle::update( const Channel32f &channel, const ivec2 &mouseLoc )
 {	
 	mVel += mAcc;
 

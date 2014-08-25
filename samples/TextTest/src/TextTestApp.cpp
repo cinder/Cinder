@@ -94,8 +94,8 @@ void TextTestApp::draw()
 	gl::enableAlphaBlending( PREMULT );
 
 	gl::color( Color::white() );
-	gl::draw( mTexture, Vec2f( 10, 10 ) );
-	gl::draw( mSimpleTexture, Vec2f( 10, getWindowHeight() - mSimpleTexture.getHeight() - 5 ) );
+	gl::draw( mTexture, vec2( 10, 10 ) );
+	gl::draw( mSimpleTexture, vec2( 10, getWindowHeight() - mSimpleTexture.getHeight() - 5 ) );
 }
 
 // This line tells Cinder to actually create the application

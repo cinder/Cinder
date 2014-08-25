@@ -469,7 +469,7 @@ void BSpline<D,T>::createControl( const VecT *akCtrlPoint )
 {
 	int iNewNumCtrlPoints = mNumCtrlPoints + mReplicate;
 	mCtrlPoints = new VecT[iNewNumCtrlPoints];
-	size_t uiSrcSize = mNumCtrlPoints * D;
+	size_t uiSrcSize = mNumCtrlPoints * sizeof( VecT );
 	memcpy( mCtrlPoints, akCtrlPoint, uiSrcSize );
 	for( int i = 0; i < mReplicate; i++ ) {
 		mCtrlPoints[mNumCtrlPoints+i] = akCtrlPoint[i];
@@ -479,21 +479,21 @@ void BSpline<D,T>::createControl( const VecT *akCtrlPoint )
 template<int D,typename T>
 void BSpline<D,T>::setControlPoint( int i, const VecT &rkCtrl )
 {
-	if( ( 0 <= i ) && ( i < mNumCtrlPoints ) ) {
-		// set the control point
-		mCtrlPoints[i] = rkCtrl;
+	assert( i >= 0 && i < mNumCtrlPoints );
 
-		// set the replicated control point
-		if( i < mReplicate ) {
-			mCtrlPoints[mNumCtrlPoints+i] = rkCtrl;
-		}
+	// set the control point
+	mCtrlPoints[i] = rkCtrl;
+
+	// set the replicated control point
+	if( i < mReplicate ) {
+		mCtrlPoints[mNumCtrlPoints+i] = rkCtrl;
 	}
 }
 
 template<int D,typename T>
 typename BSpline<D,T>::VecT BSpline<D,T>::getControlPoint( int i ) const
 {
-	assert( i > 0 && i < mNumCtrlPoints );
+	assert( i >= 0 && i < mNumCtrlPoints );
 
 	return mCtrlPoints[i];
 }
@@ -652,6 +652,12 @@ typename BSpline<D,T>::VecT BSpline<D,T>::getThirdDerivative( float t ) const
 	VecT d3;
 	get( t, 0, 0, 0, &d3 );
 	return d3;
+}
+
+template<int D,typename T>
+T BSpline<D,T>::getSpeed( float t ) const
+{
+	return length( getDerivative( t ) );
 }
 
 // explicit template instantiations

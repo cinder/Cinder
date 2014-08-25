@@ -37,7 +37,7 @@ class ImageTargetChannel : public ImageTarget {
 
 	virtual bool hasAlpha() const { return false; }
 	
-	virtual void*	getRowPointer( int32_t row ) { return reinterpret_cast<void*>( mChannel->getData( Vec2i( 0, row ) ) ); }
+	virtual void*	getRowPointer( int32_t row ) { return reinterpret_cast<void*>( mChannel->getData( ivec2( 0, row ) ) ); }
 	
   protected:
 	ImageTargetChannel( ChannelT<T> *channel )
@@ -200,9 +200,9 @@ ChannelT<T> ChannelT<T>::clone( const Area &area, bool copyPixels ) const
 
 
 template<typename T>
-void ChannelT<T>::copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const Vec2i &relativeOffset )
+void ChannelT<T>::copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &relativeOffset )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
 	
 	int32_t srcRowBytes = srcChannel.getRowBytes();
 	uint8_t srcIncrement = srcChannel.getIncrement();

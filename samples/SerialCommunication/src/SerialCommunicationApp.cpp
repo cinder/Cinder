@@ -144,7 +144,7 @@ void SerialCommunicationApp::draw()
 	
 	if(bTextureComplete){
 		glColor3f( 1.0f, 1.0f, 1.0f );
-		gl::draw( mTexture, Vec2f( 10, 10 ) );
+		gl::draw( mTexture, vec2( 10, 10 ) );
 	}
 	
 	

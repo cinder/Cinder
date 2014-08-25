@@ -347,7 +347,7 @@ void resize( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface, const Filte
 }
 
 template<typename T>
-SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &dstSize, const FilterBase &filter )
+SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter )
 {
 	SurfaceT<T> result( dstSize.x, dstSize.y, srcSurface.hasAlpha(), srcSurface.getChannelOrder() );
 	resize( srcSurface, srcArea, &result, result.getBounds(), filter );
@@ -364,7 +364,7 @@ void resize( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel, const Filte
 	template void resize( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface, const FilterBase &filter ); \
 	template void resize( const SurfaceT<T> &srcSurface, const Area &srcArea, SurfaceT<T> *dstSurface, const Area &dstArea, const FilterBase &filter ); \
 	template void resize( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel, const FilterBase &filter ); \
-	template SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &dstSize, const FilterBase &filter ); \
+	template SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter ); \
 	template void resize( const ChannelT<T> &srcChannel, const Area &srcArea, ChannelT<T> *dstChannel, const Area &dstArea, const FilterBase &filter );
 
 BOOST_PP_SEQ_FOR_EACH( resize_PROTOTYPES, ~, CHANNEL_TYPES )

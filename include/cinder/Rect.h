@@ -148,7 +148,7 @@ class RectMapping {
 		: mSrcRect( aSrcRect ), mDstRect( aDstRect ) {}
 	RectMapping( const Rectf &aSrcRect, const Rectf &aDstRect, bool preserveSrcAspect );
 		
-	Vec2f	map( const Vec2f &srcPoint ) const;
+	vec2	map( const vec2 &srcPoint ) const;
 	Rectf	map( const Rectf &srcRect ) const;
 	
  private:

@@ -101,7 +101,7 @@ void copyDataImpl( const float *srcData, size_t numElements, size_t dstStrideByt
 }
 
 template<uint8_t DSTDIM>
-void copyDataMultAddImpl( const float *srcData, size_t numElements, size_t dstStrideBytes, float *dstData, const Vec2f &mult, const Vec2f &add )
+void copyDataMultAddImpl( const float *srcData, size_t numElements, size_t dstStrideBytes, float *dstData, const vec2 &mult, const vec2 &add )
 {
 	static const float sFillerData[4] = { 0, 0, 0, 1 };
 	const uint8_t MINDIM = (2 < DSTDIM) ? 2 : DSTDIM;
@@ -123,7 +123,7 @@ void copyDataMultAddImpl( const float *srcData, size_t numElements, size_t dstSt
 }
 
 template<uint8_t DSTDIM>
-void copyDataMultAddImpl( const float *srcData, size_t numElements, size_t dstStrideBytes, float *dstData, const Vec3f &mult, const Vec3f &add )
+void copyDataMultAddImpl( const float *srcData, size_t numElements, size_t dstStrideBytes, float *dstData, const vec3 &mult, const vec3 &add )
 {
 	static const float sFillerData[4] = { 0, 0, 0, 1 };
 	const uint8_t MINDIM = (3 < DSTDIM) ? 3 : DSTDIM;
@@ -185,7 +185,7 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 }
 
 void Source::copyDataMultAdd( const float *srcData, size_t numElements,
-	uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const Vec3f &mult, const Vec3f &add )
+	uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec3 &mult, const vec3 &add )
 {
 	switch( dstDimensions) {
 	case 2: copyDataMultAddImpl<2>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
@@ -196,7 +196,7 @@ void Source::copyDataMultAdd( const float *srcData, size_t numElements,
 }
 
 void Source::copyDataMultAdd( const float *srcData, size_t numElements,
-	uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const Vec2f &mult, const Vec2f &add )
+	uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec2 &mult, const vec2 &add )
 {
 	switch( dstDimensions) {
 	case 2: copyDataMultAddImpl<2>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
@@ -312,9 +312,9 @@ Rect::Rect()
 
 void Rect::loadInto( Target *target ) const
 {
-	unique_ptr<Vec2f[]> positions( new Vec2f[4] );
+	unique_ptr<vec2[]> positions( new vec2[4] );
 	for( size_t p = 0; p < 4; ++p )
-		positions.get()[p] = Vec2f( sPositions[p*2+0], sPositions[p*2+1] ) * mScale + mPos;
+		positions.get()[p] = vec2( sPositions[p*2+0], sPositions[p*2+1] ) * mScale + mPos;
 
 	target->copyAttrib( Attrib::POSITION, 2, 0, value_ptr( *positions.get() ), 4 );
 	if( isEnabled( Attrib::COLOR ) )
@@ -443,7 +443,7 @@ void Icosahedron::calculate() const
 	mNormals.resize( 60 );
 
 	for( size_t i = 0; i < 60; ++i ) {
-		mPositions[i] = *reinterpret_cast<const Vec3f*>(&sPositions[sIndices[i]*3]);
+		mPositions[i] = *reinterpret_cast<const vec3*>(&sPositions[sIndices[i]*3]);
 		mIndices[i] = (uint32_t) i;
 	}
 
@@ -454,12 +454,12 @@ void Icosahedron::calculate() const
 		const uint32_t index1 = mIndices[i*3+1];
 		const uint32_t index2 = mIndices[i*3+2];
 
-		const Vec3f &v0 = mPositions[index0];
-		const Vec3f &v1 = mPositions[index1];
-		const Vec3f &v2 = mPositions[index2];
+		const vec3 &v0 = mPositions[index0];
+		const vec3 &v1 = mPositions[index1];
+		const vec3 &v2 = mPositions[index2];
 
-		Vec3f e0 = v1 - v0;
-		Vec3f e1 = v2 - v0;
+		vec3 e0 = v1 - v0;
+		vec3 e1 = v2 - v0;
 
 		mNormals[index0] = mNormals[index1] = mNormals[index2] = normalize( cross( e0, e1 ) );
 	}
@@ -657,13 +657,13 @@ void Teapot::generatePatches( float *v, float *n, float *tc, uint32_t *el, int g
 void Teapot::buildPatchReflect( int patchNum, float *B, float *dB, float *v, float *n, float *tc, unsigned int *el,
 	int &index, int &elIndex, int &tcIndex, int grid, bool reflectX, bool reflectY )
 {
-	Vec3f patch[4][4];
-	Vec3f patchRevV[4][4];
+	vec3 patch[4][4];
+	vec3 patchRevV[4][4];
 	getPatch( patchNum, patch, false);
 	getPatch( patchNum, patchRevV, true);
 
 	// Patch without modification
-	buildPatch( patchRevV, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, Matrix33f(), false );
+	buildPatch( patchRevV, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, mat3(), false );
 
 	// TODO: just make the matrix first and then call buildPatch once...
 
@@ -692,8 +692,8 @@ void Teapot::buildPatchReflect( int patchNum, float *B, float *dB, float *v, flo
 	}
 }
 
-void Teapot::buildPatch( Vec3f patch[][4], float *B, float *dB, float *v, float *n, float *tc, 
-	unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, Matrix33f reflect, bool invertNormal )
+void Teapot::buildPatch( vec3 patch[][4], float *B, float *dB, float *v, float *n, float *tc, 
+	unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, mat3 reflect, bool invertNormal )
 {
 	int startIndex = index / 3;
 	float tcFactor = 1.0f / grid;
@@ -735,19 +735,19 @@ void Teapot::buildPatch( Vec3f patch[][4], float *B, float *dB, float *v, float 
 	}
 }
 
-void Teapot::getPatch( int patchNum, Vec3f patch[][4], bool reverseV )
+void Teapot::getPatch( int patchNum, vec3 patch[][4], bool reverseV )
 {
 	for( int u = 0; u < 4; u++) {          // Loop in u direction
 		for( int v = 0; v < 4; v++ ) {     // Loop in v direction
 			if( reverseV ) {
-				patch[u][v] = Vec3f(
+				patch[u][v] = vec3(
 					sCurveData[sPatchIndices[patchNum][u*4+(3-v)]][0],
 					sCurveData[sPatchIndices[patchNum][u*4+(3-v)]][1],
 					sCurveData[sPatchIndices[patchNum][u*4+(3-v)]][2]
 				);
 			}
 			else {
-				patch[u][v] = Vec3f(
+				patch[u][v] = vec3(
 					sCurveData[sPatchIndices[patchNum][u*4+v]][0],
 					sCurveData[sPatchIndices[patchNum][u*4+v]][1],
 					sCurveData[sPatchIndices[patchNum][u*4+v]][2]
@@ -778,7 +778,7 @@ void Teapot::computeBasisFunctions( float *B, float *dB, int grid )
 	}
 }
 
-Vec3f Teapot::evaluate( int gridU, int gridV, const float *B, const Vec3f patch[][4] )
+vec3 Teapot::evaluate( int gridU, int gridV, const float *B, const vec3 patch[][4] )
 {
 	vec3 p;
 	for( int i = 0; i < 4; i++) {
@@ -790,7 +790,7 @@ Vec3f Teapot::evaluate( int gridU, int gridV, const float *B, const Vec3f patch[
 	return p;
 }
 
-Vec3f Teapot::evaluateNormal( int gridU, int gridV, const float *B, const float *dB, const Vec3f patch[][4] )
+vec3 Teapot::evaluateNormal( int gridU, int gridV, const float *B, const float *dB, const vec3 patch[][4] )
 {
 	vec3 du, dv;
 	for( int i = 0; i < 4; i++ ) {
@@ -842,29 +842,29 @@ void Circle::updateVertexCounts()
 
 void Circle::calculate() const
 {
-	mPositions.resize(mNumVertices); //  = unique_ptr<Vec2f[]>( new Vec2f[mNumVertices] );
+	mPositions.resize(mNumVertices); //  = unique_ptr<vec2[]>( new vec2[mNumVertices] );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		mTexCoords.resize(mNumVertices); // = unique_ptr<Vec2f[]>( new Vec2f[mNumVertices] );
+		mTexCoords.resize(mNumVertices); // = unique_ptr<vec2[]>( new vec2[mNumVertices] );
 	if( isEnabled( Attrib::NORMAL ) )		
-		mNormals.resize(mNumVertices); // = unique_ptr<Vec3f[]>( new Vec3f[mNumVertices] );	
+		mNormals.resize(mNumVertices); // = unique_ptr<vec3[]>( new vec3[mNumVertices] );	
 
 	// center
 	mPositions[0] = mCenter;
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		mTexCoords[0] = Vec2f( 0.5f, 0.5f );
+		mTexCoords[0] = vec2( 0.5f, 0.5f );
 	if( isEnabled( Attrib::NORMAL ) )
-		mNormals[0] = Vec3f( 0, 0, 1 );
+		mNormals[0] = vec3( 0, 0, 1 );
 
 	// iterate the segments
 	const float tDelta = 1 / (float)mNumSegments * 2.0f * 3.14159f;
 	float t = 0;
 	for( int s = 0; s <= mNumSegments; s++ ) {
-		Vec2f unit( math<float>::cos( t ), math<float>::sin( t ) );
+		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
 		mPositions[s+1] = mCenter + unit * mRadius;
 		if( isEnabled( Attrib::TEX_COORD_0 ) )
-			mTexCoords[s+1] = unit * 0.5f + Vec2f( 0.5f, 0.5f );
+			mTexCoords[s+1] = unit * 0.5f + vec2( 0.5f, 0.5f );
 		if( isEnabled( Attrib::NORMAL ) )
-			mNormals[s+1] = Vec3f( 0, 0, 1 );
+			mNormals[s+1] = vec3( 0, 0, 1 );
 		t += tDelta;
 	}
 }
@@ -1032,8 +1032,8 @@ void Icosphere::calculate() const
 		return;
 
 	// start by copying the base icosahedron in its entirety (vertices are shared among faces)
-	mPositions.assign( reinterpret_cast<Vec3f*>(sPositions), reinterpret_cast<Vec3f*>(sPositions) + 12 );
-	mNormals.assign( reinterpret_cast<Vec3f*>(sPositions), reinterpret_cast<Vec3f*>(sPositions) + 12 );
+	mPositions.assign( reinterpret_cast<vec3*>(sPositions), reinterpret_cast<vec3*>(sPositions) + 12 );
+	mNormals.assign( reinterpret_cast<vec3*>(sPositions), reinterpret_cast<vec3*>(sPositions) + 12 );
 	mIndices.assign( sIndices, sIndices + 60 );
 
 	// subdivide all triangles
@@ -1069,13 +1069,13 @@ void Icosphere::calculateImplUV() const
 	// calculate texture coords
 	mTexCoords.resize( mNormals.size(), vec2() );
 	for( size_t i = 0; i < mNormals.size(); ++i ) {
-		const Vec3f &normal = mNormals[i];
+		const vec3 &normal = mNormals[i];
 		mTexCoords[i].x = (math<float>::atan2( normal.z, -normal.x ) / float(M_PI)) * 0.5f + 0.5f;
 		mTexCoords[i].y = -normal.y * 0.5f + 0.5f;
 	}
 
 	// lambda closure to easily add a vertex with unique texture coordinate to our mesh
-	auto addVertex = [&] ( size_t i, const Vec2f &uv ) {
+	auto addVertex = [&] ( size_t i, const vec2 &uv ) {
 		const uint32_t index = mIndices[i];
 		mIndices[i] = mPositions.size();
 		mPositions.push_back( mPositions[index] );
@@ -1089,21 +1089,21 @@ void Icosphere::calculateImplUV() const
 	// fix texture seams (this is where the magic happens)
 	size_t numTriangles = mIndices.size() / 3;
 	for( size_t i = 0; i < numTriangles; ++i ) {
-		const Vec2f &uv0 = mTexCoords[ mIndices[i * 3 + 0] ];
-		const Vec2f &uv1 = mTexCoords[ mIndices[i * 3 + 1] ];
-		const Vec2f &uv2 = mTexCoords[ mIndices[i * 3 + 2] ];
+		const vec2 &uv0 = mTexCoords[ mIndices[i * 3 + 0] ];
+		const vec2 &uv1 = mTexCoords[ mIndices[i * 3 + 1] ];
+		const vec2 &uv2 = mTexCoords[ mIndices[i * 3 + 2] ];
 
 		const float d1 = uv1.x - uv0.x;
 		const float d2 = uv2.x - uv0.x;
 
 		if( math<float>::abs(d1) > 0.5f && math<float>::abs(d2) > 0.5f ) {
-			addVertex( i * 3 + 0, uv0 + Vec2f( (d1 > 0.0f) ? 1.0f : -1.0f, 0.0f ) );
+			addVertex( i * 3 + 0, uv0 + vec2( (d1 > 0.0f) ? 1.0f : -1.0f, 0.0f ) );
 		}
 		else if( math<float>::abs(d1) > 0.5f ) {
-			addVertex( i * 3 + 1, uv1 + Vec2f( (d1 < 0.0f) ? 1.0f : -1.0f, 0.0f ) );
+			addVertex( i * 3 + 1, uv1 + vec2( (d1 < 0.0f) ? 1.0f : -1.0f, 0.0f ) );
 		}
 		else if( math<float>::abs(d2) > 0.5f ) {
-			addVertex( i * 3 + 2, uv2 + Vec2f( (d2 < 0.0f) ? 1.0f : -1.0f, 0.0f ) );
+			addVertex( i * 3 + 2, uv2 + vec2( (d2 < 0.0f) ? 1.0f : -1.0f, 0.0f ) );
 		}
 	}
 }
@@ -1195,7 +1195,7 @@ Capsule::Capsule()
 	enable( Attrib::TEX_COORD_0 );
 }
 
-Capsule& Capsule::set( const Vec3f &from, const Vec3f &to )
+Capsule& Capsule::set( const vec3 &from, const vec3 &to )
 {
 	const vec3 axis = to - from;
 	mLength = glm::length( axis );
@@ -1267,7 +1267,7 @@ void Capsule::calculateImplUV( size_t segments, size_t rings ) const
 
 void Capsule::calculateRing( size_t segments, float radius, float y, float dy ) const
 {
-	const Quatf quaternion( vec3( 0, 1, 0 ), mDirection );
+	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
 
 	bool hasNormals = isEnabled( Attrib::NORMAL );
 	bool hasTexCoords = isEnabled( Attrib::TEX_COORD_0 );
@@ -1287,11 +1287,11 @@ void Capsule::calculateRing( size_t segments, float radius, float y, float dy ) 
 			// perform cylindrical projection
 			float u = 1.0f - (s * segIncr);
 			float v = 0.5f - ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
-			mTexCoords.push_back( Vec2f( u, v ) );
+			mTexCoords.push_back( vec2( u, v ) );
 		}
 		if( hasColors ) {
 			float g = 0.5f + ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
-			mColors.push_back( Vec3f( x * 0.5f + 0.5f, g, z * 0.5f + 0.5f ) );
+			mColors.push_back( vec3( x * 0.5f + 0.5f, g, z * 0.5f + 0.5f ) );
 		}
 	}
 }
@@ -1360,13 +1360,13 @@ void Torus::calculateImplUV( size_t segments, size_t rings ) const
 			float z = r * sinPhi;
 
 			const size_t k = i * rings + j;
-			mPositions[k] = mCenter + Vec3f( x, y, z );
-			mTexCoords[k] = Vec2f( i * majorIncr, j * minorIncr );
-			mNormals[k] = Vec3f( cosPhi * cosTheta, sinTheta, sinPhi * cosTheta );
+			mPositions[k] = mCenter + vec3( x, y, z );
+			mTexCoords[k] = vec2( i * majorIncr, j * minorIncr );
+			mNormals[k] = vec3( cosPhi * cosTheta, sinTheta, sinPhi * cosTheta );
 
 			if( isEnabled( Attrib::COLOR ) ) {
-				const Vec3f &n = mNormals[k];
-				mColors[k] = Vec3f( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
+				const vec3 &n = mNormals[k];
+				mColors[k] = vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
 			}
 		}
 	}
@@ -1424,9 +1424,9 @@ Cylinder::Cylinder()
 	enable( Attrib::TEX_COORD_0 );
 }
 
-Cylinder& Cylinder::set( const Vec3f &from, const Vec3f &to )
+Cylinder& Cylinder::set( const vec3 &from, const vec3 &to )
 {
-	const Vec3f axis = ( to - from );
+	const vec3 axis = ( to - from );
 	mHeight = length( axis );
 	mDirection = normalize( axis );
 	mOrigin = from;
@@ -1464,7 +1464,7 @@ void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
 
 	const float segmentIncr = 1.0f / (segments - 1);
 	const float ringIncr = 1.0f / (rings - 1);
-	const Quatf axis( vec3( 0, 1, 0 ), mDirection );
+	const quat axis( vec3( 0, 1, 0 ), mDirection );
 
 	// vertex, normal, tex coord and color buffers
 	for( size_t j = 0; j < rings; ++j ) {
@@ -1476,15 +1476,15 @@ void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
 			float x = r * cosPhi;
 			float y = mHeight * j * ringIncr;
 			float z = r * sinPhi;
-			const Vec3f n = normalize( vec3( mHeight * cosPhi, mRadiusBase - mRadiusApex, mHeight * sinPhi ) );
+			const vec3 n = normalize( vec3( mHeight * cosPhi, mRadiusBase - mRadiusApex, mHeight * sinPhi ) );
 
 			const size_t k = i * rings + j;
 			mPositions[k] = mOrigin + axis * vec3( x, y, z );
-			mTexCoords[k] = Vec2f( i * segmentIncr, 1.0f - j * ringIncr );
+			mTexCoords[k] = vec2( i * segmentIncr, 1.0f - j * ringIncr );
 			mNormals[k] = axis * n;
 
 			if( isEnabled( Attrib::COLOR ) ) {
-				mColors[k] = Vec3f( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
+				mColors[k] = vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
 			}
 		}
 	}
@@ -1522,19 +1522,19 @@ void Cylinder::calculateCap( bool flip, float height, float radius, size_t segme
 	mNormals.resize( index + segments * 2, flip ? -mDirection : mDirection );
 
 	if( isEnabled( Attrib::COLOR ) ) {
-		const Vec3f n = flip ? -mDirection : mDirection;
+		const vec3 n = flip ? -mDirection : mDirection;
 		mColors.resize( index + segments * 2, 
-			Vec3f( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
+			vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
 	}
 
-	const Quatf axis( vec3( 0, 1, 0 ), mDirection );
+	const quat axis( vec3( 0, 1, 0 ), mDirection );
 
 	// vertices
 	const float segmentIncr = 1.0f / (segments - 1);
 	for( size_t i = 0; i < segments; ++i ) {
 		// center point
 		mPositions[index + i * 2 + 0] = mOrigin + mDirection * height;
-		mTexCoords[index + i * 2 + 0] = Vec2f( i * segmentIncr, 1.0f - height / mHeight );
+		mTexCoords[index + i * 2 + 0] = vec2( i * segmentIncr, 1.0f - height / mHeight );
 
 		// edge point
 		float cosPhi = -math<float>::cos( i * segmentIncr * float(M_PI * 2) );
@@ -1545,7 +1545,7 @@ void Cylinder::calculateCap( bool flip, float height, float radius, size_t segme
 		float z = radius * sinPhi;
 
 		mPositions[index + i * 2 + 1] = mOrigin + axis * vec3( x, y, z );
-		mTexCoords[index + i * 2 + 1] = Vec2f( i * segmentIncr, 1.0f - height / mHeight );
+		mTexCoords[index + i * 2 + 1] = vec2( i * segmentIncr, 1.0f - height / mHeight );
 	}
 
 	// index buffer
@@ -1597,13 +1597,13 @@ void Cylinder::loadInto( Target *target ) const
 ///////////////////////////////////////////////////////////////////////////////////////
 // SplineExtrusion
 #if 0
-SplineExtrusion::SplineExtrusion( const std::function<Vec3f(float)> &pathCurve, int pathSegments, float radius, int radiusSegments )
-	: mCalculationsCached( false ), mScale( 1 , 1, 1 ), mPos( Vec3f::zero() )
+SplineExtrusion::SplineExtrusion( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments )
+	: mCalculationsCached( false ), mScale( 1 , 1, 1 ), mPos( vec3( 0 ) )
 {
 	calculateCurve( pathCurve, pathSegments, radius, radiusSegments );
 }
 
-void SplineExtrusion::calculateCurve( const std::function<Vec3f(float)> &pathCurve, int pathSegments, float radius, int radiusSegments ) const
+void SplineExtrusion::calculateCurve( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments ) const
 {
 	mNumVertices = pathSegments * radiusSegments;
 	int numTriangles = ( pathSegments - 1 ) * radiusSegments * 2;

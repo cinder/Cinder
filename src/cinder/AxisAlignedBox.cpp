@@ -26,21 +26,21 @@
 
 namespace cinder {
 
-AxisAlignedBox3f::AxisAlignedBox3f( const Vec3f &aMin, const Vec3f &aMax )
+AxisAlignedBox3f::AxisAlignedBox3f( const vec3 &aMin, const vec3 &aMax )
 {
-	mExtents[0] = Vec3f( aMin.x, aMin.y, aMin.z );
-	mExtents[1] = Vec3f( aMax.x, aMax.y, aMax.z );
+	mExtents[0] = vec3( aMin.x, aMin.y, aMin.z );
+	mExtents[1] = vec3( aMax.x, aMax.y, aMax.z );
 
-	Vec3f extent( aMax.x - aMin.x, aMax.y - aMin.y, aMax.z - aMin.z );
-	Vec3f mid( ( aMin.x + aMax.x ) / 2.0f, ( aMin.y + aMax.y ) / 2.0f, ( aMin.z + aMax.z ) / 2.0f );
-	mVerts[0] = Vec3f( -0.5f, -0.5f, 0.5f ) * extent +  mid;
-	mVerts[1] = Vec3f( 0.5f, -0.5f, 0.5f ) * extent + mid;
-	mVerts[2] = Vec3f( -0.5f, 0.5f, 0.5f ) * extent + mid;
-	mVerts[3] = Vec3f( 0.5f, 0.5f, 0.5f ) * extent + mid;
-	mVerts[4] = Vec3f( -0.5f, 0.5f, -0.5f ) * extent + mid;
-	mVerts[5] = Vec3f( 0.5f, 0.5f, -0.5f ) * extent + mid;
-	mVerts[6] = Vec3f( -0.5f, -0.5f, -0.5f ) * extent + mid;
-	mVerts[7] = Vec3f( 0.5f, -0.5f, -0.5f ) * extent + mid;
+	vec3 extent( aMax.x - aMin.x, aMax.y - aMin.y, aMax.z - aMin.z );
+	vec3 mid( ( aMin.x + aMax.x ) / 2.0f, ( aMin.y + aMax.y ) / 2.0f, ( aMin.z + aMax.z ) / 2.0f );
+	mVerts[0] = vec3( -0.5f, -0.5f, 0.5f ) * extent +  mid;
+	mVerts[1] = vec3( 0.5f, -0.5f, 0.5f ) * extent + mid;
+	mVerts[2] = vec3( -0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[3] = vec3( 0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[4] = vec3( -0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[5] = vec3( 0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[6] = vec3( -0.5f, -0.5f, -0.5f ) * extent + mid;
+	mVerts[7] = vec3( 0.5f, -0.5f, -0.5f ) * extent + mid;
 }
 
 bool AxisAlignedBox3f::intersects( const Ray &ray )
@@ -69,7 +69,7 @@ bool AxisAlignedBox3f::intersects( const Ray &ray )
 	return tmin > 0;
 }
 	
-void AxisAlignedBox3f::include( const Vec3f &point )
+void AxisAlignedBox3f::include( const vec3 &point )
 {
 	if(point.x < mExtents[0].x) mExtents[0].x = point.x;
 	if(point.y < mExtents[0].y) mExtents[0].y = point.y;
@@ -81,27 +81,27 @@ void AxisAlignedBox3f::include( const Vec3f &point )
 
 void AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
 {
-	Vec3f minB = rhs.getMin();
+	vec3 minB = rhs.getMin();
 	if(minB.x < mExtents[0].x) mExtents[0].x = minB.x;
 	if(minB.y < mExtents[0].y) mExtents[0].y = minB.y;
 	if(minB.z < mExtents[0].z) mExtents[0].z = minB.z;
 
-	Vec3f maxB = rhs.getMax();
+	vec3 maxB = rhs.getMax();
 	if(maxB.x > mExtents[1].x) mExtents[1].x = maxB.x;
 	if(maxB.y > mExtents[1].y) mExtents[1].y = maxB.y;
 	if(maxB.z > mExtents[1].z) mExtents[1].z = maxB.z;
 
 	// update vertices
-	Vec3f extent( mExtents[1].x - mExtents[0].x, mExtents[1].y - mExtents[0].y, mExtents[1].z - mExtents[0].z );
-	Vec3f mid( ( mExtents[0].x + mExtents[1].x ) / 2.0f, ( mExtents[0].y + mExtents[1].y ) / 2.0f, ( mExtents[0].z + mExtents[1].z ) / 2.0f );
-	mVerts[0] = Vec3f( -0.5f, -0.5f, 0.5f ) * extent +  mid;
-	mVerts[1] = Vec3f( 0.5f, -0.5f, 0.5f ) * extent + mid;
-	mVerts[2] = Vec3f( -0.5f, 0.5f, 0.5f ) * extent + mid;
-	mVerts[3] = Vec3f( 0.5f, 0.5f, 0.5f ) * extent + mid;
-	mVerts[4] = Vec3f( -0.5f, 0.5f, -0.5f ) * extent + mid;
-	mVerts[5] = Vec3f( 0.5f, 0.5f, -0.5f ) * extent + mid;
-	mVerts[6] = Vec3f( -0.5f, -0.5f, -0.5f ) * extent + mid;
-	mVerts[7] = Vec3f( 0.5f, -0.5f, -0.5f ) * extent + mid;
+	vec3 extent( mExtents[1].x - mExtents[0].x, mExtents[1].y - mExtents[0].y, mExtents[1].z - mExtents[0].z );
+	vec3 mid( ( mExtents[0].x + mExtents[1].x ) / 2.0f, ( mExtents[0].y + mExtents[1].y ) / 2.0f, ( mExtents[0].z + mExtents[1].z ) / 2.0f );
+	mVerts[0] = vec3( -0.5f, -0.5f, 0.5f ) * extent +  mid;
+	mVerts[1] = vec3( 0.5f, -0.5f, 0.5f ) * extent + mid;
+	mVerts[2] = vec3( -0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[3] = vec3( 0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[4] = vec3( -0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[5] = vec3( 0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[6] = vec3( -0.5f, -0.5f, -0.5f ) * extent + mid;
+	mVerts[7] = vec3( 0.5f, -0.5f, -0.5f ) * extent + mid;
 }
 
 int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
@@ -154,10 +154,10 @@ int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 }
 
 //!
-Vec3f AxisAlignedBox3f::getPositive(const Vec3f &normal) const
+vec3 AxisAlignedBox3f::getPositive(const vec3 &normal) const
 {
-	Vec3f result = getMin();
-	Vec3f size = getSize();
+	vec3 result = getMin();
+	vec3 size = getSize();
 
 	if (normal.x > 0)
 		result.x += size.x;
@@ -171,10 +171,10 @@ Vec3f AxisAlignedBox3f::getPositive(const Vec3f &normal) const
 	return(result);
 }
 
-Vec3f AxisAlignedBox3f::getNegative(const Vec3f &normal) const
+vec3 AxisAlignedBox3f::getNegative(const vec3 &normal) const
 {
-	Vec3f result = getMin();
-	Vec3f size = getSize();
+	vec3 result = getMin();
+	vec3 size = getSize();
 
 	if (normal.x < 0)
 		result.x += size.x;
@@ -188,15 +188,15 @@ Vec3f AxisAlignedBox3f::getNegative(const Vec3f &normal) const
 	return(result);
 }
 
-AxisAlignedBox3f AxisAlignedBox3f::transformed( const Matrix44f &transform ) const
+AxisAlignedBox3f AxisAlignedBox3f::transformed( const mat4 &transform ) const
 {
-	Vec3f verts[8];
+	vec3 verts[8];
 
 	for(size_t i=0;i<8;i++)
 		verts[i] = vec3( transform * vec4( mVerts[i], 1 ) );
 
-	Vec3f min = verts[0];
-	Vec3f max = verts[0];
+	vec3 min = verts[0];
+	vec3 max = verts[0];
 	
 	for(size_t i=1;i<8;i++) {
 		if(verts[i].x < min.x) min.x = verts[i].x;

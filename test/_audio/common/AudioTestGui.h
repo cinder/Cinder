@@ -83,7 +83,7 @@ struct Button : public TestWidget {
 		mEnabled = b;
 	}
 
-	bool hitTest( const Vec2i &pos )
+	bool hitTest( const ivec2 &pos )
 	{
 		if( mHidden )
 			return false;
@@ -121,7 +121,7 @@ struct Button : public TestWidget {
 		std::string& title = mEnabled ? mTitleEnabled : mTitleNormal;
 
 		gl::color( mTextColor );
-		mTexFont->drawString( title, Vec2f( mBounds.x1 + mPadding, mBounds.getCenter().y + mTexFont->getFont().getDescent() ) );
+		mTexFont->drawString( title, vec2( mBounds.x1 + mPadding, mBounds.getCenter().y + mTexFont->getFont().getDescent() ) );
 	}
 
 	ColorA mTextColor;
@@ -147,7 +147,7 @@ struct HSlider : public TestWidget {
 		mValue = ( mValueScaled - mMin ) / ( mMax - mMin );
 	}
 
-	bool hitTest( const Vec2i &pos )
+	bool hitTest( const ivec2 &pos )
 	{
 		if( mHidden )
 			return false;
@@ -174,7 +174,7 @@ struct HSlider : public TestWidget {
 
 		std::string str = mTitle + ": " + valFormatted.str();
 		gl::color( mTextColor );
-		mTexFont->drawString( str, Vec2f( mBounds.x1 + mPadding, mBounds.getCenter().y + mTexFont->getFont().getDescent() ) );
+		mTexFont->drawString( str, vec2( mBounds.x1 + mPadding, mBounds.getCenter().y + mTexFont->getFont().getDescent() ) );
 
 		gl::color( mValueColor );
 		gl::drawStrokedRect( mBounds );
@@ -200,7 +200,7 @@ struct VSelector : public TestWidget {
 		mTitleColor = ColorA::gray( 0.75f, 0.5f );
 	}
 
-	bool hitTest( const Vec2i &pos )
+	bool hitTest( const ivec2 &pos )
 	{
 		if( mHidden )
 			return false;
@@ -240,9 +240,9 @@ struct VSelector : public TestWidget {
 			if( i != mCurrentSectionIndex ) {
 				gl::drawStrokedRect( section );
 				gl::color( mUnselectedColor );
-				mTexFont->drawString( mSegments[i], Vec2f( section.x1 + mPadding, section.getCenter().y + mTexFont->getFont().getDescent() ) );
+				mTexFont->drawString( mSegments[i], vec2( section.x1 + mPadding, section.getCenter().y + mTexFont->getFont().getDescent() ) );
 			}
-			section += Vec2f( 0.0f, sectionHeight );
+			section += vec2( 0.0f, sectionHeight );
 		}
 
 		gl::color( mSelectedColor );
@@ -253,12 +253,12 @@ struct VSelector : public TestWidget {
 
 		if( ! mSegments.empty() ) {
 			gl::color( mSelectedColor );
-			mTexFont->drawString( mSegments[mCurrentSectionIndex], Vec2f( section.x1 + mPadding, section.getCenter().y + mTexFont->getFont().getDescent() ) );
+			mTexFont->drawString( mSegments[mCurrentSectionIndex], vec2( section.x1 + mPadding, section.getCenter().y + mTexFont->getFont().getDescent() ) );
 		}
 
 		if( ! mTitle.empty() ) {
 			gl::color( mTitleColor );
-			mTexFont->drawString( mTitle, Vec2f( mBounds.x1 + mPadding, mBounds.y1 - mTexFont->getFont().getDescent() ) );
+			mTexFont->drawString( mTitle, vec2( mBounds.x1 + mPadding, mBounds.y1 - mTexFont->getFont().getDescent() ) );
 		}
 	}
 
@@ -289,7 +289,7 @@ struct TextInput : public TestWidget {
 		mSelected = b;
 	}
 
-	bool hitTest( const Vec2i &pos )
+	bool hitTest( const ivec2 &pos )
 	{
 		if( mHidden )
 			return false;
@@ -355,11 +355,11 @@ struct TextInput : public TestWidget {
 		gl::color( mBackgroundColor );
 		gl::drawSolidRect( mBounds );
 
-		Vec2f titleOffset = Vec2f( mBounds.x1 + mPadding, mBounds.y1 - mTexFont->getFont().getDescent() );
+		vec2 titleOffset = vec2( mBounds.x1 + mPadding, mBounds.y1 - mTexFont->getFont().getDescent() );
 		gl::color( mTitleColor );
 		mTexFont->drawString( mTitle, titleOffset );
 
-		Vec2f textOffset = Vec2f( mBounds.x1 + mPadding, mBounds.getCenter().y + mTexFont->getFont().getDescent() );
+		vec2 textOffset = vec2( mBounds.x1 + mPadding, mBounds.getCenter().y + mTexFont->getFont().getDescent() );
 
 		gl::color( ( mSelected ? mEnabledColor : mNormalColor ) );
 

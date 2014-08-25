@@ -99,7 +99,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 		renderGlyphs[curGlyphIndex] = *glyphIt;
 		renderPositions[curGlyphIndex].x = curOffset.x - floor(bb.x1) + 1;
 		renderPositions[curGlyphIndex].y = surface.getHeight() - (curOffset.y + glyphExtents.y) - ceil(bb.y1+0.5f);
-		curOffset += Vec2i( glyphExtents.x + 3, 0 );
+		curOffset += ivec2( glyphExtents.x + 3, 0 );
 		++glyphIt;
 		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
 			::CGContextShowGlyphsAtPositions( cgContext, renderGlyphs, renderPositions, curGlyphIndex );
@@ -109,6 +109,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 				ip::unpremultiply( &surface );
 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
+			textureFormat.loadTopDown();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 			GLint dataFormat;
 #if defined( CINDER_GL_ES )
@@ -209,7 +210,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	// get the glyph indices we'll need
 	set<Font::Glyph> glyphs = getNecessaryGlyphs( font, utf8Chars );
 	// determine the max glyph extents
-	Vec2i glyphExtents;
+	ivec2 glyphExtents;
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ++glyphIt ) {
 		try {
 			Rectf bb = font.getGlyphBoundingBox( *glyphIt );
@@ -228,7 +229,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	int glyphsWide = mFormat.getTextureWidth() / glyphExtents.x;
 	int glyphsTall = mFormat.getTextureHeight() / glyphExtents.y;	
 	uint8_t curGlyphIndex = 0, curTextureIndex = 0;
-	Vec2i curOffset = Vec2i( 0, 0 );
+	ivec2 curOffset = ivec2( 0, 0 );
 
 	Channel channel( mFormat.getTextureWidth(), mFormat.getTextureHeight() );
 	ip::fill<uint8_t>( &channel, 0 );
@@ -267,12 +268,12 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 		channel.copyFrom( glyphChannel, glyphChannel.getBounds(), curOffset );
 
 		GlyphInfo newInfo;
-		newInfo.mOriginOffset = Vec2f( gm.gmptGlyphOrigin.x, glyphExtents.y - gm.gmptGlyphOrigin.y );
-		newInfo.mTexCoords = Area( curOffset, curOffset + Vec2i( gm.gmBlackBoxX, gm.gmBlackBoxY ) );
+		newInfo.mOriginOffset = vec2( gm.gmptGlyphOrigin.x, glyphExtents.y - gm.gmptGlyphOrigin.y );
+		newInfo.mTexCoords = Area( curOffset, curOffset + ivec2( gm.gmBlackBoxX, gm.gmBlackBoxY ) );
 		newInfo.mTextureIndex = curTextureIndex;
 		mGlyphMap[*glyphIt] = newInfo;
 
-		curOffset += Vec2i( glyphExtents.x, 0 );
+		curOffset += ivec2( glyphExtents.x, 0 );
 		++glyphIt;
 		if( ( ++curGlyphIndex == glyphsWide * glyphsTall ) || ( glyphIt == glyphs.end() ) ) {
 			Surface tempSurface( channel, SurfaceConstraintsDefault(), true );
@@ -281,6 +282,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				ip::unpremultiply( &tempSurface );
 			
 			gl::Texture::Format textureFormat = gl::Texture::Format();
+			textureFormat.loadTopDown();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 
 			Surface8u::ConstIter iter( tempSurface, tempSurface.getBounds() );
@@ -302,7 +304,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 #endif
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), textureFormat.getInternalFormat(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
 			ip::fill<uint8_t>( &channel, 0 );			
-			curOffset = Vec2i( 0, 0 );
+			curOffset = ivec2( 0, 0 );
 			curGlyphIndex = 0;
 			++curTextureIndex;
 		}
@@ -316,7 +318,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 }
 #endif
 
-void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baselineIn, const DrawOptions &options, const std::vector<ColorA8u> &colors )
+void TextureFont::drawGlyphs( const vector<pair<uint16_t,vec2> > &glyphMeasures, const vec2 &baselineIn, const DrawOptions &options, const std::vector<ColorA8u> &colors )
 {
 	if( mTextures.empty() )
 		return;
@@ -329,7 +331,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 	GlslProgRef shader = gl::getStockShader( shaderDef );
 	ScopedGlslProg glslScp( shader );
 
-	Vec2f baseline = baselineIn;
+	vec2 baseline = baselineIn;
 
 	const float scale = options.getScale();
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
@@ -346,9 +348,9 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 		GLenum indexType = GL_UNSIGNED_INT;
 #endif
 		if( options.getPixelSnap() )
-			baseline = Vec2f( floor( baseline.x ), floor( baseline.y ) );
+			baseline = vec2( floor( baseline.x ), floor( baseline.y ) );
 			
-		for( vector<pair<uint16_t,Vec2f> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
+		for( vector<pair<uint16_t,vec2> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
 			unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
 			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
 				continue;
@@ -360,10 +362,10 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 			destRect -= destRect.getUpperLeft();
 			destRect.scale( scale );
 			destRect += glyphIt->second * scale;
-			destRect += Vec2f( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) ) * scale;
-			destRect += Vec2f( baseline.x, baseline.y - mFont.getAscent() * scale );
+			destRect += vec2( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) ) * scale;
+			destRect += vec2( baseline.x, baseline.y - mFont.getAscent() * scale );
 			if( options.getPixelSnap() )
-				destRect -= Vec2f( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
+				destRect -= vec2( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
 			
 			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY1() );
 			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY1() );
@@ -431,7 +433,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasures
 	}
 }
 
-void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, Vec2f offset, const DrawOptions &options, const std::vector<ColorA8u> &colors )
+void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,vec2> > &glyphMeasures, const Rectf &clip, vec2 offset, const DrawOptions &options, const std::vector<ColorA8u> &colors )
 {
 	if( mTextures.empty() )
 		return;
@@ -460,9 +462,9 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 		GLenum indexType = GL_UNSIGNED_INT;
 #endif
 		if( options.getPixelSnap() )
-			offset = Vec2f( floor( offset.x ), floor( offset.y ) );
+			offset = vec2( floor( offset.x ), floor( offset.y ) );
 
-		for( vector<pair<uint16_t,Vec2f> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
+		for( vector<pair<uint16_t,vec2> >::const_iterator glyphIt = glyphMeasures.begin(); glyphIt != glyphMeasures.end(); ++glyphIt ) {
 			unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphIt->first );
 			if( (glyphInfoIt == mGlyphMap.end()) || (mGlyphMap[glyphIt->first].mTextureIndex != texIdx) )
 				continue;
@@ -473,10 +475,10 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 			destRect -= destRect.getUpperLeft();
 			destRect.scale( scale );
 			destRect += glyphIt->second * scale;
-			destRect += Vec2f( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) ) * scale;
-			destRect += Vec2f( offset.x, offset.y );
+			destRect += vec2( floor( glyphInfo.mOriginOffset.x + 0.5f ), floor( glyphInfo.mOriginOffset.y ) ) * scale;
+			destRect += vec2( offset.x, offset.y );
 			if( options.getPixelSnap() )
-				destRect -= Vec2f( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
+				destRect -= vec2( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
 
 			// clip
 			Rectf clipped( destRect );
@@ -492,7 +494,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 			if( clipped.x1 >= clipped.x2 || clipped.y1 >= clipped.y2 )
 				continue;
 			
-			Vec2f coordScale( 1 / (float)destRect.getWidth() / curTex->getWidth() * glyphInfo.mTexCoords.getWidth(),
+			vec2 coordScale( 1 / (float)destRect.getWidth() / curTex->getWidth() * glyphInfo.mTexCoords.getWidth(),
 				1 / (float)destRect.getHeight() / curTex->getHeight() * glyphInfo.mTexCoords.getHeight() );
 			srcTexCoords.x1 = srcTexCoords.x1 + ( clipped.x1 - destRect.x1 ) * coordScale.x;
 			srcTexCoords.x2 = srcTexCoords.x1 + ( clipped.x2 - clipped.x1 ) * coordScale.x;
@@ -565,36 +567,36 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gly
 	}
 }
 
-void TextureFont::drawString( const std::string &str, const Vec2f &baseline, const DrawOptions &options )
+void TextureFont::drawString( const std::string &str, const vec2 &baseline, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
-	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
+	vector<pair<uint16_t,vec2> > glyphMeasures = tbox.measureGlyphs();
 	drawGlyphs( glyphMeasures, baseline, options );
 }
 
-void TextureFont::drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset, const DrawOptions &options )
+void TextureFont::drawString( const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, fitRect.getHeight() ).ligate( options.getLigate() );
-	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
+	vector<pair<uint16_t,vec2> > glyphMeasures = tbox.measureGlyphs();
 	drawGlyphs( glyphMeasures, fitRect, fitRect.getUpperLeft() + offset, options );	
 }
 
-void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset, const DrawOptions &options )
+void TextureFont::drawStringWrapped( const std::string &str, const Rectf &fitRect, const vec2 &offset, const DrawOptions &options )
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
-	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
+	vector<pair<uint16_t,vec2> > glyphMeasures = tbox.measureGlyphs();
 	drawGlyphs( glyphMeasures, fitRect.getUpperLeft() + offset, options );
 }
 
-Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &options ) const
+vec2 TextureFont::measureString( const std::string &str, const DrawOptions &options ) const
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
 #if defined( CINDER_COCOA )
 	return tbox.measure();
 #else
-	vector<pair<uint16_t,Vec2f> > glyphMeasures = tbox.measureGlyphs();
+	vector<pair<uint16_t,vec2> > glyphMeasures = tbox.measureGlyphs();
 	if( ! glyphMeasures.empty() ) {
-		Vec2f result = glyphMeasures.back().second;
+		vec2 result = glyphMeasures.back().second;
 		unordered_map<Font::Glyph, GlyphInfo>::const_iterator glyphInfoIt = mGlyphMap.find( glyphMeasures.back().first );
 		if( glyphInfoIt != mGlyphMap.end() )
 			result += glyphInfoIt->second.mOriginOffset + vec2( glyphInfoIt->second.mTexCoords.getSize() );
@@ -607,26 +609,26 @@ Vec2f TextureFont::measureString( const std::string &str, const DrawOptions &opt
 }
 
 #if defined( CINDER_COCOA )
-Vec2f TextureFont::measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
+vec2 TextureFont::measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
 	return tbox.measure();
 }
 #endif
 
-vector<pair<uint16_t,Vec2f> > TextureFont::getGlyphPlacements( const std::string &str, const DrawOptions &options ) const
+vector<pair<uint16_t,vec2> > TextureFont::getGlyphPlacements( const std::string &str, const DrawOptions &options ) const
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, TextBox::GROW ).ligate( options.getLigate() );
 	return tbox.measureGlyphs();
 }
 
-vector<pair<uint16_t,Vec2f> > TextureFont::getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
+vector<pair<uint16_t,vec2> > TextureFont::getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( TextBox::GROW, fitRect.getHeight() ).ligate( options.getLigate() );
 	return tbox.measureGlyphs();
 }
 
-vector<pair<uint16_t,Vec2f> > TextureFont::getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
+vector<pair<uint16_t,vec2> > TextureFont::getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options ) const
 {
 	TextBox tbox = TextBox().font( mFont ).text( str ).size( fitRect.getWidth(), fitRect.getHeight() ).ligate( options.getLigate() );
 	return tbox.measureGlyphs();

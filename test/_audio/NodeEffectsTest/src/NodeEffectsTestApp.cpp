@@ -35,8 +35,8 @@ class NodeEffectsTestApp : public AppNative {
 	void applyChirp();
 
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 
 	audio::GenNodeRef				mGen;
 	audio::GainNodeRef				mGain;
@@ -198,14 +198,14 @@ void NodeEffectsTestApp::setupUI()
 	mPlayButton.mBounds = buttonRect;
 	mWidgets.push_back( &mPlayButton );
 
-	buttonRect += Vec2f( 0, buttonRect.getHeight() + padding );
+	buttonRect += vec2( 0, buttonRect.getHeight() + padding );
 	mGenButton.mIsToggle = true;
 	mGenButton.mTitleNormal = "noise";
 	mGenButton.mTitleEnabled = "sine";
 	mGenButton.mBounds = buttonRect;
 	mWidgets.push_back( &mGenButton );
 
-	buttonRect += Vec2f( 0, buttonRect.getHeight() + padding );
+	buttonRect += vec2( 0, buttonRect.getHeight() + padding );
 	mGenEnabledButton.mIsToggle = true;
 	mGenEnabledButton.mTitleNormal = "gen disabled";
 	mGenEnabledButton.mTitleEnabled = "gen enabled";
@@ -213,7 +213,7 @@ void NodeEffectsTestApp::setupUI()
 	mGenEnabledButton.mBounds = buttonRect;
 	mWidgets.push_back( &mGenEnabledButton );
 
-	buttonRect += Vec2f( 0, buttonRect.getHeight() + padding );
+	buttonRect += vec2( 0, buttonRect.getHeight() + padding );
 	mChirpButton = Button( false, "chirp" );
 	mChirpButton.mBounds = buttonRect;
 	mWidgets.push_back( &mChirpButton );
@@ -236,20 +236,20 @@ void NodeEffectsTestApp::setupUI()
 	mGainSlider.set( mGain->getValue() );
 	mWidgets.push_back( &mGainSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + padding );
+	sliderRect += vec2( 0, sliderRect.getHeight() + padding );
 	mPanSlider.mBounds = sliderRect;
 	mPanSlider.mTitle = "Pan";
 	mPanSlider.set( mPan->getPos() );
 	mWidgets.push_back( &mPanSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + padding );
+	sliderRect += vec2( 0, sliderRect.getHeight() + padding );
 	mLowPassFreqSlider.mBounds = sliderRect;
 	mLowPassFreqSlider.mTitle = "LowPass Freq";
 	mLowPassFreqSlider.mMax = 1000;
 	mLowPassFreqSlider.set( mLowPass->getCutoffFreq() );
 	mWidgets.push_back( &mLowPassFreqSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + padding );
+	sliderRect += vec2( 0, sliderRect.getHeight() + padding );
 	mFilterParam2Slider.mBounds = sliderRect;
 	mFilterParam2Slider.mTitle = "filter resonance";
 	mFilterParam2Slider.mMax = 50;
@@ -267,7 +267,7 @@ void NodeEffectsTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void NodeEffectsTestApp::processDrag( Vec2i pos )
+void NodeEffectsTestApp::processDrag( ivec2 pos )
 {
 	if( mGainSlider.hitTest( pos ) )
 		mGain->getParam()->applyRamp( mGainSlider.mValueScaled, 0.015f );
@@ -279,7 +279,7 @@ void NodeEffectsTestApp::processDrag( Vec2i pos )
 		mLowPass->setResonance( mFilterParam2Slider.mValueScaled );
 }
 
-void NodeEffectsTestApp::processTap( Vec2i pos )
+void NodeEffectsTestApp::processTap( ivec2 pos )
 {
 	auto ctx = audio::master();
 

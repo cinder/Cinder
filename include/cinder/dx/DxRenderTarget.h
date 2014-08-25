@@ -47,7 +47,7 @@ typedef std::shared_ptr<RenderTarget> RenderTargetRef;
 //	//! Returns the height of the Renderbuffer in pixels
 //	int		getHeight() const { return mObj->mHeight; }
 //	//! Returns the size of the Renderbuffer in pixels
-//	Vec2i	getSize() const { return Vec2i( mObj->mWidth, mObj->mHeight ); }
+//	ivec2	getSize() const { return ivec2( mObj->mWidth, mObj->mHeight ); }
 //	//! Returns the bounding area of the Renderbuffer in pixels
 //	Area	getBounds() const { return Area( 0, 0, mObj->mWidth, mObj->mHeight ); }
 //	//! Returns the aspect ratio of the Renderbuffer
@@ -107,7 +107,7 @@ class RenderTarget {
 	//! Returns the height of the FBO in pixels
 	int				getHeight() const { return mObj->mHeight; }
 	//! Returns the size of the FBO in pixels
-	Vec2i			getSize() const { return Vec2i( mObj->mWidth, mObj->mHeight ); }
+	ivec2			getSize() const { return ivec2( mObj->mWidth, mObj->mHeight ); }
 	//! Returns the bounding area of the FBO in pixels
 	Area			getBounds() const { return Area( 0, 0, mObj->mWidth, mObj->mHeight ); }
 	//! Returns the aspect ratio of the FBO

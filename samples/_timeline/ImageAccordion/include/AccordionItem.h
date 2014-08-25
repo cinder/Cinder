@@ -20,7 +20,7 @@ class AccordionItem {
 	void update();
 	void draw();
 	
-	bool isPointIn( const ci::Vec2f &pt );
+	bool isPointIn( const ci::vec2 &pt );
 	void animTo( float newX, float newWidth, bool revealText = false );
 
   private:	

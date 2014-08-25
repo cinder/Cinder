@@ -43,9 +43,9 @@ class MouseEvent : public Event {
 	//! Returns the Y coordinate of the mouse event, measured in points
 	int			getY() const				{ return mPos.y; }
 	//! Returns the coordinates of the mouse event measured in points
-	const Vec2i&	getPos() const			{ return mPos; }
+	const ivec2&	getPos() const			{ return mPos; }
 	//! Sets the coordinates of the mouse event, measured in points
-	void		setPos( const Vec2i &pos )	{ mPos = pos; }
+	void		setPos( const ivec2 &pos )	{ mPos = pos; }
 	//! Returns whether the initiator for the event was the left mouse button
 	bool		isLeft() const				{ return ( mInitiator & LEFT_DOWN ) ? true : false; }
 	//! Returns whether the initiator for the event was the right mouse button
@@ -91,7 +91,7 @@ class MouseEvent : public Event {
 			
   protected:
 	int				mInitiator;
-	Vec2i			mPos;
+	ivec2			mPos;
 	unsigned int	mModifiers;
 	float			mWheelIncrement;
 	uint32_t		mNativeModifiers;

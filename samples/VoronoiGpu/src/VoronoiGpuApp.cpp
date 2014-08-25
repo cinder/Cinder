@@ -20,7 +20,7 @@ class VoronoiGpuApp : public AppBasic {
 	
 	void draw();
 
-	vector<Vec2i>	mPoints;
+	vector<ivec2>	mPoints;
 	gl::Texture		mTexture;
 	bool			mShowDistance;
 };
@@ -31,10 +31,10 @@ void VoronoiGpuApp::setup()
 	// register window changed display callback
 	getWindow()->getSignalDisplayChange().connect( [this] { calculateVoronoiTexture(); } );
 	
-	mPoints.push_back( Vec2i( 100, 100 ) );
-	mPoints.push_back( Vec2i( 200, 120 ) );
-	mPoints.push_back( Vec2i( 130, 140 ) );	
-	mPoints.push_back( Vec2i( 200, 200 ) );
+	mPoints.push_back( ivec2( 100, 100 ) );
+	mPoints.push_back( ivec2( 200, 120 ) );
+	mPoints.push_back( ivec2( 130, 140 ) );	
+	mPoints.push_back( ivec2( 200, 200 ) );
 }
 
 void VoronoiGpuApp::calculateVoronoiTexture()
@@ -84,11 +84,11 @@ void VoronoiGpuApp::draw()
 	
 	// draw the voronoi sites in yellow
 	gl::color( Color( 1.0f, 1.0f, 0.0f ) );	
-	for( vector<Vec2i>::const_iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
-		gl::drawSolidCircle( Vec2f( *ptIt ), 2.0f );
+	for( vector<ivec2>::const_iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
+		gl::drawSolidCircle( vec2( *ptIt ), 2.0f );
 	
 	gl::enableAlphaBlending();
-	gl::drawStringRight( "Click to add a point", Vec2f( getWindowWidth() - toPixels( 10 ), getWindowHeight() - toPixels( 20 ) ), Color( 1, 0.3, 0 ), Font( "Arial", toPixels( 12 ) ) );
+	gl::drawStringRight( "Click to add a point", vec2( getWindowWidth() - toPixels( 10 ), getWindowHeight() - toPixels( 20 ) ), Color( 1, 0.3, 0 ), Font( "Arial", toPixels( 12 ) ) );
 	gl::disableAlphaBlending();
 }
 

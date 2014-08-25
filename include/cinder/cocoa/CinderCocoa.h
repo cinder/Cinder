@@ -143,10 +143,10 @@ CGRect createCgRect( const Area &area );
 //! Converts a CGRect to a cinder::Area
 Area CgRectToArea( const CGRect &rect );
 
-//! Creates a Cocoa CGSize from a cinder::Vec2i
-inline CGSize createCgSize( const Vec2i &s ) { CGSize result; result.width = s.x; result.height = s.y; return result; }
-//! Creates a Cocoa CGSize from a cinder::Vec2f
-inline CGSize createCgSize( const Vec2f &s ) { CGSize result; result.width = s.x; result.height = s.y; return result; }
+//! Creates a Cocoa CGSize from a cinder::ivec2
+inline CGSize createCgSize( const ivec2 &s ) { CGSize result; result.width = s.x; result.height = s.y; return result; }
+//! Creates a Cocoa CGSize from a cinder::vec2
+inline CGSize createCgSize( const vec2 &s ) { CGSize result; result.width = s.x; result.height = s.y; return result; }
 
 //! Converts a CGPathRef to a cinder::Shape2d. If \a flipVertical then the path will be flipped vertically.
 void convertCgPath( CGPathRef cgPath, Shape2d *resultShape, bool flipVertical = true );

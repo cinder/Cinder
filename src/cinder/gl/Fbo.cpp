@@ -787,16 +787,16 @@ void FboCubeMap::bindFramebufferFace( GLenum faceTarget, GLenum target, GLenum a
 	glFramebufferTexture2D( target, attachment, faceTarget, mTextureCubeMap->getId(), 0 );
 }
 
-Matrix44f FboCubeMap::calcViewMatrix( GLenum face, const Vec3f &eyePos )
+mat4 FboCubeMap::calcViewMatrix( GLenum face, const vec3 &eyePos )
 {
-	static const Vec3f viewDirs[6] = { Vec3f( 1, 0, 0 ), Vec3f( -1, 0, 0 ), Vec3f( 0, 1, 0 ), Vec3f( 0, -1, 0 ), Vec3f( 0, 0, 1 ), Vec3f( 0, 0, -1 ) };
+	static const vec3 viewDirs[6] = { vec3( 1, 0, 0 ), vec3( -1, 0, 0 ), vec3( 0, 1, 0 ), vec3( 0, -1, 0 ), vec3( 0, 0, 1 ), vec3( 0, 0, -1 ) };
 	if( face < GL_TEXTURE_CUBE_MAP_POSITIVE_X || face > GL_TEXTURE_CUBE_MAP_NEGATIVE_Z )
-		return Matrix44f();
+		return mat4();
 	
 	CameraPersp cam;
 	cam.lookAt( eyePos, eyePos + viewDirs[face - GL_TEXTURE_CUBE_MAP_POSITIVE_X] );
 
-	Matrix44f result;
+	mat4 result;
 	// We need to rotate 180deg around Z for non-Y faces
 	if( face != GL_TEXTURE_CUBE_MAP_POSITIVE_Y && face != GL_TEXTURE_CUBE_MAP_NEGATIVE_Y )
 		result *= glm::rotate( (float)M_PI, vec3( 0, 0, 1 ) );

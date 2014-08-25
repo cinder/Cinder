@@ -10,7 +10,7 @@ ParticleController::ParticleController()
 {
 }
 
-void ParticleController::pullToCenter( const ci::Vec3f &center )
+void ParticleController::pullToCenter( const ci::vec3 &center )
 {
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ) {
 		p->pullToCenter( center );
@@ -34,9 +34,9 @@ void ParticleController::draw()
 void ParticleController::addParticles( int amt )
 {
 	for( int i=0; i<amt; i++ ) {
-		Vec3f randVec = Rand::randVec3f();
-		Vec3f pos = randVec * Rand::randFloat( 50.0f );
-		Vec3f vel = randVec * Rand::randFloat( 5.0f );
+		vec3 randVec = Rand::randVec3f();
+		vec3 pos = randVec * Rand::randFloat( 50.0f );
+		vec3 vel = randVec * Rand::randFloat( 5.0f );
 		mParticles.push_back( Particle( pos, vel ) );
 	}
 }

@@ -35,7 +35,7 @@ class TriangulationApp : public AppBasic {
 
 void TriangulationApp::setup()
 {
-	mParams = params::InterfaceGl( "Parameters", Vec2i( 220, 170 ) );
+	mParams = params::InterfaceGl( "Parameters", ivec2( 220, 170 ) );
 	mFontSize = 256;
 	mDrawWireframe = true;
 	mParams.addParam( "Draw Wireframe", &mDrawWireframe, "key=w" );
@@ -90,8 +90,8 @@ void TriangulationApp::draw()
 
 	gl::clear();
 	gl::pushModelView();
-		gl::translate( getWindowCenter() * Vec2f( 0.8f, 1.2f ) );
-		gl::scale( Vec3f( mZoom, mZoom, mZoom ) );
+		gl::translate( getWindowCenter() * vec2( 0.8f, 1.2f ) );
+		gl::scale( vec3( mZoom, mZoom, mZoom ) );
 		gl::color( Color( 0.8f, 0.4f, 0.0f ) );
 		gl::draw( mVboMesh );
 		if( mDrawWireframe ) {

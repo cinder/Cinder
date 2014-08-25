@@ -16,8 +16,8 @@ class Quake {
 	float mMag;
 	std::string mTitle;
 	
-	ci::Vec3f mLoc;
-	ci::Vec3f mLocTip;
-	ci::Vec3f mLocTipAnchor;
+	ci::vec3 mLoc;
+	ci::vec3 mLocTip;
+	ci::vec3 mLocTipAnchor;
 	ci::gl::Texture mLabel;
 };

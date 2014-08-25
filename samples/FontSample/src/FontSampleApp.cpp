@@ -11,7 +11,7 @@ using namespace std;
 class fontSampleApp : public AppBasic {
  public:
 	void		setup();
-	void		drawCharacterVerbose( cairo::Context &ctx, Vec2f where );
+	void		drawCharacterVerbose( cairo::Context &ctx, vec2 where );
 	void		draw();	
 
 	void		keyDown( KeyEvent event ) { if( event.getChar() == 'f' ) { setRandomFont(); setRandomGlyph(); } else setRandomGlyph(); }
@@ -75,7 +75,7 @@ void fontSampleApp::setRandomGlyph()
 // It draws each of the segments of the path explicitly as well as drawing circles at each of the control points
 struct VerboseCharDraw {
 	VerboseCharDraw( cairo::Context &ctx ) : mCtx( ctx ) { }
-	bool operator()( Path2d::SegmentType type, const Vec2f *points, const Vec2f *previousPoint )
+	bool operator()( Path2d::SegmentType type, const vec2 *points, const vec2 *previousPoint )
 	{
 		const float radius = 3.0f;
 		const ColorA dotColor( 0.5f, 0.75f, 1.0f, 0.4f );
@@ -121,7 +121,7 @@ struct VerboseCharDraw {
 	cairo::Context &mCtx;
 };
 
-void fontSampleApp::drawCharacterVerbose( cairo::Context &ctx, Vec2f where )
+void fontSampleApp::drawCharacterVerbose( cairo::Context &ctx, vec2 where )
 {
 	cairo::Matrix prevMat;
 	ctx.getMatrix( &prevMat );
@@ -149,7 +149,7 @@ void fontSampleApp::draw()
 	
 	// draw the current character including the control points as dots
 	ctx.setSourceRgb( 1.0f, 1.0, 0.5f );
-	drawCharacterVerbose( ctx, Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
+	drawCharacterVerbose( ctx, vec2( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
 	
 	// Render the name of the font in the font itself
 	ctx.setFont( mFont );

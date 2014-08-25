@@ -19,8 +19,8 @@ class BasicApp : public AppBasic {
 	dx::TextureRef	mTexture;
 	Font			mFont;
 
-	Vec2f			mMousePosition;
-	Vec2f			mFollowerPosition;
+	vec2			mMousePosition;
+	vec2			mFollowerPosition;
 
 };
 
@@ -44,7 +44,7 @@ void BasicApp::update()
 	// Where you want to be MINUS where you are it the total distance.
 	// Unless you want to cover the entire distance in one huge step, 
 	// multiply by a small percentage. 
-	Vec2f animationStep = (mMousePosition - mFollowerPosition)*.2f;
+	vec2 animationStep = (mMousePosition - mFollowerPosition)*.2f;
 	// Then ADD that step to your current position.
 	// Since we are working with percentages of the whole, and not absolute
 	// fractions, the percentage of the distance remaining will always be relative,
@@ -70,14 +70,14 @@ void BasicApp::draw()
 	if( mTexture )
 		dx::draw( mTexture, Rectf(getWindowBounds()) );
 
-	Vec2f radius( 8.0f, 8.0f );
-	Vec2f smallerRadius( 6.0f, 6.0f );
+	vec2 radius( 8.0f, 8.0f );
+	vec2 smallerRadius( 6.0f, 6.0f );
 
 	// lets draw some shapes to show the immediate position of any screen pointer
 	// we will draw some semi-transparent cross hairs...
 	dx::color( ColorA(1.0f, 1.0f, 1.0f, 0.3f) );
-	dx::drawLine( Vec2f( 0, mMousePosition.y ), Vec2f( getWindowWidth(), mMousePosition.y ) );
-	dx::drawLine( Vec2f( mMousePosition.x, 0 ), Vec2f( mMousePosition.x, getWindowHeight() ) );
+	dx::drawLine( vec2( 0, mMousePosition.y ), vec2( getWindowWidth(), mMousePosition.y ) );
+	dx::drawLine( vec2( mMousePosition.x, 0 ), vec2( mMousePosition.x, getWindowHeight() ) );
 	// and a solid white targeting square...
 	dx::color( Color::white() );
 	dx::drawSolidRect( Rectf( mMousePosition - radius, mMousePosition + radius) );
@@ -89,15 +89,15 @@ void BasicApp::draw()
 
 	// lets explore drawing some additional, static geometries as well...
 	dx::color( ColorA( 0.0f, 1.0f, 1.0f, 0.5) );
-	dx::drawStrokedCircle( Vec2f( 40.0f, 90.0f ), 30.0f, 7 );
-	dx::drawSolidCircle( Vec2f(   40.0f, 90.0f ), 20.0f, 7 );
-	dx::drawSolidTriangle( Vec2f( 40.0f, 144.0f ), Vec2f( 14.0f, 196.0f), Vec2f(66.0f, 196.0f) ); 
+	dx::drawStrokedCircle( vec2( 40.0f, 90.0f ), 30.0f, 7 );
+	dx::drawSolidCircle( vec2(   40.0f, 90.0f ), 20.0f, 7 );
+	dx::drawSolidTriangle( vec2( 40.0f, 144.0f ), vec2( 14.0f, 196.0f), vec2(66.0f, 196.0f) ); 
 	dx::drawStrokedRect( Rectf(10.0f, 140.0f, 70.0f, 200.0f ) );
 
 	// here is a simple way of drawing basic messages on the screen
 	std::stringstream s;
 	s << "Framerate:" << getAverageFps();
-	dx::drawString( s.str(), Vec2f(10.0f,10.0f), Color(1.0f, 1.0f, 1.0f), mFont );
+	dx::drawString( s.str(), vec2(10.0f,10.0f), Color(1.0f, 1.0f, 1.0f), mFont );
 }
 
 // This line tells Cinder to actually create the application and use the DirectX required

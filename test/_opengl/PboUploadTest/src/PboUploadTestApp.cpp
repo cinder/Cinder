@@ -88,7 +88,7 @@ void PboUploadTestApp::update()
   #endif
 #else
 	for( int row = 0; row < ROWS_TO_FILL; ++row ) {
-		memcpy( surface.getData( Vec2i( 0, row ) ), rowData, IMAGE_WIDTH * IMAGE_CHANNELS );
+		memcpy( surface.getData( ivec2( 0, row ) ), rowData, IMAGE_WIDTH * IMAGE_CHANNELS );
 	}	
 	
 	mTexs[mCurrentTex]->update( surface );

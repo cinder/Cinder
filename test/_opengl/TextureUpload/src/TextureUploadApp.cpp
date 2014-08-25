@@ -119,10 +119,10 @@ void TextureUploadApp::setupTexUpdate()
 			SurfaceT<T> srcImg( mImg );			
 			SurfaceT<T> square( 100, 100, false );
 			gl::TextureRef result = gl::Texture::create( mImg2 );
-			square.copyFrom( srcImg, Area( 28, 128, 28 + 100, 128 + 100 ), Vec2i( -28, -128 ) );
+			square.copyFrom( srcImg, Area( 28, 128, 28 + 100, 128 + 100 ), ivec2( -28, -128 ) );
 			for( int y = 0; y < result->getHeight() / square.getHeight(); y += 2 ) {
 				for( int x = y%2; x < result->getWidth() / square.getWidth(); x += 2 ) {
-					result->update( square, 0, Vec2i( x * square.getWidth(), y * square.getHeight() ) );
+					result->update( square, 0, ivec2( x * square.getWidth(), y * square.getHeight() ) );
 				}
 			}
 			return result;
@@ -134,10 +134,10 @@ void TextureUploadApp::setupTexUpdate()
 			ChannelT<T> srcImg( mImg );			
 			ChannelT<T> square( 100, 100 );
 			gl::TextureRef result = gl::Texture::create( ChannelT<T>( mImg2 ) );
-			square.copyFrom( srcImg, Area( 28, 128, 28 + 100, 128 + 100 ), Vec2i( -28, -128 ) );
+			square.copyFrom( srcImg, Area( 28, 128, 28 + 100, 128 + 100 ), ivec2( -28, -128 ) );
 			for( int y = 0; y < result->getHeight() / square.getHeight(); y += 2 ) {
 				for( int x = y%2; x < result->getWidth() / square.getWidth(); x += 2 ) {
-					result->update( square, 0, Vec2i( x * square.getWidth(), y * square.getHeight() ) );
+					result->update( square, 0, ivec2( x * square.getWidth(), y * square.getHeight() ) );
 				}
 			}
 			return result;

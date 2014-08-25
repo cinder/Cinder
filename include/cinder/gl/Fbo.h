@@ -57,7 +57,7 @@ class Renderbuffer {
 	//! Returns the height of the Renderbuffer in pixels
 	int		getHeight() const { return mHeight; }
 	//! Returns the size of the Renderbuffer in pixels
-	Vec2i	getSize() const { return Vec2i( mWidth, mHeight ); }
+	ivec2	getSize() const { return ivec2( mWidth, mHeight ); }
 	//! Returns the bounding area of the Renderbuffer in pixels
 	Area	getBounds() const { return Area( 0, 0, mWidth, mHeight ); }
 	//! Returns the aspect ratio of the Renderbuffer
@@ -110,7 +110,7 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	//! Returns the height of the FBO in pixels
 	int				getHeight() const { return mHeight; }
 	//! Returns the size of the FBO in pixels
-	Vec2i			getSize() const { return Vec2i( mWidth, mHeight ); }
+	ivec2			getSize() const { return ivec2( mWidth, mHeight ); }
 	//! Returns the bounding area of the FBO in pixels
 	Area			getBounds() const { return Area( 0, 0, mWidth, mHeight ); }
 	//! Returns the aspect ratio of the FBO
@@ -335,7 +335,7 @@ class FboCubeMap : public Fbo {
 	//! Binds a face of the Fbo as the currently active framebuffer. \a faceTarget expects values in the \c GL_TEXTURE_CUBE_MAP_POSITIVE_X family.
 	void 	bindFramebufferFace( GLenum faceTarget, GLenum target = GL_FRAMEBUFFER, GLenum attachment = GL_COLOR_ATTACHMENT0 );
 	//! Returns the view matrix appropriate for a given face (in the \c GL_TEXTURE_CUBE_MAP_POSITIVE_X family) looking from the position \a eyePos
-	Matrix44f	calcViewMatrix( GLenum face, const Vec3f &eyePos );
+	mat4	calcViewMatrix( GLenum face, const vec3 &eyePos );
 	
   protected:
 	FboCubeMap( int32_t faceWidth, int32_t faceHeight, const Format &format, const TextureCubeMapRef &textureCubeMap );

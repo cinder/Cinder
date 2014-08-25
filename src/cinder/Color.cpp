@@ -26,8 +26,8 @@
 
 namespace cinder {
 
-Colorf hsvToRGB( const Vec3f &hsv );
-Vec3f rgbToHSV( const Colorf &c );
+Colorf hsvToRGB( const vec3 &hsv );
+vec3 rgbToHSV( const Colorf &c );
 
 namespace {
 const int sTotalColors = 147;
@@ -90,11 +90,11 @@ const uint8_t sColorValues[sTotalColors][3] = {
 template<typename T>
 ColorT<T>::ColorT( ColorModel cm, float x, float y, float z )
 {
-	set( cm, Vec3f( x, y, z ) );
+	set( cm, vec3( x, y, z ) );
 }
 
 template<typename T>
-ColorT<T>::ColorT( ColorModel cm, const Vec3f &v )
+ColorT<T>::ColorT( ColorModel cm, const vec3 &v )
 {
 	set( cm, v );
 }
@@ -109,7 +109,7 @@ ColorT<T>::ColorT( const char *svgColorName )
 }
 
 template<typename T>
-void ColorT<T>::set( ColorModel cm, const Vec3f &v )
+void ColorT<T>::set( ColorModel cm, const vec3 &v )
 {
 	switch( cm ) {
 		case CM_HSV: {
@@ -130,7 +130,7 @@ void ColorT<T>::set( ColorModel cm, const Vec3f &v )
 }
 
 template<typename T>
-Vec3f ColorT<T>::get( ColorModel cm ) const
+vec3 ColorT<T>::get( ColorModel cm ) const
 {
 	switch( cm ) {
 		case CM_HSV: {
@@ -138,7 +138,7 @@ Vec3f ColorT<T>::get( ColorModel cm ) const
 		}
 		break;
 		case CM_RGB: {
-			return Vec3f( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
+			return vec3( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
 		}
 		break;
 		default:
@@ -230,7 +230,7 @@ ColorAT<T>::ColorAT( ColorModel cm, float c1, float c2, float c3, float aA )
 {
 	switch( cm ) {
 		case CM_HSV: {
-			Colorf rgb = hsvToRGB( Vec3f( c1, c2, c3 ) );
+			Colorf rgb = hsvToRGB( vec3( c1, c2, c3 ) );
 			r = CHANTRAIT<T>::convert( rgb.r );
 			g = CHANTRAIT<T>::convert( rgb.g );
 			b = CHANTRAIT<T>::convert( rgb.b );
@@ -321,7 +321,7 @@ std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs )
 
 /////////////////////////////////////////////////////////////////////////////
 // Utilities
-Colorf hsvToRGB( const Vec3f &hsv )
+Colorf hsvToRGB( const vec3 &hsv )
 {
     float hue = hsv.x;
     float sat = hsv.y;
@@ -351,7 +351,7 @@ Colorf hsvToRGB( const Vec3f &hsv )
     return Colorf( x, y, z );
 }
 
-Vec3f rgbToHSV( const Colorf &c )
+vec3 rgbToHSV( const Colorf &c )
 {
     const float &x = c.r;
     const float &y = c.g;
@@ -383,7 +383,7 @@ Vec3f rgbToHSV( const Colorf &c )
 			hue += 1.0f;
     }
     
-    return Vec3f( hue, sat, val );
+    return vec3( hue, sat, val );
 }
 
 ColorT<uint8_t> svgNameToRgb( const char *name, bool *found )

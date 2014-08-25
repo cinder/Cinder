@@ -41,8 +41,8 @@ void BasicApp::setup()
 
 	// buffer our static data - the texcoords and the indices
 	vector<uint32_t> indices;
-	vector<Vec2f> texCoords;
-	vector<Vec3f> normals;
+	vector<vec2> texCoords;
+	vector<vec3> normals;
 	vector<ColorA> colors;
 
 	for( int x = 0; x < VERTICES_X; ++x ) {
@@ -55,8 +55,8 @@ void BasicApp::setup()
 				indices.push_back( (x+0) * VERTICES_Z + (z+1) );
 			}
 			// the texture coordinates are mapped to [0.0, 1.0]
-			texCoords.push_back( Vec2f( 1.5*x / (float)(VERTICES_X + 0), (z+1) / (float)VERTICES_Z ) );
-			normals.push_back(Vec3f(0, 0, 0));
+			texCoords.push_back( vec2( 1.5*x / (float)(VERTICES_X + 0), (z+1) / (float)VERTICES_Z ) );
+			normals.push_back(vec3(0, 0, 0));
 			colors.push_back(ColorA(1, 1, 1, 0.2f));
 		}
 	}
@@ -85,7 +85,7 @@ void BasicApp::update()
 	for ( int x = 0; x < VERTICES_X; ++x ) {
 		for ( int z = 0; z < VERTICES_Z; ++z) {
 			float height = sin( z / (float)VERTICES_Z * zFreq + x / (float)VERTICES_X * xFreq + offset ) / 4.0f;
-			iter.setPosition( Vec3f( x / (float)VERTICES_X, height, z / (float)VERTICES_Z ) );
+			iter.setPosition( vec3( x / (float)VERTICES_X, height, z / (float)VERTICES_Z ) );
 			++iter;
 		}
 	}
@@ -95,7 +95,7 @@ void BasicApp::update()
 	for( int x = 0; x < VERTICES_X; ++x ) {
 		for( int z = 0; z < VERTICES_Z; ++z ) {
 			float height = sin( z / (float)VERTICES_Z * zFreq * 2 + x / (float)VERTICES_X * xFreq * 2 + offset ) / 8.0f;
-			iter2.setPosition( Vec3f( x / (float)VERTICES_X, height, z / (float)VERTICES_Z ) + Vec3f( 0, 0.7, 0 ) );
+			iter2.setPosition( vec3( x / (float)VERTICES_X, height, z / (float)VERTICES_Z ) + vec3( 0, 0.7, 0 ) );
 			++iter2;
 		}
 	}
@@ -109,7 +109,7 @@ void BasicApp::draw()
 	dx::pushMatrices();
 	dx::setMatrices( mCamera );
 
-	dx::scale( Vec3f(10, 10, 10 ) );
+	dx::scale( vec3(10, 10, 10 ) );
 	mTexture->bind();
 	dx::draw( mVboMesh );
 	dx::draw( mVboMesh2 );
@@ -120,7 +120,7 @@ void BasicApp::draw()
 	std::stringstream s;
 	s << "Framerate:" << getAverageFps();
 	dx::color( Color::white() );
-	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color(0.0f, 0.0f, 1.0f) ,mFont);
+	dx::drawString(s.str(),vec2(10.0f,10.0f),Color(0.0f, 0.0f, 1.0f) ,mFont);
 }
 
 // This line tells Cinder to actually create the application

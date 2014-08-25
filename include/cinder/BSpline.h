@@ -162,7 +162,7 @@ class BSpline {
 	VecT getSecondDerivative( float t ) const;
 	VecT getThirdDerivative( float t ) const;
 
-	T getSpeed( float t ) const		{ return length( getDerivative( t ) ); }
+	T getSpeed( float t ) const;
 
 	float getLength( float fT0, float fT1 ) const;
 

@@ -64,7 +64,7 @@ void ImageFileTestApp::draw()
 	mTexture->enableAndBind();
 	mShader->bind();
 	mShader->uniform( "tex0", 0 );
-	mShader->uniform( "sampleOffset", Vec2f( cos( mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
+	mShader->uniform( "sampleOffset", vec2( cos( mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
 	gl::drawSolidRect( getWindowBounds() );
 
 	mTexture->unbind();

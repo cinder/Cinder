@@ -51,9 +51,9 @@ class GLSLLightingApp : public AppBasic {
 	
 	gl::GlslProg	mShader;
 	
-	Vec3f		mMouseLoc;
+	vec3		mMouseLoc;
 	
-	std::list<pair<Vec3f,float> > mSpheres;
+	std::list<pair<vec3,float> > mSpheres;
 	
 	float		mSphereSpacing;
 	float		mSphereRadius;
@@ -110,7 +110,7 @@ void GLSLLightingApp::setup()
 				float xp = mSphereSpacing * ( x - sphereXHalfRes );
 				float yp = mSphereSpacing * ( y - sphereYHalfRes );
 				float zp = mSphereSpacing * ( z - sphereZHalfRes );
-				Vec3f loc( xp, yp, zp );
+				vec3 loc( xp, yp, zp );
 				
 				mSpheres.push_back( std::make_pair( loc, 0.0f ) );
 			}
@@ -119,7 +119,7 @@ void GLSLLightingApp::setup()
 	
 	mShader = gl::GlslProg( loadResource( RES_VERT_GLSL ), loadResource( RES_FRAG_GLSL ) );
 
-	mMouseLoc = Vec3f::zero();
+	mMouseLoc = vec3::zero();
 	
 	mInfoPanel.createTexture();
 	glDisable( GL_TEXTURE_2D );
@@ -133,7 +133,7 @@ void GLSLLightingApp::setup()
 
 void GLSLLightingApp::resize()
 {
-	mCam.lookAt( Vec3f( 0.0f, 0.0f, 500.0f ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0.0f, 0.0f, 500.0f ), vec3::zero() );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 5000 );
 	gl::setMatrices( mCam );
 }
@@ -210,7 +210,7 @@ void GLSLLightingApp::draw()
 	glEnable( GL_LIGHT0 );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	
-	mMouseLoc -= ( mMouseLoc - Vec3f( mouseX, mouseY, 40.0f ) ) * 0.1f;
+	mMouseLoc -= ( mMouseLoc - vec3( mouseX, mouseY, 40.0f ) ) * 0.1f;
 	
 	GLfloat light_position[] = { mMouseLoc.x, mMouseLoc.y, mMouseLoc.z, mDirectional };
 	glLightfv( GL_LIGHT0, GL_POSITION, light_position );
@@ -219,12 +219,12 @@ void GLSLLightingApp::draw()
 	glLightf( GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.00015f );
 	
 	
-	for( list<pair<Vec3f, float> >::iterator sphereIt = mSpheres.begin(); sphereIt != mSpheres.end(); ++sphereIt ) {
-		Vec3f sphereLoc		= sphereIt->first;
+	for( list<pair<vec3, float> >::iterator sphereIt = mSpheres.begin(); sphereIt != mSpheres.end(); ++sphereIt ) {
+		vec3 sphereLoc		= sphereIt->first;
 		float sphereRadius	= sphereIt->second;
 		
 		int sphereDetail	= (int)( sphereRadius * 0.5f ) + 8;
-		Vec3f dirFromLight	= sphereLoc - mMouseLoc;
+		vec3 dirFromLight	= sphereLoc - mMouseLoc;
 		float distFromLight	= dirFromLight.length();
 		
 		
@@ -279,7 +279,7 @@ void GLSLLightingApp::draw()
 				mShader.bind();
 				mShader.uniform( "NumEnabledLights", 1 );
 			}
-			gl::drawSphere( sphereLoc + Vec3f( 0.0f, 0.0f, sphereIt->second ), sphereIt->second, sphereDetail );
+			gl::drawSphere( sphereLoc + vec3( 0.0f, 0.0f, sphereIt->second ), sphereIt->second, sphereDetail );
 			if( mSHADER ) mShader.unbind();
 		}
 	}
@@ -299,7 +299,7 @@ void GLSLLightingApp::drawInfoPanel()
 	
 	gl::pushMatrices();
 	gl::setMatricesWindow( getWindowSize() );
-	mInfoPanel.update( Vec2f( getWindowWidth(), getWindowHeight() ), mCounter );
+	mInfoPanel.update( vec2( getWindowWidth(), getWindowHeight() ), mCounter );
 	gl::popMatrices();
 
 	glDisable( GL_TEXTURE_2D );

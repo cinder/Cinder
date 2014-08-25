@@ -41,17 +41,17 @@ void InstancedTeapotsApp::setup()
 	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Teapot().subdivision( 4 ) );
 
 	// create an array of initial per-instance positions laid out in a 2D grid
-	std::vector<Vec3f> positions;
+	std::vector<vec3> positions;
 	for( size_t potX = 0; potX < NUM_INSTANCES_X; ++potX ) {
 		for( size_t potY = 0; potY < NUM_INSTANCES_Y; ++potY ) {
 			float instanceX = potX / (float)NUM_INSTANCES_X - 0.5f;
 			float instanceY = potY / (float)NUM_INSTANCES_Y - 0.5f;
-			positions.push_back( Vec3f( instanceX * Vec3f( DRAW_SCALE, 0, 0 ) + instanceY * Vec3f( 0, 0, DRAW_SCALE ) ) );
+			positions.push_back( vec3( instanceX * vec3( DRAW_SCALE, 0, 0 ) + instanceY * vec3( 0, 0, DRAW_SCALE ) ) );
 		}
 	}
 	
 	// create the VBO which will contain per-instance (rather than per-vertex) data
-	mInstanceDataVbo = gl::Vbo::create( GL_ARRAY_BUFFER, positions.size() * sizeof(Vec3f), positions.data(), GL_DYNAMIC_DRAW );
+	mInstanceDataVbo = gl::Vbo::create( GL_ARRAY_BUFFER, positions.size() * sizeof(vec3), positions.data(), GL_DYNAMIC_DRAW );
 
 	// we need a geom::BufferLayout to describe this data as mapping to the CUSTOM_0 semantic, and the 1 (rather than 0) as the last param indicates per-instance (rather than per-vertex)
 	geom::BufferLayout instanceDataLayout;
@@ -88,18 +88,18 @@ void InstancedTeapotsApp::resize()
 void InstancedTeapotsApp::update()
 {
 	// move the camera up and down on Y
-	mCam.lookAt( Vec3f( 0, CAMERA_Y_RANGE.first + abs(sin( getElapsedSeconds() / 4)) * (CAMERA_Y_RANGE.second - CAMERA_Y_RANGE.first), 0 ), vec3( 0 ) );
+	mCam.lookAt( vec3( 0, CAMERA_Y_RANGE.first + abs(sin( getElapsedSeconds() / 4)) * (CAMERA_Y_RANGE.second - CAMERA_Y_RANGE.first), 0 ), vec3( 0 ) );
 	
 	// update our instance positions; map our instance data VBO, write new positions, unmap
-	Vec3f *positions = (Vec3f*)mInstanceDataVbo->map( GL_WRITE_ONLY );
+	vec3 *positions = (vec3*)mInstanceDataVbo->map( GL_WRITE_ONLY );
 	for( size_t potX = 0; potX < NUM_INSTANCES_X; ++potX ) {
 		for( size_t potY = 0; potY < NUM_INSTANCES_Y; ++potY ) {
 			float instanceX = potX / (float)NUM_INSTANCES_X - 0.5f;
 			float instanceY = potY / (float)NUM_INSTANCES_Y - 0.5f;
 			// just some nonsense math to move the teapots in a wave
-			Vec3f newPos(	instanceX * Vec3f( DRAW_SCALE, 0, 0 ) +
-							instanceY * Vec3f( 0, 0, DRAW_SCALE ) +
-							Vec3f( 0, 30, 0 ) * sinf( getElapsedSeconds() * 3 + instanceX * 3 + instanceY * 3 ) );
+			vec3 newPos(	instanceX * vec3( DRAW_SCALE, 0, 0 ) +
+							instanceY * vec3( 0, 0, DRAW_SCALE ) +
+							vec3( 0, 30, 0 ) * sinf( getElapsedSeconds() * 3 + instanceX * 3 + instanceY * 3 ) );
 			*positions++ = newPos;
 		}
 	}
