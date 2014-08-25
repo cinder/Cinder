@@ -112,7 +112,6 @@
 				00236DA31130E4D8006C991F /* PBXTargetDependency */,
 				009F02051136D24300636E3C /* PBXTargetDependency */,
 				00AE0FF3113DF1F2005AFB58 /* PBXTargetDependency */,
-				0039FB34115AD32700BA0BAD /* PBXTargetDependency */,
 				0039FB43115AD34700BA0BAD /* PBXTargetDependency */,
 				0039FB53115AD3A200BA0BAD /* PBXTargetDependency */,
 				006A1FCA11D7F87600941A5E /* PBXTargetDependency */,
@@ -594,20 +593,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = StereoscopicRendering;
-		};
-		0039FB31115AD31B00BA0BAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = FBOBasic;
-		};
-		0039FB33115AD32700BA0BAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = FBOBasic;
 		};
 		0039FB40115AD33F00BA0BAD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1646,7 +1631,6 @@
 		002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoodNightMorning.xcodeproj; path = ../../_svg/GoodNightMorning/xcode/GoodNightMorning.xcodeproj; sourceTree = "<group>"; };
 		002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SimpleViewer.xcodeproj; path = ../../_svg/SimpleViewer/xcode/SimpleViewer.xcodeproj; sourceTree = "<group>"; };
 		002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = StereoscopicRendering.xcodeproj; path = ../../StereoscopicRendering/xcode/StereoscopicRendering.xcodeproj; sourceTree = "<group>"; };
-		0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MandelbrotGLSL.xcodeproj; path = ../../MandelbrotGLSL/xcode/MandelbrotGLSL.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Buddhabrot.xcodeproj; path = ../../Buddhabrot/xcode/Buddhabrot.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HodginParticlesRedux.xcodeproj; path = ../../HodginParticlesRedux/xcode/HodginParticlesRedux.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1746,7 +1730,6 @@
 				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				0005C9B5100681D9004D82BC /* eventTest.xcodeproj */,
 				00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */,
-				0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */,
 				009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */,
 				0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */,
 				00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */,
@@ -2071,14 +2054,6 @@
 			isa = PBXGroup;
 			children = (
 				002CFBDA1644BE2C00C1A31D /* StereoscopicRendering.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0039FB29115AD31B00BA0BAD /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0039FB32115AD31B00BA0BAD /* FBOBasic.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2852,10 +2827,6 @@
 					ProjectRef = 00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */;
 				},
 				{
-					ProductGroup = 0039FB29115AD31B00BA0BAD /* Products */;
-					ProjectRef = 0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */;
-				},
-				{
 					ProductGroup = 00239C5019ABF67000B652B4 /* Products */;
 					ProjectRef = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
 				},
@@ -3397,13 +3368,6 @@
 			fileType = wrapper.application;
 			path = StereoscopicRendering.app;
 			remoteRef = 002CFBD91644BE2C00C1A31D /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0039FB32115AD31B00BA0BAD /* FBOBasic.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = FBOBasic.app;
-			remoteRef = 0039FB31115AD31B00BA0BAD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0039FB41115AD33F00BA0BAD /* MandelbrotGLSL.app */ = {
@@ -4082,11 +4046,6 @@
 			isa = PBXTargetDependency;
 			name = StereoscopicRendering;
 			targetProxy = 002CFBDB1644BE4300C1A31D /* PBXContainerItemProxy */;
-		};
-		0039FB34115AD32700BA0BAD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FBOBasic;
-			targetProxy = 0039FB33115AD32700BA0BAD /* PBXContainerItemProxy */;
 		};
 		0039FB43115AD34700BA0BAD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
