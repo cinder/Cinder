@@ -26,7 +26,7 @@ class RetinaSampleApp : public AppNative {
 
 void RetinaSampleApp::prepareSettings( Settings *settings )
 {
-	settings->enableHighDensityDisplay();
+	settings->enableHighDensityDisplay(); // try removing this line
 	settings->enableMultiTouch( false );
 	
 	// on iOS we want to make a Window per monitor
@@ -65,8 +65,6 @@ void RetinaSampleApp::draw()
 	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 	gl::enableAlphaBlending();
 
-	gl::setMatricesWindow( app::getWindowSize() );
-	
 	gl::pushModelMatrix();
 		gl::color( 1.0f, 0.5f, 0.25f );
 		gl::lineWidth( toPixels( 1.0f ) );
