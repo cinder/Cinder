@@ -14,16 +14,16 @@ uniform sampler2D uEdgesTex;
 uniform sampler2D uAreaTex;
 uniform sampler2D uSearchTex;
 
-in vec4    vTexCoord0;
-in vec2    vPixcoord;
-in vec4    vOffset[3];
+noperspective in vec2    texcoord;
+noperspective in vec2    pixcoord;
+noperspective in vec4    offset[3];
+
+out vec4 fragColor;
 
 void main()
 {
-	vec2 uv = vTexCoord0.st;
-	//vec2 uv = gl_FragCoord.xy * SMAA_RT_METRICS.xy;
-	float4 subsampleIndices = float4(0.0, 0.0, 0.0, 0.0);
+	ivec4 subsampleIndices = ivec4(0, 0, 0, 0);
 
-	gl_FragColor = SMAABlendingWeightCalculationPS(uv, vPixcoord, vOffset, 
+	fragColor = SMAABlendingWeightCalculationPS(texcoord, pixcoord, offset, 
 	   uEdgesTex, uAreaTex, uSearchTex, subsampleIndices);
 }

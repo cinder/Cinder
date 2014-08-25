@@ -20,6 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "cinder/app/AppBasic.h"
 #include "cinder/Log.h"
 
 #include "SMAA.h"
@@ -45,7 +46,7 @@ void SMAA::setup()
 	gl::Texture2d::Format fmt;
 	fmt.setMinFilter( GL_LINEAR );
 	fmt.setMagFilter( GL_LINEAR );
-	fmt.setWrap( GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER );
+	fmt.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
 
 	// Search Texture (Grayscale, 8 bits unsigned)
 	fmt.setInternalFormat( GL_R8 );
@@ -76,16 +77,21 @@ void SMAA::apply( gl::FboRef destination, gl::FboRef source )
 	// Make sure our source is linearly interpolated.
 	GLenum minFilter = source->getFormat().getColorTextureFormat().getMinFilter();
 	GLenum magFilter = source->getFormat().getColorTextureFormat().getMagFilter();
-	source->getColorTexture()->setMinFilter( GL_LINEAR );
-	source->getColorTexture()->setMagFilter( GL_LINEAR );
+	bool filterChanged = ( minFilter != GL_LINEAR || magFilter != GL_LINEAR );
+	if( filterChanged ) {
+		source->getColorTexture()->setMinFilter( GL_LINEAR );
+		source->getColorTexture()->setMagFilter( GL_LINEAR );
+	}
 
 	// Perform SMAA anti-aliasing.
 	gl::clear( ColorA( 0, 0, 0, 0 ) );
 	draw( source->getColorTexture(), destination->getBounds() );
 
 	// Restore texture parameters.
-	source->getColorTexture()->setMinFilter( minFilter );
-	source->getColorTexture()->setMagFilter( magFilter );
+	if( filterChanged ) {
+		source->getColorTexture()->setMinFilter( minFilter );
+		source->getColorTexture()->setMagFilter( magFilter );
+	}
 }
 
 void SMAA::draw( gl::Texture2dRef source, const Area& bounds )
@@ -112,6 +118,8 @@ void SMAA::draw( gl::Texture2dRef source, const Area& bounds )
 
 	gl::color( Color::white() );
 	gl::drawSolidRect( bounds );
+
+	//	gl::draw( mAreaTex );
 }
 
 gl::TextureRef SMAA::getEdgePass()

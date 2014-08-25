@@ -50,6 +50,7 @@ class PostProcessingAAApp : public AppNative
 {
 public:
 	enum SMAAMode { SMAA_EDGE_DETECTION, SMAA_BLEND_WEIGHTS, SMAA_BLEND_NEIGHBORS };
+	enum DividerMode { MODE_COMPARISON, MODE_ORIGINAL, MODE_FXAA, MODE_SMAA, MODE_COUNT };
 public:
 	void prepareSettings( Settings* settings ) override;
 
@@ -84,6 +85,7 @@ private:
 	gl::TextureRef      mInfoOriginal;   // Info texture.
 
 	glm::vec2           mDivider;        // Determines which part of our scene is anti-aliased.
+	DividerMode         mDividerMode;    // Allows us to see each of the modes (Original, FXAA, SMAA) full screen.
 	int                 mDividerWidth;
 	int                 mPixelSize;      // Allows us to zoom in on the scene.
 };
@@ -110,10 +112,11 @@ void PostProcessingAAApp::setup()
 	mSMAAMode = SMAA_BLEND_NEIGHBORS;
 
 	mTimeOffset = 1.0;
-	mTimer.start();
+	//mTimer.start();
 
 	mDivider = getWindowSize() / 2;
 	mDividerWidth = getWindowWidth() / 4;
+	mDividerMode = MODE_COMPARISON;
 	mPixelSize = 1;
 }
 
@@ -149,48 +152,82 @@ void PostProcessingAAApp::draw()
 	gl::color( Color::white() );
 
 	// Draw non-anti-aliased scene.
-	gl::draw( mFboScene->getColorTexture(), getWindowBounds() );
+	if( mDividerMode == MODE_COMPARISON || mDividerMode == MODE_ORIGINAL )
+		gl::draw( mFboScene->getColorTexture(), getWindowBounds() );
 
 	// Draw FXAA-anti-aliased scene.
-	mFXAA.apply( mFboFinal, mFboScene );
+	if( mDividerMode == MODE_COMPARISON || mDividerMode == MODE_FXAA ) {
+		mFXAA.apply( mFboFinal, mFboScene );
 
-	gl::pushMatrices();
-	gl::setMatricesWindow( mDividerWidth, getWindowHeight() );
-	gl::pushViewport( mDivider.x - mDividerWidth, 0, mDividerWidth, getWindowHeight() );
-	gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( glm::vec2( -( mDivider.x - mDividerWidth ), 0 ) ) );
-	gl::popViewport();
-	gl::popMatrices();
+		if( mDividerMode == MODE_COMPARISON ) {
+			gl::pushMatrices();
+			gl::setMatricesWindow( mDividerWidth, getWindowHeight() );
+			gl::pushViewport( (int) mDivider.x - mDividerWidth, 0, mDividerWidth, getWindowHeight() );
+			gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( glm::vec2( -( mDivider.x - mDividerWidth ), 0 ) ) );
+			gl::popViewport();
+			gl::popMatrices();
+		}
+		else {
+			gl::draw( mFboFinal->getColorTexture(), getWindowBounds() );
+		}
+	}
 
 	// Draw SMAA-anti-aliased scene.
-	mSMAA.apply( mFboFinal, mFboScene );
+	if( mDividerMode == MODE_COMPARISON || mDividerMode == MODE_SMAA ) {
+		mSMAA.apply( mFboFinal, mFboScene );
 
-	gl::pushMatrices();
-	gl::setMatricesWindow( mDividerWidth, getWindowHeight(), mSMAAMode == SMAA_BLEND_NEIGHBORS );
-	gl::pushViewport( mDivider.x, 0, mDividerWidth, getWindowHeight() );
-	switch( mSMAAMode ) {
-	case SMAA_EDGE_DETECTION:
-		gl::draw( mSMAA.getEdgePass(), getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) ); break;
-	case SMAA_BLEND_WEIGHTS:
-		gl::draw( mSMAA.getBlendPass(), getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) ); break;
-	case SMAA_BLEND_NEIGHBORS:
-		gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) );
-		break;
+		gl::TextureRef tex;
+		switch( mSMAAMode ) {
+		case SMAA_EDGE_DETECTION: tex = mSMAA.getEdgePass(); break;
+		case SMAA_BLEND_WEIGHTS: tex = mSMAA.getBlendPass(); break;
+		case SMAA_BLEND_NEIGHBORS: tex = mFboFinal->getColorTexture(); break;
+		}
+
+		if( mDividerMode == MODE_COMPARISON ) {
+			gl::pushMatrices();
+			gl::setMatricesWindow( mDividerWidth, getWindowHeight(), mSMAAMode == SMAA_BLEND_WEIGHTS );
+			gl::pushViewport( (int) mDivider.x, 0, mDividerWidth, getWindowHeight() );
+			gl::draw( tex, getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) );
+			gl::popViewport();
+			gl::popMatrices();
+		}
+		else {
+			gl::pushMatrices();
+			gl::setMatricesWindow( getWindowWidth(), getWindowHeight(), mSMAAMode == SMAA_BLEND_WEIGHTS );
+			gl::draw( tex, getWindowBounds() );
+			gl::popMatrices();
+		}
 	}
-	gl::popViewport();
-	gl::popMatrices();
 
 	// Draw divider.
-	gl::drawLine( glm::vec2( (float) mDivider.x, 0 ), glm::vec2( (float) mDivider.x, (float) getWindowHeight() ) );
-	gl::drawLine( glm::vec2( (float) ( mDivider.x - mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x - mDividerWidth ), (float) getWindowHeight() ) );
-	gl::drawLine( glm::vec2( (float) ( mDivider.x + mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x + mDividerWidth ), (float) getWindowHeight() ) );
+	if( mDividerMode == MODE_COMPARISON ) {
+		gl::drawLine( glm::vec2( (float) mDivider.x, 0 ), glm::vec2( (float) mDivider.x, (float) getWindowHeight() ) );
+		gl::drawLine( glm::vec2( (float) ( mDivider.x - mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x - mDividerWidth ), (float) getWindowHeight() ) );
+		gl::drawLine( glm::vec2( (float) ( mDivider.x + mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x + mDividerWidth ), (float) getWindowHeight() ) );
+	}
 
 	// Draw info.
 	gl::enableAlphaBlending();
-	gl::draw( mInfoOriginal, glm::vec2( mDivider.x - mDividerWidth * 3 / 2 - 128, 32 ) );
-	gl::draw( mInfoFXAA, glm::vec2( mDivider.x - mDividerWidth * 1 / 2 - 128, 32 ) );
-	gl::draw( mInfoSMAA, glm::vec2( mDivider.x + mDividerWidth * 1 / 2 - 128, 32 ) );
-	gl::draw( mInfoOriginal, glm::vec2( mDivider.x + mDividerWidth * 3 / 2 - 128, 32 ) );
+	switch( mDividerMode ) {
+	case MODE_COMPARISON:
+		gl::draw( mInfoOriginal, glm::vec2( mDivider.x - mDividerWidth * 3 / 2 - 128, 32 ) );
+		gl::draw( mInfoFXAA, glm::vec2( mDivider.x - mDividerWidth * 1 / 2 - 128, 32 ) );
+		gl::draw( mInfoSMAA, glm::vec2( mDivider.x + mDividerWidth * 1 / 2 - 128, 32 ) );
+		gl::draw( mInfoOriginal, glm::vec2( mDivider.x + mDividerWidth * 3 / 2 - 128, 32 ) );
+		break;
+	case MODE_ORIGINAL:
+		gl::draw( mInfoOriginal, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
+		break;
+	case MODE_FXAA:
+		gl::draw( mInfoFXAA, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
+		break;
+	case MODE_SMAA:
+		//gl::draw( mInfoSMAA, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
+		break;
+	}
 	gl::disableAlphaBlending();
+
+	//gl::draw( mSMAA.mAreaTex );
 }
 
 void PostProcessingAAApp::render()
@@ -272,6 +309,15 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 		else
 			gl::enableVerticalSync();
 		break;
+	case KeyEvent::KEY_LEFT:
+		if( (int) mDividerMode > 0 )
+			mDividerMode = (DividerMode) ( (int) mDividerMode - 1 );
+		else
+			mDividerMode = (DividerMode) ( (int) DividerMode::MODE_COUNT - 1 );
+		break;
+	case KeyEvent::KEY_RIGHT:
+		mDividerMode = (DividerMode) ( ( (int) mDividerMode + 1 ) % DividerMode::MODE_COUNT );
+		break;
 	case KeyEvent::KEY_UP:
 		if( mPixelSize < 8 ) {
 			mPixelSize <<= 1; resize();
@@ -286,4 +332,4 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP_NATIVE( PostProcessingAAApp, RendererGl )
+CINDER_APP_NATIVE( PostProcessingAAApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )

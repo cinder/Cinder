@@ -12,12 +12,12 @@ uniform vec4 SMAA_RT_METRICS; // (1/w, 1/h, w, h)
 uniform sampler2D uColorTex;
 uniform sampler2D uBlendTex;
 
-in vec4    vTexCoord0;
-in vec4    vOffset;
+noperspective in vec2    texcoord;
+noperspective in vec4    offset;
+
+out vec4   fragColor;
 
 void main()
-{
-    //vec2 uv = vTexCoord0.st;
-	vec2 uv = gl_FragCoord.xy * SMAA_RT_METRICS.xy;
-    gl_FragColor = SMAANeighborhoodBlendingPS(uv, vOffset, uColorTex, uBlendTex);
+{	
+    fragColor = SMAANeighborhoodBlendingPS(texcoord, offset, uColorTex, uBlendTex);
 }

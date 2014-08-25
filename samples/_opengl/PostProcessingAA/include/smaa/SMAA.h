@@ -40,7 +40,7 @@ public:
 
 	ci::gl::Texture2dRef  getEdgePass();
 	ci::gl::Texture2dRef  getBlendPass();
-private:
+public:
 	ci::gl::Fbo::Format   mFboFormat;
 	ci::gl::FboRef        mFboEdgePass;
 	ci::gl::FboRef        mFboBlendPass;

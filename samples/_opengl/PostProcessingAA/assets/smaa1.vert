@@ -14,18 +14,17 @@ uniform mat4 ciModelViewProjection;
 in vec4      ciPosition;
 in vec4      ciTexCoord0;
 
-out vec4     vTexCoord0;
-out vec4     vOffset[3];
+noperspective out vec2     texcoord;
+noperspective out vec4     offset[3];
 
 void main()
 {
-	vec2 uv = ciTexCoord0.st;
+	texcoord = ciTexCoord0.st;
 	
-	// Somehow calling "SMAAEdgeDetectionVS(uv, vOffset);" did not work :(
-	vOffset[0] = mad(SMAA_RT_METRICS.xyxy, float4(-1.0, 0.0, 0.0, -1.0), uv.xyxy);
-	vOffset[1] = mad(SMAA_RT_METRICS.xyxy, float4( 1.0, 0.0, 0.0,  1.0), uv.xyxy);
-	vOffset[2] = mad(SMAA_RT_METRICS.xyxy, float4(-2.0, 0.0, 0.0, -2.0), uv.xyxy);
+	// Somehow calling "SMAAEdgeDetectionVS(texcoord, offset);" did not work :(
+	offset[0] = mad(SMAA_RT_METRICS.xyxy, float4(-1.0, 0.0, 0.0, -1.0), texcoord.xyxy);
+	offset[1] = mad(SMAA_RT_METRICS.xyxy, float4( 1.0, 0.0, 0.0,  1.0), texcoord.xyxy);
+	offset[2] = mad(SMAA_RT_METRICS.xyxy, float4(-2.0, 0.0, 0.0, -2.0), texcoord.xyxy);
 
-	vTexCoord0 = ciTexCoord0;
 	gl_Position = ciModelViewProjection * ciPosition;
 }

@@ -60,49 +60,7 @@ void Piston::draw( float time )
 	gl::drawCube( mPosition, glm::vec3( 10.0f, height, 10.0f ) );
 }
 
-/////////////////////////////////////
-
-const char* Pistons::vs =
-"varying vec3 V;"
-"varying vec3 N;"
-
-"void main()"
-"{"
-"	V = vec3(gl_ModelViewMatrix * gl_Vertex);"
-"	N = normalize(gl_NormalMatrix * gl_Normal);"
-"	gl_TexCoord[0] = gl_MultiTexCoord0;"
-"	gl_Position = ftransform();"
-"	gl_FrontColor = gl_Color;"
-"}";
-
-const char* Pistons::fs =
-"varying vec3 V;"
-"varying vec3 N;"
-
-"void main()"
-"{"
-"	vec2 uv = gl_TexCoord[0].st;"
-"	vec3 L = normalize(-V);"
-"	vec3 E = normalize(-V);"
-"	vec3 R = normalize(-reflect(L,N));"
-
-// diffuse term with fake ambient occlusion
-"	float occlusion = 0.5 + 0.5*16.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y);"
-"	vec4 diffuse = gl_Color * occlusion;"
-"	diffuse *= max(dot(N,L), 0.0);"
-
-// specular term
-"	vec4 specular = gl_Color;"
-"	specular *= pow(max(dot(R,E),0.0), 50.0);"
-
-// write gamma corrected final color
-"	vec3 final = sqrt(diffuse + specular).rgb;"
-"	gl_FragColor.rgb = final;"
-
-// write luminance in alpha channel (required for FXAA)
-"	const vec3 luminance = vec3(0.299, 0.587, 0.114);"
-"	gl_FragColor.a = dot( final, luminance );"
-"}";
+//////////////////////////////////////////////////////////////////////
 
 void Pistons::setup()
 {
