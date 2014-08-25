@@ -13,6 +13,11 @@
 			buildPhases = (
 			);
 			dependencies = (
+				00239C6919ABF8B900B652B4 /* PBXTargetDependency */,
+				00239C6B19ABF8B900B652B4 /* PBXTargetDependency */,
+				00239C6D19ABF8B900B652B4 /* PBXTargetDependency */,
+				00239C6F19ABF8B900B652B4 /* PBXTargetDependency */,
+				00239C7119ABF8B900B652B4 /* PBXTargetDependency */,
 				006D71B91995295E008149E2 /* PBXTargetDependency */,
 				006D71BB1995295E008149E2 /* PBXTargetDependency */,
 				006D71BD1995295E008149E2 /* PBXTargetDependency */,
@@ -456,6 +461,69 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = CairoBasic;
+		};
+		00239C5319ABF67100B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = FBOBasic;
+		};
+		00239C5A19ABF78A00B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = MotionBlurVelocityBuffer;
+		};
+		00239C6019ABF7C800B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ParticleSphereCPU;
+		};
+		00239C6619ABF7D100B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ParticleSphereGPU;
+		};
+		00239C6819ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ParticleSphereCPU;
+		};
+		00239C6A19ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ParticleSphereGPU;
+		};
+		00239C6C19ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = MotionBlurVelocityBuffer;
+		};
+		00239C6E19ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = FBOBasic;
+		};
+		00239C7019ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D72BE1995325D008149E2 /* Geometry.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = Geometry;
 		};
 		002932A41530F5660022B1BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1569,6 +1637,10 @@
 		000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NormalMapping.xcodeproj; path = ../../NormalMapping/xcode/NormalMapping.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Picking3D.xcodeproj; path = ../../Picking3D/xcode/Picking3D.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00236D981130E4C7006C991F /* CairoBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CairoBasic.xcodeproj; path = ../../CairoBasic/xcode/CairoBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
+		00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic.xcodeproj; path = ../../_opengl/FBOBasic/xcode/FBOBasic.xcodeproj; sourceTree = "<group>"; };
+		00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MotionBlurVelocityBuffer.xcodeproj; path = ../../_opengl/MotionBlurVelocityBuffer/xcode/MotionBlurVelocityBuffer.xcodeproj; sourceTree = "<group>"; };
+		00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParticleSphereCPU.xcodeproj; path = ../../_opengl/ParticleSphereCPU/xcode/ParticleSphereCPU.xcodeproj; sourceTree = "<group>"; };
+		00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParticleSphereGPU.xcodeproj; path = ../../_opengl/ParticleSphereGPU/xcode/ParticleSphereGPU.xcodeproj; sourceTree = "<group>"; };
 		0029329C1530F5660022B1BF /* AnimatedReveal.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AnimatedReveal.xcodeproj; path = ../../_svg/AnimatedReveal/xcode/AnimatedReveal.xcodeproj; sourceTree = "<group>"; };
 		002932A61530F5720022B1BF /* EuroMap.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EuroMap.xcodeproj; path = ../../_svg/EuroMap/xcode/EuroMap.xcodeproj; sourceTree = "<group>"; };
 		002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoodNightMorning.xcodeproj; path = ../../_svg/GoodNightMorning/xcode/GoodNightMorning.xcodeproj; sourceTree = "<group>"; };
@@ -1920,6 +1992,38 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00239C5019ABF67000B652B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00239C5419ABF67100B652B4 /* FBOBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00239C5719ABF78A00B652B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00239C5B19ABF78A00B652B4 /* MotionBlurVelocityBuffer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00239C5D19ABF7C800B652B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00239C6119ABF7C800B652B4 /* ParticleSphereCPU.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00239C6319ABF7D100B652B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00239C6719ABF7D100B652B4 /* ParticleSphereGPU.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		0029329B1530F5480022B1BF /* _svg */ = {
 			isa = PBXGroup;
 			children = (
@@ -2016,14 +2120,18 @@
 			children = (
 				006D718D19952909008149E2 /* TransformFeedbackSmokeParticles.xcodeproj */,
 				006D718719952903008149E2 /* TransformFeedbackClothSimulation.xcodeproj */,
+				00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */,
+				00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */,
 				006D7181199528FC008149E2 /* ObjLoader.xcodeproj */,
 				006D717B199528F7008149E2 /* NormalMapping.xcodeproj */,
+				00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */,
 				006D7175199528F2008149E2 /* MotionBlurFbo.xcodeproj */,
 				006D716F199528EC008149E2 /* MipMap.xcodeproj */,
 				006D7169199528E7008149E2 /* InstancedTeapots.xcodeproj */,
 				006D7163199528E1008149E2 /* ImmediateMode.xcodeproj */,
 				006D715D199528DB008149E2 /* HighDynamicRange.xcodeproj */,
 				006D7157199528D5008149E2 /* GeometryShaderBasic.xcodeproj */,
+				00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */,
 				006D7151199528CC008149E2 /* DynamicCubeMapping.xcodeproj */,
 				006D714B199528C4008149E2 /* CubeMapping.xcodeproj */,
 				006D7145199528BA008149E2 /* Cube.xcodeproj */,
@@ -2748,6 +2856,10 @@
 					ProjectRef = 0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */;
 				},
 				{
+					ProductGroup = 00239C5019ABF67000B652B4 /* Products */;
+					ProjectRef = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
+				},
+				{
 					ProductGroup = 009CB648120F22810066763D /* Products */;
 					ProjectRef = 009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */;
 				},
@@ -2852,6 +2964,10 @@
 					ProjectRef = 006D7175199528F2008149E2 /* MotionBlurFbo.xcodeproj */;
 				},
 				{
+					ProductGroup = 00239C5719ABF78A00B652B4 /* Products */;
+					ProjectRef = 00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */;
+				},
+				{
 					ProductGroup = 11754429193596890075AF60 /* Products */;
 					ProjectRef = 11754428193596890075AF60 /* MultichannelOutput.xcodeproj */;
 				},
@@ -2890,6 +3006,14 @@
 				{
 					ProductGroup = 00F0B32B1039DFFD003AB416 /* Products */;
 					ProjectRef = 00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 00239C5D19ABF7C800B652B4 /* Products */;
+					ProjectRef = 00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */;
+				},
+				{
+					ProductGroup = 00239C6319ABF7D100B652B4 /* Products */;
+					ProjectRef = 00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005CA0010068206004D82BC /* Products */;
@@ -3210,6 +3334,34 @@
 			fileType = wrapper.application;
 			path = CairoBasic.app;
 			remoteRef = 00236DA01130E4C7006C991F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00239C5419ABF67100B652B4 /* FBOBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FBOBasic.app;
+			remoteRef = 00239C5319ABF67100B652B4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00239C5B19ABF78A00B652B4 /* MotionBlurVelocityBuffer.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MotionBlurVelocityBuffer.app;
+			remoteRef = 00239C5A19ABF78A00B652B4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00239C6119ABF7C800B652B4 /* ParticleSphereCPU.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ParticleSphereCPU.app;
+			remoteRef = 00239C6019ABF7C800B652B4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00239C6719ABF7D100B652B4 /* ParticleSphereGPU.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ParticleSphereGPU.app;
+			remoteRef = 00239C6619ABF7D100B652B4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		002932A51530F5660022B1BF /* AnimatedReveal.app */ = {
@@ -3880,6 +4032,31 @@
 			isa = PBXTargetDependency;
 			name = CairoBasic;
 			targetProxy = 00236DA21130E4D8006C991F /* PBXContainerItemProxy */;
+		};
+		00239C6919ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ParticleSphereCPU;
+			targetProxy = 00239C6819ABF8B900B652B4 /* PBXContainerItemProxy */;
+		};
+		00239C6B19ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ParticleSphereGPU;
+			targetProxy = 00239C6A19ABF8B900B652B4 /* PBXContainerItemProxy */;
+		};
+		00239C6D19ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MotionBlurVelocityBuffer;
+			targetProxy = 00239C6C19ABF8B900B652B4 /* PBXContainerItemProxy */;
+		};
+		00239C6F19ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBOBasic;
+			targetProxy = 00239C6E19ABF8B900B652B4 /* PBXContainerItemProxy */;
+		};
+		00239C7119ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Geometry;
+			targetProxy = 00239C7019ABF8B900B652B4 /* PBXContainerItemProxy */;
 		};
 		002932C51530F5AD0022B1BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
