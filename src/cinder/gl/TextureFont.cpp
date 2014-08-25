@@ -121,7 +121,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 			textureFormat.setSwizzleMask( { GL_RED, GL_RED, GL_RED, GL_GREEN } );
 #endif
 			if( mFormat.hasMipmapping() )
-				mTextures.back()->setMinFilter( GL_LINEAR_MIPMAP_LINEAR );
+				textureFormat.setMinFilter( GL_LINEAR_MIPMAP_LINEAR );
 
 			// under iOS format and interalFormat must match, so let's make a block of LUMINANCE_ALPHA data
 			Surface8u::ConstIter iter( surface, surface.getBounds() );
