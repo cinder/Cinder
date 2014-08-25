@@ -29,6 +29,7 @@
 #include "cinder/Matrix.h"
 
 #include <set>
+#include <vector>
 
 namespace cinder { namespace geom {
 
