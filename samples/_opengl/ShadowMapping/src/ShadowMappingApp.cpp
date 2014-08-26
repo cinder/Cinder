@@ -33,7 +33,7 @@
  number of samples. More advanced GPU techniques allow one to increase this
  sample count.
  
- References~
+ References ~
  
  OpenGL 4.0 Shading Language Cookbook by David Wolff
  https://github.com/daw42/glslcookbook
@@ -106,6 +106,15 @@ private:
 	gl::Texture2dRef		mTextureShadowMap;
 };
 
+struct LightData {
+	bool						toggleViewpoint;
+	float						distanceRadius;
+	float						fov;
+	CameraPersp					camera;
+	vec3						viewpoint;
+	vec3						target;
+};
+
 class ShadowMappingApp : public AppNative {
 public:
 	void prepareSettings( AppBasic::Settings *settings ) override;
@@ -121,34 +130,29 @@ public:
 private:
 	void drawScene( float spinAngle, const gl::GlslProgRef& glsl = nullptr );
 	params::InterfaceGlRef		mParams;
-	bool						mToggleLightViewpoint;
+	
 	float						mFrameRate;
 	MayaCamUI					mMayaCam;
 	ivec2						mMousePos;
 	
-	gl::BatchRef				mTeapot;
-	gl::BatchRef				mTeapotShadowed;
-	gl::BatchRef				mSphere;
-	gl::BatchRef				mSphereShadowed;
+	gl::BatchRef				mTeapot, mTeapotShadowed;
+	gl::BatchRef				mSphere, mSphereShadowed;
 	std::vector< std::pair<mat4, vec3>>	mTransforms;
 	
-	float						mLightDistanceRadius;
 	
 	gl::GlslProgRef				mShadowShader;
 	ShadowMapRef				mShadowMap;
-	
-	CameraPersp					mLightCamera;
-	vec3						mLightViewpoint;
-	float						mLightFov;
-	vec3						mLightTarget;
-	
-	int							mShadowTechnique;
 	int							mShadowMapSize;
+	bool						mOnlyShadowmap;
+	
+	LightData					mLight;
+
+	int							mShadowTechnique;
+	
 	float						mDepthBias;
 	bool						mEnableNormSlopeOffset;
 	float						mRandomOffset;
 	int							mNumRandomSamples;
-	bool						mOnlyShadowmap;
 	float						mPolygonOffsetFactor, mPolygonOffsetUnits;
 };
 
@@ -163,11 +167,14 @@ void ShadowMappingApp::setup()
 	Rand::randomize();
 	
 	mFrameRate				= 0;
-	mLightDistanceRadius	= 100.0f;
 	mShadowMapSize			= 2048;
-	mLightViewpoint			= vec3( 1 ) * mLightDistanceRadius;
-	mLightFov				= 10.0f;
-	mLightTarget			= vec3( 0 );
+	
+	mLight.distanceRadius	= 100.0f;
+	mLight.viewpoint		= vec3( 1 ) * mLight.distanceRadius;
+	mLight.fov				= 10.0f;
+	mLight.target			= vec3( 0 );
+	mLight.toggleViewpoint	= false;
+	
 	mShadowTechnique		= 1;
 	mDepthBias				= -0.0005f;
 	mRandomOffset			= 1.2f;
@@ -175,7 +182,7 @@ void ShadowMappingApp::setup()
 	mEnableNormSlopeOffset	= false;
 	mOnlyShadowmap			= false;
 	mPolygonOffsetFactor	= mPolygonOffsetUnits = 3.0f;
-	mToggleLightViewpoint	= false;
+	
 	
 	try {
 		mShadowShader	= gl::GlslProg::create( loadAsset( "shadow_mapping.vert"), loadAsset("shadow_mapping.frag") );
@@ -185,13 +192,13 @@ void ShadowMappingApp::setup()
 	}
 	
 	mShadowMap		= ShadowMap::create( mShadowMapSize );
-	mLightCamera.setPerspective( mLightFov, mShadowMap->getAspectRatio(), 0.5, 500.0 );
+	mLight.camera.setPerspective( mLight.fov, mShadowMap->getAspectRatio(), 0.5, 500.0 );
 	
 	mParams = params::InterfaceGl::create( "Settings", toPixels( ivec2( 300, 325 ) ) );
 	mParams->addParam( "Framerate", &mFrameRate, "", true );
 	mParams->addSeparator();
-	mParams->addParam( "Light viewpoint", &mToggleLightViewpoint );
-	mParams->addParam( "Light distance radius", &mLightDistanceRadius ).min( 0 ).max( 450 ).step( 1 );
+	mParams->addParam( "Light viewpoint", &mLight.toggleViewpoint );
+	mParams->addParam( "Light distance radius", &mLight.distanceRadius ).min( 0 ).max( 450 ).step( 1 );
 	mParams->addParam( "Render only shadow map", &mOnlyShadowmap );
 	mParams->addSeparator();
 	mParams->addText( "Technique: Hard, PCF3x3, PCF4x4, Random" );
@@ -260,9 +267,9 @@ void ShadowMappingApp::update()
 	}
 	
 	
-	mLightViewpoint.x = mLightDistanceRadius * sin( 0.25f * e );
-	mLightViewpoint.z = mLightDistanceRadius * cos( 0.25f * e );
-	mLightCamera.lookAt( mLightViewpoint, mLightTarget );
+	mLight.viewpoint.x = mLight.distanceRadius * sin( 0.25f * e );
+	mLight.viewpoint.z = mLight.distanceRadius * cos( 0.25f * e );
+	mLight.camera.lookAt( mLight.viewpoint, mLight.target );
 	mFrameRate = getAverageFps();
 }
 
@@ -308,7 +315,7 @@ void ShadowMappingApp::draw()
 	glPolygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
 	
 	// Render scene into shadow map
-	gl::setMatrices( mLightCamera );
+	gl::setMatrices( mLight.camera );
 	gl::viewport( mShadowMap->getSize() );
 	{
 		gl::ScopedFramebuffer bindFbo( mShadowMap->getFbo() );
@@ -317,21 +324,21 @@ void ShadowMappingApp::draw()
 	}
 
 	// Render shadowed scene
-	gl::setMatrices( mToggleLightViewpoint ? mLightCamera : mMayaCam.getCamera() );
+	gl::setMatrices( mLight.toggleViewpoint ? mLight.camera : mMayaCam.getCamera() );
 	gl::viewport( toPixels( getWindowSize() ) );
 	{
 		gl::ScopedGlslProg bind( mShadowShader );
 		gl::ScopedTextureBind texture( mShadowMap->getTexture() );
 		
 		mShadowShader->uniform( "uShadowMap", 0 );
-		mShadowShader->uniform( "uShadowMatrix", mLightCamera.getProjectionMatrix() * mLightCamera.getViewMatrix() );
+		mShadowShader->uniform( "uShadowMatrix", mLight.camera.getProjectionMatrix() * mLight.camera.getViewMatrix() );
 		mShadowShader->uniform( "uShadowTechnique", mShadowTechnique );
 		mShadowShader->uniform( "uDepthBias", mDepthBias );
 		mShadowShader->uniform( "uOnlyShadowmap", mOnlyShadowmap );
 		mShadowShader->uniform( "uRandomOffset", mRandomOffset );
 		mShadowShader->uniform( "uNumRandomSamples", mNumRandomSamples );
 		mShadowShader->uniform( "uEnableNormSlopeOffset", mEnableNormSlopeOffset );
-		mShadowShader->uniform( "uLightPos", vec3( gl::getModelView() * vec4( mLightViewpoint, 1.0 ) ) );
+		mShadowShader->uniform( "uLightPos", vec3( gl::getModelView() * vec4( mLight.viewpoint, 1.0 ) ) );
 		
 		drawScene( spinAngle, mShadowShader );
 	}
@@ -339,10 +346,8 @@ void ShadowMappingApp::draw()
 	gl::disable( GL_POLYGON_OFFSET_FILL );
 	
 	// Render light direction vector
-	gl::drawLine( mLightViewpoint, vec3( 0 ) );
-	
-	gl::context()->sanityCheck();
-	
+	gl::drawLine( mLight.viewpoint, vec3( 0 ) );
+		
 	mParams->draw();
 	CI_CHECK_GL();
 }
