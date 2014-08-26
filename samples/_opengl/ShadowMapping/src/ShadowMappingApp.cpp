@@ -41,6 +41,8 @@
  http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/
  Common Techniques to Improve Shadow Depth Maps
  http://msdn.microsoft.com/en-us/library/windows/desktop/ee416324(v=vs.85).aspx
+ Soft Shadow Mapping
+ http://codeflow.org/entries/2013/feb/15/soft-shadow-mapping/
  
  */
 

@@ -49,78 +49,64 @@ vec2 getNormSlopeBias( vec3 N, vec3 L ) {
 }
 
 float sampleBasic( vec4 sc ) {
-	float shadow = 1.0;
-	if( sc.w > 1.0 ) {
-		shadow = textureProj( uShadowMap, sc );
-	}
-	return shadow;
+	return textureProj( uShadowMap, sc );
 }
 
 float samplePCF3x3( vec4 sc )
 {
-	float shadow = 1.0;
-	if( sc.w > 1.0 ) {
-		float sum = 0;
-		const int s = 2;
-		sum += textureProjOffset( uShadowMap, sc, ivec2(-s,-s) );
-		sum += textureProjOffset( uShadowMap, sc, ivec2(-s, 0) );
-		sum += textureProjOffset( uShadowMap, sc, ivec2(-s, s) );
-		sum += textureProjOffset( uShadowMap, sc, ivec2( 0,-s) );
-		sum += textureProjOffset( uShadowMap, sc, ivec2( 0, 0) );
-		sum += textureProjOffset( uShadowMap, sc, ivec2( 0, s) );
-		sum += textureProjOffset( uShadowMap, sc, ivec2( s,-s) );
-		sum += textureProjOffset( uShadowMap, sc, ivec2( s, 0) );
-		sum += textureProjOffset( uShadowMap, sc, ivec2( s, s) );
-		shadow = sum/9.0;
-	}
-	return shadow;
+	const int s = 2;
+	
+	float shadow = 0.0;
+	shadow += textureProjOffset( uShadowMap, sc, ivec2(-s,-s) );
+	shadow += textureProjOffset( uShadowMap, sc, ivec2(-s, 0) );
+	shadow += textureProjOffset( uShadowMap, sc, ivec2(-s, s) );
+	shadow += textureProjOffset( uShadowMap, sc, ivec2( 0,-s) );
+	shadow += textureProjOffset( uShadowMap, sc, ivec2( 0, 0) );
+	shadow += textureProjOffset( uShadowMap, sc, ivec2( 0, s) );
+	shadow += textureProjOffset( uShadowMap, sc, ivec2( s,-s) );
+	shadow += textureProjOffset( uShadowMap, sc, ivec2( s, 0) );
+	shadow += textureProjOffset( uShadowMap, sc, ivec2( s, s) );
+	return shadow/9.0;;
 }
 
 float samplePCF4x4( vec4 sc )
 {
-	float shadow = 1.0;
-	if( sc.w > 1.0 ) {
-		float sum = 0.0;
-		const int r = 2;
-		const int s = 2 * r;
-		sum += textureProjOffset( uShadowMap,  sc, ivec2(-s,-s) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2(-r,-s) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2( r,-s) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2( s,-s) );
+	const int r = 2;
+	const int s = 2 * r;
+	
+	float shadow = 0.0;
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s,-s) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r,-s) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2( r,-s) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2( s,-s) );
+	
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s,-r) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r,-r) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2( r,-r) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2( s,-r) );
+	
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s, r) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r, r) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2( r, r) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2( s, r) );
+	
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-s, s) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2(-r, s) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2( r, s) );
+	shadow += textureProjOffset( uShadowMap,  sc, ivec2( s, s) );
 		
-		sum += textureProjOffset( uShadowMap,  sc, ivec2(-s,-r) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2(-r,-r) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2( r,-r) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2( s,-r) );
-		
-		sum += textureProjOffset( uShadowMap,  sc, ivec2(-s, r) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2(-r, r) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2( r, r) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2( s, r) );
-		
-		sum += textureProjOffset( uShadowMap,  sc, ivec2(-s, s) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2(-r, s) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2( r, s) );
-		sum += textureProjOffset( uShadowMap,  sc, ivec2( s, s) );
-		
-		shadow = sum/16.0;
-	}
-	return shadow;
+	return shadow/16.0;
 }
 
 float sampleRandom( vec4 sc, vec2 normSlopeBias )
 {
-	float shadow = 1.0;
-	if( sc.w > 1.0 ) {
-		float sum = 0;
-		for( int i = 0; i< uNumRandomSamples; i++ ) {
-			vec4 off = getRandomOffset( i );
-			off.xy *= normSlopeBias;
-			sum += textureProj( uShadowMap, sc + off );
-		}
-		shadow = sum / float( uNumRandomSamples );
+	float shadow = 0.0;
+	for( int i = 0; i< uNumRandomSamples; i++ ) {
+		vec4 off = getRandomOffset( i );
+		off.xy *= normSlopeBias;
+		shadow += textureProj( uShadowMap, sc + off );
 	}
-	return shadow;
+	return shadow / float( uNumRandomSamples );
 }
 
 void main()
