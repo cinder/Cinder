@@ -1,3 +1,50 @@
+
+/**
+ 
+ Eric Renaud-Houde - August 2014
+ 
+ This sample illustrates common shadow mapping techniques.
+ 
+ Overview ~
+ 
+ A first pass stores the scene's depth information (from the light's POV)
+ into a FBO.  When the shaded scene is rendered, a depth test is performed on
+ each fragment. In the light's projective space, a fragment whose depth is
+ greater than that of the shadow map must be occluded: it is shadowed.
+ 
+ Common problems - Tradeoffs ~
+ 
+ Aliasing: Other than increasing the resolution of the depth map, additionnal
+ techniques can be used to soften the shadow edges. We demonstrate
+ percentage-closer filtering (PCF) and random sampling. Note that sometimes
+ lower resolution on the shadow map may help soften/blur the shadow.
+ 
+ Surface acne: Also occurring with traditional ray-tracing, this surface
+ noise occurs on false depth tests.  Due to imprecision, a fragment is
+ shadowed due to depth imprecision (self-intersecting the surface). Various
+ offsets can be used to prevent this problem.
+ 
+ Peter Panning: The shadows don't reach the objects that cast them. This
+ problem occurs when the offsets are too large. Offsets must be tweaked
+ carefully to avoid problems on each end.
+ 
+ Sampling noise: The random sampling method exhibits noise (which should
+ still be less visually objectionable than aliasing). This is due to a low
+ number of samples. More advanced GPU techniques allow one to increase this
+ sample count.
+ 
+ References~
+ 
+ OpenGL 4.0 Shading Language Cookbook by David Wolff
+ https://github.com/daw42/glslcookbook
+ Tutorial 16 : Shadow mapping
+ http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-16-shadow-mapping/
+ Common Techniques to Improve Shadow Depth Maps
+ http://msdn.microsoft.com/en-us/library/windows/desktop/ee416324(v=vs.85).aspx
+ 
+ */
+
+
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/params/Params.h"
@@ -98,6 +145,7 @@ private:
 	float						mDepthBias;
 	bool						mEnableNormSlopeOffset;
 	float						mRandomOffset;
+	int							mNumRandomSamples;
 	bool						mOnlyShadowmap;
 	float						mPolygonOffsetFactor, mPolygonOffsetUnits;
 };
@@ -105,20 +153,23 @@ private:
 void ShadowMappingApp::prepareSettings( AppBasic::Settings *settings )
 {
 //	settings->enableHighDensityDisplay();
-	settings->setWindowSize(900, 900);
+	settings->setWindowSize( 900, 900 );
 }
 
 void ShadowMappingApp::setup()
 {
+	Rand::randomize();
+	
 	mFrameRate				= 0;
 	mLightDistanceRadius	= 100.0f;
 	mShadowMapSize			= 2048;
-	mLightViewpoint			= vec3(1) * mLightDistanceRadius;
+	mLightViewpoint			= vec3( 1 ) * mLightDistanceRadius;
 	mLightFov				= 10.0f;
-	mLightTarget			= vec3(0);
+	mLightTarget			= vec3( 0 );
 	mShadowTechnique		= 1;
 	mDepthBias				= -0.0005f;
 	mRandomOffset			= 1.2f;
+	mNumRandomSamples		= 32;
 	mEnableNormSlopeOffset	= false;
 	mOnlyShadowmap			= false;
 	mPolygonOffsetFactor	= mPolygonOffsetUnits = 3.0f;
@@ -138,23 +189,24 @@ void ShadowMappingApp::setup()
 	mParams->addParam( "Framerate", &mFrameRate, "", true );
 	mParams->addSeparator();
 	mParams->addParam( "Light viewpoint", &mToggleLightViewpoint );
-	mParams->addParam( "Light distance radius", &mLightDistanceRadius ).min(0).max(450).step(1);
+	mParams->addParam( "Light distance radius", &mLightDistanceRadius ).min( 0 ).max( 450 ).step( 1 );
 	mParams->addParam( "Render only shadow map", &mOnlyShadowmap );
 	mParams->addSeparator();
 	mParams->addText( "Technique: Hard, PCF3x3, PCF4x4, Random" );
-	mParams->addParam( "Index", &mShadowTechnique ).min(0).max(3);
+	mParams->addParam( "Index", &mShadowTechnique ).min( 0 ).max( 3 );
 	mParams->addSeparator();
-	mParams->addParam( "Polygon offset factor", &mPolygonOffsetFactor ).step(0.025).min(0);
-	mParams->addParam( "Polygon offset units", &mPolygonOffsetUnits ).step(0.025).min(0);
-	mParams->addParam( "Shadow map size",  &mShadowMapSize ).min(16).step(16).updateFn( [this]() {
+	mParams->addParam( "Polygon offset factor", &mPolygonOffsetFactor ).step( 0.025 ).min( 0 );
+	mParams->addParam( "Polygon offset units", &mPolygonOffsetUnits ).step( 0.025 ).min( 0 );
+	mParams->addParam( "Shadow map size",  &mShadowMapSize ).min( 16 ).step( 16 ).updateFn( [this]() {
 		mShadowMap->reset( mShadowMapSize );
 	} );
-	mParams->addParam( "Depth bias", &mDepthBias ).step(0.00001).max(0.0);
+	mParams->addParam( "Depth bias", &mDepthBias ).step( 0.00001 ).max( 0.0 );
 	mParams->addText( "(PCF radius is const: tweak in shader.)" );
 	mParams->addSeparator();
 	mParams->addText( "Random sampling params" );
-	mParams->addParam( "Offset radius", &mRandomOffset ).min(0).step(0.05);
+	mParams->addParam( "Offset radius", &mRandomOffset ).min( 0 ).step( 0.05 );
 	mParams->addParam( "Auto normal slope offset", &mEnableNormSlopeOffset );
+	mParams->addParam( "Num samples", &mNumRandomSamples ).min( 1 );
 //	mParams->minimize();
 	
 	auto positionGlsl = gl::getStockShader( gl::ShaderDef() );
@@ -178,8 +230,8 @@ void ShadowMappingApp::setup()
 		vec3 v( 25.0f * randVec3f() );
 		mat4 m{};
 		m *= translate( v );
-		m *= scale( vec3( 6 * ( randFloat() + 1 ) ) );
-		m *= rotate( 0.0f, randVec3f() );
+		m *= scale( vec3( 6 * ( randFloat() + 1.1f ) ) );
+		m *= rotate( 2 * pi<float>() * randFloat(), randVec3f() );
 		mTransforms.emplace_back( m, randVec3f() );
 	}
 	
@@ -201,8 +253,8 @@ void ShadowMappingApp::update()
 	float c = cos( e );
 	float s	= sin( e );
 	
-	for ( auto& obj : mTransforms ) {
-		obj.first *= orientate4( vec3( c, s, -c ) * 0.01f );
+	for ( auto& transform : mTransforms ) {
+		transform.first *= orientate4( vec3( c, s, -c ) * 0.01f );
 	}
 	
 	
@@ -230,10 +282,10 @@ void ShadowMappingApp::drawScene( float spinAngle, const gl::GlslProgRef& shadow
 	
 	{
 		gl::ScopedColor white( Color( 0.90f, 0.97f, 0.97f ) );
-		for ( const auto& obj : mTransforms ) {
+		for ( const auto& transform : mTransforms ) {
 			gl::ScopedModelMatrix push;
 			gl::scale( vec3(0.25) );
-			gl::multModelMatrix( rotate( spinAngle, obj.second ) * obj.first );
+			gl::multModelMatrix( rotate( spinAngle, transform.second ) * transform.first );
 			if( shadowGlsl ) {
 				mTeapotShadowed->draw();
 			} else {
@@ -245,10 +297,10 @@ void ShadowMappingApp::drawScene( float spinAngle, const gl::GlslProgRef& shadow
 
 void ShadowMappingApp::draw()
 {
-	gl::clear();
+	gl::clear( Color( 0.07, 0.05, 0.1 ) );
 	
 	// Elapsed time called here: the scene must be absolutely identical on both renders!
-	float spinAngle = 0.25f * (float) app::getElapsedSeconds();
+	float spinAngle = 0.5f * (float) app::getElapsedSeconds();
 	
 	gl::enable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
@@ -275,6 +327,7 @@ void ShadowMappingApp::draw()
 		mShadowShader->uniform( "uDepthBias", mDepthBias );
 		mShadowShader->uniform( "uOnlyShadowmap", mOnlyShadowmap );
 		mShadowShader->uniform( "uRandomOffset", mRandomOffset );
+		mShadowShader->uniform( "uNumRandomSamples", mNumRandomSamples );
 		mShadowShader->uniform( "uEnableNormSlopeOffset", mEnableNormSlopeOffset );
 		mShadowShader->uniform( "uLightPos", vec3( gl::getModelView() * vec4( mLightViewpoint, 1.0 ) ) );
 		
@@ -284,7 +337,7 @@ void ShadowMappingApp::draw()
 	gl::disable( GL_POLYGON_OFFSET_FILL );
 	
 	// Render light direction vector
-	gl::drawLine( mLightViewpoint, vec3(0) );
+	gl::drawLine( mLightViewpoint, vec3( 0 ) );
 	
 	gl::context()->sanityCheck();
 	

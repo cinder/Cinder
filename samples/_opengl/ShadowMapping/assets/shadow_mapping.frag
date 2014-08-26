@@ -20,6 +20,7 @@ uniform float			uDepthBias;
 uniform bool			uOnlyShadowmap;
 uniform float			uRandomOffset;
 uniform bool			uEnableNormSlopeOffset;
+uniform int				uNumRandomSamples;
 
 out vec4 fragColor;
 
@@ -112,13 +113,12 @@ float sampleRandom( vec4 sc, vec2 normSlopeBias )
 	float shadow = 1.0;
 	if( sc.w > 1.0 ) {
 		float sum = 0;
-		int samples = 32;
-		for(int i=0;i<samples;i++) {
+		for( int i = 0; i< uNumRandomSamples; i++ ) {
 			vec4 off = getRandomOffset( i );
 			off.xy *= normSlopeBias;
 			sum += textureProj( uShadowMap, sc + off );
 		}
-		shadow = sum/float(samples);
+		shadow = sum / float( uNumRandomSamples );
 	}
 	return shadow;
 }
@@ -135,9 +135,9 @@ void main()
 	vec3	R = normalize( -reflect( L, N ) );
 	
 	// Modulated ambient (with fake red indirect lighting coming from the sphere)
-	vec3	sphereGlow = vec3( 0.6, 0.2, 0.2 );
-	vec3	indirectGlow = vec3( clamp( dot( 0.5 * normalize(vModelNormal), -normalize(vModelPosition.xyz) ), 0.0, 0.6 ), 0.02, 0.02 );
-	vec3	A = mix( sphereGlow, indirectGlow, float(uIsTeapot) ) + vec3( 0.03 );
+	vec3	sphereGlow = vec3( 0.6, 0.15, 0.15 );
+	vec3	indirectGlow = vec3( clamp( dot( 0.8 * normalize(vModelNormal), -normalize(vModelPosition.xyz) ), 0.0, 0.55 ), 0.0, 0.0 );
+	vec3	A = mix( sphereGlow, indirectGlow, float(uIsTeapot) ) + vec3( 0.07, 0.05, 0.1 );
 	// Diffuse factor
 	float NdotL = max( dot( N, L ), 0.0 );
 	vec3	D = vec3( NdotL );
