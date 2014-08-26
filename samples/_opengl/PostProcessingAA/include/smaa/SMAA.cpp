@@ -30,6 +30,24 @@
 using namespace ci;
 using namespace std;
 
+SMAA::SMAA()
+{
+	mSearchTexBuffer = new unsigned char[SEARCHTEX_WIDTH * SEARCHTEX_PITCH];
+	mAreaTexBuffer = new unsigned char[AREATEX_HEIGHT * AREATEX_PITCH];
+
+	// Flip textures vertically.
+	for( size_t y = 0; y < SEARCHTEX_HEIGHT; ++y )
+		memcpy( (void*) &mSearchTexBuffer[( SEARCHTEX_HEIGHT - 1 - y ) * SEARCHTEX_PITCH], (void*) &searchTexBytes[y * SEARCHTEX_PITCH], SEARCHTEX_PITCH );
+	for( size_t y = 0; y < AREATEX_HEIGHT; ++y )
+		memcpy( (void*) &mAreaTexBuffer[( AREATEX_HEIGHT - 1 - y ) * AREATEX_PITCH], (void*) &areaTexBytes[y * AREATEX_PITCH], AREATEX_PITCH );
+}
+
+SMAA::~SMAA()
+{
+	delete[] mAreaTexBuffer;
+	delete[] mSearchTexBuffer;
+}
+
 void SMAA::setup()
 {
 	// Load and compile our shaders
@@ -48,22 +66,26 @@ void SMAA::setup()
 	fmt.setMagFilter( GL_LINEAR );
 	fmt.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
 
-	// Search Texture (Grayscale, 8 bits unsigned)
+	// Search Texture (Grayscale, 8 bits unsigned).
 	fmt.setInternalFormat( GL_R8 );
 	fmt.setSwizzleMask( GL_RED, GL_RED, GL_RED, GL_ONE );
+	fmt.loadTopDown( true );
 	mSearchTex = gl::Texture2d::create( searchTexBytes, GL_RED, SEARCHTEX_WIDTH, SEARCHTEX_HEIGHT, fmt );
 
-	// Area Texture (Red+Green Channels, 8 bits unsigned)
+	// Area Texture (Red+Green Channels, 8 bits unsigned).
 	fmt.setInternalFormat( GL_RG8 );
 	fmt.setSwizzleMask( GL_RED, GL_GREEN, GL_ZERO, GL_ONE );
+	fmt.loadTopDown( true );
 	mAreaTex = gl::Texture2d::create( areaTexBytes, GL_RG, AREATEX_WIDTH, AREATEX_HEIGHT, fmt );
 
 	// Specify the Fbo format.
 	gl::Texture2d::Format tfmt;
 	tfmt.setMinFilter( GL_LINEAR );
 	tfmt.setMagFilter( GL_LINEAR );
+	tfmt.setInternalFormat( GL_RGBA8 );
 
 	mFboFormat.setColorTextureFormat( tfmt );
+	mFboFormat.setColorBufferInternalFormat( GL_RGBA );
 	mFboFormat.enableDepthBuffer( false );
 }
 
@@ -110,7 +132,7 @@ void SMAA::draw( gl::Texture2dRef source, const Area& bounds )
 
 	// Apply SMAA.
 	gl::ScopedTextureBind tex0( source );
-	gl::ScopedTextureBind tex1( ( gl::TextureBaseRef ) mFboBlendPass->getColorTexture(), 1 );
+	gl::ScopedTextureBind tex1( ( gl::TextureBaseRef ) mFboBlendPass->getColorTexture(), 1 ); // @andrewfb : we are forced to cast, because of ambiguous symbol.
 	gl::ScopedGlslProg shader( mSMAAThirdPass->program() );
 	mSMAAThirdPass->uniform( "SMAA_RT_METRICS", mMetrics );
 	mSMAAThirdPass->uniform( "uColorTex", 0 );
@@ -136,12 +158,10 @@ void SMAA::createBuffers( int width, int height )
 {
 	// Create or resize frame buffers
 	if( !mFboEdgePass || mFboEdgePass->getWidth() != width || mFboEdgePass->getHeight() != height ) {
-		mFboFormat.setColorBufferInternalFormat( GL_RGBA8 );
 		mFboEdgePass = gl::Fbo::create( width, height, mFboFormat );
 	}
 
 	if( !mFboBlendPass || mFboBlendPass->getWidth() != width || mFboBlendPass->getHeight() != height ) {
-		mFboFormat.setColorBufferInternalFormat( GL_RGBA8 );
 		mFboBlendPass = gl::Fbo::create( width, height, mFboFormat );
 	}
 
@@ -171,8 +191,8 @@ void SMAA::doBlendPass()
 	gl::clear( ColorA( 0, 0, 0, 0 ) );
 
 	gl::ScopedTextureBind tex0( mFboEdgePass->getColorTexture() );
-	gl::ScopedTextureBind tex1( ( gl::TextureBaseRef ) mAreaTex, 1 );
-	gl::ScopedTextureBind tex2( ( gl::TextureBaseRef ) mSearchTex, 2 );
+	gl::ScopedTextureBind tex1( ( gl::TextureBaseRef ) mAreaTex, 1 ); // @andrewfb : we are forced to cast, because of ambiguous symbol.
+	gl::ScopedTextureBind tex2( ( gl::TextureBaseRef ) mSearchTex, 2 ); // @andrewfb : we are forced to cast, because of ambiguous symbol.
 	gl::ScopedGlslProg shader( mSMAASecondPass->program() );
 	mSMAASecondPass->uniform( "SMAA_RT_METRICS", mMetrics );
 	mSMAASecondPass->uniform( "uEdgesTex", 0 );

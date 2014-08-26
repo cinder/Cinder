@@ -222,7 +222,7 @@ void PostProcessingAAApp::draw()
 		gl::draw( mInfoFXAA, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
 		break;
 	case MODE_SMAA:
-		//gl::draw( mInfoSMAA, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
+		gl::draw( mInfoSMAA, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
 		break;
 	}
 	gl::disableAlphaBlending();
@@ -310,20 +310,26 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 			gl::enableVerticalSync();
 		break;
 	case KeyEvent::KEY_LEFT:
+	case KeyEvent::KEY_DOWN:
 		if( (int) mDividerMode > 0 )
 			mDividerMode = (DividerMode) ( (int) mDividerMode - 1 );
 		else
 			mDividerMode = (DividerMode) ( (int) DividerMode::MODE_COUNT - 1 );
 		break;
 	case KeyEvent::KEY_RIGHT:
+	case KeyEvent::KEY_UP:
 		mDividerMode = (DividerMode) ( ( (int) mDividerMode + 1 ) % DividerMode::MODE_COUNT );
 		break;
-	case KeyEvent::KEY_UP:
+	case KeyEvent::KEY_PLUS:
+	case KeyEvent::KEY_EQUALS:
+	case KeyEvent::KEY_KP_PLUS:
 		if( mPixelSize < 8 ) {
 			mPixelSize <<= 1; resize();
 		}
 		break;
-	case KeyEvent::KEY_DOWN:
+	case KeyEvent::KEY_MINUS:
+	case KeyEvent::KEY_UNDERSCORE:
+	case KeyEvent::KEY_KP_MINUS:
 		if( mPixelSize > 1 ) {
 			mPixelSize >>= 1; resize();
 		}
