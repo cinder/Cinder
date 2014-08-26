@@ -13,6 +13,7 @@
 			buildPhases = (
 			);
 			dependencies = (
+				B05F590019AC495C001558CB /* PBXTargetDependency */,
 				00239C6919ABF8B900B652B4 /* PBXTargetDependency */,
 				00239C6B19ABF8B900B652B4 /* PBXTargetDependency */,
 				00239C6D19ABF8B900B652B4 /* PBXTargetDependency */,
@@ -1595,6 +1596,20 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = BufferPlayer;
 		};
+		B05F581C19AC4852001558CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ShadowMapping;
+		};
+		B05F58FF19AC495C001558CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ShadowMapping;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -1703,6 +1718,7 @@
 		11754434193596B20075AF60 /* NodeBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NodeBasic.xcodeproj; path = ../../_audio/NodeBasic/xcode/NodeBasic.xcodeproj; sourceTree = "<group>"; };
 		1175443A193596BE0075AF60 /* VoiceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoiceBasic.xcodeproj; path = ../../_audio/VoiceBasic/xcode/VoiceBasic.xcodeproj; sourceTree = "<group>"; };
 		11754440193596CF0075AF60 /* VoiceBasicProcessing.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoiceBasicProcessing.xcodeproj; path = ../../_audio/VoiceBasicProcessing/xcode/VoiceBasicProcessing.xcodeproj; sourceTree = "<group>"; };
+		B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ShadowMapping.xcodeproj; path = ../../_opengl/ShadowMapping/xcode/ShadowMapping.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -2095,6 +2111,7 @@
 			children = (
 				006D718D19952909008149E2 /* TransformFeedbackSmokeParticles.xcodeproj */,
 				006D718719952903008149E2 /* TransformFeedbackClothSimulation.xcodeproj */,
+				B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */,
 				00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */,
 				00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */,
 				006D7181199528FC008149E2 /* ObjLoader.xcodeproj */,
@@ -2689,6 +2706,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B05F581919AC4852001558CB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B05F581D19AC4852001558CB /* ShadowMapping.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXProject section */
@@ -3053,6 +3078,10 @@
 				{
 					ProductGroup = 0005CA4210068230004D82BC /* Products */;
 					ProjectRef = 0005CA4110068230004D82BC /* shadowMap.xcodeproj */;
+				},
+				{
+					ProductGroup = B05F581919AC4852001558CB /* Products */;
+					ProjectRef = B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */;
 				},
 				{
 					ProductGroup = 002932BB1530F5890022B1BF /* Products */;
@@ -3874,6 +3903,13 @@
 			remoteRef = 11754444193596CF0075AF60 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		B05F581D19AC4852001558CB /* ShadowMapping.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ShadowMapping.app;
+			remoteRef = B05F581C19AC4852001558CB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXTargetDependency section */
@@ -4401,6 +4437,11 @@
 			isa = PBXTargetDependency;
 			name = BufferPlayer;
 			targetProxy = 11754454193596DE0075AF60 /* PBXContainerItemProxy */;
+		};
+		B05F590019AC495C001558CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ShadowMapping;
+			targetProxy = B05F58FF19AC495C001558CB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
