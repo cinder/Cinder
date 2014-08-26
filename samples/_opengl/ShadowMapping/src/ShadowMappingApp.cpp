@@ -72,13 +72,13 @@ typedef std::shared_ptr<class ShadowMap> ShadowMapRef;
 
 class ShadowMap {
 public:
-	static ShadowMapRef create( size_t size ) { return ShadowMapRef( new ShadowMap{ size } ); }
-	ShadowMap( size_t size )
+	static ShadowMapRef create( int size ) { return ShadowMapRef( new ShadowMap{ size } ); }
+	ShadowMap( int size )
 	{
 		reset( size );
 	}
 	
-	void reset( size_t size )
+	void reset( int size )
 	{
 		gl::Texture2d::Format depthFormat;
 		depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
@@ -204,16 +204,16 @@ void ShadowMappingApp::setup()
 	mParams->addText( "Technique: Hard, PCF3x3, PCF4x4, Random" );
 	mParams->addParam( "Index", &mShadowTechnique ).min( 0 ).max( 3 );
 	mParams->addSeparator();
-	mParams->addParam( "Polygon offset factor", &mPolygonOffsetFactor ).step( 0.025 ).min( 0 );
-	mParams->addParam( "Polygon offset units", &mPolygonOffsetUnits ).step( 0.025 ).min( 0 );
+	mParams->addParam( "Polygon offset factor", &mPolygonOffsetFactor ).step( 0.025f ).min( 0.0f );
+	mParams->addParam( "Polygon offset units", &mPolygonOffsetUnits ).step( 0.025f ).min( 0.0f );
 	mParams->addParam( "Shadow map size",  &mShadowMapSize ).min( 16 ).step( 16 ).updateFn( [this]() {
 		mShadowMap->reset( mShadowMapSize );
 	} );
-	mParams->addParam( "Depth bias", &mDepthBias ).step( 0.00001 ).max( 0.0 );
+	mParams->addParam( "Depth bias", &mDepthBias ).step( 0.00001f ).max( 0.0 );
 	mParams->addText( "(PCF radius is const: tweak in shader.)" );
 	mParams->addSeparator();
 	mParams->addText( "Random sampling params" );
-	mParams->addParam( "Offset radius", &mRandomOffset ).min( 0 ).step( 0.05 );
+	mParams->addParam( "Offset radius", &mRandomOffset ).min( 0.0f ).step( 0.05f );
 	mParams->addParam( "Auto normal slope offset", &mEnableNormSlopeOffset );
 	mParams->addParam( "Num samples", &mNumRandomSamples ).min( 1 );
 //	mParams->minimize();
@@ -306,7 +306,7 @@ void ShadowMappingApp::drawScene( float spinAngle, const gl::GlslProgRef& shadow
 
 void ShadowMappingApp::draw()
 {
-	gl::clear( Color( 0.07, 0.05, 0.1 ) );
+	gl::clear( Color( 0.07f, 0.05f, 0.1f ) );
 	
 	// Elapsed time called here: the scene must be absolutely identical on both renders!
 	float spinAngle = 0.5f * (float) app::getElapsedSeconds();
