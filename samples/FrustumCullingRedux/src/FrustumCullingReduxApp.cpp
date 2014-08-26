@@ -47,8 +47,6 @@ class FrustumCullingReduxApp : public AppBasic
 	void setup();
 	void update();
 	void draw();
-	
-	void renderObjects();
 
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
@@ -77,11 +75,6 @@ class FrustumCullingReduxApp : public AppBasic
 	bool			bDrawEstimatedBoundingBoxes;
 	bool			bDrawPreciseBoundingBoxes;
 	bool			bShowHelp;
-	
-	//! assets
-	gl::Texture2dRef	mDiffuse;
-	gl::Texture2dRef	mNormal;
-	gl::Texture2dRef	mSpecular;
 
 	ci::TriMeshRef		mTriMesh;
 	gl::BatchRef		mBatch;
@@ -93,12 +86,12 @@ class FrustumCullingReduxApp : public AppBasic
 	gl::GlslProgRef		mShader;
 
 	//! objects
-	CullableObjectRef	mObjects[NUM_OBJECTS];
+	std::list<CullableObjectRef>	mObjects;
+	std::vector<CullableObjectRef>	mPotentiallyVisibleSet;
 
 	//! camera
 	MayaCamUI		mMayaCam;
 	CameraPersp		mRenderCam;
-	CameraPersp		mCullingCam;
 
 	//! help text
 	gl::Texture2dRef	mHelp;
@@ -148,22 +141,21 @@ void FrustumCullingReduxApp::setup()
 
 	//! create a few hearts
 	Rand::randomize();
-	for(int i=0;i<NUM_OBJECTS;++i) {
+	mObjects.resize( NUM_OBJECTS );
+	for( auto & objIt : mObjects ) {
 		vec3 p( Rand::randFloat(-2000.0f, 2000.0f), 0.0f, Rand::randFloat(-2000.0f, 2000.0f) );
 		vec3 r( 0.0f, Rand::randFloat(-360.0f, 360.0f), 0.0f );
 		vec3 s( 50.10f, 50.10f, 50.10f );
 
-		mObjects[i] = CullableObjectRef( new CullableObject( mBatch ) );
-		mObjects[i]->setTransform( p, r, s );
+		objIt = CullableObjectRef( new CullableObject( mBatch ) );
+		objIt->setTransform( p, r, s );
 	}
 
 	//! setup cameras
-	mRenderCam = CameraPersp(getWindowWidth(), getWindowHeight(), 60.0f, 50.0f, 10000.0f);
-	mRenderCam.setEyePoint( vec3(200.0f, 200.0f, 200.0f) );
-	mRenderCam.setCenterOfInterestPoint( vec3(0.0f, 0.0f, 0.0f) );
+	mRenderCam.setPerspective( 60.0f, getWindowAspectRatio(), .01f, 10000.0f );
+	mRenderCam.lookAt( vec3( 200.0f ), vec3( 0.0f ) );
+	
 	mMayaCam.setCurrentCam( mRenderCam );
-
-	mCullingCam = mRenderCam;
 
 	//! track current time so we can calculate elapsed time
 	mCurrentSeconds = getElapsedSeconds();
@@ -171,34 +163,52 @@ void FrustumCullingReduxApp::setup()
 
 void FrustumCullingReduxApp::update()
 {
+	// clear vector
+	vector<CullableObjectRef>().swap(mPotentiallyVisibleSet);
+	
 	//! calculate elapsed time
 	double elapsed = getElapsedSeconds() - mCurrentSeconds;
 	mCurrentSeconds += elapsed;
 
-	//! update culling camera (press SPACE to toggle bMoveCamera)
-	if(bMoveCamera) 
-		mCullingCam = mRenderCam;
-
 	//! perform frustum culling **********************************************************************************
-	Frustumf visibleWorld( mCullingCam );
+	// Set the frustum to a lower field of view angle to show the culling
+	mRenderCam.setFov( 30.0f );
+	Frustumf visibleWorld( mRenderCam );
 
-	for(int i=0;i<NUM_OBJECTS;++i) {
+	for( auto & objIt : mObjects ) {
 		// update object (so it rotates slowly around its axis)
-		mObjects[i]->update(elapsed);
+		objIt->update(elapsed);
 
 		if(bPerformCulling) {
 			// create a fast approximation of the world space bounding box by transforming the
 			// eight corners of the object space bounding box and using them to create a new axis aligned bounding box 
-			AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( mObjects[i]->getTransform() );
+			AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( objIt->getTransform() );
 
 			// check if the bounding box intersects the visible world
-			mObjects[i]->setCulled( ! visibleWorld.intersects( worldBoundingBox ) );
+			if( visibleWorld.intersects( worldBoundingBox ) ) {
+				objIt->setCulled( false );
+				mPotentiallyVisibleSet.push_back( objIt );
+			}
+			else
+				objIt->setCulled( true );
 		}
 		else {
-			mObjects[i]->setCulled( false );
+			objIt->setCulled( false );
+			mPotentiallyVisibleSet.push_back( objIt );
 		}
 	}
+	// Must reset the culling window so that we can see the effect.
+	mRenderCam.setFov( 60.0f );
 	//! **********************************************************************************************************
+	
+	auto eye = mRenderCam.getEyePoint();
+	// Depth Sort the potentially visible set
+	std::sort( mPotentiallyVisibleSet.begin(), mPotentiallyVisibleSet.end(),
+			  [&, eye]( const CullableObjectRef & objA, const CullableObjectRef & objB ) {
+				  auto distA = ci::distance( eye, objA->getPosition() );
+				  auto distB = ci::distance( eye, objB->getPosition() );
+				  return distA < distB;
+			  });
 }
 
 void FrustumCullingReduxApp::draw()
@@ -215,19 +225,24 @@ void FrustumCullingReduxApp::draw()
 		gl::enableDepthRead();
 		gl::enableDepthWrite();
 		
-		renderObjects();
+		{
+			gl::ScopedGlslProg scopeGlsl( mShader );
+			// draw hearts in depth sorted order, to make sure no pixel is drawn into twice
+			for( auto & objIt : mPotentiallyVisibleSet )
+				objIt->draw();
+		}
 		
 		// draw helper objects
 		gl::drawCoordinateFrame(100.0f, 5.0f, 2.0f);
 		
 		AxisAlignedBox3f worldBoundingBox;
-		for(int i=0;i<NUM_OBJECTS;++i) {
+		for( auto & objIt : mPotentiallyVisibleSet ) {
 			if(bDrawEstimatedBoundingBoxes) {
 				// create a fast approximation of the world space bounding box by transforming the
 				// eight corners and using them to create a new axis aligned bounding box
-				worldBoundingBox = mObjectBoundingBox.transformed( mObjects[i]->getTransform() );
+				worldBoundingBox = mObjectBoundingBox.transformed( objIt->getTransform() );
 				
-				if( !mObjects[i]->isCulled() )
+				if( ! objIt->isCulled() )
 					gl::color( Color(0, 1, 1) );
 				else
 					gl::color( Color(1, 0.5f, 0) );
@@ -235,19 +250,21 @@ void FrustumCullingReduxApp::draw()
 				gl::drawStrokedCube( worldBoundingBox );
 			}
 			
-			if(bDrawPreciseBoundingBoxes && !mObjects[i]->isCulled()) {
+			if(bDrawPreciseBoundingBoxes && ! objIt->isCulled()) {
 				// you can see how much the approximated bounding boxes differ
 				// from the precise ones by enabling this code
-				worldBoundingBox = mTriMesh->calcBoundingBox( mObjects[i]->getTransform() );
+				worldBoundingBox = mTriMesh->calcBoundingBox( objIt->getTransform() );
 				gl::color( Color(1, 1, 0) );
 				gl::drawStrokedCube( worldBoundingBox );
 			}
 		}
 		
-		if(!bMoveCamera) {
-			gl::color( Color(1, 1, 1) );
-			gl::drawFrustum( mCullingCam );
-		}
+		// Reset the field of view once again to visualize
+		// the actual window we're using to cull with.
+		gl::color( Color(1, 1, 1) );
+		mRenderCam.setFov( 30.0f );
+		gl::drawFrustum( mRenderCam );
+		mRenderCam.setFov( 60.0f );
 		
 		drawGrid(2000.0f, 25.0f);
 		
@@ -279,33 +296,29 @@ void FrustumCullingReduxApp::mouseDrag( MouseEvent event )
 void FrustumCullingReduxApp::keyDown( KeyEvent event )
 {
 	switch( event.getCode() ) {
-	case KeyEvent::KEY_ESCAPE:
-		quit();
+		case KeyEvent::KEY_ESCAPE:
+			quit();
 		break;
-	case KeyEvent::KEY_SPACE:
-		bMoveCamera = !bMoveCamera;
+		case KeyEvent::KEY_b:
+			if(event.isShiftDown())
+				bDrawPreciseBoundingBoxes = ! bDrawPreciseBoundingBoxes;
+			else
+				bDrawEstimatedBoundingBoxes = ! bDrawEstimatedBoundingBoxes;
 		break;
-	case KeyEvent::KEY_b:
-		if(event.isShiftDown())
-			bDrawPreciseBoundingBoxes = ! bDrawPreciseBoundingBoxes;
-		else
-			bDrawEstimatedBoundingBoxes = ! bDrawEstimatedBoundingBoxes;
+		case KeyEvent::KEY_c:
+			bPerformCulling = !bPerformCulling;
 		break;
-	case KeyEvent::KEY_c:
-		bPerformCulling = !bPerformCulling;
-		break;
-	case KeyEvent::KEY_f: 
-		{
+		case KeyEvent::KEY_f: {
 			bool verticalSyncEnabled = gl::isVerticalSyncEnabled();
 			setFullScreen( ! isFullScreen() );
 			gl::enableVerticalSync( verticalSyncEnabled );
 		}
 		break;
-	case KeyEvent::KEY_h:
-		bShowHelp = !bShowHelp;
+		case KeyEvent::KEY_h:
+			bShowHelp = !bShowHelp;
 		break;
-	case KeyEvent::KEY_v:
-		toggleVerticalSync();
+		case KeyEvent::KEY_v:
+			toggleVerticalSync();
 		break;
 	}
 	
@@ -313,44 +326,11 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 	renderHelpToTexture();
 }
 
-void FrustumCullingReduxApp::renderObjects()
-{
-	
-	gl::ScopedGlslProg scopeGlsl( mShader );
-	
-	if( mDiffuse && mNormal && mSpecular ) {
-		mDiffuse->bind( 0 );
-		mNormal->bind( 1 );
-		mSpecular->bind( 2 );
-	}
-	
-	// draw hearts
-	for(int i=0;i<NUM_OBJECTS;++i)
-		mObjects[i]->draw();
-	
-	if( mDiffuse && mNormal && mSpecular ) {
-		mDiffuse->unbind( 0 );
-		mNormal->unbind( 1 );
-		mSpecular->unbind( 2 );
-	}
-}
-
 void FrustumCullingReduxApp::loadObject()
 {
 	mTriMesh = TriMesh::create( ObjLoader( loadAsset("models/heart.obj") ) );
 	mBatch = gl::Batch::create( *mTriMesh, mShader );
 
-	/*// load textures for diffuse colors, normals and specular highlights (optional, no textures supplied)
-	try {
-		mDiffuse = gl::Texture( loadImage( loadFile("../models/heart_diffuse.png") ) );
-		mNormal = gl::Texture( loadImage( loadFile("../models/heart_normal.png") ) );
-		mSpecular = gl::Texture( loadImage( loadFile("../models/heart_spec.png") ) );
-	}
-	catch( const std::exception &e ) {
-		ci::app::console() << "Failed to load image:" << e.what() << std::endl;
-	}//*/
-
-	// find the object space bounding box
 	mObjectBoundingBox = mTriMesh->calcBoundingBox();
 }
 

@@ -38,10 +38,14 @@ public:
 	void update(double elapsed);
 	void draw();
 
-	void setCulled(bool culled = true){ bIsCulled = culled; };
-	bool isCulled(){ return bIsCulled; };
+	void setCulled(bool culled = true){ bIsCulled = culled; }
+	bool isCulled(){ return bIsCulled; }
 
-	const ci::mat4& getTransform() const { return mTransform; };
+	const ci::mat4& getTransform() const { return mTransform; }
+	
+	//! For sorting purposes
+	const ci::vec3& getPosition() const { return mPosition; }
+	
 	void setTransform(const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale);
 protected:
 	//! keep track of culling state
