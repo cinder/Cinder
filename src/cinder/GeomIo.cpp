@@ -965,13 +965,13 @@ void Sphere::calculateImplUV( size_t segments, size_t rings ) const
 	auto indexIt = mIndices.begin();
 	for( size_t r = 0; r < rings - 1; r++ ) {
 		for( size_t s = 0; s < segments - 1 ; s++ ) {
-			*indexIt++ = r * segments + ( s + 1 );
-			*indexIt++ = r * segments + s;
-			*indexIt++ = ( r + 1 ) * segments + ( s + 1 );
+			*indexIt++ = (uint32_t)(r * segments + ( s + 1 ));
+			*indexIt++ = (uint32_t)(r * segments + s);
+			*indexIt++ = (uint32_t)(( r + 1 ) * segments + ( s + 1 ));
 
-			*indexIt++ = ( r + 1 ) * segments + s;
-			*indexIt++ = ( r + 1 ) * segments + ( s + 1 );
-			*indexIt++ = r * segments + s;
+			*indexIt++ = (uint32_t)(( r + 1 ) * segments + s);
+			*indexIt++ = (uint32_t)(( r + 1 ) * segments + ( s + 1 ));
+			*indexIt++ = (uint32_t)(r * segments + s);
 		}
 	}
 }
@@ -1077,7 +1077,7 @@ void Icosphere::calculateImplUV() const
 	// lambda closure to easily add a vertex with unique texture coordinate to our mesh
 	auto addVertex = [&] ( size_t i, const vec2 &uv ) {
 		const uint32_t index = mIndices[i];
-		mIndices[i] = mPositions.size();
+		mIndices[i] = (uint32_t)mPositions.size();
 		mPositions.push_back( mPositions[index] );
 		mNormals.push_back( mNormals[index] );
 		mTexCoords.push_back( uv );
@@ -1115,13 +1115,13 @@ void Icosphere::subdivide() const
 		mNormals.reserve( mNormals.size() + mIndices.size() );
 		mIndices.reserve( mIndices.size() * 4 );
 
-		const int numTriangles = mIndices.size() / 3;
+		const size_t numTriangles = mIndices.size() / 3;
 		for( int i = 0; i < numTriangles; ++i ) {
 			uint32_t index0 = mIndices[i * 3 + 0];
 			uint32_t index1 = mIndices[i * 3 + 1];
 			uint32_t index2 = mIndices[i * 3 + 2];
 
-			uint32_t index3 = mPositions.size();
+			uint32_t index3 = (uint32_t)mPositions.size();
 			uint32_t index4 = index3 + 1;
 			uint32_t index5 = index4 + 1;
 
@@ -1254,13 +1254,13 @@ void Capsule::calculateImplUV( size_t segments, size_t rings ) const
 
 	for( size_t r = 0; r < ringsTotal - 1; r++ ) {
 		for( size_t s = 0; s < segments - 1; s++ ) {
-			mIndices.push_back( r * segments + ( s + 1 ) );
-			mIndices.push_back( r * segments + ( s + 0 ) );
-			mIndices.push_back( ( r + 1 ) * segments + ( s + 1 ) );
+			mIndices.push_back( (uint32_t)(r * segments + ( s + 1 )) );
+			mIndices.push_back( (uint32_t)(r * segments + ( s + 0 )) );
+			mIndices.push_back( (uint32_t)(( r + 1 ) * segments + ( s + 1 )) );
 
-			mIndices.push_back( ( r + 1 ) * segments + ( s + 0 ) );
-			mIndices.push_back( ( r + 1 ) * segments + ( s + 1 ) );
-			mIndices.push_back( r * segments + s );
+			mIndices.push_back( (uint32_t)(( r + 1 ) * segments + ( s + 0 )) );
+			mIndices.push_back( (uint32_t)(( r + 1 ) * segments + ( s + 1 )) );
+			mIndices.push_back( (uint32_t)(r * segments + s) );
 		}
 	}
 }
@@ -1375,13 +1375,13 @@ void Torus::calculateImplUV( size_t segments, size_t rings ) const
 	size_t k = 0;
 	for( size_t i = 0; i < segments - 1; ++i ) {
 		for ( size_t j = 0; j < rings - 1; ++j ) {
-			mIndices[k++] = (i + 0) * rings + (j + 0);
-			mIndices[k++] = (i + 1) * rings + (j + 1);
-			mIndices[k++] = (i + 1) * rings + (j + 0);
+			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 0));
+			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 1));
+			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 0));
 
-			mIndices[k++] = (i + 0) * rings + (j + 0);
-			mIndices[k++] = (i + 0) * rings + (j + 1);
-			mIndices[k++] = (i + 1) * rings + (j + 1);
+			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 0));
+			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 1));
+			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 1));
 		}
 	}
 }
@@ -1493,13 +1493,13 @@ void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
 	size_t k = 0;
 	for ( size_t j = 0; j < rings - 1; ++j ) {
 		for( size_t i = 0; i < segments - 1; ++i ) {
-			mIndices[k++] = (i + 0) * rings + (j + 0);
-			mIndices[k++] = (i + 1) * rings + (j + 0);
-			mIndices[k++] = (i + 1) * rings + (j + 1);
+			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 0));
+			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 0));
+			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 1));
 
-			mIndices[k++] = (i + 0) * rings + (j + 0);
-			mIndices[k++] = (i + 1) * rings + (j + 1);
-			mIndices[k++] = (i + 0) * rings + (j + 1);
+			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 0));
+			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 1));
+			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 1));
 		}
 	}
 
@@ -1554,14 +1554,14 @@ void Cylinder::calculateCap( bool flip, float height, float radius, size_t segme
 
 	for( size_t i = 0; i < segments - 1; ++i ) {
 		if( flip ) {
-			mIndices[k++] = index + i * 2 + 0;
-			mIndices[k++] = index + i * 2 + 3;
-			mIndices[k++] = index + i * 2 + 1;
+			mIndices[k++] = (uint32_t)(index + i * 2 + 0);
+			mIndices[k++] = (uint32_t)(index + i * 2 + 3);
+			mIndices[k++] = (uint32_t)(index + i * 2 + 1);
 		}
 		else {
-			mIndices[k++] = index + i * 2 + 0;
-			mIndices[k++] = index + i * 2 + 1;
-			mIndices[k++] = index + i * 2 + 3;
+			mIndices[k++] = (uint32_t)(index + i * 2 + 0);
+			mIndices[k++] = (uint32_t)(index + i * 2 + 1);
+			mIndices[k++] = (uint32_t)(index + i * 2 + 3);
 		}
 	}
 }

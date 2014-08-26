@@ -270,10 +270,10 @@ std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
 class TextureData {
   public:
 	struct Level {
-  		size_t						dataSize;
+  		GLsizei						dataSize;
 		size_t						offset;
 		std::shared_ptr<uint8_t>	dataStore;
-		size_t						width, height, depth;
+		GLsizei						width, height, depth;
 	};
 
 	TextureData();
@@ -298,8 +298,8 @@ class TextureData {
 	void				setDataFormat( GLenum dataFormat ) { mDataFormat = dataFormat; }
 	GLenum				getDataType() const { return mDataType; }
 	void				setDataType( GLenum dataType ) { mDataType = dataType; }
-	size_t				getUnpackAlignment() const { return mUnpackAlignment; }
-	void				setUnpackAlignment( size_t unpackAlignment ) { mUnpackAlignment = unpackAlignment; }
+	GLint				getUnpackAlignment() const { return mUnpackAlignment; }
+	void				setUnpackAlignment( GLint unpackAlignment ) { mUnpackAlignment = unpackAlignment; }
 
 	const std::array<GLint,4>&	getSwizzleMask() const { return mSwizzleMask; }
 	void						setSwizzleMask( const std::array<GLint,4> &swizzleMask ) { mSwizzleMask = swizzleMask; }
@@ -323,7 +323,7 @@ class TextureData {
 	GLint				mWidth, mHeight, mDepth;
 	GLint				mInternalFormat;
 	GLenum				mDataFormat, mDataType;
-	size_t				mUnpackAlignment;
+	GLint				mUnpackAlignment;
 	std::array<GLint,4>	mSwizzleMask;
 	
 	std::vector<Level>			mLevels;

@@ -256,7 +256,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 
 	int numMipMaps = ddsd.dwMipMapCount;
 	int dataFormat;
-	size_t blockSizeBytes = 16;
+	int32_t blockSizeBytes = 16;
 	switch( ddsd.ddpfPixelFormat.dwFourCC ) { 
 		case FOURCC_DXT1: 
 			dataFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;

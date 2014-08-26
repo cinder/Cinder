@@ -167,9 +167,9 @@ void ObjLoader::parse( bool includeUVs )
 			if( ! currentGroup->mFaces.empty() )
 				mGroups.push_back( Group() );
 			currentGroup = &mGroups[mGroups.size()-1];
-			currentGroup->mBaseVertexOffset = mInternalVertices.size();
-			currentGroup->mBaseTexCoordOffset = mInternalTexCoords.size();
-			currentGroup->mBaseNormalOffset = mInternalNormals.size();
+			currentGroup->mBaseVertexOffset = (int32_t)mInternalVertices.size();
+			currentGroup->mBaseTexCoordOffset = (int32_t)mInternalTexCoords.size();
+			currentGroup->mBaseNormalOffset = (int32_t)mInternalNormals.size();
 			currentGroup->mName = line.substr( line.find( ' ' ) + 1 );
 		}
         else if( tag == "usemtl") { // material
@@ -384,7 +384,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 				faceIndices.push_back( result.first->second );
 			}
 			else { // have to force unique because this group lacks either normals or texCoords
-				faceIndices.push_back( mOutputVertices.size() );
+				faceIndices.push_back( (int32_t)mOutputVertices.size() );
 
 				mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 				if( ! group.mHasNormals )
@@ -400,7 +400,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 			}
 		}
 
-		int triangles = faceIndices.size() - 2;
+		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
 			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
 		}
@@ -450,7 +450,7 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 				faceIndices.push_back( result.first->second );
 			}
 			else { // have to force unique because this group lacks normals
-				faceIndices.push_back( mOutputVertices.size() );
+				faceIndices.push_back( (int32_t)mOutputVertices.size() );
 
 				mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 				if( ! group.mHasNormals )
@@ -462,7 +462,7 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 			}
 		}
 
-		int triangles = faceIndices.size() - 2;
+		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
 			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
 		}
@@ -491,7 +491,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 		if( group.mFaces[f].mTexCoordIndices.empty() )
 			forceUnique = true;
 		
-		vector<int> faceIndices;
+		vector<int32_t> faceIndices;
 		faceIndices.reserve( group.mFaces[f].mNumVertices );
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
 			if( ! forceUnique ) {
@@ -507,7 +507,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 				faceIndices.push_back( result.first->second );
 			}
 			else { // have to force unique because this group lacks texCoords
-				faceIndices.push_back( mOutputVertices.size() );
+				faceIndices.push_back( (int32_t)mOutputVertices.size() );
 
 				mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 				if( ! group.mHasTexCoords )
@@ -519,7 +519,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 			}
 		}
 
-		int triangles = faceIndices.size() - 2;
+		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
 			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
 		}
@@ -557,7 +557,7 @@ void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts )
 			faceIndices.push_back( result.first->second );
 		}
 
-		int triangles = faceIndices.size() - 2;
+		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
 			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
 		}

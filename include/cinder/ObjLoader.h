@@ -94,16 +94,16 @@ class ObjLoader : public geom::Source {
     };
     
 	struct Face {
-		int					mNumVertices;
-		std::vector<int>	mVertexIndices;
-		std::vector<int>	mTexCoordIndices;
-		std::vector<int>	mNormalIndices;
-		const Material*     mMaterial;
+		int						mNumVertices;
+		std::vector<int32_t>	mVertexIndices;
+		std::vector<int32_t>	mTexCoordIndices;
+		std::vector<int32_t>	mNormalIndices;
+		const Material*			mMaterial;
 	};
 
 	struct Group {
 		std::string				mName;
-		int						mBaseVertexOffset, mBaseTexCoordOffset, mBaseNormalOffset;
+		int32_t					mBaseVertexOffset, mBaseTexCoordOffset, mBaseNormalOffset;
 		std::vector<Face>		mFaces;
 		bool					mHasTexCoords;
 		bool					mHasNormals;
