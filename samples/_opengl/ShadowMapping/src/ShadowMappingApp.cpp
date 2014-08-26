@@ -187,7 +187,7 @@ void ShadowMappingApp::setup()
 	mShadowMap		= ShadowMap::create( mShadowMapSize );
 	mLightCamera.setPerspective( mLightFov, mShadowMap->getAspectRatio(), 0.5, 500.0 );
 	
-	mParams = params::InterfaceGl::create( "Settings", toPixels( Vec2i( 300, 325 ) ) );
+	mParams = params::InterfaceGl::create( "Settings", toPixels( ivec2( 300, 325 ) ) );
 	mParams->addParam( "Framerate", &mFrameRate, "", true );
 	mParams->addSeparator();
 	mParams->addParam( "Light viewpoint", &mToggleLightViewpoint );
