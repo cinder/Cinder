@@ -244,6 +244,8 @@ void PostProcessingAAApp::draw()
 	case MODE_SMAA:
 		gl::draw( mInfoSMAA, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
 		break;
+    default:
+        break;
 	}
 	gl::disableAlphaBlending();
 

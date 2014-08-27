@@ -169,7 +169,7 @@ std::string Shader::parseShader( const fs::path& path, bool optional, int level 
 	std::string line;
 	std::smatch	matches;
 
-	bool isInsideComment = false;
+	//bool isInsideComment = false;
 	while( std::getline( input, line ) ) {
 		/*
 		if( isInsideComment ) {

@@ -1,4 +1,4 @@
-#version 130
+#version 150
 
 #ifdef GL_ARB_gpu_shader5
 #extension GL_ARB_gpu_shader5 : enable
@@ -16,6 +16,8 @@
 
 uniform sampler2D	uTexture;
 uniform vec4		uExtends;
+
+out     vec4        oColor;
 
 void main( void )
 {
@@ -55,7 +57,7 @@ void main( void )
 	FxaaFloat ConsoleEdgeThresholdMin = 0.05;
 	FxaaFloat4 Console360ConstDir = FxaaFloat4(1.0, -1.0, 0.25, -0.25);
 
-	gl_FragColor = FxaaPixelShader(uv, ConsolePosPos, uTexture, uTexture, uTexture, fxaaQualityRcpFrame, 
+	oColor = FxaaPixelShader(uv, ConsolePosPos, uTexture, uTexture, uTexture, fxaaQualityRcpFrame,
 		ConsoleRcpFrameOpt, ConsoleRcpFrameOpt2, Console360RcpFrameOpt2, 
 		QualitySubpix, QualityEdgeThreshold, QualityEdgeThresholdMin, 
 		ConsoleEdgeSharpness, ConsoleEdgeThreshold, ConsoleEdgeThresholdMin, Console360ConstDir);
