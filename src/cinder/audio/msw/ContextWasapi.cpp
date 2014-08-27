@@ -452,6 +452,8 @@ void OutputDeviceNodeWasapi::initialize()
 		// kludge: Update OutputDeviceNode's channels to match the number requested from IAudioClient.
 		// - this will call Node::uninitializeImpl(), but that won't do anything because we haven't completed our initialization yet.
 		setNumChannels( mRenderImpl->mNumChannels );
+		// manually call this to make sure internal buffers are the correct size
+		setupProcessWithSumming();
 	}
 
 	mInterleavedBuffer = BufferInterleaved( getFramesPerBlock(), getNumChannels() );
