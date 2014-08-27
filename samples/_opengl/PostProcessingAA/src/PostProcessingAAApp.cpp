@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/gl/Fbo.h"
 #include "cinder/Camera.h"
 #include "cinder/Timer.h"
+#include "cinder/Utilities.h"
 
 #include "fxaa/FXAA.h"
 #include "smaa/SMAA.h"
@@ -73,6 +74,9 @@ private:
 	double              mTime;
 	double              mTimeOffset;
 
+	double              mFrameTime;      // Used to calculate frame rate.
+	double              mFrameRate;
+
 	gl::FboRef          mFboScene;       // Non-anti-aliased frame buffer to render our scene to.
 	gl::FboRef          mFboFinal;       // Frame buffer that will contain the anti-aliased result.
 
@@ -88,6 +92,8 @@ private:
 	DividerMode         mDividerMode;    // Allows us to see each of the modes (Original, FXAA, SMAA) full screen.
 	int                 mDividerWidth;
 	int                 mPixelSize;      // Allows us to zoom in on the scene.
+
+	glm::vec2           mMouse;
 };
 
 void PostProcessingAAApp::prepareSettings( Settings* settings )
@@ -111,19 +117,29 @@ void PostProcessingAAApp::setup()
 
 	mSMAAMode = SMAA_BLEND_NEIGHBORS;
 
-	mTimeOffset = 1.0;
-	//mTimer.start();
+	mTime = 0.0;
+	mTimeOffset = 0.0;
+	mTimer.start();
 
-	mDivider = getWindowSize() / 2;
+	mDivider = mMouse = getWindowSize() / 2;
 	mDividerWidth = getWindowWidth() / 4;
 	mDividerMode = MODE_COMPARISON;
 	mPixelSize = 1;
+
+	mFrameTime = getElapsedSeconds();
+	mFrameRate = 0.0;
 }
 
 void PostProcessingAAApp::update()
 {
 	// Keep track of time.
 	mTime = mTimer.getSeconds() + mTimeOffset;
+
+	// Show frame rate in window title.
+	double elapsed = getElapsedSeconds() - mFrameTime;
+	mFrameTime += elapsed;
+	mFrameRate = 0.95 * mFrameRate + 0.05 * ( 1.0 / elapsed );
+	getWindow()->setTitle( std::string( "PostProcessingAAApp - Frame rate: " ) + toString( int( mFrameRate ) ) );
 
 	// Animate our camera.
 	double t = mTime / 10.0;
@@ -140,6 +156,9 @@ void PostProcessingAAApp::update()
 
 	// Update the pistons.
 	mPistons.update( mCamera );
+
+	// Move the divider.
+	mDivider += 0.25f * ( mMouse - mDivider );
 }
 
 void PostProcessingAAApp::draw()
@@ -268,39 +287,55 @@ void PostProcessingAAApp::resize()
 
 void PostProcessingAAApp::mouseMove( MouseEvent event )
 {
-	mDivider = event.getPos();
+	mMouse = event.getPos();
+
+	if( mMouse.x < 100 ) 
+		mMouse.x = 0;
+	else if( mMouse.x > getWindowWidth() - 100 ) 
+		mMouse.x = getWindowWidth();
 }
 
 void PostProcessingAAApp::mouseDrag( MouseEvent event )
 {
-	mDivider = event.getPos();
+	mMouse = event.getPos();
+
+	if( mMouse.x < 50 )
+		mMouse.x = 0;
+	else if( mMouse.x > getWindowWidth() - 50 )
+		mMouse.x = getWindowWidth();
 }
 
 void PostProcessingAAApp::keyDown( KeyEvent event )
 {
 	switch( event.getCode() ) {
 	case KeyEvent::KEY_ESCAPE:
+		// Quit the application.
 		quit();
 		break;
 	case KeyEvent::KEY_SPACE:
-		// Start/stop the animation
+		// Start/stop the animation.
 		if( mTimer.isStopped() ) {
 			mTimeOffset += mTimer.getSeconds();
 			mTimer.start();
 		}
-		else
+		else {
 			mTimer.stop();
+		}
 		break;
 	case KeyEvent::KEY_1:
+		// While in SMAA mode, show the result of the edge detection shader pass.
 		mSMAAMode = SMAAMode::SMAA_EDGE_DETECTION;
 		break;
 	case KeyEvent::KEY_2:
+		// While in SMAA mode, show the result of the blend weights shader pass.
 		mSMAAMode = SMAAMode::SMAA_BLEND_WEIGHTS;
 		break;
 	case KeyEvent::KEY_3:
+		// While in SMAA mode, show the result of the blend neightbors shader pass.
 		mSMAAMode = SMAAMode::SMAA_BLEND_NEIGHBORS;
 		break;
 	case KeyEvent::KEY_v:
+		// Toggle vertical sync.
 		if( gl::isVerticalSyncEnabled() )
 			gl::enableVerticalSync( false );
 		else
@@ -308,6 +343,7 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 		break;
 	case KeyEvent::KEY_LEFT:
 	case KeyEvent::KEY_DOWN:
+		// Switch to the next mode (comparison > original > FXAA > SMAA > original).
 		if( (int) mDividerMode > 0 )
 			mDividerMode = (DividerMode) ( (int) mDividerMode - 1 );
 		else
@@ -315,11 +351,13 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 		break;
 	case KeyEvent::KEY_RIGHT:
 	case KeyEvent::KEY_UP:
+		// Switch to the previous mode (comparison < original < FXAA < SMAA < original).
 		mDividerMode = (DividerMode) ( ( (int) mDividerMode + 1 ) % DividerMode::MODE_COUNT );
 		break;
 	case KeyEvent::KEY_PLUS:
 	case KeyEvent::KEY_EQUALS:
 	case KeyEvent::KEY_KP_PLUS:
+		// Zoom in on the scene, so you can better see the anti-aliasing.
 		if( mPixelSize < 8 ) {
 			mPixelSize <<= 1; resize();
 		}
@@ -327,6 +365,7 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 	case KeyEvent::KEY_MINUS:
 	case KeyEvent::KEY_UNDERSCORE:
 	case KeyEvent::KEY_KP_MINUS:
+		// Zoom out from the scene.
 		if( mPixelSize > 1 ) {
 			mPixelSize >>= 1; resize();
 		}

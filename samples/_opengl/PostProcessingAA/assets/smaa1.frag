@@ -16,5 +16,5 @@ out vec4 fragColor;
 
 void main()
 {
-    fragColor = vec4( SMAAColorEdgeDetectionPS(texcoord, offset, uColorTex), 0.0, 0.0);
+    fragColor = vec4( SMAALumaEdgeDetectionPS(texcoord, offset, uColorTex), 0.0, 0.0);
 }
