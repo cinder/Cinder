@@ -19,14 +19,14 @@
  percentage-closer filtering (PCF) and random sampling. Note that sometimes
  lower resolution on the shadow map may help soften/blur the shadow.
  
- Surface acne: Also occurring with traditional ray-tracing, this surface
- noise occurs on false depth tests.  Due to imprecision, a fragment is
- shadowed due to depth imprecision (self-intersecting the surface). Various
- offsets can be used to prevent this problem.
+ Surface acne/self-shadowing: Also occurring with traditional ray-tracing, this
+ surface noise occurs on false depth tests (due to imprecision of a fragment's
+ depth). Various offsets (such as glPolygonOffset & z-offsets in the light's
+ projective space) can be used to prevent this problem.
  
  Peter Panning: The shadows don't reach the objects that cast them. This
  problem occurs when the offsets are too large. Offsets must be tweaked
- carefully to avoid problems on each end.
+ carefully to avoid problems on either end.
  
  Sampling noise: The random sampling method exhibits noise (which should
  still be less visually objectionable than aliasing). This is due to a low
@@ -311,7 +311,8 @@ void ShadowMappingApp::draw()
 	// Elapsed time called here: the scene must be absolutely identical on both renders!
 	float spinAngle = 0.5f * (float) app::getElapsedSeconds();
 	
-	gl::enable(GL_POLYGON_OFFSET_FILL);
+	// Offset to help combat surface acne (self-shadowing)
+	gl::enable( GL_POLYGON_OFFSET_FILL );
 	glPolygonOffset( mPolygonOffsetFactor, mPolygonOffsetUnits );
 	
 	// Render scene into shadow map
