@@ -50,7 +50,7 @@ class PostProcessingAAApp : public AppNative
 {
 public:
 	enum SMAAMode { SMAA_EDGE_DETECTION, SMAA_BLEND_WEIGHTS, SMAA_BLEND_NEIGHBORS };
-	enum DividerMode { MODE_COMPARISON, MODE_ORIGINAL, MODE_FXAA, MODE_SMAA, MODE_COUNT };
+	enum DividerMode { MODE_COMPARISON, MODE_ORIGINAL1, MODE_FXAA, MODE_SMAA, MODE_ORIGINAL2, MODE_COUNT };
 public:
 	void prepareSettings( Settings* settings ) override;
 
@@ -152,7 +152,7 @@ void PostProcessingAAApp::draw()
 	gl::color( Color::white() );
 
 	// Draw non-anti-aliased scene.
-	if( mDividerMode == MODE_COMPARISON || mDividerMode == MODE_ORIGINAL )
+	if( mDividerMode == MODE_COMPARISON || mDividerMode == MODE_ORIGINAL1 || mDividerMode == MODE_ORIGINAL2 )
 		gl::draw( mFboScene->getColorTexture(), getWindowBounds() );
 
 	// Draw FXAA-anti-aliased scene.
@@ -185,7 +185,7 @@ void PostProcessingAAApp::draw()
 
 		if( mDividerMode == MODE_COMPARISON ) {
 			gl::pushMatrices();
-			gl::setMatricesWindow( mDividerWidth, getWindowHeight(), mSMAAMode == SMAA_BLEND_WEIGHTS );
+			gl::setMatricesWindow( mDividerWidth, getWindowHeight());
 			gl::pushViewport( (int) mDivider.x, 0, mDividerWidth, getWindowHeight() );
 			gl::draw( tex, getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) );
 			gl::popViewport();
@@ -193,7 +193,7 @@ void PostProcessingAAApp::draw()
 		}
 		else {
 			gl::pushMatrices();
-			gl::setMatricesWindow( getWindowWidth(), getWindowHeight(), mSMAAMode == SMAA_BLEND_WEIGHTS );
+			gl::setMatricesWindow( getWindowWidth(), getWindowHeight());
 			gl::draw( tex, getWindowBounds() );
 			gl::popMatrices();
 		}
@@ -215,7 +215,8 @@ void PostProcessingAAApp::draw()
 		gl::draw( mInfoSMAA, glm::vec2( mDivider.x + mDividerWidth * 1 / 2 - 128, 32 ) );
 		gl::draw( mInfoOriginal, glm::vec2( mDivider.x + mDividerWidth * 3 / 2 - 128, 32 ) );
 		break;
-	case MODE_ORIGINAL:
+	case MODE_ORIGINAL1:
+	case MODE_ORIGINAL2:
 		gl::draw( mInfoOriginal, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
 		break;
 	case MODE_FXAA:
@@ -250,14 +251,10 @@ void PostProcessingAAApp::resize()
 	gl::Texture2d::Format tfmt;
 	tfmt.setMinFilter( GL_NEAREST );
 	tfmt.setMagFilter( GL_NEAREST );
+	tfmt.setInternalFormat( GL_RGBA8 );
 
 	gl::Fbo::Format fmt;
 	fmt.setColorTextureFormat( tfmt );
-
-	// We want to store luminance in the alpha channel, 
-	// as this yields the best FXAA results.
-	// So make sure we have one.
-	fmt.setColorBufferInternalFormat( GL_RGBA8 );
 
 	mFboScene = gl::Fbo::create( getWindowWidth() / mPixelSize, getWindowHeight() / mPixelSize, fmt );
 	mFboFinal = gl::Fbo::create( getWindowWidth() / mPixelSize, getWindowHeight() / mPixelSize, fmt );

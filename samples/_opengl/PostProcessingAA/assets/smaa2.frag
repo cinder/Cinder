@@ -1,5 +1,4 @@
-#version 130
-#extension GL_EXT_gpu_shader4 : enable
+#version 150
 
 // Pass in the render target metrics as a uniform
 uniform vec4 SMAA_RT_METRICS; // (1/w, 1/h, w, h)

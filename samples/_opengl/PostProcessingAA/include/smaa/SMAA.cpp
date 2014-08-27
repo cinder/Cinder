@@ -30,24 +30,6 @@
 using namespace ci;
 using namespace std;
 
-SMAA::SMAA()
-{
-	mSearchTexBuffer = new unsigned char[SEARCHTEX_WIDTH * SEARCHTEX_PITCH];
-	mAreaTexBuffer = new unsigned char[AREATEX_HEIGHT * AREATEX_PITCH];
-
-	// Flip textures vertically.
-	for( size_t y = 0; y < SEARCHTEX_HEIGHT; ++y )
-		memcpy( (void*) &mSearchTexBuffer[( SEARCHTEX_HEIGHT - 1 - y ) * SEARCHTEX_PITCH], (void*) &searchTexBytes[y * SEARCHTEX_PITCH], SEARCHTEX_PITCH );
-	for( size_t y = 0; y < AREATEX_HEIGHT; ++y )
-		memcpy( (void*) &mAreaTexBuffer[( AREATEX_HEIGHT - 1 - y ) * AREATEX_PITCH], (void*) &areaTexBytes[y * AREATEX_PITCH], AREATEX_PITCH );
-}
-
-SMAA::~SMAA()
-{
-	delete[] mAreaTexBuffer;
-	delete[] mSearchTexBuffer;
-}
-
 void SMAA::setup()
 {
 	// Load and compile our shaders
@@ -85,7 +67,6 @@ void SMAA::setup()
 	tfmt.setInternalFormat( GL_RGBA8 );
 
 	mFboFormat.setColorTextureFormat( tfmt );
-	mFboFormat.setColorBufferInternalFormat( GL_RGBA );
 	mFboFormat.enableDepthBuffer( false );
 }
 
@@ -94,7 +75,7 @@ void SMAA::apply( gl::FboRef destination, gl::FboRef source )
 	gl::ScopedFramebuffer fbo( destination );
 	gl::ScopedViewport viewport( 0, 0, destination->getWidth(), destination->getHeight() );
 	gl::ScopedMatrices matrices;
-	gl::setMatricesWindow( destination->getSize(), false );
+	gl::setMatricesWindow( destination->getSize() );
 
 	// Make sure our source is linearly interpolated.
 	GLenum minFilter = source->getFormat().getColorTextureFormat().getMinFilter();

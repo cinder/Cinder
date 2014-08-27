@@ -137,7 +137,7 @@ std::string Shader::parseShader( const fs::path& path, bool optional, int level 
 	std::stringstream output;
 
 	if( level > 32 ) {
-		char msg[512]; FORMATTED_STRING( msg, 512, "Reached the maximum parse depth for shader '%s'. This is probably due to circular dependencies. Check your #includes.", mName.c_str() );
+		char msg[512]; FORMATTED_STRING( msg, 512, "Reached the maximum parse depth for shader '%s'. This is probably due to circular dependencies. Check your #includes and remove #include statements from comments.", mName.c_str() );
 		throw std::runtime_error( msg );
 
 		return std::string();

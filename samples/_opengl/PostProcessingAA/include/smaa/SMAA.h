@@ -31,8 +31,8 @@
 class SMAA
 {
 public:
-	SMAA();
-	~SMAA();
+	SMAA() {}
+	~SMAA(){}
 
 	void setup();
 	void draw( ci::gl::Texture2dRef source, const ci::Area& bounds );
@@ -56,10 +56,6 @@ public:
 
 	//
 	ci::vec4              mMetrics;
-
-	//
-	unsigned char*        mAreaTexBuffer;
-	unsigned char*        mSearchTexBuffer;
 private:
 	void                  createBuffers( int width, int height );
 
