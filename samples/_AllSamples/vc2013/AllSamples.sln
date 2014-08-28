@@ -1,7 +1,6 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArcballDemo", "..\..\ArcballDemo\vc2013\ArcballDemo.vcxproj", "{9DA00FEA-5218-413E-B762-35D91045B3B4}"
 EndProject
@@ -174,6 +173,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Triangulation", "..\..\Triangulation\vc2013\Triangulation.vcxproj", "{6C2A1AFB-8DB6-407B-B2AD-EBA3ECD470C9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TextureFont", "..\..\TextureFont\vc2013\TextureFont.vcxproj", "{E85D5F96-E06D-442B-8508-E7A64648DEC0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShadowMapping", "..\..\_opengl\ShadowMapping\vc2013\ShadowMapping.vcxproj", "{35ABE18C-FDCB-411E-8350-721D862FC936}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1173,6 +1174,18 @@ Global
 		{E85D5F96-E06D-442B-8508-E7A64648DEC0}.Release|Win32.ActiveCfg = Release|Win32
 		{E85D5F96-E06D-442B-8508-E7A64648DEC0}.Release|Win32.Build.0 = Release|Win32
 		{E85D5F96-E06D-442B-8508-E7A64648DEC0}.Release|x64.ActiveCfg = Release|Win32
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Debug|Win32.ActiveCfg = Debug|Win32
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Debug|Win32.Build.0 = Debug|Win32
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Debug|x64.ActiveCfg = Debug|x64
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Debug|x64.Build.0 = Debug|x64
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Release|Win32.ActiveCfg = Release|Win32
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Release|Win32.Build.0 = Release|Win32
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Release|x64.ActiveCfg = Release|x64
+		{35ABE18C-FDCB-411E-8350-721D862FC936}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
