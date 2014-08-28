@@ -26,7 +26,7 @@ using namespace ci;
 using namespace ci::geom;
 using namespace std;
 
-DebugMesh::DebugMesh(void)
+DebugMesh::DebugMesh()
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::COLOR );
@@ -34,15 +34,15 @@ DebugMesh::DebugMesh(void)
 	clear();
 }
 
-DebugMesh::DebugMesh(const TriMesh& mesh)
+DebugMesh::DebugMesh( const TriMesh& mesh )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::COLOR );
 
-	setMesh(mesh);
+	setMesh( mesh );
 }
 
-DebugMesh::~DebugMesh(void)
+DebugMesh::~DebugMesh()
 {
 }
 
@@ -53,16 +53,16 @@ void DebugMesh::clear()
 	mIndices.clear();
 }
 
-void DebugMesh::setMesh(const TriMesh& mesh)
+void DebugMesh::setMesh( const TriMesh& mesh )
 {
 	clear();
 
 	// check if mesh is valid and count vertices
-	if(!mesh.hasNormals())
+	if( ! mesh.hasNormals() )
 		return;
 
 	size_t numVertices = mesh.getNumVertices();
-	if(numVertices < 1)
+	if( numVertices < 1 )
 		return;
 
 	// reserve memory to prevent reallocations
@@ -77,28 +77,27 @@ void DebugMesh::setMesh(const TriMesh& mesh)
 	// determine the right scale, based on the bounding box
 	AxisAlignedBox3f bbox = mesh.calcBoundingBox();
 	vec3 size = bbox.getMax() - bbox.getMin();
-	float scale = math<float>::max( math<float>::max( float(size.x), float(size.y) ), float(size.z) ) / 100.0f;
+	float scale = math<float>::max( math<float>::max( size.x, size.y ), size.z ) / 100.0f;
 
 	// construct mesh
-	for(size_t i=0;i<numVertices;++i) {
+	for( size_t i = 0; i < numVertices; ++i ) {
 		uint32_t idx = mVertices.size();
 
 		mVertices.push_back( mesh.getVertices<3>()[i] );
 		mVertices.push_back( mesh.getVertices<3>()[i] + scale * mesh.getNormals()[i] );
 		
-		mColors.push_back( Color(0, 0, 0) );
-		mColors.push_back( Color(0, 0, 1) );
+		mColors.push_back( Color( 0, 0, 0 ) );
+		mColors.push_back( Color( 0, 0, 1 ) );
 		
 		mIndices.push_back( idx );
 		mIndices.push_back( idx + 1 );
 
-		if(hasTangents)
-		{
+		if( hasTangents ) {
 			mVertices.push_back( mesh.getVertices<3>()[i] + scale * mesh.getTangents()[i] );
 			mVertices.push_back( mesh.getVertices<3>()[i] + scale * cross( mesh.getNormals()[i], mesh.getTangents()[i] ) );
 
-			mColors.push_back( Color(1, 0, 0) );
-			mColors.push_back( Color(0, 1, 0) );
+			mColors.push_back( Color( 1, 0, 0 ) );
+			mColors.push_back( Color( 0, 1, 0 ) );
 
 			mIndices.push_back( idx );
 			mIndices.push_back( idx + 2 );
