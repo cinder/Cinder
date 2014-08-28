@@ -45,10 +45,10 @@ void CullableObject::update(double elapsed)
 void CullableObject::draw()
 {
 	//! don't draw if culled
-	if(bIsCulled) return;
+	if( bIsCulled ) return;
 
 	//! only draw if mesh is valid
-	if(mBatch) {
+	if( mBatch ) {
 		gl::color( Color::white() );
 
 		//! draw the mesh 

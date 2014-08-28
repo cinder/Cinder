@@ -87,7 +87,6 @@ class FrustumCullingReduxApp : public AppBasic
 
 	//! objects
 	std::list<CullableObjectRef>	mObjects;
-	std::vector<CullableObjectRef>	mPotentiallyVisibleSet;
 
 	//! camera
 	MayaCamUI		mMayaCam;
@@ -163,9 +162,6 @@ void FrustumCullingReduxApp::setup()
 
 void FrustumCullingReduxApp::update()
 {
-	// clear vector
-	vector<CullableObjectRef>().swap(mPotentiallyVisibleSet);
-	
 	//! calculate elapsed time
 	double elapsed = getElapsedSeconds() - mCurrentSeconds;
 	mCurrentSeconds += elapsed;
@@ -185,30 +181,16 @@ void FrustumCullingReduxApp::update()
 			AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( objIt->getTransform() );
 
 			// check if the bounding box intersects the visible world
-			if( visibleWorld.intersects( worldBoundingBox ) ) {
-				objIt->setCulled( false );
-				mPotentiallyVisibleSet.push_back( objIt );
-			}
-			else
-				objIt->setCulled( true );
+			
+			objIt->setCulled( ! visibleWorld.intersects( worldBoundingBox ) );
 		}
 		else {
 			objIt->setCulled( false );
-			mPotentiallyVisibleSet.push_back( objIt );
 		}
 	}
 	// Must reset the culling window so that we can see the effect.
 	mRenderCam.setFov( 60.0f );
 	//! **********************************************************************************************************
-	
-	auto eye = mRenderCam.getEyePoint();
-	// Depth Sort the potentially visible set
-	std::sort( mPotentiallyVisibleSet.begin(), mPotentiallyVisibleSet.end(),
-			  [&, eye]( const CullableObjectRef & objA, const CullableObjectRef & objB ) {
-				  auto distA = ci::distance( eye, objA->getPosition() );
-				  auto distB = ci::distance( eye, objB->getPosition() );
-				  return distA < distB;
-			  });
 }
 
 void FrustumCullingReduxApp::draw()
@@ -227,8 +209,7 @@ void FrustumCullingReduxApp::draw()
 		
 		{
 			gl::ScopedGlslProg scopeGlsl( mShader );
-			// draw hearts in depth sorted order, to make sure no pixel is drawn into twice
-			for( auto & objIt : mPotentiallyVisibleSet )
+			for( auto & objIt : mObjects )
 				objIt->draw();
 		}
 		
@@ -236,7 +217,7 @@ void FrustumCullingReduxApp::draw()
 		gl::drawCoordinateFrame(100.0f, 5.0f, 2.0f);
 		
 		AxisAlignedBox3f worldBoundingBox;
-		for( auto & objIt : mPotentiallyVisibleSet ) {
+		for( auto & objIt : mObjects ) {
 			if(bDrawEstimatedBoundingBoxes) {
 				// create a fast approximation of the world space bounding box by transforming the
 				// eight corners and using them to create a new axis aligned bounding box
@@ -337,10 +318,14 @@ void FrustumCullingReduxApp::loadObject()
 void FrustumCullingReduxApp::drawGrid(float size, float step)
 {
 	gl::color( Colorf(0.2f, 0.2f, 0.2f) );
+	gl::begin( GL_LINES );
 	for(float i=-size;i<=size;i+=step) {
-		gl::drawLine( vec3(i, 0.0f, -size), vec3(i, 0.0f, size) );
-		gl::drawLine( vec3(-size, 0.0f, i), vec3(size, 0.0f, i) );
+		gl::vertex( vec3(i, 0.0f, -size) );
+		gl::vertex( vec3(i, 0.0f,  size) );
+		gl::vertex( vec3(-size, 0.0f, i) );
+		gl::vertex( vec3( size, 0.0f, i) );
 	}
+	gl::end();
 }
 
 void FrustumCullingReduxApp::toggleVerticalSync()
