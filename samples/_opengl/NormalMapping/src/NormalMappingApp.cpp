@@ -48,7 +48,7 @@ using namespace std;
 
 struct LightSource
 {
-	Vec4f position;
+	vec4 position;
 	ColorA diffuse;
 	ColorA specular;
 };
