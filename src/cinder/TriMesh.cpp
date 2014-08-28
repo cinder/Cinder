@@ -616,7 +616,7 @@ bool TriMesh::recalculateTangents()
 	for( size_t i = 0; i < n; ++i ) {
 		vec3 normal = mNormals[i];
 		vec3 tangent = mTangents[i];
-		mTangents[i] = tangent - normal * normalize( dot( normal, tangent ) );
+		mTangents[i] = normalize( tangent - normal * dot( normal, tangent ) );
 	}
 
 	mTangentsDims = 3;
