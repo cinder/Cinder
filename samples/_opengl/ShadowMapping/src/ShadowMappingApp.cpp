@@ -201,8 +201,8 @@ void ShadowMappingApp::setup()
 	mParams->addParam( "Light distance radius", &mLight.distanceRadius ).min( 0 ).max( 450 ).step( 1 );
 	mParams->addParam( "Render only shadow map", &mOnlyShadowmap );
 	mParams->addSeparator();
-	mParams->addText( "Technique: Hard, PCF3x3, PCF4x4, Random" );
-	mParams->addParam( "Index", &mShadowTechnique ).min( 0 ).max( 3 );
+	std::vector<std::string> techniques = { "Hard", "PCF3x3", "PCF4x4", "Random" };
+	mParams->addParam( "Technique", techniques, &mShadowTechnique );
 	mParams->addSeparator();
 	mParams->addParam( "Polygon offset factor", &mPolygonOffsetFactor ).step( 0.025f ).min( 0.0f );
 	mParams->addParam( "Polygon offset units", &mPolygonOffsetUnits ).step( 0.025f ).min( 0.0f );
