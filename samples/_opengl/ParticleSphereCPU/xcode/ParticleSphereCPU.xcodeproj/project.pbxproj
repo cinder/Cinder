@@ -37,7 +37,7 @@
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		8186EE29A5FF4A9CB89C7E9B /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ParticleSphereCPU.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ParticleSphereCPU.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A795F1FE136044BBA2F863B0 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		A795F1FE136044BBA2F863B0 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../data/CinderApp.icns; sourceTree = "<group>"; };
 		D70DAE80CFDD484D82889528 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DD2C3C48F3784B5EBC6C7E33 /* ParticleSphereCPU_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ParticleSphereCPU_Prefix.pch; sourceTree = "<group>"; };
 /* End PBXFileReference section */

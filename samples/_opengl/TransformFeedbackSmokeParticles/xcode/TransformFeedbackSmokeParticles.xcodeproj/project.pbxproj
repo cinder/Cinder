@@ -42,7 +42,7 @@
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* TransformFeedbackSmokeParticles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransformFeedbackSmokeParticles.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BA5F5B760DD43DE920C3BF3 /* TransformFeedbackSmokeParticles_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = TransformFeedbackSmokeParticles_Prefix.pch; sourceTree = "<group>"; };
-		AF774889F2AC4362B5FEFB09 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		AF774889F2AC4362B5FEFB09 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../data/CinderApp.icns; sourceTree = "<group>"; };
 		B39A4BF81884D6F8002A63AF /* renderSmoke.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = renderSmoke.frag; path = ../assets/renderSmoke.frag; sourceTree = "<group>"; };
 		B39A4BF91884D6F8002A63AF /* renderSmoke.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = renderSmoke.vert; path = ../assets/renderSmoke.vert; sourceTree = "<group>"; };
 		B39A4BFA1884D6F8002A63AF /* smoke_blur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = smoke_blur.png; path = ../assets/smoke_blur.png; sourceTree = "<group>"; };

@@ -37,7 +37,7 @@
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		699D7F18E25443E19E5800C2 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ParticleSphereGPU.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ParticleSphereGPU.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9B1E328BDB7E40C69B987EAB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		9B1E328BDB7E40C69B987EAB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../data/CinderApp.icns; sourceTree = "<group>"; };
 		FA538FEABD8940C69AB518E3 /* ParticleSphereGPU_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ParticleSphereGPU_Prefix.pch; sourceTree = "<group>"; };
 		FD1B46B0B7044B879621EDC9 /* ParticleSphereGPUApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = ParticleSphereGPUApp.cpp; path = ../src/ParticleSphereGPUApp.cpp; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */

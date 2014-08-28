@@ -40,7 +40,7 @@
 		8D1107320486CEB800E47090 /* AnimatedReveal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AnimatedReveal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CCBADD7A3064922BEA5C65E /* AnimatedRevealApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = AnimatedRevealApp.cpp; path = ../src/AnimatedRevealApp.cpp; sourceTree = "<group>"; };
 		BAD063C538CE4045BBBD8370 /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Cairo.cpp; path = ../../../../blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; };
-		C0343A4D7B374D03ABD55D2F /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		C0343A4D7B374D03ABD55D2F /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../data/CinderApp.icns; sourceTree = "<group>"; };
 		D1F89237619C47E08C3C68F7 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		EA42C1AA5F1F4E7EB01A11E8 /* Cairo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cairo.h; path = ../../../../blocks/Cairo/src/Cairo.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */

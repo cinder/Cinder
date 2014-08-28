@@ -40,7 +40,7 @@
 		5A46B55C0CC64BCD91F92F86 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		68BC1D38D1674ADE86FEA9D8 /* Cairo.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Cairo.cpp; path = ../../../blocks/Cairo/src/Cairo.cpp; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* FontSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FontSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8E4802276B5B40C6BF23507F /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		8E4802276B5B40C6BF23507F /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../data/CinderApp.icns; sourceTree = "<group>"; };
 		B5855A04A1B146DD80FD2ADC /* FontSampleApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = FontSampleApp.cpp; path = ../src/FontSampleApp.cpp; sourceTree = "<group>"; };
 		DD2912DEBBE04FBDB7FB0AFC /* Cairo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Cairo.h; path = ../../../blocks/Cairo/include/cinder/cairo/Cairo.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
