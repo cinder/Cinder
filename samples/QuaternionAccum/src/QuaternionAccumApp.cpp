@@ -19,10 +19,10 @@ const float BALL_RADIUS = 1.0f;
 
 class QuaternionAccumApp : public AppBasic {
   public:
-	void setup();
-	void update();
-	void resize();
-	void mouseDown( MouseEvent event );
+	void setup() override;
+	void update() override;
+	void resize() override;
+	void mouseDown( MouseEvent event ) override;
 	
 	void createRandomBspline();
 	
@@ -39,7 +39,8 @@ class QuaternionAccumApp : public AppBasic {
 	quat			mQuat;
 	vec3			mLastPos;
 	double			mLastTime;
-	gl::BatchRef	mPlaneBatch;
+	
+	gl::BatchRef	mPlaneBatch, mBallBatch;
 };
 
 void QuaternionAccumApp::setup()
@@ -51,7 +52,8 @@ void QuaternionAccumApp::setup()
 	mPlaneTexture = gl::Texture::create( loadImage( loadResource( RES_PLANE_TEXTURE ) ) );
 	mBallTexture = gl::Texture::create( loadImage( loadResource( RES_BALL_TEXTURE ) ) );
 
-	mPlaneBatch = gl::Batch::create( geom::Plane().axis( vec3( 0, 1, 0 ), vec3( 0 ) ).scale( 10 ), gl::ShaderDef().texture() );
+	mPlaneBatch = gl::Batch::create( geom::Plane().size( vec2( 25, 25 ) ), gl::getStockShader( gl::ShaderDef().texture() ) );
+	mBallBatch = gl::Batch::create( geom::Sphere().radius( BALL_RADIUS ), gl::getStockShader( gl::ShaderDef().texture() ) );
 	
 	createRandomBspline();
 	mLastTime = getElapsedSeconds();
@@ -92,22 +94,20 @@ void QuaternionAccumApp::createRandomBspline()
 
 void QuaternionAccumApp::drawPlane()
 {
-	// draw the plane
-	gl::color( Color( 1, 1, 1 ) );
-	gl::bindStockShader( gl::ShaderDef().texture() );
+	// draw the ground plane
 	gl::ScopedTextureBind scpTex( mPlaneTexture );
-	gl::drawSolidRect( Rectf( -10, -10, 10, 10 ) );
+	mPlaneBatch->draw();
 }
 
 void QuaternionAccumApp::drawSpline()
 {
 	const int numSegments = 100;
-	gl::color( ColorA( 0.8f, 0.2f, 0.8f, 0.5f ) );
-	glLineWidth( 2.0f );
+	gl::color( ColorA( 0.8f, 0.2f, 0.8f, 0.8f ) );
+	gl::lineWidth( 2.0f );
 	gl::begin( GL_LINE_STRIP );
 	for( int s = 0; s <= numSegments; ++s ) {
 		float t = s / (float)numSegments;
-		gl::vertex( mSpline.getPosition( t ) + vec3( 0.0f, 0.5f, 0.0f ) );
+		gl::vertex( mSpline.getPosition( t ) + vec3( 0, 0.5f, 0 ) );
 	}
 	gl::end();
 }
@@ -123,19 +123,16 @@ void QuaternionAccumApp::drawBall()
 	float rotation = length( delta ) / BALL_RADIUS;
 	if( rotation ) {
 		// increment our quaternion by a new quaternion representing how much rotating we did since the last frame
-		quat incQuat( rotation, normal );
-		mQuat *= incQuat;
-//		mQuat.normalize();
+		quat incQuat = angleAxis( rotation, normalize( normal ) );
+		mQuat = incQuat * mQuat;
 	}
 	
+	gl::ScopedModelMatrix scpMtx;
 	gl::translate( vec3( 0.0f, BALL_RADIUS, 0.0f ) + pos );
-	gl::scale( vec3( BALL_RADIUS, BALL_RADIUS, BALL_RADIUS ) );
 	gl::rotate( mQuat );
 	
-	gl::color( Color( 1, 1, 1 ) );
-	gl::bindStockShader( gl::ShaderDef().texture() );
 	gl::ScopedTextureBind scpTex( mBallTexture );
-	gl::drawSphere( vec3( 0 ), 1.0f, 60 );
+	mBallBatch->draw();
 	
 	mLastPos = pos;
 }
