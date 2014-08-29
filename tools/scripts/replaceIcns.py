@@ -26,9 +26,11 @@ for root, dirs, files in os.walk(sys.argv[1]):
                 end = line.find( ";", start )
                 existingPath = line[start:end]
                 if existingPath.find( "data" ) == -1:
-                    print "found " + existingPath
+                    print "Found string " + existingPath
                     line = line.replace( existingPath, icnsRelativePath )
-                    print join( join( root, ".." ), existingPath )
-                    os.unlink( join( join( root, ".." ), existingPath ) )
+                    existingAbsolutePath = join( join( root, ".." ), existingPath )
+                    if os.path.exists( existingAbsolutePath ):
+                        print "Deleting " + existingAbsolutePath
+                        os.unlink( existingAbsolutePath )
             f.write( line )
  
