@@ -406,11 +406,11 @@ void GeometryApp::createPrimitive(void)
 				case HIGH: numSegments = ivec2( 100, 100 ); break;
 			}
 
-			auto plane = geom::Plane().segments( numSegments );
+			auto plane = geom::Plane().subdivisions( numSegments );
 
 //			plane.normal( vec3( 0, 0, 1 ) ); // change the normal angle of the plane
 //			plane.axes( vec3( 0.70710678118, -0.70710678118, 0 ), vec3( 0.70710678118, 0.70710678118, 0 ) ); // dictate plane u/v axes directly
-//			plane.segments( 3, 10 ).size( vec2( 0.5f, 2.0f ) ).origin( vec3( 0, 1.0f, 0 ) ); // change the size and origin so that it is tall and thin, above the y axis.
+//			plane.subdivisions( ivec2( 3, 10 ) ).size( vec2( 0.5f, 2.0f ) ).origin( vec3( 0, 1.0f, 0 ) ).normal( vec3( 0, 0, 1 ) ); // change the size and origin so that it is tall and thin, above the y axis.
 
 			primitive = geom::SourceRef( new geom::Plane( plane ) );
 

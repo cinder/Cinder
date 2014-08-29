@@ -1596,6 +1596,13 @@ Plane::Plane()
 	enable( Attrib::TEX_COORD_0 );
 }
 
+Plane& Plane::subdivisions( const ivec2 &subdivisions )
+{
+	mSubdivisions = glm::max( subdivisions, 1 );
+	mCalculationsCached = false;
+	return *this;
+}
+
 Plane& Plane::normal( const vec3 &normal )
 {
 	auto normalNormal = normalize( normal );
@@ -1628,26 +1635,26 @@ void Plane::calculate() const
 	if( mCalculationsCached )
 		return;
 
-	const size_t numTotalVerts = mSubdivisions.x * mSubdivisions.y;
-	mPositions.resize( numTotalVerts );
+	const size_t numVerts = ( mSubdivisions.x + 1 ) * ( mSubdivisions.y + 1 );
+	mPositions.resize( numVerts );
 	if( isEnabled( Attrib::NORMAL ) )
-		mNormals.resize( numTotalVerts );
+		mNormals.resize( numVerts );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		mTexCoords.resize( numTotalVerts );
+		mTexCoords.resize( numVerts );
 
-	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mSubdivisions - 1 );
+	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mSubdivisions );
 	const vec3 normal = cross( mAxisV, mAxisU );
 
 	// fill vertex data
-	for( size_t x = 0; x < mSubdivisions.x; x++ ) {
-		for( size_t y = 0; y < mSubdivisions.y; y++ ) {
+	for( size_t x = 0; x <= mSubdivisions.x; x++ ) {
+		for( size_t y = 0; y <= mSubdivisions.y; y++ ) {
 			float u = x * stepIncr.x;
 			float v = y * stepIncr.y;
 
 			vec3 pos = mOrigin + ( mSize.x * ( u - 0.5f ) ) * mAxisU + ( mSize.y * ( v - 0.5f ) ) * mAxisV;
 
-			size_t i = x * mSubdivisions.y + y;
-			mPositions[i] = pos;
+			size_t i = x * ( mSubdivisions.y + 1 ) + y;
+			mPositions.at( i ) = pos;
 
 			if( isEnabled( Attrib::NORMAL ) )
 				mNormals[i] = normal;
@@ -1658,17 +1665,17 @@ void Plane::calculate() const
 
 	// fill indices. TODO: this could be optimized by moving it to above loop, though last row of vertices would need to be done outside of loop
 	mIndices.clear();
-	for( uint32_t x = 0; x < mSubdivisions.x - 1; x++ ) {
-		for( uint32_t y = 0; y < mSubdivisions.y - 1; y++ ) {
-			uint32_t i = x * mSubdivisions.y + y;
+	for( uint32_t x = 0; x < mSubdivisions.x; x++ ) {
+		for( uint32_t y = 0; y < mSubdivisions.y; y++ ) {
+			uint32_t i = x * ( mSubdivisions.y + 1 ) + y;
 
 			mIndices.push_back( i );
 			mIndices.push_back( i + 1 );
-			mIndices.push_back( i + mSubdivisions.y );
-
-			mIndices.push_back( i + mSubdivisions.y );
-			mIndices.push_back( i + 1 );
 			mIndices.push_back( i + mSubdivisions.y + 1 );
+
+			mIndices.push_back( i + mSubdivisions.y + 1 );
+			mIndices.push_back( i + 1 );
+			mIndices.push_back( i + mSubdivisions.y + 2 );
 		}
 	}
 
