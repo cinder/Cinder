@@ -479,7 +479,7 @@ public:
 	virtual Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the cylinder.
 	virtual Cylinder&	segments( int segments ) { mNumSegments = segments; mCalculationsCached = false; return *this; }
-	//! Specifies the number of slices. Defaults to 6. Add more slices to improve texture mapping and lighting, or if you intend to bend the cylinder.
+	//! Specifies the number of slices. Defaults to 1. Add more slices to improve texture mapping and lighting, or if you intend to bend the cylinder.
 	virtual Cylinder&	slices( int slices ) { mNumSlices = slices; mCalculationsCached = false; return *this; }
 	//! Specifies the height of the cylinder.
 	virtual Cylinder&	height( float height ) { mHeight = height; mCalculationsCached = false; return *this; }
@@ -560,7 +560,7 @@ class Plane : public Source {
 	virtual Plane&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Plane&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
 
-	// Specifies the number of times each side is subdivided, Defaults to [2, 2], meaning 4 quads in total.
+	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
 	virtual Plane&	subdivisions( const ivec2 &subdivisions );
 	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
 	virtual Plane&	size( const vec2 &size )	{ mSize = size; mCalculationsCached = false; return *this; }

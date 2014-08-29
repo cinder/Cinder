@@ -356,7 +356,7 @@ void GeometryApp::createPrimitive(void)
 	case CYLINDER:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().segments(6).slices(1) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().segments( 6 ) ) ); break;
 			case HIGH: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().segments(60).slices(20) ) ); break;
 		}
 		break;

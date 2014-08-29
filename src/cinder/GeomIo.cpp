@@ -1409,7 +1409,7 @@ void Torus::loadInto( Target *target ) const
 // Cylinder
 
 Cylinder::Cylinder()
-	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ), mNumSegments( 18 ), mNumSlices( 6 )
+	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ), mNumSegments( 18 ), mNumSlices( 1 )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
@@ -1589,7 +1589,7 @@ void Cylinder::loadInto( Target *target ) const
 // Plane
 
 Plane::Plane()
-	: mOrigin( 0, 0, 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ), mSize( 2, 2 ), mSubdivisions( 2, 2 )
+	: mOrigin( 0, 0, 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ), mSize( 2, 2 ), mSubdivisions( 1, 1 )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
