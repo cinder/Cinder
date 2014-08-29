@@ -1654,7 +1654,7 @@ void Plane::calculate() const
 			vec3 pos = mOrigin + ( mSize.x * ( u - 0.5f ) ) * mAxisU + ( mSize.y * ( v - 0.5f ) ) * mAxisV;
 
 			size_t i = x * ( mSubdivisions.y + 1 ) + y;
-			mPositions.at( i ) = pos;
+			mPositions[i] = pos;
 
 			if( isEnabled( Attrib::NORMAL ) )
 				mNormals[i] = normal;
