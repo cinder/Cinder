@@ -1589,7 +1589,7 @@ void Cylinder::loadInto( Target *target ) const
 // Plane
 
 Plane::Plane()
-	: mOrigin( 0, 0, 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ), mSize( 2, 2 ), mNumSegments( 2, 2 )
+	: mOrigin( 0, 0, 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ), mSize( 2, 2 ), mSubdivisions( 2, 2 )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
@@ -1628,25 +1628,25 @@ void Plane::calculate() const
 	if( mCalculationsCached )
 		return;
 
-	const size_t totalNumSegments = mNumSegments.x * mNumSegments.y;
-	mPositions.resize( totalNumSegments );
+	const size_t numTotalVerts = mSubdivisions.x * mSubdivisions.y;
+	mPositions.resize( numTotalVerts );
 	if( isEnabled( Attrib::NORMAL ) )
-		mNormals.resize( totalNumSegments );
+		mNormals.resize( numTotalVerts );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		mTexCoords.resize( totalNumSegments );
+		mTexCoords.resize( numTotalVerts );
 
-	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mNumSegments - 1 );
+	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mSubdivisions - 1 );
 	const vec3 normal = cross( mAxisV, mAxisU );
 
 	// fill vertex data
-	for( size_t x = 0; x < mNumSegments.x; x++ ) {
-		for( size_t y = 0; y < mNumSegments.y; y++ ) {
+	for( size_t x = 0; x < mSubdivisions.x; x++ ) {
+		for( size_t y = 0; y < mSubdivisions.y; y++ ) {
 			float u = x * stepIncr.x;
 			float v = y * stepIncr.y;
 
 			vec3 pos = mOrigin + ( mSize.x * ( u - 0.5f ) ) * mAxisU + ( mSize.y * ( v - 0.5f ) ) * mAxisV;
 
-			size_t i = x * mNumSegments.y + y;
+			size_t i = x * mSubdivisions.y + y;
 			mPositions[i] = pos;
 
 			if( isEnabled( Attrib::NORMAL ) )
@@ -1658,17 +1658,17 @@ void Plane::calculate() const
 
 	// fill indices. TODO: this could be optimized by moving it to above loop, though last row of vertices would need to be done outside of loop
 	mIndices.clear();
-	for( uint32_t x = 0; x < mNumSegments.x - 1; x++ ) {
-		for( uint32_t y = 0; y < mNumSegments.y - 1; y++ ) {
-			uint32_t i = x * mNumSegments.y + y;
+	for( uint32_t x = 0; x < mSubdivisions.x - 1; x++ ) {
+		for( uint32_t y = 0; y < mSubdivisions.y - 1; y++ ) {
+			uint32_t i = x * mSubdivisions.y + y;
 
 			mIndices.push_back( i );
 			mIndices.push_back( i + 1 );
-			mIndices.push_back( i + mNumSegments.y );
+			mIndices.push_back( i + mSubdivisions.y );
 
-			mIndices.push_back( i + mNumSegments.y );
+			mIndices.push_back( i + mSubdivisions.y );
 			mIndices.push_back( i + 1 );
-			mIndices.push_back( i + mNumSegments.y + 1 );
+			mIndices.push_back( i + mSubdivisions.y + 1 );
 		}
 	}
 

@@ -550,18 +550,19 @@ public:
 	virtual Cone&	set( const vec3 &from, const vec3 &to ) override { Cylinder::set( from, to ); return *this; }
 };
 
-//! Defaults to a plane on the z axis, point = {0, 0, 0}, normal = {0, 1, 0}
+//! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
 class Plane : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
+	//! Defaults to having POSITION, NORMAL. Supports COLOR (??)
 	Plane();
 	virtual ~Plane() {}
 
 	virtual Plane&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Plane&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
 
-	virtual Plane&	segments( const ivec2 &segments )	{ mNumSegments = segments; mCalculationsCached = false; return *this; }
-	//! default is {2, 2}, or 1 in each direction
+	// Specifies the number of times each side is subdivided, Defaults to [2, 2], meaning 4 quads in total.
+	virtual Plane&	subdivisions( const ivec2 &subdivisions )	{ mSubdivisions = subdivisions; mCalculationsCached = false; return *this; }
+	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
 	virtual Plane&	size( const vec2 &size )	{ mSize = size; mCalculationsCached = false; return *this; }
 	virtual Plane&	axes( const vec3 &uAxis, const vec3 &vAxis );
 
@@ -577,7 +578,7 @@ class Plane : public Source {
   protected:
 	virtual void	calculate() const;
 
-	ivec2		mNumSegments;
+	ivec2		mSubdivisions;
 	vec2		mSize;
 	vec3		mOrigin, mAxisU, mAxisV;
 
