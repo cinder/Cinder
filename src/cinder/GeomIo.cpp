@@ -665,34 +665,26 @@ void Teapot::buildPatchReflect( int patchNum, float *B, float *dB, float *v, flo
 	// Patch without modification
 	buildPatch( patchRevV, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, mat3(), false );
 
-	// TODO: just make the matrix first and then call buildPatch once...
-
 	// Patch reflected in x
 	if( reflectX ) {
-		buildPatch( patch, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid,
-				   mat3( vec3( -1, 0, 0 ),
-						 vec3(  0, 1, 0 ),
-						 vec3(  0, 0, 1 ) ), true );
+		mat3 reflect( glm::scale( vec3( -1, 1, 1 ) ) );
+		buildPatch( patch, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, reflect, true );
 	}
 
 	// Patch reflected in y
 	if( reflectY ) {
-		buildPatch( patch, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid,
-				   mat3( vec3( 1,  0, 0 ),
-						 vec3( 0, -1, 0 ),
-						 vec3( 0,  0, 1 ) ), true );
+		mat3 reflect( glm::scale( vec3( 1, -1, 1 ) ) );
+		buildPatch( patch, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, reflect, true );
 	}
 
 	// Patch reflected in x and y
 	if( reflectX && reflectY ) {
-		buildPatch( patchRevV, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid,
-				   mat3( vec3( -1,  0, 0 ),
-						 vec3(  0, -1, 0 ),
-						 vec3(  0,  0, 1 ) ), false );
+		mat3 reflect( glm::scale( vec3( -1, -1, 1 ) ) );
+		buildPatch( patchRevV, B, dB, v, n, tc, el, index, elIndex, tcIndex, grid, reflect, false );
 	}
 }
 
-void Teapot::buildPatch( vec3 patch[][4], float *B, float *dB, float *v, float *n, float *tc, 
+void Teapot::buildPatch( vec3 patch[][4], float *B, float *dB, float *v, float *n, float *tc,
 	unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, mat3 reflect, bool invertNormal )
 {
 	int startIndex = index / 3;

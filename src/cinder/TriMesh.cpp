@@ -492,11 +492,11 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 	mNormals.assign( numPositions, vec3() );
 
 	// for smooth renormalization, we first find all unique vertices and keep track of them
-	std::vector<size_t> uniquePositions;
+	std::vector<uint32_t> uniquePositions;
 	if( smooth ) {
 		uniquePositions.assign( numPositions, 0 );
 
-		for( size_t i = 0; i < numPositions; ++i ) {
+		for( uint32_t i = 0; i < numPositions; ++i ) {
 			if( uniquePositions[i] == 0 ) {
 				uniquePositions[i] = i + 1;
 				const vec3 &v0 = *(const vec3*)(&mPositions[i * 3]);
@@ -514,9 +514,9 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 	size_t numTriangles = getNumTriangles();
 	for( size_t i = 0; i < numTriangles; ++i ) {
 		if( smooth ) {
-			index0 = uniquePositions[mIndices[i*3+0]] - 1;
-			index1 = uniquePositions[mIndices[i*3+1]] - 1;
-			index2 = uniquePositions[mIndices[i*3+2]] - 1;
+			index0 = uniquePositions[mIndices[i * 3 + 0]] - 1;
+			index1 = uniquePositions[mIndices[i * 3 + 1]] - 1;
+			index2 = uniquePositions[mIndices[i * 3 + 2]] - 1;
 		}
 		else {
 			index0 = mIndices[i*3+0];
@@ -655,9 +655,9 @@ void TriMesh::subdivide( int division, bool normalize )
 	size_t numTriangles = getNumTriangles();
 	for( size_t t = 0; t < numTriangles; ++t ) {
 		// the original indices forming the triangle
-		const uint32_t index0 = mIndices[t*3+0];
-		const uint32_t index1 = mIndices[t*3+1];
-		const uint32_t index2 = mIndices[t*3+2];
+		const uint32_t index0 = mIndices[t * 3 + 0];
+		const uint32_t index1 = mIndices[t * 3 + 1];
+		const uint32_t index2 = mIndices[t * 3 + 2];
 
 		// keep track of how many vertices we have added
 		size_t n = 0;
@@ -676,7 +676,7 @@ void TriMesh::subdivide( int division, bool normalize )
 					indices[n++] = index2;
 				}
 				else {
-					indices[n++] = getNumVertices();
+					indices[n++] = (uint32_t)getNumVertices();
 
 					// lambda closures for bilinear interpolation. TODO: make private templated function to reduce code reduncancy
 					auto lerpBilinear2 = [&] (const vec2 &a, const vec2 &b, const vec2 &c) {
