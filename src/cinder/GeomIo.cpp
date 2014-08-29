@@ -1644,7 +1644,7 @@ void Plane::calculate() const
 			float u = x * stepIncr.x;
 			float v = y * stepIncr.y;
 
-			vec3 pos = mOrigin + ( u - 0.5f ) * mAxisU + ( v - 0.5f ) * mAxisV;
+			vec3 pos = mOrigin + ( mSize.x * ( u - 0.5f ) ) * mAxisU + ( mSize.y * ( v - 0.5f ) ) * mAxisV;
 
 			size_t i = x * mNumSegments.y + y;
 			mPositions[i] = pos;
