@@ -18,14 +18,13 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class GeometryApp : public AppNative
-{
-public:
+class GeometryApp : public AppNative {
+  public:
 	typedef enum { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, PLANE } Primitive;
 	typedef enum { LOW, DEFAULT, HIGH } Quality;
 	typedef enum { SHADED, WIREFRAME } ViewMode;
 
-	void prepareSettings(Settings* settings);
+	void prepareSettings( Settings* settings );
 	void setup();
 	void update();
 	void draw();
@@ -36,7 +35,7 @@ public:
 	void keyDown( KeyEvent event );
 
 	void resize();
-private:
+  private:
 	void createGrid();
 	void createPhongShader();
 	void createWireframeShader();
@@ -82,7 +81,7 @@ private:
 #endif
 };
 
-void GeometryApp::prepareSettings(Settings* settings)
+void GeometryApp::prepareSettings( Settings* settings )
 {
 	settings->setWindowSize(1024, 768);
 }
@@ -129,7 +128,7 @@ void GeometryApp::setup()
 void GeometryApp::update()
 {
 	// If another primitive or quality was selected, reset the subdivision and recreate the primitive.
-	if(mPrimitiveCurrent != mPrimitiveSelected || mQualitySelected != mQualityCurrent) {
+	if( mPrimitiveCurrent != mPrimitiveSelected || mQualitySelected != mQualityCurrent ) {
 		mSubdivision = 1;
 		mPrimitiveCurrent = mPrimitiveSelected;
 		mQualityCurrent = mQualitySelected;
@@ -137,10 +136,10 @@ void GeometryApp::update()
 	}
 
 	// After creating a new primitive, gradually move the camera to get a good view.
-	if(mRecenterCamera) {
+	if( mRecenterCamera ) {
 		float distance = glm::distance( mCamera.getEyePoint(), mCameraCOI );
-		mCamera.setEyePoint( mCameraCOI - lerp(distance, 5.0f, 0.1f) * mCamera.getViewDirection() );
-		mCamera.setCenterOfInterestPoint( lerp(mCamera.getCenterOfInterestPoint(), mCameraCOI, 0.25f) );
+		mCamera.setEyePoint( mCameraCOI - lerp( distance, 5.0f, 0.1f ) * mCamera.getViewDirection() );
+		mCamera.setCenterOfInterestPoint( lerp( mCamera.getCenterOfInterestPoint(), mCameraCOI, 0.25f) );
 	}
 }
 
@@ -151,13 +150,12 @@ void GeometryApp::draw()
 	gl::setMatrices( mCamera );
 	
 	// Draw the grid.
-	if(mShowGrid && mGrid) {
+	if( mShowGrid && mGrid ) {
 		gl::ScopedGlslProg scopedGlslProg( gl::context()->getStockShader( gl::ShaderDef().color() ) );
 		mGrid->draw();
 	}
 
-	if(mPrimitive)
-	{
+	if( mPrimitive ) {
 		gl::ScopedTextureBind scopedTextureBind( mTexture );
 
 		// Rotate it slowly around the y-axis.
@@ -165,28 +163,28 @@ void GeometryApp::draw()
 		gl::rotate( 20.0f* float( getElapsedSeconds() ), 0.0f, 1.0f, 0.0f );
 
 		// Draw the normals.
-		if(mShowNormals && mNormals)
+		if( mShowNormals && mNormals )
 			mNormals->draw();
 
 		// Draw the primitive.
 		gl::color( Color(0.7f, 0.5f, 0.3f) );
 		
 		// (If transparent, render the back side first).
-		if(mViewMode == WIREFRAME) {
+		if( mViewMode == WIREFRAME ) {
 			gl::enableAlphaBlending();
 
 			gl::enable( GL_CULL_FACE );
 			glCullFace( GL_FRONT );
 
-			mWireframeShader->uniform("uBrightness", 0.5f);
+			mWireframeShader->uniform( "uBrightness", 0.5f );
 			mPrimitiveWireframe->draw();
 		}
 
 		// (Now render the front side.)
-		if(mViewMode == WIREFRAME) {
+		if( mViewMode == WIREFRAME ) {
 			glCullFace( GL_BACK );
 
-			mWireframeShader->uniform("uBrightness", 1.0f);
+			mWireframeShader->uniform( "uBrightness", 1.0f );
 			mPrimitiveWireframe->draw();
 			
 			gl::disable( GL_CULL_FACE );
@@ -231,35 +229,34 @@ void GeometryApp::resize(void)
 
 void GeometryApp::keyDown( KeyEvent event )
 {
-	switch( event.getCode() )
-	{
-	case KeyEvent::KEY_SPACE:
-		mPrimitiveSelected = static_cast<Primitive>( static_cast<int>(mPrimitiveSelected) + 1 );
-		createPrimitive();
-		break;
-	case KeyEvent::KEY_c:
-		mShowColors = !mShowColors;
-		createPrimitive();
-		break;
-	case KeyEvent::KEY_n:
-		mShowNormals = !mShowNormals;
-		break;
-	case KeyEvent::KEY_g:
-		mShowGrid = !mShowGrid;
-		break;
-	case KeyEvent::KEY_q:
-		mQualitySelected = Quality( (int)(mQualitySelected + 1) % 3 );
-		break;
-	case KeyEvent::KEY_w:
-		if(mViewMode == WIREFRAME)
-			mViewMode = SHADED;
-		else
-			mViewMode = WIREFRAME;
-		break;
-	case KeyEvent::KEY_RETURN:
-		createPhongShader();
-		createPrimitive();
-		break;
+	switch( event.getCode() ) {
+		case KeyEvent::KEY_SPACE:
+			mPrimitiveSelected = static_cast<Primitive>( static_cast<int>(mPrimitiveSelected) + 1 );
+			createPrimitive();
+			break;
+		case KeyEvent::KEY_c:
+			mShowColors = ! mShowColors;
+			createPrimitive();
+			break;
+		case KeyEvent::KEY_n:
+			mShowNormals = ! mShowNormals;
+			break;
+		case KeyEvent::KEY_g:
+			mShowGrid = ! mShowGrid;
+			break;
+		case KeyEvent::KEY_q:
+			mQualitySelected = Quality( (int)( mQualitySelected + 1 ) % 3 );
+			break;
+		case KeyEvent::KEY_w:
+			if(mViewMode == WIREFRAME)
+				mViewMode = SHADED;
+			else
+				mViewMode = WIREFRAME;
+			break;
+		case KeyEvent::KEY_RETURN:
+			createPhongShader();
+			createPrimitive();
+			break;
 	}
 }
 
@@ -270,7 +267,7 @@ void GeometryApp::createParams()
 	std::string qualities[] = { "Low", "Default", "High" };
 	std::string viewmodes[] = { "Shaded", "Wireframe" };
 
-	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", ivec2(340, 200) );
+	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", ivec2( 340, 200 ) );
 	mParams->setOptions( "", "valueswidth=100 refresh=0.1" );
 
 	mParams->addParam( "Primitive", vector<string>(primitives,primitives+11), (int*) &mPrimitiveSelected );
@@ -339,15 +336,15 @@ void GeometryApp::createPrimitive(void)
 	case CAPSULE:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().segments(6).slices(1) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().segments(60).slices(20) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().segments( 6 ).slices( 1 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().segments( 60 ).slices( 20 ) ) ); break;
 		}
 		break;
 	case CONE:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Cone( geom::Cone() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Cone( geom::Cone().segments(6).slices(1) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Cone( geom::Cone().segments(60).slices(60) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Cone( geom::Cone().segments( 6 ).slices( 1 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Cone( geom::Cone().segments( 60 ).slices( 60 ) ) ); break;
 		}
 		break;
 	case CUBE:
@@ -357,14 +354,14 @@ void GeometryApp::createPrimitive(void)
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder() ) ); break;
 			case LOW: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().segments( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().segments(60).slices(20) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().segments( 60 ).slices( 20 ) ) ); break;
 		}
 		break;
 	case HELIX:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Helix( geom::Helix() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Helix( geom::Helix().segmentsAxis(12).segmentsRing(6) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Helix( geom::Helix().segmentsAxis(60).segmentsRing(60) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Helix( geom::Helix().segmentsAxis( 12 ).segmentsRing( 6 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Helix( geom::Helix().segmentsAxis( 60 ).segmentsRing( 60 ) ) ); break;
 		}
 		break;
 	case ICOSAHEDRON:
@@ -373,15 +370,15 @@ void GeometryApp::createPrimitive(void)
 	case ICOSPHERE:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivision(1) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivision(5) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivision( 1 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivision( 5 ) ) ); break;
 		}
 		break;
 	case SPHERE:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().segments(6) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().segments(60) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().segments( 6 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().segments( 60 ) ) ); break;
 		}
 		break;
 	case TEAPOT:
@@ -394,8 +391,8 @@ void GeometryApp::createPrimitive(void)
 	case TORUS:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Torus( geom::Torus() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Torus( geom::Torus().segmentsAxis(12).segmentsRing(6) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Torus( geom::Torus().segmentsAxis(60).segmentsRing(60) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Torus( geom::Torus().segmentsAxis( 12 ).segmentsRing( 6 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Torus( geom::Torus().segmentsAxis( 60 ).segmentsRing( 60 ) ) ); break;
 		}
 		break;
 	case PLANE:
