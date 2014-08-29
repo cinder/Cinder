@@ -1597,18 +1597,36 @@ void Cylinder::loadInto( Target *target ) const
 // Plane
 
 Plane::Plane()
-	: mOrigin( 0, 0, 0 ), mNormal( 0, 1, 0 ), mSize( 2, 2 ), mNumSegments( 2, 2 )
+	: mOrigin( 0, 0, 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ), mSize( 2, 2 ), mNumSegments( 2, 2 )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
 	enable( Attrib::TEX_COORD_0 );
 }
 
-Plane& Plane::axis( const vec3 &point, const vec3 &normal )
+Plane& Plane::normal( const vec3 &normal )
 {
-	mOrigin = point;
-	mNormal = normal;
+	auto normalNormal = normalize( normal );
+	float yAxisDot = dot( normalNormal, vec3( 0, 1, 0 ) );
+	if( abs( yAxisDot ) < 0.999f ) {
+		quat normalQuat( vec3( 0, 1, 0 ), normalNormal );
+		mAxisU = normalQuat * vec3( 1, 0, 0 );
+		mAxisV = normalQuat * vec3( 0, 0, 1 );
+	}
+	else {
+		quat normalQuat( vec3( 0, 0, 1 ), normalNormal );
+		mAxisU = normalQuat * vec3( 1, 0, 0 );
+		mAxisV = normalQuat * vec3( 0, -1, 0 );
+	}
 
+	mCalculationsCached = false;
+	return *this;
+}
+
+Plane& Plane::axes( const vec3 &uAxis, const vec3 &vAxis )
+{
+	mAxisU = normalize( uAxis );
+	mAxisV = normalize( vAxis );
 	mCalculationsCached = false;
 	return *this;
 }
@@ -1625,24 +1643,24 @@ void Plane::calculate() const
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
 		mTexCoords.resize( totalNumSegments );
 
-	const quat axis = quat( vec3( 0, 1, 0 ), mNormal );
-	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mNumSegments );
+	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mNumSegments - 1 );
+	const vec3 normal = cross( mAxisV, mAxisU );
 
 	// fill vertex data
 	for( size_t x = 0; x < mNumSegments.x; x++ ) {
 		for( size_t y = 0; y < mNumSegments.y; y++ ) {
-			float u = (float)x * stepIncr.x;
-			float v = (float)y * stepIncr.y;
+			float u = x * stepIncr.x;
+			float v = y * stepIncr.y;
 
-			vec3 pos = mOrigin + axis * vec3( mSize.x * ( u - 0.5f ), 0, mSize.y * ( v - 0.5f ) );
+			vec3 pos = mOrigin + ( u - 0.5f ) * mAxisU + ( v - 0.5f ) * mAxisV;
 
 			size_t i = x * mNumSegments.y + y;
-			mPositions.at( i ) = pos;
+			mPositions[i] = pos;
 
 			if( isEnabled( Attrib::NORMAL ) )
-				mNormals.at( i ) = mNormal;
+				mNormals[i] = normal;
 			if( isEnabled( Attrib::TEX_COORD_0 ) )
-				mTexCoords.at( i ) = vec2( u, v );
+				mTexCoords[i] = vec2( u, v );
 		}
 	}
 

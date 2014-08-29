@@ -563,10 +563,10 @@ class Plane : public Source {
 	virtual Plane&	segments( const ivec2 &segments )	{ mNumSegments = segments; mCalculationsCached = false; return *this; }
 	//! default is {2, 2}, or 1 in each direction
 	virtual Plane&	size( const vec2 &size )	{ mSize = size; mCalculationsCached = false; return *this; }
-	virtual Plane&	axis( const vec3 &point, const vec3 &normal );
+	virtual Plane&	axes( const vec3 &uAxis, const vec3 &vAxis );
 
-	Plane& origin( const vec3 &origin )	{ return axis( origin, mNormal ); }
-	Plane& normal( const vec3 &normal )	{ return axis( mOrigin, normal ); }
+	Plane& origin( const vec3 &origin )	{ mOrigin = origin; mCalculationsCached = false; return *this; }
+	Plane& normal( const vec3 &normal );
 
 	virtual size_t		getNumVertices() const override		{ calculate(); return mPositions.size(); }
 	virtual size_t		getNumIndices() const override		{ calculate(); return mIndices.size(); }
@@ -579,7 +579,7 @@ class Plane : public Source {
 
 	ivec2		mNumSegments;
 	vec2		mSize;
-	vec3		mOrigin, mNormal;
+	vec3		mOrigin, mAxisU, mAxisV;
 
 	mutable bool						mCalculationsCached;
 	mutable std::vector<vec3>			mPositions;

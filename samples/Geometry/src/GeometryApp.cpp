@@ -273,7 +273,7 @@ void GeometryApp::createParams()
 	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", ivec2(340, 200) );
 	mParams->setOptions( "", "valueswidth=100 refresh=0.1" );
 
-	mParams->addParam( "Primitive", vector<string>(primitives,primitives+10), (int*) &mPrimitiveSelected );
+	mParams->addParam( "Primitive", vector<string>(primitives,primitives+11), (int*) &mPrimitiveSelected );
 	mParams->addParam( "Quality", vector<string>(qualities,qualities+3), (int*) &mQualitySelected );
 	mParams->addParam( "Viewing Mode", vector<string>(viewmodes,viewmodes+2), (int*) &mViewMode );
 
@@ -409,7 +409,7 @@ void GeometryApp::createPrimitive(void)
 			auto plane = geom::Plane().segments( numSegments );
 
 //			plane.normal( vec3( 0, 0, 1 ) ); // change the normal angle of the plane
-//			plane.axis( vec3( 1, 1, 0 ), vec3( 0, 0, 1 ) ); // change the axis with point + normal (point = origin)
+//			plane.axes( vec3( 0.70710678118, -0.70710678118, 0 ), vec3( 0.70710678118, 0.70710678118, 0 ) ); // dictate plane u/v axes directly
 
 			primitive = geom::SourceRef( new geom::Plane( plane ) );
 
