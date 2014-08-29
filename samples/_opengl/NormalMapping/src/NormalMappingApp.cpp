@@ -48,7 +48,7 @@ using namespace std;
 
 struct LightSource
 {
-	Vec4f position;
+	vec4 position;
 	ColorA diffuse;
 	ColorA specular;
 };
@@ -62,7 +62,7 @@ class NormalMappingApp : public AppNative {
 #endif
 
 public:
-	void	prepareSettings( Settings* settings );
+	void	prepareSettings( Settings *settings );
 
 	void	setup();
 	void	shutdown();
@@ -77,19 +77,19 @@ public:
 	void	keyDown( KeyEvent event );
 
 	bool	isInitialized() const {
-		return (mDiffuseMap && mSpecularMap && mNormalMap && mCopyrightMap && mShaderNormalMapping && mMesh);
+		return ( mDiffuseMap && mSpecularMap && mNormalMap && mCopyrightMap && mShaderNormalMapping && mMesh );
 	}
 
 private:
 	/* Load the mesh and calculate normals and tangents if necessary. */
-	TriMesh			createMesh(const fs::path& mshFile);
+	TriMesh			createMesh( const fs::path& mshFile );
 	/* Construct a mesh to visualize normals (blue), tangents (red) and bitangents (green). */
-	gl::VboMeshRef	createDebugMesh(const TriMesh& mesh);
+	gl::VboMeshRef	createDebugMesh( const TriMesh& mesh );
 
 private:
 	ViewMode			mViewMode;
 
-	mat4			mMeshTransform;
+	mat4				mMeshTransform;
 	AxisAlignedBox3f	mMeshBounds;
 
 	CameraPersp			mCamera;
@@ -102,7 +102,7 @@ private:
 	gl::TextureRef		mDiffuseMap;
 	gl::TextureRef		mSpecularMap;
 	gl::TextureRef		mNormalMap;
-	gl::TextureRef		mEmmisiveMap;
+	gl::TextureRef		mEmissiveMap;
 
 	gl::GlslProgRef		mShaderNormalMapping;
 	gl::GlslProgRef		mShaderWireframe;
@@ -110,23 +110,23 @@ private:
 	gl::VboMeshRef		mMesh;
 	gl::VboMeshRef		mMeshDebug;
 
-	bool				bAutoRotate;
-	float				fAutoRotateAngle;
+	bool				mAutoRotate;
+	float				mAutoRotateAngle;
 
-	bool				bAnimateLantern;
+	bool				mAnimateLantern;
 	Perlin				mPerlin;
 
-	bool				bEnableNormalMap;
-	bool				bShowNormalsAndTangents;
+	bool				mEnableNormalMap;
+	bool				mShowNormalsAndTangents;
 
-	float				fTime;
+	float				mTime;
 
 #if ! defined( CINDER_GL_ES )
 	params::InterfaceGlRef	mParams;
 #endif
 };
 
-void NormalMappingApp::prepareSettings(Settings* settings)
+void NormalMappingApp::prepareSettings( Settings *settings )
 {
 	settings->disableFrameRate();
 
@@ -154,13 +154,13 @@ void NormalMappingApp::setup()
 	// default settings
 	mMeshBounds = AxisAlignedBox3f( vec3( 0 ), vec3( 1 ) );
 
-	bAutoRotate = true;
-	fAutoRotateAngle = 0.0f;
+	mAutoRotate = true;
+	mAutoRotateAngle = 0.0f;
 
-	bAnimateLantern = true;
+	mAnimateLantern = true;
 
-	bEnableNormalMap = true;
-	bShowNormalsAndTangents = false;
+	mEnableNormalMap = true;
+	mShowNormalsAndTangents = false;
 
 	mViewMode = ViewMode::Default;
 
@@ -174,7 +174,7 @@ void NormalMappingApp::setup()
 		mDiffuseMap = gl::Texture::create( loadImage( loadAsset("leprechaun_diffuse.jpg") ), texFormat );
 		mSpecularMap = gl::Texture::create( loadImage( loadAsset("leprechaun_specular.jpg") ), texFormat );
 		mNormalMap = gl::Texture::create( loadImage( loadAsset("leprechaun_normal.jpg") ), texFormat );
-		mEmmisiveMap = gl::Texture::create( loadImage( loadAsset("leprechaun_emmisive.png") ), texFormat );
+		mEmissiveMap = gl::Texture::create( loadImage( loadAsset("leprechaun_emmisive.png") ), texFormat );
 
 		// load our shaders and set the non-varying uniforms
 #if ! defined( CINDER_GL_ES )
@@ -221,28 +221,28 @@ void NormalMappingApp::setup()
 
 	// create a parameter window, so we can toggle stuff
 	std::vector<std::string> viewmodes;
-	viewmodes.push_back("Final");
-	viewmodes.push_back("Glossy");
-	viewmodes.push_back("Normals");
-	viewmodes.push_back("Lighting");
-	viewmodes.push_back("Mesh");
+	viewmodes.push_back( "Final" );
+	viewmodes.push_back( "Glossy" );
+	viewmodes.push_back( "Normals");
+	viewmodes.push_back( "Lighting" );
+	viewmodes.push_back( "Mesh" );
 
 #if ! defined( CINDER_GL_ES )
 	mParams = params::InterfaceGl::create( getWindow(), "Normal Mapping Demo", ivec2(340, 150) );
 	mParams->setOptions( "", "valueswidth=100" );
 
-	mParams->addParam( "Enable Normal Mapping", &bEnableNormalMap );
+	mParams->addParam( "Enable Normal Mapping", &mEnableNormalMap );
 	mParams->addParam( "Viewing Mode", viewmodes, (int*) &mViewMode );
 
 	mParams->addSeparator();
 
-	mParams->addParam( "Rotate Model", &bAutoRotate );
-	mParams->addParam( "Animate Light", &bAnimateLantern );
-	mParams->addParam( "Show Normals & Tangents", &bShowNormalsAndTangents );
+	mParams->addParam( "Rotate Model", &mAutoRotate );
+	mParams->addParam( "Animate Light", &mAnimateLantern );
+	mParams->addParam( "Show Normals & Tangents", &mShowNormalsAndTangents );
 #endif
 
 	// keep track of time
-	fTime = (float) getElapsedSeconds();
+	mTime = (float) getElapsedSeconds();
 }
 
 void NormalMappingApp::shutdown()
@@ -252,24 +252,21 @@ void NormalMappingApp::shutdown()
 void NormalMappingApp::update()
 {
 	// keep track of time
-	float fElapsed = (float) getElapsedSeconds() - fTime;
-	fTime += fElapsed;
+	float fElapsed = (float)getElapsedSeconds() - mTime;
+	mTime += fElapsed;
 	
 	// rotate the mesh
-	if( bAutoRotate )
-		fAutoRotateAngle += (fElapsed * 0.2f);
+	if( mAutoRotate )
+		mAutoRotateAngle += (fElapsed * 0.2f);
 
 	mMeshTransform = mat4();
-	mMeshTransform *= rotate( fAutoRotateAngle, vec3( 0, 1, 0 ) );
+	mMeshTransform *= rotate( mAutoRotateAngle, vec3( 0, 1, 0 ) );
 	mMeshTransform *= scale( vec3( 1 ) / mMeshBounds.getSize().y );
 
 	// position our lights (in eye space)
 	vec3 lanternPositionOS = vec3(12.5f, 30.0f, 12.5f);
-	if( bAnimateLantern )
-		lanternPositionOS += mPerlin.dfBm( vec3( 0.0f, 0.0f, fTime ) ) * 5.0f;
-
-//	vec3 lanternPositionWS = mMeshTransform.transformPointAffine( lanternPositionOS );
-//	mLightLantern.position = mCamera.getViewMatrix().transformPointAffine( lanternPositionWS );
+	if( mAnimateLantern )
+		lanternPositionOS += mPerlin.dfBm( vec3( 0.0f, 0.0f, mTime ) ) * 5.0f;
 
 	vec4 lanternPositionWS = mMeshTransform * vec4( lanternPositionOS, 1 );
 	mLightLantern.position = mCamera.getViewMatrix() * lanternPositionWS;
@@ -278,10 +275,10 @@ void NormalMappingApp::update()
 
 	// set the varying shader uniforms
 	mShaderNormalMapping->uniform( "bShowNormals", mViewMode == ViewMode::Normals );
-	mShaderNormalMapping->uniform( "bUseDiffuseMap", (mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy) );
-	mShaderNormalMapping->uniform( "bUseSpecularMap", (mViewMode == ViewMode::Default || mViewMode == ViewMode::Lighting) );
-	mShaderNormalMapping->uniform( "bUseEmmisiveMap", (mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy) );
-	mShaderNormalMapping->uniform( "bUseNormalMap", bEnableNormalMap );
+	mShaderNormalMapping->uniform( "bUseDiffuseMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
+	mShaderNormalMapping->uniform( "bUseSpecularMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Lighting ) );
+	mShaderNormalMapping->uniform( "bUseEmmisiveMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
+	mShaderNormalMapping->uniform( "bUseNormalMap", mEnableNormalMap );
 
 	mShaderNormalMapping->uniform( "uLights[0].position", mLightLantern.position );
 	mShaderNormalMapping->uniform( "uLights[1].position", mLightAmbient.position );
@@ -298,8 +295,7 @@ void NormalMappingApp::draw()
 	gl::clear(); 
 	gl::color( Color::white() );
 
-	if(isInitialized())
-	{
+	if( isInitialized() ) {
 		// get ready to draw in 3D
 		gl::pushMatrices();
 		gl::setMatrices( mCamera );
@@ -311,14 +307,13 @@ void NormalMappingApp::draw()
 		mDiffuseMap->bind(0);
 		mSpecularMap->bind(1);
 		mNormalMap->bind(2);
-		mEmmisiveMap->bind(3);
+		mEmissiveMap->bind(3);
 
 		// render our model
 #if ! defined( CINDER_GL_ES )
-		if(mViewMode == ViewMode::Mesh && mShaderWireframe)
-		{
+		if( mViewMode == ViewMode::Mesh && mShaderWireframe ) {
 			// use our wireframe shader for this scope
-			gl::ScopedGlslProg GlslProgScope( mShaderWireframe );
+			gl::ScopedGlslProg glslProgScope( mShaderWireframe );
 	
 			gl::pushModelMatrix();
 			gl::multModelMatrix( mMeshTransform );
@@ -338,9 +333,9 @@ void NormalMappingApp::draw()
 		}
 	
 		// render normals, tangents and bitangents if necessary
-		if(bShowNormalsAndTangents) {
+		if( mShowNormalsAndTangents ) {
 			// use a default shader for this scope
-			gl::ScopedGlslProg GlslProgScope( gl::getStockShader( gl::ShaderDef().color() ) );
+			gl::ScopedGlslProg glslProgScope( gl::getStockShader( gl::ShaderDef().color() ) );
 
 			gl::pushModelMatrix();
 			gl::multModelMatrix( mMeshTransform );
@@ -362,7 +357,7 @@ void NormalMappingApp::draw()
 
 		// render the copyright message
 		Area centered = Area::proportionalFit( mCopyrightMap->getBounds(), getWindowBounds(), true, false );
-		centered.offset( ivec2(0, (getWindowHeight() - centered.y2) - 20) );
+		centered.offset( ivec2( 0, ( getWindowHeight() - centered.y2 ) - 20 ) );
 
 		gl::enableAlphaBlending();
 		gl::draw( mCopyrightMap, centered );
@@ -394,24 +389,24 @@ void NormalMappingApp::keyDown( KeyEvent event )
 			quit();
 		break;
 		case KeyEvent::KEY_v:
-			gl::enableVerticalSync( !gl::isVerticalSyncEnabled() );
+			gl::enableVerticalSync( ! gl::isVerticalSyncEnabled() );
 		break;
 	}
 }
 
-TriMesh NormalMappingApp::createMesh(const fs::path& mshFile)
+TriMesh NormalMappingApp::createMesh( const fs::path& mshFile )
 {	
 	TriMesh mesh( TriMesh::Format().positions(3).texCoords(2).normals() );
 	Timer	timer;
 
 	// try to load the msh file
-	if( fs::exists(mshFile) ) {
+	if( fs::exists( mshFile ) ) {
 		timer.start();
-		mesh.read( loadFile(mshFile) ); 
+		mesh.read( loadFile( mshFile ) );
 		console() << "Loading the mesh took " << timer.getSeconds() << " seconds." << std::endl;
 	}
 	else {
-		std::string msg = "Could not locate the file ("+mshFile.string()+").";
+		std::string msg = "Could not locate the file (" + mshFile.string() + ").";
 		throw std::runtime_error( msg );
 	}
 
@@ -433,7 +428,7 @@ TriMesh NormalMappingApp::createMesh(const fs::path& mshFile)
 	return mesh;
 }
 
-gl::VboMeshRef NormalMappingApp::createDebugMesh(const TriMesh& mesh)
+gl::VboMeshRef NormalMappingApp::createDebugMesh( const TriMesh& mesh )
 {
 	// create a debug mesh, showing normals, tangents and bitangents
 	DebugMesh source(mesh);

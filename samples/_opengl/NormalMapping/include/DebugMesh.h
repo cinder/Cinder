@@ -25,12 +25,11 @@
 #include "cinder/GeomIo.h"
 #include "cinder/TriMesh.h"
 
-class DebugMesh : public ci::geom::Source
-{
-public:
-	DebugMesh(void);
-	DebugMesh(const ci::TriMesh& mesh);
-	~DebugMesh(void);
+class DebugMesh : public ci::geom::Source {
+  public:
+	DebugMesh();
+	DebugMesh( const ci::TriMesh& mesh );
+	~DebugMesh();
 
 	void						clear();
 	void						setMesh(const ci::TriMesh& mesh);
@@ -42,7 +41,7 @@ public:
 	
 	virtual void				loadInto( ci::geom::Target *target ) const override;
 
-private:
+  private:
 	std::vector<ci::vec3>		mVertices;
 	std::vector<ci::Color>		mColors;
 	std::vector<ci::uint32_t>	mIndices;
