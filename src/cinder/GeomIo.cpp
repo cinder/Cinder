@@ -1593,6 +1593,104 @@ void Cylinder::loadInto( Target *target ) const
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
 }
 
+///////////////////////////////////////////////////////////////////////////////////////
+// Plane
+
+Plane::Plane()
+	: mOrigin( 0, 0, 0 ), mNormal( 0, 1, 0 ), mSize( 2, 2 ), mNumSegments( 2, 2 )
+{
+	enable( Attrib::POSITION );
+	enable( Attrib::NORMAL );
+	enable( Attrib::TEX_COORD_0 );
+}
+
+Plane& Plane::axis( const vec3 &point, const vec3 &normal )
+{
+	mOrigin = point;
+	mNormal = normal;
+
+	mCalculationsCached = false;
+	return *this;
+}
+
+void Plane::calculate() const
+{
+	if( mCalculationsCached )
+		return;
+
+	const size_t totalNumSegments = mNumSegments.x * mNumSegments.y;
+	mPositions.resize( totalNumSegments );
+	if( isEnabled( Attrib::NORMAL ) )
+		mNormals.resize( totalNumSegments );
+	if( isEnabled( Attrib::TEX_COORD_0 ) )
+		mTexCoords.resize( totalNumSegments );
+
+	const quat axis = quat( vec3( 0, 1, 0 ), mNormal );
+	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mNumSegments );
+
+	// fill vertex data
+	for( size_t x = 0; x < mNumSegments.x; x++ ) {
+		for( size_t y = 0; y < mNumSegments.y; y++ ) {
+			float u = (float)x * stepIncr.x;
+			float v = (float)y * stepIncr.y;
+
+			vec3 pos = mOrigin + axis * vec3( mSize.x * ( u - 0.5f ), 0, mSize.y * ( v - 0.5f ) );
+
+			size_t i = x * mNumSegments.y + y;
+			mPositions.at( i ) = pos;
+
+			if( isEnabled( Attrib::NORMAL ) )
+				mNormals.at( i ) = mNormal;
+			if( isEnabled( Attrib::TEX_COORD_0 ) )
+				mTexCoords.at( i ) = vec2( u, v );
+		}
+	}
+
+	// fill indices. TODO: this could be optimized by moving it to above loop, though last row of vertices would need to be done outside of loop
+	mIndices.clear();
+	for( uint32_t x = 0; x < mNumSegments.x - 1; x++ ) {
+		for( uint32_t y = 0; y < mNumSegments.y - 1; y++ ) {
+			uint32_t i = x * mNumSegments.y + y;
+
+			mIndices.push_back( i );
+			mIndices.push_back( i + 1 );
+			mIndices.push_back( i + mNumSegments.y );
+
+			mIndices.push_back( i + mNumSegments.y );
+			mIndices.push_back( i + 1 );
+			mIndices.push_back( i + mNumSegments.y + 1 );
+		}
+	}
+
+	mCalculationsCached = true;
+}
+
+uint8_t Plane::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 3;
+		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
+		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
+		default:
+			return 0;
+	}
+}
+
+void Plane::loadInto( Target *target ) const
+{
+	calculate();
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
+	if( isEnabled( Attrib::TEX_COORD_0 ) )
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
+	if( isEnabled( Attrib::NORMAL ) )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
+	if( isEnabled( Attrib::COLOR ) )
+		target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
+	
+	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // SplineExtrusion
