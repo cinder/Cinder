@@ -511,9 +511,9 @@ void ImageSourceCgImage::load( ImageTargetRef target )
 	// get a pointer to the ImageSource function appropriate for handling our data configuration
 	ImageSource::RowFunc func = setupRowFunc( target );
 	
-	shared_ptr<Color8u> tempRowBuffer;
+	unique_ptr<Color8u[]> tempRowBuffer;
 	if( mIsIndexed || mIs16BitPacked )
-		tempRowBuffer = shared_ptr<Color8u>( new Color8u[mWidth], checked_array_deleter<Color8u>() );
+		tempRowBuffer = unique_ptr<Color8u[]>( new Color8u[mWidth] );
 	
 	const uint8_t *data = ::CFDataGetBytePtr( pixels.get() );
 	for( int32_t row = 0; row < mHeight; ++row ) {

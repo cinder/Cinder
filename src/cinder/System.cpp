@@ -104,7 +104,7 @@ static std::string getSysCtlString( const std::string &key )
 	if( error )
 		throw SystemExcFailedQuery();
 	// make a string big enough
-	std::shared_ptr<char> str( new char[len], checked_array_deleter<char>() );
+	std::unique_ptr<char[]> str( new char[len] );
 	// call again, this time actually getting the value
 	error = sysctlbyname( key.c_str(), str.get(), &len, NULL, 0 );
 	if( error )
