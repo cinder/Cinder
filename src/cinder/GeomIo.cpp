@@ -1598,7 +1598,8 @@ Plane::Plane()
 
 Plane& Plane::subdivisions( const ivec2 &subdivisions )
 {
-	mSubdivisions = glm::max<ivec2>( subdivisions, 1 );
+	mSubdivisions.x = std::max( subdivisions.x, 1 );
+	mSubdivisions.y = std::max( subdivisions.y, 1 );
 	mCalculationsCached = false;
 	return *this;
 }
