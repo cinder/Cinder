@@ -269,7 +269,7 @@ OSStatus ptrDataRefAddFileNameExtension( ComponentInstance dataRefHandler, const
 	if( fileName.empty() )
 		osErr = ::PtrToHand( &myChar, &fileNameHandle, sizeof(myChar) );
 	else {
-		shared_ptr<char> tempStr( new char[fileName.size()+1], checked_array_deleter<char>() );
+		unique_ptr<char[]> tempStr( new char[fileName.size()+1] );
 		memcpy( &tempStr.get()[1], &fileName[0], fileName.size() );
 		tempStr.get()[0] = fileName.size();
 		osErr = ::PtrToHand( &tempStr.get()[0], &fileNameHandle, tempStr.get()[0] + 1 );
@@ -297,7 +297,7 @@ OSStatus ptrDataRefAddMIMETypeExtension( ComponentInstance dataRefHandler, const
     if( mimeType.empty() )
         return paramErr;
 
-	shared_ptr<char> tempStr( new char[mimeType.size()+1], checked_array_deleter<char>() );
+	unique_ptr<char[]> tempStr( new char[mimeType.size()+1] );
 	memcpy( &tempStr.get()[1], &mimeType[0], mimeType.size() );
 	tempStr.get()[0] = mimeType.size();
     osErr = ::PtrToHand( &tempStr.get()[0], &mimeTypeHndl, tempStr.get()[0] + 1 );

@@ -381,7 +381,7 @@ Font::Glyph Font::getGlyphIndex( size_t idx ) const
 vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
 {
 	std::u16string wideString = toUtf16( utf8String );
-	std::shared_ptr<WORD> buffer( new WORD[wideString.length()], checked_array_deleter<WORD>() );
+	std::unique_ptr<WORD[]> buffer( new WORD[wideString.length()] );
 	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
 	DWORD numGlyphs = ::GetGlyphIndices( FontManager::instance()->getFontDc(), (wchar_t*)&wideString[0], (int)wideString.length(), buffer.get(), GGI_MARK_NONEXISTING_GLYPHS );
 	if( numGlyphs == GDI_ERROR )
@@ -405,7 +405,7 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
     if( bytesGlyph == GDI_ERROR )
 		throw FontGlyphFailureExc();
 
-	std::shared_ptr<uint8_t> buffer( new uint8_t[bytesGlyph], checked_array_deleter<uint8_t>() );
+	std::unique_ptr<uint8_t[]> buffer( new uint8_t[bytesGlyph] );
 	uint8_t *ptr = buffer.get();
     if( ! buffer ) {
 		throw FontGlyphFailureExc();

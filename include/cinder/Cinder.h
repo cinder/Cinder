@@ -107,13 +107,6 @@ using namespace glm;
 	#endif
 #elif defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
 	#include <memory>
-	#include <vector>
-	#include <functional>
-	#if _MSC_VER >= 1700
-		#include <chrono>
-	#else
-		#include <boost/chrono.hpp>
-	#endif
 #elif defined( CINDER_COCOA ) && defined( _LIBCPP_VERSION ) // libc++
 	#include <memory>
 #elif defined( CINDER_COCOA ) // libstdc++
@@ -121,9 +114,6 @@ using namespace glm;
 #else
 	#error "Unkown platform configuration"
 #endif
-
-#include <boost/checked_delete.hpp> // necessary for checked_array_deleter
-using boost::checked_array_deleter;
 
 // Create a namepace alias as shorthand for cinder::
 #if ! defined( CINDER_NO_NS_ALIAS )
