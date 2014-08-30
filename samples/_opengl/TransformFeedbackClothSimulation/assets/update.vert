@@ -38,7 +38,7 @@ void main(void)
 {
 	vec3 p = position_mass.xyz;		// p can be our position
 	if (mouse_pos.x > p.x - 1 && mouse_pos.x < p.x + 1 && mouse_pos.y > p.y - 1 && mouse_pos.y < p.y + 1 ) {
-		p = vec3(mouse_pos, 0);
+		p = vec3(mouse_pos, mouse_pos.x);
 	}
 	float m = position_mass.w;		// m is the mass of our vertex
 	vec3 u = velocity;				// u is the initial velocity

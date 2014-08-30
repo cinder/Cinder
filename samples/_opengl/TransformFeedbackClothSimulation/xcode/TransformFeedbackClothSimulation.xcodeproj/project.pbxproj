@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		006D71DC19952C8E008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D71DA19952C8E008149E2 /* AVFoundation.framework */; };
-		006D71DD19952C8E008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D71DB19952C8E008149E2 /* CoreMedia.framework */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
 		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
@@ -20,13 +18,12 @@
 		B3A82AFE18884ED8006EC555 /* update.vert in Resources */ = {isa = PBXBuildFile; fileRef = B3A82AFD18884CF5006EC555 /* update.vert */; };
 		B3A82AFF18884ED8006EC555 /* render.vert in Resources */ = {isa = PBXBuildFile; fileRef = B3A82AFC18884CF5006EC555 /* render.vert */; };
 		B3A82B0018884ED8006EC555 /* render.frag in Resources */ = {isa = PBXBuildFile; fileRef = B3A82AFB18884CF5006EC555 /* render.frag */; };
+		B3AC834019A531C700B29ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AC833F19A531C700B29ABF /* AVFoundation.framework */; };
+		B3AC834219A531DD00B29ABF /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AC834119A531DD00B29ABF /* CoreMedia.framework */; };
 		E410DF094E954560937DA058 /* TransformFeedbackClothSimulationApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DD141C60DFFE4861896545D2 /* TransformFeedbackClothSimulationApp.cpp */; };
-		F8B0FF628064479F8A45F86E /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = AB7C452617944D36B78C548D /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		006D71DA19952C8E008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		006D71DB19952C8E008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -41,10 +38,11 @@
 		8C89E5F9323A45AEA324F75E /* TransformFeedbackClothSimulation_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = TransformFeedbackClothSimulation_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TransformFeedbackClothSimulation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransformFeedbackClothSimulation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9DFC1473A4C5416181CCD078 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AB7C452617944D36B78C548D /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../data/CinderApp.icns; sourceTree = "<group>"; };
 		B3A82AFB18884CF5006EC555 /* render.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = render.frag; path = ../assets/render.frag; sourceTree = "<group>"; };
 		B3A82AFC18884CF5006EC555 /* render.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = render.vert; path = ../assets/render.vert; sourceTree = "<group>"; };
 		B3A82AFD18884CF5006EC555 /* update.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = update.vert; path = ../assets/update.vert; sourceTree = "<group>"; };
+		B3AC833F19A531C700B29ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B3AC834119A531DD00B29ABF /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		DD141C60DFFE4861896545D2 /* TransformFeedbackClothSimulationApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = TransformFeedbackClothSimulationApp.cpp; path = ../src/TransformFeedbackClothSimulationApp.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -53,8 +51,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				006D71DC19952C8E008149E2 /* AVFoundation.framework in Frameworks */,
-				006D71DD19952C8E008149E2 /* CoreMedia.framework in Frameworks */,
+				B3AC834219A531DD00B29ABF /* CoreMedia.framework in Frameworks */,
+				B3AC834019A531C700B29ABF /* AVFoundation.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -144,7 +142,6 @@
 				B3A82AFC18884CF5006EC555 /* render.vert */,
 				B3A82AFB18884CF5006EC555 /* render.frag */,
 				B3A82AFD18884CF5006EC555 /* update.vert */,
-				AB7C452617944D36B78C548D /* CinderApp.icns */,
 				9DFC1473A4C5416181CCD078 /* Info.plist */,
 			);
 			name = Resources;
@@ -153,8 +150,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				006D71DA19952C8E008149E2 /* AVFoundation.framework */,
-				006D71DB19952C8E008149E2 /* CoreMedia.framework */,
+				B3AC834119A531DD00B29ABF /* CoreMedia.framework */,
+				B3AC833F19A531C700B29ABF /* AVFoundation.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -216,7 +213,6 @@
 				B3A82AFE18884ED8006EC555 /* update.vert in Resources */,
 				B3A82AFF18884ED8006EC555 /* render.vert in Resources */,
 				B3A82B0018884ED8006EC555 /* render.frag in Resources */,
-				F8B0FF628064479F8A45F86E /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,6 +233,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = x86_64;
 				CINDER_PATH = ../../../../;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -263,6 +260,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = x86_64;
 				CINDER_PATH = ../../../../;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
@@ -288,14 +286,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = x86_64;
+				ARCHS = i386;
 				CINDER_PATH = ../../../../../cinder_dev;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 			};
@@ -305,14 +303,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = x86_64;
+				ARCHS = i386;
 				CINDER_PATH = ../../../../../cinder_dev;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 			};

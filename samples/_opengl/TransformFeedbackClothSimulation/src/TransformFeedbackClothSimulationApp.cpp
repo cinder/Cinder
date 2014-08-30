@@ -13,21 +13,18 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-typedef std::vector<std::pair<gl::VaoRef, std::vector<gl::VboRef>>> PingPongBuffers;
+// This sample is based on the Spring-Mass System, presented in the 7th chapter
+// of the OpenGL SuperBible, 6th edition. For a more in-depth explanation of
+// what is going on here, please refer to that.
 
-enum BUFFER_TYPE {
-	POSITION = 0,
-	VELOCITY = 1,
-	CONNECTION = 2
-};
+const int POSITION_INDEX	= 0;
+const int VELOCITY_INDEX	= 1;
+const int CONNECTION_INDEX	= 2;
 
-enum
-{
-	POINTS_X			= 50,
-	POINTS_Y			= 50,
-	POINTS_TOTAL		= (POINTS_X * POINTS_Y),
-	CONNECTIONS_TOTAL	= (POINTS_X - 1) * POINTS_Y + (POINTS_Y - 1) * POINTS_X
-};
+const int POINTS_X			= 50;
+const int POINTS_Y			= 50;
+const int POINTS_TOTAL		= (POINTS_X * POINTS_Y);
+const int CONNECTIONS_TOTAL	= (POINTS_X - 1) * POINTS_Y + (POINTS_Y - 1) * POINTS_X;
 
 class TransformFeedbackClothSimulationApp : public AppNative {
   public:
@@ -42,19 +39,19 @@ class TransformFeedbackClothSimulationApp : public AppNative {
 	void loadBuffers();
 	
 	gl::GlslProgRef				mUpdateGlsl, mRenderGlsl;
-	PingPongBuffers				mBuffers;
+	gl::VaoRef					mVaos[2];
+	gl::VboRef					mPositions[2], mVelocities[2], mConnections, mLineElementBuffer;
 	gl::TransformFeedbackObjRef mFeedbackObjs[2];
-	gl::VboRef					mElementBuffer;
 	gl::BufferTextureRef		mPosBufferTextures[2];
-	int							mIterationsPerFrame, mIterationIndex;
-	bool						drawLines, drawPoints, mouseMoving;
+	int							mIterationsPerFrame, mIterationIndex, mTriangleIndices, mLineIndices;
+	bool						drawLines, drawPoints, mouseMoving, drawTexture;
 	vec2						currentMousePosition;
 };
 
 void TransformFeedbackClothSimulationApp::setup()
 {
 	mIterationsPerFrame = 32;
-	drawLines = drawPoints = 1;
+	drawLines = drawPoints = drawTexture = 1;
 	mouseMoving = mIterationIndex = 0;
 	gl::viewport(0, 0, getWindowWidth()*2, getWindowHeight()*2);
 	
@@ -65,42 +62,47 @@ void TransformFeedbackClothSimulationApp::setup()
 void TransformFeedbackClothSimulationApp::mouseDrag( MouseEvent event )
 {
 	mouseMoving = true;
-	float x = lmap( (float)event.getPos().x, (float)0, (float)getWindowWidth(), (float)-34, (float)34 );
-	float y = lmap( (float)event.getPos().y, (float)0, (float)getWindowHeight(), (float)34, (float)-34 );
-	currentMousePosition.set(x, y);
+	// Some mouse math to put the position somewhere in the flag
+	currentMousePosition.x = lmap( (float)event.getPos().x, (float)0, (float)getWindowWidth(), (float)-34, (float)34 );
+	currentMousePosition.y = lmap( (float)event.getPos().y, (float)0, (float)getWindowHeight(), (float)34, (float)-34 );
 }
 
 void TransformFeedbackClothSimulationApp::mouseUp( MouseEvent event )
 {
-	currentMousePosition.set(640, 480);
+	// reset the mouse position
+	mouseMoving = true;
+	currentMousePosition.x = 640;
+	currentMousePosition.y = 480;
 }
 
 void TransformFeedbackClothSimulationApp::keyDown( KeyEvent event )
 {
-	if( event.getChar() == 'r' )
-		loadShaders();
-	else if( event.getChar() == 'l' )
+	if( event.getChar() == 'l' )
 		drawLines = !drawLines;
 	else if( event.getChar() == 'p' )
 		drawPoints = !drawPoints;
+	else if( event.getChar() == 't' )
+		drawTexture = !drawTexture;
 }
 
 void TransformFeedbackClothSimulationApp::update()
 {
-	int i;
+	gl::ScopedGlslProg	updateScope( mUpdateGlsl );
+	gl::ScopedState		stateScope( GL_RASTERIZER_DISCARD, true );
 	
-	mUpdateGlsl->bind();
-	
-	gl::enable( GL_RASTERIZER_DISCARD );
-	
-	for( i = mIterationsPerFrame; i != 0; --i ) {	
+	// This for loop allows iteration on the gpu of solving the
+	// physics of the cloth.
+	// Change mIterationsPerFrame to see the difference it makes
+	for( int i = mIterationsPerFrame; i != 0; --i ) {
+		// Pick using the mouse if it's pressed
 		if( mouseMoving ) {
-			mUpdateGlsl->uniform("mouse_pos", currentMousePosition );
+			mUpdateGlsl->uniform( "mouse_pos", currentMousePosition );
 			mouseMoving = false;
 		}
 		
-		mBuffers[mIterationIndex & 1].first->bind();
-		mPosBufferTextures[mIterationIndex & 1]->bindTexture();
+		gl::ScopedVao			vaoScope( mVaos[mIterationIndex & 1] );
+		gl::ScopedTextureBind	textureBind( mPosBufferTextures[mIterationIndex & 1]->getTarget(),
+											mPosBufferTextures[mIterationIndex & 1]->getId() );
 		
 		mIterationIndex++;
 		
@@ -110,62 +112,68 @@ void TransformFeedbackClothSimulationApp::update()
 		gl::drawArrays( GL_POINTS, 0, POINTS_TOTAL );
 		gl::endTransformFeedback();
 	}
-	
-	gl::disable( GL_RASTERIZER_DISCARD );
 }
 
 void TransformFeedbackClothSimulationApp::draw()
 {
 	// clear out the window with black
 	gl::clear();
-	
-	mRenderGlsl->bind();
-	
+		
+	// Render the Line and/or Point version of the flag
+	gl::ScopedGlslProg glslScope( mRenderGlsl );
 	if( drawPoints ) {
-		glPointSize(4.0f);
-		gl::drawArrays(GL_POINTS, 0, POINTS_TOTAL);
+		glPointSize( 4.0f );
+		gl::drawArrays( GL_POINTS, 0, POINTS_TOTAL );
 	}
 	if( drawLines ) {
-		mElementBuffer->bind();
-		gl::drawElements( GL_LINES, CONNECTIONS_TOTAL * 2, GL_UNSIGNED_INT, NULL );
+		gl::ScopedBuffer bufferScope( mLineElementBuffer );
+		gl::drawElements( GL_LINES, mLineIndices, GL_UNSIGNED_INT, nullptr );
 	}
 }
 
 void TransformFeedbackClothSimulationApp::loadShaders()
 {
-	std::vector<std::string> tf_varyings;
-	tf_varyings.push_back( "tf_position_mass" );
-	tf_varyings.push_back( "tf_velocity" );
+	// Create a vector of Transform Feedback "Varyings".
+	// These strings tell OpenGL what to look for when capturing
+	// Transform Feedback data. For instance, tf_position_mass,
+	// and tf_velocity are variables in the update.vert that we
+	// write our calculations to.
+	std::vector<std::string> varyings(2);
+	varyings[POSITION_INDEX] = "tf_position_mass";
+	varyings[VELOCITY_INDEX] = "tf_velocity";
 	
 	gl::GlslProg::Format updateFormat;
+	// Notice that we don't offer a fragment shader. We don't need
+	// one because we're not trying to write pixels while updating
+	// the position, velocity, etc. data to the screen.
 	updateFormat.vertex( loadAsset( "update.vert" ) )
+	// This option will be either GL_SEPARATE_ATTRIBS or GL_INTERLEAVED_ATTRIBS,
+	// depending on the structure of our data, below. We're using multiple
+	// buffers. Therefore, we're using GL_SEPERATE_ATTRIBS
 		.feedbackFormat( GL_SEPARATE_ATTRIBS )
-		.feedbackVaryings( tf_varyings )
-		.attribLocation( "position_mass", 0 )
-		.attribLocation( "velocity", 1 )
-		.attribLocation( "connection", 2 );
+	// Pass the varyings to the glsl
+		.feedbackVaryings( varyings )
+		.attribLocation( "position_mass",	POSITION_INDEX )
+		.attribLocation( "velocity",		VELOCITY_INDEX )
+		.attribLocation( "connection",		CONNECTION_INDEX );
 	
 	try {
-		if( mUpdateGlsl ) mUpdateGlsl.reset();
-		mUpdateGlsl = gl::GlslProg::create(updateFormat);
-	}
-	catch( const gl::GlslNullProgramExc &ex ) {
-		console() << "Update Shader failure: " << ex.what() << endl;
-		quit();
+		mUpdateGlsl = gl::GlslProg::create( updateFormat );
 	}
 	catch( const gl::GlslProgCompileExc &ex ) {
 		console() << "Update Shader failure: " << ex.what() << endl;
 		quit();
 	}
 	
+	mUpdateGlsl->uniform( "mouse_pos", vec2(640, 480) );
+	
 	gl::GlslProg::Format renderFormat;
 	renderFormat.vertex( loadAsset( "render.vert" ) )
 		.fragment( loadAsset( "render.frag" ) )
-		.attribLocation( "position", 0 );
+		.attribLocation( "position", POSITION_INDEX );
 	
 	try {
-		if( mRenderGlsl ) mRenderGlsl.reset();
-		mRenderGlsl = gl::GlslProg::create(renderFormat);
+		mRenderGlsl = gl::GlslProg::create( renderFormat );
 	}
 	catch( const gl::GlslProgCompileExc &ex ) {
 		console() << "Render Shader failure: " << ex.what() << endl;
@@ -175,114 +183,111 @@ void TransformFeedbackClothSimulationApp::loadShaders()
 
 void TransformFeedbackClothSimulationApp::loadBuffers()
 {
-	int i, j, n = 0;
+	int n = 0;
 	
-	Vec4f * initialPositions = new Vec4f[POINTS_TOTAL];
-	vec3 * initialVelocities = new vec3[POINTS_TOTAL];
-	Vec4i * connectionVectors = new	Vec4i[POINTS_TOTAL];
+	array<vec4, POINTS_TOTAL> positions;
+	array<vec3, POINTS_TOTAL> velocities;
+	array<ivec4, POINTS_TOTAL> connections;
 	
-	for( j = 0; j < POINTS_Y; j++ ) {
+	// We set all connections to -1, because these will only be updated
+	// if there are connection indices. Explanation below.
+	connections.fill( ivec4( -1 ) );
+	
+	for( int j = 0; j < POINTS_Y; j++ ) {
 		float fj = (float)j / (float)POINTS_Y;
-		for( i = 0; i < POINTS_X; i++ ) {
+		for( int i = 0; i < POINTS_X; i++ ) {
 			float fi = (float)i / (float)POINTS_X;
 			
-			initialPositions[n] = Vec4f((fi - 0.5f) * (float)POINTS_X, // x coordinate
-										(fj - 0.5f) * (float)POINTS_Y, // y coordinate
-										0.6f * sinf(fi) * cosf(fj),	   // z coordinate
-										1.0f);						   // homogenous coordinate or w
-			initialVelocities[n] = vec3(0.0f, 0.0f, 0.0f);
-			connectionVectors[n] = Vec4i(-1, -1, -1, -1);
+			// This fills the position buffer data, basically makes a grid
+			positions[n] = vec4((fi - 0.5f) * (float)POINTS_X,	// x coordinate
+								 (fj - 0.5f) * (float)POINTS_Y,	// y coordinate
+								 0.6f * sinf(fi) * cosf(fj),	// z coordinate
+								 1.0f);							// homogenous coordinate or w
 			
-			if( j != (POINTS_Y - 1) ) {	// if it's not one of the top row which don't move
+			// This allows us to figure out the indices of the four points
+			// surrounding the current point. This will be used to index
+			// into the texture buffer.
+			if( j != (POINTS_Y - 1) ) {	// if it's not one of the top row, don't move
 				if( i != 0 )
-					connectionVectors[n][0] = n - 1;
+					connections[n][0] = n - 1;
 				if( j != 0 )
-					connectionVectors[n][1] = n - POINTS_X;
+					connections[n][1] = n - POINTS_X;
 				if( i != (POINTS_X - 1) )
-					connectionVectors[n][2] = n + 1;
+					connections[n][2] = n + 1;
 				if( j != (POINTS_Y - 1) )
-					connectionVectors[n][3] = n + POINTS_X;
+					connections[n][3] = n + POINTS_X;
 			}
 			n++;
 		}
 	}
 	
-	mBuffers.resize(2);
+	// Create the Position Buffer with the intial position data
+	mPositions[0] = gl::Vbo::create( GL_ARRAY_BUFFER, positions.size() * sizeof(vec4), positions.data(), GL_STATIC_DRAW );
+	// Create another Position Buffer that is null, for ping-ponging
+	mPositions[1] = gl::Vbo::create( GL_ARRAY_BUFFER, positions.size() * sizeof(vec4), nullptr, GL_STATIC_DRAW );
 	
-	for( i = 0; i < 2; i++ ) {
-		mBuffers[i].first = gl::Vao::create();
-		mBuffers[i].first->bind();
+	// Create the Velocity Buffer with the intial velocity data
+	mVelocities[0] = gl::Vbo::create( GL_ARRAY_BUFFER, velocities.size() * sizeof(vec3), velocities.data(), GL_STATIC_DRAW );
+	// Create another Velocity Buffer that is null, for ping-ponging
+	mVelocities[1] = gl::Vbo::create( GL_ARRAY_BUFFER, velocities.size() * sizeof(vec3), nullptr, GL_STATIC_DRAW );
+	
+	// Create Connection Buffer to index into the Texture Buffer
+	mConnections = gl::Vbo::create( GL_ARRAY_BUFFER, connections.size() * sizeof(ivec4), connections.data(), GL_STATIC_DRAW );
+	
+	for( int i = 0; i < 2; i++ ) {
+		// Initialize the Vao's holding the info for each buffer
+		mVaos[i] = gl::Vao::create();
 		
-		mBuffers[i].second.resize(3);
-		mBuffers[i].second[POSITION] = gl::Vbo::create( GL_ARRAY_BUFFER, POINTS_TOTAL * sizeof(Vec4f), initialPositions, GL_DYNAMIC_COPY );
-		mBuffers[i].second[POSITION]->bind();
-		gl::vertexAttribPointer( 0, 4, GL_FLOAT, GL_FALSE, 0, NULL );
-		gl::enableVertexAttribArray(0);
+		// Bind the vao to capture index data for the glsl
+		mVaos[i]->bind();
+		mPositions[i]->bind();
+		gl::vertexAttribPointer( POSITION_INDEX, 4, GL_FLOAT, GL_FALSE, 0, NULL );
+		gl::enableVertexAttribArray( POSITION_INDEX );
 		
-		mBuffers[i].second[VELOCITY] = gl::Vbo::create( GL_ARRAY_BUFFER, POINTS_TOTAL * sizeof(vec3), initialVelocities, GL_DYNAMIC_COPY );
-		mBuffers[i].second[VELOCITY]->bind();
-		gl::vertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, 0, NULL );
-		gl::enableVertexAttribArray(1);
+		mVelocities[i]->bind();
+		gl::vertexAttribPointer( VELOCITY_INDEX, 3, GL_FLOAT, GL_FALSE, 0, NULL );
+		gl::enableVertexAttribArray( VELOCITY_INDEX );
 		
-		if( i < 1 ) {
-			mBuffers[i].second[CONNECTION] = gl::Vbo::create( GL_ARRAY_BUFFER, POINTS_TOTAL * sizeof(Vec4i), connectionVectors, GL_STATIC_DRAW );
-			mBuffers[i].second[CONNECTION]->bind();
-			gl::vertexAttribIPointer( 2, 4, GL_INT, 0, NULL );
-			gl::enableVertexAttribArray(2);
-		}
-		else {
-			mBuffers[i].second[CONNECTION] = mBuffers[0].second[2];
-			mBuffers[i].second[CONNECTION]->bind();
-			gl::vertexAttribIPointer( 2, 4, GL_INT, 0, NULL );
-			gl::enableVertexAttribArray(2);
-		}
+		mConnections->bind();
+		gl::vertexAttribIPointer( CONNECTION_INDEX, 4, GL_INT, 0, NULL );
+		gl::enableVertexAttribArray( CONNECTION_INDEX );
 		
+		// Create a TransformFeedbackObj, which is similar to Vao
+		// It's used to capture the output of a glsl and uses the
+		// index of the feedback's varying variable names.
+		mFeedbackObjs[i] = gl::TransformFeedbackObj::create();
+		
+		// Bind the TransformFeedbackObj and bind each corresponding buffer
+		// to it's index.
+		mFeedbackObjs[i]->bind();
+		gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, POSITION_INDEX, mPositions[i] );
+		gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, VELOCITY_INDEX, mVelocities[i] );
+		mFeedbackObjs[i]->unbind();
+		
+		// Create Texture buffers to gain access to the lookup tables for
+		// calculations in the update shader
+		mPosBufferTextures[i] = gl::BufferTexture::create( mPositions[i], GL_RGBA32F );
 	}
 	
-	delete [] initialPositions;
-	delete [] initialVelocities;
-	delete [] connectionVectors;
-	
-	// Create Transform Feedback Buffer Objects to hold the state of these two buffers, position and velocity
-	mFeedbackObjs[0] = gl::TransformFeedbackObj::create();
-	
-	mFeedbackObjs[0]->bind();
-	gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 0, mBuffers[0].second[POSITION] );
-	gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 1, mBuffers[0].second[VELOCITY] );
-	mFeedbackObjs[0]->unbind();
-	
-	mFeedbackObjs[1] = gl::TransformFeedbackObj::create();
-	
-	mFeedbackObjs[1]->bind();
-	gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 0, mBuffers[1].second[POSITION] );
-	gl::bindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, 1, mBuffers[1].second[VELOCITY] );
-	mFeedbackObjs[1]->unbind();
-	
-	// Create Texture buffers to be given lookup tables for calculations in the update shader
-	mPosBufferTextures[0] = gl::BufferTexture::create( mBuffers[0].second[POSITION], GL_RGBA32F );
-	mPosBufferTextures[1] = gl::BufferTexture::create( mBuffers[1].second[POSITION], GL_RGBA32F );
-	
-	int lines = (POINTS_X - 1) * POINTS_Y + (POINTS_Y - 1) * POINTS_X;
-	
-	mElementBuffer = gl::Vbo::create( GL_ELEMENT_ARRAY_BUFFER, lines * 2 * sizeof(int), NULL, GL_STATIC_DRAW );
-	mElementBuffer->bind();
-	
-	int * e = (int *)mElementBuffer->mapBufferRange( 0, lines * 2 * sizeof(int), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT );
-	
-	for( j = 0; j < POINTS_Y; j++ ) {
-		for( i = 0; i < POINTS_X - 1; i++ ) {
+	// Create an element buffer to draw the lines (connections) between the points
+	array<uint32_t, CONNECTIONS_TOTAL*2> lineIndices;
+	uint32_t * e = lineIndices.data();
+	for( int j = 0; j < POINTS_Y; j++ ) {
+		for( int i = 0; i < POINTS_X - 1; i++ ) {
 			*e++ = i + j * POINTS_X;
 			*e++ = 1 + i + j * POINTS_Y;
 		}
 	}
 	
-	for( i = 0; i < POINTS_X; i++ ) {
-		for( j = 0; j < POINTS_Y - 1; j++ ) {
+	for( int i = 0; i < POINTS_X; i++ ) {
+		for( int j = 0; j < POINTS_Y - 1; j++ ) {
 			*e++ = i + j * POINTS_X;
 			*e++ = POINTS_X + i + j * POINTS_X;
 		}
 	}
-	mElementBuffer->unmap();
+	
+	mLineIndices = lineIndices.size();
+	mLineElementBuffer = gl::Vbo::create( GL_ELEMENT_ARRAY_BUFFER, lineIndices.size() * sizeof(uint32_t), lineIndices.data(), GL_STATIC_DRAW );
 }
 
 CINDER_APP_NATIVE( TransformFeedbackClothSimulationApp, RendererGl )
