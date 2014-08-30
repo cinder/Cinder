@@ -197,7 +197,9 @@
     <ClCompile Include="..\src\cinder\app\Window.cpp" />
     <ClCompile Include="..\src\cinder\Area.cpp" />
     <ClCompile Include="..\src\cinder\audio\ChannelRouterNode.cpp" />
-    <ClCompile Include="..\src\cinder\audio\Context.cpp" />
+    <ClCompile Include="..\src\cinder\audio\Context.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\AudioContext.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\src\cinder\audio\DelayNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\Device.cpp" />
     <ClCompile Include="..\src\cinder\audio\dsp\Biquad.cpp" />
