@@ -1,4 +1,4 @@
-#version 330 core
+#version 150 core
 
 uniform float uMouseForce;
 uniform vec3  uMousePos;

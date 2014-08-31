@@ -1,4 +1,4 @@
-#version 330 core
+#version 150 core
 
 uniform sampler2D uVelocityMap; // full-resolution velocity
 uniform int uTileSize;
