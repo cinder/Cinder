@@ -153,6 +153,8 @@ void ParticleSphereCPUApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatricesWindowPersp( getWindowSize() );
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
 
 	mParticleBatch->draw();
 }
