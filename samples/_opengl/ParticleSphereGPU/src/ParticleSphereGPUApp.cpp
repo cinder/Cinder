@@ -1,3 +1,13 @@
+//
+//	Copyright (c) 2014 David Wicks, sansumbrella.com
+//	All rights reserved.
+//
+//	Particle Sphere sample application, GPU integration.
+//
+//	Author: David Wicks
+//	License: BSD Simplified
+//
+
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 
@@ -76,7 +86,7 @@ void ParticleSphereGPUApp::setup()
 	const float azimuth = 256.0f * M_PI / particles.size();
 	const float inclination = M_PI / particles.size();
 	const float radius = 180.0f;
-	vec3 center = vec3( getWindowCenter(), 0.0f );
+	vec3 center = vec3( getWindowCenter() + vec2( 0.0f, 40.0f ), 0.0f );
 	for( int i = 0; i < particles.size(); ++i )
 	{	// assign starting values to particles.
 		float x = radius * sin( inclination * i ) * cos( azimuth * i );
@@ -180,6 +190,8 @@ void ParticleSphereGPUApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatricesWindowPersp( getWindowSize() );
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
 
 	gl::ScopedGlslProg render( mRenderProg );
 	gl::ScopedVao vao( mAttributes[mSourceIndex] );

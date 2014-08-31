@@ -1,4 +1,4 @@
-#version 330 core
+#version 150 core
 
 in vec4 ciPosition;
 in vec2 ciTexCoord0;

@@ -1,3 +1,16 @@
+//
+//	Copyright (c) 2014 David Wicks, sansumbrella.com
+//	All rights reserved.
+//
+//	Velocity buffer blur sample application.
+//	Motion blur based on the following NVIDIA papers:
+//	http://graphics.cs.williams.edu/papers/MotionBlurI3D12/
+//	http://graphics.cs.williams.edu/papers/MotionBlur13/
+//
+//	Author: David Wicks
+//	License: BSD Simplified
+//
+
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 
