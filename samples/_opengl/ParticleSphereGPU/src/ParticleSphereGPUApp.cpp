@@ -1,3 +1,13 @@
+//
+//	Copyright (c) 2014 David Wicks, sansumbrella.com
+//	All rights reserved.
+//
+//	Particle Sphere sample application, GPU integration.
+//
+//	Author: David Wicks
+//	License: BSD Simplified
+//
+
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 
