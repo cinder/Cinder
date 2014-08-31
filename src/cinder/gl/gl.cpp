@@ -1245,6 +1245,14 @@ void draw( const TriMesh &mesh )
 
 	draw( VboMesh::create( mesh ) );
 }
+	
+void draw( const geom::Source &source )
+{
+	if( source.getNumVertices() <= 0 )
+		return;
+	
+	draw( VboMesh::create( source ) );
+}
 
 void drawSolid( const Path2d &path, float approximationScale )
 {
@@ -1707,85 +1715,14 @@ void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 	drawVector( vec3( 0.0f ), vec3( 0.0f, 0.0f, 1.0f ) * axisLength, headLength, headRadius );
 }
 	
-void drawVector( const vec3 &start, const vec3 &end, float headLength, float headRadius )
+void drawVector( const vec3& start, const vec3& end, float headLength, float headRadius )
 {
-	const int NUM_SEGMENTS = 32;
-	std::array<vec3, 2> lineVerts = { start, end };
-	std::array<vec3, NUM_SEGMENTS+2> coneVerts;
-	
-	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
-	if( ! curGlslProg ) {
-		CI_LOG_E( "No GLSL program bound" );
-		return;
-	}
-	
-	ctx->pushVao();
-	ctx->getDefaultVao()->replacementBindBegin();
-	
-	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
-	
-	VboRef arrayVbo = ctx->getDefaultArrayVbo( lineVerts.size() * sizeof(vec3) );
-	{
-		ScopedBuffer bufferBindScp( arrayVbo );
-		
-		arrayVbo->bufferSubData( 0, lineVerts.size() * sizeof(vec3), lineVerts.data() );
-		if( posLoc >= 0 ) {
-			enableVertexAttribArray( posLoc );
-			vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (const GLvoid*)nullptr );
-		}
-	}
-	ctx->getDefaultVao()->replacementBindEnd();
-	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_LINES, 0, lineVerts.size() );
-	
-	
-	// Draw the cone
-	vec3 axis = normalize( end - start );
-	vec3 temp = ( dot( axis, vec3( 0.0f, 1.0f, 0.0f ) ) > 0.999f ) ?
-							cross( axis, vec3( 1.0f, 0.0f, 0.0f ) ) :
-							cross( axis, vec3( 0.0f, 1.0f, 0.0f ) );
-	vec3 left = normalize( cross( axis, temp ) );
-	vec3 up = normalize( cross( axis, left ) );
-	
-	coneVerts[0] = vec3( end + axis * headLength );
-	for( int s = 0; s <= NUM_SEGMENTS; ++s ) {
-		float t = s / (float)NUM_SEGMENTS;
-		coneVerts[s+1] = vec3( end + left * headRadius * math<float>::cos( t * 2 * 3.14159f )
-							  + up * headRadius * math<float>::sin( t * 2 * 3.14159f ) );
-	}
-	
-	ctx->getDefaultVao()->replacementBindBegin();
-	arrayVbo = ctx->getDefaultArrayVbo( coneVerts.size() * sizeof(vec3) );
-	{
-		ScopedBuffer bufferBindScp( arrayVbo );
-		
-		arrayVbo->bufferSubData( 0, coneVerts.size() * sizeof(vec3), coneVerts.data() );
-		if( posLoc >= 0 ) {
-			enableVertexAttribArray( posLoc );
-			vertexAttribPointer( posLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)0 );
-		}
-	}
-	
-	ctx->getDefaultVao()->replacementBindEnd();
-	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_TRIANGLE_FAN, 0, coneVerts.size() );
-	
-	// draw the cap
-	coneVerts[0] = end;
-	for( int s = 0; s <= NUM_SEGMENTS; ++s ) {
-		float t = s / (float)NUM_SEGMENTS;
-		coneVerts[s+1] = vec3( end - left * headRadius * math<float>::cos( t * 2 * 3.14159f )
-							  + up * headRadius * math<float>::sin( t * 2 * 3.14159f ) );
-	}
-	
-	arrayVbo->bufferSubData( 0, coneVerts.size() * sizeof(vec3), coneVerts.data() );
-	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_TRIANGLE_FAN, 0, coneVerts.size() );
-	
-	ctx->popVao();
+	gl::drawLine( start, end );
+	vec3 dir = end - start;
+	vec3 ori = end - normalize( dir ) * headLength;
+	gl::draw( geom::Cone().base( headRadius ).height( headLength ).origin( ori ).direction( dir ) );
 }
-
+	
 namespace {
 void drawStringHelper( const std::string &str, const vec2 &pos, const ColorA &color, Font font, int justification )
 {

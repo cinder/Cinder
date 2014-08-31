@@ -20,16 +20,16 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/AxisAlignedBox.h"	
-#include "cinder/Filesystem.h"
-#include "cinder/Frustum.h"
-#include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
-#include "cinder/ObjLoader.h"
-#include "cinder/Rand.h"
-#include "cinder/Text.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/app/RendererGl.h"
+
+#include "cinder/AxisAlignedBox.h"
+#include "cinder/Frustum.h"
+#include "cinder/MayaCamUI.h"
+#include "cinder/ObjLoader.h"
+#include "cinder/Text.h"
+#include "cinder/Rand.h"
+
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/Context.h"
@@ -71,7 +71,6 @@ class FrustumCullingReduxApp : public AppBasic
 
 	//! flags
 	bool			bPerformCulling;
-	bool			bMoveCamera;
 	bool			bDrawEstimatedBoundingBoxes;
 	bool			bDrawPreciseBoundingBoxes;
 	bool			bShowHelp;
@@ -111,7 +110,6 @@ void FrustumCullingReduxApp::setup()
 {
 	//! intialize settings
 	bPerformCulling = true;
-	bMoveCamera = true;
 	bDrawEstimatedBoundingBoxes = false;
 	bDrawPreciseBoundingBoxes = false;
 	bShowHelp = true;
@@ -141,13 +139,13 @@ void FrustumCullingReduxApp::setup()
 	//! create a few hearts
 	Rand::randomize();
 	mObjects.resize( NUM_OBJECTS );
-	for( auto & objIt : mObjects ) {
+	for( auto & obj : mObjects ) {
 		vec3 p( Rand::randFloat(-2000.0f, 2000.0f), 0.0f, Rand::randFloat(-2000.0f, 2000.0f) );
 		vec3 r( 0.0f, Rand::randFloat(-360.0f, 360.0f), 0.0f );
 		vec3 s( 50.10f, 50.10f, 50.10f );
 
-		objIt = CullableObjectRef( new CullableObject( mBatch ) );
-		objIt->setTransform( p, r, s );
+		obj = CullableObjectRef( new CullableObject( mBatch ) );
+		obj->setTransform( p, r, s );
 	}
 
 	//! setup cameras
@@ -171,21 +169,21 @@ void FrustumCullingReduxApp::update()
 	mRenderCam.setFov( 30.0f );
 	Frustumf visibleWorld( mRenderCam );
 
-	for( auto & objIt : mObjects ) {
+	for( auto & obj : mObjects ) {
 		// update object (so it rotates slowly around its axis)
-		objIt->update(elapsed);
+		obj->update(elapsed);
 
 		if(bPerformCulling) {
 			// create a fast approximation of the world space bounding box by transforming the
 			// eight corners of the object space bounding box and using them to create a new axis aligned bounding box 
-			AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( objIt->getTransform() );
+			AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
 
 			// check if the bounding box intersects the visible world
 			
-			objIt->setCulled( ! visibleWorld.intersects( worldBoundingBox ) );
+			obj->setCulled( ! visibleWorld.intersects( worldBoundingBox ) );
 		}
 		else {
-			objIt->setCulled( false );
+			obj->setCulled( false );
 		}
 	}
 	// Must reset the culling window so that we can see the effect.
@@ -209,21 +207,21 @@ void FrustumCullingReduxApp::draw()
 		
 		{
 			gl::ScopedGlslProg scopeGlsl( mShader );
-			for( auto & objIt : mObjects )
-				objIt->draw();
+			for( auto & obj : mObjects )
+				obj->draw();
 		}
 		
 		// draw helper objects
 		gl::drawCoordinateFrame(100.0f, 5.0f, 2.0f);
 		
 		AxisAlignedBox3f worldBoundingBox;
-		for( auto & objIt : mObjects ) {
+		for( auto & obj : mObjects ) {
 			if(bDrawEstimatedBoundingBoxes) {
 				// create a fast approximation of the world space bounding box by transforming the
 				// eight corners and using them to create a new axis aligned bounding box
-				worldBoundingBox = mObjectBoundingBox.transformed( objIt->getTransform() );
+				worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
 				
-				if( ! objIt->isCulled() )
+				if( ! obj->isCulled() )
 					gl::color( Color(0, 1, 1) );
 				else
 					gl::color( Color(1, 0.5f, 0) );
@@ -231,10 +229,10 @@ void FrustumCullingReduxApp::draw()
 				gl::drawStrokedCube( worldBoundingBox );
 			}
 			
-			if(bDrawPreciseBoundingBoxes && ! objIt->isCulled()) {
+			if(bDrawPreciseBoundingBoxes && ! obj->isCulled()) {
 				// you can see how much the approximated bounding boxes differ
 				// from the precise ones by enabling this code
-				worldBoundingBox = mTriMesh->calcBoundingBox( objIt->getTransform() );
+				worldBoundingBox = mTriMesh->calcBoundingBox( obj->getTransform() );
 				gl::color( Color(1, 1, 0) );
 				gl::drawStrokedCube( worldBoundingBox );
 			}
@@ -309,9 +307,12 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 
 void FrustumCullingReduxApp::loadObject()
 {
+	// We first convert our obj to a trimesh
 	mTriMesh = TriMesh::create( ObjLoader( loadAsset("models/heart.obj") ) );
+	// Then use our trimesh and our shader to create a batch
 	mBatch = gl::Batch::create( *mTriMesh, mShader );
 
+	// We then use trimesh to calculate the Bounding Box
 	mObjectBoundingBox = mTriMesh->calcBoundingBox();
 }
 
@@ -353,9 +354,6 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 
 	if(gl::isVerticalSyncEnabled()) layout.addLine("(V) Toggle vertical sync (currently ON)");
 	else  layout.addLine("(V) Toggle vertical sync (currently OFF)");
-
-	if(bMoveCamera) layout.addLine("(Space) Toggle camera control (currently ON)");
-	else  layout.addLine("(Space) Toggle camera control (currently OFF)");
 
 	layout.addLine("(H) Toggle this help panel");
 
