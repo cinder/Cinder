@@ -49,8 +49,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class PostProcessingAAApp : public AppNative
-{
+class PostProcessingAAApp : public AppNative {
 public:
 	enum SMAAMode { SMAA_EDGE_DETECTION, SMAA_BLEND_WEIGHTS, SMAA_BLEND_NEIGHBORS };
 	enum DividerMode { MODE_COMPARISON, MODE_ORIGINAL1, MODE_FXAA, MODE_SMAA, MODE_ORIGINAL2, MODE_COUNT };
@@ -206,7 +205,7 @@ void PostProcessingAAApp::draw()
 
 		if( mDividerMode == MODE_COMPARISON ) {
 			gl::pushMatrices();
-			gl::setMatricesWindow( mDividerWidth, getWindowHeight());
+			gl::setMatricesWindow( mDividerWidth, getWindowHeight() );
 			gl::pushViewport( (int) mDivider.x, 0, mDividerWidth, getWindowHeight() );
 			gl::draw( tex, getWindowBounds().getMoveULTo( vec2( -mDivider.x, 0 ) ) );
 			gl::popViewport();
@@ -214,7 +213,7 @@ void PostProcessingAAApp::draw()
 		}
 		else {
 			gl::pushMatrices();
-			gl::setMatricesWindow( getWindowWidth(), getWindowHeight());
+			gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 			gl::draw( tex, getWindowBounds() );
 			gl::popMatrices();
 		}
@@ -246,8 +245,8 @@ void PostProcessingAAApp::draw()
 	case MODE_SMAA:
 		gl::draw( mInfoSMAA, vec2( getWindowWidth() / 2 - 128, 32 ) );
 		break;
-    default:
-        break;
+	default:
+		break;
 	}
 	gl::disableAlphaBlending();
 }
@@ -291,9 +290,9 @@ void PostProcessingAAApp::mouseMove( MouseEvent event )
 {
 	mMouse = event.getPos();
 
-	if( mMouse.x < 100 ) 
+	if( mMouse.x < 100 )
 		mMouse.x = 0;
-	else if( mMouse.x > getWindowWidth() - 100 ) 
+	else if( mMouse.x > getWindowWidth() - 100 )
 		mMouse.x = (float) getWindowWidth();
 }
 

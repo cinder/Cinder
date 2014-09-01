@@ -35,8 +35,7 @@ class Camera;
 
 typedef std::shared_ptr<class Piston> PistonRef;
 
-class Piston
-{
+class Piston {
 public:
 	Piston();
 	Piston( float x, float z );
@@ -63,8 +62,7 @@ private:
 	ci::vec3   mPosition;
 };
 
-class Pistons
-{
+class Pistons {
 public:
 	Pistons()
 	{

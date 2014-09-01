@@ -46,8 +46,7 @@ Piston::Piston( float x, float z )
 
 void Piston::update( const ci::Camera& camera )
 {
-	vec3 diff = camera.getEyePoint() - mPosition;
-	mDistance = dot(diff, diff); // = squared distance
+	mDistance = glm::distance2( camera.getEyePoint(), mPosition );
 }
 
 void Piston::draw( float time )

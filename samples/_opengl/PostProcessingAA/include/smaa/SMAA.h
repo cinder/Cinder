@@ -28,11 +28,10 @@
 
 #include "Shader.h"
 
-class SMAA
-{
+class SMAA {
 public:
 	SMAA() {}
-	~SMAA(){}
+	~SMAA() {}
 
 	void setup();
 	void draw( ci::gl::Texture2dRef source, const ci::Area& bounds );

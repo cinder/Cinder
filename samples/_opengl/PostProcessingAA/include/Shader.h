@@ -30,8 +30,7 @@
 
 typedef std::shared_ptr<class Shader> ShaderRef;
 
-class Shader
-{
+class Shader {
 public:
 	Shader( void );
 	//! Creates a shader. Loads "[name].vert", "[name].geom" and/or "[name].frag" from the assets folder.

@@ -29,8 +29,7 @@
 
 #include "Shader.h"
 
-class FXAA
-{
+class FXAA {
 public:
 	FXAA() {}
 	~FXAA() {}
